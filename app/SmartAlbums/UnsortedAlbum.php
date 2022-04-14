@@ -2,6 +2,7 @@
 
 namespace App\SmartAlbums;
 
+use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Models\Photo;
 use App\SmartAlbums\Utils\Wireable;
@@ -50,21 +51,21 @@ class UnsortedAlbum extends BaseSmartAlbum
 	 * are deleted.
 	 *
 	 * @return bool
+	 *
+	 * @throws ModelDBException
 	 */
 	public function delete(): bool
 	{
-		$success = true;
 		if (!AccessControl::is_admin()) {
-			$photos = $this->photos()->where('owner_id', '=', AccessControl::id())->get();
-		} else {
-			$photos = $this->photos()->get();
+			$this->photos()->where('owner_id', '=', AccessControl::id());
 		}
+		$photos = $this->photos()->get();
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			// This also takes care of proper deletion of physical files from disk
-			$success &= $photo->delete();
+			$photo->delete();
 		}
 
-		return $success;
+		return true;
 	}
 }

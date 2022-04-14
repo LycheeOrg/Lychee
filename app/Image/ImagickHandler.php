@@ -2,71 +2,74 @@
 
 namespace App\Image;
 
+use App\Exceptions\MediaFileOperationException;
 use App\Models\Configs;
-use App\Models\Logs;
 use Imagick;
 use ImagickException;
+use ImagickPixel;
 use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 class ImagickHandler implements ImageHandlerInterface
 {
-	/**
-	 * @var int
-	 */
-	private $compressionQuality;
+	private int $compressionQuality;
 
 	/**
 	 * Rotates a given image based on the given orientation.
 	 *
-	 * @param \Imagick $image the image reference to rotate
+	 * @param Imagick $image the image reference to rotate
 	 *
-	 * @return array a dictionary of width and height of the rotated image
+	 * @return array{width: int, height: int} a dictionary of width and height of the rotated image
+	 *
+	 * @throws MediaFileOperationException
 	 */
-	private function autoRotateInternal(Imagick &$image): array
+	private function autoRotateInternal(Imagick $image): array
 	{
 		try {
+			$success = true;
 			$orientation = $image->getImageOrientation();
 
 			switch ($orientation) {
-				case \Imagick::ORIENTATION_TOPLEFT:
+				case Imagick::ORIENTATION_TOPLEFT:
 					// nothing to do
 					break;
-				case \Imagick::ORIENTATION_TOPRIGHT:
-					$image->flopImage();
+				case Imagick::ORIENTATION_TOPRIGHT:
+					$success = $image->flopImage();
 					break;
-				case \Imagick::ORIENTATION_BOTTOMRIGHT:
-					$image->rotateImage(new \ImagickPixel(), 180);
+				case Imagick::ORIENTATION_BOTTOMRIGHT:
+					$success = $image->rotateImage(new ImagickPixel(), 180);
 					break;
-				case \Imagick::ORIENTATION_BOTTOMLEFT:
-					$image->flopImage();
-					$image->rotateImage(new \ImagickPixel(), 180);
+				case Imagick::ORIENTATION_BOTTOMLEFT:
+					$success = $image->flopImage();
+					$success &= $image->rotateImage(new ImagickPixel(), 180);
 					break;
-				case \Imagick::ORIENTATION_LEFTTOP:
-					$image->flopImage();
-					$image->rotateImage(new \ImagickPixel(), -90);
+				case Imagick::ORIENTATION_LEFTTOP:
+					$success = $image->flopImage();
+					$success &= $image->rotateImage(new ImagickPixel(), -90);
 					break;
-				case \Imagick::ORIENTATION_RIGHTTOP:
-					$image->rotateImage(new \ImagickPixel(), 90);
+				case Imagick::ORIENTATION_RIGHTTOP:
+					$success = $image->rotateImage(new ImagickPixel(), 90);
 					break;
-				case \Imagick::ORIENTATION_RIGHTBOTTOM:
-					$image->flopImage();
-					$image->rotateImage(new \ImagickPixel(), 90);
+				case Imagick::ORIENTATION_RIGHTBOTTOM:
+					$success = $image->flopImage();
+					$success &= $image->rotateImage(new ImagickPixel(), 90);
 					break;
-				case \Imagick::ORIENTATION_LEFTBOTTOM:
-					$image->rotateImage(new \ImagickPixel(), -90);
+				case Imagick::ORIENTATION_LEFTBOTTOM:
+					$success = $image->rotateImage(new ImagickPixel(), -90);
 					break;
 			}
 
-			$image->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
+			$success &= $image->setImageOrientation(Imagick::ORIENTATION_TOPLEFT);
+
+			if (!$success) {
+				throw new MediaFileOperationException('Failed to rotate image');
+			}
 
 			return [
 				'width' => $image->getImageWidth(),
 				'height' => $image->getImageHeight(),
 			];
 		} catch (ImagickException $exception) {
-			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
-
-			return [false, false];
+			throw new MediaFileOperationException('Failed to rotate image', $exception);
 		}
 	}
 
@@ -88,10 +91,10 @@ class ImagickHandler implements ImageHandlerInterface
 		int $newHeight,
 		int &$resWidth,
 		int &$resHeight
-	): bool {
+	): void {
 		try {
 			// Read image
-			$image = new \Imagick();
+			$image = new Imagick();
 			$image->readImage($source);
 			// the image may need to be rotated prior to scaling
 			$this->autoRotateInternal($image);
@@ -110,7 +113,6 @@ class ImagickHandler implements ImageHandlerInterface
 			}
 
 			$image->writeImage($destination);
-			Logs::notice(__METHOD__, __LINE__, 'Saving thumb to ' . $destination);
 			$resWidth = $image->getImageWidth();
 			$resHeight = $image->getImageHeight();
 			$image->clear();
@@ -121,12 +123,8 @@ class ImagickHandler implements ImageHandlerInterface
 				ImageOptimizer::optimize($destination);
 			}
 		} catch (ImagickException $exception) {
-			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
-
-			return false;
+			throw new MediaFileOperationException('Failed to scale image ' . $source, $exception);
 		}
-
-		return true;
 	}
 
 	/**
@@ -137,9 +135,9 @@ class ImagickHandler implements ImageHandlerInterface
 		string $destination,
 		int $newWidth,
 		int $newHeight
-	): bool {
+	): void {
 		try {
-			$image = new \Imagick();
+			$image = new Imagick();
 			$image->readImage($source);
 			// the image may need to be rotated prior to cropping
 			$this->autoRotateInternal($image);
@@ -158,7 +156,6 @@ class ImagickHandler implements ImageHandlerInterface
 			}
 
 			$image->writeImage($destination);
-			Logs::notice(__METHOD__, __LINE__, 'Saving thumb to ' . $destination);
 			$image->clear();
 			$image->destroy();
 
@@ -167,12 +164,8 @@ class ImagickHandler implements ImageHandlerInterface
 				ImageOptimizer::optimize($destination);
 			}
 		} catch (ImagickException $exception) {
-			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
-
-			return false;
+			throw new MediaFileOperationException('Failed to crop image ' . $source, $exception);
 		}
-
-		return true;
 	}
 
 	/**
@@ -181,10 +174,10 @@ class ImagickHandler implements ImageHandlerInterface
 	public function autoRotate(string $path, int $orientation = 1, bool $pretend = false): array
 	{
 		try {
-			$image = new \Imagick();
+			$image = new Imagick();
 			$image->readImage($path);
 
-			$rotate = $image->getImageOrientation() !== \Imagick::ORIENTATION_TOPLEFT;
+			$rotate = $image->getImageOrientation() !== Imagick::ORIENTATION_TOPLEFT;
 
 			$dimensions = $this->autoRotateInternal($image);
 
@@ -197,39 +190,26 @@ class ImagickHandler implements ImageHandlerInterface
 
 			return $dimensions;
 		} catch (ImagickException $exception) {
-			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
-
-			return [false, false];
+			throw new MediaFileOperationException('Failed to rotate image ' . $path, $exception);
 		}
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function rotate(string $source, int $angle, string $destination = null): bool
+	public function rotate(string $source, int $angle, string $destination = null): void
 	{
 		try {
-			$image = new \Imagick();
-			if ($image->readImage($source) === false) {
-				return false;
-			}
+			$image = new Imagick();
+			$image->readImage($source);
 			// the image may need to be rotated upright prior to the requested rotation
 			$this->autoRotateInternal($image);
-
-			if ($image->rotateImage(new \ImagickPixel(), $angle) === false) {
-				return false;
-			}
-
-			$ret = $image->writeImage($destination);
-
+			$image->rotateImage(new ImagickPixel(), $angle);
+			$image->writeImage($destination);
 			$image->clear();
 			$image->destroy();
-
-			return $ret;
 		} catch (ImagickException $exception) {
-			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
-
-			return false;
+			throw new MediaFileOperationException('Failed to rotate image ' . $source, $exception);
 		}
 	}
 }

@@ -3,10 +3,16 @@
 namespace App\Models;
 
 use App\Casts\MustNotSetCast;
+use App\Exceptions\ConfigurationException;
+use App\Exceptions\Internal\InvalidSizeVariantException;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Image\FlysystemFile;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
+use App\Models\Extensions\ThrowsConsistentExceptions;
+use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Relations\HasManyBidirectionally;
 use Illuminate\Database\Eloquent\Collection;
@@ -26,7 +32,7 @@ use League\Flysystem\Adapter\Local;
 // have crashed, because the Laravel framework would try to load the adapter
 // below, but the adapter does not exist and is not part of our Composer
 // dependencies
-//use League\Flysystem\AwsS3v3\AwsS3Adapter;
+// use League\Flysystem\AwsS3v3\AwsS3Adapter;
 
 /**
  * Class SizeVariant.
@@ -42,6 +48,7 @@ use League\Flysystem\Adapter\Local;
  * @property string              full_path
  * @property int                 width
  * @property int                 height
+ * @property int                 filesize
  * @property Collection<SymLink> sym_links
  */
 class SizeVariant extends Model
@@ -49,6 +56,10 @@ class SizeVariant extends Model
 	use UTCBasedTimes;
 	use HasAttributesPatch;
 	use HasBidirectionalRelationships;
+	use ThrowsConsistentExceptions {
+		ThrowsConsistentExceptions::delete as private internalDelete;
+	}
+	use UseFixedQueryBuilder;
 
 	public const ORIGINAL = 0;
 	public const MEDIUM2X = 1;
@@ -73,6 +84,7 @@ class SizeVariant extends Model
 		'url' => MustNotSetCast::class . ':short_path',
 		'width' => 'integer',
 		'height' => 'integer',
+		'filesize' => 'integer',
 	];
 
 	/**
@@ -130,6 +142,8 @@ class SizeVariant extends Model
 	 * provides symbolic links.
 	 *
 	 * @return string the url of the size variant
+	 *
+	 * @throws ConfigurationException
 	 */
 	public function getUrlAttribute(): string
 	{
@@ -163,7 +177,7 @@ class SizeVariant extends Model
 			return $symLink->url;
 		}
 
-		throw new \InvalidArgumentException('the chosen storage adapter "' . Storage::getDefaultDriver() . '" does not support the symbolic linking feature');
+		throw new ConfigurationException('the chosen storage adapter "' . get_class($storageAdapter) . '" does not support the symbolic linking feature');
 	}
 
 	/**
@@ -198,13 +212,13 @@ class SizeVariant extends Model
 	 *                             {@link SizeVariant::THUMB2X}, and
 	 *                             {@link SizeVariant::THUMB}
 	 *
-	 * @throws \InvalidArgumentException thrown if `$sizeVariant` is
-	 *                                   out-of-bounds
+	 * @throws InvalidSizeVariantException thrown if `$sizeVariantType` is
+	 *                                     out-of-bounds
 	 */
 	public function setSizeVariantAttribute(int $sizeVariantType): void
 	{
 		if (self::ORIGINAL > $sizeVariantType || $sizeVariantType > self::THUMB) {
-			throw new \InvalidArgumentException('passed size variant ' . $sizeVariantType . ' out-of-range');
+			throw new InvalidSizeVariantException('passed size variant ' . $sizeVariantType . ' out-of-range');
 		}
 		$this->attributes['type'] = $sizeVariantType;
 	}
@@ -214,7 +228,10 @@ class SizeVariant extends Model
 	 *
 	 * @param bool $keepFile If true, the associated file is not removed from storage
 	 *
-	 * @return bool True on success, false otherwise
+	 * @return bool Always true
+	 *
+	 * @throws MediaFileOperationException
+	 * @throws ModelDBException
 	 */
 	public function delete(bool $keepFile = false): bool
 	{
@@ -223,13 +240,11 @@ class SizeVariant extends Model
 		// the physical symbolic links from disk.
 		// We must not use a "mass deletion" like $this->sym_links()->delete()
 		// here, because this doesn't invoke the method `delete` on the model
-		// and thus the would not delete any actual symbolic link from disk.
+		// and thus no actual symbolic link would be deleted from disk.
 		$symLinks = $this->sym_links;
 		/** @var SymLink $symLink */
 		foreach ($symLinks as $symLink) {
-			if ($symLink->delete() === false) {
-				return false;
-			}
+			$symLink->delete();
 		}
 
 		// Delete the actual media file
@@ -238,11 +253,11 @@ class SizeVariant extends Model
 			$shortPath = $this->short_path;
 			if (!empty($shortPath) && $disk->exists($shortPath)) {
 				if ($disk->delete($shortPath) === false) {
-					return false;
+					throw new MediaFileOperationException('Could not delete media file from disk: ' . $shortPath);
 				}
 			}
 		}
 
-		return parent::delete() !== false;
+		return $this->internalDelete();
 	}
 }

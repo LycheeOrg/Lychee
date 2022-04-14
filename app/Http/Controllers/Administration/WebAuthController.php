@@ -8,43 +8,25 @@ use App\Actions\WebAuth\GenerateRegistration;
 use App\Actions\WebAuth\Lists as ListDevices;
 use App\Actions\WebAuth\VerifyAuthentication;
 use App\Actions\WebAuth\VerifyRegistration;
-use App\Http\Controllers\Controller;
+use App\Exceptions\Internal\InvalidUserIdException;
+use App\Exceptions\UnauthenticatedException;
 use DarkGhostHunter\Larapass\Http\WebAuthnRules;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Collection;
+use Webauthn\PublicKeyCredentialCreationOptions;
+use Webauthn\PublicKeyCredentialRequestOptions;
 
 class WebAuthController extends Controller
 {
 	use WebAuthnRules;
 
-	/**
-	 * @var GenerateRegistration
-	 */
-	private $generateRegistration;
-
-	/**
-	 * @var VerifyRegistration
-	 */
-	private $verifyRegistration;
-
-	/**
-	 * @var GenerateAuthentication
-	 */
-	private $generateAuthentication;
-
-	/**
-	 * @var VerifiyAuthentication
-	 */
-	private $verifyAuthentication;
-
-	/**
-	 * @var ListDevices
-	 */
-	private $listDevices;
-
-	/**
-	 * @var DeleteDevices
-	 */
-	private $deleteDevices;
+	private GenerateRegistration $generateRegistration;
+	private VerifyRegistration $verifyRegistration;
+	private GenerateAuthentication $generateAuthentication;
+	private VerifyAuthentication $verifyAuthentication;
+	private ListDevices $listDevices;
+	private DeleteDevices $deleteDevices;
 
 	public function __construct(
 		GenerateRegistration $generateRegistration,
@@ -73,41 +55,42 @@ class WebAuthController extends Controller
 	 * disableCredential(): Excludes an existing Credential ID from authentication.
 	 * getFromCredentialId(): Returns the user using the given Credential ID, if any.
 	 */
-	public function GenerateRegistration(Request $request)
+	public function generateRegistration(): PublicKeyCredentialCreationOptions
 	{
 		return $this->generateRegistration->do();
 	}
 
-	public function VerifyRegistration(Request $request)
+	public function verifyRegistration(Request $request): void
 	{
 		$data = $request->validate($this->attestationRules());
 
-		return $this->verifyRegistration->do($data);
+		$this->verifyRegistration->do($data);
 	}
 
-	public function GenerateAuthentication(Request $request)
+	public function generateAuthentication(Request $request): PublicKeyCredentialRequestOptions
 	{
-		$user_id = $request->input('user_id');
-
-		return $this->generateAuthentication->do($user_id);
+		return $this->generateAuthentication->do($request['user_id']);
 	}
 
-	public function VerifyAuthentication(Request $request)
+	/**
+	 * @throws UnauthenticatedException
+	 * @throws InvalidUserIdException
+	 */
+	public function verifyAuthentication(Request $request): void
 	{
 		$credential = $request->validate($this->assertionRules());
 
-		return $this->verifyAuthentication->do($credential);
+		$this->verifyAuthentication->do($credential);
 	}
 
-	public function List()
+	public function list(): Collection
 	{
 		return $this->listDevices->do();
 	}
 
-	public function Delete(Request $request)
+	public function delete(Request $request): void
 	{
 		$id = $request->validate(['id' => 'required|string']);
-
-		return $this->deleteDevices->do($id);
+		$this->deleteDevices->do($id);
 	}
 }

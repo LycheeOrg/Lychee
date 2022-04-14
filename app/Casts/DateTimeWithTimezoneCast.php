@@ -2,6 +2,11 @@
 
 namespace App\Casts;
 
+use App\Exceptions\Internal\LycheeDomainException;
+use App\Exceptions\Internal\LycheeInvalidArgumentException;
+use App\Exceptions\Internal\MissingModelAttributeException;
+use Carbon\Exceptions\InvalidFormatException;
+use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -26,6 +31,12 @@ class DateTimeWithTimezoneCast implements CastsAttributes
 	 * @param array  $attributes all SQL attributes of the entity
 	 *
 	 * @return Carbon|null The Carbon object with a properly set timezone
+	 *
+	 * @throws LycheeInvalidArgumentException
+	 * @throws MissingModelAttributeException
+	 * @throws LycheeDomainException
+	 * @throws InvalidFormatException
+	 * @throws InvalidTimeZoneException
 	 */
 	public function get($model, string $key, $value, array $attributes): ?Carbon
 	{
@@ -34,17 +45,17 @@ class DateTimeWithTimezoneCast implements CastsAttributes
 			return null;
 		}
 		if (!is_string($value)) {
-			throw new \InvalidArgumentException('$value must be an SQL datetime string');
+			throw new LycheeInvalidArgumentException('$value must be an SQL datetime string');
 		}
 		if (array_key_exists($tzKey, $attributes)) {
 			$tz = $attributes[$tzKey];
 		} else {
-			throw new \InvalidArgumentException('Missing column \'' . $tzKey . '\'');
+			throw new MissingModelAttributeException(get_class($model), $tzKey);
 		}
 		// If the datetime value is non-null, then the accompanying timezone
 		// must not be null neither.
 		if (!is_string($tz) || empty($tz)) {
-			throw new \InvalidArgumentException('Column \'' . $key . '\' is not null, but column \'' . $tzKey . '\' is either not a string, an empty string or null');
+			throw new LycheeDomainException('Column \'' . $key . '\' is not null, but column \'' . $tzKey . '\' is either not a string, an empty string or null');
 		}
 		$result = $model->asDateTime($value);
 		$result->setTimezone($tz);
@@ -61,11 +72,18 @@ class DateTimeWithTimezoneCast implements CastsAttributes
 	 * @param array       $attributes
 	 *
 	 * @return array An associative map of SQL columns and their values
+	 *
+	 * @throws LycheeInvalidArgumentException
+	 * @throws InvalidTimeZoneException
 	 */
 	public function set($model, string $key, $value, array $attributes): array
 	{
 		if ($value !== null && !($value instanceof Carbon)) {
-			throw new \InvalidArgumentException('$value must extend \DateTimeInterface');
+			$type = gettype($value);
+			if ($type === 'object') {
+				$type = get_class($value);
+			}
+			throw new LycheeInvalidArgumentException('"' . $type . '" does not implement \DateTimeInterface');
 		}
 		$sqlDatetimeString = $model->fromDateTime($value);
 		$sqlTimezoneString = $value?->getTimezone()->getName();

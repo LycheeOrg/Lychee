@@ -3,6 +3,7 @@
 namespace App\Models\Extensions;
 
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Database\Eloquent\InvalidCastException;
 
 /**
  * Trait HasAttributesPatch.
@@ -11,6 +12,9 @@ use Illuminate\Contracts\Support\Arrayable;
  */
 trait HasAttributesPatch
 {
+	/**
+	 * @throws InvalidCastException
+	 */
 	protected function mutateAttributeForArray($key, $value)
 	{
 		if ($this->hasGetMutator($key)) {

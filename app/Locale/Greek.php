@@ -123,7 +123,9 @@ final class Greek implements Language
 
 			'STAR_PHOTO' => 'Βάλτε Αστέρι στη Φωτογραφία',
 			'STAR' => 'Βάλτε Αστέρι',
+			'UNSTAR' => 'Unstar',
 			'STAR_ALL' => 'Βάλτε Αστέρι στα επιλεγμένα',
+			'UNSTAR_ALL' => 'Unstar Selected',
 			'TAGS' => 'Ετικέτες',
 			'TAGS_ALL' => 'Ετικέτες στα επιλεγμένα',
 			'UNSTAR_PHOTO' => 'Αφαιρέστε Αστέρια από τη Φωτογραφία',

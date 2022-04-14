@@ -2,7 +2,9 @@
 
 namespace App\Assets;
 
-use App\Exceptions\DivideByZeroException;
+use App\Exceptions\Internal\ZeroModuloException;
+use App\ModelFunctions\ConfigFunctions;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\File;
 use WhichBrowser\Parser as BrowserParser;
 
@@ -39,13 +41,23 @@ class Helpers
 	}
 
 	/**
-	 * return device type as string:
+	 * Returns the device type as string:
 	 * desktop, mobile, pda, dect, tablet, gaming, ereader,
 	 * media, headset, watch, emulator, television, monitor,
 	 * camera, printer, signage, whiteboard, devboard, inflight,
 	 * appliance, gps, car, pos, bot, projector.
 	 *
+	 * This method is only used to report the type of device back to the
+	 * client.
+	 * This is totally insane, because the client knows its own type anyway.
+	 * This could be completely done in JS code and CSS on the client side.
+	 * See also {@link ConfigFunctions::get_config_device()}.
+	 *
+	 * TODO: Remove this method.
+	 *
 	 * @return string
+	 *
+	 * @throws BindingResolutionException
 	 */
 	public function getDeviceType(): string
 	{
@@ -116,14 +128,10 @@ class Helpers
 	{
 		// Check if the given path is readable and writable
 		// Both functions are also verifying that the path exists
-		if (
-			file_exists($path) === true && is_readable($path) === true
-			&& is_writeable($path) === true
-		) {
-			return true;
-		}
-
-		return false;
+		return
+			file_exists($path) &&
+			is_readable($path) &&
+			is_writeable($path);
 	}
 
 	/**
@@ -157,12 +165,12 @@ class Helpers
 	 *
 	 * @return int
 	 *
-	 * @throws DivideByZeroException
+	 * @throws ZeroModuloException
 	 */
 	public function gcd(int $a, int $b): int
 	{
 		if ($b == 0) {
-			throw new DivideByZeroException();
+			throw new ZeroModuloException();
 		}
 
 		return ($a % $b) ? $this->gcd($b, $a % $b) : $b;

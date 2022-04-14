@@ -2,14 +2,17 @@
 
 namespace App\Models\Extensions;
 
+use App\DTO\AlbumSortingCriterion;
+use App\DTO\SortingCriterion;
+use App\Exceptions\Internal\InvalidOrderDirectionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class SortingDecorator
 {
 	public const POSTPONE_COLUMNS = [
-		'title',
-		'description',
+		SortingCriterion::COLUMN_TITLE,
+		SortingCriterion::COLUMN_DESCRIPTION,
 	];
 
 	protected Builder $baseBuilder;
@@ -69,11 +72,29 @@ class SortingDecorator
 	 */
 	protected int $pivotIdx = -1;
 
-	public function orderBy($column, $direction = 'asc'): SortingDecorator
+	/**
+	 * @param string $column    the column acc. to which the result shall be
+	 *                          sorted; must either be
+	 *                          {@link SortingCriterion::COLUMN_CREATED_AT},
+	 *                          {@link SortingCriterion::COLUMN_TITLE},
+	 *                          {@link SortingCriterion::COLUMN_DESCRIPTION},
+	 *                          {@link SortingCriterion::COLUMN_IS_PUBLIC},
+	 *                          {@link PhotoSortingCriterion::COLUMN_TAKEN_AT},
+	 *                          {@link PhotoSortingCriterion::COLUMN_IS_STARRED},
+	 *                          {@link PhotoSortingCriterion::COLUMN_TYPE},
+	 *                          {@link AlbumSortingCriterion::COLUMN_MIN_TAKEN_AT}, or
+	 *                          {@link AlbumSortingCriterion::COLUMN_MAX_TAKEN_AT}.
+	 * @param string $direction the order direction must be either
+	 *                          {@link SortingCriterion::ASC} or
+	 *                          {@link SortingCriterion::DESC}
+	 *
+	 * @throws InvalidOrderDirectionException
+	 */
+	public function orderBy(string $column, string $direction = SortingCriterion::ASC): SortingDecorator
 	{
 		$direction = strtolower($direction);
 		if (!in_array($direction, ['asc', 'desc'], true)) {
-			throw new \InvalidArgumentException('Order direction must be "asc" or "desc".');
+			throw new InvalidOrderDirectionException();
 		}
 		$this->orderBy[] = [
 			'column' => $column,
@@ -87,13 +108,33 @@ class SortingDecorator
 		return $this;
 	}
 
-	public function get($columns = ['*']): Collection
+	/**
+	 * Gets the result collection.
+	 *
+	 * @param string[] $columns
+	 *
+	 * @return Collection
+	 *
+	 * @throws InvalidOrderDirectionException
+	 */
+	public function get(array $columns = ['*']): Collection
 	{
 		// Sort as much as we can on the SQL layer, i.e. everything with a
 		// lower significance than the least significant criterion which
 		// requires natural sorting.
-		for ($i = $this->pivotIdx + 1; $i < sizeof($this->orderBy); $i++) {
-			$this->baseBuilder->orderBy($this->orderBy[$i]['column'], $this->orderBy[$i]['direction']);
+		try {
+			for ($i = $this->pivotIdx + 1; $i < sizeof($this->orderBy); $i++) {
+				$this->baseBuilder->orderBy($this->orderBy[$i]['column'], $this->orderBy[$i]['direction']);
+			}
+		} catch (\InvalidArgumentException) {
+			// Sic! In theory, `\InvalidArgumentException` should be thrown
+			// if the *type* of argument differs from the expected type
+			// (e.g. a method gets pass an integer, but requires a string).
+			// If the *value* is invalid, the method should throw a
+			// `\InvalidDomainException`.
+			// But Eloquent throws `\InvalidArgumentException` if the
+			// direction does neither equal "asc" nor "desc".
+			throw new InvalidOrderDirectionException();
 		}
 
 		/** @var Collection $result */

@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Components;
 use App\Facades\Lang;
 use App\Models\Configs;
 use App\Models\Photo as PhotoModel;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Livewire\Component;
 
 class PhotoOverlay extends Component
@@ -66,6 +67,9 @@ class PhotoOverlay extends Component
 		return $exifHash;
 	}
 
+	/**
+	 * @throws BindingResolutionException
+	 */
 	public function render()
 	{
 		$this->title = $this->photo_data->title;

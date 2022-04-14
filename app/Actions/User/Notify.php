@@ -3,41 +3,34 @@
 namespace App\Actions\User;
 
 use App\Facades\AccessControl;
-use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
 use App\Notifications\PhotoAdded;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Notification;
 
 class Notify
 {
-	public function do(Photo $request, $album_id = null)
+	public function do(Photo $photo): void
 	{
-		if (Configs::get_Value('new_photos_notification', '0') == '1') {
-			if ($album_id) {
-				$album = Album::find($album_id);
-			} else {
-				$album = Album::find($request->album_id);
-			}
-
-			$album_users = $album->shared_with;
-
-			$owner = User::find($album->owner_id);
-			$album_users->push($owner);
-
-			if ($album->owner_id != 0) {
-				$admin = User::find(0);
-				$album_users->push($admin);
-			}
-
-			$album_users = $album_users->unique()
-										->whereNotNull('email')
-										->where('id', '!=', AccessControl::id());
-
-			return Notification::send($album_users, new PhotoAdded($request));
-		} else {
-			return true;
+		if (Configs::get_Value('new_photos_notification', '0') !== '1') {
+			return;
 		}
+
+		// The admin is always informed
+		$users = new Collection([User::query()->find(0)]);
+		$album = $photo->album;
+		if ($album) {
+			$users->push($album->shared_with);
+			$users->push($album->owner);
+		}
+
+		$users = $users
+			->unique('id', true)
+			->whereNotNull('email')
+			->where('id', '!=', AccessControl::id());
+
+		Notification::send($users, new PhotoAdded($photo));
 	}
 }

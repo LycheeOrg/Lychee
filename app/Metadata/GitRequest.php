@@ -2,6 +2,7 @@
 
 namespace App\Metadata;
 
+use App\Exceptions\Internal\JsonRequestFailedException;
 use App\ModelFunctions\JsonRequestFunctions;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Config;
@@ -11,12 +12,14 @@ class GitRequest extends JsonRequestFunctions
 	/**
 	 * we just override the constructor,
 	 * The rest is handled directly by the parent class.
+	 *
+	 * @throws JsonRequestFailedException
 	 */
 	public function __construct()
 	{
 		parent::__construct(
 			Config::get('urls.update.git'),
-			intval(Configs::get_value('update_check_every_days', '3'), 10)
+			intval(Configs::get_value('update_check_every_days', '3'))
 		);
 	}
 }

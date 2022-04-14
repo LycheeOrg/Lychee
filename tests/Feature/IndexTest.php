@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use App\Models\Configs;
 use Tests\TestCase;
 
@@ -21,10 +21,7 @@ class IndexTest extends TestCase
 		$response = $this->get('/');
 		$response->assertOk();
 
-		$response = $this->post('/php/index.php', []);
-		$response->assertOk();
-
-		$response = $this->post('/api/Albums::get', []);
+		$response = $this->postJson('/api/Albums::get');
 		$response->assertOk();
 	}
 
@@ -38,9 +35,7 @@ class IndexTest extends TestCase
 		AccessControl::logout();
 		// we don't want a non admin to access this
 		$response = $this->get('/phpinfo');
-		$response->assertStatus(200);
-		$response->assertDontSeeText('php');
-		$response->assertSeeText('false');
+		$response->assertForbidden();
 	}
 
 	public function testLandingPage()
@@ -49,11 +44,11 @@ class IndexTest extends TestCase
 		Configs::set('landing_page_enable', 1);
 
 		$response = $this->get('/');
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertViewIs('landing');
 
 		$response = $this->get('/gallery');
-		$response->assertStatus(200);
+		$response->assertOk(200);
 		$response->assertViewIs('gallery');
 
 		Configs::set('landing_page_enable', $landing_on_off);

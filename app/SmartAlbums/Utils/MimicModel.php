@@ -2,6 +2,9 @@
 
 namespace App\SmartAlbums\Utils;
 
+use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\LycheeInvalidArgumentException;
+use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Support\Str;
 
 trait MimicModel
@@ -12,30 +15,36 @@ trait MimicModel
 	 * Serializes this object into an array.
 	 *
 	 * @return array The serialized properties of this object
+	 *
+	 * @throws \JsonException
 	 */
 	public function jsonSerialize(): array
 	{
-		return $this->toArray();
+		try {
+			return $this->toArray();
+		} catch (\Exception $e) {
+			throw new \JsonException(get_class($this) . '::toArray() failed', 0, $e);
+		}
 	}
 
 	/**
 	 * Convert the model instance to JSON.
 	 *
+	 * The error message is inspired by {@link JsonEncodingException::forModel()}.
+	 *
 	 * @param int $options
 	 *
 	 * @return string
 	 *
-	 * @throws \RuntimeException
+	 * @throws JsonEncodingException
 	 */
 	public function toJson($options = 0): string
 	{
-		$json = json_encode($this->jsonSerialize(), $options);
-
-		if (JSON_ERROR_NONE !== json_last_error()) {
-			throw new \RuntimeException('Could not serialize ' . get_class($this) . ': ' . json_last_error_msg());
+		try {
+			return json_encode($this->jsonSerialize(), $options | JSON_THROW_ON_ERROR);
+		} catch (\JsonException $e) {
+			throw new JsonEncodingException('Error encoding [' . get_class($this) . '] to JSON', 0, $e);
 		}
-
-		return $json;
 	}
 
 	/**
@@ -49,12 +58,12 @@ trait MimicModel
 	 *
 	 * @return mixed
 	 *
-	 * @throws \InvalidArgumentException
+	 * @throws InternalLycheeException
 	 */
 	public function __get(string $key)
 	{
 		if (empty($key)) {
-			throw new \InvalidArgumentException('property name must not be empty');
+			throw new LycheeInvalidArgumentException('property name must not be empty');
 		}
 
 		$studlyKey = Str::studly($key);
@@ -66,7 +75,7 @@ trait MimicModel
 		} elseif (property_exists($this, $studlyKey)) {
 			return $this->{$studlyKey};
 		} else {
-			throw new \InvalidArgumentException('neither property nor getter method exist');
+			throw new LycheeInvalidArgumentException('neither property nor getter method exist');
 		}
 	}
 
@@ -75,7 +84,7 @@ trait MimicModel
 	 *
 	 * @return string
 	 *
-	 * @throws \RuntimeException
+	 * @throws JsonEncodingException
 	 */
 	public function __toString(): string
 	{

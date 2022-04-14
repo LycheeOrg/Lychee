@@ -2,36 +2,31 @@
 
 namespace App\Actions\Photo;
 
+use App\Exceptions\ModelDBException;
 use App\Models\Album;
 use App\Models\Photo;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Collection as BaseCollection;
 
 class Duplicate
 {
 	/**
 	 * Duplicates a set of photos.
 	 *
-	 * @param string[]    $photoIds the IDs of the source photos
-	 * @param string|null $albumID  the ID of the destination album;
-	 *                              `null` means root album
+	 * @param EloquentCollection<Photo> $photos the source photos
+	 * @param Album|null                $album  the destination album; `null` means root album
 	 *
-	 * @return Collection<Photo> the duplicates
+	 * @return BaseCollection<Photo> the duplicates
+	 *
+	 * @throws ModelDBException
 	 */
-	public function do(array $photoIds, ?string $albumID): Collection
+	public function do(EloquentCollection $photos, ?Album $album): BaseCollection
 	{
-		$album = null;
-		if ($albumID) {
-			$album = Album::query()->findOrFail($albumID);
-		}
-		$duplicates = new Collection();
-		$photos = Photo::query()
-			->with(['size_variants'])
-			->whereIn('id', $photoIds)->get();
-
+		$duplicates = new BaseCollection();
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			$duplicate = $photo->replicate();
-			$duplicate->album_id = $albumID;
+			$duplicate->album_id = $album?->id;
 			if ($album) {
 				$duplicate->owner_id = $album->owner_id;
 			}

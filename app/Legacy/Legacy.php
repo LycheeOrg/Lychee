@@ -2,8 +2,13 @@
 
 namespace App\Legacy;
 
+use App\Exceptions\ConfigurationException;
+use App\Exceptions\Internal\InvalidConfigOption;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Configs;
 use App\Models\Logs;
+use App\Rules\IntegerIDRule;
+use App\Rules\RandomIDRule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -14,18 +19,28 @@ use Illuminate\Support\Facades\Session;
  */
 class Legacy
 {
+	/**
+	 * @throws QueryBuilderException
+	 */
 	public static function resetAdmin(): void
 	{
-		Configs::where('key', '=', 'username')->orWhere('key', '=', 'password')->update(['value' => '']);
+		Configs::query()
+			->where('key', '=', 'username')
+			->orWhere('key', '=', 'password')
+			->update(['value' => '']);
 	}
 
-	public static function SetPassword($request)
+	/**
+	 * @throws InvalidConfigOption
+	 */
+	public static function SetPassword(string $hashedUsername, string $hashedPassword): bool
 	{
 		$configs = Configs::get();
-		if (Configs::get('version', '040000') < '040008') {
+
+		if (Configs::get_value('version', '040000') < '040008') {
 			if ($configs['password'] === '' && $configs['username'] === '') {
-				Configs::set('username', bcrypt($request['username']));
-				Configs::set('password', bcrypt($request['password']));
+				Configs::set('username', $hashedUsername);
+				Configs::set('password', $hashedPassword);
 
 				return true;
 			}
@@ -72,37 +87,85 @@ class Legacy
 
 	public static function isLegacyModelID(string $id): bool
 	{
-		return preg_match('/^[-_a-zA-Z0-9]{24}$/', $id) !== 1 &&
-			filter_var($id, FILTER_VALIDATE_INT) !== false;
+		$modernIDRule = new RandomIDRule(true);
+		$legacyIDRule = new IntegerIDRule(false);
+
+		return !$modernIDRule->passes('id', $id) &&
+			$legacyIDRule->passes('id', $id);
 	}
 
+	/**
+	 * Translates an ID from legacy format to modern format.
+	 *
+	 * @param string  $id        the legacy ID
+	 * @param string  $tableName the table name which should be used to look
+	 *                           up the ID; either `photos` or `base_albums`
+	 * @param Request $request   the request which triggered the lookup
+	 *                           (required for proper logging)
+	 *
+	 * @return string|null the modern ID
+	 *
+	 * @throws QueryBuilderException  thrown by the ORM layer in case of error
+	 * @throws ConfigurationException thrown, if the translation between
+	 *                                legacy and modern IDs is disabled
+	 */
 	private static function translateLegacyID(string $id, string $tableName, Request $request): ?string
 	{
-		$newID = DB::table($tableName)
+		try {
+			$newID = DB::table($tableName)
 				->where('legacy_id', '=', intval($id))
 				->value('id');
 
-		if ($newID) {
-			$referer = $request->header('Referer', '(unknown)');
-			$msg = 'Request for ' . $tableName .
-				' with legacy ID ' . $id .
-				' instead of new ID ' . $newID .
-				' from ' . $referer;
-			if (Configs::get_value('legacy_id_redirection', '0') !== '1') {
-				$msg .= ' (translation disabled by configuration)';
-				$newID = null;
+			if ($newID) {
+				$referer = $request->header('Referer', '(unknown)');
+				$msg = 'Request for ' . $tableName .
+					' with legacy ID ' . $id .
+					' instead of new ID ' . $newID .
+					' from ' . $referer;
+				if (Configs::get_value('legacy_id_redirection', '0') !== '1') {
+					$msg .= ' (translation disabled by configuration)';
+					throw new ConfigurationException($msg);
+				}
+				Logs::warning(__METHOD__, __LINE__, $msg);
 			}
-			Logs::warning(__METHOD__, __LINE__, $msg);
-		}
 
-		return $newID;
+			return $newID;
+		} catch (\InvalidArgumentException $e) {
+			throw new QueryBuilderException($e);
+		}
 	}
 
+	/**
+	 * Translates an album ID from legacy format to modern format.
+	 *
+	 * @param string  $albumID the legacy ID
+	 * @param Request $request the request which triggered the lookup
+	 *                         (required for proper logging)
+	 *
+	 * @return string|null the modern ID
+	 *
+	 * @throws QueryBuilderException  thrown by the ORM layer in case of error
+	 * @throws ConfigurationException thrown, if the translation between
+	 *                                legacy and modern IDs is disabled
+	 */
 	public static function translateLegacyAlbumID(string $albumID, Request $request): ?string
 	{
 		return self::translateLegacyID($albumID, 'base_albums', $request);
 	}
 
+	/**
+	 * Translates a photo ID from legacy format to modern format.
+	 *
+	 * @param string  $photoID the legacy ID
+	 * @param Request $request the request which triggered the lookup
+	 *                         (required for proper logging)
+	 *
+	 * @return string|null the modern ID
+	 *
+	 * @throws QueryBuilderException  thrown by the ORM layer in case of error
+	 * @throws ConfigurationException thrown, if the translation between
+	 *                                legacy and modern IDs is disabled
+	 */
 	public static function translateLegacyPhotoID(string $photoID, Request $request): ?string
 	{
 		return self::translateLegacyID($photoID, 'photos', $request);

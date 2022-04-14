@@ -22,7 +22,7 @@ class RSSTest extends TestCase
 
 		// check redirection
 		$response = $this->get('/feed');
-		$response->assertStatus(404);
+		$response->assertStatus(412);
 
 		Configs::set('Mod_Frame', $init_config_value);
 	}
@@ -40,7 +40,7 @@ class RSSTest extends TestCase
 
 		// check redirection
 		$response = $this->get('/feed');
-		$response->assertStatus(200);
+		$response->assertOk();
 
 		// now we start adding some stuff
 		$photos_tests = new PhotosUnitTest($this);
@@ -64,24 +64,24 @@ class RSSTest extends TestCase
 		$photoID = $photos_tests->upload($file);
 
 		// set it to public
-		$photos_tests->set_public($photoID);
+		$photos_tests->set_public($photoID, true);
 
 		// try to get the RSS feed.
 		$response = $this->get('/feed');
-		$response->assertStatus(200);
+		$response->assertOk();
 
 		// set picture to private
-		$photos_tests->set_public($photoID);
+		$photos_tests->set_public($photoID, false);
 
 		// move picture to album
-		$photos_tests->set_album($albumID, $photoID);
-		$albums_tests->set_public($albumID);
+		$photos_tests->set_album($albumID, [$photoID]);
+		$albums_tests->set_protection_policy($albumID);
 
 		// try to get the RSS feed.
 		$response = $this->get('/feed');
-		$response->assertStatus(200);
+		$response->assertOk();
 
-		$albums_tests->delete($albumID);
+		$albums_tests->delete([$albumID]);
 
 		Configs::set('Mod_Frame', $init_config_value);
 		Configs::set('full_photo', $init_full_photo);

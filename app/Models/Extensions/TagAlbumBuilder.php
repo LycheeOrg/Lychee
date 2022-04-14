@@ -2,8 +2,8 @@
 
 namespace App\Models\Extensions;
 
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\TagAlbum;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\DB;
  * used as a sub-query which will not hydrate actual models.
  * Thus, a global scope unnecessarily complicates queries in many cases.
  */
-class TagAlbumBuilder extends Builder
+class TagAlbumBuilder extends FixedQueryBuilder
 {
 	/**
 	 * Get the hydrated models without eager loading.
@@ -25,6 +25,8 @@ class TagAlbumBuilder extends Builder
 	 * @param array|string $columns
 	 *
 	 * @return TagAlbum[]
+	 *
+	 * @throws QueryBuilderException
 	 */
 	public function getModels($columns = ['*']): array
 	{

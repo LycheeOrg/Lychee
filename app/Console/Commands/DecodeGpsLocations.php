@@ -2,9 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Contracts\ExternalLycheeException;
 use App\Metadata\Geodecoder;
 use App\Models\Photo;
 use Illuminate\Console\Command;
+use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class DecodeGpsLocations extends Command
 {
@@ -25,7 +27,7 @@ class DecodeGpsLocations extends Command
 	/**
 	 * Create a new command instance.
 	 *
-	 * @return void
+	 * @throws SymfonyConsoleException
 	 */
 	public function __construct()
 	{
@@ -35,12 +37,16 @@ class DecodeGpsLocations extends Command
 	/**
 	 * Execute the console command.
 	 *
-	 * @return mixed
+	 * @return int
+	 *
+	 * @throws ExternalLycheeException
 	 */
-	public function handle()
+	public function handle(): int
 	{
 		// Update location if field 'location' is null or empty
-		$photos = Photo::whereNotNull('latitude')->whereNotNull('longitude')->where(
+		$photos = Photo::query()
+			->whereNotNull('latitude')
+			->whereNotNull('longitude')->where(
 			function ($query) {
 				$query->where('location', '=', '')->orWhereNull('location');
 			})
@@ -53,11 +59,14 @@ class DecodeGpsLocations extends Command
 		}
 
 		$cachedProvider = Geodecoder::getGeocoderProvider();
+		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			$this->line('Processing ' . $photo->title . '...');
 
 			$photo->location = Geodecoder::decodeLocation_core($photo->latitude, $photo->longitude, $cachedProvider);
 			$photo->save();
 		}
+
+		return 0;
 	}
 }

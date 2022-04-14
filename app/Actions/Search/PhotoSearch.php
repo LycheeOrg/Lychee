@@ -3,10 +3,11 @@
 namespace App\Actions\Search;
 
 use App\Actions\PhotoAuthorisationProvider;
-use App\Models\Configs;
+use App\Contracts\InternalLycheeException;
+use App\DTO\PhotoSortingCriterion;
+use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class PhotoSearch
@@ -18,6 +19,9 @@ class PhotoSearch
 		$this->photoAuthorisationProvider = $photoAuthorisationProvider;
 	}
 
+	/**
+	 * @throws InternalLycheeException
+	 */
 	public function query(array $terms): Collection
 	{
 		$query = $this->photoAuthorisationProvider->applySearchabilityFilter(
@@ -26,7 +30,7 @@ class PhotoSearch
 
 		foreach ($terms as $term) {
 			$query->where(
-				fn (Builder $query) => $query
+				fn (FixedQueryBuilder $query) => $query
 					->where('title', 'like', '%' . $term . '%')
 					->orWhere('description', 'like', '%' . $term . '%')
 					->orWhere('tags', 'like', '%' . $term . '%')
@@ -36,11 +40,10 @@ class PhotoSearch
 			);
 		}
 
-		$sortingCol = Configs::get_value('sorting_Photos_col');
-		$sortingOrder = Configs::get_value('sorting_Photos_order');
+		$sorting = PhotoSortingCriterion::createDefault();
 
 		return (new SortingDecorator($query))
-			->orderBy($sortingCol, $sortingOrder)
+			->orderBy($sorting->column, $sorting->order)
 			->get();
 	}
 }

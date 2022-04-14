@@ -4,17 +4,17 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-//MariaDB [lychee]> show columns from lychee_log;
-//+----------+--------------+------+-----+---------+----------------+
-//| Field    | Type         | Null | Key | Default | Extra          |
-//+----------+--------------+------+-----+---------+----------------+
-//| id       | int(11)      | NO   | PRI | NULL    | auto_increment |
-//| time     | int(11)      | NO   |     | NULL    |                |
-//| type     | varchar(11)  | NO   |     | NULL    |                |
-//| function | varchar(100) | NO   |     | NULL    |                |
-//| line     | int(11)      | NO   |     | NULL    |                |
-//| text     | text         | YES  |     | NULL    |                |
-//+----------+--------------+------+-----+---------+----------------+
+// MariaDB [lychee]> show columns from lychee_log;
+// +----------+--------------+------+-----+---------+----------------+
+// | Field    | Type         | Null | Key | Default | Extra          |
+// +----------+--------------+------+-----+---------+----------------+
+// | id       | int(11)      | NO   | PRI | NULL    | auto_increment |
+// | time     | int(11)      | NO   |     | NULL    |                |
+// | type     | varchar(11)  | NO   |     | NULL    |                |
+// | function | varchar(100) | NO   |     | NULL    |                |
+// | line     | int(11)      | NO   |     | NULL    |                |
+// | text     | text         | YES  |     | NULL    |                |
+// +----------+--------------+------+-----+---------+----------------+
 
 class CreateLogsTable extends Migration
 {

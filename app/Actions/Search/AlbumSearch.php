@@ -3,8 +3,10 @@
 namespace App\Actions\Search;
 
 use App\Actions\AlbumAuthorisationProvider;
+use App\Contracts\InternalLycheeException;
+use App\DTO\AlbumSortingCriterion;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,21 +21,26 @@ class AlbumSearch
 		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
 	}
 
+	/**
+	 * @throws InternalLycheeException
+	 */
 	public function query(array $terms): Collection
 	{
-		$sortingCol = Configs::get_value('sorting_Albums_col', 'created_at');
-		$sortingOrder = Configs::get_value('sorting_Albums_order', 'ASC');
+		$sorting = AlbumSortingCriterion::createDefault();
 
 		$tagAlbums = (new SortingDecorator($this->createTagAlbumQuery($terms)))
-			->orderBy($sortingCol, $sortingOrder)
+			->orderBy($sorting->column, $sorting->order)
 			->get();
 		$albums = (new SortingDecorator($this->createAlbumQuery($terms)))
-			->orderBy($sortingCol, $sortingOrder)
+			->orderBy($sorting->column, $sorting->order)
 			->get();
 
 		return $tagAlbums->concat($albums);
 	}
 
+	/**
+	 * @throws InternalLycheeException
+	 */
 	private function createAlbumQuery($terms): Builder
 	{
 		$albumQuery = Album::query()
@@ -45,6 +52,9 @@ class AlbumSearch
 		return $albumQuery;
 	}
 
+	/**
+	 * @throws InternalLycheeException
+	 */
 	private function createTagAlbumQuery(array $terms): Builder
 	{
 		// Note: `applyVisibilityFilter` already adds a JOIN clause with `base_albums`.
@@ -57,16 +67,23 @@ class AlbumSearch
 		return $albumQuery;
 	}
 
+	/**
+	 * @throws InternalLycheeException
+	 */
 	private function addSearchCondition(array $terms, Builder $query): Builder
 	{
-		foreach ($terms as $term) {
-			$query->where(
-				fn (Builder $query) => $query
-					->where('base_albums.title', 'like', '%' . $term . '%')
-					->orWhere('base_albums.description', 'like', '%' . $term . '%')
-			);
-		}
+		try {
+			foreach ($terms as $term) {
+				$query->where(
+					fn (Builder $query) => $query
+						->where('base_albums.title', 'like', '%' . $term . '%')
+						->orWhere('base_albums.description', 'like', '%' . $term . '%')
+				);
+			}
 
-		return $query;
+			return $query;
+		} catch (\Throwable $e) {
+			throw new QueryBuilderException($e);
+		}
 	}
 }

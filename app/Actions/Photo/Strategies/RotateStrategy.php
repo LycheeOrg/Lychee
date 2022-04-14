@@ -3,12 +3,15 @@
 namespace App\Actions\Photo\Strategies;
 
 use App\Actions\Photo\Extensions\SourceFileInfo;
+use App\Contracts\LycheeException;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
+use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Exceptions\Internal\InvalidRotationDirectionException;
+use App\Exceptions\MediaFileUnsupportedException;
 use App\Image\ImageHandlerInterface;
 use App\Image\TemporaryLocalFile;
 use App\Metadata\Extractor;
-use App\Models\Logs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 
@@ -16,6 +19,16 @@ class RotateStrategy extends AddBaseStrategy
 {
 	protected int $direction;
 
+	/**
+	 * @param Photo $photo
+	 * @param int   $direction
+	 *
+	 * @throws MediaFileUnsupportedException     thrown, if $photo cannot be
+	 *                                           rotated
+	 * @throws InvalidRotationDirectionException thrown if $direction does
+	 *                                           neither equal -1 nor 1
+	 * @throws IllegalOrderOfOperationException
+	 */
 	public function __construct(Photo $photo, int $direction)
 	{
 		// We exploit the "add strategy" here, because rotation of a photo
@@ -35,11 +48,11 @@ class RotateStrategy extends AddBaseStrategy
 		// symbolic link.
 		// This is by design.
 		// The two alternatives would be:
-		//  a) Rotate the original photo which the symlink points to.
-		//  b) Bail out with an error message, if the user attempts to rotate
+		//  1. Rotate the original photo which the symlink points to.
+		//  2. Bail out with an error message, if the user attempts to rotate
 		//     a photo that was imported via a symlink
-		// After discussion among the developers, option a) was considered a
-		// no-go and b) was considered to be too restrictive.
+		// After discussion among the developers, option 1 was considered a
+		// no-go and 2 was considered to be too restrictive.
 		parent::__construct(
 			new AddStrategyParameters(
 				new ImportMode(true, false, false, true)
@@ -47,29 +60,26 @@ class RotateStrategy extends AddBaseStrategy
 			$photo
 		);
 		if ($photo->isVideo()) {
-			$msg = 'Trying to rotate a video';
-			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new \InvalidArgumentException($msg);
+			throw new MediaFileUnsupportedException('Rotation of a video is unsupported');
 		}
 		if ($photo->live_photo_short_path !== null) {
-			$msg = 'Trying to rotate a live photo';
-			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new \InvalidArgumentException($msg);
+			throw new MediaFileUnsupportedException('Rotation of a live photo is unsupported');
 		}
 		if ($photo->isRaw()) {
-			$msg = 'Trying to rotate a raw file';
-			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new \InvalidArgumentException($msg);
+			throw new MediaFileUnsupportedException('Rotation of a raw photo is unsupported');
 		}
 		// direction is valid?
 		if (($direction != 1) && ($direction != -1)) {
-			$msg = 'Direction must be 1 or -1';
-			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new \InvalidArgumentException($msg);
+			throw new InvalidRotationDirectionException();
 		}
 		$this->direction = $direction;
 	}
 
+	/**
+	 * @return Photo
+	 *
+	 * @throws LycheeException
+	 */
 	public function do(): Photo
 	{
 		// Generate a temporary name for the rotated file.
@@ -84,17 +94,12 @@ class RotateStrategy extends AddBaseStrategy
 		/** @var ImageHandlerInterface $imageHandler */
 		$imageHandler = resolve(ImageHandlerInterface::class);
 		// TODO: If we ever wish to support something else than local files, ImageHandler must work on resource streams, not absolute file names (see ImageHandlerInterface)
-		if ($imageHandler->rotate($origFile->getAbsolutePath(), ($this->direction == 1) ? 90 : -90, $tmpFile->getAbsolutePath()) === false) {
-			$msg = 'Failed to rotate ' . $origFile->getRelativePath();
-			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new \RuntimeException($msg);
-		}
+		$imageHandler->rotate($origFile->getAbsolutePath(), ($this->direction == 1) ? 90 : -90, $tmpFile->getAbsolutePath());
 
 		// The file size and checksum may have changed after the rotation.
 		/* @var Extractor $metadataExtractor */
 		$metadataExtractor = resolve(Extractor::class);
 		// TODO: See above, we must stop using absolute paths
-		$this->photo->filesize = $metadataExtractor->filesize($tmpFile->getAbsolutePath());
 		$this->photo->checksum = $metadataExtractor->checksum($tmpFile->getAbsolutePath());
 		$this->photo->save();
 
@@ -120,9 +125,10 @@ class RotateStrategy extends AddBaseStrategy
 		// Create size variant for rotated original
 		// Note that this also creates a different file name than before
 		// because the checksum of the photo has changed.
-		// Using a different filename allows to avoid caching effects.
+		// Using a different filename allows avoiding caching effects.
 		// Sic! Swap width and height here, because the image has been rotated
-		$newOriginalSizeVariant = $sizeVariantFactory->createOriginal($oldOriginalHeight, $oldOriginalWidth);
+		$originalFilesize = $metadataExtractor->filesize($tmpFile->getAbsolutePath());
+		$newOriginalSizeVariant = $sizeVariantFactory->createOriginal($oldOriginalHeight, $oldOriginalWidth, $originalFilesize);
 		$this->putSourceIntoFinalDestination($newOriginalSizeVariant->short_path);
 
 		// Create remaining size variants
@@ -140,7 +146,7 @@ class RotateStrategy extends AddBaseStrategy
 			// variants may fail: the user has uploaded an unsupported file
 			// format, GD and Imagick are both not available or disabled
 			// by configuration, etc.
-			Logs::error(__METHOD__, __LINE__, 'Failed to generate size variants, error was ' . $t->getMessage());
+			report($t);
 		}
 
 		// Clean up factory
@@ -148,20 +154,21 @@ class RotateStrategy extends AddBaseStrategy
 
 		// Deal with duplicates.  We simply update all of them to match.
 		$duplicates = Photo::query()
-			->where('checksum', '=', $oldChecksum)
-			->get();
+				->where('checksum', '=', $oldChecksum)
+				->get();
 		/** @var Photo $duplicate */
 		foreach ($duplicates as $duplicate) {
-			$duplicate->filesize = $this->photo->filesize;
 			$duplicate->checksum = $this->photo->checksum;
 			// Note: It is not correct to simply update the existing size
 			// variants of the duplicates.
 			// Due to rotation the number and type of size variants may have
 			// changed, too.
 			// So we actually have to do a 3-way merge and update:
-			// a) delete size variants of the duplicates which do not exist
-			// anymore, b) update size variants of the duplicates which
-			// still exist and c) add new size variants to duplicates which
+			//  1. delete size variants of the duplicates which do not exist
+			//     anymore,
+			//  2. update size variants of the duplicates which still exist,
+			//     and
+			//  3. add new size variants to duplicates which
 			// haven't existed before.
 			// For simplicity, we simply delete all size variants of the
 			// duplicates and re-create them.
@@ -175,7 +182,8 @@ class RotateStrategy extends AddBaseStrategy
 						$newSizeVariant->type,
 						$newSizeVariant->short_path,
 						$newSizeVariant->width,
-						$newSizeVariant->height
+						$newSizeVariant->height,
+						$newSizeVariant->filesize
 					);
 				}
 			}

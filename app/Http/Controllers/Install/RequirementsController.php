@@ -4,22 +4,19 @@ namespace App\Http\Controllers\Install;
 
 use App\Actions\Install\DefaultConfig;
 use App\Actions\Install\RequirementsChecker;
-use App\Http\Controllers\Controller;
+use App\Exceptions\Internal\FrameworkException;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Contracts\View\View;
+use Illuminate\Routing\Controller;
 
 final class RequirementsController extends Controller
 {
-	/**
-	 * @var RequirementsChecker
-	 */
-	protected $requirements;
-	/**
-	 * @var DefaultConfig
-	 */
-	protected $config;
+	protected RequirementsChecker $requirements;
+	protected DefaultConfig $config;
 
 	/**
 	 * @param RequirementsChecker $checker
-	 * @param Config              $config
+	 * @param DefaultConfig       $config
 	 */
 	public function __construct(RequirementsChecker $checker, DefaultConfig $config)
 	{
@@ -31,22 +28,28 @@ final class RequirementsController extends Controller
 	 * Display the requirements page.
 	 *
 	 * @return View
+	 *
+	 * @throws FrameworkException
 	 */
-	public function view()
+	public function view(): View
 	{
-		$phpSupportInfo = $this->requirements->checkPHPversion(
-			$this->config->get_core()['minPhpVersion']
-		);
-		$reqs = $this->requirements->check(
-			$this->config->get_requirements()
-		);
+		try {
+			$phpSupportInfo = $this->requirements->checkPHPVersion(
+				$this->config->get_core()['minPhpVersion']
+			);
+			$reqs = $this->requirements->check(
+				$this->config->get_requirements()
+			);
 
-		return view('install.requirements', [
-			'title' => 'Lychee-installer',
-			'step' => 1,
-			'phpSupportInfo' => $phpSupportInfo,
-			'requirements' => $reqs['requirements'],
-			'errors' => $reqs['errors'] ?? null,
-		]);
+			return view('install.requirements', [
+				'title' => 'Lychee-installer',
+				'step' => 1,
+				'phpSupportInfo' => $phpSupportInfo,
+				'requirements' => $reqs['requirements'],
+				'errors' => $reqs['errors'] ?? null,
+			]);
+		} catch (BindingResolutionException $e) {
+			throw new FrameworkException('Laravel\'s view component', $e);
+		}
 	}
 }

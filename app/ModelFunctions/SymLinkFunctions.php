@@ -2,6 +2,7 @@
 
 namespace App\ModelFunctions;
 
+use App\Exceptions\ModelDBException;
 use App\Models\SymLink;
 
 class SymLinkFunctions
@@ -9,35 +10,32 @@ class SymLinkFunctions
 	/**
 	 * Clear the table of existing SymLinks.
 	 *
-	 * @return string
+	 * @return void
 	 *
-	 * @throws \Exception
+	 * @throws ModelDBException
 	 */
-	public function clearSymLink(): string
+	public function clearSymLink(): void
 	{
-		$symlinks = SymLink::all();
-		$no_error = true;
-		foreach ($symlinks as $symlink) {
-			$no_error &= $symlink->delete();
+		$symLinks = SymLink::all();
+		/** @var SymLink $symLink */
+		foreach ($symLinks as $symLink) {
+			$symLink->delete();
 		}
-
-		return $no_error ? 'true' : 'false';
 	}
 
 	/**
 	 * Remove outdated SymLinks.
 	 *
-	 * @return bool
+	 * @return void
+	 *
+	 * @throws ModelDBException
 	 */
-	public function remove_outdated()
+	public function remove_outdated(): void
 	{
-		$symlinks = SymLink::expired()->get();
-		$success = true;
-		/** @var SymLink $symlink */
-		foreach ($symlinks as $symlink) {
-			$success &= $symlink->delete();
+		$symLinks = SymLink::expired()->get();
+		/** @var SymLink $symLink */
+		foreach ($symLinks as $symLink) {
+			$symLink->delete();
 		}
-
-		return $success;
 	}
 }

@@ -6,8 +6,8 @@ use App\Contracts\DiagnosticCheckInterface;
 
 class DiagnosticsChecksFactory
 {
-	/** @var array */
-	public $checks = [];
+	/** @var string[] */
+	public array $checks = [];
 
 	public function __construct()
 	{
@@ -23,6 +23,9 @@ class DiagnosticsChecksFactory
 		}
 	}
 
+	/**
+	 * @return DiagnosticCheckInterface[]
+	 */
 	public function makeAll(): array
 	{
 		$checks_ret = [];

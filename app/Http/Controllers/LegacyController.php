@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ConfigurationException;
+use App\Exceptions\Internal\QueryBuilderException;
+use App\Http\Requests\Legacy\TranslateIDRequest;
 use App\Legacy\Legacy;
-use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 /**
  * Class LegacyController.
@@ -12,24 +15,30 @@ use Illuminate\Http\Request;
  */
 class LegacyController extends Controller
 {
-	public function translateLegacyModelIDs(Request $request): array
+	/**
+	 * Translates IDs from legacy to modern format.
+	 *
+	 * @param TranslateIDRequest $request the request
+	 *
+	 * @return array{albumID?: string, photoID?: string} the modern IDs
+	 *
+	 * @throws ConfigurationException thrown, if translation is disabled by
+	 *                                configuration
+	 * @throws QueryBuilderException  thrown by the ORM layer in case of an
+	 *                                error
+	 */
+	public function translateLegacyModelIDs(TranslateIDRequest $request): array
 	{
-		$request->validate([
-			'albumID' => 'sometimes|required_without:photoID|integer',
-			'photoID' => 'sometimes|required_without:albumID|integer',
-		]);
-		/** @var int $legacyAlbumID */
-		$legacyAlbumID = $request->get('albumID', 0);
-		/** @var int $legacyPhotoID */
-		$legacyPhotoID = $request->get('photoID', 0);
+		$legacyAlbumID = $request->albumID();
+		$legacyPhotoID = $request->photoID();
 
 		$return = [];
-		if ($legacyAlbumID !== 0) {
+		if ($legacyAlbumID !== null) {
 			$return['albumID'] = Legacy::isLegacyModelID($legacyAlbumID) ?
-				Legacy::translateLegacyAlbumID($legacyAlbumID, $request) :
+				Legacy::translateLegacyAlbumID($request->albumID(), $request) :
 				null;
 		}
-		if ($legacyPhotoID !== 0) {
+		if ($legacyPhotoID !== null) {
 			$return['photoID'] = Legacy::isLegacyModelID($legacyPhotoID) ?
 				Legacy::translateLegacyPhotoID($legacyPhotoID, $request) :
 				null;

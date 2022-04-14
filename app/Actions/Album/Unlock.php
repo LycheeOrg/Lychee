@@ -3,7 +3,9 @@
 namespace App\Actions\Album;
 
 use App\Actions\AlbumAuthorisationProvider;
+use App\Exceptions\UnauthorizedException;
 use App\Models\BaseAlbumImpl;
+use App\Models\Extensions\BaseAlbum;
 use Illuminate\Support\Facades\Hash;
 
 class Unlock extends Action
@@ -22,39 +24,35 @@ class Unlock extends Action
 	 * If the password is correct, then all albums which can be unlocked with
 	 * the same password are unlocked, too.
 	 *
-	 * @param string $albumID
-	 * @param string $password
+	 * @param BaseAlbum $album
+	 * @param string    $password
 	 *
-	 * @return bool true on success, false if password was wrong
+	 * @throws UnauthorizedException
 	 */
-	public function do(string $albumID, string $password): bool
+	public function do(BaseAlbum $album, string $password): void
 	{
-		if ($this->albumFactory->isBuiltInSmartAlbum($albumID)) {
-			return false;
-		}
-
-		$album = $this->albumFactory->findModelOrFail($albumID);
 		if ($album->is_public) {
 			if (
 				empty($album->password) ||
-				$this->albumAuthorisationProvider->isAlbumUnlocked($album->id)
+				$this->albumAuthorisationProvider->isUnlocked($album)
 			) {
-				return true;
+				return;
 			}
 			if (Hash::check($password, $album->password)) {
 				$this->propagate($password);
 
-				return true;
+				return;
 			}
+			throw new UnauthorizedException('Password is invalid');
 		}
 
-		return false;
+		throw new UnauthorizedException('Album is not enabled for password-based access');
 	}
 
 	/**
 	 * Provided a password, add all the albums that the password unlocks.
 	 */
-	public function propagate(string $password): void
+	private function propagate(string $password): void
 	{
 		// We add all the albums that the password unlocks so that the
 		// user is not repeatedly asked to enter the password as they
@@ -68,7 +66,7 @@ class Unlock extends Action
 		/** @var BaseAlbumImpl $album */
 		foreach ($albums as $album) {
 			if (Hash::check($password, $album->password)) {
-				$this->albumAuthorisationProvider->unlockAlbum($album->id);
+				$this->albumAuthorisationProvider->unlock($album);
 			}
 		}
 	}

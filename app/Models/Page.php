@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use App\Exceptions\Internal\QueryBuilderException;
+use App\Models\Extensions\FixedQueryBuilder;
+use App\Models\Extensions\ThrowsConsistentExceptions;
+use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,44 +15,51 @@ use Illuminate\Support\Carbon;
 /**
  * App\Page.
  *
- * @property int                      $id
- * @property string                   $title
- * @property string                   $menu_title
- * @property int                      $in_menu
- * @property int                      $enabled
- * @property string                   $link
- * @property int                      $order
- * @property Carbon|null              $created_at
- * @property Carbon|null              $updated_at
- * @property Collection|PageContent[] $content
+ * @property int         $id
+ * @property string      $title
+ * @property string      $menu_title
+ * @property int         $in_menu
+ * @property int         $enabled
+ * @property string      $link
+ * @property int         $order
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Collection  $content
  *
- * @method static Builder|Page enabled()
- * @method static Builder|Page menu()
- * @method static Builder|Page newModelQuery()
- * @method static Builder|Page newQuery()
- * @method static Builder|Page query()
- * @method static Builder|Page whereCreatedAt($value)
- * @method static Builder|Page whereEnabled($value)
- * @method static Builder|Page whereId($value)
- * @method static Builder|Page whereInMenu($value)
- * @method static Builder|Page whereLink($value)
- * @method static Builder|Page whereMenuTitle($value)
- * @method static Builder|Page whereOrder($value)
- * @method static Builder|Page whereTitle($value)
- * @method static Builder|Page whereUpdatedAt($value)
+ * @method static FixedQueryBuilder enabled()
+ * @method static FixedQueryBuilder menu()
+ * @method static FixedQueryBuilder whereCreatedAt($value)
+ * @method static FixedQueryBuilder whereEnabled($value)
+ * @method static FixedQueryBuilder whereId($value)
+ * @method static FixedQueryBuilder whereInMenu($value)
+ * @method static FixedQueryBuilder whereLink($value)
+ * @method static FixedQueryBuilder whereMenuTitle($value)
+ * @method static FixedQueryBuilder whereOrder($value)
+ * @method static FixedQueryBuilder whereTitle($value)
+ * @method static FixedQueryBuilder whereUpdatedAt($value)
  */
 class Page extends Model
 {
 	use UTCBasedTimes;
+	use ThrowsConsistentExceptions;
+	use UseFixedQueryBuilder;
 
 	/**
 	 * Return the relationship between a page and its content.
 	 *
 	 * @return HasMany
+	 *
+	 * @throws QueryBuilderException
 	 */
-	public function content()
+	public function content(): HasMany
 	{
-		return $this->hasMany('App\Models\PageContent', 'page_id', 'id')->orderBy('order', 'ASC');
+		try {
+			return $this
+				->hasMany('App\Models\PageContent', 'page_id', 'id')
+				->orderBy('order');
+		} catch (\InvalidArgumentException $e) {
+			throw new QueryBuilderException($e);
+		}
 	}
 
 	/**
@@ -57,22 +67,31 @@ class Page extends Model
 	 */
 
 	/**
-	 * @param $query
+	 * @param FixedQueryBuilder $query
 	 *
-	 * @return mixed
+	 * @return FixedQueryBuilder
+	 *
+	 * @throws QueryBuilderException
 	 */
-	public function scopeMenu(Builder $query)
+	public function scopeMenu(FixedQueryBuilder $query): FixedQueryBuilder
 	{
-		return $query->where('in_menu', true)->where('enabled', true)->orderBy('order', 'ASC');
+		return $query
+			->where('in_menu', true)
+			->where('enabled', true)
+			->orderBy('order');
 	}
 
 	/**
-	 * @param $query
+	 * @param FixedQueryBuilder $query
 	 *
-	 * @return mixed
+	 * @return FixedQueryBuilder
+	 *
+	 * @throws QueryBuilderException
 	 */
-	public function scopeEnabled(Builder $query)
+	public function scopeEnabled(FixedQueryBuilder $query): FixedQueryBuilder
 	{
-		return $query->where('enabled', true)->orderBy('order', 'ASC');
+		return $query
+			->where('enabled', true)
+			->orderBy('order');
 	}
 }

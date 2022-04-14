@@ -123,7 +123,9 @@ final class ChineseSimplified implements Language
 
 			'STAR_PHOTO' => '星标此照片',
 			'STAR' => '星标',
+			'UNSTAR' => 'Unstar',
 			'STAR_ALL' => '为所选照片加星标',
+			'UNSTAR_ALL' => 'Unstar Selected',
 			'TAGS' => '标签',
 			'TAGS_ALL' => '为所选照片打标签',
 			'UNSTAR_PHOTO' => '取消星标',

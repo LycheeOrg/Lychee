@@ -123,7 +123,9 @@ final class NorwegianBokmal implements Language
 
 			'STAR_PHOTO' => 'Stjernemerk Bilde',
 			'STAR' => 'Stjernemerk',
+			'UNSTAR' => 'Unstar',
 			'STAR_ALL' => 'Stjernemerk Valgte',
+			'UNSTAR_ALL' => 'Unstar Selected',
 			'TAGS' => 'Tagg',
 			'TAGS_ALL' => 'Tagg Valgte',
 			'UNSTAR_PHOTO' => 'Fjern Stjernemerke',

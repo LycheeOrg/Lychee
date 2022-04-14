@@ -2,6 +2,7 @@
 
 namespace App\Actions\Photo\Extensions;
 
+use App\Exceptions\ExternalComponentMissingException;
 use App\Image\MediaFile;
 use App\Image\NativeLocalFile;
 use App\Image\TemporaryLocalFile;
@@ -107,17 +108,23 @@ class SourceFileInfo
 	 * @param UploadedFile $file the uploaded file
 	 *
 	 * @return SourceFileInfo the new instance
+	 *
+	 * @throws ExternalComponentMissingException
 	 */
 	public static function createByUploadedFile(UploadedFile $file): SourceFileInfo
 	{
-		$fallbackTitle = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+		try {
+			$fallbackTitle = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
 
-		return new self(
-			$fallbackTitle,
-			'.' . $file->getClientOriginalExtension(),
-			$file->getMimeType(),
-			NativeLocalFile::createFromUploadedFile($file)
-		);
+			return new self(
+				$fallbackTitle,
+				'.' . $file->getClientOriginalExtension(),
+				$file->getMimeType(),
+				NativeLocalFile::createFromUploadedFile($file)
+			);
+		} catch (\LogicException $e) {
+			throw new ExternalComponentMissingException('MIME component not installed', $e);
+		}
 	}
 
 	/**

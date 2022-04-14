@@ -124,7 +124,9 @@ final class Slovak implements Language
 
 			'STAR_PHOTO' => 'Obrázok označiť ako obľúbený',
 			'STAR' => 'označiť ako obľúbené',
+			'UNSTAR' => 'Unstar',
 			'STAR_ALL' => 'všetky označiť ako obľúbené',
+			'UNSTAR_ALL' => 'Unstar Selected',
 			'TAGS' => 'Štítky',
 			'TAGS_ALL' => 'Štítky pre všetky',
 			'UNSTAR_PHOTO' => 'Obrázok odstrániť z obľúbených',

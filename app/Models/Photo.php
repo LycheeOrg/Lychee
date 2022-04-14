@@ -2,9 +2,16 @@
 
 namespace App\Models;
 
+use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Contracts\HasRandomID;
+use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\Internal\ZeroModuloException;
+use App\Exceptions\InvalidPropertyException;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Facades\Helpers;
 use App\Models\Extensions\HasAttributesPatch;
@@ -12,6 +19,8 @@ use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
 use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\SizeVariants;
+use App\Models\Extensions\ThrowsConsistentExceptions;
+use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Relations\HasManySizeVariants;
 use App\Relations\LinkedPhotoCollection;
@@ -27,11 +36,10 @@ use Illuminate\Support\Facades\Storage;
  * @property int          $legacy_id
  * @property string       $title
  * @property string|null  $description
- * @property string       $tags
+ * @property string[]     $tags
  * @property bool         $is_public
  * @property int          $owner_id
  * @property string|null  $type
- * @property int          $filesize
  * @property string|null  $iso
  * @property string|null  $aperture
  * @property string|null  $make
@@ -70,7 +78,11 @@ class Photo extends Model implements HasRandomID
 	use UTCBasedTimes;
 	use HasAttributesPatch;
 	use HasRandomIDAndLegacyTimeBasedID;
+	use ThrowsConsistentExceptions {
+		ThrowsConsistentExceptions::delete as private internalDelete;
+	}
 	use HasBidirectionalRelationships;
+	use UseFixedQueryBuilder;
 
 	/**
 	 * @var string The type of the primary key
@@ -95,8 +107,12 @@ class Photo extends Model implements HasRandomID
 		'is_share_button_visible' => MustNotSetCast::class,
 		'owner_id' => 'integer',
 		'is_starred' => 'boolean',
-		'filesize' => 'integer',
 		'is_public' => 'boolean',
+		'tags' => ArrayCast::class,
+		'latitude' => 'float',
+		'longitude' => 'float',
+		'altitude' => 'float',
+		'img_direction' => 'float',
 	];
 
 	/**
@@ -120,10 +136,6 @@ class Photo extends Model implements HasRandomID
 		'live_photo_url',
 		'is_downloadable',
 		'is_share_button_visible',
-	];
-
-	protected $attributes = [
-		'tags' => '',
 	];
 
 	/**
@@ -185,41 +197,48 @@ class Photo extends Model implements HasRandomID
 	 * @param ?string $shutter the value from the database passed in by
 	 *                         the Eloquent framework
 	 *
-	 * @return string A properly formatted shutter value
+	 * @return ?string A properly formatted shutter value
+	 *
+	 * @throws InvalidPropertyException
 	 */
 	protected function getShutterAttribute(?string $shutter): ?string
 	{
-		if (empty($shutter)) {
-			return null;
-		}
-		// shutter speed needs to be processed. It is stored as a string `a/b s`
-		if (!str_starts_with($shutter, '1/')) {
-			preg_match('/(\d+)\/(\d+) s/', $shutter, $matches);
-			if ($matches) {
-				$a = intval($matches[1]);
-				$b = intval($matches[2]);
-				if ($b != 0) {
-					try {
-						$gcd = Helpers::gcd($a, $b);
-						$a = $a / $gcd;
-						$b = $b / $gcd;
-					} catch (\Exception $e) {
-						// this should not happen as we covered the case $b = 0;
-					}
-					if ($a == 1) {
-						$shutter = '1/' . $b . ' s';
-					} else {
-						$shutter = ($a / $b) . ' s';
+		try {
+			if (empty($shutter)) {
+				return null;
+			}
+			// shutter speed needs to be processed. It is stored as a string `a/b s`
+			if (!str_starts_with($shutter, '1/')) {
+				preg_match('/(\d+)\/(\d+) s/', $shutter, $matches);
+				if ($matches) {
+					$a = intval($matches[1]);
+					$b = intval($matches[2]);
+					if ($b != 0) {
+						try {
+							$gcd = Helpers::gcd($a, $b);
+							$a = $a / $gcd;
+							$b = $b / $gcd;
+						} catch (\Exception $e) {
+							// this should not happen as we covered the case $b = 0;
+						}
+						if ($a == 1) {
+							$shutter = '1/' . $b . ' s';
+						} else {
+							$shutter = ($a / $b) . ' s';
+						}
 					}
 				}
 			}
-		}
 
-		if ($shutter == '1/1 s') {
-			$shutter = '1 s';
-		}
+			if ($shutter == '1/1 s') {
+				$shutter = '1 s';
+			}
 
-		return $shutter;
+			return $shutter;
+		} catch (ZeroModuloException $e) {
+			// gcd throws ZeroModuloException, if the divisor equals 0
+			throw new InvalidPropertyException('Could not get shutter of photo', $e);
+		}
 	}
 
 	/**
@@ -262,6 +281,8 @@ class Photo extends Model implements HasRandomID
 	 *                       Eloquent framework
 	 *
 	 * @return string
+	 *
+	 * @throws IllegalOrderOfOperationException
 	 */
 	protected function getFocalAttribute(?string $focal): ?string
 	{
@@ -316,7 +337,7 @@ class Photo extends Model implements HasRandomID
 	 */
 	protected function getIsDownloadableAttribute(): bool
 	{
-		return AccessControl::is_current_user($this->owner_id) ||
+		return AccessControl::is_current_user_or_admin($this->owner_id) ||
 			($this->album_id != null && $this->album->is_downloadable) ||
 			($this->album_id == null && (bool) Configs::get_value('downloadable', '0'));
 	}
@@ -335,7 +356,7 @@ class Photo extends Model implements HasRandomID
 	{
 		$default = (bool) Configs::get_value('share_button_visible', '0');
 
-		return AccessControl::is_current_user($this->owner_id) ||
+		return AccessControl::is_current_user_or_admin($this->owner_id) ||
 			($this->album_id != null && $this->album->is_share_button_visible) ||
 			($this->album_id == null && $default);
 	}
@@ -350,6 +371,8 @@ class Photo extends Model implements HasRandomID
 	 * client is not allowed to see that.
 	 *
 	 * @return array
+	 *
+	 * @throws IllegalOrderOfOperationException
 	 */
 	public function toArray(): array
 	{
@@ -371,7 +394,7 @@ class Photo extends Model implements HasRandomID
 		// The decision logic here is a merge of three formerly independent
 		// (and slightly different) approaches
 		if (
-			!AccessControl::is_current_user($this->owner_id) &&
+			!AccessControl::is_current_user_or_admin($this->owner_id) &&
 			$this->isVideo() === false &&
 			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null) &&
 			(
@@ -387,6 +410,8 @@ class Photo extends Model implements HasRandomID
 
 	/**
 	 * @return bool true if another DB entry exists for the same photo
+	 *
+	 * @throws QueryBuilderException
 	 */
 	protected function hasDuplicate(): bool
 	{
@@ -395,13 +420,16 @@ class Photo extends Model implements HasRandomID
 		return self::query()
 			->where(function ($q) use ($checksum) {
 				$q->where('checksum', '=', $checksum)
-					->orWhere('original_checksum', '=', $checksum)
 					->orWhere('live_photo_checksum', '=', $checksum);
 			})
 			->where('id', '<>', $this->id)
 			->exists();
 	}
 
+	/**
+	 * @throws ModelDBException
+	 * @throws IllegalOrderOfOperationException
+	 */
 	public function replicate(array $except = null): Photo
 	{
 		$duplicate = parent::replicate($except);
@@ -424,25 +452,28 @@ class Photo extends Model implements HasRandomID
 		return $duplicate;
 	}
 
+	/**
+	 * @return bool always returns true
+	 *
+	 * @throws MediaFileOperationException
+	 * @throws ModelDBException
+	 */
 	public function delete(): bool
 	{
 		$keepFiles = $this->hasDuplicate();
 		if ($keepFiles) {
 			Logs::notice(__METHOD__, __LINE__, $this->id . ' is a duplicate, files are not deleted!');
 		}
-		$success = true;
 		// Delete all size variants
-		$success &= $this->size_variants->deleteAll($keepFiles, $keepFiles);
+		$this->size_variants->deleteAll($keepFiles, $keepFiles);
 		// Delete Live Photo Video file
 		$livePhotoShortPath = $this->live_photo_short_path;
 		if (!$keepFiles && !empty($livePhotoShortPath) && Storage::exists($livePhotoShortPath)) {
-			$success &= Storage::delete($livePhotoShortPath);
+			if (!Storage::delete($livePhotoShortPath)) {
+				throw new MediaFileOperationException('could not delete media file: ' . $livePhotoShortPath);
+			}
 		}
 
-		if (!$success) {
-			return false;
-		}
-
-		return parent::delete() !== false;
+		return $this->internalDelete();
 	}
 }

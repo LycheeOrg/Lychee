@@ -2,15 +2,19 @@
 
 namespace App\Exceptions;
 
-use Throwable;
+use Symfony\Component\HttpFoundation\Response;
 
-class PhotoSkippedException extends JsonWarning
+/**
+ * PhotoSkippedException.
+ *
+ * Returns status code 409 (Conflict) to an HTTP client.
+ */
+class PhotoSkippedException extends LycheeBaseException
 {
-	public function __construct(
-		$message,
-		$code = 0,
-		Throwable $previous = null
-	) {
-		parent::__construct($message, $code, $previous);
+	public const DEFAULT_MESSAGE = 'The photo has been skipped';
+
+	public function __construct(string $message = self::DEFAULT_MESSAGE, \Throwable $previous = null)
+	{
+		parent::__construct(Response::HTTP_CONFLICT, $message, $previous);
 	}
 }

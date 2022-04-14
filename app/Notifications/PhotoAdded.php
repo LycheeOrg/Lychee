@@ -10,6 +10,8 @@ class PhotoAdded extends Notification
 {
 	use Queueable;
 
+	protected Photo $photo;
+
 	/**
 	 * Create a new notification instance.
 	 *

@@ -18,8 +18,7 @@ class LogsTest extends TestCase
 	public function testLogs()
 	{
 		$response = $this->get('/Logs');
-		$response->assertOk();
-		$response->assertSeeText('false');
+		$response->assertForbidden();
 
 		// set user as admin
 		AccessControl::log_as_id(0);
@@ -27,7 +26,6 @@ class LogsTest extends TestCase
 		Logs::notice(__METHOD__, __LINE__, 'test');
 		$response = $this->get('/Logs');
 		$response->assertOk();
-		$response->assertDontSeeText('false');
 		$response->assertViewIs('logs.list');
 
 		AccessControl::logout();
@@ -35,32 +33,26 @@ class LogsTest extends TestCase
 
 	public function testApiLogs()
 	{
-		$response = $this->post('/api/Logs');
-		$response->assertStatus(200); // code 200 something
-
-		// we may decide to change for another out there so
+		$response = $this->postJson('/api/Logs::list');
+		$response->assertForbidden();
 	}
 
 	public function testClearLogs()
 	{
-		$response = $this->post('/api/Logs::clearNoise');
-		$response->assertOk();
-		$response->assertSeeText('false');
+		$response = $this->postJson('/api/Logs::clearNoise');
+		$response->assertForbidden();
 
-		$response = $this->post('/api/Logs::clear');
-		$response->assertOk();
-		$response->assertSeeText('false');
+		$response = $this->postJson('/api/Logs::clear');
+		$response->assertForbidden();
 
 		// set user as admin
 		AccessControl::log_as_id(0);
 
-		$response = $this->post('/api/Logs::clearNoise');
-		$response->assertOk();
-		$response->assertSeeText('Log Noise cleared');
+		$response = $this->postJson('/api/Logs::clearNoise');
+		$response->assertNoContent();
 
-		$response = $this->post('/api/Logs::clear');
-		$response->assertOk();
-		$response->assertSeeText('Log cleared');
+		$response = $this->postJson('/api/Logs::clear');
+		$response->assertNoContent();
 
 		$response = $this->get('/Logs');
 		$response->assertOk();

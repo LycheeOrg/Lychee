@@ -2,19 +2,28 @@
 
 namespace App\Http\Controllers\Install;
 
-use App\Http\Controllers\Controller;
+use App\Exceptions\Internal\FrameworkException;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Contracts\View\View;
+use Illuminate\Routing\Controller;
 
 final class WelcomeController extends Controller
 {
 	/**
 	 * @return View
+	 *
+	 * @throws FrameworkException
 	 */
-	public function view()
+	public function view(): View
 	{
-		// Show separator
-		return view('install.welcome', [
-			'title' => 'Lychee-installer',
-			'step' => 0,
-		]);
+		try {
+			// Show separator
+			return view('install.welcome', [
+				'title' => 'Lychee-installer',
+				'step' => 0,
+			]);
+		} catch (BindingResolutionException $e) {
+			throw new FrameworkException('Laravel\'s view component', $e);
+		}
 	}
 }

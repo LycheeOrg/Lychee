@@ -125,7 +125,9 @@ final class German implements Language
 
 			'STAR_PHOTO' => 'Foto als Favorit markieren',
 			'STAR' => 'Als Favorit markieren',
+			'UNSTAR' => 'Als Favorit demarkieren',
 			'STAR_ALL' => 'Ausgewählte als Favoriten markieren',
+			'UNSTAR_ALL' => 'Ausgewählte als Favoriten demarkieren',
 			'TAGS' => 'Taggen',
 			'TAGS_ALL' => 'Ausgewählte Taggen',
 			'UNSTAR_PHOTO' => 'Foto von Favoriten entfernen',

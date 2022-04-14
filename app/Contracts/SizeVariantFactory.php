@@ -50,12 +50,15 @@ abstract class SizeVariantFactory
 	 * to its correct path.
 	 * This method does not check, if a file actually exists.
 	 *
-	 * @param int $width  the width of the original size variant
-	 * @param int $height the height of the original size variant
+	 * @param int $width    the width of the original size variant
+	 * @param int $height   the height of the original size variant
+	 * @param int $filesize the filesize of the original size variant
 	 *
 	 * @return SizeVariant the freshly created and persisted size variant
+	 *
+	 * @throws LycheeException
 	 */
-	abstract public function createOriginal(int $width, int $height): SizeVariant;
+	abstract public function createOriginal(int $width, int $height, int $filesize): SizeVariant;
 
 	/**
 	 * Creates a size variant for the designated size variant.
@@ -83,6 +86,8 @@ abstract class SizeVariantFactory
 	 *                         {@link SizeVariant::MEDIUM2X}
 	 *
 	 * @return SizeVariant the freshly created and persisted size variant
+	 *
+	 * @throws LycheeException
 	 */
 	abstract public function createSizeVariant(int $sizeVariant): SizeVariant;
 
@@ -95,7 +100,7 @@ abstract class SizeVariantFactory
 	 * concrete factory and may depend on application settings, supported
 	 * file formats, the dimensions of the original media, etc.
 	 *
-	 * Otherwise this methods behaves identical to
+	 * Otherwise, this method behaves identical to
 	 * {@link SizeVariantFactory::createSizeVariant()}.
 	 * Refer there for further information.
 	 *
@@ -109,6 +114,8 @@ abstract class SizeVariantFactory
 	 *                         {@link SizeVariant::MEDIUM2X}
 	 *
 	 * @return SizeVariant|null the freshly created and persisted size variant
+	 *
+	 * @throws LycheeException
 	 */
 	abstract public function createSizeVariantCond(int $sizeVariant): ?SizeVariant;
 
@@ -131,6 +138,8 @@ abstract class SizeVariantFactory
 	 * Use {@link SizeVariantFactory::createOriginal()} for that.
 	 *
 	 * @return Collection the collection of created size variants
+	 *
+	 * @throws LycheeException
 	 */
 	abstract public function createSizeVariants(): Collection;
 }

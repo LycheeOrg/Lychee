@@ -2,27 +2,24 @@
 
 namespace App\Actions\Album;
 
+use App\Exceptions\ModelDBException;
 use App\Models\Album;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Move extends Action
 {
 	/**
 	 * Moves the given albums into the target.
 	 *
-	 * @param string|null $targetAlbumID
-	 * @param string[]    $albumIDs
+	 * @param Album|null $targetAlbum
+	 * @param Collection $albums
+	 *
+	 * @throws ModelNotFoundException
+	 * @throws ModelDBException
 	 */
-	public function do(?string $targetAlbumID, array $albumIDs): void
+	public function do(?Album $targetAlbum, Collection $albums): void
 	{
-		if (empty($targetAlbumID)) {
-			$targetAlbum = null;
-		} else {
-			/** @var Album $targetAlbum */
-			$targetAlbum = Album::query()->findOrFail($targetAlbumID);
-		}
-
-		$albums = Album::query()->whereIn('id', $albumIDs)->get();
-
 		// Move source albums into target
 		if ($targetAlbum) {
 			/** @var Album $album */

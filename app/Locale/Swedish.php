@@ -123,7 +123,9 @@ final class Swedish implements Language
 
 			'STAR_PHOTO' => 'Stjärnmärk fotografi',
 			'STAR' => 'Stjärnmärk',
+			'UNSTAR' => 'Unstar',
 			'STAR_ALL' => 'Markera valda som favoriter',
+			'UNSTAR_ALL' => 'Unstar Selected',
 			'TAGS' => 'Tag',
 			'TAGS_ALL' => 'Vald taggen',
 			'UNSTAR_PHOTO' => 'Ta bort stjärnmärke',

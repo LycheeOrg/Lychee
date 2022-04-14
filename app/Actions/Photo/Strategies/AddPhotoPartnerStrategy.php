@@ -3,6 +3,10 @@
 namespace App\Actions\Photo\Strategies;
 
 use App\Actions\Photo\Extensions\SourceFileInfo;
+use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\MediaFileUnsupportedException;
+use App\Exceptions\ModelDBException;
 use App\Models\Photo;
 
 class AddPhotoPartnerStrategy extends AddStandaloneStrategy
@@ -15,6 +19,14 @@ class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 		$this->existingVideo = $existingVideo;
 	}
 
+	/**
+	 * @return Photo
+	 *
+	 * @throws ModelDBException
+	 * @throws MediaFileOperationException
+	 * @throws QueryBuilderException
+	 * @throws MediaFileUnsupportedException
+	 */
 	public function do(): Photo
 	{
 		// First add the source file as if it was a stand-alone photo

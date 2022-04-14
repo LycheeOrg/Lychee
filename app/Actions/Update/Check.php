@@ -2,37 +2,25 @@
 
 namespace App\Actions\Update;
 
-use App\Exceptions\ExecNotAvailableException;
-use App\Exceptions\GitNotAvailableException;
-use App\Exceptions\GitNotExecutableException;
-use App\Exceptions\NoOnlineUpdateException;
-use App\Exceptions\NotInCacheException;
-use App\Exceptions\NotMasterException;
+use App\Exceptions\ConfigurationException;
+use App\Exceptions\ExternalComponentMissingException;
+use App\Exceptions\InsufficientFilesystemPermissions;
+use App\Exceptions\VersionControlException;
 use App\Metadata\GitHubFunctions;
 use App\Metadata\GitRequest;
 use App\Metadata\LycheeVersion;
 use App\Models\Configs;
-use Exception;
 
 class Check
 {
-	/**
-	 * @var GitHubFunctions
-	 */
-	private $gitHubFunctions;
-
-	/**
-	 * @var GitRequest
-	 */
-	private $gitRequest;
-
-	/**
-	 * @var LycheeVersion
-	 */
-	private $lycheeVersion;
+	private GitHubFunctions $gitHubFunctions;
+	private GitRequest $gitRequest;
+	private LycheeVersion $lycheeVersion;
 
 	/**
 	 * @param GitHubFunctions $gitHubFunctions
+	 * @param GitRequest      $gitRequest
+	 * @param LycheeVersion   $lycheeVersion
 	 */
 	public function __construct(
 		GitHubFunctions $gitHubFunctions,
@@ -45,53 +33,35 @@ class Check
 	}
 
 	/**
-	 * @throws NoOnlineUpdateException
-	 * @throws GitNotAvailableException
-	 * @throws ExecNotAvailableException
-	 * @throws GitNotExecutableException
+	 * Ensures that Lychee can be updated or throws an exception otherwise.
+	 *
+	 * @return void
+	 *
+	 * @throws ConfigurationException
+	 * @throws ExternalComponentMissingException
+	 * @throws InsufficientFilesystemPermissions
 	 */
-	public function canUpdate()
+	public function assertUpdatability(): void
 	{
 		// we bypass this because we don't care about the other conditions as they don't apply to the release
 		if ($this->lycheeVersion->isRelease) {
 			// @codeCoverageIgnoreStart
-			return true;
+			return;
 			// @codeCoverageIgnoreEnd
 		}
 
 		if (Configs::get_value('allow_online_git_pull', '0') == '0') {
-			throw new NoOnlineUpdateException();
+			throw new ConfigurationException('Online updates are disabled by configuration');
 		}
 
-		// When going with the CI, .git is always executable and exec is also available
+		// When going with the CI, .git is always executable
 		// @codeCoverageIgnoreStart
-		if (!function_exists('exec')) {
-			throw new ExecNotAvailableException();
-		}
 		if (exec('command -v git') == '') {
-			throw new GitNotAvailableException();
+			throw new ExternalComponentMissingException('git (software) is not available.');
 		}
 
 		if (!$this->gitHubFunctions->has_permissions()) {
-			throw new GitNotExecutableException();
-		}
-		// @codeCoverageIgnoreEnd
-
-		return true;
-	}
-
-	/**
-	 * Cath the Exception and return the boolean equivalent.
-	 *
-	 * @return bool
-	 */
-	private function canUpdateBool()
-	{
-		try {
-			return $this->canUpdate();
-			// @codeCoverageIgnoreStart
-		} catch (Exception $e) {
-			return false;
+			throw new InsufficientFilesystemPermissions(base_path('.git') . ' (and subdirectories) are not executable, check the permissions');
 		}
 		// @codeCoverageIgnoreEnd
 	}
@@ -101,10 +71,9 @@ class Check
 	 *
 	 * @return bool
 	 *
-	 * @throws NotMasterException
-	 * @throws NotInCacheException
+	 * @throws VersionControlException
 	 */
-	private function forget_and_check()
+	private function forget_and_check(): bool
 	{
 		$this->gitRequest->clear_cache();
 
@@ -114,10 +83,9 @@ class Check
 	/**
 	 * Check for updates, return text or an exception if not possible.
 	 *
-	 * @throws NotMasterException
-	 * @throws NotInCacheException
+	 * @throws VersionControlException
 	 */
-	public function getText()
+	public function getText(): string
 	{
 		$up_to_date = $this->forget_and_check();
 
@@ -131,43 +99,44 @@ class Check
 	}
 
 	/**
-	 * Check for updates, returns the code
-	 * 0 - Not Master
-	 * 1 - Not in cache
-	 * 1 - Up to date
-	 * 2 - Not up to date.
-	 * 3 - Require migration.
+	 * Check for updates and returns the update state.
+	 *
+	 * The return codes have the following semantics:
+	 *  - `0` - Not on master branch
+	 *  - `1` - Up-to-date
+	 *  - `2` - Not up-to-date.
+	 *  - `3` - Require migration.
+	 *
+	 * The following line of codes are duplicated in
+	 *  - {@link \App\Actions\Diagnostics\Checks\LycheeDBVersionCheck::check()}
+	 *  - {@link \App\Http\Middleware\Checks\IsMigrated::assert()}.
+	 *
+	 * TODO: Probably, the whole logic around installation and updating should be re-factored. The whole code is wicked.
+	 *
+	 * @return int the update state between 0..3
 	 */
-	public function getCode()
+	public function getCode(): int
 	{
 		if ($this->lycheeVersion->isRelease) {
 			// @codeCoverageIgnoreStart
-			$versions = $this->lycheeVersion->get();
+			$db_ver = $this->lycheeVersion->getDBVersion();
+			$file_ver = $this->lycheeVersion->getFileVersion();
 
-			return 3 * intval($versions['DB']['version'] < $versions['Lychee']['version']);
+			return 3 * ($db_ver->toInteger() < $file_ver->toInteger());
 			// @codeCoverageIgnoreEnd
 		}
 
-		$update = $this->canUpdateBool();
-
-		if ($update) {
-			try {
-				// @codeCoverageIgnoreStart
-				if (!$this->gitHubFunctions->is_up_to_date()) {
-					return 2;
-				} else {
-					return 1;
-				}
-				// @codeCoverageIgnoreEnd
-			} catch (NotInCacheException $e) {
+		try {
+			$this->assertUpdatability();
+			// @codeCoverageIgnoreStart
+			if (!$this->gitHubFunctions->is_up_to_date()) {
+				return 2;
+			} else {
 				return 1;
-				// @codeCoverageIgnoreStart
-			} catch (NotMasterException $e) {
-				return 0;
 			}
+			// @codeCoverageIgnoreEnd
+		} catch (\Exception $e) {
+			return 0;
 		}
-
-		return 0;
-		// @codeCoverageIgnoreEnd
 	}
 }

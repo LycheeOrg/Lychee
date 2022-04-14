@@ -4,12 +4,12 @@ namespace App\Console\Commands;
 
 use App\Mail\PhotosAdded;
 use App\Models\Configs;
-use App\Models\Logs;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\Mail;
+use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class PhotosAddedNotification extends Command
 {
@@ -30,7 +30,7 @@ class PhotosAddedNotification extends Command
 	/**
 	 * Create a new command instance.
 	 *
-	 * @return void
+	 * @throws SymfonyConsoleException
 	 */
 	public function __construct()
 	{
@@ -87,12 +87,8 @@ class PhotosAddedNotification extends Command
 			}
 
 			if (count($photos) > 0) {
-				try {
-					Mail::to($user->email)->send(new PhotosAdded($photos));
-					$user->notifications()->delete();
-				} catch (\Exception $e) {
-					Logs::error(__METHOD__, __LINE__, 'Failed to send email notification for ' . $user->username);
-				}
+				Mail::to($user->email)->send(new PhotosAdded($photos));
+				$user->notifications()->delete();
 			}
 		}
 

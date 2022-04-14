@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static int id()
  * @method static User accessUserData()
  * @method static User user()
- * @method static bool is_current_user(int $userId)
+ * @method static bool is_current_user_or_admin(int $userId)
  * @method static void login(User $user)
  * @method static bool noLogin()
  * @method static bool log_as_user(string $username, string $password, string $ip)

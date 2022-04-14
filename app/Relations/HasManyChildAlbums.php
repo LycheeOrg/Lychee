@@ -3,17 +3,20 @@
 namespace App\Relations;
 
 use App\Actions\AlbumAuthorisationProvider;
+use App\Contracts\InternalLycheeException;
+use App\DTO\AlbumSortingCriterion;
+use App\DTO\SortingCriterion;
+use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
+use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 class HasManyChildAlbums extends HasManyBidirectionally
 {
 	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
-	private string $sortingCol;
-	private string $sortingOrder;
+	private AlbumSortingCriterion $sorting;
 
 	public function __construct(Album $owningAlbum)
 	{
@@ -22,8 +25,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
 		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
-		$this->sortingCol = Configs::get_value('sorting_Albums_col', 'created_at');
-		$this->sortingOrder = Configs::get_value('sorting_Albums_order', 'ASC');
+		$this->sorting = AlbumSortingCriterion::createDefault();
 		parent::__construct(
 			$owningAlbum->newQuery(),
 			$owningAlbum,
@@ -33,6 +35,9 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		);
 	}
 
+	/**
+	 * @throws InternalLycheeException
+	 */
 	public function addConstraints()
 	{
 		if (static::$constraints) {
@@ -41,12 +46,18 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		}
 	}
 
+	/**
+	 * @throws InternalLycheeException
+	 */
 	public function addEagerConstraints(array $models)
 	{
 		parent::addEagerConstraints($models);
 		$this->albumAuthorisationProvider->applyVisibilityFilter($this->query);
 	}
 
+	/**
+	 * @throws InvalidOrderDirectionException
+	 */
 	public function getResults()
 	{
 		if (is_null($this->getParentKey())) {
@@ -54,7 +65,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		}
 
 		return (new SortingDecorator($this->query))
-			->orderBy($this->sortingCol, $this->sortingOrder)
+			->orderBy($this->sorting->column, $this->sorting->order)
 			->get();
 	}
 
@@ -66,13 +77,12 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	 * @param string     $relation the name of the relation from the parent to the child models
 	 *
 	 * @return array
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	public function match(array $models, Collection $results, $relation): array
 	{
 		$dictionary = $this->buildDictionary($results);
-
-		$sortingCol = Configs::get_value('sorting_Albums_col', 'created_at');
-		$sortingOrder = Configs::get_value('sorting_Albums_order', 'ASC');
 
 		// Once we have the dictionary we can simply spin through the parent models to
 		// link them up with their children using the keyed dictionary to make the
@@ -82,7 +92,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 				/** @var Collection $childrenOfModel */
 				$childrenOfModel = $this->getRelationValue($dictionary, $key, 'many');
 				$childrenOfModel = $childrenOfModel
-					->sortBy($sortingCol, SORT_NATURAL | SORT_FLAG_CASE, $sortingOrder === 'DESC')
+					->sortBy($this->sorting->column, SORT_NATURAL | SORT_FLAG_CASE, $this->sorting->order === SortingCriterion::DESC)
 					->values();
 				$model->setRelation($relation, $childrenOfModel);
 				// This is the newly added code which sets this method apart

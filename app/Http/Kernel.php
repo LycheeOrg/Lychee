@@ -1,5 +1,7 @@
 <?php
 
+/** @noinspection PhpFullyQualifiedNameUsageInspection */
+
 namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
@@ -9,15 +11,14 @@ class Kernel extends HttpKernel
 	/**
 	 * The application's global HTTP middleware stack.
 	 *
-	 * These middleware are run during every request to your application.
+	 * These middlewares are run during every request to your application.
 	 *
 	 * @var array
 	 */
 	protected $middleware = [
-		// \App\Http\Middleware\TrustHosts::class,
-		\App\Http\Middleware\TrustProxies::class,
-		// \Fruitcake\Cors\HandleCors::class,
-		\App\Http\Middleware\PreventRequestsDuringMaintenance::class,
+		\App\Http\Middleware\FixStatusCode::class,
+		\Fideloper\Proxy\TrustProxies::class, // required to get proper (i.e. original) client IP instead of proxy IP, if run behind a reverse proxy
+		\Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance::class,
 		\Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
 		\App\Http\Middleware\TrimStrings::class,
 		\Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
@@ -31,7 +32,8 @@ class Kernel extends HttpKernel
 	 */
 	protected $middlewareGroups = [
 		'web' => [
-			\App\Http\Middleware\EncryptCookies::class,
+			'accept_content_type:html',
+			\Illuminate\Cookie\Middleware\EncryptCookies::class,
 			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
 			\Illuminate\Session\Middleware\StartSession::class,
 			\Illuminate\Session\Middleware\AuthenticateSession::class,
@@ -41,7 +43,8 @@ class Kernel extends HttpKernel
 		],
 
 		'web-admin' => [
-			\App\Http\Middleware\EncryptCookies::class,
+			'accept_content_type:html',
+			\Illuminate\Cookie\Middleware\EncryptCookies::class,
 			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
 			\Illuminate\Session\Middleware\StartSession::class,
 			\Illuminate\Session\Middleware\AuthenticateSession::class,
@@ -51,39 +54,51 @@ class Kernel extends HttpKernel
 			'admin',
 		],
 
-		'install' => [
-			\App\Http\Middleware\InstalledCheck::class,
+		'web-install' => [
+			'accept_content_type:html',
+			'installation:incomplete',
 		],
 
 		'api' => [
-			'throttle:api',
+			'accept_content_type:json',
+			'content_type:json',
+			\Illuminate\Cookie\Middleware\EncryptCookies::class,
+			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+			\Illuminate\Session\Middleware\StartSession::class,
+			\Illuminate\Session\Middleware\AuthenticateSession::class,
+			\Illuminate\View\Middleware\ShareErrorsFromSession::class,
+			\App\Http\Middleware\VerifyCsrfToken::class,
 			\Illuminate\Routing\Middleware\SubstituteBindings::class,
+		],
+
+		'api-admin' => [
+			'accept_content_type:json',
+			'content_type:json',
+			\Illuminate\Cookie\Middleware\EncryptCookies::class,
+			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+			\Illuminate\Session\Middleware\StartSession::class,
+			\Illuminate\Session\Middleware\AuthenticateSession::class,
+			\Illuminate\View\Middleware\ShareErrorsFromSession::class,
+			\App\Http\Middleware\VerifyCsrfToken::class,
+			\Illuminate\Routing\Middleware\SubstituteBindings::class,
+			'admin',
 		],
 	];
 
 	/**
 	 * The application's route middleware.
 	 *
-	 * These middleware may be assigned to groups or used individually.
+	 * These middlewares may be assigned to groups or used individually.
 	 *
 	 * @var array
 	 */
 	protected $routeMiddleware = [
-		// 'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
-		// 'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-		'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
-		'can' => \Illuminate\Auth\Middleware\Authorize::class,
-		// 'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-		// 'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
-		'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
-		'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-		// 'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-
-		'login' => \App\Http\Middleware\LoginCheck::class,
-		'read' => \App\Http\Middleware\ReadCheck::class,
 		'admin' => \App\Http\Middleware\AdminCheck::class,
-		'upload' => \App\Http\Middleware\UploadCheck::class,
-		'installed' => \App\Http\Middleware\DBExists::class,
-		'migrated' => \App\Http\Middleware\MigrationCheck::class,
+		'installation' => \App\Http\Middleware\InstallationStatus::class,
+		'migration' => \App\Http\Middleware\MigrationStatus::class,
+		'local_storage' => \App\Http\Middleware\LocalStorageOnly::class,
+		'content_type' => \App\Http\Middleware\ContentType::class,
+		'accept_content_type' => \App\Http\Middleware\AcceptContentType::class,
+		'redirect-legacy-id' => \App\Http\Middleware\RedirectLegacyPhotoID::class,
 	];
 }

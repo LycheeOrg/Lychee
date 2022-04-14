@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Extensions\ThrowsConsistentExceptions;
+use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -20,6 +22,8 @@ use Illuminate\Support\Carbon;
 class Logs extends Model
 {
 	use UTCBasedTimes;
+	use ThrowsConsistentExceptions;
+	use UseFixedQueryBuilder;
 
 	public const SEVERITY_EMERGENCY = 0;
 	public const SEVERITY_ALERT = 1;

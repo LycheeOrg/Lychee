@@ -37,19 +37,26 @@ class RouteServiceProvider extends ServiceProvider
 	{
 		$this->configureRateLimiting();
 
+		// Note: `web.php` must be registered last, because it contains a
+		// "catch all" route and the routes are considered in a "first match"
+		// fashion.
 		$this->routes(function () {
-			Route::middleware('install')
-				->group(base_path('routes/install.php'));
-
-			Route::middleware('web-admin')
-				->group(base_path('routes/admin.php'));
-
-			Route::prefix('api')
-				->middleware('api')
+			Route::middleware('api')
+				->prefix('api')
 				->group(base_path('routes/api.php'));
 
+			Route::middleware('api-admin')
+				->prefix('api')
+				->group(base_path('routes/api-admin.php'));
+
+			Route::middleware('web-install')
+				->group(base_path('routes/web-install.php'));
+
+			Route::middleware('web-admin')
+				->group(base_path('routes/web-admin.php'));
+
 			Route::middleware('web')
-				->group(base_path('routes/livewire.php'));
+				->group(base_path('routes/web-livewire.php'));
 
 			Route::middleware('web')
 				->group(base_path('routes/web.php'));

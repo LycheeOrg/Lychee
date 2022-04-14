@@ -41,7 +41,6 @@ class PhotosRotateTest extends TestCase
 		*/
 		$response->assertJson([
 			'id' => $id,
-			'filesize' => 21104156,
 			'size_variants' => [
 				'small' => [
 					'width' => 540,
@@ -54,19 +53,18 @@ class PhotosRotateTest extends TestCase
 				'original' => [
 					'width' => 6720,
 					'height' => 4480,
+					'filesize' => 21104156,
 				],
 			],
 		]);
 
 		$editor_enabled_value = Configs::get_value('editor_enabled');
 		Configs::set('editor_enabled', '0');
-		$response = $this->post('/api/PhotoEditor::rotate', [
-			// somewhere in the Laravel middleware is a test which checks
-			// if `photoID` is a string; find where
-			'photoID' => (string) $id,
+		$response = $this->postJson('/api/PhotoEditor::rotate', [
+			'photoID' => $id,
 			'direction' => 1,
 		]);
-		$response->assertStatus(422);
+		$response->assertStatus(412);
 		$response->assertSee('support for rotation disabled by configuration');
 
 		Configs::set('editor_enabled', '1');
@@ -122,7 +120,7 @@ class PhotosRotateTest extends TestCase
 			],
 		]);
 
-		$photos_tests->delete($id);
+		$photos_tests->delete([$id]);
 
 		// reset
 		Configs::set('editor_enabled', $editor_enabled_value);

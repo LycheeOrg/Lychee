@@ -1,9 +1,9 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Middleware;
 
+use App\Contracts\InternalLycheeException;
+use App\Exceptions\UnauthorizedException;
 use App\Facades\AccessControl;
 use App\Http\Middleware\Checks\IsInstalled;
 use Closure;
@@ -11,10 +11,7 @@ use Illuminate\Http\Request;
 
 class AdminCheck
 {
-	/**
-	 * @var IsInstalled
-	 */
-	private $isInstalled;
+	private IsInstalled $isInstalled;
 
 	public function __construct(IsInstalled $isInstalled)
 	{
@@ -28,15 +25,18 @@ class AdminCheck
 	 * @param Closure $next
 	 *
 	 * @return mixed
+	 *
+	 * @throws UnauthorizedException
+	 * @throws InternalLycheeException
 	 */
-	public function handle($request, Closure $next)
+	public function handle(Request $request, Closure $next): mixed
 	{
 		if (!$this->isInstalled->assert()) {
 			return $next($request);
 		}
 
 		if (!AccessControl::is_admin()) {
-			return response('false');
+			throw new UnauthorizedException('Admin privileges required');
 		}
 
 		return $next($request);

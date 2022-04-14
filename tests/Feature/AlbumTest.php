@@ -19,10 +19,14 @@ class AlbumTest extends TestCase
 		$albums_tests = new AlbumsUnitTest($this);
 		$albums_tests->add(null, 'test_album', 401);
 
-		$albums_tests->get('recent', 403);
-		$albums_tests->get('starred', 403);
-		$albums_tests->get('public', 403);
-		$albums_tests->get('unsorted', 403);
+		$albums_tests->get('recent', 401);
+		$albums_tests->get('starred', 401);
+		$albums_tests->get('public', 401);
+		$albums_tests->get('unsorted', 401);
+
+		// Ensure that we get proper 404 (not found) response for a
+		// non-existing album, not a false 403 (forbidden) response
+		$albums_tests->get('abcdefghijklmnopqrstuvwx', 404);
 	}
 
 	public function testAddReadLogged()
@@ -40,21 +44,23 @@ class AlbumTest extends TestCase
 		$albumID = $albums_tests->add(null, 'test_album')->offsetGet('id');
 		$albumID2 = $albums_tests->add(null, 'test_album2')->offsetGet('id');
 		$albumID3 = $albums_tests->add(null, 'test_album3')->offsetGet('id');
-		$albumTagID1 = $albums_tests->addByTags('test_tag_album1', 'test')->offsetGet('id');
+		$albumTagID1 = $albums_tests->addByTags('test_tag_album1', ['test'])->offsetGet('id');
 
-		$albums_tests->set_tags($albumTagID1, 'test, coolnewtag, secondnewtag');
+		$albums_tests->set_tags($albumTagID1, ['test', 'coolnewtag', 'secondnewtag']);
 		$response = $albums_tests->get($albumTagID1);
-		$response->assertSee('test, coolnewtag, secondnewtag');
+		$response->assertJson([
+			'show_tags' => ['test', 'coolnewtag', 'secondnewtag'],
+		]);
 
 		$albums_tests->see_in_albums($albumID);
 		$albums_tests->see_in_albums($albumID2);
 		$albums_tests->see_in_albums($albumID3);
 		$albums_tests->see_in_albums($albumTagID1);
 
-		$albums_tests->move($albumTagID1, $albumID3);
-		$albums_tests->move($albumID3, $albumID2);
-		$albums_tests->move($albumID2, $albumID);
-		$albums_tests->move($albumID3, null);
+		$albums_tests->move([$albumTagID1], $albumID3, 404);
+		$albums_tests->move([$albumID3], $albumID2);
+		$albums_tests->move([$albumID2], $albumID);
+		$albums_tests->move([$albumID3], null);
 
 		/*
 		 * try to get a non-existing album
@@ -90,13 +96,14 @@ class AlbumTest extends TestCase
 		/*
 		 * Flush the session to see if we can access the album
 		 */
-		$session_tests->logout($this);
+		$session_tests->logout();
 
 		/*
 		 * Let's try to get the info of the album we just created.
 		 */
 		$albums_tests->unlock($albumID, '', 422);
-		$albums_tests->get($albumID, 403);
+		$albums_tests->unlock($albumID, 'wrong-password', 403);
+		$albums_tests->get($albumID, 401);
 
 		/*
 		 * Because we don't know login and password we are just going to assumed we are logged in.
@@ -106,7 +113,7 @@ class AlbumTest extends TestCase
 		/*
 		 * Let's try to delete this album.
 		 */
-		$albums_tests->delete($albumID);
+		$albums_tests->delete([$albumID]);
 
 		/*
 		 * Because we deleted the album, we should not see it anymore.
@@ -124,7 +131,9 @@ class AlbumTest extends TestCase
 		AccessControl::log_as_id(0);
 
 		$albums_tests->set_description('-1', 'new description', 422);
-		$albums_tests->set_public('-1', true, true, false, false, true, true, 422);
+		$albums_tests->set_description('abcdefghijklmnopqrstuvwx', 'new description', 404);
+		$albums_tests->set_protection_policy('-1', true, true, false, false, true, true, 422);
+		$albums_tests->set_protection_policy('abcdefghijklmnopqrstuvwx', true, true, false, false, true, true, 404);
 
 		$session_tests->logout();
 	}

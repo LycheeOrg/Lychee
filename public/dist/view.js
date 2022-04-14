@@ -42,71 +42,99 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
-function gup(b) {
-	b = b.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-
-	var a = "[\\?&]" + b + "=([^&#]*)";
-	var d = new RegExp(a);
-	var c = d.exec(window.location.href);
-
-	if (c === null) return "";else return c[1];
-}
-
 /**
  * @description This module communicates with Lychee's API
  */
 
+/**
+ * @callback APISuccessCB
+ * @param {Object} data the decoded JSON response
+ * @returns {void}
+ */
+
+/**
+ * @callback APIErrorCB
+ * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+ * @param {Object} params the original JSON parameters of the request
+ * @param {?LycheeException} lycheeException the Lychee exception
+ * @returns {boolean}
+ */
+
+/**
+ * @callback APIProgressCB
+ * @param {ProgressEvent} event the progress event
+ * @returns {void}
+ */
+
+/**
+ * The main API object
+ */
 var api = {
+	/**
+  * Global, default error handler
+  *
+  * @type {?APIErrorCB}
+  */
 	onError: null
 };
 
-api.isTimeout = function (errorThrown, jqXHR) {
-	if (errorThrown && (errorThrown === "Bad Request" && jqXHR && jqXHR.responseJSON && jqXHR.responseJSON.error && jqXHR.responseJSON.error === "Session timed out" || errorThrown === "unknown status" && jqXHR && jqXHR.status && jqXHR.status === 419 && jqXHR.responseJSON && jqXHR.responseJSON.message && jqXHR.responseJSON.message === "CSRF token mismatch.")) {
-		return true;
-	}
-
-	return false;
-};
-
-api.post = function (fn, params, successCallback) {
+/**
+ *
+ * @param {string} fn
+ * @param {Object} params
+ * @param {?APISuccessCB} successCallback
+ * @param {?APIProgressCB} responseProgressCB
+ * @param {?APIErrorCB} errorCallback
+ * @returns {void}
+ */
+api.post = function (fn, params) {
+	var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 	var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 	var errorCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
 
 	loadingBar.show();
 
-	params = $.extend({ function: fn }, params);
-
-	var api_url = "api/" + fn;
-
-	var success = function success(data) {
+	/**
+  * The success handler
+  * @param {Object} data the decoded JSON object of the response
+  */
+	var successHandler = function successHandler(data) {
 		setTimeout(loadingBar.hide, 100);
-
-		// Catch errors
-		if (typeof data === "string" && data.substring(0, 7) === "Error: ") {
-			api.onError(data.substring(7, data.length), params, data);
-			return false;
-		}
-
 		if (successCallback) successCallback(data);
 	};
 
-	var error = function error(jqXHR, textStatus, errorThrown) {
+	/**
+  * The error handler
+  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+  */
+	var errorHandler = function errorHandler(jqXHR) {
+		/**
+   * @type {?LycheeException}
+   */
+		var lycheeException = jqXHR.responseJSON;
+
 		if (errorCallback) {
-			var isHandled = errorCallback(jqXHR);
-			if (isHandled) return;
+			var isHandled = errorCallback(jqXHR, params, lycheeException);
+			if (isHandled) {
+				setTimeout(loadingBar.hide, 100);
+				return;
+			}
 		}
 		// Call global error handler for unhandled errors
-		api.onError(api.isTimeout(errorThrown, jqXHR) ? "Session timed out." : "Server error or API not found.", params, errorThrown);
+		api.onError(jqXHR, params, lycheeException);
 	};
 
 	var ajaxParams = {
 		type: "POST",
-		url: api_url,
+		url: "api/" + fn,
 		contentType: "application/json",
 		data: JSON.stringify(params),
 		dataType: "json",
-		success: success,
-		error: error
+		headers: {
+			"X-XSRF-TOKEN": csrf.getCSRFCookieValue()
+		},
+		success: successHandler,
+		error: errorHandler
 	};
 
 	if (responseProgressCB !== null) {
@@ -118,23 +146,31 @@ api.post = function (fn, params, successCallback) {
 	$.ajax(ajaxParams);
 };
 
-api.get = function (url, callback) {
+/**
+ *
+ * @param {string} url
+ * @param {APISuccessCB} callback
+ * @returns {void}
+ */
+api.getCSS = function (url, callback) {
 	loadingBar.show();
 
-	var success = function success(data) {
+	/**
+  * The success handler
+  * @param {Object} data the decoded JSON object of the response
+  */
+	var successHandler = function successHandler(data) {
 		setTimeout(loadingBar.hide, 100);
-
-		// Catch errors
-		if (typeof data === "string" && data.substring(0, 7) === "Error: ") {
-			api.onError(data.substring(7, data.length), params, data);
-			return false;
-		}
 
 		callback(data);
 	};
 
-	var error = function error(jqXHR, textStatus, errorThrown) {
-		api.onError(api.isTimeout(errorThrown, jqXHR) ? "Session timed out." : "Server error or API not found.", {}, errorThrown);
+	/**
+  * The error handler
+  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+  */
+	var errorHandler = function errorHandler(jqXHR) {
+		api.onError(jqXHR, {}, null);
 	};
 
 	$.ajax({
@@ -142,68 +178,60 @@ api.get = function (url, callback) {
 		url: url,
 		data: {},
 		dataType: "text",
-		success: success,
-		error: error
-	});
-};
-
-api.post_raw = function (fn, params, callback) {
-	loadingBar.show();
-
-	params = $.extend({ function: fn }, params);
-
-	var api_url = "api/" + fn;
-
-	var success = function success(data) {
-		setTimeout(loadingBar.hide, 100);
-
-		// Catch errors
-		if (typeof data === "string" && data.substring(0, 7) === "Error: ") {
-			api.onError(data.substring(7, data.length), params, data);
-			return false;
-		}
-
-		callback(data);
-	};
-
-	var error = function error(jqXHR, textStatus, errorThrown) {
-		api.onError(api.isTimeout(errorThrown, jqXHR) ? "Session timed out." : "Server error or API not found.", params, errorThrown);
-	};
-
-	$.ajax({
-		type: "POST",
-		url: api_url,
-		data: params,
-		dataType: "text",
-		success: success,
-		error: error
+		headers: {
+			"X-XSRF-TOKEN": csrf.getCSRFCookieValue()
+		},
+		success: successHandler,
+		error: errorHandler
 	});
 };
 
 var csrf = {};
 
-csrf.addLaravelCSRF = function (event, jqxhr, settings) {
-	if (settings.url !== lychee.updatePath) {
-		jqxhr.setRequestHeader("X-XSRF-TOKEN", csrf.getCookie("XSRF-TOKEN"));
-	}
-};
-
-csrf.escape = function (s) {
-	return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, "\\$1");
-};
-
-csrf.getCookie = function (name) {
-	// we stop the selection at = (default json) but also at % to prevent any %3D at the end of the string
-	var match = document.cookie.match(RegExp("(?:^|;\\s*)" + csrf.escape(name) + "=([^;^%]*)"));
-	return match ? match[1] : null;
-};
-
-csrf.bind = function () {
-	$(document).on("ajaxSend", csrf.addLaravelCSRF);
+/**
+ * Returns the value of the CSRF token.
+ *
+ * Inspired by https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#example_2_get_a_sample_cookie_named_test2
+ *
+ * @returns {?string}
+ */
+csrf.getCSRFCookieValue = function () {
+	var cookie = document.cookie.split(";").find(function (row) {
+		return (/^\s*(X-)?[XC]SRF-TOKEN\s*=/.test(row)
+		);
+	});
+	// We must remove all '%3D' from the end of the string.
+	// Background:
+	// The actual binary value of the CSFR value is encoded in Base64.
+	// If the length of original, binary value is not a multiple of 3 bytes,
+	// the encoding gets padded with `=` on the right; i.e. there might be
+	// zero, one or two `=` at the end of the encoded value.
+	// If the value is sent from the server to the client as part of a cookie,
+	// the `=` character is URL-encoded as `%3D`, because `=` is already used
+	// to separate a cookie key from its value.
+	// When we send back the value to the server as part of an AJAX request,
+	// Laravel expects an unpadded value.
+	// Hence, we must remove the `%3D`.
+	return cookie ? cookie.split("=")[1].trim().replaceAll("%3D", "") : null;
 };
 
 /**
- * @description Used to view single photos with view.php
+ * @description Used as an alternative `main` to view single photos with `view.php`
+ *
+ * Note, the build script picks a subset of the JS files to build a variant
+ * of the JS code for the special "view mode".
+ * As this variant does not include all JS files, some objects are missing.
+ * Hence, we must partially re-implement these objects to the extent which is
+ * required by the methods we call.
+ *
+ * This approach is very tedious and error-prone, because we actually
+ * duplicate code.
+ * Also, it is not documented nor obvious why these "subset implementations"
+ * are necessary.
+ * Ideally, the full code base would be used all the time independent of
+ * the users entry point.
+ *
+ * TODO: Find out why we actually need this approach. Re-implementing different variants of the same objects is very error-prone.
  */
 
 // Sub-implementation of lychee -------------------------------------------------------------- //
@@ -214,6 +242,18 @@ lychee.content = $(".content");
 lychee.imageview = $("#imageview");
 lychee.mapview = $("#mapview");
 
+/**
+ * DON'T USE THIS METHOD.
+ *
+ * TODO: Find all invocations of this method and nuke them.
+ *
+ * This method does not cover all potentially dangerous characters and this
+ * method should not be required on the first place.
+ * jQuery and even native JS has better methods for this in the year 2022!
+ *
+ * @param {string} [html=""]
+ * @returns {string}
+ */
 lychee.escapeHTML = function () {
 	var html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
 
@@ -226,6 +266,20 @@ lychee.escapeHTML = function () {
 	return html;
 };
 
+/**
+ * Creates a HTML string with some fancy variable substitution.
+ *
+ * Actually, this method should not be required in the year 2022.
+ * jQuery and even native JS should probably provide a suitable alternative.
+ * But this method is used so ubiquitous that it might be difficult to get
+ * rid of it.
+ *
+ * TODO: Try it nonetheless.
+ *
+ * @param literalSections
+ * @param substs
+ * @returns {string}
+ */
 lychee.html = function (literalSections) {
 	// Use raw literal sections: we don’t want
 	// backslashes (\n etc.) to be interpreted
@@ -260,6 +314,9 @@ lychee.html = function (literalSections) {
 	return result;
 };
 
+/**
+ * @returns {string} - either `"touchend"` or `"click"`
+ */
 lychee.getEventName = function () {
 	var touchendSupport = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || navigator.vendor || window.opera) && "ontouchend" in document.documentElement;
 	return touchendSupport === true ? "touchend" : "click";
@@ -268,9 +325,17 @@ lychee.getEventName = function () {
 // Sub-implementation of photo -------------------------------------------------------------- //
 
 var photo = {
-	json: null
+	/** @type {?Photo} */
+	json: null,
+	/** @type {?LivePhotosKit.Player} */
+	livePhotosObject: null
 };
 
+/**
+ * @param {string} photoID
+ * @param {string} service - one out of `"twitter"`, `"facebook"`, `"mail"` or `"dropbox"`
+ * @returns {void}
+ */
 photo.share = function (photoID, service) {
 	var url = location.toString();
 
@@ -287,36 +352,72 @@ photo.share = function (photoID, service) {
 	}
 };
 
+/**
+ * @returns {string}
+ */
 photo.getDirectLink = function () {
 	return $("#imageview img").attr("src").replace(/"/g, "").replace(/url\(|\)$/gi, "");
 };
 
+/**
+ * @returns {void}
+ */
 photo.show = function () {
 	$("#imageview").removeClass("full");
 	header.dom().removeClass("header--hidden");
-
-	return true;
 };
 
+/**
+ * @returns {void}
+ */
 photo.hide = function () {
 	if (visible.photo() && !visible.sidebar() && !visible.contextMenu()) {
 		$("#imageview").addClass("full");
 		header.dom().addClass("header--hidden");
-
-		return true;
 	}
-
-	return false;
 };
 
+/**
+ * @param {number} [animationDuration=300]
+ * @param {number} [pauseBetweenUpdated=10]
+ * @returns {void}
+ */
+photo.updateSizeLivePhotoDuringAnimation = function () {
+	var animationDuration = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 300;
+	var pauseBetweenUpdated = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
+
+	// For the LivePhotoKit, we need to call the updateSize manually
+	// during CSS animations
+	//
+	var interval = setInterval(function () {
+		if (photo.isLivePhotoInitialized()) {
+			photo.livePhotosObject.updateSize();
+		}
+	}, pauseBetweenUpdated);
+
+	setTimeout(function () {
+		clearInterval(interval);
+	}, animationDuration);
+};
+
+/**
+ * @returns {boolean}
+ */
+photo.isLivePhotoInitialized = function () {
+	return !!photo.livePhotosObject;
+};
+
+/**
+ * @returns {void}
+ */
 photo.onresize = function () {
 	// Copy of view.photo.onresize
 	if (photo.json.size_variants.medium === null || photo.json.size_variants.medium2x === null) return;
 
 	var imgWidth = photo.json.size_variants.medium.width;
 	var imgHeight = photo.json.size_variants.medium.height;
-	var containerWidth = parseFloat($("#imageview").width(), 10);
-	var containerHeight = parseFloat($("#imageview").height(), 10);
+	var containerWidth = parseFloat($("#imageview").width());
+	var containerHeight = parseFloat($("#imageview").height());
 
 	var width = imgWidth < containerWidth ? imgWidth : containerWidth;
 	var height = width * imgHeight / imgWidth;
@@ -331,6 +432,11 @@ photo.onresize = function () {
 
 var contextMenu = {};
 
+/**
+ * @param {string} photoID
+ * @param {jQuery.Event} e
+ * @returns {void}
+ */
 contextMenu.sharePhoto = function (photoID, e) {
 	var iconClass = "ionicons";
 
@@ -347,6 +453,16 @@ contextMenu.sharePhoto = function (photoID, e) {
 	basicContext.show(items, e.originalEvent);
 };
 
+// Sub-implementation of photo -------------------------------------------------------------- //
+
+var album = {
+	json: null
+};
+
+album.isUploadable = function () {
+	return false;
+};
+
 // Main -------------------------------------------------------------- //
 
 var loadingBar = {
@@ -354,20 +470,21 @@ var loadingBar = {
 	hide: function hide() {}
 };
 
+/**
+ * @type {jQuery}
+ */
 var imageview = $("#imageview");
 
 $(document).ready(function () {
-	// set CSRF protection (Laravel)
-	csrf.bind();
-
 	// Image View
 	$(window).on("resize", photo.onresize);
 
 	// Save ID of photo
-	var photoID = gup("p");
+	var queryParams = new URLSearchParams(document.location.search);
+	var photoID = queryParams.get("p");
 
 	// Set API error handler
-	api.onError = error;
+	api.onError = handleAPIError;
 
 	// Share
 	header.dom("#button_share").on("click", function (e) {
@@ -383,22 +500,28 @@ $(document).ready(function () {
 	loadPhotoInfo(photoID);
 });
 
+/**
+ * TODO: This method is global for no particular reason. In case we ever clean up the view mode, this should be fixed, too.
+ * @param {string} photoID
+ */
 var loadPhotoInfo = function loadPhotoInfo(photoID) {
 	var params = {
-		photoID: photoID,
-		password: ""
+		photoID: photoID
 	};
 
-	api.post("Photo::get", params, function (data) {
+	api.post("Photo::get", params,
+	/** @param {Photo} data */
+	function (data) {
 		photo.json = data;
 
 		// Set title
-		if (!data.title) data.title = "Untitled";
-		document.title = "Lychee - " + data.title;
-		header.dom(".header__title").html(lychee.escapeHTML(data.title));
+		var _title = data.title ? data.title : lychee.locale["UNTITLED"];
+		// TODO: Actually the prefix should not be a hard-coded, but the value of `lychee.title`. However, I am unsure whether we load the configuration options in view mode.
+		document.title = "Lychee – " + _title;
+		header.dom(".header__title").text(_title);
 
 		// Render HTML
-		imageview.html(build.imageview(data, true).html);
+		imageview.html(build.imageview(data, true, false).html);
 		imageview.find(".arrow_wrapper").remove();
 		imageview.addClass("fadeIn").show();
 		photo.onresize();
@@ -422,15 +545,24 @@ var loadPhotoInfo = function loadPhotoInfo(photoID) {
 	});
 };
 
-var error = function error(errorThrown, params, data) {
-	console.error({
-		description: errorThrown,
+/**
+ * @param {XMLHttpRequest} jqXHR
+ * @param {Object} params the original JSON parameters of the request
+ * @param {?LycheeException} lycheeException the Lychee Exception
+ * @returns {boolean}
+ */
+var handleAPIError = function handleAPIError(jqXHR, params, lycheeException) {
+	var msg = jqXHR.statusText + (lycheeException ? " - " + lycheeException.message : "");
+	loadingBar.show("error", msg);
+	console.error("The server returned an error response", {
+		description: msg,
 		params: params,
-		response: data
+		response: lycheeException
 	});
-
-	loadingBar.show("error", errorThrown);
+	return true;
 };
+
+//noinspection HtmlUnknownTarget
 
 /**
  * @description This module is used to generate HTML-Code.
@@ -438,47 +570,55 @@ var error = function error(errorThrown, params, data) {
 
 var build = {};
 
+/**
+ * @param {string} icon
+ * @param {string} [classes=""]
+ *
+ * @returns {string}
+ */
 build.iconic = function (icon) {
 	var classes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
 
-	var html = "";
-
-	html += lychee.html(_templateObject, classes, icon);
-
-	return html;
+	return lychee.html(_templateObject, classes, icon);
 };
 
+/**
+ * @param {string} title
+ * @returns {string}
+ */
 build.divider = function (title) {
-	var html = "";
-
-	html += lychee.html(_templateObject2, title);
-
-	return html;
+	return lychee.html(_templateObject2, title);
 };
 
+/**
+ * @param {string} id
+ * @returns {string}
+ */
 build.editIcon = function (id) {
-	var html = "";
-
-	html += lychee.html(_templateObject3, id, build.iconic("pencil"));
-
-	return html;
+	return lychee.html(_templateObject3, id, build.iconic("pencil"));
 };
 
+/**
+ * @param {number} top
+ * @param {number} left
+ * @returns {string}
+ */
 build.multiselect = function (top, left) {
 	return lychee.html(_templateObject4, top, left);
 };
 
-// two additional images that are barely visible seems a bit overkill - use same image 3 times
-// if this simplification comes to pass data.types, data.thumbs and data.thumbs2x no longer need to be arrays
+/**
+ * Returns HTML for the thumb of an album.
+ *
+ * @param {(Album|TagAlbum)} data
+ *
+ * @returns {string}
+ */
 build.getAlbumThumb = function (data) {
-	var isVideo = void 0;
-	var isRaw = void 0;
-	var thumb = void 0;
-
-	isVideo = data.thumb.type && data.thumb.type.indexOf("video") > -1;
-	isRaw = data.thumb.type && data.thumb.type.indexOf("raw") > -1;
-	thumb = data.thumb.thumb;
-	var thumb2x = "";
+	var isVideo = data.thumb.type && data.thumb.type.indexOf("video") > -1;
+	var isRaw = data.thumb.type && data.thumb.type.indexOf("raw") > -1;
+	var thumb = data.thumb.thumb;
+	var thumb2x = data.thumb.thumb2x;
 
 	if (thumb === "uploads/thumb/" && isVideo) {
 		return "<span class=\"thumbimg\"><img src='img/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
@@ -487,11 +627,15 @@ build.getAlbumThumb = function (data) {
 		return "<span class=\"thumbimg\"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
 
-	thumb2x = data.thumb.thumb2x;
-
 	return "<span class=\"thumbimg" + (isVideo ? " video" : "") + "\"><img class='lazyload' src='img/placeholder.png' data-src='" + thumb + "' " + (thumb2x !== null ? "data-srcset='" + thumb2x + " 2x'" : "") + " alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 };
 
+/**
+ * @param {(Album|TagAlbum|SmartAlbum)} data
+ * @param {boolean}                     disabled
+ *
+ * @returns {string} HTML for the album
+ */
 build.album = function (data) {
 	var disabled = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
@@ -521,14 +665,13 @@ build.album = function (data) {
 			break;
 		case "oldstyle":
 		default:
-			if (lychee.sortingAlbums !== "" && data.min_taken_at && data.max_taken_at) {
-				var sortingAlbums = lychee.sortingAlbums.replace("ORDER BY ", "").split(" ");
-				if (sortingAlbums[0] === "max_taken_at" || sortingAlbums[0] === "min_taken_at") {
+			if (lychee.sorting_albums && data.min_taken_at && data.max_taken_at) {
+				if (lychee.sorting_albums.column === "max_taken_at" || lychee.sorting_albums.column === "min_taken_at") {
 					if (formattedMinTs !== "" && formattedMaxTs !== "") {
 						subtitle = formattedMinTs === formattedMaxTs ? formattedMaxTs : formattedMinTs + " - " + formattedMaxTs;
-					} else if (formattedMinTs !== "" && sortingAlbums[0] === "min_taken_at") {
+					} else if (formattedMinTs !== "" && lychee.sorting_albums.column === "min_taken_at") {
 						subtitle = formattedMinTs;
-					} else if (formattedMaxTs !== "" && sortingAlbums[0] === "max_taken_at") {
+					} else if (formattedMaxTs !== "" && lychee.sorting_albums.column === "max_taken_at") {
 						subtitle = formattedMaxTs;
 					}
 				}
@@ -539,10 +682,10 @@ build.album = function (data) {
 
 	if (album.isUploadable() && !disabled) {
 		var isCover = album.json && album.json.cover_id && data.thumb.id === album.json.cover_id;
-		html += lychee.html(_templateObject6, data.is_nsfw ? "badge--nsfw" : "", build.iconic("warning"), data.is_starred ? "badge--star" : "", build.iconic("star"), data.is_recent ? "badge--visible badge--list" : "", build.iconic("clock"), data.is_public ? "badge--visible" : "", data.requires_link ? "badge--hidden" : "badge--not--hidden", build.iconic("eye"), data.is_unsorted ? "badge--visible" : "", build.iconic("list"), data.has_password ? "badge--visible" : "", build.iconic("lock-locked"), data.is_tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
+		html += lychee.html(_templateObject6, data.is_nsfw ? "badge--nsfw" : "", build.iconic("warning"), data.id === SmartAlbumID.STARRED ? "badge--star" : "", build.iconic("star"), data.id === SmartAlbumID.RECENT ? "badge--visible badge--list" : "", build.iconic("clock"), data.id === SmartAlbumID.PUBLIC || data.is_public ? "badge--visible" : "", data.requires_link ? "badge--hidden" : "badge--not--hidden", build.iconic("eye"), data.id === SmartAlbumID.UNSORTED ? "badge--visible" : "", build.iconic("list"), data.has_password ? "badge--visible" : "", build.iconic("lock-locked"), data.is_tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
 
-	if (data.albums && data.albums.length > 0 || data.hasOwnProperty("has_albums") && data.has_albums === true) {
+	if (data.albums && data.albums.length > 0 || data.has_albums) {
 		html += lychee.html(_templateObject7, build.iconic("layers"));
 	}
 
@@ -551,13 +694,22 @@ build.album = function (data) {
 	return html;
 };
 
+/**
+ * @param {Photo}   data
+ * @param {boolean} disabled
+ *
+ * @returns {string} HTML for the photo
+ */
 build.photo = function (data) {
 	var disabled = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
 	var html = "";
 	var thumbnail = "";
 	var thumb2x = "";
-	var isCover = data.id === album.json.cover_id;
+	// Note, album.json might not be loaded, if
+	//  a) the photo is a single public photo in a private album
+	//  b) the photo is part of a search result
+	var isCover = album.json && album.json.cover_id === data.id;
 
 	var isVideo = data.type && data.type.indexOf("video") > -1;
 	var isRaw = data.type && data.type.indexOf("raw") > -1;
@@ -572,7 +724,7 @@ build.photo = function (data) {
 		} else if (isRaw) {
 			thumbnail = "<span class=\"thumbimg\"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false' data-tabindex='" + tabindex.get_next_tab_index() + "'></span>";
 		}
-	} else if (lychee.layout === "0") {
+	} else if (lychee.layout === 0) {
 		if (data.size_variants.thumb2x !== null) {
 			thumb2x = data.size_variants.thumb2x.url;
 		}
@@ -631,7 +783,14 @@ build.photo = function (data) {
 	html += "</div>";
 
 	if (album.isUploadable()) {
-		html += lychee.html(_templateObject11, data.is_starred ? "badge--star" : "", build.iconic("star"), data.is_public && !album.json.is_public ? "badge--visible badge--hidden" : "", build.iconic("eye"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
+		// Note, `album.json` might be null, if the photo is displayed as
+		// part of a search result and therefore the actual parent album
+		// is not loaded. (The "parent" album is the virtual "search album"
+		// in this case).
+		// This also means that the displayed variant of the public badge of
+		// a photo depends on the availability of the parent album.
+		// This seems to be an undesired but unavoidable side effect.
+		html += lychee.html(_templateObject11, data.is_starred ? "badge--star" : "", build.iconic("star"), data.is_public && album.json && !album.json.is_public ? "badge--visible badge--hidden" : "", build.iconic("eye"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
 
 	html += "</div>";
@@ -639,6 +798,13 @@ build.photo = function (data) {
 	return html;
 };
 
+/**
+ * @param {Photo} data
+ * @param {string} overlay_type
+ * @param {boolean} [next=false]
+ *
+ * @returns {string}
+ */
 build.check_overlay_type = function (data, overlay_type) {
 	var next = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
@@ -656,6 +822,10 @@ build.check_overlay_type = function (data, overlay_type) {
 	}
 };
 
+/**
+ * @param {Photo} data
+ * @returns {string}
+ */
 build.overlay_image = function (data) {
 	var overlay = "";
 	switch (build.check_overlay_type(data, lychee.image_overlay_type)) {
@@ -688,17 +858,23 @@ build.overlay_image = function (data) {
 			return "";
 	}
 
-	return lychee.html(_templateObject12, data.title) + (overlay !== "" ? "<p>" + overlay + "</p>" : "") + "\n\t\t</div>\n\t\t";
+	return lychee.html(_templateObject12, data.title ? data.title : lychee.locale["UNTITLED"]) + (overlay !== "" ? "<p>" + overlay + "</p>" : "") + "\n\t\t</div>\n\t\t";
 };
 
-build.imageview = function (data, visibleControls, autoplay) {
+/**
+ * @param {Photo} data
+ * @param {boolean} areControlsVisible
+ * @param {boolean} autoplay
+ * @returns {{thumb: string, html: string}}
+ */
+build.imageview = function (data, areControlsVisible, autoplay) {
 	var html = "";
 	var thumb = "";
 
 	if (data.type.indexOf("video") > -1) {
-		html += lychee.html(_templateObject13, visibleControls === true ? "" : "full", autoplay ? "autoplay" : "", tabindex.get_next_tab_index(), data.size_variants.original.url);
+		html += lychee.html(_templateObject13, areControlsVisible ? "" : "full", autoplay ? "autoplay" : "", tabindex.get_next_tab_index(), data.size_variants.original.url);
 	} else if (data.type.indexOf("raw") > -1 && data.size_variants.medium === null) {
-		html += lychee.html(_templateObject14, visibleControls === true ? "" : "full", tabindex.get_next_tab_index());
+		html += lychee.html(_templateObject14, areControlsVisible ? "" : "full", tabindex.get_next_tab_index());
 	} else {
 		var img = "";
 
@@ -707,7 +883,7 @@ build.imageview = function (data, visibleControls, autoplay) {
 
 			// See if we have the thumbnail loaded...
 			$(".photo").each(function () {
-				if ($(this).attr("data-id") && $(this).attr("data-id") == data.id) {
+				if ($(this).attr("data-id") && $(this).attr("data-id") === data.id) {
 					var thumbimg = $(this).find("img");
 					if (thumbimg.length > 0) {
 						thumb = thumbimg[0].currentSrc ? thumbimg[0].currentSrc : thumbimg[0].src;
@@ -722,9 +898,9 @@ build.imageview = function (data, visibleControls, autoplay) {
 				if (data.size_variants.medium2x !== null) {
 					medium = "srcset='" + data.size_variants.medium.url + " " + data.size_variants.medium.width + "w, " + data.size_variants.medium2x.url + " " + data.size_variants.medium2x.width + "w'";
 				}
-				img = "<img id='image' class='" + (visibleControls === true ? "" : "full") + "' src='" + data.size_variants.medium.url + "' " + medium + ("  draggable='false' alt='medium' data-tabindex='" + tabindex.get_next_tab_index() + "'>");
+				img = "<img id='image' class='" + (areControlsVisible ? "" : "full") + "' src='" + data.size_variants.medium.url + "' " + medium + ("  draggable='false' alt='medium' data-tabindex='" + tabindex.get_next_tab_index() + "'>");
 			} else {
-				img = "<img id='image' class='" + (visibleControls === true ? "" : "full") + "' src='" + data.size_variants.original.url + "' draggable='false' alt='big' data-tabindex='" + tabindex.get_next_tab_index() + "'>";
+				img = "<img id='image' class='" + (areControlsVisible ? "" : "full") + "' src='" + data.size_variants.original.url + "' draggable='false' alt='big' data-tabindex='" + tabindex.get_next_tab_index() + "'>";
 			}
 		} else {
 			if (data.size_variants.medium !== null) {
@@ -746,12 +922,16 @@ build.imageview = function (data, visibleControls, autoplay) {
 	return { html: html, thumb: thumb };
 };
 
-build.no_content = function (typ) {
+/**
+ * @param {string} type - either `"magnifying-glass"`, `"eye"`, `"cog"` or `"question-marks"`
+ * @returns {string}
+ */
+build.no_content = function (type) {
 	var html = "";
 
-	html += lychee.html(_templateObject16, build.iconic(typ));
+	html += lychee.html(_templateObject16, build.iconic(type));
 
-	switch (typ) {
+	switch (type) {
 		case "magnifying-glass":
 			html += lychee.html(_templateObject17, lychee.locale["VIEW_NO_RESULT"]);
 			break;
@@ -771,6 +951,11 @@ build.no_content = function (typ) {
 	return html;
 };
 
+/**
+ * @param {string}                                           title the title of the dialog
+ * @param {(FileList|File[]|DropboxFile[]|{name: string}[])} files a list of file entries to be shown in the dialog
+ * @returns {string}                                                the HTML fragment for the dialog
+ */
 build.uploadModal = function (title, files) {
 	var html = "";
 
@@ -793,30 +978,35 @@ build.uploadModal = function (title, files) {
 	return html;
 };
 
+/**
+ * Builds the HTML snippet for a row in the upload dialog.
+ *
+ * @param {string} name
+ * @returns {string}
+ */
 build.uploadNewFile = function (name) {
 	if (name.length > 40) {
-		name = name.substr(0, 17) + "..." + name.substr(name.length - 20, 20);
+		name = name.substring(0, 17) + "..." + name.substring(name.length - 20, name.length);
 	}
 
 	return lychee.html(_templateObject20, name);
 };
 
+/**
+ * @param {string[]} tags
+ * @returns {string}
+ */
 build.tags = function (tags) {
 	var html = "";
-	var editable = typeof album !== "undefined" ? album.isUploadable() : false;
+	var editable = album.isUploadable();
 
-	// Search is enabled if logged in (not publicMode) or public seach is enabled
-	var searchable = lychee.publicMode === false || lychee.public_search === true;
+	// Search is enabled if logged in (not publicMode) or public search is enabled
+	var searchable = !lychee.publicMode || lychee.public_search;
 
 	// build class_string for tag
-	var a_class = "tag";
-	if (searchable) {
-		a_class = a_class + " search";
-	}
+	var a_class = searchable ? "tag search" : "tag";
 
-	if (typeof tags === "string" && tags !== "") {
-		tags = tags.split(",");
-
+	if (tags.length !== 0) {
 		tags.forEach(function (tag, index) {
 			if (editable) {
 				html += lychee.html(_templateObject21, a_class, tag, index, build.iconic("x"));
@@ -831,12 +1021,18 @@ build.tags = function (tags) {
 	return html;
 };
 
+/**
+ * @param {User} user
+ * @returns {string}
+ */
 build.user = function (user) {
-	var html = lychee.html(_templateObject24, user.id, user.id, user.username, user.id, user.id);
-
-	return html;
+	return lychee.html(_templateObject24, user.id, user.id, user.username, user.id, user.id);
 };
 
+/**
+ * @param {WebAuthnCredential} credential
+ * @returns {string}
+ */
 build.u2f = function (credential) {
 	return lychee.html(_templateObject25, credential.id, credential.id, credential.id.slice(0, 30), credential.id);
 };
@@ -845,15 +1041,26 @@ build.u2f = function (credential) {
  * @description This module takes care of the header.
  */
 
+/**
+ * @namespace
+ * @property {jQuery} _dom
+ */
 var header = {
 	_dom: $(".header")
 };
 
+/**
+ * @param {?string} [selector=null]
+ * @returns {jQuery}
+ */
 header.dom = function (selector) {
 	if (selector == null || selector === "") return header._dom;
 	return header._dom.find(selector);
 };
 
+/**
+ * @returns {void}
+ */
 header.bind = function () {
 	// Event Name
 	var eventName = lychee.getEventName();
@@ -866,19 +1073,19 @@ header.bind = function () {
 		if (visible.photo()) contextMenu.photoTitle(album.getID(), photo.getID(), e);else contextMenu.albumTitle(album.getID(), e);
 	});
 
-	header.dom("#button_visibility").on(eventName, function (e) {
-		photo.setPublic(photo.getID(), e);
+	header.dom("#button_visibility").on(eventName, function () {
+		photo.setProtectionPolicy(photo.getID());
 	});
 	header.dom("#button_share").on(eventName, function (e) {
 		contextMenu.sharePhoto(photo.getID(), e);
 	});
 
-	header.dom("#button_visibility_album").on(eventName, function (e) {
-		album.setPublic(album.getID(), e);
+	header.dom("#button_visibility_album").on(eventName, function () {
+		album.setProtectionPolicy(album.getID());
 	});
 
-	header.dom("#button_sharing_album_users").on(eventName, function (e) {
-		album.shareUsers(album.getID(), e);
+	header.dom("#button_sharing_album_users").on(eventName, function () {
+		album.shareUsers(album.getID());
 	});
 
 	header.dom("#button_share_album").on(eventName, function (e) {
@@ -924,8 +1131,8 @@ header.bind = function () {
 	header.dom("#button_move_album").on(eventName, function (e) {
 		contextMenu.move([album.getID()], e, album.setAlbum, "ROOT", album.getParentID() != null);
 	});
-	header.dom("#button_nsfw_album").on(eventName, function (e) {
-		album.setNSFW(album.getID());
+	header.dom("#button_nsfw_album").on(eventName, function () {
+		album.toggleNSFW();
 	});
 	header.dom("#button_move").on(eventName, function (e) {
 		contextMenu.move([photo.getID()], e, photo.setAlbum);
@@ -943,7 +1150,7 @@ header.bind = function () {
 		album.getArchive([album.getID()]);
 	});
 	header.dom("#button_star").on(eventName, function () {
-		photo.setStar([photo.getID()]);
+		photo.toggleStar();
 	});
 	header.dom("#button_rotate_ccwise").on(eventName, function () {
 		photoeditor.rotate(photo.getID(), -1);
@@ -970,7 +1177,7 @@ header.bind = function () {
 	header.dom(".header__search").on("keyup click", function () {
 		if ($(this).val().length > 0) {
 			lychee.goto("search/" + encodeURIComponent($(this).val()));
-		} else if (search.hash !== null) {
+		} else if (search.json !== null) {
 			search.reset();
 		}
 	});
@@ -979,10 +1186,11 @@ header.bind = function () {
 	});
 
 	header.bind_back();
-
-	return true;
 };
 
+/**
+ * @returns {void}
+ */
 header.bind_back = function () {
 	// Event Name
 	var eventName = lychee.getEventName();
@@ -996,6 +1204,9 @@ header.bind_back = function () {
 	});
 };
 
+/**
+ * @returns {void}
+ */
 header.show = function () {
 	lychee.imageview.removeClass("full");
 	header.dom().removeClass("header--hidden");
@@ -1003,16 +1214,19 @@ header.show = function () {
 	tabindex.restoreSettings(header.dom());
 
 	photo.updateSizeLivePhotoDuringAnimation();
-
-	return true;
 };
 
+/**
+ * @returns {void}
+ */
 header.hideIfLivePhotoNotPlaying = function () {
 	// Hides the header, if current live photo is not playing
-	if (photo.isLivePhotoPlaying() == true) return false;
-	return header.hide();
+	if (!photo.isLivePhotoPlaying()) header.hide();
 };
 
+/**
+ * @returns {void}
+ */
 header.hide = function () {
 	if (visible.photo() && !visible.sidebar() && !visible.contextMenu() && basicModal.visible() === false) {
 		tabindex.saveSettings(header.dom());
@@ -1022,24 +1236,26 @@ header.hide = function () {
 		header.dom().addClass("header--hidden");
 
 		photo.updateSizeLivePhotoDuringAnimation();
-
-		return true;
 	}
-
-	return false;
 };
 
-header.setTitle = function () {
-	var title = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "Untitled";
-
+/**
+ * @param {string} title
+ * @returns {void}
+ */
+header.setTitle = function (title) {
 	var $title = header.dom(".header__title");
 	var html = lychee.html(_templateObject26, title, build.iconic("caret-bottom"));
 
 	$title.html(html);
-
-	return true;
 };
 
+/**
+ *
+ * @param {string} mode either one out of `"public"`, `"albums"`, `"album"`,
+ *                      `"photo"`, `"map"` or `"config"`
+ * @returns {void}
+ */
 header.setMode = function (mode) {
 	if (mode === "albums" && lychee.publicMode === true) mode = "public";
 
@@ -1076,7 +1292,7 @@ header.setMode = function (mode) {
 			if (lychee.active_focus_on_page_load) {
 				$("#button_signin").focus();
 			}
-			return true;
+			return;
 
 		case "albums":
 			header.dom().removeClass("header--view");
@@ -1097,7 +1313,7 @@ header.setMode = function (mode) {
 				tabindex.makeUnfocusable(_e5);
 			}
 
-			if (lychee.enable_button_add) {
+			if (lychee.enable_button_add && lychee.may_upload) {
 				var _e6 = $(".button_add", ".header__toolbar--albums");
 				_e6.show();
 				tabindex.makeFocusable(_e6);
@@ -1106,7 +1322,7 @@ header.setMode = function (mode) {
 				_e7.remove();
 			}
 
-			return true;
+			return;
 
 		case "album":
 			var albumID = album.getID();
@@ -1151,7 +1367,7 @@ header.setMode = function (mode) {
 				tabindex.makeUnfocusable(_e13);
 			}
 
-			if (albumID === "starred" || albumID === "public" || albumID === "recent") {
+			if (albumID === SmartAlbumID.STARRED || albumID === SmartAlbumID.PUBLIC || albumID === SmartAlbumID.RECENT) {
 				$("#button_nsfw_album, #button_info_album, #button_trash_album, #button_visibility_album, #button_sharing_album_users, #button_move_album").hide();
 				if (album.isUploadable()) {
 					$(".button_add, .header__divider", ".header__toolbar--album").show();
@@ -1161,7 +1377,7 @@ header.setMode = function (mode) {
 					tabindex.makeUnfocusable($(".button_add, .header__divider", ".header__toolbar--album"));
 				}
 				tabindex.makeUnfocusable($("#button_nsfw_album, #button_info_album, #button_trash_album, #button_visibility_album, #button_sharing_album_users, #button_move_album"));
-			} else if (albumID === "unsorted") {
+			} else if (albumID === SmartAlbumID.UNSORTED) {
 				$("#button_nsfw_album, #button_info_album, #button_visibility_album, #button_sharing_album_users, #button_move_album").hide();
 				$("#button_trash_album, .button_add, .header__divider", ".header__toolbar--album").show();
 				tabindex.makeFocusable($("#button_trash_album, .button_add, .header__divider", ".header__toolbar--album"));
@@ -1231,7 +1447,7 @@ header.setMode = function (mode) {
 				_e20.remove();
 			}
 
-			return true;
+			return;
 
 		case "photo":
 			header.dom().addClass("header--view");
@@ -1312,7 +1528,7 @@ header.setMode = function (mode) {
 				_e34 = $("#button_rotate_ccwise", ".header__toolbar--photo");
 				_e34.remove();
 			}
-			return true;
+			return;
 		case "map":
 			header.dom().removeClass("header--view");
 			header.dom(".header__toolbar--public, .header__toolbar--album, .header__toolbar--albums, .header__toolbar--photo, .header__toolbar--config").removeClass("header__toolbar--visible");
@@ -1320,26 +1536,27 @@ header.setMode = function (mode) {
 
 			tabindex.makeFocusable(header.dom(".header__toolbar--map"));
 			tabindex.makeUnfocusable(header.dom(".header__toolbar--public, .header__toolbar--album, .header__toolbar--albums, .header__toolbar--photo, .header__toolbar--config"));
-			return true;
+			return;
 		case "config":
 			header.dom().addClass("header--view");
 			header.dom(".header__toolbar--public, .header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map").removeClass("header__toolbar--visible");
 			header.dom(".header__toolbar--config").addClass("header__toolbar--visible");
-			return true;
+			return;
 	}
-
-	return false;
 };
 
-// Note that the pull-down menu is now enabled not only for editable
-// items but for all of public/albums/album/photo views, so 'editable' is a
-// bit of a misnomer at this point...
+/**
+ * Note that the pull-down menu is now enabled not only for editable
+ * items but for all of public/albums/album/photo views, so 'editable' is a
+ * bit of a misnomer at this point...
+ *
+ * @param {boolean} editable
+ * @returns {void}
+ */
 header.setEditable = function (editable) {
 	var $title = header.dom(".header__title");
 
 	if (editable) $title.addClass("header__title--editable");else $title.removeClass("header__title--editable");
-
-	return true;
 };
 
 /**
@@ -1348,72 +1565,75 @@ header.setEditable = function (editable) {
 
 var visible = {};
 
+/** @returns {boolean} */
 visible.albums = function () {
-	if (header.dom(".header__toolbar--public").hasClass("header__toolbar--visible")) return true;
-	if (header.dom(".header__toolbar--albums").hasClass("header__toolbar--visible")) return true;
-	return false;
+	return !!header.dom(".header__toolbar--public").hasClass("header__toolbar--visible") || !!header.dom(".header__toolbar--albums").hasClass("header__toolbar--visible");
 };
 
+/** @returns {boolean} */
 visible.album = function () {
-	if (header.dom(".header__toolbar--album").hasClass("header__toolbar--visible")) return true;
-	return false;
+	return !!header.dom(".header__toolbar--album").hasClass("header__toolbar--visible");
 };
 
+/** @returns {boolean} */
 visible.photo = function () {
-	if ($("#imageview.fadeIn").length > 0) return true;
-	return false;
+	return $("#imageview.fadeIn").length > 0;
 };
 
+/** @returns {boolean} */
 visible.mapview = function () {
-	if ($("#mapview.fadeIn").length > 0) return true;
-	return false;
+	return $("#mapview.fadeIn").length > 0;
 };
 
+/** @returns {boolean} */
 visible.config = function () {
-	if (header.dom(".header__toolbar--config").hasClass("header__toolbar--visible")) return true;
-	return false;
+	return !!header.dom(".header__toolbar--config").hasClass("header__toolbar--visible");
 };
 
+/** @returns {boolean} */
 visible.search = function () {
-	if (search.hash != null) return true;
-	return false;
+	return search.json !== null;
 };
 
+/** @returns {boolean} */
 visible.sidebar = function () {
-	if (sidebar.dom().hasClass("active") === true) return true;
-	return false;
+	return !!sidebar.dom().hasClass("active");
 };
 
+/** @returns {boolean} */
 visible.sidebarbutton = function () {
-	if (visible.photo()) return true;
-	if (visible.album() && $("#button_info_album:visible").length > 0) return true;
-	return false;
+	return visible.photo() || visible.album() && $("#button_info_album:visible").length > 0;
 };
 
+/** @returns {boolean} */
 visible.header = function () {
-	if (header.dom().hasClass("header--hidden") === true) return false;
-	return true;
+	return !header.dom().hasClass("header--hidden");
 };
 
+/** @returns {boolean} */
 visible.contextMenu = function () {
 	return basicContext.visible();
 };
 
+/** @returns {boolean} */
 visible.multiselect = function () {
-	if ($("#multiselect").length > 0) return true;
-	return false;
+	return $("#multiselect").length > 0;
 };
 
+/** @returns {boolean} */
 visible.leftMenu = function () {
-	if (leftMenu.dom().hasClass("leftMenu__visible")) return true;
-	return false;
+	return !!leftMenu.dom().hasClass("leftMenu__visible");
 };
 
 /**
  * @description This module takes care of the sidebar.
  */
 
+/**
+ * @namespace
+ */
 var sidebar = {
+	/** @type {jQuery} */
 	_dom: $(".sidebar"),
 	types: {
 		DEFAULT: 0,
@@ -1422,19 +1642,24 @@ var sidebar = {
 	createStructure: {}
 };
 
+/**
+ * @param {?string} [selector=null]
+ * @returns {jQuery}
+ */
 sidebar.dom = function (selector) {
 	if (selector == null || selector === "") return sidebar._dom;
-
 	return sidebar._dom.find(selector);
 };
 
+/**
+ * This function should be called after building and appending
+ * the sidebars content to the DOM.
+ * This function can be called multiple times, therefore
+ * event handlers should be removed before binding a new one.
+ *
+ * @returns {void}
+ */
 sidebar.bind = function () {
-	// This function should be called after building and appending
-	// the sidebars content to the DOM.
-	// This function can be called multiple times, therefore
-	// event handlers should be removed before binding a new one.
-
-	// Event Name
 	var eventName = lychee.getEventName();
 
 	sidebar.dom("#edit_title").off(eventName).on(eventName, function () {
@@ -1472,91 +1697,142 @@ sidebar.bind = function () {
 	sidebar.dom(".attr_location").off(eventName).on(eventName, function () {
 		sidebar.triggerSearch($(this).text());
 	});
-
-	return true;
 };
 
+/**
+ * @param {string} search_string
+ * @returns {void}
+ */
 sidebar.triggerSearch = function (search_string) {
-	// If public search is diabled -> do nothing
-	if (lychee.publicMode === true && !lychee.public_search) {
+	// If public search is disabled -> do nothing
+	if (lychee.publicMode && !lychee.public_search) {
 		// Do not display an error -> just do nothing to not confuse the user
 		return;
 	}
 
-	search.hash = null;
+	search.json = null;
 	// We're either logged in or public search is allowed
 	lychee.goto("search/" + encodeURIComponent(search_string));
 };
 
+/**
+ * @returns {boolean}
+ */
 sidebar.keepSidebarVisible = function () {
 	var v = sessionStorage.getItem("keepSidebarVisible");
 	return v !== null ? v === "true" : false;
 };
 
+/**
+ * @param {boolean} is_user_initiated - indicates if the user requested to
+ *                                      toggle and hence the new state shall
+ *                                      be saved in session storage
+ * @returns {void}
+ */
 sidebar.toggle = function (is_user_initiated) {
 	if (visible.sidebar() || visible.sidebarbutton()) {
 		header.dom(".button--info").toggleClass("active");
 		lychee.content.toggleClass("content--sidebar");
 		lychee.imageview.toggleClass("image--sidebar");
-		if (typeof view !== "undefined") view.album.content.justify();
+		if (typeof view !== "undefined") view.album.content.justify(album.json ? album.json.photos : []);
 		sidebar.dom().toggleClass("active");
 		photo.updateSizeLivePhotoDuringAnimation();
 
-		if (is_user_initiated) sessionStorage.setItem("keepSidebarVisible", visible.sidebar());
-
-		return true;
+		if (is_user_initiated) sessionStorage.setItem("keepSidebarVisible", visible.sidebar() ? "true" : "false");
 	}
-
-	return false;
 };
 
+/**
+ * Attributes/Values inside the sidebar are selectable by default.
+ * Selection needs to be deactivated to prevent an unwanted selection
+ * while using multiselect.
+ *
+ * @param {boolean} [selectable=true]
+ * @returns {void}
+ */
 sidebar.setSelectable = function () {
 	var selectable = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
-	// Attributes/Values inside the sidebar are selectable by default.
-	// Selection needs to be deactivated to prevent an unwanted selection
-	// while using multiselect.
-
-	if (selectable === true) sidebar.dom().removeClass("notSelectable");else sidebar.dom().addClass("notSelectable");
+	if (selectable) sidebar.dom().removeClass("notSelectable");else sidebar.dom().addClass("notSelectable");
 };
 
+/**
+ * @param {string} attr - selector of attribute without the `attr_` prefix
+ * @param {?string} value - a `null` value is replaced by the empty string
+ * @param {boolean} [dangerouslySetInnerHTML=false]
+ *
+ * @returns {void}
+ */
 sidebar.changeAttr = function (attr) {
 	var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
 	var dangerouslySetInnerHTML = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-	if (attr == null || attr === "") return false;
+	if (!attr) return;
+	if (!value) value = "";
 
-	// Set a default for the value
-	if (value === null) value = "";
-
+	// TODO: Don't use our home-brewed `escapeHTML` method; use `jQuery#text` instead
 	// Escape value
-	if (dangerouslySetInnerHTML === false) value = lychee.escapeHTML(value);
+	if (!dangerouslySetInnerHTML) value = lychee.escapeHTML(value);
 
-	// Set new value
 	sidebar.dom(".attr_" + attr).html(value);
-
-	return true;
 };
 
+/**
+ * @param {string} attr - selector of attribute without the `attr_` prefix
+ * @returns {void}
+ */
 sidebar.hideAttr = function (attr) {
 	sidebar.dom(".attr_" + attr).closest("tr").hide();
 };
 
+/**
+ * Converts integer seconds into "hours:minutes:seconds".
+ *
+ * TODO: Consider to make this method part of `lychee.locale`.
+ *
+ * @param {(number|string)} d
+ * @returns {string}
+ */
 sidebar.secondsToHMS = function (d) {
 	d = Number(d);
 	var h = Math.floor(d / 3600);
 	var m = Math.floor(d % 3600 / 60);
 	var s = Math.floor(d % 60);
 
-	return (h > 0 ? h.toString() + "h" : "") + (m > 0 ? m.toString() + "m" : "") + (s > 0 || h == 0 && m == 0 ? s.toString() + "s" : "");
+	return (h > 0 ? h.toString() + "h" : "") + (m > 0 ? m.toString() + "m" : "") + (s > 0 || h === 0 && m === 0 ? s.toString() + "s" : "");
 };
 
+/**
+ * @typedef Section
+ *
+ * @property {string}       title
+ * @property {number}       type
+ * @property {SectionRow[]} rows
+ */
+
+/**
+ * @typedef SectionRow
+ *
+ * @property {string}            title
+ * @property {string}            kind
+ * @property {(string|string[])} value
+ * @property {boolean}           [editable]
+ */
+
+/**
+ * @param {?Photo} data
+ * @returns {Section[]}
+ */
 sidebar.createStructure.photo = function (data) {
-	if (data == null || data === "") return false;
+	if (!data) return [];
 
 	var editable = typeof album !== "undefined" ? album.isUploadable() : false;
-	var exifHash = data.taken_at + data.make + data.model + data.shutter + data.aperture + data.focal + data.iso;
-	var locationHash = data.longitude + data.latitude + data.altitude;
+	var hasExif = !!data.taken_at || !!data.make || !!data.model || !!data.shutter || !!data.aperture || !!data.focal || !!data.iso;
+	// Attributes for geo-position are nullable floats.
+	// The geo-position 0°00'00'', 0°00'00'' at zero altitude is very unlikely
+	// but valid (it's south of the coast of Ghana in the Atlantic)
+	// So we must not calculate the sum and compare for zero.
+	var hasLocation = data.longitude !== null || data.latitude !== null || data.altitude !== null;
 	var structure = {};
 	var isPublic = "";
 	var isVideo = data.type && data.type.indexOf("video") > -1;
@@ -1603,7 +1879,7 @@ sidebar.createStructure.photo = function (data) {
 	structure.image = {
 		title: lychee.locale[isVideo ? "PHOTO_VIDEO" : "PHOTO_IMAGE"],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["PHOTO_SIZE"], kind: "size", value: lychee.locale.printFilesizeLocalized(data.filesize) }, { title: lychee.locale["PHOTO_FORMAT"], kind: "type", value: data.type }, {
+		rows: [{ title: lychee.locale["PHOTO_SIZE"], kind: "size", value: lychee.locale.printFilesizeLocalized(data.size_variants.original.filesize) }, { title: lychee.locale["PHOTO_FORMAT"], kind: "type", value: data.type }, {
 			title: lychee.locale["PHOTO_RESOLUTION"],
 			kind: "resolution",
 			value: data.size_variants.original.width + " x " + data.size_variants.original.height
@@ -1619,17 +1895,19 @@ sidebar.createStructure.photo = function (data) {
 		// We overload the database, storing duration (in full seconds) in
 		// "aperture" and frame rate (floating point with three digits after
 		// the decimal point) in "focal".
-		if (data.aperture != "") {
+		if (data.aperture) {
 			structure.image.rows.push({ title: lychee.locale["PHOTO_DURATION"], kind: "duration", value: sidebar.secondsToHMS(data.aperture) });
 		}
-		if (data.focal != "") {
+		if (data.focal) {
 			structure.image.rows.push({ title: lychee.locale["PHOTO_FPS"], kind: "fps", value: data.focal + " fps" });
 		}
 	}
 
 	// Always create tags section - behaviour for editing
-	//tags handled when contructing the html code for tags
+	// tags handled when constructing the html code for tags
 
+	// TODO: IDE warns, that `value` is not property and `rows` is missing; the tags should actually be stored in a row for consistency
+	// TODO: Consider to NOT call `build.tags` here, but simply pass the plain JSON. `build.tags` should be called in `sidebar.render` below
 	structure.tags = {
 		title: lychee.locale["PHOTO_TAGS"],
 		type: sidebar.types.TAGS,
@@ -1638,7 +1916,7 @@ sidebar.createStructure.photo = function (data) {
 	};
 
 	// Only create EXIF section when EXIF data available
-	if (exifHash !== "") {
+	if (hasExif) {
 		structure.exif = {
 			title: lychee.locale["PHOTO_CAMERA"],
 			type: sidebar.types.DEFAULT,
@@ -1660,7 +1938,7 @@ sidebar.createStructure.photo = function (data) {
 		rows: [{ title: lychee.locale["PHOTO_LICENSE"], kind: "license", value: license, editable: editable }]
 	};
 
-	if (locationHash !== "" && locationHash !== 0) {
+	if (hasLocation) {
 		structure.location = {
 			title: lychee.locale["PHOTO_LOCATION"],
 			type: sidebar.types.DEFAULT,
@@ -1677,10 +1955,18 @@ sidebar.createStructure.photo = function (data) {
 			{
 				title: lychee.locale["PHOTO_ALTITUDE"],
 				kind: "altitude",
-				value: data.altitude ? (Math.round(parseFloat(data.altitude) * 10) / 10).toString() + "m" : ""
-			}, { title: lychee.locale["PHOTO_LOCATION"], kind: "location", value: data.location ? data.location : "" }]
+				value: data.altitude ? (Math.round(data.altitude * 10) / 10).toString() + "m" : ""
+			}, {
+				title: lychee.locale["PHOTO_LOCATION"],
+				kind: "location",
+				// Explode location string into an array to keep street, city etc. separate
+				// TODO: We should consider to keep the components apart on the server-side and send an structured object to the front-end.
+				value: data.location ? data.location.split(",").map(function (item) {
+					return item.trim();
+				}) : ""
+			}]
 		};
-		if (data.img_direction) {
+		if (data.img_direction !== null) {
 			// No point in display sub-degree precision.
 			structure.location.rows.push({
 				title: lychee.locale["PHOTO_IMGDIRECTION"],
@@ -1702,10 +1988,12 @@ sidebar.createStructure.photo = function (data) {
 	return structure_ret;
 };
 
-sidebar.createStructure.album = function (album) {
-	var data = album.json;
-
-	if (data == null || data === "") return false;
+/**
+ * @param {(Album|TagAlbum|SmartAlbum)} data
+ * @returns {Section[]}
+ */
+sidebar.createStructure.album = function (data) {
+	if (!data) return [];
 
 	var editable = album.isUploadable();
 	var structure = {};
@@ -1731,10 +2019,10 @@ sidebar.createStructure.album = function (album) {
 	}
 
 	if (!lychee.publicMode) {
-		if (data.sorting_col === null) {
+		if (!data.sorting) {
 			sorting = lychee.locale["DEFAULT"];
 		} else {
-			sorting = data.sorting_col + " " + data.sorting_order;
+			sorting = data.sorting.column + " " + data.sorting.order;
 		}
 	}
 
@@ -1748,12 +2036,10 @@ sidebar.createStructure.album = function (album) {
 		structure.basics.rows.push({ title: lychee.locale["ALBUM_SHOW_TAGS"], kind: "showtags", value: data.show_tags, editable: editable });
 	}
 
-	var videoCount = 0;
-	$.each(data.photos, function () {
-		if (this.type && this.type.indexOf("video") > -1) {
-			videoCount++;
-		}
-	});
+	var videoCount = data.photos.reduce(function (count, photo) {
+		return count + (photo.type.indexOf("video") > -1) ? 1 : 0;
+	}, 0);
+
 	structure.album = {
 		title: lychee.locale["ALBUM_ALBUM"],
 		type: sidebar.types.DEFAULT,
@@ -1781,7 +2067,7 @@ sidebar.createStructure.album = function (album) {
 		rows: [{ title: lychee.locale["ALBUM_PUBLIC"], kind: "public", value: isPublic }, { title: lychee.locale["ALBUM_HIDDEN"], kind: "hidden", value: requiresLink }, { title: lychee.locale["ALBUM_DOWNLOADABLE"], kind: "downloadable", value: isDownloadable }, { title: lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE"], kind: "share_button_visible", value: isShareButtonVisible }, { title: lychee.locale["ALBUM_PASSWORD"], kind: "password", value: hasPassword }]
 	};
 
-	if (data.owner_name != null) {
+	if (data.owner_name) {
 		structure.share.rows.push({ title: lychee.locale["ALBUM_OWNER"], kind: "owner", value: data.owner_name });
 	}
 
@@ -1800,13 +2086,15 @@ sidebar.createStructure.album = function (album) {
 	return structure_ret;
 };
 
+/**
+ * @param {Section[]} structure
+ * @returns {boolean} - true if the passed structure contains a "location" section
+ */
 sidebar.has_location = function (structure) {
-	if (structure == null || structure === "" || structure === false) return false;
-
 	var _has_location = false;
 
 	structure.forEach(function (section) {
-		if (section.title == lychee.locale["PHOTO_LOCATION"]) {
+		if (section.title === lychee.locale["PHOTO_LOCATION"]) {
 			_has_location = true;
 		}
 	});
@@ -1814,42 +2102,33 @@ sidebar.has_location = function (structure) {
 	return _has_location;
 };
 
+/**
+ * @param {Section[]} structure
+ * @returns {string} - HTML
+ */
 sidebar.render = function (structure) {
-	if (structure == null || structure === "" || structure === false) return false;
-
-	var html = "";
-
+	/**
+  * @param {Section} section
+  * @returns {string}
+  */
 	var renderDefault = function renderDefault(section) {
-		var _html = "";
+		var _html = "\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>" + section.title + "</h1>\n\t\t\t\t </div>\n\t\t\t\t <table>\n\t\t\t\t ";
 
-		_html += "\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>" + section.title + "</h1>\n\t\t\t\t </div>\n\t\t\t\t <table>\n\t\t\t\t ";
-
-		if (section.title == lychee.locale["PHOTO_LOCATION"]) {
-			var _has_latitude = false;
-			var _has_longitude = false;
-
-			section.rows.forEach(function (row, index, object) {
-				if (row.kind == "latitude" && row.value !== "") {
-					_has_latitude = true;
-				}
-
-				if (row.kind == "longitude" && row.value !== "") {
-					_has_longitude = true;
-				}
-
-				// Do not show location is not enabled
-				if (row.kind == "location" && (lychee.publicMode === true && !lychee.location_show_public || !lychee.location_show)) {
-					object.splice(index, 1);
-				} else {
-					// Explode location string into an array to keep street, city etc separate
-					if (!(row.value === "" || row.value == null)) {
-						section.rows[index].value = row.value.split(",").map(function (item) {
-							return item.trim();
-						});
-					}
-				}
+		if (section.title === lychee.locale["PHOTO_LOCATION"]) {
+			var _has_latitude = section.rows.findIndex(function (row) {
+				return row.kind === "latitude" && row.value;
+			}) !== -1;
+			var _has_longitude = section.rows.findIndex(function (row) {
+				return row.kind === "longitude" && row.value;
+			}) !== -1;
+			var idxLocation = section.rows.findIndex(function (row) {
+				return row.kind === "location";
 			});
-
+			// Do not show location if not enabled
+			if (idxLocation !== -1 && (lychee.publicMode === true && !lychee.location_show_public || !lychee.location_show)) {
+				section.rows.splice(idxLocation, 1);
+			}
+			// Show map if we have coordinates
 			if (_has_latitude && _has_longitude && lychee.map_display) {
 				_html += "\n\t\t\t\t\t\t <div id=\"leaflet_map_single_photo\"></div>\n\t\t\t\t\t\t ";
 			}
@@ -1858,21 +2137,22 @@ sidebar.render = function (structure) {
 		section.rows.forEach(function (row) {
 			var value = row.value;
 
-			// show only Exif rows which have a value or if its editable
+			// show only rows which have a value or are editable
 			if (!(value === "" || value == null) || row.editable === true) {
 				// Wrap span-element around value for easier selecting on change
 				if (Array.isArray(row.value)) {
-					value = "";
-					row.value.forEach(function (v) {
-						if (v === "" || v == null) {
-							return;
-						}
+					value = row.value.reduce(
+					/**
+      * @param {string} prev
+      * @param {string} cur
+      */
+					function (prev, cur) {
 						// Add separator if needed
-						if (value !== "") {
-							value += lychee.html(_templateObject27, row.kind);
+						if (prev !== "") {
+							prev += lychee.html(_templateObject27, row.kind);
 						}
-						value += lychee.html(_templateObject28, row.kind, v);
-					});
+						return prev + lychee.html(_templateObject28, row.kind, cur);
+					}, "");
 				} else {
 					value = lychee.html(_templateObject29, row.kind, value);
 				}
@@ -1889,10 +2169,15 @@ sidebar.render = function (structure) {
 		return _html;
 	};
 
+	/**
+  * @param {Section} section
+  * @returns {string}
+  */
 	var renderTags = function renderTags(section) {
 		var _html = "";
 		var editable = "";
 
+		// TODO: IDE warns me that the `Section` has no properties `editable` nor `value`; cause of the problem is that the section `tags` is built differently, see above
 		// Add edit-icon to the value when editable
 		if (section.editable === true) editable = build.editIcon("edit_tags");
 
@@ -1901,6 +2186,8 @@ sidebar.render = function (structure) {
 		return _html;
 	};
 
+	var html = "";
+
 	structure.forEach(function (section) {
 		if (section.type === sidebar.types.DEFAULT) html += renderDefault(section);else if (section.type === sidebar.types.TAGS) html += renderTags(section);
 	});
@@ -1908,22 +2195,29 @@ sidebar.render = function (structure) {
 	return html;
 };
 
+/**
+ * Converts a decimal degree into integer degree, minutes and seconds.
+ *
+ * TODO: Consider to make this method part of `lychee.locale`.
+ *
+ * @param {number}  decimal
+ * @param {boolean} type    - indicates if the passed decimal indicates a
+ *                            latitude (`true`) or a longitude (`false`)
+ * @returns {string}
+ */
 function DecimalToDegreeMinutesSeconds(decimal, type) {
+	var d = Math.abs(decimal);
 	var degrees = 0;
 	var minutes = 0;
 	var seconds = 0;
 	var direction = void 0;
 
-	//decimal must be integer or float no larger than 180;
-	//type must be Boolean
-	if (Math.abs(decimal) > 180 || typeof type !== "boolean") {
-		return false;
+	// absolute value of decimal must be smaller than 180;
+	if (d > 180) {
+		return "";
 	}
 
-	//inputs OK, proceed
-	//type is latitude when true, longitude when false
-
-	//set direction; north assumed
+	// set direction; north assumed
 	if (type && decimal < 0) {
 		direction = "S";
 	} else if (!type && decimal < 0) {
@@ -1933,9 +2227,6 @@ function DecimalToDegreeMinutesSeconds(decimal, type) {
 	} else {
 		direction = "N";
 	}
-
-	//get absolute value of decimal
-	var d = Math.abs(decimal);
 
 	//get degrees
 	degrees = Math.floor(d);
@@ -1956,23 +2247,44 @@ function DecimalToDegreeMinutesSeconds(decimal, type) {
  * @description This module takes care of the map view of a full album and its sub-albums.
  */
 
+/**
+ * @typedef MapProvider
+ * @property {string} layer - URL pattern for map tile
+ * @property {string} attribution - HTML with attribution
+ */
+
 var map_provider_layer_attribution = {
+	/**
+  * @type {MapProvider}
+  */
 	Wikimedia: {
 		layer: "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png",
 		attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>'
 	},
+	/**
+  * @type {MapProvider}
+  */
 	"OpenStreetMap.org": {
 		layer: "https://{s}.tile.osm.org/{z}/{x}/{y}.png",
 		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
 	},
+	/**
+  * @type {MapProvider}
+  */
 	"OpenStreetMap.de": {
 		layer: "https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png ",
 		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
 	},
+	/**
+  * @type {MapProvider}
+  */
 	"OpenStreetMap.fr": {
 		layer: "https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png ",
 		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
 	},
+	/**
+  * @type {MapProvider}
+  */
 	RRZE: {
 		layer: "https://{s}.osm.rrze.fau.de/osmhd/{z}/{x}/{y}.png",
 		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -1980,47 +2292,80 @@ var map_provider_layer_attribution = {
 };
 
 var mapview = {
+	/** @type {?L.Map} */
 	map: null,
 	photoLayer: null,
+	/** @type {?number} */
 	min_lat: null,
+	/** @type {?number} */
 	min_lng: null,
+	/** @type {?number} */
 	max_lat: null,
+	/** @type {?number} */
 	max_lng: null,
+	/** @type {?string} */
 	albumID: null,
+	/** @type {?string} */
 	map_provider: null
 };
 
+/**
+ * @typedef MapPhotoEntry
+ *
+ * @property {number} [lat] - latitude
+ * @property {number} [lng] - longitude
+ * @property {string} [thumbnail] - URL to the thumbnail
+ * @property {string} [thumbnail2x] - URL to the high-res thumbnail
+ * @property {string} url - URL to the small size-variant; quite a misnomer
+ * @property {string} url2x - URL to the small, high-res size-variant; quite a misnomer
+ * @property {string} name - the title of the photo
+ * @property {string} taken_at - the takedate of the photo, formatted as a locale string
+ * @property {string} albumID - the album ID
+ * @property {string} photoID - the photo ID
+ */
+
+/**
+ * @returns {boolean}
+ */
 mapview.isInitialized = function () {
-	if (mapview.map === null || mapview.photoLayer === null) {
-		return false;
-	}
-	return true;
+	return !(mapview.map === null || mapview.photoLayer === null);
 };
 
+/**
+ * @param {?string} _albumID
+ * @param {string} _albumTitle
+ *
+ * @returns {void}
+ */
 mapview.title = function (_albumID, _albumTitle) {
 	switch (_albumID) {
-		case "f":
+		case SmartAlbumID.STARRED:
 			lychee.setTitle(lychee.locale["STARRED"], false);
 			break;
-		case "s":
+		case SmartAlbumID.PUBLIC:
 			lychee.setTitle(lychee.locale["PUBLIC"], false);
 			break;
-		case "r":
+		case SmartAlbumID.RECENT:
 			lychee.setTitle(lychee.locale["RECENT"], false);
 			break;
-		case "0":
+		case SmartAlbumID.UNSORTED:
 			lychee.setTitle(lychee.locale["UNSORTED"], false);
 			break;
 		case null:
 			lychee.setTitle(lychee.locale["ALBUMS"], false);
 			break;
 		default:
-			lychee.setTitle(_albumTitle, false);
+			lychee.setTitle(_albumTitle ? _albumTitle : lychee.locale["UNTITLED"], false);
 			break;
 	}
 };
 
-// Open the map view
+/**
+ * Opens the map view
+ *
+ * @param {?string} [albumID=null]
+ * @returns {void}
+ */
 mapview.open = function () {
 	var albumID = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
@@ -2037,8 +2382,8 @@ mapview.open = function () {
 	mapview.albumID = albumID;
 
 	// initialize container only once
-	if (mapview.isInitialized() == false) {
-		// Leaflet seaches for icon in same directoy as js file -> paths needs
+	if (!mapview.isInitialized()) {
+		// Leaflet searches for icon in same directory as js file -> paths need
 		// to be overwritten
 		delete L.Icon.Default.prototype._getIconUrl;
 		L.Icon.Default.mergeOptions({
@@ -2081,6 +2426,7 @@ mapview.open = function () {
 
 	// Define how the photos on the map should look like
 	mapview.photoLayer = L.photo.cluster().on("click", function (e) {
+		/** @type {MapPhotoEntry} */
 		var photo = {
 			photoID: e.layer.photo.photoID,
 			albumID: e.layer.photo.albumID,
@@ -2114,18 +2460,24 @@ mapview.open = function () {
 		}
 	};
 
-	// Adds photos to the map
+	/**
+  * Adds photos to the map.
+  *
+  * @param {(Album|TagAlbum|PositionData)} album
+  */
 	var addPhotosToMap = function addPhotosToMap(album) {
 		// check if empty
 		if (!album.photos) return;
 
+		/** @type {MapPhotoEntry[]} */
 		var photos = [];
 
-		album.photos.forEach(function (element, index) {
+		album.photos.forEach(
+		/** @param {Photo} element */function (element) {
 			if (element.latitude || element.longitude) {
 				photos.push({
-					lat: parseFloat(element.latitude),
-					lng: parseFloat(element.longitude),
+					lat: element.latitude,
+					lng: element.longitude,
 					thumbnail: element.size_variants.thumb !== null ? element.size_variants.thumb.url : "img/placeholder.png",
 					thumbnail2x: element.size_variants.thumb2x !== null ? element.size_variants.thumb2x.url : null,
 					url: element.size_variants.small !== null ? element.size_variants.small.url : element.url,
@@ -2138,16 +2490,16 @@ mapview.open = function () {
 
 				// Update min/max lat/lng
 				if (mapview.min_lat === null || mapview.min_lat > element.latitude) {
-					mapview.min_lat = parseFloat(element.latitude);
+					mapview.min_lat = element.latitude;
 				}
 				if (mapview.min_lng === null || mapview.min_lng > element.longitude) {
-					mapview.min_lng = parseFloat(element.longitude);
+					mapview.min_lng = element.longitude;
 				}
 				if (mapview.max_lat === null || mapview.max_lat < element.latitude) {
-					mapview.max_lat = parseFloat(element.latitude);
+					mapview.max_lat = element.latitude;
 				}
 				if (mapview.max_lng === null || mapview.max_lng < element.longitude) {
-					mapview.max_lng = parseFloat(element.longitude);
+					mapview.max_lng = element.longitude;
 				}
 			}
 		});
@@ -2159,29 +2511,37 @@ mapview.open = function () {
 		updateZoom();
 	};
 
-	// Call backend, retrieve information of photos and display them
-	// This function is called recursively to retrieve data for sub-albums
-	// Possible enhancement could be to only have a single ajax call
+	/**
+  * Calls backend, retrieves information about photos and displays them.
+  *
+  * This function is called recursively to retrieve data for sub-albums.
+  * Possible enhancement could be to only have a single ajax call.
+  *
+  * @param {?string} _albumID
+  * @param {boolean} [_includeSubAlbums=true]
+  */
 	var getAlbumData = function getAlbumData(_albumID) {
 		var _includeSubAlbums = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
+		/**
+   * @param {PositionData} data
+   */
+		var successHandler = function successHandler(data) {
+			addPhotosToMap(data);
+			mapview.title(_albumID, data.title);
+		};
+
 		if (_albumID !== "" && _albumID !== null) {
 			// _albumID has been specified
-			var _params = {
+			var params = {
 				albumID: _albumID,
 				includeSubAlbums: _includeSubAlbums
 			};
 
-			api.post("Album::getPositionData", _params, function (data) {
-				addPhotosToMap(data);
-				mapview.title(_albumID, data.title);
-			});
+			api.post("Album::getPositionData", params, successHandler);
 		} else {
 			// AlbumID is empty -> fetch all photos of all albums
-			api.post("Albums::getPositionData", {}, function (data) {
-				addPhotosToMap(data);
-				mapview.title(_albumID, data.title);
-			});
+			api.post("Albums::getPositionData", {}, successHandler);
 		}
 	};
 
@@ -2198,6 +2558,9 @@ mapview.open = function () {
 	updateZoom();
 };
 
+/**
+ * @returns {void}
+ */
 mapview.close = function () {
 	// If map functionality is disabled -> do nothing
 	if (!lychee.map_display) return;
@@ -2206,10 +2569,14 @@ mapview.close = function () {
 	$("#mapview").hide();
 	header.setMode("album");
 
-	// Make album focussable
+	// Make album focusable
 	tabindex.makeFocusable(lychee.content);
 };
 
+/**
+ * @param {jQuery} elem
+ * @returns {void}
+ */
 mapview.goto = function (elem) {
 	// If map functionality is disabled -> do nothing
 	if (!lychee.map_display) return;
@@ -2217,14 +2584,17 @@ mapview.goto = function (elem) {
 	var photoID = elem.attr("data-id");
 	var albumID = elem.attr("data-album-id");
 
-	if (albumID == "null") albumID = 0;
-
-	if (album.json == null || albumID !== album.json.id) {
-		album.refresh();
-	}
+	if (albumID === "null") albumID = "unsorted";
 
 	lychee.goto(albumID + "/" + photoID);
 };
+
+/**
+ * @typedef {Object.<string, string>} Locale
+ * @property {function} printFilesizeLocalized
+ * @property {function} printDateTime
+ * @property {function} printMonthYear
+ */
 
 lychee.locale = {
 	USERNAME: "username",
@@ -2325,7 +2695,7 @@ lychee.locale = {
 	NEW_TAG_ALBUM: "New Tag Album",
 
 	TITLE_NEW_ALBUM: "Enter a title for the new album:",
-	UNTITLED: "Untilted",
+	UNTITLED: "Untitled",
 	UNSORTED: "Unsorted",
 	STARRED: "Starred",
 	RECENT: "Recent",
@@ -2337,7 +2707,9 @@ lychee.locale = {
 
 	STAR_PHOTO: "Star Photo",
 	STAR: "Star",
-	STAR_ALL: "Star All",
+	UNSTAR: "Unstar",
+	STAR_ALL: "Star Selected",
+	UNSTAR_ALL: "Unstar Selected",
 	TAGS: "Tags",
 	TAGS_ALL: "Tags All",
 	UNSTAR_PHOTO: "Unstar Photo",
@@ -2615,7 +2987,7 @@ lychee.locale = {
 	LOCATION_SHOW_PUBLIC: "Show location name for public mode",
 
 	NSFW_VISIBLE_TEXT_1: "Make Sensitive albums visible by default.",
-	NSFW_VISIBLE_TEXT_2: "If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <hkb>H</hkb></b>.",
+	NSFW_VISIBLE_TEXT_2: "If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <kbd>H</kbd></b>.",
 	SETTINGS_SUCCESS_NSFW_VISIBLE: "Default sensitive album visibility updated with success.",
 
 	VIEW_NO_RESULT: "No results",
@@ -2674,10 +3046,9 @@ lychee.locale = {
 	/**
   * Formats a number representing a filesize in bytes as a localized string
   * @param {!number} filesize
-  * @return {string} A formatted and localized string
+  * @returns {string} A formatted and localized string
   */
 	printFilesizeLocalized: function printFilesizeLocalized(filesize) {
-		console.assert(Number.isInteger(filesize), "printFilesizeLocalized: expected integer, got %s", typeof filesize === "undefined" ? "undefined" : _typeof(filesize));
 		var suffix = [" B", " kB", " MB", " GB"];
 		var i = 0;
 		// Sic! We check if the number is larger than 1000 but divide by 1024 by intention
@@ -2713,7 +3084,7 @@ lychee.locale = {
   * and 14:24:13 for French/German).
   *
   * @param {?string} jsonDateTime
-  * @return {string} A formatted and localized time
+  * @returns {string} A formatted and localized time
   */
 	printDateTime: function printDateTime(jsonDateTime) {
 		if (typeof jsonDateTime !== "string" || jsonDateTime === "") return "";
@@ -2763,7 +3134,7 @@ lychee.locale = {
   * "Aug 2020" in English or "Août 2020" in French).
   *
   * @param {?string} jsonDateTime
-  * @return {string} A formatted and localized month and year
+  * @returns {string} A formatted and localized month and year
   */
 	printMonthYear: function printMonthYear(jsonDateTime) {
 		if (typeof jsonDateTime !== "string" || jsonDateTime === "") return "";
@@ -2782,17 +3153,29 @@ var tabindex = {
 	next_tab_index: 100
 };
 
+/**
+ * @param {jQuery} elem
+ * @returns {void}
+ */
 tabindex.saveSettings = function (elem) {
 	if (!lychee.enable_tabindex) return;
 
 	// Todo: Make shorter notation
 	// Get all elements which have a tabindex
-	var tmp = $(elem).find("[tabindex]");
+	// TODO @Hallenser: What did you intended by the TODO above? It seems as if the jQuery selector is already as short as possible?
+	var tmp = elem.find("[tabindex]");
 
-	// iterate over all elements and set tabindex to stored value (i.e. make is not focussable)
-	tmp.each(function (i, e) {
+	// iterate over all elements and set tabindex to stored value (i.e. make is not focusable)
+	tmp.each(
+	/**
+  * @param {number} i - the index
+  * @param {Element} e - the HTML element
+  * @this {Element} - identical to `e`
+  */
+	function (i, e) {
 		// TODO: shorter notation
-		a = $(e).attr("tabindex");
+		// TODO @Hallenser: What do you intended by the TODO `short notation`? Moreover: Why do we use `this` and `e`? They refer to the identical instance of a HTML element.
+		var a = $(e).attr("tabindex");
 		$(this).data("tabindex-saved", a);
 	});
 };
@@ -2800,29 +3183,47 @@ tabindex.saveSettings = function (elem) {
 tabindex.restoreSettings = function (elem) {
 	if (!lychee.enable_tabindex) return;
 
-	// Todo: Make shorter noation
+	// Todo: Make shorter notation
 	// Get all elements which have a tabindex
+	// TODO @Hallenser: What did you intended by the TODO above? It seems as if the jQuery selector is already as short as possible?
 	var tmp = $(elem).find("[tabindex]");
 
 	// iterate over all elements and set tabindex to stored value (i.e. make is not focussable)
-	tmp.each(function (i, e) {
+	tmp.each(
+	/**
+  * @param {number} i - the index
+  * @param {Element} e - the HTML element
+  * @this {Element} - identical to `e`
+  */
+	function (i, e) {
 		// TODO: shorter notation
-		a = $(e).data("tabindex-saved");
+		// TODO @Hallenser: What do you intended by the TODO `short notation`? Moreover: Why do we use `this` and `e`? They refer to the identical instance of a HTML element.
+		var a = $(e).data("tabindex-saved");
 		$(e).attr("tabindex", a);
 	});
 };
 
+/**
+ * @param {jQuery} elem
+ * @param {boolean} [saveFocusElement=false]
+ * @returns {void}
+ */
 tabindex.makeUnfocusable = function (elem) {
 	var saveFocusElement = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
 	if (!lychee.enable_tabindex) return;
 
-	// Todo: Make shorter noation
+	// Todo: Make shorter notation
 	// Get all elements which have a tabindex
-	var tmp = $(elem).find("[tabindex]");
+	var tmp = elem.find("[tabindex]");
 
 	// iterate over all elements and set tabindex to -1 (i.e. make is not focussable)
-	tmp.each(function (i, e) {
+	tmp.each(
+	/**
+  * @param {number} i - the index
+  * @param {Element} e - the HTML element
+  */
+	function (i, e) {
 		$(e).attr("tabindex", "-1");
 		// Save which element had focus before we make it unfocusable
 		if (saveFocusElement && $(e).is(":focus")) {
@@ -2833,22 +3234,32 @@ tabindex.makeUnfocusable = function (elem) {
 	});
 
 	// Disable input fields
-	$(elem).find("input").attr("disabled", "disabled");
+	elem.find("input").attr("disabled", "disabled");
 };
 
+/**
+ * @param {jQuery} elem
+ * @param {boolean} [restoreFocusElement=false]
+ * @returns {void}
+ */
 tabindex.makeFocusable = function (elem) {
 	var restoreFocusElement = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
 	if (!lychee.enable_tabindex) return;
 
-	// Todo: Make shorter noation
+	// Todo: Make shorter notation
 	// Get all elements which have a tabindex
-	var tmp = $(elem).find("[data-tabindex]");
+	var tmp = elem.find("[data-tabindex]");
 
-	// iterate over all elements and set tabindex to stored value (i.e. make is not focussable)
-	tmp.each(function (i, e) {
+	// iterate over all elements and set tabindex to stored value
+	tmp.each(
+	/**
+  * @param {number} i
+  * @param {Element} e
+  */
+	function (i, e) {
 		$(e).attr("tabindex", $(e).data("tabindex"));
-		// restore focus elemente if wanted
+		// restore focus element if wanted
 		if (restoreFocusElement) {
 			if ($(e).data("tabindex-focus") && lychee.active_focus_on_page_load) {
 				$(e).focus();
@@ -2858,18 +3269,411 @@ tabindex.makeFocusable = function (elem) {
 	});
 
 	// Enable input fields
-	$(elem).find("input").removeAttr("disabled");
+	elem.find("input").removeAttr("disabled");
 };
 
+/**
+ * @returns {number}
+ */
 tabindex.get_next_tab_index = function () {
 	tabindex.next_tab_index = tabindex.next_tab_index + 1;
 
 	return tabindex.next_tab_index - 1;
 };
 
+/**
+ * @returns {void}
+ */
 tabindex.reset = function () {
 	tabindex.next_tab_index = tabindex.offset_for_header;
 };
+
+/**
+ * @typedef {Object} LycheeException
+ * @property {string} message     the message of the exception
+ * @property {string} exception   the (base) name of the exception class; in developer mode the backend reports the full class name, in productive mode only the base name
+ * @property {string} [file]      the file name where the exception has been thrown; only in developer mode
+ * @property {number} [line]      the line number where the exception has been thrown; only in developer mode
+ * @property {Array} [trace]      the backtrace; only in developer mode
+ * @property {?LycheeException} [previous_exception] the previous exception, if any; only in developer mode
+ */
+
+/**
+ * @typedef Photo
+ *
+ * @property {string}       id
+ * @property {string}       title
+ * @property {?string}      description
+ * @property {string[]}     tags
+ * @property {number}       is_public
+ * @property {?string}      type
+ * @property {?string}      iso
+ * @property {?string}      aperture
+ * @property {?string}      make
+ * @property {?string}      model
+ * @property {?string}      lens
+ * @property {?string}      shutter
+ * @property {?string}      focal
+ * @property {?number}      latitude
+ * @property {?number}      longitude
+ * @property {?number}      altitude
+ * @property {?number}      img_direction
+ * @property {?string}      location
+ * @property {?string}      taken_at
+ * @property {?string}      taken_at_orig_tz
+ * @property {boolean}      is_starred
+ * @property {?string}      live_photo_url
+ * @property {?string}      album_id
+ * @property {string}       checksum
+ * @property {string}       license
+ * @property {string}       created_at
+ * @property {string}       updated_at
+ * @property {?string}      live_photo_content_id
+ * @property {?string}      live_photo_checksum
+ * @property {SizeVariants} size_variants
+ * @property {boolean}      is_downloadable
+ * @property {boolean}      is_share_button_visible
+ * @property {?string}      [next_photo_id]
+ * @property {?string}      [previous_photo_id]
+ */
+
+/**
+ * @typedef SizeVariants
+ *
+ * @property {SizeVariant}  original
+ * @property {?SizeVariant} medium2x
+ * @property {?SizeVariant} medium
+ * @property {?SizeVariant} small2x
+ * @property {?SizeVariant} small
+ * @property {?SizeVariant} thumb2x
+ * @property {?SizeVariant} thumb
+ */
+
+/**
+ * @typedef SizeVariant
+ *
+ * @property {number} type
+ * @property {string} url
+ * @property {number} width
+ * @property {number} height
+ * @property {number} filesize
+ */
+
+/**
+ * @typedef SortingCriterion
+ *
+ * @property {string} column
+ * @property {string} order
+ */
+
+/**
+ * @typedef Album
+ *
+ * @property {string}  id
+ * @property {string}  parent_id
+ * @property {string}  created_at
+ * @property {string}  updated_at
+ * @property {string}  title
+ * @property {?string} description
+ * @property {string}  license
+ * @property {Photo[]} photos
+ * @property {Album[]} [albums]
+ * @property {?string} cover_id
+ * @property {?Thumb}  thumb
+ * @property {string}  [owner_name] optional, only shown in authenticated mode
+ * @property {boolean} is_public
+ * @property {boolean} is_downloadable
+ * @property {boolean} is_share_button_visible
+ * @property {boolean} is_nsfw
+ * @property {boolean} grants_full_photo
+ * @property {boolean} requires_link
+ * @property {boolean} has_password
+ * @property {boolean} has_albums
+ * @property {?string} min_taken_at
+ * @property {?string} max_taken_at
+ * @property {?SortingCriterion} sorting
+ */
+
+/**
+ * @typedef TagAlbum
+ *
+ * @property {string}   id
+ * @property {string}   created_at
+ * @property {string}   updated_at
+ * @property {string}   title
+ * @property {?string}  description
+ * @property {string[]} show_tags
+ * @property {Photo[]}  photos
+ * @property {?Thumb}   thumb
+ * @property {string}   [owner_name] optional, only shown in authenticated mode
+ * @property {boolean}  is_public
+ * @property {boolean}  is_downloadable
+ * @property {boolean}  is_share_button_visible
+ * @property {boolean}  is_nsfw
+ * @property {boolean}  grants_full_photo
+ * @property {boolean}  requires_link
+ * @property {boolean}  has_password
+ * @property {?string}  min_taken_at
+ * @property {?string}  max_taken_at
+ * @property {?SortingCriterion}  sorting
+ * @property {boolean}  is_tag_album always true
+ */
+
+/**
+ * @typedef SmartAlbum
+ *
+ * @property {string}  id
+ * @property {string}  title
+ * @property {Photo[]} photos
+ * @property {?Thumb}  thumb
+ * @property {boolean} is_public
+ * @property {boolean} is_downloadable
+ * @property {boolean} is_share_button_visible
+ */
+
+/**
+ * @typedef Thumb
+ *
+ * @property {string}  id
+ * @property {string}  type
+ * @property {string}  thumb
+ * @property {?string} thumb2x
+ */
+
+/**
+ * @typedef SharingInfo
+ *
+ * DTO returned by `Sharing::list`
+ *
+ * @property {{id: number, album_id: string, user_id: number, username: string, title: string}[]} shared
+ * @property {{id: string, title: string}[]}                                                      albums
+ * @property {{id: number, username: string}[]}                                                   users
+ */
+
+/**
+ * @typedef SearchResult
+ *
+ * DTO returned by `Search::run`
+ *
+ * @property {(Album|TagAlbum)[]} albums
+ * @property {Photo[]}            photos
+ * @property {string}             checksum - checksum of the search result to
+ *                                           efficiently determine if the
+ *                                           result has changed since the last
+ *                                           time
+ */
+
+/**
+ * @typedef Albums
+ *
+ * @property {SmartAlbums} smart_albums
+ * @property {TagAlbum[]}  tag_albums
+ * @property {Album[]}     albums
+ * @property {Album[]}     shared_albums
+ */
+
+/**
+ * @typedef SmartAlbums
+ *
+ * @property {?SmartAlbum} unsorted
+ * @property {?SmartAlbum} starred
+ * @property {?SmartAlbum} public
+ * @property {?SmartAlbum} recent
+ */
+
+/**
+ * The IDs of the built-in, smart albums.
+ *
+ * @type {Readonly<{RECENT: string, STARRED: string, PUBLIC: string, UNSORTED: string}>}
+ */
+var SmartAlbumID = Object.freeze({
+	UNSORTED: "unsorted",
+	STARRED: "starred",
+	PUBLIC: "public",
+	RECENT: "recent"
+});
+
+/**
+ * @typedef User
+ *
+ * @property {number}  id
+ * @property {string}  username
+ * @property {?string} email
+ * @property {boolean} may_upload
+ * @property {boolean} is_locked
+ */
+
+/**
+ * @typedef WebAuthnCredential
+ *
+ * @property {string} id
+ */
+
+/**
+ * @typedef PositionData
+ *
+ * @property {?string} id - album ID
+ * @property {?string} title - album title
+ * @property {Photo[]} photos
+ */
+
+/**
+ * @typedef EMailData
+ *
+ * @property {?string} email
+ */
+
+/**
+ * @typedef ConfigSetting
+ *
+ * @property {number} id
+ * @property {string} key
+ * @property {?string} value - TODO: this should have the correct type depending on `type_range`
+ * @property {string} cat
+ * @property {string} type_range
+ * @property {number} confidentiality - `0`: public setting, `2`: informational, `3`: admin only
+ * @property {string} description
+ */
+
+/**
+ * @typedef LogEntry
+ *
+ * @property {number} id
+ * @property {string} created_at
+ * @property {string} updated_at
+ * @property {string} type
+ * @property {string} function
+ * @property {number} line
+ * @property {string} text
+ */
+
+/**
+ * @typedef DiagnosticInfo
+ *
+ * @property {string[]} errors
+ * @property {string[]} infos
+ * @property {string[]} configs
+ * @property {number} update - `0`: not on master branch; `1`: up-to-date; `2`: not up-to-date; `3`: requires migration
+ */
+
+/**
+ * @typedef FrameSettings
+ *
+ * @property {number} refresh
+ */
+
+/**
+ * @typedef InitializationData
+ *
+ * @property {number} status - `1`: unauthenticated, `2`: authenticated
+ * @property {boolean} admin
+ * @property {boolean} may_upload
+ * @property {boolean} is_locked
+ * @property {number} update_json - version number of latest available update
+ * @property {boolean} update_available
+ * @property {Object.<string, string>} locale
+ * @property {string} [username] - only if user is not the admin; TODO: Change that
+ * @property {ConfigurationData} config
+ * @property {DeviceConfiguration} config_device
+ */
+
+/**
+ * @typedef ConfigurationData
+ *
+ * @property {string}   album_subtitle_type
+ * @property {string}   check_for_updates       - actually a boolean
+ * @property {string}   [default_license]
+ * @property {string}   [delete_imported]       - actually a boolean
+ * @property {string}   downloadable            - actually a boolean
+ * @property {string}   [dropbox_key]
+ * @property {string}   editor_enabled          - actually a boolean
+ * @property {string}   full_photo              - actually a boolean
+ * @property {string}   image_overlay_type
+ * @property {string}   landing_page_enable     - actually a boolean
+ * @property {string}   lang
+ * @property {string[]} lang_available
+ * @property {string}   layout                  - actually a number: `0`, `1` or `2`
+ * @property {string}   [location]
+ * @property {string}   location_decoding       - actually a boolean
+ * @property {string}   location_show           - actually a boolean
+ * @property {string}   location_show_public    - actually a boolean
+ * @property {string}   map_display             - actually a boolean
+ * @property {string}   map_display_direction   - actually a boolean
+ * @property {string}   map_display_public      - actually a boolean
+ * @property {string}   map_include_subalbums   - actually a boolean
+ * @property {string}   map_provider
+ * @property {string}   new_photos_notification - actually a boolean
+ * @property {string}   nsfw_blur               - actually a boolean
+ * @property {string}   nsfw_visible            - actually a boolean
+ * @property {string}   nsfw_warning            - actually a boolean
+ * @property {string}   nsfw_warning_admin      - actually a boolean
+ * @property {string}   public_photos_hidden    - actually a boolean
+ * @property {string}   public_search           - actually a boolean
+ * @property {string}   share_button_visible    - actually a boolean
+ * @property {string}   [skip_duplicates]       - actually a boolean
+ * @property {SortingCriterion} sorting_albums
+ * @property {SortingCriterion} sorting_photos
+ * @property {string}   swipe_tolerance_x       - actually a number
+ * @property {string}   swipe_tolerance_y       - actually a number
+ * @property {string}   upload_processing_limit - actually a number
+ * @property {string}   version                 - actually a number
+ */
+
+/**
+ * @typedef DeviceConfiguration
+ *
+ * @property {string}  device_type
+ * @property {boolean} header_auto_hide
+ * @property {boolean} active_focus_on_page_load
+ * @property {boolean} enable_button_visibility
+ * @property {boolean} enable_button_share
+ * @property {boolean} enable_button_archive
+ * @property {boolean} enable_button_move
+ * @property {boolean} enable_button_trash
+ * @property {boolean} enable_button_fullscreen
+ * @property {boolean} enable_button_download
+ * @property {boolean} enable_button_add
+ * @property {boolean} enable_button_more
+ * @property {boolean} enable_button_rotate
+ * @property {boolean} enable_close_tab_on_esc
+ * @property {boolean} enable_contextmenu_header
+ * @property {boolean} hide_content_during_imgview
+ * @property {boolean} enable_tabindex
+ */
+
+/**
+ * The JSON object for incremental reports sent by the
+ * back-end within a streamed response.
+ *
+ * @typedef ImportReport
+ *
+ * @property {string} type - indicates the type of report;
+ *                           `'progress'`: {@link ImportProgressReport},
+ *                           `'event'`: {@link ImportEventReport}
+ */
+
+/**
+ * The JSON object for cumulative progress reports sent by the
+ * back-end within a streamed response.
+ *
+ * @typedef ImportProgressReport
+ *
+ * @property {string} type - `'progress'`
+ * @property {string} path
+ * @property {number} progress
+ */
+
+/**
+ * The JSON object for events sent by the back-end within a streamed response.
+ *
+ * @typedef ImportEventReport
+ *
+ * @property {string} type - `'event'`
+ * @property {string} subtype - the subtype of event; equals the base name of the exception class which caused this event on the back-end
+ * @property {number} severity - either `'debug'`, `'info'`, `'notice'`, `'warning'`, `'error'`, `'critical'` or `'emergency'`
+ * @property {?string} path - the path to the affected file or directory
+ * @property {string} message - a message text
+ */
 
 (function (window, factory) {
 	var basicContext = factory(window, window.document);

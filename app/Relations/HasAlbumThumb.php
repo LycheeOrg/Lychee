@@ -4,9 +4,9 @@ namespace App\Relations;
 
 use App\Actions\AlbumAuthorisationProvider;
 use App\Actions\PhotoAuthorisationProvider;
+use App\DTO\PhotoSortingCriterion;
 use App\Facades\AccessControl;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Extensions\Thumb;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
@@ -20,8 +20,7 @@ class HasAlbumThumb extends Relation
 {
 	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
 	protected PhotoAuthorisationProvider $photoAuthorisationProvider;
-	protected string $sortingCol;
-	protected string $sortingOrder;
+	protected PhotoSortingCriterion $sorting;
 
 	public function __construct(Album $parent)
 	{
@@ -31,8 +30,7 @@ class HasAlbumThumb extends Relation
 		// attributes must be initialized by then
 		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
 		$this->photoAuthorisationProvider = resolve(PhotoAuthorisationProvider::class);
-		$this->sortingCol = Configs::get_value('sorting_Photos_col');
-		$this->sortingOrder = Configs::get_value('sorting_Photos_order');
+		$this->sorting = PhotoSortingCriterion::createDefault();
 		parent::__construct(
 			Photo::query()->with(['size_variants' => fn (HasMany $r) => Thumb::sizeVariantsFilter($r)]),
 			$parent
@@ -161,7 +159,7 @@ class HasAlbumThumb extends Relation
 			->whereColumn('albums._lft', '>=', 'covered_albums._lft')
 			->whereColumn('albums._rgt', '<=', 'covered_albums._rgt')
 			->orderBy('photos.is_starred', 'desc')
-			->orderBy('photos.' . $this->sortingCol, $this->sortingOrder)
+			->orderBy('photos.' . $this->sorting->column, $this->sorting->order)
 			->limit(1);
 		if (!AccessControl::is_admin()) {
 			$bestPhotoIDSelect->where(function (Builder $query2) {
@@ -283,7 +281,7 @@ class HasAlbumThumb extends Relation
 			return Thumb::createFromPhoto($album->cover);
 		} else {
 			return Thumb::createFromQueryable(
-				$this->query, $this->sortingCol, $this->sortingOrder
+				$this->query, $this->sorting
 			);
 		}
 	}

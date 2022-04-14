@@ -2,40 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Photo\Rotate;
-use App\Http\Requests\PhotoRequests\PhotoIDRequest;
+use App\Actions\Photo\Strategies\RotateStrategy;
+use App\Contracts\LycheeException;
+use App\Exceptions\ConfigurationException;
+use App\Http\Requests\Photo\RotatePhotoRequest;
 use App\Models\Configs;
 use App\Models\Photo;
-use Illuminate\Validation\Rule;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use Illuminate\Routing\Controller;
 
 class PhotoEditorController extends Controller
 {
 	/**
 	 * Given a photoID and a direction (+1: 90° clockwise, -1: 90° counterclockwise) rotate an image.
 	 *
-	 * @param PhotoIDRequest $request
-	 * @param Rotate         $rotate
+	 * @param RotatePhotoRequest $request
 	 *
 	 * @return Photo
+	 *
+	 * @throws LycheeException
 	 */
-	public function rotate(PhotoIDRequest $request, Rotate $rotate): Photo
+	public function rotate(RotatePhotoRequest $request): Photo
 	{
 		if (!Configs::get_value('editor_enabled', '0')) {
-			throw new UnprocessableEntityHttpException('support for rotation disabled by configuration');
+			throw new ConfigurationException('support for rotation disabled by configuration');
 		}
-		$request->validate([
-			'direction' => [
-				'integer',
-				'required',
-				Rule::in([-1, 1]),
-			],
-		]);
-		/** @var Photo $photo */
-		$photo = Photo::query()
-			->with(['size_variants'])
-			->findOrFail($request['photoID']);
 
-		return $rotate->do($photo, intval($request['direction']));
+		$rotateStrategy = new RotateStrategy($request->photo(), $request->direction());
+
+		return $rotateStrategy->do();
 	}
 }
