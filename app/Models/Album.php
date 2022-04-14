@@ -294,7 +294,10 @@ class Album extends BaseAlbum implements Node
 		if ($this->track_short_path === null) {
 			return;
 		}
-		Storage::delete($this->track_short_path);
+		// make sure track is not used for other albums
+		if (self::query()->where('track_short_path', '=', $this->track_short_path)->count() <= 1) {
+			Storage::delete($this->track_short_path);
+		}
 		$this->track_short_path = null;
 		$this->save();
 	}
