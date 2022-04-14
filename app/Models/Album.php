@@ -274,7 +274,7 @@ class Album extends BaseAlbum implements Node
 	 */
 	public function setTrack(UploadedFile $file): void
 	{
-		if ($this->track_short_path != null) {
+		if ($this->track_short_path !== null) {
 			Storage::delete($this->track_short_path);
 		}
 
@@ -291,7 +291,7 @@ class Album extends BaseAlbum implements Node
 	 */
 	public function deleteTrack(): void
 	{
-		if ($this->track_short_path == null) {
+		if ($this->track_short_path === null) {
 			return;
 		}
 		Storage::delete($this->track_short_path);
