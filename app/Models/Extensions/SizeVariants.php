@@ -2,6 +2,7 @@
 
 namespace App\Models\Extensions;
 
+use App\Actions\SizeVariant\Delete;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Contracts\Support\Arrayable;
@@ -206,34 +207,44 @@ class SizeVariants implements Arrayable, JsonSerializable
 	/**
 	 * Deletes all size variants incl. the files from storage.
 	 *
-	 * @param bool $keepOriginalFile if true, the original size variant is
-	 *                               still removed from the DB and the model,
-	 *                               but the media file is kept
-	 * @param bool $keepAllFiles     if true, all size variants are still
-	 *                               removed from the DB and the model, but
-	 *                               the media files are kept
-	 *
 	 * @return bool True on success, false otherwise
 	 */
-	public function deleteAll(bool $keepOriginalFile = false, bool $keepAllFiles = false): bool
+	public function deleteAll(): bool
 	{
-		$success = true;
-		$success &= !$this->original || $this->original->delete($keepOriginalFile || $keepAllFiles);
-		$this->original = null;
-		$success &= !$this->medium2x || $this->medium2x->delete($keepAllFiles);
-		$this->medium2x = null;
-		$success &= !$this->medium || $this->medium->delete($keepAllFiles);
-		$this->medium = null;
-		$success &= !$this->small2x || $this->small2x->delete($keepAllFiles);
-		$this->small2x = null;
-		$success &= !$this->small || $this->small->delete($keepAllFiles);
-		$this->small = null;
-		$success &= !$this->thumb2x || $this->thumb2x->delete($keepAllFiles);
-		$this->thumb2x = null;
-		$success &= !$this->thumb || $this->thumb->delete($keepAllFiles);
-		$this->thumb = null;
+		$ids = [];
 
-		return $success;
+		if ($this->original) {
+			$ids[] = $this->original->id;
+			$this->original = null;
+		}
+		if ($this->medium2x) {
+			$ids[] = $this->medium2x->id;
+			$this->medium2x = null;
+		}
+		if ($this->medium) {
+			$ids[] = $this->medium->id;
+			$this->medium = null;
+		}
+		if ($this->small2x) {
+			$ids[] = $this->small2x->id;
+			$this->small2x = null;
+		}
+		if ($this->small) {
+			$ids[] = $this->small->id;
+			$this->small = null;
+		}
+		if ($this->thumb2x) {
+			$ids[] = $this->thumb2x->id;
+			$this->thumb2x = null;
+		}
+		if ($this->thumb) {
+			$ids[] = $this->thumb->id;
+			$this->thumb = null;
+		}
+
+		$fileDeleter = (new Delete())->do($ids);
+
+		return $fileDeleter->do();
 	}
 
 	public function replicate(Photo $duplicatePhoto): SizeVariants

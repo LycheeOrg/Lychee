@@ -227,9 +227,13 @@ class PhotoController extends Controller
 	 */
 	public function delete(PhotoIDsRequest $request, Delete $delete): IlluminateResponse
 	{
-		$delete->do(explode(',', $request['photoIDs']));
-
-		return response()->noContent();
+		$fileDeleter = $delete->do(explode(',', $request['photoIDs']));
+		// TODO: Move the file operation after the response
+		if ($fileDeleter->do()) {
+			return response()->noContent();
+		} else {
+			return response('', 500);
+		}
 	}
 
 	/**

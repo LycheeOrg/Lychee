@@ -41,12 +41,11 @@ class Merge extends Action
 		}
 
 		// Now we delete the source albums
-		// ! we have to do it via Model::delete() in order to not break the tree
-		$albums = Album::query()->whereIn('id', $sourceAlbumIDs)->get();
-		/** @var Album $album */
-		foreach ($albums as $album) {
-			$album->delete();
-		}
+		// We must use the special `Delete` action in order to not break the
+		// tree.
+		// he returned `FileDeleter` can be ignored as all photos have been
+		// moved to the new location.
+		(new Delete())->do($sourceAlbumIDs);
 
 		$targetAlbum->fixOwnershipOfChildren();
 	}

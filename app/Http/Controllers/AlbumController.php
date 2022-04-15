@@ -238,7 +238,9 @@ class AlbumController extends Controller
 	 */
 	public function delete(AlbumIDsRequest $request, Delete $delete): IlluminateResponse
 	{
-		if ($delete->do(explode(',', $request['albumIDs']))) {
+		$fileDeleter = $delete->do(explode(',', $request['albumIDs']));
+		// TODO: Move the file operation after the response
+		if ($fileDeleter->do()) {
 			return response()->noContent();
 		} else {
 			return response('', 500);

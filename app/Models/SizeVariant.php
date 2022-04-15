@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Actions\SizeVariant\Delete;
 use App\Casts\MustNotSetCast;
 use App\Facades\AccessControl;
 use App\Image\FlysystemFile;
@@ -212,39 +213,12 @@ class SizeVariant extends Model
 	}
 
 	/**
-	 * Deletes this model.
-	 *
-	 * @param bool $keepFile If true, the associated file is not removed from storage
-	 *
-	 * @return bool True on success, false otherwise
+	 * {@inheritDoc}
 	 */
-	public function delete(bool $keepFile = false): bool
+	protected function performDeleteOnModel(): void
 	{
-		// Delete all symbolic links pointing to this size variant
-		// The SymLink model takes care of actually erasing
-		// the physical symbolic links from disk.
-		// We must not use a "mass deletion" like $this->sym_links()->delete()
-		// here, because this doesn't invoke the method `delete` on the model
-		// and thus the would not delete any actual symbolic link from disk.
-		$symLinks = $this->sym_links;
-		/** @var SymLink $symLink */
-		foreach ($symLinks as $symLink) {
-			if ($symLink->delete() === false) {
-				return false;
-			}
-		}
-
-		// Delete the actual media file
-		if (!$keepFile) {
-			$disk = Storage::disk();
-			$shortPath = $this->short_path;
-			if (!empty($shortPath) && $disk->exists($shortPath)) {
-				if ($disk->delete($shortPath) === false) {
-					return false;
-				}
-			}
-		}
-
-		return parent::delete() !== false;
+		$fileDeleter = (new Delete())->do([$this->id]);
+		$this->exists = false;
+		$fileDeleter->do();
 	}
 }
