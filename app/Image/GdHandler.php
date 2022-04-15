@@ -5,7 +5,7 @@ namespace App\Image;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Models\Configs;
-use ImageOptimizer;
+use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 class GdHandler implements ImageHandlerInterface
 {

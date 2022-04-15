@@ -14,6 +14,15 @@
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
+	# Any request to the public folders can be served directly.
+	# There is no need to direct them to the front-controller.
+	# Hence, we take a short-cut here, [L] means last rule.
+	# This also avoids some unneccessary execptions and exception logging
+	# inside Lychee, if a non-existing file is requested.
+	# Also disable compression for already highly compressed media files.
+	RewriteRule ^(css|dist|img|installer|js|src)/ - [L]
+	RewriteRule ^(sym|uploads)/ - [L,E=no-gzip:1]
+
     # Ensure that streamed responses are not cached,
     # because Apache tries to ZIP them
     RewriteRule (Album::getArchive|Photo::getArchive|Import::server) - [E=no-gzip:1]
