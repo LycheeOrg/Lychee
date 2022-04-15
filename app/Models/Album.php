@@ -32,6 +32,7 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property string|null       $cover_id
  * @property Photo|null        $cover
  * @property string|null       $track_short_path
+ * @property string|null       $track_url
  * @property int               $_lft
  * @property int               $_rgt
  *
@@ -88,6 +89,13 @@ class Album extends BaseAlbum implements Node
 	 * The relationships that should always be eagerly loaded by default.
 	 */
 	protected $with = ['cover', 'thumb'];
+
+	/**
+	 * @var string[] The list of "virtual" attributes which do not exist as
+	 *               columns of the DB relation but which shall be appended to
+	 *               JSON from accessors
+	 */
+	protected $appends = ['track_url'];
 
 	/**
 	 * Return the relationship between this album and photos which are
@@ -261,6 +269,20 @@ class Album extends BaseAlbum implements Node
 	public function newEloquentBuilder($query): AlbumBuilder
 	{
 		return new AlbumBuilder($query);
+	}
+
+	/**
+	 * Accessor for the "virtual" attribute {@link Album::$track_url}.
+	 *
+	 * This is a convenient method which wraps
+	 * {@link Album::$track_short_path} into
+	 * {@link \Illuminate\Support\Facades\Storage::url()}.
+	 *
+	 * @return string the url of the track
+	 */
+	public function getTrackUrlAttribute(): string
+	{
+		return Storage::url($this->track_short_path);
 	}
 
 	/**
