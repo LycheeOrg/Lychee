@@ -57,7 +57,12 @@ class Delete extends Action
 
 			// Only regular albums are owner of photos, so we only need to
 			// find all photos in those and their descendants
-			$albums = Album::query()->findMany($albumIDs);
+			// Only load necessary attributes for tree; in particular avoid
+			// loading expensive `min_taken_at` and `max_taken_at`.
+			$albums = Album::query()
+				->without(['cover', 'thumb'])
+				->select(['id', 'parent_id', '_lft', '_rgt'])
+				->findMany($albumIDs);
 
 			/** @var Album $album */
 			foreach ($albums as $album) {
