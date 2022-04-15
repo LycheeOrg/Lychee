@@ -83,6 +83,7 @@ class Album extends BaseAlbum implements Node
 		'_rgt',
 		'parent',     // avoid infinite recursions
 		'all_photos', // never serialize recursive child photos of an album, even if the relation is loaded
+		'track_short_path',
 	];
 
 	/**
