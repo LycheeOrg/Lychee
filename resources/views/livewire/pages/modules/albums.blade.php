@@ -8,6 +8,9 @@
 	<!-- test comment-->
 	@if($smartalbums->count() > 0)
 		<div class='divider'><h1>{{ Lang::get('SMART_ALBUMS') }}</h1></div>
+		@php
+		dd($smartalbums);
+		@endphp
 		@foreach ($smartalbums as $album)
 			<x-album :data="$album" />
 		@endforeach

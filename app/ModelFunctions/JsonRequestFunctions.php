@@ -22,19 +22,6 @@ class JsonRequestFunctions
 	 */
 	public function __construct(string $url, int $ttl = 1)
 	{
-<<<<<<< HEAD
-		$this->url = $url;
-		$this->json = json_decode(Cache::get($url) ?? '');
-		$this->ttl = $ttl;
-	}
-
-	/**
-	 * Cache the result of the request.
-	 */
-	private function cache()
-	{
-=======
->>>>>>> consistent_json_api
 		try {
 			$this->url = $url;
 			$cached = Cache::get($url);

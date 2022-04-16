@@ -36,7 +36,7 @@ class Fullpage extends Component
 			$this->title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
 		} else {
 			$this->mode = self::ALBUM;
-			$album = $albumFactory->findOrFail($albumId);
+			$album = $albumFactory->findAbstractAlbumOrFail($albumId);
 			$this->loadAlbum($album);
 			$this->title = $album->title;
 

@@ -4,11 +4,8 @@ namespace App\Models\Extensions;
 
 use App\Contracts\AbstractAlbum;
 use App\Contracts\HasRandomID;
-<<<<<<< HEAD
-use App\Factories\AlbumFactory;
-=======
 use App\DTO\PhotoSortingCriterion;
->>>>>>> consistent_json_api
+use App\Factories\AlbumFactory;
 use App\Models\BaseAlbumImpl;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
@@ -126,6 +123,6 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID, Wi
 	{
 		$factory = resolve(AlbumFactory::class);
 
-		return $factory->findOrFail($value);
+		return $factory->findAbstractAlbumOrFail($value);
 	}
 }
