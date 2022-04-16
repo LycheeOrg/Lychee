@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use App\Contracts\HttpExceptionHandler;
+use App\DTO\BacktraceRecord;
 use App\Exceptions\Handlers\AccessDBDenied;
 use App\Exceptions\Handlers\InstallationHandler;
 use App\Exceptions\Handlers\MigrationHandler;
@@ -11,7 +12,6 @@ use App\Models\Logs;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
@@ -151,10 +151,14 @@ class Handler extends ExceptionHandler
 		do {
 			$cause = $this->findCause($e);
 
+			if (count($cause) === 2) {
+				Logs::log($severity, $cause[1]->getMethodBeautified(), $cause[1]->getLine(), $e->getMessage() . '; caused by');
+			}
+
 			if ($e->getPrevious() !== null) {
-				Logs::log($severity, $cause['method'], $cause['line'], $e->getMessage() . '; caused by');
+				Logs::log($severity, $cause[0]->getMethodBeautified(), $cause[0]->getLine(), $e->getMessage() . '; caused by');
 			} else {
-				Logs::log($severity, $cause['method'], $cause['line'], $e->getMessage());
+				Logs::log($severity, $cause[0]->getMethodBeautified(), $cause[0]->getLine(), $e->getMessage());
 			}
 		} while ($e = $e->getPrevious());
 	}
@@ -167,13 +171,28 @@ class Handler extends ExceptionHandler
 	}
 
 	/**
-	 * Returns the cause of an exception.
+	 * Returns up to two interesting backtrace entries which might help to
+	 * pinpoint the cause of an  exception.
 	 *
-	 * It finds the first (most inner) method of Lychee code base which
-	 * caused the exception and returns the method name, the file name and
-	 * the line number.
+	 * The first backtrace entry always points the most inner function which
+	 * originally has thrown the exception.
+	 * The can point to a file of the Lychee source code, but may also point
+	 * to a file which is part of the PHP engine or one of the libraries.
 	 *
-	 * The backtrace reported by PHP is oddly strange.
+	 * The second backtrace entry is optional and - if it included - always
+	 * points to the most inner method of the Lychee source code on the
+	 * stack which eventually has led to the exception.
+	 *
+	 * Laravel's backtraces are usually hundreds of frames deep with a lot
+	 * of anonymous closures in between.
+	 * Printing everything only litters the log with needless entries and
+	 * won't help to keep track of what really happened.
+	 * The two entries above have been chosen to be the most interesting ones.
+	 * The first directly points to the failing line, the second one (if not
+	 * identical to the first) indicates the last line of Lychee code which
+	 * has been passed before the exception occurred.
+	 *
+	 * The standard backtrace reported by PHP is oddly strange.
 	 * The attribute pair file/line on the one hand-side and class/function
 	 * on the other hand-side of a standard PHP backtrace are off-by-one.
 	 * The reported file/line of an entry of the backtrace don't refer to
@@ -186,10 +205,11 @@ class Handler extends ExceptionHandler
 	 *
 	 * @param \Throwable $e
 	 *
-	 * @return array{file: string, line: int, method: string}
+	 * @return BacktraceRecord[]
 	 */
 	private function findCause(\Throwable $e): array
 	{
+		$result = [];
 		$backtrace = $e->getTrace();
 
 		// Special rule for legacy PHP errors which are caught via
@@ -237,35 +257,51 @@ class Handler extends ExceptionHandler
 		//
 		// And hopefully, this is the only special rule we need and nobody
 		// never ever misuses `\ErrorException` for "normal" exceptions.
-		if ($e instanceof \ErrorException) {
-			$backtrace = array_slice($backtrace, 1);
-		}
+		$offset = $e instanceof \ErrorException ? 1 : 0;
 
 		$file = $e->getFile();
 		$line = $e->getLine();
-		$class = '';
-		$function = '';
-		foreach ($backtrace as $bt) {
-			$class = $bt['class'] ?? '';
-			$function = $bt['function'] ?? '';
+		$class = $backtrace[$offset]['class'] ?? '';
+		$function = $backtrace[$offset]['function'] ?? '';
+
+		// Always add the most inner frame
+		$result[] = new BacktraceRecord(
+			$file, $line, $class, $function
+		);
+
+		// If this frame is part of our own code, we are done.
+		// We are also done, if there are no more frame on the backtrace
+		if (str_contains($file, $this->appPath) || count($backtrace) <= $offset + 1) {
+			return $result;
+		}
+
+		// Try to find the most inner method of our own code
+
+		// Normally, every backtrace entry must have a `file` and `line`
+		// attribute.
+		// But in view of the problems with legacy error handling, this
+		// must not be taken for granted.
+		// It seems that for certain low level methods which are part of
+		// the PHP engine (like `fopen`) this cannot be taken for granted.
+		// As this method must not fail, we are better safe than sorry.
+		$file = $backtrace[$offset]['file'] ?? '';
+		$line = $backtrace[$offset]['line'] ?? 0;
+
+		for ($idx = $offset + 1; $idx < count($backtrace); $idx++) {
+			$class = $backtrace[$idx]['class'] ?? '';
+			$function = $backtrace[$idx]['function'] ?? '';
+			// If this frame is part of our own code, we are done.
 			if (str_contains($file, $this->appPath)) {
 				break;
 			}
-			// Normally, every backtrace entry must have a `file` and `line`
-			// attribute.
-			// But in view of the problems with legacy error handling, this
-			// must not be taken for granted.
-			// It seems that for certain low level methods which are part of
-			// the PHP engine (like `fopen`) this cannot be taken for granted.
-			// As this method must not fail, we are better safe than sorry.
-			$file = $bt['file'] ?? '';
-			$line = $bt['line'] ?? 0;
+			$file = $backtrace[$idx]['file'] ?? '';
+			$line = $backtrace[$idx]['line'] ?? 0;
 		}
 
-		return [
-			'file' => $file ? Str::replaceFirst($this->appPath, '', $file) : '<unknown>',
-			'line' => $line,
-			'method' => $class . '::' . ($function ?: '<unknown>'),
-		];
+		$result[] = new BacktraceRecord(
+			$file, $line, $class, $function
+		);
+
+		return $result;
 	}
 }
