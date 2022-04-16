@@ -191,24 +191,81 @@ class Handler extends ExceptionHandler
 	private function findCause(\Throwable $e): array
 	{
 		$backtrace = $e->getTrace();
+
+		// Special rule for legacy PHP errors which are caught via
+		// `set_error_handler`, converted into an `ErrorException` and
+		// re-injected into the "modern" exception handling procedure
+		//
+		// The `set_error_handler` routine is special (thank you, PHP, for
+		// nothing) in two ways: (a) the `file` parameter is not filled
+		// (WTF?), and (b) the top entry of the backtrace points to
+		// `set_error_handler` which is not really part of the frame stack
+		// and does not provide any helpful information.
+		//
+		// For all who don't know the background: PHP provides two different
+		// approaches to indicate and handle error conditions which both
+		// interrupt the normal program flow:
+		//
+		//  a) the engine error reporting system (legacy approach)
+		//  b) exceptions (modern approach)
+		//
+		// The legacy approach is very similar to POSIX signal handling in the
+		// sense that one can register a static, global error handler and the
+		// PHP engine calls this handler whenever some error has occurred
+		// anywhere in the program.
+		// This error handler is not part of the normal program stack, but
+		// "lives" outside the normal program stack.
+		// When the error handler returns, the normal program flow and call
+		// stack is resumed.
+		//
+		// The modern approach uses exceptions which bubble up the call stack
+		// until they are caught and handled.
+		//
+		// In order to unify the error handling, the default `error_handler`
+		// nowadays wraps the reported error into a `\ErrorException` which
+		// then is thrown as if it was thrown by the method which caused the
+		// error in the first place.
+		// Unfortunately, this messes with the backtrace.
+		//
+		// Hopefully, the whole legacy PHP error reporting system will be
+		// nuked some day.
+		// PHP 8 made a great step into that direction
+		// (e.g., see https://wiki.php.net/rfc/consistent_type_errors,
+		// https://wiki.php.net/rfc/engine_warnings,
+		// https://wiki.php.net/rfc/lsp_errors).
+		// I really like the sentence about the dark ages of PHP ;-).
+		//
+		// And hopefully, this is the only special rule we need and nobody
+		// never ever misuses `\ErrorException` for "normal" exceptions.
+		if ($e instanceof \ErrorException) {
+			$backtrace = array_slice($backtrace, 1);
+		}
+
 		$file = $e->getFile();
 		$line = $e->getLine();
-		$class = null;
-		$function = null;
+		$class = '';
+		$function = '';
 		foreach ($backtrace as $bt) {
-			$class = $bt['class'] ?? null;
-			$function = $bt['function'] ?? null;
+			$class = $bt['class'] ?? '';
+			$function = $bt['function'] ?? '';
 			if (str_contains($file, $this->appPath)) {
 				break;
 			}
-			$file = $bt['file'];
-			$line = $bt['line'];
+			// Normally, every backtrace entry must have a `file` and `line`
+			// attribute.
+			// But in view of the problems with legacy error handling, this
+			// must not be taken for granted.
+			// It seems that for certain low level methods which are part of
+			// the PHP engine (like `fopen`) this cannot be taken for granted.
+			// As this method must not fail, we are better safe than sorry.
+			$file = $bt['file'] ?? '';
+			$line = $bt['line'] ?? 0;
 		}
 
 		return [
-			'file' => Str::replaceFirst($this->appPath, '', $file),
+			'file' => $file ? Str::replaceFirst($this->appPath, '', $file) : '<unknown>',
 			'line' => $line,
-			'method' => ($class ? $class . '::' : '') . ($function ?: '<unknown>'),
+			'method' => $class . '::' . ($function ?: '<unknown>'),
 		];
 	}
 }
