@@ -2037,7 +2037,7 @@ sidebar.createStructure.album = function (data) {
 	}
 
 	var videoCount = data.photos.reduce(function (count, photo) {
-		return count + (photo.type.indexOf("video") > -1) ? 1 : 0;
+		return count + (photo.type.indexOf("video") > -1 ? 1 : 0);
 	}, 0);
 
 	structure.album = {
