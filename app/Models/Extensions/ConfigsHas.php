@@ -12,12 +12,9 @@ trait ConfigsHas
 	 */
 	public static function hasImagick(): bool
 	{
-		if ((bool) (extension_loaded('imagick') && self::get_value('imagick', '1') == '1')) {
-			return true;
-		}
-		Logs::notice(__METHOD__, __LINE__, 'hasImagick : false');
-
-		return false;
+		return
+			extension_loaded('imagick') &&
+			self::get_value('imagick', '1') == '1';
 	}
 
 	/**

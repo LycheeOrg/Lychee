@@ -284,9 +284,7 @@ class AlbumAuthorisationProvider
 				($album->is_public && $this->isUnlocked($album)) ||
 				($album->shared_with()->where('user_id', '=', $userID)->count());
 		} elseif ($album instanceof BaseSmartAlbum) {
-			return
-				($userID && AccessControl::can_upload()) ||
-				$album->is_public;
+			return AccessControl::can_upload() || $album->is_public;
 		} else {
 			// Should never happen
 			return false;
