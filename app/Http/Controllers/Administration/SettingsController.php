@@ -76,7 +76,7 @@ class SettingsController extends Controller
 	public function setLang(Request $request): void
 	{
 		$validated = $request->validate([
-			'lang' => ['required|string', Rule::in(Lang::get_lang_available())],
+			'lang' => ['required', 'string', Rule::in(Lang::get_lang_available())],
 		]);
 		Configs::set('lang', $validated['lang']);
 	}
