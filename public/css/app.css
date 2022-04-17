@@ -1472,7 +1472,9 @@ input {
 }
 .header__clear {
   position: absolute;
-  top: -2px;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
   right: 8px;
   padding: 0;
   color: rgba(255, 255, 255, 0.5);
@@ -1483,9 +1485,6 @@ input {
 }
 .header__clear_nomap {
   right: 60px;
-}
-.header__clear_public {
-  right: 17px;
 }
 .header__hostedwith {
   flex-shrink: 0;
