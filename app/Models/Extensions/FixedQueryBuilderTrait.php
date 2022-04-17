@@ -129,6 +129,27 @@ trait FixedQueryBuilderTrait
 	}
 
 	/**
+	 * Add a left join to the query.
+	 *
+	 * @param string          $table
+	 * @param \Closure|string $first
+	 * @param string|null     $operator
+	 * @param string|null     $second
+	 *
+	 * @return $this
+	 *
+	 * @throws QueryBuilderException
+	 */
+	public function leftJoin($table, $first, $operator = null, $second = null): static
+	{
+		try {
+			return parent::leftJoin($table, $first, $operator, $second);
+		} catch (\Throwable $e) {
+			throw new QueryBuilderException($e);
+		}
+	}
+
+	/**
 	 * Add an "order by" clause to the query.
 	 *
 	 * @param \Closure|Builder|BaseBuilder|Expression|string $column

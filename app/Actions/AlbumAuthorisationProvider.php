@@ -206,13 +206,14 @@ class AlbumAuthorisationProvider
 	 *  - the album does not require a direct link, is public and has no password set, or
 	 *  - the album does not require a direct link, is public and has been unlocked
 	 *
-	 * @param Builder $query
+	 * @param AlbumBuilder $query
 	 *
-	 * @return Builder
+	 * @return AlbumBuilder
 	 *
-	 * @throws \InvalidArgumentException
+	 * @throws QueryBuilderException
+	 * @throws InvalidQueryModelException
 	 */
-	public function applyReachabilityFilter(Builder $query): Builder
+	public function applyReachabilityFilter(AlbumBuilder $query): AlbumBuilder
 	{
 		$this->prepareModelQueryOrFail($query);
 
@@ -278,11 +279,15 @@ class AlbumAuthorisationProvider
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 
 		if ($album instanceof BaseAlbum) {
-			return
-				($album->owner_id === $userID) ||
-				($album->is_public && $album->password === null) ||
-				($album->is_public && $this->isUnlocked($album)) ||
-				($album->shared_with()->where('user_id', '=', $userID)->count());
+			try {
+				return
+					($album->owner_id === $userID) ||
+					($album->is_public && $album->password === null) ||
+					($album->is_public && $this->isUnlocked($album)) ||
+					($album->shared_with()->where('user_id', '=', $userID)->count());
+			} catch (\InvalidArgumentException $e) {
+				assert(false, new \AssertionError('\InvalidArgumentException must not be thrown by ->where', $e->getCode(), $e));
+			}
 		} elseif ($album instanceof BaseSmartAlbum) {
 			return AccessControl::can_upload() || $album->is_public;
 		} else {
@@ -327,14 +332,14 @@ class AlbumAuthorisationProvider
 	 * of the origin), the runtime is O(n), but for a high tree (the nodes are
 	 * basically a sequence), the runtime is O(n²).
 	 *
-	 * @param Builder    $query  the album query which shall be restricted
-	 * @param Album|null $origin the optional top album which is used as a search base
+	 * @param AlbumBuilder $query  the album query which shall be restricted
+	 * @param Album|null   $origin the optional top album which is used as a search base
 	 *
-	 * @return Builder the restricted album query
+	 * @return AlbumBuilder the restricted album query
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function applyBrowsabilityFilter(Builder $query, ?Album $origin = null): Builder
+	public function applyBrowsabilityFilter(AlbumBuilder $query, ?Album $origin = null): AlbumBuilder
 	{
 		$table = $query->getQuery()->from;
 		if (!($query->getModel() instanceof Album) || $table !== 'albums') {
