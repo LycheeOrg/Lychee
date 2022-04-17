@@ -6,6 +6,7 @@ use App\Actions\Albums\PositionData;
 use App\Actions\Albums\Top;
 use App\Actions\Albums\Tree;
 use App\Contracts\LycheeException;
+use App\DTO\PositionData as PositionDataDTO;
 use App\DTO\TopAlbums;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
@@ -36,11 +37,11 @@ class AlbumsController extends Controller
 	}
 
 	/**
-	 * @return array returns an array of visible photos which have positioning data
+	 * @return PositionDataDTO returns visible photos which have positioning data
 	 *
 	 * @throws LycheeException
 	 */
-	public function getPositionData(PositionData $positionData): array
+	public function getPositionData(PositionData $positionData): PositionDataDTO
 	{
 		return $positionData->do();
 	}

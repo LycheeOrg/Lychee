@@ -12,6 +12,7 @@ use App\Actions\Album\SetProtectionPolicy;
 use App\Actions\Album\Unlock;
 use App\Contracts\AbstractAlbum;
 use App\Contracts\LycheeException;
+use App\DTO\PositionData as PositionDataDTO;
 use App\Exceptions\ModelDBException;
 use App\Http\Requests\Album\AddAlbumRequest;
 use App\Http\Requests\Album\AddTagAlbumRequest;
@@ -90,7 +91,7 @@ class AlbumController extends Controller
 	 *
 	 * @return array
 	 */
-	public function getPositionData(GetAlbumPositionDataRequest $request, PositionData $positionData): array
+	public function getPositionData(GetAlbumPositionDataRequest $request, PositionData $positionData): PositionDataDTO
 	{
 		return $positionData->get($request->album(), $request->includeSubAlbums());
 	}

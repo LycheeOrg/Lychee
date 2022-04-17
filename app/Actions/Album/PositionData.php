@@ -3,6 +3,7 @@
 namespace App\Actions\Album;
 
 use App\Contracts\AbstractAlbum;
+use App\DTO\PositionData as PositionDataDTO;
 use App\Models\Album;
 use App\Models\SizeVariant;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,18 +11,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PositionData extends Action
 {
-	public function get(AbstractAlbum $album, bool $includeSubAlbums = false): array
+	public function get(AbstractAlbum $album, bool $includeSubAlbums = false): PositionDataDTO
 	{
-		if ($album instanceof Album && $includeSubAlbums) {
-			$photoRelation = $album->all_photos();
-		} else {
-			$photoRelation = $album->photos();
-		}
+		$photoRelation = ($album instanceof Album && $includeSubAlbums) ?
+			$album->all_photos() :
+			$album->photos();
 
-		$result = [];
-		$result['id'] = $album->id;
-		$result['title'] = $album->title;
-		$result['photos'] = $photoRelation
+		$photoRelation
 			->with([
 				'album' => function (BelongsTo $b) {
 					// The album is required for photos to properly
@@ -42,10 +38,8 @@ class PositionData extends Action
 				'size_variants.sym_links',
 			])
 			->whereNotNull('latitude')
-			->whereNotNull('longitude')
-			->get()
-			->toArray();
+			->whereNotNull('longitude');
 
-		return $result;
+		return new PositionDataDTO($album->id, $album->title, $photoRelation->get());
 	}
 }
