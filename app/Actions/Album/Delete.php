@@ -54,7 +54,8 @@ class Delete extends Action
 	public function do(array $albumIDs): FileDeleter
 	{
 		try {
-			$photoIDs = [];
+			$unsortedPhotoIDs = [];
+			$recursiveAlbumIDs = $albumIDs;
 
 			// Among the smart albums, the unsorted album is special,
 			// because it provides deletion of photos
@@ -63,7 +64,7 @@ class Delete extends Action
 				if (!AccessControl::is_admin()) {
 					$query->where('owner_id', '=', AccessControl::id());
 				}
-				$photoIDs = $query->pluck('id')->all();
+				$unsortedPhotoIDs = $query->pluck('id')->all();
 			}
 
 			// Only regular albums are owners of photos, so we only need to
@@ -77,13 +78,13 @@ class Delete extends Action
 
 			/** @var Album $album */
 			foreach ($albums as $album) {
-				// Collect the IDs of all (aka recursive) photos in each album
-				$photoIDs = array_merge($photoIDs, $album->all_photos()->pluck('id')->all());
+				// Collect the IDs of all (aka recursive) sub-albums in each album
+				$recursiveAlbumIDs = array_merge($recursiveAlbumIDs, $album->descendants()->pluck('id')->all());
 			}
 
 			// Delete the photos from DB and obtain the list of files which need
 			// to be deleted later
-			$fileDeleter = (new PhotoDelete())->do($photoIDs);
+			$fileDeleter = (new PhotoDelete())->do($unsortedPhotoIDs, $recursiveAlbumIDs);
 
 			// Remove descendants of each album which is going to be deleted
 			// This is ugly as hell and copy & pasted from
@@ -93,9 +94,10 @@ class Delete extends Action
 			foreach ($albums as $album) {
 				$lft = $album->getLft();
 				$rgt = $album->getRgt();
-				$album->descendants()
-				->orderBy($album->getLftName(), 'desc')
-				->delete();
+				$album
+					->descendants()
+					->orderBy($album->getLftName(), 'desc')
+					->delete();
 				$height = $rgt - $lft + 1;
 				$album->newNestedSetQuery()->makeGap($rgt + 1, -$height);
 				Album::$actionsPerformed++;
@@ -108,14 +110,11 @@ class Delete extends Action
 			// As we might have deleted more regular albums as part of a subtree
 			// we simply delete all base albums who neither have an associated
 			// (regular) album or tag album.
-			BaseAlbumImpl::query()
-			->whereNotExists(function (BaseBuilder $baseBuilder) {
+			BaseAlbumImpl::query()->whereNotExists(function (BaseBuilder $baseBuilder) {
 				$baseBuilder->from('albums')->whereColumn('albums.id', '=', 'base_albums.id');
-			})
-			->whereNotExists(function (BaseBuilder $baseBuilder) {
+			})->whereNotExists(function (BaseBuilder $baseBuilder) {
 				$baseBuilder->from('tag_albums')->whereColumn('tag_albums.id', '=', 'base_albums.id');
-			})
-			->delete();
+			})->delete();
 
 			return $fileDeleter;
 		} catch (\Exception $e) {

@@ -45,22 +45,31 @@ class Delete
 	 *
 	 * The method only deletes the records for photos, their size variants
 	 * and potentially associated symbolic links from the DB.
-	 * The method does not delete the associated files from the physical
-	 * storage.
+	 * The method does not delete the associated files from physical storage.
 	 * Instead, the method returns an object in which all these files have
 	 * been collected.
 	 * This object can (and must) be used to eventually delete the files,
 	 * however doing so can be deferred.
 	 *
-	 * @param string[] $photoIds the photo IDs
+	 * The method allows deleting individual photos designated by
+	 * `$photoIDs` or photos of entire albums designated by `$albumIDs`.
+	 * The latter is more efficient, if albums shall be deleted, because
+	 * it results in more succinct SQL queries.
+	 * Both parameters can be used simultaneously and result in a merged
+	 * deletion of the joined set of photos.
+	 *
+	 * @param string[] $photoIDs the photo IDs
+	 * @param string[] $albumIDs the album IDs
 	 *
 	 * @return FileDeleter contains the collected files which became obsolete
 	 */
-	public function do(array $photoIds): FileDeleter
+	public function do(array $photoIDs, array $albumIDs = []): FileDeleter
 	{
-		$this->collectSizeVariantPathsByPhotoID($photoIds);
-		$this->collectSymLinksByPhotoID($photoIds);
-		$this->deleteDBRecords($photoIds);
+		$this->collectSizeVariantPathsByPhotoID($photoIDs);
+		$this->collectSizeVariantPathsByAlbumID($albumIDs);
+		$this->collectSymLinksByPhotoID($photoIDs);
+		$this->collectSymLinksByAlbumID($albumIDs);
+		$this->deleteDBRecords($photoIDs, $albumIDs);
 
 		return $this->fileDeleter;
 	}
@@ -72,22 +81,58 @@ class Delete
 	 * Size variants which belong to a photo which has a duplicate that is
 	 * not going to be deleted are skipped.
 	 *
-	 * @param array $photoIds the photo IDs
+	 * @param array $photoIDs the photo IDs
 	 *
 	 * @return void
 	 */
-	private function collectSizeVariantPathsByPhotoID(array $photoIds): void
+	private function collectSizeVariantPathsByPhotoID(array $photoIDs): void
 	{
+		if (empty($photoIDs)) {
+			return;
+		}
+
 		$svShortPaths = SizeVariant::query()
 			->from('size_variants as sv')
 			->select(['sv.short_path'])
 			->join('photos as p', 'p.id', '=', 'sv.photo_id')
-			->leftJoin('photos as dup', function (JoinClause $join) use ($photoIds) {
+			->leftJoin('photos as dup', function (JoinClause $join) use ($photoIDs) {
 				$join
 					->on('dup.checksum', '=', 'p.checksum')
-					->whereNotIn('dup.id', $photoIds);
+					->whereNotIn('dup.id', $photoIDs);
 			})
-			->whereIn('p.id', $photoIds)
+			->whereIn('p.id', $photoIDs)
+			->whereNull('dup.id')
+			->pluck('sv.short_path');
+		$this->fileDeleter->addRegularFiles($svShortPaths);
+	}
+
+	/**
+	 * Collects all short paths of size variants which shall be deleted from
+	 * disk.
+	 *
+	 * Size variants which belong to a photo which has a duplicate that is
+	 * not going to be deleted are skipped.
+	 *
+	 * @param array $albumIDs the album IDs
+	 *
+	 * @return void
+	 */
+	private function collectSizeVariantPathsByAlbumID(array $albumIDs): void
+	{
+		if (empty($albumIDs)) {
+			return;
+		}
+
+		$svShortPaths = SizeVariant::query()
+			->from('size_variants as sv')
+			->select(['sv.short_path'])
+			->join('photos as p', 'p.id', '=', 'sv.photo_id')
+			->leftJoin('photos as dup', function (JoinClause $join) use ($albumIDs) {
+				$join
+					->on('dup.checksum', '=', 'p.checksum')
+					->whereNotIn('dup.album_id', $albumIDs);
+			})
+			->whereIn('p.album_id', $albumIDs)
 			->whereNull('dup.id')
 			->pluck('sv.short_path');
 		$this->fileDeleter->addRegularFiles($svShortPaths);
@@ -96,16 +141,42 @@ class Delete
 	/**
 	 * Collects all symbolic links which shall be deleted from disk.
 	 *
-	 * @param array $photoIds
+	 * @param array $photoIDs the photo IDs
 	 *
 	 * @return void
 	 */
-	private function collectSymLinksByPhotoID(array $photoIds): void
+	private function collectSymLinksByPhotoID(array $photoIDs): void
 	{
+		if (empty($photoIDs)) {
+			return;
+		}
+
 		$symLinkPaths = SymLink::query()
 			->select(['sym_links.short_path'])
 			->join('size_variants', 'size_variants.id', '=', 'sym_links.size_variant_id')
-			->whereIn('size_variants.photo_id', $photoIds)
+			->whereIn('size_variants.photo_id', $photoIDs)
+			->pluck('sym_links.short_path');
+		$this->fileDeleter->addSymbolicLinks($symLinkPaths);
+	}
+
+	/**
+	 * Collects all symbolic links which shall be deleted from disk.
+	 *
+	 * @param array $albumIDs the album IDs
+	 *
+	 * @return void
+	 */
+	private function collectSymLinksByAlbumID(array $albumIDs): void
+	{
+		if (empty($albumIDs)) {
+			return;
+		}
+
+		$symLinkPaths = SymLink::query()
+			->select(['sym_links.short_path'])
+			->join('size_variants', 'size_variants.id', '=', 'sym_links.size_variant_id')
+			->join('photos', 'photos.id', '=', 'size_variants.photo_id')
+			->whereIn('photos.album_id', $albumIDs)
 			->pluck('sym_links.short_path');
 		$this->fileDeleter->addSymbolicLinks($symLinkPaths);
 	}
@@ -116,25 +187,58 @@ class Delete
 	 * The records are deleted in such an order that foreign keys are not
 	 * broken.
 	 *
-	 * @param array $photoIds
+	 * @param array $photoIDs the photo IDs
+	 * @param array $albumIDs the album IDs
 	 *
 	 * @return void
 	 */
-	private function deleteDBRecords(array $photoIds): void
+	private function deleteDBRecords(array $photoIDs, array $albumIDs): void
 	{
-		SymLink::query()
-			->whereExists(function (BaseBuilder $query) use ($photoIds) {
-				$query
-					->from('size_variants', 'sv')
-					->whereColumn('id', '=', 'sym_links.size_variant_id')
-					->whereIn('photo_id', $photoIds);
-			})
-			->delete();
-		SizeVariant::query()
-			->whereIn('size_variants.photo_id', $photoIds)
-			->delete();
-		Photo::query()
-			->whereIn('id', $photoIds)
-			->delete();
+		if (!empty($photoIDs)) {
+			SymLink::query()
+				->whereExists(function (BaseBuilder $query) use ($photoIDs) {
+					$query
+						->from('size_variants', 'sv')
+						->whereColumn('sv.id', '=', 'sym_links.size_variant_id')
+						->whereIn('photo_id', $photoIDs);
+				})
+				->delete();
+		}
+		if (!empty($albumIDs)) {
+			SymLink::query()
+				->whereExists(function (BaseBuilder $query) use ($albumIDs) {
+					$query
+						->from('size_variants', 'sv')
+						->whereColumn('sv.id', '=', 'sym_links.size_variant_id')
+						->join('photos', 'photos.id', '=', 'sv.photo_id')
+						->whereIn('photos.album_id', $albumIDs);
+				})
+				->delete();
+		}
+		if (!empty($photoIDs)) {
+			SizeVariant::query()
+				->whereIn('size_variants.photo_id', $photoIDs)
+				->delete();
+		}
+		if (!empty($albumIDs)) {
+			SizeVariant::query()
+				->whereExists(function (BaseBuilder $query) use ($albumIDs) {
+					$query
+						->from('photos', 'p')
+						->whereColumn('p.id', '=', 'size_variants.photo_id')
+						->whereIn('p.album_id', $albumIDs);
+				})
+				->delete();
+		}
+		if (!empty($photoIDs)) {
+			Photo::query()
+				->whereIn('id', $photoIDs)
+				->delete();
+		}
+		if (!empty($albumIDs)) {
+			Photo::query()
+				->whereIn('album_id', $albumIDs)
+				->delete();
+		}
 	}
 }
