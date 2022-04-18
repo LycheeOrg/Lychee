@@ -67,6 +67,8 @@ class Delete
 	{
 		$this->collectSizeVariantPathsByPhotoID($photoIDs);
 		$this->collectSizeVariantPathsByAlbumID($albumIDs);
+		$this->collectLivePhotoPathsByPhotoID($photoIDs);
+		$this->collectLivePhotoPathsByAlbumID($albumIDs);
 		$this->collectSymLinksByPhotoID($photoIDs);
 		$this->collectSymLinksByAlbumID($albumIDs);
 		$this->deleteDBRecords($photoIDs, $albumIDs);
@@ -139,6 +141,70 @@ class Delete
 	}
 
 	/**
+	 * Collects all short paths of live photos which shall be deleted from
+	 * disk.
+	 *
+	 * Live photos which have a duplicate that is not going to be deleted are
+	 * skipped.
+	 *
+	 * @param array $photoIDs the photo IDs
+	 *
+	 * @return void
+	 */
+	private function collectLivePhotoPathsByPhotoID(array $photoIDs)
+	{
+		if (empty($photoIDs)) {
+			return;
+		}
+
+		$livePhotoShortPaths = Photo::query()
+			->from('photos as p')
+			->select(['p.live_photo_short_path'])
+			->leftJoin('photos as dup', function (JoinClause $join) use ($photoIDs) {
+				$join
+					->on('dup.live_photo_checksum', '=', 'p.live_photo_checksum')
+					->whereNotIn('dup.id', $photoIDs);
+			})
+			->whereIn('p.id', $photoIDs)
+			->whereNull('dup.id')
+			->whereNotNull('p.live_photo_short_path')
+			->pluck('p.live_photo_short_path');
+		$this->fileDeleter->addRegularFiles($livePhotoShortPaths);
+	}
+
+	/**
+	 * Collects all short paths of live photos which shall be deleted from
+	 * disk.
+	 *
+	 * Live photos which have a duplicate that is not going to be deleted are
+	 * skipped.
+	 *
+	 * @param array $albumIDs the album IDs
+	 *
+	 * @return void
+	 */
+	private function collectLivePhotoPathsByAlbumID(array $albumIDs)
+	{
+		if (empty($albumIDs)) {
+			return;
+		}
+
+		$livePhotoShortPaths = Photo::query()
+			->from('photos as p')
+			->select(['p.live_photo_short_path'])
+			->leftJoin('photos as dup', function (JoinClause $join) use ($albumIDs) {
+				$join
+					->on('dup.live_photo_checksum', '=', 'p.live_photo_checksum')
+					->whereNotIn('dup.album_id', $albumIDs);
+			})
+			->whereIn('p.album_id', $albumIDs)
+			->whereNull('dup.id')
+			->whereNotNull('p.live_photo_short_path')
+			->pluck('p.live_photo_short_path');
+		$this->fileDeleter->addRegularFiles($livePhotoShortPaths);
+	}
+
+	/**
 	 * Collects all symbolic links which shall be deleted from disk.
 	 *
 	 * @param array $photoIDs the photo IDs
@@ -152,10 +218,11 @@ class Delete
 		}
 
 		$symLinkPaths = SymLink::query()
-			->select(['sym_links.short_path'])
-			->join('size_variants', 'size_variants.id', '=', 'sym_links.size_variant_id')
-			->whereIn('size_variants.photo_id', $photoIDs)
-			->pluck('sym_links.short_path');
+			->from('sym_links', 'sl')
+			->select(['sl.short_path'])
+			->join('size_variants as sv', 'sv.id', '=', 'sl.size_variant_id')
+			->whereIn('sv.photo_id', $photoIDs)
+			->pluck('sl.short_path');
 		$this->fileDeleter->addSymbolicLinks($symLinkPaths);
 	}
 
@@ -173,11 +240,12 @@ class Delete
 		}
 
 		$symLinkPaths = SymLink::query()
-			->select(['sym_links.short_path'])
-			->join('size_variants', 'size_variants.id', '=', 'sym_links.size_variant_id')
-			->join('photos', 'photos.id', '=', 'size_variants.photo_id')
-			->whereIn('photos.album_id', $albumIDs)
-			->pluck('sym_links.short_path');
+			->from('sym_links', 'sl')
+			->select(['sl.short_path'])
+			->join('size_variants as sv', 'sv.id', '=', 'sl.size_variant_id')
+			->join('photos as p', 'p.id', '=', 'sv.photo_id')
+			->whereIn('p.album_id', $albumIDs)
+			->pluck('sl.short_path');
 		$this->fileDeleter->addSymbolicLinks($symLinkPaths);
 	}
 
