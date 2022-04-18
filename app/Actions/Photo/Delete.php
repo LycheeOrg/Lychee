@@ -33,6 +33,13 @@ use Illuminate\Database\Query\JoinClause;
  */
 class Delete
 {
+	protected FileDeleter $fileDeleter;
+
+	public function __construct()
+	{
+		$this->fileDeleter = new FileDeleter();
+	}
+
 	/**
 	 * Deletes the designated photos from the DB.
 	 *
@@ -51,12 +58,26 @@ class Delete
 	 */
 	public function do(array $photoIds): FileDeleter
 	{
-		$fileDeleter = new FileDeleter();
+		$this->collectSizeVariantPathsByPhotoID($photoIds);
+		$this->collectSymLinksByPhotoID($photoIds);
+		$this->deleteDBRecords($photoIds);
 
-		// Get all short paths of size variants which belong to photos
-		// which are going to be deleted.
-		// But exclude those short paths which are duplicated by a size
-		// variant of a photo which is not going to be deleted.
+		return $this->fileDeleter;
+	}
+
+	/**
+	 * Collects all short paths of size variants which shall be deleted from
+	 * disk.
+	 *
+	 * Size variants which belong to a photo which has a duplicate that is
+	 * not going to be deleted are skipped.
+	 *
+	 * @param array $photoIds the photo IDs
+	 *
+	 * @return void
+	 */
+	private function collectSizeVariantPathsByPhotoID(array $photoIds): void
+	{
 		$svShortPaths = SizeVariant::query()
 			->from('size_variants as sv')
 			->select(['sv.short_path'])
@@ -69,18 +90,38 @@ class Delete
 			->whereIn('p.id', $photoIds)
 			->whereNull('dup.id')
 			->pluck('sv.short_path');
-		$fileDeleter->addRegularFiles($svShortPaths);
+		$this->fileDeleter->addRegularFiles($svShortPaths);
+	}
 
-		// Get all short paths of symbolic links which point to size variants
-		// which are going to be deleted
+	/**
+	 * Collects all symbolic links which shall be deleted from disk.
+	 *
+	 * @param array $photoIds
+	 *
+	 * @return void
+	 */
+	private function collectSymLinksByPhotoID(array $photoIds): void
+	{
 		$symLinkPaths = SymLink::query()
 			->select(['sym_links.short_path'])
 			->join('size_variants', 'size_variants.id', '=', 'sym_links.size_variant_id')
 			->whereIn('size_variants.photo_id', $photoIds)
 			->pluck('sym_links.short_path');
-		$fileDeleter->addSymbolicLinks($symLinkPaths);
+		$this->fileDeleter->addSymbolicLinks($symLinkPaths);
+	}
 
-		// Delete records from DB in "inverse" order to not break foreign keys
+	/**
+	 * Deletes the records from DB.
+	 *
+	 * The records are deleted in such an order that foreign keys are not
+	 * broken.
+	 *
+	 * @param array $photoIds
+	 *
+	 * @return void
+	 */
+	private function deleteDBRecords(array $photoIds): void
+	{
 		SymLink::query()
 			->whereExists(function (BaseBuilder $query) use ($photoIds) {
 				$query
@@ -95,7 +136,5 @@ class Delete
 		Photo::query()
 			->whereIn('id', $photoIds)
 			->delete();
-
-		return $fileDeleter;
 	}
 }
