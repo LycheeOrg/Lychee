@@ -299,14 +299,10 @@ class Delete
 				->delete();
 		}
 		if (!empty($photoIDs)) {
-			Photo::query()
-				->whereIn('id', $photoIDs)
-				->delete();
+			Photo::query()->whereIn('id', $photoIDs)->delete();
 		}
 		if (!empty($albumIDs)) {
-			Photo::query()
-				->whereIn('album_id', $albumIDs)
-				->delete();
+			Photo::query()->whereIn('album_id', $albumIDs)->delete();
 		}
 	}
 }
