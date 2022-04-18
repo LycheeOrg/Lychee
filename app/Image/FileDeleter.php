@@ -29,10 +29,16 @@ class FileDeleter
 	 */
 	protected Collection $symbolicLinks;
 
+	/**
+	 * @var Collection<string>
+	 */
+	protected Collection $regularFilesOrSymbolicLinks;
+
 	public function __construct()
 	{
 		$this->regularFiles = new Collection();
 		$this->symbolicLinks = new Collection();
+		$this->regularFilesOrSymbolicLinks = new Collection();
 	}
 
 	/**
@@ -56,6 +62,16 @@ class FileDeleter
 	}
 
 	/**
+	 * @param Collection<string> $regularFilesOrSymbolicLinks
+	 *
+	 * @return void
+	 */
+	public function addRegularFilesOrSymbolicLinks(Collection $regularFilesOrSymbolicLinks): void
+	{
+		$this->regularFilesOrSymbolicLinks = $this->regularFilesOrSymbolicLinks->merge($regularFilesOrSymbolicLinks);
+	}
+
+	/**
 	 * Deletes the collected files.
 	 *
 	 * @return bool
@@ -70,6 +86,31 @@ class FileDeleter
 		foreach ($this->regularFiles as $regularFile) {
 			if ($defaultDisk->exists($regularFile)) {
 				$success &= $defaultDisk->delete($regularFile);
+			}
+		}
+
+		// If the disk uses the local driver, we use low-level routines as
+		// these are also able to handle symbolic links in case of doubt
+		$isLocalDisk = ($defaultDisk->getDriver()->getAdapter() instanceof \League\Flysystem\Adapter\Local);
+		if ($isLocalDisk) {
+			foreach ($this->regularFilesOrSymbolicLinks as $fileOrLink) {
+				$absolutePath = $defaultDisk->path($fileOrLink);
+				// This seemingly complicated and redundant statement uses
+				// lazy evaluation and avoid errors for non-existing files.
+				// Also note, the `file_exist` returns `false` for existing,
+				// but dead links.
+				// So the first part takes care of deleting links no matter
+				// if they are dead or alive.
+				// The latter part deletes (regular) files, but avoids errors
+				// in case the file doesn't exist.
+				$success &= ((is_link($absolutePath) && unlink($absolutePath)) || !file_exists($absolutePath) || unlink($absolutePath));
+			}
+		} else {
+			// If the disk is no local, we can assume that each file is a regular file
+			foreach ($this->regularFilesOrSymbolicLinks as $regularFile) {
+				if ($defaultDisk->exists($regularFile)) {
+					$success &= $defaultDisk->delete($regularFile);
+				}
 			}
 		}
 
