@@ -60,13 +60,13 @@ class Delete
 		$svShortPaths = SizeVariant::query()
 			->from('size_variants as sv')
 			->select(['sv.short_path'])
-			->leftJoin('size_variants as dup', function (JoinClause $join) use ($photoIds) {
+			->join('photos as p', 'p.id', '=', 'sv.photo_id')
+			->leftJoin('photos as dup', function (JoinClause $join) use ($photoIds) {
 				$join
-					->on('dup.short_path', '=', 'sv.short_path')
-					->whereColumn('dup.id', '<>', 'sv.id')
-					->whereNotIn('dup.photo_id', $photoIds);
+					->on('dup.checksum', '=', 'p.checksum')
+					->whereNotIn('dup.id', $photoIds);
 			})
-			->whereIn('sv.photo_id', $photoIds)
+			->whereIn('p.id', $photoIds)
 			->whereNull('dup.id')
 			->pluck('sv.short_path');
 		$fileDeleter->addRegularFiles($svShortPaths);
