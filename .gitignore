@@ -33,8 +33,6 @@ npm-debug.log
 yarn-error.log
 .env
 .env.*
-!.env.example
-!.env.homestead
 
 public/dist/user.css
 aliases
