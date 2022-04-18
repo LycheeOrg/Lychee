@@ -63,10 +63,10 @@ class Delete extends Action
 				if (!AccessControl::is_admin()) {
 					$query->where('owner_id', '=', AccessControl::id());
 				}
-				$photoIDs = UnsortedAlbum::getInstance()->photos()->pluck('id')->all();
+				$photoIDs = $query->pluck('id')->all();
 			}
 
-			// Only regular albums are owner of photos, so we only need to
+			// Only regular albums are owners of photos, so we only need to
 			// find all photos in those and their descendants
 			// Only load necessary attributes for tree; in particular avoid
 			// loading expensive `min_taken_at` and `max_taken_at`.
@@ -104,7 +104,7 @@ class Delete extends Action
 			TagAlbum::query()->whereIn('id', $albumIDs)->delete();
 
 			// Note, we may need to delete more base albums than those whose
-			// ID is in `$albumsIDs`.
+			// ID is in `$albumIDs`.
 			// As we might have deleted more regular albums as part of a subtree
 			// we simply delete all base albums who neither have an associated
 			// (regular) album or tag album.
