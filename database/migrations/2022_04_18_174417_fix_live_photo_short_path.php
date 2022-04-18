@@ -22,6 +22,8 @@ class FixLivePhotoShortPath extends Migration
 	 * Run the migrations.
 	 *
 	 * @return void
+	 *
+	 * @throws RuntimeException
 	 */
 	public function up()
 	{
@@ -30,7 +32,8 @@ class FixLivePhotoShortPath extends Migration
 		// instead.
 		$sqlConcatLivePhotoPath = match ($this->driverName) {
 			'mysql' => DB::raw('CONCAT(\'big/\', live_photo_short_path)'),
-			default => DB::raw('\'big/\' || live_photo_short_path'),
+			'pgsql', 'sqlite' => DB::raw('\'big/\' || live_photo_short_path'),
+			default => throw new \RuntimeException('Unknown DBMS')
 		};
 
 		DB::table('photos')
@@ -43,6 +46,8 @@ class FixLivePhotoShortPath extends Migration
 	 * Reverse the migrations.
 	 *
 	 * @return void
+	 *
+	 * @throws RuntimeException
 	 */
 	public function down()
 	{
@@ -50,8 +55,7 @@ class FixLivePhotoShortPath extends Migration
 		// of a string has index 1 (not 0) in SQL.
 		// We want to remove `'big/'` or `'raw/'` from the string.
 		$sqlSubstringLivePhotoPath = match ($this->driverName) {
-			'mysql' => DB::raw('SUBSTRING(live_photo_short_path FROM 5'),
-			'pgsql' => DB::raw('SUBSTRING(live_photo_short_path FROM 5)'),
+			'mysql', 'pgsql' => DB::raw('SUBSTRING(live_photo_short_path FROM 5)'),
 			'sqlite' => DB::raw('SUBSTR(live_photo_short_path, 5)'),
 			default => throw new \RuntimeException('Unknown DBMS')
 		};
