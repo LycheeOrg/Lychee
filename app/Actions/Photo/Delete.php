@@ -105,7 +105,7 @@ class Delete
 			->whereIn('p.id', $photoIDs)
 			->whereNull('dup.id')
 			->pluck('sv.short_path');
-		$this->fileDeleter->addRegularFiles($svShortPaths);
+		$this->fileDeleter->addRegularFilesOrSymbolicLinks($svShortPaths);
 	}
 
 	/**
@@ -137,7 +137,7 @@ class Delete
 			->whereIn('p.album_id', $albumIDs)
 			->whereNull('dup.id')
 			->pluck('sv.short_path');
-		$this->fileDeleter->addRegularFiles($svShortPaths);
+		$this->fileDeleter->addRegularFilesOrSymbolicLinks($svShortPaths);
 	}
 
 	/**
@@ -169,7 +169,7 @@ class Delete
 			->whereNull('dup.id')
 			->whereNotNull('p.live_photo_short_path')
 			->pluck('p.live_photo_short_path');
-		$this->fileDeleter->addRegularFiles($livePhotoShortPaths);
+		$this->fileDeleter->addRegularFilesOrSymbolicLinks($livePhotoShortPaths);
 	}
 
 	/**
@@ -201,7 +201,7 @@ class Delete
 			->whereNull('dup.id')
 			->whereNotNull('p.live_photo_short_path')
 			->pluck('p.live_photo_short_path');
-		$this->fileDeleter->addRegularFiles($livePhotoShortPaths);
+		$this->fileDeleter->addRegularFilesOrSymbolicLinks($livePhotoShortPaths);
 	}
 
 	/**

@@ -60,13 +60,12 @@ class Delete
 			->leftJoin('size_variants as dup', function (JoinClause $join) use ($svIds) {
 				$join
 					->on('dup.short_path', '=', 'sv.short_path')
-					->whereColumn('dup.id', '<>', 'sv.id')
 					->whereNotIn('dup.id', $svIds);
 			})
 			->whereIn('sv.id', $svIds)
 			->whereNull('dup.id')
 			->pluck('sv.short_path');
-		$fileDeleter->addRegularFiles($svShortPaths);
+		$fileDeleter->addRegularFilesOrSymbolicLinks($svShortPaths);
 
 		// Get all short paths of symbolic links which point to size variants
 		// which are going to be deleted

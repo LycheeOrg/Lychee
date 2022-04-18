@@ -29,16 +29,16 @@ class AddIndexForDelete extends Migration
 	public function up()
 	{
 		Schema::table('size_variants', function (Blueprint $table) {
-			// This index is required by \App\Actions\Photo\Delete::do()
+			// This index is required by \App\Actions\SizeVariant\Delete::do()
 			// for `SizeVariant::query()`
-			$table->unique(['short_path', 'photo_id']);
+			$table->index(['short_path']);
 		});
 	}
 
 	public function down()
 	{
 		Schema::table('size_variants', function (Blueprint $table) {
-			$this->dropUniqueIfExists($table, 'size_variants_short_path_photo_id_unique');
+			$this->dropIndexIfExists($table, 'size_variants_short_path_index');
 		});
 	}
 
@@ -50,11 +50,11 @@ class AddIndexForDelete extends Migration
 	 *
 	 * @throws DBALException
 	 */
-	private function dropUniqueIfExists(Blueprint $table, string $indexName)
+	private function dropIndexIfExists(Blueprint $table, string $indexName)
 	{
 		$doctrineTable = $this->schemaManager->listTableDetails($table->getTable());
 		if ($doctrineTable->hasIndex($indexName)) {
-			$table->dropUnique($indexName);
+			$table->dropIndex($indexName);
 		}
 	}
 }
