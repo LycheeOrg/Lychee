@@ -2,6 +2,8 @@
 
 namespace App\Image;
 
+use App\DTO\ImageDimension;
+use App\Exceptions\ImageProcessingException;
 use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
@@ -47,6 +49,7 @@ interface ImageHandlerInterface
 	 *
 	 * @throws MediaFileUnsupportedException
 	 * @throws MediaFileOperationException
+	 * @throws ImageProcessingException
 	 */
 	public function load($stream): void;
 
@@ -61,57 +64,101 @@ interface ImageHandlerInterface
 	 * into a file and these methods are supposed to be compatible with
 	 * Flysystem.
 	 *
-	 * @return resource a stream which can be written into a file
+	 * The caller must call {@link ImageHandlerInterface::close()} after
+	 * the returned stream has been used to free the resources of the stream.
+	 *
+	 * TODO: Find a better name for this method which intuitively reflects what really happens
+	 *
+	 * @return resource a (readable) stream whose content can be written into
+	 *                  another stream, e.g. a file stream
 	 *
 	 * @throws MediaFileOperationException
 	 */
 	public function save();
 
 	/**
-	 * @param int $newWidth
-	 * @param int $newHeight
-	 * @param int &$resWidth
-	 * @param int &$resHeight
+	 * Closes the readable stream previously returned by {@link ImageHandlerInterface::save()}.
+	 *
+	 * It is safe to call this method, even if no stream has been opened.
+	 * In this case, the method is a silent no-op.
+	 * This method neither destroys the in-memory representation of a loaded
+	 * image.
+	 * I.e., no work will be lost by calling this method.
+	 * See {@link ImageHandlerInterface::reset()} for that.
+	 *
+	 * @return void
+	 */
+	public function close(): void;
+
+	/**
+	 * Frees all internal resources.
+	 *
+	 * This method resets the object into a state where no image is loaded.
+	 * It frees all internal resources, releases all temporary buffers and
+	 * closes all streams.
+	 * Any work which has not been saved by a prior call to
+	 * {@link ImageHandlerInterface::save()} followed by
+	 * {@link ImageHandlerInterface::close()} will be lost.
+	 *
+	 * @return void
+	 */
+	public function reset(): void;
+
+	/**
+	 * Scales the image proportionally to the designated dimensions such
+	 * that the new dimension don't exceed the designated dimensions.
+	 *
+	 * The resulting dimension may differ from the requested dimension due
+	 * to proportional scaling.
+	 *
+	 * Either the new width or height may be zero which means that this
+	 * dimension is chosen automatically.
+	 *
+	 * @param ImageDimension $dstDim the designated dimensions
+	 *
+	 * @return ImageDimension the resulting dimension
+	 *
+	 * @throws ImageProcessingException
+	 * @throws LycheeDomainException
+	 */
+	public function scale(ImageDimension $dstDim): ImageDimension;
+
+	/**
+	 * Crops the image to the designated dimensions.
+	 *
+	 * @param ImageDimension $dstDim the designated dimensions
 	 *
 	 * @return void
 	 *
-	 * @throws MediaFileOperationException
+	 * @throws ImageProcessingException
 	 */
-	public function scale(
-		int $newWidth,
-		int $newHeight,
-		int &$resWidth,
-		int &$resHeight
-	): void;
+	public function crop(ImageDimension $dstDim): void;
 
 	/**
-	 * @param int $newWidth
-	 * @param int $newHeight
+	 * Rotates the imaged based on the given angle.
 	 *
-	 * @return void
-	 *
-	 * @throws MediaFileOperationException
-	 */
-	public function crop(int $newWidth, int $newHeight): void;
-
-	/**
-	 * Rotates and flips a photo based on its EXIF orientation.
-	 *
-	 * @param int $orientation the orientation value (1..8) as defined by EXIF specification, default is 1 (means up-right and not mirrored/flipped)
-	 *
-	 * @return array{width: int, height: int} an associative array `['width' => (int), 'height' => (int)]` with the new width and height after rotation
-	 *
-	 * @throws MediaFileOperationException
-	 */
-	public function autoRotate(int $orientation = 1): array;
-
-	/**
 	 * @param int $angle
 	 *
-	 * @return void
+	 * @return ImageDimension the resulting dimension
 	 *
-	 * @throws MediaFileOperationException
-	 * @throws LycheeDomainException       thrown if `$angle` is out-of-bounds
+	 * @throws ImageProcessingException
+	 * @throws LycheeDomainException    thrown if `$angle` is out-of-bounds
 	 */
-	public function rotate(int $angle): void;
+	public function rotate(int $angle): ImageDimension;
+
+	/**
+	 * Returns the dimension of the image in upright orientation.
+	 *
+	 * The returned dimension may be swapped compared to the dimensions
+	 * returned by raw EXIF data.
+	 * An image may be stored rotated or mirrored and EXIF returns the raw
+	 * width and height.
+	 * This method returns the dimension after the photo has been put into
+	 * upright orientation.
+	 *
+	 * @return ImageDimension the dimensions of the image
+	 *
+	 * @throws ImageProcessingException
+	 */
+	public function getDimensions(): ImageDimension;
 }
