@@ -2,11 +2,12 @@
 
 namespace App\Exceptions;
 
+use Symfony\Component\HttpFoundation\Response;
+
 /**
- * MediaFileOperationException.
+ * ImageProcessingException.
  *
- * Indicates any error related to media files.
- * This includes error like moving/copying media files, etc.
+ * Indicates any error related to image processing.
  * Returns status code 500 (Internal server error) to an HTTP client.
  *
  * As this exception reports a 5xx code (opposed to a 4xx code) this
@@ -21,10 +22,10 @@ namespace App\Exceptions;
  * The type and format of a media file should be validated first and the
  * application should throw an {@link MediaFileUnsupportedException} instead.
  */
-class MediaFileOperationException extends FileOperationException
+class ImageProcessingException extends LycheeBaseException
 {
 	public function __construct(string $msg, \Throwable $previous = null)
 	{
-		parent::__construct($msg, $previous);
+		parent::__construct(Response::HTTP_INTERNAL_SERVER_ERROR, $msg, $previous);
 	}
 }
