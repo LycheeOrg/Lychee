@@ -106,7 +106,7 @@ class FileDeleter
 				$success &= ((is_link($absolutePath) && unlink($absolutePath)) || !file_exists($absolutePath) || unlink($absolutePath));
 			}
 		} else {
-			// If the disk is no local, we can assume that each file is a regular file
+			// If the disk is not local, we can assume that each file is a regular file
 			foreach ($this->regularFilesOrSymbolicLinks as $regularFile) {
 				if ($defaultDisk->exists($regularFile)) {
 					$success &= $defaultDisk->delete($regularFile);
