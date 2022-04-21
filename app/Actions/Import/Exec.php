@@ -4,7 +4,6 @@ namespace App\Actions\Import;
 
 use App\Actions\Album\Create as AlbumCreate;
 use App\Actions\Photo\Create as PhotoCreate;
-use App\Actions\Photo\Extensions\Constants;
 use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\DTO\ImportEventReport;
@@ -17,6 +16,7 @@ use App\Exceptions\InvalidDirectoryException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Exceptions\ReservedDirectoryException;
 use App\Facades\Helpers;
+use App\Image\MediaFile;
 use App\Image\NativeLocalFile;
 use App\Models\Album;
 use App\Models\Configs;
@@ -31,8 +31,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Exec
 {
-	use Constants;
-
 	protected ImportMode $importMode;
 	protected PhotoCreate $photoCreate;
 	protected AlbumCreate $albumCreate;
@@ -291,7 +289,7 @@ class Exec
 					// So we put `exif_imagetype` last in the condition and
 					// exploit lazy evaluation of boolean terms for the case
 					// that we import a "short" raw file.
-					if ($is_raw || in_array(strtolower($extension), $this->validExtensions, true) || exif_imagetype($file) !== false) {
+					if ($is_raw || in_array(strtolower($extension), MediaFile::VALID_MEDIA_FILE_EXTENSIONS, true) || exif_imagetype($file) !== false) {
 						$this->photoCreate->add(SourceFileInfo::createByLocalFile(new NativeLocalFile($file)), $parentAlbum);
 					} else {
 						// TODO: Separately throwing this particular exception should not be necessary, because `photoCreate->add` should do that; see above

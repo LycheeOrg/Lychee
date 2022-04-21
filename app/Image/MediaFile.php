@@ -7,7 +7,7 @@ use App\Exceptions\MediaFileOperationException;
 use Illuminate\Http\UploadedFile;
 
 /**
- * Interface MediaFile.
+ * Class MediaFile.
  *
  * This interface abstracts from the differences of files which are provided
  * through a Flysystem adapter and files outside Flysystem.
@@ -32,6 +32,43 @@ use Illuminate\Http\UploadedFile;
  */
 abstract class MediaFile
 {
+	public const VALID_PHP_EXIF_IMAGE_TYPES = [
+		IMAGETYPE_GIF,
+		IMAGETYPE_JPEG,
+		IMAGETYPE_PNG,
+		IMAGETYPE_WEBP,
+	];
+
+	public const VALID_MEDIA_FILE_EXTENSIONS = [
+		'.jpg',
+		'.jpeg',
+		'.png',
+		'.gif',
+		'.ogv',
+		'.mp4',
+		'.mpg',
+		'.webm',
+		'.webp',
+		'.mov',
+		'.m4v',
+		'.avi',
+		'.wmv',
+	];
+
+	public const VALID_VIDEO_MIME_TYPES = [
+		'video/mp4',
+		'video/mpeg',
+		'image/x-tga', // mpg; will be corrected by the metadata extractor
+		'video/ogg',
+		'video/webm',
+		'video/quicktime',
+		'video/x-ms-asf', // wmv file
+		'video/x-ms-wmv', // wmv file
+		'video/x-msvideo', // Avi
+		'video/x-m4v', // Avi
+		'application/octet-stream', // Some mp4 files; will be corrected by the metadata extractor
+	];
+
 	/** @var ?resource */
 	protected $stream = null;
 
@@ -110,4 +147,28 @@ abstract class MediaFile
 	 * @return string
 	 */
 	abstract public function getBasename(): string;
+
+	/**
+	 * Validates whether the given MIME type designates a valid video type.
+	 *
+	 * @param string $mimeType the MIME type
+	 *
+	 * @return bool
+	 */
+	public static function isValidVideoMimeType(string $mimeType): bool
+	{
+		return in_array($mimeType, self::VALID_VIDEO_MIME_TYPES, true);
+	}
+
+	/**
+	 * Validates whether the given extension is a valid image or video extension.
+	 *
+	 * @param string $extension the file extension
+	 *
+	 * @return bool
+	 */
+	public static function isValidMediaFileExtension(string $extension): bool
+	{
+		return in_array(strtolower($extension), self::VALID_MEDIA_FILE_EXTENSIONS, true);
+	}
 }

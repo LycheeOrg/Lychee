@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Actions\Photo\Extensions\Constants;
 use App\Contracts\ExternalLycheeException;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Exceptions\UnexpectedException;
+use App\Image\MediaFile;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use App\Models\SizeVariant;
@@ -17,8 +17,6 @@ use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleExce
 
 class ExifLens extends Command
 {
-	use Constants;
-
 	/**
 	 * The name and signature of the console command.
 	 *
@@ -69,7 +67,7 @@ class ExifLens extends Command
 				$r->where('type', '=', SizeVariant::ORIGINAL);
 			}])
 				->where('lens', '=', '')
-				->whereNotIn('type', $this->getValidVideoTypes())
+				->whereNotIn('type', MediaFile::VALID_VIDEO_MIME_TYPES)
 				->offset($from)
 				->limit($argument)
 				->get();

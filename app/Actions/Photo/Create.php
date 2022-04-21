@@ -3,7 +3,6 @@
 namespace App\Actions\Photo;
 
 use App\Actions\Photo\Extensions\Checks;
-use App\Actions\Photo\Extensions\Constants;
 use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\AddDuplicateStrategy;
 use App\Actions\Photo\Strategies\AddPhotoPartnerStrategy;
@@ -18,6 +17,8 @@ use App\Exceptions\ExternalComponentFailedException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\MediaFileOperationException;
+use App\Image\MediaFile;
+use App\Image\NativeLocalFile;
 use App\Metadata\Extractor;
 use App\Models\Album;
 use App\Models\Photo;
@@ -29,7 +30,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 class Create
 {
 	use Checks;
-	use Constants;
 
 	/** @var AddStrategyParameters the strategy parameters prepared and compiled by this class */
 	protected AddStrategyParameters $strategyParameters;
@@ -69,7 +69,7 @@ class Create
 		$this->initParentAlbum($album);
 
 		// Fill in information about source file
-		$this->strategyParameters->kind = $this->file_kind($sourceFileInfo);
+		$this->strategyParameters->kind = NativeLocalFile::getFileKind($sourceFileInfo);
 		$this->strategyParameters->sourceFileInfo = $sourceFileInfo;
 
 		// Fill in meta data extracted from source file
@@ -180,7 +180,7 @@ class Create
 			// different kind then the uploaded media.
 			// Photo+Photo or Video+Video does not work
 			// TODO: This condition is probably erroneous, if one of the types equals 'raw'.
-			if (in_array($mimeType, $this->validVideoTypes, true) === in_array($livePartner->type, $this->validVideoTypes, true)) {
+			if (in_array($mimeType, MediaFile::VALID_VIDEO_MIME_TYPES, true) === in_array($livePartner->type, MediaFile::VALID_VIDEO_MIME_TYPES, true)) {
 				$livePartner = null;
 			}
 		}

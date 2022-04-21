@@ -91,11 +91,11 @@ class Extractor
 	 *
 	 * The parameter `$kind` is enum-like parameter and accepts the values
 	 * `photo`, `video` or `raw` (see
-	 * {@link \App\Actions\Photo\Extensions\Checks::file_kind}).
+	 * {@link \App\Image\NativeLocalFile::getFileKind()).
 	 * In other words `kind` is a coarsening of the mime type of a file, but
 	 * not identical to the mime type.
 	 * See {@link \App\Actions\Photo\Create::add()} which sets `$kind` to the
-	 * result of {@link \App\Actions\Photo\Extensions\Checks::file_kind()}.
+	 * result of {@link \App\Image\NativeLocalFile::getFileKind()}.
 	 * However, there are at least three other occurrences where this method
 	 * is called and the full mime type is passed as the second parameter:
 	 * see {@link \App\Console\Commands\ExifLens::handle()},

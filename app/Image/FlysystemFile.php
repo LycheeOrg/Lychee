@@ -19,8 +19,6 @@ class FlysystemFile extends MediaFile
 {
 	protected Filesystem $disk;
 	protected string $relativePath;
-	/** @var ?resource */
-	protected $stream = null;
 
 	public function __construct(Filesystem $disk, string $relativePath)
 	{

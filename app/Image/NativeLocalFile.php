@@ -2,8 +2,13 @@
 
 namespace App\Image;
 
+use App\Actions\Import\FromUrl;
+use App\Actions\Photo\Extensions\SourceFileInfo;
+use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\MediaFileUnsupportedException;
+use App\Models\Configs;
 use Illuminate\Http\UploadedFile;
 
 /**
@@ -123,5 +128,68 @@ class NativeLocalFile extends MediaFile
 	public function getMimeType(): string
 	{
 		return mime_content_type($this->absolutePath);
+	}
+
+	/**
+	 * Returns the kind of media file.
+	 *
+	 * The kind is one out of:
+	 *
+	 *  - `'photo'` if the media file is a photo
+	 *  - `'video'` if the media file is a video
+	 *  - `'raw'` if the media file is an accepted file, but none of the other
+	 *    two kinds (we only check extensions).
+	 *
+	 * TODO: Make this method non-static and more general
+	 *
+	 * @param SourceFileInfo $sourceFileInfo information about source file
+	 *
+	 * @return string either `'photo'`, `'video'` or `'raw'`
+	 *
+	 * @throws MediaFileUnsupportedException
+	 * @throws ExternalComponentMissingException
+	 */
+	public static function getFileKind(SourceFileInfo $sourceFileInfo): string
+	{
+		$extension = $sourceFileInfo->getOriginalExtension();
+		// check raw files
+		$raw_formats = strtolower(Configs::get_value('raw_formats', ''));
+		if (in_array(strtolower($extension), explode('|', $raw_formats), true)) {
+			return 'raw';
+		}
+
+		if (in_array(strtolower($extension), MediaFile::VALID_MEDIA_FILE_EXTENSIONS, true)) {
+			$mimeType = $sourceFileInfo->getOriginalMimeType();
+			if (in_array($mimeType, MediaFile::VALID_VIDEO_MIME_TYPES, true)) {
+				return 'video';
+			}
+
+			return 'photo';
+		}
+
+		// let's check for the mimetype
+		// maybe we don't have a photo
+		if (!function_exists('exif_imagetype')) {
+			throw new ExternalComponentMissingException('EXIF library mssing.');
+		}
+
+		$type = exif_imagetype($sourceFileInfo->getFile()->getAbsolutePath());
+		if (in_array($type, MediaFile::VALID_PHP_EXIF_IMAGE_TYPES, true)) {
+			return 'photo';
+		}
+
+		throw new MediaFileUnsupportedException('Photo type not supported: ' . $sourceFileInfo->getOriginalName());
+	}
+
+	/**
+	 * Checks if the file is a valid image type acc. to {@link MediaFile::VALID_PHP_EXIF_IMAGE_TYPES}.
+	 *
+	 * TODO: This is currently only used by {@link FromUrl} and dangerous, because we use the file extension provided from outside
+	 *
+	 * @return bool true, if the file is of valid image type
+	 */
+	public function isValidImageType(): bool
+	{
+		return in_array(exif_imagetype($this->getAbsolutePath()), self::VALID_PHP_EXIF_IMAGE_TYPES, true);
 	}
 }

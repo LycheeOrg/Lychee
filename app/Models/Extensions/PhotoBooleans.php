@@ -2,13 +2,11 @@
 
 namespace App\Models\Extensions;
 
-use App\Actions\Photo\Extensions\Constants;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Image\MediaFile;
 
 trait PhotoBooleans
 {
-	use Constants;
-
 	/**
 	 * We are checking if the beginning of the type string is
 	 * video.
@@ -23,7 +21,7 @@ trait PhotoBooleans
 			throw new IllegalOrderOfOperationException('Photo::isVideo() must not be called before Photo::$type has been set');
 		}
 
-		return $this->isValidVideoType($this->type);
+		return MediaFile::isValidVideoMimeType($this->type);
 	}
 
 	/**

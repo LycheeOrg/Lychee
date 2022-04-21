@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\Actions\Photo\Extensions\Constants;
 use App\Contracts\ExternalLycheeException;
 use App\Contracts\LycheeException;
 use App\Contracts\SizeVariantFactory;
 use App\Exceptions\UnexpectedException;
+use App\Image\MediaFile;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use Illuminate\Console\Command;
@@ -14,8 +14,6 @@ use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleExce
 
 class VideoData extends Command
 {
-	use Constants;
-
 	/**
 	 * The name and signature of the console command.
 	 *
@@ -70,7 +68,7 @@ class VideoData extends Command
 
 			$photos = Photo::query()
 				->with(['size_variants'])
-				->whereIn('type', $this->getValidVideoTypes())
+				->whereIn('type', MediaFile::VALID_VIDEO_MIME_TYPES)
 				->where('width', '=', 0)
 				->take($this->argument('count'))
 				->get();
