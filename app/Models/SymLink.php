@@ -124,7 +124,7 @@ class SymLink extends Model
 		$fullPath = Storage::disk(self::DISK_NAME)->path($this->short_path);
 		// Laravel and Flysystem does not support symbolic links.
 		// So we must use low-level methods here.
-		if ((is_link($fullPath) && !unlink($fullPath)) || (file_exists($fullPath)) && !is_link($fullPath)) {
+		if ((is_link($fullPath) && !unlink($fullPath)) || (file_exists($fullPath) && !is_link($fullPath))) {
 			return false;
 		}
 

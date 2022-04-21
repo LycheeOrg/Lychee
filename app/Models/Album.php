@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Actions\Album\Delete;
 use App\Models\Extensions\AlbumBuilder;
 use App\Models\Extensions\BaseAlbum;
 use App\Relations\HasAlbumThumb;
@@ -150,44 +151,32 @@ class Album extends BaseAlbum implements Node
 		return $result;
 	}
 
-	public function delete(): bool
+	/**
+	 * {@inheritDoc}
+	 */
+	public function performDeleteOnModel(): void
 	{
-		try {
-			$this->refreshNode();
+		$fileDeleter = (new Delete())->do([$this->id]);
+		$this->exists = false;
+		$fileDeleter->do();
+	}
 
-			$success = true;
-
-			// Delete all recursive child photos first
-			$photos = $this->all_photos()->lazy();
-			/** @var Photo $photo */
-			foreach ($photos as $photo) {
-				// This also takes care of proper deletion of physical files from disk
-				// Note, we need this strange condition, because `delete` may also
-				// return `null` on success, so we must explicitly test for
-				// _not `false`_.
-				$success &= ($photo->delete() !== false);
-			}
-
-			if (!$success) {
-				return false;
-			}
-
-			// Finally, delete the album itself
-			// Note, we need this strange condition, because `delete` may also
-			// return `null` on success, so we must explicitly test for
-			// _not `false`_.
-			$success &= (parent::delete() !== false);
-
-			return $success;
-		} catch (\Exception $e) {
-			try {
-				// if anything goes wrong, don't leave the tree in an inconsistent state
-				$this->newModelQuery()->fixTree();
-			} catch (\Throwable) {
-				// Sic! We cannot do anything about the inner exception
-			}
-			throw $e;
-		}
+	/**
+	 * This method is a no-op.
+	 *
+	 * This method is originally defined by {@link NodeTrait::deleteDescendants()}
+	 * and called as part of the event listener for the 'deleting' event.
+	 * The event listener is installed by {@link NodeTrait::bootNodeTrait()}.
+	 *
+	 * For efficiency reasons all descendants are deleted by
+	 * {@link Delete::do()}.
+	 * Hence, we must avoid any attempt to delete the descendants twice.
+	 *
+	 * @return void
+	 */
+	protected function deleteDescendants(): void
+	{
+		// deliberately a no op
 	}
 
 	/**

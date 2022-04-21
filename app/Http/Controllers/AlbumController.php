@@ -30,6 +30,7 @@ use App\Models\Logs;
 use App\Models\TagAlbum;
 use Illuminate\Http\Request as IlluminateRequest;
 use Illuminate\Http\Response as IlluminateResponse;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
@@ -238,11 +239,10 @@ class AlbumController extends Controller
 	 */
 	public function delete(AlbumIDsRequest $request, Delete $delete): IlluminateResponse
 	{
-		if ($delete->do(explode(',', $request['albumIDs']))) {
-			return response()->noContent();
-		} else {
-			return response('', 500);
-		}
+		$fileDeleter = $delete->do(explode(',', $request['albumIDs']));
+		App::terminating(fn () => $fileDeleter->do());
+
+		return response()->noContent();
 	}
 
 	/**

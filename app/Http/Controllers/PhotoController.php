@@ -30,6 +30,7 @@ use App\Rules\ModelIDRule;
 use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
@@ -227,7 +228,8 @@ class PhotoController extends Controller
 	 */
 	public function delete(PhotoIDsRequest $request, Delete $delete): IlluminateResponse
 	{
-		$delete->do(explode(',', $request['photoIDs']));
+		$fileDeleter = $delete->do(explode(',', $request['photoIDs']));
+		App::terminating(fn () => $fileDeleter->do());
 
 		return response()->noContent();
 	}
