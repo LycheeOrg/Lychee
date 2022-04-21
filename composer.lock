@@ -1902,16 +1902,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v8.83.7",
+            "version": "v8.83.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "0706abf5c99d3b14149fcf79c95074dadd40b203"
+                "reference": "ac6e16bb56510eda2e373c6365d5c92da3fd559d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/0706abf5c99d3b14149fcf79c95074dadd40b203",
-                "reference": "0706abf5c99d3b14149fcf79c95074dadd40b203",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/ac6e16bb56510eda2e373c6365d5c92da3fd559d",
+                "reference": "ac6e16bb56510eda2e373c6365d5c92da3fd559d",
                 "shasum": ""
             },
             "require": {
@@ -2071,7 +2071,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2022-04-05T15:08:10+00:00"
+            "time": "2022-04-19T15:01:38+00:00"
         },
         {
             "name": "laravel/serializable-closure",
@@ -2321,16 +2321,16 @@
         },
         {
             "name": "league/mime-type-detection",
-            "version": "1.9.0",
+            "version": "1.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/mime-type-detection.git",
-                "reference": "aa70e813a6ad3d1558fc927863d47309b4c23e69"
+                "reference": "ff6248ea87a9f116e78edd6002e39e5128a0d4dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/mime-type-detection/zipball/aa70e813a6ad3d1558fc927863d47309b4c23e69",
-                "reference": "aa70e813a6ad3d1558fc927863d47309b4c23e69",
+                "url": "https://api.github.com/repos/thephpleague/mime-type-detection/zipball/ff6248ea87a9f116e78edd6002e39e5128a0d4dd",
+                "reference": "ff6248ea87a9f116e78edd6002e39e5128a0d4dd",
                 "shasum": ""
             },
             "require": {
@@ -2361,7 +2361,7 @@
             "description": "Mime-type detection for Flysystem",
             "support": {
                 "issues": "https://github.com/thephpleague/mime-type-detection/issues",
-                "source": "https://github.com/thephpleague/mime-type-detection/tree/1.9.0"
+                "source": "https://github.com/thephpleague/mime-type-detection/tree/1.11.0"
             },
             "funding": [
                 {
@@ -2373,7 +2373,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-11-21T11:48:40+00:00"
+            "time": "2022-04-17T13:12:02+00:00"
         },
         {
             "name": "league/uri",
@@ -2684,12 +2684,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/php-exif.git",
-                "reference": "2f74ba7d7a66bc8c9af4e8e8731797d9d4103437"
+                "reference": "a4e6f5c5bf30f1e240ec9a68b4433458c71c5d30"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/2f74ba7d7a66bc8c9af4e8e8731797d9d4103437",
-                "reference": "2f74ba7d7a66bc8c9af4e8e8731797d9d4103437",
+                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/a4e6f5c5bf30f1e240ec9a68b4433458c71c5d30",
+                "reference": "a4e6f5c5bf30f1e240ec9a68b4433458c71c5d30",
                 "shasum": ""
             },
             "require": {
@@ -2745,7 +2745,7 @@
                 "issues": "https://github.com/LycheeOrg/php-exif/issues",
                 "source": "https://github.com/LycheeOrg/php-exif/tree/master"
             },
-            "time": "2021-10-31T13:57:15+00:00"
+            "time": "2022-04-14T22:25:52+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
@@ -3838,20 +3838,20 @@
         },
         {
             "name": "psr/cache",
-            "version": "1.0.1",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/cache.git",
-                "reference": "d11b50ad223250cf17b86e38383413f5a6764bf8"
+                "reference": "213f9dbc5b9bfbc4f8db86d2838dc968752ce13b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/cache/zipball/d11b50ad223250cf17b86e38383413f5a6764bf8",
-                "reference": "d11b50ad223250cf17b86e38383413f5a6764bf8",
+                "url": "https://api.github.com/repos/php-fig/cache/zipball/213f9dbc5b9bfbc4f8db86d2838dc968752ce13b",
+                "reference": "213f9dbc5b9bfbc4f8db86d2838dc968752ce13b",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": ">=8.0.0"
             },
             "type": "library",
             "extra": {
@@ -3871,7 +3871,7 @@
             "authors": [
                 {
                     "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
+                    "homepage": "https://www.php-fig.org/"
                 }
             ],
             "description": "Common interface for caching libraries",
@@ -3881,9 +3881,9 @@
                 "psr-6"
             ],
             "support": {
-                "source": "https://github.com/php-fig/cache/tree/master"
+                "source": "https://github.com/php-fig/cache/tree/2.0.0"
             },
-            "time": "2016-08-06T20:24:11+00:00"
+            "time": "2021-02-03T23:23:37+00:00"
         },
         {
             "name": "psr/container",
@@ -8221,21 +8221,21 @@
         },
         {
             "name": "whichbrowser/parser",
-            "version": "v2.1.2",
+            "version": "v2.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WhichBrowser/Parser-PHP.git",
-                "reference": "bcf642a1891032de16a5ab976fd352753dd7f9a0"
+                "reference": "1044880bc792dbce5948fbff22ae731c43c280d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WhichBrowser/Parser-PHP/zipball/bcf642a1891032de16a5ab976fd352753dd7f9a0",
-                "reference": "bcf642a1891032de16a5ab976fd352753dd7f9a0",
+                "url": "https://api.github.com/repos/WhichBrowser/Parser-PHP/zipball/1044880bc792dbce5948fbff22ae731c43c280d9",
+                "reference": "1044880bc792dbce5948fbff22ae731c43c280d9",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0",
-                "psr/cache": "^1.0"
+                "psr/cache": "^1.0 || ^2.0 || ^3.0"
             },
             "require-dev": {
                 "cache/array-adapter": "^1.1",
@@ -8279,9 +8279,9 @@
             ],
             "support": {
                 "issues": "https://github.com/WhichBrowser/Parser-PHP/issues",
-                "source": "https://github.com/WhichBrowser/Parser-PHP/tree/v2.1.2"
+                "source": "https://github.com/WhichBrowser/Parser-PHP/tree/v2.1.7"
             },
-            "time": "2021-05-10T10:18:11+00:00"
+            "time": "2022-04-19T20:14:54+00:00"
         },
         {
             "name": "willdurand/geocoder",
@@ -9153,16 +9153,16 @@
         },
         {
             "name": "itsgoingd/clockwork",
-            "version": "v5.1.5",
+            "version": "v5.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/itsgoingd/clockwork.git",
-                "reference": "6a7b3942224fa53cf3704d9adba636e1f3dfeb9a"
+                "reference": "9df41432da1d8cb39c7fda383ddcc02231c83ff3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/itsgoingd/clockwork/zipball/6a7b3942224fa53cf3704d9adba636e1f3dfeb9a",
-                "reference": "6a7b3942224fa53cf3704d9adba636e1f3dfeb9a",
+                "url": "https://api.github.com/repos/itsgoingd/clockwork/zipball/9df41432da1d8cb39c7fda383ddcc02231c83ff3",
+                "reference": "9df41432da1d8cb39c7fda383ddcc02231c83ff3",
                 "shasum": ""
             },
             "require": {
@@ -9209,7 +9209,7 @@
             ],
             "support": {
                 "issues": "https://github.com/itsgoingd/clockwork/issues",
-                "source": "https://github.com/itsgoingd/clockwork/tree/v5.1.5"
+                "source": "https://github.com/itsgoingd/clockwork/tree/v5.1.6"
             },
             "funding": [
                 {
@@ -9217,7 +9217,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-02-13T22:57:42+00:00"
+            "time": "2022-04-12T21:35:47+00:00"
         },
         {
             "name": "laravel/homestead",
@@ -11657,5 +11657,5 @@
     "platform-dev": {
         "ext-imagick": "*"
     },
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.1.0"
 }
