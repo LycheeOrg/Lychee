@@ -4,12 +4,10 @@ namespace App\Actions\Import;
 
 use App\Actions\Import\Extensions\Checks;
 use App\Actions\Photo\Create;
-use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\MassImportException;
 use App\Exceptions\MediaFileOperationException;
-use App\Exceptions\MediaFileUnsupportedException;
 use App\Image\MediaFile;
 use App\Image\TemporaryLocalFile;
 use App\Models\Album;
@@ -66,15 +64,12 @@ class FromUrl
 				$basename = pathinfo($path, PATHINFO_FILENAME);
 				$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
 
-				// Validate photo type and extension even when $this->photo (=> $photo->add) will do the same.
-				// This prevents us from downloading invalid photos.
-				// Verify extension
-				if (!MediaFile::isValidMediaFileExtension($extension)) {
-					throw new MediaFileUnsupportedException('Photo format not supported (' . $url . ')');
-				}
+				// Validate photo extension even when `$create->add()` will do later.
+				// This prevents us from downloading unsupported files.
+				MediaFile::assertIsSupportedFileExtension($extension);
 
 				// Download file, before exif checks the mimetype, otherwise we download it twice
-				$tmpFile = new TemporaryLocalFile($extension);
+				$tmpFile = new TemporaryLocalFile($extension, $basename);
 				try {
 					$downloadStream = fopen($url, 'r');
 					$tmpFile->write($downloadStream);
@@ -85,13 +80,11 @@ class FromUrl
 
 				// Verify image
 				// TODO: Consider to make this test a general part of \App\Actions\Photo\Create::add. Then we don't need those tests at multiple places.
-				if (!$tmpFile->isValidImageType() && !in_array(strtolower($extension), MediaFile::VALID_MEDIA_FILE_EXTENSIONS, true)) {
-					throw new MediaFileUnsupportedException('Photo format not supported (' . $url . ')');
-				}
+				$tmpFile->assertIsSupported();
 
 				// Import photo
 				$result->add(
-					$create->add(SourceFileInfo::createByTempFile($basename, $extension, $tmpFile), $album)
+					$create->add($tmpFile, $album)
 				);
 			} catch (\Throwable $e) {
 				$exceptions[] = $e;

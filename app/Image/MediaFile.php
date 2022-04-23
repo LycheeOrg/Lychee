@@ -4,6 +4,7 @@ namespace App\Image;
 
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\MediaFileUnsupportedException;
 use Illuminate\Http\UploadedFile;
 
 /**
@@ -32,30 +33,40 @@ use Illuminate\Http\UploadedFile;
  */
 abstract class MediaFile
 {
-	public const VALID_PHP_EXIF_IMAGE_TYPES = [
+	public const SUPPORTED_PHP_EXIF_IMAGE_TYPES = [
 		IMAGETYPE_GIF,
 		IMAGETYPE_JPEG,
 		IMAGETYPE_PNG,
 		IMAGETYPE_WEBP,
 	];
 
-	public const VALID_MEDIA_FILE_EXTENSIONS = [
+	public const SUPPORTED_IMAGE_FILE_EXTENSIONS = [
 		'.jpg',
 		'.jpeg',
 		'.png',
 		'.gif',
-		'.ogv',
+		'.webp',
+	];
+
+	public const SUPPORTED_VIDEO_FILE_EXTENSIONS = [
+		'.avi',
+		'.m4v',
+		'.mov',
 		'.mp4',
 		'.mpg',
+		'.ogv',
 		'.webm',
-		'.webp',
-		'.mov',
-		'.m4v',
-		'.avi',
 		'.wmv',
 	];
 
-	public const VALID_VIDEO_MIME_TYPES = [
+	public const SUPPORTED_IMAGE_MIME_TYPES = [
+		'image/gif',
+		'image/jpeg',
+		'image/png',
+		'image/webp',
+	];
+
+	public const SUPPORTED_VIDEO_MIME_TYPES = [
 		'video/mp4',
 		'video/mpeg',
 		'image/x-tga', // mpg; will be corrected by the metadata extractor
@@ -100,7 +111,8 @@ abstract class MediaFile
 	abstract public function write($stream): void;
 
 	/**
-	 * @return void
+	 * Closes the internal stream.
+	 *
 	 * @return void
 	 */
 	public function close(): void
@@ -135,6 +147,21 @@ abstract class MediaFile
 	abstract public function getExtension(): string;
 
 	/**
+	 * Returns the original extension of the file.
+	 *
+	 * Normally, the original extension equals the extension.
+	 * However, for temporary copies of downloaded or uploaded files the
+	 * original extension is the extension as used by the source while the
+	 * actual, physical extension is typically random.
+	 *
+	 * @return string
+	 */
+	public function getOriginalExtension(): string
+	{
+		return $this->getExtension();
+	}
+
+	/**
 	 * Returns the basename of the file.
 	 *
 	 * The basename of a file is the name of the file without any
@@ -149,26 +176,109 @@ abstract class MediaFile
 	abstract public function getBasename(): string;
 
 	/**
-	 * Validates whether the given MIME type designates a valid video type.
+	 * Returns the original basename of the file.
+	 *
+	 * Normally, the original basename equals the basename.
+	 * However, for temporary copies of downloaded or uploaded files the
+	 * original basename is the basename as used by the source while the
+	 * actual, physical basename is typically random.
+	 *
+	 * @return string
+	 */
+	public function getOriginalBasename(): string
+	{
+		return $this->getBasename();
+	}
+
+	/**
+	 * Validates whether the given MIME type designates a supported image type.
 	 *
 	 * @param string $mimeType the MIME type
 	 *
 	 * @return bool
 	 */
-	public static function isValidVideoMimeType(string $mimeType): bool
+	public static function isSupportedImageMimeType(string $mimeType): bool
 	{
-		return in_array($mimeType, self::VALID_VIDEO_MIME_TYPES, true);
+		return in_array($mimeType, self::SUPPORTED_IMAGE_MIME_TYPES, true);
 	}
 
 	/**
-	 * Validates whether the given extension is a valid image or video extension.
+	 * Validates whether the given MIME type designates a supported video type.
+	 *
+	 * @param string $mimeType the MIME type
+	 *
+	 * @return bool
+	 */
+	public static function isSupportedVideoMimeType(string $mimeType): bool
+	{
+		return in_array($mimeType, self::SUPPORTED_VIDEO_MIME_TYPES, true);
+	}
+
+	/**
+	 * Validates whether the given MIME type is supported.
+	 *
+	 * @param string $mimeType the MIME type
+	 *
+	 * @return bool
+	 */
+	public static function isSupportedMimeType(string $mimeType): bool
+	{
+		return
+			self::isSupportedImageMimeType($mimeType) ||
+			self::isSupportedVideoMimeType($mimeType);
+	}
+
+	/**
+	 * Validates whether the given file extension is a supported image extension.
 	 *
 	 * @param string $extension the file extension
 	 *
 	 * @return bool
 	 */
-	public static function isValidMediaFileExtension(string $extension): bool
+	public static function isSupportedImageFileExtension(string $extension): bool
 	{
-		return in_array(strtolower($extension), self::VALID_MEDIA_FILE_EXTENSIONS, true);
+		return in_array(strtolower($extension), self::SUPPORTED_IMAGE_FILE_EXTENSIONS, true);
+	}
+
+	/**
+	 * Validates whether the given file extension is a supported image extension.
+	 *
+	 * @param string $extension the file extension
+	 *
+	 * @return bool
+	 */
+	public static function isSupportedVideoFileExtension(string $extension): bool
+	{
+		return in_array(strtolower($extension), self::SUPPORTED_VIDEO_FILE_EXTENSIONS, true);
+	}
+
+	/**
+	 * Validates whether the given file extension is supported.
+	 *
+	 * @param string $extension the file extension
+	 *
+	 * @return bool
+	 */
+	public static function isSupportedFileExtension(string $extension): bool
+	{
+		return
+			self::isSupportedImageFileExtension($extension) ||
+			self::isSupportedVideoFileExtension($extension);
+	}
+
+	/**
+	 * Asserts that the given extension is supported.
+	 *
+	 * @param string $extension the file extension
+	 *
+	 * @return void
+	 *
+	 * @throws MediaFileUnsupportedException
+	 */
+	public static function assertIsSupportedFileExtension(string $extension): void
+	{
+		if (!self::isSupportedFileExtension($extension)) {
+			throw new MediaFileUnsupportedException(MediaFileUnsupportedException::DEFAULT_MESSAGE . ' (bad extension: ' . $extension . ')');
+		}
 	}
 }

@@ -68,7 +68,7 @@ class VideoData extends Command
 
 			$photos = Photo::query()
 				->with(['size_variants'])
-				->whereIn('type', MediaFile::VALID_VIDEO_MIME_TYPES)
+				->whereIn('type', MediaFile::SUPPORTED_VIDEO_MIME_TYPES)
 				->where('width', '=', 0)
 				->take($this->argument('count'))
 				->get();

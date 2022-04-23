@@ -2,20 +2,31 @@
 
 namespace App\Actions\Photo\Strategies;
 
-use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Exceptions\ModelDBException;
+use App\Image\NativeLocalFile;
 use App\Models\Photo;
 
+/**
+ * Adds a photo as partner to an existing video.
+ *
+ * Note the asymmetry to {@link AddVideoPartnerStrategy}.
+ * A photo is always added as if it had no partner, even if the video had
+ * been added first.
+ * Then the already existing video is added to the freshly added photo.
+ * Hence, this strategy works mostly like the stand-alone strategy and also
+ * requires the photo file to be a native, local file in order to be able to
+ * extract EXIF data.
+ */
 class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 {
 	protected Photo $existingVideo;
 
-	public function __construct(AddStrategyParameters $parameters, Photo $existingVideo)
+	public function __construct(AddStrategyParameters $parameters, NativeLocalFile $photoFile, Photo $existingVideo)
 	{
-		parent::__construct($parameters);
+		parent::__construct($parameters, $photoFile);
 		$this->existingVideo = $existingVideo;
 	}
 
@@ -42,8 +53,11 @@ class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 		// and moves it to the correct destination of a live partner for the
 		// photo.
 		$parameters = new AddStrategyParameters(new ImportMode(true));
-		$parameters->sourceFileInfo = SourceFileInfo::createByPhoto($this->existingVideo);
-		$videoStrategy = new AddVideoPartnerStrategy($parameters, $this->photo);
+		$videoStrategy = new AddVideoPartnerStrategy(
+			$parameters,
+			$this->existingVideo->size_variants->getOriginal()->getFile(),
+			$this->photo
+		);
 		$videoStrategy->do();
 
 		// Delete the existing video from whom we have stolen the video file

@@ -19,6 +19,7 @@
 		"ext-fileinfo": "*",
         "ext-gd": "*",
         "ext-json": "*",
+		"ext-fileinfo": "*",
         "bepsvpt/secure-headers": "^7.1",
         "darkghosthunter/larapass": "dev-LycheeSpecial",
         "doctrine/dbal": "^3.1",

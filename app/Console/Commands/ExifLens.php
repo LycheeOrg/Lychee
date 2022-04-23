@@ -67,7 +67,7 @@ class ExifLens extends Command
 				$r->where('type', '=', SizeVariant::ORIGINAL);
 			}])
 				->where('lens', '=', '')
-				->whereNotIn('type', MediaFile::VALID_VIDEO_MIME_TYPES)
+				->whereNotIn('type', MediaFile::SUPPORTED_VIDEO_MIME_TYPES)
 				->offset($from)
 				->limit($argument)
 				->get();

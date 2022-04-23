@@ -40,7 +40,7 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 		parent::setPhoto($photo);
 		$this->originalExtension = '';
 		if ($this->photo && $sv = $this->photo->size_variants->getOriginal()) {
-			$this->originalExtension = $sv->getFile()->getExtension();
+			$this->originalExtension = $sv->getFile()->getOriginalExtension();
 		}
 	}
 

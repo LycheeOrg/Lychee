@@ -2,7 +2,6 @@
 
 namespace App\Actions\Photo\Strategies;
 
-use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Contracts\LycheeException;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
@@ -110,14 +109,9 @@ class RotateStrategy extends AddBaseStrategy
 		// we were importing a new photo.
 		$this->photo->size_variants->deleteAll();
 
-		// Initialize factory for size variants
-		$this->parameters->sourceFileInfo = SourceFileInfo::createByTempFile(
-			$this->photo->title, $origFile->getExtension(), $tmpFile
-		);
-
 		/** @var SizeVariantNamingStrategy $namingStrategy */
 		$namingStrategy = resolve(SizeVariantNamingStrategy::class);
-		$namingStrategy->setFallbackExtension($this->parameters->sourceFileInfo->getOriginalExtension());
+		$namingStrategy->setFallbackExtension($origFile->getOriginalExtension());
 		/** @var SizeVariantFactory $sizeVariantFactory */
 		$sizeVariantFactory = resolve(SizeVariantFactory::class);
 		$sizeVariantFactory->init($this->photo, $namingStrategy);

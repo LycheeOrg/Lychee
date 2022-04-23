@@ -21,7 +21,7 @@ trait PhotoBooleans
 			throw new IllegalOrderOfOperationException('Photo::isVideo() must not be called before Photo::$type has been set');
 		}
 
-		return MediaFile::isValidVideoMimeType($this->type);
+		return MediaFile::isSupportedVideoMimeType($this->type);
 	}
 
 	/**

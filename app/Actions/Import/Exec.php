@@ -4,7 +4,6 @@ namespace App\Actions\Import;
 
 use App\Actions\Album\Create as AlbumCreate;
 use App\Actions\Photo\Create as PhotoCreate;
-use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\DTO\ImportEventReport;
 use App\DTO\ImportProgressReport;
@@ -289,8 +288,8 @@ class Exec
 					// So we put `exif_imagetype` last in the condition and
 					// exploit lazy evaluation of boolean terms for the case
 					// that we import a "short" raw file.
-					if ($is_raw || in_array(strtolower($extension), MediaFile::VALID_MEDIA_FILE_EXTENSIONS, true) || exif_imagetype($file) !== false) {
-						$this->photoCreate->add(SourceFileInfo::createByLocalFile(new NativeLocalFile($file)), $parentAlbum);
+					if ($is_raw || in_array(strtolower($extension), MediaFile::SUPPORTED_FILE_EXTENSIONS, true) || exif_imagetype($file) !== false) {
+						$this->photoCreate->add(new NativeLocalFile($file), $parentAlbum);
 					} else {
 						// TODO: Separately throwing this particular exception should not be necessary, because `photoCreate->add` should do that; see above
 						throw new MediaFileUnsupportedException('Unsupported file type');

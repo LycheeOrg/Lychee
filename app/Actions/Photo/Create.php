@@ -3,7 +3,6 @@
 namespace App\Actions\Photo;
 
 use App\Actions\Photo\Extensions\Checks;
-use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\AddDuplicateStrategy;
 use App\Actions\Photo\Strategies\AddPhotoPartnerStrategy;
 use App\Actions\Photo\Strategies\AddStandaloneStrategy;
@@ -48,16 +47,18 @@ class Create
 	 * This method may create a new database entry or update an existing
 	 * database entry.
 	 *
-	 * @param SourceFileInfo     $sourceFileInfo information about source file
-	 * @param AbstractAlbum|null $album          the targeted parent album
+	 * @param NativeLocalFile    $sourceFile the source file
+	 * @param AbstractAlbum|null $album      the targeted parent album
 	 *
 	 * @return Photo the newly created or updated photo
 	 *
 	 * @throws ModelNotFoundException
 	 * @throws LycheeException
 	 */
-	public function add(SourceFileInfo $sourceFileInfo, ?AbstractAlbum $album = null): Photo
+	public function add(NativeLocalFile $sourceFile, ?AbstractAlbum $album = null): Photo
 	{
+		$sourceFile->assertIsSupported();
+
 		// Check permissions
 		// throws InsufficientFilesystemPermissions
 		// TODO: Why do we explicitly perform this check here? We could just let the photo addition fail.
@@ -68,19 +69,15 @@ class Create
 		// throws InvalidPropertyException
 		$this->initParentAlbum($album);
 
-		// Fill in information about source file
-		$this->strategyParameters->kind = NativeLocalFile::getFileKind($sourceFileInfo);
-		$this->strategyParameters->sourceFileInfo = $sourceFileInfo;
-
 		// Fill in meta data extracted from source file
-		$this->loadFileMetadata($sourceFileInfo);
+		$this->loadFileMetadata($sourceFile);
 
 		// Look up potential duplicates/partners in order to select the
 		// proper strategy
-		$duplicate = $this->get_duplicate($this->strategyParameters->info['checksum']);
+		$duplicate = $this->get_duplicate($this->strategyParameters->exifInfo['checksum']);
 		$livePartner = $this->findLivePartner(
-			$this->strategyParameters->info['live_photo_content_id'],
-			$this->strategyParameters->info['type'],
+			$this->strategyParameters->exifInfo['live_photo_content_id'],
+			$this->strategyParameters->exifInfo['type'],
 			$this->strategyParameters->album
 		);
 
@@ -96,12 +93,12 @@ class Create
 			$strategy = new AddDuplicateStrategy($this->strategyParameters, $duplicate);
 		} else {
 			if ($livePartner == null) {
-				$strategy = new AddStandaloneStrategy($this->strategyParameters);
+				$strategy = new AddStandaloneStrategy($this->strategyParameters, $sourceFile);
 			} else {
-				if ($this->strategyParameters->kind === 'video') {
-					$strategy = new AddVideoPartnerStrategy($this->strategyParameters, $livePartner);
+				if ($sourceFile->getFileKind() === 'video') {
+					$strategy = new AddVideoPartnerStrategy($this->strategyParameters, $sourceFile, $livePartner);
 				} else {
-					$strategy = new AddPhotoPartnerStrategy($this->strategyParameters, $livePartner);
+					$strategy = new AddPhotoPartnerStrategy($this->strategyParameters, $sourceFile, $livePartner);
 				}
 			}
 		}
@@ -118,9 +115,9 @@ class Create
 
 	/**
 	 * Extracts the meta-data of the source file and initializes
-	 * {@link AddStrategyParameters::$info} of {@link Create::$strategyParameters}.
+	 * {@link AddStrategyParameters::$exifInfo} of {@link Create::$strategyParameters}.
 	 *
-	 * @param SourceFileInfo $sourceFileInfo information about the source file
+	 * @param NativeLocalFile $sourceFile the source file
 	 *
 	 * @return void
 	 *
@@ -128,22 +125,21 @@ class Create
 	 * @throws MediaFileOperationException
 	 * @throws ExternalComponentFailedException
 	 */
-	protected function loadFileMetadata(SourceFileInfo $sourceFileInfo): void
+	protected function loadFileMetadata(NativeLocalFile $sourceFile): void
 	{
 		/* @var  Extractor $metadataExtractor */
 		$metadataExtractor = resolve(Extractor::class);
 
-		$this->strategyParameters->info = $metadataExtractor->extract($sourceFileInfo->getFile()->getAbsolutePath(), $this->strategyParameters->kind);
-		if ($this->strategyParameters->kind == 'raw') {
-			$this->strategyParameters->info['type'] = 'raw';
-		}
-		if (empty($this->strategyParameters->info['type'])) {
-			$this->strategyParameters->info['type'] = $sourceFileInfo->getOriginalMimeType();
+		$this->strategyParameters->exifInfo = $metadataExtractor->extract($sourceFile);
+		// Overwrite MIME type if, file kind is raw
+		// TODO: This is completely unnecessary, if we interpret any MIME type which is not known as raw
+		if ($sourceFile->getFileKind() === 'raw') {
+			$this->strategyParameters->exifInfo['type'] = 'raw';
 		}
 
-		// Use title of file if IPTC title missing
-		if ($this->strategyParameters->info['title'] === '') {
-			$this->strategyParameters->info['title'] = substr($sourceFileInfo->getOriginalName(), 0, 98);
+		// Use basename of file if IPTC title missing
+		if (empty($this->strategyParameters->exifInfo['title'])) {
+			$this->strategyParameters->exifInfo['title'] = substr($sourceFile->getOriginalBasename(), 0, 98);
 		}
 	}
 
@@ -180,7 +176,7 @@ class Create
 			// different kind then the uploaded media.
 			// Photo+Photo or Video+Video does not work
 			// TODO: This condition is probably erroneous, if one of the types equals 'raw'.
-			if (in_array($mimeType, MediaFile::VALID_VIDEO_MIME_TYPES, true) === in_array($livePartner->type, MediaFile::VALID_VIDEO_MIME_TYPES, true)) {
+			if (in_array($mimeType, MediaFile::SUPPORTED_VIDEO_MIME_TYPES, true) === in_array($livePartner->type, MediaFile::SUPPORTED_VIDEO_MIME_TYPES, true)) {
 				$livePartner = null;
 			}
 		}

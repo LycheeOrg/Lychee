@@ -35,7 +35,7 @@ abstract class AddBaseStrategy
 
 	/**
 	 * Hydrates meta-info of the media file from the
-	 * {@link AddStrategyParameters::$info} attribute of the associated
+	 * {@link AddStrategyParameters::$exifInfo} attribute of the associated
 	 * {@link AddStrategyParameters} object into the associated {@link Photo}
 	 * object.
 	 *
@@ -50,65 +50,65 @@ abstract class AddBaseStrategy
 	 */
 	protected function hydrateMetadata()
 	{
-		if (empty($this->photo->title) && !empty($this->parameters->info['title'])) {
-			$this->photo->title = $this->parameters->info['title'];
+		if (empty($this->photo->title) && !empty($this->parameters->exifInfo['title'])) {
+			$this->photo->title = $this->parameters->exifInfo['title'];
 		}
-		if (empty($this->photo->description) && !empty($this->parameters->info['description'])) {
-			$this->photo->description = $this->parameters->info['description'];
+		if (empty($this->photo->description) && !empty($this->parameters->exifInfo['description'])) {
+			$this->photo->description = $this->parameters->exifInfo['description'];
 		}
-		if (empty($this->photo->tags) && !empty($this->parameters->info['tags'])) {
-			$this->photo->tags = $this->parameters->info['tags'];
+		if (empty($this->photo->tags) && !empty($this->parameters->exifInfo['tags'])) {
+			$this->photo->tags = $this->parameters->exifInfo['tags'];
 		}
-		if (empty($this->photo->type) && !empty($this->parameters->info['type'])) {
-			$this->photo->type = $this->parameters->info['type'];
+		if (empty($this->photo->type) && !empty($this->parameters->exifInfo['type'])) {
+			$this->photo->type = $this->parameters->exifInfo['type'];
 		}
-		if (empty($this->photo->checksum) && !empty($this->parameters->info['checksum'])) {
-			$this->photo->checksum = $this->parameters->info['checksum'];
+		if (empty($this->photo->checksum) && !empty($this->parameters->exifInfo['checksum'])) {
+			$this->photo->checksum = $this->parameters->exifInfo['checksum'];
 		}
-		if (empty($this->photo->original_checksum) && !empty($this->parameters->info['checksum'])) {
-			$this->photo->original_checksum = $this->parameters->info['checksum'];
+		if (empty($this->photo->original_checksum) && !empty($this->parameters->exifInfo['checksum'])) {
+			$this->photo->original_checksum = $this->parameters->exifInfo['checksum'];
 		}
-		if (empty($this->photo->iso) && !empty($this->parameters->info['iso'])) {
-			$this->photo->iso = $this->parameters->info['iso'];
+		if (empty($this->photo->iso) && !empty($this->parameters->exifInfo['iso'])) {
+			$this->photo->iso = $this->parameters->exifInfo['iso'];
 		}
-		if (empty($this->photo->aperture) && !empty($this->parameters->info['aperture'])) {
-			$this->photo->aperture = $this->parameters->info['aperture'];
+		if (empty($this->photo->aperture) && !empty($this->parameters->exifInfo['aperture'])) {
+			$this->photo->aperture = $this->parameters->exifInfo['aperture'];
 		}
-		if (empty($this->photo->make) && !empty($this->parameters->info['make'])) {
-			$this->photo->make = $this->parameters->info['make'];
+		if (empty($this->photo->make) && !empty($this->parameters->exifInfo['make'])) {
+			$this->photo->make = $this->parameters->exifInfo['make'];
 		}
-		if (empty($this->photo->model) && !empty($this->parameters->info['model'])) {
-			$this->photo->model = $this->parameters->info['model'];
+		if (empty($this->photo->model) && !empty($this->parameters->exifInfo['model'])) {
+			$this->photo->model = $this->parameters->exifInfo['model'];
 		}
-		if (empty($this->photo->lens) && !empty($this->parameters->info['lens'])) {
-			$this->photo->lens = $this->parameters->info['lens'];
+		if (empty($this->photo->lens) && !empty($this->parameters->exifInfo['lens'])) {
+			$this->photo->lens = $this->parameters->exifInfo['lens'];
 		}
-		if (empty($this->photo->shutter) && !empty($this->parameters->info['shutter'])) {
-			$this->photo->shutter = $this->parameters->info['shutter'];
+		if (empty($this->photo->shutter) && !empty($this->parameters->exifInfo['shutter'])) {
+			$this->photo->shutter = $this->parameters->exifInfo['shutter'];
 		}
-		if (empty($this->photo->focal) && !empty($this->parameters->info['focal'])) {
-			$this->photo->focal = $this->parameters->info['focal'];
+		if (empty($this->photo->focal) && !empty($this->parameters->exifInfo['focal'])) {
+			$this->photo->focal = $this->parameters->exifInfo['focal'];
 		}
-		if ($this->photo->taken_at === null && !empty($this->parameters->info['taken_at'])) {
-			$this->photo->taken_at = $this->parameters->info['taken_at'];
+		if ($this->photo->taken_at === null && !empty($this->parameters->exifInfo['taken_at'])) {
+			$this->photo->taken_at = $this->parameters->exifInfo['taken_at'];
 		}
-		if ($this->photo->latitude === null && !empty($this->parameters->info['latitude'])) {
-			$this->photo->latitude = floatval($this->parameters->info['latitude']);
+		if ($this->photo->latitude === null && !empty($this->parameters->exifInfo['latitude'])) {
+			$this->photo->latitude = floatval($this->parameters->exifInfo['latitude']);
 		}
-		if ($this->photo->longitude === null && !empty($this->parameters->info['longitude'])) {
-			$this->photo->longitude = floatval($this->parameters->info['longitude']);
+		if ($this->photo->longitude === null && !empty($this->parameters->exifInfo['longitude'])) {
+			$this->photo->longitude = floatval($this->parameters->exifInfo['longitude']);
 		}
-		if ($this->photo->altitude === null && !empty($this->parameters->info['altitude'])) {
-			$this->photo->altitude = floatval($this->parameters->info['altitude']);
+		if ($this->photo->altitude === null && !empty($this->parameters->exifInfo['altitude'])) {
+			$this->photo->altitude = floatval($this->parameters->exifInfo['altitude']);
 		}
-		if ($this->photo->img_direction === null && !empty($this->parameters->info['imgDirection'])) {
-			$this->photo->img_direction = floatval($this->parameters->info['imgDirection']);
+		if ($this->photo->img_direction === null && !empty($this->parameters->exifInfo['imgDirection'])) {
+			$this->photo->img_direction = floatval($this->parameters->exifInfo['imgDirection']);
 		}
-		if (empty($this->photo->location) && !empty($this->parameters->info['location'])) {
-			$this->photo->location = $this->parameters->info['location'];
+		if (empty($this->photo->location) && !empty($this->parameters->exifInfo['location'])) {
+			$this->photo->location = $this->parameters->exifInfo['location'];
 		}
-		if (empty($this->photo->live_photo_content_id) && !empty($this->parameters->info['live_photo_content_id'])) {
-			$this->photo->live_photo_content_id = $this->parameters->info['live_photo_content_id'];
+		if (empty($this->photo->live_photo_content_id) && !empty($this->parameters->exifInfo['live_photo_content_id'])) {
+			$this->photo->live_photo_content_id = $this->parameters->exifInfo['live_photo_content_id'];
 		}
 	}
 

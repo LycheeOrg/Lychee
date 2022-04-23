@@ -2,14 +2,11 @@
 
 namespace App\Image;
 
-use App\Actions\Import\FromUrl;
-use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Models\Configs;
-use Illuminate\Http\UploadedFile;
 
 /**
  * Class NativeLocalFile.
@@ -22,6 +19,7 @@ use Illuminate\Http\UploadedFile;
 class NativeLocalFile extends MediaFile
 {
 	protected string $absolutePath;
+	protected ?string $cachedMimeType;
 
 	/**
 	 * @param string $path the file path
@@ -35,21 +33,7 @@ class NativeLocalFile extends MediaFile
 			throw new MediaFileOperationException('The path "' . $path . '" does not point to a local file');
 		}
 		$this->absolutePath = $absolutePath;
-	}
-
-	/**
-	 * @returns NativeLocalFile
-	 *
-	 * @throws MediaFileOperationException
-	 */
-	public static function createFromUploadedFile(UploadedFile $file): self
-	{
-		$path = $file->getRealPath();
-		if ($path === false) {
-			throw new MediaFileOperationException('The uploaded file does not exist');
-		}
-
-		return new self($path);
+		$this->cachedMimeType = null;
 	}
 
 	/**
@@ -71,8 +55,16 @@ class NativeLocalFile extends MediaFile
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * If new content is written to the file, the internally cached mime
+	 * type is cleared.
+	 * The mime type will be re-determined again upon the next invocation of
+	 * {@link NativeLocalFile::getMimeType()}.
+	 * This can be avoided by passing the MIME type of the stream.
+	 *
+	 * @param string|null $mimeType the mime type of `$stream`
 	 */
-	public function write($stream): void
+	public function write($stream, ?string $mimeType = null): void
 	{
 		if (is_resource($this->stream)) {
 			throw new LycheeLogicException('Cannot write to a file which is opened for read');
@@ -87,6 +79,7 @@ class NativeLocalFile extends MediaFile
 			throw new MediaFileOperationException('Could not write file ' . $this->absolutePath);
 		}
 		$this->stream = null;
+		$this->cachedMimeType = $mimeType;
 	}
 
 	/**
@@ -127,7 +120,11 @@ class NativeLocalFile extends MediaFile
 
 	public function getMimeType(): string
 	{
-		return mime_content_type($this->absolutePath);
+		if (!$this->cachedMimeType) {
+			$this->cachedMimeType = mime_content_type($this->absolutePath);
+		}
+
+		return $this->cachedMimeType;
 	}
 
 	/**
@@ -140,27 +137,23 @@ class NativeLocalFile extends MediaFile
 	 *  - `'raw'` if the media file is an accepted file, but none of the other
 	 *    two kinds (we only check extensions).
 	 *
-	 * TODO: Make this method non-static and more general
-	 *
-	 * @param SourceFileInfo $sourceFileInfo information about source file
-	 *
 	 * @return string either `'photo'`, `'video'` or `'raw'`
 	 *
 	 * @throws MediaFileUnsupportedException
 	 * @throws ExternalComponentMissingException
 	 */
-	public static function getFileKind(SourceFileInfo $sourceFileInfo): string
+	public function getFileKind(): string
 	{
-		$extension = $sourceFileInfo->getOriginalExtension();
+		$extension = $this->getOriginalExtension();
 		// check raw files
 		$raw_formats = strtolower(Configs::get_value('raw_formats', ''));
 		if (in_array(strtolower($extension), explode('|', $raw_formats), true)) {
 			return 'raw';
 		}
 
-		if (in_array(strtolower($extension), MediaFile::VALID_MEDIA_FILE_EXTENSIONS, true)) {
-			$mimeType = $sourceFileInfo->getOriginalMimeType();
-			if (in_array($mimeType, MediaFile::VALID_VIDEO_MIME_TYPES, true)) {
+		if (in_array(strtolower($extension), MediaFile::SUPPORTED_FILE_EXTENSIONS, true)) {
+			$mimeType = $this->getMimeType();
+			if (in_array($mimeType, MediaFile::SUPPORTED_VIDEO_MIME_TYPES, true)) {
 				return 'video';
 			}
 
@@ -170,26 +163,58 @@ class NativeLocalFile extends MediaFile
 		// let's check for the mimetype
 		// maybe we don't have a photo
 		if (!function_exists('exif_imagetype')) {
-			throw new ExternalComponentMissingException('EXIF library mssing.');
+			throw new ExternalComponentMissingException('EXIF library missing.');
 		}
 
-		$type = exif_imagetype($sourceFileInfo->getFile()->getAbsolutePath());
-		if (in_array($type, MediaFile::VALID_PHP_EXIF_IMAGE_TYPES, true)) {
+		$type = exif_imagetype($this->getAbsolutePath());
+		if (in_array($type, MediaFile::SUPPORTED_PHP_EXIF_IMAGE_TYPES, true)) {
 			return 'photo';
 		}
 
-		throw new MediaFileUnsupportedException('Photo type not supported: ' . $sourceFileInfo->getOriginalName());
+		throw new MediaFileUnsupportedException('Photo type not supported: ' . $this->getOriginalBasename());
 	}
 
 	/**
-	 * Checks if the file is a valid image type acc. to {@link MediaFile::VALID_PHP_EXIF_IMAGE_TYPES}.
+	 * Checks if the file is a valid image type acc. to {@link MediaFile::SUPPORTED_PHP_EXIF_IMAGE_TYPES}.
 	 *
-	 * TODO: This is currently only used by {@link FromUrl} and dangerous, because we use the file extension provided from outside
-	 *
-	 * @return bool true, if the file is of valid image type
+	 * @return bool true, if the file has a valid EXIF type
 	 */
-	public function isValidImageType(): bool
+	public function hasSupportedExifImageType(): bool
 	{
-		return in_array(exif_imagetype($this->getAbsolutePath()), self::VALID_PHP_EXIF_IMAGE_TYPES, true);
+		return in_array(exif_imagetype($this->getAbsolutePath()), self::SUPPORTED_PHP_EXIF_IMAGE_TYPES, true);
+	}
+
+	/**
+	 * Determines whether the file is supported.
+	 *
+	 * @return bool true, if the file is supported
+	 */
+	public function isSupported(): bool
+	{
+		$mime = $this->getMimeType();
+		$ext = $this->getOriginalExtension();
+
+		return (
+			self::isSupportedImageMimeType($mime) &&
+			self::isSupportedImageFileExtension($ext) &&
+			$this->hasSupportedExifImageType()
+		) || (
+			self::isSupportedVideoMimeType($mime) &&
+			self::isSupportedVideoFileExtension($ext)
+		);
+	}
+
+	/**
+	 * Asserts that the file is supported.
+	 *
+	 * @return void
+	 *
+	 * @throws MediaFileUnsupportedException
+	 */
+	public function assertIsSupported(): void
+	{
+		if (!$this->isSupported()) {
+			throw new MediaFileUnsupportedException();
+		}
 	}
 }

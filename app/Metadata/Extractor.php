@@ -6,6 +6,7 @@ use App\Exceptions\ExternalComponentFailedException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\MediaFileOperationException;
 use App\Facades\Helpers;
+use App\Image\NativeLocalFile;
 use App\Models\Configs;
 use App\Models\Logs;
 use Carbon\Exceptions\InvalidFormatException;
@@ -107,8 +108,7 @@ class Extractor
 	 *
 	 * TODO: Thoroughly refactor this.
 	 *
-	 * @param string $fullPath the full path to the file
-	 * @param string $kind     the kind of file either 'image', 'video' or 'raw'
+	 * @param NativeLocalFile $file the file
 	 *
 	 * @return array
 	 *
@@ -116,8 +116,11 @@ class Extractor
 	 * @throws MediaFileOperationException
 	 * @throws ExternalComponentFailedException
 	 */
-	public function extract(string $fullPath, string $kind): array
+	public function extract(NativeLocalFile $file): array
 	{
+		$fullPath = $file->getAbsolutePath();
+		$kind = $file->getFileKind();
+
 		$reader = null;
 
 		// Get kind of file (photo, video, raw)
@@ -236,7 +239,7 @@ class Extractor
 		}
 
 		$metadata = $this->bare();
-		$metadata['type'] = ($exif->getMimeType() !== false) ? $exif->getMimeType() : '';
+		$metadata['type'] = ($exif->getMimeType() !== false) ? $exif->getMimeType() : $file->getMimeType();
 		$metadata['width'] = ($exif->getWidth() !== false) ? $exif->getWidth() : 0;
 		$metadata['height'] = ($exif->getHeight() !== false) ? $exif->getHeight() : 0;
 		$metadata['title'] = ($exif->getTitle() !== false) ? $exif->getTitle() : '';

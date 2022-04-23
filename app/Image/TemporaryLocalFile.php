@@ -7,17 +7,19 @@ use App\Exceptions\MediaFileOperationException;
 /**
  * Class TemporaryLocalFile.
  *
- * Represents a local file with a automatically chosen, unique name intended
+ * Represents a local file with an automatically chosen, unique name intended
  * to be used temporarily.
  */
 class TemporaryLocalFile extends NativeLocalFile
 {
+	protected string $fakeBaseName;
+
 	/**
 	 * @param string $fileExtension the file extension of the new temporary file incl. a preceding dot
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function __construct(string $fileExtension)
+	public function __construct(string $fileExtension, string $fakeBaseName = '')
 	{
 		// We must not use the usual PHP method `tempnam`, because that
 		// method does not handle file extensions well, but our temporary
@@ -44,5 +46,14 @@ class TemporaryLocalFile extends NativeLocalFile
 			throw new MediaFileOperationException('unable to create temporary file');
 		}
 		parent::__construct($tempFilePath);
+		$this->fakeBaseName = $fakeBaseName;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getOriginalBasename(): string
+	{
+		return $this->fakeBaseName;
 	}
 }

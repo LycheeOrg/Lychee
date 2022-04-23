@@ -4,13 +4,26 @@ namespace App\Actions\Photo\Strategies;
 
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
+use App\Image\MediaFile;
 use App\Models\Photo;
 
+/**
+ * Adds a video as partner to an existing photo.
+ *
+ * Note the asymmetry to {@link AddPhotoPartnerStrategy}.
+ * A video is always added to an already existing photo, and, in particular,
+ * all EXIF data are taken from the that photo.
+ * This allows to use {@link MediaFile} as the source of the video, because
+ * no EXIF data needs to be extracted from the video.
+ */
 class AddVideoPartnerStrategy extends AddBaseStrategy
 {
-	public function __construct(AddStrategyParameters $parameters, Photo $existingPhoto)
+	protected MediaFile $videoFile;
+
+	public function __construct(AddStrategyParameters $parameters, MediaFile $videoFile, Photo $existingPhoto)
 	{
 		parent::__construct($parameters, $existingPhoto);
+		$this->videoFile = $videoFile;
 	}
 
 	/**
@@ -23,8 +36,8 @@ class AddVideoPartnerStrategy extends AddBaseStrategy
 	{
 		$photoFile = $this->photo->size_variants->getOriginal()->getFile();
 		$photoPath = $photoFile->getRelativePath();
-		$photoExt = $photoFile->getExtension();
-		$videoExt = $this->parameters->sourceFileInfo->getOriginalExtension();
+		$photoExt = $photoFile->getOriginalExtension();
+		$videoExt = $this->videoFile->getOriginalExtension();
 		$videoPath = substr($photoPath, 0, -strlen($photoExt)) . $videoExt;
 		$this->putSourceIntoFinalDestination($videoPath);
 		$this->photo->live_photo_short_path = $videoPath;
