@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Album\Archive;
 use App\Actions\Album\Create;
 use App\Actions\Album\CreateTagAlbum;
+use App\Actions\Album\Delete;
 use App\Actions\Album\Merge;
 use App\Actions\Album\Move;
 use App\Actions\Album\PositionData;
@@ -13,6 +14,7 @@ use App\Actions\Album\Unlock;
 use App\Contracts\AbstractAlbum;
 use App\Contracts\LycheeException;
 use App\DTO\PositionData as PositionDataDTO;
+use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Http\Requests\Album\AddAlbumRequest;
 use App\Http\Requests\Album\AddTagAlbumRequest;
@@ -34,9 +36,9 @@ use App\Http\Requests\Album\UnlockAlbumRequest;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\TagAlbum;
-use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\App;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AlbumController extends Controller
@@ -212,20 +214,18 @@ class AlbumController extends Controller
 	/**
 	 * Delete the album and all of its pictures.
 	 *
-	 * @param DeleteAlbumsRequest $request
+	 * @param DeleteAlbumsRequest $request the request
+	 * @param Delete              $delete  the delete action
 	 *
 	 * @return void
 	 *
-	 * @throws LycheeException
+	 * @throws ModelDBException
+	 * @throws MediaFileOperationException
 	 */
-	public function delete(DeleteAlbumsRequest $request): void
+	public function delete(DeleteAlbumsRequest $request, Delete $delete): void
 	{
-		/** @var AbstractAlbum $album */
-		foreach ($request->albums() as $album) {
-			if ($album instanceof BaseAlbum || $album instanceof UnsortedAlbum) {
-				$album->delete();
-			}
-		}
+		$fileDeleter = $delete->do($request->albumIDs());
+		App::terminating(fn () => $fileDeleter->do());
 	}
 
 	/**

@@ -269,6 +269,47 @@ class PhotoAuthorisationProvider
 	}
 
 	/**
+	 * Checks whether the designated photos are editable by the current user.
+	 *
+	 * See {@link PhotoAuthorisationProvider::isEditable()} for the definition
+	 * when a photo is editable.
+	 *
+	 * This method is mostly only useful during deletion of photos, when no
+	 * photo models are loaded for efficiency reasons.
+	 * If a photo model is required anyway (because it shall be edited),
+	 * then first load the photo once and use
+	 * {@link PhotoAuthorisationProvider::isEditable()}
+	 * instead in order to avoid several DB requests.
+	 *
+	 * @param string[] $photoIDs
+	 *
+	 * @return bool
+	 *
+	 * @throws QueryBuilderException
+	 */
+	public function areEditableByIDs(array $photoIDs): bool
+	{
+		if (AccessControl::is_admin()) {
+			return true;
+		}
+		if (!AccessControl::is_logged_in()) {
+			return false;
+		}
+
+		$user = AccessControl::user();
+
+		// Make IDs unique as otherwise count will fail.
+		$photoIDs = array_unique($photoIDs);
+
+		return
+			count($photoIDs) === 0 ||
+			Photo::query()
+				->whereIn('id', $photoIDs)
+				->where('owner_id', $user->id)
+				->count() === count($photoIDs);
+	}
+
+	/**
 	 * Throws an exception if the given query does not query for a photo.
 	 *
 	 * @param FixedQueryBuilder $query         the query to prepare

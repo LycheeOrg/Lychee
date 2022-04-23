@@ -1,0 +1,358 @@
+<?php
+
+namespace App\Actions\Photo;
+
+use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\ModelDBException;
+use App\Image\FileDeleter;
+use App\Models\Photo;
+use App\Models\SizeVariant;
+use App\Models\SymLink;
+use Illuminate\Database\Query\Builder as BaseBuilder;
+use Illuminate\Database\Query\JoinClause;
+
+/**
+ * Deletes the photos with the designated IDs **efficiently**.
+ *
+ * This class deliberately violates the principle of separations of concerns.
+ * In an ideal world, the method would simply call `->delete()` on every
+ * `Photo` model and the `Photo` model would take care of deleting its
+ * associated size variants including the media files.
+ * But this is extremely inefficient due to Laravel's architecture:
+ *
+ *  - Models are heavyweight god classes such that every instance also carries
+ *    the whole code for serialization/deserialization
+ *  - Models are active records (and don't use the unit-of-work pattern), i.e.
+ *    every deletion of a model directly triggers a DB operation; they are
+ *    not deferred into a batch operation
+ *
+ * Moreover, while removing the records for photos and size variants from the
+ * DB can be implemented rather efficiently, the actual file operations may
+ * take some time.
+ * Especially, if the files are not stored locally but on a remote file system.
+ * Hence, this method collects all files which need to be removed.
+ * The caller can then decide to delete them asynchronously.
+ */
+class Delete
+{
+	protected FileDeleter $fileDeleter;
+
+	public function __construct()
+	{
+		$this->fileDeleter = new FileDeleter();
+	}
+
+	/**
+	 * Deletes the designated photos from the DB.
+	 *
+	 * The method only deletes the records for photos, their size variants
+	 * and potentially associated symbolic links from the DB.
+	 * The method does not delete the associated files from physical storage.
+	 * Instead, the method returns an object in which all these files have
+	 * been collected.
+	 * This object can (and must) be used to eventually delete the files,
+	 * however doing so can be deferred.
+	 *
+	 * The method allows deleting individual photos designated by
+	 * `$photoIDs` or photos of entire albums designated by `$albumIDs`.
+	 * The latter is more efficient, if albums shall be deleted, because
+	 * it results in more succinct SQL queries.
+	 * Both parameters can be used simultaneously and result in a merged
+	 * deletion of the joined set of photos.
+	 *
+	 * @param string[] $photoIDs the photo IDs
+	 * @param string[] $albumIDs the album IDs
+	 *
+	 * @return FileDeleter contains the collected files which became obsolete
+	 *
+	 * @throws ModelDBException
+	 */
+	public function do(array $photoIDs, array $albumIDs = []): FileDeleter
+	{
+		try {
+			$this->collectSizeVariantPathsByPhotoID($photoIDs);
+			$this->collectSizeVariantPathsByAlbumID($albumIDs);
+			$this->collectLivePhotoPathsByPhotoID($photoIDs);
+			$this->collectLivePhotoPathsByAlbumID($albumIDs);
+			$this->collectSymLinksByPhotoID($photoIDs);
+			$this->collectSymLinksByAlbumID($albumIDs);
+			$this->deleteDBRecords($photoIDs, $albumIDs);
+		} catch (QueryBuilderException $e) {
+			throw ModelDBException::create('photos', 'deleting', $e);
+		}
+
+		return $this->fileDeleter;
+	}
+
+	/**
+	 * Collects all short paths of size variants which shall be deleted from
+	 * disk.
+	 *
+	 * Size variants which belong to a photo which has a duplicate that is
+	 * not going to be deleted are skipped.
+	 *
+	 * @param array $photoIDs the photo IDs
+	 *
+	 * @return void
+	 *
+	 * @throws QueryBuilderException
+	 */
+	private function collectSizeVariantPathsByPhotoID(array $photoIDs): void
+	{
+		try {
+			if (empty($photoIDs)) {
+				return;
+			}
+
+			$svShortPaths = SizeVariant::query()
+				->from('size_variants as sv')
+				->select(['sv.short_path'])
+				->join('photos as p', 'p.id', '=', 'sv.photo_id')
+				->leftJoin('photos as dup', function (JoinClause $join) use ($photoIDs) {
+					$join
+						->on('dup.checksum', '=', 'p.checksum')
+						->whereNotIn('dup.id', $photoIDs);
+				})
+				->whereIn('p.id', $photoIDs)
+				->whereNull('dup.id')
+				->pluck('sv.short_path');
+			$this->fileDeleter->addRegularFilesOrSymbolicLinks($svShortPaths);
+		} catch (\InvalidArgumentException $e) {
+			assert(false, new \AssertionError('\InvalidArgumentException must not be thrown', $e->getCode(), $e));
+		}
+	}
+
+	/**
+	 * Collects all short paths of size variants which shall be deleted from
+	 * disk.
+	 *
+	 * Size variants which belong to a photo which has a duplicate that is
+	 * not going to be deleted are skipped.
+	 *
+	 * @param array $albumIDs the album IDs
+	 *
+	 * @return void
+	 *
+	 * @throws QueryBuilderException
+	 */
+	private function collectSizeVariantPathsByAlbumID(array $albumIDs): void
+	{
+		try {
+			if (empty($albumIDs)) {
+				return;
+			}
+
+			$svShortPaths = SizeVariant::query()
+			->from('size_variants as sv')
+			->select(['sv.short_path'])
+			->join('photos as p', 'p.id', '=', 'sv.photo_id')
+			->leftJoin('photos as dup', function (JoinClause $join) use ($albumIDs) {
+				$join
+					->on('dup.checksum', '=', 'p.checksum')
+					->whereNotIn('dup.album_id', $albumIDs);
+			})
+			->whereIn('p.album_id', $albumIDs)
+			->whereNull('dup.id')
+			->pluck('sv.short_path');
+			$this->fileDeleter->addRegularFilesOrSymbolicLinks($svShortPaths);
+		} catch (\InvalidArgumentException $e) {
+			assert(false, new \AssertionError('\InvalidArgumentException must not be thrown', $e->getCode(), $e));
+		}
+	}
+
+	/**
+	 * Collects all short paths of live photos which shall be deleted from
+	 * disk.
+	 *
+	 * Live photos which have a duplicate that is not going to be deleted are
+	 * skipped.
+	 *
+	 * @param array $photoIDs the photo IDs
+	 *
+	 * @return void
+	 *
+	 * @throws QueryBuilderException
+	 */
+	private function collectLivePhotoPathsByPhotoID(array $photoIDs)
+	{
+		try {
+			if (empty($photoIDs)) {
+				return;
+			}
+
+			$livePhotoShortPaths = Photo::query()
+				->from('photos as p')
+				->select(['p.live_photo_short_path'])
+				->leftJoin('photos as dup', function (JoinClause $join) use ($photoIDs) {
+					$join
+						->on('dup.live_photo_checksum', '=', 'p.live_photo_checksum')
+						->whereNotIn('dup.id', $photoIDs);
+				})
+				->whereIn('p.id', $photoIDs)
+				->whereNull('dup.id')
+				->whereNotNull('p.live_photo_short_path')
+				->pluck('p.live_photo_short_path');
+			$this->fileDeleter->addRegularFilesOrSymbolicLinks($livePhotoShortPaths);
+		} catch (\InvalidArgumentException $e) {
+			assert(false, new \AssertionError('\InvalidArgumentException must not be thrown', $e->getCode(), $e));
+		}
+	}
+
+	/**
+	 * Collects all short paths of live photos which shall be deleted from
+	 * disk.
+	 *
+	 * Live photos which have a duplicate that is not going to be deleted are
+	 * skipped.
+	 *
+	 * @param array $albumIDs the album IDs
+	 *
+	 * @return void
+	 *
+	 * @throws QueryBuilderException
+	 */
+	private function collectLivePhotoPathsByAlbumID(array $albumIDs)
+	{
+		try {
+			if (empty($albumIDs)) {
+				return;
+			}
+
+			$livePhotoShortPaths = Photo::query()
+				->from('photos as p')
+				->select(['p.live_photo_short_path'])
+				->leftJoin('photos as dup', function (JoinClause $join) use ($albumIDs) {
+					$join
+						->on('dup.live_photo_checksum', '=', 'p.live_photo_checksum')
+						->whereNotIn('dup.album_id', $albumIDs);
+				})
+				->whereIn('p.album_id', $albumIDs)
+				->whereNull('dup.id')
+				->whereNotNull('p.live_photo_short_path')
+				->pluck('p.live_photo_short_path');
+			$this->fileDeleter->addRegularFilesOrSymbolicLinks($livePhotoShortPaths);
+		} catch (\InvalidArgumentException $e) {
+			assert(false, new \AssertionError('\InvalidArgumentException must not be thrown', $e->getCode(), $e));
+		}
+	}
+
+	/**
+	 * Collects all symbolic links which shall be deleted from disk.
+	 *
+	 * @param array $photoIDs the photo IDs
+	 *
+	 * @return void
+	 *
+	 * @throws QueryBuilderException
+	 */
+	private function collectSymLinksByPhotoID(array $photoIDs): void
+	{
+		try {
+			if (empty($photoIDs)) {
+				return;
+			}
+
+			$symLinkPaths = SymLink::query()
+				->from('sym_links', 'sl')
+				->select(['sl.short_path'])
+				->join('size_variants as sv', 'sv.id', '=', 'sl.size_variant_id')
+				->whereIn('sv.photo_id', $photoIDs)
+				->pluck('sl.short_path');
+			$this->fileDeleter->addSymbolicLinks($symLinkPaths);
+		} catch (\InvalidArgumentException $e) {
+			assert(false, new \AssertionError('\InvalidArgumentException must not be thrown', $e->getCode(), $e));
+		}
+	}
+
+	/**
+	 * Collects all symbolic links which shall be deleted from disk.
+	 *
+	 * @param array $albumIDs the album IDs
+	 *
+	 * @return void
+	 *
+	 * @throws QueryBuilderException
+	 */
+	private function collectSymLinksByAlbumID(array $albumIDs): void
+	{
+		try {
+			if (empty($albumIDs)) {
+				return;
+			}
+
+			$symLinkPaths = SymLink::query()
+				->from('sym_links', 'sl')
+				->select(['sl.short_path'])
+				->join('size_variants as sv', 'sv.id', '=', 'sl.size_variant_id')
+				->join('photos as p', 'p.id', '=', 'sv.photo_id')
+				->whereIn('p.album_id', $albumIDs)
+				->pluck('sl.short_path');
+			$this->fileDeleter->addSymbolicLinks($symLinkPaths);
+		} catch (\InvalidArgumentException $e) {
+			assert(false, new \AssertionError('\InvalidArgumentException must not be thrown', $e->getCode(), $e));
+		}
+	}
+
+	/**
+	 * Deletes the records from DB.
+	 *
+	 * The records are deleted in such an order that foreign keys are not
+	 * broken.
+	 *
+	 * @param array $photoIDs the photo IDs
+	 * @param array $albumIDs the album IDs
+	 *
+	 * @return void
+	 *
+	 * @throws QueryBuilderException
+	 */
+	private function deleteDBRecords(array $photoIDs, array $albumIDs): void
+	{
+		try {
+			if (!empty($photoIDs)) {
+				SymLink::query()
+					->whereExists(function (BaseBuilder $query) use ($photoIDs) {
+						$query
+							->from('size_variants', 'sv')
+							->whereColumn('sv.id', '=', 'sym_links.size_variant_id')
+							->whereIn('photo_id', $photoIDs);
+					})
+					->delete();
+			}
+			if (!empty($albumIDs)) {
+				SymLink::query()
+					->whereExists(function (BaseBuilder $query) use ($albumIDs) {
+						$query
+							->from('size_variants', 'sv')
+							->whereColumn('sv.id', '=', 'sym_links.size_variant_id')
+							->join('photos', 'photos.id', '=', 'sv.photo_id')
+							->whereIn('photos.album_id', $albumIDs);
+					})
+					->delete();
+			}
+			if (!empty($photoIDs)) {
+				SizeVariant::query()
+					->whereIn('size_variants.photo_id', $photoIDs)
+					->delete();
+			}
+			if (!empty($albumIDs)) {
+				SizeVariant::query()
+					->whereExists(function (BaseBuilder $query) use ($albumIDs) {
+						$query
+							->from('photos', 'p')
+							->whereColumn('p.id', '=', 'size_variants.photo_id')
+							->whereIn('p.album_id', $albumIDs);
+					})
+					->delete();
+			}
+			if (!empty($photoIDs)) {
+				Photo::query()->whereIn('id', $photoIDs)->delete();
+			}
+			if (!empty($albumIDs)) {
+				Photo::query()->whereIn('album_id', $albumIDs)->delete();
+			}
+		} catch (\InvalidArgumentException $e) {
+			assert(false, new \AssertionError('\InvalidArgumentException must not be thrown', $e->getCode(), $e));
+		}
+	}
+}

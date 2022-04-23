@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Actions\Photo\Delete;
 use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
@@ -454,27 +455,15 @@ class Photo extends Model implements HasRandomID
 	}
 
 	/**
-	 * @return bool always returns true
+	 * {@inheritDoc}
 	 *
-	 * @throws MediaFileOperationException
 	 * @throws ModelDBException
+	 * @throws MediaFileOperationException
 	 */
-	public function delete(): bool
+	protected function performDeleteOnModel(): void
 	{
-		$keepFiles = $this->hasDuplicate();
-		if ($keepFiles) {
-			Logs::notice(__METHOD__, __LINE__, $this->id . ' is a duplicate, files are not deleted!');
-		}
-		// Delete all size variants
-		$this->size_variants->deleteAll($keepFiles, $keepFiles);
-		// Delete Live Photo Video file
-		$livePhotoShortPath = $this->live_photo_short_path;
-		if (!$keepFiles && !empty($livePhotoShortPath) && Storage::exists($livePhotoShortPath)) {
-			if (!Storage::delete($livePhotoShortPath)) {
-				throw new MediaFileOperationException('could not delete media file: ' . $livePhotoShortPath);
-			}
-		}
-
-		return $this->internalDelete();
+		$fileDeleter = (new Delete())->do([$this->id]);
+		$this->exists = false;
+		$fileDeleter->do();
 	}
 }

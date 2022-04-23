@@ -2,6 +2,7 @@
 
 namespace App\Models\Extensions;
 
+use App\Actions\SizeVariant\Delete;
 use App\DTO\DTO;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
@@ -208,34 +209,31 @@ class SizeVariants extends DTO
 	/**
 	 * Deletes all size variants incl. the files from storage.
 	 *
-	 * @param bool $keepOriginalFile if true, the original size variant is
-	 *                               still removed from the DB and the model,
-	 *                               but the media file is kept
-	 * @param bool $keepAllFiles     if true, all size variants are still
-	 *                               removed from the DB and the model, but
-	 *                               the media files are kept
-	 *
 	 * @return void
 	 *
 	 * @throws ModelDBException
 	 * @throws MediaFileOperationException
 	 */
-	public function deleteAll(bool $keepOriginalFile = false, bool $keepAllFiles = false): void
+	public function deleteAll(): void
 	{
-		$this->original?->delete($keepOriginalFile || $keepAllFiles);
+		$ids = [];
+
+		$ids[] = $this->original?->id;
 		$this->original = null;
-		$this->medium2x?->delete($keepAllFiles);
+		$ids[] = $this->medium2x?->id;
 		$this->medium2x = null;
-		$this->medium?->delete($keepAllFiles);
+		$ids[] = $this->medium?->id;
 		$this->medium = null;
-		$this->small2x?->delete($keepAllFiles);
+		$ids[] = $this->small2x?->id;
 		$this->small2x = null;
-		$this->small?->delete($keepAllFiles);
+		$ids[] = $this->small?->id;
 		$this->small = null;
-		$this->thumb2x?->delete($keepAllFiles);
+		$ids[] = $this->thumb2x?->id;
 		$this->thumb2x = null;
-		$this->thumb?->delete($keepAllFiles);
+		$ids[] = $this->thumb?->id;
 		$this->thumb = null;
+
+		(new Delete())->do(array_diff($ids, [null]))->do();
 	}
 
 	/**

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\Photo\Archive;
 use App\Actions\Photo\Create;
+use App\Actions\Photo\Delete;
 use App\Actions\Photo\Duplicate;
 use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\ImportMode;
@@ -33,6 +34,7 @@ use App\SmartAlbums\StarredAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class PhotoController extends Controller
@@ -241,20 +243,17 @@ class PhotoController extends Controller
 	 * Delete one or more photos.
 	 *
 	 * @param DeletePhotosRequest $request
+	 * @param Delete              $delete
 	 *
 	 * @return void
 	 *
 	 * @throws ModelDBException
 	 * @throws MediaFileOperationException
 	 */
-	public function delete(DeletePhotosRequest $request): void
+	public function delete(DeletePhotosRequest $request, Delete $delete): void
 	{
-		/** @var Photo $photo */
-		foreach ($request->photos() as $photo) {
-			// we must call delete on the model and not on the database
-			// in order to remove the files, too
-			$photo->delete();
-		}
+		$fileDeleter = $delete->do($request->photoIDs());
+		App::terminating(fn () => $fileDeleter->do());
 	}
 
 	/**
@@ -268,7 +267,7 @@ class PhotoController extends Controller
 	 *
 	 * @throws ModelDBException
 	 */
-	public function duplicate(DuplicatePhotosRequest $request, Duplicate $duplicate)
+	public function duplicate(DuplicatePhotosRequest $request, Duplicate $duplicate): Photo|Collection
 	{
 		$duplicates = $duplicate->do($request->photos(), $request->album());
 

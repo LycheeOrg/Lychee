@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Actions\Album\Delete;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Models\Extensions\AlbumBuilder;
 use App\Models\Extensions\BaseAlbum;
@@ -172,45 +174,34 @@ class Album extends BaseAlbum implements Node
 	}
 
 	/**
-	 * Recursively deletes the album incl. potential sub-albums and photos.
-	 *
-	 * @return bool always returns true
+	 * {@inheritDoc}
 	 *
 	 * @throws ModelDBException
+	 * @throws MediaFileOperationException
 	 */
-	public function delete(): bool
+	public function performDeleteOnModel(): void
 	{
-		try {
-			$this->refreshNode();
+		$fileDeleter = (new Delete())->do([$this->id]);
+		$this->exists = false;
+		$fileDeleter->do();
+	}
 
-			// Delete all recursive child photos first
-			// By default, photos are eagerly loaded with their album
-			// because many photo operations depend on the album of the photo.
-			// But deletion of photos does not.
-			// So we can save some queries.
-			$photos = $this->all_photos()->without(['album'])->lazy();
-			/** @var Photo $photo */
-			foreach ($photos as $photo) {
-				// This also takes care of proper deletion of physical files from disk
-				$photo->delete();
-			}
-
-			// Finally, delete the album itself
-			// Note, we need this strange condition, because `delete` may also
-			// return `null` on success, so we must explicitly test for
-			// _not `false`_.
-			parent::delete();
-
-			return true;
-		} catch (ModelDBException $e) {
-			try {
-				// if anything goes wrong, don't leave the tree in an inconsistent state
-				$this->newModelQuery()->fixTree();
-			} catch (\Throwable) {
-				// Sic! We cannot do anything about the inner exception
-			}
-			throw $e;
-		}
+	/**
+	 * This method is a no-op.
+	 *
+	 * This method is originally defined by {@link NodeTrait::deleteDescendants()}
+	 * and called as part of the event listener for the 'deleting' event.
+	 * The event listener is installed by {@link NodeTrait::bootNodeTrait()}.
+	 *
+	 * For efficiency reasons all descendants are deleted by
+	 * {@link Delete::do()}.
+	 * Hence, we must avoid any attempt to delete the descendants twice.
+	 *
+	 * @return void
+	 */
+	protected function deleteDescendants(): void
+	{
+		// deliberately a no op
 	}
 
 	/**
