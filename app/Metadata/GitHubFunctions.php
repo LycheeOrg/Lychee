@@ -6,26 +6,27 @@ use App\Exceptions\VersionControlException;
 use App\Facades\Helpers;
 use App\ModelFunctions\JsonRequestFunctions;
 use App\Models\Configs;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Config;
 
 class GitHubFunctions
 {
 	private GitRequest $gitRequest;
-	protected string $head;
-	protected string $branch;
+	protected ?string $localBranch;
+	protected ?string $localHead;
+	protected ?string $remoteHead;
 
 	/**
 	 * Base constructor.
 	 *
 	 * @param GitRequest $gitRequest
-	 *
-	 * @throws VersionControlException
 	 */
 	public function __construct(GitRequest $gitRequest)
 	{
 		$this->gitRequest = $gitRequest;
-		$this->branch = $this->determine_current_branch();
-		$this->head = $this->determine_current_commit();
+		$this->localBranch = null;
+		$this->localHead = null;
+		$this->remoteHead = null;
 	}
 
 	/**
@@ -35,57 +36,9 @@ class GitHubFunctions
 	 *
 	 * @return string
 	 */
-	private function trim($commit_id): string
+	private static function trim($commit_id): string
 	{
 		return trim(substr($commit_id, 0, 7));
-	}
-
-	/**
-	 * Looks at .git/HEAD and returns the current branch.
-	 *
-	 * @return string the current branch
-	 *
-	 * @throws VersionControlException
-	 */
-	private function determine_current_branch(): string
-	{
-		try {
-			$head_file = base_path('.git/HEAD');
-			$branch = file_get_contents($head_file);
-			if ($branch === false) {
-				throw new \RuntimeException('`file_get_contents` returned `false`');
-			}
-			$branch = explode('/', $branch, 3);
-			if ($branch === false) {
-				throw new \RuntimeException('`explode` returned `false`');
-			}
-
-			return trim($branch[2]);
-		} catch (\Throwable $e) {
-			throw new VersionControlException('Could not determine the branch', $e);
-		}
-	}
-
-	/**
-	 * Determines the head commit id (7 hex digits) of the current branch.
-	 *
-	 * @return string
-	 *
-	 * @throws VersionControlException
-	 */
-	private function determine_current_commit(): string
-	{
-		try {
-			$file = base_path('.git/refs/heads/' . $this->branch);
-			$commitID = file_get_contents($file);
-			if ($commitID === false) {
-				throw new \RuntimeException('`file_get_contents` returned `false`');
-			}
-		} catch (\Throwable $e) {
-			throw new VersionControlException('Could not determine the head commit of current branch', $e);
-		}
-
-		return $this->trim($commitID);
 	}
 
 	/**
@@ -119,9 +72,9 @@ class GitHubFunctions
 	 *
 	 * @throws VersionControlException
 	 */
-	public function count_behind(bool $cached = true): int
+	private function count_behind(bool $cached = true): int
 	{
-		if ($this->branch !== 'master') {
+		if ($this->getLocalBranch() !== 'master') {
 			throw new VersionControlException('Branch is not master, cannot compare');
 		}
 
@@ -129,7 +82,7 @@ class GitHubFunctions
 
 		$i = 0;
 		while ($i < count($commits)) {
-			if ($this->trim($commits[$i]->sha) == $this->head) {
+			if (self::trim($commits[$i]->sha) == $this->getLocalHead()) {
 				break;
 			}
 			$i++;
@@ -146,16 +99,17 @@ class GitHubFunctions
 	 * return the commit id (7 hex digits) of the head if found.
 	 *
 	 * @return string
+	 *
+	 * @throws VersionControlException
 	 */
-	public function get_github_head(): string
+	private function getRemoteHead(): string
 	{
-		try {
+		if ($this->remoteHead === null) {
 			$commits = $this->get_commits();
-
-			return ' (' . $this->trim($commits[0]->sha) . ')';
-		} catch (VersionControlException $e) {
-			return '';
+			$this->remoteHead = self::trim($commits[0]->sha);
 		}
+
+		return $this->remoteHead;
 	}
 
 	/**
@@ -169,21 +123,20 @@ class GitHubFunctions
 	{
 		try {
 			$count = $this->count_behind();
+			$last_update = $this->gitRequest->get_age_text();
+
+			if ($count === 0) {
+				return sprintf(' - Up to date (%s).', $last_update);
+			} else {
+				return sprintf(
+					' - %s commits behind master %s (%s)',
+					$count,
+					$this->getRemoteHead(),
+					$last_update
+				);
+			}
 		} catch (VersionControlException $e) {
 			return ' - ' . $e->getMessage();
-		}
-
-		$last_update = $this->gitRequest->get_age_text();
-
-		if ($count === 0) {
-			return sprintf(' - Up to date (%s).', $last_update);
-		} else {
-			return sprintf(
-				' - %s commits behind master %s (%s)',
-				$count,
-				$this->get_github_head(),
-				$last_update
-			);
 		}
 	}
 
@@ -208,7 +161,21 @@ class GitHubFunctions
 	 */
 	public function has_permissions(): bool
 	{
-		return Helpers::hasFullPermissions(base_path('.git')) && Helpers::hasPermissions(base_path('.git/refs/heads/' . $this->branch));
+		try {
+			$localBranch = $this->getLocalBranch();
+		} catch (VersionControlException) {
+			$localBranch = null;
+		}
+
+		try {
+			return
+				Helpers::hasFullPermissions(base_path('.git')) && (
+					$localBranch === null ||
+					Helpers::hasPermissions(base_path('.git/refs/heads/' . $localBranch))
+				);
+		} catch (BindingResolutionException) {
+			return false;
+		}
 	}
 
 	/**
@@ -242,23 +209,73 @@ class GitHubFunctions
 	}
 
 	/**
-	 * Return true if the current branch is master.
+	 * Checks if current branch is the master branch.
+	 *
 	 * This is used to avoid running git pulls on development branches during tests.
 	 *
 	 * @return bool
 	 */
 	public function is_master_branch(): bool
 	{
-		return $this->branch === 'master';
+		try {
+			return $this->getLocalBranch() === 'master';
+		} catch (VersionControlException) {
+			return false;
+		}
 	}
 
-	public function getBranch(): string
+	/**
+	 * Returns the name of the locally checked-out branch.
+	 *
+	 * The method reads `.git/HEAD` and caches the result.
+	 * If the branch cannot be determined an exception is thrown.
+	 *
+	 * @return string
+	 *
+	 * @throws VersionControlException
+	 */
+	public function getLocalBranch(): string
 	{
-		return $this->branch;
+		if ($this->localBranch === null) {
+			try {
+				$head_file = base_path('.git/HEAD');
+				$branch = file_get_contents($head_file);
+				if ($branch === false) {
+					throw new \RuntimeException('`file_get_contents` returned `false`');
+				}
+				$branch = explode('/', $branch, 3);
+
+				$this->localBranch = trim($branch[2]);
+			} catch (\Throwable $e) {
+				throw new VersionControlException('Could not determine the branch', $e);
+			}
+		}
+
+		return $this->localBranch;
 	}
 
-	public function getHead(): string
+	/**
+	 * Returns the commit id (7 hex digits) of the local head.
+	 *
+	 * @return string
+	 *
+	 * @throws VersionControlException
+	 */
+	public function getLocalHead(): string
 	{
-		return $this->head;
+		if ($this->localHead === null) {
+			try {
+				$file = base_path('.git/refs/heads/' . $this->getLocalBranch());
+				$commitID = file_get_contents($file);
+				if ($commitID === false) {
+					throw new \RuntimeException('`file_get_contents` returned `false`');
+				}
+				$this->localHead = self::trim($commitID);
+			} catch (\Throwable $e) {
+				throw new VersionControlException('Could not determine the head commit of current branch', $e);
+			}
+		}
+
+		return $this->localHead;
 	}
 }

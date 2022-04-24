@@ -5,7 +5,11 @@ namespace App\Metadata;
 use App\DTO\LycheeChannelInfo;
 use App\DTO\LycheeGitInfo;
 use App\DTO\Version;
+use App\Exceptions\Internal\FrameworkException;
+use App\Exceptions\Internal\LycheeInvalidArgumentException;
+use App\Exceptions\VersionControlException;
 use App\Models\Configs;
+use Illuminate\Contracts\Container\BindingResolutionException;
 
 class LycheeVersion
 {
@@ -65,12 +69,19 @@ class LycheeVersion
 	 * Return the info about the version.md file.
 	 *
 	 * @return Version
+	 *
+	 * @throws LycheeInvalidArgumentException
+	 * @throws FrameworkException
 	 */
 	public function getFileVersion(): Version
 	{
-		return Version::createFromString(
-			file_get_contents(base_path('version.md'))
-		);
+		try {
+			return Version::createFromString(
+				file_get_contents(base_path('version.md'))
+			);
+		} catch (BindingResolutionException $e) {
+			throw new FrameworkException('Laravel\'s container component', $e);
+		}
 	}
 
 	/**
@@ -81,17 +92,25 @@ class LycheeVersion
 	public function getLycheeChannelInfo(): LycheeChannelInfo
 	{
 		if ($this->isRelease) {
-			return LycheeChannelInfo::createReleaseInfo($this->getFileVersion());
+			try {
+				return LycheeChannelInfo::createReleaseInfo($this->getFileVersion());
+			} catch (FrameworkException|LycheeInvalidArgumentException $e) {
+				return LycheeChannelInfo::createReleaseInfo(null);
+			}
 		}
 
-		$branch = $this->gitHubFunctions->getBranch();
-		$commit = $this->gitHubFunctions->getHead();
-		if (empty($commit) && empty($branch)) {
+		try {
+			$branch = $this->gitHubFunctions->getLocalBranch();
+			$commit = $this->gitHubFunctions->getLocalHead();
+			if (empty($commit) && empty($branch)) {
+				return LycheeChannelInfo::createGitInfo(null);
+			}
+
+			return LycheeChannelInfo::createGitInfo(
+				new LycheeGitInfo($branch, $commit, $this->gitHubFunctions->get_behind_text())
+			);
+		} catch (VersionControlException) {
 			return LycheeChannelInfo::createGitInfo(null);
 		}
-
-		return LycheeChannelInfo::createGitInfo(
-			new LycheeGitInfo($branch, $commit, $this->gitHubFunctions->get_behind_text())
-		);
 	}
 }
