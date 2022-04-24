@@ -138,9 +138,7 @@ jobs:
 
       - name: Apply tests
         if: ${{ matrix.mode == 'dev' }}
-        run: |
-            cat .git/HEAD
-            XDEBUG_MODE=coverage vendor/bin/phpunit --verbose
+        run: XDEBUG_MODE=coverage vendor/bin/phpunit --verbose
 
       - name: Codecov
         if: ${{ matrix.mode == 'dev' }}
