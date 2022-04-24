@@ -2,11 +2,9 @@
 
 namespace App\Image;
 
-use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
-use App\Models\Configs;
 
 /**
  * Class NativeLocalFile.
@@ -128,80 +126,56 @@ class NativeLocalFile extends MediaFile
 	}
 
 	/**
-	 * Returns the kind of media file.
-	 *
-	 * The kind is one out of:
-	 *
-	 *  - `'photo'` if the media file is a photo
-	 *  - `'video'` if the media file is a video
-	 *  - `'raw'` if the media file is an accepted file, but none of the other
-	 *    two kinds (we only check extensions).
-	 *
-	 * @return string either `'photo'`, `'video'` or `'raw'`
-	 *
-	 * @throws MediaFileUnsupportedException
-	 * @throws ExternalComponentMissingException
-	 */
-	public function getFileKind(): string
-	{
-		$extension = $this->getOriginalExtension();
-		// check raw files
-		$raw_formats = strtolower(Configs::get_value('raw_formats', ''));
-		if (in_array(strtolower($extension), explode('|', $raw_formats), true)) {
-			return 'raw';
-		}
-
-		if (in_array(strtolower($extension), MediaFile::SUPPORTED_FILE_EXTENSIONS, true)) {
-			$mimeType = $this->getMimeType();
-			if (in_array($mimeType, MediaFile::SUPPORTED_VIDEO_MIME_TYPES, true)) {
-				return 'video';
-			}
-
-			return 'photo';
-		}
-
-		// let's check for the mimetype
-		// maybe we don't have a photo
-		if (!function_exists('exif_imagetype')) {
-			throw new ExternalComponentMissingException('EXIF library missing.');
-		}
-
-		$type = exif_imagetype($this->getAbsolutePath());
-		if (in_array($type, MediaFile::SUPPORTED_PHP_EXIF_IMAGE_TYPES, true)) {
-			return 'photo';
-		}
-
-		throw new MediaFileUnsupportedException('Photo type not supported: ' . $this->getOriginalBasename());
-	}
-
-	/**
 	 * Checks if the file is a valid image type acc. to {@link MediaFile::SUPPORTED_PHP_EXIF_IMAGE_TYPES}.
 	 *
 	 * @return bool true, if the file has a valid EXIF type
 	 */
-	public function hasSupportedExifImageType(): bool
+	protected function hasSupportedExifImageType(): bool
 	{
 		return in_array(exif_imagetype($this->getAbsolutePath()), self::SUPPORTED_PHP_EXIF_IMAGE_TYPES, true);
 	}
 
 	/**
-	 * Determines whether the file is supported.
+	 * Checks if the file is a supported image.
+	 *
+	 * @return bool
+	 */
+	public function isSupportedImage(): bool
+	{
+		$mime = $this->getMimeType();
+		$ext = $this->getOriginalExtension();
+
+		return
+			self::isSupportedImageMimeType($mime) &&
+			self::isSupportedImageFileExtension($ext) &&
+			$this->hasSupportedExifImageType();
+	}
+
+	/**
+	 * Checks if the file is a supported video.
+	 *
+	 * @return bool
+	 */
+	public function isSupportedVideo(): bool
+	{
+		$mime = $this->getMimeType();
+		$ext = $this->getOriginalExtension();
+
+		return
+			self::isSupportedVideoMimeType($mime) &&
+			self::isSupportedVideoFileExtension($ext);
+	}
+
+	/**
+	 * Checks if the file is supported (image or video).
 	 *
 	 * @return bool true, if the file is supported
 	 */
 	public function isSupported(): bool
 	{
-		$mime = $this->getMimeType();
-		$ext = $this->getOriginalExtension();
-
-		return (
-			self::isSupportedImageMimeType($mime) &&
-			self::isSupportedImageFileExtension($ext) &&
-			$this->hasSupportedExifImageType()
-		) || (
-			self::isSupportedVideoMimeType($mime) &&
-			self::isSupportedVideoFileExtension($ext)
-		);
+		return
+			$this->isSupportedImage() ||
+			$this->isSupportedVideo();
 	}
 
 	/**
@@ -214,6 +188,44 @@ class NativeLocalFile extends MediaFile
 	public function assertIsSupported(): void
 	{
 		if (!$this->isSupported()) {
+			throw new MediaFileUnsupportedException();
+		}
+	}
+
+	/**
+	 * Checks if the file is not supported, but an accepted raw media.
+	 *
+	 * @return bool
+	 */
+	public function isAcceptedRaw(): bool
+	{
+		return in_array(
+			strtolower($this->getOriginalExtension()),
+			self::getSanitizedAcceptedRawFileExtensions(),
+			true
+		);
+	}
+
+	/**
+	 * Checks if the file is supported or accepted (i.e. image, video or raw).
+	 *
+	 * @return bool true, if the file is supported or accepted
+	 */
+	public function isSupportedMediaOrAcceptedRaw(): bool
+	{
+		return $this->isSupported() || $this->isAcceptedRaw();
+	}
+
+	/**
+	 * Asserts that the file is supported or accepted (i.e. image, video or raw).
+	 *
+	 * @return void
+	 *
+	 * @throws MediaFileUnsupportedException
+	 */
+	public function assertIsSupportedMediaOrAcceptedRaw(): void
+	{
+		if (!$this->isSupportedMediaOrAcceptedRaw()) {
 			throw new MediaFileUnsupportedException();
 		}
 	}

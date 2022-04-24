@@ -14,6 +14,9 @@ use App\Contracts\AbstractAlbum;
 use App\Contracts\LycheeException;
 use App\Exceptions\ExternalComponentFailedException;
 use App\Exceptions\ExternalComponentMissingException;
+use App\Exceptions\Internal\FrameworkException;
+use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\MediaFileOperationException;
 use App\Image\MediaFile;
@@ -24,6 +27,7 @@ use App\Models\Photo;
 use App\SmartAlbums\BaseSmartAlbum;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\StarredAlbum;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Create
@@ -57,7 +61,7 @@ class Create
 	 */
 	public function add(NativeLocalFile $sourceFile, ?AbstractAlbum $album = null): Photo
 	{
-		$sourceFile->assertIsSupported();
+		$sourceFile->assertIsSupportedMediaOrAcceptedRaw();
 
 		// Check permissions
 		// throws InsufficientFilesystemPermissions
@@ -69,7 +73,7 @@ class Create
 		// throws InvalidPropertyException
 		$this->initParentAlbum($album);
 
-		// Fill in meta data extracted from source file
+		// Fill in metadata extracted from source file
 		$this->loadFileMetadata($sourceFile);
 
 		// Look up potential duplicates/partners in order to select the
@@ -82,7 +86,7 @@ class Create
 		);
 
 		/*
-		 * From here we need to use a strategy depending if we have
+		 * From here we need to use a strategy depending on whether we have
 		 *
 		 *  - a duplicate
 		 *  - a "stand-alone" media file (i.e. a photo or video without a partner)
@@ -92,13 +96,16 @@ class Create
 		if ($duplicate) {
 			$strategy = new AddDuplicateStrategy($this->strategyParameters, $duplicate);
 		} else {
-			if ($livePartner == null) {
+			if ($livePartner === null) {
 				$strategy = new AddStandaloneStrategy($this->strategyParameters, $sourceFile);
 			} else {
-				if ($sourceFile->getFileKind() === 'video') {
+				if ($sourceFile->isSupportedVideo()) {
 					$strategy = new AddVideoPartnerStrategy($this->strategyParameters, $sourceFile, $livePartner);
-				} else {
+				} elseif ($sourceFile->isSupportedImage()) {
 					$strategy = new AddPhotoPartnerStrategy($this->strategyParameters, $sourceFile, $livePartner);
+				} else {
+					// Accepted, but unsupported raw files are added as stand-alone files
+					$strategy = new AddStandaloneStrategy($this->strategyParameters, $sourceFile);
 				}
 			}
 		}
@@ -124,22 +131,22 @@ class Create
 	 * @throws ExternalComponentMissingException
 	 * @throws MediaFileOperationException
 	 * @throws ExternalComponentFailedException
+	 * @throws FrameworkException
 	 */
 	protected function loadFileMetadata(NativeLocalFile $sourceFile): void
 	{
-		/* @var  Extractor $metadataExtractor */
-		$metadataExtractor = resolve(Extractor::class);
+		try {
+			/* @var  Extractor $metadataExtractor */
+			$metadataExtractor = resolve(Extractor::class);
 
-		$this->strategyParameters->exifInfo = $metadataExtractor->extract($sourceFile);
-		// Overwrite MIME type if, file kind is raw
-		// TODO: This is completely unnecessary, if we interpret any MIME type which is not known as raw
-		if ($sourceFile->getFileKind() === 'raw') {
-			$this->strategyParameters->exifInfo['type'] = 'raw';
-		}
+			$this->strategyParameters->exifInfo = $metadataExtractor->extract($sourceFile);
 
-		// Use basename of file if IPTC title missing
-		if (empty($this->strategyParameters->exifInfo['title'])) {
-			$this->strategyParameters->exifInfo['title'] = substr($sourceFile->getOriginalBasename(), 0, 98);
+			// Use basename of file if IPTC title missing
+			if (empty($this->strategyParameters->exifInfo['title'])) {
+				$this->strategyParameters->exifInfo['title'] = substr($sourceFile->getOriginalBasename(), 0, 98);
+			}
+		} catch (BindingResolutionException $e) {
+			throw new FrameworkException('Laravel\'s container component', $e);
 		}
 	}
 
@@ -158,30 +165,37 @@ class Create
 	 * @param Album|null  $album     the album of which the partner must be member of
 	 *
 	 * @return Photo|null The live partner if found
+	 *
+	 * @throws QueryBuilderException
 	 */
 	protected function findLivePartner(
 		?string $contentID, string $mimeType, ?Album $album
 	): ?Photo {
-		$livePartner = null;
-		// find a potential partner which has the same content id
-		if ($contentID) {
-			/** @var Photo|null $livePartner */
-			$livePartner = Photo::query()
-				->where('live_photo_content_id', '=', $contentID)
-				->where('album_id', '=', $album?->id)
-				->whereNull('live_photo_short_path')->first();
-		}
-		if ($livePartner != null) {
+		try {
+			$livePartner = null;
+			// find a potential partner which has the same content id
+			if ($contentID) {
+				/** @var Photo|null $livePartner */
+				$livePartner = Photo::query()
+					->where('live_photo_content_id', '=', $contentID)
+					->where('album_id', '=', $album?->id)
+					->whereNull('live_photo_short_path')->first();
+			}
 			// if a potential partner has been found, ensure that it is of a
 			// different kind then the uploaded media.
-			// Photo+Photo or Video+Video does not work
-			// TODO: This condition is probably erroneous, if one of the types equals 'raw'.
-			if (in_array($mimeType, MediaFile::SUPPORTED_VIDEO_MIME_TYPES, true) === in_array($livePartner->type, MediaFile::SUPPORTED_VIDEO_MIME_TYPES, true)) {
+			if (
+				$livePartner !== null && !(
+					MediaFile::isSupportedImageMimeType($mimeType) && $livePartner->isVideo() ||
+					MediaFile::isSupportedVideoMimeType($mimeType) && $livePartner->isPhoto()
+				)
+			) {
 				$livePartner = null;
 			}
-		}
 
-		return $livePartner;
+			return $livePartner;
+		} catch (IllegalOrderOfOperationException $e) {
+			assert(false, new \AssertionError('IllegalOrderOfOperationException must not be thrown', $e));
+		}
 	}
 
 	/**

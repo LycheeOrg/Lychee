@@ -85,38 +85,34 @@ class VideoData extends Command
 			foreach ($photos as $photo) {
 				$this->line('Processing ' . $photo->title . '...');
 				$originalSizeVariant = $photo->size_variants->getOriginal();
-				$fullPath = $originalSizeVariant->full_path;
+				$file = $originalSizeVariant->getFile()->toLocalFile();
 
-				if (file_exists($fullPath)) {
-					$info = $this->metadataExtractor->extract($fullPath, 'video');
+				$info = $this->metadataExtractor->extract($file);
 
-					if ($originalSizeVariant->width == 0 && $info['width'] !== 0) {
-						$originalSizeVariant->width = $info['width'];
-					}
-					if ($originalSizeVariant->height == 0 && $info['height'] !== 0) {
-						$originalSizeVariant->height = $info['height'];
-					}
-					if ($photo->focal == '' && $info['focal'] !== '') {
-						$photo->focal = $info['focal'];
-					}
-					if ($photo->aperture == '' && $info['aperture'] !== '') {
-						$photo->aperture = $info['aperture'];
-					}
-					if ($photo->latitude == null && $info['latitude'] !== null) {
-						$photo->latitude = floatval($info['latitude']);
-					}
-					if ($photo->longitude == null && $info['longitude'] !== null) {
-						$photo->longitude = floatval($info['longitude']);
-					}
-					if ($photo->isDirty()) {
-						$this->line('Updated metadata');
-					}
-
-					$sizeVariantFactory->init($photo);
-					$sizeVariantFactory->createSizeVariants();
-				} else {
-					$this->line('File does not exist');
+				if ($originalSizeVariant->width == 0 && $info['width'] !== 0) {
+					$originalSizeVariant->width = $info['width'];
 				}
+				if ($originalSizeVariant->height == 0 && $info['height'] !== 0) {
+					$originalSizeVariant->height = $info['height'];
+				}
+				if ($photo->focal == '' && $info['focal'] !== '') {
+					$photo->focal = $info['focal'];
+				}
+				if ($photo->aperture == '' && $info['aperture'] !== '') {
+					$photo->aperture = $info['aperture'];
+				}
+				if ($photo->latitude == null && $info['latitude'] !== null) {
+					$photo->latitude = floatval($info['latitude']);
+				}
+				if ($photo->longitude == null && $info['longitude'] !== null) {
+					$photo->longitude = floatval($info['longitude']);
+				}
+				if ($photo->isDirty()) {
+					$this->line('Updated metadata');
+				}
+
+				$sizeVariantFactory->init($photo);
+				$sizeVariantFactory->createSizeVariants();
 
 				$photo->save();
 			}

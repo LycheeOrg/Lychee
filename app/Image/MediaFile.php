@@ -5,6 +5,7 @@ namespace App\Image;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
+use App\Models\Configs;
 use Illuminate\Http\UploadedFile;
 
 /**
@@ -79,6 +80,9 @@ abstract class MediaFile
 		'video/x-m4v', // Avi
 		'application/octet-stream', // Some mp4 files; will be corrected by the metadata extractor
 	];
+
+	/** @var string[]|null the accepted raw file extensions minus supported extensions */
+	private static ?array $cachedAcceptedRawFileExtensions = null;
 
 	/** @var ?resource */
 	protected $stream = null;
@@ -294,6 +298,72 @@ abstract class MediaFile
 	public static function assertIsSupportedFileExtension(string $extension): void
 	{
 		if (!self::isSupportedFileExtension($extension)) {
+			throw new MediaFileUnsupportedException(MediaFileUnsupportedException::DEFAULT_MESSAGE . ' (bad extension: ' . $extension . ')');
+		}
+	}
+
+	/**
+	 * Returns {@link MediaFile::$cachedAcceptedRawFileExtensions} and creates it, if necessary.
+	 *
+	 * @return string[]
+	 */
+	protected static function getSanitizedAcceptedRawFileExtensions(): array
+	{
+		if (self::$cachedAcceptedRawFileExtensions === null) {
+			$tmp = explode('|', strtolower(Configs::get_value('raw_formats', '')));
+			// Explode may return `false` on error
+			// Our supported file extensions always take precedence over any
+			// custom configured extension
+			self::$cachedAcceptedRawFileExtensions = is_array($tmp) ?
+				array_diff($tmp, self::SUPPORTED_IMAGE_FILE_EXTENSIONS, self::SUPPORTED_VIDEO_FILE_EXTENSIONS) :
+				[];
+		}
+
+		return self::$cachedAcceptedRawFileExtensions;
+	}
+
+	/**
+	 * Checks if the given extension is accepted as raw.
+	 *
+	 * @param string $extension the file extension
+	 *
+	 * @return bool
+	 */
+	public static function isAcceptedRawFileExtension(string $extension): bool
+	{
+		return in_array(
+			strtolower($extension),
+			self::getSanitizedAcceptedRawFileExtensions(),
+			true
+		);
+	}
+
+	/**
+	 * Check if the given extension is supported or accepted.
+	 *
+	 * @param string $extension the file extension
+	 *
+	 * @return bool
+	 */
+	public static function isSupportedOrAcceptedFileExtension(string $extension): bool
+	{
+		return
+			self::isSupportedFileExtension($extension) ||
+			self::isAcceptedRawFileExtension($extension);
+	}
+
+	/**
+	 * Asserts that the given extension is supported or accepted.
+	 *
+	 * @param string $extension the file extension
+	 *
+	 * @return void
+	 *
+	 * @throws MediaFileUnsupportedException
+	 */
+	public static function assertIsSupportedOrAcceptedFileExtension(string $extension): void
+	{
+		if (!self::isSupportedOrAcceptedFileExtension($extension)) {
 			throw new MediaFileUnsupportedException(MediaFileUnsupportedException::DEFAULT_MESSAGE . ' (bad extension: ' . $extension . ')');
 		}
 	}

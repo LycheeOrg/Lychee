@@ -15,7 +15,10 @@ class TemporaryLocalFile extends NativeLocalFile
 	protected string $fakeBaseName;
 
 	/**
+	 * Creates a new temporary file with a random file name.
+	 *
 	 * @param string $fileExtension the file extension of the new temporary file incl. a preceding dot
+	 * @param string $fakeBaseName  the fake base name of the file; e.g. the original name prior to up-/download
 	 *
 	 * @throws MediaFileOperationException
 	 */
@@ -26,6 +29,7 @@ class TemporaryLocalFile extends NativeLocalFile
 		// files need a proper (and correct) extension for the MIME extractor
 		// to work.
 		$success = false;
+		$lastException = null;
 		$retryCounter = 5;
 		do {
 			$tempFilePath = sys_get_temp_dir() .
@@ -38,12 +42,13 @@ class TemporaryLocalFile extends NativeLocalFile
 				$this->stream = fopen($tempFilePath, 'x');
 				$success = is_resource($this->stream);
 				fclose($this->stream);
-			} catch (\Throwable) {
+			} catch (\Throwable $e) {
 				$success = false;
+				$lastException = $e;
 			}
 		} while (!$success && $retryCounter > 0);
 		if (!$success) {
-			throw new MediaFileOperationException('unable to create temporary file');
+			throw new MediaFileOperationException('unable to create temporary file', $lastException);
 		}
 		parent::__construct($tempFilePath);
 		$this->fakeBaseName = $fakeBaseName;

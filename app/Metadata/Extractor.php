@@ -5,7 +5,6 @@ namespace App\Metadata;
 use App\Exceptions\ExternalComponentFailedException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\MediaFileOperationException;
-use App\Facades\Helpers;
 use App\Image\NativeLocalFile;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -88,26 +87,6 @@ class Extractor
 	/**
 	 * Extracts metadata from a file.
 	 *
-	 * **Warning:**
-	 *
-	 * The parameter `$kind` is enum-like parameter and accepts the values
-	 * `photo`, `video` or `raw` (see
-	 * {@link \App\Image\NativeLocalFile::getFileKind()).
-	 * In other words `kind` is a coarsening of the mime type of a file, but
-	 * not identical to the mime type.
-	 * See {@link \App\Actions\Photo\Create::add()} which sets `$kind` to the
-	 * result of {@link \App\Image\NativeLocalFile::getFileKind()}.
-	 * However, there are at least three other occurrences where this method
-	 * is called and the full mime type is passed as the second parameter:
-	 * see {@link \App\Console\Commands\ExifLens::handle()},
-	 * {@link \App\Console\Commands\Takedate::handle()} and
-	 * {@link \App\Console\Commands\VideoData::handle()}.
-	 *
-	 * IMHO, there is an amazing number of places which somehow deal with
-	 * "mime type-ish" sort of values with subtle differences.
-	 *
-	 * TODO: Thoroughly refactor this.
-	 *
 	 * @param NativeLocalFile $file the file
 	 *
 	 * @return array
@@ -119,11 +98,9 @@ class Extractor
 	public function extract(NativeLocalFile $file): array
 	{
 		$fullPath = $file->getAbsolutePath();
-		$kind = $file->getFileKind();
 
 		$reader = null;
 
-		// Get kind of file (photo, video, raw)
 		// TODO: This line is extremely dangerous, because it tries to determine the type of file based on a possibly not existing file extension
 		// Note: For temporarily stored files during upload, PHP normally uses
 		// temporary file names without an extension.
@@ -131,29 +108,22 @@ class Extractor
 		// re-determine the MIME type over and over again, but pass around
 		// proper `File` objects which also hold the MIME type which has
 		// been established initially.
-		$extension = Helpers::getExtension($fullPath, false);
-
-		// check raw files
-		$is_raw = false;
-		$raw_formats = strtolower(Configs::get_value('raw_formats', ''));
-		if (in_array(strtolower($extension), explode('|', $raw_formats), true)) {
-			$is_raw = true;
-		}
+		$extension = $file->getExtension();
 
 		try {
-			if ($kind !== 'video') {
+			if ($file->isSupportedImage()) {
 				// It's a photo
 				if (Configs::hasExiftool()) {
 					// reader with Exiftool adapter
 					$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
-				} elseif (Configs::hasImagick() && $is_raw) {
-					// Use imagick as exif reader for raw files (broader support)
+				} elseif (Configs::hasImagick()) {
+					// Use imagick as exif reader if available
 					$reader = Reader::factory(Reader::TYPE_IMAGICK);
 				} else {
 					// Use Php native tools
 					$reader = Reader::factory(Reader::TYPE_NATIVE);
 				}
-			} else {
+			} elseif ($file->isSupportedVideo()) {
 				// Let's try to use FFmpeg; if not available, let's try Exiftool
 				if (Configs::hasFFmpeg()) {
 					// It's a video -> use FFProbe
@@ -166,6 +136,15 @@ class Extractor
 					// For all other properties, it will not return anything
 					$reader = Reader::factory(Reader::TYPE_NATIVE);
 					Logs::notice(__METHOD__, __LINE__, 'FFmpeg and Exiftool not being available; Extraction of metadata limited to mime type and file size.');
+				}
+			} else {
+				// It is an accepted raw file
+				if (Configs::hasImagick()) {
+					// Use imagick as exif reader for raw files (broader support)
+					$reader = Reader::factory(Reader::TYPE_IMAGICK);
+				} else {
+					// Use Php native tools
+					$reader = Reader::factory(Reader::TYPE_NATIVE);
 				}
 			}
 
@@ -391,7 +370,7 @@ class Extractor
 				//         At the layer of the "business logic" we only use
 				//         the attribute `taken_at` which extends
 				//         \DateTimeInterface and stores the timezone.
-				if ($kind === 'video') {
+				if ($file->isSupportedVideo()) {
 					$locals = strtolower(Configs::get_value('local_takestamp_video_formats', ''));
 					if (!in_array(strtolower($extension), explode('|', $locals), true)) {
 						// This is a video format where we expect the takestamp
@@ -495,7 +474,7 @@ class Extractor
 			$metadata['position'] = implode(', ', $fields);
 		}
 
-		if ($kind !== 'video') {
+		if ($file->isSupportedImage() || $file->isAcceptedRaw()) {
 			$metadata['aperture'] = ($exif->getAperture() !== false) ? $exif->getAperture() : '';
 			$metadata['focal'] = ($exif->getFocalLength() !== false) ? $exif->getFocalLength() : '';
 			if ($metadata['focal'] !== '') {

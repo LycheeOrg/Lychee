@@ -66,9 +66,9 @@ class FromUrl
 
 				// Validate photo extension even when `$create->add()` will do later.
 				// This prevents us from downloading unsupported files.
-				MediaFile::assertIsSupportedFileExtension($extension);
+				MediaFile::assertIsSupportedOrAcceptedFileExtension($extension);
 
-				// Download file, before exif checks the mimetype, otherwise we download it twice
+				// Download file
 				$tmpFile = new TemporaryLocalFile($extension, $basename);
 				try {
 					$downloadStream = fopen($url, 'r');
@@ -78,14 +78,8 @@ class FromUrl
 					throw new MediaFileOperationException('Could not download ' . $url . ' to ' . $tmpFile->getAbsolutePath(), $e);
 				}
 
-				// Verify image
-				// TODO: Consider to make this test a general part of \App\Actions\Photo\Create::add. Then we don't need those tests at multiple places.
-				$tmpFile->assertIsSupported();
-
-				// Import photo
-				$result->add(
-					$create->add($tmpFile, $album)
-				);
+				// Import photo/video/raw
+				$result->add($create->add($tmpFile, $album));
 			} catch (\Throwable $e) {
 				$exceptions[] = $e;
 				$this->exceptionHandler->report($e);

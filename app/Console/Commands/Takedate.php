@@ -150,16 +150,9 @@ class Takedate extends Command
 			/* @var Photo $photo */
 			foreach ($photos as $photo) {
 				$this->progressBar->advance();
-				// TODO: As soon as we support AWS S3 storage, we must stop using absolute paths. However, first the EXIF extractor must be rewritten to use file streams.
-				$fullPath = $photo->size_variants->getOriginal()->getFile()->getAbsolutePath();
+				$localFile = $photo->size_variants->getOriginal()->getFile()->toLocalFile();
 
-				if (!file_exists($fullPath)) {
-					$this->printError($photo, 'Media file ' . $fullPath . ' not found');
-					continue;
-				}
-
-				$kind = $photo->isRaw() ? 'raw' : ($photo->isVideo() ? 'video' : 'photo');
-				$info = $metadataExtractor->extract($fullPath, $kind);
+				$info = $metadataExtractor->extract($localFile);
 				/* @var Carbon $stamp */
 				$stamp = $info['taken_at'];
 				if ($stamp !== null) {
