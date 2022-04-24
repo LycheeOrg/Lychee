@@ -170,7 +170,7 @@ abstract class MediaFile
 	abstract public function getExtension(): string;
 
 	/**
-	 * Returns the original extension of the file.
+	 * Returns the original extension of the file incl. the preceding dot.
 	 *
 	 * Normally, the original extension equals the extension.
 	 * However, for temporary copies of downloaded or uploaded files the

@@ -108,10 +108,11 @@ class RotateStrategy extends AddBaseStrategy
 		// This will bring photo entity into the same state as it would be if
 		// we were importing a new photo.
 		$this->photo->size_variants->deleteAll();
+		$origFile = null;
 
 		/** @var SizeVariantNamingStrategy $namingStrategy */
 		$namingStrategy = resolve(SizeVariantNamingStrategy::class);
-		$namingStrategy->setFallbackExtension($origFile->getOriginalExtension());
+		$namingStrategy->setFallbackExtension($tmpFile->getOriginalExtension());
 		/** @var SizeVariantFactory $sizeVariantFactory */
 		$sizeVariantFactory = resolve(SizeVariantFactory::class);
 		$sizeVariantFactory->init($this->photo, $namingStrategy);
@@ -123,7 +124,7 @@ class RotateStrategy extends AddBaseStrategy
 		// Sic! Swap width and height here, because the image has been rotated
 		$originalFilesize = $metadataExtractor->filesize($tmpFile->getAbsolutePath());
 		$newOriginalSizeVariant = $sizeVariantFactory->createOriginal($oldOriginalHeight, $oldOriginalWidth, $originalFilesize);
-		$this->putSourceIntoFinalDestination($origFile, $newOriginalSizeVariant->short_path);
+		$this->putSourceIntoFinalDestination($tmpFile, $newOriginalSizeVariant->short_path);
 
 		// Create remaining size variants
 		$newSizeVariants = null;

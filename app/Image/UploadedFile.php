@@ -28,11 +28,17 @@ class UploadedFile extends NativeLocalFile
 		parent::__construct($path);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getOriginalExtension(): string
 	{
-		return pathinfo($this->baseFile->getClientOriginalName(), PATHINFO_EXTENSION);
+		return '.' . pathinfo($this->baseFile->getClientOriginalName(), PATHINFO_EXTENSION);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getOriginalBasename(): string
 	{
 		return pathinfo($this->baseFile->getClientOriginalName(), PATHINFO_FILENAME);

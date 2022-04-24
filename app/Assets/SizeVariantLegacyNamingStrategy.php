@@ -82,6 +82,8 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 	}
 
 	/**
+	 * Returns the file extension incl. the preceding dot.
+	 *
 	 * @throws MissingValueException
 	 * @throws IllegalOrderOfOperationException
 	 */

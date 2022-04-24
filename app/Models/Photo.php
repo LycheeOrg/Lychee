@@ -367,7 +367,7 @@ class Photo extends Model implements HasRandomID
 			throw new IllegalOrderOfOperationException('Photo::isPhoto() must not be called before Photo::$type has been set');
 		}
 
-		return MediaFile::isSupportedVideoMimeType($this->type);
+		return MediaFile::isSupportedImageMimeType($this->type);
 	}
 
 	/**
