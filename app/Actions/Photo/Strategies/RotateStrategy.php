@@ -123,7 +123,7 @@ class RotateStrategy extends AddBaseStrategy
 		// Sic! Swap width and height here, because the image has been rotated
 		$originalFilesize = $metadataExtractor->filesize($tmpFile->getAbsolutePath());
 		$newOriginalSizeVariant = $sizeVariantFactory->createOriginal($oldOriginalHeight, $oldOriginalWidth, $originalFilesize);
-		$this->putSourceIntoFinalDestination($newOriginalSizeVariant->short_path);
+		$this->putSourceIntoFinalDestination($origFile, $newOriginalSizeVariant->short_path);
 
 		// Create remaining size variants
 		$newSizeVariants = null;

@@ -94,7 +94,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			$this->parameters->exifInfo['filesize']
 		);
 		try {
-			$this->putSourceIntoFinalDestination($original->short_path);
+			$this->putSourceIntoFinalDestination($this->sourceFile, $original->short_path);
 		} catch (\Exception $e) {
 			// If source file could not be put into final destination, remove
 			// freshly created photo from DB to avoid having "zombie" entries.

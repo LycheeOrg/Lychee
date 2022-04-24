@@ -18,12 +18,12 @@ use App\Models\Photo;
  */
 class AddVideoPartnerStrategy extends AddBaseStrategy
 {
-	protected MediaFile $videoFile;
+	protected MediaFile $videoSourceFile;
 
-	public function __construct(AddStrategyParameters $parameters, MediaFile $videoFile, Photo $existingPhoto)
+	public function __construct(AddStrategyParameters $parameters, MediaFile $videoSourceFile, Photo $existingPhoto)
 	{
 		parent::__construct($parameters, $existingPhoto);
-		$this->videoFile = $videoFile;
+		$this->videoSourceFile = $videoSourceFile;
 	}
 
 	/**
@@ -37,9 +37,9 @@ class AddVideoPartnerStrategy extends AddBaseStrategy
 		$photoFile = $this->photo->size_variants->getOriginal()->getFile();
 		$photoPath = $photoFile->getRelativePath();
 		$photoExt = $photoFile->getOriginalExtension();
-		$videoExt = $this->videoFile->getOriginalExtension();
+		$videoExt = $this->videoSourceFile->getOriginalExtension();
 		$videoPath = substr($photoPath, 0, -strlen($photoExt)) . $videoExt;
-		$this->putSourceIntoFinalDestination($videoPath);
+		$this->putSourceIntoFinalDestination($this->videoSourceFile, $videoPath);
 		$this->photo->live_photo_short_path = $videoPath;
 		$this->photo->save();
 

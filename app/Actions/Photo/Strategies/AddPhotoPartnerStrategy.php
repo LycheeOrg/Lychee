@@ -24,9 +24,9 @@ class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 {
 	protected Photo $existingVideo;
 
-	public function __construct(AddStrategyParameters $parameters, NativeLocalFile $photoFile, Photo $existingVideo)
+	public function __construct(AddStrategyParameters $parameters, NativeLocalFile $photoSourceFile, Photo $existingVideo)
 	{
-		parent::__construct($parameters, $photoFile);
+		parent::__construct($parameters, $photoSourceFile);
 		$this->existingVideo = $existingVideo;
 	}
 

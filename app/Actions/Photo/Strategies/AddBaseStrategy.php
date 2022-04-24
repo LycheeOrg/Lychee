@@ -7,6 +7,7 @@ use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Image\FlysystemFile;
+use App\Image\MediaFile;
 use App\Image\NativeLocalFile;
 use App\Models\Photo;
 use Illuminate\Support\Facades\Storage;
@@ -132,15 +133,16 @@ abstract class AddBaseStrategy
 	/**
 	 * Moves/copies/symlinks source file to final destination.
 	 *
-	 * @param string $targetPath the path of the final destination relative to
-	 *                           the disk {@link AddBaseStrategy::IMAGE_DISK_NAME}
+	 * @param MediaFile $sourceFile the source file
+	 * @param string    $targetPath the path of the final destination relative
+	 *                              to the disk
+	 *                              {@link AddBaseStrategy::IMAGE_DISK_NAME}
 	 *
 	 * @throws MediaFileOperationException
 	 * @throws ConfigurationException
 	 */
-	protected function putSourceIntoFinalDestination(string $targetPath): void
+	protected function putSourceIntoFinalDestination(MediaFile $sourceFile, string $targetPath): void
 	{
-		$sourceFile = $this->parameters->sourceFileInfo->getFile();
 		$targetFile = new FlysystemFile(Storage::disk(self::IMAGE_DISK_NAME), $targetPath);
 		$isTargetLocal = $targetFile->getStorageAdapter() instanceof Local;
 		if ($this->parameters->importMode->shallImportViaSymlink()) {
