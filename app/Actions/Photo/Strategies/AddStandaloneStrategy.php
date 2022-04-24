@@ -195,14 +195,14 @@ class AddStandaloneStrategy extends AddBaseStrategy
 
 		// If the image has actually been rotated, the size
 		// and the checksum may have changed.
-		$this->photo->checksum = $this->metadataExtractor->checksum($absolutePath);
+		$this->photo->checksum = $this->metadataExtractor->checksum($this->sourceFile);
 		// stat info (filesize, access mode, etc.) are cached by PHP to avoid
 		// costly I/O calls.
 		// If cache is not cleared, the size before rotation is used and later
 		// yields an incorrect value.
 		clearstatcache(true, $absolutePath);
 		// Update filesize for later use e.g. when creating variants
-		$this->parameters->exifInfo['filesize'] = $this->metadataExtractor->filesize($absolutePath);
+		$this->parameters->exifInfo['filesize'] = $this->sourceFile->getFilesize();
 		$this->photo->save();
 	}
 

@@ -154,6 +154,15 @@ abstract class MediaFile
 	abstract public function lastModified(): int;
 
 	/**
+	 * Returns the size of the file in bytes.
+	 *
+	 * @return int the file size in bytes
+	 *
+	 * @throws MediaFileOperationException
+	 */
+	abstract public function getFilesize(): int;
+
+	/**
 	 * Returns the absolute path of the file.
 	 *
 	 * @return string

@@ -3,6 +3,7 @@
 namespace App\Actions\Photo\Strategies;
 
 use App\Exceptions\ConfigurationException;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
@@ -166,11 +167,20 @@ abstract class AddBaseStrategy
 					// readable, but is not writable
 					// In this case, the media file will have been copied, but
 					// cannot be "moved".
-					// TODO: Throw a application-specific exception such that the outer caller can gracefully fallback to "copy"-semantics and return a warning instead of failing entirely.
-					$sourceFile->delete();
+					try {
+						$sourceFile->delete();
+					} catch (MediaFileOperationException $e) {
+						// If deletion failed, we do not cancel the whole
+						// import, but fall back to copy-semantics and
+						// log the exception
+						report($e);
+					}
 				}
-			} catch (\RuntimeException $e) {
-				throw new MediaFileOperationException('Could not move/copy photo', $e);
+			} catch (LycheeLogicException $e) {
+				// the exception is thrown if read/write/close are invoked
+				// in wrong order
+				// something we don't do
+				assert(false, new \AssertionError('read/write/close must not throw a logic exception', $e->getCode(), $e));
 			}
 		}
 	}

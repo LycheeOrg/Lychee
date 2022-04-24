@@ -98,6 +98,14 @@ class FlysystemFile extends MediaFile
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public function getFilesize(): int
+	{
+		return $this->disk->size($this->relativePath);
+	}
+
+	/**
 	 * Returns the relative path of the file wrt. the underlying Flysystem disk.
 	 *
 	 * @return string the relative path

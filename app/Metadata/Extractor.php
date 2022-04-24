@@ -54,31 +54,19 @@ class Extractor
 	}
 
 	/**
-	 * Returns the size of a file in bytes.
-	 *
-	 * @param string $path The relative file path
-	 *
-	 * @return int The file size in bytes or 0 in case of a failure
-	 */
-	public function filesize(string $path): int
-	{
-		return (int) filesize($path);
-	}
-
-	/**
 	 * Returns the SHA-1 checksum of a file.
 	 *
-	 * @param string $path The relative file path
+	 * @param NativeLocalFile $file the file
 	 *
 	 * @return string the checksum
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function checksum(string $path): string
+	public function checksum(NativeLocalFile $file): string
 	{
-		$checksum = sha1_file($path);
+		$checksum = sha1_file($file->getAbsolutePath());
 		if ($checksum === false) {
-			throw new MediaFileOperationException('Could not compute checksum for: ' . $path);
+			throw new MediaFileOperationException('Could not compute checksum for: ' . $file->getAbsolutePath());
 		}
 
 		return $checksum;
@@ -226,7 +214,7 @@ class Extractor
 		$metadata['filesize'] = ($exif->getFileSize() !== false) ? $exif->getFileSize() : 0;
 		$metadata['live_photo_content_id'] = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
 		$metadata['MicroVideoOffset'] = ($exif->getMicroVideoOffset() !== false) ? $exif->getMicroVideoOffset() : null;
-		$metadata['checksum'] = $this->checksum($file->getAbsolutePath());
+		$metadata['checksum'] = $this->checksum($file);
 
 		$taken_at = $exif->getCreationDate();
 		if ($taken_at !== false) {

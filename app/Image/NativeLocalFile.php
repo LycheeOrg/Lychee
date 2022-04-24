@@ -128,6 +128,19 @@ class NativeLocalFile extends MediaFile
 	/**
 	 * {@inheritDoc}
 	 */
+	public function getFilesize(): int
+	{
+		$result = filesize($this->getAbsolutePath());
+		if ($result === false) {
+			throw new MediaFileOperationException('filesize failed');
+		}
+
+		return $result;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getAbsolutePath(): string
 	{
 		$result = realpath($this->path);
