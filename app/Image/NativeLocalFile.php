@@ -16,7 +16,7 @@ use App\Exceptions\MediaFileUnsupportedException;
  */
 class NativeLocalFile extends MediaFile
 {
-	protected string $absolutePath;
+	protected string $path;
 	protected ?string $cachedMimeType;
 
 	/**
@@ -26,11 +26,7 @@ class NativeLocalFile extends MediaFile
 	 */
 	public function __construct(string $path)
 	{
-		$absolutePath = realpath($path);
-		if ($absolutePath === false || !is_file($absolutePath)) {
-			throw new MediaFileOperationException('The path "' . $path . '" does not point to a local file');
-		}
-		$this->absolutePath = $absolutePath;
+		$this->path = $path;
 		$this->cachedMimeType = null;
 	}
 
@@ -42,10 +38,14 @@ class NativeLocalFile extends MediaFile
 		if (is_resource($this->stream)) {
 			throw new LycheeLogicException('Cannot read from a file which is already opened for read');
 		}
-		$this->stream = fopen($this->absolutePath, 'rb');
-		if ($this->stream === false || !is_resource($this->stream)) {
-			$this->stream = null;
-			throw new MediaFileOperationException('Could not read from file ' . $this->absolutePath);
+		try {
+			$this->stream = fopen($this->getAbsolutePath(), 'rb');
+			if ($this->stream === false || !is_resource($this->stream)) {
+				$this->stream = null;
+				throw new MediaFileOperationException('fopen failed');
+			}
+		} catch (\Throwable $e) {
+			throw new MediaFileOperationException('Could not read from file ' . $this->path, $e);
 		}
 
 		return $this->stream;
@@ -67,17 +67,22 @@ class NativeLocalFile extends MediaFile
 		if (is_resource($this->stream)) {
 			throw new LycheeLogicException('Cannot write to a file which is opened for read');
 		}
-		// inspired from \League\Flysystem\Adapter\Local
-		$this->stream = fopen($this->absolutePath, 'wb');
-		if (
-			!is_resource($this->stream) ||
-			stream_copy_to_stream($stream, $this->stream) === false ||
-			!fclose($this->stream)
-		) {
-			throw new MediaFileOperationException('Could not write file ' . $this->absolutePath);
+		try {
+			$this->cachedMimeType = null;
+			// inspired from \League\Flysystem\Adapter\Local
+			$this->stream = fopen($this->getAbsolutePath(), 'wb');
+			if (
+				!is_resource($this->stream) ||
+				stream_copy_to_stream($stream, $this->stream) === false ||
+				!fclose($this->stream)
+			) {
+				throw new MediaFileOperationException('fopen/stream_copy_to_stream/fclose failed');
+			}
+			$this->stream = null;
+			$this->cachedMimeType = $mimeType;
+		} catch (\Throwable $e) {
+			throw new MediaFileOperationException('Could not write file ' . $this->path, $e);
 		}
-		$this->stream = null;
-		$this->cachedMimeType = $mimeType;
 	}
 
 	/**
@@ -85,17 +90,52 @@ class NativeLocalFile extends MediaFile
 	 */
 	public function delete(): void
 	{
-		if (!unlink($this->absolutePath)) {
-			throw new MediaFileOperationException('Could not delete file ' . $this->absolutePath);
+		// `is_file` returns false for links, so we must check separately with `is_link`
+		if (is_link($this->path) || is_file($this->path)) {
+			if (!unlink($this->path)) {
+				throw new MediaFileOperationException('Could not delete file ' . $this->path);
+			}
 		}
 	}
 
 	/**
-	 * @return string the absolute path of the file
+	 * {@inheritDoc}
+	 *
+	 * If the represented file is a symbolic link, then the method only
+	 * returns true, if the link (as a file) exists and the target of the
+	 * link exists, too.
+	 */
+	public function exists(): bool
+	{
+		$result = realpath($this->path);
+
+		return ($result !== false) && is_file($result);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function lastModified(): int
+	{
+		$result = filemtime($this->getAbsolutePath());
+		if ($result === false) {
+			throw new MediaFileOperationException('filemtime failed');
+		}
+
+		return $result;
+	}
+
+	/**
+	 * {@inheritDoc}
 	 */
 	public function getAbsolutePath(): string
 	{
-		return $this->absolutePath;
+		$result = realpath($this->path);
+		if ($result === false || !is_file($result)) {
+			throw new MediaFileOperationException('The path "' . $result . '" does not point to a local file');
+		}
+
+		return $result;
 	}
 
 	/**
@@ -103,7 +143,7 @@ class NativeLocalFile extends MediaFile
 	 */
 	public function getExtension(): string
 	{
-		$ext = pathinfo($this->absolutePath, PATHINFO_EXTENSION);
+		$ext = pathinfo($this->path, PATHINFO_EXTENSION);
 
 		return $ext ? '.' . $ext : '';
 	}
@@ -113,13 +153,20 @@ class NativeLocalFile extends MediaFile
 	 */
 	public function getBasename(): string
 	{
-		return pathinfo($this->absolutePath, PATHINFO_FILENAME);
+		return pathinfo($this->path, PATHINFO_FILENAME);
 	}
 
+	/**
+	 * Returns the MIME type of the file.
+	 *
+	 * @return string the MIME type
+	 *
+	 * @throws MediaFileOperationException
+	 */
 	public function getMimeType(): string
 	{
 		if (!$this->cachedMimeType) {
-			$this->cachedMimeType = mime_content_type($this->absolutePath);
+			$this->cachedMimeType = mime_content_type($this->getAbsolutePath());
 		}
 
 		return $this->cachedMimeType;
@@ -146,6 +193,8 @@ class NativeLocalFile extends MediaFile
 	 * Checks if the file is a supported image.
 	 *
 	 * @return bool
+	 *
+	 * @throws MediaFileOperationException
 	 */
 	public function isSupportedImage(): bool
 	{
@@ -162,6 +211,8 @@ class NativeLocalFile extends MediaFile
 	 * Checks if the file is a supported video.
 	 *
 	 * @return bool
+	 *
+	 * @throws MediaFileOperationException
 	 */
 	public function isSupportedVideo(): bool
 	{
@@ -177,6 +228,8 @@ class NativeLocalFile extends MediaFile
 	 * Checks if the file is supported (image or video).
 	 *
 	 * @return bool true, if the file is supported
+	 *
+	 * @throws MediaFileOperationException
 	 */
 	public function isSupported(): bool
 	{
@@ -191,6 +244,7 @@ class NativeLocalFile extends MediaFile
 	 * @return void
 	 *
 	 * @throws MediaFileUnsupportedException
+	 * @throws MediaFileOperationException
 	 */
 	public function assertIsSupported(): void
 	{
@@ -217,6 +271,8 @@ class NativeLocalFile extends MediaFile
 	 * Checks if the file is supported or accepted (i.e. image, video or raw).
 	 *
 	 * @return bool true, if the file is supported or accepted
+	 *
+	 * @throws MediaFileOperationException
 	 */
 	public function isSupportedMediaOrAcceptedRaw(): bool
 	{
@@ -229,6 +285,7 @@ class NativeLocalFile extends MediaFile
 	 * @return void
 	 *
 	 * @throws MediaFileUnsupportedException
+	 * @throws MediaFileOperationException
 	 */
 	public function assertIsSupportedMediaOrAcceptedRaw(): void
 	{

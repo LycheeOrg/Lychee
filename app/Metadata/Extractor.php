@@ -97,8 +97,6 @@ class Extractor
 	 */
 	public function extract(NativeLocalFile $file): array
 	{
-		$fullPath = $file->getAbsolutePath();
-
 		$reader = null;
 
 		// TODO: This line is extremely dangerous, because it tries to determine the type of file based on a possibly not existing file extension
@@ -159,7 +157,7 @@ class Extractor
 			// with a work-around for MP4 videos which are wrongly classified
 			// as `application/octet-stream`, but this work-around only
 			// succeeds if the file has a recognized extension.
-			$exif = $reader->read($fullPath);
+			$exif = $reader->read($file->getAbsolutePath());
 		} catch (\InvalidArgumentException|NoAdapterException $e) {
 			throw new ExternalComponentMissingException('The configured EXIF adapter is not available', $e);
 		} catch (\RuntimeException $e) {
@@ -174,7 +172,7 @@ class Extractor
 				Logs::notice(__METHOD__, __LINE__, 'Falling back to native adapter.');
 				// Use Php native tools
 				$reader = Reader::factory(Reader::TYPE_NATIVE);
-				$exif = $reader->read($fullPath);
+				$exif = $reader->read($file->getAbsolutePath());
 			} catch (\InvalidArgumentException|NoAdapterException $e) {
 				throw new ExternalComponentMissingException('The configured EXIF adapter is not available', $e);
 			} catch (\RuntimeException $e) {
@@ -187,22 +185,13 @@ class Extractor
 		// Attempt to get sidecar metadata if it exists, make sure to check 'real' path in case of symlinks
 		$sidecarData = [];
 
-		// readlink fails if it's not a link -> we need to separate it
-		$realFile = $fullPath;
-		if (is_link($fullPath)) {
-			try {
-				// if readlink($filename) == False then $realFile = $filename.
-				// if readlink($filename) != False then $realFile = readlink($filename)
-				$realFile = readlink($fullPath) ?: $fullPath;
-			} catch (\Exception $e) {
-				report($e);
-			}
-		}
-		if (Configs::hasExiftool() && file_exists($realFile . '.xmp')) {
+		$sidecarFile = new NativeLocalFile($file->getAbsolutePath() . '.xmp');
+
+		if (Configs::hasExiftool() && $sidecarFile->exists()) {
 			try {
 				// Don't use the same reader as the file in case it's a video
 				$sidecarReader = Reader::factory(Reader::TYPE_EXIFTOOL);
-				$sidecarData = $sidecarReader->read($realFile . '.xmp')->getData();
+				$sidecarData = $sidecarReader->read($sidecarFile->getAbsolutePath())->getData();
 
 				// We don't want to overwrite the media's type with the mimetype of the sidecar file
 				unset($sidecarData['MimeType']);
@@ -237,7 +226,7 @@ class Extractor
 		$metadata['filesize'] = ($exif->getFileSize() !== false) ? $exif->getFileSize() : 0;
 		$metadata['live_photo_content_id'] = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
 		$metadata['MicroVideoOffset'] = ($exif->getMicroVideoOffset() !== false) ? $exif->getMicroVideoOffset() : null;
-		$metadata['checksum'] = $this->checksum($fullPath);
+		$metadata['checksum'] = $this->checksum($file->getAbsolutePath());
 
 		$taken_at = $exif->getCreationDate();
 		if ($taken_at !== false) {

@@ -173,10 +173,7 @@ class Takedate extends Command
 				}
 
 				if ($setCreationTime) {
-					if (is_link($fullPath)) {
-						$fullPath = readlink($fullPath);
-					}
-					$created_at = filemtime($fullPath);
+					$created_at = $localFile->lastModified();
 					if ($created_at == $photo->created_at->timestamp) {
 						$this->printInfo($photo, 'Upload time up-to-date.');
 					} else {

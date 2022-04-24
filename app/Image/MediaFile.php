@@ -130,16 +130,35 @@ abstract class MediaFile
 	/**
 	 * Deletes the file.
 	 *
+	 * In case the file does not exist, the method is a silent no-op.
+	 *
 	 * @return void
 	 *
 	 * @throws MediaFileOperationException
 	 */
 	abstract public function delete(): void;
 
+	/** Checks if the file exists.
+	 *
+	 * @return bool true, if the file exists
+	 */
+	abstract public function exists(): bool;
+
+	/**
+	 * Returns the time of last modification as UNIX timestamp.
+	 *
+	 * @return int the time of last modification since epoch
+	 *
+	 * @throws MediaFileOperationException
+	 */
+	abstract public function lastModified(): int;
+
 	/**
 	 * Returns the absolute path of the file.
 	 *
 	 * @return string
+	 *
+	 * @throws MediaFileOperationException
 	 */
 	abstract public function getAbsolutePath(): string;
 

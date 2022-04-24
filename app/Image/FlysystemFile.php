@@ -2,7 +2,10 @@
 
 namespace App\Image;
 
+use App\Exceptions\Internal\LycheeLogicException;
+use App\Exceptions\MediaFileOperationException;
 use Illuminate\Contracts\Filesystem\Filesystem;
+use League\Flysystem\Adapter\Local as LocalAdapter;
 use League\Flysystem\AdapterInterface;
 
 /**
@@ -31,10 +34,17 @@ class FlysystemFile extends MediaFile
 	 */
 	public function read()
 	{
-		$this->stream = $this->disk->readStream($this->relativePath);
-		if ($this->stream === false || !is_resource($this->stream)) {
-			$this->stream = null;
-			throw new \RuntimeException('Could not read from file ' . $this->relativePath);
+		if (is_resource($this->stream)) {
+			throw new LycheeLogicException('Stream is already opened for read');
+		}
+		try {
+			$this->stream = $this->disk->readStream($this->relativePath);
+			if ($this->stream === false || !is_resource($this->stream)) {
+				$this->stream = null;
+				throw new MediaFileOperationException('readStream failed');
+			}
+		} catch (\Throwable $e) {
+			throw new MediaFileOperationException('Could not read from file ' . $this->relativePath, $e);
 		}
 
 		return $this->stream;
@@ -46,14 +56,18 @@ class FlysystemFile extends MediaFile
 	public function write($stream): void
 	{
 		if (is_resource($this->stream)) {
-			throw new \LogicException('Cannot write to a file which is opened for read');
+			throw new LycheeLogicException('Cannot write to a file which is opened for read');
 		}
-		// TODO: `put` must be replaced by `writeStream` when Flysystem 2 is shipped with Laravel 9
-		// This will also be more consistent with `readStream`.
-		// Note that v1 also provides a method `writeStream`, but this is a misnomer.
-		// See: https://flysystem.thephpleague.com/v2/docs/what-is-new/
-		if (!$this->disk->put($this->relativePath, $stream)) {
-			throw new \RuntimeException('Could not write to file ' . $this->relativePath);
+		try {
+			// TODO: `put` must be replaced by `writeStream` when Flysystem 2 is shipped with Laravel 9
+			// This will also be more consistent with `readStream`.
+			// Note that v1 also provides a method `writeStream`, but this is a misnomer.
+			// See: https://flysystem.thephpleague.com/v2/docs/what-is-new/
+			if (!$this->disk->put($this->relativePath, $stream)) {
+				throw new MediaFileOperationException('put returned false');
+			}
+		} catch (\Throwable $e) {
+			throw new MediaFileOperationException('Could not write to file ' . $this->relativePath, $e);
 		}
 	}
 
@@ -63,8 +77,24 @@ class FlysystemFile extends MediaFile
 	public function delete(): void
 	{
 		if (!$this->disk->delete($this->relativePath)) {
-			throw new \RuntimeException('Could not delete file ' . $this->relativePath);
+			throw new MediaFileOperationException('Could not delete file ' . $this->relativePath);
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function exists(): bool
+	{
+		return $this->disk->exists($this->relativePath);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function lastModified(): int
+	{
+		return $this->disk->lastModified($this->relativePath);
 	}
 
 	/**
@@ -130,5 +160,17 @@ class FlysystemFile extends MediaFile
 	public function getBasename(): string
 	{
 		return pathinfo($this->relativePath, PATHINFO_FILENAME);
+	}
+
+	/**
+	 * @throws MediaFileOperationException
+	 */
+	public function toLocalFile(): NativeLocalFile
+	{
+		if (!($this->disk->getDriver()->getAdapter() instanceof LocalAdapter)) {
+			throw new MediaFileOperationException('file is not hosted locally');
+		}
+
+		return new NativeLocalFile($this->getAbsolutePath());
 	}
 }
