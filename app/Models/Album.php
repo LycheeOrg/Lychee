@@ -301,7 +301,7 @@ class Album extends BaseAlbum implements Node
 			Storage::delete($this->track_short_path);
 		}
 
-		$new_track_id = hash('sha256', $file->get());
+		$new_track_id = strtr(base64_encode(random_bytes(18)), '+/', '-_');
 		Storage::putFileAs('tracks/', $file, "$new_track_id.xml");
 		$this->track_short_path = "tracks/$new_track_id.xml";
 		$this->save();
