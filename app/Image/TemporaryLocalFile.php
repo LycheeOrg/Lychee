@@ -21,12 +21,26 @@ class TemporaryLocalFile extends NativeLocalFile
 		// method does not handle file extensions well, but our temporary
 		// files need a proper (and correct) extension for the MIME extractor
 		// to work.
-		$tempFilePath = sys_get_temp_dir() .
-			DIRECTORY_SEPARATOR .
-			'lychee-' .
-			strtr(base64_encode(random_bytes(12)), '+/', '-_') .
-			$fileExtension;
-		touch($tempFilePath);
+		$success = false;
+		$retryCounter = 5;
+		do {
+			$tempFilePath = sys_get_temp_dir() .
+				DIRECTORY_SEPARATOR .
+				'lychee-' .
+				strtr(base64_encode(random_bytes(12)), '+/', '-_') .
+				$fileExtension;
+			try {
+				$retryCounter--;
+				$this->stream = fopen($tempFilePath, 'x');
+				$success = is_resource($this->stream);
+				fclose($this->stream);
+			} catch (\Throwable) {
+				$success = false;
+			}
+		} while (!$success && $retryCounter > 0);
+		if (!$success) {
+			throw new \RuntimeException('unable to create temporary file');
+		}
 		parent::__construct($tempFilePath);
 	}
 }
