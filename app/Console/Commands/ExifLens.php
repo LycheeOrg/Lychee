@@ -80,54 +80,49 @@ class ExifLens extends Command
 			$i = $from;
 			/** @var Photo $photo */
 			foreach ($photos as $photo) {
-				// TODO: If we ever want to be able to support AWS S3, don't use absolute paths and make metadata extracctor use streams
-				$fullPath = $photo->size_variants->getOriginal()->getFile()->getAbsolutePath();
-				if (file_exists($fullPath)) {
-					$info = $this->metadataExtractor->extract($fullPath, $photo->type);
-					$updated = false;
-					if ($photo->size_variants->getOriginal()->filesize === 0 && $info['filesize'] != '') {
-						$photo->size_variants->getOriginal()->filesize = intval($info['filesize']);
-						$updated = true;
-					}
-					if ($photo->iso == '' && $info['iso'] != '') {
-						$photo->iso = $info['iso'];
-						$updated = true;
-					}
-					if ($photo->aperture == '' && $info['aperture'] != '') {
-						$photo->aperture = $info['aperture'];
-						$updated = true;
-					}
-					if ($photo->make == '' && $info['make'] != '') {
-						$photo->make = $info['make'];
-						$updated = true;
-					}
-					if ($photo->getAttribute('model') == '' && $info['model'] != '') {
-						$photo->setAttribute('model', $info['model']);
-						$updated = true;
-					}
-					if ($photo->lens == '' && $info['lens'] != '') {
-						$photo->lens = $info['lens'];
-						$updated = true;
-					}
-					if ($photo->shutter == '' && $info['shutter'] != '') {
-						$photo->shutter = $info['shutter'];
-						$updated = true;
-					}
-					if ($photo->focal == '' && $info['focal'] != '') {
-						$photo->focal = $info['focal'];
-						$updated = true;
-					}
-					if ($updated) {
-						if ($photo->save() && $photo->size_variants->getOriginal()->save()) {
-							$this->line($i . ': EXIF updated for ' . $photo->title);
-						} else {
-							$this->line($i . ': Failed to update EXIF for ' . $photo->title);
-						}
+				$localFile = $photo->size_variants->getOriginal()->getFile()->toLocalFile();
+				$info = $this->metadataExtractor->extract($localFile);
+				$updated = false;
+				if ($photo->size_variants->getOriginal()->filesize === 0 && $info['filesize'] != '') {
+					$photo->size_variants->getOriginal()->filesize = intval($info['filesize']);
+					$updated = true;
+				}
+				if ($photo->iso == '' && $info['iso'] != '') {
+					$photo->iso = $info['iso'];
+					$updated = true;
+				}
+				if ($photo->aperture == '' && $info['aperture'] != '') {
+					$photo->aperture = $info['aperture'];
+					$updated = true;
+				}
+				if ($photo->make == '' && $info['make'] != '') {
+					$photo->make = $info['make'];
+					$updated = true;
+				}
+				if ($photo->getAttribute('model') == '' && $info['model'] != '') {
+					$photo->setAttribute('model', $info['model']);
+					$updated = true;
+				}
+				if ($photo->lens == '' && $info['lens'] != '') {
+					$photo->lens = $info['lens'];
+					$updated = true;
+				}
+				if ($photo->shutter == '' && $info['shutter'] != '') {
+					$photo->shutter = $info['shutter'];
+					$updated = true;
+				}
+				if ($photo->focal == '' && $info['focal'] != '') {
+					$photo->focal = $info['focal'];
+					$updated = true;
+				}
+				if ($updated) {
+					if ($photo->save() && $photo->size_variants->getOriginal()->save()) {
+						$this->line($i . ': EXIF updated for ' . $photo->title);
 					} else {
-						$this->line($i . ': Could not get EXIF data/nothing to update for ' . $photo->title . '.');
+						$this->line($i . ': Failed to update EXIF for ' . $photo->title);
 					}
 				} else {
-					$this->line($i . ': File does not exist for ' . $photo->title . '.');
+					$this->line($i . ': Could not get EXIF data/nothing to update for ' . $photo->title . '.');
 				}
 				$i++;
 			}
