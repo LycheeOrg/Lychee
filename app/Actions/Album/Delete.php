@@ -87,6 +87,16 @@ class Delete extends Action
 				$recursiveAlbumIDs = array_merge($recursiveAlbumIDs, $album->descendants()->pluck('id')->all());
 			}
 
+			$recursiveAlbums = Album::query()
+				->without(['cover', 'thumb'])
+				->select(['id', 'parent_id', '_lft', '_rgt'])
+				->findMany($recursiveAlbumIDs);
+
+			/** @var Album $album */
+			foreach ($recursiveAlbums as $album) {
+				$album->deleteTrack();
+			}
+
 			// Delete the photos from DB and obtain the list of files which need
 			// to be deleted later
 			$fileDeleter = (new PhotoDelete())->do($unsortedPhotoIDs, $recursiveAlbumIDs);
