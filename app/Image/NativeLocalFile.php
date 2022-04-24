@@ -132,7 +132,14 @@ class NativeLocalFile extends MediaFile
 	 */
 	protected function hasSupportedExifImageType(): bool
 	{
-		return in_array(exif_imagetype($this->getAbsolutePath()), self::SUPPORTED_PHP_EXIF_IMAGE_TYPES, true);
+		try {
+			return in_array(exif_imagetype($this->getAbsolutePath()), self::SUPPORTED_PHP_EXIF_IMAGE_TYPES, true);
+		} catch (\Throwable) {
+			// `exif_imagetype` emit an engine error E_NOTICE, if it is unable
+			// to read enough bytes from the file to determine the image type.
+			// This may happen for short "raw" files.
+			return false;
+		}
 	}
 
 	/**
