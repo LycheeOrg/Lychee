@@ -81,20 +81,20 @@ class Delete extends Action
 				->select(['id', 'parent_id', '_lft', '_rgt', 'track_short_path'])
 				->findMany($albumIDs);
 
-			$recursiveAlbums = $albums;
+			$recursiveAlbumTracks = $albums->pluck('track_short_path');
 
 			/** @var Album $album */
 			foreach ($albums as $album) {
 				// Collect all (aka recursive) sub-albums in each album
 				$subAlbums = $album->descendants()->select(['id', 'track_short_path'])->all();
 				$recursiveAlbumIDs = array_merge($recursiveAlbumIDs, $subAlbums->pluck('id')->all());
-				$recursiveAlbums = array_merge($recursiveAlbums, $subAlbums);
+				$recursiveAlbumTracks = array_merge($recursiveAlbumTracks, $subAlbums->pluck('track_short_path'));
 			}
 
 			// Delete the photos from DB and obtain the list of files which need
 			// to be deleted later
 			$fileDeleter = (new PhotoDelete())->do($unsortedPhotoIDs, $recursiveAlbumIDs);
-			$fileDeleter->addRegularFiles($recursiveAlbums->pluck('track_short_path'));
+			$fileDeleter->addRegularFiles($recursiveAlbumTracks);
 
 			// Remove descendants of each album which is going to be deleted
 			// This is ugly as hell and copy & pasted from
