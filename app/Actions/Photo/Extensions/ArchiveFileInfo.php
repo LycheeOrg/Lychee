@@ -2,7 +2,7 @@
 
 namespace App\Actions\Photo\Extensions;
 
-use App\Facades\Helpers;
+use App\Image\MediaFile;
 
 /**
  * Class ArchiveFileInfo.
@@ -20,7 +20,7 @@ use App\Facades\Helpers;
  *    photo.
  *  - _Base Filename Addon:_ The addon to the base filename is used to encode
  *    some additional information about the photo into the filename.
- *    The addon also allows to generate different filenames for different
+ *    The addon also allows generating different filenames for different
  *    variants of the same photo.
  *    Typically, the addon stars with a hyphen followed by some keyword or the
  *    dimension of the photo (e.g. `'-medium-1280x800'`, `'-large-8692x2048'`,
@@ -35,21 +35,23 @@ class ArchiveFileInfo
 {
 	protected string $baseFilename;
 	protected string $baseFilenameAddon;
-	protected string $fullPath;
+	protected MediaFile $file;
+	protected int $fileSize;
 
 	/**
 	 * ArchiveFileInfo constructor.
 	 *
-	 * @param string $baseFilename      the base filename (without directory
-	 *                                  and extension)
-	 * @param string $baseFilenameAddon the "addon" to the base filename
-	 * @param string $fullPath          the full path of the source file
+	 * @param string    $baseFilename      the base filename (without directory
+	 *                                     and extension)
+	 * @param string    $baseFilenameAddon the "addon" to the base filename
+	 * @param MediaFile $file              the source file
 	 */
-	public function __construct(string $baseFilename, string $baseFilenameAddon, string $fullPath)
+	public function __construct(string $baseFilename, string $baseFilenameAddon, MediaFile $file, int $fileSize)
 	{
 		$this->baseFilename = $baseFilename;
 		$this->baseFilenameAddon = $baseFilenameAddon;
-		$this->fullPath = $fullPath;
+		$this->file = $file;
+		$this->fileSize = $fileSize;
 	}
 
 	/**
@@ -81,16 +83,6 @@ class ArchiveFileInfo
 	}
 
 	/**
-	 * Returns the file extension of the original source file.
-	 *
-	 * @return string the original file extension with a preceding dot
-	 */
-	public function getExtension(): string
-	{
-		return Helpers::getExtension($this->fullPath, false);
-	}
-
-	/**
 	 * Returns the filename as it should be advertised to the downloading
 	 * client or put into the archive.
 	 *
@@ -100,16 +92,26 @@ class ArchiveFileInfo
 	 */
 	public function getFilename(string $extraAddon = ''): string
 	{
-		return $this->getBaseFilename() . $this->getBaseFileNameAddon() . $extraAddon . $this->getExtension();
+		return $this->getBaseFilename() . $this->getBaseFileNameAddon() . $extraAddon . $this->file->getExtension();
 	}
 
 	/**
-	 * Returns the path at which Lychee has stored the source file.
+	 * Returns the source file.
 	 *
-	 * @return string the full path
+	 * @return MediaFile the source file
 	 */
-	public function getFullPath(): string
+	public function getFile(): MediaFile
 	{
-		return $this->fullPath;
+		return $this->file;
+	}
+
+	/**
+	 * Returns the size of the source file.
+	 *
+	 * @return int the file size
+	 */
+	public function getFileSize(): int
+	{
+		return $this->fileSize;
 	}
 }
