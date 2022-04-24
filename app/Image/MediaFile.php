@@ -191,7 +191,7 @@ abstract class MediaFile
 	}
 
 	/**
-	 * Validates whether the given MIME type designates a supported image type.
+	 * Checks if the given MIME type designates a supported image type.
 	 *
 	 * @param string $mimeType the MIME type
 	 *
@@ -203,7 +203,7 @@ abstract class MediaFile
 	}
 
 	/**
-	 * Validates whether the given MIME type designates a supported video type.
+	 * Checks if the given MIME type designates a supported video type.
 	 *
 	 * @param string $mimeType the MIME type
 	 *
@@ -215,7 +215,7 @@ abstract class MediaFile
 	}
 
 	/**
-	 * Validates whether the given MIME type is supported.
+	 * Checks if the given MIME type is supported.
 	 *
 	 * @param string $mimeType the MIME type
 	 *
@@ -229,7 +229,23 @@ abstract class MediaFile
 	}
 
 	/**
-	 * Validates whether the given file extension is a supported image extension.
+	 * Asserts that the given MIME type is supported.
+	 *
+	 * @param string $mimeType the MIME type
+	 *
+	 * @return void
+	 *
+	 * @throws MediaFileUnsupportedException
+	 */
+	public static function assertIsSupportedMimeType(string $mimeType): void
+	{
+		if (!self::isSupportedMimeType($mimeType)) {
+			throw new MediaFileUnsupportedException(MediaFileUnsupportedException::DEFAULT_MESSAGE . ' (bad MIME type: ' . $mimeType . ')');
+		}
+	}
+
+	/**
+	 * Checks if the given file extension is a supported image extension.
 	 *
 	 * @param string $extension the file extension
 	 *
@@ -241,7 +257,7 @@ abstract class MediaFile
 	}
 
 	/**
-	 * Validates whether the given file extension is a supported image extension.
+	 * Checks if the given file extension is a supported image extension.
 	 *
 	 * @param string $extension the file extension
 	 *
@@ -253,7 +269,7 @@ abstract class MediaFile
 	}
 
 	/**
-	 * Validates whether the given file extension is supported.
+	 * Checks if the given file extension is supported.
 	 *
 	 * @param string $extension the file extension
 	 *
