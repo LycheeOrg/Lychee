@@ -36,6 +36,10 @@ class SizeVariants extends DTO
 	 *                                                   this object is tied to
 	 * @param Collection<SizeVariant>|null $sizeVariants a collection of size
 	 *                                                   variants
+	 *
+	 * @throws LycheeInvalidArgumentException thrown if the photo and the
+	 *                                        collection of size variants don't
+	 *                                        belong together
 	 */
 	public function __construct(Photo $photo, ?Collection $sizeVariants = null)
 	{
@@ -53,7 +57,8 @@ class SizeVariants extends DTO
 	 *
 	 * @return void
 	 *
-	 * @throws LycheeInvalidArgumentException
+	 * @throws LycheeInvalidArgumentException thrown if ID of owning photo
+	 *                                        does not match
 	 */
 	public function add(SizeVariant $sizeVariant): void
 	{
@@ -192,18 +197,23 @@ class SizeVariants extends DTO
 		if (!$this->photo->exists) {
 			throw new IllegalOrderOfOperationException('Cannot create a size variant for a photo whose id is not yet persisted to DB');
 		}
-		/** @var SizeVariant $result */
-		$result = new SizeVariant();
-		$result->photo_id = $this->photo->id;
-		$result->type = $sizeVariantType;
-		$result->short_path = $shortPath;
-		$result->width = $width;
-		$result->height = $height;
-		$result->filesize = $filesize;
-		$result->save();
-		$this->add($result);
+		try {
+			$result = new SizeVariant();
+			$result->photo_id = $this->photo->id;
+			$result->type = $sizeVariantType;
+			$result->short_path = $shortPath;
+			$result->width = $width;
+			$result->height = $height;
+			$result->filesize = $filesize;
+			$result->save();
+			$this->add($result);
 
-		return $result;
+			return $result;
+		} catch (LycheeInvalidArgumentException $e) {
+			// thrown by ::add(), if  $result->photo_id != $this->photo->id,
+			// but we know that we assert that
+			assert(false, new \AssertionError('::add failed', $e));
+		}
 	}
 
 	/**
@@ -238,7 +248,7 @@ class SizeVariants extends DTO
 
 	/**
 	 * @throws ModelDBException
-	 * @throws IllegalOrderOfOperationException|LycheeInvalidArgumentException
+	 * @throws IllegalOrderOfOperationException
 	 */
 	public function replicate(Photo $duplicatePhoto): SizeVariants
 	{

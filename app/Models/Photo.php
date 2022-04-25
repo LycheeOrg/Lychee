@@ -8,9 +8,7 @@ use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Contracts\HasRandomID;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
-use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\Internal\ZeroModuloException;
-use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
@@ -200,8 +198,6 @@ class Photo extends Model implements HasRandomID
 	 *                         the Eloquent framework
 	 *
 	 * @return ?string A properly formatted shutter value
-	 *
-	 * @throws InvalidPropertyException
 	 */
 	protected function getShutterAttribute(?string $shutter): ?string
 	{
@@ -216,13 +212,9 @@ class Photo extends Model implements HasRandomID
 					$a = intval($matches[1]);
 					$b = intval($matches[2]);
 					if ($b != 0) {
-						try {
-							$gcd = Helpers::gcd($a, $b);
-							$a = $a / $gcd;
-							$b = $b / $gcd;
-						} catch (\Exception $e) {
-							// this should not happen as we covered the case $b = 0;
-						}
+						$gcd = Helpers::gcd($a, $b);
+						$a = $a / $gcd;
+						$b = $b / $gcd;
 						if ($a == 1) {
 							$shutter = '1/' . $b . ' s';
 						} else {
@@ -238,8 +230,8 @@ class Photo extends Model implements HasRandomID
 
 			return $shutter;
 		} catch (ZeroModuloException $e) {
-			// gcd throws ZeroModuloException, if the divisor equals 0
-			throw new InvalidPropertyException('Could not get shutter of photo', $e);
+			// this should not happen as we covered the case $b = 0;
+			assert(false, new \AssertionError('Unexpected ZeroModuloException', $e->getCode(), $e));
 		}
 	}
 
@@ -282,7 +274,7 @@ class Photo extends Model implements HasRandomID
 	 * @param ?string $focal the value from the database passed in by the
 	 *                       Eloquent framework
 	 *
-	 * @return string
+	 * @return ?string
 	 *
 	 * @throws IllegalOrderOfOperationException
 	 */
@@ -292,7 +284,7 @@ class Photo extends Model implements HasRandomID
 			return null;
 		}
 		// We need to format the framerate (stored as focal) -> max 2 decimal digits
-		return $this->isVideo() ? round($focal, 2) : $focal;
+		return $this->isVideo() ? (string) round($focal, 2) : $focal;
 	}
 
 	/**
@@ -320,7 +312,7 @@ class Photo extends Model implements HasRandomID
 	 * {@link Photo::$live_photo_short_path} into
 	 * {@link \Illuminate\Support\Facades\Storage::url()}.
 	 *
-	 * @return string the url of the file
+	 * @return ?string the url of the file
 	 */
 	protected function getLivePhotoUrlAttribute(): ?string
 	{
@@ -341,7 +333,7 @@ class Photo extends Model implements HasRandomID
 	{
 		return AccessControl::is_current_user_or_admin($this->owner_id) ||
 			($this->album_id != null && $this->album->is_downloadable) ||
-			($this->album_id == null && (bool) Configs::get_value('downloadable', '0'));
+			($this->album_id == null && Configs::get_value('downloadable', '0'));
 	}
 
 	/**
@@ -408,24 +400,6 @@ class Photo extends Model implements HasRandomID
 		}
 
 		return $result;
-	}
-
-	/**
-	 * @return bool true if another DB entry exists for the same photo
-	 *
-	 * @throws QueryBuilderException
-	 */
-	protected function hasDuplicate(): bool
-	{
-		$checksum = $this->checksum;
-
-		return self::query()
-			->where(function ($q) use ($checksum) {
-				$q->where('checksum', '=', $checksum)
-					->orWhere('live_photo_checksum', '=', $checksum);
-			})
-			->where('id', '<>', $this->id)
-			->exists();
 	}
 
 	/**
