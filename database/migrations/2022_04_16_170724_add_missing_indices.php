@@ -43,9 +43,14 @@ class AddMissingIndices extends Migration
 
 	public function down()
 	{
-		Schema::table('photos', function (Blueprint $table) {
+		$descriptionSQL = match ($this->driverName) {
+			'mysql' => DB::raw('description(128)'),
+			default => 'description',
+		};
+
+		Schema::table('photos', function (Blueprint $table) use ($descriptionSQL) {
 			$this->dropIndexIfExists($table, 'photos_album_id_is_starred_title_index');
-			$this->dropIndexIfExists($table, 'photos_album_id_is_starred_description_index');
+			$this->dropIndexIfExists($table, 'photos_album_id_is_starred_' . $descriptionSQL . '_index');
 		});
 	}
 
