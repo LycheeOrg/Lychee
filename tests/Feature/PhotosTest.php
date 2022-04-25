@@ -31,7 +31,7 @@ class PhotosTest extends TestCase
 		 * Make a copy of the image because import deletes the file, and we want to be
 		 * able to use the test on a local machine and not just in CI.
 		 */
-		copy('tests/Samples/night.jpg', 'public/uploads/import/night.jpg');
+		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');
 
 		$file = new UploadedFile(
 			'public/uploads/import/night.jpg',
@@ -270,8 +270,8 @@ class PhotosTest extends TestCase
 			* Make a copy of the image because import deletes the file, and we want to be
 			* able to use the test on a local machine and not just in CI.
 			*/
-			copy('tests/Samples/train.jpg', 'public/uploads/import/train.jpg');
-			copy('tests/Samples/train.mov', 'public/uploads/import/train.mov');
+			copy('tests/Feature/train.jpg', 'public/uploads/import/train.jpg');
+			copy('tests/Feature/train.mov', 'public/uploads/import/train.mov');
 
 			$photo_file = new UploadedFile(
 				'public/uploads/import/train.jpg',
@@ -367,7 +367,7 @@ class PhotosTest extends TestCase
 		$num_before_import = $ids_before_import->count();
 
 		// upload the photo
-		copy('tests/Samples/night.jpg', 'public/uploads/import/night.jpg');
+		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');
 		$streamed_response = $photos_tests->import(base_path('public/uploads/import/'));
 
 		// check if the file is still there (without symlinks the photo would have been deleted)

@@ -106,7 +106,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 			Logs::notice(__METHOD__, __LINE__, $msg);
 			throw new \RuntimeException($msg);
 		}
-		$this->createTmpPathForReferenceJPEG();
+		$this->createTmpPathForReference();
 		try {
 			$this->imageHandler->scale($fullPath, $this->referenceFullPath, $width, $height, $this->referenceWidth, $this->referenceHeight);
 		} catch (\Throwable $e) {
@@ -128,7 +128,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 			Logs::notice(__METHOD__, __LINE__, 'Failed to extract reference image from video as FFmpeg is unavailable');
 			throw new \RuntimeException('Failed to extract reference image from video as FFmpeg is unavailable');
 		}
-		$this->createTmpPathForReferenceJPEG();
+		$this->createTmpPathForReference();
 		$ffmpeg = FFMpeg::create();
 		/** @var Video $video */
 		$video = $ffmpeg->open($fullPath);
@@ -176,9 +176,9 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 * to true such that the file which is stored at `referenceFullPath` will
 	 * be removed by {@link SizeVariantFactory::cleanup()}.
 	 */
-	protected function createTmpPathForReferenceJPEG(): void
+	protected function createTmpPathForReference(): void
 	{
-		$this->referenceFullPath = (new TemporaryLocalFile('.jpg'))->getAbsolutePath();
+		$this->referenceFullPath = (new TemporaryLocalFile())->getAbsolutePath();
 		$this->needsCleanup = true;
 		Logs::notice(__METHOD__, __LINE__, 'Saving JPG of raw/video file to ' . $this->referenceFullPath);
 	}

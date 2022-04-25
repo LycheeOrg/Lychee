@@ -112,22 +112,10 @@ class SourceFileInfo
 	{
 		$fallbackTitle = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
 
-		// We must use `->getClientMimeType` here and not `->getMimeType`,
-		// even though the documentation recommends otherwise and assess
-		// `->getClientMimeType` as an unsecure value.
-		// However, PHP temporarily stores the uploaded file without
-		// a file extensions which let `->getMimeType` sporadically fail and
-		// return `'application/octet-stream'`.
-		//
-		// Note: I haven't yet found out what other conditions need to be met
-		// for `->getMimeType` to fail.
-		// For example there are some MP4 videos which are reliably detected
-		// as `video/mp4` even without a file extension and there some other
-		// MP4 videos which are not detected correctly.
 		return new self(
 			$fallbackTitle,
 			'.' . $file->getClientOriginalExtension(),
-			$file->getClientMimeType(),
+			$file->getMimeType(),
 			NativeLocalFile::createFromUploadedFile($file)
 		);
 	}

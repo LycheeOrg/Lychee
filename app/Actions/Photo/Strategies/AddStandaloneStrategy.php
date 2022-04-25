@@ -141,7 +141,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			// So lets make a deep-copy first which can be rotated safely.
 			$info = $this->parameters->sourceFileInfo;
 			$file = $info->getFile();
-			$tmpFile = new TemporaryLocalFile($file->getExtension());
+			$tmpFile = new TemporaryLocalFile();
 			$tmpFile->write($file->read());
 			$file->close();
 			// Reset source file info to the new temporary and ensure that

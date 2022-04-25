@@ -23,7 +23,7 @@ class PhotosRotateTest extends TestCase
 		* Make a copy of the image because import deletes the file, and we want to be
 		* able to use the test on a local machine and not just in CI.
 		*/
-		copy('tests/Samples/night.jpg', 'public/uploads/import/night.jpg');
+		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');
 
 		$file = new UploadedFile(
 			'public/uploads/import/night.jpg',
