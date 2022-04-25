@@ -16,6 +16,7 @@
         "php": "^8.0",
         "ext-bcmath": "*",
         "ext-exif": "*",
+		"ext-fileinfo": "*",
         "ext-gd": "*",
         "ext-json": "*",
         "bepsvpt/secure-headers": "^7.1",

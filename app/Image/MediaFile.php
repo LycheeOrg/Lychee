@@ -2,6 +2,8 @@
 
 namespace App\Image;
 
+use App\Exceptions\Internal\LycheeLogicException;
+use App\Exceptions\MediaFileOperationException;
 use Illuminate\Http\UploadedFile;
 
 /**
@@ -39,6 +41,9 @@ abstract class MediaFile
 	 * To free the resource after use, call {@link MediaFile::close()}.
 	 *
 	 * @return resource
+	 *
+	 * @throws MediaFileOperationException
+	 * @throws LycheeLogicException
 	 */
 	abstract public function read();
 
@@ -51,10 +56,14 @@ abstract class MediaFile
 	 * @param resource $stream the input stream which provides the input to write
 	 *
 	 * @return void
+	 *
+	 * @throws MediaFileOperationException
+	 * @throws LycheeLogicException
 	 */
 	abstract public function write($stream): void;
 
 	/**
+	 * @return void
 	 * @return void
 	 */
 	public function close(): void
@@ -69,6 +78,8 @@ abstract class MediaFile
 	 * Deletes the file.
 	 *
 	 * @return void
+	 *
+	 * @throws MediaFileOperationException
 	 */
 	abstract public function delete(): void;
 

@@ -27,6 +27,7 @@ use App\Http\Requests\Photo\SetPhotoPublicRequest;
 use App\Http\Requests\Photo\SetPhotosStarredRequest;
 use App\Http\Requests\Photo\SetPhotosTagsRequest;
 use App\Http\Requests\Photo\SetPhotosTitleRequest;
+use App\Image\TemporaryLocalFile;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -95,7 +96,38 @@ class PhotoController extends Controller
 		$sourceFileInfo = SourceFileInfo::createByUploadedFile(
 			$request->uploadedFile()
 		);
-		// If the file has been uploaded, the (temporary) source file shall be
+
+		// This code is a nasty work-around which should not exist.
+		// PHP stores a temporary copy of the uploaded file without a file
+		// extension.
+		// Unfortunately, most of our methods pass around absolute file paths
+		// instead of proper `File` object.
+		// During the process we have a lot of code which tries to
+		// re-determine the MIME type of the file based on the file path.
+		// This is not only inefficient, but the original MIME type (of the
+		// uploaded file) gets lost on the way.
+		// As a work-around we store the uploaded file with a file extension.
+		// Unfortunately, we cannot simply re-name the file, because this
+		// might break due to permission problems for certain installation
+		// if the temporarily uploaded file is stored in the system-global
+		// temporary directory below another mount point or another Docker
+		// image than the Lychee installation.
+		// Hence, we must make a deep copy.
+		// TODO: Remove this code again, if all other TODOs regarding MIME and file handling are properly refactored and we have stopped using absolute file paths as the least common denominator to pass around files.
+		$uploadedFile = $sourceFileInfo->getFile();
+		$copiedFile = new TemporaryLocalFile($sourceFileInfo->getOriginalExtension());
+		$copiedFile->write($uploadedFile->read());
+		$uploadedFile->close();
+		$uploadedFile->delete();
+		// Reset source file info to the new copy
+		$sourceFileInfo = SourceFileInfo::createByTempFile(
+			$sourceFileInfo->getOriginalName(),
+			$sourceFileInfo->getOriginalExtension(),
+			$copiedFile
+		);
+		// End of work-around
+
+		// As the file has been uploaded, the (temporary) source file shall be
 		// deleted
 		$create = new Create(new ImportMode(
 			true,

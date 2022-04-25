@@ -88,7 +88,7 @@ class RotateStrategy extends AddBaseStrategy
 		$oldOriginalHeight = $oldOriginalSizeVariant->height;
 		$oldChecksum = $this->photo->checksum;
 		$origFile = $oldOriginalSizeVariant->getFile();
-		$tmpFile = new TemporaryLocalFile();
+		$tmpFile = new TemporaryLocalFile($origFile->getExtension());
 
 		// Rotate the image and save result as the temporary file
 		/** @var ImageHandlerInterface $imageHandler */
