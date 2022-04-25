@@ -86,9 +86,9 @@ class Delete extends Action
 			/** @var Album $album */
 			foreach ($albums as $album) {
 				// Collect all (aka recursive) sub-albums in each album
-				$subAlbums = $album->descendants()->select(['id', 'track_short_path'])->all();
+				$subAlbums = $album->descendants()->select(['id', 'track_short_path'])->get();
 				$recursiveAlbumIDs = array_merge($recursiveAlbumIDs, $subAlbums->pluck('id')->all());
-				$recursiveAlbumTracks = array_merge($recursiveAlbumTracks, $subAlbums->pluck('track_short_path'));
+				$recursiveAlbumTracks = $recursiveAlbumTracks->merge($subAlbums->pluck('track_short_path'));
 			}
 
 			// Delete the photos from DB and obtain the list of files which need
