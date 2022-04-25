@@ -111,6 +111,13 @@ class Extractor
 		$reader = null;
 
 		// Get kind of file (photo, video, raw)
+		// TODO: This line is extremely dangerous, because it tries to determine the type of file based on a possibly not existing file extension
+		// Note: For temporarily stored files during upload, PHP normally uses
+		// temporary file names without an extension.
+		// We should stop passing around absolute file paths and try to
+		// re-determine the MIME type over and over again, but pass around
+		// proper `File` objects which also hold the MIME type which has
+		// been established initially.
 		$extension = Helpers::getExtension($fullPath, false);
 
 		// check raw files
@@ -150,6 +157,16 @@ class Extractor
 
 		try {
 			// this can throw an exception in the case of Exiftool adapter!
+			// TODO: This may fail for files without an extension.
+			// In particular, PHPExif uses another method again to determine
+			// the MIME type of a file.
+			// For example, the adapter `PHPExif\Adapter\FFprobe` uses
+			// `mime_content_type`, but our upload controller uses the
+			// Symfony MIME utilities.
+			// The adapter `PHPExif\Adapter\FFprobe` has already been equipped
+			// with a work-around for MP4 videos which are wrongly classified
+			// as `application/octet-stream`, but this work-around only
+			// succeeds if the file has a recognized extension.
 			$exif = $reader->read($fullPath);
 		} catch (\Exception $e) {
 			Logs::error(__METHOD__, __LINE__, $e->getMessage());
