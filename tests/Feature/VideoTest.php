@@ -6,8 +6,9 @@ use App\Facades\AccessControl;
 use App\Models\Configs;
 use Illuminate\Http\UploadedFile;
 use Tests\Feature\Lib\PhotosUnitTest;
+use Tests\TestCase;
 
-class VideoTest extends \Tests\TestCase
+class VideoTest extends TestCase
 {
 	/**
 	 * Tests a trick video which is falsely identified as `application/octet-stream`.
@@ -19,10 +20,12 @@ class VideoTest extends \Tests\TestCase
 		$photos_tests = new PhotosUnitTest($this);
 
 		AccessControl::log_as_id(0);
-		$init_config_value = Configs::get_value('has_exiftool');
+		$initHasExifTool = Configs::get_value('has_exiftool');
+		$initHasFFmpeg = Configs::get_value('has_ffmpeg');
 		Configs::set('has_exiftool', '2');
+		Configs::set('has_ffmpeg', '2');
 
-		if (Configs::hasExiftool()) {
+		if (Configs::hasExiftool() && Configs::hasFFmpeg()) {
 			/*
 			 * Make a copy of the image because import deletes the file, and we want to be
 			 * able to use the test on a local machine and not just in CI.
@@ -74,10 +77,11 @@ class VideoTest extends \Tests\TestCase
 				],
 			]);
 		} else {
-			$this->markTestSkipped('Exiftool is not available. Test Skipped.');
+			$this->markTestSkipped('Exiftool or FFmpeg is not available. Test Skipped.');
 		}
 
-		Configs::set('has_exiftool', $init_config_value);
+		Configs::set('has_exiftool', $initHasExifTool);
+		Configs::set('has_ffmpeg', $initHasFFmpeg);
 		AccessControl::logout();
 	}
 }
