@@ -279,11 +279,12 @@ class Album extends BaseAlbum implements Node
 	 * {@link Album::$track_short_path} into
 	 * {@link \Illuminate\Support\Facades\Storage::url()}.
 	 *
-	 * @return string the url of the track
+	 * @return string|null the url of the track
 	 */
-	public function getTrackUrlAttribute(): string
+	public function getTrackUrlAttribute(): ?string
 	{
-		return Storage::url($this->track_short_path);
+		return $this->track_short_path !== null && $this->track_short_path !== '' ?
+			Storage::url($this->track_short_path) : null;
 	}
 
 	/**
