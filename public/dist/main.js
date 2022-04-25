@@ -5081,7 +5081,7 @@ lychee.reloadIfLegacyIDs = function (albumID, photoID, autoplay) {
 		// have 24 digits, because these could also be modern IDs.
 		// A modern IDs is a 24 character long, base64 encoded value and thus
 		// could also match 24 digits by accident.
-		return id && id.length !== 24 && parseInt(id).toString() === id;
+		return id && id.length !== 24 && parseInt(id, 10).toString() === id;
 	};
 
 	if (!isLegacyID(albumID) && !isLegacyID(photoID)) {
@@ -5111,8 +5111,8 @@ lychee.reloadIfLegacyIDs = function (albumID, photoID, autoplay) {
 	//  2. only the album ID needs to be translated
 	//  3. only the photo ID needs to be translated
 	var params = {};
-	if (isLegacyID(albumID)) params.albumID = albumID;
-	if (isLegacyID(photoID)) params.photoID = photoID;
+	if (isLegacyID(albumID)) params.albumID = parseInt(albumID, 10);
+	if (isLegacyID(photoID)) params.photoID = parseInt(photoID, 10);
 	api.post("Legacy::translateLegacyModelIDs", params, function (data) {
 		reloadWithNewIDs(data.hasOwnProperty("albumID") ? data.albumID : albumID, data.hasOwnProperty("photoID") ? data.photoID : photoID);
 	});

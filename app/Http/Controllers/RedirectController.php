@@ -58,11 +58,11 @@ class RedirectController extends Controller
 	{
 		try {
 			if (Legacy::isLegacyModelID($albumID)) {
-				$albumID = Legacy::translateLegacyAlbumID($albumID, $request);
+				$albumID = Legacy::translateLegacyAlbumID(intval($albumID), $request);
 			}
 
 			if (!empty($photoID) && Legacy::isLegacyModelID($photoID)) {
-				$photoID = Legacy::translateLegacyPhotoID($photoID, $request);
+				$photoID = Legacy::translateLegacyPhotoID(intval($photoID), $request);
 			}
 
 			if (

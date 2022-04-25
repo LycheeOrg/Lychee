@@ -97,7 +97,7 @@ class Legacy
 	/**
 	 * Translates an ID from legacy format to modern format.
 	 *
-	 * @param string  $id        the legacy ID
+	 * @param int     $id        the legacy ID
 	 * @param string  $tableName the table name which should be used to look
 	 *                           up the ID; either `photos` or `base_albums`
 	 * @param Request $request   the request which triggered the lookup
@@ -109,7 +109,7 @@ class Legacy
 	 * @throws ConfigurationException thrown, if the translation between
 	 *                                legacy and modern IDs is disabled
 	 */
-	private static function translateLegacyID(string $id, string $tableName, Request $request): ?string
+	private static function translateLegacyID(int $id, string $tableName, Request $request): ?string
 	{
 		try {
 			$newID = DB::table($tableName)
@@ -138,7 +138,7 @@ class Legacy
 	/**
 	 * Translates an album ID from legacy format to modern format.
 	 *
-	 * @param string  $albumID the legacy ID
+	 * @param int     $albumID the legacy ID
 	 * @param Request $request the request which triggered the lookup
 	 *                         (required for proper logging)
 	 *
@@ -148,7 +148,7 @@ class Legacy
 	 * @throws ConfigurationException thrown, if the translation between
 	 *                                legacy and modern IDs is disabled
 	 */
-	public static function translateLegacyAlbumID(string $albumID, Request $request): ?string
+	public static function translateLegacyAlbumID(int $albumID, Request $request): ?string
 	{
 		return self::translateLegacyID($albumID, 'base_albums', $request);
 	}
@@ -156,7 +156,7 @@ class Legacy
 	/**
 	 * Translates a photo ID from legacy format to modern format.
 	 *
-	 * @param string  $photoID the legacy ID
+	 * @param int     $photoID the legacy ID
 	 * @param Request $request the request which triggered the lookup
 	 *                         (required for proper logging)
 	 *
@@ -166,7 +166,7 @@ class Legacy
 	 * @throws ConfigurationException thrown, if the translation between
 	 *                                legacy and modern IDs is disabled
 	 */
-	public static function translateLegacyPhotoID(string $photoID, Request $request): ?string
+	public static function translateLegacyPhotoID(int $photoID, Request $request): ?string
 	{
 		return self::translateLegacyID($photoID, 'photos', $request);
 	}
