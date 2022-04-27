@@ -962,6 +962,7 @@ album.load = function (albumID) {
 			// and in case of success, try again to load album with same
 			// parameters
 			password.getDialog(albumID, function () {
+				albums.refresh();
 				album.load(albumID, albumLoadedCB);
 			});
 		} else {
@@ -1862,7 +1863,7 @@ album.isUploadable = function () {
 	}
 
 	// TODO: Comparison of numeric user IDs (instead of names) should be more robust
-	return album.json !== null && album.json.owner_name === lychee.username;
+	return album.json === null || !album.json.owner_name || album.json.owner_name === lychee.username;
 };
 
 /**
@@ -3089,7 +3090,7 @@ contextMenu.photoTitle = function (albumID, photoID, e) {
 	if (photos.length > 0) {
 		items.push({});
 
-		items = items.concat(contextMenu.buildList(data.photos, [photoID], function (a) {
+		items = items.concat(contextMenu.buildList(photos, [photoID], function (a) {
 			return lychee.goto(albumID + "/" + a.id);
 		}));
 	}
@@ -10735,7 +10736,7 @@ users.update = function (params) {
 	// If the password is empty, then the password shall not be changed.
 	// In this case, the password must not be an attribute of the object at
 	// all.
-	// An existing, but empty password, would indicate the clear the password.
+	// An existing, but empty password, would indicate to clear the password.
 	if (params.password.length === 0) {
 		delete params.password;
 	}
