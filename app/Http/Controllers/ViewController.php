@@ -1,9 +1,8 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Controllers;
 
+use App\Facades\Lang;
 use App\Legacy\Legacy;
 use App\Models\Configs;
 use App\Models\Logs;
