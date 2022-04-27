@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Facades\Lang;
 use App\Legacy\Legacy;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -65,7 +66,11 @@ class ViewController extends Controller
 		$url = config('app.url') . $request->server->get('REQUEST_URI');
 		$picture = $sizeVariant->url;
 
+		$lang = Lang::get_lang();
+		$lang['language'] = Configs::get_value('lang');
+
 		return view('view', [
+			'locale' => $lang,
 			'url' => $url,
 			'photo' => $photo,
 			'picture' => $picture,

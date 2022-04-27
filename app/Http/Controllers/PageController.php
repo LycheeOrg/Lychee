@@ -4,13 +4,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Facades\Lang;
 use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
 use App\Models\Page;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\View\View;
-use Lang;
 
 class PageController extends Controller
 {
