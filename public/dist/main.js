@@ -331,8 +331,8 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject36 = _taggedTemplateLiteral(["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"], ["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"]),
     _templateObject37 = _taggedTemplateLiteral(["<a class='", "'>$", "</a>"], ["<a class='", "'>$", "</a>"]),
     _templateObject38 = _taggedTemplateLiteral(["<div class='empty'>", "</div>"], ["<div class='empty'>", "</div>"]),
-    _templateObject39 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"username\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"new password\" />\n\t\t\t<span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"lock\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"username\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"new password\" />\n\t\t\t<span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"lock\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
-    _templateObject40 = _taggedTemplateLiteral(["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"lock\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"lock\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
+    _templateObject39 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"username\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"new password\" />\n\t\t\t<span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"username\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"new password\" />\n\t\t\t<span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
+    _templateObject40 = _taggedTemplateLiteral(["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
     _templateObject41 = _taggedTemplateLiteral(["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "' alt=\"thumbnail\">\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "], ["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "' alt=\"thumbnail\">\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "]),
     _templateObject42 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
     _templateObject43 = _taggedTemplateLiteral(["\n\t\t<a id=\"text_settings_close\" class=\"closetxt\" data-tabindex=\"-1\">", "</a>\n\t\t<a id=\"button_settings_close\" class=\"closebtn\" data-tabindex=\"20\">&times;</a>\n\t\t<a class=\"linkMenu\" id=\"button_settings_open\" data-tabindex=\"-1\"><svg class=\"iconic\"><use xlink:href=\"#cog\"></use></svg>", "</a>"], ["\n\t\t<a id=\"text_settings_close\" class=\"closetxt\" data-tabindex=\"-1\">", "</a>\n\t\t<a id=\"button_settings_close\" class=\"closebtn\" data-tabindex=\"20\">&times;</a>\n\t\t<a class=\"linkMenu\" id=\"button_settings_open\" data-tabindex=\"-1\"><svg class=\"iconic\"><use xlink:href=\"#cog\"></use></svg>", "</a>"]),
@@ -415,6 +415,26 @@ var api = {
   * @type {?APIErrorCB}
   */
 	onError: null
+};
+
+/**
+ * Checks whether the returned error is probably due to an expired HTTP session.
+ *
+ * Unfortunately, Laravel has no consistent way how to report an expired and
+ * hence unknown session.
+ * Laravel simply starts a new session with the (previous, outdated) session
+ * ID provided by the client and will fail later at some unpredictable point.
+ * The two most likely errors are a CSRF mismatch or a decryption error,
+ * because Laravel does either not find the old CSRF token or cannot encrypt
+ * a cookie.
+ *
+ * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+ * @param {?LycheeException} lycheeException the Lychee exception
+ *
+ * @returns {boolean}
+ */
+api.hasSessionExpired = function (jqXHR, lycheeException) {
+	return jqXHR.status === 419 && !!lycheeException && !!lycheeException.previous_exception && (lycheeException.previous_exception.exception === "Illuminate\\Session\\TokenMismatchException" || lycheeException.previous_exception.exception === "Illuminate\\Contracts\\Encryption\\DecryptException");
 };
 
 /**
@@ -2992,48 +3012,9 @@ contextMenu.photo = function (photoID, e) {
 
 /**
  * @param {string[]} photoIDs
- * @returns {number}
- */
-contextMenu.countSubAlbums = function (photoIDs) {
-	if (album.json.albums === null || album.json.albums.length === 0) {
-		return 0;
-	}
-
-	var count = 0;
-
-	photoIDs.forEach(function (id) {
-		if (album.json.albums.findIndex(function (a) {
-			return a.id === id;
-		}) !== -1) {
-			count++;
-		}
-	});
-
-	return count;
-};
-
-/**
- * @param {string[]} photoIDs
  * @param {jQuery.Event} e
  */
 contextMenu.photoMulti = function (photoIDs, e) {
-	// Notice for 'Move All':
-	// fn must call basicContext.close() first,
-	// in order to keep the selection and multiselect
-	var subcount = contextMenu.countSubAlbums(photoIDs);
-	var photocount = photoIDs.length - subcount;
-
-	if (subcount && photocount) {
-		multiselect.deselect($(".photo.active, .album.active"));
-		multiselect.close();
-		loadingBar.show("error", "Please select either albums or photos!");
-		return;
-	}
-	if (subcount) {
-		contextMenu.albumMulti(photoIDs, e);
-		return;
-	}
-
 	multiselect.stopResize();
 
 	var arePhotosStarred = false;
@@ -5120,7 +5101,7 @@ lychee.reloadIfLegacyIDs = function (albumID, photoID, autoplay) {
 		// have 24 digits, because these could also be modern IDs.
 		// A modern IDs is a 24 character long, base64 encoded value and thus
 		// could also match 24 digits by accident.
-		return id && id.length !== 24 && parseInt(id).toString() === id;
+		return id && id.length !== 24 && parseInt(id, 10).toString() === id;
 	};
 
 	if (!isLegacyID(albumID) && !isLegacyID(photoID)) {
@@ -5150,8 +5131,8 @@ lychee.reloadIfLegacyIDs = function (albumID, photoID, autoplay) {
 	//  2. only the album ID needs to be translated
 	//  3. only the photo ID needs to be translated
 	var params = {};
-	if (isLegacyID(albumID)) params.albumID = albumID;
-	if (isLegacyID(photoID)) params.photoID = photoID;
+	if (isLegacyID(albumID)) params.albumID = parseInt(albumID, 10);
+	if (isLegacyID(photoID)) params.photoID = parseInt(photoID, 10);
 	api.post("Legacy::translateLegacyModelIDs", params, function (data) {
 		reloadWithNewIDs(data.hasOwnProperty("albumID") ? data.albumID : albumID, data.hasOwnProperty("photoID") ? data.photoID : photoID);
 	});
@@ -5585,13 +5566,21 @@ lychee.html = function (literalSections) {
  * @returns {boolean}
  */
 lychee.handleAPIError = function (jqXHR, params, lycheeException) {
-	var msg = jqXHR.statusText + (lycheeException ? " - " + lycheeException.message : "");
-	loadingBar.show("error", msg);
-	console.error("The server returned an error response", {
-		description: msg,
-		params: params,
-		response: lycheeException
-	});
+	if (api.hasSessionExpired(jqXHR, lycheeException)) {
+		loadingBar.show("error", "Session expired.");
+		setTimeout(function () {
+			lychee.goto();
+			window.location.reload();
+		}, 3000);
+	} else {
+		var msg = jqXHR.statusText + (lycheeException ? " - " + lycheeException.message : "");
+		loadingBar.show("error", msg);
+		console.error("The server returned an error response", {
+			description: msg,
+			params: params,
+			response: lycheeException
+		});
+	}
 	return true;
 };
 
@@ -8470,14 +8459,46 @@ settings.createLogin = function () {
  */
 settings.getValues = function (formSelector) {
 	var values = {};
-	var inputs_select = $(formSelector + " input[name], " + formSelector + " select[name]");
+
+	/** @type {?NodeListOf<HTMLInputElement>} */
+	var inputElements = document.querySelectorAll(formSelector + " input[name]");
 
 	// Get value from all inputs
-	$(inputs_select).each(function () {
-		var name = $(this).attr("name");
-		// Store name and value of input
-		values[name] = $(this).val();
+	inputElements.forEach(function (inputElement) {
+		switch (inputElement.type) {
+			case "checkbox":
+			case "radio":
+				values[inputElement.name] = inputElement.checked;
+				break;
+			case "number":
+			case "range":
+				values[inputElement.name] = parseInt(inputElement.value, 10);
+				break;
+			case "file":
+				values[inputElement.name] = inputElement.files;
+				break;
+			default:
+				switch (inputElement.getAttribute("inputmode")) {
+					case "numeric":
+						values[inputElement.name] = parseInt(inputElement.value, 10);
+						break;
+					case "decimal":
+						values[inputElement.name] = parseFloat(inputElement.value);
+						break;
+					default:
+						values[inputElement.name] = inputElement.value;
+				}
+		}
 	});
+
+	/** @type {?NodeListOf<HTMLSelectElement>} */
+	var selectElements = document.querySelectorAll(formSelector + " select[name]");
+
+	// Get name of selected option from all selects
+	selectElements.forEach(function (selectElement) {
+		values[selectElement.name] = selectElement.selectedIndex !== -1 ? selectElement.options[selectElement.selectedIndex].value : null;
+	});
+
 	return values;
 };
 
@@ -8599,14 +8620,10 @@ settings.setLayout = function (params) {
 };
 
 /**
+ * @param {SettingsFormData} params
  * @returns {void}
  */
-settings.changePublicSearch = function () {
-	var params = {
-		// TODO: Presumably, the `SettingsFormData` also includes a property `PublicSearch: boolean`; in that case there is no need for an inefficient jQuery selector
-		public_search: $("#PublicSearch:checked").length === 1
-	};
-
+settings.changePublicSearch = function (params) {
 	api.post("Settings::setPublicSearch", params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_PUBLIC_SEARCH"]);
 		lychee.public_search = params.public_search;
@@ -8614,27 +8631,10 @@ settings.changePublicSearch = function () {
 };
 
 /**
+ * @param {SettingsFormData} params
  * @returns {void}
  */
-settings.setOverlayType = function () {
-	// validate the input
-	var params = {};
-	// TODO: Presumably, the `SettingsFormData` also includes the properties `ImageOverlay: boolean` and `ImgOverlayType: string`; in that case there is no need for an inefficient jQuery selector
-	var check = !!$("#ImageOverlay:checked");
-	var type = $("#ImgOverlayType").val();
-	if (check && type === "exif") {
-		params.image_overlay_type = "exif";
-	} else if (check && type === "desc") {
-		params.image_overlay_type = "desc";
-	} else if (check && type === "date") {
-		params.image_overlay_type = "date";
-	} else if (check && type === "none") {
-		params.image_overlay_type = "none";
-	} else {
-		params.image_overlay_type = "exif";
-		console.log("Error - default used");
-	}
-
+settings.setOverlayType = function (params) {
 	api.post("Settings::setOverlayType", params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_IMAGE_OVERLAY"]);
 		lychee.image_overlay_type = params.image_overlay_type;
@@ -8643,14 +8643,10 @@ settings.setOverlayType = function () {
 };
 
 /**
+ * @param {SettingsFormData} params
  * @returns {void}
  */
-settings.changeMapDisplay = function () {
-	var params = {
-		// TODO: Presumably, the `SettingsFormData` also includes a property `MapDisplay: boolean`; in that case there is no need for an inefficient jQuery selector
-		map_display: $("#MapDisplay:checked").length === 1
-	};
-
+settings.changeMapDisplay = function (params) {
 	api.post("Settings::setMapDisplay", params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
 		lychee.map_display = params.map_display;
@@ -8663,14 +8659,10 @@ settings.changeMapDisplay = function () {
 };
 
 /**
+ * @param {SettingsFormData} params
  * @returns {void}
  */
-settings.changeMapDisplayPublic = function () {
-	var params = {
-		// TODO: Presumably, the `SettingsFormData` also includes a property `MapDisplayPublic: boolean`; in that case there is no need for an inefficient jQuery selector
-		map_display_public: $("#MapDisplayPublic:checked").length === 1
-	};
-
+settings.changeMapDisplayPublic = function (params) {
 	api.post("Settings::setMapDisplayPublic", params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC"]);
 		lychee.map_display_public = params.map_display_public;
@@ -8683,14 +8675,10 @@ settings.changeMapDisplayPublic = function () {
 };
 
 /**
+ * @param {SettingsFormData} params
  * @returns {void}
  */
-settings.setMapProvider = function () {
-	// TODO: Presumably, the `SettingsFormData` also includes a property `MapProvider: string`; in that case there is no need for an inefficient jQuery selector
-	var params = {
-		map_provider: $("#MapProvider").val()
-	};
-
+settings.setMapProvider = function (params) {
 	api.post("Settings::setMapProvider", params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_PROVIDER"]);
 		lychee.map_provider = params.map_provider;
@@ -8698,27 +8686,21 @@ settings.setMapProvider = function () {
 };
 
 /**
+ * @param {SettingsFormData} params
  * @returns {void}
  */
-settings.changeMapIncludeSubalbums = function () {
-	var params = {
-		// TODO: Presumably, the `SettingsFormData` also includes a property `MapIncludeSubalbums: boolean`; in that case there is no need for an inefficient jQuery selector
-		map_include_subalbums: $("#MapIncludeSubalbums:checked").length === 1
-	};
-	api.post("Settings::setMapIncludeSubalbums", params, function () {
+settings.changeMapIncludeSubAlbums = function (params) {
+	api.post("Settings::setMapIncludeSubAlbums", params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
 		lychee.map_include_subalbums = params.map_include_subalbums;
 	});
 };
 
 /**
+ * @param {SettingsFormData} params
  * @returns {void}
  */
-settings.changeLocationDecoding = function () {
-	var params = {
-		// TODO: Presumably, the `SettingsFormData` also includes a property `LocationDecoding: boolean`; in that case there is no need for an inefficient jQuery selector
-		location_decoding: $("#LocationDecoding:checked").length === 1
-	};
+settings.changeLocationDecoding = function (params) {
 	api.post("Settings::setLocationDecoding", params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
 		lychee.location_decoding = params.location_decoding;
@@ -8726,13 +8708,10 @@ settings.changeLocationDecoding = function () {
 };
 
 /**
+ * @param {SettingsFormData} params
  * @returns {void}
  */
-settings.changeNSFWVisible = function () {
-	var params = {
-		// TODO: Presumably, the `SettingsFormData` also includes a property `NSFWVisible: boolean`; in that case there is no need for an inefficient jQuery selector
-		nsfw_visible: $("#NSFWVisible:checked").length === 1
-	};
+settings.changeNSFWVisible = function (params) {
 	api.post("Settings::setNSFWVisible", params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_NSFW_VISIBLE"]);
 		lychee.nsfw_visible = params.nsfw_visible;
@@ -8746,13 +8725,10 @@ settings.changeNSFWVisible = function () {
 // lychee.nsfw_warning_text = data.config.nsfw_warning_text || '<b>Sensitive content</b><br><p>This album contains sensitive content which some people may find offensive or disturbing.</p>';
 
 /**
+ * @param {SettingsFormData} params
  * @returns {void}
  */
-settings.changeLocationShow = function () {
-	var params = {
-		// TODO: Presumably, the `SettingsFormData` also includes a property `LocationShow: boolean`; in that case there is no need for an inefficient jQuery selector
-		location_show: $("#LocationShow:checked").length === 1
-	};
+settings.changeLocationShow = function (params) {
 	api.post("Settings::setLocationShow", params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
 		lychee.location_show = params.location_show;
@@ -8765,13 +8741,10 @@ settings.changeLocationShow = function () {
 };
 
 /**
+ * @param {SettingsFormData} params
  * @returns {void}
  */
-settings.changeLocationShowPublic = function () {
-	var params = {
-		// TODO: Presumably, the `SettingsFormData` also includes a property `LocationShowPublic: boolean`; in that case there is no need for an inefficient jQuery selector
-		location_show_public: $("#LocationShowPublic:checked").length === 1
-	};
+settings.changeLocationShowPublic = function (params) {
 	api.post("Settings::setLocationShowPublic", params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
 		lychee.location_show_public = params.location_show_public;
@@ -8784,13 +8757,10 @@ settings.changeLocationShowPublic = function () {
 };
 
 /**
+ * @param {SettingsFormData} params
  * @returns {void}
  */
-settings.changeNewPhotosNotification = function () {
-	var params = {
-		// TODO: Presumably, the `SettingsFormData` also includes a property `NewPhotosNotification: boolean`; in that case there is no need for an inefficient jQuery selector
-		new_photos_notification: $("#NewPhotosNotification:checked").length === 1
-	};
+settings.changeNewPhotosNotification = function (params) {
 	api.post("Settings::setNewPhotosNotification", params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION"]);
 		lychee.new_photos_notification = params.new_photos_notification;
@@ -9349,7 +9319,7 @@ _sidebar.createStructure.album = function (data) {
 	}
 
 	var videoCount = data.photos.reduce(function (count, photo) {
-		return count + (photo.type.indexOf("video") > -1) ? 1 : 0;
+		return count + (photo.type.indexOf("video") > -1 ? 1 : 0);
 	}, 0);
 
 	structure.album = {
@@ -10742,7 +10712,7 @@ var users = {
  * The object `params` must be kept in sync with the HTML form constructed
  * by {@link build.user}.
  *
- * @param {{id: number, username: string, password: string, upload: boolean, lock: boolean}} params
+ * @param {{id: number, username: string, password: string, may_upload: boolean, is_locked: boolean}} params
  * @returns {void}
  */
 users.update = function (params) {
@@ -10751,10 +10721,13 @@ users.update = function (params) {
 		return;
 	}
 
-	// TODO: Re-factor the HTML form constructed by `build.user`. Then the following lines would not be required.
-	params.id = parseInt(params.id, 10);
-	params.may_upload = $("#UserData" + params.id + ' .choice input[name="upload"]:checked').length === 1;
-	params.is_locked = $("#UserData" + params.id + ' .choice input[name="lock"]:checked').length === 1;
+	// If the password is empty, then the password shall not be changed.
+	// In this case, the password must not be an attribute of the object at
+	// all.
+	// An existing, but empty password, would indicate the clear the password.
+	if (params.password.length === 0) {
+		delete params.password;
+	}
 
 	api.post("User::save", params, function () {
 		loadingBar.show("success", "User updated!");
@@ -10768,7 +10741,7 @@ users.update = function (params) {
  * The object `params` must be kept in sync with the HTML form constructed
  * by {@link view.users.content}.
  *
- * @param {{id: string, username: string, password: string, upload: boolean, lock: boolean}} params
+ * @param {{id: string, username: string, password: string, may_upload: boolean, is_locked: boolean}} params
  * @returns {void}
  */
 users.create = function (params) {
@@ -10780,10 +10753,6 @@ users.create = function (params) {
 		loadingBar.show("error", "new password cannot be empty.");
 		return;
 	}
-
-	// TODO: Re-factor the HTML form constructed by `view.users.content`. Then the following lines would not be required.
-	params.may_upload = $('#UserCreate .choice input[name="upload"]:checked').length === 1;
-	params.is_locked = $('#UserCreate .choice input[name="lock"]:checked').length === 1;
 
 	api.post("User::create", params, function () {
 		loadingBar.show("success", "User created!");
@@ -10801,7 +10770,6 @@ users.create = function (params) {
  * @returns {boolean}
  */
 users.delete = function (params) {
-	params.id = parseInt(params.id, 10);
 	api.post("User::delete", params, function () {
 		loadingBar.show("success", "User deleted!");
 		users.list(); // reload user list
@@ -11902,7 +11870,7 @@ view.settings = {
    * @returns {void}
    */
 		setPublicSearch: function setPublicSearch() {
-			var msg = "\n\t\t\t<div class=\"setPublicSearch\">\n\t\t\t<p>" + lychee.locale["PUBLIC_SEARCH_TEXT"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"PublicSearch\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+			var msg = "\n\t\t\t<div class=\"setPublicSearch\">\n\t\t\t<p>" + lychee.locale["PUBLIC_SEARCH_TEXT"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"PublicSearch\" type=\"checkbox\" name=\"public_search\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
 
 			$(".settings_view").append(msg);
 			if (lychee.public_search) $("#PublicSearch").click();
@@ -11914,7 +11882,7 @@ view.settings = {
    * @returns {void}
    */
 		setNSFWVisible: function setNSFWVisible() {
-			var msg = "\n\t\t\t<div class=\"setNSFWVisible\">\n\t\t\t<p>" + lychee.locale["NSFW_VISIBLE_TEXT_1"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"NSFWVisible\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label></p>\n\t\t\t<p>" + lychee.locale["NSFW_VISIBLE_TEXT_2"] + "\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+			var msg = "\n\t\t\t<div class=\"setNSFWVisible\">\n\t\t\t<p>" + lychee.locale["NSFW_VISIBLE_TEXT_1"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"NSFWVisible\" type=\"checkbox\" name=\"nsfw_visible\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label></p>\n\t\t\t<p>" + lychee.locale["NSFW_VISIBLE_TEXT_2"] + "\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
 
 			$(".settings_view").append(msg);
 			if (lychee.nsfw_visible_saved) {
@@ -11929,7 +11897,7 @@ view.settings = {
    * @returns {void}
    */
 		setOverlayType: function setOverlayType() {
-			var msg = "\n\t\t\t<div class=\"setOverlayType\">\n\t\t\t<p>" + lychee.locale["OVERLAY_TYPE"] + "\n\t\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t\t<select name=\"OverlayType\" id=\"ImgOverlayType\">\n\t\t\t\t\t<option value=\"exif\">" + lychee.locale["OVERLAY_EXIF"] + "</option>\n\t\t\t\t\t<option value=\"desc\">" + lychee.locale["OVERLAY_DESCRIPTION"] + "</option>\n\t\t\t\t\t<option value=\"date\">" + lychee.locale["OVERLAY_DATE"] + "</option>\n\t\t\t\t\t<option value=\"none\">" + lychee.locale["OVERLAY_NONE"] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_overlay_type\" class=\"basicModal__button\">" + lychee.locale["SET_OVERLAY_TYPE"] + "</a>\n\t\t\t</div>\n\t\t\t</div>\n\t\t\t";
+			var msg = "\n\t\t\t<div class=\"setOverlayType\">\n\t\t\t<p>" + lychee.locale["OVERLAY_TYPE"] + "\n\t\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t\t<select name=\"image_overlay_type\" id=\"ImgOverlayType\">\n\t\t\t\t\t<option value=\"exif\">" + lychee.locale["OVERLAY_EXIF"] + "</option>\n\t\t\t\t\t<option value=\"desc\">" + lychee.locale["OVERLAY_DESCRIPTION"] + "</option>\n\t\t\t\t\t<option value=\"date\">" + lychee.locale["OVERLAY_DATE"] + "</option>\n\t\t\t\t\t<option value=\"none\">" + lychee.locale["OVERLAY_NONE"] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_overlay_type\" class=\"basicModal__button\">" + lychee.locale["SET_OVERLAY_TYPE"] + "</a>\n\t\t\t</div>\n\t\t\t</div>\n\t\t\t";
 
 			$(".settings_view").append(msg);
 
@@ -11941,49 +11909,49 @@ view.settings = {
    * @returns {void}
    */
 		setMapDisplay: function setMapDisplay() {
-			var msg = "\n\t\t\t<div class=\"setMapDisplay\">\n\t\t\t<p>" + lychee.locale["MAP_DISPLAY_TEXT"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"MapDisplay\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+			var msg = "\n\t\t\t<div class=\"setMapDisplay\">\n\t\t\t<p>" + lychee.locale["MAP_DISPLAY_TEXT"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"MapDisplay\" type=\"checkbox\" name=\"map_display\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
 
 			$(".settings_view").append(msg);
 			if (lychee.map_display) $("#MapDisplay").click();
 
 			settings.bind("#MapDisplay", ".setMapDisplay", settings.changeMapDisplay);
 
-			msg = "\n\t\t\t<div class=\"setMapDisplayPublic\">\n\t\t\t<p>" + lychee.locale["MAP_DISPLAY_PUBLIC_TEXT"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t\t<input id=\"MapDisplayPublic\" type=\"checkbox\">\n\t\t\t\t<span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+			msg = "\n\t\t\t<div class=\"setMapDisplayPublic\">\n\t\t\t<p>" + lychee.locale["MAP_DISPLAY_PUBLIC_TEXT"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t\t<input id=\"MapDisplayPublic\" type=\"checkbox\" name=\"map_display_public\">\n\t\t\t\t<span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
 
 			$(".settings_view").append(msg);
 			if (lychee.map_display_public) $("#MapDisplayPublic").click();
 
 			settings.bind("#MapDisplayPublic", ".setMapDisplayPublic", settings.changeMapDisplayPublic);
 
-			msg = "\n\t\t\t<div class=\"setMapProvider\">\n\t\t\t<p>" + lychee.locale["MAP_PROVIDER"] + "\n\t\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t\t<select name=\"MapProvider\" id=\"MapProvider\">\n\t\t\t\t\t<option value=\"Wikimedia\">" + lychee.locale["MAP_PROVIDER_WIKIMEDIA"] + "</option>\n\t\t\t\t\t<option value=\"OpenStreetMap.org\">" + lychee.locale["MAP_PROVIDER_OSM_ORG"] + "</option>\n\t\t\t\t\t<option value=\"OpenStreetMap.de\">" + lychee.locale["MAP_PROVIDER_OSM_DE"] + "</option>\n\t\t\t\t\t<option value=\"OpenStreetMap.fr\">" + lychee.locale["MAP_PROVIDER_OSM_FR"] + "</option>\n\t\t\t\t\t<option value=\"RRZE\">" + lychee.locale["MAP_PROVIDER_RRZE"] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_map_provider\" class=\"basicModal__button\">" + lychee.locale["SET_MAP_PROVIDER"] + "</a>\n\t\t\t</div>\n\t\t\t</div>\n\t\t\t";
+			msg = "\n\t\t\t<div class=\"setMapProvider\">\n\t\t\t<p>" + lychee.locale["MAP_PROVIDER"] + "\n\t\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t\t<select name=\"map_provider\" id=\"MapProvider\">\n\t\t\t\t\t<option value=\"Wikimedia\">" + lychee.locale["MAP_PROVIDER_WIKIMEDIA"] + "</option>\n\t\t\t\t\t<option value=\"OpenStreetMap.org\">" + lychee.locale["MAP_PROVIDER_OSM_ORG"] + "</option>\n\t\t\t\t\t<option value=\"OpenStreetMap.de\">" + lychee.locale["MAP_PROVIDER_OSM_DE"] + "</option>\n\t\t\t\t\t<option value=\"OpenStreetMap.fr\">" + lychee.locale["MAP_PROVIDER_OSM_FR"] + "</option>\n\t\t\t\t\t<option value=\"RRZE\">" + lychee.locale["MAP_PROVIDER_RRZE"] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_map_provider\" class=\"basicModal__button\">" + lychee.locale["SET_MAP_PROVIDER"] + "</a>\n\t\t\t</div>\n\t\t\t</div>\n\t\t\t";
 
 			$(".settings_view").append(msg);
 
 			$("select#MapProvider").val(!lychee.map_provider ? "Wikimedia" : lychee.map_provider);
 			settings.bind("#basicModal__action_set_map_provider", ".setMapProvider", settings.setMapProvider);
 
-			msg = "\n\t\t\t<div class=\"setMapIncludeSubalbums\">\n\t\t\t<p>" + lychee.locale["MAP_INCLUDE_SUBALBUMS_TEXT"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"MapIncludeSubalbums\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+			msg = "\n\t\t\t<div class=\"setMapIncludeSubAlbums\">\n\t\t\t<p>" + lychee.locale["MAP_INCLUDE_SUBALBUMS_TEXT"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"MapIncludeSubAlbums\" type=\"checkbox\" name=\"map_include_subalbums\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
 
 			$(".settings_view").append(msg);
-			if (lychee.map_include_subalbums) $("#MapIncludeSubalbums").click();
+			if (lychee.map_include_subalbums) $("#MapIncludeSubAlbums").click();
 
-			settings.bind("#MapIncludeSubalbums", ".setMapIncludeSubalbums", settings.changeMapIncludeSubalbums);
+			settings.bind("#MapIncludeSubAlbums", ".setMapIncludeSubAlbums", settings.changeMapIncludeSubAlbums);
 
-			msg = "\n\t\t\t<div class=\"setLocationDecoding\">\n\t\t\t<p>" + lychee.locale["LOCATION_DECODING"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"LocationDecoding\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+			msg = "\n\t\t\t<div class=\"setLocationDecoding\">\n\t\t\t<p>" + lychee.locale["LOCATION_DECODING"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"LocationDecoding\" type=\"checkbox\" name=\"location_decoding\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
 
 			$(".settings_view").append(msg);
 			if (lychee.location_decoding) $("#LocationDecoding").click();
 
 			settings.bind("#LocationDecoding", ".setLocationDecoding", settings.changeLocationDecoding);
 
-			msg = "\n\t\t\t<div class=\"setLocationShow\">\n\t\t\t<p>" + lychee.locale["LOCATION_SHOW"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"LocationShow\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+			msg = "\n\t\t\t<div class=\"setLocationShow\">\n\t\t\t<p>" + lychee.locale["LOCATION_SHOW"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"LocationShow\" type=\"checkbox\" name=\"location_show\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
 
 			$(".settings_view").append(msg);
 			if (lychee.location_show) $("#LocationShow").click();
 
 			settings.bind("#LocationShow", ".setLocationShow", settings.changeLocationShow);
 
-			msg = "\n\t\t\t<div class=\"setLocationShowPublic\">\n\t\t\t<p>" + lychee.locale["LOCATION_SHOW_PUBLIC"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t\t<input id=\"LocationShowPublic\" type=\"checkbox\">\n\t\t\t\t<span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+			msg = "\n\t\t\t<div class=\"setLocationShowPublic\">\n\t\t\t<p>" + lychee.locale["LOCATION_SHOW_PUBLIC"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t\t<input id=\"LocationShowPublic\" type=\"checkbox\" name=\"location_show_public\">\n\t\t\t\t<span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
 
 			$(".settings_view").append(msg);
 			if (lychee.location_show_public) $("#LocationShowPublic").click();
@@ -11995,7 +11963,7 @@ view.settings = {
    * @returns {void}
    */
 		setNotification: function setNotification() {
-			var msg = "\n\t\t\t<div class=\"setNewPhotosNotification\">\n\t\t\t<p>" + lychee.locale["NEW_PHOTOS_NOTIFICATION"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t\t<input id=\"NewPhotosNotification\" type=\"checkbox\">\n\t\t\t\t<span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+			var msg = "\n\t\t\t<div class=\"setNewPhotosNotification\">\n\t\t\t<p>" + lychee.locale["NEW_PHOTOS_NOTIFICATION"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t\t<input id=\"NewPhotosNotification\" type=\"checkbox\" name=\"new_photos_notification\">\n\t\t\t\t<span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
 
 			$(".settings_view").append(msg);
 			if (lychee.new_photos_notification) $("#NewPhotosNotification").click();
@@ -12166,14 +12134,14 @@ view.users = {
 				settings.bind("#UserUpdate" + _user.id, "#UserData" + _user.id, users.update);
 				settings.bind("#UserDelete" + _user.id, "#UserData" + _user.id, users.delete);
 				if (_user.may_upload) {
-					$("#UserData" + _user.id + ' .choice input[name="upload"]').click();
+					$("#UserData" + _user.id + ' .choice input[name="may_upload"]').click();
 				}
 				if (_user.is_locked) {
-					$("#UserData" + _user.id + ' .choice input[name="lock"]').click();
+					$("#UserData" + _user.id + ' .choice input[name="is_locked"]').click();
 				}
 			});
 
-			html = "\n\t\t\t\t<div class=\"users_view_line\" " + (users.json.length === 0 ? 'style="padding-top: 0px;"' : "") + ">\n\t\t\t\t\t<p id=\"UserCreate\">\n\t\t\t\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"\" placeholder=\"new username\" />\n\t\t\t\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"new password\" />\n\t\t\t\t\t\t<span class=\"choice\" title=\"Allow uploads\">\n\t\t\t\t\t\t\t<label>\n\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"upload\" />\n\t\t\t\t\t\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t\t\t\t\t</label>\n\t\t\t\t\t\t</span>\n\t\t\t\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t\t\t\t\t<label>\n\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"lock\" />\n\t\t\t\t\t\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t\t\t\t\t</label>\n\t\t\t\t\t\t</span>\n\t\t\t\t\t</p>\n\t\t\t\t\t<a id=\"UserCreate_button\"  class=\"basicModal__button basicModal__button_CREATE\">Create</a>\n\t\t\t\t</div>";
+			html = "\n\t\t\t\t<div class=\"users_view_line\" " + (users.json.length === 0 ? 'style="padding-top: 0px;"' : "") + ">\n\t\t\t\t\t<p id=\"UserCreate\">\n\t\t\t\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"\" placeholder=\"new username\" />\n\t\t\t\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"new password\" />\n\t\t\t\t\t\t<span class=\"choice\" title=\"Allow uploads\">\n\t\t\t\t\t\t\t<label>\n\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t\t\t\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t\t\t\t\t</label>\n\t\t\t\t\t\t</span>\n\t\t\t\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t\t\t\t\t<label>\n\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t\t\t\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t\t\t\t\t</label>\n\t\t\t\t\t\t</span>\n\t\t\t\t\t</p>\n\t\t\t\t\t<a id=\"UserCreate_button\"  class=\"basicModal__button basicModal__button_CREATE\">Create</a>\n\t\t\t\t</div>";
 			$(".users_view").append(html);
 			settings.bind("#UserCreate_button", "#UserCreate", users.create);
 		}

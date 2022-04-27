@@ -4,6 +4,7 @@ namespace App\Actions\Albums;
 
 use App\Actions\PhotoAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
+use App\DTO\PositionData as PositionDataDTO;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
@@ -24,16 +25,13 @@ class PositionData
 	/**
 	 * Given a list of albums, generate an array to be returned.
 	 *
-	 * @return array
+	 * @return PositionDataDTO
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function do(): array
+	public function do(): PositionDataDTO
 	{
-		$result = [];
-		$result['id'] = null;
-		$result['title'] = null;
-		$result['photos'] = $this->photoAuthorisationProvider->applySearchabilityFilter(
+		$photoQuery = $this->photoAuthorisationProvider->applySearchabilityFilter(
 			Photo::query()
 				->with([
 					'album' => function (BelongsTo $b) {
@@ -56,8 +54,8 @@ class PositionData
 				])
 				->whereNotNull('latitude')
 				->whereNotNull('longitude')
-		)->get()->toArray();
+		);
 
-		return $result;
+		return new PositionDataDTO(null, null, $photoQuery->get());
 	}
 }

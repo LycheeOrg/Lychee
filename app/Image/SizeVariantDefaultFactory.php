@@ -121,7 +121,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		if (!in_array(strtoupper($ext), \Imagick::queryformats())) {
 			throw new MediaFileUnsupportedException('Filetype ' . $ext . ' not supported by Imagick.');
 		}
-		$this->createTmpPathForReference();
+		$this->createTmpPathForReferenceJPEG();
 		$this->imageHandler->scale($fullPath, $this->referenceFullPath, $width, $height, $this->referenceWidth, $this->referenceHeight);
 	}
 
@@ -142,7 +142,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 			throw new ConfigurationException('FFmpeg is disabled by configuration');
 		}
 		try {
-			$this->createTmpPathForReference();
+			$this->createTmpPathForReferenceJPEG();
 			$ffmpeg = FFMpeg::create();
 			/** @var Video $video */
 			$video = $ffmpeg->open($fullPath);
@@ -192,9 +192,9 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 * to true such that the file which is stored at `referenceFullPath` will
 	 * be removed by {@link SizeVariantFactory::cleanup()}.
 	 */
-	protected function createTmpPathForReference(): void
+	protected function createTmpPathForReferenceJPEG(): void
 	{
-		$this->referenceFullPath = (new TemporaryLocalFile())->getAbsolutePath();
+		$this->referenceFullPath = (new TemporaryLocalFile('.jpg'))->getAbsolutePath();
 		$this->needsCleanup = true;
 		Logs::notice(__METHOD__, __LINE__, 'Saving JPG of raw/video file to ' . $this->referenceFullPath);
 	}

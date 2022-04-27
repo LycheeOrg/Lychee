@@ -2,25 +2,21 @@
 
 namespace App\Http\Requests\Album;
 
-use App\Contracts\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAlbums;
-use App\Http\Requests\Traits\HasAlbumsTrait;
+use App\Http\Requests\Contracts\HasAlbumIDs;
+use App\Http\Requests\Traits\HasAlbumIDsTrait;
 use App\Rules\AlbumIDRule;
 
-/**
- * @implements HasAlbums<AbstractAlbum>
- */
-class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbums
+class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbumIDs
 {
-	use HasAlbumsTrait;
+	use HasAlbumIDsTrait;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumsWrite($this->albums);
+		return $this->authorizeAlbumsWriteByIDs($this->albumIDs);
 	}
 
 	/**
@@ -29,8 +25,8 @@ class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbums
 	public function rules(): array
 	{
 		return [
-			HasAlbums::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
-			HasAlbums::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new AlbumIDRule(false)],
+			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
+			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new AlbumIDRule(false)],
 		];
 	}
 
@@ -39,14 +35,9 @@ class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbums
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		// We do not eagerly load all photos, size_variants and
-		// size_variants.symlinks here, because if we delete an entire
-		// subtree this might get huge and lead to an out-of-memory
-		// exception.
-		// We use lazy-loading of chunks of photos (combined with eager
-		// loading of size variants and symlinks) in {@link Album::delete}.
-		$this->albums = $this->albumFactory->findAbstractAlbumsOrFail(
-			$values[HasAlbums::ALBUM_IDS_ATTRIBUTE], false
-		);
+		// As we are going to delete the albums anyway, we don't load the
+		// models for efficiency reasons.
+		// Instead, we use mass deletion via low-level SQL queries later.
+		$this->albumIDs = $values[HasAlbumIDs::ALBUM_IDS_ATTRIBUTE];
 	}
 }

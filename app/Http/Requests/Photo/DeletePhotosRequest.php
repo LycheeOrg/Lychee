@@ -3,21 +3,20 @@
 namespace App\Http\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasPhotos;
-use App\Http\Requests\Traits\HasPhotosTrait;
-use App\Models\Photo;
+use App\Http\Requests\Contracts\HasPhotoIDs;
+use App\Http\Requests\Traits\HasPhotoIDsTrait;
 use App\Rules\RandomIDRule;
 
-class DeletePhotosRequest extends BaseApiRequest implements HasPhotos
+class DeletePhotosRequest extends BaseApiRequest implements HasPhotoIDs
 {
-	use HasPhotosTrait;
+	use HasPhotoIDsTrait;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizePhotosWrite($this->photos);
+		return $this->authorizePhotosWriteByIDs($this->photoIDs);
 	}
 
 	/**
@@ -26,8 +25,8 @@ class DeletePhotosRequest extends BaseApiRequest implements HasPhotos
 	public function rules(): array
 	{
 		return [
-			HasPhotos::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
-			HasPhotos::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
+			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
+			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
 		];
 	}
 
@@ -36,13 +35,9 @@ class DeletePhotosRequest extends BaseApiRequest implements HasPhotos
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		// Size variants and symlinks are required to properly delete the
-		// media files from disk.
-		// Load them eagerly for all photos at once to avoid iterated DB
-		// requests for each photo later.
-		$this->photos = Photo::query()
-			->with(['size_variants', 'size_variants.sym_links'])
-			->whereIn('id', $values[HasPhotos::PHOTO_IDS_ATTRIBUTE])
-			->get();
+		// As we are going to delete the photos anyway, we don't load the
+		// models for efficiency reasons.
+		// Instead, we use mass deletion via low-level SQL queries later.
+		$this->photoIDs = $values[HasPhotoIDs::PHOTO_IDS_ATTRIBUTE];
 	}
 }

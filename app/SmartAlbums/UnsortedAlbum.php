@@ -2,9 +2,6 @@
 
 namespace App\SmartAlbums;
 
-use App\Exceptions\ModelDBException;
-use App\Facades\AccessControl;
-use App\Models\Photo;
 use App\SmartAlbums\Utils\Wireable;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -41,31 +38,5 @@ class UnsortedAlbum extends BaseSmartAlbum
 		unset(self::$instance->thumb);
 
 		return self::$instance;
-	}
-
-	/**
-	 * "Deletes" the album of unsorted photos.
-	 *
-	 * Actually, the album itself is not deleted, because it is built-in.
-	 * But all photos within the album which are owned by the current user
-	 * are deleted.
-	 *
-	 * @return bool
-	 *
-	 * @throws ModelDBException
-	 */
-	public function delete(): bool
-	{
-		if (!AccessControl::is_admin()) {
-			$this->photos()->where('owner_id', '=', AccessControl::id());
-		}
-		$photos = $this->photos()->get();
-		/** @var Photo $photo */
-		foreach ($photos as $photo) {
-			// This also takes care of proper deletion of physical files from disk
-			$photo->delete();
-		}
-
-		return true;
 	}
 }

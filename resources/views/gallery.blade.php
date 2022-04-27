@@ -31,7 +31,7 @@
 
 		<div class="header__search__field">
 	        <input class="header__search" type="text" name="search" placeholder="{{ $locale['SEARCH'] }}" data-tabindex="{{ Helpers::data_index() }}">
-    	    <a class="header__clear header__clear_public">&times;</a>
+    	    <a class="header__clear">&times;</a>
     	</div>
         <a class="button button--map-albums" title="{{ $locale['DISPLAY_FULL_MAP'] }}" data-tabindex="{{ Helpers::data_index() }}">
             <svg class="iconic"><use xlink:href="#map"></use></svg>

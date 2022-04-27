@@ -3,13 +3,12 @@
 namespace App\ModelFunctions;
 
 use App\Exceptions\Internal\JsonRequestFailedException;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 
 class JsonRequestFunctions
 {
 	private string $url;
-	private mixed $json;
+	private mixed $decodedJson;
 	private int $ttl;
 
 	/**
@@ -17,21 +16,12 @@ class JsonRequestFunctions
 	 *
 	 * @param string $url URL to request/cache
 	 * @param int    $ttl Time-to-live of the cache in DAYS
-	 *
-	 * @throws JsonRequestFailedException
 	 */
 	public function __construct(string $url, int $ttl = 1)
 	{
-		try {
-			$this->url = $url;
-			$cached = Cache::get($url);
-			$this->json = is_string($cached) && !empty($cached) ?
-				json_decode($cached, false, 512, JSON_THROW_ON_ERROR) :
-				null;
-			$this->ttl = $ttl;
-		} catch (\JsonException $e) {
-			throw new JsonRequestFailedException('Could not decode JSON', $e);
-		}
+		$this->url = $url;
+		$this->decodedJson = null;
+		$this->ttl = $ttl;
 	}
 
 	/**
@@ -39,19 +29,9 @@ class JsonRequestFunctions
 	 */
 	public function clear_cache(): void
 	{
-		$this->json = null;
+		$this->decodedJson = null;
 		Cache::forget($this->url);
 		Cache::forget($this->url . '_age');
-	}
-
-	/**
-	 * return the age of the last query to url.
-	 *
-	 * @return Carbon
-	 */
-	public function get_age(): Carbon
-	{
-		return Cache::get($this->url . '_age');
 	}
 
 	/**
@@ -61,83 +41,93 @@ class JsonRequestFunctions
 	 */
 	public function get_age_text(): string
 	{
-		$age = $this->get_age();
+		$age = Cache::get($this->url . '_age');
 		if (!$age) {
 			$last = 'unknown';
 			$end = '';
 		} else {
-			$last = now()->diffInDays($age);
-			$end = $last > 0 ? ' days' : '';
-			$last = ($last == 0 && $end = ' hours')
-				? now()->diffInHours($age) : $last;
-			$last = ($last == 0 && $end = ' minutes')
-				? now()->diffInMinutes($age) : $last;
-			$last = ($last == 0 && $end = ' seconds')
-				? now()->diffInSeconds($age) : $last;
-			$end = $end . ' ago';
+			try {
+				$last = now()->diffInDays($age);
+				$end = $last > 0 ? ' days' : '';
+				$last = ($last == 0 && $end = ' hours')
+					? now()->diffInHours($age) : $last;
+				$last = ($last == 0 && $end = ' minutes')
+					? now()->diffInMinutes($age) : $last;
+				$last = ($last == 0 && $end = ' seconds')
+					? now()->diffInSeconds($age) : $last;
+				$end = $end . ' ago';
+			} catch (\Throwable) {
+				$last = 'unknown';
+				$end = '';
+			}
 		}
 
 		return $last . $end;
 	}
 
 	/**
-	 * Runs the HTTP query and caches the result.
+	 * Runs the HTTP query and returns the result.
 	 *
-	 * @return mixed the type of the response depends on the content of the
-	 *               HTTP response and may be anything: a primitive type,
-	 *               an array or an object
+	 * @return string the plain JSON-encoded response
 	 *
 	 * @throws JsonRequestFailedException
 	 */
-	private function get(): mixed
+	private function fetchFromServer(): string
 	{
-		$opts = [
-			'http' => [
-				'method' => 'GET',
-				'timeout' => 1,
-				'header' => [
-					'User-Agent: ' . ini_get('user_agent'),
-				],
-			],
-		];
-		$context = stream_context_create($opts);
-
-		$raw = file_get_contents($this->url, false, $context);
-		if (!is_string($raw) || empty($raw)) {
-			$this->clear_cache();
-			throw new JsonRequestFailedException('Could not read "' . $this->url . '"');
-		}
-
 		try {
-			$this->json = json_decode($raw, false, 512, JSON_THROW_ON_ERROR);
-			Cache::put($this->url, $raw, now()->addDays($this->ttl));
-			Cache::put($this->url . '_age', now(), now()->addDays($this->ttl));
-		} catch (\JsonException $e) {
-			$this->clear_cache();
-			throw new JsonRequestFailedException('Could not read "' . $this->url . '"', $e);
-		}
+			$opts = [
+				'http' => [
+					'method' => 'GET',
+					'timeout' => 1,
+					'header' => [
+						'User-Agent: ' . ini_get('user_agent'),
+					],
+				],
+			];
+			$context = stream_context_create($opts);
 
-		return $this->json;
+			$raw = file_get_contents($this->url, false, $context);
+			if (!is_string($raw) || empty($raw)) {
+				throw new JsonRequestFailedException('file_get_contents() failed');
+			}
+
+			return $raw;
+		} catch (\Throwable $e) {
+			throw new JsonRequestFailedException('Could not fetch ' . $this->url, $e);
+		}
 	}
 
 	/**
 	 * Returns the decoded JSON response.
 	 *
-	 * @param bool $cached if true, the JSON response is not fetched but
-	 *                     served from cache
+	 * @param bool $useCache if true, the JSON response is not fetched but
+	 *                       served from cache if available
 	 *
 	 * @return mixed the type of the response depends on the content of the
 	 *               HTTP response and may be anything: a primitive type,
 	 *               an array or an object
 	 *
 	 * @throws JsonRequestFailedException
+	 * @throws \JsonException
 	 */
-	public function get_json(bool $cached = false): mixed
+	public function get_json(bool $useCache = false): mixed
 	{
-		if ($cached && $this->json !== null) {
-			return $this->json;
-		}
+		try {
+			if ($this->decodedJson === null || !$useCache) {
+				$rawResponse = $useCache ? Cache::get($this->url) : null;
+				if (empty($rawResponse)) {
+					$rawResponse = $this->fetchFromServer();
+					Cache::put($this->url, $rawResponse, now()->addDays($this->ttl));
+					Cache::put($this->url . '_age', now(), now()->addDays($this->ttl));
+				}
 
-		return $this->get();
+				$this->decodedJson = json_decode($rawResponse, false, 512, JSON_THROW_ON_ERROR);
+			}
+
+			return $this->decodedJson;
+		} catch (\JsonException $e) {
+			$this->clear_cache();
+			throw $e;
+		}
 	}
 }

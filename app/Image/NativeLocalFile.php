@@ -2,6 +2,8 @@
 
 namespace App\Image;
 
+use App\Exceptions\Internal\LycheeLogicException;
+use App\Exceptions\MediaFileOperationException;
 use Illuminate\Http\UploadedFile;
 
 /**
@@ -16,20 +18,30 @@ class NativeLocalFile extends MediaFile
 {
 	protected string $absolutePath;
 
+	/**
+	 * @param string $path the file path
+	 *
+	 * @throws MediaFileOperationException
+	 */
 	public function __construct(string $path)
 	{
 		$absolutePath = realpath($path);
 		if ($absolutePath === false || !is_file($absolutePath)) {
-			throw new \RuntimeException('The path "' . $path . '" does not point to a local file');
+			throw new MediaFileOperationException('The path "' . $path . '" does not point to a local file');
 		}
 		$this->absolutePath = $absolutePath;
 	}
 
+	/**
+	 * @returns NativeLocalFile
+	 *
+	 * @throws MediaFileOperationException
+	 */
 	public static function createFromUploadedFile(UploadedFile $file): self
 	{
 		$path = $file->getRealPath();
 		if ($path === false) {
-			throw new \RuntimeException('The uploaded file does not exist');
+			throw new MediaFileOperationException('The uploaded file does not exist');
 		}
 
 		return new self($path);
@@ -41,12 +53,12 @@ class NativeLocalFile extends MediaFile
 	public function read()
 	{
 		if (is_resource($this->stream)) {
-			throw new \LogicException('Cannot read from a file which is already opened for read');
+			throw new LycheeLogicException('Cannot read from a file which is already opened for read');
 		}
 		$this->stream = fopen($this->absolutePath, 'rb');
 		if ($this->stream === false || !is_resource($this->stream)) {
 			$this->stream = null;
-			throw new \RuntimeException('Could not read from file ' . $this->absolutePath);
+			throw new MediaFileOperationException('Could not read from file ' . $this->absolutePath);
 		}
 
 		return $this->stream;
@@ -58,7 +70,7 @@ class NativeLocalFile extends MediaFile
 	public function write($stream): void
 	{
 		if (is_resource($this->stream)) {
-			throw new \LogicException('Cannot write to a file which is opened for read');
+			throw new LycheeLogicException('Cannot write to a file which is opened for read');
 		}
 		// inspired from \League\Flysystem\Adapter\Local
 		$this->stream = fopen($this->absolutePath, 'wb');
@@ -67,7 +79,7 @@ class NativeLocalFile extends MediaFile
 			stream_copy_to_stream($stream, $this->stream) === false ||
 			!fclose($this->stream)
 		) {
-			throw new \RuntimeException('Could not write file ' . $this->absolutePath);
+			throw new MediaFileOperationException('Could not write file ' . $this->absolutePath);
 		}
 		$this->stream = null;
 	}
@@ -78,7 +90,7 @@ class NativeLocalFile extends MediaFile
 	public function delete(): void
 	{
 		if (!unlink($this->absolutePath)) {
-			throw new \RuntimeException('Could not delete file ' . $this->absolutePath);
+			throw new MediaFileOperationException('Could not delete file ' . $this->absolutePath);
 		}
 	}
 

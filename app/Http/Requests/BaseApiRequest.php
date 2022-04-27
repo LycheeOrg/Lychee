@@ -189,6 +189,21 @@ abstract class BaseApiRequest extends FormRequest
 	}
 
 	/**
+	 * Determines if the user is authorized to modify or write into the
+	 * designated albums.
+	 *
+	 * @param string[] $albumIDs the album IDs
+	 *
+	 * @return bool true, if the authenticated user is authorized
+	 *
+	 * @throws QueryBuilderException
+	 */
+	protected function authorizeAlbumsWriteByIDs(array $albumIDs): bool
+	{
+		return $this->albumAuthorisationProvider->areEditableByIDs($albumIDs);
+	}
+
+	/**
 	 * Determines if the user is authorized to see the designated photo.
 	 *
 	 * @param Photo|null $photo the photo; `null` is accepted for convenience
@@ -261,6 +276,18 @@ abstract class BaseApiRequest extends FormRequest
 		}
 
 		return true;
+	}
+
+	/**
+	 * Determines if the user is authorized to modify the designated photos.
+	 *
+	 * @param string[] $photoIDs the IDs of the photos
+	 *
+	 * @return bool true, if the authenticated user is authorized
+	 */
+	protected function authorizePhotosWriteByIDs(array $photoIDs): bool
+	{
+		return $this->photoAuthorisationProvider->areEditableByIDs($photoIDs);
 	}
 
 	/**

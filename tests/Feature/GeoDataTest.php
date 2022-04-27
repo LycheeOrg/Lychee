@@ -26,7 +26,7 @@ class GeoDataTest extends TestCase
 		* Make a copy of the image because import deletes the file, and we want to be
 		* able to use the test on a local machine and not just in CI.
 		*/
-		copy('tests/Feature/mongolia.jpeg', 'public/uploads/import/mongolia.jpeg');
+		copy('tests/Samples/mongolia.jpeg', 'public/uploads/import/mongolia.jpeg');
 
 		$file = new UploadedFile(
 			'public/uploads/import/mongolia.jpeg',

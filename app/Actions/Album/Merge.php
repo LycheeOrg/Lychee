@@ -2,7 +2,7 @@
 
 namespace App\Actions\Album;
 
-use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Models\Album;
 use App\Models\Photo;
@@ -20,7 +20,7 @@ class Merge extends Action
 	 *
 	 * @throws ModelNotFoundException
 	 * @throws ModelDBException
-	 * @throws InternalLycheeException
+	 * @throws QueryBuilderException
 	 */
 	public function do(Album $targetAlbum, Collection $albums): void
 	{
@@ -42,11 +42,11 @@ class Merge extends Action
 		}
 
 		// Now we delete the source albums
-		// ! we have to do it via Model::delete() in order to not break the tree
-		/** @var Album $album */
-		foreach ($albums as $album) {
-			$album->delete();
-		}
+		// We must use the special `Delete` action in order to not break the
+		// tree.
+		// The returned `FileDeleter` can be ignored as all photos have been
+		// moved to the new location.
+		(new Delete())->do($albums->pluck('id')->values()->all());
 
 		$targetAlbum->fixOwnershipOfChildren();
 	}

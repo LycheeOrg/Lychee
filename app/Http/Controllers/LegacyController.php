@@ -34,14 +34,10 @@ class LegacyController extends Controller
 
 		$return = [];
 		if ($legacyAlbumID !== null) {
-			$return['albumID'] = Legacy::isLegacyModelID($legacyAlbumID) ?
-				Legacy::translateLegacyAlbumID($request->albumID(), $request) :
-				null;
+			$return['albumID'] = Legacy::translateLegacyAlbumID($request->albumID(), $request);
 		}
 		if ($legacyPhotoID !== null) {
-			$return['photoID'] = Legacy::isLegacyModelID($legacyPhotoID) ?
-				Legacy::translateLegacyPhotoID($legacyPhotoID, $request) :
-				null;
+			$return['photoID'] = Legacy::translateLegacyPhotoID($legacyPhotoID, $request);
 		}
 
 		return $return;

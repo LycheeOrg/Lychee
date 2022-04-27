@@ -927,6 +927,26 @@ var api = {
 };
 
 /**
+ * Checks whether the returned error is probably due to an expired HTTP session.
+ *
+ * Unfortunately, Laravel has no consistent way how to report an expired and
+ * hence unknown session.
+ * Laravel simply starts a new session with the (previous, outdated) session
+ * ID provided by the client and will fail later at some unpredictable point.
+ * The two most likely errors are a CSRF mismatch or a decryption error,
+ * because Laravel does either not find the old CSRF token or cannot encrypt
+ * a cookie.
+ *
+ * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+ * @param {?LycheeException} lycheeException the Lychee exception
+ *
+ * @returns {boolean}
+ */
+api.hasSessionExpired = function (jqXHR, lycheeException) {
+  return jqXHR.status === 419 && !!lycheeException && !!lycheeException.previous_exception && (lycheeException.previous_exception.exception === "Illuminate\\Session\\TokenMismatchException" || lycheeException.previous_exception.exception === "Illuminate\\Contracts\\Encryption\\DecryptException");
+};
+
+/**
  *
  * @param {string} fn
  * @param {Object} params

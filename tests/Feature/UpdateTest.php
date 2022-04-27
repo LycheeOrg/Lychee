@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Facades\AccessControl;
 use App\Models\Configs;
+use PHPUnit\Framework\ExpectationFailedException;
 use Tests\TestCase;
 
 class UpdateTest extends TestCase
@@ -41,7 +42,18 @@ class UpdateTest extends TestCase
 
 		$response = $this->postJson('/api/Update::check');
 		if ($response->status() === 500) {
-			$response->assertSee('Branch is not master, cannot compare');
+			// We need an OR-condition here.
+			// If we are inside the Lychee repository but on a development
+			// branch which is not the master branch, then we get the first
+			// error message.
+			// If we are _not_ inside the Lychee repository (e.g. we are
+			// testing a PR from a 3rd-party contributor), then we get the
+			// second error message.
+			try {
+				$response->assertSee('Branch is not master, cannot compare');
+			} catch (ExpectationFailedException) {
+				$response->assertSee('Could not determine the branch');
+			}
 		} else {
 			$response->assertOk();
 		}

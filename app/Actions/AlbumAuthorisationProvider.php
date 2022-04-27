@@ -206,13 +206,14 @@ class AlbumAuthorisationProvider
 	 *  - the album does not require a direct link, is public and has no password set, or
 	 *  - the album does not require a direct link, is public and has been unlocked
 	 *
-	 * @param Builder $query
+	 * @param AlbumBuilder $query
 	 *
-	 * @return Builder
+	 * @return AlbumBuilder
 	 *
-	 * @throws \InvalidArgumentException
+	 * @throws QueryBuilderException
+	 * @throws InvalidQueryModelException
 	 */
-	public function applyReachabilityFilter(Builder $query): Builder
+	public function applyReachabilityFilter(AlbumBuilder $query): AlbumBuilder
 	{
 		$this->prepareModelQueryOrFail($query);
 
@@ -278,15 +279,17 @@ class AlbumAuthorisationProvider
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 
 		if ($album instanceof BaseAlbum) {
-			return
-				($album->owner_id === $userID) ||
-				($album->is_public && $album->password === null) ||
-				($album->is_public && $this->isUnlocked($album)) ||
-				($album->shared_with()->where('user_id', '=', $userID)->count());
+			try {
+				return
+					($album->owner_id === $userID) ||
+					($album->is_public && $album->password === null) ||
+					($album->is_public && $this->isUnlocked($album)) ||
+					($album->shared_with()->where('user_id', '=', $userID)->count());
+			} catch (\InvalidArgumentException $e) {
+				assert(false, new \AssertionError('\InvalidArgumentException must not be thrown by ->where', $e->getCode(), $e));
+			}
 		} elseif ($album instanceof BaseSmartAlbum) {
-			return
-				($userID && AccessControl::can_upload()) ||
-				$album->is_public;
+			return AccessControl::can_upload() || $album->is_public;
 		} else {
 			// Should never happen
 			return false;
@@ -329,14 +332,14 @@ class AlbumAuthorisationProvider
 	 * of the origin), the runtime is O(n), but for a high tree (the nodes are
 	 * basically a sequence), the runtime is O(n²).
 	 *
-	 * @param Builder    $query  the album query which shall be restricted
-	 * @param Album|null $origin the optional top album which is used as a search base
+	 * @param AlbumBuilder $query  the album query which shall be restricted
+	 * @param Album|null   $origin the optional top album which is used as a search base
 	 *
-	 * @return Builder the restricted album query
+	 * @return AlbumBuilder the restricted album query
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function applyBrowsabilityFilter(Builder $query, ?Album $origin = null): Builder
+	public function applyBrowsabilityFilter(AlbumBuilder $query, ?Album $origin = null): AlbumBuilder
 	{
 		$table = $query->getQuery()->from;
 		if (!($query->getModel() instanceof Album) || $table !== 'albums') {
@@ -535,6 +538,56 @@ class AlbumAuthorisationProvider
 			$album === null ||
 			$album instanceof BaseSmartAlbum ||
 			($album instanceof BaseAlbum && $album->owner_id === $user->id);
+	}
+
+	/**
+	 * Checks whether the designated albums are editable by the current user.
+	 *
+	 * See {@link AlbumAuthorisationProvider::isEditable()} for the definition
+	 * when an album is editable.
+	 *
+	 * This method is mostly only useful during deletion of albums, when no
+	 * album models are loaded for efficiency reasons.
+	 * If an album model is required anyway (because it shall be edited),
+	 * then first load the album once and use
+	 * {@link AlbumAuthorisationProvider::isEditable()}
+	 * instead in order to avoid several DB requests.
+	 *
+	 * @param array $albumIDs
+	 *
+	 * @return bool
+	 *
+	 * @throws QueryBuilderException
+	 */
+	public function areEditableByIDs(array $albumIDs): bool
+	{
+		if (AccessControl::is_admin()) {
+			return true;
+		}
+		if (!AccessControl::is_logged_in()) {
+			return false;
+		}
+
+		$user = AccessControl::user();
+
+		if (!$user->may_upload) {
+			return false;
+		}
+
+		// Remove root and smart albums, as they get a pass.
+		// Make IDs unique as otherwise count will fail.
+		$albumIDs = array_diff(
+			array_unique($albumIDs),
+			array_keys(AlbumFactory::BUILTIN_SMARTS),
+			[null]
+		);
+
+		return
+			count($albumIDs) === 0 ||
+			BaseAlbumImpl::query()
+				->whereIn('id', $albumIDs)
+				->where('owner_id', $user->id)
+				->count() === count($albumIDs);
 	}
 
 	/**
