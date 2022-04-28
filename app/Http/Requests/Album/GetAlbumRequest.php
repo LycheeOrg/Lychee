@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests\Album;
 
-use App\Exceptions\UnauthenticatedException;
-use App\Exceptions\UnauthorizedException;
-use App\Facades\AccessControl;
+use App\Exceptions\PasswordRequiredException;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
@@ -14,8 +12,6 @@ use App\Rules\AlbumIDRule;
 class GetAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
 {
 	use HasAbstractAlbumTrait;
-
-	public const PASSWORD_REQUIRED_MSG = 'Password required';
 
 	/**
 	 * {@inheritDoc}
@@ -34,11 +30,7 @@ class GetAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
 			$this->album->is_public &&
 			$this->album->password !== null
 		) {
-			if (AccessControl::is_logged_in()) {
-				throw new UnauthorizedException(self::PASSWORD_REQUIRED_MSG);
-			} else {
-				throw new UnauthenticatedException(self::PASSWORD_REQUIRED_MSG);
-			}
+			throw new PasswordRequiredException();
 		}
 
 		return $result;

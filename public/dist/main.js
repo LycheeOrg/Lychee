@@ -718,7 +718,7 @@ csrf.getCSRFCookieValue = function () {
  */
 
 var album = {
-	/** @type {(null|Album|TagAlbum)} */
+	/** @type {(?Album|?TagAlbum)} */
 	json: null
 };
 
@@ -957,7 +957,7 @@ album.load = function (albumID) {
 			return false;
 		}
 
-		if (lycheeException.message.includes("Password required")) {
+		if (lycheeException.exception.endsWith("PasswordRequiredException")) {
 			// If a password is required, then try to unlock the album
 			// and in case of success, try again to load album with same
 			// parameters
@@ -965,16 +965,21 @@ album.load = function (albumID) {
 				albums.refresh();
 				album.load(albumID, albumLoadedCB);
 			});
-		} else {
+			return true;
+		} else if (albumLoadedCB) {
+			// In case we could not successfully load and unlock the album,
+			// but we have a callback, we call that and consider the error
+			// handled.
+			// Note: This case occurs for a single public photo on an
+			// otherwise non-public album.
 			album.json = null;
-			if (albumLoadedCB) {
-				albumLoadedCB(false);
-			} else {
-				lychee.goto();
-			}
+			albumLoadedCB(false);
+			return true;
+		} else {
+			// In any other case, let the global error handler deal with the
+			// problem.
+			return false;
 		}
-
-		return true;
 	};
 
 	api.post("Album::get", { albumID: albumID }, successHandler, null, errorHandler);
