@@ -75,7 +75,7 @@ class Handler extends ExceptionHandler
 	 *  - {@link ExceptionHandler::mapException()}
 	 *  - {@link ExceptionHandler::prepareException()}
 	 *
-	 * which are chained like one after the other like this
+	 * which are chained one after the other like this
 	 *
 	 *     $e = $this->prepareException($this->mapException($e));
 	 *
