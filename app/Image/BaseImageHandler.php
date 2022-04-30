@@ -3,14 +3,14 @@
 namespace App\Image;
 
 use App\Exceptions\MediaFileOperationException;
+use App\Models\Configs;
+use App\Models\Logs;
+use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 abstract class BaseImageHandler implements ImageHandlerInterface
 {
 	/** @var int the desired compression quality, only used for JPEG during save */
 	protected int $compressionQuality = 75;
-
-	/** @var ?resource a readable/writable/seekable in-memory stream which holds an encoding of the image (e.g. a JPEG/TIFF/PNG/WEBP representation) */
-	protected $bufferStream = null;
 
 	/**
 	 * {@inheritDoc}
@@ -25,64 +25,30 @@ abstract class BaseImageHandler implements ImageHandlerInterface
 		$this->reset();
 	}
 
-	public function __clone()
-	{
-		// We must not be the owner of an open buffer,
-		// because the cloned object owns the buffer
-		$this->bufferStream = null;
-	}
-
 	/**
-	 * Creates a new in-memory stream for buffering.
+	 * Optimizes a local image, if enabled.
 	 *
-	 * If a stream is given, the content of that stream is copied into the
-	 * new buffer.
-	 * The provided stream must be readable, seeking (rewinding) is not
-	 * required.
+	 * If lossless optimization is enabled via configuration, this method
+	 * tries to apply the optimization to the provided file.
+	 * If the file is not a local file, optimization is skipped and a warning
+	 * is logged.
 	 *
-	 * @param resource|null $stream a readable stream whose content is copied into the buffer
+	 * TODO: Do we really need it? It does neither seem lossless nor doing anything useful.
+	 *
+	 * @param MediaFile $file
 	 *
 	 * @return void
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	protected function createBuffer($stream = null): void
+	protected static function applyLosslessOptimizationConditionally(MediaFile $file): void
 	{
-		try {
-			if (is_resource($this->bufferStream)) {
-				throw new \RuntimeException('buffer already opened');
+		if (Configs::get_value('lossless_optimization', '0') == '1') {
+			if ($file instanceof NativeLocalFile) {
+				ImageOptimizer::optimize($file->getAbsolutePath());
+			} else {
+				Logs::warning(__METHOD__, __LINE__, 'Skipping lossless optimization; optimization is requested by configuration but only supported for local files');
 			}
-			$this->bufferStream = fopen('php://memory', 'r+');
-			if (!$this->bufferStream) {
-				throw new \RuntimeException('fopen failed');
-			}
-			if (stream_copy_to_stream($stream, $this->bufferStream) === false) {
-				throw new \RuntimeException('stream_copy_to_stream failed');
-			}
-			if (!rewind($this->bufferStream)) {
-				throw new \RuntimeException('rewind failed');
-			}
-		} catch (\Throwable) {
-			throw new MediaFileOperationException('Could not create buffer');
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function close(): void
-	{
-		if (is_resource($this->bufferStream)) {
-			fclose($this->bufferStream);
-			$this->bufferStream = null;
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function reset(): void
-	{
-		$this->close();
 	}
 }

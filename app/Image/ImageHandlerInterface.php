@@ -10,28 +10,6 @@ use App\Exceptions\MediaFileUnsupportedException;
 
 /**
  * Interface ImageHandlerInterface.
- *
- * TODO: If we ever plan to support other than the local filesystem this interface must be heavily refactored.
- *
- * In particular, the interface must not use strings which represent paths of
- * image file, but must entirely work on streams or resources in PHP
- * terminology.
- * These streams are provided by Flysystem and may represent local or
- * remote files (it doesn't really matter).
- *
- * This is the idea:
- * The interface should represent a image (not an image handler).
- * The interface should provide a `read`-method which reads from a stream
- * and creates the image in memory.
- * All methods which are currently defined by this interface operate on this
- * memory representation.
- * In particular, the methods don't receive any paths.
- * The interface should provide a `write`-method which write the current
- * in-memory image to the stream.
- * This works for both child classes {@link GdHandler} and
- * {@link ImagickHandler}.
- * Both libraries provide classes and methods to read from/write to streams
- * in an object-oriented fashion.
  */
 interface ImageHandlerInterface
 {
@@ -41,9 +19,9 @@ interface ImageHandlerInterface
 	public function __construct(int $compressionQuality);
 
 	/**
-	 * Loads an image from the provided stream.
+	 * Loads an image from the provided file.
 	 *
-	 * @param resource $stream the stream to read from
+	 * @param MediaFile $file the file to read from
 	 *
 	 * @return void
 	 *
@@ -51,44 +29,18 @@ interface ImageHandlerInterface
 	 * @throws MediaFileOperationException
 	 * @throws ImageProcessingException
 	 */
-	public function load($stream): void;
+	public function load(MediaFile $file): void;
 
 	/**
-	 * Provides a (readable) stream for saving into a file.
+	 * Save the image into the provided file.
 	 *
-	 * This might appear a little counter-intuitive.
-	 * Typically, you would expect such a method to take a stream and then
-	 * write into that stream.
-	 * But this is not how Flysystem works.
-	 * Flysystem expects to get a (readable) stream which can then be streamed
-	 * into a file and these methods are supposed to be compatible with
-	 * Flysystem.
+	 * @param MediaFile the file to write into
 	 *
-	 * The caller must call {@link ImageHandlerInterface::close()} after
-	 * the returned stream has been used to free the resources of the stream.
-	 *
-	 * TODO: Find a better name for this method which intuitively reflects what really happens
-	 *
-	 * @return resource a (readable) stream whose content can be written into
-	 *                  another stream, e.g. a file stream
+	 * @return void
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function save();
-
-	/**
-	 * Closes the readable stream previously returned by {@link ImageHandlerInterface::save()}.
-	 *
-	 * It is safe to call this method, even if no stream has been opened.
-	 * In this case, the method is a silent no-op.
-	 * This method neither destroys the in-memory representation of a loaded
-	 * image.
-	 * I.e., no work will be lost by calling this method.
-	 * See {@link ImageHandlerInterface::reset()} for that.
-	 *
-	 * @return void
-	 */
-	public function close(): void;
+	public function save(MediaFile $file): void;
 
 	/**
 	 * Frees all internal resources.

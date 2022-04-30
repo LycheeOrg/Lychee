@@ -16,18 +16,8 @@ class ImagickHandler extends BaseImageHandler
 	/** @var Imagick|null the internal Imagick image */
 	private ?Imagick $imImage = null;
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __construct(int $compressionQuality)
-	{
-		parent::__construct($compressionQuality);
-		$this->reset();
-	}
-
 	public function __clone()
 	{
-		parent::__clone();
 		if ($this->imImage) {
 			$this->imImage = clone $this->imImage;
 		}
@@ -38,7 +28,6 @@ class ImagickHandler extends BaseImageHandler
 	 */
 	public function reset(): void
 	{
-		parent::reset();
 		$this->imImage?->clear();
 		$this->imImage = null;
 	}
@@ -46,38 +35,45 @@ class ImagickHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function load($stream): void
+	public function load(MediaFile $file): void
 	{
-		if ($this->imImage) {
-			throw new MediaFileOperationException('Another image is already loaded');
-		}
-
-		// We first copy the provided stream into an in-memory buffer,
-		// because we must be able to seek/rewind the stream, and we do
-		// not know if the provided stream supports that.
-		// For example, a readable stream from a remote location (i.e.
-		// a "download" stream) is only forward readable once.
-		$this->createBuffer($stream);
-
 		try {
+			if ($this->imImage) {
+				$this->reset();
+			}
+
+			$originalStream = $file->read();
+			$inMemoryBuffer = new InMemoryBuffer();
+			if ((stream_get_meta_data($originalStream))['seekable']) {
+				$inputStream = $originalStream;
+			} else {
+				// We make an in-memory copy of the provided stream,
+				// because we must be able to seek/rewind the stream.
+				// For example, a readable stream from a remote location (i.e.
+				// a "download" stream) is only forward readable once.
+				$inMemoryBuffer->write($originalStream);
+				$inputStream = $inMemoryBuffer->read();
+			}
+
 			$this->imImage = new Imagick();
-			$this->imImage->readImageFile($this->bufferStream);
-			$this->close();
+			$this->imImage->readImageFile($inputStream);
 			$this->autoRotate();
-		} catch (\Throwable $e) {
-			throw new MediaFileOperationException('Could not load image', $e);
+		} catch (ImagickException $e) {
+			throw new MediaFileOperationException('Failed to load image', $e);
+		} finally {
+			$inMemoryBuffer->free();
+			$file->close();
 		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function save()
+	public function save(MediaFile $file): void
 	{
 		if (!$this->imImage) {
 			new MediaFileOperationException('No image loaded');
 		}
-		$this->createBuffer();
 		try {
 			$this->imImage->setImageCompressionQuality($this->compressionQuality);
 			$profiles = $this->imImage->getImageProfiles('icc', true);
@@ -87,18 +83,19 @@ class ImagickHandler extends BaseImageHandler
 			if (!empty($profiles)) {
 				$this->imImage->profileImage('icc', $profiles['icc']);
 			}
-			$this->imImage->writeImageFile($this->bufferStream);
-			rewind($this->bufferStream);
 
-			// TODO: Re-enable image optimization again after migration to streams
-			// Optimize image
-			/* if (Configs::get_value('lossless_optimization', '0') == '1') {
-				ImageOptimizer::optimize($destination);
-			}*/
+			// We write the image into a memory buffer first, because
+			// we don't know if the file is a local file (or hosted elsewhere)
+			// and if the file supports seekable streams
+			$inMemoryBuffer = new InMemoryBuffer();
+			$this->imImage->writeImageFile($inMemoryBuffer->stream());
+			$file->write($inMemoryBuffer->read());
+			$file->close();
+			$inMemoryBuffer->free();
 
-			return $this->bufferStream;
+			parent::applyLosslessOptimizationConditionally($file);
 		} catch (ImagickException $e) {
-			throw new MediaFileOperationException('Failed to write image', $e);
+			throw new MediaFileOperationException('Failed to save image', $e);
 		}
 	}
 
@@ -127,15 +124,15 @@ class ImagickHandler extends BaseImageHandler
 			};
 
 			if ($needsFlop && !$this->imImage->flopImage()) {
-				throw new ImageProcessingException('Failed to flop image');
+				throw new ImagickException('Failed to flop image');
 			}
 
 			if ($angle !== 0 && !$this->imImage->rotateImage(new ImagickPixel(), $angle)) {
-				throw new ImageProcessingException('Failed to rotate image');
+				throw new ImagickException('Failed to rotate image');
 			}
 
 			if (!$this->imImage->setImageOrientation(Imagick::ORIENTATION_TOPLEFT)) {
-				throw new ImageProcessingException('Failed to set orientation');
+				throw new ImagickException('Failed to set orientation');
 			}
 		} catch (ImagickException $exception) {
 			throw new ImageProcessingException('Failed to auto-rotate image', $exception);
@@ -148,9 +145,11 @@ class ImagickHandler extends BaseImageHandler
 	public function scale(ImageDimension $dstDim): ImageDimension
 	{
 		try {
-			$this->imImage->scaleImage(
+			if (!$this->imImage->scaleImage(
 				$dstDim->width, $dstDim->height, ($dstDim->width !== 0 && $dstDim->height !== 0)
-			);
+			)) {
+				throw new ImagickException('Failed to scale image');
+			}
 
 			return $this->getDimensions();
 		} catch (ImagickException $e) {
@@ -164,7 +163,9 @@ class ImagickHandler extends BaseImageHandler
 	public function crop(ImageDimension $dstDim): void
 	{
 		try {
-			$this->imImage->cropThumbnailImage($dstDim->width, $dstDim->height);
+			if (!$this->imImage->cropThumbnailImage($dstDim->width, $dstDim->height)) {
+				throw new ImagickException('Failed to crop image');
+			}
 		} catch (ImagickException $e) {
 			throw new ImageProcessingException('Failed to crop image', $e);
 		}
@@ -176,7 +177,9 @@ class ImagickHandler extends BaseImageHandler
 	public function rotate(int $angle): ImageDimension
 	{
 		try {
-			$this->imImage->rotateImage(new ImagickPixel(), $angle);
+			if (!$this->imImage->rotateImage(new ImagickPixel(), $angle)) {
+				throw new ImagickException('Failed to rotate image');
+			}
 
 			return $this->getDimensions();
 		} catch (ImagickException $e) {
