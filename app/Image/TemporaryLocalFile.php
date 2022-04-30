@@ -15,6 +15,15 @@ class TemporaryLocalFile extends NativeLocalFile
 	protected string $fakeBaseName;
 
 	/**
+	 * @throws MediaFileOperationException
+	 */
+	public function __destruct()
+	{
+		$this->delete();
+		parent::__destruct();
+	}
+
+	/**
 	 * Creates a new temporary file with a random file name.
 	 *
 	 * @param string $fileExtension the file extension of the new temporary file incl. a preceding dot

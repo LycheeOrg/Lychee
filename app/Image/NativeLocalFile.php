@@ -65,7 +65,7 @@ class NativeLocalFile extends MediaFile
 				\Safe\ftruncate($this->stream, 0);
 				\Safe\rewind($this->stream);
 			} else {
-				$this->stream = \Safe\fopen($this->getAbsolutePath(), 'r+b');
+				$this->stream = \Safe\fopen($this->getAbsolutePath(), 'w+b');
 			}
 			$this->cachedMimeType = null;
 			\Safe\stream_copy_to_stream($stream, $this->stream);
@@ -81,6 +81,8 @@ class NativeLocalFile extends MediaFile
 	public function delete(): void
 	{
 		try {
+			// Close stream before deletion in case any stream is opened
+			$this->close();
 			// `is_file` returns false for links, so we must check separately with `is_link`
 			if (is_link($this->path) || is_file($this->path)) {
 				\Safe\unlink($this->path);

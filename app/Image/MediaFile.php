@@ -87,9 +87,26 @@ abstract class MediaFile
 	protected $stream = null;
 
 	/**
-	 * Returns a resource from which can be read.
+	 * @throws MediaFileOperationException
+	 */
+	public function __destruct()
+	{
+		$this->close();
+	}
+
+	public function __clone()
+	{
+		// The stream belongs to the original object, it is not ours.
+		$this->stream = null;
+	}
+
+	/**
+	 * Returns a stream from which can be read.
 	 *
-	 * To free the resource after use, call {@link MediaFile::close()}.
+	 * To free the stream after use, call {@link MediaFile::close()}.
+	 * Calling `read` multiple times is safe.
+	 * The read pointer of the stream will be reset to the beginning of
+	 * the stream, without closing the stream in between.
 	 *
 	 * @return resource
 	 *
@@ -98,10 +115,15 @@ abstract class MediaFile
 	abstract public function read();
 
 	/**
-	 * Writes the content of the provided resource into the file.
+	 * Writes the content of the provided stream into the file.
 	 *
-	 * Note, you must not write into a file which has been opened for
-	 * reading via {@link MediaFile::read()} and not yet been closed again.
+	 * Any previous content of the file is overwritten.
+	 * The new content is buffered in memory and may not be synced to disk
+	 * until {@link MediaFile::close()} is called.
+	 * If you want to be sure, that the content is really written to disk,
+	 * explicitly call {@link MediaFile::close()}.
+	 * The freshly written content can immediately be read back via
+	 * {@link MediaFile::read} without closing the file in between.
 	 *
 	 * @param resource $stream the input stream which provides the input to write
 	 *
@@ -115,12 +137,18 @@ abstract class MediaFile
 	 * Closes the internal stream.
 	 *
 	 * @return void
+	 *
+	 * @throws MediaFileOperationException
 	 */
 	public function close(): void
 	{
-		if (is_resource($this->stream)) {
-			\Safe\fclose($this->stream);
-			$this->stream = null;
+		try {
+			if (is_resource($this->stream)) {
+				\Safe\fclose($this->stream);
+				$this->stream = null;
+			}
+		} catch (\ErrorException $e) {
+			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
 	}
 
