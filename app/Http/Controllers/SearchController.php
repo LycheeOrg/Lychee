@@ -30,7 +30,8 @@ class SearchController extends Controller
 		// such that the conversion is not performed several times, e.g.
 		// for `json_encode` below and at least a second time when the
 		// result is sent to the client.
-		$return['albums'] = $albumSearch->query($request->terms())->toArray();
+		$return['albums'] = $albumSearch->queryAlbums($request->terms())->toArray();
+		$return['tag_albums'] = $albumSearch->queryTagAlbums($request->terms())->toArray();
 		$return['photos'] = $photoSearch->query($request->terms())->toArray();
 		// The checksum is used by the web front-end as an efficient way to
 		// avoid rebuilding the GUI, if two subsequent searches return the

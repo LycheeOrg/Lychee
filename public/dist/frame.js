@@ -1519,12 +1519,12 @@ $(function () {
  *
  * DTO returned by `Search::run`
  *
- * @property {(Album|TagAlbum)[]} albums
- * @property {Photo[]}            photos
- * @property {string}             checksum - checksum of the search result to
- *                                           efficiently determine if the
- *                                           result has changed since the last
- *                                           time
+ * @property {Album[]}    albums
+ * @property {TagAlbum[]} tag_albums
+ * @property {Photo[]}    photos
+ * @property {string}     checksum - checksum of the search result to
+ *                                   efficiently determine if the result has
+ *                                   changed since the last time
  */
 
 /**

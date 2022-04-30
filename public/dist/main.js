@@ -718,7 +718,7 @@ csrf.getCSRFCookieValue = function () {
  */
 
 var album = {
-	/** @type {(?Album|?TagAlbum)} */
+	/** @type {(?Album|?TagAlbum|?SearchAlbum)} */
 	json: null
 };
 
@@ -734,6 +734,14 @@ album.isSmartID = function (id) {
  * @param {?string} id
  * @returns {boolean}
  */
+album.isSearchID = function (id) {
+	return id === SearchAlbumID;
+};
+
+/**
+ * @param {?string} id
+ * @returns {boolean}
+ */
 album.isModelID = function (id) {
 	return typeof id === "string" && /^[-_0-9a-zA-Z]{24}$/.test(id);
 };
@@ -742,7 +750,7 @@ album.isModelID = function (id) {
  * @returns {?string}
  */
 album.getParentID = function () {
-	if (album.json == null || album.isSmartID(album.json.id) === true || !album.json.parent_id) {
+	if (album.json === null || album.isSmartID(album.json.id) || album.isSearchID(album.json.id) || !album.json.parent_id) {
 		return null;
 	}
 	return album.json.parent_id;
@@ -757,7 +765,7 @@ album.getID = function () {
 
 	// this is a Lambda
 	var isID = function isID(_id) {
-		return album.isSmartID(_id) || album.isModelID(_id);
+		return album.isSmartID(_id) || album.isSearchID(_id) || album.isModelID(_id);
 	};
 
 	if (_photo3.json) id = _photo3.json.album_id;else if (album.json) id = album.json.id;else if (mapview.albumID) id = mapview.albumID;
@@ -799,21 +807,33 @@ album.getByID = function (photoID) {
 };
 
 /**
+ * Returns the sub-album of the current album by ID, if found.
+ *
+ * Note: If the current album is the special {@link SearchAlbum}, then
+ * also {@link TagAlbum} may be returned as a "sub album".
+ *
  * @param {?string} albumID
- * @returns {?Album} the album model
+ * @returns {(?Album|?TagAlbum)} the sub-album model
  */
 album.getSubByID = function (albumID) {
-	if (albumID == null || !album.json || !album.json.albums) {
+	// The special `SearchAlbum`  may also contain `TagAlbum` as sub-albums
+	if (albumID == null || !album.json || !album.json.albums && !album.json.tag_albums) {
 		loadingBar.show("error", "Error: Album json not found!");
 		return null;
 	}
 
-	var i = 0;
-	while (i < album.json.albums.length) {
-		if (album.json.albums[i].id === albumID) {
-			return album.json.albums[i];
-		}
-		i++;
+	var subAlbum = album.json.albums ? album.json.albums.find(function (a) {
+		return a.id === albumID;
+	}) : null;
+	if (subAlbum) {
+		return subAlbum;
+	}
+
+	var subTagAlbum = album.json.tag_albums ? album.json.tag_albums.find(function (a) {
+		return a.id === albumID;
+	}) : null;
+	if (subTagAlbum) {
+		return subTagAlbum;
 	}
 
 	loadingBar.show("error", "Error: album " + albumID + " not found!");
@@ -924,8 +944,6 @@ album.load = function (albumID) {
 	var successHandler = function successHandler(data) {
 		processAlbum(data);
 
-		lychee.content.show();
-		lychee.footer_show();
 		tabindex.makeFocusable(lychee.content);
 
 		if (lychee.active_focus_on_page_load) {
@@ -1026,7 +1044,7 @@ album.add = function () {
 			parent_id: null
 		};
 
-		if (visible.albums() || album.isSmartID(album.json.id)) {
+		if (visible.albums() || album.isSmartID(album.json.id) || album.isSearchID(album.json.id)) {
 			params.parent_id = null;
 		} else if (visible.album()) {
 			params.parent_id = album.json.id;
@@ -2664,8 +2682,8 @@ contextMenu.add = function (e) {
 		items.push({ title: build.iconic("tags") + lychee.locale["NEW_TAG_ALBUM"], fn: function fn() {
 				return album.addByTags();
 			} });
-	} else if (album.isSmartID(album.getID())) {
-		// remove Import and New album if smart album
+	} else if (album.isSmartID(album.getID()) || album.isSearchID(album.getID())) {
+		// remove Import and New album if smart album or search results
 		items.splice(1);
 	}
 
@@ -2750,7 +2768,7 @@ contextMenu.album = function (albumID, e) {
 	// fn must call basicContext.close() first,
 	// in order to keep the selection
 
-	if (album.isSmartID(albumID)) return;
+	if (album.isSmartID(albumID) || album.isSearchID(albumID)) return;
 
 	// Show merge-item when there's more than one album
 	// Commented out because it doesn't consider subalbums or shared albums.
@@ -2955,7 +2973,7 @@ contextMenu.albumTitle = function (albumID, e) {
 			}));
 		}
 
-		if (albumID !== null && !album.isSmartID(albumID) && album.isUploadable()) {
+		if (albumID !== null && !album.isSmartID(albumID) && !album.isSearchID(albumID) && album.isUploadable()) {
 			if (items.length > 0) {
 				items.unshift({});
 			}
@@ -3017,8 +3035,8 @@ contextMenu.photo = function (photoID, e) {
 		} }, { title: build.iconic("cloud-download") + lychee.locale["DOWNLOAD"], fn: function fn() {
 			return _photo3.getArchive([photoID]);
 		} }];
-	if (album.isSmartID(album.getID()) || album.isTagAlbum()) {
-		// Cover setting not supported for smart or tag albums.
+	if (album.isSmartID(album.getID()) || album.isSearchID(album.getID) || album.isTagAlbum()) {
+		// Cover setting not supported for smart or tag albums and search results.
 		items.splice(2, 1);
 	}
 
@@ -5250,8 +5268,8 @@ lychee.load = function () {
 			// If we don't have an album or the wrong album load the album
 			// first and let the album loader load the photo afterwards or
 			// load the photo directly.
-			lychee.content.hide();
 			if (lychee.content.html() === "" || album.json === null || album.json.id !== albumID || header.dom(".header__search").length && header.dom(".header__search").val().length !== 0) {
+				lychee.content.hide();
 				album.load(albumID, loadPhoto);
 			} else {
 				loadPhoto(true);
@@ -5292,12 +5310,15 @@ lychee.load = function () {
 				tabindex.makeUnfocusable(lychee.imageview);
 			}
 			if (visible.mapview()) mapview.close();
-			if (visible.sidebar() && album.isSmartID(albumID)) _sidebar.toggle(false);
+			if (visible.sidebar() && (album.isSmartID(albumID) || album.isSearchID(albumID))) _sidebar.toggle(false);
 			$("#sensitive_warning").hide();
 			if (album.json && albumID === album.json.id) {
 				view.album.title();
 				lychee.content.show();
 				tabindex.makeFocusable(lychee.content, true);
+				// If the album was loaded in the background (when content is
+				// hidden), scrolling may not have worked.
+				view.album.content.restoreScroll();
 			} else {
 				album.load(albumID);
 			}
@@ -6692,7 +6713,7 @@ multiselect.isSelected = function (id) {
  * @param {string} id
  */
 multiselect.toggleItem = function (object, id) {
-	if (album.isSmartID(id)) return;
+	if (album.isSmartID(id) || album.isSearchID(id)) return;
 
 	var selected = multiselect.isSelected(id).selected;
 
@@ -6704,7 +6725,7 @@ multiselect.toggleItem = function (object, id) {
  * @param {string} id
  */
 multiselect.addItem = function (object, id) {
-	if (album.isSmartID(id)) return;
+	if (album.isSmartID(id) || album.isSearchID(id)) return;
 	if (!lychee.admin && albums.isShared(id)) return;
 	if (multiselect.isSelected(id).selected === true) return;
 
@@ -8257,6 +8278,36 @@ photoeditor.rotate = function (photoID, direction) {
  * @description Searches through your photos and albums.
  */
 
+/**
+ * The ID of the search album
+ *
+ * Constant `'search'`.
+ *
+ * @type {string}
+ */
+var SearchAlbumID = "search";
+
+/**
+ * @typedef SearchAlbum
+ *
+ * A "virtual" album which holds the search results in a form which is
+ * mostly compatible with the other album types, i.e.
+ * {@link Album}, {@link TagAlbum} and {@link SmartAlbum}.
+ *
+ * @property {string}  id                       - always equals `SearchAlbumID`
+ * @property {string}  title                    - always equals `lychee.locale["SEARCH_RESULTS"]`
+ * @property {Photo[]} photos                   - the found photos
+ * @property {Album[]} albums                   - the found albums
+ * @property {TagAlbum[]} tag_albums            - the found tag albums
+ * @property {?Thumb}  thumb                    - always `null`; just a dummy entry, because all other albums {@link Album}, {@link TagAlbum}, {@link SmartAlbum} have it
+ * @property {boolean} is_public                - always `false`; just a dummy entry, because all other albums {@link Album}, {@link TagAlbum}, {@link SmartAlbum} have it
+ * @property {boolean} is_downloadable          - always `false`; just a dummy entry, because all other albums {@link Album}, {@link TagAlbum}, {@link SmartAlbum} have it
+ * @property {boolean} is_share_button_visible  - always `false`; just a dummy entry, because all other albums {@link Album}, {@link TagAlbum}, {@link SmartAlbum} have it
+ */
+
+/**
+ * The search object
+ */
 var search = {
 	/** @type {?SearchResult} */
 	json: null
@@ -8277,10 +8328,28 @@ search.find = function (term) {
 		}
 
 		search.json = data;
+
+		// Create and assign a `SearchAlbum`
+		album.json = {
+			id: SearchAlbumID,
+			title: lychee.locale["SEARCH_RESULTS"],
+			photos: search.json.photos,
+			albums: search.json.albums,
+			tag_albums: search.json.tag_albums,
+			thumb: null,
+			is_public: false,
+			is_downloadable: false,
+			is_share_button_visible: false
+		};
+
 		var albumsData = "";
 		var photosData = "";
 
 		// Build HTML for album
+		search.json.tag_albums.forEach(function (album) {
+			albums.parse(album);
+			albumsData += build.album(album);
+		});
 		search.json.albums.forEach(function (album) {
 			albums.parse(album);
 			albumsData += build.album(album);
@@ -8294,7 +8363,7 @@ search.find = function (term) {
 		var albums_divider = lychee.locale["ALBUMS"];
 		var photos_divider = lychee.locale["PHOTOS"];
 
-		if (albumsData !== "") albums_divider += " (" + search.json.albums.length + ")";
+		if (albumsData !== "") albums_divider += " (" + (search.json.tag_albums.length + search.json.albums.length) + ")";
 		if (photosData !== "") {
 			photos_divider += " (" + search.json.photos.length + ")";
 			if (lychee.layout === 1) {
@@ -11029,6 +11098,11 @@ view.album = {
 
 			view.album.content.justify(album.json ? album.json.photos : []);
 
+			view.album.content.restoreScroll();
+		},
+
+		/** @returns {void} */
+		restoreScroll: function restoreScroll() {
 			// Restore scroll position
 			var urls = JSON.parse(localStorage.getItem("scroll"));
 			var urlWindow = window.location.href;
@@ -12744,12 +12818,12 @@ visible.leftMenu = function () {
  *
  * DTO returned by `Search::run`
  *
- * @property {(Album|TagAlbum)[]} albums
- * @property {Photo[]}            photos
- * @property {string}             checksum - checksum of the search result to
- *                                           efficiently determine if the
- *                                           result has changed since the last
- *                                           time
+ * @property {Album[]}    albums
+ * @property {TagAlbum[]} tag_albums
+ * @property {Photo[]}    photos
+ * @property {string}     checksum - checksum of the search result to
+ *                                   efficiently determine if the result has
+ *                                   changed since the last time
  */
 
 /**
