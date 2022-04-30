@@ -2,7 +2,6 @@
 
 namespace App\Image;
 
-use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 
@@ -21,8 +20,6 @@ class NativeLocalFile extends MediaFile
 
 	/**
 	 * @param string $path the file path
-	 *
-	 * @throws MediaFileOperationException
 	 */
 	public function __construct(string $path)
 	{
@@ -35,20 +32,17 @@ class NativeLocalFile extends MediaFile
 	 */
 	public function read()
 	{
-		if (is_resource($this->stream)) {
-			throw new LycheeLogicException('Cannot read from a file which is already opened for read');
-		}
 		try {
-			$this->stream = fopen($this->getAbsolutePath(), 'rb');
-			if ($this->stream === false || !is_resource($this->stream)) {
-				$this->stream = null;
-				throw new MediaFileOperationException('fopen failed');
+			if (is_resource($this->stream)) {
+				\Safe\rewind($this->stream);
+			} else {
+				$this->stream = \Safe\fopen($this->getAbsolutePath(), 'r+b');
 			}
-		} catch (\Throwable $e) {
-			throw new MediaFileOperationException('Could not read from file ' . $this->path, $e);
-		}
 
-		return $this->stream;
+			return $this->stream;
+		} catch (\ErrorException $e) {
+			throw new MediaFileOperationException($e->getMessage(), $e);
+		}
 	}
 
 	/**
@@ -61,27 +55,23 @@ class NativeLocalFile extends MediaFile
 	 * This can be avoided by passing the MIME type of the stream.
 	 *
 	 * @param string|null $mimeType the mime type of `$stream`
+	 *
+	 * @returns void
 	 */
 	public function write($stream, ?string $mimeType = null): void
 	{
-		if (is_resource($this->stream)) {
-			throw new LycheeLogicException('Cannot write to a file which is opened for read');
-		}
 		try {
-			$this->cachedMimeType = null;
-			// inspired from \League\Flysystem\Adapter\Local
-			$this->stream = fopen($this->getAbsolutePath(), 'wb');
-			if (
-				!is_resource($this->stream) ||
-				stream_copy_to_stream($stream, $this->stream) === false ||
-				!fclose($this->stream)
-			) {
-				throw new MediaFileOperationException('fopen/stream_copy_to_stream/fclose failed');
+			if (is_resource($this->stream)) {
+				\Safe\ftruncate($this->stream, 0);
+				\Safe\rewind($this->stream);
+			} else {
+				$this->stream = \Safe\fopen($this->getAbsolutePath(), 'r+b');
 			}
-			$this->stream = null;
+			$this->cachedMimeType = null;
+			\Safe\stream_copy_to_stream($stream, $this->stream);
 			$this->cachedMimeType = $mimeType;
-		} catch (\Throwable $e) {
-			throw new MediaFileOperationException('Could not write file ' . $this->path, $e);
+		} catch (\ErrorException $e) {
+			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
 	}
 
@@ -90,11 +80,13 @@ class NativeLocalFile extends MediaFile
 	 */
 	public function delete(): void
 	{
-		// `is_file` returns false for links, so we must check separately with `is_link`
-		if (is_link($this->path) || is_file($this->path)) {
-			if (!unlink($this->path)) {
-				throw new MediaFileOperationException('Could not delete file ' . $this->path);
+		try {
+			// `is_file` returns false for links, so we must check separately with `is_link`
+			if (is_link($this->path) || is_file($this->path)) {
+				\Safe\unlink($this->path);
 			}
+		} catch (\ErrorException $e) {
+			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
 	}
 
@@ -107,9 +99,11 @@ class NativeLocalFile extends MediaFile
 	 */
 	public function exists(): bool
 	{
-		$result = realpath($this->path);
-
-		return ($result !== false) && is_file($result);
+		try {
+			return is_file(\Safe\realpath($this->path));
+		} catch (\ErrorException) {
+			return false;
+		}
 	}
 
 	/**
@@ -117,12 +111,11 @@ class NativeLocalFile extends MediaFile
 	 */
 	public function lastModified(): int
 	{
-		$result = filemtime($this->getAbsolutePath());
-		if ($result === false) {
-			throw new MediaFileOperationException('filemtime failed');
+		try {
+			return \Safe\filemtime($this->getAbsolutePath());
+		} catch (\ErrorException $e) {
+			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
-
-		return $result;
 	}
 
 	/**
@@ -130,12 +123,11 @@ class NativeLocalFile extends MediaFile
 	 */
 	public function getFilesize(): int
 	{
-		$result = filesize($this->getAbsolutePath());
-		if ($result === false) {
-			throw new MediaFileOperationException('filesize failed');
+		try {
+			return filesize($this->getAbsolutePath());
+		} catch (\ErrorException $e) {
+			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
-
-		return $result;
 	}
 
 	/**
@@ -143,12 +135,11 @@ class NativeLocalFile extends MediaFile
 	 */
 	public function getAbsolutePath(): string
 	{
-		$result = realpath($this->path);
-		if ($result === false || !is_file($result)) {
-			throw new MediaFileOperationException('The path "' . $result . '" does not point to a local file');
+		try {
+			return \Safe\realpath($this->path);
+		} catch (\ErrorException $e) {
+			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
-
-		return $result;
 	}
 
 	/**
@@ -178,11 +169,15 @@ class NativeLocalFile extends MediaFile
 	 */
 	public function getMimeType(): string
 	{
-		if (!$this->cachedMimeType) {
-			$this->cachedMimeType = mime_content_type($this->getAbsolutePath());
-		}
+		try {
+			if (!$this->cachedMimeType) {
+				$this->cachedMimeType = \Safe\mime_content_type($this->getAbsolutePath());
+			}
 
-		return $this->cachedMimeType;
+			return $this->cachedMimeType;
+		} catch (\ErrorException $e) {
+			throw new MediaFileOperationException($e->getMessage(), $e);
+		}
 	}
 
 	/**
@@ -194,7 +189,7 @@ class NativeLocalFile extends MediaFile
 	{
 		try {
 			return in_array(exif_imagetype($this->getAbsolutePath()), self::SUPPORTED_PHP_EXIF_IMAGE_TYPES, true);
-		} catch (\Throwable) {
+		} catch (\ErrorException|MediaFileOperationException) {
 			// `exif_imagetype` emit an engine error E_NOTICE, if it is unable
 			// to read enough bytes from the file to determine the image type.
 			// This may happen for short "raw" files.

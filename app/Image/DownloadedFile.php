@@ -3,6 +3,7 @@
 namespace App\Image;
 
 use App\Exceptions\MediaFileOperationException;
+use Safe\Exceptions\PcreException;
 
 /**
  * Represents a temporary local file which has been downloaded.
@@ -14,21 +15,26 @@ class DownloadedFile extends TemporaryLocalFile
 {
 	protected ?string $originalMimeType = null;
 
+	/**
+	 * @param string $url
+	 *
+	 * @throws MediaFileOperationException
+	 */
 	public function __construct(string $url)
 	{
-		$path = parse_url($url, PHP_URL_PATH);
-		$basename = pathinfo($path, PATHINFO_FILENAME);
-		$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
-		parent::__construct($extension, $basename);
-
 		try {
-			$downloadStream = fopen($url, 'r');
+			$path = \Safe\parse_url($url, PHP_URL_PATH);
+			$basename = pathinfo($path, PATHINFO_FILENAME);
+			$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
+			parent::__construct($extension, $basename);
+
+			$downloadStream = \Safe\fopen($url, 'r');
 			$downloadStreamData = stream_get_meta_data($downloadStream);
 			// Find the server-side MIME type; the HTTP headers are part of
 			// the protocol-specific meta-data of the stream handler
 			foreach ($downloadStreamData['wrapper_data'] as $http_header) {
 				$matches = [];
-				preg_match(
+				\Safe\preg_match(
 					'#^Content-Type: ([-a-z]+/[-a-z]+)#i',
 					$http_header,
 					$matches,
@@ -40,9 +46,9 @@ class DownloadedFile extends TemporaryLocalFile
 				}
 			}
 			$this->write($downloadStream);
-			fclose($downloadStream);
-		} catch (\Exception $e) {
-			throw new MediaFileOperationException('Could not download ' . $url . ' to ' . $this->getAbsolutePath(), $e);
+			\Safe\fclose($downloadStream);
+		} catch (\ErrorException|PcreException $e) {
+			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
 	}
 

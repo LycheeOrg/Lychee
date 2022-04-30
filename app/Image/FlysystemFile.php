@@ -2,11 +2,12 @@
 
 namespace App\Image;
 
-use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use League\Flysystem\Adapter\Local as LocalAdapter;
 use League\Flysystem\AdapterInterface;
+use League\Flysystem\Exception as FlyException;
 
 /**
  * Class FlysystemFile.
@@ -34,17 +35,18 @@ class FlysystemFile extends MediaFile
 	 */
 	public function read()
 	{
-		if (is_resource($this->stream)) {
-			throw new LycheeLogicException('Stream is already opened for read');
-		}
 		try {
+			if (is_resource($this->stream)) {
+				\Safe\fclose($this->stream);
+			}
+
 			$this->stream = $this->disk->readStream($this->relativePath);
 			if ($this->stream === false || !is_resource($this->stream)) {
 				$this->stream = null;
-				throw new MediaFileOperationException('readStream failed');
+				throw new FlyException('Filesystem::readStream failed');
 			}
-		} catch (\Throwable $e) {
-			throw new MediaFileOperationException('Could not read from file ' . $this->relativePath, $e);
+		} catch (\ErrorException|FlyException|FileNotFoundException $e) {
+			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
 
 		return $this->stream;
@@ -55,19 +57,16 @@ class FlysystemFile extends MediaFile
 	 */
 	public function write($stream): void
 	{
-		if (is_resource($this->stream)) {
-			throw new LycheeLogicException('Cannot write to a file which is opened for read');
-		}
 		try {
 			// TODO: `put` must be replaced by `writeStream` when Flysystem 2 is shipped with Laravel 9
 			// This will also be more consistent with `readStream`.
 			// Note that v1 also provides a method `writeStream`, but this is a misnomer.
 			// See: https://flysystem.thephpleague.com/v2/docs/what-is-new/
 			if (!$this->disk->put($this->relativePath, $stream)) {
-				throw new MediaFileOperationException('put returned false');
+				throw new FlyException('Filesystem::put failed');
 			}
-		} catch (\Throwable $e) {
-			throw new MediaFileOperationException('Could not write to file ' . $this->relativePath, $e);
+		} catch (\ErrorException|FlyException $e) {
+			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
 	}
 
@@ -76,8 +75,12 @@ class FlysystemFile extends MediaFile
 	 */
 	public function delete(): void
 	{
-		if (!$this->disk->delete($this->relativePath)) {
-			throw new MediaFileOperationException('Could not delete file ' . $this->relativePath);
+		try {
+			if (!$this->disk->delete($this->relativePath)) {
+				throw new FlyException('Filesystem::delete failed');
+			}
+		} catch (\ErrorException|FlyException $e) {
+			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
 	}
 

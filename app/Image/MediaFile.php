@@ -2,7 +2,6 @@
 
 namespace App\Image;
 
-use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Models\Configs;
@@ -95,7 +94,6 @@ abstract class MediaFile
 	 * @return resource
 	 *
 	 * @throws MediaFileOperationException
-	 * @throws LycheeLogicException
 	 */
 	abstract public function read();
 
@@ -110,7 +108,6 @@ abstract class MediaFile
 	 * @return void
 	 *
 	 * @throws MediaFileOperationException
-	 * @throws LycheeLogicException
 	 */
 	abstract public function write($stream): void;
 
@@ -122,7 +119,7 @@ abstract class MediaFile
 	public function close(): void
 	{
 		if (is_resource($this->stream)) {
-			fclose($this->stream);
+			\Safe\fclose($this->stream);
 			$this->stream = null;
 		}
 	}
