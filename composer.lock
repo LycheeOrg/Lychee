@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6fec5b410b41a8195b839fb2c321b464",
+    "content-hash": "31fd4d014dceeb55caaaf350e1ed8832",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -2680,16 +2680,16 @@
         },
         {
             "name": "lychee-org/php-exif",
-            "version": "v0.7.4",
+            "version": "v0.7.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/php-exif.git",
-                "reference": "458b697a0620e66f062ae792dc4cf6e68270661e"
+                "reference": "568b56c6b33cca87dcb56103d1d1eb0609091def"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/458b697a0620e66f062ae792dc4cf6e68270661e",
-                "reference": "458b697a0620e66f062ae792dc4cf6e68270661e",
+                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/568b56c6b33cca87dcb56103d1d1eb0609091def",
+                "reference": "568b56c6b33cca87dcb56103d1d1eb0609091def",
                 "shasum": ""
             },
             "require": {
@@ -2743,9 +2743,9 @@
             ],
             "support": {
                 "issues": "https://github.com/LycheeOrg/php-exif/issues",
-                "source": "https://github.com/LycheeOrg/php-exif/tree/v0.7.4"
+                "source": "https://github.com/LycheeOrg/php-exif/tree/v0.7.5"
             },
-            "time": "2022-04-27T10:29:46+00:00"
+            "time": "2022-04-29T17:58:43+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
@@ -11656,5 +11656,5 @@
     "platform-dev": {
         "ext-imagick": "*"
     },
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.0.0"
 }
