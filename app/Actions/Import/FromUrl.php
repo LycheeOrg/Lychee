@@ -7,9 +7,8 @@ use App\Actions\Photo\Create;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\MassImportException;
-use App\Exceptions\MediaFileOperationException;
+use App\Image\DownloadedFile;
 use App\Image\MediaFile;
-use App\Image\TemporaryLocalFile;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -61,7 +60,6 @@ class FromUrl
 				set_time_limit(ini_get('max_execution_time'));
 
 				$path = parse_url($url, PHP_URL_PATH);
-				$basename = pathinfo($path, PATHINFO_FILENAME);
 				$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
 
 				// Validate photo extension even when `$create->add()` will do later.
@@ -69,17 +67,10 @@ class FromUrl
 				MediaFile::assertIsSupportedOrAcceptedFileExtension($extension);
 
 				// Download file
-				$tmpFile = new TemporaryLocalFile($extension, $basename);
-				try {
-					$downloadStream = fopen($url, 'r');
-					$tmpFile->write($downloadStream);
-					fclose($downloadStream);
-				} catch (\Exception $e) {
-					throw new MediaFileOperationException('Could not download ' . $url . ' to ' . $tmpFile->getAbsolutePath(), $e);
-				}
+				$downloadedFile = new DownloadedFile($url);
 
 				// Import photo/video/raw
-				$result->add($create->add($tmpFile, $album));
+				$result->add($create->add($downloadedFile, $album));
 			} catch (\Throwable $e) {
 				$exceptions[] = $e;
 				$this->exceptionHandler->report($e);

@@ -9,6 +9,9 @@ use Illuminate\Http\UploadedFile as LaravelUploadedFile;
  * Class UploadedFile.
  *
  * Wraps a {@link LaravelUploadedFile} into a unified interface.
+ *
+ * It provides the client-side MIME type in case the MIME type cannot be
+ * inferred from the temporary, local copy of the file.
  */
 class UploadedFile extends NativeLocalFile
 {
@@ -42,5 +45,27 @@ class UploadedFile extends NativeLocalFile
 	public function getOriginalBasename(): string
 	{
 		return pathinfo($this->baseFile->getClientOriginalName(), PATHINFO_FILENAME);
+	}
+
+	/**
+	 * Returns the MIME type of the file.
+	 *
+	 * @param bool $fallbackToClientMimeType flag to use the provided MIME
+	 *                                       type by client-side, if the
+	 *                                       internal PHP mechanism detects
+	 *                                       "application/octet-stream"
+	 *
+	 * @return string the MIME type
+	 *
+	 * @throws MediaFileOperationException
+	 */
+	public function getMimeType(bool $fallbackToClientMimeType = true): string
+	{
+		parent::getMimeType();
+		if ($this->cachedMimeType === 'application/octet-stream') {
+			$this->cachedMimeType = $this->baseFile->getClientMimeType();
+		}
+
+		return $this->cachedMimeType;
 	}
 }
