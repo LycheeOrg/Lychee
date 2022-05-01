@@ -750,7 +750,7 @@ album.isModelID = function (id) {
  * @returns {?string}
  */
 album.getParentID = function () {
-	if (album.json === null || album.isSmartID(album.json.id) || album.isSearchID(album.json.id) || !album.json.parent_id) {
+	if (album.json === null || album.isSmartID(album.json.id) || /* album.isSearchID(album.json.id) || */!album.json.parent_id) {
 		return null;
 	}
 	return album.json.parent_id;
