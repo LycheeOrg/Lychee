@@ -750,7 +750,7 @@ album.isModelID = function (id) {
  * @returns {?string}
  */
 album.getParentID = function () {
-	if (album.json === null || album.isSmartID(album.json.id) || /* album.isSearchID(album.json.id) || */!album.json.parent_id) {
+	if (album.json === null || album.isSmartID(album.json.id) || album.isSearchID(album.json.id) || !album.json.parent_id) {
 		return null;
 	}
 	return album.json.parent_id;
@@ -765,7 +765,7 @@ album.getID = function () {
 
 	// this is a Lambda
 	var isID = function isID(_id) {
-		return album.isSmartID(_id) || album.isSearchID(_id) || album.isModelID(_id);
+		return album.isSmartID(_id) || /*album.isSearchID(_id) || */album.isModelID(_id);
 	};
 
 	if (_photo3.json) id = _photo3.json.album_id;else if (album.json) id = album.json.id;else if (mapview.albumID) id = mapview.albumID;
