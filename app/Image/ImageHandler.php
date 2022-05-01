@@ -2,116 +2,110 @@
 
 namespace App\Image;
 
-use App\Exceptions\Internal\LycheeDomainException;
+use App\DTO\ImageDimension;
 use App\Exceptions\MediaFileOperationException;
-use App\Exceptions\MediaFileUnsupportedException;
 use App\Models\Configs;
 
-class ImageHandler implements ImageHandlerInterface
+class ImageHandler extends BaseImageHandler
 {
 	public const NO_HANDLER_EXCEPTION_MSG = 'No suitable image handler found';
 
-	private int $compressionQuality;
-	/** @var ImageHandlerInterface[] */
-	private array $engines;
+	/**
+	 * The class names of the engines to use.
+	 *
+	 * @var string[]
+	 */
+	protected array $engineClasses = [];
 
 	/**
-	 * @param int $compressionQuality
+	 * The selected image handler.
+	 *
+	 * @var ImageHandlerInterface|null
 	 */
-	public function __construct(int $compressionQuality)
+	protected ?ImageHandlerInterface $engine = null;
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function __construct(int $compressionQuality = BaseImageHandler::DEFAULT_COMPRESSION_QUALITY)
 	{
-		$this->compressionQuality = $compressionQuality;
-		$this->engines = [];
+		parent::__construct($compressionQuality);
 		if (Configs::hasImagick()) {
-			$this->engines[] = new ImagickHandler($this->compressionQuality);
+			$this->engineClasses[] = ImagickHandler::class;
 		}
-		$this->engines[] = new GdHandler($this->compressionQuality);
+		$this->engineClasses[] = GdHandler::class;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function scale(string $source, string $destination, int $newWidth, int $newHeight, int &$resWidth, int &$resHeight): void
+	public function load(MediaFile $file): void
 	{
-		$lastException = new MediaFileOperationException(self::NO_HANDLER_EXCEPTION_MSG);
-		foreach ($this->engines as $engine) {
-			try {
-				$engine->scale($source, $destination, $newWidth, $newHeight, $resWidth, $resHeight);
-				$lastException = null;
-				break;
-			} catch (MediaFileOperationException|MediaFileUnsupportedException $e) {
-				$lastException = $e;
-			}
-		}
-		if ($lastException) {
-			throw $lastException;
-		}
-	}
+		$this->reset();
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function crop(string $source, string $destination, int $newWidth, int $newHeight): void
-	{
-		$lastException = new MediaFileOperationException(self::NO_HANDLER_EXCEPTION_MSG);
-		foreach ($this->engines as $engine) {
+		foreach ($this->engineClasses as $engineClass) {
 			try {
-				$engine->crop($source, $destination, $newWidth, $newHeight);
-				$lastException = null;
+				$this->engine = new $engineClass($this->compressionQuality);
+				$this->engine->load($file);
 				break;
-			} catch (MediaFileOperationException|MediaFileUnsupportedException $e) {
-				$lastException = $e;
+			} catch (\Throwable $e) {
+				// Report the error to the log, but don't fail yet.
+				report($e);
+				$this->engine = null;
 			}
 		}
-		if ($lastException) {
-			throw $lastException;
+
+		if (!$this->engine) {
+			throw new MediaFileOperationException(self::NO_HANDLER_EXCEPTION_MSG);
 		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function autoRotate(string $path, int $orientation = 1, bool $pretend = false): array
+	public function save(MediaFile $file): void
 	{
-		$lastException = new MediaFileOperationException(self::NO_HANDLER_EXCEPTION_MSG);
-		$ret = [];
-		foreach ($this->engines as $engine) {
-			try {
-				$ret = $engine->autoRotate($path, $orientation, $pretend);
-				$lastException = null;
-				break;
-			} catch (MediaFileOperationException|MediaFileUnsupportedException $e) {
-				$lastException = $e;
-			}
-		}
-		if ($lastException) {
-			throw $lastException;
-		}
-
-		return $ret;
+		$this->engine->save($file);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function rotate(string $source, int $angle, string $destination = null): void
+	public function reset(): void
 	{
-		if ($angle != 90 && $angle != -90) {
-			throw new LycheeDomainException('Angle value out-of-bounds');
-		}
+		$this->engine?->reset();
+		$this->engine = null;
+	}
 
-		$lastException = new MediaFileOperationException(self::NO_HANDLER_EXCEPTION_MSG);
-		foreach ($this->engines as $engine) {
-			try {
-				$engine->rotate($source, $angle, $destination);
-				$lastException = null;
-				break;
-			} catch (MediaFileOperationException|MediaFileUnsupportedException $e) {
-				$lastException = $e;
-			}
-		}
-		if ($lastException) {
-			throw $lastException;
-		}
+	/**
+	 * {@inheritDoc}
+	 */
+	public function scale(ImageDimension $dstDim): ImageDimension
+	{
+		return $this->engine->scale($dstDim);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function crop(ImageDimension $dstDim): void
+	{
+		$this->engine->crop($dstDim);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function rotate(int $angle): ImageDimension
+	{
+		return $this->engine->rotate($angle);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getDimensions(): ImageDimension
+	{
+		return $this->engine->getDimensions();
 	}
 }

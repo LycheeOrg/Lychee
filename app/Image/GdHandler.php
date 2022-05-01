@@ -92,9 +92,7 @@ class GdHandler extends BaseImageHandler
 	public function load(MediaFile $file): void
 	{
 		try {
-			if ($this->gdImage) {
-				$this->reset();
-			}
+			$this->reset();
 
 			$originalStream = $file->read();
 			$inMemoryBuffer = new InMemoryBuffer();

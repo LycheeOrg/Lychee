@@ -38,9 +38,7 @@ class ImagickHandler extends BaseImageHandler
 	public function load(MediaFile $file): void
 	{
 		try {
-			if ($this->imImage) {
-				$this->reset();
-			}
+			$this->reset();
 
 			$originalStream = $file->read();
 			$inMemoryBuffer = new InMemoryBuffer();
