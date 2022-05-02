@@ -2,6 +2,7 @@
 
 namespace App\Contracts;
 
+use App\Image\ImageHandlerInterface;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Support\Collection;
@@ -12,53 +13,25 @@ abstract class SizeVariantFactory
 	 * Initializes the factory and associates.
 	 *
 	 * This factory creates size variants for the passed {@link Photo} object
-	 * with respect to the passed naming strategy.
-	 * It is the caller's responsibility to also call
-	 * {@link SizeVariantFactory::cleanup()} when the factory is not needed
-	 * anymore.
+	 * with respect to the passed naming strategy and reference image.
 	 * If `$namingStrategy` equals `null`, then the default naming
 	 * strategy is used.
-	 * Typically, this requires that the original size variant of `$photo`
-	 * already exists such that the original size variant can be used to
-	 * derive the names of further size variants.
+	 * If `$referenceImage` equals `null`, then a reference image is created
+	 * from the photo's original size variant.
+	 * This requires that the photo is already linked to an original size
+	 * variant.
+	 * Note, that this might be inefficient, if the media files are hosted
+	 * remotely, because the reference image needs to be loaded.
+	 * Hence, it is more efficient to pass a reference image, if a local
+	 * copy is already available.
+	 * However, there is no consistency check, if the provided reference
+	 * image matches the original size variant of the photo.
 	 *
-	 * @param Photo                          $photo
-	 * @param SizeVariantNamingStrategy|null $namingStrategy
+	 * @param Photo                     $photo
+	 * @param SizeVariantNamingStrategy $namingStrategy
+	 * @param ImageHandlerInterface     $referenceImage
 	 */
-	abstract public function init(Photo $photo, ?SizeVariantNamingStrategy $namingStrategy = null): void;
-
-	/**
-	 * Removes any temporary files which this factory may have created.
-	 *
-	 * The caller of this factory should call this method when this factory
-	 * is not needed anymore.
-	 */
-	abstract public function cleanup(): void;
-
-	/**
-	 * Create a size variant usable for the original media file.
-	 *
-	 * The returned entity is already persisted to DB and associated to the
-	 * {@link Photo} object which has been passed to the most recent call
-	 * of {@link SizeVariantFactory::init()}.
-	 * The caller of the method _does not need_ to take care of correct
-	 * foreign key relationships.
-	 * However, the caller of the method **must ensure** that there is
-	 * actually a "physical" media file placed under the path to which the
-	 * returned {@link SizeVariant} points to.
-	 * But it is ok, to first call this method and then copy the physical file
-	 * to its correct path.
-	 * This method does not check, if a file actually exists.
-	 *
-	 * @param int $width    the width of the original size variant
-	 * @param int $height   the height of the original size variant
-	 * @param int $filesize the filesize of the original size variant
-	 *
-	 * @return SizeVariant the freshly created and persisted size variant
-	 *
-	 * @throws LycheeException
-	 */
-	abstract public function createOriginal(int $width, int $height, int $filesize): SizeVariant;
+	abstract public function init(Photo $photo, SizeVariantNamingStrategy $namingStrategy, ImageHandlerInterface $referenceImage): void;
 
 	/**
 	 * Creates a size variant for the designated size variant.

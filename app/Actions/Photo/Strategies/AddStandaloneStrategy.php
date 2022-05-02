@@ -4,23 +4,25 @@ namespace App\Actions\Photo\Strategies;
 
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
+use App\Exceptions\ConfigurationException;
+use App\Exceptions\ImageProcessingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Exceptions\ModelDBException;
+use App\Image\FlysystemFile;
 use App\Image\ImageHandlerInterface;
-use App\Image\MediaFile;
 use App\Image\NativeLocalFile;
-use App\Image\TemporaryLocalFile;
-use App\Metadata\Extractor;
+use App\Image\StreamStat;
 use App\ModelFunctions\MOVFormat;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use FFMpeg\FFMpeg;
 use Illuminate\Contracts\Container\BindingResolutionException;
 
 class AddStandaloneStrategy extends AddBaseStrategy
 {
-	protected ImageHandlerInterface $imageHandler;
+	protected ImageHandlerInterface $sourceImage;
 	protected NativeLocalFile $sourceFile;
 
 	/**
@@ -44,7 +46,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			// appear in a different order than users expect.
 			$newPhoto->updateTimestamps();
 			parent::__construct($parameters, $newPhoto);
-			$this->imageHandler = resolve(ImageHandlerInterface::class);
+			$this->sourceImage = resolve(ImageHandlerInterface::class);
 			$this->sourceFile = $sourceFile;
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);
@@ -66,36 +68,35 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		$this->photo->is_starred = $this->parameters->is_starred;
 		$this->setParentAndOwnership();
 
-		$this->photo->original_checksum = Extractor::checksum($this->sourceFile);
-		$this->normalizeOrientation();
-		$this->photo->checksum = Extractor::checksum($this->sourceFile);
-
-		$this->photo->save();
-
-		// Initialize factory for size variants
-		/** @var SizeVariantNamingStrategy $namingStrategy */
-		$namingStrategy = resolve(SizeVariantNamingStrategy::class);
-		$namingStrategy->setFallbackExtension(
-			$this->sourceFile->getOriginalExtension()
-		);
-		/** @var SizeVariantFactory $sizeVariantFactory */
-		$sizeVariantFactory = resolve(SizeVariantFactory::class);
-		$sizeVariantFactory->init($this->photo, $namingStrategy);
-
-		/**
-		 * Create size variant for original
-		 * Exception `IllegalOrderOfOperations` is never thrown, because we
-		 * have saved the photo above.
-		 *
-		 * @noinspection PhpUnhandledExceptionInspection
-		 */
-		$original = $sizeVariantFactory->createOriginal(
-			$this->parameters->exifInfo->width,
-			$this->parameters->exifInfo->height,
-			$this->sourceFile->getFilesize()
-		);
 		try {
-			$this->putSourceIntoFinalDestination($this->sourceFile, $original->short_path);
+			// Load source image
+			$this->sourceImage->load($this->sourceFile);
+
+			/** @var SizeVariantNamingStrategy $namingStrategy */
+			$namingStrategy = resolve(SizeVariantNamingStrategy::class);
+			$namingStrategy->setFallbackExtension(
+				$this->sourceFile->getOriginalExtension()
+			);
+
+			// Create target file and symlink/copy/move source file to
+			// target.
+			// If import strategy request to delete the source file.
+			// `$this->sourceFile` will be deleted after this step.
+			// But `$this->sourceImage` remains in memory.
+			$targetFile = $namingStrategy->createFile(SizeVariant::ORIGINAL);
+			$streamStat = $this->putSourceIntoFinalDestination($targetFile);
+
+			// If the photo has been rotated, the checksum may have changed.
+			$this->photo->checksum = $streamStat->checksum;
+			$this->photo->save();
+
+			// Create original size variant of photo
+			$this->photo->size_variants->create(
+				SizeVariant::ORIGINAL,
+				$targetFile->getRelativePath(),
+				$this->sourceImage->getDimensions(),
+				$streamStat->bytes
+			);
 		} catch (\Exception $e) {
 			// If source file could not be put into final destination, remove
 			// freshly created photo from DB to avoid having "zombie" entries.
@@ -109,6 +110,9 @@ class AddStandaloneStrategy extends AddBaseStrategy
 
 		// Create remaining size variants
 		try {
+			/** @var SizeVariantFactory $sizeVariantFactory */
+			$sizeVariantFactory = resolve(SizeVariantFactory::class);
+			$sizeVariantFactory->init($this->photo, $namingStrategy, $this->sourceImage);
 			$sizeVariantFactory->createSizeVariants();
 		} catch (\Throwable $t) {
 			// Don't re-throw the exception, because we do not want the
@@ -122,86 +126,89 @@ class AddStandaloneStrategy extends AddBaseStrategy
 
 		$this->handleGoogleMotionPicture();
 
-		// Clean up factory
-		$sizeVariantFactory->cleanup();
-
 		return $this->photo;
 	}
 
 	/**
-	 * Correct orientation of original size variant based on EXIF data.
+	 * Moves/copies/symlinks source file to final destination and
+	 * normalizes orientation, if necessary.
 	 *
-	 * **ATTENTION:** As a side effect of the method, the
-	 * {@link MediaFile}-instance stored in {@link AddStandaloneStrategy::$parameters}
-	 * might change.
+	 * Note, {@link AddStandaloneStrategy::$sourceFile} and
+	 * {@link AddStandaloneStrategy::$sourceImage} must be set before this
+	 * method is called.
 	 *
-	 * There are 5 possibilities for the source file:
+	 * If import via symbolic link is requested, then a symbolic link
+	 * from `$targetFile` to {@link AddStandaloneStrategy::$sourceFile} is
+	 * created.
+	 * Otherwise the content of {@link AddStandaloneStrategy::$sourceFile}
+	 * is physically copied/moved into `$targetFile`.
 	 *
-	 *  1. the source file has been uploaded by a client
-	 *  2. the source file has been downloaded from a remote server
-	 *  3. the source file is a local file on the server and
-	 *      a) shall be deleted
-	 *      b) shall be copied
-	 *      c) shall be symlinked
+	 * If the source file requires normalization, then
+	 * {@link AddStandaloneStrategy::$sourceImage} is saved to `$targetFile`.
+	 * This step implicitly corrects the orientation.
+	 * Otherwise, the original byte stream from
+	 * {@link AddStandaloneStrategy::$sourceFile} is written to `$targetFile`
+	 * without modifications.
 	 *
-	 * Cases 1 trough 3a can be treated identically:
-	 * In all three cases we have a local (possibly temporary) file which
-	 * will be removed anyway and thus can be modified in place.
+	 * @param FlysystemFile $targetFile the target file
 	 *
-	 * In case 3b, we make a local, temporary copy first and then proceed as
-	 * in the first 3 cases.
-	 * This is also the case which changes the {@link MediaFile}-instance.
+	 * @returns StreamStat statistics about the final file, may differ from
+	 *                     the source file due to normalization of orientation
 	 *
-	 * In case 3c, the method does not actually modify the file.
-	 *
-	 * This method also updates the attribute {@link Photo::$checksum} to the
-	 * new value after rotation.
-	 *
+	 * @throws ImageProcessingException
 	 * @throws MediaFileOperationException
-	 * @throws ModelDBException
 	 * @throws MediaFileUnsupportedException
+	 * @throws ConfigurationException
 	 */
-	protected function normalizeOrientation(): void
+	private function putSourceIntoFinalDestination(FlysystemFile $targetFile): StreamStat
 	{
-		$orientation = $this->parameters->exifInfo->orientation;
-		if ($this->photo->type !== 'image/jpeg' || $orientation == 1) {
-			// Nothing to do for non-JPEGs or correctly oriented photos.
-			return;
+		try {
+			if ($this->parameters->importMode->shallImportViaSymlink()) {
+				if (!$targetFile->isLocalFile()) {
+					throw new ConfigurationException('Symlinking is only supported on local filesystems');
+				}
+				$targetAbsolutePath = $targetFile->getAbsolutePath();
+				$sourceAbsolutePath = $this->sourceFile->getAbsolutePath();
+				\Safe\symlink($sourceAbsolutePath, $targetAbsolutePath);
+				$streamStat = StreamStat::createFromLocalFile($this->sourceFile);
+			} else {
+				// Nothing to do for non-JPEGs or correctly oriented photos.
+				// TODO: Why do we only normalize JPEG?
+				$shallNormalize = $this->photo->type === 'image/jpeg' && $this->parameters->exifInfo->orientation !== 1;
+
+				if ($shallNormalize) {
+					$streamStat = $this->sourceImage->save($targetFile);
+				} else {
+					$streamStat = $targetFile->write($this->sourceFile->read());
+					$this->sourceFile->close();
+					$targetFile->close();
+				}
+				if ($this->parameters->importMode->shallDeleteImported()) {
+					// This may throw an exception, if the original has been
+					// readable, but is not writable
+					// In this case, the media file will have been copied, but
+					// cannot be "moved".
+					try {
+						$this->sourceFile->delete();
+					} catch (MediaFileOperationException $e) {
+						// If deletion failed, we do not cancel the whole
+						// import, but fall back to copy-semantics and
+						// log the exception
+						report($e);
+					}
+				}
+			}
+
+			return $streamStat;
+		} catch (\ErrorException $e) {
+			throw new MediaFileOperationException('Could move/copy/symlink source file to final destination', $e);
 		}
-
-		if (
-			!$this->parameters->importMode->shallDeleteImported() &&
-			!$this->parameters->importMode->shallImportViaSymlink()
-		) {
-			// This is case 3b, the original shall neither be deleted
-			// nor symlinked.
-			// So lets make a deep-copy first which can be rotated safely.
-			$tmpFile = new TemporaryLocalFile($this->sourceFile->getExtension(), $this->sourceFile->getBasename());
-			$tmpFile->write($this->sourceFile->read());
-			$this->sourceFile->close();
-			$this->sourceFile = $tmpFile;
-			// Reset source file info to the new temporary and ensure that
-			// it will be deleted later
-			$this->parameters->importMode->setDeleteImported(true);
-		}
-
-		$absolutePath = $this->sourceFile->getAbsolutePath();
-		// If we are importing via symlink, we don't actually overwrite
-		// the source, but we still need to fix the dimensions.
-		$this->imageHandler->autoRotate(
-			$absolutePath,
-			$orientation,
-			$this->parameters->importMode->shallImportViaSymlink()
-		);
-
-		// stat info (filesize, access mode, etc.) are cached by PHP to avoid
-		// costly I/O calls.
-		// If cache is not cleared, the size before rotation is used and later
-		// yields an incorrect value.
-		clearstatcache(true, $absolutePath);
 	}
 
 	/**
+	 * TODO: This method is invoked too late, because the source file may already be deleted
+	 * TODO: Move this into a proper Videohandler.
+	 *
 	 * @throws MediaFileOperationException
 	 */
 	protected function handleGoogleMotionPicture(): void

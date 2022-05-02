@@ -141,7 +141,7 @@ class GdHandler extends BaseImageHandler
 			$this->reset();
 			throw new MediaFileOperationException('Failed to load image', $e);
 		} finally {
-			$inMemoryBuffer->free();
+			$inMemoryBuffer->close();
 			$file->close();
 		}
 	}
@@ -149,7 +149,7 @@ class GdHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function save(MediaFile $file): void
+	public function save(MediaFile $file): StreamStat
 	{
 		if (!$this->gdImage) {
 			new MediaFileOperationException('No image loaded');
@@ -178,11 +178,11 @@ class GdHandler extends BaseImageHandler
 					assert(false, new \AssertionError('uncovered image type'));
 			}
 
-			$file->write($inMemoryBuffer->read());
+			$streamStat = $file->write($inMemoryBuffer->read(), true);
 			$file->close();
-			$inMemoryBuffer->free();
+			$inMemoryBuffer->close();
 
-			parent::applyLosslessOptimizationConditionally($file);
+			return parent::applyLosslessOptimizationConditionally($file) ?: $streamStat;
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException('Failed to save image', $e);
 		}
@@ -375,5 +375,10 @@ class GdHandler extends BaseImageHandler
 		} catch (\ErrorException $e) {
 			throw new ImageProcessingException('Could not determine dimensions of image', $e);
 		}
+	}
+
+	public function isLoaded(): bool
+	{
+		return $this->gdImageType !== 0 && $this->gdImage;
 	}
 }

@@ -36,6 +36,13 @@ class ImageHandler extends BaseImageHandler
 		$this->engineClasses[] = GdHandler::class;
 	}
 
+	public function __clone()
+	{
+		if ($this->engine) {
+			$this->engine = clone $this->engine;
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -47,7 +54,8 @@ class ImageHandler extends BaseImageHandler
 			try {
 				$this->engine = new $engineClass($this->compressionQuality);
 				$this->engine->load($file);
-				break;
+
+				return;
 			} catch (\Throwable $e) {
 				// Report the error to the log, but don't fail yet.
 				report($e);
@@ -55,17 +63,15 @@ class ImageHandler extends BaseImageHandler
 			}
 		}
 
-		if (!$this->engine) {
-			throw new MediaFileOperationException(self::NO_HANDLER_EXCEPTION_MSG);
-		}
+		throw new MediaFileOperationException(self::NO_HANDLER_EXCEPTION_MSG);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function save(MediaFile $file): void
+	public function save(MediaFile $file): StreamStat
 	{
-		$this->engine->save($file);
+		return $this->engine->save($file);
 	}
 
 	/**
@@ -107,5 +113,13 @@ class ImageHandler extends BaseImageHandler
 	public function getDimensions(): ImageDimension
 	{
 		return $this->engine->getDimensions();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function isLoaded(): bool
+	{
+		return $this->engine && $this->engine->isLoaded();
 	}
 }

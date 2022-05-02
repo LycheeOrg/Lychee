@@ -6,12 +6,17 @@ use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\Internal\MissingValueException;
+use App\Image\FlysystemFile;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use Illuminate\Support\Facades\Storage;
 
 class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 {
-	protected string $originalExtension = '';
+	/**
+	 * The name of the Flysystem disk where images are stored.
+	 */
+	public const IMAGE_DISK_NAME = 'images';
 
 	/**
 	 * Maps a size variant to the path prefix (directory) where the file for that size variant is stored.
@@ -35,6 +40,8 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 	 */
 	public const DEFAULT_EXTENSION = '.jpeg';
 
+	protected string $originalExtension = '';
+
 	public function setPhoto(?Photo $photo): void
 	{
 		parent::setPhoto($photo);
@@ -49,13 +56,13 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 	 *
 	 * @param int $sizeVariant the size variant
 	 *
-	 * @return string The short path
+	 * @return FlysystemFile the file
 	 *
 	 * @throws InvalidSizeVariantException
 	 * @throws IllegalOrderOfOperationException
 	 * @throws MissingValueException
 	 */
-	public function generateShortPath(int $sizeVariant): string
+	public function createFile(int $sizeVariant): FlysystemFile
 	{
 		if (SizeVariant::ORIGINAL > $sizeVariant || $sizeVariant > SizeVariant::THUMB) {
 			throw new InvalidSizeVariantException('invalid $sizeVariant = ' . $sizeVariant);
@@ -63,14 +70,14 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 		if ($this->photo == null) {
 			throw new IllegalOrderOfOperationException('associated photo model must not be null');
 		}
-		if (empty($this->photo->checksum)) {
-			throw new IllegalOrderOfOperationException('cannot generate short path for photo before checksum has been set');
+		if (empty($this->photo->original_checksum)) {
+			throw new IllegalOrderOfOperationException('cannot generate filename before checksum of photo has been set');
 		}
 		$directory = self::VARIANT_2_PATH_PREFIX[$sizeVariant] . '/';
 		if ($sizeVariant === SizeVariant::ORIGINAL && $this->photo->isRaw()) {
 			$directory = 'raw/';
 		}
-		$filename = substr($this->photo->checksum, 0, 32);
+		$filename = substr($this->photo->original_checksum, 0, 32);
 		if ($sizeVariant === SizeVariant::MEDIUM2X ||
 			$sizeVariant === SizeVariant::SMALL2X ||
 			$sizeVariant === SizeVariant::THUMB2X) {
@@ -78,7 +85,7 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 		}
 		$extension = $this->generateExtension($sizeVariant);
 
-		return $directory . $filename . $extension;
+		return new FlysystemFile(Storage::disk(self::IMAGE_DISK_NAME), $directory . $filename . $extension);
 	}
 
 	/**

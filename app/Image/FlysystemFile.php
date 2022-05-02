@@ -55,9 +55,11 @@ class FlysystemFile extends MediaFile
 	/**
 	 * {@inheritDoc}
 	 */
-	public function write($stream): void
+	public function write($stream, bool $collectStatistics = false): ?StreamStat
 	{
 		try {
+			$streamStat = $collectStatistics ? static::appendStatFilter($stream) : null;
+
 			// TODO: `put` must be replaced by `writeStream` when Flysystem 2 is shipped with Laravel 9
 			// This will also be more consistent with `readStream`.
 			// Note that v1 also provides a method `writeStream`, but this is a misnomer.
@@ -65,6 +67,8 @@ class FlysystemFile extends MediaFile
 			if (!$this->disk->put($this->relativePath, $stream)) {
 				throw new FlyException('Filesystem::put failed');
 			}
+
+			return $streamStat;
 		} catch (\ErrorException|FlyException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
@@ -142,6 +146,8 @@ class FlysystemFile extends MediaFile
 	 * However, it is a last resort to implement features which Flysystem does
 	 * not provide using low-level functions.
 	 *
+	 * TODO: Remove it.
+	 *
 	 * See also: {@link FlysystemFile::getStorageAdapter()}.
 	 *
 	 * @return string
@@ -158,6 +164,8 @@ class FlysystemFile extends MediaFile
 	 * know the "type" of the disk on which the file is located on.
 	 *
 	 * See also: {@link FlysystemFile::getAbsolutePath()}.
+	 *
+	 * TODO: Remove it.
 	 *
 	 * @return AdapterInterface
 	 */
@@ -193,11 +201,21 @@ class FlysystemFile extends MediaFile
 	}
 
 	/**
+	 * Determines if this file is a local file.
+	 *
+	 * @return bool
+	 */
+	public function isLocalFile(): bool
+	{
+		return $this->disk->getDriver()->getAdapter() instanceof LocalAdapter;
+	}
+
+	/**
 	 * @throws MediaFileOperationException
 	 */
 	public function toLocalFile(): NativeLocalFile
 	{
-		if (!($this->disk->getDriver()->getAdapter() instanceof LocalAdapter)) {
+		if (!$this->isLocalFile()) {
 			throw new MediaFileOperationException('file is not hosted locally');
 		}
 

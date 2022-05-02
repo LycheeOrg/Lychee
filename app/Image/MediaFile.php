@@ -13,12 +13,8 @@ use Illuminate\Http\UploadedFile;
  * This class abstracts from the differences of files which are provided
  * through a Flysystem adapter and files outside Flysystem.
  * In particular, this abstraction provides a unified copy-mechanism
- * between different Flysystem disks, local (native) files and uploaded files
- * via
+ * between different {@link BinaryBlob}using streams.
  *
- *     $targetFile->write($sourceFile->read())
- *
- * using streams.
  * This stream-based approach is the same which is also used by
  * {@link UploadedFile::storeAs()} under the hood and avoids certain problems
  * which are may be caused by PHP method like `rename`, `move` or `copy`.
@@ -30,7 +26,7 @@ use Illuminate\Http\UploadedFile;
  * Copying via streams avoids issues like
  * [LycheeOrg/Lychee#1198](https://github.com/LycheeOrg/Lychee/issues/1198).
  */
-abstract class MediaFile
+abstract class MediaFile extends BinaryBlob
 {
 	public const SUPPORTED_PHP_EXIF_IMAGE_TYPES = [
 		IMAGETYPE_GIF,
@@ -82,37 +78,6 @@ abstract class MediaFile
 	/** @var string[]|null the accepted raw file extensions minus supported extensions */
 	private static ?array $cachedAcceptedRawFileExtensions = null;
 
-	/** @var ?resource */
-	protected $stream = null;
-
-	/**
-	 * @throws MediaFileOperationException
-	 */
-	public function __destruct()
-	{
-		$this->close();
-	}
-
-	public function __clone()
-	{
-		// The stream belongs to the original object, it is not ours.
-		$this->stream = null;
-	}
-
-	/**
-	 * Returns a stream from which can be read.
-	 *
-	 * To free the stream after use, call {@link MediaFile::close()}.
-	 * Calling `read` multiple times is safe.
-	 * The read pointer of the stream will be reset to the beginning of
-	 * the stream, without closing the stream in between.
-	 *
-	 * @return resource
-	 *
-	 * @throws MediaFileOperationException
-	 */
-	abstract public function read();
-
 	/**
 	 * Writes the content of the provided stream into the file.
 	 *
@@ -124,32 +89,14 @@ abstract class MediaFile
 	 * The freshly written content can immediately be read back via
 	 * {@link MediaFile::read} without closing the file in between.
 	 *
-	 * @param resource $stream the input stream which provides the input to write
+	 * @param resource $stream            the input stream which provides the input to write
+	 * @param bool     $collectStatistics if true, the method returns statistics about the stream
 	 *
-	 * @return void
-	 *
-	 * @throws MediaFileOperationException
-	 */
-	abstract public function write($stream): void;
-
-	/**
-	 * Closes the internal stream.
-	 *
-	 * @return void
+	 * @return ?StreamStat optional statistics about the stream, if requested
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function close(): void
-	{
-		try {
-			if (is_resource($this->stream)) {
-				\Safe\fclose($this->stream);
-				$this->stream = null;
-			}
-		} catch (\ErrorException $e) {
-			throw new MediaFileOperationException($e->getMessage(), $e);
-		}
-	}
+	abstract public function write($stream, bool $collectStatistics = false): ?StreamStat;
 
 	/**
 	 * Deletes the file.

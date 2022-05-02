@@ -39,18 +39,24 @@ abstract class BaseImageHandler implements ImageHandlerInterface
 	 *
 	 * @param MediaFile $file
 	 *
-	 * @return void
+	 * @return StreamStat|null statistics about the optimized file
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	protected static function applyLosslessOptimizationConditionally(MediaFile $file): void
+	protected static function applyLosslessOptimizationConditionally(MediaFile $file): ?StreamStat
 	{
 		if (Configs::get_value('lossless_optimization', '0') == '1') {
 			if ($file instanceof NativeLocalFile) {
 				ImageOptimizer::optimize($file->getAbsolutePath());
+
+				return StreamStat::createFromLocalFile($file);
 			} else {
 				Logs::warning(__METHOD__, __LINE__, 'Skipping lossless optimization; optimization is requested by configuration but only supported for local files');
+
+				return null;
 			}
+		} else {
+			return null;
 		}
 	}
 }

@@ -58,9 +58,11 @@ class NativeLocalFile extends MediaFile
 	 *
 	 * @returns void
 	 */
-	public function write($stream, ?string $mimeType = null): void
+	public function write($stream, bool $collectStatistics = false, ?string $mimeType = null): ?StreamStat
 	{
 		try {
+			$streamStat = $collectStatistics ? static::appendStatFilter($stream) : null;
+
 			if (is_resource($this->stream)) {
 				\Safe\ftruncate($this->stream, 0);
 				\Safe\rewind($this->stream);
@@ -70,6 +72,13 @@ class NativeLocalFile extends MediaFile
 			$this->cachedMimeType = null;
 			\Safe\stream_copy_to_stream($stream, $this->stream);
 			$this->cachedMimeType = $mimeType;
+			// File statistics info (filesize, access mode, etc.) are cached
+			// by PHP to avoid costly I/O calls.
+			// If cache is not cleared, an old size may be reported after
+			// write.
+			clearstatcache(true, $this->getAbsolutePath());
+
+			return $streamStat;
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}

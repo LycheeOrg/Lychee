@@ -59,7 +59,7 @@ class ImagickHandler extends BaseImageHandler
 		} catch (ImagickException $e) {
 			throw new MediaFileOperationException('Failed to load image', $e);
 		} finally {
-			$inMemoryBuffer->free();
+			$inMemoryBuffer->close();
 			$file->close();
 		}
 	}
@@ -67,7 +67,7 @@ class ImagickHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function save(MediaFile $file): void
+	public function save(MediaFile $file): StreamStat
 	{
 		if (!$this->imImage) {
 			new MediaFileOperationException('No image loaded');
@@ -87,11 +87,11 @@ class ImagickHandler extends BaseImageHandler
 			// and if the file supports seekable streams
 			$inMemoryBuffer = new InMemoryBuffer();
 			$this->imImage->writeImageFile($inMemoryBuffer->stream());
-			$file->write($inMemoryBuffer->read());
+			$streamStat = $file->write($inMemoryBuffer->read(), true);
 			$file->close();
-			$inMemoryBuffer->free();
+			$inMemoryBuffer->close();
 
-			parent::applyLosslessOptimizationConditionally($file);
+			return parent::applyLosslessOptimizationConditionally($file) ?: $streamStat;
 		} catch (ImagickException $e) {
 			throw new MediaFileOperationException('Failed to save image', $e);
 		}
@@ -198,5 +198,10 @@ class ImagickHandler extends BaseImageHandler
 		} catch (ImagickException $e) {
 			throw new ImageProcessingException('Could not determine dimensions of image', $e);
 		}
+	}
+
+	public function isLoaded(): bool
+	{
+		return $this->imImage !== null;
 	}
 }

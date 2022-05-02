@@ -36,11 +36,11 @@ interface ImageHandlerInterface
 	 *
 	 * @param MediaFile the file to write into
 	 *
-	 * @return void
+	 * @return StreamStat statistics about the stream
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function save(MediaFile $file): void;
+	public function save(MediaFile $file): StreamStat;
 
 	/**
 	 * Frees all internal resources.
@@ -113,4 +113,9 @@ interface ImageHandlerInterface
 	 * @throws ImageProcessingException
 	 */
 	public function getDimensions(): ImageDimension;
+
+	/**
+	 * @return bool true, if an image is loaded
+	 */
+	public function isLoaded(): bool;
 }

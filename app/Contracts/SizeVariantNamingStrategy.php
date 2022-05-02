@@ -2,6 +2,7 @@
 
 namespace App\Contracts;
 
+use App\Image\FlysystemFile;
 use App\Models\Photo;
 
 /**
@@ -23,13 +24,13 @@ abstract class SizeVariantNamingStrategy
 	}
 
 	/**
-	 * Generates a short path for the designated size variant.
+	 * Creates a file for the designated size variant.
 	 *
 	 * @param int $sizeVariant the size variant
 	 *
-	 * @return string The short path
+	 * @return FlysystemFile the file
 	 */
-	abstract public function generateShortPath(int $sizeVariant): string;
+	abstract public function createFile(int $sizeVariant): FlysystemFile;
 
 	/**
 	 * Returns the default extension.

@@ -12,9 +12,10 @@ use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\Factories\AlbumFactory;
 use App\Factories\LangFactory;
-use App\Image;
 use App\Image\ImageHandler;
+use App\Image\ImageHandlerInterface;
 use App\Image\SizeVariantDefaultFactory;
+use App\Image\StreamStatFilter;
 use App\Locale\Lang;
 use App\Metadata\GitHubFunctions;
 use App\Metadata\GitRequest;
@@ -60,6 +61,14 @@ class AppServiceProvider extends ServiceProvider
 				Log::info($msg);
 			});
 		}
+
+		// We ignore any error here, because the `boot` method may be called
+		// several times by Laravel and any subsequent attempt to register
+		// the same filter anew will fail.
+		stream_filter_register(
+			StreamStatFilter::REGISTERED_NAME,
+			StreamStatFilter::class
+		);
 	}
 
 	/**
@@ -69,7 +78,7 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function register()
 	{
-		$this->app->singleton(Image\ImageHandlerInterface::class, function ($app) {
+		$this->app->bind(ImageHandlerInterface::class, function () {
 			$compressionQuality = Configs::get_value('compression_quality', 90);
 
 			return new ImageHandler($compressionQuality);

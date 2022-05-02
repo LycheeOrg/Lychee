@@ -5,14 +5,22 @@ namespace App\Actions\Photo\Strategies;
 use App\Contracts\LycheeException;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
+use App\Exceptions\ConfigurationException;
+use App\Exceptions\ImageProcessingException;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidRotationDirectionException;
+use App\Exceptions\Internal\LycheeLogicException;
+use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
+use App\Image\FlysystemFile;
 use App\Image\ImageHandlerInterface;
+use App\Image\MediaFile;
+use App\Image\NativeLocalFile;
 use App\Image\TemporaryLocalFile;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use Illuminate\Support\Facades\Storage;
 
 class RotateStrategy extends AddBaseStrategy
 {
@@ -183,5 +191,78 @@ class RotateStrategy extends AddBaseStrategy
 		}
 
 		return $this->photo;
+	}
+
+	/**
+	 * Moves/copies/symlinks source file to final destination.
+	 *
+	 * TODO: targetPath should be a proper file object
+	 *
+	 * @param MediaFile $sourceFile     the source file
+	 * @param string    $targetPath     the path of the final destination
+	 *                                  relative to the disk
+	 *                                  {@link AddBaseStrategy::IMAGE_DISK_NAME}
+	 * @param bool      $normalizeImage if true, the image is not only
+	 *                                  moved/copied from the source to the
+	 *                                  target, but processed through
+	 *                                  {@link ImageHandler}.
+	 *                                  Inter alia, this means the orientation
+	 *                                  of the image will be normalized.
+	 *                                  The flag has no effect, if the image
+	 *                                  shall be imported via a symbolic
+	 *                                  link.
+	 *
+	 * @throws ImageProcessingException
+	 * @throws MediaFileOperationException
+	 * @throws MediaFileUnsupportedException
+	 * @throws ConfigurationException
+	 */
+	private function putSourceIntoFinalDestination(MediaFile $sourceFile, string $targetPath, bool $normalizeImage = false): void
+	{
+		$targetFile = new FlysystemFile(Storage::disk(self::IMAGE_DISK_NAME), $targetPath);
+		$isTargetLocal = $targetFile->isLocalFile();
+		if ($this->parameters->importMode->shallImportViaSymlink()) {
+			if (!$isTargetLocal) {
+				throw new ConfigurationException('Symlinking is only supported on local filesystems');
+			}
+			if (!($sourceFile instanceof NativeLocalFile)) {
+				throw new ConfigurationException('Symlinking is only supported to local files');
+			}
+			$targetAbsolutePath = $targetFile->getAbsolutePath();
+			$sourceAbsolutePath = $sourceFile->getAbsolutePath();
+			if (!symlink($sourceAbsolutePath, $targetAbsolutePath)) {
+				throw new MediaFileOperationException('Could not create symbolic link at "' . $targetAbsolutePath . '" for photo at "' . $sourceAbsolutePath . '"');
+			}
+		} else {
+			try {
+				if ($normalizeImage) {
+					$this->imageHandler->load($sourceFile);
+					$this->imageHandler->save($targetFile);
+				} else {
+					$targetFile->write($sourceFile->read());
+					$sourceFile->close();
+					$targetFile->close();
+				}
+				if ($this->parameters->importMode->shallDeleteImported()) {
+					// This may throw an exception, if the original has been
+					// readable, but is not writable
+					// In this case, the media file will have been copied, but
+					// cannot be "moved".
+					try {
+						$sourceFile->delete();
+					} catch (MediaFileOperationException $e) {
+						// If deletion failed, we do not cancel the whole
+						// import, but fall back to copy-semantics and
+						// log the exception
+						report($e);
+					}
+				}
+			} catch (LycheeLogicException $e) {
+				// the exception is thrown if read/write/close are invoked
+				// in wrong order
+				// something we don't do
+				assert(false, new \AssertionError('read/write/close must not throw a logic exception', $e->getCode(), $e));
+			}
+		}
 	}
 }
