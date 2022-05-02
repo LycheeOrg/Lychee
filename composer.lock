@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5a7fe03fbfecd8392d4b8b40ebd740e7",
+    "content-hash": "31fd4d014dceeb55caaaf350e1ed8832",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -2680,38 +2680,38 @@
         },
         {
             "name": "lychee-org/php-exif",
-            "version": "dev-master",
+            "version": "v0.7.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/php-exif.git",
-                "reference": "a4e6f5c5bf30f1e240ec9a68b4433458c71c5d30"
+                "reference": "568b56c6b33cca87dcb56103d1d1eb0609091def"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/a4e6f5c5bf30f1e240ec9a68b4433458c71c5d30",
-                "reference": "a4e6f5c5bf30f1e240ec9a68b4433458c71c5d30",
+                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/568b56c6b33cca87dcb56103d1d1eb0609091def",
+                "reference": "568b56c6b33cca87dcb56103d1d1eb0609091def",
                 "shasum": ""
             },
             "require": {
+                "ext-fileinfo": "*",
                 "neitanod/forceutf8": "^2.0.4",
-                "php": ">=7.2",
+                "php": "^8.0",
                 "php-ffmpeg/php-ffmpeg": "^0.17.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": ">=2.17",
+                "friendsofphp/php-cs-fixer": "^3.3",
                 "php-parallel-lint/php-parallel-lint": "^1.2",
                 "phpmd/phpmd": "^2.9",
-                "phpunit/phpunit": "^9.3",
-                "sebastian/phpcpd": ">=4.1",
+                "phpunit/phpunit": "^9.5.10",
                 "squizlabs/php_codesniffer": "^3.5"
             },
             "suggest": {
                 "FFmpeg": "Use FFmpeg/FFprobe as adapter",
-                "ImageMagick": "Use ImageMagick as adapter",
                 "ext-exif": "Use exif PHP extension as adapter",
+                "ext-imagick": "Use ImageMagick as adapter",
+                "ext-mbstring": "Support UTC-16 characters in EXIF data with exif PHP extension",
                 "lib-exiftool": "Use perl lib exiftool as adapter"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-0": {
@@ -2743,9 +2743,9 @@
             ],
             "support": {
                 "issues": "https://github.com/LycheeOrg/php-exif/issues",
-                "source": "https://github.com/LycheeOrg/php-exif/tree/master"
+                "source": "https://github.com/LycheeOrg/php-exif/tree/v0.7.5"
             },
-            "time": "2022-04-14T22:25:52+00:00"
+            "time": "2022-04-29T17:58:43+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
@@ -11642,8 +11642,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "darkghosthunter/larapass": 20,
-        "lychee-org/php-exif": 20
+        "darkghosthunter/larapass": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
@@ -11657,5 +11656,5 @@
     "platform-dev": {
         "ext-imagick": "*"
     },
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.0.0"
 }

@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use Lang;
+use App\Facades\Lang;
 use Tests\TestCase;
 
 class LangTest extends TestCase
