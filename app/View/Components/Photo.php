@@ -66,6 +66,7 @@ class Photo extends Component
 		$dim = 0;
 		$dim2x = 0;
 		$thumb2x = '';
+		$thumb2xUrl = '';
 
 		$thumb = $data->size_variants->getSizeVariant(SizeVariant::THUMB);
 		$thumb2x = $data->size_variants->getSizeVariant(SizeVariant::THUMB2X);
