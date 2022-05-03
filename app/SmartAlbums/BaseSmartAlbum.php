@@ -4,6 +4,11 @@ namespace App\SmartAlbums;
 
 use App\Actions\PhotoAuthorisationProvider;
 use App\Contracts\AbstractAlbum;
+use App\Contracts\InternalLycheeException;
+use App\DTO\PhotoSortingCriterion;
+use App\Exceptions\Internal\InvalidOrderDirectionException;
+use App\Exceptions\Internal\InvalidQueryModelException;
+use App\Exceptions\InvalidPropertyException;
 use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Extensions\Thumb;
@@ -51,6 +56,9 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		$this->smartPhotoCondition = $smartCondition;
 	}
 
+	/**
+	 * @throws InternalLycheeException
+	 */
 	public function photos(): Builder
 	{
 		return $this->photoAuthorisationProvider
@@ -59,22 +67,31 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			)->where($this->smartPhotoCondition);
 	}
 
+	/**
+	 * @return Collection<Photo>
+	 *
+	 * @throws InvalidOrderDirectionException
+	 * @throws InvalidQueryModelException
+	 */
 	protected function getPhotosAttribute(): Collection
 	{
 		// Cache query result for later use
 		// (this mimics the behaviour of relations of true Eloquent models)
 		if (!isset($this->photos)) {
-			$sortingCol = Configs::get_value('sorting_Photos_col');
-			$sortingOrder = Configs::get_value('sorting_Photos_order');
+			$sorting = PhotoSortingCriterion::createDefault();
 
 			$this->photos = (new SortingDecorator($this->photos()))
-				->orderBy('photos.' . $sortingCol, $sortingOrder)
+				->orderBy('photos.' . $sorting->column, $sorting->order)
 				->get();
 		}
 
 		return $this->photos;
 	}
 
+	/**
+	 * @throws InvalidPropertyException
+	 * @throws InvalidQueryModelException
+	 */
 	protected function getThumbAttribute(): ?Thumb
 	{
 		if (!isset($this->thumb)) {
@@ -85,14 +102,17 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			 */
 			$this->thumb = Thumb::createFromQueryable(
 				$this->photos(),
-				Configs::get_value('sorting_Photos_col'),
-				Configs::get_value('sorting_Photos_order')
+				PhotoSortingCriterion::createDefault()
 			);
 		}
 
 		return $this->thumb;
 	}
 
+	/**
+	 * @throws InvalidPropertyException
+	 * @throws InvalidQueryModelException
+	 */
 	public function toArray(): array
 	{
 		// The properties `thumb` and `photos` are intentionally treated

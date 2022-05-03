@@ -136,7 +136,9 @@ final class Russian implements Language
 
 			'STAR_PHOTO' => 'Отметить фото',
 			'STAR' => 'Отметить',
+			'UNSTAR' => 'Unstar',
 			'STAR_ALL' => 'Отметить все',
+			'UNSTAR_ALL' => 'Unstar Selected',
 			'TAGS' => 'Теги',
 			'TAGS_ALL' => 'теги для всех',
 			'UNSTAR_PHOTO' => 'Снять отметку',

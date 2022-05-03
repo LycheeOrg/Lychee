@@ -136,7 +136,9 @@ final class Dutch implements Language
 
 			'STAR_PHOTO' => 'Markeer met ster',
 			'STAR' => 'Ster',
+			'UNSTAR' => 'Unstar',
 			'STAR_ALL' => 'Markeer geselecteerd als favorieten',
+			'UNSTAR_ALL' => 'Verwijder geselecteerd als favorieten',
 			'TAGS' => 'Tags',
 			'TAGS_ALL' => 'Geselecteerde tags',
 			'UNSTAR_PHOTO' => 'Verwijder ster markeering',

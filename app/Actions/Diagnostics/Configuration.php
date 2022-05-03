@@ -2,15 +2,12 @@
 
 namespace App\Actions\Diagnostics;
 
+use App\Exceptions\Internal\QueryBuilderException;
 use App\ModelFunctions\ConfigFunctions;
-use Illuminate\Database\QueryException;
 
-class Configuration
+class Configuration extends Diagnostics
 {
-	use Line;
-
-	/** @var ConfigFunctions */
-	private $configFunctions;
+	private ConfigFunctions $configFunctions;
 
 	public function __construct(ConfigFunctions $configFunctions)
 	{
@@ -21,25 +18,22 @@ class Configuration
 	 * Return the config pieces of information of the Lychee installation.
 	 * Note that some information such as password and username are hidden.
 	 *
-	 * @return array
+	 * @return string[] array of messages
+	 *
+	 * @throws QueryBuilderException
 	 */
 	public function get(): array
 	{
-		// Declare
 		$configs = [];
 
-		try {
-			// Load settings
-			$settings = $this->configFunctions->min_info();
-			foreach ($settings as $key => $value) {
-				if (!is_array($value) && !is_null($value)) {
-					$configs[] = $this->line($key . ':', $value);
-				} elseif (is_null($value)) {
-					$configs[] = 'Error: ' . $key . ' has a NULL value!';
-				}
+		// Load settings
+		$settings = $this->configFunctions->min_info();
+		foreach ($settings as $key => $value) {
+			if (!is_array($value) && !is_null($value)) {
+				$configs[] = Diagnostics::line($key . ':', $value);
+			} elseif (is_null($value)) {
+				$configs[] = 'Error: ' . $key . ' has a NULL value!';
 			}
-		} catch (QueryException $e) {
-			$configs[] = 'Error: ' . $e->getMessage();
 		}
 
 		return $configs;

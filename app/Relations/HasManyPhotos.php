@@ -3,6 +3,8 @@
 namespace App\Relations;
 
 use App\Actions\PhotoAuthorisationProvider;
+use App\DTO\SortingCriterion;
+use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
@@ -89,17 +91,16 @@ abstract class HasManyPhotos extends Relation
 	 * the DB.
 	 *
 	 * @return Collection
+	 *
+	 * @throws InvalidOrderDirectionException
 	 */
 	public function getResults(): Collection
 	{
-		/** @var BaseAlbum $album */
-		$album = $this->parent;
+		/** @var SortingCriterion $sorting */
+		$sorting = $this->parent->getEffectiveSorting();
 
 		return (new SortingDecorator($this->query))
-			->orderBy(
-				'photos.' . $album->getEffectiveSortingCol(),
-				$album->getEffectiveSortingOrder()
-			)
+			->orderBy('photos.' . $sorting->column, $sorting->order)
 			->get();
 	}
 }

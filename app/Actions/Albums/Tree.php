@@ -3,32 +3,37 @@
 namespace App\Actions\Albums;
 
 use App\Actions\AlbumAuthorisationProvider;
+use App\Contracts\InternalLycheeException;
+use App\DTO\AlbumSortingCriterion;
+use App\DTO\AlbumTree;
+use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Facades\AccessControl;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
-use Illuminate\Database\Eloquent\Collection;
 use Kalnoy\Nestedset\Collection as NsCollection;
-use Kalnoy\Nestedset\QueryBuilder as NsQueryBuilder;
 
 class Tree
 {
 	private AlbumAuthorisationProvider $albumAuthorisationProvider;
-	private string $sortingCol;
-	private string $sortingOrder;
+	private AlbumSortingCriterion $sorting;
 
+	/**
+	 * @throws InvalidOrderDirectionException
+	 */
 	public function __construct(AlbumAuthorisationProvider $albumAuthorisationProvider)
 	{
 		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
-		$this->sortingCol = Configs::get_value('sorting_Albums_col', 'created_at');
-		$this->sortingOrder = Configs::get_value('sorting_Albums_order', 'ASC');
+		$this->sorting = AlbumSortingCriterion::createDefault();
 	}
 
-	public function get(): array
+	/**
+	 * @return AlbumTree
+	 *
+	 * @throws InternalLycheeException
+	 */
+	public function get(): AlbumTree
 	{
-		$return = [];
-
-		/**
+		/*
 		 * Note, strictly speaking
 		 * {@link AlbumAuthorisationProvider::applyBrowsabilityFilter()}
 		 * would be the correct function in order to scope the query below,
@@ -42,19 +47,21 @@ class Tree
 		 * reachability _locally_.
 		 * We rely on `->toTree` below to remove orphaned sub-tress and hence
 		 * only return a tree of browsable albums.
-		 *
-		 * @var NsQueryBuilder $query
 		 */
-		$query = $this->albumAuthorisationProvider
-			->applyReachabilityFilter(Album::query());
-
+		$query = new SortingDecorator(
+			$this->albumAuthorisationProvider->applyReachabilityFilter(Album::query())
+		);
 		if (AccessControl::is_logged_in()) {
 			// For authenticated users we group albums by ownership.
-			$albums = (new SortingDecorator($query))
-				->orderBy('owner_id')
-				->orderBy($this->sortingCol, $this->sortingOrder)
-				->get();
+			$query->orderBy('owner_id');
+		}
+		$query->orderBy($this->sorting->column, $this->sorting->order);
 
+		/** @var NsCollection $albums */
+		$albums = $query->get();
+		/** @var ?NsCollection $sharedAlbums */
+		$sharedAlbums = null;
+		if (AccessControl::is_logged_in()) {
 			$id = AccessControl::id();
 			// ATTENTION:
 			// For this to work correctly, it is crucial that all child albums
@@ -63,38 +70,13 @@ class Tree
 			// (sub)-tree and then `toTree` will return garbage as it does
 			// not find connected paths within `$albums` or `$sharedAlbums`,
 			// resp.
-			/** @var NsCollection $sharedAlbums */
 			list($albums, $sharedAlbums) = $albums->partition(fn ($album) => $album->owner_id == $id);
-			// We must explicitly pass `null` as the ID of the root album
-			// as there are several top-level albums below root.
-			// Otherwise, `toTree` uses the ID of the album with the lowest
-			// `_lft` value as the (wrong) root album.
-			$return['shared_albums'] = $this->toArray($sharedAlbums->toTree(null));
-		} else {
-			// For anonymous users we don't want to implicitly expose
-			// ownership via sorting.
-			$albums = (new SortingDecorator($query))
-				->orderBy($this->sortingCol, $this->sortingOrder)
-				->get();
 		}
 
 		// We must explicitly pass `null` as the ID of the root album
 		// as there are several top-level albums below root.
 		// Otherwise, `toTree` uses the ID of the album with the lowest
 		// `_lft` value as the (wrong) root album.
-		$return['albums'] = $this->toArray($albums->toTree(null));
-
-		return $return;
-	}
-
-	private function toArray(Collection $albums): array
-	{
-		return $albums->map(fn (Album $album) => [
-			'id' => $album->id,
-			'title' => $album->title,
-			'thumb' => optional($album->thumb)->toArray(),
-			'parent_id' => $album->parent_id,
-			'albums' => $this->toArray($album->children),
-		])->all();
+		return new AlbumTree($albums->toTree(null), $sharedAlbums?->toTree(null));
 	}
 }

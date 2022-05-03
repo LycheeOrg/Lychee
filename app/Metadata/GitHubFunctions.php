@@ -2,21 +2,19 @@
 
 namespace App\Metadata;
 
-use App\Exceptions\NotInCacheException;
-use App\Exceptions\NotMasterException;
+use App\Exceptions\VersionControlException;
 use App\Facades\Helpers;
 use App\ModelFunctions\JsonRequestFunctions;
 use App\Models\Configs;
-use Exception;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Config;
 
 class GitHubFunctions
 {
-	public string $head;
-
-	public string $branch;
-
 	private GitRequest $gitRequest;
+	protected ?string $localBranch;
+	protected ?string $localHead;
+	protected ?string $remoteHead;
 
 	/**
 	 * Base constructor.
@@ -26,16 +24,9 @@ class GitHubFunctions
 	public function __construct(GitRequest $gitRequest)
 	{
 		$this->gitRequest = $gitRequest;
-		try {
-			$this->branch = $this->get_current_branch();
-			$this->head = $this->get_current_commit();
-			// @codeCoverageIgnoreStart
-			// when testing on master branch this is not covered.
-		} catch (Exception $e) {
-			$this->branch = false;
-			$this->head = false;
-		}
-		// @codeCoverageIgnoreEnd
+		$this->localBranch = null;
+		$this->localHead = null;
+		$this->remoteHead = null;
 	}
 
 	/**
@@ -45,40 +36,9 @@ class GitHubFunctions
 	 *
 	 * @return string
 	 */
-	private function trim($commit_id): string
+	private static function trim($commit_id): string
 	{
 		return trim(substr($commit_id, 0, 7));
-	}
-
-	/**
-	 * look at .git/HEAD and return the current branch.
-	 * Return false if the file is not readable.
-	 *
-	 * @return false|string
-	 */
-	public function get_current_branch(): string|false
-	{
-		// @codeCoverageIgnoreStart
-		$head_file = base_path('.git/HEAD');
-		$branch_ = file_get_contents($head_file);
-		// separate out by the "/" in the string
-		$branch_ = explode('/', $branch_, 3);
-
-		return trim($branch_[2]);
-		// @codeCoverageIgnoreEnd
-	}
-
-	/**
-	 * Return the current commit id (7 hex digits).
-	 *
-	 * @return false|string
-	 */
-	public function get_current_commit(): string|false
-	{
-		$file = base_path('.git/refs/heads/' . $this->branch);
-		$head_ = file_get_contents($file);
-
-		return $this->trim($head_);
 	}
 
 	/**
@@ -86,13 +46,17 @@ class GitHubFunctions
 	 *
 	 * @param bool $cached
 	 *
-	 * @return bool|array
+	 * @return array
 	 *
-	 * @throws NotInCacheException
+	 * @throws VersionControlException
 	 */
-	private function get_commits(bool $cached = true): bool|array
+	private function get_commits(bool $cached = true): array
 	{
-		return $this->gitRequest->get_json($cached);
+		try {
+			return $this->gitRequest->get_json($cached);
+		} catch (\Throwable $e) {
+			throw new VersionControlException('Could not get commits', $e);
+		}
 	}
 
 	/**
@@ -104,56 +68,52 @@ class GitHubFunctions
 	 *
 	 * @param bool $cached
 	 *
-	 * @return bool|int
+	 * @return int
 	 *
-	 * @throws NotInCacheException
-	 * @throws NotMasterException
+	 * @throws VersionControlException
 	 */
-	public function count_behind(bool $cached = true): bool|int
+	private function count_behind(bool $cached = true): int
 	{
-		if ($this->branch != 'master') {
-			// @codeCoverageIgnoreStart
-			throw new NotMasterException();
-			// @codeCoverageIgnoreEnd
+		if ($this->getLocalBranch() !== 'master') {
+			throw new VersionControlException('Branch is not master, cannot compare');
 		}
 
 		$commits = $this->get_commits($cached);
 
 		$i = 0;
 		while ($i < count($commits)) {
-			if ($this->trim($commits[$i]->sha) == $this->head) {
+			if (self::trim($commits[$i]->sha) == $this->getLocalHead()) {
 				break;
 			}
-			// @codeCoverageIgnoreStart
-			// when testing on master branch this is not covered: we are up to date.
 			$i++;
-			// @codeCoverageIgnoreEnd
 		}
 
-		return ($i == count($commits)) ? false : $i;
+		if ($i === count($commits)) {
+			throw new VersionControlException('More than 30 commits behind');
+		}
+
+		return $i;
 	}
 
 	/**
-	 * return the commit id (7 hex digits) of the had if found.
+	 * return the commit id (7 hex digits) of the head if found.
 	 *
 	 * @return string
+	 *
+	 * @throws VersionControlException
 	 */
-	// @codeCoverageIgnoreStart
-	public function get_github_head(): string
+	private function getRemoteHead(): string
 	{
-		try {
+		if ($this->remoteHead === null) {
 			$commits = $this->get_commits();
-
-			return ' (' . $this->trim($commits[0]->sha) . ')';
-		} catch (Exception $e) {
-			return '';
+			$this->remoteHead = self::trim($commits[0]->sha);
 		}
+
+		return $this->remoteHead;
 	}
 
-	// @codeCoverageIgnoreEnd
-
 	/**
-	 * Return a string indicating whether we are up to date (used in Diagnostics).
+	 * Return a string indicating whether we are up-to-date (used in Diagnostics).
 	 *
 	 * This function should not throw exceptions !
 	 *
@@ -162,50 +122,36 @@ class GitHubFunctions
 	public function get_behind_text(): string
 	{
 		try {
-			$count = $this->count_behind(); // NotInCache or NotMaster
-		} catch (Exception $e) {
+			$count = $this->count_behind();
+			$last_update = $this->gitRequest->get_age_text();
+
+			if ($count === 0) {
+				return sprintf(' - Up to date (%s).', $last_update);
+			} else {
+				return sprintf(
+					' - %s commits behind master %s (%s)',
+					$count,
+					$this->getRemoteHead(),
+					$last_update
+				);
+			}
+		} catch (VersionControlException $e) {
 			return ' - ' . $e->getMessage();
 		}
-
-		$last_update = $this->gitRequest->get_age_text();
-
-		if ($count === 0) {
-			return sprintf(' - Up to date (%s).', $last_update);
-		}
-		// @codeCoverageIgnoreStart
-		if ($count != false) {
-			return sprintf(
-				' - %s commits behind master %s (%s)',
-				$count,
-				$this->get_github_head(),
-				$last_update
-			);
-		}
-
-		return ' - Probably more than 30 commits behind master';
-		// @codeCoverageIgnoreEnd
 	}
 
 	/**
-	 * Check if the repo is up to date, throw an exception if fails.
+	 * Check if the repo is up-to-date.
 	 *
 	 * @param bool $cached
 	 *
 	 * @return bool
 	 *
-	 * @throws NotMasterException
-	 * @throws NotInCacheException
+	 * @throws VersionControlException
 	 */
 	public function is_up_to_date(bool $cached = true): bool
 	{
-		$count = $this->count_behind($cached);
-		if ($count === 0) {
-			return true;
-		}
-
-		// @codeCoverageIgnoreStart
-		return false;
-		// @codeCoverageIgnoreEnd
+		return $this->count_behind($cached) === 0;
 	}
 
 	/**
@@ -215,44 +161,121 @@ class GitHubFunctions
 	 */
 	public function has_permissions(): bool
 	{
-		if (!$this->branch) {
-			// @codeCoverageIgnoreStart
+		try {
+			$localBranch = $this->getLocalBranch();
+		} catch (VersionControlException) {
+			$localBranch = null;
+		}
+
+		try {
+			return
+				Helpers::hasFullPermissions(base_path('.git')) && (
+					$localBranch === null ||
+					Helpers::hasPermissions(base_path('.git/refs/heads/' . $localBranch))
+				);
+		} catch (BindingResolutionException) {
 			return false;
-		// @codeCoverageIgnoreEnd
-		} else {
-			return Helpers::hasFullPermissions(base_path('.git')) && Helpers::hasPermissions(base_path('.git/refs/heads/' . $this->branch));
 		}
 	}
 
 	/**
 	 * Check for updates (old).
 	 *
-	 * @param $return
+	 * @return array{update_json: int, update_available: bool}
+	 *
+	 * @throws VersionControlException
 	 */
-	public function checkUpdates(&$return): void
+	public function checkUpdates(): array
 	{
 		// add a setting to do this check only once per day ?
-		if (Configs::get_value('check_for_updates', '0') == '1') {
+		if (Configs::get_value('check_for_updates', '0') == '0') {
+			return [];
+		}
+
+		try {
 			$json = new JsonRequestFunctions(Config::get('urls.update.json'));
 			$json = $json->get_json();
-			if ($json != false) {
-				/* @noinspection PhpUndefinedFieldInspection */
-				$return['update_json'] = $json->lychee->version;
-				$return['update_available']
-					= ((intval(Configs::get_value('version', '40000')))
-						< $return['update_json']);
-			}
+
+			return [
+				'update_json' => intval($json->lychee->version),
+				'update_available' => (
+					(intval(Configs::get_value('version', '40000'))) <
+					$json->lychee->version
+				),
+			];
+		} catch (\Throwable $e) {
+			throw new VersionControlException('Could not check for updates', $e);
 		}
 	}
 
 	/**
-	 * Return true if the current branch is master.
+	 * Checks if current branch is the master branch.
+	 *
 	 * This is used to avoid running git pulls on development branches during tests.
 	 *
 	 * @return bool
 	 */
 	public function is_master_branch(): bool
 	{
-		return $this->branch === 'master';
+		try {
+			return $this->getLocalBranch() === 'master';
+		} catch (VersionControlException) {
+			return false;
+		}
+	}
+
+	/**
+	 * Returns the name of the locally checked-out branch.
+	 *
+	 * The method reads `.git/HEAD` and caches the result.
+	 * If the branch cannot be determined an exception is thrown.
+	 *
+	 * @return string
+	 *
+	 * @throws VersionControlException
+	 */
+	public function getLocalBranch(): string
+	{
+		if ($this->localBranch === null) {
+			try {
+				$head_file = base_path('.git/HEAD');
+				$branch = file_get_contents($head_file);
+				if ($branch === false) {
+					throw new \RuntimeException('`file_get_contents` returned `false`');
+				}
+				$branch = explode('/', $branch, 3);
+
+				$this->localBranch = trim($branch[2]);
+			} catch (\Throwable $e) {
+				throw new VersionControlException('Could not determine the branch', $e);
+			}
+		}
+
+		return $this->localBranch;
+	}
+
+	/**
+	 * Returns the commit id (7 hex digits) of the local head.
+	 *
+	 * @return string
+	 *
+	 * @throws VersionControlException
+	 */
+	public function getLocalHead(): string
+	{
+		if ($this->localHead === null) {
+			try {
+				$file = base_path('.git/refs/heads/' . $this->getLocalBranch());
+				$commitID = file_get_contents($file);
+				if ($commitID === false) {
+					throw new \RuntimeException('`file_get_contents` returned `false`');
+				}
+				$this->localHead = self::trim($commitID);
+			} catch (\Throwable $e) {
+				throw new VersionControlException('Could not determine the head commit of current branch', $e);
+			}
+		}
+
+		return $this->localHead;
 	}
 }

@@ -136,7 +136,9 @@ final class English implements Language
 
 			'STAR_PHOTO' => 'Star Photo',
 			'STAR' => 'Star',
+			'UNSTAR' => 'Unstar',
 			'STAR_ALL' => 'Star Selected',
+			'UNSTAR_ALL' => 'Unstar Selected',
 			'TAGS' => 'Tag',
 			'TAGS_ALL' => 'Tag Selected',
 			'UNSTAR_PHOTO' => 'Unstar Photo',

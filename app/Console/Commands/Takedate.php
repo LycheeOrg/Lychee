@@ -2,15 +2,20 @@
 
 namespace App\Console\Commands;
 
+use App\Contracts\ExternalLycheeException;
+use App\Contracts\InternalLycheeException;
+use App\Exceptions\UnexpectedException;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
+use Symfony\Component\String\Exception\ExceptionInterface as SymfonyStringException;
 
 class Takedate extends Command
 {
@@ -90,103 +95,109 @@ class Takedate extends Command
 	/**
 	 * Execute the console command.
 	 *
+	 * @param Extractor $metadataExtractor
+	 *
 	 * @return int
+	 *
+	 * @throws ExternalLycheeException
 	 */
 	public function handle(Extractor $metadataExtractor): int
 	{
-		$limit = intval($this->argument('limit'));
-		$offset = intval($this->argument('offset'));
-		$timeout = intval($this->argument('time'));
-		$setCreationTime = boolval($this->option('set-upload-time'));
-		$force = boolval($this->option('force'));
-		set_time_limit($timeout);
+		try {
+			$limit = intval($this->argument('limit'));
+			$offset = intval($this->argument('offset'));
+			$timeout = intval($this->argument('time'));
+			$setCreationTime = boolval($this->option('set-upload-time'));
+			$force = boolval($this->option('force'));
+			set_time_limit($timeout);
 
-		// For faster iteration we eagerly load the original size variant,
-		// but only the original size variant
-		$photoQuery = Photo::with(['size_variants' => function (HasMany $r) {
-			$r->where('type', '=', SizeVariant::ORIGINAL);
-		}]);
+			// For faster iteration we eagerly load the original size variant,
+			// but only the original size variant
+			$photoQuery = Photo::with(['size_variants' => function (HasMany $r) {
+				$r->where('type', '=', SizeVariant::ORIGINAL);
+			}]);
 
-		if (!$force) {
-			$photoQuery->whereNull('taken_at');
-		}
-
-		// ATTENTION: We must call `count` first, otherwise `offset` and
-		// `limit` won't have an effect.
-		$count = $photoQuery->count();
-		if ($count === 0) {
-			$this->line('No pictures require takedate updates.');
-
-			return -1;
-		}
-
-		// We must stipulate a particular order, otherwise `offset` and `limit` have random effects
-		$photoQuery->orderBy('id');
-
-		if ($offset !== 0) {
-			$photoQuery->offset($offset);
-		}
-
-		if ($limit !== 0) {
-			$photoQuery->limit($limit);
-		}
-
-		$this->progressBar->setMaxSteps($limit === 0 ? $count : min($count, $limit));
-
-		// Unfortunately, `->getLazy` ignores `offset` and `limit`, so we must
-		// use a regular collection which might run out of memory for large
-		// values of `limit`.
-		$photos = $photoQuery->get();
-		/* @var Photo $photo */
-		foreach ($photos as $photo) {
-			$this->progressBar->advance();
-			// TODO: As soon as we support AWS S3 storage, we must stop using absolute paths. However, first the EXIF extractor must be rewritten to use file streams.
-			$fullPath = $photo->size_variants->getOriginal()->getFile()->getAbsolutePath();
-
-			if (!file_exists($fullPath)) {
-				$this->printError($photo, 'Media file ' . $fullPath . ' not found');
-				continue;
+			if (!$force) {
+				$photoQuery->whereNull('taken_at');
 			}
 
-			$kind = $photo->isRaw() ? 'raw' : ($photo->isVideo() ? 'video' : 'photo');
-			$info = $metadataExtractor->extract($fullPath, $kind);
-			/* @var Carbon $stamp */
-			$stamp = $info['taken_at'];
-			if ($stamp !== null) {
-				// Note: `equalTo` only checks if two times indicate the same
-				// instant of time on the universe's timeline, i.e. equality
-				// comparison is always done in UTC.
-				// For example "2022-01-31 20:50 CET" is deemed equal to
-				// "2022-01-31 19:50 GMT".
-				// So, we must check for equality of timezones separately.
-				if ($photo->taken_at->equalTo($stamp) && $photo->taken_at->timezoneName === $stamp->timezoneName) {
-					$this->printInfo($photo, 'Takestamp up-to-date.');
+			// ATTENTION: We must call `count` first, otherwise `offset` and
+			// `limit` won't have an effect.
+			$count = $photoQuery->count();
+			if ($count === 0) {
+				$this->line('No pictures require takedate updates.');
+
+				return -1;
+			}
+
+			// We must stipulate a particular order, otherwise `offset` and `limit` have random effects
+			$photoQuery->orderBy('id');
+
+			if ($offset !== 0) {
+				$photoQuery->offset($offset);
+			}
+
+			if ($limit !== 0) {
+				$photoQuery->limit($limit);
+			}
+
+			$this->progressBar->setMaxSteps($limit === 0 ? $count : min($count, $limit));
+
+			// Unfortunately, `->getLazy` ignores `offset` and `limit`, so we must
+			// use a regular collection which might run out of memory for large
+			// values of `limit`.
+			$photos = $photoQuery->get();
+			/* @var Photo $photo */
+			foreach ($photos as $photo) {
+				$this->progressBar->advance();
+				// TODO: As soon as we support AWS S3 storage, we must stop using absolute paths. However, first the EXIF extractor must be rewritten to use file streams.
+				$fullPath = $photo->size_variants->getOriginal()->getFile()->getAbsolutePath();
+
+				if (!file_exists($fullPath)) {
+					$this->printError($photo, 'Media file ' . $fullPath . ' not found');
+					continue;
+				}
+
+				$kind = $photo->isRaw() ? 'raw' : ($photo->isVideo() ? 'video' : 'photo');
+				$info = $metadataExtractor->extract($fullPath, $kind);
+				/* @var Carbon $stamp */
+				$stamp = $info['taken_at'];
+				if ($stamp !== null) {
+					// Note: `equalTo` only checks if two times indicate the same
+					// instant of time on the universe's timeline, i.e. equality
+					// comparison is always done in UTC.
+					// For example "2022-01-31 20:50 CET" is deemed equal to
+					// "2022-01-31 19:50 GMT".
+					// So, we must check for equality of timezones separately.
+					if ($photo->taken_at->equalTo($stamp) && $photo->taken_at->timezoneName === $stamp->timezoneName) {
+						$this->printInfo($photo, 'Takestamp up-to-date.');
+					} else {
+						$photo->taken_at = $stamp;
+						$this->printInfo($photo, 'Takestamp set to ' . $photo->taken_at->format(self::DATETIME_FORMAT) . '.');
+					}
 				} else {
-					$photo->taken_at = $stamp;
-					$this->printInfo($photo, 'Takestamp set to ' . $photo->taken_at->format(self::DATETIME_FORMAT) . '.');
+					$this->printWarning($photo, 'Failed to extract takestamp data from media file.');
 				}
-			} else {
-				$this->printWarning($photo, 'Failed to extract takestamp data from media file.');
+
+				if ($setCreationTime) {
+					if (is_link($fullPath)) {
+						$fullPath = readlink($fullPath);
+					}
+					$created_at = filemtime($fullPath);
+					if ($created_at == $photo->created_at->timestamp) {
+						$this->printInfo($photo, 'Upload time up-to-date.');
+					} else {
+						$photo->created_at = Carbon::createFromTimestamp($created_at);
+						$this->printInfo($photo, 'Upload time set to ' . $photo->created_at->format(self::DATETIME_FORMAT) . '.');
+					}
+				}
+
+				$photo->save();
 			}
 
-			if ($setCreationTime) {
-				if (is_link($fullPath)) {
-					$fullPath = readlink($fullPath);
-				}
-				$created_at = filemtime($fullPath);
-				if ($created_at == $photo->created_at->timestamp) {
-					$this->printInfo($photo, 'Upload time up-to-date.');
-				} else {
-					$photo->created_at = Carbon::createFromTimestamp($created_at);
-					$this->printInfo($photo, 'Upload time set to ' . $photo->created_at->format(self::DATETIME_FORMAT) . '.');
-				}
-			}
-
-			if (!$photo->save()) {
-				$this->printError($photo, 'Failed to save changes.');
-			}
+			return 0;
+		} catch (SymfonyConsoleException|InternalLycheeException|SymfonyStringException $e) {
+			throw new UnexpectedException($e);
 		}
-
-		return 0;
 	}
 }

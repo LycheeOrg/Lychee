@@ -4,8 +4,16 @@
 
 namespace App\Models\Extensions;
 
+use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\FailedModelAssumptionException;
+use App\Exceptions\Internal\MissingModelMethodException;
+use App\Exceptions\Internal\NotImplementedException;
+use App\Exceptions\ModelDBException;
 use App\Models\BaseAlbumImpl;
+use Illuminate\Contracts\Encryption\EncryptException;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\InvalidCastException;
+use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -29,6 +37,8 @@ use Illuminate\Support\Str;
  */
 trait ForwardsToParentImplementation
 {
+	abstract protected function friendlyModelName(): string;
+
 	/**
 	 * "Constructor" of trait.
 	 *
@@ -61,16 +71,18 @@ trait ForwardsToParentImplementation
 	 * @param Builder $query
 	 *
 	 * @return bool
+	 *
+	 * @throws FailedModelAssumptionException
 	 */
 	protected function performInsert(Builder $query): bool
 	{
 		if (!$this->relationLoaded('base_class')) {
-			throw new \LogicException('cannot create a child class whose base class is not loaded');
+			throw new FailedModelAssumptionException('cannot create a child class whose base class is not loaded');
 		}
 		/** @var Model $base_class */
 		$base_class = $this->getRelation('base_class');
 		if ($base_class->exists) {
-			throw new \LogicException('cannot create a child class whose base class already exists');
+			throw new FailedModelAssumptionException('cannot create a child class whose base class already exists');
 		}
 		// Save and therewith create the base class
 		if (!$base_class->save()) {
@@ -91,7 +103,7 @@ trait ForwardsToParentImplementation
 	 */
 	protected function performUpdate(Builder $query): bool
 	{
-		/** @var Model $base_class */
+		/** @var Model */
 		$base_class = $this->base_class;
 		// touch() also indirectly saves the base_class hence any other
 		// attributes which require an update are also saved
@@ -105,33 +117,51 @@ trait ForwardsToParentImplementation
 	/**
 	 * Delete the model from the database.
 	 *
-	 * @return bool
+	 * @return bool always returns true
 	 *
-	 * @throws \LogicException
+	 * @throws ModelDBException thrown on failure
 	 */
 	public function delete(): bool
 	{
-		/** @var ?Model $base_class */
-		$base_class = $this->base_class;
+		/** @var ?Model $baseClass */
+		$baseClass = $this->base_class;
 
-		$parentDelete = parent::delete();
-		if ($parentDelete === false) {
+		$parentException = null;
+		try {
 			// Sic! Don't use `!$parentDelete` in condition, because we also
 			// need to proceed if `$parentDelete === null` .
 			// If Eloquent returns `null` (instead of `true`), this also
-			// indicates a success and we must go on.
+			// indicates a success, and we must go on.
 			// Eloquent, I love you .... not.
-			return false;
+			$parentResult = parent::delete();
+			if ($parentResult === false) {
+				$parentException = new \RuntimeException('Eloquent\Model::delete() returned false');
+			}
+		} catch (\Throwable $e) {
+			$parentException = $e;
+		}
+		if ($parentException) {
+			throw ModelDBException::create($this->friendlyModelName(), 'deleting', $parentException);
 		}
 
 		// We must explicitly check if the base_class still exists in order
 		// to avoid an infinite recursion, as the base class will also call
 		// delete() on this class
-		if ($base_class !== null && $base_class->exists) {
-			$baseDelete = $base_class->delete();
-			// Same stupidity as above, if Eloquent returns `null` this also
-			// means `true` here.
-			return $baseDelete !== false;
+		if ($baseClass !== null && $baseClass->exists) {
+			$baseException = null;
+			try {
+				$baseResult = $baseClass->delete();
+				// Same stupidity as above, if Eloquent returns `null`,
+				// this also indicates a good case.
+				if ($baseResult === false) {
+					$baseException = new \RuntimeException('Eloquent\Model::delete() returned false');
+				}
+			} catch (\Throwable $e) {
+				$baseException = $e;
+			}
+			if ($baseException) {
+				throw ModelDBException::create($this->friendlyModelName(), 'deleting', $baseException);
+			}
 		}
 
 		return true;
@@ -226,6 +256,9 @@ trait ForwardsToParentImplementation
 	 * @param string $key the name of the queried attribute or relation
 	 *
 	 * @return mixed the value of the attribute or relation
+	 *
+	 * @throws \LogicException
+	 * @throws InvalidCastException
 	 */
 	public function getAttribute($key): mixed
 	{
@@ -238,9 +271,10 @@ trait ForwardsToParentImplementation
 		// case for new models, the implementation otherwise would fall
 		// through until the end and try to forward the call to the base class.
 		// However, asking for the primary key of the base class is
-		//  a) insane, because it should be identical to the primary key of
+		//
+		//  1. insane, because it should be identical to the primary key of
 		//     this class, and
-		//  b) does not work, because we cannot load the base class without
+		//  2. does not work, because we cannot load the base class without
 		//     knowing the primary key.
 		if ($key == $this->getKeyName()) {
 			// Sic!
@@ -307,6 +341,8 @@ trait ForwardsToParentImplementation
 	 * @param string $key the name of the queried relation
 	 *
 	 * @return mixed the value of the relation if it could be loaded
+	 *
+	 * @throws InternalLycheeException
 	 */
 	public function getRelationValue($key): mixed
 	{
@@ -333,7 +369,7 @@ trait ForwardsToParentImplementation
 			$primaryKey = $this->getKey();
 			if (!$this->exists) {
 				if ($primaryKey) {
-					throw new \LogicException('the primary key must not be set if the model does not exist');
+					throw new FailedModelAssumptionException('the primary key must not be set if the model does not exist');
 				}
 				$baseModel = $this->base_class()->getRelated()->newInstance();
 				$this->setRelation('base_class', $baseModel);
@@ -344,10 +380,10 @@ trait ForwardsToParentImplementation
 				// has not yet been loaded.
 				// Load it now.
 				if (!$primaryKey) {
-					throw new \LogicException('the model allegedly exists, but we don\'t have a primary key, cannot load base model');
+					throw new FailedModelAssumptionException('the model allegedly exists, but we don\'t have a primary key, cannot load base model');
 				}
 				if (!method_exists($this, 'base_class')) {
-					throw new \LogicException('the model "' . get_class($this) . '" does not provide a method "base_class()", cannot load base model');
+					throw new MissingModelMethodException(get_class($this), 'base_class()');
 				}
 
 				return $this->getRelationshipFromMethod('base_class');
@@ -382,6 +418,12 @@ trait ForwardsToParentImplementation
 	 * @param mixed  $value
 	 *
 	 * @return mixed
+	 *
+	 * @throws InvalidCastException
+	 * @throws JsonEncodingException
+	 * @throws EncryptException
+	 * @throws \InvalidArgumentException
+	 * @throws NotImplementedException
 	 */
 	public function setAttribute($key, $value): mixed
 	{

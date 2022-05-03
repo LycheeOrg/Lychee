@@ -12,7 +12,7 @@ class PageTest extends TestCase
 	{
 		$response = $this->get('/hello');
 
-		$response->assertStatus(404);
+		$response->assertNotFound();
 	}
 
 	public function testPage()
@@ -41,7 +41,7 @@ class PageTest extends TestCase
 		$this->assertTrue($page_content_2->save());
 
 		$response = $this->get('/about');
-		$response->assertStatus(404);
+		$response->assertNotFound();
 
 		$page->enabled = 1;
 		$this->assertTrue($page->save());
@@ -57,6 +57,6 @@ class PageTest extends TestCase
 		$page->delete();
 
 		$response = $this->get('/about');
-		$response->assertStatus(404);
+		$response->assertNotFound();
 	}
 }

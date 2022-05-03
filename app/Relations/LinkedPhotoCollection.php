@@ -2,6 +2,7 @@
 
 namespace App\Relations;
 
+use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Collection;
@@ -14,6 +15,9 @@ use Illuminate\Database\Eloquent\Collection;
  */
 class LinkedPhotoCollection extends Collection
 {
+	/**
+	 * @throws IllegalOrderOfOperationException
+	 */
 	public function toArray(): array
 	{
 		$photos = [];

@@ -4,10 +4,16 @@ namespace App\Models;
 
 use App\Actions\SizeVariant\Delete;
 use App\Casts\MustNotSetCast;
+use App\Exceptions\ConfigurationException;
+use App\Exceptions\Internal\InvalidSizeVariantException;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Image\FlysystemFile;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
+use App\Models\Extensions\ThrowsConsistentExceptions;
+use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Relations\HasManyBidirectionally;
 use Illuminate\Database\Eloquent\Collection;
@@ -51,6 +57,10 @@ class SizeVariant extends Model
 	use UTCBasedTimes;
 	use HasAttributesPatch;
 	use HasBidirectionalRelationships;
+	use ThrowsConsistentExceptions {
+		ThrowsConsistentExceptions::delete as private internalDelete;
+	}
+	use UseFixedQueryBuilder;
 
 	public const ORIGINAL = 0;
 	public const MEDIUM2X = 1;
@@ -133,6 +143,8 @@ class SizeVariant extends Model
 	 * provides symbolic links.
 	 *
 	 * @return string the url of the size variant
+	 *
+	 * @throws ConfigurationException
 	 */
 	public function getUrlAttribute(): string
 	{
@@ -166,7 +178,7 @@ class SizeVariant extends Model
 			return $symLink->url;
 		}
 
-		throw new \InvalidArgumentException('the chosen storage adapter "' . Storage::getDefaultDriver() . '" does not support the symbolic linking feature');
+		throw new ConfigurationException('the chosen storage adapter "' . get_class($storageAdapter) . '" does not support the symbolic linking feature');
 	}
 
 	/**
@@ -201,19 +213,22 @@ class SizeVariant extends Model
 	 *                             {@link SizeVariant::THUMB2X}, and
 	 *                             {@link SizeVariant::THUMB}
 	 *
-	 * @throws \InvalidArgumentException thrown if `$sizeVariant` is
-	 *                                   out-of-bounds
+	 * @throws InvalidSizeVariantException thrown if `$sizeVariantType` is
+	 *                                     out-of-bounds
 	 */
 	public function setSizeVariantAttribute(int $sizeVariantType): void
 	{
 		if (self::ORIGINAL > $sizeVariantType || $sizeVariantType > self::THUMB) {
-			throw new \InvalidArgumentException('passed size variant ' . $sizeVariantType . ' out-of-range');
+			throw new InvalidSizeVariantException('passed size variant ' . $sizeVariantType . ' out-of-range');
 		}
 		$this->attributes['type'] = $sizeVariantType;
 	}
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @throws ModelDBException
+	 * @throws MediaFileOperationException
 	 */
 	protected function performDeleteOnModel(): void
 	{

@@ -2,10 +2,13 @@
 
 namespace App\Actions\Install;
 
+use App\Exceptions\Internal\FrameworkException;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Psr\Container\ContainerExceptionInterface;
+
 class DefaultConfig
 {
-	private $config
-	= [
+	private array $config = [
 		/*
 			|--------------------------------------------------------------------------
 			| Server Requirements
@@ -101,37 +104,41 @@ class DefaultConfig
 	/**
 	 * Set the result array permissions and errors.
 	 *
-	 * @return mixed
+	 * @throws FrameworkException
 	 */
 	public function __construct()
 	{
-		$db_possibilities = [
-			['mysql', 'mysqli'],
-			['mysql', 'pdo_mysql'],
-			['pgsql', 'pgsql'],
-			['pgsql', 'pdo_pgsql'],
-			['sqlite', 'sqlite3'],
-		];
+		try {
+			$db_possibilities = [
+				['mysql', 'mysqli'],
+				['mysql', 'pdo_mysql'],
+				['pgsql', 'pgsql'],
+				['pgsql', 'pdo_pgsql'],
+				['sqlite', 'sqlite3'],
+			];
 
-		// additional requirement depending of the .env/base config
-		foreach ($db_possibilities as $db_possibility) {
-			if (config('database.default') == $db_possibility[0]) {
-				$this->config['requirements']['php'][] = $db_possibility[1];
+			// additional requirement depending on the .env/base config
+			foreach ($db_possibilities as $db_possibility) {
+				if (config('database.default') == $db_possibility[0]) {
+					$this->config['requirements']['php'][] = $db_possibility[1];
+				}
 			}
+		} catch (BindingResolutionException|ContainerExceptionInterface $e) {
+			throw new FrameworkException('Laravel\'s container component', $e);
 		}
 	}
 
-	public function get_core()
+	public function get_core(): array
 	{
 		return $this->config['core'];
 	}
 
-	public function get_requirements()
+	public function get_requirements(): array
 	{
 		return $this->config['requirements'];
 	}
 
-	public function get_permissions()
+	public function get_permissions(): array
 	{
 		return $this->config['permissions'];
 	}

@@ -1,13 +1,15 @@
 <?php
 
-/** @noinspection PhpMultipleClassDeclarationsInspection */
-
 namespace App\Models\Extensions;
 
 use App\Contracts\HasRandomID;
+use App\Exceptions\InsufficientEntropyException;
+use App\Exceptions\Internal\NotImplementedException;
+use App\Exceptions\Internal\TimeBasedIdException;
 use App\Models\Configs;
-use App\Models\Logs;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\InvalidCastException;
+use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 
@@ -32,10 +34,12 @@ trait HasRandomIDAndLegacyTimeBasedID
 	 * Set whether IDs are incrementing.
 	 *
 	 * @param bool $value
+	 *
+	 * @throws NotImplementedException
 	 */
 	public function setIncrementing($value)
 	{
-		throw new \BadMethodCallException('must not call setIncrementing for a model which uses the trait HasTimeBasedID');
+		throw new NotImplementedException('must not call setIncrementing for a model which uses the trait HasTimeBasedID');
 	}
 
 	/**
@@ -45,14 +49,18 @@ trait HasRandomIDAndLegacyTimeBasedID
 	 * @param mixed  $value value of attribute
 	 *
 	 * @return mixed
+	 *
+	 * @throws NotImplementedException
+	 * @throws InvalidCastException
+	 * @throws JsonEncodingException
 	 */
 	public function setAttribute($key, $value): mixed
 	{
 		if ($key == $this->getKeyName()) {
-			throw new \InvalidArgumentException('must not set primary key explicitly, primary key will be set on first insert');
+			throw new NotImplementedException('must not set primary key explicitly, primary key will be set on first insert');
 		}
 		if ($key == HasRandomID::LEGACY_ID_NAME) {
-			throw new \InvalidArgumentException('must not set legacy key explicitly, legacy key will be set on first insert');
+			throw new NotImplementedException('must not set legacy key explicitly, legacy key will be set on first insert');
 		}
 
 		return parent::setAttribute($key, $value);
@@ -67,7 +75,10 @@ trait HasRandomIDAndLegacyTimeBasedID
 	 *
 	 * @param Builder $query
 	 *
-	 * @return bool
+	 * @return bool true on success
+	 *
+	 * @throws TimeBasedIdException
+	 * @throws InsufficientEntropyException
 	 */
 	protected function performInsert(Builder $query): bool
 	{
@@ -109,9 +120,7 @@ trait HasRandomIDAndLegacyTimeBasedID
 		} while ($retry && $retryCounter > 0);
 
 		if ($retryCounter === 0) {
-			$msg = 'unable to persist model to DB after 5 unsuccessful attempts';
-			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new \RuntimeException($msg, 0, $lastException);
+			throw new TimeBasedIdException('unable to persist model to DB after 5 unsuccessful attempts', $lastException);
 		}
 
 		// We will go ahead and set the exists property to true, so that it is set when
@@ -125,7 +134,14 @@ trait HasRandomIDAndLegacyTimeBasedID
 	}
 
 	/**
-	 * Generates an ID for the primary key from current microtime.
+	 * Generates a primary key and a legacy key.
+	 *
+	 * The primary key are 144bit true randomness, encoded as Base64.
+	 * The legacy key is based on the current micro-time.
+	 *
+	 * @return void
+	 *
+	 * @throws InsufficientEntropyException
 	 */
 	private function generateKey(): void
 	{
@@ -133,7 +149,11 @@ trait HasRandomIDAndLegacyTimeBasedID
 		// `+` and `/` are replaced by `-` and `_`, resp.
 		// The other characters (a-z, A-Z, 0-9) are legal within an URL.
 		// As the number of bytes is divisible by 3, no trailing `=` occurs.
-		$id = strtr(base64_encode(random_bytes(3 * HasRandomID::ID_LENGTH / 4)), '+/', '-_');
+		try {
+			$id = strtr(base64_encode(random_bytes(3 * HasRandomID::ID_LENGTH / 4)), '+/', '-_');
+		} catch (\Exception $e) {
+			throw new InsufficientEntropyException($e);
+		}
 
 		if (
 			PHP_INT_MAX == 2147483647

@@ -2,36 +2,35 @@
 
 namespace App\Metadata;
 
+use App\DTO\LycheeChannelInfo;
+use App\DTO\LycheeGitInfo;
+use App\DTO\Version;
+use App\Exceptions\Internal\FrameworkException;
+use App\Exceptions\Internal\LycheeInvalidArgumentException;
+use App\Exceptions\VersionControlException;
 use App\Models\Configs;
+use Illuminate\Contracts\Container\BindingResolutionException;
 
 class LycheeVersion
 {
-	/**
-	 * @var GitHubFunctions
-	 */
-	private $gitHubFunctions;
+	private GitHubFunctions $gitHubFunctions;
 
-	/**
-	 * @var bool
-	 */
-	public $isRelease;
+	public bool $isRelease;
 
 	/**
 	 * true if phpunit is present in vendor/bin/
-	 * We use this to dertermine if composer install or composer install --no-dev was used.
-	 *
-	 * @var bool
+	 * We use this to determine if composer install or composer install --no-dev was used.
 	 */
-	public $phpUnit;
+	public bool $phpUnit;
 
 	/**
 	 * Base constructor.
 	 *
 	 * @param GitHubFunctions
 	 */
-	public function __construct(GitHubFunctions $githubFunctions)
+	public function __construct(GitHubFunctions $gitHubFunctions)
 	{
-		$this->gitHubFunctions = $githubFunctions;
+		$this->gitHubFunctions = $gitHubFunctions;
 		$this->isRelease = $this->fetchReleaseInfo();
 		$this->phpUnit = $this->fetchComposerInfo();
 	}
@@ -40,7 +39,7 @@ class LycheeVersion
 	 * Returns true if we are using the release channel
 	 * Returns false if we are using the git channel.
 	 */
-	private function fetchReleaseInfo()
+	private function fetchReleaseInfo(): bool
 	{
 		return !file_exists(base_path('.git'));
 	}
@@ -49,90 +48,69 @@ class LycheeVersion
 	 * Returns true if we are using the release channel
 	 * Returns false if we are using the git channel.
 	 */
-	private function fetchComposerInfo()
+	private function fetchComposerInfo(): bool
 	{
 		return file_exists(base_path('vendor/bin/phpunit'));
 	}
 
 	/**
-	 * Return asked information.
-	 *
-	 * @return array
-	 */
-	public function get()
-	{
-		$versions = [];
-		$versions['channel'] = $this->isRelease ? 'release' : 'git';
-		$versions['composer'] = $this->phpUnit ? 'dev' : '--no-dev';
-		$versions['DB'] = $this->getDBVersion();
-		$versions['Lychee'] = $this->getLycheeVersion();
-
-		return $versions;
-	}
-
-	/**
-	 * Format the version : number (commit id).
-	 */
-	public function format(array $info)
-	{
-		$ret = $info['version'];
-		$ret .= (isset($info['commit']) ? ' (' . $info['commit'] . ')' : '');
-		$ret .= $info['additional'] ?? '';
-
-		return $ret;
-	}
-
-	/**
-	 * @param string $version in the shape of xxyyzz
-	 *
-	 * @return string xx.yy.zz
-	 */
-	public function format_version(string $version)
-	{
-		return implode('.', array_map('intval', str_split($version, 2)));
-	}
-
-	/**
 	 * Return the info about the database.
 	 *
-	 * @return array
+	 * @return Version
 	 */
-	public function getDBVersion()
+	public function getDBVersion(): Version
 	{
-		return ['version' => $this->format_version(Configs::get_value('version', '040000'))];
+		return Version::createFromInt(
+			Configs::get_value('version', '040000')
+		);
 	}
 
 	/**
 	 * Return the info about the version.md file.
 	 *
-	 * @return array
+	 * @return Version
+	 *
+	 * @throws LycheeInvalidArgumentException
+	 * @throws FrameworkException
 	 */
-	public function getFileVersion()
+	public function getFileVersion(): Version
 	{
-		return ['version' => rtrim(@file_get_contents(base_path('version.md')))];
+		try {
+			return Version::createFromString(
+				file_get_contents(base_path('version.md'))
+			);
+		} catch (BindingResolutionException $e) {
+			throw new FrameworkException('Laravel\'s container component', $e);
+		}
 	}
 
 	/**
 	 * Return the information with respect to Lychee.
 	 *
-	 * @return array
+	 * @return LycheeChannelInfo the version of lychee or null if no git data could be found
 	 */
-	private function getLycheeVersion()
+	public function getLycheeChannelInfo(): LycheeChannelInfo
 	{
 		if ($this->isRelease) {
-			// @codeCoverageIgnoreStart
-			return $this->getFileVersion();
-			// @codeCoverageIgnoreEnd
+			try {
+				return LycheeChannelInfo::createReleaseInfo($this->getFileVersion());
+			} catch (FrameworkException|LycheeInvalidArgumentException $e) {
+				return LycheeChannelInfo::createReleaseInfo(null);
+			}
 		}
 
-		$branch = $this->gitHubFunctions->branch;
-		$commit = $this->gitHubFunctions->head;
-		if (!$commit && !$branch) {
-			// @codeCoverageIgnoreStart
-			return ['version' => 'No git data found.'];
-			// @codeCoverageIgnoreEnd
-		}
+		try {
+			$branch = $this->gitHubFunctions->getLocalBranch();
+			$commit = $this->gitHubFunctions->getLocalHead();
+			if (empty($commit) && empty($branch)) {
+				return LycheeChannelInfo::createGitInfo(null);
+			}
 
-		return ['version' => $branch, 'commit' => $commit, 'additional' => $this->gitHubFunctions->get_behind_text()];
+			return LycheeChannelInfo::createGitInfo(
+				new LycheeGitInfo($branch, $commit, $this->gitHubFunctions->get_behind_text())
+			);
+		} catch (VersionControlException) {
+			return LycheeChannelInfo::createGitInfo(null);
+		}
 	}
 }

@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Factories\AlbumFactory;
 use App\Models\Album as AlbumModel;
 use App\Models\Configs;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Livewire\Component;
 
 class Album extends Component
@@ -36,6 +37,9 @@ class Album extends Component
 		$this->albumFactory = $albumFactory;
 	}
 
+	/**
+	 * @throws BindingResolutionException
+	 */
 	public function render()
 	{
 		switch (Configs::get_value('layout')) {

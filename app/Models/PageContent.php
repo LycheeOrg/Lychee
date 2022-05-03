@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\Extensions\ThrowsConsistentExceptions;
+use App\Models\Extensions\UseFixedQueryBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Markdown;
@@ -18,21 +19,12 @@ use Markdown;
  * @property int         $order
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
- * @method static Builder|PageContent newModelQuery()
- * @method static Builder|PageContent newQuery()
- * @method static Builder|PageContent query()
- * @method static Builder|PageContent whereClass($value)
- * @method static Builder|PageContent whereContent($value)
- * @method static Builder|PageContent whereCreatedAt($value)
- * @method static Builder|PageContent whereId($value)
- * @method static Builder|PageContent whereOrder($value)
- * @method static Builder|PageContent wherePageId($value)
- * @method static Builder|PageContent whereType($value)
- * @method static Builder|PageContent whereUpdatedAt($value)
  */
 class PageContent extends Model
 {
+	use ThrowsConsistentExceptions;
+	use UseFixedQueryBuilder;
+
 	/**
 	 * Return content.
 	 * It can be an image -> create a img tag, `content` is the url of the image

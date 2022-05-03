@@ -2,9 +2,11 @@
 
 namespace App\ModelFunctions;
 
+use App\Assets\Helpers;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\Lang;
 use App\Models\Configs;
-use Illuminate\Database\QueryException;
+use Illuminate\Support\Collection;
 
 class ConfigFunctions
 {
@@ -13,7 +15,7 @@ class ConfigFunctions
 	 *
 	 * @return array
 	 */
-	public function get_pages_infos()
+	public function get_pages_infos(): array
 	{
 		$infos = [
 			'owner' => Configs::get_value('landing_owner'),
@@ -39,12 +41,16 @@ class ConfigFunctions
 	/**
 	 * Returns the public settings of Lychee (served to diagnostics).
 	 *
-	 * @return array
+	 * @return Collection
+	 *
+	 * @throws QueryBuilderException
 	 */
-	public function min_info()
+	public function min_info(): Collection
 	{
-		// Execute query
-		return Configs::info()->orderBy('id', 'ASC')->get()->pluck('value', 'key');
+		return Configs::info()
+			->orderBy('id', 'ASC')
+			->get()
+			->pluck('value', 'key');
 	}
 
 	/**
@@ -52,13 +58,9 @@ class ConfigFunctions
 	 *
 	 * @return array
 	 */
-	public function public()
+	public function public(): array
 	{
-		// Execute query
-		$return = Configs::public()->pluck('value', 'key')->all();
-		$return['sorting_Albums'] = 'ORDER BY ' . $return['sorting_Albums_col'] . ' ' . $return['sorting_Albums_order'];
-
-		return $return;
+		return Configs::public()->pluck('value', 'key')->all();
 	}
 
 	/**
@@ -66,13 +68,9 @@ class ConfigFunctions
 	 *
 	 * @return array
 	 */
-	public function admin()
+	public function admin(): array
 	{
-		// Execute query
 		$return = Configs::admin()->pluck('value', 'key')->all();
-		$return['sorting_Photos'] = 'ORDER BY ' . $return['sorting_Photos_col'] . ' ' . $return['sorting_Photos_order'];
-		$return['sorting_Albums'] = 'ORDER BY ' . $return['sorting_Albums_col'] . ' ' . $return['sorting_Albums_order'];
-
 		$return['lang_available'] = Lang::get_lang_available();
 
 		return $return;
@@ -83,23 +81,33 @@ class ConfigFunctions
 	 *
 	 * @param array $return
 	 */
-	public function sanity(array &$return)
+	public function sanity(array &$return): void
 	{
-		try {
-			$configs = Configs::all(['key', 'value', 'type_range']);
+		$configs = Configs::all(['key', 'value', 'type_range']);
 
-			foreach ($configs as $config) {
-				$message = $config->sanity($config->value);
-				if ($message != '') {
-					$return[] = $message;
-				}
+		foreach ($configs as $config) {
+			$message = $config->sanity($config->value);
+			if ($message != '') {
+				$return[] = $message;
 			}
-		} catch (QueryException $e) {
-			$return[] = 'Error: ' . $e->getMessage();
 		}
 	}
 
-	public function get_config_device(string $device)
+	/**
+	 * TODO: Get rid of this method.
+	 *
+	 * This method returns a hard-coded array of booleans which are flipped
+	 * if the client is a television.
+	 * However, the client knows by itself if it is a television or not.
+	 * Hence, these values should be part of the front-end code.
+	 *
+	 * See also {@link Helpers::getDeviceType()}.
+	 *
+	 * @param string $device
+	 *
+	 * @return array
+	 */
+	public function get_config_device(string $device): array
 	{
 		$true = true;
 		$false = false;

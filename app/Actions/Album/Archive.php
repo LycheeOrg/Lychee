@@ -3,15 +3,16 @@
 namespace App\Actions\Album;
 
 use App\Contracts\AbstractAlbum;
-use App\Contracts\BaseAlbum;
+use App\Exceptions\Internal\FrameworkException;
 use App\Facades\AccessControl;
 use App\Facades\Helpers;
 use App\Models\Album;
 use App\Models\Configs;
-use App\Models\Logs;
+use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -29,16 +30,24 @@ class Archive extends Action
 		'<', '>', ':', '"', '/', '\\', '|', '?', '*',
 	];
 
+	protected ExceptionHandler $exceptionHandler;
+
+	public function __construct()
+	{
+		parent::__construct();
+		$this->exceptionHandler = resolve(ExceptionHandler::class);
+	}
+
 	/**
-	 * @param array $albumIDs
+	 * @param Collection<AbstractAlbum> $albums
 	 *
 	 * @return StreamedResponse
+	 *
+	 * @throws FrameworkException
 	 */
-	public function do(array $albumIDs): StreamedResponse
+	public function do(Collection $albums): StreamedResponse
 	{
-		$albums = $this->albumFactory->findWhereIDsIn($albumIDs);
-
-		$response = new StreamedResponse(function () use ($albums) {
+		$responseGenerator = function () use ($albums) {
 			$options = new \ZipStream\Option\Archive();
 			$options->setEnableZip64(Configs::get_value('zip64', '1') === '1');
 			$zip = new ZipStream(null, $options);
@@ -50,22 +59,27 @@ class Archive extends Action
 
 			// finish the zip stream
 			$zip->finish();
-		});
+		};
 
-		// Set file type and destination
-		$zipTitle = self::createZipTitle($albums);
-		$disposition = HeaderUtils::makeDisposition(
-			HeaderUtils::DISPOSITION_ATTACHMENT,
-			$zipTitle . '.zip',
-			mb_check_encoding($zipTitle, 'ASCII') ? '' : 'Album.zip'
-		);
-		$response->headers->set('Content-Type', 'application/x-zip');
-		$response->headers->set('Content-Disposition', $disposition);
+		try {
+			$response = new StreamedResponse($responseGenerator);
+			// Set file type and destination
+			$zipTitle = self::createZipTitle($albums);
+			$disposition = HeaderUtils::makeDisposition(
+				HeaderUtils::DISPOSITION_ATTACHMENT,
+				$zipTitle . '.zip',
+				mb_check_encoding($zipTitle, 'ASCII') ? '' : 'Album.zip'
+			);
+			$response->headers->set('Content-Type', 'application/x-zip');
+			$response->headers->set('Content-Disposition', $disposition);
 
-		// Disable caching
-		$response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
-		$response->headers->set('Pragma', 'no-cache');
-		$response->headers->set('Expires', '0');
+			// Disable caching
+			$response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+			$response->headers->set('Pragma', 'no-cache');
+			$response->headers->set('Expires', '0');
+		} catch (\InvalidArgumentException $e) {
+			throw new FrameworkException('Symfony\'s response component', $e);
+		}
 
 		return $response;
 	}
@@ -154,43 +168,48 @@ class Archive extends Action
 		}
 
 		$usedFileNames = [];
+		// TODO: Ensure that the size variant `original` for each photo is eagerly loaded as it is needed below. This must be solved in close coordination with `ArchiveAlbumRequest`.
 		$photos = $album->photos;
 
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
-			// For photos in smart or tag albums, skip the ones that are not
-			// downloadable based on their actual parent album.  The test for
-			// album_id == null shouldn't really be needed as all such photos
-			// in smart albums should be owned by the current user...
-			if (($album instanceof BaseSmartAlbum || $album instanceof TagAlbum) &&
-			!AccessControl::is_current_user($photo->owner_id) &&
-			!($photo->album_id == null ? $album->is_downloadable : $photo->album->is_downloadable)) {
-				continue;
+			try {
+				// For photos in smart or tag albums, skip the ones that are not
+				// downloadable based on their actual parent album.  The test for
+				// album_id == null shouldn't really be needed as all such photos
+				// in smart albums should be owned by the current user...
+				if (($album instanceof BaseSmartAlbum || $album instanceof TagAlbum) &&
+					!AccessControl::is_current_user_or_admin($photo->owner_id) &&
+					!($photo->album_id == null ? $album->is_downloadable : $photo->album->is_downloadable)) {
+					continue;
+				}
+
+				$fullPath = $photo->size_variants->getOriginal()->full_path;
+
+				// Set title for photo
+				$extension = Helpers::getExtension($fullPath, false);
+				$fileBaseName = $this->makeUnique(self::createValidTitle($photo->title), $usedFileNames);
+				$fileName = $fullNameOfDirectory . '/' . $fileBaseName . $extension;
+
+				// Reset the execution timeout for every iteration.
+				set_time_limit(ini_get('max_execution_time'));
+				$zip->addFileFromPath($fileName, $fullPath);
+			} catch (\Throwable $e) {
+				$this->exceptionHandler->report($e);
 			}
-
-			$fullPath = $photo->size_variants->getOriginal()->full_path;
-			// Check if readable
-			if (!@is_readable($fullPath)) {
-				Logs::error(__METHOD__, __LINE__, 'Original photo missing: ' . $fullPath);
-				continue;
-			}
-
-			// Set title for photo
-			$extension = Helpers::getExtension($fullPath, false);
-			$fileBaseName = $this->makeUnique(self::createValidTitle($photo->title), $usedFileNames);
-			$fileName = $fullNameOfDirectory . '/' . $fileBaseName . $extension;
-
-			// Reset the execution timeout for every iteration.
-			set_time_limit(ini_get('max_execution_time'));
-			$zip->addFileFromPath($fileName, $fullPath);
 		}
 
 		// Recursively compress sub-albums
 		if ($album instanceof Album) {
 			$subDirs = [];
+			// TODO: For higher efficiency, ensure that the photos of each child album together with the original size variant are eagerly loaded.
 			$subAlbums = $album->children;
 			foreach ($subAlbums as $subAlbum) {
-				$this->compressAlbum($subAlbum, $subDirs, $fullNameOfDirectory, $zip);
+				try {
+					$this->compressAlbum($subAlbum, $subDirs, $fullNameOfDirectory, $zip);
+				} catch (\Throwable $e) {
+					$this->exceptionHandler->report($e);
+				}
 			}
 		}
 	}
@@ -207,6 +226,6 @@ class Archive extends Action
 		return
 			$album->is_downloadable ||
 			($album instanceof BaseSmartAlbum && AccessControl::is_logged_in()) ||
-			($album instanceof BaseAlbum && AccessControl::is_current_user($album->owner_id));
+			($album instanceof BaseAlbum && AccessControl::is_current_user_or_admin($album->owner_id));
 	}
 }

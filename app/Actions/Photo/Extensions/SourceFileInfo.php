@@ -2,6 +2,8 @@
 
 namespace App\Actions\Photo\Extensions;
 
+use App\Exceptions\ExternalComponentMissingException;
+use App\Exceptions\MediaFileOperationException;
 use App\Image\MediaFile;
 use App\Image\NativeLocalFile;
 use App\Image\TemporaryLocalFile;
@@ -107,29 +109,36 @@ class SourceFileInfo
 	 * @param UploadedFile $file the uploaded file
 	 *
 	 * @return SourceFileInfo the new instance
+	 *
+	 * @throws ExternalComponentMissingException
+	 * @throws MediaFileOperationException
 	 */
 	public static function createByUploadedFile(UploadedFile $file): SourceFileInfo
 	{
-		$fallbackTitle = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+		try {
+			$fallbackTitle = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
 
-		// We must use `->getClientMimeType` here and not `->getMimeType`,
-		// even though the documentation recommends otherwise and assess
-		// `->getClientMimeType` as an unsecure value.
-		// However, PHP temporarily stores the uploaded file without
-		// a file extensions which let `->getMimeType` sporadically fail and
-		// return `'application/octet-stream'`.
-		//
-		// Note: I haven't yet found out what other conditions need to be met
-		// for `->getMimeType` to fail.
-		// For example there are some MP4 videos which are reliably detected
-		// as `video/mp4` even without a file extension and there some other
-		// MP4 videos which are not detected correctly.
-		return new self(
-			$fallbackTitle,
-			'.' . $file->getClientOriginalExtension(),
-			$file->getClientMimeType(),
-			NativeLocalFile::createFromUploadedFile($file)
-		);
+			// We must use `->getClientMimeType` here and not `->getMimeType`,
+			// even though the documentation recommends otherwise and assess
+			// `->getClientMimeType` as an unsecure value.
+			// However, PHP temporarily stores the uploaded file without
+			// a file extensions which let `->getMimeType` sporadically fail and
+			// return `'application/octet-stream'`.
+			//
+			// Note: I haven't yet found out what other conditions need to be met
+			// for `->getMimeType` to fail.
+			// For example there are some MP4 videos which are reliably detected
+			// as `video/mp4` even without a file extension and there some other
+			// MP4 videos which are not detected correctly.
+			return new self(
+				$fallbackTitle,
+				'.' . $file->getClientOriginalExtension(),
+				$file->getClientMimeType(),
+				NativeLocalFile::createFromUploadedFile($file)
+			);
+		} catch (\LogicException $e) {
+			throw new ExternalComponentMissingException('MIME component not installed', $e);
+		}
 	}
 
 	/**

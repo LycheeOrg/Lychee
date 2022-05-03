@@ -2,6 +2,8 @@
 
 namespace App\Image;
 
+use App\Exceptions\MediaFileOperationException;
+
 /**
  * Class TemporaryLocalFile.
  *
@@ -13,7 +15,7 @@ class TemporaryLocalFile extends NativeLocalFile
 	/**
 	 * @param string $fileExtension the file extension of the new temporary file incl. a preceding dot
 	 *
-	 * @throws \RuntimeException
+	 * @throws MediaFileOperationException
 	 */
 	public function __construct(string $fileExtension)
 	{
@@ -39,7 +41,7 @@ class TemporaryLocalFile extends NativeLocalFile
 			}
 		} while (!$success && $retryCounter > 0);
 		if (!$success) {
-			throw new \RuntimeException('unable to create temporary file');
+			throw new MediaFileOperationException('unable to create temporary file');
 		}
 		parent::__construct($tempFilePath);
 	}

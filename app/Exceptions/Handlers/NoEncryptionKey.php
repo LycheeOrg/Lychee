@@ -2,44 +2,51 @@
 
 namespace App\Exceptions\Handlers;
 
+use App\Contracts\HttpExceptionHandler;
 use App\Redirections\ToInstall;
-use Exception;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use RuntimeException;
+use Illuminate\Encryption\MissingAppKeyException;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface as HttpException;
 use Throwable;
 
-class NoEncryptionKey
+/**
+ * Class NoEncryptionKey.
+ *
+ * If no encryption key exists, we need to run the installation.
+ */
+class NoEncryptionKey implements HttpExceptionHandler
 {
 	/**
-	 * Render an exception into an HTTP response.
-	 *
-	 * @param Request   $request
-	 * @param Throwable $exception
-	 *
-	 * @return bool
+	 * {@inheritDoc}
 	 */
-	public function check(Request $request, Throwable $exception)
+	public function check(HttpException $e): bool
 	{
-		// encryption key does not exist, we need to run the installation
-		return $exception instanceof RuntimeException && $exception->getMessage() === 'No application encryption key has been specified.';
+		do {
+			if ($e instanceof MissingAppKeyException) {
+				return true;
+			}
+		} while ($e = $e->getPrevious());
+
+		return false;
 	}
 
 	/**
-	 * @return Response|RedirectResponse
+	 * {@inheritDoc}
 	 */
-	// @codeCoverageIgnoreStart
-	public function go()
+	public function renderHttpException(SymfonyResponse $defaultResponse, HttpException $e): SymfonyResponse
 	{
 		try {
 			touch(base_path('.NO_SECURE_KEY'));
+			$redirectResponse = ToInstall::go();
+			$contentType = $defaultResponse->headers->get('Content-Type');
+			if (!empty($contentType)) {
+				$redirectResponse->headers->set('Content-Type', $contentType);
+				$redirectResponse->setContent($defaultResponse->getContent());
+			}
 
-			return ToInstall::go();
-		} catch (Exception $e) {
-			return response()->view('error.error', ['code' => '500', 'message' => 'WRITE ACCESS REQUIRED on ' . base_path() . '<br>in order to create <code>.NO_SECURE_KEY</code>, <code>.env</code>, <code>installed.log</code> files']);
+			return $redirectResponse;
+		} catch (Throwable) {
+			return $defaultResponse;
 		}
 	}
-
-	// @codeCoverageIgnoreEnd
 }

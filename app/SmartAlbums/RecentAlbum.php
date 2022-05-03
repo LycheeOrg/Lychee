@@ -3,6 +3,8 @@
 namespace App\SmartAlbums;
 
 use App\Models\Configs;
+use Carbon\Exceptions\InvalidFormatException;
+use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
@@ -12,6 +14,10 @@ class RecentAlbum extends BaseSmartAlbum
 	public const ID = 'recent';
 	public const TITLE = 'Recent';
 
+	/**
+	 * @throws InvalidFormatException
+	 * @throws InvalidTimeZoneException
+	 */
 	protected function __construct()
 	{
 		$strRecent = $this->fromDateTime(

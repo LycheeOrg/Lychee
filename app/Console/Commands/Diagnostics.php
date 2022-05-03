@@ -6,16 +6,18 @@ use App\Actions\Diagnostics\Configuration;
 use App\Actions\Diagnostics\Errors;
 use App\Actions\Diagnostics\Info;
 use App\Console\Commands\Utilities\Colorize;
+use App\Contracts\ExternalLycheeException;
+use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\UnexpectedException;
 use Illuminate\Console\Command;
+use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class Diagnostics extends Command
 {
 	/**
 	 * Add color to the command line output.
-	 *
-	 * @var Colorize
 	 */
-	private $col;
+	private Colorize $col;
 
 	/**
 	 * The name and signature of the console command.
@@ -29,12 +31,12 @@ class Diagnostics extends Command
 	 *
 	 * @var string
 	 */
-	protected $description = 'Show the diagnostics informations.';
+	protected $description = 'Show diagnostic information.';
 
 	/**
 	 * Create a new command instance.
 	 *
-	 * @return void
+	 * @throws SymfonyConsoleException
 	 */
 	public function __construct(
 		Colorize $colorize
@@ -62,16 +64,24 @@ class Diagnostics extends Command
 	/**
 	 * Execute the console command.
 	 *
-	 * @return mixed
+	 * @return int
+	 *
+	 * @throws ExternalLycheeException
 	 */
-	public function handle()
+	public function handle(): int
 	{
-		$this->line('');
-		$this->line('');
-		$this->block('Diagnostics', resolve(Errors::class)->get());
-		$this->line('');
-		$this->block('System Information', resolve(Info::class)->get());
-		$this->line('');
-		$this->block('Config Information', resolve(Configuration::class)->get());
+		try {
+			$this->line('');
+			$this->line('');
+			$this->block('Diagnostics', resolve(Errors::class)->get());
+			$this->line('');
+			$this->block('System Information', resolve(Info::class)->get());
+			$this->line('');
+			$this->block('Config Information', resolve(Configuration::class)->get());
+		} catch (QueryBuilderException $e) {
+			throw new UnexpectedException($e);
+		}
+
+		return 0;
 	}
 }

@@ -2,6 +2,8 @@
 
 namespace App\Actions\SizeVariant;
 
+use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\ModelDBException;
 use App\Image\FileDeleter;
 use App\Models\SizeVariant;
 use App\Models\SymLink;
@@ -43,46 +45,54 @@ class Delete
 	 * This object can (and must) be used to eventually delete the files,
 	 * however doing so can be deferred.
 	 *
-	 * @param string[] $svIds the size variant IDs
+	 * @param string[] $svIDs the size variant IDs
 	 *
 	 * @return FileDeleter contains the collected files which became obsolete
+	 *
+	 * @throws ModelDBException
 	 */
-	public function do(array $svIds): FileDeleter
+	public function do(array $svIDs): FileDeleter
 	{
-		$fileDeleter = new FileDeleter();
+		try {
+			$fileDeleter = new FileDeleter();
 
-		// Get all short paths of size variants which are going to be deleted.
-		// But exclude those short paths which are duplicated by a size
-		// variant which is not going to be deleted.
-		$svShortPaths = SizeVariant::query()
-			->from('size_variants as sv')
-			->select(['sv.short_path'])
-			->leftJoin('size_variants as dup', function (JoinClause $join) use ($svIds) {
-				$join
-					->on('dup.short_path', '=', 'sv.short_path')
-					->whereNotIn('dup.id', $svIds);
-			})
-			->whereIn('sv.id', $svIds)
-			->whereNull('dup.id')
-			->pluck('sv.short_path');
-		$fileDeleter->addRegularFilesOrSymbolicLinks($svShortPaths);
+			// Get all short paths of size variants which are going to be deleted.
+			// But exclude those short paths which are duplicated by a size
+			// variant which is not going to be deleted.
+			$svShortPaths = SizeVariant::query()
+				->from('size_variants as sv')
+				->select(['sv.short_path'])
+				->leftJoin('size_variants as dup', function (JoinClause $join) use ($svIDs) {
+					$join
+						->on('dup.short_path', '=', 'sv.short_path')
+						->whereNotIn('dup.id', $svIDs);
+				})
+				->whereIn('sv.id', $svIDs)
+				->whereNull('dup.id')
+				->pluck('sv.short_path');
+			$fileDeleter->addRegularFilesOrSymbolicLinks($svShortPaths);
 
-		// Get all short paths of symbolic links which point to size variants
-		// which are going to be deleted
-		$symLinkPaths = SymLink::query()
-			->select(['sym_links.short_path'])
-			->whereIn('sym_links.size_variant_id', $svIds)
-			->pluck('sym_links.short_path');
-		$fileDeleter->addSymbolicLinks($symLinkPaths);
+			// Get all short paths of symbolic links which point to size variants
+			// which are going to be deleted
+			$symLinkPaths = SymLink::query()
+				->select(['sym_links.short_path'])
+				->whereIn('sym_links.size_variant_id', $svIDs)
+				->pluck('sym_links.short_path');
+			$fileDeleter->addSymbolicLinks($symLinkPaths);
 
-		// Delete records from DB in "inverse" order to not break foreign keys
-		SymLink::query()
-			->whereIn('sym_links.size_variant_id', $svIds)
-			->delete();
-		SizeVariant::query()
-			->whereIn('id', $svIds)
-			->delete();
+			// Delete records from DB in "inverse" order to not break foreign keys
+			SymLink::query()
+				->whereIn('sym_links.size_variant_id', $svIDs)
+				->delete();
+			SizeVariant::query()
+				->whereIn('id', $svIDs)
+				->delete();
 
-		return $fileDeleter;
+			return $fileDeleter;
+		} catch (QueryBuilderException $e) {
+			throw ModelDBException::create('size variants', 'deleting', $e);
+		} catch (\InvalidArgumentException $e) {
+			assert(false, new \AssertionError('\InvalidArgumentException must not be thrown', $e->getCode(), $e));
+		}
 	}
 }

@@ -7,10 +7,7 @@ use App\Metadata\LycheeVersion;
 
 class IsMigrated implements MiddlewareCheck
 {
-	/**
-	 * @var LycheeVersion
-	 */
-	private $lycheeVersion;
+	private LycheeVersion $lycheeVersion;
 
 	public function __construct(LycheeVersion $lycheeVersion)
 	{
@@ -18,22 +15,21 @@ class IsMigrated implements MiddlewareCheck
 	}
 
 	/**
-	 * @param string $version in the shape of xxyyzz
+	 * TBD.
 	 *
-	 * @return string xx.yy.zz
+	 * The following line of codes are duplicated in
+	 *  - {@link \App\Actions\Diagnostics\Checks\LycheeDBVersionCheck::check()}
+	 *  - {@link \App\Actions\Update\Check::getCode()}.
+	 *
+	 * TODO: Probably, the whole logic around installation and updating should be re-factored. The whole code is wicked.
+	 *
+	 * @return bool
 	 */
-	private function intify(string $version): int
-	{
-		$v = explode('.', $version);
-
-		return 10000 * ($v[0] ?? 0) + 100 * ($v[1] ?? 0) + ($v[2] ?? 0);
-	}
-
 	public function assert(): bool
 	{
-		$db_ver = $this->lycheeVersion->getDBVersion()['version'];
-		$file_ver = $this->lycheeVersion->getFileVersion()['version'];
+		$db_ver = $this->lycheeVersion->getDBVersion();
+		$file_ver = $this->lycheeVersion->getFileVersion();
 
-		return $this->intify($db_ver) == $this->intify($file_ver);
+		return $db_ver->toInteger() === $file_ver->toInteger();
 	}
 }

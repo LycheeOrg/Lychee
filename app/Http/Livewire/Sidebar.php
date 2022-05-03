@@ -2,26 +2,21 @@
 
 namespace App\Http\Livewire;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use App\Facades\Lang;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\TagAlbum;
-use DebugBar;
+use DebugBar\DebugBar;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Livewire\Component;
 
 class Sidebar extends Component
 {
-	public $title = '';
-	public $data = [];
-	/**
-	 * @var Photo
-	 */
-	public $photo;
-	/**
-	 * @var Album
-	 */
-	public $album;
+	public string $title = '';
+	public array $data = [];
+	public Photo $photo;
+	public Album $album;
 
 	public function mount(Album $album = null, Photo $photo = null)
 	{
@@ -69,7 +64,7 @@ class Sidebar extends Component
 			if ($this->album->sorting_col === '') {
 				$sorting = Lang::get('DEFAULT');
 			} else {
-				$sorting = $this->album->sorting_col + ' ' + $this->album->sorting_order;
+				$sorting = $this->album->sorting_col . ' ' . $this->album->sorting_order;
 			}
 
 			$album->content[] = ['head' => Lang::get('ALBUM_ORDERING'), 'value' => $sorting];
@@ -106,6 +101,9 @@ class Sidebar extends Component
 		}
 	}
 
+	/**
+	 * @throws BindingResolutionException
+	 */
 	public function render()
 	{
 		if ($this->album != null) {

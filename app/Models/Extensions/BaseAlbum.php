@@ -4,8 +4,8 @@ namespace App\Models\Extensions;
 
 use App\Contracts\AbstractAlbum;
 use App\Contracts\HasRandomID;
+use App\DTO\PhotoSortingCriterion;
 use App\Models\BaseAlbumImpl;
-use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -21,28 +21,29 @@ use Illuminate\Support\Carbon;
  * deleted by a user at runtime or more accurately which can be persisted
  * to the DB.
  *
- * @property int           $legacy_id
- * @property Carbon        $created_at
- * @property Carbon        $updated_at
- * @property string|null   $description
- * @property bool          $is_nsfw
- * @property bool          $grants_full_photo
- * @property int           $owner_id
- * @property User          $owner
- * @property Collection    $shared_with
- * @property bool          $requires_link
- * @property string|null   $password
- * @property bool          $has_password
- * @property Carbon|null   $min_taken_at
- * @property Carbon|null   $max_taken_at
- * @property string|null   $sorting_col
- * @property string|null   $sorting_order
- * @property BaseAlbumImpl $base_class
+ * @property int                        $legacy_id
+ * @property Carbon                     $created_at
+ * @property Carbon                     $updated_at
+ * @property string|null                $description
+ * @property bool                       $is_nsfw
+ * @property bool                       $grants_full_photo
+ * @property int                        $owner_id
+ * @property User                       $owner
+ * @property Collection                 $shared_with
+ * @property bool                       $requires_link
+ * @property string|null                $password
+ * @property bool                       $has_password
+ * @property Carbon|null                $min_taken_at
+ * @property Carbon|null                $max_taken_at
+ * @property PhotoSortingCriterion|null $sorting
+ * @property BaseAlbumImpl              $base_class
  */
 abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 {
 	use HasBidirectionalRelationships;
-	use ForwardsToParentImplementation;
+	use ForwardsToParentImplementation, ThrowsConsistentExceptions {
+		ForwardsToParentImplementation::delete insteadof ThrowsConsistentExceptions;
+	}
 
 	/**
 	 * @var string The type of the primary key
@@ -96,31 +97,12 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	}
 
 	/**
-	 * Returns the attribute acc. to which **photos** inside the album shall be sorted.
+	 * Returns the criterion acc. to which **photos** inside the album shall be sorted.
 	 *
-	 * @return string the attribute acc. to which **photos** inside the album shall be sorted
+	 * @return PhotoSortingCriterion the attribute acc. to which **photos** inside the album shall be sorted
 	 */
-	public function getEffectiveSortingCol(): string
+	public function getEffectiveSorting(): PhotoSortingCriterion
 	{
-		$sortingCol = $this->sorting_col;
-
-		return empty($sortingCol) ?
-			Configs::get_value('sorting_Photos_col', 'created_at') :
-			$sortingCol;
-	}
-
-	/**
-	 * Returns the direction acc. to which **photos** inside the album shall be sorted.
-	 *
-	 * @return string the direction acc. to which **photos** inside the album shall be sorted
-	 */
-	public function getEffectiveSortingOrder(): string
-	{
-		$sortingCol = $this->sorting_col;
-		$sortingOrder = $this->sorting_order;
-
-		return empty($sortingCol) || empty($sortingOrder) ?
-			Configs::get_value('sorting_Photos_order', 'ASC') :
-			$sortingOrder;
+		return $this->sorting ?? PhotoSortingCriterion::createDefault();
 	}
 }

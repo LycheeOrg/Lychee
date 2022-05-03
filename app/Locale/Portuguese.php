@@ -136,7 +136,9 @@ final class Portuguese implements Language
 
 			'STAR_PHOTO' => 'Marcar como Favorita',
 			'STAR' => 'Favorita',
+			'UNSTAR' => 'Unstar',
 			'STAR_ALL' => 'Marcar Selecionadas como Favoritas',
+			'UNSTAR_ALL' => 'Unstar Selected',
 			'TAGS' => 'Etiqueta',
 			'TAGS_ALL' => 'Etiquetar Selecionadas',
 			'UNSTAR_PHOTO' => 'Desmarcar como Favorita',

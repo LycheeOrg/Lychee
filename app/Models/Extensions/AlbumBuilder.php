@@ -2,6 +2,8 @@
 
 namespace App\Models\Extensions;
 
+use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
 use Illuminate\Support\Facades\DB;
 use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
@@ -19,6 +21,8 @@ use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
  */
 class AlbumBuilder extends NSQueryBuilder
 {
+	use FixedQueryBuilderTrait;
+
 	/**
 	 * Get the hydrated models without eager loading.
 	 *
@@ -29,6 +33,8 @@ class AlbumBuilder extends NSQueryBuilder
 	 * @param array|string $columns
 	 *
 	 * @return Album[]
+	 *
+	 * @throws InternalLycheeException
 	 */
 	public function getModels($columns = ['*']): array
 	{
@@ -87,5 +93,21 @@ class AlbumBuilder extends NSQueryBuilder
 		}
 
 		return parent::getModels($columns);
+	}
+
+	/**
+	 * Get statistics of errors of the tree.
+	 *
+	 * @return array
+	 *
+	 * @throws QueryBuilderException
+	 */
+	public function countErrors(): array
+	{
+		try {
+			return parent::countErrors();
+		} catch (\Throwable $e) {
+			throw new QueryBuilderException($e);
+		}
 	}
 }

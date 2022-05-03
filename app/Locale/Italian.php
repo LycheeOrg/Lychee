@@ -138,7 +138,9 @@ final class Italian implements Language
 
 			'STAR_PHOTO' => 'Contrassegna la Foto come Speciale',
 			'STAR' => 'Contrassegna come Speciale',
+			'UNSTAR' => 'Unstar',
 			'STAR_ALL' => 'Contrassegna Tutto come Speciale',
+			'UNSTAR_ALL' => 'Unstar Selected',
 			'TAGS' => 'Tag',
 			'TAGS_ALL' => 'Tagga Tutto',
 			'UNSTAR_PHOTO' => 'Rimuovi dalle Foto Speciali',

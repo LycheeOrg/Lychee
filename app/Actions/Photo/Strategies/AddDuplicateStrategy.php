@@ -2,9 +2,12 @@
 
 namespace App\Actions\Photo\Strategies;
 
+use App\Exceptions\ModelDBException;
+use App\Exceptions\PhotoResyncedException;
 use App\Exceptions\PhotoSkippedException;
 use App\Models\Logs;
 use App\Models\Photo;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AddDuplicateStrategy extends AddBaseStrategy
 {
@@ -13,19 +16,30 @@ class AddDuplicateStrategy extends AddBaseStrategy
 		parent::__construct($parameters, $existing);
 	}
 
+	/**
+	 * @throws PhotoSkippedException
+	 * @throws ModelDBException
+	 * @throws ModelNotFoundException
+	 */
 	public function do(): Photo
 	{
+		$hasBeenReSynced = false;
+
 		// At least update the existing photo with additional metadata if
 		// available
 		$this->hydrateMetadata();
 		if ($this->photo->isDirty()) {
 			Logs::notice(__METHOD__, __LINE__, 'Updating metadata of existing photo.');
 			$this->photo->save();
+			$hasBeenReSynced = true;
 		}
 
 		if ($this->parameters->importMode->shallSkipDuplicates()) {
-			Logs::notice(__METHOD__, __LINE__, 'Skipped upload of existing photo because skipDuplicates is activated');
-			throw new PhotoSkippedException('This photo has been skipped because it\'s already in your library.');
+			if ($hasBeenReSynced) {
+				throw new PhotoResyncedException();
+			} else {
+				throw new PhotoSkippedException();
+			}
 		} else {
 			// Duplicate the existing photo, this will also duplicate all
 			// size variants without actually duplicating physical files

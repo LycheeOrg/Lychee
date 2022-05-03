@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Albums\Smart;
 use App\Actions\Albums\Top;
+use App\Contracts\LycheeException;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
+use Illuminate\Routing\Controller;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 class DemoController extends Controller
 {
@@ -21,6 +25,11 @@ class DemoController extends Controller
 	 * Call /demo and use the generated code to replace the api.post() function
 	 *
 	 * @return Response|RedirectResponse
+	 *
+	 * @throws LycheeException
+	 * @throws BindingResolutionException
+	 * @throws RouteNotFoundException
+	 * @throws ModelNotFoundException
 	 */
 	public function js()
 	{
@@ -46,12 +55,11 @@ class DemoController extends Controller
 		 */
 		$albums_controller = resolve(AlbumsController::class);
 		$top = resolve(Top::class);
-		$smart = resolve(Smart::class);
 
 		$return_albums = [];
 		$return_albums['name'] = 'Albums::get';
 		$return_albums['type'] = 'string';
-		$return_albums['data'] = json_encode($albums_controller->get($top, $smart));
+		$return_albums['data'] = json_encode($albums_controller->get($top));
 
 		$functions[] = $return_albums;
 

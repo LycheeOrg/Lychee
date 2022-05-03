@@ -3,6 +3,9 @@
 namespace App\Actions\Album;
 
 use App\Actions\Photo\Delete as PhotoDelete;
+use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Image\FileDeleter;
 use App\Models\Album;
@@ -50,6 +53,8 @@ class Delete extends Action
 	 * @param string[] $albumIDs the album IDs
 	 *
 	 * @return FileDeleter contains the collected files which became obsolete
+	 *
+	 * @throws ModelDBException
 	 */
 	public function do(array $albumIDs): FileDeleter
 	{
@@ -117,14 +122,22 @@ class Delete extends Action
 			})->delete();
 
 			return $fileDeleter;
-		} catch (\Exception $e) {
+		} catch (QueryBuilderException|InternalLycheeException $e) {
 			try {
 				// if anything goes wrong, don't leave the tree in an inconsistent state
 				Album::query()->fixTree();
 			} catch (\Throwable) {
 				// Sic! We cannot do anything about the inner exception
 			}
-			throw $e;
+			throw ModelDBException::create('albums', 'deleting', $e);
+		} catch (\InvalidArgumentException $e) {
+			try {
+				// if anything goes wrong, don't leave the tree in an inconsistent state
+				Album::query()->fixTree();
+			} catch (\Throwable) {
+				// Sic! We cannot do anything about the inner exception
+			}
+			assert(false, new \AssertionError('\InvalidArgumentException must not be thrown by ->where', $e->getCode(), $e));
 		}
 	}
 }

@@ -137,7 +137,9 @@ final class Czech implements Language
 
 			'STAR_PHOTO' => 'Označit jako oblíbené',
 			'STAR' => 'Označit jako oblíbené',
+			'UNSTAR' => 'Unstar',
 			'STAR_ALL' => 'Vše označit jako oblíbené',
+			'UNSTAR_ALL' => 'Unstar Selected',
 			'TAGS' => 'Štítek',
 			'TAGS_ALL' => 'Oštítkovat vše',
 			'UNSTAR_PHOTO' => 'Odebrat z oblíbených',

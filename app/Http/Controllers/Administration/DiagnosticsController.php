@@ -1,9 +1,5 @@
 <?php
 
-/** @noinspection PhpComposerExtensionStubsInspection */
-
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Controllers\Administration;
 
 use App\Actions\Diagnostics\Configuration;
@@ -11,73 +7,68 @@ use App\Actions\Diagnostics\Errors;
 use App\Actions\Diagnostics\Info;
 use App\Actions\Diagnostics\Space;
 use App\Actions\Update\Check as CheckUpdate;
+use App\Contracts\InternalLycheeException;
+use App\Contracts\LycheeException;
+use App\DTO\DiagnosticInfo;
+use App\Exceptions\Internal\FrameworkException;
 use App\Facades\AccessControl;
-use App\Http\Controllers\Controller;
-use Illuminate\View\View;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Contracts\View\View;
+use Illuminate\Routing\Controller;
 
 class DiagnosticsController extends Controller
 {
-	/**
-	 * Return the requested information.
-	 *
-	 * @return array
-	 */
-	private function get_data()
+	public const ERROR_MSG = 'You must have administrator rights to see this.';
+
+	private function isAuthorized(): bool
 	{
-		$errors = resolve(Errors::class)->get();
-
-		if (AccessControl::is_admin() || AccessControl::noLogin()) {
-			$infos = resolve(Info::class)->get();
-			$configs = resolve(Configuration::class)->get();
-		} else {
-			$infos = ['You must be logged in to see this.'];
-			$configs = ['You must be logged in to see this.'];
-		}
-
-		return [
-			'errors' => $errors,
-			'infos' => $infos,
-			'configs' => $configs,
-		];
+		return AccessControl::is_admin() || AccessControl::noLogin();
 	}
 
 	/**
 	 * This function return the Diagnostic data as an JSON array.
 	 * should be used for AJAX request.
 	 *
-	 * @return array
+	 * @param Errors        $checkErrors
+	 * @param Info          $collectInfo
+	 * @param Configuration $config
+	 * @param CheckUpdate   $checkUpdate
+	 *
+	 * @return DiagnosticInfo
+	 *
+	 * @throws InternalLycheeException
 	 */
-	public function get(CheckUpdate $checkUpdate)
+	public function get(Errors $checkErrors, Info $collectInfo, Configuration $config, CheckUpdate $checkUpdate): DiagnosticInfo
 	{
-		$ret = $this->get_data();
-		$ret['update'] = $checkUpdate->getCode();
+		$authorized = $this->isAuthorized();
 
-		return $ret;
+		return new DiagnosticInfo($checkErrors->get(), $authorized ? $collectInfo->get() : [self::ERROR_MSG], $authorized ? $config->get() : [self::ERROR_MSG], $checkUpdate->getCode());
 	}
 
 	/**
 	 * Return the diagnostic information as a page.
 	 *
 	 * @return View
+	 *
+	 * @throws LycheeException
 	 */
-	public function show()
+	public function view(Errors $checkErrors, Info $collectInfo, Configuration $config, CheckUpdate $checkUpdate): View
 	{
-		return view('diagnostics', $this->get_data());
+		try {
+			return view('diagnostics', $this->get($checkErrors, $collectInfo, $config, $checkUpdate));
+		} catch (BindingResolutionException $e) {
+			throw new FrameworkException('Laravel\'s view component', $e);
+		}
 	}
 
 	/**
 	 * Return the size used by Lychee.
 	 * We now separate this from the initial get() call as this is quite time consuming.
 	 *
-	 * @return array
+	 * @return string[] list of messages
 	 */
-	public function get_size()
+	public function getSize(Space $space): array
 	{
-		$infos = ['You must be logged in to see this.'];
-		if (AccessControl::is_admin() || AccessControl::noLogin()) {
-			$infos = resolve(Space::class)->get();
-		}
-
-		return $infos;
+		return $this->isAuthorized() ? $space->get() : [self::ERROR_MSG];
 	}
 }

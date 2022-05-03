@@ -2,6 +2,10 @@
 
 namespace App\Image;
 
+use App\Exceptions\Internal\LycheeDomainException;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\MediaFileUnsupportedException;
+
 /**
  * Interface ImageHandlerInterface.
  *
@@ -44,7 +48,10 @@ interface ImageHandlerInterface
 	 * @param int    &$resWidth
 	 * @param int    &$resHeight
 	 *
-	 * @return bool
+	 * @return void
+	 *
+	 * @throws MediaFileUnsupportedException
+	 * @throws MediaFileOperationException
 	 */
 	public function scale(
 		string $source,
@@ -53,7 +60,7 @@ interface ImageHandlerInterface
 		int $newHeight,
 		int &$resWidth,
 		int &$resHeight
-	): bool;
+	): void;
 
 	/**
 	 * TODO: Get rid of the parameters `$source` and `$destination`. See comment on the interface.
@@ -63,14 +70,17 @@ interface ImageHandlerInterface
 	 * @param int    $newWidth
 	 * @param int    $newHeight
 	 *
-	 * @return bool
+	 * @return void
+	 *
+	 * @throws MediaFileUnsupportedException
+	 * @throws MediaFileOperationException
 	 */
 	public function crop(
 		string $source,
 		string $destination,
 		int $newWidth,
 		int $newHeight
-	): bool;
+	): void;
 
 	/**
 	 * Rotates and flips a photo based on its EXIF orientation.
@@ -81,18 +91,25 @@ interface ImageHandlerInterface
 	 * @param int    $orientation the orientation value (1..8) as defined by EXIF specification, default is 1 (means up-right and not mirrored/flipped)
 	 * @param bool   $pretend
 	 *
-	 * @return array an associative array `['width' => (int), 'height' => (int)]` with the new width and height after rotation
+	 * @return array{width: int, height: int} an associative array `['width' => (int), 'height' => (int)]` with the new width and height after rotation
+	 *
+	 * @throws MediaFileUnsupportedException
+	 * @throws MediaFileOperationException
 	 */
 	public function autoRotate(string $path, int $orientation = 1, bool $pretend = false): array;
 
 	/**
 	 * TODO: Get rid of the parameters `$source` and `$destination`. See comment on the interface.
 	 *
-	 * @param string $source
-	 * @param int    $angle
-	 * @param string $destination if `null`, the image is rotated in place
+	 * @param string  $source
+	 * @param int     $angle
+	 * @param ?string $destination if `null`, the image is rotated in place
 	 *
-	 * @return bool
+	 * @return void
+	 *
+	 * @throws MediaFileUnsupportedException
+	 * @throws MediaFileOperationException
+	 * @throws LycheeDomainException         thrown if `$angle` is out-of-bounds
 	 */
-	public function rotate(string $source, int $angle, string $destination = null): bool;
+	public function rotate(string $source, int $angle, ?string $destination = null): void;
 }

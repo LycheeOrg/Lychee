@@ -23,6 +23,10 @@
 	RewriteRule ^(css|dist|img|installer|js|src)/ - [L]
 	RewriteRule ^(sym|uploads)/ - [L,E=no-gzip:1]
 
+    # Ensure that streamed responses are not cached,
+    # because Apache tries to ZIP them
+    RewriteRule (Album::getArchive|Photo::getArchive|Import::server) - [E=no-gzip:1]
+
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f

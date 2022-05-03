@@ -2,9 +2,11 @@
 
 namespace App\Image;
 
+use App\Exceptions\MediaFileOperationException;
 use App\Models\SymLink;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
+use League\Flysystem\Adapter\Local as LocalAdapter;
 
 /**
  * Class FileDeleter.
@@ -74,42 +76,63 @@ class FileDeleter
 	/**
 	 * Deletes the collected files.
 	 *
-	 * @return bool
+	 * @return void
+	 *
+	 * @throws MediaFileOperationException
 	 */
-	public function do(): bool
+	public function do(): void
 	{
-		$success = true;
+		/** @var \Throwable|null $firstException */
+		$firstException = null;
 
 		// TODO: When we use proper `File` objects, each file knows its associated disk
 		// In the mean time, we assume that any regular file is stored on the default disk.
 		$defaultDisk = Storage::disk();
 		foreach ($this->regularFiles as $regularFile) {
-			if ($defaultDisk->exists($regularFile)) {
-				$success &= $defaultDisk->delete($regularFile);
+			try {
+				if ($defaultDisk->exists($regularFile)) {
+					if (!$defaultDisk->delete($regularFile)) {
+						$firstException = $firstException ?: new \RuntimeException('Storage::delete failed: ' . $regularFile);
+					}
+				}
+			} catch (\Throwable $e) {
+				$firstException = $firstException ?: $e;
 			}
 		}
 
 		// If the disk uses the local driver, we use low-level routines as
 		// these are also able to handle symbolic links in case of doubt
-		$isLocalDisk = ($defaultDisk->getDriver()->getAdapter() instanceof \League\Flysystem\Adapter\Local);
+		$isLocalDisk = ($defaultDisk->getDriver()->getAdapter() instanceof LocalAdapter);
 		if ($isLocalDisk) {
 			foreach ($this->regularFilesOrSymbolicLinks as $fileOrLink) {
-				$absolutePath = $defaultDisk->path($fileOrLink);
-				// This seemingly complicated and redundant statement uses
-				// lazy evaluation and avoid errors for non-existing files.
-				// Also note, the `file_exist` returns `false` for existing,
-				// but dead links.
-				// So the first part takes care of deleting links no matter
-				// if they are dead or alive.
-				// The latter part deletes (regular) files, but avoids errors
-				// in case the file doesn't exist.
-				$success &= ((is_link($absolutePath) && unlink($absolutePath)) || !file_exists($absolutePath) || unlink($absolutePath));
+				try {
+					$absolutePath = $defaultDisk->path($fileOrLink);
+					// Note, `file_exist` returns `false` for existing,
+					// but dead links.
+					// So the first part takes care of deleting links no matter
+					// if they are dead or alive.
+					// The latter part deletes (regular) files, but avoids errors
+					// in case the file doesn't exist.
+					if (is_link($absolutePath) || file_exists($absolutePath)) {
+						if (!unlink($absolutePath)) {
+							$firstException = $firstException ?: new \RuntimeException('unlink failed: ' . $absolutePath);
+						}
+					}
+				} catch (\Throwable $e) {
+					$firstException = $firstException ?: $e;
+				}
 			}
 		} else {
 			// If the disk is not local, we can assume that each file is a regular file
 			foreach ($this->regularFilesOrSymbolicLinks as $regularFile) {
-				if ($defaultDisk->exists($regularFile)) {
-					$success &= $defaultDisk->delete($regularFile);
+				try {
+					if ($defaultDisk->exists($regularFile)) {
+						if (!$defaultDisk->delete($regularFile)) {
+							$firstException = $firstException ?: new \RuntimeException('Storage::delete failed: ' . $regularFile);
+						}
+					}
+				} catch (\Throwable $e) {
+					$firstException = $firstException ?: $e;
 				}
 			}
 		}
@@ -118,12 +141,22 @@ class FileDeleter
 		// In the mean time, we assume that any symbolic link is stored on the same disk
 		$symlinkDisk = Storage::disk(SymLink::DISK_NAME);
 		foreach ($this->symbolicLinks as $symbolicLink) {
-			$absolutePath = $symlinkDisk->path($symbolicLink);
-			// Laravel and Flysystem does not support symbolic links.
-			// So we must use low-level methods here.
-			$success &= ((is_link($absolutePath) && unlink($absolutePath)) || !file_exists($absolutePath));
+			try {
+				$absolutePath = $symlinkDisk->path($symbolicLink);
+				// Laravel and Flysystem does not support symbolic links.
+				// So we must use low-level methods here.
+				if (is_link($absolutePath) || file_exists($absolutePath)) {
+					if (!unlink($absolutePath)) {
+						$firstException = $firstException ?: new \RuntimeException('unlink failed: ' . $absolutePath);
+					}
+				}
+			} catch (\Throwable $e) {
+				$firstException = $firstException ?: $e;
+			}
 		}
 
-		return $success;
+		if ($firstException) {
+			throw new MediaFileOperationException('Could not delete files', $firstException);
+		}
 	}
 }

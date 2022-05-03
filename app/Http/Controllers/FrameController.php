@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\LycheeException;
+use App\Exceptions\ConfigurationException;
+use App\Exceptions\Internal\FrameworkException;
 use App\Facades\Lang;
 use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
-use App\Response;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Controller;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 class FrameController extends Controller
 {
-	/**
-	 * @var ConfigFunctions
-	 */
-	private $configFunctions;
+	private ConfigFunctions $configFunctions;
 
 	/**
 	 * FrameController constructor.
@@ -27,36 +31,44 @@ class FrameController extends Controller
 	/**
 	 * Return the page /frame if enabled.
 	 *
-	 * @return false|string
+	 * @return RedirectResponse|View
+	 *
+	 * @throws LycheeException
 	 */
-	public function init()
+	public function init(): RedirectResponse|View
 	{
-		Configs::get();
+		try {
+			Configs::get();
 
-		if (Configs::get_value('Mod_Frame') != '1') {
-			return redirect()->route('home');
+			if (Configs::get_value('Mod_Frame') != '1') {
+				return redirect()->route('home');
+			}
+
+			$lang = Lang::get_lang();
+			$lang['language'] = Configs::get_value('lang');
+
+			$infos = $this->configFunctions->get_pages_infos();
+			$title = Configs::get_value('site_title');
+
+			return view('frame', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'rss_enable' => false]);
+		} catch (BindingResolutionException|RouteNotFoundException $e) {
+			throw new FrameworkException('Laravel\'s redirect or render component', $e);
 		}
-
-		$lang = Lang::get_lang(Configs::where('key', '=', 'lang')->first());
-		$lang['language'] = Configs::get_value('lang');
-
-		$infos = $this->configFunctions->get_pages_infos();
-		$title = Configs::get_value('site_title');
-
-		return view('frame', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'rss_enable' => false]);
 	}
 
 	/**
-	 * Return is the refresh rate of the the Frame if it is enabled.
+	 * Return is the refresh rate of the Frame if it is enabled.
 	 *
-	 * @return array|string
+	 * @return array
+	 *
+	 * @throws LycheeException
 	 */
-	public function getSettings()
+	public function getSettings(): array
 	{
 		Configs::get();
 
 		if (Configs::get_value('Mod_Frame') != '1') {
-			return Response::error('Frame is not enabled');
+			throw new ConfigurationException('Frame is not enabled');
 		}
 
 		$return = [];

@@ -2,6 +2,7 @@
 
 namespace App\View\Components\Album;
 
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Str;
 use Illuminate\View\Component;
 
@@ -29,6 +30,8 @@ class Thumbimg extends Component
 	 * Get the view / contents that represent the component.
 	 *
 	 * @return \Illuminate\Contracts\View\View|\Closure|string
+	 *
+	 * @throws BindingResolutionException
 	 */
 	public function render()
 	{

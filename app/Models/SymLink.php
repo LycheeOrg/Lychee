@@ -3,8 +3,14 @@
 namespace App\Models;
 
 use App\Casts\MustNotSetCast;
+use App\Exceptions\Internal\FrameworkException;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\ModelDBException;
 use App\Models\Extensions\HasAttributesPatch;
+use App\Models\Extensions\ThrowsConsistentExceptions;
+use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
+use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -28,6 +34,10 @@ class SymLink extends Model
 {
 	use UTCBasedTimes;
 	use HasAttributesPatch;
+	use ThrowsConsistentExceptions {
+		ThrowsConsistentExceptions::delete as private internalDelete;
+	}
+	use UseFixedQueryBuilder;
 
 	public const DISK_NAME = 'symbolic';
 
@@ -59,6 +69,8 @@ class SymLink extends Model
 	 * @param Builder $query the unscoped query
 	 *
 	 * @return Builder the scoped query
+	 *
+	 * @throws InvalidTimeZoneException
 	 */
 	public function scopeExpired(Builder $query): Builder
 	{
@@ -76,10 +88,16 @@ class SymLink extends Model
 	 * into {@link \Illuminate\Support\Facades\Storage::url()}.
 	 *
 	 * @return string the URL to the symbolic link
+	 *
+	 * @throws FrameworkException
 	 */
 	protected function getUrlAttribute(): string
 	{
-		return Storage::disk(self::DISK_NAME)->url($this->short_path);
+		try {
+			return Storage::disk(self::DISK_NAME)->url($this->short_path);
+		} catch (\RuntimeException $e) {
+			throw new FrameworkException('Laravel\'s storage component', $e);
+		}
 	}
 
 	/**
@@ -117,17 +135,20 @@ class SymLink extends Model
 	 * If this method cannot delete the symbolic link, then this method
 	 * cancels the delete operation.
 	 *
-	 * @return bool
+	 * @return bool always returns true
+	 *
+	 * @throws MediaFileOperationException
+	 * @throws ModelDBException
 	 */
 	public function delete(): bool
 	{
 		$fullPath = Storage::disk(self::DISK_NAME)->path($this->short_path);
 		// Laravel and Flysystem does not support symbolic links.
 		// So we must use low-level methods here.
-		if ((is_link($fullPath) && !unlink($fullPath)) || (file_exists($fullPath) && !is_link($fullPath))) {
-			return false;
+		if ((is_link($fullPath) && !unlink($fullPath)) || (file_exists($fullPath)) && !is_link($fullPath)) {
+			throw new MediaFileOperationException('could not delete media file: ' . $fullPath);
 		}
 
-		return parent::delete() !== false;
+		return $this->internalDelete();
 	}
 }

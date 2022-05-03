@@ -3,16 +3,20 @@
 namespace App\Models\Extensions;
 
 use App\Actions\SizeVariant\Delete;
+use App\DTO\DTO;
+use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Exceptions\Internal\InvalidSizeVariantException;
+use App\Exceptions\Internal\LycheeInvalidArgumentException;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\ModelDBException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
-use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Collection;
-use JsonSerializable;
 
 /**
  * Class SizeVariants.
  */
-class SizeVariants implements Arrayable, JsonSerializable
+class SizeVariants extends DTO
 {
 	/** @var Photo the parent object this object is tied to */
 	private Photo $photo;
@@ -32,6 +36,10 @@ class SizeVariants implements Arrayable, JsonSerializable
 	 *                                                   this object is tied to
 	 * @param Collection<SizeVariant>|null $sizeVariants a collection of size
 	 *                                                   variants
+	 *
+	 * @throws LycheeInvalidArgumentException thrown if the photo and the
+	 *                                        collection of size variants don't
+	 *                                        belong together
 	 */
 	public function __construct(Photo $photo, ?Collection $sizeVariants = null)
 	{
@@ -44,10 +52,18 @@ class SizeVariants implements Arrayable, JsonSerializable
 		}
 	}
 
+	/**
+	 * @param SizeVariant $sizeVariant
+	 *
+	 * @return void
+	 *
+	 * @throws LycheeInvalidArgumentException thrown if ID of owning photo
+	 *                                        does not match
+	 */
 	public function add(SizeVariant $sizeVariant): void
 	{
 		if ($sizeVariant->photo_id !== $this->photo->id) {
-			throw new \UnexpectedValueException('ID of owning photo does not match');
+			throw new LycheeInvalidArgumentException('ID of owning photo does not match');
 		}
 		$sizeVariant->setRelation('photo', $this->photo);
 
@@ -74,11 +90,11 @@ class SizeVariants implements Arrayable, JsonSerializable
 				$ref = &$this->thumb;
 				break;
 			default:
-				throw new \UnexpectedValueException('size variant ' . $sizeVariant . 'invalid');
+				throw new LycheeInvalidArgumentException('size variant ' . $sizeVariant . 'invalid');
 		}
 
 		if ($ref && $ref->id !== $sizeVariant->id) {
-			throw new \UnexpectedValueException('Another size variant of the same type has already been added');
+			throw new LycheeInvalidArgumentException('Another size variant of the same type has already been added');
 		}
 		$ref = $sizeVariant;
 	}
@@ -102,18 +118,6 @@ class SizeVariants implements Arrayable, JsonSerializable
 	}
 
 	/**
-	 * Serializes this object into an array.
-	 *
-	 * @return array The serialized properties of this object
-	 *
-	 * @see SizeVariants::toArray()
-	 */
-	public function jsonSerialize(): array
-	{
-		return $this->toArray();
-	}
-
-	/**
 	 * Returns the requested size variant of the photo.
 	 *
 	 * @param int $sizeVariantType the type of the size variant; allowed
@@ -127,6 +131,8 @@ class SizeVariants implements Arrayable, JsonSerializable
 	 *                             {@link SizeVariant::THUMB}
 	 *
 	 * @return SizeVariant|null The size variant
+	 *
+	 * @throws InvalidSizeVariantException
 	 */
 	public function getSizeVariant(int $sizeVariantType): ?SizeVariant
 	{
@@ -138,7 +144,7 @@ class SizeVariants implements Arrayable, JsonSerializable
 			SizeVariant::SMALL => $this->small,
 			SizeVariant::THUMB2X => $this->thumb2x,
 			SizeVariant::THUMB => $this->thumb,
-			default => throw new \UnexpectedValueException('size variant ' . $sizeVariantType . 'invalid'),
+			default => throw new InvalidSizeVariantException('size variant ' . $sizeVariantType . 'invalid'),
 		};
 	}
 
@@ -182,71 +188,68 @@ class SizeVariants implements Arrayable, JsonSerializable
 	 * @param int    $filesize        the filesize of the size variant
 	 *
 	 * @return SizeVariant The newly created and persisted size variant
+	 *
+	 * @throws IllegalOrderOfOperationException
+	 * @throws ModelDBException
 	 */
 	public function create(int $sizeVariantType, string $shortPath, int $width, int $height, int $filesize): SizeVariant
 	{
 		if (!$this->photo->exists) {
-			throw new \LogicException('cannot create a size variant for a photo whose id is not yet persisted to DB');
+			throw new IllegalOrderOfOperationException('Cannot create a size variant for a photo whose id is not yet persisted to DB');
 		}
-		/** @var SizeVariant $result */
-		$result = new SizeVariant();
-		$result->photo_id = $this->photo->id;
-		$result->type = $sizeVariantType;
-		$result->short_path = $shortPath;
-		$result->width = $width;
-		$result->height = $height;
-		$result->filesize = $filesize;
-		if (!$result->save()) {
-			throw new \RuntimeException('could not persist size variant');
-		}
-		$this->add($result);
+		try {
+			$result = new SizeVariant();
+			$result->photo_id = $this->photo->id;
+			$result->type = $sizeVariantType;
+			$result->short_path = $shortPath;
+			$result->width = $width;
+			$result->height = $height;
+			$result->filesize = $filesize;
+			$result->save();
+			$this->add($result);
 
-		return $result;
+			return $result;
+		} catch (LycheeInvalidArgumentException $e) {
+			// thrown by ::add(), if  $result->photo_id != $this->photo->id,
+			// but we know that we assert that
+			assert(false, new \AssertionError('::add failed', $e));
+		}
 	}
 
 	/**
 	 * Deletes all size variants incl. the files from storage.
 	 *
-	 * @return bool True on success, false otherwise
+	 * @return void
+	 *
+	 * @throws ModelDBException
+	 * @throws MediaFileOperationException
 	 */
-	public function deleteAll(): bool
+	public function deleteAll(): void
 	{
 		$ids = [];
 
-		if ($this->original) {
-			$ids[] = $this->original->id;
-			$this->original = null;
-		}
-		if ($this->medium2x) {
-			$ids[] = $this->medium2x->id;
-			$this->medium2x = null;
-		}
-		if ($this->medium) {
-			$ids[] = $this->medium->id;
-			$this->medium = null;
-		}
-		if ($this->small2x) {
-			$ids[] = $this->small2x->id;
-			$this->small2x = null;
-		}
-		if ($this->small) {
-			$ids[] = $this->small->id;
-			$this->small = null;
-		}
-		if ($this->thumb2x) {
-			$ids[] = $this->thumb2x->id;
-			$this->thumb2x = null;
-		}
-		if ($this->thumb) {
-			$ids[] = $this->thumb->id;
-			$this->thumb = null;
-		}
+		$ids[] = $this->original?->id;
+		$this->original = null;
+		$ids[] = $this->medium2x?->id;
+		$this->medium2x = null;
+		$ids[] = $this->medium?->id;
+		$this->medium = null;
+		$ids[] = $this->small2x?->id;
+		$this->small2x = null;
+		$ids[] = $this->small?->id;
+		$this->small = null;
+		$ids[] = $this->thumb2x?->id;
+		$this->thumb2x = null;
+		$ids[] = $this->thumb?->id;
+		$this->thumb = null;
 
-		$fileDeleter = (new Delete())->do($ids);
-
-		return $fileDeleter->do();
+		(new Delete())->do(array_diff($ids, [null]))->do();
 	}
 
+	/**
+	 * @throws ModelDBException
+	 * @throws IllegalOrderOfOperationException
+	 */
 	public function replicate(Photo $duplicatePhoto): SizeVariants
 	{
 		$duplicate = new SizeVariants($duplicatePhoto);
@@ -261,6 +264,10 @@ class SizeVariants implements Arrayable, JsonSerializable
 		return $duplicate;
 	}
 
+	/**
+	 * @throws ModelDBException
+	 * @throws IllegalOrderOfOperationException
+	 */
 	private static function replicateSizeVariant(SizeVariants $duplicate, ?SizeVariant $sizeVariant): void
 	{
 		if ($sizeVariant !== null) {

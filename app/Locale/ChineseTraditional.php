@@ -136,7 +136,9 @@ final class ChineseTraditional implements Language
 
 			'STAR_PHOTO' => '加入我的最愛',
 			'STAR' => '我的最愛',
+			'UNSTAR' => 'Unstar',
 			'STAR_ALL' => '將已選的標記為收藏夾',
+			'UNSTAR_ALL' => 'Unstar Selected',
 			'TAGS' => '標籤',
 			'TAGS_ALL' => '批量標籤',
 			'UNSTAR_PHOTO' => '從我的最愛中移除',

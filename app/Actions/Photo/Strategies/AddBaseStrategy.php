@@ -2,11 +2,12 @@
 
 namespace App\Actions\Photo\Strategies;
 
-use App\Exceptions\JsonError;
+use App\Exceptions\ConfigurationException;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Image\FlysystemFile;
 use App\Image\NativeLocalFile;
-use App\Models\Logs;
 use App\Models\Photo;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Adapter\Local;
@@ -24,6 +25,12 @@ abstract class AddBaseStrategy
 		$this->photo = $photo;
 	}
 
+	/**
+	 * @return Photo
+	 *
+	 * @throws ModelDBException
+	 * @throws MediaFileOperationException
+	 */
 	abstract public function do(): Photo;
 
 	/**
@@ -109,9 +116,15 @@ abstract class AddBaseStrategy
 	{
 		if ($this->parameters->album !== null) {
 			$this->photo->album_id = $this->parameters->album->id;
+			// Avoid unnecessary DB request, when we access the album of a
+			// photo later (e.g. when a notification is sent).
+			$this->photo->setRelation('album', $this->parameters->album);
 			$this->photo->owner_id = $this->parameters->album->owner_id;
 		} else {
 			$this->photo->album_id = null;
+			// Avoid unnecessary DB request, when we access the album of a
+			// photo later (e.g. when a notification is sent).
+			$this->photo->setRelation('album', null);
 			$this->photo->owner_id = AccessControl::id();
 		}
 	}
@@ -122,27 +135,28 @@ abstract class AddBaseStrategy
 	 * @param string $targetPath the path of the final destination relative to
 	 *                           the disk {@link AddBaseStrategy::IMAGE_DISK_NAME}
 	 *
-	 * @throws JsonError
+	 * @throws MediaFileOperationException
+	 * @throws ConfigurationException
 	 */
 	protected function putSourceIntoFinalDestination(string $targetPath): void
 	{
-		try {
-			$sourceFile = $this->parameters->sourceFileInfo->getFile();
-			$targetFile = new FlysystemFile(Storage::disk(self::IMAGE_DISK_NAME), $targetPath);
-			$isTargetLocal = $targetFile->getStorageAdapter() instanceof Local;
-			if ($this->parameters->importMode->shallImportViaSymlink()) {
-				if (!$isTargetLocal) {
-					throw new \RuntimeException('Symlinking is only supported on local filesystems');
-				}
-				if (!($sourceFile instanceof NativeLocalFile)) {
-					throw new \RuntimeException('Symlinking is only supported to local files');
-				}
-				$targetAbsolutePath = $targetFile->getAbsolutePath();
-				$sourceAbsolutePath = $sourceFile->getAbsolutePath();
-				if (!symlink($sourceAbsolutePath, $targetAbsolutePath)) {
-					throw new \RuntimeException('Could not create symbolic link at "' . $targetAbsolutePath . '" for photo at "' . $sourceAbsolutePath . '"');
-				}
-			} else {
+		$sourceFile = $this->parameters->sourceFileInfo->getFile();
+		$targetFile = new FlysystemFile(Storage::disk(self::IMAGE_DISK_NAME), $targetPath);
+		$isTargetLocal = $targetFile->getStorageAdapter() instanceof Local;
+		if ($this->parameters->importMode->shallImportViaSymlink()) {
+			if (!$isTargetLocal) {
+				throw new ConfigurationException('Symlinking is only supported on local filesystems');
+			}
+			if (!($sourceFile instanceof NativeLocalFile)) {
+				throw new ConfigurationException('Symlinking is only supported to local files');
+			}
+			$targetAbsolutePath = $targetFile->getAbsolutePath();
+			$sourceAbsolutePath = $sourceFile->getAbsolutePath();
+			if (!symlink($sourceAbsolutePath, $targetAbsolutePath)) {
+				throw new MediaFileOperationException('Could not create symbolic link at "' . $targetAbsolutePath . '" for photo at "' . $sourceAbsolutePath . '"');
+			}
+		} else {
+			try {
 				$targetFile->write($sourceFile->read());
 				$sourceFile->close();
 				if ($this->parameters->importMode->shallDeleteImported()) {
@@ -153,10 +167,9 @@ abstract class AddBaseStrategy
 					// TODO: Throw a application-specific exception such that the outer caller can gracefully fallback to "copy"-semantics and return a warning instead of failing entirely.
 					$sourceFile->delete();
 				}
+			} catch (\RuntimeException $e) {
+				throw new MediaFileOperationException('Could not move/copy photo', $e);
 			}
-		} catch (\Exception $e) {
-			Logs::error(__METHOD__, __LINE__, $e->getMessage());
-			throw new JsonError($e->getMessage());
 		}
 	}
 }

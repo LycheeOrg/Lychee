@@ -2,6 +2,7 @@
 
 namespace App\Casts;
 
+use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use Illuminate\Contracts\Database\Eloquent\CastsInboundAttributes;
 use Illuminate\Database\Eloquent\Model;
 
@@ -47,6 +48,8 @@ class MustNotSetCast implements CastsInboundAttributes
 	 * @param array  $attributes all attributes of the model
 	 *
 	 * @return void
+	 *
+	 * @throws IllegalOrderOfOperationException
 	 */
 	public function set($model, string $key, $value, array $attributes): void
 	{
@@ -54,6 +57,6 @@ class MustNotSetCast implements CastsInboundAttributes
 		if ($this->alternative) {
 			$msg = $msg . ', use \'' . get_class($model) . '::$' . $this->alternative . ' instead';
 		}
-		throw new \BadMethodCallException($msg);
+		throw new IllegalOrderOfOperationException($msg);
 	}
 }

@@ -3,10 +3,13 @@
 namespace App\Http\Livewire;
 
 use App\Contracts\AbstractAlbum;
+use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\Photo;
 use App\SmartAlbums\BaseSmartAlbum;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Livewire\Component;
 
 class Fullpage extends Component
@@ -20,6 +23,10 @@ class Fullpage extends Component
 
 	protected $listeners = ['openAlbum', 'openPhoto', 'back'];
 
+	/**
+	 * @throws ModelNotFoundException
+	 * @throws InvalidSmartIdException
+	 */
 	public function mount($albumId = null, $photoId = null)
 	{
 		$albumFactory = resolve(AlbumFactory::class);
@@ -27,7 +34,7 @@ class Fullpage extends Component
 			$this->mode = 'albums';
 		} else {
 			$this->mode = 'album';
-			$this->album = $albumFactory->findOrFail($albumId);
+			$this->album = $albumFactory->findAbstractAlbumOrFail($albumId);
 
 			if ($photoId != null) {
 				$this->mode = 'photo';
@@ -66,6 +73,9 @@ class Fullpage extends Component
 		}
 	}
 
+	/**
+	 * @throws BindingResolutionException
+	 */
 	public function render()
 	{
 		return view('livewire.fullpage');

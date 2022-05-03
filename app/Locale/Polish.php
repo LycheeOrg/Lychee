@@ -136,7 +136,9 @@ final class Polish implements Language
 
 			'STAR_PHOTO' => 'Oznacz',
 			'STAR' => 'Oznacz',
+			'UNSTAR' => 'Unstar',
 			'STAR_ALL' => 'Oznacz zaznaczone',
+			'UNSTAR_ALL' => 'Unstar Selected',
 			'TAGS' => 'Otaguj',
 			'TAGS_ALL' => 'Otaguj zaznaczone',
 			'UNSTAR_PHOTO' => 'Cofnij oznaczenie',

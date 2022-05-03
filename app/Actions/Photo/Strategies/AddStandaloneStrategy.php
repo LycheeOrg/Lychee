@@ -5,17 +5,22 @@ namespace App\Actions\Photo\Strategies;
 use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\MediaFileUnsupportedException;
+use App\Exceptions\ModelDBException;
 use App\Image\ImageHandlerInterface;
 use App\Image\MediaFile;
 use App\Image\TemporaryLocalFile;
 use App\Metadata\Extractor;
 use App\ModelFunctions\MOVFormat;
-use App\Models\Logs;
 use App\Models\Photo;
 use FFMpeg\FFMpeg;
 
 class AddStandaloneStrategy extends AddBaseStrategy
 {
+	protected Extractor $metadataExtractor;
+	protected ImageHandlerInterface $imageHandler;
+
 	public function __construct(AddStrategyParameters $parameters)
 	{
 		$newPhoto = new Photo();
@@ -33,8 +38,17 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		// appear in a different order than users expect.
 		$newPhoto->updateTimestamps();
 		parent::__construct($parameters, $newPhoto);
+		$this->metadataExtractor = resolve(Extractor::class);
+		$this->imageHandler = resolve(ImageHandlerInterface::class);
 	}
 
+	/**
+	 * @return Photo
+	 *
+	 * @throws ModelDBException
+	 * @throws MediaFileOperationException
+	 * @throws MediaFileUnsupportedException
+	 */
 	public function do(): Photo
 	{
 		// Create and save "bare" photo object without size variants
@@ -56,7 +70,13 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		$sizeVariantFactory = resolve(SizeVariantFactory::class);
 		$sizeVariantFactory->init($this->photo, $namingStrategy);
 
-		// Create size variant for original
+		/**
+		 * Create size variant for original
+		 * Exception `IllegalOrderOfOperations` is never thrown, because we
+		 * have saved the photo above.
+		 *
+		 * @noinspection PhpUnhandledExceptionInspection
+		 */
 		$original = $sizeVariantFactory->createOriginal(
 			$this->parameters->info['width'],
 			$this->parameters->info['height'],
@@ -85,7 +105,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			// variants may fail: the user has uploaded an unsupported file
 			// format, GD and Imagick are both not available or disabled
 			// by configuration, etc.
-			Logs::error(__METHOD__, __LINE__, 'Failed to generate size variants, error was ' . $t->getMessage());
+			report($t);
 		}
 
 		$this->handleGoogleMotionPicture();
@@ -122,7 +142,12 @@ class AddStandaloneStrategy extends AddBaseStrategy
 	 *
 	 * In case 3c, the method does not actually modify the file.
 	 *
-	 * This method also updates the attribute {@link Photo::$checksum} to the new value after rotation.
+	 * This method also updates the attribute {@link Photo::$checksum} to the
+	 * new value after rotation.
+	 *
+	 * @throws MediaFileOperationException
+	 * @throws ModelDBException
+	 * @throws MediaFileUnsupportedException
 	 */
 	protected function normalizeOrientation(): void
 	{
@@ -147,40 +172,38 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			// Reset source file info to the new temporary and ensure that
 			// it will be deleted later
 			$this->parameters->sourceFileInfo = SourceFileInfo::createByTempFile(
-				$info->getOriginalName(),
-				$info->getOriginalExtension(),
-				$tmpFile
-			);
+					$info->getOriginalName(),
+					$info->getOriginalExtension(),
+					$tmpFile
+				);
 			$this->parameters->importMode->setDeleteImported(true);
 		}
 
-		/** @var ImageHandlerInterface $imageHandler */
-		$imageHandler = resolve(ImageHandlerInterface::class);
-
 		$absolutePath = $this->parameters->sourceFileInfo->getFile()->getAbsolutePath();
 		// If we are importing via symlink, we don't actually overwrite
-		// the source but we still need to fix the dimensions.
-		$newDim = $imageHandler->autoRotate(
+		// the source, but we still need to fix the dimensions.
+		$this->imageHandler->autoRotate(
 			$absolutePath,
 			$orientation,
 			$this->parameters->importMode->shallImportViaSymlink()
 		);
 
-		if ($newDim !== [false, false]) {
-			// If the image has actually been rotated, the size
-			// and the checksum may have changed.
-			/* @var  Extractor $metadataExtractor */
-			$metadataExtractor = resolve(Extractor::class);
-			$this->photo->checksum = $metadataExtractor->checksum($absolutePath);
-			// stat info (filesize, access mode etc) are cached by PHP to avoid costly I/O calls.
-			// If cache if not cleared, the size before rotation is used and later yields incorrect value.
-			clearstatcache(true, $absolutePath);
-			// Update filesize for later use e.g. when creating variants
-			$this->parameters->info['filesize'] = $metadataExtractor->filesize($absolutePath);
-			$this->photo->save();
-		}
+		// If the image has actually been rotated, the size
+		// and the checksum may have changed.
+		$this->photo->checksum = $this->metadataExtractor->checksum($absolutePath);
+		// stat info (filesize, access mode etc) are cached by PHP to avoid
+		// costly I/O calls.
+		// If cache is not cleared, the size before rotation is used and later
+		// yields an incorrect value.
+		clearstatcache(true, $absolutePath);
+		// Update filesize for later use e.g. when creating variants
+		$this->parameters->info['filesize'] = $this->metadataExtractor->filesize($absolutePath);
+		$this->photo->save();
 	}
 
+	/**
+	 * @throws MediaFileOperationException
+	 */
 	protected function handleGoogleMotionPicture(): void
 	{
 		if (empty($this->parameters->info['MicroVideoOffset'])) {
@@ -229,8 +252,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			$this->photo->live_photo_short_path = $shortPathVideo;
 			$this->photo->save();
 		} catch (\Throwable $e) {
-			Logs::error(__METHOD__, __LINE__, $e->getMessage());
-			throw new \RuntimeException('unable to extract video from Google Motion Picture', 0, $e);
+			throw new MediaFileOperationException('Unable to extract video from Google Motion Picture', $e);
 		}
 	}
 }

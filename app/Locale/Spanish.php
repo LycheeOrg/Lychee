@@ -136,7 +136,9 @@ final class Spanish implements Language
 
 			'STAR_PHOTO' => 'Destacar Photo',
 			'STAR' => 'Destacar',
+			'UNSTAR' => 'Unstar',
 			'STAR_ALL' => 'Destacar Todo',
+			'UNSTAR_ALL' => 'Unstar Selected',
 			'TAGS' => 'Etiquetar',
 			'TAGS_ALL' => 'Etiquetar Todo',
 			'UNSTAR_PHOTO' => 'Desetiquetar Foto',

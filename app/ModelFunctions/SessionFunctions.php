@@ -2,7 +2,7 @@
 
 namespace App\ModelFunctions;
 
-use App\Exceptions\NotLoggedInException;
+use App\Exceptions\UnauthenticatedException;
 use App\Legacy\Legacy;
 use App\Models\Logs;
 use App\Models\User;
@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Session;
 
 class SessionFunctions
 {
-	public $user_data = null;
+	public ?User $user_data = null;
 
 	public function log_as_id($id): void
 	{
@@ -27,11 +27,7 @@ class SessionFunctions
 	 */
 	public function is_logged_in(): bool
 	{
-		if (Session::get('login') === true) {
-			return true;
-		} else {
-			return false;
-		}
+		return Session::get('login') === true;
 	}
 
 	/**
@@ -44,6 +40,9 @@ class SessionFunctions
 		return Session::get('login') && Session::get('UserID') === 0;
 	}
 
+	/**
+	 * @throws UnauthenticatedException
+	 */
 	public function can_upload(): bool
 	{
 		return $this->is_logged_in() && ($this->id() == 0 || $this->user()->may_upload);
@@ -54,11 +53,13 @@ class SessionFunctions
 	 * what happens when UserID is not set? :p.
 	 *
 	 * @return int
+	 *
+	 * @throws UnauthenticatedException
 	 */
 	public function id(): int
 	{
 		if (!Session::get('login')) {
-			throw new NotLoggedInException();
+			throw new UnauthenticatedException();
 		}
 
 		return Session::get('UserID');
@@ -66,17 +67,21 @@ class SessionFunctions
 
 	/**
 	 * Return User object given a positive ID.
+	 *
+	 * @throws UnauthenticatedException
 	 */
 	private function accessUserData(): User
 	{
 		$id = $this->id();
-		$this->user_data = User::find($id);
+		$this->user_data = User::query()->find($id);
 
 		return $this->user_data;
 	}
 
 	/**
 	 * Return User object and cache the result.
+	 *
+	 * @throws UnauthenticatedException
 	 */
 	public function user(): User
 	{
@@ -84,14 +89,14 @@ class SessionFunctions
 	}
 
 	/**
-	 * Return true if the currently logged in user is the one provided
+	 * Return true if the currently logged-in user is the one provided
 	 * (or if that user is Admin).
 	 *
 	 * @param int userId
 	 *
 	 * @return bool
 	 */
-	public function is_current_user(int $userId): bool
+	public function is_current_user_or_admin(int $userId): bool
 	{
 		return Session::get('login') && (Session::get('UserID') === $userId || Session::get('UserID') === 0);
 	}
@@ -113,7 +118,8 @@ class SessionFunctions
 	 */
 	public function noLogin(): bool
 	{
-		$adminUser = User::find(0);
+		/** @var User $adminUser */
+		$adminUser = User::query()->find(0);
 		if ($adminUser !== null && $adminUser->password === '' && $adminUser->username === '') {
 			$this->user_data = $adminUser;
 			Session::put('login', true);
@@ -127,8 +133,7 @@ class SessionFunctions
 
 	/**
 	 * Given a username, password and ip (for logging), try to log the user.
-	 * returns true if succeed
-	 * returns false if fail.
+	 * Returns true if succeeded, false if failed.
 	 *
 	 * @param string $username
 	 * @param string $password
@@ -139,7 +144,8 @@ class SessionFunctions
 	public function log_as_user(string $username, string $password, string $ip): bool
 	{
 		// We select the NON ADMIN user
-		$user = User::where('username', '=', $username)->where('id', '>', '0')->first();
+		/** @var User $user */
+		$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
 
 		if ($user != null && Hash::check($password, $user->password)) {
 			$this->user_data = $user;
@@ -155,8 +161,7 @@ class SessionFunctions
 
 	/**
 	 * Given a username, password and ip (for logging), try to log the user as admin.
-	 * returns true if succeed
-	 * returns false if fail.
+	 * Returns true if succeeded, false if failed.
 	 *
 	 * @param string $username
 	 * @param string $password
@@ -166,12 +171,13 @@ class SessionFunctions
 	 */
 	public function log_as_admin(string $username, string $password, string $ip): bool
 	{
-		$AdminUser = User::find(0);
+		/** @var User $adminUser */
+		$adminUser = User::query()->find(0);
 
-		if ($AdminUser !== null) {
+		if ($adminUser !== null) {
 			// Admin User exist, so we check against it.
-			if (Hash::check($username, $AdminUser->username) && Hash::check($password, $AdminUser->password)) {
-				$this->user_data = $AdminUser;
+			if (Hash::check($username, $adminUser->username) && Hash::check($password, $adminUser->password)) {
+				$this->user_data = $adminUser;
 				Session::put('login', true);
 				Session::put('UserID', 0);
 				Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);

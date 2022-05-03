@@ -78,5 +78,20 @@ class IniSettingsCheck implements DiagnosticCheckInterface
 			$errors[]
 				= 'Warning: user_agent for PHP is not set. You may experience problems when importing images via URL.';
 		}
+
+		if (!ini_get('assert.exception')) {
+			$errors[]
+				= 'Warning: assert.exception is set to false. Lychee assumes that failing assertions throw proper exceptions.';
+		}
+
+		if (ini_get('zend.assertions') != -1 && !config('app.debug')) {
+			$errors[]
+				= 'Warning: zend.assertions is enabled although Lychee is not in debug mode. Outside of debugging, code generation for assertions is recommended to be disabled for efficiency reasons';
+		}
+
+		if (ini_get('zend.assertions') != 1 && config('app.debug')) {
+			$errors[]
+				= 'Warning: zend.assertions is disabled although Lychee is in debug mode. For easier debugging code generation for assertions should be enabled.';
+		}
 	}
 }

@@ -2,15 +2,21 @@
 
 namespace App\Models;
 
+use App\Casts\ArrayCast;
+use App\Exceptions\InvalidPropertyException;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\TagAlbumBuilder;
 use App\Models\Extensions\Thumb;
 use App\Relations\HasManyPhotosByTag;
+use Illuminate\Database\Query\Builder as BaseBuilder;
 
 /**
  * Class TagAlbum.
  *
- * @property string show_tags
+ * @property string[] show_tags
+ *
+ * @method static TagAlbumBuilder query()                       Begin querying the model.
+ * @method static TagAlbumBuilder with(array|string $relations) Begin querying the model with eager loading.
  */
 class TagAlbum extends BaseAlbum
 {
@@ -33,6 +39,7 @@ class TagAlbum extends BaseAlbum
 	protected $casts = [
 		'min_taken_at' => 'datetime',
 		'max_taken_at' => 'datetime',
+		'show_tags' => ArrayCast::class,
 	];
 
 	/**
@@ -78,17 +85,17 @@ class TagAlbum extends BaseAlbum
 	 * This would allow to create a single `JOIN`-query for all tag albums.
 	 *
 	 * @return Thumb|null
+	 *
+	 * @throws InvalidPropertyException
 	 */
 	protected function getThumbAttribute(): ?Thumb
 	{
 		// Note, `photos()` already applies a "security filter" and
 		// only returns photos which are accessible by the current
 		// user
-
 		return Thumb::createFromQueryable(
 			$this->photos(),
-			$this->getEffectiveSortingCol(),
-			$this->getEffectiveSortingOrder()
+			$this->getEffectiveSorting()
 		);
 	}
 
@@ -101,7 +108,11 @@ class TagAlbum extends BaseAlbum
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Create a new Eloquent query builder for the model.
+	 *
+	 * @param BaseBuilder $query
+	 *
+	 * @return TagAlbumBuilder
 	 */
 	public function newEloquentBuilder($query): TagAlbumBuilder
 	{

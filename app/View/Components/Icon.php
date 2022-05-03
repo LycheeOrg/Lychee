@@ -2,6 +2,7 @@
 
 namespace App\View\Components;
 
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\View\Component;
 
 class Icon extends Component
@@ -24,6 +25,8 @@ class Icon extends Component
 	 * Get the view / contents that represent the component.
 	 *
 	 * @return \Illuminate\Contracts\View\View|\Closure|string
+	 *
+	 * @throws BindingResolutionException
 	 */
 	public function render()
 	{

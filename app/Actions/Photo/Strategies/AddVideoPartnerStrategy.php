@@ -2,6 +2,8 @@
 
 namespace App\Actions\Photo\Strategies;
 
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\ModelDBException;
 use App\Models\Photo;
 
 class AddVideoPartnerStrategy extends AddBaseStrategy
@@ -11,6 +13,12 @@ class AddVideoPartnerStrategy extends AddBaseStrategy
 		parent::__construct($parameters, $existingPhoto);
 	}
 
+	/**
+	 * @return Photo
+	 *
+	 * @throws MediaFileOperationException
+	 * @throws ModelDBException
+	 */
 	public function do(): Photo
 	{
 		$photoFile = $this->photo->size_variants->getOriginal()->getFile();
