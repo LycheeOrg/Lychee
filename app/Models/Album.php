@@ -294,18 +294,25 @@ class Album extends BaseAlbum implements Node
 	 *
 	 * @return void
 	 *
-	 * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+	 * @throws ModelDBException
+	 * @throws MediaFileOperationException
 	 */
 	public function setTrack(UploadedFile $file): void
 	{
-		if ($this->track_short_path !== null) {
-			Storage::delete($this->track_short_path);
-		}
+		try {
+			if ($this->track_short_path !== null) {
+				Storage::delete($this->track_short_path);
+			}
 
-		$new_track_id = strtr(base64_encode(random_bytes(18)), '+/', '-_');
-		Storage::putFileAs('tracks/', $file, "$new_track_id.xml");
-		$this->track_short_path = "tracks/$new_track_id.xml";
-		$this->save();
+			$new_track_id = strtr(base64_encode(random_bytes(18)), '+/', '-_');
+			Storage::putFileAs('tracks/', $file, "$new_track_id.xml");
+			$this->track_short_path = "tracks/$new_track_id.xml";
+			$this->save();
+		} catch (ModelDBException $e) {
+			throw $e;
+		} catch (\Exception $e) {
+			throw new MediaFileOperationException('Could not save track file', $e);
+		}
 	}
 
 	/**
