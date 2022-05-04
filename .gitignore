@@ -21,6 +21,7 @@ public/uploads/tracks/*
 !public/uploads/raw/index.html
 !public/uploads/small/index.html
 !public/uploads/thumb/index.html
+!public/uploads/tracks/index.html
 
 /storage/*.key
 /storage/clockwork/
