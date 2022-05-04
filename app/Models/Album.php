@@ -15,6 +15,8 @@ use App\Relations\HasManyPhotosRecursively;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as BaseBuilder;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Kalnoy\Nestedset\DescendantsRelation;
 use Kalnoy\Nestedset\Node;
 use Kalnoy\Nestedset\NodeTrait;
@@ -29,6 +31,8 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property string            $license
  * @property string|null       $cover_id
  * @property Photo|null        $cover
+ * @property string|null       $track_short_path
+ * @property string|null       $track_url
  * @property int               $_lft
  * @property int               $_rgt
  *
@@ -79,12 +83,20 @@ class Album extends BaseAlbum implements Node
 		'_rgt',
 		'parent',     // avoid infinite recursions
 		'all_photos', // never serialize recursive child photos of an album, even if the relation is loaded
+		'track_short_path',
 	];
 
 	/**
 	 * The relationships that should always be eagerly loaded by default.
 	 */
 	protected $with = ['cover', 'thumb'];
+
+	/**
+	 * @var string[] The list of "virtual" attributes which do not exist as
+	 *               columns of the DB relation but which shall be appended to
+	 *               JSON from accessors
+	 */
+	protected $appends = ['track_url'];
 
 	/**
 	 * Return the relationship between this album and photos which are
@@ -258,5 +270,65 @@ class Album extends BaseAlbum implements Node
 	public function newEloquentBuilder($query): AlbumBuilder
 	{
 		return new AlbumBuilder($query);
+	}
+
+	/**
+	 * Accessor for the "virtual" attribute {@link Album::$track_url}.
+	 *
+	 * This is a convenient method which wraps
+	 * {@link Album::$track_short_path} into
+	 * {@link \Illuminate\Support\Facades\Storage::url()}.
+	 *
+	 * @return string|null the url of the track
+	 */
+	public function getTrackUrlAttribute(): ?string
+	{
+		return $this->track_short_path !== null && $this->track_short_path !== '' ?
+			Storage::url($this->track_short_path) : null;
+	}
+
+	/**
+	 * Set the GPX track for the album.
+	 *
+	 * @param UploadedFile $file the GPX track file to be set
+	 *
+	 * @return void
+	 *
+	 * @throws ModelDBException
+	 * @throws MediaFileOperationException
+	 */
+	public function setTrack(UploadedFile $file): void
+	{
+		try {
+			if ($this->track_short_path !== null) {
+				Storage::delete($this->track_short_path);
+			}
+
+			$new_track_id = strtr(base64_encode(random_bytes(18)), '+/', '-_');
+			Storage::putFileAs('tracks/', $file, "$new_track_id.xml");
+			$this->track_short_path = "tracks/$new_track_id.xml";
+			$this->save();
+		} catch (ModelDBException $e) {
+			throw $e;
+		} catch (\Exception $e) {
+			throw new MediaFileOperationException('Could not save track file', $e);
+		}
+	}
+
+	/**
+	 * Delete the track of the album.
+	 *
+	 * @return void
+	 *
+	 * @throws ModelDBException
+	 */
+	public function deleteTrack(): void
+	{
+		if ($this->track_short_path === null) {
+			return;
+		}
+		Storage::delete($this->track_short_path);
+		$this->track_short_path = null;
+		$this->save();
 	}
 }
