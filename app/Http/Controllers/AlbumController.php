@@ -231,6 +231,8 @@ class AlbumController extends Controller
 	 * @param DeleteTrackRequest $request
 	 *
 	 * @return void
+	 *
+	 * @throws ModelDBException
 	 */
 	public function deleteTrack(DeleteTrackRequest $request): void
 	{
