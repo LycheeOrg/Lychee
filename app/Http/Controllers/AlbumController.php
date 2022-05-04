@@ -219,6 +219,9 @@ class AlbumController extends Controller
 	 * @param SetAlbumTrackRequest $request
 	 *
 	 * @return void
+	 *
+	 * @throws MediaFileOperationException
+	 * @throws ModelDBException
 	 */
 	public function setTrack(SetAlbumTrackRequest $request): void
 	{
