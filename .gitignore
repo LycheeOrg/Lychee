@@ -13,6 +13,7 @@ public/uploads/medium/*
 public/uploads/raw/*
 public/uploads/small/*
 public/uploads/thumb/*
+public/uploads/tracks/*
 
 !public/uploads/big/index.html
 !public/uploads/import/index.html
@@ -20,6 +21,7 @@ public/uploads/thumb/*
 !public/uploads/raw/index.html
 !public/uploads/small/index.html
 !public/uploads/thumb/index.html
+!public/uploads/tracks/index.html
 
 /storage/*.key
 /storage/clockwork/

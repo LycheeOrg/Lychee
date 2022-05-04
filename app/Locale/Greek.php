@@ -122,6 +122,8 @@ final class Greek implements Language
 			'IMPORT_SERVER' => 'Εισαγωγή από Εξυπηρετητή',
 			'NEW_ALBUM' => 'Νέο Λεύκωμα',
 			'NEW_TAG_ALBUM' => 'New Tag Album',
+			'UPLOAD_TRACK' => 'Upload track',
+			'DELETE_TRACK' => 'Delete track',
 
 			'TITLE_NEW_ALBUM' => 'Εισάγετε έναν τίτλο για το νέο λεύκωμα:',
 			'UNTITLED' => 'Χωρίς Τίτλο',
@@ -490,6 +492,8 @@ final class Greek implements Language
 
 			'PHOTO_EDIT_ROTATECWISE' => 'Rotate clockwise',
 			'PHOTO_EDIT_ROTATECCWISE' => 'Rotate counter-clockwise',
+
+			'ERROR_GPX' => 'Error loading GPX file: ',
 		];
 
 		return $locale;

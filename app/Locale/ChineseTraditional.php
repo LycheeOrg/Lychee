@@ -122,6 +122,8 @@ final class ChineseTraditional implements Language
 			'IMPORT_SERVER' => '從伺服器導入',
 			'NEW_ALBUM' => '創建新相簿',
 			'NEW_TAG_ALBUM' => '新的標籤相簿',
+			'UPLOAD_TRACK' => 'Upload track',
+			'DELETE_TRACK' => 'Delete track',
 
 			'TITLE_NEW_ALBUM' => '輸入相簿標題：',
 			'UNTITLED' => '未命名',
@@ -490,6 +492,8 @@ final class ChineseTraditional implements Language
 
 			'PHOTO_EDIT_ROTATECWISE' => '順時針旋轉',
 			'PHOTO_EDIT_ROTATECCWISE' => '逆時針旋轉',
+
+			'ERROR_GPX' => 'Error loading GPX file: ',
 		];
 
 		return $locale;

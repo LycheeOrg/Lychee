@@ -20,6 +20,7 @@ use App\Http\Requests\Album\AddAlbumRequest;
 use App\Http\Requests\Album\AddTagAlbumRequest;
 use App\Http\Requests\Album\ArchiveAlbumsRequest;
 use App\Http\Requests\Album\DeleteAlbumsRequest;
+use App\Http\Requests\Album\DeleteTrackRequest;
 use App\Http\Requests\Album\GetAlbumPositionDataRequest;
 use App\Http\Requests\Album\GetAlbumRequest;
 use App\Http\Requests\Album\MergeAlbumsRequest;
@@ -32,6 +33,7 @@ use App\Http\Requests\Album\SetAlbumProtectionPolicyRequest;
 use App\Http\Requests\Album\SetAlbumSortingRequest;
 use App\Http\Requests\Album\SetAlbumsTitleRequest;
 use App\Http\Requests\Album\SetAlbumTagsRequest;
+use App\Http\Requests\Album\SetAlbumTrackRequest;
 use App\Http\Requests\Album\UnlockAlbumRequest;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
@@ -209,6 +211,35 @@ class AlbumController extends Controller
 	{
 		$request->album()->license = $request->license();
 		$request->album()->save();
+	}
+
+	/**
+	 * Upload a track for the Album.
+	 *
+	 * @param SetAlbumTrackRequest $request
+	 *
+	 * @return void
+	 *
+	 * @throws MediaFileOperationException
+	 * @throws ModelDBException
+	 */
+	public function setTrack(SetAlbumTrackRequest $request): void
+	{
+		$request->album()->setTrack($request->file);
+	}
+
+	/**
+	 * Delete a track from the Album.
+	 *
+	 * @param DeleteTrackRequest $request
+	 *
+	 * @return void
+	 *
+	 * @throws ModelDBException
+	 */
+	public function deleteTrack(DeleteTrackRequest $request): void
+	{
+		$request->album()->deleteTrack();
 	}
 
 	/**

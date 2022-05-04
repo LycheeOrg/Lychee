@@ -122,6 +122,8 @@ final class Portuguese implements Language
 			'IMPORT_SERVER' => 'Importar de um Servidor',
 			'NEW_ALBUM' => 'Novo Álbum',
 			'NEW_TAG_ALBUM' => 'Nova Etiqueta de Álbum',
+			'UPLOAD_TRACK' => 'Upload track',
+			'DELETE_TRACK' => 'Delete track',
 
 			'TITLE_NEW_ALBUM' => 'Insira um título para o novo álbum:',
 			'UNTITLED' => 'Sem Título',
@@ -492,6 +494,8 @@ final class Portuguese implements Language
 
 			'PHOTO_EDIT_ROTATECWISE' => 'Rodar no sentido dos ponteiros do relógio',
 			'PHOTO_EDIT_ROTATECCWISE' => 'Rodar contra o sentido dos ponteiros do relógio',
+
+			'ERROR_GPX' => 'Error loading GPX file: ',
 		];
 
 		return $locale;

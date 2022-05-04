@@ -122,6 +122,8 @@ final class Dutch implements Language
 			'IMPORT_SERVER' => 'Importeer van Server',
 			'NEW_ALBUM' => 'Nieuw Album',
 			'NEW_TAG_ALBUM' => 'New Tag Album',
+			'UPLOAD_TRACK' => 'Upload track',
+			'DELETE_TRACK' => 'Delete track',
 
 			'TITLE_NEW_ALBUM' => 'Voer een titel voor het album in:',
 			'UNTITLED' => 'Ongetiteld',
@@ -490,6 +492,8 @@ final class Dutch implements Language
 
 			'PHOTO_EDIT_ROTATECWISE' => 'Rotate clockwise',
 			'PHOTO_EDIT_ROTATECCWISE' => 'Rotate counter-clockwise',
+
+			'ERROR_GPX' => 'Error loading GPX file: ',
 		];
 
 		return $locale;
