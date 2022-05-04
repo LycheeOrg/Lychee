@@ -226,7 +226,7 @@ class AlbumController extends Controller
 	}
 
 	/**
-	 * Upload a track for the Album.
+	 * Delete a track from the Album.
 	 *
 	 * @param DeleteTrackRequest $request
 	 *
