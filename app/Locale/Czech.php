@@ -123,6 +123,8 @@ final class Czech implements Language
 			'IMPORT_SERVER' => 'Importovat ze serveru',
 			'NEW_ALBUM' => 'Nové album',
 			'NEW_TAG_ALBUM' => 'Nové tag album',
+			'UPLOAD_TRACK' => 'Upload track',
+			'DELETE_TRACK' => 'Delete track',
 
 			'TITLE_NEW_ALBUM' => 'Zadejte název nového alba:',
 			'UNTITLED' => 'Bezejmanné',
@@ -496,6 +498,8 @@ final class Czech implements Language
 
 			'PHOTO_EDIT_ROTATECWISE' => 'Otočit doprava',
 			'PHOTO_EDIT_ROTATECCWISE' => 'Otočit doleva',
+
+			'ERROR_GPX' => 'Error loading GPX file: ',
 		];
 
 		return $locale;

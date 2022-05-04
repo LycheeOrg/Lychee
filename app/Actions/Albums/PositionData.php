@@ -56,6 +56,6 @@ class PositionData
 				->whereNotNull('longitude')
 		);
 
-		return new PositionDataDTO(null, null, $photoQuery->get());
+		return new PositionDataDTO(null, null, $photoQuery->get(), null);
 	}
 }

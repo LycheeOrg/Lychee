@@ -78,18 +78,23 @@ class Delete extends Action
 			// loading expensive `min_taken_at` and `max_taken_at`.
 			$albums = Album::query()
 				->without(['cover', 'thumb'])
-				->select(['id', 'parent_id', '_lft', '_rgt'])
+				->select(['id', 'parent_id', '_lft', '_rgt', 'track_short_path'])
 				->findMany($albumIDs);
+
+			$recursiveAlbumTracks = $albums->pluck('track_short_path');
 
 			/** @var Album $album */
 			foreach ($albums as $album) {
-				// Collect the IDs of all (aka recursive) sub-albums in each album
-				$recursiveAlbumIDs = array_merge($recursiveAlbumIDs, $album->descendants()->pluck('id')->all());
+				// Collect all (aka recursive) sub-albums in each album
+				$subAlbums = $album->descendants()->select(['id', 'track_short_path'])->get();
+				$recursiveAlbumIDs = array_merge($recursiveAlbumIDs, $subAlbums->pluck('id')->all());
+				$recursiveAlbumTracks = $recursiveAlbumTracks->merge($subAlbums->pluck('track_short_path'));
 			}
 
 			// Delete the photos from DB and obtain the list of files which need
 			// to be deleted later
 			$fileDeleter = (new PhotoDelete())->do($unsortedPhotoIDs, $recursiveAlbumIDs);
+			$fileDeleter->addRegularFiles($recursiveAlbumTracks);
 
 			// Remove descendants of each album which is going to be deleted
 			// This is ugly as hell and copy & pasted from

@@ -124,6 +124,8 @@ final class German implements Language
 			'IMPORT_SERVER' => 'Von Server importieren',
 			'NEW_ALBUM' => 'Neues Album',
 			'NEW_TAG_ALBUM' => 'Neues Tag-Album',
+			'UPLOAD_TRACK' => 'Track hochladen',
+			'DELETE_TRACK' => 'Track löschen',
 
 			'TITLE_NEW_ALBUM' => 'Geben Sie einen Titel für das neue Album ein:',
 			'UNTITLED' => 'Unbenannt',
@@ -498,6 +500,8 @@ final class German implements Language
 
 			'PHOTO_EDIT_ROTATECWISE' => 'Im Uhrzeigersinn drehen',
 			'PHOTO_EDIT_ROTATECCWISE' => 'Gegen den Uhrzeigersinn drehen',
+
+			'ERROR_GPX' => 'Error loading GPX file: ',
 		];
 
 		return $locale;

@@ -2326,14 +2326,9 @@ var mapview = {
 	/** @type {?L.Map} */
 	map: null,
 	photoLayer: null,
-	/** @type {?number} */
-	min_lat: null,
-	/** @type {?number} */
-	min_lng: null,
-	/** @type {?number} */
-	max_lat: null,
-	/** @type {?number} */
-	max_lng: null,
+	trackLayer: null,
+	/** @type {(?LatLngBounds|?number[][])} */
+	bounds: null,
 	/** @type {?string} */
 	albumID: null,
 	/** @type {?string} */
@@ -2444,15 +2439,15 @@ mapview.open = function () {
 
 			mapview.map_provider = lychee.map_provider;
 		} else {
-			// Mapview has already shown data -> remove only photoLayer showing photos
+			// Mapview has already shown data -> remove only photoLayer and trackLayer showing photos and tracks
 			mapview.photoLayer.clear();
+			if (mapview.trackLayer !== null) {
+				mapview.map.removeLayer(mapview.trackLayer);
+			}
 		}
 
-		// Reset min/max lat/lgn Values
-		mapview.min_lat = null;
-		mapview.max_lat = null;
-		mapview.min_lng = null;
-		mapview.max_lng = null;
+		// Reset bounds
+		mapview.bounds = null;
 	}
 
 	// Define how the photos on the map should look like
@@ -2482,10 +2477,8 @@ mapview.open = function () {
 
 	// Adjusts zoom and position of map to show all images
 	var updateZoom = function updateZoom() {
-		if (mapview.min_lat && mapview.min_lng && mapview.max_lat && mapview.max_lng) {
-			var dist_lat = mapview.max_lat - mapview.min_lat;
-			var dist_lng = mapview.max_lng - mapview.min_lng;
-			mapview.map.fitBounds([[mapview.min_lat - 0.1 * dist_lat, mapview.min_lng - 0.1 * dist_lng], [mapview.max_lat + 0.1 * dist_lat, mapview.max_lng + 0.1 * dist_lng]]);
+		if (mapview.bounds) {
+			mapview.map.fitBounds(mapview.bounds);
 		} else {
 			mapview.map.fitWorld();
 		}
@@ -2496,12 +2489,21 @@ mapview.open = function () {
   *
   * @param {(Album|TagAlbum|PositionData)} album
   */
-	var addPhotosToMap = function addPhotosToMap(album) {
+	var addContentsToMap = function addContentsToMap(album) {
 		// check if empty
 		if (!album.photos) return;
 
 		/** @type {MapPhotoEntry[]} */
 		var photos = [];
+
+		/** @type {?number} */
+		var min_lat = null;
+		/** @type {?number} */
+		var min_lng = null;
+		/** @type {?number} */
+		var max_lat = null;
+		/** @type {?number} */
+		var max_lng = null;
 
 		album.photos.forEach(
 		/** @param {Photo} element */function (element) {
@@ -2520,23 +2522,51 @@ mapview.open = function () {
 				});
 
 				// Update min/max lat/lng
-				if (mapview.min_lat === null || mapview.min_lat > element.latitude) {
-					mapview.min_lat = element.latitude;
+				if (min_lat === null || min_lat > element.latitude) {
+					min_lat = element.latitude;
 				}
-				if (mapview.min_lng === null || mapview.min_lng > element.longitude) {
-					mapview.min_lng = element.longitude;
+				if (min_lng === null || min_lng > element.longitude) {
+					min_lng = element.longitude;
 				}
-				if (mapview.max_lat === null || mapview.max_lat < element.latitude) {
-					mapview.max_lat = element.latitude;
+				if (max_lat === null || max_lat < element.latitude) {
+					max_lat = element.latitude;
 				}
-				if (mapview.max_lng === null || mapview.max_lng < element.longitude) {
-					mapview.max_lng = element.longitude;
+				if (max_lng === null || max_lng < element.longitude) {
+					max_lng = element.longitude;
 				}
 			}
 		});
 
 		// Add Photos to map
 		mapview.photoLayer.add(photos).addTo(mapview.map);
+
+		if (photos.length > 0) {
+			// update map bounds
+			var dist_lat = max_lat - min_lat;
+			var dist_lng = max_lng - min_lng;
+			mapview.bounds = [[min_lat - 0.1 * dist_lat, min_lng - 0.1 * dist_lng], [max_lat + 0.1 * dist_lat, max_lng + 0.1 * dist_lng]];
+		}
+
+		// add track
+		if (album.track_url) {
+			mapview.trackLayer = new L.GPX(album.track_url, {
+				async: true,
+				marker_options: {
+					startIconUrl: null,
+					endIconUrl: null,
+					shadowUrl: null
+				}
+			}).on("error", function (e) {
+				lychee.error(lycche.locale["ERROR_GPX"] + e.err);
+			}).on("loaded", function (e) {
+				if (photos.length === 0) {
+					// no photos, update map bound to center track
+					mapview.bounds = e.target.getBounds();
+					updateZoom();
+				}
+			});
+			mapview.trackLayer.addTo(mapview.map);
+		}
 
 		// Update Zoom and Position
 		updateZoom();
@@ -2558,7 +2588,7 @@ mapview.open = function () {
    * @param {PositionData} data
    */
 		var successHandler = function successHandler(data) {
-			addPhotosToMap(data);
+			addContentsToMap(data);
 			mapview.title(_albumID, data.title);
 		};
 
@@ -2579,7 +2609,7 @@ mapview.open = function () {
 	// If sub-albums are not requested and album.json already has all data,
 	// we reuse it
 	if (lychee.map_include_subalbums === false && album.json !== null && album.json.photos !== null) {
-		addPhotosToMap(album.json);
+		addContentsToMap(album.json);
 	} else {
 		// Not all needed data has been  preloaded - we need to load everything
 		getAlbumData(albumID, lychee.map_include_subalbums);
@@ -2724,6 +2754,8 @@ lychee.locale = {
 	IMPORT_SERVER: "Import from Server",
 	NEW_ALBUM: "New Album",
 	NEW_TAG_ALBUM: "New Tag Album",
+	UPLOAD_TRACK: "Upload track",
+	DELETE_TRACK: "Delete track",
 
 	TITLE_NEW_ALBUM: "Enter a title for the new album:",
 	UNTITLED: "Untitled",
@@ -3073,6 +3105,8 @@ lychee.locale = {
 	PHOTO_THUMB_HIDPI: "Square thumb HiDPI",
 	PHOTO_LIVE_VIDEO: "Video part of live-photo",
 	PHOTO_VIEW: "Lychee Photo View:",
+
+	ERROR_GPX: "Error loading GPX file: ",
 
 	/**
   * Formats a number representing a filesize in bytes as a localized string
@@ -3546,6 +3580,7 @@ var SmartAlbumID = Object.freeze({
  * @property {?string} id - album ID
  * @property {?string} title - album title
  * @property {Photo[]} photos
+ * @property {?string} track_url - URL to GPX track
  */
 
 /**

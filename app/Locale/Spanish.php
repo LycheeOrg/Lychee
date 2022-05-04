@@ -122,6 +122,8 @@ final class Spanish implements Language
 			'IMPORT_SERVER' => 'Importar desde Servidor',
 			'NEW_ALBUM' => 'Nuevo Álbum',
 			'NEW_TAG_ALBUM' => 'New Tag Album',
+			'UPLOAD_TRACK' => 'Upload track',
+			'DELETE_TRACK' => 'Delete track',
 
 			'TITLE_NEW_ALBUM' => 'Ingrese un título para el nuevo álbum:',
 			'UNTITLED' => 'Sin Título',
@@ -489,6 +491,8 @@ final class Spanish implements Language
 
 			'PHOTO_EDIT_ROTATECWISE' => 'Rotate clockwise',
 			'PHOTO_EDIT_ROTATECCWISE' => 'Rotate counter-clockwise',
+
+			'ERROR_GPX' => 'Error loading GPX file: ',
 		];
 
 		return $locale;

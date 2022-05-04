@@ -122,6 +122,8 @@ final class Swedish implements Language
 			'IMPORT_SERVER' => 'Importera från server',
 			'NEW_ALBUM' => 'Nytt album',
 			'NEW_TAG_ALBUM' => 'New Tag Album',
+			'UPLOAD_TRACK' => 'Upload track',
+			'DELETE_TRACK' => 'Delete track',
 
 			'TITLE_NEW_ALBUM' => 'Skriv en titel för det nya albumet:',
 			'UNTITLED' => 'Saknar titel',
@@ -489,6 +491,8 @@ final class Swedish implements Language
 
 			'PHOTO_EDIT_ROTATECWISE' => 'Rotate clockwise',
 			'PHOTO_EDIT_ROTATECCWISE' => 'Rotate counter-clockwise',
+
+			'ERROR_GPX' => 'Error loading GPX file: ',
 		];
 
 		return $locale;

@@ -205,6 +205,11 @@
     <input id="upload_files" type="file" name="fileElem[]" multiple accept="image/*,video/*,.mov">
 </div>
 
+<!-- Upload track -->
+<div id="upload">
+	<input id="upload_track_file" type="file" name="fileElem" accept="application/x-gpx+xml">
+</div>
+
 <!-- JS -->
 <script async type="text/javascript" src="{{ Helpers::cacheBusting('dist/main.js') }}"></script>
 </div>
