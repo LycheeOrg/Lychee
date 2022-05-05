@@ -152,6 +152,7 @@ final class ChineseTraditional implements Language
 			'DISPLAY_FULL_MAP' => '地圖',
 			'DIRECT_LINK' => '外部連結',
 			'DIRECT_LINKS' => '內部連結',
+			'QR_CODE' => 'QR Code',
 
 			'ALBUM_ABOUT' => '關於',
 			'ALBUM_BASICS' => '基本資訊',

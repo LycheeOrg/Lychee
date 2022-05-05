@@ -153,6 +153,7 @@ final class Slovak implements Language
 			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Priamy link',
 			'DIRECT_LINKS' => 'Priame linky',
+			'QR_CODE' => 'QR Code',
 
 			'ALBUM_ABOUT' => 'O albume',
 			'ALBUM_BASICS' => 'Základné informácie',

@@ -154,6 +154,7 @@ final class German implements Language
 			'DISPLAY_FULL_MAP' => 'Karte',
 			'DIRECT_LINK' => 'Direkter Link',
 			'DIRECT_LINKS' => 'Direkte Links',
+			'QR_CODE' => 'QR-Code',
 
 			'ALBUM_ABOUT' => 'Über',
 			'ALBUM_BASICS' => 'Grundlegende Informationen',

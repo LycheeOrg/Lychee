@@ -155,6 +155,7 @@ final class French implements Language
 			'DISPLAY_FULL_MAP' => 'Carte',
 			'DIRECT_LINK' => 'Lien direct',
 			'DIRECT_LINKS' => 'Liens directs',
+			'QR_CODE' => 'QR Code',
 
 			'ALBUM_ABOUT' => 'À propos',
 			'ALBUM_BASICS' => 'Informations de base',
