@@ -2349,14 +2349,15 @@ album.qrCode = function () {
 	basicModal.show({
 		body: msg,
 		callback: function callback() {
+			qrcode = $("#qr-code");
 			QrCreator.render({
 				text: location.href,
 				radius: 0.0,
 				ecLevel: "H",
 				fill: "#000000",
 				background: "#FFFFFF",
-				size: 440 // 500px (modal width) - 2*30px (padding)
-			}, document.getElementById("qr-code"));
+				size: qrcode.width()
+			}, qrcode[0]);
 		},
 		buttons: {
 			cancel: {
@@ -8960,14 +8961,15 @@ _photo3.qrCode = function (photoID) {
 	basicModal.show({
 		body: msg,
 		callback: function callback() {
+			qrcode = $("#qr-code");
 			QrCreator.render({
 				text: _photo3.getViewLink(myPhoto.id),
 				radius: 0.0,
 				ecLevel: "H",
 				fill: "#000000",
 				background: "#FFFFFF",
-				size: 440 // 500px (modal width) - 2*30px (padding)
-			}, document.getElementById("qr-code"));
+				size: qrcode.width()
+			}, qrcode[0]);
 		},
 		buttons: {
 			cancel: {
