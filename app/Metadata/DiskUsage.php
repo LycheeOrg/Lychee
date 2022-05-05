@@ -2,6 +2,8 @@
 
 namespace App\Metadata;
 
+use App\Facades\Helpers;
+
 class DiskUsage
 {
 	/**
@@ -89,7 +91,7 @@ class DiskUsage
 		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
 		$dts = disk_total_space(base_path(''));
 
-		return $this->getSymbolByQuantity($dts);
+		return Helpers::getSymbolByQuantity($dts);
 	}
 
 	/**
@@ -102,7 +104,7 @@ class DiskUsage
 		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
 		$dfs = disk_free_space(base_path(''));
 
-		return $this->getSymbolByQuantity($dfs);
+		return Helpers::getSymbolByQuantity($dfs);
 	}
 
 	/**
@@ -128,7 +130,7 @@ class DiskUsage
 	{
 		$ds = $this->getTotalSize(base_path(''));
 
-		return $this->getSymbolByQuantity($ds);
+		return Helpers::getSymbolByQuantity($ds);
 	}
 
 	/**
@@ -141,6 +143,6 @@ class DiskUsage
 		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
 		$ds = $this->getTotalSize(base_path('public/uploads/'));
 
-		return $this->getSymbolByQuantity($ds);
+		return Helpers::getSymbolByQuantity($ds);
 	}
 }

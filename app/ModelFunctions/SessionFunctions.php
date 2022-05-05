@@ -96,7 +96,7 @@ class SessionFunctions
 	 *
 	 * @return bool
 	 */
-	public function is_current_user_or_admin(int $userId): bool
+	public function is_current_user_or_admin(?int $userId): bool
 	{
 		return Session::get('login') && (Session::get('UserID') === $userId || Session::get('UserID') === 0);
 	}

@@ -45,7 +45,7 @@ class Photo extends Component
 		$this->taken_at = $data->taken_at ?? '';
 		$this->created_at = $data->created_at;
 		$this->is_starred = $data->is_starred;
-		$this->is_public = $data->is_public;
+		// $this->is_public = $data->is_public;
 
 		$this->class = '';
 		$this->class .= $data->isVideo() ? ' video' : '';

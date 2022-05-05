@@ -4,38 +4,66 @@
 <div class="sidebar__wrapper">
 <x-atoms.section head='{{ Lang::get("PHOTO_BASICS") }}' >
 	<x-atoms.line head='{{ Lang::get("PHOTO_TITLE") }}' :value='$title' />
-	<x-atoms.line head='{{ Lang::get("PHOTO_UPLOADED") }}' :value='$uploaded' />
+	<x-atoms.line head='{{ Lang::get("PHOTO_UPLOADED") }}' :value='$created_at' />
 	<x-atoms.line head='{{ Lang::get("PHOTO_DESCRIPTION") }}' :value='$description' />
 </x-atoms.section>
 
-<x-atoms.section head='{{ Lang::get($isVideo ? "PHOTO_VIDEO" : "PHOTO_IMAGE") }}' >
-	<x-atoms.line head='{{ Lang::get("PHOTO_SIZE") }}' :value='$size' />
+<x-atoms.section head='{{ Lang::get($is_video ? "PHOTO_VIDEO" : "PHOTO_IMAGE") }}' >
+	<x-atoms.line head='{{ Lang::get("PHOTO_SIZE") }}' :value='$filesize' />
 	<x-atoms.line head='{{ Lang::get("PHOTO_FORMAT") }}' :value='$type' />
 	<x-atoms.line-skip head='{{ Lang::get("PHOTO_RESOLUTION") }}' :value='$resolution' />
 
-	@if ($isVideo)
+	@if ($is_video)
 		<x-atoms.line-skip head='{{ Lang::get("PHOTO_DURATION") }}' :value='$duration' />
 		<x-atoms.line-skip head='{{ Lang::get("PHOTO_FPS") }}' :value='$fps' />
 	@endif
 </x-atoms.section>
 
 <x-atoms.section head='{{ Lang::get("PHOTO_TAGS") }}' >
-	<x-atoms.line head='{{ Lang::get("ALBUM_IMAGES") }}' :value='$tags' />
+	<x-atoms.line head='{{ Lang::get("PHOTO_TAGS") }}' :value='$tags' />
 </x-atoms.section>
 
-@if(AccessControl::is_logged_in())
-<x-atoms.section head='{{ Lang::get("ALBUM_SHARING") }}' >
-	<x-atoms.line valueFalse='{{ Lang::get("ALBUM_SHR_NO") }}' valueTrue='{{ Lang::get("ALBUM_SHR_YES") }}'
-	head='{{ Lang::get("ALBUM_PUBLIC") }}' :value='$is_public' />
-	<x-atoms.line valueFalse='{{ Lang::get("ALBUM_SHR_NO") }}' valueTrue='{{ Lang::get("ALBUM_SHR_YES") }}'
-	head='{{ Lang::get("ALBUM_HIDDEN") }}' :value='$requires_link' />
-	<x-atoms.line valueFalse='{{ Lang::get("ALBUM_SHR_NO") }}' valueTrue='{{ Lang::get("ALBUM_SHR_YES") }}'
-	head='{{ Lang::get("ALBUM_DOWNLOADABLE") }}' :value='$is_downloadable' />
-	<x-atoms.line valueFalse='{{ Lang::get("ALBUM_SHR_NO") }}' valueTrue='{{ Lang::get("ALBUM_SHR_YES") }}'
-	head='{{ Lang::get("ALBUM_SHARE_BUTTON_VISIBLE") }}' :value='$is_share_button_visible' />
-	<x-atoms.line valueFalse='{{ Lang::get("ALBUM_SHR_NO") }}' valueTrue='{{ Lang::get("ALBUM_SHR_YES") }}'
-	head='{{ Lang::get("ALBUM_PASSWORD") }}' :value='$has_password' />
-	<x-atoms.line head='{{ Lang::get("ALBUM_OWNER") }}' :value='$owner_name' />
+@if ($has_exif)
+<x-atoms.section head='{{ Lang::get("PHOTO_CAMERA") }}' >
+	<x-atoms.line head='{{ Lang::get("PHOTO_CAPTURED") }}' :value='$taken_at' />
+	<x-atoms.line head='{{ Lang::get("PHOTO_MAKE") }}' :value='$make' />
+	<x-atoms.line head='{{ Lang::get("PHOTO_TYPE") }}' :value='$model' />
+	@if (!$is_video)
+	<x-atoms.line head='{{ Lang::get("PHOTO_LENS") }}' :value='$lens' />
+	<x-atoms.line head='{{ Lang::get("PHOTO_SHUTTER") }}' :value='$shutter' />
+	<x-atoms.line head='{{ Lang::get("PHOTO_APERTURE") }}' :value='"ƒ / ".$aperture' />
+	<x-atoms.line head='{{ Lang::get("PHOTO_FOCAL") }}' :value='$focal' />
+	<x-atoms.line head='{{ Lang::get("PHOTO_ISO") }}' :value='$iso' />
+	@endif
 </x-atoms.section>
+@endif
+
+@if ($has_location)
+<x-atoms.section head='{{ Lang::get("PHOTO_LOCATION") }}' >
+	<x-atoms.line head='{{ Lang::get("PHOTO_LATITUDE") }}' :value='$latitude' />
+	<x-atoms.line head='{{ Lang::get("PHOTO_LONGITUDE") }}' :value='$longitude' />
+	<x-atoms.line head='{{ Lang::get("PHOTO_ALTITUDE") }}' :value='$altitude' />
+	<x-atoms.line head='{{ Lang::get("PHOTO_LOCATION") }}' :value='$location' />
+	@if ($img_direction != null)
+	<x-atoms.line head='{{ Lang::get("PHOTO_IMGDIRECTION") }}' :value='$img_direction' />
+	@endif
+</x-atoms.section>
+@endif
+{{--
+structure.license = {
+	title: lychee.locale["PHOTO_REUSE"],
+	type: sidebar.types.DEFAULT,
+	rows: [{ title: lychee.locale["PHOTO_LICENSE"], kind: "license", value: license, editable: editable }],
+};
+--}}
+
+
+@if(AccessControl::is_logged_in())
+{{-- structure.sharing = {
+	title: lychee.locale["PHOTO_SHARING"],
+	type: sidebar.types.DEFAULT,
+	rows: [{ title: lychee.locale["PHOTO_SHR_PLUBLIC"], kind: "public", value: isPublic }],
+};
+--}}
 @endif
 </div>

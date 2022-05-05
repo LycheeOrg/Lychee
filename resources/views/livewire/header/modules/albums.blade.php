@@ -1,10 +1,10 @@
 <div class="header__toolbar header__toolbar--albums header__toolbar--visible">
 	@if(!AccessControl::is_logged_in())
-	<a class="button" id="button_signin" title="{{ Lang::get('SIGN_IN') }}" data-tabindex="{{ Helpers::data_index_r() }}" wire:click="login">
+	<a wire:click="login" class="button" id="button_signin" title="{{ Lang::get('SIGN_IN') }}" data-tabindex="{{ Helpers::data_index_r() }}">
 		<x-icons.iconic icon='account-login' />
 	</a>
 	@else
-	<a class="button" id="button_settings" title="{{ Lang::get('SETTINGS') }}" data-tabindex="{{ Helpers::data_index_r() }}" wire:click="openLeftMenu">
+	<a wire:click="openLeftMenu" class="button" id="button_settings" title="{{ Lang::get('SETTINGS') }}" data-tabindex="{{ Helpers::data_index_r() }}">
 		<x-icons.iconic icon="cog" />
 	</a>
 	@endif

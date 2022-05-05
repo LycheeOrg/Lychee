@@ -3,7 +3,6 @@
 namespace App\Assets;
 
 use App\Exceptions\Internal\ZeroModuloException;
-use App\ModelFunctions\ConfigFunctions;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\File;
 use WhichBrowser\Parser as BrowserParser;
@@ -177,6 +176,8 @@ class Helpers
 	}
 
 	/**
+	 * !TODO is it still needed?
+	 *
 	 * Properly convert a boolean to a string
 	 * the default php function returns '' in case of false, this is not the behavior we want.
 	 */
@@ -253,5 +254,23 @@ class Helpers
 	public function data_index_set(int $idx = 0): void
 	{
 		$this->numTab = $idx;
+	}
+
+	/**
+	 * From https://www.php.net/manual/en/function.disk-total-space.php.
+	 *
+	 * @param $bytes
+	 *
+	 * @return string
+	 */
+	public function getSymbolByQuantity($bytes): string
+	{
+		$symbols = [
+			'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB',
+		];
+		$exp = intval(floor(log($bytes) / log(1024)));
+
+		return sprintf('%.2f %s', ($bytes / pow(1024, $exp)),
+			$symbols[$exp]);
 	}
 }

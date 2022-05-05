@@ -13,13 +13,16 @@ class Sidebar extends Openable
 {
 	use AlbumProperty;
 
-	// public ?Photo $photo = null;
+	public ?Photo $photo = null;
 	public ?BaseAlbum $baseAlbum = null;
 	public ?BaseSmartAlbum $smartAlbum = null;
 
 	public function mount(?AbstractAlbum $album = null, ?Photo $photo = null)
 	{
 		$this->loadAlbum($album);
+		if ($this->photo != null) {
+			$this->photo = $photo;
+		}
 	}
 
 	public function render()
