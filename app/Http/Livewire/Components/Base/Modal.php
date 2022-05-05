@@ -25,7 +25,7 @@ class Modal extends Openable
 
 	public function deleteModal($params, string $form = 'forms.base-delete-form')
 	{
-		return $this->openModal($form, $params);
+		$this->openModal($form, $params);
 	}
 
 	public function closeModal()
