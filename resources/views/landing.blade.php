@@ -13,7 +13,7 @@
 
     <div id="header" class="animate animate-down">
         <div id="logo">
-            <a href="{{ URL::to('/') }}"><h1>{{ $infos['title'] }}<span>{{ $infos['subtitle'] }}</span></h1></a>
+            <a href="{{ URL::to('/') }}"><h1>{{ $infos['title'] }}<span class="subtitle">{{ $infos['subtitle'] }}</span></h1></a>
         </div><!-- logo -->
     </div><!-- header -->
 
@@ -23,7 +23,7 @@
     <div id="intro">
         <div id="intro_content">
             <h1 class="animate_slower pop-in">{{ $infos['title'] }}</h1>
-            <h2><span class="animate_slower pop-in">{{ $infos['subtitle'] }}</span></h2>
+            <h2 class="subtitle"><span class="animate_slower pop-in">{{ $infos['subtitle'] }}</span></h2>
         </div><!-- content -->
     </div><!-- intro -->
 

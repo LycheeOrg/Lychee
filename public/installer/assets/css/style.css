@@ -5,33 +5,6 @@
  */
 /* FONT PATH
  * -------------------------- */
-/* roboto-300 - vietnamese_latin-ext_latin_greek-ext_greek_cyrillic-ext_cyrillic */
-@font-face {
-	font-family: 'Roboto';
-	font-style: normal;
-	font-weight: 300;
-	src: local(''),
-	url('public/fonts/roboto-v29-300.woff2') format('woff2');
-}
-
-/* roboto-regular - vietnamese_latin-ext_latin_greek-ext_greek_cyrillic-ext_cyrillic */
-@font-face {
-	font-family: 'Roboto';
-	font-style: normal;
-	font-weight: 400;
-	src: local(''),
-	url('public/fonts/roboto-v29-400.woff2') format('woff2');
-}
-
-/* roboto-700 - vietnamese_latin-ext_latin_greek-ext_greek_cyrillic-ext_cyrillic */
-@font-face {
-	font-family: 'Roboto';
-	font-style: normal;
-	font-weight: 700;
-	src: local(''),
-	url('public/fonts/roboto-v29-700.woff2') format('woff2');
-}
-
 @font-face {
 	font-family: 'FontAwesome';
 	src: url("../fonts/fontawesome-webfont.eot?v=4.7.0");
@@ -3086,7 +3059,7 @@ button, input, optgroup, select, textarea {
 html {
 	-ms-text-size-adjust: 100%;
 	-webkit-text-size-adjust: 100%;
-	font-family: Roboto, Helvetica Neue, Helvetica, Arial, sans-serif;
+	font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
 	font-weight: 300;
 	color: #666;
 	font-size: 12px;
@@ -3243,7 +3216,7 @@ h1 {
 	line-height: 1.130880986943067em;
 	margin: 0;
 	padding: 0;
-	font-family: Roboto, Helvetica Neue, Helvetica, Arial, sans-serif;
+	font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
 	font-weight: 500;
 	color: #111;
 	clear: both;
@@ -3597,7 +3570,7 @@ form {
 
 h2 {
 	padding: 0;
-	font-family: Roboto, Helvetica Neue, Helvetica, Arial, sans-serif;
+	font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
 	font-weight: 500;
 	color: #111;
 	clear: both;
@@ -3608,7 +3581,7 @@ h2 {
 
 h3 {
 	padding: 0;
-	font-family: Roboto, Helvetica Neue, Helvetica, Arial, sans-serif;
+	font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
 	font-weight: 500;
 	color: #111;
 	clear: both;
@@ -3619,7 +3592,7 @@ h3 {
 
 h4 {
 	padding: 0;
-	font-family: Roboto, Helvetica Neue, Helvetica, Arial, sans-serif;
+	font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
 	font-weight: 500;
 	color: #111;
 	clear: both;
@@ -3630,7 +3603,7 @@ h4 {
 
 h5 {
 	padding: 0;
-	font-family: Roboto, Helvetica Neue, Helvetica, Arial, sans-serif;
+	font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
 	font-weight: 500;
 	color: #111;
 	clear: both;
@@ -3641,7 +3614,7 @@ h5 {
 
 h6 {
 	padding: 0;
-	font-family: Roboto, Helvetica Neue, Helvetica, Arial, sans-serif;
+	font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
 	font-weight: 500;
 	color: #111;
 	clear: both;

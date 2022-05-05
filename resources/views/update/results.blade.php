@@ -8,19 +8,10 @@
 
         <!-- Styles -->
         <style>
-			/* nunito-regular - vietnamese_latin-ext_latin_cyrillic-ext_cyrillic */
-			@font-face {
-				font-family: 'Nunito';
-				font-style: normal;
-				font-weight: 400;
-				src: local(''),
-				url('/fonts/nunito-v23.woff2') format('woff2');
-			}
-
             html, body {
                 background-color: #fff;
                 color: #636b6f;
-                font-family: 'Nunito', sans-serif;
+                font-family: sans-serif;
                 font-weight: 100;
                 height: 100vh;
                 margin: 0;
