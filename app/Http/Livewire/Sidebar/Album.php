@@ -54,7 +54,7 @@ class Album extends Component
 
 		$this->children_count = $album->children->count();
 
-		$counted = $this->album->photos->countBy(function (Photo $photo) {
+		$counted = $album->photos->countBy(function (Photo $photo) {
 			return $photo->isVideo() ? 'videos' : 'photos';
 		})->all();
 		$this->photo_count = isset($counted['photos']) ? $counted['photos'] : 0;
@@ -66,7 +66,7 @@ class Album extends Component
 		$this->requires_link = $album->requires_link;
 		$this->is_downloadable = $album->is_downloadable;
 		$this->is_share_button_visible = $album->is_share_button_visible;
-		$this->has_password = $this->album->has_password;
+		$this->has_password = $album->has_password;
 
 		$this->owner_name = $album->owner->name();
 

@@ -24,9 +24,8 @@ class Albums extends Component
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function mount(
-		Top $top,
-	) {
+	public function mount(Top $top)
+	{
 		$this->topAlbums = $top->get();
 	}
 

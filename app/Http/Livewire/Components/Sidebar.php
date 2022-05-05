@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Components;
 
 use App\Contracts\AbstractAlbum;
+use App\Http\Livewire\Components\Base\Openable;
 use App\Http\Livewire\Traits\AlbumProperty;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
@@ -19,7 +20,6 @@ class Sidebar extends Openable
 	public function mount(?AbstractAlbum $album = null, ?Photo $photo = null)
 	{
 		$this->loadAlbum($album);
-		// $this->photo = $photo;
 	}
 
 	public function render()

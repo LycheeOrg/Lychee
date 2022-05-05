@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Components;
 
 use App\Facades\AccessControl;
+use App\Http\Livewire\Components\Base\Openable;
 
 class LeftMenu extends Openable
 {

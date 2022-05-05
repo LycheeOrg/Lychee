@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Components;
+namespace App\Http\Livewire\Components\Base;
 
 use Barryvdh\Debugbar\Facades\Debugbar;
 use Livewire\Component;

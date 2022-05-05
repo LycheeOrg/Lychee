@@ -15,7 +15,7 @@
 	@elseif($mode === 'map')
 		<livewire:modules.albums/>
 	@endif
-	<livewire:components.modal />
+	<livewire:components.base.modal />
 
 	{{-- @include('includes.footer') --}}
 </div>

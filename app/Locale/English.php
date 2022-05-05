@@ -173,7 +173,7 @@ final class English implements Language
 			'ALBUM_SUBALBUMS' => 'Subalbums',
 			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Share',
-			'ALBUM_SHR_YES' => 'YES',
+			'ALBUM_SHR_YES' => 'Yes',
 			'ALBUM_SHR_NO' => 'No',
 			'ALBUM_PUBLIC' => 'Public',
 			'ALBUM_PUBLIC_EXPL' => 'Album can be viewed by others, subject to the restrictions below.',

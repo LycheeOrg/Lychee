@@ -7,6 +7,5 @@
 	<td>{{ $head }}</td>
 	<td><span>
 	{{ $value ? $valueTrue : $valueFalse }}
-@endif
 </span></td>
 </tr>
