@@ -48,7 +48,6 @@ class Extractor
 	public ?float $imgDirection = null;
 	/** @var string|null TODO: What is the difference to {@link Extractor::$position}? */
 	public ?string $location = null;
-	public int $filesize = 0;
 	public ?string $livePhotoContentID = null;
 	public int $microVideoOffset = 0;
 	public ?string $checksum = null;
@@ -211,7 +210,6 @@ class Extractor
 		$metadata->longitude = ($exif->getLongitude() !== false) ? $exif->getLongitude() : null;
 		$metadata->altitude = ($exif->getAltitude() !== false) ? $exif->getAltitude() : null;
 		$metadata->imgDirection = ($exif->getImgDirection() !== false) ? $exif->getImgDirection() : null;
-		$metadata->filesize = ($exif->getFileSize() !== false) ? $exif->getFileSize() : 0;
 		$metadata->livePhotoContentID = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
 		$metadata->microVideoOffset = ($exif->getMicroVideoOffset() !== false) ? $exif->getMicroVideoOffset() : 0;
 		$metadata->checksum = self::checksum($file);

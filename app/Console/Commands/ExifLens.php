@@ -65,8 +65,8 @@ class ExifLens extends Command
 					$localFile = $photo->size_variants->getOriginal()->getFile()->toLocalFile();
 					$info = Extractor::createFromFile($localFile);
 					$updated = false;
-					if ($photo->size_variants->getOriginal()->filesize === 0 && $info->filesize !== 0) {
-						$photo->size_variants->getOriginal()->filesize = $info->filesize;
+					if ($photo->size_variants->getOriginal()->filesize === 0) {
+						$photo->size_variants->getOriginal()->filesize = $localFile->getFilesize();
 						$updated = true;
 					}
 					if (empty($photo->iso) && !empty($info->iso)) {

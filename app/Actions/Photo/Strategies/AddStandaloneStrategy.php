@@ -89,7 +89,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		$original = $sizeVariantFactory->createOriginal(
 			$this->parameters->exifInfo->width,
 			$this->parameters->exifInfo->height,
-			$this->parameters->exifInfo->filesize
+			$this->sourceFile->getFilesize()
 		);
 		try {
 			$this->putSourceIntoFinalDestination($this->sourceFile, $original->short_path);
@@ -199,8 +199,6 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		// If cache is not cleared, the size before rotation is used and later
 		// yields an incorrect value.
 		clearstatcache(true, $absolutePath);
-		// Update filesize for later use e.g. when creating variants
-		$this->parameters->exifInfo->filesize = $this->sourceFile->getFilesize();
 		$this->photo->save();
 	}
 
