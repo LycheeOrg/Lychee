@@ -96,10 +96,9 @@ class RotateStrategy extends AddBaseStrategy
 		$imageHandler->rotate($origFile->getAbsolutePath(), ($this->direction == 1) ? 90 : -90, $tmpFile->getAbsolutePath());
 
 		// The file size and checksum may have changed after the rotation.
-		/* @var Extractor $metadataExtractor */
-		$metadataExtractor = resolve(Extractor::class);
 		// TODO: See above, we must stop using absolute paths
-		$this->photo->checksum = $metadataExtractor->checksum($tmpFile);
+		$metadataExtractor = Extractor::createFromFile($tmpFile);
+		$this->photo->checksum = $metadataExtractor->checksum;
 		$this->photo->save();
 
 		// Delete all size variants from current photo, this will also take

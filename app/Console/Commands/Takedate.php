@@ -95,13 +95,11 @@ class Takedate extends Command
 	/**
 	 * Execute the console command.
 	 *
-	 * @param Extractor $metadataExtractor
-	 *
 	 * @return int
 	 *
 	 * @throws ExternalLycheeException
 	 */
-	public function handle(Extractor $metadataExtractor): int
+	public function handle(): int
 	{
 		try {
 			$limit = intval($this->argument('limit'));
@@ -152,20 +150,18 @@ class Takedate extends Command
 				$this->progressBar->advance();
 				$localFile = $photo->size_variants->getOriginal()->getFile()->toLocalFile();
 
-				$info = $metadataExtractor->extract($localFile);
-				/* @var Carbon $stamp */
-				$stamp = $info['taken_at'];
-				if ($stamp !== null) {
+				$info = Extractor::createFromFile($localFile);
+				if ($info->taken_at !== null) {
 					// Note: `equalTo` only checks if two times indicate the same
 					// instant of time on the universe's timeline, i.e. equality
 					// comparison is always done in UTC.
 					// For example "2022-01-31 20:50 CET" is deemed equal to
 					// "2022-01-31 19:50 GMT".
 					// So, we must check for equality of timezones separately.
-					if ($photo->taken_at->equalTo($stamp) && $photo->taken_at->timezoneName === $stamp->timezoneName) {
+					if ($photo->taken_at->equalTo($info->taken_at) && $photo->taken_at->timezoneName === $info->taken_at->timezoneName) {
 						$this->printInfo($photo, 'Takestamp up-to-date.');
 					} else {
-						$photo->taken_at = $stamp;
+						$photo->taken_at = $info->taken_at;
 						$this->printInfo($photo, 'Takestamp set to ' . $photo->taken_at->format(self::DATETIME_FORMAT) . '.');
 					}
 				} else {

@@ -20,7 +20,6 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 
 class AddStandaloneStrategy extends AddBaseStrategy
 {
-	protected Extractor $metadataExtractor;
 	protected ImageHandlerInterface $imageHandler;
 	protected NativeLocalFile $sourceFile;
 
@@ -45,7 +44,6 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			// appear in a different order than users expect.
 			$newPhoto->updateTimestamps();
 			parent::__construct($parameters, $newPhoto);
-			$this->metadataExtractor = resolve(Extractor::class);
 			$this->imageHandler = resolve(ImageHandlerInterface::class);
 			$this->sourceFile = $sourceFile;
 		} catch (BindingResolutionException $e) {
@@ -89,9 +87,9 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		 * @noinspection PhpUnhandledExceptionInspection
 		 */
 		$original = $sizeVariantFactory->createOriginal(
-			$this->parameters->exifInfo['width'],
-			$this->parameters->exifInfo['height'],
-			$this->parameters->exifInfo['filesize']
+			$this->parameters->exifInfo->width,
+			$this->parameters->exifInfo->height,
+			$this->parameters->exifInfo->filesize
 		);
 		try {
 			$this->putSourceIntoFinalDestination($this->sourceFile, $original->short_path);
@@ -162,7 +160,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 	 */
 	protected function normalizeOrientation(): void
 	{
-		$orientation = $this->parameters->exifInfo['orientation'];
+		$orientation = $this->parameters->exifInfo->orientation;
 		if ($this->photo->type !== 'image/jpeg' || $orientation == 1) {
 			// Nothing to do for non-JPEGs or correctly oriented photos.
 			return;
@@ -195,14 +193,14 @@ class AddStandaloneStrategy extends AddBaseStrategy
 
 		// If the image has actually been rotated, the size
 		// and the checksum may have changed.
-		$this->photo->checksum = $this->metadataExtractor->checksum($this->sourceFile);
+		$this->photo->checksum = Extractor::checksum($this->sourceFile);
 		// stat info (filesize, access mode, etc.) are cached by PHP to avoid
 		// costly I/O calls.
 		// If cache is not cleared, the size before rotation is used and later
 		// yields an incorrect value.
 		clearstatcache(true, $absolutePath);
 		// Update filesize for later use e.g. when creating variants
-		$this->parameters->exifInfo['filesize'] = $this->sourceFile->getFilesize();
+		$this->parameters->exifInfo->filesize = $this->sourceFile->getFilesize();
 		$this->photo->save();
 	}
 
@@ -211,11 +209,11 @@ class AddStandaloneStrategy extends AddBaseStrategy
 	 */
 	protected function handleGoogleMotionPicture(): void
 	{
-		if (empty($this->parameters->exifInfo['MicroVideoOffset'])) {
+		if ($this->parameters->exifInfo->microVideoOffset === 0) {
 			return;
 		}
 
-		$videoLengthBytes = intval($this->parameters->exifInfo['MicroVideoOffset']);
+		$videoLengthBytes = $this->parameters->exifInfo->microVideoOffset;
 		$original = $this->photo->size_variants->getOriginal();
 		$shortPathPhoto = $original->short_path;
 		$fullPathPhoto = $original->full_path;

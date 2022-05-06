@@ -3,17 +3,14 @@
 namespace App\Console\Commands;
 
 use App\Contracts\ExternalLycheeException;
-use App\Exceptions\Internal\NotImplementedException;
+use App\Exceptions\ModelDBException;
 use App\Exceptions\UnexpectedException;
 use App\Image\MediaFile;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\InvalidCastException;
-use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class ExifLens extends Command
 {
@@ -30,22 +27,6 @@ class ExifLens extends Command
 	 * @var string
 	 */
 	protected $description = 'Get EXIF data from pictures if missing';
-
-	private Extractor $metadataExtractor;
-
-	/**
-	 * Create a new command instance.
-	 *
-	 * @param Extractor $metadataExtractor
-	 *
-	 * @throws SymfonyConsoleException
-	 */
-	public function __construct(Extractor $metadataExtractor)
-	{
-		parent::__construct();
-
-		$this->metadataExtractor = $metadataExtractor;
-	}
 
 	/**
 	 * Execute the console command.
@@ -80,55 +61,58 @@ class ExifLens extends Command
 			$i = $from;
 			/** @var Photo $photo */
 			foreach ($photos as $photo) {
-				$localFile = $photo->size_variants->getOriginal()->getFile()->toLocalFile();
-				$info = $this->metadataExtractor->extract($localFile);
-				$updated = false;
-				if ($photo->size_variants->getOriginal()->filesize === 0 && $info['filesize'] != '') {
-					$photo->size_variants->getOriginal()->filesize = intval($info['filesize']);
-					$updated = true;
-				}
-				if ($photo->iso == '' && $info['iso'] != '') {
-					$photo->iso = $info['iso'];
-					$updated = true;
-				}
-				if ($photo->aperture == '' && $info['aperture'] != '') {
-					$photo->aperture = $info['aperture'];
-					$updated = true;
-				}
-				if ($photo->make == '' && $info['make'] != '') {
-					$photo->make = $info['make'];
-					$updated = true;
-				}
-				if ($photo->getAttribute('model') == '' && $info['model'] != '') {
-					$photo->setAttribute('model', $info['model']);
-					$updated = true;
-				}
-				if ($photo->lens == '' && $info['lens'] != '') {
-					$photo->lens = $info['lens'];
-					$updated = true;
-				}
-				if ($photo->shutter == '' && $info['shutter'] != '') {
-					$photo->shutter = $info['shutter'];
-					$updated = true;
-				}
-				if ($photo->focal == '' && $info['focal'] != '') {
-					$photo->focal = $info['focal'];
-					$updated = true;
-				}
-				if ($updated) {
-					if ($photo->save() && $photo->size_variants->getOriginal()->save()) {
+				try {
+					$localFile = $photo->size_variants->getOriginal()->getFile()->toLocalFile();
+					$info = Extractor::createFromFile($localFile);
+					$updated = false;
+					if ($photo->size_variants->getOriginal()->filesize === 0 && $info->filesize !== 0) {
+						$photo->size_variants->getOriginal()->filesize = $info->filesize;
+						$updated = true;
+					}
+					if (empty($photo->iso) && !empty($info->iso)) {
+						$photo->iso = $info->iso;
+						$updated = true;
+					}
+					if (empty($photo->aperture) && !empty($info->aperture)) {
+						$photo->aperture = $info->aperture;
+						$updated = true;
+					}
+					if (empty($photo->make) && !empty($info->make)) {
+						$photo->make = $info->make;
+						$updated = true;
+					}
+					if (empty($photo->model) && !empty($info->model)) {
+						$photo->model = $info->model;
+						$updated = true;
+					}
+					if (empty($photo->lens) && !empty($info->lens)) {
+						$photo->lens = $info->lens;
+						$updated = true;
+					}
+					if (empty($photo->shutter) && !empty($info->shutter)) {
+						$photo->shutter = $info->shutter;
+						$updated = true;
+					}
+					if (empty($photo->focal) && !empty($info->focal)) {
+						$photo->focal = $info->focal;
+						$updated = true;
+					}
+					if ($updated) {
+						$photo->save();
+						$photo->size_variants->getOriginal()->save();
 						$this->line($i . ': EXIF updated for ' . $photo->title);
 					} else {
-						$this->line($i . ': Failed to update EXIF for ' . $photo->title);
+						$this->line($i . ': Could not get EXIF data/nothing to update for ' . $photo->title . '.');
 					}
-				} else {
-					$this->line($i . ': Could not get EXIF data/nothing to update for ' . $photo->title . '.');
+				} catch (ModelDBException $e) {
+					$this->line($i . ': Failed to update EXIF for ' . $photo->title);
+					$this->line($i . ': ' . $e->getMessage());
 				}
 				$i++;
 			}
 
 			return 0;
-		} catch (InvalidCastException|JsonEncodingException|\InvalidArgumentException|NotImplementedException|SymfonyConsoleException $e) {
+		} catch (\Throwable $e) {
 			throw new UnexpectedException($e);
 		}
 	}

@@ -29,24 +29,6 @@ class VideoData extends Command
 	protected $description = 'Generate video thumbnails and metadata if missing';
 
 	/**
-	 * @var Extractor
-	 */
-	private Extractor $metadataExtractor;
-
-	/**
-	 * Create a new command instance.
-	 *
-	 * @param Extractor $metadataExtractor
-	 *
-	 * @throws SymfonyConsoleException
-	 */
-	public function __construct(Extractor $metadataExtractor)
-	{
-		parent::__construct();
-		$this->metadataExtractor = $metadataExtractor;
-	}
-
-	/**
 	 * Execute the console command.
 	 *
 	 * @return int
@@ -87,30 +69,31 @@ class VideoData extends Command
 				$originalSizeVariant = $photo->size_variants->getOriginal();
 				$file = $originalSizeVariant->getFile()->toLocalFile();
 
-				$info = $this->metadataExtractor->extract($file);
+				$info = Extractor::createFromFile($file);
 
-				if ($originalSizeVariant->width == 0 && $info['width'] !== 0) {
-					$originalSizeVariant->width = $info['width'];
+				if ($originalSizeVariant->width == 0 && $info->width !== 0) {
+					$originalSizeVariant->width = $info->width;
 				}
-				if ($originalSizeVariant->height == 0 && $info['height'] !== 0) {
-					$originalSizeVariant->height = $info['height'];
+				if ($originalSizeVariant->height == 0 && $info->height !== 0) {
+					$originalSizeVariant->height = $info->height;
 				}
-				if ($photo->focal == '' && $info['focal'] !== '') {
-					$photo->focal = $info['focal'];
+				if (empty($photo->focal) && !empty($info->focal)) {
+					$photo->focal = $info->focal;
 				}
-				if ($photo->aperture == '' && $info['aperture'] !== '') {
-					$photo->aperture = $info['aperture'];
+				if (empty($photo->aperture) && !empty($info->aperture)) {
+					$photo->aperture = $info->aperture;
 				}
-				if ($photo->latitude == null && $info['latitude'] !== null) {
-					$photo->latitude = floatval($info['latitude']);
+				if ($photo->latitude == null && $info->latitude !== null) {
+					$photo->latitude = $info->latitude;
 				}
-				if ($photo->longitude == null && $info['longitude'] !== null) {
-					$photo->longitude = floatval($info['longitude']);
+				if ($photo->longitude == null && $info->longitude) {
+					$photo->longitude = $info->longitude;
 				}
 				if ($photo->isDirty()) {
 					$this->line('Updated metadata');
 				}
 
+				// TODO: Fix this line before PR; init needs more parameters
 				$sizeVariantFactory->init($photo);
 				$sizeVariantFactory->createSizeVariants();
 

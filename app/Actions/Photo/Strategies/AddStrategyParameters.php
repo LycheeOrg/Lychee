@@ -2,6 +2,7 @@
 
 namespace App\Actions\Photo\Strategies;
 
+use App\Metadata\Extractor;
 use App\Models\Album;
 use App\Models\Configs;
 
@@ -18,8 +19,8 @@ class AddStrategyParameters
 	/** @var bool indicates whether the new photo shall be starred */
 	public bool $is_starred = false;
 
-	/** @var array the extracted EXIF information */
-	public array $exifInfo = [];
+	/** @var Extractor|null the extracted EXIF information */
+	public ?Extractor $exifInfo = null;
 
 	public function __construct(?ImportMode $importMode = null)
 	{

@@ -14,7 +14,6 @@ use App\Contracts\AbstractAlbum;
 use App\Contracts\LycheeException;
 use App\Exceptions\ExternalComponentFailedException;
 use App\Exceptions\ExternalComponentMissingException;
-use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\InvalidPropertyException;
@@ -27,7 +26,6 @@ use App\Models\Photo;
 use App\SmartAlbums\BaseSmartAlbum;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\StarredAlbum;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Create
@@ -78,10 +76,10 @@ class Create
 
 		// Look up potential duplicates/partners in order to select the
 		// proper strategy
-		$duplicate = $this->get_duplicate($this->strategyParameters->exifInfo['checksum']);
+		$duplicate = $this->get_duplicate($this->strategyParameters->exifInfo->checksum);
 		$livePartner = $this->findLivePartner(
-			$this->strategyParameters->exifInfo['live_photo_content_id'],
-			$this->strategyParameters->exifInfo['type'],
+			$this->strategyParameters->exifInfo->livePhotoContentID,
+			$this->strategyParameters->exifInfo->type,
 			$this->strategyParameters->album
 		);
 
@@ -131,22 +129,14 @@ class Create
 	 * @throws ExternalComponentMissingException
 	 * @throws MediaFileOperationException
 	 * @throws ExternalComponentFailedException
-	 * @throws FrameworkException
 	 */
 	protected function loadFileMetadata(NativeLocalFile $sourceFile): void
 	{
-		try {
-			/* @var  Extractor $metadataExtractor */
-			$metadataExtractor = resolve(Extractor::class);
+		$this->strategyParameters->exifInfo = Extractor::createFromFile($sourceFile);
 
-			$this->strategyParameters->exifInfo = $metadataExtractor->extract($sourceFile);
-
-			// Use basename of file if IPTC title missing
-			if (empty($this->strategyParameters->exifInfo['title'])) {
-				$this->strategyParameters->exifInfo['title'] = substr($sourceFile->getOriginalBasename(), 0, 98);
-			}
-		} catch (BindingResolutionException $e) {
-			throw new FrameworkException('Laravel\'s container component', $e);
+		// Use basename of file if IPTC title missing
+		if (empty($this->strategyParameters->exifInfo->title)) {
+			$this->strategyParameters->exifInfo->title = substr($sourceFile->getOriginalBasename(), 0, 98);
 		}
 	}
 
