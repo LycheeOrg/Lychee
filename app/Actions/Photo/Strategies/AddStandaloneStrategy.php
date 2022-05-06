@@ -68,6 +68,20 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		$this->photo->is_starred = $this->parameters->is_starred;
 		$this->setParentAndOwnership();
 
+		// Unfortunately, we must read the entire file once to create the
+		// true, original checksum.
+		// It does **not** suffice to use the stream statistics, when the
+		// image file is loaded, because we cannot guarantee that the image
+		// loader reads the file entirely in one pass.
+		//  a) The image loader may decide to seek in the file, skip
+		//     certain parts (like EXIF information), re-read chunks of the
+		//     file multiple times or out-of-order.
+		//  b) The image loader may not load the entire file, if the image
+		//     stream is shorter than the file and followed by additional
+		//     non-image information (e.g. as it is the case for Google
+		//     Live Photos)
+		$this->photo->original_checksum = StreamStat::createFromLocalFile($this->sourceFile)->checksum;
+
 		try {
 			// Load source image
 			$this->sourceImage->load($this->sourceFile);
@@ -86,6 +100,9 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			$targetFile = $namingStrategy->createFile(SizeVariant::ORIGINAL);
 			$streamStat = $this->putSourceIntoFinalDestination($targetFile);
 
+			// The original and final checksum may differ, if the photo has
+			// been rotated by `putSourceIntoFinalDestination` while being
+			// moved into final position.
 			// If the photo has been rotated, the checksum may have changed.
 			$this->photo->checksum = $streamStat->checksum;
 			$this->photo->save();

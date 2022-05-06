@@ -20,6 +20,7 @@ use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\MediaFileOperationException;
 use App\Image\MediaFile;
 use App\Image\NativeLocalFile;
+use App\Image\StreamStat;
 use App\Metadata\Extractor;
 use App\Models\Album;
 use App\Models\Photo;
@@ -76,7 +77,7 @@ class Create
 
 		// Look up potential duplicates/partners in order to select the
 		// proper strategy
-		$duplicate = $this->get_duplicate(Extractor::checksum($sourceFile));
+		$duplicate = $this->get_duplicate(StreamStat::createFromLocalFile($sourceFile)->checksum);
 		$livePartner = $this->findLivePartner(
 			$this->strategyParameters->exifInfo->livePhotoContentID,
 			$this->strategyParameters->exifInfo->type,

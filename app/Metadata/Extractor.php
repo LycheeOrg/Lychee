@@ -53,25 +53,6 @@ class Extractor
 	public int $microVideoOffset = 0;
 
 	/**
-	 * Returns the SHA-1 checksum of a file.
-	 *
-	 * @param NativeLocalFile $file the file
-	 *
-	 * @return string the checksum
-	 *
-	 * @throws MediaFileOperationException
-	 */
-	public static function checksum(NativeLocalFile $file): string
-	{
-		$checksum = sha1_file($file->getAbsolutePath());
-		if ($checksum === false) {
-			throw new MediaFileOperationException('Could not compute checksum for: ' . $file->getAbsolutePath());
-		}
-
-		return $checksum;
-	}
-
-	/**
 	 * Extracts metadata from a file.
 	 *
 	 * @param NativeLocalFile $file the file
