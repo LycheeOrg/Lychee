@@ -3,7 +3,7 @@ NO_COLOR="\033[0m"
 GREEN="\033[38;5;010m"
 YELLOW="\033[38;5;011m"
 
-echo "\n${GREEN}pre commit hook start${NO_COLOR}\n"
+printf "\n${GREEN}pre commit hook start${NO_COLOR}\n"
 
 PHP_CS_FIXER="vendor/bin/php-cs-fixer"
 
@@ -14,10 +14,10 @@ if [ -x "$PHP_CS_FIXER" ]; then
     done
 else
     echo ""
-    echo "${YELLOW}Please install php-cs-fixer, e.g.:${NO_COLOR}"
+    printf "${YELLOW}Please install php-cs-fixer, e.g.:${NO_COLOR}"
     echo ""
     echo "  composer install"
     echo ""
 fi
 
-echo "\n${GREEN}pre commit hook finish${NO_COLOR}\n"
+printf "\n${GREEN}pre commit hook finish${NO_COLOR}\n"
