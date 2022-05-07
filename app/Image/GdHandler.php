@@ -149,7 +149,7 @@ class GdHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function save(MediaFile $file): StreamStat
+	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStat
 	{
 		if (!$this->gdImage) {
 			new MediaFileOperationException('No image loaded');
@@ -178,7 +178,7 @@ class GdHandler extends BaseImageHandler
 					assert(false, new \AssertionError('uncovered image type'));
 			}
 
-			$streamStat = $file->write($inMemoryBuffer->read(), true);
+			$streamStat = $file->write($inMemoryBuffer->read(), $collectStatistics);
 			$file->close();
 			$inMemoryBuffer->close();
 

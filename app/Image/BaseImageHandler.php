@@ -38,18 +38,19 @@ abstract class BaseImageHandler implements ImageHandlerInterface
 	 * TODO: Do we really need it? It does neither seem lossless nor doing anything useful.
 	 *
 	 * @param MediaFile $file
+	 * @param bool      $collectStatistics if true, the method returns statistics about the stream
 	 *
-	 * @return StreamStat|null statistics about the optimized file
+	 * @return StreamStat|null optional statistics about the stream, if optimization took place and if requested
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	protected static function applyLosslessOptimizationConditionally(MediaFile $file): ?StreamStat
+	protected static function applyLosslessOptimizationConditionally(MediaFile $file, bool $collectStatistics = false): ?StreamStat
 	{
 		if (Configs::get_value('lossless_optimization', '0') == '1') {
 			if ($file instanceof NativeLocalFile) {
 				ImageOptimizer::optimize($file->getAbsolutePath());
 
-				return StreamStat::createFromLocalFile($file);
+				return $collectStatistics ? StreamStat::createFromLocalFile($file) : null;
 			} else {
 				Logs::warning(__METHOD__, __LINE__, 'Skipping lossless optimization; optimization is requested by configuration but only supported for local files');
 

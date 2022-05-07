@@ -67,7 +67,7 @@ class ImagickHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function save(MediaFile $file): StreamStat
+	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStat
 	{
 		if (!$this->imImage) {
 			new MediaFileOperationException('No image loaded');
@@ -87,11 +87,11 @@ class ImagickHandler extends BaseImageHandler
 			// and if the file supports seekable streams
 			$inMemoryBuffer = new InMemoryBuffer();
 			$this->imImage->writeImageFile($inMemoryBuffer->stream());
-			$streamStat = $file->write($inMemoryBuffer->read(), true);
+			$streamStat = $file->write($inMemoryBuffer->read(), $collectStatistics);
 			$file->close();
 			$inMemoryBuffer->close();
 
-			return parent::applyLosslessOptimizationConditionally($file) ?: $streamStat;
+			return parent::applyLosslessOptimizationConditionally($file, $collectStatistics) ?: $streamStat;
 		} catch (ImagickException $e) {
 			throw new MediaFileOperationException('Failed to save image', $e);
 		}

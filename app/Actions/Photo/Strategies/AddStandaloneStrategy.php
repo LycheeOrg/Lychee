@@ -217,7 +217,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 				$shallNormalize = $this->photo->type === 'image/jpeg' && $this->parameters->exifInfo->orientation !== 1;
 
 				if ($shallNormalize) {
-					$streamStat = $this->sourceImage->save($targetFile);
+					$streamStat = $this->sourceImage->save($targetFile, true);
 				} else {
 					$streamStat = $targetFile->write($this->sourceFile->read());
 					$this->sourceFile->close();

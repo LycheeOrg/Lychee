@@ -34,13 +34,14 @@ interface ImageHandlerInterface
 	/**
 	 * Save the image into the provided file.
 	 *
-	 * @param MediaFile the file to write into
+	 * @param MediaFile $file              the file to write into
+	 * @param bool      $collectStatistics if true, the method returns statistics about the stream
 	 *
-	 * @return StreamStat statistics about the stream
+	 * @return StreamStat|null optional statistics about the stream, if requested
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function save(MediaFile $file): StreamStat;
+	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStat;
 
 	/**
 	 * Frees all internal resources.

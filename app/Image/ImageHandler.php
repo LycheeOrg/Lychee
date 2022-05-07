@@ -69,9 +69,9 @@ class ImageHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function save(MediaFile $file): StreamStat
+	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStat
 	{
-		return $this->engine->save($file);
+		return $this->engine->save($file, $collectStatistics);
 	}
 
 	/**
