@@ -36,7 +36,6 @@ class ArchiveFileInfo
 	protected string $baseFilename;
 	protected string $baseFilenameAddon;
 	protected MediaFile $file;
-	protected int $fileSize;
 
 	/**
 	 * ArchiveFileInfo constructor.
@@ -46,12 +45,11 @@ class ArchiveFileInfo
 	 * @param string    $baseFilenameAddon the "addon" to the base filename
 	 * @param MediaFile $file              the source file
 	 */
-	public function __construct(string $baseFilename, string $baseFilenameAddon, MediaFile $file, int $fileSize)
+	public function __construct(string $baseFilename, string $baseFilenameAddon, MediaFile $file)
 	{
 		$this->baseFilename = $baseFilename;
 		$this->baseFilenameAddon = $baseFilenameAddon;
 		$this->file = $file;
-		$this->fileSize = $fileSize;
 	}
 
 	/**
@@ -103,15 +101,5 @@ class ArchiveFileInfo
 	public function getFile(): MediaFile
 	{
 		return $this->file;
-	}
-
-	/**
-	 * Returns the size of the source file.
-	 *
-	 * @return int the file size
-	 */
-	public function getFileSize(): int
-	{
-		return $this->fileSize;
 	}
 }

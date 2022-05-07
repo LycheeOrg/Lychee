@@ -133,7 +133,7 @@ class Archive
 			);
 			$response->headers->set('Content-Type', $photo->type);
 			$response->headers->set('Content-Disposition', $disposition);
-			$response->headers->set('Content-Length', $archiveFileInfo->getFileSize());
+			$response->headers->set('Content-Length', $archiveFileInfo->getFile()->getFilesize());
 			// Note: Using insecure hashing algorithm is fine here.
 			// The ETag header must only be different for different size variants
 			// Pre-image resistance and collision robustness is not required.
@@ -311,14 +311,12 @@ class Archive
 
 		if ($variant === self::LIVEPHOTOVIDEO) {
 			$sourceFile = new FlysystemFile(Storage::disk(), $photo->live_photo_short_path);
-			$fileSize = $sourceFile->getFilesize();
 			$baseFilenameAddon = '';
 		} elseif (array_key_exists($variant, self::VARIANT2VARIANT)) {
 			$sv = $photo->size_variants->getSizeVariant(self::VARIANT2VARIANT[$variant]);
 			$baseFilenameAddon = '';
 			if ($sv) {
 				$sourceFile = $sv->getFile();
-				$fileSize = $sv->filesize;
 				// The filename of the original size variant shall get no
 				// particular suffix but remain as is.
 				// All other size variants (i.e. the generated, smaller ones)
@@ -333,6 +331,6 @@ class Archive
 			throw new InvalidSizeVariantException('Invalid type of size variant ' . $variant);
 		}
 
-		return new ArchiveFileInfo($baseFilename, $baseFilenameAddon, $sourceFile, $fileSize);
+		return new ArchiveFileInfo($baseFilename, $baseFilenameAddon, $sourceFile);
 	}
 }
