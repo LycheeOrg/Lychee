@@ -76,7 +76,7 @@ class Create
 
 		// Look up potential duplicates/partners in order to select the
 		// proper strategy
-		$duplicate = $this->get_duplicate($this->strategyParameters->exifInfo->checksum);
+		$duplicate = $this->get_duplicate(Extractor::checksum($sourceFile));
 		$livePartner = $this->findLivePartner(
 			$this->strategyParameters->exifInfo->livePhotoContentID,
 			$this->strategyParameters->exifInfo->type,

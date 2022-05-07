@@ -64,12 +64,6 @@ abstract class AddBaseStrategy
 		if (empty($this->photo->type) && !empty($this->parameters->exifInfo->type)) {
 			$this->photo->type = $this->parameters->exifInfo->type;
 		}
-		if (empty($this->photo->checksum) && !empty($this->parameters->exifInfo->checksum)) {
-			$this->photo->checksum = $this->parameters->exifInfo->checksum;
-		}
-		if (empty($this->photo->original_checksum) && !empty($this->parameters->exifInfo->checksum)) {
-			$this->photo->original_checksum = $this->parameters->exifInfo->checksum;
-		}
 		if (empty($this->photo->iso) && !empty($this->parameters->exifInfo->iso)) {
 			$this->photo->iso = $this->parameters->exifInfo->iso;
 		}

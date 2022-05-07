@@ -65,9 +65,12 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		$this->photo->is_public = $this->parameters->is_public;
 		$this->photo->is_starred = $this->parameters->is_starred;
 		$this->setParentAndOwnership();
-		$this->photo->save();
 
+		$this->photo->original_checksum = Extractor::checksum($this->sourceFile);
 		$this->normalizeOrientation();
+		$this->photo->checksum = Extractor::checksum($this->sourceFile);
+
+		$this->photo->save();
 
 		// Initialize factory for size variants
 		/** @var SizeVariantNamingStrategy $namingStrategy */
@@ -191,15 +194,11 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			$this->parameters->importMode->shallImportViaSymlink()
 		);
 
-		// If the image has actually been rotated, the size
-		// and the checksum may have changed.
-		$this->photo->checksum = Extractor::checksum($this->sourceFile);
 		// stat info (filesize, access mode, etc.) are cached by PHP to avoid
 		// costly I/O calls.
 		// If cache is not cleared, the size before rotation is used and later
 		// yields an incorrect value.
 		clearstatcache(true, $absolutePath);
-		$this->photo->save();
 	}
 
 	/**

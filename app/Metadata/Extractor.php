@@ -50,7 +50,6 @@ class Extractor
 	public ?string $location = null;
 	public ?string $livePhotoContentID = null;
 	public int $microVideoOffset = 0;
-	public ?string $checksum = null;
 
 	/**
 	 * Returns the SHA-1 checksum of a file.
@@ -212,7 +211,6 @@ class Extractor
 		$metadata->imgDirection = ($exif->getImgDirection() !== false) ? $exif->getImgDirection() : null;
 		$metadata->livePhotoContentID = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
 		$metadata->microVideoOffset = ($exif->getMicroVideoOffset() !== false) ? $exif->getMicroVideoOffset() : 0;
-		$metadata->checksum = self::checksum($file);
 
 		$taken_at = $exif->getCreationDate();
 		if ($taken_at !== false) {
