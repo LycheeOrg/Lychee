@@ -11,13 +11,13 @@ use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Exceptions\ModelDBException;
 use App\Image\FlysystemFile;
+use App\Image\GoogleMotionPictureHandler;
 use App\Image\ImageHandlerInterface;
 use App\Image\NativeLocalFile;
 use App\Image\StreamStat;
-use App\ModelFunctions\MOVFormat;
+use App\Image\TemporaryLocalFile;
 use App\Models\Photo;
 use App\Models\SizeVariant;
-use FFMpeg\FFMpeg;
 use Illuminate\Contracts\Container\BindingResolutionException;
 
 class AddStandaloneStrategy extends AddBaseStrategy
@@ -86,8 +86,22 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			// Load source image
 			$this->sourceImage->load($this->sourceFile);
 
+			// Handle Google Motion Pictures
+			// We must extract the video stream from the original (local)
+			// file and stash it away, before the original file is moved into
+			// its (potentially remote) final position
+			if ($this->parameters->exifInfo->microVideoOffset !== 0) {
+				$tmpVideoFile = new TemporaryLocalFile(GoogleMotionPictureHandler::FINAL_VIDEO_FILE_EXTENSION, $this->sourceFile->getBasename());
+				$gmpHandler = new GoogleMotionPictureHandler();
+				$gmpHandler->load($this->sourceFile, $this->parameters->exifInfo->microVideoOffset);
+				$gmpHandler->saveVideoStream($tmpVideoFile);
+			} else {
+				$tmpVideoFile = null;
+			}
+
 			/** @var SizeVariantNamingStrategy $namingStrategy */
 			$namingStrategy = resolve(SizeVariantNamingStrategy::class);
+			$namingStrategy->setPhoto($this->photo);
 			$namingStrategy->setFallbackExtension(
 				$this->sourceFile->getOriginalExtension()
 			);
@@ -100,10 +114,21 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			$targetFile = $namingStrategy->createFile(SizeVariant::ORIGINAL);
 			$streamStat = $this->putSourceIntoFinalDestination($targetFile);
 
+			// If we have a temporary video file from a Google Motion Picture,
+			// we must move the preliminary extracted video file next to the
+			// final target file
+			if ($tmpVideoFile) {
+				$videoTargetFile = new FlysystemFile($targetFile->getDisk(), pathinfo($targetFile->getRelativePath(), PATHINFO_FILENAME) . $tmpVideoFile->getExtension());
+				$videoTargetFile->write($tmpVideoFile->read());
+				$this->photo->live_photo_short_path = $videoTargetFile->getRelativePath();
+				$tmpVideoFile->close();
+				$tmpVideoFile->delete();
+				$tmpVideoFile = null;
+			}
+
 			// The original and final checksum may differ, if the photo has
 			// been rotated by `putSourceIntoFinalDestination` while being
 			// moved into final position.
-			// If the photo has been rotated, the checksum may have changed.
 			$this->photo->checksum = $streamStat->checksum;
 			$this->photo->save();
 
@@ -140,8 +165,6 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			// by configuration, etc.
 			report($t);
 		}
-
-		$this->handleGoogleMotionPicture();
 
 		return $this->photo;
 	}
@@ -219,64 +242,6 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			return $streamStat;
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException('Could move/copy/symlink source file to final destination', $e);
-		}
-	}
-
-	/**
-	 * TODO: This method is invoked too late, because the source file may already be deleted
-	 * TODO: Move this into a proper Videohandler.
-	 *
-	 * @throws MediaFileOperationException
-	 */
-	protected function handleGoogleMotionPicture(): void
-	{
-		if ($this->parameters->exifInfo->microVideoOffset === 0) {
-			return;
-		}
-
-		$videoLengthBytes = $this->parameters->exifInfo->microVideoOffset;
-		$original = $this->photo->size_variants->getOriginal();
-		$shortPathPhoto = $original->short_path;
-		$fullPathPhoto = $original->full_path;
-		$shortPathVideo = pathinfo($shortPathPhoto, PATHINFO_FILENAME) . '.mov';
-		$fullPathVideo = pathinfo($fullPathPhoto, PATHINFO_FILENAME) . '.mov';
-
-		try {
-			// 1. Extract the video part
-			$fp = fopen($fullPathPhoto, 'r');
-			$fp_video = tmpfile(); // use a temporary file, will be deleted once closed
-
-			// The MP4 file is located in the last bytes of the file
-			fseek($fp, -1 * $videoLengthBytes, SEEK_END); // It needs to be negative
-			$data = fread($fp, $videoLengthBytes);
-			fwrite($fp_video, $data, $videoLengthBytes);
-
-			// 2. Convert file from mp4 to mov, but keeping audio and video codec
-			// This is needed to LivePhotosKit which only accepts mov files
-			// Computation is fast, since codecs, resolution, framerate etc. remain unchanged
-
-			/**
-			 * ! check if we can use path instead of this ugly thing.
-			 * TODO: Au contraire! If we ever want to be able to use non-local storage, we must stop using paths, but use file streams.
-			 * TODO: Nonetheless, this ugliness should be properly encapsulated in an designated class.
-			 */
-			$ffmpeg = FFMpeg::create();
-			$video = $ffmpeg->open(stream_get_meta_data($fp_video)['uri']);
-			$format = new MOVFormat();
-			// Add additional parameter to extract the first video stream
-			$format->setAdditionalParameters(['-map', '0:0']);
-			$video->save($format, $fullPathVideo);
-
-			// 3. Close files ($fp_video will be again deleted)
-			fclose($fp);
-			fclose($fp_video);
-
-			// Save file path; Checksum calculation not needed since
-			// we do not perform matching for Google Motion Photos (as for iOS Live Photos)
-			$this->photo->live_photo_short_path = $shortPathVideo;
-			$this->photo->save();
-		} catch (\Throwable $e) {
-			throw new MediaFileOperationException('Unable to extract video from Google Motion Picture', $e);
 		}
 	}
 }
