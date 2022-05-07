@@ -156,6 +156,14 @@ class FlysystemFile extends MediaFile
 	}
 
 	/**
+	 * @return Filesystem the disk this file is stored on
+	 */
+	public function getDisk(): Filesystem
+	{
+		return $this->disk;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function getExtension(): string
