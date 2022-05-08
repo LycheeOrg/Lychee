@@ -9,7 +9,11 @@ use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 abstract class BaseImageHandler implements ImageHandlerInterface
 {
-	public const DEFAULT_COMPRESSION_QUALITY = 75;
+	/** @var int sentinel value to indicate that the used-defined compression quality should be loaded from runtime configuration */
+	public const USER_DEFINED_COMPRESSION_QUALITY = 0;
+
+	/** @var int default compression quality which is used when no other compression quality is set */
+	public const DEFAULT_COMPRESSION_QUALITY = 90;
 
 	/** @var int the desired compression quality, only used for JPEG during save */
 	protected int $compressionQuality = self::DEFAULT_COMPRESSION_QUALITY;
@@ -17,9 +21,11 @@ abstract class BaseImageHandler implements ImageHandlerInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function __construct(int $compressionQuality = self::DEFAULT_COMPRESSION_QUALITY)
+	public function __construct(int $compressionQuality = self::USER_DEFINED_COMPRESSION_QUALITY)
 	{
-		$this->compressionQuality = $compressionQuality;
+		$this->compressionQuality = $compressionQuality === self::USER_DEFINED_COMPRESSION_QUALITY ?
+			Configs::get_value('compression_quality', self::DEFAULT_COMPRESSION_QUALITY) :
+			$compressionQuality;
 	}
 
 	public function __destruct()

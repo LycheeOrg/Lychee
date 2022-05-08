@@ -12,8 +12,6 @@ use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\Factories\AlbumFactory;
 use App\Factories\LangFactory;
-use App\Image\ImageHandler;
-use App\Image\ImageHandlerInterface;
 use App\Image\SizeVariantDefaultFactory;
 use App\Image\StreamStatFilter;
 use App\Locale\Lang;
@@ -23,7 +21,6 @@ use App\Metadata\LycheeVersion;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\ModelFunctions\SymLinkFunctions;
-use App\Models\Configs;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
@@ -78,12 +75,6 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function register()
 	{
-		$this->app->bind(ImageHandlerInterface::class, function () {
-			$compressionQuality = Configs::get_value('compression_quality', 90);
-
-			return new ImageHandler($compressionQuality);
-		});
-
 		$this->app->bind('AccessControl', function () {
 			return resolve(SessionFunctions::class);
 		});

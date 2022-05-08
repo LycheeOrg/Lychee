@@ -27,7 +27,7 @@ class ImageHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function __construct(int $compressionQuality = BaseImageHandler::DEFAULT_COMPRESSION_QUALITY)
+	public function __construct(int $compressionQuality = BaseImageHandler::USER_DEFINED_COMPRESSION_QUALITY)
 	{
 		parent::__construct($compressionQuality);
 		if (Configs::hasImagick()) {

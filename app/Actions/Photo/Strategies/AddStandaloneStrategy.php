@@ -6,51 +6,42 @@ use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ImageProcessingException;
-use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Exceptions\ModelDBException;
 use App\Image\FlysystemFile;
 use App\Image\GoogleMotionPictureHandler;
-use App\Image\ImageHandlerInterface;
+use App\Image\ImageHandler;
 use App\Image\NativeLocalFile;
 use App\Image\StreamStat;
 use App\Image\TemporaryLocalFile;
 use App\Models\Photo;
 use App\Models\SizeVariant;
-use Illuminate\Contracts\Container\BindingResolutionException;
 
 class AddStandaloneStrategy extends AddBaseStrategy
 {
-	protected ImageHandlerInterface $sourceImage;
+	protected ImageHandler $sourceImage;
 	protected NativeLocalFile $sourceFile;
 
-	/**
-	 * @throws FrameworkException
-	 */
 	public function __construct(AddStrategyParameters $parameters, NativeLocalFile $sourceFile)
 	{
-		try {
-			$newPhoto = new Photo();
-			// We already set the timestamps (`created_at`, `updated_at`) on
-			// initialization time, not save time.
-			// This keeps the creation timestamps ordered as the images are
-			// uploaded/imported.
-			// This should be the most consistent/expected behaviour.
-			// Otherwise, the creation time would reflect the point of time when
-			// Lychee has finished processing the image (rotated, cropped,
-			// generated thumbnails).
-			// This might lead to "race conditions", i.e. some images might
-			// outpace each other.
-			// This would not lead to data loss or worse, but images might
-			// appear in a different order than users expect.
-			$newPhoto->updateTimestamps();
-			parent::__construct($parameters, $newPhoto);
-			$this->sourceImage = resolve(ImageHandlerInterface::class);
-			$this->sourceFile = $sourceFile;
-		} catch (BindingResolutionException $e) {
-			throw new FrameworkException('Laravel\'s container component', $e);
-		}
+		$newPhoto = new Photo();
+		// We already set the timestamps (`created_at`, `updated_at`) on
+		// initialization time, not save time.
+		// This keeps the creation timestamps ordered as the images are
+		// uploaded/imported.
+		// This should be the most consistent/expected behaviour.
+		// Otherwise, the creation time would reflect the point of time when
+		// Lychee has finished processing the image (rotated, cropped,
+		// generated thumbnails).
+		// This might lead to "race conditions", i.e. some images might
+		// outpace each other.
+		// This would not lead to data loss or worse, but images might
+		// appear in a different order than users expect.
+		$newPhoto->updateTimestamps();
+		parent::__construct($parameters, $newPhoto);
+		$this->sourceImage = new ImageHandler();
+		$this->sourceFile = $sourceFile;
 	}
 
 	/**

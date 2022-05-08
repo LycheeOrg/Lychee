@@ -42,11 +42,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		}*/
 		// Ensure that the naming strategy is linked to this photo
 		$this->namingStrategy->setPhoto($this->photo);
-		// if ($referenceImage) {
 		$this->referenceImage = $referenceImage;
-		/*} else {
-			$this->referenceImage = resolve(ImageHandlerInterface::class);
-		}*/
 	}
 
 	/**
