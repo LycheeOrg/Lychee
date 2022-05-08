@@ -69,7 +69,7 @@ trait ConfigsHas
 				$path = exec('command -v ffmpeg');
 			} catch (\Exception $e) {
 				$path = '';
-				Handler::reportSafely(new ExternalComponentMissingException('could not find ffmpeg, `has_ffmpeg` will be set to 0', $e));
+				Handler::reportSafely(new ExternalComponentMissingException('could not find ffmpeg; `has_ffmpeg` will be set to 0', $e));
 			}
 			$has_ffmpeg = empty($path) ? 0 : 1;
 			try {
