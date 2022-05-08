@@ -357,4 +357,39 @@ class Handler extends ExceptionHandler
 
 		return $result;
 	}
+
+	/**
+	 * An exception-free replacement for Laravel's global `report` function.
+	 *
+	 * Normally, if one is inside a `catch`-block handling exceptions, one
+	 * does not like to deal with another (new) exception.
+	 * If `report` threw an exception, what should we do about it anyway?
+	 * Report it? ;-)
+	 * Even though the Laravel framework is very reluctant to document the
+	 * exceptions thrown by their methods, one of the few Laravel methods
+	 * which documents an exception surprisingly is
+	 * {@link \Illuminate\Contracts\Debug\ExceptionHandler::report()}.
+	 * Unfortunately, it is an unspecific `\Throwable`.
+	 * Even worse, we now that our own implementation of that method
+	 * {@link Handler::report()} does not even throw an exception.
+	 *
+	 * Here, we rectify this situation by provided an alternative function
+	 * which does not throw another exception.
+	 * This also makes the IDE happy again, because we don't use an
+	 * exception throwing method inside an exception handler.
+	 *
+	 * @param \Throwable $e
+	 *
+	 * @return void
+	 */
+	public static function reportSafely(\Throwable $e): void
+	{
+		try {
+			report($e);
+		} catch (\Throwable) {
+			// Simply do nothing.
+			// If even exception reporting does not work, we are lost anyway.
+			// There is nothing we could do, except maybe die.
+		}
+	}
 }
