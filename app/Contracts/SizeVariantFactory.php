@@ -13,7 +13,7 @@ abstract class SizeVariantFactory
 	 * Initializes the factory and associates.
 	 *
 	 * This factory creates size variants for the passed {@link Photo} object
-	 * with respect to the passed naming strategy and reference image.
+	 * with respect to the passed reference image and naming strategy.
 	 * If `$namingStrategy` equals `null`, then the default naming
 	 * strategy is used.
 	 * If `$referenceImage` equals `null`, then a reference image is created
@@ -27,11 +27,13 @@ abstract class SizeVariantFactory
 	 * However, there is no consistency check, if the provided reference
 	 * image matches the original size variant of the photo.
 	 *
-	 * @param Photo                     $photo
-	 * @param SizeVariantNamingStrategy $namingStrategy
-	 * @param ImageHandlerInterface     $referenceImage
+	 * @param Photo                          $photo
+	 * @param ImageHandlerInterface|null     $referenceImage
+	 * @param SizeVariantNamingStrategy|null $namingStrategy
+	 *
+	 * @throws LycheeException
 	 */
-	abstract public function init(Photo $photo, SizeVariantNamingStrategy $namingStrategy, ImageHandlerInterface $referenceImage): void;
+	abstract public function init(Photo $photo, ?ImageHandlerInterface $referenceImage = null, ?SizeVariantNamingStrategy $namingStrategy = null): void;
 
 	/**
 	 * Creates a size variant for the designated size variant.

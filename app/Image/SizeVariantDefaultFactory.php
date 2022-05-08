@@ -8,6 +8,7 @@ use App\DTO\ImageDimension;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\ImageProcessingException;
+use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\Internal\LycheeDomainException;
@@ -17,6 +18,7 @@ use App\Exceptions\ModelDBException;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 
 class SizeVariantDefaultFactory extends SizeVariantFactory
@@ -32,40 +34,48 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	/**
 	 * {@inheritDoc}
 	 */
-	public function init(Photo $photo, SizeVariantNamingStrategy $namingStrategy, ImageHandlerInterface $referenceImage): void
+	public function init(Photo $photo, ?ImageHandlerInterface $referenceImage = null, ?SizeVariantNamingStrategy $namingStrategy = null): void
 	{
-		$this->photo = $photo;
-		// if ($namingStrategy) {
-		$this->namingStrategy = $namingStrategy;
-		/*} elseif (!$this->namingStrategy) {
-			$this->namingStrategy = resolve(SizeVariantNamingStrategy::class);
-		}*/
-		// Ensure that the naming strategy is linked to this photo
-		$this->namingStrategy->setPhoto($this->photo);
-		$this->referenceImage = $referenceImage;
+		try {
+			$this->photo = $photo;
+			if ($referenceImage && $referenceImage->isLoaded()) {
+				$this->referenceImage = $referenceImage;
+			} else {
+				$this->referenceImage = new ImageHandler();
+				$this->loadReferenceImage();
+			}
+			if ($namingStrategy) {
+				$this->namingStrategy = $namingStrategy;
+			} else {
+				$this->namingStrategy = resolve(SizeVariantNamingStrategy::class);
+			}
+			// Ensure that the naming strategy is linked to this photo
+			$this->namingStrategy->setPhoto($this->photo);
+		} catch (BindingResolutionException $e) {
+			throw new FrameworkException('Laravel\'s container component', $e);
+		}
 	}
 
 	/**
-	 * TODO: If we can assume that the reference image is always loaded, then we can remove this method.
+	 * Loads the reference image from the original size variant of the associated photo.
 	 *
 	 * @throws ExternalComponentMissingException
 	 * @throws ConfigurationException
 	 * @throws MediaFileOperationException
 	 * @throws IllegalOrderOfOperationException
 	 * @throws MediaFileUnsupportedException
+	 * @throws ImageProcessingException
 	 */
 	protected function loadReferenceImage(): void
 	{
-		if ($this->referenceImage->isLoaded()) {
-			$this->referenceImage->reset();
-		}
+		assert(!$this->referenceImage->isLoaded(), new \AssertionError('method must only be called in constructor when no reference image is provided'));
 
 		$originalFile = $this->photo->size_variants->getOriginal()->getFile();
 
 		if (!$this->photo->isVideo()) {
 			$this->referenceImage->load($originalFile);
 		} else {
-			if ($originalFile->toLocalFile()) {
+			if ($originalFile->isLocalFile()) {
 				// If the original size variant is hosted locally,
 				// we can directly take it as a source file
 				$sourceFile = $originalFile->toLocalFile();
@@ -129,14 +139,9 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		if ($sizeVariant === SizeVariant::ORIGINAL) {
 			throw new InvalidSizeVariantException('createSizeVariant() must not be used to create original size');
 		}
-		if (!$this->referenceImage->isLoaded()) {
-			$this->loadReferenceImage();
-		}
-
-		list($maxWidth, $maxHeight) = $this->getMaxDimensions($sizeVariant);
 
 		return $this->createSizeVariantInternal(
-			$sizeVariant, $maxWidth, $maxHeight
+			$sizeVariant, $this->getMaxDimensions($sizeVariant)
 		);
 	}
 
@@ -154,9 +159,6 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		// Don't generate medium size variants for videos, because the current web front-end has no use for it. Let's save some storage space.
 		if ($this->photo->isVideo() && ($sizeVariant === SizeVariant::MEDIUM || $sizeVariant === SizeVariant::MEDIUM2X)) {
 			return null;
-		}
-		if (!$this->referenceImage->isLoaded()) {
-			$this->loadReferenceImage();
 		}
 
 		$maxDim = $this->getMaxDimensions($sizeVariant);
@@ -276,8 +278,8 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 */
 	protected function isEnabledByConfiguration(int $sizeVariant): bool
 	{
-		list($maxWidth, $maxHeight) = $this->getMaxDimensions($sizeVariant);
-		if ($maxWidth === 0 && $maxHeight === 0) {
+		$maxDim = $this->getMaxDimensions($sizeVariant);
+		if ($maxDim->width === 0 && $maxDim->height === 0) {
 			return false;
 		}
 
