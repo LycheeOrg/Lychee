@@ -3,6 +3,7 @@
 namespace App\Image;
 
 use App\DTO\ImageDimension;
+use App\Exceptions\Handler;
 use App\Exceptions\MediaFileOperationException;
 use App\Models\Configs;
 
@@ -58,7 +59,7 @@ class ImageHandler extends BaseImageHandler
 				return;
 			} catch (\Throwable $e) {
 				// Report the error to the log, but don't fail yet.
-				report($e);
+				Handler::reportSafely($e);
 				$this->engine = null;
 			}
 		}
