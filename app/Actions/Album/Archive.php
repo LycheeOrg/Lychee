@@ -3,6 +3,7 @@
 namespace App\Actions\Album;
 
 use App\Contracts\AbstractAlbum;
+use App\Exceptions\Handler;
 use App\Exceptions\Internal\FrameworkException;
 use App\Facades\AccessControl;
 use App\Facades\Helpers;
@@ -12,7 +13,6 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
-use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -29,14 +29,6 @@ class Archive extends Action
 		"\x18", "\x19", "\x1a", "\x1b", "\x1c", "\x1d", "\x1e", "\x1f",
 		'<', '>', ':', '"', '/', '\\', '|', '?', '*',
 	];
-
-	protected ExceptionHandler $exceptionHandler;
-
-	public function __construct()
-	{
-		parent::__construct();
-		$this->exceptionHandler = resolve(ExceptionHandler::class);
-	}
 
 	/**
 	 * @param Collection<AbstractAlbum> $albums
@@ -195,7 +187,7 @@ class Archive extends Action
 				set_time_limit(ini_get('max_execution_time'));
 				$zip->addFileFromPath($fileName, $fullPath);
 			} catch (\Throwable $e) {
-				$this->exceptionHandler->report($e);
+				Handler::reportSafely($e);
 			}
 		}
 
@@ -208,7 +200,7 @@ class Archive extends Action
 				try {
 					$this->compressAlbum($subAlbum, $subDirs, $fullNameOfDirectory, $zip);
 				} catch (\Throwable $e) {
-					$this->exceptionHandler->report($e);
+					Handler::reportSafely($e);
 				}
 			}
 		}

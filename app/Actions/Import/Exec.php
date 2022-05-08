@@ -11,6 +11,7 @@ use App\DTO\ImportEventReport;
 use App\DTO\ImportProgressReport;
 use App\DTO\ImportReport;
 use App\Exceptions\FileOperationException;
+use App\Exceptions\Handler;
 use App\Exceptions\ImportCancelledException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\InvalidDirectoryException;
@@ -21,7 +22,6 @@ use App\Image\NativeLocalFile;
 use App\Models\Album;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
@@ -41,7 +41,6 @@ class Exec
 	protected bool $memWarningGiven = false;
 	private array $raw_formats;
 	private bool $firstReportGiven = false;
-	private ExceptionHandler $exceptionHandler;
 
 	/**
 	 * @param ImportMode $importMode          the import mode
@@ -57,7 +56,6 @@ class Exec
 		$this->enableCLIFormatting = $enableCLIFormatting;
 		$this->memLimit = $memLimit;
 		$this->raw_formats = explode('|', strtolower(Configs::get_value('raw_formats', '')));
-		$this->exceptionHandler = resolve(ExceptionHandler::class);
 	}
 
 	/**
@@ -102,7 +100,7 @@ class Exec
 		}
 
 		if ($report instanceof ImportEventReport && $report->getException()) {
-			$this->exceptionHandler->report($report->getException());
+			Handler::reportSafely($report->getException());
 		}
 	}
 

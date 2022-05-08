@@ -7,6 +7,7 @@ use App\Actions\Photo\Create;
 use App\Actions\Photo\Extensions\Constants;
 use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\ImportMode;
+use App\Exceptions\Handler;
 use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\MassImportException;
 use App\Exceptions\MediaFileOperationException;
@@ -15,15 +16,12 @@ use App\Image\TemporaryLocalFile;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
-use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Collection;
 
 class FromUrl
 {
 	use Constants;
 	use Checks;
-
-	protected ExceptionHandler $exceptionHandler;
 
 	/**
 	 * @throws InsufficientFilesystemPermissions
@@ -34,7 +32,6 @@ class FromUrl
 		// Moreover, we do not even use the `import` folder which is checked by this method.
 		// There is similar odd test in {@link \App\Actions\Photo\Create::add()} which uses another "check" trait.
 		$this->checkPermissions();
-		$this->exceptionHandler = resolve(ExceptionHandler::class);
 	}
 
 	/**
@@ -97,7 +94,7 @@ class FromUrl
 				);
 			} catch (\Throwable $e) {
 				$exceptions[] = $e;
-				$this->exceptionHandler->report($e);
+				Handler::reportSafely($e);
 			}
 		}
 
