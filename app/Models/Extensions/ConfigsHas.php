@@ -37,7 +37,7 @@ trait ConfigsHas
 				$path = exec('command -v exiftool');
 			} catch (\Exception $e) {
 				$path = '';
-				Handler::reportSafely(new ExternalComponentMissingException('could not find exiftool, `has_exiftool` will be set to 0', $e));
+				Handler::reportSafely(new ExternalComponentMissingException('could not find exiftool; `has_exiftool` will be set to 0', $e));
 			}
 			$has_exiftool = empty($path) ? 0 : 1;
 			try {
