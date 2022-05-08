@@ -370,7 +370,7 @@ class Handler extends ExceptionHandler
 	 * which documents an exception surprisingly is
 	 * {@link \Illuminate\Contracts\Debug\ExceptionHandler::report()}.
 	 * Unfortunately, it is an unspecific `\Throwable`.
-	 * Even worse, we now that our own implementation of that method
+	 * Even worse, we know that our own implementation of that method
 	 * {@link Handler::report()} does not even throw an exception.
 	 *
 	 * Here, we rectify this situation by provided an alternative function
