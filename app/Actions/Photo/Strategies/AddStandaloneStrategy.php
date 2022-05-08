@@ -2,13 +2,13 @@
 
 namespace App\Actions\Photo\Strategies;
 
+use App\Contracts\LycheeException;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\ConfigurationException;
-use App\Exceptions\ImageProcessingException;
+use App\Exceptions\Handler;
+use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\MediaFileOperationException;
-use App\Exceptions\MediaFileUnsupportedException;
-use App\Exceptions\ModelDBException;
 use App\Image\FlysystemFile;
 use App\Image\GoogleMotionPictureHandler;
 use App\Image\ImageHandler;
@@ -17,39 +17,50 @@ use App\Image\StreamStat;
 use App\Image\TemporaryLocalFile;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use Illuminate\Contracts\Container\BindingResolutionException;
 
 class AddStandaloneStrategy extends AddBaseStrategy
 {
 	protected ImageHandler $sourceImage;
 	protected NativeLocalFile $sourceFile;
+	protected SizeVariantNamingStrategy $namingStrategy;
 
+	/**
+	 * @throws FrameworkException
+	 */
 	public function __construct(AddStrategyParameters $parameters, NativeLocalFile $sourceFile)
 	{
-		$newPhoto = new Photo();
-		// We already set the timestamps (`created_at`, `updated_at`) on
-		// initialization time, not save time.
-		// This keeps the creation timestamps ordered as the images are
-		// uploaded/imported.
-		// This should be the most consistent/expected behaviour.
-		// Otherwise, the creation time would reflect the point of time when
-		// Lychee has finished processing the image (rotated, cropped,
-		// generated thumbnails).
-		// This might lead to "race conditions", i.e. some images might
-		// outpace each other.
-		// This would not lead to data loss or worse, but images might
-		// appear in a different order than users expect.
-		$newPhoto->updateTimestamps();
-		parent::__construct($parameters, $newPhoto);
-		$this->sourceImage = new ImageHandler();
-		$this->sourceFile = $sourceFile;
+		try {
+			parent::__construct($parameters, new Photo());
+			// We already set the timestamps (`created_at`, `updated_at`) on
+			// initialization time, not save time.
+			// This keeps the creation timestamps ordered as the images are
+			// uploaded/imported.
+			// This should be the most consistent/expected behaviour.
+			// Otherwise, the creation time would reflect the point of time when
+			// Lychee has finished processing the image (rotated, cropped,
+			// generated thumbnails).
+			// This might lead to "race conditions", i.e. some images might
+			// outpace each other.
+			// This would not lead to data loss or worse, but images might
+			// appear in a different order than users expect.
+			$this->photo->updateTimestamps();
+			$this->sourceImage = new ImageHandler();
+			$this->sourceFile = $sourceFile;
+			$this->namingStrategy = resolve(SizeVariantNamingStrategy::class);
+			$this->namingStrategy->setPhoto($this->photo);
+			$this->namingStrategy->setFallbackExtension(
+				$this->sourceFile->getOriginalExtension()
+			);
+		} catch (BindingResolutionException $e) {
+			throw new FrameworkException('Laravel\'s container component', $e);
+		}
 	}
 
 	/**
 	 * @return Photo
 	 *
-	 * @throws ModelDBException
-	 * @throws MediaFileOperationException
-	 * @throws MediaFileUnsupportedException
+	 * @throws LycheeException
 	 */
 	public function do(): Photo
 	{
@@ -90,19 +101,12 @@ class AddStandaloneStrategy extends AddBaseStrategy
 				$tmpVideoFile = null;
 			}
 
-			/** @var SizeVariantNamingStrategy $namingStrategy */
-			$namingStrategy = resolve(SizeVariantNamingStrategy::class);
-			$namingStrategy->setPhoto($this->photo);
-			$namingStrategy->setFallbackExtension(
-				$this->sourceFile->getOriginalExtension()
-			);
-
 			// Create target file and symlink/copy/move source file to
 			// target.
 			// If import strategy request to delete the source file.
 			// `$this->sourceFile` will be deleted after this step.
 			// But `$this->sourceImage` remains in memory.
-			$targetFile = $namingStrategy->createFile(SizeVariant::ORIGINAL);
+			$targetFile = $this->namingStrategy->createFile(SizeVariant::ORIGINAL);
 			$streamStat = $this->putSourceIntoFinalDestination($targetFile);
 
 			// If we have a temporary video file from a Google Motion Picture,
@@ -130,7 +134,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 				$this->sourceImage->getDimensions(),
 				$streamStat->bytes
 			);
-		} catch (\Exception $e) {
+		} catch (LycheeException $e) {
 			// If source file could not be put into final destination, remove
 			// freshly created photo from DB to avoid having "zombie" entries.
 			try {
@@ -145,7 +149,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		try {
 			/** @var SizeVariantFactory $sizeVariantFactory */
 			$sizeVariantFactory = resolve(SizeVariantFactory::class);
-			$sizeVariantFactory->init($this->photo, $namingStrategy, $this->sourceImage);
+			$sizeVariantFactory->init($this->photo, $this->sourceImage, $this->namingStrategy);
 			$sizeVariantFactory->createSizeVariants();
 		} catch (\Throwable $t) {
 			// Don't re-throw the exception, because we do not want the
@@ -154,7 +158,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			// variants may fail: the user has uploaded an unsupported file
 			// format, GD and Imagick are both not available or disabled
 			// by configuration, etc.
-			report($t);
+			Handler::reportSafely($t);
 		}
 
 		return $this->photo;
@@ -186,9 +190,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 	 * @returns StreamStat statistics about the final file, may differ from
 	 *                     the source file due to normalization of orientation
 	 *
-	 * @throws ImageProcessingException
 	 * @throws MediaFileOperationException
-	 * @throws MediaFileUnsupportedException
 	 * @throws ConfigurationException
 	 */
 	private function putSourceIntoFinalDestination(FlysystemFile $targetFile): StreamStat
@@ -225,7 +227,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 						// If deletion failed, we do not cancel the whole
 						// import, but fall back to copy-semantics and
 						// log the exception
-						report($e);
+						Handler::reportSafely($e);
 					}
 				}
 			}
