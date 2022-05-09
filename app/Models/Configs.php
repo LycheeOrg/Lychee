@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Exceptions\Internal\InvalidConfigOption;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Facades\Helpers;
 use App\Models\Extensions\ConfigsHas;
@@ -178,6 +179,7 @@ class Configs extends Model
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
+	 * @throws QueryBuilderException
 	 */
 	public static function set(string $key, $value): void
 	{
@@ -214,6 +216,8 @@ class Configs extends Model
 	 * @param FixedQueryBuilder $query
 	 *
 	 * @return FixedQueryBuilder
+	 *
+	 * @throws QueryBuilderException
 	 */
 	public function scopePublic(FixedQueryBuilder $query): FixedQueryBuilder
 	{
@@ -226,6 +230,8 @@ class Configs extends Model
 	 * @param FixedQueryBuilder $query
 	 *
 	 * @return FixedQueryBuilder
+	 *
+	 * @throws QueryBuilderException
 	 */
 	public function scopeInfo(FixedQueryBuilder $query): FixedQueryBuilder
 	{
@@ -238,6 +244,8 @@ class Configs extends Model
 	 * @param FixedQueryBuilder $query
 	 *
 	 * @return FixedQueryBuilder
+	 *
+	 * @throws QueryBuilderException
 	 */
 	public function scopeAdmin(FixedQueryBuilder $query): FixedQueryBuilder
 	{
