@@ -87,6 +87,17 @@ class FlysystemFile extends MediaFile
 	/**
 	 * {@inheritDoc}
 	 */
+	public function move(string $newPath): void
+	{
+		if ($this->disk->move($this->relativePath, $newPath) === false) {
+			throw new MediaFileOperationException('could not move file');
+		}
+		$this->relativePath = $newPath;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function exists(): bool
 	{
 		return $this->disk->exists($this->relativePath);

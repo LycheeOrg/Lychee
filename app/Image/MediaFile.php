@@ -162,6 +162,22 @@ abstract class MediaFile
 	 */
 	abstract public function delete(): void;
 
+	/**
+	 * Moves the file to the new location efficiently.
+	 *
+	 * Basically the file is renamed; however, this kind of "renaming" also
+	 * may change the path of the file.
+	 * Note, that the path is interpreted relative to the "mount" point of
+	 * the underlying filesystem implementation.
+	 *
+	 * @param string $newPath
+	 *
+	 * @return void
+	 *
+	 * @throws MediaFileOperationException
+	 */
+	abstract public function move(string $newPath): void;
+
 	/** Checks if the file exists.
 	 *
 	 * @return bool true, if the file exists

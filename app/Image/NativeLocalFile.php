@@ -94,6 +94,19 @@ class NativeLocalFile extends MediaFile
 
 	/**
 	 * {@inheritDoc}
+	 */
+	public function move(string $newPath): void
+	{
+		try {
+			\Safe\rename(\Safe\realpath($this->path), \Safe\realpath($newPath));
+			$this->path = $newPath;
+		} catch (\ErrorException $e) {
+			throw new MediaFileOperationException($e->getMessage(), $e);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
 	 *
 	 * If the represented file is a symbolic link, then the method only
 	 * returns true, if the link (as a file) exists and the target of the
