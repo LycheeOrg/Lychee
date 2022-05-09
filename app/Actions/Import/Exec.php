@@ -16,7 +16,6 @@ use App\Exceptions\InvalidDirectoryException;
 use App\Exceptions\ReservedDirectoryException;
 use App\Image\NativeLocalFile;
 use App\Models\Album;
-use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Support\Facades\Session;
@@ -33,7 +32,6 @@ class Exec
 	protected bool $enableCLIFormatting = false;
 	protected int $memLimit = 0;
 	protected bool $memWarningGiven = false;
-	private array $raw_formats;
 	private bool $firstReportGiven = false;
 
 	/**
@@ -49,7 +47,6 @@ class Exec
 		$this->albumCreate = new AlbumCreate();
 		$this->enableCLIFormatting = $enableCLIFormatting;
 		$this->memLimit = $memLimit;
-		$this->raw_formats = explode('|', strtolower(Configs::get_value('raw_formats', '')));
 	}
 
 	/**
