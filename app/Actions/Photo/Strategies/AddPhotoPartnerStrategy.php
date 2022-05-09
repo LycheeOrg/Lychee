@@ -2,10 +2,7 @@
 
 namespace App\Actions\Photo\Strategies;
 
-use App\Exceptions\Internal\QueryBuilderException;
-use App\Exceptions\MediaFileOperationException;
-use App\Exceptions\MediaFileUnsupportedException;
-use App\Exceptions\ModelDBException;
+use App\Contracts\LycheeException;
 use App\Image\NativeLocalFile;
 use App\Models\Photo;
 
@@ -33,10 +30,7 @@ class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 	/**
 	 * @return Photo
 	 *
-	 * @throws ModelDBException
-	 * @throws MediaFileOperationException
-	 * @throws QueryBuilderException
-	 * @throws MediaFileUnsupportedException
+	 * @throws LycheeException
 	 */
 	public function do(): Photo
 	{
@@ -59,6 +53,9 @@ class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 			$this->photo
 		);
 		$videoStrategy->do();
+
+		// If the video has already been existing, we must copy over the checksum
+		$this->photo->live_photo_checksum = $this->existingVideo->checksum;
 
 		// Delete the existing video from whom we have stolen the video file
 		// `delete()` also takes care of erasing all other size variants
