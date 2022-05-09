@@ -6,9 +6,7 @@ use App\Exceptions\MediaFileOperationException;
 use Illuminate\Http\UploadedFile as LaravelUploadedFile;
 
 /**
- * Class UploadedFile.
- *
- * Wraps a {@link LaravelUploadedFile} into a unified interface.
+ * Class `UploadedFile` wraps a {@link LaravelUploadedFile} into a unified interface.
  *
  * It provides the client-side MIME type in case the MIME type cannot be
  * inferred from the temporary, local copy of the file.

@@ -8,11 +8,10 @@ use App\Models\Configs;
 use Illuminate\Http\UploadedFile;
 
 /**
- * Class MediaFile.
+ * Class `MediaFile` provides the common interface of all file-like classes.
  *
- * This interface abstracts from the differences of files which are provided
+ * This class abstracts from the differences of files which are provided
  * through a Flysystem adapter and files outside Flysystem.
- *
  * In particular, this abstraction provides a unified copy-mechanism
  * between different Flysystem disks, local (native) files and uploaded files
  * via
