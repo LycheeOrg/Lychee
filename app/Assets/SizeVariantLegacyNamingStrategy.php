@@ -9,15 +9,9 @@ use App\Exceptions\Internal\MissingValueException;
 use App\Image\FlysystemFile;
 use App\Models\Photo;
 use App\Models\SizeVariant;
-use Illuminate\Support\Facades\Storage;
 
 class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 {
-	/**
-	 * The name of the Flysystem disk where images are stored.
-	 */
-	public const IMAGE_DISK_NAME = 'images';
-
 	/**
 	 * Maps a size variant to the path prefix (directory) where the file for that size variant is stored.
 	 */
@@ -85,7 +79,7 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 		}
 		$extension = $this->generateExtension($sizeVariant);
 
-		return new FlysystemFile(Storage::disk(self::IMAGE_DISK_NAME), $directory . $filename . $extension);
+		return new FlysystemFile(parent::getImageDisk(), $directory . $filename . $extension);
 	}
 
 	/**
@@ -111,10 +105,5 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 
 			return $this->fallbackExtension;
 		}
-	}
-
-	public function getDefaultExtension(): string
-	{
-		return self::DEFAULT_EXTENSION;
 	}
 }
