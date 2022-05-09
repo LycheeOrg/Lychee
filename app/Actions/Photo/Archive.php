@@ -4,6 +4,7 @@ namespace App\Actions\Photo;
 
 use App\Actions\Photo\Extensions\ArchiveFileInfo;
 use App\Contracts\LycheeException;
+use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Image\FlysystemFile;
@@ -12,7 +13,6 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\ZipStream;
@@ -310,7 +310,7 @@ class Archive
 		$baseFilename = str_replace($this->badChars, '', $photo->title) ?: 'Untitled';
 
 		if ($variant === self::LIVEPHOTOVIDEO) {
-			$sourceFile = new FlysystemFile(Storage::disk(), $photo->live_photo_short_path);
+			$sourceFile = new FlysystemFile(SizeVariantNamingStrategy::getImageDisk(), $photo->live_photo_short_path);
 			$baseFilenameAddon = '';
 		} elseif (array_key_exists($variant, self::VARIANT2VARIANT)) {
 			$sv = $photo->size_variants->getSizeVariant(self::VARIANT2VARIANT[$variant]);

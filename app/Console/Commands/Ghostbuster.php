@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Console\Commands\Utilities\Colorize;
+use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\UnexpectedException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
@@ -59,7 +60,7 @@ class Ghostbuster extends Command
 			$removeDeadSymLinks = (bool) $this->argument('removeDeadSymLinks');
 			$removeZombiePhotos = (bool) $this->argument('removeZombiePhotos');
 			$dryrun = (bool) $this->argument('dryrun');
-			$uploadDisk = Storage::disk();
+			$uploadDisk = SizeVariantNamingStrategy::getImageDisk();
 			$symlinkDisk = Storage::disk(SymLink::DISK_NAME);
 			$isLocalDisk = ($uploadDisk->getDriver()->getAdapter() instanceof LocalFlysystem);
 

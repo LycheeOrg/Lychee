@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Actions\SizeVariant\Delete;
 use App\Casts\MustNotSetCast;
+use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\MediaFileOperationException;
@@ -19,7 +20,6 @@ use App\Relations\HasManyBidirectionally;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Adapter\Local;
 
 // TODO: Uncomment the following line, if Lychee really starts to support AWS s3.
@@ -148,11 +148,13 @@ class SizeVariant extends Model
 	 */
 	public function getUrlAttribute(): string
 	{
+		$imageDisk = SizeVariantNamingStrategy::getImageDisk();
+
 		if (
 			(AccessControl::is_admin() && Configs::get_value('SL_for_admin', '0') === '0') ||
 			Configs::get_value('SL_enable', '0') == '0'
 		) {
-			return Storage::url($this->short_path);
+			return $imageDisk->url($this->short_path);
 		}
 
 		// In order to allow a grace period, we create a new symbolic link,
@@ -160,11 +162,11 @@ class SizeVariant extends Model
 		$maxLifetime = intval(Configs::get_value('SL_life_time_days', '3')) * 24 * 60 * 60;
 		$gracePeriod = $maxLifetime / 3;
 
-		$storageAdapter = Storage::disk()->getDriver()->getAdapter();
+		$storageAdapter = $imageDisk->getDriver()->getAdapter();
 
 		// TODO: Uncomment these line when Laravel really starts to support s3
 		/*if ($storageAdapter instanceof AwsS3Adapter) {
-			return Storage::temporaryUrl($this->short_path, now()->addSeconds($maxLifetime));
+			return $imageDisk->temporaryUrl($this->short_path, now()->addSeconds($maxLifetime));
 		}*/
 
 		if ($storageAdapter instanceof Local) {
@@ -189,16 +191,18 @@ class SizeVariant extends Model
 	 * This is a convenient method and wraps {@link SizeVariant::$short_path}
 	 * into {@link \Illuminate\Support\Facades\Storage::path()}.
 	 *
+	 * TODO: Remove this method eventually, we must not use paths.
+	 *
 	 * @return string the full path of the file
 	 */
 	public function getFullPathAttribute(): string
 	{
-		return Storage::path($this->short_path);
+		return SizeVariantNamingStrategy::getImageDisk()->path($this->short_path);
 	}
 
 	public function getFile(): FlysystemFile
 	{
-		return new FlysystemFile(Storage::disk(), $this->short_path);
+		return new FlysystemFile(SizeVariantNamingStrategy::getImageDisk(), $this->short_path);
 	}
 
 	/**
