@@ -221,10 +221,7 @@ class Exec
 
 			// TODO: Consider to use a modern OO-approach using [`DirectoryIterator`](https://www.php.net/manual/en/class.directoryiterator.php) and [`SplFileInfo`](https://www.php.net/manual/en/class.splfileinfo.php)
 			/** @var string[] $files */
-			$files = glob($path . '/*');
-			if ($files === false) {
-				throw new FileOperationException('Could not list directory entries (' . $path . ')');
-			}
+			$files = \Safe\glob($path . '/*');
 
 			$filesTotal = count($files);
 			$filesCount = 0;
@@ -283,7 +280,7 @@ class Exec
 					Album::query()
 						->select(['albums.*'])
 						->join('base_albums', 'base_albums.id', '=', 'albums.id')
-						->where('albums.parent_id', '=', $parentAlbum->id)
+						->where('albums.parent_id', '=', $parentAlbum?->id)
 						->where('base_albums.title', '=', basename($dir))
 						->get()
 						->first() :
