@@ -2,15 +2,12 @@
 
 namespace App\Assets;
 
-use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
-use App\Exceptions\Internal\MissingValueException;
 use App\Image\FlysystemFile;
-use App\Models\Photo;
 use App\Models\SizeVariant;
 
-class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
+class SizeVariantLegacyNamingStrategy extends SizeVariantBaseNamingStrategy
 {
 	/**
 	 * Maps a size variant to the path prefix (directory) where the file for that size variant is stored.
@@ -26,35 +23,7 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 	];
 
 	/**
-	 * The file extension which is always used by both "thumb" variants and
-	 * also by all other size variants but the original, if the original media
-	 * file is not a photo.
-	 * If the original media file is a photo, then the "small" and "medium"
-	 * size variants use the same extension as the original file.
-	 */
-	public const DEFAULT_EXTENSION = '.jpeg';
-
-	protected string $originalExtension = '';
-
-	public function setPhoto(?Photo $photo): void
-	{
-		parent::setPhoto($photo);
-		$this->originalExtension = '';
-		if ($this->photo && $sv = $this->photo->size_variants->getOriginal()) {
-			$this->originalExtension = $sv->getFile()->getOriginalExtension();
-		}
-	}
-
-	/**
-	 * Generates a short path for the designated size variant.
-	 *
-	 * @param int $sizeVariant the size variant
-	 *
-	 * @return FlysystemFile the file
-	 *
-	 * @throws InvalidSizeVariantException
-	 * @throws IllegalOrderOfOperationException
-	 * @throws MissingValueException
+	 * {@inheritDoc}
 	 */
 	public function createFile(int $sizeVariant): FlysystemFile
 	{
@@ -80,30 +49,5 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 		$extension = $this->generateExtension($sizeVariant);
 
 		return new FlysystemFile(parent::getImageDisk(), $directory . $filename . $extension);
-	}
-
-	/**
-	 * Returns the file extension incl. the preceding dot.
-	 *
-	 * @throws MissingValueException
-	 * @throws IllegalOrderOfOperationException
-	 */
-	protected function generateExtension(int $sizeVariant): string
-	{
-		if ($sizeVariant === SizeVariant::THUMB ||
-			$sizeVariant === SizeVariant::THUMB2X ||
-			($sizeVariant !== SizeVariant::ORIGINAL && $this->photo->isVideo()) ||
-			($sizeVariant !== SizeVariant::ORIGINAL && $this->photo->isRaw())
-		) {
-			return self::DEFAULT_EXTENSION;
-		} elseif (!empty($this->originalExtension)) {
-			return $this->originalExtension;
-		} else {
-			if (empty($this->fallbackExtension)) {
-				throw new MissingValueException('fallbackExtension');
-			}
-
-			return $this->fallbackExtension;
-		}
 	}
 }
