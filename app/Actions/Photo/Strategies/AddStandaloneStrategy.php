@@ -5,6 +5,7 @@ namespace App\Actions\Photo\Strategies;
 use App\Contracts\LycheeException;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
+use App\DTO\ImageDimension;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\FrameworkException;
@@ -21,7 +22,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 
 class AddStandaloneStrategy extends AddBaseStrategy
 {
-	protected ImageHandler $sourceImage;
+	protected ?ImageHandler $sourceImage;
 	protected NativeLocalFile $sourceFile;
 	protected SizeVariantNamingStrategy $namingStrategy;
 
@@ -45,7 +46,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			// This would not lead to data loss or worse, but images might
 			// appear in a different order than users expect.
 			$this->photo->updateTimestamps();
-			$this->sourceImage = new ImageHandler();
+			$this->sourceImage = null;
 			$this->sourceFile = $sourceFile;
 			$this->namingStrategy = resolve(SizeVariantNamingStrategy::class);
 			$this->namingStrategy->setPhoto($this->photo);
@@ -85,8 +86,11 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		$this->photo->original_checksum = StreamStat::createFromLocalFile($this->sourceFile)->checksum;
 
 		try {
-			// Load source image
-			$this->sourceImage->load($this->sourceFile);
+			// Load source image if it is a supported photo format
+			if ($this->photo->isPhoto()) {
+				$this->sourceImage = new ImageHandler();
+				$this->sourceImage->load($this->sourceFile);
+			}
 
 			// Handle Google Motion Pictures
 			// We must extract the video stream from the original (local)
@@ -113,7 +117,12 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			// we must move the preliminary extracted video file next to the
 			// final target file
 			if ($tmpVideoFile) {
-				$videoTargetFile = new FlysystemFile($targetFile->getDisk(), pathinfo($targetFile->getRelativePath(), PATHINFO_FILENAME) . $tmpVideoFile->getExtension());
+				$videoTargetPath =
+					pathinfo($targetFile->getRelativePath(), PATHINFO_DIRNAME) .
+					'/' .
+					pathinfo($targetFile->getRelativePath(), PATHINFO_FILENAME) .
+					$tmpVideoFile->getExtension();
+				$videoTargetFile = new FlysystemFile($targetFile->getDisk(), $videoTargetPath);
 				$videoTargetFile->write($tmpVideoFile->read());
 				$this->photo->live_photo_short_path = $videoTargetFile->getRelativePath();
 				$tmpVideoFile->close();
@@ -128,10 +137,16 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			$this->photo->save();
 
 			// Create original size variant of photo
+			// If the image has been loaded (and potentially auto-rotated)
+			// take the dimension from the image.
+			// As a fallback (e.g. in case of videos) we use the EXIF data.
+			$imageDim = $this->sourceImage?->isLoaded() ?
+				$this->sourceImage->getDimensions() :
+				new ImageDimension($this->parameters->exifInfo->width, $this->parameters->exifInfo->height);
 			$this->photo->size_variants->create(
 				SizeVariant::ORIGINAL,
 				$targetFile->getRelativePath(),
-				$this->sourceImage->getDimensions(),
+				$imageDim,
 				$streamStat->bytes
 			);
 		} catch (LycheeException $e) {
@@ -202,17 +217,24 @@ class AddStandaloneStrategy extends AddBaseStrategy
 				}
 				$targetAbsolutePath = $targetFile->getAbsolutePath();
 				$sourceAbsolutePath = $this->sourceFile->getAbsolutePath();
+				// For symlinks we must manually create a non-existing
+				// parent directory.
+				// This mimics the behaviour of Flysystem for regular files.
+				$targetDirectory = pathinfo($targetAbsolutePath, PATHINFO_DIRNAME);
+				if (!is_dir($targetDirectory)) {
+					\Safe\mkdir($targetDirectory, 0777, true);
+				}
 				\Safe\symlink($sourceAbsolutePath, $targetAbsolutePath);
 				$streamStat = StreamStat::createFromLocalFile($this->sourceFile);
 			} else {
 				// Nothing to do for non-JPEGs or correctly oriented photos.
-				// TODO: Why do we only normalize JPEG?
-				$shallNormalize = $this->photo->type === 'image/jpeg' && $this->parameters->exifInfo->orientation !== 1;
+				// TODO: Why do we only normalize JPEG? Should it be sufficient that we have a successfully loaded source image?
+				$shallNormalize = $this->sourceImage && $this->photo->type === 'image/jpeg' && $this->parameters->exifInfo->orientation !== 1;
 
 				if ($shallNormalize) {
 					$streamStat = $this->sourceImage->save($targetFile, true);
 				} else {
-					$streamStat = $targetFile->write($this->sourceFile->read());
+					$streamStat = $targetFile->write($this->sourceFile->read(), true);
 					$this->sourceFile->close();
 					$targetFile->close();
 				}
