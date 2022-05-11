@@ -276,7 +276,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	{
 		$result = parent::toArray();
 		if (AccessControl::is_logged_in()) {
-			$result['owner_name'] = $this->owner->name();
+			$result['owner_name'] = $this->owner->fullname();
 		}
 
 		return $result;

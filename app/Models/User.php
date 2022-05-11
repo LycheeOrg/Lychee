@@ -47,6 +47,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'username',
 		'password',
 		'email',
+		'fullname',
 	];
 
 	/**
@@ -107,5 +108,14 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	public function name(): string
 	{
 		return ($this->id == 0) ? 'Admin' : $this->username;
+	}
+
+	public function fullname(): string
+	{
+		if (empty($this->fullname) || (Configs::get_value('ldap_enabled', '0') == 0)) {
+			return $this->name();
+		}
+
+		return $this->fullname;
 	}
 }

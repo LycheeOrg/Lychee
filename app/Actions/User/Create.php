@@ -13,7 +13,7 @@ class Create
 	 * @throws InvalidPropertyException
 	 * @throws ModelDBException
 	 */
-	public function do(string $username, string $password, bool $mayUpload, bool $isLocked): User
+	public function do(string $username, string $password, bool $mayUpload, bool $isLocked, string $email = '', string $fullname = ''): User
 	{
 		if (User::query()->where('username', '=', $username)->count()) {
 			throw new ConflictingPropertyException('Username already exists');
@@ -24,6 +24,8 @@ class Create
 			$user->is_locked = $isLocked;
 			$user->username = $username;
 			$user->password = bcrypt($password);
+			$user->email = $email;
+			$user->fullname = $fullname;
 		} catch (\InvalidArgumentException $e) {
 			throw new InvalidPropertyException('Could not hash password', $e);
 		}

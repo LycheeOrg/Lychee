@@ -4,6 +4,7 @@ namespace App\Actions\Sharing;
 
 use App\DTO\Shares;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Models\Configs;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -20,14 +21,16 @@ class ListShare
 	{
 		try {
 			// prepare query
+			if (Configs::get_value('ldap_enabled', '0') != 0) {
+				$USERNAME = DB::raw("COALESCE(NULLIF(fullname,''), username) as username");
+			} else {
+				$USERNAME = 'username';
+			}
 			$shared_query = DB::table('user_base_album')
-				->select([
-					'user_base_album.id',
-					'user_id',
+				->select(['user_base_album.id', 'user_id',
 					DB::raw('base_album_id as album_id'),
-					'username',
-					'title',
-				])
+					$USERNAME,
+					'title', ])
 				->join('users', 'user_id', '=', 'users.id')
 				->join('base_albums', 'base_album_id', '=', 'base_albums.id');
 
@@ -58,7 +61,7 @@ class ListShare
 			});
 
 			$users = DB::table('users')
-				->select(['id', 'username'])
+				->select(['id', $USERNAME])
 				->where('id', '>', 0)
 				->orderBy('username', 'ASC')
 				->get()
