@@ -38,10 +38,11 @@ class ImagickHandler extends BaseImageHandler
 	public function load(MediaFile $file): void
 	{
 		try {
+			$inMemoryBuffer = null;
+
 			$this->reset();
 
 			$originalStream = $file->read();
-			$inMemoryBuffer = new InMemoryBuffer();
 			if ((stream_get_meta_data($originalStream))['seekable']) {
 				$inputStream = $originalStream;
 			} else {
@@ -49,6 +50,7 @@ class ImagickHandler extends BaseImageHandler
 				// because we must be able to seek/rewind the stream.
 				// For example, a readable stream from a remote location (i.e.
 				// a "download" stream) is only forward readable once.
+				$inMemoryBuffer = new InMemoryBuffer();
 				$inMemoryBuffer->write($originalStream);
 				$inputStream = $inMemoryBuffer->read();
 			}
@@ -59,7 +61,7 @@ class ImagickHandler extends BaseImageHandler
 		} catch (ImagickException $e) {
 			throw new MediaFileOperationException('Failed to load image', $e);
 		} finally {
-			$inMemoryBuffer->close();
+			$inMemoryBuffer?->close();
 			$file->close();
 		}
 	}
@@ -111,11 +113,11 @@ class ImagickHandler extends BaseImageHandler
 
 			$needsFlop = match ($orientation) {
 				Imagick::ORIENTATION_TOPRIGHT, Imagick::ORIENTATION_BOTTOMLEFT, Imagick::ORIENTATION_LEFTTOP, Imagick::ORIENTATION_RIGHTBOTTOM => true,
-				Imagick::ORIENTATION_TOPLEFT, Imagick::ORIENTATION_BOTTOMRIGHT, Imagick::ORIENTATION_RIGHTTOP, Imagick::ORIENTATION_LEFTBOTTOM => false,
+				Imagick::ORIENTATION_TOPLEFT, Imagick::ORIENTATION_BOTTOMRIGHT, Imagick::ORIENTATION_RIGHTTOP, Imagick::ORIENTATION_LEFTBOTTOM, Imagick::ORIENTATION_UNDEFINED => false,
 			};
 
 			$angle = match ($orientation) {
-				Imagick::ORIENTATION_TOPLEFT, Imagick::ORIENTATION_TOPRIGHT => 0,
+				Imagick::ORIENTATION_TOPLEFT, Imagick::ORIENTATION_TOPRIGHT, Imagick::ORIENTATION_UNDEFINED => 0,
 				Imagick::ORIENTATION_BOTTOMRIGHT, Imagick::ORIENTATION_BOTTOMLEFT => 180,
 				Imagick::ORIENTATION_LEFTTOP, Imagick::ORIENTATION_LEFTBOTTOM => -90,
 				Imagick::ORIENTATION_RIGHTTOP, Imagick::ORIENTATION_RIGHTBOTTOM => 90,
