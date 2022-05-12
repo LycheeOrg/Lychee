@@ -16,7 +16,7 @@ class SessionFunctions
 	public ?User $user_data = null;
 
 	/* ldap server access */
-	protected LDAPFunctions $ldap;
+	protected LDAPFunctions $ldap = null;
 
 	public function log_as_id($id): void
 	{
