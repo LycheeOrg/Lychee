@@ -17,7 +17,7 @@ class AddFullNameCol extends Migration
 	public function up()
 	{
 		Schema::table(self::USERS, function (Blueprint $table) {
-			$table->text(self::NAME)->default('')->after('password')->nullable();
+			$table->string(self::NAME, 128)->default('')->after('password')->nullable();
 		});
 	}
 
