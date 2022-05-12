@@ -26,7 +26,7 @@ class LDAPFunctions
 	 */
 	protected function _debug(string $method, string $line, string $text)
 	{
-		if ($this->getConf('debug')) {
+		if ($this->getConf('debug', '0')) {
 			Logs::notice($method, $line, $text);
 		}
 	}
