@@ -79,7 +79,7 @@ class LDAPFunctions
 	public function get_user_data($user)
 	{
 		global $conf;
-		if (!$this->_openLDAP()) {
+		if (!$this->OpenLDAP()) {
 			return false;
 		}
 		if (!empty($this->user_info) && in_array($user, $this->user_info)) {
@@ -161,7 +161,7 @@ class LDAPFunctions
 	 */
 	public function check_pass($user, $pass)
 	{
-		if (!$this->_openLDAP()) {
+		if (!$this->OpenLDAP()) {
 			return false;
 		}
 
@@ -288,7 +288,7 @@ class LDAPFunctions
 	 * Opens a connection to the configured LDAP server and sets the wanted
 	 * option on the connection.
 	 */
-	protected function _openLDAP()
+	public function OpenLDAP()
 	{
 		if ($this->con) {
 			return true;
