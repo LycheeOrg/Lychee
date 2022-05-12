@@ -16,7 +16,7 @@ class SessionFunctions
 	public ?User $user_data = null;
 
 	/* ldap server access */
-	protected LDAPFunctions $ldap = null;
+	protected ?LDAPFunctions $ldap = null;
 
 	public function log_as_id($id): void
 	{
@@ -154,12 +154,12 @@ class SessionFunctions
 	public function log_as_user(string $username, string $password, string $ip): bool
 	{
 		if (Configs::get_value('ldap_enabled', '0')) {
-			if (empty($ldap)) {
-				$ldap = new LDAPFunctions();
+			if (empty($this->ldap)) {
+				$this->ldap = new LDAPFunctions();
 			}
-			$valid = $ldap->check_pass($username, $password);
+			$valid = $this->ldap->check_pass($username, $password);
 			if ($valid) {
-				$info = $ldap->get_user_data($username);
+				$info = $this->ldap->get_user_data($username);
 				$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
 				if ($user == null) {
 					$create = new Create();
