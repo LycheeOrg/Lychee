@@ -13,7 +13,7 @@ class Create
 	 * @throws InvalidPropertyException
 	 * @throws ModelDBException
 	 */
-	public function do(string $username, string $password, bool $mayUpload, bool $isLocked, string $email = '', string $fullname = ''): User
+	public function do(string $username, string $password, bool $mayUpload, bool $isLocked, string $email = null, string $fullname = null): User
 	{
 		if (User::query()->where('username', '=', $username)->count()) {
 			throw new ConflictingPropertyException('Username already exists');
