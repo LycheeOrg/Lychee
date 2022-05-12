@@ -6,6 +6,13 @@ use Illuminate\Database\Migrations\Migration;
 class ConfigLdapParams extends Migration
 {
 	/**
+	 * We setup the configuration for the public LDAP Server
+	 * See https://www.forumsys.com/2022/05/10/online-ldap-test-server/.
+	 *
+	 * After enabling the LDAP authentication with ldap_enabled set to 1
+	 * username: gauss and passward: password can be used.
+	 *
+	 * /**
 	 * Run the migrations.
 	 *
 	 * @return void
@@ -31,7 +38,7 @@ class ConfigLdapParams extends Migration
 			],
 			[
 				'key' => 'ldap_server',
-				'value' => '',
+				'value' => 'ldap.forumsys.com',
 				'cat' => 'LDAP',
 				'type_range' => 'string',
 				'confidentiality' => '0',
@@ -47,7 +54,7 @@ class ConfigLdapParams extends Migration
 			],
 			[
 				'key' => 'ldap_usertree',
-				'value' => '',
+				'value' => 'dc=example,dc=com',
 				'cat' => 'LDAP',
 				'type_range' => 'string',
 				'confidentiality' => '0',
@@ -55,7 +62,7 @@ class ConfigLdapParams extends Migration
 			],
 			[
 				'key' => 'ldap_userfilter',
-				'value' => '',
+				'value' => '(uid=%{user})',
 				'cat' => 'LDAP',
 				'type_range' => 'string',
 				'confidentiality' => '0',
@@ -71,7 +78,7 @@ class ConfigLdapParams extends Migration
 			],
 			[
 				'key' => 'ldap_binddn',
-				'value' => '',
+				'value' => 'cn=read-only-admin,dc=example,dc=com',
 				'cat' => 'LDAP',
 				'type_range' => 'string',
 				'confidentiality' => '0',
@@ -79,7 +86,7 @@ class ConfigLdapParams extends Migration
 			],
 			[
 				'key' => 'ldap_bindpw',
-				'value' => '',
+				'value' => 'password',
 				'cat' => 'LDAP',
 				'type_range' => 'string',
 				'confidentiality' => '0',
