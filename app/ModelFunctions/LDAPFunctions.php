@@ -300,14 +300,13 @@ class LDAPFunctions
 		}
 
 		$this->bound = 0;
-
+		$FALSE = false;
 		$port = $this->getConf('port');
-		$_bound = false;
 		$servers = explode(',', $this->getConf('server'));
 		foreach ($servers as $server) {
 			$server = trim($server);
 			$this->con = @ldap_connect($server, $port);
-			$OK = ($this->con != false);
+			$OK = ($this->con != $FALSE);
 			$this->_debug(__METHOD__, __LINE__, 'Try to connect ' . $server . ' on port ' . $port . ' = ' . $OK);
 			if (!$this->con) {
 				continue;
