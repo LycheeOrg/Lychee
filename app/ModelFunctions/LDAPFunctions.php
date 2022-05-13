@@ -98,9 +98,7 @@ class LDAPFunctions
 		try {
 			// the @-operator is essential here, ldap_bind fires exceptions which cannot be caught using catch otherwise.
 			// if ldap_bind is change in future so that it does not fire uncatchable Exceptions, then the @-operator can be delted.
-			$ret = @ldap_bind($this->con, $bdn, $bpw);
-
-			return $ret;
+			return @ldap_bind($this->con, $bdn, $bpw);
 		} catch (ErrorException $e) {
 			Logs::notice(__METHOD__, __LINE__, 'LDAP_bind failed' . ' [' . ldap_error($this->con) . ']');
 
