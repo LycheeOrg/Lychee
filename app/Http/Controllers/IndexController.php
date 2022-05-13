@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\ModelDBException;
+use App\Facades\AccessControl;
 use App\Facades\Lang;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SymLinkFunctions;
@@ -39,6 +40,32 @@ class IndexController extends Controller
 	 */
 	public function show(): View
 	{
+		if (Configs::get_value('login_page_enable', '0') == '1') {
+			$logged_in = AccessControl::is_logged_in();
+			if (($logged_in === false)) {
+				$lang = Lang::get_lang();
+				$lang['language'] = Configs::get_value('lang');
+
+				$infos = $this->configFunctions->get_pages_infos();
+
+				$menus = Page::menu()->get();
+
+				$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
+				$rss_enable = Configs::get_value('rss_enable', '0') == '1';
+				$page_config = [];
+				$page_config['show_hosted_by'] = false;
+				$page_config['display_socials'] = false;
+
+				return view('login', [
+					'locale' => $lang,
+					'title' => $title,
+					'infos' => $infos,
+					'menus' => $menus,
+					'page_config' => $page_config,
+					'rss_enable' => $rss_enable,
+				]);
+			}
+		}
 		if (Configs::get_value('landing_page_enable', '0') == '1') {
 			$lang = Lang::get_lang();
 			$lang['language'] = Configs::get_value('lang');
