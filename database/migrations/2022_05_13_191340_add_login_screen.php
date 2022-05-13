@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 
 class AddLoginScreen extends Migration
