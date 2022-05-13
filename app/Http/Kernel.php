@@ -33,6 +33,7 @@ class Kernel extends HttpKernel
 	protected $middlewareGroups = [
 		'web' => [
 			'accept_content_type:html',
+			\App\Http\Middleware\ProtectPublic::class,
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
 			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
 			\Illuminate\Session\Middleware\StartSession::class,
@@ -44,6 +45,7 @@ class Kernel extends HttpKernel
 
 		'web-admin' => [
 			'accept_content_type:html',
+			\App\Http\Middleware\ProtectPublic::class,
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
 			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
 			\Illuminate\Session\Middleware\StartSession::class,
