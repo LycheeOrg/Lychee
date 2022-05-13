@@ -61,7 +61,7 @@ class ListShare
 			});
 
 			$users = DB::table('users')
-				->select(['id', $USERNAME])
+				->select(['id', $display_name])
 				->where('id', '>', 0)
 				->orderBy('username', 'ASC')
 				->get()

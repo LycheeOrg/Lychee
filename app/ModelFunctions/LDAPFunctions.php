@@ -138,7 +138,7 @@ class LDAPFunctions
 		// force superuser bind if wanted and not bound as superuser yet
 		if ($this->getConf('binddn') && $this->getConf('bindpw') && $this->bound < 2) {
 			// use superuser credentials
-			if (!ldap_bind()) {
+			if (!$this->LDAP_bind()) {
 				Logs::notice(__METHOD__, __LINE__, 'LDAP bind as superuser failed.');
 
 				return false;
