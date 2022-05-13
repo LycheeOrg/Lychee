@@ -23,6 +23,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon                                                $created_at
  * @property Carbon                                                $updated_at
  * @property string                                                $username
+ * @property string                                                $fullname
  * @property string|null                                           $password
  * @property string|null                                           $email
  * @property bool                                                  $may_upload
@@ -117,5 +118,14 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		}
 
 		return $this->fullname;
+	}
+
+	public function is_locked(): bool  // may user change their password?
+	{
+		if (Configs::get_value('ldap_enabled', '0')) {
+			return true;
+		}
+
+		return $this->is_locked;
 	}
 }

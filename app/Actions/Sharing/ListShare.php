@@ -22,14 +22,14 @@ class ListShare
 		try {
 			// prepare query
 			if (Configs::get_value('ldap_enabled', '0') != 0) {
-				$USERNAME = DB::raw("COALESCE(NULLIF(fullname,''), username) as username");
+				$display_name = DB::raw("COALESCE(NULLIF(fullname,''), username) as username");
 			} else {
-				$USERNAME = 'username';
+				$display_name = 'username';
 			}
 			$shared_query = DB::table('user_base_album')
 				->select(['user_base_album.id', 'user_id',
 					DB::raw('base_album_id as album_id'),
-					$USERNAME,
+					$display_name,
 					'title', ])
 				->join('users', 'user_id', '=', 'users.id')
 				->join('base_albums', 'base_album_id', '=', 'base_albums.id');

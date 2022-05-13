@@ -128,7 +128,7 @@ class ConfigLdapParams extends Migration
 				'key' => 'ldap_referrals',
 				'value' => '-1',
 				'cat' => 'LDAP',
-				'type_range' => 'intm',
+				'type_range' => 'signed_int',
 				'confidentiality' => '0',
 				'description' => 'LDAP option referrals',
 			],

@@ -35,7 +35,7 @@ class Configs extends Model
 	use UseFixedQueryBuilder;
 
 	protected const INT = 'int';
-	protected const INTM = 'intm';
+	protected const SIGNED_INT = 'signed_int';
 	protected const STRING = 'string';
 	protected const STRING_REQ = 'string_required';
 	protected const BOOL = '0|1';
@@ -92,12 +92,12 @@ class Configs extends Model
 					$message = 'Error: Wrong property for ' . $this->key . ' in database, expected positive integer.';
 				}
 				break;
-						case self::INTM:
-								// we make sure that we only have digits and - in the chosen value.
-								if (!ctype_digit(strval(str_replace('-', '', $value)))) {
-									$message = 'Error: Wrong property for ' . $this->key . ' in database, expected positive or negative integer.';
-								}
-								break;
+			case self::SIGNED_INT:
+				// we make sure that we only have digits and - in the chosen value.
+				if (!ctype_digit(strval(str_replace('-', '', $value)))) {
+					$message = 'Error: Wrong property for ' . $this->key . ' in database, expected positive or negative integer.';
+				}
+				break;
 			case self::BOOL:
 			case self::TERNARY:
 				if (!in_array($value, $val_range[$this->type_range])) { // BOOL or TERNARY

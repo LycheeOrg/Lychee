@@ -83,11 +83,7 @@ class SessionController extends Controller
 					$user = User::query()->findorFail($user_id);
 					$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 					$return['config'] = $this->configFunctions->public();
-					if (Configs::get_value('ldap_enabled', '0')) {
-						$return['is_locked'] = true;
-					} else {
-						$return['is_locked'] = $user->is_locked;   // may user change their password?
-					}
+					$return['is_locked'] = $user->is_locked;   // may user change their password?
 					$return['may_upload'] = $user->may_upload; // may user upload?
 					$return['username'] = $user->username;
 				} catch (ModelNotFoundException $e) {
