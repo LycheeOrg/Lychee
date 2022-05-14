@@ -1,5 +1,5 @@
 <?php
-COMPOSER_INSTALLER='https://getcomposer.org/installer';
+define('COMPOSER_INSTALLER','https://getcomposer.org/installer');
 
 chdir('..');
 $OK=true;
