@@ -15,14 +15,14 @@ class Header extends Component
 	/**
 	 * @var string
 	 */
-	public $title = '';
+	public string $title = '';
 
 	/**
 	 * @var string
 	 */
-	public $mode;
+	public string $mode;
 
-	public function mount(?string $mode = 'albums', ?string $title = null)
+	public function mount(?string $mode = 'albums', ?string $title = null): void
 	{
 		$this->title = $title ?? Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
 		$this->mode = $mode ?? 'albums';
