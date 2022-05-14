@@ -7,6 +7,7 @@ use App\Contracts\InternalLycheeException;
 use App\DTO\TopAlbums;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
+use Illuminate\View\View;
 use Livewire\Component;
 
 class Albums extends Component
@@ -24,7 +25,7 @@ class Albums extends Component
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function mount(Top $top)
+	public function mount(Top $top): void
 	{
 		$this->topAlbums = $top->get();
 	}
@@ -34,7 +35,7 @@ class Albums extends Component
 	 *
 	 * @throws BindingResolutionException
 	 */
-	public function render()
+	public function render(): View
 	{
 		$this->albums = $this->topAlbums->albums;
 		$this->smartalbums = $this->topAlbums->smartAlbums->concat($this->topAlbums->tagAlbums)->reject(fn ($album) => $album == null);

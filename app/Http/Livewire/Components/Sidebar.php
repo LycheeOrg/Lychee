@@ -8,6 +8,7 @@ use App\Http\Livewire\Traits\AlbumProperty;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\SmartAlbums\BaseSmartAlbum;
+use Illuminate\View\View;
 
 class Sidebar extends Openable
 {
@@ -17,7 +18,7 @@ class Sidebar extends Openable
 	public ?BaseAlbum $baseAlbum = null;
 	public ?BaseSmartAlbum $smartAlbum = null;
 
-	public function mount(?AbstractAlbum $album = null, ?Photo $photo = null)
+	public function mount(?AbstractAlbum $album = null, ?Photo $photo = null): void
 	{
 		$this->loadAlbum($album);
 		if ($this->photo != null) {
@@ -25,7 +26,7 @@ class Sidebar extends Openable
 		}
 	}
 
-	public function render()
+	public function render(): View
 	{
 		return view('livewire.sidebar');
 	}

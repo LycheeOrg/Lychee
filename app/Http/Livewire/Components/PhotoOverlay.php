@@ -6,6 +6,7 @@ use App\Facades\Lang;
 use App\Models\Configs;
 use App\Models\Photo as PhotoModel;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\View\View;
 use Livewire\Component;
 
 class PhotoOverlay extends Component
@@ -24,7 +25,7 @@ class PhotoOverlay extends Component
 
 	private PhotoModel $photo_data;
 
-	public function mount(PhotoModel $photo)
+	public function mount(PhotoModel $photo): void
 	{
 		$this->photo_data = $photo;
 		$overlay_type = Configs::get_value('image_overlay_type', 'none');
@@ -53,7 +54,7 @@ class PhotoOverlay extends Component
 		}
 	}
 
-	private function genExifHash()
+	private function genExifHash(): string
 	{
 		$exifHash = $this->photo_data->make;
 		$exifHash .= $this->photo_data->model;
@@ -70,7 +71,7 @@ class PhotoOverlay extends Component
 	/**
 	 * @throws BindingResolutionException
 	 */
-	public function render()
+	public function render(): View
 	{
 		$this->title = $this->photo_data->title;
 

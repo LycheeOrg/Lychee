@@ -28,7 +28,7 @@ trait AlbumProperty
 	 *
 	 * @throws Exception album class is not recognized
 	 */
-	protected function loadAlbum(AbstractAlbum $album)
+	protected function loadAlbum(AbstractAlbum $album): void
 	{
 		if ($album instanceof BaseSmartAlbum) {
 			$this->smartAlbum = $album;

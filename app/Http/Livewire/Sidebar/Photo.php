@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Sidebar;
 
 use App\Facades\Helpers;
 use App\Models\Photo as PhotoModel;
+use Illuminate\View\View;
 use Livewire\Component;
 
 class Photo extends Component
@@ -42,7 +43,7 @@ class Photo extends Component
 	public string $altitude;
 	public string $location;
 
-	public function mount(PhotoModel $photo)
+	public function mount(PhotoModel $photo): void
 	{
 		$this->title = $photo->title;
 		$this->created_at = $photo->created_at->format('F Y');
@@ -79,7 +80,7 @@ class Photo extends Component
 		}
 	}
 
-	public function render()
+	public function render(): View
 	{
 		return view('livewire.sidebar.photo');
 	}

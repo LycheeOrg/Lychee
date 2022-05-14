@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Modules;
 
 use App\Models\Photo as PhotoModel;
+use Illuminate\View\View;
 use Livewire\Component;
 
 class Photo extends Component
@@ -16,12 +17,12 @@ class Photo extends Component
 
 	public $visibleControls = false;
 
-	public function mount()
+	public function mount(): void
 	{
 		// $this->album = $this->photo->album;
 	}
 
-	public function render()
+	public function render(): View
 	{
 		// dd($this->photo);
 		return view('livewire.pages.modules.photo');

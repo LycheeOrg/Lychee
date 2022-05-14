@@ -17,7 +17,7 @@ class Login extends BaseForm
 		'form.password' => 'PASSWORD',
 	];
 
-	protected function rules()
+	protected function rules(): array
 	{
 		return [
 			'form.username' => 'required|string',
@@ -25,24 +25,28 @@ class Login extends BaseForm
 		];
 	}
 
-	public function mount(array $params = [])
+	public function mount(array $params = []): void
 	{
 		parent::mount($params);
 
 		$this->title = 'Please login';
 	}
 
-	public function submit()
+	public function submit(): void
 	{
 		$this->resetErrorBag();
 
 		$data = $this->validate()['form'];
 
 		if (AccessControl::log_as_admin($data['username'], $data['password'], request()->ip()) === true) {
-			return $this->emitTo('pages.fullpage', 'reloadPage');
+			$this->emitTo('pages.fullpage', 'reloadPage');
+
+			return;
 		}
 		if (AccessControl::log_as_user($data['username'], $data['password'], request()->ip()) === true) {
-			return $this->emitTo('pages.fullpage', 'reloadPage');
+			$this->emitTo('pages.fullpage', 'reloadPage');
+
+			return;
 		}
 
 		$this->addError('wrongLogin', 'Wrong login or password.');

@@ -2,6 +2,8 @@
 
 namespace App\Http\Livewire\Components\Base;
 
+use Illuminate\View\View;
+
 class Modal extends Openable
 {
 	public string $opacity = '0';
@@ -15,7 +17,7 @@ class Modal extends Openable
 		'deleteModal',
 	];
 
-	public function openModal(string $type, array $params = [])
+	public function openModal(string $type, array $params = []): void
 	{
 		$this->open();
 		$this->type = $type;
@@ -23,18 +25,18 @@ class Modal extends Openable
 		$this->opacity = '100';
 	}
 
-	public function deleteModal($params, string $form = 'forms.base-delete-form')
+	public function deleteModal($params, string $form = 'forms.base-delete-form'): void
 	{
 		$this->openModal($form, $params);
 	}
 
-	public function closeModal()
+	public function closeModal(): void
 	{
 		$this->close();
 		$this->opacity = '0';
 	}
 
-	public function render()
+	public function render(): View
 	{
 		return view('livewire.modal');
 	}

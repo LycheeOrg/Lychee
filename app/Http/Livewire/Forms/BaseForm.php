@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Forms;
 
 use App\Http\Livewire\Traits\InteractWithModal;
+use Illuminate\View\View;
 use Livewire\Component;
 
 abstract class BaseForm extends Component
@@ -14,19 +15,19 @@ abstract class BaseForm extends Component
 	public string $cancel = '';
 	public array $params = [];
 
-	abstract public function submit();
+	abstract public function submit(): void;
 
-	public function mount(array $params = [])
+	public function mount(array $params = []): void
 	{
 		$this->params = $params;
 	}
 
-	public function render()
+	public function render(): View
 	{
 		return view('livewire.form.form');
 	}
 
-	public function close()
+	public function close(): void
 	{
 		$this->closeModal();
 	}

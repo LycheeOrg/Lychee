@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Sidebar;
 use App\Contracts\AbstractAlbum;
 use App\Models\Photo;
 use App\Models\TagAlbum;
+use Illuminate\View\View;
 use Livewire\Component;
 
 class Album extends Component
@@ -31,17 +32,17 @@ class Album extends Component
 	public string $owner_name = '';
 	public string $license;
 
-	public function mount(AbstractAlbum $album)
+	public function mount(AbstractAlbum $album): void
 	{
 		$this->load($album);
 	}
 
-	public function render()
+	public function render(): View
 	{
 		return view('livewire.sidebar.album');
 	}
 
-	private function load(AbstractAlbum $album)
+	private function load(AbstractAlbum $album): void
 	{
 		// $this->album = $album;
 		$this->title = $album->title;

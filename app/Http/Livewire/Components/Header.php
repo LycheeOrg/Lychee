@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Components;
 use App\Http\Livewire\Traits\InteractWithModal;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Config;
+use Illuminate\View\View;
 use Livewire\Component;
 
 class Header extends Component
@@ -27,24 +28,23 @@ class Header extends Component
 		$this->mode = $mode ?? 'albums';
 	}
 
-	public function render()
+	public function render(): View
 	{
 		return view('livewire.header.header');
 	}
 
-	public function login()
+	public function login(): void
 	{
 		$this->openModal('forms.login');
 	}
 
-	public function openLeftMenu()
+	public function openLeftMenu(): void
 	{
 		$this->emitTo('components.left-menu', 'open');
 	}
 
-	public function toggleSideBar()
+	public function toggleSideBar(): void
 	{
 		$this->emitTo('components.sidebar', 'toggle');
 	}
 }
-

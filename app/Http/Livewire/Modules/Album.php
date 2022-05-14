@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Modules;
 
 use App\Contracts\AbstractAlbum;
 use App\Models\Configs;
+use Illuminate\View\View;
 use Livewire\Component;
 
 class Album extends Component
@@ -15,7 +16,7 @@ class Album extends Component
 	public string $layout = Album::MASONRY;
 	public AbstractAlbum $album;
 
-	public function render()
+	public function render(): View
 	{
 		switch (Configs::get_value('layout')) {
 			case '0':

@@ -15,19 +15,19 @@ class Openable extends Component
 		'toggle',
 	];
 
-	public function open()
+	public function open(): void
 	{
 		Debugbar::info('request to open.');
 		$this->isOpen = true;
 	}
 
-	public function close()
+	public function close(): void
 	{
 		Debugbar::info('request to close.');
 		$this->isOpen = false;
 	}
 
-	public function toggle()
+	public function toggle(): void
 	{
 		Debugbar::info('toggle.');
 		$this->isOpen = !$this->isOpen;
