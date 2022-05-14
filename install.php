@@ -1,17 +1,30 @@
 <?php
+/**
+ *  Simple straight forward installation script to run the following installtion steps via the web browser:
+ *
+ *  1. Installation of composer.phar
+ *  2. copy .env.example to .env
+ *  3.
+ */
 define('COMPOSER_INSTALLER','https://getcomposer.org/installer');
+define('COMPOSER_HASH','55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae');
+define('ENV','.env');
+define('APP_KEY','APP_KEY=');
 
-chdir('..');
-$OK=true;
-if (!file_exists('.env')) {
-    exec("cp .env.example .env");
-    H('Copy .env.example to .env');
+function getappkey() {
+    $A=file(ENV);
+    foreach($A as $a) {
+        if (str_starts_with($a,APP_KEY)) {
+            return trim(substr($a,strlen(APP_KEY)));
+        }
+    }
 }
 
 function print_o($A) {
     foreach ($A as $a) {
       echo $a."<br/>\n";
     }
+    echo "<br/>\n";
     return true;
 }
 
@@ -41,9 +54,16 @@ function RUN($cmd,$get=false) {
     }
 }
 
+chdir('..');
+$OK=true;
+if (!file_exists('.env')) {
+    H('Copy .env.example to .env');
+    copy('.env.example', '.env');
+}
+
 H('Installing Composer.phar');
 copy(COMPOSER_INSTALLER, 'composer-setup.php');
-if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { 
+if (hash_file('sha384', 'composer-setup.php') === COMPOSER_HASH) {
     T('Installer verified');
     exec('php composer-setup.php');
     unlink('composer-setup.php');
@@ -55,12 +75,12 @@ if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3dd
 
 if ($OK) {
     H('Update composer.lock');
-    echo print_o(RUN('php ./composer.phar update'));
+    print_o(RUN('php ./composer.phar update'));
 }
 
 if ($OK) {
     H('Install composer.json (no-dev)');
-    echo print_o(RUN('php ./composer.phar install --no-dev'));
+    print_o(RUN('php ./composer.phar install --no-dev'));
     H('Creating user.css',2);
     touch('public/dist/user.css');
     H('Creating the sqlite database',2);
@@ -68,18 +88,18 @@ if ($OK) {
 }
 
 if ($OK) {
-    if (RUN("grep '^APP_KEY=' .env|sed -e 's/APP_KEY=//ig'",true)=='') {
+    if (getappkey()=='') {
         H('Generate key');
-        echo print_o(RUN('php artisan key:generate --force'))."<br/>\n";
+        print_o(RUN('php artisan key:generate --force'));
     }
     H('Migrate database');
-    echo print_o(RUN('php artisan migrate --force'));
+    print_o(RUN('php artisan migrate --force'));
 }
 
-if (RUN("grep '^APP_KEY=' .env|sed -e 's/APP_KEY=//ig'",true)=='') {$OK=false;}
+if (getappkey()=='') {$OK=false;}
 
 if ($OK) {
-    T("The installation is complete.");
+    T("<b>The installation is complete.</b>");
     T('<a href="/">Continue here.</a>');
     chdir('public');
     rename("install.php","../install.php");
