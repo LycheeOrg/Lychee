@@ -321,13 +321,12 @@ class PhotosTest extends TestCase
 		$photos_tests = new PhotosUnitTest($this);
 
 		AccessControl::log_as_id(0);
-		// MUST use exiftool to get live photo metadata
-		$init_config_value = Configs::get_value('has_exiftool');
-
-		// we set the value to 2 to force the check.
+		$initHasExifTool = Configs::get_value('has_exiftool');
+		$initHasFFmpeg = Configs::get_value('has_ffmpeg');
 		Configs::set('has_exiftool', '2');
+		Configs::set('has_ffmpeg', '2');
 
-		if (Configs::hasExiftool()) {
+		if (Configs::hasExiftool() && Configs::hasFFmpeg()) {
 			/*
 			 * Make a copy of the image because import deletes the file, and
 			 * we want to be able to use the test on a local machine and not
@@ -354,9 +353,11 @@ class PhotosTest extends TestCase
 			$this->assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
 			$this->assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
 		} else {
-			$this->markTestSkipped('Exiftool is not available. Test Skipped.');
+			$this->markTestSkipped('Exiftool or FFmpeg is not available. Test Skipped.');
 		}
-		Configs::set('has_exiftool', $init_config_value);
+
+		Configs::set('has_exiftool', $initHasExifTool);
+		Configs::set('has_ffmpeg', $initHasFFmpeg);
 		AccessControl::logout();
 	}
 
