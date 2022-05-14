@@ -10,18 +10,22 @@ function print_o($A) {
     foreach ($A as $a) {
       echo $a."<br/>\n";
     }
+    return true;
 }
 
 function H($a,$l=1) { 
     echo "<h$l>".$a."</h$l>";
+    return true;
 }
 
 function T($a) { 
     echo $a."<br/>\n";
+    return true;
 }
 
 function CL($a) { 
     echo "<li><code>".$a."</code></li>\n";
+    return true;
 }
 
 function RUN($cmd,$get=false) { 
