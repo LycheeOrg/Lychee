@@ -4,8 +4,6 @@ namespace Tests\Feature;
 
 use App\ModelFunctions\SessionFunctions;
 use App\Models\Configs;
-use Tests\Feature\Lib\SessionUnitTest;
-use Tests\Feature\Lib\UsersUnitTest;
 use Tests\TestCase;
 
 class LDAPintegrationTest extends TestCase
@@ -18,8 +16,6 @@ class LDAPintegrationTest extends TestCase
 	public function testLDAP()
 	{
 		$sessionFunctions = new SessionFunctions();
-		$sessions_test = new SessionUnitTest($this);
-		$users_test = new UsersUnitTest($this);
 
 		$oldconfigs = Configs::get();
 		/*
