@@ -27,7 +27,10 @@ class RequirementsChecker
 					foreach ($requirement_ as $requirement) {
 						$hasExtension = extension_loaded($requirement);
 						$results['requirements'][$type][$requirement] = $hasExtension;
-						$results['errors'] |= !$hasExtension;
+						// Note: Don't use the short-cut assignment `|=`;
+						// it silently converts the type to integer, because
+						// `|` is not the logical OR, but the bitwise OR.
+						$results['errors'] = $results['errors'] || !$hasExtension;
 					}
 
 					if ($this->checkExec()) {
@@ -43,7 +46,7 @@ class RequirementsChecker
 						// if function doesn't exist we can't check apache modules
 						$hasModule = !function_exists('apache_get_modules') || in_array($requirement, apache_get_modules());
 						$results['requirements'][$type][$requirement] = $hasModule;
-						$results['errors'] |= !$hasModule;
+						$results['errors'] = $results['errors'] || !$hasModule;
 					}
 					break;
 				default:
