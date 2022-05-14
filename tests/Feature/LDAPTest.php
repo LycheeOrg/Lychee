@@ -15,13 +15,10 @@ class LDAPTest extends TestCase
 
 	public function testLDAP()
 	{
-		// $sessions_test = new SessionUnitTest($this);
-		// $users_test = new UsersUnitTest($this);
 		$ldap = new LDAPFunctions();
-		// $oldconfigs = Configs::get();
 		/*
-				 * These tests are made without enabling LDAP as the authenication service (ldap_enabled is untouched)
-				 *
+		 * These tests are made without enabling LDAP as the authenication service (ldap_enabled is untouched)
+		 *
 		 * Scenario is as follows:
 		 *
 		 * 1. configure the public LDAP server (see https://www.forumsys.com/2022/05/10/online-ldap-test-server/)
@@ -31,8 +28,6 @@ class LDAPTest extends TestCase
 		 * 5. try to verify user: test password: password ==> should fail
 		 * 6. try to verify user: gauss password: test ==> should fail
 		 * 7. call LDAPFunctions::get_user_data('gauss') ==> should return an array with the data for 'gauss'
-				 *
-				 * todo: integration tests with ldap_enabled=1
 		 */
 
 		// 1
