@@ -66,6 +66,6 @@ class LDAPTest extends TestCase
 			'fullname' => 'Carl Friedrich Gauss', 'email' => 'gauss@ldap.forumsys.com',
 		];
 
-		$this->assertEqualsCanonicalizing($user_data, $expected);
+		$this->assertEqualsCanonicalizing($user_data->toArray(), $expected);
 	}
 }
