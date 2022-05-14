@@ -81,12 +81,24 @@
             "@php artisan key:generate"
         ],
         "post-autoload-dump": [
-            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover",
+            "@autoload_dump",
+            "@package_discover",
             "@install_files"
         ],
+        "autoload_dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump"
+        ],
+        "package_discover": [
+            "@php artisan package:discover"
+        ],
         "install_files": [
-            "sh scripts/install_files.sh"
+            "@php -r \"touch('public/dist/user.css');\"",
+            "@php -r \"touch('database/database.sqlite');\"",
+            "@php -r \"file_exists('.git/hooks') || copy('scripts/pre-commit', '.git/hooks/pre-commit');\"",
+            "@php -r \"file_exists('.git/hooks') || copy('scripts/pre-merge', '.git/hooks/pre-merge');\""
+        ],
+        "disable_auto_composer_upgrade": [
+            "@php -r \"touch('.NO_AUTO_COMPOSER_MIGRATE');\""
         ]
     },
     "config": {
