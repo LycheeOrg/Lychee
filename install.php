@@ -1,4 +1,6 @@
 <?php
+COMPOSER_INSTALLER='https://getcomposer.org/installer';
+
 chdir('..');
 $OK=true;
 if (!file_exists('.env')) {
@@ -40,7 +42,7 @@ function RUN($cmd,$get=false) {
 }
 
 H('Installing Composer.phar');
-copy('https://getcomposer.org/installer', 'composer-setup.php');
+copy(COMPOSER_INSTALLER, 'composer-setup.php');
 if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { 
     T('Installer verified');
     exec('php composer-setup.php');
@@ -70,9 +72,6 @@ if ($OK) {
         H('Generate key');
         echo print_o(RUN('php artisan key:generate --force'))."<br/>\n";
     }
-}
-
-if ($OK) {
     H('Migrate database');
     echo print_o(RUN('php artisan migrate --force'));
 }
