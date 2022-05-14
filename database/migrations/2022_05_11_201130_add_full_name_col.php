@@ -2,13 +2,23 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\ConsoleSectionOutput;
 
 class AddFullNameCol extends Migration
 {
 	private const USERS = 'users';
 	private const NAME = 'fullname';
+
+	private ConsoleOutput $output;
+	private ConsoleSectionOutput $msgSection;
+
+	public function __construct()
+	{
+		$this->output = new ConsoleOutput();
+		$this->msgSection = $this->output->section();
+	}
 
 	/**
 	 * Run the migrations.
@@ -17,9 +27,11 @@ class AddFullNameCol extends Migration
 	 */
 	public function up()
 	{
-		Schema::table(self::USERS, function (Blueprint $table) {
-			$table->string(self::NAME, 128)->after('password')->nullable();
-		});
+		if (!Schema::hasColumn(self::USERS, self::NAME)) {
+			Schema::table(self::USERS, function (Blueprint $table) {
+				$table->string(self::NAME, 128)->after('password')->nullable();
+			});
+		}
 	}
 
 	/**
@@ -29,17 +41,6 @@ class AddFullNameCol extends Migration
 	 */
 	public function down()
 	{
-		$dbc = 'database.connections.' . Config::get('database.default');
-		$database = Config::get($dbc);
-		if ($database['driver'] == 'sqlite') {
-			$fc = $database['foreign_key_constraints'];
-			DB::statement('PRAGMA foreign_keys = OFF');
-		}
-		Schema::table(self::USERS, function (Blueprint $table) {
-			$table->dropColumn(self::NAME);
-		});
-		if (($database['driver'] == 'sqlite') && ($fc != 0)) {
-			DB::statement('PRAGMA foreign_keys = ON');
-		}
+		$this->msgSection->writeln(sprintf('<comment>Warning:</comment> %s not removed as it breaks in SQLite. Please do it manually', self::NAME));
 	}
 }
