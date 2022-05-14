@@ -23,7 +23,7 @@
     @endforeach
     </ul>
 
-    @if (!isset($errors))
+    @if (empty($errors))
     <div class="buttons">
        <a href="{{ route('install-env') }}" class="button" >
             Next <i class="fa fa-angle-right fa-fw" aria-hidden="true"></i>

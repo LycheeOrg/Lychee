@@ -11,7 +11,7 @@ active
 @endforeach
 </code></pre>
 
-@if (!isset($errors)) 
+@if (empty($errors))
     <strong>We did not detect any errors. However if the migration failed,
     remove the installed.log file and reopen <a href="{{ route('install-welcome') }}">this page</a>.</strong>
 @else
