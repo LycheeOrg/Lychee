@@ -34,12 +34,13 @@ class LDAPUserData
 	 */
 	public function toArray(): array
 	{
-		return [
-			'user' => $this->user,
-			'server' => $this->server,
-			'dn' => $this->dn,
-			'fullname' => $this->fullname,
-			'email' => $this->email,
-		];
+		$ret = [];
+		foreach (['user', 'server', 'dn', 'fullname', 'email'] as $prop) {
+			if (isset($this->{$prop})) {
+				$ret[$prop] = $this->{$prop};
+			}
+		}
+
+		return $ret;
 	}
 }
