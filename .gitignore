@@ -35,7 +35,6 @@ npm-debug.log
 yarn-error.log
 .env
 .env.*
-tmp/*
 
 public/dist/user.css
 aliases
