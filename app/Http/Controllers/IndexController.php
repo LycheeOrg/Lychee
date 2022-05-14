@@ -42,7 +42,7 @@ class IndexController extends Controller
 	{
 		if (Configs::get_value('login_page_enable', '0') == '1') {
 			$logged_in = AccessControl::is_logged_in();
-			if (($logged_in === false)) {
+			if ($logged_in === false) {
 				$lang = Lang::get_lang();
 				$lang['language'] = Configs::get_value('lang');
 

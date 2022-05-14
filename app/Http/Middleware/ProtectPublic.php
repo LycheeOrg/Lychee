@@ -28,12 +28,10 @@ class ProtectPublic
 	public function handle(Request $request, Closure $next): Response
 	{
 		$target = $next($request);
-		if (Configs::get_value('login_page_enable', '0') == '1') {
-			if (!AccessControl::is_logged_in()) {
-				if (!$request->is('/')) {
-					return redirect('/');
-				}
-			}
+		if ((Configs::get_value('login_page_enable', '0') == '1')
+		&& (!AccessControl::is_logged_in())
+		&& (!$request->is('/'))) {
+			return redirect('/');
 		}
 
 		return $target;
