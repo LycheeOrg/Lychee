@@ -249,11 +249,11 @@ class PhotosTest extends TestCase
 	}
 
 	/**
-	 * Test live photo upload.
+	 * Tests Apple Live Photo upload.
 	 *
 	 * @return void
 	 */
-	public function testLivePhotoUpload()
+	public function testAppleLivePhotoUpload(): void
 	{
 		$photos_tests = new PhotosUnitTest($this);
 
@@ -261,19 +261,25 @@ class PhotosTest extends TestCase
 		// MUST use exiftool to get live photo metadata
 		$init_config_value = Configs::get_value('has_exiftool');
 
-		// we set the value to 2to force the check.
+		// we set the value to 2 to force the check.
 		Configs::set('has_exiftool', '2');
 
 		if (Configs::hasExiftool()) {
 			/*
-			* Make a copy of the image because import deletes the file, and we want to be
-			* able to use the test on a local machine and not just in CI.
-			*/
-			copy(base_path('tests/Samples/train.jpg'), base_path('public/uploads/import/train.jpg'));
-			copy(base_path('tests/Samples/train.mov'), base_path('public/uploads/import/train.mov'));
+			 * Make a copy of the image because import deletes the file, and
+			 * we want to be able to use the test on a local machine and not
+			 * just in CI.
+			 * We must use a temporary file name without/with a wrong file
+			 * extension as a real upload would do in order to trigger the
+			 * problematic code path.
+			 */
+			$tmpPhotoFilename = \Safe\tempnam(sys_get_temp_dir(), 'lychee');
+			copy(base_path('tests/Samples/train.jpg'), $tmpPhotoFilename);
+			$tmpVideoFilename = \Safe\tempnam(sys_get_temp_dir(), 'lychee');
+			copy(base_path('tests/Samples/train.mov'), $tmpVideoFilename);
 
 			$photo_file = new UploadedFile(
-				'public/uploads/import/train.jpg',
+				$tmpPhotoFilename,
 				'train.jpg',
 				'image/jpeg',
 				null,
@@ -281,7 +287,7 @@ class PhotosTest extends TestCase
 			);
 
 			$video_file = new UploadedFile(
-				'public/uploads/import/train.mov',
+				$tmpVideoFilename,
 				'train.mov',
 				'video/quicktime',
 				null,
@@ -296,6 +302,57 @@ class PhotosTest extends TestCase
 			$this->assertEquals($photo_id, $video_id);
 			$this->assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
 			$this->assertStringEndsWith('.mov', $photo->live_photo_url);
+			$this->assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
+			$this->assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
+		} else {
+			$this->markTestSkipped('Exiftool is not available. Test Skipped.');
+		}
+		Configs::set('has_exiftool', $init_config_value);
+		AccessControl::logout();
+	}
+
+	/**
+	 * Tests Google Motion Photo upload.
+	 *
+	 * @return void
+	 */
+	public function testGoogleMotionPhotoUpload(): void
+	{
+		$photos_tests = new PhotosUnitTest($this);
+
+		AccessControl::log_as_id(0);
+		// MUST use exiftool to get live photo metadata
+		$init_config_value = Configs::get_value('has_exiftool');
+
+		// we set the value to 2 to force the check.
+		Configs::set('has_exiftool', '2');
+
+		if (Configs::hasExiftool()) {
+			/*
+			 * Make a copy of the image because import deletes the file, and
+			 * we want to be able to use the test on a local machine and not
+			 * just in CI.
+			 * We must use a temporary file name without/with a wrong file
+			 * extension as a real upload would do in order to trigger the
+			 * problematic code path.
+			 */
+			$tmpFilename = \Safe\tempnam(sys_get_temp_dir(), 'lychee');
+			copy(base_path('tests/Samples/google_motion_photo.jpg'), $tmpFilename);
+
+			$photo_file = new UploadedFile(
+				$tmpFilename,
+				'google_motion_photo.jpg',
+				'image/jpeg',
+				null,
+				true
+			);
+
+			$photo_id = $photos_tests->upload($photo_file);
+			$photo = $this->asObject($photos_tests->get($photo_id));
+
+			$this->assertStringEndsWith('.mov', $photo->live_photo_url);
+			$this->assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
+			$this->assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
 		} else {
 			$this->markTestSkipped('Exiftool is not available. Test Skipped.');
 		}
