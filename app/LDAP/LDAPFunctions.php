@@ -174,6 +174,9 @@ class LDAPFunctions
 		Logs::notice(__METHOD__, __LINE__, sprintf('filter: %s', $filter));
 
 		$sr = $this->LDAP_search($this->con, $base, $filter, Configs::get_value('ldap_userscope'));
+		if (!$sr) {
+			return false;
+		}
 		$result = ldap_get_entries($this->con, $sr);
 		ldap_free_result($sr);
 
