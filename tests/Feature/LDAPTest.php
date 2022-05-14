@@ -51,7 +51,7 @@ class LDAPTest extends TestCase
 		$this->assertFalse($ldap->check_pass('test', 'password'), 'Should not possible to verify user test:password');
 
 		// 6
-		$this->assertFalse($ldap->check_pass('gauss', 'test'), 'Should not possible to verify user test:password');
+		$this->assertFalse($ldap->check_pass('gauss', 'test'), 'Should not possible to verify user Gauss:test');
 
 		// 7
 		$user_data = $ldap->get_user_data('gauss');

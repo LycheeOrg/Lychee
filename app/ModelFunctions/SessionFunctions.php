@@ -194,7 +194,7 @@ class SessionFunctions
 	 * @throws InvalidPropertyException
 	 * @throws ModelDBException
 	 */
-	private function log_with_ldap(string $username, string $password, string $ip): bool
+	public function log_with_ldap(string $username, string $password, string $ip): bool
 	{
 		if (empty($this->ldap)) {
 			$this->ldap = new LDAPFunctions();
