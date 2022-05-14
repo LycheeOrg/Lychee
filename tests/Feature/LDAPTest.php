@@ -2,10 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\ModelFunctions\LDAPFunctions;
+use App\LDAP\LDAPFunctions;
 use App\Models\Configs;
-use Tests\Feature\Lib\SessionUnitTest;
-use Tests\Feature\Lib\UsersUnitTest;
 use Tests\TestCase;
 
 class LDAPTest extends TestCase
@@ -46,7 +44,7 @@ class LDAPTest extends TestCase
 
 		// 2
 
-		$this->assertTrue($ldap->OpenLDAP(), 'Connection to LDAP test server failed');
+		$this->assertTrue($ldap->open_LDAP(), 'Connection to LDAP test server failed');
 
 		// 3
 		$this->assertTrue($ldap->check_pass('gauss', 'password'), 'Cannot verify user gauss:password');
@@ -63,9 +61,11 @@ class LDAPTest extends TestCase
 		// 7
 		$user_data = $ldap->get_user_data('gauss');
 
-		$expected = ['user' => 'gauss', 'server' => 'ldap.forumsys.com', 'dn' => 'uid=gauss,dc=example,dc=com',
-			'fullname' => 'Carl Friedrich Gauss', 'email' => 'gauss@ldap.forumsys.com', ];
+		$expected = [
+			'user' => 'gauss', 'server' => 'ldap.forumsys.com', 'dn' => 'uid=gauss,dc=example,dc=com',
+			'fullname' => 'Carl Friedrich Gauss', 'email' => 'gauss@ldap.forumsys.com',
+		];
 
-		$this->assertEqualsCanonicalizing($user_data, $expected);
+		$this->assertEqualsCanonicalizing($user_data->toArray(), $expected);
 	}
 }

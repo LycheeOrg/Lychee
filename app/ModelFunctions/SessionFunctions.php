@@ -3,11 +3,17 @@
 namespace App\ModelFunctions;
 
 use App\Actions\User\Create;
+use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\InvalidPropertyException;
+use App\Exceptions\LDAPException;
+use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
+use App\LDAP\LDAPFunctions;
 use App\Legacy\Legacy;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\User;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
@@ -154,52 +160,77 @@ class SessionFunctions
 	public function log_as_user(string $username, string $password, string $ip): bool
 	{
 		if (Configs::get_value('ldap_enabled', '0')) {
-			if (empty($this->ldap)) {
-				$this->ldap = new LDAPFunctions();
-			}
-			$valid = $this->ldap->check_pass($username, $password);
-			if ($valid) {
-				$info = $this->ldap->get_user_data($username);
-				$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
-				if ($user == null) {
-					$create = new Create();
-					$create->do($username, $password, false, true, $info['email'], $info['fullname']);
-					$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
-				}
-				if ($user != null) {
-					$this->user_data = $user;
-					Session::put('login', true);
-					Session::put('UserID', $user->id);
-					if (($user->fullname != $info['fullname']) || ($user->email != $info['email'])) {
-						$user->email = $info['email'];
-						$user->fullname = $info['fullname'];
-						$user->save();
-					}
-					Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
+			return $this->log_with_ldap($username, $password, $ip);
+		}
 
-					return true;
-				}
+		// We select the NON ADMIN user
+		/** @var User $user */
+		$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
 
-				return false;
-			} else {
-				return false;
-			}
-		} else {
-			// We select the NON ADMIN user
-			/** @var User $user */
-			$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
+		if ($user != null && Hash::check($password, $user->password)) {
+			$this->user_data = $user;
+			Session::put('login', true);
+			Session::put('UserID', $user->id);
+			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
 
-			if ($user != null && Hash::check($password, $user->password)) {
-				$this->user_data = $user;
-				Session::put('login', true);
-				Session::put('UserID', $user->id);
-				Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
+			return true;
+		}
 
-				return true;
-			}
+		return false;
+	}
 
+	/**
+	 * Given a username and Password authenticate against LDAP.
+	 *
+	 * @param string $username
+	 * @param string $password
+	 * @param string $ip
+	 *
+	 * @return bool
+	 *
+	 * @throws LDAPException
+	 * @throws QueryBuilderException
+	 * @throws BindingResolutionException
+	 * @throws InvalidPropertyException
+	 * @throws ModelDBException
+	 */
+	private function log_with_ldap(string $username, string $password, string $ip): bool
+	{
+		if (empty($this->ldap)) {
+			$this->ldap = new LDAPFunctions();
+		}
+
+		$valid = $this->ldap->check_pass($username, $password);
+		if (!$valid) {
 			return false;
 		}
+
+		/** @var LDAPUserData user data */
+		$ldapUserData = $this->ldap->get_user_data($username);
+		if ($ldapUserData == null) {
+			return false;
+		}
+		$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
+		if ($user == null) {
+			$create = resolve(Create::class);
+			$create->do($username, $password, false, true, $ldapUserData->email, $ldapUserData->fullname);
+			$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
+		}
+		if ($user != null) {
+			$this->user_data = $user;
+			Session::put('login', true);
+			Session::put('UserID', $user->id);
+			if (($user->fullname != $ldapUserData->fullname) || ($user->email != $ldapUserData->email)) {
+				$user->email = $ldapUserData->email;
+				$user->fullname = $ldapUserData->fullname;
+				$user->save();
+			}
+			Logs::notice(__METHOD__, __LINE__, sprintf('User (%s) has logged in from %s', $username, $ip));
+
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
