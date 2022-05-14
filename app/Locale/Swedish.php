@@ -152,6 +152,7 @@ final class Swedish implements Language
 			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Direktlänk',
 			'DIRECT_LINKS' => 'Direct Links',
+			'QR_CODE' => 'QR Code',
 
 			'ALBUM_ABOUT' => 'Om',
 			'ALBUM_BASICS' => 'Grundläggande',

@@ -152,6 +152,7 @@ final class Polish implements Language
 			'DISPLAY_FULL_MAP' => 'Mapa',
 			'DIRECT_LINK' => 'Link bezpośredni',
 			'DIRECT_LINKS' => 'Linki bezpośrednie',
+			'QR_CODE' => 'QR Code',
 
 			'ALBUM_ABOUT' => 'Informacje o albumie',
 			'ALBUM_BASICS' => 'Informacje podstawowe',

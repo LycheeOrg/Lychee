@@ -152,6 +152,7 @@ final class Greek implements Language
 			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Απευθείας Σύνδεσμος',
 			'DIRECT_LINKS' => 'Απευθείας Σύνδεσμοι',
+			'QR_CODE' => 'QR Code',
 
 			'ALBUM_ABOUT' => 'Περί',
 			'ALBUM_BASICS' => 'Βασικές Πληροφορίες',

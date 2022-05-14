@@ -152,6 +152,7 @@ final class Portuguese implements Language
 			'DISPLAY_FULL_MAP' => 'Mapa',
 			'DIRECT_LINK' => 'Link Direto',
 			'DIRECT_LINKS' => 'Links Diretos',
+			'QR_CODE' => 'QR Code',
 
 			'ALBUM_ABOUT' => 'Acerca de',
 			'ALBUM_BASICS' => 'Básicos',

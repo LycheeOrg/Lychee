@@ -152,6 +152,7 @@ final class NorwegianBokmal implements Language
 			'DISPLAY_FULL_MAP' => 'Kart',
 			'DIRECT_LINK' => 'Direktelenke',
 			'DIRECT_LINKS' => 'Direktelenker',
+			'QR_CODE' => 'QR Code',
 
 			'ALBUM_ABOUT' => 'Om',
 			'ALBUM_BASICS' => 'Grunnleggende',

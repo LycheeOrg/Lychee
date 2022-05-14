@@ -2488,6 +2488,8 @@ mapview.open = function () {
   * Adds photos to the map.
   *
   * @param {(Album|TagAlbum|PositionData)} album
+  *
+  * @returns {void}
   */
 	var addContentsToMap = function addContentsToMap(album) {
 		// check if empty
@@ -2782,6 +2784,7 @@ lychee.locale = {
 	DISPLAY_FULL_MAP: "Map",
 	DIRECT_LINK: "Direct Link",
 	DIRECT_LINKS: "Direct Links",
+	QR_CODE: "QR Code",
 
 	ALBUM_ABOUT: "About",
 	ALBUM_BASICS: "Basics",

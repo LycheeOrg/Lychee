@@ -55,13 +55,11 @@ class Sync extends Command
 	/**
 	 * Execute the console command.
 	 *
-	 * @param Exec $exec
-	 *
 	 * @return int
 	 *
 	 * @throws ExternalLycheeException
 	 */
-	public function handle(Exec $exec): int
+	public function handle(): int
 	{
 		try {
 			$directory = $this->argument('dir');
