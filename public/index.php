@@ -1,4 +1,6 @@
 <?php
+/* Run install.php, if present*/
+if (file_exists('install.php')) {header("Location: /install.php"); die();}
 
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
