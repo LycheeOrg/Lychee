@@ -135,12 +135,12 @@ class LDAPFunctions
 	 *
 	 * @param string $user
 	 *
-	 * @return LDAPUserData containing user data
+	 * @return LDAPUserData|null containing user data
 	 */
-	public function get_user_data($user): LDAPUserData
+	public function get_user_data($user): ?LDAPUserData
 	{
 		if (!$this->open_LDAP()) {
-			return false;
+			return null;
 		}
 
 		if (!empty($this->user_info) && in_array($user, $this->user_info)) {
@@ -155,7 +155,7 @@ class LDAPFunctions
 			if (!$this->LDAP_bind()) {
 				Logs::notice(__METHOD__, __LINE__, 'LDAP bind as superuser failed.');
 
-				return false;
+				return null;
 			}
 			$this->bound = 2;
 		}
@@ -175,7 +175,7 @@ class LDAPFunctions
 
 		$sr = $this->LDAP_search($this->con, $base, $filter, Configs::get_value('ldap_userscope'));
 		if (!$sr) {
-			return false;
+			return null;
 		}
 		$result = ldap_get_entries($this->con, $sr);
 		ldap_free_result($sr);
@@ -185,14 +185,14 @@ class LDAPFunctions
 			// no objects found
 			Logs::notice(__METHOD__, __LINE__, 'LDAP search returned non-array result.');
 
-			return false;
+			return null;
 		}
 
 		// Only accept one response
 		if ($result['count'] != 1) {
 			Logs::notice(__METHOD__, __LINE__, sprintf('LDAP search returned %d results while it should return 1!', $result['count']));
 
-			return false;
+			return null;
 		}
 
 		$user_result = $result[0];
@@ -273,7 +273,7 @@ class LDAPFunctions
 
 		// See if we can find the user
 		$info = $this->get_user_data($user);
-		if (empty($info->dn)) {
+		if ($info == null || empty($info->dn)) {
 			return false;
 		}
 

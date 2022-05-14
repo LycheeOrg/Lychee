@@ -207,6 +207,9 @@ class SessionFunctions
 
 		/** @var LDAPUserData user data */
 		$ldapUserData = $this->ldap->get_user_data($username);
+		if ($ldapUserData == null) {
+			return false;
+		}
 		$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
 		if ($user == null) {
 			$create = resolve(Create::class);
