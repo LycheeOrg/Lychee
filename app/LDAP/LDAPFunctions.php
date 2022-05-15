@@ -226,7 +226,7 @@ class LDAPFunctions
 		}
 		Logs::notice(__METHOD__, __LINE__, sprintf('filter: %s', $filter));
 
-		// TODO fix: This line will fail,; this is suspicious.
+		// TODO fix: This line will fail; this is suspicious.
 		//
 		// This line will fail if this method is invoked independently of
 		// {@link self::check_pass()} and no super-user is configured which
@@ -287,7 +287,6 @@ class LDAPFunctions
 	{
 		$this->open_LDAP();
 
-		$ldap_bind_dn = Configs::get_value(self::CONFIG_KEY_BIND_DN);
 		$ldap_server = Configs::get_value(self::CONFIG_KEY_SERVER);
 
 		// Option A: If we know how to bind a user, we try that directly
@@ -381,7 +380,7 @@ class LDAPFunctions
 	 * wanted option on the connection.
 	 *
 	 * This method does not yet bind to the server.
-	 * If now super-user credentials are set, this method cannot decide
+	 * If no super-user credentials are set, this method cannot decide
 	 * whether it should bind anonymously or use user credentials.
 	 *
 	 * @throws LDAPException
