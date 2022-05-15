@@ -113,7 +113,7 @@ class UsersTest extends TestCase
 		 * 37. log out
 		 */
 		// ensure that LDAP login is off
-		$ldapEnabledInit = Configs::get('ldap_enabled');
+		$ldapEnabledInit = Configs::get_value('ldap_enabled', 0);
 		Configs::set('ldap_enabled', '0');
 		// 1
 		AccessControl::log_as_id(0);
