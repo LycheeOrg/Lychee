@@ -128,12 +128,20 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		return $value;
 	}
 
-	public function is_locked(): bool  // may user change their password?
+	/**
+	 * Accessor for `is_locked` property.
+	 *
+	 * The `is_locked` attribute determines whether users may change their
+	 * passwords.
+	 *
+	 * @param bool $value the raw value from the database passed in by
+	 *                    the Eloquent framework
+	 *
+	 * @return bool the effective value of the `is_locked` attribute
+	 */
+	public function getIsLockedAttribute(bool $value): bool
 	{
-		if (Configs::get_value('ldap_enabled', '0')) {
-			return true;
-		}
-
-		return $this->is_locked;
+		// If LDAP is enabled, every user is locked
+		return $value || Configs::get_value('ldap_enabled', '0');
 	}
 }
