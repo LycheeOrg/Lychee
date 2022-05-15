@@ -8,11 +8,6 @@ use Tests\TestCase;
 
 class LDAPintegrationTest extends TestCase
 {
-	protected function _debug($myDebugVar)
-	{
-		fwrite(STDERR, print_r($myDebugVar, true));
-	}
-
 	public function testLDAP()
 	{
 		$sessionFunctions = new SessionFunctions();
@@ -42,10 +37,10 @@ class LDAPintegrationTest extends TestCase
 		$ip = '127.0.0.1';
 		Configs::set('ldap_enabled', '1');
 		Configs::set('ldap_server', 'ldap.forumsys.com');
-		Configs::set('ldap_usertree', 'dc=example,dc=com');
-		Configs::set('ldap_userfilter', '(uid=%{user})');
-		Configs::set('ldap_binddn', 'cn=read-only-admin,dc=example,dc=com');
-		Configs::set('ldap_bindpw', 'password');
+		Configs::set('ldap_user_tree', 'dc=example,dc=com');
+		Configs::set('ldap_user_filter', '(uid=%{user})');
+		Configs::set('ldap_bind_dn', 'cn=read-only-admin,dc=example,dc=com');
+		Configs::set('ldap_bind_pw', 'password');
 
 		// 2
 		$this->assertTrue($sessionFunctions->log_with_ldap('gauss', 'password', $ip), 'Cannot verify user gauss:password');
@@ -79,9 +74,9 @@ class LDAPintegrationTest extends TestCase
 		// 9
 		Configs::set('ldap_enabled', $oldconfigs['ldap_enabled']);
 		Configs::set('ldap_server', $oldconfigs['ldap_server']);
-		Configs::set('ldap_usertree', $oldconfigs['ldap_usertree']);
-		Configs::set('ldap_userfilter', $oldconfigs['ldap_userfilter']);
-		Configs::set('ldap_binddn', $oldconfigs['ldap_binddn']);
-		Configs::set('ldap_bindpw', $oldconfigs['ldap_bindpw']);
+		Configs::set('ldap_user_tree', $oldconfigs['ldap_user_tree']);
+		Configs::set('ldap_user_filter', $oldconfigs['ldap_user_filter']);
+		Configs::set('ldap_bind_dn', $oldconfigs['ldap_bind_dn']);
+		Configs::set('ldap_bind_pw', $oldconfigs['ldap_bind_pw']);
 	}
 }

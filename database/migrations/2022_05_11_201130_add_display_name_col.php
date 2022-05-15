@@ -6,16 +6,19 @@ use Illuminate\Support\Facades\Schema;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
 
-class AddFullNameCol extends Migration
+class AddDisplayNameCol extends Migration
 {
 	private const USERS = 'users';
 	private const NAME = 'display_name';
 
+	private string $driverName;
 	private ConsoleOutput $output;
 	private ConsoleSectionOutput $msgSection;
 
 	public function __construct()
 	{
+		$connection = Schema::connection(null)->getConnection();
+		$this->driverName = $connection->getDriverName();
 		$this->output = new ConsoleOutput();
 		$this->msgSection = $this->output->section();
 	}
@@ -25,7 +28,7 @@ class AddFullNameCol extends Migration
 	 *
 	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		if (!Schema::hasColumn(self::USERS, self::NAME)) {
 			Schema::table(self::USERS, function (Blueprint $table) {
@@ -38,17 +41,23 @@ class AddFullNameCol extends Migration
 	 * Reverse the migrations.
 	 *
 	 * @return void
+	 *
+	 * @throws RuntimeException
 	 */
-	public function down()
+	public function down(): void
 	{
-		$dbc = 'database.connections.' . Config::get('database.default');
-		$database = Config::get($dbc);
-		if ($database['driver'] == 'sqlite') {
-			$this->msgSection->writeln(sprintf('<comment>Warning:</comment> %s not removed as it breaks in SQLite. Please do it manually', self::NAME));
-		} else {
-			Schema::table(self::USERS, function (Blueprint $table) {
-				$table->dropColumn(self::NAME);
-			});
+		switch ($this->driverName) {
+			case 'sqlite':
+				$this->msgSection->writeln(sprintf('<comment>Warning:</comment> %s not removed as it breaks in SQLite. Please do it manually', self::NAME));
+				break;
+			case 'mysql':
+			case 'psql':
+				Schema::table(self::USERS, function (Blueprint $table) {
+					$table->dropColumn(self::NAME);
+				});
+				break;
+			default:
+				throw new RuntimeException('Unsupported DBMS');
 		}
 	}
 }
