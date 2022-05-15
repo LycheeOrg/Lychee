@@ -22,18 +22,16 @@ class LDAPFunctions
 	/**
 	 * Wraps around ldap_search, ldap_list or ldap_read depending on $scope.
 	 *
-	 * @param \LDAP\Connection $link_identifier
-	 * @param string           $base_dn
-	 * @param string           $filter
-	 * @param string           $scope           can be 'base', 'one' or 'sub'
-	 * @param array            $attributes
-	 * @param int              $attrsonly
-	 * @param int              $sizelimit
+	 * @param string $base_dn
+	 * @param string $filter
+	 * @param string $scope      can be 'base', 'one' or 'sub'
+	 * @param array  $attributes
+	 * @param int    $attrsonly
+	 * @param int    $sizelimit
 	 *
 	 * @return Result|array|false
 	 */
-	protected function LDAP_search(
-		$link_identifier,
+	public function LDAP_search(
 		$base_dn,
 		$filter,
 		$scope = 'sub',
@@ -41,9 +39,10 @@ class LDAPFunctions
 		$attrsonly = 0,
 		$sizelimit = 0
 	): Result|array|false {
+		$link_identifier = $this->con;
 		try {
 			if ($scope == 'base') {
-				return ldap_read(
+				$sr = ldap_read(
 					$link_identifier,
 					$base_dn,
 					$filter,
@@ -52,7 +51,7 @@ class LDAPFunctions
 					$sizelimit
 				);
 			} elseif ($scope == 'one') {
-				return ldap_list(
+				$sr = ldap_list(
 					$link_identifier,
 					$base_dn,
 					$filter,
@@ -61,7 +60,7 @@ class LDAPFunctions
 					$sizelimit
 				);
 			} else {
-				return ldap_search(
+				$sr = ldap_search(
 					$link_identifier,
 					$base_dn,
 					$filter,
@@ -70,6 +69,13 @@ class LDAPFunctions
 					$sizelimit
 				);
 			}
+			if (!$sr) {
+				return null;
+			}
+			$result = ldap_get_entries($this->con, $sr);
+			ldap_free_result($sr);
+
+			return $result;
 		} catch (\Throwable $e) {
 			Logs::notice(__METHOD__, __LINE__, sprintf('LDAP_dearch failed [%s]', ldap_error($this->con)));
 		}
@@ -172,12 +178,7 @@ class LDAPFunctions
 		}
 		Logs::notice(__METHOD__, __LINE__, sprintf('filter: %s', $filter));
 
-		$sr = $this->LDAP_search($this->con, $base, $filter, Configs::get_value('ldap_userscope'));
-		if (!$sr) {
-			return null;
-		}
-		$result = ldap_get_entries($this->con, $sr);
-		ldap_free_result($sr);
+		$result = $this->LDAP_search($base, $filter, Configs::get_value('ldap_userscope'));
 
 		// if result is not an array
 		if (!is_array($result)) {
