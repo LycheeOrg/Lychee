@@ -10,14 +10,14 @@ use LDAP\Result;
 class LDAPFunctions
 {
 	/**
-	 * @var \LDAP\Connection holds the LDAP connection */
-	protected $con = null;
+	 * @var \LDAP\Connection|null holds the LDAP connection */
+	protected ?\LDAP\Connection $con = null;
 
 	/* @var int $bound What type of connection does already exist? */
 	protected int $bound = 0; // 0: anonymous, 1: user, 2: superuser
 
-	/* @var array user info queried from LDAP */
-	protected $user_info = [];
+	/* @var LDAPUserData[] user info queried from LDAP */
+	protected array $user_info = [];
 
 	/**
 	 * Wraps around ldap_search, ldap_list or ldap_read depending on $scope.
@@ -32,12 +32,12 @@ class LDAPFunctions
 	 * @return Result|array|false
 	 */
 	public function LDAP_search(
-		$base_dn,
-		$filter,
-		$scope = 'sub',
-		$attributes = [],
-		$attrsonly = 0,
-		$sizelimit = 0
+		string $base_dn,
+		string $filter,
+		string $scope = 'sub',
+		array $attributes = [],
+		int $attrsonly = 0,
+		int $sizelimit = 0
 	): Result|array|false {
 		$link_identifier = $this->con;
 		try {
@@ -88,7 +88,7 @@ class LDAPFunctions
 	 *
 	 * @return bool
 	 */
-	public function LDAP_bind($bdn = null, $bpw = null): bool
+	public function LDAP_bind(?string $bdn = null, ?string $bpw = null): bool
 	{
 		$bdn = $bdn ?? Configs::get_value('ldap_binddn');
 		$bpw = $bpw ?? Configs::get_value('ldap_bindpw');
@@ -105,12 +105,12 @@ class LDAPFunctions
 	/**
 	 * Wraps around ldap_set_option.
 	 *
-	 * @param mixed  $opt
+	 * @param int    $opt
 	 * @param string $value
 	 *
 	 * @return bool
 	 */
-	protected function LDAP_set_option($opt, string $value): bool
+	protected function LDAP_set_option(int $opt, string $value): bool
 	{
 		try {
 			return ldap_set_option($this->con, $opt, $value);
@@ -125,7 +125,7 @@ class LDAPFunctions
 	 *
 	 * @return bool
 	 */
-	protected function LDAP_start_tls()
+	protected function LDAP_start_tls(): bool
 	{
 		try {
 			return ldap_start_tls($this->con);
@@ -142,7 +142,7 @@ class LDAPFunctions
 	 *
 	 * @return LDAPUserData|null containing user data
 	 */
-	public function get_user_data($user): ?LDAPUserData
+	public function get_user_data(string $user): ?LDAPUserData
 	{
 		if (!$this->open_LDAP()) {
 			return null;
@@ -223,7 +223,7 @@ class LDAPFunctions
 	 *
 	 * @return bool
 	 */
-	public function check_pass($user, $pass): bool
+	public function check_pass(string $user, string $pass): bool
 	{
 		if (!$this->open_LDAP()) {
 			return false;
@@ -297,7 +297,7 @@ class LDAPFunctions
 	 *
 	 * @return string
 	 */
-	protected function _filterEscape($string)
+	protected function _filterEscape(string $string): string
 	{
 		// see https://github.com/adldap/adLDAP/issues/22
 		return preg_replace_callback(
@@ -317,7 +317,7 @@ class LDAPFunctions
 	 *
 	 * @return string
 	 */
-	protected function _makeFilter($filter, $placeholders)
+	protected function _makeFilter(string $filter, array $placeholders): string
 	{
 		preg_match_all('/%{([^}]+)/', $filter, $matches, PREG_PATTERN_ORDER);
 		// replace each match
@@ -341,7 +341,7 @@ class LDAPFunctions
 	 *
 	 * @throws LDAPException
 	 */
-	public function open_LDAP()
+	public function open_LDAP(): bool
 	{
 		if ($this->con) {
 			return true;
