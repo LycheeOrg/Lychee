@@ -51,7 +51,7 @@ class AddDisplayNameCol extends Migration
 				$this->msgSection->writeln(sprintf('<comment>Warning:</comment> %s not removed as it breaks in SQLite. Please do it manually', self::NAME));
 				break;
 			case 'mysql':
-			case 'psql':
+			case 'pgsql':
 				Schema::table(self::USERS, function (Blueprint $table) {
 					$table->dropColumn(self::NAME);
 				});
