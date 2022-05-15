@@ -197,7 +197,7 @@ class LDAPFunctions
 
 		// general user info
 		$userData->dn = $user_result['dn'];
-		$userData->fullname = $user_result[Configs::get_value('ldap_cn', 'cn')][0];
+		$userData->display_name = $user_result[Configs::get_value('ldap_cn', 'cn')][0];
 		if (array_key_exists(Configs::get_value('ldap_mail', 'mail'), $user_result)) {
 			$userData->email = $user_result[Configs::get_value('ldap_mail', 'mail')][0];
 		} else {

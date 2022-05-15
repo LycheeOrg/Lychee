@@ -213,7 +213,7 @@ class SessionFunctions
 		$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
 		if ($user == null) {
 			$create = resolve(Create::class);
-			$create->do($username, $password, false, true, $ldapUserData->email, $ldapUserData->fullname);
+			$create->do($username, $password, false, true, $ldapUserData->email, $ldapUserData->display_name);
 			$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
 		}
 		if ($user != null) {
@@ -222,7 +222,7 @@ class SessionFunctions
 			Session::put('UserID', $user->id);
 			if (($user->fullname != $ldapUserData->fullname) || ($user->email != $ldapUserData->email)) {
 				$user->email = $ldapUserData->email;
-				$user->fullname = $ldapUserData->fullname;
+				$user->display_name = $ldapUserData->display_name;
 				$user->save();
 			}
 			Logs::notice(__METHOD__, __LINE__, sprintf('User (%s) has logged in from %s', $username, $ip));

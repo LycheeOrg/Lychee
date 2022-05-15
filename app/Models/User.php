@@ -23,7 +23,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon                                                $created_at
  * @property Carbon                                                $updated_at
  * @property string                                                $username
- * @property string                                                $fullname
+ * @property string                                                $display_name
  * @property string|null                                           $password
  * @property string|null                                           $email
  * @property bool                                                  $may_upload
@@ -48,7 +48,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'username',
 		'password',
 		'email',
-		'fullname',
+		'display_name',
 	];
 
 	/**
@@ -111,13 +111,21 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		return ($this->id == 0) ? 'Admin' : $this->username;
 	}
 
-	public function fullname(): string
+	/**
+	 * Accessor for `display_name` property.
+	 *
+	 * @param ?string $value the raw value from the database passed in by
+	 *                       the Eloquent framework
+	 *
+	 * @return string the display name
+	 */
+	public function getDisplayNameAttribute(?string $value): string
 	{
-		if (empty($this->fullname) || (Configs::get_value('ldap_enabled', '0') == 0)) {
+		if (empty($value) || (Configs::get_value('ldap_enabled', '0') == 0)) {
 			return $this->name();
 		}
 
-		return $this->fullname;
+		return $value;
 	}
 
 	public function is_locked(): bool  // may user change their password?

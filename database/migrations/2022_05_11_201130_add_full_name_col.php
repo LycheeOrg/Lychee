@@ -9,7 +9,7 @@ use Symfony\Component\Console\Output\ConsoleSectionOutput;
 class AddFullNameCol extends Migration
 {
 	private const USERS = 'users';
-	private const NAME = 'fullname';
+	private const NAME = 'display_name';
 
 	private ConsoleOutput $output;
 	private ConsoleSectionOutput $msgSection;

@@ -14,7 +14,7 @@ class LDAPUserData
 	public string $user;
 	public string $server;
 	public string $dn;
-	public string $fullname;
+	public string $display_name;
 	public string $email;
 
 	/**
@@ -35,7 +35,7 @@ class LDAPUserData
 	public function toArray(): array
 	{
 		$ret = [];
-		foreach (['user', 'server', 'dn', 'fullname', 'email'] as $prop) {
+		foreach (['user', 'server', 'dn', 'display_name', 'email'] as $prop) {
 			if (isset($this->{$prop})) {
 				$ret[$prop] = $this->{$prop};
 			}

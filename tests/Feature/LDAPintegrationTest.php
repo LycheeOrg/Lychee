@@ -35,7 +35,7 @@ class LDAPintegrationTest extends TestCase
 		 * 8. Restore original config values
 		 */
 		$von_gauss = [
-			'username' => 'gauss', 'fullname' => 'Carl Friedrich Gauss', 'email' => 'gauss@ldap.forumsys.com',
+			'username' => 'gauss', 'display_name' => 'Carl Friedrich Gauss', 'email' => 'gauss@ldap.forumsys.com',
 		];
 
 		// 1

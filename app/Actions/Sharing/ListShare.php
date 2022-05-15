@@ -22,7 +22,7 @@ class ListShare
 		try {
 			// prepare query
 			if (Configs::get_value('ldap_enabled', '0') != 0) {
-				$display_name = DB::raw("COALESCE(NULLIF(fullname,''), username) as username");
+				$display_name = DB::raw("COALESCE(NULLIF(display_name,''), username) as username");
 			} else {
 				$display_name = 'username';
 			}

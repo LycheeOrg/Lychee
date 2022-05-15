@@ -71,7 +71,7 @@ class LDAPTest extends TestCase
 
 		$expected = [
 			'user' => 'gauss', 'server' => 'ldap.forumsys.com', 'dn' => 'uid=gauss,dc=example,dc=com',
-			'fullname' => 'Carl Friedrich Gauss', 'email' => 'gauss@ldap.forumsys.com',
+			'display_name' => 'Carl Friedrich Gauss', 'email' => 'gauss@ldap.forumsys.com',
 		];
 
 		$this->assertEqualsCanonicalizing($user_data->toArray(), $expected);
