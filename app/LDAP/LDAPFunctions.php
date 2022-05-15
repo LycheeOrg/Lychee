@@ -97,9 +97,9 @@ class LDAPFunctions
 			return ldap_bind($this->con, $bdn, $bpw);
 		} catch (\Throwable) {
 			Logs::notice(__METHOD__, __LINE__, sprintf('LDAP_bind failed [%s]', ldap_error($this->con)));
-		}
 
-		return false;
+			return false;
+		}
 	}
 
 	/**
@@ -115,9 +115,8 @@ class LDAPFunctions
 		try {
 			return ldap_set_option($this->con, $opt, $value);
 		} catch (\Throwable) {
+			return false;
 		}
-
-		return false;
 	}
 
 	/**
@@ -130,9 +129,8 @@ class LDAPFunctions
 		try {
 			return ldap_start_tls($this->con);
 		} catch (\Throwable) {
+			return false;
 		}
-
-		return false;
 	}
 
 	/**

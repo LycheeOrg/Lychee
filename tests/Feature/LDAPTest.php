@@ -10,7 +10,6 @@ class LDAPTest extends TestCase
 {
 	protected function _debug($myDebugVar, $label = '')
 	{
-		// fwrite(STDERR, $label . print_r($myDebugVar, true) . PHP_EOL);
 		$msg = str_replace(PHP_EOL, ' ', print_r($myDebugVar, true));
 		$msg = str_replace('  ', ' ', $msg);
 		$msg = str_replace('  ', ' ', $msg);
