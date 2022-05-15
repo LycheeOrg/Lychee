@@ -11,7 +11,7 @@ class LDAPFunctions
 {
 	/**
 	 * @var \LDAP\Connection|null holds the LDAP connection */
-	protected ?\LDAP\Connection $con = null;
+	protected $con = null;
 
 	/* @var int $bound What type of connection does already exist? */
 	protected int $bound = 0; // 0: anonymous, 1: user, 2: superuser
