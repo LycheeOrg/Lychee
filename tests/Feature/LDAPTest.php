@@ -10,7 +10,7 @@ class LDAPTest extends TestCase
 {
 	protected function _debug($myDebugVar, $label = '')
 	{
-		fwrite(STDERR, $label . print_r($myDebugVar, true));
+		fwrite(STDERR, $label . print_r($myDebugVar, true) . PHP_EOL);
 	}
 
 	public function testLDAP()

@@ -9,10 +9,7 @@ use LDAP\Result;
 
 class LDAPFunctions
 {
-	/** At least ldap_bind() fires uncatchable Exceptions and to protect the application we need to suppress them.
-	 * Therefore all php ldap library functions are protected using the @-operator. They simply can be deleted once
-	 * the php library functions fire only exceptions which can be caught.
-	 *
+	/**
 	 * @var \LDAP\Connection holds the LDAP connection */
 	protected $con = null;
 
@@ -75,9 +72,9 @@ class LDAPFunctions
 			}
 		} catch (\Throwable $e) {
 			Logs::notice(__METHOD__, __LINE__, sprintf('LDAP_dearch failed [%s]', ldap_error($this->con)));
-
-			return false;
 		}
+
+		return false;
 	}
 
 	/**
@@ -94,9 +91,9 @@ class LDAPFunctions
 			return ldap_bind($this->con, $bdn, $bpw);
 		} catch (\Throwable) {
 			Logs::notice(__METHOD__, __LINE__, sprintf('LDAP_bind failed [%s]', ldap_error($this->con)));
-
-			return false;
 		}
+
+		return false;
 	}
 
 	/**
@@ -112,8 +109,9 @@ class LDAPFunctions
 		try {
 			return ldap_set_option($this->con, $opt, $value);
 		} catch (\Throwable) {
-			return false;
 		}
+
+		return false;
 	}
 
 	/**
@@ -126,8 +124,9 @@ class LDAPFunctions
 		try {
 			return ldap_start_tls($this->con);
 		} catch (\Throwable) {
-			return false;
 		}
+
+		return false;
 	}
 
 	/**
