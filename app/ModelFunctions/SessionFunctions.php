@@ -3,10 +3,8 @@
 namespace App\ModelFunctions;
 
 use App\Actions\User\Create;
-use App\Exceptions\Internal\QueryBuilderException;
-use App\Exceptions\InvalidPropertyException;
-use App\Exceptions\LDAPException;
-use App\Exceptions\ModelDBException;
+use App\Contracts\LycheeException;
+use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\UnauthenticatedException;
 use App\LDAP\LDAPFunctions;
 use App\LDAP\LDAPUserData;
@@ -157,6 +155,8 @@ class SessionFunctions
 	 * @param string $ip
 	 *
 	 * @return bool
+	 *
+	 * @throws LycheeException
 	 */
 	public function log_as_user(string $username, string $password, string $ip): bool
 	{
@@ -189,49 +189,50 @@ class SessionFunctions
 	 *
 	 * @return bool
 	 *
-	 * @throws LDAPException
-	 * @throws QueryBuilderException
-	 * @throws BindingResolutionException
-	 * @throws InvalidPropertyException
-	 * @throws ModelDBException
+	 * @throws LycheeException
 	 */
 	public function log_with_ldap(string $username, string $password, string $ip): bool
 	{
-		if (empty($this->ldap)) {
-			$this->ldap = new LDAPFunctions();
-		}
-
-		$valid = $this->ldap->check_pass($username, $password);
-		if (!$valid) {
-			return false;
-		}
-
-		/** @var LDAPUserData user data */
-		$ldapUserData = $this->ldap->get_user_data($username);
-		if ($ldapUserData == null) {
-			return false;
-		}
-		$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
-		if ($user == null) {
-			$create = resolve(Create::class);
-			$create->do($username, $password, false, true, $ldapUserData->email, $ldapUserData->display_name);
-			$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
-		}
-		if ($user != null) {
-			$this->user_data = $user;
-			Session::put('login', true);
-			Session::put('UserID', $user->id);
-			if (($user->display_name != $ldapUserData->display_name) || ($user->email != $ldapUserData->email)) {
-				$user->email = $ldapUserData->email;
-				$user->display_name = $ldapUserData->display_name;
-				$user->save();
+		try {
+			if (empty($this->ldap)) {
+				$this->ldap = new LDAPFunctions();
 			}
-			Logs::notice(__METHOD__, __LINE__, sprintf('User (%s) has logged in from %s', $username, $ip));
 
-			return true;
+			$valid = $this->ldap->check_pass($username, $password);
+			if (!$valid) {
+				return false;
+			}
+
+			/** @var LDAPUserData user data */
+			$ldapUserData = $this->ldap->get_user_data($username);
+			if ($ldapUserData == null) {
+				return false;
+			}
+			/** @var User $user */
+			$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
+			if ($user == null) {
+				$create = resolve(Create::class);
+				$create->do($username, $password, false, true, $ldapUserData->email, $ldapUserData->display_name);
+				$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
+			}
+			if ($user !== null) {
+				$this->user_data = $user;
+				Session::put('login', true);
+				Session::put('UserID', $user->id);
+				if (($user->display_name != $ldapUserData->display_name) || ($user->email != $ldapUserData->email)) {
+					$user->email = $ldapUserData->email;
+					$user->display_name = $ldapUserData->display_name;
+					$user->save();
+				}
+				Logs::notice(__METHOD__, __LINE__, sprintf('User (%s) has logged in from %s', $username, $ip));
+
+				return true;
+			}
+
+			return false;
+		} catch (BindingResolutionException $e) {
+			throw new FrameworkException('Laravel\'s container component', $e);
 		}
-
-		return false;
 	}
 
 	/**
@@ -273,7 +274,6 @@ class SessionFunctions
 	public function logout()
 	{
 		$this->user_data = null;
-		$this->user_info = [];
 		Session::flush();
 	}
 }
