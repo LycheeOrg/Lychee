@@ -50,7 +50,7 @@ class PanicAttack
 	{
 		$this->title = 'ROOT';
 		$this->code = 403;
-		$this->message = '<span class="important">This is the root directory and it MUST NOT BE PUBLICALLY ACCESSIBLE.</span><br>
+		$this->message = '<span class="important">This is the root directory and MUST NOT BE PUBLICLY ACCESSIBLE.</span><br>
 		To access Lychee, go <a href="public/">here</a>.';
 		$this->displaySimpleError();
 	}

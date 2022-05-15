@@ -1,11 +1,20 @@
 <?php
 
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
+
 namespace Tests\Feature;
 
 use App\Facades\AccessControl;
 use App\Models\Configs;
 use Carbon\Carbon;
-use Illuminate\Http\UploadedFile;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\TestCase;
@@ -14,25 +23,6 @@ class PhotosOperationsTest extends TestCase
 {
 	protected PhotosUnitTest $photos_tests;
 	protected AlbumsUnitTest $albums_tests;
-	protected static UploadedFile $uploadFile;
-
-	public static function setUpBeforeClass(): void
-	{
-		/*
-		 * We must use a temporary file name without/with a wrong file
-		 * extension as a real upload would do in order to trigger the
-		 * problematic code path.
-		 */
-		$tmpFilename = \Safe\tempnam(sys_get_temp_dir(), 'lychee');
-		copy(base_path('tests/Samples/night.jpg'), $tmpFilename);
-		self::$uploadFile = new UploadedFile(
-			$tmpFilename,
-			'night.jpg',
-			'image/jpeg',
-			null,
-			true
-		);
-	}
 
 	public function setUp(): void
 	{
@@ -59,7 +49,9 @@ class PhotosOperationsTest extends TestCase
 	 */
 	public function testManyFunctionsAtOnce(): void
 	{
-		$id = $this->photos_tests->upload(self::$uploadFile);
+		$id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		);
 
 		$this->photos_tests->get($id);
 
@@ -191,7 +183,7 @@ class PhotosOperationsTest extends TestCase
 		 * Get album which should contain both photos.
 		 */
 		$album = static::convertJsonToObject($this->albums_tests->get($albumID));
-		$this->assertCount(2, $album->photos);
+		static::assertCount(2, $album->photos);
 
 		$ids = [];
 		$ids[0] = $album->photos[0]->id;
@@ -214,14 +206,14 @@ class PhotosOperationsTest extends TestCase
 		$this->photos_tests->delete([$ids[1]]);
 		$this->photos_tests->get($ids[1], 404);
 		$album = static::convertJsonToObject($this->albums_tests->get($albumID));
-		$this->assertCount(0, $album->photos);
+		static::assertCount(0, $album->photos);
 
 		// save initial value
 		$init_config_value = Configs::get_value('gen_demo_js');
 
 		// set to 0
 		Configs::set('gen_demo_js', '1');
-		$this->assertEquals('1', Configs::get_value('gen_demo_js'));
+		static::assertEquals('1', Configs::get_value('gen_demo_js'));
 
 		// check redirection
 		$response = $this->get('/demo');
@@ -251,8 +243,8 @@ class PhotosOperationsTest extends TestCase
 		// set to 0
 		Configs::set('SL_enable', '1');
 		Configs::set('SL_for_admin', '1');
-		$this->assertEquals('1', Configs::get_value('SL_enable'));
-		$this->assertEquals('1', Configs::get_value('SL_for_admin'));
+		static::assertEquals('1', Configs::get_value('SL_enable'));
+		static::assertEquals('1', Configs::get_value('SL_for_admin'));
 
 		// just redo the test above :'D
 		$this->testManyFunctionsAtOnce();
@@ -269,8 +261,6 @@ class PhotosOperationsTest extends TestCase
 	 */
 	public function testTrueNegative(): void
 	{
-		$this->photos_tests->wrong_upload();
-		$this->photos_tests->wrong_upload2();
 		$this->photos_tests->get('-1', 422);
 		$this->photos_tests->get('abcdefghijklmnopxyrstuvx', 404);
 		$this->photos_tests->set_description('-1', 'test', 422);
