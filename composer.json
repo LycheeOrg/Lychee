@@ -16,7 +16,7 @@
         "php": "^8.0",
         "ext-bcmath": "*",
         "ext-exif": "*",
-		"ext-fileinfo": "*",
+        "ext-fileinfo": "*",
         "ext-gd": "*",
         "ext-json": "*",
         "bepsvpt/secure-headers": "^7.1",
@@ -38,7 +38,7 @@
         "spatie/laravel-feed": "^4.0",
         "spatie/laravel-image-optimizer": "^1.6.2",
         "symfony/cache": "^5.3",
-        "whichbrowser/parser": "^2.0"
+        "whichbrowser/parser": "^2.0",
     },
     "require-dev": {
         "ext-imagick": "*",
@@ -50,6 +50,9 @@
         "laravel/homestead": "^12.8",
         "nunomaduro/collision": "^5.0",
         "phpunit/phpunit": "^9"
+    },
+    "suggest": {
+        "ext-ldap": "*"
     },
     "conflict": {
         "doctrine/dbal": "2.10.3"

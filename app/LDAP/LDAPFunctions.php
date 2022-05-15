@@ -5,18 +5,48 @@ namespace App\LDAP;
 use App\Exceptions\LDAPException;
 use App\Models\Configs;
 use App\Models\Logs;
-use LDAP\Result;
 
 class LDAPFunctions
 {
+	public const SCOPE_BASE = 'base';
+	public const SCOPE_ONE = 'one';
+	public const SCOPE_SUB = 'sub';
+
+	protected const CONFIG_KEY_BIND_DN = 'ldap_binddn';
+	protected const CONFIG_KEY_BIND_PW = 'ldap_bindpw';
+	protected const CONFIG_KEY_CN = 'ldap_cn';
+	protected const CONFIG_KEY_DEREF = 'ldap_deref';
+	protected const CONFIG_KEY_MAIL = 'ldap_mail';
+	protected const CONFIG_KEY_PORT = 'ldap_port';
+	protected const CONFIG_KEY_REFERRALS = 'ldap_referrals';
+	protected const CONFIG_KEY_SERVER = 'ldap_server';
+	protected const CONFIG_KEY_START_TLS = 'ldap_starttls';
+	protected const CONFIG_KEY_USER_TREE = 'ldap_usertree';
+	protected const CONFIG_KEY_USER_FILTER = 'ldap_userfilter';
+	protected const CONFIG_KEY_USER_SCOPE = 'ldap_userscope';
+	protected const CONFIG_KEY_VERSION = 'ldap_version';
+
+	protected const BIND_TYPE_ANONYMOUS = 0;
+	protected const BIND_TYPE_USER = 1;
+	protected const BIND_TYPE_SUPER_USER = 2;
+
 	/**
-	 * @var \LDAP\Connection|null holds the LDAP connection */
+	 * @var \LDAP\Connection|resource|null the LDAP connection
+	 */
 	protected $con = null;
 
-	/* @var int $bound What type of connection does already exist? */
-	protected int $bound = 0; // 0: anonymous, 1: user, 2: superuser
+	/**
+	 * Type of LDAP binding.
+	 *
+	 * Either {@link LDAPFunctions::BIND_TYPE_ANONYMOUS},
+	 * {@link LDAPFunctions::BIND_TYPE_USER},
+	 * {@link LDAPFunctions::BIND_TYPE_SUPER_USER}.
+	 *
+	 * @var int
+	 */
+	protected int $bound = self::BIND_TYPE_ANONYMOUS;
 
-	/* @var LDAPUserData[] user info queried from LDAP */
+	/** @var LDAPUserData[] user info queried from LDAP */
 	protected array $user_info = [];
 
 	/**
@@ -24,81 +54,78 @@ class LDAPFunctions
 	 *
 	 * @param string $base_dn
 	 * @param string $filter
-	 * @param string $scope      can be 'base', 'one' or 'sub'
+	 * @param string $scope      either {@link LDAPFunctions::SCOPE_BASE}, {@link LDAPFunctions::SCOPE_ONE} or {@link LDAPFunctions::SCOPE_SUB}
 	 * @param array  $attributes
 	 * @param int    $attrsonly
 	 * @param int    $sizelimit
 	 *
-	 * @return Result|array|false
+	 * @return array
+	 *
+	 * @throws LDAPException
 	 */
-	public function LDAP_search(
+	protected function LDAP_search(
 		string $base_dn,
 		string $filter,
-		string $scope = 'sub',
+		string $scope = self::SCOPE_SUB,
 		array $attributes = [],
 		int $attrsonly = 0,
 		int $sizelimit = 0
-	): Result|array|false {
-		$link_identifier = $this->con;
+	): array {
 		try {
-			if ($scope == 'base') {
-				$sr = ldap_read(
-					$link_identifier,
+			$sr = match ($scope) {
+				self::SCOPE_BASE => \Safe\ldap_read(
+					$this->con,
 					$base_dn,
 					$filter,
 					$attributes,
 					$attrsonly,
 					$sizelimit
-				);
-			} elseif ($scope == 'one') {
-				$sr = ldap_list(
-					$link_identifier,
+				),
+				self::SCOPE_ONE => \Safe\ldap_list(
+					$this->con,
 					$base_dn,
 					$filter,
 					$attributes,
 					$attrsonly,
 					$sizelimit
-				);
-			} else {
-				$sr = ldap_search(
-					$link_identifier,
+				),
+				self::SCOPE_SUB => \Safe\ldap_search(
+					$this->con,
 					$base_dn,
 					$filter,
 					$attributes,
 					$attrsonly,
 					$sizelimit
-				);
-			}
-			if (!$sr) {
-				return null;
-			}
-			$result = ldap_get_entries($this->con, $sr);
-			ldap_free_result($sr);
+				)
+			};
+			$result = \Safe\ldap_get_entries($this->con, $sr);
+			\Safe\ldap_free_result($sr);
 
 			return $result;
 		} catch (\Throwable $e) {
-			Logs::notice(__METHOD__, __LINE__, sprintf('LDAP_dearch failed [%s]', ldap_error($this->con)));
+			throw new LDAPException($e->getMessage(), $e);
 		}
-
-		return false;
 	}
 
 	/**
 	 * Wraps around ldap_bind.
 	 *
-	 * @return bool
+	 * @param string|null $bindDN
+	 * @param string|null $bindPassword
+	 *
+	 * @return void
+	 *
+	 * @throws LDAPException
 	 */
-	public function LDAP_bind(?string $bdn = null, ?string $bpw = null): bool
+	protected function LDAP_bind(?string $bindDN = null, ?string $bindPassword = null): void
 	{
-		$bdn = $bdn ?? Configs::get_value('ldap_binddn');
-		$bpw = $bpw ?? Configs::get_value('ldap_bindpw');
+		$bindDN = $bindDN ?? Configs::get_value(self::CONFIG_KEY_BIND_DN);
+		$bindPassword = $bindPassword ?? Configs::get_value(self::CONFIG_KEY_BIND_PW);
 
 		try {
-			return ldap_bind($this->con, $bdn, $bpw);
-		} catch (\Throwable) {
-			Logs::notice(__METHOD__, __LINE__, sprintf('LDAP_bind failed [%s]', ldap_error($this->con)));
-
-			return false;
+			\Safe\ldap_bind($this->con, $bindDN, $bindPassword);
+		} catch (\Throwable $e) {
+			throw new LDAPException($e->getMessage(), $e);
 		}
 	}
 
@@ -108,14 +135,16 @@ class LDAPFunctions
 	 * @param int    $opt
 	 * @param string $value
 	 *
-	 * @return bool
+	 * @return void
+	 *
+	 * @throws LDAPException
 	 */
-	protected function LDAP_set_option(int $opt, string $value): bool
+	protected function LDAP_set_option(int $opt, string $value): void
 	{
 		try {
-			return ldap_set_option($this->con, $opt, $value);
-		} catch (\Throwable) {
-			return false;
+			\Safe\ldap_set_option($this->con, $opt, $value);
+		} catch (\Throwable $e) {
+			throw new LDAPException($e->getMessage(), $e);
 		}
 	}
 
@@ -139,6 +168,8 @@ class LDAPFunctions
 	 * @param string $user
 	 *
 	 * @return LDAPUserData|null containing user data
+	 *
+	 * @throws LDAPException
 	 */
 	public function get_user_data(string $user): ?LDAPUserData
 	{
@@ -153,13 +184,9 @@ class LDAPFunctions
 		}
 
 		// force superuser bind if wanted and not bound as superuser yet
-		if (Configs::get_value('ldap_binddn') && Configs::get_value('ldap_bindpw') && $this->bound < 2) {
+		if (Configs::get_value(self::CONFIG_KEY_BIND_DN) && Configs::get_value(self::CONFIG_KEY_BIND_PW) && $this->bound < 2) {
 			// use superuser credentials
-			if (!$this->LDAP_bind()) {
-				Logs::notice(__METHOD__, __LINE__, 'LDAP bind as superuser failed.');
-
-				return null;
-			}
+			$this->LDAP_bind();
 			$this->bound = 2;
 		}
 
@@ -167,16 +194,16 @@ class LDAPFunctions
 		$userData->user = $user;
 
 		// get info for given user
-		$base = $this->_makeFilter(Configs::get_value('ldap_usertree'), $userData->toArray());
+		$base = $this->_makeFilter(Configs::get_value(self::CONFIG_KEY_USER_TREE), $userData->toArray());
 		Logs::notice(__METHOD__, __LINE__, sprintf('base filter: %s', $base));
-		if (Configs::get_value('ldap_userfilter')) {
-			$filter = $this->_makeFilter(Configs::get_value('ldap_userfilter'), $userData->toArray());
+		if (Configs::get_value(self::CONFIG_KEY_USER_FILTER)) {
+			$filter = $this->_makeFilter(Configs::get_value(self::CONFIG_KEY_USER_FILTER), $userData->toArray());
 		} else {
 			$filter = '(ObjectClass=*)';
 		}
 		Logs::notice(__METHOD__, __LINE__, sprintf('filter: %s', $filter));
 
-		$result = $this->LDAP_search($base, $filter, Configs::get_value('ldap_userscope'));
+		$result = $this->LDAP_search($base, $filter, Configs::get_value(self::CONFIG_KEY_USER_SCOPE));
 
 		// if result is not an array
 		if (!is_array($result)) {
@@ -197,9 +224,9 @@ class LDAPFunctions
 
 		// general user info
 		$userData->dn = $user_result['dn'];
-		$userData->display_name = $user_result[Configs::get_value('ldap_cn', 'cn')][0];
-		if (array_key_exists(Configs::get_value('ldap_mail', 'mail'), $user_result)) {
-			$userData->email = $user_result[Configs::get_value('ldap_mail', 'mail')][0];
+		$userData->display_name = $user_result[Configs::get_value(self::CONFIG_KEY_CN, 'cn')][0];
+		if (array_key_exists(Configs::get_value(self::CONFIG_KEY_MAIL, 'mail'), $user_result)) {
+			$userData->email = $user_result[Configs::get_value(self::CONFIG_KEY_MAIL, 'mail')][0];
 		} else {
 			$userData->email = '';
 		}
@@ -227,10 +254,10 @@ class LDAPFunctions
 			return false;
 		}
 
-		$ldap_bindnd = Configs::get_value('ldap_binddn');
-		$ldap_server = Configs::get_value('ldap_server');
+		$ldap_bindnd = Configs::get_value(self::CONFIG_KEY_BIND_DN);
+		$ldap_server = Configs::get_value(self::CONFIG_KEY_SERVER);
 		// indirect user bind
-		if ($ldap_bindnd && Configs::get_value('ldap_bindpw')) {
+		if ($ldap_bindnd && Configs::get_value(self::CONFIG_KEY_BIND_PW)) {
 			// use superuser credentials
 			if (!$this->LDAP_bind()) {
 				Logs::notice(__METHOD__, __LINE__, 'LDAP bind as superuser failed.');
@@ -238,13 +265,13 @@ class LDAPFunctions
 				return false;
 			}
 			$this->bound = 2;
-		} elseif ($ldap_bindnd && Configs::get_value('ldap_usertree') && Configs::get_value('ldap_userfilter')) {
+		} elseif ($ldap_bindnd && Configs::get_value(self::CONFIG_KEY_USER_TREE) && Configs::get_value(self::CONFIG_KEY_USER_FILTER)) {
 			// special bind string
 			$dn = $this->_makeFilter($ldap_bindnd, ['user' => $user, 'server' => $ldap_server]);
-		} elseif (strpos(Configs::get_value('ldap_usertree'), '%{user}')) {
+		} elseif (strpos(Configs::get_value(self::CONFIG_KEY_USER_TREE), '%{user}')) {
 			// direct user bind
 			$dn = $this->_makeFilter(
-				Configs::get_value('ldap_usertree'),
+				Configs::get_value(self::CONFIG_KEY_USER_TREE),
 				['user' => $user, 'server' => $ldap_server]
 			);
 		} else {
@@ -299,7 +326,7 @@ class LDAPFunctions
 	{
 		// see https://github.com/adldap/adLDAP/issues/22
 		return preg_replace_callback(
-			'/([\x00-\x1F\*\(\)\\\\])/',
+			'/([\x00-\x1F*()\\\\])/',
 			function ($matches) {
 				return '\\' . join('', unpack('H2', $matches[1]));
 			},
@@ -339,20 +366,20 @@ class LDAPFunctions
 	 *
 	 * @throws LDAPException
 	 */
-	public function open_LDAP(): bool
+	protected function open_LDAP(): void
 	{
 		if ($this->con) {
-			return true;
+			return;
 		} // connection already established
 
 		// ldap extension is needed
-		if (!function_exists('ldap_connect')) {
-			throw new LDAPException('LDAP err: PHP LDAP extension not found.');
+		if (!extension_loaded('ldap')) {
+			throw new LDAPException('PHP LDAP extension not found.');
 		}
 
 		$this->bound = 0;
-		$port = Configs::get_value('ldap_port');
-		$servers = explode(',', Configs::get_value('ldap_server'));
+		$port = Configs::get_value(self::CONFIG_KEY_PORT);
+		$servers = explode(',', Configs::get_value(self::CONFIG_KEY_SERVER));
 		foreach ($servers as $server) {
 			$server = trim($server);
 			$this->con = ldap_connect($server, $port);
@@ -380,38 +407,35 @@ class LDAPFunctions
 		 * So we should try to bind to server in order to check its availability.
 		*/
 		// set protocol version and dependend options
-		$ldap_version = Configs::get_value('ldap_version');
+		$ldap_version = Configs::get_value(self::CONFIG_KEY_VERSION);
 		if ($ldap_version) {
 			if (!$this->LDAP_set_option(LDAP_OPT_PROTOCOL_VERSION, $ldap_version)) {
 				Logs::notice(__METHOD__, __LINE__, sprintf('Setting LDAP Protocol version %s failed [%s]', $ldap_version, ldap_error($this->con)));
 			} else {
-				Logs::notice(__METHOD__, __LINE__, sprintf('Using protocoll version %s', $ldap_version));
+				Logs::notice(__METHOD__, __LINE__, sprintf('Using protocol version %s', $ldap_version));
 				// use TLS (needs version 3)
-				if (Configs::get_value('ldap_starttls') && !$this->LDAP_start_tls()) {
+				if (Configs::get_value(self::CONFIG_KEY_START_TLS) && !$this->LDAP_start_tls()) {
 					Logs::notice(__METHOD__, __LINE__, sprintf('Starting TLS failed [%s]', ldap_error($this->con)));
 				}
 			}
 
 			// needs version 3
-			$ldap_referals = Configs::get_value('ldap_referrals');
+			$ldap_referals = Configs::get_value(self::CONFIG_KEY_REFERRALS);
 			if (($ldap_referals > -1) && !$this->LDAP_set_option(LDAP_OPT_REFERRALS, $ldap_referals)) {
 				Logs::notice(__METHOD__, __LINE__, sprintf('Setting LDAP referrals failed [%s]', ldap_error($this->con)));
 			}
 		}
 
 		// set deref mode
-		$ldap_deref = Configs::get_value('ldap_deref');
+		$ldap_deref = Configs::get_value(self::CONFIG_KEY_DEREF);
 		if ($ldap_deref && !$this->LDAP_set_option(LDAP_OPT_DEREF, $ldap_deref)) {
 			Logs::notice(__METHOD__, __LINE__, sprintf('Setting LDAP Deref mode %s failed.', $ldap_deref));
 		}
-		/* As of PHP 5.3.0 we can set timeout to speedup skipping of invalid servers */
-		if (defined('LDAP_OPT_NETWORK_TIMEOUT')) {
-			$this->LDAP_set_option(LDAP_OPT_NETWORK_TIMEOUT, 1);
-		}
+		$this->LDAP_set_option(LDAP_OPT_NETWORK_TIMEOUT, 1);
 
-		if (Configs::get_value('ldap_binddn') && Configs::get_value('ldap_bindpw')) {
+		if (Configs::get_value(self::CONFIG_KEY_BIND_DN) && Configs::get_value(self::CONFIG_KEY_BIND_PW)) {
 			$OK = $this->LDAP_bind();
-			Logs::notice(__METHOD__, __LINE__, sprintf('Bind %s using %s: %s', Configs::get_value('ldap_binddn'), Configs::get_value('ldap_bindpw'), $OK ? 'OK' : 'NO'));
+			Logs::notice(__METHOD__, __LINE__, sprintf('Bind %s using %s: %s', Configs::get_value(self::CONFIG_KEY_BIND_DN), Configs::get_value(self::CONFIG_KEY_BIND_PW), $OK ? 'OK' : 'NO'));
 			$this->bound = 2;
 		} else {
 			$OK = $this->LDAP_bind();
