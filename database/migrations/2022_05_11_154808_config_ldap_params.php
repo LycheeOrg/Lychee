@@ -29,14 +29,6 @@ class ConfigLdapParams extends Migration
 				'description' => 'LDAP login provider enabled',
 			],
 			[
-				'key' => 'ldap_debug',
-				'value' => '0',
-				'cat' => 'LDAP',
-				'type_range' => '0|1',
-				'confidentiality' => '0',
-				'description' => 'LDAP log debug messages',
-			],
-			[
 				'key' => 'ldap_server',
 				'value' => 'ldap.forumsys.com',
 				'cat' => 'LDAP',
@@ -167,7 +159,6 @@ class ConfigLdapParams extends Migration
 	public function down()
 	{
 		Configs::where('key', '=', 'ldap_enabled')->delete();
-		Configs::where('key', '=', 'ldap_debug')->delete();
 		Configs::where('key', '=', 'ldap_server')->delete();
 		Configs::where('key', '=', 'ldap_port')->delete();
 		Configs::where('key', '=', 'ldap_usertree')->delete();

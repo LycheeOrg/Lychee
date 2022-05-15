@@ -41,6 +41,14 @@ class AddFullNameCol extends Migration
 	 */
 	public function down()
 	{
-		$this->msgSection->writeln(sprintf('<comment>Warning:</comment> %s not removed as it breaks in SQLite. Please do it manually', self::NAME));
+		$dbc = 'database.connections.' . Config::get('database.default');
+		$database = Config::get($dbc);
+		if ($database['driver'] == 'sqlite') {
+			$this->msgSection->writeln(sprintf('<comment>Warning:</comment> %s not removed as it breaks in SQLite. Please do it manually', self::NAME));
+		} else {
+			Schema::table(self::USERS, function (Blueprint $table) {
+				$table->dropColumn(self::NAME);
+			});
+		}
 	}
 }
