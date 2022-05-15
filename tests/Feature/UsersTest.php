@@ -55,6 +55,9 @@ class UsersTest extends TestCase
 			Configs::set('username', '');
 			Configs::set('password', '');
 		}
+
+		// reset LDAP configuration to initial value
+		Configs::set('ldap_enabled', $configs['ldap_enabled']);
 	}
 
 	public function testUsers()
@@ -110,6 +113,7 @@ class UsersTest extends TestCase
 		 * 37. log out
 		 */
 		// ensure that LDAP login is off
+		$ldapEnabledInit = Configs::get('ldap_enabled');
 		Configs::set('ldap_enabled', '0');
 		// 1
 		AccessControl::log_as_id(0);
@@ -248,5 +252,8 @@ class UsersTest extends TestCase
 		// 37
 		$sessions_test->logout();
 		Configs::set('new_photos_notification', $store_new_photos_notification);
+
+		// reset LDAP configuration to initial value
+		Configs::set('ldap_enabled', $ldapEnabledInit);
 	}
 }
