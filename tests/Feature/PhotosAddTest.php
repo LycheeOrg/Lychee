@@ -138,6 +138,27 @@ class PhotosAddTest extends TestCase
 		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
 	}
 
+	/**
+	 * Tests Google Motion Photo upload.
+	 *
+	 * @return void
+	 */
+	public function testGoogleMotionPhotoUpload(): void
+	{
+		if (!$this->hasExifTools || !$this->hasFFmpeg) {
+			static::markTestSkipped('Exiftool or FFmpeg is not available. Test Skipped.');
+		}
+
+		$photo_id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_IMAGE)
+		);
+		$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
+
+		static::assertStringEndsWith('.mov', $photo->live_photo_url);
+		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
+		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
+	}
+
 	public function testImport()
 	{
 		// save initial value
