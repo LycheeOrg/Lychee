@@ -2,11 +2,19 @@
 
 namespace App\Http\Livewire\Sidebar;
 
+use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Facades\Helpers;
 use App\Models\Photo as PhotoModel;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\View\View;
 use Livewire\Component;
 
+/**
+ * This is the side bar in the case of Photo.
+ *
+ * Contrary to the JS implementation, the attributes are directly embeded in the bar.
+ * This will (hopefully) simplify the update when editing properties.
+ */
 class Photo extends Component
 {
 	public string $title;
@@ -43,6 +51,16 @@ class Photo extends Component
 	public string $altitude;
 	public string $location;
 
+	/**
+	 * Given a photo model extract all the information.
+	 * ! It is possible that we may need to extract those in a similar fashion as with Album.
+	 *
+	 * @param PhotoModel $photo
+	 *
+	 * @return void
+	 *
+	 * @throws IllegalOrderOfOperationException
+	 */
 	public function mount(PhotoModel $photo): void
 	{
 		$this->title = $photo->title;
@@ -80,6 +98,13 @@ class Photo extends Component
 		}
 	}
 
+	/**
+	 * Render the view.
+	 *
+	 * @return View
+	 *
+	 * @throws BindingResolutionException
+	 */
 	public function render(): View
 	{
 		return view('livewire.sidebar.photo');

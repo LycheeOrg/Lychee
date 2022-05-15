@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Pages;
 
+use App\Enum\PageMode;
 use App\Factories\AlbumFactory;
 use App\Http\Livewire\Traits\AlbumProperty;
 use App\Models\Album;

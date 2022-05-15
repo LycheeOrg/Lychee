@@ -2,58 +2,75 @@
 
 namespace App\Http\Livewire\Components;
 
+use App\Enum\PhotoOverlayMode;
 use App\Facades\Lang;
 use App\Models\Configs;
 use App\Models\Photo as PhotoModel;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\View\View;
 use Livewire\Component;
 
+/**
+ * This is the overlay in the Photo mode.
+ */
 class PhotoOverlay extends Component
 {
-	private $types = ['desc', 'date', 'exif', 'none'];
+	public PhotoOverlayMode $type;
 
-	public $title = '';
-	public $type = 'none';
-	public $overlay = '';
-	public $idx = 0;
-	public $description = '';
-	public $camera_date = false;
-	public $date = '';
-	public $exif1 = '';
-	public $exif2 = '';
+	public string $title = '';
+	public string $overlay = '';
+	public string $description = '';
+	public bool $camera_date = false;
+	public string $date = '';
+	public string $exif1 = '';
+	public string $exif2 = '';
 
+	/** @var PhotoModel */
 	private PhotoModel $photo_data;
 
+	/**
+	 * Mount the photo model and initialize the Component.
+	 *
+	 * @param PhotoModel $photo
+	 *
+	 * @return void
+	 */
 	public function mount(PhotoModel $photo): void
 	{
+		PhotoOverlayMode::NONE();
+
 		$this->photo_data = $photo;
-		$overlay_type = Configs::get_value('image_overlay_type', 'none');
-
-		$this->idx = array_search($overlay_type, $this->types, true);
+		$this->type = PhotoOverlayMode::tryFrom(Configs::get_value('image_overlay_type', 'none')) ?? PhotoOverlayMode::NONE();
 	}
 
-	private function checkOverlayType(): string
+	/**
+	 * Return the valid OverlayType (and iterate if necessary).
+	 *
+	 * @return PhotoOverlayMode
+	 */
+	private function getOverlayType(): PhotoOverlayMode
 	{
-		if ($this->idx < 0) {
-			return 'none';
+		$type = $this->type;
+		for ($i = 0; $i < $this->type->count(); $i++) {
+			if ($type == PhotoOverlayMode::DATE() || $type == PhotoOverlayMode::NONE()) {
+				return $type;
+			}
+			if ($type == PhotoOverlayMode::DESC() && $this->photo_data->description !== '') {
+				return $type;
+			}
+			if ($type == PhotoOverlayMode::EXIF() && $this->genExifHash() !== '') {
+				return $type;
+			}
+			$type = $type->next();
 		}
 
-		$n = count($this->types);
-		for ($i = 0; $i < $n; $i++) {
-			$type = $this->types[($this->idx + $i) % $n];
-			if ($type === 'date' || $type === 'none') {
-				return $type;
-			}
-			if ($type === 'desc' && $this->photo_data->description !== '') {
-				return $type;
-			}
-			if ($type === 'exif' && $this->genExifHash() !== '') {
-				return $type;
-			}
-		}
+		return $type;
 	}
 
+	/**
+	 * Compute a simple hash of the Exif data.
+	 *
+	 * @return string
+	 */
 	private function genExifHash(): string
 	{
 		$exifHash = $this->photo_data->make;
@@ -69,14 +86,15 @@ class PhotoOverlay extends Component
 	}
 
 	/**
-	 * @throws BindingResolutionException
+	 * Render the component.
+	 *
+	 * @return View
 	 */
 	public function render(): View
 	{
+		$this->type = $this->getOverlayType();
 		$this->title = $this->photo_data->title;
-
-		$this->type = $this->checkOverlayType();
-		$this->description = $this->photo_data->description;
+		$this->description = $this->photo_data->description ?? '';
 		if ($this->photo_data->taken_at !== '') {
 			$this->camera_date = true;
 			$this->date = $this->photo_data->taken_at;
@@ -107,6 +125,15 @@ class PhotoOverlay extends Component
 		return view('livewire.photo-overlay');
 	}
 
+	/**
+	 * Concatenation function.
+	 *
+	 * @param string $in      input string
+	 * @param string $glue    concatenation glue (used only if input string is not '')
+	 * @param string $content content to be appended
+	 *
+	 * @return void
+	 */
 	private function c(string &$in, string $glue, string $content): void
 	{
 		if ($in !== '') {

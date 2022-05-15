@@ -4,15 +4,15 @@
 	<div id="loading"></div>
 	<livewire:components.header :mode="$mode" :title="$this->title" />
 	<livewire:components.left-menu>
-	@if($mode === App\Http\Livewire\Pages\PageMode::ALBUMS())
+	@if($mode === App\Enum\PageMode::ALBUMS())
 		<livewire:modules.albums/>
-	@elseif($mode === App\Http\Livewire\Pages\PageMode::ALBUM())
+	@elseif($mode === App\Enum\PageMode::ALBUM())
 		<livewire:modules.album :album="$this->album" />
 		<livewire:components.sidebar :album="$this->album"/>
-	@elseif($mode === App\Http\Livewire\Pages\PageMode::PHOTO())
+	@elseif($mode === App\Enum\PageMode::PHOTO())
 		<livewire:modules.photo :album="$this->album" :photo="$this->photo" />
 		<livewire:components.sidebar :album="$this->album" :photo="$this->photo" />
-	@elseif($mode === App\Http\Livewire\Pages\PageMode::MAP())
+	@elseif($mode === App\Enum\PageMode::MAP())
 		<livewire:modules.albums/>
 	@endif
 	<livewire:components.base.modal />

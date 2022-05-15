@@ -1,6 +1,6 @@
 <div class="header__toolbar header__toolbar--albums header__toolbar--visible">
 	@if(!AccessControl::is_logged_in())
-	<a wire:click="login" class="button" id="button_signin" title="{{ Lang::get('SIGN_IN') }}" data-tabindex="{{ Helpers::data_index_r() }}">
+	<a wire:click="openLoginModal" class="button" id="button_signin" title="{{ Lang::get('SIGN_IN') }}" data-tabindex="{{ Helpers::data_index_r() }}">
 		<x-icons.iconic icon='account-login' />
 	</a>
 	@else

@@ -37,7 +37,14 @@ class Modal extends Openable
 	 */
 	public string $modalSize = 'md:max-w-xl';
 
-	/** @var string[] Listeners for modal events. */
+	/**
+	 * This defined the events that the Component will intercept.
+	 * In order to facilitate the use of those events, the trait
+	 * app/Livewire/Traits/InteractWithModal.php can be used to
+	 * add access to the modal.
+	 *
+	 * @var string[] listeners for modal events
+	 * */
 	protected $listeners = [
 		'openModal',
 		'closeModal',
@@ -58,14 +65,6 @@ class Modal extends Openable
 		$this->type = $type;
 		$this->params = $params;
 		$this->opacity = '100';
-	}
-
-	/**
-	 * ? unused for now.
-	 */
-	public function deleteModal($params, string $form = 'forms.base-delete-form'): void
-	{
-		$this->openModal($form, $params);
 	}
 
 	/**

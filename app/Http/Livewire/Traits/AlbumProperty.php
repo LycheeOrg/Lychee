@@ -7,6 +7,16 @@ use App\Models\Extensions\BaseAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use Exception;
 
+/**
+ * This trait is use to take care and simulate an AbstractAlbum attribute.
+ * AbstractAlbum cannot be a Livewire component attribute because it is an interface.
+ * For this reason, we take advantage of the fact that an abstract album is either a baseAlbum or a smartAlbum.
+ * Both of the later are wireable.
+ * As a consequence, OBJECT->album is effectively being a FACADE for the property.
+ *
+ * Read more here:
+ * https://laravel-livewire.com/docs/2.x/computed-properties
+ */
 trait AlbumProperty
 {
 	/**

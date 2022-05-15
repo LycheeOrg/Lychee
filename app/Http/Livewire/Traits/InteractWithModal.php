@@ -4,28 +4,26 @@ namespace App\Http\Livewire\Traits;
 
 trait InteractWithModal
 {
+	/**
+	 * Open Modal with form and paramters.
+	 *
+	 * @param string $form   Livewire component to include in the modal
+	 * @param array  $params Parameters for said component
+	 *
+	 * @return void
+	 */
 	protected function openModal(string $form, $params = []): void
 	{
-		$this->emitTo('components.modal', 'openModal', $form, $params);
+		$this->emitTo('components.base.modal', 'openModal', $form, $params);
 	}
 
+	/**
+	 * Close the modal.
+	 *
+	 * @return void
+	 */
 	protected function closeModal(): void
 	{
-		$this->emitTo('components.modal', 'closeModal');
-		$this->closeDelete();
-	}
-
-	protected function closeDelete(): void
-	{
-		$this->emitTo('components.delete-modal', 'closeModal');
-	}
-
-	protected function deleteModal($model): void
-	{
-		$params = [
-			'id' => $model->id,
-			'className' => get_class($model),
-		];
-		$this->emitTo('component.delete-modal', 'deleteModal', $params);
+		$this->emitTo('components.base.modal', 'closeModal');
 	}
 }

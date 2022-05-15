@@ -5,9 +5,17 @@ namespace App\Http\Livewire\Sidebar;
 use App\Contracts\AbstractAlbum;
 use App\Models\Photo;
 use App\Models\TagAlbum;
+use Exception;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\View\View;
 use Livewire\Component;
 
+/**
+ * This is the side bar in the case of Album.
+ *
+ * Contrary to the JS implementation, the attributes are directly embeded in the bar.
+ * This will (hopefully) simplify the update when editing properties.
+ */
 class Album extends Component
 {
 	public string $title;
@@ -32,16 +40,42 @@ class Album extends Component
 	public string $owner_name = '';
 	public string $license;
 
+	/**
+	 * Given an album we load the attributes.
+	 *
+	 * @param AbstractAlbum $album
+	 *
+	 * @return void
+	 */
 	public function mount(AbstractAlbum $album): void
 	{
 		$this->load($album);
 	}
 
+	/**
+	 * Rendering of he template.
+	 *
+	 * @return View
+	 *
+	 * @throws BindingResolutionException
+	 */
 	public function render(): View
 	{
 		return view('livewire.sidebar.album');
 	}
 
+	/**
+	 * Here is where we assign the attributes given an album.
+	 *
+	 * It is more interesting to extract this code because the code of mount() is executed only once.
+	 * On the other hand, the load() can be called from other components before triggering a rerendering upon updating properties.
+	 *
+	 * @param AbstractAlbum $album
+	 *
+	 * @return void
+	 *
+	 * @throws Exception
+	 */
 	private function load(AbstractAlbum $album): void
 	{
 		// $this->album = $album;

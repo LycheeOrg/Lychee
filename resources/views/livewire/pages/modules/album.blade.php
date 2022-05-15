@@ -1,7 +1,6 @@
 <div class="content contentZoomIn">
 	@php
 		Helpers::data_index_set(100);
-		// dd($album);
 	@endphp
 	@isset($album->children)
 		@if($album->children->count() > 0)

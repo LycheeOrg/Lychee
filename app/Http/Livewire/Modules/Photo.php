@@ -3,28 +3,30 @@
 namespace App\Http\Livewire\Modules;
 
 use App\Models\Photo as PhotoModel;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\View\View;
 use Livewire\Component;
 
+/**
+ * Similar to the Album module, this takes care of displaying a single photo.
+ */
 class Photo extends Component
 {
+	/** @var PhotoModel Said photo to be displayed */
 	public PhotoModel $photo;
 
+	// ! Will be used later
+	public bool $visibleControls = false;
+
 	/**
-	 * @var Album
+	 * Render the associated view.
+	 *
+	 * @return View
+	 *
+	 * @throws BindingResolutionException
 	 */
-	// public Abst $album;
-
-	public $visibleControls = false;
-
-	public function mount(): void
-	{
-		// $this->album = $this->photo->album;
-	}
-
 	public function render(): View
 	{
-		// dd($this->photo);
 		return view('livewire.pages.modules.photo');
 	}
 }

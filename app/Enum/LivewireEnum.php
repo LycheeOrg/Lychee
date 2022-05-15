@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Pages;
+namespace App\Enum;
 
 // when php8.1 is the min version, we can move to proper enum
 // https://github.com/spatie/laravel-enum
@@ -10,13 +10,7 @@ use Closure;
 use Livewire\Wireable;
 use Spatie\Enum\Laravel\Enum;
 
-/**
- * @method static self ALBUM()
- * @method static self ALBUMS()
- * @method static self PHOTO()
- * @method static self MAP()
- */
-final class PageMode extends Enum implements Wireable
+abstract class LivewireEnum extends Enum implements Wireable
 {
 	public function toLivewire()
 	{

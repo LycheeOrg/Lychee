@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire\Components;
 
-use App\Http\Livewire\Pages\PageMode;
+use App\Enum\PageMode;
 use App\Http\Livewire\Traits\InteractWithModal;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Config;
@@ -15,10 +15,13 @@ use Livewire\Component;
  */
 class Header extends Component
 {
+	/*
+	 * Add interaction with modal
+	 */
 	use InteractWithModal;
 
 	/**
-	 * @var string
+	 * @var string title in the header
 	 */
 	public string $title = '';
 
@@ -33,12 +36,22 @@ class Header extends Component
 		$this->mode = $mode;
 	}
 
+	/**
+	 * Basic renderer.
+	 *
+	 * @return View
+	 */
 	public function render(): View
 	{
 		return view('livewire.header.header');
 	}
 
-	public function login(): void
+	/**
+	 * Open a login modal box.
+	 *
+	 * @return void
+	 */
+	public function openLoginModal(): void
 	{
 		$this->openModal('forms.login');
 	}
