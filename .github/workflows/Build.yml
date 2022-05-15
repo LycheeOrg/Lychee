@@ -91,11 +91,11 @@ jobs:
           coverage: xdebug
           tools: pecl, composer
 
-      - name: Set Up imagick & Exiftools
+      - name: Set Up Imagick, FFmpeg & Exiftools
         run: |
           sudo apt-get update
           sudo apt-get --fix-broken install
-          sudo apt-get -y install libimage-exiftool-perl
+          sudo apt-get -y install ffmpeg libimage-exiftool-perl
 
       - name: Get composer cache directory
         id: composer-cache

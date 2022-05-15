@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
+
 namespace Tests\Feature;
 
 use App\Facades\Lang;
@@ -12,7 +22,7 @@ class LangTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function testLang()
+	public function testLang(): void
 	{
 		$lang_available = Lang::get_lang_available();
 		$keys = array_keys(Lang::get_lang());
@@ -22,7 +32,7 @@ class LangTest extends TestCase
 			$locale = $lang_test->get_locale();
 
 			foreach ($keys as $key) {
-				$this->assertArrayHasKey($key, $locale, 'Language ' . $lang_test->code() . ' is incomplete.');
+				static::assertArrayHasKey($key, $locale, 'Language ' . $lang_test->code() . ' is incomplete.');
 			}
 		}
 	}

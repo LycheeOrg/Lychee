@@ -1,10 +1,18 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
 
 namespace Tests\Feature;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use App\Models\Logs;
 use Tests\TestCase;
 
@@ -15,7 +23,7 @@ class LogsTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function testLogs()
+	public function testLogs(): void
 	{
 		$response = $this->get('/Logs');
 		$response->assertForbidden();
@@ -31,13 +39,13 @@ class LogsTest extends TestCase
 		AccessControl::logout();
 	}
 
-	public function testApiLogs()
+	public function testApiLogs(): void
 	{
 		$response = $this->postJson('/api/Logs::list');
 		$response->assertForbidden();
 	}
 
-	public function testClearLogs()
+	public function testClearLogs(): void
 	{
 		$response = $this->postJson('/api/Logs::clearNoise');
 		$response->assertForbidden();

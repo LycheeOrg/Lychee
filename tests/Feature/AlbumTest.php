@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
+
 namespace Tests\Feature;
 
 use App\Facades\AccessControl;
@@ -14,7 +24,7 @@ class AlbumTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function testAddNotLogged()
+	public function testAddNotLogged(): void
 	{
 		$albums_tests = new AlbumsUnitTest($this);
 		$albums_tests->add(null, 'test_album', 401);
@@ -29,7 +39,7 @@ class AlbumTest extends TestCase
 		$albums_tests->get('abcdefghijklmnopqrstuvwx', 404);
 	}
 
-	public function testAddReadLogged()
+	public function testAddReadLogged(): void
 	{
 		$albums_tests = new AlbumsUnitTest($this);
 		$session_tests = new SessionUnitTest($this);
@@ -123,7 +133,7 @@ class AlbumTest extends TestCase
 		$session_tests->logout();
 	}
 
-	public function testTrueNegative()
+	public function testTrueNegative(): void
 	{
 		$albums_tests = new AlbumsUnitTest($this);
 		$session_tests = new SessionUnitTest($this);
