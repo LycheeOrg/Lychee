@@ -1003,10 +1003,10 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject18 = _taggedTemplateLiteral(["<div class='divider'><h1>", "</h1></div>"], ["<div class='divider'><h1>", "</h1></div>"]),
     _templateObject19 = _taggedTemplateLiteral(["<div id='", "' class='edit'>", "</div>"], ["<div id='", "' class='edit'>", "</div>"]),
     _templateObject20 = _taggedTemplateLiteral(["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"], ["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"]),
-    _templateObject21 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", " ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", " ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
+    _templateObject21 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", " ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'\n\t\t\t\tdraggable='", "'\n\t\t\t\t", ">\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", " ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'\n\t\t\t\tdraggable='", "'\n\t\t\t\t", ">\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
     _templateObject22 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject23 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"], ["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"]),
-    _templateObject24 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
+    _templateObject24 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'\n\t\t\tdraggable='true'\n\t\t\tondragstart='lychee.startDrag(event)'\n\t\t\tondragend='lychee.endDrag(event)'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'\n\t\t\tdraggable='true'\n\t\t\tondragstart='lychee.startDrag(event)'\n\t\t\tondragend='lychee.endDrag(event)'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
     _templateObject25 = _taggedTemplateLiteral(["<a><span title='Camera Date'>", "</span>", "</a>"], ["<a><span title='Camera Date'>", "</span>", "</a>"]),
     _templateObject26 = _taggedTemplateLiteral(["<a>", "</a>"], ["<a>", "</a>"]),
     _templateObject27 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
@@ -2385,36 +2385,30 @@ album.getArchive = function (albumIDs) {
  * @returns {string} the HTML content of the dialog
  */
 album.buildMessage = function (albumIDs, albumID, op1, op2, ops) {
-	var title = "";
-	var sTitle = "";
+	var targetTitle = lychee.locale["UNTITLED"];
+	var sourceTitle = lychee.locale["UNTITLED"];
 	var msg = "";
 
-	// Get title of first album
+	// Get title of target album
 	if (albumID === null) {
-		title = lychee.locale["ROOT"];
+		targetTitle = lychee.locale["ROOT"];
 	} else {
-		var album1 = albums.getByID(albumID);
-		if (album1) {
-			title = album1.title;
+		var targetAlbum = albums.getByID(albumID) || album.getSubByID(albumID);
+		if (targetAlbum) {
+			targetTitle = targetAlbum.title;
 		}
 	}
 
-	// Fallback for first album without a title
-	if (!title) title = lychee.locale["UNTITLED"];
-
 	if (albumIDs.length === 1) {
-		// Get title of second album
-		var album2 = albums.getByID(albumIDs[0]);
-		if (album2) {
-			sTitle = album2.title;
+		// Get title of the unique source album
+		var sourceAlbum = albums.getByID(albumIDs[0]) || album.getSubByID(albumIDs[0]);
+		if (sourceAlbum) {
+			sourceTitle = sourceAlbum.title;
 		}
 
-		// Fallback for second album without a title
-		if (!sTitle) sTitle = lychee.locale["UNTITLED"];
-
-		msg = lychee.html(_templateObject13, lychee.locale[op1], sTitle, lychee.locale[op2], title);
+		msg = lychee.html(_templateObject13, lychee.locale[op1], sourceTitle, lychee.locale[op2], targetTitle);
 	} else {
-		msg = lychee.html(_templateObject14, lychee.locale[ops], title);
+		msg = lychee.html(_templateObject14, lychee.locale[ops], targetTitle);
 	}
 
 	return msg;
@@ -3031,7 +3025,7 @@ build.album = function (data) {
 			}
 	}
 
-	var html = lychee.html(_templateObject21, disabled ? "disabled" : "", data.is_nsfw && lychee.nsfw_blur ? "blurred" : "", data.id, data.is_nsfw ? "1" : "0", tabindex.get_next_tab_index(), build.getAlbumThumb(data), build.getAlbumThumb(data), build.getAlbumThumb(data), data.title, data.title, subtitle);
+	var html = lychee.html(_templateObject21, disabled ? "disabled" : "", data.is_nsfw && lychee.nsfw_blur ? "blurred" : "", data.id, data.is_nsfw ? "1" : "0", tabindex.get_next_tab_index(), album.isSmartID(data.id) || data.is_tag_album ? "false" : "true", album.isSmartID(data.id) || data.is_tag_album ? "" : "ondragstart='lychee.startDrag(event)'\n\t\t\t\tondragover='lychee.overDrag(event)'\n\t\t\t\tondragleave='lychee.leaveDrag(event)'\n\t\t\t\tondragend='lychee.endDrag(event)'\n\t\t\t\tondrop='lychee.finishDrag(event)'", build.getAlbumThumb(data), build.getAlbumThumb(data), build.getAlbumThumb(data), data.title, data.title, subtitle);
 
 	if (album.isUploadable() && !disabled) {
 		var isCover = album.json && album.json.cover_id && data.thumb.id === album.json.cover_id;
@@ -3561,6 +3555,33 @@ contextMenu.album = function (albumID, e) {
 };
 
 /**
+ * Handles drop event of an album onto an album and shows context menu to let the user pick the actions.
+ *
+ * @param {string} sourceAlbumID source album (which is being dragged)
+ * @param {string} targetAlbumID target album (where it is dropped)
+ * @param {DragEvent} e
+ *
+ * @returns {void}
+ */
+contextMenu.albumDrop = function (sourceAlbumID, targetAlbumID, e) {
+	var items = [{
+		title: build.iconic("collapse-left") + lychee.locale["MERGE"],
+		fn: function fn() {
+			album.merge([sourceAlbumID], targetAlbumID);
+		}
+	}, {
+		title: build.iconic("folder") + lychee.locale["MOVE"],
+		visible: true,
+		fn: function fn() {
+			basicContext.close();
+			album.setAlbum([sourceAlbumID], targetAlbumID);
+		}
+	}];
+
+	basicContext.show(items, e, contextMenu.close);
+};
+
+/**
  * @param {string[]} albumIDs
  * @param {jQuery.Event} e
  *
@@ -3786,6 +3807,26 @@ contextMenu.photo = function (photoID, e) {
 	$('.photo[data-id="' + photoID + '"]').addClass("active");
 
 	basicContext.show(items, e.originalEvent, contextMenu.close);
+};
+
+/**
+ * @param {string} photoID
+ * @param {string} albumID
+ * @param {DragEvent} e
+ *
+ * @returns {void}
+ */
+contextMenu.photoDrop = function (photoID, albumID, e) {
+	var items = [{
+		title: build.iconic("folder") + lychee.locale["MOVE"],
+		fn: function fn() {
+			_photo3.setAlbum([photoID], albumID);
+		}
+	}];
+
+	$('.photo[data-id="' + photoID + '"]').addClass("active");
+
+	basicContext.show(items, e, contextMenu.close);
 };
 
 /**
@@ -5003,7 +5044,8 @@ $(document).ready(function () {
 			// Detect if dropped item is a file or a link
 			if (e.originalEvent.dataTransfer.files.length > 0) {
 				upload.start.local(e.originalEvent.dataTransfer.files);
-			} else if (e.originalEvent.dataTransfer.getData("Text").length > 3) {
+			} else if (e.originalEvent.dataTransfer.getData("Text").length > 3 && !e.originalEvent.dataTransfer.getData("Text").startsWith("photo-") && // block drag and drop from albums/photos in web UI
+			!e.originalEvent.dataTransfer.getData("Text").startsWith("album-")) {
 				upload.start.url(e.originalEvent.dataTransfer.getData("Text"));
 			}
 		}
@@ -6493,6 +6535,78 @@ lychee.getBaseUrl = function () {
 	} else {
 		return location.href.replace(location.hash, "");
 	}
+};
+
+/**
+ * drag album to another one
+ * @param {DragEvent} ev
+ * @returns {void}
+ */
+lychee.startDrag = function (ev) {
+	/** @type ?HTMLDivElement */
+	var div = ev.target.closest("div.album,div.photo");
+	if (!div) return;
+	var type = div.classList.contains("album") ? "album" : "photo";
+	ev.dataTransfer.setData("text/plain", type + "-" + div.dataset.id);
+};
+
+/**
+ * drop album
+ * @param {DragEvent} ev
+ * @returns {void}
+ */
+lychee.finishDrag = function (ev) {
+	ev.preventDefault();
+
+	/** @type string */
+	var data = ev.dataTransfer.getData("text/plain");
+	/** @type string */
+	var targetId = ev.target.closest("div.album").dataset.id;
+	if (!targetId || data.substring(6) === targetId) return;
+
+	if (data.startsWith("photo-")) {
+		// photo is dragged
+		contextMenu.photoDrop(data.substring(6), targetId, ev);
+	} else {
+		// album is dragged
+		contextMenu.albumDrop(data.substring(6), targetId, ev);
+	}
+};
+
+/**
+ * Album drag-over callback
+ * @param {DragEvent} ev
+ * @returns {void}
+ */
+lychee.overDrag = function (ev) {
+	ev.preventDefault();
+	/** @type ?HTMLDivElement */
+	var div = ev.target.closest("div.album");
+	if (div) {
+		div.classList.add("album__dragover");
+	}
+};
+
+/**
+ * Album drag-leave callback
+ * @param {DragEvent} ev
+ * @returns {void}
+ */
+lychee.leaveDrag = function (ev) {
+	/** @type ?HTMLDivElement */
+	var div = ev.target.closest("div.album");
+	if (div) {
+		div.classList.remove("album__dragover");
+	}
+};
+
+/**
+ * drag-end callback
+ * @param {DragEvent} ev
+ * @returns {void}
+ */
+lychee.endDrag = function (ev) {
+	$("div.album").removeClass("album__dragover");
 };
 
 /**
