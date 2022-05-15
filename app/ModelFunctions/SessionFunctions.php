@@ -9,6 +9,7 @@ use App\Exceptions\LDAPException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\LDAP\LDAPFunctions;
+use App\LDAP\LDAPUserData;
 use App\Legacy\Legacy;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -220,7 +221,7 @@ class SessionFunctions
 			$this->user_data = $user;
 			Session::put('login', true);
 			Session::put('UserID', $user->id);
-			if (($user->fullname != $ldapUserData->fullname) || ($user->email != $ldapUserData->email)) {
+			if (($user->display_name != $ldapUserData->display_name) || ($user->email != $ldapUserData->email)) {
 				$user->email = $ldapUserData->email;
 				$user->display_name = $ldapUserData->display_name;
 				$user->save();
