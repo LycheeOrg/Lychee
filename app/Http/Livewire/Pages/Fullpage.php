@@ -9,20 +9,16 @@ use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\SmartAlbums\BaseSmartAlbum;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Config;
 use Illuminate\View\View;
 use Livewire\Component;
+use Livewire\Redirector;
 
 class Fullpage extends Component
 {
 	use AlbumProperty;
 
-	public const ALBUMS = 'albums';
-	public const PHOTO = 'photo';
-	public const ALBUM = 'album';
-
-	public string $mode;
+	public PageMode $mode;
 	public string $title;
 	public ?Photo $photo = null;
 	public ?BaseAlbum $baseAlbum = null;
@@ -34,16 +30,16 @@ class Fullpage extends Component
 	{
 		$albumFactory = resolve(AlbumFactory::class);
 		if ($albumId == null) {
-			$this->mode = self::ALBUMS;
+			$this->mode = PageMode::ALBUMS();
 			$this->title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
 		} else {
-			$this->mode = self::ALBUM;
+			$this->mode = PageMode::ALBUM();
 			$album = $albumFactory->findAbstractAlbumOrFail($albumId);
 			$this->loadAlbum($album);
 			$this->title = $album->title;
 
 			if ($photoId != null) {
-				$this->mode = self::PHOTO;
+				$this->mode = PageMode::PHOTO();
 				$this->photo = Photo::with('album')->findOrFail($photoId);
 				$this->title = $this->photo->title;
 			}
@@ -58,7 +54,7 @@ class Fullpage extends Component
 	/*
 	 *          Interactions
 	 */
-	public function reloadPage(): RedirectResponse
+	public function reloadPage(): Redirector
 	{
 		if ($this->photo != null) {
 			return redirect('/livewire/' . $this->getAlbumProperty()->id . '/' . $this->photo->id);
@@ -67,18 +63,18 @@ class Fullpage extends Component
 		return redirect('/livewire/' . $this->getAlbumProperty()?->id ?? '');
 	}
 
-	public function openAlbum($albumId): RedirectResponse
+	public function openAlbum($albumId): Redirector
 	{
 		return redirect('/livewire/' . $albumId);
 	}
 
-	public function openPhoto($photoId): RedirectResponse
+	public function openPhoto($photoId): Redirector
 	{
 		return redirect('/livewire/' . $this->getAlbumProperty()->id . '/' . $photoId);
 	}
 
 	// Ideal we would like to avoid the redirect as they are slow.
-	public function back(): RedirectResponse
+	public function back(): Redirector
 	{
 		if ($this->photo != null) {
 			// $this->photo = null;

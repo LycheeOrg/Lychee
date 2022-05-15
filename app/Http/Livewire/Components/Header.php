@@ -2,12 +2,17 @@
 
 namespace App\Http\Livewire\Components;
 
+use App\Http\Livewire\Pages\PageMode;
 use App\Http\Livewire\Traits\InteractWithModal;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Config;
 use Illuminate\View\View;
 use Livewire\Component;
 
+/**
+ * We define here the header section of Lychee.
+ * From here we can.
+ */
 class Header extends Component
 {
 	use InteractWithModal;
@@ -18,14 +23,14 @@ class Header extends Component
 	public string $title = '';
 
 	/**
-	 * @var string
+	 * @var PageMode
 	 */
-	public string $mode;
+	public PageMode $mode;
 
-	public function mount(?string $mode = 'albums', ?string $title = null): void
+	public function mount(PageMode $mode, ?string $title = null): void
 	{
 		$this->title = $title ?? Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
-		$this->mode = $mode ?? 'albums';
+		$this->mode = $mode;
 	}
 
 	public function render(): View
