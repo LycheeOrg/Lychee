@@ -49,6 +49,7 @@ class LDAPTest extends TestCase
 
 		$this->assertTrue($ldap->open_LDAP(), 'Connection to LDAP test server failed');
 		$this->_debug($ldap->LDAP_bind(), 'ldap_bind: ');
+		$this->_debug($ldap->LDAP_search('dc=example,dc=com', '(uid=gauss)', 'sub'), 'LDAP_search: ');
 		$user_data = $ldap->get_user_data('gauss');
 		$this->_debug($user_data, 'get_user_data(gauss): ');
 		if ($user_data) {
