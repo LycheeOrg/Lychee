@@ -85,7 +85,7 @@ class LDAPFunctions
 	 *
 	 * @return bool
 	 */
-	protected function LDAP_bind($bdn = null, $bpw = null): bool
+	public function LDAP_bind($bdn = null, $bpw = null): bool
 	{
 		$bdn = $bdn ?? Configs::get_value('ldap_binddn');
 		$bpw = $bpw ?? Configs::get_value('ldap_bindpw');

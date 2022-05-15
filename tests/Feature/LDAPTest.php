@@ -8,9 +8,9 @@ use Tests\TestCase;
 
 class LDAPTest extends TestCase
 {
-	protected function _debug($myDebugVar)
+	protected function _debug($myDebugVar, $label = '')
 	{
-		fwrite(STDERR, print_r($myDebugVar, true));
+		fwrite(STDERR, $label . print_r($myDebugVar, true));
 	}
 
 	public function testLDAP()
@@ -40,7 +40,12 @@ class LDAPTest extends TestCase
 		// 2
 
 		$this->assertTrue($ldap->open_LDAP(), 'Connection to LDAP test server failed');
-
+		$this->_debug($ldap->LDAP_bind(), 'ldap_bind: ');
+		$user_data = $ldap->get_user_data('gauss');
+		$this->_debug($user_data, 'get_user_data(gauss): ');
+		if ($user_data) {
+			$this->_debug($ldap->LDAP_bind($user_data->dn, 'password'), 'ldap_bind(pd,password): ');
+		}
 		// 3
 		$this->assertTrue($ldap->check_pass('gauss', 'password'), 'Cannot verify user gauss:password');
 
