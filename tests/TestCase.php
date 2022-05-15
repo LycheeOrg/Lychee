@@ -29,4 +29,18 @@ abstract class TestCase extends BaseTestCase
 
 		return $this->call('GET', $uri, $queryParameters, $cookies, [], $server);
 	}
+
+	/**
+	 * Converts the JSON content of the response into a PHP standard object.
+	 *
+	 * @param TestResponse $response
+	 *
+	 * @return object
+	 */
+	protected static function convertJsonToObject(TestResponse $response): object
+	{
+		$content = $response->getContent();
+
+		return json_decode($content);
+	}
 }
