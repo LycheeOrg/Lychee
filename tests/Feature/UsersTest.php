@@ -22,7 +22,8 @@ class UsersTest extends TestCase
 
 		$clear = false;
 		$configs = Configs::get();
-
+		// ensure that LDAP login is off
+		Configs::set('ldap_enabled', '0');
 		/*
 		 * Check if password and username are set
 		 */
@@ -108,7 +109,8 @@ class UsersTest extends TestCase
 		 * 36  update email to blank
 		 * 37. log out
 		 */
-
+		// ensure that LDAP login is off
+		Configs::set('ldap_enabled', '0');
 		// 1
 		AccessControl::log_as_id(0);
 
