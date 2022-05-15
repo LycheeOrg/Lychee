@@ -26,7 +26,7 @@
 
 
 <div id="loginbg" class="login">
-   <img src="{{ $infos['loginbackground'] }}" alt="" style="width: 100%;height: 100%;object-fit: cover;">
+   <img src="{{ $infos['login_background'] }}" alt="" style="width: 100%;height: 100%;object-fit: cover;">
 </div>
 
 <!-- JS -->

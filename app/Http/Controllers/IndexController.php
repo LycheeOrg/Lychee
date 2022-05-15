@@ -40,58 +40,46 @@ class IndexController extends Controller
 	 */
 	public function show(): View
 	{
-		if (Configs::get_value('login_page_enable', '0') == '1') {
-			$logged_in = AccessControl::is_logged_in();
-			if ($logged_in === false) {
-				$lang = Lang::get_lang();
-				$lang['language'] = Configs::get_value('lang');
-
-				$infos = $this->configFunctions->get_pages_infos();
-
-				$menus = Page::menu()->get();
-
-				$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
-				$rss_enable = Configs::get_value('rss_enable', '0') == '1';
-				$page_config = [];
-				$page_config['show_hosted_by'] = false;
-				$page_config['display_socials'] = false;
-
-				return view('login', [
-					'locale' => $lang,
-					'title' => $title,
-					'infos' => $infos,
-					'menus' => $menus,
-					'page_config' => $page_config,
-					'rss_enable' => $rss_enable,
-				]);
-			}
+		if (Configs::get_value('login_page_enable', '0') == '1' && !AccessControl::is_logged_in()) {
+			return view('login', $this->getArrayData(false, false));
 		}
 		if (Configs::get_value('landing_page_enable', '0') == '1') {
-			$lang = Lang::get_lang();
-			$lang['language'] = Configs::get_value('lang');
-
-			$infos = $this->configFunctions->get_pages_infos();
-
-			$menus = Page::menu()->get();
-
-			$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
-			$rss_enable = Configs::get_value('rss_enable', '0') == '1';
-
-			$page_config = [];
-			$page_config['show_hosted_by'] = false;
-			$page_config['display_socials'] = false;
-
-			return view('landing', [
-				'locale' => $lang,
-				'title' => $title,
-				'infos' => $infos,
-				'menus' => $menus,
-				'page_config' => $page_config,
-				'rss_enable' => $rss_enable,
-			]);
+			return view('landing', $this->getArrayData(false, false));
 		}
 
 		return $this->gallery();
+	}
+
+	/**
+	 * Generate the array of data to be passed to the blade template.
+	 *
+	 * @param bool $showHostedBy
+	 * @param bool $displaySocials
+	 *
+	 * @return array
+	 */
+	private function getArrayData(bool $showHostedBy, bool $displaySocials): array
+	{
+		$infos = $this->configFunctions->get_pages_infos();
+		$menus = Page::menu()->get();
+
+		$lang = Lang::get_lang();
+		$lang['language'] = Configs::get_value('lang');
+
+		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
+		$rss_enable = Configs::get_value('rss_enable', '0') == '1';
+		$page_config = [];
+		$page_config['show_hosted_by'] = $showHostedBy;
+		$page_config['display_socials'] = $displaySocials;
+
+		return [
+			'locale' => $lang,
+			'title' => $title,
+			'infos' => $infos,
+			'menus' => $menus,
+			'page_config' => $page_config,
+			'rss_enable' => $rss_enable,
+		];
 	}
 
 	/**
@@ -105,7 +93,6 @@ class IndexController extends Controller
 	{
 		return (string) phpinfo();
 	}
-
 	// @codeCoverageIgnoreEnd
 
 	/**
@@ -119,23 +106,7 @@ class IndexController extends Controller
 	public function gallery(): View
 	{
 		$this->symLinkFunctions->remove_outdated();
-		$infos = $this->configFunctions->get_pages_infos();
 
-		$lang = Lang::get_lang();
-		$lang['language'] = Configs::get_value('lang');
-
-		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
-		$rss_enable = Configs::get_value('rss_enable', '0') == '1';
-		$page_config = [];
-		$page_config['show_hosted_by'] = true;
-		$page_config['display_socials'] = Configs::get_value('display_social_in_gallery', '0') == '1';
-
-		return view('gallery', [
-			'locale' => $lang,
-			'title' => $title,
-			'infos' => $infos,
-			'page_config' => $page_config,
-			'rss_enable' => $rss_enable,
-		]);
+		return view('gallery', $this->getArrayData(true, Configs::get_value('display_social_in_gallery', '0') == '1'));
 	}
 }

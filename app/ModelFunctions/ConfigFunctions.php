@@ -27,7 +27,7 @@ class ConfigFunctions
 			'instagram' => Configs::get_value('landing_instagram'),
 			'youtube' => Configs::get_value('landing_youtube'),
 			'background' => Configs::get_value('landing_background'),
-			'loginbackground' => Configs::get_value('login_background'),
+			'login_background' => Configs::get_value('login_background'),
 			'login_enable' => Configs::get_value('login_enable'),
 			'copyright_enable' => Configs::get_value('site_copyright_enable'),
 			'copyright_year' => Configs::get_value('site_copyright_begin'),
