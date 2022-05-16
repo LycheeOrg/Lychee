@@ -8,6 +8,15 @@ use Tests\TestCase;
 
 class LDAPintegrationTest extends TestCase
 {
+	protected function _debug($myDebugVar, $label = '')
+	{
+		$msg = str_replace(PHP_EOL, ' ', print_r($myDebugVar, true));
+		while (str_contains($msg, '  ')) {
+			$msg = str_replace('  ', ' ', $msg);
+		}
+		error_log($label . "'" . trim($msg) . "'");
+	}
+
 	public function testLDAP()
 	{
 		$sessionFunctions = new SessionFunctions();
@@ -29,43 +38,43 @@ class LDAPintegrationTest extends TestCase
 		 * 8. Verify that the return values from user() for euler do not match gauss.
 		 * 8. Restore original config values
 		 */
-		$von_gauss = [
-			'username' => 'gauss', 'display_name' => 'Carl Friedrich Gauss', 'email' => 'gauss@ldap.forumsys.com',
+		$test_user = [
+			'username' => LDAPTest::TESTUSER, 'display_name' => LDAPTest::TESTUSER_CN, 'email' => LDAPTest::TESTUSER_EMAIL,
 		];
 
 		// 1
 		$ip = '127.0.0.1';
 		Configs::set('ldap_enabled', '1');
-		Configs::set('ldap_server', 'ldap.forumsys.com');
-		Configs::set('ldap_user_tree', 'dc=example,dc=com');
-		Configs::set('ldap_user_filter', '(uid=%{user})');
-		Configs::set('ldap_bind_dn', 'cn=read-only-admin,dc=example,dc=com');
-		Configs::set('ldap_bind_pw', 'password');
+		Configs::set('ldap_server', LDAPTest::SERVER);
+		Configs::set('ldap_user_tree', LDAPTest::USER_TREE);
+		Configs::set('ldap_user_filter', LDAPTest::USER_FILTER);
+		Configs::set('ldap_bind_dn', LDAPTest::BIND_DN);
+		Configs::set('ldap_bind_pw', LDAPTest::BIND_PW);
 
 		// 2
-		$this->assertTrue($sessionFunctions->log_with_ldap('gauss', 'password', $ip), 'Cannot verify user gauss:password');
+		$this->assertTrue($sessionFunctions->log_with_ldap(LDAPTest::TESTUSER, LDAPTest::TESTUSER_PW, $ip), 'Cannot verify testuser');
 		// 3
-		$this->assertTrue($sessionFunctions->log_with_ldap('euler', 'password', $ip), 'Cannot verify user euler:password');
+		$this->assertTrue($sessionFunctions->log_with_ldap(LDAPTest::TESTUSER2, LDAPTest::TESTUSER2_PW, $ip), 'Cannot verify testuser2');
 		// 4
-		$this->assertFalse($sessionFunctions->log_with_ldap('test', 'password', $ip), 'Should not possible to verify user test:password');
+		$this->assertFalse($sessionFunctions->log_with_ldap('test', 'password', $ip), 'Should not possible to verify an unknown user');
 		// 5
-		$this->assertFalse($sessionFunctions->log_with_ldap('gauss', 'test', $ip), 'Should not possible to verify user Gauss:test');
+		$this->assertFalse($sessionFunctions->log_with_ldap(LDAPTest::TESTUSER, 'test', $ip), 'Should not possible to verify testuser (wrong pw)');
 		// 6
-		$this->assertTrue($sessionFunctions->log_as_user('gauss', 'password', $ip), 'Cannot verify user gauss:password');
+		$this->assertTrue($sessionFunctions->log_as_user(LDAPTest::TESTUSER, LDAPTest::TESTUSER_PW, $ip), 'Cannot verify testuser');
 		// 7
 		$user_data = $sessionFunctions->user();
 		$OK = true;
-		foreach ($von_gauss as $key => $value) {
+		foreach ($test_user as $key => $value) {
 			if ($user_data[$key] != $value) {
 				$OK = false;
 			}
 		}
 		$this->assertTrue($OK, 'Userdata differ from the LDAP data');
 		// 8
-		$this->assertTrue($sessionFunctions->log_as_user('euler', 'password', $ip), 'Cannot verify user euler:password');
+		$this->assertTrue($sessionFunctions->log_as_user(LDAPTest::TESTUSER2, LDAPTest::TESTUSER2_PW, $ip), 'Cannot verify testuser2');
 		$user_data = $sessionFunctions->user();
 		$OK = true;
-		foreach ($von_gauss as $key => $value) {
+		foreach ($test_user as $key => $value) {
 			if ($user_data[$key] != $value) {
 				$OK = false;
 			}

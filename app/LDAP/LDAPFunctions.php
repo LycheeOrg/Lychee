@@ -80,6 +80,7 @@ class LDAPFunctions
 		int $attrsonly = 0,
 		int $sizelimit = 0
 	): array {
+		$this->LDAP_check_bind();
 		try {
 			$sr = match ($scope) {
 				self::SCOPE_BASE => \Safe\ldap_read(
@@ -152,6 +153,23 @@ class LDAPFunctions
 	}
 
 	/**
+	 * Check if the bound level is sufficient and bind if neccessary.
+	 *
+	 * @return void
+	 *
+	 * @throws LDAPException implicit via LDAP_bind()
+	 */
+	protected function LDAP_check_bind(): void
+	{
+		// force superuser or anonymous bind if the bound level is not sufficient yet
+		if (($this->bound < (Configs::get_value(self::CONFIG_KEY_BIND_DN) && Configs::get_value(self::CONFIG_KEY_BIND_PW)))
+				   ? self::BIND_TYPE_SUPER_USER : self::BIND_TYPE_ANONYMOUS) {
+			// use anonymous or superuser credentials
+			$this->LDAP_bind();
+		}
+	}
+
+	/**
 	 * Wraps around ldap_set_option.
 	 *
 	 * @param int    $opt
@@ -207,12 +225,6 @@ class LDAPFunctions
 			return $this->cached_user_info[$username];
 		}
 
-		// force superuser bind if wanted and not bound as superuser yet
-		if (Configs::get_value(self::CONFIG_KEY_BIND_DN) && Configs::get_value(self::CONFIG_KEY_BIND_PW) && $this->bound < self::BIND_TYPE_SUPER_USER) {
-			// use superuser credentials
-			$this->LDAP_bind();
-		}
-
 		$userData = new LDAPUserData();
 		$userData->user = $username;
 
@@ -226,26 +238,6 @@ class LDAPFunctions
 		}
 		Logs::notice(__METHOD__, __LINE__, sprintf('filter: %s', $filter));
 
-		// TODO fix: This line will fail; this is suspicious.
-		//
-		// This line will fail if this method is invoked independently of
-		// {@link self::check_pass()} and no super-user is configured which
-		// has bound to the LDAP server some-lines above.
-		//
-		// The only reason why this works is that "accidentally"
-		// `check_pass` and `get_user_data` are invoked in that exact order
-		// in `SessionFunctions` and hence the previously called
-		// `check_pass` has taken care of proper binding.
-		//
-		// Either we intent to always call `check_pass` and `get_user_data`
-		// in that order.
-		// In that case `get_user_data` should not be a public function but
-		// the result of check user data should be returned as part of
-		// `check_pass`.
-		//
-		// Or, if we intent to use `get_user_data` stand-alone, then this
-		// must be fixed in a way such that it works independent of a
-		// previous call to `check_pass`.
 		$result = $this->LDAP_search($base, $filter, Configs::get_value(self::CONFIG_KEY_USER_SCOPE));
 
 		// Only accept one response
@@ -461,4 +453,45 @@ class LDAPFunctions
 		}
 		$this->LDAP_set_option(LDAP_OPT_NETWORK_TIMEOUT, 1);
 	}
+
+	/**
+	 * The following functions are an interface for the unit test only!!!
+	 *
+	 * DO NOT USE THEM FOR ANY OTHER PURPOSE!
+	 */
+	public function test_LDAP_search(
+				string $base_dn,
+				string $filter,
+				string $scope = self::SCOPE_SUB,
+				array $attributes = [],
+				int $attrsonly = 0,
+				int $sizelimit = 0
+		): array {
+		return $this->LDAP_search($base_dn, $filter, $scope, $attributes, $attrsonly, $sizelimit);
+	}
+
+	public function test_LDAP_bind(?string $bindDN = null, ?string $bindPassword = null): bool
+	{
+		try {
+			$this->LDAP_bind($bindDN, $bindPassword);
+		} catch (LDAPException $e) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public function test_open_LDAP(): bool
+	{
+		try {
+			$this->open_LDAP();
+		} catch (LDAPException $e) {
+			return false;
+		}
+
+		return true;
+	}
+	/*
+	 * End of test functions
+	 */
 }
