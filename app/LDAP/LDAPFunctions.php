@@ -291,7 +291,7 @@ class LDAPFunctions
 				// direct user bind
 				$dn = self::_makeFilter(
 					Configs::get_value(self::CONFIG_KEY_USER_TREE),
-					['user' => $user, 'server' => $ldap_server]
+					['user' => $user, 'server' => $this->ldap_server]
 				);
 				// User/Password bind
 				$this->LDAP_bind($dn, $pass);
