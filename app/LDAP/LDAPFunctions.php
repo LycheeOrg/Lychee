@@ -42,6 +42,11 @@ class LDAPFunctions
 	protected $con = null;
 
 	/**
+	 * @var string|null used server name
+	 */
+	protected ?string $ldap_server = null;
+
+	/**
 	 * Type of LDAP binding.
 	 *
 	 * Either
@@ -279,8 +284,6 @@ class LDAPFunctions
 	{
 		$this->open_LDAP();
 
-		$ldap_server = Configs::get_value(self::CONFIG_KEY_SERVER);
-
 		// Option A: If we know how to bind a user, we try that directly
 
 		try {
@@ -301,8 +304,6 @@ class LDAPFunctions
 
 		// Option B: We do not know how to bind a user, so we must first
 		// search the directory
-
-		$this->LDAP_bind(); // anonymous or super-user binding
 
 		// See if we can find the user
 		$info = $this->get_user_data($user);
@@ -388,7 +389,7 @@ class LDAPFunctions
 			throw new LDAPException('PHP LDAP extension not found.');
 		}
 
-		$this->bound = 0;
+		$this->bound = self::BIND_TYPE_UNBOUND;
 		$port = Configs::get_value(self::CONFIG_KEY_PORT);
 		$servers = explode(',', Configs::get_value(self::CONFIG_KEY_SERVER));
 		$lastException = null;
@@ -400,6 +401,7 @@ class LDAPFunctions
 				$OK = ($this->con !== false);
 				Logs::notice(__METHOD__, __LINE__, sprintf('Try to connect %s on port %s: %s', $server, $port, $OK ? 'OK' : 'NO'));
 				if ($OK) {
+					$this->ldap_server = $server;
 					break;
 				} else {
 					throw new \Safe\Exceptions\LdapException('ldap_connect failed');
