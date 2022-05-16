@@ -66,6 +66,7 @@ class LDAPTest extends TestCase
 		// Call get_user_data() befor LDAP_bind() to check if the automatic binding is working
 		// This also works with an anonymous binding LDAP_Server, verifyable by using a local server
 		$user_data = $ldap->get_user_data(self::TESTUSER);
+		$this->assertEqualsCanonicalizing($user_data->toArray(), $test_user);
 
 		$this->assertTrue($ldap->test_LDAP_bind(), 'ldap_bind has failed');
 		$SR = $ldap->test_LDAP_search(self::USER_TREE, self::TESTUSER_FILTER, 'sub');
