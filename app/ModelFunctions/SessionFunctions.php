@@ -2,10 +2,10 @@
 
 namespace App\ModelFunctions;
 
-use App\Actions\User\Create;
 use App\Contracts\LycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\UnauthenticatedException;
+use App\LDAP\LDAPActions;
 use App\LDAP\LDAPFunctions;
 use App\LDAP\LDAPUserData;
 use App\Legacy\Legacy;
@@ -209,21 +209,21 @@ class SessionFunctions
 				return false;
 			}
 			/** @var User $user */
-			$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
+			$user = User::query()->where('username', '=', $username)->first();
 			if ($user == null) {
-				$create = resolve(Create::class);
-				$create->do($username, $password, false, true, $ldapUserData->email, $ldapUserData->display_name);
-				$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
+				LDAPActions::create_user_not_exist($username, $ldapUserData);
+				$user = User::query()->where('username', '=', $username)->first();
 			}
 			if ($user !== null) {
+				// admin user cannot be used with LDAP
+				if ($user->id == 0) {
+					return false;
+				}
 				$this->user_data = $user;
 				Session::put('login', true);
 				Session::put('UserID', $user->id);
-				if (($user->display_name != $ldapUserData->display_name) || ($user->email != $ldapUserData->email)) {
-					$user->email = $ldapUserData->email;
-					$user->display_name = $ldapUserData->display_name;
-					$user->save();
-				}
+				LDAPActions::update_user($username, $ldapUserData);
+
 				Logs::notice(__METHOD__, __LINE__, sprintf('User (%s) has logged in from %s', $username, $ip));
 
 				return true;
