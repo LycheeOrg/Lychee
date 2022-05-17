@@ -19,7 +19,10 @@ class VerifyTestInterfaceTest extends TestCase
 	{
 		exec('grep test_LDAP_ * -r -l', $ret);
 		$ret = implode(' ', $ret);
-		$this->assertEquals($ret,'app/LDAP/LDAPFunctions.php tests/Feature/VerifyTestInterfaceTest.php tests/Feature/LDAPTest.php',
-			'LDAP test interface is missused!');
+		$this->assertEquals(
+			$ret,
+			'tests/Feature/Lib/LDAPFunctionsTest.php tests/Feature/VerifyTestInterfaceTest.php tests/Feature/LDAPTest.php',
+			'LDAP test interface is missused!'
+		);
 	}
 }

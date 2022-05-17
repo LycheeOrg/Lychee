@@ -168,7 +168,8 @@ class LDAPFunctions
 	{
 		// force superuser or anonymous bind if the bound level is not sufficient yet
 		if (($this->bound < (Configs::get_value(self::CONFIG_KEY_BIND_DN) && Configs::get_value(self::CONFIG_KEY_BIND_PW)))
-				   ? self::BIND_TYPE_SUPER_USER : self::BIND_TYPE_ANONYMOUS) {
+			? self::BIND_TYPE_SUPER_USER : self::BIND_TYPE_ANONYMOUS
+		) {
 			// use anonymous or superuser credentials
 			$this->LDAP_bind();
 		}
@@ -455,45 +456,4 @@ class LDAPFunctions
 		}
 		$this->LDAP_set_option(LDAP_OPT_NETWORK_TIMEOUT, 1);
 	}
-
-	/**
-	 * The following functions are an interface for the unit test only!!!
-	 *
-	 * DO NOT USE THEM FOR ANY OTHER PURPOSE!
-	 */
-	public function test_LDAP_search(
-				string $base_dn,
-				string $filter,
-				string $scope = self::SCOPE_SUB,
-				array $attributes = [],
-				int $attrsonly = 0,
-				int $sizelimit = 0
-		): array {
-		return $this->LDAP_search($base_dn, $filter, $scope, $attributes, $attrsonly, $sizelimit);
-	}
-
-	public function test_LDAP_bind(?string $bindDN = null, ?string $bindPassword = null): bool
-	{
-		try {
-			$this->LDAP_bind($bindDN, $bindPassword);
-		} catch (LDAPException $e) {
-			return false;
-		}
-
-		return true;
-	}
-
-	public function test_open_LDAP(): bool
-	{
-		try {
-			$this->open_LDAP();
-		} catch (LDAPException $e) {
-			return false;
-		}
-
-		return true;
-	}
-	/*
-	 * End of test functions
-	 */
 }

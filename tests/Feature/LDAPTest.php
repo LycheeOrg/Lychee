@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\LDAP\LDAPFunctions;
 use App\Models\Configs;
+use Tests\Feature\Lib\LDAPFunctionsTest;
 use Tests\TestCase;
 
 class LDAPTest extends TestCase
@@ -34,7 +34,7 @@ class LDAPTest extends TestCase
 
 	public function testLDAP()
 	{
-		$ldap = new LDAPFunctions();
+		$ldap = new LDAPFunctionsTest();
 		/*
 		 * These tests are made without enabling LDAP as the authenication service (ldap_enabled is untouched)
 		 *
