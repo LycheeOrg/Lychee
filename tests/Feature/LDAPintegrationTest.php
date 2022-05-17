@@ -17,7 +17,7 @@ class LDAPintegrationTest extends TestCase
 		error_log($label . "'" . trim($msg) . "'");
 	}
 
-	public function testLDAP()
+	public function testLDAPintegration()
 	{
 		$sessionFunctions = new SessionFunctions();
 

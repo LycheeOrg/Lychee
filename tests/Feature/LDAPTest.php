@@ -23,11 +23,16 @@ class LDAPTest extends TestCase
 	public const BIND_DN = 'cn=read-only-admin,dc=example,dc=com';
 	public const BIND_PW = 'password';
 
-	protected function _debug($myDebugVar, $label = '')
+	public const UNKNOWN_USER = 'test4711';
+
+	protected function _debug($myDebugVar, $label = '', $oneline = true)
 	{
-		$msg = str_replace(PHP_EOL, ' ', print_r($myDebugVar, true));
-		while (str_contains($msg, '  ')) {
-			$msg = str_replace('  ', ' ', $msg);
+		$msg = print_r($myDebugVar, true);
+		if ($oneline) {
+			$msg = str_replace(PHP_EOL, ' ', $msg);
+			while (str_contains($msg, '  ')) {
+				$msg = str_replace('  ', ' ', $msg);
+			}
 		}
 		error_log($label . "'" . trim($msg) . "'");
 	}
@@ -82,16 +87,25 @@ class LDAPTest extends TestCase
 		$this->assertTrue($ldap->check_pass(self::TESTUSER, self::TESTUSER_PW), 'Cannot verify user TESTUSER');
 
 		// 4
+		$user_data = $ldap->get_user_data(self::TESTUSER2);
+		$this->assertTrue(is_a($user_data, 'App\LDAP\LDAPUserData'), 'TESTUSER2 is unknown');
 		$this->assertTrue($ldap->check_pass(self::TESTUSER2, self::TESTUSER2_PW), 'Cannot verify user TESTUSER2');
 
 		// 5
-		$this->assertFalse($ldap->check_pass('test', 'password'), 'Should not possible to verify user test:TESTUSER_PW');
+		$this->assertFalse($ldap->check_pass(self::UNKNOWN_USER, 'password'), 'Should not possible to verify the UNKNOWN_USER:TESTUSER_PW');
 
+		$this->assertFalse($ldap->check_pass('test', '08154711'), 'Should not be possible to verify user test:08154711');
 		// 6
-		$this->assertFalse($ldap->check_pass(self::TESTUSER, 'test'), 'Should not possible to verify user TESTUSER:test');
+		$this->assertFalse($ldap->check_pass(self::TESTUSER, '08154711'), 'Should not possible to verify user TESTUSER:test');
 
 		// 7
 		$user_data = $ldap->get_user_data(self::TESTUSER);
 		$this->assertEqualsCanonicalizing($user_data->toArray(), $test_user);
+		$user_list = $ldap->get_user_list(true);
+		$this->assertIsArray($user_list, 'The user list should be an array');
+		$this->assertTrue(count($user_list) > 1, 'The user list should contain more than one entry');
+		foreach ($user_list as $usr) {
+			$this->assertFalse($usr->user == self::UNKNOWN_USER, 'UNKNOWN_USER is known');
+		}
 	}
 }
