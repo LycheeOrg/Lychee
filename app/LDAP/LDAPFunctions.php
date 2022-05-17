@@ -194,7 +194,8 @@ class LDAPFunctions
 	{
 		// force superuser or anonymous bind if the bound level is not sufficient yet
 		if (($this->bound < (Configs::get_value(self::CONFIG_KEY_BIND_DN) && Configs::get_value(self::CONFIG_KEY_BIND_PW)))
-				   ? self::BIND_TYPE_SUPER_USER : self::BIND_TYPE_ANONYMOUS) {
+			? self::BIND_TYPE_SUPER_USER : self::BIND_TYPE_ANONYMOUS
+		) {
 			// use anonymous or superuser credentials
 			if (!$this->LDAP_bind()) {
 				throw new LDAPException('Required bind was not pssible');
