@@ -61,22 +61,22 @@ class LDAPTest extends TestCase
 		Configs::set('ldap_bind_pw', self::BIND_PW);
 
 		// 2
-		$this->assertTrue($ldap->test_open_LDAP(), 'Connection to LDAP test server failed');
+		$this->assertTrue($ldap->testOpenLDAP(), 'Connection to LDAP test server failed');
 
 		// Call get_user_data() befor LDAP_bind() to check if the automatic binding is working
 		// This also works with an anonymous binding LDAP_Server, verifyable by using a local server
 		$user_data = $ldap->get_user_data(self::TESTUSER);
 		$this->assertEqualsCanonicalizing($user_data->toArray(), $test_user);
 
-		$this->assertTrue($ldap->test_LDAP_bind(), 'ldap_bind has failed');
-		$SR = $ldap->test_LDAP_search(self::USER_TREE, self::TESTUSER_FILTER, 'sub');
+		$this->assertTrue($ldap->testLDAPBind(), 'ldap_bind has failed');
+		$SR = $ldap->testLDAPSearch(self::USER_TREE, self::TESTUSER_FILTER, 'sub');
 		$this->assertFalse($SR['count'] == 0, 'LDAP_search got no result');
 		$this->assertFalse($SR['count'] > 1, 'LDAP_search got more than one result, should be one');
 		$user_data = $ldap->get_user_data(self::TESTUSER);
 		$this->assertEqualsCanonicalizing($user_data->toArray(), $test_user);
 
 		if ($user_data) {
-			$this->assertTrue($ldap->test_LDAP_bind($user_data->dn, self::TESTUSER_PW), 'Cannot ldap_bind to user TESTUSER');
+			$this->assertTrue($ldap->testLDAPBind($user_data->dn, self::TESTUSER_PW), 'Cannot ldap_bind to user TESTUSER');
 		}
 		// 3
 		$this->assertTrue($ldap->check_pass(self::TESTUSER, self::TESTUSER_PW), 'Cannot verify user TESTUSER');
