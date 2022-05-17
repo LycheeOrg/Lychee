@@ -58,6 +58,20 @@ class Logs extends Model
 	];
 
 	/**
+	 * Logs a debug message.
+	 *
+	 * @param string $method the name of the method which triggers the log
+	 *                       (use the magic constant `__METHOD__`, neither
+	 *                       `__FUNCTION__` nor `__FILE__`)
+	 * @param int    $line   the line which triggers the log
+	 * @param string $msg    the message to log
+	 */
+	public static function debug(string $method, int $line, string $msg): void
+	{
+		self::log(self::SEVERITY_DEBUG, $method, $line, $msg);
+	}
+
+	/**
 	 * Logs a notification.
 	 *
 	 * @param string $method the name of the method which triggers the log
