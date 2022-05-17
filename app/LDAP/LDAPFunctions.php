@@ -22,6 +22,7 @@ class LDAPFunctions
 	protected const CONFIG_KEY_REFERRALS = 'ldap_referrals';
 	protected const CONFIG_KEY_SERVER = 'ldap_server';
 	protected const CONFIG_KEY_START_TLS = 'ldap_start_tls';
+	protected const CONFIG_KEY_USER_KEY = 'ldap_user_key';
 	protected const CONFIG_KEY_USER_TREE = 'ldap_user_tree';
 	protected const CONFIG_KEY_USER_FILTER = 'ldap_user_filter';
 	protected const CONFIG_KEY_USER_SCOPE = 'ldap_user_scope';
@@ -62,6 +63,21 @@ class LDAPFunctions
 
 	/** @var LDAPUserData[] cashed results of user info previously queried from LDAP */
 	protected array $cached_user_info = [];
+
+	/** @var LDAPUserData[] cashed user list retrieved by get_user_list() */
+	protected ?array $user_list = null;
+
+	protected function _log($M, $L, $myDebugVar, $label = '', $oneline = true)
+	{
+		$msg = print_r($myDebugVar, true);
+		if ($oneline) {
+			$msg = str_replace(PHP_EOL, ' ', $msg);
+			while (str_contains($msg, '  ')) {
+				$msg = str_replace('  ', ' ', $msg);
+			}
+		}
+		Logs::notice($M, $L, $label . "'" . trim($msg) . "'");
+	}
 
 	/**
 	 * Wraps around ldap_search, ldap_list or ldap_read depending on $scope.
@@ -115,6 +131,7 @@ class LDAPFunctions
 			};
 			$result = \Safe\ldap_get_entries($this->con, $sr);
 			\Safe\ldap_free_result($sr);
+			$this->_log(__METHOD__, __LINE__, $result, 'LDAP_search:');
 
 			return $result;
 		} catch (\Throwable $e) {
@@ -139,7 +156,7 @@ class LDAPFunctions
 	 *
 	 * @throws LDAPException
 	 */
-	protected function LDAP_bind(?string $bindDN = null, ?string $bindPassword = null): void
+	protected function LDAP_bind(?string $bindDN = null, ?string $bindPassword = null): bool
 	{
 		try {
 			if (empty($bindDN)) {
@@ -149,8 +166,17 @@ class LDAPFunctions
 			} else {
 				$this->bound = self::BIND_TYPE_USER;
 			}
+			Logs::debug(__METHOD__, __LINE__, 'LDAP bind with ' . $bindDN . ':' . $bindPassword);
 
-			\Safe\ldap_bind($this->con, $bindDN, $bindPassword);
+			$is_bound = ldap_bind($this->con, $bindDN, $bindPassword);
+
+			if (!$is_bound) {
+				$this->bound = self::BIND_TYPE_UNBOUND;
+			}
+
+			Logs::debug(__METHOD__, __LINE__, 'LDAP bind result: ' . $is_bound);
+
+			return $is_bound;
 		} catch (\Throwable $e) {
 			$this->bound = self::BIND_TYPE_UNBOUND;
 			throw new LDAPException($e->getMessage(), $e);
@@ -170,7 +196,9 @@ class LDAPFunctions
 		if (($this->bound < (Configs::get_value(self::CONFIG_KEY_BIND_DN) && Configs::get_value(self::CONFIG_KEY_BIND_PW)))
 				   ? self::BIND_TYPE_SUPER_USER : self::BIND_TYPE_ANONYMOUS) {
 			// use anonymous or superuser credentials
-			$this->LDAP_bind();
+			if (!$this->LDAP_bind()) {
+				throw new LDAPException('Required bind was not pssible');
+			}
 		}
 	}
 
@@ -216,11 +244,11 @@ class LDAPFunctions
 	 *
 	 * @param string $username
 	 *
-	 * @return LDAPUserData contains the user data
+	 * @return LDAPUserData contains null or the user data
 	 *
 	 * @throws LDAPException
 	 */
-	public function get_user_data(string $username): LDAPUserData
+	public function get_user_data(string $username): ?LDAPUserData
 	{
 		$this->open_LDAP();
 
@@ -230,14 +258,12 @@ class LDAPFunctions
 			return $this->cached_user_info[$username];
 		}
 
-		$userData = new LDAPUserData();
-		$userData->user = $username;
-
 		// get info for given user
-		$base = self::_makeFilter(Configs::get_value(self::CONFIG_KEY_USER_TREE), $userData->toArray());
+		$user = ['user' => $username, 'server' => $this->ldap_server];
+		$base = self::_makeFilter(Configs::get_value(self::CONFIG_KEY_USER_TREE), $user);
 		Logs::notice(__METHOD__, __LINE__, sprintf('base filter: %s', $base));
 		if (Configs::get_value(self::CONFIG_KEY_USER_FILTER)) {
-			$filter = self::_makeFilter(Configs::get_value(self::CONFIG_KEY_USER_FILTER), $userData->toArray());
+			$filter = self::_makeFilter(Configs::get_value(self::CONFIG_KEY_USER_FILTER), $user);
 		} else {
 			$filter = '(ObjectClass=*)';
 		}
@@ -246,22 +272,41 @@ class LDAPFunctions
 		$result = $this->LDAP_search($base, $filter, Configs::get_value(self::CONFIG_KEY_USER_SCOPE));
 
 		// Only accept one response
-		if ($result['count'] != 1) {
+		if ($result['count'] == 0) {
+			return null;
+		} elseif ($result['count'] > 1) {
 			throw new LDAPException(sprintf('LDAP search returned %d results while it should return 1!', $result['count']));
 		}
 
-		$user_result = $result[0];
+		$userData = $this->userdata_from_ldap_result($result[0]);
+		$userData->user = $username;
+
+		// cache the info for future use
+		$this->cached_user_info[$username] = $userData;
+
+		return $userData;
+	}
+
+	/**
+	 * Converts a ldap user entry into a LDAPUserData entry.
+	 *
+	 * @param array $user_result
+	 *
+	 * @return LDAPUserData contains the user data
+	 */
+	protected function userdata_from_ldap_result(array $user_result): LDAPUserData
+	{
+		$userData = new LDAPUserData();
 
 		// general user info
 		$userData->dn = $user_result['dn'];
+		$userData->user = $user_result[Configs::get_value(self::CONFIG_KEY_USER_KEY, 'uid')][0];
 		$userData->display_name = $user_result[Configs::get_value(self::CONFIG_KEY_CN, 'cn')][0];
 		if (array_key_exists(Configs::get_value(self::CONFIG_KEY_MAIL, 'mail'), $user_result)) {
 			$userData->email = $user_result[Configs::get_value(self::CONFIG_KEY_MAIL, 'mail')][0];
 		} else {
 			$userData->email = '';
 		}
-		// cache the info for future use
-		$this->cached_user_info[$username] = $userData;
 
 		return $userData;
 	}
@@ -284,9 +329,8 @@ class LDAPFunctions
 	{
 		$this->open_LDAP();
 
-		// Option A: If we know how to bind a user, we try that directly
-
 		try {
+			// Option A: If we know how to bind a user, we try that directly
 			if (strpos(Configs::get_value(self::CONFIG_KEY_USER_TREE), '%{user}')) {
 				// direct user bind
 				$dn = self::_makeFilter(
@@ -294,33 +338,28 @@ class LDAPFunctions
 					['user' => $user, 'server' => $this->ldap_server]
 				);
 				// User/Password bind
-				$this->LDAP_bind($dn, $pass);
+				if ($this->LDAP_bind($dn, $pass)) {
+					return true;
+				}
+			}
 
+			// Option B: We do not know how to bind a user, so we must first
+			// search the directory
+
+			// See if we can find the user
+			$info = $this->get_user_data($user);
+
+			if (is_null($info) || empty($info->dn)) {
+				return false;
+			}
+
+			// Try to re-bind with the dn provided
+			if ($this->LDAP_bind($info->dn, $pass)) {
 				return true;
 			}
 		} catch (LDAPException) {
 			return false;
 		}
-
-		// Option B: We do not know how to bind a user, so we must first
-		// search the directory
-
-		// See if we can find the user
-		$info = $this->get_user_data($user);
-		if (empty($info->dn)) {
-			return false;
-		}
-
-		$dn = $info->dn;
-
-		// Try to re-bind with the dn provided
-		try {
-			$this->LDAP_bind($dn, $pass);
-		} catch (LDAPException) {
-			return false;
-		}
-
-		return true;
 	}
 
 	/**
@@ -366,6 +405,38 @@ class LDAPFunctions
 		}
 
 		return $filter;
+	}
+
+	/**
+	 * Get a list of users from the LDAP server.
+	 *
+	 * @param bool $refresh
+	 *
+	 * @return array of LDAPUserData
+	 *
+	 * @throws LDAPException
+	 */
+	public function get_user_list(bool $refresh = false)
+	{
+		$this->open_LDAP();
+
+		if (is_null($this->user_list) || $refresh) {
+			// Perform the search and grab all their details
+			if (Configs::get_value(self::CONFIG_KEY_USER_FILTER)) {
+				$all_filter = str_replace('%{user}', '*', Configs::get_value(self::CONFIG_KEY_USER_FILTER));
+			} else {
+				$all_filter = '(ObjectClass=*)';
+			}
+			$entries = $this->LDAP_search(Configs::get_value(self::CONFIG_KEY_USER_TREE), $all_filter);
+			$this->user_list = [];
+			$userkey = Configs::get_value(self::CONFIG_KEY_USER_KEY, 'uid');
+
+			for ($i = 0; $i < $entries['count']; $i++) {
+				$this->user_list[$entries[$i][$userkey][0]] = $this->userdata_from_ldap_result($entries[$i]);
+			}
+		}
+
+		return $this->user_list;
 	}
 
 	/**
@@ -474,13 +545,7 @@ class LDAPFunctions
 
 	public function test_LDAP_bind(?string $bindDN = null, ?string $bindPassword = null): bool
 	{
-		try {
-			$this->LDAP_bind($bindDN, $bindPassword);
-		} catch (LDAPException $e) {
-			return false;
-		}
-
-		return true;
+		return $this->LDAP_bind($bindDN, $bindPassword);
 	}
 
 	public function test_open_LDAP(): bool
