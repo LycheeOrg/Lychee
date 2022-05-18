@@ -128,22 +128,22 @@ jobs:
       # begin of DIST
 
       - name: Build Dist
-        if: ${{ matrix.mode == 'dist' }}
+        if: ${{ matrix.mode == '--no-dev' }}
         run: |
           make dist-clean
 
       - name: copy Env
-        if: ${{ matrix.mode == 'dist' }}
+        if: ${{ matrix.mode == '--no-dev' }}
         run: |
           cp .github/workflows/.env.${{ matrix.sql-versions }} Lychee/.env
 
       - name: setup MySQL Database with v3
-        if: ${{ matrix.mode == 'dist' }}
+        if: ${{ matrix.mode == '--no-dev' }}
         run: |
           mysql -uroot -proot homestead_test < .github/workflows/v3.sql
 
       - name: Generate secure key & Migrate & go backward
-        if: ${{ matrix.mode == 'dist' }}
+        if: ${{ matrix.mode == '--no-dev' }}
         run: |
           cd Lychee
           pwd
