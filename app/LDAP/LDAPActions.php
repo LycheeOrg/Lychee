@@ -67,7 +67,7 @@ class LDAPActions
 	{
 		$ldap = new LDAPFunctions();
 		if (is_null($purge)) {
-			$purge = Configs::get_Value('ldap_purge', '0') == '1';
+			$purge = Configs::get_value('ldap_purge', '0') == '1';
 		}
 		LDAPActions::update_users($ldap->get_user_list(true), $purge);
 	}
