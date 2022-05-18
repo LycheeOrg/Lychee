@@ -331,7 +331,7 @@ class LDAPFunctions
 	 *
 	 * @throws LDAPException
 	 */
-	public function check_pass(string $user, string $pass, bool $handleExceptions = true): bool
+	public function check_pass(string $user, string $pass): bool
 	{
 		$this->open_LDAP();
 		try {
@@ -359,17 +359,17 @@ class LDAPFunctions
 			}
 
 			// Try to re-bind with the dn provided
-			if ($this->LDAP_bind($info->dn, $pass)) {
-				return true;
+			try {
+				if ($this->LDAP_bind($info->dn, $pass)) {
+					return true;
+				}
+			} catch (\App\Exceptions\LDAPException) {
+				return false;
 			}
 
 			return false;
 		} catch (\App\Exceptions\LDAPException $e) {
-			if ($handleExceptions) {
-				return false;
-			} else {
-				throw new LdapException('Exception in check_pass:', $e);
-			}
+			throw new LDAPException('Exception in check_pass:', $e);
 		} finally {
 			$this->close_LDAP();
 		}

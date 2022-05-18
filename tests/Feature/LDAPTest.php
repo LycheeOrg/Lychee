@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\LDAP\LDAPFunctions;
 use App\Models\Configs;
 use Tests\Feature\Lib\LDAPTestFunctions;
 use Tests\LDAPTestCase;
@@ -17,8 +18,7 @@ class LDAPTest extends LDAPTestCase
 	{
 		$ldap = $this->get_ldap();
 		try {
-			$this->assertTrue($ldap->LDAP_open(), 'Connection to LDAP test server failed');
-
+			$ldap->LDAP_open();
 			$ldap->LDAP_get_option(LDAP_OPT_PROTOCOL_VERSION, $option);
 			$this->assertEquals(3, $option, 'LDAP Version should be 3');
 			$ldap->LDAP_get_option(LDAP_OPT_SIZELIMIT, $size_limit);
@@ -34,7 +34,7 @@ class LDAPTest extends LDAPTestCase
 			$Filter = LDAPTestFunctions::LDAP_filterEscape("/\x03 \x05 \x08 (test) \\/");
 			$this->assertEquals('/\03 \05 \08 \28test\29 \5c/', $Filter, 'LDAP_filterEscape could not escape properly');
 
-			$this->assertTrue($ldap->LDAP_close(), 'Connection to LDAP server cannot be closed');
+			$ldap->LDAP_close();
 		} finally {
 			$this->done_ldap();
 		}
@@ -45,7 +45,7 @@ class LDAPTest extends LDAPTestCase
 	{
 		$ldap = $this->get_ldap();
 		try {
-			$this->assertTrue($ldap->LDAP_open(), 'Connection to LDAP test server failed');
+			$ldap->LDAP_open();
 			// The bound level after open_LDAP() is 2 if open_LDAP() does already the binding with the LDAP server.
 			$this->assertEquals(2, $ldap->LDAP_get_bound(), 'Bound level should be SUPERUSER');
 
@@ -64,7 +64,7 @@ class LDAPTest extends LDAPTestCase
 			$this->expectException(\App\Exceptions\LDAPException::class, 'Missing Exception from ldap_bind when called with UNKNOWN_USER:password');
 			$ldap->LDAP_bind(self::UNKNOWN_USER, 'password');
 			$this->assertEquals(-1, $ldap->LDAP_get_bound(), 'Bound level should be UNBOUND');
-			$this->assertTrue($ldap->LDAP_close(), 'Connection to LDAP server cannot be closed');
+			$ldap->LDAP_close();
 		} finally {
 			$this->done_ldap();
 		}
@@ -74,7 +74,7 @@ class LDAPTest extends LDAPTestCase
 	{
 		$ldap = $this->get_ldap();
 		try {
-			$this->assertTrue($ldap->LDAP_open(), 'Connection to LDAP test server failed');
+			$ldap->LDAP_open();
 
 			$SR = $ldap->LDAP_search(self::USER_TREE, self::TESTUSER_FILTER, 'sub');
 
@@ -86,7 +86,7 @@ class LDAPTest extends LDAPTestCase
 			$SR = $ldap->LDAP_search(self::USER_TREE, '(objectClass=*)', 'one');
 			$this->assertTrue($SR['count'] > 0, 'LDAP_search scope base should return at least one result');
 
-			$this->assertTrue($ldap->LDAP_close(), 'Connection to LDAP server cannot be closed');
+			$ldap->LDAP_close();
 		} finally {
 			$this->done_ldap();
 		}
@@ -97,9 +97,11 @@ class LDAPTest extends LDAPTestCase
 		$ldap = $this->get_ldap();
 		try {
 			Configs::set('ldap_server', 'google.com,github.com');
-			$this->assertFalse($ldap->LDAP_open(), 'Connection to the LDAP test servers should have failed');
+			$this->expectException(\App\Exceptions\LDAPException::class, 'Missing Exception from check_pass when called with no server available');
+			$ldap->LDAP_open();
 			Configs::set('ldap_server', 'google.com,github.com,' . self::SERVER);
-			$this->assertTrue($ldap->LDAP_open(), 'Connection to LDAP test server failed');
+			$ldap->LDAP_open();
+			$ldap->LDAP_close();
 		} finally {
 			$this->done_ldap();
 		}
@@ -120,6 +122,7 @@ class LDAPTest extends LDAPTestCase
 			 * 4. try to verify user: UNKNOWN password: password ==> should fail
 			 * 5. try to verify user: gauss password: test ==> should fail
 			 * 6. call LDAPFunctions::get_user_data(TESTUSER) ==> should return an array with the data for TESTUSER
+			 * 7. Check exception in case the server is not available
 			 */
 
 			// 1
@@ -150,6 +153,14 @@ class LDAPTest extends LDAPTestCase
 			$user_data = $ldap->get_user_data(self::TESTUSER);
 			$this->assertTrue(is_a($user_data, 'App\LDAP\LDAPUserData'), 'TESTUSER is unknown');
 			$this->assertEqualsCanonicalizing($user_data->toArray(), $this->test_user);
+			// 7
+			$ldap->LDAP_close();
+			Configs::set('ldap_server', 'google.com,github.com');
+			$this->expectException(\App\Exceptions\LDAPException::class, 'Missing Exception from check_pass when called with no server available');
+			$ret = $ldap->check_pass(self::UNKNOWN_USER, 'password');
+			$this->_debug($ret, 'check_pass(self::UNKNOWN_USER, password): ');
+			Configs::set('ldap_server', 'google.com,github.com,' . self::SERVER);
+			$this->assertFalse($ldap->check_pass(self::UNKNOWN_USER, 'password'), 'Should not possible to verify the UNKNOWN_USER:TESTUSER_PW');
 		} finally {
 			$this->done_ldap();
 		}

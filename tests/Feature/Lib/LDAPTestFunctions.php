@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Lib;
 
-use App\Exceptions\LDAPException;
 use App\LDAP\LDAPFunctions;
 
 /**
@@ -21,26 +20,14 @@ class LDAPTestFunctions extends LDAPFunctions
 		return parent::LDAP_search($base_dn, $filter, $scope, $attributes, $attrsonly, $sizelimit);
 	}
 
-	public function LDAP_open(): bool
+	public function LDAP_open(): void
 	{
-		try {
-			parent::open_LDAP();
-		} catch (LDAPException $e) {
-			return false;
-		}
-
-		return true;
+		parent::open_LDAP();
 	}
 
-	public function LDAP_close(): bool
+	public function LDAP_close(): void
 	{
-		try {
-			parent::close_LDAP();
-		} catch (LDAPException $e) {
-			return false;
-		}
-
-		return true;
+		parent::close_LDAP();
 	}
 
 	public function LDAP_bind(?string $bindDN = null, ?string $bindPassword = null): bool
