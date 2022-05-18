@@ -50,7 +50,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	];
 
 	/**
-	 * The attributes that should be hidden for arrays.
+	 * @var array the attributes that should be hidden for arrays
 	 */
 	protected $hidden = [
 		'password',
@@ -59,6 +59,9 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'updated_at',
 	];
 
+	/**
+	 * @var array
+	 */
 	protected $casts = [
 		'id' => 'integer',
 		'created_at' => 'datetime',
