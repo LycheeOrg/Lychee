@@ -68,6 +68,147 @@ class LDAPFunctions
 	protected ?array $user_list = null;
 
 	/**
+	 * Check user+password.
+	 *
+	 * Checks if the given user exists and the given
+	 * plaintext password is correct by trying to bind
+	 * to the LDAP server
+	 *
+	 * @param string $user
+	 * @param string $pass
+	 * @param bool   $handleExceptions
+	 *
+	 * @return bool
+	 *
+	 * @throws LDAPException
+	 */
+	public function check_pass(string $user, string $pass): bool
+	{
+		$this->open_LDAP();
+		try {
+			// Option A: If we know how to bind a user, we try that directly
+			if (strpos(Configs::get_value(self::CONFIG_KEY_USER_TREE), '%{user}')) {
+				// direct user bind
+				$dn = self::_makeFilter(
+					Configs::get_value(self::CONFIG_KEY_USER_TREE),
+					['user' => $user, 'server' => $this->ldap_server]
+				);
+				// User/Password bind
+				if ($this->LDAP_bind($dn, $pass)) {
+					return true;
+				}
+			}
+
+			// Option B: We do not know how to bind a user, so we must first
+			// search the directory
+
+			// See if we can find the user
+			$info = $this->get_user_data($user);
+
+			if (is_null($info) || empty($info->dn)) {
+				return false;
+			}
+
+			// Try to re-bind with the dn provided
+			try {
+				if ($this->LDAP_bind($info->dn, $pass)) {
+					return true;
+				}
+			} catch (\App\Exceptions\LDAPException) {
+				return false;
+			}
+
+			return false;
+		} catch (\App\Exceptions\LDAPException $e) {
+			throw new LDAPException('Exception in check_pass:', $e);
+		} finally {
+			$this->close_LDAP();
+		}
+	}
+
+	/**
+	 * Reads the user data from the LDAP server.
+	 *
+	 * @param string $username
+	 *
+	 * @return LDAPUserData contains null or the user data
+	 *
+	 * @throws LDAPException
+	 */
+	public function get_user_data(string $username): ?LDAPUserData
+	{
+		$this->open_LDAP();
+
+		if (!empty($this->cached_user_info) && in_array($username, $this->cached_user_info)) {
+			Logs::notice(__METHOD__, __LINE__, sprintf('getUserData: Use cached info for %s', $username));
+
+			return $this->cached_user_info[$username];
+		}
+
+		// get info for given user
+		$user = ['user' => $username, 'server' => $this->ldap_server];
+		$base = self::_makeFilter(Configs::get_value(self::CONFIG_KEY_USER_TREE), $user);
+		Logs::notice(__METHOD__, __LINE__, sprintf('base filter: %s', $base));
+
+		if (Configs::get_value(self::CONFIG_KEY_USER_FILTER)) {
+			$filter = self::_makeFilter(Configs::get_value(self::CONFIG_KEY_USER_FILTER), $user);
+		} else {
+			$filter = '(ObjectClass=*)';
+		}
+		Logs::notice(__METHOD__, __LINE__, sprintf('filter: %s', $filter));
+
+		$result = $this->LDAP_search($base, $filter, Configs::get_value(self::CONFIG_KEY_USER_SCOPE));
+
+		// Only accept one response
+		if ($result['count'] == 0) {
+			return null;
+		} elseif ($result['count'] > 1) {
+			throw new LDAPException(sprintf('LDAP search returned %d results while it should return 1!', $result['count']));
+		}
+
+		$userData = $this->userdata_from_ldap_result($result[0]);
+		$userData->user = $username;
+
+		// cache the info for future use
+		$this->cached_user_info[$username] = $userData;
+
+		return $userData;
+	}
+
+	/**
+	 * Get a list of users from the LDAP server.
+	 *
+	 * @param bool $refresh
+	 *
+	 * @return array of LDAPUserData
+	 *
+	 * @throws LDAPException
+	 */
+	public function get_user_list(bool $refresh = false)
+	{
+		$this->open_LDAP();
+
+		if (is_null($this->user_list) || $refresh) {
+			// Perform the search and grab all their details
+			if (Configs::get_value(self::CONFIG_KEY_USER_FILTER)) {
+				$all_filter = str_replace('%{user}', '*', Configs::get_value(self::CONFIG_KEY_USER_FILTER));
+			} else {
+				$all_filter = '(ObjectClass=*)';
+			}
+			$entries = $this->LDAP_search(Configs::get_value(self::CONFIG_KEY_USER_TREE), $all_filter);
+			$this->user_list = [];
+			$userkey = Configs::get_value(self::CONFIG_KEY_USER_KEY, 'uid');
+
+			for ($i = 0; $i < $entries['count']; $i++) {
+				$this->user_list[$entries[$i][$userkey][0]] = $this->userdata_from_ldap_result($entries[$i]);
+			}
+		}
+		$this->close_LDAP();
+
+		return $this->user_list;
+	}
+
+	/**
 	 * Wraps around ldap_search, ldap_list or ldap_read depending on $scope.
 	 *
 	 * @param string $base_dn
@@ -92,7 +233,7 @@ class LDAPFunctions
 		$this->LDAP_check_bind();
 		try {
 			$sr = match ($scope) {
-				self::SCOPE_BASE => \Safe\ldap_read(
+				self::SCOPE_BASE => ldap_read(
 					$this->con,
 					$base_dn,
 					$filter,
@@ -100,7 +241,7 @@ class LDAPFunctions
 					$attrsonly,
 					$sizelimit
 				),
-				self::SCOPE_ONE => \Safe\ldap_list(
+				self::SCOPE_ONE => ldap_list(
 					$this->con,
 					$base_dn,
 					$filter,
@@ -108,7 +249,7 @@ class LDAPFunctions
 					$attrsonly,
 					$sizelimit
 				),
-				self::SCOPE_SUB => \Safe\ldap_search(
+				self::SCOPE_SUB => ldap_search(
 					$this->con,
 					$base_dn,
 					$filter,
@@ -117,8 +258,8 @@ class LDAPFunctions
 					$sizelimit
 				)
 			};
-			$result = \Safe\ldap_get_entries($this->con, $sr);
-			\Safe\ldap_free_result($sr);
+			$result = ldap_get_entries($this->con, $sr);
+			ldap_free_result($sr);
 
 			return $result;
 		} catch (\Throwable $e) {
@@ -206,7 +347,7 @@ class LDAPFunctions
 	protected function LDAP_set_option(int $opt, string $value): void
 	{
 		try {
-			\Safe\ldap_set_option($this->con, $opt, $value);
+			ldap_set_option($this->con, $opt, $value);
 		} catch (\Throwable $e) {
 			throw new LDAPException($e->getMessage(), $e);
 		}
@@ -244,55 +385,6 @@ class LDAPFunctions
 	}
 
 	/**
-	 * Reads the user data from the LDAP server.
-	 *
-	 * @param string $username
-	 *
-	 * @return LDAPUserData contains null or the user data
-	 *
-	 * @throws LDAPException
-	 */
-	public function get_user_data(string $username): ?LDAPUserData
-	{
-		$this->open_LDAP();
-
-		if (!empty($this->cached_user_info) && in_array($username, $this->cached_user_info)) {
-			Logs::notice(__METHOD__, __LINE__, sprintf('getUserData: Use cached info for %s', $username));
-
-			return $this->cached_user_info[$username];
-		}
-
-		// get info for given user
-		$user = ['user' => $username, 'server' => $this->ldap_server];
-		$base = self::_makeFilter(Configs::get_value(self::CONFIG_KEY_USER_TREE), $user);
-		Logs::notice(__METHOD__, __LINE__, sprintf('base filter: %s', $base));
-
-		if (Configs::get_value(self::CONFIG_KEY_USER_FILTER)) {
-			$filter = self::_makeFilter(Configs::get_value(self::CONFIG_KEY_USER_FILTER), $user);
-		} else {
-			$filter = '(ObjectClass=*)';
-		}
-		Logs::notice(__METHOD__, __LINE__, sprintf('filter: %s', $filter));
-
-		$result = $this->LDAP_search($base, $filter, Configs::get_value(self::CONFIG_KEY_USER_SCOPE));
-
-		// Only accept one response
-		if ($result['count'] == 0) {
-			return null;
-		} elseif ($result['count'] > 1) {
-			throw new LDAPException(sprintf('LDAP search returned %d results while it should return 1!', $result['count']));
-		}
-
-		$userData = $this->userdata_from_ldap_result($result[0]);
-		$userData->user = $username;
-
-		// cache the info for future use
-		$this->cached_user_info[$username] = $userData;
-
-		return $userData;
-	}
-
-	/**
 	 * Converts a ldap user entry into a LDAPUserData entry.
 	 *
 	 * @param array $user_result
@@ -314,65 +406,6 @@ class LDAPFunctions
 		}
 
 		return $userData;
-	}
-
-	/**
-	 * Check user+password.
-	 *
-	 * Checks if the given user exists and the given
-	 * plaintext password is correct by trying to bind
-	 * to the LDAP server
-	 *
-	 * @param string $user
-	 * @param string $pass
-	 * @param bool   $handleExceptions
-	 *
-	 * @return bool
-	 *
-	 * @throws LDAPException
-	 */
-	public function check_pass(string $user, string $pass): bool
-	{
-		$this->open_LDAP();
-		try {
-			// Option A: If we know how to bind a user, we try that directly
-			if (strpos(Configs::get_value(self::CONFIG_KEY_USER_TREE), '%{user}')) {
-				// direct user bind
-				$dn = self::_makeFilter(
-					Configs::get_value(self::CONFIG_KEY_USER_TREE),
-					['user' => $user, 'server' => $this->ldap_server]
-				);
-				// User/Password bind
-				if ($this->LDAP_bind($dn, $pass)) {
-					return true;
-				}
-			}
-
-			// Option B: We do not know how to bind a user, so we must first
-			// search the directory
-
-			// See if we can find the user
-			$info = $this->get_user_data($user);
-
-			if (is_null($info) || empty($info->dn)) {
-				return false;
-			}
-
-			// Try to re-bind with the dn provided
-			try {
-				if ($this->LDAP_bind($info->dn, $pass)) {
-					return true;
-				}
-			} catch (\App\Exceptions\LDAPException) {
-				return false;
-			}
-
-			return false;
-		} catch (\App\Exceptions\LDAPException $e) {
-			throw new LDAPException('Exception in check_pass:', $e);
-		} finally {
-			$this->close_LDAP();
-		}
 	}
 
 	/**
@@ -418,39 +451,6 @@ class LDAPFunctions
 		}
 
 		return $filter;
-	}
-
-	/**
-	 * Get a list of users from the LDAP server.
-	 *
-	 * @param bool $refresh
-	 *
-	 * @return array of LDAPUserData
-	 *
-	 * @throws LDAPException
-	 */
-	public function get_user_list(bool $refresh = false)
-	{
-		$this->open_LDAP();
-
-		if (is_null($this->user_list) || $refresh) {
-			// Perform the search and grab all their details
-			if (Configs::get_value(self::CONFIG_KEY_USER_FILTER)) {
-				$all_filter = str_replace('%{user}', '*', Configs::get_value(self::CONFIG_KEY_USER_FILTER));
-			} else {
-				$all_filter = '(ObjectClass=*)';
-			}
-			$entries = $this->LDAP_search(Configs::get_value(self::CONFIG_KEY_USER_TREE), $all_filter);
-			$this->user_list = [];
-			$userkey = Configs::get_value(self::CONFIG_KEY_USER_KEY, 'uid');
-
-			for ($i = 0; $i < $entries['count']; $i++) {
-				$this->user_list[$entries[$i][$userkey][0]] = $this->userdata_from_ldap_result($entries[$i]);
-			}
-		}
-		$this->close_LDAP();
-
-		return $this->user_list;
 	}
 
 	/**
@@ -561,13 +561,4 @@ class LDAPFunctions
 			Handler::reportSafely($e);
 		}
 	}
-	/*
-	 * The following functions are an interface for the unit test only!!!
-	 *
-	 * DO NOT USE THEM FOR ANY OTHER PURPOSE!
-	 */
-
-	/*
-	 * End of test functions
-	 */
 }
