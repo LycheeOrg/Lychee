@@ -46,33 +46,6 @@ class Kernel extends ConsoleKernel
 			$ce = sprintf('%s %s * * *', $m, $h);
 			$ldap_update->cron($ce);
 		}
-		/*		switch($this->ldap_update_users)
-				{
-					case 'every_minute';
-					$ldap_update->everyMinute();
-						break;
-							case 'every_five_minutes';
-								$ldap_update->everyFiveMinutes();
-								break;
-							case 'every_ten_minutes';
-								$ldap_update->everyTenMinutes();
-								break;
-							case 'every_fifteen_minutes';
-								$ldap_update->everyFifteenMinutes();
-								break;
-							case 'every_thirty_minutes';
-								$ldap_update->everyThirtyMinutes();
-								break;
-							case 'hourly';
-								$ldap_update->hourly();
-								break;
-					case 'daily';
-						$ldap_update->daily();
-						break;
-					case 'off';
-					default;
-						break;
-				} */
 	}
 
 	/**
