@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use function Safe\preg_match;
 
 /**
  * App\Photo.
@@ -199,7 +200,7 @@ class Photo extends Model implements HasRandomID
 	 *
 	 * @return ?string A properly formatted shutter value
 	 */
-	protected function getShutterAttribute(?string $shutter): ?string
+	protected function getShutterAttribute(?string $shutter): string|null
 	{
 		try {
 			if (empty($shutter)) {
