@@ -8,9 +8,9 @@ use App\LDAP\LDAPFunctions;
 /**
  * Taking advantage of inheritance to apply test without adding tests functions to the class.
  */
-class LDAPFunctionsTest extends LDAPFunctions
+class LDAPTestFunctions extends LDAPFunctions
 {
-	public function testLDAPSearch(
+	public function test_LDAP_search(
 		string $base_dn,
 		string $filter,
 		string $scope = self::SCOPE_SUB,
@@ -21,7 +21,7 @@ class LDAPFunctionsTest extends LDAPFunctions
 		return $this->LDAP_search($base_dn, $filter, $scope, $attributes, $attrsonly, $sizelimit);
 	}
 
-	public function testLDAPOpen(): bool
+	public function test_LDAP_open(): bool
 	{
 		try {
 			$this->open_LDAP();
@@ -32,7 +32,7 @@ class LDAPFunctionsTest extends LDAPFunctions
 		return true;
 	}
 
-	public function testLDAPClose(): bool
+	public function test_LDAP_close(): bool
 	{
 		try {
 			$this->close_LDAP();
@@ -43,32 +43,32 @@ class LDAPFunctionsTest extends LDAPFunctions
 		return true;
 	}
 
-	public function testLDAPBind(?string $bindDN = null, ?string $bindPassword = null): bool
+	public function test_LDAP_bind(?string $bindDN = null, ?string $bindPassword = null): bool
 	{
 		return $this->LDAP_bind($bindDN, $bindPassword);
 	}
 
-	public function testLDAPGetBound(): int
+	public function test_LDAP_get_bound(): int
 	{
 		return $this->bound;
 	}
 
-	public function testLDAPSetOption(int $opt, string $value): void
+	public function test_LDAP_set_option(int $opt, string $value): void
 	{
 		$this->LDAP_set_option($opt, $value);
 	}
 
-	public function testLDAPGetOption(int $opt, array|string|int &$value = null): void
+	public function test_LDAP_get_option(int $opt, array|string|int &$value = null): void
 	{
 		$this->LDAP_get_option($opt, $value);
 	}
 
-	public static function testLDAPFilterEscape(string $string): string
+	public static function test_LDAP_filterEscape(string $string): string
 	{
 		return LDAPFunctions::_filterEscape($string);
 	}
 
-	public static function testLDAPMakeFilter(string $filter, array $placeholders): string
+	public static function test_LDAP_makeFilter(string $filter, array $placeholders): string
 	{
 		return LDAPFunctions::_makeFilter($filter, $placeholders);
 	}

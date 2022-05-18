@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use Tests\Feature\Lib\LDAPFunctionsTest;
+use Tests\Feature\Lib\LDAPTestFunctions;
 use Tests\LDAPTestCase;
 
 class LDAPTest extends LDAPTestCase
@@ -27,9 +27,9 @@ class LDAPTest extends LDAPTestCase
 			$ldap->test_LDAP_set_option(LDAP_OPT_SIZELIMIT, $size_limit);
 			$ldap->test_LDAP_get_option(LDAP_OPT_SIZELIMIT, $new_sl);
 			$this->assertEquals(0, $new_sl, 'Option cannot be reset');
-			$Filter = LDAPFunctionsTest::test_LDAP_makeFilter('%{uid} = %{start} test%{inc} %{end}', ['uid' => 'gauss', 'start' => '{', 'end' => '}', 'inc' => '++', 'dec' => '--']);
+			$Filter = LDAPTestFunctions::test_LDAP_makeFilter('%{uid} = %{start} test%{inc} %{end}', ['uid' => 'gauss', 'start' => '{', 'end' => '}', 'inc' => '++', 'dec' => '--']);
 			$this->assertEquals('gauss = { test++ }', $Filter, 'LDAP_makeFilter could not make the filter');
-			$Filter = LDAPFunctionsTest::test_LDAP_filterEscape("/\x03 \x05 \x08 (test) \\/");
+			$Filter = LDAPTestFunctions::test_LDAP_filterEscape("/\x03 \x05 \x08 (test) \\/");
 			$this->assertEquals('/\03 \05 \08 \28test\29 \5c/', $Filter, 'LDAP_filterEscape could not escape properly');
 
 			$this->assertTrue($ldap->test_LDAP_close(), 'Connection to LDAP server cannot be closed');

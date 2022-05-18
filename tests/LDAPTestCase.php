@@ -3,7 +3,7 @@
 namespace Tests;
 
 use App\Models\Configs;
-use Tests\Feature\Lib\LDAPFunctionsTest;
+use Tests\Feature\Lib\LDAPTestFunctions;
 
 class LDAPTestCase extends TestCase
 {
@@ -64,7 +64,7 @@ class LDAPTestCase extends TestCase
 	protected function get_ldap()
 	{
 		if (is_null($this->ldap_test)) {
-			$this->ldap_test = new LDAPFunctionsTest();
+			$this->ldap_test = new LDAPTestFunctions();
 		}
 		$this->LDAP_setUp();
 
