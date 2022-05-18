@@ -40,17 +40,17 @@ use League\Flysystem\Adapter\Local;
  *
  * Describes a size variant of a photo.
  *
- * @property int                 id
- * @property string              photo_id
- * @property Photo               photo
- * @property int                 type
- * @property string              short_path
- * @property string              url
- * @property string              full_path
- * @property int                 width
- * @property int                 height
- * @property int                 filesize
- * @property Collection<SymLink> sym_links
+ * @property int                 $id
+ * @property string              $photo_id
+ * @property Photo               $photo
+ * @property int                 $type
+ * @property string              $short_path
+ * @property string              $url
+ * @property string              $full_path
+ * @property int                 $width
+ * @property int                 $height
+ * @property int                 $filesize
+ * @property Collection<SymLink> $sym_links
  */
 class SizeVariant extends Model
 {
@@ -78,6 +78,9 @@ class SizeVariant extends Model
 	 */
 	public $timestamps = false;
 
+	/**
+	 * @var string[]
+	 */
 	protected $casts = [
 		'id' => 'integer',
 		'type' => 'integer',
