@@ -1,5 +1,5 @@
 
-#### LDAP interface for Lychee
+## LDAP interface for Lychee
 
 ### Installation
 
@@ -16,20 +16,20 @@ To use LDAP as the login provider for lychee an LDAP provider needs be setup in 
 
 Setting the basic settings should be enough to enable the LDAP interface for Lychee. If needed advance options are available with the advanced settings.
 
-## Basic Settings 
-+-------------------+---------------------------------------------------------------+------------+-------------------------------+
+#### Basic Settings 
+|-------------------|---------------------------------------------------------------|------------|-------------------------------|
 | Setting           | Description                                                   | Type       | Default Value                 |
-+-------------------+---------------------------------------------------------------+:----------:+-------------------------------+
+|-------------------|---------------------------------------------------------------|:----------:|-------------------------------|
 | ldap_enabled      | LDAP login provider enabled                                   | 0|1        | 0                             |
 | ldap_server       | LDAP server name                                              | string     |                               |
 | ldap_port         | LDAP server port                                              | int        | 389                           |
 | ldap_bind_dn      | LDAP bind dn                                                  | string     |                               |
 | ldap_bind_pw      | LDAP bind password                                            | string     |                               |
-| ldap_user_tree    | LDAP user tree                                                | string     |  |
+| ldap_user_tree    | LDAP user tree                                                | string     |                               |
 | ldap_user_filter  | LDAP user filter                                              | string     |                               |
-+-------------------+---------------------------------------------------------------+------------+-------------------------------+
+|-------------------|---------------------------------------------------------------|------------|-------------------------------|
 
-## Advanced Settings
+#### Advanced Settings
 +-------------------+---------------------------------------------------------------+------------+-------------------------------+
 | Setting           | Description                                                   | Type       | Default Value                 |
 +-------------------+---------------------------------------------------------------+:----------:+-------------------------------+
@@ -43,7 +43,7 @@ Setting the basic settings should be enough to enable the LDAP interface for Lyc
 | ldap_mail         | LDAP mail entry                                               | string     | mail                          |
 +-------------------+---------------------------------------------------------------+------------+-------------------------------+
 
-## Database Update Settings
+#### Database Update Settings
 +-------------------+---------------------------------------------------------------+------------+-------------------------------+
 | Setting           | Description                                                   | Type       | Default Value                 |
 +-------------------+---------------------------------------------------------------+:----------:+-------------------------------+
