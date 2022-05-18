@@ -24,7 +24,7 @@ class AddConfigsLadpAutoUpdate extends Migration
 			],
 			[
 				'key' => 'ldap_update_users',
-				'value' => 'ldap.example.tld',
+				'value' => '0',
 				'cat' => 'LDAP',
 				'type_range' => 'int',
 				'confidentiality' => '0',
