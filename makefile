@@ -1,4 +1,4 @@
-.PHONY: dist-gen dist-clean dist clean 
+.PHONY: dist-gen dist-clean dist clean
 
 composer:
 	rm -r vendor  2> /dev/null || true
@@ -106,7 +106,7 @@ formatting:
 phpstan:
 	vendor/bin/phpstan analyze
 phpstan-hard:
-	vendor/bin/phpstan analyze -l 8
+	vendor/bin/phpstan analyze -l 7
 
 gen_minor:
 	php scripts/gen_release.php

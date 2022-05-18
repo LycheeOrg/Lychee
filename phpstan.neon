@@ -1,6 +1,7 @@
 includes:
 	- vendor/nunomaduro/larastan/extension.neon
 	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
+	- vendor/thecodingmachine/phpstan-safe-rule/phpstan-safe-rule.neon
 	- vendor/phpstan/phpstan-strict-rules/rules.neon
 
 services:
@@ -15,7 +16,7 @@ services:
 			- phpstan.rules.rule
 
 parameters:
-	level: 1
+	level: 7
 	paths:
 		- app
 	ignoreErrors:

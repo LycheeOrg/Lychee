@@ -53,7 +53,8 @@
         "phpstan/phpstan": "^1.6",
         "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpstan/phpstan-strict-rules": "^1.2",
-        "phpunit/phpunit": "^9"
+        "phpunit/phpunit": "^9",
+        "thecodingmachine/phpstan-safe-rule": "^1.2"
     },
     "conflict": {
         "doctrine/dbal": "2.10.3"
