@@ -79,7 +79,7 @@ class LDAPFunctions
 	 *
 	 * @return array
 	 *
-	 * @throws LDAPException
+	 * @throws LDAPException on error or if the user is unknown
 	 */
 	protected function LDAP_search(
 		string $base_dn,
