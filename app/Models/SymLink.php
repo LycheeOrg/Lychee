@@ -119,9 +119,9 @@ class SymLink extends Model
 		$symShortPath = hash('sha256', random_bytes(32) . '|' . $origFullPath) . $extension;
 		$symFullPath = Storage::disk(SymLink::DISK_NAME)->path($symShortPath);
 		if (is_link($symFullPath)) {
-			unlink($symFullPath);
+			\Safe\unlink($symFullPath);
 		}
-		if (!symlink($origFullPath, $symFullPath)) {
+		if (!\Safe\symlink($origFullPath, $symFullPath)) {
 			return false;
 		}
 		$this->short_path = $symShortPath;
@@ -145,7 +145,7 @@ class SymLink extends Model
 		$fullPath = Storage::disk(self::DISK_NAME)->path($this->short_path);
 		// Laravel and Flysystem does not support symbolic links.
 		// So we must use low-level methods here.
-		if ((is_link($fullPath) && !unlink($fullPath)) || (file_exists($fullPath)) && !is_link($fullPath)) {
+		if ((is_link($fullPath) && !\Safe\unlink($fullPath)) || (file_exists($fullPath)) && !is_link($fullPath)) {
 			throw new MediaFileOperationException('could not delete media file: ' . $fullPath);
 		}
 
