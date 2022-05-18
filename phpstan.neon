@@ -44,6 +44,7 @@ parameters:
 				- app/Models/User.php
 				- app/Models/Photo.php
 				- app/Models/TagAlbum.php
+				- app/Models/SymLink.php
 
 		# -
 		# 	message: '#toArray\(\) return type has no value type specified in iterable type array.#'
