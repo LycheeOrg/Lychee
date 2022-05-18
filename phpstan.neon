@@ -19,7 +19,34 @@ parameters:
 	level: 7
 	paths:
 		- app
+	excludePaths:
+		- app/Relations/*
+		- app/View/*
 	ignoreErrors:
 		- '#Short ternary operator is not allowed#'
-		- '#Variable method call on \$this#'
-		- '#Variable property access on \$this#'
+		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>::whereNull\(\).#'
+		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\Relations\\HasMany<.*>::orderBy\(\)#'
+		-
+			message: '#Variable method call on \$this#'
+			paths:
+				- app/SmartAlbums/Utils/MimicModel.php
+		-
+			message: '#Variable property access on \$this#'
+			paths:
+				- app/SmartAlbums/Utils/MimicModel.php
+		-
+			message: '#type has no value type specified in iterable type array.#'
+			paths:
+				- app/Providers/AppServiceProvider.php
+				- app/Providers/AuthServiceProvider.php
+				- app/Providers/EventServiceProvider.php
+				- app/Models/User.php
+				- app/Models/Photo.php
+		# -
+		# 	message: '#toArray\(\) return type has no value type specified in iterable type array.#'
+		# 	paths:
+		# 		- app/Relations/LinkedPhotoCollection.php
+		-
+			message: '#jsonSerialize\(\) return type has no value type specified in iterable type array.#'
+			paths:
+				- app/SmartAlbums/Utils/MimicModel.php
