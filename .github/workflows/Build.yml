@@ -91,10 +91,6 @@ jobs:
           composer-options: "${{ matrix.mode }}"
 
       # begin of DEV
-      - name: Install Composer dependencies
-        if: ${{ matrix.mode == '' }}
-        uses: "ramsey/composer-install@v2"
-
       - name: Check Syntax
         if: ${{ matrix.mode == '' }}
         # continue-on-error: ${{ matrix.php-versions != '8.0' }}
