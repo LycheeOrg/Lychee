@@ -35,8 +35,7 @@ class LDAPActions
 	public static function update_user(string $username, LDAPUserData $userData): void
 	{
 		$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
-		if ($user != null) {
-			if (($user->display_name != $userData->display_name) || ($user->email != $userData->email)) {
+		if (($user != null) && (($user->display_name != $userData->display_name) || ($user->email != $userData->email))) {
 				Logs::debug(__METHOD__, __LINE__, 'Update User: ' . $username);
 				$user->email = $userData->email;
 				$user->display_name = $userData->display_name;
