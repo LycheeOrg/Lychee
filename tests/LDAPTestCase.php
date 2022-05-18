@@ -60,6 +60,8 @@ class LDAPTestCase extends TestCase
 		Configs::set('ldap_user_filter', $this->oldconfigs['ldap_user_filter']);
 		Configs::set('ldap_bind_dn', $this->oldconfigs['ldap_bind_dn']);
 		Configs::set('ldap_bind_pw', $this->oldconfigs['ldap_bind_pw']);
+		Configs::set('ldap_port', $this->oldconfigs['ldap_port']);
+		Configs::set('ldap_start_tls', $this->oldconfigs['ldap_start_tls']);
 	}
 
 	protected function get_ldap()

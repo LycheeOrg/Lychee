@@ -181,4 +181,50 @@ class LDAPTest extends LDAPTestCase
 			$this->done_ldap();
 		}
 	}
+
+	public function testLDAPs()
+	{
+		$ldap = $this->get_ldap();
+		try {
+			// Testing ldaps by using the public debian server
+			// We try to get the list of users which uid starts with the letter a
+			// There should be more than 100 of these users, So one is enough to prove
+			// that the communications is working.
+			Configs::set('ldap_server', 'ldaps://db.debian.org');
+			Configs::set('ldap_port', '636');
+			Configs::set('ldap_user_tree', 'dc=debian,dc=org');
+			Configs::set('ldap_user_filter', 'uid=%{user}');
+			Configs::set('ldap_bind_dn', '');
+			Configs::set('ldap_bind_pw', '');
+			$ldap->LDAP_open();
+			$SR = $ldap->LDAP_search('dc=debian,dc=org', 'uid=a*', 'sub');
+			$this->assertTrue($SR['count'] > 0, 'LDAP_search scope base should return at least one result');
+			$ldap->LDAP_close();
+		} finally {
+			$this->done_ldap();
+		}
+	}
+
+	public function testLDAPstarttls()
+	{
+		$this->markTestSkipped('Do not use.');
+		$ldap = $this->get_ldap();
+		try {
+			// Testing ldap with starttls by using the public google server.
+			Configs::set('ldap_server', 'ldap.google.com');
+			Configs::set('ldap_port', '389');
+			Configs::set('ldap_start_tls', '1');
+			Configs::set('ldap_user_tree', '');
+			Configs::set('ldap_user_filter', '');
+			Configs::set('ldap_bind_dn', '');
+			Configs::set('ldap_bind_pw', '');
+			$ldap->LDAP_open();
+			$SR = $ldap->LDAP_search('dc=google,dc=com', '(objectClass=*)', 'sub');
+			$this->_debug($SR);
+			$this->assertTrue($SR['count'] > 0, 'LDAP_search scope base should return at least one result');
+			$ldap->LDAP_close();
+		} finally {
+			$this->done_ldap();
+		}
+	}
 }
