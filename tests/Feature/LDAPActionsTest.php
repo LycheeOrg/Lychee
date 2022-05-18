@@ -11,10 +11,6 @@ class LDAPActionsTest extends LDAPTestCase
 	{
 		$ldap = $this->get_ldap();
 		try {
-			$test_user = [
-				'user' => LDAPTest::TESTUSER, 'display_name' => LDAPTest::TESTUSER_CN, 'email' => LDAPTest::TESTUSER_EMAIL,
-			];
-			// 2
 			$this->assertTrue($ldap->test_LDAP_open(), 'Connection to LDAP test server failed');
 
 			$user_list = $ldap->get_user_list(true);
