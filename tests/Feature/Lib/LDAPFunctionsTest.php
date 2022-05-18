@@ -21,17 +21,6 @@ class LDAPFunctionsTest extends LDAPFunctions
 		return $this->LDAP_search($base_dn, $filter, $scope, $attributes, $attrsonly, $sizelimit);
 	}
 
-	public function testLDAPBind(?string $bindDN = null, ?string $bindPassword = null): bool
-	{
-		try {
-			$this->LDAP_bind($bindDN, $bindPassword);
-		} catch (LDAPException $e) {
-			return false;
-		}
-
-		return true;
-	}
-
 	public function testLDAPOpen(): bool
 	{
 		try {
@@ -54,6 +43,11 @@ class LDAPFunctionsTest extends LDAPFunctions
 		return true;
 	}
 
+	public function testLDAPBind(?string $bindDN = null, ?string $bindPassword = null): bool
+	{
+		return $this->LDAP_bind($bindDN, $bindPassword);
+	}
+
 	public function testLDAPGetBound(): int
 	{
 		return $this->bound;
@@ -74,7 +68,7 @@ class LDAPFunctionsTest extends LDAPFunctions
 		return LDAPFunctions::_filterEscape($string);
 	}
 
-	public static function testLDAPMakefilter(string $filter, array $placeholders): string
+	public static function testLDAPMakeFilter(string $filter, array $placeholders): string
 	{
 		return LDAPFunctions::_makeFilter($filter, $placeholders);
 	}

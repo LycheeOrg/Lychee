@@ -14,10 +14,6 @@ use App\Models\User;
  */
 class LDAPActions
 {
-	public function __construct()
-	{
-	}
-
 	/**
 	 * Create a user in the database if it does not exist already.
 	 */
@@ -36,11 +32,10 @@ class LDAPActions
 	{
 		$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
 		if (($user != null) && (($user->display_name != $userData->display_name) || ($user->email != $userData->email))) {
-				Logs::debug(__METHOD__, __LINE__, 'Update User: ' . $username);
-				$user->email = $userData->email;
-				$user->display_name = $userData->display_name;
-				$user->save();
-			}
+			Logs::debug(__METHOD__, __LINE__, 'Update User: ' . $username);
+			$user->email = $userData->email;
+			$user->display_name = $userData->display_name;
+			$user->save();
 		}
 	}
 

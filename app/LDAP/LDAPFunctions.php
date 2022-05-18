@@ -67,18 +67,6 @@ class LDAPFunctions
 	/** @var LDAPUserData[] cashed user list retrieved by get_user_list() */
 	protected ?array $user_list = null;
 
-	protected function _log($M, $L, $myDebugVar, $label = '', $oneline = true)
-	{
-		$msg = print_r($myDebugVar, true);
-		if ($oneline) {
-			$msg = str_replace(PHP_EOL, ' ', $msg);
-			while (str_contains($msg, '  ')) {
-				$msg = str_replace('  ', ' ', $msg);
-			}
-		}
-		Logs::notice($M, $L, $label . "'" . trim($msg) . "'");
-	}
-
 	/**
 	 * Wraps around ldap_search, ldap_list or ldap_read depending on $scope.
 	 *
@@ -559,6 +547,7 @@ class LDAPFunctions
 		if (!$this->con) {
 			return;
 		} // connection has not been established
+		Logs::debug(__METHOD__, __LINE__, 'close_LDAP()');
 		try {
 			ldap_close($this->con);
 			$this->con = null;

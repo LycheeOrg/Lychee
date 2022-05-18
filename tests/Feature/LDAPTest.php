@@ -59,7 +59,8 @@ class LDAPTest extends LDAPTestCase
 			$this->assertTrue($ldap->test_LDAP_bind(self::TESTUSER_DN, self::TESTUSER_PW), 'ldap_bind has failed for TESTUSER_DN:TESTUSER_PW');
 			$this->assertEquals(1, $ldap->test_LDAP_get_bound(), 'Bound level should be USER');
 
-			$this->assertFalse($ldap->test_LDAP_bind(self::UNKNOWN_USER, 'password'), 'ldap_bind has failed');
+			$this->expectException(\App\Exceptions\LDAPException::class, 'Missing Exception from ldap_bind when called with UNKNOWN_USER:password');
+			$ldap->test_LDAP_bind(self::UNKNOWN_USER, 'password');
 			$this->assertEquals(-1, $ldap->test_LDAP_get_bound(), 'Bound level should be UNBOUND');
 			$this->assertTrue($ldap->test_LDAP_close(), 'Connection to LDAP server cannot be closed');
 		} finally {
