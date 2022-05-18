@@ -7,7 +7,6 @@ use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
-use function Safe\substr;
 
 /**
  * App\Logs.
@@ -122,7 +121,7 @@ class Logs extends Model
 	{
 		try {
 			if (strlen($method) > self::MAX_METHOD_LENGTH) {
-				$method = '...' . substr($method, 3, self::MAX_METHOD_LENGTH - 3);
+				$method = '...' . \Safe\substr($method, 3, self::MAX_METHOD_LENGTH - 3);
 			}
 			$log = new self([
 				'type' => self::SEVERITY_2_STRING[$severity],

@@ -14,8 +14,6 @@ use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection;
-use function Safe\ini_get;
-use function Safe\set_time_limit;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\Exception\FileNotFoundException;
@@ -189,7 +187,7 @@ class Archive extends Action
 				$fileName = $fullNameOfDirectory . '/' . $fileBaseName . $extension;
 
 				// Reset the execution timeout for every iteration.
-				set_time_limit(intval(ini_get('max_execution_time')));
+				\Safe\set_time_limit(intval(\Safe\ini_get('max_execution_time')));
 				$zip->addFileFromPath($fileName, $fullPath);
 			} catch (\Throwable $e) {
 				Handler::reportSafely($e);
