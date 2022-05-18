@@ -131,7 +131,6 @@ class LDAPFunctions
 			};
 			$result = \Safe\ldap_get_entries($this->con, $sr);
 			\Safe\ldap_free_result($sr);
-			$this->_log(__METHOD__, __LINE__, $result, 'LDAP_search:');
 
 			return $result;
 		} catch (\Throwable $e) {
@@ -159,14 +158,15 @@ class LDAPFunctions
 	protected function LDAP_bind(?string $bindDN = null, ?string $bindPassword = null): bool
 	{
 		try {
+			Logs::debug(__METHOD__, __LINE__, '1 LDAP bind with ' . $bindDN . ':' . $bindPassword . ' [bound = ' . $this->bound . ']');
 			if (empty($bindDN)) {
 				$bindDN = (string) Configs::get_value(self::CONFIG_KEY_BIND_DN);
 				$bindPassword = (string) Configs::get_value(self::CONFIG_KEY_BIND_PW);
-				$this->bound = $bindDN ? self::BIND_TYPE_ANONYMOUS : self::BIND_TYPE_SUPER_USER;
+				$this->bound = empty($bindDN) ? self::BIND_TYPE_ANONYMOUS : self::BIND_TYPE_SUPER_USER;
 			} else {
 				$this->bound = self::BIND_TYPE_USER;
 			}
-			Logs::debug(__METHOD__, __LINE__, 'LDAP bind with ' . $bindDN . ':' . $bindPassword);
+			Logs::debug(__METHOD__, __LINE__, 'LDAP bind with ' . $bindDN . ':' . $bindPassword . ' [bound = ' . $this->bound . ']');
 
 			$is_bound = ldap_bind($this->con, $bindDN, $bindPassword);
 
@@ -192,10 +192,12 @@ class LDAPFunctions
 	 */
 	protected function LDAP_check_bind(): void
 	{
+		$req_level = (Configs::get_value(self::CONFIG_KEY_BIND_DN) && Configs::get_value(self::CONFIG_KEY_BIND_PW))
+						? self::BIND_TYPE_SUPER_USER : self::BIND_TYPE_ANONYMOUS;
+		Logs::debug(__METHOD__, __LINE__, 'LDAP_check_bind: ' . $this->bound . ' [required: ' . $req_level . ']');
 		// force superuser or anonymous bind if the bound level is not sufficient yet
-		if (($this->bound < (Configs::get_value(self::CONFIG_KEY_BIND_DN) && Configs::get_value(self::CONFIG_KEY_BIND_PW)))
-			? self::BIND_TYPE_SUPER_USER : self::BIND_TYPE_ANONYMOUS
-		) {
+		if ($this->bound < $req_level) {
+			Logs::debug(__METHOD__, __LINE__, 'New bind is required');
 			// use anonymous or superuser credentials
 			if (!$this->LDAP_bind()) {
 				throw new LDAPException('Required bind was not pssible');
@@ -223,6 +225,23 @@ class LDAPFunctions
 	}
 
 	/**
+	 * Wraps around ldap_get_option.
+	 *
+	 * @param int    $opt
+	 * @param string $value
+	 *
+	 * @return void
+	 *
+	 * @throws LDAPException
+	 */
+	protected function LDAP_get_option(int $opt, array|string|int &$value = null): void
+	{
+		if (!ldap_get_option($this->con, $opt, $value)) {
+			throw new LDAPException('Cannot get the value for option: ' . $opt);
+		}
+	}
+
+	/**
 	 * Warp around ldap_start_tls.
 	 *
 	 * @return void
@@ -231,12 +250,8 @@ class LDAPFunctions
 	 */
 	protected function LDAP_start_tls(): void
 	{
-		try {
-			if (!ldap_start_tls($this->con)) {
-				throw new \Safe\Exceptions\LdapException('ldap_stat_tls failed');
-			}
-		} catch (\Throwable $e) {
-			throw new LDAPException($e->getMessage(), $e);
+		if (!ldap_start_tls($this->con)) {
+			throw new LdapException('ldap_stat_tls failed');
 		}
 	}
 
@@ -263,6 +278,7 @@ class LDAPFunctions
 		$user = ['user' => $username, 'server' => $this->ldap_server];
 		$base = self::_makeFilter(Configs::get_value(self::CONFIG_KEY_USER_TREE), $user);
 		Logs::notice(__METHOD__, __LINE__, sprintf('base filter: %s', $base));
+
 		if (Configs::get_value(self::CONFIG_KEY_USER_FILTER)) {
 			$filter = self::_makeFilter(Configs::get_value(self::CONFIG_KEY_USER_FILTER), $user);
 		} else {
@@ -329,7 +345,6 @@ class LDAPFunctions
 	public function check_pass(string $user, string $pass): bool
 	{
 		$this->open_LDAP();
-
 		try {
 			// Option A: If we know how to bind a user, we try that directly
 			if (strpos(Configs::get_value(self::CONFIG_KEY_USER_TREE), '%{user}')) {
@@ -358,8 +373,12 @@ class LDAPFunctions
 			if ($this->LDAP_bind($info->dn, $pass)) {
 				return true;
 			}
+
+			return false;
 		} catch (LDAPException) {
 			return false;
+		} finally {
+			$this->close_LDAP();
 		}
 	}
 
@@ -436,6 +455,7 @@ class LDAPFunctions
 				$this->user_list[$entries[$i][$userkey][0]] = $this->userdata_from_ldap_result($entries[$i]);
 			}
 		}
+		$this->close_LDAP();
 
 		return $this->user_list;
 	}
@@ -467,98 +487,93 @@ class LDAPFunctions
 		$lastException = null;
 		foreach ($servers as $server) {
 			try {
-				$lastException = null;
 				$server = trim($server);
 				$this->con = ldap_connect($server, $port);
 				$OK = ($this->con !== false);
 				Logs::notice(__METHOD__, __LINE__, sprintf('Try to connect %s on port %s: %s', $server, $port, $OK ? 'OK' : 'NO'));
+				if (!$OK) {
+					continue;
+				}
+				/**
+				 * We have acquired a connection \o/.
+				 */
+
+				/*
+				 * When open_LDAP 2.x.x is used, ldap_connect() will always return a resource as it does
+				 * not actually connect but just initializes the connecting parameters. The actual
+				 * connect happens with the next calls to ldap_* functions, usually with ldap_bind().
+				 *
+				 * So we should try to bind to server in order to check its availability.
+				*/
+
+				// set protocol version
+				$ldap_version = (int) Configs::get_value(self::CONFIG_KEY_VERSION, self::LDAP_VERSION_UNKNOWN);
+				if ($ldap_version !== self::LDAP_VERSION_UNKNOWN) {
+					$this->LDAP_set_option(LDAP_OPT_PROTOCOL_VERSION, $ldap_version);
+					Logs::notice(__METHOD__, __LINE__, sprintf('Using protocol version %s', $ldap_version));
+				}
+
+				// Some options are only valid in combination with version 3
+				if ($ldap_version === self::LDAP_VERSION_3) {
+					// use TLS (needs version 3)
+					if (Configs::get_value(self::CONFIG_KEY_START_TLS)) {
+						$this->LDAP_start_tls();
+					}
+
+					$ldap_referals = Configs::get_value(self::CONFIG_KEY_REFERRALS);
+					if ($ldap_referals > -1) {
+						$this->LDAP_set_option(LDAP_OPT_REFERRALS, $ldap_referals);
+					}
+				}
+
+				// set deref mode
+				$ldap_deref = Configs::get_value(self::CONFIG_KEY_DEREF);
+				if ($ldap_deref) {
+					$this->LDAP_set_option(LDAP_OPT_DEREF, $ldap_deref);
+				}
+				$this->LDAP_set_option(LDAP_OPT_NETWORK_TIMEOUT, 1);
+				$OK = $this->LDAP_bind();
 				if ($OK) {
 					$this->ldap_server = $server;
-					break;
-				} else {
-					throw new \Safe\Exceptions\LdapException('ldap_connect failed');
+
+					return;
 				}
 			} catch (\Throwable $e) {
 				Handler::reportSafely($e);
-				$lastException = new LDAPException($e->getMessage(), $e);
 			}
 		}
-
-		if ($lastException) {
-			throw $lastException;
-		}
-
-		/**
-		 * We have acquired a connection \o/.
-		 */
-
-		/*
-		 * When open_LDAP 2.x.x is used, ldap_connect() will always return a resource as it does
-		 * not actually connect but just initializes the connecting parameters. The actual
-		 * connect happens with the next calls to ldap_* functions, usually with ldap_bind().
-		 *
-		 * So we should try to bind to server in order to check its availability.
-		*/
-
-		// set protocol version
-		$ldap_version = (int) Configs::get_value(self::CONFIG_KEY_VERSION, self::LDAP_VERSION_UNKNOWN);
-		if ($ldap_version !== self::LDAP_VERSION_UNKNOWN) {
-			$this->LDAP_set_option(LDAP_OPT_PROTOCOL_VERSION, $ldap_version);
-			Logs::notice(__METHOD__, __LINE__, sprintf('Using protocol version %s', $ldap_version));
-		}
-
-		// Some options are only valid in combination with version 3
-		if ($ldap_version === self::LDAP_VERSION_3) {
-			// use TLS (needs version 3)
-			if (Configs::get_value(self::CONFIG_KEY_START_TLS)) {
-				$this->LDAP_start_tls();
-			}
-
-			$ldap_referals = Configs::get_value(self::CONFIG_KEY_REFERRALS);
-			if ($ldap_referals > -1) {
-				$this->LDAP_set_option(LDAP_OPT_REFERRALS, $ldap_referals);
-			}
-		}
-
-		// set deref mode
-		$ldap_deref = Configs::get_value(self::CONFIG_KEY_DEREF);
-		if ($ldap_deref) {
-			$this->LDAP_set_option(LDAP_OPT_DEREF, $ldap_deref);
-		}
-		$this->LDAP_set_option(LDAP_OPT_NETWORK_TIMEOUT, 1);
+		$lastException = new LDAPException('No LDAP serveravailable');
 	}
 
 	/**
+	 * Prepares/opens a connection to the configured LDAP server and sets the
+	 * wanted option on the connection.
+	 *
+	 * This method does not yet bind to the server.
+	 * If no super-user credentials are set, this method cannot decide
+	 * whether it should bind anonymously or use user credentials.
+	 *
+	 * @throws LDAPException
+	 */
+	protected function close_LDAP(): void
+	{
+		if (!$this->con) {
+			return;
+		} // connection has not been established
+		try {
+			ldap_close($this->con);
+			$this->con = null;
+			$this->bound = self::BIND_TYPE_UNBOUND;
+		} catch (\Throwable $e) {
+			Handler::reportSafely($e);
+		}
+	}
+	/*
 	 * The following functions are an interface for the unit test only!!!
 	 *
 	 * DO NOT USE THEM FOR ANY OTHER PURPOSE!
 	 */
-	public function test_LDAP_search(
-				string $base_dn,
-				string $filter,
-				string $scope = self::SCOPE_SUB,
-				array $attributes = [],
-				int $attrsonly = 0,
-				int $sizelimit = 0
-		): array {
-		return $this->LDAP_search($base_dn, $filter, $scope, $attributes, $attrsonly, $sizelimit);
-	}
 
-	public function test_LDAP_bind(?string $bindDN = null, ?string $bindPassword = null): bool
-	{
-		return $this->LDAP_bind($bindDN, $bindPassword);
-	}
-
-	public function test_open_LDAP(): bool
-	{
-		try {
-			$this->open_LDAP();
-		} catch (LDAPException $e) {
-			return false;
-		}
-
-		return true;
-	}
 	/*
 	 * End of test functions
 	 */
