@@ -62,7 +62,7 @@ trait MimicModel
 	 */
 	public function __get(string $key)
 	{
-		if ($key != '') {
+		if (empty($key)) {
 			throw new LycheeInvalidArgumentException('property name must not be empty');
 		}
 
