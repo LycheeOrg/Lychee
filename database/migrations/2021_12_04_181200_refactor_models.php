@@ -468,13 +468,13 @@ class RefactorModels extends Migration
 	 * @return void
 	 */
 	// The requirement for email adresses being unique has to be dropped in case
-	// the users are managed externally e.g. by an ldap-server. The reason is an inherent
+	// the users are managed externally e.g. by an LDAP server. The reason is an inherent
 	// update problem.
-	// Since the external server needs to take care of the uniqueness of the e-mail address,
+	// Since the external server needs to take care of the uniqueness of the email address,
 	// nothing can be done in lychee in case if it is not unique.
-	// If the uid of a user (his login name) gets changed, but his e-mail address does not then
-	// the user cannot login any more if lychee uses LDAP. The reason is that lychee cannot update
-	// the users table since the e-mail already exists and without a new entry in the users table
+	// If the UID of a user (his login name) gets changed, but his email address does not,
+	// the user cannot login any more if Lychee uses LDAP. The reason is that Lychee cannot update
+	// the users table since the email already exists and without a new entry in the users table
 	// a login is not possible.
 	// The only solution would be to develop a clever purge strategy that deletes non-existing users
 	// first and call this strategy in case the users account cannot be created during login.
