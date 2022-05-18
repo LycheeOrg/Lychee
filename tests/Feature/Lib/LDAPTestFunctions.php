@@ -50,7 +50,7 @@ class LDAPTestFunctions extends LDAPFunctions
 
 	public function LDAP_get_bound(): int
 	{
-		return parent::bound;
+		return $this->bound;
 	}
 
 	public function LDAP_set_option(int $opt, string $value): void
