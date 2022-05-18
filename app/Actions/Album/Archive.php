@@ -14,6 +14,8 @@ use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection;
+use function Safe\ini_get;
+use function Safe\set_time_limit;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\Exception\FileNotFoundException;
@@ -99,7 +101,7 @@ class Archive extends Action
 	 */
 	private static function createValidTitle(string $title): string
 	{
-		return str_replace(self::BAD_CHARS, '', $title) ?? 'Untitled';
+		return str_replace(self::BAD_CHARS, '', $title) ?: 'Untitled';
 	}
 
 	/**
@@ -110,18 +112,18 @@ class Archive extends Action
 	 * input array `$used`.
 	 * The method adds the return value to `$used`.
 	 *
-	 * @param string $str  the input string which shall be made unique
-	 * @param array  $used an input array of previously used strings;
-	 *                     the output array will contain the result value
+	 * @param string        $str  the input string which shall be made unique
+	 * @param array<string> $used an input array of previously used strings;
+	 *                            the output array will contain the result value
 	 *
 	 * @return string the unique string
 	 */
 	private function makeUnique(string $str, array &$used): string
 	{
-		if (!empty($used)) {
+		if (count($used) > 0) {
 			$i = 1;
 			$tmp = $str;
-			while (in_array($tmp, $used)) {
+			while (in_array($tmp, $used, true)) {
 				$tmp = $str . '-' . $i;
 				$i++;
 			}
@@ -137,7 +139,7 @@ class Archive extends Action
 	 *
 	 * @param AbstractAlbum $album            the album which shall be added
 	 *                                        to the archive
-	 * @param array         $usedDirNames     the list of already used
+	 * @param array<string> $usedDirNames     the list of already used
 	 *                                        directory names on the same level
 	 *                                        as `$album`
 	 *                                        ("siblings" of `$album`)
@@ -150,12 +152,14 @@ class Archive extends Action
 	 */
 	private function compressAlbum(AbstractAlbum $album, array &$usedDirNames, ?string $fullNameOfParent, ZipStream $zip): void
 	{
+		$fullNameOfParent = $fullNameOfParent ?? '';
+
 		if (!self::isArchivable($album)) {
 			return;
 		}
 
 		$fullNameOfDirectory = $this->makeUnique(self::createValidTitle($album->title), $usedDirNames);
-		if (!empty($fullNameOfParent)) {
+		if ($fullNameOfParent !== '') {
 			$fullNameOfDirectory = $fullNameOfParent . '/' . $fullNameOfDirectory;
 		}
 
@@ -172,7 +176,8 @@ class Archive extends Action
 				// in smart albums should be owned by the current user...
 				if (($album instanceof BaseSmartAlbum || $album instanceof TagAlbum) &&
 					!AccessControl::is_current_user_or_admin($photo->owner_id) &&
-					!($photo->album_id == null ? $album->is_downloadable : $photo->album->is_downloadable)) {
+					!($photo->album_id == null ? $album->is_downloadable : $photo->album->is_downloadable)
+				) {
 					continue;
 				}
 
@@ -184,7 +189,7 @@ class Archive extends Action
 				$fileName = $fullNameOfDirectory . '/' . $fileBaseName . $extension;
 
 				// Reset the execution timeout for every iteration.
-				set_time_limit(ini_get('max_execution_time'));
+				set_time_limit(intval(ini_get('max_execution_time')));
 				$zip->addFileFromPath($fileName, $fullPath);
 			} catch (\Throwable $e) {
 				Handler::reportSafely($e);
