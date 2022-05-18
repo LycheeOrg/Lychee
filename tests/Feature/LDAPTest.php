@@ -16,7 +16,7 @@ class LDAPTest extends LDAPTestCase
 	{
 		$ldap = $this->get_ldap();
 		try {
-			$this->assertTrue($ldap->testOpenLDAP(), 'Connection to LDAP test server failed');
+			$this->assertTrue($ldap->test_LDAP_open(), 'Connection to LDAP test server failed');
 
 			$ldap->test_LDAP_get_option(LDAP_OPT_PROTOCOL_VERSION, $option);
 			$this->assertEquals(3, $option, 'LDAP Version should be 3');
@@ -43,7 +43,7 @@ class LDAPTest extends LDAPTestCase
 	{
 		$ldap = $this->get_ldap();
 		try {
-			$this->assertTrue($ldap->testOpenLDAP(), 'Connection to LDAP test server failed');
+			$this->assertTrue($ldap->test_LDAP_open(), 'Connection to LDAP test server failed');
 			// The bound level after open_LDAP() is 2 if open_LDAP() does already the binding with the LDAP server.
 			$this->assertEquals(2, $ldap->test_LDAP_get_bound(), 'Bound level should be SUPERUSER');
 
@@ -53,13 +53,13 @@ class LDAPTest extends LDAPTestCase
 			$this->assertEqualsCanonicalizing($user_data->toArray(), $this->test_user);
 			$this->assertEquals(2, $ldap->test_LDAP_get_bound(), 'Bound level should be SUPERUSER');
 
-			$this->assertTrue($ldap->testLDAPBind(), 'ldap_bind has failed');
+			$this->assertTrue($ldap->test_LDAP_bind(), 'ldap_bind has failed');
 			$this->assertEquals(2, $ldap->test_LDAP_get_bound(), 'Bound level should be SUPERUSER');
 
-			$this->assertTrue($ldap->testLDAPBind(self::TESTUSER_DN, self::TESTUSER_PW), 'ldap_bind has failed for TESTUSER_DN:TESTUSER_PW');
+			$this->assertTrue($ldap->test_LDAP_bind(self::TESTUSER_DN, self::TESTUSER_PW), 'ldap_bind has failed for TESTUSER_DN:TESTUSER_PW');
 			$this->assertEquals(1, $ldap->test_LDAP_get_bound(), 'Bound level should be USER');
 
-			$this->assertFalse($ldap->testLDAPBind(self::UNKNOWN_USER, 'password'), 'ldap_bind has failed');
+			$this->assertFalse($ldap->test_LDAP_bind(self::UNKNOWN_USER, 'password'), 'ldap_bind has failed');
 			$this->assertEquals(-1, $ldap->test_LDAP_get_bound(), 'Bound level should be UNBOUND');
 			$this->assertTrue($ldap->test_LDAP_close(), 'Connection to LDAP server cannot be closed');
 		} finally {
@@ -71,16 +71,16 @@ class LDAPTest extends LDAPTestCase
 	{
 		$ldap = $this->get_ldap();
 		try {
-			$this->assertTrue($ldap->testOpenLDAP(), 'Connection to LDAP test server failed');
+			$this->assertTrue($ldap->test_LDAP_open(), 'Connection to LDAP test server failed');
 
-			$SR = $ldap->testLDAPSearch(self::USER_TREE, self::TESTUSER_FILTER, 'sub');
+			$SR = $ldap->test_LDAP_search(self::USER_TREE, self::TESTUSER_FILTER, 'sub');
 
 			$this->assertFalse($SR['count'] == 0, 'LDAP_search got no result');
 			$this->assertFalse($SR['count'] > 1, 'LDAP_search got more than one result, should be one');
-			$SR = $ldap->testLDAPSearch(self::USER_TREE, '(objectClass=*)', 'base');
+			$SR = $ldap->test_LDAP_search(self::USER_TREE, '(objectClass=*)', 'base');
 			$this->assertTrue($SR['count'] > 0, 'LDAP_search scope base should return at least one result');
 
-			$SR = $ldap->testLDAPSearch(self::USER_TREE, '(objectClass=*)', 'one');
+			$SR = $ldap->test_LDAP_search(self::USER_TREE, '(objectClass=*)', 'one');
 			$this->assertTrue($SR['count'] > 0, 'LDAP_search scope base should return at least one result');
 
 			$this->assertTrue($ldap->test_LDAP_close(), 'Connection to LDAP server cannot be closed');
@@ -109,7 +109,7 @@ class LDAPTest extends LDAPTestCase
 			$this->assertEqualsCanonicalizing($user_data->toArray(), $this->test_user);
 
 			if ($user_data) {
-				$this->assertTrue($ldap->testLDAPBind($user_data->dn, self::TESTUSER_PW), 'Cannot ldap_bind to user TESTUSER');
+				$this->assertTrue($ldap->test_LDAP_bind($user_data->dn, self::TESTUSER_PW), 'Cannot ldap_bind to user TESTUSER');
 			}
 			// 3
 			$this->assertTrue($ldap->check_pass(self::TESTUSER, self::TESTUSER_PW), 'Cannot verify user TESTUSER');
