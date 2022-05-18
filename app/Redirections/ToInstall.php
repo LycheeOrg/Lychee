@@ -24,7 +24,7 @@ class ToInstall implements Redirection
 			if (file_exists($filename)) {
 				if (is_file($filename)) {
 					try {
-						unlink($filename);
+						\Safe\unlink($filename);
 					} catch (\Throwable $e) {
 						throw new InstallationFailedException('Could not remove ' . $filename, $e);
 					}
