@@ -34,7 +34,7 @@ class OrRule implements Rule
 		} else {
 			$idx = 0;
 			do {
-				$valid |= $this->rules[$idx]->passes($attribute, $value);
+				$valid = $this->rules[$idx]->passes($attribute, $value);
 				$idx++;
 			} while (!$valid && $idx < $num);
 		}

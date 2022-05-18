@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use App\Contracts\HasRandomID;
 use Illuminate\Contracts\Validation\Rule;
+use function Safe\preg_match;
 
 class RandomIDRule implements Rule
 {
@@ -19,11 +20,9 @@ class RandomIDRule implements Rule
 	 */
 	public function passes($attribute, $value): bool
 	{
-		return
-			(
-				$value === null &&
-				$this->isNullable
-			) || preg_match('/^[-_a-zA-Z0-9]{' . HasRandomID::ID_LENGTH . '}$/', $value) === 1;
+		return ($value === null &&
+			$this->isNullable
+		) || preg_match('/^[-_a-zA-Z0-9]{' . HasRandomID::ID_LENGTH . '}$/', $value) === 1;
 	}
 
 	/**
