@@ -36,9 +36,8 @@ class RecentAlbum extends BaseSmartAlbum
 
 	public static function getInstance(): self
 	{
-		if (!self::$instance) {
-			self::$instance = new self();
-		}
+		self::$instance = self::$instance ?? new self();
+
 		// The following two lines are only needed due to testing.
 		// The same instance of this class is used for all tests, because
 		// the singleton stays alive during tests.
