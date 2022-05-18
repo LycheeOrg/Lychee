@@ -17,7 +17,7 @@ To use LDAP as the login provider for lychee an LDAP provider needs be setup in 
 Setting the basic settings should be enough to enable the LDAP interface for Lychee. If needed advance options are available with the advanced settings.
 
 #### Basic Settings 
-|-------------------|---------------------------------------------------------------|------------|-------------------------------|
+
 | Setting           | Description                                                   | Type       | Default Value                 |
 |-------------------|---------------------------------------------------------------|:----------:|-------------------------------|
 | ldap_enabled      | LDAP login provider enabled                                   | 0|1        | 0                             |
@@ -27,12 +27,11 @@ Setting the basic settings should be enough to enable the LDAP interface for Lyc
 | ldap_bind_pw      | LDAP bind password                                            | string     |                               |
 | ldap_user_tree    | LDAP user tree                                                | string     |                               |
 | ldap_user_filter  | LDAP user filter                                              | string     |                               |
-|-------------------|---------------------------------------------------------------|------------|-------------------------------|
 
 #### Advanced Settings
-+-------------------+---------------------------------------------------------------+------------+-------------------------------+
+
 | Setting           | Description                                                   | Type       | Default Value                 |
-+-------------------+---------------------------------------------------------------+:----------:+-------------------------------+
+|-------------------|---------------------------------------------------------------|:----------:|-------------------------------|
 | ldap_version      | LDAP protocol version                                         | int        | 3                             |
 | ldap_user_key     | LDAP user key                                                 | string     | uid                           |
 | ldap_user_scope   | LDAP user scope                                               | string     | sub                           |
@@ -41,15 +40,13 @@ Setting the basic settings should be enough to enable the LDAP interface for Lyc
 | ldap_deref        | LDAP option deref                                             | 0|1        | 0                             |
 | ldap_cn           | LDAP common name                                              | string     | cn                            |
 | ldap_mail         | LDAP mail entry                                               | string     | mail                          |
-+-------------------+---------------------------------------------------------------+------------+-------------------------------+
 
 #### Database Update Settings
-+-------------------+---------------------------------------------------------------+------------+-------------------------------+
+
 | Setting           | Description                                                   | Type       | Default Value                 |
-+-------------------+---------------------------------------------------------------+:----------:+-------------------------------+
+|-------------------|---------------------------------------------------------------|:----------:|-------------------------------|
 | ldap_purge        | LDAP enables purging of obsolete users in lychee              | 0|1        | 0                             |
 | ldap_update_users | LDAP schedule interval for automatic sync of users in minutes | int        | 0                             |
-+-------------------+---------------------------------------------------------------+------------+-------------------------------+
 
 ### Synchronizing Lychee with the LDAP Server
 
@@ -76,9 +73,8 @@ switches the automatic update off. If `ldap_enable = 1` the synchronisation can 
 The LDAP interface for lychee can be tested using the public LDAP server from [Forum Systems](https://www.forumsys.com/2022/05/10/online-ldap-test-server/) 
 with the follwing configuration:
 
-+-------------------+---------------------------------------------------------------+--------------------------------------+
-| Setting           | Description                                                   | Value                 |
-+-------------------+---------------------------------------------------------------+--------------------------------------+
+| Setting           | Description                                                   | Value                                |
+|-------------------|---------------------------------------------------------------|--------------------------------------|
 | ldap_enabled      | LDAP login provider enabled                                   | 1                                    |
 | ldap_server       | LDAP server name                                              | ldap.forumsys.com                    |
 | ldap_port         | LDAP server port                                              | 389                                  |
@@ -86,16 +82,13 @@ with the follwing configuration:
 | ldap_user_filter  | LDAP user filter                                              | (uid=%{user})                        |
 | ldap_bind_dn      | LDAP bind dn                                                  | cn=read-only-admin,dc=example,dc=com |
 | ldap_bind_pw      | LDAP bind password                                            | password                             |
-+-------------------+---------------------------------------------------------------+--------------------------------------+
 
 ### Troubleshooting
 
 In case of problems with the communication between lychee and the LDAP server the deubg logging should be activated in the `.env`-file:
 
-+-------------------+-------------------------------+------------------------+--------------------------------------+
 | .env Entry        | Description                   | Default Value          | Recomended Value for Debugging       |
-+-------------------+-------------------------------+------------------------+--------------------------------------+
+|-------------------|-------------------------------|------------------------|--------------------------------------|
 | APP_LOG_LEVEL     | Application minimum log level | error                  | debug                                |
-+-------------------+-------------------------------+------------------------+--------------------------------------+
 
 Then the communication between lynchee and the LDAP server can be found in the administrator menue (Show Logs).
