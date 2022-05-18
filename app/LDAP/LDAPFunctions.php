@@ -534,7 +534,7 @@ class LDAPFunctions
 				Handler::reportSafely($e);
 			}
 		}
-		$lastException = new LDAPException('No LDAP serveravailable');
+		throw new LDAPException('No LDAP serveravailable');
 	}
 
 	/**

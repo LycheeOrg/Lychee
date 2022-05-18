@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Configs;
 use Tests\Feature\Lib\LDAPTestFunctions;
 use Tests\LDAPTestCase;
 
@@ -86,6 +87,19 @@ class LDAPTest extends LDAPTestCase
 			$this->assertTrue($SR['count'] > 0, 'LDAP_search scope base should return at least one result');
 
 			$this->assertTrue($ldap->LDAP_close(), 'Connection to LDAP server cannot be closed');
+		} finally {
+			$this->done_ldap();
+		}
+	}
+
+	public function testLDAPmultiServer()
+	{
+		$ldap = $this->get_ldap();
+		try {
+			Configs::set('ldap_server', 'google.com,github.com');
+			$this->assertFalse($ldap->LDAP_open(), 'Connection to the LDAP test servers should have failed');
+			Configs::set('ldap_server', 'google.com,github.com,' . self::SERVER);
+			$this->assertTrue($ldap->LDAP_open(), 'Connection to LDAP test server failed');
 		} finally {
 			$this->done_ldap();
 		}
