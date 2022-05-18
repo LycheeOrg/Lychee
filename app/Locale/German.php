@@ -174,7 +174,7 @@ final class German implements Language
 			'ALBUM_IMAGES' => 'Bilder',
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Unteralben',
-			'ALBUM_OWNER' => 'Owner',
+			'ALBUM_OWNER' => 'Besitzer',
 			'ALBUM_SHARING' => 'Teilen',
 			'ALBUM_SHR_YES' => 'Ja',
 			'ALBUM_SHR_NO' => 'Nein',
