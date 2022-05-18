@@ -28,7 +28,6 @@ class LDAPintegrationTest extends LDAPTestCase
 			 * 6. try to verify user gaus via log_as_user()
 			 * 7. Verify the return values from user()
 			 * 8. Verify that the return values from user() for euler do not match gauss.
-			 * 8. Restore original config values
 			 */
 			$test_user = [
 				'username' => LDAPTest::TESTUSER, 'display_name' => LDAPTest::TESTUSER_CN, 'email' => LDAPTest::TESTUSER_EMAIL,
@@ -67,7 +66,6 @@ class LDAPintegrationTest extends LDAPTestCase
 				}
 			}
 			$this->assertFalse($OK, 'Userdata should differ from the LDAP data for gauss');
-			// 9
 		} finally {
 			$this->done_ldap();
 		}
