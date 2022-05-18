@@ -207,6 +207,7 @@ class LDAPTest extends LDAPTestCase
 
 	public function testLDAPstarttls()
 	{
+		$this->assertTrue(true);
 		$this->markTestSkipped('Do not use.');
 		$ldap = $this->get_ldap();
 		try {
