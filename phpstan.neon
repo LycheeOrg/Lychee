@@ -21,3 +21,5 @@ parameters:
 		- app
 	ignoreErrors:
 		- '#Short ternary operator is not allowed#'
+		- '#Variable method call on \$this#'
+		- '#Variable property access on \$this#'
