@@ -17,6 +17,7 @@ services:
 
 parameters:
 	level: 7
+	reportMaybesInPropertyPhpDocTypes: false
 	paths:
 		- app
 	excludePaths:
@@ -42,6 +43,8 @@ parameters:
 				- app/Providers/EventServiceProvider.php
 				- app/Models/User.php
 				- app/Models/Photo.php
+				- app/Models/TagAlbum.php
+
 		# -
 		# 	message: '#toArray\(\) return type has no value type specified in iterable type array.#'
 		# 	paths:
