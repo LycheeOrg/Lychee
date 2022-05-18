@@ -20,13 +20,13 @@ use Illuminate\Support\Facades\Storage;
 /**
  * App\SymLink.
  *
- * @property int $id
- * @property int $size_variant_id
- * @property SizeVariant size_variant
- * @property string $short_path
- * @property string $url
- * @property Carbon $created_at
- * @property Carbon $updated_at
+ * @property int         $id
+ * @property int         $size_variant_id
+ * @property SizeVariant $size_variant
+ * @property string      $short_path
+ * @property string      $url
+ * @property Carbon      $created_at
+ * @property Carbon      $updated_at
  *
  * @method static Builder expired()
  */
