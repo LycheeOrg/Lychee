@@ -484,7 +484,6 @@ class LDAPFunctions
 		$this->bound = self::BIND_TYPE_UNBOUND;
 		$port = Configs::get_value(self::CONFIG_KEY_PORT);
 		$servers = explode(',', Configs::get_value(self::CONFIG_KEY_SERVER));
-		$lastException = null;
 		foreach ($servers as $server) {
 			try {
 				$server = trim($server);
