@@ -325,12 +325,13 @@ class LDAPFunctions
 	 *
 	 * @param string $user
 	 * @param string $pass
+	 * @param bool   $handleExceptions
 	 *
 	 * @return bool
 	 *
 	 * @throws LDAPException
 	 */
-	public function check_pass(string $user, string $pass): bool
+	public function check_pass(string $user, string $pass, bool $handleExceptions = true): bool
 	{
 		$this->open_LDAP();
 		try {
@@ -363,8 +364,12 @@ class LDAPFunctions
 			}
 
 			return false;
-		} catch (LDAPException) {
-			return false;
+		} catch (\App\Exceptions\LDAPException $e) {
+			if ($handleExceptions) {
+				return false;
+			} else {
+				throw new LdapException('Exception in check_pass:', $e);
+			}
 		} finally {
 			$this->close_LDAP();
 		}
