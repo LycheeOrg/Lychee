@@ -26,7 +26,7 @@ class LycheeVersion
 	/**
 	 * Base constructor.
 	 *
-	 * @param GitHubFunctions
+	 * @param GitHubFunctions $gitHubFunctions
 	 */
 	public function __construct(GitHubFunctions $gitHubFunctions)
 	{
@@ -61,7 +61,7 @@ class LycheeVersion
 	public function getDBVersion(): Version
 	{
 		return Version::createFromInt(
-			Configs::get_value('version', '040000')
+			intval(Configs::get_value('version', '040000'))
 		);
 	}
 
@@ -77,7 +77,7 @@ class LycheeVersion
 	{
 		try {
 			return Version::createFromString(
-				file_get_contents(base_path('version.md'))
+				\Safe\file_get_contents(base_path('version.md'))
 			);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);
