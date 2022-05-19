@@ -18,6 +18,7 @@
     <report>
       <clover outputFile="clover.xml"/>
       <text outputFile="php://stdout" showUncoveredFiles="false"/>
+      <html outputDirectory="public/test-output.html"/>
     </report>
   </coverage>
   <testsuites>
