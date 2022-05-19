@@ -51,3 +51,5 @@ parameters:
 			message: '#Variable property access on \$this#' # We do want this
 			paths:
 				- app/SmartAlbums/Utils/MimicModel.php
+
+		- '#Call to an undefined static method Kalnoy\\Nestedset\\QueryBuilder::(whereIn|select|join|leftJoin|orderBy|addSelect)\(\)#'
