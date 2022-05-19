@@ -45,7 +45,7 @@ class Configs extends Model
 	/**
 	 * The attributes that are mass assignable.
 	 *
-	 * @var array
+	 * @var array<string>
 	 */
 	protected $fillable = ['key', 'value', 'cat', 'type_range', 'confidentiality', 'description'];
 
@@ -64,11 +64,11 @@ class Configs extends Model
 	/**
 	 * Sanity check.
 	 *
-	 * @param $value
+	 * @param string $value
 	 *
 	 * @return string
 	 */
-	public function sanity($value): string
+	public function sanity(string $value): string
 	{
 		$message = '';
 		$val_range = [
@@ -76,6 +76,7 @@ class Configs extends Model
 			self::TERNARY => explode('|', self::TERNARY),
 		];
 
+		$message_template_got = 'Error: Wrong property for ' . $this->key . ' in database, expected %s, got ' . ($value ?: 'NULL') . '.';
 		switch ($this->type_range) {
 			case self::STRING:
 			case self::DISABLED:
@@ -88,31 +89,24 @@ class Configs extends Model
 			case self::INT:
 				// we make sure that we only have digits in the chosen value.
 				if (!ctype_digit(strval($value))) {
-					$message = 'Error: Wrong property for ' . $this->key . ' in database, expected positive integer.';
+					$message = \Safe\sprintf($message_template_got, 'positive integer');
 				}
 				break;
 			case self::BOOL:
 			case self::TERNARY:
-				if (!in_array($value, $val_range[$this->type_range])) { // BOOL or TERNARY
-					$message = 'Error: Wrong property for ' . $this->key
-						. ' in database, expected ' . implode(
-							' or ',
-							$val_range[$this->type_range]
-						) . ', got ' . ($value ?: 'NULL');
+				if (!in_array($value, $val_range[$this->type_range], true)) { // BOOL or TERNARY
+					$message = \Safe\sprintf($message_template_got, implode(' or ', $val_range[$this->type_range]));
 				}
 				break;
 			case self::LICENSE:
-				if (!in_array($value, Helpers::get_all_licenses())) {
-					$message = 'Error: Wrong property for ' . $this->key
-						. ' in database, expected a valid license, got ' . ($value ?: 'NULL');
+				if (!in_array($value, Helpers::get_all_licenses(), true)) {
+					$message = \Safe\sprintf($message_template_got, 'a valid license');
 				}
 				break;
 			default:
 				$values = explode('|', $this->type_range);
-				if (!in_array($value, $values)) {
-					$message = 'Error: Wrong property for ' . $this->key
-						. ' in database, expected ' . implode(' or ', $values)
-						. ', got ' . ($value ?: 'NULL');
+				if (!in_array($value, $values, true)) {
+					$message = \Safe\sprintf($message_template_got, implode(' or ', $values));
 				}
 				break;
 		}
@@ -127,7 +121,7 @@ class Configs extends Model
 	 */
 	public static function get(): array
 	{
-		if (self::$cache) {
+		if (count(self::$cache) > 0) {
 			return self::$cache;
 		}
 
@@ -153,7 +147,7 @@ class Configs extends Model
 	 */
 	public static function get_value(string $key, int|bool|string|null $default = null): int|bool|string|null
 	{
-		if (!self::$cache) {
+		if (count(self::$cache) == 0) {
 			self::get();
 		}
 
@@ -173,15 +167,15 @@ class Configs extends Model
 	 * Update Lychee configuration
 	 * Note that we must invalidate the cache now.
 	 *
-	 * @param string $key
-	 * @param $value
+	 * @param string     $key
+	 * @param string|int $value
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 * @throws QueryBuilderException
 	 */
-	public static function set(string $key, $value): void
+	public static function set(string $key, string|int $value): void
 	{
 		try {
 			/** @var Configs $config */
@@ -189,14 +183,15 @@ class Configs extends Model
 				->where('key', '=', $key)
 				->firstOrFail();
 
+			$strValue = strval($value);
 			/**
 			 * Sanity check. :).
 			 */
-			$message = $config->sanity($value);
+			$message = $config->sanity($strValue);
 			if ($message != '') {
 				throw new InvalidConfigOption($message);
 			}
-			$config->value = $value;
+			$config->value = $strValue;
 			$config->save();
 		} catch (ModelNotFoundException $e) {
 			throw new InvalidConfigOption('key ' . $key . ' not found!', $e);
