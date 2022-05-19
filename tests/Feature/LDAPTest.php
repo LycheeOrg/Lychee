@@ -18,7 +18,7 @@ class LDAPTest extends LDAPTestCase
 	{
 		$ldap = $this->get_ldap();
 		try {
-			$ldap->LDAP_open();
+			$this->LDAP_open();
 			$ldap->LDAP_get_option(LDAP_OPT_PROTOCOL_VERSION, $option);
 			$this->assertEquals(3, $option, 'LDAP Version should be 3');
 			$ldap->LDAP_get_option(LDAP_OPT_SIZELIMIT, $size_limit);
@@ -48,7 +48,7 @@ class LDAPTest extends LDAPTestCase
 			}
 			$this->assertTrue($did_except, 'Missing Exception from LDAP_set_option');
 
-			$ldap->LDAP_open();
+			$this->LDAP_open();
 			$did_except = false;
 			try {
 				$ldap->LDAP_get_option(-1);
@@ -57,7 +57,7 @@ class LDAPTest extends LDAPTestCase
 			}
 			$this->assertTrue($did_except, 'Missing Exception from LDAP_set_option');
 
-			$ldap->LDAP_open();
+			$this->LDAP_open();
 			$did_except = false;
 			try {
 				$ldap->LDAP_start_tls();
@@ -80,7 +80,7 @@ class LDAPTest extends LDAPTestCase
 	{
 		$ldap = $this->get_ldap();
 		try {
-			$ldap->LDAP_open();
+			$this->LDAP_open();
 			// The bound level after open_LDAP() is 2 if open_LDAP() does already the binding with the LDAP server.
 			$this->assertEquals(2, $ldap->LDAP_get_bound(), 'Bound level should be SUPERUSER');
 
@@ -142,7 +142,7 @@ class LDAPTest extends LDAPTestCase
 	{
 		$ldap = $this->get_ldap();
 		try {
-			$ldap->LDAP_open();
+			$this->LDAP_open();
 
 			$SR = $ldap->LDAP_search(self::USER_TREE, self::TESTUSER_FILTER, 'sub');
 
@@ -173,7 +173,7 @@ class LDAPTest extends LDAPTestCase
 		try {
 			Configs::set('ldap_server', 'ss:,google.com,github.com');
 			$this->expectException(\App\Exceptions\LDAPException::class, 'Missing Exception from check_pass when called with no server available');
-			$ldap->LDAP_open();
+			$this->LDAP_open();
 		} finally {
 			$this->done_ldap();
 		}
@@ -185,7 +185,7 @@ class LDAPTest extends LDAPTestCase
 		try {
 			// We do not expect any Exception if a valid server is present
 			Configs::set('ldap_server', 'google.com,github.com,' . self::SERVER);
-			$ldap->LDAP_open();
+			$this->LDAP_open();
 			$this->assertTrue(true);
 			$ldap->LDAP_close();
 		} finally {
@@ -294,7 +294,7 @@ class LDAPTest extends LDAPTestCase
 	{
 		$ldap = $this->get_ldap();
 		try {
-			$ldap->LDAP_open();
+			$this->LDAP_open();
 			Configs::set('ldap_user_filter', '');
 			$user_list = $ldap->get_user_list(true);
 			$this->assertIsArray($user_list, 'The user list should be an array');
@@ -317,7 +317,7 @@ class LDAPTest extends LDAPTestCase
 			Configs::set('ldap_user_filter', 'uid=%{user}');
 			Configs::set('ldap_bind_dn', '');
 			Configs::set('ldap_bind_pw', '');
-			$ldap->LDAP_open();
+			$this->LDAP_open();
 			$SR = $ldap->LDAP_search('dc=debian,dc=org', 'uid=a*', 'sub');
 			$this->assertTrue($SR['count'] > 0, 'LDAP_search scope base should return at least one result');
 			$ldap->LDAP_close();
@@ -338,7 +338,7 @@ class LDAPTest extends LDAPTestCase
 			Configs::set('ldap_user_filter', 'uid=%{user}');
 			Configs::set('ldap_bind_dn', '');
 			Configs::set('ldap_bind_pw', '');
-			$ldap->LDAP_open();
+			$this->LDAP_open();
 			$SR = $ldap->LDAP_search('dc=debian,dc=org', 'uid=a*', 'sub');
 			$this->assertTrue($SR['count'] > 0, 'LDAP_search scope base should return at least one result');
 			$ldap->LDAP_close();
