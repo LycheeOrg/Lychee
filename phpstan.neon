@@ -24,20 +24,27 @@ parameters:
 		- app/Relations/*
 		- app/View/*
 	ignoreErrors:
-		- '#Short ternary operator is not allowed#'
-		- '#Construct empty\(\) is not allowed#'
+		- '#Short ternary operator is not allowed#' # we like short ternary
+
+		- '#Construct empty\(\) is not allowed#' # we like empty()
+
+		# bunch of false positives
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>::whereNull\(\).#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\Relations\\HasMany<.*>::orderBy\(\)#'
+		- '#Return type \(Illuminate\\Support\\Carbon\|null\) of method App\\Models\\User::asDateTime\(\) should be covariant with return type \(Illuminate\\Support\\Carbon\) of method Illuminate\\Database\\Eloquent\\Model::asDateTime\(\)#'
+		- '#Return type \(App\\Models\\Photo\) of method App\\Models\\Photo::replicate\(\) should be covariant with return type \(static\(Illuminate\\Database\\Eloquent\\Model\)\) of method Illuminate\\Database\\Eloquent\\Model::replicate\(\)#'
+
 		-
-			message: '#Variable method call on \$this#'
+			message: '#Variable method call on \$this#' # We do want this
 			paths:
 				- app/SmartAlbums/Utils/MimicModel.php
 		-
-			message: '#Variable property access on \$this#'
+			message: '#Variable property access on \$this#' # We do want this
 			paths:
 				- app/SmartAlbums/Utils/MimicModel.php
+
 		-
-			message: '#type has no value type specified in iterable type array.#'
+			message: '#type has no value type specified in iterable type array.#' # just to make life simpler.
 			paths:
 				- app/Providers/AppServiceProvider.php
 				- app/Providers/AuthServiceProvider.php
@@ -47,10 +54,6 @@ parameters:
 				- app/Models/TagAlbum.php
 				- app/Models/SymLink.php
 
-		# -
-		# 	message: '#toArray\(\) return type has no value type specified in iterable type array.#'
-		# 	paths:
-		# 		- app/Relations/LinkedPhotoCollection.php
 		-
 			message: '#jsonSerialize\(\) return type has no value type specified in iterable type array.#'
 			paths:

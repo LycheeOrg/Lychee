@@ -147,7 +147,8 @@ trait UTCBasedTimes
 		// when checking the field. We will just return the DateTime right away.
 		if ($value instanceof \DateTimeInterface) {
 			return Date::parse(
-				$value->format('Y-m-d H:i:s.u'), $value->getTimezone()
+				$value->format('Y-m-d H:i:s.u'),
+				$value->getTimezone()
 			);
 		}
 
@@ -168,11 +169,10 @@ trait UTCBasedTimes
 		// Applied patch: The standard date format Y-m-d _without_ a timezone
 		// is interpreted relative to UTC and _then_ set to the
 		// application's default timezone.
-		if (preg_match(self::$STANDARD_DATE_PATTERN, $value)) {
-			$result = Date::createFromFormat(
-				'Y-m-d', $value, self::$DB_TIMEZONE_NAME
-			)->startOfDay();
-			$result->setTimezone(date_default_timezone_get());
+		if (\Safe\preg_match(self::$STANDARD_DATE_PATTERN, $value) == 1) {
+			$date = Date::createFromFormat('Y-m-d', $value, self::$DB_TIMEZONE_NAME) ?: null;
+			$result = $date?->startOfDay();
+			$result?->setTimezone(date_default_timezone_get());
 
 			return $result;
 		}
@@ -185,10 +185,9 @@ trait UTCBasedTimes
 		// Note that the timezone parameter is ignored for formats which
 		// include explicit timezone information.
 		try {
-			$result = Date::createFromFormat(
-				self::$DB_DATETIME_FORMAT, $value, self::$DB_TIMEZONE_NAME
-			);
-			if ($result->getTimezone()->getName() === self::$DB_TIMEZONE_NAME) {
+			// ! if Date::createFromFormat returns false, we replace it by null
+			$result = Date::createFromFormat(self::$DB_DATETIME_FORMAT, $value, self::$DB_TIMEZONE_NAME) ?: null;
+			if ($result?->getTimezone()?->getName() === self::$DB_TIMEZONE_NAME) {
 				// If the timezone is different to UTC, we don't set it, because then
 				// the timezone came from the input string.
 				// If the timezone equals UTC, then we assume that no explicit timezone
@@ -202,7 +201,7 @@ trait UTCBasedTimes
 			}
 
 			return $result;
-		} catch (InvalidArgumentException $e) {
+		} catch (InvalidArgumentException) {
 			// If the specified format did not mach, don't throw an exception,
 			// but try to parse the value using a best-effort approach, see below
 		}
