@@ -130,7 +130,7 @@ class Create
 	 */
 	protected function loadFileMetadata(SourceFileInfo $sourceFileInfo): void
 	{
-		/* @var  Extractor $metadataExtractor */
+		/** @var Extractor $metadataExtractor */
 		$metadataExtractor = resolve(Extractor::class);
 
 		$this->strategyParameters->info = $metadataExtractor->extract($sourceFileInfo->getFile()->getAbsolutePath(), $this->strategyParameters->kind);
@@ -164,7 +164,9 @@ class Create
 	 * @return Photo|null The live partner if found
 	 */
 	protected function findLivePartner(
-		?string $contentID, string $mimeType, ?Album $album
+		?string $contentID,
+		string $mimeType,
+		?Album $album
 	): ?Photo {
 		$livePartner = null;
 		// find a potential partner which has the same content id

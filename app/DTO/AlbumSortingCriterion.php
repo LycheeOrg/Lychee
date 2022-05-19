@@ -24,7 +24,7 @@ class AlbumSortingCriterion extends SortingCriterion
 	 */
 	public static function createDefault(): self
 	{
-		/* @noinspection PhpUnhandledExceptionInspection */
+		/** @noinspection PhpUnhandledExceptionInspection */
 		return new self(
 			Configs::get_value('sorting_albums_col', SortingCriterion::COLUMN_CREATED_AT),
 			Configs::get_value('sorting_albums_order', SortingCriterion::ASC)

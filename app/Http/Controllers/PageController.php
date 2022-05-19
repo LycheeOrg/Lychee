@@ -38,7 +38,9 @@ class PageController extends Controller
 	 * @throws ModelNotFoundException
 	 * @throws BindingResolutionException
 	 */
-	public function page(/* @noinspection PhpUnusedParameterInspection */ Request $request, string $page): View
+	public function page(
+	/** @noinspection PhpUnusedParameterInspection */
+	Request $request, string $page): View
 	{
 		/** @var Page $page */
 		$page = Page::enabled()->where('link', '=', '/' . $page)->firstOrFail();

@@ -30,11 +30,11 @@ class Takedate extends Command
 	 * @var string
 	 */
 	protected $signature = 'lychee:takedate' .
-	'{offset=0 : offset of the first photo to process}' .
-	'{limit=50 : number of photos to process (0 means process all)}' .
-	'{time=600 : maximum execution time in seconds (0 means unlimited)}' .
-	'{--c|set-upload-time : additionally sets the upload time based on the creation time of the media file; ATTENTION: this option is rarely needed and potentially harmful}' .
-	'{--f|force : force processing of all media files}';
+		'{offset=0 : offset of the first photo to process}' .
+		'{limit=50 : number of photos to process (0 means process all)}' .
+		'{time=600 : maximum execution time in seconds (0 means unlimited)}' .
+		'{--c|set-upload-time : additionally sets the upload time based on the creation time of the media file; ATTENTION: this option is rarely needed and potentially harmful}' .
+		'{--f|force : force processing of all media files}';
 
 	/**
 	 * The console command description.
@@ -147,7 +147,7 @@ class Takedate extends Command
 			// use a regular collection which might run out of memory for large
 			// values of `limit`.
 			$photos = $photoQuery->get();
-			/* @var Photo $photo */
+			/** @var Photo $photo */
 			foreach ($photos as $photo) {
 				$this->progressBar->advance();
 				// TODO: As soon as we support AWS S3 storage, we must stop using absolute paths. However, first the EXIF extractor must be rewritten to use file streams.
@@ -160,7 +160,7 @@ class Takedate extends Command
 
 				$kind = $photo->isRaw() ? 'raw' : ($photo->isVideo() ? 'video' : 'photo');
 				$info = $metadataExtractor->extract($fullPath, $kind);
-				/* @var Carbon $stamp */
+				/** @var Carbon $stamp */
 				$stamp = $info['taken_at'];
 				if ($stamp !== null) {
 					// Note: `equalTo` only checks if two times indicate the same

@@ -97,7 +97,7 @@ class RotateStrategy extends AddBaseStrategy
 		$imageHandler->rotate($origFile->getAbsolutePath(), ($this->direction == 1) ? 90 : -90, $tmpFile->getAbsolutePath());
 
 		// The file size and checksum may have changed after the rotation.
-		/* @var Extractor $metadataExtractor */
+		/** @var Extractor $metadataExtractor */
 		$metadataExtractor = resolve(Extractor::class);
 		// TODO: See above, we must stop using absolute paths
 		$this->photo->checksum = $metadataExtractor->checksum($tmpFile->getAbsolutePath());
@@ -112,7 +112,9 @@ class RotateStrategy extends AddBaseStrategy
 
 		// Initialize factory for size variants
 		$this->parameters->sourceFileInfo = SourceFileInfo::createByTempFile(
-			$this->photo->title, $origFile->getExtension(), $tmpFile
+			$this->photo->title,
+			$origFile->getExtension(),
+			$tmpFile
 		);
 
 		/** @var SizeVariantNamingStrategy $namingStrategy */
@@ -154,8 +156,8 @@ class RotateStrategy extends AddBaseStrategy
 
 		// Deal with duplicates.  We simply update all of them to match.
 		$duplicates = Photo::query()
-				->where('checksum', '=', $oldChecksum)
-				->get();
+			->where('checksum', '=', $oldChecksum)
+			->get();
 		/** @var Photo $duplicate */
 		foreach ($duplicates as $duplicate) {
 			$duplicate->checksum = $this->photo->checksum;

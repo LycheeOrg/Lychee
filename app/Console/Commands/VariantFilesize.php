@@ -45,7 +45,7 @@ class VariantFilesize extends Command
 			// Internally, only holds $limit entries at once
 			$variants = $variants_query->lazyById($limit);
 
-			/* @var SizeVariant $variant */
+			/** @var SizeVariant $variant */
 			$this->withProgressBar($variants, function ($variant) use (&$exit_code) {
 				$fullPath = $variant->getFile()->getAbsolutePath();
 				if (file_exists($fullPath)) {
