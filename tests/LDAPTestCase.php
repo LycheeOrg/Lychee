@@ -50,6 +50,7 @@ class LDAPTestCase extends TestCase
 		Configs::set('ldap_user_filter', self::USER_FILTER);
 		Configs::set('ldap_bind_dn', self::BIND_DN);
 		Configs::set('ldap_bind_pw', self::BIND_PW);
+		Configs::set('ldap_timeout', '10');
 	}
 
 	protected function LDAP_tearDown(): void
@@ -62,6 +63,7 @@ class LDAPTestCase extends TestCase
 		Configs::set('ldap_bind_pw', $this->oldconfigs['ldap_bind_pw']);
 		Configs::set('ldap_port', $this->oldconfigs['ldap_port']);
 		Configs::set('ldap_start_tls', $this->oldconfigs['ldap_start_tls']);
+		Configs::set('ldap_timeout', $this->oldconfigs['ldap_timeout']);
 	}
 
 	protected function get_ldap()

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\ModelFunctions\SessionFunctions;
 use App\Models\Configs;
+use App\Models\User;
 use Tests\LDAPTestCase;
 
 class LDAPintegrationTest extends LDAPTestCase
@@ -42,7 +43,7 @@ class LDAPintegrationTest extends LDAPTestCase
 			// 3
 			$this->assertTrue($sessionFunctions->log_with_ldap(LDAPTest::TESTUSER2, LDAPTest::TESTUSER2_PW, $ip), 'Cannot verify testuser2');
 			// 4
-			$this->assertFalse($sessionFunctions->log_with_ldap('test', 'password', $ip), 'Should not possible to verify an unknown user');
+			$this->assertFalse($sessionFunctions->log_with_ldap(LDAPTest::UNKNOWN_USER, 'password', $ip), 'Should not possible to verify an unknown user');
 			// 5
 			$this->assertFalse($sessionFunctions->log_with_ldap(LDAPTest::TESTUSER, 'test', $ip), 'Should not possible to verify testuser (wrong pw)');
 			// 6
@@ -66,6 +67,29 @@ class LDAPintegrationTest extends LDAPTestCase
 				}
 			}
 			$this->assertFalse($OK, 'Userdata should differ from the LDAP data for gauss');
+			$user = User::query()->where('username', '=', LDAPTest::TESTUSER)->first();
+			if (!empty($user)) {
+				$user->delete();
+			}
+			$this->assertTrue($sessionFunctions->log_with_ldap(LDAPTest::TESTUSER, LDAPTest::TESTUSER_PW, $ip), 'Cannot verify testuser');
+
+			$user = User::query()->where('username', '=', LDAPTest::TESTUSER)->first();
+			if (!empty($user)) {
+				$user->delete();
+			}
+
+			$user = User::query()->where('id', '=', '0')->first();
+			$us = $user->username;
+			try {
+				$user->username = LDAPTest::TESTUSER;
+				$user->save();
+				$this->assertFalse($sessionFunctions->log_with_ldap(LDAPTest::TESTUSER, LDAPTest::TESTUSER_PW, $ip),
+					'testuser should not be able to login if id=0');
+			} finally {
+				$user = User::query()->where('id', '=', '0')->first();
+				$user->username = $us;
+				$user->save();
+			}
 		} finally {
 			$this->done_ldap();
 		}

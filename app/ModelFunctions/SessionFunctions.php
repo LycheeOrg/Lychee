@@ -206,7 +206,10 @@ class SessionFunctions
 			/** @var LDAPUserData user data */
 			$ldapUserData = $this->ldap->get_user_data($username);
 			if ($ldapUserData == null) {
+				// Should never happen if the ldap server is functioning correctly
+				// @codeCoverageIgnoreStart
 				return false;
+				// @codeCoverageIgnoreEnd
 			}
 			/** @var User $user */
 			$user = User::query()->where('username', '=', $username)->first();
@@ -228,10 +231,15 @@ class SessionFunctions
 
 				return true;
 			}
-
+			// Can only happen if the user cannot be created in the database
+			// @codeCoverageIgnoreStart
 			return false;
-		} catch (BindingResolutionException $e) {
+			// @codeCoverageIgnoreEnd
+		}
+		// @codeCoverageIgnoreStart
+		catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);
+			// @codeCoverageIgnoreEnd
 		}
 	}
 

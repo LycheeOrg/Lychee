@@ -27,6 +27,7 @@ class LDAPFunctions
 	protected const CONFIG_KEY_USER_FILTER = 'ldap_user_filter';
 	protected const CONFIG_KEY_USER_SCOPE = 'ldap_user_scope';
 	protected const CONFIG_KEY_VERSION = 'ldap_version';
+	protected const CONFIG_KEY_TIMEOUT = 'ldap_timeout';
 
 	protected const BIND_TYPE_UNBOUND = -1;
 	protected const BIND_TYPE_ANONYMOUS = 0;
@@ -480,7 +481,7 @@ class LDAPFunctions
 	 *
 	 * This method connects to the server and returns the conection if possible.
 	 */
-	protected function connect(string $host, int $port = 389, $timeout = 10): bool|\LDAP\Connection
+	protected function connect(string $host, int $port = 389, $timeout = 1): bool|\LDAP\Connection
 	{
 		$chost = $host;
 		$cport = $port;
@@ -544,7 +545,7 @@ class LDAPFunctions
 		foreach ($servers as $server) {
 			try {
 				$server = trim($server);
-				$this->con = $this->connect($server, $port);
+				$this->con = $this->connect($server, $port, (int) Configs::get_value(self::CONFIG_KEY_TIMEOUT, '1'));
 				$OK = ($this->con !== false);
 				Logs::notice(__METHOD__, __LINE__, sprintf('Try to connect %s on port %s: %s', $server, $port, $OK ? 'OK' : 'NO'));
 				if (!$OK) {
