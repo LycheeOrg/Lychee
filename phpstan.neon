@@ -62,6 +62,10 @@ parameters:
 				- app/Models/SymLink.php
 
 		-
+			message: '#has parameter .* with no value type specified in iterable type array.#'
+			paths:
+				- app/Models/Extensions/ForwardsToParentImplementation.php
+		-
 			message: '#jsonSerialize\(\) return type has no value type specified in iterable type array.#'
 			paths:
 				- app/SmartAlbums/Utils/MimicModel.php

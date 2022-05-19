@@ -140,7 +140,7 @@ trait ForwardsToParentImplementation
 		} catch (\Throwable $e) {
 			$parentException = $e;
 		}
-		if ($parentException) {
+		if ($parentException != null) {
 			throw ModelDBException::create($this->friendlyModelName(), 'deleting', $parentException);
 		}
 
@@ -159,7 +159,7 @@ trait ForwardsToParentImplementation
 			} catch (\Throwable $e) {
 				$baseException = $e;
 			}
-			if ($baseException) {
+			if ($baseException != null) {
 				throw ModelDBException::create($this->friendlyModelName(), 'deleting', $baseException);
 			}
 		}
@@ -207,7 +207,8 @@ trait ForwardsToParentImplementation
 		$baseIsDirty = $this->relationLoaded('base_class') && $this->getRelation('base_class')->isDirty();
 
 		return $baseIsDirty || $this->hasChanges(
-			$this->getDirty(), is_array($attributes) ? $attributes : func_get_args()
+			$this->getDirty(),
+			is_array($attributes) ? $attributes : func_get_args()
 		);
 	}
 
@@ -262,7 +263,7 @@ trait ForwardsToParentImplementation
 	 */
 	public function getAttribute($key): mixed
 	{
-		if (!$key) {
+		if ($key == '') {
 			return null;
 		}
 
@@ -293,10 +294,12 @@ trait ForwardsToParentImplementation
 		// mutator we will get the attribute's value.
 		// Otherwise, we will proceed as if the developers
 		// are asking for a relationship's value. This covers both types of values.
-		if (array_key_exists($key, $this->attributes) ||
+		if (
+			array_key_exists($key, $this->attributes) ||
 			array_key_exists($key, $this->casts) ||
 			$this->hasGetMutator($key) ||
-			$this->isClassCastable($key)) {
+			$this->isClassCastable($key)
+		) {
 			return $this->getAttributeValue($key);
 		}
 
@@ -317,8 +320,10 @@ trait ForwardsToParentImplementation
 		// If the "attribute" exists as a method on the model, we will just assume
 		// it is a relationship and will load and return results from the query
 		// and hydrate the relationship's value on the "relationships" array.
-		if (method_exists($this, $key) ||
-			(static::$relationResolvers[get_class($this)][$key] ?? null)) {
+		if (
+			method_exists($this, $key) ||
+			(static::$relationResolvers[get_class($this)][$key] ?? null)
+		) {
 			return $this->getRelationshipFromMethod($key);
 		}
 
@@ -368,7 +373,7 @@ trait ForwardsToParentImplementation
 			// for a freshly created model.
 			$primaryKey = $this->getKey();
 			if (!$this->exists) {
-				if ($primaryKey) {
+				if (boolval($primaryKey)) {
 					throw new FailedModelAssumptionException('the primary key must not be set if the model does not exist');
 				}
 				$baseModel = $this->base_class()->getRelated()->newInstance();
@@ -379,7 +384,7 @@ trait ForwardsToParentImplementation
 				// This model exists, but the relation to the base class
 				// has not yet been loaded.
 				// Load it now.
-				if (!$primaryKey) {
+				if (!boolval($primaryKey)) {
 					throw new FailedModelAssumptionException('the model allegedly exists, but we don\'t have a primary key, cannot load base model');
 				}
 				if (!method_exists($this, 'base_class')) {
@@ -393,8 +398,11 @@ trait ForwardsToParentImplementation
 		// If the "attribute" exists as a method on the model, we will just assume
 		// it is a relationship and will load and return results from the query
 		// and hydrate the relationship's value on the "relationships" array.
-		if (method_exists($this, $key) ||
-			(static::$relationResolvers[get_class($this)][$key] ?? null)) {
+		// Phpstan:  390    Call to function method_exists() with $this(App\Models\Extensions\BaseAlbum) and 'base_class' will always evaluate to true.
+		if (
+			method_exists($this, $key) ||
+			(static::$relationResolvers[get_class($this)][$key] ?? null)
+		) {
 			return $this->getRelationshipFromMethod($key);
 		}
 
@@ -437,7 +445,7 @@ trait ForwardsToParentImplementation
 		// If an attribute is listed as a "date", we'll convert it from a DateTime
 		// instance into a form proper for storage in the database tables using
 		// the connection grammar's date format. We will auto set the values.
-		elseif ($value && $this->isDateAttribute($key)) {
+		elseif (boolval($value) && $this->isDateAttribute($key)) {
 			$value = $this->fromDateTime($value);
 		}
 
