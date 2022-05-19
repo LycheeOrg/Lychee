@@ -25,14 +25,13 @@ trait HasBidirectionalRelationships
 	{
 		// Run original code from HasAttributes::getRelationshipFromMethod
 
-		/** @var Relation $relation */
 		$relation = $this->$method();
 
 		if (!$relation instanceof Relation) {
 			if (is_null($relation)) {
-				throw new \LogicException(sprintf('%s::%s must return a relationship instance, but "null" was returned. Was the "return" keyword used?', static::class, $method));
+				throw new \LogicException(\Safe\sprintf('%s::%s must return a relationship instance, but "null" was returned. Was the "return" keyword used?', static::class, $method));
 			}
-			throw new \LogicException(sprintf('%s::%s must return a relationship instance.', static::class, $method));
+			throw new \LogicException(\Safe\sprintf('%s::%s must return a relationship instance.', static::class, $method));
 		}
 
 		$result = $relation->getResults();
@@ -51,7 +50,7 @@ trait HasBidirectionalRelationships
 			} elseif ($result instanceof Model) {
 				$result->setRelation($relation->getForeignMethodName(), $this);
 			} else {
-				throw new \LogicException(sprintf('$result must either be a collection of models or a model, but got %s', is_object($result) ? get_class($result) : gettype($result)));
+				throw new \LogicException(\Safe\sprintf('$result must either be a collection of models or a model, but got %s', is_object($result) ? get_class($result) : gettype($result)));
 			}
 		}
 
@@ -81,7 +80,11 @@ trait HasBidirectionalRelationships
 		$foreignMethodName = $foreignMethodName ?: $this->getForeignProperty();
 
 		return $this->newHasManyBidirectionally(
-			$instance->newQuery(), $this, $instance->getTable() . '.' . $foreignKey, $localKey, $foreignMethodName
+			$instance->newQuery(),
+			$this,
+			$instance->getTable() . '.' . $foreignKey,
+			$localKey,
+			$foreignMethodName
 		);
 	}
 
