@@ -22,7 +22,7 @@ class TagAlbumBuilder extends FixedQueryBuilder
 	/**
 	 * Get the hydrated models without eager loading.
 	 *
-	 * @param array|string $columns
+	 * @param array<string>|string $columns
 	 *
 	 * @return TagAlbum[]
 	 *
@@ -45,6 +45,7 @@ class TagAlbumBuilder extends FixedQueryBuilder
 			]);
 		}
 
+		/* @var array<TagAlbum> */
 		return parent::getModels($columns);
 	}
 }
