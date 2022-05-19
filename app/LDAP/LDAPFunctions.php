@@ -88,6 +88,7 @@ class LDAPFunctions
 		try {
 			// Option A: If we know how to bind a user, we try that directly
 			if (strpos(Configs::get_value(self::CONFIG_KEY_USER_TREE), '%{user}')) {
+				Logs::debug(__METHOD__, __LINE__, 'Option A: If we know how to bind a user, we try that directly');
 				// direct user bind
 				$dn = self::_makeFilter(
 					Configs::get_value(self::CONFIG_KEY_USER_TREE),
@@ -103,6 +104,7 @@ class LDAPFunctions
 			// search the directory
 
 			// See if we can find the user
+			Logs::debug(__METHOD__, __LINE__, 'Option B: We do not know how to bind a user, so we must first search the directory');
 			$info = $this->get_user_data($user);
 
 			if (is_null($info) || empty($info->dn)) {
@@ -111,14 +113,10 @@ class LDAPFunctions
 
 			// Try to re-bind with the dn provided
 			try {
-				if ($this->LDAP_bind($info->dn, $pass)) {
-					return true;
-				}
+				return $this->LDAP_bind($info->dn, $pass);
 			} catch (\App\Exceptions\LDAPException) {
 				return false;
 			}
-
-			return false;
 		} catch (\App\Exceptions\LDAPException $e) {
 			throw new LDAPException('Exception in check_pass:', $e);
 		} finally {
@@ -139,7 +137,7 @@ class LDAPFunctions
 	{
 		$this->open_LDAP();
 
-		if (!empty($this->cached_user_info) && in_array($username, $this->cached_user_info)) {
+		if (!empty($this->cached_user_info) && array_key_exists($username, $this->cached_user_info)) {
 			Logs::notice(__METHOD__, __LINE__, sprintf('getUserData: Use cached info for %s', $username));
 
 			return $this->cached_user_info[$username];
@@ -200,7 +198,12 @@ class LDAPFunctions
 			$userkey = Configs::get_value(self::CONFIG_KEY_USER_KEY, 'uid');
 
 			for ($i = 0; $i < $entries['count']; $i++) {
-				$this->user_list[$entries[$i][$userkey][0]] = $this->userdata_from_ldap_result($entries[$i]);
+				try {
+					$this->user_list[$entries[$i][$userkey][0]] = $this->userdata_from_ldap_result($entries[$i]);
+				} catch (\ErrorException $e) {
+					Logs::error(__METHOD__, __LINE__, 'No Entry known with the attribute ' . $userkey);
+					break;
+				}
 			}
 		}
 		$this->close_LDAP();
@@ -260,9 +263,11 @@ class LDAPFunctions
 			};
 			$result = ldap_get_entries($this->con, $sr);
 			ldap_free_result($sr);
+			Logs::debug(__METHOD__, __LINE__, 'ldap_search returned ' . $result['count'] . ' values');
 
 			return $result;
 		} catch (\Throwable $e) {
+			Logs::debug(__METHOD__, __LINE__, 'Exception: ' . $e->getMessage());
 			throw new LDAPException($e->getMessage(), $e);
 		}
 	}
@@ -287,7 +292,6 @@ class LDAPFunctions
 	protected function LDAP_bind(?string $bindDN = null, ?string $bindPassword = null): bool
 	{
 		try {
-			Logs::debug(__METHOD__, __LINE__, '1 LDAP bind with ' . $bindDN . ':' . $bindPassword . ' [bound = ' . $this->bound . ']');
 			if (empty($bindDN)) {
 				$bindDN = (string) Configs::get_value(self::CONFIG_KEY_BIND_DN);
 				$bindPassword = (string) Configs::get_value(self::CONFIG_KEY_BIND_PW);
@@ -299,14 +303,17 @@ class LDAPFunctions
 
 			$is_bound = ldap_bind($this->con, $bindDN, $bindPassword);
 
+			// @codeCoverageIgnoreStart
 			if (!$is_bound) {
 				$this->bound = self::BIND_TYPE_UNBOUND;
 			}
+			// @codeCoverageIgnoreEnd
 
 			Logs::debug(__METHOD__, __LINE__, 'LDAP bind result: ' . $is_bound);
 
 			return $is_bound;
 		} catch (\Throwable $e) {
+			Logs::debug(__METHOD__, __LINE__, 'Exception: ' . $e->getMessage());
 			$this->bound = self::BIND_TYPE_UNBOUND;
 			throw new LDAPException($e->getMessage(), $e);
 		}
@@ -329,7 +336,11 @@ class LDAPFunctions
 			Logs::debug(__METHOD__, __LINE__, 'New bind is required');
 			// use anonymous or superuser credentials
 			if (!$this->LDAP_bind()) {
-				throw new LDAPException('Required bind was not pssible');
+				// @codeCoverageIgnoreStart
+				$msg = 'Required bind was not possible';
+				Logs::debug(__METHOD__, __LINE__, $msg);
+				throw new LDAPException($msg);
+				// @codeCoverageIgnoreEnd
 			}
 		}
 	}
@@ -346,8 +357,11 @@ class LDAPFunctions
 	 */
 	protected function LDAP_set_option(int $opt, string $value): void
 	{
+		Logs::debug(__METHOD__, __LINE__, 'Set option ' . $opt . ' = ' . $value);
 		try {
-			ldap_set_option($this->con, $opt, $value);
+			if (!ldap_set_option($this->con, $opt, $value)) {
+				throw new LDAPException('ldap_errno=' . ldap_errno($this->con));
+			}
 		} catch (\Throwable $e) {
 			throw new LDAPException($e->getMessage(), $e);
 		}
@@ -379,8 +393,15 @@ class LDAPFunctions
 	 */
 	protected function LDAP_start_tls(): void
 	{
-		if (!ldap_start_tls($this->con)) {
-			throw new LdapException('ldap_stat_tls failed');
+		Logs::debug(__METHOD__, __LINE__, 'Set START TLS');
+		try {
+			if (!ldap_start_tls($this->con)) {
+				// @codeCoverageIgnoreStart
+				throw new LdapException('ldap_stat_tls failed');
+				// @codeCoverageIgnoreEnd
+			}
+		} catch (\Throwable $e) {
+			throw new LDAPException($e->getMessage(), $e);
 		}
 	}
 
@@ -454,12 +475,50 @@ class LDAPFunctions
 	}
 
 	/**
+	 * Test if a server is available.
+	 *
+	 * This method connects to the server and returns the conection if possible.
+	 */
+	protected function connect(string $host, int $port = 389, $timeout = 1): bool|\LDAP\Connection
+	{
+		$chost = $host;
+		$cport = $port;
+		$sv = explode(':', $host);
+		if (count($sv) > 1) {
+			$chost = ltrim($sv[1], '/');
+			$prot = reset($sv);
+			if (count($sv) < 3) {
+				$cport = match ($prot) {
+					'ldap' => 389,
+					'ldaps' => 636,
+					default => 389
+				};
+			} else {
+				$cport = (int) end($sv);
+			}
+		}
+		if (empty($chost) || empty($cport)) {
+			return false;
+		}
+		try {
+			$OK = fsockopen($chost, $cport, $errno, $errstr, $timeout);
+		} catch (\ErrorException) {
+			$OK = false;
+		}
+		if ($OK) {
+			fclose($OK); // explicitly close open socket connection
+
+			return ldap_connect($host, $port);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Prepares/opens a connection to the configured LDAP server and sets the
 	 * wanted option on the connection.
 	 *
-	 * This method does not yet bind to the server.
-	 * If no super-user credentials are set, this method cannot decide
-	 * whether it should bind anonymously or use user credentials.
+	 * This method binds to the server.
 	 *
 	 * @throws LDAPException
 	 */
@@ -471,16 +530,19 @@ class LDAPFunctions
 
 		// ldap extension is needed
 		if (!extension_loaded('ldap')) {
+			// @codeCoverageIgnoreStart
 			throw new LDAPException('PHP LDAP extension not found.');
+			// @codeCoverageIgnoreEnd
 		}
 
 		$this->bound = self::BIND_TYPE_UNBOUND;
-		$port = Configs::get_value(self::CONFIG_KEY_PORT);
+		$port = (int) Configs::get_value(self::CONFIG_KEY_PORT);
 		$servers = explode(',', Configs::get_value(self::CONFIG_KEY_SERVER));
 		foreach ($servers as $server) {
 			try {
 				$server = trim($server);
-				$this->con = ldap_connect($server, $port);
+				Logs::debug(__METHOD__, __LINE__, sprintf('-------------------------------- Try to connect %s on port %s', $server, $port));
+				$this->con = $this->connect($server, $port);
 				$OK = ($this->con !== false);
 				Logs::notice(__METHOD__, __LINE__, sprintf('Try to connect %s on port %s: %s', $server, $port, $OK ? 'OK' : 'NO'));
 				if (!$OK) {
@@ -509,19 +571,25 @@ class LDAPFunctions
 				if ($ldap_version === self::LDAP_VERSION_3) {
 					// use TLS (needs version 3)
 					if (Configs::get_value(self::CONFIG_KEY_START_TLS)) {
+						// @codeCoverageIgnoreStart
 						$this->LDAP_start_tls();
+						// @codeCoverageIgnoreEnd
 					}
 
 					$ldap_referals = Configs::get_value(self::CONFIG_KEY_REFERRALS);
 					if ($ldap_referals > -1) {
+						// @codeCoverageIgnoreStart
 						$this->LDAP_set_option(LDAP_OPT_REFERRALS, $ldap_referals);
+						// @codeCoverageIgnoreEnd
 					}
 				}
 
 				// set deref mode
 				$ldap_deref = Configs::get_value(self::CONFIG_KEY_DEREF);
 				if ($ldap_deref) {
+					// @codeCoverageIgnoreStart
 					$this->LDAP_set_option(LDAP_OPT_DEREF, $ldap_deref);
+					// @codeCoverageIgnoreEnd
 				}
 				$this->LDAP_set_option(LDAP_OPT_NETWORK_TIMEOUT, 1);
 				$OK = $this->LDAP_bind();
@@ -530,20 +598,21 @@ class LDAPFunctions
 
 					return;
 				}
-			} catch (\Throwable $e) {
+			}
+			// @codeCoverageIgnoreStart
+			catch (\Throwable $e) {
+				Logs::debug(__METHOD__, __LINE__, 'Exception: ' . $e->getMessage());
 				Handler::reportSafely($e);
 			}
+			// @codeCoverageIgnoreEnd
 		}
-		throw new LDAPException('No LDAP serveravailable');
+		$msg = 'No LDAP server available';
+		Logs::debug(__METHOD__, __LINE__, $msg);
+		throw new LDAPException($msg);
 	}
 
 	/**
-	 * Prepares/opens a connection to the configured LDAP server and sets the
-	 * wanted option on the connection.
-	 *
-	 * This method does not yet bind to the server.
-	 * If no super-user credentials are set, this method cannot decide
-	 * whether it should bind anonymously or use user credentials.
+	 * Closes the connection with the LDAP server.
 	 *
 	 * @throws LDAPException
 	 */
@@ -557,8 +626,11 @@ class LDAPFunctions
 			ldap_close($this->con);
 			$this->con = null;
 			$this->bound = self::BIND_TYPE_UNBOUND;
-		} catch (\Throwable $e) {
+		}
+		// @codeCoverageIgnoreStart
+		catch (\Throwable $e) {
 			Handler::reportSafely($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 }

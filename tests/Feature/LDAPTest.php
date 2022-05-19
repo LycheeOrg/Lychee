@@ -31,10 +31,45 @@ class LDAPTest extends LDAPTestCase
 			$Filter = LDAPTestFunctions::LDAP_makeFilter('%{uid} = %{start} test%{inc} %{end}',
 				  ['uid' => 'gauss', 'start' => '{', 'end' => '}', 'inc' => '++', 'dec' => '--']);
 			$this->assertEquals('gauss = { test++ }', $Filter, 'LDAP_makeFilter could not make the filter');
+
+			$Filter = LDAPTestFunctions::LDAP_makeFilter('%{uid} = %{start} test%{inc} %{end}',
+				  ['uid' => ['gauss'], 'start' => ['{'], 'end' => ['}'], 'inc' => ['++'], 'dec' => ['--']]);
+			$this->assertEquals('gauss = { test++ }', $Filter, 'LDAP_makeFilter could not make the filter');
+
 			$Filter = LDAPTestFunctions::LDAP_filterEscape("/\x03 \x05 \x08 (test) \\/");
 			$this->assertEquals('/\03 \05 \08 \28test\29 \5c/', $Filter, 'LDAP_filterEscape could not escape properly');
 
 			$ldap->LDAP_close();
+			$did_except = false;
+			try {
+				$ldap->LDAP_set_option(-1, '1000');
+			} catch (\App\Exceptions\LDAPException $e) {
+				$did_except = true;
+			}
+			$this->assertTrue($did_except, 'Missing Exception from LDAP_set_option');
+
+			$ldap->LDAP_open();
+			$did_except = false;
+			try {
+				$ldap->LDAP_get_option(-1);
+			} catch (\App\Exceptions\LDAPException $e) {
+				$did_except = true;
+			}
+			$this->assertTrue($did_except, 'Missing Exception from LDAP_set_option');
+
+			$ldap->LDAP_open();
+			$did_except = false;
+			try {
+				$ldap->LDAP_start_tls();
+			} catch (\App\Exceptions\LDAPException $e) {
+				$did_except = true;
+			}
+			$this->assertTrue($did_except, 'Missing Exception from LDAP_start_tls');
+			$ldap->LDAP_close();
+			$this->assertFalse(!$ldap->connect('ldaps://db.debian.org'), 'Cannot connect to ldaps protocol');
+			$this->assertFalse(!$ldap->connect('ldap://db.debian.org'), 'Cannot connect to ldap protocol');
+			$this->assertFalse(!$ldap->connect('ldap://db.debian.org:389'), 'Cannot connect to ldap protocol');
+			$this->assertFalse($ldap->connect('db.debian.org', 8000), 'Cannot connect to ldap protocol');
 		} finally {
 			$this->done_ldap();
 		}
@@ -54,16 +89,49 @@ class LDAPTest extends LDAPTestCase
 			$user_data = $ldap->get_user_data(self::TESTUSER);
 			$this->assertEqualsCanonicalizing($user_data->toArray(), $this->test_user);
 			$this->assertEquals(2, $ldap->LDAP_get_bound(), 'Bound level should be SUPERUSER');
+			$user_data = $ldap->get_user_data(self::TESTUSER);
+			$this->assertEqualsCanonicalizing($user_data->toArray(), $this->test_user);
 
 			$this->assertTrue($ldap->LDAP_bind(), 'ldap_bind has failed');
 			$this->assertEquals(2, $ldap->LDAP_get_bound(), 'Bound level should be SUPERUSER');
 
 			$this->assertTrue($ldap->LDAP_bind(self::TESTUSER_DN, self::TESTUSER_PW), 'ldap_bind has failed for TESTUSER_DN:TESTUSER_PW');
 			$this->assertEquals(1, $ldap->LDAP_get_bound(), 'Bound level should be USER');
-
-			$this->expectException(\App\Exceptions\LDAPException::class, 'Missing Exception from ldap_bind when called with UNKNOWN_USER:password');
-			$ldap->LDAP_bind(self::UNKNOWN_USER, 'password');
+			$did_except = false;
+			try {
+				$ldap->LDAP_bind(self::UNKNOWN_USER, 'password');
+			} catch (\App\Exceptions\LDAPException $e) {
+				$did_except = true;
+			}
+			$this->assertTrue($did_except, 'Missing Exception from ldap_bind when called with UNKNOWN_USER:password');
+			$did_except = false;
+			try {
+				$ldap->LDAP_bind(self::TESTUSER_DN, 'WRONGPASS');
+			} catch (\App\Exceptions\LDAPException $e) {
+				$did_except = true;
+			}
+			$this->assertTrue($did_except, 'Missing Exception from ldap_bind when called with TESTUSER_DN:WRONGPAS');
 			$this->assertEquals(-1, $ldap->LDAP_get_bound(), 'Bound level should be UNBOUND');
+			$ldap->clear_cache();
+			// Test for Exception
+			Configs::set('ldap_user_filter', '');
+			$did_except = false;
+			try {
+				$user_data = $ldap->get_user_data(self::TESTUSER);
+			} catch (\App\Exceptions\LDAPException $e) {
+				$did_except = true;
+			}
+			$this->assertTrue($did_except, 'Missing Exception from get_user_data because of multiple objects');
+			// Test for Exception
+			Configs::set('ldap_user_filter', '');
+			$did_except = false;
+			try {
+				$ldap->check_pass(self::TESTUSER, self::TESTUSER_PW);
+			} catch (\App\Exceptions\LDAPException $e) {
+				$did_except = true;
+			}
+			$this->assertTrue($did_except, 'Missing Exception from get_user_data because of multiple objects');
+
 			$ldap->LDAP_close();
 		} finally {
 			$this->done_ldap();
@@ -85,22 +153,40 @@ class LDAPTest extends LDAPTestCase
 
 			$SR = $ldap->LDAP_search(self::USER_TREE, '(objectClass=*)', 'one');
 			$this->assertTrue($SR['count'] > 0, 'LDAP_search scope base should return at least one result');
-
+			// Test for Exception
+			$did_except = false;
+			try {
+				$SR = $ldap->LDAP_search(self::USER_TREE, '_', 'sub');
+			} catch (\App\Exceptions\LDAPException $e) {
+				$did_except = true;
+			}
+			$this->assertTrue($did_except, 'Missing Exception from get_user_data because of multiple objects');
 			$ldap->LDAP_close();
 		} finally {
 			$this->done_ldap();
 		}
 	}
 
-	public function testLDAPmultiServer()
+	public function testLDAPmultiServer1()
 	{
 		$ldap = $this->get_ldap();
 		try {
-			Configs::set('ldap_server', 'google.com,github.com');
+			Configs::set('ldap_server', 'ss:,google.com,github.com');
 			$this->expectException(\App\Exceptions\LDAPException::class, 'Missing Exception from check_pass when called with no server available');
 			$ldap->LDAP_open();
+		} finally {
+			$this->done_ldap();
+		}
+	}
+
+	public function testLDAPmultiServer2()
+	{
+		$ldap = $this->get_ldap();
+		try {
+			// We do not expect any Exception if a valid server is present
 			Configs::set('ldap_server', 'google.com,github.com,' . self::SERVER);
 			$ldap->LDAP_open();
+			$this->assertTrue(true);
 			$ldap->LDAP_close();
 		} finally {
 			$this->done_ldap();
@@ -155,10 +241,32 @@ class LDAPTest extends LDAPTestCase
 			$this->assertEqualsCanonicalizing($user_data->toArray(), $this->test_user);
 			// 7
 			$ldap->LDAP_close();
+			Configs::set('ldap_user_tree', 'uid=%{user},dc=example,dc=com');
+			$this->assertTrue($ldap->check_pass(self::TESTUSER, self::TESTUSER_PW), 'Cannot verify user TESTUSER');
+		} finally {
+			$this->done_ldap();
+		}
+	}
+
+	public function testLDAPinvalidServer1()
+	{
+		$this->assertTrue(true);
+		$ldap = $this->get_ldap();
+		try {
+			$ldap->LDAP_close();
 			Configs::set('ldap_server', 'google.com,github.com');
 			$this->expectException(\App\Exceptions\LDAPException::class, 'Missing Exception from check_pass when called with no server available');
 			$ret = $ldap->check_pass(self::UNKNOWN_USER, 'password');
-			$this->_debug($ret, 'check_pass(self::UNKNOWN_USER, password): ');
+		} finally {
+			$this->done_ldap();
+		}
+	}
+
+	public function testLDAPinvalidServer2()
+	{
+		$ldap = $this->get_ldap();
+		try {
+			$ldap->LDAP_close();
 			Configs::set('ldap_server', 'google.com,github.com,' . self::SERVER);
 			$this->assertFalse($ldap->check_pass(self::UNKNOWN_USER, 'password'), 'Should not possible to verify the UNKNOWN_USER:TESTUSER_PW');
 		} finally {
@@ -177,6 +285,19 @@ class LDAPTest extends LDAPTestCase
 			foreach ($user_list as $usr) {
 				$this->assertFalse($usr->user == self::UNKNOWN_USER, 'UNKNOWN_USER is known');
 			}
+		} finally {
+			$this->done_ldap();
+		}
+	}
+
+	public function testLDAPGetUserList()
+	{
+		$ldap = $this->get_ldap();
+		try {
+			$ldap->LDAP_open();
+			Configs::set('ldap_user_filter', '');
+			$user_list = $ldap->get_user_list(true);
+			$this->assertIsArray($user_list, 'The user list should be an array');
 		} finally {
 			$this->done_ldap();
 		}
@@ -208,6 +329,8 @@ class LDAPTest extends LDAPTestCase
 	public function testLDAPstarttls()
 	{
 		$this->assertTrue(true);
+
+		return;
 		$this->markTestSkipped('Do not use.');
 		$ldap = $this->get_ldap();
 		try {

@@ -61,4 +61,23 @@ class LDAPTestFunctions extends LDAPFunctions
 	{
 		return parent::_makeFilter($filter, $placeholders);
 	}
+
+	public function clear_cache(): void
+	{
+		$this->cached_user_info = [];
+	}
+
+	public function LDAP_start_tls(): void
+	{
+		// This function is required for the LDAPTest.
+		// Do not remove it!
+		parent::LDAP_start_tls();
+	}
+
+	public function connect(string $host, int $port = 389, $timeout = 1): bool|\LDAP\Connection
+	{
+		// This function is required for the LDAPTest.
+		// Do not remove it!
+		return parent::connect($host, $port, $timeout);
+	}
 }
