@@ -7,6 +7,11 @@ use App\Exceptions\MediaFileUnsupportedException;
 use App\Models\Configs;
 use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
+/**
+ * Note that the doc blocks of the GD image processing functions are incorrect.
+ * PhpStan is reporting a lot of false posiive.
+ * See here: https://github.com/thecodingmachine/safe/issues/283.
+ */
 class GdHandler implements ImageHandlerInterface
 {
 	private int $compressionQuality;
@@ -23,8 +28,6 @@ class GdHandler implements ImageHandlerInterface
 	 */
 	private function autoRotateInternal(\GdImage &$image, int $orientation): array
 	{
-		$success = true;
-		// https://github.com/thecodingmachine/safe/issues/283
 		try {
 			$image = match ($orientation) {
 				3 => \Safe\imagerotate($image, -180, 0),
@@ -74,7 +77,6 @@ class GdHandler implements ImageHandlerInterface
 		int &$resHeight
 	): void {
 		$res = $this->readImage($source);
-		// list($sourceImg, $mime, $width, $height) = $res;
 		$sourceImg = $res['image'];
 		$mime = $res['mime'];
 		$width = $res['width'];
@@ -119,7 +121,6 @@ class GdHandler implements ImageHandlerInterface
 		int $newHeight
 	): void {
 		$res = $this->readImage($source);
-		// list($sourceImg,, $width, $height) = $res;
 		$sourceImg = $res['image'];
 		$width = $res['width'];
 		$height = $res['height'];
