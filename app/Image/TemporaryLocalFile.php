@@ -33,9 +33,9 @@ class TemporaryLocalFile extends NativeLocalFile
 				$fileExtension;
 			try {
 				$retryCounter--;
-				$this->stream = fopen($tempFilePath, 'x');
+				$this->stream = \Safe\fopen($tempFilePath, 'x');
 				$success = is_resource($this->stream);
-				fclose($this->stream);
+				\Safe\fclose($this->stream);
 			} catch (\Throwable) {
 				$success = false;
 			}
