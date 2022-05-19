@@ -483,6 +483,13 @@ class LDAPFunctions
 	 */
 	protected function connect(string $host, int $port = 389, $timeout = 1): bool|\LDAP\Connection
 	{
+		if (!$timeout) {
+			try {
+				return ldap_connect($host, $port);
+			} catch (\Throwable) {
+				return false;
+			}
+		}
 		$chost = $host;
 		$cport = $port;
 		$sv = explode(':', $host);
