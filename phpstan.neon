@@ -18,6 +18,7 @@ services:
 parameters:
 	level: 7
 	reportMaybesInPropertyPhpDocTypes: false
+	checkMissingIterableValueType: false
 	paths:
 		- app
 	excludePaths:
@@ -38,7 +39,6 @@ parameters:
 
 		- '#Return type \(Illuminate\\Support\\Carbon\|null\) of method App\\Models\\.*::asDateTime\(\) should be covariant with return type \(Illuminate\\Support\\Carbon\) of method Illuminate\\Database\\Eloquent\\Model::asDateTime\(\)#'
 		- '#Return type \(App\\Models\\Photo\) of method App\\Models\\Photo::replicate\(\) should be covariant with return type \(static\(.*\)\) of method Illuminate\\Database\\Eloquent\\Model::replicate\(\)#'
-		- '#Method App\\Models\\.*::save\(\) has parameter \$options with no value type specified in iterable type array.#'
 
 		- '#Method App\\Models\\Extensions\\.*::.* should return \$this\(.*\) but returns static\(.*\)#'
 		- '#Method App\\Models\\Extensions\\.*::.* should return \$this\(.*\) but returns Illuminate\\Database\\Eloquent\\Builder<.*>\.#'
@@ -49,26 +49,5 @@ parameters:
 				- app/Models/Extensions/HasBidirectionalRelationships.php
 		-
 			message: '#Variable property access on \$this#' # We do want this
-			paths:
-				- app/SmartAlbums/Utils/MimicModel.php
-
-		-
-			message: '#type has no value type specified in iterable type array.#' # just to make life simpler.
-			paths:
-				- app/Providers/AppServiceProvider.php
-				- app/Providers/AuthServiceProvider.php
-				- app/Providers/EventServiceProvider.php
-				- app/Models/User.php
-				- app/Models/Photo.php
-				- app/Models/TagAlbum.php
-				- app/Models/SymLink.php
-				- app/Models/Extensions/SizeVariants.php
-
-		-
-			message: '#has parameter .* with no value type specified in iterable type array.#'
-			paths:
-				- app/Models/Extensions/ForwardsToParentImplementation.php
-		-
-			message: '#jsonSerialize\(\) return type has no value type specified in iterable type array.#'
 			paths:
 				- app/SmartAlbums/Utils/MimicModel.php
