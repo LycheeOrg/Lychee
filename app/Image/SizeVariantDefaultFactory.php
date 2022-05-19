@@ -47,13 +47,13 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 */
 	public function init(Photo $photo, ?SizeVariantNamingStrategy $namingStrategy = null): void
 	{
-		if ($this->photo) {
+		if ($this->photo != null) {
 			$this->cleanup();
 		}
 		$this->photo = $photo;
-		if ($namingStrategy) {
+		if ($namingStrategy != null) {
 			$this->namingStrategy = $namingStrategy;
-		} elseif (!$this->namingStrategy) {
+		} elseif ($this->namingStrategy == null) {
 			$this->namingStrategy = resolve(SizeVariantNamingStrategy::class);
 		}
 		// Ensure that the naming strategy is linked to this photo
@@ -93,7 +93,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		$this->photo = null;
 		$this->namingStrategy = null;
 		if ($this->needsCleanup) {
-			unlink($this->referenceFullPath);
+			\Safe\unlink($this->referenceFullPath);
 		}
 		$this->referenceFullPath = '';
 	}
@@ -118,7 +118,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		$ext = pathinfo($fullPath, PATHINFO_EXTENSION);
 		// test if Imagick supports the filetype
 		// Query return file extensions as all upper case
-		if (!in_array(strtoupper($ext), \Imagick::queryformats())) {
+		if (!in_array(strtoupper($ext), \Imagick::queryFormats(), true)) {
 			throw new MediaFileUnsupportedException('Filetype ' . $ext . ' not supported by Imagick.');
 		}
 		$this->createTmpPathForReferenceJPEG();
@@ -177,10 +177,10 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		} catch (\Throwable $e) {
 			throw new MediaFileOperationException($errMsg, $e);
 		}
-		if (!file_exists($this->referenceFullPath) || filesize($this->referenceFullPath) == 0) {
+		if (!file_exists($this->referenceFullPath) || \Safe\filesize($this->referenceFullPath) == 0) {
 			throw new MediaFileOperationException($errMsg);
 		}
-		if (Configs::get_value('lossless_optimization')) {
+		if (Configs::get_value('lossless_optimization', '0') == '1') {
 			ImageOptimizer::optimize($this->referenceFullPath);
 		}
 	}
@@ -216,7 +216,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 
 		foreach ($allVariants as $variant) {
 			$sv = $this->createSizeVariantCond($variant);
-			if ($sv) {
+			if ($sv != null) {
 				$collection->add($sv);
 			}
 		}
@@ -238,7 +238,9 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		list($maxWidth, $maxHeight) = $this->getMaxDimensions($sizeVariant);
 
 		return $this->createSizeVariantInternal(
-			$sizeVariant, $maxWidth, $maxHeight
+			$sizeVariant,
+			$maxWidth,
+			$maxHeight
 		);
 	}
 
@@ -292,7 +294,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		$shortPath = $this->namingStrategy->generateShortPath($sizeVariant);
 
 		$sv = $this->photo->size_variants->getSizeVariant($sizeVariant);
-		if (!$sv) {
+		if ($sv == null) {
 			try {
 				// Create size variant with dummy filesize, because full path
 				// is for now required to crop/scale.
@@ -305,12 +307,12 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 				$svAbsolutePath = $sv->getFile()->getAbsolutePath();
 				if ($sizeVariant === SizeVariant::THUMB || $sizeVariant === SizeVariant::THUMB2X) {
 					$this->imageHandler->crop($this->referenceFullPath, $svAbsolutePath, $sv->width, $sv->height);
-					$sv->filesize = filesize($svAbsolutePath);
+					$sv->filesize = \Safe\filesize($svAbsolutePath);
 					$sv->save();
 				} else {
 					$resWidth = $resHeight = 0;
 					$this->imageHandler->scale($this->referenceFullPath, $svAbsolutePath, $sv->width, $sv->height, $resWidth, $resHeight);
-					$sv->filesize = filesize($svAbsolutePath);
+					$sv->filesize = \Safe\filesize($svAbsolutePath);
 					$sv->width = $resWidth;
 					$sv->height = $resHeight;
 					$sv->save();
