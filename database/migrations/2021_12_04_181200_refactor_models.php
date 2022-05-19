@@ -489,7 +489,7 @@ class RefactorModels extends Migration
 			$table->dateTime('updated_at', 6)->nullable(false);
 			$table->string('username', 100)->nullable(false)->unique();
 			$table->string('password', 100)->nullable(true);
-			$table->string('email', 100)->nullable();
+			$table->string('email', 100)->nullable()->unique();
 			$table->boolean('may_upload')->nullable(false)->default(false);
 			$table->boolean('is_locked')->nullable(false)->default(false);
 			$table->rememberToken();
