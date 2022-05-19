@@ -85,7 +85,8 @@ class Geodecoder
 	 */
 	public static function decodeLocation_core(float $latitude, float $longitude, ProviderCache $cachedProvider): ?string
 	{
-		$geocoder = new StatefulGeocoder($cachedProvider, Configs::get_value('lang'));
+		$lang = strval(Configs::get_value('lang')) ?: null;
+		$geocoder = new StatefulGeocoder($cachedProvider, $lang);
 		try {
 			$result_list = $geocoder->reverseQuery(ReverseQuery::fromCoordinates($latitude, $longitude));
 
@@ -110,7 +111,7 @@ class RateLimiterStore implements Store
 		return Cache::get('rate-limiter', []);
 	}
 
-	public function push(int $timestamp, int $limit)
+	public function push(int $timestamp, int $limit): void
 	{
 		Cache::put('rate-limiter', array_merge($this->get(), [$timestamp]));
 	}

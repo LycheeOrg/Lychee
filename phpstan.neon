@@ -53,3 +53,4 @@ parameters:
 				- app/SmartAlbums/Utils/MimicModel.php
 
 		- '#Call to an undefined static method Kalnoy\\Nestedset\\QueryBuilder::(whereIn|select|join|leftJoin|orderBy|addSelect)\(\)#'
+		- '#Call to an undefined method Geocoder\\Location::getDisplayName\(\)#'
