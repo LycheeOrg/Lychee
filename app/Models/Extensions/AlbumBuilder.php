@@ -92,6 +92,7 @@ class AlbumBuilder extends NSQueryBuilder
 			]);
 		}
 
+		/** @var array<Album> */
 		return parent::getModels($columns);
 	}
 
