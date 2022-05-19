@@ -60,6 +60,7 @@ parameters:
 				- app/Models/Photo.php
 				- app/Models/TagAlbum.php
 				- app/Models/SymLink.php
+				- app/Models/Extensions/SizeVariants.php
 
 		-
 			message: '#has parameter .* with no value type specified in iterable type array.#'

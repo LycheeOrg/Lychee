@@ -101,7 +101,7 @@ class SizeVariants extends DTO
 	/**
 	 * Serializes this object into an array.
 	 *
-	 * @return array The serialized properties of this object
+	 * @return array<string, array|null> The serialized properties of this object
 	 */
 	public function toArray(): array
 	{
