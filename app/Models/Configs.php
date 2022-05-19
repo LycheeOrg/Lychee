@@ -64,11 +64,11 @@ class Configs extends Model
 	/**
 	 * Sanity check.
 	 *
-	 * @param string $value
+	 * @param ?string $value
 	 *
 	 * @return string
 	 */
-	public function sanity(string $value): string
+	public function sanity(?string $value): string
 	{
 		$message = '';
 		$val_range = [
@@ -82,7 +82,7 @@ class Configs extends Model
 			case self::DISABLED:
 				break;
 			case self::STRING_REQ:
-				if ($value == '') {
+				if ($value == '' || $value == null) {
 					$message = 'Error: ' . $this->key . ' empty or not set in database';
 				}
 				break;
