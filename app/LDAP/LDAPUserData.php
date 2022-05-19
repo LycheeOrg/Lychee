@@ -48,7 +48,6 @@ class LDAPUserData
 	 */
 	public function fromArray(array $userdata): void
 	{
-		$ret = [];
 		foreach (['user', 'server', 'dn', 'display_name', 'email'] as $prop) {
 			if (array_key_exists($prop, $userdata)) {
 				$this->{$prop} = $userdata[$prop];

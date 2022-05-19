@@ -256,7 +256,7 @@ class LDAPTest extends LDAPTestCase
 			$ldap->LDAP_close();
 			Configs::set('ldap_server', 'google.com,github.com');
 			$this->expectException(\App\Exceptions\LDAPException::class, 'Missing Exception from check_pass when called with no server available');
-			$ret = $ldap->check_pass(self::UNKNOWN_USER, 'password');
+			$ldap->check_pass(self::UNKNOWN_USER, 'password');
 		} finally {
 			$this->done_ldap();
 		}
@@ -328,8 +328,6 @@ class LDAPTest extends LDAPTestCase
 
 	public function testLDAPstarttls()
 	{
-		$this->assertTrue(true);
-//		return;
 		$ldap = $this->get_ldap();
 		try {
 			// Testing ldap with starttls by using the public google server.
