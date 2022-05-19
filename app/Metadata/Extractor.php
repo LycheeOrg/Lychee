@@ -13,6 +13,7 @@ use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Support\Carbon;
 use PHPExif\Adapter\NoAdapterException;
+use PHPExif\Exif;
 use PHPExif\Reader\Reader;
 
 class Extractor
@@ -63,7 +64,11 @@ class Extractor
 	 */
 	public function filesize(string $path): int
 	{
-		return (int) filesize($path);
+		try {
+			return \Safe\filesize($path);
+		} catch (\Throwable) {
+			return 0;
+		}
 	}
 
 	/**
@@ -77,12 +82,11 @@ class Extractor
 	 */
 	public function checksum(string $path): string
 	{
-		$checksum = sha1_file($path);
-		if ($checksum === false) {
+		try {
+			return \Safe\sha1_file($path);
+		} catch (\Throwable) {
 			throw new MediaFileOperationException('Could not compute checksum for: ' . $path);
 		}
-
-		return $checksum;
 	}
 
 	/**
@@ -133,7 +137,7 @@ class Extractor
 
 		// check raw files
 		$is_raw = false;
-		$raw_formats = strtolower(Configs::get_value('raw_formats', ''));
+		$raw_formats = strtolower(strval(Configs::get_value('raw_formats', '')));
 		if (in_array(strtolower($extension), explode('|', $raw_formats), true)) {
 			$is_raw = true;
 		}
@@ -203,6 +207,11 @@ class Extractor
 			}
 		}
 
+		// ! By changing the logic of $reader to always return an Exif object or throw an excepion, this would make this code safer.
+		if (!$exif instanceof Exif) {
+			throw new MediaFileOperationException('Could not even extract basic EXIF data with the native adapter');
+		}
+
 		// Attempt to get sidecar metadata if it exists, make sure to check 'real' path in case of symlinks
 		$sidecarData = [];
 
@@ -212,7 +221,7 @@ class Extractor
 			try {
 				// if readlink($filename) == False then $realFile = $filename.
 				// if readlink($filename) != False then $realFile = readlink($filename)
-				$realFile = readlink($fullPath) ?: $fullPath;
+				$realFile = \Safe\readlink($fullPath) ?: $fullPath;
 			} catch (\Exception $e) {
 				Handler::reportSafely($e);
 			}
@@ -221,7 +230,11 @@ class Extractor
 			try {
 				// Don't use the same reader as the file in case it's a video
 				$sidecarReader = Reader::factory(Reader::TYPE_EXIFTOOL);
-				$sidecarData = $sidecarReader->read($realFile . '.xmp')->getData();
+				$sidecarReaderData = $sidecarReader->read($realFile . '.xmp');
+				if (!$sidecarReaderData instanceof Exif) {
+					throw new MediaFileOperationException('Could not even extract basic EXIF data from sidecar');
+				}
+				$sidecarData = $sidecarReaderData->getData();
 
 				// We don't want to overwrite the media's type with the mimetype of the sidecar file
 				unset($sidecarData['MimeType']);
@@ -390,7 +403,7 @@ class Extractor
 				//         the attribute `taken_at` which extends
 				//         \DateTimeInterface and stores the timezone.
 				if ($kind === 'video') {
-					$locals = strtolower(Configs::get_value('local_takestamp_video_formats', ''));
+					$locals = strtolower(strval(Configs::get_value('local_takestamp_video_formats', '')));
 					if (!in_array(strtolower($extension), explode('|', $locals), true)) {
 						// This is a video format where we expect the takestamp
 						// to be provided in UTC.
@@ -497,7 +510,7 @@ class Extractor
 			$metadata['aperture'] = ($exif->getAperture() !== false) ? $exif->getAperture() : '';
 			$metadata['focal'] = ($exif->getFocalLength() !== false) ? $exif->getFocalLength() : '';
 			if ($metadata['focal'] !== '') {
-				$metadata['focal'] = round($metadata['focal']) . ' mm';
+				$metadata['focal'] = round(floatval($metadata['focal'])) . ' mm';
 			}
 		} else {
 			// Video -> reuse fields
@@ -518,7 +531,7 @@ class Extractor
 		try {
 			$metadata['location'] = Geodecoder::decodeLocation($metadata['latitude'], $metadata['longitude']);
 			if ($metadata['location'] !== null) {
-				$metadata['location'] = substr($metadata['location'], 0, 255);
+				$metadata['location'] = \Safe\substr($metadata['location'], 0, 255);
 			}
 		} catch (ExternalComponentFailedException $e) {
 			Handler::reportSafely($e);
