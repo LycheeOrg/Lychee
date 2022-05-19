@@ -232,7 +232,7 @@ class Photo extends Model implements HasRandomID
 			return $shutter;
 		} catch (ZeroModuloException $e) {
 			// this should not happen as we covered the case $b = 0;
-			assert(false, new \AssertionError('Unexpected ZeroModuloException', $e->getCode(), $e));
+			throw new \AssertionError('Unexpected ZeroModuloException', $e->getCode(), $e);
 		}
 	}
 
@@ -285,7 +285,7 @@ class Photo extends Model implements HasRandomID
 			return null;
 		}
 		// We need to format the framerate (stored as focal) -> max 2 decimal digits
-		return $this->isVideo() ? (string) round($focal, 2) : $focal;
+		return $this->isVideo() ? (string) round(intval($focal), 2) : $focal;
 	}
 
 	/**
@@ -334,7 +334,7 @@ class Photo extends Model implements HasRandomID
 	{
 		return AccessControl::is_current_user_or_admin($this->owner_id) ||
 			($this->album_id != null && $this->album->is_downloadable) ||
-			($this->album_id == null && Configs::get_value('downloadable', '0'));
+			($this->album_id == null && boolval(Configs::get_value('downloadable', '0')));
 	}
 
 	/**
