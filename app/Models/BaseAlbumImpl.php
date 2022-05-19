@@ -263,13 +263,8 @@ class BaseAlbumImpl extends Model implements HasRandomID
 
 	protected function setSortingAttribute(?PhotoSortingCriterion $sorting): void
 	{
-		if ($sorting) {
-			$this->attributes['sorting_col'] = $sorting->column;
-			$this->attributes['sorting_order'] = $sorting->order;
-		} else {
-			$this->attributes['sorting_col'] = null;
-			$this->attributes['sorting_order'] = null;
-		}
+		$this->attributes['sorting_col'] = $sorting?->column;
+		$this->attributes['sorting_order'] = $sorting?->order;
 	}
 
 	public function toArray(): array
