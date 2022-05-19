@@ -169,7 +169,7 @@ class LDAPTest extends LDAPTestCase
 
 	public function testLDAPmultiServer1()
 	{
-		$ldap = $this->get_ldap();
+		$this->get_ldap();
 		try {
 			Configs::set('ldap_server', 'ss:,google.com,github.com');
 			$this->expectException(\App\Exceptions\LDAPException::class, 'Missing Exception from check_pass when called with no server available');
