@@ -2,8 +2,6 @@
 
 namespace App\LDAP;
 
-use App\Models\Configs;
-
 /**
  * Class LDAPUserData.
  *
@@ -24,7 +22,6 @@ class LDAPUserData
 	 */
 	public function __construct()
 	{
-		$this->server = Configs::get_value('ldap_server');
 	}
 
 	/**
@@ -42,5 +39,20 @@ class LDAPUserData
 		}
 
 		return $ret;
+	}
+
+	/**
+	 * Convert object to Array.
+	 *
+	 * @return array
+	 */
+	public function fromArray(array $userdata): void
+	{
+		$ret = [];
+		foreach (['user', 'server', 'dn', 'display_name', 'email'] as $prop) {
+			if (array_key_exists($prop, $userdata)) {
+				$this->{$prop} = $userdata[$prop];
+			}
+		}
 	}
 }

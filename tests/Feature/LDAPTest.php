@@ -329,22 +329,19 @@ class LDAPTest extends LDAPTestCase
 	public function testLDAPstarttls()
 	{
 		$this->assertTrue(true);
-
-		return;
-		$this->markTestSkipped('Do not use.');
+//		return;
 		$ldap = $this->get_ldap();
 		try {
 			// Testing ldap with starttls by using the public google server.
-			Configs::set('ldap_server', 'ldap.google.com');
+			Configs::set('ldap_server', 'db.debian.org');
 			Configs::set('ldap_port', '389');
 			Configs::set('ldap_start_tls', '1');
-			Configs::set('ldap_user_tree', '');
-			Configs::set('ldap_user_filter', '');
+			Configs::set('ldap_user_tree', 'dc=debian,dc=org');
+			Configs::set('ldap_user_filter', 'uid=%{user}');
 			Configs::set('ldap_bind_dn', '');
 			Configs::set('ldap_bind_pw', '');
 			$ldap->LDAP_open();
-			$SR = $ldap->LDAP_search('dc=google,dc=com', '(objectClass=*)', 'sub');
-			$this->_debug($SR);
+			$SR = $ldap->LDAP_search('dc=debian,dc=org', 'uid=a*', 'sub');
 			$this->assertTrue($SR['count'] > 0, 'LDAP_search scope base should return at least one result');
 			$ldap->LDAP_close();
 		} finally {

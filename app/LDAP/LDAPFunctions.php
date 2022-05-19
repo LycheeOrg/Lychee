@@ -425,6 +425,7 @@ class LDAPFunctions
 		} else {
 			$userData->email = '';
 		}
+		$userData->server = $this->ldap_server;
 
 		return $userData;
 	}
@@ -501,6 +502,8 @@ class LDAPFunctions
 			return false;
 		}
 		try {
+			// The use of sockets is safe here because no data will be trnsferred.
+			// The socket is only used to verify that the ldap server can be connected.
 			$OK = fsockopen($chost, $cport, $errno, $errstr, $timeout);
 		} catch (\ErrorException) {
 			$OK = false;
@@ -571,9 +574,7 @@ class LDAPFunctions
 				if ($ldap_version === self::LDAP_VERSION_3) {
 					// use TLS (needs version 3)
 					if (Configs::get_value(self::CONFIG_KEY_START_TLS)) {
-						// @codeCoverageIgnoreStart
 						$this->LDAP_start_tls();
-						// @codeCoverageIgnoreEnd
 					}
 
 					$ldap_referals = Configs::get_value(self::CONFIG_KEY_REFERRALS);
