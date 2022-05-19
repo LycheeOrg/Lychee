@@ -29,6 +29,7 @@ parameters:
 		- '#Construct empty\(\) is not allowed#' # we like empty()
 
 		# bunch of false positives from Eloquent
+		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::insert\(\).#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::select\(\).#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::whereIn\(\).#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::whereNull\(\).#'

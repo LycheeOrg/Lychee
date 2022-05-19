@@ -10,7 +10,6 @@ use App\Models\Configs;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\InvalidCastException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 
 /**
@@ -70,7 +69,7 @@ trait HasRandomIDAndLegacyTimeBasedID
 	 * Performs the `INSERT` operation of the model.
 	 *
 	 * This method also tries to create a unique, time-based ID.
-	 * The method is mostly copied & pasted from {@link Model::performInsert()}
+	 * The method is mostly copied & pasted from {@link \Illuminate\Database\Eloquent\Model::performInsert()}
 	 * with adoptions regarding key generation.
 	 *
 	 * @param Builder $query
@@ -163,13 +162,13 @@ trait HasRandomIDAndLegacyTimeBasedID
 			// full seconds in id.  The calling code needs to be able to
 			// handle duplicate ids.  Note that this also exposes us to
 			// the year 2038 problem.
-			$legacyID = sprintf('%010d', microtime(true));
+			$legacyID = \Safe\sprintf('%010d', microtime(true));
 		} else {
 			// Ensure 4 digits after the decimal point, 15 characters
 			// total (including the decimal point), 0-padded on the
 			// left if needed (shouldn't be needed unless we move back in
 			// time :-) )
-			$legacyID = sprintf('%015.4f', microtime(true));
+			$legacyID = \Safe\sprintf('%015.4f', microtime(true));
 			$legacyID = str_replace('.', '', $legacyID);
 		}
 		$this->attributes[$this->getKeyName()] = $id;
