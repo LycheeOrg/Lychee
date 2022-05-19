@@ -25,6 +25,7 @@ parameters:
 		- app/View/*
 	ignoreErrors:
 		- '#Short ternary operator is not allowed#'
+		- '#Construct empty\(\) is not allowed#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>::whereNull\(\).#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\Relations\\HasMany<.*>::orderBy\(\)#'
 		-
