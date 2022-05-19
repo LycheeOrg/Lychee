@@ -252,13 +252,13 @@ class SizeVariants extends DTO
 	public function replicate(Photo $duplicatePhoto): SizeVariants
 	{
 		$duplicate = new SizeVariants($duplicatePhoto);
-		static::replicateSizeVariant($duplicate, $this->original);
-		static::replicateSizeVariant($duplicate, $this->medium2x);
-		static::replicateSizeVariant($duplicate, $this->medium);
-		static::replicateSizeVariant($duplicate, $this->small2x);
-		static::replicateSizeVariant($duplicate, $this->small);
-		static::replicateSizeVariant($duplicate, $this->thumb2x);
-		static::replicateSizeVariant($duplicate, $this->thumb);
+		self::replicateSizeVariant($duplicate, $this->original);
+		self::replicateSizeVariant($duplicate, $this->medium2x);
+		self::replicateSizeVariant($duplicate, $this->medium);
+		self::replicateSizeVariant($duplicate, $this->small2x);
+		self::replicateSizeVariant($duplicate, $this->small);
+		self::replicateSizeVariant($duplicate, $this->thumb2x);
+		self::replicateSizeVariant($duplicate, $this->thumb);
 
 		return $duplicate;
 	}
