@@ -32,13 +32,13 @@ class GitHubFunctions
 	/**
 	 * Given a commit id, return the 7 first characters (7 hex digits) and trim it to remove \n.
 	 *
-	 * @param $commit_id
+	 * @param string $commit_id
 	 *
 	 * @return string
 	 */
-	private static function trim($commit_id): string
+	private static function trim(string $commit_id): string
 	{
-		return trim(substr($commit_id, 0, 7));
+		return trim(\Safe\substr($commit_id, 0, 7));
 	}
 
 	/**
@@ -126,9 +126,9 @@ class GitHubFunctions
 			$last_update = $this->gitRequest->get_age_text();
 
 			if ($count === 0) {
-				return sprintf(' - Up to date (%s).', $last_update);
+				return \Safe\sprintf(' - Up to date (%s).', $last_update);
 			} else {
-				return sprintf(
+				return \Safe\sprintf(
 					' - %s commits behind master %s (%s)',
 					$count,
 					$this->getRemoteHead(),
@@ -169,8 +169,7 @@ class GitHubFunctions
 
 		try {
 			return
-				Helpers::hasFullPermissions(base_path('.git')) && (
-					$localBranch === null ||
+				Helpers::hasFullPermissions(base_path('.git')) && ($localBranch === null ||
 					Helpers::hasPermissions(base_path('.git/refs/heads/' . $localBranch))
 				);
 		} catch (BindingResolutionException) {
@@ -189,7 +188,10 @@ class GitHubFunctions
 	{
 		// add a setting to do this check only once per day ?
 		if (Configs::get_value('check_for_updates', '0') == '0') {
-			return [];
+			return [
+				'update_json' => 0,
+				'update_available' => false,
+			];
 		}
 
 		try {
@@ -239,10 +241,7 @@ class GitHubFunctions
 		if ($this->localBranch === null) {
 			try {
 				$head_file = base_path('.git/HEAD');
-				$branch = file_get_contents($head_file);
-				if ($branch === false) {
-					throw new \RuntimeException('`file_get_contents` returned `false`');
-				}
+				$branch = \Safe\file_get_contents($head_file);
 				$branch = explode('/', $branch, 3);
 
 				$this->localBranch = trim($branch[2]);
@@ -266,10 +265,7 @@ class GitHubFunctions
 		if ($this->localHead === null) {
 			try {
 				$file = base_path('.git/refs/heads/' . $this->getLocalBranch());
-				$commitID = file_get_contents($file);
-				if ($commitID === false) {
-					throw new \RuntimeException('`file_get_contents` returned `false`');
-				}
+				$commitID = \Safe\file_get_contents($file);
 				$this->localHead = self::trim($commitID);
 			} catch (\Throwable $e) {
 				throw new VersionControlException('Could not determine the head commit of current branch', $e);
