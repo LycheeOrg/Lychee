@@ -28,9 +28,13 @@ parameters:
 
 		- '#Construct empty\(\) is not allowed#' # we like empty()
 
-		# bunch of false positives
-		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>::whereNull\(\).#'
-		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\Relations\\HasMany<.*>::orderBy\(\)#'
+		# bunch of false positives from Eloquent
+		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::select\(\).#'
+		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::whereIn\(\).#'
+		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::whereNull\(\).#'
+		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::orderBy\(\)#'
+		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::withOnly\(\)#'
+
 		- '#Return type \(Illuminate\\Support\\Carbon\|null\) of method App\\Models\\.*::asDateTime\(\) should be covariant with return type \(Illuminate\\Support\\Carbon\) of method Illuminate\\Database\\Eloquent\\Model::asDateTime\(\)#'
 		- '#Return type \(App\\Models\\Photo\) of method App\\Models\\Photo::replicate\(\) should be covariant with return type \(static\(Illuminate\\Database\\Eloquent\\Model\)\) of method Illuminate\\Database\\Eloquent\\Model::replicate\(\)#'
 
