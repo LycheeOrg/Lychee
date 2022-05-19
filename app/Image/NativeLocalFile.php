@@ -25,8 +25,12 @@ class NativeLocalFile extends MediaFile
 	 */
 	public function __construct(string $path)
 	{
-		$absolutePath = realpath($path);
-		if ($absolutePath === false || !is_file($absolutePath)) {
+		try {
+			$absolutePath = \Safe\realpath($path);
+		} catch (\Throwable) {
+			throw new MediaFileOperationException('The path "' . $path . '" does not point to a local file');
+		}
+		if (!is_file($absolutePath)) {
 			throw new MediaFileOperationException('The path "' . $path . '" does not point to a local file');
 		}
 		$this->absolutePath = $absolutePath;
@@ -55,9 +59,10 @@ class NativeLocalFile extends MediaFile
 		if (is_resource($this->stream)) {
 			throw new LycheeLogicException('Cannot read from a file which is already opened for read');
 		}
-		$this->stream = fopen($this->absolutePath, 'rb');
-		if ($this->stream === false || !is_resource($this->stream)) {
-			$this->stream = null;
+
+		try {
+			$this->stream = \Safe\fopen($this->absolutePath, 'rb');
+		} catch (\Throwable) {
 			throw new MediaFileOperationException('Could not read from file ' . $this->absolutePath);
 		}
 
@@ -72,15 +77,16 @@ class NativeLocalFile extends MediaFile
 		if (is_resource($this->stream)) {
 			throw new LycheeLogicException('Cannot write to a file which is opened for read');
 		}
+
 		// inspired from \League\Flysystem\Adapter\Local
-		$this->stream = fopen($this->absolutePath, 'wb');
-		if (
-			!is_resource($this->stream) ||
-			stream_copy_to_stream($stream, $this->stream) === false ||
-			!fclose($this->stream)
-		) {
+		try {
+			$this->stream = \Safe\fopen($this->absolutePath, 'wb');
+			\Safe\stream_copy_to_stream($stream, $this->stream);
+			\Safe\fclose($this->stream);
+		} catch (\Throwable) {
 			throw new MediaFileOperationException('Could not write file ' . $this->absolutePath);
 		}
+
 		$this->stream = null;
 	}
 
@@ -89,7 +95,9 @@ class NativeLocalFile extends MediaFile
 	 */
 	public function delete(): void
 	{
-		if (!unlink($this->absolutePath)) {
+		try {
+			\Safe\unlink($this->absolutePath);
+		} catch (\Throwable) {
 			throw new MediaFileOperationException('Could not delete file ' . $this->absolutePath);
 		}
 	}
@@ -109,7 +117,7 @@ class NativeLocalFile extends MediaFile
 	{
 		$ext = pathinfo($this->absolutePath, PATHINFO_EXTENSION);
 
-		return $ext ? '.' . $ext : '';
+		return boolval($ext) ? '.' . $ext : '';
 	}
 
 	/**
@@ -122,6 +130,6 @@ class NativeLocalFile extends MediaFile
 
 	public function getMimeType(): string
 	{
-		return mime_content_type($this->absolutePath);
+		return \Safe\mime_content_type($this->absolutePath);
 	}
 }
