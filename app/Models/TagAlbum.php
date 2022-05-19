@@ -13,7 +13,7 @@ use Illuminate\Database\Query\Builder as BaseBuilder;
 /**
  * Class TagAlbum.
  *
- * @property string[] show_tags
+ * @property string[] $show_tags
  *
  * @method static TagAlbumBuilder query()                       Begin querying the model.
  * @method static TagAlbumBuilder with(array|string $relations) Begin querying the model with eager loading.
