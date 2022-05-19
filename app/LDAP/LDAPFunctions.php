@@ -183,7 +183,7 @@ class LDAPFunctions
 	 *
 	 * @throws LDAPException
 	 */
-	public function get_user_list(bool $refresh = false)
+	public function get_user_list(bool $refresh = false): array
 	{
 		$this->open_LDAP();
 
