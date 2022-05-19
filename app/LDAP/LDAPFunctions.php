@@ -480,7 +480,7 @@ class LDAPFunctions
 	 *
 	 * This method connects to the server and returns the conection if possible.
 	 */
-	protected function connect(string $host, int $port = 389, $timeout = 1): bool|\LDAP\Connection
+	protected function connect(string $host, int $port = 389, $timeout = 10): bool|\LDAP\Connection
 	{
 		$chost = $host;
 		$cport = $port;
