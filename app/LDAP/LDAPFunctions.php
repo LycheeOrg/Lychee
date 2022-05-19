@@ -544,7 +544,6 @@ class LDAPFunctions
 		foreach ($servers as $server) {
 			try {
 				$server = trim($server);
-				Logs::debug(__METHOD__, __LINE__, sprintf('-------------------------------- Try to connect %s on port %s', $server, $port));
 				$this->con = $this->connect($server, $port);
 				$OK = ($this->con !== false);
 				Logs::notice(__METHOD__, __LINE__, sprintf('Try to connect %s on port %s: %s', $server, $port, $OK ? 'OK' : 'NO'));

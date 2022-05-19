@@ -17,7 +17,7 @@ class LDAPTestCase extends TestCase
 	public const TESTUSER_EMAIL = 'gauss@ldap.forumsys.com';
 	public const TESTUSER_FILTER = '(uid=gauss)';
 
-	public const SERVER = 'ldap.forumsys.com';
+	public const SERVER = 'ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com';
 	public const USER_TREE = 'dc=example,dc=com';
 	public const USER_FILTER = '(uid=%{user})';
 	public const BIND_DN = 'cn=read-only-admin,dc=example,dc=com';

@@ -10,7 +10,7 @@ use Tests\LDAPTestCase;
 class LDAPTest extends LDAPTestCase
 {
 	protected $test_user = [
-		'user' => self::TESTUSER, 'server' => self::SERVER, 'dn' => self::TESTUSER_DN,
+		'user' => self::TESTUSER, 'server' => 'ldap.forumsys.com', 'dn' => self::TESTUSER_DN,
 		'display_name' => self::TESTUSER_CN, 'email' => self::TESTUSER_EMAIL,
 	];
 
