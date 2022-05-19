@@ -16,8 +16,8 @@ class LDAPTestCase extends TestCase
 	public const TESTUSER_CN = 'Carl Friedrich Gauss';
 	public const TESTUSER_EMAIL = 'gauss@ldap.forumsys.com';
 	public const TESTUSER_FILTER = '(uid=gauss)';
-
-	public const SERVER = 'ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com';
+	// repeating the servername is working as an retry for the workflow testing
+	public const SERVER = 'ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com';
 	public const USER_TREE = 'dc=example,dc=com';
 	public const USER_FILTER = '(uid=%{user})';
 	public const BIND_DN = 'cn=read-only-admin,dc=example,dc=com';
@@ -50,7 +50,7 @@ class LDAPTestCase extends TestCase
 		Configs::set('ldap_user_filter', self::USER_FILTER);
 		Configs::set('ldap_bind_dn', self::BIND_DN);
 		Configs::set('ldap_bind_pw', self::BIND_PW);
-		Configs::set('ldap_timeout', '10');
+		Configs::set('ldap_timeout', '5');
 	}
 
 	protected function LDAP_tearDown(): void
