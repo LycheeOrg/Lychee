@@ -44,7 +44,7 @@ class SizeVariants extends DTO
 	public function __construct(Photo $photo, ?Collection $sizeVariants = null)
 	{
 		$this->photo = $photo;
-		if ($sizeVariants) {
+		if ($sizeVariants != null) {
 			/** @var SizeVariant $sizeVariant */
 			foreach ($sizeVariants as $sizeVariant) {
 				$this->add($sizeVariant);
@@ -66,7 +66,6 @@ class SizeVariants extends DTO
 			throw new LycheeInvalidArgumentException('ID of owning photo does not match');
 		}
 		$sizeVariant->setRelation('photo', $this->photo);
-
 		switch ($sizeVariant->type) {
 			case SizeVariant::ORIGINAL:
 				$ref = &$this->original;
@@ -93,7 +92,7 @@ class SizeVariants extends DTO
 				throw new LycheeInvalidArgumentException('size variant ' . $sizeVariant . 'invalid');
 		}
 
-		if ($ref && $ref->id !== $sizeVariant->id) {
+		if (isset($ref) && $ref != null && $ref->id !== $sizeVariant->id) {
 			throw new LycheeInvalidArgumentException('Another size variant of the same type has already been added');
 		}
 		$ref = $sizeVariant;
@@ -212,7 +211,7 @@ class SizeVariants extends DTO
 		} catch (LycheeInvalidArgumentException $e) {
 			// thrown by ::add(), if  $result->photo_id != $this->photo->id,
 			// but we know that we assert that
-			assert(false, new \AssertionError('::add failed', $e));
+			throw new \AssertionError('::add failed', $e->getCode(), $e);
 		}
 	}
 
@@ -228,22 +227,22 @@ class SizeVariants extends DTO
 	{
 		$ids = [];
 
-		$ids[] = $this->original?->id;
+		$ids[] = strval($this->original?->id);
 		$this->original = null;
-		$ids[] = $this->medium2x?->id;
+		$ids[] = strval($this->medium2x?->id);
 		$this->medium2x = null;
-		$ids[] = $this->medium?->id;
+		$ids[] = strval($this->medium?->id);
 		$this->medium = null;
-		$ids[] = $this->small2x?->id;
+		$ids[] = strval($this->small2x?->id);
 		$this->small2x = null;
-		$ids[] = $this->small?->id;
+		$ids[] = strval($this->small?->id);
 		$this->small = null;
-		$ids[] = $this->thumb2x?->id;
+		$ids[] = strval($this->thumb2x?->id);
 		$this->thumb2x = null;
-		$ids[] = $this->thumb?->id;
+		$ids[] = strval($this->thumb?->id);
 		$this->thumb = null;
 
-		(new Delete())->do(array_diff($ids, [null]))->do();
+		(new Delete())->do(array_diff($ids, ['']))->do();
 	}
 
 	/**
