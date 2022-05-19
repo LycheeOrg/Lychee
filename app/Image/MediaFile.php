@@ -69,7 +69,7 @@ abstract class MediaFile
 	public function close(): void
 	{
 		if (is_resource($this->stream)) {
-			fclose($this->stream);
+			\Safe\fclose($this->stream);
 			$this->stream = null;
 		}
 	}
