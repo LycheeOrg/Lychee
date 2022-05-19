@@ -50,7 +50,7 @@ class LDAPTestCase extends TestCase
 		Configs::set('ldap_user_filter', self::USER_FILTER);
 		Configs::set('ldap_bind_dn', self::BIND_DN);
 		Configs::set('ldap_bind_pw', self::BIND_PW);
-		Configs::set('ldap_timeout', '15');
+		Configs::set('ldap_timeout', '20');
 	}
 
 	protected function LDAP_tearDown(): void
