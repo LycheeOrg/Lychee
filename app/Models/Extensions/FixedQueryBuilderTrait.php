@@ -48,10 +48,10 @@ trait FixedQueryBuilderTrait
 	/**
 	 * Add a basic where clause to the query.
 	 *
-	 * @param \Closure|string|array|Expression $column
-	 * @param mixed                            $operator
-	 * @param mixed                            $value
-	 * @param string                           $boolean
+	 * @param \Closure|string|array<string>|Expression $column
+	 * @param mixed                                    $operator
+	 * @param mixed                                    $value
+	 * @param string                                   $boolean
 	 *
 	 * @return $this
 	 *
@@ -189,9 +189,9 @@ trait FixedQueryBuilderTrait
 	/**
 	 * Add an "or where" clause to the query.
 	 *
-	 * @param \Closure|array|string|Expression $column
-	 * @param mixed                            $operator
-	 * @param mixed                            $value
+	 * @param \Closure|array<string>|string|Expression $column
+	 * @param mixed                                    $operator
+	 * @param mixed                                    $value
 	 *
 	 * @return $this
 	 *
