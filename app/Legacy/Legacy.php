@@ -109,15 +109,16 @@ class Legacy
 	 * @throws ConfigurationException thrown, if the translation between
 	 *                                legacy and modern IDs is disabled
 	 */
-	private static function translateLegacyID(int $id, string $tableName, Request $request): ?string
+	private static function translateLegacyID(int $id, string $tableName, Request $request): string|null
 	{
 		try {
-			$newID = DB::table($tableName)
+			/** @var string $newID */
+			$newID = (string) DB::table($tableName)
 				->where('legacy_id', '=', intval($id))
 				->value('id');
 
-			if ($newID) {
-				$referer = $request->header('Referer', '(unknown)');
+			if ($newID != '') {
+				$referer = strval($request->header('Referer', '(unknown)'));
 				$msg = 'Request for ' . $tableName .
 					' with legacy ID ' . $id .
 					' instead of new ID ' . $newID .
@@ -127,9 +128,11 @@ class Legacy
 					throw new ConfigurationException($msg);
 				}
 				Logs::warning(__METHOD__, __LINE__, $msg);
+
+				return $newID;
 			}
 
-			return $newID;
+			return null;
 		} catch (\InvalidArgumentException $e) {
 			throw new QueryBuilderException($e);
 		}
