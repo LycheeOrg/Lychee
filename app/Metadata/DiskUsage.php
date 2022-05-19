@@ -9,9 +9,9 @@ class DiskUsage
 	 *
 	 * @return bool
 	 */
-	public function is_win()
+	public function is_win(): bool
 	{
-		$os = strtoupper(substr(PHP_OS, 0, 3));
+		$os = strtoupper(\Safe\substr(PHP_OS, 0, 3));
 
 		return $os === 'WIN';
 	}
@@ -19,29 +19,32 @@ class DiskUsage
 	/**
 	 * From https://www.php.net/manual/en/function.disk-total-space.php.
 	 *
-	 * @param $bytes
+	 * @param float $bytes
 	 *
 	 * @return string
 	 */
-	public function getSymbolByQuantity($bytes)
+	public function getSymbolByQuantity(float $bytes): string
 	{
 		$symbols = [
 			'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB',
 		];
 		$exp = intval(floor(log($bytes) / log(1024)));
 
-		return sprintf('%.2f %s', ($bytes / pow(1024, $exp)),
-			$symbols[$exp]);
+		return \Safe\sprintf(
+			'%.2f %s',
+			($bytes / pow(1024, $exp)),
+			$symbols[$exp]
+		);
 	}
 
 	/**
 	 * from https://stackoverflow.com/questions/478121/how-to-get-directory-size-in-php.
 	 *
-	 * @param $dir
+	 * @param string $dir
 	 *
-	 * @return bool|false|int|string
+	 * @return int
 	 */
-	public function getTotalSize($dir)
+	public function getTotalSize(string $dir): int
 	{
 		$dir = rtrim(str_replace('\\', '/', $dir), '/');
 
@@ -58,20 +61,18 @@ class DiskUsage
 			else {
 				if (extension_loaded('com_dotnet')) {
 					$obj = new \COM('scripting.filesystemobject');
-					if (is_object($obj)) {
-						$ref = $obj->getfolder($dir);
-						$totalSize = $ref->size;
-						$obj = null;
+					$ref = $obj->getfolder($dir);
+					$totalSize = $ref->size;
+					$obj = null;
 
-						return $totalSize;
-					}
+					return $totalSize;
 				}
 			}
 
 			return 0;
 		} else {
 			if (is_file($dir) === true) {
-				return filesize($dir);
+				return \Safe\filesize($dir);
 			}
 		}
 
@@ -84,10 +85,10 @@ class DiskUsage
 	 *
 	 * @return string
 	 */
-	public function get_total_space()
+	public function get_total_space(): string
 	{
 		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
-		$dts = disk_total_space(base_path(''));
+		$dts = \Safe\disk_total_space(base_path(''));
 
 		return $this->getSymbolByQuantity($dts);
 	}
@@ -97,10 +98,10 @@ class DiskUsage
 	 *
 	 * @return string
 	 */
-	public function get_free_space()
+	public function get_free_space(): string
 	{
 		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
-		$dfs = disk_free_space(base_path(''));
+		$dfs = \Safe\disk_free_space(base_path(''));
 
 		return $this->getSymbolByQuantity($dfs);
 	}
@@ -110,11 +111,11 @@ class DiskUsage
 	 *
 	 * @return string
 	 */
-	public function get_free_percent()
+	public function get_free_percent(): string
 	{
 		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
-		$dts = disk_total_space(base_path(''));
-		$dfs = disk_free_space(base_path(''));
+		$dts = \Safe\disk_total_space(base_path(''));
+		$dfs = \Safe\disk_free_space(base_path(''));
 
 		return floor(100 * $dfs / $dts) . '%';
 	}
@@ -124,7 +125,7 @@ class DiskUsage
 	 *
 	 * @return string
 	 */
-	public function get_lychee_space()
+	public function get_lychee_space(): string
 	{
 		$ds = $this->getTotalSize(base_path(''));
 
@@ -136,7 +137,7 @@ class DiskUsage
 	 *
 	 * @return string
 	 */
-	public function get_lychee_upload_space()
+	public function get_lychee_upload_space(): string
 	{
 		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
 		$ds = $this->getTotalSize(base_path('public/uploads/'));

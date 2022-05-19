@@ -54,3 +54,4 @@ parameters:
 
 		- '#Call to an undefined static method Kalnoy\\Nestedset\\QueryBuilder::(whereIn|select|join|leftJoin|orderBy|addSelect)\(\)#'
 		- '#Call to an undefined method Geocoder\\Location::getDisplayName\(\)#'
+		- '#Call to an undefined method COM::getfolder\(\).#'
