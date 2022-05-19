@@ -37,6 +37,7 @@ parameters:
 
 		- '#Return type \(Illuminate\\Support\\Carbon\|null\) of method App\\Models\\.*::asDateTime\(\) should be covariant with return type \(Illuminate\\Support\\Carbon\) of method Illuminate\\Database\\Eloquent\\Model::asDateTime\(\)#'
 		- '#Return type \(App\\Models\\Photo\) of method App\\Models\\Photo::replicate\(\) should be covariant with return type \(static\(Illuminate\\Database\\Eloquent\\Model\)\) of method Illuminate\\Database\\Eloquent\\Model::replicate\(\)#'
+		- '#Method App\\Models\\.*::save\(\) has parameter \$options with no value type specified in iterable type array.#'
 
 		-
 			message: '#Variable method call on \$this#' # We do want this

@@ -62,7 +62,7 @@ trait ThrowsConsistentExceptions
 		} catch (\Throwable $e) {
 			$parentException = $e;
 		}
-		if ($parentException) {
+		if ($parentException != null) {
 			throw ModelDBException::create($this->friendlyModelName(), $this->wasRecentlyCreated ? 'creating' : 'updating', $parentException);
 		}
 
@@ -92,7 +92,7 @@ trait ThrowsConsistentExceptions
 		} catch (\Throwable $e) {
 			$parentException = $e;
 		}
-		if ($parentException) {
+		if ($parentException != null) {
 			throw ModelDBException::create($this->friendlyModelName(), 'deleting', $parentException);
 		}
 
@@ -102,7 +102,7 @@ trait ThrowsConsistentExceptions
 	/**
 	 * Serializes this object into an array.
 	 *
-	 * @return array The serialized properties of this object
+	 * @return array<string> The serialized properties of this object
 	 *
 	 * @throws \JsonException
 	 *
@@ -138,9 +138,10 @@ trait ThrowsConsistentExceptions
 			// that this method does so.
 			// Hence, we call `json_encode` _without_ specifying
 			// `JSON_THROW_ON_ERROR` and then mimic that behaviour.
-			$json = json_encode($this->jsonSerialize(), $options);
-			if (json_last_error()) {
-				throw new \JsonException(json_last_error_msg(), json_last_error());
+			// ! TODO VERIFY THIS !
+			$json = \Safe\json_encode($this->jsonSerialize(), $options);
+			if ((bool) json_last_error()) {
+				throw new \JsonException(\Safe\json_last_error_msg(), json_last_error());
 			}
 
 			return $json;
