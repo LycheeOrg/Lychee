@@ -53,7 +53,7 @@ class ShowLogs extends Command
 	public function handle(): int
 	{
 		try {
-			$action = $this->argument('action');
+			$action = strval($this->argument('action'));
 			$n = (int) $this->argument('n');
 			$order = $this->argument('order');
 
@@ -67,7 +67,7 @@ class ShowLogs extends Command
 			// as a results arguments are shifted: n <- action, order <- n.
 			elseif ($action != 'show') {
 				$n = (int) $this->argument('action');
-				$order = $this->argument('n');
+				$order = strval($this->argument('n'));
 			}
 			$this->action_show($n, $order);
 
@@ -80,7 +80,7 @@ class ShowLogs extends Command
 	/**
 	 * @throws QueryBuilderException
 	 */
-	private function action_show($n, $order): void
+	private function action_show(int $n, string $order): void
 	{
 		$order = ($order == 'ASC' || $order == 'DESC') ? $order : 'DESC';
 
@@ -104,7 +104,7 @@ class ShowLogs extends Command
 		}
 	}
 
-	private function color_type($type): string
+	private function color_type(string $type): string
 	{
 		return match ($type) {
 			'error  ' => $this->col->red($type),
