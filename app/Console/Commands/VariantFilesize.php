@@ -45,11 +45,10 @@ class VariantFilesize extends Command
 			// Internally, only holds $limit entries at once
 			$variants = $variants_query->lazyById($limit);
 
-			/** @var SizeVariant $variant */
-			$this->withProgressBar($variants, function ($variant) use (&$exit_code) {
+			$this->withProgressBar($variants, function (SizeVariant $variant) use (&$exit_code) {
 				$fullPath = $variant->getFile()->getAbsolutePath();
 				if (file_exists($fullPath)) {
-					$variant->filesize = filesize($fullPath);
+					$variant->filesize = \Safe\filesize($fullPath);
 					if (!$variant->save()) {
 						$this->line('Failed to update filesize for ' . $fullPath . '.');
 						$exit_code = -1;
