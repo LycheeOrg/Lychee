@@ -77,6 +77,7 @@ class PhotoController extends Controller
 	 */
 	public function getRandom(): Photo
 	{
+		/** @var Photo */
 		return StarredAlbum::getInstance()->photos()->inRandomOrder()
 			->firstOrFail();
 	}
@@ -248,7 +249,7 @@ class PhotoController extends Controller
 			// Avoid unnecessary DB request, when we access the album of a
 			// photo later (e.g. when a notification is sent).
 			$photo->setRelation('album', $album);
-			if ($album) {
+			if ($album != null) {
 				$photo->owner_id = $album->owner_id;
 			}
 			$photo->save();

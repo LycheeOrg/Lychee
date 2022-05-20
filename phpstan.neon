@@ -36,6 +36,7 @@ parameters:
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::whereNull\(\).#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::orderBy\(\)#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::where\(\).#'
+		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::inRandomOrder\(\)#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::withOnly\(\)#'
 
 		# Covariance - LSP princinple: https://en.wikipedia.org/wiki/Liskov_substitution_principle
