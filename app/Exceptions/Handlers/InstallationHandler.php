@@ -54,7 +54,7 @@ class InstallationHandler implements HttpExceptionHandler
 				$contentType = $defaultResponse->headers->get('Content-Type');
 				if (!empty($contentType)) {
 					$redirectResponse->headers->set('Content-Type', $contentType);
-					$redirectResponse->setContent($defaultResponse->getContent());
+					$redirectResponse->setContent($defaultResponse->getContent() ?: null);
 				}
 
 				return $redirectResponse;
