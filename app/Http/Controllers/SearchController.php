@@ -41,7 +41,7 @@ class SearchController extends Controller
 		// If the GUI was rebuilt every time after the user had typed the
 		// next character of a search term although the search result might
 		// stay the same, the GUI would flicker.
-		$return['checksum'] = md5(json_encode($return));
+		$return['checksum'] = md5(\Safe\json_encode($return));
 
 		return $return;
 	}
