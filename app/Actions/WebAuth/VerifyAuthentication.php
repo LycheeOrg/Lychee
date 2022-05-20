@@ -14,14 +14,14 @@ class VerifyAuthentication
 	 * @throws UnauthenticatedException
 	 * @throws InvalidUserIdException
 	 */
-	public function do($credential): void
+	public function do(array $credential): void
 	{
 		$success = WebAuthn::validateAssertion($credential);
 
 		// If is valid, login the user of the credentials.
 		if ($success) {
 			$user = $this->getUserFromCredentials($credential);
-			if ($user) {
+			if ($user != null) {
 				AccessControl::login($user);
 
 				return;
@@ -46,7 +46,8 @@ class VerifyAuthentication
 		// authenticator may use to sign the subsequent challenge by the server.
 		if ($this->isSignedChallenge($credentials)) {
 			$id = $this->binaryID($credentials['rawId']);
-			if ($id) {
+			if ($id != '') {
+				/** @var User */
 				return User::getFromCredentialId($id);
 			}
 		}
@@ -65,8 +66,9 @@ class VerifyAuthentication
 	 */
 	protected function binaryID(string $rawId): string
 	{
-		$result = base64_decode(strtr($rawId, '-_', '+/'), true);
-		if ($result === false) {
+		try {
+			$result = \Safe\base64_decode(strtr($rawId, '-_', '+/'), true);
+		} catch (\Throwable) {
 			throw new InvalidUserIdException();
 		}
 
