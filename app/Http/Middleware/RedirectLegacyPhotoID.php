@@ -37,9 +37,10 @@ class RedirectLegacyPhotoID
 		try {
 			$photoID = $request->query->get(GetPhotoViewRequest::URL_QUERY_PARAM);
 
-			if (Legacy::isLegacyModelID($photoID)) {
-				$photoID = Legacy::translateLegacyPhotoID($photoID, $request);
-				if ($photoID) {
+			if (Legacy::isLegacyModelID(strval($photoID))) {
+				$photoID = Legacy::translateLegacyPhotoID(intval($photoID), $request);
+				// It would be nicer if the above method was throwing an excepion instead of returning null
+				if ($photoID != null) {
 					return redirect()->route('view', ['p' => $photoID]);
 				}
 			}
