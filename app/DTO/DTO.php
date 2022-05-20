@@ -37,9 +37,9 @@ abstract class DTO implements Arrayable, Jsonable, \JsonSerializable
 			// that this method does so.
 			// Hence, we call `json_encode` _without_ specifying
 			// `JSON_THROW_ON_ERROR` and then mimic that behaviour.
-			$json = json_encode($this->jsonSerialize(), $options);
-			if (json_last_error()) {
-				throw new \JsonException(json_last_error_msg(), json_last_error());
+			$json = \Safe\json_encode($this->jsonSerialize(), $options);
+			if (json_last_error() == JSON_ERROR_NONE) {
+				throw new \JsonException(\Safe\json_last_error_msg(), json_last_error());
 			}
 
 			return $json;
