@@ -24,7 +24,7 @@ class Sync extends Command
 	 * @var string
 	 */
 	protected $signature =
-		'lychee:sync ' .
+	'lychee:sync ' .
 		'{dir : directory to sync} ' .
 		'{--album_id= : Album ID to import to} ' .
 		'{--owner_id=0 : Owner ID of imported photos} ' .
@@ -43,7 +43,7 @@ class Sync extends Command
 	public function __construct()
 	{
 		// Fill signature with default values from user configuration
-		$this->signature = sprintf(
+		$this->signature = \Safe\sprintf(
 			$this->signature,
 			Configs::get_value('delete_imported', '0'),
 			Configs::get_value('import_via_symlink', '0'),
@@ -62,9 +62,9 @@ class Sync extends Command
 	public function handle(): int
 	{
 		try {
-			$directory = $this->argument('dir');
+			$directory = strval($this->argument('dir'));
 			$owner_id = (int) $this->option('owner_id'); // in case no ID provided -> import as root user
-			$album_id = ((string) $this->option('album_id')) ?: null; // in case no ID provided -> import to root folder
+			$album_id = $this->option('album_id') != null ? strval($this->option('album_id')) : null; // in case no ID provided -> import to root folder
 			/** @var Album $album */
 			$album = $album_id ? Album::query()->findOrFail($album_id) : null; // in case no ID provided -> import to root folder
 
@@ -83,7 +83,7 @@ class Sync extends Command
 					$deleteImported,
 					$this->option('import_via_symlink') === '1',
 					$importViaSymlink,
-					$this->option('resync_metadata')
+					(bool) $this->option('resync_metadata')
 				),
 				true,
 				0
