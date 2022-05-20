@@ -48,22 +48,25 @@ class GenerateThumbs extends Command
 	public function handle(): int
 	{
 		try {
-			$sizeVariantName = $this->argument('type');
+			$sizeVariantName = strval($this->argument('type'));
 			if (!array_key_exists($sizeVariantName, self::SIZE_VARIANTS)) {
-				$this->error(sprintf('Type %s is not one of %s', $sizeVariantName, implode(', ', array_flip(self::SIZE_VARIANTS))));
+				$this->error(\Safe\sprintf('Type %s is not one of %s', $sizeVariantName, implode(', ', \Safe\array_flip(self::SIZE_VARIANTS))));
 
 				return 1;
 			}
 			$sizeVariantType = self::SIZE_VARIANTS[$sizeVariantName];
 
-			set_time_limit($this->argument('timeout'));
+			$amount = (int) $this->argument('amount');
+			$timeout = (int) $this->argument('timeout');
+
+			\Safe\set_time_limit($timeout);
 
 			$this->line(
-				sprintf(
+				\Safe\sprintf(
 					'Will attempt to generate up to %s %s images with a timeout of %d seconds...',
-					$this->argument('amount'),
+					$amount,
 					$sizeVariantName,
-					$this->argument('timeout')
+					$timeout
 				)
 			);
 
@@ -73,7 +76,7 @@ class GenerateThumbs extends Command
 				->whereDoesntHave('size_variants', function (Builder $query) use ($sizeVariantType) {
 					$query->where('type', '=', $sizeVariantType);
 				})
-				->take($this->argument('amount'))
+				->take($amount)
 				->get();
 
 			if (count($photos) == 0) {
@@ -91,7 +94,7 @@ class GenerateThumbs extends Command
 			foreach ($photos as $photo) {
 				$sizeVariantFactory->init($photo);
 				$sizeVariant = $sizeVariantFactory->createSizeVariantCond($sizeVariantType);
-				if ($sizeVariant) {
+				if ($sizeVariant != null) {
 					$this->line('   ' . $sizeVariantName . ' (' . $sizeVariant->width . 'x' . $sizeVariant->height . ') for ' . $photo->title . ' created.');
 				} else {
 					$this->line('   Did not create ' . $sizeVariantName . ' for ' . $photo->title . '.');
