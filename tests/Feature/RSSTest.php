@@ -18,7 +18,7 @@ class RSSTest extends TestCase
 
 		// set to 0
 		Configs::set('rss_enable', '0');
-		$this->assertEquals('0', Configs::get_value('rss_enable'));
+		$this->assertEquals(0, Configs::get_value('rss_enable'));
 
 		// check redirection
 		$response = $this->get('/feed');

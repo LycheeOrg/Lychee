@@ -30,21 +30,10 @@ class Kernel extends ConsoleKernel
 	protected function schedule(Schedule $schedule)
 	{
 		$schedule->command('lychee:photos_added_notification')->weekly();
-		$ldap_update = $schedule->command('lychee:LDAP_update_all_users');
-		$ldap_update_users = Configs::get_value('ldap_update_users');
-		if ($ldap_update_users > 0) {
-			if ($ldap_update_users < 60) {
-				$m = sprintf('*/%s', $ldap_update_users);
-				$h = '*';
-			} elseif ($ldap_update_users < 24 * 60) {
-				$m = $ldap_update_users % 60;
-				$h = sprintf('*/%s', intdiv($ldap_update_users, 60));
-			} else {
-				$m = $ldap_update_users % 60;
-				$h = intdiv($ldap_update_users, 60) % 24;
-			}
-			$ce = sprintf('%s %s * * *', $m, $h);
-			$ldap_update->cron($ce);
+
+		$ldap_update = Configs::get_value_as_cron_spec('ldap_update_users');
+		if ($ldap_update != '') {
+			$schedule->command('lychee:LDAP_update_all_users')->cron($ldap_update);
 		}
 	}
 

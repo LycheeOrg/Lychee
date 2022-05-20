@@ -18,7 +18,7 @@ class DemoTest extends TestCase
 
 		// set to 0
 		Configs::set('gen_demo_js', '0');
-		$this->assertEquals(Configs::get_value('gen_demo_js'), '0');
+		$this->assertEquals(Configs::get_value('gen_demo_js'), 0);
 
 		// check redirection
 		$response = $this->get('/demo');
@@ -40,7 +40,7 @@ class DemoTest extends TestCase
 
 		// set to 0
 		Configs::set('gen_demo_js', '1');
-		$this->assertEquals(Configs::get_value('gen_demo_js'), '1');
+		$this->assertEquals(Configs::get_value('gen_demo_js'), 1);
 
 		// check redirection
 		$response = $this->get('/demo');

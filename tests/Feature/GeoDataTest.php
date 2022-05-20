@@ -105,12 +105,12 @@ class GeoDataTest extends TestCase
 
 		// set to 0
 		Configs::set('map_display', '0');
-		$this->assertEquals('0', Configs::get_value('map_display'));
+		$this->assertEquals(0, Configs::get_value('map_display'));
 		$albums_tests->AlbumsGetPositionDataFull(); // we need to fix this
 
 		// set to 1
 		Configs::set('map_display', '1');
-		$this->assertEquals('1', Configs::get_value('map_display'));
+		$this->assertEquals(1, Configs::get_value('map_display'));
 		$response = $albums_tests->AlbumsGetPositionDataFull();
 		$responseObj = json_decode($response->getContent());
 		$this->assertObjectHasAttribute('photos', $responseObj);
@@ -119,12 +119,12 @@ class GeoDataTest extends TestCase
 
 		// set to 0
 		Configs::set('map_display', '0');
-		$this->assertEquals('0', Configs::get_value('map_display'));
+		$this->assertEquals(0, Configs::get_value('map_display'));
 		$albums_tests->AlbumGetPositionDataFull($albumID); // we need to fix this
 
 		// set to 1
 		Configs::set('map_display', '1');
-		$this->assertEquals('1', Configs::get_value('map_display'));
+		$this->assertEquals(1, Configs::get_value('map_display'));
 		$response = $albums_tests->AlbumGetPositionDataFull($albumID);
 		$responseObj = json_decode($response->getContent());
 		$this->assertObjectHasAttribute('photos', $responseObj);
