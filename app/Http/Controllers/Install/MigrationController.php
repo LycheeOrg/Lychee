@@ -88,9 +88,9 @@ class MigrationController extends Controller
 	public function installed(array &$output): void
 	{
 		try {
-			$dateStamp = date('Y-m-d H:i:s');
+			$dateStamp = \Safe\date('Y-m-d H:i:s');
 			$message = 'Lychee INSTALLED on ' . $dateStamp;
-			file_put_contents(base_path('installed.log'), $message);
+			\Safe\file_put_contents(base_path('installed.log'), $message);
 			$output[] = $message;
 			$output[] = 'Created installed.log';
 		} catch (BindingResolutionException $e) {
