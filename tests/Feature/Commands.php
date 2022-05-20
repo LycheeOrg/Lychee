@@ -11,7 +11,7 @@ class Commands extends TestCase
 	 *
 	 * @return void
 	 */
-	public function testCommands()
+	public function testCommands(): void
 	{
 		$this->artisan('lychee:decode_GPS_locations')
 			->expectsOutput('No photos or videos require processing.')

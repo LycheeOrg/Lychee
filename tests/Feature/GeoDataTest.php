@@ -1,11 +1,20 @@
 <?php
 
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
+
 namespace Tests\Feature;
 
 use App\Facades\AccessControl;
 use App\Models\Configs;
 use Carbon\Carbon;
-use Illuminate\Http\UploadedFile;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\TestCase;
@@ -15,28 +24,16 @@ class GeoDataTest extends TestCase
 	/**
 	 * @return void
 	 */
-	public function testGeo()
+	public function testGeo(): void
 	{
 		$photos_tests = new PhotosUnitTest($this);
 		$albums_tests = new AlbumsUnitTest($this);
 
 		AccessControl::log_as_id(0);
 
-		/*
-		* Make a copy of the image because import deletes the file, and we want to be
-		* able to use the test on a local machine and not just in CI.
-		*/
-		copy('tests/Samples/mongolia.jpeg', 'public/uploads/import/mongolia.jpeg');
-
-		$file = new UploadedFile(
-			'public/uploads/import/mongolia.jpeg',
-			'mongolia.jpeg',
-			'image/jpeg',
-			null,
-			true
+		$id = $photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
 		);
-
-		$id = $photos_tests->upload($file);
 
 		$response = $photos_tests->get($id);
 		$photos_tests->see_in_unsorted($id);
@@ -96,8 +93,8 @@ class GeoDataTest extends TestCase
 		$photos_tests->dont_see_in_unsorted($id);
 		$response = $albums_tests->get($albumID);
 		$responseObj = json_decode($response->getContent());
-		$this->assertCount(1, $responseObj->photos);
-		$this->assertEquals($id, $responseObj->photos[0]->id);
+		static::assertCount(1, $responseObj->photos);
+		static::assertEquals($id, $responseObj->photos[0]->id);
 
 		// now we test position Data
 		// save initial value
@@ -105,31 +102,31 @@ class GeoDataTest extends TestCase
 
 		// set to 0
 		Configs::set('map_display', '0');
-		$this->assertEquals('0', Configs::get_value('map_display'));
+		static::assertEquals('0', Configs::get_value('map_display'));
 		$albums_tests->AlbumsGetPositionDataFull(); // we need to fix this
 
 		// set to 1
 		Configs::set('map_display', '1');
-		$this->assertEquals('1', Configs::get_value('map_display'));
+		static::assertEquals('1', Configs::get_value('map_display'));
 		$response = $albums_tests->AlbumsGetPositionDataFull();
 		$responseObj = json_decode($response->getContent());
-		$this->assertObjectHasAttribute('photos', $responseObj);
-		$this->assertCount(1, $responseObj->photos);
-		$this->assertEquals($id, $responseObj->photos[0]->id);
+		static::assertObjectHasAttribute('photos', $responseObj);
+		static::assertCount(1, $responseObj->photos);
+		static::assertEquals($id, $responseObj->photos[0]->id);
 
 		// set to 0
 		Configs::set('map_display', '0');
-		$this->assertEquals('0', Configs::get_value('map_display'));
+		static::assertEquals('0', Configs::get_value('map_display'));
 		$albums_tests->AlbumGetPositionDataFull($albumID); // we need to fix this
 
 		// set to 1
 		Configs::set('map_display', '1');
-		$this->assertEquals('1', Configs::get_value('map_display'));
+		static::assertEquals('1', Configs::get_value('map_display'));
 		$response = $albums_tests->AlbumGetPositionDataFull($albumID);
 		$responseObj = json_decode($response->getContent());
-		$this->assertObjectHasAttribute('photos', $responseObj);
-		$this->assertCount(1, $responseObj->photos);
-		$this->assertEquals($id, $responseObj->photos[0]->id);
+		static::assertObjectHasAttribute('photos', $responseObj);
+		static::assertCount(1, $responseObj->photos);
+		static::assertEquals($id, $responseObj->photos[0]->id);
 
 		$photos_tests->delete([$id]);
 		$albums_tests->delete([$albumID]);

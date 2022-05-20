@@ -1,10 +1,19 @@
 <?php
 
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
+
 namespace Tests\Feature;
 
 use App\Facades\AccessControl;
 use App\Models\Configs;
-use Illuminate\Http\UploadedFile;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\TestCase;
 
@@ -13,27 +22,15 @@ class PhotosRotateTest extends TestCase
 	/**
 	 * @return void
 	 */
-	public function testRotate()
+	public function testRotate(): void
 	{
 		$photos_tests = new PhotosUnitTest($this);
 
 		AccessControl::log_as_id(0);
 
-		/*
-		* Make a copy of the image because import deletes the file, and we want to be
-		* able to use the test on a local machine and not just in CI.
-		*/
-		copy('tests/Samples/night.jpg', 'public/uploads/import/night.jpg');
-
-		$file = new UploadedFile(
-			'public/uploads/import/night.jpg',
-			'night.jpg',
-			'image/jpeg',
-			null,
-			true
+		$id = $photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		);
-
-		$id = $photos_tests->upload($file);
 
 		$response = $photos_tests->get($id);
 		/*

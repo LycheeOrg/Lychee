@@ -4,6 +4,7 @@ namespace App\Metadata;
 
 use App\Exceptions\ExternalComponentFailedException;
 use App\Exceptions\ExternalComponentMissingException;
+use App\Exceptions\Handler;
 use App\Exceptions\MediaFileOperationException;
 use App\Facades\Helpers;
 use App\Models\Configs;
@@ -183,7 +184,7 @@ class Extractor
 		} catch (\RuntimeException $e) {
 			// thrown by $reader->read if EXIF could not be extracted,
 			// don't give up yet, only log the event
-			report($e);
+			Handler::reportSafely($e);
 			$exif = false;
 		}
 
@@ -213,7 +214,7 @@ class Extractor
 				// if readlink($filename) != False then $realFile = readlink($filename)
 				$realFile = readlink($fullPath) ?: $fullPath;
 			} catch (\Exception $e) {
-				report($e);
+				Handler::reportSafely($e);
 			}
 		}
 		if (Configs::hasExiftool() && file_exists($realFile . '.xmp')) {
@@ -231,7 +232,7 @@ class Extractor
 					$exif->setData(array_merge($sidecarData, $exif->getData()));
 				}
 			} catch (\Exception $e) {
-				report($e);
+				Handler::reportSafely($e);
 			}
 		}
 
@@ -520,7 +521,7 @@ class Extractor
 				$metadata['location'] = substr($metadata['location'], 0, 255);
 			}
 		} catch (ExternalComponentFailedException $e) {
-			report($e);
+			Handler::reportSafely($e);
 			$metadata['location'] = null;
 		}
 

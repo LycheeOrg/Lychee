@@ -192,7 +192,9 @@
 
 	&__clear {
 		position: absolute;
-		top: -2px;
+		top: 50%;
+		-ms-transform: translateY(-50%);
+		transform: translateY(-50%);
 		right: 8px;
 		padding: 0;
 		color: white(0.5);

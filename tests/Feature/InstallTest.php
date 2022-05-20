@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
+
 namespace Tests\Feature;
 
 use App\Models\User;
@@ -14,7 +24,7 @@ class InstallTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function testInstall()
+	public function testInstall(): void
 	{
 		/*
 		 * Get previous config
@@ -25,10 +35,10 @@ class InstallTest extends TestCase
 		touch(base_path('.NO_SECURE_KEY'));
 		$response = $this->get('install/');
 		$response->assertOk();
-		@unlink(base_path('.NO_SECURE_KEY'));
+		unlink(base_path('.NO_SECURE_KEY'));
 
 		// TODO: Why does a `git pull` delete `installed.log`? This test needs to be discussed with @ildyria
-		@unlink(base_path('installed.log'));
+		unlink(base_path('installed.log'));
 		/**
 		 * No installed.log: we should not be redirected to install (case where we have not done the last migration).
 		 */

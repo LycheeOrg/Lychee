@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
+
 namespace Tests\Feature\Lib;
 
 use Illuminate\Testing\TestResponse;
@@ -98,7 +108,6 @@ class AlbumsUnitTest
 	 * Get album by ID.
 	 *
 	 * @param string      $id
-	 * @param string      $password
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
@@ -144,8 +153,9 @@ class AlbumsUnitTest
 	}
 
 	/**
-	 * Check if we see id in the list of all visible albums
-	 * /!\ results varies depending if logged in or not !
+	 * Check if we see `id` in the list of all visible albums.
+	 *
+	 * Result varies depending on login state.
 	 *
 	 * @param string $id
 	 */
@@ -157,8 +167,9 @@ class AlbumsUnitTest
 	}
 
 	/**
-	 * Check if we don't see id in the list of all visible albums
-	 * /!\ results varies depending if logged in or not !
+	 * Check if we don't see id in the list of all visible albums.
+	 *
+	 * Result varies depending on login state!
 	 *
 	 * @param string $id
 	 */
@@ -270,12 +281,12 @@ class AlbumsUnitTest
 
 	/**
 	 * @param string      $id
-	 * @param int         $full_photo
-	 * @param int         $public
-	 * @param int         $requiresLink
-	 * @param int         $nsfw
-	 * @param int         $downloadable
-	 * @param int         $share_button_visible
+	 * @param bool        $full_photo
+	 * @param bool        $public
+	 * @param bool        $requiresLink
+	 * @param bool        $nsfw
+	 * @param bool        $downloadable
+	 * @param bool        $share_button_visible
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */

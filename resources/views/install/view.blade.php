@@ -56,7 +56,7 @@
                 </ul>
                 <div class="main">
 
-				@if (isset($errors))
+				@if (!empty($errors))
 				<p class="alert alert-danger text-center">
 					<strong>Please fix the errors before going to the next step.</strong>
 				</p>
