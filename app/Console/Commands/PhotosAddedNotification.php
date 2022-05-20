@@ -44,7 +44,7 @@ class PhotosAddedNotification extends Command
 	 */
 	public function handle(): int
 	{
-		if (Configs::get_Value('new_photos_notification', '0') !== '1') {
+		if (Configs::get_value('new_photos_notification', '0') !== '1') {
 			return 0;
 		}
 		$users = User::query()->whereNotNull('email')->get();
@@ -55,12 +55,12 @@ class PhotosAddedNotification extends Command
 
 			/** @var DatabaseNotification $notification */
 			foreach ($user->unreadNotifications()->get() as $notification) {
-				/** @var Photo $photo */
+				/** @var Photo|null $photo */
 				$photo = Photo::query()
 					->with(['size_variants', 'size_variants.sym_links'])
 					->find($notification->data['id']);
 
-				if ($photo) {
+				if ($photo != null) {
 					if (!isset($photos[$photo->album_id])) {
 						$photos[$photo->album_id] = [
 							'name' => $photo->album->title,
