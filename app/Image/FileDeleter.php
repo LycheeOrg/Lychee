@@ -114,7 +114,9 @@ class FileDeleter
 					// The latter part deletes (regular) files, but avoids errors
 					// in case the file doesn't exist.
 					if (is_link($absolutePath) || file_exists($absolutePath)) {
-						if (!unlink($absolutePath)) {
+						try {
+							\Safe\unlink($absolutePath);
+						} catch (\Throwable) {
 							$firstException = $firstException ?: new \RuntimeException('unlink failed: ' . $absolutePath);
 						}
 					}
@@ -146,7 +148,9 @@ class FileDeleter
 				// Laravel and Flysystem does not support symbolic links.
 				// So we must use low-level methods here.
 				if (is_link($absolutePath) || file_exists($absolutePath)) {
-					if (!unlink($absolutePath)) {
+					try {
+						\Safe\unlink($absolutePath);
+					} catch (\Throwable) {
 						$firstException = $firstException ?: new \RuntimeException('unlink failed: ' . $absolutePath);
 					}
 				}
@@ -155,7 +159,7 @@ class FileDeleter
 			}
 		}
 
-		if ($firstException) {
+		if ($firstException != null) {
 			throw new MediaFileOperationException('Could not delete files', $firstException);
 		}
 	}
