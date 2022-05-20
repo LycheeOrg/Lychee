@@ -73,11 +73,10 @@ class SessionFunctions
 	private function accessUserData(): User
 	{
 		$id = $this->id();
-		/** @var User|null */
-		$user_data_ = User::query()->find($id);
-		$this->user_data = $user_data_;
+		$this->user_data = User::query()->find($id);
 
-		return $user_data_;
+		/** @var User */
+		return $this->user_data;
 	}
 
 	/**
