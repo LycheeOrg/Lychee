@@ -11,19 +11,17 @@ class LangFactory
 	 * Maps a language code to the name of class which implements this
 	 * language.
 	 *
-	 * @template T of \App\Contracts\Language
-	 *
-	 * @var array<string, class-string<T>>
+	 * @var array<string, class-string<\App\Contracts\Language>>
 	 */
 	private array $langs = [];
 
 	public function __construct()
 	{
 		$lang_namespace = 'App\Locale';
-		$list_lang = scandir(__DIR__ . '/../Locale');
+		$list_lang = \Safe\scandir(__DIR__ . '/../Locale');
 
 		for ($i = 0; $i < count($list_lang); $i++) {
-			$class_candidate = $lang_namespace . '\\' . substr($list_lang[$i], 0, -4);
+			$class_candidate = $lang_namespace . '\\' . \Safe\substr($list_lang[$i], 0, -4);
 			if (is_subclass_of($class_candidate, Language::class)) {
 				/** @var Language */
 				$lang = new $class_candidate();
