@@ -38,8 +38,10 @@ parameters:
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\Relations\\HasMany<Illuminate\\Database\\Eloquent\\Model>::where\(\).#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::withOnly\(\)#'
 
+		# Covariance - LSP princinple: https://en.wikipedia.org/wiki/Liskov_substitution_principle
 		- '#Return type \(Illuminate\\Support\\Carbon\|null\) of method App\\Models\\.*::asDateTime\(\) should be covariant with return type \(Illuminate\\Support\\Carbon\) of method Illuminate\\Database\\Eloquent\\Model::asDateTime\(\)#'
 		- '#Return type \(App\\Models\\Photo\) of method App\\Models\\Photo::replicate\(\) should be covariant with return type \(static\(.*\)\) of method Illuminate\\Database\\Eloquent\\Model::replicate\(\)#'
+		- '#Return type \(Illuminate\\Support\\Collection&iterable<App\\Contracts\\AbstractAlbum>\) of method App\\Http\\Requests\\Album\\.*::albums\(\) should be covariant with return type \(Illuminate\\Support\\Collection&iterable<App\\Models\\(Album|Extensions\\BaseAlbum)>\) of method App\\Http\\Requests\\Contracts\\HasAlbums<App\\Models\\(Album|Extensions\\BaseAlbum)>::albums\(\)#'
 
 		- '#Method App\\Models\\Extensions\\.*::.* should return \$this\(.*\) but returns static\(.*\)#'
 		- '#Method App\\Models\\Extensions\\.*::.* should return \$this\(.*\) but returns Illuminate\\Database\\Eloquent\\Builder<.*>\.#'
