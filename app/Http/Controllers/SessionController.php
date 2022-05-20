@@ -80,7 +80,7 @@ class SessionController extends Controller
 			} else {
 				try {
 					/** @var User $user */
-					$user = User::query()->findorFail($user_id);
+					$user = User::query()->findOrFail($user_id);
 					$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 					$return['config'] = $this->configFunctions->public();
 					$return['is_locked'] = $user->is_locked;   // may user change their password?
