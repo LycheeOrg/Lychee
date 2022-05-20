@@ -71,12 +71,12 @@ class IndexController extends Controller
 	 * Just call the phpinfo function.
 	 * Cannot be tested.
 	 *
-	 * @return string
+	 * @return void
 	 */
 	// @codeCoverageIgnoreStart
-	public function phpinfo(): string
+	public function phpinfo(): void
 	{
-		return (string) phpinfo();
+		\Safe\phpinfo();
 	}
 
 	// @codeCoverageIgnoreEnd

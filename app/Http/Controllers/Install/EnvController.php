@@ -24,13 +24,13 @@ class EnvController extends Controller
 		try {
 			if ($request->has('envConfig')) {
 				$env = str_replace("\r", '', $request->get('envConfig'));
-				file_put_contents(base_path('.env'), $env, LOCK_EX);
+				\Safe\file_put_contents(base_path('.env'), $env, LOCK_EX);
 				$exists = true;
 			} elseif (file_exists(base_path('.env'))) {
-				$env = file_get_contents(base_path('.env'));
+				$env = \Safe\file_get_contents(base_path('.env'));
 				$exists = true;
 			} else {
-				$env = file_get_contents(base_path('.env.example'));
+				$env = \Safe\file_get_contents(base_path('.env.example'));
 				$exists = false;
 			}
 
