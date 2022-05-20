@@ -55,6 +55,6 @@ class ImportEventReport extends ImportReport
 
 	public function toCLIString(): string
 	{
-		return $this->path . ($this->path ? ': ' : '') . $this->message;
+		return $this->path . ($this->path != null ? ': ' : '') . $this->message;
 	}
 }
