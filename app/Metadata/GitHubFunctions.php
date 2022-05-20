@@ -75,7 +75,7 @@ class GitHubFunctions
 	private function count_behind(bool $cached = true): int
 	{
 		if ($this->getLocalBranch() !== 'master') {
-			throw new VersionControlException('Branch is not master, cannot compare');
+			throw new VersionControlException('Branch is not master, cannot compare.');
 		}
 
 		$commits = $this->get_commits($cached);
@@ -89,7 +89,7 @@ class GitHubFunctions
 		}
 
 		if ($i === count($commits)) {
-			throw new VersionControlException('More than 30 commits behind');
+			throw new VersionControlException('More than 30 commits behind.');
 		}
 
 		return $i;
@@ -126,17 +126,17 @@ class GitHubFunctions
 			$last_update = $this->gitRequest->get_age_text();
 
 			if ($count === 0) {
-				return \Safe\sprintf(' - Up to date (%s).', $last_update);
+				return \Safe\sprintf('Up to date (%s).', $last_update);
 			} else {
 				return \Safe\sprintf(
-					' - %s commits behind master %s (%s)',
+					'%s commits behind master %s (%s)',
 					$count,
 					$this->getRemoteHead(),
 					$last_update
 				);
 			}
 		} catch (VersionControlException $e) {
-			return ' - ' . $e->getMessage();
+			return $e->getMessage();
 		}
 	}
 
@@ -206,7 +206,7 @@ class GitHubFunctions
 				),
 			];
 		} catch (\Throwable $e) {
-			throw new VersionControlException('Could not check for updates', $e);
+			throw new VersionControlException('Could not check for updates.', $e);
 		}
 	}
 
@@ -246,7 +246,7 @@ class GitHubFunctions
 
 				$this->localBranch = trim($branch[2]);
 			} catch (\Throwable $e) {
-				throw new VersionControlException('Could not determine the branch', $e);
+				throw new VersionControlException('Could not determine the branch.', $e);
 			}
 		}
 
@@ -268,7 +268,7 @@ class GitHubFunctions
 				$commitID = \Safe\file_get_contents($file);
 				$this->localHead = self::trim($commitID);
 			} catch (\Throwable $e) {
-				throw new VersionControlException('Could not determine the head commit of current branch', $e);
+				throw new VersionControlException('Could not determine the head commit of current branch.', $e);
 			}
 		}
 
