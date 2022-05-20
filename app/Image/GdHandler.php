@@ -267,9 +267,8 @@ class GdHandler implements ImageHandlerInterface
 	 */
 	private function readImage(string $source): array
 	{
-		$mime = \Safe\getimagesize($source)[2];
-
 		try {
+			$mime = \Safe\getimagesize($source)[2];
 			/** @var \GdImage */
 			$image = match ($mime) {
 				IMAGETYPE_JPEG, IMAGETYPE_JPEG2000 => \Safe\imagecreatefromjpeg($source),
