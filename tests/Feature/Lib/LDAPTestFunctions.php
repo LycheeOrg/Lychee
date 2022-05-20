@@ -13,7 +13,7 @@ class LDAPTestFunctions extends LDAPFunctions
 				string $base_dn,
 				string $filter,
 				string $scope = self::SCOPE_SUB,
-				array $attributes = [],
+				array $attributes = null,
 				int $attrsonly = 0,
 				int $sizelimit = 0
 		): array {
@@ -54,12 +54,12 @@ class LDAPTestFunctions extends LDAPFunctions
 
 	public static function LDAP_filterEscape(string $string): string
 	{
-		return parent::_filterEscape($string);
+		return parent::filter_escape($string);
 	}
 
 	public static function LDAP_makeFilter(string $filter, array $placeholders): string
 	{
-		return parent::_makeFilter($filter, $placeholders);
+		return parent::make_filter($filter, $placeholders);
 	}
 
 	public function clear_cache(): void

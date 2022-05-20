@@ -7,7 +7,7 @@ use Tests\Feature\Lib\LDAPTestFunctions;
 
 class LDAPTestCase extends TestCase
 {
-		// See https://www.forumsys.com/2022/05/10/online-ldap-test-server/
+	// See https://www.forumsys.com/2022/05/10/online-ldap-test-server/
 	public const TESTUSER = 'gauss';
 	public const TESTUSER_PW = 'password';
 	public const TESTUSER2 = 'euler';
@@ -49,7 +49,7 @@ class LDAPTestCase extends TestCase
 		Configs::set('ldap_user_filter', self::USER_FILTER);
 		Configs::set('ldap_bind_dn', self::BIND_DN);
 		Configs::set('ldap_bind_pw', self::BIND_PW);
-		Configs::set('ldap_timeout', '20');
+		Configs::set('ldap_timeout', '2');
 	}
 
 	protected function LDAP_tearDown(): void

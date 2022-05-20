@@ -12,7 +12,6 @@ class LDAPFunctions
 	public const SCOPE_BASE = 'base';
 	public const SCOPE_ONE = 'one';
 	public const SCOPE_SUB = 'sub';
-
 	protected const CONFIG_KEY_BIND_DN = 'ldap_bind_dn';
 	protected const CONFIG_KEY_BIND_PW = 'ldap_bind_pw';
 	protected const CONFIG_KEY_CN = 'ldap_cn';
@@ -28,12 +27,10 @@ class LDAPFunctions
 	protected const CONFIG_KEY_USER_SCOPE = 'ldap_user_scope';
 	protected const CONFIG_KEY_VERSION = 'ldap_version';
 	protected const CONFIG_KEY_TIMEOUT = 'ldap_timeout';
-
 	protected const BIND_TYPE_UNBOUND = -1;
 	protected const BIND_TYPE_ANONYMOUS = 0;
 	protected const BIND_TYPE_USER = 1;
 	protected const BIND_TYPE_SUPER_USER = 2;
-
 	protected const LDAP_VERSION_UNKNOWN = 0;
 	protected const LDAP_VERSION_2 = 2;
 	protected const LDAP_VERSION_3 = 3;
@@ -91,10 +88,10 @@ class LDAPFunctions
 			if (strpos(Configs::get_value(self::CONFIG_KEY_USER_TREE), '%{user}')) {
 				Logs::debug(__METHOD__, __LINE__, 'Option A: If we know how to bind a user, we try that directly');
 				// direct user bind
-				$dn = self::_makeFilter(
-					Configs::get_value(self::CONFIG_KEY_USER_TREE),
-					['user' => $user, 'server' => $this->ldap_server]
-				);
+				$dn = self::make_filter(
+												Configs::get_value(self::CONFIG_KEY_USER_TREE),
+												['user' => $user, 'server' => $this->ldap_server]
+								);
 				// User/Password bind
 				if ($this->LDAP_bind($dn, $pass)) {
 					return true;
@@ -103,7 +100,6 @@ class LDAPFunctions
 
 			// Option B: We do not know how to bind a user, so we must first
 			// search the directory
-
 			// See if we can find the user
 			Logs::debug(__METHOD__, __LINE__, 'Option B: We do not know how to bind a user, so we must first search the directory');
 			$info = $this->get_user_data($user);
@@ -146,11 +142,11 @@ class LDAPFunctions
 
 		// get info for given user
 		$user = ['user' => $username, 'server' => $this->ldap_server];
-		$base = self::_makeFilter(Configs::get_value(self::CONFIG_KEY_USER_TREE), $user);
+		$base = self::make_filter(Configs::get_value(self::CONFIG_KEY_USER_TREE), $user);
 		Logs::notice(__METHOD__, __LINE__, sprintf('base filter: %s', $base));
 
 		if (Configs::get_value(self::CONFIG_KEY_USER_FILTER)) {
-			$filter = self::_makeFilter(Configs::get_value(self::CONFIG_KEY_USER_FILTER), $user);
+			$filter = self::make_filter(Configs::get_value(self::CONFIG_KEY_USER_FILTER), $user);
 		} else {
 			$filter = '(ObjectClass=*)';
 		}
@@ -185,31 +181,55 @@ class LDAPFunctions
 	 */
 	public function get_user_list(bool $refresh = false): array
 	{
-		$this->open_LDAP();
-
 		if (is_null($this->user_list) || $refresh) {
-			// Perform the search and grab all their details
-			if (Configs::get_value(self::CONFIG_KEY_USER_FILTER)) {
-				$all_filter = str_replace('%{user}', '*', Configs::get_value(self::CONFIG_KEY_USER_FILTER));
-			} else {
-				$all_filter = '(ObjectClass=*)';
-			}
-			$entries = $this->LDAP_search(Configs::get_value(self::CONFIG_KEY_USER_TREE), $all_filter);
-			$this->user_list = [];
-			$userkey = Configs::get_value(self::CONFIG_KEY_USER_KEY, 'uid');
-
-			for ($i = 0; $i < $entries['count']; $i++) {
-				try {
+			$this->open_LDAP();
+			try {
+				$this->user_list = [];
+				// Perform the search and grab all their details
+				if (Configs::get_value(self::CONFIG_KEY_USER_FILTER)) {
+					$all_filter = str_replace('%{user}', '*', Configs::get_value(self::CONFIG_KEY_USER_FILTER));
+				} else {
+					$all_filter = '(ObjectClass=*)';
+				}
+				$entries = $this->LDAP_search(Configs::get_value(self::CONFIG_KEY_USER_TREE), $all_filter);
+				$userkey = Configs::get_value(self::CONFIG_KEY_USER_KEY, 'uid');
+				$extrated_entries = [];
+				self::extract_user_data($userkey, $entries, $extrated_entries);
+				$entries = $extrated_entries;
+				for ($i = 0; $i < count($entries); $i++) {
 					$this->user_list[$entries[$i][$userkey][0]] = $this->userdata_from_ldap_result($entries[$i]);
-				} catch (\ErrorException $e) {
-					Logs::error(__METHOD__, __LINE__, 'No Entry known with the attribute ' . $userkey);
-					break;
+				}
+			} finally {
+				$this->close_LDAP();
+			}
+		}
+
+		return $this->user_list;
+	}
+
+	/**
+	 * Extract the user data from the reply of the LDAP server.
+	 *
+	 * @param string $userkey
+	 * @param array  $entries
+	 * @param array  &$result
+	 *
+	 * The user data are the sub arrays where the userkey is a valid key. They can be located anywhere
+	 * in the tree given by the entries. The function will recursively scan the whole array structure to find them.
+	 * If an array contains the userkey as a key, it is treated as a leaf. All leafs are added to the results.
+	 * The result is an array structure, where every element has a userkey as a key.
+	 */
+	protected static function extract_user_data(string $userkey, array $entries, array &$result): void
+	{
+		if (array_key_exists($userkey, $entries)) {
+			array_push($result, $entries);
+		} else {
+			for ($i = 0; $i < $entries['count']; $i++) {
+				if (is_array($entries[$i])) {
+					self::extract_user_data($userkey, $entries[$i], $result);
 				}
 			}
 		}
-		$this->close_LDAP();
-
-		return $this->user_list;
 	}
 
 	/**
@@ -227,40 +247,53 @@ class LDAPFunctions
 	 * @throws LDAPException on error or if the user is unknown
 	 */
 	protected function LDAP_search(
-		string $base_dn,
-		string $filter,
-		string $scope = self::SCOPE_SUB,
-		array $attributes = [],
-		int $attrsonly = 0,
-		int $sizelimit = 0
-	): array {
+				string $base_dn,
+				string $filter,
+				string $scope = self::SCOPE_SUB,
+				?array $attributes = null,
+				int $attrsonly = 0,
+				int $sizelimit = 0
+		): array {
 		$this->LDAP_check_bind();
+		// By default only the attributes which are needed, will be queried
+		if (is_null($attributes)) {
+			$attributes = [];
+			if (Configs::get_value(self::CONFIG_KEY_USER_KEY, 'uid')) {
+				array_push($attributes, Configs::get_value(self::CONFIG_KEY_USER_KEY, 'uid'));
+			}
+			if (Configs::get_value(self::CONFIG_KEY_CN, 'cn')) {
+				array_push($attributes, Configs::get_value(self::CONFIG_KEY_CN, 'cn'));
+			}
+			if (Configs::get_value(self::CONFIG_KEY_MAIL, 'mail')) {
+				array_push($attributes, Configs::get_value(self::CONFIG_KEY_MAIL, 'mail'));
+			}
+		}
 		try {
 			$sr = match ($scope) {
 				self::SCOPE_BASE => ldap_read(
-					$this->con,
-					$base_dn,
-					$filter,
-					$attributes,
-					$attrsonly,
-					$sizelimit
-				),
-				self::SCOPE_ONE => ldap_list(
-					$this->con,
-					$base_dn,
-					$filter,
-					$attributes,
-					$attrsonly,
-					$sizelimit
-				),
-				self::SCOPE_SUB => ldap_search(
-					$this->con,
-					$base_dn,
-					$filter,
-					$attributes,
-					$attrsonly,
-					$sizelimit
-				)
+										$this->con,
+										$base_dn,
+										$filter,
+										$attributes,
+										$attrsonly,
+										$sizelimit
+								),
+								self::SCOPE_ONE => ldap_list(
+										$this->con,
+										$base_dn,
+										$filter,
+										$attributes,
+										$attrsonly,
+										$sizelimit
+								),
+								self::SCOPE_SUB => ldap_search(
+										$this->con,
+										$base_dn,
+										$filter,
+										$attributes,
+										$attrsonly,
+										$sizelimit
+								)
 			};
 			$result = ldap_get_entries($this->con, $sr);
 			ldap_free_result($sr);
@@ -329,8 +362,7 @@ class LDAPFunctions
 	 */
 	protected function LDAP_check_bind(): void
 	{
-		$req_level = (Configs::get_value(self::CONFIG_KEY_BIND_DN) && Configs::get_value(self::CONFIG_KEY_BIND_PW))
-						? self::BIND_TYPE_SUPER_USER : self::BIND_TYPE_ANONYMOUS;
+		$req_level = (Configs::get_value(self::CONFIG_KEY_BIND_DN) && Configs::get_value(self::CONFIG_KEY_BIND_PW)) ? self::BIND_TYPE_SUPER_USER : self::BIND_TYPE_ANONYMOUS;
 		Logs::debug(__METHOD__, __LINE__, 'LDAP_check_bind: ' . $this->bound . ' [required: ' . $req_level . ']');
 		// force superuser or anonymous bind if the bound level is not sufficient yet
 		if ($this->bound < $req_level) {
@@ -438,16 +470,16 @@ class LDAPFunctions
 	 *
 	 * @return string
 	 */
-	protected static function _filterEscape(string $string): string
+	protected static function filter_escape(string $string): string
 	{
 		// see https://github.com/adldap/adLDAP/issues/22
 		return preg_replace_callback(
-			'/([\x00-\x1F*()\\\\])/',
-			function ($matches) {
-				return '\\' . join('', unpack('H2', $matches[1]));
-			},
-			$string
-		);
+						'/([\x00-\x1F*()\\\\])/',
+						function ($matches) {
+							return '\\' . join('', unpack('H2', $matches[1]));
+						},
+						$string
+				);
 	}
 
 	/**
@@ -458,7 +490,7 @@ class LDAPFunctions
 	 *
 	 * @return string
 	 */
-	protected static function _makeFilter(string $filter, array $placeholders): string
+	protected static function make_filter(string $filter, array $placeholders): string
 	{
 		preg_match_all('/%{([^}]+)/', $filter, $matches, PREG_PATTERN_ORDER);
 		// replace each match
@@ -469,7 +501,7 @@ class LDAPFunctions
 			} else {
 				$value = $placeholders[$match];
 			}
-			$value = self::_filterEscape($value);
+			$value = self::filter_escape($value);
 			$filter = str_replace('%{' . $match . '}', $value, $filter);
 		}
 
@@ -483,43 +515,52 @@ class LDAPFunctions
 	 */
 	protected function connect(string $host, int $port = 389, $timeout = 1): bool|\LDAP\Connection
 	{
-		if (!$timeout) {
-			try {
-				return ldap_connect($host, $port);
-			} catch (\Throwable) {
-				return false;
-			}
-		}
-		$chost = $host;
-		$cport = $port;
-		$sv = explode(':', $host);
-		if (count($sv) > 1) {
-			$chost = ltrim($sv[1], '/');
-			$prot = reset($sv);
-			if (count($sv) < 3) {
-				$cport = match ($prot) {
-					'ldap' => 389,
-					'ldaps' => 636,
-					default => 389
-				};
+		for ($i = 0; $i < 10; $i++) {
+			if (!$timeout) {
+				try {
+					$con = ldap_connect($host, $port);
+					if ($con) {
+						return $con;
+					}
+				} catch (\Throwable) {
+					break;
+				}
 			} else {
-				$cport = (int) end($sv);
-			}
-		}
-		if (empty($chost) || empty($cport)) {
-			return false;
-		}
-		try {
-			// The use of sockets is safe here because no data will be trnsferred.
-			// The socket is only used to verify that the ldap server can be connected.
-			$OK = fsockopen($chost, $cport, $errno, $errstr, $timeout);
-		} catch (\ErrorException) {
-			$OK = false;
-		}
-		if ($OK) {
-			fclose($OK); // explicitly close open socket connection
+				$chost = $host;
+				$cport = $port;
+				$sv = explode(':', $host);
+				if (count($sv) > 1) {
+					$chost = ltrim($sv[1], '/');
+					$prot = reset($sv);
+					if (count($sv) < 3) {
+						$cport = match ($prot) {
+							'ldap' => 389,
+														'ldaps' => 636,
+														default => 389
+						};
+					} else {
+						$cport = (int) end($sv);
+					}
+				}
+				if (empty($chost) || empty($cport)) {
+					return false;
+				}
+				try {
+					// The use of sockets is safe here because no data will be transferred.
+					// The socket is only used to verify that the ldap server can be connected.
+					$OK = fsockopen($chost, $cport, $errno, $errstr, $timeout);
+				} catch (\ErrorException) {
+					$OK = false;
+				}
+				if ($OK) {
+					fclose($OK); // explicitly close open socket connection
 
-			return ldap_connect($host, $port);
+					$con = ldap_connect($host, $port);
+					if ($con) {
+						return $con;
+					}
+				}
+			}
 		}
 
 		return false;
@@ -538,7 +579,6 @@ class LDAPFunctions
 		if ($this->con) {
 			return;
 		} // connection already established
-
 		// ldap extension is needed
 		if (!extension_loaded('ldap')) {
 			// @codeCoverageIgnoreStart
@@ -561,14 +601,13 @@ class LDAPFunctions
 				/**
 				 * We have acquired a connection \o/.
 				 */
-
 				/*
 				 * When open_LDAP 2.x.x is used, ldap_connect() will always return a resource as it does
 				 * not actually connect but just initializes the connecting parameters. The actual
 				 * connect happens with the next calls to ldap_* functions, usually with ldap_bind().
 				 *
 				 * So we should try to bind to server in order to check its availability.
-				*/
+				 */
 
 				// set protocol version
 				$ldap_version = (int) Configs::get_value(self::CONFIG_KEY_VERSION, self::LDAP_VERSION_UNKNOWN);
