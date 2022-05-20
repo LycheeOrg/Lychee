@@ -12,8 +12,8 @@ class Move extends Action
 	/**
 	 * Moves the given albums into the target.
 	 *
-	 * @param Album|null $targetAlbum
-	 * @param Collection $albums
+	 * @param Album|null        $targetAlbum
+	 * @param Collection<Album> $albums
 	 *
 	 * @throws ModelNotFoundException
 	 * @throws ModelDBException

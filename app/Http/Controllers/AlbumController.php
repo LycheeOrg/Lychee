@@ -93,7 +93,7 @@ class AlbumController extends Controller
 	 * @param GetAlbumPositionDataRequest $request
 	 * @param PositionData                $positionData
 	 *
-	 * @return array
+	 * @return PositionDataDTO
 	 */
 	public function getPositionData(GetAlbumPositionDataRequest $request, PositionData $positionData): PositionDataDTO
 	{
@@ -272,7 +272,9 @@ class AlbumController extends Controller
 	 */
 	public function merge(MergeAlbumsRequest $request, Merge $merge): void
 	{
-		$merge->do($request->album(), $request->albums());
+		/** @var \Illuminate\Database\Eloquent\Collection<Album> */
+		$listAlbums = $request->albums();
+		$merge->do($request->album(), $listAlbums);
 	}
 
 	/**
@@ -288,7 +290,9 @@ class AlbumController extends Controller
 	 */
 	public function move(MoveAlbumsRequest $request, Move $move): void
 	{
-		$move->do($request->album(), $request->albums());
+		/** @var \Illuminate\Database\Eloquent\Collection<Album> */
+		$listAlbums = $request->albums();
+		$move->do($request->album(), $listAlbums);
 	}
 
 	/**
