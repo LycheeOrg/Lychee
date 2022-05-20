@@ -17,6 +17,9 @@ class LDAPTest extends LDAPTestCase
 	public function testLDAPInternFunctions()
 	{
 		$ldap = $this->get_ldap();
+		if (!$ldap) {
+			return;
+		}
 		try {
 			$this->LDAP_open();
 			$ldap->LDAP_get_option(LDAP_OPT_PROTOCOL_VERSION, $option);
@@ -29,11 +32,11 @@ class LDAPTest extends LDAPTestCase
 			$ldap->LDAP_get_option(LDAP_OPT_SIZELIMIT, $new_sl);
 			$this->assertEquals(0, $new_sl, 'Option cannot be reset');
 			$Filter = LDAPTestFunctions::LDAP_makeFilter('%{uid} = %{start} test%{inc} %{end}',
-				  ['uid' => 'gauss', 'start' => '{', 'end' => '}', 'inc' => '++', 'dec' => '--']);
+										['uid' => 'gauss', 'start' => '{', 'end' => '}', 'inc' => '++', 'dec' => '--']);
 			$this->assertEquals('gauss = { test++ }', $Filter, 'LDAP_makeFilter could not make the filter');
 
 			$Filter = LDAPTestFunctions::LDAP_makeFilter('%{uid} = %{start} test%{inc} %{end}',
-				  ['uid' => ['gauss'], 'start' => ['{'], 'end' => ['}'], 'inc' => ['++'], 'dec' => ['--']]);
+										['uid' => ['gauss'], 'start' => ['{'], 'end' => ['}'], 'inc' => ['++'], 'dec' => ['--']]);
 			$this->assertEquals('gauss = { test++ }', $Filter, 'LDAP_makeFilter could not make the filter');
 
 			$Filter = LDAPTestFunctions::LDAP_filterEscape("/\x03 \x05 \x08 (test) \\/");
@@ -81,6 +84,9 @@ class LDAPTest extends LDAPTestCase
 	public function testLDAPBoundLevel()
 	{
 		$ldap = $this->get_ldap();
+		if (!$ldap) {
+			return;
+		}
 		try {
 			$this->LDAP_open();
 			// The bound level after open_LDAP() is 2 if open_LDAP() does already the binding with the LDAP server.
@@ -143,6 +149,9 @@ class LDAPTest extends LDAPTestCase
 	public function testLDAPSearch()
 	{
 		$ldap = $this->get_ldap();
+		if (!$ldap) {
+			return;
+		}
 		try {
 			$this->LDAP_open();
 
@@ -171,7 +180,10 @@ class LDAPTest extends LDAPTestCase
 
 	public function testLDAPmultiServer1()
 	{
-		$this->get_ldap();
+		$ldap = $this->get_ldap();
+		if (!$ldap) {
+			return;
+		}
 		try {
 			Configs::set('ldap_server', 'ss:,google.com,github.com');
 			$this->expectException(\App\Exceptions\LDAPException::class, 'Missing Exception from check_pass when called with no server available');
@@ -184,6 +196,9 @@ class LDAPTest extends LDAPTestCase
 	public function testLDAPmultiServer2()
 	{
 		$ldap = $this->get_ldap();
+		if (!$ldap) {
+			return;
+		}
 		try {
 			// We do not expect any Exception if a valid server is present
 			Configs::set('ldap_server', 'google.com,github.com,' . self::SERVER);
@@ -198,6 +213,9 @@ class LDAPTest extends LDAPTestCase
 	public function testLDAPCheck()
 	{
 		$ldap = $this->get_ldap();
+		if (!$ldap) {
+			return;
+		}
 		try {
 			/*
 			 * These tests are made without enabling LDAP as the authenication service (ldap_enabled is untouched)
@@ -254,6 +272,9 @@ class LDAPTest extends LDAPTestCase
 	{
 		$this->assertTrue(true);
 		$ldap = $this->get_ldap();
+		if (!$ldap) {
+			return;
+		}
 		try {
 			$ldap->LDAP_close();
 			Configs::set('ldap_server', 'google.com,github.com');
@@ -267,6 +288,9 @@ class LDAPTest extends LDAPTestCase
 	public function testLDAPinvalidServer2()
 	{
 		$ldap = $this->get_ldap();
+		if (!$ldap) {
+			return;
+		}
 		try {
 			$ldap->LDAP_close();
 			Configs::set('ldap_server', 'google.com,github.com,' . self::SERVER);
@@ -279,6 +303,9 @@ class LDAPTest extends LDAPTestCase
 	public function testLDAPCheckUnknown()
 	{
 		$ldap = $this->get_ldap();
+		if (!$ldap) {
+			return;
+		}
 		try {
 			// Ensures that UNKNOWN_USER does not have an account on the LDAP test server
 			$user_list = $ldap->get_user_list(true);
@@ -295,6 +322,9 @@ class LDAPTest extends LDAPTestCase
 	public function testLDAPGetUserList()
 	{
 		$ldap = $this->get_ldap();
+		if (!$ldap) {
+			return;
+		}
 		try {
 			$this->LDAP_open();
 			Configs::set('ldap_user_filter', '');
@@ -308,6 +338,9 @@ class LDAPTest extends LDAPTestCase
 	public function testLDAPs()
 	{
 		$ldap = $this->get_ldap();
+		if (!$ldap) {
+			return;
+		}
 		try {
 			// Testing ldaps by using the public debian server
 			// We try to get the list of users which uid starts with the letter a
@@ -321,7 +354,7 @@ class LDAPTest extends LDAPTestCase
 			Configs::set('ldap_bind_pw', '');
 			$this->LDAP_open();
 			$SR = $ldap->LDAP_search('dc=debian,dc=org', 'uid=a*', 'sub');
-			$this->assertTrue($SR['count'] > 0, 'LDAP_search scope base should return at least one result');
+			$this->assertTrue($SR['count'] > 0, 'LDAP_search should return at least one result');
 			$ldap->LDAP_close();
 		} finally {
 			$this->done_ldap();
@@ -331,6 +364,9 @@ class LDAPTest extends LDAPTestCase
 	public function testLDAPstarttls()
 	{
 		$ldap = $this->get_ldap();
+		if (!$ldap) {
+			return;
+		}
 		try {
 			// Testing ldap with starttls by using the public google server.
 			Configs::set('ldap_server', 'db.debian.org');
@@ -342,7 +378,7 @@ class LDAPTest extends LDAPTestCase
 			Configs::set('ldap_bind_pw', '');
 			$this->LDAP_open();
 			$SR = $ldap->LDAP_search('dc=debian,dc=org', 'uid=a*', 'sub');
-			$this->assertTrue($SR['count'] > 0, 'LDAP_search scope base should return at least one result');
+			$this->assertTrue($SR['count'] > 0, 'LDAP_search should return at least one result');
 			$ldap->LDAP_close();
 		} finally {
 			$this->done_ldap();

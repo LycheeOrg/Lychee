@@ -84,7 +84,7 @@ class LDAPintegrationTest extends LDAPTestCase
 				$user->username = LDAPTest::TESTUSER;
 				$user->save();
 				$this->assertFalse($sessionFunctions->log_with_ldap(LDAPTest::TESTUSER, LDAPTest::TESTUSER_PW, $ip),
-					'testuser should not be able to login if id=0');
+										'testuser should not be able to login if id=0');
 			} finally {
 				$user = User::query()->where('id', '=', '0')->first();
 				$user->username = $us;

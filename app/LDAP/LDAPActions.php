@@ -72,4 +72,3 @@ class LDAPActions
 		LDAPActions::update_users($ldap->get_user_list(true), $purge);
 	}
 }
-

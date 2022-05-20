@@ -7,7 +7,7 @@ use Tests\Feature\Lib\LDAPTestFunctions;
 
 class LDAPTestCase extends TestCase
 {
-	// See https://www.forumsys.com/2022/05/10/online-ldap-test-server/
+		// See https://www.forumsys.com/2022/05/10/online-ldap-test-server/
 	public const TESTUSER = 'gauss';
 	public const TESTUSER_PW = 'password';
 	public const TESTUSER2 = 'euler';
@@ -22,12 +22,11 @@ class LDAPTestCase extends TestCase
 	public const USER_FILTER = '(uid=%{user})';
 	public const BIND_DN = 'cn=read-only-admin,dc=example,dc=com';
 	public const BIND_PW = 'password';
-
 	public const UNKNOWN_USER = 'test4711';
 
 	public $oldconfigs = null;
-
 	private $ldap_test = null;
+	protected $EnableLDAPTests = false;
 
 	public static function _debug($myDebugVar, $label = '', $oneline = true)
 	{

@@ -85,51 +85,51 @@ class Configs extends Model
 		];
 
 		switch ($this->type_range) {
-			case self::STRING:
-			case self::DISABLED:
-				break;
-			case self::STRING_REQ:
-				if ($value == '') {
-					$message = 'Error: ' . $this->key . ' empty or not set in database';
+						case self::STRING:
+						case self::DISABLED:
+								break;
+						case self::STRING_REQ:
+								if ($value == '') {
+									$message = 'Error: ' . $this->key . ' empty or not set in database';
+								}
+								break;
+						case self::INT:
+								// we make sure that we only have digits in the chosen value.
+								if (!ctype_digit(strval($value))) {
+									$message = 'Error: Wrong property for ' . $this->key . ' in database, expected positive integer.';
+								}
+								break;
+						case self::SIGNED_INT:
+								// we make sure that we only have digits and - in the chosen value.
+								if (!ctype_digit(strval(str_replace('-', '', $value)))) {
+									$message = 'Error: Wrong property for ' . $this->key . ' in database, expected positive or negative integer.';
+								}
+								break;
+						case self::BOOL:
+						case self::TERNARY:
+								if (!in_array($value, $val_range[$this->type_range])) { // BOOL or TERNARY
+									$message = 'Error: Wrong property for ' . $this->key
+												. ' in database, expected ' . implode(
+														' or ',
+														$val_range[$this->type_range]
+												) . ', got ' . ($value ?: 'NULL');
+								}
+								break;
+						case self::LICENSE:
+								if (!in_array($value, Helpers::get_all_licenses())) {
+									$message = 'Error: Wrong property for ' . $this->key
+												. ' in database, expected a valid license, got ' . ($value ?: 'NULL');
+								}
+								break;
+						default:
+								$values = explode('|', $this->type_range);
+								if (!in_array($value, $values)) {
+									$message = 'Error: Wrong property for ' . $this->key
+												. ' in database, expected ' . implode(' or ', $values)
+												. ', got ' . ($value ?: 'NULL');
+								}
+								break;
 				}
-				break;
-			case self::INT:
-				// we make sure that we only have digits in the chosen value.
-				if (!ctype_digit(strval($value))) {
-					$message = 'Error: Wrong property for ' . $this->key . ' in database, expected positive integer.';
-				}
-				break;
-			case self::SIGNED_INT:
-				// we make sure that we only have digits and - in the chosen value.
-				if (!ctype_digit(strval(str_replace('-', '', $value)))) {
-					$message = 'Error: Wrong property for ' . $this->key . ' in database, expected positive or negative integer.';
-				}
-				break;
-			case self::BOOL:
-			case self::TERNARY:
-				if (!in_array($value, $val_range[$this->type_range])) { // BOOL or TERNARY
-					$message = 'Error: Wrong property for ' . $this->key
-						. ' in database, expected ' . implode(
-							' or ',
-							$val_range[$this->type_range]
-						) . ', got ' . ($value ?: 'NULL');
-				}
-				break;
-			case self::LICENSE:
-				if (!in_array($value, Helpers::get_all_licenses())) {
-					$message = 'Error: Wrong property for ' . $this->key
-						. ' in database, expected a valid license, got ' . ($value ?: 'NULL');
-				}
-				break;
-			default:
-				$values = explode('|', $this->type_range);
-				if (!in_array($value, $values)) {
-					$message = 'Error: Wrong property for ' . $this->key
-						. ' in database, expected ' . implode(' or ', $values)
-						. ', got ' . ($value ?: 'NULL');
-				}
-				break;
-		}
 
 		return $message;
 	}
@@ -145,23 +145,23 @@ class Configs extends Model
 	{
 		try {
 			switch ($type_range) {
-			case self::INT:
-			case self::SIGNED_INT:
-						case self::TERNARY:
-								if (!is_numeric($value)) {
-									throw new InvalidConfigOption($value . ' is not an integer');
-								}
+								case self::INT:
+								case self::SIGNED_INT:
+								case self::TERNARY:
+										if (!is_numeric($value)) {
+											throw new InvalidConfigOption($value . ' is not an integer');
+										}
 
-								return intval($value);
-			case self::BOOL:
-								return boolval($value);
-			case self::STRING:
-			case self::DISABLED:
-			case self::STRING_REQ:
-			case self::LICENSE:
-			default:
-								return $value;
-		}
+										return intval($value);
+								case self::BOOL:
+										return boolval($value);
+								case self::STRING:
+								case self::DISABLED:
+								case self::STRING_REQ:
+								case self::LICENSE:
+								default:
+										return $value;
+						}
 		} catch (\Throwable $e) {
 			Logs::notice(__METHOD__, __LINE__, 'The value ' . $value . ' does not match its type_range (' . $type_range . ')');
 
@@ -182,9 +182,9 @@ class Configs extends Model
 
 		try {
 			self::$cache = Configs::query()
-				->select(['key', 'value'])
-				->pluck('value', 'key')
-				->all();
+								->select(['key', 'value'])
+								->pluck('value', 'key')
+								->all();
 		}
 		// fails only if the datavase is corrupt
 		// @codeCoverageIgnoreStart
@@ -209,9 +209,9 @@ class Configs extends Model
 
 		try {
 			self::$type_range_cache = Configs::query()
-				->select(['key', 'type_range'])
-				->pluck('type_range', 'key')
-				->all();
+								->select(['key', 'type_range'])
+								->pluck('type_range', 'key')
+								->all();
 		}
 		// fails only if the datavase is corrupt
 		// @codeCoverageIgnoreStart
@@ -275,8 +275,8 @@ class Configs extends Model
 		try {
 			/** @var Configs $config */
 			$config = Configs::query()
-				->where('key', '=', $key)
-				->firstOrFail();
+								->where('key', '=', $key)
+								->firstOrFail();
 
 			/**
 			 * Sanity check. :).
@@ -327,6 +327,7 @@ class Configs extends Model
 			return '';
 		}
 	}
+
 	/**
 	 * Define scopes.
 	 */

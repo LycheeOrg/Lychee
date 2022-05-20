@@ -10,13 +10,13 @@ use App\LDAP\LDAPFunctions;
 class LDAPTestFunctions extends LDAPFunctions
 {
 	public function LDAP_search(
-		string $base_dn,
-		string $filter,
-		string $scope = self::SCOPE_SUB,
-		array $attributes = [],
-		int $attrsonly = 0,
-		int $sizelimit = 0
-	): array {
+				string $base_dn,
+				string $filter,
+				string $scope = self::SCOPE_SUB,
+				array $attributes = [],
+				int $attrsonly = 0,
+				int $sizelimit = 0
+		): array {
 		return parent::LDAP_search($base_dn, $filter, $scope, $attributes, $attrsonly, $sizelimit);
 	}
 

@@ -21,7 +21,7 @@ are available with the advanced settings.
 
 | Setting           | Description                                                   | Type       | Default Value                 |
 |-------------------|---------------------------------------------------------------|:----------:|-------------------------------|
-| ldap_enabled      | LDAP login provider enabled                                   | 0|1        | 0                             |
+| ldap_enabled      | LDAP login provider enabled                                   | 0/1        | 0                             |
 | ldap_server       | LDAP server name                                              | string     |                               |
 | ldap_port         | LDAP server port                                              | int        | 389                           |
 | ldap_bind_dn      | LDAP bind dn                                                  | string     |                               |
@@ -36,9 +36,9 @@ are available with the advanced settings.
 | ldap_version      | LDAP protocol version                                         | int        | 3                             |
 | ldap_user_key     | LDAP user key                                                 | string     | uid                           |
 | ldap_user_scope   | LDAP user scope                                               | string     | sub                           |
-| ldap_start_tls    | LDAP use STARTTLS protocol                                    | 0|1        | 0                             |
+| ldap_start_tls    | LDAP use STARTTLS protocol                                    | 0/1        | 0                             |
 | ldap_referrals    | LDAP option referrals                                         | signed_int | -1                            |
-| ldap_deref        | LDAP option deref                                             | 0|1        | 0                             |
+| ldap_deref        | LDAP option deref                                             | 0/1        | 0                             |
 | ldap_cn           | LDAP common name                                              | string     | cn                            |
 | ldap_mail         | LDAP mail entry                                               | string     | mail                          |
 | ldap_timeout      | LDAP connect timeout                                          | int        | 1                          |
@@ -47,7 +47,7 @@ are available with the advanced settings.
 
 | Setting           | Description                                                   | Type       | Default Value                 |
 |-------------------|---------------------------------------------------------------|:----------:|-------------------------------|
-| ldap_purge        | LDAP enables purging of obsolete users in lychee              | 0|1        | 0                             |
+| ldap_purge        | LDAP enables purging of obsolete users in lychee              | 0/1        | 0                             |
 | ldap_update_users | LDAP schedule interval for automatic sync of users in minutes | int        | 0                             |
 
 ### Synchronizing Lychee with the LDAP Server
@@ -85,9 +85,12 @@ with the follwing configuration:
 | ldap_bind_dn      | LDAP bind dn                                                  | cn=read-only-admin,dc=example,dc=com |
 | ldap_bind_pw      | LDAP bind password                                            | password                             |
 
+Valid usernames and passwords for this server are: riemann:password, gauss:password, euler:password, euclid:password.
+
+
 ### Therory of Operation
 
-The LDAP for lychee interface provides the following three functions.
+The LDAP for lychee interface provides the following public functions.
 
 |  Function                                                    | Description                                        |
 |--------------------------------------------------------------|----------------------------------------------------|
