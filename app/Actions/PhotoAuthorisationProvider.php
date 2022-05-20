@@ -159,7 +159,7 @@ class PhotoAuthorisationProvider
 		// If origin is set, also restrict the search result for admin
 		// to photos which are in albums below origin.
 		// This is not a security filter, but simply functional.
-		if ($origin) {
+		if ($origin != null) {
 			$query
 				->where('albums._lft', '>=', $origin->_lft)
 				->where('albums._rgt', '<=', $origin->_rgt);
@@ -304,9 +304,9 @@ class PhotoAuthorisationProvider
 		return
 			count($photoIDs) === 0 ||
 			Photo::query()
-				->whereIn('id', $photoIDs)
-				->where('owner_id', $user->id)
-				->count() === count($photoIDs);
+			->whereIn('id', $photoIDs)
+			->where('owner_id', $user->id)
+			->count() === count($photoIDs);
 	}
 
 	/**
@@ -354,7 +354,8 @@ class PhotoAuthorisationProvider
 		}
 		if ($addShares) {
 			$userID = AccessControl::id();
-			$query->leftJoin('user_base_album',
+			$query->leftJoin(
+				'user_base_album',
 				function (JoinClause $join) use ($userID) {
 					$join
 						->on('user_base_album.base_album_id', '=', 'base_albums.id')
