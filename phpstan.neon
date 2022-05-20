@@ -32,17 +32,28 @@ parameters:
 		# bunch of false positives from Eloquent
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::insert\(\).#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::select\(\).#'
-		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::whereIn\(\).#'
-		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::whereNull\(\).#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::orderBy\(\)#'
-		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::where\(\).#'
+		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::where(Null|In)?\(\).#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::inRandomOrder\(\)#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::delete\(\)#'
+		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::without\(\)#'
+		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::whereBetween\(\)#'
+		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::count\(\).#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::withOnly\(\)#'
-		- '#Call to private method whereExists\(\) of parent class Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>.#'
+		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::getLft\(\).#'
+		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::getRgt\(\).#'
+		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::descendants\(\).#'
+		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::getLftName\(\).#'
+		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::newNestedSetQuery\(\).#'
+		- '#Call to private method truncate\(\) of parent class Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>.#'
 		- '#Call to private method limit\(\) of parent class Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>.#'
 		- '#Call to private method latest\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\HasMany<Illuminate\\Database\\Eloquent\\Model>#'
-
+		- '#Call to private method offset\(\) of parent class Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>.#'
+		- '#Call to private method count\(\) of parent class Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>.#'
+		- '#Call to private method take\(\) of parent class Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>.#'
+		- '#Call to private method from\(\) of parent class Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>.#'
+		- '#Call to private method where(Not)?(Null|In|Exists)?\(\) of parent class Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>.#'
+		- '#Call to protected method asDateTime\(\) of class Illuminate\\Database\\Eloquent\\Model.#'
 		- '#Dynamic call to static method Illuminate\\Http\\Request::validate\(\)#'
 
 		# Covariance - LSP princinple: https://en.wikipedia.org/wiki/Liskov_substitution_principle
@@ -62,7 +73,7 @@ parameters:
 			paths:
 				- app/SmartAlbums/Utils/MimicModel.php
 
-		- '#Call to an undefined static method Kalnoy\\Nestedset\\QueryBuilder::(whereIn|select|join|leftJoin|orderBy|addSelect)\(\)#'
+		- '#Call to an undefined( static)? method Kalnoy\\Nestedset\\.*::(whereIn|select|join|leftJoin|orderBy|addSelect)\(\)#'
 		- '#Parameter .* of method .*::newEloquentBuilder\(\) should be contravariant with parameter \$query \(mixed\) of method Kalnoy\\Nestedset\\Node::newEloquentBuilder\(\)#'
 		- '#Call to an undefined method Geocoder\\Location::getDisplayName\(\)#'
 		- '#Call to an undefined method COM::getfolder\(\).#'
