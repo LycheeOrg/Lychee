@@ -29,7 +29,7 @@ class Version extends DTO
 	 *
 	 * @param int $version the version represented as a single integer
 	 *
-	 * @return static
+	 * @return self
 	 *
 	 * @throws LycheeInvalidArgumentException
 	 */
