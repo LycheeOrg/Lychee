@@ -8,9 +8,9 @@ use App\Exceptions\UnexpectedException;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use App\Models\SizeVariant;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -109,7 +109,7 @@ class Takedate extends Command
 			$timeout = intval($this->argument('time'));
 			$setCreationTime = boolval($this->option('set-upload-time'));
 			$force = boolval($this->option('force'));
-			set_time_limit($timeout);
+			\Safe\set_time_limit($timeout);
 
 			// For faster iteration we eagerly load the original size variant,
 			// but only the original size variant
@@ -160,9 +160,9 @@ class Takedate extends Command
 
 				$kind = $photo->isRaw() ? 'raw' : ($photo->isVideo() ? 'video' : 'photo');
 				$info = $metadataExtractor->extract($fullPath, $kind);
-				/** @var Carbon $stamp */
+				/** @var Carbon|null $stamp */
 				$stamp = $info['taken_at'];
-				if ($stamp !== null) {
+				if ($stamp != null) {
 					// Note: `equalTo` only checks if two times indicate the same
 					// instant of time on the universe's timeline, i.e. equality
 					// comparison is always done in UTC.
@@ -181,9 +181,9 @@ class Takedate extends Command
 
 				if ($setCreationTime) {
 					if (is_link($fullPath)) {
-						$fullPath = readlink($fullPath);
+						$fullPath = \Safe\readlink($fullPath);
 					}
-					$created_at = filemtime($fullPath);
+					$created_at = \Safe\filemtime($fullPath);
 					if ($created_at == $photo->created_at->timestamp) {
 						$this->printInfo($photo, 'Upload time up-to-date.');
 					} else {
