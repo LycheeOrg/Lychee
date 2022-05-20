@@ -41,7 +41,8 @@ class LycheeChannelInfo extends DTO
 			self::GIT_CHANNEL => [
 				'channel' => 'git',
 				'info' => $this->gitInfo?->toArray(),
-			]
+			],
+			default => throw new \AssertionError('invalid channel type in LycheeChannelInfo')
 		};
 	}
 }
