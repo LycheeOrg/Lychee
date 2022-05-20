@@ -37,6 +37,7 @@ parameters:
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::orderBy\(\)#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::where\(\).#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::inRandomOrder\(\)#'
+		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::delete\(\)#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::withOnly\(\)#'
 
 		- '#Dynamic call to static method Illuminate\\Http\\Request::validate\(\)#'
