@@ -46,7 +46,7 @@ class DemoController extends Controller
 		$return_session = [];
 		$return_session['name'] = 'Session::init()';
 		$return_session['type'] = 'string';
-		$return_session['data'] = json_encode($session_init->init());
+		$return_session['data'] = \Safe\json_encode($session_init->init());
 
 		$functions[] = $return_session;
 
@@ -59,7 +59,7 @@ class DemoController extends Controller
 		$return_albums = [];
 		$return_albums['name'] = 'Albums::get';
 		$return_albums['type'] = 'string';
-		$return_albums['data'] = json_encode($albums_controller->get($top));
+		$return_albums['data'] = \Safe\json_encode($albums_controller->get($top));
 
 		$functions[] = $return_albums;
 
@@ -87,7 +87,7 @@ class DemoController extends Controller
 			 */
 			$return_album = [];
 			$return_album['id'] = $album->id;
-			$return_album['data'] = json_encode($album->toArray());
+			$return_album['data'] = \Safe\json_encode($album->toArray());
 			$return_album_list['array'][] = $return_album;
 		}
 
@@ -110,7 +110,7 @@ class DemoController extends Controller
 				$return_photo_json['original_album'] = $return_photo_json['album_id'];
 				$return_photo_json['album'] = $album->id;
 				$return_photo['id'] = $photo->id;
-				$return_photo['data'] = json_encode($return_photo_json);
+				$return_photo['data'] = \Safe\json_encode($return_photo_json);
 
 				$return_photo_list['array'][] = $return_photo;
 			}
