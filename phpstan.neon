@@ -24,9 +24,9 @@ parameters:
 	excludePaths:
 		- app/Relations/*
 		- app/View/*
+		- app/Http/Livewire/*
 	ignoreErrors:
 		- '#Short ternary operator is not allowed#' # we like short ternary
-
 		- '#Construct empty\(\) is not allowed#' # we like empty()
 
 		# bunch of false positives from Eloquent
@@ -35,7 +35,7 @@ parameters:
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::whereIn\(\).#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::whereNull\(\).#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::orderBy\(\)#'
-		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\Relations\\HasMany<Illuminate\\Database\\Eloquent\\Model>::where\(\).#'
+		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::where\(\).#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::withOnly\(\)#'
 
 		# Covariance - LSP princinple: https://en.wikipedia.org/wiki/Liskov_substitution_principle
