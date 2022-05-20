@@ -39,7 +39,7 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 	{
 		parent::setPhoto($photo);
 		$this->originalExtension = '';
-		if ($this->photo && $sv = $this->photo->size_variants->getOriginal()) {
+		if ($this->photo != null && ($sv = $this->photo->size_variants->getOriginal()) != null) {
 			$this->originalExtension = $sv->getFile()->getExtension();
 		}
 	}
@@ -70,10 +70,12 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 		if ($sizeVariant === SizeVariant::ORIGINAL && $this->photo->isRaw()) {
 			$directory = 'raw/';
 		}
-		$filename = substr($this->photo->checksum, 0, 32);
-		if ($sizeVariant === SizeVariant::MEDIUM2X ||
+		$filename = \Safe\substr($this->photo->checksum, 0, 32);
+		if (
+			$sizeVariant === SizeVariant::MEDIUM2X ||
 			$sizeVariant === SizeVariant::SMALL2X ||
-			$sizeVariant === SizeVariant::THUMB2X) {
+			$sizeVariant === SizeVariant::THUMB2X
+		) {
 			$filename .= '@2x';
 		}
 		$extension = $this->generateExtension($sizeVariant);
@@ -87,7 +89,8 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 	 */
 	protected function generateExtension(int $sizeVariant): string
 	{
-		if ($sizeVariant === SizeVariant::THUMB ||
+		if (
+			$sizeVariant === SizeVariant::THUMB ||
 			$sizeVariant === SizeVariant::THUMB2X ||
 			($sizeVariant !== SizeVariant::ORIGINAL && $this->photo->isVideo()) ||
 			($sizeVariant !== SizeVariant::ORIGINAL && $this->photo->isRaw())

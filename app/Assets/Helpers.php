@@ -61,7 +61,7 @@ class Helpers
 	 */
 	public function getDeviceType(): string
 	{
-		$result = new BrowserParser(getallheaders(), ['cache' => app('cache.store')]);
+		$result = new BrowserParser(\Safe\getallheaders(), ['cache' => app('cache.store')]);
 
 		return $result->getType();
 	}
@@ -81,12 +81,12 @@ class Helpers
 		}
 
 		// Chop off the last four digits.
-		$shortId = intval(substr($id, 0, -4));
+		$shortId = intval(\Safe\substr($id, 0, -4));
 		if ($shortId <= $prevShortId) {
 			$shortId = $prevShortId + 1;
 		}
 
-		return $shortId;
+		return (string) $shortId;
 	}
 
 	/**
@@ -101,7 +101,7 @@ class Helpers
 	{
 		// If $filename is an URI, get only the path component
 		if ($isURI === true) {
-			$filename = parse_url($filename, PHP_URL_PATH);
+			$filename = \Safe\parse_url($filename, PHP_URL_PATH);
 		}
 
 		$extension = pathinfo($filename, PATHINFO_EXTENSION);
@@ -173,7 +173,7 @@ class Helpers
 			throw new ZeroModuloException();
 		}
 
-		return ($a % $b) ? $this->gcd($b, $a % $b) : $b;
+		return ($a % $b) != 0 ? $this->gcd($b, $a % $b) : $b;
 	}
 
 	/**
