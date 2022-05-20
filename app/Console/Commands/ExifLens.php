@@ -61,8 +61,8 @@ class ExifLens extends Command
 		try {
 			$argument = $this->argument('nb');
 			$from = $this->argument('from');
-			$timeout = $this->argument('tm');
-			set_time_limit($timeout);
+			$timeout = (int) $this->argument('tm');
+			\Safe\set_time_limit($timeout);
 
 			// we use lens because this is the one which is most likely to be empty.
 			$photos = Photo::with(['size_variants' => function (HasMany $r) {
