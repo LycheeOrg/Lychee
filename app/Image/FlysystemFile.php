@@ -34,7 +34,7 @@ class FlysystemFile extends MediaFile
 	public function read()
 	{
 		$this->stream = $this->disk->readStream($this->relativePath);
-		if ($this->stream === false || !is_resource($this->stream)) {
+		if ($this->stream == null || !is_resource($this->stream)) {
 			$this->stream = null;
 			throw new \RuntimeException('Could not read from file ' . $this->relativePath);
 		}
@@ -123,7 +123,7 @@ class FlysystemFile extends MediaFile
 	{
 		$ext = pathinfo($this->relativePath, PATHINFO_EXTENSION);
 
-		return $ext ? '.' . $ext : '';
+		return boolval($ext) ? '.' . $ext : '';
 	}
 
 	/**

@@ -55,6 +55,7 @@ parameters:
 		- '#Call to an undefined static method Kalnoy\\Nestedset\\QueryBuilder::(whereIn|select|join|leftJoin|orderBy|addSelect)\(\)#'
 		- '#Call to an undefined method Geocoder\\Location::getDisplayName\(\)#'
 		- '#Call to an undefined method COM::getfolder\(\).#'
+		- '#Call to an undefined method League\\Flysystem\\FilesystemInterface::getAdapter\(\)#'
 
 		# https://github.com/thecodingmachine/safe/issues/283
 		- '#Parameter \#(1|2) \$.* of function Safe\\image.* expects (resource|GdImage), (GdImage|resource)?(\|resource)? given.#'
