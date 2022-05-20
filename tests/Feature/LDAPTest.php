@@ -70,9 +70,8 @@ class LDAPTest extends LDAPTestCase
 			$this->assertFalse(!$ldap->connect('ldap://db.debian.org'), 'Cannot connect to ldap protocol');
 			$this->assertFalse(!$ldap->connect('ldap://db.debian.org:389'), 'Cannot connect to ldap protocol');
 			$this->assertFalse($ldap->connect('db.debian.org', 8000), 'Cannot connect to ldap protocol');
-			Configs::set('ldap_timeout', '0');
-			$this->assertFalse(!$ldap->connect('ldap.forumsys.com', 389), 'Cannot connect to ldap protocol');
-			$this->assertFalse($ldap->connect('ss:', 389), 'It should not be possible to connect to ss:');
+			$this->assertFalse(!$ldap->connect('ldap.forumsys.com', 38, 0), 'Cannot connect to ldap protocol');
+			$this->assertFalse($ldap->connect('ss:', 389, 0), 'It should not be possible to connect to ss:');
 		} finally {
 			$this->done_ldap();
 		}
