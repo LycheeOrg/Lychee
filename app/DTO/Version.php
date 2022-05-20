@@ -39,7 +39,7 @@ class Version extends DTO
 			throw new LycheeInvalidArgumentException('unexpected version value');
 		}
 
-		return new self($version / 10000, ($version % 10000) / 100, $version % 100);
+		return new self(intdiv($version, 10000), intdiv($version % 10000, 100), $version % 100);
 	}
 
 	/**
