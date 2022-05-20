@@ -74,12 +74,14 @@ class AlbumFactory
 		}
 
 		try {
+			/** @var Album */
 			return $albumQuery->findOrFail($albumId);
 		} catch (ModelNotFoundException) {
 			try {
+				/** @var TagAlbum */
 				return $tagAlbumQuery->findOrFail($albumId);
 			} catch (ModelNotFoundException) {
-				throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, $albumId);
+				throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, [$albumId]);
 			}
 		}
 	}
@@ -110,7 +112,7 @@ class AlbumFactory
 			try {
 				$smartAlbums[] = $this->createSmartAlbum($smartID, $withRelations);
 			} catch (InvalidSmartIdException $e) {
-				assert(false, new \AssertionError('InvalidSmartIdException must not be thrown, as search has been limited to self::BUILTIN_SMARTS', $e->getCode(), $e));
+				throw new \AssertionError('InvalidSmartIdException must not be thrown, as search has been limited to self::BUILTIN_SMARTS', $e->getCode(), $e);
 			}
 		}
 
@@ -217,6 +219,7 @@ class AlbumFactory
 		if ($withRelations) {
 			// Just try to get the photos.
 			// This loads the relation from DB and caches it.
+			// ! Dead code ???
 			$ignore = $smartAlbum->photos;
 		}
 
