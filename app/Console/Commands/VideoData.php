@@ -57,14 +57,16 @@ class VideoData extends Command
 	 */
 	public function handle(): int
 	{
+		$timeout = intval($this->argument('timeout'));
+		$count = intval($this->argument('count'));
 		try {
-			set_time_limit($this->argument('timeout'));
+			\Safe\set_time_limit($timeout);
 
 			$this->line(
-				sprintf(
+				\Safe\sprintf(
 					'Will attempt to generate up to %s video thumbnails/metadata with a timeout of %d seconds...',
-					$this->argument('count'),
-					$this->argument('timeout')
+					$count,
+					$timeout
 				)
 			);
 
@@ -72,7 +74,7 @@ class VideoData extends Command
 				->with(['size_variants'])
 				->whereIn('type', $this->getValidVideoTypes())
 				->where('width', '=', 0)
-				->take($this->argument('count'))
+				->take($count)
 				->get();
 
 			if (count($photos) == 0) {
