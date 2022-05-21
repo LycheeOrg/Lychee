@@ -7,7 +7,7 @@ use Tests\Feature\Lib\LDAPTestFunctions;
 
 class LDAPTestCase extends TestCase
 {
-		// See https://www.forumsys.com/2022/05/10/online-ldap-test-server/
+	// See https://www.forumsys.com/2022/05/10/online-ldap-test-server/
 	public const TESTUSER = 'gauss';
 	public const TESTUSER_PW = 'password';
 	public const TESTUSER2 = 'euler';
