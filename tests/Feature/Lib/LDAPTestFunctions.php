@@ -74,10 +74,10 @@ class LDAPTestFunctions extends LDAPFunctions
 		parent::LDAP_start_tls();
 	}
 
-	public function connect(string $host, int $port = 389, $timeout = 1): bool|\LDAP\Connection
+	public function connect(string $host, int $port = 389, $timeout = 1, $retry = 0): bool|\LDAP\Connection
 	{
 		// This function is required for the LDAPTest.
 		// Do not remove it!
-		return parent::connect($host, $port, $timeout);
+		return parent::connect($host, $port, $timeout, $retry);
 	}
 }

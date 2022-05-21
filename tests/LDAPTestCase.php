@@ -16,8 +16,7 @@ class LDAPTestCase extends TestCase
 	public const TESTUSER_CN = 'Carl Friedrich Gauss';
 	public const TESTUSER_EMAIL = 'gauss@ldap.forumsys.com';
 	public const TESTUSER_FILTER = '(uid=gauss)';
-	// repeating the servername is working as an retry for the workflow testing
-	public const SERVER = 'ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com,ldap.forumsys.com';
+	public const SERVER = 'ldap.forumsys.com';
 	public const USER_TREE = 'dc=example,dc=com';
 	public const USER_FILTER = '(uid=%{user})';
 	public const BIND_DN = 'cn=read-only-admin,dc=example,dc=com';
@@ -26,7 +25,8 @@ class LDAPTestCase extends TestCase
 
 	public $oldconfigs = null;
 	private $ldap_test = null;
-	protected $EnableLDAPTests = false;
+	protected static $EnableLDAPTests = true;
+	protected static $CheckLDAPTestServer = true;
 
 	public static function _debug($myDebugVar, $label = '', $oneline = true)
 	{
@@ -70,6 +70,23 @@ class LDAPTestCase extends TestCase
 		if (is_null($this->ldap_test)) {
 			$this->ldap_test = new LDAPTestFunctions();
 		}
+
+		if (self::$CheckLDAPTestServer) {
+			self::$CheckLDAPTestServer = false;
+			$con = $this->ldap_test->connect('ldap.forumsys.com', 389, 2, 15);
+			if (!$con) {
+				self::$EnableLDAPTests = false;
+			} else {
+				ldap_close($con);
+			}
+		}
+
+		if (!self::$EnableLDAPTests) {
+			$this->markTestSkipped('LDAP test-server is not available. Test Skipped.');
+
+			return null;
+		}
+
 		$this->LDAP_setUp();
 
 		return $this->ldap_test;

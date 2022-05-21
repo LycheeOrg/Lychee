@@ -513,9 +513,9 @@ class LDAPFunctions
 	 *
 	 * This method connects to the server and returns the conection if possible.
 	 */
-	protected function connect(string $host, int $port = 389, $timeout = 1): bool|\LDAP\Connection
+	protected function connect(string $host, int $port = 389, $timeout = 1, $retry = 0): bool|\LDAP\Connection
 	{
-		for ($i = 0; $i < 10; $i++) {
+		for ($i = 0; $i < $retry + 1; $i++) {
 			if (!$timeout) {
 				try {
 					$con = ldap_connect($host, $port);
