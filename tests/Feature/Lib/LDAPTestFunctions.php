@@ -40,19 +40,19 @@ class LDAPTestFunctions extends LDAPFunctions
 		return $this->bound;
 	}
 
-	public function LDAP_set_option(int $opt, string $value): void
+	public function LDAP_set_option(int $opt, string $value): void // NOSONAR
 	{
 		// This function is required for the LDAPTest.
 		// Do not remove it!
 		parent::LDAP_set_option($opt, $value);
 	}
 
-	public function LDAP_get_option(int $opt, array|string|int &$value = null): void
+	public function LDAP_get_option(int $opt, array|string|int &$value = null): void // NOSONAR
 	{
 		parent::LDAP_get_option($opt, $value);
 	}
 
-	public static function LDAP_filterEscape(string $string): string
+	public static function LDAP_filterEscape(string $string): string // NOSONAR
 	{
 		return parent::filter_escape($string);
 	}
@@ -67,14 +67,14 @@ class LDAPTestFunctions extends LDAPFunctions
 		$this->cached_user_info = [];
 	}
 
-	public function LDAP_start_tls(): void
+	public function LDAP_start_tls(): void // NOSONAR
 	{
 		// This function is required for the LDAPTest.
 		// Do not remove it!
 		parent::LDAP_start_tls();
 	}
 
-	public function connect(string $host, int $port = 389, $timeout = 1, $retry = 0)
+	public function connect(string $host, int $port = 389, $timeout = 1, $retry = 0) // NOSONAR
 	{
 		// This function is required for the LDAPTest.
 		// Do not remove it!
