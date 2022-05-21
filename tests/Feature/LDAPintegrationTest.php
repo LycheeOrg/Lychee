@@ -13,7 +13,7 @@ class LDAPintegrationTest extends LDAPTestCase
 	{
 		$sessionFunctions = new SessionFunctions();
 
-		$this->get_ldap();
+		$ldap = $this->get_ldap();
 		if (!$ldap) {
 			return;
 		}
