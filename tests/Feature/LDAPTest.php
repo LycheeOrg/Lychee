@@ -335,8 +335,8 @@ class LDAPTest extends LDAPTestCase
 		}
 	}
 
-	// noinspection Duplicates
 	public function testLDAPs()
+	// noinspection Duplicates
 	{
 		$ldap = $this->get_ldap();
 		if (!$ldap) {
@@ -362,8 +362,8 @@ class LDAPTest extends LDAPTestCase
 		}
 	}
 
-	// noinspection Duplicates
 	public function testLDAPstarttls()
+	// noinspection Duplicates
 	{
 		$ldap = $this->get_ldap();
 		if (!$ldap) {
