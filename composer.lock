@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "be03e8718f82f1c5bb7414e9e21777f0",
+    "content-hash": "df90eaec09529685ba49e29945b90cee",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -11889,10 +11889,17 @@
     "platform": {
         "php": "^8.0",
         "ext-bcmath": "*",
+        "ext-ctype": "*",
         "ext-exif": "*",
         "ext-fileinfo": "*",
         "ext-gd": "*",
-        "ext-json": "*"
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-openssl": "*",
+        "ext-pdo": "*",
+        "ext-tokenizer": "*",
+        "ext-xml": "*",
+        "ext-zip": "*"
     },
     "platform-dev": {
         "ext-imagick": "*"
