@@ -335,8 +335,8 @@ class LDAPTest extends LDAPTestCase
 		}
 	}
 
-	public function testLDAPs()
-	{       // NOSONAR
+	public function testLDAPs()     // NOSONAR
+	{
 		$ldap = $this->get_ldap();
 		if (!$ldap) {
 			return;
@@ -361,8 +361,8 @@ class LDAPTest extends LDAPTestCase
 		}
 	}
 
-	public function testLDAPstarttls()
-	{       // NOSONAR
+	public function testLDAPstarttls()      // NOSONAR
+	{
 		$ldap = $this->get_ldap();
 		if (!$ldap) {
 			return;
