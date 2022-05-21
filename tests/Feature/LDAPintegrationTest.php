@@ -14,6 +14,9 @@ class LDAPintegrationTest extends LDAPTestCase
 		$sessionFunctions = new SessionFunctions();
 
 		$this->get_ldap();
+		if (!$ldap) {
+			return;
+		}
 		try {
 			/*
 			 * These tests are made with enabling LDAP as the authenication service (ldap_enabled is set)

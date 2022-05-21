@@ -513,14 +513,14 @@ class LDAPFunctions
 	 *
 	 * This method connects to the server and returns the conection if possible.
 	 */
-	protected function connect(string $host, int $port = 389, $timeout = 1, $retry = 0): bool|\LDAP\Connection
+	protected function connect(string $host, int $port = 389, $timeout = 1, $retry = 0)
 	{
 		for ($i = 0; $i < $retry + 1; $i++) {
 			if (!$timeout) {
 				try {
-					$con = ldap_connect($host, $port);
-					if ($con) {
-						return $con;
+					$c = ldap_connect($host, $port);
+					if ($c) {
+						return $c;
 					}
 				} catch (\Throwable) {
 					break;
@@ -548,16 +548,16 @@ class LDAPFunctions
 				try {
 					// The use of sockets is safe here because no data will be transferred.
 					// The socket is only used to verify that the ldap server can be connected.
-					$OK = fsockopen($chost, $cport, $errno, $errstr, $timeout);
+					$check_con = fsockopen($chost, $cport, $errno, $errstr, $timeout);
 				} catch (\ErrorException) {
-					$OK = false;
+					$check_con = false;
 				}
-				if ($OK) {
-					fclose($OK); // explicitly close open socket connection
+				if ($check_con) {
+					fclose($check_con); // explicitly close open socket connection
 
-					$con = ldap_connect($host, $port);
-					if ($con) {
-						return $con;
+					$c = ldap_connect($host, $port);
+					if ($c) {
+						return $c;
 					}
 				}
 			}
