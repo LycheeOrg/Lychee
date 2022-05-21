@@ -335,8 +335,15 @@ class LDAPTest extends LDAPTestCase
 		}
 	}
 
-	public function testLDAPs()
-	// noinspection Duplicates
+	protected function search_for_some_entries($ldap, $dn, $filter): void
+	{
+		$this->LDAP_open();
+		$SR = $ldap->LDAP_search($dn, $filter, 'sub');
+		$this->assertTrue($SR['count'] > 0, 'LDAP_search should return at least one result');
+		$ldap->LDAP_close();
+	}
+
+	public function testLDAPS()
 	{
 		$ldap = $this->get_ldap();
 		if (!$ldap) {
@@ -347,23 +354,22 @@ class LDAPTest extends LDAPTestCase
 			// We try to get the list of users which uid starts with the letter a
 			// There should be more than 100 of these users, So one is enough to prove
 			// that the communications is working.
-			Configs::set('ldap_server', 'ldaps://db.debian.org');
-			Configs::set('ldap_port', '636');
-			Configs::set('ldap_user_tree', 'dc=debian,dc=org');
-			Configs::set('ldap_user_filter', 'uid=%{user}');
-			Configs::set('ldap_bind_dn', '');
-			Configs::set('ldap_bind_pw', '');
-			$this->LDAP_open();
-			$SR = $ldap->LDAP_search('dc=debian,dc=org', 'uid=a*', 'sub');
-			$this->assertTrue($SR['count'] > 0, 'LDAP_search should return at least one result');
-			$ldap->LDAP_close();
+			self::settings([
+				'ldap_server' => 'ldaps://db.debian.org',
+				'ldap_port' => '636',
+				'ldap_start_tls' => '0',
+				'ldap_user_tree' => 'dc=debian,dc=org',
+				'ldap_user_filter' => 'uid=%{user}',
+				'ldap_bind_dn' => '',
+				'ldap_bind_pw' => '',
+			]);
+			$this->search_for_some_entries($ldap, 'dc=debian,dc=org', 'uid=a*');
 		} finally {
 			$this->done_ldap();
 		}
 	}
 
-	public function testLDAPstarttls()
-	// noinspection Duplicates
+	public function testLDAPStarttls()
 	{
 		$ldap = $this->get_ldap();
 		if (!$ldap) {
@@ -371,17 +377,16 @@ class LDAPTest extends LDAPTestCase
 		}
 		try {
 			// Testing ldap with starttls by using the public google server.
-			Configs::set('ldap_server', 'db.debian.org');
-			Configs::set('ldap_port', '389');
-			Configs::set('ldap_start_tls', '1');
-			Configs::set('ldap_user_tree', 'dc=debian,dc=org');
-			Configs::set('ldap_user_filter', 'uid=%{user}');
-			Configs::set('ldap_bind_dn', '');
-			Configs::set('ldap_bind_pw', '');
-			$this->LDAP_open();
-			$SR = $ldap->LDAP_search('dc=debian,dc=org', 'uid=a*', 'sub');
-			$this->assertTrue($SR['count'] > 0, 'LDAP_search should return at least one result');
-			$ldap->LDAP_close();
+			self::settings([
+				'ldap_server' => 'db.debian.org',
+				'ldap_port' => '389',
+				'ldap_start_tls' => '1',
+				'ldap_user_tree' => 'dc=debian,dc=org',
+				'ldap_user_filter' => 'uid=%{user}',
+				'ldap_bind_dn' => '',
+				'ldap_bind_pw' => '',
+			]);
+			$this->search_for_some_entries($ldap, 'dc=debian,dc=org', 'uid=a*');
 		} finally {
 			$this->done_ldap();
 		}

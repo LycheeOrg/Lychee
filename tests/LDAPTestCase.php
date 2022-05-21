@@ -7,7 +7,7 @@ use Tests\Feature\Lib\LDAPTestFunctions;
 
 class LDAPTestCase extends TestCase
 {
-	// See https://www.forumsys.com/2022/05/10/online-ldap-test-server/
+		// See https://www.forumsys.com/2022/05/10/online-ldap-test-server/
 	public const TESTUSER = 'gauss';
 	public const TESTUSER_PW = 'password';
 	public const TESTUSER2 = 'euler';
@@ -28,6 +28,13 @@ class LDAPTestCase extends TestCase
 	protected static $EnableLDAPTests = true;
 	protected static $CheckLDAPTestServer = true;
 
+	public static function settings($options): void
+	{
+		foreach ($options as $key => $value) {
+			Configs::set($key, $value);
+		}
+	}
+
 	public static function _debug($myDebugVar, $label = '', $oneline = true)
 	{
 		$msg = print_r($myDebugVar, true);
@@ -43,26 +50,20 @@ class LDAPTestCase extends TestCase
 	protected function LDAP_setUp(): void
 	{
 		$this->oldconfigs = Configs::get();
-
-		Configs::set('ldap_server', self::SERVER);
-		Configs::set('ldap_user_tree', self::USER_TREE);
-		Configs::set('ldap_user_filter', self::USER_FILTER);
-		Configs::set('ldap_bind_dn', self::BIND_DN);
-		Configs::set('ldap_bind_pw', self::BIND_PW);
-		Configs::set('ldap_timeout', '2');
+		self::settings([
+			'ldap_server' => self::SERVER,
+			'ldap_start_tls' => '0',
+			'ldap_user_tree' => self::USER_TREE,
+			'ldap_user_filter' => self::USER_FILTER,
+			'ldap_bind_dn' => self::BIND_DN,
+			'ldap_bind_pw' => self::BIND_PW,
+			'ldap_timeout' => '2',
+		]);
 	}
 
 	protected function LDAP_tearDown(): void
 	{
-		Configs::set('ldap_enabled', $this->oldconfigs['ldap_enabled']);
-		Configs::set('ldap_server', $this->oldconfigs['ldap_server']);
-		Configs::set('ldap_user_tree', $this->oldconfigs['ldap_user_tree']);
-		Configs::set('ldap_user_filter', $this->oldconfigs['ldap_user_filter']);
-		Configs::set('ldap_bind_dn', $this->oldconfigs['ldap_bind_dn']);
-		Configs::set('ldap_bind_pw', $this->oldconfigs['ldap_bind_pw']);
-		Configs::set('ldap_port', $this->oldconfigs['ldap_port']);
-		Configs::set('ldap_start_tls', $this->oldconfigs['ldap_start_tls']);
-		Configs::set('ldap_timeout', $this->oldconfigs['ldap_timeout']);
+		self::settings($this->oldconfigs);
 	}
 
 	protected function get_ldap()
