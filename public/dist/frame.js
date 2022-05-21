@@ -966,6 +966,167 @@ api.hasSessionExpired = function (jqXHR, lycheeException) {
  * @param {?APIErrorCB} errorCallback
  * @returns {void}
  */
+api.get = function (fn, params) {
+  var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+  var errorCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+
+  loadingBar.show();
+
+  /**
+   * The success handler
+   * @param {Object} data the decoded JSON object of the response
+   */
+  var successHandler = function successHandler(data) {
+    setTimeout(loadingBar.hide, 100);
+    if (successCallback) successCallback(data);
+  };
+
+  /**
+   * The error handler
+   * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+   */
+  var errorHandler = function errorHandler(jqXHR) {
+    /**
+     * @type {?LycheeException}
+     */
+    var lycheeException = jqXHR.responseJSON;
+
+    if (errorCallback) {
+      var isHandled = errorCallback(jqXHR, params, lycheeException);
+      if (isHandled) {
+        setTimeout(loadingBar.hide, 100);
+        return;
+      }
+    }
+    // Call global error handler for unhandled errors
+    api.onError(jqXHR, params, lycheeException);
+  };
+
+  var urlParams = new URLSearchParams();
+  for (var param in params) {
+    var value = params[param];
+    if (value === true) value = "1";else if (value === false) value = "0";
+    urlParams.set(param, value);
+  }
+
+  var ajaxParams = {
+    type: "GET",
+    url: "api/" + fn,
+    contentType: "application/json",
+    data: urlParams.toString(),
+    headers: {
+      "X-XSRF-TOKEN": csrf.getCSRFCookieValue()
+    },
+    success: successHandler,
+    error: errorHandler
+  };
+
+  if (responseProgressCB !== null) {
+    ajaxParams.xhrFields = {
+      onprogress: responseProgressCB
+    };
+  }
+
+  $.ajax(ajaxParams);
+};
+
+/**
+ *
+ * @param {string} fn
+ * @param {Object} params
+ * @param {?APISuccessCB} successCallback
+ * @param {?APIProgressCB} responseProgressCB
+ * @param {?APIErrorCB} errorCallback
+ * @returns {void}
+ */
+api.delete = function (fn, params) {
+  var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+  var errorCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+
+  loadingBar.show();
+
+  /**
+   * The success handler
+   * @param {Object} data the decoded JSON object of the response
+   */
+  var successHandler = function successHandler(data) {
+    setTimeout(loadingBar.hide, 100);
+    if (successCallback) successCallback(data);
+  };
+
+  /**
+   * The error handler
+   * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+   */
+  var errorHandler = function errorHandler(jqXHR) {
+    /**
+     * @type {?LycheeException}
+     */
+    var lycheeException = jqXHR.responseJSON;
+
+    if (errorCallback) {
+      var isHandled = errorCallback(jqXHR, params, lycheeException);
+      if (isHandled) {
+        setTimeout(loadingBar.hide, 100);
+        return;
+      }
+    }
+    // Call global error handler for unhandled errors
+    api.onError(jqXHR, params, lycheeException);
+  };
+
+  var urlParams = new URLSearchParams();
+  for (var param in params) {
+    var value = params[param];
+    if (value === true) value = "1";else if (value === false) value = "0";
+    urlParams.set(param, value);
+  }
+
+  console.log(urlParams.toString());
+  /*let ajaxParams = {
+  	type: "DELETE",
+  	url: "api/" + fn + "?" + urlParams.toString(),
+  	contentType: "application/json",
+  	data: urlParams.toString(),
+  	headers: {
+  		"X-XSRF-TOKEN": csrf.getCSRFCookieValue(),
+  	},
+  	success: successHandler,
+  	error: errorHandler,
+  };*/
+  var ajaxParams = {
+    type: "DELETE",
+    url: "api/" + fn,
+    contentType: "application/json",
+    data: JSON.stringify(params),
+    dataType: "json",
+    headers: {
+      "X-XSRF-TOKEN": csrf.getCSRFCookieValue()
+    },
+    success: successHandler,
+    error: errorHandler
+  };
+
+  if (responseProgressCB !== null) {
+    ajaxParams.xhrFields = {
+      onprogress: responseProgressCB
+    };
+  }
+
+  $.ajax(ajaxParams);
+};
+
+/**
+ *
+ * @param {string} fn
+ * @param {Object} params
+ * @param {?APISuccessCB} successCallback
+ * @param {?APIProgressCB} responseProgressCB
+ * @param {?APIErrorCB} errorCallback
+ * @returns {void}
+ */
 api.post = function (fn, params) {
   var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
   var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
@@ -1231,7 +1392,7 @@ frame.next = function () {
  * @returns {void}
  */
 frame.refreshPicture = function () {
-  api.post("Photo::getRandom", {},
+  api.get("Photo::getRandom", {},
   /** @param {Photo} data */
   function (data) {
     if (data.size_variants.thumb) {
@@ -1345,7 +1506,7 @@ $(function () {
     $("body").addClass("loaded");
   });
 
-  api.post("Frame::getSettings", {},
+  api.get("Frame::getSettings", {},
   /** @param {FrameSettings} data */
   function (data) {
     frame.set(data);

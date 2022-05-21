@@ -23,8 +23,8 @@ if (config('app.env') === 'dev') {
 	URL::forceScheme('https');
 }
 
-Route::post('/Album::get', [AlbumController::class, 'get']);
-Route::post('/Album::getPositionData', [AlbumController::class, 'getPositionData']);
+Route::post('/Album::get', [AlbumController::class, 'get']); // TODO
+Route::get('/Album::getPositionData', [AlbumController::class, 'getPositionData']);
 Route::post('/Album::unlock', [AlbumController::class, 'unlock']);
 Route::post('/Album::add', [AlbumController::class, 'add']);
 Route::post('/Album::addByTags', [AlbumController::class, 'addTagAlbum']);
@@ -34,7 +34,7 @@ Route::post('/Album::setDescription', [AlbumController::class, 'setDescription']
 Route::post('/Album::setCover', [AlbumController::class, 'setCover']);
 Route::post('/Album::setShowTags', [AlbumController::class, 'setShowTags']);
 Route::post('/Album::setProtectionPolicy', [AlbumController::class, 'setProtectionPolicy']);
-Route::post('/Album::delete', [AlbumController::class, 'delete']);
+Route::delete('/Album::delete', [AlbumController::class, 'delete']);
 Route::post('/Album::merge', [AlbumController::class, 'merge']);
 Route::post('/Album::move', [AlbumController::class, 'move']);
 Route::post('/Album::setLicense', [AlbumController::class, 'setLicense']);
@@ -45,13 +45,13 @@ Route::get('/Album::getArchive', [AlbumController::class, 'getArchive'])
 Route::post('/Album::setTrack', [AlbumController::class, 'setTrack'])
 	->withoutMiddleware(['content_type:json'])
 	->middleware(['content_type:multipart']);
-Route::post('/Album::deleteTrack', [AlbumController::class, 'deleteTrack']);
+Route::delete('/Album::deleteTrack', [AlbumController::class, 'deleteTrack']);
 
-Route::post('/Albums::get', [AlbumsController::class, 'get']);
-Route::post('/Albums::getPositionData', [AlbumsController::class, 'getPositionData']);
-Route::post('/Albums::tree', [AlbumsController::class, 'tree']);
+Route::get('/Albums::get', [AlbumsController::class, 'get']);
+Route::get('/Albums::getPositionData', [AlbumsController::class, 'getPositionData']);
+Route::get('/Albums::tree', [AlbumsController::class, 'tree']);
 
-Route::post('/Frame::getSettings', [FrameController::class, 'getSettings']);
+Route::get('/Frame::getSettings', [FrameController::class, 'getSettings']);
 
 Route::post('/Import::url', [ImportController::class, 'url']);
 Route::post('/Import::server', [ImportController::class, 'server'])->middleware('admin');
@@ -59,8 +59,8 @@ Route::post('/Import::serverCancel', [ImportController::class, 'serverCancel'])-
 
 Route::post('/Legacy::translateLegacyModelIDs', [LegacyController::class, 'translateLegacyModelIDs']);
 
-Route::post('/Photo::get', [PhotoController::class, 'get']);
-Route::post('/Photo::getRandom', [PhotoController::class, 'getRandom']);
+Route::get('/Photo::get', [PhotoController::class, 'get']);
+Route::get('/Photo::getRandom', [PhotoController::class, 'getRandom']);
 Route::post('/Photo::setTitle', [PhotoController::class, 'setTitle']);
 Route::post('/Photo::setDescription', [PhotoController::class, 'setDescription']);
 Route::post('/Photo::setStar', [PhotoController::class, 'setStar']);
@@ -70,7 +70,7 @@ Route::post('/Photo::setTags', [PhotoController::class, 'setTags']);
 Route::post('/Photo::add', [PhotoController::class, 'add'])
 	->withoutMiddleware(['content_type:json'])
 	->middleware(['content_type:multipart']);
-Route::post('/Photo::delete', [PhotoController::class, 'delete']);
+Route::delete('/Photo::delete', [PhotoController::class, 'delete']);
 Route::post('/Photo::duplicate', [PhotoController::class, 'duplicate']);
 Route::post('/Photo::setLicense', [PhotoController::class, 'setLicense']);
 Route::get('/Photo::getArchive', [PhotoController::class, 'getArchive'])
@@ -80,21 +80,21 @@ Route::post('/Photo::clearSymLink', [PhotoController::class, 'clearSymLink']);
 
 Route::post('/PhotoEditor::rotate', [PhotoEditorController::class, 'rotate']);
 
-Route::post('/Search::run', [SearchController::class, 'run']);
+Route::get('/Search::run', [SearchController::class, 'run']);
 
-Route::post('/Session::init', [SessionController::class, 'init']);
+Route::get('/Session::init', [SessionController::class, 'init']);
 Route::post('/Session::login', [SessionController::class, 'login']);
 Route::post('/Session::logout', [SessionController::class, 'logout']);
 
 Route::post('/Settings::setLogin', [Administration\SettingsController::class, 'setLogin']);
 
-Route::post('/Sharing::list', [Administration\SharingController::class, 'list']);
+Route::get('/Sharing::list', [Administration\SharingController::class, 'list']);
 Route::post('/Sharing::add', [Administration\SharingController::class, 'add']);
-Route::post('/Sharing::delete', [Administration\SharingController::class, 'delete']);
+Route::delete('/Sharing::delete', [Administration\SharingController::class, 'delete']);
 
 Route::post('/WebAuthn::register/gen', [Administration\WebAuthController::class, 'generateRegistration']);
 Route::post('/WebAuthn::register', [Administration\WebAuthController::class, 'verifyRegistration']);
 Route::post('/WebAuthn::login/gen', [Administration\WebAuthController::class, 'generateAuthentication']);
 Route::post('/WebAuthn::login', [Administration\WebAuthController::class, 'verifyAuthentication']);
-Route::post('/WebAuthn::list', [Administration\WebAuthController::class, 'list']);
-Route::post('/WebAuthn::delete', [Administration\WebAuthController::class, 'delete']);
+Route::get('/WebAuthn::list', [Administration\WebAuthController::class, 'list']);
+Route::delete('/WebAuthn::delete', [Administration\WebAuthController::class, 'delete']);

@@ -1148,6 +1148,167 @@ api.hasSessionExpired = function (jqXHR, lycheeException) {
  * @param {?APIErrorCB} errorCallback
  * @returns {void}
  */
+api.get = function (fn, params) {
+	var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+	var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+	var errorCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+
+	loadingBar.show();
+
+	/**
+  * The success handler
+  * @param {Object} data the decoded JSON object of the response
+  */
+	var successHandler = function successHandler(data) {
+		setTimeout(loadingBar.hide, 100);
+		if (successCallback) successCallback(data);
+	};
+
+	/**
+  * The error handler
+  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+  */
+	var errorHandler = function errorHandler(jqXHR) {
+		/**
+   * @type {?LycheeException}
+   */
+		var lycheeException = jqXHR.responseJSON;
+
+		if (errorCallback) {
+			var isHandled = errorCallback(jqXHR, params, lycheeException);
+			if (isHandled) {
+				setTimeout(loadingBar.hide, 100);
+				return;
+			}
+		}
+		// Call global error handler for unhandled errors
+		api.onError(jqXHR, params, lycheeException);
+	};
+
+	var urlParams = new URLSearchParams();
+	for (var param in params) {
+		var value = params[param];
+		if (value === true) value = "1";else if (value === false) value = "0";
+		urlParams.set(param, value);
+	}
+
+	var ajaxParams = {
+		type: "GET",
+		url: "api/" + fn,
+		contentType: "application/json",
+		data: urlParams.toString(),
+		headers: {
+			"X-XSRF-TOKEN": csrf.getCSRFCookieValue()
+		},
+		success: successHandler,
+		error: errorHandler
+	};
+
+	if (responseProgressCB !== null) {
+		ajaxParams.xhrFields = {
+			onprogress: responseProgressCB
+		};
+	}
+
+	$.ajax(ajaxParams);
+};
+
+/**
+ *
+ * @param {string} fn
+ * @param {Object} params
+ * @param {?APISuccessCB} successCallback
+ * @param {?APIProgressCB} responseProgressCB
+ * @param {?APIErrorCB} errorCallback
+ * @returns {void}
+ */
+api.delete = function (fn, params) {
+	var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+	var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+	var errorCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+
+	loadingBar.show();
+
+	/**
+  * The success handler
+  * @param {Object} data the decoded JSON object of the response
+  */
+	var successHandler = function successHandler(data) {
+		setTimeout(loadingBar.hide, 100);
+		if (successCallback) successCallback(data);
+	};
+
+	/**
+  * The error handler
+  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+  */
+	var errorHandler = function errorHandler(jqXHR) {
+		/**
+   * @type {?LycheeException}
+   */
+		var lycheeException = jqXHR.responseJSON;
+
+		if (errorCallback) {
+			var isHandled = errorCallback(jqXHR, params, lycheeException);
+			if (isHandled) {
+				setTimeout(loadingBar.hide, 100);
+				return;
+			}
+		}
+		// Call global error handler for unhandled errors
+		api.onError(jqXHR, params, lycheeException);
+	};
+
+	var urlParams = new URLSearchParams();
+	for (var param in params) {
+		var value = params[param];
+		if (value === true) value = "1";else if (value === false) value = "0";
+		urlParams.set(param, value);
+	}
+
+	console.log(urlParams.toString());
+	/*let ajaxParams = {
+ 	type: "DELETE",
+ 	url: "api/" + fn + "?" + urlParams.toString(),
+ 	contentType: "application/json",
+ 	data: urlParams.toString(),
+ 	headers: {
+ 		"X-XSRF-TOKEN": csrf.getCSRFCookieValue(),
+ 	},
+ 	success: successHandler,
+ 	error: errorHandler,
+ };*/
+	var ajaxParams = {
+		type: "DELETE",
+		url: "api/" + fn,
+		contentType: "application/json",
+		data: JSON.stringify(params),
+		dataType: "json",
+		headers: {
+			"X-XSRF-TOKEN": csrf.getCSRFCookieValue()
+		},
+		success: successHandler,
+		error: errorHandler
+	};
+
+	if (responseProgressCB !== null) {
+		ajaxParams.xhrFields = {
+			onprogress: responseProgressCB
+		};
+	}
+
+	$.ajax(ajaxParams);
+};
+
+/**
+ *
+ * @param {string} fn
+ * @param {Object} params
+ * @param {?APISuccessCB} successCallback
+ * @param {?APIProgressCB} responseProgressCB
+ * @param {?APIErrorCB} errorCallback
+ * @returns {void}
+ */
 api.post = function (fn, params) {
 	var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 	var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
@@ -2237,7 +2398,7 @@ album.shareUsers = function (albumID) {
 		});
 
 		if (sharingToDelete.length > 0) {
-			api.post("Sharing::delete", {
+			api.delete("Sharing::delete", {
 				shareIDs: sharingToDelete
 			});
 		}
@@ -2275,7 +2436,7 @@ album.shareUsers = function (albumID) {
 			}
 		};
 
-		api.post("Sharing::list", {}, successCallback);
+		api.get("Sharing::list", {}, successCallback);
 	};
 
 	basicModal.show({
@@ -2426,7 +2587,7 @@ album.delete = function (albumIDs) {
 	action.fn = function () {
 		basicModal.close();
 
-		api.post("Album::delete", {
+		api.delete("Album::delete", {
 			albumIDs: albumIDs
 		}, function () {
 			if (visible.albums()) {
@@ -2670,7 +2831,7 @@ album.refresh = function () {
 album.deleteTrack = function () {
 	album.json.track_url = null;
 
-	api.post("Album::deleteTrack", {
+	api.delete("Album::deleteTrack", {
 		albumID: album.json.id
 	});
 };
@@ -2734,7 +2895,7 @@ albums.load = function () {
 	};
 
 	if (albums.json === null) {
-		api.post("Albums::get", {}, successCallback);
+		api.get("Albums::get", {}, successCallback);
 	} else {
 		setTimeout(function () {
 			header.setMode("albums");
@@ -3716,7 +3877,7 @@ contextMenu.buildList = function (lists, exclude, action) {
  * @returns {void}
  */
 contextMenu.albumTitle = function (albumID, e) {
-	api.post("Albums::tree", {}, function (data) {
+	api.get("Albums::tree", {}, function (data) {
 		var items = [];
 
 		items = items.concat({ title: lychee.locale["ROOT"], disabled: albumID === null, fn: function fn() {
@@ -4078,7 +4239,7 @@ contextMenu.move = function (IDs, e, callback) {
 
 	var items = [];
 
-	api.post("Albums::tree", {}, function (data) {
+	api.get("Albums::tree", {}, function (data) {
 		var addItems = function addItems(albums) {
 			// Disable all children
 			// It's not possible to move us into them
@@ -5636,7 +5797,7 @@ lychee.init = function () {
 
 	lychee.adjustContentHeight();
 
-	api.post("Session::init", {},
+	api.get("Session::init", {},
 	/** @param {InitializationData} data */
 	function (data) {
 		lychee.parseInitializationData(data);
@@ -7496,10 +7657,10 @@ mapview.open = function () {
 				includeSubAlbums: _includeSubAlbums
 			};
 
-			api.post("Album::getPositionData", params, successHandler);
+			api.get("Album::getPositionData", params, successHandler);
 		} else {
 			// AlbumID is empty -> fetch all photos of all albums
-			api.post("Albums::getPositionData", {}, successHandler);
+			api.get("Albums::getPositionData", {}, successHandler);
 		}
 	};
 
@@ -8029,7 +8190,7 @@ notifications.update = function (params) {
 };
 
 notifications.load = function () {
-	api.post("User::getEmail", {},
+	api.get("User::getEmail", {},
 	/** @param {EMailData} data */function (data) {
 		notifications.json = data;
 		view.notifications.init();
@@ -8158,7 +8319,7 @@ _photo3.load = function (photoID, albumID, autoplay) {
 		}
 	};
 
-	api.post("Photo::get", {
+	api.get("Photo::get", {
 		photoID: photoID
 	}, successHandler);
 };
@@ -8438,7 +8599,7 @@ _photo3.delete = function (photoIDs) {
 			lychee.goto(album.getID());
 		}
 
-		api.post("Photo::delete", { photoIDs: photoIDs });
+		api.delete("Photo::delete", { photoIDs: photoIDs });
 	};
 
 	if (photoIDs.length === 1) {
@@ -9353,7 +9514,7 @@ search.find = function (term) {
 	/** @returns {void} */
 	var timeoutHandler = function timeoutHandler() {
 		if (header.dom(".header__search").val().length !== 0) {
-			api.post("Search::run", { term: term }, successHandler);
+			api.get("Search::run", { term: term }, successHandler);
 		} else {
 			search.reset();
 		}
@@ -9916,7 +10077,7 @@ sharing.delete = function () {
 		loadingBar.show("error", "Select a sharing to remove!");
 		return;
 	}
-	api.post("Sharing::delete", params, function () {
+	api.delete("Sharing::delete", params, function () {
 		loadingBar.show("success", "Sharing removed!");
 		sharing.list(); // reload user list
 	});
@@ -9926,7 +10087,7 @@ sharing.delete = function () {
  * @returns {void}
  */
 sharing.list = function () {
-	api.post("Sharing::list", {},
+	api.get("Sharing::list", {},
 	/** @param {SharingInfo} data */
 	function (data) {
 		sharing.json = data;
@@ -10874,14 +11035,14 @@ u2f.register = function () {
  * @param {{id: string}} params - ID of WebAuthn credential
  */
 u2f.delete = function (params) {
-	api.post("WebAuthn::delete", params, function () {
+	api.delete("WebAuthn::delete", params, function () {
 		loadingBar.show("success", lychee.locale["U2F_CREDENTIALS_DELETED"]);
 		u2f.list(); // reload credential list
 	});
 };
 
 u2f.list = function () {
-	api.post("WebAuthn::list", {},
+	api.get("WebAuthn::list", {},
 	/** @param {WebAuthnCredential[]} data*/
 	function (data) {
 		u2f.json = data;
@@ -11881,7 +12042,7 @@ users.create = function (params) {
  * @returns {boolean}
  */
 users.delete = function (params) {
-	api.post("User::delete", params, function () {
+	api.delete("User::delete", params, function () {
 		loadingBar.show("success", "User deleted!");
 		users.list(); // reload user list
 	});
@@ -11891,7 +12052,7 @@ users.delete = function (params) {
  * @returns {void}
  */
 users.list = function () {
-	api.post("User::list", {},
+	api.get("User::list", {},
 	/** @param {User[]} data */
 	function (data) {
 		users.json = data;
@@ -13146,7 +13307,7 @@ view.full_settings = {
 		init: function init() {
 			view.full_settings.clearContent();
 
-			api.post("Settings::getAll", {},
+			api.get("Settings::getAll", {},
 			/** @param {ConfigSetting[]} data */
 			function (data) {
 				var msg = lychee.html(_templateObject82, lychee.locale["SETTINGS_WARNING"]);
@@ -13376,7 +13537,7 @@ view.logs = {
 			};
 
 			view.logs.clearContent();
-			api.post("Logs::list", {}, successHandler);
+			api.get("Logs::list", {}, successHandler);
 		}
 	}
 };
@@ -13437,7 +13598,7 @@ view.diagnostics = {
 		/** @returns {void} */
 		init: function init() {
 			view.diagnostics.clearContent(0);
-			api.post("Diagnostics::get", {}, view.diagnostics.content.parseResponse);
+			api.get("Diagnostics::get", {}, view.diagnostics.content.parseResponse);
 		},
 
 		/**
@@ -13505,7 +13666,7 @@ view.diagnostics = {
 
 	/** @returns {void} */
 	call_get_size: function call_get_size() {
-		api.post("Diagnostics::getSize", {},
+		api.get("Diagnostics::getSize", {},
 		/** @param {string[]} data */
 		function (data) {
 			var html = view.preify(data, "");

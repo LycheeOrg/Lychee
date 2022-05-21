@@ -13,10 +13,10 @@ if (env('APP_ENV') === 'dev') {
 	URL::forceScheme('https');
 }
 
-Route::post('/Diagnostics::get', [DiagnosticsController::class, 'get']);
-Route::post('/Diagnostics::getSize', [DiagnosticsController::class, 'getSize']);
+Route::get('/Diagnostics::get', [DiagnosticsController::class, 'get']);
+Route::get('/Diagnostics::getSize', [DiagnosticsController::class, 'getSize']);
 
-Route::post('/Logs::list', [LogController::class, 'list']);
+Route::get('/Logs::list', [LogController::class, 'list']);
 Route::post('/Logs::clear', [LogController::class, 'clear']);
 Route::post('/Logs::clearNoise', [LogController::class, 'clearNoise']);
 
@@ -33,7 +33,7 @@ Route::post('/Settings::setLocationDecoding', [SettingsController::class, 'setLo
 Route::post('/Settings::setLocationShow', [SettingsController::class, 'setLocationShow']);
 Route::post('/Settings::setLocationShowPublic', [SettingsController::class, 'setLocationShowPublic']);
 Route::post('/Settings::setCSS', [SettingsController::class, 'setCSS']);
-Route::post('/Settings::getAll', [SettingsController::class, 'getAll']);
+Route::get('/Settings::getAll', [SettingsController::class, 'getAll']);
 Route::post('/Settings::saveAll', [SettingsController::class, 'saveAll']);
 Route::post('/Settings::setOverlayType', [SettingsController::class, 'setImageOverlayType']);
 Route::post('/Settings::setNSFWVisible', [SettingsController::class, 'setNSFWVisible']);
@@ -43,9 +43,9 @@ Route::post('/Settings::setNewPhotosNotification', [SettingsController::class, '
 Route::post('/Update::apply', [UpdateController::class, 'apply']);
 Route::post('/Update::check', [UpdateController::class, 'check']);
 
-Route::post('/User::list', [UserController::class, 'list']);
+Route::get('/User::list', [UserController::class, 'list']);
 Route::post('/User::save', [UserController::class, 'save']);
-Route::post('/User::delete', [UserController::class, 'delete']);
+Route::delete('/User::delete', [UserController::class, 'delete']);
 Route::post('/User::create', [UserController::class, 'create']);
 Route::post('/User::setEmail', [UserController::class, 'setEmail'])->withoutMiddleware([AdminCheck::class]);
-Route::post('/User::getEmail', [UserController::class, 'getEmail'])->withoutMiddleware([AdminCheck::class]);
+Route::get('/User::getEmail', [UserController::class, 'getEmail'])->withoutMiddleware([AdminCheck::class]);
