@@ -548,7 +548,7 @@ class LDAPFunctions
 				try {
 					// The use of sockets is safe here because no data will be transferred.
 					// The socket is only used to verify that the ldap server can be connected.
-					$check_con = fsockopen($chost, $cport, $errno, $errstr, $timeout);
+					$check_con = fsockopen($chost, $cport, $errno, $errstr, $timeout); // NOSONAR
 				} catch (\ErrorException) {
 					$check_con = false;
 				}
