@@ -13,6 +13,9 @@ class LDAPActionsTest extends LDAPTestCase
 	public function testLDAPActions()
 	{
 		$ldap = $this->get_ldap();
+		if (!$ldap) {
+			return;
+		}
 		try {
 			$user_list = $ldap->get_user_list(true);
 			$this->assertIsArray($user_list, 'The user list should be an array');
