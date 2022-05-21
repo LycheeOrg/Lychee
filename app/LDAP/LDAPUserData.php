@@ -15,6 +15,8 @@ class LDAPUserData
 	public string $display_name;
 	public string $email;
 
+	public const KEYS = ['user', 'server', 'dn', 'display_name', 'email'];
+
 	/**
 	 * Basic constructor.
 	 *
@@ -32,7 +34,7 @@ class LDAPUserData
 	public function toArray(): array
 	{
 		$ret = [];
-		foreach (['user', 'server', 'dn', 'display_name', 'email'] as $prop) {
+		foreach (self::KEYS as $prop) {
 			if (isset($this->{$prop})) {
 				$ret[$prop] = $this->{$prop};
 			}
@@ -48,7 +50,7 @@ class LDAPUserData
 	 */
 	public function fromArray(array $userdata): void
 	{
-		foreach (['user', 'server', 'dn', 'display_name', 'email'] as $prop) {
+		foreach (self::KEYS as $prop) {
 			if (array_key_exists($prop, $userdata)) {
 				$this->{$prop} = $userdata[$prop];
 			}
