@@ -166,7 +166,7 @@ class Create
 		try {
 			$livePartner = null;
 			// find a potential partner which has the same content id
-			if ($contentID) {
+			if ($contentID != null) {
 				/** @var Photo|null $livePartner */
 				$livePartner = Photo::query()
 					->where('live_photo_content_id', '=', $contentID)
@@ -185,7 +185,7 @@ class Create
 
 			return $livePartner;
 		} catch (IllegalOrderOfOperationException $e) {
-			assert(false, new \AssertionError('IllegalOrderOfOperationException must not be thrown', $e));
+			throw new \AssertionError('IllegalOrderOfOperationException must not be thrown', $e->getCode(), $e);
 		}
 	}
 

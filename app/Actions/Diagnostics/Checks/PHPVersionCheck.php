@@ -17,7 +17,7 @@ class PHPVersionCheck implements DiagnosticCheckInterface
 		// 26 Nov 2020	 => 8.0 = RELEASED   => 7.4 = WARNING
 		// 6 Dec 2020	 => 7.3 = DEPRECATED = ERROR
 		// ! 25 Nov 2021	 => 8.1 = Released   => 8.0 = WARNING & 7.4 = ERROR
-		$php_error = 8;
+		$php_error = 7.4;
 		$php_warning = 8;
 		$php_latest = 8.1;
 
@@ -30,11 +30,9 @@ class PHPVersionCheck implements DiagnosticCheckInterface
 			$errors[] = 'Info: Latest version of PHP is ' . $php_latest;
 		}
 
-		if (floatval(phpversion()) < $php_error) {
+		if (floatval(phpversion()) <= $php_error) {
 			$errors[] = 'Error: Upgrade to PHP ' . $php_warning . ' or higher';
-		}
-
-		if (floatval(phpversion()) < $php_warning && $php_error < $php_warning) {
+		} elseif (floatval(phpversion()) < $php_warning) {
 			$errors[] = 'Warning: Upgrade to PHP ' . $php_latest . ' or higher';
 		}
 

@@ -139,7 +139,7 @@ class NativeLocalFile extends MediaFile
 	public function getFilesize(): int
 	{
 		try {
-			return filesize($this->getAbsolutePath());
+			return \Safe\filesize($this->getAbsolutePath());
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
@@ -185,7 +185,7 @@ class NativeLocalFile extends MediaFile
 	public function getMimeType(): string
 	{
 		try {
-			if (!$this->cachedMimeType) {
+			if ($this->cachedMimeType == null) {
 				$this->cachedMimeType = \Safe\mime_content_type($this->getAbsolutePath());
 			}
 

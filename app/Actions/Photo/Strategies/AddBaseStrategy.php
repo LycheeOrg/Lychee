@@ -176,7 +176,7 @@ abstract class AddBaseStrategy
 				// the exception is thrown if read/write/close are invoked
 				// in wrong order
 				// something we don't do
-				assert(false, new \AssertionError('read/write/close must not throw a logic exception', $e->getCode(), $e));
+				throw new \AssertionError('read/write/close must not throw a logic exception', $e->getCode(), $e);
 			}
 		}
 	}

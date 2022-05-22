@@ -84,7 +84,7 @@ class Extractor
 	 */
 	public static function createFromFile(NativeLocalFile $file): self
 	{
-		$metadata = new static();
+		$metadata = new self();
 		$reader = null;
 
 		// TODO: This line is extremely dangerous, because it tries to determine the type of file based on a possibly not existing file extension
@@ -184,7 +184,11 @@ class Extractor
 			try {
 				// Don't use the same reader as the file in case it's a video
 				$sidecarReader = Reader::factory(Reader::TYPE_EXIFTOOL);
-				$sidecarData = $sidecarReader->read($sidecarFile->getAbsolutePath())->getData();
+				$sideCarExifData = $sidecarReader->read($sidecarFile->getAbsolutePath());
+				if (!$sideCarExifData instanceof Exif) {
+					throw new MediaFileOperationException('Could not even extract EXIF data with the exiftool adapter');
+				}
+				$sidecarData = $sideCarExifData->getData();
 
 				// We don't want to overwrite the media's type with the mimetype of the sidecar file
 				unset($sidecarData['MimeType']);
@@ -200,11 +204,11 @@ class Extractor
 		}
 
 		$metadata->type = ($exif->getMimeType() !== false) ? $exif->getMimeType() : $file->getMimeType();
-		$metadata->width = ($exif->getWidth() !== false) ? $exif->getWidth() : 0;
-		$metadata->height = ($exif->getHeight() !== false) ? $exif->getHeight() : 0;
+		$metadata->width = ($exif->getWidth() !== false) ? (int) $exif->getWidth() : 0;
+		$metadata->height = ($exif->getHeight() !== false) ? (int) $exif->getHeight() : 0;
 		$metadata->title = ($exif->getTitle() !== false) ? $exif->getTitle() : null;
 		$metadata->description = ($exif->getDescription() !== false) ? $exif->getDescription() : null;
-		$metadata->orientation = ($exif->getOrientation() !== false) ? $exif->getOrientation() : 1;
+		$metadata->orientation = ($exif->getOrientation() !== false) ? (int) $exif->getOrientation() : 1;
 		$metadata->iso = ($exif->getIso() !== false) ? $exif->getIso() : null;
 		$metadata->make = ($exif->getMake() !== false) ? $exif->getMake() : null;
 		$metadata->model = ($exif->getCamera() !== false) ? $exif->getCamera() : null;
@@ -216,7 +220,7 @@ class Extractor
 		$metadata->altitude = ($exif->getAltitude() !== false) ? $exif->getAltitude() : null;
 		$metadata->imgDirection = ($exif->getImgDirection() !== false) ? $exif->getImgDirection() : null;
 		$metadata->livePhotoContentID = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
-		$metadata->microVideoOffset = ($exif->getMicroVideoOffset() !== false) ? $exif->getMicroVideoOffset() : 0;
+		$metadata->microVideoOffset = ($exif->getMicroVideoOffset() !== false) ? (int) $exif->getMicroVideoOffset() : 0;
 
 		$taken_at = $exif->getCreationDate();
 		if ($taken_at !== false) {
@@ -453,7 +457,7 @@ class Extractor
 			$metadata->aperture = ($exif->getAperture() !== false) ? $exif->getAperture() : null;
 			$metadata->focal = ($exif->getFocalLength() !== false) ? $exif->getFocalLength() : null;
 			if (!empty($metadata->focal)) {
-				$metadata->focal = round($metadata->focal) . self::SUFFIX_MM_UNIT;
+				$metadata->focal = round(floatval($metadata->focal)) . self::SUFFIX_MM_UNIT;
 			}
 		} else {
 			// Video -> reuse fields
@@ -476,9 +480,9 @@ class Extractor
 		try {
 			$metadata->location = Geodecoder::decodeLocation($metadata->latitude, $metadata->longitude);
 			if (!empty($metadata->location)) {
-				$metadata->location = substr($metadata->location, 0, self::MAX_LOCATION_STRING_LENGTH);
+				$metadata->location = \Safe\substr($metadata->location, 0, self::MAX_LOCATION_STRING_LENGTH);
 			}
-		} catch (ExternalComponentFailedException $e) {
+		} catch (ExternalComponentFailedException|\Safe\Exceptions\StringsException $e) {
 			Handler::reportSafely($e);
 			$metadata->location = null;
 		}

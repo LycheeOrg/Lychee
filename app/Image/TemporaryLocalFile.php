@@ -39,6 +39,7 @@ class TemporaryLocalFile extends NativeLocalFile
 		// to work.
 		$lastException = null;
 		$retryCounter = 5;
+		$tempFilePath = 'SHOULD NOT BE READ.';
 		do {
 			$success = true;
 			try {

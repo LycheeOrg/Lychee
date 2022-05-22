@@ -57,18 +57,6 @@ class Takedate extends Command
 	}
 
 	/**
-	 * Outputs an error message.
-	 *
-	 * @param string $msg the message
-	 *
-	 * @return void
-	 */
-	private function printError(Photo $photo, string $msg): void
-	{
-		$this->msgSection->writeln('<error>Error:</error>   Photo "' . $photo->title . '" (ID=' . $photo->id . '): ' . $msg);
-	}
-
-	/**
 	 * Outputs an warning.
 	 *
 	 * @param string $msg the message

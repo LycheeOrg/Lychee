@@ -85,10 +85,10 @@ class VideoData extends Command
 				if (empty($photo->aperture) && !empty($info->aperture)) {
 					$photo->aperture = $info->aperture;
 				}
-				if ($photo->latitude == null && $info->latitude !== null) {
+				if ($photo->latitude == null && $info->latitude != null) {
 					$photo->latitude = $info->latitude;
 				}
-				if ($photo->longitude == null && $info->longitude) {
+				if ($photo->longitude == null && $info->longitude != null) {
 					$photo->longitude = $info->longitude;
 				}
 				if ($photo->isDirty()) {

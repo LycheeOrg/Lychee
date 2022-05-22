@@ -30,7 +30,7 @@ class ImageOptCheck implements DiagnosticCheckInterface
 
 		$binaryPath = config('image-optimizer.binary_path');
 
-		if ($binaryPath != '' && substr($binaryPath, -1) !== DIRECTORY_SEPARATOR) {
+		if ($binaryPath != '' && \Safe\substr($binaryPath, -1) !== DIRECTORY_SEPARATOR) {
 			$binaryPath = $binaryPath . DIRECTORY_SEPARATOR;
 		}
 

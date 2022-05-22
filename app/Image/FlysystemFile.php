@@ -41,7 +41,7 @@ class FlysystemFile extends MediaFile
 			}
 
 			$this->stream = $this->disk->readStream($this->relativePath);
-			if ($this->stream === false || !is_resource($this->stream)) {
+			if (!is_resource($this->stream)) {
 				$this->stream = null;
 				throw new FlyException('Filesystem::readStream failed');
 			}

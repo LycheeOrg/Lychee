@@ -119,10 +119,10 @@ class Archive
 		$archiveFileInfo = $this->extractFileInfo($photo, $variant);
 
 		$responseGenerator = function () use ($archiveFileInfo) {
-			$outputStream = fopen('php://output', 'wb');
-			stream_copy_to_stream($archiveFileInfo->getFile()->read(), $outputStream);
+			$outputStream = \Safe\fopen('php://output', 'wb');
+			\Safe\stream_copy_to_stream($archiveFileInfo->getFile()->read(), $outputStream);
 			$archiveFileInfo->getFile()->close();
-			fclose($outputStream);
+			\Safe\fclose($outputStream);
 		};
 
 		try {
@@ -133,7 +133,7 @@ class Archive
 			);
 			$response->headers->set('Content-Type', $photo->type);
 			$response->headers->set('Content-Disposition', $disposition);
-			$response->headers->set('Content-Length', $archiveFileInfo->getFile()->getFilesize());
+			$response->headers->set('Content-Length', strval($archiveFileInfo->getFile()->getFilesize()));
 			// Note: Using insecure hashing algorithm is fine here.
 			// The ETag header must only be different for different size variants
 			// Pre-image resistance and collision robustness is not required.

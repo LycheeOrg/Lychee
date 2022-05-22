@@ -14,7 +14,7 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 		$this->userCSS($errors);
 	}
 
-	public function folders(array &$errors)
+	public function folders(array &$errors): void
 	{
 		$paths = ['big', 'medium', 'small', 'thumb', 'import', ''];
 
@@ -26,7 +26,7 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 		}
 	}
 
-	public function userCSS(array &$errors)
+	public function userCSS(array &$errors): void
 	{
 		$p = Storage::disk('dist')->path('user.css');
 		if (Helpers::hasPermissions($p) === false) {

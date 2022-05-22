@@ -23,6 +23,6 @@ abstract class Diagnostics
 	 */
 	protected static function line(string $key, string $value): string
 	{
-		return sprintf('%-32s %s', $key, $value);
+		return \Safe\sprintf('%-32s %s', $key, $value);
 	}
 }
