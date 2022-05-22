@@ -246,7 +246,7 @@ class PhotosAddTest extends TestCase
 		$ids_after = static::getRecentPhotoIDs();
 
 		$recentAlbumAfter = static::convertJsonToObject($this->albums_tests->get('recent'));
-		static::assertEquals($ids_after->count(), count($recentAlbumAfter->photos));
+		static::assertCount($ids_after->count(), $recentAlbumAfter->photos);
 
 		$new_ids = $ids_after->diff($ids_before);
 		static::assertCount(1, $new_ids);
@@ -319,13 +319,37 @@ class PhotosAddTest extends TestCase
 	{
 		$ids_before = static::getRecentPhotoIDs();
 
-		// import the two times
+		// Upload the photo the first time and remove some information
+		// such that there is really something to re-sync
+		$first_id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		);
+		DB::table('photos')
+			->where('id', '=', $first_id)
+			->update(['make' => null, 'model' => null]);
+
+		$response = $this->photos_tests->get($first_id);
+		$response->assertJson([
+			'id' => $first_id,
+			'make' => null,
+			'model' => null,
+		]);
+
+		// import the photo a second time and request re-sync
 		copy(base_path('tests/Samples/night.jpg'), base_path('public/uploads/import/night.jpg'));
-		$this->photos_tests->import(base_path('public/uploads/import/'), null, false, false, false, false);
 		$report = $this->photos_tests->import(base_path('public/uploads/import/'), null, false, true, false, true);
 		static::assertStringNotContainsString('PhotoSkippedException', $report);
 		static::assertStringContainsString('PhotoResyncedException', $report);
 
+		// The first photo is expected to have changed
+		$response = $this->photos_tests->get($first_id);
+		$response->assertJson([
+			'id' => $first_id,
+			'make' => 'Canon',
+			'model' => 'Canon EOS R',
+		]);
+
+		// Clean-up
 		$ids_after = static::getRecentPhotoIDs();
 		$ids_to_delete = $ids_after->diff($ids_before)->all();
 		$this->photos_tests->delete($ids_to_delete);
@@ -335,7 +359,12 @@ class PhotosAddTest extends TestCase
 	{
 		$ids_before = static::getRecentPhotoIDs();
 
-		// import the two times
+		// Upload the photo the first time
+		$this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		);
+
+		// import the photo a second time and skip the duplicate
 		copy(base_path('tests/Samples/night.jpg'), base_path('public/uploads/import/night.jpg'));
 		$this->photos_tests->import(base_path('public/uploads/import/'), null, false, false, false, false);
 		$report = $this->photos_tests->import(base_path('public/uploads/import/'), null, false, true, false, false);
@@ -347,16 +376,48 @@ class PhotosAddTest extends TestCase
 		$this->photos_tests->delete($ids_to_delete);
 	}
 
-	public function testImportDuplicate(): void
+	public function testImportDuplicateWithoutResync(): void
 	{
 		$ids_before = static::getRecentPhotoIDs();
 
-		// import the two times
+		// Upload the photo the first time and remove some information
+		// such that we can be sure that **no** re-sync happens later
+		$first_id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		);
+		$response = $this->photos_tests->get($first_id);
+		$response->assertJson([
+			'id' => $first_id,
+			'make' => 'Canon',
+			'model' => 'Canon EOS R',
+		]);
+		DB::table('photos')
+			->where('id', '=', $first_id)
+			->update(['make' => null, 'model' => null]);
+		$response = $this->photos_tests->get($first_id);
+		$response->assertJson([
+			'id' => $first_id,
+			'make' => null,
+			'model' => null,
+		]);
+
+		// import the photo a second time and an do not skip the duplicate
+		// but don't resync either
+		// Hence, the original photo which has been duplicated
 		copy(base_path('tests/Samples/night.jpg'), base_path('public/uploads/import/night.jpg'));
 		$this->photos_tests->import(base_path('public/uploads/import/'), null, false, false);
 		$report = $this->photos_tests->import(base_path('public/uploads/import/'), null, false, false);
 		static::assertStringNotContainsString('PhotoSkippedException', $report);
 		static::assertStringNotContainsString('PhotoResyncedException', $report);
+
+		// The original photo (which has been duplicated) should still
+		// miss the meta-data which we removed intentionally
+		$response = $this->photos_tests->get($first_id);
+		$response->assertJson([
+			'id' => $first_id,
+			'make' => null,
+			'model' => null,
+		]);
 
 		$ids_after = static::getRecentPhotoIDs();
 		$ids_to_delete = $ids_after->diff($ids_before)->all();
