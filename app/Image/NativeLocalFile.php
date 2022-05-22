@@ -36,7 +36,7 @@ class NativeLocalFile extends MediaFile
 			if (is_resource($this->stream)) {
 				\Safe\rewind($this->stream);
 			} else {
-				$this->stream = \Safe\fopen($this->getAbsolutePath(), 'r+b');
+				$this->stream = \Safe\fopen($this->getAbsolutePath(), 'rb');
 			}
 
 			return $this->stream;

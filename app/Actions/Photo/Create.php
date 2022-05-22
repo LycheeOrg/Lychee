@@ -62,12 +62,6 @@ class Create
 	{
 		$sourceFile->assertIsSupportedMediaOrAcceptedRaw();
 
-		// Check permissions
-		// throws InsufficientFilesystemPermissions
-		// TODO: Why do we explicitly perform this check here? We could just let the photo addition fail.
-		// There is similar odd test in {@link \App\Actions\Import\FromUrl::__construct()} which uses another "check" trait.
-		$this->checkPermissions();
-
 		// Fill in information about targeted parent album
 		// throws InvalidPropertyException
 		$this->initParentAlbum($album);

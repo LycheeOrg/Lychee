@@ -50,6 +50,7 @@ class ImageHandler extends BaseImageHandler
 	public function load(MediaFile $file): void
 	{
 		$this->reset();
+		$lastException = null;
 
 		foreach ($this->engineClasses as $engineClass) {
 			try {
@@ -60,11 +61,12 @@ class ImageHandler extends BaseImageHandler
 			} catch (\Throwable $e) {
 				// Report the error to the log, but don't fail yet.
 				Handler::reportSafely($e);
+				$lastException = $e;
 				$this->engine = null;
 			}
 		}
 
-		throw new MediaFileOperationException(self::NO_HANDLER_EXCEPTION_MSG);
+		throw new MediaFileOperationException(self::NO_HANDLER_EXCEPTION_MSG, $lastException);
 	}
 
 	/**

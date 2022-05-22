@@ -32,10 +32,14 @@ class PhotosUnitTest
 	 * @param UploadedFile $file
 	 * @param string|null  $albumID
 	 *
-	 * @return string the id of the photo
+	 * @return string|null the id of the photo upon success
 	 */
-	public function upload(UploadedFile $file, ?string $albumID = null): string
-	{
+	public function upload(
+		UploadedFile $file,
+		?string $albumID = null,
+		int $expectedStatusCode = 201,
+		?string $assertSee = null
+	): ?string {
 		$response = $this->testCase->post(
 			'/api/Photo::add', [
 				'albumID' => $albumID,
@@ -46,10 +50,12 @@ class PhotosUnitTest
 			]
 		);
 
-		$response->assertSuccessful();
-		$response->assertDontSee('Error');
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
 
-		return $response->offsetGet('id');
+		return $response->isSuccessful() ? $response->offsetGet('id') : null;
 	}
 
 	/**

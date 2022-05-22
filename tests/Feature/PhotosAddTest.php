@@ -146,7 +146,9 @@ class PhotosAddTest extends TestCase
 				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE)
 			);
 			$video_id = $this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_VIDEO)
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_VIDEO),
+				null,
+				200
 			);
 			$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
 			static::assertEquals($photo_id, $video_id);
@@ -313,6 +315,54 @@ class PhotosAddTest extends TestCase
 		static::assertEquals(true, is_link($symlink_path));
 
 		$this->photos_tests->delete([$photo_id]);
+	}
+
+	public function testImportViaDeniedMove(): void
+	{
+		$ids_before = static::getRecentPhotoIDs();
+
+		// import the photo without the right to move the photo (aka delete the original)
+		// For POSIX system, the right to create/rename/delete/edit meta-attributes
+		// of a file is based on the write-privilege of the containing directory,
+		// because all these operations require an update of an directory entry.
+		// Making the file read-only is not sufficient to prevent deletion.
+		copy(base_path('tests/Samples/night.jpg'), base_path('public/uploads/import/read-only.jpg'));
+		chmod(base_path('public/uploads/import/read-only.jpg'), 0444);
+		chmod(base_path('public/uploads/import'), 0555);
+		$this->photos_tests->import(base_path('public/uploads/import/'), null, true, false, false);
+
+		// check if the file is still there
+		static::assertEquals(true, file_exists(base_path('public/uploads/import/read-only.jpg')));
+
+		// re-grant file access and delete it
+		chmod(base_path('public/uploads/import'), 0775);
+		chmod(base_path('public/uploads/import/read-only.jpg'), 0664);
+		unlink(base_path('public/uploads/import/read-only.jpg'));
+
+		$ids_after = static::getRecentPhotoIDs();
+		$ids_to_delete = $ids_after->diff($ids_before)->all();
+		$this->photos_tests->delete($ids_to_delete);
+	}
+
+	public function testUploadWithReadOnlyStorage(): void
+	{
+		$id = null;
+		$diskPath = Storage::disk(SizeVariantNamingStrategy::IMAGE_DISK_NAME)->path('/');
+
+		try {
+			chmod($diskPath, 0555);
+			$id = $this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
+				null,
+				500,
+				'Impossible to create the root directory'
+			);
+		} finally {
+			chmod($diskPath, 0775);
+			// Clean-up
+			DB::table('size_variants')->whereIn('photo_id', [$id])->delete();
+			DB::table('photos')->whereIn('id', [$id])->delete();
+		}
 	}
 
 	public function testImportSkipDuplicateWithResync(): void
