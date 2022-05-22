@@ -10,7 +10,6 @@ use App\Models\Photo;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\UnitException;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\NotSupportedException;
 use Spatie\Feed\FeedItem;
@@ -59,10 +58,10 @@ class Generate
 	/**
 	 * @throws InternalLycheeException
 	 */
-	public function do(): Collection
+	public function do()
 	{
 		$rss_recent = intval(Configs::get_value('rss_recent_days', '7'));
-		$rss_max = (int) Configs::get_value('rss_max_items', '100');
+		$rss_max = Configs::get_Value('rss_max_items', '100');
 		try {
 			$nowMinus = Carbon::now()->subDays($rss_recent)->toDateTimeString();
 		} catch (UnitException|InvalidFormatException $e) {
@@ -71,7 +70,7 @@ class Generate
 
 		$photos = $this->photoAuthorisationProvider
 			->applySearchabilityFilter(
-				Photo::with(['album', 'owner', 'size_variants', 'size_variants.sym_links'])
+				Photo::with('album', 'owner', 'size_variants', 'size_variants.sym_links')
 			)
 			->where('photos.created_at', '>=', $nowMinus)
 			->limit($rss_max)

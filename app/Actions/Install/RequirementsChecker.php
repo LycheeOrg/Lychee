@@ -44,7 +44,7 @@ class RequirementsChecker
 				case 'apache':
 					foreach ($requirement_ as $requirement) {
 						// if function doesn't exist we can't check apache modules
-						$hasModule = !function_exists('apache_get_modules') || in_array($requirement, apache_get_modules(), true);
+						$hasModule = !function_exists('apache_get_modules') || in_array($requirement, apache_get_modules());
 						$results['requirements'][$type][$requirement] = $hasModule;
 						$results['errors'] = $results['errors'] || !$hasModule;
 					}
@@ -85,9 +85,9 @@ class RequirementsChecker
 	 */
 	public function checkExec(): bool
 	{
-		$disabled = explode(',', \Safe\ini_get('disable_functions'));
+		$disabled = explode(',', ini_get('disable_functions'));
 
-		return !in_array('exec', $disabled, true);
+		return !in_array('exec', $disabled);
 	}
 
 	/**
@@ -98,7 +98,7 @@ class RequirementsChecker
 	private static function getPhpVersionInfo(): array
 	{
 		$currentVersionFull = PHP_VERSION;
-		\Safe\preg_match('#^\d+(\.\d+)*#', $currentVersionFull, $filtered);
+		preg_match('#^\d+(\.\d+)*#', $currentVersionFull, $filtered);
 		$currentVersion = $filtered[0];
 
 		return [

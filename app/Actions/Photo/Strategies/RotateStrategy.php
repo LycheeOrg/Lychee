@@ -177,7 +177,7 @@ class RotateStrategy extends AddBaseStrategy
 			// Deleting the size variants of the duplicates has also the
 			// advantage that the actual files are erased from storage.
 			$duplicate->size_variants->deleteAll();
-			if ($newSizeVariants != null && $newSizeVariants->count() > 0) {
+			if ($newSizeVariants) {
 				/** @var SizeVariant $newSizeVariant */
 				foreach ($newSizeVariants as $newSizeVariant) {
 					$duplicate->size_variants->create(

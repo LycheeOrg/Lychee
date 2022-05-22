@@ -55,7 +55,7 @@ class Exec
 		$this->albumCreate = new AlbumCreate();
 		$this->enableCLIFormatting = $enableCLIFormatting;
 		$this->memLimit = $memLimit;
-		$this->raw_formats = explode('|', strtolower(strval(Configs::get_value('raw_formats', ''))));
+		$this->raw_formats = explode('|', strtolower(Configs::get_value('raw_formats', '')));
 	}
 
 	/**
@@ -99,7 +99,7 @@ class Exec
 			echo $report->toCLIString() . PHP_EOL;
 		}
 
-		if ($report instanceof ImportEventReport && $report->getException() != null) {
+		if ($report instanceof ImportEventReport && $report->getException()) {
 			Handler::reportSafely($report->getException());
 		}
 	}
@@ -117,9 +117,9 @@ class Exec
 	private static function normalizePath(string $path): string
 	{
 		if (str_ends_with($path, '/')) {
-			$path = \Safe\substr($path, 0, -1);
+			$path = substr($path, 0, -1);
 		}
-		$realPath = \Safe\realpath($path);
+		$realPath = realpath($path);
 
 		if (is_dir($realPath) === false) {
 			throw new InvalidDirectoryException('Given path is not a directory (' . $path . ')');
@@ -150,9 +150,8 @@ class Exec
 	private static function readLocalIgnoreList(string $path): array
 	{
 		if (is_readable($path . '/.lycheeignore')) {
-			try {
-				$result = \Safe\file($path . '/.lycheeignore');
-			} catch (\Throwable) {
+			$result = file($path . '/.lycheeignore');
+			if ($result === false) {
 				throw new FileOperationException('Could not read ' . $path . '/.lycheeignore');
 			}
 
@@ -222,7 +221,7 @@ class Exec
 		string $path,
 		?Album $parentAlbum,
 		array $ignore_list = []
-	): void {
+	) {
 		try {
 			$path = self::normalizePath($path);
 
@@ -242,7 +241,7 @@ class Exec
 			foreach ($files as $file) {
 				$this->assertImportNotCancelled();
 				// Reset the execution timeout for every iteration.
-				\Safe\set_time_limit((int) \Safe\ini_get('max_execution_time'));
+				set_time_limit(ini_get('max_execution_time'));
 				// Report if we might be running out of memory.
 				$this->memWarningCheck();
 
@@ -302,14 +301,14 @@ class Exec
 			// Album creation per directory
 			foreach ($dirs as $dir) {
 				$this->assertImportNotCancelled();
-				/** @var Album|null */
 				$album = $this->importMode->shallSkipDuplicates() ?
 					Album::query()
-					->select(['albums.*'])
-					->join('base_albums', 'base_albums.id', '=', 'albums.id')
-					->where('albums.parent_id', '=', $parentAlbum?->id)
-					->where('base_albums.title', '=', basename($dir))
-					->first() :
+						->select(['albums.*'])
+						->join('base_albums', 'base_albums.id', '=', 'albums.id')
+						->where('albums.parent_id', '=', $parentAlbum?->id)
+						->where('base_albums.title', '=', basename($dir))
+						->get()
+						->first() :
 					null;
 				if ($album === null) {
 					$album = $this->albumCreate->create(basename($dir), $parentAlbum);
@@ -336,7 +335,7 @@ class Exec
 		$pattern = preg_replace_callback('/([^*])/', [self::class, 'preg_quote_callback_fct'], $pattern);
 		$pattern = str_replace('*', '.*', $pattern);
 
-		return (bool) \Safe\preg_match('/^' . $pattern . '$/i', $filename);
+		return (bool) preg_match('/^' . $pattern . '$/i', $filename);
 	}
 
 	/**

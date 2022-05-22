@@ -86,8 +86,3 @@ parameters:
 		- '#Property .* \(Illuminate\\Database\\Eloquent\\Collection<App\\Models\\.*>\) does not accept Illuminate\\Database\\Eloquent\\Collection<Illuminate\\Database\\Eloquent\\Model>(\|Illuminate\\Database\\Eloquent\\Model)?.#'
 		- '#Property .* \(Illuminate\\Support\\Collection&iterable<App\\Contracts\\.*>\) does not accept Illuminate\\Database\\Eloquent\\Collection<Illuminate\\Database\\Eloquent\\Model>(\|Illuminate\\Database\\Eloquent\\Model)?.#'
 		- '#Parameter .* \$callback of function call_user_func expects callable\(\): mixed, .* given\.#'
-
-		-
-			message: '#Variable property access on mixed.#'
-			paths:
-				- app/Actions/Diagnostics/Info.php

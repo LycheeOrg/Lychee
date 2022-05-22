@@ -23,7 +23,7 @@ class PermissionsChecker
 	 */
 	public function is_win(): bool
 	{
-		return strtoupper(\Safe\substr(PHP_OS, 0, 3)) === 'WIN';
+		return strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
 	}
 
 	/**
@@ -54,7 +54,7 @@ class PermissionsChecker
 	{
 		$return = 0;
 		foreach (explode('|', $permissions) as $permission) {
-			\Safe\preg_match('/(!*)(.*)/', $permission, $f);
+			preg_match('/(!*)(.*)/', $permission, $f);
 			$return <<= 1;
 			// we overwrite the value if windows and executable check.
 			$return |= ($f[2] === 'is_executable' && $this->is_win()) ? 0 : !($f[2](base_path($folder)) xor ($f[1] == '!'));
@@ -66,11 +66,11 @@ class PermissionsChecker
 	/**
 	 * Add the file to the list of results.
 	 *
-	 * @param string $folder
-	 * @param string $permission
-	 * @param int    $isSet
+	 * @param $folder
+	 * @param $permission
+	 * @param $isSet
 	 */
-	private function addFile($folder, $permission, $isSet): void
+	private function addFile($folder, $permission, $isSet)
 	{
 		$this->results['permissions'][] = [
 			'folder' => $folder,
@@ -89,7 +89,7 @@ class PermissionsChecker
 	/**
 	 *  map.
 	 */
-	private function map_perm_set(string $permissions, int $areSet): array
+	private function map_perm_set($permissions, $areSet): array
 	{
 		$array_permission = array_reverse(explode('|', $permissions));
 		$ret = [];

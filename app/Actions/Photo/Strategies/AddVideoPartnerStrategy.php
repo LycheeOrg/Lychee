@@ -25,7 +25,7 @@ class AddVideoPartnerStrategy extends AddBaseStrategy
 		$photoPath = $photoFile->getRelativePath();
 		$photoExt = $photoFile->getExtension();
 		$videoExt = $this->parameters->sourceFileInfo->getOriginalExtension();
-		$videoPath = \Safe\substr($photoPath, 0, -strlen($photoExt)) . $videoExt;
+		$videoPath = substr($photoPath, 0, -strlen($photoExt)) . $videoExt;
 		$this->putSourceIntoFinalDestination($videoPath);
 		$this->photo->live_photo_short_path = $videoPath;
 		$this->photo->save();

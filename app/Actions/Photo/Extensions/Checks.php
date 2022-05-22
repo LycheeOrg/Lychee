@@ -91,7 +91,7 @@ trait Checks
 	{
 		$extension = $sourceFileInfo->getOriginalExtension();
 		// check raw files
-		$raw_formats = strtolower(strval(Configs::get_value('raw_formats', '')));
+		$raw_formats = strtolower(Configs::get_value('raw_formats', ''));
 		if (in_array(strtolower($extension), explode('|', $raw_formats), true)) {
 			return 'raw';
 		}

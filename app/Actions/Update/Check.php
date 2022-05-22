@@ -122,7 +122,7 @@ class Check
 			$db_ver = $this->lycheeVersion->getDBVersion();
 			$file_ver = $this->lycheeVersion->getFileVersion();
 
-			return 3 * intval($db_ver->toInteger() < $file_ver->toInteger());
+			return 3 * ($db_ver->toInteger() < $file_ver->toInteger());
 			// @codeCoverageIgnoreEnd
 		}
 

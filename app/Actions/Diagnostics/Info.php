@@ -101,7 +101,7 @@ class Info extends Diagnostics
 				break;
 			case LycheeChannelInfo::GIT_CHANNEL:
 				$lycheeChannelName = 'git';
-				$lycheeInfoString = $lycheeChannelInfo->gitInfo != null ? $lycheeChannelInfo->gitInfo->toString() : 'No git data found.';
+				$lycheeInfoString = $lycheeChannelInfo->gitInfo ? $lycheeChannelInfo->gitInfo->toString() : 'No git data found.';
 				break;
 			default:
 				$lycheeChannelName = 'unknown';
@@ -114,18 +114,18 @@ class Info extends Diagnostics
 		$infos[] = '';
 		$infos[] = Diagnostics::line('composer install:', $this->lycheeVersion->phpUnit ? 'dev' : '--no-dev');
 		$infos[] = Diagnostics::line('APP_ENV:', Config::get('app.env')); // check if production
-		$infos[] = Diagnostics::line('APP_DEBUG:', (bool) Config::get('app.debug') ? 'true' : 'false'); // check if debug is on (will help in case of error 500)
+		$infos[] = Diagnostics::line('APP_DEBUG:', Config::get('app.debug') ? 'true' : 'false'); // check if debug is on (will help in case of error 500)
 		$infos[] = '';
 		$infos[] = Diagnostics::line('System:', PHP_OS);
-		$infos[] = Diagnostics::line('PHP Version:', phpversion());
-		$infos[] = Diagnostics::line('PHP User agent:', \Safe\ini_get('user_agent'));
-		$infos[] = Diagnostics::line('Timezone:', (CarbonTimeZone::create() ?: null)?->getName());
-		$infos[] = Diagnostics::line('Max uploaded file size:', \Safe\ini_get('upload_max_filesize'));
-		$infos[] = Diagnostics::line('Max post size:', \Safe\ini_get('post_max_size'));
-		$infos[] = Diagnostics::line('Max execution time: ', \Safe\ini_get('max_execution_time'));
+		$infos[] = Diagnostics::line('PHP Version:', floatval(phpversion()));
+		$infos[] = Diagnostics::line('PHP User agent:', ini_get('user_agent'));
+		$infos[] = Diagnostics::line('Timezone:', CarbonTimeZone::create()->getName());
+		$infos[] = Diagnostics::line('Max uploaded file size:', ini_get('upload_max_filesize'));
+		$infos[] = Diagnostics::line('Max post size:', ini_get('post_max_size'));
+		$infos[] = Diagnostics::line('Max execution time: ', ini_get('max_execution_time'));
 		$infos[] = Diagnostics::line($dbtype . ' Version:', $dbver);
 		$infos[] = '';
-		$infos[] = Diagnostics::line('Imagick:', (string) $imagick);
+		$infos[] = Diagnostics::line('Imagick:', $imagick);
 		$infos[] = Diagnostics::line('Imagick Active:', $settings['imagick'] ?? 'key not found in settings');
 		$infos[] = Diagnostics::line('Imagick Version:', $imagickVersion);
 		$infos[] = Diagnostics::line('GD Version:', $gdVersion['GD Version']);

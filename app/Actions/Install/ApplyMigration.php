@@ -81,7 +81,7 @@ class ApplyMigration
 			$filename = base_path('.NO_SECURE_KEY');
 			if (file_exists($filename)) {
 				if (is_file($filename)) {
-					\Safe\unlink($filename);
+					unlink($filename);
 				} else {
 					throw new InstallationFailedException('A filesystem object . ' . $filename . ' exists, but is not an ordinary file.');
 				}

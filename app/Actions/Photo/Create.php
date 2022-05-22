@@ -92,7 +92,7 @@ class Create
 		 *  - a photo which is the partner of an already existing video
 		 *  - a video which is the partner of an already existing photo
 		 */
-		if ($duplicate != null) {
+		if ($duplicate) {
 			$strategy = new AddDuplicateStrategy($this->strategyParameters, $duplicate);
 		} else {
 			if ($livePartner == null) {
@@ -108,7 +108,7 @@ class Create
 
 		$photo = $strategy->do();
 
-		if ($photo->album_id != null) {
+		if ($photo->album_id) {
 			$notify = new Notify();
 			$notify->do($photo);
 		}
@@ -143,7 +143,7 @@ class Create
 
 		// Use title of file if IPTC title missing
 		if ($this->strategyParameters->info['title'] === '') {
-			$this->strategyParameters->info['title'] = \Safe\substr($sourceFileInfo->getOriginalName(), 0, 98);
+			$this->strategyParameters->info['title'] = substr($sourceFileInfo->getOriginalName(), 0, 98);
 		}
 	}
 
@@ -170,7 +170,7 @@ class Create
 	): ?Photo {
 		$livePartner = null;
 		// find a potential partner which has the same content id
-		if ($contentID != null) {
+		if ($contentID) {
 			/** @var Photo|null $livePartner */
 			$livePartner = Photo::query()
 				->where('live_photo_content_id', '=', $contentID)
@@ -205,7 +205,7 @@ class Create
 	 *
 	 * @throws InvalidPropertyException
 	 */
-	protected function initParentAlbum(?AbstractAlbum $album = null): void
+	protected function initParentAlbum(?AbstractAlbum $album = null)
 	{
 		if ($album === null) {
 			$this->strategyParameters->album = null;

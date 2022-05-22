@@ -92,7 +92,7 @@ class Delete
 		} catch (QueryBuilderException $e) {
 			throw ModelDBException::create('size variants', 'deleting', $e);
 		} catch (\InvalidArgumentException $e) {
-			throw new \AssertionError('\InvalidArgumentException must not be thrown', $e->getCode(), $e);
+			assert(false, new \AssertionError('\InvalidArgumentException must not be thrown', $e->getCode(), $e));
 		}
 	}
 }

@@ -76,10 +76,10 @@ class Apply
 
 				// Composer\Factory::getHomeDir() method
 				// needs COMPOSER_HOME environment variable set
-				\Safe\putenv('COMPOSER_HOME=' . base_path('/composer-cache'));
-				\Safe\chdir(base_path());
+				putenv('COMPOSER_HOME=' . base_path('/composer-cache'));
+				chdir(base_path());
 				exec('composer install --no-dev --no-progress 2>&1', $output);
-				\Safe\chdir(base_path('public'));
+				chdir(base_path('public'));
 			// @codeCoverageIgnoreEnd
 			} else {
 				$output[] = 'Composer update are always dangerous when automated.';
@@ -139,7 +139,7 @@ class Apply
 	 */
 	public function filter(array &$output): void
 	{
-		$output = \Safe\preg_replace('/\033[[][0-9]*;*[0-9]*;*[0-9]*m/', '', $output);
+		$output = preg_replace('/\033[[][0-9]*;*[0-9]*;*[0-9]*m/', '', $output);
 	}
 
 	/**
@@ -158,13 +158,9 @@ class Apply
 			$this->githubFunctions->is_master_branch() &&
 			$this->check_prod_env_allow_migration($output)
 		) {
-			if (!$this->lycheeVersion->isRelease) {
-				$this->git_pull($output);
-			}
+			$this->lycheeVersion->isRelease or $this->git_pull($output);
 			$this->migrate($output);
-			if (!$this->lycheeVersion->isRelease) {
-				$this->call_composer($output);
-			}
+			$this->lycheeVersion->isRelease or $this->call_composer($output);
 		}
 		$this->filter($output);
 

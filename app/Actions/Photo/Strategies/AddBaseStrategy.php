@@ -48,7 +48,7 @@ abstract class AddBaseStrategy
 	 * all available meta-data is hydrated, but for an already existing
 	 * {@link Photo} object existing attributes are not overwritten.
 	 */
-	protected function hydrateMetadata(): void
+	protected function hydrateMetadata()
 	{
 		if (empty($this->photo->title) && !empty($this->parameters->info['title'])) {
 			$this->photo->title = $this->parameters->info['title'];
@@ -112,7 +112,7 @@ abstract class AddBaseStrategy
 		}
 	}
 
-	protected function setParentAndOwnership(): void
+	protected function setParentAndOwnership()
 	{
 		if ($this->parameters->album !== null) {
 			$this->photo->album_id = $this->parameters->album->id;
@@ -152,9 +152,7 @@ abstract class AddBaseStrategy
 			}
 			$targetAbsolutePath = $targetFile->getAbsolutePath();
 			$sourceAbsolutePath = $sourceFile->getAbsolutePath();
-			try {
-				\Safe\symlink($sourceAbsolutePath, $targetAbsolutePath);
-			} catch (\Throwable) {
+			if (!symlink($sourceAbsolutePath, $targetAbsolutePath)) {
 				throw new MediaFileOperationException('Could not create symbolic link at "' . $targetAbsolutePath . '" for photo at "' . $sourceAbsolutePath . '"');
 			}
 		} else {
