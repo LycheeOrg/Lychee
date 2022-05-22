@@ -315,6 +315,54 @@ class PhotosAddTest extends TestCase
 		$this->photos_tests->delete([$photo_id]);
 	}
 
+	public function testImportSkipDuplicateWithResync(): void
+	{
+		$ids_before = static::getRecentPhotoIDs();
+
+		// import the two times
+		copy(base_path('tests/Samples/night.jpg'), base_path('public/uploads/import/night.jpg'));
+		$this->photos_tests->import(base_path('public/uploads/import/'), null, false, false, false, false);
+		$report = $this->photos_tests->import(base_path('public/uploads/import/'), null, false, true, false, true);
+		static::assertStringNotContainsString('PhotoSkippedException', $report);
+		static::assertStringContainsString('PhotoResyncedException', $report);
+
+		$ids_after = static::getRecentPhotoIDs();
+		$ids_to_delete = $ids_after->diff($ids_before)->all();
+		$this->photos_tests->delete($ids_to_delete);
+	}
+
+	public function testImportSkipDuplicateWithoutResync(): void
+	{
+		$ids_before = static::getRecentPhotoIDs();
+
+		// import the two times
+		copy(base_path('tests/Samples/night.jpg'), base_path('public/uploads/import/night.jpg'));
+		$this->photos_tests->import(base_path('public/uploads/import/'), null, false, false, false, false);
+		$report = $this->photos_tests->import(base_path('public/uploads/import/'), null, false, true, false, false);
+		static::assertStringContainsString('PhotoSkippedException', $report);
+		static::assertStringNotContainsString('PhotoResyncedException', $report);
+
+		$ids_after = static::getRecentPhotoIDs();
+		$ids_to_delete = $ids_after->diff($ids_before)->all();
+		$this->photos_tests->delete($ids_to_delete);
+	}
+
+	public function testImportDuplicate(): void
+	{
+		$ids_before = static::getRecentPhotoIDs();
+
+		// import the two times
+		copy(base_path('tests/Samples/night.jpg'), base_path('public/uploads/import/night.jpg'));
+		$this->photos_tests->import(base_path('public/uploads/import/'), null, false, false);
+		$report = $this->photos_tests->import(base_path('public/uploads/import/'), null, false, false);
+		static::assertStringNotContainsString('PhotoSkippedException', $report);
+		static::assertStringNotContainsString('PhotoResyncedException', $report);
+
+		$ids_after = static::getRecentPhotoIDs();
+		$ids_to_delete = $ids_after->diff($ids_before)->all();
+		$this->photos_tests->delete($ids_to_delete);
+	}
+
 	/**
 	 * Tests a trick video which is falsely identified as `application/octet-stream`.
 	 *
