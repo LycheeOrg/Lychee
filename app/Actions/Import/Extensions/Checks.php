@@ -23,7 +23,7 @@ trait Checks
 	 *
 	 * @throws InsufficientFilesystemPermissions
 	 */
-	public function checkPermissions(): void
+	public function checkPermissions()
 	{
 		if (!Helpers::hasPermissions(Storage::path('import'))) {
 			throw new InsufficientFilesystemPermissions('An upload-folder is missing or not readable and writable!');

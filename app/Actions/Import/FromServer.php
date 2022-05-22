@@ -46,9 +46,9 @@ class FromServer
 	{
 		$value = 0;
 		$suffix = '';
-		if (sscanf(\Safe\ini_get('memory_limit'), '%d%c', $value, $suffix) === 2) {
+		if (sscanf(ini_get('memory_limit'), '%d%c', $value, $suffix) === 2) {
 			switch (strtolower($suffix)) {
-					// @codeCoverageIgnoreStart
+				// @codeCoverageIgnoreStart
 				case 'k':
 					$value *= 1024;
 					break;
@@ -63,7 +63,7 @@ class FromServer
 					break;
 				default:
 					break;
-					// @codeCoverageIgnoreEnd
+				// @codeCoverageIgnoreEnd
 			}
 		}
 
