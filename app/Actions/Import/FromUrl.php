@@ -58,9 +58,9 @@ class FromUrl
 		foreach ($urls as $url) {
 			try {
 				// Reset the execution timeout for every iteration.
-				set_time_limit(ini_get('max_execution_time'));
+				\Safe\set_time_limit((int) \Safe\ini_get('max_execution_time'));
 
-				$path = parse_url($url, PHP_URL_PATH);
+				$path = \Safe\parse_url($url, PHP_URL_PATH);
 				$basename = pathinfo($path, PATHINFO_FILENAME);
 				$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
 
@@ -74,9 +74,9 @@ class FromUrl
 				// Download file, before exif checks the mimetype, otherwise we download it twice
 				$tmpFile = new TemporaryLocalFile($extension);
 				try {
-					$downloadStream = fopen($url, 'r');
+					$downloadStream = \Safe\fopen($url, 'r');
 					$tmpFile->write($downloadStream);
-					fclose($downloadStream);
+					\Safe\fclose($downloadStream);
 				} catch (\Exception $e) {
 					throw new MediaFileOperationException('Could not download ' . $url . ' to ' . $tmpFile->getAbsolutePath(), $e);
 				}
@@ -84,7 +84,7 @@ class FromUrl
 				// Verify image
 				// TODO: Consider to make this test a general part of \App\Actions\Photo\Create::add. Then we don't need those tests at multiple places.
 				$type = exif_imagetype($tmpFile->getAbsolutePath());
-				if (!$this->isValidImageType($type) && !in_array(strtolower($extension), $this->validExtensions, true)) {
+				if ($type !== false && !$this->isValidImageType($type) && !in_array(strtolower($extension), $this->validExtensions, true)) {
 					throw new MediaFileUnsupportedException('Photo format not supported (' . $url . ')');
 				}
 
