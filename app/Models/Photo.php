@@ -13,10 +13,10 @@ use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Facades\Helpers;
+use App\Image\MediaFile;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
-use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\SizeVariants;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
@@ -74,7 +74,6 @@ use Illuminate\Support\Facades\Storage;
  */
 class Photo extends Model implements HasRandomID
 {
-	use PhotoBooleans;
 	use UTCBasedTimes;
 	use HasAttributesPatch;
 	use HasRandomIDAndLegacyTimeBasedID;
@@ -353,6 +352,53 @@ class Photo extends Model implements HasRandomID
 		return AccessControl::is_current_user_or_admin($this->owner_id) ||
 			($this->album_id != null && $this->album->is_share_button_visible) ||
 			($this->album_id == null && $default);
+	}
+
+	/**
+	 * Checks if the photo represents a (real) photo (as opposed to video or raw).
+	 *
+	 * @return bool
+	 *
+	 * @throws IllegalOrderOfOperationException
+	 */
+	public function isPhoto(): bool
+	{
+		if (empty($this->type)) {
+			throw new IllegalOrderOfOperationException('Photo::isPhoto() must not be called before Photo::$type has been set');
+		}
+
+		return MediaFile::isSupportedImageMimeType($this->type);
+	}
+
+	/**
+	 * Checks if the photo represents a video.
+	 *
+	 * @return bool
+	 *
+	 * @throws IllegalOrderOfOperationException
+	 */
+	public function isVideo(): bool
+	{
+		if (empty($this->type)) {
+			throw new IllegalOrderOfOperationException('Photo::isVideo() must not be called before Photo::$type has been set');
+		}
+
+		return MediaFile::isSupportedVideoMimeType($this->type);
+	}
+
+	/**
+	 * Checks if the photo represents a raw media.
+	 *
+	 * The media record is "raw" if it is neither of a supported photo nor
+	 * video type.
+	 *
+	 * @return bool
+	 *
+	 * @throws IllegalOrderOfOperationException
+	 */
+	public function isRaw(): bool
+	{
+		return !$this->isPhoto() && !$this->isVideo();
 	}
 
 	/**

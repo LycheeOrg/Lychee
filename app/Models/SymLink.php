@@ -6,6 +6,7 @@ use App\Casts\MustNotSetCast;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
+use App\Image\FlysystemFile;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
@@ -110,10 +111,12 @@ class SymLink extends Model
 	 * @param Builder $query
 	 *
 	 * @return bool
+	 *
+	 * @throws MediaFileOperationException
 	 */
 	protected function performInsert(Builder $query): bool
 	{
-		$file = $this->size_variant->getFile();
+		$file = $this->size_variant->getFile()->toLocalFile();
 		$origFullPath = $file->getAbsolutePath();
 		$extension = $file->getExtension();
 		$symShortPath = hash('sha256', random_bytes(32) . '|' . $origFullPath) . $extension;
@@ -142,12 +145,11 @@ class SymLink extends Model
 	 */
 	public function delete(): bool
 	{
-		$fullPath = Storage::disk(self::DISK_NAME)->path($this->short_path);
 		// Laravel and Flysystem does not support symbolic links.
-		// So we must use low-level methods here.
-		if ((is_link($fullPath) && !unlink($fullPath)) || (file_exists($fullPath)) && !is_link($fullPath)) {
-			throw new MediaFileOperationException('could not delete media file: ' . $fullPath);
-		}
+		// So we must convert it to a local file
+		$flyFile = new FlysystemFile(Storage::disk(self::DISK_NAME), $this->short_path);
+		$symLink = $flyFile->toLocalFile();
+		$symLink->delete();
 
 		return $this->internalDelete();
 	}

@@ -2,7 +2,7 @@
 
 namespace App\Actions\Photo\Strategies;
 
-use App\Actions\Photo\Extensions\SourceFileInfo;
+use App\Metadata\Extractor;
 use App\Models\Album;
 use App\Models\Configs;
 
@@ -10,15 +10,17 @@ class AddStrategyParameters
 {
 	public ImportMode $importMode;
 
-	// Information about intended parent album
+	/** @var Album|null the intended parent album */
 	public ?Album $album = null;
+
+	/** @var bool indicates whether the new photo shall be public */
 	public bool $is_public = false;
+
+	/** @var bool indicates whether the new photo shall be starred */
 	public bool $is_starred = false;
 
-	// Information about source file
-	public string $kind = '';
-	public ?SourceFileInfo $sourceFileInfo = null;
-	public array $info = [];
+	/** @var Extractor|null the extracted EXIF information */
+	public ?Extractor $exifInfo = null;
 
 	public function __construct(?ImportMode $importMode = null)
 	{
