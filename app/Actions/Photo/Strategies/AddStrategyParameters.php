@@ -4,7 +4,6 @@ namespace App\Actions\Photo\Strategies;
 
 use App\Metadata\Extractor;
 use App\Models\Album;
-use App\Models\Configs;
 
 class AddStrategyParameters
 {
@@ -22,10 +21,8 @@ class AddStrategyParameters
 	/** @var Extractor|null the extracted EXIF information */
 	public ?Extractor $exifInfo = null;
 
-	public function __construct(?ImportMode $importMode = null)
+	public function __construct(ImportMode $importMode)
 	{
-		$this->importMode = $importMode ?: new ImportMode(false,
-			Configs::get_value('skip_duplicates', '0') === '1'
-		);
+		$this->importMode = $importMode;
 	}
 }
