@@ -303,12 +303,12 @@ class Exec
 				$this->assertImportNotCancelled();
 				$album = $this->importMode->shallSkipDuplicates() ?
 					Album::query()
-						->select(['albums.*'])
-						->join('base_albums', 'base_albums.id', '=', 'albums.id')
-						->where('albums.parent_id', '=', $parentAlbum?->id)
-						->where('base_albums.title', '=', basename($dir))
-						->get()
-						->first() :
+					->select(['albums.*'])
+					->join('base_albums', 'base_albums.id', '=', 'albums.id')
+					->where('albums.parent_id', '=', $parentAlbum?->id)
+					->where('base_albums.title', '=', basename($dir))
+					->get()
+					->first() :
 					null;
 				if ($album === null) {
 					$album = $this->albumCreate->create(basename($dir), $parentAlbum);
