@@ -122,7 +122,7 @@ class PhotosOperationsTest extends TestCase
 		/**
 		 * Actually try to display the picture.
 		 */
-		$response = $this->postJson('/api/Photo::getRandom');
+		$response = $this->getJson('/api/Photo::getRandom');
 		$response->assertOk();
 
 		/*
@@ -199,7 +199,7 @@ class PhotosOperationsTest extends TestCase
 		/**
 		 * Actually try to display the picture.
 		 */
-		$response = $this->postJson('/api/Photo::getRandom');
+		$response = $this->getJson('/api/Photo::getRandom');
 		$response->assertOk();
 
 		// delete the picture after displaying it

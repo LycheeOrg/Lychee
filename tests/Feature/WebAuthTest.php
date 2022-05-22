@@ -62,7 +62,7 @@ class WebAuthTest extends TestCase
 
 		AccessControl::log_as_id(0);
 
-		$response = $this->postJson('/api/WebAuthn::list');
+		$response = $this->getJson('/api/WebAuthn::list');
 		$response->assertOk(); // code 200 something
 
 		$key = new WebAuthnCredential([
@@ -79,12 +79,12 @@ class WebAuthTest extends TestCase
 		$user = User::query()->find(0);
 		$user->webAuthnCredentials()->save($key);
 
-		$response = $this->postJson('/api/WebAuthn::delete', ['id' => '1234']);
+		$response = $this->deleteJson('/api/WebAuthn::delete', ['id' => '1234']);
 		$response->assertNoContent();
 
 		AccessControl::logout();
 
-		$response = $this->postJson('/api/WebAuthn::delete', ['id' => '1234']);
+		$response = $this->deleteJson('/api/WebAuthn::delete', ['id' => '1234']);
 		$response->assertUnauthorized();
 	}
 }

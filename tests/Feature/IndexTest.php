@@ -31,7 +31,7 @@ class IndexTest extends TestCase
 		$response = $this->get('/');
 		$response->assertOk();
 
-		$response = $this->postJson('/api/Albums::get');
+		$response = $this->getJson('/api/Albums::get');
 		$response->assertOk();
 	}
 

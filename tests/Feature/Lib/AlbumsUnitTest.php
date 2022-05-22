@@ -161,7 +161,7 @@ class AlbumsUnitTest
 	 */
 	public function see_in_albums(string $id): void
 	{
-		$response = $this->testCase->postJson('/api/Albums::get');
+		$response = $this->testCase->getJson('/api/Albums::get');
 		$response->assertOk();
 		$response->assertSee($id, false);
 	}
@@ -175,7 +175,7 @@ class AlbumsUnitTest
 	 */
 	public function dont_see_in_albums(string $id): void
 	{
-		$response = $this->testCase->postJson('/api/Albums::get');
+		$response = $this->testCase->getJson('/api/Albums::get');
 		$response->assertOk();
 		$response->assertDontSee($id, false);
 	}
@@ -367,7 +367,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson('/api/Album::delete', ['albumIDs' => $ids]);
+		$response = $this->testCase->deleteJson('/api/Album::delete', ['albumIDs' => $ids]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);

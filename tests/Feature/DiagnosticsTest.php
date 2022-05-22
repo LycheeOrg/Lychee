@@ -35,10 +35,10 @@ class DiagnosticsTest extends TestCase
 
 		Configs::query()->where('key', '=', 'lossless_optimization')->update(['value' => null]);
 
-		$response = $this->postJson('/api/Diagnostics::get');
+		$response = $this->getJson('/api/Diagnostics::get');
 		$response->assertOk(); // code 200 something too
 
-		$response = $this->postJson('/api/Diagnostics::getSize');
+		$response = $this->getJson('/api/Diagnostics::getSize');
 		$response->assertOk(); // code 200 something too
 
 		Configs::query()->where('key', '=', 'lossless_optimization')->update(['value' => '1']);

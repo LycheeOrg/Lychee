@@ -32,7 +32,7 @@ class FrameTest extends TestCase
 		$response->assertRedirect('/');
 
 		// check error
-		$response = $this->postJson('/api/Frame::getSettings');
+		$response = $this->getJson('/api/Frame::getSettings');
 		$response->assertStatus(412);
 		$response->assertJson([
 			'message' => 'Frame is not enabled',
@@ -58,7 +58,7 @@ class FrameTest extends TestCase
 		$response->assertViewIs('frame');
 
 		// check refresh returned
-		$response = $this->postJson('/api/Frame::getSettings');
+		$response = $this->getJson('/api/Frame::getSettings');
 		$response->assertJsonMissingExact(['Error: Frame is not enabled']);
 		$ret = ['refresh' => Configs::get_value('Mod_Frame_refresh') * 1000];
 		$response->assertExactJson($ret);

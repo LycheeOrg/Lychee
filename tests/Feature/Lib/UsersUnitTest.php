@@ -36,7 +36,7 @@ class UsersUnitTest
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->postJson('/api/User::list');
+		$response = $this->testCase->getJson('/api/User::list');
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
@@ -112,7 +112,7 @@ class UsersUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->postJson('/api/User::delete', [
+		$response = $this->testCase->deleteJson('/api/User::delete', [
 			'id' => $id,
 		]);
 		$response->assertStatus($expectedStatusCode);
