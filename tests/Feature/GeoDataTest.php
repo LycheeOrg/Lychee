@@ -111,7 +111,6 @@ class GeoDataTest extends TestCase
 		$response = $albums_tests->AlbumsGetPositionDataFull();
 		$responseObj = json_decode($response->getContent());
 		static::assertObjectHasAttribute('photos', $responseObj);
-		echo $response->content();
 		static::assertCount(1, $responseObj->photos);
 		static::assertEquals($id, $responseObj->photos[0]->id);
 
