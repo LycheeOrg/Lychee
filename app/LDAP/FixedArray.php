@@ -33,7 +33,7 @@ class FixedArray implements \ArrayAccess, \Iterator, \Countable
 	public function offsetSet(mixed $prop, mixed $value): void
 	{
 		if (!in_array($prop, $this->_valid_keys)) {
-			throw new \ErrorException('Attribute "' . $prop . '" is unknown');
+			throw new \OutOfRangeException('Attribute "' . $prop . '" is unknown');
 		}
 		$this->_data[$prop] = $value;
 	}
@@ -46,7 +46,7 @@ class FixedArray implements \ArrayAccess, \Iterator, \Countable
 	public function offsetGet(mixed $prop): mixed
 	{
 		if (!in_array($prop, $this->_valid_keys)) {
-			throw new \ErrorException('Attribute "' . $prop . '" is unknown');
+			throw new \OutOfRangeException('Attribute "' . $prop . '" is unknown');
 		} else {
 			return $this->_data[$prop];
 		}
@@ -55,7 +55,7 @@ class FixedArray implements \ArrayAccess, \Iterator, \Countable
 	public function offsetUnset(mixed $prop): void
 	{
 		if (!in_array($prop, $this->_valid_keys)) {
-			throw new \ErrorException('Attribute "' . $prop . '" is unknown');
+			throw new \OutOfRangeException('Attribute "' . $prop . '" is unknown');
 		} else {
 			$this->_data[$prop] = null;
 		}
@@ -121,7 +121,7 @@ class FixedArray implements \ArrayAccess, \Iterator, \Countable
 	public function __set($prop, $value)
 	{
 		if (!in_array($prop, $this->_valid_keys)) {
-			throw new \ErrorException('Attribute "' . $prop . '" is unknown');
+			throw new \OutOfRangeException('Attribute "' . $prop . '" is unknown');
 		} else {
 			$this->_data[$prop] = $value;
 		}
@@ -162,7 +162,7 @@ class FixedArray implements \ArrayAccess, \Iterator, \Countable
 	{
 		foreach ($data as $prop => $value) {
 			if (!in_array($prop, $this->_valid_keys)) {
-				throw new \ErrorException('Attribute "' . $prop . '" is unknown');
+				throw new \OutOfRangeException('Attribute "' . $prop . '" is unknown');
 			}
 		}
 		foreach ($data as $prop => $value) {
