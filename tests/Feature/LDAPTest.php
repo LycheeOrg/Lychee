@@ -241,11 +241,11 @@ class LDAPTest extends LDAPTestCase
 			// 2
 			$this->assertTrue($ldap->check_pass(self::TESTUSER, self::TESTUSER_PW), 'Cannot verify user TESTUSER');
 			$user_data = $ldap->get_user_data(self::TESTUSER);
-			$this->assertTrue(is_a($user_data, 'App\LDAP\LDAPUserData'), 'TESTUSER is unknown');
+			$this->assertTrue(is_a($user_data, '\App\LDAP\FixedArray'), 'TESTUSER is unknown');
 
 			// 3
 			$user_data = $ldap->get_user_data(self::TESTUSER2);
-			$this->assertTrue(is_a($user_data, 'App\LDAP\LDAPUserData'), 'TESTUSER2 is unknown');
+			$this->assertTrue(is_a($user_data, 'App\LDAP\FixedArray'), 'TESTUSER2 is unknown');
 			$this->assertTrue($ldap->check_pass(self::TESTUSER2, self::TESTUSER2_PW), 'Cannot verify user TESTUSER2');
 
 			// 4
@@ -257,7 +257,7 @@ class LDAPTest extends LDAPTestCase
 
 			// 6
 			$user_data = $ldap->get_user_data(self::TESTUSER);
-			$this->assertTrue(is_a($user_data, 'App\LDAP\LDAPUserData'), 'TESTUSER is unknown');
+			$this->assertTrue(is_a($user_data, 'App\LDAP\FixedArray'), 'TESTUSER is unknown');
 			$this->assertEqualsCanonicalizing($user_data->toArray(), $this->test_user);
 			// 7
 			$ldap->LDAP_close();

@@ -5,9 +5,9 @@ namespace App\ModelFunctions;
 use App\Contracts\LycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\UnauthenticatedException;
+use App\LDAP\FixedArray;
 use App\LDAP\LDAPActions;
 use App\LDAP\LDAPFunctions;
-use App\LDAP\LDAPUserData;
 use App\Legacy\Legacy;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -203,7 +203,7 @@ class SessionFunctions
 				return false;
 			}
 
-			/** @var LDAPUserData user data */
+			/** @var FixedArray $ldapUserData */
 			$ldapUserData = $this->ldap->get_user_data($username);
 			if ($ldapUserData == null) {
 				// Should never happen if the ldap server is functioning correctly

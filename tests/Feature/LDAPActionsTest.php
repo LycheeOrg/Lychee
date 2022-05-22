@@ -2,8 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\LDAP\FixedArray;
 use App\LDAP\LDAPActions;
-use App\LDAP\LDAPUserData;
+use App\LDAP\LDAPFunctions;
 use App\Models\Configs;
 use App\Models\User;
 use Tests\LDAPTestCase;
@@ -27,7 +28,7 @@ class LDAPActionsTest extends LDAPTestCase
 			LDAPActions::update_users($user_list, false);
 			$user_data = ['user' => '!__not_existant__!', 'server' => 'unknown',
 				'dn' => 'cn=not0exist', 'display_name' => 'Do not know', 'email' => 'no@mail', ];
-			$user = new LDAPUserData();
+			$user = new FixedArray(LDAPFunctions::USER_ENTRIES);
 			$user->fromArray($user_data);
 			LDAPActions::create_user_not_exist($user->user, $user);
 			LDAPActions::update_users($user_list, true);

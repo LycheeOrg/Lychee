@@ -12,6 +12,7 @@ class LDAPFunctions
 	public const SCOPE_BASE = 'base';
 	public const SCOPE_ONE = 'one';
 	public const SCOPE_SUB = 'sub';
+	public const USER_ENTRIES = ['user', 'server', 'dn', 'display_name', 'email'];
 	protected const CONFIG_KEY_BIND_DN = 'ldap_bind_dn';
 	protected const CONFIG_KEY_BIND_PW = 'ldap_bind_pw';
 	protected const CONFIG_KEY_CN = 'ldap_cn';
@@ -59,10 +60,10 @@ class LDAPFunctions
 	 */
 	protected int $bound = self::BIND_TYPE_UNBOUND;
 
-	/** @var LDAPUserData[] cashed results of user info previously queried from LDAP */
+	/** @var FixedArray[] cashed results of user info previously queried from LDAP */
 	protected array $cached_user_info = [];
 
-	/** @var LDAPUserData[] cashed user list retrieved by get_user_list() */
+	/** @var FixedArray[] cashed user list retrieved by get_user_list() */
 	protected ?array $user_list = null;
 
 	/**
@@ -103,11 +104,9 @@ class LDAPFunctions
 			// See if we can find the user
 			Logs::debug(__METHOD__, __LINE__, 'Option B: We do not know how to bind a user, so we must first search the directory');
 			$info = $this->get_user_data($user);
-
 			if (is_null($info) || empty($info->dn)) {
 				return false;
 			}
-
 			// Try to re-bind with the dn provided
 			try {
 				return $this->LDAP_bind($info->dn, $pass);
@@ -126,11 +125,11 @@ class LDAPFunctions
 	 *
 	 * @param string $username
 	 *
-	 * @return LDAPUserData contains null or the user data
+	 * @return FixedArray contains null or the user data
 	 *
 	 * @throws LDAPException
 	 */
-	public function get_user_data(string $username): ?LDAPUserData
+	public function get_user_data(string $username): ?FixedArray
 	{
 		$this->open_LDAP();
 
@@ -175,7 +174,7 @@ class LDAPFunctions
 	 *
 	 * @param bool $refresh
 	 *
-	 * @return array of LDAPUserData
+	 * @return array of FixedArray
 	 *
 	 * @throws LDAPException
 	 */
@@ -439,15 +438,15 @@ class LDAPFunctions
 	}
 
 	/**
-	 * Converts a ldap user entry into a LDAPUserData entry.
+	 * Converts a ldap user entry into a FixedArray.
 	 *
 	 * @param array $user_result
 	 *
-	 * @return LDAPUserData contains the user data
+	 * @return LFixedArray contains the user data
 	 */
-	protected function userdata_from_ldap_result(array $user_result): LDAPUserData
+	protected function userdata_from_ldap_result(array $user_result): FixedArray
 	{
-		$userData = new LDAPUserData();
+		$userData = new FixedArray(self::USER_ENTRIES);
 
 		// general user info
 		$userData->dn = $user_result['dn'];

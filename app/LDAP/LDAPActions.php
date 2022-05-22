@@ -17,7 +17,7 @@ class LDAPActions
 	/**
 	 * Create a user in the database if it does not exist already.
 	 */
-	public static function create_user_not_exist(string $username, LDAPUserData $userData): void
+	public static function create_user_not_exist(string $username, FixedArray $userData): void
 	{
 		$user = User::query()->where('username', '=', $username)->first();
 		if ($user == null) {
@@ -28,7 +28,7 @@ class LDAPActions
 		}
 	}
 
-	public static function update_user(string $username, LDAPUserData $userData): void
+	public static function update_user(string $username, FixedArray $userData): void
 	{
 		$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
 		if (($user != null) && (($user->display_name != $userData->display_name) || ($user->email != $userData->email))) {
