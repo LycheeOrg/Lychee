@@ -480,26 +480,52 @@ class PhotosUnitTest
 	 * Import a picture.
 	 *
 	 * @param string      $path
-	 * @param bool        $delete_imported
 	 * @param string|null $album_id
+	 * @param bool|null   $delete_imported    tri-state, `null` means let the server pick the configured default
+	 * @param bool|null   $skip_duplicates    tri-state, `null` means let the server pick the configured default
+	 * @param bool|null   $import_via_symlink tri-state, `null` means let the server pick the configured default
+	 * @param bool|null   $resync_metadata    tri-state, `null` means let the server pick the configured default
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return string
+	 * @return string the streamed progress report
 	 */
 	public function import(
 		string $path,
-		bool $delete_imported = false,
 		?string $album_id = null,
+		?bool $delete_imported = null,
+		?bool $skip_duplicates = null,
+		?bool $import_via_symlink = null,
+		?bool $resync_metadata = null,
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): string {
-		$response = $this->testCase->postJson('/api/Import::server', [
-			'function' => 'Import::server',
+		$requestParams = [
 			'albumID' => $album_id,
 			'path' => $path,
-			'delete_imported' => $delete_imported,
-		]);
+		];
+
+		if ($delete_imported !== null) {
+			$requestParams['delete_imported'] = $delete_imported;
+		}
+
+		if ($skip_duplicates !== null) {
+			$requestParams['skip_duplicates'] = $skip_duplicates;
+		}
+
+		if ($import_via_symlink !== null) {
+			$requestParams['import_via_symlink'] = $import_via_symlink;
+		}
+
+		if ($resync_metadata !== null) {
+			$requestParams['resync_metadata'] = $resync_metadata;
+		}
+
+		$response = $this->testCase->postJson(
+			'/api/Import::server',
+			$requestParams
+		);
+
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);

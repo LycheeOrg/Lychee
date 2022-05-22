@@ -12,12 +12,16 @@
 
 namespace Tests\Feature;
 
+use App\Contracts\SizeVariantNamingStrategy;
 use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\TestCase;
@@ -71,71 +75,130 @@ class PhotosAddTest extends TestCase
 	 */
 	public function testSimpleUpload(): void
 	{
-		$id = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
-		);
-		$response = $this->photos_tests->get($id);
-		/*
-		 * Check some Exif data
-		 */
-		$taken_at = Carbon::create(
-			2019, 6, 1, 1, 28, 25, '+02:00'
-		);
-		$response->assertJson([
-			'album_id' => null,
-			'aperture' => 'f/2.8',
-			'focal' => '16 mm',
-			'id' => $id,
-			'iso' => '1250',
-			'lens' => 'EF16-35mm f/2.8L USM',
-			'make' => 'Canon',
-			'model' => 'Canon EOS R',
-			'shutter' => '30 s',
-			'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
-			'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
-			'title' => 'night',
-			'type' => 'image/jpeg',
-			'size_variants' => [
-				'small' => [
-					'width' => 540,
-					'height' => 360,
+		$id = null;
+
+		try {
+			$id = $this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			);
+			$response = $this->photos_tests->get($id);
+			/*
+			 * Check some Exif data
+			 */
+			$taken_at = Carbon::create(
+				2019, 6, 1, 1, 28, 25, '+02:00'
+			);
+			$response->assertJson([
+				'album_id' => null,
+				'aperture' => 'f/2.8',
+				'focal' => '16 mm',
+				'id' => $id,
+				'iso' => '1250',
+				'lens' => 'EF16-35mm f/2.8L USM',
+				'make' => 'Canon',
+				'model' => 'Canon EOS R',
+				'shutter' => '30 s',
+				'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
+				'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
+				'title' => 'night',
+				'type' => 'image/jpeg',
+				'size_variants' => [
+					'small' => [
+						'width' => 540,
+						'height' => 360,
+					],
+					'medium' => [
+						'width' => 1620,
+						'height' => 1080,
+					],
+					'original' => [
+						'width' => 6720,
+						'height' => 4480,
+						'filesize' => 21104156,
+					],
 				],
-				'medium' => [
-					'width' => 1620,
-					'height' => 1080,
-				],
-				'original' => [
-					'width' => 6720,
-					'height' => 4480,
-					'filesize' => 21104156,
-				],
-			],
-		]);
+			]);
+
+			$this->photos_tests->delete([$id]);
+		} finally {
+			// Clean-up
+			DB::table('size_variants')->whereIn('photo_id', [$id])->delete();
+			DB::table('photos')->whereIn('id', [$id])->delete();
+		}
 	}
 
 	/**
-	 * Tests Apple Live Photo upload.
+	 * Tests Apple Live Photo upload (photo first, video second).
 	 *
 	 * @return void
 	 */
-	public function testAppleLivePhotoUpload(): void
+	public function testAppleLivePhotoUpload1(): void
 	{
 		if (!$this->hasExifTools) {
 			static::markTestSkipped('Exiftool is not available. Test Skipped.');
 		}
 
-		$photo_id = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE)
-		);
-		$video_id = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_VIDEO)
-		);
-		$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
-		static::assertEquals($photo_id, $video_id);
-		static::assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
-		static::assertStringEndsWith('.mov', $photo->live_photo_url);
-		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
-		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
+		$video_id = null;
+		$photo_id = null;
+
+		try {
+			$photo_id = $this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE)
+			);
+			$video_id = $this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_VIDEO)
+			);
+			$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
+			static::assertEquals($photo_id, $video_id);
+			static::assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
+			static::assertStringEndsWith('.mov', $photo->live_photo_url);
+			static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
+			static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
+
+			$this->photos_tests->delete([$photo_id]);
+		} finally {
+			// Clean-up
+			DB::table('size_variants')->whereIn('photo_id', [$photo_id, $video_id])->delete();
+			DB::table('photos')->whereIn('id', [$photo_id, $video_id])->delete();
+		}
+	}
+
+	/**
+	 * Tests Apple Live Photo upload (video first, photo second).
+	 *
+	 * @return void
+	 */
+	public function testAppleLivePhotoUpload2(): void
+	{
+		if (!$this->hasExifTools) {
+			static::markTestSkipped('Exiftool is not available. Test Skipped.');
+		}
+
+		$video_id = null;
+		$photo_id = null;
+
+		try {
+			$video_id = $this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_VIDEO)
+			);
+			$photo_id = $this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE)
+			);
+			$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
+			static::assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
+			static::assertStringEndsWith('.mov', $photo->live_photo_url);
+			static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
+			static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
+
+			// The initially uploaded video should have been deleted
+			static::assertEquals(0, DB::table('photos')->where('id', '=', $video_id)->count());
+
+			$this->photos_tests->delete([$photo_id]);
+		} finally {
+			// Clean-up
+			DB::table('size_variants')->whereIn('photo_id', [$photo_id, $video_id])->delete();
+			DB::table('photos')->whereIn('id', [$photo_id, $video_id])->delete();
+		}
 	}
 
 	/**
@@ -149,54 +212,107 @@ class PhotosAddTest extends TestCase
 			static::markTestSkipped('Exiftool or FFmpeg is not available. Test Skipped.');
 		}
 
-		$photo_id = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_IMAGE)
-		);
-		$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
+		$photo_id = null;
 
-		static::assertStringEndsWith('.mov', $photo->live_photo_url);
-		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
-		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
+		try {
+			$photo_id = $this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_IMAGE)
+			);
+			$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
+
+			static::assertStringEndsWith('.mov', $photo->live_photo_url);
+			static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
+			static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
+
+			$this->photos_tests->delete([$photo_id]);
+		} finally {
+			// Clean-up
+			DB::table('size_variants')->whereIn('photo_id', [$photo_id])->delete();
+			DB::table('photos')->whereIn('id', [$photo_id])->delete();
+		}
 	}
 
-	public function testImport()
+	public function testRecentAlbum(): void
 	{
-		// save initial value
-		$init_config_value = Configs::get_value('import_via_symlink');
+		$ids_before = static::getRecentPhotoIDs();
 
-		// enable import via symlink option
-		Configs::set('import_via_symlink', '1');
-		static::assertEquals('1', Configs::get_value('import_via_symlink'));
+		$recentAlbumBefore = static::convertJsonToObject($this->albums_tests->get('recent'));
+		static::assertCount($ids_before->count(), $recentAlbumBefore->photos);
 
-		$strRecent = Carbon::now()
-			->subDays(intval(Configs::get_value('recent_age', '1')))
-			->setTimezone('UTC')
-			->format('Y-m-d H:i:s');
-		$recentFilter = function (Builder $query) use ($strRecent) {
-			$query->where('created_at', '>=', $strRecent);
-		};
+		$id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		);
+		$photo_id = $this->photos_tests->get($id)->offsetGet('id');
+		$ids_after = static::getRecentPhotoIDs();
 
-		$ids_before_import = Photo::query()->select('id')->where($recentFilter)->pluck('id');
-		$num_before_import = $ids_before_import->count();
+		$recentAlbumAfter = static::convertJsonToObject($this->albums_tests->get('recent'));
+		static::assertEquals($ids_after->count(), count($recentAlbumAfter->photos));
 
-		// upload the photo
+		$new_ids = $ids_after->diff($ids_before);
+		static::assertCount(1, $new_ids);
+		static::assertEquals($photo_id, $new_ids->first());
+
+		$this->photos_tests->delete([$photo_id]);
+
+		$recentAlbum = static::convertJsonToObject($this->albums_tests->get('recent'));
+		static::assertEquals($recentAlbumBefore->photos, $recentAlbum->photos);
+	}
+
+	public function testImportViaMove(): void
+	{
+		$ids_before = static::getRecentPhotoIDs();
+
+		// import the photo
 		copy(base_path('tests/Samples/night.jpg'), base_path('public/uploads/import/night.jpg'));
-		$this->photos_tests->import(base_path('public/uploads/import/'));
+		$this->photos_tests->import(base_path('public/uploads/import/'), null, true, false, false);
 
-		// check if the file is still there (without symlinks the photo would have been deleted)
-		static::assertEquals(true, file_exists('public/uploads/import/night.jpg'));
+		// check if the file has been moved
+		static::assertEquals(false, file_exists(base_path('public/uploads/import/night.jpg')));
 
-		$response = $this->albums_tests->get('recent');
-		$responseObj = json_decode($response->getContent());
-		$ids_after_import = (new BaseCollection($responseObj->photos))->pluck('id');
-		static::assertEquals(Photo::query()->where($recentFilter)->count(), $ids_after_import->count());
-		$ids_to_delete = $ids_after_import->diff($ids_before_import)->all();
+		$ids_after = static::getRecentPhotoIDs();
+		$ids_to_delete = $ids_after->diff($ids_before)->all();
 		$this->photos_tests->delete($ids_to_delete);
+	}
 
-		static::assertEquals($num_before_import, Photo::query()->where($recentFilter)->count());
+	public function testImportViaCopy(): void
+	{
+		$ids_before = static::getRecentPhotoIDs();
 
-		// set back to initial value
-		Configs::set('import_via_symlink', $init_config_value);
+		// import the photo
+		copy(base_path('tests/Samples/night.jpg'), base_path('public/uploads/import/night.jpg'));
+		$this->photos_tests->import(base_path('public/uploads/import/'), null, false, false, false);
+
+		// check if the file is still there
+		static::assertEquals(true, file_exists(base_path('public/uploads/import/night.jpg')));
+
+		$ids_after = static::getRecentPhotoIDs();
+		$ids_to_delete = $ids_after->diff($ids_before)->all();
+		$this->photos_tests->delete($ids_to_delete);
+	}
+
+	public function testImportViaSymlink(): void
+	{
+		$ids_before = static::getRecentPhotoIDs();
+
+		// import the photo
+		copy(base_path('tests/Samples/night.jpg'), base_path('public/uploads/import/night.jpg'));
+		$this->photos_tests->import(base_path('public/uploads/import/'), null, false, false, true);
+
+		// check if the file is still there
+		static::assertEquals(true, file_exists(base_path('public/uploads/import/night.jpg')));
+
+		// get the path of the photo object and check whether it is truly a symbolic link
+		$ids_after = static::getRecentPhotoIDs();
+		$photo_id = $ids_after->diff($ids_before)->first();
+		$rel_path = DB::table('size_variants')
+			->where('photo_id', '=', $photo_id)
+			->where('type', '=', SizeVariant::ORIGINAL)
+			->first('short_path')
+			->short_path;
+		$symlink_path = Storage::disk(SizeVariantNamingStrategy::IMAGE_DISK_NAME)->path($rel_path);
+		static::assertEquals(true, is_link($symlink_path));
+
+		$this->photos_tests->delete([$photo_id]);
 	}
 
 	/**
@@ -244,5 +360,21 @@ class PhotosAddTest extends TestCase
 				],
 			],
 		]);
+	}
+
+	/**
+	 * @return BaseCollection<string> the IDs of recently added photos
+	 */
+	protected static function getRecentPhotoIDs(): BaseCollection
+	{
+		$strRecent = Carbon::now()
+			->subDays(intval(Configs::get_value('recent_age', '1')))
+			->setTimezone('UTC')
+			->format('Y-m-d H:i:s');
+		$recentFilter = function (Builder $query) use ($strRecent) {
+			$query->where('created_at', '>=', $strRecent);
+		};
+
+		return Photo::query()->select('id')->where($recentFilter)->pluck('id');
 	}
 }
