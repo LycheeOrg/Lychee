@@ -95,8 +95,8 @@ The LDAP for lychee interface provides the following public functions.
 | Function                                                    | Description                                        | Return Value |
 |-------------------------------------------------------------|----------------------------------------------------|--------------|
 | check_pass(string $user, string $pass): bool                | Checks if the user has an account.                 | True if the the credentials are valid |
-| get_user_data(string $username): LDAPUserData or null       | Reads some addition data from the LDAP server.     | The data of the user |
-| get_user_list(bool $refresh = false): array of LDAPUserData | Reads the data for a list of users from the LDAP server. | A list of user data |
+| get_user_data(string $username): FixedArray or null         | Reads some addition data from the LDAP server.     | The data of the user |
+| get_user_list(bool $refresh = false): array of FixedArray   | Reads the data for a list of users from the LDAP server. | A list of user data |
 
 If the user types in his credentials lychee calls `check_pass()`. The function connects with the LDAP server and 
 checks if the user has an account. If an
