@@ -46,15 +46,15 @@ class VariantFilesize extends Command
 			$variants = $variants_query->lazyById($limit);
 
 			$this->withProgressBar($variants, function (SizeVariant $variant) use (&$exit_code) {
-				$fullPath = $variant->getFile()->getAbsolutePath();
-				if (file_exists($fullPath)) {
-					$variant->filesize = \Safe\filesize($fullPath);
+				$variantFile = $variant->getFile();
+				if ($variantFile->exists()) {
+					$variant->filesize = $variantFile->getFilesize();
 					if (!$variant->save()) {
-						$this->line('Failed to update filesize for ' . $fullPath . '.');
+						$this->line('Failed to update filesize for ' . $variantFile->getRelativePath() . '.');
 						$exit_code = -1;
 					}
 				} else {
-					$this->line('No file found at ' . $fullPath . '.');
+					$this->line('No file found at ' . $variantFile->getRelativePath() . '.');
 					$exit_code = -1;
 				}
 			});

@@ -40,7 +40,7 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 		parent::setPhoto($photo);
 		$this->originalExtension = '';
 		if ($this->photo != null && ($sv = $this->photo->size_variants->getOriginal()) != null) {
-			$this->originalExtension = $sv->getFile()->getExtension();
+			$this->originalExtension = $sv->getFile()->getOriginalExtension();
 		}
 	}
 
@@ -84,6 +84,8 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 	}
 
 	/**
+	 * Returns the file extension incl. the preceding dot.
+	 *
 	 * @throws MissingValueException
 	 * @throws IllegalOrderOfOperationException
 	 */

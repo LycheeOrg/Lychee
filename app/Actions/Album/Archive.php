@@ -6,7 +6,6 @@ use App\Contracts\AbstractAlbum;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\FrameworkException;
 use App\Facades\AccessControl;
-use App\Facades\Helpers;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
@@ -179,16 +178,16 @@ class Archive extends Action
 					continue;
 				}
 
-				$fullPath = $photo->size_variants->getOriginal()->full_path;
+				$file = $photo->size_variants->getOriginal()->getFile();
 
-				// Set title for photo
-				$extension = Helpers::getExtension($fullPath, false);
+				// Generate name for file inside the ZIP archive
 				$fileBaseName = $this->makeUnique(self::createValidTitle($photo->title), $usedFileNames);
-				$fileName = $fullNameOfDirectory . '/' . $fileBaseName . $extension;
+				$fileName = $fullNameOfDirectory . '/' . $fileBaseName . $file->getExtension();
 
 				// Reset the execution timeout for every iteration.
 				\Safe\set_time_limit(intval(\Safe\ini_get('max_execution_time')));
-				$zip->addFileFromPath($fileName, $fullPath);
+				$zip->addFileFromStream($fileName, $file->read());
+				$file->close();
 			} catch (\Throwable $e) {
 				Handler::reportSafely($e);
 			}

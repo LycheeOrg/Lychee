@@ -3,11 +3,7 @@
 namespace App\Actions\Photo\Extensions;
 
 use App\Actions\Diagnostics\Checks\BasicPermissionCheck;
-use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\InsufficientFilesystemPermissions;
-use App\Exceptions\MediaFileUnsupportedException;
-use App\Image\MediaFile;
-use App\Models\Configs;
 use App\Models\Photo;
 
 /**
@@ -19,14 +15,9 @@ use App\Models\Photo;
  *
  *  - {@link Checks::checkPermissions()} is only used in a single place
  *  - {@link Checks::get_duplicate()} is only used in a single place
- *  - {@link Checks::file_kind()} should be part of a class which combines
- *    all methods which deal with MIME type; maybe e.g.
- *    {@link MediaFile}
  */
 trait Checks
 {
-	use Constants;
-
 	/**
 	 * TODO: Move this method to where it belongs or maybe even nuke it entirely.
 	 *
@@ -66,56 +57,5 @@ trait Checks
 			->first();
 
 		return $photo;
-	}
-
-	/**
-	 * Returns the kind of media file.
-	 *
-	 * The kind is one out of:
-	 *
-	 *  - `'photo'` if the media file is a photo
-	 *  - `'video'` if the media file is a video
-	 *  - `'raw'` if the media file is an accepted file, but none of the other
-	 *    two kinds (we only check extensions).
-	 *
-	 * TODO: Move this method to where it belongs and consolidate this logic with the MIME-related logic of the remaining application.
-	 *
-	 * @param SourceFileInfo $sourceFileInfo information about source file
-	 *
-	 * @return string either `'photo'`, `'video'` or `'raw'`
-	 *
-	 * @throws MediaFileUnsupportedException
-	 * @throws ExternalComponentMissingException
-	 */
-	public function file_kind(SourceFileInfo $sourceFileInfo): string
-	{
-		$extension = $sourceFileInfo->getOriginalExtension();
-		// check raw files
-		$raw_formats = strtolower(strval(Configs::get_value('raw_formats', '')));
-		if (in_array(strtolower($extension), explode('|', $raw_formats), true)) {
-			return 'raw';
-		}
-
-		if (in_array(strtolower($extension), $this->validExtensions, true)) {
-			$mimeType = $sourceFileInfo->getOriginalMimeType();
-			if (in_array($mimeType, $this->validVideoTypes, true)) {
-				return 'video';
-			}
-
-			return 'photo';
-		}
-
-		// let's check for the mimetype
-		// maybe we don't have a photo
-		if (!function_exists('exif_imagetype')) {
-			throw new ExternalComponentMissingException('EXIF library mssing.');
-		}
-
-		$type = exif_imagetype($sourceFileInfo->getFile()->getAbsolutePath());
-		if (in_array($type, $this->validTypes, true)) {
-			return 'photo';
-		}
-
-		throw new MediaFileUnsupportedException('Photo type not supported: ' . $sourceFileInfo->getOriginalName());
 	}
 }

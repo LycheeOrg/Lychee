@@ -44,7 +44,9 @@ class Photo extends Component
 		$this->is_starred = $data['is_starred'];
 		$this->is_public = $data['is_public'];
 
+		// TODO: Don't query the MIME type directly; use the methods of Photo or MediaFile
 		$isVideo = Str::contains($data['type'], 'video');
+		// TODO: Won't work any longer, as `type` always contains the true MIME type, not some faked "raw"
 		$isRaw = Str::contains($data['type'], 'raw');
 		$isLivePhoto = filled($data['live_Photo_filename']);
 

@@ -148,7 +148,7 @@ class Ghostbuster extends Command
 					->get();
 				/** @var SizeVariant $sizeVariant */
 				foreach ($sizeVariants as $sizeVariant) {
-					if ($uploadDisk->exists($sizeVariant->short_path)) {
+					if ($sizeVariant->getFile()->exists()) {
 						continue;
 					}
 					$totalDbEntries++;
