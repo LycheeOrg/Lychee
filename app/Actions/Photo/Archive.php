@@ -99,14 +99,14 @@ class Archive
 	}
 
 	/**
-	 * @param Photo $photo
-	 * @param $variant
+	 * @param Photo  $photo
+	 * @param string $variant
 	 *
 	 * @return BinaryFileResponse
 	 *
 	 * @throws LycheeException
 	 */
-	protected function file(Photo $photo, $variant): BinaryFileResponse
+	protected function file(Photo $photo, string $variant): BinaryFileResponse
 	{
 		$archiveFileInfo = $this->extractFileInfo($photo, $variant);
 		try {
@@ -227,7 +227,7 @@ class Archive
 				}
 				$zip->addFileFromPath($filename, $archiveFileInfo->getFullPath());
 				// Reset the execution timeout for every iteration.
-				set_time_limit(ini_get('max_execution_time'));
+				\Safe\set_time_limit((int) \Safe\ini_get('max_execution_time'));
 			}
 
 			// finish the zip stream
@@ -286,7 +286,7 @@ class Archive
 			$sv = $photo->size_variants->getSizeVariant(self::VARIANT2VARIANT[$variant]);
 			$shortPath = '';
 			$baseFilenameAddon = '';
-			if ($sv) {
+			if ($sv != null) {
 				$shortPath = $sv->short_path;
 				// The filename of the original size variant shall get no
 				// particular suffix but remain as is.

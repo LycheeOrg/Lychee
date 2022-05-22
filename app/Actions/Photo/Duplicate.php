@@ -27,7 +27,7 @@ class Duplicate
 		foreach ($photos as $photo) {
 			$duplicate = $photo->replicate();
 			$duplicate->album_id = $album?->id;
-			if ($album) {
+			if ($album != null) {
 				$duplicate->owner_id = $album->owner_id;
 			}
 			$duplicate->save();
