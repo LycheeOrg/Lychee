@@ -7,15 +7,15 @@ use Tests\TestCase;
 
 class FixedArrayTest extends TestCase
 {
-	public const entries = ['user', 'display_name', 'dn'];
+	public const ENTRIES = ['user', 'display_name', 'dn'];
 
 	public function testFixedArray()
 	{
-		$FA = new FixedArray(self::entries);
-		$this->assertEquals($FA->get_properties(), self::entries);
+		$FA = new FixedArray(self::ENTRIES);
+		$this->assertEquals($FA->get_properties(), self::ENTRIES);
 
-		$this->assertEquals($FA->count(), count(self::entries));
-		$this->assertEquals(count($FA), count(self::entries));
+		$this->assertEquals($FA->count(), count(self::ENTRIES));
+		$this->assertEquals(count($FA), count(self::ENTRIES));
 		$this->assertEquals($FA->count_set(), 0);
 
 		$FA->user = 'username';
@@ -27,7 +27,7 @@ class FixedArrayTest extends TestCase
 		$this->assertEquals($FA->display_name, 'full_name');
 		$this->assertEqualsCanonicalizing($FA->toArray(), ['user' => 'username', 'display_name' => 'full_name'], 'test A');
 
-		$FB = new FixedArray(self::entries);
+		$FB = new FixedArray(self::ENTRIES);
 		$FB->fromArray(['user' => 'username', 'display_name' => 'full_name']);
 		$this->assertEquals($FB->count_set(), 2);
 		$this->assertEqualsCanonicalizing($FB->toArray(), $FA->toArray(), 'Test B');
@@ -46,35 +46,35 @@ class FixedArrayTest extends TestCase
 
 	public function testFixedArrayExcept1()
 	{
-		$FA = new FixedArray(self::entries);
+		$FA = new FixedArray(self::ENTRIES);
 		$this->expectException(\ErrorException::class);
 		$FA->nouser = 'username';
 	}
 
 	public function testFixedArrayExcept2()
 	{
-		$FA = new FixedArray(self::entries);
+		$FA = new FixedArray(self::ENTRIES);
 		$this->expectException(\ErrorException::class);
 		$FA['nouser'] = 'username';
 	}
 
 	public function testFixedArrayExcept3()
 	{
-		$FA = new FixedArray(self::entries);
+		$FA = new FixedArray(self::ENTRIES);
 		$this->expectException(\ErrorException::class);
 		$FA->offsetunset('nouser');
 	}
 
 	public function testFixedArrayExcept4()
 	{
-		$FA = new FixedArray(self::entries);
+		$FA = new FixedArray(self::ENTRIES);
 		$this->expectException(\ErrorException::class);
-		$V = $FA['nouser'];
+		$FA['nouser'];
 	}
 
 	public function testFixedArrayExcept5()
 	{
-		$FA = new FixedArray(self::entries);
+		$FA = new FixedArray(self::ENTRIES);
 		$this->expectException(\ErrorException::class);
 		$FA->fromArray(['nouser' => 'test']);
 	}
