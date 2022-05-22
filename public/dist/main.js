@@ -1266,18 +1266,6 @@ api.delete = function (fn, params) {
 		urlParams.set(param, value);
 	}
 
-	console.log(urlParams.toString());
-	/*let ajaxParams = {
- 	type: "DELETE",
- 	url: "api/" + fn + "?" + urlParams.toString(),
- 	contentType: "application/json",
- 	data: urlParams.toString(),
- 	headers: {
- 		"X-XSRF-TOKEN": csrf.getCSRFCookieValue(),
- 	},
- 	success: successHandler,
- 	error: errorHandler,
- };*/
 	var ajaxParams = {
 		type: "DELETE",
 		url: "api/" + fn,
@@ -1852,7 +1840,7 @@ album.load = function (albumID) {
 		}
 	};
 
-	api.post("Album::get", { albumID: albumID }, successHandler, null, errorHandler);
+	api.get("Album::get", { albumID: albumID }, successHandler, null, errorHandler);
 };
 
 /**

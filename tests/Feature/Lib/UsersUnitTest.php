@@ -197,7 +197,7 @@ class UsersUnitTest
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->postJson('/api/User::getEmail');
+		$response = $this->testCase->getJson('/api/User::getEmail');
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);

@@ -23,7 +23,7 @@ if (config('app.env') === 'dev') {
 	URL::forceScheme('https');
 }
 
-Route::post('/Album::get', [AlbumController::class, 'get']); // TODO
+Route::get('/Album::get', [AlbumController::class, 'get']);
 Route::get('/Album::getPositionData', [AlbumController::class, 'getPositionData']);
 Route::post('/Album::unlock', [AlbumController::class, 'unlock']);
 Route::post('/Album::add', [AlbumController::class, 'add']);
