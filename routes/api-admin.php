@@ -36,8 +36,8 @@ Route::post('/update', [UpdateController::class, 'apply']);
 Route::get('/update', [UpdateController::class, 'check']);
 
 Route::get('/user', [UserController::class, 'list']);
+Route::post('/user/email', [UserController::class, 'setEmail'])->withoutMiddleware([AdminCheck::class]);
+Route::get('/user/email', [UserController::class, 'getEmail'])->withoutMiddleware([AdminCheck::class]);
 Route::post('/user/{userID}', [UserController::class, 'save']);
 Route::delete('/user/{userID}', [UserController::class, 'delete']);
 Route::post('/user', [UserController::class, 'create']);
-Route::post('/user/{userID}/email', [UserController::class, 'setEmail'])->withoutMiddleware([AdminCheck::class]);
-Route::get('/user/{userID}/email', [UserController::class, 'getEmail'])->withoutMiddleware([AdminCheck::class]);

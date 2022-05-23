@@ -24,10 +24,10 @@ class UpdateTest extends TestCase
 		$response = $this->get('/Update', []);
 		$response->assertForbidden();
 
-		$response = $this->postJson('/api/Update::apply');
+		$response = $this->postJson('/api/update');
 		$response->assertForbidden();
 
-		$response = $this->postJson('/api/Update::check');
+		$response = $this->getJson('/api/update');
 		$response->assertForbidden();
 	}
 
@@ -38,7 +38,7 @@ class UpdateTest extends TestCase
 		AccessControl::log_as_id(0);
 
 		Configs::set('allow_online_git_pull', '0');
-		$response = $this->postJson('/api/Update::apply');
+		$response = $this->postJson('/api/update');
 		$response->assertStatus(412);
 		$response->assertSee('Online updates are disabled by configuration');
 
@@ -47,10 +47,10 @@ class UpdateTest extends TestCase
 		$response = $this->get('/Update', []);
 		$response->assertOk();
 
-		$response = $this->postJson('/api/Update::apply');
+		$response = $this->postJson('/api/update');
 		$response->assertOk();
 
-		$response = $this->postJson('/api/Update::check');
+		$response = $this->getJson('/api/update');
 		if ($response->status() === 500) {
 			// We need an OR-condition here.
 			// If we are inside the Lychee repository but on a development

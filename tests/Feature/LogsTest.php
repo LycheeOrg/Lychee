@@ -41,25 +41,25 @@ class LogsTest extends TestCase
 
 	public function testApiLogs(): void
 	{
-		$response = $this->getJson('/api/Logs::list');
+		$response = $this->getJson('/api/logs');
 		$response->assertForbidden();
 	}
 
 	public function testClearLogs(): void
 	{
-		$response = $this->postJson('/api/Logs::clearNoise');
+		$response = $this->postJson('/api/logs/clearNoise');
 		$response->assertForbidden();
 
-		$response = $this->postJson('/api/Logs::clear');
+		$response = $this->postJson('/api/logs/clear');
 		$response->assertForbidden();
 
 		// set user as admin
 		AccessControl::log_as_id(0);
 
-		$response = $this->postJson('/api/Logs::clearNoise');
+		$response = $this->postJson('/api/logs/clearNoise');
 		$response->assertNoContent();
 
-		$response = $this->postJson('/api/Logs::clear');
+		$response = $this->postJson('/api/logs/clear');
 		$response->assertNoContent();
 
 		$response = $this->get('/Logs');

@@ -31,7 +31,7 @@ class NotificationTest extends TestCase
 		// save initial value
 		$init_config_value = Configs::get_value('new_photos_notification');
 
-		$response = $this->postJson('/api/Settings::setNewPhotosNotification', [
+		$response = $this->postJson('/api/settings/newPhotosNotification', [
 			'new_photos_notification' => '1',
 		]);
 		$response->assertNoContent();

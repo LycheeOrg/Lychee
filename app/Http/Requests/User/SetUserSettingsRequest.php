@@ -11,7 +11,7 @@ class SetUserSettingsRequest extends AbstractUserRequest implements HasUser
 {
 	use HasUserTrait;
 
-	public const ID_ATTRIBUTE = 'id';
+	public const ID_ATTRIBUTE = 'userID';
 
 	/**
 	 * {@inheritDoc}

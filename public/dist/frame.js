@@ -1423,9 +1423,9 @@ api.v2 = {
 	/** @type APIV2Call */
 	deleteUser: api.createV2API("user/{userID}", "DELETE"),
 	/** @type APIV2Call */
-	userGetEmail: api.createV2API("user/{userID}/email", "GET"),
+	userGetEmail: api.createV2API("user/email", "GET"),
 	/** @type APIV2Call */
-	userSetEmail: api.createV2API("user/{userID}/email", "POST"),
+	userSetEmail: api.createV2API("user/email", "POST"),
 	/** @type APIV2Call */
 	allSettings: api.createV2API("settings", "GET"),
 	/** @type APIV2Call */
