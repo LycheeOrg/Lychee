@@ -68,7 +68,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 201,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->postJson('/api/album/tags', [
+		$response = $this->testCase->postJson('/api/album/tag', [
 			'title' => $title,
 			'tags' => $tags,
 		]);
@@ -142,8 +142,8 @@ class AlbumsUnitTest
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->postJson(
-			'/api/Album::unlock',
-			['albumID' => $id, 'password' => $password]
+			'/api/album/' . $id . '/unlock',
+			['password' => $password]
 		);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
@@ -218,8 +218,8 @@ class AlbumsUnitTest
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->postJson(
-			'/api/Album::setDescription',
-			['albumID' => $id, 'description' => $description]
+			'/api/album/' . $id . '/description',
+			['description' => $description]
 		);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
@@ -241,8 +241,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson('/api/Album::setLicense', [
-			'albumID' => $id,
+		$response = $this->testCase->postJson('/api/album/' . $id . '/license', [
 			'license' => $license,
 		]);
 		$response->assertStatus($expectedStatusCode);
@@ -267,8 +266,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson('/api/Album::setSorting', [
-			'albumID' => $id,
+		$response = $this->testCase->postJson('/api/album/' . $id . '/sorting', [
 			'sorting_column' => $sortingCol,
 			'sorting_order' => $sortingOrder,
 		]);
@@ -300,9 +298,8 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson('/api/Album::setProtectionPolicy', [
+		$response = $this->testCase->postJson('/api/album/' . $id . '/protection', [
 			'grants_full_photo' => $full_photo,
-			'albumID' => $id,
 			'is_public' => $public,
 			'requires_link' => $requiresLink,
 			'is_nsfw' => $nsfw,
@@ -327,8 +324,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson('/api/Album::setShowTags', [
-			'albumID' => $id,
+		$response = $this->testCase->postJson('/api/album/' . $id . '/tags', [
 			'show_tags' => $tags,
 		]);
 		$response->assertStatus($expectedStatusCode);
@@ -385,7 +381,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->getJson('/api/Albums::getPositionData');
+		$response = $this->testCase->getJson('/api/albums/position');
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
@@ -408,7 +404,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->getJson('/api/Album::getPositionData?includeSubAlbums=0&albumID=' . $id);
+		$response = $this->testCase->getJson('/api/album/' . $id . 'position?includeSubAlbums=0');
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);

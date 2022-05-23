@@ -80,9 +80,9 @@ Route::post('/session/logout', [SessionController::class, 'logout']);
 
 Route::post('/settings/login', [Administration\SettingsController::class, 'setLogin']);
 
-Route::get('/Sharing::list', [Administration\SharingController::class, 'list']);
-Route::post('/Sharing::add', [Administration\SharingController::class, 'add']);
-Route::delete('/Sharing::delete', [Administration\SharingController::class, 'delete']);
+Route::get('/sharing', [Administration\SharingController::class, 'list']);
+Route::post('/Sharing::add', [Administration\SharingController::class, 'add']); // TODO uses list
+Route::delete('/sharing', [Administration\SharingController::class, 'delete']); // TODO uses list
 
 Route::post('/webauthn/register/gen', [Administration\WebAuthController::class, 'generateRegistration']);
 Route::post('/webauthn/register', [Administration\WebAuthController::class, 'verifyRegistration']);

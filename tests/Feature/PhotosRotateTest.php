@@ -57,10 +57,7 @@ class PhotosRotateTest extends TestCase
 
 		$editor_enabled_value = Configs::get_value('editor_enabled');
 		Configs::set('editor_enabled', '0');
-		$response = $this->postJson('/api/PhotoEditor::rotate', [
-			'photoID' => $id,
-			'direction' => 1,
-		]);
+		$response = $this->postJson('/api/photo/' . $id . '/editor/rotate/1');
 		$response->assertStatus(412);
 		$response->assertSee('support for rotation disabled by configuration');
 

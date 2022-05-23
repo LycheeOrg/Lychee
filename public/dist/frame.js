@@ -1463,7 +1463,11 @@ api.v2 = {
 	/**
   * @type APIV2Call
   */
-	setLogin: api.createV2API("settings/login", "POST")
+	setLogin: api.createV2API("settings/login", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	sharingList: api.createV2API("sharing", "GET")
 };
 
 var csrf = {};
@@ -1908,7 +1912,7 @@ $(function () {
 /**
  * @typedef SharingInfo
  *
- * DTO returned by `Sharing::list`
+ * DTO returned by `sharing`
  *
  * @property {{id: number, album_id: string, user_id: number, username: string, title: string}[]} shared
  * @property {{id: string, title: string}[]}                                                      albums
