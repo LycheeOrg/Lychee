@@ -2,8 +2,12 @@
 
 namespace App\Image;
 
+use App\Exceptions\MediaFileOperationException;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
+use League\Flysystem\Adapter\Local as LocalAdapter;
 use League\Flysystem\AdapterInterface;
+use League\Flysystem\Exception as FlyException;
 
 /**
  * Class FlysystemFile.
@@ -19,8 +23,6 @@ class FlysystemFile extends MediaFile
 {
 	protected Filesystem $disk;
 	protected string $relativePath;
-	/** @var ?resource */
-	protected $stream = null;
 
 	public function __construct(Filesystem $disk, string $relativePath)
 	{
@@ -33,10 +35,18 @@ class FlysystemFile extends MediaFile
 	 */
 	public function read()
 	{
-		$this->stream = $this->disk->readStream($this->relativePath);
-		if ($this->stream === false || !is_resource($this->stream)) {
-			$this->stream = null;
-			throw new \RuntimeException('Could not read from file ' . $this->relativePath);
+		try {
+			if (is_resource($this->stream)) {
+				\Safe\fclose($this->stream);
+			}
+
+			$this->stream = $this->disk->readStream($this->relativePath);
+			if ($this->stream === false || !is_resource($this->stream)) {
+				$this->stream = null;
+				throw new FlyException('Filesystem::readStream failed');
+			}
+		} catch (\ErrorException|FlyException|FileNotFoundException $e) {
+			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
 
 		return $this->stream;
@@ -47,15 +57,16 @@ class FlysystemFile extends MediaFile
 	 */
 	public function write($stream): void
 	{
-		if (is_resource($this->stream)) {
-			throw new \LogicException('Cannot write to a file which is opened for read');
-		}
-		// TODO: `put` must be replaced by `writeStream` when Flysystem 2 is shipped with Laravel 9
-		// This will also be more consistent with `readStream`.
-		// Note that v1 also provides a method `writeStream`, but this is a misnomer.
-		// See: https://flysystem.thephpleague.com/v2/docs/what-is-new/
-		if (!$this->disk->put($this->relativePath, $stream)) {
-			throw new \RuntimeException('Could not write to file ' . $this->relativePath);
+		try {
+			// TODO: `put` must be replaced by `writeStream` when Flysystem 2 is shipped with Laravel 9
+			// This will also be more consistent with `readStream`.
+			// Note that v1 also provides a method `writeStream`, but this is a misnomer.
+			// See: https://flysystem.thephpleague.com/v2/docs/what-is-new/
+			if (!$this->disk->put($this->relativePath, $stream)) {
+				throw new FlyException('Filesystem::put failed');
+			}
+		} catch (\ErrorException|FlyException $e) {
+			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
 	}
 
@@ -64,9 +75,48 @@ class FlysystemFile extends MediaFile
 	 */
 	public function delete(): void
 	{
-		if (!$this->disk->delete($this->relativePath)) {
-			throw new \RuntimeException('Could not delete file ' . $this->relativePath);
+		try {
+			if (!$this->disk->delete($this->relativePath)) {
+				throw new FlyException('Filesystem::delete failed');
+			}
+		} catch (\ErrorException|FlyException $e) {
+			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function move(string $newPath): void
+	{
+		if ($this->disk->move($this->relativePath, $newPath) === false) {
+			throw new MediaFileOperationException('could not move file');
+		}
+		$this->relativePath = $newPath;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function exists(): bool
+	{
+		return $this->disk->exists($this->relativePath);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function lastModified(): int
+	{
+		return $this->disk->lastModified($this->relativePath);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getFilesize(): int
+	{
+		return $this->disk->size($this->relativePath);
 	}
 
 	/**
@@ -117,6 +167,14 @@ class FlysystemFile extends MediaFile
 	}
 
 	/**
+	 * @return Filesystem the disk this file is stored on
+	 */
+	public function getDisk(): Filesystem
+	{
+		return $this->disk;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function getExtension(): string
@@ -132,5 +190,17 @@ class FlysystemFile extends MediaFile
 	public function getBasename(): string
 	{
 		return pathinfo($this->relativePath, PATHINFO_FILENAME);
+	}
+
+	/**
+	 * @throws MediaFileOperationException
+	 */
+	public function toLocalFile(): NativeLocalFile
+	{
+		if (!($this->disk->getDriver()->getAdapter() instanceof LocalAdapter)) {
+			throw new MediaFileOperationException('file is not hosted locally');
+		}
+
+		return new NativeLocalFile($this->getAbsolutePath());
 	}
 }

@@ -20,6 +20,7 @@ class Thumbimg extends Component
 	 */
 	public function __construct($type = '', $thumb = '', $thumb2x = '')
 	{
+		// TODO: Don't query the MIME type directly; use the methods of Photo or MediaFile
 		$this->isVideo = Str::contains($type, 'video');
 		$this->thumb = $thumb;
 		$this->thumb2x = $thumb2x;
@@ -39,6 +40,7 @@ class Thumbimg extends Component
 		if ($this->thumb == 'uploads/thumb/' && $this->isVideo) {
 			return view('components.album.thumb-play');
 		}
+		// TODO: Don't query the MIME type directly; use the methods of Photo or MediaFile
 		if ($this->thumb == 'uploads/thumb/' && Str::contains($this->type, 'raw')) {
 			return view('components.album.thumb-placeholder');
 		}
