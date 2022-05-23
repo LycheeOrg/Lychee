@@ -46,7 +46,7 @@ jobs:
         sql-versions: ['mariadb', 'postgresql', 'sqlite']
         mode: ['', '--no-dev']
 
-    name: PHP${{ matrix.php-versions }} - ${{ matrix.sql-versions }} - ${{ matrix.mode }}
+    name: PHP${{ matrix.php-versions }} - ${{ matrix.sql-versions }} ${{ matrix.mode }}
 
     env:
       extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip
