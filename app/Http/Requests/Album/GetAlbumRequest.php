@@ -8,7 +8,6 @@ use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Models\Extensions\BaseAlbum;
 use App\Rules\AlbumIDRule;
-use PHPUnit\Exception;
 
 class GetAlbumRequest extends BaseRouteParameterApiRequest implements HasAbstractAlbum
 {
