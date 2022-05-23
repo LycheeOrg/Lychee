@@ -28,10 +28,10 @@ class WebAuthTest extends TestCase
 	{
 		AccessControl::log_as_id(0);
 
-		$response = $this->postJson('/api/WebAuthn::register/gen');
+		$response = $this->postJson('/api/webauthn/register/gen');
 		$response->assertOk();
 
-		$response = $this->postJson('/api/WebAuthn::register', [
+		$response = $this->postJson('/api/webauthn/register', [
 			'id' => '-PhslGzltOv3nJ0j8Or1AuNHh9kgmMQmOdM0A7eF7yJcAuSZzFa9YhSHfrYvyllhNUhuIMTE6hFYA3Ef7gCOwg',
 			'rawId' => '+PhslGzltOv3nJ0j8Or1AuNHh9kgmMQmOdM0A7eF7yJcAuSZzFa9YhSHfrYvyllhNUhuIMTE6hFYA3Ef7gCOwg==',
 			'response' => [
@@ -44,10 +44,10 @@ class WebAuthTest extends TestCase
 
 		AccessControl::logout();
 
-		$response = $this->postJson('/api/WebAuthn::login/gen', ['user_id' => 0]);
+		$response = $this->postJson('/api/webauthn/login/gen', ['user_id' => 0]);
 		$response->assertOk();
 
-		$response = $this->postJson('/api/WebAuthn::login', [
+		$response = $this->postJson('/api/webauthn/login', [
 			'id' => 'jQJF5u0Fn-MsdabIxKJoxc19XSLXDCSDqs4g8TV1rXXXBDSEoT6LeRN60CfxZskRxq15EEl43OIbPluD7dVT0A',
 			'rawId' => 'jQJF5u0Fn+MsdabIxKJoxc19XSLXDCSDqs4g8TV1rXXXBDSEoT6LeRN60CfxZskRxq15EEl43OIbPluD7dVT0A==',
 			'response' => [
@@ -62,7 +62,7 @@ class WebAuthTest extends TestCase
 
 		AccessControl::log_as_id(0);
 
-		$response = $this->getJson('/api/WebAuthn::list');
+		$response = $this->getJson('/api/webauthn');
 		$response->assertOk(); // code 200 something
 
 		$key = new WebAuthnCredential([
@@ -79,12 +79,12 @@ class WebAuthTest extends TestCase
 		$user = User::query()->find(0);
 		$user->webAuthnCredentials()->save($key);
 
-		$response = $this->deleteJson('/api/WebAuthn::delete', ['id' => '1234']);
+		$response = $this->deleteJson('/api/webauthn', ['id' => '1234']);
 		$response->assertNoContent();
 
 		AccessControl::logout();
 
-		$response = $this->deleteJson('/api/WebAuthn::delete', ['id' => '1234']);
+		$response = $this->deleteJson('/api/webauthn', ['id' => '1234']);
 		$response->assertUnauthorized();
 	}
 }

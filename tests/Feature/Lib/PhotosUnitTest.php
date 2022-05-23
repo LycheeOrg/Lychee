@@ -37,7 +37,7 @@ class PhotosUnitTest
 	public function upload(UploadedFile $file, ?string $albumID = null): string
 	{
 		$response = $this->testCase->post(
-			'/api/Photo::add', [
+			'/api/photo', [
 				'albumID' => $albumID,
 				'file' => $file,
 			], [

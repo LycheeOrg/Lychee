@@ -18,7 +18,7 @@ class SetEmailRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			self::EMAIL_ATTRIBUTE => 'present|nullable|email:rfc,dns|max:100',
+			self::EMAIL_ATTRIBUTE => 'present|nullable|email:rfc|max:100',
 		];
 	}
 
