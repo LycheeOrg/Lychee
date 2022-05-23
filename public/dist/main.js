@@ -1097,6 +1097,15 @@ function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defi
  */
 
 /**
+ * @callback APIV2Call
+ * @param {Object} params the parameters
+ * @param {?APISuccessCB} [successCallback = null]
+ * @param {?APIProgressCB} [responseProgressCB = null]
+ * @param {?APIErrorCB} [errorCallback = null]
+ * @returns {void}
+ */
+
+/**
  * The main API object
  */
 var api = {
@@ -1394,6 +1403,133 @@ api.getCSS = function (url, callback) {
 		success: successHandler,
 		error: errorHandler
 	});
+};
+
+/**
+ * create a function which queries the API
+ * @param {string} endpoint
+ * @param {string} method
+ * @return APIV2Call
+ */
+api.createV2API = function (endpoint, method) {
+	return function (params) {
+		var successCallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+		var responseProgressCB = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+		var errorCallback = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
+		loadingBar.show();
+
+		var url = endpoint;
+		for (var param in params) {
+			if (url.includes("{" + param + "}")) {
+				url = url.replace("{" + param + "}", params[param]);
+				delete params[param];
+			}
+		}
+
+		/**
+   * The success handler
+   * @param {Object} data the decoded JSON object of the response
+   */
+		var successHandler = function successHandler(data) {
+			setTimeout(loadingBar.hide, 100);
+			if (successCallback) successCallback(data);
+		};
+
+		/**
+   * The error handler
+   * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+   */
+		var errorHandler = function errorHandler(jqXHR) {
+			/**
+    * @type {?LycheeException}
+    */
+			var lycheeException = jqXHR.responseJSON;
+
+			if (errorCallback) {
+				var isHandled = errorCallback(jqXHR, params, lycheeException);
+				if (isHandled) {
+					setTimeout(loadingBar.hide, 100);
+					return;
+				}
+			}
+			// Call global error handler for unhandled errors
+			api.onError(jqXHR, params, lycheeException);
+		};
+
+		var ajaxParams = void 0;
+		switch (method) {
+			case "POST":
+				ajaxParams = {
+					type: "POST",
+					url: "api/" + url,
+					contentType: "application/json",
+					data: JSON.stringify(params),
+					dataType: "json",
+					headers: {
+						"X-XSRF-TOKEN": csrf.getCSRFCookieValue()
+					},
+					success: successHandler,
+					error: errorHandler
+				};
+				break;
+			case "GET":
+				var urlParams = new URLSearchParams();
+				for (var _param in params) {
+					var value = params[_param];
+					if (value === true) value = "1";else if (value === false) value = "0";
+					urlParams.set(_param, value);
+				}
+				ajaxParams = {
+					type: "GET",
+					url: "api/" + url,
+					contentType: "application/json",
+					data: urlParams.toString(),
+					headers: {
+						"X-XSRF-TOKEN": csrf.getCSRFCookieValue()
+					},
+					success: successHandler,
+					error: errorHandler
+				};
+				break;
+			case "DELETE":
+				ajaxParams = {
+					type: "DELETE",
+					url: "api/" + url,
+					contentType: "application/json",
+					data: JSON.stringify(params),
+					dataType: "json",
+					headers: {
+						"X-XSRF-TOKEN": csrf.getCSRFCookieValue()
+					},
+					success: successHandler,
+					error: errorHandler
+				};
+				break;
+		}
+		if (responseProgressCB !== null) {
+			ajaxParams.xhrFields = {
+				onprogress: responseProgressCB
+			};
+		}
+
+		$.ajax(ajaxParams);
+	};
+};
+
+api.v2 = {
+	/**
+  * @type APIV2Call
+  */
+	getAlbum: api.createV2API("album/{albumID}", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	getAlbumPosition: api.createV2API("album/{albumID}/positions", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	deleteAlbumTrack: api.createV2API("album/{albumID}/track", "DELETE")
 };
 
 var csrf = {};
@@ -1840,7 +1976,7 @@ album.load = function (albumID) {
 		}
 	};
 
-	api.get("album/" + albumID, {}, successHandler, null, errorHandler);
+	api.v2.getAlbum({ albumID: albumID }, successHandler, null, errorHandler);
 };
 
 /**
@@ -2819,7 +2955,7 @@ album.refresh = function () {
 album.deleteTrack = function () {
 	album.json.track_url = null;
 
-	api.delete("Album::deleteTrack", {
+	api.v2.deleteAlbumTrack({
 		albumID: album.json.id
 	});
 };
@@ -7645,7 +7781,7 @@ mapview.open = function () {
 				includeSubAlbums: _includeSubAlbums
 			};
 
-			api.get("Album::getPositionData", params, successHandler);
+			api.v2.getAlbumPosition(params, successHandler);
 		} else {
 			// AlbumID is empty -> fetch all photos of all albums
 			api.get("Albums::getPositionData", {}, successHandler);
@@ -11946,12 +12082,11 @@ upload.uploadTrack = function (files) {
 		var formData = new FormData();
 		var xhr = new XMLHttpRequest();
 
-		formData.append("albumID", albumID);
 		formData.append("file", files[0]);
 
 		xhr.onload = finish;
 		xhr.responseType = "json";
-		xhr.open("POST", "api/Album::setTrack");
+		xhr.open("POST", "api/album/" + albumID + "/track");
 		xhr.setRequestHeader("X-XSRF-TOKEN", csrf.getCSRFCookieValue());
 		xhr.setRequestHeader("Accept", "application/json");
 

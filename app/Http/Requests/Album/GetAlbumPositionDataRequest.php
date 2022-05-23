@@ -2,12 +2,12 @@
 
 namespace App\Http\Requests\Album;
 
-use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\BaseRouteParameterApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Rules\AlbumIDRule;
 
-class GetAlbumPositionDataRequest extends BaseApiRequest implements HasAbstractAlbum
+class GetAlbumPositionDataRequest extends BaseRouteParameterApiRequest implements HasAbstractAlbum
 {
 	use HasAbstractAlbumTrait;
 

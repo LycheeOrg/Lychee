@@ -9,6 +9,6 @@ abstract class BaseRouteParameterApiRequest extends BaseApiRequest
 	 */
 	public function validationData(): array
 	{
-		return array_replace_recursive($this->route()->parameters(), $this->allFiles());
+		return array_replace_recursive($this->route()->parameters(), $this->input(), $this->allFiles());
 	}
 }

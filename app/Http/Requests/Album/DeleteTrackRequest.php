@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Album;
 
-use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\BaseRouteParameterApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasAlbum;
 use App\Http\Requests\Traits\HasAlbumTrait;
@@ -12,7 +12,7 @@ use App\Rules\AlbumIDRule;
 /**
  * @implements HasAlbum<AbstractAlbum>
  */
-class DeleteTrackRequest extends BaseApiRequest implements HasAlbum
+class DeleteTrackRequest extends BaseRouteParameterApiRequest implements HasAlbum
 {
 	use HasAlbumTrait;
 

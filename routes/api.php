@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\URL;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,15 +15,8 @@ use Illuminate\Support\Facades\URL;
 |
 */
 
-// We need that to force https everywhere
-// if (env('APP_ENV') === 'production') {
-
-if (config('app.env') === 'dev') {
-	URL::forceScheme('https');
-}
-
 Route::get('/album/{albumID}', [AlbumController::class, 'get']);
-Route::get('/Album::getPositionData', [AlbumController::class, 'getPositionData']);
+Route::get('/album/{albumID}/positions', [AlbumController::class, 'getPositionData']);
 Route::post('/Album::unlock', [AlbumController::class, 'unlock']);
 Route::post('/Album::add', [AlbumController::class, 'add']);
 Route::post('/Album::addByTags', [AlbumController::class, 'addTagAlbum']);
@@ -42,10 +34,10 @@ Route::post('/Album::setSorting', [AlbumController::class, 'setSorting']);
 Route::get('/Album::getArchive', [AlbumController::class, 'getArchive'])
 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
 	->middleware(['local_storage', 'accept_content_type:any']);
-Route::post('/Album::setTrack', [AlbumController::class, 'setTrack'])
+Route::post('/album/{albumID}/track', [AlbumController::class, 'setTrack'])
 	->withoutMiddleware(['content_type:json'])
 	->middleware(['content_type:multipart']);
-Route::delete('/Album::deleteTrack', [AlbumController::class, 'deleteTrack']);
+Route::delete('/album/{albumID}/track', [AlbumController::class, 'deleteTrack']);
 
 Route::get('/Albums::get', [AlbumsController::class, 'get']);
 Route::get('/Albums::getPositionData', [AlbumsController::class, 'getPositionData']);
