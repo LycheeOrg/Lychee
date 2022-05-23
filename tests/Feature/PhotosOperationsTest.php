@@ -225,7 +225,7 @@ class PhotosOperationsTest extends TestCase
 
 		$this->albums_tests->delete([$albumID]);
 
-		$response = $this->postJson('/api/Photo::clearSymLink');
+		$response = $this->postJson('/api/photo/clearSymLink');
 		$response->assertNoContent();
 	}
 

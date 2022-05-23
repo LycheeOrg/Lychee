@@ -927,12 +927,12 @@
  * The main API object
  */
 var api = {
-  /**
-   * Global, default error handler
-   *
-   * @type {?APIErrorCB}
-   */
-  onError: null
+	/**
+  * Global, default error handler
+  *
+  * @type {?APIErrorCB}
+  */
+	onError: null
 };
 
 /**
@@ -963,7 +963,7 @@ var api = {
  * @returns {boolean}
  */
 api.hasSessionExpired = function (jqXHR, lycheeException) {
-  return jqXHR.status === 419 && !!lycheeException && lycheeException.exception.endsWith("SessionExpiredException") || jqXHR.status === 401 && !!lycheeException && lycheeException.exception.endsWith("UnauthenticatedException");
+	return jqXHR.status === 419 && !!lycheeException && lycheeException.exception.endsWith("SessionExpiredException") || jqXHR.status === 401 && !!lycheeException && lycheeException.exception.endsWith("UnauthenticatedException");
 };
 
 /**
@@ -976,68 +976,68 @@ api.hasSessionExpired = function (jqXHR, lycheeException) {
  * @returns {void}
  */
 api.get = function (fn, params) {
-  var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-  var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-  var errorCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+	var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+	var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+	var errorCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
 
-  loadingBar.show();
+	loadingBar.show();
 
-  /**
-   * The success handler
-   * @param {Object} data the decoded JSON object of the response
+	/**
+  * The success handler
+  * @param {Object} data the decoded JSON object of the response
+  */
+	var successHandler = function successHandler(data) {
+		setTimeout(loadingBar.hide, 100);
+		if (successCallback) successCallback(data);
+	};
+
+	/**
+  * The error handler
+  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+  */
+	var errorHandler = function errorHandler(jqXHR) {
+		/**
+   * @type {?LycheeException}
    */
-  var successHandler = function successHandler(data) {
-    setTimeout(loadingBar.hide, 100);
-    if (successCallback) successCallback(data);
-  };
+		var lycheeException = jqXHR.responseJSON;
 
-  /**
-   * The error handler
-   * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
-   */
-  var errorHandler = function errorHandler(jqXHR) {
-    /**
-     * @type {?LycheeException}
-     */
-    var lycheeException = jqXHR.responseJSON;
+		if (errorCallback) {
+			var isHandled = errorCallback(jqXHR, params, lycheeException);
+			if (isHandled) {
+				setTimeout(loadingBar.hide, 100);
+				return;
+			}
+		}
+		// Call global error handler for unhandled errors
+		api.onError(jqXHR, params, lycheeException);
+	};
 
-    if (errorCallback) {
-      var isHandled = errorCallback(jqXHR, params, lycheeException);
-      if (isHandled) {
-        setTimeout(loadingBar.hide, 100);
-        return;
-      }
-    }
-    // Call global error handler for unhandled errors
-    api.onError(jqXHR, params, lycheeException);
-  };
+	var urlParams = new URLSearchParams();
+	for (var param in params) {
+		var value = params[param];
+		if (value === true) value = "1";else if (value === false) value = "0";
+		urlParams.set(param, value);
+	}
 
-  var urlParams = new URLSearchParams();
-  for (var param in params) {
-    var value = params[param];
-    if (value === true) value = "1";else if (value === false) value = "0";
-    urlParams.set(param, value);
-  }
+	var ajaxParams = {
+		type: "GET",
+		url: "api/" + fn,
+		contentType: "application/json",
+		data: urlParams.toString(),
+		headers: {
+			"X-XSRF-TOKEN": csrf.getCSRFCookieValue()
+		},
+		success: successHandler,
+		error: errorHandler
+	};
 
-  var ajaxParams = {
-    type: "GET",
-    url: "api/" + fn,
-    contentType: "application/json",
-    data: urlParams.toString(),
-    headers: {
-      "X-XSRF-TOKEN": csrf.getCSRFCookieValue()
-    },
-    success: successHandler,
-    error: errorHandler
-  };
+	if (responseProgressCB !== null) {
+		ajaxParams.xhrFields = {
+			onprogress: responseProgressCB
+		};
+	}
 
-  if (responseProgressCB !== null) {
-    ajaxParams.xhrFields = {
-      onprogress: responseProgressCB
-    };
-  }
-
-  $.ajax(ajaxParams);
+	$.ajax(ajaxParams);
 };
 
 /**
@@ -1050,69 +1050,69 @@ api.get = function (fn, params) {
  * @returns {void}
  */
 api.delete = function (fn, params) {
-  var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-  var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-  var errorCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+	var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+	var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+	var errorCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
 
-  loadingBar.show();
+	loadingBar.show();
 
-  /**
-   * The success handler
-   * @param {Object} data the decoded JSON object of the response
+	/**
+  * The success handler
+  * @param {Object} data the decoded JSON object of the response
+  */
+	var successHandler = function successHandler(data) {
+		setTimeout(loadingBar.hide, 100);
+		if (successCallback) successCallback(data);
+	};
+
+	/**
+  * The error handler
+  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+  */
+	var errorHandler = function errorHandler(jqXHR) {
+		/**
+   * @type {?LycheeException}
    */
-  var successHandler = function successHandler(data) {
-    setTimeout(loadingBar.hide, 100);
-    if (successCallback) successCallback(data);
-  };
+		var lycheeException = jqXHR.responseJSON;
 
-  /**
-   * The error handler
-   * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
-   */
-  var errorHandler = function errorHandler(jqXHR) {
-    /**
-     * @type {?LycheeException}
-     */
-    var lycheeException = jqXHR.responseJSON;
+		if (errorCallback) {
+			var isHandled = errorCallback(jqXHR, params, lycheeException);
+			if (isHandled) {
+				setTimeout(loadingBar.hide, 100);
+				return;
+			}
+		}
+		// Call global error handler for unhandled errors
+		api.onError(jqXHR, params, lycheeException);
+	};
 
-    if (errorCallback) {
-      var isHandled = errorCallback(jqXHR, params, lycheeException);
-      if (isHandled) {
-        setTimeout(loadingBar.hide, 100);
-        return;
-      }
-    }
-    // Call global error handler for unhandled errors
-    api.onError(jqXHR, params, lycheeException);
-  };
+	var urlParams = new URLSearchParams();
+	for (var param in params) {
+		var value = params[param];
+		if (value === true) value = "1";else if (value === false) value = "0";
+		urlParams.set(param, value);
+	}
 
-  var urlParams = new URLSearchParams();
-  for (var param in params) {
-    var value = params[param];
-    if (value === true) value = "1";else if (value === false) value = "0";
-    urlParams.set(param, value);
-  }
+	var ajaxParams = {
+		type: "DELETE",
+		url: "api/" + fn,
+		contentType: "application/json",
+		data: JSON.stringify(params),
+		dataType: "json",
+		headers: {
+			"X-XSRF-TOKEN": csrf.getCSRFCookieValue()
+		},
+		success: successHandler,
+		error: errorHandler
+	};
 
-  var ajaxParams = {
-    type: "DELETE",
-    url: "api/" + fn,
-    contentType: "application/json",
-    data: JSON.stringify(params),
-    dataType: "json",
-    headers: {
-      "X-XSRF-TOKEN": csrf.getCSRFCookieValue()
-    },
-    success: successHandler,
-    error: errorHandler
-  };
+	if (responseProgressCB !== null) {
+		ajaxParams.xhrFields = {
+			onprogress: responseProgressCB
+		};
+	}
 
-  if (responseProgressCB !== null) {
-    ajaxParams.xhrFields = {
-      onprogress: responseProgressCB
-    };
-  }
-
-  $.ajax(ajaxParams);
+	$.ajax(ajaxParams);
 };
 
 /**
@@ -1125,62 +1125,62 @@ api.delete = function (fn, params) {
  * @returns {void}
  */
 api.post = function (fn, params) {
-  var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-  var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-  var errorCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+	var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+	var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+	var errorCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
 
-  loadingBar.show();
+	loadingBar.show();
 
-  /**
-   * The success handler
-   * @param {Object} data the decoded JSON object of the response
+	/**
+  * The success handler
+  * @param {Object} data the decoded JSON object of the response
+  */
+	var successHandler = function successHandler(data) {
+		setTimeout(loadingBar.hide, 100);
+		if (successCallback) successCallback(data);
+	};
+
+	/**
+  * The error handler
+  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+  */
+	var errorHandler = function errorHandler(jqXHR) {
+		/**
+   * @type {?LycheeException}
    */
-  var successHandler = function successHandler(data) {
-    setTimeout(loadingBar.hide, 100);
-    if (successCallback) successCallback(data);
-  };
+		var lycheeException = jqXHR.responseJSON;
 
-  /**
-   * The error handler
-   * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
-   */
-  var errorHandler = function errorHandler(jqXHR) {
-    /**
-     * @type {?LycheeException}
-     */
-    var lycheeException = jqXHR.responseJSON;
+		if (errorCallback) {
+			var isHandled = errorCallback(jqXHR, params, lycheeException);
+			if (isHandled) {
+				setTimeout(loadingBar.hide, 100);
+				return;
+			}
+		}
+		// Call global error handler for unhandled errors
+		api.onError(jqXHR, params, lycheeException);
+	};
 
-    if (errorCallback) {
-      var isHandled = errorCallback(jqXHR, params, lycheeException);
-      if (isHandled) {
-        setTimeout(loadingBar.hide, 100);
-        return;
-      }
-    }
-    // Call global error handler for unhandled errors
-    api.onError(jqXHR, params, lycheeException);
-  };
+	var ajaxParams = {
+		type: "POST",
+		url: "api/" + fn,
+		contentType: "application/json",
+		data: JSON.stringify(params),
+		dataType: "json",
+		headers: {
+			"X-XSRF-TOKEN": csrf.getCSRFCookieValue()
+		},
+		success: successHandler,
+		error: errorHandler
+	};
 
-  var ajaxParams = {
-    type: "POST",
-    url: "api/" + fn,
-    contentType: "application/json",
-    data: JSON.stringify(params),
-    dataType: "json",
-    headers: {
-      "X-XSRF-TOKEN": csrf.getCSRFCookieValue()
-    },
-    success: successHandler,
-    error: errorHandler
-  };
+	if (responseProgressCB !== null) {
+		ajaxParams.xhrFields = {
+			onprogress: responseProgressCB
+		};
+	}
 
-  if (responseProgressCB !== null) {
-    ajaxParams.xhrFields = {
-      onprogress: responseProgressCB
-    };
-  }
-
-  $.ajax(ajaxParams);
+	$.ajax(ajaxParams);
 };
 
 /**
@@ -1190,37 +1190,37 @@ api.post = function (fn, params) {
  * @returns {void}
  */
 api.getCSS = function (url, callback) {
-  loadingBar.show();
+	loadingBar.show();
 
-  /**
-   * The success handler
-   * @param {Object} data the decoded JSON object of the response
-   */
-  var successHandler = function successHandler(data) {
-    setTimeout(loadingBar.hide, 100);
+	/**
+  * The success handler
+  * @param {Object} data the decoded JSON object of the response
+  */
+	var successHandler = function successHandler(data) {
+		setTimeout(loadingBar.hide, 100);
 
-    callback(data);
-  };
+		callback(data);
+	};
 
-  /**
-   * The error handler
-   * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
-   */
-  var errorHandler = function errorHandler(jqXHR) {
-    api.onError(jqXHR, {}, null);
-  };
+	/**
+  * The error handler
+  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+  */
+	var errorHandler = function errorHandler(jqXHR) {
+		api.onError(jqXHR, {}, null);
+	};
 
-  $.ajax({
-    type: "GET",
-    url: url,
-    data: {},
-    dataType: "text",
-    headers: {
-      "X-XSRF-TOKEN": csrf.getCSRFCookieValue()
-    },
-    success: successHandler,
-    error: errorHandler
-  });
+	$.ajax({
+		type: "GET",
+		url: url,
+		data: {},
+		dataType: "text",
+		headers: {
+			"X-XSRF-TOKEN": csrf.getCSRFCookieValue()
+		},
+		success: successHandler,
+		error: errorHandler
+	});
 };
 
 /**
@@ -1230,124 +1230,240 @@ api.getCSS = function (url, callback) {
  * @return APIV2Call
  */
 api.createV2API = function (endpoint, method) {
-  return function (params) {
-    var successCallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-    var responseProgressCB = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-    var errorCallback = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+	return function (params) {
+		var successCallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+		var responseProgressCB = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+		var errorCallback = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
-    loadingBar.show();
+		loadingBar.show();
 
-    var url = endpoint;
-    for (var param in params) {
-      if (url.includes("{" + param + "}")) {
-        url = url.replace("{" + param + "}", params[param]);
-        delete params[param];
-      }
-    }
+		var url = endpoint;
+		for (var param in params) {
+			if (url.includes("{" + param + "}")) {
+				url = url.replace("{" + param + "}", params[param]);
+				delete params[param];
+			}
+		}
 
-    /**
-     * The success handler
-     * @param {Object} data the decoded JSON object of the response
-     */
-    var successHandler = function successHandler(data) {
-      setTimeout(loadingBar.hide, 100);
-      if (successCallback) successCallback(data);
-    };
+		/**
+   * The success handler
+   * @param {Object} data the decoded JSON object of the response
+   */
+		var successHandler = function successHandler(data) {
+			setTimeout(loadingBar.hide, 100);
+			if (successCallback) successCallback(data);
+		};
 
-    /**
-     * The error handler
-     * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
-     */
-    var errorHandler = function errorHandler(jqXHR) {
-      /**
-       * @type {?LycheeException}
-       */
-      var lycheeException = jqXHR.responseJSON;
+		/**
+   * The error handler
+   * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+   */
+		var errorHandler = function errorHandler(jqXHR) {
+			/**
+    * @type {?LycheeException}
+    */
+			var lycheeException = jqXHR.responseJSON;
 
-      if (errorCallback) {
-        var isHandled = errorCallback(jqXHR, params, lycheeException);
-        if (isHandled) {
-          setTimeout(loadingBar.hide, 100);
-          return;
-        }
-      }
-      // Call global error handler for unhandled errors
-      api.onError(jqXHR, params, lycheeException);
-    };
+			if (errorCallback) {
+				var isHandled = errorCallback(jqXHR, params, lycheeException);
+				if (isHandled) {
+					setTimeout(loadingBar.hide, 100);
+					return;
+				}
+			}
+			// Call global error handler for unhandled errors
+			api.onError(jqXHR, params, lycheeException);
+		};
 
-    var ajaxParams = void 0;
-    switch (method) {
-      case "POST":
-        ajaxParams = {
-          type: "POST",
-          url: "api/" + url,
-          contentType: "application/json",
-          data: JSON.stringify(params),
-          dataType: "json",
-          headers: {
-            "X-XSRF-TOKEN": csrf.getCSRFCookieValue()
-          },
-          success: successHandler,
-          error: errorHandler
-        };
-        break;
-      case "GET":
-        var urlParams = new URLSearchParams();
-        for (var _param in params) {
-          var value = params[_param];
-          if (value === true) value = "1";else if (value === false) value = "0";
-          urlParams.set(_param, value);
-        }
-        ajaxParams = {
-          type: "GET",
-          url: "api/" + url,
-          contentType: "application/json",
-          data: urlParams.toString(),
-          headers: {
-            "X-XSRF-TOKEN": csrf.getCSRFCookieValue()
-          },
-          success: successHandler,
-          error: errorHandler
-        };
-        break;
-      case "DELETE":
-        ajaxParams = {
-          type: "DELETE",
-          url: "api/" + url,
-          contentType: "application/json",
-          data: JSON.stringify(params),
-          dataType: "json",
-          headers: {
-            "X-XSRF-TOKEN": csrf.getCSRFCookieValue()
-          },
-          success: successHandler,
-          error: errorHandler
-        };
-        break;
-    }
-    if (responseProgressCB !== null) {
-      ajaxParams.xhrFields = {
-        onprogress: responseProgressCB
-      };
-    }
+		var ajaxParams = void 0;
+		switch (method) {
+			case "POST":
+				ajaxParams = {
+					type: "POST",
+					url: "api/" + url,
+					contentType: "application/json",
+					data: JSON.stringify(params),
+					dataType: "json",
+					headers: {
+						"X-XSRF-TOKEN": csrf.getCSRFCookieValue()
+					},
+					success: successHandler,
+					error: errorHandler
+				};
+				break;
+			case "GET":
+				var urlParams = new URLSearchParams();
+				for (var _param in params) {
+					var value = params[_param];
+					if (value === true) value = "1";else if (value === false) value = "0";
+					urlParams.set(_param, value);
+				}
+				ajaxParams = {
+					type: "GET",
+					url: "api/" + url,
+					contentType: "application/json",
+					data: urlParams.toString(),
+					headers: {
+						"X-XSRF-TOKEN": csrf.getCSRFCookieValue()
+					},
+					success: successHandler,
+					error: errorHandler
+				};
+				break;
+			case "DELETE":
+				ajaxParams = {
+					type: "DELETE",
+					url: "api/" + url,
+					contentType: "application/json",
+					data: JSON.stringify(params),
+					dataType: "json",
+					headers: {
+						"X-XSRF-TOKEN": csrf.getCSRFCookieValue()
+					},
+					success: successHandler,
+					error: errorHandler
+				};
+				break;
+		}
+		if (responseProgressCB !== null) {
+			ajaxParams.xhrFields = {
+				onprogress: responseProgressCB
+			};
+		}
 
-    $.ajax(ajaxParams);
-  };
+		$.ajax(ajaxParams);
+	};
 };
 
 api.v2 = {
-  /**
-   * @type APIV2Call
-   */
-  getAlbum: api.createV2API("album/{albumID}", "GET"),
-  /**
-   * @type APIV2Call
-   */
-  getAlbumPosition: api.createV2API("album/{albumID}/positions", "GET"),
-  /**
-   * @type APIV2Call
-   */
-  deleteAlbumTrack: api.createV2API("album/{albumID}/track", "DELETE")
+	/**
+  * @type APIV2Call
+  */
+	getAlbum: api.createV2API("album/{albumID}", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	getAlbumPosition: api.createV2API("album/{albumID}/positions", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	deleteAlbumTrack: api.createV2API("album/{albumID}/track", "DELETE"),
+	/**
+  * @type APIV2Call
+  */
+	listWebAuthn: api.createV2API("webauthn", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	search: api.createV2API("search/{term}", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	photoEditorRotate: api.createV2API("photo/{photoID}/editor/rotate/{direction}", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	photoSetLicense: api.createV2API("photo/{photoID}/license", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	photoSetPublic: api.createV2API("photo/{photoID}/public", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	photoSetDescription: api.createV2API("photo/{photoID}/description", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	photoRandom: api.createV2API("photo/random", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	getPhoto: api.createV2API("photo/{photoID}", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	translateLegacy: api.createV2API("legacy/translate", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	importServer: api.createV2API("import/server", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	importServerCancel: api.createV2API("import/server/cancel", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	frameSettings: api.createV2API("frame/settings", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	albumsTree: api.createV2API("albums/tree", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	albumsPosition: api.createV2API("albums/position", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	getAlbums: api.createV2API("albums", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	setAlbumSorting: api.createV2API("album/{albumID}/sorting", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	setAlbumLicense: api.createV2API("album/{albumID}/license", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	setAlbumProtectionPolicy: api.createV2API("album/{albumID}/protection", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	setTagAlbumTags: api.createV2API("album/{albumID}/tags", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	setAlbumCover: api.createV2API("album/{albumID}/cover", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	setAlbumDescription: api.createV2API("album/{albumID}/description", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	setAlbumNSFW: api.createV2API("album/{albumID}/nsfw", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	addTagAlbum: api.createV2API("album/tag", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	addAlbum: api.createV2API("album", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	unlockAlbum: api.createV2API("album/{albumID}/unlock", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	initSession: api.createV2API("session/init", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	loginSession: api.createV2API("session/login", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	logoutSession: api.createV2API("session/login", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	setLogin: api.createV2API("settings/login", "POST")
 };
 
 var csrf = {};
@@ -1360,23 +1476,23 @@ var csrf = {};
  * @returns {?string}
  */
 csrf.getCSRFCookieValue = function () {
-  var cookie = document.cookie.split(";").find(function (row) {
-    return (/^\s*(X-)?[XC]SRF-TOKEN\s*=/.test(row)
-    );
-  });
-  // We must remove all '%3D' from the end of the string.
-  // Background:
-  // The actual binary value of the CSFR value is encoded in Base64.
-  // If the length of original, binary value is not a multiple of 3 bytes,
-  // the encoding gets padded with `=` on the right; i.e. there might be
-  // zero, one or two `=` at the end of the encoded value.
-  // If the value is sent from the server to the client as part of a cookie,
-  // the `=` character is URL-encoded as `%3D`, because `=` is already used
-  // to separate a cookie key from its value.
-  // When we send back the value to the server as part of an AJAX request,
-  // Laravel expects an unpadded value.
-  // Hence, we must remove the `%3D`.
-  return cookie ? cookie.split("=")[1].trim().replaceAll("%3D", "") : null;
+	var cookie = document.cookie.split(";").find(function (row) {
+		return (/^\s*(X-)?[XC]SRF-TOKEN\s*=/.test(row)
+		);
+	});
+	// We must remove all '%3D' from the end of the string.
+	// Background:
+	// The actual binary value of the CSFR value is encoded in Base64.
+	// If the length of original, binary value is not a multiple of 3 bytes,
+	// the encoding gets padded with `=` on the right; i.e. there might be
+	// zero, one or two `=` at the end of the encoded value.
+	// If the value is sent from the server to the client as part of a cookie,
+	// the `=` character is URL-encoded as `%3D`, because `=` is already used
+	// to separate a cookie key from its value.
+	// When we send back the value to the server as part of an AJAX request,
+	// Laravel expects an unpadded value.
+	// Hence, we must remove the `%3D`.
+	return cookie ? cookie.split("=")[1].trim().replaceAll("%3D", "") : null;
 };
 
 /**
@@ -1415,15 +1531,15 @@ lychee.content = $(".content");
  * @returns {string}
  */
 lychee.escapeHTML = function () {
-  var html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+	var html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
 
-  // Ensure that html is a string
-  html += "";
+	// Ensure that html is a string
+	html += "";
 
-  // Escape all critical characters
-  html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;").replace(/`/g, "&#96;");
+	// Escape all critical characters
+	html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;").replace(/`/g, "&#96;");
 
-  return html;
+	return html;
 };
 
 /**
@@ -1441,114 +1557,114 @@ lychee.escapeHTML = function () {
  * @returns {string}
  */
 lychee.html = function (literalSections) {
-  // Use raw literal sections: we don’t want
-  // backslashes (\n etc.) to be interpreted
-  var raw = literalSections.raw;
-  var result = "";
+	// Use raw literal sections: we don’t want
+	// backslashes (\n etc.) to be interpreted
+	var raw = literalSections.raw;
+	var result = "";
 
-  for (var _len = arguments.length, substs = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    substs[_key - 1] = arguments[_key];
-  }
+	for (var _len = arguments.length, substs = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+		substs[_key - 1] = arguments[_key];
+	}
 
-  substs.forEach(function (subst, i) {
-    // Retrieve the literal section preceding
-    // the current substitution
-    var lit = raw[i];
+	substs.forEach(function (subst, i) {
+		// Retrieve the literal section preceding
+		// the current substitution
+		var lit = raw[i];
 
-    // If the substitution is preceded by a dollar sign,
-    // we escape special characters in it
-    if (lit.slice(-1) === "$") {
-      subst = lychee.escapeHTML(subst);
-      lit = lit.slice(0, -1);
-    }
+		// If the substitution is preceded by a dollar sign,
+		// we escape special characters in it
+		if (lit.slice(-1) === "$") {
+			subst = lychee.escapeHTML(subst);
+			lit = lit.slice(0, -1);
+		}
 
-    result += lit;
-    result += subst;
-  });
+		result += lit;
+		result += subst;
+	});
 
-  // Take care of last literal section
-  // (Never fails, because an empty template string
-  // produces one literal section, an empty string)
-  result += raw[raw.length - 1];
+	// Take care of last literal section
+	// (Never fails, because an empty template string
+	// produces one literal section, an empty string)
+	result += raw[raw.length - 1];
 
-  return result;
+	return result;
 };
 
 /**
  * @returns {string} - either `"touchend"` or `"click"`
  */
 lychee.getEventName = function () {
-  var touchendSupport = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || navigator.vendor || window.opera) && "ontouchend" in document.documentElement;
-  return touchendSupport === true ? "touchend" : "click";
+	var touchendSupport = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || navigator.vendor || window.opera) && "ontouchend" in document.documentElement;
+	return touchendSupport === true ? "touchend" : "click";
 };
 
 // Sub-implementation of lychee -------------------------------------------------------------- //
 
 var frame = {
-  /** @type {number} */
-  refresh: 30000,
-  /** @type {?Photo} */
-  photo: null
+	/** @type {number} */
+	refresh: 30000,
+	/** @type {?Photo} */
+	photo: null
 };
 
 /**
  * @returns {void}
  */
 frame.start_blur = function () {
-  var img = document.getElementById("background");
-  var canvas = document.getElementById("background_canvas");
-  StackBlur.image(img, canvas, 20);
-  canvas.style.width = "100%";
-  canvas.style.height = "100%";
+	var img = document.getElementById("background");
+	var canvas = document.getElementById("background_canvas");
+	StackBlur.image(img, canvas, 20);
+	canvas.style.width = "100%";
+	canvas.style.height = "100%";
 };
 
 /**
  * @returns {void}
  */
 frame.next = function () {
-  $("body").removeClass("loaded");
-  setTimeout(function () {
-    frame.refreshPicture();
-  }, 1000);
+	$("body").removeClass("loaded");
+	setTimeout(function () {
+		frame.refreshPicture();
+	}, 1000);
 };
 
 /**
  * @returns {void}
  */
 frame.refreshPicture = function () {
-  api.get("Photo::getRandom", {},
-  /** @param {Photo} data */
-  function (data) {
-    if (data.size_variants.thumb) {
-      $("#background").attr("src", data.size_variants.thumb.url);
-    } else {
-      $("#background").removeAttr("src");
-      console.log("Thumb not found");
-    }
+	api.v2.photoRandom({},
+	/** @param {Photo} data */
+	function (data) {
+		if (data.size_variants.thumb) {
+			$("#background").attr("src", data.size_variants.thumb.url);
+		} else {
+			$("#background").removeAttr("src");
+			console.log("Thumb not found");
+		}
 
-    var srcset = "";
-    var src = "";
-    frame.photo = null;
-    if (data.size_variants.medium !== null) {
-      src = data.size_variants.medium.url;
+		var srcset = "";
+		var src = "";
+		frame.photo = null;
+		if (data.size_variants.medium !== null) {
+			src = data.size_variants.medium.url;
 
-      if (data.size_variants.medium2x !== null) {
-        srcset = data.size_variants.medium.url + " " + data.size_variants.medium.width + "w, " + data.size_variants.medium2x.url + " " + data.size_variants.medium2x.width + "w";
-        // We use it in the resize callback.
-        this.frame.photo = data;
-      }
-    } else {
-      src = data.size_variants.original.url;
-    }
+			if (data.size_variants.medium2x !== null) {
+				srcset = data.size_variants.medium.url + " " + data.size_variants.medium.width + "w, " + data.size_variants.medium2x.url + " " + data.size_variants.medium2x.width + "w";
+				// We use it in the resize callback.
+				this.frame.photo = data;
+			}
+		} else {
+			src = data.size_variants.original.url;
+		}
 
-    $("#picture").attr("srcset", srcset);
-    frame.resize();
-    $("#picture").attr("src", src).css("display", "inline");
+		$("#picture").attr("srcset", srcset);
+		frame.resize();
+		$("#picture").attr("src", src).css("display", "inline");
 
-    setTimeout(function () {
-      frame.next();
-    }, frame.refresh);
-  });
+		setTimeout(function () {
+			frame.next();
+		}, frame.refresh);
+	});
 };
 
 /**
@@ -1556,26 +1672,26 @@ frame.refreshPicture = function () {
  * @returns {void}
  */
 frame.set = function (data) {
-  frame.refresh = data.refresh + 1000; // + 1 sec of blackout
-  frame.refreshPicture();
+	frame.refresh = data.refresh + 1000; // + 1 sec of blackout
+	frame.refreshPicture();
 };
 
 /**
  * @returns {void}
  */
 frame.resize = function () {
-  if (this.photo) {
-    var ratio = this.photo.size_variants.original.height > 0 ? this.photo.size_variants.original.width / this.photo.size_variants.original.height : 1;
-    var winWidth = $(window).width();
-    var winHeight = $(window).height();
+	if (this.photo) {
+		var ratio = this.photo.size_variants.original.height > 0 ? this.photo.size_variants.original.width / this.photo.size_variants.original.height : 1;
+		var winWidth = $(window).width();
+		var winHeight = $(window).height();
 
-    // Our math assumes that the image occupies the whole frame.  That's
-    // not quite the case (the default css sets it to 95%) but it's close
-    // enough.
-    var width = winWidth / ratio > winHeight ? winHeight * ratio : winWidth;
+		// Our math assumes that the image occupies the whole frame.  That's
+		// not quite the case (the default css sets it to 95%) but it's close
+		// enough.
+		var width = winWidth / ratio > winHeight ? winHeight * ratio : winWidth;
 
-    $("#picture").attr("sizes", width + "px");
-  }
+		$("#picture").attr("sizes", width + "px");
+	}
 };
 
 /**
@@ -1586,55 +1702,55 @@ frame.resize = function () {
  * @returns {boolean}
  */
 frame.handleAPIError = function (jqXHR, params, lycheeException) {
-  var msg = jqXHR.statusText + (lycheeException ? " - " + lycheeException.message : "");
-  loadingBar.show("error", msg);
-  console.error("The server returned an error response", {
-    description: msg,
-    params: params,
-    response: lycheeException
-  });
-  alert(msg);
-  return true;
+	var msg = jqXHR.statusText + (lycheeException ? " - " + lycheeException.message : "");
+	loadingBar.show("error", msg);
+	console.error("The server returned an error response", {
+		description: msg,
+		params: params,
+		response: lycheeException
+	});
+	alert(msg);
+	return true;
 };
 
 // Main -------------------------------------------------------------- //
 
 var loadingBar = {
-  /**
-   * @param {?string} status the status, either `null`, `"error"` or `"success"`
-   * @param {?string} errorText the error text to show
-   * @returns {void}
-   */
-  show: function show(status, errorText) {},
+	/**
+  * @param {?string} status the status, either `null`, `"error"` or `"success"`
+  * @param {?string} errorText the error text to show
+  * @returns {void}
+  */
+	show: function show(status, errorText) {},
 
 
-  /**
-   * @param {?boolean} force
-   */
-  hide: function hide(force) {}
+	/**
+  * @param {?boolean} force
+  */
+	hide: function hide(force) {}
 };
 
 $(function () {
-  // Set API error handler
-  api.onError = frame.handleAPIError;
+	// Set API error handler
+	api.onError = frame.handleAPIError;
 
-  $(window).on("resize", function () {
-    frame.resize();
-  });
+	$(window).on("resize", function () {
+		frame.resize();
+	});
 
-  $("#background").on("load", function () {
-    frame.start_blur();
-  });
+	$("#background").on("load", function () {
+		frame.start_blur();
+	});
 
-  $("#picture").on("load", function () {
-    $("body").addClass("loaded");
-  });
+	$("#picture").on("load", function () {
+		$("body").addClass("loaded");
+	});
 
-  api.get("Frame::getSettings", {},
-  /** @param {FrameSettings} data */
-  function (data) {
-    frame.set(data);
-  });
+	api.v2.frameSettings({},
+	/** @param {FrameSettings} data */
+	function (data) {
+		frame.set(data);
+	});
 });
 
 /**
@@ -1802,7 +1918,7 @@ $(function () {
 /**
  * @typedef SearchResult
  *
- * DTO returned by `Search::run`
+ * DTO returned by `search/{term}`
  *
  * @property {Album[]}    albums
  * @property {TagAlbum[]} tag_albums
@@ -1836,10 +1952,10 @@ $(function () {
  * @type {Readonly<{RECENT: string, STARRED: string, PUBLIC: string, UNSORTED: string}>}
  */
 var SmartAlbumID = Object.freeze({
-  UNSORTED: "unsorted",
-  STARRED: "starred",
-  PUBLIC: "public",
-  RECENT: "recent"
+	UNSORTED: "unsorted",
+	STARRED: "starred",
+	PUBLIC: "public",
+	RECENT: "recent"
 });
 
 /**

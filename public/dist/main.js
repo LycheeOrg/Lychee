@@ -1529,7 +1529,123 @@ api.v2 = {
 	/**
   * @type APIV2Call
   */
-	deleteAlbumTrack: api.createV2API("album/{albumID}/track", "DELETE")
+	deleteAlbumTrack: api.createV2API("album/{albumID}/track", "DELETE"),
+	/**
+  * @type APIV2Call
+  */
+	listWebAuthn: api.createV2API("webauthn", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	search: api.createV2API("search/{term}", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	photoEditorRotate: api.createV2API("photo/{photoID}/editor/rotate/{direction}", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	photoSetLicense: api.createV2API("photo/{photoID}/license", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	photoSetPublic: api.createV2API("photo/{photoID}/public", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	photoSetDescription: api.createV2API("photo/{photoID}/description", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	photoRandom: api.createV2API("photo/random", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	getPhoto: api.createV2API("photo/{photoID}", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	translateLegacy: api.createV2API("legacy/translate", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	importServer: api.createV2API("import/server", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	importServerCancel: api.createV2API("import/server/cancel", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	frameSettings: api.createV2API("frame/settings", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	albumsTree: api.createV2API("albums/tree", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	albumsPosition: api.createV2API("albums/position", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	getAlbums: api.createV2API("albums", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	setAlbumSorting: api.createV2API("album/{albumID}/sorting", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	setAlbumLicense: api.createV2API("album/{albumID}/license", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	setAlbumProtectionPolicy: api.createV2API("album/{albumID}/protection", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	setTagAlbumTags: api.createV2API("album/{albumID}/tags", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	setAlbumCover: api.createV2API("album/{albumID}/cover", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	setAlbumDescription: api.createV2API("album/{albumID}/description", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	setAlbumNSFW: api.createV2API("album/{albumID}/nsfw", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	addTagAlbum: api.createV2API("album/tag", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	addAlbum: api.createV2API("album", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	unlockAlbum: api.createV2API("album/{albumID}/unlock", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	initSession: api.createV2API("session/init", "GET"),
+	/**
+  * @type APIV2Call
+  */
+	loginSession: api.createV2API("session/login", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	logoutSession: api.createV2API("session/login", "POST"),
+	/**
+  * @type APIV2Call
+  */
+	setLogin: api.createV2API("settings/login", "POST")
 };
 
 var csrf = {};
@@ -2028,7 +2144,7 @@ album.add = function () {
 			params.parent_id = _photo3.json.album_id;
 		}
 
-		api.post("Album::add", params,
+		api.v2.addAlbum(params,
 		/** @param {Album} _data */
 		function (_data) {
 			if (IDs != null && callback != null) {
@@ -2072,7 +2188,7 @@ album.addByTags = function () {
 
 		basicModal.close();
 
-		api.post("Album::addByTags", {
+		api.v2.addTagAlbum({
 			title: data.title,
 			tags: data.tags.split(",")
 		},
@@ -2122,7 +2238,7 @@ album.setShowTags = function (albumID) {
 			view.album.show_tags();
 		}
 
-		api.post("Album::setShowTags", {
+		api.v2.setTagAlbumTags({
 			albumID: albumID,
 			show_tags: new_show_tags
 		}, function () {
@@ -2248,7 +2364,7 @@ album.setDescription = function (albumID) {
 			view.album.description();
 		}
 
-		api.post("Album::setDescription", {
+		api.v2.setAlbumDescription({
 			albumID: albumID,
 			description: description
 		});
@@ -2281,7 +2397,7 @@ album.toggleCover = function (photoID) {
 		photoID: album.json.cover_id
 	};
 
-	api.post("Album::setCover", params, function () {
+	api.v2.setAlbumCover(params, function () {
 		view.album.content.cover(photoID);
 		if (!album.getParentID()) {
 			albums.refresh();
@@ -2302,7 +2418,7 @@ album.setLicense = function (albumID) {
 	var action = function action(data) {
 		basicModal.close();
 
-		api.post("Album::setLicense", {
+		api.v2.setAlbumLicense({
 			albumID: albumID,
 			license: data.license
 		}, function () {
@@ -2350,7 +2466,7 @@ album.setSorting = function (albumID) {
 	var action = function action(data) {
 		basicModal.close();
 
-		api.post("Album::setSorting", {
+		api.v2.setAlbumSorting({
 			albumID: albumID,
 			sorting_column: data.sortingCol,
 			sorting_order: data.sortingOrder
@@ -2431,7 +2547,7 @@ album.setProtectionPolicy = function (albumID) {
 			params.password = null;
 		}
 
-		api.post("Album::setProtectionPolicy", params);
+		api.v2.setAlbumProtectionPolicy(params);
 	};
 
 	var msg = lychee.html(_templateObject10, lychee.locale["ALBUM_PUBLIC"], lychee.locale["ALBUM_PUBLIC_EXPL"], build.iconic("check"), lychee.locale["ALBUM_FULL"], lychee.locale["ALBUM_FULL_EXPL"], build.iconic("check"), lychee.locale["ALBUM_HIDDEN"], lychee.locale["ALBUM_HIDDEN_EXPL"], build.iconic("check"), lychee.locale["ALBUM_DOWNLOADABLE"], lychee.locale["ALBUM_DOWNLOADABLE_EXPL"], build.iconic("check"), lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE"], lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE_EXPL"], build.iconic("check"), lychee.locale["ALBUM_PASSWORD_PROT"], lychee.locale["ALBUM_PASSWORD_PROT_EXPL"], lychee.locale["PASSWORD"], lychee.locale["ALBUM_NSFW"], lychee.locale["ALBUM_NSFW_EXPL"]);
@@ -2589,7 +2705,7 @@ album.toggleNSFW = function () {
 
 	view.album.nsfw();
 
-	api.post("Album::setNSFW", {
+	api.v2.setAlbumNSFW({
 		albumID: album.json.id,
 		is_nsfw: album.json.is_nsfw
 	}, function () {
@@ -3019,7 +3135,7 @@ albums.load = function () {
 	};
 
 	if (albums.json === null) {
-		api.get("Albums::get", {}, successCallback);
+		api.v2.getAlbums({}, successCallback);
 	} else {
 		setTimeout(function () {
 			header.setMode("albums");
@@ -4001,7 +4117,7 @@ contextMenu.buildList = function (lists, exclude, action) {
  * @returns {void}
  */
 contextMenu.albumTitle = function (albumID, e) {
-	api.get("Albums::tree", {}, function (data) {
+	api.v2.albumsTree({}, function (data) {
 		var items = [];
 
 		items = items.concat({ title: lychee.locale["ROOT"], disabled: albumID === null, fn: function fn() {
@@ -4363,7 +4479,7 @@ contextMenu.move = function (IDs, e, callback) {
 
 	var items = [];
 
-	api.get("Albums::tree", {}, function (data) {
+	api.v2.albumsTree({}, function (data) {
 		var addItems = function addItems(albums) {
 			// Disable all children
 			// It's not possible to move us into them
@@ -5921,7 +6037,7 @@ lychee.init = function () {
 
 	lychee.adjustContentHeight();
 
-	api.get("Session::init", {},
+	api.v2.initSession({},
 	/** @param {InitializationData} data */
 	function (data) {
 		lychee.parseInitializationData(data);
@@ -6093,7 +6209,7 @@ lychee.login = function (data) {
 		return;
 	}
 
-	api.post("Session::login", data, function () {
+	api.v2.loginSession(data, function () {
 		return window.location.reload();
 	}, null, function (jqXHR) {
 		if (jqXHR.status === 401) {
@@ -6149,7 +6265,7 @@ lychee.loginDialog = function () {
  * @returns {void}
  */
 lychee.logout = function () {
-	api.post("Session::logout", {}, function () {
+	api.v2.logoutSession({}, function () {
 		return window.location.reload();
 	});
 };
@@ -6246,7 +6362,7 @@ lychee.reloadIfLegacyIDs = function (albumID, photoID, autoplay) {
 	var params = {};
 	if (isLegacyID(albumID)) params.albumID = parseInt(albumID, 10);
 	if (isLegacyID(photoID)) params.photoID = parseInt(photoID, 10);
-	api.post("Legacy::translateLegacyModelIDs", params, function (data) {
+	api.v2.translateLegacy(params, function (data) {
 		reloadWithNewIDs(data.hasOwnProperty("albumID") ? data.albumID : albumID, data.hasOwnProperty("photoID") ? data.photoID : photoID);
 	});
 
@@ -7784,7 +7900,7 @@ mapview.open = function () {
 			api.v2.getAlbumPosition(params, successHandler);
 		} else {
 			// AlbumID is empty -> fetch all photos of all albums
-			api.get("Albums::getPositionData", {}, successHandler);
+			api.v2.albumsPosition({}, successHandler);
 		}
 	};
 
@@ -8352,7 +8468,7 @@ password.getDialog = function (albumID, callback) {
 			password: data.password
 		};
 
-		api.post("Album::unlock", params, function () {
+		api.v2.unlockAlbum(params, function () {
 			basicModal.close();
 			callback();
 		}, null, function (jqXHR, params2, lycheeException) {
@@ -8443,7 +8559,7 @@ _photo3.load = function (photoID, albumID, autoplay) {
 		}
 	};
 
-	api.get("Photo::get", {
+	api.v2.getPhoto({
 		photoID: photoID
 	}, successHandler);
 };
@@ -8999,7 +9115,7 @@ _photo3.setProtectionPolicy = function (photoID) {
 
 				albums.refresh();
 
-				api.post("Photo::setPublic", {
+				api.v2.photoSetPublic({
 					photoID: photoID,
 					is_public: newIsPublic !== 0
 				});
@@ -9072,7 +9188,7 @@ _photo3.setDescription = function (photoID) {
 			view.photo.description();
 		}
 
-		api.post("Photo::setDescription", {
+		api.v2.photoSetDescription({
 			photoID: photoID,
 			description: description
 		});
@@ -9233,7 +9349,7 @@ _photo3.setLicense = function (photoID) {
 			license: license
 		};
 
-		api.post("Photo::setLicense", params, function () {
+		api.v2.photoSetLicense(params, function () {
 			// update the photo JSON and reload the license in the sidebar
 			_photo3.json.license = params.license;
 			view.photo.license();
@@ -9473,7 +9589,7 @@ photoeditor = {};
  * @returns {void}
  */
 photoeditor.rotate = function (photoID, direction) {
-	api.post("PhotoEditor::rotate", {
+	api.v2.photoEditorRotate({
 		photoID: photoID,
 		direction: direction
 	},
@@ -9638,7 +9754,7 @@ search.find = function (term) {
 	/** @returns {void} */
 	var timeoutHandler = function timeoutHandler() {
 		if (header.dom(".header__search").val().length !== 0) {
-			api.get("Search::run", { term: term }, successHandler);
+			api.v2.search({ term: term }, successHandler);
 		} else {
 			search.reset();
 		}
@@ -9739,7 +9855,7 @@ settings.createLogin = function () {
 			password: password
 		};
 
-		api.post("Settings::setLogin", params, null, null, errorHandler);
+		api.v2.setLogin(params, null, null, errorHandler);
 	};
 
 	var msg = "\n\t\t<p>\n\t\t\t" + lychee.locale["LOGIN_TITLE"] + "\n\t\t\t<input name='username' class='text' type='text' placeholder='" + lychee.locale["LOGIN_USERNAME"] + "' value=''>\n\t\t\t<input name='password' class='text' type='password' placeholder='" + lychee.locale["LOGIN_PASSWORD"] + "' value=''>\n\t\t\t<input name='confirm' class='text' type='password' placeholder='" + lychee.locale["LOGIN_PASSWORD_CONFIRM"] + "' value=''>\n\t\t</p>";
@@ -11119,8 +11235,8 @@ u2f.login = function () {
 	}
 
 	new Larapass({
-		login: "/api/WebAuthn::login",
-		loginOptions: "/api/WebAuthn::login/gen"
+		login: "/api/webauthn/login",
+		loginOptions: "/api/webauthn/login/gen"
 	}).login({
 		user_id: 0 // for now it is only available to Admin user via a secret key shortcut.
 	}).then(function () {
@@ -11140,8 +11256,8 @@ u2f.register = function () {
 	}
 
 	var larapass = new Larapass({
-		register: "/api/WebAuthn::register",
-		registerOptions: "/api/WebAuthn::register/gen"
+		register: "/api/webauthn/register",
+		registerOptions: "/api/webauthn/register/gen"
 	});
 	if (Larapass.supportsWebAuthn()) {
 		larapass.register().then(function () {
@@ -11159,14 +11275,14 @@ u2f.register = function () {
  * @param {{id: string}} params - ID of WebAuthn credential
  */
 u2f.delete = function (params) {
-	api.delete("WebAuthn::delete", params, function () {
+	api.delete("webauthn", params, function () {
 		loadingBar.show("success", lychee.locale["U2F_CREDENTIALS_DELETED"]);
 		u2f.list(); // reload credential list
 	});
 };
 
 u2f.list = function () {
-	api.get("WebAuthn::list", {},
+	api.v2.listWebAuthn({},
 	/** @param {WebAuthnCredential[]} data*/
 	function (data) {
 		u2f.json = data;
@@ -11507,7 +11623,7 @@ upload.start = {
 			xhr.onload = onLoaded;
 			xhr.onloadend = onComplete;
 			xhr.responseType = "json";
-			xhr.open("POST", "api/Photo::add");
+			xhr.open("POST", "api/photo");
 			xhr.setRequestHeader("X-XSRF-TOKEN", csrf.getCSRFCookieValue());
 			xhr.setRequestHeader("Accept", "application/json");
 
@@ -11687,7 +11803,7 @@ upload.start = {
 
 			var cancelUpload = function cancelUpload() {
 				if (!isUploadCancelled) {
-					api.post("Import::serverCancel", {}, function () {
+					api.v2.importServerCancel({}, function () {
 						isUploadCancelled = true;
 					});
 				}
@@ -11890,7 +12006,7 @@ upload.start = {
 					resync_metadata: data.resync_metadata
 				};
 
-				api.post("Import::server", params, successHandler, progressHandler);
+				api.v2.importServer(params, successHandler, progressHandler);
 			};
 
 			upload.show(lychee.locale["UPLOAD_IMPORT_SERVER"], [], runUpload, cancelUpload);
@@ -14125,7 +14241,7 @@ visible.leftMenu = function () {
 /**
  * @typedef SearchResult
  *
- * DTO returned by `Search::run`
+ * DTO returned by `search/{term}`
  *
  * @property {Album[]}    albums
  * @property {TagAlbum[]} tag_albums

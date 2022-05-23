@@ -306,6 +306,14 @@ abstract class BaseApiRequest extends FormRequest
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public function validationData(): array
+	{
+		return array_replace_recursive($this->route()->parameters(), parent::validationData());
+	}
+
+	/**
 	 * Determines if the user is authorized to make this request.
 	 *
 	 * @return bool

@@ -3,13 +3,13 @@
 namespace App\Http\Requests\Album;
 
 use App\Exceptions\PasswordRequiredException;
-use App\Http\Requests\BaseRouteParameterApiRequest;
+use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Models\Extensions\BaseAlbum;
 use App\Rules\AlbumIDRule;
 
-class GetAlbumRequest extends BaseRouteParameterApiRequest implements HasAbstractAlbum
+class GetAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
 {
 	use HasAbstractAlbumTrait;
 
