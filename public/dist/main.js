@@ -1840,7 +1840,7 @@ album.load = function (albumID) {
 		}
 	};
 
-	api.get("Album::get", { albumID: albumID }, successHandler, null, errorHandler);
+	api.get("album/" + albumID, {}, successHandler, null, errorHandler);
 };
 
 /**
