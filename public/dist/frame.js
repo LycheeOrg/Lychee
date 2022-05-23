@@ -1336,138 +1336,134 @@ api.createV2API = function (endpoint, method) {
 };
 
 api.v2 = {
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	getAlbum: api.createV2API("album/{albumID}", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	getAlbumPosition: api.createV2API("album/{albumID}/positions", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	deleteAlbumTrack: api.createV2API("album/{albumID}/track", "DELETE"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	listWebAuthn: api.createV2API("webauthn", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	search: api.createV2API("search/{term}", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	photoEditorRotate: api.createV2API("photo/{photoID}/editor/rotate/{direction}", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	photoSetLicense: api.createV2API("photo/{photoID}/license", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	photoSetPublic: api.createV2API("photo/{photoID}/public", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	photoSetDescription: api.createV2API("photo/{photoID}/description", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	photoRandom: api.createV2API("photo/random", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	getPhoto: api.createV2API("photo/{photoID}", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	translateLegacy: api.createV2API("legacy/translate", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	importServer: api.createV2API("import/server", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	importServerCancel: api.createV2API("import/server/cancel", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	frameSettings: api.createV2API("frame/settings", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	albumsTree: api.createV2API("albums/tree", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	albumsPosition: api.createV2API("albums/position", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	getAlbums: api.createV2API("albums", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	setAlbumSorting: api.createV2API("album/{albumID}/sorting", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	setAlbumLicense: api.createV2API("album/{albumID}/license", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	setAlbumProtectionPolicy: api.createV2API("album/{albumID}/protection", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	setTagAlbumTags: api.createV2API("album/{albumID}/tags", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	setAlbumCover: api.createV2API("album/{albumID}/cover", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	setAlbumDescription: api.createV2API("album/{albumID}/description", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	setAlbumNSFW: api.createV2API("album/{albumID}/nsfw", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	addTagAlbum: api.createV2API("album/tag", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	addAlbum: api.createV2API("album", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	unlockAlbum: api.createV2API("album/{albumID}/unlock", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	initSession: api.createV2API("session/init", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	loginSession: api.createV2API("session/login", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	logoutSession: api.createV2API("session/login", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	setLogin: api.createV2API("settings/login", "POST"),
-	/**
-  * @type APIV2Call
-  */
-	sharingList: api.createV2API("sharing", "GET")
+	/** @type APIV2Call */
+	sharingList: api.createV2API("sharing", "GET"),
+	/** @type APIV2Call */
+	diagnostics: api.createV2API("diagnostics", "GET"),
+	/** @type APIV2Call */
+	diagnosticsSize: api.createV2API("diagnostics/size", "GET"),
+	/** @type APIV2Call */
+	listLogs: api.createV2API("logs", "GET"),
+	/** @type APIV2Call */
+	clearLogsNoise: api.createV2API("logs/clearNoise", "POST"),
+	/** @type APIV2Call */
+	checkUpdate: api.createV2API("update", "GET"),
+	/** @type APIV2Call */
+	applyUpdate: api.createV2API("update", "POST"),
+	/** @type APIV2Call */
+	listUsers: api.createV2API("user", "GET"),
+	/** @type APIV2Call */
+	saveUser: api.createV2API("user/{userID}", "POST"),
+	/** @type APIV2Call */
+	createUser: api.createV2API("user", "POST"),
+	/** @type APIV2Call */
+	deleteUser: api.createV2API("user/{userID}", "DELETE"),
+	/** @type APIV2Call */
+	userGetEmail: api.createV2API("user/{userID}/email", "GET"),
+	/** @type APIV2Call */
+	userSetEmail: api.createV2API("user/{userID}/email", "POST"),
+	/** @type APIV2Call */
+	allSettings: api.createV2API("settings", "GET"),
+	/** @type APIV2Call */
+	saveAllSettings: api.createV2API("settings", "POST"),
+	/** @type APIV2Call */
+	dropboxKey: api.createV2API("settings/dropbox", "POST"),
+	/** @type APIV2Call */
+	sorting: api.createV2API("settings/sorting", "POST"),
+	/** @type APIV2Call */
+	lang: api.createV2API("settings/lang", "POST"),
+	/** @type APIV2Call */
+	layout: api.createV2API("settings/layout", "POST"),
+	/** @type APIV2Call */
+	publicSearch: api.createV2API("settings/publicSearch", "POST"),
+	/** @type APIV2Call */
+	defaultLicense: api.createV2API("settings/defaultLicense", "POST"),
+	/** @type APIV2Call */
+	mapDisplay: api.createV2API("settings/mapDisplay", "POST"),
+	/** @type APIV2Call */
+	mapDisplayPublic: api.createV2API("settings/mapDisplayPublic", "POST"),
+	/** @type APIV2Call */
+	mapProvider: api.createV2API("settings/mapProvider", "POST"),
+	/** @type APIV2Call */
+	mapIncludeSubAlbums: api.createV2API("settings/mapIncludeSubAlbums", "POST"),
+	/** @type APIV2Call */
+	locationDecoding: api.createV2API("settings/locationDecoding", "POST"),
+	/** @type APIV2Call */
+	locationShow: api.createV2API("settings/locationShow", "POST"),
+	/** @type APIV2Call */
+	locationShowPublic: api.createV2API("settings/locationShowPublic", "POST"),
+	/** @type APIV2Call */
+	css: api.createV2API("settings/css", "POST"),
+	/** @type APIV2Call */
+	overlayType: api.createV2API("settings/overlayType", "POST"),
+	/** @type APIV2Call */
+	nsfwVisible: api.createV2API("settings/nsfwVisible", "POST"),
+	/** @type APIV2Call */
+	newPhotosNotification: api.createV2API("settings/newPhotosNotification", "POST")
 };
 
 var csrf = {};

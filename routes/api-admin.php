@@ -4,48 +4,40 @@ namespace App\Http\Controllers\Administration;
 
 use App\Http\Middleware\AdminCheck;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\URL;
 
-// We need that to force https everywhere
-// if (env('APP_ENV') === 'production') {
+Route::get('/diagnostics', [DiagnosticsController::class, 'get']);
+Route::get('/diagnostics/size', [DiagnosticsController::class, 'getSize']);
 
-if (env('APP_ENV') === 'dev') {
-	URL::forceScheme('https');
-}
+Route::get('/logs', [LogController::class, 'list']);
+Route::post('/logs/clear', [LogController::class, 'clear']);
+Route::post('/logs/clearNoise', [LogController::class, 'clearNoise']);
 
-Route::get('/Diagnostics::get', [DiagnosticsController::class, 'get']);
-Route::get('/Diagnostics::getSize', [DiagnosticsController::class, 'getSize']);
+Route::post('/settings/sorting', [SettingsController::class, 'setSorting']);
+Route::post('/settings/lang', [SettingsController::class, 'setLang']);
+Route::post('/settings/layout', [SettingsController::class, 'setLayout']);
+Route::post('/settings/publicSearch', [SettingsController::class, 'setPublicSearch']);
+Route::post('/settings/defaultLicense', [SettingsController::class, 'setDefaultLicense']);
+Route::post('/settings/mapDisplay', [SettingsController::class, 'setMapDisplay']);
+Route::post('/settings/mapDisplayPublic', [SettingsController::class, 'setMapDisplayPublic']);
+Route::post('/settings/mapProvider', [SettingsController::class, 'setMapProvider']);
+Route::post('/settings/mapIncludeSubAlbums', [SettingsController::class, 'setMapIncludeSubAlbums']);
+Route::post('/settings/locationDecoding', [SettingsController::class, 'setLocationDecoding']);
+Route::post('/settings/locationShow', [SettingsController::class, 'setLocationShow']);
+Route::post('/settings/locationShowPublic', [SettingsController::class, 'setLocationShowPublic']);
+Route::post('/settings/css', [SettingsController::class, 'setCSS']);
+Route::get('/settings', [SettingsController::class, 'getAll']);
+Route::post('/settings', [SettingsController::class, 'saveAll']);
+Route::post('/settings/overlayType', [SettingsController::class, 'setImageOverlayType']);
+Route::post('/settings/nsfwVisible', [SettingsController::class, 'setNSFWVisible']);
+Route::post('/settings/dropbox', [SettingsController::class, 'setDropboxKey']);
+Route::post('/settings/newPhotosNotification', [SettingsController::class, 'setNewPhotosNotification']);
 
-Route::get('/Logs::list', [LogController::class, 'list']);
-Route::post('/Logs::clear', [LogController::class, 'clear']);
-Route::post('/Logs::clearNoise', [LogController::class, 'clearNoise']);
+Route::post('/update', [UpdateController::class, 'apply']);
+Route::get('/update', [UpdateController::class, 'check']);
 
-Route::post('/Settings::setSorting', [SettingsController::class, 'setSorting']);
-Route::post('/Settings::setLang', [SettingsController::class, 'setLang']);
-Route::post('/Settings::setLayout', [SettingsController::class, 'setLayout']);
-Route::post('/Settings::setPublicSearch', [SettingsController::class, 'setPublicSearch']);
-Route::post('/Settings::setDefaultLicense', [SettingsController::class, 'setDefaultLicense']);
-Route::post('/Settings::setMapDisplay', [SettingsController::class, 'setMapDisplay']);
-Route::post('/Settings::setMapDisplayPublic', [SettingsController::class, 'setMapDisplayPublic']);
-Route::post('/Settings::setMapProvider', [SettingsController::class, 'setMapProvider']);
-Route::post('/Settings::setMapIncludeSubAlbums', [SettingsController::class, 'setMapIncludeSubAlbums']);
-Route::post('/Settings::setLocationDecoding', [SettingsController::class, 'setLocationDecoding']);
-Route::post('/Settings::setLocationShow', [SettingsController::class, 'setLocationShow']);
-Route::post('/Settings::setLocationShowPublic', [SettingsController::class, 'setLocationShowPublic']);
-Route::post('/Settings::setCSS', [SettingsController::class, 'setCSS']);
-Route::get('/Settings::getAll', [SettingsController::class, 'getAll']);
-Route::post('/Settings::saveAll', [SettingsController::class, 'saveAll']);
-Route::post('/Settings::setOverlayType', [SettingsController::class, 'setImageOverlayType']);
-Route::post('/Settings::setNSFWVisible', [SettingsController::class, 'setNSFWVisible']);
-Route::post('/Settings::setDropboxKey', [SettingsController::class, 'setDropboxKey']);
-Route::post('/Settings::setNewPhotosNotification', [SettingsController::class, 'setNewPhotosNotification']);
-
-Route::post('/Update::apply', [UpdateController::class, 'apply']);
-Route::post('/Update::check', [UpdateController::class, 'check']);
-
-Route::get('/User::list', [UserController::class, 'list']);
-Route::post('/User::save', [UserController::class, 'save']);
-Route::delete('/User::delete', [UserController::class, 'delete']);
-Route::post('/User::create', [UserController::class, 'create']);
-Route::post('/User::setEmail', [UserController::class, 'setEmail'])->withoutMiddleware([AdminCheck::class]);
-Route::get('/User::getEmail', [UserController::class, 'getEmail'])->withoutMiddleware([AdminCheck::class]);
+Route::get('/user', [UserController::class, 'list']);
+Route::post('/user/{userID}', [UserController::class, 'save']);
+Route::delete('/user/{userID}', [UserController::class, 'delete']);
+Route::post('/user', [UserController::class, 'create']);
+Route::post('/user/{userID}/email', [UserController::class, 'setEmail'])->withoutMiddleware([AdminCheck::class]);
+Route::get('/user/{userID}/email', [UserController::class, 'getEmail'])->withoutMiddleware([AdminCheck::class]);

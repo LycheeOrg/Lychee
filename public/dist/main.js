@@ -1518,138 +1518,134 @@ api.createV2API = function (endpoint, method) {
 };
 
 api.v2 = {
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	getAlbum: api.createV2API("album/{albumID}", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	getAlbumPosition: api.createV2API("album/{albumID}/positions", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	deleteAlbumTrack: api.createV2API("album/{albumID}/track", "DELETE"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	listWebAuthn: api.createV2API("webauthn", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	search: api.createV2API("search/{term}", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	photoEditorRotate: api.createV2API("photo/{photoID}/editor/rotate/{direction}", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	photoSetLicense: api.createV2API("photo/{photoID}/license", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	photoSetPublic: api.createV2API("photo/{photoID}/public", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	photoSetDescription: api.createV2API("photo/{photoID}/description", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	photoRandom: api.createV2API("photo/random", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	getPhoto: api.createV2API("photo/{photoID}", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	translateLegacy: api.createV2API("legacy/translate", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	importServer: api.createV2API("import/server", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	importServerCancel: api.createV2API("import/server/cancel", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	frameSettings: api.createV2API("frame/settings", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	albumsTree: api.createV2API("albums/tree", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	albumsPosition: api.createV2API("albums/position", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	getAlbums: api.createV2API("albums", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	setAlbumSorting: api.createV2API("album/{albumID}/sorting", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	setAlbumLicense: api.createV2API("album/{albumID}/license", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	setAlbumProtectionPolicy: api.createV2API("album/{albumID}/protection", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	setTagAlbumTags: api.createV2API("album/{albumID}/tags", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	setAlbumCover: api.createV2API("album/{albumID}/cover", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	setAlbumDescription: api.createV2API("album/{albumID}/description", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	setAlbumNSFW: api.createV2API("album/{albumID}/nsfw", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	addTagAlbum: api.createV2API("album/tag", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	addAlbum: api.createV2API("album", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	unlockAlbum: api.createV2API("album/{albumID}/unlock", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	initSession: api.createV2API("session/init", "GET"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	loginSession: api.createV2API("session/login", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	logoutSession: api.createV2API("session/login", "POST"),
-	/**
-  * @type APIV2Call
-  */
+	/** @type APIV2Call */
 	setLogin: api.createV2API("settings/login", "POST"),
-	/**
-  * @type APIV2Call
-  */
-	sharingList: api.createV2API("sharing", "GET")
+	/** @type APIV2Call */
+	sharingList: api.createV2API("sharing", "GET"),
+	/** @type APIV2Call */
+	diagnostics: api.createV2API("diagnostics", "GET"),
+	/** @type APIV2Call */
+	diagnosticsSize: api.createV2API("diagnostics/size", "GET"),
+	/** @type APIV2Call */
+	listLogs: api.createV2API("logs", "GET"),
+	/** @type APIV2Call */
+	clearLogsNoise: api.createV2API("logs/clearNoise", "POST"),
+	/** @type APIV2Call */
+	checkUpdate: api.createV2API("update", "GET"),
+	/** @type APIV2Call */
+	applyUpdate: api.createV2API("update", "POST"),
+	/** @type APIV2Call */
+	listUsers: api.createV2API("user", "GET"),
+	/** @type APIV2Call */
+	saveUser: api.createV2API("user/{userID}", "POST"),
+	/** @type APIV2Call */
+	createUser: api.createV2API("user", "POST"),
+	/** @type APIV2Call */
+	deleteUser: api.createV2API("user/{userID}", "DELETE"),
+	/** @type APIV2Call */
+	userGetEmail: api.createV2API("user/{userID}/email", "GET"),
+	/** @type APIV2Call */
+	userSetEmail: api.createV2API("user/{userID}/email", "POST"),
+	/** @type APIV2Call */
+	allSettings: api.createV2API("settings", "GET"),
+	/** @type APIV2Call */
+	saveAllSettings: api.createV2API("settings", "POST"),
+	/** @type APIV2Call */
+	dropboxKey: api.createV2API("settings/dropbox", "POST"),
+	/** @type APIV2Call */
+	sorting: api.createV2API("settings/sorting", "POST"),
+	/** @type APIV2Call */
+	lang: api.createV2API("settings/lang", "POST"),
+	/** @type APIV2Call */
+	layout: api.createV2API("settings/layout", "POST"),
+	/** @type APIV2Call */
+	publicSearch: api.createV2API("settings/publicSearch", "POST"),
+	/** @type APIV2Call */
+	defaultLicense: api.createV2API("settings/defaultLicense", "POST"),
+	/** @type APIV2Call */
+	mapDisplay: api.createV2API("settings/mapDisplay", "POST"),
+	/** @type APIV2Call */
+	mapDisplayPublic: api.createV2API("settings/mapDisplayPublic", "POST"),
+	/** @type APIV2Call */
+	mapProvider: api.createV2API("settings/mapProvider", "POST"),
+	/** @type APIV2Call */
+	mapIncludeSubAlbums: api.createV2API("settings/mapIncludeSubAlbums", "POST"),
+	/** @type APIV2Call */
+	locationDecoding: api.createV2API("settings/locationDecoding", "POST"),
+	/** @type APIV2Call */
+	locationShow: api.createV2API("settings/locationShow", "POST"),
+	/** @type APIV2Call */
+	locationShowPublic: api.createV2API("settings/locationShowPublic", "POST"),
+	/** @type APIV2Call */
+	css: api.createV2API("settings/css", "POST"),
+	/** @type APIV2Call */
+	overlayType: api.createV2API("settings/overlayType", "POST"),
+	/** @type APIV2Call */
+	nsfwVisible: api.createV2API("settings/nsfwVisible", "POST"),
+	/** @type APIV2Call */
+	newPhotosNotification: api.createV2API("settings/newPhotosNotification", "POST")
 };
 
 var csrf = {};
@@ -8428,13 +8424,13 @@ notifications.update = function (params) {
 		}
 	}
 
-	api.post("User::setEmail", params, function () {
+	api.v2.userSetEmail(params, function () {
 		loadingBar.show("success", "Email updated!");
 	});
 };
 
 notifications.load = function () {
-	api.get("User::getEmail", {},
+	api.v2.userGetEmail({},
 	/** @param {EMailData} data */function (data) {
 		notifications.json = data;
 		view.notifications.init();
@@ -9983,7 +9979,7 @@ settings.changeLogin = function (params) {
 		$("input[name=confirm]").removeClass("error");
 	}
 
-	api.post("Settings::setLogin", params, function () {
+	api.v2.setLogin(params, function () {
 		$("input[name]").removeClass("error");
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LOGIN"]);
 		view.settings.content.clearLogin();
@@ -9995,7 +9991,7 @@ settings.changeLogin = function (params) {
  * @returns {void}
  */
 settings.changeSorting = function (params) {
-	api.post("Settings::setSorting", params, function () {
+	api.v2.sorting(params, function () {
 		lychee.sorting_albums.column = params["sorting_albums_column"];
 		lychee.sorting_albums.order = params["sorting_albums_order"];
 		lychee.sorting_photos.column = params["sorting_photos_column"];
@@ -10011,7 +10007,7 @@ settings.changeSorting = function (params) {
  */
 settings.changeDropboxKey = function (params) {
 	// if params.key == "" key is cleared
-	api.post("Settings::setDropboxKey", params, function () {
+	api.v2.dropboxKey(params, function () {
 		lychee.dropboxKey = params.key;
 		// if (callback) lychee.loadDropbox(callback)
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_DROPBOX"]);
@@ -10023,7 +10019,7 @@ settings.changeDropboxKey = function (params) {
  * @returns {void}
  */
 settings.changeLang = function (params) {
-	api.post("Settings::setLang", params, function () {
+	api.v2.lang(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LANG"]);
 		lychee.init();
 	});
@@ -10034,7 +10030,7 @@ settings.changeLang = function (params) {
  * @returns {void}
  */
 settings.setDefaultLicense = function (params) {
-	api.post("Settings::setDefaultLicense", params, function () {
+	api.v2.defaultLicense(params, function () {
 		lychee.default_license = params.license;
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LICENSE"]);
 	});
@@ -10045,7 +10041,7 @@ settings.setDefaultLicense = function (params) {
  * @returns {void}
  */
 settings.setLayout = function (params) {
-	api.post("Settings::setLayout", params, function () {
+	api.v2.layout(params, function () {
 		lychee.layout = params.layout;
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LAYOUT"]);
 	});
@@ -10056,7 +10052,7 @@ settings.setLayout = function (params) {
  * @returns {void}
  */
 settings.changePublicSearch = function (params) {
-	api.post("Settings::setPublicSearch", params, function () {
+	api.v2.publicSearch(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_PUBLIC_SEARCH"]);
 		lychee.public_search = params.public_search;
 	});
@@ -10067,7 +10063,7 @@ settings.changePublicSearch = function (params) {
  * @returns {void}
  */
 settings.setOverlayType = function (params) {
-	api.post("Settings::setOverlayType", params, function () {
+	api.v2.overlayType(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_IMAGE_OVERLAY"]);
 		lychee.image_overlay_type = params.image_overlay_type;
 		lychee.image_overlay_type_default = params.image_overlay_type;
@@ -10079,7 +10075,7 @@ settings.setOverlayType = function (params) {
  * @returns {void}
  */
 settings.changeMapDisplay = function (params) {
-	api.post("Settings::setMapDisplay", params, function () {
+	api.v2.mapDisplay(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
 		lychee.map_display = params.map_display;
 		// Map functionality is disabled
@@ -10095,7 +10091,7 @@ settings.changeMapDisplay = function (params) {
  * @returns {void}
  */
 settings.changeMapDisplayPublic = function (params) {
-	api.post("Settings::setMapDisplayPublic", params, function () {
+	api.v2.mapDisplayPublic(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC"]);
 		lychee.map_display_public = params.map_display_public;
 		// If public map functionality is enabled, but map in general is disabled
@@ -10111,7 +10107,7 @@ settings.changeMapDisplayPublic = function (params) {
  * @returns {void}
  */
 settings.setMapProvider = function (params) {
-	api.post("Settings::setMapProvider", params, function () {
+	api.v2.mapProvider(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_PROVIDER"]);
 		lychee.map_provider = params.map_provider;
 	});
@@ -10122,7 +10118,7 @@ settings.setMapProvider = function (params) {
  * @returns {void}
  */
 settings.changeMapIncludeSubAlbums = function (params) {
-	api.post("Settings::setMapIncludeSubAlbums", params, function () {
+	api.v2.mapIncludeSubAlbums(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
 		lychee.map_include_subalbums = params.map_include_subalbums;
 	});
@@ -10133,7 +10129,7 @@ settings.changeMapIncludeSubAlbums = function (params) {
  * @returns {void}
  */
 settings.changeLocationDecoding = function (params) {
-	api.post("Settings::setLocationDecoding", params, function () {
+	api.v2.locationDecoding(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
 		lychee.location_decoding = params.location_decoding;
 	});
@@ -10144,7 +10140,7 @@ settings.changeLocationDecoding = function (params) {
  * @returns {void}
  */
 settings.changeNSFWVisible = function (params) {
-	api.post("Settings::setNSFWVisible", params, function () {
+	api.v2.nsfwVisible(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_NSFW_VISIBLE"]);
 		lychee.nsfw_visible = params.nsfw_visible;
 		lychee.nsfw_visible_saved = lychee.nsfw_visible;
@@ -10161,7 +10157,7 @@ settings.changeNSFWVisible = function (params) {
  * @returns {void}
  */
 settings.changeLocationShow = function (params) {
-	api.post("Settings::setLocationShow", params, function () {
+	api.v2.locationShow(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
 		lychee.location_show = params.location_show;
 		// Don't show location
@@ -10177,7 +10173,7 @@ settings.changeLocationShow = function (params) {
  * @returns {void}
  */
 settings.changeLocationShowPublic = function (params) {
-	api.post("Settings::setLocationShowPublic", params, function () {
+	api.v2.locationShowPublic(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
 		lychee.location_show_public = params.location_show_public;
 		// If public map functionality is enabled, but map in general is disabled
@@ -10193,7 +10189,7 @@ settings.changeLocationShowPublic = function (params) {
  * @returns {void}
  */
 settings.changeNewPhotosNotification = function (params) {
-	api.post("Settings::setNewPhotosNotification", params, function () {
+	api.v2.newPhotosNotification(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION"]);
 		lychee.new_photos_notification = params.new_photos_notification;
 	});
@@ -10206,7 +10202,7 @@ settings.changeCSS = function () {
 	var params = {
 		css: $("#css").val()
 	};
-	api.post("Settings::setCSS", params, function () {
+	api.v2.css(params, function () {
 		lychee.css = params.css;
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_CSS"]);
 	});
@@ -10217,7 +10213,7 @@ settings.changeCSS = function () {
  * @returns {void}
  */
 settings.save = function (params) {
-	api.post("Settings::saveAll", params, function () {
+	api.v2.saveAllSettings(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_UPDATE"]);
 		view.full_settings.init();
 		// re-read settings
@@ -12244,7 +12240,7 @@ users.update = function (params) {
 		delete params.password;
 	}
 
-	api.post("User::save", params, function () {
+	api.v2.saveUser(params, function () {
 		loadingBar.show("success", "User updated!");
 		users.list(); // reload user list
 	});
@@ -12269,7 +12265,7 @@ users.create = function (params) {
 		return;
 	}
 
-	api.post("User::create", params, function () {
+	api.v2.createUser(params, function () {
 		loadingBar.show("success", "User created!");
 		users.list(); // reload user list
 	});
@@ -12285,7 +12281,7 @@ users.create = function (params) {
  * @returns {boolean}
  */
 users.delete = function (params) {
-	api.delete("User::delete", params, function () {
+	api.v2.deleteUser(params, function () {
 		loadingBar.show("success", "User deleted!");
 		users.list(); // reload user list
 	});
@@ -12295,7 +12291,7 @@ users.delete = function (params) {
  * @returns {void}
  */
 users.list = function () {
-	api.get("User::list", {},
+	api.v2.listUsers({},
 	/** @param {User[]} data */
 	function (data) {
 		users.json = data;
@@ -13550,7 +13546,7 @@ view.full_settings = {
 		init: function init() {
 			view.full_settings.clearContent();
 
-			api.get("Settings::getAll", {},
+			api.v2.allSettings({},
 			/** @param {ConfigSetting[]} data */
 			function (data) {
 				var msg = lychee.html(_templateObject82, lychee.locale["SETTINGS_WARNING"]);
@@ -13753,7 +13749,7 @@ view.logs = {
 		lychee.content.html(html);
 
 		$("#Clean_Noise").on("click", function () {
-			api.post("Logs::clearNoise", {}, view.logs.init);
+			api.v2.clearLogsNoise({}, view.logs.init);
 		});
 	},
 
@@ -13780,7 +13776,7 @@ view.logs = {
 			};
 
 			view.logs.clearContent();
-			api.get("Logs::list", {}, successHandler);
+			api.v2.listLogs({}, successHandler);
 		}
 	}
 };
@@ -13841,7 +13837,7 @@ view.diagnostics = {
 		/** @returns {void} */
 		init: function init() {
 			view.diagnostics.clearContent(0);
-			api.get("Diagnostics::get", {}, view.diagnostics.content.parseResponse);
+			api.v2.diagnostics({}, view.diagnostics.content.parseResponse);
 		},
 
 		/**
@@ -13888,7 +13884,7 @@ view.diagnostics = {
 
 	/** @returns {void} */
 	call_check_update: function call_check_update() {
-		api.post("Update::check", {},
+		api.v2.checkUpdate({},
 		/** @param {{updateStatus: string}} data */
 		function (data) {
 			loadingBar.show("success", data.updateStatus);
@@ -13898,7 +13894,7 @@ view.diagnostics = {
 
 	/** @returns {void} */
 	call_apply_update: function call_apply_update() {
-		api.post("Update::apply", {},
+		api.v2.applyUpdate({},
 		/** @param {{updateMsgs: string[]}} data */
 		function (data) {
 			var html = view.preify(data.updateMsgs, "");
@@ -13909,7 +13905,7 @@ view.diagnostics = {
 
 	/** @returns {void} */
 	call_get_size: function call_get_size() {
-		api.get("Diagnostics::getSize", {},
+		api.v2.diagnosticsSize({},
 		/** @param {string[]} data */
 		function (data) {
 			var html = view.preify(data, "");
@@ -13946,7 +13942,7 @@ view.update = {
 			view.update.clearContent();
 
 			// code duplicate
-			api.post("Update::apply", {},
+			api.v2.applyUpdate({},
 			/** @param {{updateMsgs: string[]}} data */
 			function (data) {
 				var html = view.preify(data.updateMsgs, "");
