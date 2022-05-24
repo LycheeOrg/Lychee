@@ -13,7 +13,7 @@ class DeleteUserRequest extends BaseApiRequest implements HasUser
 {
 	use HasUserTrait;
 
-	public const ID_ATTRIBUTE = 'id';
+	public const ID_ATTRIBUTE = 'userID';
 
 	/**
 	 * {@inheritDoc}
