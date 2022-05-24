@@ -15,6 +15,7 @@ namespace Tests\Feature;
 use App\Facades\AccessControl;
 use App\Models\Configs;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\TestCase;
@@ -31,10 +32,21 @@ class PhotosOperationsTest extends TestCase
 		$this->albums_tests = new AlbumsUnitTest($this);
 
 		AccessControl::log_as_id(0);
+
+		// Assert that photo table is empty
+		static::assertDatabaseCount('sym_links', 0);
+		static::assertDatabaseCount('size_variants', 0);
+		static::assertDatabaseCount('photos', 0);
 	}
 
 	public function tearDown(): void
 	{
+		// Clean up remaining stuff from tests
+		DB::table('sym_links')->delete();
+		DB::table('size_variants')->delete();
+		DB::table('photos')->delete();
+		self::cleanPublicFolders();
+
 		AccessControl::logout();
 		parent::tearDown();
 	}
@@ -240,18 +252,20 @@ class PhotosOperationsTest extends TestCase
 		$init_config_value1 = Configs::get_value('SL_enable');
 		$init_config_value2 = Configs::get_value('SL_for_admin');
 
-		// set to 0
-		Configs::set('SL_enable', '1');
-		Configs::set('SL_for_admin', '1');
-		static::assertEquals('1', Configs::get_value('SL_enable'));
-		static::assertEquals('1', Configs::get_value('SL_for_admin'));
+		try {
+			// set to 1
+			Configs::set('SL_enable', '1');
+			Configs::set('SL_for_admin', '1');
+			static::assertEquals('1', Configs::get_value('SL_enable'));
+			static::assertEquals('1', Configs::get_value('SL_for_admin'));
 
-		// just redo the test above :'D
-		$this->testManyFunctionsAtOnce();
-
-		// set back to initial value
-		Configs::set('SL_enable', $init_config_value1);
-		Configs::set('SL_for_admin', $init_config_value2);
+			// just redo the test above :'D
+			$this->testManyFunctionsAtOnce();
+		} finally {
+			// set back to initial value
+			Configs::set('SL_enable', $init_config_value1);
+			Configs::set('SL_for_admin', $init_config_value2);
+		}
 	}
 
 	/**

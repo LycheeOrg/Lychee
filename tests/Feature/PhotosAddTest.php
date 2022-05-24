@@ -49,11 +49,23 @@ class PhotosAddTest extends TestCase
 		Configs::set('has_ffmpeg', '2');
 		$this->hasFFmpeg = Configs::hasFFmpeg();
 
+		// Assert that photo table is empty, otherwise we cannot ensure
+		// deterministic test results for duplicate photos
+		static::assertDatabaseCount('sym_links', 0);
+		static::assertDatabaseCount('size_variants', 0);
+		static::assertDatabaseCount('photos', 0);
+
 		AccessControl::log_as_id(0);
 	}
 
 	public function tearDown(): void
 	{
+		// Clean up remaining stuff from tests
+		DB::table('sym_links')->delete();
+		DB::table('size_variants')->delete();
+		DB::table('photos')->delete();
+		self::cleanPublicFolders();
+
 		AccessControl::logout();
 
 		Configs::set('has_exiftool', $this->hasExifToolsInit);
@@ -75,56 +87,46 @@ class PhotosAddTest extends TestCase
 	 */
 	public function testSimpleUpload(): void
 	{
-		$id = null;
-
-		try {
-			$id = $this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
-			);
-			$response = $this->photos_tests->get($id);
-			/*
-			 * Check some Exif data
-			 */
-			$taken_at = Carbon::create(
-				2019, 6, 1, 1, 28, 25, '+02:00'
-			);
-			$response->assertJson([
-				'album_id' => null,
-				'aperture' => 'f/2.8',
-				'focal' => '16 mm',
-				'id' => $id,
-				'iso' => '1250',
-				'lens' => 'EF16-35mm f/2.8L USM',
-				'make' => 'Canon',
-				'model' => 'Canon EOS R',
-				'shutter' => '30 s',
-				'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
-				'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
-				'title' => 'night',
-				'type' => 'image/jpeg',
-				'size_variants' => [
-					'small' => [
-						'width' => 540,
-						'height' => 360,
-					],
-					'medium' => [
-						'width' => 1620,
-						'height' => 1080,
-					],
-					'original' => [
-						'width' => 6720,
-						'height' => 4480,
-						'filesize' => 21104156,
-					],
+		$id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		);
+		$response = $this->photos_tests->get($id);
+		/*
+		 * Check some Exif data
+		 */
+		$taken_at = Carbon::create(
+			2019, 6, 1, 1, 28, 25, '+02:00'
+		);
+		$response->assertJson([
+			'album_id' => null,
+			'aperture' => 'f/2.8',
+			'focal' => '16 mm',
+			'id' => $id,
+			'iso' => '1250',
+			'lens' => 'EF16-35mm f/2.8L USM',
+			'make' => 'Canon',
+			'model' => 'Canon EOS R',
+			'shutter' => '30 s',
+			'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
+			'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
+			'title' => 'night',
+			'type' => 'image/jpeg',
+			'size_variants' => [
+				'small' => [
+					'width' => 540,
+					'height' => 360,
 				],
-			]);
-
-			$this->photos_tests->delete([$id]);
-		} finally {
-			// Clean-up
-			DB::table('size_variants')->whereIn('photo_id', [$id])->delete();
-			DB::table('photos')->whereIn('id', [$id])->delete();
-		}
+				'medium' => [
+					'width' => 1620,
+					'height' => 1080,
+				],
+				'original' => [
+					'width' => 6720,
+					'height' => 4480,
+					'filesize' => 21104156,
+				],
+			],
+		]);
 	}
 
 	/**
@@ -138,31 +140,20 @@ class PhotosAddTest extends TestCase
 			static::markTestSkipped('Exiftool is not available. Test Skipped.');
 		}
 
-		$video_id = null;
-		$photo_id = null;
-
-		try {
-			$photo_id = $this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE)
-			);
-			$video_id = $this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_VIDEO),
-				null,
-				200
-			);
-			$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
-			static::assertEquals($photo_id, $video_id);
-			static::assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
-			static::assertStringEndsWith('.mov', $photo->live_photo_url);
-			static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
-			static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
-
-			$this->photos_tests->delete([$photo_id]);
-		} finally {
-			// Clean-up
-			DB::table('size_variants')->whereIn('photo_id', [$photo_id, $video_id])->delete();
-			DB::table('photos')->whereIn('id', [$photo_id, $video_id])->delete();
-		}
+		$photo_id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE)
+		);
+		$video_id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_VIDEO),
+			null,
+			200
+		);
+		$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
+		static::assertEquals($photo_id, $video_id);
+		static::assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
+		static::assertStringEndsWith('.mov', $photo->live_photo_url);
+		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
+		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
 	}
 
 	/**
@@ -176,31 +167,20 @@ class PhotosAddTest extends TestCase
 			static::markTestSkipped('Exiftool is not available. Test Skipped.');
 		}
 
-		$video_id = null;
-		$photo_id = null;
+		$video_id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_VIDEO)
+		);
+		$photo_id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE)
+		);
+		$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
+		static::assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
+		static::assertStringEndsWith('.mov', $photo->live_photo_url);
+		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
+		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
 
-		try {
-			$video_id = $this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_VIDEO)
-			);
-			$photo_id = $this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE)
-			);
-			$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
-			static::assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
-			static::assertStringEndsWith('.mov', $photo->live_photo_url);
-			static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
-			static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
-
-			// The initially uploaded video should have been deleted
-			static::assertEquals(0, DB::table('photos')->where('id', '=', $video_id)->count());
-
-			$this->photos_tests->delete([$photo_id]);
-		} finally {
-			// Clean-up
-			DB::table('size_variants')->whereIn('photo_id', [$photo_id, $video_id])->delete();
-			DB::table('photos')->whereIn('id', [$photo_id, $video_id])->delete();
-		}
+		// The initially uploaded video should have been deleted
+		static::assertEquals(0, DB::table('photos')->where('id', '=', $video_id)->count());
 	}
 
 	/**
@@ -214,24 +194,14 @@ class PhotosAddTest extends TestCase
 			static::markTestSkipped('Exiftool or FFmpeg is not available. Test Skipped.');
 		}
 
-		$photo_id = null;
+		$photo_id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_IMAGE)
+		);
+		$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
 
-		try {
-			$photo_id = $this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_IMAGE)
-			);
-			$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
-
-			static::assertStringEndsWith('.mov', $photo->live_photo_url);
-			static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
-			static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
-
-			$this->photos_tests->delete([$photo_id]);
-		} finally {
-			// Clean-up
-			DB::table('size_variants')->whereIn('photo_id', [$photo_id])->delete();
-			DB::table('photos')->whereIn('id', [$photo_id])->delete();
-		}
+		static::assertStringEndsWith('.mov', $photo->live_photo_url);
+		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
+		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
 	}
 
 	public function testRecentAlbum(): void
@@ -262,34 +232,22 @@ class PhotosAddTest extends TestCase
 
 	public function testImportViaMove(): void
 	{
-		$ids_before = static::getRecentPhotoIDs();
-
 		// import the photo
 		copy(base_path('tests/Samples/night.jpg'), base_path('public/uploads/import/night.jpg'));
 		$this->photos_tests->import(base_path('public/uploads/import/'), null, true, false, false);
 
 		// check if the file has been moved
 		static::assertEquals(false, file_exists(base_path('public/uploads/import/night.jpg')));
-
-		$ids_after = static::getRecentPhotoIDs();
-		$ids_to_delete = $ids_after->diff($ids_before)->all();
-		$this->photos_tests->delete($ids_to_delete);
 	}
 
 	public function testImportViaCopy(): void
 	{
-		$ids_before = static::getRecentPhotoIDs();
-
 		// import the photo
 		copy(base_path('tests/Samples/night.jpg'), base_path('public/uploads/import/night.jpg'));
 		$this->photos_tests->import(base_path('public/uploads/import/'), null, false, false, false);
 
 		// check if the file is still there
 		static::assertEquals(true, file_exists(base_path('public/uploads/import/night.jpg')));
-
-		$ids_after = static::getRecentPhotoIDs();
-		$ids_to_delete = $ids_after->diff($ids_before)->all();
-		$this->photos_tests->delete($ids_to_delete);
 	}
 
 	public function testImportViaSymlink(): void
@@ -313,62 +271,44 @@ class PhotosAddTest extends TestCase
 			->short_path;
 		$symlink_path = Storage::disk(SizeVariantNamingStrategy::IMAGE_DISK_NAME)->path($rel_path);
 		static::assertEquals(true, is_link($symlink_path));
-
-		$this->photos_tests->delete([$photo_id]);
 	}
 
 	public function testImportViaDeniedMove(): void
 	{
-		$ids_before = static::getRecentPhotoIDs();
-
 		// import the photo without the right to move the photo (aka delete the original)
 		// For POSIX system, the right to create/rename/delete/edit meta-attributes
 		// of a file is based on the write-privilege of the containing directory,
 		// because all these operations require an update of an directory entry.
 		// Making the file read-only is not sufficient to prevent deletion.
 		copy(base_path('tests/Samples/night.jpg'), base_path('public/uploads/import/read-only.jpg'));
-		chmod(base_path('public/uploads/import/read-only.jpg'), 0444);
-		chmod(base_path('public/uploads/import'), 0555);
-		$this->photos_tests->import(base_path('public/uploads/import/'), null, true, false, false);
+		try {
+			chmod(base_path('public/uploads/import/read-only.jpg'), 0444);
+			chmod(base_path('public/uploads/import'), 0555);
+			$this->photos_tests->import(base_path('public/uploads/import/'), null, true, false, false);
 
-		// check if the file is still there
-		static::assertEquals(true, file_exists(base_path('public/uploads/import/read-only.jpg')));
-
-		// re-grant file access and delete it
-		chmod(base_path('public/uploads/import'), 0775);
-		chmod(base_path('public/uploads/import/read-only.jpg'), 0664);
-		unlink(base_path('public/uploads/import/read-only.jpg'));
-
-		$ids_after = static::getRecentPhotoIDs();
-		$ids_to_delete = $ids_after->diff($ids_before)->all();
-		$this->photos_tests->delete($ids_to_delete);
+			// check if the file is still there
+			static::assertEquals(true, file_exists(base_path('public/uploads/import/read-only.jpg')));
+		} finally {
+			// re-grant file access
+			chmod(base_path('public/uploads/import'), 0775);
+			chmod(base_path('public/uploads/import/read-only.jpg'), 0664);
+		}
 	}
 
 	public function testUploadWithReadOnlyStorage(): void
 	{
-		$id = null;
-		$diskPath = Storage::disk(SizeVariantNamingStrategy::IMAGE_DISK_NAME)->path('/');
+		self::restrictDirectoryAccess(base_path('public/uploads/'));
 
-		try {
-			chmod($diskPath, 0555);
-			$id = $this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
-				null,
-				500,
-				'Impossible to create the root directory'
-			);
-		} finally {
-			chmod($diskPath, 0775);
-			// Clean-up
-			DB::table('size_variants')->whereIn('photo_id', [$id])->delete();
-			DB::table('photos')->whereIn('id', [$id])->delete();
-		}
+		$this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
+			null,
+			500,
+			'Impossible to create the root directory'
+		);
 	}
 
 	public function testImportSkipDuplicateWithResync(): void
 	{
-		$ids_before = static::getRecentPhotoIDs();
-
 		// Upload the photo the first time and remove some information
 		// such that there is really something to re-sync
 		$first_id = $this->photos_tests->upload(
@@ -398,17 +338,10 @@ class PhotosAddTest extends TestCase
 			'make' => 'Canon',
 			'model' => 'Canon EOS R',
 		]);
-
-		// Clean-up
-		$ids_after = static::getRecentPhotoIDs();
-		$ids_to_delete = $ids_after->diff($ids_before)->all();
-		$this->photos_tests->delete($ids_to_delete);
 	}
 
 	public function testImportSkipDuplicateWithoutResync(): void
 	{
-		$ids_before = static::getRecentPhotoIDs();
-
 		// Upload the photo the first time
 		$this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
@@ -420,16 +353,10 @@ class PhotosAddTest extends TestCase
 		$report = $this->photos_tests->import(base_path('public/uploads/import/'), null, false, true, false, false);
 		static::assertStringContainsString('PhotoSkippedException', $report);
 		static::assertStringNotContainsString('PhotoResyncedException', $report);
-
-		$ids_after = static::getRecentPhotoIDs();
-		$ids_to_delete = $ids_after->diff($ids_before)->all();
-		$this->photos_tests->delete($ids_to_delete);
 	}
 
 	public function testImportDuplicateWithoutResync(): void
 	{
-		$ids_before = static::getRecentPhotoIDs();
-
 		// Upload the photo the first time and remove some information
 		// such that we can be sure that **no** re-sync happens later
 		$first_id = $this->photos_tests->upload(
@@ -468,10 +395,6 @@ class PhotosAddTest extends TestCase
 			'make' => null,
 			'model' => null,
 		]);
-
-		$ids_after = static::getRecentPhotoIDs();
-		$ids_to_delete = $ids_after->diff($ids_before)->all();
-		$this->photos_tests->delete($ids_to_delete);
 	}
 
 	/**
@@ -535,5 +458,33 @@ class PhotosAddTest extends TestCase
 		};
 
 		return Photo::query()->select('id')->where($recentFilter)->pluck('id');
+	}
+
+	/**
+	 * Recursively restricts the access to the given directory.
+	 *
+	 * @param string $dirPath the directory path
+	 *
+	 * @return void
+	 */
+	protected static function restrictDirectoryAccess(string $dirPath): void
+	{
+		if (!is_dir($dirPath)) {
+			return;
+		}
+
+		$dirEntries = scandir($dirPath);
+		foreach ($dirEntries as $dirEntry) {
+			if (in_array($dirEntry, ['.', '..'])) {
+				continue;
+			}
+
+			$dirEntryPath = $dirPath . DIRECTORY_SEPARATOR . $dirEntry;
+			if (is_dir($dirEntryPath) && !is_link($dirEntryPath)) {
+				self::restrictDirectoryAccess($dirEntryPath);
+			}
+		}
+
+		\Safe\chmod($dirPath, 0555);
 	}
 }

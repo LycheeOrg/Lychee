@@ -14,26 +14,55 @@ namespace Tests\Feature;
 
 use App\Facades\AccessControl;
 use App\Models\Configs;
+use Illuminate\Support\Facades\DB;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\TestCase;
 
 class RSSTest extends TestCase
 {
+	protected PhotosUnitTest $photos_tests;
+	protected AlbumsUnitTest $albums_tests;
+
+	public function setUp(): void
+	{
+		parent::setUp();
+		$this->photos_tests = new PhotosUnitTest($this);
+		$this->albums_tests = new AlbumsUnitTest($this);
+
+		// Assert that photo table is empty
+		static::assertDatabaseCount('sym_links', 0);
+		static::assertDatabaseCount('size_variants', 0);
+		static::assertDatabaseCount('photos', 0);
+	}
+
+	public function tearDown(): void
+	{
+		// Clean up remaining stuff from tests
+		DB::table('sym_links')->delete();
+		DB::table('size_variants')->delete();
+		DB::table('photos')->delete();
+		self::cleanPublicFolders();
+
+		parent::tearDown();
+	}
+
 	public function testRSS0(): void
 	{
 		// save initial value
 		$init_config_value = Configs::get_value('rss_enable');
 
-		// set to 0
-		Configs::set('rss_enable', '0');
-		static::assertEquals('0', Configs::get_value('rss_enable'));
+		try {
+			// set to 0
+			Configs::set('rss_enable', '0');
+			static::assertEquals('0', Configs::get_value('rss_enable'));
 
-		// check redirection
-		$response = $this->get('/feed');
-		$response->assertStatus(412);
-
-		Configs::set('Mod_Frame', $init_config_value);
+			// check redirection
+			$response = $this->get('/feed');
+			$response->assertStatus(412);
+		} finally {
+			Configs::set('rss_enable', $init_config_value);
+		}
 	}
 
 	public function testRSS1(): void
@@ -42,53 +71,51 @@ class RSSTest extends TestCase
 		$init_config_value = Configs::get_value('rss_enable');
 		$init_full_photo = Configs::get_value('full_photo');
 
-		// set to 0
-		Configs::set('rss_enable', '1');
-		Configs::set('full_photo', '0');
-		static::assertEquals('1', Configs::get_value('rss_enable'));
+		try {
+			// set to 0
+			Configs::set('rss_enable', '1');
+			Configs::set('full_photo', '0');
+			static::assertEquals('1', Configs::get_value('rss_enable'));
 
-		// check redirection
-		$response = $this->get('/feed');
-		$response->assertOk();
+			// check redirection
+			$response = $this->get('/feed');
+			$response->assertOk();
 
-		// now we start adding some stuff
-		$photos_tests = new PhotosUnitTest($this);
-		$albums_tests = new AlbumsUnitTest($this);
+			// log as admin
+			AccessControl::log_as_id(0);
 
-		// log as admin
-		AccessControl::log_as_id(0);
+			// create an album
+			$albumID = $this->albums_tests->add(null, 'test_album')->offsetGet('id');
 
-		// create an album
-		$albumID = $albums_tests->add(null, 'test_album')->offsetGet('id');
+			// upload a picture
+			$photoID = $this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			);
 
-		// upload a picture
-		$photoID = $photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
-		);
+			// set it to public
+			$this->photos_tests->set_public($photoID, true);
 
-		// set it to public
-		$photos_tests->set_public($photoID, true);
+			// try to get the RSS feed.
+			$response = $this->get('/feed');
+			$response->assertOk();
 
-		// try to get the RSS feed.
-		$response = $this->get('/feed');
-		$response->assertOk();
+			// set picture to private
+			$this->photos_tests->set_public($photoID, false);
 
-		// set picture to private
-		$photos_tests->set_public($photoID, false);
+			// move picture to album
+			$this->photos_tests->set_album($albumID, [$photoID]);
+			$this->albums_tests->set_protection_policy($albumID);
 
-		// move picture to album
-		$photos_tests->set_album($albumID, [$photoID]);
-		$albums_tests->set_protection_policy($albumID);
+			// try to get the RSS feed.
+			$response = $this->get('/feed');
+			$response->assertOk();
 
-		// try to get the RSS feed.
-		$response = $this->get('/feed');
-		$response->assertOk();
+			$this->albums_tests->delete([$albumID]);
+		} finally {
+			Configs::set('rss_enable', $init_config_value);
+			Configs::set('full_photo', $init_full_photo);
 
-		$albums_tests->delete([$albumID]);
-
-		Configs::set('Mod_Frame', $init_config_value);
-		Configs::set('full_photo', $init_full_photo);
-
-		AccessControl::logout();
+			AccessControl::logout();
+		}
 	}
 }
