@@ -40,7 +40,7 @@ Route::post('/album/{albumID}/track', [AlbumController::class, 'setTrack'])
 Route::delete('/album/{albumID}/track', [AlbumController::class, 'deleteTrack']);
 
 Route::get('/albums', [AlbumsController::class, 'get']);
-Route::get('/albums/position', [AlbumsController::class, 'getPositionData']);
+Route::get('/albums/positions', [AlbumsController::class, 'getPositionData']);
 Route::get('/albums/tree', [AlbumsController::class, 'tree']);
 
 Route::get('/frame/settings', [FrameController::class, 'getSettings']);
@@ -82,7 +82,7 @@ Route::post('/settings/login', [Administration\SettingsController::class, 'setLo
 
 Route::get('/sharing', [Administration\SharingController::class, 'list']);
 Route::post('/Sharing::add', [Administration\SharingController::class, 'add']); // TODO uses list
-Route::delete('/sharing', [Administration\SharingController::class, 'delete']); // TODO uses list
+Route::delete('/Sharing::delete', [Administration\SharingController::class, 'delete']); // TODO uses list
 
 Route::post('/webauthn/register/gen', [Administration\WebAuthController::class, 'generateRegistration']);
 Route::post('/webauthn/register', [Administration\WebAuthController::class, 'verifyRegistration']);

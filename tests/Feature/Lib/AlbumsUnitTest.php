@@ -381,7 +381,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->getJson('/api/albums/position');
+		$response = $this->testCase->getJson('/api/albums/positions');
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
@@ -404,7 +404,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->getJson('/api/album/' . $id . '/position?includeSubAlbums=0');
+		$response = $this->testCase->getJson('/api/album/' . $id . '/positions?includeSubAlbums=0');
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
