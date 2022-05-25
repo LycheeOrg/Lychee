@@ -81,11 +81,11 @@ class PhotosAddTest extends TestCase
 	}
 
 	/**
-	 * A simple upload of an ordinary photo.
+	 * A simple upload of an ordinary photo to the root album.
 	 *
 	 * @return void
 	 */
-	public function testSimpleUpload(): void
+	public function testSimpleUploadToRoot(): void
 	{
 		$id = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
@@ -126,6 +126,64 @@ class PhotosAddTest extends TestCase
 					'filesize' => 21104156,
 				],
 			],
+		]);
+	}
+
+	/**
+	 * A simple upload of an ordinary photo to a regular album.
+	 *
+	 * @return void
+	 */
+	public function testSimpleUploadToSubAlbum(): void
+	{
+		$album_id = null;
+
+		try {
+			$album_id = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
+
+			$id = $this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
+				$album_id
+			);
+			$this->photos_tests->get($id)->assertJson(['album_id' => $album_id]);
+		} finally {
+			if ($album_id) {
+				$this->albums_tests->delete([$album_id]);
+			}
+		}
+	}
+
+	/**
+	 * A simple upload of an ordinary photo to the public album.
+	 *
+	 * @return void
+	 */
+	public function testSimpleUploadToPublic(): void
+	{
+		$id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
+			'public'
+		);
+		$this->photos_tests->get($id)->assertJson([
+			'album_id' => null,
+			'is_public' => 1,
+		]);
+	}
+
+	/**
+	 * A simple upload of an ordinary photo to the is-starred album.
+	 *
+	 * @return void
+	 */
+	public function testSimpleUploadToIsStarred(): void
+	{
+		$id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
+			'starred'
+		);
+		$this->photos_tests->get($id)->assertJson([
+			'album_id' => null,
+			'is_starred' => true,
 		]);
 	}
 
@@ -395,6 +453,44 @@ class PhotosAddTest extends TestCase
 			'make' => null,
 			'model' => null,
 		]);
+	}
+
+	/**
+	 * Tests Apple Live Photo import via symlinks.
+	 *
+	 * @return void
+	 */
+	public function testAppleLivePhotoImportViaSymlink(): void
+	{
+		if (!$this->hasExifTools) {
+			static::markTestSkipped('Exiftool is not available. Test Skipped.');
+		}
+
+		$ids_before = static::getRecentPhotoIDs();
+
+		// import the photo and video
+		copy(base_path(TestCase::SAMPLE_FILE_TRAIN_IMAGE), base_path('public/uploads/import/train.jpg'));
+		copy(base_path(TestCase::SAMPLE_FILE_TRAIN_VIDEO), base_path('public/uploads/import/train.mov'));
+		$this->photos_tests->import(base_path('public/uploads/import/'), null, false, false, true);
+
+		// check if the files are still there
+		static::assertEquals(true, file_exists(base_path('public/uploads/import/train.jpg')));
+		static::assertEquals(true, file_exists(base_path('public/uploads/import/train.mov')));
+
+		// get the path of the photo object
+		$ids_after = static::getRecentPhotoIDs();
+		$photo_id = $ids_after->diff($ids_before)->first();
+		$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
+		static::assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
+		static::assertStringEndsWith('.mov', $photo->live_photo_url);
+		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
+		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
+
+		// get the paths of the original size variant and the live photo and check whether they are truly symbolic links
+		$symlink_path1 = Storage::disk(SizeVariantNamingStrategy::IMAGE_DISK_NAME)->path($photo->size_variants->original->url);
+		$symlink_path2 = Storage::disk(SizeVariantNamingStrategy::IMAGE_DISK_NAME)->path($photo->live_photo_url);
+		static::assertEquals(true, is_link($symlink_path1));
+		static::assertEquals(true, is_link($symlink_path2));
 	}
 
 	/**
