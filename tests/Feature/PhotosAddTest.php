@@ -487,8 +487,8 @@ class PhotosAddTest extends TestCase
 		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
 
 		// get the paths of the original size variant and the live photo and check whether they are truly symbolic links
-		$symlink_path1 = Storage::disk(SizeVariantNamingStrategy::IMAGE_DISK_NAME)->path($photo->size_variants->original->url);
-		$symlink_path2 = Storage::disk(SizeVariantNamingStrategy::IMAGE_DISK_NAME)->path($photo->live_photo_url);
+		$symlink_path1 = public_path($photo->size_variants->original->url);
+		$symlink_path2 = public_path($photo->live_photo_url);
 		static::assertEquals(true, is_link($symlink_path1));
 		static::assertEquals(true, is_link($symlink_path2));
 	}
