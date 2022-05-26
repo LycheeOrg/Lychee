@@ -443,22 +443,26 @@ class PhotosUnitTest
 	/**
 	 * We only test for a code 200.
 	 *
-	 * @param string $id
-	 * @param string $kind
+	 * @param string[] $ids
+	 * @param string   $kind
+	 *
+	 * @return TestResponse
 	 */
 	public function download(
-		string $id,
+		array $ids,
 		string $kind = Archive::FULL
-	): void {
+	): TestResponse {
 		$response = $this->testCase->getWithParameters(
 			'/api/Photo::getArchive', [
-				'photoIDs' => $id,
+				'photoIDs' => implode(',', $ids),
 				'kind' => $kind,
 			], [
 				'Accept' => '*/*',
 			]
 		);
 		$response->assertOk();
+
+		return $response;
 	}
 
 	/**

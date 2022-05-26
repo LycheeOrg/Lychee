@@ -13,12 +13,16 @@
 namespace Tests\Feature;
 
 use App\Facades\AccessControl;
+use App\Image\ImagickHandler;
+use App\Image\InMemoryBuffer;
+use App\Image\TemporaryLocalFile;
 use App\Models\Configs;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\TestCase;
+use ZipArchive;
 
 class PhotosOperationsTest extends TestCase
 {
@@ -114,7 +118,6 @@ class PhotosOperationsTest extends TestCase
 		$this->photos_tests->see_in_favorite($id);
 		$this->photos_tests->see_in_shared($id);
 		$response = $this->photos_tests->get($id);
-		$this->photos_tests->download($id);
 
 		/*
 		 * Check some Exif data
@@ -246,7 +249,7 @@ class PhotosOperationsTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function testSManyFunctionsAtOnceWithSL(): void
+	public function testManyFunctionsAtOnceWithSL(): void
 	{
 		// save initial value
 		$init_config_value1 = Configs::get_value('SL_enable');
@@ -287,5 +290,64 @@ class PhotosOperationsTest extends TestCase
 		$this->photos_tests->set_album('abcdefghijklmnopxyrstuvx', ['abcdefghijklmnopxyrstuvx'], 404);
 		$this->photos_tests->set_license('-1', 'CC0', 422);
 		$this->photos_tests->set_license('abcdefghijklmnopxyrstuvx', 'CC0', 404);
+	}
+
+	public function testSinglePhotoDownload(): void
+	{
+		$photoUploadResponse = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		);
+		$photoArchiveResponse = $this->photos_tests->download([$photoUploadResponse->offsetGet('id')]);
+
+		// Stream the response in a temporary file
+		$memoryBlob = new InMemoryBuffer();
+		fwrite($memoryBlob->stream(), $photoArchiveResponse->streamedContent());
+		$imageFile = new TemporaryLocalFile('.jpg', 'night');
+		$imageFile->write($memoryBlob->read());
+		$memoryBlob->close();
+
+		// Just do a simple read test
+		$image = new ImagickHandler();
+		$image->load($imageFile);
+		$imageDim = $image->getDimensions();
+		static::assertEquals(6720, $imageDim->width);
+		static::assertEquals(4480, $imageDim->height);
+	}
+
+	public function testMultiplePhotoDownload(): void
+	{
+		$photoUploadResponse1 = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		);
+		$photoUploadResponse2 = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+		);
+
+		$photoArchiveResponse = $this->photos_tests->download([
+			$photoUploadResponse1->offsetGet('id'),
+			$photoUploadResponse2->offsetGet('id'),
+		]);
+
+		$memoryBlob = new InMemoryBuffer();
+		fwrite($memoryBlob->stream(), $photoArchiveResponse->streamedContent());
+		$tmpZipFile = new TemporaryLocalFile('.zip', 'archive');
+		$tmpZipFile->write($memoryBlob->read());
+		$memoryBlob->close();
+
+		$zipArchive = new ZipArchive();
+		$zipArchive->open($tmpZipFile->getAbsolutePath());
+
+		static::assertCount(2, $zipArchive);
+		$fileStat1 = $zipArchive->statIndex(0);
+		$fileStat2 = $zipArchive->statIndex(1);
+
+		static::assertContains($fileStat1['name'], ['night.jpg', 'mongolia.jpeg']);
+		static::assertContains($fileStat2['name'], ['night.jpg', 'mongolia.jpeg']);
+
+		$expectedSize1 = $fileStat1['name'] === 'night.jpg' ? 21106422 : 201316;
+		$expectedSize2 = $fileStat2['name'] === 'night.jpg' ? 21106422 : 201316;
+
+		static::assertEquals($expectedSize1, $fileStat1['size']);
+		static::assertEquals($expectedSize2, $fileStat2['size']);
 	}
 }
