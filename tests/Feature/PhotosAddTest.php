@@ -12,16 +12,13 @@
 
 namespace Tests\Feature;
 
-use App\Contracts\SizeVariantNamingStrategy;
 use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\Models\Photo;
-use App\Models\SizeVariant;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\TestCase;
@@ -322,12 +319,8 @@ class PhotosAddTest extends TestCase
 		// get the path of the photo object and check whether it is truly a symbolic link
 		$ids_after = static::getRecentPhotoIDs();
 		$photo_id = $ids_after->diff($ids_before)->first();
-		$rel_path = DB::table('size_variants')
-			->where('photo_id', '=', $photo_id)
-			->where('type', '=', SizeVariant::ORIGINAL)
-			->first('short_path')
-			->short_path;
-		$symlink_path = Storage::disk(SizeVariantNamingStrategy::IMAGE_DISK_NAME)->path($rel_path);
+		$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
+		$symlink_path = public_path($photo->size_variants->original->url);
 		static::assertEquals(true, is_link($symlink_path));
 	}
 
