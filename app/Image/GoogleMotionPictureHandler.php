@@ -78,6 +78,8 @@ class GoogleMotionPictureHandler extends VideoHandler
 			throw new ExternalComponentMissingException('FFmpeg not found', $e);
 		} catch (InvalidArgumentException $e) {
 			throw new MediaFileOperationException('FFmpeg could not open media file', $e);
+		} catch (RuntimeException $e) {
+			throw new MediaFileOperationException('Could not load video stream from Google Motion Picture', $e);
 		}
 	}
 

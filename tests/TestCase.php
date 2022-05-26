@@ -25,7 +25,9 @@ abstract class TestCase extends BaseTestCase
 	public const SAMPLE_FILE_TRAIN_IMAGE = 'tests/Samples/train.jpg';
 	public const SAMPLE_FILE_TRAIN_VIDEO = 'tests/Samples/train.mov';
 	public const SAMPLE_FILE_GMP_IMAGE = 'tests/Samples/google_motion_photo.jpg';
+	public const SAMPLE_FILE_GMP_BROKEN_IMAGE = 'tests/Samples/google_motion_photo_broken.jpg';
 	public const SAMPLE_FILE_GAMING_VIDEO = 'tests/Samples/gaming.mp4';
+	public const SAMPLE_FILE_SIDEWAYS = 'tests/Samples/sideways.jpg';
 
 	public const SAMPLE_FILES_2_MIME = [
 		self::SAMPLE_FILE_NIGHT_IMAGE => 'image/jpeg',
@@ -33,7 +35,9 @@ abstract class TestCase extends BaseTestCase
 		self::SAMPLE_FILE_TRAIN_IMAGE => 'image/jpeg',
 		self::SAMPLE_FILE_TRAIN_VIDEO => 'video/quicktime',
 		self::SAMPLE_FILE_GMP_IMAGE => 'image/jpeg',
+		self::SAMPLE_FILE_GMP_BROKEN_IMAGE => 'image/jpeg',
 		self::SAMPLE_FILE_GAMING_VIDEO => 'video/mp4',
+		self::SAMPLE_FILE_SIDEWAYS => 'image/jpeg',
 	];
 
 	/**

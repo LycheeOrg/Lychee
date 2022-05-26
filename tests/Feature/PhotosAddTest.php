@@ -204,6 +204,41 @@ class PhotosAddTest extends TestCase
 	}
 
 	/**
+	 * A simple upload of an ordinary photo to the root album.
+	 *
+	 * @return void
+	 */
+	public function testUploadWithAutoRotate(): void
+	{
+		$this->assertHasExifToolOrSkip();
+
+		$id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_SIDEWAYS)
+		);
+		$response = $this->photos_tests->get($id);
+
+		/*
+		 * Check some Exif data
+		 */
+		$response->assertJson([
+			'size_variants' => [
+				'small' => [
+					'width' => 480,
+					'height' => 360,
+				],
+				'medium' => [
+					'width' => 1440,
+					'height' => 1080,
+				],
+				'original' => [
+					'width' => 2016,
+					'height' => 1512,
+				],
+			],
+		]);
+	}
+
+	/**
 	 * Tests Apple Live Photo upload (photo first, video second).
 	 *
 	 * @return void
@@ -271,6 +306,25 @@ class PhotosAddTest extends TestCase
 		static::assertStringEndsWith('.mov', $photo->live_photo_url);
 		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
 		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
+	}
+
+	/**
+	 * Tests Google Motion Photo upload with a file which has a broken
+	 * video stream.
+	 *
+	 * @return void
+	 */
+	public function testBrokenGoogleMotionPhotoUpload(): void
+	{
+		$this->assertHasExifToolOrSkip();
+		$this->assertHasFFmpegOrSkip();
+
+		$this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_BROKEN_IMAGE),
+			null,
+			500,
+			'MediaFileOperationException'
+		);
 	}
 
 	public function testRecentAlbum(): void
