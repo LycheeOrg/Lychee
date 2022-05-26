@@ -152,7 +152,7 @@ class GdHandler extends BaseImageHandler
 	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStat
 	{
 		if (!$this->gdImage) {
-			new MediaFileOperationException('No image loaded');
+			throw new MediaFileOperationException('No image loaded');
 		}
 		try {
 			// We write the image into a memory buffer first, because

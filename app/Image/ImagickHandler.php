@@ -72,7 +72,7 @@ class ImagickHandler extends BaseImageHandler
 	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStat
 	{
 		if (!$this->imImage) {
-			new MediaFileOperationException('No image loaded');
+			throw new MediaFileOperationException('No image loaded');
 		}
 		try {
 			$this->imImage->setImageCompressionQuality($this->compressionQuality);
