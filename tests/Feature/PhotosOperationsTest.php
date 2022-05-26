@@ -12,10 +12,12 @@
 
 namespace Tests\Feature;
 
+use App\Actions\Photo\Archive;
 use App\Facades\AccessControl;
 use App\Image\ImagickHandler;
 use App\Image\InMemoryBuffer;
 use App\Image\TemporaryLocalFile;
+use App\Image\VideoHandler;
 use App\Models\Configs;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -26,14 +28,29 @@ use ZipArchive;
 
 class PhotosOperationsTest extends TestCase
 {
+	public const CONFIG_HAS_EXIF_TOOL = 'has_exiftool';
+	public const CONFIG_HAS_FFMPEG_TOOL = 'has_ffmpeg';
+
 	protected PhotosUnitTest $photos_tests;
 	protected AlbumsUnitTest $albums_tests;
+	protected bool $hasExifTools;
+	protected int $hasExifToolsInit;
+	protected bool $hasFFmpeg;
+	protected int $hasFFmpegInit;
 
 	public function setUp(): void
 	{
 		parent::setUp();
 		$this->photos_tests = new PhotosUnitTest($this);
 		$this->albums_tests = new AlbumsUnitTest($this);
+
+		$this->hasExifToolsInit = (int) Configs::get_value(self::CONFIG_HAS_EXIF_TOOL, 2);
+		Configs::set(self::CONFIG_HAS_EXIF_TOOL, 2);
+		$this->hasExifTools = Configs::hasExiftool();
+
+		$this->hasFFmpegInit = (int) Configs::get_value(self::CONFIG_HAS_FFMPEG_TOOL, 2);
+		Configs::set(self::CONFIG_HAS_FFMPEG_TOOL, 2);
+		$this->hasFFmpeg = Configs::hasFFmpeg();
 
 		AccessControl::log_as_id(0);
 
@@ -50,6 +67,9 @@ class PhotosOperationsTest extends TestCase
 		DB::table('size_variants')->delete();
 		DB::table('photos')->delete();
 		self::cleanPublicFolders();
+
+		Configs::set(self::CONFIG_HAS_EXIF_TOOL, $this->hasExifToolsInit);
+		Configs::set(self::CONFIG_HAS_FFMPEG_TOOL, $this->hasFFmpegInit);
 
 		AccessControl::logout();
 		parent::tearDown();
@@ -292,6 +312,11 @@ class PhotosOperationsTest extends TestCase
 		$this->photos_tests->set_license('abcdefghijklmnopxyrstuvx', 'CC0', 404);
 	}
 
+	/**
+	 * Downloads a single photo.
+	 *
+	 * @return void
+	 */
 	public function testSinglePhotoDownload(): void
 	{
 		$photoUploadResponse = $this->photos_tests->upload(
@@ -314,6 +339,11 @@ class PhotosOperationsTest extends TestCase
 		static::assertEquals(4480, $imageDim->height);
 	}
 
+	/**
+	 * Downloads an archive of two different photos.
+	 *
+	 * @return void
+	 */
 	public function testMultiplePhotoDownload(): void
 	{
 		$photoUploadResponse1 = $this->photos_tests->upload(
@@ -349,5 +379,100 @@ class PhotosOperationsTest extends TestCase
 
 		static::assertEquals($expectedSize1, $fileStat1['size']);
 		static::assertEquals($expectedSize2, $fileStat2['size']);
+	}
+
+	/**
+	 * Downloads the video part of a Google Motion Photo.
+	 *
+	 * @return void
+	 */
+	public function testGoogleMotionPhotoDownload(): void
+	{
+		static::assertHasExifToolOrSkip();
+		static::assertHasFFmpegOrSkip();
+
+		$photoUploadResponse = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_IMAGE)
+		);
+		$photoArchiveResponse = $this->photos_tests->download(
+			[$photoUploadResponse->offsetGet('id')],
+			Archive::LIVEPHOTOVIDEO
+		);
+
+		// Stream the response in a temporary file
+		$memoryBlob = new InMemoryBuffer();
+		fwrite($memoryBlob->stream(), $photoArchiveResponse->streamedContent());
+		$videoFile = new TemporaryLocalFile('.mov', 'gmp');
+		$videoFile->write($memoryBlob->read());
+		$memoryBlob->close();
+
+		// Just do a simple read test
+		$video = new VideoHandler();
+		$video->load($videoFile);
+	}
+
+	/**
+	 * Downloads an archive of tree photos with one photo being included twice.
+	 *
+	 * This tests the capability of the archive function to generate unique
+	 * file names for duplicates.
+	 *
+	 * @return void
+	 */
+	public function testAmbiguousPhotoDownload(): void
+	{
+		$photoUploadResponse1 = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE)
+		);
+		$photoUploadResponse2 = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+		);
+		$photoDuplicateResponse = $this->photos_tests->duplicate([$photoUploadResponse2->offsetGet('id')], null);
+
+		$photoArchiveResponse = $this->photos_tests->download([
+			$photoUploadResponse1->offsetGet('id'),
+			$photoUploadResponse2->offsetGet('id'),
+			$photoDuplicateResponse->offsetGet('id'),
+		]);
+
+		$memoryBlob = new InMemoryBuffer();
+		fwrite($memoryBlob->stream(), $photoArchiveResponse->streamedContent());
+		$tmpZipFile = new TemporaryLocalFile('.zip', 'archive');
+		$tmpZipFile->write($memoryBlob->read());
+		$memoryBlob->close();
+
+		$zipArchive = new ZipArchive();
+		$zipArchive->open($tmpZipFile->getAbsolutePath());
+
+		static::assertCount(3, $zipArchive);
+		$fileStat1 = $zipArchive->statIndex(0);
+		$fileStat2 = $zipArchive->statIndex(1);
+		$fileStat3 = $zipArchive->statIndex(2);
+
+		static::assertContains($fileStat1['name'], ['train.jpg', 'mongolia-1.jpeg', 'mongolia-2.jpeg']);
+		static::assertContains($fileStat2['name'], ['train.jpg', 'mongolia-1.jpeg', 'mongolia-2.jpeg']);
+		static::assertContains($fileStat3['name'], ['train.jpg', 'mongolia-1.jpeg', 'mongolia-2.jpeg']);
+
+		$expectedSize1 = $fileStat1['name'] === 'train.jpg' ? 3478530 : 201316;
+		$expectedSize2 = $fileStat2['name'] === 'train.jpg' ? 3478530 : 201316;
+		$expectedSize3 = $fileStat3['name'] === 'train.jpg' ? 3478530 : 201316;
+
+		static::assertEquals($expectedSize1, $fileStat1['size']);
+		static::assertEquals($expectedSize2, $fileStat2['size']);
+		static::assertEquals($expectedSize3, $fileStat3['size']);
+	}
+
+	protected function assertHasExifToolOrSkip(): void
+	{
+		if (!$this->hasExifTools) {
+			static::markTestSkipped('Exiftool is not available. Test Skipped.');
+		}
+	}
+
+	protected function assertHasFFmpegOrSkip(): void
+	{
+		if (!$this->hasFFmpeg) {
+			static::markTestSkipped('FFmpeg is not available. Test Skipped.');
+		}
 	}
 }
