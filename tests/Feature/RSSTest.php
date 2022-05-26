@@ -90,7 +90,7 @@ class RSSTest extends TestCase
 			// upload a picture
 			$photoID = $this->photos_tests->upload(
 				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
-			);
+			)->offsetGet('id');
 
 			// set it to public
 			$this->photos_tests->set_public($photoID, true);

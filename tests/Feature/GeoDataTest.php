@@ -61,12 +61,12 @@ class GeoDataTest extends TestCase
 		$map_display_value = Configs::get_value('map_display');
 
 		try {
-			$id = $this->photos_tests->upload(
+			$photoResponse = $this->photos_tests->upload(
 				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
 			);
+			$photoID = $photoResponse->offsetGet('id');
 
-			$response = $this->photos_tests->get($id);
-			$this->photos_tests->see_in_unsorted($id);
+			$this->photos_tests->see_in_unsorted($photoID);
 			/*
 			 * Check some Exif data
 			 * The metadata extractor is unable to extract an explicit timezone
@@ -80,9 +80,9 @@ class GeoDataTest extends TestCase
 			$taken_at = Carbon::create(
 				2011, 8, 17, 16, 39, 37
 			);
-			$response->assertJson(
+			$photoResponse->assertJson(
 				[
-					'id' => $id,
+					'id' => $photoID,
 					'title' => 'mongolia',
 					'type' => 'image/jpeg',
 					'iso' => '200',
@@ -92,7 +92,6 @@ class GeoDataTest extends TestCase
 					'shutter' => '1/640 s',
 					'focal' => '44 mm',
 					'altitude' => 1633,
-					'license' => 'none',
 					'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
 					'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
 					'is_public' => 0,
@@ -118,13 +117,14 @@ class GeoDataTest extends TestCase
 				]
 			);
 
-			$albumID = $this->albums_tests->add(null, 'test_mongolia')->offsetGet('id');
-			$this->photos_tests->set_album($albumID, [$id]);
-			$this->photos_tests->dont_see_in_unsorted($id);
-			$response = $this->albums_tests->get($albumID);
-			$responseObj = static::convertJsonToObject($response);
-			static::assertCount(1, $responseObj->photos);
-			static::assertEquals($id, $responseObj->photos[0]->id);
+			$albumResponse = $this->albums_tests->add(null, 'test_mongolia');
+			$albumID = $albumResponse->offsetGet('id');
+			$this->photos_tests->set_album($albumID, [$photoID]);
+			$this->photos_tests->dont_see_in_unsorted($photoID);
+			$albumResponse = $this->albums_tests->get($albumID);
+			$album = static::convertJsonToObject($albumResponse);
+			static::assertCount(1, $album->photos);
+			static::assertEquals($photoID, $album->photos[0]->id);
 
 			// now we test position Data
 
@@ -136,11 +136,11 @@ class GeoDataTest extends TestCase
 			// set to 1
 			Configs::set('map_display', '1');
 			static::assertEquals('1', Configs::get_value('map_display'));
-			$response = $this->albums_tests->AlbumsGetPositionDataFull();
-			$responseObj = static::convertJsonToObject($response);
-			static::assertObjectHasAttribute('photos', $responseObj);
-			static::assertCount(1, $responseObj->photos);
-			static::assertEquals($id, $responseObj->photos[0]->id);
+			$positionDataResponse = $this->albums_tests->AlbumsGetPositionDataFull();
+			$positionData = static::convertJsonToObject($positionDataResponse);
+			static::assertObjectHasAttribute('photos', $positionData);
+			static::assertCount(1, $positionData->photos);
+			static::assertEquals($photoID, $positionData->photos[0]->id);
 
 			// set to 0
 			Configs::set('map_display', '0');
@@ -150,11 +150,11 @@ class GeoDataTest extends TestCase
 			// set to 1
 			Configs::set('map_display', '1');
 			static::assertEquals('1', Configs::get_value('map_display'));
-			$response = $this->albums_tests->AlbumGetPositionDataFull($albumID);
-			$responseObj = static::convertJsonToObject($response);
-			static::assertObjectHasAttribute('photos', $responseObj);
-			static::assertCount(1, $responseObj->photos);
-			static::assertEquals($id, $responseObj->photos[0]->id);
+			$positionDataResponse = $this->albums_tests->AlbumGetPositionDataFull($albumID);
+			$positionData = static::convertJsonToObject($positionDataResponse);
+			static::assertObjectHasAttribute('photos', $positionData);
+			static::assertCount(1, $positionData->photos);
+			static::assertEquals($photoID, $positionData->photos[0]->id);
 		} finally {
 			Configs::set('map_display', $map_display_value);
 		}

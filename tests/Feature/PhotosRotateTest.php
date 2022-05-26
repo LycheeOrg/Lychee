@@ -61,7 +61,7 @@ class PhotosRotateTest extends TestCase
 		Configs::set(self::CONFIG_EDITOR_ENABLED, 0);
 		$id = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
-		);
+		)->offsetGet('id');
 
 		$this->photos_tests->rotate($id, 1, 412, 'support for rotation disabled by configuration');
 	}
@@ -70,7 +70,7 @@ class PhotosRotateTest extends TestCase
 	{
 		$id = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
-		);
+		)->offsetGet('id');
 
 		$this->photos_tests->rotate('-1', 1, 422);
 		$this->photos_tests->rotate($id, 'asdq', 422, 'The selected direction is invalid');
@@ -82,13 +82,10 @@ class PhotosRotateTest extends TestCase
 	 */
 	public function testSimpleRotation(): void
 	{
-		$id = $this->photos_tests->upload(
+		$response = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		);
-
-		$response = $this->photos_tests->get($id);
 		$response->assertJson([
-			'id' => $id,
 			'size_variants' => [
 				'small' => ['width' => 540, 'height' => 360],
 				'medium' => ['width' => 1620, 'height' => 1080],
@@ -96,9 +93,8 @@ class PhotosRotateTest extends TestCase
 			],
 		]);
 
-		$response = $this->photos_tests->rotate($id, 1);
+		$response = $this->photos_tests->rotate($response->offsetGet('id'), 1);
 		$response->assertJson([
-			'id' => $id,
 			'size_variants' => [
 				'small' => ['width' => 240, 'height' => 360],
 				'medium' => ['width' => 720, 'height' => 1080],

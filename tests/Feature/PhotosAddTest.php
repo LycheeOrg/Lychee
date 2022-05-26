@@ -103,10 +103,9 @@ class PhotosAddTest extends TestCase
 	 */
 	public function testSimpleUploadToRoot(): void
 	{
-		$id = $this->photos_tests->upload(
+		$response = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		);
-		$response = $this->photos_tests->get($id);
 		/*
 		 * Check some Exif data
 		 */
@@ -117,7 +116,6 @@ class PhotosAddTest extends TestCase
 			'album_id' => null,
 			'aperture' => 'f/2.8',
 			'focal' => '16 mm',
-			'id' => $id,
 			'iso' => '1250',
 			'lens' => 'EF16-35mm f/2.8L USM',
 			'make' => 'Canon',
@@ -157,11 +155,11 @@ class PhotosAddTest extends TestCase
 		try {
 			$album_id = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 
-			$id = $this->photos_tests->upload(
+			$response = $this->photos_tests->upload(
 				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
 				$album_id
 			);
-			$this->photos_tests->get($id)->assertJson(['album_id' => $album_id]);
+			$response->assertJson(['album_id' => $album_id]);
 		} finally {
 			if ($album_id) {
 				$this->albums_tests->delete([$album_id]);
@@ -176,11 +174,11 @@ class PhotosAddTest extends TestCase
 	 */
 	public function testSimpleUploadToPublic(): void
 	{
-		$id = $this->photos_tests->upload(
+		$response = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
 			'public'
 		);
-		$this->photos_tests->get($id)->assertJson([
+		$response->assertJson([
 			'album_id' => null,
 			'is_public' => 1,
 		]);
@@ -193,11 +191,11 @@ class PhotosAddTest extends TestCase
 	 */
 	public function testSimpleUploadToIsStarred(): void
 	{
-		$id = $this->photos_tests->upload(
+		$response = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
 			'starred'
 		);
-		$this->photos_tests->get($id)->assertJson([
+		$response->assertJson([
 			'album_id' => null,
 			'is_starred' => true,
 		]);
@@ -212,10 +210,9 @@ class PhotosAddTest extends TestCase
 	{
 		$this->assertHasExifToolOrSkip();
 
-		$id = $this->photos_tests->upload(
+		$response = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_SIDEWAYS)
 		);
-		$response = $this->photos_tests->get($id);
 
 		/*
 		 * Check some Exif data
@@ -247,20 +244,19 @@ class PhotosAddTest extends TestCase
 	{
 		$this->assertHasExifToolOrSkip();
 
-		$photo_id = $this->photos_tests->upload(
+		$photo = static::convertJsonToObject($this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE)
-		);
-		$video_id = $this->photos_tests->upload(
+		));
+		$video = static::convertJsonToObject($this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_VIDEO),
 			null,
 			200
-		);
-		$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
-		static::assertEquals($photo_id, $video_id);
-		static::assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
-		static::assertStringEndsWith('.mov', $photo->live_photo_url);
-		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
-		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
+		));
+		static::assertEquals($photo->id, $video->id);
+		static::assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $video->live_photo_content_id);
+		static::assertStringEndsWith('.mov', $video->live_photo_url);
+		static::assertEquals(pathinfo($video->live_photo_url, PATHINFO_DIRNAME), pathinfo($video->size_variants->original->url, PATHINFO_DIRNAME));
+		static::assertEquals(pathinfo($video->live_photo_url, PATHINFO_FILENAME), pathinfo($video->size_variants->original->url, PATHINFO_FILENAME));
 	}
 
 	/**
@@ -272,20 +268,19 @@ class PhotosAddTest extends TestCase
 	{
 		$this->assertHasExifToolOrSkip();
 
-		$video_id = $this->photos_tests->upload(
+		$video = static::convertJsonToObject($this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_VIDEO)
-		);
-		$photo_id = $this->photos_tests->upload(
+		));
+		$photo = static::convertJsonToObject($this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE)
-		);
-		$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
+		));
 		static::assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
 		static::assertStringEndsWith('.mov', $photo->live_photo_url);
 		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
 		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
 
 		// The initially uploaded video should have been deleted
-		static::assertEquals(0, DB::table('photos')->where('id', '=', $video_id)->count());
+		static::assertEquals(0, DB::table('photos')->where('id', '=', $video->id)->count());
 	}
 
 	/**
@@ -298,10 +293,9 @@ class PhotosAddTest extends TestCase
 		$this->assertHasExifToolOrSkip();
 		$this->assertHasFFmpegOrSkip();
 
-		$photo_id = $this->photos_tests->upload(
+		$photo = static::convertJsonToObject($this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_IMAGE)
-		);
-		$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
+		));
 
 		static::assertStringEndsWith('.mov', $photo->live_photo_url);
 		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
@@ -334,10 +328,9 @@ class PhotosAddTest extends TestCase
 		$recentAlbumBefore = static::convertJsonToObject($this->albums_tests->get('recent'));
 		static::assertCount($ids_before->count(), $recentAlbumBefore->photos);
 
-		$id = $this->photos_tests->upload(
+		$photo_id = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
-		);
-		$photo_id = $this->photos_tests->get($id)->offsetGet('id');
+		)->offsetGet('id');
 		$ids_after = static::getRecentPhotoIDs();
 
 		$recentAlbumAfter = static::convertJsonToObject($this->albums_tests->get('recent'));
@@ -432,7 +425,7 @@ class PhotosAddTest extends TestCase
 		// such that there is really something to re-sync
 		$first_id = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
-		);
+		)->offsetGet('id');
 		DB::table('photos')
 			->where('id', '=', $first_id)
 			->update(['make' => null, 'model' => null]);
@@ -479,7 +472,7 @@ class PhotosAddTest extends TestCase
 		// such that we can be sure that **no** re-sync happens later
 		$first_id = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
-		);
+		)->offsetGet('id');
 		$response = $this->photos_tests->get($first_id);
 		$response->assertJson([
 			'id' => $first_id,
@@ -561,14 +554,11 @@ class PhotosAddTest extends TestCase
 		$this->assertHasExifToolOrSkip();
 		$this->assertHasFFmpegOrSkip();
 
-		$id = $this->photos_tests->upload(
+		$response = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GAMING_VIDEO)
 		);
-		$response = $this->photos_tests->get($id);
-		$response->assertOk();
 		$response->assertJson([
 			'album_id' => null,
-			'id' => $id,
 			'title' => 'gaming',
 			'type' => 'video/mp4',
 			'size_variants' => [

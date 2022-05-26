@@ -63,7 +63,7 @@ class PhotosOperationsTest extends TestCase
 	{
 		$id = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
-		);
+		)->offsetGet('id');
 
 		$this->photos_tests->get($id);
 
