@@ -13,6 +13,7 @@ class MigrateAdminUser extends Migration
 	 * Run the migrations.
 	 *
 	 * @return void
+	 *
 	 * @throws ModelDBException
 	 */
 	public function up(): void
@@ -32,6 +33,7 @@ class MigrateAdminUser extends Migration
 	 * Reverse the migrations.
 	 *
 	 * @return void
+	 *
 	 * @throws InvalidArgumentException
 	 */
 	public function down(): void
