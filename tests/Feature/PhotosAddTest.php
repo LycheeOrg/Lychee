@@ -32,18 +32,23 @@ class PhotosAddTest extends TestCase
 	protected bool $hasFFmpeg;
 	protected int $hasFFmpegInit;
 
+	public const CONFIG_HAS_EXIF_TOOL = 'has_exiftool';
+	public const CONFIG_HAS_FFMPEG_TOOL = 'has_ffmpeg';
+
+	public const PATH_IMPORT_DIR = 'uploads/import/';
+
 	public function setUp(): void
 	{
 		parent::setUp();
 		$this->photos_tests = new PhotosUnitTest($this);
 		$this->albums_tests = new AlbumsUnitTest($this);
 
-		$this->hasExifToolsInit = (int) Configs::get_value('has_exiftool', 2);
-		Configs::set('has_exiftool', '2');
+		$this->hasExifToolsInit = (int) Configs::get_value(self::CONFIG_HAS_EXIF_TOOL, 2);
+		Configs::set(self::CONFIG_HAS_EXIF_TOOL, '2');
 		$this->hasExifTools = Configs::hasExiftool();
 
-		$this->hasFFmpegInit = (int) Configs::get_value('has_ffmpeg', 2);
-		Configs::set('has_ffmpeg', '2');
+		$this->hasFFmpegInit = (int) Configs::get_value(self::CONFIG_HAS_FFMPEG_TOOL, 2);
+		Configs::set(self::CONFIG_HAS_FFMPEG_TOOL, '2');
 		$this->hasFFmpeg = Configs::hasFFmpeg();
 
 		// Assert that photo table is empty, otherwise we cannot ensure
@@ -65,8 +70,8 @@ class PhotosAddTest extends TestCase
 
 		AccessControl::logout();
 
-		Configs::set('has_exiftool', $this->hasExifToolsInit);
-		Configs::set('has_ffmpeg', $this->hasFFmpegInit);
+		Configs::set(self::CONFIG_HAS_EXIF_TOOL, $this->hasExifToolsInit);
+		Configs::set(self::CONFIG_HAS_FFMPEG_TOOL, $this->hasFFmpegInit);
 
 		parent::tearDown();
 	}
@@ -288,21 +293,21 @@ class PhotosAddTest extends TestCase
 	public function testImportViaMove(): void
 	{
 		// import the photo
-		copy(base_path('tests/Samples/night.jpg'), public_path('uploads/import/night.jpg'));
-		$this->photos_tests->import(public_path('uploads/import/'), null, true, false, false);
+		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
+		$this->photos_tests->import(static::importPath(), null, true, false, false);
 
 		// check if the file has been moved
-		static::assertEquals(false, file_exists(public_path('uploads/import/night.jpg')));
+		static::assertEquals(false, file_exists(static::importPath('night.jpg')));
 	}
 
 	public function testImportViaCopy(): void
 	{
 		// import the photo
-		copy(base_path('tests/Samples/night.jpg'), public_path('uploads/import/night.jpg'));
-		$this->photos_tests->import(public_path('uploads/import/'), null, false, false, false);
+		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
+		$this->photos_tests->import(static::importPath(), null, false, false, false);
 
 		// check if the file is still there
-		static::assertEquals(true, file_exists(public_path('uploads/import/night.jpg')));
+		static::assertEquals(true, file_exists(static::importPath('night.jpg')));
 	}
 
 	public function testImportViaSymlink(): void
@@ -310,11 +315,11 @@ class PhotosAddTest extends TestCase
 		$ids_before = static::getRecentPhotoIDs();
 
 		// import the photo
-		copy(base_path('tests/Samples/night.jpg'), public_path('uploads/import/night.jpg'));
-		$this->photos_tests->import(public_path('uploads/import/'), null, false, false, true);
+		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
+		$this->photos_tests->import(static::importPath(), null, false, false, true);
 
 		// check if the file is still there
-		static::assertEquals(true, file_exists(public_path('uploads/import/night.jpg')));
+		static::assertEquals(true, file_exists(static::importPath('night.jpg')));
 
 		// get the path of the photo object and check whether it is truly a symbolic link
 		$ids_after = static::getRecentPhotoIDs();
@@ -331,18 +336,18 @@ class PhotosAddTest extends TestCase
 		// of a file is based on the write-privilege of the containing directory,
 		// because all these operations require an update of an directory entry.
 		// Making the file read-only is not sufficient to prevent deletion.
-		copy(base_path('tests/Samples/night.jpg'), public_path('uploads/import/read-only.jpg'));
+		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('read-only.jpg'));
 		try {
-			chmod(public_path('uploads/import/read-only.jpg'), 0444);
-			chmod(public_path('uploads/import'), 0555);
-			$this->photos_tests->import(public_path('uploads/import/'), null, true, false, false);
+			chmod(static::importPath('read-only.jpg'), 0444);
+			chmod(static::importPath(), 0555);
+			$this->photos_tests->import(static::importPath(), null, true, false, false);
 
 			// check if the file is still there
-			static::assertEquals(true, file_exists(public_path('uploads/import/read-only.jpg')));
+			static::assertEquals(true, file_exists(static::importPath('read-only.jpg')));
 		} finally {
 			// re-grant file access
-			chmod(public_path('uploads/import'), 0775);
-			chmod(public_path('uploads/import/read-only.jpg'), 0664);
+			chmod(static::importPath(), 0775);
+			chmod(static::importPath('read-only.jpg'), 0664);
 		}
 	}
 
@@ -377,8 +382,8 @@ class PhotosAddTest extends TestCase
 		]);
 
 		// import the photo a second time and request re-sync
-		copy(base_path('tests/Samples/night.jpg'), public_path('uploads/import/night.jpg'));
-		$report = $this->photos_tests->import(public_path('uploads/import/'), null, false, true, false, true);
+		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
+		$report = $this->photos_tests->import(static::importPath(), null, false, true, false, true);
 		static::assertStringNotContainsString('PhotoSkippedException', $report);
 		static::assertStringContainsString('PhotoResyncedException', $report);
 
@@ -399,9 +404,8 @@ class PhotosAddTest extends TestCase
 		);
 
 		// import the photo a second time and skip the duplicate
-		copy(base_path('tests/Samples/night.jpg'), public_path('uploads/import/night.jpg'));
-		$this->photos_tests->import(public_path('uploads/import/'), null, false, false, false, false);
-		$report = $this->photos_tests->import(public_path('uploads/import/'), null, false, true, false, false);
+		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
+		$report = $this->photos_tests->import(static::importPath(), null, false, true, false, false);
 		static::assertStringContainsString('PhotoSkippedException', $report);
 		static::assertStringNotContainsString('PhotoResyncedException', $report);
 	}
@@ -432,9 +436,9 @@ class PhotosAddTest extends TestCase
 		// import the photo a second time and an do not skip the duplicate
 		// but don't resync either
 		// Hence, the original photo which has been duplicated
-		copy(base_path('tests/Samples/night.jpg'), public_path('uploads/import/night.jpg'));
-		$this->photos_tests->import(public_path('uploads/import/'), null, false, false);
-		$report = $this->photos_tests->import(public_path('uploads/import/'), null, false, false);
+		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
+		$this->photos_tests->import(static::importPath(), null, false, false);
+		$report = $this->photos_tests->import(static::importPath(), null, false, false);
 		static::assertStringNotContainsString('PhotoSkippedException', $report);
 		static::assertStringNotContainsString('PhotoResyncedException', $report);
 
@@ -462,13 +466,13 @@ class PhotosAddTest extends TestCase
 		$ids_before = static::getRecentPhotoIDs();
 
 		// import the photo and video
-		copy(base_path(TestCase::SAMPLE_FILE_TRAIN_IMAGE), public_path('uploads/import/train.jpg'));
-		copy(base_path(TestCase::SAMPLE_FILE_TRAIN_VIDEO), public_path('uploads/import/train.mov'));
-		$this->photos_tests->import(public_path('uploads/import/'), null, false, false, true);
+		copy(base_path(TestCase::SAMPLE_FILE_TRAIN_IMAGE), static::importPath('train.jpg'));
+		copy(base_path(TestCase::SAMPLE_FILE_TRAIN_VIDEO), static::importPath('train.mov'));
+		$this->photos_tests->import(static::importPath(), null, false, false, true);
 
 		// check if the files are still there
-		static::assertEquals(true, file_exists(public_path('uploads/import/train.jpg')));
-		static::assertEquals(true, file_exists(public_path('uploads/import/train.mov')));
+		static::assertEquals(true, file_exists(static::importPath('train.jpg')));
+		static::assertEquals(true, file_exists(static::importPath('train.mov')));
 
 		// get the path of the photo object
 		$ids_after = static::getRecentPhotoIDs();
@@ -575,5 +579,10 @@ class PhotosAddTest extends TestCase
 		}
 
 		\Safe\chmod($dirPath, 0555);
+	}
+
+	protected static function importPath(string $path = ''): string
+	{
+		return public_path(self::PATH_IMPORT_DIR . $path);
 	}
 }
