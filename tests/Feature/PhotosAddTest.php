@@ -76,6 +76,20 @@ class PhotosAddTest extends TestCase
 		parent::tearDown();
 	}
 
+	protected function assertHasExifToolOrSkip(): void
+	{
+		if (!$this->hasExifTools) {
+			static::markTestSkipped('Exiftool is not available. Test Skipped.');
+		}
+	}
+
+	protected function assertHasFFmpegOrSkip(): void
+	{
+		if (!$this->hasFFmpeg) {
+			static::markTestSkipped('FFmpeg is not available. Test Skipped.');
+		}
+	}
+
 	public function testNegativeUpload(): void
 	{
 		$this->photos_tests->wrong_upload();
@@ -196,9 +210,7 @@ class PhotosAddTest extends TestCase
 	 */
 	public function testAppleLivePhotoUpload1(): void
 	{
-		if (!$this->hasExifTools) {
-			static::markTestSkipped('Exiftool is not available. Test Skipped.');
-		}
+		$this->assertHasExifToolOrSkip();
 
 		$photo_id = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE)
@@ -223,9 +235,7 @@ class PhotosAddTest extends TestCase
 	 */
 	public function testAppleLivePhotoUpload2(): void
 	{
-		if (!$this->hasExifTools) {
-			static::markTestSkipped('Exiftool is not available. Test Skipped.');
-		}
+		$this->assertHasExifToolOrSkip();
 
 		$video_id = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_VIDEO)
@@ -250,9 +260,8 @@ class PhotosAddTest extends TestCase
 	 */
 	public function testGoogleMotionPhotoUpload(): void
 	{
-		if (!$this->hasExifTools || !$this->hasFFmpeg) {
-			static::markTestSkipped('Exiftool or FFmpeg is not available. Test Skipped.');
-		}
+		$this->assertHasExifToolOrSkip();
+		$this->assertHasFFmpegOrSkip();
 
 		$photo_id = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_IMAGE)
@@ -459,9 +468,7 @@ class PhotosAddTest extends TestCase
 	 */
 	public function testAppleLivePhotoImportViaSymlink(): void
 	{
-		if (!$this->hasExifTools) {
-			static::markTestSkipped('Exiftool is not available. Test Skipped.');
-		}
+		$this->assertHasExifToolOrSkip();
 
 		$ids_before = static::getRecentPhotoIDs();
 
@@ -497,9 +504,8 @@ class PhotosAddTest extends TestCase
 	 */
 	public function testTrickyVideoUpload(): void
 	{
-		if (!$this->hasExifTools || !$this->hasFFmpeg) {
-			static::markTestSkipped('Exiftool or FFmpeg is not available. Test Skipped.');
-		}
+		$this->assertHasExifToolOrSkip();
+		$this->assertHasFFmpegOrSkip();
 
 		$id = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GAMING_VIDEO)
