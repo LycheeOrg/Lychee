@@ -350,7 +350,7 @@ class PhotosAddTest extends TestCase
 	{
 		// import the photo
 		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
-		$this->photos_tests->import(static::importPath(), null, true, false, false);
+		$this->photos_tests->importFromServer(static::importPath(), null, true, false, false);
 
 		// check if the file has been moved
 		static::assertEquals(false, file_exists(static::importPath('night.jpg')));
@@ -360,7 +360,7 @@ class PhotosAddTest extends TestCase
 	{
 		// import the photo
 		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
-		$this->photos_tests->import(static::importPath(), null, false, false, false);
+		$this->photos_tests->importFromServer(static::importPath(), null, false, false, false);
 
 		// check if the file is still there
 		static::assertEquals(true, file_exists(static::importPath('night.jpg')));
@@ -372,7 +372,7 @@ class PhotosAddTest extends TestCase
 
 		// import the photo
 		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
-		$this->photos_tests->import(static::importPath(), null, false, false, true);
+		$this->photos_tests->importFromServer(static::importPath(), null, false, false, true);
 
 		// check if the file is still there
 		static::assertEquals(true, file_exists(static::importPath('night.jpg')));
@@ -396,7 +396,7 @@ class PhotosAddTest extends TestCase
 		try {
 			chmod(static::importPath('read-only.jpg'), 0444);
 			chmod(static::importPath(), 0555);
-			$this->photos_tests->import(static::importPath(), null, true, false, false);
+			$this->photos_tests->importFromServer(static::importPath(), null, true, false, false);
 
 			// check if the file is still there
 			static::assertEquals(true, file_exists(static::importPath('read-only.jpg')));
@@ -439,7 +439,7 @@ class PhotosAddTest extends TestCase
 
 		// import the photo a second time and request re-sync
 		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
-		$report = $this->photos_tests->import(static::importPath(), null, false, true, false, true);
+		$report = $this->photos_tests->importFromServer(static::importPath(), null, false, true, false, true);
 		static::assertStringNotContainsString('PhotoSkippedException', $report);
 		static::assertStringContainsString('PhotoResyncedException', $report);
 
@@ -461,7 +461,7 @@ class PhotosAddTest extends TestCase
 
 		// import the photo a second time and skip the duplicate
 		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
-		$report = $this->photos_tests->import(static::importPath(), null, false, true, false, false);
+		$report = $this->photos_tests->importFromServer(static::importPath(), null, false, true, false, false);
 		static::assertStringContainsString('PhotoSkippedException', $report);
 		static::assertStringNotContainsString('PhotoResyncedException', $report);
 	}
@@ -493,8 +493,8 @@ class PhotosAddTest extends TestCase
 		// but don't resync either
 		// Hence, the original photo which has been duplicated
 		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
-		$this->photos_tests->import(static::importPath(), null, false, false);
-		$report = $this->photos_tests->import(static::importPath(), null, false, false);
+		$this->photos_tests->importFromServer(static::importPath(), null, false, false);
+		$report = $this->photos_tests->importFromServer(static::importPath(), null, false, false);
 		static::assertStringNotContainsString('PhotoSkippedException', $report);
 		static::assertStringNotContainsString('PhotoResyncedException', $report);
 
@@ -522,7 +522,7 @@ class PhotosAddTest extends TestCase
 		// import the photo and video
 		copy(base_path(TestCase::SAMPLE_FILE_TRAIN_IMAGE), static::importPath('train.jpg'));
 		copy(base_path(TestCase::SAMPLE_FILE_TRAIN_VIDEO), static::importPath('train.mov'));
-		$this->photos_tests->import(static::importPath(), null, false, false, true);
+		$this->photos_tests->importFromServer(static::importPath(), null, false, false, true);
 
 		// check if the files are still there
 		static::assertEquals(true, file_exists(static::importPath('train.jpg')));
@@ -585,6 +585,24 @@ class PhotosAddTest extends TestCase
 				],
 			],
 		]);
+	}
+
+	public function testDownloadPhoto(): void
+	{
+		$response = $this->photos_tests->importFromUrl(['https://lycheeorg.github.io/assets/images/showcase.jpg']);
+
+		$response->assertJson([[
+			'album_id' => null,
+			'title' => 'showcase',
+			'type' => 'image/jpeg',
+			'size_variants' => [
+				'original' => [
+					'width' => 2388,
+					'height' => 1050,
+					'filesize' => 547489,
+				],
+			],
+		]]);
 	}
 
 	/**

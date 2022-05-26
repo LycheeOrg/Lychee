@@ -500,7 +500,7 @@ class PhotosUnitTest
 	 *
 	 * @return string the streamed progress report
 	 */
-	public function import(
+	public function importFromServer(
 		string $path,
 		?string $album_id = null,
 		?bool $delete_imported = null,
@@ -542,6 +542,36 @@ class PhotosUnitTest
 		}
 
 		return $response->streamedContent();
+	}
+
+	/**
+	 * Imports a photo from a remote URL.
+	 *
+	 * @param string[]    $urls               URLs to import photos from
+	 * @param string|null $album_id           ID of album to import into
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 *
+	 * @return TestResponse
+	 */
+	public function importFromUrl(
+		array $urls,
+		?string $album_id = null,
+		int $expectedStatusCode = 200,
+		?string $assertSee = null
+	): TestResponse {
+		$response = $this->testCase->postJson(
+			'/api/Import::url', [
+				'albumID' => $album_id,
+				'urls' => $urls,
+			]);
+
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
+
+		return $response;
 	}
 
 	/**
