@@ -20,12 +20,18 @@ use Tests\TestCase;
 
 class PhotosRotateTest extends TestCase
 {
+	public const CONFIG_EDITOR_ENABLED = 'editor_enabled';
+
 	protected PhotosUnitTest $photos_tests;
+	protected int $editor_enabled_init;
 
 	public function setUp(): void
 	{
 		parent::setUp();
 		$this->photos_tests = new PhotosUnitTest($this);
+
+		$this->editor_enabled_init = (int) Configs::get_value(self::CONFIG_EDITOR_ENABLED, 0);
+		Configs::set(self::CONFIG_EDITOR_ENABLED, 1);
 
 		AccessControl::log_as_id(0);
 
@@ -43,107 +49,61 @@ class PhotosRotateTest extends TestCase
 		DB::table('photos')->delete();
 		self::cleanPublicFolders();
 
+		Configs::set(self::CONFIG_EDITOR_ENABLED, $this->editor_enabled_init);
+
 		AccessControl::logout();
 
 		parent::tearDown();
 	}
 
+	public function testDisabledEditor(): void
+	{
+		Configs::set(self::CONFIG_EDITOR_ENABLED, 0);
+		$id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		);
+
+		$this->photos_tests->rotate($id, 1, 412, 'support for rotation disabled by configuration');
+	}
+
+	public function testInvalidValues(): void
+	{
+		$id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		);
+
+		$this->photos_tests->rotate('-1', 1, 422);
+		$this->photos_tests->rotate($id, 'asdq', 422, 'The selected direction is invalid');
+		$this->photos_tests->rotate($id, '2', 422, 'The selected direction is invalid');
+	}
+
 	/**
 	 * @return void
 	 */
-	public function testRotate(): void
+	public function testSimpleRotation(): void
 	{
-		$editor_enabled_value = Configs::get_value('editor_enabled');
+		$id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		);
 
-		try {
-			$id = $this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
-			);
+		$response = $this->photos_tests->get($id);
+		$response->assertJson([
+			'id' => $id,
+			'size_variants' => [
+				'small' => ['width' => 540, 'height' => 360],
+				'medium' => ['width' => 1620, 'height' => 1080],
+				'original' => ['width' => 6720, 'height' => 4480],
+			],
+		]);
 
-			$response = $this->photos_tests->get($id);
-			/*
-			* Check some Exif data
-			*/
-			$response->assertJson([
-				'id' => $id,
-				'size_variants' => [
-					'small' => [
-						'width' => 540,
-						'height' => 360,
-					],
-					'medium' => [
-						'width' => 1620,
-						'height' => 1080,
-					],
-					'original' => [
-						'width' => 6720,
-						'height' => 4480,
-						'filesize' => 21106422,
-					],
-				],
-			]);
-
-			Configs::set('editor_enabled', '0');
-			$response = $this->postJson('/api/PhotoEditor::rotate', [
-				'photoID' => $id,
-				'direction' => 1,
-			]);
-			$response->assertStatus(412);
-			$response->assertSee('support for rotation disabled by configuration');
-
-			Configs::set('editor_enabled', '1');
-			$this->photos_tests->rotate('-1', 1, 422);
-			$this->photos_tests->rotate($id, 'asdq', 422, 'The selected direction is invalid');
-			$this->photos_tests->rotate($id, '2', 422, 'The selected direction is invalid');
-
-			$response = $this->photos_tests->rotate($id, 1);
-			/*
-			* Check some Exif data
-			*/
-			$response->assertJson([
-				'id' => $id,
-				'size_variants' => [
-					'small' => [
-						'width' => 240,
-						'height' => 360,
-					],
-					'medium' => [
-						'width' => 720,
-						'height' => 1080,
-					],
-					'original' => [
-						'width' => 4480,
-						'height' => 6720,
-					],
-				],
-			]);
-
-			$this->photos_tests->rotate($id, -1);
-
-			/*
-			* Check some Exif data
-			*/
-			$response = $this->photos_tests->get($id);
-			$response->assertJson([
-				'id' => $id,
-				'size_variants' => [
-					'small' => [
-						'width' => 540,
-						'height' => 360,
-					],
-					'medium' => [
-						'width' => 1620,
-						'height' => 1080,
-					],
-					'original' => [
-						'width' => 6720,
-						'height' => 4480,
-					],
-				],
-			]);
-		} finally {
-			// reset
-			Configs::set('editor_enabled', $editor_enabled_value);
-		}
+		$response = $this->photos_tests->rotate($id, 1);
+		$response->assertJson([
+			'id' => $id,
+			'size_variants' => [
+				'small' => ['width' => 240, 'height' => 360],
+				'medium' => ['width' => 720, 'height' => 1080],
+				'original' => ['width' => 4480, 'height' => 6720],
+			],
+		]);
 	}
 }
