@@ -46,7 +46,7 @@ class StreamStat
 			$checksum = hash_file(StreamStatFilter::HASH_ALGO_NAME, $file->getAbsolutePath());
 			if (!$checksum) {
 				$error = error_get_last();
-				throw new \ErrorException($error['message'] ?? 'An error occured', 0, $error['type'] ?? 1);
+				throw new \ErrorException($error['message'] ?? 'An error occurred', 0, $error['type'] ?? 1);
 			}
 
 			return new StreamStat($file->getFilesize(), $checksum);
