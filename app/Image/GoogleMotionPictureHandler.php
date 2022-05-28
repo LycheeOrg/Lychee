@@ -73,7 +73,7 @@ class GoogleMotionPictureHandler extends VideoHandler
 			$file->close();
 
 			$ffmpeg = FFMpeg::create();
-			$this->video = $ffmpeg->open($this->workingCopy->getAbsolutePath());
+			$this->video = $ffmpeg->open($this->workingCopy->getRealPath());
 		} catch (ExecutableNotFoundException $e) {
 			throw new ExternalComponentMissingException('FFmpeg not found', $e);
 		} catch (InvalidArgumentException $e) {
@@ -98,7 +98,7 @@ class GoogleMotionPictureHandler extends VideoHandler
 			$format = new MOVFormat();
 			// Add additional parameter to extract the first video stream
 			$format->setAdditionalParameters(['-map', '0:0']);
-			$this->video->save($format, $file->getAbsolutePath());
+			$this->video->save($format, $file->getRealPath());
 		} catch (RuntimeException $e) {
 			throw new MediaFileOperationException('Could not save video stream from Google Motion Picture', $e);
 		} catch (InvalidArgumentException $e) {

@@ -126,7 +126,7 @@ class Extractor
 			// with a work-around for MP4 videos which are wrongly classified
 			// as `application/octet-stream`, but this work-around only
 			// succeeds if the file has a recognized extension.
-			$exif = $reader->read($file->getAbsolutePath());
+			$exif = $reader->read($file->getRealPath());
 		} catch (\InvalidArgumentException|NoAdapterException $e) {
 			throw new ExternalComponentMissingException('The configured EXIF adapter is not available', $e);
 		} catch (\RuntimeException $e) {
@@ -141,7 +141,7 @@ class Extractor
 				Logs::notice(__METHOD__, __LINE__, 'Falling back to native adapter.');
 				// Use Php native tools
 				$reader = Reader::factory(Reader::TYPE_NATIVE);
-				$exif = $reader->read($file->getAbsolutePath());
+				$exif = $reader->read($file->getRealPath());
 			} catch (\InvalidArgumentException|NoAdapterException $e) {
 				throw new ExternalComponentMissingException('The configured EXIF adapter is not available', $e);
 			} catch (\RuntimeException $e) {
@@ -154,13 +154,13 @@ class Extractor
 		// Attempt to get sidecar metadata if it exists, make sure to check 'real' path in case of symlinks
 		$sidecarData = [];
 
-		$sidecarFile = new NativeLocalFile($file->getAbsolutePath() . '.xmp');
+		$sidecarFile = new NativeLocalFile($file->getPath() . '.xmp');
 
 		if (Configs::hasExiftool() && $sidecarFile->exists()) {
 			try {
 				// Don't use the same reader as the file in case it's a video
 				$sidecarReader = Reader::factory(Reader::TYPE_EXIFTOOL);
-				$sidecarData = $sidecarReader->read($sidecarFile->getAbsolutePath())->getData();
+				$sidecarData = $sidecarReader->read($sidecarFile->getRealPath())->getData();
 
 				// We don't want to overwrite the media's type with the mimetype of the sidecar file
 				unset($sidecarData['MimeType']);

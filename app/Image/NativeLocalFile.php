@@ -36,7 +36,7 @@ class NativeLocalFile extends MediaFile
 			if (is_resource($this->stream)) {
 				\Safe\rewind($this->stream);
 			} else {
-				$this->stream = \Safe\fopen($this->getAbsolutePath(), 'rb');
+				$this->stream = \Safe\fopen($this->getPath(), 'rb');
 			}
 
 			return $this->stream;
@@ -67,7 +67,7 @@ class NativeLocalFile extends MediaFile
 				\Safe\ftruncate($this->stream, 0);
 				\Safe\rewind($this->stream);
 			} else {
-				$this->stream = \Safe\fopen($this->getAbsolutePath(), 'w+b');
+				$this->stream = \Safe\fopen($this->getPath(), 'w+b');
 			}
 			$this->cachedMimeType = null;
 			\Safe\stream_copy_to_stream($stream, $this->stream);
@@ -76,7 +76,7 @@ class NativeLocalFile extends MediaFile
 			// by PHP to avoid costly I/O calls.
 			// If cache is not cleared, an old size may be reported after
 			// write.
-			clearstatcache(true, $this->getAbsolutePath());
+			clearstatcache(true, $this->getPath());
 
 			return $streamStat;
 		} catch (\ErrorException $e) {
@@ -107,7 +107,7 @@ class NativeLocalFile extends MediaFile
 	public function move(string $newPath): void
 	{
 		try {
-			\Safe\rename(\Safe\realpath($this->path), \Safe\realpath($newPath));
+			\Safe\rename($this->path, $newPath);
 			$this->path = $newPath;
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
@@ -136,7 +136,7 @@ class NativeLocalFile extends MediaFile
 	public function lastModified(): int
 	{
 		try {
-			return \Safe\filemtime($this->getAbsolutePath());
+			return \Safe\filemtime($this->getPath());
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
@@ -148,16 +148,33 @@ class NativeLocalFile extends MediaFile
 	public function getFilesize(): int
 	{
 		try {
-			return filesize($this->getAbsolutePath());
+			return filesize($this->getPath());
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Returns the path of the file.
+	 *
+	 * @return string
 	 */
-	public function getAbsolutePath(): string
+	public function getPath(): string
+	{
+		return $this->path;
+	}
+
+	/**
+	 * Returns the real path of the file after all symbolic links and
+	 * relative path components such as `'..'` have been resolved.
+	 *
+	 * Throws an exception, if the file does not exist.
+	 *
+	 * @return string
+	 *
+	 * @throws MediaFileOperationException
+	 */
+	public function getRealPath(): string
 	{
 		try {
 			return \Safe\realpath($this->path);
@@ -195,7 +212,7 @@ class NativeLocalFile extends MediaFile
 	{
 		try {
 			if (!$this->cachedMimeType) {
-				$this->cachedMimeType = \Safe\mime_content_type($this->getAbsolutePath());
+				$this->cachedMimeType = \Safe\mime_content_type($this->getPath());
 			}
 
 			return $this->cachedMimeType;
@@ -212,7 +229,7 @@ class NativeLocalFile extends MediaFile
 	protected function hasSupportedExifImageType(): bool
 	{
 		try {
-			return in_array(exif_imagetype($this->getAbsolutePath()), self::SUPPORTED_PHP_EXIF_IMAGE_TYPES, true);
+			return in_array(exif_imagetype($this->getPath()), self::SUPPORTED_PHP_EXIF_IMAGE_TYPES, true);
 		} catch (\ErrorException|MediaFileOperationException) {
 			// `exif_imagetype` emit an engine error E_NOTICE, if it is unable
 			// to read enough bytes from the file to determine the image type.

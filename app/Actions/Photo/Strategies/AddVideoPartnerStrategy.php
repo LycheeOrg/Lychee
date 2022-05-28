@@ -97,16 +97,16 @@ class AddVideoPartnerStrategy extends AddBaseStrategy
 					if (!$videoTargetFile->isLocalFile()) {
 						throw new ConfigurationException('Symlinking is only supported on local filesystems');
 					}
-					$targetAbsolutePath = $videoTargetFile->getAbsolutePath();
-					$sourceAbsolutePath = $this->videoSourceFile->getAbsolutePath();
+					$targetPath = $videoTargetFile->toLocalFile()->getPath();
+					$sourcePath = $this->videoSourceFile->getRealPath();
 					// For symlinks we must manually create a non-existing
 					// parent directory.
 					// This mimics the behaviour of Flysystem for regular files.
-					$targetDirectory = pathinfo($targetAbsolutePath, PATHINFO_DIRNAME);
+					$targetDirectory = pathinfo($targetPath, PATHINFO_DIRNAME);
 					if (!is_dir($targetDirectory)) {
 						\Safe\mkdir($targetDirectory, 0777, true);
 					}
-					\Safe\symlink($sourceAbsolutePath, $targetAbsolutePath);
+					\Safe\symlink($sourcePath, $targetPath);
 					$streamStat = StreamStat::createFromLocalFile($this->videoSourceFile);
 				} else {
 					$streamStat = $videoTargetFile->write($this->videoSourceFile->read(), true);

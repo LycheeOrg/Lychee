@@ -54,12 +54,12 @@ abstract class BaseImageHandler implements ImageHandlerInterface
 	{
 		if (Configs::get_value('lossless_optimization', '0') == '1') {
 			if ($file instanceof NativeLocalFile) {
-				ImageOptimizer::optimize($file->getAbsolutePath());
+				ImageOptimizer::optimize($file->getRealPath());
 
 				return $collectStatistics ? StreamStat::createFromLocalFile($file) : null;
 			} elseif ($file instanceof FlysystemFile && $file->isLocalFile()) {
 				$localFile = $file->toLocalFile();
-				ImageOptimizer::optimize($localFile->getAbsolutePath());
+				ImageOptimizer::optimize($localFile->getRealPath());
 
 				return $collectStatistics ? StreamStat::createFromLocalFile($localFile) : null;
 			} else {

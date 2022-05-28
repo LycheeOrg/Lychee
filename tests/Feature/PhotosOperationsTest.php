@@ -350,7 +350,7 @@ class PhotosOperationsTest extends TestCase
 		$memoryBlob->close();
 
 		$zipArchive = new ZipArchive();
-		$zipArchive->open($tmpZipFile->getAbsolutePath());
+		$zipArchive->open($tmpZipFile->getRealPath());
 
 		static::assertCount(2, $zipArchive);
 		$fileStat1 = $zipArchive->statIndex(0);
@@ -427,7 +427,7 @@ class PhotosOperationsTest extends TestCase
 		$memoryBlob->close();
 
 		$zipArchive = new ZipArchive();
-		$zipArchive->open($tmpZipFile->getAbsolutePath());
+		$zipArchive->open($tmpZipFile->getRealPath());
 
 		static::assertCount(3, $zipArchive);
 		$fileStat1 = $zipArchive->statIndex(0);

@@ -142,7 +142,12 @@ class Archive
 			// The only reason why we don't use the path directly is that
 			// we must avoid illegal characters like `/` and md5 returns a
 			// hexadecimal string.
-			$response->headers->set('ETag', md5($archiveFileInfo->getFile()->getAbsolutePath()));
+			$response->headers->set('ETag', md5(
+				$archiveFileInfo->getFile()->getBasename() .
+				$variant .
+				$photo->updated_at->toAtomString() .
+				$archiveFileInfo->getFile()->getFilesize())
+			);
 			$response->headers->set('Last-Modified', $photo->updated_at->format(DateTimeInterface::RFC7231));
 
 			return $response;

@@ -40,7 +40,7 @@ class VideoHandler
 		}
 		try {
 			$ffmpeg = FFMpeg::create();
-			$this->video = $ffmpeg->open($file->getAbsolutePath());
+			$this->video = $ffmpeg->open($file->getRealPath());
 		} catch (ExecutableNotFoundException $e) {
 			throw new ExternalComponentMissingException('FFmpeg not found', $e);
 		} catch (InvalidArgumentException $e) {
@@ -62,12 +62,12 @@ class VideoHandler
 	{
 		try {
 			$frame = $this->video->frame(TimeCode::fromSeconds($framePosition));
-			$frame->save($file->getAbsolutePath());
+			$frame->save($file->getRealPath());
 		} catch (RuntimeException $e) {
 			throw new MediaFileOperationException('Could not extract frame from video file', $e);
 		}
 		if (Configs::get_value('lossless_optimization')) {
-			ImageOptimizer::optimize($file->getAbsolutePath());
+			ImageOptimizer::optimize($file->getRealPath());
 		}
 	}
 }

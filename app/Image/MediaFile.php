@@ -150,15 +150,6 @@ abstract class MediaFile extends BinaryBlob
 	abstract public function getFilesize(): int;
 
 	/**
-	 * Returns the absolute path of the file.
-	 *
-	 * @return string
-	 *
-	 * @throws MediaFileOperationException
-	 */
-	abstract public function getAbsolutePath(): string;
-
-	/**
 	 * Returns the extension of the file incl. a preceding dot.
 	 *
 	 * @return string

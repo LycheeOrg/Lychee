@@ -117,14 +117,14 @@ class SymLink extends Model
 	protected function performInsert(Builder $query): bool
 	{
 		$file = $this->size_variant->getFile()->toLocalFile();
-		$origFullPath = $file->getAbsolutePath();
+		$origRealPath = $file->getRealPath();
 		$extension = $file->getExtension();
-		$symShortPath = hash('sha256', random_bytes(32) . '|' . $origFullPath) . $extension;
-		$symFullPath = Storage::disk(SymLink::DISK_NAME)->path($symShortPath);
-		if (is_link($symFullPath)) {
-			unlink($symFullPath);
+		$symShortPath = hash('sha256', random_bytes(32) . '|' . $origRealPath) . $extension;
+		$symAbsolutePath = Storage::disk(SymLink::DISK_NAME)->path($symShortPath);
+		if (is_link($symAbsolutePath)) {
+			unlink($symAbsolutePath);
 		}
-		if (!symlink($origFullPath, $symFullPath)) {
+		if (!symlink($origRealPath, $symAbsolutePath)) {
 			return false;
 		}
 		$this->short_path = $symShortPath;
