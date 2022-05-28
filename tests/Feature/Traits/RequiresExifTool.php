@@ -17,18 +17,18 @@ use App\Models\Configs;
 trait RequiresExifTool
 {
 	protected bool $hasExifTools;
-	protected int $hasExifToolsInit;
+	protected int $hasImagickInit;
 
 	protected function setUpRequiresExifTool(): void
 	{
-		$this->hasExifToolsInit = (int) Configs::get_value(self::CONFIG_HAS_EXIF_TOOL, 2);
+		$this->hasImagickInit = (int) Configs::get_value(self::CONFIG_HAS_EXIF_TOOL, 2);
 		Configs::set(self::CONFIG_HAS_EXIF_TOOL, 2);
 		$this->hasExifTools = Configs::hasExiftool();
 	}
 
 	protected function tearDownRequiresExifTool(): void
 	{
-		Configs::set(self::CONFIG_HAS_EXIF_TOOL, $this->hasExifToolsInit);
+		Configs::set(self::CONFIG_HAS_EXIF_TOOL, $this->hasImagickInit);
 	}
 
 	protected function assertHasExifToolOrSkip(): void

@@ -1,0 +1,275 @@
+<?php
+
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
+
+namespace Tests\Feature;
+
+use App\Facades\AccessControl;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Tests\Feature\Lib\AlbumsUnitTest;
+use Tests\Feature\Lib\PhotosUnitTest;
+use Tests\Feature\Traits\RequiresEmptyPhotos;
+use Tests\Feature\Traits\RequiresExifTool;
+use Tests\Feature\Traits\RequiresFFMpeg;
+use Tests\TestCase;
+
+/**
+ * Contains all tests for adding photos to Lychee which involve the image
+ * handler.
+ *
+ * The idea is to inherit this class be real test classes which enable
+ * a particular image handler (i.e. Imagick, GD, etc.)
+ */
+abstract class PhotosAddTestAbstract extends TestCase
+{
+	use RequiresExifTool;
+	use RequiresFFMpeg;
+	use RequiresEmptyPhotos;
+
+	protected PhotosUnitTest $photos_tests;
+	protected AlbumsUnitTest $albums_tests;
+
+	public function setUp(): void
+	{
+		parent::setUp();
+		$this->photos_tests = new PhotosUnitTest($this);
+		$this->albums_tests = new AlbumsUnitTest($this);
+
+		$this->setUpRequiresExifTool();
+		$this->setUpRequiresFFMpeg();
+		$this->setUpRequiresEmptyPhotos();
+
+		AccessControl::log_as_id(0);
+	}
+
+	public function tearDown(): void
+	{
+		$this->tearDownRequiresEmptyPhotos();
+
+		AccessControl::logout();
+
+		$this->tearDownRequiresExifTool();
+		$this->tearDownRequiresFFMpeg();
+
+		parent::tearDown();
+	}
+
+	/**
+	 * A simple upload of an ordinary photo to the root album.
+	 *
+	 * @return void
+	 */
+	public function testSimpleUploadToRoot(): void
+	{
+		$response = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		);
+		/*
+		 * Check some Exif data
+		 */
+		$taken_at = Carbon::create(
+			2019, 6, 1, 1, 28, 25, '+02:00'
+		);
+		$response->assertJson([
+			'album_id' => null,
+			'aperture' => 'f/2.8',
+			'focal' => '16 mm',
+			'iso' => '1250',
+			'lens' => 'EF16-35mm f/2.8L USM',
+			'make' => 'Canon',
+			'model' => 'Canon EOS R',
+			'shutter' => '30 s',
+			'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
+			'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
+			'title' => 'night',
+			'type' => 'image/jpeg',
+			'size_variants' => [
+				'small' => [
+					'width' => 540,
+					'height' => 360,
+				],
+				'medium' => [
+					'width' => 1620,
+					'height' => 1080,
+				],
+				'original' => [
+					'width' => 6720,
+					'height' => 4480,
+					'filesize' => 21106422,
+				],
+			],
+		]);
+	}
+
+	/**
+	 * A simple upload of an ordinary photo to the root album.
+	 *
+	 * @return void
+	 */
+	public function testUploadWithAutoRotate(): void
+	{
+		$this->assertHasExifToolOrSkip();
+
+		$response = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_SIDEWAYS)
+		);
+
+		/*
+		 * Check some Exif data
+		 */
+		$response->assertJson([
+			'size_variants' => [
+				'small' => [
+					'width' => 480,
+					'height' => 360,
+				],
+				'medium' => [
+					'width' => 1440,
+					'height' => 1080,
+				],
+				'original' => [
+					'width' => 2016,
+					'height' => 1512,
+				],
+			],
+		]);
+	}
+
+	/**
+	 * Tests Apple Live Photo upload (photo first, video second).
+	 *
+	 * @return void
+	 */
+	public function testAppleLivePhotoUpload1(): void
+	{
+		$this->assertHasExifToolOrSkip();
+
+		$photo = static::convertJsonToObject($this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE)
+		));
+		$video = static::convertJsonToObject($this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_VIDEO),
+			null,
+			200
+		));
+		static::assertEquals($photo->id, $video->id);
+		static::assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $video->live_photo_content_id);
+		static::assertStringEndsWith('.mov', $video->live_photo_url);
+		static::assertEquals(pathinfo($video->live_photo_url, PATHINFO_DIRNAME), pathinfo($video->size_variants->original->url, PATHINFO_DIRNAME));
+		static::assertEquals(pathinfo($video->live_photo_url, PATHINFO_FILENAME), pathinfo($video->size_variants->original->url, PATHINFO_FILENAME));
+	}
+
+	/**
+	 * Tests Apple Live Photo upload (video first, photo second).
+	 *
+	 * @return void
+	 */
+	public function testAppleLivePhotoUpload2(): void
+	{
+		$this->assertHasExifToolOrSkip();
+
+		$video = static::convertJsonToObject($this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_VIDEO)
+		));
+		$photo = static::convertJsonToObject($this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE)
+		));
+		static::assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
+		static::assertStringEndsWith('.mov', $photo->live_photo_url);
+		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
+		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
+
+		// The initially uploaded video should have been deleted
+		static::assertEquals(0, DB::table('photos')->where('id', '=', $video->id)->count());
+	}
+
+	/**
+	 * Tests Google Motion Photo upload.
+	 *
+	 * @return void
+	 */
+	public function testGoogleMotionPhotoUpload(): void
+	{
+		$this->assertHasExifToolOrSkip();
+		$this->assertHasFFMpegOrSkip();
+
+		$photo = static::convertJsonToObject($this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_IMAGE)
+		));
+
+		static::assertStringEndsWith('.mov', $photo->live_photo_url);
+		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
+		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
+	}
+
+	/**
+	 * Tests Google Motion Photo upload with a file which has a broken
+	 * video stream.
+	 *
+	 * @return void
+	 */
+	public function testBrokenGoogleMotionPhotoUpload(): void
+	{
+		$this->assertHasExifToolOrSkip();
+		$this->assertHasFFMpegOrSkip();
+
+		$this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_BROKEN_IMAGE),
+			null,
+			500,
+			'MediaFileOperationException'
+		);
+	}
+
+	/**
+	 * Tests a trick video which is falsely identified as `application/octet-stream`.
+	 *
+	 * @return void
+	 */
+	public function testTrickyVideoUpload(): void
+	{
+		$this->assertHasExifToolOrSkip();
+		$this->assertHasFFMpegOrSkip();
+
+		$response = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GAMING_VIDEO)
+		);
+		$response->assertJson([
+			'album_id' => null,
+			'title' => 'gaming',
+			'type' => 'video/mp4',
+			'size_variants' => [
+				'thumb' => [
+					'width' => 200,
+					'height' => 200,
+				],
+				'thumb2x' => [
+					'width' => 400,
+					'height' => 400,
+				],
+				'small' => [
+					'width' => 640,
+					'height' => 360,
+				],
+				'small2x' => [
+					'width' => 1280,
+					'height' => 720,
+				],
+				'original' => [
+					'width' => 1920,
+					'height' => 1080,
+					'filesize' => 66781184,
+				],
+			],
+		]);
+	}
+}

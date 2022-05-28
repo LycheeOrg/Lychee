@@ -12,13 +12,20 @@
 
 namespace Tests;
 
+use App\Models\Configs;
+use App\Models\Photo;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Testing\TestResponse;
 
 abstract class TestCase extends BaseTestCase
 {
 	use CreatesApplication;
+
+	public const PATH_IMPORT_DIR = 'uploads/import/';
 
 	public const SAMPLE_FILE_NIGHT_IMAGE = 'tests/Samples/night.jpg';
 	public const SAMPLE_FILE_MONGOLIA_IMAGE = 'tests/Samples/mongolia.jpeg';
@@ -42,6 +49,7 @@ abstract class TestCase extends BaseTestCase
 
 	public const CONFIG_HAS_FFMPEG = 'has_ffmpeg';
 	public const CONFIG_HAS_EXIF_TOOL = 'has_exiftool';
+	public const CONFIG_HAS_IMAGICK = 'imagick';
 
 	/**
 	 * Visit the given URI with a GET request.
@@ -105,5 +113,26 @@ abstract class TestCase extends BaseTestCase
 			UPLOAD_ERR_OK,
 			true
 		);
+	}
+
+	protected static function importPath(string $path = ''): string
+	{
+		return public_path(self::PATH_IMPORT_DIR . $path);
+	}
+
+	/**
+	 * @return BaseCollection<string> the IDs of recently added photos
+	 */
+	protected static function getRecentPhotoIDs(): BaseCollection
+	{
+		$strRecent = Carbon::now()
+			->subDays(intval(Configs::get_value('recent_age', '1')))
+			->setTimezone('UTC')
+			->format('Y-m-d H:i:s');
+		$recentFilter = function (Builder $query) use ($strRecent) {
+			$query->where('created_at', '>=', $strRecent);
+		};
+
+		return Photo::query()->select('id')->where($recentFilter)->pluck('id');
 	}
 }
