@@ -57,6 +57,11 @@ abstract class BaseImageHandler implements ImageHandlerInterface
 				ImageOptimizer::optimize($file->getAbsolutePath());
 
 				return $collectStatistics ? StreamStat::createFromLocalFile($file) : null;
+			} elseif ($file instanceof FlysystemFile && $file->isLocalFile()) {
+				$localFile = $file->toLocalFile();
+				ImageOptimizer::optimize($localFile->getAbsolutePath());
+
+				return $collectStatistics ? StreamStat::createFromLocalFile($localFile) : null;
 			} else {
 				Logs::warning(__METHOD__, __LINE__, 'Skipping lossless optimization; optimization is requested by configuration but only supported for local files');
 
