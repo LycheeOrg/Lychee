@@ -14,13 +14,15 @@ namespace Tests\Feature;
 
 use App\Facades\AccessControl;
 use App\Models\Configs;
-use Illuminate\Support\Facades\DB;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
+use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\TestCase;
 
 class RSSTest extends TestCase
 {
+	use RequiresEmptyPhotos;
+
 	protected PhotosUnitTest $photos_tests;
 	protected AlbumsUnitTest $albums_tests;
 
@@ -30,20 +32,12 @@ class RSSTest extends TestCase
 		$this->photos_tests = new PhotosUnitTest($this);
 		$this->albums_tests = new AlbumsUnitTest($this);
 
-		// Assert that photo table is empty
-		static::assertDatabaseCount('sym_links', 0);
-		static::assertDatabaseCount('size_variants', 0);
-		static::assertDatabaseCount('photos', 0);
+		$this->setUpRequiresEmptyPhotos();
 	}
 
 	public function tearDown(): void
 	{
-		// Clean up remaining stuff from tests
-		DB::table('sym_links')->delete();
-		DB::table('size_variants')->delete();
-		DB::table('photos')->delete();
-		self::cleanPublicFolders();
-
+		$this->tearDownRequiresEmptyPhotos();
 		parent::tearDown();
 	}
 

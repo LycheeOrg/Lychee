@@ -20,23 +20,22 @@ use App\Image\TemporaryLocalFile;
 use App\Image\VideoHandler;
 use App\Models\Configs;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
+use Tests\Feature\Traits\RequiresEmptyPhotos;
+use Tests\Feature\Traits\RequiresExifTool;
+use Tests\Feature\Traits\RequiresFFMpeg;
 use Tests\TestCase;
 use ZipArchive;
 
 class PhotosOperationsTest extends TestCase
 {
-	public const CONFIG_HAS_EXIF_TOOL = 'has_exiftool';
-	public const CONFIG_HAS_FFMPEG_TOOL = 'has_ffmpeg';
+	use RequiresFFMpeg;
+	use RequiresExifTool;
+	use RequiresEmptyPhotos;
 
 	protected PhotosUnitTest $photos_tests;
 	protected AlbumsUnitTest $albums_tests;
-	protected bool $hasExifTools;
-	protected int $hasExifToolsInit;
-	protected bool $hasFFmpeg;
-	protected int $hasFFmpegInit;
 
 	public function setUp(): void
 	{
@@ -44,32 +43,18 @@ class PhotosOperationsTest extends TestCase
 		$this->photos_tests = new PhotosUnitTest($this);
 		$this->albums_tests = new AlbumsUnitTest($this);
 
-		$this->hasExifToolsInit = (int) Configs::get_value(self::CONFIG_HAS_EXIF_TOOL, 2);
-		Configs::set(self::CONFIG_HAS_EXIF_TOOL, 2);
-		$this->hasExifTools = Configs::hasExiftool();
-
-		$this->hasFFmpegInit = (int) Configs::get_value(self::CONFIG_HAS_FFMPEG_TOOL, 2);
-		Configs::set(self::CONFIG_HAS_FFMPEG_TOOL, 2);
-		$this->hasFFmpeg = Configs::hasFFmpeg();
+		$this->setUpRequiresExifTool();
+		$this->setUpRequiresFFMpeg();
+		$this->setUpRequiresEmptyPhotos();
 
 		AccessControl::log_as_id(0);
-
-		// Assert that photo table is empty
-		static::assertDatabaseCount('sym_links', 0);
-		static::assertDatabaseCount('size_variants', 0);
-		static::assertDatabaseCount('photos', 0);
 	}
 
 	public function tearDown(): void
 	{
-		// Clean up remaining stuff from tests
-		DB::table('sym_links')->delete();
-		DB::table('size_variants')->delete();
-		DB::table('photos')->delete();
-		self::cleanPublicFolders();
-
-		Configs::set(self::CONFIG_HAS_EXIF_TOOL, $this->hasExifToolsInit);
-		Configs::set(self::CONFIG_HAS_FFMPEG_TOOL, $this->hasFFmpegInit);
+		$this->tearDownRequiresEmptyPhotos();
+		$this->tearDownRequiresExifTool();
+		$this->tearDownRequiresFFMpeg();
 
 		AccessControl::logout();
 		parent::tearDown();
@@ -389,7 +374,7 @@ class PhotosOperationsTest extends TestCase
 	public function testGoogleMotionPhotoDownload(): void
 	{
 		static::assertHasExifToolOrSkip();
-		static::assertHasFFmpegOrSkip();
+		static::assertHasFFMpegOrSkip();
 
 		$photoUploadResponse = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_IMAGE)
@@ -460,19 +445,5 @@ class PhotosOperationsTest extends TestCase
 		static::assertEquals($expectedSize1, $fileStat1['size']);
 		static::assertEquals($expectedSize2, $fileStat2['size']);
 		static::assertEquals($expectedSize3, $fileStat3['size']);
-	}
-
-	protected function assertHasExifToolOrSkip(): void
-	{
-		if (!$this->hasExifTools) {
-			static::markTestSkipped('Exiftool is not available. Test Skipped.');
-		}
-	}
-
-	protected function assertHasFFmpegOrSkip(): void
-	{
-		if (!$this->hasFFmpeg) {
-			static::markTestSkipped('FFmpeg is not available. Test Skipped.');
-		}
 	}
 }

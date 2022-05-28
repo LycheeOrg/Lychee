@@ -21,19 +21,19 @@ use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
+use Tests\Feature\Traits\RequiresEmptyPhotos;
+use Tests\Feature\Traits\RequiresExifTool;
+use Tests\Feature\Traits\RequiresFFMpeg;
 use Tests\TestCase;
 
 class PhotosAddTest extends TestCase
 {
+	use RequiresExifTool;
+	use RequiresFFMpeg;
+	use RequiresEmptyPhotos;
+
 	protected PhotosUnitTest $photos_tests;
 	protected AlbumsUnitTest $albums_tests;
-	protected bool $hasExifTools;
-	protected int $hasExifToolsInit;
-	protected bool $hasFFmpeg;
-	protected int $hasFFmpegInit;
-
-	public const CONFIG_HAS_EXIF_TOOL = 'has_exiftool';
-	public const CONFIG_HAS_FFMPEG_TOOL = 'has_ffmpeg';
 
 	public const PATH_IMPORT_DIR = 'uploads/import/';
 
@@ -43,51 +43,23 @@ class PhotosAddTest extends TestCase
 		$this->photos_tests = new PhotosUnitTest($this);
 		$this->albums_tests = new AlbumsUnitTest($this);
 
-		$this->hasExifToolsInit = (int) Configs::get_value(self::CONFIG_HAS_EXIF_TOOL, 2);
-		Configs::set(self::CONFIG_HAS_EXIF_TOOL, '2');
-		$this->hasExifTools = Configs::hasExiftool();
-
-		$this->hasFFmpegInit = (int) Configs::get_value(self::CONFIG_HAS_FFMPEG_TOOL, 2);
-		Configs::set(self::CONFIG_HAS_FFMPEG_TOOL, '2');
-		$this->hasFFmpeg = Configs::hasFFmpeg();
-
-		// Assert that photo table is empty, otherwise we cannot ensure
-		// deterministic test results for duplicate photos
-		static::assertDatabaseCount('sym_links', 0);
-		static::assertDatabaseCount('size_variants', 0);
-		static::assertDatabaseCount('photos', 0);
+		$this->setUpRequiresExifTool();
+		$this->setUpRequiresFFMpeg();
+		$this->setUpRequiresEmptyPhotos();
 
 		AccessControl::log_as_id(0);
 	}
 
 	public function tearDown(): void
 	{
-		// Clean up remaining stuff from tests
-		DB::table('sym_links')->delete();
-		DB::table('size_variants')->delete();
-		DB::table('photos')->delete();
-		self::cleanPublicFolders();
+		$this->tearDownRequiresEmptyPhotos();
 
 		AccessControl::logout();
 
-		Configs::set(self::CONFIG_HAS_EXIF_TOOL, $this->hasExifToolsInit);
-		Configs::set(self::CONFIG_HAS_FFMPEG_TOOL, $this->hasFFmpegInit);
+		$this->tearDownRequiresExifTool();
+		$this->tearDownRequiresFFMpeg();
 
 		parent::tearDown();
-	}
-
-	protected function assertHasExifToolOrSkip(): void
-	{
-		if (!$this->hasExifTools) {
-			static::markTestSkipped('Exiftool is not available. Test Skipped.');
-		}
-	}
-
-	protected function assertHasFFmpegOrSkip(): void
-	{
-		if (!$this->hasFFmpeg) {
-			static::markTestSkipped('FFmpeg is not available. Test Skipped.');
-		}
 	}
 
 	public function testNegativeUpload(): void
@@ -291,7 +263,7 @@ class PhotosAddTest extends TestCase
 	public function testGoogleMotionPhotoUpload(): void
 	{
 		$this->assertHasExifToolOrSkip();
-		$this->assertHasFFmpegOrSkip();
+		$this->assertHasFFMpegOrSkip();
 
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_IMAGE)
@@ -311,7 +283,7 @@ class PhotosAddTest extends TestCase
 	public function testBrokenGoogleMotionPhotoUpload(): void
 	{
 		$this->assertHasExifToolOrSkip();
-		$this->assertHasFFmpegOrSkip();
+		$this->assertHasFFMpegOrSkip();
 
 		$this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_BROKEN_IMAGE),
@@ -390,7 +362,7 @@ class PhotosAddTest extends TestCase
 		// import the photo without the right to move the photo (aka delete the original)
 		// For POSIX system, the right to create/rename/delete/edit meta-attributes
 		// of a file is based on the write-privilege of the containing directory,
-		// because all these operations require an update of an directory entry.
+		// because all these operations require an update of a directory entry.
 		// Making the file read-only is not sufficient to prevent deletion.
 		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('read-only.jpg'));
 		try {
@@ -489,9 +461,8 @@ class PhotosAddTest extends TestCase
 			'model' => null,
 		]);
 
-		// import the photo a second time and an do not skip the duplicate
-		// but don't resync either
-		// Hence, the original photo which has been duplicated
+		// Import the photo a second time and do not skip the duplicate,
+		// but don't resync the metadata either.
 		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
 		$this->photos_tests->importFromServer(static::importPath(), null, false, false);
 		$report = $this->photos_tests->importFromServer(static::importPath(), null, false, false);
@@ -552,7 +523,7 @@ class PhotosAddTest extends TestCase
 	public function testTrickyVideoUpload(): void
 	{
 		$this->assertHasExifToolOrSkip();
-		$this->assertHasFFmpegOrSkip();
+		$this->assertHasFFMpegOrSkip();
 
 		$response = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GAMING_VIDEO)

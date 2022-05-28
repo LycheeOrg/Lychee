@@ -15,13 +15,15 @@ namespace Tests\Feature;
 use App\Facades\AccessControl;
 use App\Models\Configs;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
+use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\TestCase;
 
 class GeoDataTest extends TestCase
 {
+	use RequiresEmptyPhotos;
+
 	protected PhotosUnitTest $photos_tests;
 	protected AlbumsUnitTest $albums_tests;
 
@@ -33,22 +35,13 @@ class GeoDataTest extends TestCase
 
 		AccessControl::log_as_id(0);
 
-		// Assert that photo table is empty
-		static::assertDatabaseCount('sym_links', 0);
-		static::assertDatabaseCount('size_variants', 0);
-		static::assertDatabaseCount('photos', 0);
+		$this->setUpRequiresEmptyPhotos();
 	}
 
 	public function tearDown(): void
 	{
-		// Clean up remaining stuff from tests
-		DB::table('sym_links')->delete();
-		DB::table('size_variants')->delete();
-		DB::table('photos')->delete();
-		self::cleanPublicFolders();
-
+		$this->tearDownRequiresEmptyPhotos();
 		AccessControl::logout();
-
 		parent::tearDown();
 	}
 

@@ -40,6 +40,9 @@ abstract class TestCase extends BaseTestCase
 		self::SAMPLE_FILE_SIDEWAYS => 'image/jpeg',
 	];
 
+	public const CONFIG_HAS_FFMPEG = 'has_ffmpeg';
+	public const CONFIG_HAS_EXIF_TOOL = 'has_exiftool';
+
 	/**
 	 * Visit the given URI with a GET request.
 	 *
@@ -102,51 +105,5 @@ abstract class TestCase extends BaseTestCase
 			UPLOAD_ERR_OK,
 			true
 		);
-	}
-
-	/**
-	 * Cleans the "public" folders 'uploads' and 'sym'.
-	 *
-	 * Removes all files from the directories except for sub-directories and
-	 * 'index.html'.
-	 *
-	 * @return void
-	 */
-	protected static function cleanPublicFolders(): void
-	{
-		self::cleanupHelper(base_path('public/uploads/'));
-		self::cleanupHelper(base_path('public/sym/'));
-	}
-
-	/**
-	 * Cleans the designated directory recursively.
-	 *
-	 * Removes all files from the directories except for sub-directories and
-	 * 'index.html'.
-	 *
-	 * @param string $dirPath the path of the directory
-	 *
-	 * @return void
-	 */
-	private static function cleanupHelper(string $dirPath): void
-	{
-		if (!is_dir($dirPath)) {
-			return;
-		}
-		\Safe\chmod($dirPath, 0775);
-		$dirEntries = scandir($dirPath);
-		foreach ($dirEntries as $dirEntry) {
-			if (in_array($dirEntry, ['.', '..', 'index.html', '.gitignore'])) {
-				continue;
-			}
-
-			$dirEntryPath = $dirPath . DIRECTORY_SEPARATOR . $dirEntry;
-			if (is_dir($dirEntryPath) && !is_link($dirEntryPath)) {
-				self::cleanupHelper($dirEntryPath);
-			}
-			if (is_file($dirEntryPath) || is_link($dirEntryPath)) {
-				unlink($dirEntryPath);
-			}
-		}
 	}
 }

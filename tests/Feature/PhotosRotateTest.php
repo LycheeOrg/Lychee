@@ -14,22 +14,22 @@ namespace Tests\Feature;
 
 use App\Facades\AccessControl;
 use App\Models\Configs;
-use Illuminate\Support\Facades\DB;
 use Tests\Feature\Lib\PhotosUnitTest;
+use Tests\Feature\Traits\RequiresEmptyPhotos;
+use Tests\Feature\Traits\RequiresExifTool;
+use Tests\Feature\Traits\RequiresFFMpeg;
 use Tests\TestCase;
 
 class PhotosRotateTest extends TestCase
 {
-	public const CONFIG_HAS_EXIF_TOOL = 'has_exiftool';
-	public const CONFIG_HAS_FFMPEG_TOOL = 'has_ffmpeg';
+	use RequiresExifTool;
+	use RequiresFFMpeg;
+	use RequiresEmptyPhotos;
+
 	public const CONFIG_EDITOR_ENABLED = 'editor_enabled';
 
 	protected PhotosUnitTest $photos_tests;
 
-	protected bool $hasExifTools;
-	protected int $hasExifToolsInit;
-	protected bool $hasFFmpeg;
-	protected int $hasFFmpegInit;
 	protected int $editor_enabled_init;
 
 	public function setUp(): void
@@ -40,33 +40,20 @@ class PhotosRotateTest extends TestCase
 		$this->editor_enabled_init = (int) Configs::get_value(self::CONFIG_EDITOR_ENABLED, 0);
 		Configs::set(self::CONFIG_EDITOR_ENABLED, 1);
 
-		$this->hasExifToolsInit = (int) Configs::get_value(self::CONFIG_HAS_EXIF_TOOL, 2);
-		Configs::set(self::CONFIG_HAS_EXIF_TOOL, '2');
-		$this->hasExifTools = Configs::hasExiftool();
-
-		$this->hasFFmpegInit = (int) Configs::get_value(self::CONFIG_HAS_FFMPEG_TOOL, 2);
-		Configs::set(self::CONFIG_HAS_FFMPEG_TOOL, '2');
-		$this->hasFFmpeg = Configs::hasFFmpeg();
+		$this->setUpRequiresExifTool();
+		$this->setUpRequiresFFMpeg();
+		$this->setUpRequiresEmptyPhotos();
 
 		AccessControl::log_as_id(0);
-
-		// Assert that photo table is empty
-		static::assertDatabaseCount('sym_links', 0);
-		static::assertDatabaseCount('size_variants', 0);
-		static::assertDatabaseCount('photos', 0);
 	}
 
 	public function tearDown(): void
 	{
-		// Clean up remaining stuff from tests
-		DB::table('sym_links')->delete();
-		DB::table('size_variants')->delete();
-		DB::table('photos')->delete();
-		self::cleanPublicFolders();
+		$this->tearDownRequiresEmptyPhotos();
+		$this->tearDownRequiresExifTool();
+		$this->tearDownRequiresFFMpeg();
 
 		Configs::set(self::CONFIG_EDITOR_ENABLED, $this->editor_enabled_init);
-		Configs::set(self::CONFIG_HAS_EXIF_TOOL, $this->hasExifToolsInit);
-		Configs::set(self::CONFIG_HAS_FFMPEG_TOOL, $this->hasFFmpegInit);
 
 		AccessControl::logout();
 
@@ -122,7 +109,7 @@ class PhotosRotateTest extends TestCase
 
 	public function testVideoRotation(): void
 	{
-		static::assertHasFFmpegOrSkip();
+		static::assertHasFFMpegOrSkip();
 
 		$id = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_VIDEO)
@@ -134,7 +121,7 @@ class PhotosRotateTest extends TestCase
 	public function testGoogleMotionPhotoRotation(): void
 	{
 		static::assertHasExifToolOrSkip();
-		static::assertHasFFmpegOrSkip();
+		static::assertHasFFMpegOrSkip();
 
 		$id = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_IMAGE)
@@ -180,19 +167,5 @@ class PhotosRotateTest extends TestCase
 				'original' => ['width' => 4480, 'height' => 6720],
 			],
 		]);
-	}
-
-	protected function assertHasExifToolOrSkip(): void
-	{
-		if (!$this->hasExifTools) {
-			static::markTestSkipped('Exiftool is not available. Test Skipped.');
-		}
-	}
-
-	protected function assertHasFFmpegOrSkip(): void
-	{
-		if (!$this->hasFFmpeg) {
-			static::markTestSkipped('FFmpeg is not available. Test Skipped.');
-		}
 	}
 }
