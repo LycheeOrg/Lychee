@@ -134,17 +134,20 @@ class GdHandler extends BaseImageHandler
 			}
 
 			// Get EXIF data to determine whether rotation is required
-			error_clear_last();
-			// TODO: Replace `exif_read_data` by `\Safe\exif_read_data` after https://github.com/thecodingmachine/safe/issues/215 has been resolved
-			$exifData = exif_read_data($inputStream);
-			if ($exifData === false) {
-				throw ImageException::createFromPhpError();
-			}
+			// `exif_read_data` only supports JPEGs
+			if (in_array($this->gdImageType, [IMAGETYPE_JPEG, IMAGETYPE_JPEG2000])) {
+				error_clear_last();
+				// TODO: Replace `exif_read_data` by `\Safe\exif_read_data` after https://github.com/thecodingmachine/safe/issues/215 has been resolved
+				$exifData = exif_read_data($inputStream);
+				if ($exifData === false) {
+					throw ImageException::createFromPhpError();
+				}
 
-			// Auto-rotate image
-			// TODO: Check if `exif_read_data` actually uses the key `Orientation` with a capital 'O'
-			$orientation = !empty($exifData['Orientation']) ? $exifData['Orientation'] : 1;
-			$this->autoRotate($orientation);
+				// Auto-rotate image
+				// TODO: Check if `exif_read_data` actually uses the key `Orientation` with a capital 'O'
+				$orientation = !empty($exifData['Orientation']) ? $exifData['Orientation'] : 1;
+				$this->autoRotate($orientation);
+			}
 		} catch (\ErrorException $e) {
 			$this->reset();
 			throw new MediaFileOperationException('Failed to load image', $e);
