@@ -42,9 +42,9 @@ class PhotosAddGDTest extends PhotosAddTestAbstract
 	}
 
 	/**
-	 * Tests uploading of an accepted XCF (GIMP image).
+	 * Tests uploading of an accepted TIFF.
 	 *
-	 * As GD does not support XCFs, no thumbnail is generated.
+	 * As GD does not support TIFFs, no thumbnail is generated.
 	 * Nonetheless, the original file should be uploaded without error.
 	 *
 	 * @return void
@@ -53,15 +53,15 @@ class PhotosAddGDTest extends PhotosAddTestAbstract
 	{
 		$acceptedRawFormats = Configs::get_value(self::CONFIG_RAW_FORMATS, '');
 		try {
-			Configs::set(self::CONFIG_RAW_FORMATS, '.xcf');
+			Configs::set(self::CONFIG_RAW_FORMATS, '.tif');
 			$reflection = new \ReflectionClass(MediaFile::class);
 			$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', null);
 
 			$photo = static::convertJsonToObject($this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_XCF)
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TIFF)
 			));
 
-			static::assertStringEndsWith('.xcf', $photo->size_variants->original->url);
+			static::assertStringEndsWith('.tif', $photo->size_variants->original->url);
 			static::assertNull($photo->size_variants->thumb);
 		} finally {
 			Configs::set(self::CONFIG_RAW_FORMATS, $acceptedRawFormats);

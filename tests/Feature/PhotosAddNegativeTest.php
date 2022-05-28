@@ -108,7 +108,7 @@ class PhotosAddNegativeTest extends TestCase
 			$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', null);
 
 			static::convertJsonToObject($this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_XCF),
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TIFF),
 				null,
 				422,
 				'MediaFileUnsupportedException'
