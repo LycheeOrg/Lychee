@@ -107,10 +107,19 @@ class GdHandler extends BaseImageHandler
 				$inputStream = $inMemoryBuffer->read();
 			}
 
+			$imgBinary = \Safe\stream_get_contents($inputStream);
+			\Safe\rewind($inputStream);
+
 			// Determine the type of image, so that we can later save the
 			// image using the same type
-			list(, , $this->gdImageType) = \Safe\getimagesize(stream_get_contents($inputStream));
-			\Safe\rewind($inputStream);
+			// TODO: Replace `imagecreatefromstring` by `\Safe\imagecreatefromstring` after https://github.com/thecodingmachine/safe/issues/352 has been resolved
+			error_clear_last();
+			$gdImgStat = getimagesizefromstring($imgBinary);
+			if ($gdImgStat === false) {
+				throw ImageException::createFromPhpError();
+			} else {
+				$this->gdImageType = $gdImgStat[2];
+			}
 			if (!in_array($this->gdImageType, self::SUPPORTED_IMAGE_TYPES)) {
 				$this->reset();
 				throw new MediaFileUnsupportedException('Type of photo is not supported');
@@ -119,11 +128,10 @@ class GdHandler extends BaseImageHandler
 			// Load image
 			error_clear_last();
 			// TODO: Replace `imagecreatefromstring` by `\Safe\imagecreatefromstring` after https://github.com/thecodingmachine/safe/issues/352 has been resolved
-			$this->gdImage = imagecreatefromstring(\Safe\stream_get_contents($inputStream));
+			$this->gdImage = imagecreatefromstring($imgBinary);
 			if (!$this->gdImage) {
 				throw ImageException::createFromPhpError();
 			}
-			\Safe\rewind($inputStream);
 
 			// Get EXIF data to determine whether rotation is required
 			error_clear_last();
