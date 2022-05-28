@@ -111,16 +111,16 @@ abstract class PhotosAddTestAbstract extends TestCase
 	}
 
 	/**
-	 * A simple upload of an ordinary photo to the root album.
+	 * Tests auto-orientation with rotation 90° CW.
 	 *
 	 * @return void
 	 */
-	public function testUploadWithAutoRotate(): void
+	public function testUploadWithAutoOrientation90(): void
 	{
 		$this->assertHasExifToolOrSkip();
 
 		$response = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_SIDEWAYS)
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_ORIENTATION_90)
 		);
 
 		/*
@@ -128,18 +128,109 @@ abstract class PhotosAddTestAbstract extends TestCase
 		 */
 		$response->assertJson([
 			'size_variants' => [
-				'small' => [
-					'width' => 480,
-					'height' => 360,
-				],
-				'medium' => [
-					'width' => 1440,
-					'height' => 1080,
-				],
-				'original' => [
-					'width' => 2016,
-					'height' => 1512,
-				],
+				'small' => ['width' => 480, 'height' => 360],
+				'medium' => ['width' => 1440, 'height' => 1080],
+				'original' => ['width' => 2016,	'height' => 1512],
+			],
+		]);
+	}
+
+	/**
+	 * Tests auto-orientation with rotation 180° CW.
+	 *
+	 * @return void
+	 */
+	public function testUploadWithAutoOrientation180(): void
+	{
+		$this->assertHasExifToolOrSkip();
+
+		$response = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_ORIENTATION_180)
+		);
+
+		/*
+		 * Check some Exif data
+		 */
+		$response->assertJson([
+			'size_variants' => [
+				'small' => ['width' => 480, 'height' => 360],
+				'medium' => ['width' => 1440, 'height' => 1080],
+				'original' => ['width' => 2016,	'height' => 1512],
+			],
+		]);
+	}
+
+	/**
+	 * Tests auto-orientation with rotation 270° CW.
+	 *
+	 * @return void
+	 */
+	public function testUploadWithAutoOrientation270(): void
+	{
+		$this->assertHasExifToolOrSkip();
+
+		$response = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_ORIENTATION_270)
+		);
+
+		/*
+		 * Check some Exif data
+		 */
+		$response->assertJson([
+			'size_variants' => [
+				'small' => ['width' => 480, 'height' => 360],
+				'medium' => ['width' => 1440, 'height' => 1080],
+				'original' => ['width' => 2016,	'height' => 1512],
+			],
+		]);
+	}
+
+	/**
+	 * Tests auto-orientation with horizontal mirroring.
+	 *
+	 * @return void
+	 */
+	public function testUploadWithAutoOrientationHFlip(): void
+	{
+		$this->assertHasExifToolOrSkip();
+
+		$response = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_ORIENTATION_HFLIP)
+		);
+
+		/*
+		 * Check some Exif data
+		 */
+		$response->assertJson([
+			'size_variants' => [
+				'small' => ['width' => 480, 'height' => 360],
+				'medium' => ['width' => 1440, 'height' => 1080],
+				'original' => ['width' => 2016,	'height' => 1512],
+			],
+		]);
+	}
+
+	/**
+	 * Tests auto-orientation with vertial mirroring.
+	 *
+	 * @return void
+	 */
+	public function testUploadWithAutoOrientationVFlip(): void
+	{
+		$this->assertHasExifToolOrSkip();
+
+		$response = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_ORIENTATION_VFLIP)
+		);
+
+		/*
+		 * Check some Exif data
+		 */
+		$response->assertJson([
+			'size_variants' => [
+				'small' => ['width' => 480, 'height' => 360],
+				'medium' => ['width' => 1440, 'height' => 1080],
+				'original' => ['width' => 2016,	'height' => 1512],
 			],
 		]);
 	}

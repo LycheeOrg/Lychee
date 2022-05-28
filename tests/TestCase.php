@@ -34,7 +34,11 @@ abstract class TestCase extends BaseTestCase
 	public const SAMPLE_FILE_GMP_IMAGE = 'tests/Samples/google_motion_photo.jpg';
 	public const SAMPLE_FILE_GMP_BROKEN_IMAGE = 'tests/Samples/google_motion_photo_broken.jpg';
 	public const SAMPLE_FILE_GAMING_VIDEO = 'tests/Samples/gaming.mp4';
-	public const SAMPLE_FILE_SIDEWAYS = 'tests/Samples/sideways.jpg';
+	public const SAMPLE_FILE_ORIENTATION_90 = 'tests/Samples/orientation-90.jpg';
+	public const SAMPLE_FILE_ORIENTATION_180 = 'tests/Samples/orientation-180.jpg';
+	public const SAMPLE_FILE_ORIENTATION_270 = 'tests/Samples/orientation-270.jpg';
+	public const SAMPLE_FILE_ORIENTATION_HFLIP = 'tests/Samples/orientation-hflip.jpg';
+	public const SAMPLE_FILE_ORIENTATION_VFLIP = 'tests/Samples/orientation-vflip.jpg';
 	public const SAMPLE_FILE_PNG = 'tests/Samples/png.png';
 	public const SAMPLE_FILE_GIF = 'tests/Samples/gif.gif';
 	public const SAMPLE_FILE_WEBP = 'tests/Samples/webp.webp';
@@ -47,7 +51,11 @@ abstract class TestCase extends BaseTestCase
 		self::SAMPLE_FILE_GMP_IMAGE => 'image/jpeg',
 		self::SAMPLE_FILE_GMP_BROKEN_IMAGE => 'image/jpeg',
 		self::SAMPLE_FILE_GAMING_VIDEO => 'video/mp4',
-		self::SAMPLE_FILE_SIDEWAYS => 'image/jpeg',
+		self::SAMPLE_FILE_ORIENTATION_90 => 'image/jpeg',
+		self::SAMPLE_FILE_ORIENTATION_180 => 'image/jpeg',
+		self::SAMPLE_FILE_ORIENTATION_270 => 'image/jpeg',
+		self::SAMPLE_FILE_ORIENTATION_HFLIP => 'image/jpeg',
+		self::SAMPLE_FILE_ORIENTATION_VFLIP => 'image/jpeg',
 		self::SAMPLE_FILE_PNG => 'image/png',
 		self::SAMPLE_FILE_GIF => 'image/gif',
 		self::SAMPLE_FILE_WEBP => 'image/webp',
