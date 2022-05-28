@@ -7,7 +7,7 @@ use App\Actions\PhotoAuthorisationProvider;
 use App\Actions\Update\Apply as ApplyUpdate;
 use App\Actions\Update\Check as CheckUpdate;
 use App\Assets\Helpers;
-use App\Assets\SizeVariantSharedPrefixRandomNamingStrategy;
+use App\Assets\SizeVariantGroupedRandomNamingStrategy2;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\Factories\AlbumFactory;
@@ -89,7 +89,7 @@ class AppServiceProvider extends ServiceProvider
 
 		$this->app->bind(
 			SizeVariantNamingStrategy::class,
-			SizeVariantSharedPrefixRandomNamingStrategy::class
+			SizeVariantGroupedRandomNamingStrategy2::class
 		);
 
 		$this->app->bind(
