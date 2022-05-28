@@ -20,7 +20,7 @@ use Tests\Feature\Traits\RequiresExifTool;
 use Tests\Feature\Traits\RequiresFFMpeg;
 use Tests\TestCase;
 
-class PhotosRotateTest extends TestCase
+abstract class PhotosRotateTestAbstract extends TestCase
 {
 	use RequiresExifTool;
 	use RequiresFFMpeg;
