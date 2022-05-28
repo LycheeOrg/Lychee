@@ -41,7 +41,6 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 			if ($referenceImage && $referenceImage->isLoaded()) {
 				$this->referenceImage = $referenceImage;
 			} else {
-				$this->referenceImage = new ImageHandler();
 				$this->loadReferenceImage();
 			}
 			if ($namingStrategy) {
@@ -68,11 +67,10 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 */
 	protected function loadReferenceImage(): void
 	{
-		assert(!$this->referenceImage->isLoaded(), new \AssertionError('method must only be called in constructor when no reference image is provided'));
-
 		$originalFile = $this->photo->size_variants->getOriginal()->getFile();
 
 		if (!$this->photo->isVideo()) {
+			$this->referenceImage = new ImageHandler();
 			$this->referenceImage->load($originalFile);
 		} else {
 			if ($originalFile->isLocalFile()) {
@@ -89,20 +87,13 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 
 			$videoHandler = new VideoHandler();
 			$videoHandler->load($sourceFile);
-
-			// A temporary, local file for the extracted frame
-			$frameFile = new TemporaryLocalFile('.jpg', $this->photo->title);
 			$position = empty($this->photo->aperture) ? 0.0 : floatval($this->photo->aperture) / 2;
-			$videoHandler->saveFrame($frameFile, $position);
-
-			// Load the reference image into the image handler
-			$this->referenceImage->load($frameFile);
+			$this->referenceImage = $videoHandler->extractFrame($position);
 
 			// Clean up
 			if ($sourceFile instanceof TemporaryLocalFile) {
 				$sourceFile->delete();
 			}
-			$frameFile->delete();
 		}
 	}
 

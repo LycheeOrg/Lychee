@@ -4,7 +4,9 @@ namespace App\Image;
 
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ExternalComponentMissingException;
+use App\Exceptions\ImageProcessingException;
 use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\MediaFileUnsupportedException;
 use App\Models\Configs;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\Exception\ExecutableNotFoundException;
@@ -69,5 +71,30 @@ class VideoHandler
 		if (Configs::get_value('lossless_optimization')) {
 			ImageOptimizer::optimize($file->getRealPath());
 		}
+	}
+
+	/**
+	 * Extracts and returns a frame from the video.
+	 *
+	 * @param float $framePosition
+	 *
+	 * @return ImageHandlerInterface
+	 *
+	 * @throws MediaFileOperationException
+	 * @throws ImageProcessingException
+	 * @throws MediaFileUnsupportedException
+	 */
+	public function extractFrame(float $framePosition = 0.0): ImageHandlerInterface
+	{
+		// A temporary, local file for the extracted frame
+		$frameFile = new TemporaryLocalFile('.jpg');
+		$this->saveFrame($frameFile, $framePosition);
+
+		// Load the extracted frame into the image handler
+		$frame = new ImageHandler();
+		$frame->load($frameFile);
+		$frameFile->delete();
+
+		return $frame;
 	}
 }

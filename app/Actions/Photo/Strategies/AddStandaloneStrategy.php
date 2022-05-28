@@ -13,16 +13,18 @@ use App\Exceptions\MediaFileOperationException;
 use App\Image\FlysystemFile;
 use App\Image\GoogleMotionPictureHandler;
 use App\Image\ImageHandler;
+use App\Image\ImageHandlerInterface;
 use App\Image\NativeLocalFile;
 use App\Image\StreamStat;
 use App\Image\TemporaryLocalFile;
+use App\Image\VideoHandler;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
 
 class AddStandaloneStrategy extends AddBaseStrategy
 {
-	protected ?ImageHandler $sourceImage;
+	protected ?ImageHandlerInterface $sourceImage;
 	protected NativeLocalFile $sourceFile;
 	protected SizeVariantNamingStrategy $namingStrategy;
 
@@ -90,6 +92,21 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			if ($this->photo->isPhoto()) {
 				$this->sourceImage = new ImageHandler();
 				$this->sourceImage->load($this->sourceFile);
+			} elseif ($this->photo->isVideo()) {
+				$videoHandler = new VideoHandler();
+				$videoHandler->load($this->sourceFile);
+				$position = empty($this->photo->aperture) ? 0.0 : floatval($this->photo->aperture) / 2;
+				$this->sourceImage = $videoHandler->extractFrame($position);
+			} else {
+				// If we have a raw file, we try to treat it as an image, as
+				// Imagick supports a lot of other image-like file types
+				// But if it fails we don't mind.
+				try {
+					$this->sourceImage = new ImageHandler();
+					$this->sourceImage->load($this->sourceFile);
+				} catch (\Throwable) {
+					$this->sourceImage = null;
+				}
 			}
 
 			// Handle Google Motion Pictures
@@ -160,20 +177,23 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			throw $e;
 		}
 
-		// Create remaining size variants
-		try {
-			/** @var SizeVariantFactory $sizeVariantFactory */
-			$sizeVariantFactory = resolve(SizeVariantFactory::class);
-			$sizeVariantFactory->init($this->photo, $this->sourceImage, $this->namingStrategy);
-			$sizeVariantFactory->createSizeVariants();
-		} catch (\Throwable $t) {
-			// Don't re-throw the exception, because we do not want the
-			// import to fail completely only due to missing size variants.
-			// There are just too many options why the creation of size
-			// variants may fail: the user has uploaded an unsupported file
-			// format, GD and Imagick are both not available or disabled
-			// by configuration, etc.
-			Handler::reportSafely($t);
+		// Create remaining size variants if we were able to successfully
+		// extract a reference image above
+		if ($this->sourceImage?->isLoaded()) {
+			try {
+				/** @var SizeVariantFactory $sizeVariantFactory */
+				$sizeVariantFactory = resolve(SizeVariantFactory::class);
+				$sizeVariantFactory->init($this->photo, $this->sourceImage, $this->namingStrategy);
+				$sizeVariantFactory->createSizeVariants();
+			} catch (\Throwable $t) {
+				// Don't re-throw the exception, because we do not want the
+				// import to fail completely only due to missing size variants.
+				// There are just too many options why the creation of size
+				// variants may fail: the user has uploaded an unsupported file
+				// format, GD and Imagick are both not available or disabled
+				// by configuration, etc.
+				Handler::reportSafely($t);
+			}
 		}
 
 		return $this->photo;

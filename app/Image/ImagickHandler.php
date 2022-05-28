@@ -88,7 +88,7 @@ class ImagickHandler extends BaseImageHandler
 			// we don't know if the file is a local file (or hosted elsewhere)
 			// and if the file supports seekable streams
 			$inMemoryBuffer = new InMemoryBuffer();
-			$this->imImage->writeImageFile($inMemoryBuffer->stream());
+			$this->imImage->writeImageFile($inMemoryBuffer->stream(), ltrim($file->getExtension(), '.'));
 			$streamStat = $file->write($inMemoryBuffer->read(), $collectStatistics);
 			$file->close();
 			$inMemoryBuffer->close();
