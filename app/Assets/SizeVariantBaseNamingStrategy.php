@@ -11,27 +11,12 @@ use App\Models\SizeVariant;
 abstract class SizeVariantBaseNamingStrategy extends SizeVariantNamingStrategy
 {
 	/**
-	 * The file extension which is always used by both "thumb" variants and
-	 * also by all other size variants but the original, if the original media
-	 * file is not a photo.
-	 * If the original media file is a photo, then the "small" and "medium"
-	 * size variants use the same extension as the original file.
+	 * The file extension which is always used by both "thumb" variants.
+	 * If the media file is not a supported photo format (e.g. the media is
+	 * a video), then this extension is also used for the small and medium
+	 * size variants.
 	 */
-	public const DEFAULT_EXTENSION = '.jpeg';
-
-	protected string $originalExtension = '';
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function setPhoto(?Photo $photo): void
-	{
-		parent::setPhoto($photo);
-		$this->originalExtension = '';
-		if ($this->photo && $sv = $this->photo->size_variants->getOriginal()) {
-			$this->originalExtension = $sv->getFile()->getOriginalExtension();
-		}
-	}
+	public const THUMB_EXTENSION = '.jpeg';
 
 	/**
 	 * Returns the file extension incl. the preceding dot.
@@ -45,15 +30,13 @@ abstract class SizeVariantBaseNamingStrategy extends SizeVariantNamingStrategy
 			$sizeVariant === SizeVariant::THUMB2X ||
 			($sizeVariant !== SizeVariant::ORIGINAL && !$this->photo->isPhoto())
 		) {
-			return self::DEFAULT_EXTENSION;
-		} elseif (!empty($this->originalExtension)) {
-			return $this->originalExtension;
-		} else {
-			if (empty($this->fallbackExtension)) {
-				throw new MissingValueException('fallbackExtension');
-			}
-
-			return $this->fallbackExtension;
+			return self::THUMB_EXTENSION;
 		}
+
+		if (empty($this->extension)) {
+			throw new MissingValueException('extension');
+		}
+
+		return $this->extension;
 	}
 }

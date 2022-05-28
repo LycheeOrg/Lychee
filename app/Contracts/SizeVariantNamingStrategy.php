@@ -17,7 +17,7 @@ abstract class SizeVariantNamingStrategy
 	 */
 	public const IMAGE_DISK_NAME = 'images';
 
-	protected string $fallbackExtension = '';
+	protected string $extension = '';
 	protected ?Photo $photo = null;
 
 	/**
@@ -31,18 +31,20 @@ abstract class SizeVariantNamingStrategy
 	}
 
 	/**
-	 * Sets a fallback extension for the size variants.
+	 * Sets the extension to be used for the size variants.
 	 *
-	 * This extension is used, if the correct extension cannot be inferred
-	 * from the photo.
+	 * {@link SizeVariantNamingStrategy::setPhoto()} also sets the
+	 * extension, if the photo is linked to an original size variant.
+	 * Hence, calling this method should only be necessary for creating new
+	 * photos, if no size variant already exist.
 	 *
-	 * @param string $fallbackExtension the fallback extension, incl. a preceding dot.
+	 * @param string $extension the extension
 	 *
 	 * @return void
 	 */
-	public function setFallbackExtension(string $fallbackExtension): void
+	public function setExtension(string $extension): void
 	{
-		$this->fallbackExtension = $fallbackExtension;
+		$this->extension = $extension;
 	}
 
 	/**
@@ -55,6 +57,10 @@ abstract class SizeVariantNamingStrategy
 	public function setPhoto(?Photo $photo): void
 	{
 		$this->photo = $photo;
+		$this->extension = '';
+		if ($this->photo && $sv = $this->photo->size_variants->getOriginal()) {
+			$this->extension = $sv->getFile()->getExtension();
+		}
 	}
 
 	/**

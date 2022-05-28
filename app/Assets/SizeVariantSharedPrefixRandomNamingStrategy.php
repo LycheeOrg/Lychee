@@ -73,11 +73,10 @@ class SizeVariantSharedPrefixRandomNamingStrategy extends SizeVariantBaseNamingS
 	public function setPhoto(?Photo $photo): void
 	{
 		try {
-			$this->photo = $photo;
+			parent::setPhoto($photo);
 
 			$origFile = $this->photo?->size_variants->getOriginal()?->getFile();
 			if ($origFile) {
-				$this->originalExtension = $origFile->getOriginalExtension();
 				$existingRelPath = $origFile->getRelativePath();
 				$matches = [];
 				// Extract random bath path
@@ -112,7 +111,6 @@ class SizeVariantSharedPrefixRandomNamingStrategy extends SizeVariantBaseNamingS
 					$this->cachedRndBasePath = self::createRndBasePath();
 				}
 			} else {
-				$this->originalExtension = '';
 				$this->cachedRndBasePath = self::createRndBasePath();
 			}
 		} catch (PcreException $e) {

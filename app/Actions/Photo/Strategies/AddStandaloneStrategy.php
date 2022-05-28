@@ -50,7 +50,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			$this->sourceFile = $sourceFile;
 			$this->namingStrategy = resolve(SizeVariantNamingStrategy::class);
 			$this->namingStrategy->setPhoto($this->photo);
-			$this->namingStrategy->setFallbackExtension(
+			$this->namingStrategy->setExtension(
 				$this->sourceFile->getOriginalExtension()
 			);
 		} catch (BindingResolutionException $e) {

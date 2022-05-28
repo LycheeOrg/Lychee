@@ -35,11 +35,10 @@ class SizeVariantGroupedRandomNamingStrategy extends SizeVariantBaseNamingStrate
 	public function setPhoto(?Photo $photo): void
 	{
 		try {
-			$this->photo = $photo;
+			parent::setPhoto($photo);
 
 			$origFile = $this->photo?->size_variants->getOriginal()?->getFile();
 			if ($origFile) {
-				$this->originalExtension = $origFile->getOriginalExtension();
 				$existingRelPath = $origFile->getRelativePath();
 				$matches = [];
 				// Extract random bath path
@@ -71,11 +70,10 @@ class SizeVariantGroupedRandomNamingStrategy extends SizeVariantBaseNamingStrate
 					$this->cachedRndBasePath = $matches[1];
 				} else {
 					// If we don't have a match, we create a new random base path.
-					$this->cachedRndBasePath = self::createRndBathPath();
+					$this->cachedRndBasePath = self::createRndBasePath();
 				}
 			} else {
-				$this->originalExtension = '';
-				$this->cachedRndBasePath = self::createRndBathPath();
+				$this->cachedRndBasePath = self::createRndBasePath();
 			}
 		} catch (PcreException $e) {
 			assert(false, new \AssertionError('regex could not be compiled; that should not happen for a statically coded regex', $e));
@@ -111,7 +109,7 @@ class SizeVariantGroupedRandomNamingStrategy extends SizeVariantBaseNamingStrate
 	 */
 	public function __construct()
 	{
-		$this->cachedRndBasePath = self::createRndBathPath();
+		$this->cachedRndBasePath = self::createRndBasePath();
 	}
 
 	/**
@@ -142,7 +140,7 @@ class SizeVariantGroupedRandomNamingStrategy extends SizeVariantBaseNamingStrate
 	 *
 	 * @throws InsufficientEntropyException
 	 */
-	protected static function createRndBathPath(): string
+	protected static function createRndBasePath(): string
 	{
 		try {
 			return bin2hex(random_bytes(self::NAME_LENGTH / 2));

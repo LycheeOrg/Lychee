@@ -59,9 +59,6 @@ class RotateStrategy
 			$this->sourceFile = $this->photo->size_variants->getOriginal()->getFile();
 			$this->namingStrategy = resolve(SizeVariantNamingStrategy::class);
 			$this->namingStrategy->setPhoto($this->photo);
-			$this->namingStrategy->setFallbackExtension(
-				$this->sourceFile->getOriginalExtension()
-			);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);
 		}
@@ -93,12 +90,16 @@ class RotateStrategy
 		// This also deletes the original size variant
 		$this->photo->size_variants->deleteAll();
 
-		// Create new target file for rotated original size variant,
-		// stream it into final place and delete the original file
-		// We also reset the photo of the naming strategy after the size
+		// We reset the photo of the naming strategy after the size
 		// variants have been deleted, in case the naming strategy has based
 		// its choice on the existing size variants.
+		// As the photo has no size variants anymore, we must set the
+		// extension manually from the source file we saved earlier.
 		$this->namingStrategy->setPhoto($this->photo);
+		$this->namingStrategy->setExtension($this->sourceFile->getExtension());
+
+		// Create new target file for rotated original size variant,
+		// stream it into final place and delete the original file
 		$targetFile = $this->namingStrategy->createFile(SizeVariant::ORIGINAL);
 		$streamStat = $image->save($targetFile, true);
 
