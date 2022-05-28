@@ -144,6 +144,30 @@ abstract class PhotosAddTestAbstract extends TestCase
 		]);
 	}
 
+	public function testPNGUpload(): void
+	{
+		$photo = static::convertJsonToObject($this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_PNG)
+		));
+		static::assertStringEndsWith('.png', $photo->size_variants->original->url);
+	}
+
+	public function testGIFUpload(): void
+	{
+		$photo = static::convertJsonToObject($this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GIF)
+		));
+		static::assertStringEndsWith('.gif', $photo->size_variants->original->url);
+	}
+
+	public function testWEBPUpload(): void
+	{
+		$photo = static::convertJsonToObject($this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_WEBP)
+		));
+		static::assertStringEndsWith('.webp', $photo->size_variants->original->url);
+	}
+
 	/**
 	 * Tests Apple Live Photo upload (photo first, video second).
 	 *

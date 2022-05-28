@@ -35,6 +35,9 @@ abstract class TestCase extends BaseTestCase
 	public const SAMPLE_FILE_GMP_BROKEN_IMAGE = 'tests/Samples/google_motion_photo_broken.jpg';
 	public const SAMPLE_FILE_GAMING_VIDEO = 'tests/Samples/gaming.mp4';
 	public const SAMPLE_FILE_SIDEWAYS = 'tests/Samples/sideways.jpg';
+	public const SAMPLE_FILE_PNG = 'tests/Samples/png.png';
+	public const SAMPLE_FILE_GIF = 'tests/Samples/gif.gif';
+	public const SAMPLE_FILE_WEBP = 'tests/Samples/webp.webp';
 
 	public const SAMPLE_FILES_2_MIME = [
 		self::SAMPLE_FILE_NIGHT_IMAGE => 'image/jpeg',
@@ -45,6 +48,9 @@ abstract class TestCase extends BaseTestCase
 		self::SAMPLE_FILE_GMP_BROKEN_IMAGE => 'image/jpeg',
 		self::SAMPLE_FILE_GAMING_VIDEO => 'video/mp4',
 		self::SAMPLE_FILE_SIDEWAYS => 'image/jpeg',
+		self::SAMPLE_FILE_PNG => 'image/png',
+		self::SAMPLE_FILE_GIF => 'image/gif',
+		self::SAMPLE_FILE_WEBP => 'image/webp',
 	];
 
 	public const CONFIG_HAS_FFMPEG = 'has_ffmpeg';
