@@ -36,42 +36,10 @@ abstract class SizeVariantFactory
 	abstract public function init(Photo $photo, ?ImageHandlerInterface $referenceImage = null, ?SizeVariantNamingStrategy $namingStrategy = null): void;
 
 	/**
-	 * Creates a size variant for the designated size variant.
-	 *
-	 * The returned entity is already persisted to DB and associated to the
-	 * {@link Photo} object which has been passed to the most recent call
-	 * of {@link SizeVariantFactory::init()}.
-	 * The caller of the method _does not need_ to take care of correct
-	 * foreign key relationships.
-	 * Moreover, this method also creates the necessary "physical" image file.
-	 * The caller of this method **must ensure** that the original size
-	 * variant already exists and that the "physical" media file is already
-	 * in place.
-	 * Otherwise, this method won't be able to create the desired size variant.
-	 * This method is inapt to create the original size variant.
-	 * Use {@link SizeVariantFactory::createOriginal()} for that.
-	 *
-	 * @param int $sizeVariant the desired size variant; admissible values
-	 *                         are:
-	 *                         {@link SizeVariant::THUMB},
-	 *                         {@link SizeVariant::THUMB2X},
-	 *                         {@link SizeVariant::SMALL},
-	 *                         {@link SizeVariant::SMALL2X},
-	 *                         {@link SizeVariant::MEDIUM} and
-	 *                         {@link SizeVariant::MEDIUM2X}
-	 *
-	 * @return SizeVariant the freshly created and persisted size variant
-	 *
-	 * @throws LycheeException
-	 */
-	abstract public function createSizeVariant(int $sizeVariant): SizeVariant;
-
-	/**
 	 * Conditionally creates a size variant for the designated size variant.
 	 *
-	 * Contrary to {@link SizeVariantFactory::createSizeVariant()} this method
-	 * does not create a size variant of the desired type unconditionally,
-	 * but based on a decision logic which is matter of the implementing
+	 * This method creates a size variant of the desired type based on a
+	 * decision logic which is matter of the implementing
 	 * concrete factory and may depend on application settings, supported
 	 * file formats, the dimensions of the original media, etc.
 	 *

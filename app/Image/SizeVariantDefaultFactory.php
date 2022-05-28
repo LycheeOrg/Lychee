@@ -134,20 +134,6 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	/**
 	 * {@inheritDoc}
 	 */
-	public function createSizeVariant(int $sizeVariant): SizeVariant
-	{
-		if ($sizeVariant === SizeVariant::ORIGINAL) {
-			throw new InvalidSizeVariantException('createSizeVariant() must not be used to create original size');
-		}
-
-		return $this->createSizeVariantInternal(
-			$sizeVariant, $this->getMaxDimensions($sizeVariant)
-		);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public function createSizeVariantCond(int $sizeVariant): ?SizeVariant
 	{
 		if ($sizeVariant === SizeVariant::ORIGINAL) {
