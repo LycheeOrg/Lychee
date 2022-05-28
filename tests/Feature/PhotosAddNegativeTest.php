@@ -13,6 +13,7 @@
 namespace Tests\Feature;
 
 use App\Facades\AccessControl;
+use App\Image\MediaFile;
 use App\Models\Configs;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
@@ -103,6 +104,8 @@ class PhotosAddNegativeTest extends TestCase
 		$acceptedRawFormats = Configs::get_value(self::CONFIG_RAW_FORMATS, '');
 		try {
 			Configs::set(self::CONFIG_RAW_FORMATS, '');
+			$reflection = new \ReflectionClass(MediaFile::class);
+			$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', null);
 
 			static::convertJsonToObject($this->photos_tests->upload(
 				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_PDF),

@@ -12,7 +12,9 @@
 
 namespace Tests\Feature;
 
+use App\Image\MediaFile;
 use App\Models\Configs;
+use Tests\TestCase;
 
 /**
  * Runs the tests of {@link PhotosAddTestAbstract} with GD as image handler.
@@ -37,5 +39,32 @@ class PhotosAddGDTest extends PhotosAddTestAbstract
 	{
 		Configs::set(self::CONFIG_HAS_IMAGICK, $this->hasImagickInit);
 		parent::tearDown();
+	}
+
+	/**
+	 * Tests uploading of an accepted PDF.
+	 *
+	 * As GD does not support PDFs, no thumbnail is generated.
+	 * Nonetheless, the original file should be uploaded without error.
+	 *
+	 * @return void
+	 */
+	public function testAcceptedRawUpload(): void
+	{
+		$acceptedRawFormats = Configs::get_value(self::CONFIG_RAW_FORMATS, '');
+		try {
+			Configs::set(self::CONFIG_RAW_FORMATS, '.pdf');
+			$reflection = new \ReflectionClass(MediaFile::class);
+			$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', null);
+
+			$photo = static::convertJsonToObject($this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_PDF)
+			));
+
+			static::assertStringEndsWith('.pdf', $photo->size_variants->original->url);
+			static::assertNull($photo->size_variants->thumb);
+		} finally {
+			Configs::set(self::CONFIG_RAW_FORMATS, $acceptedRawFormats);
+		}
 	}
 }
