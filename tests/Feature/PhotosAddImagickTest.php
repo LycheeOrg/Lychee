@@ -42,9 +42,9 @@ class PhotosAddImagickTest extends PhotosAddTestAbstract
 	}
 
 	/**
-	 * Tests uploading of an accepted PDF.
+	 * Tests uploading of an accepted XCF (GIMP image).
 	 *
-	 * As Imagick supports PDFs, we also expect generated thumbnail.
+	 * As Imagick supports XCFs, we also expect generated thumbnail.
 	 *
 	 * @return void
 	 */
@@ -52,15 +52,16 @@ class PhotosAddImagickTest extends PhotosAddTestAbstract
 	{
 		$acceptedRawFormats = Configs::get_value(self::CONFIG_RAW_FORMATS, '');
 		try {
-			Configs::set(self::CONFIG_RAW_FORMATS, '.pdf');
+			Configs::set(self::CONFIG_RAW_FORMATS, '.xcf');
 			$reflection = new \ReflectionClass(MediaFile::class);
 			$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', null);
 
 			$photo = static::convertJsonToObject($this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_PDF)
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_XCF)
 			));
 
-			static::assertStringEndsWith('.pdf', $photo->size_variants->original->url);
+			static::assertStringEndsWith('.xcf', $photo->size_variants->original->url);
+			static::assertEquals('image/x-xcf', $photo->type);
 			static::assertNotNull($photo->size_variants->thumb);
 		} finally {
 			Configs::set(self::CONFIG_RAW_FORMATS, $acceptedRawFormats);

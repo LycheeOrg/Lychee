@@ -43,6 +43,7 @@ abstract class TestCase extends BaseTestCase
 	public const SAMPLE_FILE_GIF = 'tests/Samples/gif.gif';
 	public const SAMPLE_FILE_WEBP = 'tests/Samples/webp.webp';
 	public const SAMPLE_FILE_PDF = 'tests/Samples/pdf.pdf';
+	public const SAMPLE_FILE_XCF = 'tests/Samples/xcf.xcf';
 
 	public const SAMPLE_FILES_2_MIME = [
 		self::SAMPLE_FILE_NIGHT_IMAGE => 'image/jpeg',
@@ -61,6 +62,7 @@ abstract class TestCase extends BaseTestCase
 		self::SAMPLE_FILE_GIF => 'image/gif',
 		self::SAMPLE_FILE_WEBP => 'image/webp',
 		self::SAMPLE_FILE_PDF => 'application/pdf',
+		self::SAMPLE_FILE_XCF => 'image/x-xcf',
 	];
 
 	public const CONFIG_HAS_FFMPEG = 'has_ffmpeg';
