@@ -13,6 +13,7 @@
 namespace Tests\Feature;
 
 use App\Facades\AccessControl;
+use App\Models\Configs;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
@@ -95,6 +96,23 @@ class PhotosAddNegativeTest extends TestCase
 			500,
 			'Impossible to create the root directory'
 		);
+	}
+
+	public function testRefusedRawUpload(): void
+	{
+		$acceptedRawFormats = Configs::get_value(self::CONFIG_RAW_FORMATS, '');
+		try {
+			Configs::set(self::CONFIG_RAW_FORMATS, '');
+
+			static::convertJsonToObject($this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_PDF),
+				null,
+				422,
+				'MediaFileUnsupportedException'
+			));
+		} finally {
+			Configs::set(self::CONFIG_RAW_FORMATS, $acceptedRawFormats);
+		}
 	}
 
 	/**
