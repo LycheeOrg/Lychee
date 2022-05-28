@@ -50,7 +50,11 @@ class PhotosUnitTest
 			]
 		);
 
-		$response->assertStatus($expectedStatusCode);
+		try {
+			$response->assertStatus($expectedStatusCode);
+		} catch (\Throwable) {
+			var_dump($response);
+		}
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
 		}
