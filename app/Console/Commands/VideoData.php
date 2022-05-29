@@ -9,7 +9,9 @@ use App\Exceptions\UnexpectedException;
 use App\Image\MediaFile;
 use App\Metadata\Extractor;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class VideoData extends Command
@@ -51,7 +53,9 @@ class VideoData extends Command
 			$photos = Photo::query()
 				->with(['size_variants'])
 				->whereIn('type', MediaFile::SUPPORTED_VIDEO_MIME_TYPES)
-				->where('width', '=', 0)
+				->whereDoesntHave('size_variants', function (Builder $query) {
+					$query->where('type', '=', SizeVariant::THUMB);
+				})
 				->take($this->argument('count'))
 				->get();
 
