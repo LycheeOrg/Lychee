@@ -29,7 +29,7 @@ use Tests\TestCase;
  * The idea is to inherit this class be real test classes which enable
  * a particular image handler (i.e. Imagick, GD, etc.)
  */
-abstract class PhotosAddTestAbstract extends TestCase
+abstract class PhotosAddHandlerTestAbstract extends TestCase
 {
 	use RequiresExifTool;
 	use RequiresFFMpeg;

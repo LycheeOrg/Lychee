@@ -12,32 +12,27 @@
 
 namespace Tests\Feature;
 
-use App\Image\MediaFile;
-use App\Models\Configs;
+use Tests\Feature\Traits\InteractsWithRaw;
+use Tests\Feature\Traits\RequiresImageHandler;
 use Tests\TestCase;
 
 /**
- * Runs the tests of {@link PhotosAddTestAbstract} with Imagick as image handler.
+ * Runs the tests of {@link PhotosAddHandlerTestAbstract} with Imagick as image handler.
  */
-class PhotosAddImagickTest extends PhotosAddTestAbstract
+class PhotosAddHandlerImagickTest extends PhotosAddHandlerTestAbstract
 {
-	protected int $hasImagickInit;
+	use InteractsWithRaw;
+	use RequiresImageHandler;
 
 	public function setUp(): void
 	{
 		parent::setUp();
-
-		$this->hasImagickInit = (int) Configs::get_value(self::CONFIG_HAS_IMAGICK, 1);
-		Configs::set(self::CONFIG_HAS_IMAGICK, 1);
-
-		if (!Configs::hasImagick()) {
-			static::markTestSkipped('Imagick is not available. Test Skipped.');
-		}
+		$this->setUpRequiresImagick();
 	}
 
 	public function tearDown(): void
 	{
-		Configs::set(self::CONFIG_HAS_IMAGICK, $this->hasImagickInit);
+		$this->tearDownRequiresImageHandler();
 		parent::tearDown();
 	}
 
@@ -50,11 +45,9 @@ class PhotosAddImagickTest extends PhotosAddTestAbstract
 	 */
 	public function testAcceptedRawUpload(): void
 	{
-		$acceptedRawFormats = Configs::get_value(self::CONFIG_RAW_FORMATS, '');
+		$acceptedRawFormats = static::getAcceptedRawFormats();
 		try {
-			Configs::set(self::CONFIG_RAW_FORMATS, '.tif');
-			$reflection = new \ReflectionClass(MediaFile::class);
-			$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', null);
+			static::setAcceptedRawFormats('.tif');
 
 			$photo = static::convertJsonToObject($this->photos_tests->upload(
 				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TIFF)
@@ -64,7 +57,7 @@ class PhotosAddImagickTest extends PhotosAddTestAbstract
 			static::assertEquals(TestCase::MIME_TYPE_IMG_TIFF, $photo->type);
 			static::assertNotNull($photo->size_variants->thumb);
 		} finally {
-			Configs::set(self::CONFIG_RAW_FORMATS, $acceptedRawFormats);
+			static::setAcceptedRawFormats($acceptedRawFormats);
 		}
 	}
 }

@@ -13,10 +13,9 @@
 namespace Tests\Feature;
 
 use App\Facades\AccessControl;
-use App\Image\MediaFile;
-use App\Models\Configs;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
+use Tests\Feature\Traits\InteractsWithRaw;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\Feature\Traits\RequiresExifTool;
 use Tests\Feature\Traits\RequiresFFMpeg;
@@ -27,6 +26,7 @@ use Tests\TestCase;
  */
 class PhotosAddNegativeTest extends TestCase
 {
+	use InteractsWithRaw;
 	use RequiresExifTool;
 	use RequiresFFMpeg;
 	use RequiresEmptyPhotos;
@@ -106,11 +106,9 @@ class PhotosAddNegativeTest extends TestCase
 	 */
 	public function testRefusedRawUpload(): void
 	{
-		$acceptedRawFormats = Configs::get_value(self::CONFIG_RAW_FORMATS, '');
+		$acceptedRawFormats = static::getAcceptedRawFormats();
 		try {
-			Configs::set(self::CONFIG_RAW_FORMATS, '');
-			$reflection = new \ReflectionClass(MediaFile::class);
-			$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', null);
+			static::setAcceptedRawFormats('');
 
 			static::convertJsonToObject($this->photos_tests->upload(
 				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TIFF),
@@ -119,7 +117,7 @@ class PhotosAddNegativeTest extends TestCase
 				'MediaFileUnsupportedException'
 			));
 		} finally {
-			Configs::set(self::CONFIG_RAW_FORMATS, $acceptedRawFormats);
+			static::setAcceptedRawFormats($acceptedRawFormats);
 		}
 	}
 
@@ -135,20 +133,18 @@ class PhotosAddNegativeTest extends TestCase
 	 */
 	public function testRefusedRawImportFormUrl(): void
 	{
-		$acceptedRawFormats = Configs::get_value(self::CONFIG_RAW_FORMATS, '');
+		$acceptedRawFormats = static::getAcceptedRawFormats();
 		try {
-			Configs::set(self::CONFIG_RAW_FORMATS, '');
-			$reflection = new \ReflectionClass(MediaFile::class);
-			$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', null);
+			static::setAcceptedRawFormats('');
 
-			$response = $this->photos_tests->importFromUrl(
+			$this->photos_tests->importFromUrl(
 				[TestCase::SAMPLE_DOWNLOAD_TIFF],
 				null,
 				422,
 				'MediaFileUnsupportedException'
 			);
 		} finally {
-			Configs::set(self::CONFIG_RAW_FORMATS, $acceptedRawFormats);
+			static::setAcceptedRawFormats($acceptedRawFormats);
 		}
 	}
 
