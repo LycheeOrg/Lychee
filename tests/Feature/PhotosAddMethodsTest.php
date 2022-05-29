@@ -226,17 +226,17 @@ class PhotosAddMethodsTest extends TestCase
 
 	public function testImportFromUrl(): void
 	{
-		$response = $this->photos_tests->importFromUrl(['https://lycheeorg.github.io/assets/images/showcase.jpg']);
+		$response = $this->photos_tests->importFromUrl([TestCase::SAMPLE_DOWNLOAD_JPG]);
 
 		$response->assertJson([[
 			'album_id' => null,
-			'title' => 'showcase',
-			'type' => 'image/jpeg',
+			'title' => 'mongolia',
+			'type' => TestCase::MIME_TYPE_IMG_JPEG,
 			'size_variants' => [
 				'original' => [
-					'width' => 2388,
-					'height' => 1050,
-					'filesize' => 547489,
+					'width' => 1280,
+					'height' => 850,
+					'filesize' => 201316,
 				],
 			],
 		]]);
@@ -260,12 +260,12 @@ class PhotosAddMethodsTest extends TestCase
 			$reflection = new \ReflectionClass(MediaFile::class);
 			$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', null);
 
-			$response = $this->photos_tests->importFromUrl(['https://github.com/LycheeOrg/Lychee/raw/use_filestreams/tests/Samples/tiff.tif']);
+			$response = $this->photos_tests->importFromUrl([TestCase::SAMPLE_DOWNLOAD_TIFF]);
 
 			$response->assertJson([[
 				'album_id' => null,
 				'title' => 'tiff',
-				'type' => 'image/tiff',
+				'type' => TestCase::MIME_TYPE_IMG_TIFF,
 				'size_variants' => [
 					'original' => [
 						'width' => 400,

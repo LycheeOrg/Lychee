@@ -181,7 +181,7 @@ class PhotosOperationsTest extends TestCase
 			'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
 			'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
 			'title' => "Night in Ploumanac'h",
-			'type' => 'image/jpeg',
+			'type' => TestCase::MIME_TYPE_IMG_JPEG,
 			'size_variants' => [
 				'small' => [
 					'width' => 540,

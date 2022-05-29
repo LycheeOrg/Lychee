@@ -91,7 +91,7 @@ abstract class PhotosAddTestAbstract extends TestCase
 			'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
 			'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
 			'title' => 'night',
-			'type' => 'image/jpeg',
+			'type' => TestCase::MIME_TYPE_IMG_JPEG,
 			'size_variants' => [
 				'small' => [
 					'width' => 540,
@@ -361,7 +361,7 @@ abstract class PhotosAddTestAbstract extends TestCase
 		$response->assertJson([
 			'album_id' => null,
 			'title' => 'gaming',
-			'type' => 'video/mp4',
+			'type' => TestCase::MIME_TYPE_VID_MP4,
 			'size_variants' => [
 				'thumb' => [
 					'width' => 200,

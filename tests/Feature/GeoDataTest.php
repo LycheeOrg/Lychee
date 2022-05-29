@@ -77,7 +77,7 @@ class GeoDataTest extends TestCase
 				[
 					'id' => $photoID,
 					'title' => 'mongolia',
-					'type' => 'image/jpeg',
+					'type' => TestCase::MIME_TYPE_IMG_JPEG,
 					'iso' => '200',
 					'aperture' => 'f/13.0',
 					'make' => 'NIKON CORPORATION',

@@ -142,7 +142,7 @@ class PhotosAddNegativeTest extends TestCase
 			$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', null);
 
 			$response = $this->photos_tests->importFromUrl(
-				['https://github.com/LycheeOrg/Lychee/raw/use_filestreams/tests/Samples/tiff.tif'],
+				[TestCase::SAMPLE_DOWNLOAD_TIFF],
 				null,
 				422,
 				'MediaFileUnsupportedException'

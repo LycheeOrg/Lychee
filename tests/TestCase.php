@@ -27,48 +27,61 @@ abstract class TestCase extends BaseTestCase
 
 	public const PATH_IMPORT_DIR = 'uploads/import/';
 
-	public const SAMPLE_FILE_NIGHT_IMAGE = 'tests/Samples/night.jpg';
-	public const SAMPLE_FILE_MONGOLIA_IMAGE = 'tests/Samples/mongolia.jpeg';
-	public const SAMPLE_FILE_TRAIN_IMAGE = 'tests/Samples/train.jpg';
-	public const SAMPLE_FILE_TRAIN_VIDEO = 'tests/Samples/train.mov';
-	public const SAMPLE_FILE_GMP_IMAGE = 'tests/Samples/google_motion_photo.jpg';
-	public const SAMPLE_FILE_GMP_BROKEN_IMAGE = 'tests/Samples/google_motion_photo_broken.jpg';
+	public const MIME_TYPE_APP_PDF = 'application/pdf';
+	public const MIME_TYPE_IMG_GIF = 'image/gif';
+	public const MIME_TYPE_IMG_JPEG = 'image/jpeg';
+	public const MIME_TYPE_IMG_PNG = 'image/png';
+	public const MIME_TYPE_IMG_TIFF = 'image/tiff';
+	public const MIME_TYPE_IMG_WEBP = 'image/webp';
+	public const MIME_TYPE_IMG_XCF = 'image/x-xcf';
+	public const MIME_TYPE_VID_MP4 = 'video/mp4';
+	public const MIME_TYPE_VID_QUICKTIME = 'video/quicktime';
+
+	public const SAMPLE_DOWNLOAD_JPG = 'https://github.com/LycheeOrg/Lychee/raw/master/tests/Samples/mongolia.jpeg';
+	public const SAMPLE_DOWNLOAD_TIFF = 'https://github.com/LycheeOrg/Lychee/raw/use_filestreams/tests/Samples/tiff.tif';
+
 	public const SAMPLE_FILE_GAMING_VIDEO = 'tests/Samples/gaming.mp4';
-	public const SAMPLE_FILE_ORIENTATION_90 = 'tests/Samples/orientation-90.jpg';
+	public const SAMPLE_FILE_GIF = 'tests/Samples/gif.gif';
+	public const SAMPLE_FILE_GMP_BROKEN_IMAGE = 'tests/Samples/google_motion_photo_broken.jpg';
+	public const SAMPLE_FILE_GMP_IMAGE = 'tests/Samples/google_motion_photo.jpg';
+	public const SAMPLE_FILE_MONGOLIA_IMAGE = 'tests/Samples/mongolia.jpeg';
+	public const SAMPLE_FILE_NIGHT_IMAGE = 'tests/Samples/night.jpg';
 	public const SAMPLE_FILE_ORIENTATION_180 = 'tests/Samples/orientation-180.jpg';
 	public const SAMPLE_FILE_ORIENTATION_270 = 'tests/Samples/orientation-270.jpg';
+	public const SAMPLE_FILE_ORIENTATION_90 = 'tests/Samples/orientation-90.jpg';
 	public const SAMPLE_FILE_ORIENTATION_HFLIP = 'tests/Samples/orientation-hflip.jpg';
 	public const SAMPLE_FILE_ORIENTATION_VFLIP = 'tests/Samples/orientation-vflip.jpg';
-	public const SAMPLE_FILE_PNG = 'tests/Samples/png.png';
-	public const SAMPLE_FILE_GIF = 'tests/Samples/gif.gif';
-	public const SAMPLE_FILE_WEBP = 'tests/Samples/webp.webp';
 	public const SAMPLE_FILE_PDF = 'tests/Samples/pdf.pdf';
-	public const SAMPLE_FILE_XCF = 'tests/Samples/xcf.xcf';
+	public const SAMPLE_FILE_PNG = 'tests/Samples/png.png';
 	public const SAMPLE_FILE_TIFF = 'tests/Samples/tiff.tif';
+	public const SAMPLE_FILE_TRAIN_IMAGE = 'tests/Samples/train.jpg';
+	public const SAMPLE_FILE_TRAIN_VIDEO = 'tests/Samples/train.mov';
+	public const SAMPLE_FILE_WEBP = 'tests/Samples/webp.webp';
+	public const SAMPLE_FILE_XCF = 'tests/Samples/xcf.xcf';
 
 	public const SAMPLE_FILES_2_MIME = [
-		self::SAMPLE_FILE_NIGHT_IMAGE => 'image/jpeg',
-		self::SAMPLE_FILE_MONGOLIA_IMAGE => 'image/jpeg',
-		self::SAMPLE_FILE_TRAIN_IMAGE => 'image/jpeg',
-		self::SAMPLE_FILE_TRAIN_VIDEO => 'video/quicktime',
-		self::SAMPLE_FILE_GMP_IMAGE => 'image/jpeg',
-		self::SAMPLE_FILE_GMP_BROKEN_IMAGE => 'image/jpeg',
-		self::SAMPLE_FILE_GAMING_VIDEO => 'video/mp4',
-		self::SAMPLE_FILE_ORIENTATION_90 => 'image/jpeg',
-		self::SAMPLE_FILE_ORIENTATION_180 => 'image/jpeg',
-		self::SAMPLE_FILE_ORIENTATION_270 => 'image/jpeg',
-		self::SAMPLE_FILE_ORIENTATION_HFLIP => 'image/jpeg',
-		self::SAMPLE_FILE_ORIENTATION_VFLIP => 'image/jpeg',
-		self::SAMPLE_FILE_PNG => 'image/png',
-		self::SAMPLE_FILE_GIF => 'image/gif',
-		self::SAMPLE_FILE_WEBP => 'image/webp',
-		self::SAMPLE_FILE_PDF => 'application/pdf',
-		self::SAMPLE_FILE_XCF => 'image/x-xcf',
-		self::SAMPLE_FILE_TIFF => 'image/tiff',
+		self::SAMPLE_FILE_GAMING_VIDEO => self::MIME_TYPE_VID_MP4,
+		self::SAMPLE_FILE_GIF => self::MIME_TYPE_IMG_GIF,
+		self::SAMPLE_FILE_GMP_BROKEN_IMAGE => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_GMP_IMAGE => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_MONGOLIA_IMAGE => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_NIGHT_IMAGE => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_ORIENTATION_180 => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_ORIENTATION_270 => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_ORIENTATION_90 => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_ORIENTATION_HFLIP => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_ORIENTATION_VFLIP => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_PDF => self::MIME_TYPE_APP_PDF,
+		self::SAMPLE_FILE_PNG => self::MIME_TYPE_IMG_PNG,
+		self::SAMPLE_FILE_TIFF => self::MIME_TYPE_IMG_TIFF,
+		self::SAMPLE_FILE_TRAIN_IMAGE => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_TRAIN_VIDEO => self::MIME_TYPE_VID_QUICKTIME,
+		self::SAMPLE_FILE_WEBP => self::MIME_TYPE_IMG_WEBP,
+		self::SAMPLE_FILE_XCF => self::MIME_TYPE_IMG_XCF,
 	];
 
-	public const CONFIG_HAS_FFMPEG = 'has_ffmpeg';
 	public const CONFIG_HAS_EXIF_TOOL = 'has_exiftool';
+	public const CONFIG_HAS_FFMPEG = 'has_ffmpeg';
 	public const CONFIG_HAS_IMAGICK = 'imagick';
 	public const CONFIG_RAW_FORMATS = 'raw_formats';
 

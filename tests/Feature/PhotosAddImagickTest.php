@@ -61,7 +61,7 @@ class PhotosAddImagickTest extends PhotosAddTestAbstract
 			));
 
 			static::assertStringEndsWith('.tif', $photo->size_variants->original->url);
-			static::assertEquals('image/tiff', $photo->type);
+			static::assertEquals(TestCase::MIME_TYPE_IMG_TIFF, $photo->type);
 			static::assertNotNull($photo->size_variants->thumb);
 		} finally {
 			Configs::set(self::CONFIG_RAW_FORMATS, $acceptedRawFormats);
