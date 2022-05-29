@@ -34,8 +34,5 @@ class CommandsTest extends TestCase
 		$this->artisan('lychee:logs', ['action' => 'clean'])
 			->expectsOutput('Log table has been emptied.')
 			->assertExitCode(0);
-
-		$this->artisan('lychee:video_data')
-			->assertExitCode(0);
 	}
 }
