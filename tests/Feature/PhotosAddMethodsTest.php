@@ -13,6 +13,8 @@
 namespace Tests\Feature;
 
 use App\Facades\AccessControl;
+use App\Image\MediaFile;
+use App\Models\Configs;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
@@ -238,5 +240,42 @@ class PhotosAddMethodsTest extends TestCase
 				],
 			],
 		]]);
+	}
+
+	/**
+	 * Test import from URL of a supported raw image.
+	 *
+	 * This test is necessary in addition to uploading a raw file, because
+	 * Lychee checks whether the format is supported prior to the download,
+	 * i.e. before an actual file exists on the server and hence this check
+	 * takes a different code path than the check after an upload.
+	 *
+	 * @return void
+	 */
+	public function testRawImportFromUrl(): void
+	{
+		$acceptedRawFormats = Configs::get_value(self::CONFIG_RAW_FORMATS, '');
+		try {
+			Configs::set(self::CONFIG_RAW_FORMATS, '.tif');
+			$reflection = new \ReflectionClass(MediaFile::class);
+			$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', null);
+
+			$response = $this->photos_tests->importFromUrl(['https://github.com/LycheeOrg/Lychee/raw/use_filestreams/tests/Samples/tiff.tif']);
+
+			$response->assertJson([[
+				'album_id' => null,
+				'title' => 'tiff',
+				'type' => 'image/tiff',
+				'size_variants' => [
+					'original' => [
+						'width' => 400,
+						'height' => 300,
+						'filesize' => 5802,
+					],
+				],
+			]]);
+		} finally {
+			Configs::set(self::CONFIG_RAW_FORMATS, $acceptedRawFormats);
+		}
 	}
 }

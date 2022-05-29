@@ -99,6 +99,11 @@ class PhotosAddNegativeTest extends TestCase
 		);
 	}
 
+	/**
+	 * Test upload of an unsupported raw image.
+	 *
+	 * @return void
+	 */
 	public function testRefusedRawUpload(): void
 	{
 		$acceptedRawFormats = Configs::get_value(self::CONFIG_RAW_FORMATS, '');
@@ -113,6 +118,35 @@ class PhotosAddNegativeTest extends TestCase
 				422,
 				'MediaFileUnsupportedException'
 			));
+		} finally {
+			Configs::set(self::CONFIG_RAW_FORMATS, $acceptedRawFormats);
+		}
+	}
+
+	/**
+	 * Test import from URL of an unsupported raw image.
+	 *
+	 * This test is necessary in addition to uploading an unsupported raw
+	 * file, because Lychee checks whether the format is supported prior to
+	 * the download, i.e. before an actual file exists on the server and hence
+	 * this check takes a different code path than the check after an upload.
+	 *
+	 * @return void
+	 */
+	public function testRefusedRawImportFormUrl(): void
+	{
+		$acceptedRawFormats = Configs::get_value(self::CONFIG_RAW_FORMATS, '');
+		try {
+			Configs::set(self::CONFIG_RAW_FORMATS, '');
+			$reflection = new \ReflectionClass(MediaFile::class);
+			$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', null);
+
+			$response = $this->photos_tests->importFromUrl(
+				['https://github.com/LycheeOrg/Lychee/raw/use_filestreams/tests/Samples/tiff.tif'],
+				null,
+				422,
+				'MediaFileUnsupportedException'
+			);
 		} finally {
 			Configs::set(self::CONFIG_RAW_FORMATS, $acceptedRawFormats);
 		}
