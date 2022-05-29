@@ -54,6 +54,7 @@
         "friendsofphp/php-cs-fixer": "^3.3",
         "itsgoingd/clockwork": "^5.0",
         "laravel/homestead": "^v13.2.1",
+        "mockery/mockery": "^1.5",
         "nunomaduro/collision": "^5.0",
         "phpunit/phpunit": "^9"
     },
