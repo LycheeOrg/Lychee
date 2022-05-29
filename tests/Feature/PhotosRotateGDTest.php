@@ -12,30 +12,24 @@
 
 namespace Tests\Feature;
 
-use App\Models\Configs;
+use Tests\Feature\Traits\RequiresImageHandler;
 
 /**
  * Runs the tests of {@link PhotosRotateTestAbstract} with GD as image handler.
  */
 class PhotosRotateGDTest extends PhotosRotateTestAbstract
 {
-	protected int $hasImagickInit;
+	use RequiresImageHandler;
 
 	public function setUp(): void
 	{
 		parent::setUp();
-
-		$this->hasImagickInit = (int) Configs::get_value(self::CONFIG_HAS_IMAGICK, 0);
-		Configs::set(self::CONFIG_HAS_IMAGICK, 0);
-
-		if (Configs::hasImagick()) {
-			static::markTestSkipped('Imagick still enabled although it shouldn\'t. Test Skipped.');
-		}
+		$this->setUpRequiresGD();
 	}
 
 	public function tearDown(): void
 	{
-		Configs::set(self::CONFIG_HAS_IMAGICK, $this->hasImagickInit);
+		$this->tearDownRequiresImageHandler();
 		parent::tearDown();
 	}
 }

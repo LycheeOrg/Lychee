@@ -12,51 +12,26 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
 use App\Models\Configs;
-use Tests\Feature\Lib\PhotosUnitTest;
-use Tests\Feature\Traits\RequiresEmptyPhotos;
-use Tests\Feature\Traits\RequiresExifTool;
-use Tests\Feature\Traits\RequiresFFMpeg;
+use Tests\Feature\Base\PhotoTestBase;
 use Tests\TestCase;
 
-abstract class PhotosRotateTestAbstract extends TestCase
+abstract class PhotosRotateTestAbstract extends PhotoTestBase
 {
-	use RequiresExifTool;
-	use RequiresFFMpeg;
-	use RequiresEmptyPhotos;
-
 	public const CONFIG_EDITOR_ENABLED = 'editor_enabled';
-
-	protected PhotosUnitTest $photos_tests;
 
 	protected int $editor_enabled_init;
 
 	public function setUp(): void
 	{
 		parent::setUp();
-		$this->photos_tests = new PhotosUnitTest($this);
-
 		$this->editor_enabled_init = (int) Configs::get_value(self::CONFIG_EDITOR_ENABLED, 0);
 		Configs::set(self::CONFIG_EDITOR_ENABLED, 1);
-
-		$this->setUpRequiresExifTool();
-		$this->setUpRequiresFFMpeg();
-		$this->setUpRequiresEmptyPhotos();
-
-		AccessControl::log_as_id(0);
 	}
 
 	public function tearDown(): void
 	{
-		$this->tearDownRequiresEmptyPhotos();
-		$this->tearDownRequiresExifTool();
-		$this->tearDownRequiresFFMpeg();
-
 		Configs::set(self::CONFIG_EDITOR_ENABLED, $this->editor_enabled_init);
-
-		AccessControl::logout();
-
 		parent::tearDown();
 	}
 

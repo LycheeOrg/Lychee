@@ -1,0 +1,51 @@
+<?php
+
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
+
+namespace Tests\Feature\Base;
+
+use App\Facades\AccessControl;
+use Tests\Feature\Lib\AlbumsUnitTest;
+use Tests\Feature\Lib\PhotosUnitTest;
+use Tests\Feature\Traits\RequiresEmptyPhotos;
+use Tests\Feature\Traits\RequiresExifTool;
+use Tests\Feature\Traits\RequiresFFMpeg;
+use Tests\TestCase;
+
+abstract class PhotoTestBase extends TestCase
+{
+	use RequiresEmptyPhotos;
+	use RequiresExifTool;
+	use RequiresFFMpeg;
+
+	protected AlbumsUnitTest $albums_tests;
+	protected PhotosUnitTest $photos_tests;
+
+	public function setUp(): void
+	{
+		parent::setUp();
+		$this->albums_tests = new AlbumsUnitTest($this);
+		$this->photos_tests = new PhotosUnitTest($this);
+		$this->setUpRequiresExifTool();
+		$this->setUpRequiresFFMpeg();
+		$this->setUpRequiresEmptyPhotos();
+		AccessControl::log_as_id(0);
+	}
+
+	public function tearDown(): void
+	{
+		AccessControl::logout();
+		$this->tearDownRequiresEmptyPhotos();
+		$this->tearDownRequiresFFMpeg();
+		$this->tearDownRequiresExifTool();
+		parent::tearDown();
+	}
+}

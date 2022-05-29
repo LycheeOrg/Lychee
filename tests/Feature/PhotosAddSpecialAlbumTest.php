@@ -12,51 +12,14 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
-use Tests\Feature\Lib\AlbumsUnitTest;
-use Tests\Feature\Lib\PhotosUnitTest;
-use Tests\Feature\Traits\RequiresEmptyPhotos;
-use Tests\Feature\Traits\RequiresExifTool;
-use Tests\Feature\Traits\RequiresFFMpeg;
+use Tests\Feature\Base\PhotoTestBase;
 use Tests\TestCase;
 
 /**
  * Contains tests which adds photos to Lychee and directly set an album.
  */
-class PhotosAddSpecialAlbumTest extends TestCase
+class PhotosAddSpecialAlbumTest extends PhotoTestBase
 {
-	use RequiresExifTool;
-	use RequiresFFMpeg;
-	use RequiresEmptyPhotos;
-
-	protected PhotosUnitTest $photos_tests;
-	protected AlbumsUnitTest $albums_tests;
-
-	public function setUp(): void
-	{
-		parent::setUp();
-		$this->photos_tests = new PhotosUnitTest($this);
-		$this->albums_tests = new AlbumsUnitTest($this);
-
-		$this->setUpRequiresExifTool();
-		$this->setUpRequiresFFMpeg();
-		$this->setUpRequiresEmptyPhotos();
-
-		AccessControl::log_as_id(0);
-	}
-
-	public function tearDown(): void
-	{
-		$this->tearDownRequiresEmptyPhotos();
-
-		AccessControl::logout();
-
-		$this->tearDownRequiresExifTool();
-		$this->tearDownRequiresFFMpeg();
-
-		parent::tearDown();
-	}
-
 	/**
 	 * A simple upload of an ordinary photo to a regular album.
 	 *

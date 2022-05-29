@@ -12,55 +12,18 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
 use App\Image\MediaFile;
 use App\Models\Configs;
 use Illuminate\Support\Facades\DB;
-use Tests\Feature\Lib\AlbumsUnitTest;
-use Tests\Feature\Lib\PhotosUnitTest;
-use Tests\Feature\Traits\RequiresEmptyPhotos;
-use Tests\Feature\Traits\RequiresExifTool;
-use Tests\Feature\Traits\RequiresFFMpeg;
+use Tests\Feature\Base\PhotoTestBase;
 use Tests\TestCase;
 
 /**
  * Contains all test for the various ways how to add images to Lychee
  * (upload, download, import) and their various options.
  */
-class PhotosAddMethodsTest extends TestCase
+class PhotosAddMethodsTest extends PhotoTestBase
 {
-	use RequiresExifTool;
-	use RequiresFFMpeg;
-	use RequiresEmptyPhotos;
-
-	protected PhotosUnitTest $photos_tests;
-	protected AlbumsUnitTest $albums_tests;
-
-	public function setUp(): void
-	{
-		parent::setUp();
-		$this->photos_tests = new PhotosUnitTest($this);
-		$this->albums_tests = new AlbumsUnitTest($this);
-
-		$this->setUpRequiresExifTool();
-		$this->setUpRequiresFFMpeg();
-		$this->setUpRequiresEmptyPhotos();
-
-		AccessControl::log_as_id(0);
-	}
-
-	public function tearDown(): void
-	{
-		$this->tearDownRequiresEmptyPhotos();
-
-		AccessControl::logout();
-
-		$this->tearDownRequiresExifTool();
-		$this->tearDownRequiresFFMpeg();
-
-		parent::tearDown();
-	}
-
 	public function testImportViaMove(): void
 	{
 		// import the photo

@@ -13,53 +13,18 @@
 namespace Tests\Feature;
 
 use App\Actions\Photo\Archive;
-use App\Facades\AccessControl;
 use App\Image\ImagickHandler;
 use App\Image\InMemoryBuffer;
 use App\Image\TemporaryLocalFile;
 use App\Image\VideoHandler;
 use App\Models\Configs;
 use Carbon\Carbon;
-use Tests\Feature\Lib\AlbumsUnitTest;
-use Tests\Feature\Lib\PhotosUnitTest;
-use Tests\Feature\Traits\RequiresEmptyPhotos;
-use Tests\Feature\Traits\RequiresExifTool;
-use Tests\Feature\Traits\RequiresFFMpeg;
+use Tests\Feature\Base\PhotoTestBase;
 use Tests\TestCase;
 use ZipArchive;
 
-class PhotosOperationsTest extends TestCase
+class PhotosOperationsTest extends PhotoTestBase
 {
-	use RequiresFFMpeg;
-	use RequiresExifTool;
-	use RequiresEmptyPhotos;
-
-	protected PhotosUnitTest $photos_tests;
-	protected AlbumsUnitTest $albums_tests;
-
-	public function setUp(): void
-	{
-		parent::setUp();
-		$this->photos_tests = new PhotosUnitTest($this);
-		$this->albums_tests = new AlbumsUnitTest($this);
-
-		$this->setUpRequiresExifTool();
-		$this->setUpRequiresFFMpeg();
-		$this->setUpRequiresEmptyPhotos();
-
-		AccessControl::log_as_id(0);
-	}
-
-	public function tearDown(): void
-	{
-		$this->tearDownRequiresEmptyPhotos();
-		$this->tearDownRequiresExifTool();
-		$this->tearDownRequiresFFMpeg();
-
-		AccessControl::logout();
-		parent::tearDown();
-	}
-
 	/**
 	 * Tests a lot of photo actions at once.
 	 *

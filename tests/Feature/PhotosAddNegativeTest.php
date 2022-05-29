@@ -12,52 +12,16 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
-use Tests\Feature\Lib\AlbumsUnitTest;
-use Tests\Feature\Lib\PhotosUnitTest;
+use Tests\Feature\Base\PhotoTestBase;
 use Tests\Feature\Traits\InteractsWithRaw;
-use Tests\Feature\Traits\RequiresEmptyPhotos;
-use Tests\Feature\Traits\RequiresExifTool;
-use Tests\Feature\Traits\RequiresFFMpeg;
 use Tests\TestCase;
 
 /**
  * Contains all tests which add photos to Lychee and are expected to fail.
  */
-class PhotosAddNegativeTest extends TestCase
+class PhotosAddNegativeTest extends PhotoTestBase
 {
 	use InteractsWithRaw;
-	use RequiresExifTool;
-	use RequiresFFMpeg;
-	use RequiresEmptyPhotos;
-
-	protected PhotosUnitTest $photos_tests;
-	protected AlbumsUnitTest $albums_tests;
-
-	public function setUp(): void
-	{
-		parent::setUp();
-		$this->photos_tests = new PhotosUnitTest($this);
-		$this->albums_tests = new AlbumsUnitTest($this);
-
-		$this->setUpRequiresExifTool();
-		$this->setUpRequiresFFMpeg();
-		$this->setUpRequiresEmptyPhotos();
-
-		AccessControl::log_as_id(0);
-	}
-
-	public function tearDown(): void
-	{
-		$this->tearDownRequiresEmptyPhotos();
-
-		AccessControl::logout();
-
-		$this->tearDownRequiresExifTool();
-		$this->tearDownRequiresFFMpeg();
-
-		parent::tearDown();
-	}
 
 	public function testNegativeUpload(): void
 	{

@@ -12,30 +12,24 @@
 
 namespace Tests\Feature;
 
-use App\Models\Configs;
+use Tests\Feature\Traits\RequiresImageHandler;
 
 /**
  * Runs the tests of {@link PhotosRotateTestAbstract} with Imagick as image handler.
  */
 class PhotosRotateImagickTest extends PhotosRotateTestAbstract
 {
-	protected int $hasImagickInit;
+	use RequiresImageHandler;
 
 	public function setUp(): void
 	{
 		parent::setUp();
-
-		$this->hasImagickInit = (int) Configs::get_value(self::CONFIG_HAS_IMAGICK, 1);
-		Configs::set(self::CONFIG_HAS_IMAGICK, 1);
-
-		if (!Configs::hasImagick()) {
-			static::markTestSkipped('Imagick is not available. Test Skipped.');
-		}
+		$this->setUpRequiresImagick();
 	}
 
 	public function tearDown(): void
 	{
-		Configs::set(self::CONFIG_HAS_IMAGICK, $this->hasImagickInit);
+		$this->tearDownRequiresImageHandler();
 		parent::tearDown();
 	}
 }
