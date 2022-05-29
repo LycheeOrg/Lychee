@@ -2,6 +2,7 @@
 
 namespace App\Image;
 
+use App\Contracts\LycheeException;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\DTO\ImageDimension;
@@ -11,10 +12,8 @@ use App\Exceptions\ImageProcessingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
-use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
-use App\Exceptions\ModelDBException;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
@@ -137,6 +136,10 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		if ($this->photo->isVideo() && ($sizeVariant === SizeVariant::MEDIUM || $sizeVariant === SizeVariant::MEDIUM2X)) {
 			return null;
 		}
+		// Don't re-create existing size variant
+		if ($this->photo->size_variants->getSizeVariant($sizeVariant)) {
+			return null;
+		}
 
 		$maxDim = $this->getMaxDimensions($sizeVariant);
 		$realDim = $this->referenceImage->getDimensions();
@@ -155,19 +158,28 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	}
 
 	/**
-	 * @throws ModelDBException
-	 * @throws IllegalOrderOfOperationException
-	 * @throws MediaFileOperationException
-	 * @throws InvalidSizeVariantException
-	 * @throws ImageProcessingException
-	 * @throws LycheeDomainException
+	 * Generates the designated size variant unconditionally.
+	 *
+	 * The method does not check whether the size variant already exist
+	 * and will overwrite an existing one of the same type.
+	 *
+	 * @param int            $sizeVariant the desired size variant; admissible
+	 *                                    values are:
+	 *                                    {@link SizeVariant::THUMB},
+	 *                                    {@link SizeVariant::THUMB2X},
+	 *                                    {@link SizeVariant::SMALL},
+	 *                                    {@link SizeVariant::SMALL2X},
+	 *                                    {@link SizeVariant::MEDIUM} and
+	 *                                    {@link SizeVariant::MEDIUM2X}
+	 * @param ImageDimension $maxDim      the designated dimensions of the
+	 *                                    size variant
+	 *
+	 * @return SizeVariant the generated size variant
+	 *
+	 * @throws LycheeException
 	 */
-	protected function createSizeVariantInternal(int $sizeVariant, ImageDimension $maxDim): SizeVariant
+	private function createSizeVariantInternal(int $sizeVariant, ImageDimension $maxDim): SizeVariant
 	{
-		if ($this->photo->size_variants->getSizeVariant($sizeVariant)) {
-			throw new InvalidSizeVariantException('size variant already exists');
-		}
-
 		$svImage = clone $this->referenceImage;
 		if ($sizeVariant === SizeVariant::THUMB || $sizeVariant === SizeVariant::THUMB2X) {
 			$svImage->crop($maxDim);
