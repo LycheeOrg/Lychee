@@ -288,21 +288,6 @@ class NativeLocalFile extends MediaFile
 	}
 
 	/**
-	 * Asserts that the file is supported.
-	 *
-	 * @return void
-	 *
-	 * @throws MediaFileUnsupportedException
-	 * @throws MediaFileOperationException
-	 */
-	public function assertIsSupported(): void
-	{
-		if (!$this->isSupported()) {
-			throw new MediaFileUnsupportedException();
-		}
-	}
-
-	/**
 	 * Checks if the file is not supported, but an accepted raw media.
 	 *
 	 * @return bool

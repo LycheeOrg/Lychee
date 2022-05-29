@@ -225,36 +225,6 @@ abstract class MediaFile extends BinaryBlob
 	}
 
 	/**
-	 * Checks if the given MIME type is supported.
-	 *
-	 * @param string $mimeType the MIME type
-	 *
-	 * @return bool
-	 */
-	public static function isSupportedMimeType(string $mimeType): bool
-	{
-		return
-			self::isSupportedImageMimeType($mimeType) ||
-			self::isSupportedVideoMimeType($mimeType);
-	}
-
-	/**
-	 * Asserts that the given MIME type is supported.
-	 *
-	 * @param string $mimeType the MIME type
-	 *
-	 * @return void
-	 *
-	 * @throws MediaFileUnsupportedException
-	 */
-	public static function assertIsSupportedMimeType(string $mimeType): void
-	{
-		if (!self::isSupportedMimeType($mimeType)) {
-			throw new MediaFileUnsupportedException(MediaFileUnsupportedException::DEFAULT_MESSAGE . ' (bad MIME type: ' . $mimeType . ')');
-		}
-	}
-
-	/**
 	 * Checks if the given file extension is a supported image extension.
 	 *
 	 * @param string $extension the file extension
@@ -290,22 +260,6 @@ abstract class MediaFile extends BinaryBlob
 		return
 			self::isSupportedImageFileExtension($extension) ||
 			self::isSupportedVideoFileExtension($extension);
-	}
-
-	/**
-	 * Asserts that the given extension is supported.
-	 *
-	 * @param string $extension the file extension
-	 *
-	 * @return void
-	 *
-	 * @throws MediaFileUnsupportedException
-	 */
-	public static function assertIsSupportedFileExtension(string $extension): void
-	{
-		if (!self::isSupportedFileExtension($extension)) {
-			throw new MediaFileUnsupportedException(MediaFileUnsupportedException::DEFAULT_MESSAGE . ' (bad extension: ' . $extension . ')');
-		}
 	}
 
 	/**
