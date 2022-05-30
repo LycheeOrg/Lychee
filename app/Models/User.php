@@ -147,7 +147,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 
 		foreach ($ownershipRelations as $relation) {
 			// We must also update the `updated_at` column of the related
-			// models in case clients have cashed these models.
+			// models in case clients have cached these models.
 			$relation->update([
 				$relation->getForeignKeyName() => $newOwnerID,
 				$relation->getRelated()->getUpdatedAtColumn() => $relation->getRelated()->fromDateTime($now),
