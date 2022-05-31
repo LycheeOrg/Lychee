@@ -5,8 +5,8 @@ namespace App\Models;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Mail\Markdown;
 use Illuminate\Support\Carbon;
-use Markdown;
 
 /**
  * App\PageContent.
@@ -39,7 +39,7 @@ class PageContent extends Model
 			$return = '<div class="' . $this->class . '"><img src="' . $this->content . '" alt="image" /></div>';
 		} elseif ($this->type == 'div') {
 			$return = '<div class="' . $this->class . '">';
-			$return .= Markdown::convertToHtml($this->content);
+			$return .= Markdown::parse($this->content)->toHtml();
 			$return .= '</div>';
 		}
 
