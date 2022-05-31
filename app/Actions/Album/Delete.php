@@ -13,6 +13,7 @@ use App\Models\BaseAlbumImpl;
 use App\Models\TagAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Database\Query\Builder as BaseBuilder;
+use Safe\Exceptions\ArrayException;
 
 /**
  * Deletes the albums with the designated IDs **efficiently**.
@@ -137,9 +138,10 @@ class Delete extends Action
 			// Note, the gaps must be removed beginning with the highest
 			// values first otherwise the later indices won't be correct.
 			// To save some DB queries, we could implement a "makeMultiGap".
-			usort($pendingGapsToMake, fn ($a, $b) => $b['lft'] <=> $a['lft']);
+			\Safe\usort($pendingGapsToMake, fn ($a, $b) => $b['lft'] <=> $a['lft']);
 			foreach ($pendingGapsToMake as $pendingGap) {
 				$height = $pendingGap['rgt'] - $pendingGap['lft'] + 1;
+				// ! TODO PhpStan is complaining here that $album may be undefined. @nagmat84
 				$album->newNestedSetQuery()->makeGap($pendingGap['rgt'] + 1, -$height);
 				Album::$actionsPerformed++;
 			}
@@ -173,7 +175,15 @@ class Delete extends Action
 			} catch (\Throwable) {
 				// Sic! We cannot do anything about the inner exception
 			}
-			assert(false, new \AssertionError('\InvalidArgumentException must not be thrown by ->where', $e->getCode(), $e));
+			throw new \AssertionError('\InvalidArgumentException must not be thrown by ->where', $e->getCode(), $e);
+		} catch (ArrayException $e) {
+			try {
+				// if anything goes wrong, don't leave the tree in an inconsistent state
+				Album::query()->fixTree();
+			} catch (\Throwable) {
+				// Sic! We cannot do anything about the inner exception
+			}
+			throw new \AssertionError('Safe\Exceptions\ArrayException must not be thrown by usort', $e->getCode(), $e);
 		}
 	}
 }
