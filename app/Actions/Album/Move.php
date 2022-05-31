@@ -21,7 +21,7 @@ class Move extends Action
 	public function do(?Album $targetAlbum, Collection $albums): void
 	{
 		// Move source albums into target
-		if ($targetAlbum) {
+		if ($targetAlbum != null) {
 			/** @var Album $album */
 			foreach ($albums as $album) {
 				// Don't set attribute `parent_id` manually, but use specialized
