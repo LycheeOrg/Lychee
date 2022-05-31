@@ -56,7 +56,7 @@
         "laravel/homestead": "^v13.2.1",
         "nunomaduro/collision": "^5.0",
         "nunomaduro/larastan": "^1.0",
-        "phpstan/phpstan": "^1.6",
+        "phpstan/phpstan": "^1.7",
         "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpstan/phpstan-strict-rules": "^1.2",
         "phpunit/phpunit": "^9",
