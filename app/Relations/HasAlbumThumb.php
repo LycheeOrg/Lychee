@@ -16,6 +16,9 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
 
+/**
+ * @method where($column, $operator, $value)
+ */
 class HasAlbumThumb extends Relation
 {
 	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
@@ -50,7 +53,7 @@ class HasAlbumThumb extends Relation
 		if (static::$constraints) {
 			/** @var Album $album */
 			$album = $this->parent;
-			if ($album->cover_id) {
+			if ($album->cover_id != null) {
 				$this->where('photos.id', '=', $album->cover_id);
 			} else {
 				$this->photoAuthorisationProvider
@@ -248,7 +251,7 @@ class HasAlbumThumb extends Relation
 		/** @var Album $album */
 		foreach ($models as $album) {
 			$albumID = $album->id;
-			if ($album->cover_id) {
+			if ($album->cover_id != null) {
 				// We do not execute a query, if `cover_id` is set, because
 				// `Album`always eagerly loads its cover and hence, we already
 				// have it.
@@ -278,7 +281,7 @@ class HasAlbumThumb extends Relation
 		// is always eagerly loaded with its cover and hence, we already
 		// have it.
 		// See {@link Album::with}
-		if ($album->cover_id) {
+		if ($album->cover_id != null) {
 			return Thumb::createFromPhoto($album->cover);
 		} else {
 			return Thumb::createFromQueryable(
