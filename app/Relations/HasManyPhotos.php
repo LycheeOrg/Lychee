@@ -96,8 +96,10 @@ abstract class HasManyPhotos extends Relation
 	 */
 	public function getResults(): Collection
 	{
+		/** @var BaseAlbum */
+		$parent = $this->parent;
 		/** @var SortingCriterion $sorting */
-		$sorting = $this->parent->getEffectiveSorting();
+		$sorting = $parent->getEffectiveSorting();
 
 		return (new SortingDecorator($this->query))
 			->orderBy('photos.' . $sorting->column, $sorting->order)

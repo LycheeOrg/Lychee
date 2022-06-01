@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Safe\Exceptions\FilesystemException;
+use Safe\Exceptions\StringsException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Exec
@@ -107,26 +109,30 @@ class Exec
 	 */
 	private static function normalizePath(string $path): string
 	{
-		if (str_ends_with($path, '/')) {
-			$path = substr($path, 0, -1);
-		}
-		$realPath = realpath($path);
+		try {
+			if (str_ends_with($path, '/')) {
+				$path = \Safe\substr($path, 0, -1);
+			}
+			$realPath = \Safe\realpath($path);
 
-		if (is_dir($realPath) === false) {
+			if (is_dir($realPath) === false) {
+				throw new InvalidDirectoryException('Given path is not a directory (' . $path . ')');
+			}
+
+			// Skip folders of Lychee
+			if (
+				$realPath === Storage::path('big') ||
+				$realPath === Storage::path('medium') ||
+				$realPath === Storage::path('small') ||
+				$realPath === Storage::path('thumb')
+			) {
+				throw new ReservedDirectoryException('The given path is a reserved path of Lychee (' . $path . ')');
+			}
+
+			return $path;
+		} catch (StringsException|FilesystemException) {
 			throw new InvalidDirectoryException('Given path is not a directory (' . $path . ')');
 		}
-
-		// Skip folders of Lychee
-		if (
-			$realPath === Storage::path('big') ||
-			$realPath === Storage::path('medium') ||
-			$realPath === Storage::path('small') ||
-			$realPath === Storage::path('thumb')
-		) {
-			throw new ReservedDirectoryException('The given path is a reserved path of Lychee (' . $path . ')');
-		}
-
-		return $path;
 	}
 
 	/**
@@ -141,8 +147,9 @@ class Exec
 	private static function readLocalIgnoreList(string $path): array
 	{
 		if (is_readable($path . '/.lycheeignore')) {
-			$result = file($path . '/.lycheeignore');
-			if ($result === false) {
+			try {
+				$result = \Safe\file($path . '/.lycheeignore');
+			} catch (FilesystemException) {
 				throw new FileOperationException('Could not read ' . $path . '/.lycheeignore');
 			}
 
@@ -212,7 +219,7 @@ class Exec
 		string $path,
 		?Album $parentAlbum,
 		array $ignore_list = []
-	) {
+	): void {
 		try {
 			$path = self::normalizePath($path);
 
@@ -232,7 +239,7 @@ class Exec
 			foreach ($files as $file) {
 				$this->assertImportNotCancelled();
 				// Reset the execution timeout for every iteration.
-				set_time_limit(ini_get('max_execution_time'));
+				\Safe\set_time_limit((int) \Safe\ini_get('max_execution_time'));
 				// Report if we might be running out of memory.
 				$this->memWarningCheck();
 

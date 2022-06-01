@@ -496,7 +496,7 @@ trait ForwardsToParentImplementation
 	 *
 	 * @return void
 	 */
-	public function offsetUnset($offset)
+	public function offsetUnset($offset): void
 	{
 		// Prevent that the base model is unset from the set of relations
 		if ($offset == 'base_class') {
