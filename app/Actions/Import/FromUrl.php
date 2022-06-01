@@ -54,9 +54,9 @@ class FromUrl
 		foreach ($urls as $url) {
 			try {
 				// Reset the execution timeout for every iteration.
-				set_time_limit(ini_get('max_execution_time'));
+				\Safe\set_time_limit((int) \Safe\ini_get('max_execution_time'));
 
-				$path = parse_url($url, PHP_URL_PATH);
+				$path = \Safe\parse_url($url, PHP_URL_PATH);
 				$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
 
 				// Validate photo extension even when `$create->add()` will do later.
