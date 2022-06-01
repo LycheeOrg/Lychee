@@ -20,20 +20,15 @@ Route::get('/album/{albumID}/positions', [AlbumController::class, 'getPositionDa
 Route::post('/album/{albumID}/unlock', [AlbumController::class, 'unlock']);
 Route::post('/album', [AlbumController::class, 'add']);
 Route::post('/album/tag', [AlbumController::class, 'addTagAlbum']);
-Route::post('/Album::setTitle', [AlbumController::class, 'setTitle']); // TODO uses list
 Route::post('/album/{albumID}/nsfw', [AlbumController::class, 'setNSFW']);
 Route::post('/album/{albumID}/description', [AlbumController::class, 'setDescription']);
 Route::post('/album/{albumID}/cover', [AlbumController::class, 'setCover']);
 Route::post('/album/{albumID}/tags', [AlbumController::class, 'setShowTags']);
 Route::post('/album/{albumID}/protection', [AlbumController::class, 'setProtectionPolicy']);
-Route::delete('/Album::delete', [AlbumController::class, 'delete']); // TODO uses list
-Route::post('/Album::merge', [AlbumController::class, 'merge']); // TODO uses list
-Route::post('/Album::move', [AlbumController::class, 'move']); // TODO uses list
+Route::post('/album/{albumID}/merge', [AlbumController::class, 'merge']);
+Route::post('/album/{albumID}/move', [AlbumController::class, 'move']);
 Route::post('/album/{albumID}/license', [AlbumController::class, 'setLicense']);
 Route::post('/album/{albumID}/sorting', [AlbumController::class, 'setSorting']);
-Route::get('/Album::getArchive', [AlbumController::class, 'getArchive'])
-	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
-	->middleware(['local_storage', 'accept_content_type:any']); // TODO uses list
 Route::post('/album/{albumID}/track', [AlbumController::class, 'setTrack'])
 	->withoutMiddleware(['content_type:json'])
 	->middleware(['content_type:multipart']);
@@ -42,10 +37,15 @@ Route::delete('/album/{albumID}/track', [AlbumController::class, 'deleteTrack'])
 Route::get('/albums', [AlbumsController::class, 'get']);
 Route::get('/albums/positions', [AlbumsController::class, 'getPositionData']);
 Route::get('/albums/tree', [AlbumsController::class, 'tree']);
+Route::get('/albums/{albumIDs}/archive', [AlbumController::class, 'getArchive'])
+	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
+	->middleware(['local_storage', 'accept_content_type:any']);
+Route::delete('/albums/{albumIDs}', [AlbumController::class, 'delete']);
+Route::post('/albums/{albumIDs}/title', [AlbumController::class, 'setTitle']);
 
 Route::get('/frame/settings', [FrameController::class, 'getSettings']);
 
-Route::post('/Import::url', [ImportController::class, 'url']); // TODO uses list
+Route::post('/import/url', [ImportController::class, 'url']); // TODO uses list
 Route::post('/import/server', [ImportController::class, 'server'])->middleware('admin');
 Route::post('/import/server/cancel', [ImportController::class, 'serverCancel'])->middleware('admin');
 
@@ -81,8 +81,8 @@ Route::post('/session/logout', [SessionController::class, 'logout']);
 Route::post('/settings/login', [Administration\SettingsController::class, 'setLogin']);
 
 Route::get('/sharing', [Administration\SharingController::class, 'list']);
-Route::post('/Sharing::add', [Administration\SharingController::class, 'add']); // TODO uses list
-Route::delete('/Sharing::delete', [Administration\SharingController::class, 'delete']); // TODO uses list
+Route::post('/sharing', [Administration\SharingController::class, 'add']);
+Route::delete('/sharing/{shareIDs}', [Administration\SharingController::class, 'delete']);
 
 Route::post('/webauthn/register/gen', [Administration\WebAuthController::class, 'generateRegistration']);
 Route::post('/webauthn/register', [Administration\WebAuthController::class, 'verifyRegistration']);

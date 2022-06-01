@@ -1422,6 +1422,9 @@ api.createV2API = function (endpoint, method) {
 		var url = endpoint;
 		for (var param in params) {
 			if (url.includes("{" + param + "}")) {
+				if (_typeof(params[param]) === Array) {
+					params[param] = params[param].join();
+				}
 				url = url.replace("{" + param + "}", params[param]);
 				delete params[param];
 			}
@@ -1545,13 +1548,15 @@ api.v2 = {
 	/** @type APIV2Call */
 	importServer: api.createV2API("import/server", "POST"),
 	/** @type APIV2Call */
+	importUrl: api.createV2API("import/url", "POST"),
+	/** @type APIV2Call */
 	importServerCancel: api.createV2API("import/server/cancel", "POST"),
 	/** @type APIV2Call */
 	frameSettings: api.createV2API("frame/settings", "GET"),
 	/** @type APIV2Call */
 	albumsTree: api.createV2API("albums/tree", "GET"),
 	/** @type APIV2Call */
-	albumsPosition: api.createV2API("albums/position", "GET"),
+	albumsPosition: api.createV2API("albums/positions", "GET"),
 	/** @type APIV2Call */
 	getAlbums: api.createV2API("albums", "GET"),
 	/** @type APIV2Call */
@@ -1584,6 +1589,10 @@ api.v2 = {
 	setLogin: api.createV2API("settings/login", "POST"),
 	/** @type APIV2Call */
 	sharingList: api.createV2API("sharing", "GET"),
+	/** @type APIV2Call */
+	sharingAdd: api.createV2API("sharing", "POST"),
+	/** @type APIV2Call */
+	sharingDelete: api.createV2API("sharing/{shareIDs}", "DELETE"),
 	/** @type APIV2Call */
 	diagnostics: api.createV2API("diagnostics", "GET"),
 	/** @type APIV2Call */
@@ -1645,7 +1654,15 @@ api.v2 = {
 	/** @type APIV2Call */
 	nsfwVisible: api.createV2API("settings/nsfwVisible", "POST"),
 	/** @type APIV2Call */
-	newPhotosNotification: api.createV2API("settings/newPhotosNotification", "POST")
+	newPhotosNotification: api.createV2API("settings/newPhotosNotification", "POST"),
+	/** @type APIV2Call */
+	mergeAlbums: api.createV2API("album/{albumID}/merge", "POST"),
+	/** @type APIV2Call */
+	moveAlbums: api.createV2API("album/{albumID}/move", "POST"),
+	/** @type APIV2Call */
+	deleteAlbums: api.createV2API("albums/{albumIDs}", "DELETE"),
+	/** @type APIV2Call */
+	setAlbumTitle: api.createV2API("albums/{albumIDs}/title", "POST")
 };
 
 var csrf = {};
@@ -2321,7 +2338,7 @@ album.setTitle = function (albumIDs) {
 			});
 		}
 
-		api.post("Album::setTitle", {
+		api.v2.setAlbumTitle({
 			albumIDs: albumIDs,
 			title: newTitle
 		});
@@ -2638,12 +2655,12 @@ album.shareUsers = function (albumID) {
 		});
 
 		if (sharingToDelete.length > 0) {
-			api.delete("Sharing::delete", {
+			api.v2.sharingDelete({
 				shareIDs: sharingToDelete
 			});
 		}
 		if (sharingToAdd.length > 0) {
-			api.post("Sharing::add", {
+			api.v2.sharingAdd({
 				albumIDs: [albumID],
 				userIDs: sharingToAdd
 			});
@@ -2774,7 +2791,7 @@ album.qrCode = function () {
  * @returns {void}
  */
 album.getArchive = function (albumIDs) {
-	location.href = "api/Album::getArchive?albumIDs=" + albumIDs.join();
+	location.href = "api/albums/" + albumIDs.join() + "/archive";
 };
 
 /**
@@ -2827,7 +2844,7 @@ album.delete = function (albumIDs) {
 	action.fn = function () {
 		basicModal.close();
 
-		api.delete("Album::delete", {
+		api.v2.deleteAlbums({
 			albumIDs: albumIDs
 		}, function () {
 			if (visible.albums()) {
@@ -2909,7 +2926,7 @@ album.merge = function (albumIDs, albumID) {
 	var action = function action() {
 		basicModal.close();
 
-		api.post("Album::merge", {
+		api.v2.mergeAlbums({
 			albumID: albumID,
 			albumIDs: albumIDs
 		}, function () {
@@ -2948,7 +2965,7 @@ album.setAlbum = function (albumIDs, albumID) {
 	var action = function action() {
 		basicModal.close();
 
-		api.post("Album::move", {
+		api.v2.moveAlbums({
 			albumID: albumID,
 			albumIDs: albumIDs
 		}, function () {
@@ -10294,7 +10311,7 @@ sharing.add = function () {
 		return;
 	}
 
-	api.post("Sharing::add", params, function () {
+	api.v2.sharingAdd(params, function () {
 		loadingBar.show("success", "Sharing updated!");
 		sharing.list(); // reload user list
 	});
@@ -10317,7 +10334,7 @@ sharing.delete = function () {
 		loadingBar.show("error", "Select a sharing to remove!");
 		return;
 	}
-	api.delete("Sharing::delete", params, function () {
+	api.v2.sharingDelete(params, function () {
 		loadingBar.show("success", "Sharing removed!");
 		sharing.list(); // reload user list
 	});
@@ -11722,7 +11739,7 @@ upload.start = {
 				// This way, the server could also report its own progress of
 				// downloading the images.
 				// TODO: Use a streamed response (see description above).
-				api.post("Import::url", {
+				api.v2.importUrl({
 					urls: [data.url],
 					albumID: albumID
 				}, successHandler, null, errorHandler);
@@ -12082,7 +12099,7 @@ upload.start = {
 				$(firstRowStatusSelector).html(lychee.locale["UPLOAD_IMPORTING"]);
 
 				// TODO: Use a streamed response; see long comment in `import.url()` for the reasons
-				api.post("Import::url", {
+				api.v2.importUrl({
 					urls: files.map(function (file) {
 						return file.link;
 					}),

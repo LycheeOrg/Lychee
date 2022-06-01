@@ -9,7 +9,7 @@ class IntegerIDRule implements Rule
 	protected bool $isNullable;
 	protected bool $isRelaxed;
 
-	public function __construct(bool $isNullable, bool $isRelaxed = false)
+	public function __construct(bool $isNullable, bool $isRelaxed = true)
 	{
 		$this->isNullable = $isNullable;
 		$this->isRelaxed = $isRelaxed;

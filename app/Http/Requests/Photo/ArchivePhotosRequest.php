@@ -9,7 +9,7 @@ use App\Http\Requests\Contracts\HasSizeVariant;
 use App\Http\Requests\Traits\HasPhotosTrait;
 use App\Http\Requests\Traits\HasSizeVariantTrait;
 use App\Models\Photo;
-use App\Rules\RandomIDListRule;
+use App\Rules\IntegerIDListRule;
 use App\Rules\SizeVariantRule;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -32,7 +32,7 @@ class ArchivePhotosRequest extends BaseApiRequest implements HasPhotos, HasSizeV
 	public function rules(): array
 	{
 		return [
-			HasPhotos::PHOTO_IDS_ATTRIBUTE => ['required', new RandomIDListRule()],
+			HasPhotos::PHOTO_IDS_ATTRIBUTE => ['required', new IntegerIDListRule()],
 			HasSizeVariant::SIZE_VARIANT_ATTRIBUTE => ['required', new SizeVariantRule()],
 		];
 	}

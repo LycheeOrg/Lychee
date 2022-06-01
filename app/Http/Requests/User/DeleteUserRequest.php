@@ -13,8 +13,6 @@ class DeleteUserRequest extends BaseApiRequest implements HasUser
 {
 	use HasUserTrait;
 
-	public const ID_ATTRIBUTE = 'userID';
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -33,7 +31,7 @@ class DeleteUserRequest extends BaseApiRequest implements HasUser
 	public function rules(): array
 	{
 		return [
-			self::ID_ATTRIBUTE => ['required', new IntegerIDRule(false)],
+			HasUser::USER_ID_ATTRIBUTE => ['required', new IntegerIDRule(false)],
 		];
 	}
 
@@ -42,6 +40,6 @@ class DeleteUserRequest extends BaseApiRequest implements HasUser
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->user2 = User::query()->findOrFail($values[self::ID_ATTRIBUTE]);
+		$this->user2 = User::query()->findOrFail($values[HasUser::USER_ID_ATTRIBUTE]);
 	}
 }

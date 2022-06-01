@@ -890,6 +890,8 @@
 
 "use strict";
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 /**
  * @description This module communicates with Lychee's API
  */
@@ -1240,6 +1242,9 @@ api.createV2API = function (endpoint, method) {
 		var url = endpoint;
 		for (var param in params) {
 			if (url.includes("{" + param + "}")) {
+				if (_typeof(params[param]) === Array) {
+					params[param] = params[param].join();
+				}
 				url = url.replace("{" + param + "}", params[param]);
 				delete params[param];
 			}
@@ -1363,13 +1368,15 @@ api.v2 = {
 	/** @type APIV2Call */
 	importServer: api.createV2API("import/server", "POST"),
 	/** @type APIV2Call */
+	importUrl: api.createV2API("import/url", "POST"),
+	/** @type APIV2Call */
 	importServerCancel: api.createV2API("import/server/cancel", "POST"),
 	/** @type APIV2Call */
 	frameSettings: api.createV2API("frame/settings", "GET"),
 	/** @type APIV2Call */
 	albumsTree: api.createV2API("albums/tree", "GET"),
 	/** @type APIV2Call */
-	albumsPosition: api.createV2API("albums/position", "GET"),
+	albumsPosition: api.createV2API("albums/positions", "GET"),
 	/** @type APIV2Call */
 	getAlbums: api.createV2API("albums", "GET"),
 	/** @type APIV2Call */
@@ -1402,6 +1409,10 @@ api.v2 = {
 	setLogin: api.createV2API("settings/login", "POST"),
 	/** @type APIV2Call */
 	sharingList: api.createV2API("sharing", "GET"),
+	/** @type APIV2Call */
+	sharingAdd: api.createV2API("sharing", "POST"),
+	/** @type APIV2Call */
+	sharingDelete: api.createV2API("sharing/{shareIDs}", "DELETE"),
 	/** @type APIV2Call */
 	diagnostics: api.createV2API("diagnostics", "GET"),
 	/** @type APIV2Call */
@@ -1463,7 +1474,15 @@ api.v2 = {
 	/** @type APIV2Call */
 	nsfwVisible: api.createV2API("settings/nsfwVisible", "POST"),
 	/** @type APIV2Call */
-	newPhotosNotification: api.createV2API("settings/newPhotosNotification", "POST")
+	newPhotosNotification: api.createV2API("settings/newPhotosNotification", "POST"),
+	/** @type APIV2Call */
+	mergeAlbums: api.createV2API("album/{albumID}/merge", "POST"),
+	/** @type APIV2Call */
+	moveAlbums: api.createV2API("album/{albumID}/move", "POST"),
+	/** @type APIV2Call */
+	deleteAlbums: api.createV2API("albums/{albumIDs}", "DELETE"),
+	/** @type APIV2Call */
+	setAlbumTitle: api.createV2API("albums/{albumIDs}/title", "POST")
 };
 
 var csrf = {};

@@ -11,15 +11,13 @@ class SetUserSettingsRequest extends AbstractUserRequest implements HasUser
 {
 	use HasUserTrait;
 
-	public const ID_ATTRIBUTE = 'userID';
-
 	/**
 	 * {@inheritDoc}
 	 */
 	public function rules(): array
 	{
 		$rules = parent::rules();
-		$rules[self::ID_ATTRIBUTE] = ['required', new IntegerIDRule(false)];
+		$rules[HasUser::USER_ID_ATTRIBUTE] = ['required', new IntegerIDRule(false)];
 
 		return $rules;
 	}
@@ -30,6 +28,6 @@ class SetUserSettingsRequest extends AbstractUserRequest implements HasUser
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		parent::processValidatedValues($values, $files);
-		$this->user2 = User::query()->findOrFail($values[self::ID_ATTRIBUTE]);
+		$this->user2 = User::query()->findOrFail($values[HasUser::USER_ID_ATTRIBUTE]);
 	}
 }
