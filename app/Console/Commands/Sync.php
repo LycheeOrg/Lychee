@@ -45,9 +45,9 @@ class Sync extends Command
 		// Fill signature with default values from user configuration
 		$this->signature = \Safe\sprintf(
 			$this->signature,
-			Configs::get_value('delete_imported', '0'),
-			Configs::get_value('import_via_symlink', '0'),
-			Configs::get_value('skip_duplicates', '0')
+			Configs::getValueAsString('delete_imported', '0'),
+			Configs::getValueAsString('import_via_symlink', '0'),
+			Configs::getValueAsString('skip_duplicates', '0')
 		);
 		parent::__construct();
 	}

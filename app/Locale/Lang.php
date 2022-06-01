@@ -19,7 +19,7 @@ class Lang
 	{
 		$this->langFactory = $langFactory;
 
-		$this->code = strval(Configs::get_value('lang', 'en'));
+		$this->code = Configs::getValueAsString('lang', 'en');
 
 		$this->language = $langFactory->make($this->code);
 	}

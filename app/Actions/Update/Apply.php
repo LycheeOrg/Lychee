@@ -42,7 +42,7 @@ class Apply
 		if (Config::get('app.env') == 'production') {
 			// @codeCoverageIgnoreStart
 			// we cannot code cov this part. APP_ENV is dev in testing mode.
-			if (Configs::get_value('force_migration_in_production') == '1') {
+			if (Configs::getValueAsBool('force_migration_in_production')) {
 				Logs::warning(__METHOD__, __LINE__, 'Force update is production.');
 
 				return true;
@@ -70,7 +70,7 @@ class Apply
 	private function call_composer(array &$output): void
 	{
 		try {
-			if (Configs::get_value('apply_composer_update', '0') == '1') {
+			if (Configs::getValueAsBool('apply_composer_update', false)) {
 				// @codeCoverageIgnoreStart
 				Logs::warning(__METHOD__, __LINE__, 'Composer is called on update.');
 

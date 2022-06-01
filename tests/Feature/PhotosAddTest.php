@@ -37,11 +37,11 @@ class PhotosAddTest extends TestCase
 		$this->photos_tests = new PhotosUnitTest($this);
 		$this->albums_tests = new AlbumsUnitTest($this);
 
-		$this->hasExifToolsInit = (int) Configs::get_value('has_exiftool', 2);
+		$this->hasExifToolsInit = (int) Configs::getValue('has_exiftool', 2);
 		Configs::set('has_exiftool', '2');
 		$this->hasExifTools = Configs::hasExiftool();
 
-		$this->hasFFmpegInit = (int) Configs::get_value('has_ffmpeg', 2);
+		$this->hasFFmpegInit = (int) Configs::getValue('has_ffmpeg', 2);
 		Configs::set('has_ffmpeg', '2');
 		$this->hasFFmpeg = Configs::hasFFmpeg();
 
@@ -79,7 +79,13 @@ class PhotosAddTest extends TestCase
 		 * Check some Exif data
 		 */
 		$taken_at = Carbon::create(
-			2019, 6, 1, 1, 28, 25, '+02:00'
+			2019,
+			6,
+			1,
+			1,
+			28,
+			25,
+			'+02:00'
 		);
 		$response->assertJson([
 			'album_id' => null,
@@ -141,14 +147,14 @@ class PhotosAddTest extends TestCase
 	public function testImport()
 	{
 		// save initial value
-		$init_config_value = Configs::get_value('import_via_symlink');
+		$init_config_value = Configs::getValue('import_via_symlink');
 
 		// enable import via symlink option
 		Configs::set('import_via_symlink', '1');
-		static::assertEquals('1', Configs::get_value('import_via_symlink'));
+		static::assertEquals('1', Configs::getValue('import_via_symlink'));
 
 		$strRecent = Carbon::now()
-			->subDays(intval(Configs::get_value('recent_age', '1')))
+			->subDays(intval(Configs::getValue('recent_age', '1')))
 			->setTimezone('UTC')
 			->format('Y-m-d H:i:s');
 		$recentFilter = function (Builder $query) use ($strRecent) {

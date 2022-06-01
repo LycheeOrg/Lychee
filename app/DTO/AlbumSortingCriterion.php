@@ -26,8 +26,8 @@ class AlbumSortingCriterion extends SortingCriterion
 	{
 		/** @noinspection PhpUnhandledExceptionInspection */
 		return new self(
-			(string) Configs::get_value('sorting_albums_col', SortingCriterion::COLUMN_CREATED_AT),
-			(string) Configs::get_value('sorting_albums_order', SortingCriterion::ASC)
+			Configs::getValueAsString('sorting_albums_col', SortingCriterion::COLUMN_CREATED_AT),
+			Configs::getValueAsString('sorting_albums_order', SortingCriterion::ASC)
 		);
 	}
 }

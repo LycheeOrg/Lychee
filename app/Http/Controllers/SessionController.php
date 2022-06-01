@@ -99,7 +99,7 @@ class SessionController extends Controller
 		} else {
 			// Logged out
 			$return['config'] = $this->configFunctions->public();
-			if (Configs::get_value('hide_version_number', '1') != '0') {
+			if (Configs::getValueAsBool('hide_version_number', true)) {
 				$return['config']['version'] = '';
 			}
 			$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDOUT');

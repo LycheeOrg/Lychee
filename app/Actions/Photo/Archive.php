@@ -163,7 +163,7 @@ class Archive
 	{
 		$responseGenerator = function () use ($variant, $photos) {
 			$options = new \ZipStream\Option\Archive();
-			$options->setEnableZip64(Configs::get_value('zip64', '1') === '1');
+			$options->setEnableZip64(Configs::getValueAsBool('zip64', true));
 			$zip = new ZipStream(null, $options);
 
 			// We first need to scan the whole array of files to avoid

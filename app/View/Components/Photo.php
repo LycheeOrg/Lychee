@@ -54,7 +54,7 @@ class Photo extends Component
 		$this->class .= $isVideo ? ' video' : '';
 		$this->class .= $isLivePhoto ? ' livephoto' : '';
 
-		$this->layout = Configs::get_value('layout', '0') == '0';
+		$this->layout = Configs::getValueAsInt('layout', 0) == 0;
 
 		// TODO: Don't hardcode paths
 		if ($data['sizeVariants']['thumb']['url'] == 'uploads/thumb/') {

@@ -55,8 +55,8 @@ class Generate
 	 */
 	public function do(): Collection
 	{
-		$rss_recent = intval(Configs::get_value('rss_recent_days', '7'));
-		$rss_max = (int) Configs::get_value('rss_max_items', '100');
+		$rss_recent = Configs::getValueAsInt('rss_recent_days', 7);
+		$rss_max = Configs::getValueAsInt('rss_max_items', 100);
 		try {
 			$nowMinus = Carbon::now()->subDays($rss_recent)->toDateTimeString();
 		} catch (UnitException|InvalidFormatException $e) {

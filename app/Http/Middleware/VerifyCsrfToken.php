@@ -40,7 +40,7 @@ class VerifyCsrfToken extends Middleware
 			 * default value is ''
 			 * we force it in case of the migration has not been done.
 			 */
-			$apiKey = strval(Configs::get_value('api_key', ''));
+			$apiKey = Configs::getValueAsString('api_key');
 
 			/*
 			 * if apiKey is the empty string we directly return the parent handle.

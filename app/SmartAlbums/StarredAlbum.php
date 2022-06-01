@@ -16,7 +16,7 @@ class StarredAlbum extends BaseSmartAlbum
 		parent::__construct(
 			self::ID,
 			self::TITLE,
-			Configs::get_value('public_starred', '0') === '1',
+			Configs::getValueAsBool('public_starred', false),
 			fn (Builder $q) => $q->where('photos.is_starred', '=', true)
 		);
 	}

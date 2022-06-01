@@ -125,7 +125,7 @@ class PhotoController extends Controller
 		// deleted
 		$create = new Create(new ImportMode(
 			true,
-			Configs::get_value('skip_duplicates', '0') === '1'
+			Configs::getValueAsBool('skip_duplicates', false)
 		));
 
 		return $create->add($copiedFile, $request->album());

@@ -60,9 +60,7 @@ class LycheeVersion
 	 */
 	public function getDBVersion(): Version
 	{
-		return Version::createFromInt(
-			intval(Configs::get_value('version', '040000'))
-		);
+		return Version::createFromInt(Configs::getValueAsInt('version', 40000));
 	}
 
 	/**

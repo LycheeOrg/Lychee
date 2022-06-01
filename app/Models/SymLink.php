@@ -75,7 +75,7 @@ class SymLink extends Model
 	 */
 	public function scopeExpired(Builder $query): Builder
 	{
-		$expiration = now()->subDays(intval(Configs::get_value('SL_life_time_days', '3')));
+		$expiration = now()->subDays(Configs::getValueAsInt('SL_life_time_days', 3));
 
 		return $query->where('created_at', '<', $this->fromDateTime($expiration));
 	}

@@ -152,15 +152,15 @@ class SizeVariant extends Model
 	public function getUrlAttribute(): string
 	{
 		if (
-			(AccessControl::is_admin() && Configs::get_value('SL_for_admin', '0') === '0') ||
-			Configs::get_value('SL_enable', '0') == '0'
+			(AccessControl::is_admin() && Configs::getValueAsBool('SL_for_admin', false) == false) ||
+			Configs::getValueAsBool('SL_enable', false) == false
 		) {
 			return Storage::url($this->short_path);
 		}
 
 		// In order to allow a grace period, we create a new symbolic link,
 		// if the most recent existing link has reached 2/3 of its lifetime
-		$maxLifetime = intval(Configs::get_value('SL_life_time_days', '3')) * 24 * 60 * 60;
+		$maxLifetime = Configs::getValueAsInt('SL_life_time_days', 3) * 24 * 60 * 60;
 		$gracePeriod = $maxLifetime / 3;
 
 		$storageAdapter = Storage::disk()->getDriver()->getAdapter();

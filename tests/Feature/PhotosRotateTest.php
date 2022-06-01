@@ -55,7 +55,7 @@ class PhotosRotateTest extends TestCase
 			],
 		]);
 
-		$editor_enabled_value = Configs::get_value('editor_enabled');
+		$editor_enabled_value = Configs::getValue('editor_enabled');
 		Configs::set('editor_enabled', '0');
 		$response = $this->postJson('/api/PhotoEditor::rotate', [
 			'photoID' => $id,

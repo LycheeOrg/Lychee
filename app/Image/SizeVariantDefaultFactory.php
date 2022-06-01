@@ -180,7 +180,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		if (!file_exists($this->referenceFullPath) || \Safe\filesize($this->referenceFullPath) == 0) {
 			throw new MediaFileOperationException($errMsg);
 		}
-		if (Configs::get_value('lossless_optimization', '0') == '1') {
+		if (Configs::getValueAsBool('lossless_optimization', false)) {
 			ImageOptimizer::optimize($this->referenceFullPath);
 		}
 	}
@@ -347,20 +347,20 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	{
 		switch ($sizeVariant) {
 			case SizeVariant::MEDIUM2X:
-				$maxWidth = 2 * intval(Configs::get_value('medium_max_width'));
-				$maxHeight = 2 * intval(Configs::get_value('medium_max_height'));
+				$maxWidth = 2 * Configs::getValueAsInt('medium_max_width');
+				$maxHeight = 2 * Configs::getValueAsInt('medium_max_height');
 				break;
 			case SizeVariant::MEDIUM:
-				$maxWidth = intval(Configs::get_value('medium_max_width'));
-				$maxHeight = intval(Configs::get_value('medium_max_height'));
+				$maxWidth = Configs::getValueAsInt('medium_max_width');
+				$maxHeight = Configs::getValueAsInt('medium_max_height');
 				break;
 			case SizeVariant::SMALL2X:
-				$maxWidth = 2 * intval(Configs::get_value('small_max_width'));
-				$maxHeight = 2 * intval(Configs::get_value('small_max_height'));
+				$maxWidth = 2 * Configs::getValueAsInt('small_max_width');
+				$maxHeight = 2 * Configs::getValueAsInt('small_max_height');
 				break;
 			case SizeVariant::SMALL:
-				$maxWidth = intval(Configs::get_value('small_max_width'));
-				$maxHeight = intval(Configs::get_value('small_max_height'));
+				$maxWidth = Configs::getValueAsInt('small_max_width');
+				$maxHeight = Configs::getValueAsInt('small_max_height');
 				break;
 			case SizeVariant::THUMB2X:
 				$maxWidth = self::THUMBNAIL2X_DIM;
@@ -408,9 +408,9 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		}
 
 		return match ($sizeVariant) {
-			SizeVariant::MEDIUM2X => Configs::get_value('medium_2x', 0) == 1,
-			SizeVariant::SMALL2X => Configs::get_value('small_2x', 0) == 1,
-			SizeVariant::THUMB2X => Configs::get_value('thumb_2x', 0) == 1,
+			SizeVariant::MEDIUM2X => Configs::getValueAsBool('medium_2x', false),
+			SizeVariant::SMALL2X => Configs::getValueAsBool('small_2x', false),
+			SizeVariant::THUMB2X => Configs::getValueAsBool('thumb_2x', false),
 			SizeVariant::SMALL, SizeVariant::MEDIUM, SizeVariant::THUMB => true,
 			default => throw new InvalidSizeVariantException('unknown size variant: ' . $sizeVariant),
 		};

@@ -378,7 +378,7 @@ abstract class MediaFile
 	protected static function getSanitizedAcceptedRawFileExtensions(): array
 	{
 		if (self::$cachedAcceptedRawFileExtensions === null) {
-			$tmp = explode('|', strtolower(strval(Configs::get_value('raw_formats', ''))));
+			$tmp = explode('|', strtolower(Configs::getValueAsString('raw_formats', '')));
 			// Explode may return `false` on error
 			// Our supported file extensions always take precedence over any
 			// custom configured extension

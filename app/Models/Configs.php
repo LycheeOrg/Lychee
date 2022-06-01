@@ -145,7 +145,7 @@ class Configs extends Model
 	 *
 	 * @return int|bool|string|null
 	 */
-	public static function get_value(string $key, int|bool|string|null $default = null): int|bool|string|null
+	public static function getValue(string $key, int|bool|string|null $default = null): int|bool|string|null
 	{
 		if (count(self::$cache) == 0) {
 			self::get();
@@ -161,6 +161,46 @@ class Configs extends Model
 		}
 
 		return self::$cache[$key];
+	}
+
+	/**
+	 * Get string configuration value.
+	 *
+	 * @param string $key
+	 * @param string $default
+	 *
+	 * @return string
+	 */
+	public static function getValueAsString(string $key, string $default = ''): string
+	{
+		return strval(self::getValue($key, $default));
+	}
+
+	/**
+	 * Get string configuration value.
+	 *
+	 * @param string $key
+	 * @param int    $default
+	 *
+	 * @return int
+	 */
+	public static function getValueAsInt(string $key, int $default = 0): int
+	{
+		return intval(self::getValue($key, $default));
+	}
+
+	/**
+	 * Get bool configuration value
+	 * ! tricky logic.
+	 *
+	 * @param string $key
+	 * @param bool   $default
+	 *
+	 * @return bool
+	 */
+	public static function getValueAsBool(string $key, bool $default = false): bool
+	{
+		return self::getValue($key, $default ? '1' : '0') == '1';
 	}
 
 	/**

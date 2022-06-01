@@ -14,7 +14,7 @@ class Notify
 {
 	public function do(Photo $photo): void
 	{
-		if (Configs::get_value('new_photos_notification', '0') !== '1') {
+		if (Configs::getValueAsBool('new_photos_notification', false) == false) {
 			return;
 		}
 

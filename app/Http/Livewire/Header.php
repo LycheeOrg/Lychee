@@ -14,7 +14,7 @@ class Header extends Component
 
 	public function mount(?string $mode = 'albums', $album = null)
 	{
-		$this->title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
+		$this->title = Configs::getValueAsString('site_title', Config::get('defines.defaults.SITE_TITLE'));
 		if ($album != null) {
 			$this->title = $album->title;
 		}
@@ -29,4 +29,3 @@ class Header extends Component
 		return view('livewire.header');
 	}
 }
-

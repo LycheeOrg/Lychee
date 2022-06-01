@@ -44,7 +44,7 @@ class PhotosAddedNotification extends Command
 	 */
 	public function handle(): int
 	{
-		if (Configs::get_value('new_photos_notification', '0') !== '1') {
+		if (Configs::getValue('new_photos_notification', false) == false) {
 			return 0;
 		}
 		$users = User::query()->whereNotNull('email')->get();

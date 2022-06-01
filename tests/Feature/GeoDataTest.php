@@ -48,7 +48,12 @@ class GeoDataTest extends TestCase
 		 * \PHPExif\Exif does not use it.
 		 */
 		$taken_at = Carbon::create(
-			2011, 8, 17, 16, 39, 37
+			2011,
+			8,
+			17,
+			16,
+			39,
+			37
 		);
 		$response->assertJson(
 			[
@@ -98,16 +103,16 @@ class GeoDataTest extends TestCase
 
 		// now we test position Data
 		// save initial value
-		$map_display_value = Configs::get_value('map_display');
+		$map_display_value = Configs::getValue('map_display');
 
 		// set to 0
 		Configs::set('map_display', '0');
-		static::assertEquals('0', Configs::get_value('map_display'));
+		static::assertEquals('0', Configs::getValue('map_display'));
 		$albums_tests->AlbumsGetPositionDataFull(); // we need to fix this
 
 		// set to 1
 		Configs::set('map_display', '1');
-		static::assertEquals('1', Configs::get_value('map_display'));
+		static::assertEquals('1', Configs::getValue('map_display'));
 		$response = $albums_tests->AlbumsGetPositionDataFull();
 		$responseObj = json_decode($response->getContent());
 		static::assertObjectHasAttribute('photos', $responseObj);
@@ -116,12 +121,12 @@ class GeoDataTest extends TestCase
 
 		// set to 0
 		Configs::set('map_display', '0');
-		static::assertEquals('0', Configs::get_value('map_display'));
+		static::assertEquals('0', Configs::getValue('map_display'));
 		$albums_tests->AlbumGetPositionDataFull($albumID); // we need to fix this
 
 		// set to 1
 		Configs::set('map_display', '1');
-		static::assertEquals('1', Configs::get_value('map_display'));
+		static::assertEquals('1', Configs::getValue('map_display'));
 		$response = $albums_tests->AlbumGetPositionDataFull($albumID);
 		$responseObj = json_decode($response->getContent());
 		static::assertObjectHasAttribute('photos', $responseObj);

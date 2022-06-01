@@ -33,7 +33,7 @@ class DemoController extends Controller
 	 */
 	public function js()
 	{
-		if (Configs::get_value('gen_demo_js', '0') != '1') {
+		if (Configs::getValueAsBool('gen_demo_js', false) == false) {
 			return redirect()->route('home');
 		}
 

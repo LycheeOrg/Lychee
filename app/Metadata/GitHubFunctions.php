@@ -187,7 +187,7 @@ class GitHubFunctions
 	public function checkUpdates(): array
 	{
 		// add a setting to do this check only once per day ?
-		if (Configs::get_value('check_for_updates', '0') == '0') {
+		if (Configs::getValueAsBool('check_for_updates', false) == false) {
 			return [
 				'update_json' => 0,
 				'update_available' => false,
@@ -201,7 +201,7 @@ class GitHubFunctions
 			return [
 				'update_json' => intval($json->lychee->version),
 				'update_available' => (
-					(intval(Configs::get_value('version', '40000'))) <
+					(Configs::getValueAsInt('version', 40000)) <
 					$json->lychee->version
 				),
 			];

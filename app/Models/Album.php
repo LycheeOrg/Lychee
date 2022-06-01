@@ -164,7 +164,7 @@ class Album extends BaseAlbum implements Node
 	protected function getLicenseAttribute(string $value): string
 	{
 		if ($value === 'none') {
-			return strval(Configs::get_value('default_license', 'none'));
+			return Configs::getValueAsString('default_license', 'none');
 		}
 
 		return $value;

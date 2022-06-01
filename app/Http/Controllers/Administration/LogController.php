@@ -24,7 +24,7 @@ class LogController extends Controller
 	{
 		return Logs::query()
 			->orderBy('id', $order)
-			->limit(intval(Configs::get_value('log_max_num_line', 1000)))
+			->limit(Configs::getValueAsInt('log_max_num_line', 1000))
 			->get();
 	}
 

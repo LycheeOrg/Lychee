@@ -50,7 +50,7 @@ class Check
 			// @codeCoverageIgnoreEnd
 		}
 
-		if (Configs::get_value('allow_online_git_pull', '0') == '0') {
+		if (Configs::getValueAsBool('allow_online_git_pull', false) == false) {
 			throw new ConfigurationException('Online updates are disabled by configuration');
 		}
 

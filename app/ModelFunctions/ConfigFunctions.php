@@ -18,21 +18,21 @@ class ConfigFunctions
 	public function get_pages_infos(): array
 	{
 		$infos = [
-			'owner' => Configs::get_value('landing_owner'),
-			'title' => Configs::get_value('landing_title'),
-			'subtitle' => Configs::get_value('landing_subtitle'),
-			'facebook' => Configs::get_value('landing_facebook'),
-			'flickr' => Configs::get_value('landing_flickr'),
-			'twitter' => Configs::get_value('landing_twitter'),
-			'instagram' => Configs::get_value('landing_instagram'),
-			'youtube' => Configs::get_value('landing_youtube'),
-			'background' => Configs::get_value('landing_background'),
-			'copyright_enable' => Configs::get_value('site_copyright_enable'),
-			'copyright_year' => Configs::get_value('site_copyright_begin'),
-			'additional_footer_text' => Configs::get_value('additional_footer_text'),
+			'owner' => Configs::getValueAsString('landing_owner'),
+			'title' => Configs::getValueAsString('landing_title'),
+			'subtitle' => Configs::getValueAsString('landing_subtitle'),
+			'facebook' => Configs::getValueAsString('landing_facebook'),
+			'flickr' => Configs::getValueAsString('landing_flickr'),
+			'twitter' => Configs::getValueAsString('landing_twitter'),
+			'instagram' => Configs::getValueAsString('landing_instagram'),
+			'youtube' => Configs::getValueAsString('landing_youtube'),
+			'background' => Configs::getValueAsString('landing_background'),
+			'copyright_enable' => Configs::getValueAsString('site_copyright_enable'),
+			'copyright_year' => Configs::getValueAsString('site_copyright_begin'),
+			'additional_footer_text' => Configs::getValueAsString('additional_footer_text'),
 		];
-		if (Configs::get_value('site_copyright_begin') != Configs::get_value('site_copyright_end')) {
-			$infos['copyright_year'] = Configs::get_value('site_copyright_begin') . '-' . Configs::get_value('site_copyright_end');
+		if (Configs::getValueAsString('site_copyright_begin') != Configs::getValueAsString('site_copyright_end')) {
+			$infos['copyright_year'] = Configs::getValueAsString('site_copyright_begin') . '-' . Configs::getValueAsString('site_copyright_end');
 		}
 
 		return $infos;
