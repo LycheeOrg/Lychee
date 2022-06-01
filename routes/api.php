@@ -45,7 +45,7 @@ Route::post('/albums/{albumIDs}/title', [AlbumController::class, 'setTitle']);
 
 Route::get('/frame/settings', [FrameController::class, 'getSettings']);
 
-Route::post('/import/url', [ImportController::class, 'url']); // TODO uses list
+Route::post('/import/url', [ImportController::class, 'url']);
 Route::post('/import/server', [ImportController::class, 'server'])->middleware('admin');
 Route::post('/import/server/cancel', [ImportController::class, 'serverCancel'])->middleware('admin');
 
@@ -53,24 +53,25 @@ Route::get('/legacy/translate', [LegacyController::class, 'translateLegacyModelI
 
 Route::get('/photo/random', [PhotoController::class, 'getRandom']);
 Route::get('/photo/{photoID}', [PhotoController::class, 'get']);
-Route::post('/Photo::setTitle', [PhotoController::class, 'setTitle']); // TODO uses list
 Route::post('/photo/{photoID}/description', [PhotoController::class, 'setDescription']);
-Route::post('/Photo::setStar', [PhotoController::class, 'setStar']); // TODO uses list
 Route::post('/photo/{photoID}/public', [PhotoController::class, 'setPublic']);
-Route::post('/Photo::setAlbum', [PhotoController::class, 'setAlbum']); // TODO uses list
-Route::post('/Photo::setTags', [PhotoController::class, 'setTags']); // TODO uses list
 Route::post('/photo', [PhotoController::class, 'add'])
 	->withoutMiddleware(['content_type:json'])
 	->middleware(['content_type:multipart']);
-Route::delete('/Photo::delete', [PhotoController::class, 'delete']); // TODO uses list
-Route::post('/Photo::duplicate', [PhotoController::class, 'duplicate']); // TODO uses list
 Route::post('/photo/{photoID}/license', [PhotoController::class, 'setLicense']);
-Route::get('/Photo::getArchive', [PhotoController::class, 'getArchive']) // TODO uses list
-	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
-	->middleware(['local_storage', 'accept_content_type:any']);
 Route::post('/photo/clearSymLink', [PhotoController::class, 'clearSymLink']);
 
 Route::post('/photo/{photoID}/editor/rotate/{direction}', [PhotoEditorController::class, 'rotate']);
+
+Route::post('/photos/{photoIDs}/title', [PhotoController::class, 'setTitle']);
+Route::post('/photos/{photoIDs}/star', [PhotoController::class, 'setStar']);
+Route::delete('/photos/{photoIDs}', [PhotoController::class, 'delete']);
+Route::post('/photos/{photoIDs}/album', [PhotoController::class, 'setAlbum']);
+Route::post('/photos/{photoIDs}/duplicate', [PhotoController::class, 'duplicate']);
+Route::get('/photos/{photoIDs}/archive', [PhotoController::class, 'getArchive'])
+->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
+	->middleware(['local_storage', 'accept_content_type:any']);
+Route::post('/photos/{photoIDs}/tags', [PhotoController::class, 'setTags']);
 
 Route::get('/search/{term}', [SearchController::class, 'run']);
 

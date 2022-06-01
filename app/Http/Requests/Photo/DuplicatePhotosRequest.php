@@ -10,6 +10,7 @@ use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Http\Requests\Traits\HasPhotosTrait;
 use App\Models\Album;
 use App\Models\Photo;
+use App\Rules\RandomIDListRule;
 use App\Rules\RandomIDRule;
 
 class DuplicatePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum
@@ -32,7 +33,7 @@ class DuplicatePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlb
 	public function rules(): array
 	{
 		return [
-			HasPhotos::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
+			HasPhotos::PHOTO_IDS_ATTRIBUTE => ['required', new RandomIDListRule()],
 			HasPhotos::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
 			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 		];
@@ -44,7 +45,7 @@ class DuplicatePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlb
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->photos = Photo::with(['size_variants'])->findOrFail(
-			$values[HasPhotos::PHOTO_IDS_ATTRIBUTE]
+			explode(',', $values[HasPhotos::PHOTO_IDS_ATTRIBUTE])
 		);
 		$targetAlbumID = $values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE];
 		$this->album = empty($targetAlbumID) ?

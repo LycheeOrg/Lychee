@@ -8,6 +8,7 @@ use App\Http\Requests\Contracts\HasTitle;
 use App\Http\Requests\Traits\HasPhotosTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
 use App\Models\Photo;
+use App\Rules\RandomIDListRule;
 use App\Rules\RandomIDRule;
 use App\Rules\TitleRule;
 
@@ -30,7 +31,7 @@ class SetPhotosTitleRequest extends BaseApiRequest implements HasPhotos, HasTitl
 	public function rules(): array
 	{
 		return [
-			HasPhotos::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
+			HasPhotos::PHOTO_IDS_ATTRIBUTE => ['required', new RandomIDListRule()],
 			HasPhotos::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
 			HasTitle::TITLE_ATTRIBUTE => ['required', new TitleRule()],
 		];

@@ -6,6 +6,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPhotos;
 use App\Http\Requests\Traits\HasPhotosTrait;
 use App\Models\Photo;
+use App\Rules\RandomIDListRule;
 use App\Rules\RandomIDRule;
 
 /**
@@ -32,7 +33,7 @@ class SetPhotosStarredRequest extends BaseApiRequest implements HasPhotos
 	public function rules(): array
 	{
 		return [
-			HasPhotos::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
+			HasPhotos::PHOTO_IDS_ATTRIBUTE => ['required', new RandomIDListRule()],
 			HasPhotos::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
 			self::IS_STARRED_ATTRIBUTE => 'required|boolean',
 		];
@@ -43,7 +44,7 @@ class SetPhotosStarredRequest extends BaseApiRequest implements HasPhotos
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photos = Photo::query()->findOrFail($values[HasPhotos::PHOTO_IDS_ATTRIBUTE]);
+		$this->photos = Photo::query()->findOrFail(explode(',', $values[HasPhotos::PHOTO_IDS_ATTRIBUTE]));
 		$this->isStarred = static::toBoolean($values[self::IS_STARRED_ATTRIBUTE]);
 	}
 
