@@ -4,6 +4,7 @@ namespace App\Actions\Sharing;
 
 use App\DTO\Shares;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Models\Album;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -72,7 +73,7 @@ class ListShare
 		}
 	}
 
-	private function breadcrumbPath(object $album): string
+	private function breadcrumbPath(Album $album): string
 	{
 		$title = [$album->title];
 		$parent = $album->parent;

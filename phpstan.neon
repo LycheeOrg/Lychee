@@ -22,7 +22,6 @@ parameters:
 	paths:
 		- app
 	excludePaths:
-		- app/Relations/*
 		- app/View/*
 		- app/Http/Livewire/*
 	ignoreErrors:
@@ -33,18 +32,19 @@ parameters:
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::insert\(\).#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::select\(\).#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::orderBy\(\)#'
-		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::where(Not)?(Null|In)?\(\).#'
+		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::where(Not)?(Null|In|Between)?\(\).#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::inRandomOrder\(\)#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::delete\(\)#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::without\(\)#'
-		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::whereBetween\(\)#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::count\(\).#'
+		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::from\(\).#'
+		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::join\(\).#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::update\(\)#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::with(Only)?\(\)#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::getLft\(\).#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::getRgt\(\).#'
-		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::descendants\(\).#'
-		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::getLftName\(\).#'
+		# - '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::descendants\(\).#'
+		# - '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::getLftName\(\).#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::newNestedSetQuery\(\).#'
 		- '#Call to private method truncate\(\) of parent class Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>.#'
 		- '#Call to private method limit\(\) of parent class Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>.#'
@@ -53,7 +53,7 @@ parameters:
 		- '#Call to private method count\(\) of parent class Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>.#'
 		- '#Call to private method take\(\) of parent class Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>.#'
 		- '#Call to private method from\(\) of parent class Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>.#'
-		- '#Call to private method where(Not)?(Null|In|Exists)?\(\) of parent class Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>.#'
+		- '#Call to private method where(Not)?(Null|In|Exists|Column)?\(\) of parent class Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>.#'
 		- '#Call to protected method asDateTime\(\) of class Illuminate\\Database\\Eloquent\\Model.#'
 		- '#Dynamic call to static method Illuminate\\Http\\Request::validate\(\)#'
 
@@ -61,6 +61,11 @@ parameters:
 		- '#Return type \(Illuminate\\Support\\Carbon\|null\) of method App\\Models\\.*::asDateTime\(\) should be covariant with return type \(Illuminate\\Support\\Carbon\) of method Illuminate\\Database\\Eloquent\\Model::asDateTime\(\)#'
 		- '#Return type \(App\\Models\\Photo\) of method App\\Models\\Photo::replicate\(\) should be covariant with return type \(static\(.*\)\) of method Illuminate\\Database\\Eloquent\\Model::replicate\(\)#'
 		- '#Return type \(Illuminate\\Support\\Collection&iterable<App\\Contracts\\AbstractAlbum>\) of method App\\Http\\Requests\\Album\\.*::albums\(\) should be covariant with return type \(Illuminate\\Support\\Collection&iterable<App\\Models\\(Album|Extensions\\BaseAlbum)>\) of method App\\Http\\Requests\\Contracts\\HasAlbums<App\\Models\\(Album|Extensions\\BaseAlbum)>::albums\(\)#'
+		- '#Parameter \#1 \$column \(array<string>\|Closure\|Illuminate\\Database\\Query\\Expression\|string\) of method .* should be contravariant with parameter \$column \(array<int\|string, mixed>\|Closure\|Illuminate\\Database\\Query\\Expression\|string\) of method .*#'
+		- '#Parameter \#1 \$models \(array<.*>\) of method .*::initRelation\(\) should be contravariant with parameter \$models \(array\) of method .*::initRelation\(\)#'
+		- '#Parameter \#1 \$models \(array<.*>\) of method .*::match\(\) should be contravariant with parameter \$models \(array\) of method .*::match\(\)#'
+		- '#Parameter \#1 \$models \(array<.*>\) of method .*::addEagerConstraints\(\) should be contravariant with parameter \$models \(array\) of method .*::addEagerConstraints\(\)#'
+		- '#Parameter \#2 \$results \(Illuminate\\Database\\Eloquent\\Collection<.*>\) of method .*::match\(\) should be contravariant with parameter \$results \(Illuminate\\Database\\Eloquent\\Collection\) of method Illuminate\\Database\\Eloquent\\Relations\\Relation<Illuminate\\Database\\Eloquent\\Model>::match\(\)#'
 
 		- '#Method App\\Models\\Extensions\\.*::.* should return \$this\(.*\) but returns static\(.*\)#'
 		- '#Method App\\Models\\Extensions\\.*::.* should return \$this\(.*\) but returns Illuminate\\Database\\Eloquent\\Builder<.*>\.#'

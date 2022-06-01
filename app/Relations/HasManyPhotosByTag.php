@@ -92,7 +92,7 @@ class HasManyPhotosByTag extends HasManyPhotos
 
 		$photos = $photos->sortBy(
 			$sorting->column,
-			in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
+			in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
 			$sorting->order === SortingCriterion::DESC
 		)->values();
 		$album->setRelation($relation, $photos);

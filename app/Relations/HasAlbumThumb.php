@@ -178,7 +178,8 @@ class HasAlbumThumb extends Relation
 				->from('albums as covered_albums')
 				->join('base_albums', 'base_albums.id', '=', 'covered_albums.id');
 			if ($userID !== null) {
-				$builder->leftJoin('user_base_album',
+				$builder->leftJoin(
+					'user_base_album',
 					function (JoinClause $join) use ($userID) {
 						$join
 							->on('user_base_album.base_album_id', '=', 'base_albums.id')
@@ -267,9 +268,9 @@ class HasAlbumThumb extends Relation
 
 	public function getResults(): ?Thumb
 	{
-		/** @var Album $album */
+		/** @var Album|null $album */
 		$album = $this->parent;
-		if ($album === null || !$this->albumAuthorisationProvider->isAccessible($album)) {
+		if ($album == null || !$this->albumAuthorisationProvider->isAccessible($album)) {
 			return null;
 		}
 
@@ -281,7 +282,8 @@ class HasAlbumThumb extends Relation
 			return Thumb::createFromPhoto($album->cover);
 		} else {
 			return Thumb::createFromQueryable(
-				$this->query, $this->sorting
+				$this->query,
+				$this->sorting
 			);
 		}
 	}
