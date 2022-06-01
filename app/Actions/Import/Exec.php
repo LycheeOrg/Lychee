@@ -232,7 +232,7 @@ class Exec
 			foreach ($files as $file) {
 				$this->assertImportNotCancelled();
 				// Reset the execution timeout for every iteration.
-				set_time_limit(ini_get('max_execution_time'));
+				\Safe\set_time_limit((int) \Safe\ini_get('max_execution_time'));
 				// Report if we might be running out of memory.
 				$this->memWarningCheck();
 
