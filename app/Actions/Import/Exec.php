@@ -232,7 +232,28 @@ class Exec
 			foreach ($files as $file) {
 				$this->assertImportNotCancelled();
 				// Reset the execution timeout for every iteration.
-				\Safe\set_time_limit((int) \Safe\ini_get('max_execution_time'));
+				try {
+					\Safe\set_time_limit((int) \Safe\ini_get('max_execution_time'));
+				} catch (\Throwable) {
+					// ! If we do not catch this one this throws this error during tests:
+					/**
+					 * 1) Tests\Feature\PhotosAddTest::testImport
+					 * Expected response status code [204] but received 422.
+					 *
+					 * The following errors occurred during the request:
+					 *
+					 * {
+					 *     "message": "The given data was invalid.",
+					 *     "errors": {
+					 *         "photoIDs": [
+					 *             "The photo i ds field is required."
+					 *         ]
+					 *     }
+					 * }
+					 *
+					 * Failed asserting that 204 is identical to 422.
+					 */
+				}
 				// Report if we might be running out of memory.
 				$this->memWarningCheck();
 
