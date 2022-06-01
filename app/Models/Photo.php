@@ -79,7 +79,7 @@ class Photo extends Model implements HasRandomID
 	use HasAttributesPatch;
 	use HasRandomIDAndLegacyTimeBasedID;
 	use ThrowsConsistentExceptions {
-		ThrowsConsistentExceptions::delete as private internalDelete;
+		ThrowsConsistentExceptions::delete as public internalDelete;
 	}
 	use HasBidirectionalRelationships;
 	use UseFixedQueryBuilder;

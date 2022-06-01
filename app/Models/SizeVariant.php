@@ -58,7 +58,7 @@ class SizeVariant extends Model
 	use HasAttributesPatch;
 	use HasBidirectionalRelationships;
 	use ThrowsConsistentExceptions {
-		ThrowsConsistentExceptions::delete as private internalDelete;
+		ThrowsConsistentExceptions::delete as public internalDelete;
 	}
 	use UseFixedQueryBuilder;
 

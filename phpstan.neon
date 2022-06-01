@@ -66,6 +66,7 @@ parameters:
 		- '#Parameter \#1 \$models \(array<.*>\) of method .*::match\(\) should be contravariant with parameter \$models \(array\) of method .*::match\(\)#'
 		- '#Parameter \#1 \$models \(array<.*>\) of method .*::addEagerConstraints\(\) should be contravariant with parameter \$models \(array\) of method .*::addEagerConstraints\(\)#'
 		- '#Parameter \#2 \$results \(Illuminate\\Database\\Eloquent\\Collection<.*>\) of method .*::match\(\) should be contravariant with parameter \$results \(Illuminate\\Database\\Eloquent\\Collection\) of method Illuminate\\Database\\Eloquent\\Relations\\Relation<Illuminate\\Database\\Eloquent\\Model>::match\(\)#'
+		- '#Parameter \#1 \$albums \(array<.*>\) of method .*::addEagerConstraints\(\) should be contravariant with parameter \$models \(array\) of method .*::addEagerConstraints\(\)#'
 
 		- '#Method App\\Models\\Extensions\\.*::.* should return \$this\(.*\) but returns static\(.*\)#'
 		- '#Method App\\Models\\Extensions\\.*::.* should return \$this\(.*\) but returns Illuminate\\Database\\Eloquent\\Builder<.*>\.#'
