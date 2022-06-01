@@ -89,7 +89,7 @@ class FlysystemFile extends MediaFile
 	 */
 	public function move(string $newPath): void
 	{
-		if ($this->disk->move($this->relativePath, $newPath) === false) {
+		if (!$this->disk->move($this->relativePath, $newPath)) {
 			throw new MediaFileOperationException('could not move file');
 		}
 		$this->relativePath = $newPath;

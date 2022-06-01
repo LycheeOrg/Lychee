@@ -20,7 +20,7 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 
 		foreach ($paths as $path) {
 			$p = Storage::path($path);
-			if (Helpers::hasPermissions($p) === false) {
+			if (!Helpers::hasPermissions($p)) {
 				$errors[] = "Error: '" . $p . "' is missing or has insufficient read/write privileges";
 			}
 		}
@@ -29,10 +29,10 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 	public function userCSS(array &$errors): void
 	{
 		$p = Storage::disk('dist')->path('user.css');
-		if (Helpers::hasPermissions($p) === false) {
+		if (!Helpers::hasPermissions($p)) {
 			$errors[] = "Warning: '" . $p . "' does not exist or has insufficient read/write privileges.";
 			$p = Storage::disk('dist')->path('');
-			if (Helpers::hasPermissions($p) === false) {
+			if (!Helpers::hasPermissions($p)) {
 				$errors[] = "Warning: '" . $p . "' has insufficient read/write privileges.";
 			}
 		}

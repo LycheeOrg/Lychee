@@ -60,7 +60,7 @@ class Geodecoder
 	public static function decodeLocation(?float $latitude, ?float $longitude): ?string
 	{
 		// User does not want to decode location data
-		if (Configs::getValueAsBool('location_decoding', false) == false) {
+		if (!Configs::getValueAsBool('location_decoding', false)) {
 			return null;
 		}
 		if ($latitude === null || $longitude === null) {

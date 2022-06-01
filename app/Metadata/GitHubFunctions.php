@@ -187,7 +187,7 @@ class GitHubFunctions
 	public function checkUpdates(): array
 	{
 		// add a setting to do this check only once per day ?
-		if (Configs::getValueAsBool('check_for_updates', false) == false) {
+		if (!Configs::getValueAsBool('check_for_updates', false)) {
 			return [
 				'update_json' => 0,
 				'update_available' => false,

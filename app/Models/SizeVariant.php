@@ -152,8 +152,8 @@ class SizeVariant extends Model
 	public function getUrlAttribute(): string
 	{
 		if (
-			(AccessControl::is_admin() && Configs::getValueAsBool('SL_for_admin', false) == false) ||
-			Configs::getValueAsBool('SL_enable', false) == false
+			!AccessControl::is_admin() && Configs::getValueAsBool('SL_for_admin', false) ||
+			!Configs::getValueAsBool('SL_enable', false)
 		) {
 			return Storage::url($this->short_path);
 		}

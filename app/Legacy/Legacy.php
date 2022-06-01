@@ -123,7 +123,7 @@ class Legacy
 					' with legacy ID ' . $id .
 					' instead of new ID ' . $newID .
 					' from ' . $referer;
-				if (Configs::getValueAsBool('legacy_id_redirection', false) == false) {
+				if (!Configs::getValueAsBool('legacy_id_redirection', false)) {
 					$msg .= ' (translation disabled by configuration)';
 					throw new ConfigurationException($msg);
 				}

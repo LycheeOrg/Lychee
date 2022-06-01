@@ -40,7 +40,7 @@ class FrameController extends Controller
 		try {
 			Configs::get();
 
-			if (Configs::getValueAsBool('Mod_Frame', false) == false) {
+			if (!Configs::getValueAsBool('Mod_Frame', false)) {
 				return redirect()->route('home');
 			}
 
@@ -67,7 +67,7 @@ class FrameController extends Controller
 	{
 		Configs::get();
 
-		if (Configs::getValueAsBool('Mod_Frame', false) == false) {
+		if (!Configs::getValueAsBool('Mod_Frame', false)) {
 			throw new ConfigurationException('Frame is not enabled');
 		}
 

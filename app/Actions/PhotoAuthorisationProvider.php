@@ -215,7 +215,7 @@ class PhotoAuthorisationProvider
 	public function appendSearchabilityConditions(BaseBuilder $query, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
 	{
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
-		$maySearchPublic = Configs::getValueAsBool('public_photos_hidden', true) == false;
+		$maySearchPublic = !Configs::getValueAsBool('public_photos_hidden', true);
 
 		try {
 			// there must be no unreachable album between the origin and the photo

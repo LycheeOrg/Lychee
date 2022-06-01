@@ -435,12 +435,11 @@ class Photo extends Model implements HasRandomID
 		// The decision logic here is a merge of three formerly independent
 		// (and slightly different) approaches
 		if (
-			!AccessControl::is_current_user_or_admin($this->owner_id) &&
-			$this->isVideo() === false &&
+			!AccessControl::is_current_user_or_admin($this->owner_id) && !$this->isVideo() &&
 			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null) &&
 			(
 				($this->album_id != null && !$this->album->grants_full_photo) ||
-				($this->album_id == null && Configs::getValueAsBool('full_photo', true) == false)
+				($this->album_id == null && !Configs::getValueAsBool('full_photo', true))
 			)
 		) {
 			unset($result['size_variants']['original']['url']);

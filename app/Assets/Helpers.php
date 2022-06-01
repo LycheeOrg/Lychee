@@ -110,7 +110,7 @@ class Helpers
 		// https://github.com/electerious/Lychee/issues/482
 		list($extension) = explode(':', $extension, 2);
 
-		if (empty($extension) === false) {
+		if (!empty($extension)) {
 			$extension = '.' . $extension;
 		}
 
