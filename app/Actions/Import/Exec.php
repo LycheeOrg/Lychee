@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Safe\Exceptions\FilesystemException;
+use Safe\Exceptions\StringsException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Exec
@@ -107,26 +109,30 @@ class Exec
 	 */
 	private static function normalizePath(string $path): string
 	{
-		if (str_ends_with($path, '/')) {
-			$path = substr($path, 0, -1);
-		}
-		$realPath = realpath($path);
+		try {
+			if (str_ends_with($path, '/')) {
+				$path = \Safe\substr($path, 0, -1);
+			}
+			$realPath = \Safe\realpath($path);
 
-		if (is_dir($realPath) === false) {
+			if (is_dir($realPath) === false) {
+				throw new InvalidDirectoryException('Given path is not a directory (' . $path . ')');
+			}
+
+			// Skip folders of Lychee
+			if (
+				$realPath === Storage::path('big') ||
+				$realPath === Storage::path('medium') ||
+				$realPath === Storage::path('small') ||
+				$realPath === Storage::path('thumb')
+			) {
+				throw new ReservedDirectoryException('The given path is a reserved path of Lychee (' . $path . ')');
+			}
+
+			return $path;
+		} catch (FilesystemException|StringsException) {
 			throw new InvalidDirectoryException('Given path is not a directory (' . $path . ')');
 		}
-
-		// Skip folders of Lychee
-		if (
-			$realPath === Storage::path('big') ||
-			$realPath === Storage::path('medium') ||
-			$realPath === Storage::path('small') ||
-			$realPath === Storage::path('thumb')
-		) {
-			throw new ReservedDirectoryException('The given path is a reserved path of Lychee (' . $path . ')');
-		}
-
-		return $path;
 	}
 
 	/**
@@ -141,8 +147,9 @@ class Exec
 	private static function readLocalIgnoreList(string $path): array
 	{
 		if (is_readable($path . '/.lycheeignore')) {
-			$result = file($path . '/.lycheeignore');
-			if ($result === false) {
+			try {
+				$result = \Safe\file($path . '/.lycheeignore');
+			} catch (\Throwable) {
 				throw new FileOperationException('Could not read ' . $path . '/.lycheeignore');
 			}
 
@@ -212,7 +219,7 @@ class Exec
 		string $path,
 		?Album $parentAlbum,
 		array $ignore_list = []
-	) {
+	): void {
 		try {
 			$path = self::normalizePath($path);
 
@@ -297,13 +304,13 @@ class Exec
 			// Album creation per directory
 			foreach ($dirs as $dir) {
 				$this->assertImportNotCancelled();
+				/** @var Album|null */
 				$album = $this->importMode->shallSkipDuplicates() ?
 					Album::query()
 					->select(['albums.*'])
 					->join('base_albums', 'base_albums.id', '=', 'albums.id')
 					->where('albums.parent_id', '=', $parentAlbum?->id)
 					->where('base_albums.title', '=', basename($dir))
-					->get()
 					->first() :
 					null;
 				if ($album === null) {
