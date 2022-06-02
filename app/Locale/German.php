@@ -46,6 +46,7 @@ final class German implements Language
 			'DIAGNOSTICS_GET_SIZE' => 'Speicherplatz-Nutzung abrufen',
 			'LOGS' => 'Logs anzeigen',
 			'CLEAN_LOGS' => 'Clean Noise',
+			'CLEAR' => 'Leeren',
 			'SIGN_OUT' => 'Abmelden',
 			'UPDATE_AVAILABLE' => 'Update verfügbar!',
 			'MIGRATION_AVAILABLE' => 'Migration verfügbar!',

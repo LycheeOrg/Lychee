@@ -46,6 +46,7 @@ final class Portuguese implements Language
 			'DIAGNOSTICS_GET_SIZE' => 'Pedir utilização de espaço',
 			'LOGS' => 'Mostrar Logs',
 			'CLEAN_LOGS' => 'Clean Noise',
+			'CLEAR' => 'Clear',
 			'SIGN_OUT' => 'Terminar Sessão',
 			'UPDATE_AVAILABLE' => 'Atualização disponível!',
 			'MIGRATION_AVAILABLE' => 'Migração disponível!',

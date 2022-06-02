@@ -46,6 +46,7 @@ final class Dutch implements Language
 			'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
 			'LOGS' => 'Laat logs zien',
 			'CLEAN_LOGS' => 'Clean Noise',
+			'CLEAR' => 'Leeren',
 			'SIGN_OUT' => 'Log uit',
 			'UPDATE_AVAILABLE' => 'Update beschikbaar!',
 			'MIGRATION_AVAILABLE' => 'Migration available!',

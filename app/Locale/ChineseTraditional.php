@@ -46,6 +46,7 @@ final class ChineseTraditional implements Language
 			'DIAGNOSTICS_GET_SIZE' => '請求空間使用',
 			'LOGS' => '查看日誌',
 			'CLEAN_LOGS' => 'Clean Noise',
+			'CLEAR' => 'Clear',
 			'SIGN_OUT' => '登出',
 			'UPDATE_AVAILABLE' => '可用更新！',
 			'MIGRATION_AVAILABLE' => '可進行轉移!',
