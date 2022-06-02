@@ -1,3 +1,24 @@
+/* roboto-300 - vietnamese_latin-ext_latin_greek-ext_greek_cyrillic-ext_cyrillic */
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 300;
+  src: local(""), url("../../../fonts/roboto-v29-300.woff2") format("woff2");
+}
+/* roboto-regular - vietnamese_latin-ext_latin_greek-ext_greek_cyrillic-ext_cyrillic */
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 400;
+  src: local(""), url("../../../fonts/roboto-v29-400.woff2") format("woff2");
+}
+/* roboto-700 - vietnamese_latin-ext_latin_greek-ext_greek_cyrillic-ext_cyrillic */
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 700;
+  src: local(""), url("../../../fonts/roboto-v29-700.woff2") format("woff2");
+}
 html,
 body,
 div,
@@ -152,7 +173,7 @@ b {
 
 html,
 body {
-  font-family: sans-serif;
+  font-family: "Roboto", sans-serif;
   background: #ffffff;
 }
 
@@ -3693,7 +3714,7 @@ a {
   text-align: center;
 }
 #logo h1 span {
-  font-family: sans-serif;
+  font-family: "Roboto", sans-serif;
   font-size: 0.6em;
   display: block;
   font-weight: 300;
@@ -3810,7 +3831,7 @@ a {
 #content {
   margin-top: 70px;
   max-width: 70%;
-  font-family: sans-serif;
+  font-family: "Roboto", sans-serif;
   margin-left: auto;
   margin-right: auto;
 }
