@@ -1346,21 +1346,15 @@ api.v2 = {
 	/** @type APIV2Call */
 	getAlbums: api.createV2API("albums", "GET"),
 	/** @type APIV2Call */
-	setAlbumSorting: api.createV2API("album/{albumID}/sorting", "POST"),
-	/** @type APIV2Call */
-	setAlbumLicense: api.createV2API("album/{albumID}/license", "POST"),
-	/** @type APIV2Call */
 	setAlbumProtectionPolicy: api.createV2API("album/{albumID}/protection", "POST"),
-	/** @type APIV2Call */
-	setTagAlbumTags: api.createV2API("album/{albumID}/tags", "POST"),
 	/** @type APIV2Call */
 	setAlbumCover: api.createV2API("album/{albumID}/cover", "POST"),
 	/** @type APIV2Call */
-	setAlbumDescription: api.createV2API("album/{albumID}/description", "POST"),
-	/** @type APIV2Call */
-	setAlbumNSFW: api.createV2API("album/{albumID}/nsfw", "POST"),
-	/** @type APIV2Call */
 	addTagAlbum: api.createV2API("album/tag", "POST"),
+	/** @type APIV2Call */
+	patchAlbum: api.createV2API("album/{albumID}", "PATCH"),
+	/** @type APIV2Call */
+	patchTagAlbum: api.createV2API("album/tag/{albumID}", "PATCH"),
 	/** @type APIV2Call */
 	addAlbum: api.createV2API("album", "POST"),
 	/** @type APIV2Call */
@@ -2043,9 +2037,9 @@ album.setShowTags = function (albumID) {
 			view.album.show_tags();
 		}
 
-		api.v2.setTagAlbumTags({
+		api.v2.patchTagAlbum({
 			albumID: albumID,
-			show_tags: new_show_tags
+			tags: new_show_tags
 		}, function () {
 			return album.reload();
 		});
@@ -2169,10 +2163,17 @@ album.setDescription = function (albumID) {
 			view.album.description();
 		}
 
-		api.v2.setAlbumDescription({
-			albumID: albumID,
-			description: description
-		});
+		if (album.isTagAlbum()) {
+			api.v2.patchTagAlbum({
+				albumID: albumID,
+				description: description
+			});
+		} else {
+			api.v2.patchAlbum({
+				albumID: albumID,
+				description: description
+			});
+		}
 	};
 
 	basicModal.show({
@@ -2223,7 +2224,7 @@ album.setLicense = function (albumID) {
 	var action = function action(data) {
 		basicModal.close();
 
-		api.v2.setAlbumLicense({
+		api.v2.patchAlbum({
 			albumID: albumID,
 			license: data.license
 		}, function () {
@@ -2271,6 +2272,27 @@ album.setSorting = function (albumID) {
 	var action = function action(data) {
 		basicModal.close();
 
+		if (album.isTagAlbum()) {
+			api.v2.patchTagAlbum({
+				albumID: albumID,
+				sorting_column: data.sortingCol,
+				sorting_order: data.sortingOrder
+			}, function () {
+				if (visible.album()) {
+					album.reload();
+				}
+			});
+		} else {
+			api.v2.patchAlbum({
+				albumID: albumID,
+				sorting_column: data.sortingCol,
+				sorting_order: data.sortingOrder
+			}, function () {
+				if (visible.album()) {
+					album.reload();
+				}
+			});
+		}
 		api.v2.setAlbumSorting({
 			albumID: albumID,
 			sorting_column: data.sortingCol,
@@ -2510,7 +2532,7 @@ album.toggleNSFW = function () {
 
 	view.album.nsfw();
 
-	api.v2.setAlbumNSFW({
+	api.v2.patchAlbum({
 		albumID: album.json.id,
 		is_nsfw: album.json.is_nsfw
 	}, function () {

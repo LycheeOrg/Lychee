@@ -26,14 +26,10 @@ use App\Http\Requests\Album\GetAlbumRequest;
 use App\Http\Requests\Album\MergeAlbumsRequest;
 use App\Http\Requests\Album\MoveAlbumsRequest;
 use App\Http\Requests\Album\PatchAlbumRequest;
+use App\Http\Requests\Album\PatchTagAlbumRequest;
 use App\Http\Requests\Album\SetAlbumCoverRequest;
-use App\Http\Requests\Album\SetAlbumDescriptionRequest;
-use App\Http\Requests\Album\SetAlbumLicenseRequest;
-use App\Http\Requests\Album\SetAlbumNSFWRequest;
 use App\Http\Requests\Album\SetAlbumProtectionPolicyRequest;
-use App\Http\Requests\Album\SetAlbumSortingRequest;
 use App\Http\Requests\Album\SetAlbumsTitleRequest;
-use App\Http\Requests\Album\SetAlbumTagsRequest;
 use App\Http\Requests\Album\SetAlbumTrackRequest;
 use App\Http\Requests\Album\UnlockAlbumRequest;
 use App\Models\Album;
@@ -145,9 +141,57 @@ class AlbumController extends Controller
 	 */
 	public function patchAlbum(PatchAlbumRequest $request): void
 	{
-		$request->album()->license = $request->license();
-		$request->album()->is_nsfw = $request->isNSFW();
-		$request->album()->save();
+		/** @var Album $album */
+		foreach ($request->albums() as $album) {
+			if ($request->license() != null) {
+				$album->license = $request->license();
+			}
+			if ($request->isNSFW() != null) {
+				$album->is_nsfw = $request->isNSFW();
+			}
+			if ($request->description() != null) {
+				$album->description = $request->description();
+			}
+			if ($request->title() != null) {
+				$album->title = $request->title();
+			}
+			if ($request->hasSorting()) {
+				$album->sorting = $request->sortingCriterion();
+			}
+			$album->save();
+		}
+	}
+
+	/**
+	 * Update a tag album.
+	 *
+	 * @param PatchTagAlbumRequest $request
+	 *
+	 * @return void
+	 *
+	 * @throws ModelDBException
+	 */
+	public function patchTagAlbum(PatchTagAlbumRequest $request): void
+	{
+		/** @var TagAlbum $album */
+		foreach ($request->albums() as $album) {
+			if ($request->isNSFW() != null) {
+				$album->is_nsfw = $request->isNSFW();
+			}
+			if ($request->description() != null) {
+				$album->description = $request->description();
+			}
+			if ($request->title() != null) {
+				$album->title = $request->title();
+			}
+			if ($request->hasSorting()) {
+				$album->sorting = $request->sortingCriterion();
+			}
+			if ($request->tags() != null) {
+				$album->show_tags = $request->tags();
+			}
+			$album->save();
+		}
 	}
 
 	/**
@@ -229,21 +273,6 @@ class AlbumController extends Controller
 	}
 
 	/**
-	 * Change show tags of the tag album.
-	 *
-	 * @param SetAlbumTagsRequest $request
-	 *
-	 * @return void
-	 *
-	 * @throws ModelDBException
-	 */
-	public function setShowTags(SetAlbumTagsRequest $request): void
-	{
-		$request->album()->show_tags = $request->tags();
-		$request->album()->save();
-	}
-
-	/**
 	 * Sets the protection policy of the album.
 	 *
 	 * @param SetAlbumProtectionPolicyRequest $request
@@ -264,21 +293,6 @@ class AlbumController extends Controller
 	}
 
 	/**
-	 * Change the description of the album.
-	 *
-	 * @param SetAlbumDescriptionRequest $request
-	 *
-	 * @return void
-	 *
-	 * @throws ModelDBException
-	 */
-	public function setDescription(SetAlbumDescriptionRequest $request): void
-	{
-		$request->album()->description = $request->description();
-		$request->album()->save();
-	}
-
-	/**
 	 * Set cover image of the album.
 	 *
 	 * @param SetAlbumCoverRequest $request
@@ -290,51 +304,6 @@ class AlbumController extends Controller
 	public function setCover(SetAlbumCoverRequest $request): void
 	{
 		$request->album()->cover_id = $request->photo()?->id;
-		$request->album()->save();
-	}
-
-	/**
-	 * Set the license of the Album.
-	 *
-	 * @param SetAlbumLicenseRequest $request
-	 *
-	 * @return void
-	 *
-	 * @throws ModelDBException
-	 */
-	public function setLicense(SetAlbumLicenseRequest $request): void
-	{
-		$request->album()->license = $request->license();
-		$request->album()->save();
-	}
-
-	/**
-	 * Sets whether an album contains sensitive pictures.
-	 *
-	 * @param SetAlbumNSFWRequest $request
-	 *
-	 * @return void
-	 *
-	 * @throws ModelDBException
-	 */
-	public function setNSFW(SetAlbumNSFWRequest $request): void
-	{
-		$request->album()->is_nsfw = $request->isNSFW();
-		$request->album()->save();
-	}
-
-	/**
-	 * Define the default sorting type.
-	 *
-	 * @param SetAlbumSortingRequest $request
-	 *
-	 * @return void
-	 *
-	 * @throws LycheeException
-	 */
-	public function setSorting(SetAlbumSortingRequest $request): void
-	{
-		$request->album()->sorting = $request->sortingCriterion();
 		$request->album()->save();
 	}
 

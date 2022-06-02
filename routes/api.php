@@ -20,15 +20,12 @@ Route::get('/album/{albumID}/positions', [AlbumController::class, 'getPositionDa
 Route::post('/album/{albumID}/unlock', [AlbumController::class, 'unlock']);
 Route::post('/album', [AlbumController::class, 'add']);
 Route::post('/album/tag', [AlbumController::class, 'addTagAlbum']);
-Route::post('/album/{albumID}/tags', [AlbumController::class, 'setShowTags']);
-// TODO -- PATCH --
-Route::patch('/album/{albumID}', [AlbumController::class, 'patchAlbum']);
-Route::post('/album/{albumID}/nsfw', [AlbumController::class, 'setNSFW']);
-Route::post('/album/{albumID}/description', [AlbumController::class, 'setDescription']);
 Route::post('/album/{albumID}/cover', [AlbumController::class, 'setCover']);
+Route::patch('/album/tag/{albumIDs}', [AlbumController::class, 'patchTagAlbum']);
+Route::patch('/album/{albumIDs}', [AlbumController::class, 'patchAlbum']);
+// TODO -- PATCH and remove -- these endpoints are available for both normal and tag albums
 Route::post('/album/{albumID}/protection', [AlbumController::class, 'setProtectionPolicy']);
-Route::post('/album/{albumID}/license', [AlbumController::class, 'setLicense']);
-Route::post('/album/{albumID}/sorting', [AlbumController::class, 'setSorting']);
+Route::post('/albums/{albumIDs}/title', [AlbumController::class, 'setTitle']);
 // -- PATCH --
 Route::post('/album/{albumID}/merge', [AlbumController::class, 'merge']);
 Route::post('/album/{albumID}/move', [AlbumController::class, 'move']);
@@ -44,7 +41,6 @@ Route::get('/albums/{albumIDs}/archive', [AlbumController::class, 'getArchive'])
 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
 	->middleware(['local_storage', 'accept_content_type:any']);
 Route::delete('/albums/{albumIDs}', [AlbumController::class, 'delete']);
-Route::post('/albums/{albumIDs}/title', [AlbumController::class, 'setTitle']); // TODO PATCH?
 
 Route::get('/frame/settings', [FrameController::class, 'getSettings']);
 
@@ -63,6 +59,7 @@ Route::patch('/photo/{photoIDs}', [PhotoController::class, 'patchPhoto']);
 Route::post('/photo/clearSymLink', [PhotoController::class, 'clearSymLink']);
 
 Route::post('/photo/{photoID}/editor/rotate/{direction}', [PhotoEditorController::class, 'rotate']);
+
 Route::delete('/photos/{photoIDs}', [PhotoController::class, 'delete']);
 Route::post('/photos/{photoIDs}/duplicate', [PhotoController::class, 'duplicate']);
 Route::get('/photos/{photoIDs}/archive', [PhotoController::class, 'getArchive'])

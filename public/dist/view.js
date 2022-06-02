@@ -316,21 +316,15 @@ api.v2 = {
 	/** @type APIV2Call */
 	getAlbums: api.createV2API("albums", "GET"),
 	/** @type APIV2Call */
-	setAlbumSorting: api.createV2API("album/{albumID}/sorting", "POST"),
-	/** @type APIV2Call */
-	setAlbumLicense: api.createV2API("album/{albumID}/license", "POST"),
-	/** @type APIV2Call */
 	setAlbumProtectionPolicy: api.createV2API("album/{albumID}/protection", "POST"),
-	/** @type APIV2Call */
-	setTagAlbumTags: api.createV2API("album/{albumID}/tags", "POST"),
 	/** @type APIV2Call */
 	setAlbumCover: api.createV2API("album/{albumID}/cover", "POST"),
 	/** @type APIV2Call */
-	setAlbumDescription: api.createV2API("album/{albumID}/description", "POST"),
-	/** @type APIV2Call */
-	setAlbumNSFW: api.createV2API("album/{albumID}/nsfw", "POST"),
-	/** @type APIV2Call */
 	addTagAlbum: api.createV2API("album/tag", "POST"),
+	/** @type APIV2Call */
+	patchAlbum: api.createV2API("album/{albumID}", "PATCH"),
+	/** @type APIV2Call */
+	patchTagAlbum: api.createV2API("album/tag/{albumID}", "PATCH"),
 	/** @type APIV2Call */
 	addAlbum: api.createV2API("album", "POST"),
 	/** @type APIV2Call */
