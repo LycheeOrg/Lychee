@@ -63,6 +63,8 @@ class PhotoAuthorisationProvider
 			$query2->orWhere('photos.is_public', '=', true);
 			if ($userID !== null) {
 				$query2->orWhere('photos.owner_id', '=', $userID);
+			} elseif (Configs::get_value('no_public', '0') === '1') {
+				$query2->where('null', '=', '123');
 			}
 		};
 
@@ -82,6 +84,10 @@ class PhotoAuthorisationProvider
 	 */
 	public function isVisible(?Photo $photo): bool
 	{
+		if (!AccessControl::is_logged_in() && Configs::get_value('no_public', '0') === '1') {
+			return false;
+		}
+
 		return
 			$photo === null ||
 			AccessControl::is_current_user_or_admin($photo->owner_id) ||
@@ -240,6 +246,8 @@ class PhotoAuthorisationProvider
 			}
 			if ($userID !== null) {
 				$query->orWhere('photos.owner_id', '=', $userID);
+			} elseif (Configs::get_value('no_public', '0') === '1') {
+				$query->where('123', '=', 'never-true');
 			}
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);

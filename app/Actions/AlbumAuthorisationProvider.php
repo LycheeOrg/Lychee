@@ -11,6 +11,7 @@ use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
+use App\Models\Configs;
 use App\Models\Extensions\AlbumBuilder;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\FixedQueryBuilder;
@@ -82,6 +83,8 @@ class AlbumAuthorisationProvider
 						->where('base_albums.requires_link', '=', false)
 						->where('user_base_album.user_id', '=', $userID)
 					);
+			} elseif (Configs::get_value('no_public', '0') === '1') {
+				$query2->where('null', '=', 'never-true');
 			}
 		};
 
@@ -164,6 +167,8 @@ class AlbumAuthorisationProvider
 				$query
 					->orWhere('base_albums.owner_id', '=', $userID)
 					->orWhere('user_base_album.user_id', '=', $userID);
+			} elseif (Configs::get_value('no_public', '0') === '1') {
+				$query->where('null', '=', 'never-true');
 			}
 
 			return $query;
@@ -248,6 +253,8 @@ class AlbumAuthorisationProvider
 						->where('base_albums.requires_link', '=', false)
 						->where('user_base_album.user_id', '=', $userID)
 					);
+			} elseif (Configs::get_value('no_public', '0') === '1') {
+				$query2->where('not-exst', '=', '123');
 			}
 		};
 
@@ -275,7 +282,9 @@ class AlbumAuthorisationProvider
 		if ($album === null || AccessControl::is_admin()) {
 			return true;
 		}
-
+		if (!AccessControl::is_logged_in() && Configs::get_value('no_public', '0') === '1') {
+			return false;
+		}
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 
 		if ($album instanceof BaseAlbum) {
@@ -460,6 +469,8 @@ class AlbumAuthorisationProvider
 							->where('user_inner_base_album.user_id', '=', $userID)
 						)
 					);
+			} elseif (Configs::get_value('no_public', '0') === '1') {
+				$builder->whereNotNull('null1');
 			}
 
 			return $builder;
