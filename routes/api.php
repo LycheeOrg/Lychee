@@ -49,7 +49,7 @@ Route::post('/import/url', [ImportController::class, 'url']);
 Route::post('/import/server', [ImportController::class, 'server'])->middleware('admin');
 Route::post('/import/server/cancel', [ImportController::class, 'serverCancel'])->middleware('admin');
 
-Route::get('/legacy/translate', [LegacyController::class, 'translateLegacyModelIDs']); // TODO move params to route
+Route::get('/legacy/translate', [LegacyController::class, 'translateLegacyModelIDs']);
 
 Route::get('/photo/random', [PhotoController::class, 'getRandom']);
 Route::get('/photo/{photoID}', [PhotoController::class, 'get']);
