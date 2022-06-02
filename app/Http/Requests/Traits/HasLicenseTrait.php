@@ -4,12 +4,12 @@ namespace App\Http\Requests\Traits;
 
 trait HasLicenseTrait
 {
-	protected string $license = 'none';
+	protected ?string $license = 'none';
 
 	/**
-	 * @return string
+	 * @return string|null
 	 */
-	public function license(): string
+	public function license(): ?string
 	{
 		return $this->license;
 	}

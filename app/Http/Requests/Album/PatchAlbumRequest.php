@@ -47,8 +47,8 @@ class PatchAlbumRequest extends BaseApiRequest implements HasAlbum, HasLicense
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->album = Album::query()->findOrFail($values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]);
-		$this->license = array_key_exists(HasLicense::LICENSE_ATTRIBUTE, $values) ? $this->album()->license : $values[HasLicense::LICENSE_ATTRIBUTE];
-		$this->isNSFW = array_key_exists(self::IS_NSFW_ATTRIBUTE, $values) ? $this->album()->is_nsfw : static::toBoolean($values[self::IS_NSFW_ATTRIBUTE]);
+		$this->license = array_key_exists(HasLicense::LICENSE_ATTRIBUTE, $values) ? $values[HasLicense::LICENSE_ATTRIBUTE] : $this->album()->license;
+		$this->isNSFW = array_key_exists(self::IS_NSFW_ATTRIBUTE, $values) ? static::toBoolean($values[self::IS_NSFW_ATTRIBUTE]) : $this->album()->is_nsfw;
 	}
 
 	public function isNSFW(): bool

@@ -19,13 +19,7 @@ use App\Http\Requests\Photo\ArchivePhotosRequest;
 use App\Http\Requests\Photo\DeletePhotosRequest;
 use App\Http\Requests\Photo\DuplicatePhotosRequest;
 use App\Http\Requests\Photo\GetPhotoRequest;
-use App\Http\Requests\Photo\MovePhotosRequest;
-use App\Http\Requests\Photo\SetPhotoDescriptionRequest;
-use App\Http\Requests\Photo\SetPhotoLicenseRequest;
-use App\Http\Requests\Photo\SetPhotoPublicRequest;
-use App\Http\Requests\Photo\SetPhotosStarredRequest;
-use App\Http\Requests\Photo\SetPhotosTagsRequest;
-use App\Http\Requests\Photo\SetPhotosTitleRequest;
+use App\Http\Requests\Photo\PatchPhotoRequest;
 use App\Image\TemporaryLocalFile;
 use App\Image\UploadedFile;
 use App\ModelFunctions\SymLinkFunctions;
@@ -131,137 +125,52 @@ class PhotoController extends Controller
 	}
 
 	/**
-	 * Change the title of a photo.
+	 * Update a photo.
 	 *
-	 * @param SetPhotosTitleRequest $request
-	 *
-	 * @return void
-	 *
-	 * @throws LycheeException
-	 */
-	public function setTitle(SetPhotosTitleRequest $request): void
-	{
-		$title = $request->title();
-		/** @var Photo $photo */
-		foreach ($request->photos() as $photo) {
-			$photo->title = $title;
-			$photo->save();
-		}
-	}
-
-	/**
-	 * Set the is-starred attribute of the given photos.
-	 *
-	 * @param SetPhotosStarredRequest $request
+	 * @param PatchPhotoRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
 	 */
-	public function setStar(SetPhotosStarredRequest $request): void
-	{
-		/** @var Photo $photo */
-		foreach ($request->photos() as $photo) {
-			$photo->is_starred = $request->isStarred();
-			$photo->save();
-		}
-	}
-
-	/**
-	 * Set the description of a photo.
-	 *
-	 * @param SetPhotoDescriptionRequest $request
-	 *
-	 * @return void
-	 *
-	 * @throws LycheeException
-	 */
-	public function setDescription(SetPhotoDescriptionRequest $request): void
-	{
-		$request->photo()->description = $request->description();
-		$request->photo()->save();
-	}
-
-	/**
-	 * Sets the `is_public` attribute of the given photo.
-	 *
-	 * We do not advise the use of this and would rather see people use albums
-	 * visibility.
-	 * This would highly simplify the code if we remove this.
-	 * Do we really want to keep it ?
-	 *
-	 * @param SetPhotoPublicRequest $request
-	 *
-	 * @return void
-	 *
-	 * @throws LycheeException
-	 */
-	public function setPublic(SetPhotoPublicRequest $request): void
-	{
-		$request->photo()->is_public = $request->isPublic();
-		$request->photo()->save();
-	}
-
-	/**
-	 * Set the tags of a photo.
-	 *
-	 * @param SetPhotosTagsRequest $request
-	 *
-	 * @return void
-	 *
-	 * @throws LycheeException
-	 */
-	public function setTags(SetPhotosTagsRequest $request): void
-	{
-		$tags = $request->tags();
-		/** @var Photo $photo */
-		foreach ($request->photos() as $photo) {
-			$photo->tags = $tags;
-			$photo->save();
-		}
-	}
-
-	/**
-	 * Moves the photos to an album.
-	 *
-	 * @param MovePhotosRequest $request
-	 *
-	 * @return void
-	 *
-	 * @throws LycheeException
-	 */
-	public function setAlbum(MovePhotosRequest $request): void
+	public function patchPhoto(PatchPhotoRequest $request): void
 	{
 		$notify = new Notify();
-		$album = $request->album();
 
 		/** @var Photo $photo */
 		foreach ($request->photos() as $photo) {
-			$photo->album_id = $album?->id;
-			// Avoid unnecessary DB request, when we access the album of a
-			// photo later (e.g. when a notification is sent).
-			$photo->setRelation('album', $album);
-			if ($album) {
-				$photo->owner_id = $album->owner_id;
+			if ($request->description() != null) {
+				$photo->description = $request->description();
+			}
+			if ($request->isPublic() != null) {
+				$photo->is_public = $request->isPublic();
+			}
+			if ($request->license() != null) {
+				$photo->license = $request->license();
+			}
+			if ($request->title() != null) {
+				$photo->title = $request->title();
+			}
+			if ($request->isStarred() != null) {
+				$photo->is_starred = $request->isStarred();
+			}
+			if ($request->tags() != null) {
+				$photo->tags = $request->tags();
+			}
+			if ($request->albumSet()) {
+				$photo->album_id = $request->album()?->id;
+				// Avoid unnecessary DB request, when we access the album of a
+				// photo later (e.g. when a notification is sent).
+				$photo->setRelation('album', $request->album());
+				if ($request->album()) {
+					$photo->owner_id = $request->album()->owner_id;
+				}
 			}
 			$photo->save();
-			$notify->do($photo);
+			if ($request->albumSet()) {
+				$notify->do($photo);
+			}
 		}
-	}
-
-	/**
-	 * Sets the license of the photo.
-	 *
-	 * @param SetPhotoLicenseRequest $request
-	 *
-	 * @return void
-	 *
-	 * @throws LycheeException
-	 */
-	public function setLicense(SetPhotoLicenseRequest $request): void
-	{
-		$request->photo()->license = $request->license();
-		$request->photo()->save();
 	}
 
 	/**

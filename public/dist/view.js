@@ -216,8 +216,9 @@ api.createV2API = function (endpoint, method) {
 		var ajaxParams = void 0;
 		switch (method) {
 			case "POST":
+			case "PATCH":
 				ajaxParams = {
-					type: "POST",
+					type: method,
 					url: "api/" + url,
 					contentType: "application/json",
 					data: JSON.stringify(params),
@@ -289,23 +290,11 @@ api.v2 = {
 	/** @type APIV2Call */
 	photoEditorRotate: api.createV2API("photo/{photoID}/editor/rotate/{direction}", "POST"),
 	/** @type APIV2Call */
-	photoSetLicense: api.createV2API("photo/{photoID}/license", "POST"),
-	/** @type APIV2Call */
-	photoSetPublic: api.createV2API("photo/{photoID}/public", "POST"),
-	/** @type APIV2Call */
-	photoSetTitle: api.createV2API("photos/{photoIDs}/title", "POST"),
-	/** @type APIV2Call */
-	photoSetStar: api.createV2API("photos/{photoIDs}/star", "POST"),
-	/** @type APIV2Call */
-	photoSetAlbum: api.createV2API("photos/{photoIDs}/album", "POST"),
-	/** @type APIV2Call */
 	photoDuplicate: api.createV2API("photos/{photoIDs}/duplicate", "POST"),
-	/** @type APIV2Call */
-	photoSetTags: api.createV2API("photos/{photoIDs}/tags", "POST"),
 	/** @type APIV2Call */
 	photoDelete: api.createV2API("photos/{photoIDs}", "DELETE"),
 	/** @type APIV2Call */
-	photoSetDescription: api.createV2API("photo/{photoID}/description", "POST"),
+	photoPatch: api.createV2API("photo/{photoIDs}", "PATCH"),
 	/** @type APIV2Call */
 	photoRandom: api.createV2API("photo/random", "GET"),
 	/** @type APIV2Call */

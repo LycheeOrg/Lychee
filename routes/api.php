@@ -59,21 +59,10 @@ Route::get('/photo/{photoID}', [PhotoController::class, 'get']);
 Route::post('/photo', [PhotoController::class, 'add'])
 	->withoutMiddleware(['content_type:json'])
 	->middleware(['content_type:multipart']);
-// TODO -- PATCH --
-Route::post('/photo/{photoID}/license', [PhotoController::class, 'setLicense']);
-Route::post('/photo/{photoID}/description', [PhotoController::class, 'setDescription']);
-Route::post('/photo/{photoID}/public', [PhotoController::class, 'setPublic']);
-// -- PATCH --
+Route::patch('/photo/{photoIDs}', [PhotoController::class, 'patchPhoto']);
 Route::post('/photo/clearSymLink', [PhotoController::class, 'clearSymLink']);
 
 Route::post('/photo/{photoID}/editor/rotate/{direction}', [PhotoEditorController::class, 'rotate']);
-
-// TODO -- PATCH --
-Route::post('/photos/{photoIDs}/title', [PhotoController::class, 'setTitle']);
-Route::post('/photos/{photoIDs}/star', [PhotoController::class, 'setStar']);
-Route::post('/photos/{photoIDs}/album', [PhotoController::class, 'setAlbum']);
-Route::post('/photos/{photoIDs}/tags', [PhotoController::class, 'setTags']);
-// -- PATCH --
 Route::delete('/photos/{photoIDs}', [PhotoController::class, 'delete']);
 Route::post('/photos/{photoIDs}/duplicate', [PhotoController::class, 'duplicate']);
 Route::get('/photos/{photoIDs}/archive', [PhotoController::class, 'getArchive'])

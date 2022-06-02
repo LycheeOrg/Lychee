@@ -5,14 +5,14 @@ namespace App\Http\Requests\Traits;
 trait HasTagsTrait
 {
 	/**
-	 * @var string[]
+	 * @var string[]|null
 	 */
-	protected array $tags = [];
+	protected ?array $tags = [];
 
 	/**
-	 * @return string[]
+	 * @return array|null
 	 */
-	public function tags(): array
+	public function tags(): ?array
 	{
 		return $this->tags;
 	}

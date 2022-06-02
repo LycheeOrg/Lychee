@@ -9,5 +9,5 @@ interface HasTags
 	/**
 	 * @return string[]
 	 */
-	public function tags(): array;
+	public function tags(): ?array;
 }

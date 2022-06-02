@@ -1246,8 +1246,9 @@ api.createV2API = function (endpoint, method) {
 		var ajaxParams = void 0;
 		switch (method) {
 			case "POST":
+			case "PATCH":
 				ajaxParams = {
-					type: "POST",
+					type: method,
 					url: "api/" + url,
 					contentType: "application/json",
 					data: JSON.stringify(params),
@@ -1319,23 +1320,11 @@ api.v2 = {
 	/** @type APIV2Call */
 	photoEditorRotate: api.createV2API("photo/{photoID}/editor/rotate/{direction}", "POST"),
 	/** @type APIV2Call */
-	photoSetLicense: api.createV2API("photo/{photoID}/license", "POST"),
-	/** @type APIV2Call */
-	photoSetPublic: api.createV2API("photo/{photoID}/public", "POST"),
-	/** @type APIV2Call */
-	photoSetTitle: api.createV2API("photos/{photoIDs}/title", "POST"),
-	/** @type APIV2Call */
-	photoSetStar: api.createV2API("photos/{photoIDs}/star", "POST"),
-	/** @type APIV2Call */
-	photoSetAlbum: api.createV2API("photos/{photoIDs}/album", "POST"),
-	/** @type APIV2Call */
 	photoDuplicate: api.createV2API("photos/{photoIDs}/duplicate", "POST"),
-	/** @type APIV2Call */
-	photoSetTags: api.createV2API("photos/{photoIDs}/tags", "POST"),
 	/** @type APIV2Call */
 	photoDelete: api.createV2API("photos/{photoIDs}", "DELETE"),
 	/** @type APIV2Call */
-	photoSetDescription: api.createV2API("photo/{photoID}/description", "POST"),
+	photoPatch: api.createV2API("photo/{photoIDs}", "PATCH"),
 	/** @type APIV2Call */
 	photoRandom: api.createV2API("photo/random", "GET"),
 	/** @type APIV2Call */
@@ -8723,7 +8712,7 @@ _photo3.setTitle = function (photoIDs) {
 			view.album.content.title(id);
 		});
 
-		api.v2.photoSetTitle({
+		api.v2.photoPatch({
 			photoIDs: photoIDs,
 			title: newTitle
 		});
@@ -8806,7 +8795,7 @@ _photo3.setAlbum = function (photoIDs, albumID) {
 		}
 	}
 
-	api.v2.photoSetAlbum({
+	api.v2.photoPatch({
 		photoIDs: photoIDs,
 		albumID: albumID
 	}, function () {
@@ -8830,7 +8819,7 @@ _photo3.toggleStar = function () {
 	view.photo.star();
 	albums.refresh();
 
-	api.v2.photoSetStar({
+	api.v2.photoPatch({
 		photoIDs: [_photo3.json.id],
 		is_starred: _photo3.json.is_starred
 	});
@@ -8851,7 +8840,7 @@ _photo3.setStar = function (photoIDs, isStarred) {
 
 	albums.refresh();
 
-	api.v2.photoSetStar({
+	api.v2.photoPatch({
 		photoIDs: photoIDs,
 		is_starred: isStarred
 	});
@@ -8929,8 +8918,8 @@ _photo3.setProtectionPolicy = function (photoID) {
 
 				albums.refresh();
 
-				api.v2.photoSetPublic({
-					photoID: photoID,
+				api.v2.photoPatch({
+					photoIDs: photoID,
 					is_public: newIsPublic !== 0
 				});
 			}
@@ -9002,8 +8991,8 @@ _photo3.setDescription = function (photoID) {
 			view.photo.description();
 		}
 
-		api.v2.photoSetDescription({
-			photoID: photoID,
+		api.v2.photoPatch({
+			photoIDs: photoID,
 			description: description
 		});
 	};
@@ -9093,7 +9082,7 @@ _photo3.setTags = function (photoIDs, tags) {
 		album.getByID(id).tags = tags;
 	});
 
-	api.v2.photoSetTags({
+	api.v2.photoPatch({
 		photoIDs: photoIDs,
 		tags: tags
 	}, function () {
@@ -9159,11 +9148,11 @@ _photo3.setLicense = function (photoID) {
 		var license = data.license;
 
 		var params = {
-			photoID: photoID,
+			photoIDs: photoID,
 			license: license
 		};
 
-		api.v2.photoSetLicense(params, function () {
+		api.v2.photoPatch(params, function () {
 			// update the photo JSON and reload the license in the sidebar
 			_photo3.json.license = params.license;
 			view.photo.license();
