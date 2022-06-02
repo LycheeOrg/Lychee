@@ -1206,6 +1206,8 @@ api.v2 = {
   /** @type APIV2Call */
   clearLogsNoise: api.createV2API("logs/clearNoise", "POST"),
   /** @type APIV2Call */
+  clearLogs: api.createV2API("logs/clear", "POST"),
+  /** @type APIV2Call */
   checkUpdate: api.createV2API("update", "GET"),
   /** @type APIV2Call */
   applyUpdate: api.createV2API("update", "POST"),

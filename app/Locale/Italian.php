@@ -46,6 +46,7 @@ final class Italian implements Language
 			'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
 			'LOGS' => 'Visualizza Log',
 			'CLEAN_LOGS' => 'Clean Noise',
+			'CLEAR' => 'Clear',
 			'SIGN_OUT' => 'Esci',
 			'UPDATE_AVAILABLE' => 'Aggiornamento disponibile!',
 			'MIGRATION_AVAILABLE' => 'Migration available!',

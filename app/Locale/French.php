@@ -49,6 +49,7 @@ final class French implements Language
 			'DIAGNOSTICS_GET_SIZE' => 'Calculer l’espace utilisé',
 			'LOGS' => 'Afficher les logs',
 			'CLEAN_LOGS' => 'Clean Noise',
+			'CLEAR' => 'Clear',
 			'SIGN_OUT' => 'Se déconnecter',
 			'UPDATE_AVAILABLE' => 'Une mise à jour est disponible !',
 			'MIGRATION_AVAILABLE' => 'Une migration disponible !',
