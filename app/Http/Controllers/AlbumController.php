@@ -25,6 +25,7 @@ use App\Http\Requests\Album\GetAlbumPositionDataRequest;
 use App\Http\Requests\Album\GetAlbumRequest;
 use App\Http\Requests\Album\MergeAlbumsRequest;
 use App\Http\Requests\Album\MoveAlbumsRequest;
+use App\Http\Requests\Album\PatchAlbumRequest;
 use App\Http\Requests\Album\SetAlbumCoverRequest;
 use App\Http\Requests\Album\SetAlbumDescriptionRequest;
 use App\Http\Requests\Album\SetAlbumLicenseRequest;
@@ -134,82 +135,18 @@ class AlbumController extends Controller
 	}
 
 	/**
-	 * Sets the protection policy of the album.
+	 * Update an album.
 	 *
-	 * @param SetAlbumProtectionPolicyRequest $request
-	 * @param SetProtectionPolicy             $setProtectionPolicy
-	 *
-	 * @return void
-	 *
-	 * @throws LycheeException
-	 */
-	public function setProtectionPolicy(SetAlbumProtectionPolicyRequest $request, SetProtectionPolicy $setProtectionPolicy): void
-	{
-		$setProtectionPolicy->do(
-			$request->album(),
-			$request->albumProtectionPolicy(),
-			$request->isPasswordProvided(),
-			$request->password()
-		);
-	}
-
-	/**
-	 * Change the description of the album.
-	 *
-	 * @param SetAlbumDescriptionRequest $request
+	 * @param PatchAlbumRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws ModelDBException
 	 */
-	public function setDescription(SetAlbumDescriptionRequest $request): void
-	{
-		$request->album()->description = $request->description();
-		$request->album()->save();
-	}
-
-	/**
-	 * Change show tags of the tag album.
-	 *
-	 * @param SetAlbumTagsRequest $request
-	 *
-	 * @return void
-	 *
-	 * @throws ModelDBException
-	 */
-	public function setShowTags(SetAlbumTagsRequest $request): void
-	{
-		$request->album()->show_tags = $request->tags();
-		$request->album()->save();
-	}
-
-	/**
-	 * Set cover image of the album.
-	 *
-	 * @param SetAlbumCoverRequest $request
-	 *
-	 * @return void
-	 *
-	 * @throws ModelDBException
-	 */
-	public function setCover(SetAlbumCoverRequest $request): void
-	{
-		$request->album()->cover_id = $request->photo()?->id;
-		$request->album()->save();
-	}
-
-	/**
-	 * Set the license of the Album.
-	 *
-	 * @param SetAlbumLicenseRequest $request
-	 *
-	 * @return void
-	 *
-	 * @throws ModelDBException
-	 */
-	public function setLicense(SetAlbumLicenseRequest $request): void
+	public function patchAlbum(PatchAlbumRequest $request): void
 	{
 		$request->album()->license = $request->license();
+		$request->album()->is_nsfw = $request->isNSFW();
 		$request->album()->save();
 	}
 
@@ -289,6 +226,86 @@ class AlbumController extends Controller
 	public function move(MoveAlbumsRequest $request, Move $move): void
 	{
 		$move->do($request->album(), $request->albums());
+	}
+
+	/**
+	 * Change show tags of the tag album.
+	 *
+	 * @param SetAlbumTagsRequest $request
+	 *
+	 * @return void
+	 *
+	 * @throws ModelDBException
+	 */
+	public function setShowTags(SetAlbumTagsRequest $request): void
+	{
+		$request->album()->show_tags = $request->tags();
+		$request->album()->save();
+	}
+
+	/**
+	 * Sets the protection policy of the album.
+	 *
+	 * @param SetAlbumProtectionPolicyRequest $request
+	 * @param SetProtectionPolicy             $setProtectionPolicy
+	 *
+	 * @return void
+	 *
+	 * @throws LycheeException
+	 */
+	public function setProtectionPolicy(SetAlbumProtectionPolicyRequest $request, SetProtectionPolicy $setProtectionPolicy): void
+	{
+		$setProtectionPolicy->do(
+			$request->album(),
+			$request->albumProtectionPolicy(),
+			$request->isPasswordProvided(),
+			$request->password()
+		);
+	}
+
+	/**
+	 * Change the description of the album.
+	 *
+	 * @param SetAlbumDescriptionRequest $request
+	 *
+	 * @return void
+	 *
+	 * @throws ModelDBException
+	 */
+	public function setDescription(SetAlbumDescriptionRequest $request): void
+	{
+		$request->album()->description = $request->description();
+		$request->album()->save();
+	}
+
+	/**
+	 * Set cover image of the album.
+	 *
+	 * @param SetAlbumCoverRequest $request
+	 *
+	 * @return void
+	 *
+	 * @throws ModelDBException
+	 */
+	public function setCover(SetAlbumCoverRequest $request): void
+	{
+		$request->album()->cover_id = $request->photo()?->id;
+		$request->album()->save();
+	}
+
+	/**
+	 * Set the license of the Album.
+	 *
+	 * @param SetAlbumLicenseRequest $request
+	 *
+	 * @return void
+	 *
+	 * @throws ModelDBException
+	 */
+	public function setLicense(SetAlbumLicenseRequest $request): void
+	{
+		$request->album()->license = $request->license();
+		$request->album()->save();
 	}
 
 	/**

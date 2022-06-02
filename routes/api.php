@@ -20,15 +20,18 @@ Route::get('/album/{albumID}/positions', [AlbumController::class, 'getPositionDa
 Route::post('/album/{albumID}/unlock', [AlbumController::class, 'unlock']);
 Route::post('/album', [AlbumController::class, 'add']);
 Route::post('/album/tag', [AlbumController::class, 'addTagAlbum']);
+Route::post('/album/{albumID}/tags', [AlbumController::class, 'setShowTags']);
+// TODO -- PATCH --
+Route::patch('/album/{albumID}', [AlbumController::class, 'patchAlbum']);
 Route::post('/album/{albumID}/nsfw', [AlbumController::class, 'setNSFW']);
 Route::post('/album/{albumID}/description', [AlbumController::class, 'setDescription']);
 Route::post('/album/{albumID}/cover', [AlbumController::class, 'setCover']);
-Route::post('/album/{albumID}/tags', [AlbumController::class, 'setShowTags']);
 Route::post('/album/{albumID}/protection', [AlbumController::class, 'setProtectionPolicy']);
-Route::post('/album/{albumID}/merge', [AlbumController::class, 'merge']);
-Route::post('/album/{albumID}/move', [AlbumController::class, 'move']);
 Route::post('/album/{albumID}/license', [AlbumController::class, 'setLicense']);
 Route::post('/album/{albumID}/sorting', [AlbumController::class, 'setSorting']);
+// -- PATCH --
+Route::post('/album/{albumID}/merge', [AlbumController::class, 'merge']);
+Route::post('/album/{albumID}/move', [AlbumController::class, 'move']);
 Route::post('/album/{albumID}/track', [AlbumController::class, 'setTrack'])
 	->withoutMiddleware(['content_type:json'])
 	->middleware(['content_type:multipart']);
@@ -41,7 +44,7 @@ Route::get('/albums/{albumIDs}/archive', [AlbumController::class, 'getArchive'])
 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
 	->middleware(['local_storage', 'accept_content_type:any']);
 Route::delete('/albums/{albumIDs}', [AlbumController::class, 'delete']);
-Route::post('/albums/{albumIDs}/title', [AlbumController::class, 'setTitle']);
+Route::post('/albums/{albumIDs}/title', [AlbumController::class, 'setTitle']); // TODO PATCH?
 
 Route::get('/frame/settings', [FrameController::class, 'getSettings']);
 
@@ -53,25 +56,29 @@ Route::get('/legacy/translate', [LegacyController::class, 'translateLegacyModelI
 
 Route::get('/photo/random', [PhotoController::class, 'getRandom']);
 Route::get('/photo/{photoID}', [PhotoController::class, 'get']);
-Route::post('/photo/{photoID}/description', [PhotoController::class, 'setDescription']);
-Route::post('/photo/{photoID}/public', [PhotoController::class, 'setPublic']);
 Route::post('/photo', [PhotoController::class, 'add'])
 	->withoutMiddleware(['content_type:json'])
 	->middleware(['content_type:multipart']);
+// TODO -- PATCH --
 Route::post('/photo/{photoID}/license', [PhotoController::class, 'setLicense']);
+Route::post('/photo/{photoID}/description', [PhotoController::class, 'setDescription']);
+Route::post('/photo/{photoID}/public', [PhotoController::class, 'setPublic']);
+// -- PATCH --
 Route::post('/photo/clearSymLink', [PhotoController::class, 'clearSymLink']);
 
 Route::post('/photo/{photoID}/editor/rotate/{direction}', [PhotoEditorController::class, 'rotate']);
 
+// TODO -- PATCH --
 Route::post('/photos/{photoIDs}/title', [PhotoController::class, 'setTitle']);
 Route::post('/photos/{photoIDs}/star', [PhotoController::class, 'setStar']);
-Route::delete('/photos/{photoIDs}', [PhotoController::class, 'delete']);
 Route::post('/photos/{photoIDs}/album', [PhotoController::class, 'setAlbum']);
+Route::post('/photos/{photoIDs}/tags', [PhotoController::class, 'setTags']);
+// -- PATCH --
+Route::delete('/photos/{photoIDs}', [PhotoController::class, 'delete']);
 Route::post('/photos/{photoIDs}/duplicate', [PhotoController::class, 'duplicate']);
 Route::get('/photos/{photoIDs}/archive', [PhotoController::class, 'getArchive'])
 ->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
 	->middleware(['local_storage', 'accept_content_type:any']);
-Route::post('/photos/{photoIDs}/tags', [PhotoController::class, 'setTags']);
 
 Route::get('/search/{term}', [SearchController::class, 'run']);
 
