@@ -32,7 +32,7 @@
         "fideloper/proxy": "^4.3",
         "geocoder-php/cache-provider": "^4.3",
         "geocoder-php/nominatim-provider": "^5.5",
-        "laravel/framework": "^8.0",
+        "laravel/framework": "^8.83.14",
         "livewire/livewire": "^2.7",
         "lychee-org/nestedset": "^6",
         "lychee-org/php-exif": "^0.7.5",
@@ -54,6 +54,7 @@
         "friendsofphp/php-cs-fixer": "^3.3",
         "itsgoingd/clockwork": "^5.0",
         "laravel/homestead": "^v13.2.1",
+        "mockery/mockery": "^1.5",
         "nunomaduro/collision": "^5.0",
         "phpunit/phpunit": "^9"
     },

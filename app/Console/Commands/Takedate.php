@@ -29,11 +29,11 @@ class Takedate extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'lychee:takedate' .
-	'{offset=0 : offset of the first photo to process}' .
-	'{limit=50 : number of photos to process (0 means process all)}' .
-	'{time=600 : maximum execution time in seconds (0 means unlimited)}' .
-	'{--c|set-upload-time : additionally sets the upload time based on the creation time of the media file; ATTENTION: this option is rarely needed and potentially harmful}' .
+	protected $signature = 'lychee:takedate ' .
+	'{offset=0 : offset of the first photo to process} ' .
+	'{limit=50 : number of photos to process (0 means process all)} ' .
+	'{time=600 : maximum execution time in seconds (0 means unlimited)} ' .
+	'{--c|set-upload-time : additionally sets the upload time based on the creation time of the media file; ATTENTION: this option is rarely needed and potentially harmful} ' .
 	'{--f|force : force processing of all media files}';
 
 	/**
