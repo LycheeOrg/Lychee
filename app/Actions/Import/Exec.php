@@ -4,8 +4,6 @@ namespace App\Actions\Import;
 
 use App\Actions\Album\Create as AlbumCreate;
 use App\Actions\Photo\Create as PhotoCreate;
-use App\Actions\Photo\Extensions\Constants;
-use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\DTO\ImportEventReport;
 use App\DTO\ImportProgressReport;
@@ -15,12 +13,9 @@ use App\Exceptions\Handler;
 use App\Exceptions\ImportCancelledException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\InvalidDirectoryException;
-use App\Exceptions\MediaFileUnsupportedException;
 use App\Exceptions\ReservedDirectoryException;
-use App\Facades\Helpers;
 use App\Image\NativeLocalFile;
 use App\Models\Album;
-use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Support\Facades\Session;
@@ -31,15 +26,12 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Exec
 {
-	use Constants;
-
 	protected ImportMode $importMode;
 	protected PhotoCreate $photoCreate;
 	protected AlbumCreate $albumCreate;
 	protected bool $enableCLIFormatting = false;
 	protected int $memLimit = 0;
 	protected bool $memWarningGiven = false;
-	private array $raw_formats;
 	private bool $firstReportGiven = false;
 
 	/**
@@ -55,7 +47,6 @@ class Exec
 		$this->albumCreate = new AlbumCreate();
 		$this->enableCLIFormatting = $enableCLIFormatting;
 		$this->memLimit = $memLimit;
-		$this->raw_formats = explode('|', strtolower(Configs::get_value('raw_formats', '')));
 	}
 
 	/**
@@ -275,23 +266,7 @@ class Exec
 				$filesCount++;
 
 				try {
-					$extension = Helpers::getExtension($file, false);
-					$is_raw = in_array(strtolower($extension), $this->raw_formats, true);
-					// TODO: Consolidate all mimetype/extension handling in one place; here we have another test whether the source file is supported which is inconsistent with tests elsewhere
-					// TODO: Probably the best place is \App\Image\MediaFile.
-					// TODO: Consider to make this test a general part of \App\Actions\Photo\Create::add. Then we don't need those tests at multiple places.
-					// Note: `exif_imagetype` may also throw an exception
-					// (instead of returning `false`), if the file is too small
-					// to read enough bytes to determine the file type.
-					// So we put `exif_imagetype` last in the condition and
-					// exploit lazy evaluation of boolean terms for the case
-					// that we import a "short" raw file.
-					if ($is_raw || in_array(strtolower($extension), $this->validExtensions, true) || exif_imagetype($file) !== false) {
-						$this->photoCreate->add(SourceFileInfo::createByLocalFile(new NativeLocalFile($file)), $parentAlbum);
-					} else {
-						// TODO: Separately throwing this particular exception should not be necessary, because `photoCreate->add` should do that; see above
-						throw new MediaFileUnsupportedException('Unsupported file type');
-					}
+					$this->photoCreate->add(new NativeLocalFile($file), $parentAlbum);
 				} catch (\Throwable $e) {
 					$this->report(ImportEventReport::createFromException($e, $file));
 				}

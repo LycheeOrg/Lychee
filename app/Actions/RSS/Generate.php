@@ -10,8 +10,6 @@ use App\Models\Photo;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\UnitException;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Storage;
-use League\Flysystem\NotSupportedException;
 use Spatie\Feed\FeedItem;
 
 class Generate
@@ -44,13 +42,9 @@ class Generate
 			'link' => $page_link,
 			'enclosure' => $sizeVariant->url,
 			'enclosureType' => $photo_model->type,
+			'enclosureLength' => $sizeVariant->filesize,
 			'authorName' => $photo_model->owner->username,
 		];
-		try {
-			// This may throw a `NotSupportedException`, if the file is a symlink
-			$feedItem['enclosureLength'] = Storage::size($sizeVariant->short_path);
-		} catch (NotSupportedException) {
-		}
 
 		return FeedItem::create($feedItem);
 	}

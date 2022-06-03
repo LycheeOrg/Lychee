@@ -29,11 +29,11 @@ class Takedate extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'lychee:takedate' .
-	'{offset=0 : offset of the first photo to process}' .
-	'{limit=50 : number of photos to process (0 means process all)}' .
-	'{time=600 : maximum execution time in seconds (0 means unlimited)}' .
-	'{--c|set-upload-time : additionally sets the upload time based on the creation time of the media file; ATTENTION: this option is rarely needed and potentially harmful}' .
+	protected $signature = 'lychee:takedate ' .
+	'{offset=0 : offset of the first photo to process} ' .
+	'{limit=50 : number of photos to process (0 means process all)} ' .
+	'{time=600 : maximum execution time in seconds (0 means unlimited)} ' .
+	'{--c|set-upload-time : additionally sets the upload time based on the creation time of the media file; ATTENTION: this option is rarely needed and potentially harmful} ' .
 	'{--f|force : force processing of all media files}';
 
 	/**
@@ -95,13 +95,11 @@ class Takedate extends Command
 	/**
 	 * Execute the console command.
 	 *
-	 * @param Extractor $metadataExtractor
-	 *
 	 * @return int
 	 *
 	 * @throws ExternalLycheeException
 	 */
-	public function handle(Extractor $metadataExtractor): int
+	public function handle(): int
 	{
 		try {
 			$limit = intval($this->argument('limit'));
@@ -150,29 +148,20 @@ class Takedate extends Command
 			/* @var Photo $photo */
 			foreach ($photos as $photo) {
 				$this->progressBar->advance();
-				// TODO: As soon as we support AWS S3 storage, we must stop using absolute paths. However, first the EXIF extractor must be rewritten to use file streams.
-				$fullPath = $photo->size_variants->getOriginal()->getFile()->getAbsolutePath();
+				$localFile = $photo->size_variants->getOriginal()->getFile()->toLocalFile();
 
-				if (!file_exists($fullPath)) {
-					$this->printError($photo, 'Media file ' . $fullPath . ' not found');
-					continue;
-				}
-
-				$kind = $photo->isRaw() ? 'raw' : ($photo->isVideo() ? 'video' : 'photo');
-				$info = $metadataExtractor->extract($fullPath, $kind);
-				/* @var Carbon $stamp */
-				$stamp = $info['taken_at'];
-				if ($stamp !== null) {
+				$info = Extractor::createFromFile($localFile);
+				if ($info->taken_at !== null) {
 					// Note: `equalTo` only checks if two times indicate the same
 					// instant of time on the universe's timeline, i.e. equality
 					// comparison is always done in UTC.
 					// For example "2022-01-31 20:50 CET" is deemed equal to
 					// "2022-01-31 19:50 GMT".
 					// So, we must check for equality of timezones separately.
-					if ($photo->taken_at->equalTo($stamp) && $photo->taken_at->timezoneName === $stamp->timezoneName) {
+					if ($photo->taken_at->equalTo($info->taken_at) && $photo->taken_at->timezoneName === $info->taken_at->timezoneName) {
 						$this->printInfo($photo, 'Takestamp up-to-date.');
 					} else {
-						$photo->taken_at = $stamp;
+						$photo->taken_at = $info->taken_at;
 						$this->printInfo($photo, 'Takestamp set to ' . $photo->taken_at->format(self::DATETIME_FORMAT) . '.');
 					}
 				} else {
@@ -180,10 +169,7 @@ class Takedate extends Command
 				}
 
 				if ($setCreationTime) {
-					if (is_link($fullPath)) {
-						$fullPath = readlink($fullPath);
-					}
-					$created_at = filemtime($fullPath);
+					$created_at = $localFile->lastModified();
 					if ($created_at == $photo->created_at->timestamp) {
 						$this->printInfo($photo, 'Upload time up-to-date.');
 					} else {
