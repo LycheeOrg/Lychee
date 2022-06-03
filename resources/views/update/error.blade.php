@@ -8,7 +8,7 @@
 
         <!-- Styles -->
         <style>
-			html, body {
+            html, body {
                 background-color: #fff;
                 color: #636b6f;
                 font-family: sans-serif;
