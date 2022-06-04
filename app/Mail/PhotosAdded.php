@@ -35,6 +35,7 @@ class PhotosAdded extends Mailable
 	{
 		return $this->markdown('emails.photos-added', [
 			'title' => $this->title,
+			'photos' => $this->photos,
 		]);
 	}
 }
