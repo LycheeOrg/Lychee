@@ -89,7 +89,7 @@
             "@install_files"
         ],
         "install_files": [
-            "sh scripts/install_files.sh"
+            "@php scripts/install_files.php"
         ]
     },
     "config": {

@@ -91,7 +91,7 @@ return [
 	|
 	*/
 
-	'locale' => 'en',
+	'locale' => env('APP_LOCALE', 'en'),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -104,7 +104,7 @@ return [
 	|
 	*/
 
-	'fallback_locale' => 'en',
+	'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -133,7 +133,7 @@ return [
 
 	'key' => env('APP_KEY'),
 
-	'cipher' => 'AES-256-CBC',
+	'cipher' => env('APP_CIPHER', 'AES-256-CBC'),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -216,7 +216,7 @@ return [
 		'Cookie' => Illuminate\Support\Facades\Cookie::class,
 		'Crypt' => Illuminate\Support\Facades\Crypt::class,
 		'DB' => Illuminate\Support\Facades\DB::class,
-		'DebugBar' => Barryvdh\Debugbar\Facade::class,
+		'DebugBar' => Barryvdh\Debugbar\Facades\Debugbar::class,
 		'Eloquent' => Illuminate\Database\Eloquent\Model::class,
 		'Event' => Illuminate\Support\Facades\Event::class,
 		'File' => Illuminate\Support\Facades\File::class,
