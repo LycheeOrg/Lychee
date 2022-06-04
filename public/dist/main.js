@@ -1346,7 +1346,7 @@ api.v2 = {
 	/** @type APIV2Call */
 	getAlbums: api.createV2API("albums", "GET"),
 	/** @type APIV2Call */
-	setAlbumProtectionPolicy: api.createV2API("album/{albumID}/protection", "POST"),
+	setAlbumProtectionPolicy: api.createV2API("album/{albumID}/protect", "POST"),
 	/** @type APIV2Call */
 	setAlbumCover: api.createV2API("album/{albumID}/cover", "POST"),
 	/** @type APIV2Call */
@@ -1444,7 +1444,7 @@ api.v2 = {
 	/** @type APIV2Call */
 	deleteAlbums: api.createV2API("albums/{albumIDs}", "DELETE"),
 	/** @type APIV2Call */
-	setAlbumTitle: api.createV2API("albums/{albumIDs}/title", "POST")
+	setAlbumTitle: api.createV2API("albums/{albumIDs}/rename", "POST")
 };
 
 var csrf = {};

@@ -226,9 +226,8 @@ class PhotosUnitTest
 		/**
 		 * Try to set the title.
 		 */
-		$response = $this->testCase->postJson('/api/Photo::setTitle', [
+		$response = $this->testCase->patchJson('/api/photos/' . $id, [
 			'title' => $title,
-			'photoIDs' => [$id],
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
@@ -250,8 +249,8 @@ class PhotosUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson(
-			'/api/photo/' . $id . '/description', [
+		$response = $this->testCase->patchJson(
+			'/api/photos/' . $id, [
 				'description' => $description,
 			]
 		);
@@ -275,8 +274,7 @@ class PhotosUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson('/api/Photo::setStar', [
-			'photoIDs' => $ids,
+		$response = $this->testCase->patchJson('/api/photos/' . implode(',', $ids), [
 			'is_starred' => $isStarred,
 		]);
 		$response->assertStatus($expectedStatusCode);
@@ -299,8 +297,7 @@ class PhotosUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson('/api/Photo::setTags', [
-			'photoIDs' => $ids,
+		$response = $this->testCase->patchJson('/api/photos/' . implode(',', $ids), [
 			'tags' => $tags,
 		]);
 		$response->assertStatus($expectedStatusCode);
@@ -323,8 +320,8 @@ class PhotosUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson(
-			'/api/photo/' . $id . '/public', [
+		$response = $this->testCase->patchJson(
+			'/api/photos/' . $id, [
 				'is_public' => $isPublic,
 			]
 		);
@@ -348,8 +345,8 @@ class PhotosUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson(
-			'/api/photo/' . $id . '/license', [
+		$response = $this->testCase->patchJson(
+			'/api/photos/' . $id, [
 				'license' => $license,
 			]
 		);
@@ -373,9 +370,8 @@ class PhotosUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson(
-			'/api/Photo::setAlbum', [
-				'photoIDs' => $ids,
+		$response = $this->testCase->patchJson(
+			'/api/photos/' . implode(',', $ids), [
 				'albumID' => $album_id,
 			]
 		);
@@ -401,8 +397,7 @@ class PhotosUnitTest
 		int $expectedStatusCode = 201,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->postJson('/api/Photo::duplicate', [
-			'photoIDs' => $ids,
+		$response = $this->testCase->postJson('/api/photos/' . implode(',', $ids) . '/duplicate', [
 			'albumID' => $targetAlbumID,
 		]);
 		$response->assertStatus($expectedStatusCode);
@@ -424,9 +419,7 @@ class PhotosUnitTest
 		string $kind = Archive::FULL
 	): void {
 		$response = $this->testCase->getWithParameters(
-			'/api/Photo::getArchive', [
-				'photoIDs' => $id,
-				'kind' => $kind,
+			'/api/photos/' . $id . '/archive', ['kind' => $kind,
 			], [
 				'Accept' => '*/*',
 			]
@@ -446,9 +439,7 @@ class PhotosUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->deleteJson('/api/Photo::delete', [
-			'photoIDs' => $ids,
-		]);
+		$response = $this->testCase->deleteJson('/api/photos/' . implode(',', $ids), []);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
@@ -474,7 +465,6 @@ class PhotosUnitTest
 		?string $assertSee = null
 	): string {
 		$response = $this->testCase->postJson('/api/import/server', [
-			'function' => 'Import::server',
 			'albumID' => $album_id,
 			'path' => $path,
 			'delete_imported' => $delete_imported,

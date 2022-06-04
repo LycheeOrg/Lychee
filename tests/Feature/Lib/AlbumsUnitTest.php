@@ -94,7 +94,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson('/api/Album::move', [
+		$response = $this->testCase->postJson('/api/album/' . $to . '/move', [
 			'albumID' => $to,
 			'albumIDs' => $ids,
 		]);
@@ -194,8 +194,8 @@ class AlbumsUnitTest
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->postJson(
-			'/api/Album::setTitle',
-			['albumIDs' => [$id], 'title' => $title]
+			'/api/album/' . $id . '/rename',
+			['title' => $title]
 		);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
@@ -217,8 +217,8 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson(
-			'/api/album/' . $id . '/description',
+		$response = $this->testCase->patchJson(
+			'/api/albums/' . $id,
 			['description' => $description]
 		);
 		$response->assertStatus($expectedStatusCode);
@@ -241,7 +241,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson('/api/album/' . $id . '/license', [
+		$response = $this->testCase->patchJson('/api/albums/' . $id, [
 			'license' => $license,
 		]);
 		$response->assertStatus($expectedStatusCode);
@@ -266,7 +266,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson('/api/album/' . $id . '/sorting', [
+		$response = $this->testCase->patchJson('/api/albums/' . $id, [
 			'sorting_column' => $sortingCol,
 			'sorting_order' => $sortingOrder,
 		]);
@@ -298,7 +298,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson('/api/album/' . $id . '/protection', [
+		$response = $this->testCase->postJson('/api/album/' . $id . '/protect', [
 			'grants_full_photo' => $full_photo,
 			'is_public' => $public,
 			'requires_link' => $requiresLink,
@@ -324,8 +324,8 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson('/api/album/' . $id . '/tags', [
-			'show_tags' => $tags,
+		$response = $this->testCase->patchJson('/api/albums/tag/' . $id, [
+			'tags' => $tags,
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
@@ -341,9 +341,7 @@ class AlbumsUnitTest
 	public function download(string $id): void
 	{
 		$response = $this->testCase->getWithParameters(
-			'/api/Album::getArchive', [
-				'albumIDs' => $id,
-			], [
+			'/api/albums/' . $id . '/archive', [], [
 				'Accept' => '*/*',
 			]
 		);
@@ -362,7 +360,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->deleteJson('/api/Album::delete', ['albumIDs' => $ids]);
+		$response = $this->testCase->deleteJson('/api/albums/' . implode(',', $ids), []);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
