@@ -23,6 +23,7 @@ Route::post('/album/tag', [AlbumController::class, 'addTagAlbum']);
 Route::post('/album/{albumID}/cover', [AlbumController::class, 'setCover']);
 Route::post('/album/{albumID}/protect', [AlbumController::class, 'setProtectionPolicy']);
 Route::post('/album/{albumID}/merge', [AlbumController::class, 'merge']);
+Route::post('/album/move', [AlbumController::class, 'move']);
 Route::post('/album/{albumID}/move', [AlbumController::class, 'move']);
 Route::post('/album/{albumID}/track', [AlbumController::class, 'setTrack'])
 	->withoutMiddleware(['content_type:json'])

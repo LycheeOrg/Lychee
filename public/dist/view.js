@@ -412,6 +412,8 @@ api.v2 = {
 	/** @type APIV2Call */
 	moveAlbums: api.createV2API("album/{albumID}/move", "POST"),
 	/** @type APIV2Call */
+	moveAlbumsToTop: api.createV2API("album/move", "POST"),
+	/** @type APIV2Call */
 	deleteAlbums: api.createV2API("albums/{albumIDs}", "DELETE"),
 	/** @type APIV2Call */
 	setAlbumTitle: api.createV2API("albums/{albumIDs}/rename", "POST")

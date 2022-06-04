@@ -34,7 +34,7 @@ class MoveAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 	public function rules(): array
 	{
 		return [
-			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
+			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => [new RandomIDRule(true)],
 			HasAlbums::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
 			HasAlbums::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
 		];
@@ -45,7 +45,7 @@ class MoveAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$targetAlbumID = $values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE];
+		$targetAlbumID = array_key_exists(HasAbstractAlbum::ALBUM_ID_ATTRIBUTE, $values) ? $values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE] : '';
 		$this->album = empty($targetAlbumID) ?
 			null :
 			Album::query()->findOrFail($targetAlbumID);

@@ -94,8 +94,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson('/api/album/' . $to . '/move', [
-			'albumID' => $to,
+		$response = $this->testCase->postJson($to !== null ? '/api/album/' . $to . '/move' : '/api/album/move', [
 			'albumIDs' => $ids,
 		]);
 		$response->assertStatus($expectedStatusCode);
