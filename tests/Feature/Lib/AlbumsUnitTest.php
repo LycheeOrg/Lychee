@@ -193,7 +193,7 @@ class AlbumsUnitTest
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->postJson(
-			'/api/album/' . $id . '/rename',
+			'/api/albums/' . $id . '/rename',
 			['title' => $title]
 		);
 		$response->assertStatus($expectedStatusCode);
