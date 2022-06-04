@@ -69,7 +69,6 @@ class PhotosAddedNotification extends Command
 					}
 
 					$thumbUrl = $photo->size_variants->getThumb()?->url;
-					logger($thumbUrl);
 
 					// If the url config doesn't contain a trailing slash then add it
 					if (str_ends_with(config('app.url'), '/')) {
