@@ -80,7 +80,6 @@ class PatchPhotoRequest extends BaseApiRequest implements HasPhotos, HasDescript
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		// TODO this does not work if trying to send `false` as boolean value
 		$this->photos = Photo::query()->findOrFail(explode(',', $values[HasPhotos::PHOTO_IDS_ATTRIBUTE]));
 		$this->description = array_key_exists(HasDescription::DESCRIPTION_ATTRIBUTE, $values) ? $values[HasDescription::DESCRIPTION_ATTRIBUTE] : null;
 		$this->license = array_key_exists(HasLicense::LICENSE_ATTRIBUTE, $values) ? $values[HasLicense::LICENSE_ATTRIBUTE] : null;

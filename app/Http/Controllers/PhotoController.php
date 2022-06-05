@@ -139,22 +139,22 @@ class PhotoController extends Controller
 
 		/** @var Photo $photo */
 		foreach ($request->photos() as $photo) {
-			if ($request->description() != null) {
+			if ($request->description() !== null) {
 				$photo->description = $request->description();
 			}
-			if ($request->isPublic() != null) {
+			if ($request->isPublic() !== null) {
 				$photo->is_public = $request->isPublic();
 			}
-			if ($request->license() != null) {
+			if ($request->license() !== null) {
 				$photo->license = $request->license();
 			}
-			if ($request->title() != null) {
+			if ($request->title() !== null) {
 				$photo->title = $request->title();
 			}
-			if ($request->isStarred() != null) {
+			if ($request->isStarred() !== null) {
 				$photo->is_starred = $request->isStarred();
 			}
-			if ($request->tags() != null) {
+			if ($request->tags() !== null) {
 				$photo->tags = $request->tags();
 			}
 			if ($request->albumSet()) {

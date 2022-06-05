@@ -143,16 +143,16 @@ class AlbumController extends Controller
 	{
 		/** @var Album $album */
 		foreach ($request->albums() as $album) {
-			if ($request->license() != null) {
+			if ($request->license() !== null) {
 				$album->license = $request->license();
 			}
-			if ($request->isNSFW() != null) {
+			if ($request->isNSFW() !== null) {
 				$album->is_nsfw = $request->isNSFW();
 			}
 			if ($request->hasDescription()) {
 				$album->description = $request->description();
 			}
-			if ($request->title() != null) {
+			if ($request->title() !== null) {
 				$album->title = $request->title();
 			}
 			if ($request->hasSorting()) {
@@ -175,19 +175,19 @@ class AlbumController extends Controller
 	{
 		/** @var TagAlbum $album */
 		foreach ($request->albums() as $album) {
-			if ($request->isNSFW() != null) {
+			if ($request->isNSFW() !== null) {
 				$album->is_nsfw = $request->isNSFW();
 			}
 			if ($request->hasDescription()) {
 				$album->description = $request->description();
 			}
-			if ($request->title() != null) {
+			if ($request->title() !== null) {
 				$album->title = $request->title();
 			}
 			if ($request->hasSorting()) {
 				$album->sorting = $request->sortingCriterion();
 			}
-			if ($request->tags() != null) {
+			if ($request->tags() !== null) {
 				$album->show_tags = $request->tags();
 			}
 			$album->save();

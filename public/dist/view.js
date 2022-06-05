@@ -217,6 +217,7 @@ api.createV2API = function (endpoint, method) {
 		switch (method) {
 			case "POST":
 			case "PATCH":
+				console.log(JSON.stringify(params));
 				ajaxParams = {
 					type: method,
 					url: "api/" + url,
@@ -307,9 +308,9 @@ api.setAlbumCover = api.createV2API("album/{albumID}/cover", "POST");
 /** @type APIV2Call */
 api.addTagAlbum = api.createV2API("album/tag", "POST");
 /** @type APIV2Call */
-api.patchAlbum = api.createV2API("album/{albumID}", "PATCH");
+api.patchAlbum = api.createV2API("albums/{albumID}", "PATCH");
 /** @type APIV2Call */
-api.patchTagAlbum = api.createV2API("album/tag/{albumID}", "PATCH");
+api.patchTagAlbum = api.createV2API("albums/tag/{albumID}", "PATCH");
 /** @type APIV2Call */
 api.addAlbum = api.createV2API("album", "POST");
 /** @type APIV2Call */
@@ -337,7 +338,7 @@ api.photoDuplicate = api.createV2API("photos/{photoIDs}/duplicate", "POST");
 /** @type APIV2Call */
 api.photoDelete = api.createV2API("photos/{photoIDs}", "DELETE");
 /** @type APIV2Call */
-api.photoPatch = api.createV2API("photo/{photoIDs}", "PATCH");
+api.photoPatch = api.createV2API("photos/{photoIDs}", "PATCH");
 /** @type APIV2Call */
 api.photoRandom = api.createV2API("photo/random", "GET");
 /** @type APIV2Call */

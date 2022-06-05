@@ -302,6 +302,10 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected static function toBoolean($value): bool
 	{
+		if (empty($value)) {
+			return false;
+		}
+
 		return filter_var($value, FILTER_VALIDATE_BOOLEAN);
 	}
 
