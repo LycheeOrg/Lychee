@@ -1,5 +1,7 @@
 <?php
 
+include_once __DIR__ . '/../vendor/autoload.php';
+
 $NO_COLOR = "\033[0m";
 $GREEN = "\033[38;5;010m";
 $YELLOW = "\033[38;5;011m";
