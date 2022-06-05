@@ -7,7 +7,13 @@ use Tests\TestCase;
 class CommandsTest extends TestCase
 {
 	/**
-	 * A basic feature test example.
+	 * Tests some console commands on a basic level.
+	 *
+	 * The command under tests are only invoked, but not tested thoroughly.
+	 * In the long run, each of the commands should be tested by its own,
+	 * dedicated test class with test thorough methods for every option and
+	 * outcome of each command.
+	 * Then this class and test method can be nuked.
 	 *
 	 * @return void
 	 */

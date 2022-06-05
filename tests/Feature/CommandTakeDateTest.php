@@ -28,7 +28,7 @@ class CommandTakeDateTest extends PhotoTestBase
 			->assertExitCode(-1);
 	}
 
-	public function testUploadTimeFromCreationTime(): void
+	public function testSetUploadTimeFromFileTime(): void
 	{
 		$id = $this->photos_tests->upload(
 			static::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)

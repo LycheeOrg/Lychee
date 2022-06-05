@@ -73,7 +73,7 @@ class Ghostbuster extends Command
 				$removeDeadSymLinks = false;
 			}
 			if ($removeDeadSymLinks) {
-				$this->line('Also parsing database for pictures which point to non-existing files.');
+				$this->line('Also parsing database for photos with dead symbolic links.');
 				$this->line($this->col->yellow('This may modify the database.'));
 				$this->line('');
 			}
