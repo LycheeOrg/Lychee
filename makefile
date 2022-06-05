@@ -1,4 +1,4 @@
-.PHONY: dist-gen dist-clean dist clean 
+.PHONY: dist-gen dist-clean dist clean
 
 composer:
 	rm -r vendor  2> /dev/null || true
@@ -11,11 +11,6 @@ dist-gen: clean composer
 	@mkdir Lychee/public/dist
 	@mkdir Lychee/public/img
 	@mkdir Lychee/public/uploads
-	@mkdir Lychee/public/uploads/small
-	@mkdir Lychee/public/uploads/medium
-	@mkdir Lychee/public/uploads/big
-	@mkdir Lychee/public/uploads/thumb
-	@mkdir Lychee/public/uploads/raw
 	@mkdir Lychee/public/uploads/import
 	@mkdir Lychee/public/sym
 	@cp -r app                              Lychee
@@ -49,11 +44,6 @@ dist-gen: clean composer
 	@cp -r version.md                       Lychee
 	@touch Lychee/storage/logs/laravel.log
 	@touch Lychee/public/dist/user.css
-	@touch Lychee/public/uploads/big/index.html
-	@touch Lychee/public/uploads/small/index.html
-	@touch Lychee/public/uploads/medium/index.html
-	@touch Lychee/public/uploads/thumb/index.html
-	@touch Lychee/public/uploads/raw/index.html
 	@touch Lychee/public/uploads/import/index.html
 	@touch Lychee/public/sym/index.html
 
