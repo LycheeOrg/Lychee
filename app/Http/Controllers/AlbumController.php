@@ -37,6 +37,7 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -135,11 +136,11 @@ class AlbumController extends Controller
 	 *
 	 * @param PatchAlbumRequest $request
 	 *
-	 * @return void
+	 * @return Collection
 	 *
 	 * @throws ModelDBException
 	 */
-	public function patchAlbum(PatchAlbumRequest $request): void
+	public function patchAlbum(PatchAlbumRequest $request): Collection
 	{
 		/** @var Album $album */
 		foreach ($request->albums() as $album) {
@@ -160,6 +161,8 @@ class AlbumController extends Controller
 			}
 			$album->save();
 		}
+
+		return $request->albums();
 	}
 
 	/**
@@ -167,11 +170,11 @@ class AlbumController extends Controller
 	 *
 	 * @param PatchTagAlbumRequest $request
 	 *
-	 * @return void
+	 * @return Collection
 	 *
 	 * @throws ModelDBException
 	 */
-	public function patchTagAlbum(PatchTagAlbumRequest $request): void
+	public function patchTagAlbum(PatchTagAlbumRequest $request): Collection
 	{
 		/** @var TagAlbum $album */
 		foreach ($request->albums() as $album) {
@@ -192,6 +195,8 @@ class AlbumController extends Controller
 			}
 			$album->save();
 		}
+
+		return $request->albums();
 	}
 
 	/**

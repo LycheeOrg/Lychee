@@ -129,11 +129,11 @@ class PhotoController extends Controller
 	 *
 	 * @param PatchPhotoRequest $request
 	 *
-	 * @return void
+	 * @return \Illuminate\Database\Eloquent\Collection
 	 *
 	 * @throws LycheeException
 	 */
-	public function patchPhoto(PatchPhotoRequest $request): void
+	public function patchPhoto(PatchPhotoRequest $request): \Illuminate\Database\Eloquent\Collection
 	{
 		$notify = new Notify();
 
@@ -171,6 +171,8 @@ class PhotoController extends Controller
 				$notify->do($photo);
 			}
 		}
+
+		return $request->photos();
 	}
 
 	/**
