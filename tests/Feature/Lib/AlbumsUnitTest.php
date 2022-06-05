@@ -213,7 +213,7 @@ class AlbumsUnitTest
 	public function set_description(
 		string $id,
 		string $description,
-		int $expectedStatusCode = 204,
+		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->patchJson('/api/albums/' . $id, [
@@ -236,7 +236,7 @@ class AlbumsUnitTest
 	public function set_license(
 		string $id,
 		string $license,
-		int $expectedStatusCode = 204,
+		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->patchJson('/api/albums/' . $id, [
@@ -261,7 +261,7 @@ class AlbumsUnitTest
 		string $id,
 		string $sortingCol,
 		string $sortingOrder,
-		int $expectedStatusCode = 204,
+		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->patchJson('/api/albums/' . $id, [
@@ -319,7 +319,7 @@ class AlbumsUnitTest
 	public function set_tags(
 		string $id,
 		array $tags,
-		int $expectedStatusCode = 204,
+		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->patchJson('/api/albums/tag/' . $id, [
@@ -355,7 +355,7 @@ class AlbumsUnitTest
 	 */
 	public function delete(
 		array $ids,
-		int $expectedStatusCode = 204,
+		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->deleteJson('/api/albums/' . implode(',', $ids), []);

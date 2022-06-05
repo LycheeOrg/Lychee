@@ -220,7 +220,7 @@ class PhotosUnitTest
 	public function set_title(
 		string $id,
 		string $title,
-		int $expectedStatusCode = 204,
+		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): void {
 		/**
@@ -246,7 +246,7 @@ class PhotosUnitTest
 	public function set_description(
 		string $id,
 		string $description,
-		int $expectedStatusCode = 204,
+		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->patchJson(
@@ -271,7 +271,7 @@ class PhotosUnitTest
 	public function set_star(
 		array $ids,
 		bool $isStarred,
-		int $expectedStatusCode = 204,
+		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->patchJson('/api/photos/' . implode(',', $ids), [
@@ -294,7 +294,7 @@ class PhotosUnitTest
 	public function set_tag(
 		array $ids,
 		array $tags,
-		int $expectedStatusCode = 204,
+		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->patchJson('/api/photos/' . implode(',', $ids), [
@@ -317,7 +317,7 @@ class PhotosUnitTest
 	public function set_public(
 		string $id,
 		bool $isPublic,
-		int $expectedStatusCode = 204,
+		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->patchJson(
@@ -342,7 +342,7 @@ class PhotosUnitTest
 	public function set_license(
 		string $id,
 		string $license,
-		int $expectedStatusCode = 204,
+		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->patchJson(
@@ -367,7 +367,7 @@ class PhotosUnitTest
 	public function set_album(
 		string $album_id,
 		array $ids,
-		int $expectedStatusCode = 204,
+		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->patchJson(
