@@ -355,7 +355,7 @@ class AlbumsUnitTest
 	 */
 	public function delete(
 		array $ids,
-		int $expectedStatusCode = 200,
+		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->deleteJson('/api/albums/' . implode(',', $ids), []);
