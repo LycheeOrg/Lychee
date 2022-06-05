@@ -36,6 +36,8 @@ class PatchAlbumRequest extends BaseApiRequest implements HasAlbums, HasLicense,
 
 	protected bool $hasSorting = false;
 
+	protected bool $hasDescription = false;
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -71,7 +73,8 @@ class PatchAlbumRequest extends BaseApiRequest implements HasAlbums, HasLicense,
 		$this->albums = Album::query()->findOrFail(explode(',', $values[HasAlbums::ALBUM_IDS_ATTRIBUTE]));
 		$this->license = array_key_exists(HasLicense::LICENSE_ATTRIBUTE, $values) ? $values[HasLicense::LICENSE_ATTRIBUTE] : null;
 		$this->isNSFW = array_key_exists(self::IS_NSFW_ATTRIBUTE, $values) ? static::toBoolean($values[self::IS_NSFW_ATTRIBUTE]) : null;
-		$this->description = array_key_exists(HasDescription::DESCRIPTION_ATTRIBUTE, $values) ? static::toBoolean($values[HasDescription::DESCRIPTION_ATTRIBUTE]) : null;
+		$this->description = array_key_exists(HasDescription::DESCRIPTION_ATTRIBUTE, $values) ? $values[HasDescription::DESCRIPTION_ATTRIBUTE] : null;
+		$this->hasDescription = array_key_exists(HasDescription::DESCRIPTION_ATTRIBUTE, $values);
 		$this->title = array_key_exists(HasTitle::TITLE_ATTRIBUTE, $values) ? $values[HasTitle::TITLE_ATTRIBUTE] : null;
 		$this->hasSorting = array_key_exists(HasSortingCriterion::SORTING_COLUMN_ATTRIBUTE, $values);
 		if ($this->hasSorting) {
@@ -90,5 +93,10 @@ class PatchAlbumRequest extends BaseApiRequest implements HasAlbums, HasLicense,
 	public function hasSorting(): bool
 	{
 		return $this->hasSorting;
+	}
+
+	public function hasDescription(): bool
+	{
+		return $this->hasDescription;
 	}
 }

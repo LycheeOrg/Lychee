@@ -216,10 +216,9 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->patchJson(
-			'/api/albums/' . $id,
-			['description' => $description]
-		);
+		$response = $this->testCase->patchJson('/api/albums/' . $id, [
+			'description' => $description,
+		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);

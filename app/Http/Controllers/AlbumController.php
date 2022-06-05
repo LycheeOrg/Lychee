@@ -149,7 +149,7 @@ class AlbumController extends Controller
 			if ($request->isNSFW() != null) {
 				$album->is_nsfw = $request->isNSFW();
 			}
-			if ($request->description() != null) {
+			if ($request->hasDescription()) {
 				$album->description = $request->description();
 			}
 			if ($request->title() != null) {
@@ -178,7 +178,7 @@ class AlbumController extends Controller
 			if ($request->isNSFW() != null) {
 				$album->is_nsfw = $request->isNSFW();
 			}
-			if ($request->description() != null) {
+			if ($request->hasDescription()) {
 				$album->description = $request->description();
 			}
 			if ($request->title() != null) {
