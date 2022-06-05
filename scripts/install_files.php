@@ -6,7 +6,7 @@ $YELLOW = "\033[38;5;011m";
 $ORANGE = "\033[38;5;214m";
 
 echo "\n${YELLOW}creating file for CSS personalization$NO_COLOR\n";
-touch('public/dist/user.css');
+\Safe\touch('public/dist/user.css');
 
 echo "\n${YELLOW}creating default SQLite database$NO_COLOR\n";
 touch('database/database.sqlite');
