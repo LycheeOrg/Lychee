@@ -1304,150 +1304,157 @@ api.createV2API = function (endpoint, method) {
 	};
 };
 
-api.v2 = {
-	/** @type APIV2Call */
-	getAlbum: api.createV2API("album/{albumID}", "GET"),
-	/** @type APIV2Call */
-	getAlbumPosition: api.createV2API("album/{albumID}/positions", "GET"),
-	/** @type APIV2Call */
-	deleteAlbumTrack: api.createV2API("album/{albumID}/track", "DELETE"),
-	/** @type APIV2Call */
-	listWebAuthn: api.createV2API("webauthn", "GET"),
-	/** @type APIV2Call */
-	deleteWebAuthn: api.createV2API("webauthn", "DELETE"),
-	/** @type APIV2Call */
-	search: api.createV2API("search/{term}", "GET"),
-	/** @type APIV2Call */
-	photoEditorRotate: api.createV2API("photo/{photoID}/editor/rotate/{direction}", "POST"),
-	/** @type APIV2Call */
-	photoDuplicate: api.createV2API("photos/{photoIDs}/duplicate", "POST"),
-	/** @type APIV2Call */
-	photoDelete: api.createV2API("photos/{photoIDs}", "DELETE"),
-	/** @type APIV2Call */
-	photoPatch: api.createV2API("photo/{photoIDs}", "PATCH"),
-	/** @type APIV2Call */
-	photoRandom: api.createV2API("photo/random", "GET"),
-	/** @type APIV2Call */
-	getPhoto: api.createV2API("photo/{photoID}", "GET"),
-	/** @type APIV2Call */
-	translateLegacy: api.createV2API("legacy/translate", "GET"),
-	/** @type APIV2Call */
-	importServer: api.createV2API("import/server", "POST"),
-	/** @type APIV2Call */
-	importUrl: api.createV2API("import/url", "POST"),
-	/** @type APIV2Call */
-	importServerCancel: api.createV2API("import/server/cancel", "POST"),
-	/** @type APIV2Call */
-	frameSettings: api.createV2API("frame/settings", "GET"),
-	/** @type APIV2Call */
-	albumsTree: api.createV2API("albums/tree", "GET"),
-	/** @type APIV2Call */
-	albumsPosition: api.createV2API("albums/positions", "GET"),
-	/** @type APIV2Call */
-	getAlbums: api.createV2API("albums", "GET"),
-	/** @type APIV2Call */
-	setAlbumProtectionPolicy: api.createV2API("album/{albumID}/protect", "POST"),
-	/** @type APIV2Call */
-	setAlbumCover: api.createV2API("album/{albumID}/cover", "POST"),
-	/** @type APIV2Call */
-	addTagAlbum: api.createV2API("album/tag", "POST"),
-	/** @type APIV2Call */
-	patchAlbum: api.createV2API("album/{albumID}", "PATCH"),
-	/** @type APIV2Call */
-	patchTagAlbum: api.createV2API("album/tag/{albumID}", "PATCH"),
-	/** @type APIV2Call */
-	addAlbum: api.createV2API("album", "POST"),
-	/** @type APIV2Call */
-	unlockAlbum: api.createV2API("album/{albumID}/unlock", "POST"),
-	/** @type APIV2Call */
-	initSession: api.createV2API("session/init", "GET"),
-	/** @type APIV2Call */
-	loginSession: api.createV2API("session/login", "POST"),
-	/** @type APIV2Call */
-	logoutSession: api.createV2API("session/login", "POST"),
-	/** @type APIV2Call */
-	setLogin: api.createV2API("settings/login", "POST"),
-	/** @type APIV2Call */
-	sharingList: api.createV2API("sharing", "GET"),
-	/** @type APIV2Call */
-	sharingAdd: api.createV2API("sharing", "POST"),
-	/** @type APIV2Call */
-	sharingDelete: api.createV2API("sharing/{shareIDs}", "DELETE"),
-	/** @type APIV2Call */
-	diagnostics: api.createV2API("diagnostics", "GET"),
-	/** @type APIV2Call */
-	diagnosticsSize: api.createV2API("diagnostics/size", "GET"),
-	/** @type APIV2Call */
-	listLogs: api.createV2API("logs", "GET"),
-	/** @type APIV2Call */
-	clearLogsNoise: api.createV2API("logs/clearNoise", "POST"),
-	/** @type APIV2Call */
-	clearLogs: api.createV2API("logs/clear", "POST"),
-	/** @type APIV2Call */
-	checkUpdate: api.createV2API("update", "GET"),
-	/** @type APIV2Call */
-	applyUpdate: api.createV2API("update", "POST"),
-	/** @type APIV2Call */
-	listUsers: api.createV2API("user", "GET"),
-	/** @type APIV2Call */
-	saveUser: api.createV2API("user/{userID}", "POST"),
-	/** @type APIV2Call */
-	createUser: api.createV2API("user", "POST"),
-	/** @type APIV2Call */
-	deleteUser: api.createV2API("user/{userID}", "DELETE"),
-	/** @type APIV2Call */
-	userGetEmail: api.createV2API("user/email", "GET"),
-	/** @type APIV2Call */
-	userSetEmail: api.createV2API("user/email", "POST"),
-	/** @type APIV2Call */
-	allSettings: api.createV2API("settings", "GET"),
-	/** @type APIV2Call */
-	saveAllSettings: api.createV2API("settings", "POST"),
-	/** @type APIV2Call */
-	dropboxKey: api.createV2API("settings/dropbox", "POST"),
-	/** @type APIV2Call */
-	sorting: api.createV2API("settings/sorting", "POST"),
-	/** @type APIV2Call */
-	lang: api.createV2API("settings/lang", "POST"),
-	/** @type APIV2Call */
-	layout: api.createV2API("settings/layout", "POST"),
-	/** @type APIV2Call */
-	publicSearch: api.createV2API("settings/publicSearch", "POST"),
-	/** @type APIV2Call */
-	defaultLicense: api.createV2API("settings/defaultLicense", "POST"),
-	/** @type APIV2Call */
-	mapDisplay: api.createV2API("settings/mapDisplay", "POST"),
-	/** @type APIV2Call */
-	mapDisplayPublic: api.createV2API("settings/mapDisplayPublic", "POST"),
-	/** @type APIV2Call */
-	mapProvider: api.createV2API("settings/mapProvider", "POST"),
-	/** @type APIV2Call */
-	mapIncludeSubAlbums: api.createV2API("settings/mapIncludeSubAlbums", "POST"),
-	/** @type APIV2Call */
-	locationDecoding: api.createV2API("settings/locationDecoding", "POST"),
-	/** @type APIV2Call */
-	locationShow: api.createV2API("settings/locationShow", "POST"),
-	/** @type APIV2Call */
-	locationShowPublic: api.createV2API("settings/locationShowPublic", "POST"),
-	/** @type APIV2Call */
-	css: api.createV2API("settings/css", "POST"),
-	/** @type APIV2Call */
-	overlayType: api.createV2API("settings/overlayType", "POST"),
-	/** @type APIV2Call */
-	nsfwVisible: api.createV2API("settings/nsfwVisible", "POST"),
-	/** @type APIV2Call */
-	newPhotosNotification: api.createV2API("settings/newPhotosNotification", "POST"),
-	/** @type APIV2Call */
-	mergeAlbums: api.createV2API("album/{albumID}/merge", "POST"),
-	/** @type APIV2Call */
-	moveAlbums: api.createV2API("album/{albumID}/move", "POST"),
-	/** @type APIV2Call */
-	moveAlbumsToTop: api.createV2API("album/move", "POST"),
-	/** @type APIV2Call */
-	deleteAlbums: api.createV2API("albums/{albumIDs}", "DELETE"),
-	/** @type APIV2Call */
-	setAlbumTitle: api.createV2API("albums/{albumIDs}/rename", "POST")
-};
+/** @type APIV2Call */
+api.search = api.createV2API("search/{term}", "GET");
+/** @type APIV2Call */
+api.translateLegacy = api.createV2API("legacy/translate", "GET");
+/** @type APIV2Call */
+api.importServer = api.createV2API("import/server", "POST");
+/** @type APIV2Call */
+api.importUrl = api.createV2API("import/url", "POST");
+/** @type APIV2Call */
+api.importServerCancel = api.createV2API("import/server/cancel", "POST");
+/** @type APIV2Call */
+api.frameSettings = api.createV2API("frame/settings", "GET");
+/** @type APIV2Call */
+
+/** @type APIV2Call */
+api.getAlbum = api.createV2API("album/{albumID}", "GET");
+/** @type APIV2Call */
+api.getAlbumPosition = api.createV2API("album/{albumID}/positions", "GET");
+/** @type APIV2Call */
+api.deleteAlbumTrack = api.createV2API("album/{albumID}/track", "DELETE");
+/** @type APIV2Call */
+api.albumsTree = api.createV2API("albums/tree", "GET");
+/** @type APIV2Call */
+api.albumsPosition = api.createV2API("albums/positions", "GET");
+/** @type APIV2Call */
+api.getAlbums = api.createV2API("albums", "GET");
+/** @type APIV2Call */
+api.setAlbumProtectionPolicy = api.createV2API("album/{albumID}/protect", "POST");
+/** @type APIV2Call */
+api.setAlbumCover = api.createV2API("album/{albumID}/cover", "POST");
+/** @type APIV2Call */
+api.addTagAlbum = api.createV2API("album/tag", "POST");
+/** @type APIV2Call */
+api.patchAlbum = api.createV2API("album/{albumID}", "PATCH");
+/** @type APIV2Call */
+api.patchTagAlbum = api.createV2API("album/tag/{albumID}", "PATCH");
+/** @type APIV2Call */
+api.addAlbum = api.createV2API("album", "POST");
+/** @type APIV2Call */
+api.unlockAlbum = api.createV2API("album/{albumID}/unlock", "POST");
+/** @type APIV2Call */
+api.mergeAlbums = api.createV2API("album/{albumID}/merge", "POST");
+/** @type APIV2Call */
+api.moveAlbums = api.createV2API("album/{albumID}/move", "POST");
+/** @type APIV2Call */
+api.moveAlbumsToTop = api.createV2API("album/move", "POST");
+/** @type APIV2Call */
+api.deleteAlbums = api.createV2API("albums/{albumIDs}", "DELETE");
+/** @type APIV2Call */
+api.setAlbumTitle = api.createV2API("albums/{albumIDs}/rename", "POST");
+
+/** @type APIV2Call */
+api.listWebAuthn = api.createV2API("webauthn", "GET");
+/** @type APIV2Call */
+api.deleteWebAuthn = api.createV2API("webauthn", "DELETE");
+
+/** @type APIV2Call */
+api.photoEditorRotate = api.createV2API("photo/{photoID}/editor/rotate/{direction}", "POST");
+/** @type APIV2Call */
+api.photoDuplicate = api.createV2API("photos/{photoIDs}/duplicate", "POST");
+/** @type APIV2Call */
+api.photoDelete = api.createV2API("photos/{photoIDs}", "DELETE");
+/** @type APIV2Call */
+api.photoPatch = api.createV2API("photo/{photoIDs}", "PATCH");
+/** @type APIV2Call */
+api.photoRandom = api.createV2API("photo/random", "GET");
+/** @type APIV2Call */
+api.getPhoto = api.createV2API("photo/{photoID}", "GET");
+
+/** @type APIV2Call */
+api.initSession = api.createV2API("session/init", "GET");
+/** @type APIV2Call */
+api.loginSession = api.createV2API("session/login", "POST");
+/** @type APIV2Call */
+api.logoutSession = api.createV2API("session/login", "POST");
+
+/** @type APIV2Call */
+api.sharingList = api.createV2API("sharing", "GET");
+/** @type APIV2Call */
+api.sharingAdd = api.createV2API("sharing", "POST");
+/** @type APIV2Call */
+api.sharingDelete = api.createV2API("sharing/{shareIDs}", "DELETE");
+
+/** @type APIV2Call */
+api.diagnostics = api.createV2API("diagnostics", "GET");
+/** @type APIV2Call */
+api.diagnosticsSize = api.createV2API("diagnostics/size", "GET");
+/** @type APIV2Call */
+api.listLogs = api.createV2API("logs", "GET");
+/** @type APIV2Call */
+api.clearLogsNoise = api.createV2API("logs/clearNoise", "POST");
+/** @type APIV2Call */
+api.clearLogs = api.createV2API("logs/clear", "POST");
+/** @type APIV2Call */
+api.checkUpdate = api.createV2API("update", "GET");
+/** @type APIV2Call */
+api.applyUpdate = api.createV2API("update", "POST");
+
+/** @type APIV2Call */
+api.listUsers = api.createV2API("user", "GET");
+/** @type APIV2Call */
+api.saveUser = api.createV2API("user/{userID}", "POST");
+/** @type APIV2Call */
+api.createUser = api.createV2API("user", "POST");
+/** @type APIV2Call */
+api.deleteUser = api.createV2API("user/{userID}", "DELETE");
+/** @type APIV2Call */
+api.userGetEmail = api.createV2API("user/email", "GET");
+/** @type APIV2Call */
+api.userSetEmail = api.createV2API("user/email", "POST");
+
+/** @type APIV2Call */
+api.allSettings = api.createV2API("settings", "GET");
+/** @type APIV2Call */
+api.saveAllSettings = api.createV2API("settings", "POST");
+/** @type APIV2Call */
+api.dropboxKey = api.createV2API("settings/dropbox", "POST");
+/** @type APIV2Call */
+api.sorting = api.createV2API("settings/sorting", "POST");
+/** @type APIV2Call */
+api.lang = api.createV2API("settings/lang", "POST");
+/** @type APIV2Call */
+api.layout = api.createV2API("settings/layout", "POST");
+/** @type APIV2Call */
+api.setLogin = api.createV2API("settings/login", "POST");
+/** @type APIV2Call */
+api.publicSearch = api.createV2API("settings/publicSearch", "POST");
+/** @type APIV2Call */
+api.defaultLicense = api.createV2API("settings/defaultLicense", "POST");
+/** @type APIV2Call */
+api.mapDisplay = api.createV2API("settings/mapDisplay", "POST");
+/** @type APIV2Call */
+api.mapDisplayPublic = api.createV2API("settings/mapDisplayPublic", "POST");
+/** @type APIV2Call */
+api.mapProvider = api.createV2API("settings/mapProvider", "POST");
+/** @type APIV2Call */
+api.mapIncludeSubAlbums = api.createV2API("settings/mapIncludeSubAlbums", "POST");
+/** @type APIV2Call */
+api.locationDecoding = api.createV2API("settings/locationDecoding", "POST");
+/** @type APIV2Call */
+api.locationShow = api.createV2API("settings/locationShow", "POST");
+/** @type APIV2Call */
+api.locationShowPublic = api.createV2API("settings/locationShowPublic", "POST");
+/** @type APIV2Call */
+api.css = api.createV2API("settings/css", "POST");
+/** @type APIV2Call */
+api.overlayType = api.createV2API("settings/overlayType", "POST");
+/** @type APIV2Call */
+api.nsfwVisible = api.createV2API("settings/nsfwVisible", "POST");
+/** @type APIV2Call */
+api.newPhotosNotification = api.createV2API("settings/newPhotosNotification", "POST");
 
 var csrf = {};
 
@@ -1893,7 +1900,7 @@ album.load = function (albumID) {
 		}
 	};
 
-	api.v2.getAlbum({ albumID: albumID }, successHandler, null, errorHandler);
+	api.getAlbum({ albumID: albumID }, successHandler, null, errorHandler);
 };
 
 /**
@@ -1945,7 +1952,7 @@ album.add = function () {
 			params.parent_id = _photo3.json.album_id;
 		}
 
-		api.v2.addAlbum(params,
+		api.addAlbum(params,
 		/** @param {Album} _data */
 		function (_data) {
 			if (IDs != null && callback != null) {
@@ -1989,7 +1996,7 @@ album.addByTags = function () {
 
 		basicModal.close();
 
-		api.v2.addTagAlbum({
+		api.addTagAlbum({
 			title: data.title,
 			tags: data.tags.split(",")
 		},
@@ -2039,7 +2046,7 @@ album.setShowTags = function (albumID) {
 			view.album.show_tags();
 		}
 
-		api.v2.patchTagAlbum({
+		api.patchTagAlbum({
 			albumID: albumID,
 			tags: new_show_tags
 		}, function () {
@@ -2122,7 +2129,7 @@ album.setTitle = function (albumIDs) {
 			});
 		}
 
-		api.v2.setAlbumTitle({
+		api.setAlbumTitle({
 			albumIDs: albumIDs,
 			title: newTitle
 		});
@@ -2166,12 +2173,12 @@ album.setDescription = function (albumID) {
 		}
 
 		if (album.isTagAlbum()) {
-			api.v2.patchTagAlbum({
+			api.patchTagAlbum({
 				albumID: albumID,
 				description: description
 			});
 		} else {
-			api.v2.patchAlbum({
+			api.patchAlbum({
 				albumID: albumID,
 				description: description
 			});
@@ -2205,7 +2212,7 @@ album.toggleCover = function (photoID) {
 		photoID: album.json.cover_id
 	};
 
-	api.v2.setAlbumCover(params, function () {
+	api.setAlbumCover(params, function () {
 		view.album.content.cover(photoID);
 		if (!album.getParentID()) {
 			albums.refresh();
@@ -2226,7 +2233,7 @@ album.setLicense = function (albumID) {
 	var action = function action(data) {
 		basicModal.close();
 
-		api.v2.patchAlbum({
+		api.patchAlbum({
 			albumID: albumID,
 			license: data.license
 		}, function () {
@@ -2275,7 +2282,7 @@ album.setSorting = function (albumID) {
 		basicModal.close();
 
 		if (album.isTagAlbum()) {
-			api.v2.patchTagAlbum({
+			api.patchTagAlbum({
 				albumID: albumID,
 				sorting_column: data.sortingCol,
 				sorting_order: data.sortingOrder
@@ -2285,7 +2292,7 @@ album.setSorting = function (albumID) {
 				}
 			});
 		} else {
-			api.v2.patchAlbum({
+			api.patchAlbum({
 				albumID: albumID,
 				sorting_column: data.sortingCol,
 				sorting_order: data.sortingOrder
@@ -2295,7 +2302,7 @@ album.setSorting = function (albumID) {
 				}
 			});
 		}
-		api.v2.setAlbumSorting({
+		api.setAlbumSorting({
 			albumID: albumID,
 			sorting_column: data.sortingCol,
 			sorting_order: data.sortingOrder
@@ -2376,7 +2383,7 @@ album.setProtectionPolicy = function (albumID) {
 			params.password = null;
 		}
 
-		api.v2.setAlbumProtectionPolicy(params);
+		api.setAlbumProtectionPolicy(params);
 	};
 
 	var msg = lychee.html(_templateObject10, lychee.locale["ALBUM_PUBLIC"], lychee.locale["ALBUM_PUBLIC_EXPL"], build.iconic("check"), lychee.locale["ALBUM_FULL"], lychee.locale["ALBUM_FULL_EXPL"], build.iconic("check"), lychee.locale["ALBUM_HIDDEN"], lychee.locale["ALBUM_HIDDEN_EXPL"], build.iconic("check"), lychee.locale["ALBUM_DOWNLOADABLE"], lychee.locale["ALBUM_DOWNLOADABLE_EXPL"], build.iconic("check"), lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE"], lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE_EXPL"], build.iconic("check"), lychee.locale["ALBUM_PASSWORD_PROT"], lychee.locale["ALBUM_PASSWORD_PROT_EXPL"], lychee.locale["PASSWORD"], lychee.locale["ALBUM_NSFW"], lychee.locale["ALBUM_NSFW_EXPL"]);
@@ -2467,12 +2474,12 @@ album.shareUsers = function (albumID) {
 		});
 
 		if (sharingToDelete.length > 0) {
-			api.v2.sharingDelete({
+			api.sharingDelete({
 				shareIDs: sharingToDelete
 			});
 		}
 		if (sharingToAdd.length > 0) {
-			api.v2.sharingAdd({
+			api.sharingAdd({
 				albumIDs: [albumID],
 				userIDs: sharingToAdd
 			});
@@ -2505,7 +2512,7 @@ album.shareUsers = function (albumID) {
 			}
 		};
 
-		api.v2.sharingList({}, successCallback);
+		api.sharingList({}, successCallback);
 	};
 
 	basicModal.show({
@@ -2534,7 +2541,7 @@ album.toggleNSFW = function () {
 
 	view.album.nsfw();
 
-	api.v2.patchAlbum({
+	api.patchAlbum({
 		albumID: album.json.id,
 		is_nsfw: album.json.is_nsfw
 	}, function () {
@@ -2656,7 +2663,7 @@ album.delete = function (albumIDs) {
 	action.fn = function () {
 		basicModal.close();
 
-		api.v2.deleteAlbums({
+		api.deleteAlbums({
 			albumIDs: albumIDs
 		}, function () {
 			if (visible.albums()) {
@@ -2738,7 +2745,7 @@ album.merge = function (albumIDs, albumID) {
 	var action = function action() {
 		basicModal.close();
 
-		api.v2.mergeAlbums({
+		api.mergeAlbums({
 			albumID: albumID,
 			albumIDs: albumIDs
 		}, function () {
@@ -2778,13 +2785,13 @@ album.setAlbum = function (albumIDs, albumID) {
 		basicModal.close();
 
 		if (albumID === null) {
-			api.v2.moveAlbumsToTop({
+			api.moveAlbumsToTop({
 				albumIDs: albumIDs
 			}, function () {
 				return album.reload();
 			});
 		} else {
-			api.v2.moveAlbums({
+			api.moveAlbums({
 				albumID: albumID,
 				albumIDs: albumIDs
 			}, function () {
@@ -2908,7 +2915,7 @@ album.refresh = function () {
 album.deleteTrack = function () {
 	album.json.track_url = null;
 
-	api.v2.deleteAlbumTrack({
+	api.deleteAlbumTrack({
 		albumID: album.json.id
 	});
 };
@@ -2972,7 +2979,7 @@ albums.load = function () {
 	};
 
 	if (albums.json === null) {
-		api.v2.getAlbums({}, successCallback);
+		api.getAlbums({}, successCallback);
 	} else {
 		setTimeout(function () {
 			header.setMode("albums");
@@ -3954,7 +3961,7 @@ contextMenu.buildList = function (lists, exclude, action) {
  * @returns {void}
  */
 contextMenu.albumTitle = function (albumID, e) {
-	api.v2.albumsTree({}, function (data) {
+	api.albumsTree({}, function (data) {
 		var items = [];
 
 		items = items.concat({ title: lychee.locale["ROOT"], disabled: albumID === null, fn: function fn() {
@@ -4316,7 +4323,7 @@ contextMenu.move = function (IDs, e, callback) {
 
 	var items = [];
 
-	api.v2.albumsTree({}, function (data) {
+	api.albumsTree({}, function (data) {
 		var addItems = function addItems(albums) {
 			// Disable all children
 			// It's not possible to move us into them
@@ -5874,7 +5881,7 @@ lychee.init = function () {
 
 	lychee.adjustContentHeight();
 
-	api.v2.initSession({},
+	api.initSession({},
 	/** @param {InitializationData} data */
 	function (data) {
 		lychee.parseInitializationData(data);
@@ -6046,7 +6053,7 @@ lychee.login = function (data) {
 		return;
 	}
 
-	api.v2.loginSession(data, function () {
+	api.loginSession(data, function () {
 		return window.location.reload();
 	}, null, function (jqXHR) {
 		if (jqXHR.status === 401) {
@@ -6102,7 +6109,7 @@ lychee.loginDialog = function () {
  * @returns {void}
  */
 lychee.logout = function () {
-	api.v2.logoutSession({}, function () {
+	api.logoutSession({}, function () {
 		return window.location.reload();
 	});
 };
@@ -6199,7 +6206,7 @@ lychee.reloadIfLegacyIDs = function (albumID, photoID, autoplay) {
 	var params = {};
 	if (isLegacyID(albumID)) params.albumID = parseInt(albumID, 10);
 	if (isLegacyID(photoID)) params.photoID = parseInt(photoID, 10);
-	api.v2.translateLegacy(params, function (data) {
+	api.translateLegacy(params, function (data) {
 		reloadWithNewIDs(data.hasOwnProperty("albumID") ? data.albumID : albumID, data.hasOwnProperty("photoID") ? data.photoID : photoID);
 	});
 
@@ -7735,10 +7742,10 @@ mapview.open = function () {
 				includeSubAlbums: _includeSubAlbums
 			};
 
-			api.v2.getAlbumPosition(params, successHandler);
+			api.getAlbumPosition(params, successHandler);
 		} else {
 			// AlbumID is empty -> fetch all photos of all albums
-			api.v2.albumsPosition({}, successHandler);
+			api.albumsPosition({}, successHandler);
 		}
 	};
 
@@ -8262,13 +8269,13 @@ notifications.update = function (params) {
 		}
 	}
 
-	api.v2.userSetEmail(params, function () {
+	api.userSetEmail(params, function () {
 		loadingBar.show("success", "Email updated!");
 	});
 };
 
 notifications.load = function () {
-	api.v2.userGetEmail({},
+	api.userGetEmail({},
 	/** @param {EMailData} data */function (data) {
 		notifications.json = data;
 		view.notifications.init();
@@ -8306,7 +8313,7 @@ password.getDialog = function (albumID, callback) {
 			password: data.password
 		};
 
-		api.v2.unlockAlbum(params, function () {
+		api.unlockAlbum(params, function () {
 			basicModal.close();
 			callback();
 		}, null, function (jqXHR, params2, lycheeException) {
@@ -8397,7 +8404,7 @@ _photo3.load = function (photoID, albumID, autoplay) {
 		}
 	};
 
-	api.v2.getPhoto({
+	api.getPhoto({
 		photoID: photoID
 	}, successHandler);
 };
@@ -8677,7 +8684,7 @@ _photo3.delete = function (photoIDs) {
 			lychee.goto(album.getID());
 		}
 
-		api.v2.photoDelete({ photoIDs: photoIDs });
+		api.photoDelete({ photoIDs: photoIDs });
 	};
 
 	if (photoIDs.length === 1) {
@@ -8747,7 +8754,7 @@ _photo3.setTitle = function (photoIDs) {
 			view.album.content.title(id);
 		});
 
-		api.v2.photoPatch({
+		api.photoPatch({
 			photoIDs: photoIDs,
 			title: newTitle
 		});
@@ -8779,7 +8786,7 @@ _photo3.setTitle = function (photoIDs) {
  * @returns {void}
  */
 _photo3.copyTo = function (photoIDs, albumID) {
-	api.v2.photoDuplicate({
+	api.photoDuplicate({
 		photoIDs: photoIDs,
 		albumID: albumID
 	}, function () {
@@ -8830,7 +8837,7 @@ _photo3.setAlbum = function (photoIDs, albumID) {
 		}
 	}
 
-	api.v2.photoPatch({
+	api.photoPatch({
 		photoIDs: photoIDs,
 		albumID: albumID
 	}, function () {
@@ -8854,7 +8861,7 @@ _photo3.toggleStar = function () {
 	view.photo.star();
 	albums.refresh();
 
-	api.v2.photoPatch({
+	api.photoPatch({
 		photoIDs: [_photo3.json.id],
 		is_starred: _photo3.json.is_starred
 	});
@@ -8875,7 +8882,7 @@ _photo3.setStar = function (photoIDs, isStarred) {
 
 	albums.refresh();
 
-	api.v2.photoPatch({
+	api.photoPatch({
 		photoIDs: photoIDs,
 		is_starred: isStarred
 	});
@@ -8953,7 +8960,7 @@ _photo3.setProtectionPolicy = function (photoID) {
 
 				albums.refresh();
 
-				api.v2.photoPatch({
+				api.photoPatch({
 					photoIDs: photoID,
 					is_public: newIsPublic !== 0
 				});
@@ -9026,7 +9033,7 @@ _photo3.setDescription = function (photoID) {
 			view.photo.description();
 		}
 
-		api.v2.photoPatch({
+		api.photoPatch({
 			photoIDs: photoID,
 			description: description
 		});
@@ -9117,7 +9124,7 @@ _photo3.setTags = function (photoIDs, tags) {
 		album.getByID(id).tags = tags;
 	});
 
-	api.v2.photoPatch({
+	api.photoPatch({
 		photoIDs: photoIDs,
 		tags: tags
 	}, function () {
@@ -9187,7 +9194,7 @@ _photo3.setLicense = function (photoID) {
 			license: license
 		};
 
-		api.v2.photoPatch(params, function () {
+		api.photoPatch(params, function () {
 			// update the photo JSON and reload the license in the sidebar
 			_photo3.json.license = params.license;
 			view.photo.license();
@@ -9427,7 +9434,7 @@ photoeditor = {};
  * @returns {void}
  */
 photoeditor.rotate = function (photoID, direction) {
-	api.v2.photoEditorRotate({
+	api.photoEditorRotate({
 		photoID: photoID,
 		direction: direction
 	},
@@ -9592,7 +9599,7 @@ search.find = function (term) {
 	/** @returns {void} */
 	var timeoutHandler = function timeoutHandler() {
 		if (header.dom(".header__search").val().length !== 0) {
-			api.v2.search({ term: term }, successHandler);
+			api.search({ term: term }, successHandler);
 		} else {
 			search.reset();
 		}
@@ -9693,7 +9700,7 @@ settings.createLogin = function () {
 			password: password
 		};
 
-		api.v2.setLogin(params, null, null, errorHandler);
+		api.setLogin(params, null, null, errorHandler);
 	};
 
 	var msg = "\n\t\t<p>\n\t\t\t" + lychee.locale["LOGIN_TITLE"] + "\n\t\t\t<input name='username' class='text' type='text' placeholder='" + lychee.locale["LOGIN_USERNAME"] + "' value=''>\n\t\t\t<input name='password' class='text' type='password' placeholder='" + lychee.locale["LOGIN_PASSWORD"] + "' value=''>\n\t\t\t<input name='confirm' class='text' type='password' placeholder='" + lychee.locale["LOGIN_PASSWORD_CONFIRM"] + "' value=''>\n\t\t</p>";
@@ -9817,7 +9824,7 @@ settings.changeLogin = function (params) {
 		$("input[name=confirm]").removeClass("error");
 	}
 
-	api.v2.setLogin(params, function () {
+	api.setLogin(params, function () {
 		$("input[name]").removeClass("error");
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LOGIN"]);
 		view.settings.content.clearLogin();
@@ -9829,7 +9836,7 @@ settings.changeLogin = function (params) {
  * @returns {void}
  */
 settings.changeSorting = function (params) {
-	api.v2.sorting(params, function () {
+	api.sorting(params, function () {
 		lychee.sorting_albums.column = params["sorting_albums_column"];
 		lychee.sorting_albums.order = params["sorting_albums_order"];
 		lychee.sorting_photos.column = params["sorting_photos_column"];
@@ -9845,7 +9852,7 @@ settings.changeSorting = function (params) {
  */
 settings.changeDropboxKey = function (params) {
 	// if params.key == "" key is cleared
-	api.v2.dropboxKey(params, function () {
+	api.dropboxKey(params, function () {
 		lychee.dropboxKey = params.key;
 		// if (callback) lychee.loadDropbox(callback)
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_DROPBOX"]);
@@ -9857,7 +9864,7 @@ settings.changeDropboxKey = function (params) {
  * @returns {void}
  */
 settings.changeLang = function (params) {
-	api.v2.lang(params, function () {
+	api.lang(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LANG"]);
 		lychee.init();
 	});
@@ -9868,7 +9875,7 @@ settings.changeLang = function (params) {
  * @returns {void}
  */
 settings.setDefaultLicense = function (params) {
-	api.v2.defaultLicense(params, function () {
+	api.defaultLicense(params, function () {
 		lychee.default_license = params.license;
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LICENSE"]);
 	});
@@ -9879,7 +9886,7 @@ settings.setDefaultLicense = function (params) {
  * @returns {void}
  */
 settings.setLayout = function (params) {
-	api.v2.layout(params, function () {
+	api.layout(params, function () {
 		lychee.layout = params.layout;
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LAYOUT"]);
 	});
@@ -9890,7 +9897,7 @@ settings.setLayout = function (params) {
  * @returns {void}
  */
 settings.changePublicSearch = function (params) {
-	api.v2.publicSearch(params, function () {
+	api.publicSearch(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_PUBLIC_SEARCH"]);
 		lychee.public_search = params.public_search;
 	});
@@ -9901,7 +9908,7 @@ settings.changePublicSearch = function (params) {
  * @returns {void}
  */
 settings.setOverlayType = function (params) {
-	api.v2.overlayType(params, function () {
+	api.overlayType(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_IMAGE_OVERLAY"]);
 		lychee.image_overlay_type = params.image_overlay_type;
 		lychee.image_overlay_type_default = params.image_overlay_type;
@@ -9913,7 +9920,7 @@ settings.setOverlayType = function (params) {
  * @returns {void}
  */
 settings.changeMapDisplay = function (params) {
-	api.v2.mapDisplay(params, function () {
+	api.mapDisplay(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
 		lychee.map_display = params.map_display;
 		// Map functionality is disabled
@@ -9929,7 +9936,7 @@ settings.changeMapDisplay = function (params) {
  * @returns {void}
  */
 settings.changeMapDisplayPublic = function (params) {
-	api.v2.mapDisplayPublic(params, function () {
+	api.mapDisplayPublic(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC"]);
 		lychee.map_display_public = params.map_display_public;
 		// If public map functionality is enabled, but map in general is disabled
@@ -9945,7 +9952,7 @@ settings.changeMapDisplayPublic = function (params) {
  * @returns {void}
  */
 settings.setMapProvider = function (params) {
-	api.v2.mapProvider(params, function () {
+	api.mapProvider(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_PROVIDER"]);
 		lychee.map_provider = params.map_provider;
 	});
@@ -9956,7 +9963,7 @@ settings.setMapProvider = function (params) {
  * @returns {void}
  */
 settings.changeMapIncludeSubAlbums = function (params) {
-	api.v2.mapIncludeSubAlbums(params, function () {
+	api.mapIncludeSubAlbums(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
 		lychee.map_include_subalbums = params.map_include_subalbums;
 	});
@@ -9967,7 +9974,7 @@ settings.changeMapIncludeSubAlbums = function (params) {
  * @returns {void}
  */
 settings.changeLocationDecoding = function (params) {
-	api.v2.locationDecoding(params, function () {
+	api.locationDecoding(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
 		lychee.location_decoding = params.location_decoding;
 	});
@@ -9978,7 +9985,7 @@ settings.changeLocationDecoding = function (params) {
  * @returns {void}
  */
 settings.changeNSFWVisible = function (params) {
-	api.v2.nsfwVisible(params, function () {
+	api.nsfwVisible(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_NSFW_VISIBLE"]);
 		lychee.nsfw_visible = params.nsfw_visible;
 		lychee.nsfw_visible_saved = lychee.nsfw_visible;
@@ -9995,7 +10002,7 @@ settings.changeNSFWVisible = function (params) {
  * @returns {void}
  */
 settings.changeLocationShow = function (params) {
-	api.v2.locationShow(params, function () {
+	api.locationShow(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
 		lychee.location_show = params.location_show;
 		// Don't show location
@@ -10011,7 +10018,7 @@ settings.changeLocationShow = function (params) {
  * @returns {void}
  */
 settings.changeLocationShowPublic = function (params) {
-	api.v2.locationShowPublic(params, function () {
+	api.locationShowPublic(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
 		lychee.location_show_public = params.location_show_public;
 		// If public map functionality is enabled, but map in general is disabled
@@ -10027,7 +10034,7 @@ settings.changeLocationShowPublic = function (params) {
  * @returns {void}
  */
 settings.changeNewPhotosNotification = function (params) {
-	api.v2.newPhotosNotification(params, function () {
+	api.newPhotosNotification(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION"]);
 		lychee.new_photos_notification = params.new_photos_notification;
 	});
@@ -10040,7 +10047,7 @@ settings.changeCSS = function () {
 	var params = {
 		css: $("#css").val()
 	};
-	api.v2.css(params, function () {
+	api.css(params, function () {
 		lychee.css = params.css;
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_CSS"]);
 	});
@@ -10051,7 +10058,7 @@ settings.changeCSS = function () {
  * @returns {void}
  */
 settings.save = function (params) {
-	api.v2.saveAllSettings(params, function () {
+	api.saveAllSettings(params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_UPDATE"]);
 		view.full_settings.init();
 		// re-read settings
@@ -10132,7 +10139,7 @@ sharing.add = function () {
 		return;
 	}
 
-	api.v2.sharingAdd(params, function () {
+	api.sharingAdd(params, function () {
 		loadingBar.show("success", "Sharing updated!");
 		sharing.list(); // reload user list
 	});
@@ -10155,7 +10162,7 @@ sharing.delete = function () {
 		loadingBar.show("error", "Select a sharing to remove!");
 		return;
 	}
-	api.v2.sharingDelete(params, function () {
+	api.sharingDelete(params, function () {
 		loadingBar.show("success", "Sharing removed!");
 		sharing.list(); // reload user list
 	});
@@ -10165,7 +10172,7 @@ sharing.delete = function () {
  * @returns {void}
  */
 sharing.list = function () {
-	api.v2.sharingList({},
+	api.sharingList({},
 	/** @param {SharingInfo} data */
 	function (data) {
 		sharing.json = data;
@@ -11113,14 +11120,14 @@ u2f.register = function () {
  * @param {{id: string}} params - ID of WebAuthn credential
  */
 u2f.delete = function (params) {
-	api.v2.deleteWebAuthn(params, function () {
+	api.deleteWebAuthn(params, function () {
 		loadingBar.show("success", lychee.locale["U2F_CREDENTIALS_DELETED"]);
 		u2f.list(); // reload credential list
 	});
 };
 
 u2f.list = function () {
-	api.v2.listWebAuthn({},
+	api.listWebAuthn({},
 	/** @param {WebAuthnCredential[]} data*/
 	function (data) {
 		u2f.json = data;
@@ -11560,7 +11567,7 @@ upload.start = {
 				// This way, the server could also report its own progress of
 				// downloading the images.
 				// TODO: Use a streamed response (see description above).
-				api.v2.importUrl({
+				api.importUrl({
 					urls: [data.url],
 					albumID: albumID
 				}, successHandler, null, errorHandler);
@@ -11641,7 +11648,7 @@ upload.start = {
 
 			var cancelUpload = function cancelUpload() {
 				if (!isUploadCancelled) {
-					api.v2.importServerCancel({}, function () {
+					api.importServerCancel({}, function () {
 						isUploadCancelled = true;
 					});
 				}
@@ -11844,7 +11851,7 @@ upload.start = {
 					resync_metadata: data.resync_metadata
 				};
 
-				api.v2.importServer(params, successHandler, progressHandler);
+				api.importServer(params, successHandler, progressHandler);
 			};
 
 			upload.show(lychee.locale["UPLOAD_IMPORT_SERVER"], [], runUpload, cancelUpload);
@@ -11920,7 +11927,7 @@ upload.start = {
 				$(firstRowStatusSelector).html(lychee.locale["UPLOAD_IMPORTING"]);
 
 				// TODO: Use a streamed response; see long comment in `import.url()` for the reasons
-				api.v2.importUrl({
+				api.importUrl({
 					urls: files.map(function (file) {
 						return file.link;
 					}),
@@ -12078,7 +12085,7 @@ users.update = function (params) {
 		delete params.password;
 	}
 
-	api.v2.saveUser(params, function () {
+	api.saveUser(params, function () {
 		loadingBar.show("success", "User updated!");
 		users.list(); // reload user list
 	});
@@ -12103,7 +12110,7 @@ users.create = function (params) {
 		return;
 	}
 
-	api.v2.createUser(params, function () {
+	api.createUser(params, function () {
 		loadingBar.show("success", "User created!");
 		users.list(); // reload user list
 	});
@@ -12119,7 +12126,7 @@ users.create = function (params) {
  * @returns {boolean}
  */
 users.delete = function (params) {
-	api.v2.deleteUser(params, function () {
+	api.deleteUser(params, function () {
 		loadingBar.show("success", "User deleted!");
 		users.list(); // reload user list
 	});
@@ -12129,7 +12136,7 @@ users.delete = function (params) {
  * @returns {void}
  */
 users.list = function () {
-	api.v2.listUsers({},
+	api.listUsers({},
 	/** @param {User[]} data */
 	function (data) {
 		users.json = data;
@@ -13384,7 +13391,7 @@ view.full_settings = {
 		init: function init() {
 			view.full_settings.clearContent();
 
-			api.v2.allSettings({},
+			api.allSettings({},
 			/** @param {ConfigSetting[]} data */
 			function (data) {
 				var msg = lychee.html(_templateObject82, lychee.locale["SETTINGS_WARNING"]);
@@ -13587,10 +13594,10 @@ view.logs = {
 		lychee.content.html(html);
 
 		$("#Clean_Noise").on("click", function () {
-			api.v2.clearLogsNoise({}, view.logs.init);
+			api.clearLogsNoise({}, view.logs.init);
 		});
 		$("#Clear").on("click", function () {
-			api.v2.clearLogs({}, view.logs.init);
+			api.clearLogs({}, view.logs.init);
 		});
 	},
 
@@ -13617,7 +13624,7 @@ view.logs = {
 			};
 
 			view.logs.clearContent();
-			api.v2.listLogs({}, successHandler);
+			api.listLogs({}, successHandler);
 		}
 	}
 };
@@ -13678,7 +13685,7 @@ view.diagnostics = {
 		/** @returns {void} */
 		init: function init() {
 			view.diagnostics.clearContent(0);
-			api.v2.diagnostics({}, view.diagnostics.content.parseResponse);
+			api.diagnostics({}, view.diagnostics.content.parseResponse);
 		},
 
 		/**
@@ -13725,7 +13732,7 @@ view.diagnostics = {
 
 	/** @returns {void} */
 	call_check_update: function call_check_update() {
-		api.v2.checkUpdate({},
+		api.checkUpdate({},
 		/** @param {{updateStatus: string}} data */
 		function (data) {
 			loadingBar.show("success", data.updateStatus);
@@ -13735,7 +13742,7 @@ view.diagnostics = {
 
 	/** @returns {void} */
 	call_apply_update: function call_apply_update() {
-		api.v2.applyUpdate({},
+		api.applyUpdate({},
 		/** @param {{updateMsgs: string[]}} data */
 		function (data) {
 			var html = view.preify(data.updateMsgs, "");
@@ -13746,7 +13753,7 @@ view.diagnostics = {
 
 	/** @returns {void} */
 	call_get_size: function call_get_size() {
-		api.v2.diagnosticsSize({},
+		api.diagnosticsSize({},
 		/** @param {string[]} data */
 		function (data) {
 			var html = view.preify(data, "");
@@ -13783,7 +13790,7 @@ view.update = {
 			view.update.clearContent();
 
 			// code duplicate
-			api.v2.applyUpdate({},
+			api.applyUpdate({},
 			/** @param {{updateMsgs: string[]}} data */
 			function (data) {
 				var html = view.preify(data.updateMsgs, "");

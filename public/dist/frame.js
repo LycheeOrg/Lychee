@@ -1122,150 +1122,157 @@ api.createV2API = function (endpoint, method) {
   };
 };
 
-api.v2 = {
-  /** @type APIV2Call */
-  getAlbum: api.createV2API("album/{albumID}", "GET"),
-  /** @type APIV2Call */
-  getAlbumPosition: api.createV2API("album/{albumID}/positions", "GET"),
-  /** @type APIV2Call */
-  deleteAlbumTrack: api.createV2API("album/{albumID}/track", "DELETE"),
-  /** @type APIV2Call */
-  listWebAuthn: api.createV2API("webauthn", "GET"),
-  /** @type APIV2Call */
-  deleteWebAuthn: api.createV2API("webauthn", "DELETE"),
-  /** @type APIV2Call */
-  search: api.createV2API("search/{term}", "GET"),
-  /** @type APIV2Call */
-  photoEditorRotate: api.createV2API("photo/{photoID}/editor/rotate/{direction}", "POST"),
-  /** @type APIV2Call */
-  photoDuplicate: api.createV2API("photos/{photoIDs}/duplicate", "POST"),
-  /** @type APIV2Call */
-  photoDelete: api.createV2API("photos/{photoIDs}", "DELETE"),
-  /** @type APIV2Call */
-  photoPatch: api.createV2API("photo/{photoIDs}", "PATCH"),
-  /** @type APIV2Call */
-  photoRandom: api.createV2API("photo/random", "GET"),
-  /** @type APIV2Call */
-  getPhoto: api.createV2API("photo/{photoID}", "GET"),
-  /** @type APIV2Call */
-  translateLegacy: api.createV2API("legacy/translate", "GET"),
-  /** @type APIV2Call */
-  importServer: api.createV2API("import/server", "POST"),
-  /** @type APIV2Call */
-  importUrl: api.createV2API("import/url", "POST"),
-  /** @type APIV2Call */
-  importServerCancel: api.createV2API("import/server/cancel", "POST"),
-  /** @type APIV2Call */
-  frameSettings: api.createV2API("frame/settings", "GET"),
-  /** @type APIV2Call */
-  albumsTree: api.createV2API("albums/tree", "GET"),
-  /** @type APIV2Call */
-  albumsPosition: api.createV2API("albums/positions", "GET"),
-  /** @type APIV2Call */
-  getAlbums: api.createV2API("albums", "GET"),
-  /** @type APIV2Call */
-  setAlbumProtectionPolicy: api.createV2API("album/{albumID}/protect", "POST"),
-  /** @type APIV2Call */
-  setAlbumCover: api.createV2API("album/{albumID}/cover", "POST"),
-  /** @type APIV2Call */
-  addTagAlbum: api.createV2API("album/tag", "POST"),
-  /** @type APIV2Call */
-  patchAlbum: api.createV2API("album/{albumID}", "PATCH"),
-  /** @type APIV2Call */
-  patchTagAlbum: api.createV2API("album/tag/{albumID}", "PATCH"),
-  /** @type APIV2Call */
-  addAlbum: api.createV2API("album", "POST"),
-  /** @type APIV2Call */
-  unlockAlbum: api.createV2API("album/{albumID}/unlock", "POST"),
-  /** @type APIV2Call */
-  initSession: api.createV2API("session/init", "GET"),
-  /** @type APIV2Call */
-  loginSession: api.createV2API("session/login", "POST"),
-  /** @type APIV2Call */
-  logoutSession: api.createV2API("session/login", "POST"),
-  /** @type APIV2Call */
-  setLogin: api.createV2API("settings/login", "POST"),
-  /** @type APIV2Call */
-  sharingList: api.createV2API("sharing", "GET"),
-  /** @type APIV2Call */
-  sharingAdd: api.createV2API("sharing", "POST"),
-  /** @type APIV2Call */
-  sharingDelete: api.createV2API("sharing/{shareIDs}", "DELETE"),
-  /** @type APIV2Call */
-  diagnostics: api.createV2API("diagnostics", "GET"),
-  /** @type APIV2Call */
-  diagnosticsSize: api.createV2API("diagnostics/size", "GET"),
-  /** @type APIV2Call */
-  listLogs: api.createV2API("logs", "GET"),
-  /** @type APIV2Call */
-  clearLogsNoise: api.createV2API("logs/clearNoise", "POST"),
-  /** @type APIV2Call */
-  clearLogs: api.createV2API("logs/clear", "POST"),
-  /** @type APIV2Call */
-  checkUpdate: api.createV2API("update", "GET"),
-  /** @type APIV2Call */
-  applyUpdate: api.createV2API("update", "POST"),
-  /** @type APIV2Call */
-  listUsers: api.createV2API("user", "GET"),
-  /** @type APIV2Call */
-  saveUser: api.createV2API("user/{userID}", "POST"),
-  /** @type APIV2Call */
-  createUser: api.createV2API("user", "POST"),
-  /** @type APIV2Call */
-  deleteUser: api.createV2API("user/{userID}", "DELETE"),
-  /** @type APIV2Call */
-  userGetEmail: api.createV2API("user/email", "GET"),
-  /** @type APIV2Call */
-  userSetEmail: api.createV2API("user/email", "POST"),
-  /** @type APIV2Call */
-  allSettings: api.createV2API("settings", "GET"),
-  /** @type APIV2Call */
-  saveAllSettings: api.createV2API("settings", "POST"),
-  /** @type APIV2Call */
-  dropboxKey: api.createV2API("settings/dropbox", "POST"),
-  /** @type APIV2Call */
-  sorting: api.createV2API("settings/sorting", "POST"),
-  /** @type APIV2Call */
-  lang: api.createV2API("settings/lang", "POST"),
-  /** @type APIV2Call */
-  layout: api.createV2API("settings/layout", "POST"),
-  /** @type APIV2Call */
-  publicSearch: api.createV2API("settings/publicSearch", "POST"),
-  /** @type APIV2Call */
-  defaultLicense: api.createV2API("settings/defaultLicense", "POST"),
-  /** @type APIV2Call */
-  mapDisplay: api.createV2API("settings/mapDisplay", "POST"),
-  /** @type APIV2Call */
-  mapDisplayPublic: api.createV2API("settings/mapDisplayPublic", "POST"),
-  /** @type APIV2Call */
-  mapProvider: api.createV2API("settings/mapProvider", "POST"),
-  /** @type APIV2Call */
-  mapIncludeSubAlbums: api.createV2API("settings/mapIncludeSubAlbums", "POST"),
-  /** @type APIV2Call */
-  locationDecoding: api.createV2API("settings/locationDecoding", "POST"),
-  /** @type APIV2Call */
-  locationShow: api.createV2API("settings/locationShow", "POST"),
-  /** @type APIV2Call */
-  locationShowPublic: api.createV2API("settings/locationShowPublic", "POST"),
-  /** @type APIV2Call */
-  css: api.createV2API("settings/css", "POST"),
-  /** @type APIV2Call */
-  overlayType: api.createV2API("settings/overlayType", "POST"),
-  /** @type APIV2Call */
-  nsfwVisible: api.createV2API("settings/nsfwVisible", "POST"),
-  /** @type APIV2Call */
-  newPhotosNotification: api.createV2API("settings/newPhotosNotification", "POST"),
-  /** @type APIV2Call */
-  mergeAlbums: api.createV2API("album/{albumID}/merge", "POST"),
-  /** @type APIV2Call */
-  moveAlbums: api.createV2API("album/{albumID}/move", "POST"),
-  /** @type APIV2Call */
-  moveAlbumsToTop: api.createV2API("album/move", "POST"),
-  /** @type APIV2Call */
-  deleteAlbums: api.createV2API("albums/{albumIDs}", "DELETE"),
-  /** @type APIV2Call */
-  setAlbumTitle: api.createV2API("albums/{albumIDs}/rename", "POST")
-};
+/** @type APIV2Call */
+api.search = api.createV2API("search/{term}", "GET");
+/** @type APIV2Call */
+api.translateLegacy = api.createV2API("legacy/translate", "GET");
+/** @type APIV2Call */
+api.importServer = api.createV2API("import/server", "POST");
+/** @type APIV2Call */
+api.importUrl = api.createV2API("import/url", "POST");
+/** @type APIV2Call */
+api.importServerCancel = api.createV2API("import/server/cancel", "POST");
+/** @type APIV2Call */
+api.frameSettings = api.createV2API("frame/settings", "GET");
+/** @type APIV2Call */
+
+/** @type APIV2Call */
+api.getAlbum = api.createV2API("album/{albumID}", "GET");
+/** @type APIV2Call */
+api.getAlbumPosition = api.createV2API("album/{albumID}/positions", "GET");
+/** @type APIV2Call */
+api.deleteAlbumTrack = api.createV2API("album/{albumID}/track", "DELETE");
+/** @type APIV2Call */
+api.albumsTree = api.createV2API("albums/tree", "GET");
+/** @type APIV2Call */
+api.albumsPosition = api.createV2API("albums/positions", "GET");
+/** @type APIV2Call */
+api.getAlbums = api.createV2API("albums", "GET");
+/** @type APIV2Call */
+api.setAlbumProtectionPolicy = api.createV2API("album/{albumID}/protect", "POST");
+/** @type APIV2Call */
+api.setAlbumCover = api.createV2API("album/{albumID}/cover", "POST");
+/** @type APIV2Call */
+api.addTagAlbum = api.createV2API("album/tag", "POST");
+/** @type APIV2Call */
+api.patchAlbum = api.createV2API("album/{albumID}", "PATCH");
+/** @type APIV2Call */
+api.patchTagAlbum = api.createV2API("album/tag/{albumID}", "PATCH");
+/** @type APIV2Call */
+api.addAlbum = api.createV2API("album", "POST");
+/** @type APIV2Call */
+api.unlockAlbum = api.createV2API("album/{albumID}/unlock", "POST");
+/** @type APIV2Call */
+api.mergeAlbums = api.createV2API("album/{albumID}/merge", "POST");
+/** @type APIV2Call */
+api.moveAlbums = api.createV2API("album/{albumID}/move", "POST");
+/** @type APIV2Call */
+api.moveAlbumsToTop = api.createV2API("album/move", "POST");
+/** @type APIV2Call */
+api.deleteAlbums = api.createV2API("albums/{albumIDs}", "DELETE");
+/** @type APIV2Call */
+api.setAlbumTitle = api.createV2API("albums/{albumIDs}/rename", "POST");
+
+/** @type APIV2Call */
+api.listWebAuthn = api.createV2API("webauthn", "GET");
+/** @type APIV2Call */
+api.deleteWebAuthn = api.createV2API("webauthn", "DELETE");
+
+/** @type APIV2Call */
+api.photoEditorRotate = api.createV2API("photo/{photoID}/editor/rotate/{direction}", "POST");
+/** @type APIV2Call */
+api.photoDuplicate = api.createV2API("photos/{photoIDs}/duplicate", "POST");
+/** @type APIV2Call */
+api.photoDelete = api.createV2API("photos/{photoIDs}", "DELETE");
+/** @type APIV2Call */
+api.photoPatch = api.createV2API("photo/{photoIDs}", "PATCH");
+/** @type APIV2Call */
+api.photoRandom = api.createV2API("photo/random", "GET");
+/** @type APIV2Call */
+api.getPhoto = api.createV2API("photo/{photoID}", "GET");
+
+/** @type APIV2Call */
+api.initSession = api.createV2API("session/init", "GET");
+/** @type APIV2Call */
+api.loginSession = api.createV2API("session/login", "POST");
+/** @type APIV2Call */
+api.logoutSession = api.createV2API("session/login", "POST");
+
+/** @type APIV2Call */
+api.sharingList = api.createV2API("sharing", "GET");
+/** @type APIV2Call */
+api.sharingAdd = api.createV2API("sharing", "POST");
+/** @type APIV2Call */
+api.sharingDelete = api.createV2API("sharing/{shareIDs}", "DELETE");
+
+/** @type APIV2Call */
+api.diagnostics = api.createV2API("diagnostics", "GET");
+/** @type APIV2Call */
+api.diagnosticsSize = api.createV2API("diagnostics/size", "GET");
+/** @type APIV2Call */
+api.listLogs = api.createV2API("logs", "GET");
+/** @type APIV2Call */
+api.clearLogsNoise = api.createV2API("logs/clearNoise", "POST");
+/** @type APIV2Call */
+api.clearLogs = api.createV2API("logs/clear", "POST");
+/** @type APIV2Call */
+api.checkUpdate = api.createV2API("update", "GET");
+/** @type APIV2Call */
+api.applyUpdate = api.createV2API("update", "POST");
+
+/** @type APIV2Call */
+api.listUsers = api.createV2API("user", "GET");
+/** @type APIV2Call */
+api.saveUser = api.createV2API("user/{userID}", "POST");
+/** @type APIV2Call */
+api.createUser = api.createV2API("user", "POST");
+/** @type APIV2Call */
+api.deleteUser = api.createV2API("user/{userID}", "DELETE");
+/** @type APIV2Call */
+api.userGetEmail = api.createV2API("user/email", "GET");
+/** @type APIV2Call */
+api.userSetEmail = api.createV2API("user/email", "POST");
+
+/** @type APIV2Call */
+api.allSettings = api.createV2API("settings", "GET");
+/** @type APIV2Call */
+api.saveAllSettings = api.createV2API("settings", "POST");
+/** @type APIV2Call */
+api.dropboxKey = api.createV2API("settings/dropbox", "POST");
+/** @type APIV2Call */
+api.sorting = api.createV2API("settings/sorting", "POST");
+/** @type APIV2Call */
+api.lang = api.createV2API("settings/lang", "POST");
+/** @type APIV2Call */
+api.layout = api.createV2API("settings/layout", "POST");
+/** @type APIV2Call */
+api.setLogin = api.createV2API("settings/login", "POST");
+/** @type APIV2Call */
+api.publicSearch = api.createV2API("settings/publicSearch", "POST");
+/** @type APIV2Call */
+api.defaultLicense = api.createV2API("settings/defaultLicense", "POST");
+/** @type APIV2Call */
+api.mapDisplay = api.createV2API("settings/mapDisplay", "POST");
+/** @type APIV2Call */
+api.mapDisplayPublic = api.createV2API("settings/mapDisplayPublic", "POST");
+/** @type APIV2Call */
+api.mapProvider = api.createV2API("settings/mapProvider", "POST");
+/** @type APIV2Call */
+api.mapIncludeSubAlbums = api.createV2API("settings/mapIncludeSubAlbums", "POST");
+/** @type APIV2Call */
+api.locationDecoding = api.createV2API("settings/locationDecoding", "POST");
+/** @type APIV2Call */
+api.locationShow = api.createV2API("settings/locationShow", "POST");
+/** @type APIV2Call */
+api.locationShowPublic = api.createV2API("settings/locationShowPublic", "POST");
+/** @type APIV2Call */
+api.css = api.createV2API("settings/css", "POST");
+/** @type APIV2Call */
+api.overlayType = api.createV2API("settings/overlayType", "POST");
+/** @type APIV2Call */
+api.nsfwVisible = api.createV2API("settings/nsfwVisible", "POST");
+/** @type APIV2Call */
+api.newPhotosNotification = api.createV2API("settings/newPhotosNotification", "POST");
 
 var csrf = {};
 
@@ -1433,7 +1440,7 @@ frame.next = function () {
  * @returns {void}
  */
 frame.refreshPicture = function () {
-  api.v2.photoRandom({},
+  api.photoRandom({},
   /** @param {Photo} data */
   function (data) {
     if (data.size_variants.thumb) {
@@ -1547,7 +1554,7 @@ $(function () {
     $("body").addClass("loaded");
   });
 
-  api.v2.frameSettings({},
+  api.frameSettings({},
   /** @param {FrameSettings} data */
   function (data) {
     frame.set(data);
