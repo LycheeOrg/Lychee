@@ -3,34 +3,33 @@
 namespace App\Assets;
 
 use App\Exceptions\InsufficientEntropyException;
-use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
-use App\Exceptions\Internal\MissingValueException;
 use App\Image\FlysystemFile;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Safe\Exceptions\PcreException;
 
 /**
- * A naming strategy for size variants which creates random names.
+ * A naming strategy for size variants which groups size variants by their
+ * type into top-level directories, use a random file name and two levels
+ * of subdirectories between the top-level directory and the file.
  *
- * Size variants for the same photo have a shared random prefix and are
- * distinguished by a suffix denoting their type, i.e. `-full`,
- * `-medium`, etc.
+ * Size variants which belong to the same photo share the same random
+ * end section.
  */
-class SizeVariantSharedPrefixRandomNamingStrategy extends SizeVariantBaseNamingStrategy
+class SizeVariantGroupedWithRandomSuffixNamingStrategy extends SizeVariantBaseNamingStrategy
 {
 	/**
-	 * Maps a size variant to its suffix.
+	 * Maps a size variant to the path prefix (directory) where the file for that size variant is stored.
 	 */
-	public const VARIANT_2_SUFFIX = [
-		SizeVariant::THUMB => '-thumb',
-		SizeVariant::THUMB2X => '-thumb2x',
-		SizeVariant::SMALL => '-small',
-		SizeVariant::SMALL2X => '-small2x',
-		SizeVariant::MEDIUM => '-medium',
-		SizeVariant::MEDIUM2X => '-medium2x',
-		SizeVariant::ORIGINAL => '-full',
+	public const VARIANT_2_PATH_PREFIX = [
+		SizeVariant::THUMB => 'thumb',
+		SizeVariant::THUMB2X => 'thumb2x',
+		SizeVariant::SMALL => 'small',
+		SizeVariant::SMALL2X => 'small2x',
+		SizeVariant::MEDIUM => 'medium',
+		SizeVariant::MEDIUM2X => 'medium2x',
+		SizeVariant::ORIGINAL => 'original',
 	];
 
 	/**
@@ -53,16 +52,22 @@ class SizeVariantSharedPrefixRandomNamingStrategy extends SizeVariantBaseNamingS
 	public const NAME_LENGTH = 32;
 
 	/**
-	 * @var string a cached random base path for the shared prefix which is reset for every new photo
+	 * A cached random path which is reset for every new photo and represents
+	 * the "middle" portion of the file path, i.e. without the top directory
+	 * (`original`, `medium`, etc.) and without the file extension.
+	 *
+	 * The string has the pattern `[0-9a-f]{2}/[0-9a-f]{2}/[0-9a-f]{28}`.
+	 *
+	 * @var string
 	 */
-	protected string $cachedRndBasePath;
+	protected string $cachedRndMiddlePath;
 
 	/**
 	 * @throws InsufficientEntropyException
 	 */
 	public function __construct()
 	{
-		$this->cachedRndBasePath = self::createRndBasePath();
+		$this->cachedRndMiddlePath = self::createRndMiddlePath();
 	}
 
 	/**
@@ -99,19 +104,23 @@ class SizeVariantSharedPrefixRandomNamingStrategy extends SizeVariantBaseNamingS
 				// reported, we must be prepared for an optional `/` or `./`
 				// at the beginning.
 				if (\Safe\preg_match(
-						'#^\.?[/\\\\]?([0-9a-f]{2})[/\\\\]([0-9a-f]{2})[/\\\\]([0-9a-f]{' . (self::NAME_LENGTH - 4) . '})-full\.#i',
+						'#^\.?[/\\\\]?' .
+						self::VARIANT_2_PATH_PREFIX[SizeVariant::ORIGINAL] . '[/\\\\]' .
+						'([0-9a-f]{2})[/\\\\]' .
+						'([0-9a-f]{2})[/\\\\]' .
+						'([0-9a-f]{' . (self::NAME_LENGTH - 4) . '})\.#i',
 						$existingRelPath,
 						$matches
 					) === 1) {
-					// If we have a match, we use the base path of the original
+					// If we have a match, we use the middle path of the original
 					// size variant
-					$this->cachedRndBasePath = $matches[1] . DIRECTORY_SEPARATOR . $matches[2] . DIRECTORY_SEPARATOR . $matches[3];
+					$this->cachedRndMiddlePath = $matches[1] . DIRECTORY_SEPARATOR . $matches[2] . DIRECTORY_SEPARATOR . $matches[3];
 				} else {
 					// If we don't have a match, we create a new random base path.
-					$this->cachedRndBasePath = self::createRndBasePath();
+					$this->cachedRndMiddlePath = self::createRndMiddlePath();
 				}
 			} else {
-				$this->cachedRndBasePath = self::createRndBasePath();
+				$this->cachedRndMiddlePath = self::createRndMiddlePath();
 			}
 		} catch (PcreException $e) {
 			assert(false, new \AssertionError('regex could not be compiled; that should not happen for a statically coded regex', $e));
@@ -119,15 +128,7 @@ class SizeVariantSharedPrefixRandomNamingStrategy extends SizeVariantBaseNamingS
 	}
 
 	/**
-	 * Generates a short path for the designated size variant.
-	 *
-	 * @param int $sizeVariant the size variant
-	 *
-	 * @return FlysystemFile the file
-	 *
-	 * @throws InvalidSizeVariantException
-	 * @throws IllegalOrderOfOperationException
-	 * @throws MissingValueException
+	 * {@inheritDoc}
 	 */
 	public function createFile(int $sizeVariant): FlysystemFile
 	{
@@ -135,16 +136,11 @@ class SizeVariantSharedPrefixRandomNamingStrategy extends SizeVariantBaseNamingS
 			throw new InvalidSizeVariantException('invalid $sizeVariant = ' . $sizeVariant);
 		}
 
-		$extension = $this->generateExtension($sizeVariant);
 		$relativePath =
-			$this->cachedRndBasePath .
-			self::VARIANT_2_SUFFIX[$sizeVariant] .
-			$extension;
+			self::VARIANT_2_PATH_PREFIX[$sizeVariant] . DIRECTORY_SEPARATOR .
+			$this->cachedRndMiddlePath .
+			$this->generateExtension($sizeVariant);
 
-		// Flysystem does not support the semantics of `O_EXCL|O_CREAT` which
-		// means "create a file if not exist and obtain an exclusive lock or fail".
-		// This would be nice here to avoid accidental overwriting of a file,
-		// but we must simply hope that 128bit randomness are sufficient.
 		return new FlysystemFile(parent::getImageDisk(), $relativePath);
 	}
 
@@ -153,7 +149,7 @@ class SizeVariantSharedPrefixRandomNamingStrategy extends SizeVariantBaseNamingS
 	 *
 	 * @throws InsufficientEntropyException
 	 */
-	protected static function createRndBasePath(): string
+	protected static function createRndMiddlePath(): string
 	{
 		try {
 			$rndStr = bin2hex(random_bytes(self::NAME_LENGTH / 2));
