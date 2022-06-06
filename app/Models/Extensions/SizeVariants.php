@@ -225,24 +225,25 @@ class SizeVariants extends DTO
 	 */
 	public function deleteAll(): void
 	{
-		$ids = [];
+		$ids = [
+			$this->original?->id,
+			$this->medium2x?->id,
+			$this->medium?->id,
+			$this->small2x?->id,
+			$this->small?->id,
+			$this->thumb2x?->id,
+			$this->thumb?->id,
+		];
 
-		$ids[] = strval($this->original?->id);
 		$this->original = null;
-		$ids[] = strval($this->medium2x?->id);
 		$this->medium2x = null;
-		$ids[] = strval($this->medium?->id);
 		$this->medium = null;
-		$ids[] = strval($this->small2x?->id);
 		$this->small2x = null;
-		$ids[] = strval($this->small?->id);
 		$this->small = null;
-		$ids[] = strval($this->thumb2x?->id);
 		$this->thumb2x = null;
-		$ids[] = strval($this->thumb?->id);
 		$this->thumb = null;
 
-		(new Delete())->do(array_diff($ids, ['']))->do();
+		(new Delete())->do(array_diff($ids, [null]))->do();
 	}
 
 	/**

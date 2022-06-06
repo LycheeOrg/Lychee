@@ -235,7 +235,7 @@ class SizeVariant extends Model
 	 */
 	protected function performDeleteOnModel(): void
 	{
-		$fileDeleter = (new Delete())->do([strval($this->id)]);
+		$fileDeleter = (new Delete())->do([$this->id]);
 		$this->exists = false;
 		$fileDeleter->do();
 	}

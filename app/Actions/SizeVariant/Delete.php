@@ -45,7 +45,7 @@ class Delete
 	 * This object can (and must) be used to eventually delete the files,
 	 * however doing so can be deferred.
 	 *
-	 * @param string[] $svIDs the size variant IDs
+	 * @param int[] $svIDs the size variant IDs
 	 *
 	 * @return FileDeleter contains the collected files which became obsolete
 	 *
