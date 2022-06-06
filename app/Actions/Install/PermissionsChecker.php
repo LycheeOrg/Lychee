@@ -29,7 +29,7 @@ class PermissionsChecker
 	/**
 	 * Check for the folders permissions.
 	 *
-	 * @param array $folders
+	 * @param string[] $folders
 	 *
 	 * @return array
 	 */
@@ -70,7 +70,7 @@ class PermissionsChecker
 	 * @param string $permission
 	 * @param int    $isSet
 	 */
-	private function addFile($folder, $permission, $isSet): void
+	private function addFile(string $folder, string $permission, int $isSet): void
 	{
 		$this->results['permissions'][] = [
 			'folder' => $folder,

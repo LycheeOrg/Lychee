@@ -138,6 +138,9 @@ class DefaultConfig
 		return $this->config['requirements'];
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public function get_permissions(): array
 	{
 		return $this->config['permissions'];

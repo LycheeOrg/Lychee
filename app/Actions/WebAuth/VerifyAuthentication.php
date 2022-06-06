@@ -11,6 +11,10 @@ use DarkGhostHunter\Larapass\Facades\WebAuthn;
 class VerifyAuthentication
 {
 	/**
+	 * @param string[] $credential
+	 *
+	 * @return void
+	 *
 	 * @throws UnauthenticatedException
 	 * @throws InvalidUserIdException
 	 */
@@ -33,7 +37,7 @@ class VerifyAuthentication
 	/**
 	 * Return the user that should authenticate via WebAuthn.
 	 *
-	 * @param array $credentials
+	 * @param string[] $credentials
 	 *
 	 * @return User|null
 	 *
