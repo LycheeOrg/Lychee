@@ -107,7 +107,7 @@ class PhotosAddTest extends TestCase
 				'original' => [
 					'width' => 6720,
 					'height' => 4480,
-					'filesize' => 21104156,
+					'filesize' => 21106422,
 				],
 			],
 		]);
@@ -159,11 +159,11 @@ class PhotosAddTest extends TestCase
 		$num_before_import = $ids_before_import->count();
 
 		// upload the photo
-		copy(base_path('tests/Samples/night.jpg'), base_path('public/uploads/import/night.jpg'));
-		$this->photos_tests->import(base_path('public/uploads/import/'));
+		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
+		$this->photos_tests->import(static::importPath());
 
 		// check if the file is still there (without symlinks the photo would have been deleted)
-		static::assertEquals(true, file_exists('public/uploads/import/night.jpg'));
+		static::assertEquals(true, file_exists(static::importPath('night.jpg')));
 
 		$response = $this->albums_tests->get('recent');
 		$responseObj = json_decode($response->getContent());
