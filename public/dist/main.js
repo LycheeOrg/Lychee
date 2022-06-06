@@ -5726,7 +5726,8 @@ lychee.parsePublicInitializationData = function (data) {
 	lychee.sorting_albums = data.config.sorting_albums;
 	lychee.album_subtitle_type = data.config.album_subtitle_type || "oldstyle";
 	lychee.checkForUpdates = data.config.check_for_updates;
-	lychee.layout = Number.parseInt(data.config.layout, 10) || 1;
+	lychee.layout = Number.parseInt(data.config.layout, 10);
+	if (Number.isNaN(lychee.layout)) lychee.layout = 1;
 	lychee.landing_page_enable = data.config.landing_page_enable === "1";
 	lychee.public_search = data.config.public_search === "1";
 	lychee.image_overlay_type = data.config.image_overlay_type || "exif";
