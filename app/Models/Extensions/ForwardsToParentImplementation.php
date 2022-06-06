@@ -6,15 +6,14 @@ namespace App\Models\Extensions;
 
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\FailedModelAssumptionException;
-use App\Exceptions\Internal\MissingModelMethodException;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Exceptions\ModelDBException;
-use App\Models\BaseAlbumImpl;
 use Illuminate\Contracts\Encryption\EncryptException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\InvalidCastException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
 /**
@@ -25,7 +24,7 @@ use Illuminate\Support\Str;
  * {@link \App\Models\BaseAlbumImpl}.
  * This trait assumes that the using "child" classes provides a relation
  * called `base_class` which returns an instance of
- * {@link \Illuminate\Database\Eloquent\Relations\MorphOne} and refers
+ * {@link BelongsTo} and refers
  * to the implementation of the "parent" class.
  * This trait forwards calls to properties and relations which are not
  * defined by the "child" class to the "parent" class and therewith
@@ -38,6 +37,14 @@ use Illuminate\Support\Str;
 trait ForwardsToParentImplementation
 {
 	abstract protected function friendlyModelName(): string;
+
+	/**
+	 * Returns the relationship between this model and the implementation
+	 * of the "parent" class.
+	 *
+	 * @return BelongsTo
+	 */
+	abstract public function base_class(): BelongsTo;
 
 	/**
 	 * "Constructor" of trait.
@@ -387,9 +394,6 @@ trait ForwardsToParentImplementation
 				if (!boolval($primaryKey)) {
 					throw new FailedModelAssumptionException('the model allegedly exists, but we don\'t have a primary key, cannot load base model');
 				}
-				if (!method_exists($this, 'base_class')) {
-					throw new MissingModelMethodException(get_class($this), 'base_class()');
-				}
 
 				return $this->getRelationshipFromMethod('base_class');
 			}
@@ -475,7 +479,6 @@ trait ForwardsToParentImplementation
 		// on the parent class.
 		// Only if the parent class does not provide such an attribute either,
 		// we write it to the child class.
-		/** @var BaseAlbumImpl $baseClass */
 		$baseClass = $this->base_class;
 		if (
 			array_key_exists($key, $baseClass->getAttributes()) ||
