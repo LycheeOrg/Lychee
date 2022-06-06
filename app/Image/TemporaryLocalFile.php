@@ -39,9 +39,7 @@ class TemporaryLocalFile extends NativeLocalFile
 		// to work.
 		$lastException = null;
 		$retryCounter = 5;
-		$tempFilePath = 'SHOULD NOT BE READ.';
 		do {
-			$success = true;
 			try {
 				$tempFilePath = sys_get_temp_dir() .
 					DIRECTORY_SEPARATOR .
@@ -51,11 +49,11 @@ class TemporaryLocalFile extends NativeLocalFile
 				$retryCounter--;
 				$this->stream = \Safe\fopen($tempFilePath, 'x+b');
 			} catch (\ErrorException|\Exception $e) {
-				$success = false;
+				$tempFilePath = null;
 				$lastException = $e;
 			}
-		} while (!$success && $retryCounter > 0);
-		if (!$success) {
+		} while ($tempFilePath === null && $retryCounter > 0);
+		if ($tempFilePath === null) {
 			throw new MediaFileOperationException('unable to create temporary file', $lastException);
 		}
 		parent::__construct($tempFilePath);
