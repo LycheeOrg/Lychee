@@ -7,6 +7,7 @@ use App\Contracts\InternalLycheeException;
 use App\DTO\SortingCriterion;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
+use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use Doctrine\Instantiator\Exception\InvalidArgumentException;
@@ -34,6 +35,17 @@ class HasManyChildPhotos extends HasManyBidirectionally
 		);
 	}
 
+	protected function getRelationQuery(): FixedQueryBuilder
+	{
+		/**
+		 * We know that the internal query is of type `FixedQueryBuilder`,
+		 * because it was set int the constructor as `Photo::query()`.
+		 *
+		 * @noinspection PhpIncompatibleReturnTypeInspection
+		 */
+		return $this->query; // @phpstan-ignore-line
+	}
+
 	/**
 	 * @throws InternalLycheeException
 	 */
@@ -41,7 +53,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 	{
 		if (static::$constraints) {
 			parent::addConstraints();
-			$this->photoAuthorisationProvider->applyVisibilityFilter($this->query);
+			$this->photoAuthorisationProvider->applyVisibilityFilter($this->getRelationQuery());
 		}
 	}
 
@@ -51,7 +63,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 	public function addEagerConstraints(array $models)
 	{
 		parent::addEagerConstraints($models);
-		$this->photoAuthorisationProvider->applyVisibilityFilter($this->query);
+		$this->photoAuthorisationProvider->applyVisibilityFilter($this->getRelationQuery());
 	}
 
 	/**

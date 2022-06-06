@@ -61,7 +61,7 @@ class HasManyPhotosRecursively extends HasManyPhotos
 		}
 
 		$this->photoAuthorisationProvider
-			->applySearchabilityFilter($this->query, $albums[0]);
+			->applySearchabilityFilter($this->getRelationQuery(), $albums[0]);
 	}
 
 	public function getResults(): Collection

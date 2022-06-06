@@ -6,6 +6,7 @@ use App\Actions\PhotoAuthorisationProvider;
 use App\DTO\SortingCriterion;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Collection;
@@ -57,6 +58,17 @@ abstract class HasManyPhotos extends Relation
 		);
 	}
 
+	protected function getRelationQuery(): FixedQueryBuilder
+	{
+		/**
+		 * We know that the internal query is of type `FixedQueryBuilder`,
+		 * because it was set int the constructor as `Photo::query()`.
+		 *
+		 * @noinspection PhpIncompatibleReturnTypeInspection
+		 */
+		return $this->query; // @phpstan-ignore-line
+	}
+
 	/**
 	 * Initializes the given owning models with a default value of this
 	 * relation.
@@ -101,7 +113,7 @@ abstract class HasManyPhotos extends Relation
 		/** @var SortingCriterion $sorting */
 		$sorting = $parent->getEffectiveSorting();
 
-		return (new SortingDecorator($this->query))
+		return (new SortingDecorator($this->getRelationQuery()))
 			->orderBy('photos.' . $sorting->column, $sorting->order)
 			->get();
 	}

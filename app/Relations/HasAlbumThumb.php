@@ -7,6 +7,7 @@ use App\Actions\PhotoAuthorisationProvider;
 use App\DTO\PhotoSortingCriterion;
 use App\Facades\AccessControl;
 use App\Models\Album;
+use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\Thumb;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
@@ -40,6 +41,17 @@ class HasAlbumThumb extends Relation
 		);
 	}
 
+	protected function getRelationQuery(): FixedQueryBuilder
+	{
+		/**
+		 * We know that the internal query is of type `FixedQueryBuilder`,
+		 * because it was set int the constructor as `Photo::query()`.
+		 *
+		 * @noinspection PhpIncompatibleReturnTypeInspection
+		 */
+		return $this->query; // @phpstan-ignore-line
+	}
+
 	/**
 	 * Adds the constraints for a single album.
 	 *
@@ -57,7 +69,7 @@ class HasAlbumThumb extends Relation
 				$this->where('photos.id', '=', $album->cover_id);
 			} else {
 				$this->photoAuthorisationProvider
-					->applySearchabilityFilter($this->query, $album);
+					->applySearchabilityFilter($this->getRelationQuery(), $album);
 			}
 		}
 	}
@@ -200,7 +212,7 @@ class HasAlbumThumb extends Relation
 			}
 		};
 
-		$this->query
+		$this->getRelationQuery()
 			->select([
 				'covers.id as id',
 				'covers.type as type',
@@ -285,7 +297,7 @@ class HasAlbumThumb extends Relation
 			return Thumb::createFromPhoto($album->cover);
 		} else {
 			return Thumb::createFromQueryable(
-				$this->query,
+				$this->getRelationQuery(),
 				$this->sorting
 			);
 		}
