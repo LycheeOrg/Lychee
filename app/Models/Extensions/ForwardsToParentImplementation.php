@@ -380,7 +380,7 @@ trait ForwardsToParentImplementation
 			// for a freshly created model.
 			$primaryKey = $this->getKey();
 			if (!$this->exists) {
-				if (boolval($primaryKey)) {
+				if ($primaryKey !== null) {
 					throw new FailedModelAssumptionException('the primary key must not be set if the model does not exist');
 				}
 				$baseModel = $this->base_class()->getRelated()->newInstance();
@@ -391,7 +391,7 @@ trait ForwardsToParentImplementation
 				// This model exists, but the relation to the base class
 				// has not yet been loaded.
 				// Load it now.
-				if (!boolval($primaryKey)) {
+				if ($primaryKey === null) {
 					throw new FailedModelAssumptionException('the model allegedly exists, but we don\'t have a primary key, cannot load base model');
 				}
 
@@ -449,7 +449,7 @@ trait ForwardsToParentImplementation
 		// If an attribute is listed as a "date", we'll convert it from a DateTime
 		// instance into a form proper for storage in the database tables using
 		// the connection grammar's date format. We will auto set the values.
-		elseif (boolval($value) && $this->isDateAttribute($key)) {
+		elseif ($this->isDateAttribute($key)) {
 			$value = $this->fromDateTime($value);
 		}
 
