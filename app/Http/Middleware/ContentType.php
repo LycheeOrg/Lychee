@@ -45,7 +45,7 @@ class ContentType
 			if ($request->getContentType() !== 'form' && !$request->acceptsAnyContentType()) {
 				throw new UnexpectedContentType(self::MULTIPART);
 			}
-		} else {
+		} elseif (!$any) {
 			throw new LycheeInvalidArgumentException('$contentType must either be "' . self::JSON . '" or "' . self::MULTIPART . '"');
 		}
 
