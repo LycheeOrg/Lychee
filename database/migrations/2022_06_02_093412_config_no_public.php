@@ -17,7 +17,7 @@ class ConfigNoPublic extends Migration
 
 		DB::table('configs')->insert([
 			[
-				'key' => 'no_public',
+				'key' => 'restrict_public_to_auth',
 				'value' => '0',
 				'confidentiality' => 2,
 				'cat' => 'config',
@@ -33,6 +33,6 @@ class ConfigNoPublic extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', '=', 'no_public')->delete();
+		Configs::where('key', '=', 'restrict_public_to_auth')->delete();
 	}
 }

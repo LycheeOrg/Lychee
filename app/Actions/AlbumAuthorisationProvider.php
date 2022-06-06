@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Contracts\AbstractAlbum;
 use App\Contracts\InternalLycheeException;
+use App\Database\Query\NullBuilder;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\Internal\QueryBuilderException;
@@ -15,6 +16,7 @@ use App\Models\Configs;
 use App\Models\Extensions\AlbumBuilder;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\FixedQueryBuilder;
+use App\Models\Extensions\NullModelBuilder;
 use App\Models\Extensions\TagAlbumBuilder;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
@@ -51,19 +53,27 @@ class AlbumAuthorisationProvider
 	 *
 	 * @param AlbumBuilder|TagAlbumBuilder $query
 	 *
-	 * @return AlbumBuilder|TagAlbumBuilder
+	 * @return AlbumBuilder|TagAlbumBuilder|NullModelBuilder
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function applyVisibilityFilter(AlbumBuilder|FixedQueryBuilder $query): AlbumBuilder|TagAlbumBuilder
+	public function applyVisibilityFilter(AlbumBuilder|FixedQueryBuilder $query): AlbumBuilder|TagAlbumBuilder|NullModelBuilder
 	{
 		$this->prepareModelQueryOrFail($query);
+
+		$restrictPublicToAuth = Configs::get_value('restrict_public_to_auth', '0') === '1';
 
 		if (AccessControl::is_admin()) {
 			return $query;
 		}
 
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+
+		// If no user is authenticated and public photos are restricted to
+		// authenticated users, return the `null` query
+		if ($restrictPublicToAuth && $userID === null) {
+			return NullModelBuilder::createFromQueryBuilder($query);
+		}
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
@@ -75,7 +85,7 @@ class AlbumAuthorisationProvider
 				->where(fn (AlbumBuilder|TagAlbumBuilder $q) => $q
 					->where('base_albums.requires_link', '=', false)
 					->where('base_albums.is_public', '=', true)
-			);
+				);
 			if ($userID !== null) {
 				$query2
 					->orWhere('base_albums.owner_id', '=', $userID)
@@ -83,8 +93,6 @@ class AlbumAuthorisationProvider
 						->where('base_albums.requires_link', '=', false)
 						->where('user_base_album.user_id', '=', $userID)
 					);
-			} elseif (Configs::get_value('no_public', '0') === '1') {
-				$query2->where('null', '=', 'never-true');
 			}
 		};
 
@@ -150,8 +158,15 @@ class AlbumAuthorisationProvider
 	 */
 	public function appendAccessibilityConditions(BaseBuilder $query): BaseBuilder
 	{
+		$restrictPublicToAuth = Configs::get_value('restrict_public_to_auth', '0') === '1';
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+
+		// If no user is authenticated and public photos are restricted to
+		// authenticated users, return the `null` query
+		if ($restrictPublicToAuth && $userID === null) {
+			return NullBuilder::createFromQueryBuilder($query);
+		}
 
 		try {
 			$query
@@ -167,8 +182,6 @@ class AlbumAuthorisationProvider
 				$query
 					->orWhere('base_albums.owner_id', '=', $userID)
 					->orWhere('user_base_album.user_id', '=', $userID);
-			} elseif (Configs::get_value('no_public', '0') === '1') {
-				$query->where('null', '=', 'never-true');
 			}
 
 			return $query;
@@ -213,12 +226,12 @@ class AlbumAuthorisationProvider
 	 *
 	 * @param AlbumBuilder $query
 	 *
-	 * @return AlbumBuilder
+	 * @return AlbumBuilder|NullModelBuilder
 	 *
 	 * @throws QueryBuilderException
 	 * @throws InvalidQueryModelException
 	 */
-	public function applyReachabilityFilter(AlbumBuilder $query): AlbumBuilder
+	public function applyReachabilityFilter(AlbumBuilder $query): AlbumBuilder|NullModelBuilder
 	{
 		$this->prepareModelQueryOrFail($query);
 
@@ -227,7 +240,14 @@ class AlbumAuthorisationProvider
 		}
 
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
+		$restrictPublicToAuth = Configs::get_value('restrict_public_to_auth', '0') === '1';
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+
+		// If no user is authenticated and public photos are restricted to
+		// authenticated users, return the `null` query
+		if ($restrictPublicToAuth && $userID === null) {
+			return NullModelBuilder::createFromQueryBuilder($query);
+		}
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
@@ -253,8 +273,6 @@ class AlbumAuthorisationProvider
 						->where('base_albums.requires_link', '=', false)
 						->where('user_base_album.user_id', '=', $userID)
 					);
-			} elseif (Configs::get_value('no_public', '0') === '1') {
-				$query2->where('not-exst', '=', '123');
 			}
 		};
 
@@ -282,7 +300,7 @@ class AlbumAuthorisationProvider
 		if ($album === null || AccessControl::is_admin()) {
 			return true;
 		}
-		if (!AccessControl::is_logged_in() && Configs::get_value('no_public', '0') === '1') {
+		if (!AccessControl::is_logged_in() && Configs::get_value('restrict_public_to_auth', '0') === '1') {
 			return false;
 		}
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
@@ -419,7 +437,14 @@ class AlbumAuthorisationProvider
 		}
 
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
+		$restrictPublicToAuth = Configs::get_value('restrict_public_to_auth', '0') === '1';
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+
+		// If no user is authenticated and public photos are restricted to
+		// authenticated users, return the `null` query
+		if ($restrictPublicToAuth && $userID === null) {
+			return NullBuilder::createFromQueryBuilder($builder);
+		}
 
 		try {
 			// There are inner albums ...
@@ -469,8 +494,6 @@ class AlbumAuthorisationProvider
 							->where('user_inner_base_album.user_id', '=', $userID)
 						)
 					);
-			} elseif (Configs::get_value('no_public', '0') === '1') {
-				$builder->whereNotNull('null1');
 			}
 
 			return $builder;
