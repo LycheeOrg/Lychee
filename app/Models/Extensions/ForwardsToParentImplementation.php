@@ -402,7 +402,6 @@ trait ForwardsToParentImplementation
 		// If the "attribute" exists as a method on the model, we will just assume
 		// it is a relationship and will load and return results from the query
 		// and hydrate the relationship's value on the "relationships" array.
-		// Phpstan:  390    Call to function method_exists() with $this(App\Models\Extensions\BaseAlbum) and 'base_class' will always evaluate to true.
 		if (
 			method_exists($this, $key) ||
 			(static::$relationResolvers[get_class($this)][$key] ?? null)
