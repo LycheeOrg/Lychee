@@ -36,7 +36,7 @@ class PhotoAuthorisationProvider
 	 *  - the user is the admin
 	 *  - the user is the owner of the photo
 	 *  - the photo is part of an album which the user is allowed to access
-	 *    (cp. {@link AlbumAuthorisationProvider::applyAccessibilityFilter()}).
+	 *    (cp. {@link AlbumAuthorisationProvider::isAccessible()}).
 	 *  - the photo is public
 	 *
 	 * @param FixedQueryBuilder $query

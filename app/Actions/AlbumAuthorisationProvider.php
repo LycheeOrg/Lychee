@@ -91,48 +91,10 @@ class AlbumAuthorisationProvider
 	}
 
 	/**
-	 * ! TODO @nagmat84 this is unused?
-	 *
-	 * Restricts an album query to _accessible_ albums.
-	 *
-	 * An album is called _accessible_ if the current user is allowed to
-	 * browse into it, i.e. if the current user may open it and see its
-	 * content.
-	 * An album is _accessible_ if any of the following conditions hold
-	 * (OR-clause)
-	 *
-	 *  - the user is an admin
-	 *  - the user is the owner of the album
-	 *  - the album is shared with the user
-	 *  - the album is public AND no password is set
-	 *  - the album is public AND has been unlocked
-	 *
-	 * @param AlbumBuilder|FixedQueryBuilder $query
-	 *
-	 * @return AlbumBuilder|FixedQueryBuilder
-	 *
-	 * @throws InternalLycheeException
-	 */
-	private function applyAccessibilityFilter(AlbumBuilder|FixedQueryBuilder $query): AlbumBuilder|FixedQueryBuilder
-	{
-		$this->prepareModelQueryOrFail($query);
-
-		if (AccessControl::is_admin()) {
-			return $query;
-		}
-
-		return $query->where(
-			fn (Builder $q) => $this->appendAccessibilityConditions($q->getQuery())
-		);
-	}
-
-	/**
 	 * Adds the conditions of an accessible album to the query.
 	 *
 	 * **Attention:** This method is only meant for internal use by
 	 * this class or {@link PhotoAuthorisationProvider}.
-	 * Use {@link AlbumAuthorisationProvider::applyAccessibilityFilter()}
-	 * if called from other places instead.
 	 *
 	 * This method adds the WHERE conditions without any further pre-cautions.
 	 * The method silently assumes that the SELECT clause contains the tables
@@ -186,21 +148,6 @@ class AlbumAuthorisationProvider
 	 * An album is reachable, if the user is able to see the album
 	 * within its parent album and has the privilege to enter it.
 	 *
-	 * The result of this filter is strictly identical to the concatenation
-	 * of {@link AlbumAuthorisationProvider::applyVisibilityFilter()} and
-	 * {@link AlbumAuthorisationProvider::applyAccessibilityFilter()}, i.e.
-	 *
-	 *     $aap = resolve(AlbumAuthorisationProvider::class);
-	 *     $aap->applyVisibilityFilter(
-	 *         $aap->applyAccessibilityFilter(
-	 *             $model::query()
-	 *         )
-	 *     )->get()
-	 *
-	 * returns the exact same result set.
-	 * The only advantage of this combined filter is that the `WHERE` clause
-	 * is already in disjunctive normal form (DNF) which results in a
-	 * slightly better SQL performance.
 	 *
 	 * The combination of both sets of conditions yields that an album is
 	 * _reachable_, if any of the following conditions hold
@@ -266,9 +213,18 @@ class AlbumAuthorisationProvider
 	/**
 	 * Checks whether the album is accessible by the current user.
 	 *
-	 * For real albums (i.e. albums that are stored in the DB), see
-	 * {@link AlbumAuthorisationProvider::applyAccessibilityFilter()} for a
-	 * specification of the rules when an album is accessible.
+	 * A real albums (i.e. albums that are stored in the DB) is called
+	 * _accessible_ if the current user is allowed to browse into it, i.e. if
+	 * the current user may open it and see its content.
+	 * An album is _accessible_ if any of the following conditions hold
+	 * (OR-clause)
+	 *
+	 *  - the user is an admin
+	 *  - the user is the owner of the album
+	 *  - the album is shared with the user
+	 *  - the album is public AND no password is set
+	 *  - the album is public AND has been unlocked
+	 *
 	 * In other cases, the following holds:
 	 *  - the root album is accessible by everybody
 	 *  - the built-in smart albums are accessible, if
