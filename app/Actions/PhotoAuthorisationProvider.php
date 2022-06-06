@@ -68,7 +68,7 @@ class PhotoAuthorisationProvider
 		// effects in case that the original query already contains an
 		// "OR"-clause.
 		$visibilitySubQuery = function (FixedQueryBuilder $query2) use ($userID) {
-			$this->albumAuthorisationProvider->appendAccessibilityConditions($query2->getQuery());
+			$query2->setQuery($this->albumAuthorisationProvider->appendAccessibilityConditions($query2->getQuery()));
 			$query2->orWhere('photos.is_public', '=', true);
 			if ($userID !== null) {
 				$query2->orWhere('photos.owner_id', '=', $userID);
@@ -182,11 +182,11 @@ class PhotoAuthorisationProvider
 			return $query;
 		} else {
 			return $query->where(function (Builder $query) use ($origin) {
-				$this->appendSearchabilityConditions(
+				$query->setQuery($this->appendSearchabilityConditions(
 					$query->getQuery(),
 					$origin?->_lft,
 					$origin?->_rgt
-				);
+				));
 			});
 		}
 	}
@@ -241,7 +241,7 @@ class PhotoAuthorisationProvider
 		try {
 			// there must be no unreachable album between the origin and the photo
 			$query->whereNotExists(function (BaseBuilder $q) use ($originLeft, $originRight) {
-				$this->albumAuthorisationProvider->appendUnreachableAlbumsCondition($q, $originLeft, $originRight);
+				$this->albumAuthorisationProvider->appendUnreachableAlbumsCondition($q, $originLeft, $originRight); // TODO set var to apply filter
 			});
 
 			// Special care needs to be taken for unsorted photo, i.e. photos on

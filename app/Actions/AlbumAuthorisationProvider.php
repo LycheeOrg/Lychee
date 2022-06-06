@@ -129,7 +129,7 @@ class AlbumAuthorisationProvider
 		}
 
 		return $query->where(
-			fn (Builder $q) => $this->appendAccessibilityConditions($q->getQuery())
+			fn (Builder $q) => $q->setQuery($this->appendAccessibilityConditions($q->getQuery()))
 		);
 	}
 
@@ -392,7 +392,7 @@ class AlbumAuthorisationProvider
 					$q,
 					$origin?->_lft,
 					$origin?->_rgt,
-				);
+				); // TODO set var to apply filter
 			});
 		}
 	}

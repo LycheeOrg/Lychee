@@ -41,7 +41,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 	{
 		if (static::$constraints) {
 			parent::addConstraints();
-			$this->photoAuthorisationProvider->applyVisibilityFilter($this->query);
+			$this->query = $this->photoAuthorisationProvider->applyVisibilityFilter($this->query);
 		}
 	}
 
@@ -51,7 +51,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 	public function addEagerConstraints(array $models)
 	{
 		parent::addEagerConstraints($models);
-		$this->photoAuthorisationProvider->applyVisibilityFilter($this->query);
+		$this->query = $this->photoAuthorisationProvider->applyVisibilityFilter($this->query);
 	}
 
 	/**

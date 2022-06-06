@@ -163,11 +163,11 @@ class HasAlbumThumb extends Relation
 			->limit(1);
 		if (!AccessControl::is_admin()) {
 			$bestPhotoIDSelect->where(function (Builder $query2) {
-				$this->photoAuthorisationProvider->appendSearchabilityConditions(
+				$query2->setQuery($this->photoAuthorisationProvider->appendSearchabilityConditions(
 					$query2->getQuery(),
 					'covered_albums._lft',
 					'covered_albums._rgt'
-				);
+				));
 			});
 		}
 
@@ -191,7 +191,7 @@ class HasAlbumThumb extends Relation
 				->whereIn('covered_albums.id', $albumKeys);
 			if (!AccessControl::is_admin()) {
 				$builder->where(function (BaseBuilder $q) {
-					$this->albumAuthorisationProvider->appendAccessibilityConditions($q);
+					$this->albumAuthorisationProvider->appendAccessibilityConditions($q); // TODO set var to apply filter
 				});
 			}
 		};

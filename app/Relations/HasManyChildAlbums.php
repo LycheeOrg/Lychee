@@ -42,7 +42,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	{
 		if (static::$constraints) {
 			parent::addConstraints();
-			$this->albumAuthorisationProvider->applyVisibilityFilter($this->query);
+			$this->query = $this->albumAuthorisationProvider->applyVisibilityFilter($this->query);
 		}
 	}
 
@@ -52,7 +52,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	public function addEagerConstraints(array $models)
 	{
 		parent::addEagerConstraints($models);
-		$this->albumAuthorisationProvider->applyVisibilityFilter($this->query);
+		$this->query = $this->albumAuthorisationProvider->applyVisibilityFilter($this->query);
 	}
 
 	/**
