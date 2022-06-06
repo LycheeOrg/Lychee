@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Actions\Photo\Archive;
 use App\Contracts\InternalLycheeException;
+use App\Database\Query\NullBuilder;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnauthorizedException;
@@ -11,6 +12,7 @@ use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\FixedQueryBuilder;
+use App\Models\Extensions\NullModelBuilder;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
@@ -53,7 +55,14 @@ class PhotoAuthorisationProvider
 			return $query;
 		}
 
+		$restrictPublicToAuth = Configs::get_value('restrict_public_to_auth', '0') === '1';
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+
+		// If no user is authenticated and public photos are restricted to
+		// authenticated users, return the `null` query
+		if ($restrictPublicToAuth && $userID === null) {
+			return NullModelBuilder::createFromQueryBuilder($query);
+		}
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
@@ -63,8 +72,6 @@ class PhotoAuthorisationProvider
 			$query2->orWhere('photos.is_public', '=', true);
 			if ($userID !== null) {
 				$query2->orWhere('photos.owner_id', '=', $userID);
-			} elseif (Configs::get_value('no_public', '0') === '1') {
-				$query2->where('null', '=', '123');
 			}
 		};
 
@@ -84,7 +91,7 @@ class PhotoAuthorisationProvider
 	 */
 	public function isVisible(?Photo $photo): bool
 	{
-		if (!AccessControl::is_logged_in() && Configs::get_value('no_public', '0') === '1') {
+		if (!AccessControl::is_logged_in() && Configs::get_value('restrict_public_to_auth', '0') === '1') {
 			return false;
 		}
 
@@ -220,7 +227,15 @@ class PhotoAuthorisationProvider
 	 */
 	public function appendSearchabilityConditions(BaseBuilder $query, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
 	{
+		$restrictPublicToAuth = Configs::get_value('restrict_public_to_auth', '0') === '1';
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+
+		// If no user is authenticated and public photos are restricted to
+		// authenticated users, return the `null` query
+		if ($restrictPublicToAuth && $userID === null) {
+			return NullBuilder::createFromQueryBuilder($query);
+		}
+
 		$maySearchPublic = Configs::get_value('public_photos_hidden', '1') !== '1';
 
 		try {
@@ -246,8 +261,6 @@ class PhotoAuthorisationProvider
 			}
 			if ($userID !== null) {
 				$query->orWhere('photos.owner_id', '=', $userID);
-			} elseif (Configs::get_value('no_public', '0') === '1') {
-				$query->where('123', '=', 'never-true');
 			}
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
