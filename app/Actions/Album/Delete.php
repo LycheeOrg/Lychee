@@ -141,8 +141,7 @@ class Delete extends Action
 			\Safe\usort($pendingGapsToMake, fn ($a, $b) => $b['lft'] <=> $a['lft']);
 			foreach ($pendingGapsToMake as $pendingGap) {
 				$height = $pendingGap['rgt'] - $pendingGap['lft'] + 1;
-				// ! TODO PhpStan is complaining here that $album may be undefined. @nagmat84
-				$album->newNestedSetQuery()->makeGap($pendingGap['rgt'] + 1, -$height);
+				(new Album())->newNestedSetQuery()->makeGap($pendingGap['rgt'] + 1, -$height);
 				Album::$actionsPerformed++;
 			}
 
