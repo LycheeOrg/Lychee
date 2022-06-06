@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\UnexpectedContentType;
+use Closure;
 use Illuminate\Http\Request;
 
 /**
@@ -22,22 +23,22 @@ class AcceptContentType
 	/**
 	 * Handles the incoming request.
 	 *
-	 * @param Request  $request     the incoming request to serve
-	 * @param \Closure $next        the next operation to be applied to the
-	 *                              request
-	 * @param string   $contentType the content type which must be acceptable
-	 *                              by the client; either {@link self::JSON},
-	 *                              {@link self::HTML}, or {@link self::ANY}
+	 * @param Request $request     the incoming request to serve
+	 * @param Closure $next        the next operation to be applied to the
+	 *                             request
+	 * @param string  $contentType the content type which must be acceptable
+	 *                             by the client; either {@link self::JSON},
+	 *                             {@link self::HTML}, or {@link self::ANY}
 	 *
 	 * @return mixed
 	 *
 	 * @throws UnexpectedContentType
 	 * @throws LycheeInvalidArgumentException
 	 */
-	public function handle(Request $request, \Closure $next, string $contentType): mixed
+	public function handle(Request $request, Closure $next, string $contentType): mixed
 	{
 		if ($contentType === self::JSON) {
-			if (!$request->expectsJson()) {
+			if (!$request->acceptsJson()) {
 				throw new UnexpectedContentType(self::JSON);
 			}
 		} elseif ($contentType === self::HTML) {

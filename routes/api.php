@@ -15,31 +15,35 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/album/{albumID}', [AlbumController::class, 'get']);
-Route::get('/album/{albumID}/positions', [AlbumController::class, 'getPositionData']);
-Route::post('/album/{albumID}/unlock', [AlbumController::class, 'unlock']);
-Route::post('/album', [AlbumController::class, 'add']);
-Route::post('/album/tag', [AlbumController::class, 'addTagAlbum']);
-Route::post('/album/{albumID}/cover', [AlbumController::class, 'setCover']);
-Route::post('/album/{albumID}/protect', [AlbumController::class, 'setProtectionPolicy']);
-Route::post('/album/{albumID}/merge', [AlbumController::class, 'merge']);
-Route::post('/album/move', [AlbumController::class, 'move']);
-Route::post('/album/{albumID}/move', [AlbumController::class, 'move']);
-Route::post('/album/{albumID}/track', [AlbumController::class, 'setTrack'])
-	->withoutMiddleware(['content_type:json'])
-	->middleware(['content_type:multipart']);
-Route::delete('/album/{albumID}/track', [AlbumController::class, 'deleteTrack']);
+Route::prefix('album')->group(function () {
+	Route::post('', [AlbumController::class, 'add']);
+	Route::post('/tag', [AlbumController::class, 'addTagAlbum']);
+	Route::post('/move', [AlbumController::class, 'move']);
+	Route::get('/{albumID}', [AlbumController::class, 'get']);
+	Route::get('/{albumID}/positions', [AlbumController::class, 'getPositionData']);
+	Route::post('/{albumID}/unlock', [AlbumController::class, 'unlock']);
+	Route::post('/{albumID}/cover', [AlbumController::class, 'setCover']);
+	Route::post('/{albumID}/protect', [AlbumController::class, 'setProtectionPolicy']);
+	Route::post('/{albumID}/merge', [AlbumController::class, 'merge']);
+	Route::post('/{albumID}/move', [AlbumController::class, 'move']);
+	Route::post('/{albumID}/track', [AlbumController::class, 'setTrack'])
+		->withoutMiddleware(['content_type:json'])
+		->middleware(['content_type:multipart']);
+	Route::delete('/{albumID}/track', [AlbumController::class, 'deleteTrack']);
+});
 
-Route::get('/albums', [AlbumsController::class, 'get']);
-Route::get('/albums/positions', [AlbumsController::class, 'getPositionData']);
-Route::get('/albums/tree', [AlbumsController::class, 'tree']);
-Route::patch('/albums/{albumIDs}', [AlbumController::class, 'patchAlbum']);
-Route::patch('/albums/tag/{albumIDs}', [AlbumController::class, 'patchTagAlbum']);
-Route::get('/albums/{albumIDs}/archive', [AlbumController::class, 'getArchive'])
-	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
-	->middleware(['local_storage', 'accept_content_type:any']);
-Route::post('/albums/{albumIDs}/rename', [AlbumController::class, 'setTitle']);
-Route::delete('/albums/{albumIDs}', [AlbumController::class, 'delete']);
+Route::prefix('albums')->group(function () {
+	Route::get('', [AlbumsController::class, 'get']);
+	Route::get('/positions', [AlbumsController::class, 'getPositionData']);
+	Route::get('/tree', [AlbumsController::class, 'tree']);
+	Route::patch('/tag/{albumIDs}', [AlbumController::class, 'patchTagAlbum']);
+	Route::patch('/{albumIDs}', [AlbumController::class, 'patchAlbum']);
+	Route::delete('/{albumIDs}', [AlbumController::class, 'delete']);
+	Route::get('/{albumIDs}/archive', [AlbumController::class, 'getArchive'])
+		->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
+		->middleware(['local_storage', 'accept_content_type:any']);
+	Route::post('/{albumIDs}/rename', [AlbumController::class, 'setTitle']);
+});
 
 Route::get('/frame/settings', [FrameController::class, 'getSettings']);
 
@@ -49,21 +53,24 @@ Route::post('/import/server/cancel', [ImportController::class, 'serverCancel'])-
 
 Route::get('/legacy/translate', [LegacyController::class, 'translateLegacyModelIDs']);
 
-Route::get('/photo/random', [PhotoController::class, 'getRandom']);
-Route::get('/photo/{photoID}', [PhotoController::class, 'get']);
-Route::post('/photo', [PhotoController::class, 'add'])
-	->withoutMiddleware(['content_type:json'])
-	->middleware(['content_type:multipart']);
-Route::post('/photo/clearSymLink', [PhotoController::class, 'clearSymLink']);
+Route::prefix('photo')->group(function () {
+	Route::post('', [PhotoController::class, 'add'])
+		->withoutMiddleware(['content_type:json'])
+		->middleware(['content_type:multipart']);
+	Route::post('/clearSymLink', [PhotoController::class, 'clearSymLink']);
+	Route::get('/random', [PhotoController::class, 'getRandom']);
+	Route::get('/{photoID}', [PhotoController::class, 'get']);
+	Route::post('/{photoID}/editor/rotate/{direction}', [PhotoEditorController::class, 'rotate']);
+});
 
-Route::post('/photo/{photoID}/editor/rotate/{direction}', [PhotoEditorController::class, 'rotate']);
-
-Route::patch('/photos/{photoIDs}', [PhotoController::class, 'patchPhoto']);
-Route::delete('/photos/{photoIDs}', [PhotoController::class, 'delete']);
-Route::post('/photos/{photoIDs}/duplicate', [PhotoController::class, 'duplicate']);
-Route::get('/photos/{photoIDs}/archive', [PhotoController::class, 'getArchive'])
-->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
-	->middleware(['local_storage', 'accept_content_type:any']);
+Route::prefix('photos')->group(function () {
+	Route::patch('/{photoIDs}', [PhotoController::class, 'patchPhoto']);
+	Route::delete('/{photoIDs}', [PhotoController::class, 'delete']);
+	Route::post('/{photoIDs}/duplicate', [PhotoController::class, 'duplicate']);
+	Route::get('/{photoIDs}/archive', [PhotoController::class, 'getArchive'])
+		->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
+		->middleware(['local_storage', 'accept_content_type:any']);
+});
 
 Route::get('/search/{term}', [SearchController::class, 'run']);
 
@@ -77,9 +84,11 @@ Route::get('/sharing', [Administration\SharingController::class, 'list']);
 Route::post('/sharing', [Administration\SharingController::class, 'add']);
 Route::delete('/sharing/{shareIDs}', [Administration\SharingController::class, 'delete']);
 
-Route::post('/webauthn/register/gen', [Administration\WebAuthController::class, 'generateRegistration']);
-Route::post('/webauthn/register', [Administration\WebAuthController::class, 'verifyRegistration']);
-Route::post('/webauthn/login/gen', [Administration\WebAuthController::class, 'generateAuthentication']);
-Route::post('/webauthn/login', [Administration\WebAuthController::class, 'verifyAuthentication']);
-Route::get('/webauthn', [Administration\WebAuthController::class, 'list']);
-Route::delete('/webauthn', [Administration\WebAuthController::class, 'delete']);
+Route::prefix('webauthn')->group(function () {
+	Route::get('', [Administration\WebAuthController::class, 'list']);
+	Route::delete('', [Administration\WebAuthController::class, 'delete']);
+	Route::post('/register/gen', [Administration\WebAuthController::class, 'generateRegistration']);
+	Route::post('/register', [Administration\WebAuthController::class, 'verifyRegistration']);
+	Route::post('/login/gen', [Administration\WebAuthController::class, 'generateAuthentication']);
+	Route::post('/login', [Administration\WebAuthController::class, 'verifyAuthentication']);
+});
