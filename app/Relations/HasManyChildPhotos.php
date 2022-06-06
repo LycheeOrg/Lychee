@@ -46,6 +46,17 @@ class HasManyChildPhotos extends HasManyBidirectionally
 		return $this->query; // @phpstan-ignore-line
 	}
 
+	public function getParent(): Album
+	{
+		/**
+		 * We know that the internal query is of type `Album`,
+		 * because it was set int the constructor as `$owningAlbum`.
+		 *
+		 * @noinspection PhpIncompatibleReturnTypeInspection
+		 */
+		return $this->parent; // @phpstan-ignore-line
+	}
+
 	/**
 	 * @throws InternalLycheeException
 	 */
@@ -75,8 +86,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 			return $this->related->newCollection();
 		}
 
-		/** @var SortingCriterion $albumSorting */
-		$albumSorting = $this->parent->getEffectiveSorting();
+		$albumSorting = $this->getParent()->getEffectiveSorting();
 
 		return (new SortingDecorator($this->query))
 			->orderBy(
