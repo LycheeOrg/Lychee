@@ -245,9 +245,9 @@ class HasAlbumThumb extends Relation
 	/**
 	 * Match the eagerly loaded results to their parents.
 	 *
-	 * @param array<Album>      $models   an array of parent models
-	 * @param Collection<Photo> $results  the unified collection of all child models of all parent models
-	 * @param string            $relation the name of the relation from the parent to the child models
+	 * @param array<Album> $models   an array of parent models
+	 * @param Collection   $results  the unified collection of all child models of all parent models
+	 * @param string       $relation the name of the relation from the parent to the child models
 	 *
 	 * @return array
 	 */
