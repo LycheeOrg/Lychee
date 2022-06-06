@@ -69,6 +69,17 @@ abstract class HasManyPhotos extends Relation
 		return $this->query; // @phpstan-ignore-line
 	}
 
+	public function getParent(): BaseAlbum
+	{
+		/**
+		 * We know that the parent is of type `BaseAlbum`,
+		 * because it was set int the constructor as `$owningAlbum`.
+		 *
+		 * @noinspection PhpIncompatibleReturnTypeInspection
+		 */
+		return $this->parent; // @phpstan-ignore-line
+	}
+
 	/**
 	 * Initializes the given owning models with a default value of this
 	 * relation.

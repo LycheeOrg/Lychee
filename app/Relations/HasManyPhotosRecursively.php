@@ -25,6 +25,17 @@ class HasManyPhotosRecursively extends HasManyPhotos
 		parent::__construct($owningAlbum);
 	}
 
+	public function getParent(): Album
+	{
+		/**
+		 * We know that the parent is of type `Album`,
+		 * because it was set int the constructor as `$owningAlbum`.
+		 *
+		 * @noinspection PhpIncompatibleReturnTypeInspection
+		 */
+		return $this->parent; // @phpstan-ignore-line
+	}
+
 	/**
 	 * Adds the constraints for single owning album to the base query.
 	 *
@@ -36,7 +47,7 @@ class HasManyPhotosRecursively extends HasManyPhotos
 	public function addConstraints(): void
 	{
 		if (static::$constraints) {
-			$this->addEagerConstraints([$this->parent]);
+			$this->addEagerConstraints([$this->getParent()]);
 		}
 	}
 
