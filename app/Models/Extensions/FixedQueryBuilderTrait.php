@@ -162,6 +162,13 @@ trait FixedQueryBuilderTrait
 	public function orderBy($column, $direction = 'asc'): static
 	{
 		try {
+			// The parent class is Eloquent\Builder and Eloquent\Builder::orderBy()
+			// accepts exactly the types for columns as listed above
+			// (see source code of the framework).
+			// However, the buggy larastan ruleset lies to PhpStan about the
+			// types and hence we must ignore this line.
+			//
+			// @phpstan-ignore-next-line
 			return parent::orderBy($column, $direction);
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
