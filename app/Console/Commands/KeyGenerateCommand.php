@@ -2,12 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\ConfirmableTrait;
-
 class KeyGenerateCommand extends \Illuminate\Foundation\Console\KeyGenerateCommand
 {
-	use ConfirmableTrait;
-
 	/**
 	 * Set the application key in the environment file.
 	 *
