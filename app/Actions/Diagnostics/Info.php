@@ -125,8 +125,8 @@ class Info extends Diagnostics
 		$infos[] = Diagnostics::line('Max execution time: ', \Safe\ini_get('max_execution_time'));
 		$infos[] = Diagnostics::line($dbtype . ' Version:', $dbver);
 		$infos[] = '';
-		$infos[] = Diagnostics::line('Imagick:', (string) $imagick);
-		$infos[] = Diagnostics::line('Imagick Active:', $settings['imagick'] ?? 'key not found in settings');
+		$infos[] = Diagnostics::line('Imagick Available:', (string) $imagick);
+		$infos[] = Diagnostics::line('Imagick Enabled:', $settings['imagick'] ?? 'key not found in settings');
 		$infos[] = Diagnostics::line('Imagick Version:', $imagickVersion);
 		$infos[] = Diagnostics::line('GD Version:', $gdVersion['GD Version']);
 
