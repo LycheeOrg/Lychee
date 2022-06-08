@@ -10,6 +10,7 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
+use Safe\Exceptions\InfoException;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class GenerateThumbs extends Command
@@ -59,7 +60,11 @@ class GenerateThumbs extends Command
 			$amount = (int) $this->argument('amount');
 			$timeout = (int) $this->argument('timeout');
 
-			\Safe\set_time_limit($timeout);
+			try {
+				\Safe\set_time_limit($timeout);
+			} catch (InfoException) {
+				// We do nothing, set_time_limit will throw an error on tests.
+			}
 
 			$this->line(
 				\Safe\sprintf(

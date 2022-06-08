@@ -11,6 +11,7 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Safe\Exceptions\InfoException;
 
 class ExifLens extends Command
 {
@@ -41,7 +42,12 @@ class ExifLens extends Command
 			$argument = $this->argument('nb');
 			$from = $this->argument('from');
 			$timeout = (int) $this->argument('tm');
-			\Safe\set_time_limit($timeout);
+
+			try {
+				\Safe\set_time_limit($timeout);
+			} catch (InfoException) {
+				// We do nothing, set_time_limit will throw an error on tests.
+			}
 
 			// we use lens because this is the one which is most likely to be empty.
 			$photos = Photo::with(['size_variants' => function (HasMany $r) {
