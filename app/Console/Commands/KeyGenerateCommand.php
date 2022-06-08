@@ -4,6 +4,11 @@ namespace App\Console\Commands;
 
 /**
  * Generate the `APP_KEY` config variable.
+ *
+ * This class extends the original command by the additional option `--no-override`
+ * which - if enabled - let the command silently do nothing, if the variable has already been set.
+ * This special mode is needed in the automatic install script which is called by Composer
+ * upon package installation.
  */
 class KeyGenerateCommand extends \Illuminate\Foundation\Console\KeyGenerateCommand
 {
@@ -26,10 +31,10 @@ class KeyGenerateCommand extends \Illuminate\Foundation\Console\KeyGenerateComma
 	 */
 	protected function setKeyInEnvironmentFile($key): bool
 	{
-		if (!$this->hasOption('no-override') || !$this->option('no-override')) {
+		if (!$this->hasOption('no-override') || !$this->option('no-override') || strlen($this->laravel['config']['app.key']) === 0) {
 			return parent::setKeyInEnvironmentFile($key);
 		}
 
-		return strlen($this->laravel['config']['app.key']) === 0 || parent::setKeyInEnvironmentFile($key);
+		return false;
 	}
 }
