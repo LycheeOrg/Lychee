@@ -357,24 +357,6 @@ return [
 			'add-generated-nonce' => false,
 		],
 
-		'style-src' => [
-			'allow' => [
-				'https://fonts.googleapis.com',
-			],
-			'hashes' => [
-				// 'sha256' => [
-				//     'hash-value',
-				// ],
-			],
-			'nonces' => [],
-			'schemes' => [
-				// 'https:',
-			],
-			'self' => true,
-			'unsafe-inline' => true,
-			'report-sample' => true,
-			'add-generated-nonce' => false,
-		],
 		'img-src' => [
 			'self' => true,
 			// Allow OpenStreetMap tile images to be fetched from the different provides
@@ -409,12 +391,6 @@ return [
 			'allow' => [
 				'http://lycheeorg.github.io/update.json',
 				'blob:',
-			],
-			'self' => true,
-		],
-		'font-src' => [
-			'allow' => [
-				'https://fonts.gstatic.com',
 			],
 			'self' => true,
 		],

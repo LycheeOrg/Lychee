@@ -32,12 +32,12 @@
         "fideloper/proxy": "^4.3",
         "geocoder-php/cache-provider": "^4.3",
         "geocoder-php/nominatim-provider": "^5.5",
-        "laravel/framework": "^8.0",
+        "laravel/framework": "^8.83.14",
         "livewire/livewire": "^2.7",
         "lychee-org/nestedset": "^6",
-        "lychee-org/php-exif": "^0.7.5",
+        "lychee-org/php-exif": "^0.7.6",
         "maennchen/zipstream-php": "^2.1",
-        "php-ffmpeg/php-ffmpeg": "^0.17.0",
+        "php-ffmpeg/php-ffmpeg": "^1.0",
         "php-http/guzzle7-adapter": "^1.0",
         "php-http/message": "^1.12",
         "spatie/guzzle-rate-limiter-middleware": "^2.0",
@@ -54,6 +54,7 @@
         "friendsofphp/php-cs-fixer": "^3.3",
         "itsgoingd/clockwork": "^5.0",
         "laravel/homestead": "^v13.2.1",
+        "mockery/mockery": "^1.5",
         "nunomaduro/collision": "^5.0",
         "nunomaduro/larastan": "^1.0",
         "phpstan/phpstan": "^1.7",
@@ -82,10 +83,8 @@
         }
     },
     "scripts": {
-        "post-root-package-install": [
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
-        ],
-        "post-create-project-cmd": [
+        "post-install-cmd": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
             "@php artisan key:generate"
         ],
         "post-autoload-dump": [
@@ -94,7 +93,7 @@
             "@install_files"
         ],
         "install_files": [
-            "sh scripts/install_files.sh"
+            "@php scripts/install_files.php"
         ]
     },
     "config": {
