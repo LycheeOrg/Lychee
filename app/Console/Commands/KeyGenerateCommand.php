@@ -2,34 +2,34 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Encryption\Encrypter;
-use Safe\Exceptions\UrlException;
-
+/**
+ * Generate the `APP_KEY` config variable.
+ */
 class KeyGenerateCommand extends \Illuminate\Foundation\Console\KeyGenerateCommand
 {
+	/**
+	 * The name and signature of the console command.
+	 *
+	 * @var string
+	 */
+	protected $signature = 'key:generate
+	                {--no-override : Do not override an existing key}
+                    {--show : Display the key instead of modifying files}
+                    {--force : Force the operation to run when in production}';
+
 	/**
 	 * Set the application key in the environment file.
 	 *
 	 * @param string $key
 	 *
 	 * @return bool
-	 *
-	 * @throws UrlException
 	 */
 	protected function setKeyInEnvironmentFile($key): bool
 	{
-		$currentKey = $this->laravel['config']['app.key'];
-		if (str_starts_with($currentKey, 'base64:')) {
-			$currentKey = substr($currentKey, 7);
-		}
-		$supported = Encrypter::supported(\Safe\base64_decode($currentKey), $this->laravel['config']['app.cipher']);
-
-		if (strlen($currentKey) !== 0 && ($supported || ($this->getDefaultConfirmCallback()() && !$this->confirmToProceed()))) {
-			return false;
+		if (!$this->hasOption('no-override') || !$this->option('no-override')) {
+			return parent::setKeyInEnvironmentFile($key);
 		}
 
-		$this->writeNewEnvironmentFileWith($key);
-
-		return true;
+		return strlen($this->laravel['config']['app.key']) === 0 || parent::setKeyInEnvironmentFile($key);
 	}
 }
