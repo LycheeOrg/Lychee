@@ -11,6 +11,7 @@ use App\Models\SizeVariant;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Safe\Exceptions\InfoException;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -95,7 +96,11 @@ class Takedate extends Command
 			$timeout = intval($this->argument('time'));
 			$setCreationTime = boolval($this->option('set-upload-time'));
 			$force = boolval($this->option('force'));
-			\Safe\set_time_limit($timeout);
+			try {
+				\Safe\set_time_limit($timeout);
+			} catch (InfoException) {
+				// Do nothing
+			}
 
 			// For faster iteration we eagerly load the original size variant,
 			// but only the original size variant
