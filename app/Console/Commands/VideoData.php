@@ -12,6 +12,8 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
+use Safe\Exceptions\InfoException;
+use function Safe\set_time_limit;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class VideoData extends Command
@@ -42,7 +44,11 @@ class VideoData extends Command
 		$timeout = intval($this->argument('timeout'));
 		$count = intval($this->argument('count'));
 		try {
-			\Safe\set_time_limit($timeout);
+			try {
+				set_time_limit($timeout);
+			} catch (InfoException) {
+				// do nothing
+			}
 
 			$this->line(
 				\Safe\sprintf(
