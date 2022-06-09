@@ -175,7 +175,7 @@ class Delete extends Action
 			} catch (\Throwable) {
 				// Sic! We cannot do anything about the inner exception
 			}
-			throw new \AssertionError('\InvalidArgumentException must not be thrown by ->where', $e->getCode(), $e);
+			assert(false, new \AssertionError('\InvalidArgumentException must not be thrown by ->where', $e->getCode(), $e));
 		} catch (ArrayException $e) {
 			try {
 				// if anything goes wrong, don't leave the tree in an inconsistent state
@@ -183,7 +183,7 @@ class Delete extends Action
 			} catch (\Throwable) {
 				// Sic! We cannot do anything about the inner exception
 			}
-			throw new \AssertionError('Safe\Exceptions\ArrayException must not be thrown by usort', $e->getCode(), $e);
+			assert(false, new \AssertionError('Safe\Exceptions\ArrayException must not be thrown by usort', $e->getCode(), $e));
 		}
 	}
 }

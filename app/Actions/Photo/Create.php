@@ -177,7 +177,8 @@ class Create
 			// if a potential partner has been found, ensure that it is of a
 			// different kind then the uploaded media.
 			if (
-				$livePartner !== null && !(MediaFile::isSupportedImageMimeType($mimeType) && $livePartner->isVideo() ||
+				$livePartner !== null && !(
+					MediaFile::isSupportedImageMimeType($mimeType) && $livePartner->isVideo() ||
 					MediaFile::isSupportedVideoMimeType($mimeType) && $livePartner->isPhoto()
 				)
 			) {

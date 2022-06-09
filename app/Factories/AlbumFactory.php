@@ -219,7 +219,6 @@ class AlbumFactory
 		if ($withRelations) {
 			// Just try to get the photos.
 			// This loads the relation from DB and caches it.
-			// ! Dead code ???
 			$ignore = $smartAlbum->photos;
 		}
 

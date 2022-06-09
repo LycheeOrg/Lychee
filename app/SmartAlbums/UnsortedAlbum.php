@@ -22,7 +22,7 @@ class UnsortedAlbum extends BaseSmartAlbum
 
 	public static function getInstance(): self
 	{
-		self::$instance = self::$instance ?? new self();
+		self::$instance ??= new self();
 
 		// The following two lines are only needed due to testing.
 		// The same instance of this class is used for all tests, because

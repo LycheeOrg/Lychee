@@ -155,7 +155,10 @@ trait HasRandomIDAndLegacyTimeBasedID
 			throw new InsufficientEntropyException($e);
 		}
 
-		if (PHP_INT_MAX == 2147483647 || Configs::getValueAsBool('force_32bit_ids', false)) {
+		if (
+			PHP_INT_MAX == 2147483647 ||
+			Configs::getValueAsBool('force_32bit_ids', false)
+		) {
 			// For 32-bit installations, we can only afford to store the
 			// full seconds in id.  The calling code needs to be able to
 			// handle duplicate ids.  Note that this also exposes us to

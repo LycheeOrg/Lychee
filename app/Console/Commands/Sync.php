@@ -25,7 +25,7 @@ class Sync extends Command
 	 * @var string
 	 */
 	protected $signature =
-	'lychee:sync ' .
+		'lychee:sync ' .
 		'{dir : directory to sync} ' .
 		'{--album_id= : Album ID to import to} ' .
 		'{--owner_id=0 : Owner ID of imported photos} ' .
