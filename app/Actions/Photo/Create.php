@@ -27,6 +27,7 @@ use App\SmartAlbums\BaseSmartAlbum;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\StarredAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use function Safe\substr;
 
 class Create
 {
@@ -136,7 +137,7 @@ class Create
 
 		// Use basename of file if IPTC title missing
 		if (empty($this->strategyParameters->exifInfo->title)) {
-			$this->strategyParameters->exifInfo->title = \Safe\substr($sourceFile->getOriginalBasename(), 0, 98);
+			$this->strategyParameters->exifInfo->title = substr($sourceFile->getOriginalBasename(), 0, 98);
 		}
 	}
 

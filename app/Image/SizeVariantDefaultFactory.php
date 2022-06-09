@@ -21,6 +21,8 @@ use FFMpeg\Exception\InvalidArgumentException;
 use FFMpeg\FFMpeg;
 use FFMpeg\Media\Video;
 use Illuminate\Support\Collection;
+use function Safe\filesize;
+use function Safe\unlink;
 use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 class SizeVariantDefaultFactory extends SizeVariantFactory
@@ -93,7 +95,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		$this->photo = null;
 		$this->namingStrategy = null;
 		if ($this->needsCleanup) {
-			\Safe\unlink($this->referenceFullPath);
+			unlink($this->referenceFullPath);
 		}
 		$this->referenceFullPath = '';
 	}
@@ -177,7 +179,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		} catch (\Throwable $e) {
 			throw new MediaFileOperationException($errMsg, $e);
 		}
-		if (!file_exists($this->referenceFullPath) || \Safe\filesize($this->referenceFullPath) == 0) {
+		if (!file_exists($this->referenceFullPath) || filesize($this->referenceFullPath) == 0) {
 			throw new MediaFileOperationException($errMsg);
 		}
 		if (Configs::getValueAsBool('lossless_optimization', false)) {
@@ -307,12 +309,12 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 				$svAbsolutePath = $sv->getFile()->getAbsolutePath();
 				if ($sizeVariant === SizeVariant::THUMB || $sizeVariant === SizeVariant::THUMB2X) {
 					$this->imageHandler->crop($this->referenceFullPath, $svAbsolutePath, $sv->width, $sv->height);
-					$sv->filesize = \Safe\filesize($svAbsolutePath);
+					$sv->filesize = filesize($svAbsolutePath);
 					$sv->save();
 				} else {
 					$resWidth = $resHeight = 0;
 					$this->imageHandler->scale($this->referenceFullPath, $svAbsolutePath, $sv->width, $sv->height, $resWidth, $resHeight);
-					$sv->filesize = \Safe\filesize($svAbsolutePath);
+					$sv->filesize = filesize($svAbsolutePath);
 					$sv->width = $resWidth;
 					$sv->height = $resHeight;
 					$sv->save();

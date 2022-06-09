@@ -7,6 +7,7 @@ use App\Exceptions\UnauthenticatedException;
 use App\Facades\AccessControl;
 use App\Models\User;
 use DarkGhostHunter\Larapass\Facades\WebAuthn;
+use function Safe\base64_decode;
 
 class VerifyAuthentication
 {
@@ -71,7 +72,7 @@ class VerifyAuthentication
 	protected function binaryID(string $rawId): string
 	{
 		try {
-			$result = \Safe\base64_decode(strtr($rawId, '-_', '+/'), true);
+			$result = base64_decode(strtr($rawId, '-_', '+/'), true);
 		} catch (\Throwable) {
 			throw new InvalidUserIdException();
 		}

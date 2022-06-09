@@ -11,6 +11,9 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Adapter\Local as LocalFlysystem;
+use function Safe\readlink;
+use function Safe\scandir;
+use function Safe\unlink;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class Ghostbuster extends Command
@@ -97,7 +100,7 @@ class Ghostbuster extends Command
 				$isDeadSymlink = false;
 				if ($isLocalDisk) {
 					$fullPath = $uploadDisk->path($filename);
-					$isDeadSymlink = is_link($fullPath) && !file_exists(\Safe\readlink($fullPath));
+					$isDeadSymlink = is_link($fullPath) && !file_exists(readlink($fullPath));
 				}
 
 				/** @var Collection $sizeVariants */
@@ -116,7 +119,7 @@ class Ghostbuster extends Command
 						$this->line(str_pad($filename, 50) . $this->col->red(' is dead symlink and would be removed') . '.');
 					} else {
 						// Laravel apparently doesn't think dead symlinks 'exist', so use low-level commands
-						\Safe\unlink($uploadDisk->path($filename));
+						unlink($uploadDisk->path($filename));
 						$this->line(str_pad($filename, 50) . $this->col->red(' removed') . '.');
 						$totalDbEntries += $sizeVariants->count() + $photos->count();
 						/** @var SizeVariant $sizeVariant */
@@ -186,14 +189,14 @@ class Ghostbuster extends Command
 			// contains symbolic links.
 			// So we must use low-level methods here.
 			$symlinkDiskPath = $symlinkDisk->path('');
-			$symLinks = array_slice(\Safe\scandir($symlinkDiskPath), 3);
+			$symLinks = array_slice(scandir($symlinkDiskPath), 3);
 			/** @var string $symLink */
 			foreach ($symLinks as $symLink) {
 				$fullPath = $symlinkDiskPath . $symLink;
-				$isDeadSymlink = !file_exists(\Safe\readlink($fullPath));
+				$isDeadSymlink = !file_exists(readlink($fullPath));
 				if ($isDeadSymlink) {
 					// Laravel apparently doesn't think dead symlinks 'exist', so use low-level commands
-					\Safe\unlink($fullPath);
+					unlink($fullPath);
 					$this->line($this->col->red('removed symbolic link: ') . $fullPath);
 				}
 			}

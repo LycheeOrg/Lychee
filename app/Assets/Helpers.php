@@ -6,6 +6,9 @@ use App\Exceptions\Internal\ZeroModuloException;
 use App\ModelFunctions\ConfigFunctions;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\File;
+use function Safe\getallheaders;
+use function Safe\parse_url;
+use function Safe\substr;
 use WhichBrowser\Parser as BrowserParser;
 
 class Helpers
@@ -61,7 +64,7 @@ class Helpers
 	 */
 	public function getDeviceType(): string
 	{
-		$result = new BrowserParser(\Safe\getallheaders(), ['cache' => app('cache.store')]);
+		$result = new BrowserParser(getallheaders(), ['cache' => app('cache.store')]);
 
 		return $result->getType();
 	}
@@ -81,7 +84,7 @@ class Helpers
 		}
 
 		// Chop off the last four digits.
-		$shortId = intval(\Safe\substr($id, 0, -4));
+		$shortId = intval(substr($id, 0, -4));
 		if ($shortId <= $prevShortId) {
 			$shortId = $prevShortId + 1;
 		}
@@ -101,7 +104,7 @@ class Helpers
 	{
 		// If $filename is an URI, get only the path component
 		if ($isURI === true) {
-			$filename = \Safe\parse_url($filename, PHP_URL_PATH);
+			$filename = parse_url($filename, PHP_URL_PATH);
 		}
 
 		$extension = pathinfo($filename, PATHINFO_EXTENSION);

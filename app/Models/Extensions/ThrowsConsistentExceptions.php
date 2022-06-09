@@ -5,6 +5,8 @@ namespace App\Models\Extensions;
 use App\Exceptions\ModelDBException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Support\Str;
+use function Safe\json_encode;
+use function Safe\json_last_error_msg;
 
 /**
  * Fixed Eloquent model for all Lychee models.
@@ -139,9 +141,9 @@ trait ThrowsConsistentExceptions
 			// Hence, we call `json_encode` _without_ specifying
 			// `JSON_THROW_ON_ERROR` and then mimic that behaviour.
 			// ! TODO VERIFY THIS !
-			$json = \Safe\json_encode($this->jsonSerialize(), $options);
+			$json = json_encode($this->jsonSerialize(), $options);
 			if ((bool) json_last_error()) {
-				throw new \JsonException(\Safe\json_last_error_msg(), json_last_error());
+				throw new \JsonException(json_last_error_msg(), json_last_error());
 			}
 
 			return $json;

@@ -2,6 +2,12 @@
 
 namespace App\Metadata;
 
+use function Safe\disk_free_space;
+use function Safe\disk_total_space;
+use function Safe\filesize;
+use function Safe\sprintf;
+use function Safe\substr;
+
 class DiskUsage
 {
 	/**
@@ -11,7 +17,7 @@ class DiskUsage
 	 */
 	public function is_win(): bool
 	{
-		$os = strtoupper(\Safe\substr(PHP_OS, 0, 3));
+		$os = strtoupper(substr(PHP_OS, 0, 3));
 
 		return $os === 'WIN';
 	}
@@ -30,7 +36,7 @@ class DiskUsage
 		];
 		$exp = intval(floor(log($bytes) / log(1024)));
 
-		return \Safe\sprintf(
+		return sprintf(
 			'%.2f %s',
 			($bytes / pow(1024, $exp)),
 			$symbols[$exp]
@@ -72,7 +78,7 @@ class DiskUsage
 			return 0;
 		} else {
 			if (is_file($dir) === true) {
-				return \Safe\filesize($dir);
+				return filesize($dir);
 			}
 		}
 
@@ -88,7 +94,7 @@ class DiskUsage
 	public function get_total_space(): string
 	{
 		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
-		$dts = \Safe\disk_total_space(base_path(''));
+		$dts = disk_total_space(base_path(''));
 
 		return $this->getSymbolByQuantity($dts);
 	}
@@ -101,7 +107,7 @@ class DiskUsage
 	public function get_free_space(): string
 	{
 		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
-		$dfs = \Safe\disk_free_space(base_path(''));
+		$dfs = disk_free_space(base_path(''));
 
 		return $this->getSymbolByQuantity($dfs);
 	}
@@ -114,8 +120,8 @@ class DiskUsage
 	public function get_free_percent(): string
 	{
 		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
-		$dts = \Safe\disk_total_space(base_path(''));
-		$dfs = \Safe\disk_free_space(base_path(''));
+		$dts = disk_total_space(base_path(''));
+		$dfs = disk_free_space(base_path(''));
 
 		return floor(100 * $dfs / $dts) . '%';
 	}

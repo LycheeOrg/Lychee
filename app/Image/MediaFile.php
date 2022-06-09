@@ -6,6 +6,7 @@ use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Models\Configs;
 use Illuminate\Http\UploadedFile;
+use function Safe\fclose;
 
 /**
  * Class `MediaFile` provides the common interface of all file-like classes.
@@ -143,7 +144,7 @@ abstract class MediaFile
 	{
 		try {
 			if (is_resource($this->stream)) {
-				\Safe\fclose($this->stream);
+				fclose($this->stream);
 				$this->stream = null;
 			}
 		} catch (\ErrorException $e) {

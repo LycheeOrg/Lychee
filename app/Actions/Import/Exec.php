@@ -23,7 +23,15 @@ use Illuminate\Support\Facades\Storage;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Safe\Exceptions\FilesystemException;
+use Safe\Exceptions\InfoException;
 use Safe\Exceptions\StringsException;
+use function Safe\file;
+use function Safe\glob;
+use function Safe\ini_get;
+use function Safe\preg_match;
+use function Safe\realpath;
+use function Safe\set_time_limit;
+use function Safe\substr;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Exec
@@ -111,9 +119,9 @@ class Exec
 	{
 		try {
 			if (str_ends_with($path, '/')) {
-				$path = \Safe\substr($path, 0, -1);
+				$path = substr($path, 0, -1);
 			}
-			$realPath = \Safe\realpath($path);
+			$realPath = realpath($path);
 
 			if (is_dir($realPath) === false) {
 				throw new InvalidDirectoryException('Given path is not a directory (' . $path . ')');
@@ -148,7 +156,7 @@ class Exec
 	{
 		if (is_readable($path . '/.lycheeignore')) {
 			try {
-				$result = \Safe\file($path . '/.lycheeignore');
+				$result = file($path . '/.lycheeignore');
 			} catch (\Throwable) {
 				throw new FileOperationException('Could not read ' . $path . '/.lycheeignore');
 			}
@@ -228,7 +236,7 @@ class Exec
 
 			// TODO: Consider to use a modern OO-approach using [`DirectoryIterator`](https://www.php.net/manual/en/class.directoryiterator.php) and [`SplFileInfo`](https://www.php.net/manual/en/class.splfileinfo.php)
 			/** @var string[] $files */
-			$files = \Safe\glob($path . '/*');
+			$files = glob($path . '/*');
 
 			$filesTotal = count($files);
 			$filesCount = 0;
@@ -240,8 +248,8 @@ class Exec
 				$this->assertImportNotCancelled();
 				// Reset the execution timeout for every iteration.
 				try {
-					\Safe\set_time_limit((int) \Safe\ini_get('max_execution_time'));
-				} catch (\Throwable) {
+					set_time_limit((int) ini_get('max_execution_time'));
+				} catch (InfoException) {
 					// ! If we do not catch this one this throws this error during tests:
 					/**
 					 * 1) Tests\Feature\PhotosAddTest::testImport
@@ -338,7 +346,7 @@ class Exec
 		$pattern = preg_replace_callback('/([^*])/', [self::class, 'preg_quote_callback_fct'], $pattern);
 		$pattern = str_replace('*', '.*', $pattern);
 
-		return (bool) \Safe\preg_match('/^' . $pattern . '$/i', $filename);
+		return (bool) preg_match('/^' . $pattern . '$/i', $filename);
 	}
 
 	/**

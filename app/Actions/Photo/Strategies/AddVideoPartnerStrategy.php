@@ -6,6 +6,7 @@ use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Image\MediaFile;
 use App\Models\Photo;
+use function Safe\substr;
 
 /**
  * Adds a video as partner to an existing photo.
@@ -38,7 +39,7 @@ class AddVideoPartnerStrategy extends AddBaseStrategy
 		$photoPath = $photoFile->getRelativePath();
 		$photoExt = $photoFile->getOriginalExtension();
 		$videoExt = $this->videoSourceFile->getOriginalExtension();
-		$videoPath = \Safe\substr($photoPath, 0, -strlen($photoExt)) . $videoExt;
+		$videoPath = substr($photoPath, 0, -strlen($photoExt)) . $videoExt;
 		$this->putSourceIntoFinalDestination($this->videoSourceFile, $videoPath);
 		$this->photo->live_photo_short_path = $videoPath;
 		$this->photo->save();

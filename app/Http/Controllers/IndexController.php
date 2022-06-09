@@ -12,6 +12,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Config;
 use Illuminate\View\View;
+use function Safe\phpinfo;
 
 class IndexController extends Controller
 {
@@ -76,7 +77,7 @@ class IndexController extends Controller
 	// @codeCoverageIgnoreStart
 	public function phpinfo(): void
 	{
-		\Safe\phpinfo();
+		phpinfo();
 	}
 
 	// @codeCoverageIgnoreEnd

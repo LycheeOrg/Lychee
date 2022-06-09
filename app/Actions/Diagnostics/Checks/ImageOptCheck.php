@@ -4,6 +4,7 @@ namespace App\Actions\Diagnostics\Checks;
 
 use App\Contracts\DiagnosticCheckInterface;
 use App\Models\Configs;
+use function Safe\substr;
 use Spatie\ImageOptimizer\Optimizers\Cwebp;
 use Spatie\ImageOptimizer\Optimizers\Gifsicle;
 use Spatie\ImageOptimizer\Optimizers\Jpegoptim;
@@ -30,7 +31,7 @@ class ImageOptCheck implements DiagnosticCheckInterface
 
 		$binaryPath = config('image-optimizer.binary_path');
 
-		if ($binaryPath != '' && \Safe\substr($binaryPath, -1) !== DIRECTORY_SEPARATOR) {
+		if ($binaryPath != '' && substr($binaryPath, -1) !== DIRECTORY_SEPARATOR) {
 			$binaryPath = $binaryPath . DIRECTORY_SEPARATOR;
 		}
 

@@ -2,6 +2,8 @@
 
 namespace App\Actions\Diagnostics;
 
+use function Safe\sprintf;
+
 abstract class Diagnostics
 {
 	/**
@@ -23,6 +25,6 @@ abstract class Diagnostics
 	 */
 	protected static function line(string $key, string $value): string
 	{
-		return \Safe\sprintf('%-32s %s', $key, $value);
+		return sprintf('%-32s %s', $key, $value);
 	}
 }

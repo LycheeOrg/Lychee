@@ -37,6 +37,7 @@ parameters:
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::delete\(\)#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::without\(\)#'
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::count\(\).#'
+		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::update\(\).#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::update\(\)#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::with(Only)?\(\)#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::getLft\(\).#'

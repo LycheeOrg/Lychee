@@ -2,6 +2,9 @@
 
 namespace App\Actions\Install;
 
+use function Safe\ini_get;
+use function Safe\preg_match;
+
 class RequirementsChecker
 {
 	/**
@@ -85,7 +88,7 @@ class RequirementsChecker
 	 */
 	public function checkExec(): bool
 	{
-		$disabled = explode(',', \Safe\ini_get('disable_functions'));
+		$disabled = explode(',', ini_get('disable_functions'));
 
 		return !in_array('exec', $disabled, true);
 	}
@@ -98,7 +101,7 @@ class RequirementsChecker
 	private static function getPhpVersionInfo(): array
 	{
 		$currentVersionFull = PHP_VERSION;
-		\Safe\preg_match('#^\d+(\.\d+)*#', $currentVersionFull, $filtered);
+		preg_match('#^\d+(\.\d+)*#', $currentVersionFull, $filtered);
 		$currentVersion = $filtered[0];
 
 		return [

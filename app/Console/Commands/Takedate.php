@@ -12,6 +12,7 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Safe\Exceptions\InfoException;
+use function Safe\set_time_limit;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -97,7 +98,7 @@ class Takedate extends Command
 			$setCreationTime = boolval($this->option('set-upload-time'));
 			$force = boolval($this->option('force'));
 			try {
-				\Safe\set_time_limit($timeout);
+				set_time_limit($timeout);
 			} catch (InfoException) {
 				// Do nothing
 			}

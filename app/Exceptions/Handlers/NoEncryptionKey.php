@@ -5,6 +5,7 @@ namespace App\Exceptions\Handlers;
 use App\Contracts\HttpExceptionHandler;
 use App\Redirections\ToInstall;
 use Illuminate\Encryption\MissingAppKeyException;
+use function Safe\touch;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface as HttpException;
 use Throwable;
@@ -36,7 +37,7 @@ class NoEncryptionKey implements HttpExceptionHandler
 	public function renderHttpException(SymfonyResponse $defaultResponse, HttpException $e): SymfonyResponse
 	{
 		try {
-			\Safe\touch(base_path('.NO_SECURE_KEY'));
+			touch(base_path('.NO_SECURE_KEY'));
 			$redirectResponse = ToInstall::go();
 			$contentType = $defaultResponse->headers->get('Content-Type');
 			if (!empty($contentType)) {

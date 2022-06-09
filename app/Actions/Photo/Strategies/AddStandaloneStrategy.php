@@ -17,6 +17,11 @@ use App\ModelFunctions\MOVFormat;
 use App\Models\Photo;
 use FFMpeg\FFMpeg;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use function Safe\fclose;
+use function Safe\fopen;
+use function Safe\fread;
+use function Safe\fwrite;
+use function Safe\tmpfile;
 
 class AddStandaloneStrategy extends AddBaseStrategy
 {
@@ -219,13 +224,13 @@ class AddStandaloneStrategy extends AddBaseStrategy
 
 		try {
 			// 1. Extract the video part
-			$fp = \Safe\fopen($fullPathPhoto, 'r');
-			$fp_video = \Safe\tmpfile(); // use a temporary file, will be deleted once closed
+			$fp = fopen($fullPathPhoto, 'r');
+			$fp_video = tmpfile(); // use a temporary file, will be deleted once closed
 
 			// The MP4 file is located in the last bytes of the file
 			fseek($fp, -1 * $videoLengthBytes, SEEK_END); // It needs to be negative
-			$data = \Safe\fread($fp, $videoLengthBytes);
-			\Safe\fwrite($fp_video, $data, $videoLengthBytes);
+			$data = fread($fp, $videoLengthBytes);
+			fwrite($fp_video, $data, $videoLengthBytes);
 
 			// 2. Convert file from mp4 to mov, but keeping audio and video codec
 			// This is needed to LivePhotosKit which only accepts mov files
@@ -244,8 +249,8 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			$video->save($format, $fullPathVideo);
 
 			// 3. Close files ($fp_video will be again deleted)
-			\Safe\fclose($fp);
-			\Safe\fclose($fp_video);
+			fclose($fp);
+			fclose($fp_video);
 
 			// Save file path; Checksum calculation not needed since
 			// we do not perform matching for Google Motion Photos (as for iOS Live Photos)

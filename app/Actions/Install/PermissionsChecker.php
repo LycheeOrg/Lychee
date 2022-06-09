@@ -2,6 +2,9 @@
 
 namespace App\Actions\Install;
 
+use function Safe\preg_match;
+use function Safe\substr;
+
 class PermissionsChecker
 {
 	/**
@@ -23,7 +26,7 @@ class PermissionsChecker
 	 */
 	public function is_win(): bool
 	{
-		return strtoupper(\Safe\substr(PHP_OS, 0, 3)) === 'WIN';
+		return strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
 	}
 
 	/**
@@ -54,7 +57,7 @@ class PermissionsChecker
 	{
 		$return = 0;
 		foreach (explode('|', $permissions) as $permission) {
-			\Safe\preg_match('/(!*)(.*)/', $permission, $f);
+			preg_match('/(!*)(.*)/', $permission, $f);
 			$return <<= 1;
 			// we overwrite the value if windows and executable check.
 			$return |= ($f[2] === 'is_executable' && $this->is_win()) ? 0 : !($f[2](base_path($folder)) xor ($f[1] == '!'));

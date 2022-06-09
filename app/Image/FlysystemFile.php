@@ -8,6 +8,7 @@ use Illuminate\Contracts\Filesystem\Filesystem;
 use League\Flysystem\Adapter\Local as LocalAdapter;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Exception as FlyException;
+use function Safe\fclose;
 
 /**
  * Class FlysystemFile.
@@ -37,7 +38,7 @@ class FlysystemFile extends MediaFile
 	{
 		try {
 			if (is_resource($this->stream)) {
-				\Safe\fclose($this->stream);
+				fclose($this->stream);
 			}
 
 			$this->stream = $this->disk->readStream($this->relativePath);

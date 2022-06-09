@@ -8,6 +8,7 @@ use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\Internal\MissingValueException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use function Safe\substr;
 
 class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 {
@@ -70,7 +71,7 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 		if ($sizeVariant === SizeVariant::ORIGINAL && $this->photo->isRaw()) {
 			$directory = 'raw/';
 		}
-		$filename = \Safe\substr($this->photo->checksum, 0, 32);
+		$filename = substr($this->photo->checksum, 0, 32);
 		if (
 			$sizeVariant === SizeVariant::MEDIUM2X ||
 			$sizeVariant === SizeVariant::SMALL2X ||

@@ -5,6 +5,8 @@ namespace App\DTO;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\Eloquent\JsonEncodingException;
+use function Safe\json_encode;
+use function Safe\json_last_error_msg;
 
 /**
  * Base class for all Data Transfer Objects (DTO).
@@ -37,9 +39,9 @@ abstract class DTO implements Arrayable, Jsonable, \JsonSerializable
 			// that this method does so.
 			// Hence, we call `json_encode` _without_ specifying
 			// `JSON_THROW_ON_ERROR` and then mimic that behaviour.
-			$json = \Safe\json_encode($this->jsonSerialize(), $options);
+			$json = json_encode($this->jsonSerialize(), $options);
 			if (json_last_error() != JSON_ERROR_NONE) {
-				throw new \JsonException(\Safe\json_last_error_msg(), json_last_error());
+				throw new \JsonException(json_last_error_msg(), json_last_error());
 			}
 
 			return $json;

@@ -14,6 +14,7 @@ use App\Models\TagAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Safe\Exceptions\ArrayException;
+use function Safe\usort;
 
 /**
  * Deletes the albums with the designated IDs **efficiently**.
@@ -138,7 +139,7 @@ class Delete extends Action
 			// Note, the gaps must be removed beginning with the highest
 			// values first otherwise the later indices won't be correct.
 			// To save some DB queries, we could implement a "makeMultiGap".
-			\Safe\usort($pendingGapsToMake, fn ($a, $b) => $b['lft'] <=> $a['lft']);
+			usort($pendingGapsToMake, fn ($a, $b) => $b['lft'] <=> $a['lft']);
 			foreach ($pendingGapsToMake as $pendingGap) {
 				$height = $pendingGap['rgt'] - $pendingGap['lft'] + 1;
 				(new Album())->newNestedSetQuery()->makeGap($pendingGap['rgt'] + 1, -$height);

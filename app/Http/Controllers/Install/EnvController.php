@@ -8,6 +8,8 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use function Safe\file_get_contents;
+use function Safe\file_put_contents;
 
 class EnvController extends Controller
 {
@@ -24,13 +26,13 @@ class EnvController extends Controller
 		try {
 			if ($request->has('envConfig')) {
 				$env = str_replace("\r", '', $request->get('envConfig'));
-				\Safe\file_put_contents(base_path('.env'), $env, LOCK_EX);
+				file_put_contents(base_path('.env'), $env, LOCK_EX);
 				$exists = true;
 			} elseif (file_exists(base_path('.env'))) {
-				$env = \Safe\file_get_contents(base_path('.env'));
+				$env = file_get_contents(base_path('.env'));
 				$exists = true;
 			} else {
-				$env = \Safe\file_get_contents(base_path('.env.example'));
+				$env = file_get_contents(base_path('.env.example'));
 				$exists = false;
 			}
 

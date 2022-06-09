@@ -10,6 +10,7 @@ use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\VersionControlException;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use function Safe\file_get_contents;
 
 class LycheeVersion
 {
@@ -75,7 +76,7 @@ class LycheeVersion
 	{
 		try {
 			return Version::createFromString(
-				\Safe\file_get_contents(base_path('version.md'))
+				file_get_contents(base_path('version.md'))
 			);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);

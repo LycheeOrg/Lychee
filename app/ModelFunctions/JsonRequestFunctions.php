@@ -4,6 +4,8 @@ namespace App\ModelFunctions;
 
 use App\Exceptions\Internal\JsonRequestFailedException;
 use Illuminate\Support\Facades\Cache;
+use function Safe\file_get_contents;
+use function Safe\ini_get;
 
 class JsonRequestFunctions
 {
@@ -77,13 +79,13 @@ class JsonRequestFunctions
 					'method' => 'GET',
 					'timeout' => 1,
 					'header' => [
-						'User-Agent: ' . \Safe\ini_get('user_agent'),
+						'User-Agent: ' . ini_get('user_agent'),
 					],
 				],
 			];
 			$context = stream_context_create($opts);
 
-			$raw = \Safe\file_get_contents($this->url, false, $context);
+			$raw = file_get_contents($this->url, false, $context);
 			if ($raw == '') {
 				throw new JsonRequestFailedException('file_get_contents() failed');
 			}

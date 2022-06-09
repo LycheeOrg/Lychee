@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Str;
+use function Safe\sprintf;
 
 trait HasBidirectionalRelationships
 {
@@ -29,9 +30,9 @@ trait HasBidirectionalRelationships
 
 		if (!$relation instanceof Relation) {
 			if (is_null($relation)) {
-				throw new \LogicException(\Safe\sprintf('%s::%s must return a relationship instance, but "null" was returned. Was the "return" keyword used?', static::class, $method));
+				throw new \LogicException(sprintf('%s::%s must return a relationship instance, but "null" was returned. Was the "return" keyword used?', static::class, $method));
 			}
-			throw new \LogicException(\Safe\sprintf('%s::%s must return a relationship instance.', static::class, $method));
+			throw new \LogicException(sprintf('%s::%s must return a relationship instance.', static::class, $method));
 		}
 
 		$result = $relation->getResults();
@@ -50,7 +51,7 @@ trait HasBidirectionalRelationships
 			} elseif ($result instanceof Model) {
 				$result->setRelation($relation->getForeignMethodName(), $this);
 			} else {
-				throw new \LogicException(\Safe\sprintf('$result must either be a collection of models or a model, but got %s', is_object($result) ? get_class($result) : gettype($result)));
+				throw new \LogicException(sprintf('$result must either be a collection of models or a model, but got %s', is_object($result) ? get_class($result) : gettype($result)));
 			}
 		}
 

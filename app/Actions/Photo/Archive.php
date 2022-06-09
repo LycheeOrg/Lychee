@@ -13,6 +13,11 @@ use App\Models\SizeVariant;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
+use function Safe\fclose;
+use function Safe\fopen;
+use function Safe\ini_get;
+use function Safe\set_time_limit;
+use function Safe\stream_copy_to_stream;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\ZipStream;
@@ -119,10 +124,10 @@ class Archive
 		$archiveFileInfo = $this->extractFileInfo($photo, $variant);
 
 		$responseGenerator = function () use ($archiveFileInfo) {
-			$outputStream = \Safe\fopen('php://output', 'wb');
-			\Safe\stream_copy_to_stream($archiveFileInfo->getFile()->read(), $outputStream);
+			$outputStream = fopen('php://output', 'wb');
+			stream_copy_to_stream($archiveFileInfo->getFile()->read(), $outputStream);
 			$archiveFileInfo->getFile()->close();
-			\Safe\fclose($outputStream);
+			fclose($outputStream);
 		};
 
 		try {
@@ -258,7 +263,7 @@ class Archive
 				$zip->addFileFromStream($filename, $archiveFileInfo->getFile()->read());
 				$archiveFileInfo->getFile()->close();
 				// Reset the execution timeout for every iteration.
-				\Safe\set_time_limit((int) \Safe\ini_get('max_execution_time'));
+				set_time_limit((int) ini_get('max_execution_time'));
 			}
 
 			// finish the zip stream

@@ -10,6 +10,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Imagick;
+use function Safe\ini_get;
 
 class Info extends Diagnostics
 {
@@ -118,11 +119,11 @@ class Info extends Diagnostics
 		$infos[] = '';
 		$infos[] = Diagnostics::line('System:', PHP_OS);
 		$infos[] = Diagnostics::line('PHP Version:', phpversion());
-		$infos[] = Diagnostics::line('PHP User agent:', \Safe\ini_get('user_agent'));
+		$infos[] = Diagnostics::line('PHP User agent:', ini_get('user_agent'));
 		$infos[] = Diagnostics::line('Timezone:', (CarbonTimeZone::create() ?: null)?->getName());
-		$infos[] = Diagnostics::line('Max uploaded file size:', \Safe\ini_get('upload_max_filesize'));
-		$infos[] = Diagnostics::line('Max post size:', \Safe\ini_get('post_max_size'));
-		$infos[] = Diagnostics::line('Max execution time: ', \Safe\ini_get('max_execution_time'));
+		$infos[] = Diagnostics::line('Max uploaded file size:', ini_get('upload_max_filesize'));
+		$infos[] = Diagnostics::line('Max post size:', ini_get('post_max_size'));
+		$infos[] = Diagnostics::line('Max execution time: ', ini_get('max_execution_time'));
 		$infos[] = Diagnostics::line($dbtype . ' Version:', $dbver);
 		$infos[] = '';
 		$infos[] = Diagnostics::line('Imagick Available:', (string) $imagick);

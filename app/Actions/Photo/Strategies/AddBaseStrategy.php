@@ -13,6 +13,7 @@ use App\Image\NativeLocalFile;
 use App\Models\Photo;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Adapter\Local;
+use function Safe\symlink;
 
 abstract class AddBaseStrategy
 {
@@ -150,7 +151,7 @@ abstract class AddBaseStrategy
 			$targetAbsolutePath = $targetFile->getAbsolutePath();
 			$sourceAbsolutePath = $sourceFile->getAbsolutePath();
 			try {
-				\Safe\symlink($sourceAbsolutePath, $targetAbsolutePath);
+				symlink($sourceAbsolutePath, $targetAbsolutePath);
 			} catch (\Throwable) {
 				throw new MediaFileOperationException('Could not create symbolic link at "' . $targetAbsolutePath . '" for photo at "' . $sourceAbsolutePath . '"');
 			}

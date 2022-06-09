@@ -11,6 +11,7 @@ use App\Models\Album;
 use App\Models\Configs;
 use Exception;
 use Illuminate\Console\Command;
+use function Safe\sprintf;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class Sync extends Command
@@ -43,7 +44,7 @@ class Sync extends Command
 	public function __construct()
 	{
 		// Fill signature with default values from user configuration
-		$this->signature = \Safe\sprintf(
+		$this->signature = sprintf(
 			$this->signature,
 			Configs::getValueAsString('delete_imported', '0'),
 			Configs::getValueAsString('import_via_symlink', '0'),

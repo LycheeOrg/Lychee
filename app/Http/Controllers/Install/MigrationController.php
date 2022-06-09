@@ -8,6 +8,8 @@ use App\Exceptions\Internal\FrameworkException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Routing\Controller;
+use function Safe\date;
+use function Safe\file_put_contents;
 
 /**
  * Class MigrationController.
@@ -88,9 +90,9 @@ class MigrationController extends Controller
 	public function installed(array &$output): void
 	{
 		try {
-			$dateStamp = \Safe\date('Y-m-d H:i:s');
+			$dateStamp = date('Y-m-d H:i:s');
 			$message = 'Lychee INSTALLED on ' . $dateStamp;
-			\Safe\file_put_contents(base_path('installed.log'), $message);
+			file_put_contents(base_path('installed.log'), $message);
 			$output[] = $message;
 			$output[] = 'Created installed.log';
 		} catch (BindingResolutionException $e) {

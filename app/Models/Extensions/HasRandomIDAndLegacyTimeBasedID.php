@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\InvalidCastException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Database\QueryException;
+use function Safe\sprintf;
 
 /**
  * Trait HasTimeBasedID.
@@ -159,13 +160,13 @@ trait HasRandomIDAndLegacyTimeBasedID
 			// full seconds in id.  The calling code needs to be able to
 			// handle duplicate ids.  Note that this also exposes us to
 			// the year 2038 problem.
-			$legacyID = \Safe\sprintf('%010d', microtime(true));
+			$legacyID = sprintf('%010d', microtime(true));
 		} else {
 			// Ensure 4 digits after the decimal point, 15 characters
 			// total (including the decimal point), 0-padded on the
 			// left if needed (shouldn't be needed unless we move back in
 			// time :-) )
-			$legacyID = \Safe\sprintf('%015.4f', microtime(true));
+			$legacyID = sprintf('%015.4f', microtime(true));
 			$legacyID = str_replace('.', '', $legacyID);
 		}
 		$this->attributes[$this->getKeyName()] = $id;

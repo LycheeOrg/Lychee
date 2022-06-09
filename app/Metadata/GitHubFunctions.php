@@ -8,6 +8,9 @@ use App\ModelFunctions\JsonRequestFunctions;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Config;
+use function Safe\file_get_contents;
+use function Safe\sprintf;
+use function Safe\substr;
 
 class GitHubFunctions
 {
@@ -38,7 +41,7 @@ class GitHubFunctions
 	 */
 	private static function trim(string $commit_id): string
 	{
-		return trim(\Safe\substr($commit_id, 0, 7));
+		return trim(substr($commit_id, 0, 7));
 	}
 
 	/**
@@ -126,9 +129,9 @@ class GitHubFunctions
 			$last_update = $this->gitRequest->get_age_text();
 
 			if ($count === 0) {
-				return \Safe\sprintf('Up to date (%s).', $last_update);
+				return sprintf('Up to date (%s).', $last_update);
 			} else {
-				return \Safe\sprintf(
+				return sprintf(
 					'%s commits behind master %s (%s)',
 					$count,
 					$this->getRemoteHead(),
@@ -241,7 +244,7 @@ class GitHubFunctions
 		if ($this->localBranch === null) {
 			try {
 				$head_file = base_path('.git/HEAD');
-				$branch = \Safe\file_get_contents($head_file);
+				$branch = file_get_contents($head_file);
 				$branch = explode('/', $branch, 3);
 
 				$this->localBranch = trim($branch[2]);
@@ -265,7 +268,7 @@ class GitHubFunctions
 		if ($this->localHead === null) {
 			try {
 				$file = base_path('.git/refs/heads/' . $this->getLocalBranch());
-				$commitID = \Safe\file_get_contents($file);
+				$commitID = file_get_contents($file);
 				$this->localHead = self::trim($commitID);
 			} catch (\Throwable $e) {
 				throw new VersionControlException('Could not determine the head commit of current branch.', $e);

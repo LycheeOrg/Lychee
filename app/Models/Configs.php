@@ -12,6 +12,7 @@ use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use function Safe\sprintf;
 
 /**
  * App\Configs.
@@ -89,24 +90,24 @@ class Configs extends Model
 			case self::INT:
 				// we make sure that we only have digits in the chosen value.
 				if (!ctype_digit(strval($value))) {
-					$message = \Safe\sprintf($message_template_got, 'positive integer');
+					$message = sprintf($message_template_got, 'positive integer');
 				}
 				break;
 			case self::BOOL:
 			case self::TERNARY:
 				if (!in_array($value, $val_range[$this->type_range], true)) { // BOOL or TERNARY
-					$message = \Safe\sprintf($message_template_got, implode(' or ', $val_range[$this->type_range]));
+					$message = sprintf($message_template_got, implode(' or ', $val_range[$this->type_range]));
 				}
 				break;
 			case self::LICENSE:
 				if (!in_array($value, Helpers::get_all_licenses(), true)) {
-					$message = \Safe\sprintf($message_template_got, 'a valid license');
+					$message = sprintf($message_template_got, 'a valid license');
 				}
 				break;
 			default:
 				$values = explode('|', $this->type_range);
 				if (!in_array($value, $values, true)) {
-					$message = \Safe\sprintf($message_template_got, implode(' or ', $values));
+					$message = sprintf($message_template_got, implode(' or ', $values));
 				}
 				break;
 		}

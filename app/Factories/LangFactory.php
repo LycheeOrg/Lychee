@@ -4,6 +4,8 @@ namespace App\Factories;
 
 use App\Contracts\Language;
 use App\Locale\English;
+use function Safe\scandir;
+use function Safe\substr;
 
 class LangFactory
 {
@@ -18,10 +20,10 @@ class LangFactory
 	public function __construct()
 	{
 		$lang_namespace = 'App\Locale';
-		$list_lang = \Safe\scandir(__DIR__ . '/../Locale');
+		$list_lang = scandir(__DIR__ . '/../Locale');
 
 		for ($i = 0; $i < count($list_lang); $i++) {
-			$class_candidate = $lang_namespace . '\\' . \Safe\substr($list_lang[$i], 0, -4);
+			$class_candidate = $lang_namespace . '\\' . substr($list_lang[$i], 0, -4);
 			if (is_subclass_of($class_candidate, Language::class)) {
 				/** @var Language */
 				$lang = new $class_candidate();

@@ -15,6 +15,9 @@ use Illuminate\Support\Carbon;
 use PHPExif\Adapter\NoAdapterException;
 use PHPExif\Exif;
 use PHPExif\Reader\Reader;
+use Safe\Exceptions\StringsException;
+use function Safe\sha1_file;
+use function Safe\substr;
 
 /**
  * Collects normalized EXIF info about an image/video.
@@ -65,8 +68,8 @@ class Extractor
 	public static function checksum(NativeLocalFile $file): string
 	{
 		try {
-			return \Safe\sha1_file($file->getAbsolutePath());
-		} catch (\Throwable) {
+			return sha1_file($file->getAbsolutePath());
+		} catch (StringsException) {
 			throw new MediaFileOperationException('Could not compute checksum for: ' . $file->getAbsolutePath());
 		}
 	}
@@ -480,9 +483,9 @@ class Extractor
 		try {
 			$metadata->location = Geodecoder::decodeLocation($metadata->latitude, $metadata->longitude);
 			if (!empty($metadata->location)) {
-				$metadata->location = \Safe\substr($metadata->location, 0, self::MAX_LOCATION_STRING_LENGTH);
+				$metadata->location = substr($metadata->location, 0, self::MAX_LOCATION_STRING_LENGTH);
 			}
-		} catch (ExternalComponentFailedException|\Safe\Exceptions\StringsException $e) {
+		} catch (ExternalComponentFailedException|StringsException $e) {
 			Handler::reportSafely($e);
 			$metadata->location = null;
 		}

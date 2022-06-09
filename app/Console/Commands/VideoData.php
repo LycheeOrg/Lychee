@@ -14,6 +14,7 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Safe\Exceptions\InfoException;
 use function Safe\set_time_limit;
+use function Safe\sprintf;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class VideoData extends Command
@@ -51,7 +52,7 @@ class VideoData extends Command
 			}
 
 			$this->line(
-				\Safe\sprintf(
+				sprintf(
 					'Will attempt to generate up to %s video thumbnails/metadata with a timeout of %d seconds...',
 					$count,
 					$timeout
@@ -64,7 +65,7 @@ class VideoData extends Command
 				->whereDoesntHave('size_variants', function (Builder $query) {
 					$query->where('type', '=', SizeVariant::THUMB);
 				})
-				->take($this->argument('count'))
+				->take($count)
 				->get();
 
 			if (count($photos) == 0) {

@@ -10,7 +10,10 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
+use function Safe\array_flip;
 use Safe\Exceptions\InfoException;
+use function Safe\set_time_limit;
+use function Safe\sprintf;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class GenerateThumbs extends Command
@@ -51,7 +54,7 @@ class GenerateThumbs extends Command
 		try {
 			$sizeVariantName = strval($this->argument('type'));
 			if (!array_key_exists($sizeVariantName, self::SIZE_VARIANTS)) {
-				$this->error(\Safe\sprintf('Type %s is not one of %s', $sizeVariantName, implode(', ', \Safe\array_flip(self::SIZE_VARIANTS))));
+				$this->error(sprintf('Type %s is not one of %s', $sizeVariantName, implode(', ', array_flip(self::SIZE_VARIANTS))));
 
 				return 1;
 			}
@@ -61,13 +64,13 @@ class GenerateThumbs extends Command
 			$timeout = (int) $this->argument('timeout');
 
 			try {
-				\Safe\set_time_limit($timeout);
+				set_time_limit($timeout);
 			} catch (InfoException) {
 				// We do nothing, set_time_limit will throw an error on tests.
 			}
 
 			$this->line(
-				\Safe\sprintf(
+				sprintf(
 					'Will attempt to generate up to %s %s images with a timeout of %d seconds...',
 					$amount,
 					$sizeVariantName,

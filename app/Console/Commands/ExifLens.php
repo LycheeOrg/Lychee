@@ -12,6 +12,7 @@ use App\Models\SizeVariant;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Safe\Exceptions\InfoException;
+use function Safe\set_time_limit;
 
 class ExifLens extends Command
 {
@@ -44,7 +45,7 @@ class ExifLens extends Command
 			$timeout = (int) $this->argument('tm');
 
 			try {
-				\Safe\set_time_limit($timeout);
+				set_time_limit($timeout);
 			} catch (InfoException) {
 				// We do nothing, set_time_limit will throw an error on tests.
 			}

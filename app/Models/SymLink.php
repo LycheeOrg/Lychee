@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use function Safe\symlink;
+use function Safe\unlink;
 
 /**
  * App\SymLink.
@@ -122,9 +124,9 @@ class SymLink extends Model
 		$symShortPath = hash('sha256', random_bytes(32) . '|' . $origFullPath) . $extension;
 		$symFullPath = Storage::disk(SymLink::DISK_NAME)->path($symShortPath);
 		if (is_link($symFullPath)) {
-			\Safe\unlink($symFullPath);
+			unlink($symFullPath);
 		}
-		\Safe\symlink($origFullPath, $symFullPath);
+		symlink($origFullPath, $symFullPath);
 		$this->short_path = $symShortPath;
 
 		return parent::performInsert($query);

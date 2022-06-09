@@ -6,6 +6,7 @@ use App\Exceptions\InstallationFailedException;
 use App\Exceptions\Internal\FrameworkException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Artisan;
+use function Safe\unlink;
 
 class ApplyMigration
 {
@@ -81,7 +82,7 @@ class ApplyMigration
 			$filename = base_path('.NO_SECURE_KEY');
 			if (file_exists($filename)) {
 				if (is_file($filename)) {
-					\Safe\unlink($filename);
+					unlink($filename);
 				} else {
 					throw new InstallationFailedException('A filesystem object . ' . $filename . ' exists, but is not an ordinary file.');
 				}

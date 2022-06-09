@@ -14,6 +14,9 @@ use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Support\Collection;
+use function Safe\ini_get;
+use function Safe\parse_url;
+use function Safe\set_time_limit;
 
 class FromUrl
 {
@@ -54,9 +57,9 @@ class FromUrl
 		foreach ($urls as $url) {
 			try {
 				// Reset the execution timeout for every iteration.
-				\Safe\set_time_limit((int) \Safe\ini_get('max_execution_time'));
+				set_time_limit((int) ini_get('max_execution_time'));
 
-				$path = \Safe\parse_url($url, PHP_URL_PATH);
+				$path = parse_url($url, PHP_URL_PATH);
 				$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
 
 				// Validate photo extension even when `$create->add()` will do later.

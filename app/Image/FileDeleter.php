@@ -7,6 +7,7 @@ use App\Models\SymLink;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Adapter\Local as LocalAdapter;
+use function Safe\unlink;
 
 /**
  * Class FileDeleter.
@@ -115,7 +116,7 @@ class FileDeleter
 					// in case the file doesn't exist.
 					if (is_link($absolutePath) || file_exists($absolutePath)) {
 						try {
-							\Safe\unlink($absolutePath);
+							unlink($absolutePath);
 						} catch (\Throwable) {
 							$firstException = $firstException ?: new \RuntimeException('unlink failed: ' . $absolutePath);
 						}
@@ -149,7 +150,7 @@ class FileDeleter
 				// So we must use low-level methods here.
 				if (is_link($absolutePath) || file_exists($absolutePath)) {
 					try {
-						\Safe\unlink($absolutePath);
+						unlink($absolutePath);
 					} catch (\Throwable) {
 						$firstException = $firstException ?: new \RuntimeException('unlink failed: ' . $absolutePath);
 					}
