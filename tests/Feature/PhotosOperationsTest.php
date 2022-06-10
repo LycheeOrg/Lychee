@@ -174,7 +174,7 @@ class PhotosOperationsTest extends TestCase
 				'original' => [
 					'width' => 6720,
 					'height' => 4480,
-					'filesize' => 21104156,
+					'filesize' => 21106422,
 				],
 			],
 		]);

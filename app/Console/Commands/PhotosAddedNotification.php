@@ -69,7 +69,6 @@ class PhotosAddedNotification extends Command
 					}
 
 					$thumbUrl = $photo->size_variants->getThumb()?->url;
-					logger($thumbUrl);
 
 					// If the url config doesn't contain a trailing slash then add it
 					if (str_ends_with(config('app.url'), '/')) {
@@ -79,6 +78,7 @@ class PhotosAddedNotification extends Command
 					}
 
 					$photos[$photo->album_id]['photos'][$photo->id] = [
+						'title' => $photo->title,
 						'thumb' => $thumbUrl,
 						// TODO: Clean this up. There should be a better way to get the URL of a photo than constructing it manually
 						'link' => config('app.url') . $trailing_slash . 'r/' . $photo->album_id . '/' . $photo->id,

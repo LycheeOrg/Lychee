@@ -217,7 +217,6 @@ api.createV2API = function (endpoint, method) {
 		switch (method) {
 			case "POST":
 			case "PATCH":
-				console.log(JSON.stringify(params));
 				ajaxParams = {
 					type: method,
 					url: "api/" + url,

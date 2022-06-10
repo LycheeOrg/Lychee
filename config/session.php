@@ -71,20 +71,7 @@ return [
 	|
 	*/
 
-	'connection' => null,
-
-	/*
-	|--------------------------------------------------------------------------
-	| Session Database Connection
-	|--------------------------------------------------------------------------
-	|
-	| When using the "database" or "redis" session drivers, you may specify a
-	| connection that should be used to manage these sessions. This should
-	| correspond to a connection in your database configuration options.
-	|
-	*/
-
-	'connection' => env('SESSION_CONNECTION', null),
+	'connection' => env('SESSION_CONNECTION'),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -112,7 +99,7 @@ return [
 	|
 	*/
 
-	'store' => env('SESSION_STORE', null),
+	'store' => env('SESSION_STORE'),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -167,7 +154,7 @@ return [
 	|
 	*/
 
-	'domain' => env('SESSION_DOMAIN', null),
+	'domain' => env('SESSION_DOMAIN'),
 
 	/*
 	|--------------------------------------------------------------------------
