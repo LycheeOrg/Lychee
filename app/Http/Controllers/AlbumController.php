@@ -272,9 +272,7 @@ class AlbumController extends Controller
 	 */
 	public function merge(MergeAlbumsRequest $request, Merge $merge): void
 	{
-		/** @var \Illuminate\Database\Eloquent\Collection<Album> */
-		$listAlbums = $request->albums();
-		$merge->do($request->album(), $listAlbums);
+		$merge->do($request->album(), $request->albums());
 	}
 
 	/**
@@ -290,9 +288,7 @@ class AlbumController extends Controller
 	 */
 	public function move(MoveAlbumsRequest $request, Move $move): void
 	{
-		/** @var \Illuminate\Database\Eloquent\Collection<Album> */
-		$listAlbums = $request->albums();
-		$move->do($request->album(), $listAlbums);
+		$move->do($request->album(), $request->albums());
 	}
 
 	/**

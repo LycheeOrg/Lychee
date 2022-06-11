@@ -4,8 +4,8 @@ namespace App\Actions\Album;
 
 use App\Exceptions\ModelDBException;
 use App\Models\Album;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Collection;
 
 class Move extends Action
 {
