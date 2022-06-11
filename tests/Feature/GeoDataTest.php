@@ -47,14 +47,7 @@ class GeoDataTest extends TestCase
 		 * if the tool is invoked from the command line, but the PHP wrapper
 		 * \PHPExif\Exif does not use it.
 		 */
-		$taken_at = Carbon::create(
-			2011,
-			8,
-			17,
-			16,
-			39,
-			37
-		);
+		$taken_at = Carbon::create(2011, 8, 17, 16, 39, 37);
 		$response->assertJson(
 			[
 				'id' => $id,
