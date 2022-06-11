@@ -67,23 +67,23 @@ class Info extends Diagnostics
 			switch (DB::getDriverName()) {
 				case 'mysql':
 					$dbtype = 'MySQL';
-					$results = DB::select(DB::raw('select version()'));
-					$dbver = $results[0]->{'version()'};
+					$results = DB::select(DB::raw('select version() as version'));
+					$dbver = $results[0]->version;
 					break;
 				case 'sqlite':
 					$dbtype = 'SQLite';
-					$results = DB::select(DB::raw('select sqlite_version()'));
-					$dbver = $results[0]->{'sqlite_version()'};
+					$results = DB::select(DB::raw('select sqlite_version() as version'));
+					$dbver = $results[0]->version;
 					break;
 				case 'pgsql':
 					$dbtype = 'PostgreSQL';
-					$results = DB::select(DB::raw('select version()'));
-					$dbver = $results[0]->{'version'};
+					$results = DB::select(DB::raw('select version() as version'));
+					$dbver = $results[0]->version;
 					break;
 				default:
 					$dbtype = DB::getDriverName();
-					$results = DB::select(DB::raw('select version()'));
-					$dbver = $results[0]->{'version()'};
+					$results = DB::select(DB::raw('select version() as version'));
+					$dbver = $results[0]->version;
 					break;
 			}
 		} catch (QueryException $e) {
