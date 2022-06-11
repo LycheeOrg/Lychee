@@ -140,7 +140,7 @@ trait ThrowsConsistentExceptions
 			// that this method does so.
 			// Hence, we call `json_encode` _without_ specifying
 			// `JSON_THROW_ON_ERROR` and then mimic that behaviour.
-			// ! TODO VERIFY THIS !
+			// TODO: VERIFY THIS
 			$json = json_encode($this->jsonSerialize(), $options);
 			if ((bool) json_last_error()) {
 				throw new \JsonException(json_last_error_msg(), json_last_error());

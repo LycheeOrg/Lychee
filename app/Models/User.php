@@ -116,13 +116,21 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		return $this->id == 0;
 	}
 
-	// ! Used by Larapass
+	/**
+	 * Used by Larapass.
+	 *
+	 * @return string
+	 */
 	public function username(): string
 	{
 		return utf8_encode($this->username);
 	}
 
-	// ! Used by Larapass
+	/**
+	 * Used by Larapass.
+	 *
+	 * @return string
+	 */
 	public function name(): string
 	{
 		return ($this->id == 0) ? 'Admin' : $this->username;

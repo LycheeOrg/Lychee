@@ -186,7 +186,7 @@ trait UTCBasedTimes
 		// Note that the timezone parameter is ignored for formats which
 		// include explicit timezone information.
 		try {
-			// ! if Date::createFromFormat returns false, we replace it by null
+			/** @var Carbon|null $result */
 			$result = Date::createFromFormat(self::$DB_DATETIME_FORMAT, $value, self::$DB_TIMEZONE_NAME) ?: null;
 			if ($result?->getTimezone()?->getName() === self::$DB_TIMEZONE_NAME) {
 				// If the timezone is different to UTC, we don't set it, because then

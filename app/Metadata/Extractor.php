@@ -173,7 +173,7 @@ class Extractor
 			}
 		}
 
-		// ! By changing the logic of $reader to always return an Exif object or throw an excepion, this would make this code safer.
+		// TODO: By changing the logic of $reader to always return an Exif object or throw an exception, this would make this code safer.
 		if (!$exif instanceof Exif) {
 			throw new MediaFileOperationException('Could not even extract basic EXIF data with the native adapter');
 		}
