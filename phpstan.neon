@@ -65,15 +65,6 @@ parameters:
 
 		- '#Method App\\Models\\Extensions\\.*::.* should return \$this\(.*\) but returns static\(.*\)#'
 		- '#Method App\\Models\\Extensions\\.*::.* should return \$this\(.*\) but returns Illuminate\\Database\\Eloquent\\Builder<.*>\.#'
-		-
-			message: '#Variable method call on \$this#' # We do want this
-			paths:
-				- app/SmartAlbums/Utils/MimicModel.php
-				- app/Models/Extensions/HasBidirectionalRelationships.php
-		-
-			message: '#Variable property access on \$this#' # We do want this
-			paths:
-				- app/SmartAlbums/Utils/MimicModel.php
 
 		- '#Call to an undefined( static)? method Kalnoy\\Nestedset\\.*::(whereIn|select|join|leftJoin|orderBy|addSelect)\(\)#'
 		- '#Parameter .* of method .*::newEloquentBuilder\(\) should be contravariant with parameter \$query \(mixed\) of method Kalnoy\\Nestedset\\Node::newEloquentBuilder\(\)#'

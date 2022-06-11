@@ -26,7 +26,7 @@ trait HasBidirectionalRelationships
 	{
 		// Run original code from HasAttributes::getRelationshipFromMethod
 
-		$relation = $this->$method();
+		$relation = $this->$method(); // @phpstan-ignore-line, PhpStan does not like variadic calls
 
 		if (!$relation instanceof Relation) {
 			if (is_null($relation)) {

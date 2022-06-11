@@ -71,9 +71,9 @@ trait MimicModel
 		$studlyKey = lcfirst($studlyKey);
 
 		if (method_exists($this, $getter)) {
-			return $this->{$getter}();
+			return $this->{$getter}(); // @phpstan-ignore-line, PhpStan does not like variadic calls
 		} elseif (property_exists($this, $studlyKey)) {
-			return $this->{$studlyKey};
+			return $this->{$studlyKey}; // @phpstan-ignore-line, PhpStan does not like variadic calls
 		} else {
 			throw new LycheeInvalidArgumentException('neither property nor getter method exist');
 		}
