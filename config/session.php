@@ -71,7 +71,8 @@ return [
 	|
 	*/
 
-	'connection' => env('SESSION_CONNECTION'),
+	'connection' => env('SESSION_DRIVER') === 'database' ?
+		env('DB_CONNECTION', 'mysql') : 'cache',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -99,7 +100,7 @@ return [
 	|
 	*/
 
-	'store' => env('SESSION_STORE'),
+	'store' => env('SESSION_DRIVER'),
 
 	/*
 	|--------------------------------------------------------------------------
