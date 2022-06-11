@@ -112,7 +112,6 @@ class Legacy
 	private static function translateLegacyID(int $id, string $tableName, Request $request): string|null
 	{
 		try {
-			/** @var string $newID */
 			$newID = (string) DB::table($tableName)
 				->where('legacy_id', '=', intval($id))
 				->value('id');
