@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\DB;
  * A global scope is always added to the query, even if the query is only
  * used as a sub-query which will not hydrate actual models.
  * Thus, a global scope unnecessarily complicates queries in many cases.
+ *
+ * @extends FixedQueryBuilder<\App\Models\TagAlbum>
  */
 class TagAlbumBuilder extends FixedQueryBuilder
 {

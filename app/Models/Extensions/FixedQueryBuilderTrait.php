@@ -42,6 +42,8 @@ use Illuminate\Database\Query\Expression;
  * _Note:_ This trait does not wrap every method of the underlying
  * {@link \Illuminate\Database\Eloquent\Builder}; only those which are used
  * by Lychee.
+ *
+ * @template TModelClass of \Illuminate\Database\Eloquent\Model
  */
 trait FixedQueryBuilderTrait
 {
@@ -60,6 +62,7 @@ trait FixedQueryBuilderTrait
 	public function where($column, $operator = null, $value = null, $boolean = 'and'): static
 	{
 		try {
+			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method
 			return parent::where($column, $operator, $value, $boolean);
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
@@ -81,6 +84,7 @@ trait FixedQueryBuilderTrait
 	public function whereIn($column, $values, $boolean = 'and', $not = false): static
 	{
 		try {
+			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method
 			return parent::whereIn($column, $values, $boolean, $not);
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
@@ -99,6 +103,7 @@ trait FixedQueryBuilderTrait
 	public function select($columns = ['*']): static
 	{
 		try {
+			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method
 			return parent::select($columns);
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
@@ -122,6 +127,7 @@ trait FixedQueryBuilderTrait
 	public function join($table, $first, $operator = null, $second = null, $type = 'inner', $where = false): static
 	{
 		try {
+			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method
 			return parent::join($table, $first, $operator, $second, $type, $where);
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
@@ -143,6 +149,7 @@ trait FixedQueryBuilderTrait
 	public function leftJoin($table, $first, $operator = null, $second = null): static
 	{
 		try {
+			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method
 			return parent::leftJoin($table, $first, $operator, $second);
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
@@ -187,6 +194,7 @@ trait FixedQueryBuilderTrait
 	public function addSelect($column): static
 	{
 		try {
+			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method
 			return parent::addSelect($column);
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
@@ -207,6 +215,7 @@ trait FixedQueryBuilderTrait
 	public function orWhere($column, $operator = null, $value = null): static
 	{
 		try {
+			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method
 			return parent::orWhere($column, $operator, $value);
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);

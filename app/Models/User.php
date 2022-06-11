@@ -44,6 +44,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	use ThrowsConsistentExceptions {
 		delete as parentDelete;
 	}
+	/** @phpstan-use UseFixedQueryBuilder<User> */
 	use UseFixedQueryBuilder;
 
 	/**

@@ -145,10 +145,12 @@ class PhotoAuthorisationProvider
 	 * The method simply assumes that the user has already legitimately
 	 * accessed the origin album, if the caller provides an album model.
 	 *
-	 * @param FixedQueryBuilder $query  the photo query which shall be restricted
-	 * @param Album|null        $origin the optional top album which is used as a search base
+	 * @template TModelClass of \Illuminate\Database\Eloquent\Model
 	 *
-	 * @return FixedQueryBuilder the restricted photo query
+	 * @param FixedQueryBuilder<TModelClass> $query  the photo query which shall be restricted
+	 * @param Album|null                     $origin the optional top album which is used as a search base
+	 *
+	 * @return FixedQueryBuilder<TModelClass> the restricted photo query
 	 *
 	 * @throws InternalLycheeException
 	 */

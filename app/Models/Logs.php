@@ -24,6 +24,7 @@ class Logs extends Model
 {
 	use UTCBasedTimes;
 	use ThrowsConsistentExceptions;
+	/** @phpstan-use UseFixedQueryBuilder<Logs> */
 	use UseFixedQueryBuilder;
 
 	public const SEVERITY_EMERGENCY = 0;

@@ -81,6 +81,7 @@ class Photo extends Model implements HasRandomID
 	use HasRandomIDAndLegacyTimeBasedID;
 	use ThrowsConsistentExceptions;
 	use HasBidirectionalRelationships;
+	/** @phpstan-use UseFixedQueryBuilder<Photo> */
 	use UseFixedQueryBuilder;
 
 	/**

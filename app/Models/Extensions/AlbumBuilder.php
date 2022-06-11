@@ -21,6 +21,7 @@ use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
  */
 class AlbumBuilder extends NSQueryBuilder
 {
+	/** @phpstan-use FixedQueryBuilderTrait<Album> */
 	use FixedQueryBuilderTrait;
 
 	/**

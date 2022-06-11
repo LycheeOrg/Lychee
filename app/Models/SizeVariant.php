@@ -60,6 +60,7 @@ class SizeVariant extends Model
 	use HasAttributesPatch;
 	use HasBidirectionalRelationships;
 	use ThrowsConsistentExceptions;
+	/** @phpstan-use UseFixedQueryBuilder<SizeVariant> */
 	use UseFixedQueryBuilder;
 
 	public const ORIGINAL = 0;

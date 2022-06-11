@@ -21,7 +21,7 @@ class ExifLens extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'lychee:exif_lens {from=0 : from which do we start} {nb=5 : generate exif data if missing} {tm=600 : timeout time requirement}';
+	protected $signature = 'lychee:exif_lens {offset=0 : from which do we start} {limit=5 : number of photos to generate exif data for} {tm=600 : timeout time requirement}';
 
 	/**
 	 * The console command description.
@@ -40,8 +40,8 @@ class ExifLens extends Command
 	public function handle(): int
 	{
 		try {
-			$argument = $this->argument('nb');
-			$from = $this->argument('from');
+			$limit = (int) $this->argument('limit');
+			$offset = (int) $this->argument('offset');
 			$timeout = (int) $this->argument('tm');
 
 			try {
@@ -56,8 +56,8 @@ class ExifLens extends Command
 			}])
 				->where('lens', '=', '')
 				->whereNotIn('type', MediaFile::SUPPORTED_VIDEO_MIME_TYPES)
-				->offset($from)
-				->limit($argument)
+				->offset($offset)
+				->limit($limit)
 				->get();
 			if (count($photos) == 0) {
 				$this->line('No pictures requires EXIF updates.');
@@ -65,7 +65,7 @@ class ExifLens extends Command
 				return -1;
 			}
 
-			$i = $from;
+			$i = $offset;
 			/** @var Photo $photo */
 			foreach ($photos as $photo) {
 				try {

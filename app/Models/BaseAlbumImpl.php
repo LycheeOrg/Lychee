@@ -108,6 +108,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	use ThrowsConsistentExceptions;
 	use UTCBasedTimes;
 	use HasBidirectionalRelationships;
+	/** @phpstan-use UseFixedQueryBuilder<BaseAlbumImpl> */
 	use UseFixedQueryBuilder;
 
 	protected $table = 'base_albums';

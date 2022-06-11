@@ -47,6 +47,10 @@ class SetAlbumTagsRequest extends BaseApiRequest implements HasTagAlbum, HasTags
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
+		// `findOrFail` returns the union `TagAlbum|Collection<TagAlbum`
+		// which is not assignable to `TagAlbum`; but as we query for the ID
+		// we never get a collection
+		// @phpstan-ignore-next-line
 		$this->album = TagAlbum::query()->findOrFail($values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]);
 		$this->tags = $values[self::SHOW_TAGS_ATTRIBUTE];
 	}
