@@ -34,7 +34,7 @@ class Geodecoder
 
 			$httpClient = new \GuzzleHttp\Client([
 				'handler' => $stack,
-				'timeout' => Configs::getValueAsString('location_decoding_timeout'),
+				'timeout' => Configs::getValueAsInt('location_decoding_timeout'),
 			]);
 
 			$httpAdapter = new \Http\Adapter\Guzzle7\Client($httpClient);
