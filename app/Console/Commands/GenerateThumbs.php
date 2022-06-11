@@ -19,7 +19,8 @@ use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleExce
 class GenerateThumbs extends Command
 {
 	/**
-	 * @var array
+	 * @var array<string, int>
+	 * @phpstan-var array<string, int<0,6>>
 	 */
 	public const SIZE_VARIANTS = [
 		'small' => SizeVariant::SMALL,

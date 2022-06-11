@@ -7,10 +7,7 @@ use function Safe\substr;
 
 class PermissionsChecker
 {
-	/**
-	 * @var array
-	 */
-	protected $results = [];
+	protected array $results = [];
 
 	/**
 	 * Set the result array permissions and errors.

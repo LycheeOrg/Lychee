@@ -9,7 +9,7 @@ class AuthServiceProvider extends ServiceProvider
 	/**
 	 * The policy mappings for the application.
 	 *
-	 * @var array
+	 * @var array<string, string>
 	 */
 	protected $policies = [
 		// 'App\Model' => 'App\Policies\ModelPolicy',
@@ -20,7 +20,7 @@ class AuthServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function boot()
+	public function boot(): void
 	{
 		$this->registerPolicies();
 	}

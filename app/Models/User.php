@@ -47,7 +47,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	use UseFixedQueryBuilder;
 
 	/**
-	 * The attributes that are mass assignable.
+	 * @var string[] the attributes that are mass assignable
 	 */
 	protected $fillable = [
 		'username',
@@ -56,7 +56,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	];
 
 	/**
-	 * @var array the attributes that should be hidden for arrays
+	 * @var string[] the attributes that should be hidden for arrays
 	 */
 	protected $hidden = [
 		'password',
@@ -66,7 +66,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	];
 
 	/**
-	 * @var array
+	 * @var array<string, string>
 	 */
 	protected $casts = [
 		'id' => 'integer',

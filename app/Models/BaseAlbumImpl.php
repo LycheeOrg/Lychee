@@ -133,7 +133,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 * only works properly, if it knows which attributes belong to the parent
 	 * class and which attributes belong to the child class.
 	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	protected $attributes = [
 		'id' => null,
@@ -154,6 +154,9 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'sorting_order' => null,
 	];
 
+	/**
+	 * @var array<string, string>
+	 */
 	protected $casts = [
 		'id' => HasRandomID::ID_TYPE,
 		HasRandomID::LEGACY_ID_NAME => HasRandomID::LEGACY_ID_TYPE,

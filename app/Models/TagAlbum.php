@@ -29,13 +29,16 @@ class TagAlbum extends BaseAlbum
 	 * only works properly, if it knows which attributes belong to the parent
 	 * class and which attributes belong to the child class.
 	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	protected $attributes = [
 		'id' => null,
 		'show_tags' => null,
 	];
 
+	/**
+	 * @var array<string, string>
+	 */
 	protected $casts = [
 		'min_taken_at' => 'datetime',
 		'max_taken_at' => 'datetime',
