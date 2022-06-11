@@ -117,6 +117,8 @@ class Logs extends Model
 	 *                         `__FUNCTION__` nor `__FILE__`)
 	 * @param int    $line     the line which triggers the log
 	 * @param string $msg      the message to log
+	 *
+	 * @phpstan-param int<0,7> $severity
 	 */
 	public static function log(int $severity, string $method, int $line, string $msg): void
 	{

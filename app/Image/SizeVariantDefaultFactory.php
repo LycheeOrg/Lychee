@@ -285,11 +285,25 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	}
 
 	/**
+	 * @param int $sizeVariant the type of the desired size variant;
+	 *                         allowed values are:
+	 *                         {@link SizeVariant::ORIGINAL},
+	 *                         {@link SizeVariant::MEDIUM2X},
+	 *                         {@link SizeVariant::MEDIUM2},
+	 *                         {@link SizeVariant::SMALL2X},
+	 *                         {@link SizeVariant::SMALL},
+	 *                         {@link SizeVariant::THUMB2X}, and
+	 *                         {@link SizeVariant::THUMB}
+	 * @param int $maxWidth
+	 * @param int $maxHeight
+	 *
 	 * @throws ModelDBException
 	 * @throws IllegalOrderOfOperationException
 	 * @throws MediaFileOperationException
 	 * @throws MediaFileUnsupportedException
 	 * @throws InvalidSizeVariantException
+	 *
+	 * @phpstan-param int<0,6> $sizeVariant
 	 */
 	protected function createSizeVariantInternal(int $sizeVariant, int $maxWidth, int $maxHeight): SizeVariant
 	{

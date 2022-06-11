@@ -26,6 +26,8 @@ class Handler extends ExceptionHandler
 	 * This array overwrites the default severity per exception.
 	 *
 	 * @var array<class-string, int>
+	 *
+	 * @phpstan-var array<class-string, int<0,7>>
 	 */
 	public const EXCEPTION2SEVERITY = [
 		PhotoResyncedException::class => Logs::SEVERITY_WARNING,
@@ -216,6 +218,13 @@ class Handler extends ExceptionHandler
 		} while ($e = $e->getPrevious());
 	}
 
+	/**
+	 * @param \Throwable $e
+	 *
+	 * @return int
+	 *
+	 * @phpstan-return int<0,7>
+	 */
 	public static function getLogSeverity(\Throwable $e): int
 	{
 		return array_key_exists(get_class($e), self::EXCEPTION2SEVERITY) ?

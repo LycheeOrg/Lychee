@@ -191,6 +191,8 @@ class SizeVariants extends DTO
 	 *
 	 * @throws IllegalOrderOfOperationException
 	 * @throws ModelDBException
+	 *
+	 * @phpstan-param int<0,6>   $sizeVariantType
 	 */
 	public function create(int $sizeVariantType, string $shortPath, int $width, int $height, int $filesize): SizeVariant
 	{

@@ -51,6 +51,8 @@ use League\Flysystem\Adapter\Local;
  * @property int                 $height
  * @property int                 $filesize
  * @property Collection<SymLink> $sym_links
+ *
+ * @phpstan-property int<0,6>   $type
  */
 class SizeVariant extends Model
 {
@@ -216,9 +218,16 @@ class SizeVariant extends Model
 	 *
 	 * @throws InvalidSizeVariantException thrown if `$sizeVariantType` is
 	 *                                     out-of-bounds
+	 *
+	 * @phpstan-param int<0,6> $sizeVariantType
 	 */
-	public function setSizeVariantAttribute(int $sizeVariantType): void
+	public function setTypeAttribute(int $sizeVariantType): void
 	{
+		// This method is also invoked, if the model is hydrated from the DB.
+		// Hence, we cannot ensure by static code analyzing that the
+		// restriction `int<0,6>` always holds.
+		// We must check at runtime, too.
+		// @phpstan-ignore-next-line
 		if (self::ORIGINAL > $sizeVariantType || $sizeVariantType > self::THUMB) {
 			throw new InvalidSizeVariantException('passed size variant ' . $sizeVariantType . ' out-of-range');
 		}
