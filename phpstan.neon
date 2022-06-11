@@ -27,7 +27,6 @@ parameters:
 	ignoreErrors:
 		- '#Short ternary operator is not allowed#' # we like short ternary
 		- '#Construct empty\(\) is not allowed#' # we like empty()
-		- '#Call to function assert\(\) with false and AssertionError will always evaluate to false.#'
 
 		# bunch of false positives from Eloquent
 		- '#Dynamic call to static method Illuminate\\Database\\Eloquent\\.*::insert\(\).#'

@@ -3,6 +3,7 @@
 namespace App\Actions\Photo\Strategies;
 
 use App\Exceptions\ConfigurationException;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
@@ -177,7 +178,7 @@ abstract class AddBaseStrategy
 				// the exception is thrown if read/write/close are invoked
 				// in wrong order
 				// something we don't do
-				throw new \AssertionError('read/write/close must not throw a logic exception', $e->getCode(), $e);
+				throw LycheeAssertionError::createFromUnexpectedException($e);
 			}
 		}
 	}

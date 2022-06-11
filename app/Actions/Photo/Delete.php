@@ -2,6 +2,7 @@
 
 namespace App\Actions\Photo;
 
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Image\FileDeleter;
@@ -118,7 +119,7 @@ class Delete
 				->pluck('sv.short_path');
 			$this->fileDeleter->addRegularFilesOrSymbolicLinks($svShortPaths);
 		} catch (\InvalidArgumentException $e) {
-			throw new \AssertionError('\InvalidArgumentException must not be thrown', $e->getCode(), $e);
+			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 	}
 
@@ -156,7 +157,7 @@ class Delete
 				->pluck('sv.short_path');
 			$this->fileDeleter->addRegularFilesOrSymbolicLinks($svShortPaths);
 		} catch (\InvalidArgumentException $e) {
-			throw new \AssertionError('\InvalidArgumentException must not be thrown', $e->getCode(), $e);
+			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 	}
 
@@ -194,7 +195,7 @@ class Delete
 				->pluck('p.live_photo_short_path');
 			$this->fileDeleter->addRegularFilesOrSymbolicLinks($livePhotoShortPaths);
 		} catch (\InvalidArgumentException $e) {
-			throw new \AssertionError('\InvalidArgumentException must not be thrown', $e->getCode(), $e);
+			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 	}
 
@@ -232,7 +233,7 @@ class Delete
 				->pluck('p.live_photo_short_path');
 			$this->fileDeleter->addRegularFilesOrSymbolicLinks($livePhotoShortPaths);
 		} catch (\InvalidArgumentException $e) {
-			throw new \AssertionError('\InvalidArgumentException must not be thrown', $e->getCode(), $e);
+			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 	}
 
@@ -260,7 +261,7 @@ class Delete
 				->pluck('sl.short_path');
 			$this->fileDeleter->addSymbolicLinks($symLinkPaths);
 		} catch (\InvalidArgumentException $e) {
-			throw new \AssertionError('\InvalidArgumentException must not be thrown', $e->getCode(), $e);
+			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 	}
 
@@ -289,7 +290,7 @@ class Delete
 				->pluck('sl.short_path');
 			$this->fileDeleter->addSymbolicLinks($symLinkPaths);
 		} catch (\InvalidArgumentException $e) {
-			throw new \AssertionError('\InvalidArgumentException must not be thrown', $e->getCode(), $e);
+			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 	}
 
@@ -352,7 +353,7 @@ class Delete
 				Photo::query()->whereIn('album_id', $albumIDs)->delete();
 			}
 		} catch (\InvalidArgumentException $e) {
-			throw new \AssertionError('\InvalidArgumentException must not be thrown', $e->getCode(), $e);
+			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 	}
 }

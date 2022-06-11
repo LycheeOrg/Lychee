@@ -6,6 +6,7 @@ use App\Actions\SizeVariant\Delete;
 use App\DTO\DTO;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
@@ -211,7 +212,7 @@ class SizeVariants extends DTO
 		} catch (LycheeInvalidArgumentException $e) {
 			// thrown by ::add(), if  $result->photo_id != $this->photo->id,
 			// but we know that we assert that
-			throw new \AssertionError('::add failed', $e->getCode(), $e);
+			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 	}
 

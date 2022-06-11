@@ -2,6 +2,7 @@
 
 namespace App\Actions\SizeVariant;
 
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Image\FileDeleter;
@@ -92,7 +93,7 @@ class Delete
 		} catch (QueryBuilderException $e) {
 			throw ModelDBException::create('size variants', 'deleting', $e);
 		} catch (\InvalidArgumentException $e) {
-			throw new \AssertionError('\InvalidArgumentException must not be thrown', $e->getCode(), $e);
+			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 	}
 }

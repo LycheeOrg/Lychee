@@ -15,6 +15,7 @@ use App\Contracts\LycheeException;
 use App\Exceptions\ExternalComponentFailedException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\MediaFileOperationException;
@@ -187,7 +188,7 @@ class Create
 
 			return $livePartner;
 		} catch (IllegalOrderOfOperationException $e) {
-			throw new \AssertionError('IllegalOrderOfOperationException must not be thrown', $e->getCode(), $e);
+			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 	}
 

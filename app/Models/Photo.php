@@ -8,6 +8,7 @@ use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Contracts\HasRandomID;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\ZeroModuloException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
@@ -231,7 +232,7 @@ class Photo extends Model implements HasRandomID
 			return $shutter;
 		} catch (ZeroModuloException $e) {
 			// this should not happen as we covered the case $b = 0;
-			throw new \AssertionError('Unexpected ZeroModuloException', $e->getCode(), $e);
+			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 	}
 

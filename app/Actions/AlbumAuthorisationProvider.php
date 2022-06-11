@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\Contracts\AbstractAlbum;
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\InvalidQueryModelException;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\AccessControl;
@@ -244,7 +245,7 @@ class AlbumAuthorisationProvider
 					($album->is_public && $this->isUnlocked($album)) ||
 					($album->shared_with()->where('user_id', '=', $userID)->count() > 0);
 			} catch (\InvalidArgumentException $e) {
-				throw new \AssertionError('\InvalidArgumentException must not be thrown by ->where', $e->getCode(), $e);
+				throw LycheeAssertionError::createFromUnexpectedException($e);
 			}
 		} elseif ($album instanceof BaseSmartAlbum) {
 			return AccessControl::can_upload() || $album->is_public;

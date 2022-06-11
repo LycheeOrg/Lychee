@@ -4,6 +4,7 @@ namespace App\Factories;
 
 use App\Contracts\AbstractAlbum;
 use App\Exceptions\Internal\InvalidSmartIdException;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\BaseAlbum;
@@ -112,7 +113,8 @@ class AlbumFactory
 			try {
 				$smartAlbums[] = $this->createSmartAlbum($smartID, $withRelations);
 			} catch (InvalidSmartIdException $e) {
-				throw new \AssertionError('InvalidSmartIdException must not be thrown, as search has been limited to self::BUILTIN_SMARTS', $e->getCode(), $e);
+				// InvalidSmartIdException must not be thrown, as search has been limited to self::BUILTIN_SMARTS'
+				throw LycheeAssertionError::createFromUnexpectedException($e);
 			}
 		}
 

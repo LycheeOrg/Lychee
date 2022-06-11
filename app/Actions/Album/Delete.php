@@ -4,6 +4,7 @@ namespace App\Actions\Album;
 
 use App\Actions\Photo\Delete as PhotoDelete;
 use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
@@ -168,22 +169,14 @@ class Delete extends Action
 				// Sic! We cannot do anything about the inner exception
 			}
 			throw ModelDBException::create('albums', 'deleting', $e);
-		} catch (\InvalidArgumentException $e) {
+		} catch (\InvalidArgumentException|ArrayException $e) {
 			try {
 				// if anything goes wrong, don't leave the tree in an inconsistent state
 				Album::query()->fixTree();
 			} catch (\Throwable) {
 				// Sic! We cannot do anything about the inner exception
 			}
-			assert(false, new \AssertionError('\InvalidArgumentException must not be thrown by ->where', $e->getCode(), $e));
-		} catch (ArrayException $e) {
-			try {
-				// if anything goes wrong, don't leave the tree in an inconsistent state
-				Album::query()->fixTree();
-			} catch (\Throwable) {
-				// Sic! We cannot do anything about the inner exception
-			}
-			assert(false, new \AssertionError('Safe\Exceptions\ArrayException must not be thrown by usort', $e->getCode(), $e));
+			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 	}
 }
