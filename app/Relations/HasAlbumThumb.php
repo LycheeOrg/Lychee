@@ -18,7 +18,7 @@ use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
 
 /**
- * @method where($column, $operator, $value)
+ * @mixin Builder
  */
 class HasAlbumThumb extends Relation
 {
