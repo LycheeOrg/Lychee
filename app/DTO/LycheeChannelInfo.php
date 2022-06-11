@@ -7,10 +7,21 @@ class LycheeChannelInfo extends DTO
 	public const RELEASE_CHANNEL = 0;
 	public const GIT_CHANNEL = 1;
 
+	/**
+	 * @var int either {@link LycheeChannelInfo::RELEASE_CHANNEL} or {@link LycheeChannelInfo::GIT_CHANNEL}
+	 * @phpstan-var int<0,1>
+	 */
 	public int $channelType;
 	public ?LycheeGitInfo $gitInfo;
 	public ?Version $releaseVersion;
 
+	/**
+	 * @param int $channelType either {@link LycheeChannelInfo::RELEASE_CHANNEL} or {@link LycheeChannelInfo::GIT_CHANNEL}
+	 * @phpstan-param int<0,1> $channelType
+	 *
+	 * @param LycheeGitInfo|null $lycheeGitInfo
+	 * @param Version|null       $releaseVersion
+	 */
 	protected function __construct(int $channelType, ?LycheeGitInfo $lycheeGitInfo, ?Version $releaseVersion)
 	{
 		$this->channelType = $channelType;
@@ -42,7 +53,6 @@ class LycheeChannelInfo extends DTO
 				'channel' => 'git',
 				'info' => $this->gitInfo?->toArray(),
 			],
-			default => throw new \AssertionError('invalid channel type in LycheeChannelInfo')
 		};
 	}
 }
