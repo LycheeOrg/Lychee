@@ -132,7 +132,7 @@ class GitHubFunctions
 				return sprintf('Up to date (%s).', $last_update);
 			} else {
 				return sprintf(
-					'%s commits behind master %s (%s)',
+					'%d commits behind master %s (%s)',
 					$count,
 					$this->getRemoteHead(),
 					$last_update
@@ -172,8 +172,11 @@ class GitHubFunctions
 
 		try {
 			return
-				Helpers::hasFullPermissions(base_path('.git')) && ($localBranch === null ||
-					Helpers::hasPermissions(base_path('.git/refs/heads/' . $localBranch))
+				Helpers::hasFullPermissions(
+					base_path('.git')) && (
+						$localBranch === null ||
+						Helpers::hasPermissions(base_path('.git/refs/heads/' . $localBranch)
+					)
 				);
 		} catch (BindingResolutionException) {
 			return false;
