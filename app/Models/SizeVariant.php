@@ -57,9 +57,7 @@ class SizeVariant extends Model
 	use UTCBasedTimes;
 	use HasAttributesPatch;
 	use HasBidirectionalRelationships;
-	use ThrowsConsistentExceptions {
-		ThrowsConsistentExceptions::delete as public internalDelete;
-	}
+	use ThrowsConsistentExceptions;
 	use UseFixedQueryBuilder;
 
 	public const ORIGINAL = 0;
