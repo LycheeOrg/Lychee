@@ -16,11 +16,11 @@ class LycheeChannelInfo extends DTO
 	public ?Version $releaseVersion;
 
 	/**
-	 * @param int $channelType either {@link LycheeChannelInfo::RELEASE_CHANNEL} or {@link LycheeChannelInfo::GIT_CHANNEL}
-	 * @phpstan-param int<0,1> $channelType
-	 *
+	 * @param int                $channelType    either {@link LycheeChannelInfo::RELEASE_CHANNEL} or {@link LycheeChannelInfo::GIT_CHANNEL}
 	 * @param LycheeGitInfo|null $lycheeGitInfo
 	 * @param Version|null       $releaseVersion
+	 *
+	 * @phpstan-param int<0,1> $channelType
 	 */
 	protected function __construct(int $channelType, ?LycheeGitInfo $lycheeGitInfo, ?Version $releaseVersion)
 	{
