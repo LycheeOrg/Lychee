@@ -57,9 +57,9 @@ class Tree
 		}
 		$query->orderBy($this->sorting->column, $this->sorting->order);
 
-		/** @var NsCollection $albums */
+		/** @var NsCollection<Album> $albums */
 		$albums = $query->get();
-		/** @var ?NsCollection $sharedAlbums */
+		/** @var ?NsCollection<Album> $sharedAlbums */
 		$sharedAlbums = null;
 		if (AccessControl::is_logged_in()) {
 			$id = AccessControl::id();

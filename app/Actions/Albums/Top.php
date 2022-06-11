@@ -83,8 +83,8 @@ class Top
 
 			$id = AccessControl::id();
 			/**
-			 * @var BaseCollection $a
-			 * @var BaseCollection $b
+			 * @var BaseCollection<Album> $a
+			 * @var BaseCollection<Album> $b
 			 */
 			list($a, $b) = $albums->partition(fn ($album) => $album->owner_id == $id);
 
