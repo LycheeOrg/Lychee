@@ -13,6 +13,7 @@ use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection;
+use Safe\Exceptions\InfoException;
 use function Safe\ini_get;
 use function Safe\set_time_limit;
 use Symfony\Component\HttpFoundation\HeaderUtils;
@@ -188,7 +189,11 @@ class Archive extends Action
 				$fileName = $fullNameOfDirectory . '/' . $fileBaseName . $file->getExtension();
 
 				// Reset the execution timeout for every iteration.
-				set_time_limit(intval(ini_get('max_execution_time')));
+				try {
+					set_time_limit(intval(ini_get('max_execution_time')));
+				} catch (InfoException) {
+					// Silently do nothing, if `set_time_limit` is denied.
+				}
 				$zip->addFileFromStream($fileName, $file->read());
 				$file->close();
 			} catch (\Throwable $e) {

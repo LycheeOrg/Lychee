@@ -100,7 +100,7 @@ class Takedate extends Command
 			try {
 				set_time_limit($timeout);
 			} catch (InfoException) {
-				// Do nothing
+				// Silently do nothing, if `set_time_limit` is denied.
 			}
 
 			// For faster iteration we eagerly load the original size variant,

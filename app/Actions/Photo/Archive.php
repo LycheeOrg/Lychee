@@ -13,6 +13,7 @@ use App\Models\SizeVariant;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
+use Safe\Exceptions\InfoException;
 use function Safe\fclose;
 use function Safe\fopen;
 use function Safe\ini_get;
@@ -263,7 +264,11 @@ class Archive
 				$zip->addFileFromStream($filename, $archiveFileInfo->getFile()->read());
 				$archiveFileInfo->getFile()->close();
 				// Reset the execution timeout for every iteration.
-				set_time_limit((int) ini_get('max_execution_time'));
+				try {
+					set_time_limit((int) ini_get('max_execution_time'));
+				} catch (InfoException) {
+					// Silently do nothing, if `set_time_limit` is denied.
+				}
 			}
 
 			// finish the zip stream

@@ -67,7 +67,7 @@ class GenerateThumbs extends Command
 			try {
 				set_time_limit($timeout);
 			} catch (InfoException) {
-				// We do nothing, set_time_limit will throw an error on tests.
+				// Silently do nothing, if `set_time_limit` is denied.
 			}
 
 			$this->line(

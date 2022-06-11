@@ -48,7 +48,7 @@ class VideoData extends Command
 			try {
 				set_time_limit($timeout);
 			} catch (InfoException) {
-				// do nothing
+				// Silently do nothing, if `set_time_limit` is denied.
 			}
 
 			$this->line(

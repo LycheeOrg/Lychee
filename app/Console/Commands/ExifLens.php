@@ -47,7 +47,7 @@ class ExifLens extends Command
 			try {
 				set_time_limit($timeout);
 			} catch (InfoException) {
-				// We do nothing, set_time_limit will throw an error on tests.
+				// Silently do nothing, if `set_time_limit` is denied.
 			}
 
 			// we use lens because this is the one which is most likely to be empty.
