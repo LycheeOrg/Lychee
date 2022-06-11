@@ -217,7 +217,7 @@ class AlbumFactory
 		}
 
 		/** @var BaseSmartAlbum $smartAlbum */
-		$smartAlbum = call_user_func([self::BUILTIN_SMARTS[$smartAlbumId], 'getInstance']);
+		$smartAlbum = call_user_func(self::BUILTIN_SMARTS[$smartAlbumId] . '::getInstance');
 		if ($withRelations) {
 			// Just try to get the photos.
 			// This loads the relation from DB and caches it.
