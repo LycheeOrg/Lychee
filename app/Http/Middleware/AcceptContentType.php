@@ -37,7 +37,7 @@ class AcceptContentType
 	public function handle(Request $request, \Closure $next, string $contentType): mixed
 	{
 		if ($contentType === self::JSON) {
-			if (!$request->expectsJson()) {
+			if (!$request->acceptsJson()) {
 				throw new UnexpectedContentType(self::JSON);
 			}
 		} elseif ($contentType === self::HTML) {
