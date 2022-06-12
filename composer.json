@@ -2,21 +2,23 @@
     "name": "lycheeorg/lychee",
     "description": "A great looking and easy-to-use photo-management-system you can run on your server, to manage and share photos.",
     "homepage": "https://lycheeorg.github.io/",
-	"readme": "readme.md",
-	"support": {
-		"source": "https://github.com/LycheeOrg/Lychee",
-		"issues": "https://github.com/LycheeOrg/Lychee/issues",
-		"docs": "https://lycheeorg.github.io/docs/",
-		"chat": "https://gitter.im/LycheeOrg/Lobby"
-	},
-	"keywords": [
+    "readme": "readme.md",
+    "support": {
+        "source": "https://github.com/LycheeOrg/Lychee",
+        "issues": "https://github.com/LycheeOrg/Lychee/issues",
+        "docs": "https://lycheeorg.github.io/docs/",
+        "chat": "https://gitter.im/LycheeOrg/Lobby"
+    },
+    "keywords": [
         "framework",
         "laravel"
     ],
-    "repositories": [{
-        "type": "vcs",
-        "url": "https://github.com/LycheeOrg/Larapass"
-    }],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/LycheeOrg/Larapass"
+        }
+    ],
     "license": "MIT",
     "type": "project",
     "require": {
