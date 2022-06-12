@@ -55,6 +55,8 @@ final class NorwegianBokmal implements Language
 			'SET_MAP_PROVIDER' => 'Lagre leverandør for OpenStreetMap fliser',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
+			'VIEW_TOKEN' => 'View API token',
+			'RESET' => 'Reset',
 
 			'SMART_ALBUMS' => 'Automatiske album',
 			'SHARED_ALBUMS' => 'Delte album',

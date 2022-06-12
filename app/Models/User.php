@@ -30,6 +30,7 @@ use Illuminate\Support\Carbon;
  * @property string|null                                           $email
  * @property bool                                                  $may_upload
  * @property bool                                                  $is_locked
+ * @property string                                                $token
  * @property string|null                                           $remember_token
  * @property Collection<BaseAlbumImpl>                             $albums
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications

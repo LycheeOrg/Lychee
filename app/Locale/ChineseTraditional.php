@@ -55,6 +55,8 @@ final class ChineseTraditional implements Language
 			'SET_MAP_PROVIDER' => '設置OpenStreetMap圖層提供者',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
+			'VIEW_TOKEN' => 'View API token',
+			'RESET' => 'Reset',
 
 			'SMART_ALBUMS' => '智能相簿',
 			'SHARED_ALBUMS' => '共享的相簿',

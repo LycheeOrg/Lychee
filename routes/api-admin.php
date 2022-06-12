@@ -49,3 +49,5 @@ Route::post('/User::delete', [UserController::class, 'delete']);
 Route::post('/User::create', [UserController::class, 'create']);
 Route::post('/User::setEmail', [UserController::class, 'setEmail'])->withoutMiddleware([AdminCheck::class]);
 Route::post('/User::getEmail', [UserController::class, 'getEmail'])->withoutMiddleware([AdminCheck::class]);
+Route::post('/User::getCurrent', [UserController::class, 'getCurrent'])->withoutMiddleware([AdminCheck::class]);
+Route::post('/User::resetToken', [UserController::class, 'resetToken'])->withoutMiddleware([AdminCheck::class]);

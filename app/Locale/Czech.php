@@ -56,6 +56,8 @@ final class Czech implements Language
 			'SAVE_RISK' => 'Uložit změny, rizika jsou mi známa!',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
+			'VIEW_TOKEN' => 'View API token',
+			'RESET' => 'Reset',
 
 			'SMART_ALBUMS' => 'Chytrá alba',
 			'SHARED_ALBUMS' => 'Sdílená alba',
