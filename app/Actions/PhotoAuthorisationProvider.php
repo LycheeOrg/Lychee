@@ -241,7 +241,7 @@ class PhotoAuthorisationProvider
 		try {
 			// there must be no unreachable album between the origin and the photo
 			$query->whereNotExists(function (BaseBuilder $q) use ($originLeft, $originRight) {
-				$this->albumAuthorisationProvider->appendUnreachableAlbumsCondition($q, $originLeft, $originRight); // TODO set var to apply filter
+				$this->albumAuthorisationProvider->appendUnreachableAlbumsCondition($q, $originLeft, $originRight);
 			});
 
 			// Special care needs to be taken for unsorted photo, i.e. photos on

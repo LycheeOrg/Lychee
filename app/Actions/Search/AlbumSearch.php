@@ -58,7 +58,7 @@ class AlbumSearch
 			->select(['albums.*'])
 			->join('base_albums', 'base_albums.id', '=', 'albums.id');
 		$this->addSearchCondition($terms, $albumQuery);
-		$this->albumAuthorisationProvider->applyBrowsabilityFilter($albumQuery);
+		$albumQuery = $this->albumAuthorisationProvider->applyBrowsabilityFilter($albumQuery);
 
 		$sorting = AlbumSortingCriterion::createDefault();
 

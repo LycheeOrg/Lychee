@@ -366,7 +366,7 @@ class AlbumAuthorisationProvider
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function applyBrowsabilityFilter(AlbumBuilder $query, ?Album $origin = null): AlbumBuilder
+	public function applyBrowsabilityFilter(AlbumBuilder $query, ?Album $origin = null): AlbumBuilder|NullModelBuilder
 	{
 		$table = $query->getQuery()->from;
 		if (!($query->getModel() instanceof Album) || $table !== 'albums') {
@@ -387,12 +387,21 @@ class AlbumAuthorisationProvider
 		if (AccessControl::is_admin()) {
 			return $query;
 		} else {
+			$restrictPublicToAuth = Configs::get_value('restrict_public_to_auth', '0') === '1';
+			$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+
+			// If no user is authenticated and public photos are restricted to
+			// authenticated users, return the `null` query
+			if ($restrictPublicToAuth && $userID === null) {
+				return NullModelBuilder::createFromQueryBuilder($query);
+			}
+
 			return $query->whereNotExists(function (BaseBuilder $q) use ($origin) {
 				$this->appendUnreachableAlbumsCondition(
 					$q,
 					$origin?->_lft,
 					$origin?->_rgt,
-				); // TODO set var to apply filter
+				);
 			});
 		}
 	}

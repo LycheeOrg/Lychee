@@ -7,6 +7,8 @@ use App\Actions\PhotoAuthorisationProvider;
 use App\DTO\PhotoSortingCriterion;
 use App\Facades\AccessControl;
 use App\Models\Album;
+use App\Models\Configs;
+use App\Models\Extensions\NullModelBuilder;
 use App\Models\Extensions\Thumb;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
@@ -173,42 +175,46 @@ class HasAlbumThumb extends Relation
 
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 
-		$album2Cover = function (BaseBuilder $builder) use ($bestPhotoIDSelect, $albumKeys, $userID) {
-			$builder
-				->from('albums as covered_albums')
-				->join('base_albums', 'base_albums.id', '=', 'covered_albums.id');
-			if ($userID !== null) {
-				$builder->leftJoin('user_base_album',
-					function (JoinClause $join) use ($userID) {
-						$join
-							->on('user_base_album.base_album_id', '=', 'base_albums.id')
-							->where('user_base_album.user_id', '=', $userID);
-					}
-				);
-			}
-			$builder->select(['covered_albums.id AS album_id'])
-				->addSelect(['photo_id' => $bestPhotoIDSelect])
-				->whereIn('covered_albums.id', $albumKeys);
-			if (!AccessControl::is_admin()) {
-				$builder->where(function (BaseBuilder $q) {
-					$this->albumAuthorisationProvider->appendAccessibilityConditions($q); // TODO set var to apply filter
-				});
-			}
-		};
+		if ($userID != null || Configs::get_value('restrict_public_to_auth', '0') !== '1') {
+			$album2Cover = function (BaseBuilder $builder) use ($bestPhotoIDSelect, $albumKeys, $userID) {
+				$builder
+					->from('albums as covered_albums')
+					->join('base_albums', 'base_albums.id', '=', 'covered_albums.id');
+				if ($userID !== null) {
+					$builder->leftJoin('user_base_album',
+						function (JoinClause $join) use ($userID) {
+							$join
+								->on('user_base_album.base_album_id', '=', 'base_albums.id')
+								->where('user_base_album.user_id', '=', $userID);
+						}
+					);
+				}
+				$builder->select(['covered_albums.id AS album_id'])
+					->addSelect(['photo_id' => $bestPhotoIDSelect])
+					->whereIn('covered_albums.id', $albumKeys);
+				if (!AccessControl::is_admin()) {
+					$builder->where(function (BaseBuilder $q) {
+						$this->albumAuthorisationProvider->appendAccessibilityConditions($q);
+					});
+				}
+			};
 
-		$this->query
-			->select([
-				'covers.id as id',
-				'covers.type as type',
-				'album_2_cover.album_id as covered_album_id',
-			])
-			->from($album2Cover, 'album_2_cover')
-			->join(
-				'photos as covers',
-				'covers.id',
-				'=',
-				'album_2_cover.photo_id'
-			);
+			$this->query
+				->select([
+					'covers.id as id',
+					'covers.type as type',
+					'album_2_cover.album_id as covered_album_id',
+				])
+				->from($album2Cover, 'album_2_cover')
+				->join(
+					'photos as covers',
+					'covers.id',
+					'=',
+					'album_2_cover.photo_id'
+				);
+		} else {
+			$this->query = NullModelBuilder::createFromQueryBuilder($this->query);
+		}
 	}
 
 	/**
