@@ -58,10 +58,7 @@
         "nunomaduro/collision": "^5.0",
         "phpunit/phpunit": "^9"
     },
-	"suggest": {
-		"etx-phpredis": "*"
-	},
-	"autoload": {
+    "autoload": {
         "classmap": [
             "database/seeds",
             "database/factories"
