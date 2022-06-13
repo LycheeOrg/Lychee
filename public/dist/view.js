@@ -3139,13 +3139,13 @@ lychee.locale = {
 	USER_CREATED: "User created!",
 	USER_DELETED: "User deleted!",
 	USER_UPDATED: "User updated!",
-	DROPBOX_API_KEY: "Dropbox API Key",
 	FULL_SETTINGS: "Full settings",
 	ENTER_EMAIL: "Enter your email address:",
 	CREATE: "Create",
 	REMOVE: "Remove",
 	SHARE: "Share",
 	UPDATE: "Update",
+	SETTINGS_DROPBOX_KEY: "Dropbox-API-Schlüssel",
 
 	/**
   * Formats a number representing a filesize in bytes as a localized string

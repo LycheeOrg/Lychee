@@ -29,8 +29,6 @@ final class French implements Language
 			'ALBUM_OWNER' => 'Propriétaire',
 
 			'USERS' => 'Utilisateurs',
-			'ALLOW_UPLOAD' => 'Allow uploads',
-			'RESTRICTED_ACCOUT' => 'Restricted account',
 			'CREATE' => 'Create',
 			'USERS_EMPTY' => 'User list is empty!',
 			'U2F' => 'U2F',
@@ -510,7 +508,6 @@ final class French implements Language
 			'USER_CREATED' => 'User created!',
 			'USER_REMOVED' => 'User deleted!',
 			'USER_UPDATED' => 'User updated!',
-			'DROPBOX_API_KEY' => 'Dropbox API Key',
 			'ENTER_EMAIL' => 'Enter your email address:',
 			'ERROR_ALBUM_JSON_NOT_FOUND' => 'Error: Album json not found!',
 			'ERROR_DROPBOX_KEY' => 'Error: Dropbox key not set',

@@ -7097,13 +7097,13 @@ lychee.locale = {
 	USER_CREATED: "User created!",
 	USER_DELETED: "User deleted!",
 	USER_UPDATED: "User updated!",
-	DROPBOX_API_KEY: "Dropbox API Key",
 	FULL_SETTINGS: "Full settings",
 	ENTER_EMAIL: "Enter your email address:",
 	CREATE: "Create",
 	REMOVE: "Remove",
 	SHARE: "Share",
 	UPDATE: "Update",
+	SETTINGS_DROPBOX_KEY: "Dropbox-API-Schlüssel",
 
 	/**
   * Formats a number representing a filesize in bytes as a localized string
@@ -12981,7 +12981,7 @@ view.settings = {
    * @returns {void}
    */
 		setDropboxKey: function setDropboxKey() {
-			var msg = "\n\t\t\t<div class=\"setDropBox\">\n\t\t\t  <p>" + lychee.locale["DROPBOX_TEXT"] + "\n\t\t\t  <input class='text' name='key' type='text' placeholder='" + lychee.locale["DROPBOX_API_KEY"] + "' value='" + lychee.dropboxKey + "'>\n\t\t\t  </p>\n\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t<a id=\"basicModal__action_dropbox_change\" class=\"basicModal__button\">" + lychee.locale["DROPBOX_TITLE"] + "</a>\n\t\t\t\t</div>\n\t\t\t  </div>\n\t\t\t  ";
+			var msg = "\n\t\t\t<div class=\"setDropBox\">\n\t\t\t  <p>" + lychee.locale["DROPBOX_TEXT"] + "\n\t\t\t  <input class='text' name='key' type='text' placeholder='" + lychee.locale["SETTINGS_DROPBOX_KEY"] + "' value='" + lychee.dropboxKey + "'>\n\t\t\t  </p>\n\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t<a id=\"basicModal__action_dropbox_change\" class=\"basicModal__button\">" + lychee.locale["DROPBOX_TITLE"] + "</a>\n\t\t\t\t</div>\n\t\t\t  </div>\n\t\t\t  ";
 
 			$(".settings_view").append(msg);
 			settings.bind("#basicModal__action_dropbox_change", ".setDropBox", settings.changeDropboxKey);

@@ -26,8 +26,6 @@ final class ChineseSimplified implements Language
 			'DEFAULT' => '默认',
 
 			'USERS' => '用户',
-			'ALLOW_UPLOAD' => 'Allow uploads',
-			'RESTRICTED_ACCOUT' => 'Restricted account',
 			'CREATE' => 'Create',
 			'USERS_EMPTY' => 'User list is empty!',
 			'U2F' => '通用两步验证（U2F）',
@@ -511,7 +509,6 @@ final class ChineseSimplified implements Language
 			'USER_CREATED' => 'User created!',
 			'USER_REMOVED' => 'User deleted!',
 			'USER_UPDATED' => 'User updated!',
-			'DROPBOX_API_KEY' => 'Dropbox API Key',
 			'ENTER_EMAIL' => 'Enter your email address:',
 			'ERROR_ALBUM_JSON_NOT_FOUND' => 'Error: Album json not found!',
 			'ERROR_DROPBOX_KEY' => 'Error: Dropbox key not set',
