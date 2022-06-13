@@ -869,6 +869,10 @@ d=0;d<a;d+=1)for(var g=0;g<a;g+=1){for(var e=0,t=b.a(d,g),p=-1;1>=p;p+=1)if(!(0>
 typeof e)throw Error("bad rs block @ typeNumber:"+b+"/errorCorrectLevel:"+a);b=e.length/3;a=[];for(var d=0;d<b;d+=1)for(var g=e[3*d],h=e[3*d+1],t=e[3*d+2],p=0;p<g;p+=1){var q=t,f={};f.o=h;f.j=q;a.push(f)}return a}};return e}();return C}());
 //# sourceMappingURL=qr-creator.min.js.map
 
+/*! sprintf-js v1.1.2 | Copyright (c) 2007-present, Alexandru Mărășteanu <hello@alexei.ro> | BSD-3-Clause */
+!function(){"use strict";var g={not_string:/[^s]/,not_bool:/[^t]/,not_type:/[^T]/,not_primitive:/[^v]/,number:/[diefg]/,numeric_arg:/[bcdiefguxX]/,json:/[j]/,not_json:/[^j]/,text:/^[^\x25]+/,modulo:/^\x25{2}/,placeholder:/^\x25(?:([1-9]\d*)\$|\(([^)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijostTuvxX])/,key:/^([a-z_][a-z_\d]*)/i,key_access:/^\.([a-z_][a-z_\d]*)/i,index_access:/^\[(\d+)\]/,sign:/^[+-]/};function y(e){return function(e,t){var r,n,i,s,a,o,p,c,l,u=1,f=e.length,d="";for(n=0;n<f;n++)if("string"==typeof e[n])d+=e[n];else if("object"==typeof e[n]){if((s=e[n]).keys)for(r=t[u],i=0;i<s.keys.length;i++){if(null==r)throw new Error(y('[sprintf] Cannot access property "%s" of undefined value "%s"',s.keys[i],s.keys[i-1]));r=r[s.keys[i]]}else r=s.param_no?t[s.param_no]:t[u++];if(g.not_type.test(s.type)&&g.not_primitive.test(s.type)&&r instanceof Function&&(r=r()),g.numeric_arg.test(s.type)&&"number"!=typeof r&&isNaN(r))throw new TypeError(y("[sprintf] expecting number but found %T",r));switch(g.number.test(s.type)&&(c=0<=r),s.type){case"b":r=parseInt(r,10).toString(2);break;case"c":r=String.fromCharCode(parseInt(r,10));break;case"d":case"i":r=parseInt(r,10);break;case"j":r=JSON.stringify(r,null,s.width?parseInt(s.width):0);break;case"e":r=s.precision?parseFloat(r).toExponential(s.precision):parseFloat(r).toExponential();break;case"f":r=s.precision?parseFloat(r).toFixed(s.precision):parseFloat(r);break;case"g":r=s.precision?String(Number(r.toPrecision(s.precision))):parseFloat(r);break;case"o":r=(parseInt(r,10)>>>0).toString(8);break;case"s":r=String(r),r=s.precision?r.substring(0,s.precision):r;break;case"t":r=String(!!r),r=s.precision?r.substring(0,s.precision):r;break;case"T":r=Object.prototype.toString.call(r).slice(8,-1).toLowerCase(),r=s.precision?r.substring(0,s.precision):r;break;case"u":r=parseInt(r,10)>>>0;break;case"v":r=r.valueOf(),r=s.precision?r.substring(0,s.precision):r;break;case"x":r=(parseInt(r,10)>>>0).toString(16);break;case"X":r=(parseInt(r,10)>>>0).toString(16).toUpperCase()}g.json.test(s.type)?d+=r:(!g.number.test(s.type)||c&&!s.sign?l="":(l=c?"+":"-",r=r.toString().replace(g.sign,"")),o=s.pad_char?"0"===s.pad_char?"0":s.pad_char.charAt(1):" ",p=s.width-(l+r).length,a=s.width&&0<p?o.repeat(p):"",d+=s.align?l+r+a:"0"===o?l+a+r:a+l+r)}return d}(function(e){if(p[e])return p[e];var t,r=e,n=[],i=0;for(;r;){if(null!==(t=g.text.exec(r)))n.push(t[0]);else if(null!==(t=g.modulo.exec(r)))n.push("%");else{if(null===(t=g.placeholder.exec(r)))throw new SyntaxError("[sprintf] unexpected placeholder");if(t[2]){i|=1;var s=[],a=t[2],o=[];if(null===(o=g.key.exec(a)))throw new SyntaxError("[sprintf] failed to parse named argument key");for(s.push(o[1]);""!==(a=a.substring(o[0].length));)if(null!==(o=g.key_access.exec(a)))s.push(o[1]);else{if(null===(o=g.index_access.exec(a)))throw new SyntaxError("[sprintf] failed to parse named argument key");s.push(o[1])}t[2]=s}else i|=2;if(3===i)throw new Error("[sprintf] mixing positional and named placeholders is not (yet) supported");n.push({placeholder:t[0],param_no:t[1],keys:t[2],sign:t[3],pad_char:t[4],align:t[5],width:t[6],precision:t[7],type:t[8]})}r=r.substring(t[0].length)}return p[e]=n}(e),arguments)}function e(e,t){return y.apply(null,[e].concat(t||[]))}var p=Object.create(null);"undefined"!=typeof exports&&(exports.sprintf=y,exports.vsprintf=e),"undefined"!=typeof window&&(window.sprintf=y,window.vsprintf=e,"function"==typeof define&&define.amd&&define(function(){return{sprintf:y,vsprintf:e}}))}();
+//# sourceMappingURL=sprintf.min.js.map
+
 L.Photo = L.FeatureGroup.extend({
 	options: {
 		icon: {
@@ -1520,7 +1524,7 @@ album.getSubByID = function (albumID) {
 		return subTagAlbum;
 	}
 
-	loadingBar.show("error", lychee.locale["ERROR_ALBUM_NOT_FOUND"].replace("%0", albumID));
+	loadingBar.show("error", sprintf(lychee.locale["ERROR_ALBUM_NOT_FOUND"], albumID));
 	return null;
 };
 
@@ -1921,7 +1925,7 @@ album.setTitle = function (albumIDs) {
 
 	var inputHTML = lychee.html(_templateObject4, lychee.locale["ALBUM_TITLE"], oldTitle);
 
-	var dialogHTML = albumIDs.length === 1 ? lychee.html(_templateObject5, lychee.locale["ALBUM_NEW_TITLE"], inputHTML) : lychee.html(_templateObject5, lychee.locale["ALBUMS_NEW_TITLE"].replace("%0", albumIDs.length.toString()), inputHTML);
+	var dialogHTML = albumIDs.length === 1 ? lychee.html(_templateObject5, lychee.locale["ALBUM_NEW_TITLE"], inputHTML) : lychee.html(_templateObject5, sprintf(lychee.locale["ALBUMS_NEW_TITLE"], albumIDs.length), inputHTML);
 
 	basicModal.show({
 		body: dialogHTML,
@@ -2069,7 +2073,7 @@ album.setSorting = function (albumID) {
 		});
 	};
 
-	var msg = lychee.html(_templateObject8, lychee.locale["SORT_PHOTO_BY"].replace("%0", "<span class=\"select\">\n\t\t\t\t<select id=\"sortingCol\" name=\"sortingCol\">\n\t\t\t\t\t<option value=''>-</option>\n\t\t\t\t\t<option value='created_at'>" + lychee.locale["SORT_PHOTO_SELECT_1"] + "</option>\n\t\t\t\t\t<option value='taken_at'>" + lychee.locale["SORT_PHOTO_SELECT_2"] + "</option>\n\t\t\t\t\t<option value='title'>" + lychee.locale["SORT_PHOTO_SELECT_3"] + "</option>\n\t\t\t\t\t<option value='description'>" + lychee.locale["SORT_PHOTO_SELECT_4"] + "</option>\n\t\t\t\t\t<option value='is_public'>" + lychee.locale["SORT_PHOTO_SELECT_5"] + "</option>\n\t\t\t\t\t<option value='is_starred'>" + lychee.locale["SORT_PHOTO_SELECT_6"] + "</option>\n\t\t\t\t\t<option value='type'>" + lychee.locale["SORT_PHOTO_SELECT_7"] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>").replace("%1", "<span class=\"select\">\n\t\t\t\t<select id=\"sortingOrder\" name=\"sortingOrder\">\n\t\t\t\t\t<option value=''>-</option>\n\t\t\t\t\t<option value='ASC'>" + lychee.locale["SORT_ASCENDING"] + "</option>\n\t\t\t\t\t<option value='DESC'>" + lychee.locale["SORT_DESCENDING"] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>"));
+	var msg = lychee.html(_templateObject8, sprintf(lychee.locale["SORT_PHOTO_BY"], "<span class=\"select\">\n\t\t\t\t<select id=\"sortingCol\" name=\"sortingCol\">\n\t\t\t\t\t<option value=''>-</option>\n\t\t\t\t\t<option value='created_at'>" + lychee.locale["SORT_PHOTO_SELECT_1"] + "</option>\n\t\t\t\t\t<option value='taken_at'>" + lychee.locale["SORT_PHOTO_SELECT_2"] + "</option>\n\t\t\t\t\t<option value='title'>" + lychee.locale["SORT_PHOTO_SELECT_3"] + "</option>\n\t\t\t\t\t<option value='description'>" + lychee.locale["SORT_PHOTO_SELECT_4"] + "</option>\n\t\t\t\t\t<option value='is_public'>" + lychee.locale["SORT_PHOTO_SELECT_5"] + "</option>\n\t\t\t\t\t<option value='is_starred'>" + lychee.locale["SORT_PHOTO_SELECT_6"] + "</option>\n\t\t\t\t\t<option value='type'>" + lychee.locale["SORT_PHOTO_SELECT_7"] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>", "<span class=\"select\">\n\t\t\t\t<select id=\"sortingOrder\" name=\"sortingOrder\">\n\t\t\t\t\t<option value=''>-</option>\n\t\t\t\t\t<option value='ASC'>" + lychee.locale["SORT_ASCENDING"] + "</option>\n\t\t\t\t\t<option value='DESC'>" + lychee.locale["SORT_DESCENDING"] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>"));
 
 	basicModal.show({
 		body: msg,
@@ -2398,9 +2402,9 @@ album.buildMessage = function (albumIDs, albumID, op1, ops) {
 			sourceTitle = sourceAlbum.title;
 		}
 
-		msg = lychee.html(_templateObject12, lychee.locale[op1].replace("%0", sourceTitle).replace("%1", targetTitle));
+		msg = lychee.html(_templateObject12, sprintf(lychee.locale[op1], sourceTitle, targetTitle));
 	} else {
-		msg = lychee.html(_templateObject13, lychee.locale[ops].replace("%0", targetTitle));
+		msg = lychee.html(_templateObject13, sprintf(lychee.locale[ops], targetTitle));
 	}
 
 	return msg;
@@ -2465,12 +2469,12 @@ album.delete = function (albumIDs) {
 		// Fallback for album without a title
 		if (!albumTitle) albumTitle = lychee.locale["UNTITLED"];
 
-		msg = lychee.html(_templateObject13, lychee.locale["DELETE_ALBUM_CONFIRMATION"].replace("%0", albumTitle));
+		msg = lychee.html(_templateObject13, sprintf(lychee.locale["DELETE_ALBUM_CONFIRMATION"], albumTitle));
 	} else {
 		action.title = lychee.locale["DELETE_ALBUMS_QUESTION"];
 		cancel.title = lychee.locale["KEEP_ALBUMS"];
 
-		msg = lychee.html(_templateObject13, lychee.locale["DELETE_ALBUMS_CONFIRMATION"].replace("%0", albumIDs.length.toString()));
+		msg = lychee.html(_templateObject13, sprintf(lychee.locale["DELETE_ALBUMS_CONFIRMATION"], albumIDs.length));
 	}
 
 	basicModal.show({
@@ -3184,7 +3188,7 @@ build.overlay_image = function (data) {
 				}
 				if (data.iso && data.iso !== "") {
 					if (overlay !== "") overlay += ", ";
-					overlay += lychee.locale["PHOTO_ISO"].replace("%0", data.iso);
+					overlay += sprintf(lychee.locale["PHOTO_ISO"], data.iso);
 				}
 				if (data.focal && data.focal !== "") {
 					if (overlay !== "") overlay += "<br>";
@@ -5601,7 +5605,7 @@ lychee.logs = function () {
  * @returns {void}
  */
 lychee.aboutDialog = function () {
-	var msg = lychee.html(_templateObject45, lychee.version, lychee.updateURL, lychee.locale["UPDATE_AVAILABLE"], lychee.locale["ABOUT_SUBTITLE"], lychee.locale["ABOUT_DESCRIPTION"].replace("%0", lychee.website));
+	var msg = lychee.html(_templateObject45, lychee.version, lychee.updateURL, lychee.locale["UPDATE_AVAILABLE"], lychee.locale["ABOUT_SUBTITLE"], sprintf(lychee.locale["ABOUT_DESCRIPTION"], lychee.website));
 
 	basicModal.show({
 		body: msg,
@@ -6670,11 +6674,11 @@ lychee.locale = {
 
 	DELETE_ALBUM_QUESTION: "Delete Album and Photos",
 	KEEP_ALBUM: "Keep Album",
-	DELETE_ALBUM_CONFIRMATION_1: "Are you sure you want to delete the album '%0' and all of the photos it contains? This action can't be undone!",
+	DELETE_ALBUM_CONFIRMATION_1: "Are you sure you want to delete the album '%s' and all of the photos it contains? This action can't be undone!",
 
 	DELETE_ALBUMS_QUESTION: "Delete Albums and Photos",
 	KEEP_ALBUMS: "Keep Albums",
-	DELETE_ALBUMS_CONFIRMATION: "Are you sure you want to delete all %0 selected albums and all of the photos they contain? This action can't be undone!",
+	DELETE_ALBUMS_CONFIRMATION: "Are you sure you want to delete all %d selected albums and all of the photos they contain? This action can't be undone!",
 
 	DELETE_UNSORTED_CONFIRM: "Are you sure you want to delete all photos from 'Unsorted'?<br>This action can't be undone!",
 	CLEAR_UNSORTED: "Clear Unsorted",
@@ -6739,7 +6743,7 @@ lychee.locale = {
 	ALBUM_BASICS: "Basics",
 	ALBUM_TITLE: "Title",
 	ALBUM_NEW_TITLE: "Enter a new title for this album:",
-	ALBUMS_NEW_TITLE: "Enter a title for all %0 selected albums:",
+	ALBUMS_NEW_TITLE: "Enter a title for all %d selected albums:",
 	ALBUM_SET_TITLE: "Set Title",
 	ALBUM_DESCRIPTION: "Description",
 	ALBUM_SHOW_TAGS: "Tags to show",
@@ -6773,12 +6777,12 @@ lychee.locale = {
 	ALBUM_PASSWORD_PROT: "Password protected",
 	ALBUM_PASSWORD_PROT_EXPL: "Album only accessible with a valid password.",
 	ALBUM_PASSWORD_REQUIRED: "This album is protected by a password. Enter the password below to view the photos of this album:",
-	ALBUM_MERGE: "Are you sure you want to merge the album '%0' into the album '%1'?",
-	ALBUMS_MERGE: "Are you sure you want to merge all selected albums into the album",
+	ALBUM_MERGE: "Are you sure you want to merge the album '%1$s' into the album '%2$s'?",
+	ALBUMS_MERGE: "Are you sure you want to merge all selected albums into the album '%s'?",
 	MERGE_ALBUM: "Merge Albums",
 	DONT_MERGE: "Don't Merge",
-	ALBUM_MOVE: "Are you sure you want to move the album '%0' into the album '%1'?",
-	ALBUMS_MOVE: "Are you sure you want to move all selected albums into the album",
+	ALBUM_MOVE: "Are you sure you want to move the album '%1$s' into the album '%2$s'?",
+	ALBUMS_MOVE: "Are you sure you want to move all selected albums into the album '%s'?",
 	MOVE_ALBUMS: "Move Albums",
 	NOT_MOVE_ALBUMS: "Don't Move",
 	ROOT: "Root",
@@ -6817,7 +6821,7 @@ lychee.locale = {
 	PHOTO_TAGS: "Tags",
 	PHOTO_NOTAGS: "No Tags",
 	PHOTO_NEW_TAGS: "Enter your tags for this photo. You can add multiple tags by separating them with a comma:",
-	PHOTOS_NEW_TAGS: "Enter your tags for all %0 selected photos. Existing tags will be overwritten. You can add multiple tags by separating them with a comma:",
+	PHOTOS_NEW_TAGS: "Enter your tags for all %d selected photos. Existing tags will be overwritten. You can add multiple tags by separating them with a comma:",
 	PHOTO_SET_TAGS: "Set Tags",
 	PHOTO_CAMERA: "Camera",
 	PHOTO_CAPTURED: "Captured",
@@ -6827,17 +6831,17 @@ lychee.locale = {
 	PHOTO_SHUTTER: "Shutter Speed",
 	PHOTO_APERTURE: "Aperture",
 	PHOTO_FOCAL: "Focal Length",
-	PHOTO_ISO: "ISO %0",
+	PHOTO_ISO: "ISO %s",
 	PHOTO_SHARING: "Sharing",
-	PHOTO_SHR_PLUBLIC: "Public",
+	PHOTO_SHR_PUBLIC: "Public",
 	PHOTO_SHR_ALB: "Yes (Album)",
 	PHOTO_SHR_PHT: "Yes (Photo)",
 	PHOTO_SHR_NO: "No",
 	PHOTO_DELETE: "Delete Photo",
 	PHOTO_KEEP: "Keep Photo",
-	PHOTO_DELETE_CONFIRMATION: "Are you sure you want to delete the photo '%0'? This action can't be undone!",
-	PHOTO_DELETE_ALL: "Are you sure you want to delete all %0 selected photo? This action can't be undone!",
-	PHOTOS_NEW_TITLE_: "Enter a title for all %0 selected photos:",
+	PHOTO_DELETE_CONFIRMATION: "Are you sure you want to delete the photo '%s'? This action can't be undone!",
+	PHOTO_DELETE_ALL: "Are you sure you want to delete all %d selected photo? This action can't be undone!",
+	PHOTOS_NEW_TITLE: "Enter a title for all %d selected photos:",
 	PHOTO_MAKE_PRIVATE_ALBUM: "This photo is located in a public album. To make this photo private or public, edit the visibility of the associated album.",
 	PHOTO_SHOW_ALBUM: "Show Album",
 	PHOTO_PUBLIC: "Public",
@@ -6872,7 +6876,7 @@ lychee.locale = {
 	ERROR_MAP_DEACTIVATED: "Map functionality has been deactivated under settings.",
 	ERROR_SEARCH_DEACTIVATED: "Search functionality has been deactivated under settings.",
 	ERROR_ALBUM_JSON_NOT_FOUND: "Error: Album json not found!",
-	ERROR_ALBUM_NOT_FOUND: "Error: album %0 not found",
+	ERROR_ALBUM_NOT_FOUND: "Error: album %s not found",
 	ERROR_DROPBOX_KEY: "Error: Dropbox key not set",
 	ERROR_SESSION: "Session expired.",
 	SUCCESS: "OK",
@@ -6931,7 +6935,7 @@ lychee.locale = {
 	EDIT_SHARING_TEXT: "The sharing-properties of this album will be changed to the following:",
 	SHARE_ALBUM_TEXT: "This album will be shared with the following properties:",
 
-	SORT_ALBUM_BY: "Sort albums by %0 in an %1 order.",
+	SORT_ALBUM_BY: "Sort albums by %1$s in an %2$s order.",
 
 	SORT_ALBUM_SELECT_1: "Creation Time",
 	SORT_ALBUM_SELECT_2: "Title",
@@ -6940,7 +6944,7 @@ lychee.locale = {
 	SORT_ALBUM_SELECT_5: "Latest Take Date",
 	SORT_ALBUM_SELECT_6: "Oldest Take Date",
 
-	SORT_PHOTO_BY: "Sort photos by %0 in an %1 order.",
+	SORT_PHOTO_BY: "Sort photos by %1$s in an %2$s order.",
 
 	SORT_PHOTO_SELECT_1: "Upload Time",
 	SORT_PHOTO_SELECT_2: "Take Date",
@@ -7035,7 +7039,7 @@ lychee.locale = {
 	UPLOAD_IMPORT_SERVER_EMPT: "Could not start import because the folder was empty!",
 
 	ABOUT_SUBTITLE: "Self-hosted photo-management done right",
-	ABOUT_DESCRIPTION: "<a target='_blank' href='%0'>Lychee</a> is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.",
+	ABOUT_DESCRIPTION: "<a target='_blank' href='%s'>Lychee</a> is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.",
 
 	URL_COPY_TO_CLIPBOARD: "Copy to clipboard",
 	URL_COPIED_TO_CLIPBOARD: "Copied URL to clipboard!",
@@ -7062,7 +7066,7 @@ lychee.locale = {
 	ERROR_COULD_NOT_FIND: "Could not find what you want.",
 	ERROR_INVALID_EMAIL: "Not a valid email address.",
 	EMAIL_SUCCESS: "Email updated!",
-	ERROR_PHOTO_NOT_FOUND: "Error: photo %0 not found !",
+	ERROR_PHOTO_NOT_FOUND: "Error: photo %s not found !",
 	ERROR_EMPTY_USERNAME: "new username cannot be empty.",
 	ERROR_PASSWORD_DOES_NOT_MATCH: "new password does not match.",
 	ERROR_EMPTY_PASSWORD: "new password cannot be empty.",
@@ -8459,12 +8463,12 @@ _photo3.delete = function (photoIDs) {
 		action.title = lychee.locale["PHOTO_DELETE"];
 		cancel.title = lychee.locale["PHOTO_KEEP"];
 
-		msg = lychee.html(_templateObject13, lychee.locale["PHOTO_DELETE_CONFIRMATION"].replace("%0", photoTitle));
+		msg = lychee.html(_templateObject13, sprintf(lychee.locale["PHOTO_DELETE_CONFIRMATION"], photoTitle));
 	} else {
 		action.title = lychee.locale["PHOTO_DELETE"];
 		cancel.title = lychee.locale["PHOTO_KEEP"];
 
-		msg = lychee.html(_templateObject13, lychee.locale["PHOTO_DELETE_ALL"].replace("%0", photoIDs.length.toString()));
+		msg = lychee.html(_templateObject13, sprintf(lychee.locale["PHOTO_DELETE_ALL"], photoIDs.length));
 	}
 
 	basicModal.show({
@@ -8530,7 +8534,7 @@ _photo3.setTitle = function (photoIDs) {
 
 	var input = lychee.html(_templateObject48, oldTitle);
 
-	if (photoIDs.length === 1) msg = lychee.html(_templateObject5, lychee.locale["PHOTO_NEW_TITLE"], input);else msg = lychee.html(_templateObject5, lychee.locale["PHOTOS_NEW_TITLE_"].replace("%0", photoIDs.length.toString()), input);
+	if (photoIDs.length === 1) msg = lychee.html(_templateObject5, lychee.locale["PHOTO_NEW_TITLE"], input);else msg = lychee.html(_templateObject5, sprintf(lychee.locale["PHOTOS_NEW_TITLE"], photoIDs.length), input);
 
 	basicModal.show({
 		body: msg,
@@ -8860,7 +8864,7 @@ _photo3.editTags = function (photoIDs) {
 
 	var input = lychee.html(_templateObject54, oldTags.join(", "));
 
-	var msg = photoIDs.length === 1 ? lychee.html(_templateObject5, lychee.locale["PHOTO_NEW_TAGS"], input) : lychee.html(_templateObject5, lychee.locale["PHOTOS_NEW_TAGS"].replace("%0", photoIDs.length.toString()), input);
+	var msg = photoIDs.length === 1 ? lychee.html(_templateObject5, lychee.locale["PHOTO_NEW_TAGS"], input) : lychee.html(_templateObject5, sprintf(lychee.locale["PHOTOS_NEW_TAGS"], photoIDs.length), input);
 
 	basicModal.show({
 		body: msg,
@@ -9080,7 +9084,7 @@ _photo3.qrCode = function (photoID) {
 	var myPhoto = _photo3.json && _photo3.json.id === photoID ? _photo3.json : album.getByID(photoID);
 
 	if (myPhoto == null) {
-		lychee.error(lychee.locale["ERROR_PHOTO_NOT_FOUND"].replace("%0", photoID));
+		lychee.error(sprintf(lychee.locale["ERROR_PHOTO_NOT_FOUND"], photoID));
 		return;
 	}
 
@@ -10243,7 +10247,7 @@ _sidebar.createStructure.photo = function (data) {
 		structure.exif = {
 			title: lychee.locale["PHOTO_CAMERA"],
 			type: _sidebar.types.DEFAULT,
-			rows: isVideo ? [{ title: lychee.locale["PHOTO_CAPTURED"], kind: "takedate", value: lychee.locale.printDateTime(data.taken_at) }, { title: lychee.locale["PHOTO_MAKE"], kind: "make", value: data.make }, { title: lychee.locale["PHOTO_TYPE"], kind: "model", value: data.model }] : [{ title: lychee.locale["PHOTO_CAPTURED"], kind: "takedate", value: lychee.locale.printDateTime(data.taken_at) }, { title: lychee.locale["PHOTO_MAKE"], kind: "make", value: data.make }, { title: lychee.locale["PHOTO_TYPE"], kind: "model", value: data.model }, { title: lychee.locale["PHOTO_LENS"], kind: "lens", value: data.lens }, { title: lychee.locale["PHOTO_SHUTTER"], kind: "shutter", value: data.shutter }, { title: lychee.locale["PHOTO_APERTURE"], kind: "aperture", value: data.aperture }, { title: lychee.locale["PHOTO_FOCAL"], kind: "focal", value: data.focal }, { title: lychee.locale["PHOTO_ISO"], kind: "iso", value: data.iso }]
+			rows: isVideo ? [{ title: lychee.locale["PHOTO_CAPTURED"], kind: "takedate", value: lychee.locale.printDateTime(data.taken_at) }, { title: lychee.locale["PHOTO_MAKE"], kind: "make", value: data.make }, { title: lychee.locale["PHOTO_TYPE"], kind: "model", value: data.model }] : [{ title: lychee.locale["PHOTO_CAPTURED"], kind: "takedate", value: lychee.locale.printDateTime(data.taken_at) }, { title: lychee.locale["PHOTO_MAKE"], kind: "make", value: data.make }, { title: lychee.locale["PHOTO_TYPE"], kind: "model", value: data.model }, { title: lychee.locale["PHOTO_LENS"], kind: "lens", value: data.lens }, { title: lychee.locale["PHOTO_SHUTTER"], kind: "shutter", value: data.shutter }, { title: lychee.locale["PHOTO_APERTURE"], kind: "aperture", value: data.aperture }, { title: lychee.locale["PHOTO_FOCAL"], kind: "focal", value: data.focal }, { title: sprintf(lychee.locale["PHOTO_ISO"], ""), kind: "iso", value: data.iso }]
 		};
 	} else {
 		structure.exif = {};
@@ -10252,7 +10256,7 @@ _sidebar.createStructure.photo = function (data) {
 	structure.sharing = {
 		title: lychee.locale["PHOTO_SHARING"],
 		type: _sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["PHOTO_SHR_PLUBLIC"], kind: "public", value: isPublic }]
+		rows: [{ title: lychee.locale["PHOTO_SHR_PUBLIC"], kind: "public", value: isPublic }]
 	};
 
 	structure.license = {
@@ -12937,7 +12941,7 @@ view.settings = {
    * @returns {void}
    */
 		setSorting: function setSorting() {
-			var msg = lychee.html(_templateObject73, lychee.locale["SORT_ALBUM_BY"].replace("%0", "<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_albums_sorting_column\" name=\"sorting_albums_column\">\n\t\t\t\t\t\t\t\t<option value='created_at'>" + lychee.locale["SORT_ALBUM_SELECT_1"] + "</option>\n\t\t\t\t\t\t\t\t<option value='title'>" + lychee.locale["SORT_ALBUM_SELECT_2"] + "</option>\n\t\t\t\t\t\t\t\t<option value='description'>" + lychee.locale["SORT_ALBUM_SELECT_3"] + "</option>\n\t\t\t\t\t\t\t\t<option value='is_public'>" + lychee.locale["SORT_ALBUM_SELECT_4"] + "</option>\n\t\t\t\t\t\t\t\t<option value='max_taken_at'>" + lychee.locale["SORT_ALBUM_SELECT_5"] + "</option>\n\t\t\t\t\t\t\t\t<option value='min_taken_at'>" + lychee.locale["SORT_ALBUM_SELECT_6"] + "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>").replace("%1", "<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_albums_sorting_order\" name=\"sorting_albums_order\">\n\t\t\t\t\t\t\t\t<option value='ASC'>" + lychee.locale["SORT_ASCENDING"] + "</option>\n\t\t\t\t\t\t\t\t<option value='DESC'>" + lychee.locale["SORT_DESCENDING"] + "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>"), lychee.locale["SORT_PHOTO_BY"].replace("%0", "<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_photos_sorting_column\" name=\"sorting_photos_column\">\n\t\t\t\t\t\t\t\t<option value='created_at'>" + lychee.locale["SORT_PHOTO_SELECT_1"] + "</option>\n\t\t\t\t\t\t\t\t<option value='taken_at'>" + lychee.locale["SORT_PHOTO_SELECT_2"] + "</option>\n\t\t\t\t\t\t\t\t<option value='title'>" + lychee.locale["SORT_PHOTO_SELECT_3"] + "</option>\n\t\t\t\t\t\t\t\t<option value='description'>" + lychee.locale["SORT_PHOTO_SELECT_4"] + "</option>\n\t\t\t\t\t\t\t\t<option value='is_public'>" + lychee.locale["SORT_PHOTO_SELECT_5"] + "</option>\n\t\t\t\t\t\t\t\t<option value='is_starred'>" + lychee.locale["SORT_PHOTO_SELECT_6"] + "</option>\n\t\t\t\t\t\t\t\t<option value='type'>" + lychee.locale["SORT_PHOTO_SELECT_7"] + "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t  \t\t</span>").replace("%1", "<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_photos_sorting_order\" name=\"sorting_photos_order\">\n\t\t\t\t\t\t\t\t<option value='ASC'>" + lychee.locale["SORT_ASCENDING"] + "</option>\n\t\t\t\t\t\t\t\t<option value='DESC'>" + lychee.locale["SORT_DESCENDING"] + "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>"), lychee.locale["SORT_CHANGE"]);
+			var msg = lychee.html(_templateObject73, sprintf(lychee.locale["SORT_ALBUM_BY"], "<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_albums_sorting_column\" name=\"sorting_albums_column\">\n\t\t\t\t\t\t\t\t<option value='created_at'>" + lychee.locale["SORT_ALBUM_SELECT_1"] + "</option>\n\t\t\t\t\t\t\t\t<option value='title'>" + lychee.locale["SORT_ALBUM_SELECT_2"] + "</option>\n\t\t\t\t\t\t\t\t<option value='description'>" + lychee.locale["SORT_ALBUM_SELECT_3"] + "</option>\n\t\t\t\t\t\t\t\t<option value='is_public'>" + lychee.locale["SORT_ALBUM_SELECT_4"] + "</option>\n\t\t\t\t\t\t\t\t<option value='max_taken_at'>" + lychee.locale["SORT_ALBUM_SELECT_5"] + "</option>\n\t\t\t\t\t\t\t\t<option value='min_taken_at'>" + lychee.locale["SORT_ALBUM_SELECT_6"] + "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>", "<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_albums_sorting_order\" name=\"sorting_albums_order\">\n\t\t\t\t\t\t\t\t<option value='ASC'>" + lychee.locale["SORT_ASCENDING"] + "</option>\n\t\t\t\t\t\t\t\t<option value='DESC'>" + lychee.locale["SORT_DESCENDING"] + "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>"), sprintf(lychee.locale["SORT_PHOTO_BY"], "<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_photos_sorting_column\" name=\"sorting_photos_column\">\n\t\t\t\t\t\t\t\t<option value='created_at'>" + lychee.locale["SORT_PHOTO_SELECT_1"] + "</option>\n\t\t\t\t\t\t\t\t<option value='taken_at'>" + lychee.locale["SORT_PHOTO_SELECT_2"] + "</option>\n\t\t\t\t\t\t\t\t<option value='title'>" + lychee.locale["SORT_PHOTO_SELECT_3"] + "</option>\n\t\t\t\t\t\t\t\t<option value='description'>" + lychee.locale["SORT_PHOTO_SELECT_4"] + "</option>\n\t\t\t\t\t\t\t\t<option value='is_public'>" + lychee.locale["SORT_PHOTO_SELECT_5"] + "</option>\n\t\t\t\t\t\t\t\t<option value='is_starred'>" + lychee.locale["SORT_PHOTO_SELECT_6"] + "</option>\n\t\t\t\t\t\t\t\t<option value='type'>" + lychee.locale["SORT_PHOTO_SELECT_7"] + "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t  \t\t</span>", "<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_photos_sorting_order\" name=\"sorting_photos_order\">\n\t\t\t\t\t\t\t\t<option value='ASC'>" + lychee.locale["SORT_ASCENDING"] + "</option>\n\t\t\t\t\t\t\t\t<option value='DESC'>" + lychee.locale["SORT_DESCENDING"] + "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>"), lychee.locale["SORT_CHANGE"]);
 
 			$(".settings_view").append(msg);
 

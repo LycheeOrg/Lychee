@@ -876,7 +876,7 @@ build.overlay_image = function (data) {
 				}
 				if (data.iso && data.iso !== "") {
 					if (overlay !== "") overlay += ", ";
-					overlay += lychee.locale["PHOTO_ISO"].replace("%0", data.iso);
+					overlay += sprintf(lychee.locale["PHOTO_ISO"], data.iso);
 				}
 				if (data.focal && data.focal !== "") {
 					if (overlay !== "") overlay += "<br>";
@@ -1951,7 +1951,7 @@ sidebar.createStructure.photo = function (data) {
 		structure.exif = {
 			title: lychee.locale["PHOTO_CAMERA"],
 			type: sidebar.types.DEFAULT,
-			rows: isVideo ? [{ title: lychee.locale["PHOTO_CAPTURED"], kind: "takedate", value: lychee.locale.printDateTime(data.taken_at) }, { title: lychee.locale["PHOTO_MAKE"], kind: "make", value: data.make }, { title: lychee.locale["PHOTO_TYPE"], kind: "model", value: data.model }] : [{ title: lychee.locale["PHOTO_CAPTURED"], kind: "takedate", value: lychee.locale.printDateTime(data.taken_at) }, { title: lychee.locale["PHOTO_MAKE"], kind: "make", value: data.make }, { title: lychee.locale["PHOTO_TYPE"], kind: "model", value: data.model }, { title: lychee.locale["PHOTO_LENS"], kind: "lens", value: data.lens }, { title: lychee.locale["PHOTO_SHUTTER"], kind: "shutter", value: data.shutter }, { title: lychee.locale["PHOTO_APERTURE"], kind: "aperture", value: data.aperture }, { title: lychee.locale["PHOTO_FOCAL"], kind: "focal", value: data.focal }, { title: lychee.locale["PHOTO_ISO"], kind: "iso", value: data.iso }]
+			rows: isVideo ? [{ title: lychee.locale["PHOTO_CAPTURED"], kind: "takedate", value: lychee.locale.printDateTime(data.taken_at) }, { title: lychee.locale["PHOTO_MAKE"], kind: "make", value: data.make }, { title: lychee.locale["PHOTO_TYPE"], kind: "model", value: data.model }] : [{ title: lychee.locale["PHOTO_CAPTURED"], kind: "takedate", value: lychee.locale.printDateTime(data.taken_at) }, { title: lychee.locale["PHOTO_MAKE"], kind: "make", value: data.make }, { title: lychee.locale["PHOTO_TYPE"], kind: "model", value: data.model }, { title: lychee.locale["PHOTO_LENS"], kind: "lens", value: data.lens }, { title: lychee.locale["PHOTO_SHUTTER"], kind: "shutter", value: data.shutter }, { title: lychee.locale["PHOTO_APERTURE"], kind: "aperture", value: data.aperture }, { title: lychee.locale["PHOTO_FOCAL"], kind: "focal", value: data.focal }, { title: sprintf(lychee.locale["PHOTO_ISO"], ""), kind: "iso", value: data.iso }]
 		};
 	} else {
 		structure.exif = {};
@@ -1960,7 +1960,7 @@ sidebar.createStructure.photo = function (data) {
 	structure.sharing = {
 		title: lychee.locale["PHOTO_SHARING"],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["PHOTO_SHR_PLUBLIC"], kind: "public", value: isPublic }]
+		rows: [{ title: lychee.locale["PHOTO_SHR_PUBLIC"], kind: "public", value: isPublic }]
 	};
 
 	structure.license = {
@@ -2720,11 +2720,11 @@ lychee.locale = {
 
 	DELETE_ALBUM_QUESTION: "Delete Album and Photos",
 	KEEP_ALBUM: "Keep Album",
-	DELETE_ALBUM_CONFIRMATION_1: "Are you sure you want to delete the album '%0' and all of the photos it contains? This action can't be undone!",
+	DELETE_ALBUM_CONFIRMATION_1: "Are you sure you want to delete the album '%s' and all of the photos it contains? This action can't be undone!",
 
 	DELETE_ALBUMS_QUESTION: "Delete Albums and Photos",
 	KEEP_ALBUMS: "Keep Albums",
-	DELETE_ALBUMS_CONFIRMATION: "Are you sure you want to delete all %0 selected albums and all of the photos they contain? This action can't be undone!",
+	DELETE_ALBUMS_CONFIRMATION: "Are you sure you want to delete all %d selected albums and all of the photos they contain? This action can't be undone!",
 
 	DELETE_UNSORTED_CONFIRM: "Are you sure you want to delete all photos from 'Unsorted'?<br>This action can't be undone!",
 	CLEAR_UNSORTED: "Clear Unsorted",
@@ -2789,7 +2789,7 @@ lychee.locale = {
 	ALBUM_BASICS: "Basics",
 	ALBUM_TITLE: "Title",
 	ALBUM_NEW_TITLE: "Enter a new title for this album:",
-	ALBUMS_NEW_TITLE: "Enter a title for all %0 selected albums:",
+	ALBUMS_NEW_TITLE: "Enter a title for all %d selected albums:",
 	ALBUM_SET_TITLE: "Set Title",
 	ALBUM_DESCRIPTION: "Description",
 	ALBUM_SHOW_TAGS: "Tags to show",
@@ -2823,12 +2823,12 @@ lychee.locale = {
 	ALBUM_PASSWORD_PROT: "Password protected",
 	ALBUM_PASSWORD_PROT_EXPL: "Album only accessible with a valid password.",
 	ALBUM_PASSWORD_REQUIRED: "This album is protected by a password. Enter the password below to view the photos of this album:",
-	ALBUM_MERGE: "Are you sure you want to merge the album '%0' into the album '%1'?",
-	ALBUMS_MERGE: "Are you sure you want to merge all selected albums into the album",
+	ALBUM_MERGE: "Are you sure you want to merge the album '%1$s' into the album '%2$s'?",
+	ALBUMS_MERGE: "Are you sure you want to merge all selected albums into the album '%s'?",
 	MERGE_ALBUM: "Merge Albums",
 	DONT_MERGE: "Don't Merge",
-	ALBUM_MOVE: "Are you sure you want to move the album '%0' into the album '%1'?",
-	ALBUMS_MOVE: "Are you sure you want to move all selected albums into the album",
+	ALBUM_MOVE: "Are you sure you want to move the album '%1$s' into the album '%2$s'?",
+	ALBUMS_MOVE: "Are you sure you want to move all selected albums into the album '%s'?",
 	MOVE_ALBUMS: "Move Albums",
 	NOT_MOVE_ALBUMS: "Don't Move",
 	ROOT: "Root",
@@ -2867,7 +2867,7 @@ lychee.locale = {
 	PHOTO_TAGS: "Tags",
 	PHOTO_NOTAGS: "No Tags",
 	PHOTO_NEW_TAGS: "Enter your tags for this photo. You can add multiple tags by separating them with a comma:",
-	PHOTOS_NEW_TAGS: "Enter your tags for all %0 selected photos. Existing tags will be overwritten. You can add multiple tags by separating them with a comma:",
+	PHOTOS_NEW_TAGS: "Enter your tags for all %d selected photos. Existing tags will be overwritten. You can add multiple tags by separating them with a comma:",
 	PHOTO_SET_TAGS: "Set Tags",
 	PHOTO_CAMERA: "Camera",
 	PHOTO_CAPTURED: "Captured",
@@ -2877,17 +2877,17 @@ lychee.locale = {
 	PHOTO_SHUTTER: "Shutter Speed",
 	PHOTO_APERTURE: "Aperture",
 	PHOTO_FOCAL: "Focal Length",
-	PHOTO_ISO: "ISO %0",
+	PHOTO_ISO: "ISO %s",
 	PHOTO_SHARING: "Sharing",
-	PHOTO_SHR_PLUBLIC: "Public",
+	PHOTO_SHR_PUBLIC: "Public",
 	PHOTO_SHR_ALB: "Yes (Album)",
 	PHOTO_SHR_PHT: "Yes (Photo)",
 	PHOTO_SHR_NO: "No",
 	PHOTO_DELETE: "Delete Photo",
 	PHOTO_KEEP: "Keep Photo",
-	PHOTO_DELETE_CONFIRMATION: "Are you sure you want to delete the photo '%0'? This action can't be undone!",
-	PHOTO_DELETE_ALL: "Are you sure you want to delete all %0 selected photo? This action can't be undone!",
-	PHOTOS_NEW_TITLE_: "Enter a title for all %0 selected photos:",
+	PHOTO_DELETE_CONFIRMATION: "Are you sure you want to delete the photo '%s'? This action can't be undone!",
+	PHOTO_DELETE_ALL: "Are you sure you want to delete all %d selected photo? This action can't be undone!",
+	PHOTOS_NEW_TITLE: "Enter a title for all %d selected photos:",
 	PHOTO_MAKE_PRIVATE_ALBUM: "This photo is located in a public album. To make this photo private or public, edit the visibility of the associated album.",
 	PHOTO_SHOW_ALBUM: "Show Album",
 	PHOTO_PUBLIC: "Public",
@@ -2922,7 +2922,7 @@ lychee.locale = {
 	ERROR_MAP_DEACTIVATED: "Map functionality has been deactivated under settings.",
 	ERROR_SEARCH_DEACTIVATED: "Search functionality has been deactivated under settings.",
 	ERROR_ALBUM_JSON_NOT_FOUND: "Error: Album json not found!",
-	ERROR_ALBUM_NOT_FOUND: "Error: album %0 not found",
+	ERROR_ALBUM_NOT_FOUND: "Error: album %s not found",
 	ERROR_DROPBOX_KEY: "Error: Dropbox key not set",
 	ERROR_SESSION: "Session expired.",
 	SUCCESS: "OK",
@@ -2981,7 +2981,7 @@ lychee.locale = {
 	EDIT_SHARING_TEXT: "The sharing-properties of this album will be changed to the following:",
 	SHARE_ALBUM_TEXT: "This album will be shared with the following properties:",
 
-	SORT_ALBUM_BY: "Sort albums by %0 in an %1 order.",
+	SORT_ALBUM_BY: "Sort albums by %1$s in an %2$s order.",
 
 	SORT_ALBUM_SELECT_1: "Creation Time",
 	SORT_ALBUM_SELECT_2: "Title",
@@ -2990,7 +2990,7 @@ lychee.locale = {
 	SORT_ALBUM_SELECT_5: "Latest Take Date",
 	SORT_ALBUM_SELECT_6: "Oldest Take Date",
 
-	SORT_PHOTO_BY: "Sort photos by %0 in an %1 order.",
+	SORT_PHOTO_BY: "Sort photos by %1$s in an %2$s order.",
 
 	SORT_PHOTO_SELECT_1: "Upload Time",
 	SORT_PHOTO_SELECT_2: "Take Date",
@@ -3085,7 +3085,7 @@ lychee.locale = {
 	UPLOAD_IMPORT_SERVER_EMPT: "Could not start import because the folder was empty!",
 
 	ABOUT_SUBTITLE: "Self-hosted photo-management done right",
-	ABOUT_DESCRIPTION: "<a target='_blank' href='%0'>Lychee</a> is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.",
+	ABOUT_DESCRIPTION: "<a target='_blank' href='%s'>Lychee</a> is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.",
 
 	URL_COPY_TO_CLIPBOARD: "Copy to clipboard",
 	URL_COPIED_TO_CLIPBOARD: "Copied URL to clipboard!",
@@ -3112,7 +3112,7 @@ lychee.locale = {
 	ERROR_COULD_NOT_FIND: "Could not find what you want.",
 	ERROR_INVALID_EMAIL: "Not a valid email address.",
 	EMAIL_SUCCESS: "Email updated!",
-	ERROR_PHOTO_NOT_FOUND: "Error: photo %0 not found !",
+	ERROR_PHOTO_NOT_FOUND: "Error: photo %s not found !",
 	ERROR_EMPTY_USERNAME: "new username cannot be empty.",
 	ERROR_PASSWORD_DOES_NOT_MATCH: "new password does not match.",
 	ERROR_EMPTY_PASSWORD: "new password cannot be empty.",

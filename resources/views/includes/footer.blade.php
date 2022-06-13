@@ -9,7 +9,7 @@
 
     @if($infos['copyright_enable'] == '1')
         <p class="home_copyright">
-			{!! str_replace('%1', $infos['copyright_year'], str_replace('%0', $infos['owner'], $locale['FOOTER_COPYRIGHT'])) !!}</p>
+			{!! sprintf($locale['FOOTER_COPYRIGHT'], $infos['owner'], $infos['copyright_year']) !!}</p>
     @endif
 
     @if($infos['additional_footer_text'] != '')
