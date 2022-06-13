@@ -10,8 +10,11 @@
         "chat": "https://gitter.im/LycheeOrg/Lobby"
     },
     "keywords": [
-        "framework",
-        "laravel"
+        "photos",
+        "gallery",
+        "photo management",
+        "album software",
+        "image organizer"
     ],
     "repositories": [
         {
