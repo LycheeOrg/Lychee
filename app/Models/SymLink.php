@@ -40,7 +40,7 @@ class SymLink extends Model
 	use ThrowsConsistentExceptions {
 		ThrowsConsistentExceptions::delete as private internalDelete;
 	}
-	/** @phpstan-use UseFixedQueryBuilder<SymLink> */
+	/* @phpstan-use UseFixedQueryBuilder<SymLink> */
 	use UseFixedQueryBuilder;
 
 	public const DISK_NAME = 'symbolic';

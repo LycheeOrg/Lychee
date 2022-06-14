@@ -27,7 +27,6 @@ $rules = [
 	'yoda_style' => false,
 	'concat_space' => ['spacing' => 'one'],
 	'no_superfluous_phpdoc_tags' => false,
-	'phpdoc_to_comment' => false,
 ];
 $config = new PhpCsFixer\Config();
 

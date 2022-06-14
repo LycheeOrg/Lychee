@@ -27,7 +27,7 @@ class HasManyPhotosRecursively extends HasManyPhotos
 
 	public function getParent(): Album
 	{
-		/**
+		/*
 		 * We know that the parent is of type `Album`,
 		 * because it was set int the constructor as `$owningAlbum`.
 		 *

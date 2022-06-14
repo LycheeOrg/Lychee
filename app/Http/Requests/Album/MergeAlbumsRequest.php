@@ -17,7 +17,7 @@ use App\Rules\RandomIDRule;
 class MergeAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 {
 	use HasAlbumTrait;
-	/** @phpstan-use HasAlbumsTrait<Album> */
+	/* @phpstan-use HasAlbumsTrait<Album> */
 	use HasAlbumsTrait;
 
 	/**

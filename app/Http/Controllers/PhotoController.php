@@ -77,7 +77,7 @@ class PhotoController extends Controller
 	 */
 	public function getRandom(): Photo
 	{
-		/** @var Photo */
+		/* @var Photo */
 		return StarredAlbum::getInstance()->photos()->inRandomOrder()
 			->firstOrFail();
 	}

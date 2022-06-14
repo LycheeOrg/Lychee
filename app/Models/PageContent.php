@@ -23,7 +23,7 @@ use Illuminate\Support\Carbon;
 class PageContent extends Model
 {
 	use ThrowsConsistentExceptions;
-	/** @phpstan-use UseFixedQueryBuilder<PageContent> */
+	/* @phpstan-use UseFixedQueryBuilder<PageContent> */
 	use UseFixedQueryBuilder;
 
 	/**

@@ -43,7 +43,7 @@ class HasAlbumThumb extends Relation
 
 	protected function getRelationQuery(): FixedQueryBuilder
 	{
-		/**
+		/*
 		 * We know that the internal query is of type `FixedQueryBuilder`,
 		 * because it was set int the constructor as `Photo::query()`.
 		 *
