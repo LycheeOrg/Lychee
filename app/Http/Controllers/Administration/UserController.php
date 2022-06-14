@@ -27,7 +27,7 @@ class UserController extends Controller
 	 */
 	public function list(): Collection
 	{
-		/* @var Collection<User> */
+		/** @var Collection<User> */
 		return User::query()->where('id', '>', 0)->get();
 	}
 

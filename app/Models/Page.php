@@ -42,7 +42,7 @@ class Page extends Model
 {
 	use UTCBasedTimes;
 	use ThrowsConsistentExceptions;
-	/* @phpstan-use UseFixedQueryBuilder<Page> */
+	/** @phpstan-use UseFixedQueryBuilder<Page> */
 	use UseFixedQueryBuilder;
 
 	/**

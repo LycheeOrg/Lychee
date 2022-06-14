@@ -75,7 +75,7 @@ class SessionFunctions
 		$id = $this->id();
 		$this->user_data = User::query()->find($id);
 
-		/* @var User */
+		/** @var User */
 		return $this->user_data;
 	}
 

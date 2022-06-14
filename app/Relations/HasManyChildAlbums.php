@@ -38,7 +38,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 
 	protected function getRelationQuery(): AlbumBuilder
 	{
-		/*
+		/**
 		 * We know that the internal query is of type `AlbumBuilder`,
 		 * because it was set int the constructor as `$owningAlbum->newQuery()`.
 		 *

@@ -47,6 +47,6 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class FixedQueryBuilder extends Builder
 {
-	/* @phpstan-use FixedQueryBuilderTrait<TModelClass> */
+	/** @phpstan-use FixedQueryBuilderTrait<TModelClass> */
 	use FixedQueryBuilderTrait;
 }

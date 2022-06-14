@@ -37,7 +37,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 
 	protected function getRelationQuery(): FixedQueryBuilder
 	{
-		/*
+		/**
 		 * We know that the internal query is of type `FixedQueryBuilder`,
 		 * because it was set int the constructor as `Photo::query()`.
 		 *
@@ -48,7 +48,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 
 	public function getParent(): Album
 	{
-		/*
+		/**
 		 * We know that the internal query is of type `Album`,
 		 * because it was set int the constructor as `$owningAlbum`.
 		 *

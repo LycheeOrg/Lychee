@@ -75,11 +75,11 @@ class AlbumFactory
 		}
 
 		try {
-			/* @var Album */
+			/** @var Album */
 			return $albumQuery->findOrFail($albumId);
 		} catch (ModelNotFoundException) {
 			try {
-				/* @var TagAlbum */
+				/** @var TagAlbum */
 				return $tagAlbumQuery->findOrFail($albumId);
 			} catch (ModelNotFoundException) {
 				throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, [$albumId]);

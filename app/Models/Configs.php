@@ -33,7 +33,7 @@ class Configs extends Model
 {
 	use ConfigsHas;
 	use ThrowsConsistentExceptions;
-	/* @phpstan-use UseFixedQueryBuilder<Configs> */
+	/** @phpstan-use UseFixedQueryBuilder<Configs> */
 	use UseFixedQueryBuilder;
 
 	protected const INT = 'int';

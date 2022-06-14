@@ -21,7 +21,7 @@ use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
  */
 class AlbumBuilder extends NSQueryBuilder
 {
-	/* @phpstan-use FixedQueryBuilderTrait<Album> */
+	/** @phpstan-use FixedQueryBuilderTrait<Album> */
 	use FixedQueryBuilderTrait;
 
 	/**
@@ -93,7 +93,7 @@ class AlbumBuilder extends NSQueryBuilder
 			]);
 		}
 
-		/* @var array<Album> */
+		/** @var array<Album> */
 		return parent::getModels($columns);
 	}
 

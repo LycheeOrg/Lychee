@@ -17,7 +17,7 @@ use function Safe\putenv;
 class Apply
 {
 	public const ERROR_MSG =
-	/* @lang text */
+	/** @lang text */
 	'Update not applied: `APP_ENV` in `.env` is `production` and `force_migration_in_production` is set to `0`.';
 
 	private LycheeVersion $lycheeVersion;
