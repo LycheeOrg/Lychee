@@ -295,7 +295,7 @@ class Exec
 			// Album creation per directory
 			foreach ($dirs as $dir) {
 				$this->assertImportNotCancelled();
-				/* @var Album|null */
+				/** @var Album|null */
 				$album = $this->importMode->shallSkipDuplicates() ?
 					Album::query()
 					->select(['albums.*'])
