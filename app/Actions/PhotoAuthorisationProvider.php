@@ -306,9 +306,9 @@ class PhotoAuthorisationProvider
 		return
 			count($photoIDs) === 0 ||
 			Photo::query()
-			->whereIn('id', $photoIDs)
-			->where('owner_id', $user->id)
-			->count() === count($photoIDs);
+				->whereIn('id', $photoIDs)
+				->where('owner_id', $user->id)
+				->count() === count($photoIDs);
 	}
 
 	/**

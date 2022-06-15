@@ -298,11 +298,11 @@ class Exec
 				/** @var Album|null */
 				$album = $this->importMode->shallSkipDuplicates() ?
 					Album::query()
-					->select(['albums.*'])
-					->join('base_albums', 'base_albums.id', '=', 'albums.id')
-					->where('albums.parent_id', '=', $parentAlbum?->id)
-					->where('base_albums.title', '=', basename($dir))
-					->first() :
+						->select(['albums.*'])
+						->join('base_albums', 'base_albums.id', '=', 'albums.id')
+						->where('albums.parent_id', '=', $parentAlbum?->id)
+						->where('base_albums.title', '=', basename($dir))
+						->first() :
 					null;
 				if ($album === null) {
 					$album = $this->albumCreate->create(basename($dir), $parentAlbum);
