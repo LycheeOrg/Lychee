@@ -113,7 +113,7 @@ class ConfigFunctions
 		$false = false;
 
 		// we just flip the values in the television case
-		if ($device == 'television') {
+		if ($device === 'television') {
 			// @codeCoverageIgnoreStart
 			$true = false;
 			$false = true;

@@ -79,7 +79,7 @@ class HasManyPhotosRecursively extends HasManyPhotos
 	{
 		/** @var Album|null $album */
 		$album = $this->parent;
-		if ($album == null || !$this->albumAuthorisationProvider->isAccessible($album)) {
+		if ($album === null || !$this->albumAuthorisationProvider->isAccessible($album)) {
 			return $this->related->newCollection();
 		} else {
 			return parent::getResults();

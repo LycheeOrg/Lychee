@@ -169,7 +169,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 	protected function normalizeOrientation(): void
 	{
 		$orientation = $this->parameters->exifInfo->orientation;
-		if ($this->photo->type !== 'image/jpeg' || $orientation == 1) {
+		if ($this->photo->type !== 'image/jpeg' || $orientation === 1) {
 			// Nothing to do for non-JPEGs or correctly oriented photos.
 			return;
 		}

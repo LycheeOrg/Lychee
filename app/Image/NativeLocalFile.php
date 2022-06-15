@@ -195,7 +195,7 @@ class NativeLocalFile extends MediaFile
 	public function getMimeType(): string
 	{
 		try {
-			if ($this->cachedMimeType == null) {
+			if ($this->cachedMimeType === null) {
 				$this->cachedMimeType = mime_content_type($this->getAbsolutePath());
 			}
 

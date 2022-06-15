@@ -61,7 +61,7 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 		if (SizeVariant::ORIGINAL > $sizeVariant || $sizeVariant > SizeVariant::THUMB) {
 			throw new InvalidSizeVariantException('invalid $sizeVariant = ' . $sizeVariant);
 		}
-		if ($this->photo == null) {
+		if ($this->photo === null) {
 			throw new IllegalOrderOfOperationException('associated photo model must not be null');
 		}
 		if (empty($this->photo->checksum)) {

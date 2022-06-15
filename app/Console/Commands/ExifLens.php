@@ -59,7 +59,7 @@ class ExifLens extends Command
 				->offset($offset)
 				->limit($limit)
 				->get();
-			if (count($photos) == 0) {
+			if (count($photos) === 0) {
 				$this->line('No pictures requires EXIF updates.');
 
 				return -1;

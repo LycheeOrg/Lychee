@@ -30,7 +30,7 @@ class Fullpage extends Component
 	public function mount($albumId = null, $photoId = null)
 	{
 		$albumFactory = resolve(AlbumFactory::class);
-		if ($albumId == null) {
+		if ($albumId === null) {
 			$this->mode = 'albums';
 		} else {
 			$this->mode = 'album';

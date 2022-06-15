@@ -285,7 +285,7 @@ class HasAlbumThumb extends Relation
 	{
 		/** @var Album|null $album */
 		$album = $this->parent;
-		if ($album == null || !$this->albumAuthorisationProvider->isAccessible($album)) {
+		if ($album === null || !$this->albumAuthorisationProvider->isAccessible($album)) {
 			return null;
 		}
 

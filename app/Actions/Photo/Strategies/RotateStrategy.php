@@ -93,7 +93,7 @@ class RotateStrategy extends AddBaseStrategy
 		/** @var ImageHandlerInterface $imageHandler */
 		$imageHandler = resolve(ImageHandlerInterface::class);
 		// TODO: If we ever wish to support something else than local files, ImageHandler must work on resource streams, not absolute file names (see ImageHandlerInterface)
-		$imageHandler->rotate($origFile->getAbsolutePath(), ($this->direction == 1) ? 90 : -90, $tmpFile->getAbsolutePath());
+		$imageHandler->rotate($origFile->getAbsolutePath(), ($this->direction === 1) ? 90 : -90, $tmpFile->getAbsolutePath());
 
 		// The file size and checksum may have changed after the rotation.
 		$this->photo->checksum = Extractor::checksum($tmpFile);

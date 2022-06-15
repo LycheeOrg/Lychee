@@ -164,7 +164,7 @@ class Takedate extends Command
 
 				if ($setCreationTime) {
 					$created_at = $localFile->lastModified();
-					if ($created_at == $photo->created_at->timestamp) {
+					if ($created_at === $photo->created_at->timestamp) {
 						$this->printInfo($photo, 'Upload time up-to-date.');
 					} else {
 						$photo->created_at = Carbon::createFromTimestamp($created_at);

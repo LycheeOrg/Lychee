@@ -41,7 +41,7 @@ class DateTimeWithTimezoneCast implements CastsAttributes
 	public function get($model, string $key, $value, array $attributes): ?Carbon
 	{
 		$tzKey = $key . self::TZ_ATTRIBUTE_SUFFIX;
-		if ($value == null) {
+		if ($value === null) {
 			return null;
 		}
 		if (!is_string($value)) {

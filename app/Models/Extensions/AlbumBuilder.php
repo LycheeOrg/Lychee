@@ -41,8 +41,8 @@ class AlbumBuilder extends NSQueryBuilder
 	{
 		$baseQuery = $this->getQuery();
 		if (
-			($columns == ['*'] || $columns == ['albums.*']) &&
-			($baseQuery->columns == ['*'] || $baseQuery->columns == ['albums.*'] || $baseQuery->columns == null)
+			($columns === ['*'] || $columns === ['albums.*']) &&
+			($baseQuery->columns === ['*'] || $baseQuery->columns === ['albums.*'] || $baseQuery->columns === null)
 		) {
 			// Note:
 			//  1. The order of JOINS is important.

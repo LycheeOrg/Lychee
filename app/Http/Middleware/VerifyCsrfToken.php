@@ -46,7 +46,7 @@ class VerifyCsrfToken extends Middleware
 			/*
 			 * if apiKey is the empty string we directly return the parent handle.
 			 */
-			if ($apiKey == '') {
+			if ($apiKey === '') {
 				return parent::handle($request, $next);
 			}
 

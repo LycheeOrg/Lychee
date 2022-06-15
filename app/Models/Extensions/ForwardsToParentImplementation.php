@@ -270,7 +270,7 @@ trait ForwardsToParentImplementation
 	 */
 	public function getAttribute($key): mixed
 	{
-		if ($key == '') {
+		if ($key === '') {
 			return null;
 		}
 
@@ -284,7 +284,7 @@ trait ForwardsToParentImplementation
 		//     this class, and
 		//  2. does not work, because we cannot load the base class without
 		//     knowing the primary key.
-		if ($key == $this->getKeyName()) {
+		if ($key === $this->getKeyName()) {
 			// Sic!
 			// Don't use `$this->getKey()` because this would call
 			// `getAttribute` again, and we would end up in an infinite loop.
@@ -293,7 +293,7 @@ trait ForwardsToParentImplementation
 		}
 
 		// Avoid infinite loops, see below
-		if ($key == 'base_class') {
+		if ($key === 'base_class') {
 			return $this->getRelationValue($key);
 		}
 
@@ -371,7 +371,7 @@ trait ForwardsToParentImplementation
 		// `getRelationshipFromMethod` throws an exception if no such method
 		// exists.
 		// Bailing out with an exception prevents the infinite loop.
-		if ($key == 'base_class') {
+		if ($key === 'base_class') {
 			// If this is a newly created model, then we cannot resolve the
 			// relation to the base class from the database, because no such
 			// entity exists.
@@ -501,7 +501,7 @@ trait ForwardsToParentImplementation
 	public function offsetUnset($offset): void
 	{
 		// Prevent that the base model is unset from the set of relations
-		if ($offset == 'base_class') {
+		if ($offset === 'base_class') {
 			return;
 		}
 		parent::offsetUnset($offset);

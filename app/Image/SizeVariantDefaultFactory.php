@@ -55,7 +55,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		$this->photo = $photo;
 		if ($namingStrategy != null) {
 			$this->namingStrategy = $namingStrategy;
-		} elseif ($this->namingStrategy == null) {
+		} elseif ($this->namingStrategy === null) {
 			$this->namingStrategy = resolve(SizeVariantNamingStrategy::class);
 		}
 		// Ensure that the naming strategy is linked to this photo
@@ -179,7 +179,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		} catch (\Throwable $e) {
 			throw new MediaFileOperationException($errMsg, $e);
 		}
-		if (!file_exists($this->referenceFullPath) || filesize($this->referenceFullPath) == 0) {
+		if (!file_exists($this->referenceFullPath) || filesize($this->referenceFullPath) === 0) {
 			throw new MediaFileOperationException($errMsg);
 		}
 		if (Configs::getValueAsBool('lossless_optimization', false)) {
@@ -310,7 +310,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		$shortPath = $this->namingStrategy->generateShortPath($sizeVariant);
 
 		$sv = $this->photo->size_variants->getSizeVariant($sizeVariant);
-		if ($sv == null) {
+		if ($sv === null) {
 			try {
 				// Create size variant with dummy filesize, because full path
 				// is for now required to crop/scale.

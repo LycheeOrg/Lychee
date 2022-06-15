@@ -174,7 +174,7 @@ class SizeVariant extends Model
 		if ($storageAdapter instanceof Local) {
 			/** @var ?SymLink $symLink */
 			$symLink = $this->sym_links()->latest()->first();
-			if ($symLink == null || $symLink->created_at->isBefore(now()->subSeconds($gracePeriod))) {
+			if ($symLink === null || $symLink->created_at->isBefore(now()->subSeconds($gracePeriod))) {
 				/** @var SymLink $symLink */
 				$symLink = $this->sym_links()->create();
 			}

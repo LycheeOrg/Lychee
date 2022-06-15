@@ -10,7 +10,7 @@ class TimezoneCheck implements DiagnosticCheckInterface
 	public function check(array &$errors): void
 	{
 		$timezone = CarbonTimeZone::create();
-		if ($timezone == false) {
+		if ($timezone === false) {
 			$errors[]
 				= 'Error: Could not retrieve timezone; you might experience strange results when importing photos without explicit EXIF timezone';
 

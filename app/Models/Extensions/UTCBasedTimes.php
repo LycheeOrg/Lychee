@@ -170,7 +170,7 @@ trait UTCBasedTimes
 		// Applied patch: The standard date format Y-m-d _without_ a timezone
 		// is interpreted relative to UTC and _then_ set to the
 		// application's default timezone.
-		if (preg_match(self::$STANDARD_DATE_PATTERN, $value) == 1) {
+		if (preg_match(self::$STANDARD_DATE_PATTERN, $value) === 1) {
 			$date = Date::createFromFormat('Y-m-d', $value, self::$DB_TIMEZONE_NAME) ?: null;
 			$result = $date?->startOfDay();
 			$result?->setTimezone(date_default_timezone_get());

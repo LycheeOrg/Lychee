@@ -56,10 +56,10 @@ trait HasRandomIDAndLegacyTimeBasedID
 	 */
 	public function setAttribute($key, $value): mixed
 	{
-		if ($key == $this->getKeyName()) {
+		if ($key === $this->getKeyName()) {
 			throw new NotImplementedException('must not set primary key explicitly, primary key will be set on first insert');
 		}
-		if ($key == HasRandomID::LEGACY_ID_NAME) {
+		if ($key === HasRandomID::LEGACY_ID_NAME) {
 			throw new NotImplementedException('must not set legacy key explicitly, legacy key will be set on first insert');
 		}
 
@@ -107,7 +107,7 @@ trait HasRandomIDAndLegacyTimeBasedID
 			} catch (QueryException $e) {
 				$lastException = $e;
 				$errorCode = $e->getCode();
-				if ($errorCode == 23000 || $errorCode == 23505) {
+				if ($errorCode === 23000 || $errorCode === 23505) {
 					// houston, we have a duplicate entry problem
 					// Our ids are based on current system time, so
 					// wait randomly up to 1s before retrying.
@@ -156,7 +156,7 @@ trait HasRandomIDAndLegacyTimeBasedID
 		}
 
 		if (
-			PHP_INT_MAX == 2147483647 ||
+			PHP_INT_MAX === 2147483647 ||
 			Configs::getValueAsBool('force_32bit_ids', false)
 		) {
 			// For 32-bit installations, we can only afford to store the

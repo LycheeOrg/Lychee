@@ -59,6 +59,20 @@ class VideoData extends Command
 				)
 			);
 
+			$counted = Photo::query()
+				->with(['size_variants'])
+				->whereIn('type', MediaFile::SUPPORTED_VIDEO_MIME_TYPES)
+				->whereDoesntHave('size_variants', function (Builder $query) {
+					$query->where('type', '=', SizeVariant::THUMB);
+				})
+				->count();
+
+			if ($counted === 0) {
+				$this->line('No videos require processing');
+
+				return 0;
+			}
+
 			$photos = Photo::query()
 				->with(['size_variants'])
 				->whereIn('type', MediaFile::SUPPORTED_VIDEO_MIME_TYPES)
@@ -67,12 +81,6 @@ class VideoData extends Command
 				})
 				->take($count)
 				->get();
-
-			if (count($photos) == 0) {
-				$this->line('No videos require processing');
-
-				return 0;
-			}
 
 			// Initialize factory for size variants
 			$sizeVariantFactory = resolve(SizeVariantFactory::class);
@@ -84,10 +92,10 @@ class VideoData extends Command
 
 				$info = Extractor::createFromFile($file);
 
-				if ($originalSizeVariant->width == 0 && $info->width !== 0) {
+				if ($originalSizeVariant->width === 0 && $info->width !== 0) {
 					$originalSizeVariant->width = $info->width;
 				}
-				if ($originalSizeVariant->height == 0 && $info->height !== 0) {
+				if ($originalSizeVariant->height === 0 && $info->height !== 0) {
 					$originalSizeVariant->height = $info->height;
 				}
 				if (empty($photo->focal) && !empty($info->focal)) {
@@ -96,10 +104,10 @@ class VideoData extends Command
 				if (empty($photo->aperture) && !empty($info->aperture)) {
 					$photo->aperture = $info->aperture;
 				}
-				if ($photo->latitude == null && $info->latitude != null) {
+				if ($photo->latitude === null && $info->latitude != null) {
 					$photo->latitude = $info->latitude;
 				}
-				if ($photo->longitude == null && $info->longitude != null) {
+				if ($photo->longitude === null && $info->longitude != null) {
 					$photo->longitude = $info->longitude;
 				}
 				if ($photo->isDirty()) {

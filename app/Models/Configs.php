@@ -84,7 +84,7 @@ class Configs extends Model
 			case self::DISABLED:
 				break;
 			case self::STRING_REQ:
-				if ($value == '' || $value == null) {
+				if ($value === '' || $value === null) {
 					$message = 'Error: ' . $this->key . ' empty or not set in database';
 				}
 				break;
@@ -149,7 +149,7 @@ class Configs extends Model
 	 */
 	public static function getValue(string $key, int|bool|string|null $default = null): int|bool|string|null
 	{
-		if (count(self::$cache) == 0) {
+		if (count(self::$cache) === 0) {
 			self::get();
 		}
 
@@ -202,7 +202,7 @@ class Configs extends Model
 	 */
 	public static function getValueAsBool(string $key, bool $default = false): bool
 	{
-		return self::getValue($key, $default ? '1' : '0') == '1';
+		return self::getValue($key, $default ? '1' : '0') === '1';
 	}
 
 	/**

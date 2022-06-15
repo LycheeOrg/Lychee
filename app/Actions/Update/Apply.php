@@ -42,7 +42,7 @@ class Apply
 	 */
 	private function check_prod_env_allow_migration(array &$output): bool
 	{
-		if (Config::get('app.env') == 'production') {
+		if (Config::get('app.env') === 'production') {
 			// @codeCoverageIgnoreStart
 			// we cannot code cov this part. APP_ENV is dev in testing mode.
 			if (Configs::getValueAsBool('force_migration_in_production')) {

@@ -86,7 +86,7 @@ class JsonRequestFunctions
 			$context = stream_context_create($opts);
 
 			$raw = file_get_contents($this->url, false, $context);
-			if ($raw == '') {
+			if ($raw === '') {
 				throw new JsonRequestFailedException('file_get_contents() failed');
 			}
 

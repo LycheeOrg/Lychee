@@ -172,7 +172,7 @@ class Helpers
 	 */
 	public function gcd(int $a, int $b): int
 	{
-		if ($b == 0) {
+		if ($b === 0) {
 			throw new ZeroModuloException();
 		}
 

@@ -88,7 +88,7 @@ class GenerateThumbs extends Command
 				->take($amount)
 				->get();
 
-			if (count($photos) == 0) {
+			if (count($photos) === 0) {
 				$this->line('No picture requires ' . $sizeVariantName . '.');
 
 				return 0;

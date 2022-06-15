@@ -61,7 +61,7 @@ class SortingDecorator
 	 * Criteria between `$pivotIdx+1` ... `length-1` are sorted on the SQL
 	 * layer.
 	 *
-	 * If `$pivotIdx == -1`, then everything is sorted on the SQL layer.
+	 * If `$pivotIdx === -1`, then everything is sorted on the SQL layer.
 	 * `$pivotIdx` is only set to a different value, if a sorting criteria
 	 * which must be postponed (see {@link SortingDecorator::POSTPONE_COLUMNS})
 	 * is added.

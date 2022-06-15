@@ -85,7 +85,7 @@ class GitHubFunctions
 
 		$i = 0;
 		while ($i < count($commits)) {
-			if (self::trim($commits[$i]->sha) == $this->getLocalHead()) {
+			if (self::trim($commits[$i]->sha) === $this->getLocalHead()) {
 				break;
 			}
 			$i++;
@@ -173,9 +173,10 @@ class GitHubFunctions
 		try {
 			return
 				Helpers::hasFullPermissions(
-					base_path('.git')) && (
-						$localBranch === null ||
-						Helpers::hasPermissions(base_path('.git/refs/heads/' . $localBranch)
+					base_path('.git')
+				) && ($localBranch === null ||
+					Helpers::hasPermissions(
+						base_path('.git/refs/heads/' . $localBranch)
 					)
 				);
 		} catch (BindingResolutionException) {

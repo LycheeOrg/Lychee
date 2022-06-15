@@ -58,7 +58,7 @@ class ShowLogs extends Command
 			$n = (int) $this->argument('n');
 			$order = $this->argument('order');
 
-			if ($action == 'clean') {
+			if ($action === 'clean') {
 				Logs::query()->truncate();
 				$this->line($this->col->yellow('Log table has been emptied.'));
 
@@ -83,9 +83,9 @@ class ShowLogs extends Command
 	 */
 	private function action_show(int $n, string $order): void
 	{
-		$order = ($order == 'ASC' || $order == 'DESC') ? $order : 'DESC';
+		$order = ($order === 'ASC' || $order === 'DESC') ? $order : 'DESC';
 
-		if (Logs::query()->count() == 0) {
+		if (Logs::query()->count() === 0) {
 			$this->line($this->col->green('Everything looks fine, Lychee has not reported any problems!'));
 		} else {
 			/** @var Collection<Logs> $logs */

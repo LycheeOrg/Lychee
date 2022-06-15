@@ -86,7 +86,7 @@ class Top
 			 * @var BaseCollection<Album> $a
 			 * @var BaseCollection<Album> $b
 			 */
-			list($a, $b) = $albums->partition(fn ($album) => $album->owner_id == $id);
+			list($a, $b) = $albums->partition(fn ($album) => $album->owner_id === $id);
 
 			return new TopAlbums($smartAlbums, $tagAlbums, $a->values(), $b->values());
 		} else {

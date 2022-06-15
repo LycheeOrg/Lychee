@@ -215,7 +215,7 @@ class Photo extends Model implements HasRandomID
 						$gcd = Helpers::gcd($a, $b);
 						$a = $a / $gcd;
 						$b = $b / $gcd;
-						if ($a == 1) {
+						if ($a === 1) {
 							$shutter = '1/' . $b . ' s';
 						} else {
 							$shutter = ($a / $b) . ' s';
@@ -224,7 +224,7 @@ class Photo extends Model implements HasRandomID
 				}
 			}
 
-			if ($shutter == '1/1 s') {
+			if ($shutter === '1/1 s') {
 				$shutter = '1 s';
 			}
 
@@ -334,7 +334,7 @@ class Photo extends Model implements HasRandomID
 		return
 			AccessControl::is_current_user_or_admin($this->owner_id) ||
 			($this->album_id != null && $this->album->is_downloadable) ||
-			($this->album_id == null && Configs::getValueAsBool('downloadable', false));
+			($this->album_id === null && Configs::getValueAsBool('downloadable', false));
 	}
 
 	/**
@@ -354,7 +354,7 @@ class Photo extends Model implements HasRandomID
 		return
 			AccessControl::is_current_user_or_admin($this->owner_id) ||
 			($this->album_id != null && $this->album->is_share_button_visible) ||
-			($this->album_id == null && $default);
+			($this->album_id === null && $default);
 	}
 
 	/**
@@ -442,7 +442,7 @@ class Photo extends Model implements HasRandomID
 			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null) &&
 			(
 				($this->album_id != null && !$this->album->grants_full_photo) ||
-				($this->album_id == null && !Configs::getValueAsBool('full_photo', true))
+				($this->album_id === null && !Configs::getValueAsBool('full_photo', true))
 			)
 		) {
 			unset($result['size_variants']['original']['url']);

@@ -37,7 +37,7 @@ class PHPVersionCheck implements DiagnosticCheckInterface
 		}
 
 		// 32 or 64 bits ?
-		if (PHP_INT_MAX == 2147483647) {
+		if (PHP_INT_MAX === 2147483647) {
 			$errors[] = 'Warning: Using 32 bit PHP, recommended upgrade to 64 bit';
 		}
 

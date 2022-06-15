@@ -69,7 +69,7 @@ class SessionController extends Controller
 			// we set the user ID (it is set to 0 if there is no login/password = admin)
 			$user_id = AccessControl::id();
 
-			if ($user_id == 0) {
+			if ($user_id === 0) {
 				$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 				$return['admin'] = true;
 				$return['may_upload'] = true; // not necessary

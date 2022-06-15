@@ -57,7 +57,7 @@ class PermissionsChecker
 			preg_match('/(!*)(.*)/', $permission, $f);
 			$return <<= 1;
 			// we overwrite the value if windows and executable check.
-			$return |= ($f[2] === 'is_executable' && $this->is_win()) ? 0 : !($f[2](base_path($folder)) xor ($f[1] == '!'));
+			$return |= ($f[2] === 'is_executable' && $this->is_win()) ? 0 : !($f[2](base_path($folder)) xor ($f[1] === '!'));
 		}
 
 		return $return;

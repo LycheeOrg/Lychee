@@ -81,7 +81,7 @@ class Thumb extends DTO
 	public static function createFromPhoto(?Photo $photo): ?Thumb
 	{
 		$thumb = $photo?->size_variants->getThumb();
-		if ($thumb == null) {
+		if ($thumb === null) {
 			return null;
 		}
 		$thumb2x = $photo->size_variants->getThumb2x();

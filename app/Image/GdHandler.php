@@ -99,7 +99,7 @@ class GdHandler implements ImageHandlerInterface
 		$width = $res['width'];
 		$height = $res['height'];
 
-		if ($newWidth == 0) {
+		if ($newWidth === 0) {
 			$newWidth = (int) round($newHeight * ($width / $height));
 		} else {
 			$tmpHeight = (int) round($newWidth / ($width / $height));

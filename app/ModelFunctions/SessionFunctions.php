@@ -45,7 +45,7 @@ class SessionFunctions
 	 */
 	public function can_upload(): bool
 	{
-		return $this->is_logged_in() && ($this->id() == 0 || $this->user()->may_upload);
+		return $this->is_logged_in() && ($this->id() === 0 || $this->user()->may_upload);
 	}
 
 	/**

@@ -114,7 +114,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 
 	public function is_admin(): bool
 	{
-		return $this->id == 0;
+		return $this->id === 0;
 	}
 
 	/**
@@ -134,7 +134,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	public function name(): string
 	{
-		return ($this->id == 0) ? 'Admin' : $this->username;
+		return ($this->id === 0) ? 'Admin' : $this->username;
 	}
 
 	/**

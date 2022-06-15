@@ -56,7 +56,7 @@ class Check
 
 		// When going with the CI, .git is always executable
 		// @codeCoverageIgnoreStart
-		if (exec('command -v git') == '') {
+		if (exec('command -v git') === '') {
 			throw new ExternalComponentMissingException('git (software) is not available.');
 		}
 
