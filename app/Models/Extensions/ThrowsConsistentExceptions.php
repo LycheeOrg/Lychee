@@ -104,7 +104,7 @@ trait ThrowsConsistentExceptions
 	/**
 	 * Serializes this object into an array.
 	 *
-	 * @return array<string> The serialized properties of this object
+	 * @return array The serialized properties of this object
 	 *
 	 * @throws \JsonException
 	 *

@@ -199,7 +199,7 @@ class Photo extends Model implements HasRandomID
 	 *
 	 * @return ?string A properly formatted shutter value
 	 */
-	protected function getShutterAttribute(?string $shutter): string|null
+	protected function getShutterAttribute(?string $shutter): ?string
 	{
 		try {
 			if (empty($shutter)) {

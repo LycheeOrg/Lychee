@@ -109,7 +109,7 @@ class Legacy
 	 * @throws ConfigurationException thrown, if the translation between
 	 *                                legacy and modern IDs is disabled
 	 */
-	private static function translateLegacyID(int $id, string $tableName, Request $request): string|null
+	private static function translateLegacyID(int $id, string $tableName, Request $request): ?string
 	{
 		try {
 			$newID = (string) DB::table($tableName)
