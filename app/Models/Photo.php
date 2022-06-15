@@ -194,8 +194,8 @@ class Photo extends Model implements HasRandomID
 	 * re-format the string on every fetch.
 	 * TODO: Refactor this.
 	 *
-	 * @param ?string $shutter the value from the database passed in by
-	 *                         the Eloquent framework
+	 * @param string|null $shutter the value from the database passed in by
+	 *                             the Eloquent framework
 	 *
 	 * @return ?string A properly formatted shutter value
 	 */
@@ -271,8 +271,8 @@ class Photo extends Model implements HasRandomID
 	 * not every time when it is read from the database.
 	 * TODO: Refactor this.
 	 *
-	 * @param ?string $focal the value from the database passed in by the
-	 *                       Eloquent framework
+	 * @param string|null $focal the value from the database passed in by the
+	 *                           Eloquent framework
 	 *
 	 * @return ?string
 	 *

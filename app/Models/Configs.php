@@ -66,7 +66,7 @@ class Configs extends Model
 	/**
 	 * Sanity check.
 	 *
-	 * @param ?string $value
+	 * @param string|null $value
 	 *
 	 * @return string
 	 */
