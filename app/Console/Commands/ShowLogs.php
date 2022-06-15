@@ -66,7 +66,7 @@ class ShowLogs extends Command
 			}
 			// we are in the show part but in the case where 'show' has not been defined.
 			// as a results arguments are shifted: n <- action, order <- n.
-			elseif ($action != 'show') {
+			elseif ($action !== 'show') {
 				$n = (int) $this->argument('action');
 				$order = strval($this->argument('n'));
 			}

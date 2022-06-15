@@ -1379,7 +1379,7 @@ class RefactorModels extends Migration
 				continue;
 			}
 			$originalSizeVariant = $sizeVariants->first();
-			if ($originalSizeVariant->type != self::VARIANT_ORIGINAL) {
+			if ($originalSizeVariant->type !== self::VARIANT_ORIGINAL) {
 				continue;
 			}
 
@@ -1425,7 +1425,7 @@ class RefactorModels extends Migration
 
 				// Ensure that the size variant is stored at the location which
 				// is expected acc. to the old naming scheme
-				if ($sizeVariant->short_path != $expectedShortPath) {
+				if ($sizeVariant->short_path !== $expectedShortPath) {
 					try {
 						Storage::move($sizeVariant->short_path, $expectedShortPath);
 					} catch (FileNotFoundException $e) {
@@ -1762,7 +1762,7 @@ class RefactorModels extends Migration
 		} elseif ($variantType === self::VARIANT_THUMB2X) {
 			return (bool) ($photo->thumb2x);
 		} else {
-			return $this->getWidth($photo, $variantType) != 0;
+			return $this->getWidth($photo, $variantType) !== 0;
 		}
 	}
 

@@ -45,7 +45,7 @@ function get_version()
 		throw new Exception("unable to find current version number in version.md\n");
 	}
 	$arr_CurrentVersion = array_map('intval', explode('.', $str_CurrentVersion));
-	if (count($arr_CurrentVersion) != 3) {
+	if (count($arr_CurrentVersion) !== 3) {
 		throw new Exception('invalid version number');
 	}
 

@@ -22,7 +22,7 @@ class ApplyMigration
 	{
 		$a = explode("\n", $string);
 		foreach ($a as $aa) {
-			if ($aa != '') {
+			if ($aa !== '') {
 				$output[] = $aa;
 			}
 		}

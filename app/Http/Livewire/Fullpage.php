@@ -36,7 +36,7 @@ class Fullpage extends Component
 			$this->mode = 'album';
 			$this->album = $albumFactory->findAbstractAlbumOrFail($albumId);
 
-			if ($photoId != null) {
+			if ($photoId !== null) {
 				$this->mode = 'photo';
 				$this->photo = Photo::with('album')->findOrFail($photoId);
 			}
@@ -56,16 +56,16 @@ class Fullpage extends Component
 	// Ideal we would like to avoid the redirect as they are slow.
 	public function back()
 	{
-		if ($this->photo != null) {
+		if ($this->photo !== null) {
 			// $this->photo = null;
 			return redirect('/livewire/' . $this->album->id);
 		}
-		if ($this->album != null) {
+		if ($this->album !== null) {
 			if ($this->album instanceof BaseSmartAlbum) {
 				// $this->album = null;
 				return redirect('/livewire/');
 			}
-			if ($this->album instanceof Album && $this->album->parent_id != null) {
+			if ($this->album instanceof Album && $this->album->parent_id !== null) {
 				return redirect('/livewire/' . $this->album->parent_id);
 			}
 

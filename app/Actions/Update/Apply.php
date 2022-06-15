@@ -127,7 +127,7 @@ class Apply
 
 		$a = explode("\n", Artisan::output());
 		foreach ($a as $aa) {
-			if ($aa != '') {
+			if ($aa !== '') {
 				$output[] = $aa;
 			}
 		}

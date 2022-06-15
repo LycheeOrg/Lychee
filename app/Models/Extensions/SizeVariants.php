@@ -45,7 +45,7 @@ class SizeVariants extends DTO
 	public function __construct(Photo $photo, ?Collection $sizeVariants = null)
 	{
 		$this->photo = $photo;
-		if ($sizeVariants != null) {
+		if ($sizeVariants !== null) {
 			/** @var SizeVariant $sizeVariant */
 			foreach ($sizeVariants as $sizeVariant) {
 				$this->add($sizeVariant);
@@ -93,7 +93,7 @@ class SizeVariants extends DTO
 				throw new LycheeInvalidArgumentException('size variant ' . $sizeVariant . 'invalid');
 		}
 
-		if (isset($ref) && $ref != null && $ref->id !== $sizeVariant->id) {
+		if (isset($ref) && $ref !== null && $ref->id !== $sizeVariant->id) {
 			throw new LycheeInvalidArgumentException('Another size variant of the same type has already been added');
 		}
 		$ref = $sizeVariant;
@@ -212,7 +212,7 @@ class SizeVariants extends DTO
 
 			return $result;
 		} catch (LycheeInvalidArgumentException $e) {
-			// thrown by ::add(), if  $result->photo_id != $this->photo->id,
+			// thrown by ::add(), if  $result->photo_id !==  $this->photo->id,
 			// but we know that we assert that
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}

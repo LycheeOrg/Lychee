@@ -152,7 +152,7 @@ class FileDeleter
 			}
 		}
 
-		if ($firstException != null) {
+		if ($firstException !== null) {
 			throw new MediaFileOperationException('Could not delete files', $firstException);
 		}
 	}

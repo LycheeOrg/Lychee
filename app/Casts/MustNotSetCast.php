@@ -54,7 +54,7 @@ class MustNotSetCast implements CastsInboundAttributes
 	public function set($model, string $key, $value, array $attributes): void
 	{
 		$msg = 'must not set read-only attribute \'' . get_class($model) . '::$' . $key . '\' directly';
-		if ($this->alternative != null) {
+		if ($this->alternative !== null) {
 			$msg = $msg . ', use \'' . get_class($model) . '::$' . $this->alternative . ' instead';
 		}
 		throw new IllegalOrderOfOperationException($msg);

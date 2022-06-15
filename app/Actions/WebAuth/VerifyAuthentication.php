@@ -26,7 +26,7 @@ class VerifyAuthentication
 		// If is valid, login the user of the credentials.
 		if ($success) {
 			$user = $this->getUserFromCredentials($credential);
-			if ($user != null) {
+			if ($user !== null) {
 				AccessControl::login($user);
 
 				return;
@@ -51,7 +51,7 @@ class VerifyAuthentication
 		// authenticator may use to sign the subsequent challenge by the server.
 		if ($this->isSignedChallenge($credentials)) {
 			$id = $this->binaryID($credentials['rawId']);
-			if ($id != '') {
+			if ($id !== '') {
 				/** @var User */
 				return User::getFromCredentialId($id);
 			}

@@ -242,7 +242,7 @@ class PhotoController extends Controller
 			// Avoid unnecessary DB request, when we access the album of a
 			// photo later (e.g. when a notification is sent).
 			$photo->setRelation('album', $album);
-			if ($album != null) {
+			if ($album !== null) {
 				$photo->owner_id = $album->owner_id;
 			}
 			$photo->save();

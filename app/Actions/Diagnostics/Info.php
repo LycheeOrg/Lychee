@@ -102,7 +102,7 @@ class Info extends Diagnostics
 				break;
 			case LycheeChannelInfo::GIT_CHANNEL:
 				$lycheeChannelName = 'git';
-				$lycheeInfoString = $lycheeChannelInfo->gitInfo != null ? $lycheeChannelInfo->gitInfo->toString() : 'No git data found.';
+				$lycheeInfoString = $lycheeChannelInfo->gitInfo !== null ? $lycheeChannelInfo->gitInfo->toString() : 'No git data found.';
 				break;
 			default:
 				$lycheeChannelName = 'unknown';

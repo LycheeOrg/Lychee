@@ -103,7 +103,7 @@ class GenerateThumbs extends Command
 			foreach ($photos as $photo) {
 				$sizeVariantFactory->init($photo);
 				$sizeVariant = $sizeVariantFactory->createSizeVariantCond($sizeVariantType);
-				if ($sizeVariant != null) {
+				if ($sizeVariant !== null) {
 					$this->line('   ' . $sizeVariantName . ' (' . $sizeVariant->width . 'x' . $sizeVariant->height . ') for ' . $photo->title . ' created.');
 				} else {
 					$this->line('   Did not create ' . $sizeVariantName . ' for ' . $photo->title . '.');

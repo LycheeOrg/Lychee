@@ -84,7 +84,7 @@ class ImagickHandler implements ImageHandlerInterface
 
 			$profiles = $image->getImageProfiles('icc', true);
 
-			$image->scaleImage($newWidth, $newHeight, ($newWidth != 0 && $newHeight != 0));
+			$image->scaleImage($newWidth, $newHeight, ($newWidth !== 0 && $newHeight !== 0));
 
 			// Remove metadata to save some bytes
 			$image->stripImage();

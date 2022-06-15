@@ -176,7 +176,7 @@ class Helpers
 			throw new ZeroModuloException();
 		}
 
-		return ($a % $b) != 0 ? $this->gcd($b, $a % $b) : $b;
+		return ($a % $b) !== 0 ? $this->gcd($b, $a % $b) : $b;
 	}
 
 	/**

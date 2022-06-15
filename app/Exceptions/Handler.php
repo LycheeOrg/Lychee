@@ -173,7 +173,7 @@ class Handler extends ExceptionHandler
 				'trace' => collect($e->getTrace())->map(function ($trace) {
 					return Arr::except($trace, ['args']);
 				})->all(),
-				'previous_exception' => $e->getPrevious() != null ? $this->convertExceptionToArray($e->getPrevious()) : null,
+				'previous_exception' => $e->getPrevious() !== null ? $this->convertExceptionToArray($e->getPrevious()) : null,
 			] : [
 				'message' => $this->isHttpException($e) ? $e->getMessage() : 'Server Error',
 				'exception' => class_basename($e),

@@ -230,7 +230,7 @@ class Configs extends Model
 			 * Sanity check. :).
 			 */
 			$message = $config->sanity($strValue);
-			if ($message != '') {
+			if ($message !== '') {
 				throw new InvalidConfigOption($message);
 			}
 			$config->value = $strValue;

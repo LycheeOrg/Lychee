@@ -37,7 +37,7 @@ class ListShare
 				->select(['base_albums.id', 'title', 'parent_id']);
 
 			// apply filter
-			if ($userId != 0) {
+			if ($userId !== 0) {
 				$shared_query = $shared_query->where('base_albums.owner_id', '=', $userId);
 				$albums_query = $albums_query->where('owner_id', '=', $userId);
 			}

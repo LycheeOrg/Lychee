@@ -93,7 +93,7 @@ class Create
 		 *  - a photo which is the partner of an already existing video
 		 *  - a video which is the partner of an already existing photo
 		 */
-		if ($duplicate != null) {
+		if ($duplicate !== null) {
 			$strategy = new AddDuplicateStrategy($this->strategyParameters, $duplicate);
 		} else {
 			if ($livePartner === null) {
@@ -112,7 +112,7 @@ class Create
 
 		$photo = $strategy->do();
 
-		if ($photo->album_id != null) {
+		if ($photo->album_id !== null) {
 			$notify = new Notify();
 			$notify->do($photo);
 		}
@@ -168,7 +168,7 @@ class Create
 		try {
 			$livePartner = null;
 			// find a potential partner which has the same content id
-			if ($contentID != null) {
+			if ($contentID !== null) {
 				/** @var Photo|null $livePartner */
 				$livePartner = Photo::query()
 					->where('live_photo_content_id', '=', $contentID)
@@ -178,8 +178,7 @@ class Create
 			// if a potential partner has been found, ensure that it is of a
 			// different kind then the uploaded media.
 			if (
-				$livePartner !== null && !(
-					MediaFile::isSupportedImageMimeType($mimeType) && $livePartner->isVideo() ||
+				$livePartner !== null && !(MediaFile::isSupportedImageMimeType($mimeType) && $livePartner->isVideo() ||
 					MediaFile::isSupportedVideoMimeType($mimeType) && $livePartner->isPhoto()
 				)
 			) {

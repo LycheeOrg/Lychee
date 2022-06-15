@@ -211,7 +211,7 @@ class Photo extends Model implements HasRandomID
 				if ($matches) {
 					$a = intval($matches[1]);
 					$b = intval($matches[2]);
-					if ($b != 0) {
+					if ($b !== 0) {
 						$gcd = Helpers::gcd($a, $b);
 						$a = $a / $gcd;
 						$b = $b / $gcd;
@@ -253,7 +253,7 @@ class Photo extends Model implements HasRandomID
 		if ($license !== 'none') {
 			return $license;
 		}
-		if ($this->album_id != null) {
+		if ($this->album_id !== null) {
 			return $this->album->license;
 		}
 
@@ -333,7 +333,7 @@ class Photo extends Model implements HasRandomID
 	{
 		return
 			AccessControl::is_current_user_or_admin($this->owner_id) ||
-			($this->album_id != null && $this->album->is_downloadable) ||
+			($this->album_id !== null && $this->album->is_downloadable) ||
 			($this->album_id === null && Configs::getValueAsBool('downloadable', false));
 	}
 
@@ -353,7 +353,7 @@ class Photo extends Model implements HasRandomID
 
 		return
 			AccessControl::is_current_user_or_admin($this->owner_id) ||
-			($this->album_id != null && $this->album->is_share_button_visible) ||
+			($this->album_id !== null && $this->album->is_share_button_visible) ||
 			($this->album_id === null && $default);
 	}
 
@@ -427,7 +427,7 @@ class Photo extends Model implements HasRandomID
 		//  - 0 => the photo is not publicly visible
 		//  - 1 => the photo is publicly visible on its own right
 		//  - 2 => the photo is publicly visible because its album is public
-		if ($this->album_id != null && $this->album->is_public) {
+		if ($this->album_id !== null && $this->album->is_public) {
 			$result['is_public'] = 2;
 		} else {
 			$result['is_public'] = boolval($result['is_public']) ? 1 : 0;
@@ -441,7 +441,7 @@ class Photo extends Model implements HasRandomID
 			!$this->isVideo() &&
 			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null) &&
 			(
-				($this->album_id != null && !$this->album->grants_full_photo) ||
+				($this->album_id !== null && !$this->album->grants_full_photo) ||
 				($this->album_id === null && !Configs::getValueAsBool('full_photo', true))
 			)
 		) {

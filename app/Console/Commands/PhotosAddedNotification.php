@@ -60,7 +60,7 @@ class PhotosAddedNotification extends Command
 					->with(['size_variants', 'size_variants.sym_links'])
 					->find($notification->data['id']);
 
-				if ($photo != null) {
+				if ($photo !== null) {
 					if (!isset($photos[$photo->album_id])) {
 						$photos[$photo->album_id] = [
 							'name' => $photo->album->title,

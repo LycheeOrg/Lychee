@@ -145,7 +145,7 @@ class Takedate extends Command
 				$localFile = $photo->size_variants->getOriginal()->getFile()->toLocalFile();
 
 				$info = Extractor::createFromFile($localFile);
-				if ($info->taken_at != null) {
+				if ($info->taken_at !== null) {
 					// Note: `equalTo` only checks if two times indicate the same
 					// instant of time on the universe's timeline, i.e. equality
 					// comparison is always done in UTC.

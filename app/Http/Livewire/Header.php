@@ -15,7 +15,7 @@ class Header extends Component
 	public function mount(?string $mode = 'albums', $album = null)
 	{
 		$this->title = Configs::getValueAsString('site_title', Config::get('defines.defaults.SITE_TITLE'));
-		if ($album != null) {
+		if ($album !== null) {
 			$this->title = $album->title;
 		}
 		$this->mode = $mode ?? 'albums';

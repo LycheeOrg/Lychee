@@ -401,7 +401,7 @@ class SettingsController extends Controller
 				$lastException = $e;
 			}
 		}
-		if ($lastException != null) {
+		if ($lastException !== null) {
 			throw $lastException;
 		}
 	}

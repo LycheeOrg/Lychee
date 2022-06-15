@@ -325,7 +325,7 @@ class Archive
 		} elseif (array_key_exists($variant, self::VARIANT2VARIANT)) {
 			$sv = $photo->size_variants->getSizeVariant(self::VARIANT2VARIANT[$variant]);
 			$baseFilenameAddon = '';
-			if ($sv != null) {
+			if ($sv !== null) {
 				$sourceFile = $sv->getFile();
 				// The filename of the original size variant shall get no
 				// particular suffix but remain as is.

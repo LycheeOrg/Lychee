@@ -49,11 +49,11 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 */
 	public function init(Photo $photo, ?SizeVariantNamingStrategy $namingStrategy = null): void
 	{
-		if ($this->photo != null) {
+		if ($this->photo !== null) {
 			$this->cleanup();
 		}
 		$this->photo = $photo;
-		if ($namingStrategy != null) {
+		if ($namingStrategy !== null) {
 			$this->namingStrategy = $namingStrategy;
 		} elseif ($this->namingStrategy === null) {
 			$this->namingStrategy = resolve(SizeVariantNamingStrategy::class);
@@ -218,7 +218,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 
 		foreach ($allVariants as $variant) {
 			$sv = $this->createSizeVariantCond($variant);
-			if ($sv != null) {
+			if ($sv !== null) {
 				$collection->add($sv);
 			}
 		}

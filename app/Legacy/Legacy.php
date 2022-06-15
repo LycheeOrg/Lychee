@@ -116,7 +116,7 @@ class Legacy
 				->where('legacy_id', '=', intval($id))
 				->value('id');
 
-			if ($newID != '') {
+			if ($newID !== '') {
 				$referer = strval($request->header('Referer', '(unknown)'));
 				$msg = 'Request for ' . $tableName .
 					' with legacy ID ' . $id .

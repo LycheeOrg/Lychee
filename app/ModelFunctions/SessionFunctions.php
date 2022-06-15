@@ -148,7 +148,7 @@ class SessionFunctions
 		/** @var User|null $user */
 		$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
 
-		if ($user != null && Hash::check($password, $user->password)) {
+		if ($user !== null && Hash::check($password, $user->password)) {
 			$this->user_data = $user;
 			Session::put('login', true);
 			Session::put('UserID', $user->id);

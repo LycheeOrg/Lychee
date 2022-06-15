@@ -147,7 +147,7 @@ trait ForwardsToParentImplementation
 		} catch (\Throwable $e) {
 			$parentException = $e;
 		}
-		if ($parentException != null) {
+		if ($parentException !== null) {
 			throw ModelDBException::create($this->friendlyModelName(), 'deleting', $parentException);
 		}
 
@@ -166,7 +166,7 @@ trait ForwardsToParentImplementation
 			} catch (\Throwable $e) {
 				$baseException = $e;
 			}
-			if ($baseException != null) {
+			if ($baseException !== null) {
 				throw ModelDBException::create($this->friendlyModelName(), 'deleting', $baseException);
 			}
 		}

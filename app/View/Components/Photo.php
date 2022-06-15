@@ -112,7 +112,7 @@ class Photo extends Component
 			$thumb2x_src .= URL::asset($thumb2x) . ' ' . $dim2x . 'w';
 		}
 
-		$this->srcset2x = $thumb2x != '' ? "data-srcset='" . $thumb2x_src . "'" : '';
+		$this->srcset2x = $thumb2x !== '' ? "data-srcset='" . $thumb2x_src . "'" : '';
 	}
 
 	/**

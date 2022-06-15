@@ -25,7 +25,7 @@ class Sync extends Command
 	 * @var string
 	 */
 	protected $signature =
-		'lychee:sync ' .
+	'lychee:sync ' .
 		'{dir : directory to sync} ' .
 		'{--album_id= : Album ID to import to} ' .
 		'{--owner_id=0 : Owner ID of imported photos} ' .
@@ -65,7 +65,7 @@ class Sync extends Command
 		try {
 			$directory = strval($this->argument('dir'));
 			$owner_id = (int) $this->option('owner_id'); // in case no ID provided -> import as root user
-			$album_id = $this->option('album_id') != null ? strval($this->option('album_id')) : null; // in case no ID provided -> import to root folder
+			$album_id = $this->option('album_id') !== null ? strval($this->option('album_id')) : null; // in case no ID provided -> import to root folder
 			/** @var Album $album */
 			$album = $album_id ? Album::query()->findOrFail($album_id) : null; // in case no ID provided -> import to root folder
 

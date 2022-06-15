@@ -18,8 +18,8 @@ class LycheeGitInfo extends DTO
 	public function toString(): string
 	{
 		$ret = $this->branch;
-		$ret .= $this->commit != null ? ' (' . $this->commit . ')' : '';
-		$ret .= $this->additional != null ? ' -- ' . $this->additional : '';
+		$ret .= $this->commit !== null ? ' (' . $this->commit . ')' : '';
+		$ret .= $this->additional !== null ? ' -- ' . $this->additional : '';
 
 		return $ret;
 	}

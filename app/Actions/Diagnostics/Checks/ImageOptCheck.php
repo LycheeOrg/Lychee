@@ -25,13 +25,13 @@ class ImageOptCheck implements DiagnosticCheckInterface
 		$tools[] = new Svgo();
 
 		$settings = Configs::get();
-		if (!isset($settings['lossless_optimization']) || $settings['lossless_optimization'] != '1') {
+		if (!isset($settings['lossless_optimization']) || $settings['lossless_optimization'] !== '1') {
 			return;
 		}
 
 		$binaryPath = config('image-optimizer.binary_path');
 
-		if ($binaryPath != '' && substr($binaryPath, -1) !== DIRECTORY_SEPARATOR) {
+		if ($binaryPath !== '' && substr($binaryPath, -1) !== DIRECTORY_SEPARATOR) {
 			$binaryPath = $binaryPath . DIRECTORY_SEPARATOR;
 		}
 

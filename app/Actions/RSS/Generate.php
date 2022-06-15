@@ -24,7 +24,7 @@ class Generate
 
 	private function create_link_to_page(Photo $photo_model): string
 	{
-		if ($photo_model->album_id != null) {
+		if ($photo_model->album_id !== null) {
 			return url('/#' . $photo_model->album_id . '/' . $photo_model->id);
 		}
 

@@ -31,7 +31,7 @@ class ConfigFunctions
 			'copyright_year' => Configs::getValueAsString('site_copyright_begin'),
 			'additional_footer_text' => Configs::getValueAsString('additional_footer_text'),
 		];
-		if (Configs::getValueAsString('site_copyright_begin') != Configs::getValueAsString('site_copyright_end')) {
+		if (Configs::getValueAsString('site_copyright_begin') !== Configs::getValueAsString('site_copyright_end')) {
 			$infos['copyright_year'] = Configs::getValueAsString('site_copyright_begin') . '-' . Configs::getValueAsString('site_copyright_end');
 		}
 
@@ -87,7 +87,7 @@ class ConfigFunctions
 
 		foreach ($configs as $config) {
 			$message = $config->sanity($config->value);
-			if ($message != '') {
+			if ($message !== '') {
 				$return[] = $message;
 			}
 		}

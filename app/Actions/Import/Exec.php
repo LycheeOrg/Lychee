@@ -100,7 +100,7 @@ class Exec
 			echo $report->toCLIString() . PHP_EOL;
 		}
 
-		if ($report instanceof ImportEventReport && $report->getException() != null) {
+		if ($report instanceof ImportEventReport && $report->getException() !== null) {
 			Handler::reportSafely($report->getException());
 		}
 	}

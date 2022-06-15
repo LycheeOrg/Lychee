@@ -64,7 +64,7 @@ trait ThrowsConsistentExceptions
 		} catch (\Throwable $e) {
 			$parentException = $e;
 		}
-		if ($parentException != null) {
+		if ($parentException !== null) {
 			throw ModelDBException::create($this->friendlyModelName(), $this->wasRecentlyCreated ? 'creating' : 'updating', $parentException);
 		}
 
@@ -94,7 +94,7 @@ trait ThrowsConsistentExceptions
 		} catch (\Throwable $e) {
 			$parentException = $e;
 		}
-		if ($parentException != null) {
+		if ($parentException !== null) {
 			throw ModelDBException::create($this->friendlyModelName(), 'deleting', $parentException);
 		}
 
