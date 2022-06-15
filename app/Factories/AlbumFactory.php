@@ -221,6 +221,7 @@ class AlbumFactory
 		if ($withRelations) {
 			// Just try to get the photos.
 			// This loads the relation from DB and caches it.
+			// @phpstan-ignore-next-line : PhpStan will complain about unused variable.
 			$ignore = $smartAlbum->photos;
 		}
 

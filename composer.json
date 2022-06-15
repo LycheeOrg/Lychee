@@ -50,6 +50,7 @@
         "ext-imagick": "*",
         "barryvdh/laravel-debugbar": "^3.6",
         "barryvdh/laravel-ide-helper": "^2.10",
+        "ergebnis/phpstan-rules": "^1.0",
         "filp/whoops": "^2.5",
         "friendsofphp/php-cs-fixer": "^3.3",
         "itsgoingd/clockwork": "^5.0",
@@ -61,6 +62,7 @@
         "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpstan/phpstan-strict-rules": "^1.2",
         "phpunit/phpunit": "^9",
+        "slam/phpstan-extensions": "^6.0",
         "thecodingmachine/phpstan-safe-rule": "^1.2"
     },
     "autoload": {

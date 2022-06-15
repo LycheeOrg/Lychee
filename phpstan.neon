@@ -6,12 +6,11 @@ includes:
 
 services:
 	-
-		class: PHPStan\Rules\StrictCalls\StrictFunctionCallsRule
+		class: Ergebnis\PHPStan\Rules\Expressions\NoErrorSuppressionRule
 		tags:
 			- phpstan.rules.rule
-
 	-
-		class: PHPStan\Rules\SwitchConditions\MatchingTypeInSwitchCaseConditionRule
+		class: SlamPhpStan\UnusedVariableRule
 		tags:
 			- phpstan.rules.rule
 
