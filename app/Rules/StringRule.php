@@ -45,6 +45,6 @@ abstract class StringRule implements Rule
 		return ':attribute must be' .
 			($this->isNullable ? ' either null or' : '') .
 			' a non-empty string' .
-			($this->limit != 0 ? ' with at most ' . $this->limit . ' characters' : '');
+			($this->limit !== 0 ? ' with at most ' . $this->limit . ' characters' : '');
 	}
 }
