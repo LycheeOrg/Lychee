@@ -2,13 +2,15 @@
 
 namespace App\DTO;
 
+use function Safe\sprintf;
+
 class LycheeGitInfo extends DTO
 {
 	public string $branch;
-	public ?string $commit;
-	public ?string $additional;
+	public string $commit;
+	public string $additional;
 
-	public function __construct(string $branch, ?string $commit = null, string $additional = null)
+	public function __construct(string $branch, string $commit, string $additional)
 	{
 		$this->branch = $branch;
 		$this->commit = $commit;
@@ -17,9 +19,7 @@ class LycheeGitInfo extends DTO
 
 	public function toString(): string
 	{
-		$ret = $this->branch;
-		$ret .= $this->commit !== null ? ' (' . $this->commit . ')' : '';
-		$ret .= $this->additional !== null ? ' -- ' . $this->additional : '';
+		$ret = sprintf('%s (%s) -- %s', $this->branch, $this->commit, $this->additional);
 
 		return $ret;
 	}
