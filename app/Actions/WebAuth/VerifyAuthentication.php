@@ -73,8 +73,8 @@ class VerifyAuthentication
 	{
 		try {
 			$result = base64_decode(strtr($rawId, '-_', '+/'), true);
-		} catch (\Throwable) {
-			throw new InvalidUserIdException();
+		} catch (\Throwable $e) {
+			throw new InvalidUserIdException($e);
 		}
 
 		return $result;

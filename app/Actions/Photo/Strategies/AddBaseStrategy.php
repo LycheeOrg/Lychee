@@ -153,8 +153,8 @@ abstract class AddBaseStrategy
 			$sourceAbsolutePath = $sourceFile->getAbsolutePath();
 			try {
 				symlink($sourceAbsolutePath, $targetAbsolutePath);
-			} catch (\Throwable) {
-				throw new MediaFileOperationException('Could not create symbolic link at "' . $targetAbsolutePath . '" for photo at "' . $sourceAbsolutePath . '"');
+			} catch (\Throwable $e) {
+				throw new MediaFileOperationException('Could not create symbolic link at "' . $targetAbsolutePath . '" for photo at "' . $sourceAbsolutePath . '"', $e);
 			}
 		} else {
 			try {
