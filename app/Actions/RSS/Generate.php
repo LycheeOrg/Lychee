@@ -51,6 +51,8 @@ class Generate
 	}
 
 	/**
+	 * @return Collection<FeedItem>
+	 *
 	 * @throws InternalLycheeException
 	 */
 	public function do(): Collection

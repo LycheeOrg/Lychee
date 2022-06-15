@@ -19,9 +19,7 @@ class LycheeGitInfo extends DTO
 
 	public function toString(): string
 	{
-		$ret = sprintf('%s (%s) -- %s', $this->branch, $this->commit, $this->additional);
-
-		return $ret;
+		return sprintf('%s (%s) -- %s', $this->branch, $this->commit, $this->additional);
 	}
 
 	/**
