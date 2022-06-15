@@ -93,7 +93,7 @@ class SizeVariants extends DTO
 				throw new LycheeInvalidArgumentException('size variant ' . $sizeVariant . 'invalid');
 		}
 
-		if (isset($ref) && $ref !== null && $ref->id !== $sizeVariant->id) {
+		if (isset($ref) && $ref->id !== $sizeVariant->id) {
 			throw new LycheeInvalidArgumentException('Another size variant of the same type has already been added');
 		}
 		$ref = $sizeVariant;
