@@ -26,13 +26,13 @@ class Sync extends Command
 	 */
 	protected $signature =
 	'lychee:sync ' .
-		'{dir : directory to sync} ' .
-		'{--album_id= : Album ID to import to} ' .
-		'{--owner_id=0 : Owner ID of imported photos} ' .
-		'{--resync_metadata : Re-sync metadata of existing files}  ' .
-		'{--delete_imported=%s : Delete the original files} ' .
-		'{--import_via_symlink=%s : Imports photos from via a symlink instead of copying the files} ' .
-		'{--skip_duplicates=%s : Don\'t skip photos and albums if they already exist in the gallery}';
+		'{dir : directory to sync} ' . // string
+		'{--album_id= : Album ID to import to} ' . // string or null
+		'{--owner_id=0 : Owner ID of imported photos} ' . // string
+		'{--resync_metadata : Re-sync metadata of existing files}  ' . // bool
+		'{--delete_imported=%s : Delete the original files} ' . // string
+		'{--import_via_symlink=%s : Imports photos from via a symlink instead of copying the files} ' . // string
+		'{--skip_duplicates=%s : Don\'t skip photos and albums if they already exist in the gallery}'; // string
 
 	/**
 	 * The console command description.
@@ -63,14 +63,16 @@ class Sync extends Command
 	public function handle(): int
 	{
 		try {
-			$directory = strval($this->argument('dir'));
+			$directory = (string) $this->argument('dir');
 			$owner_id = (int) $this->option('owner_id'); // in case no ID provided -> import as root user
-			$album_id = $this->option('album_id') !== null ? strval($this->option('album_id')) : null; // in case no ID provided -> import to root folder
+			$album_id = $this->option('album_id') !== null ? (string) $this->option('album_id') : null; // in case no ID provided -> import to root folder
 			/** @var Album $album */
 			$album = $album_id ? Album::query()->findOrFail($album_id) : null; // in case no ID provided -> import to root folder
 
 			$deleteImported = $this->option('delete_imported') === '1';
 			$importViaSymlink = $this->option('import_via_symlink') === '1';
+			$skipDuplicates = $this->option('skip_duplicates') === '1';
+			$resyncMetadata = (bool) $this->option('resync_metadata'); // ! Because the option is --resync_metadata the return type of $this->option() is already bool.
 
 			if ($importViaSymlink && $deleteImported) {
 				$this->error('The settings for import via symbolic links and deletion of imported files are conflicting');
@@ -82,9 +84,9 @@ class Sync extends Command
 			$exec = new Exec(
 				new ImportMode(
 					$deleteImported,
-					$this->option('import_via_symlink') === '1',
+					$skipDuplicates,
 					$importViaSymlink,
-					(bool) $this->option('resync_metadata')
+					$resyncMetadata
 				),
 				true,
 				0
