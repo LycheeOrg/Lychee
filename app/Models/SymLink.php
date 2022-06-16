@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Safe\Exceptions\FilesystemException;
 use function Safe\symlink;
 use function Safe\unlink;
 
@@ -124,10 +125,14 @@ class SymLink extends Model
 		$extension = $file->getExtension();
 		$symShortPath = hash('sha256', random_bytes(32) . '|' . $origFullPath) . $extension;
 		$symFullPath = Storage::disk(SymLink::DISK_NAME)->path($symShortPath);
-		if (is_link($symFullPath)) {
-			unlink($symFullPath);
+		try {
+			if (is_link($symFullPath)) {
+				unlink($symFullPath);
+			}
+			symlink($origFullPath, $symFullPath);
+		} catch (FilesystemException $e) {
+			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
-		symlink($origFullPath, $symFullPath);
 		$this->short_path = $symShortPath;
 
 		return parent::performInsert($query);
