@@ -63,11 +63,21 @@ class Sync extends Command
 	public function handle(): int
 	{
 		try {
-			$directory = (string) $this->argument('dir');
+			$directory = $this->argument('dir');
+			if (is_array($directory) || $directory == null) {
+				$this->error('Synchronize one folder at a time.');
+
+				return 1;
+			}
 			$owner_id = (int) $this->option('owner_id'); // in case no ID provided -> import as root user
-			$album_id = $this->option('album_id') !== null ? (string) $this->option('album_id') : null; // in case no ID provided -> import to root folder
+			$album_id = $this->option('album_id'); // in case no ID provided -> import to root folder
+			if (is_array($album_id)) {
+				$this->error('Only one value for album_id is allowed.');
+
+				return 1;
+			}
 			/** @var Album $album */
-			$album = $album_id ? Album::query()->findOrFail($album_id) : null; // in case no ID provided -> import to root folder
+			$album = $album_id !== null ? Album::query()->findOrFail($album_id) : null; // in case no ID provided -> import to root folder
 
 			$deleteImported = $this->option('delete_imported') === '1';
 			$importViaSymlink = $this->option('import_via_symlink') === '1';
