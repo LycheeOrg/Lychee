@@ -172,12 +172,9 @@ class GitHubFunctions
 
 		try {
 			return
-				Helpers::hasFullPermissions(
-					base_path('.git')
-				) && ($localBranch === null ||
-					Helpers::hasPermissions(
-						base_path('.git/refs/heads/' . $localBranch)
-					)
+				Helpers::hasFullPermissions(base_path('.git')) && (
+					$localBranch === null ||
+					Helpers::hasPermissions(base_path('.git/refs/heads/' . $localBranch))
 				);
 		} catch (BindingResolutionException) {
 			return false;
