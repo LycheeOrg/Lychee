@@ -95,8 +95,8 @@ class Takedate extends Command
 			$limit = intval($this->argument('limit'));
 			$offset = intval($this->argument('offset'));
 			$timeout = intval($this->argument('time'));
-			$setCreationTime = boolval($this->option('set-upload-time'));
-			$force = boolval($this->option('force'));
+			$setCreationTime = $this->option('set-upload-time') === true;
+			$force = $this->option('force') === true;
 			try {
 				set_time_limit($timeout);
 			} catch (InfoException) {

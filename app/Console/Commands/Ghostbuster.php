@@ -59,9 +59,9 @@ class Ghostbuster extends Command
 	public function handle(): int
 	{
 		try {
-			$removeDeadSymLinks = (bool) $this->argument('removeDeadSymLinks');
-			$removeZombiePhotos = (bool) $this->argument('removeZombiePhotos');
-			$dryrun = (bool) $this->argument('dryrun');
+			$removeDeadSymLinks = $this->argument('removeDeadSymLinks') === '1';
+			$removeZombiePhotos = $this->argument('removeZombiePhotos') === '1';
+			$dryrun = $this->argument('dryrun') === '1';
 			$uploadDisk = Storage::disk();
 			$symlinkDisk = Storage::disk(SymLink::DISK_NAME);
 			$isLocalDisk = ($uploadDisk->getDriver()->getAdapter() instanceof LocalFlysystem);

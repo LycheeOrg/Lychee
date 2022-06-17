@@ -37,7 +37,7 @@ class SessionFunctions
 	 */
 	public function is_admin(): bool
 	{
-		return boolval(Session::get('login')) && Session::get('UserID') === 0;
+		return $this->is_logged_in() && Session::get('UserID') === 0;
 	}
 
 	/**
@@ -58,7 +58,7 @@ class SessionFunctions
 	 */
 	public function id(): int
 	{
-		if (!boolval(Session::get('login'))) {
+		if (!$this->is_logged_in()) {
 			throw new UnauthenticatedException();
 		}
 
@@ -98,7 +98,7 @@ class SessionFunctions
 	 */
 	public function is_current_user_or_admin(int $userId): bool
 	{
-		return boolval(Session::get('login')) && (Session::get('UserID') === $userId || Session::get('UserID') === 0);
+		return $this->is_logged_in() && (Session::get('UserID') === $userId || Session::get('UserID') === 0);
 	}
 
 	/**

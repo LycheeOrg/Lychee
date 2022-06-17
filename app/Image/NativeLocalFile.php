@@ -174,7 +174,7 @@ class NativeLocalFile extends MediaFile
 	{
 		$ext = pathinfo($this->path, PATHINFO_EXTENSION);
 
-		return boolval($ext) ? '.' . $ext : '';
+		return $ext !== '' ? '.' . $ext : '';
 	}
 
 	/**

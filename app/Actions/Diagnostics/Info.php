@@ -115,7 +115,7 @@ class Info extends Diagnostics
 		$infos[] = '';
 		$infos[] = Diagnostics::line('composer install:', $this->lycheeVersion->phpUnit ? 'dev' : '--no-dev');
 		$infos[] = Diagnostics::line('APP_ENV:', Config::get('app.env')); // check if production
-		$infos[] = Diagnostics::line('APP_DEBUG:', (bool) Config::get('app.debug') ? 'true' : 'false'); // check if debug is on (will help in case of error 500)
+		$infos[] = Diagnostics::line('APP_DEBUG:', Config::get('app.debug') === true ? 'true' : 'false'); // check if debug is on (will help in case of error 500)
 		$infos[] = '';
 		$infos[] = Diagnostics::line('System:', PHP_OS);
 		$infos[] = Diagnostics::line('PHP Version:', phpversion());

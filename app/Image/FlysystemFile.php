@@ -182,7 +182,7 @@ class FlysystemFile extends MediaFile
 	{
 		$ext = pathinfo($this->relativePath, PATHINFO_EXTENSION);
 
-		return boolval($ext) ? '.' . $ext : '';
+		return $ext !== '' ? '.' . $ext : '';
 	}
 
 	/**

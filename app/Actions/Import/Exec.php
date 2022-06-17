@@ -329,7 +329,7 @@ class Exec
 		$pattern = preg_replace_callback('/([^*])/', [self::class, 'preg_quote_callback_fct'], $pattern);
 		$pattern = str_replace('*', '.*', $pattern);
 
-		return (bool) preg_match('/^' . $pattern . '$/i', $filename);
+		return preg_match('/^' . $pattern . '$/i', $filename) === 1;
 	}
 
 	/**

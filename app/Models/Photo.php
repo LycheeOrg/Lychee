@@ -430,7 +430,7 @@ class Photo extends Model implements HasRandomID
 		if ($this->album_id !== null && $this->album->is_public) {
 			$result['is_public'] = 2;
 		} else {
-			$result['is_public'] = boolval($result['is_public']) ? 1 : 0;
+			$result['is_public'] = $result['is_public'] === true ? 1 : 0;
 		}
 
 		// Downgrades the accessible resolution of a photo

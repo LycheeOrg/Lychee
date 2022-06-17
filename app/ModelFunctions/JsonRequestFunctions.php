@@ -44,7 +44,7 @@ class JsonRequestFunctions
 	public function get_age_text(): string
 	{
 		$age = Cache::get($this->url . '_age');
-		if (!boolval($age)) {
+		if (!$age instanceof \DateTimeInterface) {
 			return 'unknown';
 		}
 		try {

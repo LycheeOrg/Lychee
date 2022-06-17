@@ -82,7 +82,7 @@ class Sync extends Command
 			$deleteImported = $this->option('delete_imported') === '1';
 			$importViaSymlink = $this->option('import_via_symlink') === '1';
 			$skipDuplicates = $this->option('skip_duplicates') === '1';
-			$resyncMetadata = (bool) $this->option('resync_metadata'); // ! Because the option is --resync_metadata the return type of $this->option() is already bool.
+			$resyncMetadata = $this->option('resync_metadata') === true; // ! Because the option is --resync_metadata the return type of $this->option() is already bool.
 
 			if ($importViaSymlink && $deleteImported) {
 				$this->error('The settings for import via symbolic links and deletion of imported files are conflicting');

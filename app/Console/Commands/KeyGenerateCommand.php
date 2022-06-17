@@ -33,7 +33,7 @@ class KeyGenerateCommand extends \Illuminate\Foundation\Console\KeyGenerateComma
 	 */
 	protected function setKeyInEnvironmentFile($key): bool
 	{
-		if (!$this->hasOption('no-override') || !(bool) $this->option('no-override') || strlen(Config::get('app.key', '')) === 0) {
+		if (!$this->hasOption('no-override') || $this->option('no-override') === false || strlen(Config::get('app.key', '')) === 0) {
 			return parent::setKeyInEnvironmentFile($key);
 		}
 
