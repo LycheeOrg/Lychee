@@ -76,8 +76,9 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
-        }
+            "Tests\\": "tests/",
+			"PHPStan\\": "phpstan/"
+		}
     },
     "extra": {
         "laravel": {

@@ -64,7 +64,7 @@ class Sync extends Command
 	{
 		try {
 			$directory = $this->argument('dir');
-			if (is_array($directory) || $directory == null) {
+			if (is_array($directory) || $directory === null) {
 				$this->error('Synchronize one folder at a time.');
 
 				return 1;
