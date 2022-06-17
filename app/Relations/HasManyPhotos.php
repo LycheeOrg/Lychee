@@ -60,24 +60,20 @@ abstract class HasManyPhotos extends Relation
 
 	protected function getRelationQuery(): FixedQueryBuilder
 	{
-		/**
+		/*
 		 * We know that the internal query is of type `FixedQueryBuilder`,
 		 * because it was set int the constructor as `Photo::query()`.
-		 *
-		 * @noinspection PhpIncompatibleReturnTypeInspection
 		 */
-		return $this->query; // @phpstan-ignore-line
+		return $this->query; // @phpstan-ignore-line @noinspection PhpIncompatibleReturnTypeInspection
 	}
 
 	public function getParent(): BaseAlbum
 	{
-		/**
+		/*
 		 * We know that the parent is of type `BaseAlbum`,
 		 * because it was set int the constructor as `$owningAlbum`.
-		 *
-		 * @noinspection PhpIncompatibleReturnTypeInspection
 		 */
-		return $this->parent; // @phpstan-ignore-line
+		return $this->parent; // @phpstan-ignore-line @noinspection PhpIncompatibleReturnTypeInspection
 	}
 
 	/**

@@ -75,11 +75,9 @@ class AlbumFactory
 		}
 
 		try {
-			/** @var Album */
-			return $albumQuery->findOrFail($albumId);
+			return $albumQuery->findOrFail($albumId); // @phpstan-ignore-line
 		} catch (ModelNotFoundException) {
 			try {
-				/** @var TagAlbum */
 				return $tagAlbumQuery->findOrFail($albumId);
 			} catch (ModelNotFoundException) {
 				throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, [$albumId]);

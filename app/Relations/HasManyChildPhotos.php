@@ -37,24 +37,20 @@ class HasManyChildPhotos extends HasManyBidirectionally
 
 	protected function getRelationQuery(): FixedQueryBuilder
 	{
-		/**
+		/*
 		 * We know that the internal query is of type `FixedQueryBuilder`,
 		 * because it was set int the constructor as `Photo::query()`.
-		 *
-		 * @noinspection PhpIncompatibleReturnTypeInspection
 		 */
-		return $this->query; // @phpstan-ignore-line
+		return $this->query; // @phpstan-ignore-line @noinspection PhpIncompatibleReturnTypeInspection
 	}
 
 	public function getParent(): Album
 	{
-		/**
+		/*
 		 * We know that the internal query is of type `Album`,
 		 * because it was set int the constructor as `$owningAlbum`.
-		 *
-		 * @noinspection PhpIncompatibleReturnTypeInspection
 		 */
-		return $this->parent; // @phpstan-ignore-line
+		return $this->parent; // @phpstan-ignore-line @noinspection PhpIncompatibleReturnTypeInspection
 	}
 
 	/**

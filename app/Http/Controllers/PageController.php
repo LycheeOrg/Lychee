@@ -39,7 +39,7 @@ class PageController extends Controller
 	 * @throws BindingResolutionException
 	 */
 	public function page(
-		/** @noinspection PhpUnusedParameterInspection */
+		/* @noinspection PhpUnusedParameterInspection */
 		Request $request,
 		string $page
 	): View {

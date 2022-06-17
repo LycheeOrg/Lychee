@@ -47,7 +47,6 @@ class TagAlbumBuilder extends FixedQueryBuilder
 			]);
 		}
 
-		/** @var array<TagAlbum> */
 		return parent::getModels($columns);
 	}
 }

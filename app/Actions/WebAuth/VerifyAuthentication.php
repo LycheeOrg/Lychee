@@ -52,8 +52,7 @@ class VerifyAuthentication
 		if ($this->isSignedChallenge($credentials)) {
 			$id = $this->binaryID($credentials['rawId']);
 			if ($id !== '') {
-				/** @var User */
-				return User::getFromCredentialId($id);
+				return User::getFromCredentialId($id); // @phpstan-ignore-line
 			}
 		}
 
