@@ -1,4 +1,4 @@
-.PHONY: dist-gen dist-clean dist clean
+.PHONY: dist-gen dist-clean dist clean test formatting phpstan
 
 composer:
 	rm -r vendor  2> /dev/null || true
