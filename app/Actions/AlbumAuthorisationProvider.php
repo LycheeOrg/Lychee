@@ -246,7 +246,8 @@ class AlbumAuthorisationProvider
 
 		if ($album instanceof BaseAlbum) {
 			try {
-				return ($album->owner_id === $userID) ||
+				return
+					($album->owner_id === $userID) ||
 					($album->is_public && $album->password === null) ||
 					($album->is_public && $this->isUnlocked($album)) ||
 					($album->shared_with()->where('user_id', '=', $userID)->count() > 0);
@@ -628,7 +629,8 @@ class AlbumAuthorisationProvider
 	 */
 	public function isVisible(BaseSmartAlbum $smartAlbum): bool
 	{
-		return (AccessControl::is_logged_in() && AccessControl::can_upload()) ||
+		return
+			(AccessControl::is_logged_in() && AccessControl::can_upload()) ||
 			$smartAlbum->is_public;
 	}
 }
