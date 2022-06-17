@@ -27,7 +27,7 @@ $rules = [
 	'yoda_style' => false,
 	'concat_space' => ['spacing' => 'one'],
 	'no_superfluous_phpdoc_tags' => false,
-	'phpdoc_to_comment' => false,
+	'phpdoc_to_comment' => false, // required until https://github.com/phpstan/phpstan/issues/7486 got fixed
 ];
 $config = new PhpCsFixer\Config();
 
