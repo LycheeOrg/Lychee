@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "48235c98ce615f01ac9f50a4a36ff832",
+    "content-hash": "6b63e514ff9e6ac9b457b66f361261df",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -11974,11 +11974,10 @@
         "ext-openssl": "*",
         "ext-pdo": "*",
         "ext-tokenizer": "*",
-        "ext-xml": "*",
-        "ext-zip": "*"
+        "ext-xml": "*"
     },
     "platform-dev": {
         "ext-imagick": "*"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.0.0"
 }
