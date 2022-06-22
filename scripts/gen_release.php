@@ -1,6 +1,16 @@
 #!/usr/bin/env php
 <?php
 
+include_once __DIR__ . '/../vendor/autoload.php';
+
+use function Safe\date;
+use Safe\Exceptions\FilesystemException;
+use function Safe\file_get_contents;
+use function Safe\file_put_contents;
+use function Safe\scandir;
+use function Safe\sprintf;
+use function Safe\substr;
+
 /**
  * Template for migration.
  */
@@ -38,10 +48,11 @@ class BumpVersion%s extends Migration
  *
  * @return array
  */
-function get_version()
+function get_version(): array
 {
-	$str_CurrentVersion = @file_get_contents('version.md');
-	if (!$str_CurrentVersion) {
+	try {
+		$str_CurrentVersion = file_get_contents('version.md');
+	} catch (FilesystemException) {
 		throw new Exception("unable to find current version number in version.md\n");
 	}
 	$arr_CurrentVersion = array_map('intval', explode('.', $str_CurrentVersion));
@@ -60,7 +71,7 @@ function get_version()
  *
  * @return array
  */
-function new_version(array $curr_version, string $kind)
+function new_version(array $curr_version, string $kind): array
 {
 	$new_version = $curr_version;
 	switch ($kind) {
@@ -88,7 +99,7 @@ function new_version(array $curr_version, string $kind)
  *
  * @return string
  */
-function str_version(array $version)
+function str_version(array $version): string
 {
 	return sprintf('%02d%02d%02d', $version[0], $version[1], $version[2]);
 }
@@ -96,7 +107,7 @@ function str_version(array $version)
 /**
  * Check if migration with same name already exists.
  */
-function does_migration_exists(string $version)
+function does_migration_exists(string $version): void
 {
 	$name_candidate = 'bump_version' . $version;
 	$migrations = array_slice(scandir('database/migrations'), 2);

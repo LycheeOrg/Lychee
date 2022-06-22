@@ -2,6 +2,7 @@
 
 include_once __DIR__ . '/../vendor/autoload.php';
 
+use function Safe\copy;
 use function Safe\touch;
 
 $NO_COLOR = "\033[0m";

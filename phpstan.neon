@@ -33,6 +33,7 @@ parameters:
 	checkMissingIterableValueType: false
 	paths:
 		- app
+		- scripts
 	excludePaths:
 		- app/View/*
 		- app/Http/Livewire/*
