@@ -39,7 +39,7 @@ class RedirectLegacyPhotoID
 
 			if (Legacy::isLegacyModelID(strval($photoID))) {
 				$photoID = Legacy::translateLegacyPhotoID(intval($photoID), $request);
-				// It would be nicer if the above method was throwing an excepion instead of returning null
+				// TODO: It would be nicer if the above method was throwing an excepion instead of returning null
 				if ($photoID !== null) {
 					return redirect()->route('view', ['p' => $photoID]);
 				}
