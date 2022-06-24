@@ -88,6 +88,10 @@ final class Spanish implements Language
 			'DELETE_ALBUM_CONFIRMATION_1' => '¿Estás seguro de que deseas eliminar el álbum?',
 			'DELETE_ALBUM_CONFIRMATION_2' => '¿Ha seleccionado un álbum y todas las fotos que contiene? ¡Esta acción no se puede deshacer!',
 
+			'DELETE_TAG_ALBUM_QUESTION' => 'Delete Album',
+			'DELETE_TAG_ALBUM_CONFIRMATION_1' => 'Are you sure you want to delete the album',
+			'DELETE_TAG_ALBUM_CONFIRMATION_2' => '(any photos inside will not be deleted)? This action can\'t be undone!',
+
 			'DELETE_ALBUMS_QUESTION' => 'Eliminar Álbumes y Fotos',
 			'KEEP_ALBUMS' => 'Mantener Álbumes',
 			'DELETE_ALBUMS_CONFIRMATION_1' => '¿Está seguro de que desea eliminar todo',
