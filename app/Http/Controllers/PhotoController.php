@@ -77,7 +77,9 @@ class PhotoController extends Controller
 	 */
 	public function getRandom(): Photo
 	{
-		return StarredAlbum::getInstance() // @phpstan-ignore-line
+		// PHPStan does not understand that `firstOrFail` returns `Photo`, but assumes that it returns `Model`
+		// @phpstan-ignore-next-line
+		return StarredAlbum::getInstance()
 			->photos()
 			->inRandomOrder()
 			->firstOrFail();

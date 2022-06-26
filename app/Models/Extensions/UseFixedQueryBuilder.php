@@ -23,6 +23,10 @@ trait UseFixedQueryBuilder
 	 */
 	public function newEloquentBuilder($query): FixedQueryBuilder
 	{
-		return new FixedQueryBuilder($query); // @phpstan-ignore-line
+		// We must return `FixedQueryBuilder<TModelClass>` but the
+		// `new`-statement evaluates to `FixedQueryBuilder` (without a bound
+		// template parameter).
+		// @phpstan-ignore-next-line
+		return new FixedQueryBuilder($query);
 	}
 }

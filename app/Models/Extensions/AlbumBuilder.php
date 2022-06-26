@@ -93,7 +93,11 @@ class AlbumBuilder extends NSQueryBuilder
 			]);
 		}
 
-		return parent::getModels($columns); // @phpstan-ignore-line
+		// The parent method returns an `Model[]`, but we must return
+		// `Album[]` and we know that this is indeed the case as we have
+		// queried for albums
+		// @phpstan-ignore-next-line
+		return parent::getModels($columns);
 	}
 
 	/**

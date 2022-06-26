@@ -27,7 +27,9 @@ class UserController extends Controller
 	 */
 	public function list(): Collection
 	{
-		return User::query()->where('id', '>', 0)->get(); // @phpstan-ignore-line
+		// PHPStan does not understand that `get` returns `Collection<User>`, but assumes that it returns `Collection<Model>`
+		// @phpstan-ignore-next-line
+		return User::query()->where('id', '>', 0)->get();
 	}
 
 	/**

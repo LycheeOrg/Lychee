@@ -75,7 +75,9 @@ class AlbumFactory
 		}
 
 		try {
-			return $albumQuery->findOrFail($albumId); // @phpstan-ignore-line
+			// PHPStan does not understand that `findOrFail` returns `BaseAlbum`, but assumes that it returns `Model`
+			// @phpstan-ignore-next-line
+			return $albumQuery->findOrFail($albumId);
 		} catch (ModelNotFoundException) {
 			try {
 				return $tagAlbumQuery->findOrFail($albumId);

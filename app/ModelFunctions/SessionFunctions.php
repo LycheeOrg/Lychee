@@ -6,6 +6,7 @@ use App\Exceptions\UnauthenticatedException;
 use App\Legacy\Legacy;
 use App\Models\Logs;
 use App\Models\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
@@ -69,13 +70,17 @@ class SessionFunctions
 	 * Return User object given a positive ID.
 	 *
 	 * @throws UnauthenticatedException
+	 * @throws ModelNotFoundException
 	 */
 	private function accessUserData(): User
 	{
 		$id = $this->id();
-		$this->user_data = User::query()->find($id);
+		$this->user_data = User::query()->findOrFail($id);
 
-		return $this->user_data; // @phpstan-ignore-line
+		// `findOrFail` above returns a union type, but we know that it
+		// returns the correct `User` mode in this case
+		// @phpstan-ignore-next-line
+		return $this->user_data;
 	}
 
 	/**

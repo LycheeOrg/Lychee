@@ -52,7 +52,9 @@ class VerifyAuthentication
 		if ($this->isSignedChallenge($credentials)) {
 			$id = $this->binaryID($credentials['rawId']);
 			if ($id !== '') {
-				return User::getFromCredentialId($id); // @phpstan-ignore-line
+				// PHPStan does not understand that `getFromCredentialId` returns `User<Logs>`, but assumes that it returns `WebAuthnAuthenticatable`
+				// @phpstan-ignore-next-line
+				return User::getFromCredentialId($id);
 			}
 		}
 
