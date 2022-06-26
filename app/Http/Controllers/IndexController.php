@@ -42,7 +42,7 @@ class IndexController extends Controller
 	{
 		if (Configs::getValueAsBool('landing_page_enable', false)) {
 			$lang = Lang::get_lang();
-			$lang['language'] = Configs::getValueAsString('lang');
+			$lang['language'] = Configs::getValueAsString('lang', 'en');
 
 			$infos = $this->configFunctions->get_pages_infos();
 
