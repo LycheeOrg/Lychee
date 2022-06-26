@@ -586,7 +586,8 @@ class AlbumAuthorisationProvider
 		// if no specific columns are yet set.
 		// Otherwise, we cannot add a JOIN clause below
 		// without accidentally adding all columns of the join, too.
-		if (empty($query->columns)) {
+		$baseQuery = $query->getQuery();
+		if ($baseQuery->columns === null || count($baseQuery->columns) === 0) {
 			$query->select([$table . '.*']);
 		}
 

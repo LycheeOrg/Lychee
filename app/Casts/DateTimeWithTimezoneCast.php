@@ -54,7 +54,7 @@ class DateTimeWithTimezoneCast implements CastsAttributes
 		}
 		// If the datetime value is non-null, then the accompanying timezone
 		// must not be null neither.
-		if (!is_string($tz) || empty($tz)) {
+		if (!is_string($tz) || $tz === '') {
 			throw new LycheeDomainException('Column \'' . $key . '\' is not null, but column \'' . $tzKey . '\' is either not a string, an empty string or null');
 		}
 		$result = $model->asDateTime($value);

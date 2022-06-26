@@ -90,16 +90,16 @@ class VideoData extends Command
 				if ($originalSizeVariant->height === 0 && $info->height !== 0) {
 					$originalSizeVariant->height = $info->height;
 				}
-				if (empty($photo->focal) && !empty($info->focal)) {
+				if ($photo->focal === null) {
 					$photo->focal = $info->focal;
 				}
-				if (empty($photo->aperture) && !empty($info->aperture)) {
+				if ($photo->aperture === null) {
 					$photo->aperture = $info->aperture;
 				}
-				if ($photo->latitude === null && $info->latitude !== null) {
+				if ($photo->latitude === null) {
 					$photo->latitude = $info->latitude;
 				}
-				if ($photo->longitude === null && $info->longitude !== null) {
+				if ($photo->longitude === null) {
 					$photo->longitude = $info->longitude;
 				}
 				if ($photo->isDirty()) {

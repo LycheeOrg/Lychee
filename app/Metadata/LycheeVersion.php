@@ -101,7 +101,7 @@ class LycheeVersion
 		try {
 			$branch = $this->gitHubFunctions->getLocalBranch();
 			$commit = $this->gitHubFunctions->getLocalHead();
-			if (empty($commit) && empty($branch)) {
+			if ($commit === '' && $branch === '') {
 				return LycheeChannelInfo::createGitInfo(null);
 			}
 

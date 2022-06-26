@@ -54,58 +54,58 @@ abstract class AddBaseStrategy
 	 */
 	protected function hydrateMetadata(): void
 	{
-		if (empty($this->photo->title) && !empty($this->parameters->exifInfo->title)) {
+		if ($this->photo->title === null) {
 			$this->photo->title = $this->parameters->exifInfo->title;
 		}
-		if (empty($this->photo->description) && !empty($this->parameters->exifInfo->description)) {
+		if ($this->photo->description === null) {
 			$this->photo->description = $this->parameters->exifInfo->description;
 		}
-		if (empty($this->photo->tags) && !empty($this->parameters->exifInfo->tags)) {
+		if (count($this->photo->tags) === 0) {
 			$this->photo->tags = $this->parameters->exifInfo->tags;
 		}
-		if (empty($this->photo->type) && !empty($this->parameters->exifInfo->type)) {
+		if ($this->photo->type === null) {
 			$this->photo->type = $this->parameters->exifInfo->type;
 		}
-		if (empty($this->photo->iso) && !empty($this->parameters->exifInfo->iso)) {
+		if ($this->photo->iso === null) {
 			$this->photo->iso = $this->parameters->exifInfo->iso;
 		}
-		if (empty($this->photo->aperture) && !empty($this->parameters->exifInfo->aperture)) {
+		if ($this->photo->aperture === null) {
 			$this->photo->aperture = $this->parameters->exifInfo->aperture;
 		}
-		if (empty($this->photo->make) && !empty($this->parameters->exifInfo->make)) {
+		if ($this->photo->make === null) {
 			$this->photo->make = $this->parameters->exifInfo->make;
 		}
-		if (empty($this->photo->model) && !empty($this->parameters->exifInfo->model)) {
+		if ($this->photo->model === null) {
 			$this->photo->model = $this->parameters->exifInfo->model;
 		}
-		if (empty($this->photo->lens) && !empty($this->parameters->exifInfo->lens)) {
+		if ($this->photo->lens === null) {
 			$this->photo->lens = $this->parameters->exifInfo->lens;
 		}
-		if (empty($this->photo->shutter) && !empty($this->parameters->exifInfo->shutter)) {
+		if ($this->photo->shutter === null) {
 			$this->photo->shutter = $this->parameters->exifInfo->shutter;
 		}
-		if (empty($this->photo->focal) && !empty($this->parameters->exifInfo->focal)) {
+		if ($this->photo->focal === null) {
 			$this->photo->focal = $this->parameters->exifInfo->focal;
 		}
-		if ($this->photo->taken_at === null && $this->parameters->exifInfo->taken_at !== null) {
+		if ($this->photo->taken_at === null) {
 			$this->photo->taken_at = $this->parameters->exifInfo->taken_at;
 		}
-		if ($this->photo->latitude === null && $this->parameters->exifInfo->latitude !== null) {
+		if ($this->photo->latitude === null) {
 			$this->photo->latitude = $this->parameters->exifInfo->latitude;
 		}
-		if ($this->photo->longitude === null && $this->parameters->exifInfo->longitude !== null) {
+		if ($this->photo->longitude === null) {
 			$this->photo->longitude = $this->parameters->exifInfo->longitude;
 		}
-		if ($this->photo->altitude === null && $this->parameters->exifInfo->altitude !== null) {
+		if ($this->photo->altitude === null) {
 			$this->photo->altitude = $this->parameters->exifInfo->altitude;
 		}
-		if ($this->photo->img_direction === null && $this->parameters->exifInfo->imgDirection !== null) {
+		if ($this->photo->img_direction === null) {
 			$this->photo->img_direction = $this->parameters->exifInfo->imgDirection;
 		}
-		if (empty($this->photo->location) && !empty($this->parameters->exifInfo->location)) {
+		if ($this->photo->location === null) {
 			$this->photo->location = $this->parameters->exifInfo->location;
 		}
-		if (empty($this->photo->live_photo_content_id) && !empty($this->parameters->exifInfo->livePhotoContentID)) {
+		if ($this->photo->live_photo_content_id === null) {
 			$this->photo->live_photo_content_id = $this->parameters->exifInfo->livePhotoContentID;
 		}
 	}

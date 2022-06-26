@@ -47,7 +47,7 @@ class MoveAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$targetAlbumID = $values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE];
-		$this->album = empty($targetAlbumID) ?
+		$this->album = $targetAlbumID === null ?
 			null :
 			Album::query()->findOrFail($targetAlbumID);
 		// `findOrFail` returns a union type, but we know that it returns the

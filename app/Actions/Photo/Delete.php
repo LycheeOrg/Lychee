@@ -101,7 +101,7 @@ class Delete
 	private function collectSizeVariantPathsByPhotoID(array $photoIDs): void
 	{
 		try {
-			if (empty($photoIDs)) {
+			if (count($photoIDs) === 0) {
 				return;
 			}
 
@@ -139,7 +139,7 @@ class Delete
 	private function collectSizeVariantPathsByAlbumID(array $albumIDs): void
 	{
 		try {
-			if (empty($albumIDs)) {
+			if (count($albumIDs) === 0) {
 				return;
 			}
 
@@ -177,7 +177,7 @@ class Delete
 	private function collectLivePhotoPathsByPhotoID(array $photoIDs)
 	{
 		try {
-			if (empty($photoIDs)) {
+			if (count($photoIDs) === 0) {
 				return;
 			}
 
@@ -215,7 +215,7 @@ class Delete
 	private function collectLivePhotoPathsByAlbumID(array $albumIDs)
 	{
 		try {
-			if (empty($albumIDs)) {
+			if (count($albumIDs) === 0) {
 				return;
 			}
 
@@ -249,7 +249,7 @@ class Delete
 	private function collectSymLinksByPhotoID(array $photoIDs): void
 	{
 		try {
-			if (empty($photoIDs)) {
+			if (count($photoIDs) === 0) {
 				return;
 			}
 
@@ -277,7 +277,7 @@ class Delete
 	private function collectSymLinksByAlbumID(array $albumIDs): void
 	{
 		try {
-			if (empty($albumIDs)) {
+			if (count($albumIDs) === 0) {
 				return;
 			}
 
@@ -310,7 +310,7 @@ class Delete
 	private function deleteDBRecords(array $photoIDs, array $albumIDs): void
 	{
 		try {
-			if (!empty($photoIDs)) {
+			if (count($photoIDs) !== 0) {
 				SymLink::query()
 					->whereExists(function (BaseBuilder $query) use ($photoIDs) {
 						$query
@@ -320,7 +320,7 @@ class Delete
 					})
 					->delete();
 			}
-			if (!empty($albumIDs)) {
+			if (count($albumIDs) !== 0) {
 				SymLink::query()
 					->whereExists(function (BaseBuilder $query) use ($albumIDs) {
 						$query
@@ -331,12 +331,12 @@ class Delete
 					})
 					->delete();
 			}
-			if (!empty($photoIDs)) {
+			if (count($photoIDs) !== 0) {
 				SizeVariant::query()
 					->whereIn('size_variants.photo_id', $photoIDs)
 					->delete();
 			}
-			if (!empty($albumIDs)) {
+			if (count($albumIDs) !== 0) {
 				SizeVariant::query()
 					->whereExists(function (BaseBuilder $query) use ($albumIDs) {
 						$query
@@ -346,10 +346,10 @@ class Delete
 					})
 					->delete();
 			}
-			if (!empty($photoIDs)) {
+			if (count($photoIDs) !== 0) {
 				Photo::query()->whereIn('id', $photoIDs)->delete();
 			}
-			if (!empty($albumIDs)) {
+			if (count($albumIDs) !== 0) {
 				Photo::query()->whereIn('album_id', $albumIDs)->delete();
 			}
 		} catch (\InvalidArgumentException $e) {

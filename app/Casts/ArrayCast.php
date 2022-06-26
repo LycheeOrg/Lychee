@@ -17,7 +17,7 @@ class ArrayCast implements CastsAttributes
 	 */
 	public function get($model, string $key, $value, array $attributes): array
 	{
-		return empty($value) ? [] : explode(',', strval($value));
+		return ($value === null || $value === '') ? [] : explode(',', strval($value));
 	}
 
 	/**
@@ -34,13 +34,13 @@ class ArrayCast implements CastsAttributes
 		// The array must not contain empty tags and tags which contain a comma
 		// TODO: Either use a separate table to store the tags or another encoding (e.g. JSON) which also allows commas in tags
 
-		$arr = empty($value) ? [] : array_values(array_filter(
+		$arr = !is_array($value) ? [] : array_values(array_filter(
 			$value,
 			fn ($elem) => ($elem !== null && $elem !== '' && !str_contains($elem, ','))
 		));
 
 		return [
-			$key => empty($arr) ? null : implode(',', $arr),
+			$key => count($arr) === 0 ? null : implode(',', $arr),
 		];
 	}
 }

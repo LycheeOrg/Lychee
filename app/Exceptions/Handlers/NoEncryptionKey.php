@@ -40,7 +40,7 @@ class NoEncryptionKey implements HttpExceptionHandler
 			touch(base_path('.NO_SECURE_KEY'));
 			$redirectResponse = ToInstall::go();
 			$contentType = $defaultResponse->headers->get('Content-Type');
-			if (!empty($contentType)) {
+			if ($contentType !== null && $contentType !== '') {
 				$redirectResponse->headers->set('Content-Type', $contentType);
 				$content = $defaultResponse->getContent();
 				$redirectResponse->setContent($content !== false ? $content : null);

@@ -252,7 +252,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 
 	protected function getHasPasswordAttribute(): bool
 	{
-		return !empty($this->password);
+		return $this->password !== null && $this->password !== '';
 	}
 
 	protected function getSortingAttribute(): ?PhotoSortingCriterion
@@ -260,7 +260,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		$sortingColumn = $this->attributes['sorting_col'];
 		$sortingOrder = $this->attributes['sorting_order'];
 
-		return (empty($sortingColumn) || empty($sortingOrder)) ?
+		return ($sortingColumn === null || $sortingOrder === null) ?
 			null :
 			new PhotoSortingCriterion($sortingColumn, $sortingOrder);
 	}

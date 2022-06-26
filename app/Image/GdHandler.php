@@ -260,7 +260,7 @@ class GdHandler implements ImageHandlerInterface
 		int $src_h,
 		int $quality = 4
 	): void {
-		if (empty($src_image) || empty($dst_image) || $quality <= 0) {
+		if ($src_image === null || $dst_image === null || $quality <= 0) {
 			return;
 		}
 

@@ -137,7 +137,10 @@ class Create
 		$this->strategyParameters->exifInfo = Extractor::createFromFile($sourceFile);
 
 		// Use basename of file if IPTC title missing
-		if (empty($this->strategyParameters->exifInfo->title)) {
+		if (
+			$this->strategyParameters->exifInfo->title === null ||
+			$this->strategyParameters->exifInfo->title === ''
+		) {
 			$this->strategyParameters->exifInfo->title = substr($sourceFile->getOriginalBasename(), 0, 98);
 		}
 	}

@@ -64,7 +64,7 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 		if ($this->photo === null) {
 			throw new IllegalOrderOfOperationException('associated photo model must not be null');
 		}
-		if (empty($this->photo->checksum)) {
+		if ($this->photo->checksum === null || $this->photo->checksum === '') {
 			throw new IllegalOrderOfOperationException('cannot generate short path for photo before checksum has been set');
 		}
 		$directory = self::VARIANT_2_PATH_PREFIX[$sizeVariant] . '/';
@@ -99,10 +99,10 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 			($sizeVariant !== SizeVariant::ORIGINAL && $this->photo->isRaw())
 		) {
 			return self::DEFAULT_EXTENSION;
-		} elseif (!empty($this->originalExtension)) {
+		} elseif ($this->originalExtension !== '') {
 			return $this->originalExtension;
 		} else {
-			if (empty($this->fallbackExtension)) {
+			if ($this->fallbackExtension === '') {
 				throw new MissingValueException('fallbackExtension');
 			}
 

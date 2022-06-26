@@ -75,7 +75,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		if ($this->photo->isRaw()) {
 			$this->extractReferenceFromRaw($original->full_path, $original->width, $original->height);
 		} elseif ($this->photo->isVideo()) {
-			if (empty($this->photo->aperture)) {
+			if (!is_numeric($this->photo->aperture)) {
 				throw new MediaFileOperationException('Media file is reported to be a video, but aperture (aka duration) has not been extracted');
 			}
 			$position = floatval($this->photo->aperture) / 2;
@@ -234,7 +234,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		if ($sizeVariant === SizeVariant::ORIGINAL) {
 			throw new InvalidSizeVariantException('createSizeVariant() must not be used to create original size, use createOriginal() instead');
 		}
-		if (empty($this->referenceFullPath)) {
+		if ($this->referenceFullPath === '') {
 			$this->extractReferenceImage();
 		}
 		list($maxWidth, $maxHeight) = $this->getMaxDimensions($sizeVariant);
@@ -257,7 +257,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		if ($this->photo->isVideo() && ($sizeVariant === SizeVariant::MEDIUM || $sizeVariant === SizeVariant::MEDIUM2X)) {
 			return null;
 		}
-		if (empty($this->referenceFullPath)) {
+		if ($this->referenceFullPath === '') {
 			$this->extractReferenceImage();
 		}
 

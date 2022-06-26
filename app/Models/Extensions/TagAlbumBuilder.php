@@ -33,7 +33,7 @@ class TagAlbumBuilder extends FixedQueryBuilder
 	public function getModels($columns = ['*']): array
 	{
 		$baseQuery = $this->getQuery();
-		if (empty($baseQuery->columns)) {
+		if ($baseQuery->columns === null || count($baseQuery->columns) === 0) {
 			$this->select([$baseQuery->from . '.*']);
 		}
 

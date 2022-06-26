@@ -82,12 +82,9 @@ trait UTCBasedTimes
 		// deep copy, hence it is safe to change the timezone below without
 		// altering the original object
 		$carbonTime = $this->asDateTime($value);
-		if (empty($carbonTime)) {
-			return null;
-		}
-		$carbonTime->setTimezone(self::$DB_TIMEZONE_NAME);
+		$carbonTime?->setTimezone(self::$DB_TIMEZONE_NAME);
 
-		return $carbonTime->format(self::$DB_DATETIME_FORMAT);
+		return $carbonTime?->format(self::$DB_DATETIME_FORMAT);
 	}
 
 	/**
@@ -132,7 +129,7 @@ trait UTCBasedTimes
 	 */
 	public function asDateTime($value): ?Carbon
 	{
-		if (empty($value)) {
+		if ($value === null || $value === '') {
 			return null;
 		}
 

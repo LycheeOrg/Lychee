@@ -34,12 +34,13 @@ trait ConfigsHas
 		// value not yet set -> let's see if exiftool is available
 		if ($has_exiftool === 2) {
 			try {
-				$path = exec('command -v exiftool');
+				$cmd_output = exec('command -v exiftool');
 			} catch (\Exception $e) {
-				$path = '';
+				$cmd_output = false;
 				Handler::reportSafely(new ExternalComponentMissingException('could not find exiftool; `has_exiftool` will be set to 0', $e));
 			}
-			$has_exiftool = empty($path) ? 0 : 1;
+			$path = $cmd_output === false ? '' : $cmd_output;
+			$has_exiftool = $path === '' ? 0 : 1;
 			try {
 				self::set('has_exiftool', $has_exiftool);
 			} catch (InvalidConfigOption|QueryBuilderException $e) {
@@ -66,12 +67,13 @@ trait ConfigsHas
 		// value not yet set -> let's see if ffmpeg is available
 		if ($has_ffmpeg === 2) {
 			try {
-				$path = exec('command -v ffmpeg');
+				$cmd_output = exec('command -v ffmpeg');
 			} catch (\Exception $e) {
-				$path = '';
+				$cmd_output = false;
 				Handler::reportSafely(new ExternalComponentMissingException('could not find ffmpeg; `has_ffmpeg` will be set to 0', $e));
 			}
-			$has_ffmpeg = empty($path) ? 0 : 1;
+			$path = $cmd_output === false ? '' : $cmd_output;
+			$has_ffmpeg = $path === '' ? 0 : 1;
 			try {
 				self::set('has_ffmpeg', $has_ffmpeg);
 			} catch (InvalidConfigOption|QueryBuilderException $e) {

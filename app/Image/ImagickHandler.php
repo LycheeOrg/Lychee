@@ -89,7 +89,7 @@ class ImagickHandler implements ImageHandlerInterface
 			// Remove metadata to save some bytes
 			$image->stripImage();
 
-			if (!empty($profiles)) {
+			if (array_key_exists('icc', $profiles)) {
 				$image->profileImage('icc', $profiles['icc']);
 			}
 
@@ -132,7 +132,7 @@ class ImagickHandler implements ImageHandlerInterface
 			// Remove metadata to save some bytes
 			$image->stripImage();
 
-			if (!empty($profiles)) {
+			if (array_key_exists('icc', $profiles)) {
 				$image->profileImage('icc', $profiles['icc']);
 			}
 

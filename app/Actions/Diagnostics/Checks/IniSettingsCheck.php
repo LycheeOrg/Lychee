@@ -5,6 +5,7 @@ namespace App\Actions\Diagnostics\Checks;
 use App\Contracts\DiagnosticCheckInterface;
 use App\Models\Configs;
 use function Safe\ini_get;
+use function Safe\preg_match;
 
 class IniSettingsCheck implements DiagnosticCheckInterface
 {
@@ -47,7 +48,7 @@ class IniSettingsCheck implements DiagnosticCheckInterface
 		if (0 < $max_execution_time && $max_execution_time < 200) {
 			$errors[] = 'Warning: You may experience problems when uploading a photo of large size or handling many/large albums. Take a look in the FAQ for details.';
 		}
-		if (empty(ini_get('allow_url_fopen'))) {
+		if (filter_var(ini_get('allow_url_fopen'), FILTER_VALIDATE_BOOLEAN) !== true) {
 			$errors[] = 'Warning: You may experience problems with the Dropbox- and URL-Import. Edit your php.ini and set allow_url_fopen to 1.';
 		}
 
@@ -64,8 +65,8 @@ class IniSettingsCheck implements DiagnosticCheckInterface
 			$errors[] = 'Warning: exec function has been disabled. You may experience some error 500, please report them to us.';
 		}
 
-		if (empty(ini_get('user_agent'))) {
-			$errors[] = 'Warning: user_agent for PHP is not set. You may experience problems when importing images via URL.';
+		if (preg_match('!^[-_a-zA-Z]+/\d+(\.\d+)*[a-z]? \(.*\)!', ini_get('user_agent')) === 0) {
+			$errors[] = 'Warning: user_agent for PHP is not properly set. You may experience problems when importing images via URL.';
 		}
 
 		if (ini_get('assert.exception') !== '1') {

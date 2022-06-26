@@ -202,7 +202,7 @@ class Photo extends Model implements HasRandomID
 	protected function getShutterAttribute(?string $shutter): ?string
 	{
 		try {
-			if (empty($shutter)) {
+			if ($shutter === null || $shutter === '') {
 				return null;
 			}
 			// shutter speed needs to be processed. It is stored as a string `a/b s`
@@ -280,7 +280,7 @@ class Photo extends Model implements HasRandomID
 	 */
 	protected function getFocalAttribute(?string $focal): ?string
 	{
-		if (empty($focal)) {
+		if ($focal === null || $focal === '') {
 			return null;
 		}
 		// We need to format the framerate (stored as focal) -> max 2 decimal digits
@@ -300,7 +300,9 @@ class Photo extends Model implements HasRandomID
 	 */
 	protected function getLivePhotoFullPathAttribute(): ?string
 	{
-		return empty($this->live_photo_short_path) ? null : Storage::path($this->live_photo_short_path);
+		$path = $this->live_photo_short_path;
+
+		return ($path === null || $path === '') ? null : Storage::path($path);
 	}
 
 	/**
@@ -316,7 +318,9 @@ class Photo extends Model implements HasRandomID
 	 */
 	protected function getLivePhotoUrlAttribute(): ?string
 	{
-		return empty($this->live_photo_short_path) ? null : Storage::url($this->live_photo_short_path);
+		$path = $this->live_photo_short_path;
+
+		return ($path === null || $path === '') ? null : Storage::url($path);
 	}
 
 	/**
@@ -366,7 +370,7 @@ class Photo extends Model implements HasRandomID
 	 */
 	public function isPhoto(): bool
 	{
-		if (empty($this->type)) {
+		if ($this->type === null || $this->type === '') {
 			throw new IllegalOrderOfOperationException('Photo::isPhoto() must not be called before Photo::$type has been set');
 		}
 
@@ -382,7 +386,7 @@ class Photo extends Model implements HasRandomID
 	 */
 	public function isVideo(): bool
 	{
-		if (empty($this->type)) {
+		if ($this->type === null || $this->type === '') {
 			throw new IllegalOrderOfOperationException('Photo::isVideo() must not be called before Photo::$type has been set');
 		}
 

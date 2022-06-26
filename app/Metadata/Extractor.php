@@ -418,7 +418,7 @@ class Extractor
 		if ($exif->getCountry() !== false) {
 			$fields[] = trim($exif->getCountry());
 		}
-		if (!empty($fields)) {
+		if (count($fields) !== 0) {
 			$metadata->position = implode(', ', $fields);
 		}
 
@@ -427,7 +427,7 @@ class Extractor
 			// properly format aperture and focal
 			$metadata->aperture = ($exif->getAperture() !== false) ? $exif->getAperture() : null;
 			$metadata->focal = ($exif->getFocalLength() !== false) ? $exif->getFocalLength() : null;
-			if (!empty($metadata->focal)) {
+			if ($metadata->focal !== null) {
 				$metadata->focal = round(floatval($metadata->focal)) . self::SUFFIX_MM_UNIT;
 			}
 		} else {
@@ -436,11 +436,11 @@ class Extractor
 			$metadata->focal = ($exif->getFramerate() !== false) ? $exif->getFramerate() : null;
 		}
 
-		if (empty($metadata->title)) {
+		if ($metadata->title === null || $metadata->title === '') {
 			$metadata->title = ($exif->getHeadline() !== false) ? $exif->getHeadline() : null;
 		}
 
-		if (!empty($metadata->shutter)) {
+		if ($metadata->shutter !== null && $metadata->shutter !== '') {
 			// TODO: If we add the suffix " s" here, we should also normalize the fraction here.
 			// It does not make any sense to strip-off the suffix again in Photo and re-add it again.
 			$metadata->shutter = $metadata->shutter . self::SUFFIX_SEC_UNIT;
@@ -450,7 +450,7 @@ class Extractor
 		// but only if return value is not null (= function has been disabled)
 		try {
 			$metadata->location = Geodecoder::decodeLocation($metadata->latitude, $metadata->longitude);
-			if (!empty($metadata->location)) {
+			if ($metadata->location !== null) {
 				$metadata->location = substr($metadata->location, 0, self::MAX_LOCATION_STRING_LENGTH);
 			}
 		} catch (ExternalComponentFailedException|StringsException $e) {

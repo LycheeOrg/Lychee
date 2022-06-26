@@ -76,31 +76,59 @@ class ExifLens extends Command
 						$photo->size_variants->getOriginal()->filesize = $localFile->getFilesize();
 						$updated = true;
 					}
-					if (empty($photo->iso) && !empty($info->iso)) {
+					if (
+						($photo->iso === null || $photo->iso === '') &&
+						$info->iso !== null &&
+						$info->iso !== ''
+					) {
 						$photo->iso = $info->iso;
 						$updated = true;
 					}
-					if (empty($photo->aperture) && !empty($info->aperture)) {
+					if (
+						($photo->aperture === null || $photo->aperture === '') &&
+						$info->aperture !== null &&
+						$info->aperture !== ''
+					) {
 						$photo->aperture = $info->aperture;
 						$updated = true;
 					}
-					if (empty($photo->make) && !empty($info->make)) {
+					if (
+						($photo->make === null || $photo->make === '') &&
+						$info->make !== null &&
+						$info->make !== ''
+					) {
 						$photo->make = $info->make;
 						$updated = true;
 					}
-					if (empty($photo->model) && !empty($info->model)) {
+					if (
+						($photo->model === null || $photo->model === '') &&
+						$info->model !== null &&
+						$info->model !== ''
+					) {
 						$photo->model = $info->model;
 						$updated = true;
 					}
-					if (empty($photo->lens) && !empty($info->lens)) {
+					if (
+						($photo->lens === null || $photo->lens === '') &&
+						$info->lens !== null &&
+						$info->lens !== ''
+					) {
 						$photo->lens = $info->lens;
 						$updated = true;
 					}
-					if (empty($photo->shutter) && !empty($info->shutter)) {
+					if (
+						($photo->shutter === null || $photo->shutter === '') &&
+						$info->shutter !== null &&
+						$info->shutter !== ''
+					) {
 						$photo->shutter = $info->shutter;
 						$updated = true;
 					}
-					if (empty($photo->focal) && !empty($info->focal)) {
+					if (
+						($photo->focal === null || $photo->focal === '') &&
+						$info->focal !== null &&
+						$info->focal !== ''
+					) {
 						$photo->focal = $info->focal;
 						$updated = true;
 					}

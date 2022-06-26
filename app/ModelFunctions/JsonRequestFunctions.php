@@ -113,8 +113,8 @@ class JsonRequestFunctions
 	{
 		try {
 			if ($this->decodedJson === null || !$useCache) {
-				$rawResponse = $useCache ? Cache::get($this->url) : null;
-				if (empty($rawResponse)) {
+				$rawResponse = $useCache ? (string) Cache::get($this->url) : '';
+				if ($rawResponse === '') {
 					$rawResponse = $this->fetchFromServer();
 					Cache::put($this->url, $rawResponse, now()->addDays($this->ttl));
 					Cache::put($this->url . '_age', now(), now()->addDays($this->ttl));

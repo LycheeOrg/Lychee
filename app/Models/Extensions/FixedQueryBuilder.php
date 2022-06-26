@@ -28,8 +28,6 @@ use Illuminate\Database\Eloquent\Builder;
  * See this [PhpStan Playground](https://phpstan.org/r/f3415be1-fe6b-43fb-8be1-f712cd3e24b1)
  * for an explanation what happens.
  *
- * @property string[]|null $columns
- *
  * @method $this addSelect(array|mixed $column)
  * @method int   count(string $columns = '*')
  * @method $this from(\Closure|\Illuminate\Database\Query\Builder|string $table, ?string $as = null)
