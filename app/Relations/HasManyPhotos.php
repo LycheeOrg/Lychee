@@ -71,7 +71,7 @@ abstract class HasManyPhotos extends Relation
 	{
 		/*
 		 * We know that the parent is of type `BaseAlbum`,
-		 * because it was set int the constructor as `$owningAlbum`.
+		 * because it was set in the constructor as `$owningAlbum`.
 		 */
 		return $this->parent; // @phpstan-ignore-line @noinspection PhpIncompatibleReturnTypeInspection
 	}
