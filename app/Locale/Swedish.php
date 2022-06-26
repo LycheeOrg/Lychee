@@ -90,6 +90,10 @@ final class Swedish implements Language
 			'DELETE_ALBUM_CONFIRMATION_1' => 'Är du säker på att du vill radera albumet',
 			'DELETE_ALBUM_CONFIRMATION_2' => 'och alla fotografier det innehåller? Raderingen går inte att ångra!',
 
+			'DELETE_TAG_ALBUM_QUESTION' => 'Delete Album',
+			'DELETE_TAG_ALBUM_CONFIRMATION_1' => 'Are you sure you want to delete the album',
+			'DELETE_TAG_ALBUM_CONFIRMATION_2' => '(any photos inside will not be deleted)? This action can\'t be undone!',
+
 			'DELETE_ALBUMS_QUESTION' => 'Radera album och fotografier',
 			'KEEP_ALBUMS' => 'Behåll album',
 			'DELETE_ALBUMS_CONFIRMATION_1' => 'Är du säker på att du vill radera alla',

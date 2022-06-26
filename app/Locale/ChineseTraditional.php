@@ -90,6 +90,10 @@ final class ChineseTraditional implements Language
 			'DELETE_ALBUM_CONFIRMATION_1' => '確定要刪除相簿',
 			'DELETE_ALBUM_CONFIRMATION_2' => '以及相簿內包含的所有照片？此動作無法還原！',
 
+			'DELETE_TAG_ALBUM_QUESTION' => 'Delete Album',
+			'DELETE_TAG_ALBUM_CONFIRMATION_1' => 'Are you sure you want to delete the album',
+			'DELETE_TAG_ALBUM_CONFIRMATION_2' => '(any photos inside will not be deleted)? This action can\'t be undone!',
+
 			'DELETE_ALBUMS_QUESTION' => '刪除相簿和照片',
 			'KEEP_ALBUMS' => '保留相簿',
 			'DELETE_ALBUMS_CONFIRMATION_1' => '確定要刪除全部照片',

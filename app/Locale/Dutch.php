@@ -90,6 +90,10 @@ final class Dutch implements Language
 			'DELETE_ALBUM_CONFIRMATION_1' => 'Weet je zeker dat je dit album en alle foto\'s die het',
 			'DELETE_ALBUM_CONFIRMATION_2' => 'bevat wilt verwijderen? Deze actie kan niet ongedaan gemaakt worden!',
 
+			'DELETE_TAG_ALBUM_QUESTION' => 'Delete Album',
+			'DELETE_TAG_ALBUM_CONFIRMATION_1' => 'Are you sure you want to delete the album',
+			'DELETE_TAG_ALBUM_CONFIRMATION_2' => '(any photos inside will not be deleted)? This action can\'t be undone!',
+
 			'DELETE_ALBUMS_QUESTION' => 'Verwijder Albums en Foto\'s',
 			'KEEP_ALBUMS' => 'Behoud Albums',
 			'DELETE_ALBUMS_CONFIRMATION_1' => 'Weet je zeker dat je deze albums en alle foto\'s die ze',

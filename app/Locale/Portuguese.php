@@ -90,6 +90,10 @@ final class Portuguese implements Language
 			'DELETE_ALBUM_CONFIRMATION_1' => 'De certeza que quer eliminar o álbum',
 			'DELETE_ALBUM_CONFIRMATION_2' => 'e todas as fotografias contidas? Esta ação não pode ser desfeita!',
 
+			'DELETE_TAG_ALBUM_QUESTION' => 'Delete Album',
+			'DELETE_TAG_ALBUM_CONFIRMATION_1' => 'Are you sure you want to delete the album',
+			'DELETE_TAG_ALBUM_CONFIRMATION_2' => '(any photos inside will not be deleted)? This action can\'t be undone!',
+
 			'DELETE_ALBUMS_QUESTION' => 'Eliminar Álbums e Fotos',
 			'KEEP_ALBUMS' => 'Manter Álbums',
 			'DELETE_ALBUMS_CONFIRMATION_1' => 'De certeza que quer eliminar todos',
