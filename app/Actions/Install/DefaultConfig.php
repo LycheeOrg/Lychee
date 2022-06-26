@@ -22,13 +22,24 @@ class DefaultConfig
 
 		'requirements' => [
 			'php' => [
-				'openssl',
-				'pdo',
-				'mbstring',
-				'tokenizer',
-				'JSON',
+				'bcmath', // Required by Laravel
+				'ctype', // Required by Laravel
+				'dom', // Required by dependencies
 				'exif',
+				'fileinfo', // Required by Laravel
+				'filter', // Required by dependencies
 				'gd',
+				'json', // Required by Laravel
+				'libxml', // Required by dependencies
+				'mbstring', // Required by Laravel
+				'openssl', // Required by Laravel
+				'pcre', // Required by dependencies
+				'PDO', // Required by Laravel
+				'Phar', // Required by dependencies
+				'SimpleXML', // Required by dependencies
+				'tokenizer', // Required by Laravel
+				'xml', // Required by Laravel
+				'xmlwriter', // Required by dependencies
 			],
 			'apache' => ['mod_rewrite'],
 		],

@@ -25,7 +25,6 @@
         "ext-pdo": "*",
         "ext-tokenizer": "*",
         "ext-xml": "*",
-        "ext-zip": "*",
         "bepsvpt/secure-headers": "^7.1",
         "darkghosthunter/larapass": "dev-LycheeSpecial",
         "doctrine/dbal": "^3.1",
