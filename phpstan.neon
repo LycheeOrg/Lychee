@@ -27,7 +27,7 @@ parameters:
 	level: 7
 	reportMaybesInPropertyPhpDocTypes: false
 	checkMissingIterableValueType: false
-	checkDynamicProperties: false
+	# checkDynamicProperties: false
 	featureToggles:
 		bleedingEdge: true
 	paths:
