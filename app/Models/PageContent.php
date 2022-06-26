@@ -23,6 +23,7 @@ use Illuminate\Support\Carbon;
 class PageContent extends Model
 {
 	use ThrowsConsistentExceptions;
+	/** @phpstan-use UseFixedQueryBuilder<PageContent> */
 	use UseFixedQueryBuilder;
 
 	/**
@@ -35,9 +36,9 @@ class PageContent extends Model
 	public function get_content()
 	{
 		$return = '';
-		if ($this->type == 'img') {
+		if ($this->type === 'img') {
 			$return = '<div class="' . $this->class . '"><img src="' . $this->content . '" alt="image" /></div>';
-		} elseif ($this->type == 'div') {
+		} elseif ($this->type === 'div') {
 			$return = '<div class="' . $this->class . '">';
 			$return .= Markdown::parse($this->content)->toHtml();
 			$return .= '</div>';

@@ -65,13 +65,13 @@ class ImportServerRequest extends BaseApiRequest implements HasAlbum
 		$this->importMode = new ImportMode(
 			isset($values[self::DELETE_IMPORTED_ATTRIBUTE]) ?
 				static::toBoolean($values[self::DELETE_IMPORTED_ATTRIBUTE]) :
-				Configs::get_value('delete_imported', '0') === '1',
+				Configs::getValueAsBool('delete_imported', false),
 			isset($values[self::SKIP_DUPLICATES_ATTRIBUTE]) ?
 				static::toBoolean($values[self::SKIP_DUPLICATES_ATTRIBUTE]) :
-				Configs::get_value('skip_duplicates', '0') === '1',
+				Configs::getValueAsBool('skip_duplicates', false),
 			isset($values[self::IMPORT_VIA_SYMLINK_ATTRIBUTE]) ?
 				static::toBoolean($values[self::IMPORT_VIA_SYMLINK_ATTRIBUTE]) :
-				Configs::get_value('import_via_symlink', '0') === '1',
+				Configs::getValueAsBool('import_via_symlink', false),
 			isset($values[self::RESYNC_METADATA_ATTRIBUTE]) &&
 				static::toBoolean($values[self::RESYNC_METADATA_ATTRIBUTE])
 		);

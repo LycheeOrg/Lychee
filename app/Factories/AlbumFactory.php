@@ -4,6 +4,7 @@ namespace App\Factories;
 
 use App\Contracts\AbstractAlbum;
 use App\Exceptions\Internal\InvalidSmartIdException;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\BaseAlbum;
@@ -74,12 +75,12 @@ class AlbumFactory
 		}
 
 		try {
-			return $albumQuery->findOrFail($albumId);
+			return $albumQuery->findOrFail($albumId); // @phpstan-ignore-line
 		} catch (ModelNotFoundException) {
 			try {
 				return $tagAlbumQuery->findOrFail($albumId);
 			} catch (ModelNotFoundException) {
-				throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, $albumId);
+				throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, [$albumId]);
 			}
 		}
 	}
@@ -110,7 +111,8 @@ class AlbumFactory
 			try {
 				$smartAlbums[] = $this->createSmartAlbum($smartID, $withRelations);
 			} catch (InvalidSmartIdException $e) {
-				assert(false, new \AssertionError('InvalidSmartIdException must not be thrown, as search has been limited to self::BUILTIN_SMARTS', $e->getCode(), $e));
+				// InvalidSmartIdException must not be thrown, as search has been limited to self::BUILTIN_SMARTS'
+				throw LycheeAssertionError::createFromUnexpectedException($e);
 			}
 		}
 
@@ -213,10 +215,11 @@ class AlbumFactory
 		}
 
 		/** @var BaseSmartAlbum $smartAlbum */
-		$smartAlbum = call_user_func([self::BUILTIN_SMARTS[$smartAlbumId], 'getInstance']);
+		$smartAlbum = call_user_func(self::BUILTIN_SMARTS[$smartAlbumId] . '::getInstance');
 		if ($withRelations) {
 			// Just try to get the photos.
 			// This loads the relation from DB and caches it.
+			// @phpstan-ignore-next-line : PhpStan will complain about unused variable.
 			$ignore = $smartAlbum->photos;
 		}
 

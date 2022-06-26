@@ -8,6 +8,9 @@ use App\ModelFunctions\JsonRequestFunctions;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Config;
+use function Safe\file_get_contents;
+use function Safe\sprintf;
+use function Safe\substr;
 
 class GitHubFunctions
 {
@@ -32,11 +35,11 @@ class GitHubFunctions
 	/**
 	 * Given a commit id, return the 7 first characters (7 hex digits) and trim it to remove \n.
 	 *
-	 * @param $commit_id
+	 * @param string $commit_id
 	 *
 	 * @return string
 	 */
-	private static function trim($commit_id): string
+	private static function trim(string $commit_id): string
 	{
 		return trim(substr($commit_id, 0, 7));
 	}
@@ -75,21 +78,21 @@ class GitHubFunctions
 	private function count_behind(bool $cached = true): int
 	{
 		if ($this->getLocalBranch() !== 'master') {
-			throw new VersionControlException('Branch is not master, cannot compare');
+			throw new VersionControlException('Branch is not master, cannot compare.');
 		}
 
 		$commits = $this->get_commits($cached);
 
 		$i = 0;
 		while ($i < count($commits)) {
-			if (self::trim($commits[$i]->sha) == $this->getLocalHead()) {
+			if (self::trim($commits[$i]->sha) === $this->getLocalHead()) {
 				break;
 			}
 			$i++;
 		}
 
 		if ($i === count($commits)) {
-			throw new VersionControlException('More than 30 commits behind');
+			throw new VersionControlException('More than 30 commits behind.');
 		}
 
 		return $i;
@@ -126,17 +129,17 @@ class GitHubFunctions
 			$last_update = $this->gitRequest->get_age_text();
 
 			if ($count === 0) {
-				return sprintf(' - Up to date (%s).', $last_update);
+				return sprintf('Up to date (%s).', $last_update);
 			} else {
 				return sprintf(
-					' - %s commits behind master %s (%s)',
+					'%d commits behind master %s (%s)',
 					$count,
 					$this->getRemoteHead(),
 					$last_update
 				);
 			}
 		} catch (VersionControlException $e) {
-			return ' - ' . $e->getMessage();
+			return $e->getMessage();
 		}
 	}
 
@@ -188,8 +191,11 @@ class GitHubFunctions
 	public function checkUpdates(): array
 	{
 		// add a setting to do this check only once per day ?
-		if (Configs::get_value('check_for_updates', '0') == '0') {
-			return [];
+		if (!Configs::getValueAsBool('check_for_updates', false)) {
+			return [
+				'update_json' => 0,
+				'update_available' => false,
+			];
 		}
 
 		try {
@@ -199,12 +205,12 @@ class GitHubFunctions
 			return [
 				'update_json' => intval($json->lychee->version),
 				'update_available' => (
-					(intval(Configs::get_value('version', '40000'))) <
+					(Configs::getValueAsInt('version', 40000)) <
 					$json->lychee->version
 				),
 			];
 		} catch (\Throwable $e) {
-			throw new VersionControlException('Could not check for updates', $e);
+			throw new VersionControlException('Could not check for updates.', $e);
 		}
 	}
 
@@ -240,14 +246,11 @@ class GitHubFunctions
 			try {
 				$head_file = base_path('.git/HEAD');
 				$branch = file_get_contents($head_file);
-				if ($branch === false) {
-					throw new \RuntimeException('`file_get_contents` returned `false`');
-				}
 				$branch = explode('/', $branch, 3);
 
 				$this->localBranch = trim($branch[2]);
 			} catch (\Throwable $e) {
-				throw new VersionControlException('Could not determine the branch', $e);
+				throw new VersionControlException('Could not determine the branch.', $e);
 			}
 		}
 
@@ -267,12 +270,9 @@ class GitHubFunctions
 			try {
 				$file = base_path('.git/refs/heads/' . $this->getLocalBranch());
 				$commitID = file_get_contents($file);
-				if ($commitID === false) {
-					throw new \RuntimeException('`file_get_contents` returned `false`');
-				}
 				$this->localHead = self::trim($commitID);
 			} catch (\Throwable $e) {
-				throw new VersionControlException('Could not determine the head commit of current branch', $e);
+				throw new VersionControlException('Could not determine the head commit of current branch.', $e);
 			}
 		}
 

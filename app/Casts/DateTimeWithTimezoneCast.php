@@ -27,7 +27,7 @@ class DateTimeWithTimezoneCast implements CastsAttributes
 	 *
 	 * @param Model  $model      the associated model class
 	 * @param string $key        the name of the SQL column holding the datetime
-	 * @param string $value      the SQL datetime string
+	 * @param mixed  $value      the SQL datetime string
 	 * @param array  $attributes all SQL attributes of the entity
 	 *
 	 * @return Carbon|null The Carbon object with a properly set timezone
@@ -66,10 +66,10 @@ class DateTimeWithTimezoneCast implements CastsAttributes
 	/**
 	 * Converts the given value into an SQL string for storage.
 	 *
-	 * @param Model       $model      the associated model class
-	 * @param string      $key        the name of the SQL column holding the datetime
-	 * @param Carbon|null $value      the Carbon object of the model
-	 * @param array       $attributes
+	 * @param Model  $model      the associated model class
+	 * @param string $key        the name of the SQL column holding the datetime
+	 * @param mixed  $value      the Carbon object of the model
+	 * @param array  $attributes
 	 *
 	 * @return array An associative map of SQL columns and their values
 	 *

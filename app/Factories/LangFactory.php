@@ -4,6 +4,8 @@ namespace App\Factories;
 
 use App\Contracts\Language;
 use App\Locale\English;
+use function Safe\scandir;
+use function Safe\substr;
 
 class LangFactory
 {
@@ -11,9 +13,7 @@ class LangFactory
 	 * Maps a language code to the name of class which implements this
 	 * language.
 	 *
-	 * @template T of \App\Contracts\Language
-	 *
-	 * @var array<string, class-string<T>>
+	 * @var array<string, class-string<\App\Contracts\Language>>
 	 */
 	private array $langs = [];
 

@@ -3,6 +3,7 @@
 namespace App\Actions\Photo\Strategies;
 
 use App\Exceptions\ConfigurationException;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
@@ -13,6 +14,7 @@ use App\Image\NativeLocalFile;
 use App\Models\Photo;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Adapter\Local;
+use function Safe\symlink;
 
 abstract class AddBaseStrategy
 {
@@ -50,7 +52,7 @@ abstract class AddBaseStrategy
 	 * all available meta-data is hydrated, but for an already existing
 	 * {@link Photo} object existing attributes are not overwritten.
 	 */
-	protected function hydrateMetadata()
+	protected function hydrateMetadata(): void
 	{
 		if (empty($this->photo->title) && !empty($this->parameters->exifInfo->title)) {
 			$this->photo->title = $this->parameters->exifInfo->title;
@@ -108,7 +110,7 @@ abstract class AddBaseStrategy
 		}
 	}
 
-	protected function setParentAndOwnership()
+	protected function setParentAndOwnership(): void
 	{
 		if ($this->parameters->album !== null) {
 			$this->photo->album_id = $this->parameters->album->id;
@@ -149,8 +151,10 @@ abstract class AddBaseStrategy
 			}
 			$targetAbsolutePath = $targetFile->getAbsolutePath();
 			$sourceAbsolutePath = $sourceFile->getAbsolutePath();
-			if (!symlink($sourceAbsolutePath, $targetAbsolutePath)) {
-				throw new MediaFileOperationException('Could not create symbolic link at "' . $targetAbsolutePath . '" for photo at "' . $sourceAbsolutePath . '"');
+			try {
+				symlink($sourceAbsolutePath, $targetAbsolutePath);
+			} catch (\Throwable $e) {
+				throw new MediaFileOperationException('Could not create symbolic link at "' . $targetAbsolutePath . '" for photo at "' . $sourceAbsolutePath . '"', $e);
 			}
 		} else {
 			try {
@@ -174,7 +178,7 @@ abstract class AddBaseStrategy
 				// the exception is thrown if read/write/close are invoked
 				// in wrong order
 				// something we don't do
-				assert(false, new \AssertionError('read/write/close must not throw a logic exception', $e->getCode(), $e));
+				throw LycheeAssertionError::createFromUnexpectedException($e);
 			}
 		}
 	}

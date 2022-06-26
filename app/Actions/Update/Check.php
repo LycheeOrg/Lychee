@@ -50,13 +50,13 @@ class Check
 			// @codeCoverageIgnoreEnd
 		}
 
-		if (Configs::get_value('allow_online_git_pull', '0') == '0') {
+		if (!Configs::getValueAsBool('allow_online_git_pull', false)) {
 			throw new ConfigurationException('Online updates are disabled by configuration');
 		}
 
 		// When going with the CI, .git is always executable
 		// @codeCoverageIgnoreStart
-		if (exec('command -v git') == '') {
+		if (exec('command -v git') === '') {
 			throw new ExternalComponentMissingException('git (software) is not available.');
 		}
 
@@ -122,7 +122,7 @@ class Check
 			$db_ver = $this->lycheeVersion->getDBVersion();
 			$file_ver = $this->lycheeVersion->getFileVersion();
 
-			return 3 * ($db_ver->toInteger() < $file_ver->toInteger());
+			return 3 * intval($db_ver->toInteger() < $file_ver->toInteger());
 			// @codeCoverageIgnoreEnd
 		}
 

@@ -12,6 +12,7 @@ use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use function Safe\sprintf;
 
 /**
  * App\Configs.
@@ -32,6 +33,7 @@ class Configs extends Model
 {
 	use ConfigsHas;
 	use ThrowsConsistentExceptions;
+	/** @phpstan-use UseFixedQueryBuilder<Configs> */
 	use UseFixedQueryBuilder;
 
 	protected const INT = 'int';
@@ -45,7 +47,7 @@ class Configs extends Model
 	/**
 	 * The attributes that are mass assignable.
 	 *
-	 * @var array
+	 * @var array<string>
 	 */
 	protected $fillable = ['key', 'value', 'cat', 'type_range', 'confidentiality', 'description'];
 
@@ -64,11 +66,11 @@ class Configs extends Model
 	/**
 	 * Sanity check.
 	 *
-	 * @param $value
+	 * @param string|null $candidateValue
 	 *
 	 * @return string
 	 */
-	public function sanity($value): string
+	public function sanity(?string $candidateValue): string
 	{
 		$message = '';
 		$val_range = [
@@ -76,43 +78,37 @@ class Configs extends Model
 			self::TERNARY => explode('|', self::TERNARY),
 		];
 
+		$message_template_got = 'Error: Wrong property for ' . $this->key . ', expected %s, got ' . ($candidateValue ?? 'NULL') . '.';
 		switch ($this->type_range) {
 			case self::STRING:
 			case self::DISABLED:
 				break;
 			case self::STRING_REQ:
-				if ($value == '') {
-					$message = 'Error: ' . $this->key . ' empty or not set in database';
+				if ($candidateValue === '' || $candidateValue === null) {
+					$message = 'Error: ' . $this->key . ' empty or not set';
 				}
 				break;
 			case self::INT:
 				// we make sure that we only have digits in the chosen value.
-				if (!ctype_digit(strval($value))) {
-					$message = 'Error: Wrong property for ' . $this->key . ' in database, expected positive integer.';
+				if (!ctype_digit(strval($candidateValue))) {
+					$message = sprintf($message_template_got, 'positive integer');
 				}
 				break;
 			case self::BOOL:
 			case self::TERNARY:
-				if (!in_array($value, $val_range[$this->type_range])) { // BOOL or TERNARY
-					$message = 'Error: Wrong property for ' . $this->key
-						. ' in database, expected ' . implode(
-							' or ',
-							$val_range[$this->type_range]
-						) . ', got ' . ($value ?: 'NULL');
+				if (!in_array($candidateValue, $val_range[$this->type_range], true)) { // BOOL or TERNARY
+					$message = sprintf($message_template_got, implode(' or ', $val_range[$this->type_range]));
 				}
 				break;
 			case self::LICENSE:
-				if (!in_array($value, Helpers::get_all_licenses())) {
-					$message = 'Error: Wrong property for ' . $this->key
-						. ' in database, expected a valid license, got ' . ($value ?: 'NULL');
+				if (!in_array($candidateValue, Helpers::get_all_licenses(), true)) {
+					$message = sprintf($message_template_got, 'a valid license');
 				}
 				break;
 			default:
 				$values = explode('|', $this->type_range);
-				if (!in_array($value, $values)) {
-					$message = 'Error: Wrong property for ' . $this->key
-						. ' in database, expected ' . implode(' or ', $values)
-						. ', got ' . ($value ?: 'NULL');
+				if (!in_array($candidateValue, $values, true)) {
+					$message = sprintf($message_template_got, implode(' or ', $values));
 				}
 				break;
 		}
@@ -127,7 +123,7 @@ class Configs extends Model
 	 */
 	public static function get(): array
 	{
-		if (self::$cache) {
+		if (count(self::$cache) > 0) {
 			return self::$cache;
 		}
 
@@ -151,9 +147,9 @@ class Configs extends Model
 	 *
 	 * @return int|bool|string|null
 	 */
-	public static function get_value(string $key, int|bool|string|null $default = null): int|bool|string|null
+	public static function getValue(string $key, int|bool|string|null $default = null): int|bool|string|null
 	{
-		if (!self::$cache) {
+		if (count(self::$cache) === 0) {
 			self::get();
 		}
 
@@ -170,18 +166,58 @@ class Configs extends Model
 	}
 
 	/**
+	 * Get string configuration value.
+	 *
+	 * @param string $key
+	 * @param string $default
+	 *
+	 * @return string
+	 */
+	public static function getValueAsString(string $key, string $default = ''): string
+	{
+		return strval(self::getValue($key, $default));
+	}
+
+	/**
+	 * Get string configuration value.
+	 *
+	 * @param string $key
+	 * @param int    $default
+	 *
+	 * @return int
+	 */
+	public static function getValueAsInt(string $key, int $default = 0): int
+	{
+		return intval(self::getValue($key, $default));
+	}
+
+	/**
+	 * Get bool configuration value
+	 * ! tricky logic.
+	 *
+	 * @param string $key
+	 * @param bool   $default
+	 *
+	 * @return bool
+	 */
+	public static function getValueAsBool(string $key, bool $default = false): bool
+	{
+		return self::getValue($key, $default ? '1' : '0') === '1';
+	}
+
+	/**
 	 * Update Lychee configuration
 	 * Note that we must invalidate the cache now.
 	 *
-	 * @param string $key
-	 * @param $value
+	 * @param string     $key
+	 * @param string|int $value
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 * @throws QueryBuilderException
 	 */
-	public static function set(string $key, $value): void
+	public static function set(string $key, string|int $value): void
 	{
 		try {
 			/** @var Configs $config */
@@ -189,14 +225,15 @@ class Configs extends Model
 				->where('key', '=', $key)
 				->firstOrFail();
 
+			$strValue = strval($value);
 			/**
 			 * Sanity check. :).
 			 */
-			$message = $config->sanity($value);
-			if ($message != '') {
+			$message = $config->sanity($strValue);
+			if ($message !== '') {
 				throw new InvalidConfigOption($message);
 			}
-			$config->value = $value;
+			$config->value = $strValue;
 			$config->save();
 		} catch (ModelNotFoundException $e) {
 			throw new InvalidConfigOption('key ' . $key . ' not found!', $e);

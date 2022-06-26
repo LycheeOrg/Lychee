@@ -13,7 +13,7 @@ class SessionFunctions
 {
 	public ?User $user_data = null;
 
-	public function log_as_id($id): void
+	public function log_as_id(int $id): void
 	{
 		Session::put('login', true);
 		Session::put('UserID', $id);
@@ -37,7 +37,7 @@ class SessionFunctions
 	 */
 	public function is_admin(): bool
 	{
-		return Session::get('login') && Session::get('UserID') === 0;
+		return $this->is_logged_in() && Session::get('UserID') === 0;
 	}
 
 	/**
@@ -45,7 +45,7 @@ class SessionFunctions
 	 */
 	public function can_upload(): bool
 	{
-		return $this->is_logged_in() && ($this->id() == 0 || $this->user()->may_upload);
+		return $this->is_logged_in() && ($this->id() === 0 || $this->user()->may_upload);
 	}
 
 	/**
@@ -58,7 +58,7 @@ class SessionFunctions
 	 */
 	public function id(): int
 	{
-		if (!Session::get('login')) {
+		if (!$this->is_logged_in()) {
 			throw new UnauthenticatedException();
 		}
 
@@ -75,7 +75,7 @@ class SessionFunctions
 		$id = $this->id();
 		$this->user_data = User::query()->find($id);
 
-		return $this->user_data;
+		return $this->user_data; // @phpstan-ignore-line
 	}
 
 	/**
@@ -92,13 +92,13 @@ class SessionFunctions
 	 * Return true if the currently logged-in user is the one provided
 	 * (or if that user is Admin).
 	 *
-	 * @param int userId
+	 * @param int $userId
 	 *
 	 * @return bool
 	 */
 	public function is_current_user_or_admin(int $userId): bool
 	{
-		return Session::get('login') && (Session::get('UserID') === $userId || Session::get('UserID') === 0);
+		return $this->is_logged_in() && (Session::get('UserID') === $userId || Session::get('UserID') === 0);
 	}
 
 	/**
@@ -118,7 +118,7 @@ class SessionFunctions
 	 */
 	public function noLogin(): bool
 	{
-		/** @var User $adminUser */
+		/** @var User|null $adminUser */
 		$adminUser = User::query()->find(0);
 		if ($adminUser !== null && $adminUser->password === '' && $adminUser->username === '') {
 			$this->user_data = $adminUser;
@@ -144,10 +144,10 @@ class SessionFunctions
 	public function log_as_user(string $username, string $password, string $ip): bool
 	{
 		// We select the NON ADMIN user
-		/** @var User $user */
+		/** @var User|null $user */
 		$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
 
-		if ($user != null && Hash::check($password, $user->password)) {
+		if ($user !== null && Hash::check($password, $user->password)) {
 			$this->user_data = $user;
 			Session::put('login', true);
 			Session::put('UserID', $user->id);
@@ -171,7 +171,7 @@ class SessionFunctions
 	 */
 	public function log_as_admin(string $username, string $password, string $ip): bool
 	{
-		/** @var User $adminUser */
+		/** @var User|null $adminUser */
 		$adminUser = User::query()->find(0);
 
 		if ($adminUser !== null) {
@@ -188,14 +188,13 @@ class SessionFunctions
 			return false;
 		}
 		// Admin User does not exist yet, so we use the Legacy.
-
 		return Legacy::log_as_admin($username, $password, $ip);
 	}
 
 	/**
 	 * Log out the current user.
 	 */
-	public function logout()
+	public function logout(): void
 	{
 		$this->user_data = null;
 		Session::flush();

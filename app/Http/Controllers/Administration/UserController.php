@@ -27,7 +27,7 @@ class UserController extends Controller
 	 */
 	public function list(): Collection
 	{
-		return User::query()->where('id', '>', 0)->get();
+		return User::query()->where('id', '>', 0)->get(); // @phpstan-ignore-line
 	}
 
 	/**

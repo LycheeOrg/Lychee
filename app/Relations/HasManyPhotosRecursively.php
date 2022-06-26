@@ -25,6 +25,15 @@ class HasManyPhotosRecursively extends HasManyPhotos
 		parent::__construct($owningAlbum);
 	}
 
+	public function getParent(): Album
+	{
+		/*
+		 * We know that the parent is of type `Album`,
+		 * because it was set in the constructor as `$owningAlbum`.
+		 */
+		return $this->parent; // @phpstan-ignore-line @noinspection PhpIncompatibleReturnTypeInspection
+	}
+
 	/**
 	 * Adds the constraints for single owning album to the base query.
 	 *
@@ -36,7 +45,7 @@ class HasManyPhotosRecursively extends HasManyPhotos
 	public function addConstraints(): void
 	{
 		if (static::$constraints) {
-			$this->addEagerConstraints([$this->parent]);
+			$this->addEagerConstraints([$this->getParent()]);
 		}
 	}
 
@@ -61,12 +70,12 @@ class HasManyPhotosRecursively extends HasManyPhotos
 		}
 
 		$this->photoAuthorisationProvider
-			->applySearchabilityFilter($this->query, $albums[0]);
+			->applySearchabilityFilter($this->getRelationQuery(), $albums[0]);
 	}
 
 	public function getResults(): Collection
 	{
-		/** @var Album $album */
+		/** @var Album|null $album */
 		$album = $this->parent;
 		if ($album === null || !$this->albumAuthorisationProvider->isAccessible($album)) {
 			return $this->related->newCollection();
@@ -103,7 +112,7 @@ class HasManyPhotosRecursively extends HasManyPhotos
 			$sorting = $album->getEffectiveSorting();
 			$photos = $photos->sortBy(
 				$sorting->column,
-				in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
+				in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
 				$sorting->order === SortingCriterion::DESC
 			)->values();
 			$album->setRelation($relation, $photos);

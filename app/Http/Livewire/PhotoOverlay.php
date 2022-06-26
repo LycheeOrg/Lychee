@@ -26,7 +26,7 @@ class PhotoOverlay extends Component
 	public function mount(array $data)
 	{
 		$this->photo_data = $data;
-		$overlay_type = Configs::get_value('image_overlay_type', 'none');
+		$overlay_type = Configs::getValueAsString('image_overlay_type', 'none');
 
 		$this->idx = array_search($overlay_type, $this->types, true);
 	}

@@ -8,6 +8,7 @@ use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Contracts\HasRandomID;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\ZeroModuloException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
@@ -28,6 +29,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use function Safe\preg_match;
 
 /**
  * App\Photo.
@@ -77,10 +79,9 @@ class Photo extends Model implements HasRandomID
 	use UTCBasedTimes;
 	use HasAttributesPatch;
 	use HasRandomIDAndLegacyTimeBasedID;
-	use ThrowsConsistentExceptions {
-		ThrowsConsistentExceptions::delete as private internalDelete;
-	}
+	use ThrowsConsistentExceptions;
 	use HasBidirectionalRelationships;
+	/** @phpstan-use UseFixedQueryBuilder<Photo> */
 	use UseFixedQueryBuilder;
 
 	/**
@@ -193,8 +194,8 @@ class Photo extends Model implements HasRandomID
 	 * re-format the string on every fetch.
 	 * TODO: Refactor this.
 	 *
-	 * @param ?string $shutter the value from the database passed in by
-	 *                         the Eloquent framework
+	 * @param string|null $shutter the value from the database passed in by
+	 *                             the Eloquent framework
 	 *
 	 * @return ?string A properly formatted shutter value
 	 */
@@ -210,11 +211,11 @@ class Photo extends Model implements HasRandomID
 				if ($matches) {
 					$a = intval($matches[1]);
 					$b = intval($matches[2]);
-					if ($b != 0) {
+					if ($b !== 0) {
 						$gcd = Helpers::gcd($a, $b);
 						$a = $a / $gcd;
 						$b = $b / $gcd;
-						if ($a == 1) {
+						if ($a === 1) {
 							$shutter = '1/' . $b . ' s';
 						} else {
 							$shutter = ($a / $b) . ' s';
@@ -223,14 +224,14 @@ class Photo extends Model implements HasRandomID
 				}
 			}
 
-			if ($shutter == '1/1 s') {
+			if ($shutter === '1/1 s') {
 				$shutter = '1 s';
 			}
 
 			return $shutter;
 		} catch (ZeroModuloException $e) {
 			// this should not happen as we covered the case $b = 0;
-			assert(false, new \AssertionError('Unexpected ZeroModuloException', $e->getCode(), $e));
+			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 	}
 
@@ -252,11 +253,11 @@ class Photo extends Model implements HasRandomID
 		if ($license !== 'none') {
 			return $license;
 		}
-		if ($this->album_id != null) {
+		if ($this->album_id !== null) {
 			return $this->album->license;
 		}
 
-		return Configs::get_value('default_license');
+		return Configs::getValueAsString('default_license', 'none');
 	}
 
 	/**
@@ -270,8 +271,8 @@ class Photo extends Model implements HasRandomID
 	 * not every time when it is read from the database.
 	 * TODO: Refactor this.
 	 *
-	 * @param ?string $focal the value from the database passed in by the
-	 *                       Eloquent framework
+	 * @param string|null $focal the value from the database passed in by the
+	 *                           Eloquent framework
 	 *
 	 * @return ?string
 	 *
@@ -283,7 +284,7 @@ class Photo extends Model implements HasRandomID
 			return null;
 		}
 		// We need to format the framerate (stored as focal) -> max 2 decimal digits
-		return $this->isVideo() ? (string) round($focal, 2) : $focal;
+		return $this->isVideo() ? (string) round(floatval($focal), 2) : $focal;
 	}
 
 	/**
@@ -330,9 +331,10 @@ class Photo extends Model implements HasRandomID
 	 */
 	protected function getIsDownloadableAttribute(): bool
 	{
-		return AccessControl::is_current_user_or_admin($this->owner_id) ||
-			($this->album_id != null && $this->album->is_downloadable) ||
-			($this->album_id == null && Configs::get_value('downloadable', '0'));
+		return
+			AccessControl::is_current_user_or_admin($this->owner_id) ||
+			($this->album_id !== null && $this->album->is_downloadable) ||
+			($this->album_id === null && Configs::getValueAsBool('downloadable', false));
 	}
 
 	/**
@@ -347,11 +349,12 @@ class Photo extends Model implements HasRandomID
 	 */
 	protected function getIsShareButtonVisibleAttribute(): bool
 	{
-		$default = (bool) Configs::get_value('share_button_visible', '0');
+		$default = Configs::getValueAsBool('share_button_visible', false);
 
-		return AccessControl::is_current_user_or_admin($this->owner_id) ||
-			($this->album_id != null && $this->album->is_share_button_visible) ||
-			($this->album_id == null && $default);
+		return
+			AccessControl::is_current_user_or_admin($this->owner_id) ||
+			($this->album_id !== null && $this->album->is_share_button_visible) ||
+			($this->album_id === null && $default);
 	}
 
 	/**
@@ -424,10 +427,10 @@ class Photo extends Model implements HasRandomID
 		//  - 0 => the photo is not publicly visible
 		//  - 1 => the photo is publicly visible on its own right
 		//  - 2 => the photo is publicly visible because its album is public
-		if ($this->album_id != null && $this->album->is_public) {
+		if ($this->album_id !== null && $this->album->is_public) {
 			$result['is_public'] = 2;
 		} else {
-			$result['is_public'] = $result['is_public'] ? 1 : 0;
+			$result['is_public'] = $result['is_public'] === true ? 1 : 0;
 		}
 
 		// Downgrades the accessible resolution of a photo
@@ -435,11 +438,11 @@ class Photo extends Model implements HasRandomID
 		// (and slightly different) approaches
 		if (
 			!AccessControl::is_current_user_or_admin($this->owner_id) &&
-			$this->isVideo() === false &&
+			!$this->isVideo() &&
 			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null) &&
 			(
-				($this->album_id != null && !$this->album->grants_full_photo) ||
-				($this->album_id == null && Configs::get_value('full_photo', '1') != '1')
+				($this->album_id !== null && !$this->album->grants_full_photo) ||
+				($this->album_id === null && !Configs::getValueAsBool('full_photo', true))
 			)
 		) {
 			unset($result['size_variants']['original']['url']);

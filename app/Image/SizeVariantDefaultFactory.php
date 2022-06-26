@@ -21,6 +21,8 @@ use FFMpeg\Exception\InvalidArgumentException;
 use FFMpeg\FFMpeg;
 use FFMpeg\Media\Video;
 use Illuminate\Support\Collection;
+use function Safe\filesize;
+use function Safe\unlink;
 use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 class SizeVariantDefaultFactory extends SizeVariantFactory
@@ -47,13 +49,13 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 */
 	public function init(Photo $photo, ?SizeVariantNamingStrategy $namingStrategy = null): void
 	{
-		if ($this->photo) {
+		if ($this->photo !== null) {
 			$this->cleanup();
 		}
 		$this->photo = $photo;
-		if ($namingStrategy) {
+		if ($namingStrategy !== null) {
 			$this->namingStrategy = $namingStrategy;
-		} elseif (!$this->namingStrategy) {
+		} elseif ($this->namingStrategy === null) {
 			$this->namingStrategy = resolve(SizeVariantNamingStrategy::class);
 		}
 		// Ensure that the naming strategy is linked to this photo
@@ -118,7 +120,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		$ext = pathinfo($fullPath, PATHINFO_EXTENSION);
 		// test if Imagick supports the filetype
 		// Query return file extensions as all upper case
-		if (!in_array(strtoupper($ext), \Imagick::queryformats())) {
+		if (!in_array(strtoupper($ext), \Imagick::queryFormats(), true)) {
 			throw new MediaFileUnsupportedException('Filetype ' . $ext . ' not supported by Imagick.');
 		}
 		$this->createTmpPathForReferenceJPEG();
@@ -177,10 +179,10 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		} catch (\Throwable $e) {
 			throw new MediaFileOperationException($errMsg, $e);
 		}
-		if (!file_exists($this->referenceFullPath) || filesize($this->referenceFullPath) == 0) {
+		if (!file_exists($this->referenceFullPath) || filesize($this->referenceFullPath) === 0) {
 			throw new MediaFileOperationException($errMsg);
 		}
-		if (Configs::get_value('lossless_optimization')) {
+		if (Configs::getValueAsBool('lossless_optimization', false)) {
 			ImageOptimizer::optimize($this->referenceFullPath);
 		}
 	}
@@ -216,7 +218,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 
 		foreach ($allVariants as $variant) {
 			$sv = $this->createSizeVariantCond($variant);
-			if ($sv) {
+			if ($sv !== null) {
 				$collection->add($sv);
 			}
 		}
@@ -237,9 +239,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		}
 		list($maxWidth, $maxHeight) = $this->getMaxDimensions($sizeVariant);
 
-		return $this->createSizeVariantInternal(
-			$sizeVariant, $maxWidth, $maxHeight
-		);
+		return $this->createSizeVariantInternal($sizeVariant, $maxWidth, $maxHeight);
 	}
 
 	/**
@@ -281,18 +281,32 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	}
 
 	/**
+	 * @param int $sizeVariant the type of the desired size variant;
+	 *                         allowed values are:
+	 *                         {@link SizeVariant::ORIGINAL},
+	 *                         {@link SizeVariant::MEDIUM2X},
+	 *                         {@link SizeVariant::MEDIUM2},
+	 *                         {@link SizeVariant::SMALL2X},
+	 *                         {@link SizeVariant::SMALL},
+	 *                         {@link SizeVariant::THUMB2X}, and
+	 *                         {@link SizeVariant::THUMB}
+	 * @param int $maxWidth
+	 * @param int $maxHeight
+	 *
 	 * @throws ModelDBException
 	 * @throws IllegalOrderOfOperationException
 	 * @throws MediaFileOperationException
 	 * @throws MediaFileUnsupportedException
 	 * @throws InvalidSizeVariantException
+	 *
+	 * @phpstan-param int<0,6> $sizeVariant
 	 */
 	protected function createSizeVariantInternal(int $sizeVariant, int $maxWidth, int $maxHeight): SizeVariant
 	{
 		$shortPath = $this->namingStrategy->generateShortPath($sizeVariant);
 
 		$sv = $this->photo->size_variants->getSizeVariant($sizeVariant);
-		if (!$sv) {
+		if ($sv === null) {
 			try {
 				// Create size variant with dummy filesize, because full path
 				// is for now required to crop/scale.
@@ -345,20 +359,20 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	{
 		switch ($sizeVariant) {
 			case SizeVariant::MEDIUM2X:
-				$maxWidth = 2 * intval(Configs::get_value('medium_max_width'));
-				$maxHeight = 2 * intval(Configs::get_value('medium_max_height'));
+				$maxWidth = 2 * Configs::getValueAsInt('medium_max_width', 1920);
+				$maxHeight = 2 * Configs::getValueAsInt('medium_max_height', 1080);
 				break;
 			case SizeVariant::MEDIUM:
-				$maxWidth = intval(Configs::get_value('medium_max_width'));
-				$maxHeight = intval(Configs::get_value('medium_max_height'));
+				$maxWidth = Configs::getValueAsInt('medium_max_width', 1920);
+				$maxHeight = Configs::getValueAsInt('medium_max_height', 1080);
 				break;
 			case SizeVariant::SMALL2X:
-				$maxWidth = 2 * intval(Configs::get_value('small_max_width'));
-				$maxHeight = 2 * intval(Configs::get_value('small_max_height'));
+				$maxWidth = 2 * Configs::getValueAsInt('small_max_width', 0);
+				$maxHeight = 2 * Configs::getValueAsInt('small_max_height', 360);
 				break;
 			case SizeVariant::SMALL:
-				$maxWidth = intval(Configs::get_value('small_max_width'));
-				$maxHeight = intval(Configs::get_value('small_max_height'));
+				$maxWidth = Configs::getValueAsInt('small_max_width', 0);
+				$maxHeight = Configs::getValueAsInt('small_max_height', 360);
 				break;
 			case SizeVariant::THUMB2X:
 				$maxWidth = self::THUMBNAIL2X_DIM;
@@ -406,9 +420,9 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		}
 
 		return match ($sizeVariant) {
-			SizeVariant::MEDIUM2X => Configs::get_value('medium_2x', 0) == 1,
-			SizeVariant::SMALL2X => Configs::get_value('small_2x', 0) == 1,
-			SizeVariant::THUMB2X => Configs::get_value('thumb_2x', 0) == 1,
+			SizeVariant::MEDIUM2X => Configs::getValueAsBool('medium_2x', false),
+			SizeVariant::SMALL2X => Configs::getValueAsBool('small_2x', false),
+			SizeVariant::THUMB2X => Configs::getValueAsBool('thumb_2x', false),
 			SizeVariant::SMALL, SizeVariant::MEDIUM, SizeVariant::THUMB => true,
 			default => throw new InvalidSizeVariantException('unknown size variant: ' . $sizeVariant),
 		};

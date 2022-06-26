@@ -21,15 +21,15 @@ class PhotoSortingCriterion extends SortingCriterion
 	];
 
 	/**
-	 * @return static
+	 * @return self
 	 * @noinspection PhpDocMissingThrowsInspection
 	 */
 	public static function createDefault(): self
 	{
 		/* @noinspection PhpUnhandledExceptionInspection */
 		return new self(
-			Configs::get_value('sorting_photos_col', SortingCriterion::COLUMN_CREATED_AT),
-			Configs::get_value('sorting_photos_order', SortingCriterion::ASC)
+			Configs::getValueAsString('sorting_photos_col', SortingCriterion::COLUMN_CREATED_AT),
+			Configs::getValueAsString('sorting_photos_order', SortingCriterion::ASC)
 		);
 	}
 }

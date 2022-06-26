@@ -60,8 +60,8 @@ class ResetAdmin extends Command
 			$user = User::query()->findOrNew(0);
 			$user->incrementing = false; // disable auto-generation of ID
 			$user->id = 0;
-			$user->username = Configs::get_value('username', '');
-			$user->password = Configs::get_value('password', '');
+			$user->username = Configs::getValueAsString('username', '');
+			$user->password = Configs::getValueAsString('password', '');
 			$user->save();
 
 			$this->line($this->col->yellow('Admin username and password reset.'));

@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\Contracts\AbstractAlbum;
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\InvalidQueryModelException;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\AccessControl;
@@ -71,16 +72,18 @@ class AlbumAuthorisationProvider
 		// defined on the common base model for all albums.
 		$visibilitySubQuery = function (AlbumBuilder|TagAlbumBuilder $query2) use ($userID) {
 			$query2
-				->where(fn (AlbumBuilder|TagAlbumBuilder $q) => $q
-					->where('base_albums.requires_link', '=', false)
-					->where('base_albums.is_public', '=', true)
-			);
+				->where(
+					fn (AlbumBuilder|TagAlbumBuilder $q) => $q
+						->where('base_albums.requires_link', '=', false)
+						->where('base_albums.is_public', '=', true)
+				);
 			if ($userID !== null) {
 				$query2
 					->orWhere('base_albums.owner_id', '=', $userID)
-					->orWhere(fn (AlbumBuilder|TagAlbumBuilder $q) => $q
-						->where('base_albums.requires_link', '=', false)
-						->where('user_base_album.user_id', '=', $userID)
+					->orWhere(
+						fn (AlbumBuilder|TagAlbumBuilder $q) => $q
+							->where('base_albums.requires_link', '=', false)
+							->where('user_base_album.user_id', '=', $userID)
 					);
 			}
 		};
@@ -89,46 +92,10 @@ class AlbumAuthorisationProvider
 	}
 
 	/**
-	 * Restricts an album query to _accessible_ albums.
-	 *
-	 * An album is called _accessible_ if the current user is allowed to
-	 * browse into it, i.e. if the current user may open it and see its
-	 * content.
-	 * An album is _accessible_ if any of the following conditions hold
-	 * (OR-clause)
-	 *
-	 *  - the user is an admin
-	 *  - the user is the owner of the album
-	 *  - the album is shared with the user
-	 *  - the album is public AND no password is set
-	 *  - the album is public AND has been unlocked
-	 *
-	 * @param AlbumBuilder|FixedQueryBuilder $query
-	 *
-	 * @return AlbumBuilder|FixedQueryBuilder
-	 *
-	 * @throws InternalLycheeException
-	 */
-	private function applyAccessibilityFilter(AlbumBuilder|FixedQueryBuilder $query): AlbumBuilder|FixedQueryBuilder
-	{
-		$this->prepareModelQueryOrFail($query);
-
-		if (AccessControl::is_admin()) {
-			return $query;
-		}
-
-		return $query->where(
-			fn (Builder $q) => $this->appendAccessibilityConditions($q->getQuery())
-		);
-	}
-
-	/**
 	 * Adds the conditions of an accessible album to the query.
 	 *
 	 * **Attention:** This method is only meant for internal use by
 	 * this class or {@link PhotoAuthorisationProvider}.
-	 * Use {@link AlbumAuthorisationProvider::applyAccessibilityFilter()}
-	 * if called from other places instead.
 	 *
 	 * This method adds the WHERE conditions without any further pre-cautions.
 	 * The method silently assumes that the SELECT clause contains the tables
@@ -152,13 +119,15 @@ class AlbumAuthorisationProvider
 
 		try {
 			$query
-				->orWhere(fn (BaseBuilder $q) => $q
-					->where('base_albums.is_public', '=', true)
-					->whereNull('base_albums.password')
+				->orWhere(
+					fn (BaseBuilder $q) => $q
+						->where('base_albums.is_public', '=', true)
+						->whereNull('base_albums.password')
 				)
-				->orWhere(fn (BaseBuilder $q) => $q
-					->where('base_albums.is_public', '=', true)
-					->whereIn('base_albums.id', $unlockedAlbumIDs)
+				->orWhere(
+					fn (BaseBuilder $q) => $q
+						->where('base_albums.is_public', '=', true)
+						->whereIn('base_albums.id', $unlockedAlbumIDs)
 				);
 			if ($userID !== null) {
 				$query
@@ -180,21 +149,6 @@ class AlbumAuthorisationProvider
 	 * An album is reachable, if the user is able to see the album
 	 * within its parent album and has the privilege to enter it.
 	 *
-	 * The result of this filter is strictly identical to the concatenation
-	 * of {@link AlbumAuthorisationProvider::applyVisibilityFilter()} and
-	 * {@link AlbumAuthorisationProvider::applyAccessibilityFilter()}, i.e.
-	 *
-	 *     $aap = resolve(AlbumAuthorisationProvider::class);
-	 *     $aap->applyVisibilityFilter(
-	 *         $aap->applyAccessibilityFilter(
-	 *             $model::query()
-	 *         )
-	 *     )->get()
-	 *
-	 * returns the exact same result set.
-	 * The only advantage of this combined filter is that the `WHERE` clause
-	 * is already in disjunctive normal form (DNF) which results in a
-	 * slightly better SQL performance.
 	 *
 	 * The combination of both sets of conditions yields that an album is
 	 * _reachable_, if any of the following conditions hold
@@ -231,22 +185,25 @@ class AlbumAuthorisationProvider
 		// defined on the common base model for all albums.
 		$reachabilitySubQuery = function (Builder $query2) use ($userID, $unlockedAlbumIDs) {
 			$query2
-				->where(fn (Builder $q) => $q
-					->where('base_albums.requires_link', '=', false)
-					->where('base_albums.is_public', '=', true)
-					->whereNull('base_albums.password')
+				->where(
+					fn (Builder $q) => $q
+						->where('base_albums.requires_link', '=', false)
+						->where('base_albums.is_public', '=', true)
+						->whereNull('base_albums.password')
 				)
-				->orWhere(fn (Builder $q) => $q
-					->where('base_albums.requires_link', '=', false)
-					->where('base_albums.is_public', '=', true)
-					->whereIn('base_albums.id', $unlockedAlbumIDs)
+				->orWhere(
+					fn (Builder $q) => $q
+						->where('base_albums.requires_link', '=', false)
+						->where('base_albums.is_public', '=', true)
+						->whereIn('base_albums.id', $unlockedAlbumIDs)
 				);
 			if ($userID !== null) {
 				$query2
 					->orWhere('base_albums.owner_id', '=', $userID)
-					->orWhere(fn (Builder $q) => $q
-						->where('base_albums.requires_link', '=', false)
-						->where('user_base_album.user_id', '=', $userID)
+					->orWhere(
+						fn (Builder $q) => $q
+							->where('base_albums.requires_link', '=', false)
+							->where('user_base_album.user_id', '=', $userID)
 					);
 			}
 		};
@@ -257,9 +214,18 @@ class AlbumAuthorisationProvider
 	/**
 	 * Checks whether the album is accessible by the current user.
 	 *
-	 * For real albums (i.e. albums that are stored in the DB), see
-	 * {@link AlbumAuthorisationProvider::applyAccessibilityFilter()} for a
-	 * specification of the rules when an album is accessible.
+	 * A real albums (i.e. albums that are stored in the DB) is called
+	 * _accessible_ if the current user is allowed to browse into it, i.e. if
+	 * the current user may open it and see its content.
+	 * An album is _accessible_ if any of the following conditions hold
+	 * (OR-clause)
+	 *
+	 *  - the user is an admin
+	 *  - the user is the owner of the album
+	 *  - the album is shared with the user
+	 *  - the album is public AND no password is set
+	 *  - the album is public AND has been unlocked
+	 *
 	 * In other cases, the following holds:
 	 *  - the root album is accessible by everybody
 	 *  - the built-in smart albums are accessible, if
@@ -284,9 +250,9 @@ class AlbumAuthorisationProvider
 					($album->owner_id === $userID) ||
 					($album->is_public && $album->password === null) ||
 					($album->is_public && $this->isUnlocked($album)) ||
-					($album->shared_with()->where('user_id', '=', $userID)->count());
+					($album->shared_with()->where('user_id', '=', $userID)->count() > 0);
 			} catch (\InvalidArgumentException $e) {
-				assert(false, new \AssertionError('\InvalidArgumentException must not be thrown by ->where', $e->getCode(), $e));
+				throw LycheeAssertionError::createFromUnexpectedException($e);
 			}
 		} elseif ($album instanceof BaseSmartAlbum) {
 			return AccessControl::can_upload() || $album->is_public;
@@ -348,7 +314,7 @@ class AlbumAuthorisationProvider
 
 		// Ensures that only those albums of the original query are
 		// returned for which a path from the origin to the album exist ...
-		if ($origin) {
+		if ($origin !== null) {
 			$query
 				// (We include the origin here, because we want the
 				// origin to be browsable from itself)
@@ -426,7 +392,7 @@ class AlbumAuthorisationProvider
 				$builder
 					->where('inner._lft', '>', $originLeft)
 					->where('inner._rgt', '<', $originRight);
-			} elseif (is_string($originLeft)) {
+			} elseif (is_string($originLeft) && is_string($originRight)) {
 				$builder
 					->whereColumn('inner._lft', '>', $originLeft)
 					->whereColumn('inner._rgt', '<', $originRight);
@@ -439,26 +405,30 @@ class AlbumAuthorisationProvider
 				->whereColumn('inner._rgt', '>=', 'albums._rgt');
 			// ... which are unreachable.
 			$builder
-				->where(fn (BaseBuilder $q) => $q
-					->where('inner_base_albums.requires_link', '=', true)
-					->orWhere('inner_base_albums.is_public', '=', false)
-					->orWhereNotNull('inner_base_albums.password')
+				->where(
+					fn (BaseBuilder $q) => $q
+						->where('inner_base_albums.requires_link', '=', true)
+						->orWhere('inner_base_albums.is_public', '=', false)
+						->orWhereNotNull('inner_base_albums.password')
 				)
-				->where(fn (BaseBuilder $q) => $q
-					->where('inner_base_albums.requires_link', '=', true)
-					->orWhere('inner_base_albums.is_public', '=', false)
-					->orWhereNotIn('inner_base_albums.id', $unlockedAlbumIDs)
+				->where(
+					fn (BaseBuilder $q) => $q
+						->where('inner_base_albums.requires_link', '=', true)
+						->orWhere('inner_base_albums.is_public', '=', false)
+						->orWhereNotIn('inner_base_albums.id', $unlockedAlbumIDs)
 				);
 			if ($userID !== null) {
 				$builder
 					->where('inner_base_albums.owner_id', '<>', $userID)
-					->where(fn (BaseBuilder $q) => $q
-						->where('inner_base_albums.requires_link', '=', true)
-						->orWhereNotExists(fn (BaseBuilder $q2) => $q2
-							->from('user_base_album', 'user_inner_base_album')
-							->whereColumn('user_inner_base_album.base_album_id', '=', 'inner_base_albums.id')
-							->where('user_inner_base_album.user_id', '=', $userID)
-						)
+					->where(
+						fn (BaseBuilder $q) => $q
+							->where('inner_base_albums.requires_link', '=', true)
+							->orWhereNotExists(
+								fn (BaseBuilder $q2) => $q2
+									->from('user_base_album', 'user_inner_base_album')
+									->whereColumn('user_inner_base_album.base_album_id', '=', 'inner_base_albums.id')
+									->where('user_inner_base_album.user_id', '=', $userID)
+							)
 					);
 			}
 
@@ -487,7 +457,7 @@ class AlbumAuthorisationProvider
 	 */
 	public function isUnlocked(BaseAlbum|BaseAlbumImpl $album): bool
 	{
-		return in_array($album->id, $this->getUnlockedAlbumIDs());
+		return in_array($album->id, $this->getUnlockedAlbumIDs(), true);
 	}
 
 	private function getUnlockedAlbumIDs(): array
@@ -585,9 +555,9 @@ class AlbumAuthorisationProvider
 		return
 			count($albumIDs) === 0 ||
 			BaseAlbumImpl::query()
-				->whereIn('id', $albumIDs)
-				->where('owner_id', $user->id)
-				->count() === count($albumIDs);
+			->whereIn('id', $albumIDs)
+			->where('owner_id', $user->id)
+			->count() === count($albumIDs);
 	}
 
 	/**
@@ -603,8 +573,7 @@ class AlbumAuthorisationProvider
 		$model = $query->getModel();
 		$table = $query->getQuery()->from;
 		if (
-			!(
-				$model instanceof Album ||
+			!($model instanceof Album ||
 				$model instanceof TagAlbum ||
 				$model instanceof BaseAlbumImpl
 			) ||
@@ -636,7 +605,8 @@ class AlbumAuthorisationProvider
 			// Hence, we must restrict the `LEFT JOIN` to the user ID which
 			// is also used in the outer `WHERE`-clause.
 			// See `applyVisibilityFilter` and `appendAccessibilityConditions`.
-			$query->leftJoin('user_base_album',
+			$query->leftJoin(
+				'user_base_album',
 				function (JoinClause $join) use ($userID) {
 					$join
 						->on('user_base_album.base_album_id', '=', 'base_albums.id')

@@ -16,13 +16,15 @@ use Illuminate\Support\Facades\DB;
  * A global scope is always added to the query, even if the query is only
  * used as a sub-query which will not hydrate actual models.
  * Thus, a global scope unnecessarily complicates queries in many cases.
+ *
+ * @extends FixedQueryBuilder<\App\Models\TagAlbum>
  */
 class TagAlbumBuilder extends FixedQueryBuilder
 {
 	/**
 	 * Get the hydrated models without eager loading.
 	 *
-	 * @param array|string $columns
+	 * @param array<string>|string $columns
 	 *
 	 * @return TagAlbum[]
 	 *
@@ -36,8 +38,8 @@ class TagAlbumBuilder extends FixedQueryBuilder
 		}
 
 		if (
-			($columns == ['*'] || $columns == ['tag_albums.*']) &&
-			($baseQuery->columns == ['*'] || $baseQuery->columns == ['tag_albums.*'])
+			($columns === ['*'] || $columns === ['tag_albums.*']) &&
+			($baseQuery->columns === ['*'] || $baseQuery->columns === ['tag_albums.*'])
 		) {
 			$this->addSelect([
 				DB::raw('null as max_taken_at'),

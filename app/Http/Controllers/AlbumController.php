@@ -93,7 +93,7 @@ class AlbumController extends Controller
 	 * @param GetAlbumPositionDataRequest $request
 	 * @param PositionData                $positionData
 	 *
-	 * @return array
+	 * @return PositionDataDTO
 	 */
 	public function getPositionData(GetAlbumPositionDataRequest $request, PositionData $positionData): PositionDataDTO
 	{

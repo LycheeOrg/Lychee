@@ -108,6 +108,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	use ThrowsConsistentExceptions;
 	use UTCBasedTimes;
 	use HasBidirectionalRelationships;
+	/** @phpstan-use UseFixedQueryBuilder<BaseAlbumImpl> */
 	use UseFixedQueryBuilder;
 
 	protected $table = 'base_albums';
@@ -133,7 +134,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 * only works properly, if it knows which attributes belong to the parent
 	 * class and which attributes belong to the child class.
 	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	protected $attributes = [
 		'id' => null,
@@ -154,6 +155,9 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'sorting_order' => null,
 	];
 
+	/**
+	 * @var array<string, string>
+	 */
 	protected $casts = [
 		'id' => HasRandomID::ID_TYPE,
 		HasRandomID::LEGACY_ID_NAME => HasRandomID::LEGACY_ID_TYPE,
@@ -224,7 +228,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		if ($this->is_public) {
 			return $value;
 		} else {
-			return Configs::get_value('full_photo', '1') === '1';
+			return Configs::getValueAsBool('full_photo', true);
 		}
 	}
 
@@ -233,7 +237,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		if ($this->is_public) {
 			return $value;
 		} else {
-			return Configs::get_value('downloadable', '0') === '1';
+			return Configs::getValueAsBool('downloadable', false);
 		}
 	}
 
@@ -242,7 +246,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		if ($this->is_public) {
 			return $value;
 		} else {
-			return Configs::get_value('share_button_visible', '0') === '1';
+			return Configs::getValueAsBool('share_button_visible', false);
 		}
 	}
 
@@ -263,13 +267,8 @@ class BaseAlbumImpl extends Model implements HasRandomID
 
 	protected function setSortingAttribute(?PhotoSortingCriterion $sorting): void
 	{
-		if ($sorting) {
-			$this->attributes['sorting_col'] = $sorting->column;
-			$this->attributes['sorting_order'] = $sorting->order;
-		} else {
-			$this->attributes['sorting_col'] = null;
-			$this->attributes['sorting_order'] = null;
-		}
+		$this->attributes['sorting_col'] = $sorting?->column;
+		$this->attributes['sorting_order'] = $sorting?->order;
 	}
 
 	public function toArray(): array

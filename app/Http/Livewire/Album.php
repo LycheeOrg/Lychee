@@ -42,7 +42,7 @@ class Album extends Component
 	 */
 	public function render()
 	{
-		switch (Configs::get_value('layout')) {
+		switch (Configs::getValueAsString('layout', '1')) {
 			case '0':
 				$this->layout = Album::SQUARE;
 				break;

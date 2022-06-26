@@ -54,7 +54,7 @@ class Album extends BaseAlbum implements Node
 	 * only works properly, if it knows which attributes belong to the parent
 	 * class and which attributes belong to the child class.
 	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	protected $attributes = [
 		'id' => null,
@@ -65,6 +65,9 @@ class Album extends BaseAlbum implements Node
 		'_rgt' => null,
 	];
 
+	/**
+	 * @var array<string, string>
+	 */
 	protected $casts = [
 		'min_taken_at' => 'datetime',
 		'max_taken_at' => 'datetime',
@@ -164,7 +167,7 @@ class Album extends BaseAlbum implements Node
 	protected function getLicenseAttribute(string $value): string
 	{
 		if ($value === 'none') {
-			return Configs::get_value('default_license');
+			return Configs::getValueAsString('default_license', 'none');
 		}
 
 		return $value;

@@ -10,6 +10,7 @@ use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\VersionControlException;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use function Safe\file_get_contents;
 
 class LycheeVersion
 {
@@ -26,7 +27,7 @@ class LycheeVersion
 	/**
 	 * Base constructor.
 	 *
-	 * @param GitHubFunctions
+	 * @param GitHubFunctions $gitHubFunctions
 	 */
 	public function __construct(GitHubFunctions $gitHubFunctions)
 	{
@@ -60,9 +61,7 @@ class LycheeVersion
 	 */
 	public function getDBVersion(): Version
 	{
-		return Version::createFromInt(
-			Configs::get_value('version', '040000')
-		);
+		return Version::createFromInt(Configs::getValueAsInt('version', 40000));
 	}
 
 	/**

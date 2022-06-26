@@ -27,15 +27,15 @@ class ViewController extends Controller
 	{
 		try {
 			$photo = $request->photo();
-			$sizeVariant = $photo->size_variants->getMedium() ?: $photo->size_variants->getOriginal();
-			$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
-			$rss_enable = Configs::get_value('rss_enable', '0') == '1';
+			$sizeVariant = $photo->size_variants->getMedium() ?? $photo->size_variants->getOriginal();
+			$title = Configs::getValueAsString('site_title', Config::get('defines.defaults.SITE_TITLE'));
+			$rss_enable = Configs::getValueAsBool('rss_enable', false);
 
 			$url = config('app.url') . $request->server->get('REQUEST_URI');
 			$picture = $sizeVariant->url;
 
 			$lang = Lang::get_lang();
-			$lang['language'] = Configs::get_value('lang');
+			$lang['language'] = Configs::getValueAsString('lang', 'en');
 
 			return view('view', [
 				'locale' => $lang,

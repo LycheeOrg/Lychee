@@ -37,7 +37,7 @@ class Legacy
 	{
 		$configs = Configs::get();
 
-		if (Configs::get_value('version', '040000') < '040008') {
+		if (Configs::getValueAsString('version', '040000') < '040008') {
 			if ($configs['password'] === '' && $configs['username'] === '') {
 				Configs::set('username', $hashedUsername);
 				Configs::set('password', $hashedPassword);
@@ -54,7 +54,7 @@ class Legacy
 		// LEGACY STUFF
 		$configs = Configs::get();
 
-		if (Configs::get_value('version', '040000') <= '040008') {
+		if (Configs::getValueAsString('version', '040000') <= '040008') {
 			// Check if login credentials exist and login if they don't
 			if (
 				isset($configs['username']) && $configs['username'] === '' &&
@@ -112,24 +112,26 @@ class Legacy
 	private static function translateLegacyID(int $id, string $tableName, Request $request): ?string
 	{
 		try {
-			$newID = DB::table($tableName)
+			$newID = (string) DB::table($tableName)
 				->where('legacy_id', '=', intval($id))
 				->value('id');
 
-			if ($newID) {
-				$referer = $request->header('Referer', '(unknown)');
+			if ($newID !== '') {
+				$referer = strval($request->header('Referer', '(unknown)'));
 				$msg = 'Request for ' . $tableName .
 					' with legacy ID ' . $id .
 					' instead of new ID ' . $newID .
 					' from ' . $referer;
-				if (Configs::get_value('legacy_id_redirection', '0') !== '1') {
+				if (!Configs::getValueAsBool('legacy_id_redirection', false)) {
 					$msg .= ' (translation disabled by configuration)';
 					throw new ConfigurationException($msg);
 				}
 				Logs::warning(__METHOD__, __LINE__, $msg);
+
+				return $newID;
 			}
 
-			return $newID;
+			return null;
 		} catch (\InvalidArgumentException $e) {
 			throw new QueryBuilderException($e);
 		}

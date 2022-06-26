@@ -17,17 +17,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Safe\Exceptions\FilesystemException;
+use function Safe\symlink;
+use function Safe\unlink;
 
 /**
  * App\SymLink.
  *
- * @property int $id
- * @property int $size_variant_id
- * @property SizeVariant size_variant
- * @property string $short_path
- * @property string $url
- * @property Carbon $created_at
- * @property Carbon $updated_at
+ * @property int         $id
+ * @property int         $size_variant_id
+ * @property SizeVariant $size_variant
+ * @property string      $short_path
+ * @property string      $url
+ * @property Carbon      $created_at
+ * @property Carbon      $updated_at
  *
  * @method static Builder expired()
  */
@@ -38,6 +41,7 @@ class SymLink extends Model
 	use ThrowsConsistentExceptions {
 		ThrowsConsistentExceptions::delete as private internalDelete;
 	}
+	/** @phpstan-use UseFixedQueryBuilder<SymLink> */
 	use UseFixedQueryBuilder;
 
 	public const DISK_NAME = 'symbolic';
@@ -75,7 +79,7 @@ class SymLink extends Model
 	 */
 	public function scopeExpired(Builder $query): Builder
 	{
-		$expiration = now()->subDays(intval(Configs::get_value('SL_life_time_days', '3')));
+		$expiration = now()->subDays(Configs::getValueAsInt('SL_life_time_days', 3));
 
 		return $query->where('created_at', '<', $this->fromDateTime($expiration));
 	}
@@ -121,11 +125,13 @@ class SymLink extends Model
 		$extension = $file->getExtension();
 		$symShortPath = hash('sha256', random_bytes(32) . '|' . $origFullPath) . $extension;
 		$symFullPath = Storage::disk(SymLink::DISK_NAME)->path($symShortPath);
-		if (is_link($symFullPath)) {
-			unlink($symFullPath);
-		}
-		if (!symlink($origFullPath, $symFullPath)) {
-			return false;
+		try {
+			if (is_link($symFullPath)) {
+				unlink($symFullPath);
+			}
+			symlink($origFullPath, $symFullPath);
+		} catch (FilesystemException $e) {
+			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
 		$this->short_path = $symShortPath;
 

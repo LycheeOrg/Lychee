@@ -13,7 +13,11 @@ use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Support\Carbon;
 use PHPExif\Adapter\NoAdapterException;
+use PHPExif\Exif;
 use PHPExif\Reader\Reader;
+use Safe\Exceptions\StringsException;
+use function Safe\sha1_file;
+use function Safe\substr;
 
 /**
  * Collects normalized EXIF info about an image/video.
@@ -63,12 +67,11 @@ class Extractor
 	 */
 	public static function checksum(NativeLocalFile $file): string
 	{
-		$checksum = sha1_file($file->getAbsolutePath());
-		if ($checksum === false) {
+		try {
+			return sha1_file($file->getAbsolutePath());
+		} catch (StringsException) {
 			throw new MediaFileOperationException('Could not compute checksum for: ' . $file->getAbsolutePath());
 		}
-
-		return $checksum;
 	}
 
 	/**
@@ -136,6 +139,11 @@ class Extractor
 			}
 		}
 
+		// TODO: By changing the logic of $reader to always return an Exif object or throw an exception, this would make this code safer.
+		if (!$exif instanceof Exif) {
+			throw new MediaFileOperationException('Could not even extract basic EXIF data with the native adapter');
+		}
+
 		// Attempt to get sidecar metadata if it exists, make sure to check 'real' path in case of symlinks
 		$sidecarData = [];
 
@@ -145,12 +153,16 @@ class Extractor
 			try {
 				// Don't use the same reader as the file in case it's a video
 				$sidecarReader = Reader::factory(Reader::TYPE_EXIFTOOL);
-				$sidecarData = $sidecarReader->read($sidecarFile->getAbsolutePath())->getData();
+				$sideCarExifData = $sidecarReader->read($sidecarFile->getAbsolutePath());
+				if (!$sideCarExifData instanceof Exif) {
+					throw new MediaFileOperationException('Could not even extract EXIF data with the exiftool adapter');
+				}
+				$sidecarData = $sideCarExifData->getData();
 
 				// We don't want to overwrite the media's type with the mimetype of the sidecar file
 				unset($sidecarData['MimeType']);
 
-				if (Configs::get_value('prefer_available_xmp_metadata', '0') == '1') {
+				if (Configs::getValueAsBool('prefer_available_xmp_metadata', false)) {
 					$exif->setData(array_merge($exif->getData(), $sidecarData));
 				} else {
 					$exif->setData(array_merge($sidecarData, $exif->getData()));
@@ -161,11 +173,11 @@ class Extractor
 		}
 
 		$metadata->type = ($exif->getMimeType() !== false) ? $exif->getMimeType() : $file->getMimeType();
-		$metadata->width = ($exif->getWidth() !== false) ? $exif->getWidth() : 0;
-		$metadata->height = ($exif->getHeight() !== false) ? $exif->getHeight() : 0;
+		$metadata->width = ($exif->getWidth() !== false) ? (int) $exif->getWidth() : 0;
+		$metadata->height = ($exif->getHeight() !== false) ? (int) $exif->getHeight() : 0;
 		$metadata->title = ($exif->getTitle() !== false) ? $exif->getTitle() : null;
 		$metadata->description = ($exif->getDescription() !== false) ? $exif->getDescription() : null;
-		$metadata->orientation = ($exif->getOrientation() !== false) ? $exif->getOrientation() : 1;
+		$metadata->orientation = ($exif->getOrientation() !== false) ? (int) $exif->getOrientation() : 1;
 		$metadata->iso = ($exif->getIso() !== false) ? $exif->getIso() : null;
 		$metadata->make = ($exif->getMake() !== false) ? $exif->getMake() : null;
 		$metadata->model = ($exif->getCamera() !== false) ? $exif->getCamera() : null;
@@ -177,7 +189,7 @@ class Extractor
 		$metadata->altitude = ($exif->getAltitude() !== false) ? $exif->getAltitude() : null;
 		$metadata->imgDirection = ($exif->getImgDirection() !== false) ? $exif->getImgDirection() : null;
 		$metadata->livePhotoContentID = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
-		$metadata->microVideoOffset = ($exif->getMicroVideoOffset() !== false) ? $exif->getMicroVideoOffset() : 0;
+		$metadata->microVideoOffset = ($exif->getMicroVideoOffset() !== false) ? (int) $exif->getMicroVideoOffset() : 0;
 
 		$taken_at = $exif->getCreationDate();
 		if ($taken_at !== false) {
@@ -416,7 +428,7 @@ class Extractor
 			$metadata->aperture = ($exif->getAperture() !== false) ? $exif->getAperture() : null;
 			$metadata->focal = ($exif->getFocalLength() !== false) ? $exif->getFocalLength() : null;
 			if (!empty($metadata->focal)) {
-				$metadata->focal = round($metadata->focal) . self::SUFFIX_MM_UNIT;
+				$metadata->focal = round(floatval($metadata->focal)) . self::SUFFIX_MM_UNIT;
 			}
 		} else {
 			// Media is a video: Reuse (exploit) fields aperture and focal for duration and framerate
@@ -441,7 +453,7 @@ class Extractor
 			if (!empty($metadata->location)) {
 				$metadata->location = substr($metadata->location, 0, self::MAX_LOCATION_STRING_LENGTH);
 			}
-		} catch (ExternalComponentFailedException $e) {
+		} catch (ExternalComponentFailedException|StringsException $e) {
 			Handler::reportSafely($e);
 			$metadata->location = null;
 		}

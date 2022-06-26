@@ -8,6 +8,7 @@ use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\Internal\MissingValueException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use function Safe\substr;
 
 class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 {
@@ -39,7 +40,7 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 	{
 		parent::setPhoto($photo);
 		$this->originalExtension = '';
-		if ($this->photo && $sv = $this->photo->size_variants->getOriginal()) {
+		if ($this->photo !== null && ($sv = $this->photo->size_variants->getOriginal()) !== null) {
 			$this->originalExtension = $sv->getFile()->getOriginalExtension();
 		}
 	}
@@ -60,7 +61,7 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 		if (SizeVariant::ORIGINAL > $sizeVariant || $sizeVariant > SizeVariant::THUMB) {
 			throw new InvalidSizeVariantException('invalid $sizeVariant = ' . $sizeVariant);
 		}
-		if ($this->photo == null) {
+		if ($this->photo === null) {
 			throw new IllegalOrderOfOperationException('associated photo model must not be null');
 		}
 		if (empty($this->photo->checksum)) {
@@ -71,9 +72,11 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 			$directory = 'raw/';
 		}
 		$filename = substr($this->photo->checksum, 0, 32);
-		if ($sizeVariant === SizeVariant::MEDIUM2X ||
+		if (
+			$sizeVariant === SizeVariant::MEDIUM2X ||
 			$sizeVariant === SizeVariant::SMALL2X ||
-			$sizeVariant === SizeVariant::THUMB2X) {
+			$sizeVariant === SizeVariant::THUMB2X
+		) {
 			$filename .= '@2x';
 		}
 		$extension = $this->generateExtension($sizeVariant);
@@ -89,7 +92,8 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 	 */
 	protected function generateExtension(int $sizeVariant): string
 	{
-		if ($sizeVariant === SizeVariant::THUMB ||
+		if (
+			$sizeVariant === SizeVariant::THUMB ||
 			$sizeVariant === SizeVariant::THUMB2X ||
 			($sizeVariant !== SizeVariant::ORIGINAL && $this->photo->isVideo()) ||
 			($sizeVariant !== SizeVariant::ORIGINAL && $this->photo->isRaw())

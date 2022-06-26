@@ -11,6 +11,8 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Safe\Exceptions\InfoException;
+use function Safe\set_time_limit;
 
 class ExifLens extends Command
 {
@@ -19,7 +21,7 @@ class ExifLens extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'lychee:exif_lens {from=0 : from which do we start} {nb=5 : generate exif data if missing} {tm=600 : timeout time requirement}';
+	protected $signature = 'lychee:exif_lens {offset=0 : from which do we start} {limit=5 : number of photos to generate exif data for} {tm=600 : timeout time requirement}';
 
 	/**
 	 * The console command description.
@@ -38,10 +40,15 @@ class ExifLens extends Command
 	public function handle(): int
 	{
 		try {
-			$argument = $this->argument('nb');
-			$from = $this->argument('from');
-			$timeout = $this->argument('tm');
-			set_time_limit($timeout);
+			$limit = (int) $this->argument('limit');
+			$offset = (int) $this->argument('offset');
+			$timeout = (int) $this->argument('tm');
+
+			try {
+				set_time_limit($timeout);
+			} catch (InfoException) {
+				// Silently do nothing, if `set_time_limit` is denied.
+			}
 
 			// we use lens because this is the one which is most likely to be empty.
 			$photos = Photo::with(['size_variants' => function (HasMany $r) {
@@ -49,16 +56,16 @@ class ExifLens extends Command
 			}])
 				->where('lens', '=', '')
 				->whereNotIn('type', MediaFile::SUPPORTED_VIDEO_MIME_TYPES)
-				->offset($from)
-				->limit($argument)
+				->offset($offset)
+				->limit($limit)
 				->get();
-			if (count($photos) == 0) {
+			if (count($photos) === 0) {
 				$this->line('No pictures requires EXIF updates.');
 
 				return -1;
 			}
 
-			$i = $from;
+			$i = $offset;
 			/** @var Photo $photo */
 			foreach ($photos as $photo) {
 				try {

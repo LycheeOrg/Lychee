@@ -17,6 +17,7 @@ use App\Rules\RandomIDRule;
 class MoveAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 {
 	use HasAlbumTrait;
+	/** @phpstan-use HasAlbumsTrait<Album> */
 	use HasAlbumsTrait;
 
 	/**
@@ -49,6 +50,9 @@ class MoveAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 		$this->album = empty($targetAlbumID) ?
 			null :
 			Album::query()->findOrFail($targetAlbumID);
+		// `findOrFail` returns a union type, but we know that it returns the
+		// correct collection in this case
+		// @phpstan-ignore-next-line
 		$this->albums = Album::query()->findOrFail($values[HasAlbums::ALBUM_IDS_ATTRIBUTE]);
 	}
 }

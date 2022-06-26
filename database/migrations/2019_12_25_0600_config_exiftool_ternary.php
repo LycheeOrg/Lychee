@@ -21,7 +21,7 @@ class ConfigExiftoolTernary extends Migration
 		$has_exiftool = 2; // not set
 		try {
 			$path = exec('command -v exiftool');
-			if ($path == '') {
+			if ($path === '') {
 				$has_exiftool = 0; // false
 			} else {
 				$has_exiftool = 1; // true
