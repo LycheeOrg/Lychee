@@ -257,7 +257,7 @@ class Photo extends Model implements HasRandomID
 			return $this->album->license;
 		}
 
-		return Configs::getValueAsString('default_license');
+		return Configs::getValueAsString('default_license', 'none');
 	}
 
 	/**
