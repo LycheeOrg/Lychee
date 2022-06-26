@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Builder;
  * anything about our `FixedQueryBuilder`.
  * For this reason me must repeat all the methods defined by
  * `Illuminate\Database\Query\Builder`.
- * Moreover, many of this methods return `$this` which is way we cannot use
+ * Moreover, many of these methods return `$this`, which is why we cannot use
  * `@mixin` as otherwise the return type does not match.
  * See this [PhpStan Playground](https://phpstan.org/r/f3415be1-fe6b-43fb-8be1-f712cd3e24b1)
  * for an explanation what happens.
