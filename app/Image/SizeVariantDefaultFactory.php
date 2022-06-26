@@ -363,8 +363,8 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 				$maxHeight = 2 * Configs::getValueAsInt('medium_max_height', 1080);
 				break;
 			case SizeVariant::MEDIUM:
-				$maxWidth = Configs::getValueAsInt('medium_max_width');
-				$maxHeight = Configs::getValueAsInt('medium_max_height');
+				$maxWidth = Configs::getValueAsInt('medium_max_width', 1920);
+				$maxHeight = Configs::getValueAsInt('medium_max_height', 1080);
 				break;
 			case SizeVariant::SMALL2X:
 				$maxWidth = 2 * Configs::getValueAsInt('small_max_width');
