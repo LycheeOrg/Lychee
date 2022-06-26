@@ -90,9 +90,9 @@ final class German implements Language
 			'DELETE_ALBUM_CONFIRMATION_1' => 'Sind Sie sicher, dass Sie das Album',
 			'DELETE_ALBUM_CONFIRMATION_2' => 'und alle enthaltenen Fotos löschen wollen? Diese Aktion kann nicht rückgängig gemacht werden!',
 
-			'DELETE_TAG_ALBUM_QUESTION' => 'Delete Album',
-			'DELETE_TAG_ALBUM_CONFIRMATION_1' => 'Are you sure you want to delete the album',
-			'DELETE_TAG_ALBUM_CONFIRMATION_2' => '(any photos inside will not be deleted)? This action can\'t be undone!',
+			'DELETE_TAG_ALBUM_QUESTION' => 'Album löschen',
+			'DELETE_TAG_ALBUM_CONFIRMATION_1' => 'Sind Sie sicher, dass Sie das Album',
+			'DELETE_TAG_ALBUM_CONFIRMATION_2' => ' löschen wollen (Fotos darin werden nicht gelöscht)? Diese Aktion kann nicht rückgängig gemacht werden!',
 
 			'DELETE_ALBUMS_QUESTION' => 'Alben und Fotos löschen',
 			'KEEP_ALBUMS' => 'Alben behalten',
