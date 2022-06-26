@@ -45,7 +45,7 @@ class FrameController extends Controller
 			}
 
 			$lang = Lang::get_lang();
-			$lang['language'] = Configs::getValueAsString('lang');
+			$lang['language'] = Configs::getValueAsString('lang', 'en');
 
 			$infos = $this->configFunctions->get_pages_infos();
 			$title = Configs::getValueAsString('site_title');
