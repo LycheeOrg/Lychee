@@ -99,7 +99,7 @@ class IndexController extends Controller
 		$lang['language'] = Configs::getValueAsString('lang', 'en');
 
 		$title = Configs::getValueAsString('site_title', Config::get('defines.defaults.SITE_TITLE'));
-		$rss_enable = Configs::getValueAsBool('rss_enable');
+		$rss_enable = Configs::getValueAsBool('rss_enable', false);
 		$page_config = [];
 		$page_config['show_hosted_by'] = true;
 		$page_config['display_socials'] = Configs::getValueAsBool('display_social_in_gallery', false);
