@@ -171,7 +171,8 @@ trait UTCBasedTimes
 		// is interpreted relative to UTC and _then_ set to the
 		// application's default timezone.
 		if (preg_match(self::$STANDARD_DATE_PATTERN, $value) === 1) {
-			$date = Date::createFromFormat('Y-m-d', $value, self::$DB_TIMEZONE_NAME) ?: null;
+			$date = Date::createFromFormat('Y-m-d', $value, self::$DB_TIMEZONE_NAME);
+			$date = $date !== false ? $date : null;
 			$result = $date?->startOfDay();
 			$result?->setTimezone(date_default_timezone_get());
 
@@ -186,8 +187,8 @@ trait UTCBasedTimes
 		// Note that the timezone parameter is ignored for formats which
 		// include explicit timezone information.
 		try {
-			/** @var Carbon|null $result */
-			$result = Date::createFromFormat(self::$DB_DATETIME_FORMAT, $value, self::$DB_TIMEZONE_NAME) ?: null;
+			$result = Date::createFromFormat(self::$DB_DATETIME_FORMAT, $value, self::$DB_TIMEZONE_NAME);
+			$result = $result !== false ? $result : null;
 			if ($result?->getTimezone()?->getName() === self::$DB_TIMEZONE_NAME) {
 				// If the timezone is different to UTC, we don't set it, because then
 				// the timezone came from the input string.

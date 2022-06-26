@@ -15,10 +15,6 @@ services:
 			- phpstan.rules.rule
 
 	-
-		class: PHPStan\Rules\DisallowedConstructs\DisallowedLooseComparisonRule # only required until https://github.com/phpstan/phpstan-strict-rules/pull/177 becomes part of phpstan-strict-rules 1.2.4
-		tags:
-			- phpstan.rules.rule
-	-
 		class: PHPStan\Rules\DisallowedConstructs\DisallowedBooleanCastRule
 		tags:
 			- phpstan.rules.rule
@@ -31,6 +27,9 @@ parameters:
 	level: 7
 	reportMaybesInPropertyPhpDocTypes: false
 	checkMissingIterableValueType: false
+	checkDynamicProperties: false
+	featureToggles:
+		bleedingEdge: true
 	paths:
 		- app
 		- scripts
@@ -38,7 +37,6 @@ parameters:
 		- app/View/*
 		- app/Http/Livewire/*
 	ignoreErrors:
-		- '#Short ternary operator is not allowed#' # we like short ternary
 		- '#Construct empty\(\) is not allowed#' # we like empty()
 
 		# bunch of false positives from Eloquent

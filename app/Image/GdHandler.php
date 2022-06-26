@@ -300,7 +300,8 @@ class GdHandler implements ImageHandlerInterface
 
 		// the image may need to be rotated prior to any processing
 		try {
-			$exif = exif_read_data($source) ?: [];
+			$exif = exif_read_data($source);
+			$exif = $exif !== false ? $exif : [];
 		} catch (\Exception $e) {
 			$exif = [];
 		}

@@ -317,7 +317,8 @@ class Archive
 	 */
 	protected function extractFileInfo(Photo $photo, string $variant): ArchiveFileInfo
 	{
-		$baseFilename = str_replace($this->badChars, '', $photo->title) ?: 'Untitled';
+		$validFilename = str_replace($this->badChars, '', $photo->title);
+		$baseFilename = $validFilename !== '' ? $validFilename : 'Untitled';
 
 		if ($variant === self::LIVEPHOTOVIDEO) {
 			$sourceFile = new FlysystemFile(Storage::disk(), $photo->live_photo_short_path);

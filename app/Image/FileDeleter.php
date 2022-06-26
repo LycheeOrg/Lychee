@@ -93,11 +93,11 @@ class FileDeleter
 			try {
 				if ($defaultDisk->exists($regularFile)) {
 					if (!$defaultDisk->delete($regularFile)) {
-						$firstException = $firstException ?: new \RuntimeException('Storage::delete failed: ' . $regularFile);
+						$firstException = $firstException ?? new \RuntimeException('Storage::delete failed: ' . $regularFile);
 					}
 				}
 			} catch (\Throwable $e) {
-				$firstException = $firstException ?: $e;
+				$firstException = $firstException ?? $e;
 			}
 		}
 
@@ -118,7 +118,7 @@ class FileDeleter
 						unlink($absolutePath);
 					}
 				} catch (\Throwable $e) {
-					$firstException = $firstException ?: $e;
+					$firstException = $firstException ?? $e;
 				}
 			}
 		} else {
@@ -127,11 +127,11 @@ class FileDeleter
 				try {
 					if ($defaultDisk->exists($regularFile)) {
 						if (!$defaultDisk->delete($regularFile)) {
-							$firstException = $firstException ?: new \RuntimeException('Storage::delete failed: ' . $regularFile);
+							$firstException = $firstException ?? new \RuntimeException('Storage::delete failed: ' . $regularFile);
 						}
 					}
 				} catch (\Throwable $e) {
-					$firstException = $firstException ?: $e;
+					$firstException = $firstException ?? $e;
 				}
 			}
 		}
@@ -148,7 +148,7 @@ class FileDeleter
 					unlink($absolutePath);
 				}
 			} catch (\Throwable $e) {
-				$firstException = $firstException ?: $e;
+				$firstException = $firstException ?? $e;
 			}
 		}
 

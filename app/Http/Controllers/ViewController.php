@@ -27,7 +27,7 @@ class ViewController extends Controller
 	{
 		try {
 			$photo = $request->photo();
-			$sizeVariant = $photo->size_variants->getMedium() ?: $photo->size_variants->getOriginal();
+			$sizeVariant = $photo->size_variants->getMedium() ?? $photo->size_variants->getOriginal();
 			$title = Configs::getValueAsString('site_title', Config::get('defines.defaults.SITE_TITLE'));
 			$rss_enable = Configs::getValueAsBool('rss_enable', false);
 

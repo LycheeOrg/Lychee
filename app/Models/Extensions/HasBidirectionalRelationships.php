@@ -74,11 +74,11 @@ trait HasBidirectionalRelationships
 	{
 		$instance = $this->newRelatedInstance($related);
 
-		$foreignKey = $foreignKey ?: $this->getForeignKey();
+		$foreignKey = $foreignKey ?? $this->getForeignKey();
 
-		$localKey = $localKey ?: $this->getKeyName();
+		$localKey = $localKey ?? $this->getKeyName();
 
-		$foreignMethodName = $foreignMethodName ?: $this->getForeignProperty();
+		$foreignMethodName = $foreignMethodName ?? $this->getForeignProperty();
 
 		return $this->newHasManyBidirectionally(
 			$instance->newQuery(),

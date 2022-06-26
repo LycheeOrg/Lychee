@@ -85,7 +85,7 @@ class Geodecoder
 	 */
 	public static function decodeLocation_core(float $latitude, float $longitude, ProviderCache $cachedProvider): ?string
 	{
-		$lang = Configs::getValueAsString('lang') ?: null;
+		$lang = Configs::getValueAsString('lang', 'en');
 		$geocoder = new StatefulGeocoder($cachedProvider, $lang);
 		try {
 			$result_list = $geocoder->reverseQuery(ReverseQuery::fromCoordinates($latitude, $longitude));

@@ -119,7 +119,7 @@ class BacktraceRecord extends DTO
 	 */
 	public function getFunctionBeautified(): string
 	{
-		return $this->function ?: self::UNKNOWN_PLACEHOLDER;
+		return $this->function !== '' ? $this->function : self::UNKNOWN_PLACEHOLDER;
 	}
 
 	/**

@@ -78,7 +78,7 @@ class Configs extends Model
 			self::TERNARY => explode('|', self::TERNARY),
 		];
 
-		$message_template_got = 'Error: Wrong property for ' . $this->key . ' in database, expected %s, got ' . ($value ?: 'NULL') . '.';
+		$message_template_got = 'Error: Wrong property for ' . $this->key . ' in database, expected %s, got ' . ($value ?? 'NULL') . '.';
 		switch ($this->type_range) {
 			case self::STRING:
 			case self::DISABLED:

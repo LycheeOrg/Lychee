@@ -101,7 +101,9 @@ class Archive extends Action
 	 */
 	private static function createValidTitle(string $title): string
 	{
-		return str_replace(self::BAD_CHARS, '', $title) ?: 'Untitled';
+		$validTitle = str_replace(self::BAD_CHARS, '', $title);
+
+		return $validTitle !== '' ? $validTitle : 'Untitled';
 	}
 
 	/**

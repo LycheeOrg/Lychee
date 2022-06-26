@@ -120,7 +120,8 @@ class Info extends Diagnostics
 		$infos[] = Diagnostics::line('System:', PHP_OS);
 		$infos[] = Diagnostics::line('PHP Version:', phpversion());
 		$infos[] = Diagnostics::line('PHP User agent:', ini_get('user_agent'));
-		$infos[] = Diagnostics::line('Timezone:', (CarbonTimeZone::create() ?: null)?->getName());
+		$timeZone = CarbonTimeZone::create();
+		$infos[] = Diagnostics::line('Timezone:', ($timeZone !== false ? $timeZone : null)?->getName());
 		$infos[] = Diagnostics::line('Max uploaded file size:', ini_get('upload_max_filesize'));
 		$infos[] = Diagnostics::line('Max post size:', ini_get('post_max_size'));
 		$infos[] = Diagnostics::line('Max execution time: ', ini_get('max_execution_time'));

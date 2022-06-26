@@ -60,7 +60,7 @@
         "nunomaduro/larastan": "^1.0",
         "phpstan/phpstan": "^1.7",
         "phpstan/phpstan-deprecation-rules": "^1.0",
-        "phpstan/phpstan-strict-rules": "^1.2",
+        "phpstan/phpstan-strict-rules": "^1.3",
         "phpunit/phpunit": "^9",
         "slam/phpstan-extensions": "^6.0",
         "thecodingmachine/phpstan-safe-rule": "^1.2"

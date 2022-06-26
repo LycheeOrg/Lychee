@@ -69,7 +69,7 @@ class RequirementsChecker
 	 */
 	public function checkPHPVersion(?string $minPhpVersion = null): array
 	{
-		$minVersionPhp = $minPhpVersion ?: self::MIN_PHP_VERSION;
+		$minVersionPhp = $minPhpVersion ?? self::MIN_PHP_VERSION;
 		$currentPhpVersion = self::getPhpVersionInfo();
 		$supported = version_compare($currentPhpVersion['version'], $minVersionPhp) >= 0;
 
