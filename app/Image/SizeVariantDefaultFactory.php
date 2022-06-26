@@ -371,8 +371,8 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 				$maxHeight = 2 * Configs::getValueAsInt('small_max_height', 360);
 				break;
 			case SizeVariant::SMALL:
-				$maxWidth = Configs::getValueAsInt('small_max_width');
-				$maxHeight = Configs::getValueAsInt('small_max_height');
+				$maxWidth = Configs::getValueAsInt('small_max_width', 0);
+				$maxHeight = Configs::getValueAsInt('small_max_height', 360);
 				break;
 			case SizeVariant::THUMB2X:
 				$maxWidth = self::THUMBNAIL2X_DIM;
