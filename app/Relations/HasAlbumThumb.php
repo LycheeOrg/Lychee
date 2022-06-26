@@ -45,7 +45,7 @@ class HasAlbumThumb extends Relation
 	{
 		/*
 		 * We know that the internal query is of type `FixedQueryBuilder`,
-		 * because it was set int the constructor as `Photo::query()`.
+		 * because it was set in the constructor as `Photo::query()`.
 		 */
 		return $this->query; // @phpstan-ignore-line @noinspection PhpIncompatibleReturnTypeInspection
 	}
