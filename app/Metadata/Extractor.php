@@ -85,54 +85,20 @@ class Extractor
 	public static function createFromFile(NativeLocalFile $file): self
 	{
 		$metadata = new static();
-		$reader = null;
-
-		// TODO: This line is extremely dangerous, because it tries to determine the type of file based on a possibly not existing file extension
-		// Note: For temporarily stored files during upload, PHP normally uses
-		// temporary file names without an extension.
-		// We should stop passing around absolute file paths and try to
-		// re-determine the MIME type over and over again, but pass around
-		// proper `File` objects which also hold the MIME type which has
-		// been established initially.
-		$extension = $file->getExtension();
+		$isSupportedVideo = $file->isSupportedVideo();
 
 		try {
-			if ($file->isSupportedImage()) {
-				// It's a photo
-				if (Configs::hasExiftool()) {
-					// reader with Exiftool adapter
-					$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
-				} elseif (Configs::hasImagick()) {
-					// Use imagick as exif reader if available
-					$reader = Reader::factory(Reader::TYPE_IMAGICK);
-				} else {
-					// Use Php native tools
-					$reader = Reader::factory(Reader::TYPE_NATIVE);
-				}
-			} elseif ($file->isSupportedVideo()) {
-				// Let's try to use FFmpeg; if not available, let's try Exiftool
-				if (Configs::hasFFmpeg()) {
-					// It's a video -> use FFProbe
-					$reader = Reader::factory(Reader::TYPE_FFPROBE);
-				} elseif (Configs::hasExiftool()) {
-					// reader with Exiftool adapter
-					$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
-				} else {
-					// Use Php native tools to extract at least MimeType and Filesize
-					// For all other properties, it will not return anything
-					$reader = Reader::factory(Reader::TYPE_NATIVE);
-					Logs::notice(__METHOD__, __LINE__, 'FFmpeg and Exiftool not being available; Extraction of metadata limited to mime type and file size.');
-				}
-			} else {
-				// It is an accepted raw file
-				if (Configs::hasImagick()) {
-					// Use imagick as exif reader for raw files (broader support)
-					$reader = Reader::factory(Reader::TYPE_IMAGICK);
-				} else {
-					// Use Php native tools
-					$reader = Reader::factory(Reader::TYPE_NATIVE);
-				}
-			}
+			// Priority of EXIF data readers is
+			//  1. FFMpeg (only for videos)
+			//  2. Exiftool
+			//  3. Imagick (not for videos, i.e. for supported photos and accepted raw files only)
+			//  4. Native PHP exif reader (last resort)
+			$reader = match (true) {
+				(Configs::hasFFmpeg() && $isSupportedVideo) => Reader::factory(Reader::TYPE_FFPROBE),
+				Configs::hasExiftool() => Reader::factory(Reader::TYPE_EXIFTOOL),
+				(Configs::hasImagick() && !$isSupportedVideo) => Reader::factory(Reader::TYPE_IMAGICK),
+				default => Reader::factory(Reader::TYPE_NATIVE),
+			};
 
 			// this can throw an exception in the case of Exiftool adapter!
 			// TODO: This may fail for files without an extension.
@@ -344,9 +310,9 @@ class Extractor
 				//         At the layer of the "business logic" we only use
 				//         the attribute `taken_at` which extends
 				//         \DateTimeInterface and stores the timezone.
-				if ($file->isSupportedVideo()) {
+				if ($isSupportedVideo) {
 					$locals = strtolower(Configs::get_value('local_takestamp_video_formats', ''));
-					if (!in_array(strtolower($extension), explode('|', $locals), true)) {
+					if (!in_array(strtolower($file->getExtension()), explode('|', $locals), true)) {
 						// This is a video format where we expect the takestamp
 						// to be provided in UTC.
 						if ($taken_at->getTimezone()->getName() === date_default_timezone_get()) {
@@ -444,14 +410,16 @@ class Extractor
 			$metadata->position = implode(', ', $fields);
 		}
 
-		if ($file->isSupportedImage() || $file->isAcceptedRaw()) {
+		if (!$isSupportedVideo) {
+			// Media is either a supported photo or an accepted raw file:
+			// properly format aperture and focal
 			$metadata->aperture = ($exif->getAperture() !== false) ? $exif->getAperture() : null;
 			$metadata->focal = ($exif->getFocalLength() !== false) ? $exif->getFocalLength() : null;
 			if (!empty($metadata->focal)) {
 				$metadata->focal = round($metadata->focal) . self::SUFFIX_MM_UNIT;
 			}
 		} else {
-			// Video -> reuse fields
+			// Media is a video: Reuse (exploit) fields aperture and focal for duration and framerate
 			$metadata->aperture = ($exif->getDuration() !== false) ? $exif->getDuration() : null;
 			$metadata->focal = ($exif->getFramerate() !== false) ? $exif->getFramerate() : null;
 		}
