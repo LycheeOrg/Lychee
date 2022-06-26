@@ -96,7 +96,7 @@ class IndexController extends Controller
 		$infos = $this->configFunctions->get_pages_infos();
 
 		$lang = Lang::get_lang();
-		$lang['language'] = Configs::getValueAsString('lang');
+		$lang['language'] = Configs::getValueAsString('lang', 'en');
 
 		$title = Configs::getValueAsString('site_title', Config::get('defines.defaults.SITE_TITLE'));
 		$rss_enable = Configs::getValueAsBool('rss_enable');
