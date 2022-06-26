@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Builder;
  * Although this class extends `Builder<TModelClass>` and `Builder<TModelClass>`
  * has a `@mixin` for `Illuminate\Database\Query\Builder`, PhpStan does not
  * consider this mixin as part of this class, because this mixin is treated
- * in a special way bay the Larastan extension, but Larastan does not know
+ * in a special way by the Larastan extension, but Larastan does not know
  * anything about our `FixedQueryBuilder`.
  * For this reason me must repeat all the methods defined by
  * `Illuminate\Database\Query\Builder`.
