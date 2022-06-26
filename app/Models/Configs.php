@@ -66,11 +66,11 @@ class Configs extends Model
 	/**
 	 * Sanity check.
 	 *
-	 * @param string|null $value
+	 * @param string|null $candidateValue
 	 *
 	 * @return string
 	 */
-	public function sanity(?string $value): string
+	public function sanity(?string $candidateValue): string
 	{
 		$message = '';
 		$val_range = [
@@ -78,36 +78,36 @@ class Configs extends Model
 			self::TERNARY => explode('|', self::TERNARY),
 		];
 
-		$message_template_got = 'Error: Wrong property for ' . $this->key . ' in database, expected %s, got ' . ($value ?? 'NULL') . '.';
+		$message_template_got = 'Error: Wrong property for ' . $this->key . ' in database, expected %s, got ' . ($candidateValue ?? 'NULL') . '.';
 		switch ($this->type_range) {
 			case self::STRING:
 			case self::DISABLED:
 				break;
 			case self::STRING_REQ:
-				if ($value === '' || $value === null) {
+				if ($candidateValue === '' || $candidateValue === null) {
 					$message = 'Error: ' . $this->key . ' empty or not set in database';
 				}
 				break;
 			case self::INT:
 				// we make sure that we only have digits in the chosen value.
-				if (!ctype_digit(strval($value))) {
+				if (!ctype_digit(strval($candidateValue))) {
 					$message = sprintf($message_template_got, 'positive integer');
 				}
 				break;
 			case self::BOOL:
 			case self::TERNARY:
-				if (!in_array($value, $val_range[$this->type_range], true)) { // BOOL or TERNARY
+				if (!in_array($candidateValue, $val_range[$this->type_range], true)) { // BOOL or TERNARY
 					$message = sprintf($message_template_got, implode(' or ', $val_range[$this->type_range]));
 				}
 				break;
 			case self::LICENSE:
-				if (!in_array($value, Helpers::get_all_licenses(), true)) {
+				if (!in_array($candidateValue, Helpers::get_all_licenses(), true)) {
 					$message = sprintf($message_template_got, 'a valid license');
 				}
 				break;
 			default:
 				$values = explode('|', $this->type_range);
-				if (!in_array($value, $values, true)) {
+				if (!in_array($candidateValue, $values, true)) {
 					$message = sprintf($message_template_got, implode(' or ', $values));
 				}
 				break;
