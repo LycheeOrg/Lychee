@@ -42,7 +42,8 @@ class NoEncryptionKey implements HttpExceptionHandler
 			$contentType = $defaultResponse->headers->get('Content-Type');
 			if (!empty($contentType)) {
 				$redirectResponse->headers->set('Content-Type', $contentType);
-				$redirectResponse->setContent($defaultResponse->getContent() !== false ? $defaultResponse->getContent() : null);
+				$content = $defaultResponse->getContent();
+				$redirectResponse->setContent($content !== false ? $content : null);
 			}
 
 			return $redirectResponse;
