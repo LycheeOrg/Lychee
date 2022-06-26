@@ -87,7 +87,7 @@ class Extractor
 	 */
 	public static function createFromFile(NativeLocalFile $file): self
 	{
-		$metadata = new static();
+		$metadata = new self();
 		$isSupportedVideo = $file->isSupportedVideo();
 
 		try {
@@ -323,7 +323,7 @@ class Extractor
 				//         the attribute `taken_at` which extends
 				//         \DateTimeInterface and stores the timezone.
 				if ($isSupportedVideo) {
-					$locals = strtolower(Configs::get_value('local_takestamp_video_formats', ''));
+					$locals = strtolower(Configs::getValueAsString('local_takestamp_video_formats', ''));
 					if (!in_array(strtolower($file->getExtension()), explode('|', $locals), true)) {
 						// This is a video format where we expect the takestamp
 						// to be provided in UTC.
