@@ -29,7 +29,7 @@ class HasManyPhotosRecursively extends HasManyPhotos
 	{
 		/*
 		 * We know that the parent is of type `Album`,
-		 * because it was set int the constructor as `$owningAlbum`.
+		 * because it was set in the constructor as `$owningAlbum`.
 		 */
 		return $this->parent; // @phpstan-ignore-line @noinspection PhpIncompatibleReturnTypeInspection
 	}
