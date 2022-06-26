@@ -68,7 +68,7 @@ class IniSettingsCheck implements DiagnosticCheckInterface
 			$errors[] = 'Warning: user_agent for PHP is not set. You may experience problems when importing images via URL.';
 		}
 
-		if (!(ini_get('assert.exception') === '1')) {
+		if (ini_get('assert.exception') !== '1') {
 			$errors[] = 'Warning: assert.exception is set to false. Lychee assumes that failing assertions throw proper exceptions.';
 		}
 
