@@ -48,7 +48,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 	{
 		/*
 		 * We know that the internal query is of type `Album`,
-		 * because it was set int the constructor as `$owningAlbum`.
+		 * because it was set in the constructor as `$owningAlbum`.
 		 */
 		return $this->parent; // @phpstan-ignore-line @noinspection PhpIncompatibleReturnTypeInspection
 	}
