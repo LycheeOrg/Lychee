@@ -224,7 +224,7 @@ class SizeVariant extends Model
 	 */
 	public function setTypeAttribute(int $sizeVariantType): void
 	{
-		// This method is also invoked, if the model is hydrated from the DB.
+		// This method is also invoked if the model is hydrated from the DB.
 		// Hence, we cannot ensure by static code analyzing that the
 		// restriction `int<0,6>` always holds.
 		// We must check at runtime, too.
