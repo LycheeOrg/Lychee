@@ -40,7 +40,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	{
 		/*
 		 * We know that the internal query is of type `AlbumBuilder`,
-		 * because it was set int the constructor as `$owningAlbum->newQuery()`.
+		 * because it was set in the constructor as `$owningAlbum->newQuery()`.
 		 */
 		return $this->query; // @phpstan-ignore-line @noinspection PhpIncompatibleReturnTypeInspection
 	}
