@@ -53,7 +53,7 @@ class VideoData extends Command
 
 			$this->line(
 				sprintf(
-					'Will attempt to generate up to %s video thumbnails/metadata with a timeout of %d seconds...',
+					'Will attempt to generate up to %d video thumbnails/metadata with a timeout of %d seconds...',
 					$count,
 					$timeout
 				)
