@@ -35,7 +35,7 @@ class ViewController extends Controller
 			$picture = $sizeVariant->url;
 
 			$lang = Lang::get_lang();
-			$lang['language'] = Configs::getValueAsString('lang');
+			$lang['language'] = Configs::getValueAsString('lang', 'en');
 
 			return view('view', [
 				'locale' => $lang,
