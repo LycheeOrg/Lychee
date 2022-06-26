@@ -47,7 +47,7 @@ class PageController extends Controller
 		$page = Page::enabled()->where('link', '=', '/' . $page)->firstOrFail();
 
 		$lang = Lang::get_lang();
-		$lang['language'] = Configs::getValueAsString('lang');
+		$lang['language'] = Configs::getValueAsString('lang', 'en');
 
 		$infos = $this->configFunctions->get_pages_infos();
 		$title = Configs::getValueAsString('site_title', Config::get('defines.defaults.SITE_TITLE'));
