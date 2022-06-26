@@ -12,6 +12,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Config;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 class FrameController extends Controller
@@ -48,7 +49,7 @@ class FrameController extends Controller
 			$lang['language'] = Configs::getValueAsString('lang', 'en');
 
 			$infos = $this->configFunctions->get_pages_infos();
-			$title = Configs::getValueAsString('site_title');
+			$title = Configs::getValueAsString('site_title', Config::get('defines.defaults.SITE_TITLE'));
 
 			return view('frame', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'rss_enable' => false]);
 		} catch (BindingResolutionException|RouteNotFoundException $e) {

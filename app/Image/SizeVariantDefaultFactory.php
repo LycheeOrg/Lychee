@@ -239,11 +239,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		}
 		list($maxWidth, $maxHeight) = $this->getMaxDimensions($sizeVariant);
 
-		return $this->createSizeVariantInternal(
-			$sizeVariant,
-			$maxWidth,
-			$maxHeight
-		);
+		return $this->createSizeVariantInternal($sizeVariant, $maxWidth, $maxHeight);
 	}
 
 	/**
