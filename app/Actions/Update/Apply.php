@@ -45,7 +45,7 @@ class Apply
 		if (Config::get('app.env') === 'production') {
 			// @codeCoverageIgnoreStart
 			// we cannot code cov this part. APP_ENV is dev in testing mode.
-			if (Configs::getValueAsBool('force_migration_in_production')) {
+			if (Configs::getValueAsBool('force_migration_in_production', false)) {
 				Logs::warning(__METHOD__, __LINE__, 'Force update is production.');
 
 				return true;
