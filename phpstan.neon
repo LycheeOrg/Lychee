@@ -10,8 +10,6 @@ parameters:
 		- app/View/*
 		- app/Http/Livewire/*
 	ignoreErrors:
-		- '#Construct empty\(\) is not allowed#' # we like empty()
-
 		# bunch of false positives from Eloquent
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::insert\(\).#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::select\(\).#'
