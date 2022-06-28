@@ -20,6 +20,7 @@ class Lang
 	{
 		$this->langFactory = $langFactory;
 
+		// Necessary for phpStan to pass.
 		try {
 			$this->code = Configs::getValueAsString('lang');
 		} catch (ConfigurationKeyMissingException) {
