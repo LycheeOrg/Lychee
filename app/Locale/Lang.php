@@ -3,6 +3,7 @@
 namespace App\Locale;
 
 use App\Contracts\Language;
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Factories\LangFactory;
 use App\Models\Configs;
 
@@ -19,7 +20,11 @@ class Lang
 	{
 		$this->langFactory = $langFactory;
 
-		$this->code = Configs::getValueAsString('lang');
+		try {
+			$this->code = Configs::getValueAsString('lang');
+		} catch (ConfigurationKeyMissingException) {
+			$this->code = 'en';
+		}
 
 		$this->language = $langFactory->make($this->code);
 	}
