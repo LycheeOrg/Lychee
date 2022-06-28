@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Actions\Import\Exec;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\Contracts\ExternalLycheeException;
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\UnexpectedException;
 use App\Facades\AccessControl;
 use App\Models\Album;
@@ -44,12 +45,17 @@ class Sync extends Command
 	public function __construct()
 	{
 		// Fill signature with default values from user configuration
-		$this->signature = sprintf(
-			$this->signature,
-			Configs::getValueAsString('delete_imported'),
-			Configs::getValueAsString('import_via_symlink'),
-			Configs::getValueAsString('skip_duplicates')
-		);
+		try {
+			$this->signature = sprintf(
+				$this->signature,
+				Configs::getValueAsString('delete_imported'),
+				Configs::getValueAsString('import_via_symlink'),
+				Configs::getValueAsString('skip_duplicates')
+			);
+		} catch (ConfigurationKeyMissingException) {
+			// This is necessary other wise we can't even run Composer install
+			$this->signature = sprintf($this->signature, '0', '0', '0');
+		}
 		parent::__construct();
 	}
 
