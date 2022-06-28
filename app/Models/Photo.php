@@ -257,7 +257,7 @@ class Photo extends Model implements HasRandomID
 			return $this->album->license;
 		}
 
-		return Configs::getValueAsString('default_license', 'none');
+		return Configs::getValueAsString('default_license');
 	}
 
 	/**
@@ -338,7 +338,7 @@ class Photo extends Model implements HasRandomID
 		return
 			AccessControl::is_current_user_or_admin($this->owner_id) ||
 			($this->album_id !== null && $this->album->is_downloadable) ||
-			($this->album_id === null && Configs::getValueAsBool('downloadable', false));
+			($this->album_id === null && Configs::getValueAsBool('downloadable'));
 	}
 
 	/**
@@ -353,7 +353,7 @@ class Photo extends Model implements HasRandomID
 	 */
 	protected function getIsShareButtonVisibleAttribute(): bool
 	{
-		$default = Configs::getValueAsBool('share_button_visible', false);
+		$default = Configs::getValueAsBool('share_button_visible');
 
 		return
 			AccessControl::is_current_user_or_admin($this->owner_id) ||
@@ -446,7 +446,7 @@ class Photo extends Model implements HasRandomID
 			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null) &&
 			(
 				($this->album_id !== null && !$this->album->grants_full_photo) ||
-				($this->album_id === null && !Configs::getValueAsBool('full_photo', true))
+				($this->album_id === null && !Configs::getValueAsBool('full_photo'))
 			)
 		) {
 			unset($result['size_variants']['original']['url']);

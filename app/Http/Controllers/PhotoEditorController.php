@@ -23,7 +23,7 @@ class PhotoEditorController extends Controller
 	 */
 	public function rotate(RotatePhotoRequest $request): Photo
 	{
-		if (!Configs::getValueAsBool('editor_enabled', false)) {
+		if (!Configs::getValueAsBool('editor_enabled')) {
 			throw new ConfigurationException('support for rotation disabled by configuration');
 		}
 

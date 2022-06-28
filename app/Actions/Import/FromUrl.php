@@ -52,7 +52,7 @@ class FromUrl
 		$exceptions = [];
 		$create = new Create(new ImportMode(
 			true,
-			Configs::getValueAsBool('skip_duplicates', false)
+			Configs::getValueAsBool('skip_duplicates')
 		));
 
 		foreach ($urls as $url) {

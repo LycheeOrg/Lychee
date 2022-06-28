@@ -60,7 +60,7 @@ class Geodecoder
 	public static function decodeLocation(?float $latitude, ?float $longitude): ?string
 	{
 		// User does not want to decode location data
-		if (!Configs::getValueAsBool('location_decoding', false)) {
+		if (!Configs::getValueAsBool('location_decoding')) {
 			return null;
 		}
 		if ($latitude === null || $longitude === null) {
@@ -85,7 +85,7 @@ class Geodecoder
 	 */
 	public static function decodeLocation_core(float $latitude, float $longitude, ProviderCache $cachedProvider): ?string
 	{
-		$lang = Configs::getValueAsString('lang', 'en');
+		$lang = Configs::getValueAsString('lang');
 		$geocoder = new StatefulGeocoder($cachedProvider, $lang);
 		try {
 			$result_list = $geocoder->reverseQuery(ReverseQuery::fromCoordinates($latitude, $longitude));

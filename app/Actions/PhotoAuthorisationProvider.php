@@ -120,7 +120,7 @@ class PhotoAuthorisationProvider
 		return
 			AccessControl::is_current_user_or_admin($photo->owner_id) ||
 			$photo->album?->is_downloadable ||
-			($photo->album === null && Configs::getValueAsBool('downloadable', false));
+			($photo->album === null && Configs::getValueAsBool('downloadable'));
 	}
 
 	/**
@@ -217,7 +217,7 @@ class PhotoAuthorisationProvider
 	public function appendSearchabilityConditions(BaseBuilder $query, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
 	{
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
-		$maySearchPublic = !Configs::getValueAsBool('public_photos_hidden', true);
+		$maySearchPublic = !Configs::getValueAsBool('public_photos_hidden');
 
 		try {
 			// there must be no unreachable album between the origin and the photo

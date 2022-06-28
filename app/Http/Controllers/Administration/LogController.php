@@ -26,7 +26,7 @@ class LogController extends Controller
 		// @phpstan-ignore-next-line
 		return Logs::query()
 			->orderBy('id', $order)
-			->limit(Configs::getValueAsInt('log_max_num_line', 1000))
+			->limit(Configs::getValueAsInt('log_max_num_line'))
 			->get();
 	}
 

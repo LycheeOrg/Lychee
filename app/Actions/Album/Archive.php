@@ -43,7 +43,7 @@ class Archive extends Action
 	{
 		$responseGenerator = function () use ($albums) {
 			$options = new \ZipStream\Option\Archive();
-			$options->setEnableZip64(Configs::getValueAsBool('zip64', true));
+			$options->setEnableZip64(Configs::getValueAsBool('zip64'));
 			$zip = new ZipStream(null, $options);
 
 			$usedDirNames = [];

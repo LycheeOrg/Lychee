@@ -20,7 +20,7 @@ class SearchRequest extends BaseApiRequest
 	 */
 	public function authorize(): bool
 	{
-		return AccessControl::is_logged_in() || Configs::getValueAsBool('public_search', false);
+		return AccessControl::is_logged_in() || Configs::getValueAsBool('public_search');
 	}
 
 	/**

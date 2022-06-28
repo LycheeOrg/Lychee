@@ -10,7 +10,6 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Config;
 use Illuminate\View\View;
 
 class PageController extends Controller
@@ -47,11 +46,11 @@ class PageController extends Controller
 		$page = Page::enabled()->where('link', '=', '/' . $page)->firstOrFail();
 
 		$lang = Lang::get_lang();
-		$lang['language'] = Configs::getValueAsString('lang', 'en');
+		$lang['language'] = Configs::getValueAsString('lang');
 
 		$infos = $this->configFunctions->get_pages_infos();
-		$title = Configs::getValueAsString('site_title', Config::get('defines.defaults.SITE_TITLE'));
-		$rss_enable = Configs::getValueAsBool('rss_enable', false);
+		$title = Configs::getValueAsString('site_title');
+		$rss_enable = Configs::getValueAsBool('rss_enable');
 		$menus = Page::menu()->get();
 
 		$contents = $page->content;

@@ -70,7 +70,7 @@ class AppServiceProvider extends ServiceProvider
 	public function register()
 	{
 		$this->app->singleton(Image\ImageHandlerInterface::class, function ($app) {
-			$compressionQuality = Configs::getValueAsInt('compression_quality', 90);
+			$compressionQuality = Configs::getValueAsInt('compression_quality');
 
 			return new ImageHandler($compressionQuality);
 		});

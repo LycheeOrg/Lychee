@@ -37,7 +37,7 @@ class Legacy
 	{
 		$configs = Configs::get();
 
-		if (Configs::getValueAsString('version', '040000') < '040008') {
+		if (Configs::getValueAsString('version') < '040008') {
 			if ($configs['password'] === '' && $configs['username'] === '') {
 				Configs::set('username', $hashedUsername);
 				Configs::set('password', $hashedPassword);
@@ -54,7 +54,7 @@ class Legacy
 		// LEGACY STUFF
 		$configs = Configs::get();
 
-		if (Configs::getValueAsString('version', '040000') <= '040008') {
+		if (Configs::getValueAsString('version') <= '040008') {
 			// Check if login credentials exist and login if they don't
 			if (
 				isset($configs['username']) && $configs['username'] === '' &&
@@ -122,7 +122,7 @@ class Legacy
 					' with legacy ID ' . $id .
 					' instead of new ID ' . $newID .
 					' from ' . $referer;
-				if (!Configs::getValueAsBool('legacy_id_redirection', false)) {
+				if (!Configs::getValueAsBool('legacy_id_redirection')) {
 					$msg .= ' (translation disabled by configuration)';
 					throw new ConfigurationException($msg);
 				}

@@ -10,7 +10,6 @@ use App\Models\Configs;
 use App\Models\Page;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Config;
 use Illuminate\View\View;
 use function Safe\phpinfo;
 
@@ -40,16 +39,16 @@ class IndexController extends Controller
 	 */
 	public function show(): View
 	{
-		if (Configs::getValueAsBool('landing_page_enable', false)) {
+		if (Configs::getValueAsBool('landing_page_enable')) {
 			$lang = Lang::get_lang();
-			$lang['language'] = Configs::getValueAsString('lang', 'en');
+			$lang['language'] = Configs::getValueAsString('lang');
 
 			$infos = $this->configFunctions->get_pages_infos();
 
 			$menus = Page::menu()->get();
 
-			$title = Configs::getValueAsString('site_title', Config::get('defines.defaults.SITE_TITLE'));
-			$rss_enable = Configs::getValueAsBool('rss_enable', false);
+			$title = Configs::getValueAsString('site_title');
+			$rss_enable = Configs::getValueAsBool('rss_enable');
 
 			$page_config = [];
 			$page_config['show_hosted_by'] = false;
@@ -96,13 +95,13 @@ class IndexController extends Controller
 		$infos = $this->configFunctions->get_pages_infos();
 
 		$lang = Lang::get_lang();
-		$lang['language'] = Configs::getValueAsString('lang', 'en');
+		$lang['language'] = Configs::getValueAsString('lang');
 
-		$title = Configs::getValueAsString('site_title', Config::get('defines.defaults.SITE_TITLE'));
-		$rss_enable = Configs::getValueAsBool('rss_enable', false);
+		$title = Configs::getValueAsString('site_title');
+		$rss_enable = Configs::getValueAsBool('rss_enable');
 		$page_config = [];
 		$page_config['show_hosted_by'] = true;
-		$page_config['display_socials'] = Configs::getValueAsBool('display_social_in_gallery', false);
+		$page_config['display_socials'] = Configs::getValueAsBool('display_social_in_gallery');
 
 		return view('gallery', [
 			'locale' => $lang,

@@ -12,7 +12,6 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Config;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 class FrameController extends Controller
@@ -41,15 +40,15 @@ class FrameController extends Controller
 		try {
 			Configs::get();
 
-			if (!Configs::getValueAsBool('Mod_Frame', false)) {
+			if (!Configs::getValueAsBool('Mod_Frame')) {
 				return redirect()->route('home');
 			}
 
 			$lang = Lang::get_lang();
-			$lang['language'] = Configs::getValueAsString('lang', 'en');
+			$lang['language'] = Configs::getValueAsString('lang');
 
 			$infos = $this->configFunctions->get_pages_infos();
-			$title = Configs::getValueAsString('site_title', Config::get('defines.defaults.SITE_TITLE'));
+			$title = Configs::getValueAsString('site_title');
 
 			return view('frame', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'rss_enable' => false]);
 		} catch (BindingResolutionException|RouteNotFoundException $e) {
@@ -68,12 +67,12 @@ class FrameController extends Controller
 	{
 		Configs::get();
 
-		if (!Configs::getValueAsBool('Mod_Frame', false)) {
+		if (!Configs::getValueAsBool('Mod_Frame')) {
 			throw new ConfigurationException('Frame is not enabled');
 		}
 
 		$return = [];
-		$return['refresh'] = Configs::getValueAsInt('Mod_Frame_refresh', 30) * 1000;
+		$return['refresh'] = Configs::getValueAsInt('Mod_Frame_refresh') * 1000;
 
 		return $return;
 	}

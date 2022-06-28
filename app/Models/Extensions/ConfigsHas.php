@@ -16,7 +16,7 @@ trait ConfigsHas
 	{
 		return
 			extension_loaded('imagick') &&
-			self::getValueAsBool('imagick', true);
+			self::getValueAsBool('imagick');
 	}
 
 	/**
@@ -29,7 +29,7 @@ trait ConfigsHas
 		// 1: Exiftool is available
 		// 2: Not yet tested if exiftool is available
 
-		$has_exiftool = self::getValueAsInt('has_exiftool', 2);
+		$has_exiftool = self::getValueAsInt('has_exiftool');
 
 		// value not yet set -> let's see if exiftool is available
 		if ($has_exiftool === 2) {
@@ -62,7 +62,7 @@ trait ConfigsHas
 		// 1: ffmpeg is available
 		// 2: Not yet tested if ffmpeg is available
 
-		$has_ffmpeg = self::getValueAsInt('has_ffmpeg', 2);
+		$has_ffmpeg = self::getValueAsInt('has_ffmpeg');
 
 		// value not yet set -> let's see if ffmpeg is available
 		if ($has_ffmpeg === 2) {

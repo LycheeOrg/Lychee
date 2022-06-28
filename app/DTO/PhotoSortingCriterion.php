@@ -28,8 +28,8 @@ class PhotoSortingCriterion extends SortingCriterion
 	{
 		/* @noinspection PhpUnhandledExceptionInspection */
 		return new self(
-			Configs::getValueAsString('sorting_photos_col', SortingCriterion::COLUMN_CREATED_AT),
-			Configs::getValueAsString('sorting_photos_order', SortingCriterion::ASC)
+			Configs::getValueAsString('sorting_photos_col'),
+			Configs::getValueAsString('sorting_photos_order')
 		);
 	}
 }

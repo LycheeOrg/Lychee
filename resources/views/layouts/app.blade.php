@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', Lang::get_code()) }}">
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-	<title>{{ App\Models\Configs::getValueAsString('site_title', Config::get('defines.defaults.SITE_TITLE')) }}</title>
+	<title>{{ App\Models\Configs::getValueAsString('site_title') }}</title>
 
 	<link rel="shortcut icon" href="{{ URL::asset('favicon.ico') }}">
 	<link rel="apple-touch-icon" href="img/apple-touch-icon-ipad.png" sizes="120x120">

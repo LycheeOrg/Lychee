@@ -162,7 +162,7 @@ class Extractor
 				// We don't want to overwrite the media's type with the mimetype of the sidecar file
 				unset($sidecarData['MimeType']);
 
-				if (Configs::getValueAsBool('prefer_available_xmp_metadata', false)) {
+				if (Configs::getValueAsBool('prefer_available_xmp_metadata')) {
 					$exif->setData(array_merge($exif->getData(), $sidecarData));
 				} else {
 					$exif->setData(array_merge($sidecarData, $exif->getData()));
@@ -323,7 +323,7 @@ class Extractor
 				//         the attribute `taken_at` which extends
 				//         \DateTimeInterface and stores the timezone.
 				if ($isSupportedVideo) {
-					$locals = strtolower(Configs::getValueAsString('local_takestamp_video_formats', ''));
+					$locals = strtolower(Configs::getValueAsString('local_takestamp_video_formats'));
 					if (!in_array(strtolower($file->getExtension()), explode('|', $locals), true)) {
 						// This is a video format where we expect the takestamp
 						// to be provided in UTC.

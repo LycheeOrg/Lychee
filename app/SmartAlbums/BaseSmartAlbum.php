@@ -50,8 +50,8 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		$this->id = $id;
 		$this->title = $title;
 		$this->isPublic = $isPublic;
-		$this->isDownloadable = Configs::getValueAsBool('downloadable', false);
-		$this->isShareButtonVisible = Configs::getValueAsBool('share_button_visible', false);
+		$this->isDownloadable = Configs::getValueAsBool('downloadable');
+		$this->isShareButtonVisible = Configs::getValueAsBool('share_button_visible');
 		$this->thumb = null;
 		$this->smartPhotoCondition = $smartCondition;
 	}

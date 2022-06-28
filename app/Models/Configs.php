@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
@@ -142,24 +143,25 @@ class Configs extends Model
 	/**
 	 * The best way to request a value from the config...
 	 *
-	 * @param string               $key
-	 * @param int|bool|string|null $default
+	 * @param string $key
 	 *
 	 * @return int|bool|string|null
+	 *
+	 * @throws ConfigurationKeyMissingException if a key does not exist
 	 */
-	public static function getValue(string $key, int|bool|string|null $default = null): int|bool|string|null
+	public static function getValue(string $key): int|bool|string|null
 	{
 		if (count(self::$cache) === 0) {
 			self::get();
 		}
 
-		if (!isset(self::$cache[$key])) {
+		if (!array_key_exists($key, self::$cache)) {
 			/*
 			 * For some reason the $default is not returned above...
 			 */
 			Logs::notice(__METHOD__, __LINE__, $key . ' does not exist in config (local) !');
 
-			return $default;
+			throw new ConfigurationKeyMissingException($key . ' does not exist in config!');
 		}
 
 		return self::$cache[$key];
@@ -169,40 +171,36 @@ class Configs extends Model
 	 * Get string configuration value.
 	 *
 	 * @param string $key
-	 * @param string $default
 	 *
 	 * @return string
 	 */
-	public static function getValueAsString(string $key, string $default = ''): string
+	public static function getValueAsString(string $key): string
 	{
-		return strval(self::getValue($key, $default));
+		return strval(self::getValue($key));
 	}
 
 	/**
 	 * Get string configuration value.
 	 *
 	 * @param string $key
-	 * @param int    $default
 	 *
 	 * @return int
 	 */
-	public static function getValueAsInt(string $key, int $default = 0): int
+	public static function getValueAsInt(string $key): int
 	{
-		return intval(self::getValue($key, $default));
+		return intval(self::getValue($key));
 	}
 
 	/**
-	 * Get bool configuration value
-	 * ! tricky logic.
+	 * Get bool configuration value.
 	 *
 	 * @param string $key
-	 * @param bool   $default
 	 *
 	 * @return bool
 	 */
-	public static function getValueAsBool(string $key, bool $default = false): bool
+	public static function getValueAsBool(string $key): bool
 	{
-		return self::getValue($key, $default ? '1' : '0') === '1';
+		return self::getValue($key) === '1';
 	}
 
 	/**

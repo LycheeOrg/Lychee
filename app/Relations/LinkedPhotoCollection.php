@@ -39,7 +39,7 @@ class LinkedPhotoCollection extends Collection
 
 		$count = count($photos);
 
-		if ($count > 1 && Configs::getValueAsBool('photos_wraparound', true)) {
+		if ($count > 1 && Configs::getValueAsBool('photos_wraparound')) {
 			$photos[0]['previous_photo_id'] = $photos[$count - 1]['id'];
 			$photos[$count - 1]['next_photo_id'] = $photos[0]['id'];
 		} else {

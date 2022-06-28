@@ -100,7 +100,7 @@ class ImagickHandler implements ImageHandlerInterface
 			$image->destroy();
 
 			// Optimize image
-			if (Configs::getValueAsBool('lossless_optimization', false)) {
+			if (Configs::getValueAsBool('lossless_optimization')) {
 				ImageOptimizer::optimize($destination);
 			}
 		} catch (ImagickException $exception) {
@@ -141,7 +141,7 @@ class ImagickHandler implements ImageHandlerInterface
 			$image->destroy();
 
 			// Optimize image
-			if (Configs::getValueAsBool('lossless_optimization', false)) {
+			if (Configs::getValueAsBool('lossless_optimization')) {
 				ImageOptimizer::optimize($destination);
 			}
 		} catch (ImagickException $exception) {
