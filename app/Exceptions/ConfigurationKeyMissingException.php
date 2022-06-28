@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * ConfigurationKeyMissingException.
  *
- * Returns status code 50 (Precondition failed) to an HTTP client.
+ * Returns status code 500 (Internal Server Error) to an HTTP client.
  */
 class ConfigurationKeyMissingException extends LycheeBaseException
 {

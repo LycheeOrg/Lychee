@@ -2,6 +2,7 @@
 
 namespace App\View\Components;
 
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\URL;
@@ -33,6 +34,8 @@ class Photo extends Component
 	 * Create a new component instance.
 	 *
 	 * @return void
+	 *
+	 * @throws ConfigurationKeyMissingException
 	 */
 	public function __construct(array $data)
 	{
@@ -54,7 +57,7 @@ class Photo extends Component
 		$this->class .= $isVideo ? ' video' : '';
 		$this->class .= $isLivePhoto ? ' livephoto' : '';
 
-		$this->layout = Configs::getValueAsInt('layout', 0) === 0;
+		$this->layout = Configs::getValueAsInt('layout') === 0;
 
 		// TODO: Don't hardcode paths
 		if ($data['sizeVariants']['thumb']['url'] === 'uploads/thumb/') {

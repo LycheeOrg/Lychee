@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Factories\AlbumFactory;
 use App\Models\Album as AlbumModel;
 use App\Models\Configs;
@@ -39,10 +40,11 @@ class Album extends Component
 
 	/**
 	 * @throws BindingResolutionException
+	 * @throws ConfigurationKeyMissingException
 	 */
 	public function render()
 	{
-		switch (Configs::getValueAsString('layout', '1')) {
+		switch (Configs::getValueAsString('layout')) {
 			case '0':
 				$this->layout = Album::SQUARE;
 				break;

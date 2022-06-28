@@ -173,6 +173,8 @@ class Configs extends Model
 	 * @param string $key
 	 *
 	 * @return string
+	 *
+	 * @throws ConfigurationKeyMissingException
 	 */
 	public static function getValueAsString(string $key): string
 	{
@@ -185,6 +187,8 @@ class Configs extends Model
 	 * @param string $key
 	 *
 	 * @return int
+	 *
+	 * @throws ConfigurationKeyMissingException
 	 */
 	public static function getValueAsInt(string $key): int
 	{
@@ -197,6 +201,8 @@ class Configs extends Model
 	 * @param string $key
 	 *
 	 * @return bool
+	 *
+	 * @throws ConfigurationKeyMissingException
 	 */
 	public static function getValueAsBool(string $key): bool
 	{
