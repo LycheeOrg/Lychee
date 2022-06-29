@@ -144,7 +144,9 @@ class UserController extends Controller
 	/**
 	 * Reset the token of the currently authenticated user.
 	 *
-	 * @return User
+	 * @return array
+	 *
+	 * @throws \Exception
 	 */
 	public function resetToken(): array
 	{

@@ -39,13 +39,13 @@ class VerifyCsrfToken extends Middleware
 	{
 		if ($request->is('api/*')) {
 			$token = $request->header('Authorization');
-			if (!$token) {
+			if ($token === '') {
 				return parent::handle($request, $next);
 			}
 
 			/** @var User $user */
 			$user = User::query()->where('token', '=', $token)->first();
-			if ($user === null) {
+			if ($user == null) {
 				return parent::handle($request, $next);
 			}
 
