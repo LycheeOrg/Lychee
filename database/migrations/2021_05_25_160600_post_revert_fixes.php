@@ -52,7 +52,7 @@ class PostRevertFixes extends Migration
 	 */
 	public function up()
 	{
-		if (Configs::get_value('version') !== '040303') {
+		if (Configs::getValueAsString('version') !== '040303') {
 			return;
 		}
 

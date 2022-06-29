@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use Illuminate\Support\Facades\Config;
+
 /**
  * Generate the `APP_KEY` config variable.
  *
@@ -31,7 +33,7 @@ class KeyGenerateCommand extends \Illuminate\Foundation\Console\KeyGenerateComma
 	 */
 	protected function setKeyInEnvironmentFile($key): bool
 	{
-		if (!$this->hasOption('no-override') || !$this->option('no-override') || strlen($this->laravel['config']['app.key']) === 0) {
+		if (!$this->hasOption('no-override') || $this->option('no-override') === false || strlen(Config::get('app.key', '')) === 0) {
 			return parent::setKeyInEnvironmentFile($key);
 		}
 

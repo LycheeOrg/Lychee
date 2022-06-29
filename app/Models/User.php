@@ -45,10 +45,11 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	use ThrowsConsistentExceptions {
 		delete as parentDelete;
 	}
+	/** @phpstan-use UseFixedQueryBuilder<User> */
 	use UseFixedQueryBuilder;
 
 	/**
-	 * The attributes that are mass assignable.
+	 * @var string[] the attributes that are mass assignable
 	 */
 	protected $fillable = [
 		'username',
@@ -57,7 +58,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	];
 
 	/**
-	 * The attributes that should be hidden for arrays.
+	 * @var string[] the attributes that should be hidden for arrays
 	 */
 	protected $hidden = [
 		'password',
@@ -66,6 +67,9 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'updated_at',
 	];
 
+	/**
+	 * @var array<string, string>
+	 */
 	protected $casts = [
 		'id' => 'integer',
 		'created_at' => 'datetime',
@@ -111,19 +115,27 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 
 	public function is_admin(): bool
 	{
-		return $this->id == 0;
+		return $this->id === 0;
 	}
 
-	// ! Used by Larapass
+	/**
+	 * Used by Larapass.
+	 *
+	 * @return string
+	 */
 	public function username(): string
 	{
 		return utf8_encode($this->username);
 	}
 
-	// ! Used by Larapass
+	/**
+	 * Used by Larapass.
+	 *
+	 * @return string
+	 */
 	public function name(): string
 	{
-		return ($this->id == 0) ? 'Admin' : $this->username;
+		return ($this->id === 0) ? 'Admin' : $this->username;
 	}
 
 	/**

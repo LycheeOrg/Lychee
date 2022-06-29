@@ -10,7 +10,7 @@ class MOVFormat extends FFMpeg\Format\Video\DefaultVideo
 	/**
 	 * @throws FFMpeg\Exception\InvalidArgumentException
 	 */
-	public function __construct($audioCodec = 'copy', $videoCodec = 'copy')
+	public function __construct(string $audioCodec = 'copy', string $videoCodec = 'copy')
 	{
 		$this
 			->setAudioCodec($audioCodec)

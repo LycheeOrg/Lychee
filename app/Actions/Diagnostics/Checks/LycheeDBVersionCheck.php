@@ -11,7 +11,6 @@ class LycheeDBVersionCheck implements DiagnosticCheckInterface
 
 	/**
 	 * @param LycheeVersion $lycheeVersion
-	 * @param array caching the return of lycheeVersion->get()
 	 */
 	public function __construct(
 		LycheeVersion $lycheeVersion

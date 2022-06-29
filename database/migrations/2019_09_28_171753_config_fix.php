@@ -101,7 +101,7 @@ class ConfigFix extends Migration
 					'confidentiality' => $value['confidentiality'],
 				]
 			);
-			if ($c == 0) {
+			if ($c === 0) {
 				$config->value = $value['value'];
 				$config->save();
 			}

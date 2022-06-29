@@ -6,6 +6,7 @@ use App\Facades\AccessControl;
 use App\Models\User;
 use Closure;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
+use Illuminate\Http\Request;
 use Illuminate\Session\TokenMismatchException;
 
 class VerifyCsrfToken extends Middleware
@@ -13,7 +14,7 @@ class VerifyCsrfToken extends Middleware
 	/**
 	 * The URIs that should be excluded from CSRF verification.
 	 *
-	 * @var array
+	 * @var string[]
 	 */
 	protected $except = [
 		// entry points...
@@ -27,14 +28,14 @@ class VerifyCsrfToken extends Middleware
 	 *
 	 * FIXME: Do we want to hash this API key ? Might actually be a good idea...
 	 *
-	 * @param $request
+	 * @param Request $request
 	 * @param Closure $next
 	 *
 	 * @return mixed
 	 *
 	 * @throws TokenMismatchException
 	 */
-	public function handle($request, Closure $next)
+	public function handle($request, Closure $next): mixed
 	{
 		if ($request->is('api/*')) {
 			$token = $request->header('Authorization');

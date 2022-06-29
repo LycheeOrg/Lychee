@@ -1,4 +1,4 @@
-<div wire:click="$emit('openAlbum', '{{ $data['id'] }}')" class='album {{ $data['nsfw'] === "1" && App\Models\Configs::get_value('nsfw_blur', '1') == '1' ? 'blurred' : '' }}'
+<div wire:click="$emit('openAlbum', '{{ $data['id'] }}')" class='album {{ $data['nsfw'] === "1" && App\Models\Configs::getValueAsBool('nsfw_blur', true) ? 'blurred' : '' }}'
 	{{-- {{ $disabled ? 'disabled' : '' }} --}}
 	data-id='{{ $data['id'] }}'
 	data-tabindex='{{ Helpers::data_index() }}'

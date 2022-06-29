@@ -34,7 +34,7 @@ class Sidebar extends Component
 		$basic->content = [];
 
 		$basic->content[] = ['head' => Lang::get('ALBUM_TITLE'), 'value' => $this->album->title];
-		if ($this->album->description != '') {
+		if ($this->album->description !== '') {
 			['head' => Lang::get('ALBUM_DESCRIPTION'), 'value' => $this->album->description];
 		}
 
@@ -84,7 +84,7 @@ class Sidebar extends Component
 			['head' => Lang::get('ALBUM_SHARE_BUTTON_VISIBLE'), 'value' => $_share_button_visible],
 			['head' => Lang::get('ALBUM_PASSWORD'), 'value' => $_password],
 		];
-		if ($this->album->owner_id != null) {
+		if ($this->album->owner_id !== null) {
 			$share->content[] = ['head' => Lang::get('ALBUM_OWNER'), 'value' => $this->album->owner->name()];
 		}
 
@@ -106,7 +106,7 @@ class Sidebar extends Component
 	 */
 	public function render()
 	{
-		if ($this->album != null) {
+		if ($this->album !== null) {
 			$this->generateAlbumStructure();
 		} else {
 			$this->data = [];

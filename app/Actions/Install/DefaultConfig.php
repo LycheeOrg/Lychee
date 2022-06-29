@@ -130,7 +130,7 @@ class DefaultConfig
 
 			// additional requirement depending on the .env/base config
 			foreach ($db_possibilities as $db_possibility) {
-				if (config('database.default') == $db_possibility[0]) {
+				if (config('database.default') === $db_possibility[0]) {
 					$this->config['requirements']['php'][] = $db_possibility[1];
 				}
 			}
@@ -149,6 +149,9 @@ class DefaultConfig
 		return $this->config['requirements'];
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public function get_permissions(): array
 	{
 		return $this->config['permissions'];

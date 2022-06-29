@@ -43,7 +43,7 @@ class ImageHandler implements ImageHandlerInterface
 				$lastException = $e;
 			}
 		}
-		if ($lastException) {
+		if ($lastException !== null) {
 			throw $lastException;
 		}
 	}
@@ -63,7 +63,7 @@ class ImageHandler implements ImageHandlerInterface
 				$lastException = $e;
 			}
 		}
-		if ($lastException) {
+		if ($lastException !== null) {
 			throw $lastException;
 		}
 	}
@@ -74,7 +74,9 @@ class ImageHandler implements ImageHandlerInterface
 	public function autoRotate(string $path, int $orientation = 1, bool $pretend = false): array
 	{
 		$lastException = new MediaFileOperationException(self::NO_HANDLER_EXCEPTION_MSG);
-		$ret = [];
+		$ret = [
+			'width' => 0, 'height' => 0,
+		];
 		foreach ($this->engines as $engine) {
 			try {
 				$ret = $engine->autoRotate($path, $orientation, $pretend);
@@ -84,7 +86,7 @@ class ImageHandler implements ImageHandlerInterface
 				$lastException = $e;
 			}
 		}
-		if ($lastException) {
+		if ($lastException !== null) {
 			throw $lastException;
 		}
 
@@ -96,7 +98,7 @@ class ImageHandler implements ImageHandlerInterface
 	 */
 	public function rotate(string $source, int $angle, string $destination = null): void
 	{
-		if ($angle != 90 && $angle != -90) {
+		if ($angle !== 90 && $angle !== -90) {
 			throw new LycheeDomainException('Angle value out-of-bounds');
 		}
 
@@ -110,7 +112,7 @@ class ImageHandler implements ImageHandlerInterface
 				$lastException = $e;
 			}
 		}
-		if ($lastException) {
+		if ($lastException !== null) {
 			throw $lastException;
 		}
 	}

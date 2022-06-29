@@ -17,6 +17,11 @@ use App\ModelFunctions\MOVFormat;
 use App\Models\Photo;
 use FFMpeg\FFMpeg;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use function Safe\fclose;
+use function Safe\fopen;
+use function Safe\fread;
+use function Safe\fwrite;
+use function Safe\tmpfile;
 
 class AddStandaloneStrategy extends AddBaseStrategy
 {
@@ -164,7 +169,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 	protected function normalizeOrientation(): void
 	{
 		$orientation = $this->parameters->exifInfo->orientation;
-		if ($this->photo->type !== 'image/jpeg' || $orientation == 1) {
+		if ($this->photo->type !== 'image/jpeg' || $orientation === 1) {
 			// Nothing to do for non-JPEGs or correctly oriented photos.
 			return;
 		}

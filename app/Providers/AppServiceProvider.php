@@ -54,7 +54,7 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
-		if (config('app.db_log_sql', false)) {
+		if (config('app.db_log_sql', false) === true) {
 			DB::listen(function ($query) {
 				$msg = $query->sql . ' [' . implode(', ', $query->bindings) . ']';
 				Log::info($msg);
@@ -70,7 +70,7 @@ class AppServiceProvider extends ServiceProvider
 	public function register()
 	{
 		$this->app->singleton(Image\ImageHandlerInterface::class, function ($app) {
-			$compressionQuality = Configs::get_value('compression_quality', 90);
+			$compressionQuality = Configs::getValueAsInt('compression_quality');
 
 			return new ImageHandler($compressionQuality);
 		});

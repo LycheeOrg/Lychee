@@ -5,7 +5,7 @@ namespace App\Image;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Models\Configs;
-use Illuminate\Http\UploadedFile;
+use function Safe\fclose;
 
 /**
  * Class `MediaFile` provides the common interface of all file-like classes.
@@ -20,7 +20,7 @@ use Illuminate\Http\UploadedFile;
  *
  * using streams.
  * This stream-based approach is the same which is also used by
- * {@link UploadedFile::storeAs()} under the hood and avoids certain problems
+ * {@link Illuminate\Http\UploadedFile::storeAs()} under the hood and avoids certain problems
  * which are may be caused by PHP method like `rename`, `move` or `copy`.
  * Firstly, these methods need a file path and thus do not work, if a file
  * resides on a Flysystem disk for which PHP has no native handler (e.g.
@@ -143,7 +143,7 @@ abstract class MediaFile
 	{
 		try {
 			if (is_resource($this->stream)) {
-				\Safe\fclose($this->stream);
+				fclose($this->stream);
 				$this->stream = null;
 			}
 		} catch (\ErrorException $e) {
@@ -378,13 +378,11 @@ abstract class MediaFile
 	protected static function getSanitizedAcceptedRawFileExtensions(): array
 	{
 		if (self::$cachedAcceptedRawFileExtensions === null) {
-			$tmp = explode('|', strtolower(Configs::get_value('raw_formats', '')));
+			$tmp = explode('|', strtolower(Configs::getValueAsString('raw_formats')));
 			// Explode may return `false` on error
 			// Our supported file extensions always take precedence over any
 			// custom configured extension
-			self::$cachedAcceptedRawFileExtensions = is_array($tmp) ?
-				array_diff($tmp, self::SUPPORTED_IMAGE_FILE_EXTENSIONS, self::SUPPORTED_VIDEO_FILE_EXTENSIONS) :
-				[];
+			self::$cachedAcceptedRawFileExtensions = array_diff($tmp, self::SUPPORTED_IMAGE_FILE_EXTENSIONS, self::SUPPORTED_VIDEO_FILE_EXTENSIONS);
 		}
 
 		return self::$cachedAcceptedRawFileExtensions;
