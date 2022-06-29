@@ -20,11 +20,6 @@ class AddTokenToUserTable extends Migration
 	{
 		$key_length = 16;
 
-		$old_key = Configs::get_value('api_key', '');
-		if (!$old_key) {
-			$old_key = strtr(base64_encode(random_bytes($key_length)), '+/', '-_');
-		}
-
 		Configs::where('key', '=', 'api_key')->delete();
 
 		Schema::table('users', function (Blueprint $table) {
@@ -32,11 +27,7 @@ class AddTokenToUserTable extends Migration
 		});
 
 		foreach (User::all() as $user) {
-			if ($user->id === 0) {
-				$user->token = $old_key;
-			} else {
-				$user->token = strtr(base64_encode(random_bytes($key_length)), '+/', '-_');
-			}
+			$user->token = strtr(base64_encode(random_bytes($key_length)), '+/', '-_');
 			$user->save();
 		}
 	}
@@ -52,8 +43,8 @@ class AddTokenToUserTable extends Migration
 			[
 				'key' => 'api_key',
 				'value' => User::query()->findOrFail(0)->token,
-				'confidentiality' => 0,
-				'cat' => 'config',
+				'confidentiality' => 3,
+				'cat' => 'Admin',
 			],
 		]);
 

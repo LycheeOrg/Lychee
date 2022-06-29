@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use App\Facades\AccessControl;
 use App\Models\User;
 use Closure;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 use Illuminate\Session\TokenMismatchException;
 
@@ -44,11 +43,7 @@ class VerifyCsrfToken extends Middleware
 			}
 
 			/** @var User $user */
-			$user = User::query()->where('token', '=', $token)->get();
-			if ($user instanceof Collection) {
-				$user = $user->get(0);
-			}
-
+			$user = User::query()->where('token', '=', $token)->first();
 			if ($user === null) {
 				return parent::handle($request, $next);
 			}
