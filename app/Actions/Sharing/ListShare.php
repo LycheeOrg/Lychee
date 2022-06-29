@@ -2,6 +2,7 @@
 
 namespace App\Actions\Sharing;
 
+use App\DTO\BreadCrumbData;
 use App\DTO\Shares;
 use App\Exceptions\Internal\QueryBuilderException;
 use Illuminate\Support\Collection;
@@ -36,7 +37,7 @@ class ListShare
 				->select(['base_albums.id', 'title', 'parent_id']);
 
 			// apply filter
-			if ($userId != 0) {
+			if ($userId !== 0) {
 				$shared_query = $shared_query->where('base_albums.owner_id', '=', $userId);
 				$albums_query = $albums_query->where('owner_id', '=', $userId);
 			}
@@ -47,10 +48,11 @@ class ListShare
 				->orderBy('username', 'ASC')
 				->get();
 
+			/** @var Collection<\App\DTO\BreadCrumbData> */
 			$albums = $albums_query->get();
 			$this->linkAlbums($albums);
-			$albums->each(function ($album) {
-				$album->title = $this->breadcrumbPath($album);
+			$albums->each(function (BreadCrumbData $album) {
+				$album->title = $album->getPath();
 			});
 			$albums->each(function ($album) {
 				unset($album->parent_id);
@@ -70,18 +72,6 @@ class ListShare
 		} catch (\InvalidArgumentException $e) {
 			throw new QueryBuilderException($e);
 		}
-	}
-
-	private function breadcrumbPath(object $album): string
-	{
-		$title = [$album->title];
-		$parent = $album->parent;
-		while ($parent) {
-			array_unshift($title, $parent->title);
-			$parent = $parent->parent;
-		}
-
-		return implode('/', $title);
 	}
 
 	private function linkAlbums(Collection $albums): void

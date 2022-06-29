@@ -6,10 +6,16 @@
         "framework",
         "laravel"
     ],
-    "repositories": [{
-        "type": "vcs",
-        "url": "https://github.com/LycheeOrg/Larapass"
-    }],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/LycheeOrg/Larapass"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/LycheeOrg/phpstan-lychee"
+        }
+    ],
     "license": "MIT",
     "type": "project",
     "require": {
@@ -34,7 +40,7 @@
         "laravel/framework": "^8.83.14",
         "livewire/livewire": "^2.7",
         "lychee-org/nestedset": "^6",
-        "lychee-org/php-exif": "^0.7.6",
+        "lychee-org/php-exif": "^0.7.7",
         "maennchen/zipstream-php": "^2.1",
         "php-ffmpeg/php-ffmpeg": "^1.0",
         "php-http/guzzle7-adapter": "^1.0",
@@ -55,7 +61,9 @@
         "laravel/homestead": "^v13.2.1",
         "mockery/mockery": "^1.5",
         "nunomaduro/collision": "^5.0",
-        "phpunit/phpunit": "^9"
+        "phpunit/phpunit": "^9",
+        "lychee-org/phpstan-lychee": "dev-master",
+        "nunomaduro/larastan": "^1.0"
     },
     "autoload": {
         "classmap": [
@@ -68,7 +76,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\": "tests/",
+            "PHPStan\\": "phpstan/"
         }
     },
     "extra": {
@@ -91,6 +100,9 @@
         ]
     },
     "config": {
+        "platform": {
+            "php": "8.0.2"
+        },
         "preferred-install": "dist",
         "sort-packages": true,
         "optimize-autoloader": true

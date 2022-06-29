@@ -20,7 +20,7 @@ class LegacyController extends Controller
 	 *
 	 * @param TranslateIDRequest $request the request
 	 *
-	 * @return array{albumID?: string, photoID?: string} the modern IDs
+	 * @return array{albumID: ?string, photoID: ?string} the modern IDs
 	 *
 	 * @throws ConfigurationException thrown, if translation is disabled by
 	 *                                configuration
@@ -32,7 +32,7 @@ class LegacyController extends Controller
 		$legacyAlbumID = $request->albumID();
 		$legacyPhotoID = $request->photoID();
 
-		$return = [];
+		$return = ['albumID' => null, 'photoID' => null];
 		if ($legacyAlbumID !== null) {
 			$return['albumID'] = Legacy::translateLegacyAlbumID($request->albumID(), $request);
 		}

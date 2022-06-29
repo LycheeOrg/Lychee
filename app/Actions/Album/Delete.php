@@ -4,6 +4,7 @@ namespace App\Actions\Album;
 
 use App\Actions\Photo\Delete as PhotoDelete;
 use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
@@ -13,6 +14,8 @@ use App\Models\BaseAlbumImpl;
 use App\Models\TagAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Database\Query\Builder as BaseBuilder;
+use Safe\Exceptions\ArrayException;
+use function Safe\usort;
 
 /**
  * Deletes the albums with the designated IDs **efficiently**.
@@ -140,7 +143,7 @@ class Delete extends Action
 			usort($pendingGapsToMake, fn ($a, $b) => $b['lft'] <=> $a['lft']);
 			foreach ($pendingGapsToMake as $pendingGap) {
 				$height = $pendingGap['rgt'] - $pendingGap['lft'] + 1;
-				$album->newNestedSetQuery()->makeGap($pendingGap['rgt'] + 1, -$height);
+				(new Album())->newNestedSetQuery()->makeGap($pendingGap['rgt'] + 1, -$height);
 				Album::$actionsPerformed++;
 			}
 
@@ -166,14 +169,14 @@ class Delete extends Action
 				// Sic! We cannot do anything about the inner exception
 			}
 			throw ModelDBException::create('albums', 'deleting', $e);
-		} catch (\InvalidArgumentException $e) {
+		} catch (\InvalidArgumentException|ArrayException $e) {
 			try {
 				// if anything goes wrong, don't leave the tree in an inconsistent state
 				Album::query()->fixTree();
 			} catch (\Throwable) {
 				// Sic! We cannot do anything about the inner exception
 			}
-			assert(false, new \AssertionError('\InvalidArgumentException must not be thrown by ->where', $e->getCode(), $e));
+			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 	}
 }

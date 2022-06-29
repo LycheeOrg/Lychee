@@ -61,19 +61,19 @@ class RedirectController extends Controller
 				$albumID = Legacy::translateLegacyAlbumID(intval($albumID), $request);
 			}
 
-			if (!empty($photoID) && Legacy::isLegacyModelID($photoID)) {
+			if ($photoID !== null && Legacy::isLegacyModelID($photoID)) {
 				$photoID = Legacy::translateLegacyPhotoID(intval($photoID), $request);
 			}
 
 			if (
 				$request->filled('password') &&
-				Configs::get_value('unlock_password_photos_with_url_param', '0') === '1'
+				Configs::getValueAsBool('unlock_password_photos_with_url_param')
 			) {
 				$album = $this->albumFactory->findBaseAlbumOrFail($albumID);
 				$this->unlock->do($album, $request['password']);
 			}
 
-			return empty($photoID) ?
+			return $photoID === null ?
 				redirect('gallery#' . $albumID) :
 				redirect('gallery#' . $albumID . '/' . $photoID);
 		} catch (BindingResolutionException $e) {

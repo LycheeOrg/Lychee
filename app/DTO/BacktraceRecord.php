@@ -60,7 +60,7 @@ class BacktraceRecord extends DTO
 	 */
 	public function getFileBeautified(): string
 	{
-		return $this->file ?
+		return $this->file !== '' ?
 			Str::replaceFirst($this->basePath, '', $this->file) :
 			self::UNKNOWN_PLACEHOLDER;
 	}
@@ -119,7 +119,7 @@ class BacktraceRecord extends DTO
 	 */
 	public function getFunctionBeautified(): string
 	{
-		return $this->function ?: self::UNKNOWN_PLACEHOLDER;
+		return $this->function !== '' ? $this->function : self::UNKNOWN_PLACEHOLDER;
 	}
 
 	/**

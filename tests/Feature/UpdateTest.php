@@ -33,7 +33,7 @@ class UpdateTest extends TestCase
 
 	public function testDoLogged(): void
 	{
-		$gitpull = Configs::get_value('allow_online_git_pull', '0');
+		$gitpull = Configs::getValue('allow_online_git_pull', '0');
 
 		AccessControl::log_as_id(0);
 

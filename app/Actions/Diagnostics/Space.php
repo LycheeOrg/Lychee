@@ -20,6 +20,7 @@ class Space extends Diagnostics
 	 */
 	public function get(): array
 	{
+		$infos = [];
 		$infos[] = Diagnostics::line('Lychee total space:', $this->diskUsage->get_lychee_space());
 		$infos[] = Diagnostics::line('Upload folder space:', $this->diskUsage->get_lychee_upload_space());
 		$infos[] = Diagnostics::line('System total space:', $this->diskUsage->get_total_space());
