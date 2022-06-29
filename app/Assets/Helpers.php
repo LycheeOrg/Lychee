@@ -6,6 +6,9 @@ use App\Exceptions\Internal\ZeroModuloException;
 use App\ModelFunctions\ConfigFunctions;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\File;
+use function Safe\getallheaders;
+use function Safe\parse_url;
+use function Safe\substr;
 use WhichBrowser\Parser as BrowserParser;
 
 class Helpers
@@ -86,7 +89,7 @@ class Helpers
 			$shortId = $prevShortId + 1;
 		}
 
-		return $shortId;
+		return (string) $shortId;
 	}
 
 	/**
@@ -110,7 +113,7 @@ class Helpers
 		// https://github.com/electerious/Lychee/issues/482
 		list($extension) = explode(':', $extension, 2);
 
-		if (empty($extension) === false) {
+		if ($extension !== '') {
 			$extension = '.' . $extension;
 		}
 
@@ -169,11 +172,11 @@ class Helpers
 	 */
 	public function gcd(int $a, int $b): int
 	{
-		if ($b == 0) {
+		if ($b === 0) {
 			throw new ZeroModuloException();
 		}
 
-		return ($a % $b) ? $this->gcd($b, $a % $b) : $b;
+		return ($a % $b) !== 0 ? $this->gcd($b, $a % $b) : $b;
 	}
 
 	/**

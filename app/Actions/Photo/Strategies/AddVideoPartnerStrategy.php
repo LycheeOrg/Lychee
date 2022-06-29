@@ -6,6 +6,7 @@ use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Image\MediaFile;
 use App\Models\Photo;
+use function Safe\substr;
 
 /**
  * Adds a video as partner to an existing photo.

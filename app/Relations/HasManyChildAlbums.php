@@ -8,6 +8,7 @@ use App\DTO\AlbumSortingCriterion;
 use App\DTO\SortingCriterion;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
+use App\Models\Extensions\AlbumBuilder;
 use App\Models\Extensions\SortingDecorator;
 use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use Illuminate\Database\Eloquent\Collection;
@@ -35,6 +36,18 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		);
 	}
 
+	protected function getRelationQuery(): AlbumBuilder
+	{
+		/**
+		 * We know that the internal query is of type `AlbumBuilder`,
+		 * because it was set in the constructor as `$owningAlbum->newQuery()`.
+		 *
+		 * @noinspection PhpIncompatibleReturnTypeInspection
+		 * @phpstan-ignore-next-line
+		 */
+		return $this->query;
+	}
+
 	/**
 	 * @throws InternalLycheeException
 	 */
@@ -42,7 +55,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	{
 		if (static::$constraints) {
 			parent::addConstraints();
-			$this->query = $this->albumAuthorisationProvider->applyVisibilityFilter($this->query);
+			$this->query = $this->albumAuthorisationProvider->applyVisibilityFilter($this->getRelationQuery());
 		}
 	}
 
@@ -52,7 +65,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	public function addEagerConstraints(array $models)
 	{
 		parent::addEagerConstraints($models);
-		$this->query = $this->albumAuthorisationProvider->applyVisibilityFilter($this->query);
+		$this->query = $this->albumAuthorisationProvider->applyVisibilityFilter($this->getRelationQuery());
 	}
 
 	/**

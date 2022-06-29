@@ -4,6 +4,8 @@ namespace App\ModelFunctions;
 
 use App\Exceptions\Internal\JsonRequestFailedException;
 use Illuminate\Support\Facades\Cache;
+use function Safe\file_get_contents;
+use function Safe\ini_get;
 
 class JsonRequestFunctions
 {
@@ -42,27 +44,24 @@ class JsonRequestFunctions
 	public function get_age_text(): string
 	{
 		$age = Cache::get($this->url . '_age');
-		if (!$age) {
-			$last = 'unknown';
-			$end = '';
-		} else {
-			try {
-				$last = now()->diffInDays($age);
-				$end = $last > 0 ? ' days' : '';
-				$last = ($last == 0 && $end = ' hours')
-					? now()->diffInHours($age) : $last;
-				$last = ($last == 0 && $end = ' minutes')
-					? now()->diffInMinutes($age) : $last;
-				$last = ($last == 0 && $end = ' seconds')
-					? now()->diffInSeconds($age) : $last;
-				$end = $end . ' ago';
-			} catch (\Throwable) {
-				$last = 'unknown';
-				$end = '';
-			}
+		if (!$age instanceof \DateTimeInterface) {
+			return 'unknown';
 		}
+		try {
+			$text = match (0) {
+				now()->diffInMinutes($age) => now()->diffInSeconds($age) . ' seconds',
+				now()->diffInHours($age) => now()->diffInMinutes($age) . ' minutes',
+				now()->diffInDays($age) => now()->diffInHours($age) . ' hours',
+				now()->diffInWeeks($age) => now()->diffInDays($age) . ' days',
+				now()->diffInMonths($age) => now()->diffInWeeks($age) . ' weeks',
+				now()->diffInYears($age) => now()->diffInMonths($age) . ' months',
+				default => now()->diffInYears($age) . ' years'
+			};
 
-		return $last . $end;
+			return $text . ' ago';
+		} catch (\Throwable) {
+			return 'unknown';
+		}
 	}
 
 	/**
@@ -87,7 +86,7 @@ class JsonRequestFunctions
 			$context = stream_context_create($opts);
 
 			$raw = file_get_contents($this->url, false, $context);
-			if (!is_string($raw) || empty($raw)) {
+			if ($raw === '') {
 				throw new JsonRequestFailedException('file_get_contents() failed');
 			}
 
@@ -114,8 +113,8 @@ class JsonRequestFunctions
 	{
 		try {
 			if ($this->decodedJson === null || !$useCache) {
-				$rawResponse = $useCache ? Cache::get($this->url) : null;
-				if (empty($rawResponse)) {
+				$rawResponse = $useCache ? (string) Cache::get($this->url) : '';
+				if ($rawResponse === '') {
 					$rawResponse = $this->fetchFromServer();
 					Cache::put($this->url, $rawResponse, now()->addDays($this->ttl));
 					Cache::put($this->url . '_age', now(), now()->addDays($this->ttl));

@@ -7,6 +7,7 @@ use App\Actions\Search\PhotoSearch;
 use App\Contracts\LycheeException;
 use App\Http\Requests\Search\SearchRequest;
 use Illuminate\Routing\Controller;
+use function Safe\json_encode;
 
 class SearchController extends Controller
 {

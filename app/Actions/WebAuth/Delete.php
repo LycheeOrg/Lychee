@@ -6,7 +6,7 @@ use App\Facades\AccessControl;
 
 class Delete
 {
-	public function do($ids): void
+	public function do(string|array $ids): void
 	{
 		$user = AccessControl::user();
 		$user->removeCredential($ids);

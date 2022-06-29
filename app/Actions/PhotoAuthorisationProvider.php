@@ -38,7 +38,7 @@ class PhotoAuthorisationProvider
 	 *  - the user is the admin
 	 *  - the user is the owner of the photo
 	 *  - the photo is part of an album which the user is allowed to access
-	 *    (cp. {@link AlbumAuthorisationProvider::applyAccessibilityFilter()}).
+	 *    (cp. {@link AlbumAuthorisationProvider::isAccessible()}).
 	 *  - the photo is public
 	 *
 	 * @param FixedQueryBuilder $query
@@ -133,7 +133,7 @@ class PhotoAuthorisationProvider
 		return
 			AccessControl::is_current_user_or_admin($photo->owner_id) ||
 			$photo->album?->is_downloadable ||
-			($photo->album === null && Configs::get_value('downloadable', '0') === '1');
+			($photo->album === null && Configs::getValueAsBool('downloadable'));
 	}
 
 	/**
@@ -158,10 +158,12 @@ class PhotoAuthorisationProvider
 	 * The method simply assumes that the user has already legitimately
 	 * accessed the origin album, if the caller provides an album model.
 	 *
-	 * @param FixedQueryBuilder $query  the photo query which shall be restricted
-	 * @param Album|null        $origin the optional top album which is used as a search base
+	 * @template TModelClass of \Illuminate\Database\Eloquent\Model
 	 *
-	 * @return FixedQueryBuilder the restricted photo query
+	 * @param FixedQueryBuilder<TModelClass> $query  the photo query which shall be restricted
+	 * @param Album|null                     $origin the optional top album which is used as a search base
+	 *
+	 * @return FixedQueryBuilder<TModelClass> the restricted photo query
 	 *
 	 * @throws InternalLycheeException
 	 */
@@ -172,7 +174,7 @@ class PhotoAuthorisationProvider
 		// If origin is set, also restrict the search result for admin
 		// to photos which are in albums below origin.
 		// This is not a security filter, but simply functional.
-		if ($origin) {
+		if ($origin !== null) {
 			$query
 				->where('albums._lft', '>=', $origin->_lft)
 				->where('albums._rgt', '<=', $origin->_rgt);
@@ -229,14 +231,13 @@ class PhotoAuthorisationProvider
 	{
 		$restrictPublicToAuth = Configs::get_value('restrict_public_to_auth', '0') === '1';
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+		$maySearchPublic = !Configs::getValueAsBool('public_photos_hidden');
 
 		// If no user is authenticated and public photos are restricted to
 		// authenticated users, return the `null` query
 		if ($restrictPublicToAuth && $userID === null) {
 			return NullBuilder::createFromQueryBuilder($query);
 		}
-
-		$maySearchPublic = Configs::get_value('public_photos_hidden', '1') !== '1';
 
 		try {
 			// there must be no unreachable album between the origin and the photo
@@ -364,7 +365,8 @@ class PhotoAuthorisationProvider
 		// if no specific columns are yet set.
 		// Otherwise, we cannot add a JOIN clause below
 		// without accidentally adding all columns of the join, too.
-		if (empty($query->columns)) {
+		$baseQuery = $query->getQuery();
+		if ($baseQuery->columns === null || count($baseQuery->columns) === 0) {
 			$query->select(['photos.*']);
 		}
 		if ($addAlbums) {
@@ -375,7 +377,8 @@ class PhotoAuthorisationProvider
 		}
 		if ($addShares) {
 			$userID = AccessControl::id();
-			$query->leftJoin('user_base_album',
+			$query->leftJoin(
+				'user_base_album',
 				function (JoinClause $join) use ($userID) {
 					$join
 						->on('user_base_album.base_album_id', '=', 'base_albums.id')

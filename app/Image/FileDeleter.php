@@ -7,6 +7,7 @@ use App\Models\SymLink;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Adapter\Local as LocalAdapter;
+use function Safe\unlink;
 
 /**
  * Class FileDeleter.
@@ -92,11 +93,11 @@ class FileDeleter
 			try {
 				if ($defaultDisk->exists($regularFile)) {
 					if (!$defaultDisk->delete($regularFile)) {
-						$firstException = $firstException ?: new \RuntimeException('Storage::delete failed: ' . $regularFile);
+						$firstException = $firstException ?? new \RuntimeException('Storage::delete failed: ' . $regularFile);
 					}
 				}
 			} catch (\Throwable $e) {
-				$firstException = $firstException ?: $e;
+				$firstException = $firstException ?? $e;
 			}
 		}
 
@@ -114,12 +115,10 @@ class FileDeleter
 					// The latter part deletes (regular) files, but avoids errors
 					// in case the file doesn't exist.
 					if (is_link($absolutePath) || file_exists($absolutePath)) {
-						if (!unlink($absolutePath)) {
-							$firstException = $firstException ?: new \RuntimeException('unlink failed: ' . $absolutePath);
-						}
+						unlink($absolutePath);
 					}
 				} catch (\Throwable $e) {
-					$firstException = $firstException ?: $e;
+					$firstException = $firstException ?? $e;
 				}
 			}
 		} else {
@@ -128,11 +127,11 @@ class FileDeleter
 				try {
 					if ($defaultDisk->exists($regularFile)) {
 						if (!$defaultDisk->delete($regularFile)) {
-							$firstException = $firstException ?: new \RuntimeException('Storage::delete failed: ' . $regularFile);
+							$firstException = $firstException ?? new \RuntimeException('Storage::delete failed: ' . $regularFile);
 						}
 					}
 				} catch (\Throwable $e) {
-					$firstException = $firstException ?: $e;
+					$firstException = $firstException ?? $e;
 				}
 			}
 		}
@@ -146,16 +145,14 @@ class FileDeleter
 				// Laravel and Flysystem does not support symbolic links.
 				// So we must use low-level methods here.
 				if (is_link($absolutePath) || file_exists($absolutePath)) {
-					if (!unlink($absolutePath)) {
-						$firstException = $firstException ?: new \RuntimeException('unlink failed: ' . $absolutePath);
-					}
+					unlink($absolutePath);
 				}
 			} catch (\Throwable $e) {
-				$firstException = $firstException ?: $e;
+				$firstException = $firstException ?? $e;
 			}
 		}
 
-		if ($firstException) {
+		if ($firstException !== null) {
 			throw new MediaFileOperationException('Could not delete files', $firstException);
 		}
 	}

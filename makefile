@@ -1,4 +1,4 @@
-.PHONY: dist-gen dist-clean dist clean 
+.PHONY: dist-gen dist-clean dist clean test formatting phpstan
 
 composer:
 	rm -r vendor  2> /dev/null || true
@@ -102,6 +102,9 @@ formatting:
 		echo "  composer install"; \
 		echo ""; \
 	fi
+
+phpstan:
+	vendor/bin/phpstan analyze
 
 gen_minor:
 	php scripts/gen_release.php

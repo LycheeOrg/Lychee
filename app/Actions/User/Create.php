@@ -15,7 +15,7 @@ class Create
 	 */
 	public function do(string $username, string $password, bool $mayUpload, bool $isLocked): User
 	{
-		if (User::query()->where('username', '=', $username)->count()) {
+		if (User::query()->where('username', '=', $username)->count() !== 0) {
 			throw new ConflictingPropertyException('Username already exists');
 		}
 		try {

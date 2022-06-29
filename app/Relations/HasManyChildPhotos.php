@@ -7,6 +7,7 @@ use App\Contracts\InternalLycheeException;
 use App\DTO\SortingCriterion;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
+use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use Doctrine\Instantiator\Exception\InvalidArgumentException;
@@ -34,6 +35,30 @@ class HasManyChildPhotos extends HasManyBidirectionally
 		);
 	}
 
+	protected function getRelationQuery(): FixedQueryBuilder
+	{
+		/**
+		 * We know that the internal query is of type `FixedQueryBuilder`,
+		 * because it was set in the constructor as `Photo::query()`.
+		 *
+		 * @noinspection PhpIncompatibleReturnTypeInspection
+		 * @phpstan-ignore-next-line
+		 */
+		return $this->query;
+	}
+
+	public function getParent(): Album
+	{
+		/**
+		 * We know that the internal query is of type `Album`,
+		 * because it was set in the constructor as `$owningAlbum`.
+		 *
+		 * @noinspection PhpIncompatibleReturnTypeInspection
+		 * @phpstan-ignore-next-line
+		 */
+		return $this->parent;
+	}
+
 	/**
 	 * @throws InternalLycheeException
 	 */
@@ -41,7 +66,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 	{
 		if (static::$constraints) {
 			parent::addConstraints();
-			$this->query = $this->photoAuthorisationProvider->applyVisibilityFilter($this->query);
+			$this->query = $this->photoAuthorisationProvider->applyVisibilityFilter($this->getRelationQuery());
 		}
 	}
 
@@ -51,7 +76,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 	public function addEagerConstraints(array $models)
 	{
 		parent::addEagerConstraints($models);
-		$this->query = $this->photoAuthorisationProvider->applyVisibilityFilter($this->query);
+		$this->query = $this->photoAuthorisationProvider->applyVisibilityFilter($this->getRelationQuery());
 	}
 
 	/**
@@ -63,8 +88,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 			return $this->related->newCollection();
 		}
 
-		/** @var SortingCriterion $albumSorting */
-		$albumSorting = $this->parent->getEffectiveSorting();
+		$albumSorting = $this->getParent()->getEffectiveSorting();
 
 		return (new SortingDecorator($this->query))
 			->orderBy(
@@ -103,7 +127,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 				$childrenOfModel = $childrenOfModel
 					->sortBy(
 						$sorting->column,
-						in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
+						in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
 						$sorting->order === SortingCriterion::DESC
 					)
 					->values();

@@ -6,6 +6,7 @@ use App\Actions\PhotoAuthorisationProvider;
 use App\DTO\SortingCriterion;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Collection;
@@ -57,6 +58,30 @@ abstract class HasManyPhotos extends Relation
 		);
 	}
 
+	protected function getRelationQuery(): FixedQueryBuilder
+	{
+		/**
+		 * We know that the internal query is of type `FixedQueryBuilder`,
+		 * because it was set in the constructor as `Photo::query()`.
+		 *
+		 * @noinspection PhpIncompatibleReturnTypeInspection
+		 * @phpstan-ignore-next-line
+		 */
+		return $this->query;
+	}
+
+	public function getParent(): BaseAlbum
+	{
+		/**
+		 * We know that the parent is of type `BaseAlbum`,
+		 * because it was set in the constructor as `$owningAlbum`.
+		 *
+		 * @noinspection PhpIncompatibleReturnTypeInspection
+		 * @phpstan-ignore-next-line
+		 */
+		return $this->parent;
+	}
+
 	/**
 	 * Initializes the given owning models with a default value of this
 	 * relation.
@@ -96,10 +121,12 @@ abstract class HasManyPhotos extends Relation
 	 */
 	public function getResults(): Collection
 	{
+		/** @var BaseAlbum */
+		$parent = $this->parent;
 		/** @var SortingCriterion $sorting */
-		$sorting = $this->parent->getEffectiveSorting();
+		$sorting = $parent->getEffectiveSorting();
 
-		return (new SortingDecorator($this->query))
+		return (new SortingDecorator($this->getRelationQuery()))
 			->orderBy('photos.' . $sorting->column, $sorting->order)
 			->get();
 	}

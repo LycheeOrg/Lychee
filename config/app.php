@@ -65,7 +65,7 @@ return [
 
 	'url' => env('APP_URL', 'http://localhost'),
 
-	'asset_url' => env('ASSET_URL', null),
+	'asset_url' => env('ASSET_URL'),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -118,7 +118,7 @@ return [
 	|
 	*/
 
-	'db_log_sql' => env('DB_LOG_SQL', false),
+	'db_log_sql' => (bool) env('DB_LOG_SQL', false),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -133,7 +133,7 @@ return [
 
 	'key' => env('APP_KEY'),
 
-	'cipher' => 'AES-256-CBC',
+	'cipher' => env('APP_CIPHER', 'AES-256-CBC'),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -216,7 +216,7 @@ return [
 		'Cookie' => Illuminate\Support\Facades\Cookie::class,
 		'Crypt' => Illuminate\Support\Facades\Crypt::class,
 		'DB' => Illuminate\Support\Facades\DB::class,
-		'DebugBar' => Barryvdh\Debugbar\Facade::class,
+		'DebugBar' => Barryvdh\Debugbar\Facades\Debugbar::class,
 		'Eloquent' => Illuminate\Database\Eloquent\Model::class,
 		'Event' => Illuminate\Support\Facades\Event::class,
 		'File' => Illuminate\Support\Facades\File::class,

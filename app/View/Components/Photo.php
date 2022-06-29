@@ -2,6 +2,7 @@
 
 namespace App\View\Components;
 
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\URL;
@@ -33,6 +34,8 @@ class Photo extends Component
 	 * Create a new component instance.
 	 *
 	 * @return void
+	 *
+	 * @throws ConfigurationKeyMissingException
 	 */
 	public function __construct(array $data)
 	{
@@ -54,10 +57,10 @@ class Photo extends Component
 		$this->class .= $isVideo ? ' video' : '';
 		$this->class .= $isLivePhoto ? ' livephoto' : '';
 
-		$this->layout = Configs::get_value('layout', '0') == '0';
+		$this->layout = Configs::getValueAsInt('layout') === 0;
 
 		// TODO: Don't hardcode paths
-		if ($data['sizeVariants']['thumb']['url'] == 'uploads/thumb/') {
+		if ($data['sizeVariants']['thumb']['url'] === 'uploads/thumb/') {
 			$this->show_live = $isLivePhoto;
 			$this->show_play = $isVideo;
 			$this->show_placeholder = $isRaw;
@@ -112,7 +115,7 @@ class Photo extends Component
 			$thumb2x_src .= URL::asset($thumb2x) . ' ' . $dim2x . 'w';
 		}
 
-		$this->srcset2x = $thumb2x != '' ? "data-srcset='" . $thumb2x_src . "'" : '';
+		$this->srcset2x = $thumb2x !== '' ? "data-srcset='" . $thumb2x_src . "'" : '';
 	}
 
 	/**

@@ -34,7 +34,7 @@ class Geodecoder
 
 			$httpClient = new \GuzzleHttp\Client([
 				'handler' => $stack,
-				'timeout' => Configs::get_value('location_decoding_timeout'),
+				'timeout' => Configs::getValueAsInt('location_decoding_timeout'),
 			]);
 
 			$httpAdapter = new \Http\Adapter\Guzzle7\Client($httpClient);
@@ -60,7 +60,7 @@ class Geodecoder
 	public static function decodeLocation(?float $latitude, ?float $longitude): ?string
 	{
 		// User does not want to decode location data
-		if (Configs::get_value('location_decoding') == false) {
+		if (!Configs::getValueAsBool('location_decoding')) {
 			return null;
 		}
 		if ($latitude === null || $longitude === null) {
@@ -85,7 +85,8 @@ class Geodecoder
 	 */
 	public static function decodeLocation_core(float $latitude, float $longitude, ProviderCache $cachedProvider): ?string
 	{
-		$geocoder = new StatefulGeocoder($cachedProvider, Configs::get_value('lang'));
+		$lang = Configs::getValueAsString('lang');
+		$geocoder = new StatefulGeocoder($cachedProvider, $lang);
 		try {
 			$result_list = $geocoder->reverseQuery(ReverseQuery::fromCoordinates($latitude, $longitude));
 
@@ -110,7 +111,7 @@ class RateLimiterStore implements Store
 		return Cache::get('rate-limiter', []);
 	}
 
-	public function push(int $timestamp, int $limit)
+	public function push(int $timestamp, int $limit): void
 	{
 		Cache::put('rate-limiter', array_merge($this->get(), [$timestamp]));
 	}

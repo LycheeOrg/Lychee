@@ -69,7 +69,7 @@ class SessionController extends Controller
 			// we set the user ID (it is set to 0 if there is no login/password = admin)
 			$user_id = AccessControl::id();
 
-			if ($user_id == 0) {
+			if ($user_id === 0) {
 				$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 				$return['admin'] = true;
 				$return['may_upload'] = true; // not necessary
@@ -80,7 +80,7 @@ class SessionController extends Controller
 			} else {
 				try {
 					/** @var User $user */
-					$user = User::query()->findorFail($user_id);
+					$user = User::query()->findOrFail($user_id);
 					$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 					$return['config'] = $this->configFunctions->public();
 					$return['is_locked'] = $user->is_locked;   // may user change their password?
@@ -99,7 +99,7 @@ class SessionController extends Controller
 		} else {
 			// Logged out
 			$return['config'] = $this->configFunctions->public();
-			if (Configs::get_value('hide_version_number', '1') != '0') {
+			if (Configs::getValueAsBool('hide_version_number')) {
 				$return['config']['version'] = '';
 			}
 			$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDOUT');

@@ -6,16 +6,12 @@
 
         <title>Error - Database File Versions mismatch</title>
 
-        <!-- Fonts -->
-        <link rel="dns-prefetch" href="//fonts.gstatic.com">
-        <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
-
         <!-- Styles -->
         <style>
             html, body {
                 background-color: #fff;
                 color: #636b6f;
-                font-family: 'Nunito', sans-serif;
+                font-family: sans-serif;
                 font-weight: 100;
                 height: 100vh;
                 margin: 0;
@@ -82,14 +78,14 @@
             button:hover {
                 color: #fff;
                 background: #646b6f;
-                cursor: pointer; 
+                cursor: pointer;
             }
 
-            /* Inserting this collapsed row between two flex items will make 
+            /* Inserting this collapsed row between two flex items will make
              * the flex item that comes after it break to a new row */
             .break {
                 flex-basis: 100%;
-                height: 0; margin: 0; border: 0; 
+                height: 0; margin: 0; border: 0;
             }
         </style>
     </head>

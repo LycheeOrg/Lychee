@@ -14,14 +14,14 @@ class Notify
 {
 	public function do(Photo $photo): void
 	{
-		if (Configs::get_Value('new_photos_notification', '0') !== '1') {
+		if (!Configs::getValueAsBool('new_photos_notification')) {
 			return;
 		}
 
 		// The admin is always informed
 		$users = new Collection([User::query()->find(0)]);
 		$album = $photo->album;
-		if ($album) {
+		if ($album !== null) {
 			$users->push($album->shared_with);
 			$users->push($album->owner);
 		}
