@@ -34,17 +34,15 @@ class ContentType
 	 */
 	public function handle(Request $request, \Closure $next, string $contentType): mixed
 	{
-		$any = empty($request->getContentType()) || $request->getContentType() === '*/*';
-
-		if ($contentType === self::JSON && !$any) {
+		if ($contentType === self::JSON) {
 			if (!$request->isJson()) {
 				throw new UnexpectedContentType(self::JSON);
 			}
-		} elseif ($contentType === self::MULTIPART && !$any) {
+		} elseif ($contentType === self::MULTIPART) {
 			if ($request->getContentType() !== 'form') {
 				throw new UnexpectedContentType(self::MULTIPART);
 			}
-		} elseif (!$any) {
+		} else {
 			throw new LycheeInvalidArgumentException('$contentType must either be "' . self::JSON . '" or "' . self::MULTIPART . '"');
 		}
 
