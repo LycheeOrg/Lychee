@@ -55,7 +55,7 @@ class PhotoAuthorisationProvider
 			return $query;
 		}
 
-		$restrictPublicToAuth = Configs::get_value('restrict_public_to_auth', '0') === '1';
+		$restrictPublicToAuth = Configs::getValueAsBool('restrict_public_to_auth');
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 
 		// If no user is authenticated and public photos are restricted to
@@ -91,7 +91,7 @@ class PhotoAuthorisationProvider
 	 */
 	public function isVisible(?Photo $photo): bool
 	{
-		if (!AccessControl::is_logged_in() && Configs::get_value('restrict_public_to_auth', '0') === '1') {
+		if (!AccessControl::is_logged_in() && Configs::getValueAsBool('restrict_public_to_auth')) {
 			return false;
 		}
 
@@ -229,7 +229,7 @@ class PhotoAuthorisationProvider
 	 */
 	public function appendSearchabilityConditions(BaseBuilder $query, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
 	{
-		$restrictPublicToAuth = Configs::get_value('restrict_public_to_auth', '0') === '1';
+		$restrictPublicToAuth = Configs::getValueAsBool('restrict_public_to_auth');
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 		$maySearchPublic = !Configs::getValueAsBool('public_photos_hidden');
 

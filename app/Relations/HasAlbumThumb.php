@@ -191,7 +191,7 @@ class HasAlbumThumb extends Relation
 
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 
-		if ($userID != null || Configs::get_value('restrict_public_to_auth', '0') !== '1') {
+		if ($userID !== null || Configs::getValueAsBool('restrict_public_to_auth')) {
 			$album2Cover = function (BaseBuilder $builder) use ($bestPhotoIDSelect, $albumKeys, $userID) {
 				$builder
 					->from('albums as covered_albums')

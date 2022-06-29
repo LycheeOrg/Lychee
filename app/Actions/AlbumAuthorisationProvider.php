@@ -62,7 +62,7 @@ class AlbumAuthorisationProvider
 	{
 		$this->prepareModelQueryOrFail($query);
 
-		$restrictPublicToAuth = Configs::get_value('restrict_public_to_auth', '0') === '1';
+		$restrictPublicToAuth = Configs::getValueAsBool('restrict_public_to_auth');
 
 		if (AccessControl::is_admin()) {
 			return $query;
@@ -125,7 +125,7 @@ class AlbumAuthorisationProvider
 	 */
 	public function appendAccessibilityConditions(BaseBuilder $query): BaseBuilder
 	{
-		$restrictPublicToAuth = Configs::get_value('restrict_public_to_auth', '0') === '1';
+		$restrictPublicToAuth = Configs::getValueAsBool('restrict_public_to_auth');
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 
@@ -194,7 +194,7 @@ class AlbumAuthorisationProvider
 		}
 
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
-		$restrictPublicToAuth = Configs::get_value('restrict_public_to_auth', '0') === '1';
+		$restrictPublicToAuth = Configs::getValueAsBool('restrict_public_to_auth');
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 
 		// If no user is authenticated and public photos are restricted to
@@ -266,7 +266,7 @@ class AlbumAuthorisationProvider
 		if ($album === null || AccessControl::is_admin()) {
 			return true;
 		}
-		if (!AccessControl::is_logged_in() && Configs::get_value('restrict_public_to_auth', '0') === '1') {
+		if (!AccessControl::is_logged_in() && Configs::getValueAsBool('restrict_public_to_auth')) {
 			return false;
 		}
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
@@ -353,7 +353,7 @@ class AlbumAuthorisationProvider
 		if (AccessControl::is_admin()) {
 			return $query;
 		} else {
-			$restrictPublicToAuth = Configs::get_value('restrict_public_to_auth', '0') === '1';
+			$restrictPublicToAuth = Configs::getValueAsBool('restrict_public_to_auth');
 			$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 
 			// If no user is authenticated and public photos are restricted to
@@ -412,7 +412,7 @@ class AlbumAuthorisationProvider
 		}
 
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
-		$restrictPublicToAuth = Configs::get_value('restrict_public_to_auth', '0') === '1';
+		$restrictPublicToAuth = Configs::getValueAsBool('restrict_public_to_auth');
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 
 		// If no user is authenticated and public photos are restricted to

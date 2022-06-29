@@ -8,6 +8,7 @@ use App\DTO\AlbumSortingCriterion;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
 use App\Models\Extensions\AlbumBuilder;
+use App\Models\Extensions\NullModelBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Extensions\TagAlbumBuilder;
 use App\Models\TagAlbum;
@@ -77,7 +78,7 @@ class AlbumSearch
 	 *
 	 * @throws QueryBuilderException
 	 */
-	private function addSearchCondition(array $terms, AlbumBuilder|TagAlbumBuilder $query): void
+	private function addSearchCondition(array $terms, AlbumBuilder|TagAlbumBuilder|NullModelBuilder $query): void
 	{
 		foreach ($terms as $term) {
 			$query->where(
