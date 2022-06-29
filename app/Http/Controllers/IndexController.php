@@ -10,8 +10,8 @@ use App\Models\Configs;
 use App\Models\Page;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Config;
 use Illuminate\View\View;
+use function Safe\phpinfo;
 
 class IndexController extends Controller
 {
@@ -39,16 +39,16 @@ class IndexController extends Controller
 	 */
 	public function show(): View
 	{
-		if (Configs::get_value('landing_page_enable', '0') == '1') {
+		if (Configs::getValueAsBool('landing_page_enable')) {
 			$lang = Lang::get_lang();
-			$lang['language'] = Configs::get_value('lang');
+			$lang['language'] = Configs::getValueAsString('lang');
 
 			$infos = $this->configFunctions->get_pages_infos();
 
 			$menus = Page::menu()->get();
 
-			$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
-			$rss_enable = Configs::get_value('rss_enable', '0') == '1';
+			$title = Configs::getValueAsString('site_title');
+			$rss_enable = Configs::getValueAsBool('rss_enable');
 
 			$page_config = [];
 			$page_config['show_hosted_by'] = false;
@@ -71,12 +71,12 @@ class IndexController extends Controller
 	 * Just call the phpinfo function.
 	 * Cannot be tested.
 	 *
-	 * @return string
+	 * @return void
 	 */
 	// @codeCoverageIgnoreStart
-	public function phpinfo(): string
+	public function phpinfo(): void
 	{
-		return (string) phpinfo();
+		phpinfo();
 	}
 
 	// @codeCoverageIgnoreEnd
@@ -95,13 +95,13 @@ class IndexController extends Controller
 		$infos = $this->configFunctions->get_pages_infos();
 
 		$lang = Lang::get_lang();
-		$lang['language'] = Configs::get_value('lang');
+		$lang['language'] = Configs::getValueAsString('lang');
 
-		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
-		$rss_enable = Configs::get_value('rss_enable', '0') == '1';
+		$title = Configs::getValueAsString('site_title');
+		$rss_enable = Configs::getValueAsBool('rss_enable');
 		$page_config = [];
 		$page_config['show_hosted_by'] = true;
-		$page_config['display_socials'] = Configs::get_value('display_social_in_gallery', '0') == '1';
+		$page_config['display_socials'] = Configs::getValueAsBool('display_social_in_gallery');
 
 		return view('gallery', [
 			'locale' => $lang,

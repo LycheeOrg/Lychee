@@ -28,37 +28,18 @@ class ImagickHandler implements ImageHandlerInterface
 			$success = true;
 			$orientation = $image->getImageOrientation();
 
-			switch ($orientation) {
-				case Imagick::ORIENTATION_TOPLEFT:
-					// nothing to do
-					break;
-				case Imagick::ORIENTATION_TOPRIGHT:
-					$success = $image->flopImage();
-					break;
-				case Imagick::ORIENTATION_BOTTOMRIGHT:
-					$success = $image->rotateImage(new ImagickPixel(), 180);
-					break;
-				case Imagick::ORIENTATION_BOTTOMLEFT:
-					$success = $image->flopImage();
-					$success &= $image->rotateImage(new ImagickPixel(), 180);
-					break;
-				case Imagick::ORIENTATION_LEFTTOP:
-					$success = $image->flopImage();
-					$success &= $image->rotateImage(new ImagickPixel(), -90);
-					break;
-				case Imagick::ORIENTATION_RIGHTTOP:
-					$success = $image->rotateImage(new ImagickPixel(), 90);
-					break;
-				case Imagick::ORIENTATION_RIGHTBOTTOM:
-					$success = $image->flopImage();
-					$success &= $image->rotateImage(new ImagickPixel(), 90);
-					break;
-				case Imagick::ORIENTATION_LEFTBOTTOM:
-					$success = $image->rotateImage(new ImagickPixel(), -90);
-					break;
-			}
+			$success = match ($orientation) {
+				Imagick::ORIENTATION_TOPRIGHT => $image->flopImage(),
+				Imagick::ORIENTATION_BOTTOMRIGHT => $image->rotateImage(new ImagickPixel(), 180),
+				Imagick::ORIENTATION_BOTTOMLEFT => $image->flopImage() && $image->rotateImage(new ImagickPixel(), 180),
+				Imagick::ORIENTATION_LEFTTOP => $image->flopImage() && $image->rotateImage(new ImagickPixel(), -90),
+				Imagick::ORIENTATION_RIGHTTOP => $image->rotateImage(new ImagickPixel(), 90),
+				Imagick::ORIENTATION_RIGHTBOTTOM => $image->flopImage() && $image->rotateImage(new ImagickPixel(), 90),
+				Imagick::ORIENTATION_LEFTBOTTOM => $image->rotateImage(new ImagickPixel(), -90),
+				default => true
+			};
 
-			$success &= $image->setImageOrientation(Imagick::ORIENTATION_TOPLEFT);
+			$success = $success && $image->setImageOrientation(Imagick::ORIENTATION_TOPLEFT);
 
 			if (!$success) {
 				throw new MediaFileOperationException('Failed to rotate image');
@@ -103,12 +84,12 @@ class ImagickHandler implements ImageHandlerInterface
 
 			$profiles = $image->getImageProfiles('icc', true);
 
-			$image->scaleImage($newWidth, $newHeight, ($newWidth != 0 && $newHeight != 0));
+			$image->scaleImage($newWidth, $newHeight, ($newWidth !== 0 && $newHeight !== 0));
 
 			// Remove metadata to save some bytes
 			$image->stripImage();
 
-			if (!empty($profiles)) {
+			if (array_key_exists('icc', $profiles)) {
 				$image->profileImage('icc', $profiles['icc']);
 			}
 
@@ -119,7 +100,7 @@ class ImagickHandler implements ImageHandlerInterface
 			$image->destroy();
 
 			// Optimize image
-			if (Configs::get_value('lossless_optimization', '0') == '1') {
+			if (Configs::getValueAsBool('lossless_optimization')) {
 				ImageOptimizer::optimize($destination);
 			}
 		} catch (ImagickException $exception) {
@@ -151,7 +132,7 @@ class ImagickHandler implements ImageHandlerInterface
 			// Remove metadata to save some bytes
 			$image->stripImage();
 
-			if (!empty($profiles)) {
+			if (array_key_exists('icc', $profiles)) {
 				$image->profileImage('icc', $profiles['icc']);
 			}
 
@@ -160,7 +141,7 @@ class ImagickHandler implements ImageHandlerInterface
 			$image->destroy();
 
 			// Optimize image
-			if (Configs::get_value('lossless_optimization', '0') == '1') {
+			if (Configs::getValueAsBool('lossless_optimization')) {
 				ImageOptimizer::optimize($destination);
 			}
 		} catch (ImagickException $exception) {

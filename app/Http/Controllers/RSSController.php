@@ -20,7 +20,7 @@ class RSSController extends Controller
 	 */
 	public function getRSS(Generate $generate): Collection
 	{
-		if (Configs::get_value('rss_enable', '0') != '1') {
+		if (!Configs::getValueAsBool('rss_enable')) {
 			throw new ConfigurationException('RSS is disabled by configuration');
 		}
 

@@ -41,8 +41,10 @@ class SettingsController extends Controller
 	public function setLogin(ChangeLoginRequest $request, Login $login): void
 	{
 		$login->do(
-			$request->username(), $request->password(),
-			$request->oldUsername(), $request->oldPassword(),
+			$request->username(),
+			$request->password(),
+			$request->oldUsername(),
+			$request->oldPassword(),
 			$request->ip()
 		);
 	}
@@ -129,7 +131,7 @@ class SettingsController extends Controller
 	public function setPublicSearch(Request $request): void
 	{
 		$request->validate(['public_search' => 'required|boolean']);
-		Configs::set('public_search', $request->boolean('public_search'));
+		Configs::set('public_search', (int) $request->boolean('public_search'));
 	}
 
 	/**
@@ -145,7 +147,7 @@ class SettingsController extends Controller
 	public function setNSFWVisible(Request $request): void
 	{
 		$request->validate(['nsfw_visible' => 'required|boolean']);
-		Configs::set('nsfw_visible', $request->boolean('nsfw_visible'));
+		Configs::set('nsfw_visible', (int) $request->boolean('nsfw_visible'));
 	}
 
 	/**
@@ -204,7 +206,7 @@ class SettingsController extends Controller
 	public function setMapDisplay(Request $request): void
 	{
 		$request->validate(['map_display' => 'required|boolean']);
-		Configs::set('map_display', $request->boolean('map_display'));
+		Configs::set('map_display', (int) $request->boolean('map_display'));
 	}
 
 	/**
@@ -220,7 +222,7 @@ class SettingsController extends Controller
 	public function setMapDisplayPublic(Request $request): void
 	{
 		$request->validate(['map_display_public' => 'required|boolean']);
-		Configs::set('map_display_public', $request->boolean('map_display_public'));
+		Configs::set('map_display_public', (int) $request->boolean('map_display_public'));
 	}
 
 	/**
@@ -267,7 +269,7 @@ class SettingsController extends Controller
 	public function setMapIncludeSubAlbums(Request $request): void
 	{
 		$request->validate(['map_include_subalbums' => 'required|boolean']);
-		Configs::set('map_include_subalbums', $request->boolean('map_include_subalbums'));
+		Configs::set('map_include_subalbums', (int) $request->boolean('map_include_subalbums'));
 	}
 
 	/**
@@ -283,7 +285,7 @@ class SettingsController extends Controller
 	public function setLocationDecoding(Request $request): void
 	{
 		$request->validate(['location_decoding' => 'required|boolean']);
-		Configs::set('location_decoding', $request->boolean('location_decoding'));
+		Configs::set('location_decoding', (int) $request->boolean('location_decoding'));
 	}
 
 	/**
@@ -299,7 +301,7 @@ class SettingsController extends Controller
 	public function setLocationShow(Request $request): void
 	{
 		$request->validate(['location_show' => 'required|boolean']);
-		Configs::set('location_show', $request->boolean('location_show'));
+		Configs::set('location_show', (int) $request->boolean('location_show'));
 	}
 
 	/**
@@ -317,7 +319,7 @@ class SettingsController extends Controller
 		$request->validate(['location_show_public' => 'required|boolean']);
 		Configs::set(
 			'location_show_public',
-			$request->boolean('location_show_public')
+			(int) $request->boolean('location_show_public')
 		);
 	}
 
@@ -336,7 +338,7 @@ class SettingsController extends Controller
 		$request->validate(['new_photos_notification' => 'required|boolean']);
 		Configs::set(
 			'new_photos_notification',
-			$request->boolean('new_photos_notification')
+			(int) $request->boolean('new_photos_notification')
 		);
 	}
 
@@ -392,14 +394,14 @@ class SettingsController extends Controller
 	{
 		$lastException = null;
 		foreach ($request->except(['_token', 'function', '/api/Settings::saveAll']) as $key => $value) {
-			$value = ($value == null) ? '' : $value;
+			$value ??= '';
 			try {
 				Configs::set($key, $value);
 			} catch (InvalidConfigOption $e) {
 				$lastException = $e;
 			}
 		}
-		if ($lastException) {
+		if ($lastException !== null) {
 			throw $lastException;
 		}
 	}

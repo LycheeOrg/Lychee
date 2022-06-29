@@ -24,11 +24,11 @@ class DemoTest extends TestCase
 	public function testDemo0(): void
 	{
 		// save initial value
-		$init_config_value = Configs::get_value('gen_demo_js');
+		$init_config_value = Configs::getValue('gen_demo_js');
 
 		// set to 0
 		Configs::set('gen_demo_js', '0');
-		static::assertEquals('0', Configs::get_value('gen_demo_js'));
+		static::assertEquals('0', Configs::getValue('gen_demo_js'));
 
 		// check redirection
 		$response = $this->get('/demo');
@@ -46,11 +46,11 @@ class DemoTest extends TestCase
 	public function testDemo1()
 	{
 		// save initial value
-		$init_config_value = Configs::get_value('gen_demo_js');
+		$init_config_value = Configs::getValue('gen_demo_js');
 
 		// set to 0
 		Configs::set('gen_demo_js', '1');
-		static::assertEquals('1', Configs::get_value('gen_demo_js'));
+		static::assertEquals('1', Configs::getValue('gen_demo_js'));
 
 		// check redirection
 		$response = $this->get('/demo');

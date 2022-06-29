@@ -14,25 +14,25 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 		$this->userCSS($errors);
 	}
 
-	public function folders(array &$errors)
+	public function folders(array &$errors): void
 	{
 		$paths = ['big', 'medium', 'small', 'thumb', 'import', ''];
 
 		foreach ($paths as $path) {
 			$p = Storage::path($path);
-			if (Helpers::hasPermissions($p) === false) {
+			if (!Helpers::hasPermissions($p)) {
 				$errors[] = "Error: '" . $p . "' is missing or has insufficient read/write privileges";
 			}
 		}
 	}
 
-	public function userCSS(array &$errors)
+	public function userCSS(array &$errors): void
 	{
 		$p = Storage::disk('dist')->path('user.css');
-		if (Helpers::hasPermissions($p) === false) {
+		if (!Helpers::hasPermissions($p)) {
 			$errors[] = "Warning: '" . $p . "' does not exist or has insufficient read/write privileges.";
 			$p = Storage::disk('dist')->path('');
-			if (Helpers::hasPermissions($p) === false) {
+			if (!Helpers::hasPermissions($p)) {
 				$errors[] = "Warning: '" . $p . "' has insufficient read/write privileges.";
 			}
 		}

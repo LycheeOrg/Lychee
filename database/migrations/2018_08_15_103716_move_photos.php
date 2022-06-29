@@ -19,7 +19,7 @@ class MovePhotos extends Migration
 		// only do if photos is empty and
 		// if there is a table to import from
 		if (
-			MovePhotos_Photo::count() == 0 &&
+			MovePhotos_Photo::count() === 0 &&
 			Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_photos')
 		) {
 			$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_photos')->select('*')->orderBy('id', 'asc')->orderBy('album', 'asc')->get();
@@ -28,7 +28,7 @@ class MovePhotos extends Migration
 				$photoAttributes = [];
 				$id = Helpers::trancateIf32($result->id, $id);
 				$photoAttributes['id'] = $id;
-				if ($result->album == 0) {
+				if ($result->album === 0) {
 					$photoAttributes['album_id'] = null;
 				} else {
 					$photoAttributes['album_id'] = Helpers::trancateIf32($result->album, 0);
@@ -49,7 +49,7 @@ class MovePhotos extends Migration
 				$photoAttributes['model'] = $result->model;
 				$photoAttributes['shutter'] = $result->shutter;
 				$photoAttributes['focal'] = $result->focal;
-				$photoAttributes['takestamp'] = ($result->takestamp == 0 || $result->takestamp == null) ? null : date('Y-m-d H:i:s', $result->takestamp);
+				$photoAttributes['takestamp'] = ($result->takestamp === 0 || $result->takestamp === null) ? null : date('Y-m-d H:i:s', $result->takestamp);
 				$photoAttributes['star'] = $result->star;
 				$photoAttributes['thumbUrl'] = $result->thumbUrl;
 				$thumbUrl2x = explode('.', $result->thumbUrl);

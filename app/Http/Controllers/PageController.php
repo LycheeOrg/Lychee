@@ -10,7 +10,6 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Config;
 use Illuminate\View\View;
 
 class PageController extends Controller
@@ -38,17 +37,20 @@ class PageController extends Controller
 	 * @throws ModelNotFoundException
 	 * @throws BindingResolutionException
 	 */
-	public function page(/* @noinspection PhpUnusedParameterInspection */ Request $request, string $page): View
-	{
+	public function page(
+		/* @noinspection PhpUnusedParameterInspection */
+		Request $request,
+		string $page
+	): View {
 		/** @var Page $page */
 		$page = Page::enabled()->where('link', '=', '/' . $page)->firstOrFail();
 
 		$lang = Lang::get_lang();
-		$lang['language'] = Configs::get_value('lang');
+		$lang['language'] = Configs::getValueAsString('lang');
 
 		$infos = $this->configFunctions->get_pages_infos();
-		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
-		$rss_enable = Configs::get_value('rss_enable', '0') == '1';
+		$title = Configs::getValueAsString('site_title');
+		$rss_enable = Configs::getValueAsBool('rss_enable');
 		$menus = Page::menu()->get();
 
 		$contents = $page->content;

@@ -8,9 +8,11 @@ use App\Exceptions\UnexpectedException;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use App\Models\SizeVariant;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+use Safe\Exceptions\InfoException;
+use function Safe\set_time_limit;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -30,11 +32,11 @@ class Takedate extends Command
 	 * @var string
 	 */
 	protected $signature = 'lychee:takedate ' .
-	'{offset=0 : offset of the first photo to process} ' .
-	'{limit=50 : number of photos to process (0 means process all)} ' .
-	'{time=600 : maximum execution time in seconds (0 means unlimited)} ' .
-	'{--c|set-upload-time : additionally sets the upload time based on the creation time of the media file; ATTENTION: this option is rarely needed and potentially harmful} ' .
-	'{--f|force : force processing of all media files}';
+		'{offset=0 : offset of the first photo to process} ' .
+		'{limit=50 : number of photos to process (0 means process all)} ' .
+		'{time=600 : maximum execution time in seconds (0 means unlimited)} ' .
+		'{--c|set-upload-time : additionally sets the upload time based on the creation time of the media file; ATTENTION: this option is rarely needed and potentially harmful} ' .
+		'{--f|force : force processing of all media files}';
 
 	/**
 	 * The console command description.
@@ -54,18 +56,6 @@ class Takedate extends Command
 		$this->msgSection = $output->section();
 		$this->progressBar = new ProgressBar($output->section());
 		$this->progressBar->setFormat('Photo %current%/%max% [%bar%] %percent:3s%%');
-	}
-
-	/**
-	 * Outputs an error message.
-	 *
-	 * @param string $msg the message
-	 *
-	 * @return void
-	 */
-	private function printError(Photo $photo, string $msg): void
-	{
-		$this->msgSection->writeln('<error>Error:</error>   Photo "' . $photo->title . '" (ID=' . $photo->id . '): ' . $msg);
 	}
 
 	/**
@@ -105,9 +95,13 @@ class Takedate extends Command
 			$limit = intval($this->argument('limit'));
 			$offset = intval($this->argument('offset'));
 			$timeout = intval($this->argument('time'));
-			$setCreationTime = boolval($this->option('set-upload-time'));
-			$force = boolval($this->option('force'));
-			set_time_limit($timeout);
+			$setCreationTime = $this->option('set-upload-time') === true;
+			$force = $this->option('force') === true;
+			try {
+				set_time_limit($timeout);
+			} catch (InfoException) {
+				// Silently do nothing, if `set_time_limit` is denied.
+			}
 
 			// For faster iteration we eagerly load the original size variant,
 			// but only the original size variant
@@ -145,7 +139,7 @@ class Takedate extends Command
 			// use a regular collection which might run out of memory for large
 			// values of `limit`.
 			$photos = $photoQuery->get();
-			/* @var Photo $photo */
+			/** @var Photo $photo */
 			foreach ($photos as $photo) {
 				$this->progressBar->advance();
 				$localFile = $photo->size_variants->getOriginal()->getFile()->toLocalFile();
@@ -170,7 +164,7 @@ class Takedate extends Command
 
 				if ($setCreationTime) {
 					$created_at = $localFile->lastModified();
-					if ($created_at == $photo->created_at->timestamp) {
+					if ($created_at === $photo->created_at->timestamp) {
 						$this->printInfo($photo, 'Upload time up-to-date.');
 					} else {
 						$photo->created_at = Carbon::createFromTimestamp($created_at);

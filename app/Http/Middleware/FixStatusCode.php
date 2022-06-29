@@ -30,13 +30,14 @@ class FixStatusCode
 		/** @var Response $response */
 		$response = $next($request);
 
+		$content = $response->getContent();
 		// Note: The content is always empty for binary file or streamed
 		// responses at this stage, because their content is sent
 		// asynchronously.
 		// Hence, we must not overwrite the status code with 204 for those
 		// kinds of responses.
 		if (
-			empty($response->getContent()) &&
+			($content === false || $content === '') &&
 			!($response instanceof BinaryFileResponse) &&
 			!($response instanceof StreamedResponse)
 		) {
