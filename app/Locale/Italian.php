@@ -85,6 +85,9 @@ final class Italian implements Language
 			'KEEP_ALBUM' => 'Mantieni Album',
 			'DELETE_ALBUM_CONFIRMATION' => 'Sei sicuro di voler eliminare l\' album \'%s\' e tutte le immagini che contiene? Questa azione non può essere annullata successivamente!',
 
+			'DELETE_TAG_ALBUM_QUESTION' => 'Delete Album',
+			'DELETE_TAG_ALBUM_CONFIRMATION' => 'Are you sure you want to delete the album \'%s\' (any photos inside will not be deleted)? This action can\'t be undone!',
+
 			'DELETE_ALBUMS_QUESTION' => 'Elimina gli Album e le Immagini',
 			'KEEP_ALBUMS' => 'Mantieni gli Album',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Sei sicuro di voler eliminare tutti %d gli album selezionati e le immagini contenute in essi? Questa azione non può essere annullata successivamente!',

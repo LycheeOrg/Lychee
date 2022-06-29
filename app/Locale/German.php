@@ -87,6 +87,9 @@ final class German implements Language
 			'KEEP_ALBUM' => 'Album behalten',
 			'DELETE_ALBUM_CONFIRMATION' => 'Sind Sie sicher, dass Sie das Album „%s“ und alle enthaltenen Fotos löschen wollen? Diese Aktion kann nicht rückgängig gemacht werden!',
 
+			'DELETE_TAG_ALBUM_QUESTION' => 'Album löschen',
+			'DELETE_TAG_ALBUM_CONFIRMATION' => 'Sind Sie sicher, dass Sie das Album „%s“ löschen wollen (Fotos darin werden nicht gelöscht)? Diese Aktion kann nicht rückgängig gemacht werden!',
+
 			'DELETE_ALBUMS_QUESTION' => 'Alben und Fotos löschen',
 			'KEEP_ALBUMS' => 'Alben behalten',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Sind Sie sicher, dass Sie alle %d ausgewählten Alben und die enthaltenen Fotos löschen wollen? Diese Aktion kann nicht rückgängig gemacht werden!',

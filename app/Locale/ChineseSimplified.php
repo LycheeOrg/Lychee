@@ -85,6 +85,9 @@ final class ChineseSimplified implements Language
 			'KEEP_ALBUM' => '保留相册',
 			'DELETE_ALBUM_CONFIRMATION' => '是否确认删除相册 \'%s\' 以及相册中包含的所有照片？操作后不可恢复！',
 
+			'DELETE_TAG_ALBUM_QUESTION' => 'Delete Album',
+			'DELETE_TAG_ALBUM_CONFIRMATION' => 'Are you sure you want to delete the album \'%s\' (any photos inside will not be deleted)? This action can\'t be undone!',
+
 			'DELETE_ALBUMS_QUESTION' => '删除相册和照片',
 			'KEEP_ALBUMS' => '保留相册',
 			'DELETE_ALBUMS_CONFIRMATION' => '是否确认删除全部 %d 选中的相册和其中的所有照片？操作后不可恢复！',

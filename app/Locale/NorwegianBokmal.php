@@ -85,6 +85,9 @@ final class NorwegianBokmal implements Language
 			'KEEP_ALBUM' => 'Behold Album',
 			'DELETE_ALBUM_CONFIRMATION' => 'Ønsker du virkelig å fjerne album \'%s\' og alle bildene i det? Denne handlingen kan ikke angres!',
 
+			'DELETE_TAG_ALBUM_QUESTION' => 'Delete Album',
+			'DELETE_TAG_ALBUM_CONFIRMATION' => 'Are you sure you want to delete the album \'%s\' (any photos inside will not be deleted)? This action can\'t be undone!',
+
 			'DELETE_ALBUMS_QUESTION' => 'Fjern Album og Bilder',
 			'KEEP_ALBUMS' => 'Behold Album',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Ønsker du virkelig å fjerne %d valgte album og alle bildene i disse? Denne handlingen kan ikke angres!',

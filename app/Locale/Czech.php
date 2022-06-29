@@ -86,6 +86,9 @@ final class Czech implements Language
 			'KEEP_ALBUM' => 'Ponechat album',
 			'DELETE_ALBUM_CONFIRMATION' => 'Opravdu smazat album \'%s\' a všechny fotografie, které obsahuje? Tento krok je nevratný!',
 
+			'DELETE_TAG_ALBUM_QUESTION' => 'Delete Album',
+			'DELETE_TAG_ALBUM_CONFIRMATION' => 'Are you sure you want to delete the album \'%s\' (any photos inside will not be deleted)? This action can\'t be undone!',
+
 			'DELETE_ALBUMS_QUESTION' => 'Mazání alb a fotografií',
 			'KEEP_ALBUMS' => 'Ponechat alba',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Opravdu smazat všechna vybraná %d alba a fotografie, které obsahují? Tento krok je nevratný!',

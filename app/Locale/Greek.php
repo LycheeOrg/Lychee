@@ -85,6 +85,9 @@ final class Greek implements Language
 			'KEEP_ALBUM' => 'Διατήρηση Λευκώματος',
 			'DELETE_ALBUM_CONFIRMATION' => 'Είστε σίγουρη/ος πως θέλετε να διαγράψετε αυτό το λεύκωμα \'%s\' και όλες τις φωτογραφίες που περιέχει; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί!',
 
+			'DELETE_TAG_ALBUM_QUESTION' => 'Delete Album',
+			'DELETE_TAG_ALBUM_CONFIRMATION' => 'Are you sure you want to delete the album \'%s\' (any photos inside will not be deleted)? This action can\'t be undone!',
+
 			'DELETE_ALBUMS_QUESTION' => 'Διαγραφή Λευκωμάτων και Φωτογραφιών',
 			'KEEP_ALBUMS' => 'Διατήρηση Λευκωμάτων',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Είστε σίγουρη/ος πως θέλετε να διαγράψετε όλα %d τα επιλεγμένα λευκώματα και όλες τις φωτογραφίες που περιέχουν; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί!',

@@ -85,6 +85,9 @@ final class Polish implements Language
 			'KEEP_ALBUM' => 'Zatrzymaj album',
 			'DELETE_ALBUM_CONFIRMATION' => 'Czy na pewno chcesz usunąć album \'%s\' razem z zawartością ? Ta akcja jest nieodwracalna!',
 
+			'DELETE_TAG_ALBUM_QUESTION' => 'Delete Album',
+			'DELETE_TAG_ALBUM_CONFIRMATION' => 'Are you sure you want to delete the album \'%s\' (any photos inside will not be deleted)? This action can\'t be undone!',
+
 			'DELETE_ALBUMS_QUESTION' => 'Usuń album wraz z zawartością',
 			'KEEP_ALBUMS' => 'Zatrzymaj Albumy',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Czy na pewno usunąć %d zaznaczone albumy wraz z zawartością? Ta akcja jest nieodwracalna!',

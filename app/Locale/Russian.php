@@ -85,6 +85,9 @@ final class Russian implements Language
 			'KEEP_ALBUM' => 'Сохранить альбом',
 			'DELETE_ALBUM_CONFIRMATION' => 'Вы точно хотите удалить альбом \'%s\' со всеми фотографиями? Это действие необратимо!',
 
+			'DELETE_TAG_ALBUM_QUESTION' => 'Delete Album',
+			'DELETE_TAG_ALBUM_CONFIRMATION' => 'Are you sure you want to delete the album \'%s\' (any photos inside will not be deleted)? This action can\'t be undone!',
+
 			'DELETE_ALBUMS_QUESTION' => 'Удалить альбом и фотографии',
 			'KEEP_ALBUMS' => 'Сохранить альбомы',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Вы точно хотите удалить альбомы %d со всеми фотографиями? Это действие необратимо!',

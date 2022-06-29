@@ -86,6 +86,9 @@ final class Slovak implements Language
 			'KEEP_ALBUM' => 'Album ponechať',
 			'DELETE_ALBUM_CONFIRMATION' => 'Ste si istý, že chcete album \'%s\' a všetky obrázky v ňom zmazať? Táto akcia je nevratná!',
 
+			'DELETE_TAG_ALBUM_QUESTION' => 'Delete Album',
+			'DELETE_TAG_ALBUM_CONFIRMATION' => 'Are you sure you want to delete the album \'%s\' (any photos inside will not be deleted)? This action can\'t be undone!',
+
 			'DELETE_ALBUMS_QUESTION' => 'Všetky albumy a obrázky zmazať',
 			'KEEP_ALBUMS' => 'Albumy ponechať',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Ste si istý, že chcete všetky %d vybrané albumy a všetky obrázky v nich zmazať? Táto akcia je nevratná!',

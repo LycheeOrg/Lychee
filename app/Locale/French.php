@@ -88,6 +88,9 @@ final class French implements Language
 			'KEEP_ALBUM' => 'Garder l’album',
 			'DELETE_ALBUM_CONFIRMATION' => 'Voulez-vous vraiment supprimer l’album \'%s\' et toutes les photos qu’il contient ? Cette action est irréversible !',
 
+			'DELETE_TAG_ALBUM_QUESTION' => 'Delete Album',
+			'DELETE_TAG_ALBUM_CONFIRMATION' => 'Are you sure you want to delete the album \'%s\' (any photos inside will not be deleted)? This action can\'t be undone!',
+
 			'DELETE_ALBUMS_QUESTION' => 'Supprimer les albums et leurs photos',
 			'KEEP_ALBUMS' => 'Garder les albums',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Voulez-vous vraiment supprimer les %d albums selectionnés et toutes leurs photos ? Cette action est irréversible !',
