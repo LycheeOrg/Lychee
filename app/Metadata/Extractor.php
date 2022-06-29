@@ -13,7 +13,11 @@ use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Support\Carbon;
 use PHPExif\Adapter\NoAdapterException;
+use PHPExif\Exif;
 use PHPExif\Reader\Reader;
+use Safe\Exceptions\StringsException;
+use function Safe\sha1_file;
+use function Safe\substr;
 
 /**
  * Collects normalized EXIF info about an image/video.
@@ -63,12 +67,11 @@ class Extractor
 	 */
 	public static function checksum(NativeLocalFile $file): string
 	{
-		$checksum = sha1_file($file->getAbsolutePath());
-		if ($checksum === false) {
+		try {
+			return sha1_file($file->getAbsolutePath());
+		} catch (StringsException) {
 			throw new MediaFileOperationException('Could not compute checksum for: ' . $file->getAbsolutePath());
 		}
-
-		return $checksum;
 	}
 
 	/**
@@ -84,55 +87,21 @@ class Extractor
 	 */
 	public static function createFromFile(NativeLocalFile $file): self
 	{
-		$metadata = new static();
-		$reader = null;
-
-		// TODO: This line is extremely dangerous, because it tries to determine the type of file based on a possibly not existing file extension
-		// Note: For temporarily stored files during upload, PHP normally uses
-		// temporary file names without an extension.
-		// We should stop passing around absolute file paths and try to
-		// re-determine the MIME type over and over again, but pass around
-		// proper `File` objects which also hold the MIME type which has
-		// been established initially.
-		$extension = $file->getExtension();
+		$metadata = new self();
+		$isSupportedVideo = $file->isSupportedVideo();
 
 		try {
-			if ($file->isSupportedImage()) {
-				// It's a photo
-				if (Configs::hasExiftool()) {
-					// reader with Exiftool adapter
-					$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
-				} elseif (Configs::hasImagick()) {
-					// Use imagick as exif reader if available
-					$reader = Reader::factory(Reader::TYPE_IMAGICK);
-				} else {
-					// Use Php native tools
-					$reader = Reader::factory(Reader::TYPE_NATIVE);
-				}
-			} elseif ($file->isSupportedVideo()) {
-				// Let's try to use FFmpeg; if not available, let's try Exiftool
-				if (Configs::hasFFmpeg()) {
-					// It's a video -> use FFProbe
-					$reader = Reader::factory(Reader::TYPE_FFPROBE);
-				} elseif (Configs::hasExiftool()) {
-					// reader with Exiftool adapter
-					$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
-				} else {
-					// Use Php native tools to extract at least MimeType and Filesize
-					// For all other properties, it will not return anything
-					$reader = Reader::factory(Reader::TYPE_NATIVE);
-					Logs::notice(__METHOD__, __LINE__, 'FFmpeg and Exiftool not being available; Extraction of metadata limited to mime type and file size.');
-				}
-			} else {
-				// It is an accepted raw file
-				if (Configs::hasImagick()) {
-					// Use imagick as exif reader for raw files (broader support)
-					$reader = Reader::factory(Reader::TYPE_IMAGICK);
-				} else {
-					// Use Php native tools
-					$reader = Reader::factory(Reader::TYPE_NATIVE);
-				}
-			}
+			// Priority of EXIF data readers is
+			//  1. FFMpeg (only for videos)
+			//  2. Exiftool
+			//  3. Imagick (not for videos, i.e. for supported photos and accepted raw files only)
+			//  4. Native PHP exif reader (last resort)
+			$reader = match (true) {
+				(Configs::hasFFmpeg() && $isSupportedVideo) => Reader::factory(Reader::TYPE_FFPROBE),
+				Configs::hasExiftool() => Reader::factory(Reader::TYPE_EXIFTOOL),
+				(Configs::hasImagick() && !$isSupportedVideo) => Reader::factory(Reader::TYPE_IMAGICK),
+				default => Reader::factory(Reader::TYPE_NATIVE),
+			};
 
 			// this can throw an exception in the case of Exiftool adapter!
 			// TODO: This may fail for files without an extension.
@@ -170,6 +139,11 @@ class Extractor
 			}
 		}
 
+		// TODO: By changing the logic of $reader to always return an Exif object or throw an exception, this would make this code safer.
+		if (!$exif instanceof Exif) {
+			throw new MediaFileOperationException('Could not even extract basic EXIF data with the native adapter');
+		}
+
 		// Attempt to get sidecar metadata if it exists, make sure to check 'real' path in case of symlinks
 		$sidecarData = [];
 
@@ -179,12 +153,16 @@ class Extractor
 			try {
 				// Don't use the same reader as the file in case it's a video
 				$sidecarReader = Reader::factory(Reader::TYPE_EXIFTOOL);
-				$sidecarData = $sidecarReader->read($sidecarFile->getAbsolutePath())->getData();
+				$sideCarExifData = $sidecarReader->read($sidecarFile->getAbsolutePath());
+				if (!$sideCarExifData instanceof Exif) {
+					throw new MediaFileOperationException('Could not even extract EXIF data with the exiftool adapter');
+				}
+				$sidecarData = $sideCarExifData->getData();
 
 				// We don't want to overwrite the media's type with the mimetype of the sidecar file
 				unset($sidecarData['MimeType']);
 
-				if (Configs::get_value('prefer_available_xmp_metadata', '0') == '1') {
+				if (Configs::getValueAsBool('prefer_available_xmp_metadata')) {
 					$exif->setData(array_merge($exif->getData(), $sidecarData));
 				} else {
 					$exif->setData(array_merge($sidecarData, $exif->getData()));
@@ -195,11 +173,11 @@ class Extractor
 		}
 
 		$metadata->type = ($exif->getMimeType() !== false) ? $exif->getMimeType() : $file->getMimeType();
-		$metadata->width = ($exif->getWidth() !== false) ? $exif->getWidth() : 0;
-		$metadata->height = ($exif->getHeight() !== false) ? $exif->getHeight() : 0;
+		$metadata->width = ($exif->getWidth() !== false) ? (int) $exif->getWidth() : 0;
+		$metadata->height = ($exif->getHeight() !== false) ? (int) $exif->getHeight() : 0;
 		$metadata->title = ($exif->getTitle() !== false) ? $exif->getTitle() : null;
 		$metadata->description = ($exif->getDescription() !== false) ? $exif->getDescription() : null;
-		$metadata->orientation = ($exif->getOrientation() !== false) ? $exif->getOrientation() : 1;
+		$metadata->orientation = ($exif->getOrientation() !== false) ? (int) $exif->getOrientation() : 1;
 		$metadata->iso = ($exif->getIso() !== false) ? $exif->getIso() : null;
 		$metadata->make = ($exif->getMake() !== false) ? $exif->getMake() : null;
 		$metadata->model = ($exif->getCamera() !== false) ? $exif->getCamera() : null;
@@ -211,7 +189,7 @@ class Extractor
 		$metadata->altitude = ($exif->getAltitude() !== false) ? $exif->getAltitude() : null;
 		$metadata->imgDirection = ($exif->getImgDirection() !== false) ? $exif->getImgDirection() : null;
 		$metadata->livePhotoContentID = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
-		$metadata->microVideoOffset = ($exif->getMicroVideoOffset() !== false) ? $exif->getMicroVideoOffset() : 0;
+		$metadata->microVideoOffset = ($exif->getMicroVideoOffset() !== false) ? (int) $exif->getMicroVideoOffset() : 0;
 
 		$taken_at = $exif->getCreationDate();
 		if ($taken_at !== false) {
@@ -344,9 +322,9 @@ class Extractor
 				//         At the layer of the "business logic" we only use
 				//         the attribute `taken_at` which extends
 				//         \DateTimeInterface and stores the timezone.
-				if ($file->isSupportedVideo()) {
-					$locals = strtolower(Configs::get_value('local_takestamp_video_formats', ''));
-					if (!in_array(strtolower($extension), explode('|', $locals), true)) {
+				if ($isSupportedVideo) {
+					$locals = strtolower(Configs::getValueAsString('local_takestamp_video_formats'));
+					if (!in_array(strtolower($file->getExtension()), explode('|', $locals), true)) {
 						// This is a video format where we expect the takestamp
 						// to be provided in UTC.
 						if ($taken_at->getTimezone()->getName() === date_default_timezone_get()) {
@@ -440,27 +418,29 @@ class Extractor
 		if ($exif->getCountry() !== false) {
 			$fields[] = trim($exif->getCountry());
 		}
-		if (!empty($fields)) {
+		if (count($fields) !== 0) {
 			$metadata->position = implode(', ', $fields);
 		}
 
-		if ($file->isSupportedImage() || $file->isAcceptedRaw()) {
+		if (!$isSupportedVideo) {
+			// Media is either a supported photo or an accepted raw file:
+			// properly format aperture and focal
 			$metadata->aperture = ($exif->getAperture() !== false) ? $exif->getAperture() : null;
 			$metadata->focal = ($exif->getFocalLength() !== false) ? $exif->getFocalLength() : null;
-			if (!empty($metadata->focal)) {
-				$metadata->focal = round($metadata->focal) . self::SUFFIX_MM_UNIT;
+			if ($metadata->focal !== null) {
+				$metadata->focal = round(floatval($metadata->focal)) . self::SUFFIX_MM_UNIT;
 			}
 		} else {
-			// Video -> reuse fields
+			// Media is a video: Reuse (exploit) fields aperture and focal for duration and framerate
 			$metadata->aperture = ($exif->getDuration() !== false) ? $exif->getDuration() : null;
 			$metadata->focal = ($exif->getFramerate() !== false) ? $exif->getFramerate() : null;
 		}
 
-		if (empty($metadata->title)) {
+		if ($metadata->title === null || $metadata->title === '') {
 			$metadata->title = ($exif->getHeadline() !== false) ? $exif->getHeadline() : null;
 		}
 
-		if (!empty($metadata->shutter)) {
+		if ($metadata->shutter !== null && $metadata->shutter !== '') {
 			// TODO: If we add the suffix " s" here, we should also normalize the fraction here.
 			// It does not make any sense to strip-off the suffix again in Photo and re-add it again.
 			$metadata->shutter = $metadata->shutter . self::SUFFIX_SEC_UNIT;
@@ -470,10 +450,10 @@ class Extractor
 		// but only if return value is not null (= function has been disabled)
 		try {
 			$metadata->location = Geodecoder::decodeLocation($metadata->latitude, $metadata->longitude);
-			if (!empty($metadata->location)) {
+			if ($metadata->location !== null) {
 				$metadata->location = substr($metadata->location, 0, self::MAX_LOCATION_STRING_LENGTH);
 			}
-		} catch (ExternalComponentFailedException $e) {
+		} catch (ExternalComponentFailedException|StringsException $e) {
 			Handler::reportSafely($e);
 			$metadata->location = null;
 		}

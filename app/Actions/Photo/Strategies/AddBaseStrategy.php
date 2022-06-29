@@ -3,6 +3,7 @@
 namespace App\Actions\Photo\Strategies;
 
 use App\Exceptions\ConfigurationException;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
@@ -13,6 +14,7 @@ use App\Image\NativeLocalFile;
 use App\Models\Photo;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Adapter\Local;
+use function Safe\symlink;
 
 abstract class AddBaseStrategy
 {
@@ -50,65 +52,65 @@ abstract class AddBaseStrategy
 	 * all available meta-data is hydrated, but for an already existing
 	 * {@link Photo} object existing attributes are not overwritten.
 	 */
-	protected function hydrateMetadata()
+	protected function hydrateMetadata(): void
 	{
-		if (empty($this->photo->title) && !empty($this->parameters->exifInfo->title)) {
+		if ($this->photo->title === null) {
 			$this->photo->title = $this->parameters->exifInfo->title;
 		}
-		if (empty($this->photo->description) && !empty($this->parameters->exifInfo->description)) {
+		if ($this->photo->description === null) {
 			$this->photo->description = $this->parameters->exifInfo->description;
 		}
-		if (empty($this->photo->tags) && !empty($this->parameters->exifInfo->tags)) {
+		if (count($this->photo->tags) === 0) {
 			$this->photo->tags = $this->parameters->exifInfo->tags;
 		}
-		if (empty($this->photo->type) && !empty($this->parameters->exifInfo->type)) {
+		if ($this->photo->type === null) {
 			$this->photo->type = $this->parameters->exifInfo->type;
 		}
-		if (empty($this->photo->iso) && !empty($this->parameters->exifInfo->iso)) {
+		if ($this->photo->iso === null) {
 			$this->photo->iso = $this->parameters->exifInfo->iso;
 		}
-		if (empty($this->photo->aperture) && !empty($this->parameters->exifInfo->aperture)) {
+		if ($this->photo->aperture === null) {
 			$this->photo->aperture = $this->parameters->exifInfo->aperture;
 		}
-		if (empty($this->photo->make) && !empty($this->parameters->exifInfo->make)) {
+		if ($this->photo->make === null) {
 			$this->photo->make = $this->parameters->exifInfo->make;
 		}
-		if (empty($this->photo->model) && !empty($this->parameters->exifInfo->model)) {
+		if ($this->photo->model === null) {
 			$this->photo->model = $this->parameters->exifInfo->model;
 		}
-		if (empty($this->photo->lens) && !empty($this->parameters->exifInfo->lens)) {
+		if ($this->photo->lens === null) {
 			$this->photo->lens = $this->parameters->exifInfo->lens;
 		}
-		if (empty($this->photo->shutter) && !empty($this->parameters->exifInfo->shutter)) {
+		if ($this->photo->shutter === null) {
 			$this->photo->shutter = $this->parameters->exifInfo->shutter;
 		}
-		if (empty($this->photo->focal) && !empty($this->parameters->exifInfo->focal)) {
+		if ($this->photo->focal === null) {
 			$this->photo->focal = $this->parameters->exifInfo->focal;
 		}
-		if ($this->photo->taken_at === null && $this->parameters->exifInfo->taken_at !== null) {
+		if ($this->photo->taken_at === null) {
 			$this->photo->taken_at = $this->parameters->exifInfo->taken_at;
 		}
-		if ($this->photo->latitude === null && $this->parameters->exifInfo->latitude !== null) {
+		if ($this->photo->latitude === null) {
 			$this->photo->latitude = $this->parameters->exifInfo->latitude;
 		}
-		if ($this->photo->longitude === null && $this->parameters->exifInfo->longitude !== null) {
+		if ($this->photo->longitude === null) {
 			$this->photo->longitude = $this->parameters->exifInfo->longitude;
 		}
-		if ($this->photo->altitude === null && $this->parameters->exifInfo->altitude !== null) {
+		if ($this->photo->altitude === null) {
 			$this->photo->altitude = $this->parameters->exifInfo->altitude;
 		}
-		if ($this->photo->img_direction === null && $this->parameters->exifInfo->imgDirection !== null) {
+		if ($this->photo->img_direction === null) {
 			$this->photo->img_direction = $this->parameters->exifInfo->imgDirection;
 		}
-		if (empty($this->photo->location) && !empty($this->parameters->exifInfo->location)) {
+		if ($this->photo->location === null) {
 			$this->photo->location = $this->parameters->exifInfo->location;
 		}
-		if (empty($this->photo->live_photo_content_id) && !empty($this->parameters->exifInfo->livePhotoContentID)) {
+		if ($this->photo->live_photo_content_id === null) {
 			$this->photo->live_photo_content_id = $this->parameters->exifInfo->livePhotoContentID;
 		}
 	}
 
-	protected function setParentAndOwnership()
+	protected function setParentAndOwnership(): void
 	{
 		if ($this->parameters->album !== null) {
 			$this->photo->album_id = $this->parameters->album->id;
@@ -149,8 +151,10 @@ abstract class AddBaseStrategy
 			}
 			$targetAbsolutePath = $targetFile->getAbsolutePath();
 			$sourceAbsolutePath = $sourceFile->getAbsolutePath();
-			if (!symlink($sourceAbsolutePath, $targetAbsolutePath)) {
-				throw new MediaFileOperationException('Could not create symbolic link at "' . $targetAbsolutePath . '" for photo at "' . $sourceAbsolutePath . '"');
+			try {
+				symlink($sourceAbsolutePath, $targetAbsolutePath);
+			} catch (\Throwable $e) {
+				throw new MediaFileOperationException('Could not create symbolic link at "' . $targetAbsolutePath . '" for photo at "' . $sourceAbsolutePath . '"', $e);
 			}
 		} else {
 			try {
@@ -174,7 +178,7 @@ abstract class AddBaseStrategy
 				// the exception is thrown if read/write/close are invoked
 				// in wrong order
 				// something we don't do
-				assert(false, new \AssertionError('read/write/close must not throw a logic exception', $e->getCode(), $e));
+				throw LycheeAssertionError::createFromUnexpectedException($e);
 			}
 		}
 	}

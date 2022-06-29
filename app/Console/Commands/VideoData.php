@@ -12,6 +12,9 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
+use Safe\Exceptions\InfoException;
+use function Safe\set_time_limit;
+use function Safe\sprintf;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class VideoData extends Command
@@ -39,14 +42,20 @@ class VideoData extends Command
 	 */
 	public function handle(): int
 	{
+		$timeout = intval($this->argument('timeout'));
+		$count = intval($this->argument('count'));
 		try {
-			set_time_limit($this->argument('timeout'));
+			try {
+				set_time_limit($timeout);
+			} catch (InfoException) {
+				// Silently do nothing, if `set_time_limit` is denied.
+			}
 
 			$this->line(
 				sprintf(
-					'Will attempt to generate up to %s video thumbnails/metadata with a timeout of %d seconds...',
-					$this->argument('count'),
-					$this->argument('timeout')
+					'Will attempt to generate up to %d video thumbnails/metadata with a timeout of %d seconds...',
+					$count,
+					$timeout
 				)
 			);
 
@@ -56,10 +65,10 @@ class VideoData extends Command
 				->whereDoesntHave('size_variants', function (Builder $query) {
 					$query->where('type', '=', SizeVariant::THUMB);
 				})
-				->take($this->argument('count'))
+				->take($count)
 				->get();
 
-			if (count($photos) == 0) {
+			if (count($photos) === 0) {
 				$this->line('No videos require processing');
 
 				return 0;
@@ -75,22 +84,22 @@ class VideoData extends Command
 
 				$info = Extractor::createFromFile($file);
 
-				if ($originalSizeVariant->width == 0 && $info->width !== 0) {
+				if ($originalSizeVariant->width === 0 && $info->width !== 0) {
 					$originalSizeVariant->width = $info->width;
 				}
-				if ($originalSizeVariant->height == 0 && $info->height !== 0) {
+				if ($originalSizeVariant->height === 0 && $info->height !== 0) {
 					$originalSizeVariant->height = $info->height;
 				}
-				if (empty($photo->focal) && !empty($info->focal)) {
+				if ($photo->focal === null) {
 					$photo->focal = $info->focal;
 				}
-				if (empty($photo->aperture) && !empty($info->aperture)) {
+				if ($photo->aperture === null) {
 					$photo->aperture = $info->aperture;
 				}
-				if ($photo->latitude == null && $info->latitude !== null) {
+				if ($photo->latitude === null) {
 					$photo->latitude = $info->latitude;
 				}
-				if ($photo->longitude == null && $info->longitude) {
+				if ($photo->longitude === null) {
 					$photo->longitude = $info->longitude;
 				}
 				if ($photo->isDirty()) {

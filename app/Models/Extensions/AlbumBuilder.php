@@ -21,6 +21,7 @@ use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
  */
 class AlbumBuilder extends NSQueryBuilder
 {
+	/** @phpstan-use FixedQueryBuilderTrait<Album> */
 	use FixedQueryBuilderTrait;
 
 	/**
@@ -40,8 +41,8 @@ class AlbumBuilder extends NSQueryBuilder
 	{
 		$baseQuery = $this->getQuery();
 		if (
-			($columns == ['*'] || $columns == ['albums.*']) &&
-			($baseQuery->columns == ['*'] || $baseQuery->columns == ['albums.*'] || $baseQuery->columns == null)
+			($columns === ['*'] || $columns === ['albums.*']) &&
+			($baseQuery->columns === ['*'] || $baseQuery->columns === ['albums.*'] || $baseQuery->columns === null)
 		) {
 			// Note:
 			//  1. The order of JOINS is important.
@@ -92,6 +93,10 @@ class AlbumBuilder extends NSQueryBuilder
 			]);
 		}
 
+		// The parent method returns a `Model[]`, but we must return
+		// `Album[]` and we know that this is indeed the case as we have
+		// queried for albums
+		// @phpstan-ignore-next-line
 		return parent::getModels($columns);
 	}
 

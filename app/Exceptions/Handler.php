@@ -26,6 +26,8 @@ class Handler extends ExceptionHandler
 	 * This array overwrites the default severity per exception.
 	 *
 	 * @var array<class-string, int>
+	 *
+	 * @phpstan-var array<class-string, int<0,7>>
 	 */
 	public const EXCEPTION2SEVERITY = [
 		PhotoResyncedException::class => Logs::SEVERITY_WARNING,
@@ -120,7 +122,7 @@ class Handler extends ExceptionHandler
 		// on the available extensions (i.e. Whoops, Symfony renderer, etc.)
 		// If we are in non-debug mode, we render our own template that
 		// matches Lychee's style and only contains rudimentary information.
-		$defaultResponse = config('app.debug') ?
+		$defaultResponse = config('app.debug') === true ?
 			$this->convertExceptionToResponse($e) :
 			response()->view('error.error', [
 				'code' => $e->getStatusCode(),
@@ -163,7 +165,7 @@ class Handler extends ExceptionHandler
 	protected function convertExceptionToArray(\Throwable $e): array
 	{
 		try {
-			return config('app.debug') ? [
+			return config('app.debug') === true ? [
 				'message' => $e->getMessage(),
 				'exception' => get_class($e),
 				'file' => $e->getFile(),
@@ -171,7 +173,7 @@ class Handler extends ExceptionHandler
 				'trace' => collect($e->getTrace())->map(function ($trace) {
 					return Arr::except($trace, ['args']);
 				})->all(),
-				'previous_exception' => $e->getPrevious() ? $this->convertExceptionToArray($e->getPrevious()) : null,
+				'previous_exception' => $e->getPrevious() !== null ? $this->convertExceptionToArray($e->getPrevious()) : null,
 			] : [
 				'message' => $this->isHttpException($e) ? $e->getMessage() : 'Server Error',
 				'exception' => class_basename($e),
@@ -216,6 +218,13 @@ class Handler extends ExceptionHandler
 		} while ($e = $e->getPrevious());
 	}
 
+	/**
+	 * @param \Throwable $e
+	 *
+	 * @return int
+	 *
+	 * @phpstan-return int<0,7>
+	 */
 	public static function getLogSeverity(\Throwable $e): int
 	{
 		return array_key_exists(get_class($e), self::EXCEPTION2SEVERITY) ?
@@ -319,7 +328,10 @@ class Handler extends ExceptionHandler
 
 		// Always add the most inner frame
 		$result[] = new BacktraceRecord(
-			$file, $line, $class, $function
+			$file,
+			$line,
+			$class,
+			$function
 		);
 
 		// If this frame is part of our own code, we are done.
@@ -352,7 +364,10 @@ class Handler extends ExceptionHandler
 		}
 
 		$result[] = new BacktraceRecord(
-			$file, $line, $class, $function
+			$file,
+			$line,
+			$class,
+			$function
 		);
 
 		return $result;

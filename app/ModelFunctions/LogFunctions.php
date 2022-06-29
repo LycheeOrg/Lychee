@@ -11,7 +11,7 @@ class LogFunctions extends AbstractLogger
 	/**
 	 * We check if a message is understandable as a string.
 	 */
-	private function is_stringable($in): bool
+	private function is_stringable(mixed $in): bool
 	{
 		return !is_array($in) && (!is_object($in) || method_exists($in, '__toString'));
 	}
@@ -19,7 +19,7 @@ class LogFunctions extends AbstractLogger
 	/**
 	 * Interpolates context values into the message placeholders.
 	 */
-	private function interpolate($message, array $context = []): string
+	private function interpolate(string $message, array $context = []): string
 	{
 		// build a replacement array with braces around the context keys
 		$replace = [];

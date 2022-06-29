@@ -118,7 +118,7 @@ return [
 	|
 	*/
 
-	'db_log_sql' => env('DB_LOG_SQL', false),
+	'db_log_sql' => (bool) env('DB_LOG_SQL', false),
 
 	/*
 	|--------------------------------------------------------------------------

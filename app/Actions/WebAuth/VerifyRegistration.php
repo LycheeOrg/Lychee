@@ -20,8 +20,9 @@ class VerifyRegistration
 		$user = AccessControl::user();
 
 		// okay.
+		/** @var false|\Webauthn\PublicKeyCredentialSource */
 		$credential = WebAuthn::validateAttestation($data, $user);
-		if ($credential) {
+		if ($credential !== false) {
 			$user->addCredential($credential);
 		} else {
 			throw new UnauthorizedException('Provided credentials are insufficient');

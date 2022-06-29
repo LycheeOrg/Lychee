@@ -3,6 +3,7 @@
 namespace App\Image;
 
 use App\Exceptions\MediaFileOperationException;
+use function Safe\fopen;
 
 /**
  * Class TemporaryLocalFile.
@@ -40,7 +41,6 @@ class TemporaryLocalFile extends NativeLocalFile
 		$lastException = null;
 		$retryCounter = 5;
 		do {
-			$success = true;
 			try {
 				$tempFilePath = sys_get_temp_dir() .
 					DIRECTORY_SEPARATOR .
@@ -48,13 +48,13 @@ class TemporaryLocalFile extends NativeLocalFile
 					strtr(base64_encode(random_bytes(12)), '+/', '-_') .
 					$fileExtension;
 				$retryCounter--;
-				$this->stream = \Safe\fopen($tempFilePath, 'x+b');
+				$this->stream = fopen($tempFilePath, 'x+b');
 			} catch (\ErrorException|\Exception $e) {
-				$success = false;
+				$tempFilePath = null;
 				$lastException = $e;
 			}
-		} while (!$success && $retryCounter > 0);
-		if (!$success) {
+		} while ($tempFilePath === null && $retryCounter > 0);
+		if ($tempFilePath === null) {
 			throw new MediaFileOperationException('unable to create temporary file', $lastException);
 		}
 		parent::__construct($tempFilePath);

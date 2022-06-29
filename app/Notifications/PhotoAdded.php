@@ -27,7 +27,7 @@ class PhotoAdded extends Notification
 	 *
 	 * @param mixed $notifiable
 	 *
-	 * @return array
+	 * @return array<string>
 	 */
 	public function via($notifiable)
 	{
@@ -39,7 +39,7 @@ class PhotoAdded extends Notification
 	 *
 	 * @param mixed $notifiable
 	 *
-	 * @return array
+	 * @return array<string,string>
 	 */
 	public function toArray($notifiable)
 	{

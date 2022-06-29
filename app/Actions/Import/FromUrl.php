@@ -14,6 +14,10 @@ use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Support\Collection;
+use Safe\Exceptions\InfoException;
+use function Safe\ini_get;
+use function Safe\parse_url;
+use function Safe\set_time_limit;
 
 class FromUrl
 {
@@ -48,13 +52,17 @@ class FromUrl
 		$exceptions = [];
 		$create = new Create(new ImportMode(
 			true,
-			Configs::get_value('skip_duplicates', '0') === '1'
+			Configs::getValueAsBool('skip_duplicates')
 		));
 
 		foreach ($urls as $url) {
 			try {
 				// Reset the execution timeout for every iteration.
-				set_time_limit(ini_get('max_execution_time'));
+				try {
+					set_time_limit((int) ini_get('max_execution_time'));
+				} catch (InfoException) {
+					// Silently do nothing, if `set_time_limit` is denied.
+				}
 
 				$path = parse_url($url, PHP_URL_PATH);
 				$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
