@@ -53,7 +53,9 @@ class Sync extends Command
 				Configs::getValueAsString('skip_duplicates')
 			);
 		} catch (ConfigurationKeyMissingException) {
-			// This is necessary other wise we can't even run Composer install
+			// Catching this exception is necessary as artisan package:discover
+			// is called after each composer installation/update and artisan
+			// tries to instantiate every command.
 			$this->signature = sprintf($this->signature, '0', '0', '0');
 		}
 		parent::__construct();
