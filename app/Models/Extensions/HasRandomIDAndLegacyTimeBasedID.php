@@ -10,8 +10,8 @@ use App\Models\Configs;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\InvalidCastException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
+use function Safe\sprintf;
 
 /**
  * Trait HasTimeBasedID.
@@ -56,10 +56,10 @@ trait HasRandomIDAndLegacyTimeBasedID
 	 */
 	public function setAttribute($key, $value): mixed
 	{
-		if ($key == $this->getKeyName()) {
+		if ($key === $this->getKeyName()) {
 			throw new NotImplementedException('must not set primary key explicitly, primary key will be set on first insert');
 		}
-		if ($key == HasRandomID::LEGACY_ID_NAME) {
+		if ($key === HasRandomID::LEGACY_ID_NAME) {
 			throw new NotImplementedException('must not set legacy key explicitly, legacy key will be set on first insert');
 		}
 
@@ -70,7 +70,7 @@ trait HasRandomIDAndLegacyTimeBasedID
 	 * Performs the `INSERT` operation of the model.
 	 *
 	 * This method also tries to create a unique, time-based ID.
-	 * The method is mostly copied & pasted from {@link Model::performInsert()}
+	 * The method is mostly copied & pasted from {@link \Illuminate\Database\Eloquent\Model::performInsert()}
 	 * with adoptions regarding key generation.
 	 *
 	 * @param Builder $query
@@ -107,7 +107,7 @@ trait HasRandomIDAndLegacyTimeBasedID
 			} catch (QueryException $e) {
 				$lastException = $e;
 				$errorCode = $e->getCode();
-				if ($errorCode == 23000 || $errorCode == 23505) {
+				if ($errorCode === 23000 || $errorCode === 23505) {
 					// houston, we have a duplicate entry problem
 					// Our ids are based on current system time, so
 					// wait randomly up to 1s before retrying.
@@ -156,8 +156,8 @@ trait HasRandomIDAndLegacyTimeBasedID
 		}
 
 		if (
-			PHP_INT_MAX == 2147483647
-			|| Configs::get_value('force_32bit_ids', '0') === '1'
+			PHP_INT_MAX === 2147483647 ||
+			Configs::getValueAsBool('force_32bit_ids')
 		) {
 			// For 32-bit installations, we can only afford to store the
 			// full seconds in id.  The calling code needs to be able to

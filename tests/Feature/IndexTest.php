@@ -50,7 +50,7 @@ class IndexTest extends TestCase
 
 	public function testLandingPage(): void
 	{
-		$landing_on_off = Configs::get_value('landing_page_enable', '0');
+		$landing_on_off = Configs::getValue('landing_page_enable', '0');
 		Configs::set('landing_page_enable', 1);
 
 		$response = $this->get('/');

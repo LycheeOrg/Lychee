@@ -11,6 +11,8 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Safe\Exceptions\InfoException;
+use function Safe\set_time_limit;
 
 class ExifLens extends Command
 {
@@ -19,7 +21,7 @@ class ExifLens extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'lychee:exif_lens {from=0 : from which do we start} {nb=5 : generate exif data if missing} {tm=600 : timeout time requirement}';
+	protected $signature = 'lychee:exif_lens {offset=0 : from which do we start} {limit=5 : number of photos to generate exif data for} {tm=600 : timeout time requirement}';
 
 	/**
 	 * The console command description.
@@ -38,10 +40,15 @@ class ExifLens extends Command
 	public function handle(): int
 	{
 		try {
-			$argument = $this->argument('nb');
-			$from = $this->argument('from');
-			$timeout = $this->argument('tm');
-			set_time_limit($timeout);
+			$limit = (int) $this->argument('limit');
+			$offset = (int) $this->argument('offset');
+			$timeout = (int) $this->argument('tm');
+
+			try {
+				set_time_limit($timeout);
+			} catch (InfoException) {
+				// Silently do nothing, if `set_time_limit` is denied.
+			}
 
 			// we use lens because this is the one which is most likely to be empty.
 			$photos = Photo::with(['size_variants' => function (HasMany $r) {
@@ -49,16 +56,16 @@ class ExifLens extends Command
 			}])
 				->where('lens', '=', '')
 				->whereNotIn('type', MediaFile::SUPPORTED_VIDEO_MIME_TYPES)
-				->offset($from)
-				->limit($argument)
+				->offset($offset)
+				->limit($limit)
 				->get();
-			if (count($photos) == 0) {
+			if (count($photos) === 0) {
 				$this->line('No pictures requires EXIF updates.');
 
 				return -1;
 			}
 
-			$i = $from;
+			$i = $offset;
 			/** @var Photo $photo */
 			foreach ($photos as $photo) {
 				try {
@@ -69,31 +76,59 @@ class ExifLens extends Command
 						$photo->size_variants->getOriginal()->filesize = $localFile->getFilesize();
 						$updated = true;
 					}
-					if (empty($photo->iso) && !empty($info->iso)) {
+					if (
+						($photo->iso === null || $photo->iso === '') &&
+						$info->iso !== null &&
+						$info->iso !== ''
+					) {
 						$photo->iso = $info->iso;
 						$updated = true;
 					}
-					if (empty($photo->aperture) && !empty($info->aperture)) {
+					if (
+						($photo->aperture === null || $photo->aperture === '') &&
+						$info->aperture !== null &&
+						$info->aperture !== ''
+					) {
 						$photo->aperture = $info->aperture;
 						$updated = true;
 					}
-					if (empty($photo->make) && !empty($info->make)) {
+					if (
+						($photo->make === null || $photo->make === '') &&
+						$info->make !== null &&
+						$info->make !== ''
+					) {
 						$photo->make = $info->make;
 						$updated = true;
 					}
-					if (empty($photo->model) && !empty($info->model)) {
+					if (
+						($photo->model === null || $photo->model === '') &&
+						$info->model !== null &&
+						$info->model !== ''
+					) {
 						$photo->model = $info->model;
 						$updated = true;
 					}
-					if (empty($photo->lens) && !empty($info->lens)) {
+					if (
+						($photo->lens === null || $photo->lens === '') &&
+						$info->lens !== null &&
+						$info->lens !== ''
+					) {
 						$photo->lens = $info->lens;
 						$updated = true;
 					}
-					if (empty($photo->shutter) && !empty($info->shutter)) {
+					if (
+						($photo->shutter === null || $photo->shutter === '') &&
+						$info->shutter !== null &&
+						$info->shutter !== ''
+					) {
 						$photo->shutter = $info->shutter;
 						$updated = true;
 					}
-					if (empty($photo->focal) && !empty($info->focal)) {
+					if (
+						($photo->focal === null || $photo->focal === '') &&
+						$info->focal !== null &&
+						$info->focal !== ''
+					) {
 						$photo->focal = $info->focal;
 						$updated = true;
 					}

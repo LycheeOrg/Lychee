@@ -15,7 +15,7 @@ class FrameRefreshInSec extends Migration
 		Configs::where('key', 'Mod_Frame_refresh')
 			->update(
 				[
-					'value' => Configs::get_value('Mod_Frame_refresh') / 1000,
+					'value' => Configs::getValueAsInt('Mod_Frame_refresh') / 1000,
 				]
 			);
 	}
@@ -30,7 +30,7 @@ class FrameRefreshInSec extends Migration
 		Configs::where('key', 'Mod_Frame_refresh')
 			->update(
 				[
-					'value' => Configs::get_value('Mod_Frame_refresh') * 1000,
+					'value' => Configs::getValueAsInt('Mod_Frame_refresh') * 1000,
 				]
 			);
 	}

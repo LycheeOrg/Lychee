@@ -24,8 +24,8 @@ class AddStrategyParameters
 
 	public function __construct(?ImportMode $importMode = null)
 	{
-		$this->importMode = $importMode ?: new ImportMode(false,
-			Configs::get_value('skip_duplicates', '0') === '1'
+		$this->importMode = $importMode ?? new ImportMode(
+			false, Configs::getValueAsBool('skip_duplicates')
 		);
 	}
 }

@@ -44,7 +44,7 @@ class ConfigSanityCheck implements DiagnosticCheckInterface
 		if (!isset($settings['dropbox_key'])) {
 			$errors[]
 				= 'Warning: Dropbox import not working. No property for dropbox_key.';
-		} elseif ($settings['dropbox_key'] == '') {
+		} elseif ($settings['dropbox_key'] === '') {
 			$errors[]
 				= 'Warning: Dropbox import not working. dropbox_key is empty.';
 		}

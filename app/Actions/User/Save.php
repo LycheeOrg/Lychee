@@ -27,7 +27,7 @@ class Save
 		if (User::query()
 			->where('username', '=', $username)
 			->where('id', '!=', $user->id)
-			->count()
+			->count() !== 0
 		) {
 			throw new ConflictingPropertyException('Username already exists');
 		}

@@ -2,6 +2,9 @@
 
 namespace App\Actions\Install;
 
+use function Safe\ini_get;
+use function Safe\preg_match;
+
 class RequirementsChecker
 {
 	/**
@@ -44,7 +47,7 @@ class RequirementsChecker
 				case 'apache':
 					foreach ($requirement_ as $requirement) {
 						// if function doesn't exist we can't check apache modules
-						$hasModule = !function_exists('apache_get_modules') || in_array($requirement, apache_get_modules());
+						$hasModule = !function_exists('apache_get_modules') || in_array($requirement, apache_get_modules(), true);
 						$results['requirements'][$type][$requirement] = $hasModule;
 						$results['errors'] = $results['errors'] || !$hasModule;
 					}
@@ -66,7 +69,7 @@ class RequirementsChecker
 	 */
 	public function checkPHPVersion(?string $minPhpVersion = null): array
 	{
-		$minVersionPhp = $minPhpVersion ?: self::MIN_PHP_VERSION;
+		$minVersionPhp = $minPhpVersion ?? self::MIN_PHP_VERSION;
 		$currentPhpVersion = self::getPhpVersionInfo();
 		$supported = version_compare($currentPhpVersion['version'], $minVersionPhp) >= 0;
 
@@ -87,7 +90,7 @@ class RequirementsChecker
 	{
 		$disabled = explode(',', ini_get('disable_functions'));
 
-		return !in_array('exec', $disabled);
+		return !in_array('exec', $disabled, true);
 	}
 
 	/**

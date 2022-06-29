@@ -13,7 +13,7 @@ use Illuminate\Database\Query\Builder as BaseBuilder;
 /**
  * Class TagAlbum.
  *
- * @property string[] show_tags
+ * @property string[] $show_tags
  *
  * @method static TagAlbumBuilder query()                       Begin querying the model.
  * @method static TagAlbumBuilder with(array|string $relations) Begin querying the model with eager loading.
@@ -29,13 +29,16 @@ class TagAlbum extends BaseAlbum
 	 * only works properly, if it knows which attributes belong to the parent
 	 * class and which attributes belong to the child class.
 	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	protected $attributes = [
 		'id' => null,
 		'show_tags' => null,
 	];
 
+	/**
+	 * @var array<string, string>
+	 */
 	protected $casts = [
 		'min_taken_at' => 'datetime',
 		'max_taken_at' => 'datetime',

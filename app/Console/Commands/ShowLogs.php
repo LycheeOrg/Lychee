@@ -9,6 +9,7 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnexpectedException;
 use App\Models\Logs;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class ShowLogs extends Command
@@ -53,11 +54,11 @@ class ShowLogs extends Command
 	public function handle(): int
 	{
 		try {
-			$action = $this->argument('action');
+			$action = strval($this->argument('action'));
 			$n = (int) $this->argument('n');
 			$order = $this->argument('order');
 
-			if ($action == 'clean') {
+			if ($action === 'clean') {
 				Logs::query()->truncate();
 				$this->line($this->col->yellow('Log table has been emptied.'));
 
@@ -65,9 +66,9 @@ class ShowLogs extends Command
 			}
 			// we are in the show part but in the case where 'show' has not been defined.
 			// as a results arguments are shifted: n <- action, order <- n.
-			elseif ($action != 'show') {
+			elseif ($action !== 'show') {
 				$n = (int) $this->argument('action');
-				$order = $this->argument('n');
+				$order = strval($this->argument('n'));
 			}
 			$this->action_show($n, $order);
 
@@ -80,13 +81,14 @@ class ShowLogs extends Command
 	/**
 	 * @throws QueryBuilderException
 	 */
-	private function action_show($n, $order): void
+	private function action_show(int $n, string $order): void
 	{
-		$order = ($order == 'ASC' || $order == 'DESC') ? $order : 'DESC';
+		$order = ($order === 'ASC' || $order === 'DESC') ? $order : 'DESC';
 
-		if (Logs::query()->count() == 0) {
+		if (Logs::query()->count() === 0) {
 			$this->line($this->col->green('Everything looks fine, Lychee has not reported any problems!'));
 		} else {
+			/** @var Collection<Logs> $logs */
 			$logs = Logs::query()
 				->orderBy('id', $order)
 				->limit($n)
@@ -98,13 +100,13 @@ class ShowLogs extends Command
 					. ' -- '
 					. $this->col->blue($log->function)
 					. ' -- '
-					. $this->col->green($log->line)
+					. $this->col->green((string) $log->line)
 					. ' -- ' . $log->text);
 			}
 		}
 	}
 
-	private function color_type($type): string
+	private function color_type(string $type): string
 	{
 		return match ($type) {
 			'error  ' => $this->col->red($type),
