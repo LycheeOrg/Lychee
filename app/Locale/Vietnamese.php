@@ -88,6 +88,10 @@ final class Vietnamese implements Language
 			'DELETE_ALBUM_CONFIRMATION_1' => 'Bạn có chắc là bạn muốn xóa album này không',
 			'DELETE_ALBUM_CONFIRMATION_2' => 'và tất cả những hình ảnh chứa trong đó? Thao tác này sẽ không được phục hồi lại!',
 
+			'DELETE_TAG_ALBUM_QUESTION' => 'Delete Album',
+			'DELETE_TAG_ALBUM_CONFIRMATION_1' => 'Are you sure you want to delete the album',
+			'DELETE_TAG_ALBUM_CONFIRMATION_2' => '(any photos inside will not be deleted)? This action can\'t be undone!',
+
 			'DELETE_ALBUMS_QUESTION' => 'Xóa nhiều album và hình ảnh',
 			'KEEP_ALBUMS' => 'Giữ lại các album này',
 			'DELETE_ALBUMS_CONFIRMATION_1' => 'Bạn có chắc chắn là muốn xóa hết tất cả',
