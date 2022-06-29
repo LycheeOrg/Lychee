@@ -77,7 +77,11 @@ class PhotoController extends Controller
 	 */
 	public function getRandom(): Photo
 	{
-		return StarredAlbum::getInstance()->photos()->inRandomOrder()
+		// PHPStan does not understand that `firstOrFail` returns `Photo`, but assumes that it returns `Model`
+		// @phpstan-ignore-next-line
+		return StarredAlbum::getInstance()
+			->photos()
+			->inRandomOrder()
 			->firstOrFail();
 	}
 
@@ -124,7 +128,7 @@ class PhotoController extends Controller
 		// deleted
 		$create = new Create(new ImportMode(
 			true,
-			Configs::get_value('skip_duplicates', '0') === '1'
+			Configs::getValueAsBool('skip_duplicates')
 		));
 
 		return $create->add($copiedFile, $request->album());
@@ -241,7 +245,7 @@ class PhotoController extends Controller
 			// Avoid unnecessary DB request, when we access the album of a
 			// photo later (e.g. when a notification is sent).
 			$photo->setRelation('album', $album);
-			if ($album) {
+			if ($album !== null) {
 				$photo->owner_id = $album->owner_id;
 			}
 			$photo->save();

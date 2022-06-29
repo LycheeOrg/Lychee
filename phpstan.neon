@@ -1,0 +1,54 @@
+includes:
+	- vendor/nunomaduro/larastan/extension.neon
+	- vendor/lychee-org/phpstan-lychee/phpstan.neon
+
+parameters:
+	paths:
+		- app
+		- scripts
+	excludePaths:
+		- app/View/*
+		- app/Http/Livewire/*
+	ignoreErrors:
+		# bunch of false positives from Eloquent
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::insert\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::select\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::orderBy\(\)#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::where(Not)?(Null|In|Between|Exists|Column)?\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::delete\(\)#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::without\(\)#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::count\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::update\(\).#'
+		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::update\(\)#'
+		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::with(Only)?\(\)#'
+		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::getLft\(\).#'
+		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::getRgt\(\).#'
+		- '#Call to private method latest\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\HasMany<Illuminate\\Database\\Eloquent\\Model>#'
+		- '#Call to private method where(Not)?(Null|In|Exists|Column)?\(\) of parent class Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>.#'
+		- '#Call to protected method asDateTime\(\) of class Illuminate\\Database\\Eloquent\\Model.#'
+		- '#Dynamic call to static method Illuminate\\Http\\Request::validate\(\)#'
+
+		# Covariance - LSP princinple: https://en.wikipedia.org/wiki/Liskov_substitution_principle
+		- '#Return type \(Illuminate\\Support\\Carbon\|null\) of method App\\Models\\.*::asDateTime\(\) should be covariant with return type \(Illuminate\\Support\\Carbon\) of method Illuminate\\Database\\Eloquent\\Model::asDateTime\(\)#'
+		- '#Return type \(App\\Models\\Photo\) of method App\\Models\\Photo::replicate\(\) should be covariant with return type \(static\(.*\)\) of method Illuminate\\Database\\Eloquent\\Model::replicate\(\)#'
+		- '#Return type \(Illuminate\\Support\\Collection&iterable<App\\Contracts\\AbstractAlbum>\) of method App\\Http\\Requests\\Album\\.*::albums\(\) should be covariant with return type \(Illuminate\\Support\\Collection&iterable<App\\Models\\(Album|Extensions\\BaseAlbum)>\) of method App\\Http\\Requests\\Contracts\\HasAlbums<App\\Models\\(Album|Extensions\\BaseAlbum)>::albums\(\)#'
+		- '#Parameter \#1 \$column \(array<string>\|Closure\|Illuminate\\Database\\Query\\Expression\|string\) of method .* should be contravariant with parameter \$column \(array<int\|string, mixed>\|Closure\|Illuminate\\Database\\Query\\Expression\|string\) of method .*#'
+		- '#Parameter \#1 \$models \(array<.*>\) of method .*::initRelation\(\) should be contravariant with parameter \$models \(array\) of method .*::initRelation\(\)#'
+		- '#Parameter \#1 \$models \(array<.*>\) of method .*::match\(\) should be contravariant with parameter \$models \(array\) of method .*::match\(\)#'
+		- '#Parameter \#1 \$models \(array<.*>\) of method .*::addEagerConstraints\(\) should be contravariant with parameter \$models \(array\) of method .*::addEagerConstraints\(\)#'
+		- '#Parameter \#1 \$albums \(array<.*>\) of method .*::addEagerConstraints\(\) should be contravariant with parameter \$models \(array\) of method .*::addEagerConstraints\(\)#'
+
+		- '#Call to an undefined( static)? method Kalnoy\\Nestedset\\.*::(whereIn|select|join|leftJoin|orderBy|addSelect)\(\)#'
+		- '#Parameter .* of method .*::newEloquentBuilder\(\) should be contravariant with parameter \$query \(mixed\) of method Kalnoy\\Nestedset\\Node::newEloquentBuilder\(\)#'
+		- '#Call to an undefined method Geocoder\\Location::getDisplayName\(\)#'
+		- '#Call to an undefined method COM::getfolder\(\).#'
+		- '#Call to an undefined method League\\Flysystem\\FilesystemInterface::getAdapter\(\)#'
+
+		# https://github.com/thecodingmachine/safe/issues/283
+		- '#Parameter \#(1|2) \$.* of function Safe\\image.* expects (resource|GdImage), (GdImage|resource)?(\|resource)? given.#'
+
+		- '#Property .* \(App\\Models\\.*(\|null)?\) does not accept (Illuminate\\Database\\Eloquent\\Collection<Illuminate\\Database\\Eloquent\\Model>\|)?Illuminate\\Database\\Eloquent\\Model(\|null)?.#'
+		- '#Property .* \(Illuminate\\Database\\Eloquent\\Collection<App\\Models\\.*>\) does not accept Illuminate\\Database\\Eloquent\\Collection<Illuminate\\Database\\Eloquent\\Model>(\|Illuminate\\Database\\Eloquent\\Model)?.#'
+
+		# False positive as stub code for PHP has not yet been updated to 2nd parameter, see https://github.com/php/doc-en/issues/1529 and https://www.php.net/imagick.writeimagefile
+		- '#Method Imagick::writeImageFile\(\) invoked with 2 parameters, 1 required#'

@@ -5,6 +5,7 @@ namespace App\Image;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\Internal\InvalidConfigOption;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\MediaFileOperationException;
 use App\ModelFunctions\MOVFormat;
 use App\Models\Configs;
@@ -12,6 +13,7 @@ use FFMpeg\Exception\ExecutableNotFoundException;
 use FFMpeg\Exception\InvalidArgumentException;
 use FFMpeg\Exception\RuntimeException;
 use FFMpeg\FFMpeg;
+use FFMpeg\Media\Video;
 
 /**
  * Class GoogleMotionPictureHandler.
@@ -73,7 +75,12 @@ class GoogleMotionPictureHandler extends VideoHandler
 			$file->close();
 
 			$ffmpeg = FFMpeg::create();
-			$this->video = $ffmpeg->open($this->workingCopy->getRealPath());
+			$audioOrVideo = $ffmpeg->open($this->workingCopy->getRealPath());
+			if ($audioOrVideo instanceof Video) {
+				$this->video = $audioOrVideo;
+			} else {
+				throw new MediaFileOperationException('No video stream found');
+			}
 		} catch (ExecutableNotFoundException $e) {
 			throw new ExternalComponentMissingException('FFmpeg not found', $e);
 		} catch (InvalidArgumentException $e) {
@@ -102,7 +109,7 @@ class GoogleMotionPictureHandler extends VideoHandler
 		} catch (RuntimeException $e) {
 			throw new MediaFileOperationException('Could not save video stream from Google Motion Picture', $e);
 		} catch (InvalidArgumentException $e) {
-			assert(false, new \AssertionError('setAdditionalParameters failed', $e));
+			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 	}
 }

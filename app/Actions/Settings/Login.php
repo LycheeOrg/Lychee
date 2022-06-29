@@ -96,7 +96,7 @@ class Login
 				throw new UnauthorizedException('Account is locked');
 			}
 
-			if (User::query()->where('username', '=', $username)->where('id', '!=', $id)->count()) {
+			if (User::query()->where('username', '=', $username)->where('id', '!=', $id)->count() !== 0) {
 				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change their identity to ' . $username . ' from ' . $ip);
 				throw new ConflictingPropertyException('Username already exists.');
 			}

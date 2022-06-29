@@ -296,11 +296,11 @@ abstract class BaseApiRequest extends FormRequest
 	 * Opposed to trivial type-casting the conversion also correctly recognizes
 	 * the inputs `0`, `1`, `'0'`, `'1'`, `'true'` and `'false'`.
 	 *
-	 * @param $value
+	 * @param mixed $value
 	 *
 	 * @return bool
 	 */
-	protected static function toBoolean($value): bool
+	protected static function toBoolean(mixed $value): bool
 	{
 		return filter_var($value, FILTER_VALIDATE_BOOLEAN);
 	}

@@ -33,7 +33,7 @@ abstract class SizeVariantBaseNamingStrategy extends SizeVariantNamingStrategy
 			return self::THUMB_EXTENSION;
 		}
 
-		if (empty($this->extension)) {
+		if ($this->extension === '') {
 			throw new MissingValueException('extension');
 		}
 

@@ -13,6 +13,12 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Collection;
+use Safe\Exceptions\InfoException;
+use function Safe\fclose;
+use function Safe\fopen;
+use function Safe\ini_get;
+use function Safe\set_time_limit;
+use function Safe\stream_copy_to_stream;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\ZipStream;
@@ -133,7 +139,7 @@ class Archive
 			);
 			$response->headers->set('Content-Type', $photo->type);
 			$response->headers->set('Content-Disposition', $disposition);
-			$response->headers->set('Content-Length', $archiveFileInfo->getFile()->getFilesize());
+			$response->headers->set('Content-Length', strval($archiveFileInfo->getFile()->getFilesize()));
 			// Note: Using insecure hashing algorithm is fine here.
 			// The ETag header must only be different for different size variants
 			// Pre-image resistance and collision robustness is not required.
@@ -168,7 +174,7 @@ class Archive
 	{
 		$responseGenerator = function () use ($variant, $photos) {
 			$options = new \ZipStream\Option\Archive();
-			$options->setEnableZip64(Configs::get_value('zip64', '1') === '1');
+			$options->setEnableZip64(Configs::getValueAsBool('zip64'));
 			$zip = new ZipStream(null, $options);
 
 			// We first need to scan the whole array of files to avoid
@@ -263,7 +269,11 @@ class Archive
 				$zip->addFileFromStream($filename, $archiveFileInfo->getFile()->read());
 				$archiveFileInfo->getFile()->close();
 				// Reset the execution timeout for every iteration.
-				set_time_limit(ini_get('max_execution_time'));
+				try {
+					set_time_limit((int) ini_get('max_execution_time'));
+				} catch (InfoException) {
+					// Silently do nothing, if `set_time_limit` is denied.
+				}
 			}
 
 			// finish the zip stream
@@ -312,7 +322,8 @@ class Archive
 	 */
 	protected function extractFileInfo(Photo $photo, string $variant): ArchiveFileInfo
 	{
-		$baseFilename = str_replace($this->badChars, '', $photo->title) ?: 'Untitled';
+		$validFilename = str_replace($this->badChars, '', $photo->title);
+		$baseFilename = $validFilename !== '' ? $validFilename : 'Untitled';
 
 		if ($variant === self::LIVEPHOTOVIDEO) {
 			$sourceFile = new FlysystemFile(SizeVariantNamingStrategy::getImageDisk(), $photo->live_photo_short_path);
@@ -320,7 +331,7 @@ class Archive
 		} elseif (array_key_exists($variant, self::VARIANT2VARIANT)) {
 			$sv = $photo->size_variants->getSizeVariant(self::VARIANT2VARIANT[$variant]);
 			$baseFilenameAddon = '';
-			if ($sv) {
+			if ($sv !== null) {
 				$sourceFile = $sv->getFile();
 				// The filename of the original size variant shall get no
 				// particular suffix but remain as is.

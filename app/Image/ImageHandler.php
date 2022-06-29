@@ -4,6 +4,7 @@ namespace App\Image;
 
 use App\DTO\ImageDimension;
 use App\Exceptions\Handler;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
 use App\Models\Configs;
 
@@ -39,7 +40,7 @@ class ImageHandler extends BaseImageHandler
 
 	public function __clone()
 	{
-		if ($this->engine) {
+		if ($this->engine !== null) {
 			$this->engine = clone $this->engine;
 		}
 	}
@@ -54,10 +55,15 @@ class ImageHandler extends BaseImageHandler
 
 		foreach ($this->engineClasses as $engineClass) {
 			try {
-				$this->engine = new $engineClass($this->compressionQuality);
-				$this->engine->load($file);
+				$engine = new $engineClass($this->compressionQuality);
+				if ($engine instanceof ImageHandlerInterface) {
+					$this->engine = $engine;
+					$this->engine->load($file);
 
-				return;
+					return;
+				} else {
+					throw new LycheeLogicException('$engine is not an instance of ImageHandlerInterface');
+				}
 			} catch (\Throwable $e) {
 				// Report the error to the log, but don't fail yet.
 				Handler::reportSafely($e);
@@ -123,6 +129,6 @@ class ImageHandler extends BaseImageHandler
 	 */
 	public function isLoaded(): bool
 	{
-		return $this->engine && $this->engine->isLoaded();
+		return $this->engine !== null && $this->engine->isLoaded();
 	}
 }

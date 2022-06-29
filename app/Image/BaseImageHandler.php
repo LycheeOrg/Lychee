@@ -24,7 +24,7 @@ abstract class BaseImageHandler implements ImageHandlerInterface
 	public function __construct(int $compressionQuality = self::USER_DEFINED_COMPRESSION_QUALITY)
 	{
 		$this->compressionQuality = $compressionQuality === self::USER_DEFINED_COMPRESSION_QUALITY ?
-			Configs::get_value('compression_quality', self::DEFAULT_COMPRESSION_QUALITY) :
+			Configs::getValueAsInt('compression_quality') :
 			$compressionQuality;
 	}
 
@@ -52,7 +52,7 @@ abstract class BaseImageHandler implements ImageHandlerInterface
 	 */
 	protected static function applyLosslessOptimizationConditionally(MediaFile $file, bool $collectStatistics = false): ?StreamStat
 	{
-		if (Configs::get_value('lossless_optimization', '0') == '1') {
+		if (Configs::getValueAsBool('lossless_optimization')) {
 			if ($file instanceof NativeLocalFile) {
 				ImageOptimizer::optimize($file->getRealPath());
 

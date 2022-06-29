@@ -95,7 +95,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			} elseif ($this->photo->isVideo()) {
 				$videoHandler = new VideoHandler();
 				$videoHandler->load($this->sourceFile);
-				$position = empty($this->photo->aperture) ? 0.0 : floatval($this->photo->aperture) / 2;
+				$position = is_numeric($this->photo->aperture) ? floatval($this->photo->aperture) / 2 : 0.0;
 				$this->sourceImage = $videoHandler->extractFrame($position);
 			} else {
 				// If we have a raw file, we try to treat it as an image, as
@@ -133,7 +133,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			// If we have a temporary video file from a Google Motion Picture,
 			// we must move the preliminary extracted video file next to the
 			// final target file
-			if ($tmpVideoFile) {
+			if ($tmpVideoFile !== null) {
 				$videoTargetPath =
 					pathinfo($targetFile->getRelativePath(), PATHINFO_DIRNAME) .
 					'/' .
@@ -249,7 +249,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			} else {
 				// Nothing to do for non-JPEGs or correctly oriented photos.
 				// TODO: Why do we only normalize JPEG? Should it be sufficient that we have a successfully loaded source image?
-				$shallNormalize = $this->sourceImage && $this->photo->type === 'image/jpeg' && $this->parameters->exifInfo->orientation !== 1;
+				$shallNormalize = $this->sourceImage !== null && $this->photo->type === 'image/jpeg' && $this->parameters->exifInfo->orientation !== 1;
 
 				if ($shallNormalize) {
 					$streamStat = $this->sourceImage->save($targetFile, true);

@@ -15,6 +15,7 @@ use App\Contracts\LycheeException;
 use App\Exceptions\ExternalComponentFailedException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\MediaFileOperationException;
@@ -28,6 +29,7 @@ use App\SmartAlbums\BaseSmartAlbum;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\StarredAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use function Safe\substr;
 
 class Create
 {
@@ -86,7 +88,7 @@ class Create
 		 *  - a photo which is the partner of an already existing video
 		 *  - a video which is the partner of an already existing photo
 		 */
-		if ($duplicate) {
+		if ($duplicate !== null) {
 			$strategy = new AddDuplicateStrategy($this->strategyParameters, $duplicate);
 		} else {
 			if ($livePartner === null) {
@@ -105,7 +107,7 @@ class Create
 
 		$photo = $strategy->do();
 
-		if ($photo->album_id) {
+		if ($photo->album_id !== null) {
 			$notify = new Notify();
 			$notify->do($photo);
 		}
@@ -130,7 +132,10 @@ class Create
 		$this->strategyParameters->exifInfo = Extractor::createFromFile($sourceFile);
 
 		// Use basename of file if IPTC title missing
-		if (empty($this->strategyParameters->exifInfo->title)) {
+		if (
+			$this->strategyParameters->exifInfo->title === null ||
+			$this->strategyParameters->exifInfo->title === ''
+		) {
 			$this->strategyParameters->exifInfo->title = substr($sourceFile->getOriginalBasename(), 0, 98);
 		}
 	}
@@ -154,12 +159,14 @@ class Create
 	 * @throws QueryBuilderException
 	 */
 	protected function findLivePartner(
-		?string $contentID, string $mimeType, ?Album $album
+		?string $contentID,
+		string $mimeType,
+		?Album $album
 	): ?Photo {
 		try {
 			$livePartner = null;
 			// find a potential partner which has the same content id
-			if ($contentID) {
+			if ($contentID !== null) {
 				/** @var Photo|null $livePartner */
 				$livePartner = Photo::query()
 					->where('live_photo_content_id', '=', $contentID)
@@ -179,7 +186,7 @@ class Create
 
 			return $livePartner;
 		} catch (IllegalOrderOfOperationException $e) {
-			assert(false, new \AssertionError('IllegalOrderOfOperationException must not be thrown', $e));
+			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 	}
 
@@ -198,7 +205,7 @@ class Create
 	 *
 	 * @throws InvalidPropertyException
 	 */
-	protected function initParentAlbum(?AbstractAlbum $album = null)
+	protected function initParentAlbum(?AbstractAlbum $album = null): void
 	{
 		if ($album === null) {
 			$this->strategyParameters->album = null;

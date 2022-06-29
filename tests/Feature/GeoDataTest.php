@@ -51,7 +51,7 @@ class GeoDataTest extends TestCase
 	public function testGeo(): void
 	{
 		// save initial value
-		$map_display_value = Configs::get_value('map_display');
+		$map_display_value = Configs::getValue('map_display');
 
 		try {
 			$photoResponse = $this->photos_tests->upload(
@@ -123,12 +123,12 @@ class GeoDataTest extends TestCase
 
 			// set to 0
 			Configs::set('map_display', '0');
-			static::assertEquals('0', Configs::get_value('map_display'));
+			static::assertEquals('0', Configs::getValue('map_display'));
 			$this->albums_tests->AlbumsGetPositionDataFull(); // we need to fix this
 
 			// set to 1
 			Configs::set('map_display', '1');
-			static::assertEquals('1', Configs::get_value('map_display'));
+			static::assertEquals('1', Configs::getValue('map_display'));
 			$positionDataResponse = $this->albums_tests->AlbumsGetPositionDataFull();
 			$positionData = static::convertJsonToObject($positionDataResponse);
 			static::assertObjectHasAttribute('photos', $positionData);
@@ -137,12 +137,12 @@ class GeoDataTest extends TestCase
 
 			// set to 0
 			Configs::set('map_display', '0');
-			static::assertEquals('0', Configs::get_value('map_display'));
+			static::assertEquals('0', Configs::getValue('map_display'));
 			$this->albums_tests->AlbumGetPositionDataFull($albumID); // we need to fix this
 
 			// set to 1
 			Configs::set('map_display', '1');
-			static::assertEquals('1', Configs::get_value('map_display'));
+			static::assertEquals('1', Configs::getValue('map_display'));
 			$positionDataResponse = $this->albums_tests->AlbumGetPositionDataFull($albumID);
 			$positionData = static::convertJsonToObject($positionDataResponse);
 			static::assertObjectHasAttribute('photos', $positionData);

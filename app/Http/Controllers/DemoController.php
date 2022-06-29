@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use function Safe\json_encode;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 class DemoController extends Controller
@@ -33,7 +34,7 @@ class DemoController extends Controller
 	 */
 	public function js()
 	{
-		if (Configs::get_value('gen_demo_js', '0') != '1') {
+		if (!Configs::getValueAsBool('gen_demo_js')) {
 			return redirect()->route('home');
 		}
 

@@ -44,12 +44,12 @@ class RSSTest extends TestCase
 	public function testRSS0(): void
 	{
 		// save initial value
-		$init_config_value = Configs::get_value('rss_enable');
+		$init_config_value = Configs::getValue('rss_enable');
 
 		try {
 			// set to 0
 			Configs::set('rss_enable', '0');
-			static::assertEquals('0', Configs::get_value('rss_enable'));
+			static::assertEquals('0', Configs::getValue('rss_enable'));
 
 			// check redirection
 			$response = $this->get('/feed');
@@ -62,14 +62,14 @@ class RSSTest extends TestCase
 	public function testRSS1(): void
 	{
 		// save initial value
-		$init_config_value = Configs::get_value('rss_enable');
-		$init_full_photo = Configs::get_value('full_photo');
+		$init_config_value = Configs::getValue('rss_enable');
+		$init_full_photo = Configs::getValue('full_photo');
 
 		try {
 			// set to 0
 			Configs::set('rss_enable', '1');
 			Configs::set('full_photo', '0');
-			static::assertEquals('1', Configs::get_value('rss_enable'));
+			static::assertEquals('1', Configs::getValue('rss_enable'));
 
 			// check redirection
 			$response = $this->get('/feed');

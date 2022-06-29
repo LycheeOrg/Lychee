@@ -2,11 +2,12 @@
 
 namespace App\ModelFunctions;
 
+use App\Exceptions\Internal\LycheeAssertionError;
 use FFMpeg\Exception\InvalidArgumentException;
 use FFMpeg\Format\Video\DefaultVideo;
 
 /**
- * Format class for FFmpeg to store a single video stream in a Quicktime (MOV) container.
+ * Format class for FFMpeg to store a single video stream in a Quicktime (MOV) container.
  */
 class MOVFormat extends DefaultVideo
 {
@@ -21,7 +22,7 @@ class MOVFormat extends DefaultVideo
 				->setAudioCodec(self::FFMPEG_AUDIO_CODEC_ID)
 				->setVideoCodec(self::FFMPEG_VIDEO_CODEC_ID);
 		} catch (InvalidArgumentException $e) {
-			assert(false, new \AssertionError('copy codec must always be supported', $e));
+			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 	}
 

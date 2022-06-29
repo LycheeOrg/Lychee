@@ -18,7 +18,7 @@ class ImagickHandler extends BaseImageHandler
 
 	public function __clone()
 	{
-		if ($this->imImage) {
+		if ($this->imImage !== null) {
 			$this->imImage = clone $this->imImage;
 		}
 	}
@@ -71,7 +71,7 @@ class ImagickHandler extends BaseImageHandler
 	 */
 	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStat
 	{
-		if (!$this->imImage) {
+		if ($this->imImage === null) {
 			throw new MediaFileOperationException('No image loaded');
 		}
 		try {
@@ -80,7 +80,7 @@ class ImagickHandler extends BaseImageHandler
 			// Remove metadata to save some bytes
 			$this->imImage->stripImage();
 			// Re-add  color profiles
-			if (!empty($profiles)) {
+			if (key_exists('icc', $profiles)) {
 				$this->imImage->profileImage('icc', $profiles['icc']);
 			}
 
@@ -93,7 +93,7 @@ class ImagickHandler extends BaseImageHandler
 			$file->close();
 			$inMemoryBuffer->close();
 
-			return parent::applyLosslessOptimizationConditionally($file, $collectStatistics) ?: $streamStat;
+			return parent::applyLosslessOptimizationConditionally($file, $collectStatistics) ?? $streamStat;
 		} catch (ImagickException $e) {
 			throw new MediaFileOperationException('Failed to save image', $e);
 		}
@@ -114,6 +114,7 @@ class ImagickHandler extends BaseImageHandler
 			$needsFlop = match ($orientation) {
 				Imagick::ORIENTATION_TOPRIGHT, Imagick::ORIENTATION_BOTTOMLEFT, Imagick::ORIENTATION_LEFTTOP, Imagick::ORIENTATION_RIGHTBOTTOM => true,
 				Imagick::ORIENTATION_TOPLEFT, Imagick::ORIENTATION_BOTTOMRIGHT, Imagick::ORIENTATION_RIGHTTOP, Imagick::ORIENTATION_LEFTBOTTOM, Imagick::ORIENTATION_UNDEFINED => false,
+				default => throw new ImageProcessingException('Image orientation out of range')
 			};
 
 			$angle = match ($orientation) {
@@ -121,6 +122,7 @@ class ImagickHandler extends BaseImageHandler
 				Imagick::ORIENTATION_BOTTOMRIGHT, Imagick::ORIENTATION_BOTTOMLEFT => 180,
 				Imagick::ORIENTATION_LEFTTOP, Imagick::ORIENTATION_LEFTBOTTOM => -90,
 				Imagick::ORIENTATION_RIGHTTOP, Imagick::ORIENTATION_RIGHTBOTTOM => 90,
+				default => throw new ImageProcessingException('Image orientation out of range')
 			};
 
 			if ($needsFlop && !$this->imImage->flopImage()) {

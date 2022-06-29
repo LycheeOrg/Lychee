@@ -21,7 +21,7 @@ trait RequiresImageHandler
 
 	protected function setUpRequiresImagick(): void
 	{
-		$this->hasImagickInit = (int) Configs::get_value(TestCase::CONFIG_HAS_IMAGICK, 1);
+		$this->hasImagickInit = Configs::getValueAsInt(TestCase::CONFIG_HAS_IMAGICK);
 		Configs::set(TestCase::CONFIG_HAS_IMAGICK, 1);
 
 		if (!Configs::hasImagick()) {
@@ -31,7 +31,7 @@ trait RequiresImageHandler
 
 	protected function setUpRequiresGD(): void
 	{
-		$this->hasImagickInit = (int) Configs::get_value(TestCase::CONFIG_HAS_IMAGICK, 1);
+		$this->hasImagickInit = Configs::getValueAsInt(TestCase::CONFIG_HAS_IMAGICK);
 		Configs::set(TestCase::CONFIG_HAS_IMAGICK, 0);
 
 		if (Configs::hasImagick()) {

@@ -7,6 +7,7 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use League\Flysystem\Adapter\Local as LocalAdapter;
 use League\Flysystem\Exception as FlyException;
+use function Safe\fclose;
 
 /**
  * Class FlysystemFile.
@@ -36,11 +37,11 @@ class FlysystemFile extends MediaFile
 	{
 		try {
 			if (is_resource($this->stream)) {
-				\Safe\fclose($this->stream);
+				fclose($this->stream);
 			}
 
 			$this->stream = $this->disk->readStream($this->relativePath);
-			if ($this->stream === false || !is_resource($this->stream)) {
+			if (!is_resource($this->stream)) {
 				$this->stream = null;
 				throw new FlyException('Filesystem::readStream failed');
 			}
@@ -92,7 +93,7 @@ class FlysystemFile extends MediaFile
 	 */
 	public function move(string $newPath): void
 	{
-		if ($this->disk->move($this->relativePath, $newPath) === false) {
+		if (!$this->disk->move($this->relativePath, $newPath)) {
 			throw new MediaFileOperationException('could not move file');
 		}
 		$this->relativePath = $newPath;
@@ -147,7 +148,7 @@ class FlysystemFile extends MediaFile
 	{
 		$ext = pathinfo($this->relativePath, PATHINFO_EXTENSION);
 
-		return $ext ? '.' . $ext : '';
+		return $ext !== '' ? '.' . $ext : '';
 	}
 
 	/**

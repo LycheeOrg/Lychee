@@ -17,13 +17,10 @@ class AlbumIDListRule implements Rule
 			return false;
 		}
 		$albumIDs = explode(',', $value);
-		if (!is_array($albumIDs) || count($albumIDs) === 0) {
-			return false;
-		}
 		$idRule = new AlbumIDRule(false);
 		$success = true;
 		foreach ($albumIDs as $albumID) {
-			$success &= $idRule->passes('', $albumID);
+			$success = $success && $idRule->passes('', $albumID);
 		}
 
 		return $success;

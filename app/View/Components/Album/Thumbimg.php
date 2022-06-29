@@ -37,11 +37,11 @@ class Thumbimg extends Component
 	public function render()
 	{
 		// TODO: Don't hardcode paths
-		if ($this->thumb == 'uploads/thumb/' && $this->isVideo) {
+		if ($this->thumb === 'uploads/thumb/' && $this->isVideo) {
 			return view('components.album.thumb-play');
 		}
 		// TODO: Don't query the MIME type directly; use the methods of Photo or MediaFile
-		if ($this->thumb == 'uploads/thumb/' && Str::contains($this->type, 'raw')) {
+		if ($this->thumb === 'uploads/thumb/' && Str::contains($this->type, 'raw')) {
 			return view('components.album.thumb-placeholder');
 		}
 

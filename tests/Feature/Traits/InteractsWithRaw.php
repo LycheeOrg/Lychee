@@ -10,7 +10,7 @@ trait InteractsWithRaw
 {
 	public static function getAcceptedRawFormats(): string
 	{
-		return Configs::get_value(TestCase::CONFIG_RAW_FORMATS, '');
+		return Configs::getValueAsString(TestCase::CONFIG_RAW_FORMATS);
 	}
 
 	public static function setAcceptedRawFormats(string $acceptedRawFormats): void

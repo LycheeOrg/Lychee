@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Str;
+use function Safe\sprintf;
 
 trait HasBidirectionalRelationships
 {
@@ -25,8 +26,7 @@ trait HasBidirectionalRelationships
 	{
 		// Run original code from HasAttributes::getRelationshipFromMethod
 
-		/** @var Relation $relation */
-		$relation = $this->$method();
+		$relation = $this->$method(); // @phpstan-ignore-line, PhpStan does not like variadic calls
 
 		if (!$relation instanceof Relation) {
 			if (is_null($relation)) {
@@ -74,14 +74,18 @@ trait HasBidirectionalRelationships
 	{
 		$instance = $this->newRelatedInstance($related);
 
-		$foreignKey = $foreignKey ?: $this->getForeignKey();
+		$foreignKey = $foreignKey ?? $this->getForeignKey();
 
-		$localKey = $localKey ?: $this->getKeyName();
+		$localKey = $localKey ?? $this->getKeyName();
 
-		$foreignMethodName = $foreignMethodName ?: $this->getForeignProperty();
+		$foreignMethodName = $foreignMethodName ?? $this->getForeignProperty();
 
 		return $this->newHasManyBidirectionally(
-			$instance->newQuery(), $this, $instance->getTable() . '.' . $foreignKey, $localKey, $foreignMethodName
+			$instance->newQuery(),
+			$this,
+			$instance->getTable() . '.' . $foreignKey,
+			$localKey,
+			$foreignMethodName
 		);
 	}
 

@@ -47,7 +47,7 @@ class DuplicatePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlb
 			$values[HasPhotos::PHOTO_IDS_ATTRIBUTE]
 		);
 		$targetAlbumID = $values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE];
-		$this->album = empty($targetAlbumID) ?
+		$this->album = $targetAlbumID === null ?
 			null :
 			Album::query()->findOrFail($targetAlbumID);
 	}

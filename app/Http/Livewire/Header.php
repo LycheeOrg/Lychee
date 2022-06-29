@@ -4,7 +4,6 @@ namespace App\Http\Livewire;
 
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Support\Facades\Config;
 use Livewire\Component;
 
 class Header extends Component
@@ -14,8 +13,8 @@ class Header extends Component
 
 	public function mount(?string $mode = 'albums', $album = null)
 	{
-		$this->title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
-		if ($album != null) {
+		$this->title = Configs::getValueAsString('site_title');
+		if ($album !== null) {
 			$this->title = $album->title;
 		}
 		$this->mode = $mode ?? 'albums';
@@ -29,4 +28,3 @@ class Header extends Component
 		return view('livewire.header');
 	}
 }
-

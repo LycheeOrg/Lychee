@@ -4,6 +4,16 @@ namespace App\Image;
 
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
+use function Safe\filemtime;
+use function Safe\filesize;
+use function Safe\fopen;
+use function Safe\ftruncate;
+use function Safe\mime_content_type;
+use function Safe\realpath;
+use function Safe\rename;
+use function Safe\rewind;
+use function Safe\stream_copy_to_stream;
+use function Safe\unlink;
 
 /**
  * Class NativeLocalFile.
@@ -34,9 +44,9 @@ class NativeLocalFile extends MediaFile
 	{
 		try {
 			if (is_resource($this->stream)) {
-				\Safe\rewind($this->stream);
+				rewind($this->stream);
 			} else {
-				$this->stream = \Safe\fopen($this->getPath(), 'rb');
+				$this->stream = fopen($this->getPath(), 'rb');
 			}
 
 			return $this->stream;
@@ -64,13 +74,13 @@ class NativeLocalFile extends MediaFile
 			$streamStat = $collectStatistics ? static::appendStatFilter($stream) : null;
 
 			if (is_resource($this->stream)) {
-				\Safe\ftruncate($this->stream, 0);
-				\Safe\rewind($this->stream);
+				ftruncate($this->stream, 0);
+				rewind($this->stream);
 			} else {
-				$this->stream = \Safe\fopen($this->getPath(), 'w+b');
+				$this->stream = fopen($this->getPath(), 'w+b');
 			}
 			$this->cachedMimeType = null;
-			\Safe\stream_copy_to_stream($stream, $this->stream);
+			stream_copy_to_stream($stream, $this->stream);
 			$this->cachedMimeType = $mimeType;
 			// File statistics info (filesize, access mode, etc.) are cached
 			// by PHP to avoid costly I/O calls.
@@ -94,7 +104,7 @@ class NativeLocalFile extends MediaFile
 			$this->close();
 			// `is_file` returns false for links, so we must check separately with `is_link`
 			if (is_link($this->path) || is_file($this->path)) {
-				\Safe\unlink($this->path);
+				unlink($this->path);
 			}
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
@@ -107,7 +117,7 @@ class NativeLocalFile extends MediaFile
 	public function move(string $newPath): void
 	{
 		try {
-			\Safe\rename($this->path, $newPath);
+			rename($this->path, $newPath);
 			$this->path = $newPath;
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
@@ -124,7 +134,7 @@ class NativeLocalFile extends MediaFile
 	public function exists(): bool
 	{
 		try {
-			return is_file(\Safe\realpath($this->path));
+			return is_file(realpath($this->path));
 		} catch (\ErrorException) {
 			return false;
 		}
@@ -136,7 +146,7 @@ class NativeLocalFile extends MediaFile
 	public function lastModified(): int
 	{
 		try {
-			return \Safe\filemtime($this->getPath());
+			return filemtime($this->getPath());
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
@@ -177,7 +187,7 @@ class NativeLocalFile extends MediaFile
 	public function getRealPath(): string
 	{
 		try {
-			return \Safe\realpath($this->path);
+			return realpath($this->path);
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
@@ -190,7 +200,7 @@ class NativeLocalFile extends MediaFile
 	{
 		$ext = pathinfo($this->path, PATHINFO_EXTENSION);
 
-		return $ext ? '.' . $ext : '';
+		return $ext !== '' ? '.' . $ext : '';
 	}
 
 	/**
@@ -211,8 +221,8 @@ class NativeLocalFile extends MediaFile
 	public function getMimeType(): string
 	{
 		try {
-			if (!$this->cachedMimeType) {
-				$this->cachedMimeType = \Safe\mime_content_type($this->getPath());
+			if ($this->cachedMimeType === null) {
+				$this->cachedMimeType = mime_content_type($this->getPath());
 			}
 
 			return $this->cachedMimeType;

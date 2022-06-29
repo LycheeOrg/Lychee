@@ -37,16 +37,12 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	{
 		try {
 			$this->photo = $photo;
-			if ($referenceImage && $referenceImage->isLoaded()) {
+			if ($referenceImage !== null && $referenceImage->isLoaded()) {
 				$this->referenceImage = $referenceImage;
 			} else {
 				$this->loadReferenceImage();
 			}
-			if ($namingStrategy) {
-				$this->namingStrategy = $namingStrategy;
-			} else {
-				$this->namingStrategy = resolve(SizeVariantNamingStrategy::class);
-			}
+			$this->namingStrategy = $namingStrategy ?? resolve(SizeVariantNamingStrategy::class);
 			// Ensure that the naming strategy is linked to this photo
 			$this->namingStrategy->setPhoto($this->photo);
 		} catch (BindingResolutionException $e) {
@@ -81,12 +77,12 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 				// we must download it first we exploit the temporary file
 				// for that
 				$sourceFile = new TemporaryLocalFile($originalFile->getOriginalExtension(), $this->photo->title);
-				$sourceFile->write($originalFile->read(), $this->photo->type);
+				$sourceFile->write($originalFile->read(), false, $this->photo->type);
 			}
 
 			$videoHandler = new VideoHandler();
 			$videoHandler->load($sourceFile);
-			$position = empty($this->photo->aperture) ? 0.0 : floatval($this->photo->aperture) / 2;
+			$position = is_numeric($this->photo->aperture) ? floatval($this->photo->aperture) / 2 : 0.0;
 			$this->referenceImage = $videoHandler->extractFrame($position);
 
 			// Clean up
@@ -113,7 +109,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 
 		foreach ($allVariants as $variant) {
 			$sv = $this->createSizeVariantCond($variant);
-			if ($sv) {
+			if ($sv !== null) {
 				$collection->add($sv);
 			}
 		}
@@ -137,7 +133,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 			return null;
 		}
 		// Don't re-create existing size variant
-		if ($this->photo->size_variants->getSizeVariant($sizeVariant)) {
+		if ($this->photo->size_variants->getSizeVariant($sizeVariant) !== null) {
 			return null;
 		}
 
@@ -177,6 +173,8 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 * @return SizeVariant the generated size variant
 	 *
 	 * @throws LycheeException
+	 *
+	 * @phpstan-param int<0,6> $sizeVariant
 	 */
 	private function createSizeVariantInternal(int $sizeVariant, ImageDimension $maxDim): SizeVariant
 	{
@@ -212,20 +210,20 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	{
 		switch ($sizeVariant) {
 			case SizeVariant::MEDIUM2X:
-				$maxWidth = 2 * intval(Configs::get_value('medium_max_width'));
-				$maxHeight = 2 * intval(Configs::get_value('medium_max_height'));
+				$maxWidth = 2 * Configs::getValueAsInt('medium_max_width');
+				$maxHeight = 2 * Configs::getValueAsInt('medium_max_height');
 				break;
 			case SizeVariant::MEDIUM:
-				$maxWidth = intval(Configs::get_value('medium_max_width'));
-				$maxHeight = intval(Configs::get_value('medium_max_height'));
+				$maxWidth = Configs::getValueAsInt('medium_max_width');
+				$maxHeight = Configs::getValueAsInt('medium_max_height');
 				break;
 			case SizeVariant::SMALL2X:
-				$maxWidth = 2 * intval(Configs::get_value('small_max_width'));
-				$maxHeight = 2 * intval(Configs::get_value('small_max_height'));
+				$maxWidth = 2 * Configs::getValueAsInt('small_max_width');
+				$maxHeight = 2 * Configs::getValueAsInt('small_max_height');
 				break;
 			case SizeVariant::SMALL:
-				$maxWidth = intval(Configs::get_value('small_max_width'));
-				$maxHeight = intval(Configs::get_value('small_max_height'));
+				$maxWidth = Configs::getValueAsInt('small_max_width');
+				$maxHeight = Configs::getValueAsInt('small_max_height');
 				break;
 			case SizeVariant::THUMB2X:
 				$maxWidth = self::THUMBNAIL2X_DIM;
@@ -273,9 +271,9 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		}
 
 		return match ($sizeVariant) {
-			SizeVariant::MEDIUM2X => Configs::get_value('medium_2x', 0) == 1,
-			SizeVariant::SMALL2X => Configs::get_value('small_2x', 0) == 1,
-			SizeVariant::THUMB2X => Configs::get_value('thumb_2x', 0) == 1,
+			SizeVariant::MEDIUM2X => Configs::getValueAsBool('medium_2x'),
+			SizeVariant::SMALL2X => Configs::getValueAsBool('small_2x'),
+			SizeVariant::THUMB2X => Configs::getValueAsBool('thumb_2x'),
 			SizeVariant::SMALL, SizeVariant::MEDIUM, SizeVariant::THUMB => true,
 			default => throw new InvalidSizeVariantException('unknown size variant: ' . $sizeVariant),
 		};

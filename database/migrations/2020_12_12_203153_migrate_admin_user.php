@@ -19,8 +19,8 @@ class MigrateAdminUser extends Migration
 	public function up(): void
 	{
 		$user = new User();
-		$user->username = Configs::get_value('username', '');
-		$user->password = Configs::get_value('password', '');
+		$user->username = Configs::getValueAsString('username', '');
+		$user->password = Configs::getValueAsString('password', '');
 		$user->save();
 
 		// User will have an ID which is NOT 0.

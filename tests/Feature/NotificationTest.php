@@ -25,7 +25,7 @@ class NotificationTest extends TestCase
 	public function testNotificationSetting(): void
 	{
 		// save initial value
-		$init_config_value = Configs::get_value('new_photos_notification');
+		$init_config_value = Configs::getValue('new_photos_notification');
 
 		try {
 			AccessControl::log_as_id(0);
@@ -34,7 +34,7 @@ class NotificationTest extends TestCase
 				'new_photos_notification' => '1',
 			]);
 			$response->assertNoContent();
-			static::assertEquals('1', Configs::get_value('new_photos_notification'));
+			static::assertEquals('1', Configs::getValue('new_photos_notification'));
 		} finally {
 			// set to initial
 			Configs::set('new_photos_notification', $init_config_value);
@@ -56,7 +56,7 @@ class NotificationTest extends TestCase
 	public function testMailNotifications(): void
 	{
 		// save initial value
-		$init_config_value = Configs::get_value('new_photos_notification');
+		$init_config_value = Configs::getValue('new_photos_notification');
 
 		try {
 			Configs::set('new_photos_notification', '1');

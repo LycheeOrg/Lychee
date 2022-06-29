@@ -4,8 +4,6 @@ namespace App\Image;
 
 /**
  * Class `StreamStatFilter` collects {@link StreamStat} during streaming.
- *
- * @property StreamStat|null $params
  */
 class StreamStatFilter extends \php_user_filter
 {
@@ -28,7 +26,7 @@ class StreamStatFilter extends \php_user_filter
 	{
 		while ($bucket = stream_bucket_make_writeable($in)) {
 			$consumed += $bucket->datalen;
-			if ($this->params) {
+			if ($this->params instanceof StreamStat) {
 				$this->params->bytes += $bucket->datalen;
 				\hash_update($this->hashContext, $bucket->data);
 			}
@@ -47,7 +45,7 @@ class StreamStatFilter extends \php_user_filter
 	 */
 	public function onClose(): void
 	{
-		if ($this->params) {
+		if ($this->params instanceof StreamStat) {
 			$this->params->checksum = \hash_final($this->hashContext);
 		}
 		parent::onClose();
@@ -62,7 +60,7 @@ class StreamStatFilter extends \php_user_filter
 	 */
 	public function onCreate(): bool
 	{
-		if ($this->params) {
+		if ($this->params instanceof StreamStat) {
 			$this->params->bytes = 0;
 			$this->hashContext = \hash_init(self::HASH_ALGO_NAME);
 		}

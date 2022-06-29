@@ -20,6 +20,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Testing\TestResponse;
+use function Safe\tempnam;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -137,7 +138,7 @@ abstract class TestCase extends BaseTestCase
 	 */
 	protected static function createUploadedFile(string $sampleFilePath): UploadedFile
 	{
-		$tmpFilename = \Safe\tempnam(sys_get_temp_dir(), 'lychee');
+		$tmpFilename = tempnam(sys_get_temp_dir(), 'lychee');
 		copy(base_path($sampleFilePath), $tmpFilename);
 
 		return new UploadedFile(
@@ -160,7 +161,7 @@ abstract class TestCase extends BaseTestCase
 	protected static function getRecentPhotoIDs(): BaseCollection
 	{
 		$strRecent = Carbon::now()
-			->subDays(intval(Configs::get_value('recent_age', '1')))
+			->subDays(Configs::getValueAsInt('recent_age'))
 			->setTimezone('UTC')
 			->format('Y-m-d H:i:s');
 		$recentFilter = function (Builder $query) use ($strRecent) {

@@ -58,7 +58,7 @@ abstract class SizeVariantNamingStrategy
 	{
 		$this->photo = $photo;
 		$this->extension = '';
-		if ($this->photo && $sv = $this->photo->size_variants->getOriginal()) {
+		if ($this->photo !== null && ($sv = $this->photo->size_variants->getOriginal()) !== null) {
 			$this->extension = $sv->getFile()->getExtension();
 		}
 	}

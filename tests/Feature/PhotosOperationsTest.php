@@ -93,7 +93,13 @@ class PhotosOperationsTest extends PhotoTestBase
 		 * Check some Exif data
 		 */
 		$taken_at = Carbon::create(
-			2019, 6, 1, 1, 28, 25, '+02:00'
+			2019,
+			6,
+			1,
+			1,
+			28,
+			25,
+			'+02:00'
 		);
 		$response->assertJson([
 			'album_id' => null,
@@ -194,11 +200,11 @@ class PhotosOperationsTest extends PhotoTestBase
 		static::assertCount(0, $album->photos);
 
 		// save initial value
-		$init_config_value = Configs::get_value('gen_demo_js');
+		$init_config_value = Configs::getValue('gen_demo_js');
 
 		// set to 0
 		Configs::set('gen_demo_js', '1');
-		static::assertEquals('1', Configs::get_value('gen_demo_js'));
+		static::assertEquals('1', Configs::getValue('gen_demo_js'));
 
 		// check redirection
 		$response = $this->get('/demo');
@@ -222,15 +228,15 @@ class PhotosOperationsTest extends PhotoTestBase
 	public function testManyFunctionsAtOnceWithSL(): void
 	{
 		// save initial value
-		$init_config_value1 = Configs::get_value('SL_enable');
-		$init_config_value2 = Configs::get_value('SL_for_admin');
+		$init_config_value1 = Configs::getValue('SL_enable');
+		$init_config_value2 = Configs::getValue('SL_for_admin');
 
 		try {
 			// set to 1
 			Configs::set('SL_enable', '1');
 			Configs::set('SL_for_admin', '1');
-			static::assertEquals('1', Configs::get_value('SL_enable'));
-			static::assertEquals('1', Configs::get_value('SL_for_admin'));
+			static::assertEquals('1', Configs::getValue('SL_enable'));
+			static::assertEquals('1', Configs::getValue('SL_for_admin'));
 
 			// just redo the test above :'D
 			$this->testManyFunctionsAtOnce();

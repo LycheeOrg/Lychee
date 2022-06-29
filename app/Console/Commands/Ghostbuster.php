@@ -12,6 +12,9 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Adapter\Local as LocalFlysystem;
+use function Safe\readlink;
+use function Safe\scandir;
+use function Safe\unlink;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class Ghostbuster extends Command
@@ -52,14 +55,14 @@ class Ghostbuster extends Command
 	/**
 	 * Execute the console command.
 	 *
-	 * @return mixed
+	 * @return int
 	 */
 	public function handle(): int
 	{
 		try {
-			$removeDeadSymLinks = (bool) $this->argument('removeDeadSymLinks');
-			$removeZombiePhotos = (bool) $this->argument('removeZombiePhotos');
-			$dryrun = (bool) $this->argument('dryrun');
+			$removeDeadSymLinks = filter_var($this->argument('removeDeadSymLinks'), FILTER_VALIDATE_BOOLEAN) === true;
+			$removeZombiePhotos = filter_var($this->argument('removeZombiePhotos'), FILTER_VALIDATE_BOOLEAN) === true;
+			$dryrun = filter_var($this->argument('dryrun'), FILTER_VALIDATE_BOOLEAN) === true;
 			$uploadDisk = SizeVariantNamingStrategy::getImageDisk();
 			$symlinkDisk = Storage::disk(SymLink::DISK_NAME);
 			$isLocalDisk = ($uploadDisk->getDriver()->getAdapter() instanceof LocalFlysystem);
@@ -101,11 +104,11 @@ class Ghostbuster extends Command
 					$isDeadSymlink = is_link($fullPath) && !file_exists(readlink($fullPath));
 				}
 
-				/** @var Collection $sizeVariants */
+				/** @var Collection<Photo> $photos */
 				$photos = Photo::query()
 					->where('live_photo_short_path', '=', $filename)
 					->get();
-				/** @var Collection $sizeVariants */
+				/** @var Collection<SizeVariant> $sizeVariants */
 				$sizeVariants = SizeVariant::query()
 					->with('photo')
 					->where('short_path', '=', $filename)
@@ -154,20 +157,20 @@ class Ghostbuster extends Command
 					}
 					$totalDbEntries++;
 					if ($dryrun) {
-						$this->line(str_pad($filename, 50) . $this->col->red(' does not exist and photo would be removed') . '.');
+						$this->line(str_pad($sizeVariant->short_path, 50) . $this->col->red(' does not exist and photo would be removed') . '.');
 					} else {
-						if ($sizeVariant->type == SizeVariant::ORIGINAL) {
+						if ($sizeVariant->type === SizeVariant::ORIGINAL) {
 							$sizeVariant->photo->delete();
 						} else {
 							$sizeVariant->delete();
 						}
-						$this->line(str_pad($filename, 50) . $this->col->red(' removed') . '.');
+						$this->line(str_pad($sizeVariant->short_path, 50) . $this->col->red(' removed') . '.');
 					}
 				}
 			}
 
 			$total = $totalDeadSymLinks + $totalFiles + $totalDbEntries;
-			if ($total == 0) {
+			if ($total === 0) {
 				$this->line($this->col->green('No pictures found to be deleted'));
 			}
 			if ($total > 0 && $dryrun) {

@@ -24,6 +24,8 @@ use App\ModelFunctions\SymLinkFunctions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
+use Safe\Exceptions\StreamException;
+use function Safe\stream_filter_register;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -52,20 +54,23 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
-		if (config('app.db_log_sql', false)) {
+		if (config('app.db_log_sql', false) === true) {
 			DB::listen(function ($query) {
 				$msg = $query->sql . ' [' . implode(', ', $query->bindings) . ']';
 				Log::info($msg);
 			});
 		}
 
-		// We ignore any error here, because the `boot` method may be called
-		// several times by Laravel and any subsequent attempt to register
-		// the same filter anew will fail.
-		stream_filter_register(
-			StreamStatFilter::REGISTERED_NAME,
-			StreamStatFilter::class
-		);
+		try {
+			stream_filter_register(
+				StreamStatFilter::REGISTERED_NAME,
+				StreamStatFilter::class
+			);
+		} catch (StreamException) {
+			// We ignore any error here, because Laravel calls the `boot`
+			// method several times and any subsequent attempt to register a
+			// filter for the same name anew will fail.
+		}
 	}
 
 	/**

@@ -22,7 +22,7 @@ trait RequiresFFMpeg
 
 	protected function setUpRequiresFFMpeg(): void
 	{
-		$this->hasFFMpegInit = (int) Configs::get_value(TestCase::CONFIG_HAS_FFMPEG, 2);
+		$this->hasFFMpegInit = Configs::getValueAsInt(TestCase::CONFIG_HAS_FFMPEG);
 		Configs::set(TestCase::CONFIG_HAS_FFMPEG, 2);
 		$this->hasFFMpeg = Configs::hasFFmpeg();
 	}

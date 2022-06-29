@@ -22,9 +22,11 @@ class LogController extends Controller
 	 */
 	public function list(string $order = 'desc'): Collection
 	{
+		// PHPStan does not understand that `get` returns `Collection<Logs>`, but assumes that it returns `Collection<Model>`
+		// @phpstan-ignore-next-line
 		return Logs::query()
 			->orderBy('id', $order)
-			->limit(intval(Configs::get_value('log_max_num_line', 1000)))
+			->limit(Configs::getValueAsInt('log_max_num_line'))
 			->get();
 	}
 

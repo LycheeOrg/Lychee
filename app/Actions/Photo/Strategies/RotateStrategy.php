@@ -10,6 +10,7 @@ use App\Exceptions\Handler;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidRotationDirectionException;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Image\FlysystemFile;
@@ -51,7 +52,7 @@ class RotateStrategy
 				throw new MediaFileUnsupportedException('Rotation of a raw photo is unsupported');
 			}
 			// direction is valid?
-			if (($direction != 1) && ($direction != -1)) {
+			if (($direction !== 1) && ($direction !== -1)) {
 				throw new InvalidRotationDirectionException();
 			}
 			$this->photo = $photo;
@@ -79,7 +80,7 @@ class RotateStrategy
 		try {
 			$image->rotate(90 * $this->direction);
 		} catch (LycheeDomainException $e) {
-			assert(false, new \AssertionError('unexpected domain exception for a proper rotation angle', $e));
+			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 
 		// Delete all size variants from current photo, this will also take
@@ -138,8 +139,8 @@ class RotateStrategy
 
 		// Deal with duplicates.  We simply update all of them to match.
 		$duplicates = Photo::query()
-				->where('checksum', '=', $oldChecksum)
-				->get();
+			->where('checksum', '=', $oldChecksum)
+			->get();
 		/** @var Photo $duplicate */
 		foreach ($duplicates as $duplicate) {
 			$duplicate->checksum = $this->photo->checksum;

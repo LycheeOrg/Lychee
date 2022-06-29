@@ -25,7 +25,7 @@ abstract class PhotosRotateTestAbstract extends PhotoTestBase
 	public function setUp(): void
 	{
 		parent::setUp();
-		$this->editor_enabled_init = (int) Configs::get_value(self::CONFIG_EDITOR_ENABLED, 0);
+		$this->editor_enabled_init = Configs::getValueAsInt(self::CONFIG_EDITOR_ENABLED);
 		Configs::set(self::CONFIG_EDITOR_ENABLED, 1);
 	}
 

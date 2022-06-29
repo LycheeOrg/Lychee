@@ -21,13 +21,13 @@ class RecentAlbum extends BaseSmartAlbum
 	protected function __construct()
 	{
 		$strRecent = $this->fromDateTime(
-			Carbon::now()->subDays(intval(Configs::get_value('recent_age', '1')))
+			Carbon::now()->subDays(Configs::getValueAsInt('recent_age'))
 		);
 
 		parent::__construct(
 			self::ID,
 			self::TITLE,
-			Configs::get_value('public_recent', '0') === '1',
+			Configs::getValueAsBool('public_recent'),
 			function (Builder $query) use ($strRecent) {
 				$query->where('photos.created_at', '>=', $strRecent);
 			}
@@ -36,9 +36,8 @@ class RecentAlbum extends BaseSmartAlbum
 
 	public static function getInstance(): self
 	{
-		if (!self::$instance) {
-			self::$instance = new self();
-		}
+		self::$instance ??= new self();
+
 		// The following two lines are only needed due to testing.
 		// The same instance of this class is used for all tests, because
 		// the singleton stays alive during tests.

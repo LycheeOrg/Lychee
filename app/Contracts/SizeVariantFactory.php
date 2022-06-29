@@ -59,6 +59,8 @@ abstract class SizeVariantFactory
 	 * @return SizeVariant|null the freshly created and persisted size variant
 	 *
 	 * @throws LycheeException
+	 *
+	 * @phpstan-param int<0,6> $sizeVariant
 	 */
 	abstract public function createSizeVariantCond(int $sizeVariant): ?SizeVariant;
 
@@ -76,7 +78,7 @@ abstract class SizeVariantFactory
 	 * The caller of this method **must ensure** that the original size
 	 * variant already exists and that the "physical" media file is already
 	 * in place.
-	 * Otherwise, this method won't be able to create any size variant at all-
+	 * Otherwise, this method won't be able to create any size variant at all.
 	 * This method is inapt to create the original size variant.
 	 * Use {@link SizeVariantFactory::createOriginal()} for that.
 	 *

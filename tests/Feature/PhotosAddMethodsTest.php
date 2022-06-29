@@ -217,7 +217,7 @@ class PhotosAddMethodsTest extends PhotoTestBase
 	 */
 	public function testRawImportFromUrl(): void
 	{
-		$acceptedRawFormats = Configs::get_value(self::CONFIG_RAW_FORMATS, '');
+		$acceptedRawFormats = Configs::getValueAsString(self::CONFIG_RAW_FORMATS);
 		try {
 			Configs::set(self::CONFIG_RAW_FORMATS, '.tif');
 			$reflection = new \ReflectionClass(MediaFile::class);

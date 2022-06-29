@@ -8,6 +8,25 @@ use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use Safe\Exceptions\ImageException;
+use function Safe\imagealphablending;
+use function Safe\imagecopy;
+use function Safe\imagecopymerge;
+use function Safe\imagecopyresampled;
+use function Safe\imagecopyresized;
+use function Safe\imagecreate;
+use function Safe\imagecreatetruecolor;
+use function Safe\imagefill;
+use function Safe\imageflip;
+use function Safe\imagegif;
+use function Safe\imagejpeg;
+use function Safe\imagepng;
+use function Safe\imagerotate;
+use function Safe\imagesavealpha;
+use function Safe\imagesx;
+use function Safe\imagesy;
+use function Safe\imagewebp;
+use function Safe\rewind;
+use function Safe\stream_get_contents;
 
 class GdHandler extends BaseImageHandler
 {
@@ -43,8 +62,8 @@ class GdHandler extends BaseImageHandler
 			try {
 				if (imageistruecolor($this->gdImage)) {
 					// If this is a true color image...
-					$clone = \Safe\imagecreatetruecolor($dim->width, $dim->height);
-					\Safe\imagealphablending($clone, false);
+					$clone = imagecreatetruecolor($dim->width, $dim->height);
+					imagealphablending($clone, false);
 					// As we don't know if the original image has an alpha channel,
 					// we must unconditionally enable transparency for the clone
 					// in order to be on the safe side.
@@ -54,20 +73,20 @@ class GdHandler extends BaseImageHandler
 					// (e.g TIFF, PNG, etc.)
 					// For formats which don't support transparency (e.g. JPEG),
 					// this method has no effect.
-					\Safe\imagesavealpha($clone, true);
+					imagesavealpha($clone, true);
 					// Note the comment in the PHP doc:
 					// `imagecopymerge` with pct = 100 is not identical to `imagecopy`
 					// because it preserves transparency
-					\Safe\imagecopymerge($clone, $this->gdImage, 0, 0, 0, 0, $dim->width, $dim->height, 100);
+					imagecopymerge($clone, $this->gdImage, 0, 0, 0, 0, $dim->width, $dim->height, 100);
 				} else {
 					// If this is a 256 color palette image...
-					$clone = \Safe\imagecreate($dim->width, $dim->height);
+					$clone = imagecreate($dim->width, $dim->height);
 					imagepalettecopy($clone, $this->gdImage);
 					$transColorIndex = imagecolortransparent($this->gdImage);
 					if ($transColorIndex !== -1) {
-						\Safe\imagefill($clone, 0, 0, $transColorIndex);
+						imagefill($clone, 0, 0, $transColorIndex);
 					}
-					\Safe\imagecopy($clone, $this->gdImage, 0, 0, 0, 0, $dim->width, $dim->height);
+					imagecopy($clone, $this->gdImage, 0, 0, 0, 0, $dim->width, $dim->height);
 				}
 
 				$this->gdImage = $clone;
@@ -107,8 +126,8 @@ class GdHandler extends BaseImageHandler
 				$inputStream = $inMemoryBuffer->read();
 			}
 
-			$imgBinary = \Safe\stream_get_contents($inputStream);
-			\Safe\rewind($inputStream);
+			$imgBinary = stream_get_contents($inputStream);
+			rewind($inputStream);
 
 			// Determine the type of image, so that we can later save the
 			// image using the same type
@@ -120,7 +139,7 @@ class GdHandler extends BaseImageHandler
 			} else {
 				$this->gdImageType = $gdImgStat[2];
 			}
-			if (!in_array($this->gdImageType, self::SUPPORTED_IMAGE_TYPES)) {
+			if (!in_array($this->gdImageType, self::SUPPORTED_IMAGE_TYPES, true)) {
 				$this->reset();
 				throw new MediaFileUnsupportedException('Type of photo is not supported');
 			}
@@ -129,13 +148,13 @@ class GdHandler extends BaseImageHandler
 			error_clear_last();
 			// TODO: Replace `imagecreatefromstring` by `\Safe\imagecreatefromstring` after https://github.com/thecodingmachine/safe/issues/352 has been resolved
 			$this->gdImage = imagecreatefromstring($imgBinary);
-			if (!$this->gdImage) {
+			if (!is_resource($this->gdImage) && !$this->gdImage instanceof \GdImage) {
 				throw ImageException::createFromPhpError();
 			}
 
 			// Get EXIF data to determine whether rotation is required
 			// `exif_read_data` only supports JPEGs
-			if (in_array($this->gdImageType, [IMAGETYPE_JPEG, IMAGETYPE_JPEG2000])) {
+			if (in_array($this->gdImageType, [IMAGETYPE_JPEG, IMAGETYPE_JPEG2000], true)) {
 				error_clear_last();
 				// TODO: Replace `exif_read_data` by `\Safe\exif_read_data` after https://github.com/thecodingmachine/safe/issues/215 has been resolved
 				$exifData = exif_read_data($inputStream);
@@ -145,7 +164,7 @@ class GdHandler extends BaseImageHandler
 
 				// Auto-rotate image
 				// TODO: Check if `exif_read_data` actually uses the key `Orientation` with a capital 'O'
-				$orientation = !empty($exifData['Orientation']) ? $exifData['Orientation'] : 1;
+				$orientation = array_key_exists('Orientation', $exifData) && is_numeric($exifData['Orientation']) ? (int) $exifData['Orientation'] : 1;
 				$this->autoRotate($orientation);
 			}
 		} catch (\ErrorException $e) {
@@ -162,7 +181,7 @@ class GdHandler extends BaseImageHandler
 	 */
 	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStat
 	{
-		if (!$this->gdImage) {
+		if (!is_resource($this->gdImage) && !$this->gdImage instanceof \GdImage) {
 			throw new MediaFileOperationException('No image loaded');
 		}
 		try {
@@ -174,26 +193,26 @@ class GdHandler extends BaseImageHandler
 			switch ($this->gdImageType) {
 				case IMAGETYPE_JPEG:
 				case IMAGETYPE_JPEG2000:
-					\Safe\imagejpeg($this->gdImage, $inMemoryBuffer->stream(), $this->compressionQuality);
+					imagejpeg($this->gdImage, $inMemoryBuffer->stream(), $this->compressionQuality);
 					break;
 				case IMAGETYPE_PNG:
-					\Safe\imagepng($this->gdImage, $inMemoryBuffer->stream());
+					imagepng($this->gdImage, $inMemoryBuffer->stream());
 					break;
 				case IMAGETYPE_GIF:
-					\Safe\imagegif($this->gdImage, $inMemoryBuffer->stream());
+					imagegif($this->gdImage, $inMemoryBuffer->stream());
 					break;
 				case IMAGETYPE_WEBP:
-					\Safe\imagewebp($this->gdImage, $inMemoryBuffer->stream());
+					imagewebp($this->gdImage, $inMemoryBuffer->stream());
 					break;
 				default:
-					assert(false, new \AssertionError('uncovered image type'));
+					throw new \AssertionError('uncovered image type');
 			}
 
 			$streamStat = $file->write($inMemoryBuffer->read(), $collectStatistics);
 			$file->close();
 			$inMemoryBuffer->close();
 
-			return parent::applyLosslessOptimizationConditionally($file) ?: $streamStat;
+			return parent::applyLosslessOptimizationConditionally($file) ?? $streamStat;
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException('Failed to save image', $e);
 		}
@@ -216,20 +235,22 @@ class GdHandler extends BaseImageHandler
 				3 => -180,
 				5, 6 => -90,
 				7, 8 => 90,
+				default => throw new ImageProcessingException('Image orientation out of range')
 			};
 
 			$flip = match ($orientation) {
 				1, 3, 6, 8 => 0,
 				2, 7, 5 => IMG_FLIP_HORIZONTAL,
 				4 => IMG_FLIP_VERTICAL,
+				default => throw new ImageProcessingException('Image orientation out of range')
 			};
 
 			if ($angle !== 0) {
-				$this->gdImage = \Safe\imagerotate($this->gdImage, $angle, 0);
+				$this->gdImage = imagerotate($this->gdImage, $angle, 0);
 			}
 
 			if ($flip !== 0) {
-				\Safe\imageflip($this->gdImage, $flip);
+				imageflip($this->gdImage, $flip);
 			}
 		} catch (\ErrorException $e) {
 			throw new ImageProcessingException('Failed to auto-rotate image', $e);
@@ -257,7 +278,7 @@ class GdHandler extends BaseImageHandler
 			$width = (int) round($scale * $srcDim->width);
 			$height = (int) round($scale * $srcDim->height);
 
-			$image = \Safe\imagecreatetruecolor($width, $height);
+			$image = imagecreatetruecolor($width, $height);
 			$this->fastImageCopyResampled($image, $this->gdImage, 0, 0, 0, 0, $width, $height, $srcDim->width, $srcDim->height);
 			$this->gdImage = $image;
 
@@ -294,7 +315,7 @@ class GdHandler extends BaseImageHandler
 				$y = 0;
 			}
 
-			$image = \Safe\imagecreatetruecolor($dstDim->width, $dstDim->height);
+			$image = imagecreatetruecolor($dstDim->width, $dstDim->height);
 			$this->fastImageCopyResampled($image, $this->gdImage, 0, 0, $x, $y, $dstDim->width, $dstDim->height, $width, $height);
 			$this->gdImage = $image;
 		} catch (\ErrorException $e) {
@@ -309,7 +330,7 @@ class GdHandler extends BaseImageHandler
 	public function rotate(int $angle): ImageDimension
 	{
 		try {
-			$this->gdImage = \Safe\imagerotate($this->gdImage, -$angle, 0);
+			$this->gdImage = imagerotate($this->gdImage, -$angle, 0);
 
 			return $this->getDimensions();
 		} catch (\ErrorException $e) {
@@ -365,11 +386,11 @@ class GdHandler extends BaseImageHandler
 	): void {
 		try {
 			if ($quality < 5 && (($dst_w * $quality) < $src_w || ($dst_h * $quality) < $src_h)) {
-				$temp = \Safe\imagecreatetruecolor($dst_w * $quality + 1, $dst_h * $quality + 1);
-				\Safe\imagecopyresized($temp, $src_image, 0, 0, $src_x, $src_y, $dst_w * $quality + 1, $dst_h * $quality + 1, $src_w, $src_h);
-				\Safe\imagecopyresampled($dst_image, $temp, $dst_x, $dst_y, 0, 0, $dst_w, $dst_h, $dst_w * $quality, $dst_h * $quality);
+				$temp = imagecreatetruecolor($dst_w * $quality + 1, $dst_h * $quality + 1);
+				imagecopyresized($temp, $src_image, 0, 0, $src_x, $src_y, $dst_w * $quality + 1, $dst_h * $quality + 1, $src_w, $src_h);
+				imagecopyresampled($dst_image, $temp, $dst_x, $dst_y, 0, 0, $dst_w, $dst_h, $dst_w * $quality, $dst_h * $quality);
 			} else {
-				\Safe\imagecopyresampled($dst_image, $src_image, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h);
+				imagecopyresampled($dst_image, $src_image, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h);
 			}
 		} catch (\ErrorException $e) {
 			throw new ImageProcessingException('Could not resample image', $e);
@@ -382,7 +403,7 @@ class GdHandler extends BaseImageHandler
 	public function getDimensions(): ImageDimension
 	{
 		try {
-			return new ImageDimension(\Safe\imagesx($this->gdImage), \Safe\imagesy($this->gdImage));
+			return new ImageDimension(imagesx($this->gdImage), imagesy($this->gdImage));
 		} catch (\ErrorException $e) {
 			throw new ImageProcessingException('Could not determine dimensions of image', $e);
 		}
@@ -390,6 +411,6 @@ class GdHandler extends BaseImageHandler
 
 	public function isLoaded(): bool
 	{
-		return $this->gdImageType !== 0 && $this->gdImage;
+		return $this->gdImageType !== 0 && (is_resource($this->gdImage) || $this->gdImage instanceof \GdImage);
 	}
 }

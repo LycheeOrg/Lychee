@@ -42,7 +42,12 @@ class VideoHandler
 		}
 		try {
 			$ffmpeg = FFMpeg::create();
-			$this->video = $ffmpeg->open($file->getRealPath());
+			$audioOrVideo = $ffmpeg->open($file->getRealPath());
+			if ($audioOrVideo instanceof Video) {
+				$this->video = $audioOrVideo;
+			} else {
+				throw new MediaFileOperationException('No video streams found.');
+			}
 		} catch (ExecutableNotFoundException $e) {
 			throw new ExternalComponentMissingException('FFmpeg not found', $e);
 		} catch (InvalidArgumentException $e) {
@@ -68,7 +73,7 @@ class VideoHandler
 		} catch (RuntimeException $e) {
 			throw new MediaFileOperationException('Could not extract frame from video file', $e);
 		}
-		if (Configs::get_value('lossless_optimization')) {
+		if (Configs::getValueAsBool('lossless_optimization')) {
 			ImageOptimizer::optimize($file->getRealPath());
 		}
 	}

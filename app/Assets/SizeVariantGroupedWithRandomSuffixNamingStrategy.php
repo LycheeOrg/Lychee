@@ -4,6 +4,7 @@ namespace App\Assets;
 
 use App\Exceptions\InsufficientEntropyException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Image\FlysystemFile;
 use App\Models\Photo;
 use App\Models\SizeVariant;
@@ -81,7 +82,7 @@ class SizeVariantGroupedWithRandomSuffixNamingStrategy extends SizeVariantBaseNa
 			parent::setPhoto($photo);
 
 			$origFile = $this->photo?->size_variants->getOriginal()?->getFile();
-			if ($origFile) {
+			if ($origFile !== null) {
 				$existingRelPath = $origFile->getRelativePath();
 				$matches = [];
 				// Extract random bath path
@@ -123,7 +124,7 @@ class SizeVariantGroupedWithRandomSuffixNamingStrategy extends SizeVariantBaseNa
 				$this->cachedRndMiddlePath = self::createRndMiddlePath();
 			}
 		} catch (PcreException $e) {
-			assert(false, new \AssertionError('regex could not be compiled; that should not happen for a statically coded regex', $e));
+			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 	}
 

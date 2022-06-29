@@ -48,7 +48,7 @@ class SetAlbumSortingRequest extends BaseApiRequest implements HasBaseAlbum, Has
 	{
 		$this->album = $this->albumFactory->findBaseAlbumOrFail($values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]);
 		$column = $values[HasSortingCriterion::SORTING_COLUMN_ATTRIBUTE];
-		$this->sortingCriterion = empty($column) ?
+		$this->sortingCriterion = $column === null ?
 			null :
 			new PhotoSortingCriterion($column, $values[HasSortingCriterion::SORTING_ORDER_ATTRIBUTE]);
 	}

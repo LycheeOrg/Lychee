@@ -40,12 +40,9 @@ class AddPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$albumID = $values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE];
-		$this->album = empty($albumID) ?
+		$this->album = $albumID === null ?
 			null :
 			$this->albumFactory->findAbstractAlbumOrFail($albumID);
-		if (empty($this->albumID)) {
-			$this->albumID = null;
-		}
 		$this->file = $files[self::FILE_ATTRIBUTE];
 	}
 

@@ -5,6 +5,7 @@ namespace App\Actions\Photo\Strategies;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Handler;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Image\FlysystemFile;
@@ -12,6 +13,7 @@ use App\Image\MediaFile;
 use App\Image\NativeLocalFile;
 use App\Image\StreamStat;
 use App\Models\Photo;
+use function Safe\substr;
 
 /**
  * Adds a video as partner to an existing photo.
@@ -134,7 +136,7 @@ class AddVideoPartnerStrategy extends AddBaseStrategy
 				$this->videoSourceFile->move($videoTargetFile->getRelativePath());
 				$streamStat = null;
 			} else {
-				assert(false, new \AssertionError('unexpected type of $videoSourceFile'));
+				throw new LycheeAssertionError('Unexpected type of $videoSourceFile: ' . get_class($this->videoSourceFile));
 			}
 
 			return $streamStat;

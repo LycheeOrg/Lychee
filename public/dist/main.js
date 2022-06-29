@@ -2455,8 +2455,9 @@ album.delete = function (albumIDs) {
 		msg = "<p>" + lychee.locale["DELETE_UNSORTED_CONFIRM"] + "</p>";
 	} else if (albumIDs.length === 1) {
 		var albumTitle = "";
+		var isTagAlbum = albums.isTagAlbum(albumIDs[0]);
 
-		action.title = lychee.locale["DELETE_ALBUM_QUESTION"];
+		action.title = lychee.locale[isTagAlbum ? "DELETE_TAG_ALBUM_QUESTION" : "DELETE_ALBUM_QUESTION"];
 		cancel.title = lychee.locale["KEEP_ALBUM"];
 
 		// Get title
@@ -2473,7 +2474,7 @@ album.delete = function (albumIDs) {
 		// Fallback for album without a title
 		if (!albumTitle) albumTitle = lychee.locale["UNTITLED"];
 
-		msg = lychee.html(_templateObject15, lychee.locale["DELETE_ALBUM_CONFIRMATION_1"], albumTitle, lychee.locale["DELETE_ALBUM_CONFIRMATION_2"]);
+		msg = lychee.html(_templateObject15, lychee.locale[isTagAlbum ? "DELETE_TAG_ALBUM_CONFIRMATION_1" : "DELETE_ALBUM_CONFIRMATION_1"], albumTitle, lychee.locale[isTagAlbum ? "DELETE_TAG_ALBUM_CONFIRMATION_2" : "DELETE_ALBUM_CONFIRMATION_2"]);
 	} else {
 		action.title = lychee.locale["DELETE_ALBUMS_QUESTION"];
 		cancel.title = lychee.locale["KEEP_ALBUMS"];
@@ -2907,6 +2908,16 @@ albums.deleteByID = function (albumID) {
  */
 albums.refresh = function () {
 	albums.json = null;
+};
+
+/**
+ * @param {?string} albumID
+ * @returns {boolean}
+ */
+albums.isTagAlbum = function (albumID) {
+	return albums.json && albums.json.tag_albums.find(function (tagAlbum) {
+		return tagAlbum.id === albumID;
+	});
 };
 
 //noinspection HtmlUnknownTarget
@@ -3507,23 +3518,20 @@ contextMenu.album = function (albumID, e) {
 
 	if (album.isSmartID(albumID) || album.isSearchID(albumID)) return;
 
-	// Show merge-item when there's more than one album
-	// Commented out because it doesn't consider subalbums or shared albums.
-	// let showMerge = (albums.json && albums.json.albums && Object.keys(albums.json.albums).length>1);
-	var showMerge = true;
+	var showMergeMove = !albums.isTagAlbum(albumID);
 
 	var items = [{ title: build.iconic("pencil") + lychee.locale["RENAME"], fn: function fn() {
 			return album.setTitle([albumID]);
 		} }, {
 		title: build.iconic("collapse-left") + lychee.locale["MERGE"],
-		visible: showMerge,
+		visible: showMergeMove,
 		fn: function fn() {
 			basicContext.close();
 			contextMenu.move([albumID], e, album.merge, "ROOT", false);
 		}
 	}, {
 		title: build.iconic("folder") + lychee.locale["MOVE"],
-		visible: true,
+		visible: showMergeMove,
 		fn: function fn() {
 			basicContext.close();
 			contextMenu.move([albumID], e, album.setAlbum, "ROOT");
@@ -3594,30 +3602,29 @@ contextMenu.albumMulti = function (albumIDs, e) {
 	// Show list of albums otherwise
 	var autoMerge = albumIDs.length > 1;
 
-	// Show merge-item when there's more than one album
-	// Commented out because it doesn't consider subalbums or shared albums.
-	// let showMerge = (albums.json && albums.json.albums && Object.keys(albums.json.albums).length>1);
-	var showMerge = true;
+	var showMergeMove = albumIDs.every(function (albumID) {
+		return !albums.isTagAlbum(albumID);
+	});
 
 	var items = [{ title: build.iconic("pencil") + lychee.locale["RENAME_ALL"], fn: function fn() {
 			return album.setTitle(albumIDs);
 		} }, {
 		title: build.iconic("collapse-left") + lychee.locale["MERGE_ALL"],
-		visible: showMerge && autoMerge,
+		visible: showMergeMove && autoMerge,
 		fn: function fn() {
 			var albumID = albumIDs.shift();
 			album.merge(albumIDs, albumID);
 		}
 	}, {
 		title: build.iconic("collapse-left") + lychee.locale["MERGE"],
-		visible: showMerge && !autoMerge,
+		visible: showMergeMove && !autoMerge,
 		fn: function fn() {
 			basicContext.close();
 			contextMenu.move(albumIDs, e, album.merge, "ROOT", false);
 		}
 	}, {
 		title: build.iconic("folder") + lychee.locale["MOVE_ALL"],
-		visible: true,
+		visible: showMergeMove,
 		fn: function fn() {
 			basicContext.close();
 			contextMenu.move(albumIDs, e, album.setAlbum, "ROOT");
@@ -4839,7 +4846,7 @@ $(document).ready(function () {
 		}
 		return true;
 	}).bind(["u"], function () {
-		if (!visible.photo() && album.isUploadable()) {
+		if (!visible.photo() && album.isUploadable() && !album.isTagAlbum()) {
 			$("#upload_files").click();
 			return false;
 		}
@@ -5726,7 +5733,8 @@ lychee.parsePublicInitializationData = function (data) {
 	lychee.sorting_albums = data.config.sorting_albums;
 	lychee.album_subtitle_type = data.config.album_subtitle_type || "oldstyle";
 	lychee.checkForUpdates = data.config.check_for_updates;
-	lychee.layout = Number.parseInt(data.config.layout, 10) || 1;
+	lychee.layout = Number.parseInt(data.config.layout, 10);
+	if (Number.isNaN(lychee.layout)) lychee.layout = 1;
 	lychee.landing_page_enable = data.config.landing_page_enable === "1";
 	lychee.public_search = data.config.public_search === "1";
 	lychee.image_overlay_type = data.config.image_overlay_type || "exif";
@@ -6678,6 +6686,10 @@ lychee.locale = {
 	KEEP_ALBUM: "Keep Album",
 	DELETE_ALBUM_CONFIRMATION_1: "Are you sure you want to delete the album",
 	DELETE_ALBUM_CONFIRMATION_2: "and all of the photos it contains? This action can't be undone!",
+
+	DELETE_TAG_ALBUM_QUESTION: "Delete Album",
+	DELETE_TAG_ALBUM_CONFIRMATION_1: "Are you sure you want to delete the album",
+	DELETE_TAG_ALBUM_CONFIRMATION_2: "(any photos inside will not be deleted)? This action can't be undone!",
 
 	DELETE_ALBUMS_QUESTION: "Delete Albums and Photos",
 	KEEP_ALBUMS: "Keep Albums",
@@ -12851,7 +12863,7 @@ view.settings = {
 	init: function init() {
 		multiselect.clearSelection();
 
-		view.photo.hide();
+		if (visible.photo()) view.photo.hide();
 		view.settings.title();
 		header.setMode("config");
 		view.settings.content.init();
@@ -13181,7 +13193,7 @@ view.notifications = {
 	init: function init() {
 		multiselect.clearSelection();
 
-		view.photo.hide();
+		if (visible.photo()) view.photo.hide();
 		view.notifications.title();
 		header.setMode("config");
 		view.notifications.content.init();
@@ -13215,7 +13227,7 @@ view.users = {
 	init: function init() {
 		multiselect.clearSelection();
 
-		view.photo.hide();
+		if (visible.photo()) view.photo.hide();
 		view.users.title();
 		header.setMode("config");
 		view.users.content.init();
@@ -13269,7 +13281,7 @@ view.sharing = {
 	init: function init() {
 		multiselect.clearSelection();
 
-		view.photo.hide();
+		if (visible.photo()) view.photo.hide();
 		view.sharing.title();
 		header.setMode("config");
 		view.sharing.content.init();
@@ -13332,7 +13344,7 @@ view.logs = {
 	init: function init() {
 		multiselect.clearSelection();
 
-		view.photo.hide();
+		if (visible.photo()) view.photo.hide();
 		view.logs.title();
 		header.setMode("config");
 		view.logs.content.init();
@@ -13386,7 +13398,7 @@ view.diagnostics = {
 	init: function init() {
 		multiselect.clearSelection();
 
-		view.photo.hide();
+		if (visible.photo()) view.photo.hide();
 		view.diagnostics.title();
 		header.setMode("config");
 		view.diagnostics.content.init();
@@ -13520,7 +13532,7 @@ view.update = {
 	init: function init() {
 		multiselect.clearSelection();
 
-		view.photo.hide();
+		if (visible.photo()) view.photo.hide();
 		view.update.title();
 		header.setMode("config");
 		view.update.content.init();
@@ -13568,7 +13580,7 @@ view.u2f = {
 	init: function init() {
 		multiselect.clearSelection();
 
-		view.photo.hide();
+		if (visible.photo()) view.photo.hide();
 		view.u2f.title();
 		header.setMode("config");
 		view.u2f.content.init();

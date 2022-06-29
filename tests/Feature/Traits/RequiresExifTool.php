@@ -21,7 +21,7 @@ trait RequiresExifTool
 
 	protected function setUpRequiresExifTool(): void
 	{
-		$this->hasExifToolInit = (int) Configs::get_value(self::CONFIG_HAS_EXIF_TOOL, 2);
+		$this->hasExifToolInit = Configs::getValueAsInt(self::CONFIG_HAS_EXIF_TOOL);
 		Configs::set(self::CONFIG_HAS_EXIF_TOOL, 2);
 		$this->hasExifTools = Configs::hasExiftool();
 	}
