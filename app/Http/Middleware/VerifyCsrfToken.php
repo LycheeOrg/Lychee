@@ -43,9 +43,8 @@ class VerifyCsrfToken extends Middleware
 				return parent::handle($request, $next);
 			}
 
-			/** @var User $user */
 			$user = User::query()->where('token', '=', $token)->first();
-			if ($user == null) {
+			if ($user === null) {
 				return parent::handle($request, $next);
 			}
 
