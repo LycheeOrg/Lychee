@@ -58,7 +58,7 @@ class HasManyPhotosByTag extends HasManyPhotos
 		$tags = $album->show_tags;
 
 		$this->photoAuthorisationProvider
-			->applySearchabilityFilter($this->query)
+			->applySearchabilityFilter($this->getRelationQuery())
 			->where(function (Builder $q) use ($tags) {
 				// Filter for requested tags
 				foreach ($tags as $tag) {
@@ -92,7 +92,7 @@ class HasManyPhotosByTag extends HasManyPhotos
 
 		$photos = $photos->sortBy(
 			$sorting->column,
-			in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
+			in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
 			$sorting->order === SortingCriterion::DESC
 		)->values();
 		$album->setRelation($relation, $photos);

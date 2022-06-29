@@ -3,28 +3,28 @@
 namespace App\Actions\Photo;
 
 use App\Actions\Photo\Extensions\ArchiveFileInfo;
-use App\Actions\Photo\Extensions\Constants;
 use App\Contracts\LycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
-use App\Exceptions\MediaFileMissingException;
+use App\Image\FlysystemFile;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Safe\Exceptions\InfoException;
+use function Safe\fclose;
+use function Safe\fopen;
+use function Safe\ini_get;
+use function Safe\set_time_limit;
+use function Safe\stream_copy_to_stream;
 use Symfony\Component\HttpFoundation\HeaderUtils;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\ZipStream;
 
 class Archive
 {
-	use Constants;
-
 	public const LIVEPHOTOVIDEO = 'LIVEPHOTOVIDEO';
 	public const FULL = 'FULL';
 	public const MEDIUM2X = 'MEDIUM2X';
@@ -83,11 +83,11 @@ class Archive
 	 *                                   {@link Archive::THUMB2X},
 	 *                                   {@link Archive::THUMB}
 	 *
-	 * @return Response
+	 * @return StreamedResponse
 	 *
 	 * @throws LycheeException
 	 */
-	public function do(Collection $photos, string $variant): Response
+	public function do(Collection $photos, string $variant): StreamedResponse
 	{
 		if ($photos->count() === 1) {
 			$response = $this->file($photos->first(), $variant);
@@ -99,26 +99,62 @@ class Archive
 	}
 
 	/**
-	 * @param Photo $photo
-	 * @param $variant
+	 * Streams a single size variant to the client.
 	 *
-	 * @return BinaryFileResponse
+	 * Note: This method will become quite inefficient, when the media files
+	 * are not hosted on the same machine as Lychee, but on a remote file
+	 * hosting service like AWS S3.
+	 * In this case, the file would be streamed from the hoster to Lychee
+	 * first and then streamed from Lychee to the client.
+	 * It would be much more efficient, if the client would directly fetch
+	 * the file from the hoster.
+	 * Practically, we could use `->getUrl` of the size variant in combination
+	 * with `Symfony\Component\HttpFoundation\RedirectResponse`.
+	 * However, the client would not get a "nice" file name, but the
+	 * random file name of the size variant.
+	 *
+	 * @param Photo  $photo   the photo
+	 * @param string $variant the requested size variant
+	 *
+	 * @return StreamedResponse
 	 *
 	 * @throws LycheeException
 	 */
-	protected function file(Photo $photo, $variant): BinaryFileResponse
+	protected function file(Photo $photo, string $variant): StreamedResponse
 	{
 		$archiveFileInfo = $this->extractFileInfo($photo, $variant);
+
+		$responseGenerator = function () use ($archiveFileInfo) {
+			$outputStream = fopen('php://output', 'wb');
+			stream_copy_to_stream($archiveFileInfo->getFile()->read(), $outputStream);
+			$archiveFileInfo->getFile()->close();
+			fclose($outputStream);
+		};
+
 		try {
-			$response = new BinaryFileResponse($archiveFileInfo->getFullPath());
-		} catch (\InvalidArgumentException|FileException $e) {
+			$response = new StreamedResponse($responseGenerator);
+			$disposition = HeaderUtils::makeDisposition(
+				HeaderUtils::DISPOSITION_ATTACHMENT,
+				$archiveFileInfo->getFilename()
+			);
+			$response->headers->set('Content-Type', $photo->type);
+			$response->headers->set('Content-Disposition', $disposition);
+			$response->headers->set('Content-Length', strval($archiveFileInfo->getFile()->getFilesize()));
+			// Note: Using insecure hashing algorithm is fine here.
+			// The ETag header must only be different for different size variants
+			// Pre-image resistance and collision robustness is not required.
+			// If a size variant changes, the name of the (physical) file
+			// changes, too.
+			// The only reason why we don't use the path directly is that
+			// we must avoid illegal characters like `/` and md5 returns a
+			// hexadecimal string.
+			$response->headers->set('ETag', md5($archiveFileInfo->getFile()->getAbsolutePath()));
+			$response->headers->set('Last-Modified', $photo->updated_at->format(DateTimeInterface::RFC7231));
+
+			return $response;
+		} catch (\InvalidArgumentException $e) {
 			throw new FrameworkException('Symfony\'s response component', $e);
 		}
-
-		return $response->setContentDisposition(
-			ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-			$archiveFileInfo->getFilename()
-		);
 	}
 
 	/**
@@ -133,7 +169,7 @@ class Archive
 	{
 		$responseGenerator = function () use ($variant, $photos) {
 			$options = new \ZipStream\Option\Archive();
-			$options->setEnableZip64(Configs::get_value('zip64', '1') === '1');
+			$options->setEnableZip64(Configs::getValueAsBool('zip64'));
 			$zip = new ZipStream(null, $options);
 
 			// We first need to scan the whole array of files to avoid
@@ -225,9 +261,14 @@ class Archive
 						);
 					} while (array_key_exists($filename, $uniqueFilenames));
 				}
-				$zip->addFileFromPath($filename, $archiveFileInfo->getFullPath());
+				$zip->addFileFromStream($filename, $archiveFileInfo->getFile()->read());
+				$archiveFileInfo->getFile()->close();
 				// Reset the execution timeout for every iteration.
-				set_time_limit(ini_get('max_execution_time'));
+				try {
+					set_time_limit((int) ini_get('max_execution_time'));
+				} catch (InfoException) {
+					// Silently do nothing, if `set_time_limit` is denied.
+				}
 			}
 
 			// finish the zip stream
@@ -273,21 +314,20 @@ class Archive
 	 * @return ArchiveFileInfo the created archive info
 	 *
 	 * @throws InvalidSizeVariantException
-	 * @throws MediaFileMissingException
 	 */
 	protected function extractFileInfo(Photo $photo, string $variant): ArchiveFileInfo
 	{
-		$baseFilename = str_replace($this->badChars, '', $photo->title) ?: 'Untitled';
+		$validFilename = str_replace($this->badChars, '', $photo->title);
+		$baseFilename = $validFilename !== '' ? $validFilename : 'Untitled';
 
 		if ($variant === self::LIVEPHOTOVIDEO) {
-			$shortPath = $photo->live_photo_short_path;
+			$sourceFile = new FlysystemFile(Storage::disk(), $photo->live_photo_short_path);
 			$baseFilenameAddon = '';
 		} elseif (array_key_exists($variant, self::VARIANT2VARIANT)) {
 			$sv = $photo->size_variants->getSizeVariant(self::VARIANT2VARIANT[$variant]);
-			$shortPath = '';
 			$baseFilenameAddon = '';
-			if ($sv) {
-				$shortPath = $sv->short_path;
+			if ($sv !== null) {
+				$sourceFile = $sv->getFile();
 				// The filename of the original size variant shall get no
 				// particular suffix but remain as is.
 				// All other size variants (i.e. the generated, smaller ones)
@@ -295,16 +335,13 @@ class Archive
 				if ($sv->type !== SizeVariant::ORIGINAL) {
 					$baseFilenameAddon = '-' . $sv->width . 'x' . $sv->height;
 				}
+			} else {
+				throw new InvalidSizeVariantException('Size variant missing');
 			}
 		} else {
 			throw new InvalidSizeVariantException('Invalid type of size variant ' . $variant);
 		}
 
-		// Check if file actually exists
-		if (empty($shortPath) || !Storage::exists($shortPath)) {
-			throw new MediaFileMissingException('File is missing: ' . $shortPath . ' (' . $baseFilename . ')');
-		}
-
-		return new ArchiveFileInfo($baseFilename, $baseFilenameAddon, Storage::path($shortPath));
+		return new ArchiveFileInfo($baseFilename, $baseFilenameAddon, $sourceFile);
 	}
 }

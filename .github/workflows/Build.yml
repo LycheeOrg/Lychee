@@ -44,9 +44,9 @@ jobs:
         operating-system: [ubuntu-20.04]
         php-versions: ['8.0', '8.1']
         sql-versions: ['mariadb', 'postgresql', 'sqlite']
-        mode: ['dev', 'dist']
+        mode: ['', '--no-dev']
 
-    name: PHP${{ matrix.php-versions }} - ${{ matrix.sql-versions }} - ${{ matrix.mode }}
+    name: PHP${{ matrix.php-versions }} - ${{ matrix.sql-versions }} ${{ matrix.mode }}
 
     env:
       extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip
@@ -60,28 +60,19 @@ jobs:
 
       # Checks out a copy of your repository on the ubuntu machine
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Setup cache environment
-        id: extcache
-        uses: shivammathur/cache-extensions@1.6.2
-        with:
-          php-version: ${{ matrix.php-versions }}
-          extensions: ${{ env.extensions }}
-          key: ${{ env.key }}
+      - name: Set Up Imagick, FFmpeg & Exiftools
+        run: |
+          sudo apt-get update
+          sudo apt-get --fix-broken install
+          sudo apt-get -y install ffmpeg libimage-exiftool-perl
 
-      - name: Cache PHP Extensions
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.extcache.outputs.dir }}
-          key: ${{ steps.extcache.outputs.key }}
-          restore-keys: ${{ steps.extcache.outputs.key }}
-
-      - name: Cache Composer Dependencies
-        uses: actions/cache@v2.1.6
-        with:
-          path: ~/.composer/cache/files
-          key: dependencies-composer-${{ hashFiles('composer.json') }}
+      - name: setup Databases
+        run: |
+          sudo service mysql start
+          touch database/database.sqlite
+          mysql -uroot -proot -e 'create database homestead_test;'
 
       - name: Setup PHP Action
         uses: shivammathur/setup-php@2.15.0
@@ -91,86 +82,64 @@ jobs:
           coverage: xdebug
           tools: pecl, composer
 
-      - name: Set Up imagick & Exiftools
-        run: |
-          sudo apt-get update
-          sudo apt-get --fix-broken install
-          sudo apt-get -y install libimage-exiftool-perl
-
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-      - name: Cache dependencies
-        uses: actions/cache@v2
+      # Install dependencies and handle caching in one go.
+      # Dependencies need to be installed to make sure the PHPUnit classes are recognized.
+      # @link https://github.com/marketplace/actions/install-composer-dependencies
+      - name: Install Composer dependencies
+        uses: "ramsey/composer-install@v2"
         with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: setup Databases
-        run: |
-          sudo service mysql start
-          touch database/database.sqlite
-          mysql -uroot -proot -e 'create database homestead_test;'
+          composer-options: "${{ matrix.mode }}"
 
       # begin of DEV
-      - name: Install Composer dependencies (dev)
-        if: ${{ matrix.mode == 'dev' }}
-        run: composer install --prefer-dist --no-interaction
-
       - name: Check Syntax
-        if: ${{ matrix.mode == 'dev' }}
-        continue-on-error: ${{ matrix.php-versions != '8.0' }}
+        if: ${{ matrix.mode == '' }}
+        # continue-on-error: ${{ matrix.php-versions != '8.0' }}
         run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
 
       - name: copy Env
-        if: ${{ matrix.mode == 'dev' }}
+        if: ${{ matrix.mode == '' }}
         run: |
           cp .github/workflows/.env.${{ matrix.sql-versions }} .env
 
       - name: Generate secure key & Optimize application & Migrate
-        if: ${{ matrix.mode == 'dev' }}
+        if: ${{ matrix.mode == '' }}
         run: |
           php artisan key:generate
           php artisan optimize
           php artisan migrate
 
       - name: Apply tests
-        if: ${{ matrix.mode == 'dev' }}
+        if: ${{ matrix.mode == '' }}
         run: XDEBUG_MODE=coverage vendor/bin/phpunit --verbose
 
       - name: Codecov
-        if: ${{ matrix.mode == 'dev' }}
+        if: ${{ matrix.mode == '' }}
         uses: codecov/codecov-action@v1
 
       - name: Make sure we can go backward
-        if: ${{ matrix.mode == 'dev' }}
+        if: ${{ matrix.mode == '' }}
         run: php artisan migrate:rollback
 
       # end of DEV
       # begin of DIST
-      - name: Install Composer dependencies (dist)
-        if: ${{ matrix.mode == 'dist' }}
-        run: composer install --prefer-dist --no-interaction --no-dev
 
       - name: Build Dist
-        if: ${{ matrix.mode == 'dist' }}
+        if: ${{ matrix.mode == '--no-dev' }}
         run: |
           make dist-clean
 
       - name: copy Env
-        if: ${{ matrix.mode == 'dist' }}
+        if: ${{ matrix.mode == '--no-dev' }}
         run: |
           cp .github/workflows/.env.${{ matrix.sql-versions }} Lychee/.env
 
       - name: setup MySQL Database with v3
-        if: ${{ matrix.mode == 'dist' }}
+        if: ${{ matrix.mode == '--no-dev' }}
         run: |
           mysql -uroot -proot homestead_test < .github/workflows/v3.sql
 
       - name: Generate secure key & Migrate & go backward
-        if: ${{ matrix.mode == 'dist' }}
+        if: ${{ matrix.mode == '--no-dev' }}
         run: |
           cd Lychee
           pwd

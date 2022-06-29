@@ -2,6 +2,7 @@
 
 namespace App\View\Components;
 
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Models\Configs;
 use App\Models\Photo as ModelsPhoto;
 use App\Models\SizeVariant;
@@ -36,6 +37,8 @@ class Photo extends Component
 	 * Create a new component instance.
 	 *
 	 * @return void
+	 *
+	 * @throws ConfigurationKeyMissingException
 	 */
 	public function __construct(ModelsPhoto $data)
 	{
@@ -51,7 +54,7 @@ class Photo extends Component
 		$this->class .= $data->isVideo() ? ' video' : '';
 		$this->class .= $data->isLivePhoto() ? ' livephoto' : '';
 
-		$this->layout = Configs::get_value('layout', '0') == '0';
+		$this->layout = Configs::getValueAsInt('layout') === 0;
 
 		$this->src = URL::asset('img/placeholder.png');
 

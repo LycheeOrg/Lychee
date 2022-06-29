@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
+
 namespace Tests\Feature;
 
 use App\Facades\AccessControl;
@@ -13,7 +23,7 @@ class IndexTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function testHome()
+	public function testHome(): void
 	{
 		/**
 		 * check if we can actually get a nice answer.
@@ -30,7 +40,7 @@ class IndexTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function testPhpInfo()
+	public function testPhpInfo(): void
 	{
 		AccessControl::logout();
 		// we don't want a non admin to access this
@@ -38,9 +48,9 @@ class IndexTest extends TestCase
 		$response->assertForbidden();
 	}
 
-	public function testLandingPage()
+	public function testLandingPage(): void
 	{
-		$landing_on_off = Configs::get_value('landing_page_enable', '0');
+		$landing_on_off = Configs::getValue('landing_page_enable', '0');
 		Configs::set('landing_page_enable', 1);
 
 		$response = $this->get('/');
@@ -48,7 +58,7 @@ class IndexTest extends TestCase
 		$response->assertViewIs('landing');
 
 		$response = $this->get('/gallery');
-		$response->assertOk(200);
+		$response->assertOk();
 		$response->assertViewIs('gallery');
 
 		Configs::set('landing_page_enable', $landing_on_off);

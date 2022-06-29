@@ -2,7 +2,6 @@
 
 namespace App\Actions\Photo\Strategies;
 
-use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Contracts\LycheeException;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
@@ -69,7 +68,7 @@ class RotateStrategy extends AddBaseStrategy
 			throw new MediaFileUnsupportedException('Rotation of a raw photo is unsupported');
 		}
 		// direction is valid?
-		if (($direction != 1) && ($direction != -1)) {
+		if (($direction !== 1) && ($direction !== -1)) {
 			throw new InvalidRotationDirectionException();
 		}
 		$this->direction = $direction;
@@ -94,13 +93,10 @@ class RotateStrategy extends AddBaseStrategy
 		/** @var ImageHandlerInterface $imageHandler */
 		$imageHandler = resolve(ImageHandlerInterface::class);
 		// TODO: If we ever wish to support something else than local files, ImageHandler must work on resource streams, not absolute file names (see ImageHandlerInterface)
-		$imageHandler->rotate($origFile->getAbsolutePath(), ($this->direction == 1) ? 90 : -90, $tmpFile->getAbsolutePath());
+		$imageHandler->rotate($origFile->getAbsolutePath(), ($this->direction === 1) ? 90 : -90, $tmpFile->getAbsolutePath());
 
 		// The file size and checksum may have changed after the rotation.
-		/* @var Extractor $metadataExtractor */
-		$metadataExtractor = resolve(Extractor::class);
-		// TODO: See above, we must stop using absolute paths
-		$this->photo->checksum = $metadataExtractor->checksum($tmpFile->getAbsolutePath());
+		$this->photo->checksum = Extractor::checksum($tmpFile);
 		$this->photo->save();
 
 		// Delete all size variants from current photo, this will also take
@@ -109,15 +105,11 @@ class RotateStrategy extends AddBaseStrategy
 		// This will bring photo entity into the same state as it would be if
 		// we were importing a new photo.
 		$this->photo->size_variants->deleteAll();
-
-		// Initialize factory for size variants
-		$this->parameters->sourceFileInfo = SourceFileInfo::createByTempFile(
-			$this->photo->title, $origFile->getExtension(), $tmpFile
-		);
+		$origFile = null;
 
 		/** @var SizeVariantNamingStrategy $namingStrategy */
 		$namingStrategy = resolve(SizeVariantNamingStrategy::class);
-		$namingStrategy->setFallbackExtension($this->parameters->sourceFileInfo->getOriginalExtension());
+		$namingStrategy->setFallbackExtension($tmpFile->getOriginalExtension());
 		/** @var SizeVariantFactory $sizeVariantFactory */
 		$sizeVariantFactory = resolve(SizeVariantFactory::class);
 		$sizeVariantFactory->init($this->photo, $namingStrategy);
@@ -127,9 +119,9 @@ class RotateStrategy extends AddBaseStrategy
 		// because the checksum of the photo has changed.
 		// Using a different filename allows avoiding caching effects.
 		// Sic! Swap width and height here, because the image has been rotated
-		$originalFilesize = $metadataExtractor->filesize($tmpFile->getAbsolutePath());
+		$originalFilesize = $tmpFile->getFilesize();
 		$newOriginalSizeVariant = $sizeVariantFactory->createOriginal($oldOriginalHeight, $oldOriginalWidth, $originalFilesize);
-		$this->putSourceIntoFinalDestination($newOriginalSizeVariant->short_path);
+		$this->putSourceIntoFinalDestination($tmpFile, $newOriginalSizeVariant->short_path);
 
 		// Create remaining size variants
 		$newSizeVariants = null;
@@ -154,8 +146,8 @@ class RotateStrategy extends AddBaseStrategy
 
 		// Deal with duplicates.  We simply update all of them to match.
 		$duplicates = Photo::query()
-				->where('checksum', '=', $oldChecksum)
-				->get();
+			->where('checksum', '=', $oldChecksum)
+			->get();
 		/** @var Photo $duplicate */
 		foreach ($duplicates as $duplicate) {
 			$duplicate->checksum = $this->photo->checksum;
@@ -175,7 +167,7 @@ class RotateStrategy extends AddBaseStrategy
 			// Deleting the size variants of the duplicates has also the
 			// advantage that the actual files are erased from storage.
 			$duplicate->size_variants->deleteAll();
-			if ($newSizeVariants) {
+			if ($newSizeVariants !== null && $newSizeVariants->count() > 0) {
 				/** @var SizeVariant $newSizeVariant */
 				foreach ($newSizeVariants as $newSizeVariant) {
 					$duplicate->size_variants->create(

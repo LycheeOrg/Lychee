@@ -46,7 +46,7 @@ class ImportFromUrlRequest extends BaseApiRequest implements HasAlbum
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$albumID = $values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE];
-		$this->album = empty($albumID) ?
+		$this->album = $albumID === null ?
 			null :
 			Album::query()->findOrFail($albumID);
 		// The replacement below looks suspicious.

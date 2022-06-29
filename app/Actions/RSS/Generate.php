@@ -10,8 +10,7 @@ use App\Models\Photo;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\UnitException;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Storage;
-use League\Flysystem\NotSupportedException;
+use Illuminate\Support\Collection;
 use Spatie\Feed\FeedItem;
 
 class Generate
@@ -25,7 +24,7 @@ class Generate
 
 	private function create_link_to_page(Photo $photo_model): string
 	{
-		if ($photo_model->album_id != null) {
+		if ($photo_model->album_id !== null) {
 			return url('/#' . $photo_model->album_id . '/' . $photo_model->id);
 		}
 
@@ -44,24 +43,22 @@ class Generate
 			'link' => $page_link,
 			'enclosure' => $sizeVariant->url,
 			'enclosureType' => $photo_model->type,
+			'enclosureLength' => $sizeVariant->filesize,
 			'authorName' => $photo_model->owner->username,
 		];
-		try {
-			// This may throw a `NotSupportedException`, if the file is a symlink
-			$feedItem['enclosureLength'] = Storage::size($sizeVariant->short_path);
-		} catch (NotSupportedException) {
-		}
 
 		return FeedItem::create($feedItem);
 	}
 
 	/**
+	 * @return Collection<FeedItem>
+	 *
 	 * @throws InternalLycheeException
 	 */
-	public function do()
+	public function do(): Collection
 	{
-		$rss_recent = intval(Configs::get_value('rss_recent_days', '7'));
-		$rss_max = Configs::get_Value('rss_max_items', '100');
+		$rss_recent = Configs::getValueAsInt('rss_recent_days');
+		$rss_max = Configs::getValueAsInt('rss_max_items');
 		try {
 			$nowMinus = Carbon::now()->subDays($rss_recent)->toDateTimeString();
 		} catch (UnitException|InvalidFormatException $e) {
@@ -70,7 +67,7 @@ class Generate
 
 		$photos = $this->photoAuthorisationProvider
 			->applySearchabilityFilter(
-				Photo::with('album', 'owner', 'size_variants', 'size_variants.sym_links')
+				Photo::with(['album', 'owner', 'size_variants', 'size_variants.sym_links'])
 			)
 			->where('photos.created_at', '>=', $nowMinus)
 			->limit($rss_max)

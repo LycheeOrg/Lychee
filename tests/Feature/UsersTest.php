@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
+
 namespace Tests\Feature;
 
 use App\Facades\AccessControl;
@@ -12,7 +22,7 @@ use Tests\TestCase;
 
 class UsersTest extends TestCase
 {
-	public function testSetLogin()
+	public function testSetLogin(): void
 	{
 		/**
 		 * because there is no dependency injection in test cases.
@@ -26,7 +36,7 @@ class UsersTest extends TestCase
 		/*
 		 * Check if password and username are set
 		 */
-		if ($configs['password'] == '' && $configs['username'] == '') {
+		if ($configs['password'] === '' && $configs['username'] === '') {
 			$clear = true;
 
 			$sessions_test->set_new('lychee', 'password');
@@ -35,13 +45,13 @@ class UsersTest extends TestCase
 			$sessions_test->login('lychee', 'password');
 			$sessions_test->logout();
 		} else {
-			$this->markTestSkipped('Username and Password are set. We do not bother testing further.');
+			static::markTestSkipped('Username and Password are set. We do not bother testing further.');
 		}
 
 		/*
 		 * We check that there are username and password set in the database
 		 */
-		$this->assertFalse($sessionFunctions->noLogin());
+		static::assertFalse($sessionFunctions->noLogin());
 
 		$sessions_test->login('foo', 'bar', 401);
 		$sessions_test->login('lychee', 'bar', 401);
@@ -56,7 +66,7 @@ class UsersTest extends TestCase
 		}
 	}
 
-	public function testUsers()
+	public function testUsers(): void
 	{
 		$sessions_test = new SessionUnitTest($this);
 		$users_test = new UsersUnitTest($this);

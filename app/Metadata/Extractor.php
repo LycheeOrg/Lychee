@@ -6,166 +6,102 @@ use App\Exceptions\ExternalComponentFailedException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\Handler;
 use App\Exceptions\MediaFileOperationException;
-use App\Facades\Helpers;
+use App\Image\NativeLocalFile;
 use App\Models\Configs;
 use App\Models\Logs;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Support\Carbon;
 use PHPExif\Adapter\NoAdapterException;
+use PHPExif\Exif;
 use PHPExif\Reader\Reader;
+use Safe\Exceptions\StringsException;
+use function Safe\sha1_file;
+use function Safe\substr;
 
+/**
+ * Collects normalized EXIF info about an image/video.
+ */
 class Extractor
 {
-	/**
-	 * return bare array for info.
-	 *
-	 * @return array
-	 */
-	public function bare()
-	{
-		return [
-			'type' => '',
-			'width' => 0,
-			'height' => 0,
-			'title' => '',
-			'description' => '',
-			'orientation' => 1,
-			'iso' => '',
-			'aperture' => '',
-			'make' => '',
-			'model' => '',
-			'shutter' => '',
-			'focal' => '',
-			'taken_at' => null,
-			'lens' => '',
-			'tags' => '',
-			'position' => '',
-			'latitude' => null,
-			'longitude' => null,
-			'altitude' => null,
-			'imgDirection' => null,
-			'location' => null,
-			'filesize' => 0,
-			'livePhotoContentID' => null,
-			'livePhotoStillImageTime' => null,
-			'MicroVideoOffset' => null,
-			'checksum' => null,
-		];
-	}
+	public const SUFFIX_MM_UNIT = ' mm';
+	public const SUFFIX_SEC_UNIT = ' s';
+	public const ABSOLUTE_ALTITUDE_BOUNDS = 999999.9999;
+	public const MAX_LOCATION_STRING_LENGTH = 255;
 
-	/**
-	 * Returns the size of a file in bytes.
-	 *
-	 * @param string $path The relative file path
-	 *
-	 * @return int The file size in bytes or 0 in case of a failure
-	 */
-	public function filesize(string $path): int
-	{
-		return (int) filesize($path);
-	}
+	public ?string $type = null;
+	public int $width = 0;
+	public int $height = 0;
+	public ?string $title = null;
+	public ?string $description = null;
+	public int $orientation = 1;
+	public ?string $iso = null;
+	public ?string $aperture = null;
+	public ?string $make = null;
+	public ?string $model = null;
+	public ?string $shutter = null;
+	public ?string $focal = null;
+	public ?Carbon $taken_at = null;
+	public ?string $lens = null;
+	/** @var string[] */
+	public array $tags = [];
+	/** @var string|null TODO: What is the difference to {@link Extractor::$location}? */
+	public ?string $position = null;
+	public ?float $latitude = null;
+	public ?float $longitude = null;
+	public ?float $altitude = null;
+	public ?float $imgDirection = null;
+	/** @var string|null TODO: What is the difference to {@link Extractor::$position}? */
+	public ?string $location = null;
+	public ?string $livePhotoContentID = null;
+	public int $microVideoOffset = 0;
 
 	/**
 	 * Returns the SHA-1 checksum of a file.
 	 *
-	 * @param string $path The relative file path
+	 * @param NativeLocalFile $file the file
 	 *
 	 * @return string the checksum
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function checksum(string $path): string
+	public static function checksum(NativeLocalFile $file): string
 	{
-		$checksum = sha1_file($path);
-		if ($checksum === false) {
-			throw new MediaFileOperationException('Could not compute checksum for: ' . $path);
+		try {
+			return sha1_file($file->getAbsolutePath());
+		} catch (StringsException) {
+			throw new MediaFileOperationException('Could not compute checksum for: ' . $file->getAbsolutePath());
 		}
-
-		return $checksum;
 	}
 
 	/**
 	 * Extracts metadata from a file.
 	 *
-	 * **Warning:**
+	 * @param NativeLocalFile $file the file
 	 *
-	 * The parameter `$kind` is enum-like parameter and accepts the values
-	 * `photo`, `video` or `raw` (see
-	 * {@link \App\Actions\Photo\Extensions\Checks::file_kind}).
-	 * In other words `kind` is a coarsening of the mime type of a file, but
-	 * not identical to the mime type.
-	 * See {@link \App\Actions\Photo\Create::add()} which sets `$kind` to the
-	 * result of {@link \App\Actions\Photo\Extensions\Checks::file_kind()}.
-	 * However, there are at least three other occurrences where this method
-	 * is called and the full mime type is passed as the second parameter:
-	 * see {@link \App\Console\Commands\ExifLens::handle()},
-	 * {@link \App\Console\Commands\Takedate::handle()} and
-	 * {@link \App\Console\Commands\VideoData::handle()}.
-	 *
-	 * IMHO, there is an amazing number of places which somehow deal with
-	 * "mime type-ish" sort of values with subtle differences.
-	 *
-	 * TODO: Thoroughly refactor this.
-	 *
-	 * @param string $fullPath the full path to the file
-	 * @param string $kind     the kind of file either 'image', 'video' or 'raw'
-	 *
-	 * @return array
+	 * @return Extractor
 	 *
 	 * @throws ExternalComponentMissingException
 	 * @throws MediaFileOperationException
 	 * @throws ExternalComponentFailedException
 	 */
-	public function extract(string $fullPath, string $kind): array
+	public static function createFromFile(NativeLocalFile $file): self
 	{
-		$reader = null;
-
-		// Get kind of file (photo, video, raw)
-		// TODO: This line is extremely dangerous, because it tries to determine the type of file based on a possibly not existing file extension
-		// Note: For temporarily stored files during upload, PHP normally uses
-		// temporary file names without an extension.
-		// We should stop passing around absolute file paths and try to
-		// re-determine the MIME type over and over again, but pass around
-		// proper `File` objects which also hold the MIME type which has
-		// been established initially.
-		$extension = Helpers::getExtension($fullPath, false);
-
-		// check raw files
-		$is_raw = false;
-		$raw_formats = strtolower(Configs::get_value('raw_formats', ''));
-		if (in_array(strtolower($extension), explode('|', $raw_formats), true)) {
-			$is_raw = true;
-		}
+		$metadata = new self();
+		$isSupportedVideo = $file->isSupportedVideo();
 
 		try {
-			if ($kind !== 'video') {
-				// It's a photo
-				if (Configs::hasExiftool()) {
-					// reader with Exiftool adapter
-					$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
-				} elseif (Configs::hasImagick() && $is_raw) {
-					// Use imagick as exif reader for raw files (broader support)
-					$reader = Reader::factory(Reader::TYPE_IMAGICK);
-				} else {
-					// Use Php native tools
-					$reader = Reader::factory(Reader::TYPE_NATIVE);
-				}
-			} else {
-				// Let's try to use FFmpeg; if not available, let's try Exiftool
-				if (Configs::hasFFmpeg()) {
-					// It's a video -> use FFProbe
-					$reader = Reader::factory(Reader::TYPE_FFPROBE);
-				} elseif (Configs::hasExiftool()) {
-					// reader with Exiftool adapter
-					$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
-				} else {
-					// Use Php native tools to extract at least MimeType and Filesize
-					// For all other properties, it will not return anything
-					$reader = Reader::factory(Reader::TYPE_NATIVE);
-					Logs::notice(__METHOD__, __LINE__, 'FFmpeg and Exiftool not being available; Extraction of metadata limited to mime type and file size.');
-				}
-			}
+			// Priority of EXIF data readers is
+			//  1. FFMpeg (only for videos)
+			//  2. Exiftool
+			//  3. Imagick (not for videos, i.e. for supported photos and accepted raw files only)
+			//  4. Native PHP exif reader (last resort)
+			$reader = match (true) {
+				(Configs::hasFFmpeg() && $isSupportedVideo) => Reader::factory(Reader::TYPE_FFPROBE),
+				Configs::hasExiftool() => Reader::factory(Reader::TYPE_EXIFTOOL),
+				(Configs::hasImagick() && !$isSupportedVideo) => Reader::factory(Reader::TYPE_IMAGICK),
+				default => Reader::factory(Reader::TYPE_NATIVE),
+			};
 
 			// this can throw an exception in the case of Exiftool adapter!
 			// TODO: This may fail for files without an extension.
@@ -178,7 +114,7 @@ class Extractor
 			// with a work-around for MP4 videos which are wrongly classified
 			// as `application/octet-stream`, but this work-around only
 			// succeeds if the file has a recognized extension.
-			$exif = $reader->read($fullPath);
+			$exif = $reader->read($file->getAbsolutePath());
 		} catch (\InvalidArgumentException|NoAdapterException $e) {
 			throw new ExternalComponentMissingException('The configured EXIF adapter is not available', $e);
 		} catch (\RuntimeException $e) {
@@ -193,7 +129,7 @@ class Extractor
 				Logs::notice(__METHOD__, __LINE__, 'Falling back to native adapter.');
 				// Use Php native tools
 				$reader = Reader::factory(Reader::TYPE_NATIVE);
-				$exif = $reader->read($fullPath);
+				$exif = $reader->read($file->getAbsolutePath());
 			} catch (\InvalidArgumentException|NoAdapterException $e) {
 				throw new ExternalComponentMissingException('The configured EXIF adapter is not available', $e);
 			} catch (\RuntimeException $e) {
@@ -203,30 +139,30 @@ class Extractor
 			}
 		}
 
+		// TODO: By changing the logic of $reader to always return an Exif object or throw an exception, this would make this code safer.
+		if (!$exif instanceof Exif) {
+			throw new MediaFileOperationException('Could not even extract basic EXIF data with the native adapter');
+		}
+
 		// Attempt to get sidecar metadata if it exists, make sure to check 'real' path in case of symlinks
 		$sidecarData = [];
 
-		// readlink fails if it's not a link -> we need to separate it
-		$realFile = $fullPath;
-		if (is_link($fullPath)) {
-			try {
-				// if readlink($filename) == False then $realFile = $filename.
-				// if readlink($filename) != False then $realFile = readlink($filename)
-				$realFile = readlink($fullPath) ?: $fullPath;
-			} catch (\Exception $e) {
-				Handler::reportSafely($e);
-			}
-		}
-		if (Configs::hasExiftool() && file_exists($realFile . '.xmp')) {
+		$sidecarFile = new NativeLocalFile($file->getAbsolutePath() . '.xmp');
+
+		if (Configs::hasExiftool() && $sidecarFile->exists()) {
 			try {
 				// Don't use the same reader as the file in case it's a video
 				$sidecarReader = Reader::factory(Reader::TYPE_EXIFTOOL);
-				$sidecarData = $sidecarReader->read($realFile . '.xmp')->getData();
+				$sideCarExifData = $sidecarReader->read($sidecarFile->getAbsolutePath());
+				if (!$sideCarExifData instanceof Exif) {
+					throw new MediaFileOperationException('Could not even extract EXIF data with the exiftool adapter');
+				}
+				$sidecarData = $sideCarExifData->getData();
 
 				// We don't want to overwrite the media's type with the mimetype of the sidecar file
 				unset($sidecarData['MimeType']);
 
-				if (Configs::get_value('prefer_available_xmp_metadata', '0') == '1') {
+				if (Configs::getValueAsBool('prefer_available_xmp_metadata')) {
 					$exif->setData(array_merge($exif->getData(), $sidecarData));
 				} else {
 					$exif->setData(array_merge($sidecarData, $exif->getData()));
@@ -236,27 +172,24 @@ class Extractor
 			}
 		}
 
-		$metadata = $this->bare();
-		$metadata['type'] = ($exif->getMimeType() !== false) ? $exif->getMimeType() : '';
-		$metadata['width'] = ($exif->getWidth() !== false) ? $exif->getWidth() : 0;
-		$metadata['height'] = ($exif->getHeight() !== false) ? $exif->getHeight() : 0;
-		$metadata['title'] = ($exif->getTitle() !== false) ? $exif->getTitle() : '';
-		$metadata['description'] = ($exif->getDescription() !== false) ? $exif->getDescription() : '';
-		$metadata['orientation'] = ($exif->getOrientation() !== false) ? $exif->getOrientation() : 1;
-		$metadata['iso'] = ($exif->getIso() !== false) ? $exif->getIso() : '';
-		$metadata['make'] = ($exif->getMake() !== false) ? $exif->getMake() : '';
-		$metadata['model'] = ($exif->getCamera() !== false) ? $exif->getCamera() : '';
-		$metadata['shutter'] = ($exif->getExposure() !== false) ? $exif->getExposure() : '';
-		$metadata['lens'] = ($exif->getLens() !== false) ? $exif->getLens() : '';
-		$metadata['tags'] = ($exif->getKeywords() !== false) ? $exif->getKeywords() : [];
-		$metadata['latitude'] = ($exif->getLatitude() !== false) ? $exif->getLatitude() : null;
-		$metadata['longitude'] = ($exif->getLongitude() !== false) ? $exif->getLongitude() : null;
-		$metadata['altitude'] = ($exif->getAltitude() !== false) ? $exif->getAltitude() : null;
-		$metadata['imgDirection'] = ($exif->getImgDirection() !== false) ? $exif->getImgDirection() : null;
-		$metadata['filesize'] = ($exif->getFileSize() !== false) ? $exif->getFileSize() : 0;
-		$metadata['live_photo_content_id'] = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
-		$metadata['MicroVideoOffset'] = ($exif->getMicroVideoOffset() !== false) ? $exif->getMicroVideoOffset() : null;
-		$metadata['checksum'] = $this->checksum($fullPath);
+		$metadata->type = ($exif->getMimeType() !== false) ? $exif->getMimeType() : $file->getMimeType();
+		$metadata->width = ($exif->getWidth() !== false) ? (int) $exif->getWidth() : 0;
+		$metadata->height = ($exif->getHeight() !== false) ? (int) $exif->getHeight() : 0;
+		$metadata->title = ($exif->getTitle() !== false) ? $exif->getTitle() : null;
+		$metadata->description = ($exif->getDescription() !== false) ? $exif->getDescription() : null;
+		$metadata->orientation = ($exif->getOrientation() !== false) ? (int) $exif->getOrientation() : 1;
+		$metadata->iso = ($exif->getIso() !== false) ? $exif->getIso() : null;
+		$metadata->make = ($exif->getMake() !== false) ? $exif->getMake() : null;
+		$metadata->model = ($exif->getCamera() !== false) ? $exif->getCamera() : null;
+		$metadata->shutter = ($exif->getExposure() !== false) ? $exif->getExposure() : null;
+		$metadata->lens = ($exif->getLens() !== false) ? $exif->getLens() : null;
+		$metadata->tags = ($exif->getKeywords() !== false) ? $exif->getKeywords() : [];
+		$metadata->latitude = ($exif->getLatitude() !== false) ? $exif->getLatitude() : null;
+		$metadata->longitude = ($exif->getLongitude() !== false) ? $exif->getLongitude() : null;
+		$metadata->altitude = ($exif->getAltitude() !== false) ? $exif->getAltitude() : null;
+		$metadata->imgDirection = ($exif->getImgDirection() !== false) ? $exif->getImgDirection() : null;
+		$metadata->livePhotoContentID = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
+		$metadata->microVideoOffset = ($exif->getMicroVideoOffset() !== false) ? (int) $exif->getMicroVideoOffset() : 0;
 
 		$taken_at = $exif->getCreationDate();
 		if ($taken_at !== false) {
@@ -389,9 +322,9 @@ class Extractor
 				//         At the layer of the "business logic" we only use
 				//         the attribute `taken_at` which extends
 				//         \DateTimeInterface and stores the timezone.
-				if ($kind === 'video') {
-					$locals = strtolower(Configs::get_value('local_takestamp_video_formats', ''));
-					if (!in_array(strtolower($extension), explode('|', $locals), true)) {
+				if ($isSupportedVideo) {
+					$locals = strtolower(Configs::getValueAsString('local_takestamp_video_formats'));
+					if (!in_array(strtolower($file->getExtension()), explode('|', $locals), true)) {
 						// This is a video format where we expect the takestamp
 						// to be provided in UTC.
 						if ($taken_at->getTimezone()->getName() === date_default_timezone_get()) {
@@ -435,43 +368,39 @@ class Extractor
 						// so neither of the two conditions above should trigger.
 					}
 				}
-				$metadata['taken_at'] = $taken_at;
+				$metadata->taken_at = $taken_at;
 			} catch (InvalidTimeZoneException|InvalidFormatException $e) {
 				throw new MediaFileOperationException('Could not even extract date/time from EXIF data', $e);
 			}
 		} else {
-			$metadata['taken_at'] = null;
+			$metadata->taken_at = null;
 		}
 
 		// We need to make sure, latitude is between -90/90 and longitude is between -180/180
 		// We set values to null in case we're out of bounds
-		if ($metadata['latitude'] !== null || $metadata['longitude'] !== null) {
-			$latitude = $metadata['latitude'];
-			$longitude = $metadata['longitude'];
-			if ($latitude < -90 || $latitude > 90 || $longitude < -180 || $longitude > 180) {
-				$metadata['latitude'] = null;
-				$metadata['longitude'] = null;
-				Logs::notice(__METHOD__, __LINE__, 'Latitude/Longitude (' . $latitude . '/' . $longitude . ') out of bounds (needs to be between -90/90 and -180/180)');
+		if ($metadata->latitude !== null || $metadata->longitude !== null) {
+			if ($metadata->latitude < -90 || $metadata->latitude > 90 || $metadata->longitude < -180 || $metadata->longitude > 180) {
+				Logs::notice(__METHOD__, __LINE__, 'Latitude/Longitude (' . $metadata->latitude . '/' . $metadata->longitude . ') out of bounds (needs to be between -90/90 and -180/180)');
+				$metadata->latitude = null;
+				$metadata->longitude = null;
 			}
 		}
 
 		// We need to make sure, altitude is between -999999.9999 and 999999.9999
 		// We set values to null in case we're out of bounds
-		if ($metadata['altitude'] !== null) {
-			$altitude = $metadata['altitude'];
-			if ($altitude < -999999.9999 || $altitude > 999999.9999) {
-				$metadata['altitude'] = null;
-				Logs::notice(__METHOD__, __LINE__, 'Altitude (' . $altitude . ') out of bounds for database (needs to be between -999999.9999 and 999999.9999)');
+		if ($metadata->altitude !== null) {
+			if ($metadata->altitude < -self::ABSOLUTE_ALTITUDE_BOUNDS || $metadata->altitude > self::ABSOLUTE_ALTITUDE_BOUNDS) {
+				Logs::notice(__METHOD__, __LINE__, 'Altitude (' . $metadata->altitude . ') out of bounds for database (needs to be between -999999.9999 and 999999.9999)');
+				$metadata->altitude = null;
 			}
 		}
 
 		// We need to make sure, imgDirection is between 0 and 360
 		// We set values to null in case we're out of bounds
-		if ($metadata['imgDirection'] !== null) {
-			$imgDirection = $metadata['imgDirection'];
-			if ($imgDirection < 0 || $imgDirection > 360) {
-				$metadata['imgDirection'] = null;
-				Logs::notice(__METHOD__, __LINE__, 'GPSImgDirection (' . $imgDirection . ') out of bounds (needs to be between 0 and 360)');
+		if ($metadata->imgDirection !== null) {
+			if ($metadata->imgDirection < 0 || $metadata->imgDirection > 360) {
+				Logs::notice(__METHOD__, __LINE__, 'GPSImgDirection (' . $metadata->imgDirection . ') out of bounds (needs to be between 0 and 360)');
+				$metadata->imgDirection = null;
 			}
 		}
 
@@ -489,40 +418,44 @@ class Extractor
 		if ($exif->getCountry() !== false) {
 			$fields[] = trim($exif->getCountry());
 		}
-		if (!empty($fields)) {
-			$metadata['position'] = implode(', ', $fields);
+		if (count($fields) !== 0) {
+			$metadata->position = implode(', ', $fields);
 		}
 
-		if ($kind !== 'video') {
-			$metadata['aperture'] = ($exif->getAperture() !== false) ? $exif->getAperture() : '';
-			$metadata['focal'] = ($exif->getFocalLength() !== false) ? $exif->getFocalLength() : '';
-			if ($metadata['focal'] !== '') {
-				$metadata['focal'] = round($metadata['focal']) . ' mm';
+		if (!$isSupportedVideo) {
+			// Media is either a supported photo or an accepted raw file:
+			// properly format aperture and focal
+			$metadata->aperture = ($exif->getAperture() !== false) ? $exif->getAperture() : null;
+			$metadata->focal = ($exif->getFocalLength() !== false) ? $exif->getFocalLength() : null;
+			if ($metadata->focal !== null) {
+				$metadata->focal = round(floatval($metadata->focal)) . self::SUFFIX_MM_UNIT;
 			}
 		} else {
-			// Video -> reuse fields
-			$metadata['aperture'] = ($exif->getDuration() !== false) ? $exif->getDuration() : '';
-			$metadata['focal'] = ($exif->getFramerate() !== false) ? $exif->getFramerate() : '';
+			// Media is a video: Reuse (exploit) fields aperture and focal for duration and framerate
+			$metadata->aperture = ($exif->getDuration() !== false) ? $exif->getDuration() : null;
+			$metadata->focal = ($exif->getFramerate() !== false) ? $exif->getFramerate() : null;
 		}
 
-		if ($metadata['title'] == '') {
-			$metadata['title'] = ($exif->getHeadline() !== false) ? $exif->getHeadline() : '';
+		if ($metadata->title === null || $metadata->title === '') {
+			$metadata->title = ($exif->getHeadline() !== false) ? $exif->getHeadline() : null;
 		}
 
-		if ($metadata['shutter'] !== '') {
-			$metadata['shutter'] = $metadata['shutter'] . ' s';
+		if ($metadata->shutter !== null && $metadata->shutter !== '') {
+			// TODO: If we add the suffix " s" here, we should also normalize the fraction here.
+			// It does not make any sense to strip-off the suffix again in Photo and re-add it again.
+			$metadata->shutter = $metadata->shutter . self::SUFFIX_SEC_UNIT;
 		}
 
 		// Decode location data, it can be longer than is acceptable for DB that's the reason for substr
 		// but only if return value is not null (= function has been disabled)
 		try {
-			$metadata['location'] = Geodecoder::decodeLocation($metadata['latitude'], $metadata['longitude']);
-			if ($metadata['location'] !== null) {
-				$metadata['location'] = substr($metadata['location'], 0, 255);
+			$metadata->location = Geodecoder::decodeLocation($metadata->latitude, $metadata->longitude);
+			if ($metadata->location !== null) {
+				$metadata->location = substr($metadata->location, 0, self::MAX_LOCATION_STRING_LENGTH);
 			}
-		} catch (ExternalComponentFailedException $e) {
+		} catch (ExternalComponentFailedException|StringsException $e) {
 			Handler::reportSafely($e);
-			$metadata['location'] = null;
+			$metadata->location = null;
 		}
 
 		return $metadata;

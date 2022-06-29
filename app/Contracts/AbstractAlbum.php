@@ -5,7 +5,9 @@ namespace App\Contracts;
 use App\Models\Extensions\Thumb;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Livewire\Wireable;
 
 /**
@@ -31,4 +33,8 @@ use Livewire\Wireable;
  */
 interface AbstractAlbum extends \JsonSerializable, Arrayable, Jsonable, Wireable
 {
+	/**
+	 * @return Relation|Builder
+	 */
+	public function photos(): Relation|Builder;
 }

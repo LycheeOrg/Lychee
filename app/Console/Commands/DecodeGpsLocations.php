@@ -47,12 +47,13 @@ class DecodeGpsLocations extends Command
 		$photos = Photo::query()
 			->whereNotNull('latitude')
 			->whereNotNull('longitude')->where(
-			function ($query) {
-				$query->where('location', '=', '')->orWhereNull('location');
-			})
+				function ($query) {
+					$query->where('location', '=', '')->orWhereNull('location');
+				}
+			)
 			->get();
 
-		if (count($photos) == 0) {
+		if (count($photos) === 0) {
 			$this->line('No photos or videos require processing.');
 
 			return 0;

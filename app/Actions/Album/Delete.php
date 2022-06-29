@@ -4,6 +4,7 @@ namespace App\Actions\Album;
 
 use App\Actions\Photo\Delete as PhotoDelete;
 use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
@@ -13,6 +14,8 @@ use App\Models\BaseAlbumImpl;
 use App\Models\TagAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Database\Query\Builder as BaseBuilder;
+use Safe\Exceptions\ArrayException;
+use function Safe\usort;
 
 /**
  * Deletes the albums with the designated IDs **efficiently**.
@@ -101,18 +104,49 @@ class Delete extends Action
 			// \Kalnoy\Nestedset\NodeTrait
 			// I really liked the code of master@0199212 ways better, but it was
 			// simply too inefficient
+
+			// This code also fixes a bug when more than one album with
+			// sub-albums is deleted, i.e. if we delete a "sub-forest".
+			// The original code (of the nested set model) updates the
+			// (lft,rgt)-indices on the DB level for every single deletion.
+			// However, this way deletion of the second albums fails, if the
+			// second album has already been hydrated earlier, because the
+			// indices of the already hydrated models and the indices in the
+			// DB are out-of-sync.
+			// Either all remaining models needs to be re-hydrated aka
+			// "refreshed" from the (already updated) DB after every single
+			// deletion or the update of the DB needs to be postponed until
+			// all models have been deleted.
+			// The latter is more efficient, because we do not reload models
+			// from the DB.
+
+			/** @var array<array{lft: int, rgt:int}> $pendingGapsToMake */
+			$pendingGapsToMake = [];
+			$deleteQuery = Album::query();
+			// First collect all albums to delete in a single query and
+			// memorize which indices need to be updated later.
 			foreach ($albums as $album) {
-				$lft = $album->getLft();
-				$rgt = $album->getRgt();
-				$album
-					->descendants()
-					->orderBy($album->getLftName(), 'desc')
-					->delete();
-				$height = $rgt - $lft + 1;
-				$album->newNestedSetQuery()->makeGap($rgt + 1, -$height);
+				$pendingGapsToMake[] = [
+					'lft' => $album->getLft(),
+					'rgt' => $album->getRgt(),
+				];
+				$deleteQuery->whereDescendantOf($album, 'or', false, true);
+			}
+			// For MySQL deletion must be done in correct order otherwise the
+			// foreign key constraint to `parent_id` fails.
+			$deleteQuery->orderBy('_lft', 'desc')->delete();
+			// _After all_ albums have been deleted, remove the gaps which
+			// have been created by the removed albums.
+			// Note, the gaps must be removed beginning with the highest
+			// values first otherwise the later indices won't be correct.
+			// To save some DB queries, we could implement a "makeMultiGap".
+			usort($pendingGapsToMake, fn ($a, $b) => $b['lft'] <=> $a['lft']);
+			foreach ($pendingGapsToMake as $pendingGap) {
+				$height = $pendingGap['rgt'] - $pendingGap['lft'] + 1;
+				(new Album())->newNestedSetQuery()->makeGap($pendingGap['rgt'] + 1, -$height);
 				Album::$actionsPerformed++;
 			}
-			Album::query()->whereIn('id', $albumIDs)->delete();
+
 			TagAlbum::query()->whereIn('id', $albumIDs)->delete();
 
 			// Note, we may need to delete more base albums than those whose
@@ -135,14 +169,14 @@ class Delete extends Action
 				// Sic! We cannot do anything about the inner exception
 			}
 			throw ModelDBException::create('albums', 'deleting', $e);
-		} catch (\InvalidArgumentException $e) {
+		} catch (\InvalidArgumentException|ArrayException $e) {
 			try {
 				// if anything goes wrong, don't leave the tree in an inconsistent state
 				Album::query()->fixTree();
 			} catch (\Throwable) {
 				// Sic! We cannot do anything about the inner exception
 			}
-			assert(false, new \AssertionError('\InvalidArgumentException must not be thrown by ->where', $e->getCode(), $e));
+			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 	}
 }

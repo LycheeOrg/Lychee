@@ -16,13 +16,10 @@ class RandomIDListRule implements Rule
 			return false;
 		}
 		$randomIDs = explode(',', $value);
-		if (!is_array($randomIDs) || count($randomIDs) === 0) {
-			return false;
-		}
 		$idRule = new RandomIDRule(false);
 		$success = true;
 		foreach ($randomIDs as $randomID) {
-			$success &= $idRule->passes('', $randomID);
+			$success = $success && $idRule->passes('', $randomID);
 		}
 
 		return $success;

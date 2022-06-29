@@ -5,12 +5,14 @@ namespace App\Console\Commands;
 use App\Actions\Import\Exec;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\Contracts\ExternalLycheeException;
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\UnexpectedException;
 use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Configs;
 use Exception;
 use Illuminate\Console\Command;
+use function Safe\sprintf;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class Sync extends Command
@@ -24,14 +26,14 @@ class Sync extends Command
 	 * @var string
 	 */
 	protected $signature =
-		'lychee:sync ' .
-		'{dir : directory to sync} ' .
-		'{--album_id= : Album ID to import to} ' .
-		'{--owner_id=0 : Owner ID of imported photos} ' .
-		'{--resync_metadata : Re-sync metadata of existing files}  ' .
-		'{--delete_imported=%s : Delete the original files} ' .
-		'{--import_via_symlink=%s : Imports photos from via a symlink instead of copying the files} ' .
-		'{--skip_duplicates=%s : Don\'t skip photos and albums if they already exist in the gallery}';
+	'lychee:sync ' .
+		'{dir : directory to sync} ' . // string
+		'{--album_id= : Album ID to import to} ' . // string or null
+		'{--owner_id=0 : Owner ID of imported photos} ' . // string
+		'{--resync_metadata : Re-sync metadata of existing files}  ' . // bool
+		'{--delete_imported=%s : Delete the original files} ' . // string
+		'{--import_via_symlink=%s : Imports photos from via a symlink instead of copying the files} ' . // string
+		'{--skip_duplicates=%s : Don\'t skip photos and albums if they already exist in the gallery}'; // string
 
 	/**
 	 * The console command description.
@@ -43,12 +45,19 @@ class Sync extends Command
 	public function __construct()
 	{
 		// Fill signature with default values from user configuration
-		$this->signature = sprintf(
-			$this->signature,
-			Configs::get_value('delete_imported', '0'),
-			Configs::get_value('import_via_symlink', '0'),
-			Configs::get_value('skip_duplicates', '0')
-		);
+		try {
+			$this->signature = sprintf(
+				$this->signature,
+				Configs::getValueAsString('delete_imported'),
+				Configs::getValueAsString('import_via_symlink'),
+				Configs::getValueAsString('skip_duplicates')
+			);
+		} catch (ConfigurationKeyMissingException) {
+			// Catching this exception is necessary as artisan package:discover
+			// is called after each composer installation/update and artisan
+			// tries to instantiate every command.
+			$this->signature = sprintf($this->signature, '0', '0', '0');
+		}
 		parent::__construct();
 	}
 
@@ -63,13 +72,25 @@ class Sync extends Command
 	{
 		try {
 			$directory = $this->argument('dir');
+			if (is_array($directory) || $directory === null) {
+				$this->error('Synchronize one folder at a time.');
+
+				return 1;
+			}
 			$owner_id = (int) $this->option('owner_id'); // in case no ID provided -> import as root user
-			$album_id = ((string) $this->option('album_id')) ?: null; // in case no ID provided -> import to root folder
+			$album_id = $this->option('album_id'); // in case no ID provided -> import to root folder
+			if (is_array($album_id)) {
+				$this->error('Only one value for album_id is allowed.');
+
+				return 1;
+			}
 			/** @var Album $album */
-			$album = $album_id ? Album::query()->findOrFail($album_id) : null; // in case no ID provided -> import to root folder
+			$album = $album_id !== null ? Album::query()->findOrFail($album_id) : null; // in case no ID provided -> import to root folder
 
 			$deleteImported = $this->option('delete_imported') === '1';
 			$importViaSymlink = $this->option('import_via_symlink') === '1';
+			$skipDuplicates = $this->option('skip_duplicates') === '1';
+			$resyncMetadata = $this->option('resync_metadata') === true; // ! Because the option is --resync_metadata the return type of $this->option() is already bool.
 
 			if ($importViaSymlink && $deleteImported) {
 				$this->error('The settings for import via symbolic links and deletion of imported files are conflicting');
@@ -81,9 +102,9 @@ class Sync extends Command
 			$exec = new Exec(
 				new ImportMode(
 					$deleteImported,
-					$this->option('import_via_symlink') === '1',
+					$skipDuplicates,
 					$importViaSymlink,
-					$this->option('resync_metadata')
+					$resyncMetadata
 				),
 				true,
 				0

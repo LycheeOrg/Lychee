@@ -1379,7 +1379,7 @@ class RefactorModels extends Migration
 				continue;
 			}
 			$originalSizeVariant = $sizeVariants->first();
-			if ($originalSizeVariant->type != self::VARIANT_ORIGINAL) {
+			if ($originalSizeVariant->type !== self::VARIANT_ORIGINAL) {
 				continue;
 			}
 
@@ -1409,23 +1409,23 @@ class RefactorModels extends Migration
 			foreach ($sizeVariants as $sizeVariant) {
 				$fileExtension = '.' . pathinfo($sizeVariant->short_path, PATHINFO_EXTENSION);
 				if (
-					$sizeVariant->type == self::VARIANT_THUMB2X ||
-					$sizeVariant->type == self::VARIANT_SMALL2X ||
-					$sizeVariant->type == self::VARIANT_MEDIUM2X
+					$sizeVariant->type === self::VARIANT_THUMB2X ||
+					$sizeVariant->type === self::VARIANT_SMALL2X ||
+					$sizeVariant->type === self::VARIANT_MEDIUM2X
 				) {
 					$expectedFilename = $expectedBasename . '@2x' . $fileExtension;
 				} else {
 					$expectedFilename = $expectedBasename . $fileExtension;
 				}
 				$expectedPathPrefix = self::VARIANT_2_PATH_PREFIX[$sizeVariant->type] . '/';
-				if ($sizeVariant->type == self::VARIANT_ORIGINAL && $this->isRaw($photo)) {
+				if ($sizeVariant->type === self::VARIANT_ORIGINAL && $this->isRaw($photo)) {
 					$expectedPathPrefix = 'raw/';
 				}
 				$expectedShortPath = $expectedPathPrefix . $expectedFilename;
 
 				// Ensure that the size variant is stored at the location which
 				// is expected acc. to the old naming scheme
-				if ($sizeVariant->short_path != $expectedShortPath) {
+				if ($sizeVariant->short_path !== $expectedShortPath) {
 					try {
 						Storage::move($sizeVariant->short_path, $expectedShortPath);
 					} catch (FileNotFoundException $e) {
@@ -1438,12 +1438,12 @@ class RefactorModels extends Migration
 					}
 				}
 
-				if ($sizeVariant->type == self::VARIANT_THUMB2X) {
+				if ($sizeVariant->type === self::VARIANT_THUMB2X) {
 					$photoAttributes['thumb2x'] = true;
-				} elseif ($sizeVariant->type == self::VARIANT_THUMB) {
+				} elseif ($sizeVariant->type === self::VARIANT_THUMB) {
 					$photoAttributes['thumbUrl'] = $expectedFilename;
 				} else {
-					if ($sizeVariant->type == self::VARIANT_ORIGINAL) {
+					if ($sizeVariant->type === self::VARIANT_ORIGINAL) {
 						$photoAttributes['url'] = $expectedFilename;
 					}
 					$photoAttributes[self::VARIANT_2_WIDTH_ATTRIBUTE[$sizeVariant->type]] = $sizeVariant->width;
@@ -1686,7 +1686,7 @@ class RefactorModels extends Migration
 
 	protected function isRaw(object $photo): bool
 	{
-		return $photo->type == 'raw';
+		return $photo->type === 'raw';
 	}
 
 	/**
@@ -1757,12 +1757,12 @@ class RefactorModels extends Migration
 	 */
 	protected function hasSizeVariant(object $photo, int $variantType): bool
 	{
-		if ($variantType == self::VARIANT_ORIGINAL || $variantType == self::VARIANT_THUMB) {
+		if ($variantType === self::VARIANT_ORIGINAL || $variantType === self::VARIANT_THUMB) {
 			return true;
-		} elseif ($variantType == self::VARIANT_THUMB2X) {
+		} elseif ($variantType === self::VARIANT_THUMB2X) {
 			return (bool) ($photo->thumb2x);
 		} else {
-			return $this->getWidth($photo, $variantType) != 0;
+			return $this->getWidth($photo, $variantType) !== 0;
 		}
 	}
 
@@ -1919,11 +1919,15 @@ class RefactorModels extends Migration
 		try {
 			try {
 				$originalCreatedAt = Carbon::createFromFormat(
-					'Y-m-d H:i:s.u', $sqlCreatedAt, 'UTC'
+					'Y-m-d H:i:s.u',
+					$sqlCreatedAt,
+					'UTC'
 				);
 			} catch (InvalidFormatException $e) {
 				$originalCreatedAt = Carbon::createFromFormat(
-					'Y-m-d H:i:s', $sqlCreatedAt, 'UTC'
+					'Y-m-d H:i:s',
+					$sqlCreatedAt,
+					'UTC'
 				);
 			}
 
@@ -1938,12 +1942,12 @@ class RefactorModels extends Migration
 		} catch (\RangeException $e) {
 			$this->printWarning(
 				'Model ID ' . $legacyID . ' - ' .
-				class_basename($e) . ' - ' . $e->getMessage()
+					class_basename($e) . ' - ' . $e->getMessage()
 			);
 		} catch (\Throwable $e) {
 			$this->printError(
 				'Model ID ' . $legacyID . ' - ' .
-				class_basename($e) . ' - ' . $e->getMessage()
+					class_basename($e) . ' - ' . $e->getMessage()
 			);
 		}
 

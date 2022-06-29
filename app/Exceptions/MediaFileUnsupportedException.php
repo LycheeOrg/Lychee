@@ -12,7 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class MediaFileUnsupportedException extends LycheeBaseException
 {
-	public function __construct(string $msg, \Throwable $previous = null)
+	public const DEFAULT_MESSAGE = 'File format not supported';
+
+	public function __construct(string $msg = self::DEFAULT_MESSAGE, \Throwable $previous = null)
 	{
 		parent::__construct(Response::HTTP_UNPROCESSABLE_ENTITY, $msg, $previous);
 	}

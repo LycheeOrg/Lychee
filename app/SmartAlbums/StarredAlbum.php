@@ -19,16 +19,15 @@ class StarredAlbum extends BaseSmartAlbum
 		parent::__construct(
 			self::ID,
 			self::TITLE,
-			Configs::get_value('public_starred', '0') === '1',
+			Configs::getValueAsBool('public_starred'),
 			fn (Builder $q) => $q->where('photos.is_starred', '=', true)
 		);
 	}
 
 	public static function getInstance(): self
 	{
-		if (!self::$instance) {
-			self::$instance = new self();
-		}
+		self::$instance ??= new self();
+
 		// The following two lines are only needed due to testing.
 		// The same instance of this class is used for all tests, because
 		// the singleton stays alive during tests.

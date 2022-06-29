@@ -2,20 +2,23 @@
 
 namespace App\Console\Commands;
 
-use App\Actions\Photo\Extensions\Constants;
 use App\Contracts\ExternalLycheeException;
 use App\Contracts\LycheeException;
 use App\Contracts\SizeVariantFactory;
 use App\Exceptions\UnexpectedException;
+use App\Image\MediaFile;
 use App\Metadata\Extractor;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
+use Safe\Exceptions\InfoException;
+use function Safe\set_time_limit;
+use function Safe\sprintf;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class VideoData extends Command
 {
-	use Constants;
-
 	/**
 	 * The name and signature of the console command.
 	 *
@@ -31,24 +34,6 @@ class VideoData extends Command
 	protected $description = 'Generate video thumbnails and metadata if missing';
 
 	/**
-	 * @var Extractor
-	 */
-	private Extractor $metadataExtractor;
-
-	/**
-	 * Create a new command instance.
-	 *
-	 * @param Extractor $metadataExtractor
-	 *
-	 * @throws SymfonyConsoleException
-	 */
-	public function __construct(Extractor $metadataExtractor)
-	{
-		parent::__construct();
-		$this->metadataExtractor = $metadataExtractor;
-	}
-
-	/**
 	 * Execute the console command.
 	 *
 	 * @return int
@@ -57,25 +42,33 @@ class VideoData extends Command
 	 */
 	public function handle(): int
 	{
+		$timeout = intval($this->argument('timeout'));
+		$count = intval($this->argument('count'));
 		try {
-			set_time_limit($this->argument('timeout'));
+			try {
+				set_time_limit($timeout);
+			} catch (InfoException) {
+				// Silently do nothing, if `set_time_limit` is denied.
+			}
 
 			$this->line(
 				sprintf(
-					'Will attempt to generate up to %s video thumbnails/metadata with a timeout of %d seconds...',
-					$this->argument('count'),
-					$this->argument('timeout')
+					'Will attempt to generate up to %d video thumbnails/metadata with a timeout of %d seconds...',
+					$count,
+					$timeout
 				)
 			);
 
 			$photos = Photo::query()
 				->with(['size_variants'])
-				->whereIn('type', $this->getValidVideoTypes())
-				->where('width', '=', 0)
-				->take($this->argument('count'))
+				->whereIn('type', MediaFile::SUPPORTED_VIDEO_MIME_TYPES)
+				->whereDoesntHave('size_variants', function (Builder $query) {
+					$query->where('type', '=', SizeVariant::THUMB);
+				})
+				->take($count)
 				->get();
 
-			if (count($photos) == 0) {
+			if (count($photos) === 0) {
 				$this->line('No videos require processing');
 
 				return 0;
@@ -87,38 +80,35 @@ class VideoData extends Command
 			foreach ($photos as $photo) {
 				$this->line('Processing ' . $photo->title . '...');
 				$originalSizeVariant = $photo->size_variants->getOriginal();
-				$fullPath = $originalSizeVariant->full_path;
+				$file = $originalSizeVariant->getFile()->toLocalFile();
 
-				if (file_exists($fullPath)) {
-					$info = $this->metadataExtractor->extract($fullPath, 'video');
+				$info = Extractor::createFromFile($file);
 
-					if ($originalSizeVariant->width == 0 && $info['width'] !== 0) {
-						$originalSizeVariant->width = $info['width'];
-					}
-					if ($originalSizeVariant->height == 0 && $info['height'] !== 0) {
-						$originalSizeVariant->height = $info['height'];
-					}
-					if ($photo->focal == '' && $info['focal'] !== '') {
-						$photo->focal = $info['focal'];
-					}
-					if ($photo->aperture == '' && $info['aperture'] !== '') {
-						$photo->aperture = $info['aperture'];
-					}
-					if ($photo->latitude == null && $info['latitude'] !== null) {
-						$photo->latitude = floatval($info['latitude']);
-					}
-					if ($photo->longitude == null && $info['longitude'] !== null) {
-						$photo->longitude = floatval($info['longitude']);
-					}
-					if ($photo->isDirty()) {
-						$this->line('Updated metadata');
-					}
-
-					$sizeVariantFactory->init($photo);
-					$sizeVariantFactory->createSizeVariants();
-				} else {
-					$this->line('File does not exist');
+				if ($originalSizeVariant->width === 0 && $info->width !== 0) {
+					$originalSizeVariant->width = $info->width;
 				}
+				if ($originalSizeVariant->height === 0 && $info->height !== 0) {
+					$originalSizeVariant->height = $info->height;
+				}
+				if ($photo->focal === null) {
+					$photo->focal = $info->focal;
+				}
+				if ($photo->aperture === null) {
+					$photo->aperture = $info->aperture;
+				}
+				if ($photo->latitude === null) {
+					$photo->latitude = $info->latitude;
+				}
+				if ($photo->longitude === null) {
+					$photo->longitude = $info->longitude;
+				}
+				if ($photo->isDirty()) {
+					$this->line('Updated metadata');
+				}
+
+				// TODO: Fix this line before PR; init needs more parameters
+				$sizeVariantFactory->init($photo);
+				$sizeVariantFactory->createSizeVariants();
 
 				$photo->save();
 			}

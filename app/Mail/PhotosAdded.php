@@ -23,7 +23,7 @@ class PhotosAdded extends Mailable
 	public function __construct(array $photos)
 	{
 		$this->photos = $photos;
-		$this->title = Configs::get_value('site_title', '');
+		$this->title = Configs::getValueAsString('site_title');
 	}
 
 	/**
@@ -35,6 +35,7 @@ class PhotosAdded extends Mailable
 	{
 		return $this->markdown('emails.photos-added', [
 			'title' => $this->title,
+			'photos' => $this->photos,
 		]);
 	}
 }

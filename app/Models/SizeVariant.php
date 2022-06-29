@@ -40,26 +40,27 @@ use League\Flysystem\Adapter\Local;
  *
  * Describes a size variant of a photo.
  *
- * @property int                 id
- * @property string              photo_id
- * @property Photo               photo
- * @property int                 type
- * @property string              short_path
- * @property string              url
- * @property string              full_path
- * @property int                 width
- * @property int                 height
- * @property int                 filesize
- * @property Collection<SymLink> sym_links
+ * @property int                 $id
+ * @property string              $photo_id
+ * @property Photo               $photo
+ * @property int                 $type
+ * @property string              $short_path
+ * @property string              $url
+ * @property string              $full_path
+ * @property int                 $width
+ * @property int                 $height
+ * @property int                 $filesize
+ * @property Collection<SymLink> $sym_links
+ *
+ * @phpstan-property int<0,6>   $type
  */
 class SizeVariant extends Model
 {
 	use UTCBasedTimes;
 	use HasAttributesPatch;
 	use HasBidirectionalRelationships;
-	use ThrowsConsistentExceptions {
-		ThrowsConsistentExceptions::delete as private internalDelete;
-	}
+	use ThrowsConsistentExceptions;
+	/** @phpstan-use UseFixedQueryBuilder<SizeVariant> */
 	use UseFixedQueryBuilder;
 
 	public const ORIGINAL = 0;
@@ -78,6 +79,9 @@ class SizeVariant extends Model
 	 */
 	public $timestamps = false;
 
+	/**
+	 * @var string[]
+	 */
 	protected $casts = [
 		'id' => 'integer',
 		'type' => 'integer',
@@ -149,15 +153,15 @@ class SizeVariant extends Model
 	public function getUrlAttribute(): string
 	{
 		if (
-			(AccessControl::is_admin() && Configs::get_value('SL_for_admin', '0') === '0') ||
-			Configs::get_value('SL_enable', '0') == '0'
+			AccessControl::is_admin() && !Configs::getValueAsBool('SL_for_admin') ||
+			!Configs::getValueAsBool('SL_enable')
 		) {
 			return Storage::url($this->short_path);
 		}
 
 		// In order to allow a grace period, we create a new symbolic link,
 		// if the most recent existing link has reached 2/3 of its lifetime
-		$maxLifetime = intval(Configs::get_value('SL_life_time_days', '3')) * 24 * 60 * 60;
+		$maxLifetime = Configs::getValueAsInt('SL_life_time_days') * 24 * 60 * 60;
 		$gracePeriod = $maxLifetime / 3;
 
 		$storageAdapter = Storage::disk()->getDriver()->getAdapter();
@@ -170,7 +174,7 @@ class SizeVariant extends Model
 		if ($storageAdapter instanceof Local) {
 			/** @var ?SymLink $symLink */
 			$symLink = $this->sym_links()->latest()->first();
-			if ($symLink == null || $symLink->created_at->isBefore(now()->subSeconds($gracePeriod))) {
+			if ($symLink === null || $symLink->created_at->isBefore(now()->subSeconds($gracePeriod))) {
 				/** @var SymLink $symLink */
 				$symLink = $this->sym_links()->create();
 			}
@@ -215,9 +219,16 @@ class SizeVariant extends Model
 	 *
 	 * @throws InvalidSizeVariantException thrown if `$sizeVariantType` is
 	 *                                     out-of-bounds
+	 *
+	 * @phpstan-param int<0,6> $sizeVariantType
 	 */
-	public function setSizeVariantAttribute(int $sizeVariantType): void
+	public function setTypeAttribute(int $sizeVariantType): void
 	{
+		// This method is also invoked if the model is hydrated from the DB.
+		// Hence, we cannot ensure by static code analyzing that the
+		// restriction `int<0,6>` always holds.
+		// We must check at runtime, too.
+		// @phpstan-ignore-next-line
 		if (self::ORIGINAL > $sizeVariantType || $sizeVariantType > self::THUMB) {
 			throw new InvalidSizeVariantException('passed size variant ' . $sizeVariantType . ' out-of-range');
 		}

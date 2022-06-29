@@ -44,7 +44,7 @@ class PhotosAddedNotification extends Command
 	 */
 	public function handle(): int
 	{
-		if (Configs::get_Value('new_photos_notification', '0') !== '1') {
+		if (!Configs::getValueAsBool('new_photos_notification')) {
 			return 0;
 		}
 		$users = User::query()->whereNotNull('email')->get();
@@ -55,12 +55,12 @@ class PhotosAddedNotification extends Command
 
 			/** @var DatabaseNotification $notification */
 			foreach ($user->unreadNotifications()->get() as $notification) {
-				/** @var Photo $photo */
+				/** @var Photo|null $photo */
 				$photo = Photo::query()
 					->with(['size_variants', 'size_variants.sym_links'])
 					->find($notification->data['id']);
 
-				if ($photo) {
+				if ($photo !== null) {
 					if (!isset($photos[$photo->album_id])) {
 						$photos[$photo->album_id] = [
 							'name' => $photo->album->title,
@@ -69,7 +69,6 @@ class PhotosAddedNotification extends Command
 					}
 
 					$thumbUrl = $photo->size_variants->getThumb()?->url;
-					logger($thumbUrl);
 
 					// If the url config doesn't contain a trailing slash then add it
 					if (str_ends_with(config('app.url'), '/')) {
@@ -79,6 +78,7 @@ class PhotosAddedNotification extends Command
 					}
 
 					$photos[$photo->album_id]['photos'][$photo->id] = [
+						'title' => $photo->title,
 						'thumb' => $thumbUrl,
 						// TODO: Clean this up. There should be a better way to get the URL of a photo than constructing it manually
 						'link' => config('app.url') . $trailing_slash . 'r/' . $photo->album_id . '/' . $photo->id,

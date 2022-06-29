@@ -6,7 +6,6 @@ use App\Actions\Photo\Archive;
 use App\Actions\Photo\Create;
 use App\Actions\Photo\Delete;
 use App\Actions\Photo\Duplicate;
-use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\Actions\User\Notify;
 use App\Contracts\InternalLycheeException;
@@ -28,6 +27,7 @@ use App\Http\Requests\Photo\SetPhotosStarredRequest;
 use App\Http\Requests\Photo\SetPhotosTagsRequest;
 use App\Http\Requests\Photo\SetPhotosTitleRequest;
 use App\Image\TemporaryLocalFile;
+use App\Image\UploadedFile;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -77,7 +77,11 @@ class PhotoController extends Controller
 	 */
 	public function getRandom(): Photo
 	{
-		return StarredAlbum::getInstance()->photos()->inRandomOrder()
+		// PHPStan does not understand that `firstOrFail` returns `Photo`, but assumes that it returns `Model`
+		// @phpstan-ignore-next-line
+		return StarredAlbum::getInstance()
+			->photos()
+			->inRandomOrder()
 			->firstOrFail();
 	}
 
@@ -93,10 +97,6 @@ class PhotoController extends Controller
 	 */
 	public function add(AddPhotoRequest $request): Photo
 	{
-		$sourceFileInfo = SourceFileInfo::createByUploadedFile(
-			$request->uploadedFile()
-		);
-
 		// This code is a nasty work-around which should not exist.
 		// PHP stores a temporary copy of the uploaded file without a file
 		// extension.
@@ -114,27 +114,24 @@ class PhotoController extends Controller
 		// image than the Lychee installation.
 		// Hence, we must make a deep copy.
 		// TODO: Remove this code again, if all other TODOs regarding MIME and file handling are properly refactored and we have stopped using absolute file paths as the least common denominator to pass around files.
-		$uploadedFile = $sourceFileInfo->getFile();
-		$copiedFile = new TemporaryLocalFile($sourceFileInfo->getOriginalExtension());
+		$uploadedFile = new UploadedFile($request->uploadedFile());
+		$copiedFile = new TemporaryLocalFile(
+			$uploadedFile->getOriginalExtension(),
+			$uploadedFile->getOriginalBasename()
+		);
 		$copiedFile->write($uploadedFile->read());
 		$uploadedFile->close();
 		$uploadedFile->delete();
-		// Reset source file info to the new copy
-		$sourceFileInfo = SourceFileInfo::createByTempFile(
-			$sourceFileInfo->getOriginalName(),
-			$sourceFileInfo->getOriginalExtension(),
-			$copiedFile
-		);
 		// End of work-around
 
 		// As the file has been uploaded, the (temporary) source file shall be
 		// deleted
 		$create = new Create(new ImportMode(
 			true,
-			Configs::get_value('skip_duplicates', '0') === '1'
+			Configs::getValueAsBool('skip_duplicates')
 		));
 
-		return $create->add($sourceFileInfo, $request->album());
+		return $create->add($copiedFile, $request->album());
 	}
 
 	/**
@@ -248,7 +245,7 @@ class PhotoController extends Controller
 			// Avoid unnecessary DB request, when we access the album of a
 			// photo later (e.g. when a notification is sent).
 			$photo->setRelation('album', $album);
-			if ($album) {
+			if ($album !== null) {
 				$photo->owner_id = $album->owner_id;
 			}
 			$photo->save();

@@ -53,7 +53,7 @@ class Npm extends Command
 					$this->line($retline);
 				}
 			}
-			if ($argument == 'start') {
+			if ($argument === 'start') {
 				$cmd = 'cd public/Lychee-front; npm start';
 			} else {
 				$cmd = 'cd public/Lychee-front; npm run compile';

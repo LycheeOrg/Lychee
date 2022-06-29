@@ -48,8 +48,11 @@ class Diagnostics extends Command
 
 	/**
 	 * Format the block.
+	 *
+	 * @param string        $str
+	 * @param array<string> $array
 	 */
-	private function block(string $str, array $array)
+	private function block(string $str, array $array): void
 	{
 		$this->line($this->col->cyan($str));
 		$this->line($this->col->cyan(str_pad('', strlen($str), '-')));

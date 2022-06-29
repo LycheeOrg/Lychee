@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
+
 namespace Tests\Feature;
 
 use App\Facades\AccessControl;
@@ -9,7 +19,7 @@ use Tests\TestCase;
 
 class UpdateTest extends TestCase
 {
-	public function testDoNotLogged()
+	public function testDoNotLogged(): void
 	{
 		$response = $this->get('/Update', []);
 		$response->assertForbidden();
@@ -21,9 +31,9 @@ class UpdateTest extends TestCase
 		$response->assertForbidden();
 	}
 
-	public function testDoLogged()
+	public function testDoLogged(): void
 	{
-		$gitpull = Configs::get_value('allow_online_git_pull', '0');
+		$gitpull = Configs::getValue('allow_online_git_pull', '0');
 
 		AccessControl::log_as_id(0);
 

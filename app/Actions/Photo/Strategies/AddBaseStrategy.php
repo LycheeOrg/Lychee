@@ -3,14 +3,18 @@
 namespace App\Actions\Photo\Strategies;
 
 use App\Exceptions\ConfigurationException;
+use App\Exceptions\Internal\LycheeAssertionError;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Image\FlysystemFile;
+use App\Image\MediaFile;
 use App\Image\NativeLocalFile;
 use App\Models\Photo;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Adapter\Local;
+use function Safe\symlink;
 
 abstract class AddBaseStrategy
 {
@@ -35,7 +39,7 @@ abstract class AddBaseStrategy
 
 	/**
 	 * Hydrates meta-info of the media file from the
-	 * {@link AddStrategyParameters::$info} attribute of the associated
+	 * {@link AddStrategyParameters::$exifInfo} attribute of the associated
 	 * {@link AddStrategyParameters} object into the associated {@link Photo}
 	 * object.
 	 *
@@ -48,71 +52,65 @@ abstract class AddBaseStrategy
 	 * all available meta-data is hydrated, but for an already existing
 	 * {@link Photo} object existing attributes are not overwritten.
 	 */
-	protected function hydrateMetadata()
+	protected function hydrateMetadata(): void
 	{
-		if (empty($this->photo->title) && !empty($this->parameters->info['title'])) {
-			$this->photo->title = $this->parameters->info['title'];
+		if ($this->photo->title === null) {
+			$this->photo->title = $this->parameters->exifInfo->title;
 		}
-		if (empty($this->photo->description) && !empty($this->parameters->info['description'])) {
-			$this->photo->description = $this->parameters->info['description'];
+		if ($this->photo->description === null) {
+			$this->photo->description = $this->parameters->exifInfo->description;
 		}
-		if (empty($this->photo->tags) && !empty($this->parameters->info['tags'])) {
-			$this->photo->tags = $this->parameters->info['tags'];
+		if (count($this->photo->tags) === 0) {
+			$this->photo->tags = $this->parameters->exifInfo->tags;
 		}
-		if (empty($this->photo->type) && !empty($this->parameters->info['type'])) {
-			$this->photo->type = $this->parameters->info['type'];
+		if ($this->photo->type === null) {
+			$this->photo->type = $this->parameters->exifInfo->type;
 		}
-		if (empty($this->photo->checksum) && !empty($this->parameters->info['checksum'])) {
-			$this->photo->checksum = $this->parameters->info['checksum'];
+		if ($this->photo->iso === null) {
+			$this->photo->iso = $this->parameters->exifInfo->iso;
 		}
-		if (empty($this->photo->original_checksum) && !empty($this->parameters->info['checksum'])) {
-			$this->photo->original_checksum = $this->parameters->info['checksum'];
+		if ($this->photo->aperture === null) {
+			$this->photo->aperture = $this->parameters->exifInfo->aperture;
 		}
-		if (empty($this->photo->iso) && !empty($this->parameters->info['iso'])) {
-			$this->photo->iso = $this->parameters->info['iso'];
+		if ($this->photo->make === null) {
+			$this->photo->make = $this->parameters->exifInfo->make;
 		}
-		if (empty($this->photo->aperture) && !empty($this->parameters->info['aperture'])) {
-			$this->photo->aperture = $this->parameters->info['aperture'];
+		if ($this->photo->model === null) {
+			$this->photo->model = $this->parameters->exifInfo->model;
 		}
-		if (empty($this->photo->make) && !empty($this->parameters->info['make'])) {
-			$this->photo->make = $this->parameters->info['make'];
+		if ($this->photo->lens === null) {
+			$this->photo->lens = $this->parameters->exifInfo->lens;
 		}
-		if (empty($this->photo->model) && !empty($this->parameters->info['model'])) {
-			$this->photo->model = $this->parameters->info['model'];
+		if ($this->photo->shutter === null) {
+			$this->photo->shutter = $this->parameters->exifInfo->shutter;
 		}
-		if (empty($this->photo->lens) && !empty($this->parameters->info['lens'])) {
-			$this->photo->lens = $this->parameters->info['lens'];
+		if ($this->photo->focal === null) {
+			$this->photo->focal = $this->parameters->exifInfo->focal;
 		}
-		if (empty($this->photo->shutter) && !empty($this->parameters->info['shutter'])) {
-			$this->photo->shutter = $this->parameters->info['shutter'];
+		if ($this->photo->taken_at === null) {
+			$this->photo->taken_at = $this->parameters->exifInfo->taken_at;
 		}
-		if (empty($this->photo->focal) && !empty($this->parameters->info['focal'])) {
-			$this->photo->focal = $this->parameters->info['focal'];
+		if ($this->photo->latitude === null) {
+			$this->photo->latitude = $this->parameters->exifInfo->latitude;
 		}
-		if ($this->photo->taken_at === null && !empty($this->parameters->info['taken_at'])) {
-			$this->photo->taken_at = $this->parameters->info['taken_at'];
+		if ($this->photo->longitude === null) {
+			$this->photo->longitude = $this->parameters->exifInfo->longitude;
 		}
-		if ($this->photo->latitude === null && !empty($this->parameters->info['latitude'])) {
-			$this->photo->latitude = floatval($this->parameters->info['latitude']);
+		if ($this->photo->altitude === null) {
+			$this->photo->altitude = $this->parameters->exifInfo->altitude;
 		}
-		if ($this->photo->longitude === null && !empty($this->parameters->info['longitude'])) {
-			$this->photo->longitude = floatval($this->parameters->info['longitude']);
+		if ($this->photo->img_direction === null) {
+			$this->photo->img_direction = $this->parameters->exifInfo->imgDirection;
 		}
-		if ($this->photo->altitude === null && !empty($this->parameters->info['altitude'])) {
-			$this->photo->altitude = floatval($this->parameters->info['altitude']);
+		if ($this->photo->location === null) {
+			$this->photo->location = $this->parameters->exifInfo->location;
 		}
-		if ($this->photo->img_direction === null && !empty($this->parameters->info['imgDirection'])) {
-			$this->photo->img_direction = floatval($this->parameters->info['imgDirection']);
-		}
-		if (empty($this->photo->location) && !empty($this->parameters->info['location'])) {
-			$this->photo->location = $this->parameters->info['location'];
-		}
-		if (empty($this->photo->live_photo_content_id) && !empty($this->parameters->info['live_photo_content_id'])) {
-			$this->photo->live_photo_content_id = $this->parameters->info['live_photo_content_id'];
+		if ($this->photo->live_photo_content_id === null) {
+			$this->photo->live_photo_content_id = $this->parameters->exifInfo->livePhotoContentID;
 		}
 	}
 
-	protected function setParentAndOwnership()
+	protected function setParentAndOwnership(): void
 	{
 		if ($this->parameters->album !== null) {
 			$this->photo->album_id = $this->parameters->album->id;
@@ -132,15 +130,16 @@ abstract class AddBaseStrategy
 	/**
 	 * Moves/copies/symlinks source file to final destination.
 	 *
-	 * @param string $targetPath the path of the final destination relative to
-	 *                           the disk {@link AddBaseStrategy::IMAGE_DISK_NAME}
+	 * @param MediaFile $sourceFile the source file
+	 * @param string    $targetPath the path of the final destination relative
+	 *                              to the disk
+	 *                              {@link AddBaseStrategy::IMAGE_DISK_NAME}
 	 *
 	 * @throws MediaFileOperationException
 	 * @throws ConfigurationException
 	 */
-	protected function putSourceIntoFinalDestination(string $targetPath): void
+	protected function putSourceIntoFinalDestination(MediaFile $sourceFile, string $targetPath): void
 	{
-		$sourceFile = $this->parameters->sourceFileInfo->getFile();
 		$targetFile = new FlysystemFile(Storage::disk(self::IMAGE_DISK_NAME), $targetPath);
 		$isTargetLocal = $targetFile->getStorageAdapter() instanceof Local;
 		if ($this->parameters->importMode->shallImportViaSymlink()) {
@@ -152,8 +151,10 @@ abstract class AddBaseStrategy
 			}
 			$targetAbsolutePath = $targetFile->getAbsolutePath();
 			$sourceAbsolutePath = $sourceFile->getAbsolutePath();
-			if (!symlink($sourceAbsolutePath, $targetAbsolutePath)) {
-				throw new MediaFileOperationException('Could not create symbolic link at "' . $targetAbsolutePath . '" for photo at "' . $sourceAbsolutePath . '"');
+			try {
+				symlink($sourceAbsolutePath, $targetAbsolutePath);
+			} catch (\Throwable $e) {
+				throw new MediaFileOperationException('Could not create symbolic link at "' . $targetAbsolutePath . '" for photo at "' . $sourceAbsolutePath . '"', $e);
 			}
 		} else {
 			try {
@@ -164,11 +165,20 @@ abstract class AddBaseStrategy
 					// readable, but is not writable
 					// In this case, the media file will have been copied, but
 					// cannot be "moved".
-					// TODO: Throw a application-specific exception such that the outer caller can gracefully fallback to "copy"-semantics and return a warning instead of failing entirely.
-					$sourceFile->delete();
+					try {
+						$sourceFile->delete();
+					} catch (MediaFileOperationException $e) {
+						// If deletion failed, we do not cancel the whole
+						// import, but fall back to copy-semantics and
+						// log the exception
+						report($e);
+					}
 				}
-			} catch (\RuntimeException $e) {
-				throw new MediaFileOperationException('Could not move/copy photo', $e);
+			} catch (LycheeLogicException $e) {
+				// the exception is thrown if read/write/close are invoked
+				// in wrong order
+				// something we don't do
+				throw LycheeAssertionError::createFromUnexpectedException($e);
 			}
 		}
 	}

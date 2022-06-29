@@ -36,7 +36,7 @@ class VariantFilesize extends Command
 				->where('filesize', '=', 0)->orderBy('id');
 
 			$count = $variants_query->count();
-			if ($count == 0) {
+			if ($count === 0) {
 				$this->line('All filesize variants already set in database.');
 
 				return $exit_code;
@@ -45,17 +45,16 @@ class VariantFilesize extends Command
 			// Internally, only holds $limit entries at once
 			$variants = $variants_query->lazyById($limit);
 
-			/* @var SizeVariant $variant */
-			$this->withProgressBar($variants, function ($variant) use (&$exit_code) {
-				$fullPath = $variant->getFile()->getAbsolutePath();
-				if (file_exists($fullPath)) {
-					$variant->filesize = filesize($fullPath);
+			$this->withProgressBar($variants, function (SizeVariant $variant) use (&$exit_code) {
+				$variantFile = $variant->getFile();
+				if ($variantFile->exists()) {
+					$variant->filesize = $variantFile->getFilesize();
 					if (!$variant->save()) {
-						$this->line('Failed to update filesize for ' . $fullPath . '.');
+						$this->line('Failed to update filesize for ' . $variantFile->getRelativePath() . '.');
 						$exit_code = -1;
 					}
 				} else {
-					$this->line('No file found at ' . $fullPath . '.');
+					$this->line('No file found at ' . $variantFile->getRelativePath() . '.');
 					$exit_code = -1;
 				}
 			});

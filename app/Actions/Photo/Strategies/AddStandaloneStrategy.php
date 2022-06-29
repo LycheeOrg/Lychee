@@ -2,44 +2,58 @@
 
 namespace App\Actions\Photo\Strategies;
 
-use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
+use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Exceptions\ModelDBException;
 use App\Image\ImageHandlerInterface;
 use App\Image\MediaFile;
+use App\Image\NativeLocalFile;
 use App\Image\TemporaryLocalFile;
 use App\Metadata\Extractor;
 use App\ModelFunctions\MOVFormat;
 use App\Models\Photo;
 use FFMpeg\FFMpeg;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use function Safe\fclose;
+use function Safe\fopen;
+use function Safe\fread;
+use function Safe\fwrite;
+use function Safe\tmpfile;
 
 class AddStandaloneStrategy extends AddBaseStrategy
 {
-	protected Extractor $metadataExtractor;
 	protected ImageHandlerInterface $imageHandler;
+	protected NativeLocalFile $sourceFile;
 
-	public function __construct(AddStrategyParameters $parameters)
+	/**
+	 * @throws FrameworkException
+	 */
+	public function __construct(AddStrategyParameters $parameters, NativeLocalFile $sourceFile)
 	{
-		$newPhoto = new Photo();
-		// We already set the timestamps (`created_at`, `updated_at`) on
-		// initialization time, not save time.
-		// This keeps the creation timestamps ordered as the images are
-		// uploaded/imported.
-		// This should be the most consistent/expected behaviour.
-		// Otherwise, the creation time would reflect the point of time when
-		// Lychee has finished processing the image (rotated, cropped,
-		// generated thumbnails).
-		// This might lead to "race conditions", i.e. some images might
-		// outpace each other.
-		// This would not lead to data loss or worse, but images might
-		// appear in a different order than users expect.
-		$newPhoto->updateTimestamps();
-		parent::__construct($parameters, $newPhoto);
-		$this->metadataExtractor = resolve(Extractor::class);
-		$this->imageHandler = resolve(ImageHandlerInterface::class);
+		try {
+			$newPhoto = new Photo();
+			// We already set the timestamps (`created_at`, `updated_at`) on
+			// initialization time, not save time.
+			// This keeps the creation timestamps ordered as the images are
+			// uploaded/imported.
+			// This should be the most consistent/expected behaviour.
+			// Otherwise, the creation time would reflect the point of time when
+			// Lychee has finished processing the image (rotated, cropped,
+			// generated thumbnails).
+			// This might lead to "race conditions", i.e. some images might
+			// outpace each other.
+			// This would not lead to data loss or worse, but images might
+			// appear in a different order than users expect.
+			$newPhoto->updateTimestamps();
+			parent::__construct($parameters, $newPhoto);
+			$this->imageHandler = resolve(ImageHandlerInterface::class);
+			$this->sourceFile = $sourceFile;
+		} catch (BindingResolutionException $e) {
+			throw new FrameworkException('Laravel\'s container component', $e);
+		}
 	}
 
 	/**
@@ -56,15 +70,18 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		$this->photo->is_public = $this->parameters->is_public;
 		$this->photo->is_starred = $this->parameters->is_starred;
 		$this->setParentAndOwnership();
-		$this->photo->save();
 
+		$this->photo->original_checksum = Extractor::checksum($this->sourceFile);
 		$this->normalizeOrientation();
+		$this->photo->checksum = Extractor::checksum($this->sourceFile);
+
+		$this->photo->save();
 
 		// Initialize factory for size variants
 		/** @var SizeVariantNamingStrategy $namingStrategy */
 		$namingStrategy = resolve(SizeVariantNamingStrategy::class);
 		$namingStrategy->setFallbackExtension(
-			$this->parameters->sourceFileInfo->getOriginalExtension()
+			$this->sourceFile->getOriginalExtension()
 		);
 		/** @var SizeVariantFactory $sizeVariantFactory */
 		$sizeVariantFactory = resolve(SizeVariantFactory::class);
@@ -78,12 +95,12 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		 * @noinspection PhpUnhandledExceptionInspection
 		 */
 		$original = $sizeVariantFactory->createOriginal(
-			$this->parameters->info['width'],
-			$this->parameters->info['height'],
-			$this->parameters->info['filesize']
+			$this->parameters->exifInfo->width,
+			$this->parameters->exifInfo->height,
+			$this->sourceFile->getFilesize()
 		);
 		try {
-			$this->putSourceIntoFinalDestination($original->short_path);
+			$this->putSourceIntoFinalDestination($this->sourceFile, $original->short_path);
 		} catch (\Exception $e) {
 			// If source file could not be put into final destination, remove
 			// freshly created photo from DB to avoid having "zombie" entries.
@@ -151,8 +168,8 @@ class AddStandaloneStrategy extends AddBaseStrategy
 	 */
 	protected function normalizeOrientation(): void
 	{
-		$orientation = $this->parameters->info['orientation'];
-		if ($this->photo->type !== 'image/jpeg' || $orientation == 1) {
+		$orientation = $this->parameters->exifInfo->orientation;
+		if ($this->photo->type !== 'image/jpeg' || $orientation === 1) {
 			// Nothing to do for non-JPEGs or correctly oriented photos.
 			return;
 		}
@@ -164,22 +181,16 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			// This is case 3b, the original shall neither be deleted
 			// nor symlinked.
 			// So lets make a deep-copy first which can be rotated safely.
-			$info = $this->parameters->sourceFileInfo;
-			$file = $info->getFile();
-			$tmpFile = new TemporaryLocalFile($file->getExtension());
-			$tmpFile->write($file->read());
-			$file->close();
+			$tmpFile = new TemporaryLocalFile($this->sourceFile->getExtension(), $this->sourceFile->getBasename());
+			$tmpFile->write($this->sourceFile->read());
+			$this->sourceFile->close();
+			$this->sourceFile = $tmpFile;
 			// Reset source file info to the new temporary and ensure that
 			// it will be deleted later
-			$this->parameters->sourceFileInfo = SourceFileInfo::createByTempFile(
-					$info->getOriginalName(),
-					$info->getOriginalExtension(),
-					$tmpFile
-				);
 			$this->parameters->importMode->setDeleteImported(true);
 		}
 
-		$absolutePath = $this->parameters->sourceFileInfo->getFile()->getAbsolutePath();
+		$absolutePath = $this->sourceFile->getAbsolutePath();
 		// If we are importing via symlink, we don't actually overwrite
 		// the source, but we still need to fix the dimensions.
 		$this->imageHandler->autoRotate(
@@ -188,17 +199,11 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			$this->parameters->importMode->shallImportViaSymlink()
 		);
 
-		// If the image has actually been rotated, the size
-		// and the checksum may have changed.
-		$this->photo->checksum = $this->metadataExtractor->checksum($absolutePath);
-		// stat info (filesize, access mode etc) are cached by PHP to avoid
+		// stat info (filesize, access mode, etc.) are cached by PHP to avoid
 		// costly I/O calls.
 		// If cache is not cleared, the size before rotation is used and later
 		// yields an incorrect value.
 		clearstatcache(true, $absolutePath);
-		// Update filesize for later use e.g. when creating variants
-		$this->parameters->info['filesize'] = $this->metadataExtractor->filesize($absolutePath);
-		$this->photo->save();
 	}
 
 	/**
@@ -206,11 +211,11 @@ class AddStandaloneStrategy extends AddBaseStrategy
 	 */
 	protected function handleGoogleMotionPicture(): void
 	{
-		if (empty($this->parameters->info['MicroVideoOffset'])) {
+		if ($this->parameters->exifInfo->microVideoOffset === 0) {
 			return;
 		}
 
-		$videoLengthBytes = intval($this->parameters->info['MicroVideoOffset']);
+		$videoLengthBytes = $this->parameters->exifInfo->microVideoOffset;
 		$original = $this->photo->size_variants->getOriginal();
 		$shortPathPhoto = $original->short_path;
 		$fullPathPhoto = $original->full_path;

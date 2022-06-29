@@ -10,14 +10,6 @@ use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
 class Kernel extends ConsoleKernel
 {
 	/**
-	 * The Artisan commands provided by your application.
-	 *
-	 * @var array
-	 */
-	protected $commands = [
-	];
-
-	/**
 	 * Define the application's command schedule.
 	 *
 	 * @param Schedule $schedule
@@ -26,7 +18,7 @@ class Kernel extends ConsoleKernel
 	 *
 	 * @throws BindingResolutionException
 	 */
-	protected function schedule(Schedule $schedule)
+	protected function schedule(Schedule $schedule): void
 	{
 		$schedule->command('lychee:photos_added_notification')->weekly();
 	}
@@ -40,7 +32,7 @@ class Kernel extends ConsoleKernel
 	 * @throws \RuntimeException
 	 * @throws DirectoryNotFoundException
 	 */
-	protected function commands()
+	protected function commands(): void
 	{
 		$this->load(__DIR__ . '/Commands');
 	}

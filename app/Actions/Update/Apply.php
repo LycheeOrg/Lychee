@@ -10,10 +10,14 @@ use App\Models\Logs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
+use function Safe\chdir;
+use function Safe\preg_replace;
+use function Safe\putenv;
 
 class Apply
 {
-	public const ERROR_MSG = /* @lang text */
+	public const ERROR_MSG =
+		/* @lang text */
 		'Update not applied: `APP_ENV` in `.env` is `production` and `force_migration_in_production` is set to `0`.';
 
 	private LycheeVersion $lycheeVersion;
@@ -38,10 +42,10 @@ class Apply
 	 */
 	private function check_prod_env_allow_migration(array &$output): bool
 	{
-		if (Config::get('app.env') == 'production') {
+		if (Config::get('app.env') === 'production') {
 			// @codeCoverageIgnoreStart
 			// we cannot code cov this part. APP_ENV is dev in testing mode.
-			if (Configs::get_value('force_migration_in_production') == '1') {
+			if (Configs::getValueAsBool('force_migration_in_production')) {
 				Logs::warning(__METHOD__, __LINE__, 'Force update is production.');
 
 				return true;
@@ -69,7 +73,7 @@ class Apply
 	private function call_composer(array &$output): void
 	{
 		try {
-			if (Configs::get_value('apply_composer_update', '0') == '1') {
+			if (Configs::getValueAsBool('apply_composer_update')) {
 				// @codeCoverageIgnoreStart
 				Logs::warning(__METHOD__, __LINE__, 'Composer is called on update.');
 
@@ -123,7 +127,7 @@ class Apply
 
 		$a = explode("\n", Artisan::output());
 		foreach ($a as $aa) {
-			if ($aa != '') {
+			if ($aa !== '') {
 				$output[] = $aa;
 			}
 		}
@@ -157,9 +161,13 @@ class Apply
 			$this->githubFunctions->is_master_branch() &&
 			$this->check_prod_env_allow_migration($output)
 		) {
-			$this->lycheeVersion->isRelease or $this->git_pull($output);
+			if (!$this->lycheeVersion->isRelease) {
+				$this->git_pull($output);
+			}
 			$this->migrate($output);
-			$this->lycheeVersion->isRelease or $this->call_composer($output);
+			if (!$this->lycheeVersion->isRelease) {
+				$this->call_composer($output);
+			}
 		}
 		$this->filter($output);
 

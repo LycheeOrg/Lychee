@@ -88,6 +88,10 @@ final class English implements Language
 			'DELETE_ALBUM_CONFIRMATION_1' => 'Are you sure you want to delete the album',
 			'DELETE_ALBUM_CONFIRMATION_2' => 'and all of the photos it contains? This action can\'t be undone!',
 
+			'DELETE_TAG_ALBUM_QUESTION' => 'Delete Album',
+			'DELETE_TAG_ALBUM_CONFIRMATION_1' => 'Are you sure you want to delete the album',
+			'DELETE_TAG_ALBUM_CONFIRMATION_2' => '(any photos inside will not be deleted)? This action can\'t be undone!',
+
 			'DELETE_ALBUMS_QUESTION' => 'Delete Albums and Photos',
 			'KEEP_ALBUMS' => 'Keep Albums',
 			'DELETE_ALBUMS_CONFIRMATION_1' => 'Are you sure you want to delete all',

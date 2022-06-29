@@ -101,9 +101,9 @@ interface ImageHandlerInterface
 	/**
 	 * TODO: Get rid of the parameters `$source` and `$destination`. See comment on the interface.
 	 *
-	 * @param string  $source
-	 * @param int     $angle
-	 * @param ?string $destination if `null`, the image is rotated in place
+	 * @param string      $source
+	 * @param int         $angle
+	 * @param string|null $destination if `null`, the image is rotated in place
 	 *
 	 * @return void
 	 *

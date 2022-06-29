@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
+
 namespace Tests\Feature\Lib;
 
 use App\Actions\Photo\Archive;
@@ -322,6 +332,7 @@ class PhotosUnitTest
 	 * Set public.
 	 *
 	 * @param string      $id
+	 * @param bool        $isPublic
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
@@ -399,6 +410,7 @@ class PhotosUnitTest
 	 * Duplicate a picture.
 	 *
 	 * @param string[]    $ids
+	 * @param string|null $targetAlbumID
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *

@@ -4,23 +4,23 @@ namespace App\Actions\Import;
 
 use App\Actions\Import\Extensions\Checks;
 use App\Actions\Photo\Create;
-use App\Actions\Photo\Extensions\Constants;
-use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\Exceptions\Handler;
 use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\MassImportException;
-use App\Exceptions\MediaFileOperationException;
-use App\Exceptions\MediaFileUnsupportedException;
-use App\Image\TemporaryLocalFile;
+use App\Image\DownloadedFile;
+use App\Image\MediaFile;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Support\Collection;
+use Safe\Exceptions\InfoException;
+use function Safe\ini_get;
+use function Safe\parse_url;
+use function Safe\set_time_limit;
 
 class FromUrl
 {
-	use Constants;
 	use Checks;
 
 	/**
@@ -52,46 +52,30 @@ class FromUrl
 		$exceptions = [];
 		$create = new Create(new ImportMode(
 			true,
-			Configs::get_value('skip_duplicates', '0') === '1'
+			Configs::getValueAsBool('skip_duplicates')
 		));
 
 		foreach ($urls as $url) {
 			try {
 				// Reset the execution timeout for every iteration.
-				set_time_limit(ini_get('max_execution_time'));
+				try {
+					set_time_limit((int) ini_get('max_execution_time'));
+				} catch (InfoException) {
+					// Silently do nothing, if `set_time_limit` is denied.
+				}
 
 				$path = parse_url($url, PHP_URL_PATH);
-				$basename = pathinfo($path, PATHINFO_FILENAME);
 				$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
 
-				// Validate photo type and extension even when $this->photo (=> $photo->add) will do the same.
-				// This prevents us from downloading invalid photos.
-				// Verify extension
-				if (!$this->isValidExtension($extension)) {
-					throw new MediaFileUnsupportedException('Photo format not supported (' . $url . ')');
-				}
+				// Validate photo extension even when `$create->add()` will do later.
+				// This prevents us from downloading unsupported files.
+				MediaFile::assertIsSupportedOrAcceptedFileExtension($extension);
 
-				// Download file, before exif checks the mimetype, otherwise we download it twice
-				$tmpFile = new TemporaryLocalFile($extension);
-				try {
-					$downloadStream = fopen($url, 'r');
-					$tmpFile->write($downloadStream);
-					fclose($downloadStream);
-				} catch (\Exception $e) {
-					throw new MediaFileOperationException('Could not download ' . $url . ' to ' . $tmpFile->getAbsolutePath(), $e);
-				}
+				// Download file
+				$downloadedFile = new DownloadedFile($url);
 
-				// Verify image
-				// TODO: Consider to make this test a general part of \App\Actions\Photo\Create::add. Then we don't need those tests at multiple places.
-				$type = exif_imagetype($tmpFile->getAbsolutePath());
-				if (!$this->isValidImageType($type) && !in_array(strtolower($extension), $this->validExtensions, true)) {
-					throw new MediaFileUnsupportedException('Photo format not supported (' . $url . ')');
-				}
-
-				// Import photo
-				$result->add(
-					$create->add(SourceFileInfo::createByTempFile($basename, $extension, $tmpFile), $album)
-				);
+				// Import photo/video/raw
+				$result->add($create->add($downloadedFile, $album));
 			} catch (\Throwable $e) {
 				$exceptions[] = $e;
 				Handler::reportSafely($e);

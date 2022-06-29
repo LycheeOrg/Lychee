@@ -5,6 +5,8 @@ namespace App\Models\Extensions;
 use App\Exceptions\ModelDBException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Support\Str;
+use function Safe\json_encode;
+use function Safe\json_last_error_msg;
 
 /**
  * Fixed Eloquent model for all Lychee models.
@@ -62,7 +64,7 @@ trait ThrowsConsistentExceptions
 		} catch (\Throwable $e) {
 			$parentException = $e;
 		}
-		if ($parentException) {
+		if ($parentException !== null) {
 			throw ModelDBException::create($this->friendlyModelName(), $this->wasRecentlyCreated ? 'creating' : 'updating', $parentException);
 		}
 
@@ -92,7 +94,7 @@ trait ThrowsConsistentExceptions
 		} catch (\Throwable $e) {
 			$parentException = $e;
 		}
-		if ($parentException) {
+		if ($parentException !== null) {
 			throw ModelDBException::create($this->friendlyModelName(), 'deleting', $parentException);
 		}
 
@@ -138,8 +140,9 @@ trait ThrowsConsistentExceptions
 			// that this method does so.
 			// Hence, we call `json_encode` _without_ specifying
 			// `JSON_THROW_ON_ERROR` and then mimic that behaviour.
+			// TODO: VERIFY THIS
 			$json = json_encode($this->jsonSerialize(), $options);
-			if (json_last_error()) {
+			if (json_last_error() !== JSON_ERROR_NONE) {
 				throw new \JsonException(json_last_error_msg(), json_last_error());
 			}
 
