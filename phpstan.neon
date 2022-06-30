@@ -9,6 +9,10 @@ parameters:
 	excludePaths:
 		- app/View/*
 		- app/Http/Livewire/*
+	stubFiles:
+		# these can be removed after https://github.com/thecodingmachine/safe/issues/283 has been merged
+		- phpstan/stubs/image.stub
+		- phpstan/stubs/imageexception.stub
 	ignoreErrors:
 		# bunch of false positives from Eloquent
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::insert\(\).#'
@@ -43,9 +47,6 @@ parameters:
 		- '#Call to an undefined method Geocoder\\Location::getDisplayName\(\)#'
 		- '#Call to an undefined method COM::getfolder\(\).#'
 		- '#Call to an undefined method League\\Flysystem\\FilesystemInterface::getAdapter\(\)#'
-
-		# https://github.com/thecodingmachine/safe/issues/283
-		- '#Parameter \#(1|2) \$.* of function Safe\\image.* expects (resource|GdImage), (GdImage|resource)?(\|resource)? given.#'
 
 		- '#Property .* \(App\\Models\\.*(\|null)?\) does not accept (Illuminate\\Database\\Eloquent\\Collection<Illuminate\\Database\\Eloquent\\Model>\|)?Illuminate\\Database\\Eloquent\\Model(\|null)?.#'
 		- '#Property .* \(Illuminate\\Database\\Eloquent\\Collection<App\\Models\\.*>\) does not accept Illuminate\\Database\\Eloquent\\Collection<Illuminate\\Database\\Eloquent\\Model>(\|Illuminate\\Database\\Eloquent\\Model)?.#'

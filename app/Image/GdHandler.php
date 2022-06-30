@@ -39,11 +39,9 @@ class GdHandler extends BaseImageHandler
 	];
 
 	/**
-	 * TODO: Remove `resource` after `\Safe` has been migrated to PHP 8.
-	 *
-	 * @var \GdImage|resource|null the opaque GD handler
+	 * @var \GdImage|null the opaque GD handler
 	 */
-	private $gdImage = null;
+	private ?\GdImage $gdImage = null;
 
 	/** @var int the image type detected by GD upon loading */
 	private int $gdImageType = 0;
@@ -111,10 +109,10 @@ class GdHandler extends BaseImageHandler
 	public function load(MediaFile $file): void
 	{
 		try {
+			$inMemoryBuffer = new InMemoryBuffer();
 			$this->reset();
 
 			$originalStream = $file->read();
-			$inMemoryBuffer = new InMemoryBuffer();
 			if ((stream_get_meta_data($originalStream))['seekable']) {
 				$inputStream = $originalStream;
 			} else {
@@ -147,10 +145,11 @@ class GdHandler extends BaseImageHandler
 			// Load image
 			error_clear_last();
 			// TODO: Replace `imagecreatefromstring` by `\Safe\imagecreatefromstring` after https://github.com/thecodingmachine/safe/issues/352 has been resolved
-			$this->gdImage = imagecreatefromstring($imgBinary);
-			if (!is_resource($this->gdImage) && !$this->gdImage instanceof \GdImage) {
+			$img = imagecreatefromstring($imgBinary);
+			if ($img === false) {
 				throw ImageException::createFromPhpError();
 			}
+			$this->gdImage = $img;
 
 			// Get EXIF data to determine whether rotation is required
 			// `exif_read_data` only supports JPEGs
@@ -181,7 +180,7 @@ class GdHandler extends BaseImageHandler
 	 */
 	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStat
 	{
-		if (!is_resource($this->gdImage) && !$this->gdImage instanceof \GdImage) {
+		if ($this->gdImage === null) {
 			throw new MediaFileOperationException('No image loaded');
 		}
 		try {
@@ -353,19 +352,17 @@ class GdHandler extends BaseImageHandler
 	 * 4 = Up to 25 times faster.  Almost identical to imagecopyresampled for most images.
 	 * 5 = No speedup. Just uses imagecopyresampled, no advantage over imagecopyresampled.
 	 *
-	 * TODO: Remove `resource` from type after `\Safe` has been migrated to PHP 8.
-	 *
-	 * @param \GdImage|resource $dst_image
-	 * @param \GdImage|resource $src_image
-	 * @param int               $dst_x
-	 * @param int               $dst_y
-	 * @param int               $src_x
-	 * @param int               $src_y
-	 * @param int               $dst_w
-	 * @param int               $dst_h
-	 * @param int               $src_w
-	 * @param int               $src_h
-	 * @param int               $quality
+	 * @param \GdImage $dst_image
+	 * @param \GdImage $src_image
+	 * @param int      $dst_x
+	 * @param int      $dst_y
+	 * @param int      $src_x
+	 * @param int      $src_y
+	 * @param int      $dst_w
+	 * @param int      $dst_h
+	 * @param int      $src_w
+	 * @param int      $src_h
+	 * @param int      $quality
 	 *
 	 * @return void
 	 *
@@ -411,6 +408,6 @@ class GdHandler extends BaseImageHandler
 
 	public function isLoaded(): bool
 	{
-		return $this->gdImageType !== 0 && (is_resource($this->gdImage) || $this->gdImage instanceof \GdImage);
+		return $this->gdImageType !== 0 && $this->gdImage !== null;
 	}
 }
