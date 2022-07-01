@@ -26,10 +26,10 @@ class Album extends Component
 	 */
 	public function render(): View
 	{
-		$this->layout = match (Configs::get_value('layout')) {
-			'0' => AlbumMode::SQUARE(),
-			'1' => AlbumMode::FLKR(),
-			'2' => AlbumMode::MASONRY(),
+		$this->layout = match (Configs::getValueAsInt('layout')) {
+			0 => AlbumMode::SQUARE(),
+			1 => AlbumMode::FLKR(),
+			2 => AlbumMode::MASONRY(),
 			default => AlbumMode::FLKR()
 		};
 

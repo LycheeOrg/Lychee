@@ -38,7 +38,7 @@
         "geocoder-php/cache-provider": "^4.3",
         "geocoder-php/nominatim-provider": "^5.5",
         "laravel/framework": "^8.83.14",
-        "livewire/livewire": "^2.7",
+        "livewire/livewire": "^2.10",
         "lychee-org/nestedset": "^6",
         "lychee-org/php-exif": "^0.7.7",
         "maennchen/zipstream-php": "^2.1",

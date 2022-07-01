@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Sidebar;
 
 use App\Contracts\AbstractAlbum;
+use App\Models\Album as ModelsAlbum;
 use App\Models\Photo;
 use App\Models\TagAlbum;
 use Exception;
@@ -21,7 +22,8 @@ class Album extends Component
 	public string $title;
 	public string $description;
 	public bool $is_tag_album = false;
-	public string $showtags = '';
+	/** @var string[] */
+	public array $showtags;
 
 	public string $created_at;
 	public int $children_count;
@@ -80,31 +82,38 @@ class Album extends Component
 	{
 		// $this->album = $album;
 		$this->title = $album->title;
-		$this->description = $album->description ?? '';
+
+		if ($album instanceof ModelsAlbum) {
+			$this->description = $album->description ?? '';
+			$this->children_count = $album->children->count();
+			$this->sorting_col = $album->sorting_col ?? '';
+			$this->sorting_order = $album->sorting_order ?? '';
+			$this->owner_name = $album->owner->name();
+			$this->license = $album->license;
+		} else {
+			$this->description = '';
+		}
+
 		if ($album instanceof TagAlbum) {
 			$this->is_tag_album = true;
-			$this->showtags = $album->showtags;
+			$this->showtags = $album->show_tags;
 		}
-		$this->created_at = $album->created_at->format('F Y');
 
-		$this->children_count = $album->children->count();
+		if ($album instanceof ModelsAlbum || $album instanceof TagAlbum) {
+			$this->created_at = $album->created_at->format('F Y');
+			$this->requires_link = $album->requires_link;
+
+			$this->has_password = $album->has_password;
+		}
 
 		$counted = $album->photos->countBy(function (Photo $photo) {
 			return $photo->isVideo() ? 'videos' : 'photos';
 		})->all();
 		$this->photo_count = isset($counted['photos']) ? $counted['photos'] : 0;
 		$this->video_count = isset($counted['videos']) ? $counted['videos'] : 0;
-		$this->sorting_col = $album->sorting_col ?? '';
-		$this->sorting_order = $album->sorting_order ?? '';
 
 		$this->is_public = $album->is_public;
-		$this->requires_link = $album->requires_link;
 		$this->is_downloadable = $album->is_downloadable;
 		$this->is_share_button_visible = $album->is_share_button_visible;
-		$this->has_password = $album->has_password;
-
-		$this->owner_name = $album->owner->name();
-
-		$this->license = $album->license;
 	}
 }

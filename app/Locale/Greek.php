@@ -217,7 +217,6 @@ final class Greek implements Language
 			'ALBUM_RESERVED' => 'Με επιφύλαξη παντός δικαιώματος',
 			'ALBUM_SET_ORDER' => 'Set Order',
 			'ALBUM_ORDERING' => 'Order by',
-			'ALBUM_OWNER' => 'Owner',
 
 			'PHOTO_ABOUT' => 'Περί',
 			'PHOTO_BASICS' => 'Βασικές Πληροφορίες',

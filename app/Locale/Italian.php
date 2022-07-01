@@ -219,7 +219,6 @@ final class Italian implements Language
 			'ALBUM_RESERVED' => 'Tutti i Diritti Riservati',
 			'ALBUM_SET_ORDER' => 'Set Order',
 			'ALBUM_ORDERING' => 'Order by',
-			'ALBUM_OWNER' => 'Owner',
 
 			'PHOTO_ABOUT' => 'Informazioni',
 			'PHOTO_BASICS' => 'Base',

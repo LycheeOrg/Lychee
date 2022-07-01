@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Modules;
 use App\Actions\Albums\Top;
 use App\Contracts\InternalLycheeException;
 use App\DTO\TopAlbums;
+use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
@@ -19,13 +20,13 @@ class Albums extends Component
 	/** @var TopAlbums This is just here for the computations before the rendering. */
 	private TopAlbums $topAlbums;
 
-	/** @var Collection[Album] Collection of the album owned by the user */
+	/** @var Collection<Album> Collection of the album owned by the user */
 	public Collection $albums;
 
-	/** @var Collection[BaseSmartAlbum] Collection of the smart album owned by the user */
+	/** @var Collection<BaseSmartAlbum> Collection of the smart album owned by the user */
 	public Collection $smartalbums;
 
-	/** @var Collection[Album] Collection of the album shared to the user */
+	/** @var Collection<Album> Collection of the album shared to the user */
 	public Collection $shared_albums;
 
 	/**
@@ -50,7 +51,7 @@ class Albums extends Component
 	public function render(): View
 	{
 		$this->albums = $this->topAlbums->albums;
-		$this->smartalbums = $this->topAlbums->smartAlbums->concat($this->topAlbums->tagAlbums)->reject(fn ($album) => $album == null);
+		$this->smartalbums = $this->topAlbums->smartAlbums->concat($this->topAlbums->tagAlbums)->reject(fn ($album) => $album === null);
 		$this->shared_albums = $this->topAlbums->sharedAlbums;
 
 		return view('livewire.pages.modules.albums');

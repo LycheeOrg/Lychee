@@ -81,7 +81,7 @@ class Modal extends Openable
 	/**
 	 * Rendering of the Component.
 	 *
-	 * @return void
+	 * @return View
 	 */
 	public function render(): View
 	{

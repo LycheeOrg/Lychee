@@ -217,7 +217,6 @@ final class Dutch implements Language
 			'ALBUM_RESERVED' => 'All Rights Reserved',
 			'ALBUM_SET_ORDER' => 'Set Order',
 			'ALBUM_ORDERING' => 'Order by',
-			'ALBUM_OWNER' => 'Owner',
 
 			'PHOTO_ABOUT' => 'Over',
 			'PHOTO_BASICS' => 'Basics',

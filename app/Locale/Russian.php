@@ -217,7 +217,6 @@ final class Russian implements Language
 			'ALBUM_RESERVED' => 'Все права защищены',
 			'ALBUM_SET_ORDER' => 'Set Order',
 			'ALBUM_ORDERING' => 'Order by',
-			'ALBUM_OWNER' => 'Owner',
 
 			'PHOTO_ABOUT' => 'Описание',
 			'PHOTO_BASICS' => 'Основное',

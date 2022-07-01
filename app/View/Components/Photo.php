@@ -9,6 +9,7 @@ use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\URL;
 use Illuminate\View\Component;
+use function Safe\sprintf;
 
 class Photo extends Component
 {

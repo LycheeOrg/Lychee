@@ -5,7 +5,6 @@ namespace App\Http\Livewire\Components;
 use App\Enum\PageMode;
 use App\Http\Livewire\Traits\InteractWithModal;
 use App\Models\Configs;
-use Illuminate\Support\Facades\Config;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -32,7 +31,7 @@ class Header extends Component
 
 	public function mount(PageMode $mode, ?string $title = null): void
 	{
-		$this->title = $title ?? Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
+		$this->title = $title ?? Configs::getValueAsString('site_title');
 		$this->mode = $mode;
 	}
 

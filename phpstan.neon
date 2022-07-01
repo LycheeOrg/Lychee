@@ -3,12 +3,12 @@ includes:
 	- vendor/lychee-org/phpstan-lychee/phpstan.neon
 
 parameters:
+	stubFiles:
+		- phpstan/stubs/Wireable.stub
 	paths:
 		- app
 		- scripts
 	excludePaths:
-		- app/View/*
-		- app/Http/Livewire/*
 	ignoreErrors:
 		# bunch of false positives from Eloquent
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::insert\(\).#'

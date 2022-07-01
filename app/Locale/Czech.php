@@ -218,7 +218,6 @@ final class Czech implements Language
 			'ALBUM_RESERVED' => 'Všechna práva vyhrazena',
 			'ALBUM_SET_ORDER' => 'Set Order',
 			'ALBUM_ORDERING' => 'Order by',
-			'ALBUM_OWNER' => 'Owner',
 
 			'PHOTO_ABOUT' => 'O fotografii',
 			'PHOTO_BASICS' => 'Základní informace',

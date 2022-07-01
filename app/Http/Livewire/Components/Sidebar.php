@@ -33,7 +33,7 @@ class Sidebar extends Openable
 	public function mount(?AbstractAlbum $album = null, ?Photo $photo = null): void
 	{
 		$this->loadAlbum($album);
-		if ($this->photo != null) {
+		if ($this->photo !== null) {
 			$this->photo = $photo;
 		}
 	}

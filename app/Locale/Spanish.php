@@ -217,7 +217,6 @@ final class Spanish implements Language
 			'ALBUM_RESERVED' => 'Todos los derechos reservados',
 			'ALBUM_SET_ORDER' => 'Set Order',
 			'ALBUM_ORDERING' => 'Order by',
-			'ALBUM_OWNER' => 'Owner',
 
 			'PHOTO_ABOUT' => 'Acerca de',
 			'PHOTO_BASICS' => 'Basico',

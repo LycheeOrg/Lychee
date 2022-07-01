@@ -7,6 +7,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\File;
 use function Safe\getallheaders;
 use function Safe\parse_url;
+use function Safe\sprintf;
 use function Safe\substr;
 use WhichBrowser\Parser as BrowserParser;
 
@@ -262,18 +263,17 @@ class Helpers
 	/**
 	 * From https://www.php.net/manual/en/function.disk-total-space.php.
 	 *
-	 * @param $bytes
+	 * @param float $bytes
 	 *
 	 * @return string
 	 */
-	public function getSymbolByQuantity($bytes): string
+	public function getSymbolByQuantity(float $bytes): string
 	{
 		$symbols = [
 			'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB',
 		];
-		$exp = intval(floor(log($bytes) / log(1024)));
+		$exp = intval(floor(log($bytes) / log(1024.0)));
 
-		return sprintf('%.2f %s', ($bytes / pow(1024, $exp)),
-			$symbols[$exp]);
+		return sprintf('%.2f %s', ($bytes / pow(1024, $exp)), $symbols[$exp]);
 	}
 }

@@ -217,7 +217,6 @@ final class NorwegianBokmal implements Language
 			'ALBUM_RESERVED' => 'Alle Rettigheter Forbeholdt',
 			'ALBUM_SET_ORDER' => 'Set Order',
 			'ALBUM_ORDERING' => 'Order by',
-			'ALBUM_OWNER' => 'Owner',
 
 			'PHOTO_ABOUT' => 'Om',
 			'PHOTO_BASICS' => 'Grunnleggende',

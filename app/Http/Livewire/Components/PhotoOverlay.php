@@ -39,7 +39,7 @@ class PhotoOverlay extends Component
 		PhotoOverlayMode::NONE();
 
 		$this->photo_data = $photo;
-		$this->type = PhotoOverlayMode::tryFrom(Configs::get_value('image_overlay_type', 'none')) ?? PhotoOverlayMode::NONE();
+		$this->type = PhotoOverlayMode::tryFrom(Configs::getValueAsString('image_overlay_type')) ?? PhotoOverlayMode::NONE();
 	}
 
 	/**
@@ -51,13 +51,13 @@ class PhotoOverlay extends Component
 	{
 		$type = $this->type;
 		for ($i = 0; $i < $this->type->count(); $i++) {
-			if ($type == PhotoOverlayMode::DATE() || $type == PhotoOverlayMode::NONE()) {
+			if ($type === PhotoOverlayMode::DATE() || $type === PhotoOverlayMode::NONE()) {
 				return $type;
 			}
-			if ($type == PhotoOverlayMode::DESC() && $this->photo_data->description !== '') {
+			if ($type === PhotoOverlayMode::DESC() && $this->photo_data->description !== '') {
 				return $type;
 			}
-			if ($type == PhotoOverlayMode::EXIF() && $this->genExifHash() !== '') {
+			if ($type === PhotoOverlayMode::EXIF() && $this->genExifHash() !== '') {
 				return $type;
 			}
 			$type = $type->next();
@@ -95,7 +95,7 @@ class PhotoOverlay extends Component
 		$this->type = $this->getOverlayType();
 		$this->title = $this->photo_data->title;
 		$this->description = $this->photo_data->description ?? '';
-		if ($this->photo_data->taken_at !== '') {
+		if ($this->photo_data->taken_at !== null) {
 			$this->camera_date = true;
 			$this->date = $this->photo_data->taken_at;
 		} else {

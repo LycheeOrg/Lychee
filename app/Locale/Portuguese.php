@@ -217,7 +217,6 @@ final class Portuguese implements Language
 			'ALBUM_RESERVED' => 'Todos os Direitos Reservados',
 			'ALBUM_SET_ORDER' => 'Escolher Ordem',
 			'ALBUM_ORDERING' => 'Ordenar por',
-			'ALBUM_OWNER' => 'Owner',
 
 			'PHOTO_ABOUT' => 'Acerca de',
 			'PHOTO_BASICS' => 'Básicos',

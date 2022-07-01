@@ -24,9 +24,6 @@ final class French implements Language
 			'SEARCH' => 'Rechercher…',
 			'MORE' => 'Plus',
 			'DEFAULT' => 'Valeur par defaut',
-			'ALBUM_SET_ORDER' => 'Changer l\'ordre',
-			'ALBUM_ORDERING' => 'Trier par',
-			'ALBUM_OWNER' => 'Propriétaire',
 
 			'USERS' => 'Utilisateurs',
 			'ALLOW_UPLOAD' => 'Allow uploads',
@@ -218,6 +215,8 @@ final class French implements Language
 			'ALBUM_LICENSE_HELP' => 'Un doute sur le choix ?',
 			'ALBUM_LICENSE_NONE' => 'Aucune',
 			'ALBUM_RESERVED' => 'Tous droits réservés',
+			'ALBUM_SET_ORDER' => 'Changer l\'ordre',
+			'ALBUM_ORDERING' => 'Trier par',
 
 			'PHOTO_ABOUT' => 'À propos',
 			'PHOTO_BASICS' => 'Informations de base',

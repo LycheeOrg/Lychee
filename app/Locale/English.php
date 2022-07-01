@@ -217,7 +217,6 @@ final class English implements Language
 			'ALBUM_RESERVED' => 'All Rights Reserved',
 			'ALBUM_SET_ORDER' => 'Set Order',
 			'ALBUM_ORDERING' => 'Order by',
-			'ALBUM_OWNER' => 'Owner',
 
 			'PHOTO_ABOUT' => 'About',
 			'PHOTO_BASICS' => 'Basics',

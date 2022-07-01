@@ -5,7 +5,6 @@ namespace App\Http\Livewire\Components;
 use App\Facades\AccessControl;
 use App\Http\Livewire\Components\Base\Openable;
 use Illuminate\View\View;
-use Livewire\Redirector;
 
 /**
  * This is the Left menu component.
@@ -24,10 +23,8 @@ class LeftMenu extends Openable
 	/**
 	 * Method called from user-land.
 	 * Log out the user.
-	 *
-	 * @return Redirector
 	 */
-	public function logout(): Redirector
+	public function logout(): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
 	{
 		AccessControl::logout();
 

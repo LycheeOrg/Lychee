@@ -27,6 +27,7 @@ class Photo extends Component
 	public string $tags;
 
 	public bool $is_public;
+	public bool $is_video;
 	public bool $has_password;
 
 	public string $owner_name = '';
@@ -44,6 +45,7 @@ class Photo extends Component
 	public string $focal;
 	public string $aperture;
 	public string $shutter;
+	public string $taken_at;
 
 	public bool $has_location = false;
 	public string $latitude;
@@ -80,7 +82,7 @@ class Photo extends Component
 		$this->make = $photo->make;
 		$this->model = $photo->model;
 
-		$this->has_exif = $this->genExifHash($photo) != '';
+		$this->has_exif = $this->genExifHash($photo) !== '';
 		if ($this->has_exif) {
 			$this->lens = $photo->lens;
 			$this->shutter = $photo->shutter;
@@ -115,12 +117,12 @@ class Photo extends Component
 	 *
 	 * TODO: Consider to make this method part of `lychee.locale`.
 	 *
-	 * @param {number}  decimal
-	 * @param {boolean} type    - indicates if the passed decimal indicates a
-	 *                            latitude (`true`) or a longitude (`false`)
-	 * @returns {string}
+	 * @param float $decimal
+	 * @param bool  $type    - indicates if the passed decimal indicates a
+	 *                       latitude (`true`) or a longitude (`false`)
+	 * @returns string
 	 */
-	private function decimalToDegreeMinutesSeconds(int $decimal, bool $type): string
+	private function decimalToDegreeMinutesSeconds(float $decimal, bool $type): string
 	{
 		$d = abs($decimal);
 
@@ -152,7 +154,7 @@ class Photo extends Component
 		// reset seconds
 		$seconds = floor($seconds - $minutes * 60);
 
-		return $degrees + '° ' + $minutes + "' " + $seconds + '" ' + $direction;
+		return $degrees . '° ' . $minutes . "' " . $seconds . '" ' . $direction;
 	}
 
 	private function genExifHash(PhotoModel $photo): string
@@ -171,6 +173,6 @@ class Photo extends Component
 
 	private function has_location(PhotoModel $photo): bool
 	{
-		return $photo->longitude !== null || $photo->latitude !== null || $photo->altitude !== null;
+		return $photo->longitude !== null && $photo->latitude !== null && $photo->altitude !== null;
 	}
 }

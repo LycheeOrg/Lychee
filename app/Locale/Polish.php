@@ -217,7 +217,6 @@ final class Polish implements Language
 			'ALBUM_RESERVED' => 'Wszelkie prawa zastrzeżone',
 			'ALBUM_SET_ORDER' => 'Zapisz',
 			'ALBUM_ORDERING' => 'Sortowanie',
-			'ALBUM_OWNER' => 'Owner',
 
 			'PHOTO_ABOUT' => 'Informacje o zdjęciu',
 			'PHOTO_BASICS' => 'Informacje podstawowe',
