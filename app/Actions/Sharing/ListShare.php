@@ -72,14 +72,14 @@ class ListShare
 	}
 
 	/**
-	 * This is not really an Album but more a very stripped down version of Album with only the following properties:
-	 * - title
-	 * - parent
-	 * - parent_id (unsued here).
+	 * Creates the breadcrumb path of an album.
 	 *
-	 * @param \App\Models\Album $album
+	 * @param \App\Models\Album $album this is not really an album but a very
+	 *                                 stripped down version of an album with
+	 *                                 only the following properties:
+	 *                                 `title`, `parent` and `parent_id` (unused here)
 	 *
-	 * @return string
+	 * @return string the breadcrumb path
 	 */
 	private function breadcrumbPath(object $album): string
 	{
