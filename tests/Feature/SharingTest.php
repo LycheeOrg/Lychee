@@ -36,7 +36,7 @@ class SharingTest extends TestCase
 		$albumID1 = $this->albums_tests->add(null, 'test_album')->offsetGet('id');
 		$albumID2 = $this->albums_tests->add($albumID1, 'test_album2')->offsetGet('id');
 
-		$response = $this->post('/Sharing::list', []);
+		$response = $this->post('/api/Sharing::list', []);
 		$response->assertStatus(200);
 
 		$this->albums_tests->delete([$albumID1, $albumID2]);
