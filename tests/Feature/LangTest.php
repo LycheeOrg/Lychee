@@ -13,6 +13,7 @@
 namespace Tests\Feature;
 
 use App\Facades\Lang;
+use App\Models\Configs;
 use Tests\TestCase;
 
 class LangTest extends TestCase
@@ -35,5 +36,10 @@ class LangTest extends TestCase
 				static::assertArrayHasKey($key, $locale, 'Language ' . $lang_test->code() . ' is incomplete.');
 			}
 		}
+
+		static::assertEquals('en', Lang::get_code());
+		static::assertEquals('OK', Lang::get('SUCCESS'));
+
+		Configs::set('lang', 'en');
 	}
 }
