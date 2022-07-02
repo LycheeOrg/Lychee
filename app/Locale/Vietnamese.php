@@ -509,6 +509,7 @@ final class Vietnamese implements Language
 			'NEW_PASSWORD' => 'new password',
 			'ALLOW_UPLOADS' => 'Cho phép đăng hình ảnh video',
 			'RESTRICTED_ACCOUNT' => 'Không được chỉnh cài đặt',
+			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
 
 		return $locale;
