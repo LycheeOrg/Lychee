@@ -36,7 +36,7 @@ class UsersTest extends TestCase
 		/*
 		 * Check if password and username are set
 		 */
-		if ($configs['password'] == '' && $configs['username'] == '') {
+		if ($configs['password'] === '' && $configs['username'] === '') {
 			$clear = true;
 
 			$sessions_test->set_new('lychee', 'password');

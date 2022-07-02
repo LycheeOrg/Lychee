@@ -9,9 +9,6 @@ use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Models\Album;
 use App\Rules\AlbumIDRule;
 
-/**
- * @implements HasAlbum<AbstractAlbum>
- */
 class DeleteTrackRequest extends BaseApiRequest implements HasAlbum
 {
 	use HasAlbumTrait;

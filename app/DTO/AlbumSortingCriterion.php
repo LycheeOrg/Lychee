@@ -19,15 +19,15 @@ class AlbumSortingCriterion extends SortingCriterion
 	];
 
 	/**
-	 * @return static
+	 * @return self
 	 * @noinspection PhpDocMissingThrowsInspection
 	 */
 	public static function createDefault(): self
 	{
 		/* @noinspection PhpUnhandledExceptionInspection */
 		return new self(
-			Configs::get_value('sorting_albums_col', SortingCriterion::COLUMN_CREATED_AT),
-			Configs::get_value('sorting_albums_order', SortingCriterion::ASC)
+			Configs::getValueAsString('sorting_albums_col'),
+			Configs::getValueAsString('sorting_albums_order')
 		);
 	}
 }

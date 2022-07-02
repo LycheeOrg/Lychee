@@ -22,6 +22,16 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Safe\Exceptions\FilesystemException;
+use Safe\Exceptions\InfoException;
+use Safe\Exceptions\StringsException;
+use function Safe\file;
+use function Safe\glob;
+use function Safe\ini_get;
+use function Safe\preg_match;
+use function Safe\realpath;
+use function Safe\set_time_limit;
+use function Safe\substr;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Exec
@@ -90,7 +100,7 @@ class Exec
 			echo $report->toCLIString() . PHP_EOL;
 		}
 
-		if ($report instanceof ImportEventReport && $report->getException()) {
+		if ($report instanceof ImportEventReport && $report->getException() !== null) {
 			Handler::reportSafely($report->getException());
 		}
 	}
@@ -107,26 +117,30 @@ class Exec
 	 */
 	private static function normalizePath(string $path): string
 	{
-		if (str_ends_with($path, '/')) {
-			$path = substr($path, 0, -1);
-		}
-		$realPath = realpath($path);
+		try {
+			if (str_ends_with($path, '/')) {
+				$path = substr($path, 0, -1);
+			}
+			$realPath = realpath($path);
 
-		if (is_dir($realPath) === false) {
+			if (is_dir($realPath) === false) {
+				throw new InvalidDirectoryException('Given path is not a directory (' . $path . ')');
+			}
+
+			// Skip folders of Lychee
+			if (
+				$realPath === Storage::path('big') ||
+				$realPath === Storage::path('medium') ||
+				$realPath === Storage::path('small') ||
+				$realPath === Storage::path('thumb')
+			) {
+				throw new ReservedDirectoryException('The given path is a reserved path of Lychee (' . $path . ')');
+			}
+
+			return $path;
+		} catch (FilesystemException|StringsException) {
 			throw new InvalidDirectoryException('Given path is not a directory (' . $path . ')');
 		}
-
-		// Skip folders of Lychee
-		if (
-			$realPath === Storage::path('big') ||
-			$realPath === Storage::path('medium') ||
-			$realPath === Storage::path('small') ||
-			$realPath === Storage::path('thumb')
-		) {
-			throw new ReservedDirectoryException('The given path is a reserved path of Lychee (' . $path . ')');
-		}
-
-		return $path;
 	}
 
 	/**
@@ -141,8 +155,9 @@ class Exec
 	private static function readLocalIgnoreList(string $path): array
 	{
 		if (is_readable($path . '/.lycheeignore')) {
-			$result = file($path . '/.lycheeignore');
-			if ($result === false) {
+			try {
+				$result = file($path . '/.lycheeignore');
+			} catch (\Throwable) {
 				throw new FileOperationException('Could not read ' . $path . '/.lycheeignore');
 			}
 
@@ -212,7 +227,7 @@ class Exec
 		string $path,
 		?Album $parentAlbum,
 		array $ignore_list = []
-	) {
+	): void {
 		try {
 			$path = self::normalizePath($path);
 
@@ -221,7 +236,7 @@ class Exec
 
 			// TODO: Consider to use a modern OO-approach using [`DirectoryIterator`](https://www.php.net/manual/en/class.directoryiterator.php) and [`SplFileInfo`](https://www.php.net/manual/en/class.splfileinfo.php)
 			/** @var string[] $files */
-			$files = \Safe\glob($path . '/*');
+			$files = glob($path . '/*');
 
 			$filesTotal = count($files);
 			$filesCount = 0;
@@ -232,7 +247,11 @@ class Exec
 			foreach ($files as $file) {
 				$this->assertImportNotCancelled();
 				// Reset the execution timeout for every iteration.
-				set_time_limit(ini_get('max_execution_time'));
+				try {
+					set_time_limit((int) ini_get('max_execution_time'));
+				} catch (InfoException) {
+					// Silently do nothing, if `set_time_limit` is denied.
+				}
 				// Report if we might be running out of memory.
 				$this->memWarningCheck();
 
@@ -276,13 +295,13 @@ class Exec
 			// Album creation per directory
 			foreach ($dirs as $dir) {
 				$this->assertImportNotCancelled();
+				/** @var Album|null */
 				$album = $this->importMode->shallSkipDuplicates() ?
 					Album::query()
 						->select(['albums.*'])
 						->join('base_albums', 'base_albums.id', '=', 'albums.id')
 						->where('albums.parent_id', '=', $parentAlbum?->id)
 						->where('base_albums.title', '=', basename($dir))
-						->get()
 						->first() :
 					null;
 				if ($album === null) {
@@ -310,7 +329,7 @@ class Exec
 		$pattern = preg_replace_callback('/([^*])/', [self::class, 'preg_quote_callback_fct'], $pattern);
 		$pattern = str_replace('*', '.*', $pattern);
 
-		return (bool) preg_match('/^' . $pattern . '$/i', $filename);
+		return preg_match('/^' . $pattern . '$/i', $filename) === 1;
 	}
 
 	/**

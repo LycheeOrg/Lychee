@@ -58,10 +58,7 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	public $incrementing = false;
 
 	/**
-	 * Returns the relationship between this model and the implementation
-	 * of the "parent" class.
-	 *
-	 * @return BelongsTo
+	 * {@inheritDoc}
 	 */
 	public function base_class(): BelongsTo
 	{

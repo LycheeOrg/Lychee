@@ -61,7 +61,7 @@ class SortingDecorator
 	 * Criteria between `$pivotIdx+1` ... `length-1` are sorted on the SQL
 	 * layer.
 	 *
-	 * If `$pivotIdx == -1`, then everything is sorted on the SQL layer.
+	 * If `$pivotIdx === -1`, then everything is sorted on the SQL layer.
 	 * `$pivotIdx` is only set to a different value, if a sorting criteria
 	 * which must be postponed (see {@link SortingDecorator::POSTPONE_COLUMNS})
 	 * is added.
@@ -101,7 +101,7 @@ class SortingDecorator
 			'direction' => $direction,
 		];
 
-		if (in_array($column, self::POSTPONE_COLUMNS)) {
+		if (in_array($column, self::POSTPONE_COLUMNS, true)) {
 			$this->pivotIdx = sizeof($this->orderBy) - 1;
 		}
 
@@ -143,7 +143,7 @@ class SortingDecorator
 		// Sort with PHP for the remaining criteria in reverse order.
 		for ($i = $this->pivotIdx; $i >= 0; $i--) {
 			$column = $this->orderBy[$i]['column'];
-			$options = in_array($column, self::POSTPONE_COLUMNS) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR;
+			$options = in_array($column, self::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR;
 			$result = $result->sortBy(
 				$column,
 				$options,

@@ -80,11 +80,8 @@ class Thumb extends DTO
 	 */
 	public static function createFromPhoto(?Photo $photo): ?Thumb
 	{
-		if (!$photo) {
-			return null;
-		}
-		$thumb = $photo->size_variants->getThumb();
-		if (!$thumb) {
+		$thumb = $photo?->size_variants->getThumb();
+		if ($thumb === null) {
 			return null;
 		}
 		$thumb2x = $photo->size_variants->getThumb2x();
@@ -100,7 +97,7 @@ class Thumb extends DTO
 	/**
 	 * Serializes this object into an array.
 	 *
-	 * @return array The serialized properties of this object
+	 * @return array<string, string|null> The serialized properties of this object
 	 */
 	public function toArray(): array
 	{

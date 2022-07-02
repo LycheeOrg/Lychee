@@ -36,7 +36,7 @@ class VariantFilesize extends Command
 				->where('filesize', '=', 0)->orderBy('id');
 
 			$count = $variants_query->count();
-			if ($count == 0) {
+			if ($count === 0) {
 				$this->line('All filesize variants already set in database.');
 
 				return $exit_code;

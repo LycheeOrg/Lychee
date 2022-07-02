@@ -17,7 +17,7 @@ class MoveSettings extends Migration
 	{
 		// this test is to make sure this is not executed when we passed a certain migration point
 		if (Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_settings')) {
-			if (Configs::where('key', '=', 'check_for_updates')->count() == 0) {
+			if (Configs::where('key', '=', 'check_for_updates')->count() === 0) {
 				$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_settings')->select('*')->orderBy('key', 'asc')->get();
 
 				foreach ($results as $result) {

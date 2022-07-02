@@ -22,7 +22,7 @@ class ConfigHasFFmpeg extends Migration
 		$has_ffmpeg = 2; // not set
 		try {
 			$path = exec('command -v ffmpeg');
-			if ($path == '') {
+			if ($path === '') {
 				$has_ffmpeg = 0; // false
 			} else {
 				$has_ffmpeg = 1; // true

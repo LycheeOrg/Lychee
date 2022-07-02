@@ -36,7 +36,7 @@ class ListShare
 				->select(['base_albums.id', 'title', 'parent_id']);
 
 			// apply filter
-			if ($userId != 0) {
+			if ($userId !== 0) {
 				$shared_query = $shared_query->where('base_albums.owner_id', '=', $userId);
 				$albums_query = $albums_query->where('owner_id', '=', $userId);
 			}
@@ -46,7 +46,6 @@ class ListShare
 				->orderBy('title', 'ASC')
 				->orderBy('username', 'ASC')
 				->get();
-
 			$albums = $albums_query->get();
 			$this->linkAlbums($albums);
 			$albums->each(function ($album) {
@@ -72,6 +71,16 @@ class ListShare
 		}
 	}
 
+	/**
+	 * Creates the breadcrumb path of an album.
+	 *
+	 * @param \App\Models\Album $album this is not really an album but a very
+	 *                                 stripped down version of an album with
+	 *                                 only the following properties:
+	 *                                 `title`, `parent` and `parent_id` (unused here)
+	 *
+	 * @return string the breadcrumb path
+	 */
 	private function breadcrumbPath(object $album): string
 	{
 		$title = [$album->title];

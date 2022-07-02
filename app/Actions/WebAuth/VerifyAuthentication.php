@@ -7,21 +7,26 @@ use App\Exceptions\UnauthenticatedException;
 use App\Facades\AccessControl;
 use App\Models\User;
 use DarkGhostHunter\Larapass\Facades\WebAuthn;
+use function Safe\base64_decode;
 
 class VerifyAuthentication
 {
 	/**
+	 * @param string[] $credential
+	 *
+	 * @return void
+	 *
 	 * @throws UnauthenticatedException
 	 * @throws InvalidUserIdException
 	 */
-	public function do($credential): void
+	public function do(array $credential): void
 	{
 		$success = WebAuthn::validateAssertion($credential);
 
 		// If is valid, login the user of the credentials.
 		if ($success) {
 			$user = $this->getUserFromCredentials($credential);
-			if ($user) {
+			if ($user !== null) {
 				AccessControl::login($user);
 
 				return;
@@ -33,7 +38,7 @@ class VerifyAuthentication
 	/**
 	 * Return the user that should authenticate via WebAuthn.
 	 *
-	 * @param array $credentials
+	 * @param string[] $credentials
 	 *
 	 * @return User|null
 	 *
@@ -46,7 +51,9 @@ class VerifyAuthentication
 		// authenticator may use to sign the subsequent challenge by the server.
 		if ($this->isSignedChallenge($credentials)) {
 			$id = $this->binaryID($credentials['rawId']);
-			if ($id) {
+			if ($id !== '') {
+				// PHPStan does not understand that `getFromCredentialId` returns `User<Logs>`, but assumes that it returns `WebAuthnAuthenticatable`
+				// @phpstan-ignore-next-line
 				return User::getFromCredentialId($id);
 			}
 		}
@@ -65,9 +72,10 @@ class VerifyAuthentication
 	 */
 	protected function binaryID(string $rawId): string
 	{
-		$result = base64_decode(strtr($rawId, '-_', '+/'), true);
-		if ($result === false) {
-			throw new InvalidUserIdException();
+		try {
+			$result = base64_decode(strtr($rawId, '-_', '+/'), true);
+		} catch (\Throwable $e) {
+			throw new InvalidUserIdException($e);
 		}
 
 		return $result;

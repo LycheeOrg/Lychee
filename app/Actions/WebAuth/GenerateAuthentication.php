@@ -8,7 +8,7 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 
 class GenerateAuthentication
 {
-	public function do($user_id): PublicKeyCredentialRequestOptions
+	public function do(int $user_id): PublicKeyCredentialRequestOptions
 	{
 		/** @var User $user */
 		$user = User::query()->where('id', $user_id)->first();

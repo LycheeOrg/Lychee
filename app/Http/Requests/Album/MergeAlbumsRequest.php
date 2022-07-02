@@ -17,6 +17,7 @@ use App\Rules\RandomIDRule;
 class MergeAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 {
 	use HasAlbumTrait;
+	/** @phpstan-use HasAlbumsTrait<Album> */
 	use HasAlbumsTrait;
 
 	/**
@@ -46,6 +47,11 @@ class MergeAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->album = Album::query()->findOrFail($values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]);
+		// `findOrFail` returns a union type, but we know that it returns the
+		// correct collection in this case
+		// TODO: As part of our `FixedQueryBuilder` we should also consider adding a method `findManyOrFail` which does not return an union type, but only a `Collection`.
+		// This would avoid using phpstan-ignore-next-line here and in many similar cases.
+		// @phpstan-ignore-next-line
 		$this->albums = Album::query()
 			->with(['children'])
 			->findOrFail($values[HasAlbums::ALBUM_IDS_ATTRIBUTE]);
