@@ -4,6 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\ConsoleSectionOutput;
 
 /**
  * Add a filesize column for size variants to make it
@@ -14,6 +16,15 @@ use Illuminate\Support\Facades\Schema;
  */
 class FilesizeSizeVariants extends Migration
 {
+	private ConsoleOutput $output;
+	private ConsoleSectionOutput $msgSection;
+
+	public function __construct()
+	{
+		$this->output = new ConsoleOutput();
+		$this->msgSection = $this->output->section();
+	}
+
 	private const VAR_TAB = 'size_variants';
 	private const PHOTO_FK = 'photo_id';
 	private const TYPE_COL = 'type';
@@ -57,9 +68,13 @@ class FilesizeSizeVariants extends Migration
 				->where(self::TYPE_COL, '=', self::TYPE_ORIGINAL)
 				->first();
 
-			DB::table(self::VAR_TAB)
+			if ($original_variant === null) {
+				$this->msgSection->writeln('<error>Error:</error> ' . $photo->id . ' does not have an original attached. Please double check your Database.');
+			} else {
+				DB::table(self::VAR_TAB)
 				->where(self::ID_COL, '=', $original_variant->id)
 				->update([self::SIZE_COL => $photo->filesize]);
+			}
 		}
 
 		DB::commit();
