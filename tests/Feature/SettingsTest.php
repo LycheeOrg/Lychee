@@ -43,7 +43,7 @@ class SettingsTest extends TestCase
 			]);
 
 		$response->assertStatus(422);
-		$response->assertSee(SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE . ' must be null or one out of');
+		$response->assertSee('sorting albums column must be null or one out of');
 
 		// test with wrong photo column
 		$response = $this->postJson('/api/Settings::setSorting',
@@ -55,7 +55,7 @@ class SettingsTest extends TestCase
 			]);
 
 		$response->assertStatus(422);
-		$response->assertSee(SetSortingRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE . ' must be null or one out of');
+		$response->assertSee('sorting photos column must be null or one out of');
 
 		// test with wrong order
 		$response = $this->postJson('/api/Settings::setSorting',
@@ -67,7 +67,7 @@ class SettingsTest extends TestCase
 			]);
 
 		$response->assertStatus(422);
-		$response->assertSee(SetSortingRequest::ALBUM_SORTING_ORDER_ATTRIBUTE . ' must be either');
+		$response->assertSee('order must be either');
 
 		AccessControl::logout();
 	}
