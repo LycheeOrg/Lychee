@@ -189,9 +189,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 				// Don't re-throw the exception, because we do not want the
 				// import to fail completely only due to missing size variants.
 				// There are just too many options why the creation of size
-				// variants may fail: the user has uploaded an unsupported file
-				// format, GD and Imagick are both not available or disabled
-				// by configuration, etc.
+				// variants may fail.
 				Handler::reportSafely($t);
 			}
 		}
@@ -247,13 +245,19 @@ class AddStandaloneStrategy extends AddBaseStrategy
 				\Safe\symlink($sourcePath, $targetPath);
 				$streamStat = StreamStat::createFromLocalFile($this->sourceFile);
 			} else {
-				// Nothing to do for non-JPEGs or correctly oriented photos.
-				// TODO: Why do we only normalize JPEG? Should it be sufficient that we have a successfully loaded source image?
-				$shallNormalize = $this->sourceImage !== null && $this->photo->type === 'image/jpeg' && $this->parameters->exifInfo->orientation !== 1;
+				$shallNormalize = $this->sourceImage !== null && $this->parameters->exifInfo->orientation !== 1;
 
 				if ($shallNormalize) {
+					// Saving the loaded image to the final target normalizes
+					// the image orientation. This comes at the cost that
+					// the image is re-encoded and hence its quality might
+					// be reduced.
 					$streamStat = $this->sourceImage->save($targetFile, true);
 				} else {
+					// If the image does not require normalization the
+					// unaltered source file is copied to the final target.
+					// Avoiding a re-encoding prevents any potential quality
+					// loss.
 					$streamStat = $targetFile->write($this->sourceFile->read(), true);
 					$this->sourceFile->close();
 					$targetFile->close();
