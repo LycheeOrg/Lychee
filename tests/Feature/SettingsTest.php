@@ -31,7 +31,7 @@ class SettingsTest extends TestCase
 			SetSortingRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
 			SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
 		]);
-		$response->assertOk();
+		$response->assertStatus(204);
 
 		// test with wrong album column
 		$response = $this->postJson('/api/Settings::setSorting',
