@@ -13,6 +13,7 @@
 namespace Tests\Feature;
 
 use App\DTO\SortingCriterion;
+use App\Facades\AccessControl;
 use App\Http\Requests\Settings\SetSortingRequest;
 use Tests\TestCase;
 
@@ -20,6 +21,8 @@ class SettingsTest extends TestCase
 {
 	public function testSetSorting(): void
 	{
+		AccessControl::log_as_id(0);
+
 		// correct test
 		$response = $this->postJson('/api/Settings::setSorting',
 		[
@@ -65,5 +68,7 @@ class SettingsTest extends TestCase
 
 		$response->assertStatus(422);
 		$response->assertSee(SetSortingRequest::ALBUM_SORTING_ORDER_ATTRIBUTE . ' must be either');
+
+		AccessControl::logout();
 	}
 }
