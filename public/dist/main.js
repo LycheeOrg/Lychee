@@ -2470,7 +2470,7 @@ album.delete = function (albumIDs) {
 		// Fallback for album without a title
 		if (!albumTitle) albumTitle = lychee.locale["UNTITLED"];
 
-		msg = lychee.html(_templateObject13, sprintf(isTagAlbum ? "DELETE_TAG_ALBUM_CONFIRMATION" : lychee.locale["DELETE_ALBUM_CONFIRMATION"], albumTitle));
+		msg = lychee.html(_templateObject13, sprintf(lychee.locale[isTagAlbum ? "DELETE_TAG_ALBUM_CONFIRMATION" : "DELETE_ALBUM_CONFIRMATION"], albumTitle));
 	} else {
 		action.title = lychee.locale["DELETE_ALBUMS_QUESTION"];
 		cancel.title = lychee.locale["KEEP_ALBUMS"];
