@@ -133,7 +133,7 @@ class SessionFunctions
 			return true;
 		}
 
-		return Legacy::noLogin();
+		return false;
 	}
 
 	/**
