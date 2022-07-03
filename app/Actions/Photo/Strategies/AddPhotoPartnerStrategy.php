@@ -54,7 +54,7 @@ class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 		);
 		$videoStrategy->do();
 
-		// If the video has already been existing, we must copy over the checksum
+		// If the video is uploaded already, we must copy over the checksum
 		$this->photo->live_photo_checksum = $this->existingVideo->checksum;
 
 		// Delete the existing video from whom we have stolen the video file

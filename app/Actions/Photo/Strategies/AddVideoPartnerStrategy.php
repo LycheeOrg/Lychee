@@ -62,7 +62,7 @@ class AddVideoPartnerStrategy extends AddBaseStrategy
 	 *
 	 * We need to distinguish two cases:
 	 *
-	 * A) The video source file a native, local file.
+	 * A) The video source file is a native, local file.
 	 *
 	 * In this case, the video file has just been uploaded (and the photo
 	 * partner is already on the target disk).
