@@ -121,12 +121,6 @@ class AlbumTest extends TestCase
 
 		AccessControl::log_as_id(0);
 
-		/**
-		 * Try to set `null` description and title.
-		 */
-		$this->albums_tests->set_description($albumID1, null);
-		$this->albums_tests->set_title($albumID1, null, 422, 'a non-empty string with at most 100 characters');
-
 		/*
 		 * Let's try to delete this album.
 		 */

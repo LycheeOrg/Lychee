@@ -184,13 +184,13 @@ class AlbumsUnitTest
 	 * Change title.
 	 *
 	 * @param string      $id
-	 * @param string|null $title
+	 * @param string      $title
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
 	public function set_title(
 		string $id,
-		?string $title, // for testing purposes we allow `null` here. However, this will be reported as error from Lychee.
+		string $title,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
@@ -208,13 +208,13 @@ class AlbumsUnitTest
 	 * Change description.
 	 *
 	 * @param string      $id
-	 * @param string|null $description
+	 * @param string      $description
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
 	public function set_description(
 		string $id,
-		?string $description,
+		string $description,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
