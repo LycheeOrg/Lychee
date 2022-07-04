@@ -3,6 +3,7 @@
 namespace App\Actions\Update;
 
 use App\Exceptions\Internal\FrameworkException;
+use App\Facades\Helpers;
 use App\Metadata\GitHubFunctions;
 use App\Metadata\LycheeVersion;
 use App\Models\Configs;
@@ -73,7 +74,7 @@ class Apply
 	private function call_composer(array &$output): void
 	{
 		try {
-			if (Configs::getValueAsBool('apply_composer_update')) {
+			if (Configs::getValueAsBool('apply_composer_update') && Helpers::isExecAvailable()) {
 				// @codeCoverageIgnoreStart
 				Logs::warning(__METHOD__, __LINE__, 'Composer is called on update.');
 
