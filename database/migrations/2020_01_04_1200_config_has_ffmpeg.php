@@ -20,20 +20,19 @@ class ConfigHasFFmpeg extends Migration
 		defined('TERNARY') or define('TERNARY', '0|1|2');
 
 		if (Helpers::isExecAvailable()) {
-			// Let's run the check for exiftool right here
-		// Let's run the check for ffmpeg right here
-		$has_ffmpeg = 2; // not set
-		try {
-			$path = exec('command -v ffmpeg');
-			if ($path === '') {
-				$has_ffmpeg = 0; // false
-			} else {
-				$has_ffmpeg = 1; // true
+			// Let's run the check for ffmpeg right here
+			$has_ffmpeg = 2; // not set
+			try {
+				$path = exec('command -v ffmpeg');
+				if ($path === '') {
+					$has_ffmpeg = 0; // false
+				} else {
+					$has_ffmpeg = 1; // true
+				}
+			} catch (\Exception $e) {
+				$has_ffmpeg = 0;
+				// let's do nothing
 			}
-		} catch (\Exception $e) {
-			$has_ffmpeg = 0;
-			// let's do nothing
-		}
 		} else {
 			$has_ffmpeg = 0; // we cannot use it anyway because exec is not available
 		}
