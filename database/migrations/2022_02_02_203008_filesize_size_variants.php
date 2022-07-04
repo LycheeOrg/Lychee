@@ -90,14 +90,13 @@ class FilesizeSizeVariants extends Migration
 	{
 		DB::beginTransaction();
 
-		$grammar = DB::table(self::VAR_TAB)->getGrammar();
-
 		// Copy the filesize from the original size variant (if it exists) to photos
 		DB::table(self::PHOTOS_TAB)
+			->addBinding(self::TYPE_ORIGINAL) // we must add the binding of the sub-query below as it is wrapped in a raw statement
 			->update([self::SIZE_COL => DB::raw('COALESCE((' .
 				DB::table(self::VAR_TAB)
 					->select([self::SIZE_COL])
-					->whereRaw($grammar->wrap(self::VAR_TAB . '.' . self::TYPE_COL) . ' = ' . self::TYPE_ORIGINAL) // we need a raw where here to by-pass bindings
+					->where(self::VAR_TAB . '.' . self::TYPE_COL, ' = ', self::TYPE_ORIGINAL)
 					->whereColumn(self::VAR_TAB . '.' . self::PHOTO_FK, '=', self::PHOTOS_TAB . '.' . self::ID_COL)
 					->toSql() .
 				'), 0)'
