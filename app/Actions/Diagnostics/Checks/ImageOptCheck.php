@@ -36,13 +36,15 @@ class ImageOptCheck implements DiagnosticCheckInterface
 			$binaryPath = $binaryPath . DIRECTORY_SEPARATOR;
 		}
 
-		foreach ($tools as $tool) {
-			if (Helpers::isExecAvailable()) {
+		if (Helpers::isExecAvailable()) {
+			foreach ($tools as $tool) {
 				$path = exec('command -v ' . $binaryPath . $tool->binaryName());
 				if ($path === '') {
 					$errors[] = 'Warning: lossless_optimization set to 1 but ' . $binaryPath . $tool->binaryName() . ' not found!';
 				}
 			}
+		} else {
+			$errors[] = 'Warning: lossless_optimization set to 1 but exec() is not enabled.';
 		}
 	}
 }
