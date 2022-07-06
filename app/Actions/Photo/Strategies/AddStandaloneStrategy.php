@@ -156,7 +156,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			// Create original size variant of photo
 			// If the image has been loaded (and potentially auto-rotated)
 			// take the dimension from the image.
-			// As a fallback (e.g. in case of videos) we use the EXIF data.
+			// As a fallback for media files from which no image could be extracted (e.g. unsupported file formats) we use the EXIF data.
 			$imageDim = $this->sourceImage?->isLoaded() ?
 				$this->sourceImage->getDimensions() :
 				new ImageDimension($this->parameters->exifInfo->width, $this->parameters->exifInfo->height);
