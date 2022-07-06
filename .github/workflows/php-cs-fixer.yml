@@ -1,5 +1,13 @@
 name: php-cs-fixer
-on: [push, pull_request]
+on:
+  push:
+    branches-ignore:
+      - master
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - '**.js'
+
 env:
   PR_NUMBER: "${{ github.event.number }}"
   SOURCE_BRANCH: "$GITHUB_HEAD_REF"

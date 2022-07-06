@@ -3,10 +3,10 @@
 namespace App\Assets;
 
 use App\Exceptions\Internal\ZeroModuloException;
-use App\ModelFunctions\ConfigFunctions;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\File;
 use function Safe\getallheaders;
+use function Safe\ini_get;
 use function Safe\parse_url;
 use function Safe\substr;
 use WhichBrowser\Parser as BrowserParser;
@@ -256,5 +256,17 @@ class Helpers
 	public function data_index_set(int $idx = 0): void
 	{
 		$this->numTab = $idx;
+	}
+
+	/**
+	 * Check if the `exec` function is available.
+	 *
+	 * @return bool
+	 */
+	public function isExecAvailable(): bool
+	{
+		$disabledFunctions = explode(',', ini_get('disable_functions'));
+
+		return function_exists('exec') && !in_array('exec', $disabledFunctions, true);
 	}
 }
