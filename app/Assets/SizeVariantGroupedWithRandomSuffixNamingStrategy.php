@@ -85,7 +85,7 @@ class SizeVariantGroupedWithRandomSuffixNamingStrategy extends SizeVariantBaseNa
 			if ($origFile !== null) {
 				$existingRelPath = $origFile->getRelativePath();
 				$matches = [];
-				// Extract random bath path
+				// Extract random base path
 				// As the naming strategy has been changed in the past, we must
 				// not assume that an existing original size variant has already
 				// the right pattern.
