@@ -87,7 +87,7 @@ class SizeVariantGroupedWithRandomSuffixNamingStrategy extends SizeVariantBaseNa
 				$matches = [];
 				// Extract random base path
 				// As the naming strategy has been changed in the past, we must
-				// not assume that an existing original size variant has already
+				// not assume that an existing original size variant already has
 				// the right pattern.
 				//
 				// In order to handle UNIX and Windows directory separators,
