@@ -23,7 +23,7 @@ use Illuminate\Support\Collection;
 class RotateStrategy
 {
 	protected Photo $photo;
-	/** @var int either `1` for counter-clock or `-1` for anti counter-clock rotation */
+	/** @var int either `1` for counterclockwise or `-1` for clockwise rotation */
 	protected int $direction;
 	protected FlysystemFile $sourceFile;
 	protected SizeVariantNamingStrategy $namingStrategy;
