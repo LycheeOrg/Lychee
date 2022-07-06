@@ -344,7 +344,7 @@ class GdHandler extends BaseImageHandler
 	 * Typically from 30 to 60 times faster when reducing high resolution images down to thumbnail size using the default quality setting.
 	 * Author: Tim Eckel - Date: 09/07/07 - Version: 1.1 - Project: FreeRingers.net - Freely distributable - These comments must remain.
 	 *
-	 * Optional "quality" parameter (defaults is 4). Fractional values are allowed, for example 1.5. Must be greater than zero.
+	 * Optional "quality" parameter (default is 4). Fractional values are allowed, for example 1.5. Must be greater than zero.
 	 * Between 0 and 1 = Fast, but mosaic results, closer to 0 increases the mosaic effect.
 	 * 1 = Up to 350 times faster. Poor results, looks very similar to imagecopyresized.
 	 * 2 = Up to 95 times faster.  Images appear a little sharp, some prefer this over a quality of 3.
