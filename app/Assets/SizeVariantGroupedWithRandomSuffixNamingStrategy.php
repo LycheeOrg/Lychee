@@ -101,7 +101,7 @@ class SizeVariantGroupedWithRandomSuffixNamingStrategy extends SizeVariantBaseNa
 				// The POSIX regex engine uses backslash for escaping, too,
 				// so we need four.
 				//
-				// As it is unspecified, how the beginning of the path is
+				// As it is unspecified how the beginning of the path is
 				// reported, we must be prepared for an optional `/` or `./`
 				// at the beginning.
 				if (\Safe\preg_match(
