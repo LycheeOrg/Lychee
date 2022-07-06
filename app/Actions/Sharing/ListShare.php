@@ -2,7 +2,6 @@
 
 namespace App\Actions\Sharing;
 
-use App\DTO\BreadCrumbData;
 use App\DTO\Shares;
 use App\Exceptions\Internal\QueryBuilderException;
 use Illuminate\Support\Collection;
@@ -47,12 +46,10 @@ class ListShare
 				->orderBy('title', 'ASC')
 				->orderBy('username', 'ASC')
 				->get();
-
-			/** @var Collection<\App\DTO\BreadCrumbData> */
 			$albums = $albums_query->get();
 			$this->linkAlbums($albums);
-			$albums->each(function (BreadCrumbData $album) {
-				$album->title = $album->getPath();
+			$albums->each(function ($album) {
+				$album->title = $this->breadcrumbPath($album);
 			});
 			$albums->each(function ($album) {
 				unset($album->parent_id);
@@ -72,6 +69,28 @@ class ListShare
 		} catch (\InvalidArgumentException $e) {
 			throw new QueryBuilderException($e);
 		}
+	}
+
+	/**
+	 * Creates the breadcrumb path of an album.
+	 *
+	 * @param \App\Models\Album $album this is not really an album but a very
+	 *                                 stripped down version of an album with
+	 *                                 only the following properties:
+	 *                                 `title`, `parent` and `parent_id` (unused here)
+	 *
+	 * @return string the breadcrumb path
+	 */
+	private function breadcrumbPath(object $album): string
+	{
+		$title = [$album->title];
+		$parent = $album->parent;
+		while ($parent) {
+			array_unshift($title, $parent->title);
+			$parent = $parent->parent;
+		}
+
+		return implode('/', $title);
 	}
 
 	private function linkAlbums(Collection $albums): void

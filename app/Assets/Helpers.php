@@ -6,6 +6,7 @@ use App\Exceptions\Internal\ZeroModuloException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\File;
 use function Safe\getallheaders;
+use function Safe\ini_get;
 use function Safe\parse_url;
 use function Safe\sprintf;
 use function Safe\substr;
@@ -275,5 +276,17 @@ class Helpers
 		$exp = intval(floor(log($bytes) / log(1024.0)));
 
 		return sprintf('%.2f %s', ($bytes / pow(1024, $exp)), $symbols[$exp]);
+	}
+
+	/**
+	 * Check if the `exec` function is available.
+	 *
+	 * @return bool
+	 */
+	public function isExecAvailable(): bool
+	{
+		$disabledFunctions = explode(',', ini_get('disable_functions'));
+
+		return function_exists('exec') && !in_array('exec', $disabledFunctions, true);
 	}
 }

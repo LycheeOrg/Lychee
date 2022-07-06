@@ -3,6 +3,7 @@
 namespace App\Actions\Diagnostics;
 
 use App\DTO\LycheeChannelInfo;
+use App\Facades\Helpers;
 use App\Metadata\LycheeVersion;
 use App\Models\Configs;
 use Carbon\CarbonTimeZone;
@@ -127,6 +128,7 @@ class Info extends Diagnostics
 		$infos[] = Diagnostics::line('Max execution time: ', ini_get('max_execution_time'));
 		$infos[] = Diagnostics::line($dbtype . ' Version:', $dbver);
 		$infos[] = '';
+		$infos[] = Diagnostics::line('exec() Available:', Helpers::isExecAvailable() ? 'yes' : 'no');
 		$infos[] = Diagnostics::line('Imagick Available:', (string) $imagick);
 		$infos[] = Diagnostics::line('Imagick Enabled:', $settings['imagick'] ?? 'key not found in settings');
 		$infos[] = Diagnostics::line('Imagick Version:', $imagickVersion);
