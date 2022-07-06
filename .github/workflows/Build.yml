@@ -12,6 +12,8 @@ on:
       - '**/*.md'
       - 'public/dist/*.js'
       - 'public/dist/**/*.js'
+  # Allow manually triggering the workflow.
+  workflow_dispatch:
 
 jobs:
   tests:

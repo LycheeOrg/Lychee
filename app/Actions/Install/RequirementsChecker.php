@@ -2,7 +2,7 @@
 
 namespace App\Actions\Install;
 
-use function Safe\ini_get;
+use App\Facades\Helpers;
 use function Safe\preg_match;
 
 class RequirementsChecker
@@ -36,7 +36,7 @@ class RequirementsChecker
 						$results['errors'] = $results['errors'] || !$hasExtension;
 					}
 
-					if ($this->checkExec()) {
+					if (Helpers::isExecAvailable()) {
 						$results['requirements'][$type]['Php exec() available'] = true;
 					} else {
 						$results['requirements'][$type]['Php exec() not available (optional)'] = false;
@@ -79,18 +79,6 @@ class RequirementsChecker
 			'minimum' => $minVersionPhp,
 			'supported' => $supported,
 		];
-	}
-
-	/**
-	 * Check if exec is enabled. This will allow us to execute the migration.
-	 *
-	 * @return bool
-	 */
-	public function checkExec(): bool
-	{
-		$disabled = explode(',', ini_get('disable_functions'));
-
-		return !in_array('exec', $disabled, true);
 	}
 
 	/**

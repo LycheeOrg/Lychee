@@ -3,6 +3,7 @@
 namespace App\Actions\Diagnostics\Checks;
 
 use App\Contracts\DiagnosticCheckInterface;
+use App\Facades\Helpers;
 use App\Models\Configs;
 use function Safe\substr;
 use Spatie\ImageOptimizer\Optimizers\Cwebp;
@@ -35,11 +36,15 @@ class ImageOptCheck implements DiagnosticCheckInterface
 			$binaryPath = $binaryPath . DIRECTORY_SEPARATOR;
 		}
 
-		foreach ($tools as $tool) {
-			$path = exec('command -v ' . $binaryPath . $tool->binaryName());
-			if ($path === '') {
-				$errors[] = 'Warning: lossless_optimization set to 1 but ' . $binaryPath . $tool->binaryName() . ' not found!';
+		if (Helpers::isExecAvailable()) {
+			foreach ($tools as $tool) {
+				$path = exec('command -v ' . $binaryPath . $tool->binaryName());
+				if ($path === '') {
+					$errors[] = 'Warning: lossless_optimization set to 1 but ' . $binaryPath . $tool->binaryName() . ' not found!';
+				}
 			}
+		} else {
+			$errors[] = 'Warning: lossless_optimization set to 1 but exec() is not enabled.';
 		}
 	}
 }
