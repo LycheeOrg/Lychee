@@ -24,7 +24,7 @@ use FFMpeg\Media\Video;
  * A Google Motion Picture (GMP) puts the video stream into the file after the
  * image binary.
  * Hence, image libraries or programs which simply read the image don't care
- * because they stop reading from the file as seen as the image is complete.
+ * because they stop reading from the file as soon as the image is complete.
  * The start of the video stream from the end of the file is encoded in the
  * EXIF attribute `MicroVideoOffset`.
  *

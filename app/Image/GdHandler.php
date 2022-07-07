@@ -162,7 +162,6 @@ class GdHandler extends BaseImageHandler
 				}
 
 				// Auto-rotate image
-				// TODO: Check if `exif_read_data` actually uses the key `Orientation` with a capital 'O'
 				$orientation = array_key_exists('Orientation', $exifData) && is_numeric($exifData['Orientation']) ? (int) $exifData['Orientation'] : 1;
 				$this->autoRotate($orientation);
 			}

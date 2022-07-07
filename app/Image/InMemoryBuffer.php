@@ -71,7 +71,7 @@ class InMemoryBuffer extends BinaryBlob
 	 * Returns a stream from which can be read/written/seeked.
 	 *
 	 * Calling `stream` multiple times is safe.
-	 * As long a stream is opened, it will always return the same
+	 * As long as a stream is opened, it will always return the same
 	 * stream and not modify the position of the read/write pointer.
 	 * If no stream is opened, a new buffer will be created.
 	 *
