@@ -50,8 +50,7 @@ interface ImageHandlerInterface
 	 * It frees all internal resources, releases all temporary buffers and
 	 * closes all streams.
 	 * Any work which has not been saved by a prior call to
-	 * {@link ImageHandlerInterface::save()} followed by
-	 * {@link ImageHandlerInterface::close()} will be lost.
+	 * {@link ImageHandlerInterface::save()} will be lost.
 	 *
 	 * @return void
 	 */
