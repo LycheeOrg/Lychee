@@ -140,13 +140,11 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		$maxDim = $this->getMaxDimensions($sizeVariant);
 		$realDim = $this->referenceImage->getDimensions();
 
-		if ($sizeVariant === SizeVariant::THUMB) {
-			$isLargeEnough = true;
-		} elseif ($sizeVariant === SizeVariant::THUMB2X) {
-			$isLargeEnough = $realDim->width > $maxDim->width && $realDim->height > $maxDim->height;
-		} else {
-			$isLargeEnough = $realDim->width > $maxDim->width || $realDim->height > $maxDim->height;
-		}
+		$isLargeEnough = match ($sizeVariant) {
+			SizeVariant::THUMB => true,
+			SizeVariant::THUMB2X => $realDim->width >= $maxDim->width && $realDim->height >= $maxDim->height,
+			default => ($realDim->width >= $maxDim->width && $maxDim->width !== 0) || ($realDim->height >= $maxDim->height && $maxDim->height !== 0)
+		};
 
 		return $isLargeEnough ?
 			$this->createSizeVariantInternal($sizeVariant, $maxDim) :
