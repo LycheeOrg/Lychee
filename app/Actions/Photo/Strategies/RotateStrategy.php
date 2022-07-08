@@ -100,7 +100,7 @@ class RotateStrategy
 		$this->namingStrategy->setExtension($this->sourceFile->getExtension());
 
 		// Create new target file for rotated original size variant,
-		// stream it into final place and delete the original file
+		// and stream it into the final place
 		$targetFile = $this->namingStrategy->createFile(SizeVariant::ORIGINAL);
 		$streamStat = $image->save($targetFile, true);
 

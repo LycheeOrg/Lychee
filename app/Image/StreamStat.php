@@ -32,8 +32,8 @@ class StreamStat
 	 * In particular, the checksum of file (or binary blob) can be
 	 * calculated on the fly while the content of the file is written
 	 * via {@link BinaryBlob::write()}.
-	 * Calculated the stream statistics on-the-fly avoid reading back the
-	 * file from disk after is has been written.
+	 * Calculating the stream statistics on-the-fly avoids reading back the
+	 * file from disk after it has been written.
 	 * This method is merely meant for the rare cases where we don't have
 	 * an in-memory copy of the file in the first place.
 	 *

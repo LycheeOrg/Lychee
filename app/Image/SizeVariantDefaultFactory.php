@@ -74,7 +74,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 				$sourceFile = $originalFile->toLocalFile();
 			} else {
 				// If the original size variant is hosted remotely,
-				// we must download it first we exploit the temporary file
+				// we must download it first; we exploit the temporary file
 				// for that
 				$sourceFile = new TemporaryLocalFile($originalFile->getOriginalExtension(), $this->photo->title);
 				$sourceFile->write($originalFile->read(), false, $this->photo->type);
