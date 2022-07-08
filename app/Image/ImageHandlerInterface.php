@@ -14,11 +14,6 @@ use App\Exceptions\MediaFileUnsupportedException;
 interface ImageHandlerInterface
 {
 	/**
-	 * @param int $compressionQuality
-	 */
-	public function __construct(int $compressionQuality);
-
-	/**
 	 * Loads an image from the provided file.
 	 *
 	 * @param MediaFile $file the file to read from

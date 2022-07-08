@@ -29,9 +29,9 @@ class ImageHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function __construct(int $compressionQuality = BaseImageHandler::USER_DEFINED_COMPRESSION_QUALITY)
+	public function __construct()
 	{
-		parent::__construct($compressionQuality);
+		parent::__construct();
 		if (Configs::hasImagick()) {
 			$this->engineClasses[] = ImagickHandler::class;
 		}
@@ -55,7 +55,7 @@ class ImageHandler extends BaseImageHandler
 
 		foreach ($this->engineClasses as $engineClass) {
 			try {
-				$engine = new $engineClass($this->compressionQuality);
+				$engine = new $engineClass();
 				if ($engine instanceof ImageHandlerInterface) {
 					$this->engine = $engine;
 					$this->engine->load($file);
