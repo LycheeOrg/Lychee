@@ -32,17 +32,17 @@ class MOVFormat extends DefaultVideo
 	}
 
 	/**
-	 * Returns the extra parameters to be added to the FFmpeg command line.
+	 * Returns the extra parameters to be added to the FFMpeg command line.
 	 *
-	 * Here we force FFmpeg to use the Quicktime Container format for output.
-	 *
-	 * TODO: Why do we enforce Apple Quicktime as the output container? This is suspicious.
-	 *
-	 * Note, that we only use this format to store extracted video streams
-	 * from Google Motions Pictures.
-	 * A Google Motion Picture uses AVC (H.264) as the codec in an MP4
-	 * (MPEG-4 Part 1) container.
-	 * We do want to re-pack it in another container?
+	 * Here we force FFMpeg to use the Quicktime Container format for output.
+	 * Natively, a Google Motion Picture uses the video codec AVC (H.264)
+	 * in an MP4 (MPEG-4 Part 1) container.
+	 * But the JS package `livephotoskit/livephotoskit` which handles
+	 * live photos on the frontend only supports Quicktime containers
+	 * (at least this was the case in 2019, see
+	 * [comment in issue #378](https://github.com/LycheeOrg/Lychee/issues/378#issuecomment-548687276)
+	 * and the [related pull request #172](https://github.com/LycheeOrg/Lychee-front/pull/172)).
+	 * Hence, we re-packetize the video stream into a Quicktime container.
 	 *
 	 * @return string[]
 	 */
