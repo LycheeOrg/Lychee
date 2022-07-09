@@ -15,7 +15,7 @@ use App\Models\Configs;
  * between different {@link BinaryBlob}using streams.
  *
  * This stream-based approach is the same which is also used by
- * {@link Illuminate\Http\UploadedFile::storeAs()} under the hood and avoids certain problems
+ * {@link \Illuminate\Http\UploadedFile::storeAs()} under the hood and avoids certain problems
  * which are may be caused by PHP method like `rename`, `move` or `copy`.
  * Firstly, these methods need a file path and thus do not work, if a file
  * resides on a Flysystem disk for which PHP has no native handler (e.g.
