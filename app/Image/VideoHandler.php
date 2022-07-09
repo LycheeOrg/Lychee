@@ -14,7 +14,6 @@ use FFMpeg\Exception\InvalidArgumentException;
 use FFMpeg\Exception\RuntimeException;
 use FFMpeg\FFMpeg;
 use FFMpeg\Media\Video;
-use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 class VideoHandler
 {
@@ -28,8 +27,8 @@ class VideoHandler
 	 * Hence, the physical on-disk representation of provided input file must
 	 * exist at least as long as the object of this class is used.
 	 * Otherwise, subsequent calls to method
-	 * (like {@link VideoHandler::saveFrame()}) which assume the file to exist
-	 * will fail.
+	 * (like {@link VideoHandler::extractFrame()}) which assume the file to
+	 * exist will fail.
 	 *
 	 * @throws ExternalComponentMissingException
 	 * @throws ConfigurationException
@@ -56,29 +55,6 @@ class VideoHandler
 	}
 
 	/**
-	 * Extracts and saves a frame from the video as image.
-	 *
-	 * @param NativeLocalFile $file          the file to write into
-	 * @param float           $framePosition the position of the frame to be extracted in seconds
-	 *
-	 * @return void
-	 *
-	 * @throws MediaFileOperationException
-	 */
-	public function saveFrame(NativeLocalFile $file, float $framePosition = 0.0): void
-	{
-		try {
-			$frame = $this->video->frame(TimeCode::fromSeconds($framePosition));
-			$frame->save($file->getRealPath());
-		} catch (RuntimeException $e) {
-			throw new MediaFileOperationException('Could not extract frame from video file', $e);
-		}
-		if (Configs::getValueAsBool('lossless_optimization')) {
-			ImageOptimizer::optimize($file->getRealPath());
-		}
-	}
-
-	/**
 	 * Extracts and returns a frame from the video.
 	 *
 	 * @param float $framePosition
@@ -91,15 +67,20 @@ class VideoHandler
 	 */
 	public function extractFrame(float $framePosition = 0.0): ImageHandlerInterface
 	{
-		// A temporary, local file for the extracted frame
-		$frameFile = new TemporaryLocalFile('.jpg');
-		$this->saveFrame($frameFile, $framePosition);
+		try {
+			// A temporary, local file for the extracted frame
+			$frameFile = new TemporaryLocalFile('.jpg');
+			$frame = $this->video->frame(TimeCode::fromSeconds($framePosition));
+			$frame->save($frameFile->getRealPath());
 
-		// Load the extracted frame into the image handler
-		$frame = new ImageHandler();
-		$frame->load($frameFile);
-		$frameFile->delete();
+			// Load the extracted frame into the image handler
+			$frame = new ImageHandler();
+			$frame->load($frameFile);
+			$frameFile->delete();
 
-		return $frame;
+			return $frame;
+		} catch (RuntimeException $e) {
+			throw new MediaFileOperationException('Could not extract frame from video file', $e);
+		}
 	}
 }
