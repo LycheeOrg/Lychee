@@ -19,7 +19,7 @@ use Tests\Feature\Base\PhotoTestBase;
 use Tests\TestCase;
 
 /**
- * Contains all test for the various ways how to add images to Lychee
+ * Contains all tests for the various ways of adding images to Lychee
  * (upload, download, import) and their various options.
  */
 class PhotosAddMethodsTest extends PhotoTestBase

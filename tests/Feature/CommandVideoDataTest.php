@@ -27,7 +27,7 @@ class CommandVideoDataTest extends PhotoTestBase
 			static::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_VIDEO)
 		));
 
-		// Remove the size variant "small" from disk and from DB
+		// Remove the size variant "thumb" from disk and from DB
 		\Safe\unlink(public_path($photo1->size_variants->thumb->url));
 		DB::table('size_variants')
 			->where('photo_id', '=', $photo1->id)

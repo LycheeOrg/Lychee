@@ -368,7 +368,7 @@ class PhotosOperationsTest extends PhotoTestBase
 	}
 
 	/**
-	 * Downloads an archive of tree photos with one photo being included twice.
+	 * Downloads an archive of three photos with one photo being included twice.
 	 *
 	 * This tests the capability of the archive function to generate unique
 	 * file names for duplicates.

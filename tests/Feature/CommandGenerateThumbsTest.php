@@ -58,7 +58,7 @@ class CommandGenerateThumbsTest extends PhotoTestBase
 		$this->artisan(self::COMMAND, ['type' => 'small'])
 			->assertExitCode(0);
 
-		// Get updated photo and check if size variants has been re-created
+		// Get updated photo and check if size variant has been re-created
 		$photo2 = static::convertJsonToObject($this->photos_tests->get($photo1->id));
 		static::assertNotNull($photo2->size_variants->small);
 		static::assertEquals($photo1->size_variants->small->width, $photo2->size_variants->small->width);

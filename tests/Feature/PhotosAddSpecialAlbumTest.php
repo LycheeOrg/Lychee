@@ -16,7 +16,7 @@ use Tests\Feature\Base\PhotoTestBase;
 use Tests\TestCase;
 
 /**
- * Contains tests which adds photos to Lychee and directly set an album.
+ * Contains tests which add photos to Lychee and directly set an album.
  */
 class PhotosAddSpecialAlbumTest extends PhotoTestBase
 {

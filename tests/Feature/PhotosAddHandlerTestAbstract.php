@@ -21,7 +21,7 @@ use Tests\TestCase;
  * Contains all tests for adding photos to Lychee which involve the image
  * handler.
  *
- * The idea is to inherit this class be real test classes which enable
+ * The idea is to inherit this class by real test classes which enable
  * a particular image handler (i.e. Imagick, GD, etc.)
  */
 abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
