@@ -12,6 +12,7 @@
 
 namespace Tests\Feature\Traits;
 
+use App\Console\Commands\FixPermissions;
 use Illuminate\Support\Facades\DB;
 
 trait RequiresEmptyPhotos
@@ -62,7 +63,7 @@ trait RequiresEmptyPhotos
 		if (!is_dir($dirPath)) {
 			return;
 		}
-		\Safe\chmod($dirPath, 0775);
+		\Safe\chmod($dirPath, FixPermissions::DEFAULT_DIRECTORY_PERMS);
 		$dirEntries = scandir($dirPath);
 		foreach ($dirEntries as $dirEntry) {
 			if (in_array($dirEntry, ['.', '..', 'index.html', '.gitignore'])) {

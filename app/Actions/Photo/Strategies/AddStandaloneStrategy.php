@@ -2,6 +2,7 @@
 
 namespace App\Actions\Photo\Strategies;
 
+use App\Console\Commands\FixPermissions;
 use App\Contracts\LycheeException;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
@@ -240,7 +241,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 				// This mimics the behaviour of Flysystem for regular files.
 				$targetDirectory = pathinfo($targetPath, PATHINFO_DIRNAME);
 				if (!is_dir($targetDirectory)) {
-					\Safe\mkdir($targetDirectory, 0777, true);
+					\Safe\mkdir($targetDirectory, FixPermissions::DEFAULT_DIRECTORY_PERMS, true);
 				}
 				\Safe\symlink($sourcePath, $targetPath);
 				$streamStat = StreamStat::createFromLocalFile($this->sourceFile);
