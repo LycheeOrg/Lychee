@@ -13,8 +13,8 @@
 namespace Tests\Feature;
 
 use App\Console\Commands\FixPermissions;
-use Tests\TestCase;
 use function Safe\chmod;
+use Tests\TestCase;
 
 class CommandFixPermissionsTest extends Base\PhotoTestBase
 {
