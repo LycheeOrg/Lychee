@@ -71,7 +71,8 @@
             "database/factories"
         ],
         "psr-4": {
-            "App\\": "app/"
+            "App\\": "app/",
+            "Scripts\\": "scripts/"
         }
     },
     "autoload-dev": {
@@ -93,7 +94,8 @@
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover",
-            "@install_files"
+            "@install_files",
+            "@php artisan lychee:fix-permissions"
         ],
         "install_files": [
             "@php scripts/install_files.php"

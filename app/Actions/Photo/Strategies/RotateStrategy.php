@@ -5,144 +5,137 @@ namespace App\Actions\Photo\Strategies;
 use App\Contracts\LycheeException;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
+use App\DTO\ImageDimension;
+use App\Exceptions\Handler;
+use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidRotationDirectionException;
+use App\Exceptions\Internal\LycheeAssertionError;
+use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\MediaFileUnsupportedException;
-use App\Image\ImageHandlerInterface;
-use App\Image\TemporaryLocalFile;
-use App\Metadata\Extractor;
+use App\Image\FlysystemFile;
+use App\Image\ImageHandler;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Collection;
 
-class RotateStrategy extends AddBaseStrategy
+class RotateStrategy
 {
+	protected Photo $photo;
+	/** @var int either `1` for counterclockwise or `-1` for clockwise rotation */
 	protected int $direction;
+	protected FlysystemFile $sourceFile;
+	protected SizeVariantNamingStrategy $namingStrategy;
 
 	/**
 	 * @param Photo $photo
 	 * @param int   $direction
 	 *
-	 * @throws MediaFileUnsupportedException     thrown, if $photo cannot be
-	 *                                           rotated
-	 * @throws InvalidRotationDirectionException thrown if $direction does
-	 *                                           neither equal -1 nor 1
+	 * @throws MediaFileUnsupportedException     thrown, if rotation of $photo
+	 *                                           is not supported
+	 * @throws InvalidRotationDirectionException thrown if $direction neither
+	 *                                           equals -1 nor 1
 	 * @throws IllegalOrderOfOperationException
+	 * @throws FrameworkException
 	 */
 	public function __construct(Photo $photo, int $direction)
 	{
-		// We exploit the "add strategy" here, because rotation of a photo
-		// has a lot in common with adding a new photo.
-		// We first make a temporary copy of the photo, rotate that copy
-		// and then "re-import" that temporary copy into an existing photo
-		// model.
-		// As we want the temporary file to be moved back into place,
-		// we delete the "imported" file and do not want to import via symlink.
-		// We do not want to skip duplicates (in case the photo is already a
-		// duplicate, we still want to rotate it) and we want to re-sync
-		// metadata (after rotation width, height and filesize may have changed).
-		//
-		// In case the photo has originally been imported as a symbolic link,
-		// the photo won't be a symbolic link after rotation, but become an
-		// independent file which is detached from the original target of the
-		// symbolic link.
-		// This is by design.
-		// The two alternatives would be:
-		//  1. Rotate the original photo which the symlink points to.
-		//  2. Bail out with an error message, if the user attempts to rotate
-		//     a photo that was imported via a symlink
-		// After discussion among the developers, option 1 was considered a
-		// no-go and 2 was considered to be too restrictive.
-		parent::__construct(
-			new AddStrategyParameters(
-				new ImportMode(true, false, false, true)
-			),
-			$photo
-		);
-		if ($photo->isVideo()) {
-			throw new MediaFileUnsupportedException('Rotation of a video is unsupported');
+		try {
+			if ($photo->isVideo()) {
+				throw new MediaFileUnsupportedException('Rotation of a video is unsupported');
+			}
+			if ($photo->live_photo_short_path !== null) {
+				throw new MediaFileUnsupportedException('Rotation of a live photo is unsupported');
+			}
+			if ($photo->isRaw()) {
+				throw new MediaFileUnsupportedException('Rotation of a raw photo is unsupported');
+			}
+			// direction is valid?
+			if (($direction !== 1) && ($direction !== -1)) {
+				throw new InvalidRotationDirectionException();
+			}
+			$this->photo = $photo;
+			$this->direction = $direction;
+			$this->sourceFile = $this->photo->size_variants->getOriginal()->getFile();
+			$this->namingStrategy = resolve(SizeVariantNamingStrategy::class);
+			$this->namingStrategy->setPhoto($this->photo);
+		} catch (BindingResolutionException $e) {
+			throw new FrameworkException('Laravel\'s container component', $e);
 		}
-		if ($photo->live_photo_short_path !== null) {
-			throw new MediaFileUnsupportedException('Rotation of a live photo is unsupported');
-		}
-		if ($photo->isRaw()) {
-			throw new MediaFileUnsupportedException('Rotation of a raw photo is unsupported');
-		}
-		// direction is valid?
-		if (($direction !== 1) && ($direction !== -1)) {
-			throw new InvalidRotationDirectionException();
-		}
-		$this->direction = $direction;
 	}
 
 	/**
-	 * @return Photo
+	 * Rotates the photo and its duplicates and re-generates all size variants.
+	 *
+	 * @return Photo the updated (i.e. rotated) photo
 	 *
 	 * @throws LycheeException
 	 */
 	public function do(): Photo
 	{
-		// Generate a temporary name for the rotated file.
-		$oldOriginalSizeVariant = $this->photo->size_variants->getOriginal();
-		$oldOriginalWidth = $oldOriginalSizeVariant->width;
-		$oldOriginalHeight = $oldOriginalSizeVariant->height;
-		$oldChecksum = $this->photo->checksum;
-		$origFile = $oldOriginalSizeVariant->getFile();
-		$tmpFile = new TemporaryLocalFile($origFile->getExtension());
-
-		// Rotate the image and save result as the temporary file
-		/** @var ImageHandlerInterface $imageHandler */
-		$imageHandler = resolve(ImageHandlerInterface::class);
-		// TODO: If we ever wish to support something else than local files, ImageHandler must work on resource streams, not absolute file names (see ImageHandlerInterface)
-		$imageHandler->rotate($origFile->getAbsolutePath(), ($this->direction === 1) ? 90 : -90, $tmpFile->getAbsolutePath());
-
-		// The file size and checksum may have changed after the rotation.
-		$this->photo->checksum = Extractor::checksum($tmpFile);
-		$this->photo->save();
+		// Load the previous original image and rotate it
+		$image = new ImageHandler();
+		$image->load($this->sourceFile);
+		try {
+			$image->rotate(90 * $this->direction);
+		} catch (LycheeDomainException $e) {
+			throw LycheeAssertionError::createFromUnexpectedException($e);
+		}
 
 		// Delete all size variants from current photo, this will also take
 		// care of erasing the actual "physical" files from storage and any
 		// potential symbolic link which points to one of the original files.
 		// This will bring photo entity into the same state as it would be if
 		// we were importing a new photo.
+		// This also deletes the original size variant
 		$this->photo->size_variants->deleteAll();
-		$origFile = null;
 
-		/** @var SizeVariantNamingStrategy $namingStrategy */
-		$namingStrategy = resolve(SizeVariantNamingStrategy::class);
-		$namingStrategy->setFallbackExtension($tmpFile->getOriginalExtension());
-		/** @var SizeVariantFactory $sizeVariantFactory */
-		$sizeVariantFactory = resolve(SizeVariantFactory::class);
-		$sizeVariantFactory->init($this->photo, $namingStrategy);
+		// We reset the photo of the naming strategy after the size
+		// variants have been deleted, in case the naming strategy has based
+		// its choice on the existing size variants.
+		// As the photo has no size variants anymore, we must set the
+		// extension manually from the source file we saved earlier.
+		$this->namingStrategy->setPhoto($this->photo);
+		$this->namingStrategy->setExtension($this->sourceFile->getExtension());
 
-		// Create size variant for rotated original
-		// Note that this also creates a different file name than before
-		// because the checksum of the photo has changed.
-		// Using a different filename allows avoiding caching effects.
-		// Sic! Swap width and height here, because the image has been rotated
-		$originalFilesize = $tmpFile->getFilesize();
-		$newOriginalSizeVariant = $sizeVariantFactory->createOriginal($oldOriginalHeight, $oldOriginalWidth, $originalFilesize);
-		$this->putSourceIntoFinalDestination($tmpFile, $newOriginalSizeVariant->short_path);
+		// Create new target file for rotated original size variant,
+		// and stream it into the final place
+		$targetFile = $this->namingStrategy->createFile(SizeVariant::ORIGINAL);
+		$streamStat = $image->save($targetFile, true);
 
-		// Create remaining size variants
-		$newSizeVariants = null;
+		// The checksum has been changed due to rotation.
+		$oldChecksum = $this->photo->checksum;
+		$this->photo->checksum = $streamStat->checksum;
+		$this->photo->save();
+
+		// Re-create original size variant of photo
+		$newOriginalSizeVariant = $this->photo->size_variants->create(
+				SizeVariant::ORIGINAL,
+				$targetFile->getRelativePath(),
+				$image->getDimensions(),
+				$streamStat->bytes
+			);
+
+		// Re-create remaining size variants
 		try {
+			/** @var SizeVariantFactory $sizeVariantFactory */
+			$sizeVariantFactory = resolve(SizeVariantFactory::class);
+			$sizeVariantFactory->init($this->photo, $image, $this->namingStrategy);
 			$newSizeVariants = $sizeVariantFactory->createSizeVariants();
-			// add new original size variant to collection of newly created
-			// size variants; we need this to correctly update the duplicates
-			// below
-			$newSizeVariants->add($newOriginalSizeVariant);
 		} catch (\Throwable $t) {
 			// Don't re-throw the exception, because we do not want the
-			// import to fail completely only due to missing size variants.
+			// rotation operation to fail completely only due to missing size
+			// variants.
 			// There are just too many options why the creation of size
-			// variants may fail: the user has uploaded an unsupported file
-			// format, GD and Imagick are both not available or disabled
-			// by configuration, etc.
-			report($t);
+			// variants may fail.
+			Handler::reportSafely($t);
+			$newSizeVariants = new Collection();
 		}
-
-		// Clean up factory
-		$sizeVariantFactory->cleanup();
+		// Add new original size variant to collection of newly created
+		// size variants; we need this to correctly update the duplicates
+		// below
+		$newSizeVariants->add($newOriginalSizeVariant);
 
 		// Deal with duplicates.  We simply update all of them to match.
 		$duplicates = Photo::query()
@@ -167,17 +160,14 @@ class RotateStrategy extends AddBaseStrategy
 			// Deleting the size variants of the duplicates has also the
 			// advantage that the actual files are erased from storage.
 			$duplicate->size_variants->deleteAll();
-			if ($newSizeVariants !== null && $newSizeVariants->count() > 0) {
-				/** @var SizeVariant $newSizeVariant */
-				foreach ($newSizeVariants as $newSizeVariant) {
-					$duplicate->size_variants->create(
+			/** @var SizeVariant $newSizeVariant */
+			foreach ($newSizeVariants as $newSizeVariant) {
+				$duplicate->size_variants->create(
 						$newSizeVariant->type,
 						$newSizeVariant->short_path,
-						$newSizeVariant->width,
-						$newSizeVariant->height,
+						new ImageDimension($newSizeVariant->width, $newSizeVariant->height),
 						$newSizeVariant->filesize
 					);
-				}
 			}
 			$duplicate->save();
 		}

@@ -21,6 +21,7 @@ use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\MediaFileOperationException;
 use App\Image\MediaFile;
 use App\Image\NativeLocalFile;
+use App\Image\StreamStat;
 use App\Metadata\Extractor;
 use App\Models\Album;
 use App\Models\Photo;
@@ -63,12 +64,6 @@ class Create
 	{
 		$sourceFile->assertIsSupportedMediaOrAcceptedRaw();
 
-		// Check permissions
-		// throws InsufficientFilesystemPermissions
-		// TODO: Why do we explicitly perform this check here? We could just let the photo addition fail.
-		// There is similar odd test in {@link \App\Actions\Import\FromUrl::__construct()} which uses another "check" trait.
-		$this->checkPermissions();
-
 		// Fill in information about targeted parent album
 		// throws InvalidPropertyException
 		$this->initParentAlbum($album);
@@ -78,7 +73,7 @@ class Create
 
 		// Look up potential duplicates/partners in order to select the
 		// proper strategy
-		$duplicate = $this->get_duplicate(Extractor::checksum($sourceFile));
+		$duplicate = $this->get_duplicate(StreamStat::createFromLocalFile($sourceFile)->checksum);
 		$livePartner = $this->findLivePartner(
 			$this->strategyParameters->exifInfo->livePhotoContentID,
 			$this->strategyParameters->exifInfo->type,

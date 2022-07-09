@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Console\Commands\Utilities\Colorize;
+use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\UnexpectedException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
@@ -59,10 +60,10 @@ class Ghostbuster extends Command
 	public function handle(): int
 	{
 		try {
-			$removeDeadSymLinks = $this->argument('removeDeadSymLinks') === '1';
-			$removeZombiePhotos = $this->argument('removeZombiePhotos') === '1';
-			$dryrun = $this->argument('dryrun') === '1';
-			$uploadDisk = Storage::disk();
+			$removeDeadSymLinks = filter_var($this->argument('removeDeadSymLinks'), FILTER_VALIDATE_BOOLEAN) === true;
+			$removeZombiePhotos = filter_var($this->argument('removeZombiePhotos'), FILTER_VALIDATE_BOOLEAN) === true;
+			$dryrun = filter_var($this->argument('dryrun'), FILTER_VALIDATE_BOOLEAN) === true;
+			$uploadDisk = SizeVariantNamingStrategy::getImageDisk();
 			$symlinkDisk = Storage::disk(SymLink::DISK_NAME);
 			$isLocalDisk = ($uploadDisk->getDriver()->getAdapter() instanceof LocalFlysystem);
 
@@ -75,7 +76,7 @@ class Ghostbuster extends Command
 				$removeDeadSymLinks = false;
 			}
 			if ($removeDeadSymLinks) {
-				$this->line('Also parsing database for pictures which point to non-existing files.');
+				$this->line('Also parsing database for photos with dead symbolic links.');
 				$this->line($this->col->yellow('This may modify the database.'));
 				$this->line('');
 			}
