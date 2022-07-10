@@ -176,13 +176,10 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 */
 	private function createSizeVariantInternal(int $sizeVariant, ImageDimension $maxDim): SizeVariant
 	{
-		$svImage = clone $this->referenceImage;
-		if ($sizeVariant === SizeVariant::THUMB || $sizeVariant === SizeVariant::THUMB2X) {
-			$svImage->crop($maxDim);
-			$realDim = $maxDim;
-		} else {
-			$realDim = $svImage->scale($maxDim);
-		}
+		$svImage = match ($sizeVariant) {
+			SizeVariant::THUMB, SizeVariant::THUMB2X => $this->referenceImage->cloneAndCrop($maxDim),
+			default => $this->referenceImage->cloneAndScale($maxDim)
+		};
 
 		$svFile = $this->namingStrategy->createFile($sizeVariant);
 		$svImage->save($svFile);
@@ -190,7 +187,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		return $this->photo->size_variants->create(
 			$sizeVariant,
 			$svFile->getRelativePath(),
-			$realDim,
+			$svImage->getDimensions(),
 			$svFile->getFilesize()
 		);
 	}

@@ -52,7 +52,7 @@ interface ImageHandlerInterface
 	public function reset(): void;
 
 	/**
-	 * Scales the image proportionally to the designated dimensions such
+	 * Clones and scales the image proportionally to the designated dimensions such
 	 * that the new dimension don't exceed the designated dimensions.
 	 *
 	 * The resulting dimension may differ from the requested dimension due
@@ -63,23 +63,23 @@ interface ImageHandlerInterface
 	 *
 	 * @param ImageDimension $dstDim the designated dimensions
 	 *
-	 * @return ImageDimension the resulting dimension
+	 * @return ImageHandlerInterface the scaled clone
 	 *
 	 * @throws ImageProcessingException
 	 * @throws LycheeDomainException
 	 */
-	public function scale(ImageDimension $dstDim): ImageDimension;
+	public function cloneAndScale(ImageDimension $dstDim): ImageHandlerInterface;
 
 	/**
-	 * Crops the image to the designated dimensions.
+	 * Clones and crops the image to the designated dimensions.
 	 *
 	 * @param ImageDimension $dstDim the designated dimensions
 	 *
-	 * @return void
+	 * @return ImageHandlerInterface the cropped clone
 	 *
 	 * @throws ImageProcessingException
 	 */
-	public function crop(ImageDimension $dstDim): void;
+	public function cloneAndCrop(ImageDimension $dstDim): ImageHandlerInterface;
 
 	/**
 	 * Rotates the imaged based on the given angle.

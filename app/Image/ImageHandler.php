@@ -95,17 +95,17 @@ class ImageHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function scale(ImageDimension $dstDim): ImageDimension
+	public function cloneAndScale(ImageDimension $dstDim): ImageHandlerInterface
 	{
-		return $this->engine->scale($dstDim);
+		return $this->engine->cloneAndScale($dstDim);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function crop(ImageDimension $dstDim): void
+	public function cloneAndCrop(ImageDimension $dstDim): ImageHandlerInterface
 	{
-		$this->engine->crop($dstDim);
+		return $this->engine->cloneAndCrop($dstDim);
 	}
 
 	/**

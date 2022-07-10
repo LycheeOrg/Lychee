@@ -279,7 +279,7 @@ class GdHandler extends BaseImageHandler
 	/**
 	 * {@inheritdoc}
 	 */
-	public function scale(ImageDimension $dstDim): ImageDimension
+	public function cloneAndScale(ImageDimension $dstDim): ImageHandlerInterface
 	{
 		try {
 			$srcDim = $this->getDimensions();
@@ -297,11 +297,15 @@ class GdHandler extends BaseImageHandler
 			$width = (int) round($scale * $srcDim->width);
 			$height = (int) round($scale * $srcDim->height);
 
-			$image = imagecreatetruecolor($width, $height);
-			$this->fastImageCopyResampled($image, $this->gdImage, 0, 0, 0, 0, $width, $height, $srcDim->width, $srcDim->height);
-			$this->gdImage = $image;
+			$clonedGdImage = imagecreatetruecolor($width, $height);
+			$this->fastImageCopyResampled($clonedGdImage, $this->gdImage, 0, 0, 0, 0, $width, $height, $srcDim->width, $srcDim->height);
 
-			return new ImageDimension($width, $height);
+			$clone = new self();
+			$clone->compressionQuality = $this->compressionQuality;
+			$clone->gdImage = $clonedGdImage;
+			$clone->gdImageType = $this->gdImageType;
+
+			return $clone;
 		} catch (\ErrorException $e) {
 			$this->reset();
 			throw new ImageProcessingException('Failed to scale image', $e);
@@ -311,7 +315,7 @@ class GdHandler extends BaseImageHandler
 	/**
 	 * {@inheritdoc}
 	 */
-	public function crop(ImageDimension $dstDim): void
+	public function cloneAndCrop(ImageDimension $dstDim): ImageHandlerInterface
 	{
 		try {
 			$srcDim = $this->getDimensions();
@@ -334,9 +338,15 @@ class GdHandler extends BaseImageHandler
 				$y = 0;
 			}
 
-			$image = imagecreatetruecolor($dstDim->width, $dstDim->height);
-			$this->fastImageCopyResampled($image, $this->gdImage, 0, 0, $x, $y, $dstDim->width, $dstDim->height, $width, $height);
-			$this->gdImage = $image;
+			$clonedGdImage = imagecreatetruecolor($dstDim->width, $dstDim->height);
+			$this->fastImageCopyResampled($clonedGdImage, $this->gdImage, 0, 0, $x, $y, $dstDim->width, $dstDim->height, $width, $height);
+
+			$clone = new self();
+			$clone->compressionQuality = $this->compressionQuality;
+			$clone->gdImage = $clonedGdImage;
+			$clone->gdImageType = $this->gdImageType;
+
+			return $clone;
 		} catch (\ErrorException $e) {
 			$this->reset();
 			throw new ImageProcessingException('Failed to crop image', $e);

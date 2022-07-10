@@ -144,16 +144,17 @@ class ImagickHandler extends BaseImageHandler
 	/**
 	 * {@inheritdoc}
 	 */
-	public function scale(ImageDimension $dstDim): ImageDimension
+	public function cloneAndScale(ImageDimension $dstDim): ImageHandlerInterface
 	{
 		try {
-			if (!$this->imImage->scaleImage(
+			$clone = clone $this;
+			if (!$clone->imImage->scaleImage(
 				$dstDim->width, $dstDim->height, ($dstDim->width !== 0 && $dstDim->height !== 0)
 			)) {
 				throw new ImagickException('Failed to scale image');
 			}
 
-			return $this->getDimensions();
+			return $clone;
 		} catch (ImagickException $e) {
 			throw new ImageProcessingException('Failed to scale image', $e);
 		}
@@ -162,12 +163,15 @@ class ImagickHandler extends BaseImageHandler
 	/**
 	 * {@inheritdoc}
 	 */
-	public function crop(ImageDimension $dstDim): void
+	public function cloneAndCrop(ImageDimension $dstDim): ImageHandlerInterface
 	{
 		try {
-			if (!$this->imImage->cropThumbnailImage($dstDim->width, $dstDim->height)) {
+			$clone = clone $this;
+			if (!$clone->imImage->cropThumbnailImage($dstDim->width, $dstDim->height)) {
 				throw new ImagickException('Failed to crop image');
 			}
+
+			return $clone;
 		} catch (ImagickException $e) {
 			throw new ImageProcessingException('Failed to crop image', $e);
 		}
