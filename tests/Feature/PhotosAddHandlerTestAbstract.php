@@ -56,19 +56,13 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 			'title' => 'night',
 			'type' => TestCase::MIME_TYPE_IMG_JPEG,
 			'size_variants' => [
-				'small' => [
-					'width' => 540,
-					'height' => 360,
-				],
-				'medium' => [
-					'width' => 1620,
-					'height' => 1080,
-				],
-				'original' => [
-					'width' => 6720,
-					'height' => 4480,
-					'filesize' => 21106422,
-				],
+				'thumb' => ['width' => 200, 'height' => 200],
+				'thumb2x' => ['width' => 400, 'height' => 400],
+				'small' => ['width' => 540,	'height' => 360],
+				'small2x' => ['width' => 1080,	'height' => 720],
+				'medium' => ['width' => 1620, 'height' => 1080],
+				'medium2x' => ['width' => 3240, 'height' => 2160],
+				'original' => ['width' => 6720,	'height' => 4480, 'filesize' => 21106422],
 			],
 		]);
 	}
