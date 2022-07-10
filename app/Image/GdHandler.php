@@ -8,20 +8,15 @@ use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use Safe\Exceptions\ImageException;
-use function Safe\imagealphablending;
-use function Safe\imagecopy;
-use function Safe\imagecopymerge;
 use function Safe\imagecopyresampled;
 use function Safe\imagecopyresized;
-use function Safe\imagecreate;
 use function Safe\imagecreatetruecolor;
-use function Safe\imagefill;
+use function Safe\imagecrop;
 use function Safe\imageflip;
 use function Safe\imagegif;
 use function Safe\imagejpeg;
 use function Safe\imagepng;
 use function Safe\imagerotate;
-use function Safe\imagesavealpha;
 use function Safe\imagesx;
 use function Safe\imagesy;
 use function Safe\imagewebp;
@@ -51,46 +46,72 @@ class GdHandler extends BaseImageHandler
 	 */
 	public function __clone()
 	{
-		// Cloning of \GdImage is complicated and not 100% reliable, if the
-		// original image uses transparency. :-(
-		// But photos hopefully don't use transparency too often. :-)
-		if ($this->gdImage !== null) {
-			$dim = $this->getDimensions();
-
-			try {
-				if (imageistruecolor($this->gdImage)) {
-					// If this is a true color image...
-					$clone = imagecreatetruecolor($dim->width, $dim->height);
-					imagealphablending($clone, false);
-					// As we don't know if the original image has an alpha channel,
-					// we must unconditionally enable transparency for the clone
-					// in order to be on the safe side.
-					// This seems to be a limitation of the GD library.
-					// This may needlessly increase storage size by an extra
-					// 8bit channel for image formats which support transparency
-					// (e.g TIFF, PNG, etc.)
-					// For formats which don't support transparency (e.g. JPEG),
-					// this method has no effect.
-					imagesavealpha($clone, true);
-					// Note the comment in the PHP doc:
-					// `imagecopymerge` with pct = 100 is not identical to `imagecopy`
-					// because it preserves transparency
-					imagecopymerge($clone, $this->gdImage, 0, 0, 0, 0, $dim->width, $dim->height, 100);
-				} else {
-					// If this is a 256 color palette image...
-					$clone = imagecreate($dim->width, $dim->height);
-					imagepalettecopy($clone, $this->gdImage);
-					$transColorIndex = imagecolortransparent($this->gdImage);
-					if ($transColorIndex !== -1) {
-						imagefill($clone, 0, 0, $transColorIndex);
-					}
-					imagecopy($clone, $this->gdImage, 0, 0, 0, 0, $dim->width, $dim->height);
-				}
-
-				$this->gdImage = $clone;
-			} catch (\ErrorException $e) {
-				throw new ImageProcessingException('Failed to clone image', $e);
+		try {
+			// \GdImage is an uncloneable object.
+			// Moreover, the library does not provide a method to make
+			// a proper copy of an \GdImage which preserves all attributes.
+			// Making a reliable copy of a \GdImage is a hassle.
+			// The main problem is that a \GdImage instance can represent one
+			// out of four types of images:
+			//
+			//  a) a true color image without alpha channel
+			//  b) a true color image with alpha channel
+			//  c) a palette image without a palette entry for transparency
+			//  d) a palette image with a palette entry for transparency
+			//
+			// Programmatically, the former two are created via
+			// `imagecreatetruecolor`, the latter two are created via
+			// `imagecreate`.
+			// Methods which take two `\GdImage` arguments - a source and
+			// a destination - such as `imagecopy` behave unreliable, if
+			// the provided source and destination are of different type.
+			// Typically, one ends up with color distortions or
+			// transparency turning into black or white.
+			// For palette images one has to ensure that the palette is
+			// copied from the source to the destination via
+			// `imagepalettecopy` before the actual image is copied.
+			// However, `imagepalettecopy` must not be used on a true color
+			// image or funny things start to happen.
+			// Unfortunately, if one does not create a `\GdImage` with
+			// `imagecreatetruecolor` or `imagecreate` but loads an image
+			// from a file via `imagecreatefrom...` the type of the
+			// returned `\GdImage` is unpredictable.
+			// For example a PNG or TIFF image can either be a palette image
+			// or a true color image.
+			// TLTR: Making a good, deep copy of a `\GdImage` is a nightmare.
+			//
+			// The problem is discussed in https://stackoverflow.com/q/12605768/2690527.
+			// The accepted answer https://stackoverflow.com/a/12606659/2690527
+			// is not good, because it simply assumes that one has case a)
+			// (true color without alpha channel).
+			// The answer https://stackoverflow.com/a/14690598/2690527 is
+			// better even though it bears some easy-to-fix programming errors
+			// like undefined variables.
+			// However, it has two drawbacks:
+			//  - In order to be on the safe side, the copied image always
+			//    has a transparency channel for true color images even if
+			//    the image does not use transparancy at all.
+			//  - Due to its usage of `imagealphablending` it turns out to be
+			//    incredibly slow, even slower than just re-loading the
+			//    GD image from disk and decoding the image stream.
+			//
+			// The best solution seems to exploit `imagecrop`.
+			// Opposed to other methods, `imagecrop` does not take two
+			// arguments - the source and the destination - but creates
+			// a deep copy internally and **returns** the result.
+			// Hence, we use `imagecrop` without actually cropping anything
+			// to get a deep copy.
+			// With respect to efficiency `imagecrop` does not seem to be as
+			// efficient as a true clone method could be, but it is not worse
+			// than re-loading the image from disk.
+			if ($this->gdImage !== null) {
+				$dim = $this->getDimensions();
+				// We exploit `imagecrop` to get a deep copy of the image;
+				// see long explanation above
+				$this->gdImage = imagecrop($this->gdImage, ['x' => 0, 'y' => 0, 'width' => $dim->width, 'height' => $dim->height]);
 			}
+		} catch (\ErrorException $e) {
+			throw new ImageProcessingException('Failed to clone image', $e);
 		}
 	}
 

@@ -191,3 +191,16 @@ function imagesx(\GdImage $image): int {}
  * @throws ImageException
  */
 function imagesy(\GdImage $image): int {}
+
+
+/**
+ * Crops an image to the given rectangular area and returns the resulting image.
+ * The given image is not modified.
+ *
+ * @param  \GdImage                                       $image An image, returned by one of the image creation functions, such as imagecreatetruecolor.
+ * @param  array{x: int, y: int, width: int, height: int} $rect  The cropping rectangle
+ * @return \GdImage                                              Return cropped image on success.
+ * @throws ImageException
+ *
+ */
+function imagecrop(\GdImage $image, array $rect): \GdImage {}
