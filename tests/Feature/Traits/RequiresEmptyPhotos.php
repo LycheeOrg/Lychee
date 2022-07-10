@@ -14,11 +14,15 @@ namespace Tests\Feature\Traits;
 
 use App\Console\Commands\FixPermissions;
 use Illuminate\Support\Facades\DB;
+use function Safe\fileowner;
 
 trait RequiresEmptyPhotos
 {
+	protected static int $effUserId;
+
 	protected function setUpRequiresEmptyPhotos(): void
 	{
+		self::$effUserId = posix_geteuid();
 		// Assert that photo table is empty
 		static::assertDatabaseCount('sym_links', 0);
 		static::assertDatabaseCount('size_variants', 0);
@@ -63,7 +67,9 @@ trait RequiresEmptyPhotos
 		if (!is_dir($dirPath)) {
 			return;
 		}
-		\Safe\chmod($dirPath, FixPermissions::DEFAULT_DIRECTORY_PERMS);
+		if (fileowner($dirPath) === self::$effUserId) {
+			\Safe\chmod($dirPath, FixPermissions::DEFAULT_DIRECTORY_PERMS);
+		}
 		$dirEntries = scandir($dirPath);
 		foreach ($dirEntries as $dirEntry) {
 			if (in_array($dirEntry, ['.', '..', 'index.html', '.gitignore'])) {
