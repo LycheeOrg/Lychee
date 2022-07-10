@@ -18,11 +18,11 @@ use function Safe\fileowner;
 
 trait RequiresEmptyPhotos
 {
-	protected static int $effUserId;
+	use InteractsWithFilesystemPermissions;
 
 	protected function setUpRequiresEmptyPhotos(): void
 	{
-		self::$effUserId = posix_geteuid();
+		$this->setUpInteractsWithFilesystemPermissions();
 		// Assert that photo table is empty
 		static::assertDatabaseCount('sym_links', 0);
 		static::assertDatabaseCount('size_variants', 0);

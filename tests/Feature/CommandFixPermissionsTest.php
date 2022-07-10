@@ -36,6 +36,9 @@ class CommandFixPermissionsTest extends Base\PhotoTestBase
 		$filePath = public_path($photo->size_variants->original->url);
 		$dirPath = pathinfo($filePath, PATHINFO_DIRNAME);
 
+		static::skipIfNotFileOwner($filePath);
+		static::skipIfNotFileOwner($dirPath);
+
 		chmod($filePath, 00400);
 		chmod($dirPath, 00500);
 

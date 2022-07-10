@@ -13,6 +13,7 @@
 namespace Tests\Feature;
 
 use Tests\Feature\Base\PhotoTestBase;
+use Tests\Feature\Traits\InteractsWithFilesystemPermissions;
 use Tests\Feature\Traits\InteractsWithRaw;
 use Tests\TestCase;
 
@@ -22,6 +23,13 @@ use Tests\TestCase;
 class PhotosAddNegativeTest extends PhotoTestBase
 {
 	use InteractsWithRaw;
+	use InteractsWithFilesystemPermissions;
+
+	public function setUp(): void
+	{
+		parent::setUp();
+		$this->setUpInteractsWithFilesystemPermissions();
+	}
 
 	public function testNegativeUpload(): void
 	{
@@ -31,6 +39,8 @@ class PhotosAddNegativeTest extends PhotoTestBase
 
 	public function testImportViaDeniedMove(): void
 	{
+		static::skipIfNotFileOwner(static::importPath());
+
 		// import the photo without the right to move the photo (aka delete the original)
 		// For POSIX system, the right to create/rename/delete/edit meta-attributes
 		// of a file is based on the write-privilege of the containing directory,
@@ -124,6 +134,7 @@ class PhotosAddNegativeTest extends PhotoTestBase
 		if (!is_dir($dirPath)) {
 			return;
 		}
+		static::skipIfNotFileOwner($dirPath);
 
 		$dirEntries = scandir($dirPath);
 		foreach ($dirEntries as $dirEntry) {
