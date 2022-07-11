@@ -60,9 +60,15 @@ class Ghostbuster extends Command
 	public function handle(): int
 	{
 		try {
-			$removeDeadSymLinks = filter_var($this->argument('removeDeadSymLinks'), FILTER_VALIDATE_BOOLEAN) === true;
-			$removeZombiePhotos = filter_var($this->argument('removeZombiePhotos'), FILTER_VALIDATE_BOOLEAN) === true;
-			$dryrun = filter_var($this->argument('dryrun'), FILTER_VALIDATE_BOOLEAN) === true;
+			// The asymmetry in the three lines below regarding `=== true`
+			// and `!== false` is by intention for improved safety.
+			// `filter_var` is tri-state and returns `null` for an
+			//  unrecognized boolean value.
+			// In case of errors, i.e. in the `null` case, we want the first
+			// two to default to `false` and the third to default to `true`.
+			$removeDeadSymLinks = filter_var($this->argument('removeDeadSymLinks'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) === true;
+			$removeZombiePhotos = filter_var($this->argument('removeZombiePhotos'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) === true;
+			$dryrun = filter_var($this->argument('dryrun'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) !== false;
 			$uploadDisk = SizeVariantNamingStrategy::getImageDisk();
 			$symlinkDisk = Storage::disk(SymLink::DISK_NAME);
 			$isLocalDisk = ($uploadDisk->getDriver()->getAdapter() instanceof LocalFlysystem);
