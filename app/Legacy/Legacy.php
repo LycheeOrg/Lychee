@@ -88,6 +88,7 @@ class Legacy
 	 */
 	private static function createAdminAndLogin($username, $password): bool
 	{
+		/** @var User */
 		$user = User::query()->findOrNew(0);
 		$user->incrementing = false; // disable auto-generation of ID
 		$user->id = 0;

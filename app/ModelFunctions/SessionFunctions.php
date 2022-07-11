@@ -6,6 +6,7 @@ use App\Exceptions\UnauthenticatedException;
 use App\Legacy\Legacy;
 use App\Models\Logs;
 use App\Models\User;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
@@ -35,7 +36,10 @@ class SessionFunctions
 	 */
 	public function is_admin(): bool
 	{
-		return Auth::check() && Auth::getUser()->id === 0;
+		/** @var User|null */
+		$user = Auth::getUser();
+
+		return Auth::check() && $user?->id === 0;
 	}
 
 	/**
@@ -43,7 +47,10 @@ class SessionFunctions
 	 */
 	public function can_upload(): bool
 	{
-		return Auth::check() && (Auth::getUser()->id === 0 || Auth::getUser()->may_upload);
+		/** @var User|null */
+		$user = Auth::getUser();
+
+		return Auth::check() && ($user?->id === 0 || $user?->may_upload === true);
 	}
 
 	/**
@@ -56,11 +63,13 @@ class SessionFunctions
 	 */
 	public function id(): int
 	{
-		if (!Auth::check()) {
+		/** @var User|null */
+		$user = Auth::getUser();
+		if (!Auth::check() || $user === null) {
 			throw new UnauthenticatedException();
 		}
 
-		return Auth::user()->id;
+		return $user->id;
 	}
 
 	/**
@@ -70,7 +79,14 @@ class SessionFunctions
 	 */
 	public function user(): User
 	{
-		return Auth::authenticate();
+		try {
+			/** @var User */
+			$user = Auth::authenticate();
+		} catch (AuthenticationException) {
+			throw new UnauthenticatedException();
+		}
+
+		return $user;
 	}
 
 	/**
@@ -83,7 +99,10 @@ class SessionFunctions
 	 */
 	public function is_current_user_or_admin(int $userId): bool
 	{
-		return Auth::check() && (Session::user()->id === $userId || Session::user()->id === 0);
+		/** @var User|null */
+		$user = Auth::getUser();
+
+		return Auth::check() && ($user?->id === $userId || $user?->id === 0);
 	}
 
 	/**
