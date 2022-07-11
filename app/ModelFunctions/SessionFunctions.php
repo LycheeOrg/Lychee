@@ -6,18 +6,15 @@ use App\Exceptions\UnauthenticatedException;
 use App\Legacy\Legacy;
 use App\Models\Logs;
 use App\Models\User;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
 class SessionFunctions
 {
-	public ?User $user_data = null;
-
 	public function log_as_id(int $id): void
 	{
-		Session::put('login', true);
-		Session::put('UserID', $id);
+		Auth::loginUsingId($id);
 	}
 
 	/**
@@ -28,7 +25,7 @@ class SessionFunctions
 	 */
 	public function is_logged_in(): bool
 	{
-		return Session::get('login') === true;
+		return Auth::check();
 	}
 
 	/**
@@ -38,7 +35,7 @@ class SessionFunctions
 	 */
 	public function is_admin(): bool
 	{
-		return $this->is_logged_in() && Session::get('UserID') === 0;
+		return Auth::check() && Auth::getUser()->id === 0;
 	}
 
 	/**
@@ -46,7 +43,7 @@ class SessionFunctions
 	 */
 	public function can_upload(): bool
 	{
-		return $this->is_logged_in() && ($this->id() === 0 || $this->user()->may_upload);
+		return Auth::check() && (Auth::getUser()->id === 0 || Auth::getUser()->may_upload);
 	}
 
 	/**
@@ -59,28 +56,11 @@ class SessionFunctions
 	 */
 	public function id(): int
 	{
-		if (!$this->is_logged_in()) {
+		if (!Auth::check()) {
 			throw new UnauthenticatedException();
 		}
 
-		return Session::get('UserID');
-	}
-
-	/**
-	 * Return User object given a positive ID.
-	 *
-	 * @throws UnauthenticatedException
-	 * @throws ModelNotFoundException
-	 */
-	private function accessUserData(): User
-	{
-		$id = $this->id();
-		$this->user_data = User::query()->findOrFail($id);
-
-		// `findOrFail` above returns a union type, but we know that it
-		// returns the correct `User` mode in this case
-		// @phpstan-ignore-next-line
-		return $this->user_data;
+		return Auth::user()->id;
 	}
 
 	/**
@@ -90,7 +70,7 @@ class SessionFunctions
 	 */
 	public function user(): User
 	{
-		return $this->user_data ?? $this->accessUserData();
+		return Auth::authenticate();
 	}
 
 	/**
@@ -103,7 +83,7 @@ class SessionFunctions
 	 */
 	public function is_current_user_or_admin(int $userId): bool
 	{
-		return $this->is_logged_in() && (Session::get('UserID') === $userId || Session::get('UserID') === 0);
+		return Auth::check() && (Session::user()->id === $userId || Session::user()->id === 0);
 	}
 
 	/**
@@ -111,9 +91,7 @@ class SessionFunctions
 	 */
 	public function login(User $user): void
 	{
-		$this->user_data = $user;
-		Session::put('login', true);
-		Session::put('UserID', $user->id);
+		Auth::login($user);
 	}
 
 	/**
@@ -126,9 +104,7 @@ class SessionFunctions
 		/** @var User|null $adminUser */
 		$adminUser = User::query()->find(0);
 		if ($adminUser !== null && $adminUser->password === '' && $adminUser->username === '') {
-			$this->user_data = $adminUser;
-			Session::put('login', true);
-			Session::put('UserID', 0);
+			Auth::login($adminUser);
 
 			return true;
 		}
@@ -153,9 +129,7 @@ class SessionFunctions
 		$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
 
 		if ($user !== null && Hash::check($password, $user->password)) {
-			$this->user_data = $user;
-			Session::put('login', true);
-			Session::put('UserID', $user->id);
+			Auth::login($user);
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
 
 			return true;
@@ -182,9 +156,7 @@ class SessionFunctions
 		if ($adminUser !== null) {
 			// Admin User exist, so we check against it.
 			if (Hash::check($username, $adminUser->username) && Hash::check($password, $adminUser->password)) {
-				$this->user_data = $adminUser;
-				Session::put('login', true);
-				Session::put('UserID', 0);
+				Auth::login($adminUser);
 				Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
 
 				return true;
@@ -201,7 +173,7 @@ class SessionFunctions
 	 */
 	public function logout(): void
 	{
-		$this->user_data = null;
+		Auth::logout();
 		Session::flush();
 	}
 }

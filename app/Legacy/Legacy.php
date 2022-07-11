@@ -7,12 +7,13 @@ use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Configs;
 use App\Models\Logs;
+use App\Models\User;
 use App\Rules\IntegerIDRule;
 use App\Rules\RandomIDRule;
+use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 
 /**
  * Stuff we need to delete in the future.
@@ -39,10 +40,7 @@ class Legacy
 
 		if (Configs::getValueAsString('version') < '040008') {
 			if ($configs['password'] === '' && $configs['username'] === '') {
-				Configs::set('username', $hashedUsername);
-				Configs::set('password', $hashedPassword);
-
-				return true;
+				return self::createAdminAndLogin($hashedUsername, $hashedUsername);
 			}
 		}
 
@@ -60,10 +58,7 @@ class Legacy
 				isset($configs['username']) && $configs['username'] === '' &&
 				isset($configs['password']) && $configs['password'] === ''
 			) {
-				Session::put('login', true);
-				Session::put('UserID', 0);
-
-				return true;
+				return self::createAdminAndLogin('', '');
 			}
 		}
 
@@ -75,14 +70,33 @@ class Legacy
 		$configs = Configs::get();
 
 		if (Hash::check($username, $configs['username']) && Hash::check($password, $configs['password'])) {
-			Session::put('login', true);
-			Session::put('UserID', 0);
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip . ' (legacy)');
 
-			return true;
+			return self::createAdminAndLogin($configs['username'], $configs['password']);
 		}
 
 		return false;
+	}
+
+	/**
+	 * Givne a username and password, create an admin user in the database.
+	 *
+	 * @param mixed $username
+	 * @param mixed $password
+	 *
+	 * @return bool actually always true
+	 */
+	private static function createAdminAndLogin($username, $password): bool
+	{
+		$user = User::query()->findOrNew(0);
+		$user->incrementing = false; // disable auto-generation of ID
+		$user->id = 0;
+		$user->username = $username;
+		$user->password = $password;
+		$user->save();
+		Auth::login($user);
+
+		return true;
 	}
 
 	public static function isLegacyModelID(string $id): bool
