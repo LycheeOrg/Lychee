@@ -73,6 +73,7 @@ class FixPermissions extends Command
 
 	/**
 	 * @return int
+	 *
 	 * @throws InvalidArgumentException
 	 */
 	public function handle(): int
