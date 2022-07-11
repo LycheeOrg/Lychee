@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use function Safe\chmod;
 use function Safe\fileowner;
 use function Safe\sprintf;
+use Symfony\Component\Console\Exception\InvalidArgumentException;
 
 class FixPermissions extends Command
 {
@@ -51,27 +52,38 @@ class FixPermissions extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'lychee:fix-permissions';
+	protected $signature = 'lychee:fix-permissions {dry-run=1 : Dry run (default is true)}';
 
 	/**
 	 * The console command description.
 	 *
 	 * @var string
 	 */
-	protected $description = 'Fixes the directory permissions (POSIX only; must be run as the same user as the web server)';
+	protected $description = 'Fixes the directory permissions (POSIX only; must be run as the user which owns the media files)';
 
 	/**
 	 * @var int ID of (POSIX) user which runs this command
 	 */
 	protected int $effUserId;
 
+	/**
+	 * @var bool indicates whether the command shall only report what it would do without actually doing anything
+	 */
+	protected bool $isDryRun;
+
+	/**
+	 * @return int
+	 * @throws InvalidArgumentException
+	 */
 	public function handle(): int
 	{
 		if (!extension_loaded('posix')) {
-			$this->error('Non-POSIX OS detected: Cannot fix permissions');
+			$this->error('Non-POSIX OS detected: Command unsupported');
 
 			return -1;
 		}
+
+		$this->isDryRun = filter_var($this->argument('dry-run'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) !== false;
 
 		clearstatcache(true);
 		$this->effUserId = posix_geteuid();
@@ -119,19 +131,26 @@ class FixPermissions extends Command
 			$expectedPerm = ($actualPerm | $minPerms) & $maxPerms;
 
 			if ($expectedPerm !== $actualPerm) {
-				if ($ownerId !== $this->effUserId) {
-					$this->warn(
-						sprintf('%s has permissions %04o, but should have %04o at least and %04o at most', $path, $actualPerm, $minPerms, $maxPerms)
-					);
-					$this->error(
-						sprintf('Cannot fix permissions for %s as current user is not the owner', $path)
-					);
+				$this->warn(
+					sprintf('%s has permissions %04o, but should have %04o at least and %04o at most', $path, $actualPerm, $minPerms, $maxPerms)
+				);
 
-					return;
+				if ($this->isDryRun) {
+					$this->info(sprintf(
+						'Would change permissions of %s from %04o to %04o', $path, $actualPerm, $expectedPerm
+					));
+				} else {
+					if ($ownerId === $this->effUserId) {
+						$this->info(sprintf(
+							'Changing permissions of %s from %04o to %04o', $path, $actualPerm, $expectedPerm
+						));
+						chmod($path, $expectedPerm);
+					} else {
+						$this->error(
+							sprintf('Cannot change permissions of %s from %04o to %04o as current user is not the owner', $path, $actualPerm, $expectedPerm)
+						);
+					}
 				}
-
-				$this->info(sprintf('Changing permissions of %s from %04o to %04o', $path, $actualPerm, $expectedPerm));
-				chmod($path, $expectedPerm);
 			}
 
 			if ($fileType === 'dir') {
