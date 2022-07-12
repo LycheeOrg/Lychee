@@ -166,7 +166,8 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 					$problem = match (true) {
 						(!is_writable($path) && !is_readable($path)) => 'readable and writable',
 						!is_writable($path) => 'writable',
-						!is_readable($path) => 'readable'
+						!is_readable($path) => 'readable',
+						default => ''
 					};
 					$errors[] = sprintf('Error: %s is not %s by %s', $path, $problem, $this->groupNames);
 				}
