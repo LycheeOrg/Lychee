@@ -12,7 +12,7 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
+use App\Auth\Authorization;
 use App\Models\Configs;
 use Tests\TestCase;
 
@@ -28,7 +28,7 @@ class DiagnosticsTest extends TestCase
 		$response = $this->get('/Diagnostics');
 		$response->assertOk(); // code 200 something
 
-		AccessControl::log_as_id(0);
+		Authorization::loginUsingId(0);
 
 		$response = $this->get('/Diagnostics');
 		$response->assertOk(); // code 200 something
@@ -43,6 +43,6 @@ class DiagnosticsTest extends TestCase
 
 		Configs::query()->where('key', '=', 'lossless_optimization')->update(['value' => '1']);
 
-		AccessControl::logout();
+		Authorization::logout();
 	}
 }

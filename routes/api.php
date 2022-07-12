@@ -96,5 +96,5 @@ Route::post('/WebAuthn::register/gen', [Administration\WebAuthController::class,
 Route::post('/WebAuthn::register', [Administration\WebAuthController::class, 'verifyRegistration']);
 Route::post('/WebAuthn::login/gen', [Administration\WebAuthController::class, 'generateAuthentication']);
 Route::post('/WebAuthn::login', [Administration\WebAuthController::class, 'verifyAuthentication']);
-Route::post('/WebAuthn::list', [Administration\WebAuthController::class, 'list']);
-Route::post('/WebAuthn::delete', [Administration\WebAuthController::class, 'delete']);
+Route::post('/WebAuthn::list', [Administration\WebAuthController::class, 'list'])->middleware(['admin']);
+Route::post('/WebAuthn::delete', [Administration\WebAuthController::class, 'delete'])->middleware(['admin']);

@@ -12,7 +12,7 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
+use App\Auth\Authorization;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\TestCase;
 
@@ -31,7 +31,7 @@ class SharingTest extends TestCase
 	 */
 	public function testSharing(): void
 	{
-		AccessControl::log_as_id(0);
+		Authorization::loginUsingId(0);
 
 		$albumID1 = $this->albums_tests->add(null, 'test_album')->offsetGet('id');
 		$albumID2 = $this->albums_tests->add($albumID1, 'test_album2')->offsetGet('id');
@@ -41,6 +41,6 @@ class SharingTest extends TestCase
 
 		$this->albums_tests->delete([$albumID1, $albumID2]);
 
-		AccessControl::logout();
+		Authorization::logout();
 	}
 }

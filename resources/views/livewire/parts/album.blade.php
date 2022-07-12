@@ -16,7 +16,7 @@
 	{{-- <a>{{ $data['date_stamp'] }}</a> --}}
 </div>
 
-@if (AccessControl::is_logged_in())
+@if (Auth::check())
 <div class='badges'>
 	@if (isset($data['nsfw']) && $data['nsfw'] == "1")
 		<x-icon class='badge--nsfw icn-warning' icon='warning' />

@@ -12,7 +12,7 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
+use App\Auth\Authorization;
 use App\Models\Configs;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\TestCase;
@@ -26,7 +26,7 @@ class PhotosRotateTest extends TestCase
 	{
 		$photos_tests = new PhotosUnitTest($this);
 
-		AccessControl::log_as_id(0);
+		Authorization::loginUsingId(0);
 
 		$id = $photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
@@ -122,6 +122,6 @@ class PhotosRotateTest extends TestCase
 		// reset
 		Configs::set('editor_enabled', $editor_enabled_value);
 
-		AccessControl::logout();
+		Authorization::logout();
 	}
 }

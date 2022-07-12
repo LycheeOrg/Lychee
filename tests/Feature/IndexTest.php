@@ -12,7 +12,7 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
+use App\Auth\Authorization;
 use App\Models\Configs;
 use Tests\TestCase;
 
@@ -42,7 +42,7 @@ class IndexTest extends TestCase
 	 */
 	public function testPhpInfo(): void
 	{
-		AccessControl::logout();
+		Authorization::logout();
 		// we don't want a non admin to access this
 		$response = $this->get('/phpinfo');
 		$response->assertForbidden();

@@ -12,7 +12,7 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
+use App\Auth\Authorization;
 use App\Models\Configs;
 use App\Models\Photo;
 use Carbon\Carbon;
@@ -45,12 +45,12 @@ class PhotosAddTest extends TestCase
 		Configs::set('has_ffmpeg', '2');
 		$this->hasFFmpeg = Configs::hasFFmpeg();
 
-		AccessControl::log_as_id(0);
+		Authorization::loginUsingId(0);
 	}
 
 	public function tearDown(): void
 	{
-		AccessControl::logout();
+		Authorization::logout();
 
 		Configs::set('has_exiftool', $this->hasExifToolsInit);
 		Configs::set('has_ffmpeg', $this->hasFFmpegInit);

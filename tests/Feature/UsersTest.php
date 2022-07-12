@@ -12,8 +12,7 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
-use App\ModelFunctions\SessionFunctions;
+use App\Auth\Authorization;
 use App\Models\Configs;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\SessionUnitTest;
@@ -27,7 +26,6 @@ class UsersTest extends TestCase
 		/**
 		 * because there is no dependency injection in test cases.
 		 */
-		$sessionFunctions = new SessionFunctions();
 		$sessions_test = new SessionUnitTest($this);
 
 		$clear = false;
@@ -51,7 +49,7 @@ class UsersTest extends TestCase
 		/*
 		 * We check that there are username and password set in the database
 		 */
-		static::assertFalse($sessionFunctions->noLogin());
+		static::assertFalse(Authorization::noLogin());
 
 		$sessions_test->login('foo', 'bar', 401);
 		$sessions_test->login('lychee', 'bar', 401);
@@ -120,7 +118,7 @@ class UsersTest extends TestCase
 		 */
 
 		// 1
-		AccessControl::log_as_id(0);
+		Authorization::loginUsingId(0);
 
 		// 2
 		$users_test->add('test_abcd', 'test_abcd', true, true);
@@ -172,7 +170,7 @@ class UsersTest extends TestCase
 		$sessions_test->logout();
 
 		// 15
-		AccessControl::log_as_id(0);
+		Authorization::loginUsingId(0);
 
 		// 16
 		$users_test->save($id, 'test_abcde', 'testing', false, false);
@@ -215,7 +213,7 @@ class UsersTest extends TestCase
 		$sessions_test->logout();
 
 		// 29
-		AccessControl::log_as_id(0);
+		Authorization::loginUsingId(0);
 
 		// 30
 		$users_test->delete($id);
@@ -231,7 +229,7 @@ class UsersTest extends TestCase
 		$sessions_test->logout();
 
 		// 32
-		AccessControl::log_as_id(0);
+		Authorization::loginUsingId(0);
 
 		$configs = Configs::get();
 		$store_new_photos_notification = $configs['new_photos_notification'];

@@ -12,7 +12,7 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
+use App\Auth\Authorization;
 use App\Models\Configs;
 use PHPUnit\Framework\ExpectationFailedException;
 use Tests\TestCase;
@@ -35,7 +35,7 @@ class UpdateTest extends TestCase
 	{
 		$gitpull = Configs::getValue('allow_online_git_pull', '0');
 
-		AccessControl::log_as_id(0);
+		Authorization::loginUsingId(0);
 
 		Configs::set('allow_online_git_pull', '0');
 		$response = $this->postJson('/api/Update::apply');
@@ -70,6 +70,6 @@ class UpdateTest extends TestCase
 
 		Configs::set('allow_online_git_pull', $gitpull);
 
-		AccessControl::logout();
+		Authorization::logout();
 	}
 }

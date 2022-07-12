@@ -1,7 +1,7 @@
 <header class="header">
 	@if($mode == 'albums')
     <div class="header__toolbar header__toolbar--albums header__toolbar--visible">
-		@if(!AccessControl::is_logged_in())
+		@if(!Auh::check())
 		<a class="button" id="button_signin" title="{{ Lang::get('SIGN_IN') }}" data-tabindex="{{ Helpers::data_index_r() }}">
 			<x-iconic icon='account-login' />
 		</a>
@@ -20,7 +20,7 @@
         <a class="button button--map-albums" title="{{ Lang::get('DISPLAY_FULL_MAP') }}" data-tabindex="{{ Helpers::data_index() }}">
             <x-iconic icon="map" />
         </a>
-		@if(AccessControl::is_logged_in())
+		@if(Auh::check())
         <a class="button button_add" title="{{ Lang::get('ADD') }}" data-tabindex="{{ Helpers::data_index() }}">
             <x-iconic icon="plus" />
         </a>
@@ -36,7 +36,7 @@
 
         <a class="header__title" data-tabindex="{{ Helpers::data_index() }}">{{ $title }}</a>
 
-		@if(AccessControl::is_logged_in())
+		@if(Auh::check())
         <a class="button button--eye" id="button_visibility_album" title="{{ Lang::get('VISIBILITY_ALBUM') }}" data-tabindex="{{ Helpers::data_index() }}">
             <x-iconic class="iconic--eye" icon="eye" />
         </a>
@@ -59,7 +59,7 @@
         <a class="button button--map" id="button_map_album" title="{{ Lang::get('DISPLAY_FULL_MAP') }}" data-tabindex="{{ Helpers::data_index() }}">
             <x-iconic icon="map" />
         </a>
-		@if(AccessControl::is_logged_in())
+		@if(Auh::check())
         <a class="button" id="button_move_album" title="{{ Lang::get('MOVE_ALBUM') }}" data-tabindex="{{ Helpers::data_index() }}">
             <x-iconic icon="folder" />
         </a>
@@ -74,7 +74,7 @@
             <x-iconic icon="fullscreen-exit" />
         </a>
         <a class="header__divider"></a>
-		@if(AccessControl::is_logged_in())
+		@if(Auh::check())
         <a class="button button_add" title="{{ Lang::get('ADD') }}" data-tabindex="{{ Helpers::data_index() }}">
             <x-iconic icon="plus" />
         </a>
@@ -90,7 +90,7 @@
 
         <a class="header__title" data-tabindex="{{ Helpers::data_index() }}">{{ $title }}</a>
 
-		@if(AccessControl::is_logged_in())
+		@if(Auh::check())
         <a class="button button--star" id="button_star" title="{{ Lang::get('STAR_PHOTO') }}" data-tabindex="{{ Helpers::data_index() }}">
             <x-iconic icon="star" />
         </a>
@@ -113,7 +113,7 @@
         <a class="button button--map" id="button_map" title="{{ Lang::get('DISPLAY_FULL_MAP') }}" data-tabindex="{{ Helpers::data_index() }}">
             <x-iconic icon="map" />
         </a>
-		@if(AccessControl::is_logged_in())
+		@if(Auh::check())
         <a class="button" id="button_move" title="{{ Lang::get('MOVE') }}" data-tabindex="{{ Helpers::data_index() }}">
             <x-iconic icon="folder" />
         </a>
@@ -144,7 +144,7 @@
 
     </div>
 
-	@else 
+	@else
 	<div class="header__toolbar header__toolbar--config header__toolbar--visible">
         <a class="button" id="button_close_config" title="{{ Lang::get('CLOSE') }}" data-tabindex="{{ Helpers::data_index_r() }}">
             <x-iconic icon="plus" />
