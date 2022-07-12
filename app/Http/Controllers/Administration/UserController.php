@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Administration;
 
 use App\Actions\User\Create;
 use App\Actions\User\Save;
+use App\Auth\Authorization;
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
-use App\Facades\AccessControl;
 use App\Http\Requests\User\AddUserRequest;
 use App\Http\Requests\User\DeleteUserRequest;
 use App\Http\Requests\User\SetEmailRequest;
@@ -104,7 +104,7 @@ class UserController extends Controller
 	public function setEmail(SetEmailRequest $request): void
 	{
 		try {
-			$user = AccessControl::user();
+			$user = Authorization::user();
 			$user->email = $request->email();
 
 			if ($request->email() === null) {
@@ -127,7 +127,7 @@ class UserController extends Controller
 	public function getEmail(): array
 	{
 		return [
-			'email' => AccessControl::user()->email,
+			'email' => Authorization::user()->email,
 		];
 	}
 }

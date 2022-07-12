@@ -3,11 +3,11 @@
 namespace App\Actions\Album;
 
 use App\Actions\Photo\Delete as PhotoDelete;
+use App\Auth\Authorization;
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
-use App\Facades\AccessControl;
 use App\Image\FileDeleter;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
@@ -69,8 +69,8 @@ class Delete extends Action
 			// because it provides deletion of photos
 			if (in_array(UnsortedAlbum::ID, $albumIDs, true)) {
 				$query = UnsortedAlbum::getInstance()->photos();
-				if (!AccessControl::is_admin()) {
-					$query->where('owner_id', '=', AccessControl::id());
+				if (!Authorization::isAdmin()) {
+					$query->where('owner_id', '=', Authorization::id());
 				}
 				$unsortedPhotoIDs = $query->pluck('id')->all();
 			}

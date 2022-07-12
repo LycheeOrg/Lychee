@@ -2,9 +2,9 @@
 
 namespace App\Actions\WebAuth;
 
+use App\Auth\Authorization;
 use App\Exceptions\Internal\InvalidUserIdException;
 use App\Exceptions\UnauthenticatedException;
-use App\Facades\AccessControl;
 use App\Models\User;
 use DarkGhostHunter\Larapass\Facades\WebAuthn;
 use function Safe\base64_decode;
@@ -27,7 +27,7 @@ class VerifyAuthentication
 		if ($success) {
 			$user = $this->getUserFromCredentials($credential);
 			if ($user !== null) {
-				AccessControl::login($user);
+				Authorization::login($user);
 
 				return;
 			}

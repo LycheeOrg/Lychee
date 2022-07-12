@@ -2,10 +2,10 @@
 
 namespace App\Relations;
 
-use App\Actions\AlbumAuthorisationProvider;
-use App\Actions\PhotoAuthorisationProvider;
+use App\Auth\AlbumAuthorisationProvider;
+use App\Auth\Authorization;
+use App\Auth\PhotoAuthorisationProvider;
 use App\DTO\PhotoSortingCriterion;
-use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\Thumb;
@@ -177,7 +177,7 @@ class HasAlbumThumb extends Relation
 			->orderBy('photos.is_starred', 'desc')
 			->orderBy('photos.' . $this->sorting->column, $this->sorting->order)
 			->limit(1);
-		if (!AccessControl::is_admin()) {
+		if (!Authorization::isAdmin()) {
 			$bestPhotoIDSelect->where(function (Builder $query2) {
 				$this->photoAuthorisationProvider->appendSearchabilityConditions(
 					$query2->getQuery(),
@@ -187,7 +187,7 @@ class HasAlbumThumb extends Relation
 			});
 		}
 
-		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+		$userID = Authorization::check() ? Authorization::id() : null;
 
 		$album2Cover = function (BaseBuilder $builder) use ($bestPhotoIDSelect, $albumKeys, $userID) {
 			$builder
@@ -206,7 +206,7 @@ class HasAlbumThumb extends Relation
 			$builder->select(['covered_albums.id AS album_id'])
 				->addSelect(['photo_id' => $bestPhotoIDSelect])
 				->whereIn('covered_albums.id', $albumKeys);
-			if (!AccessControl::is_admin()) {
+			if (!Authorization::isAdmin()) {
 				$builder->where(function (BaseBuilder $q) {
 					$this->albumAuthorisationProvider->appendAccessibilityConditions($q);
 				});

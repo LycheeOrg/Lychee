@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Actions;
+namespace App\Auth;
 
 use App\Actions\Photo\Archive;
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnauthorizedException;
-use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\FixedQueryBuilder;
@@ -15,6 +14,7 @@ use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Facades\Auth;
 
 class PhotoAuthorisationProvider
 {
@@ -49,20 +49,20 @@ class PhotoAuthorisationProvider
 	{
 		$this->prepareModelQueryOrFail($query, false, true, true);
 
-		if (AccessControl::is_admin()) {
+		if (Authorization::isAdmin()) {
 			return $query;
 		}
 
-		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+		$userId = Authorization::id();
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
 		// "OR"-clause.
-		$visibilitySubQuery = function (FixedQueryBuilder $query2) use ($userID) {
+		$visibilitySubQuery = function (FixedQueryBuilder $query2) use ($userId) {
 			$this->albumAuthorisationProvider->appendAccessibilityConditions($query2->getQuery());
 			$query2->orWhere('photos.is_public', '=', true);
-			if ($userID !== null) {
-				$query2->orWhere('photos.owner_id', '=', $userID);
+			if ($userId !== null) {
+				$query2->orWhere('photos.owner_id', '=', $userId);
 			}
 		};
 
@@ -84,7 +84,7 @@ class PhotoAuthorisationProvider
 	{
 		return
 			$photo === null ||
-			AccessControl::is_current_user_or_admin($photo->owner_id) ||
+			Authorization::isCurrentOrAdmin($photo->owner_id) ||
 			$photo->is_public ||
 			$this->albumAuthorisationProvider->isAccessible($photo->album);
 	}
@@ -118,7 +118,7 @@ class PhotoAuthorisationProvider
 		}
 
 		return
-			AccessControl::is_current_user_or_admin($photo->owner_id) ||
+			Authorization::isCurrentOrAdmin($photo->owner_id) ||
 			$photo->album?->is_downloadable ||
 			($photo->album === null && Configs::getValueAsBool('downloadable'));
 	}
@@ -167,7 +167,7 @@ class PhotoAuthorisationProvider
 				->where('albums._rgt', '<=', $origin->_rgt);
 		}
 
-		if (AccessControl::is_admin()) {
+		if (Authorization::isAdmin()) {
 			return $query;
 		} else {
 			return $query->where(function (Builder $query) use ($origin) {
@@ -216,7 +216,7 @@ class PhotoAuthorisationProvider
 	 */
 	public function appendSearchabilityConditions(BaseBuilder $query, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
 	{
-		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+		$userId = Authorization::id();
 		$maySearchPublic = !Configs::getValueAsBool('public_photos_hidden');
 
 		try {
@@ -240,8 +240,8 @@ class PhotoAuthorisationProvider
 			if ($maySearchPublic) {
 				$query->orWhere('photos.is_public', '=', true);
 			}
-			if ($userID !== null) {
-				$query->orWhere('photos.owner_id', '=', $userID);
+			if ($userId !== null) {
+				$query->orWhere('photos.owner_id', '=', $userId);
 			}
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
@@ -267,7 +267,7 @@ class PhotoAuthorisationProvider
 	 */
 	public function isEditable(Photo $photo): bool
 	{
-		return AccessControl::is_current_user_or_admin($photo->owner_id);
+		return Authorization::isCurrentOrAdmin($photo->owner_id);
 	}
 
 	/**
@@ -291,14 +291,14 @@ class PhotoAuthorisationProvider
 	 */
 	public function areEditableByIDs(array $photoIDs): bool
 	{
-		if (AccessControl::is_admin()) {
-			return true;
-		}
-		if (!AccessControl::is_logged_in()) {
+		if (!Auth::check()) {
 			return false;
 		}
 
-		$user = AccessControl::user();
+		if (Authorization::isAdmin()) {
+			return true;
+		}
+		$userId = Authorization::id();
 
 		// Make IDs unique as otherwise count will fail.
 		$photoIDs = array_unique($photoIDs);
@@ -307,7 +307,7 @@ class PhotoAuthorisationProvider
 			count($photoIDs) === 0 ||
 			Photo::query()
 				->whereIn('id', $photoIDs)
-				->where('owner_id', $user->id)
+				->where('owner_id', $userId)
 				->count() === count($photoIDs);
 	}
 
@@ -339,7 +339,7 @@ class PhotoAuthorisationProvider
 		// Hence, we must restrict the `LEFT JOIN` to the user ID which
 		// is also used in the outer `WHERE`-clause.
 		// See `applyVisibilityFilter`.
-		$addShares = $addShares && AccessControl::is_logged_in();
+		$addShares = $addShares && Auth::check();
 
 		// Ensure that only columns of the photos are selected,
 		// if no specific columns are yet set.
@@ -356,13 +356,13 @@ class PhotoAuthorisationProvider
 			$query->leftJoin('base_albums', 'base_albums.id', '=', 'photos.album_id');
 		}
 		if ($addShares) {
-			$userID = AccessControl::id();
+			$userId = Authorization::id();
 			$query->leftJoin(
 				'user_base_album',
-				function (JoinClause $join) use ($userID) {
+				function (JoinClause $join) use ($userId) {
 					$join
 						->on('user_base_album.base_album_id', '=', 'base_albums.id')
-						->where('user_base_album.user_id', '=', $userID);
+						->where('user_base_album.user_id', '=', $userId);
 				}
 			);
 		}

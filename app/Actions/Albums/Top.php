@@ -2,12 +2,12 @@
 
 namespace App\Actions\Albums;
 
-use App\Actions\AlbumAuthorisationProvider;
+use App\Auth\AlbumAuthorisationProvider;
+use App\Auth\Authorization;
 use App\Contracts\InternalLycheeException;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\TopAlbums;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
-use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
@@ -74,14 +74,14 @@ class Top
 		$query = $this->albumAuthorisationProvider
 			->applyVisibilityFilter(Album::query()->whereIsRoot());
 
-		if (AccessControl::is_logged_in()) {
+		if (Authorization::check()) {
 			// For authenticated users we group albums by ownership.
 			$albums = (new SortingDecorator($query))
 				->orderBy('owner_id')
 				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();
 
-			$id = AccessControl::id();
+			$id = Authorization::id();
 			/**
 			 * @var BaseCollection<Album> $a
 			 * @var BaseCollection<Album> $b

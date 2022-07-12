@@ -8,12 +8,12 @@ use App\Actions\Photo\Delete;
 use App\Actions\Photo\Duplicate;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\Actions\User\Notify;
+use App\Auth\Authorization;
 use App\Contracts\InternalLycheeException;
 use App\Contracts\LycheeException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthorizedException;
-use App\Facades\AccessControl;
 use App\Http\Requests\Photo\AddPhotoRequest;
 use App\Http\Requests\Photo\ArchivePhotosRequest;
 use App\Http\Requests\Photo\DeletePhotosRequest;
@@ -328,7 +328,7 @@ class PhotoController extends Controller
 	 */
 	public function clearSymLink(): void
 	{
-		if (!AccessControl::is_admin()) {
+		if (!Authorization::isAdmin()) {
 			throw new UnauthorizedException('Admin privileges required');
 		}
 		$this->symLinkFunctions->clearSymLink();

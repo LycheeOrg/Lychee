@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Administration;
 
 use App\Actions\Update\Apply as ApplyUpdate;
 use App\Actions\Update\Check as CheckUpdate;
+use App\Auth\Authorization;
 use App\Contracts\LycheeException;
 use App\Exceptions\VersionControlException;
-use App\Facades\AccessControl;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
@@ -120,15 +120,15 @@ class UpdateController extends Controller
 	public function migrate(Request $request): View
 	{
 		if (
-			AccessControl::is_admin() || AccessControl::noLogin() ||
-			AccessControl::log_as_admin($request['username'] ?? '', $request['password'] ?? '', $request->ip())
+			Authorization::isAdmin() || Authorization::noLogin() ||
+			Authorization::logAsAdmin($request['username'] ?? '', $request['password'] ?? '', $request->ip())
 		) {
 			$output = [];
 			$this->applyUpdate->migrate($output);
 			$this->applyUpdate->filter($output);
 
-			if (AccessControl::noLogin()) {
-				AccessControl::logout();
+			if (Authorization::noLogin()) {
+				Authorization::logout();
 			}
 
 			return view('update.results', ['code' => '200', 'message' => 'Migration results', 'output' => $output]);

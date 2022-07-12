@@ -2,7 +2,7 @@
 
 namespace App\Relations;
 
-use App\Actions\PhotoAuthorisationProvider;
+use App\Auth\PhotoAuthorisationProvider;
 use App\DTO\SortingCriterion;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Extensions\BaseAlbum;

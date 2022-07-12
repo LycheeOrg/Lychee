@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Settings;
 
-use App\Facades\AccessControl;
+use App\Auth\Authorization;
 use App\Http\Requests\Session\LoginRequest;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Rules\PasswordRule;
@@ -38,9 +38,9 @@ class ChangeLoginRequest extends LoginRequest
 	 */
 	public function authorize(): bool
 	{
-		/*return AccessControl::is_logged_in() && (
-			AccessControl::is_admin() ||
-			!AccessControl::user()->is_locked
+		/*return Authorization::check() && (
+			Authorization::isAdmin() ||
+			!Authorization::user()->is_locked
 		);*/
 
 		return true;

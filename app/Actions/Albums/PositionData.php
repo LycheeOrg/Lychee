@@ -2,7 +2,7 @@
 
 namespace App\Actions\Albums;
 
-use App\Actions\PhotoAuthorisationProvider;
+use App\Auth\PhotoAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\DTO\PositionData as PositionDataDTO;
 use App\Models\Configs;

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Administration;
 
 use App\Actions\Sharing\ListShare;
+use App\Auth\Authorization;
 use App\DTO\Shares;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnauthorizedException;
-use App\Facades\AccessControl;
 use App\Http\Requests\Sharing\DeleteSharingRequest;
 use App\Http\Requests\Sharing\SetSharingRequest;
 use App\Models\User;
@@ -30,11 +30,11 @@ class SharingController extends Controller
 	{
 		// Note: This test is part of the request validation for the other
 		// methods of this class.
-		if (!AccessControl::can_upload()) {
+		if (!Authorization::canUpload()) {
 			throw new UnauthorizedException('Upload privilege required');
 		}
 
-		return $listShare->do(AccessControl::id());
+		return $listShare->do(Authorization::id());
 	}
 
 	/**

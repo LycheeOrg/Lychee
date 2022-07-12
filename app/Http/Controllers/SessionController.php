@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Auth\Authorization;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\VersionControlException;
-use App\Facades\AccessControl;
 use App\Facades\Helpers;
 use App\Facades\Lang;
 use App\Http\Requests\Session\LoginRequest;
@@ -17,7 +17,6 @@ use App\Models\Logs;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
 
@@ -60,28 +59,26 @@ class SessionController extends Controller
 	 */
 	public function init(): array
 	{
-		$logged_in = AccessControl::is_logged_in();
+		$logged_in = Authorization::check();
 
 		// Return settings
 		$return = [];
 
 		// Check if login credentials exist and login if they don't
-		if (AccessControl::noLogin() === true || $logged_in === true) {
+		if (Authorization::noLogin() === true || $logged_in === true) {
 			// we set the user ID (it is set to 0 if there is no login/password = admin)
-			$user_id = AccessControl::id();
+			$user_id = Authorization::id();
 
 			if ($user_id === 0) {
 				$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 				$return['admin'] = true;
 				$return['may_upload'] = true; // not necessary
-
 				$return['config'] = $this->configFunctions->admin();
-
 				$return['config']['location'] = base_path('public/');
 			} else {
 				try {
 					/** @var User $user */
-					$user = User::query()->findOrFail($user_id);
+					$user = Authorization::user();
 					$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 					$return['config'] = $this->configFunctions->public();
 					$return['is_locked'] = $user->is_locked;   // may user change their password?
@@ -140,18 +137,18 @@ class SessionController extends Controller
 	public function login(LoginRequest $request): void
 	{
 		// No login
-		if (AccessControl::noLogin() === true) {
+		if (Authorization::noLogin() === true) {
 			Logs::warning(__METHOD__, __LINE__, 'DEFAULT LOGIN!');
 
 			return;
 		}
 
 		// this is probably sensitive to timing attacks...
-		if (AccessControl::log_as_admin($request->username(), $request->password(), $request->ip()) === true) {
+		if (Authorization::logAsAdmin($request->username(), $request->password(), $request->ip()) === true) {
 			return;
 		}
 
-		if (AccessControl::log_as_user($request->username(), $request->password(), $request->ip()) === true) {
+		if (Authorization::logAsUser($request->username(), $request->password(), $request->ip()) === true) {
 			return;
 		}
 
@@ -168,8 +165,7 @@ class SessionController extends Controller
 	 */
 	public function logout(): void
 	{
-		Auth::logout();
-		Session::flush();
+		Authorization::logout();
 	}
 
 	/**
@@ -179,6 +175,6 @@ class SessionController extends Controller
 	 */
 	public function show(): void
 	{
-		dd(Session::all(), Auth::user());
+		dd(Session::all(), Authorization::user());
 	}
 }

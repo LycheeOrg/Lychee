@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Sharing;
 
-use App\Facades\AccessControl;
+use App\Auth\Authorization;
 use App\Http\Requests\BaseApiRequest;
 use App\Rules\IntegerIDRule;
 
@@ -20,7 +20,7 @@ class DeleteSharingRequest extends BaseApiRequest
 	 */
 	public function authorize(): bool
 	{
-		return AccessControl::can_upload();
+		return Authorization::canUpload();
 	}
 
 	/**

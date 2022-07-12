@@ -4,10 +4,10 @@ namespace App\Console\Commands;
 
 use App\Actions\Import\Exec;
 use App\Actions\Photo\Strategies\ImportMode;
+use App\Auth\Authorization;
 use App\Contracts\ExternalLycheeException;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\UnexpectedException;
-use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Configs;
 use Exception;
@@ -110,7 +110,7 @@ class Sync extends Command
 				0
 			);
 
-			AccessControl::log_as_id($owner_id);
+			Authorization::loginUsingId($owner_id);
 
 			$this->info('Start syncing.');
 

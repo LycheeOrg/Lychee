@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Sharing;
 
-use App\Facades\AccessControl;
+use App\Auth\Authorization;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbumIDs;
 use App\Http\Requests\Contracts\HasUserIDs;
@@ -21,7 +21,7 @@ class SetSharingRequest extends BaseApiRequest implements HasAlbumIDs, HasUserID
 	 */
 	public function authorize(): bool
 	{
-		return AccessControl::can_upload();
+		return Authorization::canUpload();
 	}
 
 	/**

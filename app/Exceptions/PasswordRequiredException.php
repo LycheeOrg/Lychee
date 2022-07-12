@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-use App\Facades\AccessControl;
+use App\Auth\Authorization;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -21,6 +21,6 @@ class PasswordRequiredException extends LycheeBaseException
 
 	public function __construct(string $msg = self::DEFAULT_MESSAGE, \Throwable $previous = null)
 	{
-		parent::__construct(AccessControl::is_logged_in() ? Response::HTTP_FORBIDDEN : Response::HTTP_UNAUTHORIZED, $msg, $previous);
+		parent::__construct(Authorization::check() ? Response::HTTP_FORBIDDEN : Response::HTTP_UNAUTHORIZED, $msg, $previous);
 	}
 }

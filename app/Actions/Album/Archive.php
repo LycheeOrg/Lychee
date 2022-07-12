@@ -2,10 +2,10 @@
 
 namespace App\Actions\Album;
 
+use App\Auth\Authorization;
 use App\Contracts\AbstractAlbum;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\FrameworkException;
-use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
@@ -178,7 +178,7 @@ class Archive extends Action
 				// in smart albums should be owned by the current user...
 				if (
 					($album instanceof BaseSmartAlbum || $album instanceof TagAlbum) &&
-					!AccessControl::is_current_user_or_admin($photo->owner_id) &&
+					!Authorization::isCurrentOrAdmin($photo->owner_id) &&
 					!($photo->album_id === null ? $album->is_downloadable : $photo->album->is_downloadable)
 				) {
 					continue;
@@ -229,7 +229,7 @@ class Archive extends Action
 	{
 		return
 			$album->is_downloadable ||
-			($album instanceof BaseSmartAlbum && AccessControl::is_logged_in()) ||
-			($album instanceof BaseAlbum && AccessControl::is_current_user_or_admin($album->owner_id));
+			($album instanceof BaseSmartAlbum && Authorization::check()) ||
+			($album instanceof BaseAlbum && Authorization::isCurrentOrAdmin($album->owner_id));
 	}
 }

@@ -3,12 +3,12 @@
 namespace App\Models;
 
 use App\Actions\SizeVariant\Delete;
+use App\Auth\Authorization;
 use App\Casts\MustNotSetCast;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
-use App\Facades\AccessControl;
 use App\Image\FlysystemFile;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
@@ -153,7 +153,7 @@ class SizeVariant extends Model
 	public function getUrlAttribute(): string
 	{
 		if (
-			AccessControl::is_admin() && !Configs::getValueAsBool('SL_for_admin') ||
+			Authorization::isAdmin() && !Configs::getValueAsBool('SL_for_admin') ||
 			!Configs::getValueAsBool('SL_enable')
 		) {
 			return Storage::url($this->short_path);

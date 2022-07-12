@@ -2,12 +2,12 @@
 
 namespace App\Providers;
 
-use App\Actions\AlbumAuthorisationProvider;
-use App\Actions\PhotoAuthorisationProvider;
 use App\Actions\Update\Apply as ApplyUpdate;
 use App\Actions\Update\Check as CheckUpdate;
 use App\Assets\Helpers;
 use App\Assets\SizeVariantLegacyNamingStrategy;
+use App\Auth\AlbumAuthorisationProvider;
+use App\Auth\PhotoAuthorisationProvider;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\Factories\AlbumFactory;
@@ -20,7 +20,6 @@ use App\Metadata\GitHubFunctions;
 use App\Metadata\GitRequest;
 use App\Metadata\LycheeVersion;
 use App\ModelFunctions\ConfigFunctions;
-use App\ModelFunctions\SessionFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +35,6 @@ class AppServiceProvider extends ServiceProvider
 		LangFactory::class => LangFactory::class,
 		Lang::class => Lang::class,
 		Helpers::class => Helpers::class,
-		SessionFunctions::class => SessionFunctions::class,
 		GitRequest::class => GitRequest::class,
 		GitHubFunctions::class => GitHubFunctions::class,
 		LycheeVersion::class => LycheeVersion::class,
@@ -73,10 +71,6 @@ class AppServiceProvider extends ServiceProvider
 			$compressionQuality = Configs::getValueAsInt('compression_quality');
 
 			return new ImageHandler($compressionQuality);
-		});
-
-		$this->app->bind('AccessControl', function () {
-			return resolve(SessionFunctions::class);
 		});
 
 		$this->app->bind('lang', function () {

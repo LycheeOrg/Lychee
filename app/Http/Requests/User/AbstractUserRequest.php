@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\User;
 
-use App\Facades\AccessControl;
+use App\Auth\Authorization;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPassword;
 use App\Http\Requests\Contracts\HasUsername;
@@ -31,7 +31,7 @@ abstract class AbstractUserRequest extends BaseApiRequest implements HasUsername
 		// request is made by an admin during authentication (see
 		// `routes/web.php`).
 		// But better safe than sorry.
-		return AccessControl::is_admin();
+		return Authorization::isAdmin();
 	}
 
 	/**

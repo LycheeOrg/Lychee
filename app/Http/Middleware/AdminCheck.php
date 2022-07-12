@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Auth\Authorization;
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\UnauthorizedException;
-use App\Facades\AccessControl;
 use App\Http\Middleware\Checks\IsInstalled;
 use Closure;
 use Illuminate\Http\Request;
@@ -35,7 +35,7 @@ class AdminCheck
 			return $next($request);
 		}
 
-		if (!AccessControl::is_admin()) {
+		if (!Authorization::isAdmin()) {
 			throw new UnauthorizedException('Admin privileges required');
 		}
 

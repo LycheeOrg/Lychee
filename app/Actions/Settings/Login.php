@@ -2,13 +2,13 @@
 
 namespace App\Actions\Settings;
 
+use App\Auth\Authorization;
 use App\Exceptions\ConflictingPropertyException;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
-use App\Facades\AccessControl;
 use App\Legacy\Legacy;
 use App\Models\Logs;
 use App\Models\User;
@@ -64,12 +64,12 @@ class Login
 			$adminUser->username = $hashedUsername;
 			$adminUser->password = $hashedPassword;
 			$adminUser->save();
-			AccessControl::login($adminUser);
+			Authorization::login($adminUser);
 
 			return;
 		}
 
-		if (AccessControl::is_admin()) {
+		if (Authorization::isAdmin()) {
 			if ($adminUser->password === '' || Hash::check($oldPassword, $adminUser->password)) {
 				$adminUser->username = $hashedUsername;
 				$adminUser->password = $hashedPassword;
@@ -84,12 +84,12 @@ class Login
 		}
 
 		// is this necessary ?
-		if (AccessControl::is_logged_in()) {
-			$id = AccessControl::id();
+		if (Authorization::check()) {
+			$id = Authorization::id();
 
 			// this is probably sensitive to timing attacks...
 			/** @var User $user */
-			$user = User::query()->findOrFail($id);
+			$user = Authorization::user();
 
 			if ($user->is_locked) {
 				Logs::notice(__METHOD__, __LINE__, 'Locked user (' . $user->username . ') tried to change their identity from ' . $ip);
@@ -104,7 +104,7 @@ class Login
 			// TODO: This looks suspicious.
 			// Users can only change the username/password of their own
 			// account and must be authenticated in order to do so.
-			// (See above, we use `AccessControl::id()` and query for the
+			// (See above, we use `Authorization::id()` and query for the
 			// currently authenticated user).
 			// The user name of the currently authenticated user is visible on
 			// the GUI anyway.
