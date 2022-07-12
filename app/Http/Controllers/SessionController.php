@@ -17,6 +17,7 @@ use App\Models\Logs;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
 
@@ -167,6 +168,7 @@ class SessionController extends Controller
 	 */
 	public function logout(): void
 	{
+		Auth::logout();
 		Session::flush();
 	}
 
@@ -177,6 +179,6 @@ class SessionController extends Controller
 	 */
 	public function show(): void
 	{
-		dd(Session::all());
+		dd(Session::all(), Auth::user());
 	}
 }
