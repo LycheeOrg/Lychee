@@ -95,8 +95,7 @@
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover",
-            "@install_files",
-            "@php artisan lychee:fix-permissions"
+            "@install_files"
         ],
         "install_files": [
             "@php scripts/install_files.php"
