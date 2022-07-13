@@ -52,7 +52,7 @@ class FixPermissions extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'lychee:fix-permissions {dry-run=1 : Dry run (default is true)}';
+	protected $signature = 'lychee:fix-permissions {--dry-run=1 : Dry run (default is true)}';
 
 	/**
 	 * The console command description.
@@ -84,7 +84,7 @@ class FixPermissions extends Command
 			return -1;
 		}
 
-		$this->isDryRun = filter_var($this->argument('dry-run'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) !== false;
+		$this->isDryRun = filter_var($this->option('dry-run'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) !== false;
 
 		clearstatcache(true);
 		$this->effUserId = posix_geteuid();
@@ -92,6 +92,11 @@ class FixPermissions extends Command
 		foreach (self::DIRECTORIES as $directory) {
 			$this->line(sprintf('Scanning: <info>%s</info>', $directory));
 			$this->fixPermissionsRecursively($directory);
+		}
+
+		if ($this->isDryRun) {
+			$this->line('');
+			$this->line('To apply those modifications, run <info>php artisan lychee:fix-permissions --dry-run=0</info>');
 		}
 
 		return 0;
@@ -138,12 +143,12 @@ class FixPermissions extends Command
 
 				if ($this->isDryRun) {
 					$this->info(sprintf(
-						'Would change permissions of %s from %04o to %04o', $path, $actualPerm, $expectedPerm
+						'  => Would change permissions of %s from %04o to %04o', $path, $actualPerm, $expectedPerm
 					));
 				} else {
 					if ($ownerId === $this->effUserId) {
 						$this->info(sprintf(
-							'Changing permissions of %s from %04o to %04o', $path, $actualPerm, $expectedPerm
+							'  => Changing permissions of %s from %04o to %04o', $path, $actualPerm, $expectedPerm
 						));
 						chmod($path, $expectedPerm);
 					} else {

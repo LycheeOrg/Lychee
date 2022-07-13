@@ -29,7 +29,10 @@ class Ghostbuster extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'lychee:ghostbuster {removeDeadSymLinks=0 : Removes dead symlinks and the photos pointing to them} {removeZombiePhotos=0 : Removes photos pointing to non-existing files} {dryrun=1 : Dry Run default is True}';
+	protected $signature = 'lychee:ghostbuster
+	{--removeDeadSymLinks=0 : Removes dead symlinks and the photos pointing to them}
+	{--removeZombiePhotos=0 : Removes photos pointing to non-existing files}
+	{--dryrun=1 : Dry Run default is True}';
 
 	/**
 	 * The console command description.
@@ -66,9 +69,9 @@ class Ghostbuster extends Command
 			//  unrecognized boolean value.
 			// In case of errors, i.e. in the `null` case, we want the first
 			// two to default to `false` and the third to default to `true`.
-			$removeDeadSymLinks = filter_var($this->argument('removeDeadSymLinks'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) === true;
-			$removeZombiePhotos = filter_var($this->argument('removeZombiePhotos'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) === true;
-			$dryrun = filter_var($this->argument('dryrun'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) !== false;
+			$removeDeadSymLinks = filter_var($this->option('removeDeadSymLinks'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) === true;
+			$removeZombiePhotos = filter_var($this->option('removeZombiePhotos'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) === true;
+			$dryrun = filter_var($this->option('dryrun'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) !== false;
 			$uploadDisk = SizeVariantNamingStrategy::getImageDisk();
 			$symlinkDisk = Storage::disk(SymLink::DISK_NAME);
 			$isLocalDisk = ($uploadDisk->getDriver()->getAdapter() instanceof LocalFlysystem);
