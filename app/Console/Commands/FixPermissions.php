@@ -18,7 +18,7 @@ class FixPermissions extends Command
 	 * either via the web interface or via console commands such as
 	 * `artisan lychee:sync` or `artisan lychee:ghostbuster`.
 	 * Usually, the user (process owner) who runs the web server and the
-	 * user who runs console commands a different.
+	 * user who runs console commands are different.
 	 * This might lead to unfortunate file permission problems such that
 	 * the images added via the CLI cannot be deleted via the web UI and
 	 * vice versa.
