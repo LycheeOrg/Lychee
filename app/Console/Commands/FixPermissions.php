@@ -107,6 +107,7 @@ class FixPermissions extends Command
 			$this->line('');
 			$this->line('Nothing to fix.');
 		}
+		$this->warn('This command cannot check for correct group ownership; the web diagnostic may report errors which are not detected by this tool');
 
 		return 0;
 	}
