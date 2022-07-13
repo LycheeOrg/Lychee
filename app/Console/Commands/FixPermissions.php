@@ -103,7 +103,7 @@ class FixPermissions extends Command
 			$this->line('');
 			$this->line('To apply those modifications, run <info>php artisan lychee:fix-permissions --dry-run=0</info>');
 		}
-		if ($this->isDryRun && $this->changesExpected == 0) {
+		if ($this->isDryRun && $this->changesExpected === 0) {
 			$this->line('');
 			$this->line('Nothing to fix.');
 		}
