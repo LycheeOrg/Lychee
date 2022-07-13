@@ -2,7 +2,7 @@
 
 namespace App\Actions\Photo\Strategies;
 
-use App\Console\Commands\FixPermissions;
+use App\Actions\Diagnostics\Checks\BasicPermissionCheck;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Handler;
@@ -107,7 +107,7 @@ class AddVideoPartnerStrategy extends AddBaseStrategy
 					// This mimics the behaviour of Flysystem for regular files.
 					$targetDirectory = pathinfo($targetPath, PATHINFO_DIRNAME);
 					if (!is_dir($targetDirectory)) {
-						\Safe\mkdir($targetDirectory, FixPermissions::DEFAULT_DIRECTORY_PERMS, true);
+						\Safe\mkdir($targetDirectory, BasicPermissionCheck::getDefaultDirectoryPerms(), true);
 					}
 					\Safe\symlink($sourcePath, $targetPath);
 					$streamStat = StreamStat::createFromLocalFile($this->videoSourceFile);

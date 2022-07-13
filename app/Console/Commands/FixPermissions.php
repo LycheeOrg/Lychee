@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Actions\Diagnostics\Checks\BasicPermissionCheck;
 use Illuminate\Console\Command;
 use function Safe\chmod;
 use function Safe\fileowner;
@@ -10,38 +11,6 @@ use Symfony\Component\Console\Exception\InvalidArgumentException;
 
 class FixPermissions extends Command
 {
-	/**
-	 * Image directories must be group-writeable and have the special
-	 * `set gid` bit.
-	 *
-	 * Lychee provides different ways how image files can be added or deleted:
-	 * either via the web interface or via console commands such as
-	 * `artisan lychee:sync` or `artisan lychee:ghostbuster`.
-	 * Usually, the user (process owner) who runs the web server and the
-	 * user who runs console commands are different.
-	 * This might lead to unfortunate file permission problems such that
-	 * the images added via the CLI cannot be deleted via the web UI and
-	 * vice versa.
-	 *
-	 * In order to mitigate the effects the image directories are made
-	 * group writable.
-	 * Moreover, we set the special `set gid` bit.
-	 * For directories, this special bit ensure that newly creates files and
-	 * sub-directories get the group of their parent directory and not the
-	 * group of the running process.
-	 */
-	public const MIN_DIRECTORY_PERMS = 02770;
-
-	public const MAX_DIRECTORY_PERMS = 02775;
-
-	public const DEFAULT_DIRECTORY_PERMS = self::MAX_DIRECTORY_PERMS;
-
-	public const MIN_FILE_PERMS = 00660;
-
-	public const MAX_FILE_PERMS = 00664;
-
-	public const DEFAULT_FILE_PERMS = self::MAX_FILE_PERMS;
-
 	public const DIRECTORIES = [
 		'public/uploads',
 		'public/sym',
@@ -134,13 +103,13 @@ class FixPermissions extends Command
 			$fileType = filetype($path);
 
 			$minPerms = match ($fileType) {
-				'dir' => self::MIN_DIRECTORY_PERMS,
-				'file' => self::MIN_FILE_PERMS,
+				'dir' => BasicPermissionCheck::getMinDirectoryPerms(),
+				'file' => BasicPermissionCheck::getMinFilePerms(),
 				default => 00000, // we do not care for links and other special files
 			};
 			$maxPerms = match ($fileType) {
-				'dir' => self::MAX_DIRECTORY_PERMS,
-				'file' => self::MAX_FILE_PERMS,
+				'dir' => BasicPermissionCheck::getMaxDirectoryPerms(),
+				'file' => BasicPermissionCheck::getMaxFilePerms(),
 				default => 07777, // we do not care for links and other special files
 			};
 

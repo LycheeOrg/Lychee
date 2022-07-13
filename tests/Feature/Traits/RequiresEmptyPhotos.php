@@ -12,7 +12,6 @@
 
 namespace Tests\Feature\Traits;
 
-use App\Console\Commands\FixPermissions;
 use Illuminate\Support\Facades\DB;
 use function Safe\fileowner;
 
@@ -68,7 +67,7 @@ trait RequiresEmptyPhotos
 			return;
 		}
 		if (fileowner($dirPath) === self::$effUserId) {
-			\Safe\chmod($dirPath, FixPermissions::DEFAULT_DIRECTORY_PERMS);
+			\Safe\chmod($dirPath, 02775);
 		}
 		$dirEntries = scandir($dirPath);
 		foreach ($dirEntries as $dirEntry) {

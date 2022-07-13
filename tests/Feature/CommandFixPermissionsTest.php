@@ -12,7 +12,6 @@
 
 namespace Tests\Feature;
 
-use App\Console\Commands\FixPermissions;
 use function Safe\chmod;
 use Tests\TestCase;
 
@@ -27,6 +26,10 @@ class CommandFixPermissionsTest extends Base\PhotoTestBase
 	 */
 	public function testFixPermissions(): void
 	{
+		if (config('filesystems.images.visibility', 'public') !== 'public') {
+			static::markTestSkipped('Wrong setting in .env file or configuration');
+		}
+
 		clearstatcache(true);
 
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
@@ -47,8 +50,8 @@ class CommandFixPermissionsTest extends Base\PhotoTestBase
 		])->assertSuccessful();
 
 		clearstatcache(true);
-		static::assertEquals(FixPermissions::MIN_FILE_PERMS, fileperms($filePath) & 07777);
-		static::assertEquals(FixPermissions::MIN_DIRECTORY_PERMS, fileperms($dirPath) & 07777);
+		static::assertEquals(00660, fileperms($filePath) & 07777);
+		static::assertEquals(02770, fileperms($dirPath) & 07777);
 
 		chmod($filePath, 00777);
 		chmod($dirPath, 06777);
@@ -58,7 +61,7 @@ class CommandFixPermissionsTest extends Base\PhotoTestBase
 		])->assertSuccessful();
 
 		clearstatcache(true);
-		static::assertEquals(FixPermissions::MAX_FILE_PERMS, fileperms($filePath) & 07777);
-		static::assertEquals(FixPermissions::MAX_DIRECTORY_PERMS, fileperms($dirPath) & 07777);
+		static::assertEquals(00664, fileperms($filePath) & 07777);
+		static::assertEquals(02775, fileperms($dirPath) & 07777);
 	}
 }

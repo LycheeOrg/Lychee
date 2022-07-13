@@ -2,19 +2,58 @@
 
 namespace App\Actions\Diagnostics\Checks;
 
-use App\Console\Commands\FixPermissions;
 use App\Contracts\DiagnosticCheckInterface;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\Handler;
+use App\Exceptions\Internal\InvalidConfigOption;
 use App\Facades\Helpers;
 use App\Models\SymLink;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Adapter\Local as LocalFlysystem;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use function Safe\sprintf;
 
 class BasicPermissionCheck implements DiagnosticCheckInterface
 {
+	/**
+	 * Image directories must be group-writeable and have the special
+	 * `set gid` bit.
+	 *
+	 * Lychee provides different ways how image files can be added or deleted:
+	 * either via the web interface or via console commands such as
+	 * `artisan lychee:sync` or `artisan lychee:ghostbuster`.
+	 * Usually, the user (process owner) who runs the web server and the
+	 * user who runs console commands are different.
+	 * This might lead to unfortunate file permission problems such that
+	 * the images added via the CLI cannot be deleted via the web UI and
+	 * vice versa.
+	 *
+	 * In order to mitigate the effects the image directories are made
+	 * group writable.
+	 * Moreover, we set the special `set gid` bit.
+	 * For directories, this special bit ensure that newly creates files and
+	 * sub-directories get the group of their parent directory and not the
+	 * group of the running process.
+	 */
+	private const MIN_DIRECTORY_PERMS = 02770;
+
+	private const MAX_DIRECTORY_PERMS = 02777;
+
+	private const DEFAULT_DIRECTORY_PERMS = 02775;
+
+	private const MIN_FILE_PERMS = 00660;
+
+	private const MAX_FILE_PERMS = 00666;
+
+	private const DEFAULT_FILE_PERMS = 00664;
+
+	private const VISIBILITY_CATEGORIES = ['private', 'public', 'world'];
+
+	private const FALLBACK_VISIBILITY = 'public';
+
 	public const MAX_ISSUE_REPORTS_PER_TYPE = 5;
 
 	/**
@@ -144,7 +183,7 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 			$owningGroupIdOrFalse = filegroup($path);
 			$owningGroupNameOrFalse = $owningGroupIdOrFalse === false ? false : posix_getgrgid($owningGroupIdOrFalse);
 			$owningGroupName = $owningGroupNameOrFalse === false ? '<unknown>' : $owningGroupNameOrFalse['name'];
-			$expectedPerm = ($actualPerm | FixPermissions::MIN_DIRECTORY_PERMS) & FixPermissions::MAX_DIRECTORY_PERMS;
+			$expectedPerm = ($actualPerm | self::getMinDirectoryPerms()) & self::getMaxDirectoryPerms();
 
 			if (!in_array($owningGroupIdOrFalse, $this->groupIDs, true)) {
 				$this->numOwnerIssues++;
@@ -156,7 +195,13 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 			if ($expectedPerm !== $actualPerm) {
 				$this->numPermissionIssues++;
 				if ($this->numPermissionIssues <= self::MAX_ISSUE_REPORTS_PER_TYPE) {
-					$errors[] = sprintf('Warning: %s has permissions %04o, but should have %04o at least and %04o at most', $path, $actualPerm, FixPermissions::MIN_DIRECTORY_PERMS, FixPermissions::MAX_DIRECTORY_PERMS);
+					$errors[] = sprintf(
+						'Warning: %s has permissions %04o, but should have %04o at least and %04o at most',
+						$path,
+						$actualPerm,
+						BasicPermissionCheck::getMinDirectoryPerms(),
+						BasicPermissionCheck::getMaxDirectoryPerms()
+					);
 				}
 			}
 
@@ -182,6 +227,81 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 		} catch (\Exception $e) {
 			$errors[] = 'Error: ' . $e->getMessage();
 			Handler::reportSafely($e);
+		}
+	}
+
+	/**
+	 * @throws InvalidConfigOption
+	 */
+	public static function getDefaultDirectoryPerms(): int
+	{
+		return self::getPerms('dir', null, self::DEFAULT_DIRECTORY_PERMS);
+	}
+
+	/**
+	 * @throws InvalidConfigOption
+	 */
+	public static function getMaxDirectoryPerms(): int
+	{
+		return self::getPerms('dir', 'world', self::MAX_DIRECTORY_PERMS);
+	}
+
+	/**
+	 * @throws InvalidConfigOption
+	 */
+	public static function getMinDirectoryPerms(): int
+	{
+		return self::getPerms('dir', 'private', self::MIN_DIRECTORY_PERMS);
+	}
+
+	/**
+	 * @throws InvalidConfigOption
+	 */
+	public static function getDefaultFilePerms(): int
+	{
+		return self::getPerms('file', null, self::DEFAULT_FILE_PERMS);
+	}
+
+	/**
+	 * @throws InvalidConfigOption
+	 */
+	public static function getMaxFilePerms(): int
+	{
+		return self::getPerms('file', 'world', self::MAX_FILE_PERMS);
+	}
+
+	/**
+	 * @throws InvalidConfigOption
+	 */
+	public static function getMinFilePerms(): int
+	{
+		return self::getPerms('file', 'private', self::MIN_FILE_PERMS);
+	}
+
+	/**
+	 * @param string      $type       either 'dir' or 'file'
+	 * @param string|null $visibility a value out of {@link BasicPermissionCheck::VISIBILITY_CATEGORIES} or `null`
+	 *
+	 * @return int
+	 *
+	 * @phpstan-param 'dir'|'file' $type
+	 *
+	 * @throws InvalidConfigOption
+	 */
+	private static function getPerms(string $type, ?string $visibility, int $fallbackPermission): int
+	{
+		try {
+			$visibility ??= (string) config('filesystems.images.visibility', self::FALLBACK_VISIBILITY);
+			if (!in_array($visibility, self::VISIBILITY_CATEGORIES, true)) {
+				throw new InvalidConfigOption('Misconfigured default directory permissions');
+			}
+
+			return (int) config(
+				sprintf('filesystems.images.permissions.%s.%s', $type, $visibility),
+				$fallbackPermission
+			);
+		} catch (ContainerExceptionInterface|BindingResolutionException|NotFoundExceptionInterface $e) {
+			throw new InvalidConfigOption('Misconfigured default directory permissions', $e);
 		}
 	}
 }
