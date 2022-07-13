@@ -23,7 +23,7 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 	protected array $groupIDs;
 
 	/**
-	 * @var string Comma-seperated list of names of (POSIX) groups to which the process belongs
+	 * @var string Comma-separated list of names of (POSIX) groups to which the process belongs
 	 */
 	protected string $groupNames;
 
