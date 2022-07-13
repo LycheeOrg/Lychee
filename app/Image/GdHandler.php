@@ -63,7 +63,7 @@ class GdHandler extends BaseImageHandler
 			// `imagecreatetruecolor`, the latter two are created via
 			// `imagecreate`.
 			// Methods which take two `\GdImage` arguments - a source and
-			// a destination - such as `imagecopy` behave unreliable, if
+			// a destination - such as `imagecopy` behave unreliably, if
 			// the provided source and destination are of different type.
 			// Typically, one ends up with color distortions or
 			// transparency turning into black or white.
