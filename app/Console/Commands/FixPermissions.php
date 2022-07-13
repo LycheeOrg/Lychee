@@ -102,22 +102,15 @@ class FixPermissions extends Command
 			$ownerId = fileowner($path);
 			$fileType = filetype($path);
 
-			$minPerms = match ($fileType) {
-				'dir' => BasicPermissionCheck::getMinDirectoryPerms(),
-				'file' => BasicPermissionCheck::getMinFilePerms(),
-				default => 00000, // we do not care for links and other special files
+			$expectedPerm = match ($fileType) {
+				'dir' => BasicPermissionCheck::getConfiguredDirectoryPerm(),
+				'file' => BasicPermissionCheck::getConfiguredFilePerm(),
+				default => $actualPerm, // we do not care for links and other special files
 			};
-			$maxPerms = match ($fileType) {
-				'dir' => BasicPermissionCheck::getMaxDirectoryPerms(),
-				'file' => BasicPermissionCheck::getMaxFilePerms(),
-				default => 07777, // we do not care for links and other special files
-			};
-
-			$expectedPerm = ($actualPerm | $minPerms) & $maxPerms;
 
 			if ($expectedPerm !== $actualPerm) {
 				$this->warn(
-					sprintf('%s has permissions %04o, but should have %04o at least and %04o at most', $path, $actualPerm, $minPerms, $maxPerms)
+					sprintf('%s has permissions %04o, but should have %04o', $path, $actualPerm, $expectedPerm)
 				);
 
 				if ($this->isDryRun) {

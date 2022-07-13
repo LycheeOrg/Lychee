@@ -38,21 +38,13 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 	 * sub-directories get the group of their parent directory and not the
 	 * group of the running process.
 	 */
-	private const MIN_DIRECTORY_PERMS = 02770;
-
-	private const MAX_DIRECTORY_PERMS = 02777;
-
-	private const DEFAULT_DIRECTORY_PERMS = 02775;
-
-	private const MIN_FILE_PERMS = 00660;
-
-	private const MAX_FILE_PERMS = 00666;
-
-	private const DEFAULT_FILE_PERMS = 00664;
-
 	private const VISIBILITY_CATEGORIES = ['private', 'public', 'world'];
 
 	private const FALLBACK_VISIBILITY = 'public';
+
+	private const FALLBACK_DIRECTORY_PERMS = 02775;
+
+	private const FALLBACK_FILE_PERMS = 00664;
 
 	public const MAX_ISSUE_REPORTS_PER_TYPE = 5;
 
@@ -183,7 +175,7 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 			$owningGroupIdOrFalse = filegroup($path);
 			$owningGroupNameOrFalse = $owningGroupIdOrFalse === false ? false : posix_getgrgid($owningGroupIdOrFalse);
 			$owningGroupName = $owningGroupNameOrFalse === false ? '<unknown>' : $owningGroupNameOrFalse['name'];
-			$expectedPerm = ($actualPerm | self::getMinDirectoryPerms()) & self::getMaxDirectoryPerms();
+			$expectedPerm = self::getConfiguredDirectoryPerm();
 
 			if (!in_array($owningGroupIdOrFalse, $this->groupIDs, true)) {
 				$this->numOwnerIssues++;
@@ -196,11 +188,10 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 				$this->numPermissionIssues++;
 				if ($this->numPermissionIssues <= self::MAX_ISSUE_REPORTS_PER_TYPE) {
 					$errors[] = sprintf(
-						'Warning: %s has permissions %04o, but should have %04o at least and %04o at most',
+						'Warning: %s has permissions %04o, but should have %04o',
 						$path,
 						$actualPerm,
-						BasicPermissionCheck::getMinDirectoryPerms(),
-						BasicPermissionCheck::getMaxDirectoryPerms()
+						$expectedPerm
 					);
 				}
 			}
@@ -209,7 +200,7 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 				$this->numAccessIssues++;
 				if ($this->numAccessIssues <= self::MAX_ISSUE_REPORTS_PER_TYPE) {
 					$problem = match (true) {
-						(!is_writable($path) && !is_readable($path)) => 'readable and writable',
+						(!is_writable($path) && !is_readable($path)) => 'readable nor writable',
 						!is_writable($path) => 'writable',
 						!is_readable($path) => 'readable',
 						default => ''
@@ -233,49 +224,17 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 	/**
 	 * @throws InvalidConfigOption
 	 */
-	public static function getDefaultDirectoryPerms(): int
+	public static function getConfiguredDirectoryPerm(): int
 	{
-		return self::getPerms('dir', null, self::DEFAULT_DIRECTORY_PERMS);
+		return self::getConfiguredPerm('dir', null, self::FALLBACK_DIRECTORY_PERMS);
 	}
 
 	/**
 	 * @throws InvalidConfigOption
 	 */
-	public static function getMaxDirectoryPerms(): int
+	public static function getConfiguredFilePerm(): int
 	{
-		return self::getPerms('dir', 'world', self::MAX_DIRECTORY_PERMS);
-	}
-
-	/**
-	 * @throws InvalidConfigOption
-	 */
-	public static function getMinDirectoryPerms(): int
-	{
-		return self::getPerms('dir', 'private', self::MIN_DIRECTORY_PERMS);
-	}
-
-	/**
-	 * @throws InvalidConfigOption
-	 */
-	public static function getDefaultFilePerms(): int
-	{
-		return self::getPerms('file', null, self::DEFAULT_FILE_PERMS);
-	}
-
-	/**
-	 * @throws InvalidConfigOption
-	 */
-	public static function getMaxFilePerms(): int
-	{
-		return self::getPerms('file', 'world', self::MAX_FILE_PERMS);
-	}
-
-	/**
-	 * @throws InvalidConfigOption
-	 */
-	public static function getMinFilePerms(): int
-	{
-		return self::getPerms('file', 'private', self::MIN_FILE_PERMS);
+		return self::getConfiguredPerm('file', null, self::FALLBACK_FILE_PERMS);
 	}
 
 	/**
@@ -288,12 +247,12 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 	 *
 	 * @throws InvalidConfigOption
 	 */
-	private static function getPerms(string $type, ?string $visibility, int $fallbackPermission): int
+	private static function getConfiguredPerm(string $type, ?string $visibility, int $fallbackPermission): int
 	{
 		try {
 			$visibility ??= (string) config('filesystems.images.visibility', self::FALLBACK_VISIBILITY);
 			if (!in_array($visibility, self::VISIBILITY_CATEGORIES, true)) {
-				throw new InvalidConfigOption('Misconfigured default directory permissions');
+				throw new InvalidConfigOption('Misconfigured directory permissions');
 			}
 
 			return (int) config(
@@ -301,7 +260,7 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 				$fallbackPermission
 			);
 		} catch (ContainerExceptionInterface|BindingResolutionException|NotFoundExceptionInterface $e) {
-			throw new InvalidConfigOption('Misconfigured default directory permissions', $e);
+			throw new InvalidConfigOption('Misconfigured directory permissions', $e);
 		}
 	}
 }
