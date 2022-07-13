@@ -72,6 +72,11 @@ class FixPermissions extends Command
 	protected bool $isDryRun;
 
 	/**
+	 * @var int Number of files & folder which permissions changes are required
+	 */
+	private int $changesExpected = 0;
+
+	/**
 	 * @return int
 	 *
 	 * @throws InvalidArgumentException
@@ -94,9 +99,13 @@ class FixPermissions extends Command
 			$this->fixPermissionsRecursively($directory);
 		}
 
-		if ($this->isDryRun) {
+		if ($this->isDryRun && $this->changesExpected > 0) {
 			$this->line('');
 			$this->line('To apply those modifications, run <info>php artisan lychee:fix-permissions --dry-run=0</info>');
+		}
+		if ($this->isDryRun && $this->changesExpected == 0) {
+			$this->line('');
+			$this->line('Nothing to fix.');
 		}
 
 		return 0;
@@ -145,6 +154,7 @@ class FixPermissions extends Command
 					$this->info(sprintf(
 						'  => Would change permissions of %s from %04o to %04o', $path, $actualPerm, $expectedPerm
 					));
+					$this->changesExpected++;
 				} else {
 					if ($ownerId === $this->effUserId) {
 						$this->info(sprintf(
