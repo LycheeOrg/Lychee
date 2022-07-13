@@ -56,7 +56,7 @@ class CommandGhostbusterTest extends Base\PhotoTestBase
 
 		// Ghostbuster, ...
 		$this->artisan(self::COMMAND, [
-			'dryrun' => 0,
+			'--dryrun' => 0,
 		])->assertSuccessful();
 
 		// Ensure that files are gone
@@ -91,8 +91,8 @@ class CommandGhostbusterTest extends Base\PhotoTestBase
 
 		// Ghostbuster, ...
 		$this->artisan(self::COMMAND, [
-			'dryrun' => 0,
-			'removeZombiePhotos' => 1,
+			'--dryrun' => 0,
+			'--removeZombiePhotos' => 1,
 		])->assertSuccessful();
 
 		// Ensure that photo, size variants and all other size variants are gone

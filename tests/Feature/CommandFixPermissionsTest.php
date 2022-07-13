@@ -43,7 +43,7 @@ class CommandFixPermissionsTest extends Base\PhotoTestBase
 		chmod($dirPath, 00500);
 
 		$this->artisan(self::COMMAND, [
-			'dry-run' => 0,
+			'--dry-run' => 0,
 		])->assertSuccessful();
 
 		clearstatcache(true);
@@ -54,7 +54,7 @@ class CommandFixPermissionsTest extends Base\PhotoTestBase
 		chmod($dirPath, 06777);
 
 		$this->artisan(self::COMMAND, [
-			'dry-run' => 0,
+			'--dry-run' => 0,
 		])->assertSuccessful();
 
 		clearstatcache(true);
