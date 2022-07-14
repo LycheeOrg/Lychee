@@ -41,7 +41,7 @@ class FixPermissions extends Command
 	protected bool $isDryRun;
 
 	/**
-	 * @var int Number of files & folder which permissions changes are required
+	 * @var int Number of files & folders for which permissions changes are required
 	 */
 	private int $changesExpected = 0;
 
