@@ -34,7 +34,7 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 	 * In order to mitigate the effects the image directories are made
 	 * group writable.
 	 * Moreover, we set the special `set gid` bit.
-	 * For directories, this special bit ensure that newly creates files and
+	 * For directories, this special bit ensures that newly creates files and
 	 * sub-directories get the group of their parent directory and not the
 	 * group of the running process.
 	 */
