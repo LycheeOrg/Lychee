@@ -13,23 +13,32 @@
 namespace Tests\Feature;
 
 use App\Facades\AccessControl;
-use Tests\Feature\Lib\AlbumsUnitTest;
-use Tests\TestCase;
+use Tests\Feature\Base\PhotoTestBase;
 
-class SharingTest extends TestCase
+class SharingTest extends PhotoTestBase
 {
-	protected AlbumsUnitTest $albums_tests;
-
-	public function setUp(): void
+	/**
+	 * @return void
+	 */
+	public function testEmptySharingList(): void
 	{
-		parent::setUp();
-		$this->albums_tests = new AlbumsUnitTest($this);
+		AccessControl::log_as_id(0);
+
+		$response = $this->postJson('/api/Sharing::list');
+		$response->assertStatus(200);
+		$response->assertExactJson([
+			'shared' => [],
+			'albums' => [],
+			'users' => [],
+		]);
+
+		AccessControl::logout();
 	}
 
 	/**
 	 * @return void
 	 */
-	public function testSharing(): void
+	public function testSharingListWithAlbums(): void
 	{
 		AccessControl::log_as_id(0);
 
@@ -38,6 +47,17 @@ class SharingTest extends TestCase
 
 		$response = $this->postJson('/api/Sharing::list');
 		$response->assertStatus(200);
+		$response->assertSimilarJson([
+			'shared' => [],
+			'albums' => [[
+				'id' => $albumID1,
+				'title' => 'test_album',
+			], [
+				'id' => $albumID2,
+				'title' => 'test_album/test_album2',
+			]],
+			'users' => [],
+		]);
 
 		$this->albums_tests->delete([$albumID1, $albumID2]);
 
