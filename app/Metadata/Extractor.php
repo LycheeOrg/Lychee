@@ -240,7 +240,9 @@ class Extractor
 				//
 				// Here, we rely here on a simple filetype-based heuristics and,
 				// for a timestamp we suspect to be in UTC, we convert it to the
-				// application's default timezone.
+				// application's default timezone.  For a timestamp we suspect to
+				// be local, we ensure that the extractor didn't erroneously mark
+				// it as UTC.
 				// All other timestamps are not altered, but used "as is":
 				//
 				//   i) Either the meta-data extractor was able to properly
@@ -366,6 +368,22 @@ class Extractor
 						// The only known example are the mov files from Apple
 						// devices; the time zone will be formatted as "+01:00"
 						// so neither of the two conditions above should trigger.
+					} elseif ($taken_at->getTimezone()->getName() === 'Z') {
+						// This is a video format where we expect the takestamp
+						// to be provided in local time but the timezone is
+						// (erroneuously) set to Zulu (UTC).  This will trigger,
+						// e.g., for mov files with the FFprobe extractor.
+						// We recreate the recording time as a timestamp in the
+						// application's default timezone.
+						// Note: This assumes that the application's default
+						// timezone is the same as the timezone of the
+						// location where the video has been recorded and that
+						// the beholder (of the video) expects to observe
+						// that timezone.
+						$taken_at = new Carbon(
+							$taken_at->format('Y-m-d H:i:s'),
+							new \DateTimeZone(date_default_timezone_get())
+						);
 					}
 				}
 				$metadata->taken_at = $taken_at;

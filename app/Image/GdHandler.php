@@ -58,7 +58,8 @@ class GdHandler implements ImageHandlerInterface
 				2 => imageflip($image, IMG_FLIP_HORIZONTAL),
 				4 => imageflip($image, IMG_FLIP_VERTICAL),
 				5 => imageflip($image, IMG_FLIP_HORIZONTAL),
-				7 => imageflip($image, IMG_FLIP_HORIZONTAL)
+				7 => imageflip($image, IMG_FLIP_HORIZONTAL),
+				default => true
 			};
 		} catch (\Throwable) {
 			throw new MediaFileOperationException('Failed to rotate image');

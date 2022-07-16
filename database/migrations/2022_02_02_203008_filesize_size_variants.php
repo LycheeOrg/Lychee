@@ -17,8 +17,6 @@ class FilesizeSizeVariants extends Migration
 	private const VAR_TAB = 'size_variants';
 	private const PHOTO_FK = 'photo_id';
 	private const TYPE_COL = 'type';
-	private const WIDTH_COL = 'width';
-	private const HEIGHT_COL = 'height';
 	private const ID_COL = 'id';
 	private const TYPE_ORIGINAL = 0;
 	private const PHOTOS_TAB = 'photos';
@@ -29,7 +27,7 @@ class FilesizeSizeVariants extends Migration
 	 *
 	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		// To avoid doing I/O on every photo, which would be prohibitive
 		// on large instances, and because JPEG compression makes approximations
@@ -46,23 +44,16 @@ class FilesizeSizeVariants extends Migration
 
 		DB::beginTransaction();
 
-		$photos = DB::table(self::PHOTOS_TAB)
-			->select([self::ID_COL, self::SIZE_COL])
-			->lazyById();
-
-		foreach ($photos as $photo) {
-			$original_variant = DB::table(self::VAR_TAB)
-				->select([self::ID_COL, self::WIDTH_COL, self::HEIGHT_COL])
-				->where(self::PHOTO_FK, '=', $photo->id)
-				->where(self::TYPE_COL, '=', self::TYPE_ORIGINAL)
-				->first();
-
-			DB::table(self::VAR_TAB)
-				->where(self::ID_COL, '=', $original_variant->id)
-				->update([self::SIZE_COL => $photo->filesize]);
-		}
-
-		DB::commit();
+		// Copy the filesize from photo to the original size variant
+		DB::table(self::VAR_TAB)
+			->where(self::VAR_TAB . '.' . self::TYPE_COL, '=', self::TYPE_ORIGINAL)
+			->update([self::SIZE_COL => DB::raw('(' .
+				DB::table(self::PHOTOS_TAB)
+					->select([self::SIZE_COL])
+					->whereColumn(self::PHOTOS_TAB . '.' . self::ID_COL, '=', self::VAR_TAB . '.' . self::PHOTO_FK)
+					->toSql() .
+				')'
+			)]);
 
 		/*
 		 * Ideally, we would be using dropColumn. However it seems that the Eloquent implementation
@@ -86,6 +77,8 @@ class FilesizeSizeVariants extends Migration
 		 */
 		// DB::statement('ALTER TABLE ' . self::PHOTOS_TAB . ' DROP COLUMN ' . self::SIZE_COL);
 		DB::table(self::PHOTOS_TAB)->update([self::SIZE_COL => 0]);
+
+		DB::commit();
 	}
 
 	/**
@@ -93,31 +86,21 @@ class FilesizeSizeVariants extends Migration
 	 *
 	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		DB::beginTransaction();
 
-		$photos = DB::table(self::PHOTOS_TAB)
-			->select([self::ID_COL])
-			->lazyById();
-
-		foreach ($photos as $photo) {
-			// Get filesize from 'original' variant (type 0)
-			$original_variant = DB::table(self::VAR_TAB)
-									->select([self::SIZE_COL])
-									->where(self::PHOTO_FK, '=', $photo->id)
-									->where(self::TYPE_COL, '=', self::TYPE_ORIGINAL)
-									->first();
-
-			$original_filesize = $original_variant->filesize;
-
-			// See comment in the upward migration: the column is still there
-			DB::table(self::PHOTOS_TAB)
-						->where(self::ID_COL, '=', $photo->id)
-						->update([self::SIZE_COL => $original_filesize]);
-		}
-
-		DB::commit();
+		// Copy the filesize from the original size variant (if it exists) to photos
+		DB::table(self::PHOTOS_TAB)
+			->addBinding(self::TYPE_ORIGINAL) // we must add the binding of the sub-query below as it is wrapped in a raw statement
+			->update([self::SIZE_COL => DB::raw('COALESCE((' .
+				DB::table(self::VAR_TAB)
+					->select([self::SIZE_COL])
+					->where(self::VAR_TAB . '.' . self::TYPE_COL, ' = ', self::TYPE_ORIGINAL)
+					->whereColumn(self::VAR_TAB . '.' . self::PHOTO_FK, '=', self::PHOTOS_TAB . '.' . self::ID_COL)
+					->toSql() .
+				'), 0)'
+			)]);
 
 		// See comment if the upward migration.
 		// Schema::table(self::VAR_TAB, function (Blueprint $table) {
@@ -125,5 +108,7 @@ class FilesizeSizeVariants extends Migration
 		// });
 		// DB::statement('ALTER TABLE ' . self::VAR_TAB . ' DROP COLUMN ' . self::SIZE_COL);
 		DB::table(self::VAR_TAB)->update([self::SIZE_COL => 0]);
+
+		DB::commit();
 	}
 }
