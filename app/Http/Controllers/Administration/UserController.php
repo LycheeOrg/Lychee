@@ -104,7 +104,7 @@ class UserController extends Controller
 	public function setEmail(SetEmailRequest $request): void
 	{
 		try {
-			$user = Authorization::user();
+			$user = Authorization::userOrFail();
 			$user->email = $request->email();
 
 			if ($request->email() === null) {
@@ -127,7 +127,7 @@ class UserController extends Controller
 	public function getEmail(): array
 	{
 		return [
-			'email' => Authorization::user()->email,
+			'email' => Authorization::userOrFail()->email,
 		];
 	}
 }

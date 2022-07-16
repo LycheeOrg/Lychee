@@ -6,7 +6,6 @@ use App\Console\Commands\Utilities\Colorize;
 use App\Contracts\ExternalLycheeException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnexpectedException;
-use App\Legacy\Legacy;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
@@ -53,8 +52,6 @@ class ResetAdmin extends Command
 	public function handle(): int
 	{
 		try {
-			Legacy::resetAdmin();
-
 			/** @var User $user */
 			$user = User::query()->findOrNew(0);
 			$user->incrementing = false; // disable auto-generation of ID

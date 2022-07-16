@@ -5,6 +5,7 @@ namespace App\Auth;
 use App\Legacy\Legacy;
 use App\Models\Logs;
 use App\Models\User;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -44,9 +45,22 @@ class Authorization
 	 *
 	 * @return int|null
 	 */
-	public static function id(): int|null
+	public static function idOrNull(): int|null
 	{
 		return is_int(Auth::id()) ? Auth::id() : null;
+	}
+
+	/**
+	 * Return the user Id if logged in.
+	 * Fail otherwise.
+	 *
+	 * @return int
+	 *
+	 * @throws AuthenticationException
+	 */
+	public static function idOrFail(): int
+	{
+		return Auth::authenticate()->id;
 	}
 
 	/**
@@ -58,11 +72,32 @@ class Authorization
 	 * @throws InvalidArgumentException
 	 * @throws BadRequestException
 	 */
-	public static function user(): User|null
+	public static function userOrNull(): User|null
 	{
 		return Auth::user();
 	}
 
+	/**
+	 * Return current user if logged in.
+	 * Fail otherwise.
+	 *
+	 * @return User
+	 *
+	 * @throws AuthenticationException
+	 */
+	public static function userOrFail(): User
+	{
+		return Auth::authenticate();
+	}
+
+	/**
+	 * Return true if user is admin.
+	 *
+	 * @return bool
+	 *
+	 * @throws InvalidArgumentException
+	 * @throws BadRequestException
+	 */
 	public static function isAdmin(): bool
 	{
 		return Auth::user()?->isAdmin() === true;
@@ -75,9 +110,7 @@ class Authorization
 	 */
 	public static function canUpload(): bool
 	{
-		$user = Auth::user();
-
-		return $user?->id === 0 || $user?->may_upload === true;
+		return Auth::authenticate()->id === 0 || Auth::authenticate()->may_upload;
 	}
 
 	/**
@@ -104,7 +137,7 @@ class Authorization
 	 */
 	public static function isCurrentOrAdmin(int $id)
 	{
-		return self::id() === 0 || self::id() === $id;
+		return self::idOrNull() === 0 || self::idOrNull() === $id;
 	}
 
 	/**
@@ -116,13 +149,17 @@ class Authorization
 	{
 		/** @var User|null $adminUser */
 		$adminUser = User::query()->find(0);
-		if ($adminUser !== null && $adminUser->password === '' && $adminUser->username === '') {
-			Auth::login($adminUser);
+		if ($adminUser !== null) {
+			if ($adminUser->password === '' && $adminUser->username === '') {
+				Auth::login($adminUser);
 
-			return true;
+				return true;
+			}
+
+			return false;
 		}
 
-		return Legacy::isAdminNotConfigured();
+		return self::createAdminAndLogin('', '');
 	}
 
 	/**
@@ -189,6 +226,28 @@ class Authorization
 			return false;
 		}
 		// Admin User does not exist yet, so we use the Legacy.
-		return Legacy::log_as_admin($username, $password, $ip);
+		return self::createAdminAndLogin('', '');
+	}
+
+	/**
+	 * Givne a username and password, create an admin user in the database.
+	 *
+	 * @param mixed $username
+	 * @param mixed $password
+	 *
+	 * @return bool actually always true
+	 */
+	private static function createAdminAndLogin($username, $password): bool
+	{
+		/** @var User */
+		$user = User::query()->findOrNew(0);
+		$user->incrementing = false; // disable auto-generation of ID
+		$user->id = 0;
+		$user->username = $username;
+		$user->password = $password;
+		$user->save();
+		Auth::login($user);
+
+		return true;
 	}
 }

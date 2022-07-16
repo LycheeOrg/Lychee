@@ -3,103 +3,19 @@
 namespace App\Legacy;
 
 use App\Exceptions\ConfigurationException;
-use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Configs;
 use App\Models\Logs;
-use App\Models\User;
 use App\Rules\IntegerIDRule;
 use App\Rules\RandomIDRule;
-use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 /**
  * Stuff we need to delete in the future.
  */
 class Legacy
 {
-	/**
-	 * @throws QueryBuilderException
-	 */
-	public static function resetAdmin(): void
-	{
-		Configs::query()
-			->where('key', '=', 'username')
-			->orWhere('key', '=', 'password')
-			->update(['value' => '']);
-	}
-
-	/**
-	 * @throws InvalidConfigOption
-	 */
-	public static function SetPassword(string $hashedUsername, string $hashedPassword): bool
-	{
-		$configs = Configs::get();
-
-		if (Configs::getValueAsString('version') < '040008') {
-			if ($configs['password'] === '' && $configs['username'] === '') {
-				return self::createAdminAndLogin($hashedUsername, $hashedUsername);
-			}
-		}
-
-		return false;
-	}
-
-	public static function isAdminNotConfigured(): bool
-	{
-		// LEGACY STUFF
-		$configs = Configs::get();
-
-		if (Configs::getValueAsString('version') <= '040008') {
-			// Check if login credentials exist and login if they don't
-			if (
-				isset($configs['username']) && $configs['username'] === '' &&
-				isset($configs['password']) && $configs['password'] === ''
-			) {
-				return self::createAdminAndLogin('', '');
-			}
-		}
-
-		return false;
-	}
-
-	public static function log_as_admin(string $username, string $password, string $ip): bool
-	{
-		$configs = Configs::get();
-
-		if (Hash::check($username, $configs['username']) && Hash::check($password, $configs['password'])) {
-			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip . ' (legacy)');
-
-			return self::createAdminAndLogin($configs['username'], $configs['password']);
-		}
-
-		return false;
-	}
-
-	/**
-	 * Givne a username and password, create an admin user in the database.
-	 *
-	 * @param mixed $username
-	 * @param mixed $password
-	 *
-	 * @return bool actually always true
-	 */
-	private static function createAdminAndLogin($username, $password): bool
-	{
-		/** @var User */
-		$user = User::query()->findOrNew(0);
-		$user->incrementing = false; // disable auto-generation of ID
-		$user->id = 0;
-		$user->username = $username;
-		$user->password = $password;
-		$user->save();
-		Auth::login($user);
-
-		return true;
-	}
-
 	public static function isLegacyModelID(string $id): bool
 	{
 		$modernIDRule = new RandomIDRule(true);

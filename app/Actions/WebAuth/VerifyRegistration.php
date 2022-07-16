@@ -17,7 +17,7 @@ class VerifyRegistration
 		/**
 		 * @var User
 		 */
-		$user = Authorization::user();
+		$user = Authorization::userOrFail();
 
 		// okay.
 		/** @var false|\Webauthn\PublicKeyCredentialSource */

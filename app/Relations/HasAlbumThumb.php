@@ -187,7 +187,7 @@ class HasAlbumThumb extends Relation
 			});
 		}
 
-		$userID = Authorization::check() ? Authorization::id() : null;
+		$userID = Authorization::idOrNull();
 
 		$album2Cover = function (BaseBuilder $builder) use ($bestPhotoIDSelect, $albumKeys, $userID) {
 			$builder

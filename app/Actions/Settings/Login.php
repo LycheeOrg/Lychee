@@ -5,15 +5,19 @@ namespace App\Actions\Settings;
 use App\Auth\Authorization;
 use App\Exceptions\ConflictingPropertyException;
 use App\Exceptions\Internal\InvalidConfigOption;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
-use App\Legacy\Legacy;
 use App\Models\Logs;
 use App\Models\User;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
+use InvalidArgumentException;
+use RuntimeException;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class Login
 {
@@ -44,7 +48,7 @@ class Login
 	 * @throws InvalidConfigOption
 	 * @throws UnauthorizedException
 	 */
-	public function do(string $username, string $password, ?string $oldUsername, ?string $oldPassword, string $ip): void
+	public function do(string $username, string $password, ?string $oldPassword, string $ip): void
 	{
 		try {
 			$hashedUsername = bcrypt($username);
@@ -53,75 +57,106 @@ class Login
 			throw new InvalidPropertyException('Could not hash username or password', $e);
 		}
 
-		if (Legacy::SetPassword($hashedUsername, $hashedPassword)) {
+		if ($this->updateAsAdmin($hashedUsername, $hashedPassword, $oldPassword)) {
 			return;
 		}
+		$this->updateAsUser($username, $hashedPassword, $oldPassword, $ip);
+	}
 
-		// > 4.0.8
-		/** @var User $adminUser */
-		$adminUser = User::query()->find(0);
-		if ($adminUser->password === '' && $adminUser->username === '') {
-			$adminUser->username = $hashedUsername;
-			$adminUser->password = $hashedPassword;
-			$adminUser->save();
-			Authorization::login($adminUser);
+	/**
+	 * Given a hashed username and password, update the Admin credentials.
+	 *
+	 * @param string  $hashedUsername
+	 * @param string  $hashedPassword
+	 * @param ?string $oldPassword
+	 *
+	 * @return bool true if Admin credentials are updated, false otherwise
+	 *
+	 * @throws RuntimeException
+	 * @throws ModelDBException
+	 * @throws InvalidArgumentException
+	 * @throws BadRequestException
+	 * @throws AuthenticationException
+	 * @throws UnauthenticatedException
+	 */
+	private function updateAsAdmin(string $hashedUsername, string $hashedPassword, ?string $oldPassword): bool
+	{
+		if (Authorization::isAdminNotConfigured()) {
+			/** @var User $adminUser */
+			$adminUser = User::query()->findOrFail(0);
+			if ($adminUser->password === '' && $adminUser->username === '') {
+				$adminUser->username = $hashedUsername;
+				$adminUser->password = $hashedPassword;
+				$adminUser->save();
+				Authorization::login($adminUser);
 
-			return;
+				return true;
+			}
 		}
 
 		if (Authorization::isAdmin()) {
+			/** @var User $adminUser */
+			$adminUser = User::query()->findOrFail(0);
 			if ($adminUser->password === '' || Hash::check($oldPassword, $adminUser->password)) {
 				$adminUser->username = $hashedUsername;
 				$adminUser->password = $hashedPassword;
 				$adminUser->save();
-				unset($adminUser);
 
-				return;
+				return true;
 			}
-			unset($adminUser);
 
 			throw new UnauthenticatedException('Password is invalid');
 		}
 
-		// is this necessary ?
-		if (Authorization::check()) {
-			$id = Authorization::id();
+		return false;
+	}
 
-			// this is probably sensitive to timing attacks...
-			/** @var User $user */
-			$user = Authorization::user();
+	/**
+	 * Updates a User password.
+	 *
+	 * @param string      $username       New username
+	 * @param string      $hashedPassword New password (hashed)
+	 * @param string|null $oldPassword    Old Password
+	 * @param string      $ip             Ip address of the change
+	 *
+	 * @return void
+	 *
+	 * @throws AuthenticationException
+	 * @throws UnauthorizedException
+	 * @throws QueryBuilderException
+	 * @throws ConflictingPropertyException
+	 * @throws InvalidArgumentException
+	 * @throws ModelDBException
+	 * @throws UnauthenticatedException
+	 */
+	private function updateAsUser(string $username, string $hashedPassword, ?string $oldPassword, string $ip): void
+	{
+		// this is probably sensitive to timing attacks...
+		/** @var User $user */
+		$user = Authorization::userOrFail();
 
-			if ($user->is_locked) {
-				Logs::notice(__METHOD__, __LINE__, 'Locked user (' . $user->username . ') tried to change their identity from ' . $ip);
-				throw new UnauthorizedException('Account is locked');
-			}
-
-			if (User::query()->where('username', '=', $username)->where('id', '!=', $id)->count() !== 0) {
-				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change their identity to ' . $username . ' from ' . $ip);
-				throw new ConflictingPropertyException('Username already exists.');
-			}
-
-			// TODO: This looks suspicious.
-			// Users can only change the username/password of their own
-			// account and must be authenticated in order to do so.
-			// (See above, we use `Authorization::id()` and query for the
-			// currently authenticated user).
-			// The user name of the currently authenticated user is visible on
-			// the GUI anyway.
-			// Why do we re-check whether users have been able to correctly
-			// present their current (aka old) username again?
-			// This does not seem to make any sense security-wise.
-			if ($user->username === $oldUsername && Hash::check($oldPassword, $user->password)) {
-				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') changed their identity for (' . $username . ') from ' . $ip);
-				$user->username = $username;
-				$user->password = $hashedPassword;
-				$user->save();
-
-				return;
-			}
-			Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change their identity from ' . $ip);
-
-			throw new UnauthenticatedException('Previous username or password are invalid');
+		if ($user->is_locked) {
+			Logs::notice(__METHOD__, __LINE__, 'Locked user (' . $user->username . ') tried to change their identity from ' . $ip);
+			throw new UnauthorizedException('Account is locked');
 		}
+
+		if (User::query()->where('username', '=', $username)->where('id', '!=', $user->id)->count() !== 0) {
+			Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change their identity to ' . $username . ' from ' . $ip);
+			throw new ConflictingPropertyException('Username already exists.');
+		}
+
+		if (Hash::check($oldPassword, $user->password)) {
+			if ($username !== $user->username) {
+				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') changed their identity for (' . $username . ') from ' . $ip);
+			}
+			$user->username = $username;
+			$user->password = $hashedPassword;
+			$user->save();
+
+			return;
+		}
+		Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change their identity from ' . $ip);
+
+		throw new UnauthenticatedException('Previous username or password are invalid');
 	}
 }

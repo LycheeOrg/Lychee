@@ -42,7 +42,7 @@ class Create extends Action
 			// methods of the nested set `NodeTrait`.
 			$album->appendToNode($parentAlbum);
 		} else {
-			$album->owner_id = Authorization::id() ?? 0;
+			$album->owner_id = Authorization::idOrFail();
 			$album->makeRoot();
 		}
 	}

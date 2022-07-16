@@ -81,7 +81,7 @@ class Top
 				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();
 
-			$id = Authorization::id();
+			$id = Authorization::idOrFail();
 			/**
 			 * @var BaseCollection<Album> $a
 			 * @var BaseCollection<Album> $b

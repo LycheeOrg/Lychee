@@ -157,7 +157,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	public function delete(): bool
 	{
 		$now = Carbon::now();
-		$newOwnerID = Authorization::id();
+		$newOwnerID = Authorization::idOrFail();
 
 		/** @var HasMany[] $ownershipRelations */
 		$ownershipRelations = [$this->photos(), $this->albums()];

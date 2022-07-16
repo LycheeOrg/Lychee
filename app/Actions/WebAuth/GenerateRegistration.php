@@ -10,6 +10,6 @@ class GenerateRegistration
 {
 	public function do(): PublicKeyCredentialCreationOptions
 	{
-		return WebAuthn::generateAttestation(Authorization::user());
+		return WebAuthn::generateAttestation(Authorization::userOrFail());
 	}
 }

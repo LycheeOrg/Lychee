@@ -6,14 +6,11 @@ use App\Auth\Authorization;
 use App\Http\Requests\Session\LoginRequest;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Rules\PasswordRule;
-use App\Rules\UsernameRule;
 
 class ChangeLoginRequest extends LoginRequest
 {
-	public const OLD_USERNAME_ATTRIBUTE = 'oldUsername';
 	public const OLD_PASSWORD_ATTRIBUTE = 'oldPassword';
 
-	protected ?string $oldUsername = null;
 	protected ?string $oldPassword = null;
 
 	/**
@@ -52,7 +49,6 @@ class ChangeLoginRequest extends LoginRequest
 	public function rules(): array
 	{
 		$rules = parent::rules();
-		$rules[self::OLD_USERNAME_ATTRIBUTE] = ['sometimes', new UsernameRule()];
 		$rules[self::OLD_PASSWORD_ATTRIBUTE] = ['sometimes', new PasswordRule(false)];
 
 		return $rules;
@@ -64,7 +60,6 @@ class ChangeLoginRequest extends LoginRequest
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		parent::processValidatedValues($values, $files);
-		$this->oldUsername = $values[self::OLD_USERNAME_ATTRIBUTE] ?? null;
 		if (array_key_exists(self::OLD_PASSWORD_ATTRIBUTE, $values)) {
 			// See {@link HasPasswordTrait::password()} for an explanation
 			// of the semantic difference between `null` and `''`.

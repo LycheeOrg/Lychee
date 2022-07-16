@@ -23,7 +23,7 @@ class CreateTagAlbum extends Action
 		$album = new TagAlbum();
 		$album->title = $title;
 		$album->show_tags = $show_tags;
-		$album->owner_id = Authorization::id();
+		$album->owner_id = Authorization::idOrFail();
 		$album->save();
 
 		return $album;

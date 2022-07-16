@@ -9,6 +9,6 @@ class Lists
 {
 	public function do(): Collection
 	{
-		return Authorization::user()->webAuthnCredentials->map(fn ($cred) => ['id' => $cred->id]);
+		return Authorization::userOrFail()->webAuthnCredentials->map(fn ($cred) => ['id' => $cred->id]);
 	}
 }

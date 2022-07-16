@@ -70,7 +70,7 @@ class Delete extends Action
 			if (in_array(UnsortedAlbum::ID, $albumIDs, true)) {
 				$query = UnsortedAlbum::getInstance()->photos();
 				if (!Authorization::isAdmin()) {
-					$query->where('owner_id', '=', Authorization::id());
+					$query->where('owner_id', '=', Authorization::idOrFail());
 				}
 				$unsortedPhotoIDs = $query->pluck('id')->all();
 			}

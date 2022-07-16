@@ -34,7 +34,7 @@ class SharingController extends Controller
 			throw new UnauthorizedException('Upload privilege required');
 		}
 
-		return $listShare->do(Authorization::id());
+		return $listShare->do(Authorization::idOrFail());
 	}
 
 	/**

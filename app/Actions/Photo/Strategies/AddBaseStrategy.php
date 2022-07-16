@@ -123,7 +123,7 @@ abstract class AddBaseStrategy
 			// Avoid unnecessary DB request, when we access the album of a
 			// photo later (e.g. when a notification is sent).
 			$this->photo->setRelation('album', null);
-			$this->photo->owner_id = Authorization::id();
+			$this->photo->owner_id = Authorization::idOrFail();
 		}
 	}
 

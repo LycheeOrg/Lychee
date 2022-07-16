@@ -43,7 +43,6 @@ class SettingsController extends Controller
 		$login->do(
 			$request->username(),
 			$request->password(),
-			$request->oldUsername(),
 			$request->oldPassword(),
 			$request->ip()
 		);

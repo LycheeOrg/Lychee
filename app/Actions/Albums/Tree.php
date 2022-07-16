@@ -62,7 +62,7 @@ class Tree
 		/** @var ?NsCollection<Album> $sharedAlbums */
 		$sharedAlbums = null;
 		if (Authorization::check()) {
-			$id = Authorization::id();
+			$id = Authorization::idOrFail();
 			// ATTENTION:
 			// For this to work correctly, it is crucial that all child albums
 			// below each top-level album have the same owner!

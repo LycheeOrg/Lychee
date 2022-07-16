@@ -63,7 +63,7 @@ class AlbumAuthorisationProvider
 			return $query;
 		}
 
-		$userID = Authorization::id();
+		$userID = Authorization::idOrNull();
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
@@ -115,7 +115,7 @@ class AlbumAuthorisationProvider
 	public function appendAccessibilityConditions(BaseBuilder $query): BaseBuilder
 	{
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
-		$userID = Authorization::id();
+		$userID = Authorization::idOrNull();
 
 		try {
 			$query
@@ -176,7 +176,7 @@ class AlbumAuthorisationProvider
 		}
 
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
-		$userID = Authorization::id();
+		$userID = Authorization::idOrNull();
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
@@ -242,7 +242,7 @@ class AlbumAuthorisationProvider
 			return true;
 		}
 
-		$userID = Authorization::id();
+		$userID = Authorization::idOrNull();
 
 		if ($album instanceof BaseAlbum) {
 			try {
@@ -376,7 +376,7 @@ class AlbumAuthorisationProvider
 		}
 
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
-		$userID = Authorization::id();
+		$userID = Authorization::idOrNull();
 
 		try {
 			// There are inner albums ...
@@ -504,7 +504,7 @@ class AlbumAuthorisationProvider
 		return
 			$album === null ||
 			$album instanceof BaseSmartAlbum ||
-			($album instanceof BaseAlbum && $album->owner_id === Authorization::id());
+			($album instanceof BaseAlbum && $album->owner_id === Authorization::idOrFail());
 	}
 
 	/**
@@ -550,7 +550,7 @@ class AlbumAuthorisationProvider
 			count($albumIDs) === 0 ||
 			BaseAlbumImpl::query()
 			->whereIn('id', $albumIDs)
-			->where('owner_id', Authorization::id())
+			->where('owner_id', Authorization::idOrFail())
 			->count() === count($albumIDs);
 	}
 
@@ -590,7 +590,7 @@ class AlbumAuthorisationProvider
 		}
 
 		if (Authorization::check()) {
-			$userID = Authorization::id();
+			$userID = Authorization::idOrFail();
 			// We must left join with `user_base_album` if and only if we
 			// restrict the eventual query to the ID of the authenticated
 			// user by a `WHERE`-clause.

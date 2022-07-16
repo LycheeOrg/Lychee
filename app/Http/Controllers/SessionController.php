@@ -67,7 +67,7 @@ class SessionController extends Controller
 		// Check if login credentials exist and login if they don't
 		if (Authorization::isAdminNotConfigured() || $logged_in === true) {
 			// we set the user ID (it is set to 0 if there is no login/password = admin)
-			$user_id = Authorization::id();
+			$user_id = Authorization::idOrFail();
 
 			if ($user_id === 0) {
 				$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
@@ -77,8 +77,7 @@ class SessionController extends Controller
 				$return['config']['location'] = base_path('public/');
 			} else {
 				try {
-					/** @var User $user */
-					$user = Authorization::user();
+					$user = Authorization::userOrFail();
 					$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 					$return['config'] = $this->configFunctions->public();
 					$return['is_locked'] = $user->is_locked;   // may user change their password?

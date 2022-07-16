@@ -53,7 +53,7 @@ class PhotoAuthorisationProvider
 			return $query;
 		}
 
-		$userId = Authorization::id();
+		$userId = Authorization::idOrNull();
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
@@ -216,7 +216,7 @@ class PhotoAuthorisationProvider
 	 */
 	public function appendSearchabilityConditions(BaseBuilder $query, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
 	{
-		$userId = Authorization::id();
+		$userId = Authorization::idOrNull();
 		$maySearchPublic = !Configs::getValueAsBool('public_photos_hidden');
 
 		try {
@@ -298,7 +298,7 @@ class PhotoAuthorisationProvider
 		if (Authorization::isAdmin()) {
 			return true;
 		}
-		$userId = Authorization::id();
+		$userId = Authorization::idOrFail();
 
 		// Make IDs unique as otherwise count will fail.
 		$photoIDs = array_unique($photoIDs);
@@ -356,7 +356,7 @@ class PhotoAuthorisationProvider
 			$query->leftJoin('base_albums', 'base_albums.id', '=', 'photos.album_id');
 		}
 		if ($addShares) {
-			$userId = Authorization::id();
+			$userId = Authorization::idOrNull();
 			$query->leftJoin(
 				'user_base_album',
 				function (JoinClause $join) use ($userId) {
