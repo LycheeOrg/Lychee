@@ -53,6 +53,11 @@ abstract class LycheeBaseException extends HttpException implements ExternalLych
 	 */
 	protected function __construct(int $httpStatusCode, string $message, ?\Throwable $previous = null)
 	{
-		parent::__construct($httpStatusCode, $message, $previous, [], $previous !== null ? $previous->getCode() : 0);
+		$code = null;
+		if ($previous !== null) {
+			// Some Throwable will throw strings intead of int: SQLite when failing on read only DB for example.
+			$code = is_int($previous->getCode()) ? $previous->getCode() : 0;
+		}
+		parent::__construct($httpStatusCode, $message, $previous, [], $code ?? 0);
 	}
 }
