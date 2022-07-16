@@ -18,34 +18,6 @@ use function Safe\sprintf;
 
 class BasicPermissionCheck implements DiagnosticCheckInterface
 {
-	/**
-	 * Image directories must be group-writeable and have the special
-	 * `set gid` bit.
-	 *
-	 * Lychee provides different ways how image files can be added or deleted:
-	 * either via the web interface or via console commands such as
-	 * `artisan lychee:sync` or `artisan lychee:ghostbuster`.
-	 * Usually, the user (process owner) who runs the web server and the
-	 * user who runs console commands are different.
-	 * This might lead to unfortunate file permission problems such that
-	 * the images added via the CLI cannot be deleted via the web UI and
-	 * vice versa.
-	 *
-	 * In order to mitigate the effects the image directories are made
-	 * group writable.
-	 * Moreover, we set the special `set gid` bit.
-	 * For directories, this special bit ensures that newly creates files and
-	 * sub-directories get the group of their parent directory and not the
-	 * group of the running process.
-	 */
-	private const VISIBILITY_CATEGORIES = ['private', 'public', 'world'];
-
-	private const FALLBACK_VISIBILITY = 'public';
-
-	private const FALLBACK_DIRECTORY_PERMS = 02775;
-
-	private const FALLBACK_FILE_PERMS = 00664;
-
 	public const MAX_ISSUE_REPORTS_PER_TYPE = 5;
 
 	/**
@@ -226,7 +198,7 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 	 */
 	public static function getConfiguredDirectoryPerm(): int
 	{
-		return self::getConfiguredPerm('dir', null, self::FALLBACK_DIRECTORY_PERMS);
+		return self::getConfiguredPerm('dir');
 	}
 
 	/**
@@ -234,12 +206,11 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 	 */
 	public static function getConfiguredFilePerm(): int
 	{
-		return self::getConfiguredPerm('file', null, self::FALLBACK_FILE_PERMS);
+		return self::getConfiguredPerm('file');
 	}
 
 	/**
-	 * @param string      $type       either 'dir' or 'file'
-	 * @param string|null $visibility a value out of {@link BasicPermissionCheck::VISIBILITY_CATEGORIES} or `null`
+	 * @param string $type either 'dir' or 'file'
 	 *
 	 * @return int
 	 *
@@ -247,20 +218,22 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 	 *
 	 * @throws InvalidConfigOption
 	 */
-	private static function getConfiguredPerm(string $type, ?string $visibility, int $fallbackPermission): int
+	private static function getConfiguredPerm(string $type): int
 	{
 		try {
-			$visibility ??= (string) config('filesystems.images.visibility', self::FALLBACK_VISIBILITY);
-			if (!in_array($visibility, self::VISIBILITY_CATEGORIES, true)) {
-				throw new InvalidConfigOption('Misconfigured directory permissions');
+			$visibility = (string) config(sprintf('filesystems.disks.%s.visibility', SizeVariantNamingStrategy::IMAGE_DISK_NAME));
+			if ($visibility === '') {
+				throw new InvalidConfigOption('File/directory visibility not configured');
 			}
 
-			return (int) config(
-				sprintf('filesystems.images.permissions.%s.%s', $type, $visibility),
-				$fallbackPermission
-			);
+			$perm = (int) config(sprintf('filesystems.disks.%s.permissions.%s.%s', SizeVariantNamingStrategy::IMAGE_DISK_NAME, $type, $visibility));
+			if ($perm === 0) {
+				throw new InvalidConfigOption('Configured file/directory permission is invalid');
+			}
+
+			return $perm;
 		} catch (ContainerExceptionInterface|BindingResolutionException|NotFoundExceptionInterface $e) {
-			throw new InvalidConfigOption('Misconfigured directory permissions', $e);
+			throw new InvalidConfigOption('Could not read configuration for file/directory permission', $e);
 		}
 	}
 }
