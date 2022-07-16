@@ -60,7 +60,10 @@ class Authorization
 	 */
 	public static function idOrFail(): int
 	{
-		return Auth::authenticate()->id;
+		/** @var User $user */
+		$user = Auth::authenticate();
+
+		return $user->id;
 	}
 
 	/**
@@ -74,7 +77,10 @@ class Authorization
 	 */
 	public static function userOrNull(): User|null
 	{
-		return Auth::user();
+		/** @var User|null $user */
+		$user = Auth::user();
+
+		return $user;
 	}
 
 	/**
@@ -87,7 +93,10 @@ class Authorization
 	 */
 	public static function userOrFail(): User
 	{
-		return Auth::authenticate();
+		/** @var User $user */
+		$user = Auth::authenticate();
+
+		return $user;
 	}
 
 	/**
@@ -100,7 +109,10 @@ class Authorization
 	 */
 	public static function isAdmin(): bool
 	{
-		return Auth::user()?->isAdmin() === true;
+		/** @var User|null $user */
+		$user = Auth::user();
+
+		return $user?->isAdmin() === true;
 	}
 
 	/**
@@ -110,7 +122,10 @@ class Authorization
 	 */
 	public static function canUpload(): bool
 	{
-		return Auth::authenticate()->id === 0 || Auth::authenticate()->may_upload;
+		/** @var User $user */
+		$user = Auth::authenticate();
+
+		return $user->id === 0 || $user->may_upload;
 	}
 
 	/**
@@ -167,7 +182,7 @@ class Authorization
 	 *
 	 * @throws RuntimeException
 	 */
-	public static function logout()
+	public static function logout(): void
 	{
 		Auth::logout();
 		Session::flush();
