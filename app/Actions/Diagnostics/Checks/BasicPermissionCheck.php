@@ -172,12 +172,12 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 				$this->numAccessIssues++;
 				if ($this->numAccessIssues <= self::MAX_ISSUE_REPORTS_PER_TYPE) {
 					$problem = match (true) {
-						(!is_writable($path) && !is_readable($path)) => 'readable nor writable',
-						!is_writable($path) => 'writable',
-						!is_readable($path) => 'readable',
+						(!is_writable($path) && !is_readable($path)) => 'neither readable nor writable',
+						!is_writable($path) => 'not writable',
+						!is_readable($path) => 'not readable',
 						default => ''
 					};
-					$errors[] = sprintf('Error: %s is not %s by %s', $path, $problem, $this->groupNames);
+					$errors[] = sprintf('Error: %s is %s by %s', $path, $problem, $this->groupNames);
 				}
 			}
 
