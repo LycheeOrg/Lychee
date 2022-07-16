@@ -15,6 +15,9 @@ namespace Tests\Feature;
 use App\Facades\AccessControl;
 use App\ModelFunctions\SessionFunctions;
 use App\Models\Configs;
+use App\Models\User;
+use function PHPUnit\Framework\assertEquals;
+use function PHPUnit\Framework\assertNotEquals;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\SessionUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
@@ -256,5 +259,33 @@ class UsersTest extends TestCase
 		// 37
 		$sessions_test->logout();
 		Configs::set('new_photos_notification', $store_new_photos_notification);
+	}
+
+	public function testResetToken(): void
+	{
+		$users_test = new UsersUnitTest($this);
+
+		AccessControl::log_as_id(0);
+
+		$oldToken = $users_test->get_user()->offsetGet('token');
+		$newToken = $users_test->reset_token()->offsetGet('token');
+		assertNotEquals($oldToken, $newToken);
+
+		AccessControl::logout(0);
+	}
+
+	public function testDisableToken(): void
+	{
+		$users_test = new UsersUnitTest($this);
+
+		AccessControl::log_as_id(0);
+
+		$oldToken = $users_test->reset_token()->offsetGet('token');
+		assertNotEquals('', $oldToken);
+
+		$newToken = $users_test->disable_token()->offsetGet('token');
+		assertEquals('', $newToken);
+
+		AccessControl::logout(0);
 	}
 }
