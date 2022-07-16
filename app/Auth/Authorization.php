@@ -156,9 +156,10 @@ class Authorization
 	}
 
 	/**
-	 * Sets the session values when no there is no username and password in the database.
+	 * If admin user does not exist or is not configured log as admin.
+	 * Return false otherwise (admin exist with credentials).
 	 *
-	 * @return bool returns true when no login was found
+	 * @return bool
 	 */
 	public static function isAdminNotConfigured(): bool
 	{
@@ -245,7 +246,8 @@ class Authorization
 	}
 
 	/**
-	 * Givne a username and password, create an admin user in the database.
+	 * Given a username and password, create an admin user in the database.
+	 * Do note that the password is set NOT HASHED.
 	 *
 	 * @param mixed $username
 	 * @param mixed $password
