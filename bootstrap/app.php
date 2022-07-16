@@ -2,14 +2,6 @@
 
 ini_set('user_agent', 'Lychee/4 (https://lycheeorg.github.io/)');
 
-// As media files can be imported via Web UI and via CLI.
-// Typically, the (POSIX) user which runs the web server and the one which
-// runs command line commands are different.
-// Hence, we must grant write permission for the group, too, as otherwise
-// media files which have been imported
-// the one way cannot be deleted the other way
-umask(0002);
-
 /*
 |--------------------------------------------------------------------------
 | Create The Application

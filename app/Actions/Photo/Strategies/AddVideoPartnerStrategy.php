@@ -107,7 +107,9 @@ class AddVideoPartnerStrategy extends AddBaseStrategy
 					// This mimics the behaviour of Flysystem for regular files.
 					$targetDirectory = pathinfo($targetPath, PATHINFO_DIRNAME);
 					if (!is_dir($targetDirectory)) {
+						$umask = \umask(0);
 						\Safe\mkdir($targetDirectory, BasicPermissionCheck::getConfiguredDirectoryPerm(), true);
+						\umask($umask);
 					}
 					\Safe\symlink($sourcePath, $targetPath);
 					$streamStat = StreamStat::createFromLocalFile($this->videoSourceFile);
