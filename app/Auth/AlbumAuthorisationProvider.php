@@ -63,7 +63,7 @@ class AlbumAuthorisationProvider
 			return $query;
 		}
 
-		$userID = Authorization::user()?->id;
+		$userID = Authorization::id();
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
@@ -115,7 +115,7 @@ class AlbumAuthorisationProvider
 	public function appendAccessibilityConditions(BaseBuilder $query): BaseBuilder
 	{
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
-		$userID = Authorization::user()?->id;
+		$userID = Authorization::id();
 
 		try {
 			$query
@@ -176,7 +176,7 @@ class AlbumAuthorisationProvider
 		}
 
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
-		$userID = Authorization::user()?->id;
+		$userID = Authorization::id();
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
@@ -242,7 +242,7 @@ class AlbumAuthorisationProvider
 			return true;
 		}
 
-		$userID = Authorization::user()?->id;
+		$userID = Authorization::id();
 
 		if ($album instanceof BaseAlbum) {
 			try {
@@ -323,7 +323,7 @@ class AlbumAuthorisationProvider
 		}
 
 		// ... such that there are no blocked albums on the path to the album.
-		if (Auth::getUser()?->isAdmin() === true) {
+		if (Auth::getUser()?->isAdmin()) {
 			return $query;
 		} else {
 			return $query->whereNotExists(function (BaseBuilder $q) use ($origin) {
@@ -376,7 +376,7 @@ class AlbumAuthorisationProvider
 		}
 
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
-		$userID = Authorization::user()?->id;
+		$userID = Authorization::id();
 
 		try {
 			// There are inner albums ...

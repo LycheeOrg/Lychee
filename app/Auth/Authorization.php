@@ -5,31 +5,94 @@ namespace App\Auth;
 use App\Legacy\Legacy;
 use App\Models\Logs;
 use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use InvalidArgumentException;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
-class Authorization extends Auth
+class Authorization
 {
+	/**
+	 * Forward the check call to Auth.
+	 * Check if user is logged in.
+	 *
+	 * @return bool
+	 */
+	public static function check(): bool
+	{
+		return Auth::check();
+	}
+
+	/**
+	 * @param Authenticatable $user
+	 *
+	 * @return void
+	 *
+	 * @throws RuntimeException
+	 */
+	public static function login(Authenticatable $user): void
+	{
+		Auth::login($user); // returns void anyway.
+	}
+
+	/**
+	 * Forward the id call to Auth
+	 * Returns id if logged in, null otherwise.
+	 *
+	 * @return int|null
+	 */
 	public static function id(): int|null
 	{
-		return is_int(parent::id()) ? parent::id() : null;
+		return is_int(Auth::id()) ? Auth::id() : null;
+	}
+
+	/**
+	 * Forward the user call to Auth.
+	 * Returns current user if logged in, null otherwise.
+	 *
+	 * @return User|null
+	 *
+	 * @throws InvalidArgumentException
+	 * @throws BadRequestException
+	 */
+	public static function user(): User|null
+	{
+		return Auth::user();
 	}
 
 	public static function isAdmin(): bool
 	{
-		return parent::user()?->isAdmin() === true;
+		return Auth::user()?->isAdmin() === true;
 	}
 
 	/**
+	 * Check if User can upload.
+	 *
 	 * @return bool
 	 */
 	public static function canUpload(): bool
 	{
-		$user = parent::user();
+		$user = Auth::user();
 
 		return $user?->id === 0 || $user?->may_upload === true;
+	}
+
+	/**
+	 * Forwards the loginUsingId to Auth.
+	 * Log in user using its id, return User if successful.
+	 *
+	 * @param int $id
+	 *
+	 * @return Authenticatable|false
+	 *
+	 * @throws RuntimeException
+	 */
+	public static function loginUsingId(int $id): Authenticatable|false
+	{
+		return Auth::loginUsingId($id);
 	}
 
 	/**
@@ -49,17 +112,17 @@ class Authorization extends Auth
 	 *
 	 * @return bool returns true when no login was found
 	 */
-	public static function noLogin(): bool
+	public static function isAdminNotConfigured(): bool
 	{
 		/** @var User|null $adminUser */
 		$adminUser = User::query()->find(0);
 		if ($adminUser !== null && $adminUser->password === '' && $adminUser->username === '') {
-			parent::login($adminUser);
+			Auth::login($adminUser);
 
 			return true;
 		}
 
-		return Legacy::noLogin();
+		return Legacy::isAdminNotConfigured();
 	}
 
 	/**
@@ -69,7 +132,7 @@ class Authorization extends Auth
 	 */
 	public static function logout()
 	{
-		parent::logout();
+		Auth::logout();
 		Session::flush();
 	}
 
@@ -90,7 +153,7 @@ class Authorization extends Auth
 		$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
 
 		if ($user !== null && Hash::check($password, $user->password)) {
-			parent::login($user);
+			Auth::login($user);
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
 
 			return true;
@@ -117,7 +180,7 @@ class Authorization extends Auth
 		if ($adminUser !== null) {
 			// Admin User exist, so we check against it.
 			if (Hash::check($username, $adminUser->username) && Hash::check($password, $adminUser->password)) {
-				parent::login($adminUser);
+				Auth::login($adminUser);
 				Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
 
 				return true;

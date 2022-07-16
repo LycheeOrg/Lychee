@@ -47,7 +47,7 @@ class Legacy
 		return false;
 	}
 
-	public static function noLogin(): bool
+	public static function isAdminNotConfigured(): bool
 	{
 		// LEGACY STUFF
 		$configs = Configs::get();

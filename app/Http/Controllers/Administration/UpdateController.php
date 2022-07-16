@@ -120,14 +120,14 @@ class UpdateController extends Controller
 	public function migrate(Request $request): View
 	{
 		if (
-			Authorization::isAdmin() || Authorization::noLogin() ||
+			Authorization::isAdmin() || Authorization::isAdminNotConfigured() ||
 			Authorization::logAsAdmin($request['username'] ?? '', $request['password'] ?? '', $request->ip())
 		) {
 			$output = [];
 			$this->applyUpdate->migrate($output);
 			$this->applyUpdate->filter($output);
 
-			if (Authorization::noLogin()) {
+			if (Authorization::isAdminNotConfigured()) {
 				Authorization::logout();
 			}
 

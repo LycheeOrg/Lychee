@@ -22,7 +22,7 @@ class DiagnosticsController extends Controller
 
 	private function isAuthorized(): bool
 	{
-		return Authorization::isAdmin() || Authorization::noLogin();
+		return Authorization::isAdmin() || Authorization::isAdminNotConfigured();
 	}
 
 	/**

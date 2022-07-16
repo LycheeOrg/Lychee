@@ -49,7 +49,7 @@ class UsersTest extends TestCase
 		/*
 		 * We check that there are username and password set in the database
 		 */
-		static::assertFalse(Authorization::noLogin());
+		static::assertFalse(Authorization::isAdminNotConfigured());
 
 		$sessions_test->login('foo', 'bar', 401);
 		$sessions_test->login('lychee', 'bar', 401);

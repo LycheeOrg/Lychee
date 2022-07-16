@@ -65,7 +65,7 @@ class SessionController extends Controller
 		$return = [];
 
 		// Check if login credentials exist and login if they don't
-		if (Authorization::noLogin() === true || $logged_in === true) {
+		if (Authorization::isAdminNotConfigured() || $logged_in === true) {
 			// we set the user ID (it is set to 0 if there is no login/password = admin)
 			$user_id = Authorization::id();
 
@@ -137,7 +137,7 @@ class SessionController extends Controller
 	public function login(LoginRequest $request): void
 	{
 		// No login
-		if (Authorization::noLogin() === true) {
+		if (Authorization::isAdminNotConfigured()) {
 			Logs::warning(__METHOD__, __LINE__, 'DEFAULT LOGIN!');
 
 			return;
@@ -166,15 +166,5 @@ class SessionController extends Controller
 	public function logout(): void
 	{
 		Authorization::logout();
-	}
-
-	/**
-	 * Shows the session values.
-	 *
-	 * @return void
-	 */
-	public function show(): void
-	{
-		dd(Session::all(), Authorization::user());
 	}
 }
