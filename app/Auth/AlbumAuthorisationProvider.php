@@ -20,7 +20,6 @@ use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 /**
@@ -323,7 +322,7 @@ class AlbumAuthorisationProvider
 		}
 
 		// ... such that there are no blocked albums on the path to the album.
-		if (Auth::getUser()?->isAdmin()) {
+		if (Authorization::isAdmin()) {
 			return $query;
 		} else {
 			return $query->whereNotExists(function (BaseBuilder $q) use ($origin) {

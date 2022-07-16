@@ -67,23 +67,6 @@ class Authorization
 	}
 
 	/**
-	 * Forward the user call to Auth.
-	 * Returns current user if logged in, null otherwise.
-	 *
-	 * @return User|null
-	 *
-	 * @throws InvalidArgumentException
-	 * @throws BadRequestException
-	 */
-	public static function userOrNull(): User|null
-	{
-		/** @var User|null $user */
-		$user = Auth::user();
-
-		return $user;
-	}
-
-	/**
 	 * Return current user if logged in.
 	 * Fail otherwise.
 	 *
@@ -122,10 +105,10 @@ class Authorization
 	 */
 	public static function canUpload(): bool
 	{
-		/** @var User $user */
-		$user = Auth::authenticate();
+		/** @var User|null $user */
+		$user = Auth::user();
 
-		return $user->id === 0 || $user->may_upload;
+		return $user?->id === 0 || $user?->may_upload === true;
 	}
 
 	/**
