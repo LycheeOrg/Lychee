@@ -56,6 +56,8 @@ final class Czech implements Language
 			'UPDATE' => 'Update',
 			'VIEW_TOKEN' => 'View API token',
 			'RESET' => 'Reset',
+			'DISABLE' => 'Disable',
+			'ENABLE' => 'Enable',
 
 			'SMART_ALBUMS' => 'Chytrá alba',
 			'SHARED_ALBUMS' => 'Sdílená alba',

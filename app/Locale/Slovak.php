@@ -56,6 +56,8 @@ final class Slovak implements Language
 			'UPDATE' => 'Update',
 			'VIEW_TOKEN' => 'View API token',
 			'RESET' => 'Reset',
+			'DISABLE' => 'Disable',
+			'ENABLE' => 'Enable',
 
 			'SMART_ALBUMS' => 'Inteligentné albumy',
 			'SHARED_ALBUMS' => 'Zdieľané albumy',

@@ -55,6 +55,8 @@ final class German implements Language
 			'UPDATE' => 'Update',
 			'VIEW_TOKEN' => 'API-Schlüssel anzeigen',
 			'RESET' => 'Zurücksetzen',
+			'DISABLE' => 'Disable',
+			'ENABLE' => 'Enable',
 
 			'SAVE_RISK' => 'Änderungen speichern, ich kenne das Risiko!',
 

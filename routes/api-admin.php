@@ -51,3 +51,4 @@ Route::post('/User::setEmail', [UserController::class, 'setEmail'])->withoutMidd
 Route::post('/User::getEmail', [UserController::class, 'getEmail'])->withoutMiddleware([AdminCheck::class]);
 Route::post('/User::getCurrent', [UserController::class, 'getCurrent'])->withoutMiddleware([AdminCheck::class]);
 Route::post('/User::resetToken', [UserController::class, 'resetToken'])->withoutMiddleware([AdminCheck::class]);
+Route::post('/User::disableToken', [UserController::class, 'disableToken'])->withoutMiddleware([AdminCheck::class]);

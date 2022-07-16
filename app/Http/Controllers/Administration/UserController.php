@@ -157,4 +157,21 @@ class UserController extends Controller
 			'token' => AccessControl::user()->token,
 		];
 	}
+
+	/**
+	 * Disable the token of the currently authenticated user.
+	 *
+	 * @return array
+	 *
+	 * @throws \Exception
+	 */
+	public function disableToken(): array
+	{
+		AccessControl::user()->token = '';
+		AccessControl::user()->save();
+
+		return [
+			'token' => '',
+		];
+	}
 }

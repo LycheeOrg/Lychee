@@ -24,7 +24,7 @@ class Create
 			$user->is_locked = $isLocked;
 			$user->username = $username;
 			$user->password = bcrypt($password);
-			$user->token = strtr(base64_encode(random_bytes(16)), '+/', '-_');
+			$user->token = '';
 		} catch (\InvalidArgumentException $e) {
 			throw new InvalidPropertyException('Could not hash password', $e);
 		}

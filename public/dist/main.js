@@ -1051,7 +1051,7 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject66 = _taggedTemplateLiteral(["\n\t\t<div class='directLinks'>\n\t\t\t", "\n\t\t\t<p class='less'>\n\t\t\t\t", "\n\t\t\t</p>\n\t\t\t<div class='imageLinks'>\n\t"], ["\n\t\t<div class='directLinks'>\n\t\t\t", "\n\t\t\t<p class='less'>\n\t\t\t\t", "\n\t\t\t</p>\n\t\t\t<div class='imageLinks'>\n\t"]),
     _templateObject67 = _taggedTemplateLiteral(["\n\t\t</div>\n\t\t</div>\n\t"], ["\n\t\t</div>\n\t\t</div>\n\t"]),
     _templateObject68 = _taggedTemplateLiteral(["<p style=\"color: #d92c34; font-size: 1.3em; font-weight: bold; text-transform: capitalize; text-align: center;\">", "</p>"], ["<p style=\"color: #d92c34; font-size: 1.3em; font-weight: bold; text-transform: capitalize; text-align: center;\">", "</p>"]),
-    _templateObject69 = _taggedTemplateLiteral(["<div class='directLinks'><p>", " <a id=\"button_copy_token\" class='basicModal__button' title='", "'>", "</a></p></div>"], ["<div class='directLinks'><p>", " <a id=\"button_copy_token\" class='basicModal__button' title='", "'>", "</a></p></div>"]),
+    _templateObject69 = _taggedTemplateLiteral(["<div class='directLinks'><p><span id=\"apiToken\">", "</span> <a id=\"button_copy_token\" class='basicModal__button' title='", "'>", "</a> <a id=\"button_disable_token\" class='basicModal__button' title='", "'>", "</a></p></div>"], ["<div class='directLinks'><p><span id=\"apiToken\">", "</span> <a id=\"button_copy_token\" class='basicModal__button' title='", "'>", "</a> <a id=\"button_disable_token\" class='basicModal__button' title='", "'>", "</a></p></div>"]),
     _templateObject70 = _taggedTemplateLiteral(["<span class='attr_", "_separator'>, </span>"], ["<span class='attr_", "_separator'>, </span>"]),
     _templateObject71 = _taggedTemplateLiteral(["<span class='attr_", " search'>$", "</span>"], ["<span class='attr_", " search'>$", "</span>"]),
     _templateObject72 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
@@ -6659,6 +6659,8 @@ lychee.locale = {
 	DEFAULT: "Default",
 	VIEW_TOKEN: "View API token",
 	RESET: "Reset",
+	DISABLE: "Disable",
+	ENABLE: "Enable",
 
 	SMART_ALBUMS: "Smart albums",
 	SHARED_ALBUMS: "Shared albums",
@@ -9877,11 +9879,20 @@ settings.save_enter = function (e) {
 
 settings.viewToken = function () {
 	api.post("User::getCurrent", {}, function (data) {
+		var bodyHtml = '';
+		var enableReset = '';
+		if (data.token === '') {
+			bodyHtml = "<div class='directLinks'><p>disabled</p></div>";
+			enableReset = lychee.locale["ENABLE"];
+		} else {
+			bodyHtml = lychee.html(_templateObject69, data.token, lychee.locale["URL_COPY_TO_CLIPBOARD"], build.iconic("copy", "ionicons"), lychee.locale["DISABLE"], build.iconic("ban"));
+			enableReset = lychee.locale["RESET"];
+		}
 		basicModal.show({
-			body: lychee.html(_templateObject69, data.token, lychee.locale["URL_COPY_TO_CLIPBOARD"], build.iconic("copy", "ionicons")),
+			body: bodyHtml,
 			buttons: {
 				action: {
-					title: lychee.locale["RESET"],
+					title: enableReset,
 					fn: function fn() {
 						api.post("User::resetToken", {});
 						basicModal.close();
@@ -9896,6 +9907,11 @@ settings.viewToken = function () {
 		});
 		$("#button_copy_token").on(lychee.getEventName(), function () {
 			navigator.clipboard.writeText(data.token);
+		});
+		$("#button_disable_token").on(lychee.getEventName(), function () {
+			api.post("User::disableToken", {}, function () {
+				$('#apiToken').html('disabled');
+			});
 		});
 	});
 };

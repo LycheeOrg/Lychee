@@ -55,6 +55,8 @@ final class Spanish implements Language
 			'UPDATE' => 'Update',
 			'VIEW_TOKEN' => 'View API token',
 			'RESET' => 'Reset',
+			'DISABLE' => 'Disable',
+			'ENABLE' => 'Enable',
 
 			'SMART_ALBUMS' => 'Álbumes inteligentes',
 			'SHARED_ALBUMS' => 'Álbumes compartidos',

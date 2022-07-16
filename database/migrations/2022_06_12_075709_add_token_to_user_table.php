@@ -20,16 +20,14 @@ class AddTokenToUserTable extends Migration
 	{
 		$key_length = 16;
 
+		$oldApiKey = Configs::where('key', '=', 'api_key')->first()->value;
 		Configs::where('key', '=', 'api_key')->delete();
 
 		Schema::table('users', function (Blueprint $table) {
-			$table->char('token', 100)->unique()->after('email')->default('needs-to-be-set');
+			$table->char('token', 100)->after('email')->default('');
 		});
 
-		foreach (User::all() as $user) {
-			$user->token = strtr(base64_encode(random_bytes($key_length)), '+/', '-_');
-			$user->save();
-		}
+		User::where('id', '=', '0')->update(['token' => $oldApiKey]);
 	}
 
 	/**

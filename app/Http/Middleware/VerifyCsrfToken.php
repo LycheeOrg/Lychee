@@ -44,12 +44,17 @@ class VerifyCsrfToken extends Middleware
 			}
 
 			/** @var User|null $user */
-			$user = User::query()->where('token', '=', $token)->first();
+			$user = User::query()
+				->where('token', '=', $token)
+				->where('token', '!=', '')
+				->first();
 			if ($user === null) {
 				return parent::handle($request, $next);
 			}
 
-			AccessControl::log_as_id($user->id);
+			if (!AccessControl::is_logged_in()) {
+				AccessControl::log_as_id($user->id);
+			}
 
 			return $next($request);
 		}

@@ -55,6 +55,8 @@ final class Greek implements Language
 			'UPDATE' => 'Update',
 			'VIEW_TOKEN' => 'View API token',
 			'RESET' => 'Reset',
+			'DISABLE' => 'Disable',
+			'ENABLE' => 'Enable',
 
 			'SMART_ALBUMS' => 'Έξυπνα λευκώματα',
 			'SHARED_ALBUMS' => 'Κοινόχρηστα λευκώματα',

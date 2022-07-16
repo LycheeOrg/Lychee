@@ -55,6 +55,8 @@ final class ChineseSimplified implements Language
 			'UPDATE' => 'Update',
 			'VIEW_TOKEN' => 'View API token',
 			'RESET' => 'Reset',
+			'DISABLE' => 'Disable',
+			'ENABLE' => 'Enable',
 
 			'SMART_ALBUMS' => '智能相册',
 			'SHARED_ALBUMS' => '已共享的相册',

@@ -2693,6 +2693,8 @@ lychee.locale = {
 	DEFAULT: "Default",
 	VIEW_TOKEN: "View API token",
 	RESET: "Reset",
+	DISABLE: "Disable",
+	ENABLE: "Enable",
 
 	SMART_ALBUMS: "Smart albums",
 	SHARED_ALBUMS: "Shared albums",
