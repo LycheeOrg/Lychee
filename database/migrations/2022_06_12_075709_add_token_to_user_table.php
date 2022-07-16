@@ -18,8 +18,6 @@ class AddTokenToUserTable extends Migration
 	 */
 	public function up(): void
 	{
-		$key_length = 16;
-
 		$oldApiKey = Configs::where('key', '=', 'api_key')->first()->value;
 		Configs::where('key', '=', 'api_key')->delete();
 
