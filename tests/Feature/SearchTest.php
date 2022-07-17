@@ -103,7 +103,7 @@ class SearchTest extends TestCase
 					'make' => 'Canon',
 					'model' => 'Canon EOS R',
 					'shutter' => '30 s',
-					'tags' => 'search tag',
+					'tags' => ['search tag'],
 					'type' => 'image/jpeg',
 					'size_variants' => [
 						'small' => [
