@@ -37,8 +37,10 @@ class UsersTest extends TestCase
 		if ($configs['password'] === '' && $configs['username'] === '') {
 			$clear = true;
 
-			$sessions_test->set_new('lychee', 'password');
+			$sessions_test->set_admin('lychee', 'password');
 			$sessions_test->logout();
+
+			$sessions_test->set_admin('lychee', 'password', 403, 'Admin user is already registered');
 
 			$sessions_test->login('lychee', 'password');
 			$sessions_test->logout();
@@ -49,7 +51,7 @@ class UsersTest extends TestCase
 		/*
 		 * We check that there are username and password set in the database
 		 */
-		static::assertFalse(Authorization::isAdminNotConfigured());
+		static::assertFalse(Authorization::isAdminNotRegistered());
 
 		$sessions_test->login('foo', 'bar', 401);
 		$sessions_test->login('lychee', 'bar', 401);
@@ -121,7 +123,7 @@ class UsersTest extends TestCase
 		Authorization::loginUsingId(0);
 
 		// 2
-		$users_test->add('test_abcd', 'test_abcd', true, true);
+		$users_test->add('test_abcd', 'password_abcd', true, true);
 
 		// 3
 		$response = $users_test->list();
@@ -137,34 +139,34 @@ class UsersTest extends TestCase
 		]);
 
 		// 5
-		$users_test->add('test_abcd', 'test_abcd', true, true, 409, 'Username already exists');
+		$users_test->add('test_abcd', 'password_abcd', true, true, 409, 'Username already exists');
 
 		// 6
-		$users_test->save($id, 'test_abcde', 'testing', false, true);
+		$users_test->save($id, 'test_abcde', 'password_testing', false, true);
 
 		// 7
-		$users_test->add('test_abcd2', 'test_abcd', true, true);
+		$users_test->add('test_abcd2', 'password_abcd', true, true);
 		$response = $users_test->list();
 		$t = json_decode($response->getContent());
 		$id2 = end($t)->id;
 
 		// 8
-		$users_test->save($id2, 'test_abcde', 'testing', false, true, 409, 'Username already exists');
+		$users_test->save($id2, 'test_abcde', 'password_testing', false, true, 409, 'Username already exists');
 
 		// 9
 		$sessions_test->logout();
 
 		// 10
-		$sessions_test->login('test_abcde', 'testing');
+		$sessions_test->login('test_abcde', 'password_testing');
 
 		// 11
 		$users_test->list(403);
 
 		// 12
-		$sessions_test->set_new('test_abcde', 'testing2', 403, 'Account is locked');
+		$sessions_test->update_login('test_abcde', 'password_testing2', '', 422, 'The old password field is required.');
 
 		// 13
-		$sessions_test->set_old('test_abcde', 'testing2', 'test_abcde', 'testing2', 403, 'Account is locked');
+		$sessions_test->update_login('test_abcde', 'password_testing2', 'password_testing2', 403, 'Insufficient privileges');
 
 		// 14
 		$sessions_test->logout();
@@ -173,13 +175,13 @@ class UsersTest extends TestCase
 		Authorization::loginUsingId(0);
 
 		// 16
-		$users_test->save($id, 'test_abcde', 'testing', false, false);
+		$users_test->save($id, 'test_abcde', 'password_testing', false, false);
 
 		// 17
 		$sessions_test->logout();
 
 		// 18
-		$sessions_test->login('test_abcde', 'testing');
+		$sessions_test->login('test_abcde', 'password_testing');
 		$sessions_test->init();
 
 		// 19
@@ -192,22 +194,22 @@ class UsersTest extends TestCase
 		$album_tests->get('unsorted', 403);
 
 		// 22
-		$sessions_test->set_new('test_abcde', 'testing2', 401, 'Previous username or password are invalid');
+		$sessions_test->update_login('test_abcde', 'password_testing2', '', 422, 'The old password field is required.');
 
 		// 23
-		$sessions_test->set_old('test_abcde', 'testing2', 'test_abcde', 'testing2', 401, 'Previous username or password are invalid');
+		$sessions_test->update_login('test_abcde', 'password_testing2', 'password_testing2', 401, 'Previous username or password are invalid');
 
 		// 24
-		$sessions_test->set_old('test_abcd2', 'testing2', 'test_abcde', 'testing2', 409, 'Username already exists');
+		$sessions_test->update_login('test_abcd2', 'password_testing2', 'password_testing', 409, 'Username already exists');
 
 		// 25
-		$sessions_test->set_old('test_abcdef', 'testing2', 'test_abcde', 'testing');
+		$sessions_test->update_login('test_abcdef', 'password_testing2', 'password_testing');
 
 		// 26
 		$sessions_test->logout();
 
 		// 27
-		$sessions_test->login('test_abcdef', 'testing2');
+		$sessions_test->login('test_abcdef', 'password_testing2');
 
 		// 28
 		$sessions_test->logout();
