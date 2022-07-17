@@ -3,6 +3,7 @@
 namespace App\Actions\Update;
 
 use App\Exceptions\Internal\FrameworkException;
+use App\Facades\Helpers;
 use App\Metadata\GitHubFunctions;
 use App\Metadata\LycheeVersion;
 use App\Models\Configs;
@@ -72,25 +73,27 @@ class Apply
 	 */
 	private function call_composer(array &$output): void
 	{
-		try {
-			if (Configs::getValueAsBool('apply_composer_update')) {
-				// @codeCoverageIgnoreStart
-				Logs::warning(__METHOD__, __LINE__, 'Composer is called on update.');
+		if (Helpers::isExecAvailable()) {
+			try {
+				if (Configs::getValueAsBool('apply_composer_update')) {
+					// @codeCoverageIgnoreStart
+					Logs::warning(__METHOD__, __LINE__, 'Composer is called on update.');
 
-				// Composer\Factory::getHomeDir() method
-				// needs COMPOSER_HOME environment variable set
-				putenv('COMPOSER_HOME=' . base_path('/composer-cache'));
-				chdir(base_path());
-				exec('composer install --no-dev --no-progress 2>&1', $output);
-				chdir(base_path('public'));
-			// @codeCoverageIgnoreEnd
-			} else {
-				$output[] = 'Composer update are always dangerous when automated.';
-				$output[] = 'So we did not execute it.';
-				$output[] = 'If you want to have composer update applied, please set the setting to 1 at your own risk.';
+					// Composer\Factory::getHomeDir() method
+					// needs COMPOSER_HOME environment variable set
+					putenv('COMPOSER_HOME=' . base_path('/composer-cache'));
+					chdir(base_path());
+					exec('composer install --no-dev --no-progress 2>&1', $output);
+					chdir(base_path('public'));
+				// @codeCoverageIgnoreEnd
+				} else {
+					$output[] = 'Composer update are always dangerous when automated.';
+					$output[] = 'So we did not execute it.';
+					$output[] = 'If you want to have composer update applied, please set the setting to 1 at your own risk.';
+				}
+			} catch (BindingResolutionException $e) {
+				throw new FrameworkException('Laravel\'s container component', $e);
 			}
-		} catch (BindingResolutionException $e) {
-			throw new FrameworkException('Laravel\'s container component', $e);
 		}
 	}
 
@@ -103,8 +106,10 @@ class Apply
 	 */
 	private function git_pull(array &$output): void
 	{
-		$command = 'git pull --rebase ' . Config::get('urls.git.pull') . ' master 2>&1';
-		exec($command, $output);
+		if (Helpers::isExecAvailable()) {
+			$command = 'git pull --rebase ' . Config::get('urls.git.pull') . ' master 2>&1';
+			exec($command, $output);
+		}
 	}
 
 	/**
