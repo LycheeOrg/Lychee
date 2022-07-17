@@ -2,7 +2,7 @@
 
 namespace App\Auth;
 
-use App\Legacy\Legacy;
+use App\Exceptions\ModelDBException;
 use App\Models\Logs;
 use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
@@ -139,26 +139,42 @@ class Authorization
 	}
 
 	/**
-	 * If admin user does not exist or is not configured log as admin.
+	 * If admin user does not exist or is not configured.
 	 * Return false otherwise (admin exist with credentials).
 	 *
 	 * @return bool
 	 */
-	public static function isAdminNotConfigured(): bool
+	public static function isAdminNotRegistered(): bool
 	{
 		/** @var User|null $adminUser */
 		$adminUser = User::query()->find(0);
 		if ($adminUser !== null) {
 			if ($adminUser->password === '' && $adminUser->username === '') {
-				Auth::login($adminUser);
-
 				return true;
 			}
 
 			return false;
 		}
 
-		return self::createAdminAndLogin('', '');
+		return self::createAdmin('', '');
+	}
+
+	/**
+	 * Login as admin temporarilly when unconfigured.
+	 *
+	 * @return bool true of successful
+	 *
+	 * @throws ModelDBException
+	 */
+	public static function isAdminNotRegisteredAndLogin(): bool
+	{
+		if (self::isAdminNotRegistered()) {
+			/** @var User|null $adminUser */
+			$adminUser = User::query()->find(0);
+			Auth::login($adminUser);
+		}
+
+		return false;
 	}
 
 	/**
@@ -182,11 +198,11 @@ class Authorization
 	 *
 	 * @return bool
 	 */
-	public static function logAsUser(string $username, string $password, string $ip): bool
+	public static function logAs(string $username, string $password, string $ip): bool
 	{
 		// We select the NON ADMIN user
 		/** @var User|null $user */
-		$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
+		$user = User::query()->where('username', '=', $username)->first();
 
 		if ($user !== null && Hash::check($password, $user->password)) {
 			Auth::login($user);
@@ -199,36 +215,6 @@ class Authorization
 	}
 
 	/**
-	 * Given a username, password and ip (for logging), try to log the user as admin.
-	 * Returns true if succeeded, false if failed.
-	 *
-	 * @param string $username
-	 * @param string $password
-	 * @param string $ip
-	 *
-	 * @return bool
-	 */
-	public static function logAsAdmin(string $username, string $password, string $ip): bool
-	{
-		/** @var User|null $adminUser */
-		$adminUser = User::query()->find(0);
-
-		if ($adminUser !== null) {
-			// Admin User exist, so we check against it.
-			if (Hash::check($username, $adminUser->username) && Hash::check($password, $adminUser->password)) {
-				Auth::login($adminUser);
-				Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
-
-				return true;
-			}
-
-			return false;
-		}
-		// Admin User does not exist yet, so we use the Legacy.
-		return self::createAdminAndLogin('', '');
-	}
-
-	/**
 	 * Given a username and password, create an admin user in the database.
 	 * Do note that the password is set NOT HASHED.
 	 *
@@ -237,16 +223,15 @@ class Authorization
 	 *
 	 * @return bool actually always true
 	 */
-	private static function createAdminAndLogin($username, $password): bool
+	private static function createAdmin($username, $password): bool
 	{
-		/** @var User */
+		/** @var User $user */
 		$user = User::query()->findOrNew(0);
 		$user->incrementing = false; // disable auto-generation of ID
 		$user->id = 0;
 		$user->username = $username;
 		$user->password = $password;
 		$user->save();
-		Auth::login($user);
 
 		return true;
 	}

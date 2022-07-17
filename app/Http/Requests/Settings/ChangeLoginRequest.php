@@ -3,44 +3,32 @@
 namespace App\Http\Requests\Settings;
 
 use App\Auth\Authorization;
-use App\Http\Requests\Session\LoginRequest;
+use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\Contracts\HasPassword;
+use App\Http\Requests\Contracts\HasUsername;
 use App\Http\Requests\Traits\HasPasswordTrait;
+use App\Http\Requests\Traits\HasUsernameTrait;
 use App\Rules\PasswordRule;
+use App\Rules\UsernameRule;
 
-class ChangeLoginRequest extends LoginRequest
+class ChangeLoginRequest extends BaseApiRequest implements HasUsername, HasPassword
 {
+	use HasUsernameTrait;
+	use HasPasswordTrait;
+
 	public const OLD_PASSWORD_ATTRIBUTE = 'oldPassword';
 
 	protected ?string $oldPassword = null;
 
 	/**
 	 * Determines if the user is authorized to make this request.
-	 *
-	 * TODO: This method need to be rewritten after {@link \App\Actions\Settings\Login::do()} has been refactored.
-	 *
-	 * Normally, the request to change a user's password should
-	 * only be authorized for admin or non-locked users.
-	 * However, at the moment the method
-	 * {@link \App\Actions\Settings\Login::do()} is a "god" method and serves
-	 * three totally different use-cases mixed into one method (see comment
-	 * there).
-	 * We cannot reliably determine if the request is authorized without
-	 * knowing which of the use-case applies and thus without repeating
-	 * most of the logic of {@link \App\Actions\Settings\Login::do()}.
-	 * Hence, we authorize this request unconditionally and assume that
-	 * {@link \App\Actions\Settings\Login::do()} enforces correct
-	 * authorization.
-	 *
-	 * @return bool always true
 	 */
 	public function authorize(): bool
 	{
-		/*return Authorization::check() && (
+		return Authorization::check() && (
 			Authorization::isAdmin() ||
-			!Authorization::user()->is_locked
-		);*/
-
-		return true;
+			!Authorization::userOrFail()->is_locked
+		);
 	}
 
 	/**
@@ -48,10 +36,11 @@ class ChangeLoginRequest extends LoginRequest
 	 */
 	public function rules(): array
 	{
-		$rules = parent::rules();
-		$rules[self::OLD_PASSWORD_ATTRIBUTE] = ['sometimes', new PasswordRule(false)];
-
-		return $rules;
+		return [
+			HasUsername::USERNAME_ATTRIBUTE => ['sometimes', new UsernameRule()],
+			HasPassword::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
+			self::OLD_PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
+		];
 	}
 
 	/**
@@ -59,22 +48,15 @@ class ChangeLoginRequest extends LoginRequest
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		parent::processValidatedValues($values, $files);
-		if (array_key_exists(self::OLD_PASSWORD_ATTRIBUTE, $values)) {
-			// See {@link HasPasswordTrait::password()} for an explanation
-			// of the semantic difference between `null` and `''`.
-			$this->oldPassword = $values[self::OLD_PASSWORD_ATTRIBUTE] ?? '';
-		} else {
-			$this->oldPassword = null;
-		}
-	}
+		$this->password = $values[HasPassword::PASSWORD_ATTRIBUTE];
+		$this->oldPassword = $values[self::OLD_PASSWORD_ATTRIBUTE];
 
-	/**
-	 * @return string|null
-	 */
-	public function oldUsername(): ?string
-	{
-		return $this->oldUsername;
+		if (array_key_exists(HasUsername::USERNAME_ATTRIBUTE, $values)) {
+			$this->username = $values[HasUsername::USERNAME_ATTRIBUTE];
+			$this->username = $this->username === '' ? null : $this->username;
+		} else {
+			$this->username = null;
+		}
 	}
 
 	/**

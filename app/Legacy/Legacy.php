@@ -6,8 +6,11 @@ use App\Exceptions\ConfigurationException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Configs;
 use App\Models\Logs;
+use App\Models\User;
 use App\Rules\IntegerIDRule;
 use App\Rules\RandomIDRule;
+use Auth;
+use Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -102,5 +105,34 @@ class Legacy
 	public static function translateLegacyPhotoID(int $photoID, Request $request): ?string
 	{
 		return self::translateLegacyID($photoID, 'photos', $request);
+	}
+
+	/**
+	 * Given a username, password and ip (for logging), try to log the user as admin.
+	 * Returns true if succeeded, false if failed.
+	 *
+	 * @param string $username
+	 * @param string $password
+	 * @param string $ip
+	 *
+	 * @return bool
+	 */
+	public static function logAsAdmin(string $username, string $password, string $ip): bool
+	{
+		/** @var User $adminUser */
+		$adminUser = User::query()->findOrFail(0);
+		// Admin User exist, so we check against it.
+		if (Hash::check($username, $adminUser->username) && Hash::check($password, $adminUser->password)) {
+			Auth::login($adminUser);
+			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
+
+			// update the admin username so we do not need to go through here anymore.
+			$adminUser->username = $username;
+			$adminUser->save();
+
+			return true;
+		}
+
+		return false;
 	}
 }

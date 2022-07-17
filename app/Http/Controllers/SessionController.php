@@ -10,6 +10,7 @@ use App\Exceptions\VersionControlException;
 use App\Facades\Helpers;
 use App\Facades\Lang;
 use App\Http\Requests\Session\LoginRequest;
+use App\Legacy\Legacy;
 use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
@@ -65,7 +66,7 @@ class SessionController extends Controller
 		$return = [];
 
 		// Check if login credentials exist and login if they don't
-		if (Authorization::isAdminNotConfigured() || $logged_in === true) {
+		if (Authorization::isAdminNotRegisteredAndLogin() || $logged_in === true) {
 			// we set the user ID (it is set to 0 if there is no login/password = admin)
 			$user_id = Authorization::idOrFail();
 
@@ -136,18 +137,17 @@ class SessionController extends Controller
 	public function login(LoginRequest $request): void
 	{
 		// No login
-		if (Authorization::isAdminNotConfigured()) {
+		if (Authorization::isAdminNotRegisteredAndLogin()) {
 			Logs::warning(__METHOD__, __LINE__, 'DEFAULT LOGIN!');
 
 			return;
 		}
 
-		// this is probably sensitive to timing attacks...
-		if (Authorization::logAsAdmin($request->username(), $request->password(), $request->ip()) === true) {
+		if (Legacy::logAsAdmin($request->username(), $request->password(), $request->ip()) === true) {
 			return;
 		}
 
-		if (Authorization::logAsUser($request->username(), $request->password(), $request->ip()) === true) {
+		if (Authorization::logAs($request->username(), $request->password(), $request->ip()) === true) {
 			return;
 		}
 
