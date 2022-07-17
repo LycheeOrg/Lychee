@@ -40,7 +40,7 @@ class UpdateLogin
 		if (!Hash::check($oldPassword, $user->password)) {
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change their identity from ' . $ip);
 
-			throw new UnauthenticatedException('Previous username or password are invalid');
+			throw new UnauthenticatedException('Previous password is invalid');
 		}
 
 		if (User::query()->where('username', '=', $username)->where('id', '!=', $user->id)->count() !== 0) {
