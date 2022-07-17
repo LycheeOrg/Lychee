@@ -64,7 +64,7 @@ class SessionController extends Controller
 		$return = [];
 
 		// Check if login credentials exist and login if they don't
-		if (Authorization::check() || Authorization::isAdminNotRegisteredAndLogin()) {
+		if (Authorization::check() || Authorization::loginAsAdminIfNotRegistered()) {
 			if (Authorization::isAdmin()) {
 				$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 				$return['admin'] = true;
@@ -133,17 +133,17 @@ class SessionController extends Controller
 	public function login(LoginRequest $request): void
 	{
 		// No login
-		if (Authorization::isAdminNotRegisteredAndLogin()) {
+		if (Authorization::loginAsAdminIfNotRegistered()) {
 			Logs::warning(__METHOD__, __LINE__, 'DEFAULT LOGIN!');
 
 			return;
 		}
 
-		if (Legacy::logAsAdmin($request->username(), $request->password(), $request->ip())) {
+		if (Legacy::loginAsAdmin($request->username(), $request->password(), $request->ip())) {
 			return;
 		}
 
-		if (Authorization::logAs($request->username(), $request->password(), $request->ip())) {
+		if (Authorization::loginAs($request->username(), $request->password(), $request->ip())) {
 			return;
 		}
 

@@ -197,7 +197,7 @@ class UsersTest extends TestCase
 		$sessions_test->update_login('test_abcde', 'password_testing2', '', 422, 'The old password field is required.');
 
 		// 23
-		$sessions_test->update_login('test_abcde', 'password_testing2', 'password_testing2', 401, 'Previous username or password are invalid');
+		$sessions_test->update_login('test_abcde', 'password_testing2', 'password_testing2', 401, 'Previous password is invalid');
 
 		// 24
 		$sessions_test->update_login('test_abcd2', 'password_testing2', 'password_testing', 409, 'Username already exists');

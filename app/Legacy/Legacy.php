@@ -117,7 +117,7 @@ class Legacy
 	 *
 	 * @return bool
 	 */
-	public static function logAsAdmin(string $username, string $password, string $ip): bool
+	public static function loginAsAdmin(string $username, string $password, string $ip): bool
 	{
 		/** @var User $adminUser */
 		$adminUser = User::query()->findOrFail(0);

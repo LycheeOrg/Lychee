@@ -120,10 +120,10 @@ class UpdateController extends Controller
 	 */
 	public function migrate(Request $request): View
 	{
-		$canExecute = Authorization::isAdmin() || Authorization::isAdminNotRegisteredAndLogin();
+		$canExecute = Authorization::isAdmin() || Authorization::loginAsAdminIfNotRegistered();
 
-		if (!$canExecute && !Legacy::logAsAdmin($request['username'] ?? '', $request['password'] ?? '', $request->ip())) {
-			Authorization::logAs($request['username'] ?? '', $request['password'] ?? '', $request->ip());
+		if (!$canExecute && !Legacy::loginAsAdmin($request['username'] ?? '', $request['password'] ?? '', $request->ip())) {
+			Authorization::loginAs($request['username'] ?? '', $request['password'] ?? '', $request->ip());
 			$canExecute = Authorization::isAdmin();
 		}
 

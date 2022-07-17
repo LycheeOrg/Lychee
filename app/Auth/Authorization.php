@@ -159,17 +159,19 @@ class Authorization
 			return false;
 		}
 
-		return self::createAdmin('', '');
+		return self::resetAdmin();
 	}
 
 	/**
+	 * TODO: Once the admin user registration is moved to the installation phase this methode can finally be removed.
+	 *
 	 * Login as admin temporarilly when unconfigured.
 	 *
 	 * @return bool true of successful
 	 *
 	 * @throws ModelDBException
 	 */
-	public static function isAdminNotRegisteredAndLogin(): bool
+	public static function loginAsAdminIfNotRegistered(): bool
 	{
 		if (self::isAdminNotRegistered()) {
 			/** @var User|null $adminUser */
@@ -201,7 +203,7 @@ class Authorization
 	 *
 	 * @return bool
 	 */
-	public static function logAs(string $username, string $password, string $ip): bool
+	public static function loginAs(string $username, string $password, string $ip): bool
 	{
 		// We select the NON ADMIN user
 		/** @var User|null $user */
@@ -221,19 +223,18 @@ class Authorization
 	 * Given a username and password, create an admin user in the database.
 	 * Do note that the password is set NOT HASHED.
 	 *
-	 * @param mixed $username
-	 * @param mixed $password
-	 *
 	 * @return bool actually always true
+	 *
+	 * @throws ModelDBException
 	 */
-	private static function createAdmin($username, $password): bool
+	public static function resetAdmin(): bool
 	{
 		/** @var User $user */
 		$user = User::query()->findOrNew(0);
 		$user->incrementing = false; // disable auto-generation of ID
 		$user->id = 0;
-		$user->username = $username;
-		$user->password = $password;
+		$user->username = '';
+		$user->password = '';
 		$user->save();
 
 		return true;
