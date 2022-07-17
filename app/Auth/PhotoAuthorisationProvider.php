@@ -53,7 +53,7 @@ class PhotoAuthorisationProvider
 			return $query;
 		}
 
-		$userId = Authorization::idOrFail();
+		$userId = Authorization::idOrNull();
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
@@ -216,7 +216,7 @@ class PhotoAuthorisationProvider
 	 */
 	public function appendSearchabilityConditions(BaseBuilder $query, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
 	{
-		$userId = Authorization::idOrFail();
+		$userId = Authorization::idOrNull();
 		$maySearchPublic = !Configs::getValueAsBool('public_photos_hidden');
 
 		try {
