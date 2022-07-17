@@ -19,22 +19,12 @@ use Tests\TestCase;
 
 class SearchTest extends TestCase
 {
-	/**
-	 * Test searching is working.
-	 *
-	 * @return void
-	 */
-	public function testSearch(): void
+	public function testSearchPhotoByTitle(): void
 	{
 		AccessControl::log_as_id(0);
 
-		$albums_test = new AlbumsUnitTest($this);
 		$photos_tests = new PhotosUnitTest($this);
 
-		/** @var string $id */
-		$id = $albums_test->add(null, 'search')->offsetGet('id');
-		/** @var string $tagId */
-		$tagId = $albums_test->addByTags('tag search', ['tag1', 'tag2'])->offsetGet('id');
 		$photoId = $photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		);
@@ -47,16 +37,6 @@ class SearchTest extends TestCase
 		$response->assertStatus(200);
 
 		$response->assertJson([
-			'albums' => [[
-				'id' => $id,
-				'title' => 'search',
-			]],
-			'tag_albums' => [
-				[
-					'id' => $tagId,
-					'title' => 'tag search',
-				],
-			],
 			'photos' => [
 				[
 					'album_id' => null,
@@ -89,8 +69,118 @@ class SearchTest extends TestCase
 			],
 		]);
 
-		$albums_test->delete([$id, $tagId]);
 		$photos_tests->delete([$photoId]);
+
+		AccessControl::logout();
+	}
+
+	public function testSearchPhotoByTag(): void
+	{
+		AccessControl::log_as_id(0);
+
+		$photos_tests = new PhotosUnitTest($this);
+
+		$photoId = $photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		);
+		$photos_tests->set_tag([$photoId], ['search tag']);
+
+		$response = $this->postJson(
+			'/api/Search::run',
+			['term' => 'search']
+		);
+		$response->assertStatus(200);
+
+		$response->assertJson([
+			'photos' => [
+				[
+					'album_id' => null,
+					'aperture' => 'f/2.8',
+					'focal' => '16 mm',
+					'id' => $photoId,
+					'iso' => '1250',
+					'lens' => 'EF16-35mm f/2.8L USM',
+					'make' => 'Canon',
+					'model' => 'Canon EOS R',
+					'shutter' => '30 s',
+					'tags' => 'search tag',
+					'type' => 'image/jpeg',
+					'size_variants' => [
+						'small' => [
+							'width' => 540,
+							'height' => 360,
+						],
+						'medium' => [
+							'width' => 1620,
+							'height' => 1080,
+						],
+						'original' => [
+							'width' => 6720,
+							'height' => 4480,
+							'filesize' => 22842265,
+						],
+					],
+				],
+			],
+		]);
+
+		$photos_tests->delete([$photoId]);
+
+		AccessControl::logout();
+	}
+
+	public function testSearchAlbumByName(): void
+	{
+		AccessControl::log_as_id(0);
+
+		$albums_test = new AlbumsUnitTest($this);
+
+		/** @var string $id */
+		$id = $albums_test->add(null, 'search')->offsetGet('id');
+
+		$response = $this->postJson(
+			'/api/Search::run',
+			['term' => 'search']
+		);
+		$response->assertStatus(200);
+
+		$response->assertJson([
+			'albums' => [[
+				'id' => $id,
+				'title' => 'search',
+			]],
+		]);
+
+		$albums_test->delete([$id]);
+
+		AccessControl::logout();
+	}
+
+	public function testSearchAlbumByTag(): void
+	{
+		AccessControl::log_as_id(0);
+
+		$albums_test = new AlbumsUnitTest($this);
+
+		/** @var string $tagId */
+		$tagId = $albums_test->addByTags('tag search', ['tag1', 'tag2'])->offsetGet('id');
+
+		$response = $this->postJson(
+			'/api/Search::run',
+			['term' => 'search']
+		);
+		$response->assertStatus(200);
+
+		$response->assertJson([
+			'tag_albums' => [
+				[
+					'id' => $tagId,
+					'title' => 'tag search',
+				],
+			],
+		]);
+
+		$albums_test->delete([$tagId]);
 
 		AccessControl::logout();
 	}
