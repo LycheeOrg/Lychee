@@ -108,7 +108,7 @@ class Authorization
 		/** @var User|null $user */
 		$user = Auth::user();
 
-		return $user?->id === 0 || $user?->may_upload === true;
+		return $user?->isAdmin() === true || $user?->may_upload === true;
 	}
 
 	/**
@@ -135,7 +135,10 @@ class Authorization
 	 */
 	public static function isCurrentOrAdmin(int $id)
 	{
-		return self::idOrNull() === 0 || self::idOrNull() === $id;
+		/** @var User|null $user */
+		$user = Auth::user();
+
+		return $user?->isAdmin() === true || self::idOrNull() === $id;
 	}
 
 	/**

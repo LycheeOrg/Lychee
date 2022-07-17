@@ -356,7 +356,7 @@ class PhotoAuthorisationProvider
 			$query->leftJoin('base_albums', 'base_albums.id', '=', 'photos.album_id');
 		}
 		if ($addShares) {
-			$userId = Authorization::idOrNull();
+			$userId = Authorization::idOrFail();
 			$query->leftJoin(
 				'user_base_album',
 				function (JoinClause $join) use ($userId) {

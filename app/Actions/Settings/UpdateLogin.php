@@ -34,7 +34,6 @@ class UpdateLogin
 	 */
 	public function do(?string $username, string $password, string $oldPassword, string $ip): void
 	{
-		// this is probably sensitive to timing attacks...
 		/** @var User $user */
 		$user = Authorization::userOrFail();
 

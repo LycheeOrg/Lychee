@@ -60,17 +60,12 @@ class SessionController extends Controller
 	 */
 	public function init(): array
 	{
-		$logged_in = Authorization::check();
-
 		// Return settings
 		$return = [];
 
 		// Check if login credentials exist and login if they don't
-		if (Authorization::isAdminNotRegisteredAndLogin() || $logged_in === true) {
-			// we set the user ID (it is set to 0 if there is no login/password = admin)
-			$user_id = Authorization::idOrFail();
-
-			if ($user_id === 0) {
+		if (Authorization::check() || Authorization::isAdminNotRegisteredAndLogin()) {
+			if (Authorization::isAdmin()) {
 				$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 				$return['admin'] = true;
 				$return['may_upload'] = true; // not necessary
@@ -92,8 +87,9 @@ class SessionController extends Controller
 
 			// here we say whether we logged in because there is no login/password or if we actually entered a login/password
 			// TODO: Refactor this. At least, rename the flag `login` to something more understandable, like `isAdminUserConfigured`, but rather re-factor the whole logic, i.e. creating the initial user should be part of the installation routine.
-			$return['config']['login'] = $logged_in;
+			$return['config']['login'] = !Authorization::isAdminNotRegistered();
 			$return['config']['lang_available'] = Lang::get_lang_available();
+		// dd($return);
 		} else {
 			// Logged out
 			$return['config'] = $this->configFunctions->public();

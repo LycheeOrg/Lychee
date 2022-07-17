@@ -113,7 +113,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	}
 
 	/**
-	 * Accessor whether user is an Admin.
+	 * Property whether user is an Admin.
 	 *
 	 * @return bool
 	 */
