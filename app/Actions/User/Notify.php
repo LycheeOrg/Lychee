@@ -2,6 +2,7 @@
 
 namespace App\Actions\User;
 
+use App\Auth\Authorization;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
@@ -27,7 +28,8 @@ class Notify
 
 		$users = $users
 			->unique('id', true)
-			->whereNotNull('email');
+			->whereNotNull('email')
+			->where('id', '!=', Authorization::idOrNull());
 
 		Notification::send($users, new PhotoAdded($photo));
 	}
