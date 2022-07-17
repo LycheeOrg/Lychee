@@ -143,11 +143,11 @@ class SessionController extends Controller
 			return;
 		}
 
-		if (Legacy::logAsAdmin($request->username(), $request->password(), $request->ip()) === true) {
+		if (Legacy::logAsAdmin($request->username(), $request->password(), $request->ip())) {
 			return;
 		}
 
-		if (Authorization::logAs($request->username(), $request->password(), $request->ip()) === true) {
+		if (Authorization::logAs($request->username(), $request->password(), $request->ip())) {
 			return;
 		}
 

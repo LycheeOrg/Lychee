@@ -7,6 +7,7 @@ use App\Actions\Update\Check as CheckUpdate;
 use App\Auth\Authorization;
 use App\Contracts\LycheeException;
 use App\Exceptions\VersionControlException;
+use App\Legacy\Legacy;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
@@ -119,15 +120,19 @@ class UpdateController extends Controller
 	 */
 	public function migrate(Request $request): View
 	{
-		if (
-			Authorization::isAdmin() || Authorization::isAdminNotConfigured() ||
-			Authorization::logAsAdmin($request['username'] ?? '', $request['password'] ?? '', $request->ip())
-		) {
+		$canExecute = Authorization::isAdmin() || Authorization::isAdminNotRegisteredAndLogin();
+
+		if (!$canExecute && !Legacy::logAsAdmin($request['username'] ?? '', $request['password'] ?? '', $request->ip())) {
+			Authorization::logAs($request['username'] ?? '', $request['password'] ?? '', $request->ip());
+			$canExecute = Authorization::isAdmin();
+		}
+
+		if ($canExecute) {
 			$output = [];
 			$this->applyUpdate->migrate($output);
 			$this->applyUpdate->filter($output);
 
-			if (Authorization::isAdminNotConfigured()) {
+			if (Authorization::isAdminNotRegistered()) {
 				Authorization::logout();
 			}
 

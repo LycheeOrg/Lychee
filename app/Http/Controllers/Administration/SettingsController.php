@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Administration;
 
-use App\Actions\Settings\Login;
 use App\Actions\Settings\SetLogin;
 use App\Actions\Settings\UpdateLogin;
 use App\Contracts\LycheeException;
@@ -33,8 +32,8 @@ class SettingsController extends Controller
 	 * To be noted this function will change the CONFIG table if used by admin
 	 * or the USER table if used by any other user
 	 *
-	 * @param ChangeLoginRequest $request
-	 * @param Login              $login
+	 * @param SetLoginRequest $request
+	 * @param SetLogin        $login
 	 *
 	 * @return void
 	 *
@@ -58,7 +57,7 @@ class SettingsController extends Controller
 	 * or the USER table if used by any other user
 	 *
 	 * @param ChangeLoginRequest $request
-	 * @param Login              $login
+	 * @param UpdateLogin        $login
 	 *
 	 * @return void
 	 *

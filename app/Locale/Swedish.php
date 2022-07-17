@@ -335,7 +335,6 @@ final class Swedish implements Language
 			'LOGIN_CREATE' => 'Skapa inloggning',
 
 			'PASSWORD_TITLE' => 'Ange dina befintliga inloggningsuppgifter:',
-			'USERNAME_CURRENT' => 'Befintligt användarnamn',
 			'PASSWORD_CURRENT' => 'Befintligt lösenord',
 			'PASSWORD_TEXT' => 'Ditt inloggningsuppgifter kommer att ändras till:',
 			'PASSWORD_CHANGE' => 'Spara ändringar av inloggningsuppgifter',

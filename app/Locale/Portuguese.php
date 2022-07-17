@@ -335,7 +335,6 @@ final class Portuguese implements Language
 			'LOGIN_CREATE' => 'Criar Login',
 
 			'PASSWORD_TITLE' => 'Inserir a sua password atual:',
-			'USERNAME_CURRENT' => 'Nome de Utilizador Atual',
 			'PASSWORD_CURRENT' => 'Password Atual',
 			'PASSWORD_TEXT' => 'O seu nome de utilizador e password vão ser alterados para o seguinte:',
 			'PASSWORD_CHANGE' => 'Alterar Login',

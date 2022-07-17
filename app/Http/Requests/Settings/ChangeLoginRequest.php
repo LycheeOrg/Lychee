@@ -7,18 +7,17 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPassword;
 use App\Http\Requests\Contracts\HasUsername;
 use App\Http\Requests\Traits\HasPasswordTrait;
-use App\Http\Requests\Traits\HasUsernameTrait;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
 
-class ChangeLoginRequest extends BaseApiRequest implements HasUsername, HasPassword
+class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 {
-	use HasUsernameTrait;
 	use HasPasswordTrait;
 
 	public const OLD_PASSWORD_ATTRIBUTE = 'oldPassword';
 
-	protected ?string $oldPassword = null;
+	protected string $oldPassword;
+	protected ?string $username = null;
 
 	/**
 	 * Determines if the user is authorized to make this request.
@@ -51,8 +50,9 @@ class ChangeLoginRequest extends BaseApiRequest implements HasUsername, HasPassw
 		$this->password = $values[HasPassword::PASSWORD_ATTRIBUTE];
 		$this->oldPassword = $values[self::OLD_PASSWORD_ATTRIBUTE];
 
+		// We do not allow '' as a username. So any such input will be casted to null
 		if (array_key_exists(HasUsername::USERNAME_ATTRIBUTE, $values)) {
-			$this->username = $values[HasUsername::USERNAME_ATTRIBUTE];
+			$this->username = trim($values[HasUsername::USERNAME_ATTRIBUTE]);
 			$this->username = $this->username === '' ? null : $this->username;
 		} else {
 			$this->username = null;
@@ -60,7 +60,7 @@ class ChangeLoginRequest extends BaseApiRequest implements HasUsername, HasPassw
 	}
 
 	/**
-	 * Returns the previous (old) password, if available.
+	 * Returns the previous password.
 	 *
 	 * See {@link HasPasswordTrait::password()} for an explanation of the
 	 * semantic difference between the return values `null` and `''`.
@@ -70,5 +70,16 @@ class ChangeLoginRequest extends BaseApiRequest implements HasUsername, HasPassw
 	public function oldPassword(): ?string
 	{
 		return $this->oldPassword;
+	}
+
+	/**
+	 * Return the new username chosen.
+	 * if Username is null, this means that the user does not want to update it.
+	 *
+	 * @return ?string
+	 */
+	public function username(): ?string
+	{
+		return $this->username;
 	}
 }

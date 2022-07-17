@@ -335,7 +335,6 @@ final class Polish implements Language
 			'LOGIN_CREATE' => 'Utwórz login',
 
 			'PASSWORD_TITLE' => 'Wpisz aktualne dane dostępowe:',
-			'USERNAME_CURRENT' => 'Aktualna nazwa użytkownika',
 			'PASSWORD_CURRENT' => 'Aktualne hasło',
 			'PASSWORD_TEXT' => 'Twoja nazwa użytkownika oraz hasło zostaną zmienione na następujące:',
 			'PASSWORD_CHANGE' => 'Zmień login',

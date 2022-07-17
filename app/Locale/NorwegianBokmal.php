@@ -335,7 +335,6 @@ final class NorwegianBokmal implements Language
 			'LOGIN_CREATE' => 'Lag Innlogging',
 
 			'PASSWORD_TITLE' => 'Fyll inn ditt nåværende passord:',
-			'USERNAME_CURRENT' => 'Nåværende Brukernavn',
 			'PASSWORD_CURRENT' => 'Nåværende Passord',
 			'PASSWORD_TEXT' => 'Brukernavnet og passordet ditt vil bli endret til det følgende:',
 			'PASSWORD_CHANGE' => 'Lagre brukernavn og passord',

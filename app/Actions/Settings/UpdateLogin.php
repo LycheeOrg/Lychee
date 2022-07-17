@@ -16,7 +16,7 @@ use InvalidArgumentException;
 class UpdateLogin
 {
 	/**
-	 * Changes and modifies logins of a user.
+	 * Changes and modifies login parameters of CURRENT user (may be admin).
 	 *
 	 * @param string|null $username
 	 * @param string      $password
