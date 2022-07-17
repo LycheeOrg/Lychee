@@ -23,17 +23,21 @@ class SettingsTest extends TestCase
 	{
 		AccessControl::log_as_id(0);
 
-		// correct test
-		$response = $this->postJson('/api/Settings::setSorting',
+		$this->postJson('/api/Settings::setSorting',
 		[
 			SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
 			SetSortingRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
 			SetSortingRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
 			SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
-		]);
-		$response->assertStatus(204);
+		])->assertStatus(204);
 
-		// test with wrong album column
+		AccessControl::logout();
+	}
+
+	public function testSetSortingWithIllegalAlbumAttribute(): void
+	{
+		AccessControl::log_as_id(0);
+
 		$response = $this->postJson('/api/Settings::setSorting',
 			[
 				SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => '123',
@@ -45,7 +49,13 @@ class SettingsTest extends TestCase
 		$response->assertStatus(422);
 		$response->assertSee('sorting albums column must be null or one out of');
 
-		// test with wrong photo column
+		AccessControl::logout();
+	}
+
+	public function testSetSortingWithIllegalPhotoAttribute(): void
+	{
+		AccessControl::log_as_id(0);
+
 		$response = $this->postJson('/api/Settings::setSorting',
 			[
 				SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
@@ -57,7 +67,13 @@ class SettingsTest extends TestCase
 		$response->assertStatus(422);
 		$response->assertSee('sorting photos column must be null or one out of');
 
-		// test with wrong order
+		AccessControl::logout();
+	}
+
+	public function testSetSortingWithUnknownOrder(): void
+	{
+		AccessControl::log_as_id(0);
+
 		$response = $this->postJson('/api/Settings::setSorting',
 			[
 				SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
