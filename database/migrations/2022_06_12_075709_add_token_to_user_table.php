@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Configs;
-use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -18,14 +17,11 @@ class AddTokenToUserTable extends Migration
 	 */
 	public function up(): void
 	{
-		$oldApiKey = Configs::where('key', '=', 'api_key')->first()->value;
 		Configs::where('key', '=', 'api_key')->delete();
 
 		Schema::table('users', function (Blueprint $table) {
 			$table->char('token', 100)->after('email')->default('');
 		});
-
-		User::where('id', '=', '0')->update(['token' => $oldApiKey]);
 	}
 
 	/**
@@ -38,7 +34,7 @@ class AddTokenToUserTable extends Migration
 		DB::table('configs')->insert([
 			[
 				'key' => 'api_key',
-				'value' => User::query()->findOrFail(0)->token,
+				'value' => '',
 				'confidentiality' => 3,
 				'cat' => 'Admin',
 			],
