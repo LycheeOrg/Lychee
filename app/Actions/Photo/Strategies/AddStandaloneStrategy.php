@@ -193,11 +193,13 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		$absolutePath = $this->sourceFile->getAbsolutePath();
 		// If we are importing via symlink, we don't actually overwrite
 		// the source, but we still need to fix the dimensions.
-		$this->imageHandler->autoRotate(
+		$rotation = $this->imageHandler->autoRotate(
 			$absolutePath,
 			$orientation,
 			$this->parameters->importMode->shallImportViaSymlink()
 		);
+		$this->parameters->exifInfo->width = $rotation['width'];
+		$this->parameters->exifInfo->height = $rotation['height'];
 
 		// stat info (filesize, access mode, etc.) are cached by PHP to avoid
 		// costly I/O calls.
