@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "afa9a0a7b9aaaa2f077965f4b6159881",
+    "content-hash": "b952956069f0e3c24317e3035f7990d5",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -2701,16 +2701,16 @@
         },
         {
             "name": "lychee-org/php-exif",
-            "version": "v0.7.8",
+            "version": "v0.7.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/php-exif.git",
-                "reference": "f908413caefcd3d0a4224dfb845b7c9e60d14635"
+                "reference": "ef77c3767a57ca6792efc19e389642d3d8844958"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/f908413caefcd3d0a4224dfb845b7c9e60d14635",
-                "reference": "f908413caefcd3d0a4224dfb845b7c9e60d14635",
+                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/ef77c3767a57ca6792efc19e389642d3d8844958",
+                "reference": "ef77c3767a57ca6792efc19e389642d3d8844958",
                 "shasum": ""
             },
             "require": {
@@ -2767,9 +2767,9 @@
             ],
             "support": {
                 "issues": "https://github.com/LycheeOrg/php-exif/issues",
-                "source": "https://github.com/LycheeOrg/php-exif/tree/v0.7.8"
+                "source": "https://github.com/LycheeOrg/php-exif/tree/v0.7.9"
             },
-            "time": "2022-07-06T16:12:00+00:00"
+            "time": "2022-07-18T03:45:38+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
