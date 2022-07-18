@@ -9,6 +9,7 @@ use App\Contracts\LycheeException;
 use App\Exceptions\VersionControlException;
 use App\Legacy\Legacy;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
 
@@ -118,16 +119,14 @@ class UpdateController extends Controller
 	 * The whole code around installation/upgrade/migration should
 	 * thoroughly be revised an refactored.
 	 */
-	public function migrate(Request $request): View
+	public function migrate(Request $request): View|Response
 	{
-		$canExecute = Authorization::isAdmin() || Authorization::loginAsAdminIfNotRegistered();
+		$isLoggedIn = Authorization::check();
+		$isLoggedIn = $isLoggedIn || Authorization::loginAsAdminIfNotRegistered();
+		$isLoggedIn = $isLoggedIn || Legacy::loginAsAdmin($request->input('username', ''), $request->input('password', ''), $request->ip());
+		$isLoggedIn = $isLoggedIn || Authorization::loginAs($request->input('username', ''), $request->input('password', ''), $request->ip());
 
-		if (!$canExecute && !Legacy::loginAsAdmin($request['username'] ?? '', $request['password'] ?? '', $request->ip())) {
-			Authorization::loginAs($request['username'] ?? '', $request['password'] ?? '', $request->ip());
-			$canExecute = Authorization::isAdmin();
-		}
-
-		if ($canExecute) {
+		if ($isLoggedIn && Authorization::isAdmin()) {
 			$output = [];
 			$this->applyUpdate->migrate($output);
 			$this->applyUpdate->filter($output);
@@ -137,8 +136,8 @@ class UpdateController extends Controller
 			}
 
 			return view('update.results', ['code' => '200', 'message' => 'Migration results', 'output' => $output]);
-		} else {
-			return view('update.error', ['code' => '403', 'message' => 'Incorrect username or password']);
 		}
+
+		return response()->view('update.error', ['code' => '403', 'message' => 'Incorrect username or password'], 403);
 	}
 }

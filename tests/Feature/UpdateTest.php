@@ -13,7 +13,11 @@
 namespace Tests\Feature;
 
 use App\Auth\Authorization;
+use App\Http\Middleware\MigrationStatus;
 use App\Models\Configs;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use function PHPUnit\Framework\assertEquals;
 use PHPUnit\Framework\ExpectationFailedException;
 use Tests\TestCase;
 
@@ -71,5 +75,43 @@ class UpdateTest extends TestCase
 		Configs::set('allow_online_git_pull', $gitpull);
 
 		Authorization::logout();
+	}
+
+	/**
+	 * We check that we can apply migration.
+	 * This requires us to disable the MigrationStatus middleware otherwise
+	 * we will be thrown out all the time.
+	 */
+	public function testApplyMigration()
+	{
+		// Prepare for test: we need to make sure there an admin user registered.
+		/** @var User $adminUser */
+		$adminUser = User::findOrFail(0);
+		$login = $adminUser->username;
+		$pw = $adminUser->password;
+		$adminUser->username = Hash::make('test_login');
+		$adminUser->password = Hash::make('test_password');
+		$adminUser->save();
+
+		// We disable middlewares because they are not what we want to test here.
+		$this->withoutMiddleware();
+
+		// make sure we are logged out
+		Authorization::logout();
+		$response = $this->postJson('/migrate');
+		$response->assertForbidden();
+
+		$response = $this->postJson('/migrate', ['username' => 'test_login', 'password' => 'test_password']);
+		$response->assertOk();
+
+		// check that Legacy did change the username
+		$adminUser = User::findOrFail(0);
+		assertEquals('test_login', $adminUser->username);
+
+		// clean up
+		Authorization::logout();
+		$adminUser->username = $login;
+		$adminUser->password = $pw;
+		$adminUser->save();
 	}
 }

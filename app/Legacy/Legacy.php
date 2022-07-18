@@ -117,11 +117,11 @@ class Legacy
 	 * @param string $password
 	 * @param string $ip
 	 *
-	 * @return bool
+	 * @return bool true if login is successful
 	 */
 	public static function loginAsAdmin(string $username, string $password, string $ip): bool
 	{
-		/** @var User $adminUser */
+		/** @var User|null $adminUser */
 		$adminUser = User::query()->find(0);
 		// findOrFail could be used, but we just want to make sure to handle the cases where that user in not in the DB even though it should not happen.
 
