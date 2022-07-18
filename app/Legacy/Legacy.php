@@ -111,6 +111,8 @@ class Legacy
 	 * Given a username, password and ip (for logging), try to log the user as admin.
 	 * Returns true if succeeded, false if failed.
 	 *
+	 * Note that
+	 *
 	 * @param string $username
 	 * @param string $password
 	 * @param string $ip
@@ -120,9 +122,11 @@ class Legacy
 	public static function loginAsAdmin(string $username, string $password, string $ip): bool
 	{
 		/** @var User $adminUser */
-		$adminUser = User::query()->findOrFail(0);
-		// Admin User exist, so we check against it.
-		if (Hash::check($username, $adminUser->username) && Hash::check($password, $adminUser->password)) {
+		$adminUser = User::query()->find(0);
+		// findOrFail could be used, but we just want to make sure to handle the cases where that user in not in the DB even though it should not happen.
+
+		// Admin User exist and we check agains it, so we check against it.
+		if ($adminUser !== null && Hash::check($username, $adminUser->username) && Hash::check($password, $adminUser->password)) {
 			Auth::login($adminUser);
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
 
