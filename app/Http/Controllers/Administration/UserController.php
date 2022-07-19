@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Administration;
 
 use App\Actions\User\Create;
 use App\Actions\User\Save;
-use App\Auth\Authorization;
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
@@ -17,6 +16,7 @@ use App\Http\Requests\User\SetUserSettingsRequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -104,7 +104,7 @@ class UserController extends Controller
 	public function setEmail(SetEmailRequest $request): void
 	{
 		try {
-			$user = Authorization::userOrFail();
+			$user = Auth::authenticate();
 			$user->email = $request->email();
 
 			if ($request->email() === null) {
@@ -127,7 +127,7 @@ class UserController extends Controller
 	public function getEmail(): array
 	{
 		return [
-			'email' => Authorization::userOrFail()->email,
+			'email' => Auth::authenticate()->email,
 		];
 	}
 }

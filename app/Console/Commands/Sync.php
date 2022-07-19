@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Actions\Import\Exec;
 use App\Actions\Photo\Strategies\ImportMode;
-use App\Auth\Authorization;
 use App\Contracts\ExternalLycheeException;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\UnexpectedException;
@@ -12,6 +11,7 @@ use App\Models\Album;
 use App\Models\Configs;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Auth;
 use function Safe\sprintf;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
@@ -110,7 +110,7 @@ class Sync extends Command
 				0
 			);
 
-			Authorization::loginUsingId($owner_id);
+			Auth::loginUsingId($owner_id);
 
 			$this->info('Start syncing.');
 

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Actions\Photo\Delete;
-use App\Auth\Authorization;
 use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
@@ -28,6 +27,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use function Safe\preg_match;
 
@@ -336,7 +336,7 @@ class Photo extends Model implements HasRandomID
 	protected function getIsDownloadableAttribute(): bool
 	{
 		return
-			Authorization::isCurrentOrAdmin($this->owner_id) ||
+			Gate::check('own', $this) ||
 			($this->album_id !== null && $this->album->is_downloadable) ||
 			($this->album_id === null && Configs::getValueAsBool('downloadable'));
 	}
@@ -356,7 +356,7 @@ class Photo extends Model implements HasRandomID
 		$default = Configs::getValueAsBool('share_button_visible');
 
 		return
-			Authorization::isCurrentOrAdmin($this->owner_id) ||
+			Gate::check('own', $this) ||
 			($this->album_id !== null && $this->album->is_share_button_visible) ||
 			($this->album_id === null && $default);
 	}
@@ -441,7 +441,7 @@ class Photo extends Model implements HasRandomID
 		// The decision logic here is a merge of three formerly independent
 		// (and slightly different) approaches
 		if (
-			!Authorization::isCurrentOrAdmin($this->owner_id) &&
+			!Gate::check('own', $this) &&
 			!$this->isVideo() &&
 			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null) &&
 			(

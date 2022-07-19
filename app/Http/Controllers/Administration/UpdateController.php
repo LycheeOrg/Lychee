@@ -11,6 +11,9 @@ use App\Legacy\Legacy;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 /**
@@ -126,19 +129,20 @@ class UpdateController extends Controller
 		// 2. if not, we check if the admin user is registered (if not login in such case)
 		// 3. We have an admin user set up, try to login with Legacy method: hash(username) + hash(password).
 		// 4. if Legacy login failed, try to login the normal way.
-		$isLoggedIn = Authorization::check();
+		$isLoggedIn = Auth::check();
 		$isLoggedIn = $isLoggedIn || Authorization::loginAsAdminIfNotRegistered();
 		$isLoggedIn = $isLoggedIn || Legacy::loginAsAdmin($request->input('username', ''), $request->input('password', ''), $request->ip());
 		$isLoggedIn = $isLoggedIn || Authorization::loginAs($request->input('username', ''), $request->input('password', ''), $request->ip());
 
 		// Check if logged in AND is admin
-		if ($isLoggedIn && Authorization::isAdmin()) {
+		if ($isLoggedIn && Gate::check('admin')) {
 			$output = [];
 			$this->applyUpdate->migrate($output);
 			$this->applyUpdate->filter($output);
 
 			if (Authorization::isAdminNotRegistered()) {
-				Authorization::logout();
+				Auth::logout();
+				Session::flush();
 			}
 
 			return view('update.results', ['code' => '200', 'message' => 'Migration results', 'output' => $output]);

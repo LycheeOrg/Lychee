@@ -12,7 +12,6 @@
 
 namespace Tests\Feature;
 
-use App\Auth\Authorization;
 use App\Models\Configs;
 use App\Models\Photo;
 use Carbon\Carbon;
@@ -45,12 +44,13 @@ class PhotosAddTest extends TestCase
 		Configs::set('has_ffmpeg', '2');
 		$this->hasFFmpeg = Configs::hasFFmpeg();
 
-		Authorization::loginUsingId(0);
+		Auth::loginUsingId(0);
 	}
 
 	public function tearDown(): void
 	{
-		Authorization::logout();
+		Auth::logout();
+		Session::flush();
 
 		Configs::set('has_exiftool', $this->hasExifToolsInit);
 		Configs::set('has_ffmpeg', $this->hasFFmpegInit);

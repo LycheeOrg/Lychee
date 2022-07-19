@@ -12,7 +12,6 @@
 
 namespace Tests\Feature;
 
-use App\Auth\Authorization;
 use App\Models\Configs;
 use Tests\TestCase;
 
@@ -28,7 +27,7 @@ class DiagnosticsTest extends TestCase
 		$response = $this->get('/Diagnostics');
 		$response->assertOk(); // code 200 something
 
-		Authorization::loginUsingId(0);
+		Auth::loginUsingId(0);
 
 		$response = $this->get('/Diagnostics');
 		$response->assertOk(); // code 200 something
@@ -43,6 +42,7 @@ class DiagnosticsTest extends TestCase
 
 		Configs::query()->where('key', '=', 'lossless_optimization')->update(['value' => '1']);
 
-		Authorization::logout();
+		Auth::logout();
+		Session::flush();
 	}
 }

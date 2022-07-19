@@ -12,7 +12,6 @@
 
 namespace Tests\Feature;
 
-use App\Auth\Authorization;
 use App\Models\Configs;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\TestCase;
@@ -26,7 +25,7 @@ class PhotosRotateTest extends TestCase
 	{
 		$photos_tests = new PhotosUnitTest($this);
 
-		Authorization::loginUsingId(0);
+		Auth::loginUsingId(0);
 
 		$id = $photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
@@ -122,6 +121,7 @@ class PhotosRotateTest extends TestCase
 		// reset
 		Configs::set('editor_enabled', $editor_enabled_value);
 
-		Authorization::logout();
+		Auth::logout();
+		Session::flush();
 	}
 }

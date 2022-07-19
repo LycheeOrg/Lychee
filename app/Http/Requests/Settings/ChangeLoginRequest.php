@@ -10,6 +10,8 @@ use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 {
@@ -25,9 +27,9 @@ class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 	 */
 	public function authorize(): bool
 	{
-		return Authorization::check() && (
-			Authorization::isAdmin() ||
-			!Authorization::userOrFail()->is_locked
+		return Auth::check() && (
+			Gate::check('admin') ||
+			!Auth::authenticate()->is_locked
 		);
 	}
 

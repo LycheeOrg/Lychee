@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Auth\Authorization;
 use App\Exceptions\ModelDBException;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
@@ -18,6 +17,7 @@ use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\User.
@@ -157,7 +157,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	public function delete(): bool
 	{
 		$now = Carbon::now();
-		$newOwnerID = Authorization::idOrFail();
+		$newOwnerID = Auth::authenticate()->id;
 
 		/** @var HasMany[] $ownershipRelations */
 		$ownershipRelations = [$this->photos(), $this->albums()];

@@ -12,7 +12,6 @@
 
 namespace Tests\Feature;
 
-use App\Auth\Authorization;
 use App\Models\Configs;
 use Carbon\Carbon;
 use Tests\Feature\Lib\AlbumsUnitTest;
@@ -30,12 +29,13 @@ class PhotosOperationsTest extends TestCase
 		$this->photos_tests = new PhotosUnitTest($this);
 		$this->albums_tests = new AlbumsUnitTest($this);
 
-		Authorization::loginUsingId(0);
+		Auth::loginUsingId(0);
 	}
 
 	public function tearDown(): void
 	{
-		Authorization::logout();
+		Auth::logout();
+		Session::flush();
 		parent::tearDown();
 	}
 

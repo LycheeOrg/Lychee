@@ -12,7 +12,6 @@
 
 namespace Tests\Feature;
 
-use App\Auth\Authorization;
 use App\Models\Logs;
 use Tests\TestCase;
 
@@ -29,14 +28,15 @@ class LogsTest extends TestCase
 		$response->assertForbidden();
 
 		// set user as admin
-		Authorization::loginUsingId(0);
+		Auth::loginUsingId(0);
 
 		Logs::notice(__METHOD__, __LINE__, 'test');
 		$response = $this->get('/Logs');
 		$response->assertOk();
 		$response->assertViewIs('logs.list');
 
-		Authorization::logout();
+		Auth::logout();
+		Session::flush();
 	}
 
 	public function testApiLogs(): void
@@ -54,7 +54,7 @@ class LogsTest extends TestCase
 		$response->assertForbidden();
 
 		// set user as admin
-		Authorization::loginUsingId(0);
+		Auth::loginUsingId(0);
 
 		$response = $this->postJson('/api/Logs::clearNoise');
 		$response->assertNoContent();
@@ -66,6 +66,7 @@ class LogsTest extends TestCase
 		$response->assertOk();
 		$response->assertSeeText('Everything looks fine, Lychee has not reported any problems!');
 
-		Authorization::logout();
+		Auth::logout();
+		Session::flush();
 	}
 }

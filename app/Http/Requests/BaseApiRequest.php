@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
@@ -121,7 +122,7 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function failedAuthorization(): void
 	{
-		throw Authorization::check() ? new UnauthorizedException() : new UnauthenticatedException();
+		throw Auth::check() ? new UnauthorizedException() : new UnauthenticatedException();
 	}
 
 	/**

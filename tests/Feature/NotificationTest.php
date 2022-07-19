@@ -12,7 +12,6 @@
 
 namespace Tests\Feature;
 
-use App\Auth\Authorization;
 use App\Mail\PhotosAdded;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Mail;
@@ -26,7 +25,7 @@ class NotificationTest extends TestCase
 {
 	public function testNotificationSetting(): void
 	{
-		Authorization::loginUsingId(0);
+		Auth::loginUsingId(0);
 
 		// save initial value
 		$init_config_value = Configs::getValue('new_photos_notification');
@@ -47,7 +46,7 @@ class NotificationTest extends TestCase
 		$sessions_test = new SessionUnitTest($this);
 
 		// add email to admin
-		Authorization::loginUsingId(0);
+		Auth::loginUsingId(0);
 		$users_test->update_email('test@test.com');
 
 		// add new user
@@ -113,7 +112,7 @@ class NotificationTest extends TestCase
 		$sessions_test = new SessionUnitTest($this);
 
 		// remove user, email & notifications
-		Authorization::loginUsingId(0);
+		Auth::loginUsingId(0);
 
 		$users_test->update_email(null);
 

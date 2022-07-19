@@ -12,11 +12,12 @@
 
 namespace Tests\Feature;
 
-use App\Auth\Authorization;
 use App\Http\Middleware\MigrationStatus;
 use App\Models\Configs;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use function PHPUnit\Framework\assertEquals;
 use PHPUnit\Framework\ExpectationFailedException;
 use Tests\TestCase;
@@ -39,7 +40,7 @@ class UpdateTest extends TestCase
 	{
 		$gitpull = Configs::getValue('allow_online_git_pull', '0');
 
-		Authorization::loginUsingId(0);
+		Auth::loginUsingId(0);
 
 		Configs::set('allow_online_git_pull', '0');
 		$response = $this->postJson('/api/Update::apply');
@@ -74,7 +75,8 @@ class UpdateTest extends TestCase
 
 		Configs::set('allow_online_git_pull', $gitpull);
 
-		Authorization::logout();
+		Auth::logout();
+		Session::flush();
 	}
 
 	/**
@@ -97,7 +99,8 @@ class UpdateTest extends TestCase
 		$this->withoutMiddleware();
 
 		// make sure we are logged out
-		Authorization::logout();
+		Auth::logout();
+		Session::flush();
 		$response = $this->postJson('/migrate');
 		$response->assertForbidden();
 
@@ -109,7 +112,8 @@ class UpdateTest extends TestCase
 		assertEquals('test_login', $adminUser->username);
 
 		// clean up
-		Authorization::logout();
+		Auth::logout();
+		Session::flush();
 		$adminUser->username = $login;
 		$adminUser->password = $pw;
 		$adminUser->save();

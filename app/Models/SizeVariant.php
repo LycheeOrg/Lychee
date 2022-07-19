@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Actions\SizeVariant\Delete;
-use App\Auth\Authorization;
 use App\Casts\MustNotSetCast;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
@@ -19,6 +18,7 @@ use App\Relations\HasManyBidirectionally;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Adapter\Local;
 
@@ -153,7 +153,7 @@ class SizeVariant extends Model
 	public function getUrlAttribute(): string
 	{
 		if (
-			Authorization::isAdmin() && !Configs::getValueAsBool('SL_for_admin') ||
+			Gate::check('admin') && !Configs::getValueAsBool('SL_for_admin') ||
 			!Configs::getValueAsBool('SL_enable')
 		) {
 			return Storage::url($this->short_path);

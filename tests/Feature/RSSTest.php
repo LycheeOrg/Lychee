@@ -12,7 +12,6 @@
 
 namespace Tests\Feature;
 
-use App\Auth\Authorization;
 use App\Models\Configs;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
@@ -56,7 +55,7 @@ class RSSTest extends TestCase
 		$albums_tests = new AlbumsUnitTest($this);
 
 		// log as admin
-		Authorization::loginUsingId(0);
+		Auth::loginUsingId(0);
 
 		// create an album
 		$albumID = $albums_tests->add(null, 'test_album')->offsetGet('id');
@@ -89,6 +88,7 @@ class RSSTest extends TestCase
 		Configs::set('Mod_Frame', $init_config_value);
 		Configs::set('full_photo', $init_full_photo);
 
-		Authorization::logout();
+		Auth::logout();
+		Session::flush();
 	}
 }
