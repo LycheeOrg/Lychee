@@ -32,6 +32,7 @@ class Kernel extends HttpKernel
 	 */
 	protected $middlewareGroups = [
 		'web' => [
+			'installation:complete',
 			'accept_content_type:html',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
 			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
@@ -93,6 +94,8 @@ class Kernel extends HttpKernel
 	 * @var array<string, string>
 	 */
 	protected $routeMiddleware = [
+		'auth' => \App\Http\Middleware\Authenticate::class,
+		'can' => \Illuminate\Auth\Middleware\Authorize::class,
 		'admin' => \App\Http\Middleware\AdminCheck::class,
 		'installation' => \App\Http\Middleware\InstallationStatus::class,
 		'migration' => \App\Http\Middleware\MigrationStatus::class,

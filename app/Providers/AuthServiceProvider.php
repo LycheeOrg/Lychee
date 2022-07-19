@@ -28,8 +28,8 @@ class AuthServiceProvider extends ServiceProvider
 	{
 		$this->registerPolicies();
 
-		Gate::define('admin', function (?User $user) {
-			return optional($user)->id === 0;
+		Gate::define('admin', function (User $user) {
+			return $user->id === 0;
 		});
 
 		Gate::define('can-upload', function (?User $user) {
