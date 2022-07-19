@@ -145,7 +145,9 @@ class SessionController extends Controller
 			return;
 		}
 
-		if (Authorization::loginAs($request->username(), $request->password(), $request->ip())) {
+		if (Auth::attempt(['username' => $request->username(), 'password' => $request->password()])) {
+			Logs::notice(__METHOD__, __LINE__, 'User (' . $request->username() . ') has logged in from ' . $request->ip());
+
 			return;
 		}
 

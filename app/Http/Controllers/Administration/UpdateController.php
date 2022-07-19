@@ -132,7 +132,7 @@ class UpdateController extends Controller
 		$isLoggedIn = Auth::check();
 		$isLoggedIn = $isLoggedIn || Authorization::loginAsAdminIfNotRegistered();
 		$isLoggedIn = $isLoggedIn || Legacy::loginAsAdmin($request->input('username', ''), $request->input('password', ''), $request->ip());
-		$isLoggedIn = $isLoggedIn || Authorization::loginAs($request->input('username', ''), $request->input('password', ''), $request->ip());
+		$isLoggedIn = $isLoggedIn || Auth::attempt(['username' => $request->input('username', ''), 'password' => $request->input('password', '')]);
 
 		// Check if logged in AND is admin
 		if ($isLoggedIn && Gate::check('admin')) {

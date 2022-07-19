@@ -3,10 +3,8 @@
 namespace App\Auth;
 
 use App\Exceptions\ModelDBException;
-use App\Models\Logs;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class Authorization
 {
@@ -46,32 +44,6 @@ class Authorization
 			/** @var User|null $adminUser */
 			$adminUser = User::query()->find(0);
 			Auth::login($adminUser);
-		}
-
-		return false;
-	}
-
-	/**
-	 * Given a username, password and ip (for logging), try to log the user.
-	 * Returns true if succeeded, false if failed.
-	 *
-	 * @param string $username
-	 * @param string $password
-	 * @param string $ip
-	 *
-	 * @return bool
-	 */
-	public static function loginAs(string $username, string $password, string $ip): bool
-	{
-		// We select the NON ADMIN user
-		/** @var User|null $user */
-		$user = User::query()->where('username', '=', $username)->first();
-
-		if ($user !== null && Hash::check($password, $user->password)) {
-			Auth::login($user);
-			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
-
-			return true;
 		}
 
 		return false;
