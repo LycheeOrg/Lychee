@@ -14,6 +14,7 @@ namespace Tests\Feature;
 
 use App\Auth\Authorization;
 use App\Models\Configs;
+use Illuminate\Support\Facades\Auth;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\SessionUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
@@ -120,7 +121,7 @@ class UsersTest extends TestCase
 		 */
 
 		// 1
-		Authorization::loginUsingId(0);
+		Auth::loginUsingId(0);
 
 		// 2
 		$users_test->add('test_abcd', 'password_abcd', true, true);
@@ -172,7 +173,7 @@ class UsersTest extends TestCase
 		$sessions_test->logout();
 
 		// 15
-		Authorization::loginUsingId(0);
+		Auth::loginUsingId(0);
 
 		// 16
 		$users_test->save($id, 'test_abcde', 'password_testing', false, false);
@@ -215,7 +216,7 @@ class UsersTest extends TestCase
 		$sessions_test->logout();
 
 		// 29
-		Authorization::loginUsingId(0);
+		Auth::loginUsingId(0);
 
 		// 30
 		$users_test->delete($id);
@@ -231,7 +232,7 @@ class UsersTest extends TestCase
 		$sessions_test->logout();
 
 		// 32
-		Authorization::loginUsingId(0);
+		Auth::loginUsingId(0);
 
 		$configs = Configs::get();
 		$store_new_photos_notification = $configs['new_photos_notification'];

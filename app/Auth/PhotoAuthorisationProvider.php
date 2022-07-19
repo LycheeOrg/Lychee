@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class PhotoAuthorisationProvider
 {
@@ -49,11 +50,11 @@ class PhotoAuthorisationProvider
 	{
 		$this->prepareModelQueryOrFail($query, false, true, true);
 
-		if (Authorization::isAdmin()) {
+		if (Gate::check('admin')) {
 			return $query;
 		}
 
-		$userId = Authorization::idOrNull();
+		$userId = Auth::id();
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
@@ -84,7 +85,7 @@ class PhotoAuthorisationProvider
 	{
 		return
 			$photo === null ||
-			Authorization::isCurrentOrAdmin($photo->owner_id) ||
+			Gate::check('own', $photo) ||
 			$photo->is_public ||
 			$this->albumAuthorisationProvider->isAccessible($photo->album);
 	}
@@ -118,7 +119,7 @@ class PhotoAuthorisationProvider
 		}
 
 		return
-			Authorization::isCurrentOrAdmin($photo->owner_id) ||
+			Gate::check('own', $photo) ||
 			$photo->album?->is_downloadable ||
 			($photo->album === null && Configs::getValueAsBool('downloadable'));
 	}
@@ -167,7 +168,7 @@ class PhotoAuthorisationProvider
 				->where('albums._rgt', '<=', $origin->_rgt);
 		}
 
-		if (Authorization::isAdmin()) {
+		if (Gate::check('admin')) {
 			return $query;
 		} else {
 			return $query->where(function (Builder $query) use ($origin) {
@@ -216,7 +217,7 @@ class PhotoAuthorisationProvider
 	 */
 	public function appendSearchabilityConditions(BaseBuilder $query, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
 	{
-		$userId = Authorization::idOrNull();
+		$userId = Auth::id();
 		$maySearchPublic = !Configs::getValueAsBool('public_photos_hidden');
 
 		try {
@@ -267,7 +268,7 @@ class PhotoAuthorisationProvider
 	 */
 	public function isEditable(Photo $photo): bool
 	{
-		return Authorization::isCurrentOrAdmin($photo->owner_id);
+		return Gate::check('own', $photo);
 	}
 
 	/**
@@ -295,10 +296,10 @@ class PhotoAuthorisationProvider
 			return false;
 		}
 
-		if (Authorization::isAdmin()) {
+		if (Gate::check('admin')) {
 			return true;
 		}
-		$userId = Authorization::idOrFail();
+		$userId = Auth::authenticate()->id;
 
 		// Make IDs unique as otherwise count will fail.
 		$photoIDs = array_unique($photoIDs);
@@ -356,7 +357,7 @@ class PhotoAuthorisationProvider
 			$query->leftJoin('base_albums', 'base_albums.id', '=', 'photos.album_id');
 		}
 		if ($addShares) {
-			$userId = Authorization::idOrFail();
+			$userId = Auth::authenticate()->id;
 			$query->leftJoin(
 				'user_base_album',
 				function (JoinClause $join) use ($userId) {

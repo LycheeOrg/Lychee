@@ -12,12 +12,13 @@
 
 namespace Tests\Feature;
 
-use App\Auth\Authorization;
 use App\Models\Configs;
 use App\Models\Photo;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\TestCase;
@@ -45,12 +46,13 @@ class PhotosAddTest extends TestCase
 		Configs::set('has_ffmpeg', '2');
 		$this->hasFFmpeg = Configs::hasFFmpeg();
 
-		Authorization::loginUsingId(0);
+		Auth::loginUsingId(0);
 	}
 
 	public function tearDown(): void
 	{
-		Authorization::logout();
+		Auth::logout();
+		Session::flush();
 
 		Configs::set('has_exiftool', $this->hasExifToolsInit);
 		Configs::set('has_ffmpeg', $this->hasFFmpegInit);

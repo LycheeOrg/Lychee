@@ -18,7 +18,9 @@ use App\Models\Logs;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
 
 class SessionController extends Controller
@@ -64,8 +66,8 @@ class SessionController extends Controller
 		$return = [];
 
 		// Check if login credentials exist and login if they don't
-		if (Authorization::check() || Authorization::loginAsAdminIfNotRegistered()) {
-			if (Authorization::isAdmin()) {
+		if (Auth::check() || Authorization::loginAsAdminIfNotRegistered()) {
+			if (Gate::check('admin')) {
 				$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 				$return['admin'] = true;
 				$return['may_upload'] = true; // not necessary
@@ -73,7 +75,7 @@ class SessionController extends Controller
 				$return['config']['location'] = base_path('public/');
 			} else {
 				try {
-					$user = Authorization::userOrFail();
+					$user = Auth::authenticate();
 					$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 					$return['config'] = $this->configFunctions->public();
 					$return['is_locked'] = $user->is_locked;   // may user change their password?
@@ -143,7 +145,9 @@ class SessionController extends Controller
 			return;
 		}
 
-		if (Authorization::loginAs($request->username(), $request->password(), $request->ip())) {
+		if (Auth::attempt(['username' => $request->username(), 'password' => $request->password()])) {
+			Logs::notice(__METHOD__, __LINE__, 'User (' . $request->username() . ') has logged in from ' . $request->ip());
+
 			return;
 		}
 
@@ -160,6 +164,7 @@ class SessionController extends Controller
 	 */
 	public function logout(): void
 	{
-		Authorization::logout();
+		Auth::logout();
+		Session::flush();
 	}
 }

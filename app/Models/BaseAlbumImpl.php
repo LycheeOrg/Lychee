@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Auth\Authorization;
 use App\Contracts\HasRandomID;
 use App\DTO\PhotoSortingCriterion;
 use App\Models\Extensions\HasAttributesPatch;
@@ -16,6 +15,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class BaseAlbumImpl.
@@ -274,7 +274,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	public function toArray(): array
 	{
 		$result = parent::toArray();
-		if (Authorization::check()) {
+		if (Auth::check()) {
 			$result['owner_name'] = $this->owner->name();
 		}
 

@@ -2,7 +2,6 @@
 
 namespace App\Actions\Settings;
 
-use App\Auth\Authorization;
 use App\Exceptions\ConflictingPropertyException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
@@ -10,6 +9,7 @@ use App\Exceptions\UnauthenticatedException;
 use App\Models\Logs;
 use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use InvalidArgumentException;
 
@@ -35,7 +35,7 @@ class UpdateLogin
 	public function do(?string $username, string $password, string $oldPassword, string $ip): void
 	{
 		/** @var User $user */
-		$user = Authorization::userOrFail();
+		$user = Auth::authenticate();
 
 		if (!Hash::check($oldPassword, $user->password)) {
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change their identity from ' . $ip);

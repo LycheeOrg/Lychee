@@ -2,12 +2,12 @@
 
 namespace App\Actions\WebAuth;
 
-use App\Auth\Authorization;
+use Illuminate\Support\Facades\Auth;
 
 class Delete
 {
 	public function do(string|array $ids): void
 	{
-		Authorization::userOrFail()->removeCredential($ids);
+		Auth::authenticate()->removeCredential($ids);
 	}
 }

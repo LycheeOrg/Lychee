@@ -49,3 +49,5 @@ parameters:
 
 		- '#Property .* \(App\\Models\\.*(\|null)?\) does not accept (Illuminate\\Database\\Eloquent\\Collection<Illuminate\\Database\\Eloquent\\Model>\|)?Illuminate\\Database\\Eloquent\\Model(\|null)?.#'
 		- '#Property .* \(Illuminate\\Database\\Eloquent\\Collection<App\\Models\\.*>\) does not accept Illuminate\\Database\\Eloquent\\Collection<Illuminate\\Database\\Eloquent\\Model>(\|Illuminate\\Database\\Eloquent\\Model)?.#'
+
+		- '#Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable::\$.*.#'

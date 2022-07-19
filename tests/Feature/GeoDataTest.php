@@ -12,9 +12,10 @@
 
 namespace Tests\Feature;
 
-use App\Auth\Authorization;
 use App\Models\Configs;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\TestCase;
@@ -29,7 +30,7 @@ class GeoDataTest extends TestCase
 		$photos_tests = new PhotosUnitTest($this);
 		$albums_tests = new AlbumsUnitTest($this);
 
-		Authorization::loginUsingId(0);
+		Auth::loginUsingId(0);
 
 		$id = $photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
@@ -132,6 +133,7 @@ class GeoDataTest extends TestCase
 		// reset
 		Configs::set('map_display', $map_display_value);
 
-		Authorization::logout();
+		Auth::logout();
+		Session::flush();
 	}
 }

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Administration;
 
 use App\Actions\Sharing\ListShare;
-use App\Auth\Authorization;
 use App\DTO\Shares;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnauthorizedException;
@@ -12,7 +11,9 @@ use App\Http\Requests\Sharing\SetSharingRequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class SharingController extends Controller
 {
@@ -30,11 +31,11 @@ class SharingController extends Controller
 	{
 		// Note: This test is part of the request validation for the other
 		// methods of this class.
-		if (!Authorization::canUpload()) {
+		if (!Gate::any('admin', 'can-upload')) {
 			throw new UnauthorizedException('Upload privilege required');
 		}
 
-		return $listShare->do(Authorization::idOrFail());
+		return $listShare->do(Auth::authenticate()->id);
 	}
 
 	/**
