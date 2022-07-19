@@ -14,6 +14,8 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use DarkGhostHunter\Larapass\Eloquent\WebAuthnCredential;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
 
 class WebAuthTest extends TestCase

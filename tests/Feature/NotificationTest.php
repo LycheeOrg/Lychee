@@ -14,6 +14,7 @@ namespace Tests\Feature;
 
 use App\Mail\PhotosAdded;
 use App\Models\Configs;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;

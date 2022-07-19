@@ -13,6 +13,8 @@
 namespace Tests\Feature;
 
 use App\Models\Logs;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
 
 class LogsTest extends TestCase
