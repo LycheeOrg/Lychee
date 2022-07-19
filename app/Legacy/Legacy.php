@@ -111,7 +111,8 @@ class Legacy
 	 * Given a username, password and ip (for logging), try to log the user as admin.
 	 * Returns true if succeeded, false if failed.
 	 *
-	 * Note that
+	 * Note that this method will only be successful "once".
+	 * Upon success, the admin username is updated to a clear text value.
 	 *
 	 * @param string $username
 	 * @param string $password

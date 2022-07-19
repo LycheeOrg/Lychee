@@ -121,11 +121,19 @@ class UpdateController extends Controller
 	 */
 	public function migrate(Request $request): View|Response
 	{
+		// This conditional code makes use of lazy boolean evaluation: a || b does not execute b if a is true.
+		// 1. We check we are logged in
+		// 2. if not, if admin user is not registered (and login in such case)
+		// 3. We have an admin user set up, try to login with Legacy method: hash(username) + hash(password).
+		// 4. if we still have not logged in successfully, try to login the normal way.
+		//
+		// It is no important to be logged as admin as this point.
 		$isLoggedIn = Authorization::check();
 		$isLoggedIn = $isLoggedIn || Authorization::loginAsAdminIfNotRegistered();
 		$isLoggedIn = $isLoggedIn || Legacy::loginAsAdmin($request->input('username', ''), $request->input('password', ''), $request->ip());
 		$isLoggedIn = $isLoggedIn || Authorization::loginAs($request->input('username', ''), $request->input('password', ''), $request->ip());
 
+		// Check if logged in AND is admin
 		if ($isLoggedIn && Authorization::isAdmin()) {
 			$output = [];
 			$this->applyUpdate->migrate($output);
@@ -138,6 +146,7 @@ class UpdateController extends Controller
 			return view('update.results', ['code' => '200', 'message' => 'Migration results', 'output' => $output]);
 		}
 
+		// Rather than returning a view directly (which implies code 200, we use response in order to ensure code 403)
 		return response()->view('update.error', ['code' => '403', 'message' => 'Incorrect username or password'], 403);
 	}
 }
