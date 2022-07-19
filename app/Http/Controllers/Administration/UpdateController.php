@@ -122,12 +122,10 @@ class UpdateController extends Controller
 	public function migrate(Request $request): View|Response
 	{
 		// This conditional code makes use of lazy boolean evaluation: a || b does not execute b if a is true.
-		// 1. We check we are logged in
-		// 2. if not, if admin user is not registered (and login in such case)
+		// 1. We check if we are logged in
+		// 2. if not, we check if the admin user is registered (if not login in such case)
 		// 3. We have an admin user set up, try to login with Legacy method: hash(username) + hash(password).
-		// 4. if we still have not logged in successfully, try to login the normal way.
-		//
-		// It is no important to be logged as admin as this point.
+		// 4. if Legacy login failed, try to login the normal way.
 		$isLoggedIn = Authorization::check();
 		$isLoggedIn = $isLoggedIn || Authorization::loginAsAdminIfNotRegistered();
 		$isLoggedIn = $isLoggedIn || Legacy::loginAsAdmin($request->input('username', ''), $request->input('password', ''), $request->ip());
