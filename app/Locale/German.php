@@ -57,6 +57,7 @@ final class German implements Language
 			'RESET' => 'Zurücksetzen',
 			'DISABLE' => 'Deaktivieren',
 			'ENABLE' => 'Aktivieren',
+			'DISABLED' => 'deaktiviert',
 
 			'SAVE_RISK' => 'Änderungen speichern, ich kenne das Risiko!',
 

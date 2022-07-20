@@ -57,6 +57,7 @@ final class NorwegianBokmal implements Language
 			'RESET' => 'Reset',
 			'DISABLE' => 'Disable',
 			'ENABLE' => 'Enable',
+			'DISABLED' => 'disabled',
 
 			'SMART_ALBUMS' => 'Automatiske album',
 			'SHARED_ALBUMS' => 'Delte album',

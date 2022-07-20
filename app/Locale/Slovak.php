@@ -58,6 +58,7 @@ final class Slovak implements Language
 			'RESET' => 'Reset',
 			'DISABLE' => 'Disable',
 			'ENABLE' => 'Enable',
+			'DISABLED' => 'disabled',
 
 			'SMART_ALBUMS' => 'Inteligentné albumy',
 			'SHARED_ALBUMS' => 'Zdieľané albumy',

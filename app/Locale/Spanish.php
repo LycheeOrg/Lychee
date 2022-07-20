@@ -57,6 +57,7 @@ final class Spanish implements Language
 			'RESET' => 'Reset',
 			'DISABLE' => 'Disable',
 			'ENABLE' => 'Enable',
+			'DISABLED' => 'disabled',
 
 			'SMART_ALBUMS' => 'Álbumes inteligentes',
 			'SHARED_ALBUMS' => 'Álbumes compartidos',

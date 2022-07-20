@@ -57,6 +57,7 @@ final class ChineseSimplified implements Language
 			'RESET' => 'Reset',
 			'DISABLE' => 'Disable',
 			'ENABLE' => 'Enable',
+			'DISABLED' => 'disabled',
 
 			'SMART_ALBUMS' => '智能相册',
 			'SHARED_ALBUMS' => '已共享的相册',

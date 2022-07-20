@@ -57,6 +57,7 @@ final class Russian implements Language
 			'RESET' => 'Reset',
 			'DISABLE' => 'Disable',
 			'ENABLE' => 'Enable',
+			'DISABLED' => 'disabled',
 
 			'SMART_ALBUMS' => 'Метаальбомы',
 			'SHARED_ALBUMS' => 'Общие альбомы',

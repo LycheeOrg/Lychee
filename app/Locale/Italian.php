@@ -57,6 +57,7 @@ final class Italian implements Language
 			'RESET' => 'Reset',
 			'DISABLE' => 'Disable',
 			'ENABLE' => 'Enable',
+			'DISABLED' => 'disabled',
 
 			'SMART_ALBUMS' => 'Album smart',
 			'SHARED_ALBUMS' => 'Album condivisi',

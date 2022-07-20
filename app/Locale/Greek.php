@@ -57,6 +57,7 @@ final class Greek implements Language
 			'RESET' => 'Reset',
 			'DISABLE' => 'Disable',
 			'ENABLE' => 'Enable',
+			'DISABLED' => 'disabled',
 
 			'SMART_ALBUMS' => 'Έξυπνα λευκώματα',
 			'SHARED_ALBUMS' => 'Κοινόχρηστα λευκώματα',

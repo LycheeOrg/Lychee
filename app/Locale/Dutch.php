@@ -57,6 +57,7 @@ final class Dutch implements Language
 			'RESET' => 'Reset',
 			'DISABLE' => 'Disable',
 			'ENABLE' => 'Enable',
+			'DISABLED' => 'disabled',
 
 			'SMART_ALBUMS' => 'Slimme albums',
 			'SHARED_ALBUMS' => 'Shared albums',

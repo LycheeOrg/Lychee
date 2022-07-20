@@ -57,6 +57,7 @@ final class Vietnamese implements Language
 			'RESET' => 'Reset',
 			'DISABLE' => 'Disable',
 			'ENABLE' => 'Enable',
+			'DISABLED' => 'disabled',
 
 			'SMART_ALBUMS' => 'Những album thông minh',
 			'SHARED_ALBUMS' => 'Những album được chia sẻ',

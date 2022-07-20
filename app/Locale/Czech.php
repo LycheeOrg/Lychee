@@ -58,6 +58,7 @@ final class Czech implements Language
 			'RESET' => 'Reset',
 			'DISABLE' => 'Disable',
 			'ENABLE' => 'Enable',
+			'DISABLED' => 'disabled',
 
 			'SMART_ALBUMS' => 'Chytrá alba',
 			'SHARED_ALBUMS' => 'Sdílená alba',

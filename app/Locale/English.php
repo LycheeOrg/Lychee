@@ -57,6 +57,7 @@ final class English implements Language
 			'RESET' => 'Reset',
 			'DISABLE' => 'Disable',
 			'ENABLE' => 'Enable',
+			'DISABLED' => 'disabled',
 
 			'SMART_ALBUMS' => 'Smart albums',
 			'SHARED_ALBUMS' => 'Shared albums',

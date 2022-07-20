@@ -57,6 +57,7 @@ final class Portuguese implements Language
 			'RESET' => 'Reset',
 			'DISABLE' => 'Disable',
 			'ENABLE' => 'Enable',
+			'DISABLED' => 'disabled',
 
 			'SMART_ALBUMS' => 'Smart álbums',
 			'SHARED_ALBUMS' => 'Álbums partilhados',

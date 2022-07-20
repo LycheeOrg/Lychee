@@ -57,6 +57,7 @@ final class Polish implements Language
 			'RESET' => 'Reset',
 			'DISABLE' => 'Disable',
 			'ENABLE' => 'Enable',
+			'DISABLED' => 'disabled',
 
 			'SMART_ALBUMS' => 'Inteligentne albumy',
 			'SHARED_ALBUMS' => 'Udostępnione albumy',

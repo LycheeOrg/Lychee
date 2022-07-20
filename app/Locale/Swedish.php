@@ -57,6 +57,7 @@ final class Swedish implements Language
 			'RESET' => 'Reset',
 			'DISABLE' => 'Disable',
 			'ENABLE' => 'Enable',
+			'DISABLED' => 'disabled',
 
 			'SMART_ALBUMS' => 'Smarta album',
 			'SHARED_ALBUMS' => 'Shared albums',
