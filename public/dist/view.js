@@ -2681,6 +2681,7 @@ lychee.locale = {
 	DIAGNOSTICS_GET_SIZE: "Request space usage",
 	LOGS: "Show Logs",
 	CLEAN_LOGS: "Clean Noise",
+	CLEAR: "Clear",
 	SIGN_OUT: "Sign Out",
 	UPDATE_AVAILABLE: "Update available!",
 	MIGRATION_AVAILABLE: "Migration available!",
