@@ -44,6 +44,7 @@ final class Vietnamese implements Language
 			'DIAGNOSTICS_GET_SIZE' => 'Xem dung lượng đã dùng',
 			'LOGS' => 'Xem nhật ký thay đổi',
 			'CLEAN_LOGS' => 'Xóa bớt nhật ký',
+			'CLEAR' => 'Clear',
 			'SIGN_OUT' => 'Thoát',
 			'UPDATE_AVAILABLE' => 'Có phiên bản mới!',
 			'MIGRATION_AVAILABLE' => 'Có thể sang chuyển hệ thống được rồi!',
