@@ -26,7 +26,7 @@ class UserPolicy
 
 	/**
 	 * This policy gate is unused for now.
-	 * However it should later take care of checking whether current user as edit rights or not.
+	 * However it should later take care of checking whether current user has edit rights or not.
 	 *
 	 * @param User $user
 	 *
