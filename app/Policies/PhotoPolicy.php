@@ -25,6 +25,15 @@ class PhotoPolicy
 		}
 	}
 
+	/**
+	 * This gate policy ensures that the Photo is owned by current user.
+	 * Do note that in case of current user being admin, it will be skipped due to the before method.
+	 *
+	 * @param User|null $user
+	 * @param Photo     $photo
+	 *
+	 * @return bool
+	 */
 	public function own(?User $user, Photo $photo): bool
 	{
 		return $photo->owner_id === optional($user)->id;

@@ -24,13 +24,29 @@ class UserPolicy
 		}
 	}
 
+	/**
+	 * This policy gate is unused for now.
+	 * However it should later take care of checking whether current user as edit rights or not.
+	 *
+	 * @param User $user
+	 *
+	 * @return bool
+	 */
 	public function edit(User $user): bool
 	{
 		return !$user->is_locked;
 	}
 
+	/**
+	 * This policy gate is unsued for now.
+	 * However it should later be used to check if user has upload rights or not.
+	 *
+	 * @param User $user
+	 *
+	 * @return bool
+	 */
 	public function upload(User $user): bool
 	{
-		return !$user->may_upload;
+		return $user->may_upload;
 	}
 }

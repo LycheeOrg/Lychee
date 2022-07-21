@@ -25,6 +25,17 @@ class AlbumPolicy
 		}
 	}
 
+	/**
+	 * This gate policy ensures that the Album is owned by current user.
+	 * Do note that in case of current user being admin, it will be skipped due to the before method.
+	 *
+	 * TODO: Check if this is also used in TagAlbums and Smart albums
+	 *
+	 * @param User|null $user
+	 * @param Album     $album
+	 *
+	 * @return bool
+	 */
 	public function own(?User $user, Album $album): bool
 	{
 		return $album->owner_id === optional($user)->id;
