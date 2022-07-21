@@ -32,7 +32,7 @@ class Authorization
 	/**
 	 * TODO: Once the admin user registration is moved to the installation phase this methode can finally be removed.
 	 *
-	 * Login as admin temporarilly when unconfigured.
+	 * Login as admin temporarily when unconfigured.
 	 *
 	 * @return bool true of successful
 	 *
