@@ -53,7 +53,7 @@ class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 		$this->password = $values[HasPassword::PASSWORD_ATTRIBUTE];
 		$this->oldPassword = $values[self::OLD_PASSWORD_ATTRIBUTE];
 
-		// We do not allow '' as a username. So any such input will be casted to null
+		// We do not allow '' as a username. So any such input will be cast to null
 		if (array_key_exists(HasUsername::USERNAME_ATTRIBUTE, $values)) {
 			$this->username = trim($values[HasUsername::USERNAME_ATTRIBUTE]);
 			$this->username = $this->username === '' ? null : $this->username;

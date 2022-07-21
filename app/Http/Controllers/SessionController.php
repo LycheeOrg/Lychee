@@ -91,7 +91,6 @@ class SessionController extends Controller
 			// TODO: Refactor this. At least, rename the flag `login` to something more understandable, like `isAdminUserConfigured`, but rather re-factor the whole logic, i.e. creating the initial user should be part of the installation routine.
 			$return['config']['login'] = !Authorization::isAdminNotRegistered();
 			$return['config']['lang_available'] = Lang::get_lang_available();
-		// dd($return);
 		} else {
 			// Logged out
 			$return['config'] = $this->configFunctions->public();

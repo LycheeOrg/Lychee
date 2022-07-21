@@ -86,7 +86,7 @@ class UpdateTest extends TestCase
 	 */
 	public function testApplyMigration()
 	{
-		// Prepare for test: we need to make sure there an admin user registered.
+		// Prepare for test: we need to make sure there is an admin user registered.
 		/** @var User $adminUser */
 		$adminUser = User::findOrFail(0);
 		$login = $adminUser->username;

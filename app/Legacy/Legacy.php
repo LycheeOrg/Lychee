@@ -126,7 +126,7 @@ class Legacy
 		$adminUser = User::query()->find(0);
 		// findOrFail could be used, but we just want to make sure to handle the cases where that user in not in the DB even though it should not happen.
 
-		// Admin User exist and we check agains it, so we check against it.
+		// Admin User exists, so we check against it.
 		if ($adminUser !== null && Hash::check($username, $adminUser->username) && Hash::check($password, $adminUser->password)) {
 			Auth::login($adminUser);
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
