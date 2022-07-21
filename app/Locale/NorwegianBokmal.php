@@ -44,6 +44,7 @@ final class NorwegianBokmal implements Language
 			'DIAGNOSTICS_GET_SIZE' => 'Hent diskbruk',
 			'LOGS' => 'Vis Logg',
 			'CLEAN_LOGS' => 'Clean Noise',
+			'CLEAR' => 'Clear',
 			'SIGN_OUT' => 'Logg Ut',
 			'UPDATE_AVAILABLE' => 'Oppdatering er tilgjengelig!',
 			'MIGRATION_AVAILABLE' => 'Migrering er tilgjengelig!',

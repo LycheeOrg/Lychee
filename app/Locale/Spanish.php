@@ -44,6 +44,7 @@ final class Spanish implements Language
 			'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
 			'LOGS' => 'Mostrar Registros',
 			'CLEAN_LOGS' => 'Clean Noise',
+			'CLEAR' => 'Clear',
 			'SIGN_OUT' => 'Cerrar Sesión',
 			'UPDATE_AVAILABLE' => '¡Actualización disponible!',
 			'MIGRATION_AVAILABLE' => 'Migration available!',
