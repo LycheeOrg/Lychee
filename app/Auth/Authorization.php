@@ -9,8 +9,9 @@ use Illuminate\Support\Facades\Auth;
 class Authorization
 {
 	/**
-	 * If admin user does not exist or is not configured.
-	 * Return false otherwise (admin exist with credentials).
+	 * Checks wether the the admin is unconfigured.
+	 * The method is not side-effect free.
+	 * If the admin user happens to not exist at all, the method creates an unconfigured admin.
 	 *
 	 * @return bool
 	 */
