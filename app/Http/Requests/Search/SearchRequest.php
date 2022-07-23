@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Search;
 
-use App\Facades\AccessControl;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\Configs;
+use Illuminate\Support\Facades\Auth;
 
 class SearchRequest extends BaseApiRequest
 {
@@ -20,7 +20,7 @@ class SearchRequest extends BaseApiRequest
 	 */
 	public function authorize(): bool
 	{
-		return AccessControl::is_logged_in() || Configs::getValueAsBool('public_search');
+		return Auth::check() || Configs::getValueAsBool('public_search');
 	}
 
 	/**

@@ -2,7 +2,7 @@
 
 namespace App\Actions\Search;
 
-use App\Actions\PhotoAuthorisationProvider;
+use App\Auth\PhotoAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\DTO\PhotoSortingCriterion;
 use App\Models\Extensions\FixedQueryBuilder;

@@ -2,7 +2,7 @@
 
 namespace App\Relations;
 
-use App\Actions\AlbumAuthorisationProvider;
+use App\Auth\AlbumAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\DTO\SortingCriterion;
 use App\Exceptions\Internal\NotImplementedException;

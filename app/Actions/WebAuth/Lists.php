@@ -2,13 +2,13 @@
 
 namespace App\Actions\WebAuth;
 
-use App\Facades\AccessControl;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class Lists
 {
 	public function do(): Collection
 	{
-		return AccessControl::user()->webAuthnCredentials->map(fn ($cred) => ['id' => $cred->id]);
+		return Auth::authenticate()->webAuthnCredentials->map(fn ($cred) => ['id' => $cred->id]);
 	}
 }

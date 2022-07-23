@@ -13,7 +13,6 @@ use App\Contracts\LycheeException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthorizedException;
-use App\Facades\AccessControl;
 use App\Http\Requests\Photo\AddPhotoRequest;
 use App\Http\Requests\Photo\ArchivePhotosRequest;
 use App\Http\Requests\Photo\DeletePhotosRequest;
@@ -36,6 +35,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class PhotoController extends Controller
@@ -328,7 +328,7 @@ class PhotoController extends Controller
 	 */
 	public function clearSymLink(): void
 	{
-		if (!AccessControl::is_admin()) {
+		if (!Gate::check('admin')) {
 			throw new UnauthorizedException('Admin privileges required');
 		}
 		$this->symLinkFunctions->clearSymLink();

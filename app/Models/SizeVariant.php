@@ -8,7 +8,6 @@ use App\Exceptions\ConfigurationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
-use App\Facades\AccessControl;
 use App\Image\FlysystemFile;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
@@ -19,6 +18,7 @@ use App\Relations\HasManyBidirectionally;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Adapter\Local;
 
@@ -153,7 +153,7 @@ class SizeVariant extends Model
 	public function getUrlAttribute(): string
 	{
 		if (
-			AccessControl::is_admin() && !Configs::getValueAsBool('SL_for_admin') ||
+			Gate::check('admin') && !Configs::getValueAsBool('SL_for_admin') ||
 			!Configs::getValueAsBool('SL_enable')
 		) {
 			return Storage::url($this->short_path);
