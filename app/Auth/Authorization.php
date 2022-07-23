@@ -20,11 +20,7 @@ class Authorization
 		/** @var User|null $adminUser */
 		$adminUser = User::query()->find(0);
 		if ($adminUser !== null) {
-			if ($adminUser->password === '' && $adminUser->username === '') {
-				return true;
-			}
-
-			return false;
+			return $adminUser->password === '' || $adminUser->username === '';
 		}
 
 		return self::resetAdmin();
