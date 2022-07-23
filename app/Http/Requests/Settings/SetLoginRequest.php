@@ -3,8 +3,8 @@
 namespace App\Http\Requests\Settings;
 
 use App\Auth\Authorization;
-use App\Http\Requests\Session\LoginRequest;
 use App\Exceptions\UnauthorizedException;
+use App\Http\Requests\Session\LoginRequest;
 
 class SetLoginRequest extends LoginRequest
 {
