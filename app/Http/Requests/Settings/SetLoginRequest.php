@@ -26,6 +26,6 @@ class SetLoginRequest extends LoginRequest
 	 */
 	protected function failedAuthorization(): void
 	{
-		throw new AuthorizationException('Admin user is already registered');
+		throw new UnauthorizedException('Admin user is already registered');
 	}
 }
