@@ -14,6 +14,7 @@ class Authorization
 	 * If the admin user happens to not exist at all, the method creates an unconfigured admin.
 	 *
 	 * @return bool
+	 *
 	 * @throws ModelDBException
 	 */
 	public static function isAdminNotRegistered(): bool
