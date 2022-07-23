@@ -60,8 +60,8 @@ class UploadedFile extends NativeLocalFile
 	public function getMimeType(bool $fallbackToClientMimeType = true): string
 	{
 		parent::getMimeType();
-		if ($this->cachedMimeType === 'application/octet-stream') {
-			$this->cachedMimeType = $this->baseFile->getClientMimeType();
+		if ($this->cachedMimeType === 'application/octet-stream' && $fallbackToClientMimeType) {
+			return $this->baseFile->getClientMimeType();
 		}
 
 		return $this->cachedMimeType;

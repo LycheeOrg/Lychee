@@ -71,7 +71,7 @@ class DownloadedFile extends TemporaryLocalFile
 	public function getMimeType(bool $fallbackToClientMimeType = true): string
 	{
 		parent::getMimeType();
-		if ($this->cachedMimeType === 'application/octet-stream') {
+		if ($this->cachedMimeType === 'application/octet-stream' && $fallbackToClientMimeType) {
 			return $this->originalMimeType;
 		} else {
 			return $this->cachedMimeType;
