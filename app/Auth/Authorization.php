@@ -14,6 +14,7 @@ class Authorization
 	 * If the admin user happens to not exist at all, the method creates an unconfigured admin.
 	 *
 	 * @return bool
+	 * @throws ModelDBException
 	 */
 	public static function isAdminNotRegistered(): bool
 	{
@@ -22,8 +23,9 @@ class Authorization
 		if ($adminUser !== null) {
 			return $adminUser->password === '' || $adminUser->username === '';
 		}
+		self::resetAdmin();
 
-		return self::resetAdmin();
+		return true;
 	}
 
 	/**
@@ -51,11 +53,11 @@ class Authorization
 	/**
 	 * Reset admin user: set username and password to empty string ''.
 	 *
-	 * @return bool actually always true
+	 * @return void
 	 *
 	 * @throws ModelDBException
 	 */
-	public static function resetAdmin(): bool
+	public static function resetAdmin(): void
 	{
 		/** @var User $user */
 		$user = User::query()->findOrNew(0);
@@ -64,7 +66,5 @@ class Authorization
 		$user->username = '';
 		$user->password = '';
 		$user->save();
-
-		return true;
 	}
 }
