@@ -9,7 +9,6 @@ use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
-use App\Facades\AccessControl;
 use App\Http\Requests\User\AddUserRequest;
 use App\Http\Requests\User\DeleteUserRequest;
 use App\Http\Requests\User\SetEmailRequest;
@@ -17,6 +16,7 @@ use App\Http\Requests\User\SetUserSettingsRequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -104,7 +104,7 @@ class UserController extends Controller
 	public function setEmail(SetEmailRequest $request): void
 	{
 		try {
-			$user = AccessControl::user();
+			$user = Auth::authenticate();
 			$user->email = $request->email();
 
 			if ($request->email() === null) {
@@ -127,7 +127,7 @@ class UserController extends Controller
 	public function getEmail(): array
 	{
 		return [
-			'email' => AccessControl::user()->email,
+			'email' => Auth::authenticate()->email,
 		];
 	}
 }

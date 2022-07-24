@@ -2,12 +2,11 @@
 
 namespace App\Actions\Albums;
 
-use App\Actions\AlbumAuthorisationProvider;
+use App\Auth\AlbumAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\TopAlbums;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
-use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
@@ -15,6 +14,7 @@ use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Support\Facades\Auth;
 use Kalnoy\Nestedset\QueryBuilder as NsQueryBuilder;
 
 class Top
@@ -74,14 +74,14 @@ class Top
 		$query = $this->albumAuthorisationProvider
 			->applyVisibilityFilter(Album::query()->whereIsRoot());
 
-		if (AccessControl::is_logged_in()) {
+		if (Auth::check()) {
 			// For authenticated users we group albums by ownership.
 			$albums = (new SortingDecorator($query))
 				->orderBy('owner_id')
 				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();
 
-			$id = AccessControl::id();
+			$id = Auth::authenticate()->id;
 			/**
 			 * @var BaseCollection<Album> $a
 			 * @var BaseCollection<Album> $b

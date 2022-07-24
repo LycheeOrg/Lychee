@@ -12,8 +12,9 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\RootAlbumUnitTest;
 use Tests\TestCase;
@@ -51,7 +52,7 @@ class AlbumTest extends TestCase
 
 	public function testAddReadLogged(): void
 	{
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 
 		$this->albums_tests->get('recent');
 		$this->albums_tests->get('starred');
@@ -113,7 +114,8 @@ class AlbumTest extends TestCase
 		/*
 		 * Flush the session to see if we can access the album
 		 */
-		AccessControl::logout();
+		Auth::logout();
+		Session::flush();
 
 		/*
 		 * Let's try to get the info of the album we just created.
@@ -122,7 +124,7 @@ class AlbumTest extends TestCase
 		$this->albums_tests->unlock($albumID1, 'wrong-password', 403);
 		$this->albums_tests->get($albumID1, 401);
 
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 
 		/*
 		 * Let's try to delete this album.
@@ -138,7 +140,8 @@ class AlbumTest extends TestCase
 		$this->root_album_tests->get(200, null, $albumID3);
 		$this->root_album_tests->get(200, null, $albumTagID1);
 
-		AccessControl::logout();
+		Auth::logout();
+		Session::flush();
 	}
 
 	/**
@@ -185,7 +188,7 @@ class AlbumTest extends TestCase
 			// tests.
 			static::assertDatabaseCount('base_albums', 0);
 
-			AccessControl::log_as_id(0);
+			Auth::loginUsingId(0);
 
 			// Create the test layout
 			$albumID1 = $this->albums_tests->add(null, 'Album 1')->offsetGet('id');
@@ -280,19 +283,21 @@ class AlbumTest extends TestCase
 			// Clean-up any left-overs
 			DB::table('albums')->orderBy('_lft', 'desc')->delete();
 			DB::table('base_albums')->delete();
-			AccessControl::logout();
+			Auth::logout();
+			Session::flush();
 		}
 	}
 
 	public function testTrueNegative(): void
 	{
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 
 		$this->albums_tests->set_description('-1', 'new description', 422);
 		$this->albums_tests->set_description('abcdefghijklmnopqrstuvwx', 'new description', 404);
 		$this->albums_tests->set_protection_policy('-1', true, true, false, false, true, true, 422);
 		$this->albums_tests->set_protection_policy('abcdefghijklmnopqrstuvwx', true, true, false, false, true, true, 404);
 
-		AccessControl::logout();
+		Auth::logout();
+		Session::flush();
 	}
 }

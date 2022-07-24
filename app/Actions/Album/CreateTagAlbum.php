@@ -3,8 +3,8 @@
 namespace App\Actions\Album;
 
 use App\Exceptions\ModelDBException;
-use App\Facades\AccessControl;
 use App\Models\TagAlbum;
+use Illuminate\Support\Facades\Auth;
 
 class CreateTagAlbum extends Action
 {
@@ -23,7 +23,7 @@ class CreateTagAlbum extends Action
 		$album = new TagAlbum();
 		$album->title = $title;
 		$album->show_tags = $show_tags;
-		$album->owner_id = AccessControl::id();
+		$album->owner_id = Auth::authenticate()->id;
 		$album->save();
 
 		return $album;

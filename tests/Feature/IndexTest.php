@@ -12,8 +12,9 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
 use App\Models\Configs;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
 
 class IndexTest extends TestCase
@@ -42,7 +43,8 @@ class IndexTest extends TestCase
 	 */
 	public function testPhpInfo(): void
 	{
-		AccessControl::logout();
+		Auth::logout();
+		Session::flush();
 		// we don't want a non admin to access this
 		$response = $this->get('/phpinfo');
 		$response->assertForbidden();

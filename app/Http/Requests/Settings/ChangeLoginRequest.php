@@ -2,48 +2,37 @@
 
 namespace App\Http\Requests\Settings;
 
-use App\Facades\AccessControl;
-use App\Http\Requests\Session\LoginRequest;
+use App\Auth\Authorization;
+use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\Contracts\HasPassword;
+use App\Http\Requests\Contracts\HasUsername;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
-class ChangeLoginRequest extends LoginRequest
+class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 {
-	public const OLD_USERNAME_ATTRIBUTE = 'oldUsername';
+	use HasPasswordTrait;
+
 	public const OLD_PASSWORD_ATTRIBUTE = 'oldPassword';
 
-	protected ?string $oldUsername = null;
-	protected ?string $oldPassword = null;
+	protected string $oldPassword;
+	protected ?string $username = null;
 
 	/**
 	 * Determines if the user is authorized to make this request.
-	 *
-	 * TODO: This method need to be rewritten after {@link \App\Actions\Settings\Login::do()} has been refactored.
-	 *
-	 * Normally, the request to change a user's password should
-	 * only be authorized for admin or non-locked users.
-	 * However, at the moment the method
-	 * {@link \App\Actions\Settings\Login::do()} is a "god" method and serves
-	 * three totally different use-cases mixed into one method (see comment
-	 * there).
-	 * We cannot reliably determine if the request is authorized without
-	 * knowing which of the use-case applies and thus without repeating
-	 * most of the logic of {@link \App\Actions\Settings\Login::do()}.
-	 * Hence, we authorize this request unconditionally and assume that
-	 * {@link \App\Actions\Settings\Login::do()} enforces correct
-	 * authorization.
-	 *
-	 * @return bool always true
 	 */
 	public function authorize(): bool
 	{
-		/*return AccessControl::is_logged_in() && (
-			AccessControl::is_admin() ||
-			!AccessControl::user()->is_locked
-		);*/
+		$user = Auth::user();
 
-		return true;
+		return $user !== null && (
+			$user->isAdmin() ||
+			!$user->is_locked
+		);
 	}
 
 	/**
@@ -51,11 +40,11 @@ class ChangeLoginRequest extends LoginRequest
 	 */
 	public function rules(): array
 	{
-		$rules = parent::rules();
-		$rules[self::OLD_USERNAME_ATTRIBUTE] = ['sometimes', new UsernameRule()];
-		$rules[self::OLD_PASSWORD_ATTRIBUTE] = ['sometimes', new PasswordRule(false)];
-
-		return $rules;
+		return [
+			HasUsername::USERNAME_ATTRIBUTE => ['sometimes', new UsernameRule()],
+			HasPassword::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
+			self::OLD_PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
+		];
 	}
 
 	/**
@@ -63,27 +52,20 @@ class ChangeLoginRequest extends LoginRequest
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		parent::processValidatedValues($values, $files);
-		$this->oldUsername = $values[self::OLD_USERNAME_ATTRIBUTE] ?? null;
-		if (array_key_exists(self::OLD_PASSWORD_ATTRIBUTE, $values)) {
-			// See {@link HasPasswordTrait::password()} for an explanation
-			// of the semantic difference between `null` and `''`.
-			$this->oldPassword = $values[self::OLD_PASSWORD_ATTRIBUTE] ?? '';
+		$this->password = $values[HasPassword::PASSWORD_ATTRIBUTE];
+		$this->oldPassword = $values[self::OLD_PASSWORD_ATTRIBUTE];
+
+		// We do not allow '' as a username. So any such input will be cast to null
+		if (array_key_exists(HasUsername::USERNAME_ATTRIBUTE, $values)) {
+			$this->username = trim($values[HasUsername::USERNAME_ATTRIBUTE]);
+			$this->username = $this->username === '' ? null : $this->username;
 		} else {
-			$this->oldPassword = null;
+			$this->username = null;
 		}
 	}
 
 	/**
-	 * @return string|null
-	 */
-	public function oldUsername(): ?string
-	{
-		return $this->oldUsername;
-	}
-
-	/**
-	 * Returns the previous (old) password, if available.
+	 * Returns the previous password.
 	 *
 	 * See {@link HasPasswordTrait::password()} for an explanation of the
 	 * semantic difference between the return values `null` and `''`.
@@ -93,5 +75,28 @@ class ChangeLoginRequest extends LoginRequest
 	public function oldPassword(): ?string
 	{
 		return $this->oldPassword;
+	}
+
+	/**
+	 * Return the new username chosen.
+	 * if Username is null, this means that the user does not want to update it.
+	 *
+	 * @return ?string
+	 */
+	public function username(): ?string
+	{
+		return $this->username;
+	}
+
+	/**
+	 * Handle a failed authorization attempt.
+	 *
+	 * @return void
+	 *
+	 * @throws \Illuminate\Auth\Access\AuthorizationException
+	 */
+	protected function failedAuthorization(): void
+	{
+		throw new AuthorizationException('Insufficient privileges');
 	}
 }

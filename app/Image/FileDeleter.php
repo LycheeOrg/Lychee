@@ -104,7 +104,7 @@ class FileDeleter
 
 		// If the disk uses the local driver, we use low-level routines as
 		// these are also able to handle symbolic links in case of doubt
-		$isLocalDisk = ($defaultDisk->getDriver()->getAdapter() instanceof LocalAdapter);
+		$isLocalDisk = $defaultDisk->getDriver()->getAdapter() instanceof LocalAdapter;
 		if ($isLocalDisk) {
 			foreach ($this->regularFilesOrSymbolicLinks as $fileOrLink) {
 				try {

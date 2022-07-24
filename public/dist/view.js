@@ -2975,8 +2975,7 @@ lychee.locale = {
 	LOGIN_PASSWORD_CONFIRM: "Confirm Password",
 	LOGIN_CREATE: "Create Login",
 
-	PASSWORD_TITLE: "Enter your current username and password:",
-	USERNAME_CURRENT: "Current Username",
+	PASSWORD_TITLE: "Enter your current password:",
 	PASSWORD_CURRENT: "Current Password",
 	PASSWORD_TEXT: "Your username and password will be changed to the following:",
 	PASSWORD_CHANGE: "Change Login",

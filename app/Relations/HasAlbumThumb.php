@@ -2,10 +2,9 @@
 
 namespace App\Relations;
 
-use App\Actions\AlbumAuthorisationProvider;
-use App\Actions\PhotoAuthorisationProvider;
+use App\Auth\AlbumAuthorisationProvider;
+use App\Auth\PhotoAuthorisationProvider;
 use App\DTO\PhotoSortingCriterion;
-use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\Thumb;
@@ -16,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * @mixin Builder
@@ -177,7 +178,7 @@ class HasAlbumThumb extends Relation
 			->orderBy('photos.is_starred', 'desc')
 			->orderBy('photos.' . $this->sorting->column, $this->sorting->order)
 			->limit(1);
-		if (!AccessControl::is_admin()) {
+		if (!Gate::check('admin')) {
 			$bestPhotoIDSelect->where(function (Builder $query2) {
 				$this->photoAuthorisationProvider->appendSearchabilityConditions(
 					$query2->getQuery(),
@@ -187,7 +188,7 @@ class HasAlbumThumb extends Relation
 			});
 		}
 
-		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+		$user = Auth::user();
 
 		$album2Cover = function (BaseBuilder $builder) use ($bestPhotoIDSelect, $albumKeys, $userID) {
 			$builder
@@ -206,7 +207,7 @@ class HasAlbumThumb extends Relation
 			$builder->select(['covered_albums.id AS album_id'])
 				->addSelect(['photo_id' => $bestPhotoIDSelect])
 				->whereIn('covered_albums.id', $albumKeys);
-			if (!AccessControl::is_admin()) {
+			if (!$user->isAdmin) {
 				$builder->where(function (BaseBuilder $q) {
 					$this->albumAuthorisationProvider->appendAccessibilityConditions($q);
 				});

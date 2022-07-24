@@ -4,8 +4,8 @@ namespace App\Actions\Photo\Strategies;
 
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
-use App\Facades\AccessControl;
 use App\Models\Photo;
+use Illuminate\Support\Facades\Auth;
 
 abstract class AddBaseStrategy
 {
@@ -112,7 +112,7 @@ abstract class AddBaseStrategy
 			// Avoid unnecessary DB request, when we access the album of a
 			// photo later (e.g. when a notification is sent).
 			$this->photo->setRelation('album', null);
-			$this->photo->owner_id = AccessControl::id();
+			$this->photo->owner_id = Auth::authenticate()->id;
 		}
 	}
 }

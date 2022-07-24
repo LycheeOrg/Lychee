@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Actions\AlbumAuthorisationProvider;
-use App\Actions\PhotoAuthorisationProvider;
+use App\Auth\AlbumAuthorisationProvider;
+use App\Auth\Authorization;
+use App\Auth\PhotoAuthorisationProvider;
 use App\Contracts\AbstractAlbum;
 use App\Contracts\LycheeException;
 use App\Exceptions\Internal\FrameworkException;
@@ -11,7 +12,6 @@ use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
-use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Photo;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
@@ -121,7 +122,7 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function failedAuthorization(): void
 	{
-		throw AccessControl::is_logged_in() ? new UnauthorizedException() : new UnauthenticatedException();
+		throw Auth::check() ? new UnauthorizedException() : new UnauthenticatedException();
 	}
 
 	/**

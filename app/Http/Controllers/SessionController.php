@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Auth\Authorization;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\VersionControlException;
-use App\Facades\AccessControl;
 use App\Facades\Helpers;
 use App\Facades\Lang;
 use App\Http\Requests\Session\LoginRequest;
+use App\Legacy\Legacy;
 use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
@@ -17,7 +18,9 @@ use App\Models\Logs;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
 
 class SessionController extends Controller
@@ -59,28 +62,20 @@ class SessionController extends Controller
 	 */
 	public function init(): array
 	{
-		$logged_in = AccessControl::is_logged_in();
-
 		// Return settings
 		$return = [];
 
 		// Check if login credentials exist and login if they don't
-		if (AccessControl::noLogin() === true || $logged_in === true) {
-			// we set the user ID (it is set to 0 if there is no login/password = admin)
-			$user_id = AccessControl::id();
-
-			if ($user_id === 0) {
+		if (Auth::check() || Authorization::loginAsAdminIfNotRegistered()) {
+			if (Gate::check('admin')) {
 				$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 				$return['admin'] = true;
 				$return['may_upload'] = true; // not necessary
-
 				$return['config'] = $this->configFunctions->admin();
-
 				$return['config']['location'] = base_path('public/');
 			} else {
 				try {
-					/** @var User $user */
-					$user = User::query()->findOrFail($user_id);
+					$user = Auth::authenticate();
 					$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 					$return['config'] = $this->configFunctions->public();
 					$return['is_locked'] = $user->is_locked;   // may user change their password?
@@ -94,7 +89,7 @@ class SessionController extends Controller
 
 			// here we say whether we logged in because there is no login/password or if we actually entered a login/password
 			// TODO: Refactor this. At least, rename the flag `login` to something more understandable, like `isAdminUserConfigured`, but rather re-factor the whole logic, i.e. creating the initial user should be part of the installation routine.
-			$return['config']['login'] = $logged_in;
+			$return['config']['login'] = !Authorization::isAdminNotRegistered();
 			$return['config']['lang_available'] = Lang::get_lang_available();
 		} else {
 			// Logged out
@@ -139,18 +134,19 @@ class SessionController extends Controller
 	public function login(LoginRequest $request): void
 	{
 		// No login
-		if (AccessControl::noLogin() === true) {
+		if (Authorization::loginAsAdminIfNotRegistered()) {
 			Logs::warning(__METHOD__, __LINE__, 'DEFAULT LOGIN!');
 
 			return;
 		}
 
-		// this is probably sensitive to timing attacks...
-		if (AccessControl::log_as_admin($request->username(), $request->password(), $request->ip()) === true) {
+		if (Legacy::loginAsAdmin($request->username(), $request->password(), $request->ip())) {
 			return;
 		}
 
-		if (AccessControl::log_as_user($request->username(), $request->password(), $request->ip()) === true) {
+		if (Auth::attempt(['username' => $request->username(), 'password' => $request->password()])) {
+			Logs::notice(__METHOD__, __LINE__, 'User (' . $request->username() . ') has logged in from ' . $request->ip());
+
 			return;
 		}
 
@@ -167,16 +163,7 @@ class SessionController extends Controller
 	 */
 	public function logout(): void
 	{
+		Auth::logout();
 		Session::flush();
-	}
-
-	/**
-	 * Shows the session values.
-	 *
-	 * @return void
-	 */
-	public function show(): void
-	{
-		dd(Session::all());
 	}
 }

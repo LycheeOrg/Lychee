@@ -7,11 +7,12 @@ use App\Actions\Diagnostics\Errors;
 use App\Actions\Diagnostics\Info;
 use App\Actions\Diagnostics\Space;
 use App\Actions\Update\Check as CheckUpdate;
+use App\Auth\Authorization;
 use App\Contracts\InternalLycheeException;
 use App\Contracts\LycheeException;
 use App\DTO\DiagnosticInfo;
 use App\Exceptions\Internal\FrameworkException;
-use App\Facades\AccessControl;
+use Gate;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Routing\Controller;
@@ -22,7 +23,7 @@ class DiagnosticsController extends Controller
 
 	private function isAuthorized(): bool
 	{
-		return AccessControl::is_admin() || AccessControl::noLogin();
+		return Gate::check('admin') || Authorization::isAdminNotRegistered();
 	}
 
 	/**

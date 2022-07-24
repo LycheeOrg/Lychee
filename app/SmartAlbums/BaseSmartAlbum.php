@@ -2,7 +2,7 @@
 
 namespace App\SmartAlbums;
 
-use App\Actions\PhotoAuthorisationProvider;
+use App\Auth\PhotoAuthorisationProvider;
 use App\Contracts\AbstractAlbum;
 use App\Contracts\InternalLycheeException;
 use App\DTO\PhotoSortingCriterion;
