@@ -12,21 +12,35 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
 use Tests\Feature\Base\PhotoTestBase;
 use Tests\Feature\Lib\SharingUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
+use Tests\Feature\Traits\RequiresEmptyAlbums;
+use Tests\Feature\Traits\RequiresEmptyUsers;
 
 class SharingTest extends PhotoTestBase
 {
+	use RequiresEmptyAlbums;
+	use RequiresEmptyUsers;
+
 	protected SharingUnitTest $sharing_test;
 	protected UsersUnitTest $users_test;
 
 	public function setUp(): void
 	{
 		parent::setUp();
+		$this->setUpRequiresEmptyAlbums();
+		$this->setUpRequiresEmptyUsers();
 		$this->sharing_test = new SharingUnitTest($this);
 		$this->users_test = new UsersUnitTest($this);
+	}
+
+	public function tearDown(): void
+	{
+		$this->tearDownRequiresEmptyPhotos();
+		$this->tearDownRequiresEmptyAlbums();
+		$this->tearDownRequiresEmptyUsers();
+		parent::tearDown();
 	}
 
 	/**
@@ -34,16 +48,12 @@ class SharingTest extends PhotoTestBase
 	 */
 	public function testEmptySharingList(): void
 	{
-		AccessControl::log_as_id(0);
-
 		$response = $this->sharing_test->list();
 		$response->assertExactJson([
 			'shared' => [],
 			'albums' => [],
 			'users' => [],
 		]);
-
-		AccessControl::logout();
 	}
 
 	/**
@@ -51,8 +61,6 @@ class SharingTest extends PhotoTestBase
 	 */
 	public function testSharingListWithAlbums(): void
 	{
-		AccessControl::log_as_id(0);
-
 		$albumID1 = $this->albums_tests->add(null, 'test_album')->offsetGet('id');
 		$albumID2 = $this->albums_tests->add($albumID1, 'test_album2')->offsetGet('id');
 
@@ -68,10 +76,6 @@ class SharingTest extends PhotoTestBase
 			]],
 			'users' => [],
 		]);
-
-		$this->albums_tests->delete([$albumID1, $albumID2]);
-
-		AccessControl::logout();
 	}
 
 	/**
@@ -82,8 +86,6 @@ class SharingTest extends PhotoTestBase
 	 */
 	public function testSharingListWithSharedAlbums(): void
 	{
-		AccessControl::log_as_id(0);
-
 		$albumID1 = $this->albums_tests->add(null, 'test_album_1')->offsetGet('id');
 		$albumID2 = $this->albums_tests->add(null, 'test_album_2')->offsetGet('id');
 		$userID1 = $this->users_test->add('test_user_1', 'test_password_1')->offsetGet('id');
@@ -91,6 +93,7 @@ class SharingTest extends PhotoTestBase
 
 		$this->sharing_test->add([$albumID1], [$userID1]);
 		$response = $this->sharing_test->list();
+
 		$response->assertJson([
 			'shared' => [[
 				'user_id' => $userID1,
@@ -113,10 +116,6 @@ class SharingTest extends PhotoTestBase
 				'username' => 'test_user_2',
 			]],
 		]);
-
-		$this->albums_tests->delete([$albumID1, $albumID2]);
-		$this->users_test->delete($userID1);
-		$this->users_test->delete($userID2);
 	}
 
 	/**
