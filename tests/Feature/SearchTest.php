@@ -19,10 +19,14 @@ class SearchTest extends PhotoTestBase
 {
 	public function testSearchPhotoByTitle(): void
 	{
-		$photoId = $this->photos_tests->upload(
+		$photoId1 = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
-		$this->photos_tests->set_title($photoId, 'photo search');
+		$photoId2 = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+		)->offsetGet('id');
+		$this->photos_tests->set_title($photoId1, 'photo search');
+		$this->photos_tests->set_title($photoId2, 'do not find me');
 
 		$response = $this->postJson(
 			'/api/Search::run',
@@ -36,7 +40,7 @@ class SearchTest extends PhotoTestBase
 					'album_id' => null,
 					'aperture' => 'f/2.8',
 					'focal' => '16 mm',
-					'id' => $photoId,
+					'id' => $photoId1,
 					'iso' => '1250',
 					'lens' => 'EF16-35mm f/2.8L USM',
 					'make' => 'Canon',
@@ -62,14 +66,28 @@ class SearchTest extends PhotoTestBase
 				],
 			],
 		]);
+
+		$response->assertJsonMissing([
+			'title' => 'do not find me',
+		]);
+
+		$response->assertJsonMissing([
+			'id' => $photoId2,
+		]);
 	}
 
 	public function testSearchPhotoByTag(): void
 	{
-		$photoId = $this->photos_tests->upload(
+		$photoId1 = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
-		$this->photos_tests->set_tag([$photoId], ['search tag']);
+		$photoId2 = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+		)->offsetGet('id');
+		$this->photos_tests->set_title($photoId1, 'photo search');
+		$this->photos_tests->set_title($photoId2, 'do not find me');
+		$this->photos_tests->set_tag([$photoId1], ['search tag']);
+		$this->photos_tests->set_tag([$photoId2], ['other tag']);
 
 		$response = $this->postJson(
 			'/api/Search::run',
@@ -83,7 +101,7 @@ class SearchTest extends PhotoTestBase
 					'album_id' => null,
 					'aperture' => 'f/2.8',
 					'focal' => '16 mm',
-					'id' => $photoId,
+					'id' => $photoId1,
 					'iso' => '1250',
 					'lens' => 'EF16-35mm f/2.8L USM',
 					'make' => 'Canon',
@@ -109,12 +127,26 @@ class SearchTest extends PhotoTestBase
 				],
 			],
 		]);
+
+		$response->assertJsonMissing([
+			'title' => 'do not find me',
+		]);
+
+		$response->assertJsonMissing([
+			'tags' => ['other tag'],
+		]);
+
+		$response->assertJsonMissing([
+			'id' => $photoId2,
+		]);
 	}
 
-	public function testSearchAlbumByName(): void
+	public function testSearchAlbumByTitle(): void
 	{
-		/** @var string $id */
-		$id = $this->albums_tests->add(null, 'search')->offsetGet('id');
+		/** @var string $albumId1 */
+		$albumId1 = $this->albums_tests->add(null, 'search')->offsetGet('id');
+		/** @var string $albumId2 */
+		$albumId2 = $this->albums_tests->add(null, 'other')->offsetGet('id');
 
 		$response = $this->postJson(
 			'/api/Search::run',
@@ -124,18 +156,28 @@ class SearchTest extends PhotoTestBase
 
 		$response->assertJson([
 			'albums' => [[
-				'id' => $id,
+				'id' => $albumId1,
 				'title' => 'search',
 			]],
 		]);
 
-		$this->albums_tests->delete([$id]);
+		$response->assertJsonMissing([
+			'title' => 'other',
+		]);
+
+		$response->assertJsonMissing([
+			'id' => $albumId2,
+		]);
+
+		$this->albums_tests->delete([$albumId1, $albumId2]);
 	}
 
-	public function testSearchAlbumByTag(): void
+	public function testSearchTagAlbumByTitle(): void
 	{
-		/** @var string $tagId */
-		$tagId = $this->albums_tests->addByTags('tag search', ['tag1', 'tag2'])->offsetGet('id');
+		/** @var string $tagAlbumId1 */
+		$tagAlbumId1 = $this->albums_tests->addByTags('tag search', ['tag1', 'tag2'])->offsetGet('id');
+		/** @var string $tagAlbumId2 */
+		$tagAlbumId2 = $this->albums_tests->addByTags('tag other', ['tag3'])->offsetGet('id');
 
 		$response = $this->postJson(
 			'/api/Search::run',
@@ -146,12 +188,20 @@ class SearchTest extends PhotoTestBase
 		$response->assertJson([
 			'tag_albums' => [
 				[
-					'id' => $tagId,
+					'id' => $tagAlbumId1,
 					'title' => 'tag search',
 				],
 			],
 		]);
 
-		$this->albums_tests->delete([$tagId]);
+		$response->assertJsonMissing([
+			'title' => 'tag other',
+		]);
+
+		$response->assertJsonMissing([
+			'id' => $tagAlbumId2,
+		]);
+
+		$this->albums_tests->delete([$tagAlbumId1]);
 	}
 }
