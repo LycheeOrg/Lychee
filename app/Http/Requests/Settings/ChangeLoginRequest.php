@@ -11,7 +11,6 @@ use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 
 class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 {
