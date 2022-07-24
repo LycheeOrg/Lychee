@@ -45,8 +45,11 @@ trait RequiresEmptyAlbums
 	protected function tearDownRequiresEmptyAlbums(): void
 	{
 		// Clean up remaining stuff from tests
+		// For MySQL/MariaDB we must delete albums in the correct order to
+		// avoid breaking parent relationship although this is non-standard
+		// SQL.
 		DB::table('tag_albums')->delete();
-		DB::table('albums')->delete();
+		DB::table('albums')->orderBy('_lft', 'desc')->delete();
 		DB::table('base_albums')->delete();
 	}
 }
