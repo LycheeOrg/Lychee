@@ -13,22 +13,19 @@
 namespace Tests\Feature;
 
 use App\Facades\AccessControl;
+use Tests\Feature\Base\PhotoTestBase;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\TestCase;
 
-class SearchTest extends TestCase
+class SearchTest extends PhotoTestBase
 {
 	public function testSearchPhotoByTitle(): void
 	{
-		AccessControl::log_as_id(0);
-
-		$photos_tests = new PhotosUnitTest($this);
-
-		$photoId = $photos_tests->upload(
+		$photoId = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
-		);
-		$photos_tests->set_title($photoId, 'photo search');
+		)->offsetGet('id');
+		$this->photos_tests->set_title($photoId, 'photo search');
 
 		$response = $this->postJson(
 			'/api/Search::run',
@@ -62,28 +59,20 @@ class SearchTest extends TestCase
 						'original' => [
 							'width' => 6720,
 							'height' => 4480,
-							'filesize' => 22842265,
+							'filesize' => 21106422,
 						],
 					],
 				],
 			],
 		]);
-
-		$photos_tests->delete([$photoId]);
-
-		AccessControl::logout();
 	}
 
 	public function testSearchPhotoByTag(): void
 	{
-		AccessControl::log_as_id(0);
-
-		$photos_tests = new PhotosUnitTest($this);
-
-		$photoId = $photos_tests->upload(
+		$photoId = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
-		);
-		$photos_tests->set_tag([$photoId], ['search tag']);
+		)->offsetGet('id');
+		$this->photos_tests->set_tag([$photoId], ['search tag']);
 
 		$response = $this->postJson(
 			'/api/Search::run',
@@ -117,26 +106,18 @@ class SearchTest extends TestCase
 						'original' => [
 							'width' => 6720,
 							'height' => 4480,
-							'filesize' => 22842265,
+							'filesize' => 21106422,
 						],
 					],
 				],
 			],
 		]);
-
-		$photos_tests->delete([$photoId]);
-
-		AccessControl::logout();
 	}
 
 	public function testSearchAlbumByName(): void
 	{
-		AccessControl::log_as_id(0);
-
-		$albums_test = new AlbumsUnitTest($this);
-
 		/** @var string $id */
-		$id = $albums_test->add(null, 'search')->offsetGet('id');
+		$id = $this->albums_tests->add(null, 'search')->offsetGet('id');
 
 		$response = $this->postJson(
 			'/api/Search::run',
@@ -151,19 +132,13 @@ class SearchTest extends TestCase
 			]],
 		]);
 
-		$albums_test->delete([$id]);
-
-		AccessControl::logout();
+		$this->albums_tests->delete([$id]);
 	}
 
 	public function testSearchAlbumByTag(): void
 	{
-		AccessControl::log_as_id(0);
-
-		$albums_test = new AlbumsUnitTest($this);
-
 		/** @var string $tagId */
-		$tagId = $albums_test->addByTags('tag search', ['tag1', 'tag2'])->offsetGet('id');
+		$tagId = $this->albums_tests->addByTags('tag search', ['tag1', 'tag2'])->offsetGet('id');
 
 		$response = $this->postJson(
 			'/api/Search::run',
@@ -180,8 +155,6 @@ class SearchTest extends TestCase
 			],
 		]);
 
-		$albums_test->delete([$tagId]);
-
-		AccessControl::logout();
+		$this->albums_tests->delete([$tagId]);
 	}
 }
