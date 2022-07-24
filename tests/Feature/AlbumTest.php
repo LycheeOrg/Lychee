@@ -15,16 +15,19 @@ namespace Tests\Feature;
 use App\Facades\AccessControl;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature\Lib\AlbumsUnitTest;
+use Tests\Feature\Lib\RootAlbumUnitTest;
 use Tests\TestCase;
 
 class AlbumTest extends TestCase
 {
 	protected AlbumsUnitTest $albums_tests;
+	protected RootAlbumUnitTest $root_album_tests;
 
 	public function setUp(): void
 	{
 		parent::setUp();
 		$this->albums_tests = new AlbumsUnitTest($this);
+		$this->root_album_tests = new RootAlbumUnitTest($this);
 	}
 
 	/**
@@ -66,10 +69,10 @@ class AlbumTest extends TestCase
 			'show_tags' => ['test', 'cool_new_tag', 'second_new_tag'],
 		]);
 
-		$this->albums_tests->see_in_albums($albumID1);
-		$this->albums_tests->see_in_albums($albumID2);
-		$this->albums_tests->see_in_albums($albumID3);
-		$this->albums_tests->see_in_albums($albumTagID1);
+		$this->root_album_tests->get(200, $albumID1);
+		$this->root_album_tests->get(200, $albumID2);
+		$this->root_album_tests->get(200, $albumID3);
+		$this->root_album_tests->get(200, $albumTagID1);
 
 		$this->albums_tests->move([$albumTagID1], $albumID3, 404);
 		$this->albums_tests->move([$albumID3], $albumID2);
@@ -131,9 +134,9 @@ class AlbumTest extends TestCase
 		/*
 		 * Because we deleted the album, we should not see it anymore.
 		 */
-		$this->albums_tests->dont_see_in_albums($albumID1);
-		$this->albums_tests->dont_see_in_albums($albumID3);
-		$this->albums_tests->dont_see_in_albums($albumTagID1);
+		$this->root_album_tests->get(200, null, $albumID1);
+		$this->root_album_tests->get(200, null, $albumID3);
+		$this->root_album_tests->get(200, null, $albumTagID1);
 
 		AccessControl::logout();
 	}
