@@ -12,7 +12,9 @@
 
 namespace Tests\Feature;
 
+use App\Facades\AccessControl;
 use Tests\Feature\Base\PhotoTestBase;
+use Tests\Feature\Lib\RootAlbumUnitTest;
 use Tests\Feature\Lib\SharingUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
@@ -23,16 +25,18 @@ class SharingTest extends PhotoTestBase
 	use RequiresEmptyAlbums;
 	use RequiresEmptyUsers;
 
-	protected SharingUnitTest $sharing_test;
-	protected UsersUnitTest $users_test;
+	protected SharingUnitTest $sharing_tests;
+	protected UsersUnitTest $users_tests;
+	protected RootAlbumUnitTest $root_album_tests;
 
 	public function setUp(): void
 	{
 		parent::setUp();
 		$this->setUpRequiresEmptyAlbums();
 		$this->setUpRequiresEmptyUsers();
-		$this->sharing_test = new SharingUnitTest($this);
-		$this->users_test = new UsersUnitTest($this);
+		$this->sharing_tests = new SharingUnitTest($this);
+		$this->users_tests = new UsersUnitTest($this);
+		$this->root_album_tests = new RootAlbumUnitTest($this);
 	}
 
 	public function tearDown(): void
@@ -48,7 +52,7 @@ class SharingTest extends PhotoTestBase
 	 */
 	public function testEmptySharingList(): void
 	{
-		$response = $this->sharing_test->list();
+		$response = $this->sharing_tests->list();
 		$response->assertExactJson([
 			'shared' => [],
 			'albums' => [],
@@ -64,7 +68,7 @@ class SharingTest extends PhotoTestBase
 		$albumID1 = $this->albums_tests->add(null, 'test_album')->offsetGet('id');
 		$albumID2 = $this->albums_tests->add($albumID1, 'test_album2')->offsetGet('id');
 
-		$response = $this->sharing_test->list();
+		$response = $this->sharing_tests->list();
 		$response->assertSimilarJson([
 			'shared' => [],
 			'albums' => [[
@@ -88,11 +92,11 @@ class SharingTest extends PhotoTestBase
 	{
 		$albumID1 = $this->albums_tests->add(null, 'test_album_1')->offsetGet('id');
 		$albumID2 = $this->albums_tests->add(null, 'test_album_2')->offsetGet('id');
-		$userID1 = $this->users_test->add('test_user_1', 'test_password_1')->offsetGet('id');
-		$userID2 = $this->users_test->add('test_user_2', 'test_password_2')->offsetGet('id');
+		$userID1 = $this->users_tests->add('test_user_1', 'test_password_1')->offsetGet('id');
+		$userID2 = $this->users_tests->add('test_user_2', 'test_password_2')->offsetGet('id');
 
-		$this->sharing_test->add([$albumID1], [$userID1]);
-		$response = $this->sharing_test->list();
+		$this->sharing_tests->add([$albumID1], [$userID1]);
+		$response = $this->sharing_tests->list();
 
 		$response->assertJson([
 			'shared' => [[
@@ -126,7 +130,7 @@ class SharingTest extends PhotoTestBase
 	 * In particular the following checks are made:
 	 *  - the user sees the album (incl. its cover) but not the other album
 	 *    nor image
-	 *  - the user sees the image of the public album in "Recent"
+	 *  - the user sees the image of the shared album in "Recent"
 	 *  - the album tree contains the one album (incl. the photo) but not
 	 *    the other one
 	 *  - the user cannot access the non-shared album
@@ -136,14 +140,94 @@ class SharingTest extends PhotoTestBase
 	 */
 	public function testAlbumSharedWithUser(): void
 	{
-		static::markTestIncomplete('Not written yet');
+		$albumID1 = $this->albums_tests->add(null, 'Test Album 1')->offsetGet('id');
+		$albumID2 = $this->albums_tests->add(null, 'Test Album 2')->offsetGet('id');
+		$photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID1)->offsetGet('id');
+		$photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $albumID2)->offsetGet('id');
+		$userID = $this->users_tests->add('test_user', 'test_password')->offsetGet('id');
+		$this->sharing_tests->add([$albumID1], [$userID]);
+
+		AccessControl::logout();
+		AccessControl::log_as_id($userID);
+
+		$responseForRoot = $this->root_album_tests->get();
+		$responseForRoot->assertJson([
+			'smart_albums' => [
+				'unsorted' => ['thumb' => null],
+				'starred' => ['thumb' => null],
+				'public' => ['thumb' => null],
+				'recent' => ['thumb' => ['id' => $photoID1,	'type' => 'image/jpeg']],
+			],
+			'tag_albums' => [],
+			'albums' => [],
+			'shared_albums' => [[
+				'id' => $albumID1,
+				'parent_id' => null,
+				'thumb' => ['id' => $photoID1, 'type' => 'image/jpeg'],
+				'title' => 'Test Album 1',
+				'owner_name' => 'Admin',
+			]],
+		]);
+		$responseForRoot->assertJsonMissing(['id' => $albumID2]);
+		$responseForRoot->assertJsonMissing(['title' => 'Test Album 2']);
+		$responseForRoot->assertJsonMissing(['id' => $photoID2]);
+
+		$responseForRecent = $this->albums_tests->get('recent');
+		$responseForRecent->assertJson([
+			'id' => 'recent',
+			'title' => 'Recent',
+			'thumb' => [
+				'id' => $photoID1,
+				'type' => 'image/jpeg',
+			],
+			'photos' => [[
+				'id' => $photoID1,
+				'album_id' => $albumID1,
+				'title' => 'mongolia',
+				'type' => 'image/jpeg',
+				'size_variants' => [
+					'original' => ['type' => 0, 'width' => 1280, 'height' => 850, 'filesize' => 201316],
+					'medium2x' => null,
+					'medium' => null,
+					'small2x' => ['type' => 3, 'width' => 1084,	'height' => 720],
+					'small' => ['type' => 4, 'width' => 542, 'height' => 360],
+					'thumb2x' => ['type' => 5, 'width' => 400, 'height' => 400],
+					'thumb' => ['type' => 6, 'width' => 200, 'height' => 200],
+				],
+				'previous_photo_id' => null,
+				'next_photo_id' => null,
+			]],
+		]);
+		$responseForRoot->assertJsonMissing(['id' => $albumID2]);
+		$responseForRoot->assertJsonMissing(['id' => $photoID2]);
+		$responseForRoot->assertJsonMissing(['title' => 'train']);
+
+		$responseForTree = $this->root_album_tests->getTree();
+		$responseForTree->assertJson([
+			'albums' => [],
+			'shared_albums' => [[
+				'id' => $albumID1,
+				'title' => 'Test Album 1',
+				'thumb' => ['id' => $photoID1, 'type' => 'image/jpeg'],
+				'parent_id' => null,
+				'albums' => [],
+			]],
+		]);
+		$responseForRoot->assertJsonMissing(['id' => $albumID2]);
+		$responseForRoot->assertJsonMissing(['title' => 'Test Album 2']);
+		$responseForRoot->assertJsonMissing(['id' => $photoID2]);
+
+		$this->albums_tests->get($albumID2, 403);
+		$this->photos_tests->get($photoID2, 403);
 	}
 
 	/**
-	 * Uploads a photo, logs in as another user, checks that the user
+	 * Uploads a photo, logs out, checks that the anonymous user does not see
+	 * the photo, logs in as another user, checks that the user
 	 * does not see the photo.
 	 *
 	 * In particular the following checks are made:
+	 *  - the user does not see the photo in "Unsorted"
 	 *  - the user does not see the photo in "Recent"
 	 *  - the user cannot access the photo
 	 *
