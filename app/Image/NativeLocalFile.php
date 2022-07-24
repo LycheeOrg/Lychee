@@ -4,6 +4,7 @@ namespace App\Image;
 
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
+
 use function Safe\filemtime;
 use function Safe\filesize;
 use function Safe\fopen;
@@ -46,7 +47,7 @@ class NativeLocalFile extends MediaFile
 			if (is_resource($this->stream)) {
 				rewind($this->stream);
 			} else {
-				$this->stream = fopen($this->getAbsolutePath(), 'r+b');
+				$this->stream = fopen($this->getPath(), 'rb');
 			}
 
 			return $this->stream;
@@ -68,18 +69,27 @@ class NativeLocalFile extends MediaFile
 	 *
 	 * @returns void
 	 */
-	public function write($stream, ?string $mimeType = null): void
+	public function write($stream, bool $collectStatistics = false, ?string $mimeType = null): ?StreamStat
 	{
 		try {
+			$streamStat = $collectStatistics ? static::appendStatFilter($stream) : null;
+
 			if (is_resource($this->stream)) {
 				ftruncate($this->stream, 0);
 				rewind($this->stream);
 			} else {
-				$this->stream = fopen($this->getAbsolutePath(), 'w+b');
+				$this->stream = fopen($this->getPath(), 'w+b');
 			}
 			$this->cachedMimeType = null;
 			stream_copy_to_stream($stream, $this->stream);
 			$this->cachedMimeType = $mimeType;
+			// File statistics info (filesize, access mode, etc.) are cached
+			// by PHP to avoid costly I/O calls.
+			// If cache is not cleared, an old size may be reported after
+			// write.
+			clearstatcache(true, $this->getPath());
+
+			return $streamStat;
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
@@ -108,7 +118,7 @@ class NativeLocalFile extends MediaFile
 	public function move(string $newPath): void
 	{
 		try {
-			rename(realpath($this->path), realpath($newPath));
+			rename($this->path, $newPath);
 			$this->path = $newPath;
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
@@ -137,7 +147,7 @@ class NativeLocalFile extends MediaFile
 	public function lastModified(): int
 	{
 		try {
-			return filemtime($this->getAbsolutePath());
+			return filemtime($this->getPath());
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
@@ -149,16 +159,33 @@ class NativeLocalFile extends MediaFile
 	public function getFilesize(): int
 	{
 		try {
-			return filesize($this->getAbsolutePath());
+			return filesize($this->getPath());
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Returns the path of the file.
+	 *
+	 * @return string
 	 */
-	public function getAbsolutePath(): string
+	public function getPath(): string
+	{
+		return $this->path;
+	}
+
+	/**
+	 * Returns the real path of the file after all symbolic links and
+	 * relative path components such as `'..'` have been resolved.
+	 *
+	 * Throws an exception, if the file does not exist.
+	 *
+	 * @return string
+	 *
+	 * @throws MediaFileOperationException
+	 */
+	public function getRealPath(): string
 	{
 		try {
 			return realpath($this->path);
@@ -196,7 +223,7 @@ class NativeLocalFile extends MediaFile
 	{
 		try {
 			if ($this->cachedMimeType === null) {
-				$this->cachedMimeType = mime_content_type($this->getAbsolutePath());
+				$this->cachedMimeType = mime_content_type($this->getPath());
 			}
 
 			return $this->cachedMimeType;
@@ -213,7 +240,7 @@ class NativeLocalFile extends MediaFile
 	protected function hasSupportedExifImageType(): bool
 	{
 		try {
-			return in_array(exif_imagetype($this->getAbsolutePath()), self::SUPPORTED_PHP_EXIF_IMAGE_TYPES, true);
+			return in_array(exif_imagetype($this->getPath()), self::SUPPORTED_PHP_EXIF_IMAGE_TYPES, true);
 		} catch (\ErrorException|MediaFileOperationException) {
 			// `exif_imagetype` emit an engine error E_NOTICE, if it is unable
 			// to read enough bytes from the file to determine the image type.
@@ -269,21 +296,6 @@ class NativeLocalFile extends MediaFile
 		return
 			$this->isSupportedImage() ||
 			$this->isSupportedVideo();
-	}
-
-	/**
-	 * Asserts that the file is supported.
-	 *
-	 * @return void
-	 *
-	 * @throws MediaFileUnsupportedException
-	 * @throws MediaFileOperationException
-	 */
-	public function assertIsSupported(): void
-	{
-		if (!$this->isSupported()) {
-			throw new MediaFileUnsupportedException();
-		}
 	}
 
 	/**

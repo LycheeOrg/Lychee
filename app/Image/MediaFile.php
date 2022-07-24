@@ -5,7 +5,6 @@ namespace App\Image;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Models\Configs;
-use function Safe\fclose;
 
 /**
  * Class `MediaFile` provides the common interface of all file-like classes.
@@ -13,14 +12,10 @@ use function Safe\fclose;
  * This class abstracts from the differences of files which are provided
  * through a Flysystem adapter and files outside Flysystem.
  * In particular, this abstraction provides a unified copy-mechanism
- * between different Flysystem disks, local (native) files and uploaded files
- * via
+ * between different {@link BinaryBlob}using streams.
  *
- *     $targetFile->write($sourceFile->read())
- *
- * using streams.
  * This stream-based approach is the same which is also used by
- * {@link Illuminate\Http\UploadedFile::storeAs()} under the hood and avoids certain problems
+ * {@link \Illuminate\Http\UploadedFile::storeAs()} under the hood and avoids certain problems
  * which are may be caused by PHP method like `rename`, `move` or `copy`.
  * Firstly, these methods need a file path and thus do not work, if a file
  * resides on a Flysystem disk for which PHP has no native handler (e.g.
@@ -30,7 +25,7 @@ use function Safe\fclose;
  * Copying via streams avoids issues like
  * [LycheeOrg/Lychee#1198](https://github.com/LycheeOrg/Lychee/issues/1198).
  */
-abstract class MediaFile
+abstract class MediaFile extends BinaryBlob
 {
 	public const SUPPORTED_PHP_EXIF_IMAGE_TYPES = [
 		IMAGETYPE_GIF,
@@ -82,37 +77,6 @@ abstract class MediaFile
 	/** @var string[]|null the accepted raw file extensions minus supported extensions */
 	private static ?array $cachedAcceptedRawFileExtensions = null;
 
-	/** @var ?resource */
-	protected $stream = null;
-
-	/**
-	 * @throws MediaFileOperationException
-	 */
-	public function __destruct()
-	{
-		$this->close();
-	}
-
-	public function __clone()
-	{
-		// The stream belongs to the original object, it is not ours.
-		$this->stream = null;
-	}
-
-	/**
-	 * Returns a stream from which can be read.
-	 *
-	 * To free the stream after use, call {@link MediaFile::close()}.
-	 * Calling `read` multiple times is safe.
-	 * The read pointer of the stream will be reset to the beginning of
-	 * the stream, without closing the stream in between.
-	 *
-	 * @return resource
-	 *
-	 * @throws MediaFileOperationException
-	 */
-	abstract public function read();
-
 	/**
 	 * Writes the content of the provided stream into the file.
 	 *
@@ -124,32 +88,14 @@ abstract class MediaFile
 	 * The freshly written content can immediately be read back via
 	 * {@link MediaFile::read} without closing the file in between.
 	 *
-	 * @param resource $stream the input stream which provides the input to write
+	 * @param resource $stream            the input stream which provides the input to write
+	 * @param bool     $collectStatistics if true, the method returns statistics about the stream
 	 *
-	 * @return void
-	 *
-	 * @throws MediaFileOperationException
-	 */
-	abstract public function write($stream): void;
-
-	/**
-	 * Closes the internal stream.
-	 *
-	 * @return void
+	 * @return ?StreamStat optional statistics about the stream, if requested
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function close(): void
-	{
-		try {
-			if (is_resource($this->stream)) {
-				fclose($this->stream);
-				$this->stream = null;
-			}
-		} catch (\ErrorException $e) {
-			throw new MediaFileOperationException($e->getMessage(), $e);
-		}
-	}
+	abstract public function write($stream, bool $collectStatistics = false): ?StreamStat;
 
 	/**
 	 * Deletes the file.
@@ -201,15 +147,6 @@ abstract class MediaFile
 	 * @throws MediaFileOperationException
 	 */
 	abstract public function getFilesize(): int;
-
-	/**
-	 * Returns the absolute path of the file.
-	 *
-	 * @return string
-	 *
-	 * @throws MediaFileOperationException
-	 */
-	abstract public function getAbsolutePath(): string;
 
 	/**
 	 * Returns the extension of the file incl. a preceding dot.
@@ -287,36 +224,6 @@ abstract class MediaFile
 	}
 
 	/**
-	 * Checks if the given MIME type is supported.
-	 *
-	 * @param string $mimeType the MIME type
-	 *
-	 * @return bool
-	 */
-	public static function isSupportedMimeType(string $mimeType): bool
-	{
-		return
-			self::isSupportedImageMimeType($mimeType) ||
-			self::isSupportedVideoMimeType($mimeType);
-	}
-
-	/**
-	 * Asserts that the given MIME type is supported.
-	 *
-	 * @param string $mimeType the MIME type
-	 *
-	 * @return void
-	 *
-	 * @throws MediaFileUnsupportedException
-	 */
-	public static function assertIsSupportedMimeType(string $mimeType): void
-	{
-		if (!self::isSupportedMimeType($mimeType)) {
-			throw new MediaFileUnsupportedException(MediaFileUnsupportedException::DEFAULT_MESSAGE . ' (bad MIME type: ' . $mimeType . ')');
-		}
-	}
-
-	/**
 	 * Checks if the given file extension is a supported image extension.
 	 *
 	 * @param string $extension the file extension
@@ -352,22 +259,6 @@ abstract class MediaFile
 		return
 			self::isSupportedImageFileExtension($extension) ||
 			self::isSupportedVideoFileExtension($extension);
-	}
-
-	/**
-	 * Asserts that the given extension is supported.
-	 *
-	 * @param string $extension the file extension
-	 *
-	 * @return void
-	 *
-	 * @throws MediaFileUnsupportedException
-	 */
-	public static function assertIsSupportedFileExtension(string $extension): void
-	{
-		if (!self::isSupportedFileExtension($extension)) {
-			throw new MediaFileUnsupportedException(MediaFileUnsupportedException::DEFAULT_MESSAGE . ' (bad extension: ' . $extension . ')');
-		}
 	}
 
 	/**

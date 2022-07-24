@@ -20,7 +20,7 @@ class Errors extends Diagnostics
 	 */
 	public function get(): array
 	{
-		// Declare
+		/** @var string[] $errors */
 		$errors = [];
 
 		// @codeCoverageIgnoreStart

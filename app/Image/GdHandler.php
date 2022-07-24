@@ -2,18 +2,17 @@
 
 namespace App\Image;
 
+use App\DTO\ImageDimension;
+use App\Exceptions\ImageProcessingException;
+use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
-use App\Models\Configs;
-use function Safe\getimagesize;
+use Safe\Exceptions\ImageException;
+
 use function Safe\imagecopyresampled;
 use function Safe\imagecopyresized;
-use function Safe\imagecreatefromgif;
-use function Safe\imagecreatefromjpeg;
-use function Safe\imagecreatefrompng;
-use function Safe\imagecreatefromwebp;
 use function Safe\imagecreatetruecolor;
-use function Safe\imagedestroy;
+use function Safe\imagecrop;
 use function Safe\imageflip;
 use function Safe\imagegif;
 use function Safe\imagejpeg;
@@ -22,202 +21,352 @@ use function Safe\imagerotate;
 use function Safe\imagesx;
 use function Safe\imagesy;
 use function Safe\imagewebp;
-use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
+use function Safe\rewind;
+use function Safe\stream_get_contents;
 
-/**
- * Note that the doc blocks of the GD image processing functions are incorrect.
- * PhpStan is reporting a lot of false posiive.
- * See here: https://github.com/thecodingmachine/safe/issues/283.
- */
-class GdHandler implements ImageHandlerInterface
+class GdHandler extends BaseImageHandler
 {
-	private int $compressionQuality;
+	public const SUPPORTED_IMAGE_TYPES = [
+		IMAGETYPE_JPEG,
+		IMAGETYPE_JPEG2000,
+		IMAGETYPE_PNG,
+		IMAGETYPE_GIF,
+		IMAGETYPE_WEBP,
+	];
 
 	/**
-	 * Rotates a given image resource based on the given orientation.
-	 *
-	 * @param \GdImage $image       the image reference to rotate
-	 * @param int      $orientation the orientation of the original image
-	 *
-	 * @return array{width: int, height: int} a dictionary of width and height of the rotated image
-	 *
-	 * @throws MediaFileOperationException
+	 * @var \GdImage|null the opaque GD handler
 	 */
-	private function autoRotateInternal(\GdImage &$image, int $orientation): array
+	private ?\GdImage $gdImage = null;
+
+	/** @var int the image type detected by GD upon loading */
+	private int $gdImageType = 0;
+
+	/**
+	 * @throws ImageProcessingException
+	 */
+	public function __clone()
 	{
 		try {
-			$image = match ($orientation) {
-				3 => imagerotate($image, -180, 0),
-				5 => imagerotate($image, -90, 0),
-				6 => imagerotate($image, -90, 0),
-				7 => imagerotate($image, 90, 0),
-				8 => imagerotate($image, 90, 0),
-				default => $image
-			};
-			match ($orientation) {
-				2 => imageflip($image, IMG_FLIP_HORIZONTAL),
-				4 => imageflip($image, IMG_FLIP_VERTICAL),
-				5 => imageflip($image, IMG_FLIP_HORIZONTAL),
-				7 => imageflip($image, IMG_FLIP_HORIZONTAL),
-				default => true
-			};
-		} catch (\Throwable) {
-			throw new MediaFileOperationException('Failed to rotate image');
+			// \GdImage is an uncloneable object.
+			// Moreover, the library does not provide a method to make
+			// a proper copy of an \GdImage which preserves all attributes.
+			// Making a reliable copy of a \GdImage is a hassle.
+			// The main problem is that a \GdImage instance can represent one
+			// out of four types of images:
+			//
+			//  a) a true color image without alpha channel
+			//  b) a true color image with alpha channel
+			//  c) a palette image without a palette entry for transparency
+			//  d) a palette image with a palette entry for transparency
+			//
+			// Programmatically, the former two are created via
+			// `imagecreatetruecolor`, the latter two are created via
+			// `imagecreate`.
+			// Methods which take two `\GdImage` arguments - a source and
+			// a destination - such as `imagecopy` behave unreliably, if
+			// the provided source and destination are of different type.
+			// Typically, one ends up with color distortions or
+			// transparency turning into black or white.
+			// For palette images one has to ensure that the palette is
+			// copied from the source to the destination via
+			// `imagepalettecopy` before the actual image is copied.
+			// However, `imagepalettecopy` must not be used on a true color
+			// image or funny things start to happen.
+			// Unfortunately, if one does not create a `\GdImage` with
+			// `imagecreatetruecolor` or `imagecreate` but loads an image
+			// from a file via `imagecreatefrom...` the type of the
+			// returned `\GdImage` is unpredictable.
+			// For example a PNG or TIFF image can either be a palette image
+			// or a true color image.
+			// TLTR: Making a good, deep copy of a `\GdImage` is a nightmare.
+			//
+			// The problem is discussed in https://stackoverflow.com/q/12605768/2690527.
+			// The accepted answer https://stackoverflow.com/a/12606659/2690527
+			// is not good, because it simply assumes that one has case a)
+			// (true color without alpha channel).
+			// The answer https://stackoverflow.com/a/14690598/2690527 is
+			// better even though it bears some easy-to-fix programming errors
+			// like undefined variables.
+			// However, it has two drawbacks:
+			//  - In order to be on the safe side, the copied image always
+			//    has a transparency channel for true color images even if
+			//    the image does not use transparancy at all.
+			//  - Due to its usage of `imagealphablending` it turns out to be
+			//    incredibly slow, even slower than just re-loading the
+			//    GD image from disk and decoding the image stream.
+			//
+			// The best solution seems to exploit `imagecrop`.
+			// Opposed to other methods, `imagecrop` does not take two
+			// arguments - the source and the destination - but creates
+			// a deep copy internally and **returns** the result.
+			// Hence, we use `imagecrop` without actually cropping anything
+			// to get a deep copy.
+			// With respect to efficiency `imagecrop` does not seem to be as
+			// efficient as a true clone method could be, but it is not worse
+			// than re-loading the image from disk.
+			if ($this->gdImage !== null) {
+				$dim = $this->getDimensions();
+				// We exploit `imagecrop` to get a deep copy of the image;
+				// see long explanation above
+				$this->gdImage = imagecrop($this->gdImage, ['x' => 0, 'y' => 0, 'width' => $dim->width, 'height' => $dim->height]);
+			}
+		} catch (\ErrorException $e) {
+			throw new ImageProcessingException('Failed to clone image', $e);
 		}
-
-		try {
-			$width = imagesx($image);
-			$height = imagesy($image);
-		} catch (\Throwable) {
-			throw new MediaFileOperationException('Failed to determine dimensions of image');
-		}
-
-		return ['width' => $width, 'height' => $height];
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function __construct(int $compressionQuality)
+	public function reset(): void
 	{
-		$this->compressionQuality = $compressionQuality;
+		$this->gdImage = null;
+		$this->gdImageType = 0;
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
-	public function scale(
-		string $source,
-		string $destination,
-		int $newWidth,
-		int $newHeight,
-		int &$resWidth,
-		int &$resHeight
-	): void {
-		$res = $this->readImage($source);
-		$sourceImg = $res['image'];
-		$mime = $res['mime'];
-		$width = $res['width'];
-		$height = $res['height'];
+	public function load(MediaFile $file): void
+	{
+		try {
+			$inMemoryBuffer = new InMemoryBuffer();
+			$this->reset();
 
-		if ($newWidth === 0) {
-			$newWidth = (int) round($newHeight * ($width / $height));
-		} else {
-			$tmpHeight = (int) round($newWidth / ($width / $height));
-			if ($newHeight !== 0 && $tmpHeight > $newHeight) {
-				$newWidth = (int) round($newHeight * ($width / $height));
+			$originalStream = $file->read();
+			if (stream_get_meta_data($originalStream)['seekable']) {
+				$inputStream = $originalStream;
 			} else {
-				$newHeight = $tmpHeight;
+				// We make an in-memory copy of the provided stream,
+				// because we must be able to seek/rewind the stream.
+				// For example, a readable stream from a remote location (i.e.
+				// a "download" stream) is only forward readable once.
+				$inMemoryBuffer->write($originalStream);
+				$inputStream = $inMemoryBuffer->read();
 			}
-		}
 
-		$image = imagecreatetruecolor($newWidth, $newHeight);
+			$imgBinary = stream_get_contents($inputStream);
+			rewind($inputStream);
 
-		imagecopyresampled($image, $sourceImg, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+			// Determine the type of image, so that we can later save the
+			// image using the same type
+			// TODO: Replace `imagecreatefromstring` by `\Safe\imagecreatefromstring` after https://github.com/thecodingmachine/safe/issues/352 has been resolved
+			error_clear_last();
+			$gdImgStat = getimagesizefromstring($imgBinary);
+			if ($gdImgStat === false) {
+				throw ImageException::createFromPhpError();
+			} else {
+				$this->gdImageType = $gdImgStat[2];
+			}
+			if (!in_array($this->gdImageType, self::SUPPORTED_IMAGE_TYPES, true)) {
+				$this->reset();
+				throw new MediaFileUnsupportedException('Type of photo is not supported');
+			}
 
-		$this->writeImage($destination, $image, $mime);
+			// Load image
+			error_clear_last();
+			// TODO: Replace `imagecreatefromstring` by `\Safe\imagecreatefromstring` after https://github.com/thecodingmachine/safe/issues/352 has been resolved
+			$img = imagecreatefromstring($imgBinary);
+			if ($img === false) {
+				throw ImageException::createFromPhpError();
+			}
+			$this->gdImage = $img;
 
-		imagedestroy($image);
-		imagedestroy($sourceImg);
+			// Get EXIF data to determine whether rotation is required
+			// `exif_read_data` only supports JPEGs
+			if (in_array($this->gdImageType, [IMAGETYPE_JPEG, IMAGETYPE_JPEG2000], true)) {
+				error_clear_last();
+				// TODO: Replace `exif_read_data` by `\Safe\exif_read_data` after https://github.com/thecodingmachine/safe/issues/215 has been resolved
+				$exifData = exif_read_data($inputStream);
+				if ($exifData === false) {
+					throw ImageException::createFromPhpError();
+				}
 
-		$resWidth = $newWidth;
-		$resHeight = $newHeight;
-
-		// Optimize image
-		if (Configs::getValueAsBool('lossless_optimization')) {
-			ImageOptimizer::optimize($destination);
+				// Auto-rotate image
+				$orientation = array_key_exists('Orientation', $exifData) && is_numeric($exifData['Orientation']) ? (int) $exifData['Orientation'] : 1;
+				$this->autoRotate($orientation);
+			}
+		} catch (\ErrorException $e) {
+			$this->reset();
+			throw new MediaFileOperationException('Failed to load image', $e);
+		} finally {
+			$inMemoryBuffer->close();
+			$file->close();
 		}
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
-	public function crop(
-		string $source,
-		string $destination,
-		int $newWidth,
-		int $newHeight
-	): void {
-		$res = $this->readImage($source);
-		$sourceImg = $res['image'];
-		$width = $res['width'];
-		$height = $res['height'];
-
-		if ($width < $height) {
-			$newSize = $width;
-			$startWidth = 0;
-			$startHeight = $height / 2 - $width / 2;
-		} else {
-			$newSize = $height;
-			$startWidth = $width / 2 - $height / 2;
-			$startHeight = 0;
+	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStat
+	{
+		if ($this->gdImage === null) {
+			throw new MediaFileOperationException('No image loaded');
 		}
-
-		$image = imagecreatetruecolor($newWidth, $newHeight);
-
-		$this->fastImageCopyResampled($image, $sourceImg, 0, 0, $startWidth, $startHeight, $newWidth, $newHeight, $newSize, $newSize);
-
 		try {
-			imagejpeg($image, $destination, $this->compressionQuality);
-		} catch (\Throwable) {
-			throw new MediaFileOperationException('Failed to write image ' . $destination);
-		}
+			// We write the image into a memory buffer first, because
+			// we don't know if the file is a local file (or hosted elsewhere)
+			// and if the file supports seekable streams
+			$inMemoryBuffer = new InMemoryBuffer();
 
-		imagedestroy($image);
-		imagedestroy($sourceImg);
+			switch ($this->gdImageType) {
+				case IMAGETYPE_JPEG:
+				case IMAGETYPE_JPEG2000:
+					imagejpeg($this->gdImage, $inMemoryBuffer->stream(), $this->compressionQuality);
+					break;
+				case IMAGETYPE_PNG:
+					imagepng($this->gdImage, $inMemoryBuffer->stream());
+					break;
+				case IMAGETYPE_GIF:
+					imagegif($this->gdImage, $inMemoryBuffer->stream());
+					break;
+				case IMAGETYPE_WEBP:
+					imagewebp($this->gdImage, $inMemoryBuffer->stream());
+					break;
+				default:
+					throw new \AssertionError('uncovered image type');
+			}
 
-		// Optimize image
-		if (Configs::getValueAsBool('lossless_optimization')) {
-			ImageOptimizer::optimize($destination);
+			$streamStat = $file->write($inMemoryBuffer->read(), $collectStatistics);
+			$file->close();
+			$inMemoryBuffer->close();
+
+			return parent::applyLosslessOptimizationConditionally($file) ?? $streamStat;
+		} catch (\ErrorException $e) {
+			throw new MediaFileOperationException('Failed to save image', $e);
 		}
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Rotates and flips a photo based on the designated EXIF orientation.
+	 *
+	 * @param int $orientation the orientation value (1..8) as defined by EXIF specification, default is 1 (means up-right and not mirrored/flipped)
+	 *
+	 * @return void
+	 *
+	 * @throws ImageProcessingException
 	 */
-	public function autoRotate(string $path, int $orientation = 1, bool $pretend = false): array
+	private function autoRotate(int $orientation): void
 	{
 		try {
-			/** @var \GdImage $image */
-			$image = imagecreatefromjpeg($path);
-		} catch (\Throwable) {
-			throw new MediaFileOperationException('Failed to read image ' . $path);
-		}
+			$angle = match ($orientation) {
+				1, 2, 4 => 0,
+				3 => -180,
+				5, 6 => -90,
+				7, 8 => 90,
+				default => throw new ImageProcessingException('Image orientation out of range')
+			};
 
-		$rotate = $orientation !== 1;
+			$flip = match ($orientation) {
+				1, 3, 6, 8 => 0,
+				2, 7, 5 => IMG_FLIP_HORIZONTAL,
+				4 => IMG_FLIP_VERTICAL,
+				default => throw new ImageProcessingException('Image orientation out of range')
+			};
 
-		$dimensions = $this->autoRotateInternal($image, $orientation);
-
-		if ($rotate && !$pretend) {
-			try {
-				imagejpeg($image, $path, 100);
-			} catch (\Throwable) {
-				throw new MediaFileOperationException('Failed to write image ' . $path);
+			if ($angle !== 0) {
+				$this->gdImage = imagerotate($this->gdImage, $angle, 0);
 			}
-		}
-		imagedestroy($image);
 
-		return $dimensions;
+			if ($flip !== 0) {
+				imageflip($this->gdImage, $flip);
+			}
+		} catch (\ErrorException $e) {
+			throw new ImageProcessingException('Failed to auto-rotate image', $e);
+		}
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function rotate(string $source, int $angle, ?string $destination = null): void
+	public function cloneAndScale(ImageDimension $dstDim): ImageHandlerInterface
 	{
-		$res = $this->readImage($source);
-		$image = $res['image'];
-		$mime = $res['mime'];
-
 		try {
-			$image = imagerotate($image, -$angle, 0);
-		} catch (\Throwable) {
-			throw new MediaFileOperationException('Failed to rotate image ' . $source);
+			$srcDim = $this->getDimensions();
+
+			if ($dstDim->width === 0 && $dstDim->height !== 0) {
+				$scale = $dstDim->height / $srcDim->height;
+			} elseif ($dstDim->width !== 0 && $dstDim->height === 0) {
+				$scale = $dstDim->width / $srcDim->width;
+			} elseif ($dstDim->width !== 0 && $dstDim->height !== 0) {
+				$scale = min($dstDim->width / $srcDim->width, $dstDim->height / $srcDim->height);
+			} else {
+				throw new LycheeDomainException('Width and height must not be zero simultaneously');
+			}
+
+			$width = (int) round($scale * $srcDim->width);
+			$height = (int) round($scale * $srcDim->height);
+
+			$clonedGdImage = imagecreatetruecolor($width, $height);
+			$this->fastImageCopyResampled($clonedGdImage, $this->gdImage, 0, 0, 0, 0, $width, $height, $srcDim->width, $srcDim->height);
+
+			$clone = new self();
+			$clone->compressionQuality = $this->compressionQuality;
+			$clone->gdImage = $clonedGdImage;
+			$clone->gdImageType = $this->gdImageType;
+
+			return $clone;
+		} catch (\ErrorException $e) {
+			$this->reset();
+			throw new ImageProcessingException('Failed to scale image', $e);
 		}
+	}
 
-		$this->writeImage($destination ?? $source, $image, $mime, 100);
+	/**
+	 * {@inheritdoc}
+	 */
+	public function cloneAndCrop(ImageDimension $dstDim): ImageHandlerInterface
+	{
+		try {
+			$srcDim = $this->getDimensions();
 
-		imagedestroy($image);
+			$srcWHRatio = $srcDim->width / $srcDim->height;
+			$dstWHRatio = $dstDim->width / $dstDim->height;
+
+			if ($dstWHRatio > $srcWHRatio) {
+				// The designated ratio is wider than the source ratio
+				// Hence, we must crop off the height
+				$width = $srcDim->width;
+				$x = 0;
+				$height = (int) round($srcDim->width / $dstWHRatio);
+				$y = (int) round(($srcDim->height - $height) / 2);
+			} else {
+				// Inverse case: we must crop off the width
+				$width = (int) round($srcDim->height * $dstWHRatio);
+				$x = (int) round(($srcDim->width - $width) / 2);
+				$height = $srcDim->height;
+				$y = 0;
+			}
+
+			$clonedGdImage = imagecreatetruecolor($dstDim->width, $dstDim->height);
+			$this->fastImageCopyResampled($clonedGdImage, $this->gdImage, 0, 0, $x, $y, $dstDim->width, $dstDim->height, $width, $height);
+
+			$clone = new self();
+			$clone->compressionQuality = $this->compressionQuality;
+			$clone->gdImage = $clonedGdImage;
+			$clone->gdImageType = $this->gdImageType;
+
+			return $clone;
+		} catch (\ErrorException $e) {
+			$this->reset();
+			throw new ImageProcessingException('Failed to crop image', $e);
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function rotate(int $angle): ImageDimension
+	{
+		try {
+			$this->gdImage = imagerotate($this->gdImage, -$angle, 0);
+
+			return $this->getDimensions();
+		} catch (\ErrorException $e) {
+			$this->reset();
+			throw new ImageProcessingException('Failed to rotate image', $e);
+		}
 	}
 
 	/**
@@ -226,7 +375,7 @@ class GdHandler implements ImageHandlerInterface
 	 * Typically from 30 to 60 times faster when reducing high resolution images down to thumbnail size using the default quality setting.
 	 * Author: Tim Eckel - Date: 09/07/07 - Version: 1.1 - Project: FreeRingers.net - Freely distributable - These comments must remain.
 	 *
-	 * Optional "quality" parameter (defaults is 3). Fractional values are allowed, for example 1.5. Must be greater than zero.
+	 * Optional "quality" parameter (default is 4). Fractional values are allowed, for example 1.5. Must be greater than zero.
 	 * Between 0 and 1 = Fast, but mosaic results, closer to 0 increases the mosaic effect.
 	 * 1 = Up to 350 times faster. Poor results, looks very similar to imagecopyresized.
 	 * 2 = Up to 95 times faster.  Images appear a little sharp, some prefer this over a quality of 3.
@@ -234,22 +383,24 @@ class GdHandler implements ImageHandlerInterface
 	 * 4 = Up to 25 times faster.  Almost identical to imagecopyresampled for most images.
 	 * 5 = No speedup. Just uses imagecopyresampled, no advantage over imagecopyresampled.
 	 *
-	 * @param ?\GdImage &$dst_image
-	 * @param ?\GdImage $src_image
-	 * @param int       $dst_x
-	 * @param int       $dst_y
-	 * @param int       $src_x
-	 * @param int       $src_y
-	 * @param int       $dst_w
-	 * @param int       $dst_h
-	 * @param int       $src_w
-	 * @param int       $src_h
-	 * @param int       $quality
+	 * @param \GdImage $dst_image
+	 * @param \GdImage $src_image
+	 * @param int      $dst_x
+	 * @param int      $dst_y
+	 * @param int      $src_x
+	 * @param int      $src_y
+	 * @param int      $dst_w
+	 * @param int      $dst_h
+	 * @param int      $src_w
+	 * @param int      $src_h
+	 * @param int      $quality
 	 *
 	 * @return void
+	 *
+	 * @throws ImageProcessingException
 	 */
 	private function fastImageCopyResampled(
-		&$dst_image,
+		$dst_image,
 		$src_image,
 		int $dst_x,
 		int $dst_y,
@@ -261,79 +412,33 @@ class GdHandler implements ImageHandlerInterface
 		int $src_h,
 		int $quality = 4
 	): void {
-		if ($src_image === null || $dst_image === null || $quality <= 0) {
-			return;
-		}
-
-		if ($quality < 5 && (($dst_w * $quality) < $src_w || ($dst_h * $quality) < $src_h)) {
-			$temp = imagecreatetruecolor($dst_w * $quality + 1, $dst_h * $quality + 1);
-			imagecopyresized($temp, $src_image, 0, 0, $src_x, $src_y, $dst_w * $quality + 1, $dst_h * $quality + 1, $src_w, $src_h);
-			imagecopyresampled($dst_image, $temp, $dst_x, $dst_y, 0, 0, $dst_w, $dst_h, $dst_w * $quality, $dst_h * $quality);
-			imagedestroy($temp);
-		} else {
-			imagecopyresampled($dst_image, $src_image, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h);
+		try {
+			if ($quality < 5 && (($dst_w * $quality) < $src_w || ($dst_h * $quality) < $src_h)) {
+				$temp = imagecreatetruecolor($dst_w * $quality + 1, $dst_h * $quality + 1);
+				imagecopyresized($temp, $src_image, 0, 0, $src_x, $src_y, $dst_w * $quality + 1, $dst_h * $quality + 1, $src_w, $src_h);
+				imagecopyresampled($dst_image, $temp, $dst_x, $dst_y, 0, 0, $dst_w, $dst_h, $dst_w * $quality, $dst_h * $quality);
+			} else {
+				imagecopyresampled($dst_image, $src_image, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h);
+			}
+		} catch (\ErrorException $e) {
+			throw new ImageProcessingException('Could not resample image', $e);
 		}
 	}
 
 	/**
-	 * @param string $source
-	 *
-	 * @return array{image: \GdImage, mime: int, width: int, height: int}
-	 *
-	 * @throws MediaFileUnsupportedException
-	 * @throws MediaFileOperationException
+	 * {@inheritDoc}
 	 */
-	private function readImage(string $source): array
+	public function getDimensions(): ImageDimension
 	{
 		try {
-			$mime = getimagesize($source)[2];
-			/** @var \GdImage */
-			$image = match ($mime) {
-				IMAGETYPE_JPEG, IMAGETYPE_JPEG2000 => imagecreatefromjpeg($source),
-				IMAGETYPE_PNG => imagecreatefrompng($source),
-				IMAGETYPE_GIF => imagecreatefromgif($source),
-				IMAGETYPE_WEBP => imagecreatefromwebp($source),
-				default => throw new MediaFileUnsupportedException('Type of photo "' . $mime . '" is not supported'),
-			};
-		} catch (\Throwable) {
-			throw new MediaFileUnsupportedException('Failed to read photo ' . $source);
+			return new ImageDimension(imagesx($this->gdImage), imagesy($this->gdImage));
+		} catch (\ErrorException $e) {
+			throw new ImageProcessingException('Could not determine dimensions of image', $e);
 		}
-
-		// the image may need to be rotated prior to any processing
-		try {
-			$exif = exif_read_data($source);
-			$exif = $exif !== false ? $exif : [];
-		} catch (\Exception $e) {
-			$exif = [];
-		}
-		$orientation = isset($exif['Orientation']) && $exif['Orientation'] !== '' ? $exif['Orientation'] : 1;
-		$dimensions = $this->autoRotateInternal($image, $orientation);
-
-		return ['image' => $image, 'mime' => $mime, 'width' => $dimensions['width'], 'height' => $dimensions['height']];
 	}
 
-	/**
-	 * @param string   $destination
-	 * @param resource $image
-	 * @param int      $mime
-	 * @param int      $quality
-	 *
-	 * @return void
-	 *
-	 * @throws MediaFileOperationException
-	 */
-	private function writeImage(string $destination, $image, int $mime, int $quality = -1): void
+	public function isLoaded(): bool
 	{
-		try {
-			match ($mime) {
-				IMAGETYPE_JPEG, IMAGETYPE_JPEG2000 => imagejpeg($image, $destination, $quality !== -1 ? $quality : $this->compressionQuality),
-				IMAGETYPE_PNG => imagepng($image, $destination),
-				IMAGETYPE_GIF => imagegif($image, $destination),
-				IMAGETYPE_WEBP => imagewebp($image, $destination),
-				default => throw new MediaFileOperationException('Failed to write image ' . $destination),
-			};
-		} catch (\Throwable $e) {
-			throw new MediaFileOperationException('Failed to write image ' . $destination, $e);
-		}
+		return $this->gdImageType !== 0 && $this->gdImage !== null;
 	}
 }

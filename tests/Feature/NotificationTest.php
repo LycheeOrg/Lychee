@@ -16,8 +16,6 @@ use App\Mail\PhotosAdded;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
-use Tests\Feature\Lib\AlbumsUnitTest;
-use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\Feature\Lib\SessionUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
 use Tests\TestCase;
@@ -26,19 +24,23 @@ class NotificationTest extends TestCase
 {
 	public function testNotificationSetting(): void
 	{
-		Auth::loginUsingId(0);
-
 		// save initial value
 		$init_config_value = Configs::getValue('new_photos_notification');
 
-		$response = $this->postJson('/api/Settings::setNewPhotosNotification', [
-			'new_photos_notification' => '1',
-		]);
-		$response->assertNoContent();
-		static::assertEquals('1', Configs::getValue('new_photos_notification'));
+		try {
+			Auth::loginUsingId(0);
 
-		// set to initial
-		Configs::set('new_photos_notification', $init_config_value);
+			$response = $this->postJson('/api/Settings::setNewPhotosNotification', [
+				'new_photos_notification' => '1',
+			]);
+			$response->assertNoContent();
+			static::assertEquals('1', Configs::getValue('new_photos_notification'));
+		} finally {
+			// set to initial
+			Configs::set('new_photos_notification', $init_config_value);
+			$sessions_test = new SessionUnitTest($this);
+			$sessions_test->logout();
+		}
 	}
 
 	public function testSetupUserEmail(): void
@@ -50,35 +52,6 @@ class NotificationTest extends TestCase
 		Auth::loginUsingId(0);
 		$users_test->update_email('test@test.com');
 
-		// add new user
-		$users_test->add('uploader', 'uploader');
-
-		$sessions_test->logout();
-	}
-
-	/**
-	 * TODO: Figure out if this test even tests anything related to notification; it appears to me as if this test simply uploads a file, but does not even assert that a notification has been sent.
-	 */
-	public function testUploadAndNotify(): void
-	{
-		$sessions_test = new SessionUnitTest($this);
-		$albums_tests = new AlbumsUnitTest($this);
-		$photos_tests = new PhotosUnitTest($this);
-
-		// login as new user
-		$sessions_test->login('uploader', 'uploader');
-
-		// add new album
-		$albumID = $albums_tests->add(null, 'test_album')->offsetGet('id');
-
-		$photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
-			$albumID
-		);
-
-		$albums_tests->delete([$albumID]);
-
-		// logout
 		$sessions_test->logout();
 	}
 
@@ -86,49 +59,27 @@ class NotificationTest extends TestCase
 	{
 		// save initial value
 		$init_config_value = Configs::getValue('new_photos_notification');
-		Configs::set('new_photos_notification', '1');
 
-		$photos = [
-			'album123' => [
-				'name' => 'Test Photo',
-				'photos' => [
-					'photo123' => [
-						'thumb' => 'https://lychee.test.com/thumb.jpg',
-						'link' => 'https://lychee.test.com',
+		try {
+			Configs::set('new_photos_notification', '1');
+
+			$photos = [
+				'album123' => [
+					'name' => 'Test Photo',
+					'photos' => [
+						'photo123' => [
+							'thumb' => 'https://lychee.test.com/thumb.jpg',
+							'link' => 'https://lychee.test.com',
+						],
 					],
 				],
-			],
-		];
+			];
 
-		Mail::fake()->send(new PhotosAdded($photos));
+			Mail::fake()->send(new PhotosAdded($photos));
 
-		Mail::assertSent(PhotosAdded::class);
-
-		Configs::set('new_photos_notification', $init_config_value);
-	}
-
-	public function testClearNotifications(): void
-	{
-		$users_test = new UsersUnitTest($this);
-		$sessions_test = new SessionUnitTest($this);
-
-		// remove user, email & notifications
-		Auth::loginUsingId(0);
-
-		$users_test->update_email(null);
-
-		$response = $users_test->list();
-		$t = json_decode($response->getContent());
-		$user_id = end($t)->id;
-		$response->assertJsonFragment([
-			'id' => $user_id,
-			'username' => 'uploader',
-			'may_upload' => true,
-			'is_locked' => false,
-		]);
-
-		$users_test->delete($user_id);
-
-		$sessions_test->logout();
+			Mail::assertSent(PhotosAdded::class);
+		} finally {
+			Configs::set('new_photos_notification', $init_config_value);
+		}
 	}
 }

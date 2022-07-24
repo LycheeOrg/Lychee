@@ -153,34 +153,6 @@ class AlbumsUnitTest
 	}
 
 	/**
-	 * Check if we see `id` in the list of all visible albums.
-	 *
-	 * Result varies depending on login state.
-	 *
-	 * @param string $id
-	 */
-	public function see_in_albums(string $id): void
-	{
-		$response = $this->testCase->postJson('/api/Albums::get');
-		$response->assertOk();
-		$response->assertSee($id, false);
-	}
-
-	/**
-	 * Check if we don't see id in the list of all visible albums.
-	 *
-	 * Result varies depending on login state!
-	 *
-	 * @param string $id
-	 */
-	public function dont_see_in_albums(string $id): void
-	{
-		$response = $this->testCase->postJson('/api/Albums::get');
-		$response->assertOk();
-		$response->assertDontSee($id, false);
-	}
-
-	/**
 	 * Change title.
 	 *
 	 * @param string      $id

@@ -2,11 +2,9 @@
 
 namespace App\Actions\Import;
 
-use App\Actions\Import\Extensions\Checks;
 use App\Actions\Photo\Create;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\Exceptions\Handler;
-use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\MassImportException;
 use App\Image\DownloadedFile;
 use App\Image\MediaFile;
@@ -15,25 +13,13 @@ use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Support\Collection;
 use Safe\Exceptions\InfoException;
+
 use function Safe\ini_get;
 use function Safe\parse_url;
 use function Safe\set_time_limit;
 
 class FromUrl
 {
-	use Checks;
-
-	/**
-	 * @throws InsufficientFilesystemPermissions
-	 */
-	public function __construct()
-	{
-		// TODO: Why do we explicitly perform this check here? We don't check the other import classes. We could just let the import fail.
-		// Moreover, we do not even use the `import` folder which is checked by this method.
-		// There is similar odd test in {@link \App\Actions\Photo\Create::add()} which uses another "check" trait.
-		$this->checkPermissions();
-	}
-
 	/**
 	 * Imports photos from a list of URLs.
 	 *

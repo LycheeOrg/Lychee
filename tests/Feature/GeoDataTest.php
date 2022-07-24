@@ -18,122 +18,140 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
+use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\TestCase;
 
 class GeoDataTest extends TestCase
 {
+	use RequiresEmptyPhotos;
+
+	protected PhotosUnitTest $photos_tests;
+	protected AlbumsUnitTest $albums_tests;
+
+	public function setUp(): void
+	{
+		parent::setUp();
+		$this->photos_tests = new PhotosUnitTest($this);
+		$this->albums_tests = new AlbumsUnitTest($this);
+
+		Auth::loginUsingId(0);
+
+		$this->setUpRequiresEmptyPhotos();
+	}
+
+	public function tearDown(): void
+	{
+		$this->tearDownRequiresEmptyPhotos();
+		Auth::logout();
+		Session::flush();
+		parent::tearDown();
+	}
+
 	/**
 	 * @return void
 	 */
 	public function testGeo(): void
 	{
-		$photos_tests = new PhotosUnitTest($this);
-		$albums_tests = new AlbumsUnitTest($this);
-
-		Auth::loginUsingId(0);
-
-		$id = $photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
-		);
-
-		$response = $photos_tests->get($id);
-		$photos_tests->see_in_unsorted($id);
-		/*
-		 * Check some Exif data
-		 * The metadata extractor is unable to extract an explicit timezone
-		 * for the test file.
-		 * Hence, the attribute `taken_at` is relative to the default timezone
-		 * of the application.
-		 * Actually, the `exiftool` reports an attribute `Time Zone: +08:00`,
-		 * if the tool is invoked from the command line, but the PHP wrapper
-		 * \PHPExif\Exif does not use it.
-		 */
-		$taken_at = Carbon::create(2011, 8, 17, 16, 39, 37);
-		$response->assertJson(
-			[
-				'id' => $id,
-				'title' => 'mongolia',
-				'type' => 'image/jpeg',
-				'iso' => '200',
-				'aperture' => 'f/13.0',
-				'make' => 'NIKON CORPORATION',
-				'model' => 'NIKON D5000',
-				'shutter' => '1/640 s',
-				'focal' => '44 mm',
-				'altitude' => '1633.0000',
-				'license' => 'none',
-				'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
-				'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
-				'is_public' => 0,
-				'is_downloadable' => true,
-				'is_share_button_visible' => true,
-				'size_variants' => [
-					'thumb' => [
-						'width' => 200,
-						'height' => 200,
-					],
-					'small' => [
-						'width' => 542,
-						'height' => 360,
-					],
-					'medium' => null,
-					'medium2x' => null,
-					'original' => [
-						'width' => 1280,
-						'height' => 850,
-						'filesize' => 201316,
-					],
-				],
-			]
-		);
-
-		$albumID = $albums_tests->add(null, 'test_mongolia')->offsetGet('id');
-		$photos_tests->set_album($albumID, [$id]);
-		$photos_tests->dont_see_in_unsorted($id);
-		$response = $albums_tests->get($albumID);
-		$responseObj = json_decode($response->getContent());
-		static::assertCount(1, $responseObj->photos);
-		static::assertEquals($id, $responseObj->photos[0]->id);
-
-		// now we test position Data
 		// save initial value
 		$map_display_value = Configs::getValue('map_display');
 
-		// set to 0
-		Configs::set('map_display', '0');
-		static::assertEquals('0', Configs::getValue('map_display'));
-		$albums_tests->AlbumsGetPositionDataFull(); // we need to fix this
+		try {
+			$photoResponse = $this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+			);
+			$photoID = $photoResponse->offsetGet('id');
 
-		// set to 1
-		Configs::set('map_display', '1');
-		static::assertEquals('1', Configs::getValue('map_display'));
-		$response = $albums_tests->AlbumsGetPositionDataFull();
-		$responseObj = json_decode($response->getContent());
-		static::assertObjectHasAttribute('photos', $responseObj);
-		static::assertCount(1, $responseObj->photos);
-		static::assertEquals($id, $responseObj->photos[0]->id);
+			$this->photos_tests->see_in_unsorted($photoID);
+			/*
+			 * Check some Exif data
+			 * The metadata extractor is unable to extract an explicit timezone
+			 * for the test file.
+			 * Hence, the attribute `taken_at` is relative to the default timezone
+			 * of the application.
+			 * Actually, the `exiftool` reports an attribute `Time Zone: +08:00`,
+			 * if the tool is invoked from the command line, but the PHP wrapper
+			 * \PHPExif\Exif does not use it.
+			 */
+			$taken_at = Carbon::create(
+				2011, 8, 17, 16, 39, 37
+			);
+			$photoResponse->assertJson(
+				[
+					'id' => $photoID,
+					'title' => 'mongolia',
+					'type' => TestCase::MIME_TYPE_IMG_JPEG,
+					'iso' => '200',
+					'aperture' => 'f/13.0',
+					'make' => 'NIKON CORPORATION',
+					'model' => 'NIKON D5000',
+					'shutter' => '1/640 s',
+					'focal' => '44 mm',
+					'altitude' => 1633,
+					'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
+					'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
+					'is_public' => 0,
+					'is_downloadable' => true,
+					'is_share_button_visible' => true,
+					'size_variants' => [
+						'thumb' => [
+							'width' => 200,
+							'height' => 200,
+						],
+						'small' => [
+							'width' => 542,
+							'height' => 360,
+						],
+						'medium' => null,
+						'medium2x' => null,
+						'original' => [
+							'width' => 1280,
+							'height' => 850,
+							'filesize' => 201316,
+						],
+					],
+				]
+			);
 
-		// set to 0
-		Configs::set('map_display', '0');
-		static::assertEquals('0', Configs::getValue('map_display'));
-		$albums_tests->AlbumGetPositionDataFull($albumID); // we need to fix this
+			$albumResponse = $this->albums_tests->add(null, 'test_mongolia');
+			$albumID = $albumResponse->offsetGet('id');
+			$this->photos_tests->set_album($albumID, [$photoID]);
+			$this->photos_tests->dont_see_in_unsorted($photoID);
+			$albumResponse = $this->albums_tests->get($albumID);
+			$album = static::convertJsonToObject($albumResponse);
+			static::assertCount(1, $album->photos);
+			static::assertEquals($photoID, $album->photos[0]->id);
 
-		// set to 1
-		Configs::set('map_display', '1');
-		static::assertEquals('1', Configs::getValue('map_display'));
-		$response = $albums_tests->AlbumGetPositionDataFull($albumID);
-		$responseObj = json_decode($response->getContent());
-		static::assertObjectHasAttribute('photos', $responseObj);
-		static::assertCount(1, $responseObj->photos);
-		static::assertEquals($id, $responseObj->photos[0]->id);
+			// now we test position Data
 
-		$photos_tests->delete([$id]);
-		$albums_tests->delete([$albumID]);
+			// set to 0
+			Configs::set('map_display', '0');
+			static::assertEquals('0', Configs::getValue('map_display'));
+			$this->albums_tests->AlbumsGetPositionDataFull(); // we need to fix this
 
-		// reset
-		Configs::set('map_display', $map_display_value);
+			// set to 1
+			Configs::set('map_display', '1');
+			static::assertEquals('1', Configs::getValue('map_display'));
+			$positionDataResponse = $this->albums_tests->AlbumsGetPositionDataFull();
+			$positionData = static::convertJsonToObject($positionDataResponse);
+			static::assertObjectHasAttribute('photos', $positionData);
+			static::assertCount(1, $positionData->photos);
+			static::assertEquals($photoID, $positionData->photos[0]->id);
 
-		Auth::logout();
-		Session::flush();
+			// set to 0
+			Configs::set('map_display', '0');
+			static::assertEquals('0', Configs::getValue('map_display'));
+			$this->albums_tests->AlbumGetPositionDataFull($albumID); // we need to fix this
+
+			// set to 1
+			Configs::set('map_display', '1');
+			static::assertEquals('1', Configs::getValue('map_display'));
+			$positionDataResponse = $this->albums_tests->AlbumGetPositionDataFull($albumID);
+			$positionData = static::convertJsonToObject($positionDataResponse);
+			static::assertObjectHasAttribute('photos', $positionData);
+			static::assertCount(1, $positionData->photos);
+			static::assertEquals($photoID, $positionData->photos[0]->id);
+		} finally {
+			Configs::set('map_display', $map_display_value);
+		}
 	}
 }

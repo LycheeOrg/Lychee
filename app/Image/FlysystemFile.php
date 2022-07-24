@@ -6,8 +6,8 @@ use App\Exceptions\MediaFileOperationException;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use League\Flysystem\Adapter\Local as LocalAdapter;
-use League\Flysystem\AdapterInterface;
 use League\Flysystem\Exception as FlyException;
+
 use function Safe\fclose;
 
 /**
@@ -56,9 +56,11 @@ class FlysystemFile extends MediaFile
 	/**
 	 * {@inheritDoc}
 	 */
-	public function write($stream): void
+	public function write($stream, bool $collectStatistics = false): ?StreamStat
 	{
 		try {
+			$streamStat = $collectStatistics ? static::appendStatFilter($stream) : null;
+
 			// TODO: `put` must be replaced by `writeStream` when Flysystem 2 is shipped with Laravel 9
 			// This will also be more consistent with `readStream`.
 			// Note that v1 also provides a method `writeStream`, but this is a misnomer.
@@ -66,6 +68,8 @@ class FlysystemFile extends MediaFile
 			if (!$this->disk->put($this->relativePath, $stream)) {
 				throw new FlyException('Filesystem::put failed');
 			}
+
+			return $streamStat;
 		} catch (\ErrorException|FlyException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
@@ -131,43 +135,6 @@ class FlysystemFile extends MediaFile
 	}
 
 	/**
-	 * Returns the absolute (aka "full") path of the Flysystem file.
-	 *
-	 * Note, the syntax of the absolute path depends on the adapter of the
-	 * underlying Flysystem disk.
-	 * For example, for a disk which uses the "Local" adapter, the absolute
-	 * path starts with a slash `/`.
-	 *
-	 * Optimally, this method should not be used at all, because it exposes
-	 * internal implementation details of the Flysystem adapter.
-	 * However, it is a last resort to implement features which Flysystem does
-	 * not provide using low-level functions.
-	 *
-	 * See also: {@link FlysystemFile::getStorageAdapter()}.
-	 *
-	 * @return string
-	 */
-	public function getAbsolutePath(): string
-	{
-		return $this->disk->path($this->relativePath);
-	}
-
-	/**
-	 * Returns the adapter which drives the Flysystem disk of the file.
-	 *
-	 * Correct interpretation of the absolute path of the file requires to
-	 * know the "type" of the disk on which the file is located on.
-	 *
-	 * See also: {@link FlysystemFile::getAbsolutePath()}.
-	 *
-	 * @return AdapterInterface
-	 */
-	public function getStorageAdapter(): AdapterInterface
-	{
-		return $this->disk->getDriver()->getAdapter();
-	}
-
-	/**
 	 * @return Filesystem the disk this file is stored on
 	 */
 	public function getDisk(): Filesystem
@@ -194,14 +161,24 @@ class FlysystemFile extends MediaFile
 	}
 
 	/**
+	 * Determines if this file is a local file.
+	 *
+	 * @return bool
+	 */
+	public function isLocalFile(): bool
+	{
+		return $this->disk->getDriver()->getAdapter() instanceof LocalAdapter;
+	}
+
+	/**
 	 * @throws MediaFileOperationException
 	 */
 	public function toLocalFile(): NativeLocalFile
 	{
-		if (!($this->disk->getDriver()->getAdapter() instanceof LocalAdapter)) {
+		if (!$this->isLocalFile()) {
 			throw new MediaFileOperationException('file is not hosted locally');
 		}
 
-		return new NativeLocalFile($this->getAbsolutePath());
+		return new NativeLocalFile($this->disk->path($this->relativePath));
 	}
 }

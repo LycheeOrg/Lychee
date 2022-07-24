@@ -16,7 +16,7 @@ use PHPExif\Adapter\NoAdapterException;
 use PHPExif\Exif;
 use PHPExif\Reader\Reader;
 use Safe\Exceptions\StringsException;
-use function Safe\sha1_file;
+
 use function Safe\substr;
 
 /**
@@ -55,24 +55,6 @@ class Extractor
 	public ?string $location = null;
 	public ?string $livePhotoContentID = null;
 	public int $microVideoOffset = 0;
-
-	/**
-	 * Returns the SHA-1 checksum of a file.
-	 *
-	 * @param NativeLocalFile $file the file
-	 *
-	 * @return string the checksum
-	 *
-	 * @throws MediaFileOperationException
-	 */
-	public static function checksum(NativeLocalFile $file): string
-	{
-		try {
-			return sha1_file($file->getAbsolutePath());
-		} catch (StringsException) {
-			throw new MediaFileOperationException('Could not compute checksum for: ' . $file->getAbsolutePath());
-		}
-	}
 
 	/**
 	 * Extracts metadata from a file.
@@ -114,7 +96,7 @@ class Extractor
 			// with a work-around for MP4 videos which are wrongly classified
 			// as `application/octet-stream`, but this work-around only
 			// succeeds if the file has a recognized extension.
-			$exif = $reader->read($file->getAbsolutePath());
+			$exif = $reader->read($file->getRealPath());
 		} catch (\InvalidArgumentException|NoAdapterException $e) {
 			throw new ExternalComponentMissingException('The configured EXIF adapter is not available', $e);
 		} catch (\RuntimeException $e) {
@@ -129,7 +111,7 @@ class Extractor
 				Logs::notice(__METHOD__, __LINE__, 'Falling back to native adapter.');
 				// Use Php native tools
 				$reader = Reader::factory(Reader::TYPE_NATIVE);
-				$exif = $reader->read($file->getAbsolutePath());
+				$exif = $reader->read($file->getRealPath());
 			} catch (\InvalidArgumentException|NoAdapterException $e) {
 				throw new ExternalComponentMissingException('The configured EXIF adapter is not available', $e);
 			} catch (\RuntimeException $e) {
@@ -147,13 +129,13 @@ class Extractor
 		// Attempt to get sidecar metadata if it exists, make sure to check 'real' path in case of symlinks
 		$sidecarData = [];
 
-		$sidecarFile = new NativeLocalFile($file->getAbsolutePath() . '.xmp');
+		$sidecarFile = new NativeLocalFile($file->getPath() . '.xmp');
 
 		if (Configs::hasExiftool() && $sidecarFile->exists()) {
 			try {
 				// Don't use the same reader as the file in case it's a video
 				$sidecarReader = Reader::factory(Reader::TYPE_EXIFTOOL);
-				$sideCarExifData = $sidecarReader->read($sidecarFile->getAbsolutePath());
+				$sideCarExifData = $sidecarReader->read($sidecarFile->getRealPath());
 				if (!$sideCarExifData instanceof Exif) {
 					throw new MediaFileOperationException('Could not even extract EXIF data with the exiftool adapter');
 				}
@@ -359,15 +341,15 @@ class Extractor
 							// that timezone.
 							$taken_at->setTimezone(new \DateTimeZone(date_default_timezone_get()));
 						}
-						// In the remaining cases the timezone information was
-						// extracted and the recording time is assumed exhibit
-						// to original timezone of the location where the video
-						// has been recorded.
-						// So we don't need to do anything.
+					// In the remaining cases the timezone information was
+					// extracted and the recording time is assumed exhibit
+					// to original timezone of the location where the video
+					// has been recorded.
+					// So we don't need to do anything.
 						//
-						// The only known example are the mov files from Apple
-						// devices; the time zone will be formatted as "+01:00"
-						// so neither of the two conditions above should trigger.
+					// The only known example are the mov files from Apple
+					// devices; the time zone will be formatted as "+01:00"
+					// so neither of the two conditions above should trigger.
 					} elseif ($taken_at->getTimezone()->getName() === 'Z') {
 						// This is a video format where we expect the takestamp
 						// to be provided in local time but the timezone is
