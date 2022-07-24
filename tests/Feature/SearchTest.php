@@ -12,10 +12,7 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
 use Tests\Feature\Base\PhotoTestBase;
-use Tests\Feature\Lib\AlbumsUnitTest;
-use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\TestCase;
 
 class SearchTest extends PhotoTestBase
