@@ -3,8 +3,8 @@
 namespace App\Actions\Album;
 
 use App\Exceptions\ModelDBException;
-use App\Facades\AccessControl;
 use App\Models\Album;
+use Illuminate\Support\Facades\Auth;
 
 class Create extends Action
 {
@@ -42,7 +42,7 @@ class Create extends Action
 			// methods of the nested set `NodeTrait`.
 			$album->appendToNode($parentAlbum);
 		} else {
-			$album->owner_id = AccessControl::id();
+			$album->owner_id = Auth::authenticate()->id;
 			$album->makeRoot();
 		}
 	}

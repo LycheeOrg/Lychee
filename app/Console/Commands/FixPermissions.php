@@ -4,9 +4,11 @@ namespace App\Console\Commands;
 
 use App\Actions\Diagnostics\Checks\BasicPermissionCheck;
 use Illuminate\Console\Command;
+
 use function Safe\chmod;
 use function Safe\fileowner;
 use function Safe\sprintf;
+
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 
 class FixPermissions extends Command

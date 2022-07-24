@@ -3,88 +3,22 @@
 namespace App\Legacy;
 
 use App\Exceptions\ConfigurationException;
-use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Configs;
 use App\Models\Logs;
+use App\Models\User;
 use App\Rules\IntegerIDRule;
 use App\Rules\RandomIDRule;
+use Auth;
+use Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 
 /**
  * Stuff we need to delete in the future.
  */
 class Legacy
 {
-	/**
-	 * @throws QueryBuilderException
-	 */
-	public static function resetAdmin(): void
-	{
-		Configs::query()
-			->where('key', '=', 'username')
-			->orWhere('key', '=', 'password')
-			->update(['value' => '']);
-	}
-
-	/**
-	 * @throws InvalidConfigOption
-	 */
-	public static function SetPassword(string $hashedUsername, string $hashedPassword): bool
-	{
-		$configs = Configs::get();
-
-		if (Configs::getValueAsString('version') < '040008') {
-			if ($configs['password'] === '' && $configs['username'] === '') {
-				Configs::set('username', $hashedUsername);
-				Configs::set('password', $hashedPassword);
-
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	public static function noLogin(): bool
-	{
-		// LEGACY STUFF
-		$configs = Configs::get();
-
-		if (Configs::getValueAsString('version') <= '040008') {
-			// Check if login credentials exist and login if they don't
-			if (
-				isset($configs['username']) && $configs['username'] === '' &&
-				isset($configs['password']) && $configs['password'] === ''
-			) {
-				Session::put('login', true);
-				Session::put('UserID', 0);
-
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	public static function log_as_admin(string $username, string $password, string $ip): bool
-	{
-		$configs = Configs::get();
-
-		if (Hash::check($username, $configs['username']) && Hash::check($password, $configs['password'])) {
-			Session::put('login', true);
-			Session::put('UserID', 0);
-			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip . ' (legacy)');
-
-			return true;
-		}
-
-		return false;
-	}
-
 	public static function isLegacyModelID(string $id): bool
 	{
 		$modernIDRule = new RandomIDRule(true);
@@ -171,5 +105,39 @@ class Legacy
 	public static function translateLegacyPhotoID(int $photoID, Request $request): ?string
 	{
 		return self::translateLegacyID($photoID, 'photos', $request);
+	}
+
+	/**
+	 * Given a username, password and ip (for logging), try to log the user as admin.
+	 * Returns true if succeeded, false if failed.
+	 *
+	 * Note that this method will only be successful "once".
+	 * Upon success, the admin username is updated to a clear text value.
+	 *
+	 * @param string $username
+	 * @param string $password
+	 * @param string $ip
+	 *
+	 * @return bool true if login is successful
+	 */
+	public static function loginAsAdmin(string $username, string $password, string $ip): bool
+	{
+		/** @var User|null $adminUser */
+		$adminUser = User::query()->find(0);
+		// findOrFail could be used, but we just want to make sure to handle the cases where that user in not in the DB even though it should not happen.
+
+		// Admin User exists, so we check against it.
+		if ($adminUser !== null && Hash::check($username, $adminUser->username) && Hash::check($password, $adminUser->password)) {
+			Auth::login($adminUser);
+			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
+
+			// update the admin username so we do not need to go through here anymore.
+			$adminUser->username = $username;
+			$adminUser->save();
+
+			return true;
+		}
+
+		return false;
 	}
 }

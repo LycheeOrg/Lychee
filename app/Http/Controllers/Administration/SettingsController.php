@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers\Administration;
 
-use App\Actions\Settings\Login;
+use App\Actions\Settings\SetLogin;
+use App\Actions\Settings\UpdateLogin;
 use App\Contracts\LycheeException;
 use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\Lang;
 use App\Http\Requests\Settings\ChangeLoginRequest;
+use App\Http\Requests\Settings\SetLoginRequest;
 use App\Http\Requests\Settings\SetSortingRequest;
 use App\Models\Configs;
 use App\Rules\LicenseRule;
@@ -30,20 +32,43 @@ class SettingsController extends Controller
 	 * To be noted this function will change the CONFIG table if used by admin
 	 * or the USER table if used by any other user
 	 *
-	 * @param ChangeLoginRequest $request
-	 * @param Login              $login
+	 * @param SetLoginRequest $request
+	 * @param SetLogin        $login
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
 	 * @throws ModelNotFoundException
 	 */
-	public function setLogin(ChangeLoginRequest $request, Login $login): void
+	public function setLogin(SetLoginRequest $request, SetLogin $login): void
+	{
+		$login->do(
+			$request->username(),
+			$request->password()
+		);
+	}
+
+	/**
+	 * Set the Login information of the Lychee configuration
+	 * Either they are not already set and we directly bcrypt the parameters
+	 * or the current username and password are compared and changed if successful.
+	 *
+	 * To be noted this function will change the CONFIG table if used by admin
+	 * or the USER table if used by any other user
+	 *
+	 * @param ChangeLoginRequest $request
+	 * @param UpdateLogin        $login
+	 *
+	 * @return void
+	 *
+	 * @throws LycheeException
+	 * @throws ModelNotFoundException
+	 */
+	public function updateLogin(ChangeLoginRequest $request, UpdateLogin $login): void
 	{
 		$login->do(
 			$request->username(),
 			$request->password(),
-			$request->oldUsername(),
 			$request->oldPassword(),
 			$request->ip()
 		);

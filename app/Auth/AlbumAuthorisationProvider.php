@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions;
+namespace App\Auth;
 
 use App\Contracts\AbstractAlbum;
 use App\Contracts\InternalLycheeException;
@@ -8,7 +8,6 @@ use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
@@ -21,6 +20,8 @@ use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
 
 /**
@@ -59,11 +60,11 @@ class AlbumAuthorisationProvider
 	{
 		$this->prepareModelQueryOrFail($query);
 
-		if (AccessControl::is_admin()) {
+		if (Gate::check('admin')) {
 			return $query;
 		}
 
-		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+		$userID = Auth::id();
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
@@ -115,7 +116,7 @@ class AlbumAuthorisationProvider
 	public function appendAccessibilityConditions(BaseBuilder $query): BaseBuilder
 	{
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
-		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+		$userID = Auth::id();
 
 		try {
 			$query
@@ -171,12 +172,12 @@ class AlbumAuthorisationProvider
 	{
 		$this->prepareModelQueryOrFail($query);
 
-		if (AccessControl::is_admin()) {
+		if (Gate::check('admin')) {
 			return $query;
 		}
 
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
-		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+		$userID = Auth::id();
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
@@ -238,11 +239,11 @@ class AlbumAuthorisationProvider
 	 */
 	public function isAccessible(?AbstractAlbum $album): bool
 	{
-		if ($album === null || AccessControl::is_admin()) {
+		if ($album === null || Gate::check('admin')) {
 			return true;
 		}
 
-		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+		$userID = Auth::id();
 
 		if ($album instanceof BaseAlbum) {
 			try {
@@ -255,7 +256,7 @@ class AlbumAuthorisationProvider
 				throw LycheeAssertionError::createFromUnexpectedException($e);
 			}
 		} elseif ($album instanceof BaseSmartAlbum) {
-			return AccessControl::can_upload() || $album->is_public;
+			return Gate::any(['admin', 'can-upload']) || $album->is_public;
 		} else {
 			// Should never happen
 			return false;
@@ -323,7 +324,7 @@ class AlbumAuthorisationProvider
 		}
 
 		// ... such that there are no blocked albums on the path to the album.
-		if (AccessControl::is_admin()) {
+		if (Gate::check('admin')) {
 			return $query;
 		} else {
 			return $query->whereNotExists(function (BaseBuilder $q) use ($origin) {
@@ -376,7 +377,7 @@ class AlbumAuthorisationProvider
 		}
 
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
-		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+		$userID = Auth::id();
 
 		try {
 			// There are inner albums ...
@@ -490,16 +491,13 @@ class AlbumAuthorisationProvider
 	 */
 	public function isEditable(?AbstractAlbum $album): bool
 	{
-		if (AccessControl::is_admin()) {
-			return true;
-		}
-		if (!AccessControl::is_logged_in()) {
+		if (!Auth::check()) {
 			return false;
 		}
-
-		$user = AccessControl::user();
-
-		if (!$user->may_upload) {
+		if (Gate::check('admin')) {
+			return true;
+		}
+		if (!Gate::check('can-upload')) {
 			return false;
 		}
 
@@ -507,7 +505,7 @@ class AlbumAuthorisationProvider
 		return
 			$album === null ||
 			$album instanceof BaseSmartAlbum ||
-			($album instanceof BaseAlbum && $album->owner_id === $user->id);
+			($album instanceof BaseAlbum && $album->owner_id === Auth::authenticate()->id);
 	}
 
 	/**
@@ -531,16 +529,13 @@ class AlbumAuthorisationProvider
 	 */
 	public function areEditableByIDs(array $albumIDs): bool
 	{
-		if (AccessControl::is_admin()) {
-			return true;
-		}
-		if (!AccessControl::is_logged_in()) {
+		if (!Auth::check()) {
 			return false;
 		}
-
-		$user = AccessControl::user();
-
-		if (!$user->may_upload) {
+		if (Gate::check('admin')) {
+			return true;
+		}
+		if (!Gate::check('can-upload')) {
 			return false;
 		}
 
@@ -556,7 +551,7 @@ class AlbumAuthorisationProvider
 			count($albumIDs) === 0 ||
 			BaseAlbumImpl::query()
 			->whereIn('id', $albumIDs)
-			->where('owner_id', $user->id)
+			->where('owner_id', Auth::authenticate()->id)
 			->count() === count($albumIDs);
 	}
 
@@ -595,8 +590,8 @@ class AlbumAuthorisationProvider
 			$query->join('base_albums', 'base_albums.id', '=', $table . '.id');
 		}
 
-		if (AccessControl::is_logged_in()) {
-			$userID = AccessControl::id();
+		if (Auth::check()) {
+			$userID = Auth::authenticate()->id;
 			// We must left join with `user_base_album` if and only if we
 			// restrict the eventual query to the ID of the authenticated
 			// user by a `WHERE`-clause.
@@ -631,7 +626,7 @@ class AlbumAuthorisationProvider
 	public function isVisible(BaseSmartAlbum $smartAlbum): bool
 	{
 		return
-			(AccessControl::is_logged_in() && AccessControl::can_upload()) ||
+			(Auth::check() && Gate::any(['admin', 'can-upload'])) ||
 			$smartAlbum->is_public;
 	}
 }

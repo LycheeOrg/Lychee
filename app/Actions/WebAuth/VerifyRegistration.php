@@ -3,9 +3,9 @@
 namespace App\Actions\WebAuth;
 
 use App\Exceptions\UnauthorizedException;
-use App\Facades\AccessControl;
 use App\Models\User;
 use DarkGhostHunter\Larapass\Facades\WebAuthn;
+use Illuminate\Support\Facades\Auth;
 
 class VerifyRegistration
 {
@@ -17,7 +17,7 @@ class VerifyRegistration
 		/**
 		 * @var User
 		 */
-		$user = AccessControl::user();
+		$user = Auth::authenticate();
 
 		// okay.
 		/** @var false|\Webauthn\PublicKeyCredentialSource */

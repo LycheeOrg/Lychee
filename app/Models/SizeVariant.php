@@ -9,7 +9,6 @@ use App\Exceptions\ConfigurationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
-use App\Facades\AccessControl;
 use App\Image\FlysystemFile;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
@@ -20,6 +19,8 @@ use App\Relations\HasManyBidirectionally;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Adapter\Local;
 
 // TODO: Uncomment the following line, if Lychee really starts to support AWS s3.
@@ -155,7 +156,7 @@ class SizeVariant extends Model
 		$imageDisk = SizeVariantNamingStrategy::getImageDisk();
 
 		if (
-			AccessControl::is_admin() && !Configs::getValueAsBool('SL_for_admin') ||
+			Gate::check('admin') && !Configs::getValueAsBool('SL_for_admin') ||
 			!Configs::getValueAsBool('SL_enable')
 		) {
 			return $imageDisk->url($this->short_path);

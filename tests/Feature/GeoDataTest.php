@@ -12,9 +12,10 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
 use App\Models\Configs;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
@@ -33,7 +34,7 @@ class GeoDataTest extends TestCase
 		$this->photos_tests = new PhotosUnitTest($this);
 		$this->albums_tests = new AlbumsUnitTest($this);
 
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 
 		$this->setUpRequiresEmptyPhotos();
 	}
@@ -41,7 +42,8 @@ class GeoDataTest extends TestCase
 	public function tearDown(): void
 	{
 		$this->tearDownRequiresEmptyPhotos();
-		AccessControl::logout();
+		Auth::logout();
+		Session::flush();
 		parent::tearDown();
 	}
 

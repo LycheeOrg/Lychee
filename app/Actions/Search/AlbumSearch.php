@@ -2,7 +2,7 @@
 
 namespace App\Actions\Search;
 
-use App\Actions\AlbumAuthorisationProvider;
+use App\Auth\AlbumAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\DTO\AlbumSortingCriterion;
 use App\Exceptions\Internal\QueryBuilderException;

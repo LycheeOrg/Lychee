@@ -2,14 +2,14 @@
 
 namespace App\Actions\Albums;
 
-use App\Actions\AlbumAuthorisationProvider;
+use App\Auth\AlbumAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\AlbumTree;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
-use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
+use Illuminate\Support\Facades\Auth;
 use Kalnoy\Nestedset\Collection as NsCollection;
 
 class Tree
@@ -51,7 +51,7 @@ class Tree
 		$query = new SortingDecorator(
 			$this->albumAuthorisationProvider->applyReachabilityFilter(Album::query())
 		);
-		if (AccessControl::is_logged_in()) {
+		if (Auth::check()) {
 			// For authenticated users we group albums by ownership.
 			$query->orderBy('owner_id');
 		}
@@ -61,8 +61,8 @@ class Tree
 		$albums = $query->get();
 		/** @var ?NsCollection<Album> $sharedAlbums */
 		$sharedAlbums = null;
-		if (AccessControl::is_logged_in()) {
-			$id = AccessControl::id();
+		if (Auth::check()) {
+			$id = Auth::authenticate()->id;
 			// ATTENTION:
 			// For this to work correctly, it is crucial that all child albums
 			// below each top-level album have the same owner!

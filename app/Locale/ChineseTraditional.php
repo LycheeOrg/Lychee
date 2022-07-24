@@ -336,7 +336,6 @@ final class ChineseTraditional implements Language
 			'LOGIN_CREATE' => '創建',
 
 			'PASSWORD_TITLE' => '當前密碼',
-			'USERNAME_CURRENT' => '當前用戶名',
 			'PASSWORD_CURRENT' => '當前密碼',
 			'PASSWORD_TEXT' => '用戶名和密碼將被修改為：',
 			'PASSWORD_CHANGE' => '修改登入訊息',
