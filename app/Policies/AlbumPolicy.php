@@ -20,7 +20,7 @@ class AlbumPolicy
 	 */
 	public function before(?User $user, $ability)
 	{
-		if (optional($user)->id === 0) {
+		if ($user?->id === 0) {
 			return true;
 		}
 	}
@@ -38,6 +38,6 @@ class AlbumPolicy
 	 */
 	public function own(?User $user, Album $album): bool
 	{
-		return $album->owner_id === optional($user)->id;
+		return $album->owner_id === $user?->id;
 	}
 }

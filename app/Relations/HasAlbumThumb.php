@@ -188,7 +188,7 @@ class HasAlbumThumb extends Relation
 			});
 		}
 
-		$userID = Auth::id();
+		$user = Auth::user();
 
 		$album2Cover = function (BaseBuilder $builder) use ($bestPhotoIDSelect, $albumKeys, $userID) {
 			$builder
@@ -207,7 +207,7 @@ class HasAlbumThumb extends Relation
 			$builder->select(['covered_albums.id AS album_id'])
 				->addSelect(['photo_id' => $bestPhotoIDSelect])
 				->whereIn('covered_albums.id', $albumKeys);
-			if (!Gate::check('admin')) {
+			if (!$user->isAdmin) {
 				$builder->where(function (BaseBuilder $q) {
 					$this->albumAuthorisationProvider->appendAccessibilityConditions($q);
 				});

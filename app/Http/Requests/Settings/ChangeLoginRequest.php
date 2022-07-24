@@ -27,9 +27,11 @@ class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 	 */
 	public function authorize(): bool
 	{
-		return Auth::check() && (
-			Gate::check('admin') ||
-			!Auth::authenticate()->is_locked
+		$user = Auth::user();
+
+		return $user !== null && (
+			$user->isAdmin() ||
+			!$user->is_locked
 		);
 	}
 
