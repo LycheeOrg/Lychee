@@ -32,7 +32,7 @@ class DownloadedFile extends TemporaryLocalFile
 			$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
 			parent::__construct($extension, $basename);
 
-			$downloadStream = fopen($url, 'r');
+			$downloadStream = fopen($url, 'rb');
 			$downloadStreamData = stream_get_meta_data($downloadStream);
 			// Find the server-side MIME type; the HTTP headers are part of
 			// the protocol-specific meta-data of the stream handler
@@ -71,7 +71,7 @@ class DownloadedFile extends TemporaryLocalFile
 	public function getMimeType(bool $fallbackToClientMimeType = true): string
 	{
 		parent::getMimeType();
-		if ($this->cachedMimeType === 'application/octet-stream') {
+		if ($this->cachedMimeType === 'application/octet-stream' && $fallbackToClientMimeType) {
 			return $this->originalMimeType;
 		} else {
 			return $this->cachedMimeType;

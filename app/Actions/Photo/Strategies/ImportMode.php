@@ -40,15 +40,6 @@ class ImportMode
 		}
 	}
 
-	public function setDeleteImported(bool $flag): void
-	{
-		$this->deleteImported = $flag;
-		// avoid incompatible settings (delete originals takes precedence over symbolic links)
-		if ($this->deleteImported) {
-			$this->importViaSymlink = false;
-		}
-	}
-
 	public function shallDeleteImported(): bool
 	{
 		return $this->deleteImported;

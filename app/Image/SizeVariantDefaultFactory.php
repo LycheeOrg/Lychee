@@ -2,28 +2,23 @@
 
 namespace App\Image;
 
+use App\Contracts\LycheeException;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
+use App\DTO\ImageDimension;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ExternalComponentMissingException;
+use App\Exceptions\ImageProcessingException;
+use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
-use App\Exceptions\ModelDBException;
 use App\Models\Configs;
-use App\Models\Logs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
-use FFMpeg\Coordinate\TimeCode;
-use FFMpeg\Exception\ExecutableNotFoundException;
-use FFMpeg\Exception\InvalidArgumentException;
-use FFMpeg\FFMpeg;
-use FFMpeg\Media\Video;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
-use function Safe\filesize;
-use function Safe\unlink;
-use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 class SizeVariantDefaultFactory extends SizeVariantFactory
 {
@@ -31,174 +26,70 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	public const THUMBNAIL2X_DIM = 400;
 
 	/** @var ImageHandlerInterface the image handler (gd, imagick, ...) which is used to generate image files */
-	protected ImageHandlerInterface $imageHandler;
+	protected ImageHandlerInterface $referenceImage;
 	protected ?Photo $photo = null;
 	protected ?SizeVariantNamingStrategy $namingStrategy = null;
-	protected string $referenceFullPath = '';
-	protected int $referenceWidth = 0;
-	protected int $referenceHeight = 0;
-	protected bool $needsCleanup = false;
-
-	public function __construct(ImageHandlerInterface $imageHandler)
-	{
-		$this->imageHandler = $imageHandler;
-	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function init(Photo $photo, ?SizeVariantNamingStrategy $namingStrategy = null): void
+	public function init(Photo $photo, ?ImageHandlerInterface $referenceImage = null, ?SizeVariantNamingStrategy $namingStrategy = null): void
 	{
-		if ($this->photo !== null) {
-			$this->cleanup();
+		try {
+			$this->photo = $photo;
+			if ($referenceImage !== null && $referenceImage->isLoaded()) {
+				$this->referenceImage = $referenceImage;
+			} else {
+				$this->loadReferenceImage();
+			}
+			$this->namingStrategy = $namingStrategy ?? resolve(SizeVariantNamingStrategy::class);
+			// Ensure that the naming strategy is linked to this photo
+			$this->namingStrategy->setPhoto($this->photo);
+		} catch (BindingResolutionException $e) {
+			throw new FrameworkException('Laravel\'s container component', $e);
 		}
-		$this->photo = $photo;
-		if ($namingStrategy !== null) {
-			$this->namingStrategy = $namingStrategy;
-		} elseif ($this->namingStrategy === null) {
-			$this->namingStrategy = resolve(SizeVariantNamingStrategy::class);
-		}
-		// Ensure that the naming strategy is linked to this photo
-		$this->namingStrategy->setPhoto($this->photo);
 	}
 
 	/**
+	 * Loads the reference image from the original size variant of the associated photo.
+	 *
 	 * @throws ExternalComponentMissingException
 	 * @throws ConfigurationException
 	 * @throws MediaFileOperationException
 	 * @throws IllegalOrderOfOperationException
 	 * @throws MediaFileUnsupportedException
+	 * @throws ImageProcessingException
 	 */
-	protected function extractReferenceImage(): void
+	protected function loadReferenceImage(): void
 	{
-		$original = $this->photo->size_variants->getOriginal();
-		if ($this->photo->isRaw()) {
-			$this->extractReferenceFromRaw($original->full_path, $original->width, $original->height);
-		} elseif ($this->photo->isVideo()) {
-			if (!is_numeric($this->photo->aperture)) {
-				throw new MediaFileOperationException('Media file is reported to be a video, but aperture (aka duration) has not been extracted');
-			}
-			$position = floatval($this->photo->aperture) / 2;
-			$this->extractReferenceFromVideo($original->full_path, $position);
+		$originalFile = $this->photo->size_variants->getOriginal()->getFile();
+
+		if (!$this->photo->isVideo()) {
+			$this->referenceImage = new ImageHandler();
+			$this->referenceImage->load($originalFile);
 		} else {
-			$this->referenceFullPath = $original->full_path;
-			$this->referenceWidth = $original->width;
-			$this->referenceHeight = $original->height;
-		}
-	}
+			if ($originalFile->isLocalFile()) {
+				// If the original size variant is hosted locally,
+				// we can directly take it as a source file
+				$sourceFile = $originalFile->toLocalFile();
+			} else {
+				// If the original size variant is hosted remotely,
+				// we must download it first; we exploit the temporary file
+				// for that
+				$sourceFile = new TemporaryLocalFile($originalFile->getOriginalExtension(), $this->photo->title);
+				$sourceFile->write($originalFile->read(), false, $this->photo->type);
+			}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function cleanup(): void
-	{
-		$this->photo = null;
-		$this->namingStrategy = null;
-		if ($this->needsCleanup) {
-			unlink($this->referenceFullPath);
-		}
-		$this->referenceFullPath = '';
-	}
+			$videoHandler = new VideoHandler();
+			$videoHandler->load($sourceFile);
+			$position = is_numeric($this->photo->aperture) ? floatval($this->photo->aperture) / 2 : 0.0;
+			$this->referenceImage = $videoHandler->extractFrame($position);
 
-	/**
-	 * Extracts a reference image from a raw file.
-	 *
-	 * @param string $fullPath The full path to the original (raw) file
-	 * @param int    $width    The original width
-	 * @param int    $height   The original height
-	 *
-	 * @throws ExternalComponentMissingException
-	 * @throws MediaFileUnsupportedException
-	 * @throws MediaFileOperationException
-	 */
-	protected function extractReferenceFromRaw(string $fullPath, int $width, int $height): void
-	{
-		// we need imagick to do the job
-		if (!Configs::hasImagick()) {
-			throw new ExternalComponentMissingException('Saving JPG of raw file failed: Imagick not installed.');
+			// Clean up
+			if ($sourceFile instanceof TemporaryLocalFile) {
+				$sourceFile->delete();
+			}
 		}
-		$ext = pathinfo($fullPath, PATHINFO_EXTENSION);
-		// test if Imagick supports the filetype
-		// Query return file extensions as all upper case
-		if (!in_array(strtoupper($ext), \Imagick::queryFormats(), true)) {
-			throw new MediaFileUnsupportedException('Filetype ' . $ext . ' not supported by Imagick.');
-		}
-		$this->createTmpPathForReferenceJPEG();
-		$this->imageHandler->scale($fullPath, $this->referenceFullPath, $width, $height, $this->referenceWidth, $this->referenceHeight);
-	}
-
-	/**
-	 * Extracts a reference image from a video file at the given position.
-	 *
-	 * @param string $fullPath
-	 * @param float  $framePosition The temporal position in seconds of the
-	 *                              frame to be extracted
-	 *
-	 * @throws ConfigurationException
-	 * @throws ExternalComponentMissingException
-	 * @throws MediaFileOperationException
-	 */
-	protected function extractReferenceFromVideo(string $fullPath, float $framePosition): void
-	{
-		if (!Configs::hasFFmpeg()) {
-			throw new ConfigurationException('FFmpeg is disabled by configuration');
-		}
-		try {
-			$this->createTmpPathForReferenceJPEG();
-			$ffmpeg = FFMpeg::create();
-			/** @var Video $video */
-			$video = $ffmpeg->open($fullPath);
-			$this->extractFrame($video, $framePosition);
-		} catch (ExecutableNotFoundException $e) {
-			throw new ExternalComponentMissingException('FFmpeg not found', $e);
-		} catch (InvalidArgumentException $e) {
-			throw new MediaFileOperationException('FFmpeg could not open media file', $e);
-		} catch (MediaFileOperationException) {
-			Logs::notice(__METHOD__, __LINE__, 'Fallback: Try to extract snapshot at position 0');
-			$this->extractFrame($video, 0);
-		}
-	}
-
-	/**
-	 * Extracts a frame from a loaded `Video` object at the given position.
-	 *
-	 * @param Video $video         the video object
-	 * @param float $framePosition the position in seconds
-	 *
-	 * @throws MediaFileOperationException thrown, if FFmpeg failed to extract a frame
-	 */
-	protected function extractFrame(Video $video, float $framePosition): void
-	{
-		$errMsg = 'Failed to extract snapshot from video ' . $this->referenceFullPath . ' at position ' . $framePosition;
-		try {
-			$dim = $video->getStreams()->videos()->first()->getDimensions();
-			$frame = $video->frame(TimeCode::fromSeconds($framePosition));
-			$frame->save($this->referenceFullPath);
-			$this->referenceWidth = $dim->getWidth();
-			$this->referenceHeight = $dim->getHeight();
-		} catch (\Throwable $e) {
-			throw new MediaFileOperationException($errMsg, $e);
-		}
-		if (!file_exists($this->referenceFullPath) || filesize($this->referenceFullPath) === 0) {
-			throw new MediaFileOperationException($errMsg);
-		}
-		if (Configs::getValueAsBool('lossless_optimization')) {
-			ImageOptimizer::optimize($this->referenceFullPath);
-		}
-	}
-
-	/**
-	 * Creates a temporary path to store the extracted reference image.
-	 *
-	 * This method modifies `referenceFullPath` and also sets `needsCleanup`
-	 * to true such that the file which is stored at `referenceFullPath` will
-	 * be removed by {@link SizeVariantFactory::cleanup()}.
-	 */
-	protected function createTmpPathForReferenceJPEG(): void
-	{
-		$this->referenceFullPath = (new TemporaryLocalFile('.jpg'))->getAbsolutePath();
-		$this->needsCleanup = true;
-		Logs::notice(__METHOD__, __LINE__, 'Saving JPG of raw/video file to ' . $this->referenceFullPath);
 	}
 
 	/**
@@ -229,26 +120,10 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	/**
 	 * {@inheritDoc}
 	 */
-	public function createSizeVariant(int $sizeVariant): SizeVariant
-	{
-		if ($sizeVariant === SizeVariant::ORIGINAL) {
-			throw new InvalidSizeVariantException('createSizeVariant() must not be used to create original size, use createOriginal() instead');
-		}
-		if ($this->referenceFullPath === '') {
-			$this->extractReferenceImage();
-		}
-		list($maxWidth, $maxHeight) = $this->getMaxDimensions($sizeVariant);
-
-		return $this->createSizeVariantInternal($sizeVariant, $maxWidth, $maxHeight);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public function createSizeVariantCond(int $sizeVariant): ?SizeVariant
 	{
 		if ($sizeVariant === SizeVariant::ORIGINAL) {
-			throw new InvalidSizeVariantException('createSizeVariantCond() must not be used to create original size, use createOriginal() instead');
+			throw new InvalidSizeVariantException('createSizeVariantCond() must not be used to create original size');
 		}
 		if (!$this->isEnabledByConfiguration($sizeVariant)) {
 			return null;
@@ -257,92 +132,64 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		if ($this->photo->isVideo() && ($sizeVariant === SizeVariant::MEDIUM || $sizeVariant === SizeVariant::MEDIUM2X)) {
 			return null;
 		}
-		if ($this->referenceFullPath === '') {
-			$this->extractReferenceImage();
+		// Don't re-create existing size variant
+		if ($this->photo->size_variants->getSizeVariant($sizeVariant) !== null) {
+			return null;
 		}
 
-		list($maxWidth, $maxHeight) = $this->getMaxDimensions($sizeVariant);
+		$maxDim = $this->getMaxDimensions($sizeVariant);
+		$realDim = $this->referenceImage->getDimensions();
 
-		if ($sizeVariant === SizeVariant::THUMB) {
-			$isLargeEnough = true;
-		} elseif ($sizeVariant === SizeVariant::THUMB2X) {
-			$isLargeEnough = $this->referenceWidth > $maxWidth && $this->referenceHeight > $maxHeight;
-		} else {
-			$isLargeEnough = $this->referenceWidth > $maxWidth || $this->referenceHeight > $maxHeight;
-		}
+		$isLargeEnough = match ($sizeVariant) {
+			SizeVariant::THUMB => true,
+			SizeVariant::THUMB2X => $realDim->width >= $maxDim->width && $realDim->height >= $maxDim->height,
+			default => ($realDim->width >= $maxDim->width && $maxDim->width !== 0) || ($realDim->height >= $maxDim->height && $maxDim->height !== 0)
+		};
 
 		return $isLargeEnough ?
-			$this->createSizeVariantInternal(
-				$sizeVariant,
-				$maxWidth,
-				$maxHeight
-			) :
+			$this->createSizeVariantInternal($sizeVariant, $maxDim) :
 			null;
 	}
 
 	/**
-	 * @param int $sizeVariant the type of the desired size variant;
-	 *                         allowed values are:
-	 *                         {@link SizeVariant::ORIGINAL},
-	 *                         {@link SizeVariant::MEDIUM2X},
-	 *                         {@link SizeVariant::MEDIUM2},
-	 *                         {@link SizeVariant::SMALL2X},
-	 *                         {@link SizeVariant::SMALL},
-	 *                         {@link SizeVariant::THUMB2X}, and
-	 *                         {@link SizeVariant::THUMB}
-	 * @param int $maxWidth
-	 * @param int $maxHeight
+	 * Generates the designated size variant unconditionally.
 	 *
-	 * @throws ModelDBException
-	 * @throws IllegalOrderOfOperationException
-	 * @throws MediaFileOperationException
-	 * @throws MediaFileUnsupportedException
-	 * @throws InvalidSizeVariantException
+	 * The method does not check whether the size variant already exist
+	 * and will overwrite an existing one of the same type.
+	 *
+	 * @param int            $sizeVariant the desired size variant; admissible
+	 *                                    values are:
+	 *                                    {@link SizeVariant::THUMB},
+	 *                                    {@link SizeVariant::THUMB2X},
+	 *                                    {@link SizeVariant::SMALL},
+	 *                                    {@link SizeVariant::SMALL2X},
+	 *                                    {@link SizeVariant::MEDIUM} and
+	 *                                    {@link SizeVariant::MEDIUM2X}
+	 * @param ImageDimension $maxDim      the designated dimensions of the
+	 *                                    size variant
+	 *
+	 * @return SizeVariant the generated size variant
+	 *
+	 * @throws LycheeException
 	 *
 	 * @phpstan-param int<0,6> $sizeVariant
 	 */
-	protected function createSizeVariantInternal(int $sizeVariant, int $maxWidth, int $maxHeight): SizeVariant
+	private function createSizeVariantInternal(int $sizeVariant, ImageDimension $maxDim): SizeVariant
 	{
-		$shortPath = $this->namingStrategy->generateShortPath($sizeVariant);
+		$svImage = match ($sizeVariant) {
+			SizeVariant::THUMB, SizeVariant::THUMB2X => $this->referenceImage->cloneAndCrop($maxDim),
+			default => $this->referenceImage->cloneAndScale($maxDim)
+		};
 
-		$sv = $this->photo->size_variants->getSizeVariant($sizeVariant);
-		if ($sv === null) {
-			try {
-				// Create size variant with dummy filesize, because full path
-				// is for now required to crop/scale.
-				// However, before cropping/scaling, the real filesize is not
-				// known yet.
-				// Ideally, the media file would be created independently of
-				// variant entry, and then stored.
-				// TODO: Use `MediaFile` here, let the ImageHandler operate on the MediaFile (without using paths at all) and then create the size variant in the end using the final and correct file size right away.
-				$sv = $this->photo->size_variants->create($sizeVariant, $shortPath, $maxWidth, $maxHeight, 0);
-				$svAbsolutePath = $sv->getFile()->getAbsolutePath();
-				if ($sizeVariant === SizeVariant::THUMB || $sizeVariant === SizeVariant::THUMB2X) {
-					$this->imageHandler->crop($this->referenceFullPath, $svAbsolutePath, $sv->width, $sv->height);
-					$sv->filesize = filesize($svAbsolutePath);
-					$sv->save();
-				} else {
-					$resWidth = $resHeight = 0;
-					$this->imageHandler->scale($this->referenceFullPath, $svAbsolutePath, $sv->width, $sv->height, $resWidth, $resHeight);
-					$sv->filesize = filesize($svAbsolutePath);
-					$sv->width = $resWidth;
-					$sv->height = $resHeight;
-					$sv->save();
-				}
-			} catch (MediaFileOperationException|MediaFileUnsupportedException $e) {
-				// If scaling/cropping has failed, remove the freshly created DB entity again
-				// This will also take care of removing a potentially created file from storage
-				try {
-					$sv->delete();
-				} catch (\Throwable) {
-					// We are already in an (outer) error handling, we cannot
-					// do anything about this inner problem
-				}
-				throw $e;
-			}
-		}
+		$svFile = $this->namingStrategy->createFile($sizeVariant);
+		$svImage->save($svFile);
 
-		return $sv;
+		return $this->photo->size_variants->create(
+			$sizeVariant,
+			$svFile->getRelativePath(),
+			$svImage->getDimensions(),
+			$svFile->getFilesize()
+		);
 	}
 
 	/**
@@ -350,12 +197,11 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 *
 	 * @param int $sizeVariant the size variant
 	 *
-	 * @return int[] an array with exactly two integers, the first integer is
-	 *               the width, the second integer is the height
+	 * @return ImageDimension
 	 *
 	 * @throws InvalidSizeVariantException
 	 */
-	protected function getMaxDimensions(int $sizeVariant): array
+	protected function getMaxDimensions(int $sizeVariant): ImageDimension
 	{
 		switch ($sizeVariant) {
 			case SizeVariant::MEDIUM2X:
@@ -386,7 +232,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 				throw new InvalidSizeVariantException('unknown size variant: ' . $sizeVariant);
 		}
 
-		return [$maxWidth, $maxHeight];
+		return new ImageDimension($maxWidth, $maxHeight);
 	}
 
 	/**
@@ -414,8 +260,8 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 */
 	protected function isEnabledByConfiguration(int $sizeVariant): bool
 	{
-		list($maxWidth, $maxHeight) = $this->getMaxDimensions($sizeVariant);
-		if ($maxWidth === 0 && $maxHeight === 0) {
+		$maxDim = $this->getMaxDimensions($sizeVariant);
+		if ($maxDim->width === 0 && $maxDim->height === 0) {
 			return false;
 		}
 
@@ -426,19 +272,5 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 			SizeVariant::SMALL, SizeVariant::MEDIUM, SizeVariant::THUMB => true,
 			default => throw new InvalidSizeVariantException('unknown size variant: ' . $sizeVariant),
 		};
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function createOriginal(int $width, int $height, int $filesize): SizeVariant
-	{
-		return $this->photo->size_variants->create(
-			SizeVariant::ORIGINAL,
-			$this->namingStrategy->generateShortPath(SizeVariant::ORIGINAL),
-			$width,
-			$height,
-			$filesize
-		);
 	}
 }

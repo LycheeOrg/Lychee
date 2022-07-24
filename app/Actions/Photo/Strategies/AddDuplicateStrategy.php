@@ -27,11 +27,13 @@ class AddDuplicateStrategy extends AddBaseStrategy
 
 		// At least update the existing photo with additional metadata if
 		// available
-		$this->hydrateMetadata();
-		if ($this->photo->isDirty()) {
-			Logs::notice(__METHOD__, __LINE__, 'Updating metadata of existing photo.');
-			$this->photo->save();
-			$hasBeenReSynced = true;
+		if ($this->parameters->importMode->shallResyncMetadata()) {
+			$this->hydrateMetadata();
+			if ($this->photo->isDirty()) {
+				Logs::notice(__METHOD__, __LINE__, 'Updating metadata of existing photo.');
+				$this->photo->save();
+				$hasBeenReSynced = true;
+			}
 		}
 
 		if ($this->parameters->importMode->shallSkipDuplicates()) {
