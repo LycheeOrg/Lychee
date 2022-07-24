@@ -2,15 +2,15 @@
 
 namespace App\Http\Requests\Settings;
 
-use App\Auth\Authorization;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPassword;
 use App\Http\Requests\Contracts\HasUsername;
 use App\Http\Requests\Traits\HasPasswordTrait;
+use App\Models\User;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 {
@@ -26,12 +26,7 @@ class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 	 */
 	public function authorize(): bool
 	{
-		$user = Auth::user();
-
-		return $user !== null && (
-			$user->isAdmin() ||
-			!$user->is_locked
-		);
+		return Gate::check('edit', User::class);
 	}
 
 	/**

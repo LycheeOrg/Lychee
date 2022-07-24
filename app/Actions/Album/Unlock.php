@@ -6,6 +6,7 @@ use App\Auth\AlbumAuthorisationProvider;
 use App\Exceptions\UnauthorizedException;
 use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\BaseAlbum;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 
 class Unlock extends Action
@@ -35,7 +36,7 @@ class Unlock extends Action
 			if (
 				$album->password === null ||
 				$album->password === '' ||
-				$this->albumAuthorisationProvider->isUnlocked($album)
+				Gate::check('unlocked', $album)
 			) {
 				return;
 			}

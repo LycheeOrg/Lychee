@@ -190,24 +190,24 @@ class HasAlbumThumb extends Relation
 
 		$user = Auth::user();
 
-		$album2Cover = function (BaseBuilder $builder) use ($bestPhotoIDSelect, $albumKeys, $userID) {
+		$album2Cover = function (BaseBuilder $builder) use ($bestPhotoIDSelect, $albumKeys, $user) {
 			$builder
 				->from('albums as covered_albums')
 				->join('base_albums', 'base_albums.id', '=', 'covered_albums.id');
-			if ($userID !== null) {
+			if ($user !== null) {
 				$builder->leftJoin(
 					'user_base_album',
-					function (JoinClause $join) use ($userID) {
+					function (JoinClause $join) use ($user) {
 						$join
 							->on('user_base_album.base_album_id', '=', 'base_albums.id')
-							->where('user_base_album.user_id', '=', $userID);
+							->where('user_base_album.user_id', '=', $user->id);
 					}
 				);
 			}
 			$builder->select(['covered_albums.id AS album_id'])
 				->addSelect(['photo_id' => $bestPhotoIDSelect])
 				->whereIn('covered_albums.id', $albumKeys);
-			if (!$user->isAdmin) {
+			if ($user?->isAdmin() !== true) {
 				$builder->where(function (BaseBuilder $q) {
 					$this->albumAuthorisationProvider->appendAccessibilityConditions($q);
 				});
@@ -287,7 +287,7 @@ class HasAlbumThumb extends Relation
 	{
 		/** @var Album|null $album */
 		$album = $this->parent;
-		if ($album === null || !$this->albumAuthorisationProvider->isAccessible($album)) {
+		if ($album === null || !Gate::check('access', $album)) {
 			return null;
 		}
 

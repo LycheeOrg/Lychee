@@ -2,9 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Auth\AlbumAuthorisationProvider;
-use App\Auth\Authorization;
-use App\Auth\PhotoAuthorisationProvider;
 use App\Contracts\AbstractAlbum;
 use App\Contracts\LycheeException;
 use App\Exceptions\Internal\FrameworkException;
@@ -21,14 +18,13 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 abstract class BaseApiRequest extends FormRequest
 {
 	protected AlbumFactory $albumFactory;
-	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
-	protected PhotoAuthorisationProvider $photoAuthorisationProvider;
 
 	/**
 	 * @throws FrameworkException
@@ -44,8 +40,6 @@ abstract class BaseApiRequest extends FormRequest
 	) {
 		try {
 			$this->albumFactory = resolve(AlbumFactory::class);
-			$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
-			$this->photoAuthorisationProvider = resolve(PhotoAuthorisationProvider::class);
 			parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s provider component', $e);
@@ -126,6 +120,8 @@ abstract class BaseApiRequest extends FormRequest
 	}
 
 	/**
+	 * TODO: TO POLICY.
+	 *
 	 * Determines if the user is authorized to access the designated album.
 	 *
 	 * @param AbstractAlbum|null $album the album
@@ -134,10 +130,12 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizeAlbumAccess(?AbstractAlbum $album): bool
 	{
-		return $this->albumAuthorisationProvider->isAccessible($album);
+		return Gate::check('access', $album);
 	}
 
 	/**
+	 * TODO: TO POLICY.
+	 *
 	 * Determines if the user is authorized to access the designated albums.
 	 *
 	 * @param BaseCollection<AbstractAlbum> $albums the albums
@@ -157,6 +155,8 @@ abstract class BaseApiRequest extends FormRequest
 	}
 
 	/**
+	 * TODO: TO POLICY.
+	 *
 	 * Determines if the user is authorized to modify or write into the
 	 * designated album.
 	 *
@@ -166,10 +166,12 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizeAlbumWrite(?AbstractAlbum $album): bool
 	{
-		return $this->albumAuthorisationProvider->isEditable($album);
+		return Gate::check('edit', $album);
 	}
 
 	/**
+	 * TODO: TO POLICY.
+	 *
 	 * Determines if the user is authorized to modify or write into the
 	 * designated albums.
 	 *
@@ -190,6 +192,8 @@ abstract class BaseApiRequest extends FormRequest
 	}
 
 	/**
+	 * TODO: TO POLICY.
+	 *
 	 * Determines if the user is authorized to modify or write into the
 	 * designated albums.
 	 *
@@ -201,10 +205,12 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizeAlbumsWriteByIDs(array $albumIDs): bool
 	{
-		return $this->albumAuthorisationProvider->areEditableByIDs($albumIDs);
+		return Gate::check('editById-albums', $albumIDs);
 	}
 
 	/**
+	 * TODO: TO POLICY.
+	 *
 	 * Determines if the user is authorized to see the designated photo.
 	 *
 	 * @param Photo|null $photo the photo; `null` is accepted for convenience
@@ -214,10 +220,12 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizePhotoVisible(?Photo $photo): bool
 	{
-		return $this->photoAuthorisationProvider->isVisible($photo);
+		return Gate::check('access', $photo);
 	}
 
 	/**
+	 * TODO: TO POLICY.
+	 *
 	 * Determines if the user is authorized to download the designated photo.
 	 *
 	 * @param Photo $photo the photo
@@ -226,10 +234,12 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizePhotoDownload(Photo $photo): bool
 	{
-		return $this->photoAuthorisationProvider->isDownloadable($photo);
+		return Gate::check('download', $photo);
 	}
 
 	/**
+	 * TODO: TO POLICY.
+	 *
 	 * Determines if the user is authorized to download the designated photos.
 	 *
 	 * @param EloquentCollection<Photo> $photos the photos
@@ -249,6 +259,8 @@ abstract class BaseApiRequest extends FormRequest
 	}
 
 	/**
+	 * TODO: TO POLICY.
+	 *
 	 * Determines if the user is authorized to modify the designated photo.
 	 *
 	 * @param Photo $photo the photo
@@ -257,10 +269,12 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizePhotoWrite(Photo $photo): bool
 	{
-		return $this->photoAuthorisationProvider->isEditable($photo);
+		return Gate::check('edit', $photo);
 	}
 
 	/**
+	 * TODO: TO POLICY.
+	 *
 	 * Determines if the user is authorized to modify the designated photos.
 	 *
 	 * @param EloquentCollection<Photo> $photos the photos
@@ -280,6 +294,8 @@ abstract class BaseApiRequest extends FormRequest
 	}
 
 	/**
+	 * TODO: TO POLICY.
+	 *
 	 * Determines if the user is authorized to modify the designated photos.
 	 *
 	 * @param string[] $photoIDs the IDs of the photos
@@ -288,7 +304,7 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizePhotosWriteByIDs(array $photoIDs): bool
 	{
-		return $this->photoAuthorisationProvider->areEditableByIDs($photoIDs);
+		return Gate::check('editById-photos', $photoIDs);
 	}
 
 	/**

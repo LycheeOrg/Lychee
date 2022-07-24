@@ -2,11 +2,9 @@
 
 namespace App\Auth;
 
-use App\Actions\Photo\Archive;
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Exceptions\UnauthorizedException;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\FixedQueryBuilder;
@@ -68,60 +66,6 @@ class PhotoAuthorisationProvider
 		};
 
 		return $query->where($visibilitySubQuery);
-	}
-
-	/**
-	 * Checks whether the photo is visible by the current user.
-	 *
-	 * See {@link PhotoAuthorisationProvider::applyVisibilityFilter()} for a
-	 * specification of the rules when a photo is visible.
-	 *
-	 * @param Photo|null $photo the photo; `null` is accepted for convenience
-	 *                          and the `null` photo is always authorized
-	 *
-	 * @return bool true, if the authenticated user is authorized
-	 */
-	public function isVisible(?Photo $photo): bool
-	{
-		return
-			$photo === null ||
-			Gate::check('own', $photo) ||
-			$photo->is_public ||
-			$this->albumAuthorisationProvider->isAccessible($photo->album);
-	}
-
-	/**
-	 * Checks whether the photo may be downloaded by the current user.
-	 *
-	 * Previously, this code was part of {@link Archive::extractFileInfo()}.
-	 * In particular, the method threw to {@link UnauthorizedException} with
-	 * custom error messages:
-	 *
-	 *  - `'User is not allowed to download the image'`, if the user was not
-	 *    the owner, the user was allowed to see the photo (i.e. the album
-	 *    is shared with the user), but the album does not allow to dowload
-	 *    photos
-	 *  - `'Permission to download is disabled by configuration'`, if the
-	 *    user was not the owner, the photo was not part of any album (i.e.
-	 *    unsorted), the photo was public and downloading was disabled by
-	 *    configuration.
-	 *
-	 * TODO: Check if these custom error messages are still needed. If yes, consider not to return a boolean value but rename the method to `assert...` and throw exceptions with custom error messages.
-	 *
-	 * @param Photo $photo
-	 *
-	 * @return bool
-	 */
-	public function isDownloadable(Photo $photo): bool
-	{
-		if (!$this->isVisible($photo)) {
-			return false;
-		}
-
-		return
-			Gate::check('own', $photo) ||
-			$photo->album?->is_downloadable ||
-			($photo->album === null && Configs::getValueAsBool('downloadable'));
 	}
 
 	/**
@@ -252,67 +196,6 @@ class PhotoAuthorisationProvider
 	}
 
 	/**
-	 * Checks whether the photo is editable by the current user.
-	 *
-	 * A photo is called _editable_ if the current user is allowed to edit
-	 * the photo's properties.
-	 * A photo is _editable_ if any of the following conditions hold
-	 * (OR-clause)
-	 *
-	 *  - the user is an admin
-	 *  - the user is the owner of the photo
-	 *
-	 * @param Photo $photo
-	 *
-	 * @return bool
-	 */
-	public function isEditable(Photo $photo): bool
-	{
-		return Gate::check('own', $photo);
-	}
-
-	/**
-	 * Checks whether the designated photos are editable by the current user.
-	 *
-	 * See {@link PhotoAuthorisationProvider::isEditable()} for the definition
-	 * when a photo is editable.
-	 *
-	 * This method is mostly only useful during deletion of photos, when no
-	 * photo models are loaded for efficiency reasons.
-	 * If a photo model is required anyway (because it shall be edited),
-	 * then first load the photo once and use
-	 * {@link PhotoAuthorisationProvider::isEditable()}
-	 * instead in order to avoid several DB requests.
-	 *
-	 * @param string[] $photoIDs
-	 *
-	 * @return bool
-	 *
-	 * @throws QueryBuilderException
-	 */
-	public function areEditableByIDs(array $photoIDs): bool
-	{
-		if (!Auth::check()) {
-			return false;
-		}
-
-		if (Gate::check('admin')) {
-			return true;
-		}
-		$userId = Auth::authenticate()->id;
-
-		// Make IDs unique as otherwise count will fail.
-		$photoIDs = array_unique($photoIDs);
-
-		return
-			count($photoIDs) === 0 ||
-			Photo::query()
-				->whereIn('id', $photoIDs)
-				->where('owner_id', $userId)
-				->count() === count($photoIDs);
-	}
-
-	/**
 	 * Throws an exception if the given query does not query for a photo.
 	 *
 	 * @param FixedQueryBuilder $query         the query to prepare
@@ -357,7 +240,7 @@ class PhotoAuthorisationProvider
 			$query->leftJoin('base_albums', 'base_albums.id', '=', 'photos.album_id');
 		}
 		if ($addShares) {
-			$userId = Auth::authenticate()->id;
+			$userId = Auth::id();
 			$query->leftJoin(
 				'user_base_album',
 				function (JoinClause $join) use ($userId) {

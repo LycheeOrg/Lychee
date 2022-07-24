@@ -2,9 +2,11 @@
 
 namespace App\Policies;
 
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Gate;
 
 class PhotoPolicy
 {
@@ -20,7 +22,7 @@ class PhotoPolicy
 	 */
 	public function before(?User $user, $ability)
 	{
-		if ($user?->id === 0) {
+		if ($user?->isAdmin()) {
 			return true;
 		}
 	}
@@ -37,5 +39,108 @@ class PhotoPolicy
 	public function own(?User $user, Photo $photo): bool
 	{
 		return $photo->owner_id === $user?->id;
+	}
+
+	/**
+	 * Defines whether current user has access to provided album.
+	 *
+	 * @param User|null $user
+	 * @param Photo     $photo
+	 *
+	 * @return bool
+	 */
+	public function access(?User $user, Photo $photo): bool
+	{
+		return $this->own($user, $photo) ||
+		$photo->is_public ||
+		Gate::check('access', $photo->album);
+		// $this->albumAuthorisationProvider->isAccessible($photo->album);
+	}
+
+	/**
+	 * Checks whether the photo may be downloaded by the current user.
+	 *
+	 * Previously, this code was part of {@link Archive::extractFileInfo()}.
+	 * In particular, the method threw to {@link UnauthorizedException} with
+	 * custom error messages:
+	 *
+	 *  - `'User is not allowed to download the image'`, if the user was not
+	 *    the owner, the user was allowed to see the photo (i.e. the album
+	 *    is shared with the user), but the album does not allow to dowload
+	 *    photos
+	 *  - `'Permission to download is disabled by configuration'`, if the
+	 *    user was not the owner, the photo was not part of any album (i.e.
+	 *    unsorted), the photo was public and downloading was disabled by
+	 *    configuration.
+	 *
+	 * TODO: Check if these custom error messages are still needed. If yes, consider not to return a boolean value but rename the method to `assert...` and throw exceptions with custom error messages.
+	 *
+	 * @param User|null $user
+	 * @param Photo     $photo
+	 *
+	 * @return bool
+	 */
+	public function download(?User $user, Photo $photo): bool
+	{
+		if (!$this->access($user, $photo)) {
+			return false;
+		}
+
+		return Gate::check('download', $photo->album);
+	}
+
+	/**
+	 * Checks whether the photo is editable by the current user.
+	 *
+	 * A photo is called _editable_ if the current user is allowed to edit
+	 * the photo's properties.
+	 * A photo is _editable_ if any of the following conditions hold
+	 * (OR-clause)
+	 *
+	 *  - the user is an admin
+	 *  - the user is the owner of the photo
+	 *
+	 * @param Photo $photo
+	 *
+	 * @return bool
+	 */
+	public function edit(User $user, Photo $photo)
+	{
+		return $this->own($user, $photo);
+	}
+
+	/**
+	 * TODO: MOVE TO POLICY.
+	 *
+	 * Checks whether the designated photos are editable by the current user.
+	 *
+	 * See {@link PhotoAuthorisationProvider::isEditable()} for the definition
+	 * when a photo is editable.
+	 *
+	 * This method is mostly only useful during deletion of photos, when no
+	 * photo models are loaded for efficiency reasons.
+	 * If a photo model is required anyway (because it shall be edited),
+	 * then first load the photo once and use
+	 * {@link PhotoAuthorisationProvider::isEditable()}
+	 * instead in order to avoid several DB requests.
+	 *
+	 * @param User     $user
+	 * @param string[] $photoIDs
+	 *
+	 * @return bool
+	 *
+	 * @throws QueryBuilderException
+	 */
+	public function editByID(User $user, array $photoIDs): bool
+	{
+		// Make IDs unique as otherwise count will fail.
+		$photoIDs = array_unique($photoIDs);
+
+		return
+			count($photoIDs) === 0 ||
+			Photo::query()
+				->whereIn('id', $photoIDs)
+				->where('owner_id', $user->id)
+				->count() === count($photoIDs);
 	}
 }

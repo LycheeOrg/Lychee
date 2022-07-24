@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Policies\AlbumPolicy;
+use App\Policies\PhotoPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -29,11 +31,11 @@ class AuthServiceProvider extends ServiceProvider
 		$this->registerPolicies();
 
 		Gate::define('admin', function (User $user) {
-			return $user->id === 0;
+			return $user->isAdmin();
 		});
 
-		Gate::define('can-upload', function (?User $user) {
-			return optional($user)->may_upload === true;
-		});
+		Gate::define('can-upload', [UserPolicy::class, 'upload']);
+		Gate::define('editById-albums', [AlbumPolicy::class, 'editById']);
+		Gate::define('editById-photos', [PhotoPolicy::class, 'editById']);
 	}
 }

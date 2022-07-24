@@ -15,6 +15,7 @@ use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Kalnoy\Nestedset\QueryBuilder as NsQueryBuilder;
 
 class Top
@@ -60,7 +61,7 @@ class Top
 		$smartAlbums = $this->albumFactory
 			->getAllBuiltInSmartAlbums(false)
 			->map(
-				fn ($smartAlbum) => $this->albumAuthorisationProvider->isVisible($smartAlbum) ? $smartAlbum : null
+				fn ($smartAlbum) => Gate::check('see', $smartAlbum) ? $smartAlbum : null
 			);
 
 		$tagAlbumQuery = $this->albumAuthorisationProvider

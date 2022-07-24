@@ -19,7 +19,7 @@ class UserPolicy
 	 */
 	public function before(?User $user, $ability)
 	{
-		if (optional($user)->id === 0) {
+		if ($user?->isAdmin()) {
 			return true;
 		}
 	}

@@ -11,6 +11,7 @@ use App\Http\Requests\Traits\HasPhotoTrait;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Rules\RandomIDRule;
+use Illuminate\Support\Facades\Gate;
 
 class SetAlbumCoverRequest extends BaseApiRequest implements HasAlbum, HasPhoto
 {
@@ -22,8 +23,7 @@ class SetAlbumCoverRequest extends BaseApiRequest implements HasAlbum, HasPhoto
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumWrite($this->album) &&
-			$this->authorizePhotoVisible($this->photo);
+		return $this->authorizeAlbumWrite($this->album) && Gate::check('access', $this->photo);
 	}
 
 	/**
