@@ -13,10 +13,26 @@
 namespace Tests\Feature;
 
 use Tests\Feature\Base\PhotoTestBase;
+use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\TestCase;
 
 class SearchTest extends PhotoTestBase
 {
+	use RequiresEmptyAlbums;
+
+	public function setUp(): void
+	{
+		parent::setUp();
+		$this->setUpRequiresEmptyAlbums();
+	}
+
+	public function tearDown(): void
+	{
+		$this->tearDownRequiresEmptyPhotos();
+		$this->tearDownRequiresEmptyAlbums();
+		parent::tearDown();
+	}
+
 	public function testSearchPhotoByTitle(): void
 	{
 		$photoId1 = $this->photos_tests->upload(
@@ -168,8 +184,6 @@ class SearchTest extends PhotoTestBase
 		$response->assertJsonMissing([
 			'id' => $albumId2,
 		]);
-
-		$this->albums_tests->delete([$albumId1, $albumId2]);
 	}
 
 	public function testSearchTagAlbumByTitle(): void
@@ -201,7 +215,5 @@ class SearchTest extends PhotoTestBase
 		$response->assertJsonMissing([
 			'id' => $tagAlbumId2,
 		]);
-
-		$this->albums_tests->delete([$tagAlbumId1]);
 	}
 }
