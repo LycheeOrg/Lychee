@@ -9,6 +9,7 @@ use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
 use App\Facades\AccessControl;
+use App\Legacy\Legacy;
 use App\Models\Logs;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -50,6 +51,10 @@ class Login
 			$hashedPassword = bcrypt($password);
 		} catch (\InvalidArgumentException $e) {
 			throw new InvalidPropertyException('Could not hash username or password', $e);
+		}
+
+		if (Legacy::SetPassword($hashedUsername, $hashedPassword)) {
+			return;
 		}
 
 		// > 4.0.8
