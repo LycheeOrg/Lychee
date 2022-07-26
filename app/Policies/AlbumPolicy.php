@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Auth\AlbumAuthorisationProvider;
 use App\Contracts\AbstractAlbum;
 use App\Exceptions\ConfigurationKeyMissingException;
+use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Factories\AlbumFactory;
@@ -14,12 +15,27 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\User;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
 
 class AlbumPolicy
 {
 	use HandlesAuthorization;
+
+	protected UserPolicy $userPolicy;
+
+	/**
+	 * @throws FrameworkException
+	 */
+	public function __construct()
+	{
+		try {
+			$this->userPolicy = resolve(UserPolicy::class);
+		} catch (BindingResolutionException $e) {
+			throw new FrameworkException('Laravel\'s provider component', $e);
+		}
+	}
 
 	/**
 	 * Perform pre-authorization checks.
@@ -47,7 +63,7 @@ class AlbumPolicy
 	 */
 	public function own(?User $user, BaseAlbum $album): bool
 	{
-		return $album->owner_id === $user?->id;
+		return $user !== null && $album->owner_id === $user->id;
 	}
 
 	/**
@@ -88,14 +104,14 @@ class AlbumPolicy
 			try {
 				return
 					$this->own($user, $album) ||
-					($album->is_public && $album->password === null) ||
-					($album->is_public && $this->unlocked($user, $album)) ||
+					($album->is_public === true && $album->password === null) ||
+					($album->is_public === true && $this->unlocked($album)) ||
 					($album->shared_with()->where('user_id', '=', $user?->id)->count() > 0);
 			} catch (\InvalidArgumentException $e) {
 				throw LycheeAssertionError::createFromUnexpectedException($e);
 			}
 		} elseif ($album instanceof BaseSmartAlbum) {
-			return Gate::check('can-upload') || $album->is_public;
+			return $this->see($user, $album);
 		} else {
 			// Should never happen
 			return false;
@@ -105,18 +121,21 @@ class AlbumPolicy
 	/**
 	 * Check if an album is dowmloadable.
 	 *
-	 * @param User|null $user
-	 * @param BaseAlbum $baseAlbum
+	 * @param User|null      $user
+	 * @param BaseAlbum|null $baseAlbum
 	 *
 	 * @return bool
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function download(?User $user, BaseAlbum|null $baseAlbum): bool
+	public function download(?User $user, ?BaseAlbum $baseAlbum): bool
 	{
+		if ($baseAlbum === null) {
+			return Configs::getValueAsBool('downloadable');
+		}
+
 		return $this->own($user, $baseAlbum) ||
-		$baseAlbum?->is_downloadable ||
-		($baseAlbum === null && Configs::getValueAsBool('downloadable'));
+			$baseAlbum->is_downloadable;
 	}
 
 	/**
@@ -127,7 +146,7 @@ class AlbumPolicy
 	 *
 	 * @return bool
 	 */
-	public function unlocked(?User $user, BaseAlbum|BaseAlbumImpl $album): bool
+	public function unlocked(BaseAlbum|BaseAlbumImpl $album): bool
 	{
 		return in_array($album->id, $this->getUnlockedAlbumIDs(), true);
 	}
@@ -159,14 +178,14 @@ class AlbumPolicy
 	 * In order to silently ignore/skip this condition for smart albums,
 	 * this method always returns `true` for a smart album.
 	 *
-	 * @param User               $user
+	 * @param User|null          $user
 	 * @param AbstractAlbum|null $album the album; `null` designates the root album
 	 *
 	 * @return bool
 	 */
 	public function edit(User $user, ?AbstractAlbum $album): bool
 	{
-		if (!Gate::check('can-upload')) {
+		if (!$this->userPolicy->upload($user)) {
 			return false;
 		}
 
@@ -199,7 +218,11 @@ class AlbumPolicy
 	 */
 	public function editById(User $user, array $albumIDs): bool
 	{
-		if (!Gate::any(['admin', 'can-upload'])) {
+		if ($this->before($user, 'editById') === true) {
+			return true;
+		}
+
+		if (!$this->userPolicy->upload($user)) {
 			return false;
 		}
 
@@ -233,8 +256,7 @@ class AlbumPolicy
 	 */
 	public function see(?User $user, BaseSmartAlbum $smartAlbum): bool
 	{
-		return
-			Gate::check('can-upload') ||
+		return ($user !== null && $this->userPolicy->upload($user)) ||
 			$smartAlbum->is_public;
 	}
 }

@@ -25,21 +25,19 @@ class UserPolicy
 	}
 
 	/**
-	 * This policy gate is unused for now.
-	 * However it should later take care of checking whether current user has edit rights or not.
+	 * This defines if user can edit their settings.
 	 *
 	 * @param User $user
 	 *
 	 * @return bool
 	 */
-	public function edit(User $user): bool
+	public function editSettings(User $user): bool
 	{
 		return !$user->is_locked;
 	}
 
 	/**
-	 * This policy gate is unsued for now.
-	 * However it should later be used to check if user has upload rights or not.
+	 * This defines is user has upload rights.
 	 *
 	 * @param User $user
 	 *

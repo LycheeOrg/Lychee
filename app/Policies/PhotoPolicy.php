@@ -2,15 +2,30 @@
 
 namespace App\Policies;
 
+use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Contracts\Container\BindingResolutionException;
 
 class PhotoPolicy
 {
 	use HandlesAuthorization;
+
+	protected AlbumPolicy $albumPolicy;
+
+	/**
+	 * @throws FrameworkException
+	 */
+	public function __construct()
+	{
+		try {
+			$this->albumPolicy = resolve(AlbumPolicy::class);
+		} catch (BindingResolutionException $e) {
+			throw new FrameworkException('Laravel\'s provider component', $e);
+		}
+	}
 
 	/**
 	 * Perform pre-authorization checks.
@@ -38,7 +53,7 @@ class PhotoPolicy
 	 */
 	public function own(?User $user, Photo $photo): bool
 	{
-		return $photo->owner_id === $user?->id;
+		return $user !== null && $photo->owner_id === $user->id;
 	}
 
 	/**
@@ -53,8 +68,7 @@ class PhotoPolicy
 	{
 		return $this->own($user, $photo) ||
 		$photo->is_public ||
-		Gate::check('access', $photo->album);
-		// $this->albumAuthorisationProvider->isAccessible($photo->album);
+		$this->albumPolicy->access($user, $photo->album);
 	}
 
 	/**
@@ -86,7 +100,7 @@ class PhotoPolicy
 			return false;
 		}
 
-		return Gate::check('download', $photo->album);
+		return $this->albumPolicy->download($user, $photo->album);
 	}
 
 	/**
@@ -110,8 +124,6 @@ class PhotoPolicy
 	}
 
 	/**
-	 * TODO: MOVE TO POLICY.
-	 *
 	 * Checks whether the designated photos are editable by the current user.
 	 *
 	 * See {@link PhotoAuthorisationProvider::isEditable()} for the definition
@@ -133,6 +145,10 @@ class PhotoPolicy
 	 */
 	public function editByID(User $user, array $photoIDs): bool
 	{
+		if ($this->before($user, 'editById') === true) {
+			return true;
+		}
+
 		// Make IDs unique as otherwise count will fail.
 		$photoIDs = array_unique($photoIDs);
 

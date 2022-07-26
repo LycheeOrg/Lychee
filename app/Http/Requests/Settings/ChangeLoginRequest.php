@@ -26,7 +26,7 @@ class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check('edit', User::class);
+		return Gate::check('editSettings', User::class);
 	}
 
 	/**

@@ -2,10 +2,15 @@
 
 namespace App\Providers;
 
+use App\Contracts\AbstractAlbum;
+use App\Models\Album;
+use App\Models\BaseAlbumImpl;
+use App\Models\Extensions\BaseAlbum;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use App\Policies\UserPolicy;
+use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -17,8 +22,13 @@ class AuthServiceProvider extends ServiceProvider
 	 * @var array<string, string>
 	 */
 	protected $policies = [
-		// User::class => UserPolicy::class,
-		// 'App\Model' => 'App\Policies\ModelPolicy',
+		User::class => UserPolicy::class,
+		Photo::class => PhotoPolicy::class,
+		BaseSmartAlbum::class => AlbumPolicy::class,
+		BaseAlbum::class => AlbumPolicy::class,
+		BaseAlbumImpl::class => AlbumPolicy::class,
+		Album::class => AlbumPolicy::class,
+		AbstractAlbum::class => AlbumPolicy::class,
 	];
 
 	/**
@@ -33,9 +43,5 @@ class AuthServiceProvider extends ServiceProvider
 		Gate::define('admin', function (User $user) {
 			return $user->isAdmin();
 		});
-
-		Gate::define('can-upload', [UserPolicy::class, 'upload']);
-		Gate::define('editById-albums', [AlbumPolicy::class, 'editById']);
-		Gate::define('editById-photos', [PhotoPolicy::class, 'editById']);
 	}
 }

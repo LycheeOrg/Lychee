@@ -31,7 +31,7 @@ class SharingController extends Controller
 	{
 		// Note: This test is part of the request validation for the other
 		// methods of this class.
-		if (!Gate::any('admin', 'can-upload')) {
+		if (!Gate::check('upload', User::class)) {
 			throw new UnauthorizedException('Upload privilege required');
 		}
 

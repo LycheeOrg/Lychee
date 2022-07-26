@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Sharing;
 
 use App\Http\Requests\BaseApiRequest;
+use App\Models\User;
 use App\Rules\IntegerIDRule;
 use Illuminate\Support\Facades\Gate;
 
@@ -20,7 +21,7 @@ class DeleteSharingRequest extends BaseApiRequest
 	 */
 	public function authorize(): bool
 	{
-		return Gate::any(['admin', 'can-upload']);
+		return Gate::any('upload', User::class);
 	}
 
 	/**
