@@ -6,6 +6,7 @@ use App\Contracts\AbstractAlbum;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\Photo;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;

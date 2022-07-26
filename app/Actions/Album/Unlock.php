@@ -18,6 +18,7 @@ class Unlock extends Action
 	{
 		parent::__construct();
 		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
+		$this->albumPolicy = resolve(AlbumPolicy::class);
 	}
 
 	/**

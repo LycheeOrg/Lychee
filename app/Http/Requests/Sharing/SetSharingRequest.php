@@ -7,6 +7,7 @@ use App\Http\Requests\Contracts\HasAlbumIDs;
 use App\Http\Requests\Contracts\HasUserIDs;
 use App\Http\Requests\Traits\HasAlbumIDsTrait;
 use App\Http\Requests\Traits\HasUserIDsTrait;
+use App\Models\User;
 use App\Rules\IntegerIDRule;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;

@@ -141,7 +141,6 @@ class AlbumPolicy
 	/**
 	 * Check whether the given album has previously been unlocked.
 	 *
-	 * @param User|null               $user
 	 * @param BaseAlbum|BaseAlbumImpl $album
 	 *
 	 * @return bool
@@ -178,7 +177,7 @@ class AlbumPolicy
 	 * In order to silently ignore/skip this condition for smart albums,
 	 * this method always returns `true` for a smart album.
 	 *
-	 * @param User|null          $user
+	 * @param User               $user
 	 * @param AbstractAlbum|null $album the album; `null` designates the root album
 	 *
 	 * @return bool
