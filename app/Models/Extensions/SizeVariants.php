@@ -4,6 +4,7 @@ namespace App\Models\Extensions;
 
 use App\Actions\SizeVariant\Delete;
 use App\DTO\DTO;
+use App\DTO\ImageDimension;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\Internal\LycheeAssertionError;
@@ -172,20 +173,19 @@ class SizeVariants extends DTO
 	 * Creates a new instance of {@link \App\Models\SizeVariant} for the
 	 * associated photo and persists it to DB.
 	 *
-	 * @param int    $sizeVariantType the type of the desired size variant;
-	 *                                allowed values are:
-	 *                                {@link SizeVariant::ORIGINAL},
-	 *                                {@link SizeVariant::MEDIUM2X},
-	 *                                {@link SizeVariant::MEDIUM2},
-	 *                                {@link SizeVariant::SMALL2X},
-	 *                                {@link SizeVariant::SMALL},
-	 *                                {@link SizeVariant::THUMB2X}, and
-	 *                                {@link SizeVariant::THUMB}
-	 * @param string $shortPath       the short path of the media file this
-	 *                                size variant shall point to
-	 * @param int    $width           the width of the size variant
-	 * @param int    $height          the height of the size variant
-	 * @param int    $filesize        the filesize of the size variant
+	 * @param int            $sizeVariantType the type of the desired size variant;
+	 *                                        allowed values are:
+	 *                                        {@link SizeVariant::ORIGINAL},
+	 *                                        {@link SizeVariant::MEDIUM2X},
+	 *                                        {@link SizeVariant::MEDIUM2},
+	 *                                        {@link SizeVariant::SMALL2X},
+	 *                                        {@link SizeVariant::SMALL},
+	 *                                        {@link SizeVariant::THUMB2X}, and
+	 *                                        {@link SizeVariant::THUMB}
+	 * @param string         $shortPath       the short path of the media file this
+	 *                                        size variant shall point to
+	 * @param ImageDimension $dim             the width of the size variant
+	 * @param int            $filesize        the filesize of the size variant
 	 *
 	 * @return SizeVariant The newly created and persisted size variant
 	 *
@@ -194,7 +194,7 @@ class SizeVariants extends DTO
 	 *
 	 * @phpstan-param int<0,6>   $sizeVariantType
 	 */
-	public function create(int $sizeVariantType, string $shortPath, int $width, int $height, int $filesize): SizeVariant
+	public function create(int $sizeVariantType, string $shortPath, ImageDimension $dim, int $filesize): SizeVariant
 	{
 		if (!$this->photo->exists) {
 			throw new IllegalOrderOfOperationException('Cannot create a size variant for a photo whose id is not yet persisted to DB');
@@ -204,8 +204,8 @@ class SizeVariants extends DTO
 			$result->photo_id = $this->photo->id;
 			$result->type = $sizeVariantType;
 			$result->short_path = $shortPath;
-			$result->width = $width;
-			$result->height = $height;
+			$result->width = $dim->width;
+			$result->height = $dim->height;
 			$result->filesize = $filesize;
 			$result->save();
 			$this->add($result);
@@ -274,7 +274,12 @@ class SizeVariants extends DTO
 	private static function replicateSizeVariant(SizeVariants $duplicate, ?SizeVariant $sizeVariant): void
 	{
 		if ($sizeVariant !== null) {
-			$duplicate->create($sizeVariant->type, $sizeVariant->short_path, $sizeVariant->width, $sizeVariant->height, $sizeVariant->filesize);
+			$duplicate->create(
+				$sizeVariant->type,
+				$sizeVariant->short_path,
+				new ImageDimension($sizeVariant->width, $sizeVariant->height),
+				$sizeVariant->filesize
+			);
 		}
 	}
 }

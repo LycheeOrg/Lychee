@@ -46,7 +46,19 @@ return [
 			'driver' => 'local',
 			'root' => env('LYCHEE_UPLOADS', public_path('uploads/')),
 			'url' => env('LYCHEE_UPLOADS_URL', 'uploads/'),
-			'visibility' => 'public',
+			'visibility' => env('LYCHEE_IMAGE_VISIBILITY', 'public'),
+			'permissions' => [
+				'file' => [
+					'world' => 00666,
+					'public' => 00664,
+					'private' => 00660,
+				],
+				'dir' => [
+					'world' => 02777,
+					'public' => 02775,
+					'private' => 02770,
+				],
+			],
 		],
 
 		// This is an example how the "images" disk can be hosted on an AWS S3

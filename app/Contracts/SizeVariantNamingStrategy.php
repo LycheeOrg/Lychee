@@ -2,40 +2,75 @@
 
 namespace App\Contracts;
 
+use App\Image\FlysystemFile;
 use App\Models\Photo;
+use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Interface SizeVariantNamingStrategy.
  */
 abstract class SizeVariantNamingStrategy
 {
-	protected string $fallbackExtension = '';
+	/**
+	 * The name of the Flysystem disk where images are stored.
+	 */
+	public const IMAGE_DISK_NAME = 'images';
+
+	protected string $extension = '';
 	protected ?Photo $photo = null;
 
-	public function setFallbackExtension(string $fallbackExtension): void
+	/**
+	 * Returns the disk on which the size variants are put.
+	 *
+	 * @return Filesystem
+	 */
+	public static function getImageDisk(): Filesystem
 	{
-		$this->fallbackExtension = $fallbackExtension;
+		return Storage::disk(self::IMAGE_DISK_NAME);
 	}
 
+	/**
+	 * Sets the extension to be used for the size variants.
+	 *
+	 * {@link SizeVariantNamingStrategy::setPhoto()} also sets the
+	 * extension, if the photo is linked to an original size variant.
+	 * Hence, calling this method should only be necessary for creating new
+	 * photos, if no size variant already exist.
+	 *
+	 * @param string $extension the extension
+	 *
+	 * @return void
+	 */
+	public function setExtension(string $extension): void
+	{
+		$this->extension = $extension;
+	}
+
+	/**
+	 * Sets the photo for which names of size variants shall be generated.
+	 *
+	 * @param Photo|null $photo the photo whose size variants shall be named
+	 *
+	 * @return void
+	 */
 	public function setPhoto(?Photo $photo): void
 	{
 		$this->photo = $photo;
+		$this->extension = '';
+		if ($this->photo !== null && ($sv = $this->photo->size_variants->getOriginal()) !== null) {
+			$this->extension = $sv->getFile()->getExtension();
+		}
 	}
 
 	/**
-	 * Generates a short path for the designated size variant.
+	 * Creates a file for the designated size variant.
 	 *
 	 * @param int $sizeVariant the size variant
 	 *
-	 * @return string The short path
-	 */
-	abstract public function generateShortPath(int $sizeVariant): string;
-
-	/**
-	 * Returns the default extension.
+	 * @return FlysystemFile the file
 	 *
-	 * @return string the default extension (incl. a preceding dot) which is
-	 *                used by the naming strategy
+	 * @throws LycheeException
 	 */
-	abstract public function getDefaultExtension(): string;
+	abstract public function createFile(int $sizeVariant): FlysystemFile;
 }

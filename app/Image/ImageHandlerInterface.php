@@ -2,114 +2,115 @@
 
 namespace App\Image;
 
+use App\DTO\ImageDimension;
+use App\Exceptions\ImageProcessingException;
 use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 
 /**
  * Interface ImageHandlerInterface.
- *
- * TODO: If we ever plan to support other than the local filesystem this interface must be heavily refactored.
- *
- * In particular, the interface must not use strings which represent paths of
- * image file, but must entirely work on streams or resources in PHP
- * terminology.
- * These streams are provided by Flysystem and may represent local or
- * remote files (it doesn't really matter).
- *
- * This is the idea:
- * The interface should represent a image (not an image handler).
- * The interface should provide a `read`-method which reads from a stream
- * and creates the image in memory.
- * All methods which are currently defined by this interface operate on this
- * memory representation.
- * In particular, the methods don't receive any paths.
- * The interface should provide a `write`-method which write the current
- * in-memory image to the stream.
- * This works for both child classes {@link GdHandler} and
- * {@link ImagickHandler}.
- * Both libraries provide classes and methods to read from/write to streams
- * in an object-oriented fashion.
  */
 interface ImageHandlerInterface
 {
 	/**
-	 * @param int $compressionQuality
-	 */
-	public function __construct(int $compressionQuality);
-
-	/**
-	 * TODO: Get rid of the parameters `$source` and `$destination`. See comment on the interface.
+	 * Loads an image from the provided file.
 	 *
-	 * @param string $source
-	 * @param string $destination
-	 * @param int    $newWidth
-	 * @param int    $newHeight
-	 * @param int    &$resWidth
-	 * @param int    &$resHeight
+	 * @param MediaFile $file the file to read from
 	 *
 	 * @return void
 	 *
 	 * @throws MediaFileUnsupportedException
 	 * @throws MediaFileOperationException
+	 * @throws ImageProcessingException
 	 */
-	public function scale(
-		string $source,
-		string $destination,
-		int $newWidth,
-		int $newHeight,
-		int &$resWidth,
-		int &$resHeight
-	): void;
+	public function load(MediaFile $file): void;
 
 	/**
-	 * TODO: Get rid of the parameters `$source` and `$destination`. See comment on the interface.
+	 * Save the image into the provided file.
 	 *
-	 * @param string $source
-	 * @param string $destination
-	 * @param int    $newWidth
-	 * @param int    $newHeight
+	 * @param MediaFile $file              the file to write into
+	 * @param bool      $collectStatistics if true, the method returns statistics about the stream
+	 *
+	 * @return StreamStat|null optional statistics about the stream, if requested
+	 *
+	 * @throws MediaFileOperationException
+	 */
+	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStat;
+
+	/**
+	 * Frees all internal resources.
+	 *
+	 * This method resets the object into a state where no image is loaded.
+	 * It frees all internal resources, releases all temporary buffers and
+	 * closes all streams.
+	 * Any work which has not been saved by a prior call to
+	 * {@link ImageHandlerInterface::save()} will be lost.
 	 *
 	 * @return void
-	 *
-	 * @throws MediaFileUnsupportedException
-	 * @throws MediaFileOperationException
 	 */
-	public function crop(
-		string $source,
-		string $destination,
-		int $newWidth,
-		int $newHeight
-	): void;
+	public function reset(): void;
 
 	/**
-	 * Rotates and flips a photo based on its EXIF orientation.
+	 * Clones and scales the image proportionally to the designated dimensions such
+	 * that the new dimension don't exceed the designated dimensions.
 	 *
-	 * TODO: Get rid of the parameters `$source` and `$destination`. See comment on the interface.
+	 * The resulting dimension may differ from the requested dimension due
+	 * to proportional scaling.
 	 *
-	 * @param string $path
-	 * @param int    $orientation the orientation value (1..8) as defined by EXIF specification, default is 1 (means up-right and not mirrored/flipped)
-	 * @param bool   $pretend
+	 * Either the new width or height may be zero which means that this
+	 * dimension is chosen automatically.
 	 *
-	 * @return array{width: int, height: int} an associative array `['width' => (int), 'height' => (int)]` with the new width and height after rotation
+	 * @param ImageDimension $dstDim the designated dimensions
 	 *
-	 * @throws MediaFileUnsupportedException
-	 * @throws MediaFileOperationException
+	 * @return ImageHandlerInterface the scaled clone
+	 *
+	 * @throws ImageProcessingException
+	 * @throws LycheeDomainException
 	 */
-	public function autoRotate(string $path, int $orientation = 1, bool $pretend = false): array;
+	public function cloneAndScale(ImageDimension $dstDim): ImageHandlerInterface;
 
 	/**
-	 * TODO: Get rid of the parameters `$source` and `$destination`. See comment on the interface.
+	 * Clones and crops the image to the designated dimensions.
 	 *
-	 * @param string      $source
-	 * @param int         $angle
-	 * @param string|null $destination if `null`, the image is rotated in place
+	 * @param ImageDimension $dstDim the designated dimensions
 	 *
-	 * @return void
+	 * @return ImageHandlerInterface the cropped clone
 	 *
-	 * @throws MediaFileUnsupportedException
-	 * @throws MediaFileOperationException
-	 * @throws LycheeDomainException         thrown if `$angle` is out-of-bounds
+	 * @throws ImageProcessingException
 	 */
-	public function rotate(string $source, int $angle, ?string $destination = null): void;
+	public function cloneAndCrop(ImageDimension $dstDim): ImageHandlerInterface;
+
+	/**
+	 * Rotates the imaged based on the given angle.
+	 *
+	 * @param int $angle
+	 *
+	 * @return ImageDimension the resulting dimension
+	 *
+	 * @throws ImageProcessingException
+	 * @throws LycheeDomainException    thrown if `$angle` is out-of-bounds
+	 */
+	public function rotate(int $angle): ImageDimension;
+
+	/**
+	 * Returns the dimension of the image in upright orientation.
+	 *
+	 * The returned dimension may be swapped compared to the dimensions
+	 * returned by raw EXIF data.
+	 * An image may be stored rotated or mirrored and EXIF returns the raw
+	 * width and height.
+	 * This method returns the dimension after the photo has been put into
+	 * upright orientation.
+	 *
+	 * @return ImageDimension the dimensions of the image
+	 *
+	 * @throws ImageProcessingException
+	 */
+	public function getDimensions(): ImageDimension;
+
+	/**
+	 * @return bool true, if an image is loaded
+	 */
+	public function isLoaded(): bool;
 }

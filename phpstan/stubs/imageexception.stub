@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * These stubs for the \Safe-variant of the GD image functions until
+ * https://github.com/thecodingmachine/safe/issues/283
+ * has been merged into thecodingmachine/safe-2.0
+ */
+
+namespace Safe\Exceptions;
+
+interface SafeExceptionInterface extends \Throwable
+{
+}
+
+class ImageException extends \ErrorException implements SafeExceptionInterface
+{
+	/**
+	 * @return self
+	 */
+	public static function createFromPhpError(): self {}
+}

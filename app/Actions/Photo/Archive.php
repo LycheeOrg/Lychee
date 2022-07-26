@@ -4,6 +4,7 @@ namespace App\Actions\Photo;
 
 use App\Actions\Photo\Extensions\ArchiveFileInfo;
 use App\Contracts\LycheeException;
+use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Image\FlysystemFile;
@@ -12,7 +13,6 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Storage;
 use Safe\Exceptions\InfoException;
 use function Safe\fclose;
 use function Safe\fopen;
@@ -148,7 +148,12 @@ class Archive
 			// The only reason why we don't use the path directly is that
 			// we must avoid illegal characters like `/` and md5 returns a
 			// hexadecimal string.
-			$response->headers->set('ETag', md5($archiveFileInfo->getFile()->getAbsolutePath()));
+			$response->headers->set('ETag', md5(
+				$archiveFileInfo->getFile()->getBasename() .
+				$variant .
+				$photo->updated_at->toAtomString() .
+				$archiveFileInfo->getFile()->getFilesize())
+			);
 			$response->headers->set('Last-Modified', $photo->updated_at->format(DateTimeInterface::RFC7231));
 
 			return $response;
@@ -321,7 +326,7 @@ class Archive
 		$baseFilename = $validFilename !== '' ? $validFilename : 'Untitled';
 
 		if ($variant === self::LIVEPHOTOVIDEO) {
-			$sourceFile = new FlysystemFile(Storage::disk(), $photo->live_photo_short_path);
+			$sourceFile = new FlysystemFile(SizeVariantNamingStrategy::getImageDisk(), $photo->live_photo_short_path);
 			$baseFilenameAddon = '';
 		} elseif (array_key_exists($variant, self::VARIANT2VARIANT)) {
 			$sv = $photo->size_variants->getSizeVariant(self::VARIANT2VARIANT[$variant]);
