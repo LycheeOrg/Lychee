@@ -134,6 +134,8 @@ class RefactorTimestampsAnew extends Migration
 	 */
 	protected function upgradeORMSystemTimesByTable(string $tableName): void
 	{
+		$nowString = Carbon::now(self::SQL_TIMEZONE_NAME)->format(self::SQL_DATETIME_FORMAT);
+
 		// We must use three single calls to work around an SQLite limitation
 		Schema::table($tableName, function (Blueprint $table) {
 			$table->renameColumn(self::CREATED_AT_COL_NAME, self::CREATED_AT_COL_NAME . '_tmp');
@@ -163,14 +165,23 @@ class RefactorTimestampsAnew extends Migration
 			$created_at = $entity->{self::CREATED_AT_COL_NAME . '_tmp'};
 			$updated_at = $entity->{self::UPDATED_AT_COL_NAME . '_tmp'};
 			if ($needsConversion) {
-				$created_at = $this->upgradeDatetime($created_at);
-				$updated_at = $this->upgradeDatetime($updated_at);
+				$created_at = $this->upgradeDatetime($created_at) ?? $nowString;
+				$updated_at = $this->upgradeDatetime($updated_at) ?? $nowString;
 			}
 			DB::table($tableName)->where(self::ID_COL_NAME, '=', $entity->id)->update([
 				self::CREATED_AT_COL_NAME => $created_at,
 				self::UPDATED_AT_COL_NAME => $updated_at,
 			]);
 		}
+		DB::table($tableName)
+			->whereNull(self::CREATED_AT_COL_NAME)
+			->update([
+				self::CREATED_AT_COL_NAME => $nowString,
+				self::UPDATED_AT_COL_NAME => $nowString,
+			]);
+		DB::table($tableName)
+			->whereNull(self::UPDATED_AT_COL_NAME)
+			->update([self::UPDATED_AT_COL_NAME => $nowString]);
 		DB::commit();
 		// Make the new columns non-nullable
 		Schema::table($tableName, function (Blueprint $table) {
@@ -450,10 +461,11 @@ class RefactorTimestampsAnew extends Migration
 			return null;
 		}
 		$result = Carbon::createFromFormat(
-			self::SQL_DATETIME_FORMAT,
+			self::SQL_DATETIME_FORMAT . '+',
 			$sqlDatetime,
 			$oldTz
 		);
+
 		$result->setTimezone($newTz);
 
 		return $result->format(self::SQL_DATETIME_FORMAT);

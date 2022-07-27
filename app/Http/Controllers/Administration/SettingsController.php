@@ -1,19 +1,24 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Controllers\Administration;
 
 use App\Actions\Settings\Login;
-use App\Facades\Helpers;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\UserRequests\UsernamePasswordRequest;
+use App\Contracts\LycheeException;
+use App\Exceptions\InsufficientFilesystemPermissions;
+use App\Exceptions\Internal\InvalidConfigOption;
+use App\Exceptions\Internal\QueryBuilderException;
+use App\Facades\Lang;
+use App\Http\Requests\Settings\ChangeLoginRequest;
+use App\Http\Requests\Settings\SetSortingRequest;
 use App\Models\Configs;
-use App\Models\Logs;
+use App\Rules\LicenseRule;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
-use Lang;
+use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class SettingsController extends Controller
 {
@@ -25,37 +30,40 @@ class SettingsController extends Controller
 	 * To be noted this function will change the CONFIG table if used by admin
 	 * or the USER table if used by any other user
 	 *
-	 * @param Request $request
+	 * @param ChangeLoginRequest $request
+	 * @param Login              $login
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws LycheeException
+	 * @throws ModelNotFoundException
 	 */
-	public function setLogin(UsernamePasswordRequest $request, Login $login)
+	public function setLogin(ChangeLoginRequest $request, Login $login): void
 	{
-		return $login->do($request) ? 'true' : 'false';
+		$login->do(
+			$request->username(),
+			$request->password(),
+			$request->oldUsername(),
+			$request->oldPassword(),
+			$request->ip()
+		);
 	}
 
 	/**
 	 * Define the default sorting type.
 	 *
-	 * @param Request $request
+	 * @param SetSortingRequest $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws InvalidConfigOption
 	 */
-	public function setSorting(Request $request)
+	public function setSorting(SetSortingRequest $request): void
 	{
-		$validated = $request->validate([
-			'typeAlbums' => 'required|string',
-			'orderAlbums' => 'required|string',
-			'typePhotos' => 'required|string',
-			'orderPhotos' => 'required|string',
-		]);
-
-		Configs::set('sorting_Photos_col', $validated['typePhotos']);
-		Configs::set('sorting_Photos_order', $validated['orderPhotos']);
-		Configs::set('sorting_Albums_col', $validated['typeAlbums']);
-		Configs::set('sorting_Albums_order', $validated['orderAlbums']);
-
-		return 'true';
+		Configs::set('sorting_photos_col', $request->photoSortingColumn());
+		Configs::set('sorting_photos_order', $request->photoSortingOrder());
+		Configs::set('sorting_albums_col', $request->albumSortingColumn());
+		Configs::set('sorting_albums_order', $request->albumSortingOrder());
 	}
 
 	/**
@@ -63,21 +71,16 @@ class SettingsController extends Controller
 	 *
 	 * @param Request $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws InvalidConfigOption
 	 */
-	public function setLang(Request $request)
+	public function setLang(Request $request): void
 	{
-		$validated = $request->validate(['lang' => 'required|string']);
-
-		foreach (Lang::get_lang_available() as $lang) {
-			if ($validated['lang'] == $lang) {
-				return Configs::set('lang', $lang) ? 'true' : 'false';
-			}
-		}
-
-		Logs::error(__METHOD__, __LINE__, 'Could not update settings. Unknown lang.');
-
-		return 'false';
+		$validated = $request->validate([
+			'lang' => ['required', 'string', Rule::in(Lang::get_lang_available())],
+		]);
+		Configs::set('lang', $validated['lang']);
 	}
 
 	/**
@@ -88,13 +91,16 @@ class SettingsController extends Controller
 	 *
 	 * @param Request $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws InvalidConfigOption
 	 */
-	public function setLayout(Request $request)
+	public function setLayout(Request $request): void
 	{
-		$validated = $request->validate(['layout' => 'required|string']);
-
-		return Configs::set('layout', $validated['layout']) ? 'true' : 'false';
+		$validated = $request->validate([
+			'layout' => ['required', Rule::in([0, 1, 2])],
+		]);
+		Configs::set('layout', $validated['layout']);
 	}
 
 	/**
@@ -102,13 +108,14 @@ class SettingsController extends Controller
 	 *
 	 * @param Request $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws InvalidConfigOption
 	 */
-	public function setDropboxKey(Request $request)
+	public function setDropboxKey(Request $request): void
 	{
-		$validated = $request->validate(['key' => 'string|nullable']);
-
-		return Configs::set('dropbox_key', $validated['key']) ? 'true' : 'false';
+		$validated = $request->validate(['key' => 'present|string|nullable']);
+		Configs::set('dropbox_key', $validated['key']);
 	}
 
 	/**
@@ -116,17 +123,15 @@ class SettingsController extends Controller
 	 *
 	 * @param Request $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws InvalidConfigOption
+	 * @throws BadRequestException
 	 */
-	public function setPublicSearch(Request $request)
+	public function setPublicSearch(Request $request): void
 	{
-		$validated = $request->validate(['public_search' => 'required|string']);
-
-		if ($validated['public_search'] == '1') {
-			return Configs::set('public_search', '1') ? 'true' : 'false';
-		}
-
-		return Configs::set('public_search', '0') ? 'true' : 'false';
+		$request->validate(['public_search' => 'required|boolean']);
+		Configs::set('public_search', (int) $request->boolean('public_search'));
 	}
 
 	/**
@@ -134,17 +139,15 @@ class SettingsController extends Controller
 	 *
 	 * @param Request $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws InvalidConfigOption
+	 * @throws BadRequestException
 	 */
-	public function setNSFWVisible(Request $request)
+	public function setNSFWVisible(Request $request): void
 	{
-		$validated = $request->validate(['nsfw_visible' => 'required|string']);
-
-		if ($validated['nsfw_visible'] == '1') {
-			return Configs::set('nsfw_visible', '1') ? 'true' : 'false';
-		}
-
-		return Configs::set('nsfw_visible', '0') ? 'true' : 'false';
+		$request->validate(['nsfw_visible' => 'required|boolean']);
+		Configs::set('nsfw_visible', (int) $request->boolean('nsfw_visible'));
 	}
 
 	/**
@@ -156,13 +159,21 @@ class SettingsController extends Controller
 	 *
 	 * @param Request $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws InvalidConfigOption
 	 */
-	public function setImageOverlayType(Request $request)
+	public function setImageOverlayType(Request $request): void
 	{
-		$validated = $request->validate(['image_overlay_type' => 'required|string']);
+		$validated = $request->validate([
+			'image_overlay_type' => [
+				'required',
+				'string',
+				Rule::in(['none', 'desc', 'date', 'exif']),
+			],
+		]);
 
-		return Configs::set('image_overlay_type', $validated['image_overlay_type']) ? 'true' : 'false';
+		Configs::set('image_overlay_type', $validated['image_overlay_type']);
 	}
 
 	/**
@@ -170,21 +181,16 @@ class SettingsController extends Controller
 	 *
 	 * @param Request $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws InvalidConfigOption
 	 */
-	public function setDefaultLicense(Request $request)
+	public function setDefaultLicense(Request $request): void
 	{
-		$validated = $request->validate(['license' => 'required|string']);
-
-		foreach (Helpers::get_all_licenses() as $license) {
-			if ($license === $validated['license']) {
-				return Configs::set('default_license', $license) ? 'true' : 'false';
-			}
-		}
-
-		Logs::error(__METHOD__, __LINE__, 'Could not find the submitted license');
-
-		return 'false';
+		$validated = $request->validate([
+			'license' => ['required', new LicenseRule()],
+		]);
+		Configs::set('default_license', $validated['license']);
 	}
 
 	/**
@@ -192,17 +198,15 @@ class SettingsController extends Controller
 	 *
 	 * @param Request $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws InvalidConfigOption
+	 * @throws BadRequestException
 	 */
-	public function setMapDisplay(Request $request)
+	public function setMapDisplay(Request $request): void
 	{
-		$request->validate(['map_display' => 'required|string']);
-
-		if ($request['map_display'] == '1') {
-			return Configs::set('map_display', '1') ? 'true' : 'false';
-		}
-
-		return Configs::set('map_display', '0') ? 'true' : 'false';
+		$request->validate(['map_display' => 'required|boolean']);
+		Configs::set('map_display', (int) $request->boolean('map_display'));
 	}
 
 	/**
@@ -210,49 +214,62 @@ class SettingsController extends Controller
 	 *
 	 * @param Request $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws InvalidConfigOption
+	 * @throws BadRequestException
 	 */
-	public function setMapDisplayPublic(Request $request)
+	public function setMapDisplayPublic(Request $request): void
 	{
-		$request->validate(['map_display_public' => 'required|string']);
-
-		if ($request['map_display_public'] == '1') {
-			return Configs::set('map_display_public', '1') ? 'true' : 'false';
-		}
-
-		return Configs::set('map_display_public', '0') ? 'true' : 'false';
+		$request->validate(['map_display_public' => 'required|boolean']);
+		Configs::set('map_display_public', (int) $request->boolean('map_display_public'));
 	}
 
 	/**
 	 * Set provider of OSM map tiles.
 	 *
+	 * This configuration option is not used by the backend itself, but only
+	 * by the frontend.
+	 * The configured value is transmitted to the frontend as part of the
+	 * response for `Session::init`
+	 * (cp. {@link \App\Http\Controllers\SessionController::init()}) as the
+	 * confidentiality of this configuration option is `public`.
+	 *
 	 * @param Request $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws InvalidConfigOption
 	 */
-	public function setMapProvider(Request $request)
+	public function setMapProvider(Request $request): void
 	{
-		$request->validate(['map_provider' => 'required|string']);
+		$request->validate([
+			'map_provider' => ['required', 'string', Rule::in([
+				'Wikimedia',
+				'OpenStreetMap.org',
+				'OpenStreetMap.de',
+				'OpenStreetMap.fr',
+				'RRZE',
+			])],
+		]);
 
-		return Configs::set('map_provider', $request['map_provider']) ? 'true' : 'false';
+		Configs::set('map_provider', $request['map_provider']);
 	}
 
 	/**
-	 * Enable display of photos of subalbums on map.
+	 * Enable display of photos of sub-albums on map.
 	 *
 	 * @param Request $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws InvalidConfigOption
+	 * @throws BadRequestException
 	 */
-	public function setMapIncludeSubalbums(Request $request)
+	public function setMapIncludeSubAlbums(Request $request): void
 	{
-		$request->validate(['map_include_subalbums' => 'required|string']);
-
-		if ($request['map_include_subalbums'] == '1') {
-			return Configs::set('map_include_subalbums', '1') ? 'true' : 'false';
-		}
-
-		return Configs::set('map_include_subalbums', '0') ? 'true' : 'false';
+		$request->validate(['map_include_subalbums' => 'required|boolean']);
+		Configs::set('map_include_subalbums', (int) $request->boolean('map_include_subalbums'));
 	}
 
 	/**
@@ -260,13 +277,15 @@ class SettingsController extends Controller
 	 *
 	 * @param Request $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws InvalidConfigOption
+	 * @throws BadRequestException
 	 */
-	public function setLocationDecoding(Request $request)
+	public function setLocationDecoding(Request $request): void
 	{
-		$request->validate(['location_decoding' => 'required|string']);
-
-		return Configs::set('location_decoding', $request['location_decoding']) ? 'true' : 'false';
+		$request->validate(['location_decoding' => 'required|boolean']);
+		Configs::set('location_decoding', (int) $request->boolean('location_decoding'));
 	}
 
 	/**
@@ -274,13 +293,15 @@ class SettingsController extends Controller
 	 *
 	 * @param Request $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws InvalidConfigOption
+	 * @throws BadRequestException
 	 */
-	public function setLocationShow(Request $request)
+	public function setLocationShow(Request $request): void
 	{
-		$request->validate(['location_show' => 'required|string']);
-
-		return Configs::set('location_show', $request['location_show']) ? 'true' : 'false';
+		$request->validate(['location_show' => 'required|boolean']);
+		Configs::set('location_show', (int) $request->boolean('location_show'));
 	}
 
 	/**
@@ -288,16 +309,18 @@ class SettingsController extends Controller
 	 *
 	 * @param Request $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws InvalidConfigOption
+	 * @throws BadRequestException
 	 */
-	public function setLocationShowPublic(Request $request)
+	public function setLocationShowPublic(Request $request): void
 	{
-		$request->validate(['location_show_public' => 'required|string']);
-
-		return Configs::set(
+		$request->validate(['location_show_public' => 'required|boolean']);
+		Configs::set(
 			'location_show_public',
-			$request['location_show_public']
-		) ? 'true' : 'false';
+			(int) $request->boolean('location_show_public')
+		);
 	}
 
 	/**
@@ -305,52 +328,56 @@ class SettingsController extends Controller
 	 *
 	 * @param Request $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws InvalidConfigOption
+	 * @throws BadRequestException
 	 */
-	public function setNewPhotosNotification(Request $request)
+	public function setNewPhotosNotification(Request $request): void
 	{
-		$request->validate(['new_photos_notification' => 'required|string']);
-
-		if ($request['new_photos_notification'] == '1') {
-			return Configs::set('new_photos_notification', '1') ? 'true' : 'false';
-		}
-
-		return Configs::set('new_photos_notification', '0') ? 'true' : 'false';
+		$request->validate(['new_photos_notification' => 'required|boolean']);
+		Configs::set(
+			'new_photos_notification',
+			(int) $request->boolean('new_photos_notification')
+		);
 	}
 
 	/**
-	 * take the css input text and put it into dist/user.css
-	 * this allow admins to actually personalize the look of their installation.
+	 * Takes the css input text and put it into `dist/user.css`.
+	 * This allows admins to actually personalize the look of their
+	 * installation.
 	 *
 	 * @param Request $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws InsufficientFilesystemPermissions
 	 */
-	public function setCSS(Request $request)
+	public function setCSS(Request $request): void
 	{
-		$request->validate(['css' => 'nullable|string']);
-		$css = $request->get('css');
-		$css = $css == null ? '' : $css;
+		$request->validate(['css' => 'present|nullable|string']);
+		$css = $request->get('css') ?? '';
 
 		if (!Storage::disk('dist')->put('user.css', $css)) {
-			Logs::error(__METHOD__, __LINE__, 'Could not save css.');
-
-			return 'false';
+			throw new InsufficientFilesystemPermissions('Could not save CSS');
 		}
-
-		return 'true';
 	}
 
 	/**
-	 * Return ALL the settings. This is not filtered!
-	 * Fortunately this is behind an admin middlewear.
+	 * Returns ALL settings. This is not filtered!
+	 * Fortunately, this is behind an admin middleware.
 	 * This is used in the advanced settings part.
 	 *
 	 * @return Collection
+	 *
+	 * @throws QueryBuilderException
 	 */
-	public function getAll()
+	public function getAll(): Collection
 	{
-		return Configs::orderBy('cat', 'ASC')->get();
+		return Configs::query()
+			->orderBy('cat')
+			->orderBy('id')
+			->get();
 	}
 
 	/**
@@ -359,16 +386,23 @@ class SettingsController extends Controller
 	 *
 	 * @param Request $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws InvalidConfigOption
 	 */
-	public function saveAll(Request $request)
+	public function saveAll(Request $request): void
 	{
-		$no_error = true;
+		$lastException = null;
 		foreach ($request->except(['_token', 'function', '/api/Settings::saveAll']) as $key => $value) {
-			$value = ($value == null) ? '' : $value;
-			$no_error &= Configs::set($key, $value);
+			$value ??= '';
+			try {
+				Configs::set($key, $value);
+			} catch (InvalidConfigOption $e) {
+				$lastException = $e;
+			}
 		}
-
-		return $no_error ? 'true' : 'false';
+		if ($lastException !== null) {
+			throw $lastException;
+		}
 	}
 }

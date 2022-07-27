@@ -1,81 +1,51 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Controllers;
 
+use App\Exceptions\Internal\FrameworkException;
+use App\Facades\Lang;
+use App\Http\Requests\View\GetPhotoViewRequest;
 use App\Models\Configs;
-use App\Models\Logs;
-use App\Models\Photo;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Routing\Controller;
 use Illuminate\View\View;
+use Psr\Container\ContainerExceptionInterface;
 
 class ViewController extends Controller
 {
 	/**
-	 * Just the constructor
-	 * This also shows how to apply a middlewear directly in a controller.
-	 *
-	 * ViewController constructor.
-	 */
-	public function __construct()
-	{
-		$this->middleware([]);
-	}
-
-	/**
 	 * View is only used when sharing a single picture.
 	 *
-	 * @param Request $request
+	 * @param GetPhotoViewRequest $request
 	 *
-	 * @return View|void
+	 * @return View
+	 *
+	 * @throws FrameworkException
 	 */
-	public function view(Request $request)
+	public function view(GetPhotoViewRequest $request): View
 	{
-		$request->validate([
-			'p' => 'required',
-		]);
+		try {
+			$photo = $request->photo();
+			$sizeVariant = $photo->size_variants->getMedium() ?? $photo->size_variants->getOriginal();
+			$title = Configs::getValueAsString('site_title');
+			$rss_enable = Configs::getValueAsBool('rss_enable');
 
-		/** @var Photo $photo */
-		$photo = Photo::find($request->get('p'));
+			$url = config('app.url') . $request->server->get('REQUEST_URI');
+			$picture = $sizeVariant->url;
 
-		if ($photo == null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find photo in database');
+			$lang = Lang::get_lang();
+			$lang['language'] = Configs::getValueAsString('lang');
 
-			return abort(404);
+			return view('view', [
+				'locale' => $lang,
+				'url' => $url,
+				'photo' => $photo,
+				'picture' => $picture,
+				'title' => $title,
+				'rss_enable' => $rss_enable,
+			]);
+		} catch (BindingResolutionException|ContainerExceptionInterface $e) {
+			throw new FrameworkException('Laravel\'s container component', $e);
 		}
-
-		// is the picture public ?
-		$public = $photo->public == '1';
-
-		// is the album (if exist) public ?
-		if ($photo->album_id != null) {
-			$public = $photo->album->public == '1' || $public;
-		}
-		// return 403 if not allowed
-		if (!$public) {
-			return abort(403);
-		}
-
-		if ($photo->medium == '1') {
-			$dir = 'medium';
-		} else {
-			$dir = 'big';
-		}
-
-		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
-		$rss_enable = Configs::get_value('rss_enable', '0') == '1';
-
-		$url = config('app.url') . $request->server->get('REQUEST_URI');
-		$picture = config('app.url') . '/uploads/' . $dir . '/' . $photo->url;
-
-		return view('view', [
-			'url' => $url,
-			'photo' => $photo,
-			'picture' => $picture,
-			'title' => $title,
-			'rss_enable' => $rss_enable,
-		]);
 	}
 }

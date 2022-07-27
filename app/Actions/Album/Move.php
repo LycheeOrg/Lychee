@@ -2,48 +2,43 @@
 
 namespace App\Actions\Album;
 
+use App\Exceptions\ModelDBException;
 use App\Models\Album;
-use App\Models\Logs;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Collection;
 
 class Move extends Action
 {
 	/**
-	 * @param string $albumID
+	 * Moves the given albums into the target.
 	 *
-	 * @return bool
+	 * @param Album|null        $targetAlbum
+	 * @param Collection<Album> $albums
+	 *
+	 * @throws ModelNotFoundException
+	 * @throws ModelDBException
 	 */
-	public function do(string $albumID, array $albumIDs): bool
+	public function do(?Album $targetAlbum, Collection $albums): void
 	{
-		$album_master = null;
-		// $albumID = 0 is root
-		// ! check type
-		if ($albumID != 0) {
-			$album_master = $this->albumFactory->make($albumID);
-
-			if ($album_master->is_smart()) {
-				Logs::error(__METHOD__, __LINE__, 'Move is not possible on smart albums');
-
-				return false;
+		// Move source albums into target
+		if ($targetAlbum !== null) {
+			/** @var Album $album */
+			foreach ($albums as $album) {
+				// Don't set attribute `parent_id` manually, but use specialized
+				// methods of the nested set `NodeTrait` to keep the enumeration
+				// of the tree consistent
+				// `appendNode` also internally calls `save` on the model
+				$targetAlbum->appendNode($album);
 			}
+			$targetAlbum->fixOwnershipOfChildren();
 		} else {
-			$albumID = null;
+			/** @var Album $album */
+			foreach ($albums as $album) {
+				// Don't set attribute `parent_id` manually, but use specialized
+				// methods of the nested set `NodeTrait` to keep the enumeration
+				// of the tree consistent
+				$album->saveAsRoot();
+			}
 		}
-
-		$albums = Album::whereIn('id', $albumIDs)->get();
-		$no_error = true;
-
-		foreach ($albums as $album) {
-			$album->parent_id = $albumID;
-			$no_error &= $album->save();
-		}
-		// Tree should be updated by itself here.
-
-		if ($no_error && $album_master !== null) {
-			// updat owner
-			$album_master->descendants()->update(['owner_id' => $album_master->owner_id]);
-			$album_master->get_all_photos()->update(['photos.owner_id' => $album_master->owner_id]);
-		}
-
-		return $no_error;
 	}
 }

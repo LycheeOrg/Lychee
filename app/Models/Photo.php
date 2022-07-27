@@ -1,155 +1,160 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Models;
 
+use App\Actions\Photo\Delete;
+use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
+use App\Casts\MustNotSetCast;
+use App\Contracts\HasRandomID;
+use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Exceptions\Internal\LycheeAssertionError;
+use App\Exceptions\Internal\ZeroModuloException;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\ModelDBException;
+use App\Facades\AccessControl;
 use App\Facades\Helpers;
-use App\Models\Extensions\PhotoBooleans;
-use App\Models\Extensions\PhotoCast;
-use App\Models\Extensions\PhotoGetters;
+use App\Image\MediaFile;
+use App\Models\Extensions\HasAttributesPatch;
+use App\Models\Extensions\HasBidirectionalRelationships;
+use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
+use App\Models\Extensions\SizeVariants;
+use App\Models\Extensions\ThrowsConsistentExceptions;
+use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
-use Illuminate\Database\Eloquent\Builder;
+use App\Relations\HasManySizeVariants;
+use App\Relations\LinkedPhotoCollection;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use function Safe\preg_match;
 
 /**
  * App\Photo.
  *
- * @property int         $id
- * @property string      $title
- * @property string|null $description
- * @property string      $url
- * @property string      $tags
- * @property int         $public
- * @property int         $owner_id
- * @property string      $type
- * @property int|null    $width
- * @property int|null    $height
- * @property int         $filesize
- * @property string      $iso
- * @property string      $aperture
- * @property string      $make
- * @property string      $model
- * @property string      $lens
- * @property string      $shutter
- * @property string      $focal
- * @property float|null  $latitude
- * @property float|null  $longitude
- * @property float|null  $altitude
- * @property float|null  imgDirection
- * @property string|null location
- * @property Carbon|null $taken_at
- * @property string|null $taken_at_orig_tz
- * @property int         $star
- * @property string      $thumbUrl
- * @property string      $livePhotoUrl
- * @property int|null    $album_id
- * @property string      $checksum
- * @property string      $license
- * @property Carbon      $created_at
- * @property Carbon      $updated_at
- * @property int|null    $medium_width
- * @property int|null    $medium_height
- * @property int|null    $medium2x_width
- * @property int|null    $medium2x_height
- * @property int|null    $small_width
- * @property int|null    $small_height
- * @property int|null    $small2x_width
- * @property int|null    $small2x_height
- * @property int         $thumb2x
- * @property string      $livePhotoContentID
- * @property string      $livePhotoChecksum
- * @property Album|null  $album
- * @property User        $owner
- *
- * @method static Builder|Photo ownedBy($id)
- * @method static Builder|Photo public ()
- * @method static Builder|Photo recent()
- * @method static Builder|Photo stars()
- * @method static Builder|Photo unsorted()
- * @method static Builder|Photo whereAlbumId($value)
- * @method static Builder|Photo whereAltitude($value)
- * @method static Builder|Photo whereAperture($value)
- * @method static Builder|Photo whereChecksum($value)
- * @method static Builder|Photo whereCreatedAt($value)
- * @method static Builder|Photo whereDescription($value)
- * @method static Builder|Photo whereFocal($value)
- * @method static Builder|Photo whereHeight($value)
- * @method static Builder|Photo whereId($value)
- * @method static Builder|Photo whereImgDirection($value)
- * @method static Builder|Photo whereLocation($value)
- * @method static Builder|Photo whereIso($value)
- * @method static Builder|Photo whereLatitude($value)
- * @method static Builder|Photo whereLens($value)
- * @method static Builder|Photo whereLicense($value)
- * @method static Builder|Photo whereLivePhotoChecksum($value)
- * @method static Builder|Photo whereLivePhotoContentID($value)
- * @method static Builder|Photo whereLivePhotoUrl($value)
- * @method static Builder|Photo whereLongitude($value)
- * @method static Builder|Photo whereMake($value)
- * @method static Builder|Photo whereMedium($value)
- * @method static Builder|Photo whereMedium2x($value)
- * @method static Builder|Photo whereModel($value)
- * @method static Builder|Photo whereOwnerId($value)
- * @method static Builder|Photo wherePublic($value)
- * @method static Builder|Photo whereShutter($value)
- * @method static Builder|Photo whereSize($value)
- * @method static Builder|Photo whereSmall($value)
- * @method static Builder|Photo whereSmall2x($value)
- * @method static Builder|Photo whereStar($value)
- * @method static Builder|Photo whereTags($value)
- * @method static Builder|Photo whereTakenAt($value)
- * @method static Builder|Photo whereThumb2x($value)
- * @method static Builder|Photo whereThumbUrl($value)
- * @method static Builder|Photo whereTitle($value)
- * @method static Builder|Photo whereType($value)
- * @method static Builder|Photo whereUpdatedAt($value)
- * @method static Builder|Photo whereUrl($value)
- * @method static Builder|Photo whereWidth($value)
+ * @property string       $id
+ * @property int          $legacy_id
+ * @property string       $title
+ * @property string|null  $description
+ * @property string[]     $tags
+ * @property bool         $is_public
+ * @property int          $owner_id
+ * @property string|null  $type
+ * @property string|null  $iso
+ * @property string|null  $aperture
+ * @property string|null  $make
+ * @property string|null  $model
+ * @property string|null  $lens
+ * @property string|null  $shutter
+ * @property string|null  $focal
+ * @property float|null   $latitude
+ * @property float|null   $longitude
+ * @property float|null   $altitude
+ * @property float|null   $img_direction
+ * @property string|null  $location
+ * @property Carbon|null  $taken_at
+ * @property string|null  $taken_at_orig_tz
+ * @property bool         $is_starred
+ * @property string|null  $live_photo_short_path
+ * @property string|null  $live_photo_full_path
+ * @property string|null  $live_photo_url
+ * @property string|null  $album_id
+ * @property string       $checksum
+ * @property string       $original_checksum
+ * @property string       $license
+ * @property Carbon       $created_at
+ * @property Carbon       $updated_at
+ * @property string|null  $live_photo_content_id
+ * @property string|null  $live_photo_checksum
+ * @property Album|null   $album
+ * @property User         $owner
+ * @property SizeVariants $size_variants
+ * @property bool         $is_downloadable
+ * @property bool         $is_share_button_visible
  */
-class Photo extends Model
+class Photo extends Model implements HasRandomID
 {
-	use PhotoBooleans;
-	use PhotoCast;
-	use PhotoGetters;
 	use UTCBasedTimes;
-	const THUMBNAIL_DIM = 200;
-	const THUMBNAIL2X_DIM = 400;
-	const VARIANT_THUMB = 'thumb';
-	const VARIANT_THUMB2X = 'thumb2x';
-	const VARIANT_SMALL = 'small';
-	const VARIANT_SMALL2X = 'small2x';
-	const VARIANT_MEDIUM = 'medium';
-	const VARIANT_MEDIUM2X = 'medium2x';
-	const VARIANT_ORIGINAL = 'original';
+	use HasAttributesPatch;
+	use HasRandomIDAndLegacyTimeBasedID;
+	use ThrowsConsistentExceptions;
+	use HasBidirectionalRelationships;
+	/** @phpstan-use UseFixedQueryBuilder<Photo> */
+	use UseFixedQueryBuilder;
 
 	/**
-	 * Maps a size variant to the path prefix (directory) where the file for that size variant is stored.
-	 * Use this array to avoid the anti-pattern "magic constants" throughout the whole code.
+	 * @var string The type of the primary key
 	 */
-	const VARIANT_2_PATH_PREFIX = [
-		self::VARIANT_THUMB => 'thumb',
-		self::VARIANT_THUMB2X => 'thumb',
-		self::VARIANT_SMALL => 'small',
-		self::VARIANT_SMALL2X => 'small',
-		self::VARIANT_MEDIUM => 'medium',
-		self::VARIANT_MEDIUM2X => 'medium',
-		self::VARIANT_ORIGINAL => 'big',
-	];
+	protected $keyType = 'string';
+
+	/**
+	 * Indicates if the model's primary key is auto-incrementing.
+	 *
+	 * @var bool
+	 */
+	public $incrementing = false;
 
 	protected $casts = [
-		'public' => 'int',
-		'star' => 'int',
-		'downloadable' => 'int',
-		'share_button_visible' => 'int',
+		HasRandomID::LEGACY_ID_NAME => HasRandomID::LEGACY_ID_TYPE,
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'taken_at' => DateTimeWithTimezoneCast::class,
+		'live_photo_full_path' => MustNotSetCast::class . ':live_photo_short_path',
+		'live_photo_url' => MustNotSetCast::class . ':live_photo_short_path',
+		'is_downloadable' => MustNotSetCast::class,
+		'is_share_button_visible' => MustNotSetCast::class,
+		'owner_id' => 'integer',
+		'is_starred' => 'boolean',
+		'is_public' => 'boolean',
+		'tags' => ArrayCast::class,
+		'latitude' => 'float',
+		'longitude' => 'float',
+		'altitude' => 'float',
+		'img_direction' => 'float',
 	];
+
+	/**
+	 * @var string[] The list of attributes which exist as columns of the DB
+	 *               relation but shall not be serialized to JSON
+	 */
+	protected $hidden = [
+		HasRandomID::LEGACY_ID_NAME,
+		'album',  // do not serialize relation in order to avoid infinite loops
+		'owner',  // do not serialize relation
+		'owner_id',
+		'live_photo_short_path', // serialize live_photo_url instead
+	];
+
+	/**
+	 * @var string[] The list of "virtual" attributes which do not exist as
+	 *               columns of the DB relation but which shall be appended to
+	 *               JSON from accessors
+	 */
+	protected $appends = [
+		'live_photo_url',
+		'is_downloadable',
+		'is_share_button_visible',
+	];
+
+	/**
+	 * Creates a new instance of {@link LinkedPhotoCollection}.
+	 *
+	 * The only difference between an ordinary {@link Collection} and a
+	 * {@link LinkedPhotoCollection} is that the latter also adds links to
+	 * the previous and next photo if the collection is serialized to JSON.
+	 * This method is called by all relations which need to create a
+	 * collection of photos.
+	 *
+	 * @param array $models a list of {@link Photo} models
+	 *
+	 * @return LinkedPhotoCollection
+	 */
+	public function newCollection(array $models = []): LinkedPhotoCollection
+	{
+		return new LinkedPhotoCollection($models);
+	}
 
 	/**
 	 * Return the relationship between a Photo and its Album.
@@ -171,180 +176,321 @@ class Photo extends Model
 		return $this->belongsTo('App\Models\User', 'owner_id', 'id');
 	}
 
-	/**
-	 * Before calling the delete() method which will remove the entry from the database, we need to remove the files.
-	 *
-	 * @param bool $keep_original
-	 *
-	 * @return bool True on success, false otherwise
-	 */
-	public function predelete(bool $keep_original = false): bool
+	public function size_variants(): HasManySizeVariants
 	{
-		if ($this->isDuplicate($this->checksum, $this->id)) {
-			Logs::notice(__METHOD__, __LINE__, $this->id . ' is a duplicate!');
-			// it is a duplicate, we do not delete!
-			return true;
-		}
+		return new HasManySizeVariants($this);
+	}
 
-		$error = false;
-		$path_prefix = $this->type == 'raw' ? 'raw/' : 'big/';
-		if ($keep_original === false) {
-			// quick check...
-			if (!Storage::exists($path_prefix . $this->url)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find file in ' . Storage::path($path_prefix . $this->url));
-				$error = true;
-			} elseif (!Storage::delete($path_prefix . $this->url)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete file in ' . Storage::path($path_prefix . $this->url));
-				$error = true;
+	/**
+	 * Accessor for attribute {@link Photo::$shutter}.
+	 *
+	 * This accessor ensures that the returned string is either formatted as
+	 * a unit fraction or a decimal number irrespective of what is stored
+	 * in the database.
+	 *
+	 * Actually it would be much more efficient to write a mutator which
+	 * ensures that the string is stored correctly formatted at the DB right
+	 * from the beginning and then simply return the stored string instead of
+	 * re-format the string on every fetch.
+	 * TODO: Refactor this.
+	 *
+	 * @param string|null $shutter the value from the database passed in by
+	 *                             the Eloquent framework
+	 *
+	 * @return ?string A properly formatted shutter value
+	 */
+	protected function getShutterAttribute(?string $shutter): ?string
+	{
+		try {
+			if ($shutter === null || $shutter === '') {
+				return null;
 			}
-		}
-
-		if ((strpos($this->type, 'video') === 0) || ($this->type == 'raw')) {
-			$photoName = $this->thumbUrl;
-		} else {
-			$photoName = $this->url;
-		}
-		if ($photoName !== '') {
-			$photoName2x = Helpers::ex2x($photoName);
-
-			// Delete Live Photo Video file
-			// TODO: USE STORAGE FOR DELETE
-			// check first if livePhotoUrl is available
-			if ($this->livePhotoUrl !== null) {
-				if (!Storage::exists('big/' . $this->livePhotoUrl)) {
-					Logs::error(__METHOD__, __LINE__, 'Could not find file in ' . Storage::path('big/' . $this->livePhotoUrl));
-					$error = true;
-				} elseif (!Storage::delete('big/' . $this->livePhotoUrl)) {
-					Logs::error(__METHOD__, __LINE__, 'Could not delete file in ' . Storage::path('big/' . $this->livePhotoUrl));
-					$error = true;
+			// shutter speed needs to be processed. It is stored as a string `a/b s`
+			if (!str_starts_with($shutter, '1/')) {
+				preg_match('/(\d+)\/(\d+) s/', $shutter, $matches);
+				if ($matches) {
+					$a = intval($matches[1]);
+					$b = intval($matches[2]);
+					if ($b !== 0) {
+						$gcd = Helpers::gcd($a, $b);
+						$a = $a / $gcd;
+						$b = $b / $gcd;
+						if ($a === 1) {
+							$shutter = '1/' . $b . ' s';
+						} else {
+							$shutter = ($a / $b) . ' s';
+						}
+					}
 				}
 			}
 
-			// Delete medium
-			// TODO: USE STORAGE FOR DELETE
-			if (Storage::exists('medium/' . $photoName) && !unlink(Storage::path('medium/' . $photoName))) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/medium/');
-				$error = true;
+			if ($shutter === '1/1 s') {
+				$shutter = '1 s';
 			}
 
-			// TODO: USE STORAGE FOR DELETE
-			if (Storage::exists('medium/' . $photoName2x) && !unlink(Storage::path('medium/' . $photoName2x))) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/medium/');
-				$error = true;
-			}
+			return $shutter;
+		} catch (ZeroModuloException $e) {
+			// this should not happen as we covered the case $b = 0;
+			throw LycheeAssertionError::createFromUnexpectedException($e);
+		}
+	}
 
-			// Delete small
-			// TODO: USE STORAGE FOR DELETE
-			if (Storage::exists('small/' . $photoName) && !unlink(Storage::path('small/' . $photoName))) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/small/');
-				$error = true;
-			}
-
-			// TODO: USE STORAGE FOR DELETE
-			if (Storage::exists('small/' . $photoName2x) && !unlink(Storage::path('small/' . $photoName2x))) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/small/');
-				$error = true;
-			}
+	/**
+	 * Accessor for attribute `license`.
+	 *
+	 * If the photo has an explicitly set license, that license is returned.
+	 * Else, either the licence of the album is returned (if the photo is
+	 * part of an album) or the default license of the application-wide
+	 * setting is returned.
+	 *
+	 * @param string $license the value from the database passed in by
+	 *                        the Eloquent framework
+	 *
+	 * @return string
+	 */
+	protected function getLicenseAttribute(string $license): string
+	{
+		if ($license !== 'none') {
+			return $license;
+		}
+		if ($this->album_id !== null) {
+			return $this->album->license;
 		}
 
-		if ($this->thumbUrl != '') {
-			// Get retina thumb url
-			$thumbUrl2x = Helpers::ex2x($this->thumbUrl);
-			// Delete thumb
-			// TODO: USE STORAGE FOR DELETE
-			if (Storage::exists('thumb/' . $this->thumbUrl) && !unlink(Storage::path('thumb/' . $this->thumbUrl))) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/thumb/');
-				$error = true;
-			}
+		return Configs::getValueAsString('default_license');
+	}
 
-			// Delete thumb@2x
-			// TODO: USE STORAGE FOR DELETE
-			if (Storage::exists('thumb/' . $thumbUrl2x) && !unlink(Storage::path('thumb/' . $thumbUrl2x))) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/thumb/');
-				$error = true;
-			}
+	/**
+	 * Accessor for attribute `focal`.
+	 *
+	 * In case the photo is a video (why it is called a photo then, btw?), the
+	 * attribute `focal` is exploited to store the framerate and rounded
+	 * to two decimal digits.
+	 *
+	 * Again, we probably should do that when the value is set and stored,
+	 * not every time when it is read from the database.
+	 * TODO: Refactor this.
+	 *
+	 * @param string|null $focal the value from the database passed in by the
+	 *                           Eloquent framework
+	 *
+	 * @return ?string
+	 *
+	 * @throws IllegalOrderOfOperationException
+	 */
+	protected function getFocalAttribute(?string $focal): ?string
+	{
+		if ($focal === null || $focal === '') {
+			return null;
+		}
+		// We need to format the framerate (stored as focal) -> max 2 decimal digits
+		return $this->isVideo() ? (string) round(floatval($focal), 2) : $focal;
+	}
+
+	/**
+	 * Accessor for the "virtual" attribute {@see Photo::$live_photo_full_path}.
+	 *
+	 * Returns the full path of the live photo as it needs to be input into
+	 * some low-level PHP functions like `unlink`.
+	 * This is a convenient method and wraps
+	 * {@link Photo::$live_photo_short_path} into
+	 * {@link \Illuminate\Support\Facades\Storage::path()}.
+	 *
+	 * @return string|null The full path of the live photo
+	 */
+	protected function getLivePhotoFullPathAttribute(): ?string
+	{
+		$path = $this->live_photo_short_path;
+
+		return ($path === null || $path === '') ? null : Storage::path($path);
+	}
+
+	/**
+	 * Accessor for the "virtual" attribute {@see Photo::$live_photo_url}.
+	 *
+	 * Returns the URL of the live photo as it is seen from a client's
+	 * point of view.
+	 * This is a convenient method and wraps
+	 * {@link Photo::$live_photo_short_path} into
+	 * {@link \Illuminate\Support\Facades\Storage::url()}.
+	 *
+	 * @return ?string the url of the file
+	 */
+	protected function getLivePhotoUrlAttribute(): ?string
+	{
+		$path = $this->live_photo_short_path;
+
+		return ($path === null || $path === '') ? null : Storage::url($path);
+	}
+
+	/**
+	 * Accessor for the "virtual" attribute {@see Photo::$is_downloadable}.
+	 *
+	 * The photo is downloadable if the currently authenticated user is the
+	 * owner or if the photo is part of a downloadable album or if it is
+	 * unsorted and unsorted photos are configured to be downloadable by
+	 * default.
+	 *
+	 * @return bool true if the photo is downloadable
+	 */
+	protected function getIsDownloadableAttribute(): bool
+	{
+		return
+			AccessControl::is_current_user_or_admin($this->owner_id) ||
+			($this->album_id !== null && $this->album->is_downloadable) ||
+			($this->album_id === null && Configs::getValueAsBool('downloadable'));
+	}
+
+	/**
+	 * Accessor for the "virtual" attribute {@see Photo::$is_share_button_visible}.
+	 *
+	 * The share button is visible if the currently authenticated user is the
+	 * owner or if the photo is part of an album which has enabled the
+	 * share button or if the photo is unsorted and unsorted photos are
+	 * configured to be sharable by default.
+	 *
+	 * @return bool true if the share button is visible for this photo
+	 */
+	protected function getIsShareButtonVisibleAttribute(): bool
+	{
+		$default = Configs::getValueAsBool('share_button_visible');
+
+		return
+			AccessControl::is_current_user_or_admin($this->owner_id) ||
+			($this->album_id !== null && $this->album->is_share_button_visible) ||
+			($this->album_id === null && $default);
+	}
+
+	/**
+	 * Checks if the photo represents a (real) photo (as opposed to video or raw).
+	 *
+	 * @return bool
+	 *
+	 * @throws IllegalOrderOfOperationException
+	 */
+	public function isPhoto(): bool
+	{
+		if ($this->type === null || $this->type === '') {
+			throw new IllegalOrderOfOperationException('Photo::isPhoto() must not be called before Photo::$type has been set');
 		}
 
-		return !$error;
+		return MediaFile::isSupportedImageMimeType($this->type);
 	}
 
 	/**
-	 * @param $query
+	 * Checks if the photo represents a video.
 	 *
-	 * @return mixed
+	 * @return bool
+	 *
+	 * @throws IllegalOrderOfOperationException
 	 */
-	public static function set_order(Builder $query)
+	public function isVideo(): bool
 	{
-		$sortingCol = Configs::get_value('sorting_Photos_col');
-		if ($sortingCol !== 'title' && $sortingCol !== 'description') {
-			$query = $query->orderBy($sortingCol, Configs::get_value('sorting_Photos_order'));
+		if ($this->type === null || $this->type === '') {
+			throw new IllegalOrderOfOperationException('Photo::isVideo() must not be called before Photo::$type has been set');
 		}
 
-		return $query->orderBy('photos.id', 'ASC');
+		return MediaFile::isSupportedVideoMimeType($this->type);
 	}
 
 	/**
-	 * Define scopes which we can directly use e.g. Photo::stars()->all().
-	 */
-
-	/**
-	 * @param $query
+	 * Checks if the photo represents a raw media.
 	 *
-	 * @return mixed
+	 * The media record is "raw" if it is neither of a supported photo nor
+	 * video type.
+	 *
+	 * @return bool
+	 *
+	 * @throws IllegalOrderOfOperationException
 	 */
-	public function scopeStars($query)
+	public function isRaw(): bool
 	{
-		return $query->where('star', '=', 1);
+		return !$this->isPhoto() && !$this->isVideo();
 	}
 
 	/**
-	 * @param $query
+	 * Serializes the model into an array.
 	 *
-	 * @return mixed
-	 */
-	public function scopePublic($query)
-	{
-		return $query->where('public', '=', 1);
-	}
-
-	/**
-	 * @param $query
+	 * This method is also invoked by Eloquent when someone invokes
+	 * {@link Model::toJson()} or {@link Model::jsonSerialize()}.
 	 *
-	 * @return mixed
-	 */
-	public function scopeRecent($query)
-	{
-		return $query->where('created_at', '>=', Carbon::now()->subDays(intval(Configs::get_value('recent_age', '1')))->toDateTimeString());
-	}
-
-	/**
-	 * @param $query
+	 * This method removes the URL to the full resolution of a photo, if the
+	 * client is not allowed to see that.
 	 *
-	 * @return mixed
-	 */
-	public function scopeUnsorted($query)
-	{
-		return $query->where('album_id', '=', null);
-	}
-
-	/**
-	 * @param $query
-	 * @param $id
+	 * @return array
 	 *
-	 * @return mixed
+	 * @throws IllegalOrderOfOperationException
 	 */
-	public function scopeOwnedBy(Builder $query, $id)
+	public function toArray(): array
 	{
-		return $id == 0 ? $query : $query->where('owner_id', '=', $id);
-	}
+		$result = parent::toArray();
 
-	public function withTags($tags)
-	{
-		$sql = $this;
-		foreach ($tags as $tag) {
-			$sql = $sql->where('tags', 'like', '%' . $tag . '%');
+		// Modify the attribute `public`
+		// The current front-end implementation does not expect a boolean
+		// but a tri-state integer acc. to the following interpretation
+		//  - 0 => the photo is not publicly visible
+		//  - 1 => the photo is publicly visible on its own right
+		//  - 2 => the photo is publicly visible because its album is public
+		if ($this->album_id !== null && $this->album->is_public) {
+			$result['is_public'] = 2;
+		} else {
+			$result['is_public'] = $result['is_public'] === true ? 1 : 0;
 		}
 
-		return ($sql->count() == 0) ? false : $sql->first();
+		// Downgrades the accessible resolution of a photo
+		// The decision logic here is a merge of three formerly independent
+		// (and slightly different) approaches
+		if (
+			!AccessControl::is_current_user_or_admin($this->owner_id) &&
+			!$this->isVideo() &&
+			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null) &&
+			(
+				($this->album_id !== null && !$this->album->grants_full_photo) ||
+				($this->album_id === null && !Configs::getValueAsBool('full_photo'))
+			)
+		) {
+			unset($result['size_variants']['original']['url']);
+		}
+
+		return $result;
+	}
+
+	/**
+	 * @throws ModelDBException
+	 * @throws IllegalOrderOfOperationException
+	 */
+	public function replicate(array $except = null): Photo
+	{
+		$duplicate = parent::replicate($except);
+		// A photo has the following relations: (parent) album, owner and
+		// size_variants.
+		// While the duplicate may keep the relation to the same album and
+		// each photo requires an individual set of size variants.
+		// Se we unset the relation and explicitly duplicate the size variants.
+		$duplicate->unsetRelation('size_variants');
+		// save duplicate so that the photo gets an ID
+		$duplicate->save();
+
+		$areSizeVariantsOriginallyLoaded = $this->relationLoaded('size_variants');
+		// Duplicate the size variants of this instance for the duplicate
+		$duplicatedSizeVariants = $this->size_variants->replicate($duplicate);
+		if ($areSizeVariantsOriginallyLoaded) {
+			$duplicate->setRelation('size_variants', $duplicatedSizeVariants);
+		}
+
+		return $duplicate;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws ModelDBException
+	 * @throws MediaFileOperationException
+	 */
+	protected function performDeleteOnModel(): void
+	{
+		$fileDeleter = (new Delete())->do([$this->id]);
+		$this->exists = false;
+		$fileDeleter->do();
 	}
 }

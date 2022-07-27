@@ -2,99 +2,86 @@
 
 namespace App\Models\Extensions;
 
-use App\Models\Logs;
-use Exception;
+use App\Exceptions\ExternalComponentMissingException;
+use App\Exceptions\Handler;
+use App\Exceptions\Internal\InvalidConfigOption;
+use App\Exceptions\Internal\QueryBuilderException;
 
 trait ConfigsHas
 {
 	/**
 	 * @return bool returns the Imagick setting
 	 */
-	public static function hasImagick()
+	public static function hasImagick(): bool
 	{
-		if ((bool) (extension_loaded('imagick') && self::get_value('imagick', '1') == '1')) {
-			return true;
-		}
-		try {
-			Logs::notice(__METHOD__, __LINE__, 'hasImagick : false');
-		} catch (Exception $e) {
-			//do nothing
-		}
-
-		return false;
+		return
+			extension_loaded('imagick') &&
+			self::getValueAsBool('imagick');
 	}
 
 	/**
 	 * @return bool returns the Exiftool setting
 	 */
-	public static function hasExiftool()
+	public static function hasExiftool(): bool
 	{
 		// has_exiftool has the following values:
 		// 0: No Exiftool
 		// 1: Exiftool is available
 		// 2: Not yet tested if exiftool is available
 
-		$has_exiftool = intval(self::get_value('has_exiftool'));
+		$has_exiftool = self::getValueAsInt('has_exiftool');
 
 		// value not yet set -> let's see if exiftool is available
-		if ($has_exiftool == 2) {
+		if ($has_exiftool === 2) {
 			try {
-				$path = exec('command -v exiftool');
-				if ($path == '') {
-					self::set('has_exiftool', 0);
-					$has_exiftool = false;
-				} else {
-					self::set('has_exiftool', 1);
-					$has_exiftool = true;
-				}
-			} catch (Exception $e) {
-				self::set('has_exiftool', 0);
-				$has_exiftool = false;
-				Logs::warning(__METHOD__, __LINE__, 'exec is disabled, has_exiftool has been set to 0.');
+				$cmd_output = exec('command -v exiftool');
+			} catch (\Exception $e) {
+				$cmd_output = false;
+				Handler::reportSafely(new ExternalComponentMissingException('could not find exiftool; `has_exiftool` will be set to 0', $e));
 			}
-		} elseif ($has_exiftool == 1) {
-			$has_exiftool = true;
-		} else {
-			$has_exiftool = false;
+			$path = $cmd_output === false ? '' : $cmd_output;
+			$has_exiftool = $path === '' ? 0 : 1;
+			try {
+				self::set('has_exiftool', $has_exiftool);
+			} catch (InvalidConfigOption|QueryBuilderException $e) {
+				// If we could not save the detected setting, still proceed
+				Handler::reportSafely($e);
+			}
 		}
 
-		return $has_exiftool;
+		return $has_exiftool === 1;
 	}
 
 	/**
-	 * @return bool returns the Exiftool setting
+	 * @return bool returns the FFMpeg setting
 	 */
-	public static function hasFFmpeg()
+	public static function hasFFmpeg(): bool
 	{
 		// has_ffmpeg has the following values:
 		// 0: No ffmpeg
 		// 1: ffmpeg is available
 		// 2: Not yet tested if ffmpeg is available
 
-		$has_ffmpeg = intval(self::get_value('has_ffmpeg'));
+		$has_ffmpeg = self::getValueAsInt('has_ffmpeg');
 
 		// value not yet set -> let's see if ffmpeg is available
-		if ($has_ffmpeg == 2) {
+		if ($has_ffmpeg === 2) {
 			try {
-				$path = exec('command -v ffmpeg');
-				if ($path == '') {
-					self::set('has_ffmpeg', 0);
-					$has_ffmpeg = false;
-				} else {
-					self::set('has_ffmpeg', 1);
-					$has_ffmpeg = true;
-				}
-			} catch (Exception $e) {
-				self::set('has_ffmpeg', 0);
-				$has_ffmpeg = false;
-				Logs::warning(__METHOD__, __LINE__, 'exec is disabled, set_ffmpeg has been set to 0.');
+				$cmd_output = exec('command -v ffmpeg');
+			} catch (\Exception $e) {
+				$cmd_output = false;
+				Handler::reportSafely(new ExternalComponentMissingException('could not find ffmpeg; `has_ffmpeg` will be set to 0', $e));
 			}
-		} elseif ($has_ffmpeg == 1) {
-			$has_ffmpeg = true;
-		} else {
-			$has_ffmpeg = false;
+			$path = $cmd_output === false ? '' : $cmd_output;
+			$has_ffmpeg = $path === '' ? 0 : 1;
+			try {
+				self::set('has_ffmpeg', $has_ffmpeg);
+			} catch (InvalidConfigOption|QueryBuilderException $e) {
+				// If we could not save the detected setting, still proceed
+				Handler::reportSafely($e);
+			}
 		}
 
-		return $has_ffmpeg;
+		return $has_ffmpeg === 1;
 	}
 }

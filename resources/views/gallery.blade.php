@@ -31,7 +31,7 @@
 
 		<div class="header__search__field">
 	        <input class="header__search" type="text" name="search" placeholder="{{ $locale['SEARCH'] }}" data-tabindex="{{ Helpers::data_index() }}">
-    	    <a class="header__clear header__clear_public">&times;</a>
+    	    <a class="header__clear">&times;</a>
     	</div>
         <a class="button button--map-albums" title="{{ $locale['DISPLAY_FULL_MAP'] }}" data-tabindex="{{ Helpers::data_index() }}">
             <svg class="iconic"><use xlink:href="#map"></use></svg>
@@ -189,13 +189,13 @@
 
 <!-- Warning -->
 <div id="sensitive_warning">
-	{!! App\Models\Configs::get_value('nsfw_warning_text','<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>'); !!}
+	{!! App\Models\Configs::getValueAsString('nsfw_warning_text','<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>'); !!}
 </div>
 
 <!-- Sidebar -->
 <div class="sidebar">
     <div class="sidebar__header">
-        <h1>About</h1>
+        <h1>{{ $locale['PHOTO_ABOUT'] }}</h1>
     </div>
     <div class="sidebar__wrapper"></div>
 </div>
@@ -203,6 +203,11 @@
 <!-- Upload -->
 <div id="upload">
     <input id="upload_files" type="file" name="fileElem[]" multiple accept="image/*,video/*,.mov">
+</div>
+
+<!-- Upload track -->
+<div id="upload">
+	<input id="upload_track_file" type="file" name="fileElem" accept="application/x-gpx+xml">
 </div>
 
 <!-- JS -->

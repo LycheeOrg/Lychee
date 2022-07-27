@@ -3,10 +3,17 @@
 namespace App\Console\Commands;
 
 use App\Actions\Import\Exec;
+use App\Actions\Photo\Strategies\ImportMode;
+use App\Contracts\ExternalLycheeException;
+use App\Exceptions\ConfigurationKeyMissingException;
+use App\Exceptions\UnexpectedException;
 use App\Facades\AccessControl;
+use App\Models\Album;
 use App\Models\Configs;
 use Exception;
 use Illuminate\Console\Command;
+use function Safe\sprintf;
+use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class Sync extends Command
 {
@@ -19,14 +26,14 @@ class Sync extends Command
 	 * @var string
 	 */
 	protected $signature =
-		'lychee:sync ' .
-		'{dir : directory to sync} ' .
-		'{--album_id=0 : Album ID to import to} ' .
-		'{--owner_id=0 : Owner ID of imported photos} ' .
-		'{--resync_metadata : Re-sync metadata of existing files}  ' .
-		'{--delete_imported=%s : Delete the original files} ' .
-		'{--import_via_symlink=%s : Imports photos from via a symlink instead of copying the files} ' .
-		'{--skip_duplicates=%s : Don\'t Skip photos and albums if they already exist in the gallery}';
+	'lychee:sync ' .
+		'{dir : directory to sync} ' . // string
+		'{--album_id= : Album ID to import to} ' . // string or null
+		'{--owner_id=0 : Owner ID of imported photos} ' . // string
+		'{--resync_metadata : Re-sync metadata of existing files}  ' . // bool
+		'{--delete_imported=%s : Delete the original files} ' . // string
+		'{--import_via_symlink=%s : Imports photos from via a symlink instead of copying the files} ' . // string
+		'{--skip_duplicates=%s : Don\'t skip photos and albums if they already exist in the gallery}'; // string
 
 	/**
 	 * The console command description.
@@ -38,51 +45,86 @@ class Sync extends Command
 	public function __construct()
 	{
 		// Fill signature with default values from user configuration
-		$this->signature = sprintf(
-			$this->signature,
-			Configs::get_value('delete_imported', '0'),
-			Configs::get_value('import_via_symlink', '0'),
-			Configs::get_value('skip_duplicates', '0')
-		);
+		try {
+			$this->signature = sprintf(
+				$this->signature,
+				Configs::getValueAsString('delete_imported'),
+				Configs::getValueAsString('import_via_symlink'),
+				Configs::getValueAsString('skip_duplicates')
+			);
+		} catch (ConfigurationKeyMissingException) {
+			// Catching this exception is necessary as artisan package:discover
+			// is called after each composer installation/update and artisan
+			// tries to instantiate every command.
+			$this->signature = sprintf($this->signature, '0', '0', '0');
+		}
 		parent::__construct();
 	}
 
 	/**
 	 * Execute the console command.
 	 *
-	 * @return mixed
+	 * @return int
+	 *
+	 * @throws ExternalLycheeException
 	 */
-	public function handle(Exec $exec)
+	public function handle(): int
 	{
-		$directory = $this->argument('dir');
-		$owner_id = (int) $this->option('owner_id'); // in case no ID provided -> import as root user
-		$album_id = (int) $this->option('album_id'); // in case no ID provided -> import to root folder
-
-		// Enable CLI formatting of status
-		$exec->statusCLIFormatting = true;
-		$exec->memCheck = false;
-		$exec->resync_metadata = $this->option('resync_metadata');
-		$exec->delete_imported = $this->option('delete_imported') === '1';
-		$exec->import_via_symlink = $this->option('import_via_symlink') === '1';
-		$exec->skip_duplicates = $this->option('skip_duplicates') === '1';
-
-		if ($exec->import_via_symlink && $exec->delete_imported) {
-			$this->error('The settings for import via symbolic links and deletion of imported files are conflicting');
-			$this->info('  Use --import_via_symlink={0|1} and --delete-imported={0|1} explicitly to apply a conflict-free setting');
-
-			return 1;
-		}
-
-		AccessControl::log_as_id($owner_id);
-
-		$this->info('Start syncing.');
-
 		try {
-			$exec->do($directory, $album_id);
-		} catch (Exception $e) {
-			$this->error($e);
-		}
+			$directory = $this->argument('dir');
+			if (is_array($directory) || $directory === null) {
+				$this->error('Synchronize one folder at a time.');
 
-		$this->info('Done syncing.');
+				return 1;
+			}
+			$owner_id = (int) $this->option('owner_id'); // in case no ID provided -> import as root user
+			$album_id = $this->option('album_id'); // in case no ID provided -> import to root folder
+			if (is_array($album_id)) {
+				$this->error('Only one value for album_id is allowed.');
+
+				return 1;
+			}
+			/** @var Album $album */
+			$album = $album_id !== null ? Album::query()->findOrFail($album_id) : null; // in case no ID provided -> import to root folder
+
+			$deleteImported = $this->option('delete_imported') === '1';
+			$importViaSymlink = $this->option('import_via_symlink') === '1';
+			$skipDuplicates = $this->option('skip_duplicates') === '1';
+			$resyncMetadata = $this->option('resync_metadata') === true; // ! Because the option is --resync_metadata the return type of $this->option() is already bool.
+
+			if ($importViaSymlink && $deleteImported) {
+				$this->error('The settings for import via symbolic links and deletion of imported files are conflicting');
+				$this->info('  Use --import_via_symlink={0|1} and --delete-imported={0|1} explicitly to apply a conflict-free setting');
+
+				return 1;
+			}
+
+			$exec = new Exec(
+				new ImportMode(
+					$deleteImported,
+					$skipDuplicates,
+					$importViaSymlink,
+					$resyncMetadata
+				),
+				true,
+				0
+			);
+
+			AccessControl::log_as_id($owner_id);
+
+			$this->info('Start syncing.');
+
+			try {
+				$exec->do($directory, $album);
+			} catch (Exception $e) {
+				$this->error($e);
+			}
+
+			$this->info('Done syncing.');
+
+			return 0;
+		} catch (SymfonyConsoleException $e) {
+			throw new UnexpectedException($e);
+		}
 	}
 }

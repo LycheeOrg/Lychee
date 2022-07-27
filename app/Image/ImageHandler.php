@@ -2,105 +2,133 @@
 
 namespace App\Image;
 
+use App\DTO\ImageDimension;
+use App\Exceptions\Handler;
+use App\Exceptions\Internal\LycheeLogicException;
+use App\Exceptions\MediaFileOperationException;
 use App\Models\Configs;
 
-class ImageHandler implements ImageHandlerInterface
+class ImageHandler extends BaseImageHandler
 {
-	/**
-	 * @var int
-	 */
-	private $compressionQuality;
-	private $engines;
+	public const NO_HANDLER_EXCEPTION_MSG = 'No suitable image handler found';
 
 	/**
-	 * @param int $compressionQuality
+	 * The class names of the engines to use.
+	 *
+	 * @var string[]
 	 */
-	public function __construct(int $compressionQuality)
+	protected array $engineClasses = [];
+
+	/**
+	 * The selected image handler.
+	 *
+	 * @var ImageHandlerInterface|null
+	 */
+	protected ?ImageHandlerInterface $engine = null;
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function __construct()
 	{
-		$this->compressionQuality = $compressionQuality;
-		$this->engines = [];
+		parent::__construct();
 		if (Configs::hasImagick()) {
-			$this->engines[] = new ImagickHandler($this->compressionQuality);
+			$this->engineClasses[] = ImagickHandler::class;
 		}
-		$this->engines[] = new GdHandler($this->compressionQuality);
+		$this->engineClasses[] = GdHandler::class;
+	}
+
+	public function __clone()
+	{
+		if ($this->engine !== null) {
+			$this->engine = clone $this->engine;
+		}
 	}
 
 	/**
-	 * @param string $source
-	 * @param string $destination
-	 * @param int    $newWidth
-	 * @param int    $newHeight
-	 * @param int    &$resWidth
-	 * @param int    &$resHeight
-	 *
-	 * @return bool
+	 * {@inheritDoc}
 	 */
-	public function scale(string $source, string $destination, int $newWidth, int $newHeight, int &$resWidth, int &$resHeight): bool
+	public function load(MediaFile $file): void
 	{
-		$i = 0;
-		while ($i < count($this->engines) && !$this->engines[$i]->scale($source, $destination, $newWidth, $newHeight, $resWidth, $resHeight)) {
-			$i++;
+		$this->reset();
+		$lastException = null;
+
+		foreach ($this->engineClasses as $engineClass) {
+			try {
+				$engine = new $engineClass();
+				if ($engine instanceof ImageHandlerInterface) {
+					$this->engine = $engine;
+					$this->engine->load($file);
+
+					return;
+				} else {
+					throw new LycheeLogicException('$engine is not an instance of ImageHandlerInterface');
+				}
+			} catch (\Throwable $e) {
+				// Report the error to the log, but don't fail yet.
+				Handler::reportSafely($e);
+				$lastException = $e;
+				$this->engine = null;
+			}
 		}
 
-		return $i != count($this->engines);
+		throw new MediaFileOperationException(self::NO_HANDLER_EXCEPTION_MSG, $lastException);
 	}
 
 	/**
-	 * @param string $source
-	 * @param string $destination
-	 * @param int    $newWidth
-	 * @param int    $newHeight
-	 *
-	 * @return bool
+	 * {@inheritDoc}
 	 */
-	public function crop(string $source, string $destination, int $newWidth, int $newHeight): bool
+	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStat
 	{
-		$i = 0;
-		while ($i < count($this->engines) && !$this->engines[$i]->crop($source, $destination, $newWidth, $newHeight)) {
-			$i++;
-		}
-
-		return $i != count($this->engines);
+		return $this->engine->save($file, $collectStatistics);
 	}
 
 	/**
-	 * Rotates and flips a photo based on its EXIF orientation.
-	 *
-	 * @param string $path
-	 * @param array  $info
-	 * @param bool   $pretend
-	 *
-	 * @return array
+	 * {@inheritDoc}
 	 */
-	public function autoRotate(string $path, array $info, bool $pretend = false): array
+	public function reset(): void
 	{
-		$i = 0;
-		$ret = [false, false];
-		while ($i < count($this->engines) && ($ret = $this->engines[$i]->autoRotate($path, $info, $pretend)) == [false, false]) {
-			$i++;
-		}
-
-		return $ret;
+		$this->engine?->reset();
+		$this->engine = null;
 	}
 
 	/**
-	 * @param string $source
-	 * @param int    $angle
-	 * @param string $destination
-	 *
-	 * @return bool
+	 * {@inheritDoc}
 	 */
-	public function rotate(string $source, int $angle, string $destination = null): bool
+	public function cloneAndScale(ImageDimension $dstDim): ImageHandlerInterface
 	{
-		if ($angle != 90 && $angle != -90) {
-			return false;
-		}
+		return $this->engine->cloneAndScale($dstDim);
+	}
 
-		$i = 0;
-		while ($i < count($this->engines) && !$this->engines[$i]->rotate($source, $angle, $destination)) {
-			$i++;
-		}
+	/**
+	 * {@inheritDoc}
+	 */
+	public function cloneAndCrop(ImageDimension $dstDim): ImageHandlerInterface
+	{
+		return $this->engine->cloneAndCrop($dstDim);
+	}
 
-		return $i != count($this->engines);
+	/**
+	 * {@inheritDoc}
+	 */
+	public function rotate(int $angle): ImageDimension
+	{
+		return $this->engine->rotate($angle);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getDimensions(): ImageDimension
+	{
+		return $this->engine->getDimensions();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function isLoaded(): bool
+	{
+		return $this->engine !== null && $this->engine->isLoaded();
 	}
 }

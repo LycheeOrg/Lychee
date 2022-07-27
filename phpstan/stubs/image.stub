@@ -1,0 +1,206 @@
+<?php
+
+/**
+ * These stubs for the \Safe-variant of the GD image functions until
+ * https://github.com/thecodingmachine/safe/issues/283
+ * has been merged into thecodingmachine/safe-2.0
+ */
+
+namespace Safe;
+
+use Safe\Exceptions\ImageException;
+
+/**
+ * @param int $width Image width.
+ * @param int $height Image height.
+ * @return \GdImage Returns an image identifier.
+ * @throws ImageException
+ *
+ */
+function imagecreatetruecolor(int $width, int $height) {}
+
+/**
+ * @param \GdImage $dst_im Destination image.
+ * @param \GdImage $src_im Source image.
+ * @param int $dst_x x-coordinate of destination point.
+ * @param int $dst_y y-coordinate of destination point.
+ * @param int $src_x x-coordinate of source point.
+ * @param int $src_y y-coordinate of source point.
+ * @param int $src_w Source width.
+ * @param int $src_h Source height.
+ * @param int $pct The two images will be merged according to pct which can range from 0 to 100.
+ */
+function imagecopymerge(\GdImage $dst_im, \GdImage $src_im, int $dst_x, int $dst_y, int $src_x, int $src_y, int $src_w, int $src_h, int $pct): void {}
+
+/**
+ * @param int $width The image width.
+ * @param int $height The image height.
+ * @return \GdImage Returns an image.
+ * @throws ImageException
+ */
+function imagecreate(int $width, int $height): \GdImage {}
+
+
+/**
+ * @param \GdImage $image An image, returned by one of the image creation functions, such as imagecreatetruecolor.
+ * @param bool $blendmode Whether to enable the blending mode or not.
+ * @throws ImageException
+ */
+function imagealphablending(\GdImage $image, bool $blendmode): void {}
+
+
+/**
+ * @param \GdImage  $image An image, returned by one of the image creation functions, such as imagecreatetruecolor.
+ * @param bool $saveflag Whether to save the alpha channel or not. Defaults to FALSE.
+ * @throws ImageException
+ */
+function imagesavealpha(\GdImage $image, bool $saveflag): void {}
+
+
+/**
+ * @param \GdImage $image An image, returned by one of the image creation functions, such as imagecreatetruecolor.
+ * @param int $x x-coordinate of start point.
+ * @param int $y y-coordinate of start point.
+ * @param int $color The fill color. A color identifier created with imagecolorallocate.
+ * @throws ImageException
+ */
+function imagefill(\GdImage $image, int $x, int $y, int $color): void {}
+
+
+/**
+ * @param \GdImage $dst_im Destination image.
+ * @param \GdImage $src_im Source image.
+ * @param int $dst_x x-coordinate of destination point.
+ * @param int $dst_y y-coordinate of destination point.
+ * @param int $src_x x-coordinate of source point.
+ * @param int $src_y y-coordinate of source point.
+ * @param int $src_w Source width.
+ * @param int $src_h Source height.
+ * @throws ImageException
+ */
+function imagecopy(\GdImage $dst_im, \GdImage $src_im, int $dst_x, int $dst_y, int $src_x, int $src_y, int $src_w, int $src_h): void {}
+
+
+/**
+ * @param \GdImage $image An image, returned by one of the image creation functions, such as imagecreatetruecolor.
+ * @param resource|string|null $to The path or an open stream resource (which is automatically being closed after this function returns) to save the file to. If not set or NULL, the raw image stream will be outputted directly.
+ * @param int $quality quality is optional, and ranges from 0 to 100
+ * @throws ImageException
+ */
+function imagejpeg(\GdImage $image, $to = null, int $quality = -1): void {}
+
+
+/**
+ * @param \GdImage $image An image, returned by one of the image creation functions, such as imagecreatetruecolor.
+ * @param resource|string|null $to The path or an open stream resource (which is automatically being closed after this function returns) to save the file to. If not set or NULL, the raw image stream will be outputted directly.
+ * @throws ImageException
+ */
+function imagepng(\GdImage $image, $to = null, int $quality = -1, int $filters = -1): void {}
+
+
+/**
+ * @param \GdImage $image An image, returned by one of the image creation functions, such as imagecreatetruecolor.
+ * @param resource|string|null $to The path or an open stream resource (which is automatically being closed after this function returns) to save the file to. If not set or NULL, the raw image stream will be outputted directly.
+ * @throws ImageException
+ */
+function imagegif(\GdImage $image, $to = null): void {}
+
+
+/**
+ * @param \GdImage $image An image, returned by one of the image creation functions, such as imagecreatetruecolor.
+ * @param resource|string|null $to The path or an open stream resource (which is automatically being closed after this function returns) to save the file to. If not set or NULL, the raw image stream will be outputted directly.
+ * @param int $quality quality ranges from 0  to 100
+ * @throws ImageException
+ */
+function imagewebp(\GdImage $image, $to = null, int $quality = 80): void {}
+
+
+/**
+ * @param \GdImage $image An image, returned by one of the image creation functions, such as imagecreatetruecolor.
+ * @param float $angle Rotation angle, in degrees. The rotation angle is interpreted as the number of degrees to rotate the image anticlockwise.
+ * @param int $bgd_color Specifies the color of the uncovered zone after the rotation
+ * @param int $dummy This parameter is unused.
+ * @return \GdImage Returns an image for the rotated image.
+ * @throws ImageException
+ */
+function imagerotate(\GdImage $image, float $angle, int $bgd_color, int $dummy = 0): \GdImage {}
+
+
+/**
+ * @param \GdImage $image An image, returned by one of the image creation functions, such as imagecreatetruecolor.
+ * @param int $mode Flip mode, this can be one of the IMG_FLIP_* constants
+ * @throws ImageException
+ */
+function imageflip(\GdImage $image, int $mode): void {}
+
+
+/**
+ * @param \GdImage $image An image, returned by one of the image creation functions, such as imagecreatetruecolor.
+ * @param float $angle Rotation angle, in degrees. The rotation angle is interpreted as the number of degrees to rotate the image anticlockwise.
+ * @param int $bgd_color Specifies the color of the uncovered zone after the rotation
+ * @param int $dummy This parameter is unused.
+ * @return \GdImage Returns an image for the rotated image.
+ * @throws ImageException
+ */
+function imagerotate(\GdImage $image, float $angle, int $bgd_color, int $dummy = 0): \GdImage {}
+
+
+/**
+ * @param \GdImage $dst_image Destination image.
+ * @param \GdImage $src_image Source image.
+ * @param int $dst_x x-coordinate of destination point.
+ * @param int $dst_y y-coordinate of destination point.
+ * @param int $src_x x-coordinate of source point.
+ * @param int $src_y y-coordinate of source point.
+ * @param int $dst_w Destination width.
+ * @param int $dst_h Destination height.
+ * @param int $src_w Source width.
+ * @param int $src_h Source height.
+ * @throws ImageException
+ */
+function imagecopyresized(\GdImage $dst_image, \GdImage $src_image, int $dst_x, int $dst_y, int $src_x, int $src_y, int $dst_w, int $dst_h, int $src_w, int $src_h): void {}
+
+
+/**
+ * @param \GdImage $dst_image Destination image.
+ * @param \GdImage $src_image Source image.
+ * @param int $dst_x x-coordinate of destination point.
+ * @param int $dst_y y-coordinate of destination point.
+ * @param int $src_x x-coordinate of source point.
+ * @param int $src_y y-coordinate of source point.
+ * @param int $dst_w Destination width.
+ * @param int $dst_h Destination height.
+ * @param int $src_w Source width.
+ * @param int $src_h Source height.
+ * @throws ImageException
+ */
+function imagecopyresampled(\GdImage $dst_image, \GdImage $src_image, int $dst_x, int $dst_y, int $src_x, int $src_y, int $dst_w, int $dst_h, int $src_w, int $src_h): void {}
+
+
+/**
+ * @param \GdImage $image An image, returned by one of the image creation functions, such as imagecreatetruecolor.
+ * @return int Return the width of the images.
+ * @throws ImageException
+ */
+function imagesx(\GdImage $image): int {}
+
+
+/**
+ * @param \GdImage $image An image, returned by one of the image creation functions, such as imagecreatetruecolor.
+ * @return int Return the height of the images.
+ * @throws ImageException
+ */
+function imagesy(\GdImage $image): int {}
+
+
+/**
+ * Crops an image to the given rectangular area and returns the resulting image.
+ * The given image is not modified.
+ *
+ * @param  \GdImage                                       $image An image, returned by one of the image creation functions, such as imagecreatetruecolor.
+ * @param  array{x: int, y: int, width: int, height: int} $rect  The cropping rectangle
+ * @return \GdImage                                              Return cropped image on success.
+ * @throws ImageException
+ *
+ */
+function imagecrop(\GdImage $image, array $rect): \GdImage {}

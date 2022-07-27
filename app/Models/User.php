@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Exceptions\ModelDBException;
+use App\Facades\AccessControl;
+use App\Models\Extensions\ThrowsConsistentExceptions;
+use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
+use Carbon\Exceptions\InvalidFormatException;
 use DarkGhostHunter\Larapass\Contracts\WebAuthnAuthenticatable;
 use DarkGhostHunter\Larapass\WebAuthnAuthentication;
-use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,39 +23,32 @@ use Illuminate\Support\Carbon;
  * App\Models\User.
  *
  * @property int                                                   $id
+ * @property Carbon                                                $created_at
+ * @property Carbon                                                $updated_at
  * @property string                                                $username
- * @property string                                                $password
+ * @property string|null                                           $password
  * @property string|null                                           $email
- * @property int                                                   $upload
- * @property int                                                   $lock
+ * @property bool                                                  $may_upload
+ * @property bool                                                  $is_locked
  * @property string|null                                           $remember_token
- * @property Carbon|null                                           $created_at
- * @property Carbon|null                                           $updated_at
- * @property Collection|Album[]                                    $albums
+ * @property Collection<BaseAlbumImpl>                             $albums
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
- * @property Collection|Album[]                                    $shared
- *
- * @method static Builder|User newModelQuery()
- * @method static Builder|User newQuery()
- * @method static Builder|User query()
- * @method static Builder|User whereCreatedAt($value)
- * @method static Builder|User whereId($value)
- * @method static Builder|User whereLock($value)
- * @method static Builder|User wherePassword($value)
- * @method static Builder|User whereRememberToken($value)
- * @method static Builder|User whereUpdatedAt($value)
- * @method static Builder|User whereUpload($value)
- * @method static Builder|User whereUsername($value)
- * @mixin Eloquent
+ * @property Collection<BaseAlbumImpl>                             $shared
+ * @property Collection<Photo>                                     $photos
  */
 class User extends Authenticatable implements WebAuthnAuthenticatable
 {
 	use Notifiable;
 	use WebAuthnAuthentication;
 	use UTCBasedTimes;
+	use ThrowsConsistentExceptions {
+		delete as parentDelete;
+	}
+	/** @phpstan-use UseFixedQueryBuilder<User> */
+	use UseFixedQueryBuilder;
 
 	/**
-	 * The attributes that are mass assignable.
+	 * @var string[] the attributes that are mass assignable
 	 */
 	protected $fillable = [
 		'username',
@@ -61,7 +57,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	];
 
 	/**
-	 * The attributes that should be hidden for arrays.
+	 * @var string[] the attributes that should be hidden for arrays
 	 */
 	protected $hidden = [
 		'password',
@@ -70,9 +66,15 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'updated_at',
 	];
 
+	/**
+	 * @var array<string, string>
+	 */
 	protected $casts = [
-		'upload' => 'int',
-		'lock' => 'int',
+		'id' => 'integer',
+		'created_at' => 'datetime',
+		'updated_at' => 'datetime',
+		'may_upload' => 'boolean',
+		'is_locked' => 'boolean',
 	];
 
 	/**
@@ -80,9 +82,19 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 *
 	 * @return HasMany
 	 */
-	public function albums()
+	public function albums(): HasMany
 	{
-		return $this->hasMany('App\Models\Album', 'owner_id', 'id');
+		return $this->hasMany('App\Models\BaseAlbumImpl', 'owner_id', 'id');
+	}
+
+	/**
+	 * Return the photos owned by the user.
+	 *
+	 * @return HasMany
+	 */
+	public function photos(): HasMany
+	{
+		return $this->hasMany('App\Models\Photo', 'owner_id', 'id');
 	}
 
 	/**
@@ -90,30 +102,72 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 *
 	 * @return BelongsToMany
 	 */
-	public function shared()
+	public function shared(): BelongsToMany
 	{
-		return $this->belongsToMany('App\Models\Album', 'user_album', 'user_id', 'album_id');
+		return $this->belongsToMany(
+			BaseAlbumImpl::class,
+			'user_base_album',
+			'user_id',
+			'base_album_id'
+		);
 	}
 
 	public function is_admin(): bool
 	{
-		return $this->id == 0;
+		return $this->id === 0;
 	}
 
-	public function can_upload(): bool
-	{
-		return $this->id == 0 || $this->upload;
-	}
-
-	// ! Used by Larapass
+	/**
+	 * Used by Larapass.
+	 *
+	 * @return string
+	 */
 	public function username(): string
 	{
 		return utf8_encode($this->username);
 	}
 
-	// ! Used by Larapass
+	/**
+	 * Used by Larapass.
+	 *
+	 * @return string
+	 */
 	public function name(): string
 	{
-		return ($this->id == 0) ? 'Admin' : $this->username;
+		return ($this->id === 0) ? 'Admin' : $this->username;
+	}
+
+	/**
+	 * Deletes a user from the DB and re-assigns ownership of albums and photos
+	 * to the currently authenticated user.
+	 *
+	 * For efficiency reasons the methods performs a mass-update without
+	 * hydrating the actual models.
+	 *
+	 * @return bool always true
+	 *
+	 * @throws ModelDBException
+	 * @throws InvalidFormatException
+	 */
+	public function delete(): bool
+	{
+		$now = Carbon::now();
+		$newOwnerID = AccessControl::id();
+
+		/** @var HasMany[] $ownershipRelations */
+		$ownershipRelations = [$this->photos(), $this->albums()];
+
+		foreach ($ownershipRelations as $relation) {
+			// We must also update the `updated_at` column of the related
+			// models in case clients have cached these models.
+			$relation->update([
+				$relation->getForeignKeyName() => $newOwnerID,
+				$relation->getRelated()->getUpdatedAtColumn() => $relation->getRelated()->fromDateTime($now),
+			]);
+		}
+
+		$this->shared()->delete();
+
+		return $this->parentDelete();
 	}
 }

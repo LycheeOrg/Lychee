@@ -2,64 +2,115 @@
 
 namespace App\Image;
 
+use App\DTO\ImageDimension;
+use App\Exceptions\ImageProcessingException;
+use App\Exceptions\Internal\LycheeDomainException;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\MediaFileUnsupportedException;
+
+/**
+ * Interface ImageHandlerInterface.
+ */
 interface ImageHandlerInterface
 {
 	/**
-	 * @param int $compressionQuality
+	 * Loads an image from the provided file.
+	 *
+	 * @param MediaFile $file the file to read from
+	 *
+	 * @return void
+	 *
+	 * @throws MediaFileUnsupportedException
+	 * @throws MediaFileOperationException
+	 * @throws ImageProcessingException
 	 */
-	public function __construct(int $compressionQuality);
+	public function load(MediaFile $file): void;
 
 	/**
-	 * @param string $source
-	 * @param string $destination
-	 * @param int    $newWidth
-	 * @param int    $newHeight
-	 * @param int    &$resWidth
-	 * @param int    &$resHeight
+	 * Save the image into the provided file.
 	 *
-	 * @return bool
+	 * @param MediaFile $file              the file to write into
+	 * @param bool      $collectStatistics if true, the method returns statistics about the stream
+	 *
+	 * @return StreamStat|null optional statistics about the stream, if requested
+	 *
+	 * @throws MediaFileOperationException
 	 */
-	public function scale(
-		string $source,
-		string $destination,
-		int $newWidth,
-		int $newHeight,
-		int &$resWidth,
-		int &$resHeight
-	): bool;
+	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStat;
 
 	/**
-	 * @param string $source
-	 * @param string $destination
-	 * @param int    $newWidth
-	 * @param int    $newHeight
+	 * Frees all internal resources.
 	 *
-	 * @return bool
+	 * This method resets the object into a state where no image is loaded.
+	 * It frees all internal resources, releases all temporary buffers and
+	 * closes all streams.
+	 * Any work which has not been saved by a prior call to
+	 * {@link ImageHandlerInterface::save()} will be lost.
+	 *
+	 * @return void
 	 */
-	public function crop(
-		string $source,
-		string $destination,
-		int $newWidth,
-		int $newHeight
-	): bool;
+	public function reset(): void;
 
 	/**
-	 * Rotates and flips a photo based on its EXIF orientation.
+	 * Clones and scales the image proportionally to the designated dimensions such
+	 * that the new dimension don't exceed the designated dimensions.
 	 *
-	 * @param string $path
-	 * @param array  $info
-	 * @param boo    $pretend
+	 * The resulting dimension may differ from the requested dimension due
+	 * to proportional scaling.
 	 *
-	 * @return array
+	 * Either the new width or height may be zero which means that this
+	 * dimension is chosen automatically.
+	 *
+	 * @param ImageDimension $dstDim the designated dimensions
+	 *
+	 * @return ImageHandlerInterface the scaled clone
+	 *
+	 * @throws ImageProcessingException
+	 * @throws LycheeDomainException
 	 */
-	public function autoRotate(string $path, array $info, bool $pretend = false): array;
+	public function cloneAndScale(ImageDimension $dstDim): ImageHandlerInterface;
 
 	/**
-	 * @param string $source
-	 * @param int    $angle
-	 * @param string $destination
+	 * Clones and crops the image to the designated dimensions.
 	 *
-	 * @return bool
+	 * @param ImageDimension $dstDim the designated dimensions
+	 *
+	 * @return ImageHandlerInterface the cropped clone
+	 *
+	 * @throws ImageProcessingException
 	 */
-	public function rotate(string $source, int $angle, string $destination = null): bool;
+	public function cloneAndCrop(ImageDimension $dstDim): ImageHandlerInterface;
+
+	/**
+	 * Rotates the imaged based on the given angle.
+	 *
+	 * @param int $angle
+	 *
+	 * @return ImageDimension the resulting dimension
+	 *
+	 * @throws ImageProcessingException
+	 * @throws LycheeDomainException    thrown if `$angle` is out-of-bounds
+	 */
+	public function rotate(int $angle): ImageDimension;
+
+	/**
+	 * Returns the dimension of the image in upright orientation.
+	 *
+	 * The returned dimension may be swapped compared to the dimensions
+	 * returned by raw EXIF data.
+	 * An image may be stored rotated or mirrored and EXIF returns the raw
+	 * width and height.
+	 * This method returns the dimension after the photo has been put into
+	 * upright orientation.
+	 *
+	 * @return ImageDimension the dimensions of the image
+	 *
+	 * @throws ImageProcessingException
+	 */
+	public function getDimensions(): ImageDimension;
+
+	/**
+	 * @return bool true, if an image is loaded
+	 */
+	public function isLoaded(): bool;
 }

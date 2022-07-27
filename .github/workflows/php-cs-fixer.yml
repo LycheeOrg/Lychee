@@ -1,5 +1,13 @@
 name: php-cs-fixer
-on: [push, pull_request]
+on:
+  push:
+    branches-ignore:
+      - master
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - '**.js'
+
 env:
   PR_NUMBER: "${{ github.event.number }}"
   SOURCE_BRANCH: "$GITHUB_HEAD_REF"
@@ -17,12 +25,12 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@2.7.0
         with:
-          php-version: 7.4
+          php-version: 8.0
           extensions: json, dom, curl, libxml, mbstring
           coverage: none
       - name: Install PHP-CS-Fixer
         run: |
-          curl -L https://github.com/FriendsOfPHP/PHP-CS-Fixer/releases/download/v2.18.6/php-cs-fixer.phar -o .github/build/php-cs-fixer
+          curl -L https://github.com/FriendsOfPHP/PHP-CS-Fixer/releases/download/v3.3.2/php-cs-fixer.phar -o .github/build/php-cs-fixer
           chmod a+x .github/build/php-cs-fixer
       - name: Prepare Git User
         run: |
@@ -30,7 +38,7 @@ jobs:
           git config --global user.email "action@github.com"
           git checkout -B "${{ env.FIXER_BRANCH }}"
       - name: Apply auto-fixers
-        run: php .github/build/php-cs-fixer fix --config=.php_cs
+        run: php .github/build/php-cs-fixer fix --config=.php-cs-fixer.php
       - name: Create Fixer PR
         run: |
           if [[ -z $(git status --porcelain) ]]; then

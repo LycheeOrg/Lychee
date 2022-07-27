@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Extensions\ThrowsConsistentExceptions;
+use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use function Safe\substr;
 
 /**
  * App\Logs.
@@ -20,17 +23,20 @@ use Illuminate\Support\Carbon;
 class Logs extends Model
 {
 	use UTCBasedTimes;
+	use ThrowsConsistentExceptions;
+	/** @phpstan-use UseFixedQueryBuilder<Logs> */
+	use UseFixedQueryBuilder;
 
-	const SEVERITY_EMERGENCY = 0;
-	const SEVERITY_ALERT = 1;
-	const SEVERITY_CRITICAL = 2;
-	const SEVERITY_ERROR = 3;
-	const SEVERITY_WARNING = 4;
-	const SEVERITY_NOTICE = 5;
-	const SEVERITY_INFO = 6;
-	const SEVERITY_DEBUG = 7;
+	public const SEVERITY_EMERGENCY = 0;
+	public const SEVERITY_ALERT = 1;
+	public const SEVERITY_CRITICAL = 2;
+	public const SEVERITY_ERROR = 3;
+	public const SEVERITY_WARNING = 4;
+	public const SEVERITY_NOTICE = 5;
+	public const SEVERITY_INFO = 6;
+	public const SEVERITY_DEBUG = 7;
 
-	const SEVERITY_2_STRING = [
+	public const SEVERITY_2_STRING = [
 		self::SEVERITY_EMERGENCY => 'emergency',
 		self::SEVERITY_ALERT => 'alert',
 		self::SEVERITY_CRITICAL => 'critical',
@@ -41,7 +47,7 @@ class Logs extends Model
 		self::SEVERITY_DEBUG => 'debug',
 	];
 
-	const MAX_METHOD_LENGTH = 100;
+	public const MAX_METHOD_LENGTH = 100;
 
 	/**
 	 * allow these properties to be mass assigned.
@@ -112,6 +118,8 @@ class Logs extends Model
 	 *                         `__FUNCTION__` nor `__FILE__`)
 	 * @param int    $line     the line which triggers the log
 	 * @param string $msg      the message to log
+	 *
+	 * @phpstan-param int<0,7> $severity
 	 */
 	public static function log(int $severity, string $method, int $line, string $msg): void
 	{
@@ -119,14 +127,14 @@ class Logs extends Model
 			if (strlen($method) > self::MAX_METHOD_LENGTH) {
 				$method = '...' . substr($method, 3, self::MAX_METHOD_LENGTH - 3);
 			}
-			$log = new static([
+			$log = new self([
 				'type' => self::SEVERITY_2_STRING[$severity],
 				'function' => $method,
 				'line' => $line,
 				'text' => $msg,
 			]);
 			$log->save();
-		} catch (\Throwable $ignored) {
+		} catch (\Throwable) {
 		}
 	}
 }

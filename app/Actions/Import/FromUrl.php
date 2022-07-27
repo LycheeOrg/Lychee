@@ -2,65 +2,75 @@
 
 namespace App\Actions\Import;
 
-use App\Actions\Import\Extensions\Checks;
-use App\Actions\Import\Extensions\ImportPhoto;
-use App\Actions\Photo\Extensions\Constants;
-use App\Facades\Helpers;
-use App\Models\Logs;
-use Illuminate\Support\Facades\Storage;
+use App\Actions\Photo\Create;
+use App\Actions\Photo\Strategies\ImportMode;
+use App\Exceptions\Handler;
+use App\Exceptions\MassImportException;
+use App\Image\DownloadedFile;
+use App\Image\MediaFile;
+use App\Models\Album;
+use App\Models\Configs;
+use App\Models\Photo;
+use Illuminate\Support\Collection;
+use Safe\Exceptions\InfoException;
+use function Safe\ini_get;
+use function Safe\parse_url;
+use function Safe\set_time_limit;
 
 class FromUrl
 {
-	use Constants;
-	use ImportPhoto;
-	use Checks;
-
-	public function __construct()
+	/**
+	 * Imports photos from a list of URLs.
+	 *
+	 * TODO: Instead of returning a collection of photos and throwing a potential {@link MassImportException}, we should use a streamed response like in {@link FromServer}
+	 *
+	 * @param string[]   $urls
+	 * @param Album|null $album
+	 *
+	 * @return Collection<Photo> the collection of imported photos
+	 *
+	 * @throws MassImportException
+	 */
+	public function do(array $urls, ?Album $album): Collection
 	{
-		$this->checkPermissions();
-	}
+		$result = new Collection();
+		$exceptions = [];
+		$create = new Create(new ImportMode(
+			true,
+			Configs::getValueAsBool('skip_duplicates')
+		));
 
-	public function do(array $urls, $albumId): bool
-	{
-		$error = false;
+		foreach ($urls as $url) {
+			try {
+				// Reset the execution timeout for every iteration.
+				try {
+					set_time_limit((int) ini_get('max_execution_time'));
+				} catch (InfoException) {
+					// Silently do nothing, if `set_time_limit` is denied.
+				}
 
-		foreach ($urls as &$url) {
-			// Reset the execution timeout for every iteration.
-			set_time_limit(ini_get('max_execution_time'));
+				$path = parse_url($url, PHP_URL_PATH);
+				$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
 
-			// Validate photo type and extension even when $this->photo (=> $photo->add) will do the same.
-			// This prevents us from downloading invalid photos.
-			// Verify extension
-			$extension = Helpers::getExtension($url, true);
-			if (!$this->isValidExtension($extension)) {
-				$error = true;
-				Logs::error(__METHOD__, __LINE__, 'Photo format not supported (' . $url . ')');
-				continue;
-			}
+				// Validate photo extension even when `$create->add()` will do later.
+				// This prevents us from downloading unsupported files.
+				MediaFile::assertIsSupportedOrAcceptedFileExtension($extension);
 
-			// Verify image
-			$type = @exif_imagetype($url);
-			if (!$this->isValidImageType($type) && !in_array(strtolower($extension), $this->validExtensions, true)) {
-				$error = true;
-				Logs::error(__METHOD__, __LINE__, 'Photo type not supported (' . $url . ')');
-				continue;
-			}
+				// Download file
+				$downloadedFile = new DownloadedFile($url);
 
-			$filename = pathinfo($url, PATHINFO_FILENAME) . $extension;
-			$tmp_name = Storage::path('import/' . $filename);
-			if (@copy($url, $tmp_name) === false) {
-				$error = true;
-				Logs::error(__METHOD__, __LINE__, 'Could not copy file (' . $url . ') to temp-folder (' . $tmp_name . ')');
-				continue;
-			}
-
-			// Import photo
-			if (!$this->photo($tmp_name, true, false, $albumId)) {
-				$error = true;
-				Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $tmp_name . ')');
+				// Import photo/video/raw
+				$result->add($create->add($downloadedFile, $album));
+			} catch (\Throwable $e) {
+				$exceptions[] = $e;
+				Handler::reportSafely($e);
 			}
 		}
 
-		return !$error;
+		if (count($exceptions) !== 0) {
+			throw new MassImportException($exceptions);
+		}
+
+		return $result;
 	}
 }

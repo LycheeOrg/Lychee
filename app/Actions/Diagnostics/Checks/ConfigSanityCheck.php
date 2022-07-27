@@ -8,14 +8,10 @@ use App\Models\Configs;
 
 class ConfigSanityCheck implements DiagnosticCheckInterface
 {
-	/**
-	 * @var ConfigFunctions
-	 */
-	private $configFunctions;
+	private ConfigFunctions $configFunctions;
 
 	/**
-	 * @param ConfigFunctions $lycheeVersion
-	 * @param array caching the return of lycheeVersion->get()
+	 * @param ConfigFunctions $configFunctions
 	 */
 	public function __construct(
 		ConfigFunctions $configFunctions
@@ -29,7 +25,7 @@ class ConfigSanityCheck implements DiagnosticCheckInterface
 		$settings = Configs::get();
 
 		$keys_checked = [
-			'username', 'password', 'sorting_Photos', 'sorting_Albums',
+			'username', 'password', 'sorting_photos_col', 'sorting_albums_col',
 			'imagick', 'skip_duplicates', 'check_for_updates', 'version',
 		];
 
@@ -48,7 +44,7 @@ class ConfigSanityCheck implements DiagnosticCheckInterface
 		if (!isset($settings['dropbox_key'])) {
 			$errors[]
 				= 'Warning: Dropbox import not working. No property for dropbox_key.';
-		} elseif ($settings['dropbox_key'] == '') {
+		} elseif ($settings['dropbox_key'] === '') {
 			$errors[]
 				= 'Warning: Dropbox import not working. dropbox_key is empty.';
 		}

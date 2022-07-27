@@ -2,51 +2,48 @@
 
 namespace App\Actions\Album;
 
-use App\Actions\Album\Extensions\StoreAlbum;
+use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Models\Album;
 
 class Create extends Action
 {
-	use StoreAlbum;
-
 	/**
-	 * @param string $albumID
+	 * @param string     $title
+	 * @param Album|null $parentAlbum
 	 *
-	 * @return Album|SmartAlbum|Response
+	 * @return Album
+	 *
+	 * @throws ModelDBException
 	 */
-	public function create(string $title, int $parent_id): Album
+	public function create(string $title, ?Album $parentAlbum): Album
 	{
-		$album = $this->albumFactory->makeFromTitle($title);
+		$album = new Album();
+		$album->title = $title;
+		$this->set_parent($album, $parentAlbum);
+		$album->save();
 
-		$this->set_parent($album, $parent_id);
-
-		return $this->store_album($album);
+		return $album;
 	}
 
 	/**
 	 * Setups parent album on album structure.
 	 *
-	 * @param Album $album
-	 * @param int   $parent_id
-	 * @param int   $user_id
-	 *
-	 * @return Album
+	 * @param Album      $album
+	 * @param Album|null $parentAlbum
 	 */
-	private function set_parent(Album &$album, int $parent_id): void
+	private function set_parent(Album $album, ?Album $parentAlbum): void
 	{
-		$parent = Album::find($parent_id);
-
-		// we get the parent if it exists.
-		if ($parent !== null) {
-			$album->parent_id = $parent->id;
-
-			// Admin can add subalbums to other users' albums.  Make sure that
+		if ($parentAlbum !== null) {
+			// Admin can add sub-albums to other users' albums.  Make sure that
 			// the ownership stays with that user.
-			$album->owner_id = $parent->owner_id;
+			$album->owner_id = $parentAlbum->owner_id;
+			// Don't set attribute `parent_id` manually, but use specialized
+			// methods of the nested set `NodeTrait`.
+			$album->appendToNode($parentAlbum);
 		} else {
-			$album->parent_id = null;
 			$album->owner_id = AccessControl::id();
+			$album->makeRoot();
 		}
 	}
 }

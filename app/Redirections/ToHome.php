@@ -2,14 +2,20 @@
 
 namespace App\Redirections;
 
+use Illuminate\Http\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
+
 class ToHome implements Redirection
 {
-	public static function go()
+	/**
+	 * @throws RouteNotFoundException
+	 */
+	public static function go(): RedirectResponse
 	{
 		// we directly redirect to gallery
-		return redirect(route('home'), 307, [
+		return redirect(route('home'), Response::HTTP_TEMPORARY_REDIRECT, [
 			'Cache-Control' => 'no-cache, must-revalidate',
 		]);
 	}
 }
-

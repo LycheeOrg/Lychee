@@ -1,10 +1,18 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
 
 namespace Tests\Feature;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use App\Models\Logs;
 use Tests\TestCase;
 
@@ -15,11 +23,10 @@ class LogsTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function testLogs()
+	public function testLogs(): void
 	{
 		$response = $this->get('/Logs');
-		$response->assertOk();
-		$response->assertSeeText('false');
+		$response->assertForbidden();
 
 		// set user as admin
 		AccessControl::log_as_id(0);
@@ -27,40 +34,33 @@ class LogsTest extends TestCase
 		Logs::notice(__METHOD__, __LINE__, 'test');
 		$response = $this->get('/Logs');
 		$response->assertOk();
-		$response->assertDontSeeText('false');
 		$response->assertViewIs('logs.list');
 
 		AccessControl::logout();
 	}
 
-	public function testApiLogs()
+	public function testApiLogs(): void
 	{
-		$response = $this->post('/api/Logs');
-		$response->assertStatus(200); // code 200 something
-
-		// we may decide to change for another out there so
+		$response = $this->postJson('/api/Logs::list');
+		$response->assertForbidden();
 	}
 
-	public function testClearLogs()
+	public function testClearLogs(): void
 	{
-		$response = $this->post('/api/Logs::clearNoise');
-		$response->assertOk();
-		$response->assertSeeText('false');
+		$response = $this->postJson('/api/Logs::clearNoise');
+		$response->assertForbidden();
 
-		$response = $this->post('/api/Logs::clear');
-		$response->assertOk();
-		$response->assertSeeText('false');
+		$response = $this->postJson('/api/Logs::clear');
+		$response->assertForbidden();
 
 		// set user as admin
 		AccessControl::log_as_id(0);
 
-		$response = $this->post('/api/Logs::clearNoise');
-		$response->assertOk();
-		$response->assertSeeText('Log Noise cleared');
+		$response = $this->postJson('/api/Logs::clearNoise');
+		$response->assertNoContent();
 
-		$response = $this->post('/api/Logs::clear');
-		$response->assertOk();
-		$response->assertSeeText('Log cleared');
+		$response = $this->postJson('/api/Logs::clear');
+		$response->assertNoContent();
 
 		$response = $this->get('/Logs');
 		$response->assertOk();

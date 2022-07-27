@@ -2,9 +2,13 @@
 
 namespace App\Assets;
 
-use App\Exceptions\DivideByZeroException;
-use App\Models\Configs;
+use App\Exceptions\Internal\ZeroModuloException;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\File;
+use function Safe\getallheaders;
+use function Safe\ini_get;
+use function Safe\parse_url;
+use function Safe\substr;
 use WhichBrowser\Parser as BrowserParser;
 
 class Helpers
@@ -40,49 +44,29 @@ class Helpers
 	}
 
 	/**
-	 * return device type as string:
+	 * Returns the device type as string:
 	 * desktop, mobile, pda, dect, tablet, gaming, ereader,
 	 * media, headset, watch, emulator, television, monitor,
 	 * camera, printer, signage, whiteboard, devboard, inflight,
 	 * appliance, gps, car, pos, bot, projector.
 	 *
+	 * This method is only used to report the type of device back to the
+	 * client.
+	 * This is totally insane, because the client knows its own type anyway.
+	 * This could be completely done in JS code and CSS on the client side.
+	 * See also {@link ConfigFunctions::get_config_device()}.
+	 *
+	 * TODO: Remove this method.
+	 *
 	 * @return string
+	 *
+	 * @throws BindingResolutionException
 	 */
 	public function getDeviceType(): string
 	{
 		$result = new BrowserParser(getallheaders(), ['cache' => app('cache.store')]);
 
 		return $result->getType();
-	}
-
-	/*
-	 * Generate an id from current microtime.
-	 *
-	 * @return string generated ID
-	 */
-	public function generateID(): string
-	{
-		// Generate id based on the current microtime
-
-		if (
-			PHP_INT_MAX == 2147483647
-			|| Configs::get_value('force_32bit_ids', '0') === '1'
-		) {
-			// For 32-bit installations, we can only afford to store the
-			// full seconds in id.  The calling code needs to be able to
-			// handle duplicate ids.  Note that this also exposes us to
-			// the year 2038 problem.
-			$id = sprintf('%010d', microtime(true));
-		} else {
-			// Ensure 4 digits after the decimal point, 15 characters
-			// total (including the decimal point), 0-padded on the
-			// left if needed (shouldn't be needed unless we move back in
-			// time :-) )
-			$id = sprintf('%015.4f', microtime(true));
-			$id = str_replace('.', '', $id);
-		}
-
-		return $id;
 	}
 
 	/**
@@ -105,7 +89,7 @@ class Helpers
 			$shortId = $prevShortId + 1;
 		}
 
-		return $shortId;
+		return (string) $shortId;
 	}
 
 	/**
@@ -129,7 +113,7 @@ class Helpers
 		// https://github.com/electerious/Lychee/issues/482
 		list($extension) = explode(':', $extension, 2);
 
-		if (empty($extension) === false) {
+		if ($extension !== '') {
 			$extension = '.' . $extension;
 		}
 
@@ -147,14 +131,10 @@ class Helpers
 	{
 		// Check if the given path is readable and writable
 		// Both functions are also verifying that the path exists
-		if (
-			file_exists($path) === true && is_readable($path) === true
-			&& is_writeable($path) === true
-		) {
-			return true;
-		}
-
-		return false;
+		return
+			file_exists($path) &&
+			is_readable($path) &&
+			is_writeable($path);
 	}
 
 	/**
@@ -188,15 +168,15 @@ class Helpers
 	 *
 	 * @return int
 	 *
-	 * @throws DivideByZeroException
+	 * @throws ZeroModuloException
 	 */
 	public function gcd(int $a, int $b): int
 	{
-		if ($b == 0) {
-			throw new DivideByZeroException();
+		if ($b === 0) {
+			throw new ZeroModuloException();
 		}
 
-		return ($a % $b) ? $this->gcd($b, $a % $b) : $b;
+		return ($a % $b) !== 0 ? $this->gcd($b, $a % $b) : $b;
 	}
 
 	/**
@@ -206,19 +186,6 @@ class Helpers
 	public function str_of_bool(bool $b): string
 	{
 		return $b ? '1' : '0';
-	}
-
-	/**
-	 * Given a filename generate the @2x corresponding filename.
-	 * This is used for thumbs, small and medium.
-	 */
-	public function ex2x(string $filename): string
-	{
-		$filename2x = explode('.', $filename);
-
-		return (count($filename2x) === 2) ?
-			$filename2x[0] . '@2x.' . $filename2x[1] :
-			$filename2x[0] . '@2x';
 	}
 
 	/**
@@ -289,5 +256,17 @@ class Helpers
 	public function data_index_set(int $idx = 0): void
 	{
 		$this->numTab = $idx;
+	}
+
+	/**
+	 * Check if the `exec` function is available.
+	 *
+	 * @return bool
+	 */
+	public function isExecAvailable(): bool
+	{
+		$disabledFunctions = explode(',', ini_get('disable_functions'));
+
+		return function_exists('exec') && !in_array('exec', $disabledFunctions, true);
 	}
 }

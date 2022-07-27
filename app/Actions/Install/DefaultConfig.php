@@ -2,10 +2,13 @@
 
 namespace App\Actions\Install;
 
+use App\Exceptions\Internal\FrameworkException;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Psr\Container\ContainerExceptionInterface;
+
 class DefaultConfig
 {
-	private $config
-	= [
+	private array $config = [
 		/*
 			|--------------------------------------------------------------------------
 			| Server Requirements
@@ -15,18 +18,28 @@ class DefaultConfig
 			| by looping through the array and run "extension_loaded" on it.
 			|
 			*/
-		'core' => ['minPhpVersion' => '7.4.0'],
+		'core' => ['minPhpVersion' => '8.0.0'],
 
 		'requirements' => [
 			'php' => [
-				'openssl',
-				'pdo',
-				'mbstring',
-				'tokenizer',
-				'JSON',
+				'bcmath', // Required by Laravel
+				'ctype', // Required by Laravel
+				'dom', // Required by dependencies
 				'exif',
+				'fileinfo', // Required by Laravel
+				'filter', // Required by dependencies
 				'gd',
-				'intl',
+				'json', // Required by Laravel
+				'libxml', // Required by dependencies
+				'mbstring', // Required by Laravel
+				'openssl', // Required by Laravel
+				'pcre', // Required by dependencies
+				'PDO', // Required by Laravel
+				'Phar', // Required by dependencies
+				'SimpleXML', // Required by dependencies
+				'tokenizer', // Required by Laravel
+				'xml', // Required by Laravel
+				'xmlwriter', // Required by dependencies
 			],
 			'apache' => ['mod_rewrite'],
 		],
@@ -78,22 +91,22 @@ class DefaultConfig
 		//						'database_name'       => 'required|string|max:50',
 		//						'database_username'   => 'required|string|max:50',
 		//						'database_password'   => 'required|string|max:50',
-		////						'broadcast_driver'    => 'required|string|max:50',
-		////						'cache_driver'        => 'required|string|max:50',
+		// //						'broadcast_driver'    => 'required|string|max:50',
+		// //						'cache_driver'        => 'required|string|max:50',
 		//						'session_driver'      => 'required|string|max:50',
-		////						'queue_driver'        => 'required|string|max:50',
-		////						'redis_hostname'      => 'required|string|max:50',
-		////						'redis_password'      => 'required|string|max:50',
-		////						'redis_port'          => 'required|numeric',
-		////						'mail_driver'         => 'required|string|max:50',
-		////						'mail_host'           => 'required|string|max:50',
-		////						'mail_port'           => 'required|string|max:50',
-		////						'mail_username'       => 'required|string|max:50',
-		////						'mail_password'       => 'required|string|max:50',
-		////						'mail_encryption'     => 'required|string|max:50',
-		////						'pusher_app_id'       => 'max:50',
-		////						'pusher_app_key'      => 'max:50',
-		////						'pusher_app_secret'   => 'max:50',
+		// //						'queue_driver'        => 'required|string|max:50',
+		// //						'redis_hostname'      => 'required|string|max:50',
+		// //						'redis_password'      => 'required|string|max:50',
+		// //						'redis_port'          => 'required|numeric',
+		// //						'mail_driver'         => 'required|string|max:50',
+		// //						'mail_host'           => 'required|string|max:50',
+		// //						'mail_port'           => 'required|string|max:50',
+		// //						'mail_username'       => 'required|string|max:50',
+		// //						'mail_password'       => 'required|string|max:50',
+		// //						'mail_encryption'     => 'required|string|max:50',
+		// //						'pusher_app_id'       => 'max:50',
+		// //						'pusher_app_key'      => 'max:50',
+		// //						'pusher_app_secret'   => 'max:50',
 		//					],
 		//				],
 		//			],
@@ -102,37 +115,44 @@ class DefaultConfig
 	/**
 	 * Set the result array permissions and errors.
 	 *
-	 * @return mixed
+	 * @throws FrameworkException
 	 */
 	public function __construct()
 	{
-		$db_possibilities = [
-			['mysql', 'mysqli'],
-			['mysql', 'pdo_mysql'],
-			['pgsql', 'pgsql'],
-			['pgsql', 'pdo_pgsql'],
-			['sqlite', 'sqlite3'],
-		];
+		try {
+			$db_possibilities = [
+				['mysql', 'mysqli'],
+				['mysql', 'pdo_mysql'],
+				['pgsql', 'pgsql'],
+				['pgsql', 'pdo_pgsql'],
+				['sqlite', 'sqlite3'],
+			];
 
-		// additional requirement depending of the .env/base config
-		foreach ($db_possibilities as $db_possibility) {
-			if (config('database.default') == $db_possibility[0]) {
-				$this->config['requirements']['php'][] = $db_possibility[1];
+			// additional requirement depending on the .env/base config
+			foreach ($db_possibilities as $db_possibility) {
+				if (config('database.default') === $db_possibility[0]) {
+					$this->config['requirements']['php'][] = $db_possibility[1];
+				}
 			}
+		} catch (BindingResolutionException|ContainerExceptionInterface $e) {
+			throw new FrameworkException('Laravel\'s container component', $e);
 		}
 	}
 
-	public function get_core()
+	public function get_core(): array
 	{
 		return $this->config['core'];
 	}
 
-	public function get_requirements()
+	public function get_requirements(): array
 	{
 		return $this->config['requirements'];
 	}
 
-	public function get_permissions()
+	/**
+	 * @return string[]
+	 */
+	public function get_permissions(): array
 	{
 		return $this->config['permissions'];
 	}

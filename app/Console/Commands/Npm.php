@@ -2,7 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Contracts\ExternalLycheeException;
+use App\Exceptions\UnexpectedException;
 use Illuminate\Console\Command;
+use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class Npm extends Command
 {
@@ -23,7 +26,7 @@ class Npm extends Command
 	/**
 	 * Create a new command instance.
 	 *
-	 * @return void
+	 * @throws SymfonyConsoleException
 	 */
 	public function __construct()
 	{
@@ -33,29 +36,37 @@ class Npm extends Command
 	/**
 	 * Execute the console command.
 	 *
-	 * @return mixed
+	 * @return int
+	 *
+	 * @throws ExternalLycheeException
 	 */
-	public function handle()
+	public function handle(): int
 	{
-		$argument = $this->argument('cmd');
-		$ret = [];
-		if (!file_exists('public/Lychee-front/package-lock.json')) {
-			$cmd = 'cd public/Lychee-front; npm install';
+		try {
+			$argument = $this->argument('cmd');
+			$ret = [];
+			if (!file_exists('public/Lychee-front/package-lock.json')) {
+				$cmd = 'cd public/Lychee-front; npm install';
+				$this->info('execute: ' . $cmd);
+				exec($cmd, $ret);
+				foreach ($ret as $retline) {
+					$this->line($retline);
+				}
+			}
+			if ($argument === 'start') {
+				$cmd = 'cd public/Lychee-front; npm start';
+			} else {
+				$cmd = 'cd public/Lychee-front; npm run compile';
+			}
 			$this->info('execute: ' . $cmd);
 			exec($cmd, $ret);
 			foreach ($ret as $retline) {
 				$this->line($retline);
 			}
-		}
-		if ($argument == 'start') {
-			$cmd = 'cd public/Lychee-front; npm start';
-		} else {
-			$cmd = 'cd public/Lychee-front; npm run compile';
-		}
-		$this->info('execute: ' . $cmd);
-		exec($cmd, $ret);
-		foreach ($ret as $retline) {
-			$this->line($retline);
+
+			return 0;
+		} catch (SymfonyConsoleException $e) {
+			throw new UnexpectedException($e);
 		}
 	}
 }

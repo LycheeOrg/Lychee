@@ -1,5 +1,7 @@
 <?php
 
+ini_set('user_agent', 'Lychee/4 (https://lycheeorg.github.io/)');
+
 /*
 |--------------------------------------------------------------------------
 | Create The Application

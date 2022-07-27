@@ -3,11 +3,13 @@
 namespace App\Factories;
 
 use App\Contracts\DiagnosticCheckInterface;
+use function Safe\scandir;
+use function Safe\substr;
 
 class DiagnosticsChecksFactory
 {
-	/** @var array */
-	public $checks = [];
+	/** @var string[] */
+	public array $checks = [];
 
 	public function __construct()
 	{
@@ -23,6 +25,9 @@ class DiagnosticsChecksFactory
 		}
 	}
 
+	/**
+	 * @return DiagnosticCheckInterface[]
+	 */
 	public function makeAll(): array
 	{
 		$checks_ret = [];

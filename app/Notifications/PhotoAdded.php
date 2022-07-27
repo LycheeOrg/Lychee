@@ -10,6 +10,8 @@ class PhotoAdded extends Notification
 {
 	use Queueable;
 
+	protected Photo $photo;
+
 	/**
 	 * Create a new notification instance.
 	 *
@@ -25,7 +27,7 @@ class PhotoAdded extends Notification
 	 *
 	 * @param mixed $notifiable
 	 *
-	 * @return array
+	 * @return array<string>
 	 */
 	public function via($notifiable)
 	{
@@ -37,7 +39,7 @@ class PhotoAdded extends Notification
 	 *
 	 * @param mixed $notifiable
 	 *
-	 * @return array
+	 * @return array<string,string>
 	 */
 	public function toArray($notifiable)
 	{

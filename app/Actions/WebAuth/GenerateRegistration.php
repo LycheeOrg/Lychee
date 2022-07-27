@@ -3,19 +3,13 @@
 namespace App\Actions\WebAuth;
 
 use App\Facades\AccessControl;
-use App\Models\User;
 use DarkGhostHunter\Larapass\Facades\WebAuthn;
+use Webauthn\PublicKeyCredentialCreationOptions;
 
 class GenerateRegistration
 {
-	public function do()
+	public function do(): PublicKeyCredentialCreationOptions
 	{
-		/**
-		 * @var User
-		 */
-		$user = AccessControl::user();
-
-		// Create an attestation for a given user.
-		return WebAuthn::generateAttestation($user);
+		return WebAuthn::generateAttestation(AccessControl::user());
 	}
 }

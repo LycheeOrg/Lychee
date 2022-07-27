@@ -1,33 +1,29 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Controllers;
 
+use App\DTO\AlbumSortingCriterion;
+use App\DTO\PhotoSortingCriterion;
+use App\Exceptions\UnauthenticatedException;
+use App\Exceptions\VersionControlException;
 use App\Facades\AccessControl;
 use App\Facades\Helpers;
-use App\Http\Requests\UserRequests\UsernamePasswordRequest;
+use App\Facades\Lang;
+use App\Http\Requests\Session\LoginRequest;
 use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
-use Lang;
 
 class SessionController extends Controller
 {
-	/**
-	 * @var ConfigFunctions
-	 */
-	private $configFunctions;
-
-	/**
-	 * @var GitHubFunctions
-	 */
-	private $gitHubFunctions;
+	private ConfigFunctions $configFunctions;
+	private GitHubFunctions $gitHubFunctions;
 
 	/**
 	 * @param ConfigFunctions $configFunctions
@@ -42,121 +38,144 @@ class SessionController extends Controller
 	/**
 	 * First function being called via AJAX.
 	 *
-	 * @return array|bool (array containing config information or killing the session)
+	 * TODO: Remove attribute `status`.
+	 * TODO: Add nullable attribute `user` with a proper user object.
+	 * TODO: Merge attributes `is_admin`, `may_upload`, `username`, and `is_locked` into user object.
+	 *
+	 * `status === 0 ` (i.e. "no config") is legacy and does not occur.
+	 *
+	 * `status === {1|2}` indicates whether a user is authenticated or not.
+	 * But we should return a nullable attribute `user` which either holds the
+	 * currently authenticated user object or `null` if no user is
+	 * authenticated.
+	 *
+	 * The user-related attributes (`is_admin`, etc.) should be part of that
+	 * user object.
+	 *
+	 * @return array
+	 *
+	 * @throws ModelNotFoundException
+	 * @throws VersionControlException
 	 */
-	public function init()
+	public function init(): array
 	{
 		$logged_in = AccessControl::is_logged_in();
 
 		// Return settings
 		$return = [];
 
-		$return['api_V2'] = true;               // we are using api_V2
-		$return['sub_albums'] = true;           // Lychee-laravel does have sub albums
-
 		// Check if login credentials exist and login if they don't
 		if (AccessControl::noLogin() === true || $logged_in === true) {
-			// we the the UserID (it is set to 0 if there is no login/password = admin)
+			// we set the user ID (it is set to 0 if there is no login/password = admin)
 			$user_id = AccessControl::id();
 
-			if ($user_id == 0) {
+			if ($user_id === 0) {
 				$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 				$return['admin'] = true;
-				$return['upload'] = true; // not necessary
+				$return['may_upload'] = true; // not necessary
 
 				$return['config'] = $this->configFunctions->admin();
 
 				$return['config']['location'] = base_path('public/');
 			} else {
-				$user = User::find($user_id);
-
-				if ($user == null) {
-					Logs::notice(__METHOD__, __LINE__, 'UserID ' . $user_id . ' not found!');
-
-					return $this->logout();
-				} else {
+				try {
+					/** @var User $user */
+					$user = User::query()->findOrFail($user_id);
 					$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
-
 					$return['config'] = $this->configFunctions->public();
-					$return['lock'] = ($user->lock == '1');         // can user change their password
-					$return['upload'] = ($user->upload == '1');     // can user upload ?
+					$return['is_locked'] = $user->is_locked;   // may user change their password?
+					$return['may_upload'] = $user->may_upload; // may user upload?
 					$return['username'] = $user->username;
+				} catch (ModelNotFoundException $e) {
+					$this->logout();
+					throw $e;
 				}
 			}
 
-			// here we say whether we looged in because there is no login/password or if we actually entered a login/password
+			// here we say whether we logged in because there is no login/password or if we actually entered a login/password
+			// TODO: Refactor this. At least, rename the flag `login` to something more understandable, like `isAdminUserConfigured`, but rather re-factor the whole logic, i.e. creating the initial user should be part of the installation routine.
 			$return['config']['login'] = $logged_in;
 			$return['config']['lang_available'] = Lang::get_lang_available();
 		} else {
 			// Logged out
 			$return['config'] = $this->configFunctions->public();
-			if (Configs::get_value('hide_version_number', '1') != '0') {
+			if (Configs::getValueAsBool('hide_version_number')) {
 				$return['config']['version'] = '';
 			}
 			$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDOUT');
 		}
 
+		// Consolidate sorting attributes
+		$return['config']['sorting_albums'] = AlbumSortingCriterion::createDefault()->toArray();
+		$return['config']['sorting_photos'] = PhotoSortingCriterion::createDefault()->toArray();
+		unset($return['config']['sorting_albums_col']);
+		unset($return['config']['sorting_albums_order']);
+		unset($return['config']['sorting_photos_col']);
+		unset($return['config']['sorting_photos_order']);
+
+		// Device dependent settings
 		$deviceType = Helpers::getDeviceType();
 		// UI behaviour needs to be slightly modified if client is a TV
 		$return['config_device'] = $this->configFunctions->get_config_device($deviceType);
 
 		// we also return the local
-		$return['locale'] = Lang::get_lang(Configs::get_value('lang'));
+		$return['locale'] = Lang::get_lang();
 
 		$return['update_json'] = 0;
 		$return['update_available'] = false;
 
-		$this->gitHubFunctions->checkUpdates($return);
-
-		return $return;
+		return array_merge($return, $this->gitHubFunctions->checkUpdates());
 	}
 
 	/**
 	 * Login tentative.
 	 *
-	 * @param Request $request
+	 * @param LoginRequest $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws UnauthenticatedException
 	 */
-	public function login(UsernamePasswordRequest $request)
+	public function login(LoginRequest $request): void
 	{
 		// No login
 		if (AccessControl::noLogin() === true) {
 			Logs::warning(__METHOD__, __LINE__, 'DEFAULT LOGIN!');
 
-			return 'true';
+			return;
 		}
 
 		// this is probably sensitive to timing attacks...
-		if (AccessControl::log_as_admin($request['username'], $request['password'], $request->ip()) === true) {
-			return 'true';
+		if (AccessControl::log_as_admin($request->username(), $request->password(), $request->ip()) === true) {
+			return;
 		}
 
-		if (AccessControl::log_as_user($request['username'], $request['password'], $request->ip()) === true) {
-			return 'true';
+		if (AccessControl::log_as_user($request->username(), $request->password(), $request->ip()) === true) {
+			return;
 		}
 
-		Logs::error(__METHOD__, __LINE__, 'User (' . $request['username'] . ') has tried to log in from ' . $request->ip());
+		// TODO: We could avoid this separate log entry and let the exeption handler to all the logging, if we would add "context" (see Laravel docs) to those exceptions which need it.
+		Logs::error(__METHOD__, __LINE__, 'User (' . $request->username() . ') has tried to log in from ' . $request->ip());
 
-		return 'false';
+		throw new UnauthenticatedException('Unknown user or invalid password');
 	}
 
 	/**
-	 * Unset the session values.
+	 * Unsets the session values.
 	 *
-	 * @return bool returns true when logout was successful
+	 * @return void
 	 */
-	public function logout()
+	public function logout(): void
 	{
 		Session::flush();
-
-		return 'true';
 	}
 
 	/**
-	 * Show the session values.
+	 * Shows the session values.
+	 *
+	 * @return void
 	 */
-	public function show()
+	public function show(): void
 	{
 		dd(Session::all());
 	}

@@ -12,17 +12,18 @@ class PhotosAdded extends Mailable
 	use Queueable;
 	use SerializesModels;
 
-	public $photos;
+	protected array $photos;
+	protected string $title;
 
 	/**
 	 * Create a new message instance.
 	 *
 	 * @return void
 	 */
-	public function __construct($photos)
+	public function __construct(array $photos)
 	{
 		$this->photos = $photos;
-		$this->settings = Configs::get();
+		$this->title = Configs::getValueAsString('site_title');
 	}
 
 	/**
@@ -30,10 +31,11 @@ class PhotosAdded extends Mailable
 	 *
 	 * @return $this
 	 */
-	public function build()
+	public function build(): self
 	{
 		return $this->markdown('emails.photos-added', [
-			'title' => $this->settings['site_title'],
+			'title' => $this->title,
+			'photos' => $this->photos,
 		]);
 	}
 }

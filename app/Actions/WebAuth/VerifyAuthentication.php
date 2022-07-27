@@ -2,44 +2,58 @@
 
 namespace App\Actions\WebAuth;
 
+use App\Exceptions\Internal\InvalidUserIdException;
+use App\Exceptions\UnauthenticatedException;
 use App\Facades\AccessControl;
 use App\Models\User;
 use DarkGhostHunter\Larapass\Facades\WebAuthn;
+use function Safe\base64_decode;
 
 class VerifyAuthentication
 {
-	public function do($credential)
+	/**
+	 * @param string[] $credential
+	 *
+	 * @return void
+	 *
+	 * @throws UnauthenticatedException
+	 * @throws InvalidUserIdException
+	 */
+	public function do(array $credential): void
 	{
-		$cred = WebAuthn::validateAssertion($credential);
+		$success = WebAuthn::validateAssertion($credential);
 
 		// If is valid, login the user of the credentials.
-		if ($cred) {
+		if ($success) {
 			$user = $this->getUserFromCredentials($credential);
-			if ($user) {
+			if ($user !== null) {
 				AccessControl::login($user);
 
-				return response()->json('Authenticated!', 200);
+				return;
 			}
 		}
-
-		return response()->json('Something went wrong with your device!', 422);
+		throw new UnauthenticatedException('Invalid login');
 	}
 
 	/**
 	 * Return the user that should authenticate via WebAuthn.
 	 *
-	 * @param array $credentials
+	 * @param string[] $credentials
 	 *
-	 * @return \Illuminate\Contracts\Auth\Authenticatable|\DarkGhostHunter\Larapass\Contracts\WebAuthnAuthenticatable|null
+	 * @return User|null
+	 *
+	 * @throws InvalidUserIdException
 	 */
-	protected function getUserFromCredentials(array $credentials)
+	protected function getUserFromCredentials(array $credentials): ?User
 	{
 		// We will try to ask the User Provider for any user for the given credentials.
 		// If there is one, we will then return an array of credentials ID that the
 		// authenticator may use to sign the subsequent challenge by the server.
 		if ($this->isSignedChallenge($credentials)) {
 			$id = $this->binaryID($credentials['rawId']);
-			if ($id) {
+			if ($id !== '') {
+				// PHPStan does not understand that `getFromCredentialId` returns `User<Logs>`, but assumes that it returns `WebAuthnAuthenticatable`
+				// @phpstan-ignore-next-line
 				return User::getFromCredentialId($id);
 			}
 		}
@@ -52,11 +66,19 @@ class VerifyAuthentication
 	 *
 	 * @param string $rawId
 	 *
-	 * @return string|null
+	 * @return string
+	 *
+	 * @throws InvalidUserIdException
 	 */
-	protected function binaryID(string $rawId)
+	protected function binaryID(string $rawId): string
 	{
-		return base64_decode(strtr($rawId, '-_', '+/'), true);
+		try {
+			$result = base64_decode(strtr($rawId, '-_', '+/'), true);
+		} catch (\Throwable $e) {
+			throw new InvalidUserIdException($e);
+		}
+
+		return $result;
 	}
 
 	/**
@@ -66,7 +88,7 @@ class VerifyAuthentication
 	 *
 	 * @return bool
 	 */
-	protected function isSignedChallenge(array $credentials)
+	protected function isSignedChallenge(array $credentials): bool
 	{
 		return isset($credentials['id'], $credentials['rawId'], $credentials['type'], $credentials['response']);
 	}

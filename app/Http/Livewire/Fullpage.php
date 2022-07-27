@@ -2,11 +2,14 @@
 
 namespace App\Http\Livewire;
 
+use App\Contracts\AbstractAlbum;
+use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\Photo;
-use App\SmartAlbums\SmartAlbum;
-use App\SmartAlbums\TagAlbum;
+use App\SmartAlbums\BaseSmartAlbum;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Livewire\Component;
 
 class Fullpage extends Component
@@ -15,28 +18,25 @@ class Fullpage extends Component
 	 * @var
 	 */
 	public $mode;
-	/**
-	 * @var Photo
-	 */
-	public $photo = null;
-
-	/**
-	 * @var Album|SmartAlbum|TagAlbum
-	 */
-	public $album = null;
+	public ?Photo $photo = null;
+	public ?AbstractAlbum $album = null;
 
 	protected $listeners = ['openAlbum', 'openPhoto', 'back'];
 
+	/**
+	 * @throws ModelNotFoundException
+	 * @throws InvalidSmartIdException
+	 */
 	public function mount($albumId = null, $photoId = null)
 	{
 		$albumFactory = resolve(AlbumFactory::class);
-		if ($albumId == null) {
+		if ($albumId === null) {
 			$this->mode = 'albums';
 		} else {
 			$this->mode = 'album';
-			$this->album = $albumFactory->make($albumId);
+			$this->album = $albumFactory->findAbstractAlbumOrFail($albumId);
 
-			if ($photoId != null) {
+			if ($photoId !== null) {
 				$this->mode = 'photo';
 				$this->photo = Photo::with('album')->findOrFail($photoId);
 			}
@@ -56,16 +56,16 @@ class Fullpage extends Component
 	// Ideal we would like to avoid the redirect as they are slow.
 	public function back()
 	{
-		if ($this->photo != null) {
+		if ($this->photo !== null) {
 			// $this->photo = null;
 			return redirect('/livewire/' . $this->album->id);
 		}
-		if ($this->album != null) {
-			if ($this->album->is_smart()) {
+		if ($this->album !== null) {
+			if ($this->album instanceof BaseSmartAlbum) {
 				// $this->album = null;
 				return redirect('/livewire/');
 			}
-			if ($this->album->parent_id != null) {
+			if ($this->album instanceof Album && $this->album->parent_id !== null) {
 				return redirect('/livewire/' . $this->album->parent_id);
 			}
 
@@ -73,6 +73,9 @@ class Fullpage extends Component
 		}
 	}
 
+	/**
+	 * @throws BindingResolutionException
+	 */
 	public function render()
 	{
 		return view('livewire.fullpage');

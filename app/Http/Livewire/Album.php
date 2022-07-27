@@ -2,63 +2,49 @@
 
 namespace App\Http\Livewire;
 
-use App\Actions\Album\Photos;
-use App\Actions\Albums\Extensions\PublicIds;
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Factories\AlbumFactory;
+use App\Models\Album as AlbumModel;
 use App\Models\Configs;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Livewire\Component;
 
 class Album extends Component
 {
-	const FLKR = 'flkr';
-	const MASONRY = 'masonry';
-	const SQUARE = 'square';
+	public const FLKR = 'flkr';
+	public const MASONRY = 'masonry';
+	public const SQUARE = 'square';
 
-	/**
-	 * @var string
-	 */
-	public $layout = Album::MASONRY;
-
-	/**
-	 * @var int
-	 */
-	public $albumId;
-
-	/**
-	 * @var Album
-	 */
-	public $album;
-
+	public string $layout = Album::MASONRY;
+	public int $albumId;
+	public AlbumModel $album;
 	/**
 	 * @var array (for now)
 	 */
-	public $info;
-
+	public array $info;
 	/**
 	 * @var array (for now)
 	 */
-	public $photos;
+	public array $photos;
 
-	/**
-	 * @var AlbumFactory
-	 */
-	private $albumFactory;
+	private AlbumFactory $albumFactory;
 
-	private $photosAction;
-
-	public function mount($album, AlbumFactory $albumFactory, Photos $photosAction)
+	public function mount(AlbumModel $album, AlbumFactory $albumFactory)
 	{
 		$this->album = $album;
 		$this->info = [];
 		$this->info['albums'] = [];
 
 		$this->albumFactory = $albumFactory;
-		$this->photosAction = $photosAction;
 	}
 
+	/**
+	 * @throws BindingResolutionException
+	 * @throws ConfigurationKeyMissingException
+	 */
 	public function render()
 	{
-		switch (Configs::get_value('layout')) {
+		switch (Configs::getValueAsString('layout')) {
 			case '0':
 				$this->layout = Album::SQUARE;
 				break;
@@ -72,23 +58,7 @@ class Album extends Component
 				$this->layout = Album::FLKR;
 		}
 
-		if ($this->album->smart) {
-			$publicAlbums = resolve(PublicIds::class)->getPublicAlbumsId();
-			$this->album->setAlbumIDs($publicAlbums);
-		} else {
-			// we only do this when not in smart mode (i.e. no sub albums)
-			// that way we limit the number of times we have to query.
-			resolve(PublicIds::class)->setAlbum($this->album);
-		}
-		$this->info = $this->album->toReturnArray();
-
-		// take care of sub albums
-		$this->info['albums'] = $this->album->get_children()->map(fn ($a) => $a->toReturnArray())->values();
-
-		// take care of photos
-		$this->photos = $this->photosAction->get($this->album);
-		$this->info['id'] = strval($this->album->id);
-		$this->info['num'] = strval(count($this->photos));
+		$this->info = $this->album->toArray();
 
 		return view('livewire.album');
 	}

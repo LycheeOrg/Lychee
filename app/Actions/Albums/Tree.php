@@ -2,68 +2,81 @@
 
 namespace App\Actions\Albums;
 
-use App\Actions\Albums\Extensions\PublicIds;
-use App\Actions\Albums\Extensions\TopQuery;
+use App\Actions\AlbumAuthorisationProvider;
+use App\Contracts\InternalLycheeException;
+use App\DTO\AlbumSortingCriterion;
+use App\DTO\AlbumTree;
+use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Facades\AccessControl;
 use App\Models\Album;
-use App\Models\Configs;
-use App\Models\Extensions\CustomSort;
+use App\Models\Extensions\SortingDecorator;
+use Kalnoy\Nestedset\Collection as NsCollection;
 
 class Tree
 {
-	use TopQuery;
-	use CustomSort;
+	private AlbumAuthorisationProvider $albumAuthorisationProvider;
+	private AlbumSortingCriterion $sorting;
 
 	/**
-	 * @var string
+	 * @throws InvalidOrderDirectionException
 	 */
-	private $sortingCol;
-
-	/**
-	 * @var string
-	 */
-	private $sortingOrder;
-
-	public function __construct()
+	public function __construct(AlbumAuthorisationProvider $albumAuthorisationProvider)
 	{
-		$this->sortingCol = Configs::get_value('sorting_Albums_col');
-		$this->sortingOrder = Configs::get_value('sorting_Albums_order');
+		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
+		$this->sorting = AlbumSortingCriterion::createDefault();
 	}
 
-	public function get(): array
+	/**
+	 * @return AlbumTree
+	 *
+	 * @throws InternalLycheeException
+	 */
+	public function get(): AlbumTree
 	{
-		$return = [];
-		$PublicIds = resolve(PublicIds::class);
+		/*
+		 * Note, strictly speaking
+		 * {@link AlbumAuthorisationProvider::applyBrowsabilityFilter()}
+		 * would be the correct function in order to scope the query below,
+		 * because we only want albums which are browsable.
+		 * But
+		 * {@link AlbumAuthorisationProvider::applyBrowsabilityFilter()}
+		 * is rather slow for large sets of albums (O(n²) runtime).
+		 * Luckily,
+		 * {@link AlbumAuthorisationProvider::applyReachabilityFilter()}
+		 * is sufficient here, although it does only consider an album's
+		 * reachability _locally_.
+		 * We rely on `->toTree` below to remove orphaned sub-tress and hence
+		 * only return a tree of browsable albums.
+		 */
+		$query = new SortingDecorator(
+			$this->albumAuthorisationProvider->applyReachabilityFilter(Album::query())
+		);
+		if (AccessControl::is_logged_in()) {
+			// For authenticated users we group albums by ownership.
+			$query->orderBy('owner_id');
+		}
+		$query->orderBy($this->sorting->column, $this->sorting->order);
 
-		$sql = Album::query()
-			->where('smart', '=', false)
-			->whereNotIn('id', $PublicIds->getNotAccessible())
-			->orderBy('owner_id', 'ASC');
-		$albumCollection = $this->customSort($sql, $this->sortingCol, $this->sortingOrder);
-
+		/** @var NsCollection<Album> $albums */
+		$albums = $query->get();
+		/** @var ?NsCollection<Album> $sharedAlbums */
+		$sharedAlbums = null;
 		if (AccessControl::is_logged_in()) {
 			$id = AccessControl::id();
-			list($albumCollection, $albums_shared) = $albumCollection->partition(fn ($album) => $album->owner_id == $id);
-			$return['shared_albums'] = $this->prepare($albums_shared->toTree());
+			// ATTENTION:
+			// For this to work correctly, it is crucial that all child albums
+			// below each top-level album have the same owner!
+			// Otherwise, this partitioning tears apart albums of the same
+			// (sub)-tree and then `toTree` will return garbage as it does
+			// not find connected paths within `$albums` or `$sharedAlbums`,
+			// resp.
+			list($albums, $sharedAlbums) = $albums->partition(fn ($album) => $album->owner_id === $id);
 		}
 
-		$return['albums'] = $this->prepare($albumCollection->toTree());
-
-		return $return;
-	}
-
-	private function prepare($albums)
-	{
-		return $albums->map(function ($album) {
-			$ret = [
-				'id' => strval($album->id),
-				'title' => $album->title,
-				'parent_id' => strval($album->parent_id),
-				'thumb' => optional($album->get_thumb())->toArray(),
-			];
-			$ret['albums'] = $this->prepare($album->children);
-
-			return $ret;
-		});
+		// We must explicitly pass `null` as the ID of the root album
+		// as there are several top-level albums below root.
+		// Otherwise, `toTree` uses the ID of the album with the lowest
+		// `_lft` value as the (wrong) root album.
+		return new AlbumTree($albums->toTree(null), $sharedAlbums?->toTree(null));
 	}
 }

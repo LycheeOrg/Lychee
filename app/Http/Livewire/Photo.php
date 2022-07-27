@@ -2,44 +2,32 @@
 
 namespace App\Http\Livewire;
 
-use App\Actions\Photo\Prepare;
+use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Models\Album as AlbumModel;
 use App\Models\Photo as PhotoModel;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Livewire\Component;
 
 class Photo extends Component
 {
-	/**
-	 * @var PhotoModel
-	 */
-	public $photo;
+	public PhotoModel $photo;
+	public AlbumModel $album;
+	public array $data;
+	public bool $visibleControls = false;
 
-	/**
-	 * @var Album
-	 */
-	public $album;
-
-	/**
-	 * @var array (for now)
-	 */
-	public $data;
-
-	public $visibleControls = false;
-
-	/**
-	 * @var Prepare
-	 */
-	private $prepare;
-
-	public function mount(PhotoModel $photo, Prepare $prepare)
+	public function mount(PhotoModel $photo)
 	{
 		$this->album = $photo->album;
 		$this->photo = $photo;
-		$this->prepare = $prepare;
 	}
 
+	/**
+	 * @throws BindingResolutionException
+	 * @throws IllegalOrderOfOperationException
+	 */
 	public function render()
 	{
-		$this->data = $this->prepare->do($this->photo);
+		$this->data = $this->photo->toArray();
 
 		return view('livewire.photo');
 	}

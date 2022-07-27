@@ -1,21 +1,20 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\ModelFunctions;
 
-use App\Exceptions\NotLoggedInException;
+use App\Exceptions\UnauthenticatedException;
 use App\Legacy\Legacy;
 use App\Models\Logs;
 use App\Models\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
 class SessionFunctions
 {
-	public $user_data = null;
+	public ?User $user_data = null;
 
-	public function log_as_id($id): void
+	public function log_as_id(int $id): void
 	{
 		Session::put('login', true);
 		Session::put('UserID', $id);
@@ -29,11 +28,7 @@ class SessionFunctions
 	 */
 	public function is_logged_in(): bool
 	{
-		if (Session::get('login') === true) {
-			return true;
-		} else {
-			return false;
-		}
+		return Session::get('login') === true;
 	}
 
 	/**
@@ -43,12 +38,15 @@ class SessionFunctions
 	 */
 	public function is_admin(): bool
 	{
-		return Session::get('login') && Session::get('UserID') === 0;
+		return $this->is_logged_in() && Session::get('UserID') === 0;
 	}
 
+	/**
+	 * @throws UnauthenticatedException
+	 */
 	public function can_upload(): bool
 	{
-		return $this->is_logged_in() && ($this->id() == 0 || $this->user()->upload);
+		return $this->is_logged_in() && ($this->id() === 0 || $this->user()->may_upload);
 	}
 
 	/**
@@ -56,11 +54,13 @@ class SessionFunctions
 	 * what happens when UserID is not set? :p.
 	 *
 	 * @return int
+	 *
+	 * @throws UnauthenticatedException
 	 */
 	public function id(): int
 	{
-		if (!Session::get('login')) {
-			throw new NotLoggedInException();
+		if (!$this->is_logged_in()) {
+			throw new UnauthenticatedException();
 		}
 
 		return Session::get('UserID');
@@ -68,17 +68,25 @@ class SessionFunctions
 
 	/**
 	 * Return User object given a positive ID.
+	 *
+	 * @throws UnauthenticatedException
+	 * @throws ModelNotFoundException
 	 */
 	private function accessUserData(): User
 	{
 		$id = $this->id();
-		$this->user_data = User::find($id);
+		$this->user_data = User::query()->findOrFail($id);
 
+		// `findOrFail` above returns a union type, but we know that it
+		// returns the correct `User` mode in this case
+		// @phpstan-ignore-next-line
 		return $this->user_data;
 	}
 
 	/**
 	 * Return User object and cache the result.
+	 *
+	 * @throws UnauthenticatedException
 	 */
 	public function user(): User
 	{
@@ -86,16 +94,16 @@ class SessionFunctions
 	}
 
 	/**
-	 * Return true if the currently logged in user is the one provided
+	 * Return true if the currently logged-in user is the one provided
 	 * (or if that user is Admin).
 	 *
-	 * @param int userId
+	 * @param int $userId
 	 *
 	 * @return bool
 	 */
-	public function is_current_user(int $userId): bool
+	public function is_current_user_or_admin(int $userId): bool
 	{
-		return Session::get('login') && (Session::get('UserID') === $userId || Session::get('UserID') === 0);
+		return $this->is_logged_in() && (Session::get('UserID') === $userId || Session::get('UserID') === 0);
 	}
 
 	/**
@@ -115,7 +123,8 @@ class SessionFunctions
 	 */
 	public function noLogin(): bool
 	{
-		$adminUser = User::find(0);
+		/** @var User|null $adminUser */
+		$adminUser = User::query()->find(0);
 		if ($adminUser !== null && $adminUser->password === '' && $adminUser->username === '') {
 			$this->user_data = $adminUser;
 			Session::put('login', true);
@@ -129,8 +138,7 @@ class SessionFunctions
 
 	/**
 	 * Given a username, password and ip (for logging), try to log the user.
-	 * returns true if succeed
-	 * returns false if fail.
+	 * Returns true if succeeded, false if failed.
 	 *
 	 * @param string $username
 	 * @param string $password
@@ -141,9 +149,10 @@ class SessionFunctions
 	public function log_as_user(string $username, string $password, string $ip): bool
 	{
 		// We select the NON ADMIN user
-		$user = User::where('username', '=', $username)->where('id', '>', '0')->first();
+		/** @var User|null $user */
+		$user = User::query()->where('username', '=', $username)->where('id', '>', '0')->first();
 
-		if ($user != null && Hash::check($password, $user->password)) {
+		if ($user !== null && Hash::check($password, $user->password)) {
 			$this->user_data = $user;
 			Session::put('login', true);
 			Session::put('UserID', $user->id);
@@ -157,8 +166,7 @@ class SessionFunctions
 
 	/**
 	 * Given a username, password and ip (for logging), try to log the user as admin.
-	 * returns true if succeed
-	 * returns false if fail.
+	 * Returns true if succeeded, false if failed.
 	 *
 	 * @param string $username
 	 * @param string $password
@@ -168,12 +176,13 @@ class SessionFunctions
 	 */
 	public function log_as_admin(string $username, string $password, string $ip): bool
 	{
-		$AdminUser = User::find(0);
+		/** @var User|null $adminUser */
+		$adminUser = User::query()->find(0);
 
-		if ($AdminUser !== null) {
+		if ($adminUser !== null) {
 			// Admin User exist, so we check against it.
-			if (Hash::check($username, $AdminUser->username) && Hash::check($password, $AdminUser->password)) {
-				$this->user_data = $AdminUser;
+			if (Hash::check($username, $adminUser->username) && Hash::check($password, $adminUser->password)) {
+				$this->user_data = $adminUser;
 				Session::put('login', true);
 				Session::put('UserID', 0);
 				Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
@@ -184,65 +193,13 @@ class SessionFunctions
 			return false;
 		}
 		// Admin User does not exist yet, so we use the Legacy.
-
 		return Legacy::log_as_admin($username, $password, $ip);
-	}
-
-	/**
-	 * Given an albumID, check if it exists in the visible_albums session variable.
-	 *
-	 * @param $albumID
-	 *
-	 * @return bool
-	 */
-	public function has_visible_album($albumID): bool
-	{
-		if (!Session::has('visible_albums')) {
-			return false;
-		}
-
-		$visible_albums = Session::get('visible_albums');
-		$visible_albums = explode('|', $visible_albums);
-
-		return in_array($albumID, $visible_albums);
-	}
-
-	/**
-	 * Add new album to the visible_albums session variable.
-	 *
-	 * @param $albumIDs
-	 */
-	public function add_visible_albums($albumIDs): void
-	{
-		$visible_albums = [];
-		if (Session::has('visible_albums')) {
-			$visible_albums = Session::get('visible_albums');
-			$visible_albums = explode('|', $visible_albums);
-		}
-
-		foreach ($albumIDs as $albumID) {
-			if (!in_array($albumID, $visible_albums)) {
-				$visible_albums[] = $albumID;
-			}
-		}
-
-		$visible_albums = implode('|', $visible_albums);
-		Session::put('visible_albums', $visible_albums);
-	}
-
-	public function get_visible_albums(): array
-	{
-		if (Session::has('visible_albums')) {
-			return explode('|', Session::get('visible_albums'));
-		}
-
-		return [];
 	}
 
 	/**
 	 * Log out the current user.
 	 */
-	public function logout()
+	public function logout(): void
 	{
 		$this->user_data = null;
 		Session::flush();

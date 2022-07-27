@@ -2,13 +2,17 @@
 
 namespace App\Actions\WebAuth;
 
+use App\Exceptions\UnauthorizedException;
 use App\Facades\AccessControl;
 use App\Models\User;
 use DarkGhostHunter\Larapass\Facades\WebAuthn;
 
 class VerifyRegistration
 {
-	public function do($data)
+	/**
+	 * @throws UnauthorizedException
+	 */
+	public function do(array $data): void
 	{
 		/**
 		 * @var User
@@ -16,13 +20,12 @@ class VerifyRegistration
 		$user = AccessControl::user();
 
 		// okay.
+		/** @var false|\Webauthn\PublicKeyCredentialSource */
 		$credential = WebAuthn::validateAttestation($data, $user);
-		if ($credential) {
+		if ($credential !== false) {
 			$user->addCredential($credential);
-
-			return response()->json('Device registered!', 200);
 		} else {
-			return response()->json('Something went wrong with your device!', 422);
+			throw new UnauthorizedException('Provided credentials are insufficient');
 		}
 	}
 }

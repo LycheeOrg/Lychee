@@ -2,59 +2,52 @@
 
 namespace App\Actions\Album;
 
+use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\ModelDBException;
 use App\Models\Album;
-use App\Models\Logs;
 use App\Models\Photo;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Collection;
 
 class Merge extends Action
 {
 	/**
-	 * @param string $albumID
+	 * Merges the content of the given source albums (photos and sub-albums)
+	 * into the target.
 	 *
-	 * @return bool
+	 * @param Album             $targetAlbum
+	 * @param Collection<Album> $albums
+	 *
+	 * @throws ModelNotFoundException
+	 * @throws ModelDBException
+	 * @throws QueryBuilderException
 	 */
-	public function do(string $albumID, array $albumIDs): bool
+	public function do(Album $targetAlbum, Collection $albums): void
 	{
-		$album_master = $this->albumFactory->make($albumID);
-		if ($album_master->is_smart()) {
-			Logs::error(__METHOD__, __LINE__, 'Merge is not possible on smart albums');
+		// Merge photos of source albums into target
+		Photo::query()
+			->whereIn('album_id', $albums->pluck('id'))
+			->update(['album_id' => $targetAlbum->id]);
 
-			return false;
-		}
-
-		$no_error = true;
-		// Merge Photos
-		if (DB::table('photos')->whereIn('album_id', $albumIDs)->count() > 0) {
-			$no_error &= Photo::whereIn('album_id', $albumIDs)->update(['album_id' => $album_master->id]);
-		}
-
-		// Merge Sub-albums
-		// ! we have to do it via Model::save() in order to not break the tree
-		$albums = Album::whereIn('parent_id', $albumIDs)->get();
+		// Merge sub-albums of source albums into target
+		/** @var Album $album */
 		foreach ($albums as $album) {
-			$album->parent_id = $album_master->id;
-			$album->save();
+			foreach ($album->children as $childAlbum) {
+				// Don't set attribute `parent_id` manually, but use specialized
+				// methods of the nested set `NodeTrait` to keep the enumeration
+				// of the tree consistent
+				// `appendNode` also internally calls `save` on the model
+				$targetAlbum->appendNode($childAlbum);
+			}
 		}
 
-		// now we delete the albums
-		// ! we have to do it via Model::delete() in order to not break the tree
-		$albums = Album::whereIn('id', $albumIDs)->get();
-		foreach ($albums as $album) {
-			$album->delete();
-		}
+		// Now we delete the source albums
+		// We must use the special `Delete` action in order to not break the
+		// tree.
+		// The returned `FileDeleter` can be ignored as all photos have been
+		// moved to the new location.
+		(new Delete())->do($albums->pluck('id')->values()->all());
 
-		if (Album::isBroken()) {
-			$errors = Album::countErrors();
-			$sum = $errors['oddness'] + $errors['duplicates'] + $errors['wrong_parent'] + $errors['missing_parent'];
-			Logs::warning(__METHOD__, __LINE__, 'Tree is broken with ' . $sum . ' errors.');
-			Album::fixTree();
-			Logs::notice(__METHOD__, __LINE__, 'Tree has been fixed.');
-		}
-
-		$album_master->descendants()->update(['owner_id' => $album_master->owner_id]);
-		$album_master->get_all_photos()->update(['photos.owner_id' => $album_master->owner_id]);
-
-		return $no_error;
+		$targetAlbum->fixOwnershipOfChildren();
 	}
 }

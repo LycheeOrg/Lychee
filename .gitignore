@@ -7,19 +7,9 @@ public/Lychee-front/node_modules/
 public/Lychee-front/bower_components/
 public/Lychee-front/package-lock.json
 
-public/uploads/big/*
-public/uploads/import/*
-public/uploads/medium/*
-public/uploads/raw/*
-public/uploads/small/*
-public/uploads/thumb/*
+public/dist/user.css
 
-!public/uploads/big/index.html
-!public/uploads/import/index.html
-!public/uploads/medium/index.html
-!public/uploads/raw/index.html
-!public/uploads/small/index.html
-!public/uploads/thumb/index.html
+public/uploads/**
 
 /storage/*.key
 /storage/clockwork/
@@ -32,9 +22,8 @@ Homestead.yaml
 npm-debug.log
 yarn-error.log
 .env
-.env.bck
+.env.*
 
-public/dist/user.css
 aliases
 
 Lychee/*

@@ -1,9 +1,18 @@
 <?php
 
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
+
 namespace Tests\Feature;
 
-use AccessControl;
-use App\ModelFunctions\SessionFunctions;
+use App\Facades\AccessControl;
 use App\Models\User;
 use DarkGhostHunter\Larapass\Eloquent\WebAuthnCredential;
 use Tests\TestCase;
@@ -15,16 +24,14 @@ class WebAuthTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function testWebAuthTest()
+	public function testWebAuthTest(): void
 	{
-		$sessionFunctions = new SessionFunctions();
-
 		AccessControl::log_as_id(0);
 
-		$response = $this->post('/api/webauthn::register/gen');
-		$response->assertStatus(200);
+		$response = $this->postJson('/api/WebAuthn::register/gen');
+		$response->assertOk();
 
-		$response = $this->post('/api/webauthn::register', [
+		$response = $this->postJson('/api/WebAuthn::register', [
 			'id' => '-PhslGzltOv3nJ0j8Or1AuNHh9kgmMQmOdM0A7eF7yJcAuSZzFa9YhSHfrYvyllhNUhuIMTE6hFYA3Ef7gCOwg',
 			'rawId' => '+PhslGzltOv3nJ0j8Or1AuNHh9kgmMQmOdM0A7eF7yJcAuSZzFa9YhSHfrYvyllhNUhuIMTE6hFYA3Ef7gCOwg==',
 			'response' => [
@@ -33,14 +40,14 @@ class WebAuthTest extends TestCase
 			],
 			'type' => 'public-key',
 		]);
-		$response->assertStatus(422);
+		$response->assertForbidden();
 
-		$sessionFunctions->logout();
+		AccessControl::logout();
 
-		$response = $this->post('/api/webauthn::login/gen', ['user_id' => 0]);
-		$response->assertStatus(200);
+		$response = $this->postJson('/api/WebAuthn::login/gen', ['user_id' => 0]);
+		$response->assertOk();
 
-		$response = $this->post('/api/webauthn::login', [
+		$response = $this->postJson('/api/WebAuthn::login', [
 			'id' => 'jQJF5u0Fn-MsdabIxKJoxc19XSLXDCSDqs4g8TV1rXXXBDSEoT6LeRN60CfxZskRxq15EEl43OIbPluD7dVT0A',
 			'rawId' => 'jQJF5u0Fn+MsdabIxKJoxc19XSLXDCSDqs4g8TV1rXXXBDSEoT6LeRN60CfxZskRxq15EEl43OIbPluD7dVT0A==',
 			'response' => [
@@ -51,12 +58,12 @@ class WebAuthTest extends TestCase
 			],
 			'type' => 'public-key',
 		]);
-		$response->assertStatus(422);
+		$response->assertUnauthorized();
 
 		AccessControl::log_as_id(0);
 
-		$response = $this->post('/api/webauthn::list');
-		$response->assertStatus(200); // code 200 something
+		$response = $this->postJson('/api/WebAuthn::list');
+		$response->assertOk(); // code 200 something
 
 		$key = new WebAuthnCredential([
 			'id' => '1234',
@@ -69,16 +76,15 @@ class WebAuthTest extends TestCase
 			'public_key' => '',
 			'counter' => '0',
 		]);
-		$user = User::find(0);
+		$user = User::query()->find(0);
 		$user->webAuthnCredentials()->save($key);
 
-		$response = $this->post('/api/webauthn::delete', ['id' => '1234']);
-		$response->assertStatus(200); // code 200 something
+		$response = $this->postJson('/api/WebAuthn::delete', ['id' => '1234']);
+		$response->assertNoContent();
 
-		$sessionFunctions->logout();
+		AccessControl::logout();
 
-		$response = $this->post('/api/webauthn::delete', ['id' => '1234']);
-		$response->assertStatus(200); // code 200 something
-		$response->assertSee('false');
+		$response = $this->postJson('/api/WebAuthn::delete', ['id' => '1234']);
+		$response->assertUnauthorized();
 	}
 }

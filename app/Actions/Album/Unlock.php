@@ -2,63 +2,73 @@
 
 namespace App\Actions\Album;
 
-use App\Facades\AccessControl;
-use App\Models\Album;
+use App\Actions\AlbumAuthorisationProvider;
+use App\Exceptions\UnauthorizedException;
+use App\Models\BaseAlbumImpl;
+use App\Models\Extensions\BaseAlbum;
 use Illuminate\Support\Facades\Hash;
 
 class Unlock extends Action
 {
-	/**
-	 * Provided a password and an album, check if the album can be
-	 * unlocked. If yes, unlock all albums with the same password.
-	 *
-	 * @param string $albumID
-	 *
-	 * @return array
-	 */
-	public function do(?string $albumid, $password): bool
-	{
-		if ($this->albumFactory->is_smart($albumid)) {
-			return false;
-		}
+	private AlbumAuthorisationProvider $albumAuthorisationProvider;
 
-		$album = $this->albumFactory->make($albumid);
-		if ($album->is_public()) {
-			if ($album->password === '') {
-				return true;
+	public function __construct()
+	{
+		parent::__construct();
+		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
+	}
+
+	/**
+	 * Tries to unlock the given album with the given password.
+	 *
+	 * If the password is correct, then all albums which can be unlocked with
+	 * the same password are unlocked, too.
+	 *
+	 * @param BaseAlbum $album
+	 * @param string    $password
+	 *
+	 * @throws UnauthorizedException
+	 */
+	public function do(BaseAlbum $album, string $password): void
+	{
+		if ($album->is_public) {
+			if (
+				$album->password === null ||
+				$album->password === '' ||
+				$this->albumAuthorisationProvider->isUnlocked($album)
+			) {
+				return;
 			}
-			if (AccessControl::has_visible_album($album->id)) {
-				return true;
-			}
-			$password ??= '';
 			if (Hash::check($password, $album->password)) {
 				$this->propagate($password);
 
-				return true;
+				return;
 			}
+			throw new UnauthorizedException('Password is invalid');
 		}
 
-		return false;
+		throw new UnauthorizedException('Album is not enabled for password-based access');
 	}
 
 	/**
 	 * Provided a password, add all the albums that the password unlocks.
 	 */
-	public function propagate(string $password): void
+	private function propagate(string $password): void
 	{
 		// We add all the albums that the password unlocks so that the
 		// user is not repeatedly asked to enter the password as they
 		// browse through the hierarchy.  This should be safe as the
 		// list of such albums is not exposed to the user and is
 		// considered as the last access check criteria.
-		$albums = Album::whereNotNull('password')->where('password', '!=', '')->get();
-		$albumIDs = [];
+		$albums = BaseAlbumImpl::query()
+			->where('is_public', '=', true)
+			->whereNotNull('password')
+			->get();
+		/** @var BaseAlbumImpl $album */
 		foreach ($albums as $album) {
 			if (Hash::check($password, $album->password)) {
-				$albumIDs[] = $album->id;
+				$this->albumAuthorisationProvider->unlock($album);
 			}
 		}
-
-		AccessControl::add_visible_albums($albumIDs);
 	}
 }

@@ -5,8 +5,8 @@
     <link type="text/css" rel="stylesheet" href="{{ Helpers::cacheBusting('dist/main.css') }}">
 
     <link rel="shortcut icon" href="favicon.ico">
-    <link rel="apple-touch-icon" href="Lychee-front/images/apple-touch-icon-iphone.png" sizes="120x120">
-    <link rel="apple-touch-icon" href="Lychee-front/images/apple-touch-icon-ipad.png" sizes="152x152">
+    <link rel="apple-touch-icon" href="img/apple-touch-icon-iphone.png" sizes="120x120">
+    <link rel="apple-touch-icon" href="img/apple-touch-icon-ipad.png" sizes="152x152">
 @endsection
 
 @section('head-meta')
@@ -58,7 +58,7 @@
 <!-- Infobox -->
 <div class="sidebar">
     <div class="sidebar__header">
-        <h1>About</h1>
+        <h1>{{ $locale['PHOTO_ABOUT'] }}</h1>
     </div>
     <div class="sidebar__wrapper"></div>
 </div>

@@ -2,36 +2,51 @@
 
 namespace App\Exceptions\Handlers;
 
+use App\Contracts\HttpExceptionHandler;
 use App\Redirections\ToInstall;
-use Illuminate\Database\QueryException as QueryException;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Database\QueryException;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface as HttpException;
 use Throwable;
 
-class AccessDBDenied
+/**
+ * Class AccessDBDenied.
+ *
+ * If access to the DB is denied, we need to run the installation.
+ */
+class AccessDBDenied implements HttpExceptionHandler
 {
 	/**
-	 * Render an exception into an HTTP response.
-	 *
-	 * @param Request   $request
-	 * @param Throwable $exception
-	 *
-	 * @return bool
+	 * {@inheritDoc}
 	 */
-	public function check($request, Throwable $exception)
+	public function check(HttpException $e): bool
 	{
-		// encryption key does not exist, we need to run the installation
-		return $exception instanceof QueryException && (strpos($exception->getMessage(), 'Access denied') !== false);
+		do {
+			if ($e instanceof QueryException && str_contains($e->getMessage(), 'Access denied')) {
+				return true;
+			}
+		} while ($e = $e->getPrevious());
+
+		return false;
 	}
 
 	/**
-	 * @return Response
+	 * {@inheritDoc}
 	 */
-	// @codeCoverageIgnoreStart
-	public function go()
+	public function renderHttpException(SymfonyResponse $defaultResponse, HttpException $e): SymfonyResponse
 	{
-		return ToInstall::go();
-	}
+		try {
+			$redirectResponse = ToInstall::go();
+			$contentType = $defaultResponse->headers->get('Content-Type');
+			if ($contentType !== null && $contentType !== '') {
+				$redirectResponse->headers->set('Content-Type', $contentType);
+				$content = $defaultResponse->getContent();
+				$redirectResponse->setContent($content !== false ? $content : null);
+			}
 
-	// @codeCoverageIgnoreEnd
+			return $redirectResponse;
+		} catch (Throwable) {
+			return $defaultResponse;
+		}
+	}
 }

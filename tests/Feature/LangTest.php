@@ -1,8 +1,21 @@
 <?php
 
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
+
 namespace Tests\Feature;
 
-use Lang;
+use App\Facades\Lang;
+use App\Factories\LangFactory;
+use App\Models\Configs;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class LangTest extends TestCase
@@ -12,7 +25,7 @@ class LangTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function testLang()
+	public function testLang(): void
 	{
 		$lang_available = Lang::get_lang_available();
 		$keys = array_keys(Lang::get_lang());
@@ -22,8 +35,27 @@ class LangTest extends TestCase
 			$locale = $lang_test->get_locale();
 
 			foreach ($keys as $key) {
-				$this->assertArrayHasKey($key, $locale, 'Language ' . $lang_test->code() . ' is incomplete.');
+				static::assertArrayHasKey($key, $locale, 'Language ' . $lang_test->code() . ' is incomplete.');
 			}
 		}
+
+		static::assertEquals('en', Lang::get_code());
+		static::assertEquals('OK', Lang::get('SUCCESS'));
+	}
+
+	public function testEnglishAsFallbackIfLangConfigIsMissing(): void
+	{
+		Configs::where('key', '=', 'lang')->delete();
+		$lang = new \App\Locale\Lang(new LangFactory());
+		self::assertEquals('en', $lang->get_code());
+
+		DB::table('configs')->insert([
+			[
+				'key' => 'lang',
+				'value' => 'en',
+				'confidentiality' => 0,
+				'cat' => 'Gallery',
+			],
+		]);
 	}
 }

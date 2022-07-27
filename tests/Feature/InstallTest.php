@@ -1,10 +1,19 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
 
 namespace Tests\Feature;
 
 use App\Models\User;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
@@ -15,29 +24,58 @@ class InstallTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function testInstall()
+	public function testInstall(): void
 	{
 		/*
 		 * Get previous config
 		 */
-		$admin = User::find(0);
+		/** @var User $admin */
+		$admin = User::query()->find(0);
 
 		touch(base_path('.NO_SECURE_KEY'));
 		$response = $this->get('install/');
-		$response->assertStatus(200);
-		@unlink(base_path('.NO_SECURE_KEY'));
+		$response->assertOk();
+		unlink(base_path('.NO_SECURE_KEY'));
 
-		@unlink(base_path('installed.log'));
+		// TODO: Why does a `git pull` delete `installed.log`? This test needs to be discussed with @ildyria
+		unlink(base_path('installed.log'));
 		/**
 		 * No installed.log: we should not be redirected to install (case where we have not done the last migration).
 		 */
 		$response = $this->get('/');
-		$response->assertStatus(200);
+		$response->assertOk();
 
 		/*
 		 * Clearing things up. We could do an Artisan migrate but this is more efficient.
 		 */
-		$tables = ['sym_links', 'photos', 'configs', 'logs', 'migrations', 'notifications', 'page_contents', 'pages', 'user_album', 'users', 'albums', 'web_authn_credentials'];
+
+		// The order is important: referring tables must be deleted first, referred tables last
+		$tables = [
+			'sym_links',
+			'size_variants',
+			'photos',
+			'configs',
+			'logs',
+			'migrations',
+			'notifications',
+			'page_contents',
+			'pages',
+			'user_base_album',
+			'tag_albums',
+			'albums',
+			'base_albums',
+			'web_authn_credentials',
+			'users',
+		];
+
+		if (Schema::connection(null)->getConnection()->getDriverName() !== 'sqlite') {
+			// We must remove the foreign constraint from `albums` to `photos` to
+			// break up circular dependencies.
+			Schema::table('albums', function (Blueprint $table) {
+				$table->dropForeign('albums_cover_id_foreign');
+			});
+		}
+
 		foreach ($tables as $table) {
 			Schema::dropIfExists($table);
 		}
@@ -53,28 +91,28 @@ class InstallTest extends TestCase
 		 * Check the welcome page.
 		 */
 		$response = $this->get('install/');
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertViewIs('install.welcome');
 
 		/**
 		 * Check the requirements page.
 		 */
 		$response = $this->get('install/req');
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertViewIs('install.requirements');
 
 		/**
 		 * Check the permissions page.
 		 */
 		$response = $this->get('install/perm');
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertViewIs('install.permissions');
 
 		/**
 		 * Check the env page.
 		 */
 		$response = $this->get('install/env');
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertViewIs('install.env');
 
 		$env = file_get_contents(base_path('.env'));
@@ -83,28 +121,27 @@ class InstallTest extends TestCase
 		 * POST '.env' the env page.
 		 */
 		$response = $this->post('install/env', ['envConfig' => $env]);
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertViewIs('install.env');
 
 		/**
 		 * apply migration.
 		 */
 		$response = $this->get('install/migrate');
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertViewIs('install.migrate');
 
 		/**
-		 * We now should be redirected.
+		 * Re-Installation should be forbidden now.
 		 */
 		$response = $this->get('install/');
-		$response->assertStatus(307);
-		$response->assertRedirect('/');
+		$response->assertForbidden();
 
 		/**
 		 * We now should NOT be redirected.
 		 */
 		$response = $this->get('/');
-		$response->assertStatus(200);
+		$response->assertOk();
 
 		$admin->save();
 		$admin->id = 0;

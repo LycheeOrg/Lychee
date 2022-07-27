@@ -14,6 +14,19 @@
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
+	# Any request to the public folders can be served directly.
+	# There is no need to direct them to the front-controller.
+	# Hence, we take a short-cut here, [L] means last rule.
+	# This also avoids some unneccessary execptions and exception logging
+	# inside Lychee, if a non-existing file is requested.
+	# Also disable compression for already highly compressed media files.
+	RewriteRule ^(css|dist|img|installer|js|src)/ - [L]
+	RewriteRule ^(sym|uploads)/ - [L,E=no-gzip:1]
+
+    # Ensure that streamed responses are not cached,
+    # because Apache tries to ZIP them
+    RewriteRule (Album::getArchive|Photo::getArchive|Import::server) - [E=no-gzip:1]
+
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
@@ -22,11 +35,13 @@
 
 Options -Indexes
 
-<IfModule mod_php7.c>
+<IfModule php_module>
 	php_value max_execution_time 200
 	php_value post_max_size 500M
 	php_value upload_max_filesize 500M
 	php_value max_file_uploads 100
+	# A proper user agent is required by some web servers, when photos are imported via URL
+	php_value user_agent "Lychee/4 (https://lycheeorg.github.io/)"
 </IfModule>
 
 # ---

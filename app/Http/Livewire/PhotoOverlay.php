@@ -2,9 +2,11 @@
 
 namespace App\Http\Livewire;
 
+use App\Exceptions\ConfigurationKeyMissingException;
+use App\Facades\Lang;
 use App\Models\Configs;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Str;
-use Lang;
 use Livewire\Component;
 
 class PhotoOverlay extends Component
@@ -22,10 +24,13 @@ class PhotoOverlay extends Component
 
 	private $photo_data;
 
+	/**
+	 * @throws ConfigurationKeyMissingException
+	 */
 	public function mount(array $data)
 	{
 		$this->photo_data = $data;
-		$overlay_type = Configs::get_value('image_overlay_type', 'none');
+		$overlay_type = Configs::getValueAsString('image_overlay_type');
 
 		$this->idx = array_search($overlay_type, $this->types, true);
 	}
@@ -65,6 +70,9 @@ class PhotoOverlay extends Component
 		return $exifHash;
 	}
 
+	/**
+	 * @throws BindingResolutionException
+	 */
 	public function render()
 	{
 		$this->title = $this->photo_data['title'];

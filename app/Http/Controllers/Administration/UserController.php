@@ -4,109 +4,130 @@ namespace App\Http\Controllers\Administration;
 
 use App\Actions\User\Create;
 use App\Actions\User\Save;
+use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\FrameworkException;
+use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\InvalidPropertyException;
+use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\UserRequests\UserPostIdRequest;
-use App\Http\Requests\UserRequests\UserPostRequest;
+use App\Http\Requests\User\AddUserRequest;
+use App\Http\Requests\User\DeleteUserRequest;
+use App\Http\Requests\User\SetEmailRequest;
+use App\Http\Requests\User\SetUserSettingsRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Routing\Controller;
 
 class UserController extends Controller
 {
-	public function list()
+	/**
+	 * @return Collection<User>
+	 *
+	 * @throws QueryBuilderException
+	 */
+	public function list(): Collection
 	{
-		return User::where('id', '>', 0)->get();
+		// PHPStan does not understand that `get` returns `Collection<User>`, but assumes that it returns `Collection<Model>`
+		// @phpstan-ignore-next-line
+		return User::query()->where('id', '>', 0)->get();
 	}
 
 	/**
 	 * Save modification done to a user.
 	 * Note that an admin can change the password of a user at will.
 	 *
-	 * @param UserPostRequest $request
+	 * @param SetUserSettingsRequest $request
+	 * @param Save                   $save
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws InvalidPropertyException
+	 * @throws ModelDBException
 	 */
-	public function save(UserPostRequest $request, Save $save)
+	public function save(SetUserSettingsRequest $request, Save $save): void
 	{
-		$user = User::findOrFail($request['id']);
-
-		return $save->do($user, $request->all()) ? 'true' : 'false';
+		$save->do(
+			$request->user2(),
+			$request->username(),
+			$request->password(),
+			$request->mayUpload(),
+			$request->isLocked()
+		);
 	}
 
 	/**
-	 * Delete a user.
-	 * FIXME: What happen to the albums owned ?
+	 * Deletes a user.
 	 *
-	 * @param UserPostIdRequest $request
+	 * The albums and photos owned by the user are re-assigned to the
+	 * admin user.
 	 *
-	 * @return string
+	 * @param DeleteUserRequest $request
+	 *
+	 * @return void
+	 *
+	 * @throws ModelDBException
 	 */
-	public function delete(UserPostIdRequest $request)
+	public function delete(DeleteUserRequest $request): void
 	{
-		$user = User::findOrFail($request['id']);
-
-		return $user->delete() ? 'true' : 'false';
+		$request->user2()->delete();
 	}
 
 	/**
 	 * Create a new user.
 	 *
-	 * @param Request $request
+	 * @param AddUserRequest $request
+	 * @param Create         $create
 	 *
-	 * @return string
+	 * @return User
+	 *
+	 * @throws InvalidPropertyException
+	 * @throws ModelDBException
 	 */
-	public function create(Request $request, Create $create)
+	public function create(AddUserRequest $request, Create $create): User
 	{
-		$data = $request->validate([
-			'username' => 'required|string|max:100',
-			'password' => 'required|string|max:50',
-			'upload' => 'required',
-			'lock' => 'required',
-		]);
-
-		return $create->do($data) ? 'true' : 'false';
+		return $create->do($request->username(), $request->password(), $request->mayUpload(), $request->isLocked());
 	}
 
 	/**
-	 * Update the email of a user.
-	 * Will delete all notifications if the email is left empty.
+	 * Updates the email address of the currently authenticated user.
+	 * Deletes all notifications if the email address is empty.
 	 *
-	 * @param Request $request
+	 * TODO: Why is this an independent request? IMHO this should be combined with the other user settings.
 	 *
-	 * @return string
+	 * @param SetEmailRequest $request
+	 *
+	 * @return void
+	 *
+	 * @throws InternalLycheeException
+	 * @throws ModelDBException
 	 */
-	public function updateEmail(Request $request, Save $save)
+	public function setEmail(SetEmailRequest $request): void
 	{
-		if ($request->email != '') {
-			$request->validate([
-				'email' => 'email|max:100',
-			]);
+		try {
+			$user = AccessControl::user();
+			$user->email = $request->email();
+
+			if ($request->email() === null) {
+				$user->notifications()->delete();
+			}
+
+			$user->save();
+		} catch (\InvalidArgumentException $e) {
+			throw new FrameworkException('Laravel\'s notification module', $e);
 		}
-
-		$user = AccessControl::user();
-
-		$user->email = $request->email;
-
-		if (is_null($request->email)) {
-			$user->notifications()->delete();
-		}
-
-		return $user->save() ? 'true' : 'false';
 	}
 
 	/**
-	 * Return the email address of a user.
+	 * Returns the email address of the currently authenticated user.
 	 *
-	 * @return string
+	 * TODO: Why is this an independent request? IMHO this should be combined with the GET request for the other user settings (see session init)
+	 *
+	 * @return array{email: ?string}
 	 */
-	public function getEmail()
+	public function getEmail(): array
 	{
-		$user = AccessControl::user();
-
-		if ($user->email) {
-			return json_encode($user->email);
-		} else {
-			return json_encode('');
-		}
+		return [
+			'email' => AccessControl::user()->email,
+		];
 	}
 }

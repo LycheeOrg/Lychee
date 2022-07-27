@@ -1,38 +1,34 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Controllers;
 
-use App\Actions\Photo\Prepare;
-use App\Actions\Photo\Rotate;
-use App\Http\Requests\PhotoRequests\PhotoIDRequest;
+use App\Actions\Photo\Strategies\RotateStrategy;
+use App\Contracts\LycheeException;
+use App\Exceptions\ConfigurationException;
+use App\Http\Requests\Photo\RotatePhotoRequest;
 use App\Models\Configs;
 use App\Models\Photo;
+use Illuminate\Routing\Controller;
 
 class PhotoEditorController extends Controller
 {
 	/**
 	 * Given a photoID and a direction (+1: 90° clockwise, -1: 90° counterclockwise) rotate an image.
 	 *
-	 * @param PhotoIDRequest $request
+	 * @param RotatePhotoRequest $request
 	 *
-	 * @return array|string
+	 * @return Photo
+	 *
+	 * @throws LycheeException
 	 */
-	public function rotate(PhotoIDRequest $request, Rotate $rotate, Prepare $prepare)
+	public function rotate(RotatePhotoRequest $request): Photo
 	{
-		if (!Configs::get_value('editor_enabled', '0')) {
-			return 'false';
+		if (!Configs::getValueAsBool('editor_enabled')) {
+			throw new ConfigurationException('support for rotation disabled by configuration');
 		}
 
-		$request->validate(['direction' => 'integer|required']);
+		$rotateStrategy = new RotateStrategy($request->photo(), $request->direction());
 
-		$photo = Photo::findOrFail($request['photoID']);
-
-		if (!$rotate->do($photo, intval($request['direction']))) {
-			return 'false';
-		}
-
-		return $prepare->do($photo);
+		return $rotateStrategy->do();
 	}
 }

@@ -1,235 +1,215 @@
 <?php
 
+/** @noinspection PhpComposerExtensionStubsInspection */
+
 namespace App\Image;
 
-use App\Models\Configs;
-use App\Models\Logs;
+use App\DTO\ImageDimension;
+use App\Exceptions\ImageProcessingException;
+use App\Exceptions\MediaFileOperationException;
 use Imagick;
 use ImagickException;
-use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
+use ImagickPixel;
 
-class ImagickHandler implements ImageHandlerInterface
+class ImagickHandler extends BaseImageHandler
 {
-	/**
-	 * @var int
-	 */
-	private $compressionQuality;
+	/** @var Imagick|null the internal Imagick image */
+	private ?Imagick $imImage = null;
 
-	/**
-	 * Rotates a given image based on the given orientation.
-	 *
-	 * @param \Imagick $image the image reference to rotate
-	 *
-	 * @return array a dictionary of width and height of the rotated image
-	 */
-	private function autoRotateInternal(Imagick &$image): array
+	public function __clone()
 	{
-		try {
-			$orientation = $image->getImageOrientation();
-
-			switch ($orientation) {
-				case \Imagick::ORIENTATION_TOPLEFT:
-					// nothing to do
-					break;
-				case \Imagick::ORIENTATION_TOPRIGHT:
-					$image->flopImage();
-					break;
-				case \Imagick::ORIENTATION_BOTTOMRIGHT:
-					$image->rotateImage(new \ImagickPixel(), 180);
-					break;
-				case \Imagick::ORIENTATION_BOTTOMLEFT:
-					$image->flopImage();
-					$image->rotateImage(new \ImagickPixel(), 180);
-					break;
-				case \Imagick::ORIENTATION_LEFTTOP:
-					$image->flopImage();
-					$image->rotateImage(new \ImagickPixel(), -90);
-					break;
-				case \Imagick::ORIENTATION_RIGHTTOP:
-					$image->rotateImage(new \ImagickPixel(), 90);
-					break;
-				case \Imagick::ORIENTATION_RIGHTBOTTOM:
-					$image->flopImage();
-					$image->rotateImage(new \ImagickPixel(), 90);
-					break;
-				case \Imagick::ORIENTATION_LEFTBOTTOM:
-					$image->rotateImage(new \ImagickPixel(), -90);
-					break;
-			}
-
-			$image->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
-
-			return [
-				'width' => $image->getImageWidth(),
-				'height' => $image->getImageHeight(),
-			];
-		} catch (ImagickException $exception) {
-			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
-
-			return [false, false];
+		if ($this->imImage !== null) {
+			$this->imImage = clone $this->imImage;
 		}
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function __construct(int $compressionQuality)
+	public function reset(): void
 	{
-		$this->compressionQuality = $compressionQuality;
+		$this->imImage?->clear();
+		$this->imImage = null;
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
-	public function scale(
-		string $source,
-		string $destination,
-		int $newWidth,
-		int $newHeight,
-		int &$resWidth,
-		int &$resHeight
-	): bool {
+	public function load(MediaFile $file): void
+	{
 		try {
-			// Read image
-			$image = new \Imagick();
-			$image->readImage($source);
-			// the image may need to be rotated prior to scaling
-			$this->autoRotateInternal($image);
+			$inMemoryBuffer = null;
 
-			$image->setImageCompressionQuality($this->compressionQuality);
+			$this->reset();
 
-			$profiles = $image->getImageProfiles('icc', true);
+			$originalStream = $file->read();
+			if ((stream_get_meta_data($originalStream))['seekable']) {
+				$inputStream = $originalStream;
+			} else {
+				// We make an in-memory copy of the provided stream,
+				// because we must be able to seek/rewind the stream.
+				// For example, a readable stream from a remote location (i.e.
+				// a "download" stream) is only forward readable once.
+				$inMemoryBuffer = new InMemoryBuffer();
+				$inMemoryBuffer->write($originalStream);
+				$inputStream = $inMemoryBuffer->read();
+			}
 
-			$image->scaleImage($newWidth, $newHeight, ($newWidth != 0 && $newHeight != 0));
+			$this->imImage = new Imagick();
+			$this->imImage->readImageFile($inputStream);
+			$this->autoRotate();
+		} catch (ImagickException $e) {
+			throw new MediaFileOperationException('Failed to load image', $e);
+		} finally {
+			$inMemoryBuffer?->close();
+			$file->close();
+		}
+	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStat
+	{
+		if ($this->imImage === null) {
+			throw new MediaFileOperationException('No image loaded');
+		}
+		try {
+			$this->imImage->setImageCompressionQuality($this->compressionQuality);
+			$profiles = $this->imImage->getImageProfiles('icc', true);
 			// Remove metadata to save some bytes
-			$image->stripImage();
-
-			if (!empty($profiles)) {
-				$image->profileImage('icc', $profiles['icc']);
+			$this->imImage->stripImage();
+			// Re-add  color profiles
+			if (key_exists('icc', $profiles)) {
+				$this->imImage->profileImage('icc', $profiles['icc']);
 			}
 
-			$image->writeImage($destination);
-			Logs::notice(__METHOD__, __LINE__, 'Saving thumb to ' . $destination);
-			$resWidth = $image->getImageWidth();
-			$resHeight = $image->getImageHeight();
-			$image->clear();
-			$image->destroy();
+			// We write the image into a memory buffer first, because
+			// we don't know if the file is a local file (or hosted elsewhere)
+			// and if the file supports seekable streams
+			$inMemoryBuffer = new InMemoryBuffer();
+			$this->imImage->writeImageFile($inMemoryBuffer->stream(), ltrim($file->getExtension(), '.'));
+			$streamStat = $file->write($inMemoryBuffer->read(), $collectStatistics);
+			$file->close();
+			$inMemoryBuffer->close();
 
-			// Optimize image
-			if (Configs::get_value('lossless_optimization', '0') == '1') {
-				ImageOptimizer::optimize($destination);
-			}
-		} catch (ImagickException $exception) {
-			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
-
-			return false;
+			return parent::applyLosslessOptimizationConditionally($file, $collectStatistics) ?? $streamStat;
+		} catch (ImagickException $e) {
+			throw new MediaFileOperationException('Failed to save image', $e);
 		}
-
-		return true;
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Rotates the image such that it is oriented in upright direction;.
+	 *
+	 * @return void
+	 *
+	 * @throws ImageProcessingException
 	 */
-	public function crop(
-		string $source,
-		string $destination,
-		int $newWidth,
-		int $newHeight
-	): bool {
-		try {
-			$image = new \Imagick();
-			$image->readImage($source);
-			// the image may need to be rotated prior to cropping
-			$this->autoRotateInternal($image);
-
-			$image->setImageCompressionQuality($this->compressionQuality);
-
-			$profiles = $image->getImageProfiles('icc', true);
-
-			$image->cropThumbnailImage($newWidth, $newHeight);
-
-			// Remove metadata to save some bytes
-			$image->stripImage();
-
-			if (!empty($profiles)) {
-				$image->profileImage('icc', $profiles['icc']);
-			}
-
-			$image->writeImage($destination);
-			Logs::notice(__METHOD__, __LINE__, 'Saving thumb to ' . $destination);
-			$image->clear();
-			$image->destroy();
-
-			// Optimize image
-			if (Configs::get_value('lossless_optimization', '0') == '1') {
-				ImageOptimizer::optimize($destination);
-			}
-		} catch (ImagickException $exception) {
-			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
-
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function autoRotate(string $path, array $info, bool $pretend = false): array
+	private function autoRotate(): void
 	{
 		try {
-			$image = new \Imagick();
-			$image->readImage($path);
+			$orientation = $this->imImage->getImageOrientation();
 
-			$rotate = $image->getImageOrientation() !== \Imagick::ORIENTATION_TOPLEFT;
+			$needsFlop = match ($orientation) {
+				Imagick::ORIENTATION_TOPRIGHT, Imagick::ORIENTATION_BOTTOMLEFT, Imagick::ORIENTATION_LEFTTOP, Imagick::ORIENTATION_RIGHTBOTTOM => true,
+				Imagick::ORIENTATION_TOPLEFT, Imagick::ORIENTATION_BOTTOMRIGHT, Imagick::ORIENTATION_RIGHTTOP, Imagick::ORIENTATION_LEFTBOTTOM, Imagick::ORIENTATION_UNDEFINED => false,
+				default => throw new ImageProcessingException('Image orientation out of range')
+			};
 
-			$dimensions = $this->autoRotateInternal($image);
+			$angle = match ($orientation) {
+				Imagick::ORIENTATION_TOPLEFT, Imagick::ORIENTATION_TOPRIGHT, Imagick::ORIENTATION_UNDEFINED => 0,
+				Imagick::ORIENTATION_BOTTOMRIGHT, Imagick::ORIENTATION_BOTTOMLEFT => 180,
+				Imagick::ORIENTATION_LEFTTOP, Imagick::ORIENTATION_LEFTBOTTOM => -90,
+				Imagick::ORIENTATION_RIGHTTOP, Imagick::ORIENTATION_RIGHTBOTTOM => 90,
+				default => throw new ImageProcessingException('Image orientation out of range')
+			};
 
-			if ($rotate && !$pretend) {
-				$image->writeImage($path);
+			if ($needsFlop && !$this->imImage->flopImage()) {
+				throw new ImagickException('Failed to flop image');
 			}
 
-			$image->clear();
-			$image->destroy();
+			if ($angle !== 0 && !$this->imImage->rotateImage(new ImagickPixel(), $angle)) {
+				throw new ImagickException('Failed to rotate image');
+			}
 
-			return $dimensions;
+			if (!$this->imImage->setImageOrientation(Imagick::ORIENTATION_TOPLEFT)) {
+				throw new ImagickException('Failed to set orientation');
+			}
 		} catch (ImagickException $exception) {
-			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
-
-			return [false, false];
+			throw new ImageProcessingException('Failed to auto-rotate image', $exception);
 		}
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function rotate(string $source, int $angle, string $destination = null): bool
+	public function cloneAndScale(ImageDimension $dstDim): ImageHandlerInterface
 	{
 		try {
-			$image = new \Imagick();
-			if ($image->readImage($source) === false) {
-				return false;
-			}
-			// the image may need to be rotated upright prior to the requested rotation
-			$this->autoRotateInternal($image);
-
-			if ($image->rotateImage(new \ImagickPixel(), $angle) === false) {
-				return false;
+			$clone = clone $this;
+			if (!$clone->imImage->scaleImage(
+				$dstDim->width, $dstDim->height, ($dstDim->width !== 0 && $dstDim->height !== 0)
+			)) {
+				throw new ImagickException('Failed to scale image');
 			}
 
-			$ret = $image->writeImage($destination);
-
-			$image->clear();
-			$image->destroy();
-
-			return $ret;
-		} catch (ImagickException $exception) {
-			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
-
-			return false;
+			return $clone;
+		} catch (ImagickException $e) {
+			throw new ImageProcessingException('Failed to scale image', $e);
 		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function cloneAndCrop(ImageDimension $dstDim): ImageHandlerInterface
+	{
+		try {
+			$clone = clone $this;
+			if (!$clone->imImage->cropThumbnailImage($dstDim->width, $dstDim->height)) {
+				throw new ImagickException('Failed to crop image');
+			}
+
+			return $clone;
+		} catch (ImagickException $e) {
+			throw new ImageProcessingException('Failed to crop image', $e);
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function rotate(int $angle): ImageDimension
+	{
+		try {
+			if (!$this->imImage->rotateImage(new ImagickPixel(), $angle)) {
+				throw new ImagickException('Failed to rotate image');
+			}
+
+			return $this->getDimensions();
+		} catch (ImagickException $e) {
+			throw new ImageProcessingException('Failed to rotate image', $e);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getDimensions(): ImageDimension
+	{
+		try {
+			return new ImageDimension(
+				$this->imImage->getImageWidth(),
+				$this->imImage->getImageHeight(),
+			);
+		} catch (ImagickException $e) {
+			throw new ImageProcessingException('Could not determine dimensions of image', $e);
+		}
+	}
+
+	public function isLoaded(): bool
+	{
+		return $this->imImage !== null;
 	}
 }

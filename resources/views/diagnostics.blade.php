@@ -1,3 +1,10 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Lychee Diagnostics</title>
+	<meta charset="utf-8"/>
+</head>
+<body>
 <pre>
     Diagnostics
     -----------
@@ -21,3 +28,5 @@
     {{ $config }}
 @endforeach
 </pre>
+</body>
+</html>

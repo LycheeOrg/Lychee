@@ -2,23 +2,33 @@
 
 namespace App\Actions\User;
 
-use App\Exceptions\JsonError;
+use App\Exceptions\ConflictingPropertyException;
+use App\Exceptions\InvalidPropertyException;
+use App\Exceptions\ModelDBException;
 use App\Models\User;
 
 class Create
 {
-	public function do(array $data): bool
+	/**
+	 * @throws InvalidPropertyException
+	 * @throws ModelDBException
+	 */
+	public function do(string $username, string $password, bool $mayUpload, bool $isLocked): User
 	{
-		if (User::where('username', '=', $data['username'])->count()) {
-			throw new JsonError('username must be unique');
+		if (User::query()->where('username', '=', $username)->count() !== 0) {
+			throw new ConflictingPropertyException('Username already exists');
 		}
+		try {
+			$user = new User();
+			$user->may_upload = $mayUpload;
+			$user->is_locked = $isLocked;
+			$user->username = $username;
+			$user->password = bcrypt($password);
+		} catch (\InvalidArgumentException $e) {
+			throw new InvalidPropertyException('Could not hash password', $e);
+		}
+		$user->save();
 
-		$user = new User();
-		$user->upload = ($data['upload'] == '1');
-		$user->lock = ($data['lock'] == '1');
-		$user->username = $data['username'];
-		$user->password = bcrypt($data['password']);
-
-		return @$user->save();
+		return $user;
 	}
 }

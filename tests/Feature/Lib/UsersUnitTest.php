@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
+
 namespace Tests\Feature\Lib;
 
 use Illuminate\Testing\TestResponse;
@@ -7,41 +17,48 @@ use Tests\TestCase;
 
 class UsersUnitTest
 {
+	private TestCase $testCase;
+
+	public function __construct(TestCase $testCase)
+	{
+		$this->testCase = $testCase;
+	}
+
 	/**
 	 * List users.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $result
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
 	 *
 	 * @return TestResponse
 	 */
 	public function list(
-		TestCase &$testCase,
-		string $result = 'true'
-	) {
-		$response = $testCase->json('POST', '/api/User::List', []);
-		$response->assertStatus(200);
-		if ($result != 'true') {
-			$response->assertSee($result, false);
+		int $expectedStatusCode = 200,
+		?string $assertSee = null
+	): TestResponse {
+		$response = $this->testCase->postJson('/api/User::list');
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
 		}
 
 		return $response;
 	}
 
 	/**
-	 * @param TestCase $testCase
-	 * @param string   $result
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
 	 *
 	 * @return TestResponse
 	 */
 	public function init(
-		TestCase &$testCase,
-		string $result = 'true'
-	) {
-		$response = $testCase->json('POST', '/php/index.php', []);
-		$response->assertStatus(200);
-		if ($result != 'true') {
-			$response->assertSee($result, false);
+		int $expectedStatusCode = 200,
+		?string $assertSee = null
+	): TestResponse {
+		$response = $this->testCase->postJson('/php/index.php');
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
 		}
 
 		return $response;
@@ -50,124 +67,142 @@ class UsersUnitTest
 	/**
 	 * Add a new user.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $username
-	 * @param string   $password
-	 * @param string   $upload
-	 * @param string   $lock
-	 * @param string   $result
+	 * @param string      $username
+	 * @param string      $password
+	 * @param bool        $mayUpload
+	 * @param bool        $isLocked
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 *
+	 * @return TestResponse
 	 */
 	public function add(
-		TestCase &$testCase,
 		string $username,
 		string $password,
-		string $upload,
-		string $lock,
-		string $result = 'true'
-	) {
-		$response = $testCase->json('POST', '/api/User::Create', [
+		bool $mayUpload = true,
+		bool $isLocked = false,
+		int $expectedStatusCode = 201,
+		?string $assertSee = null
+	): TestResponse {
+		$response = $this->testCase->postJson('/api/User::create', [
 			'username' => $username,
 			'password' => $password,
-			'upload' => $upload,
-			'lock' => $lock,
+			'may_upload' => $mayUpload,
+			'is_locked' => $isLocked,
 		]);
-		$response->assertStatus(200);
-		$response->assertSee($result, false);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
+
+		return $response;
 	}
 
 	/**
 	 * Delete a user.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $result
+	 * @param int         $id
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 *
+	 * @return TestResponse
 	 */
 	public function delete(
-		TestCase &$testCase,
-		string $id,
-		string $result = 'true',
-		int $code = 200
-	) {
-		$response = $testCase->json('POST', '/api/User::Delete', [
+		int $id,
+		int $expectedStatusCode = 204,
+		?string $assertSee = null
+	): TestResponse {
+		$response = $this->testCase->postJson('/api/User::delete', [
 			'id' => $id,
 		]);
-		$response->assertStatus($code);
-		if ($result == 'true') {
-			$response->assertSee($result, false);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
 		}
+
+		return $response;
 	}
 
 	/**
 	 * Save modifications to a user.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $username
-	 * @param string   $password
-	 * @param string   $upload
-	 * @param string   $lock
-	 * @param string   $result
+	 * @param int         $id
+	 * @param string      $username
+	 * @param string      $password
+	 * @param bool        $mayUpload
+	 * @param bool        $isLocked
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 *
+	 * @return TestResponse
 	 */
 	public function save(
-		TestCase &$testCase,
-		string $id,
+		int $id,
 		string $username,
 		string $password,
-		string $upload,
-		string $lock,
-		string $result = 'true',
-		int $code = 200
-	) {
-		$response = $testCase->json('POST', '/api/User::Save', [
+		bool $mayUpload = true,
+		bool $isLocked = false,
+		int $expectedStatusCode = 204,
+		?string $assertSee = null
+	): TestResponse {
+		$response = $this->testCase->postJson('/api/User::save', [
 			'id' => $id,
 			'username' => $username,
 			'password' => $password,
-			'upload' => $upload,
-			'lock' => $lock,
+			'may_upload' => $mayUpload,
+			'is_locked' => $isLocked,
 		]);
-		$response->assertStatus($code);
-		if ($code == 200) {
-			$response->assertSee($result, false);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
 		}
+
+		return $response;
 	}
 
 	/**
 	 * Update email on user.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $email
-	 * @param string   $result
+	 * @param string|null $email
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 *
+	 * @return TestResponse
 	 */
 	public function update_email(
-		TestCase &$testCase,
-		string $email,
-		string $result = 'true',
-		int $code = 200
-	) {
-		$response = $testCase->json('POST', '/api/User::UpdateEmail', [
+		?string $email,
+		int $expectedStatusCode = 204,
+		?string $assertSee = null
+	): TestResponse {
+		$response = $this->testCase->postJson('/api/User::setEmail', [
 			'email' => $email,
 		]);
-		$response->assertStatus($code);
-		if ($code == 200) {
-			$response->assertSee($result, false);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
 		}
+
+		return $response;
 	}
 
 	/**
 	 * Get the email of a user.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $result
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 *
+	 * @return TestResponse
 	 */
 	public function get_email(
-		TestCase &$testCase,
-		string $result = 'true',
-		int $code = 200
-	) {
-		$response = $testCase->json('POST', '/api/User::GetEmail');
-		$response->assertStatus($code);
-		if ($code == 200) {
-			$response->assertSee($result, false);
+		int $expectedStatusCode = 200,
+		?string $assertSee = null
+	): TestResponse {
+		$response = $this->testCase->postJson('/api/User::getEmail');
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
 		}
+
+		return $response;
 	}
 }

@@ -4,15 +4,15 @@ namespace App\Actions\WebAuth;
 
 use App\Models\User;
 use DarkGhostHunter\Larapass\Facades\WebAuthn;
+use Webauthn\PublicKeyCredentialRequestOptions;
 
 class GenerateAuthentication
 {
-	public function do($user_id)
+	public function do(int $user_id): PublicKeyCredentialRequestOptions
 	{
-		// Find the user to assert, if there is any
-		$user = User::where('id', $user_id)->first();
+		/** @var User $user */
+		$user = User::query()->where('id', $user_id)->first();
 
-		// Create an assertion for the given user (or a blank one if not found);
 		return WebAuthn::generateAssertion($user);
 	}
 }

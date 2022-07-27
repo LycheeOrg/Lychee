@@ -1,44 +1,46 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Controllers;
 
 use App\Actions\Photo\Archive;
 use App\Actions\Photo\Create;
 use App\Actions\Photo\Delete;
 use App\Actions\Photo\Duplicate;
-use App\Actions\Photo\Prepare;
-use App\Actions\Photo\Random;
-use App\Actions\Photo\SetAlbum;
-use App\Actions\Photo\SetDescription;
-use App\Actions\Photo\SetLicense;
-use App\Actions\Photo\SetPublic;
-use App\Actions\Photo\SetStar;
-use App\Actions\Photo\SetTags;
-use App\Actions\Photo\SetTitle;
-use App\Exceptions\JsonError;
-use App\Exceptions\JsonWarning;
-use App\Facades\Helpers;
-use App\Http\Requests\AlbumRequests\AlbumIDRequest;
-use App\Http\Requests\PhotoRequests\PhotoIDRequest;
-use App\Http\Requests\PhotoRequests\PhotoIDsRequest;
+use App\Actions\Photo\Strategies\ImportMode;
+use App\Actions\User\Notify;
+use App\Contracts\InternalLycheeException;
+use App\Contracts\LycheeException;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\ModelDBException;
+use App\Exceptions\UnauthorizedException;
+use App\Facades\AccessControl;
+use App\Http\Requests\Photo\AddPhotoRequest;
+use App\Http\Requests\Photo\ArchivePhotosRequest;
+use App\Http\Requests\Photo\DeletePhotosRequest;
+use App\Http\Requests\Photo\DuplicatePhotosRequest;
+use App\Http\Requests\Photo\GetPhotoRequest;
+use App\Http\Requests\Photo\MovePhotosRequest;
+use App\Http\Requests\Photo\SetPhotoDescriptionRequest;
+use App\Http\Requests\Photo\SetPhotoLicenseRequest;
+use App\Http\Requests\Photo\SetPhotoPublicRequest;
+use App\Http\Requests\Photo\SetPhotosStarredRequest;
+use App\Http\Requests\Photo\SetPhotosTagsRequest;
+use App\Http\Requests\Photo\SetPhotosTitleRequest;
+use App\Image\TemporaryLocalFile;
+use App\Image\UploadedFile;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
-use App\Models\Logs;
 use App\Models\Photo;
-use App\Response;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use App\SmartAlbums\StarredAlbum;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class PhotoController extends Controller
 {
-	/**
-	 * @var SymLinkFunctions
-	 */
-	private $symLinkFunctions;
+	private SymLinkFunctions $symLinkFunctions;
 
 	/**
 	 * @param SymLinkFunctions $symLinkFunctions
@@ -50,242 +52,285 @@ class PhotoController extends Controller
 	}
 
 	/**
-	 * Given a photoID returns the data of the photo.
+	 * Given a photoID returns a photo.
 	 *
-	 * @param PhotoIDRequest $request
+	 * @param GetPhotoRequest $request
 	 *
-	 * @return ?array
+	 * @return Photo
 	 */
-	public function get(PhotoIDRequest $request, Prepare $prepare)
+	public function get(GetPhotoRequest $request): Photo
 	{
-		/** @var ?Photo $photo */
-		$photo = Photo::with('album')->findOrFail($request['photoID']);
-
-		return $prepare->do($photo);
+		return $request->photo();
 	}
 
 	/**
-	 * Return a random public photo (starred)
+	 * Returns a random public photo (starred)
 	 * This is used in the Frame Controller.
 	 *
-	 * @return array
+	 * @return Photo
+	 *
+	 * @throws ModelNotFoundException
+	 * @throws InternalLycheeException
+	 * @throws \InvalidArgumentException
+	 *
+	 * @noinspection PhpIncompatibleReturnTypeInspection
 	 */
-	public function getRandom(Random $random)
+	public function getRandom(): Photo
 	{
-		return $random->do();
+		// PHPStan does not understand that `firstOrFail` returns `Photo`, but assumes that it returns `Model`
+		// @phpstan-ignore-next-line
+		return StarredAlbum::getInstance()
+			->photos()
+			->inRandomOrder()
+			->firstOrFail();
 	}
 
 	/**
-	 * Add a function given an AlbumID.
+	 * Adds a photo given an AlbumID.
 	 *
-	 * @param Request $request
+	 * @param AddPhotoRequest $request
 	 *
-	 * @return false|string
+	 * @return Photo
+	 *
+	 * @throws LycheeException
+	 * @throws ModelNotFoundException
 	 */
-	public function add(AlbumIDRequest $request, Create $create)
+	public function add(AddPhotoRequest $request): Photo
 	{
-		try {
-			$request->validate(['0' => 'required']);
-		} catch (ValidationException $e) {
-			return Response::error('validation failed');
-		}
+		// This code is a nasty work-around which should not exist.
+		// PHP stores a temporary copy of the uploaded file without a file
+		// extension.
+		// Unfortunately, most of our methods pass around absolute file paths
+		// instead of proper `File` object.
+		// During the process we have a lot of code which tries to
+		// re-determine the MIME type of the file based on the file path.
+		// This is not only inefficient, but the original MIME type (of the
+		// uploaded file) gets lost on the way.
+		// As a work-around we store the uploaded file with a file extension.
+		// Unfortunately, we cannot simply re-name the file, because this
+		// might break due to permission problems for certain installation
+		// if the temporarily uploaded file is stored in the system-global
+		// temporary directory below another mount point or another Docker
+		// image than the Lychee installation.
+		// Hence, we must make a deep copy.
+		// TODO: Remove this code again, if all other TODOs regarding MIME and file handling are properly refactored and we have stopped using absolute file paths as the least common denominator to pass around files.
+		$uploadedFile = new UploadedFile($request->uploadedFile());
+		$copiedFile = new TemporaryLocalFile(
+			$uploadedFile->getOriginalExtension(),
+			$uploadedFile->getOriginalBasename()
+		);
+		$copiedFile->write($uploadedFile->read());
+		$uploadedFile->close();
+		$uploadedFile->delete();
+		// End of work-around
 
-		if (!$request->hasfile('0')) {
-			return Response::error('missing files');
-		}
+		// As the file has been uploaded, the (temporary) source file shall be
+		// deleted
+		$create = new Create(new ImportMode(
+			true,
+			Configs::getValueAsBool('skip_duplicates')
+		));
 
-		// Only process the first photo in the array
-		$file = $request->file('0');
-
-		$nameFile = [];
-		$nameFile['name'] = $file->getClientOriginalName();
-		$nameFile['type'] = $file->getMimeType();
-		$nameFile['tmp_name'] = $file->getPathName();
-
-		try {
-			$res = $create->add($nameFile, $request['albumID'], false, (Configs::get_value('skip_duplicates', '0') === '1'));
-		} catch (JsonWarning $e) {
-			$res = $e->render();
-		} catch (JsonError $e) {
-			$res = $e->render();
-		}
-
-		return $res;
+		return $create->add($copiedFile, $request->album());
 	}
 
 	/**
 	 * Change the title of a photo.
 	 *
-	 * @param Request $request
+	 * @param SetPhotosTitleRequest $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws LycheeException
 	 */
-	public function setTitle(PhotoIDsRequest $request, SetTitle $setTitle)
+	public function setTitle(SetPhotosTitleRequest $request): void
 	{
-		$request->validate(['title' => 'required|string|max:100']);
-
-		return $setTitle->do(explode(',', $request['photoIDs']), $request['title']) ? 'true' : 'false';
+		$title = $request->title();
+		/** @var Photo $photo */
+		foreach ($request->photos() as $photo) {
+			$photo->title = $title;
+			$photo->save();
+		}
 	}
 
 	/**
-	 * Set if a photo is a favorite.
+	 * Set the is-starred attribute of the given photos.
 	 *
-	 * @param Request $request
+	 * @param SetPhotosStarredRequest $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws LycheeException
 	 */
-	public function setStar(PhotoIDsRequest $request, SetStar $setStar)
+	public function setStar(SetPhotosStarredRequest $request): void
 	{
-		return $setStar->do(explode(',', $request['photoIDs']), $request['title']) ? 'true' : 'false';
+		/** @var Photo $photo */
+		foreach ($request->photos() as $photo) {
+			$photo->is_starred = $request->isStarred();
+			$photo->save();
+		}
 	}
 
 	/**
 	 * Set the description of a photo.
 	 *
-	 * @param Request $request
+	 * @param SetPhotoDescriptionRequest $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws LycheeException
 	 */
-	public function setDescription(PhotoIDRequest $request, SetDescription $setDescription)
+	public function setDescription(SetPhotoDescriptionRequest $request): void
 	{
-		$request->validate(['description' => 'string|nullable']);
-
-		return $setDescription->do($request['photoID'], $request['description'] ?? '') ? 'true' : 'false';
+		$request->photo()->description = $request->description();
+		$request->photo()->save();
 	}
 
 	/**
-	 * Define if a photo is public.
-	 * We do not advise the use of this and would rather see people use albums visibility
-	 * This would highly simplify the code if we remove this. Do we really want to keep it ?
+	 * Sets the `is_public` attribute of the given photo.
 	 *
-	 * @param Request $request
+	 * We do not advise the use of this and would rather see people use albums
+	 * visibility.
+	 * This would highly simplify the code if we remove this.
+	 * Do we really want to keep it ?
 	 *
-	 * @return string
+	 * @param SetPhotoPublicRequest $request
+	 *
+	 * @return void
+	 *
+	 * @throws LycheeException
 	 */
-	public function setPublic(PhotoIDRequest $request, SetPublic $setPublic)
+	public function setPublic(SetPhotoPublicRequest $request): void
 	{
-		return $setPublic->do($request['photoID']) ? 'true' : 'false';
+		$request->photo()->is_public = $request->isPublic();
+		$request->photo()->save();
 	}
 
 	/**
 	 * Set the tags of a photo.
 	 *
-	 * @param Request $request
+	 * @param SetPhotosTagsRequest $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws LycheeException
 	 */
-	public function setTags(PhotoIDsRequest $request, SetTags $setTags)
+	public function setTags(SetPhotosTagsRequest $request): void
 	{
-		$request->validate(['tags' => 'string|nullable']);
-
-		return $setTags->do(explode(',', $request['photoIDs']), $request['tags'] ?? '') ? 'true' : 'false';
-	}
-
-	/**
-	 * Define the album of a photo.
-	 *
-	 * @param Request $request
-	 *
-	 * @return string
-	 */
-	public function setAlbum(PhotoIDsRequest $request, SetAlbum $setAlbum)
-	{
-		$request->validate(['albumID' => 'required|string']);
-
-		return $setAlbum->execute(explode(',', $request['photoIDs']), $request['albumID']) ? 'true' : 'false';
-	}
-
-	/**
-	 * Define the license of the photo.
-	 *
-	 * @param Request $request
-	 *
-	 * @return false|string
-	 */
-	public function setLicense(PhotoIDRequest $request, SetLicense $setLicense)
-	{
-		$request->validate(['license' => 'required|string']);
-
-		$licenses = Helpers::get_all_licenses();
-
-		if (!in_array($request['license'], $licenses, true)) {
-			Logs::error(__METHOD__, __LINE__, 'License not recognised: ' . $request['license']);
-
-			return Response::error('License not recognised!');
+		$tags = $request->tags();
+		/** @var Photo $photo */
+		foreach ($request->photos() as $photo) {
+			$photo->tags = $tags;
+			$photo->save();
 		}
-
-		return $setLicense->do($request['photoID'], $request['license']) ? 'true' : 'false';
 	}
 
 	/**
-	 * Delete a photo.
+	 * Moves the photos to an album.
 	 *
-	 * @param Request $request
+	 * @param MovePhotosRequest $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws LycheeException
 	 */
-	public function delete(PhotoIDsRequest $request, Delete $delete)
+	public function setAlbum(MovePhotosRequest $request): void
 	{
-		return $delete->do(explode(',', $request['photoIDs'])) ? 'true' : 'false';
+		$notify = new Notify();
+		$album = $request->album();
+
+		/** @var Photo $photo */
+		foreach ($request->photos() as $photo) {
+			$photo->album_id = $album?->id;
+			// Avoid unnecessary DB request, when we access the album of a
+			// photo later (e.g. when a notification is sent).
+			$photo->setRelation('album', $album);
+			if ($album !== null) {
+				$photo->owner_id = $album->owner_id;
+			}
+			$photo->save();
+			$notify->do($photo);
+		}
 	}
 
 	/**
-	 * Duplicate a photo.
+	 * Sets the license of the photo.
+	 *
+	 * @param SetPhotoLicenseRequest $request
+	 *
+	 * @return void
+	 *
+	 * @throws LycheeException
+	 */
+	public function setLicense(SetPhotoLicenseRequest $request): void
+	{
+		$request->photo()->license = $request->license();
+		$request->photo()->save();
+	}
+
+	/**
+	 * Delete one or more photos.
+	 *
+	 * @param DeletePhotosRequest $request
+	 * @param Delete              $delete
+	 *
+	 * @return void
+	 *
+	 * @throws ModelDBException
+	 * @throws MediaFileOperationException
+	 */
+	public function delete(DeletePhotosRequest $request, Delete $delete): void
+	{
+		$fileDeleter = $delete->do($request->photoIDs());
+		App::terminating(fn () => $fileDeleter->do());
+	}
+
+	/**
+	 * Duplicates a set of photos.
 	 * Only the SQL entry is duplicated for space reason.
 	 *
-	 * @param Request $request
+	 * @param DuplicatePhotosRequest $request
+	 * @param Duplicate              $duplicate
 	 *
-	 * @return string
+	 * @return Photo|Collection the duplicated photo or collection of duplicated photos
+	 *
+	 * @throws ModelDBException
 	 */
-	public function duplicate(PhotoIDsRequest $request, Duplicate $duplicate)
+	public function duplicate(DuplicatePhotosRequest $request, Duplicate $duplicate): Photo|Collection
 	{
-		$request->validate(['albumID' => 'string']);
+		$duplicates = $duplicate->do($request->photos(), $request->album());
 
-		$duplicate->do(explode(',', $request['photoIDs']), $request['albumID'] ?? null);
-
-		return 'true';
+		return ($duplicates->count() === 1) ? $duplicates->first() : $duplicates;
 	}
 
 	/**
 	 * Return the archive of pictures or just a picture if only one.
 	 *
-	 * @param Request $request
+	 * @param ArchivePhotosRequest $request
+	 * @param Archive              $archive
 	 *
-	 * @return StreamedResponse|Response|string|void
+	 * @return SymfonyResponse
+	 *
+	 * @throws LycheeException
 	 */
-	public function getArchive(PhotoIDsRequest $request, Archive $archive)
+	public function getArchive(ArchivePhotosRequest $request, Archive $archive): SymfonyResponse
 	{
-		if (Storage::getDefaultDriver() === 's3') {
-			Logs::error(__METHOD__, __LINE__, 'getArchive not implemented for S3');
-
-			return 'false';
-		}
-
-		$request->validate([
-			'kind' => 'nullable|string',
-		]);
-
-		$photoIDs = explode(',', $request['photoIDs']);
-
-		$response = $archive->do($photoIDs, $request['kind']);
-
-		// Disable caching
-		$response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
-		$response->headers->set('Pragma', 'no-cache');
-		$response->headers->set('Expires', '0');
-
-		return $response;
+		return $archive->do($request->photos(), $request->sizeVariant());
 	}
 
 	/**
 	 * GET to manually clear the symlinks.
 	 *
-	 * @return string
+	 * @return void
 	 *
-	 * @throws \Exception
+	 * @throws ModelDBException
+	 * @throws LycheeException
 	 */
-	public function clearSymLink()
+	public function clearSymLink(): void
 	{
-		return $this->symLinkFunctions->clearSymLink();
+		if (!AccessControl::is_admin()) {
+			throw new UnauthorizedException('Admin privileges required');
+		}
+		$this->symLinkFunctions->clearSymLink();
 	}
 }

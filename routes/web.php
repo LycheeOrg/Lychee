@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\URL;
 */
 
 // We need that to force https everywhere
-//if (env('APP_ENV') === 'production') {
+// if (env('APP_ENV') === 'production') {
 
 if (config('app.env') === 'dev') {
 	URL::forceScheme('https');
@@ -25,10 +25,11 @@ if (config('app.env') === 'dev') {
 
 Route::feeds();
 
-Route::get('/', [IndexController::class, 'show'])->name('home')->middleware(['installed', 'migrated']);
-Route::get('/phpinfo', [IndexController::class, 'phpinfo'])->middleware('admin');
-Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware(['installed', 'migrated']);
-Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::class, 'force'])->name('migrate')->middleware('installed');
+Route::get('/', [IndexController::class, 'show'])->name('home')->middleware(['installation:complete', 'migration:complete']);
+Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware(['installation:complete', 'migration:complete']);
+Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::class, 'migrate'])
+	->name('migrate')
+	->middleware(['installation:complete', 'migration:incomplete']);
 
 /*
  * TODO see to add better redirection functionality later.
@@ -37,102 +38,12 @@ Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::clas
  *
  * Other ideas, redirection by album name, photo title...
  */
-Route::get('/r/{albumid}/{photoid}', [RedirectController::class, 'photo'])->middleware(['installed', 'migrated']);
-Route::get('/r/{albumid}', [RedirectController::class, 'album'])->middleware(['installed', 'migrated']);
+Route::get('/r/{albumID}/{photoID}', [RedirectController::class, 'photo'])->middleware(['installation:complete', 'migration:complete']);
+Route::get('/r/{albumID}', [RedirectController::class, 'album'])->middleware(['installation:complete', 'migration:complete']);
 
-Route::get('/view', [ViewController::class, 'view']);
+Route::get('/view', [ViewController::class, 'view'])->name('view')->middleware(['redirect-legacy-id']);
 Route::get('/demo', [DemoController::class, 'js']);
-Route::get('/frame', [FrameController::class, 'init'])->name('frame')->middleware(['installed', 'migrated']);
-
-Route::post('/php/index.php', [SessionController::class, 'init']); // entry point if options are not initialized
-
-Route::post('/api/Session::init', [SessionController::class, 'init']);
-Route::post('/api/Session::login', [SessionController::class, 'login']);
-Route::post('/api/Session::logout', [SessionController::class, 'logout']);
-
-Route::post('/api/webauthn::register/gen', [Administration\WebAuthController::class, 'GenerateRegistration'])->middleware('login');
-Route::post('/api/webauthn::register', [Administration\WebAuthController::class, 'VerifyRegistration'])->middleware('login');
-Route::post('/api/webauthn::login/gen', [Administration\WebAuthController::class, 'GenerateAuthentication']);
-Route::post('/api/webauthn::login', [Administration\WebAuthController::class, 'VerifyAuthentication']);
-Route::post('/api/webauthn::list', [Administration\WebAuthController::class, 'List'])->middleware('login');
-Route::post('/api/webauthn::delete', [Administration\WebAuthController::class, 'Delete'])->middleware('login');
-
-Route::post('/api/Albums::get', [AlbumsController::class, 'get']);
-Route::post('/api/Albums::getPositionData', [AlbumsController::class, 'getPositionData']);
-Route::post('/api/Albums::tree', [AlbumsController::class, 'tree']);
-
-Route::post('/api/Album::get', [AlbumController::class, 'get'])->middleware('read');
-Route::post('/api/Album::getPositionData', [AlbumController::class, 'getPositionData'])->middleware('read');
-Route::post('/api/Album::getPublic', [AlbumController::class, 'getPublic']);
-Route::post('/api/Album::add', [AlbumController::class, 'add'])->middleware('upload');
-Route::post('/api/Album::addByTags', [AlbumController::class, 'addByTags'])->middleware('upload');
-Route::post('/api/Album::setTitle', [AlbumController::class, 'setTitle'])->middleware('upload');
-Route::post('/api/Album::setNSFW', [AlbumController::class, 'setNSFW'])->middleware('upload');
-Route::post('/api/Album::setDescription', [AlbumController::class, 'setDescription'])->middleware('upload');
-Route::post('/api/Album::setCover', [AlbumController::class, 'setCover'])->middleware('upload');
-Route::post('/api/Album::setShowTags', [AlbumController::class, 'setShowTags'])->middleware('upload');
-Route::post('/api/Album::setPublic', [AlbumController::class, 'setPublic'])->middleware('upload');
-Route::post('/api/Album::delete', [AlbumController::class, 'delete'])->middleware('upload');
-Route::post('/api/Album::merge', [AlbumController::class, 'merge'])->middleware('upload');
-Route::post('/api/Album::move', [AlbumController::class, 'move'])->middleware('upload');
-Route::post('/api/Album::setLicense', [AlbumController::class, 'setLicense'])->middleware('upload');
-Route::post('/api/Album::setSorting', [AlbumController::class, 'setSorting'])->middleware('upload');
-Route::get('/api/Album::getArchive', [AlbumController::class, 'getArchive'])->middleware('read');
-
-Route::post('/api/Frame::getSettings', [FrameController::class, 'getSettings']);
-
-Route::post('/api/Photo::get', [PhotoController::class, 'get'])->middleware('read');
-Route::post('/api/Photo::getRandom', [PhotoController::class, 'getRandom']);
-Route::post('/api/Photo::setTitle', [PhotoController::class, 'setTitle'])->middleware('upload');
-Route::post('/api/Photo::setDescription', [PhotoController::class, 'setDescription'])->middleware('upload');
-Route::post('/api/Photo::setStar', [PhotoController::class, 'setStar'])->middleware('upload');
-Route::post('/api/Photo::setPublic', [PhotoController::class, 'setPublic'])->middleware('upload');
-Route::post('/api/Photo::setAlbum', [PhotoController::class, 'setAlbum'])->middleware('upload');
-Route::post('/api/Photo::setTags', [PhotoController::class, 'setTags'])->middleware('upload');
-Route::post('/api/Photo::add', [PhotoController::class, 'add'])->middleware('upload');
-Route::post('/api/Photo::delete', [PhotoController::class, 'delete'])->middleware('upload');
-Route::post('/api/Photo::duplicate', [PhotoController::class, 'duplicate'])->middleware('upload');
-Route::post('/api/Photo::setLicense', [PhotoController::class, 'setLicense'])->middleware('upload');
-Route::get('/api/Photo::getArchive', [PhotoController::class, 'getArchive'])->middleware('read');
-Route::get('/api/Photo::clearSymLink', [PhotoController::class, 'clearSymLink'])->middleware('admin');
-
-Route::post('/api/PhotoEditor::rotate', [PhotoEditorController::class, 'rotate'])->middleware('upload');
-
-Route::post('/api/Sharing::List', [Administration\SharingController::class, 'listSharing'])->middleware('upload');
-Route::post('/api/Sharing::ListUser', [Administration\SharingController::class, 'getUserList'])->middleware('upload');
-Route::post('/api/Sharing::Add', [Administration\SharingController::class, 'add'])->middleware('upload');
-Route::post('/api/Sharing::Delete', [Administration\SharingController::class, 'delete'])->middleware('upload');
-
-Route::post('/api/Settings::setLogin', [Administration\SettingsController::class, 'setLogin']);
-
-Route::post('/api/Import::url', [ImportController::class, 'url'])->middleware('upload');
-Route::post('/api/Import::server', [ImportController::class, 'server'])->middleware('admin');
-Route::post('/api/Import::serverCancel', [ImportController::class, 'serverCancel'])->middleware('admin');
-
-Route::post('/api/User::List', [Administration\UserController::class, 'list'])->middleware('upload');
-Route::post('/api/User::Save', [Administration\UserController::class, 'save'])->middleware('admin');
-Route::post('/api/User::Delete', [Administration\UserController::class, 'delete'])->middleware('admin');
-Route::post('/api/User::Create', [Administration\UserController::class, 'create'])->middleware('admin');
-Route::post('/api/User::UpdateEmail', [Administration\UserController::class, 'updateEmail'])->middleware('login');
-Route::post('/api/User::GetEmail', [Administration\UserController::class, 'getEmail'])->middleware('login');
-
-Route::post('/api/Logs', [Administration\LogController::class, 'display'])->middleware('admin');
-Route::post('/api/Logs::clearNoise', [Administration\LogController::class, 'clearNoise'])->middleware('admin');
-Route::post('/api/Diagnostics', [Administration\DiagnosticsController::class, 'get']);
-Route::post('/api/Diagnostics::getSize', [Administration\DiagnosticsController::class, 'get_size']);
-
-Route::get('/Logs', [Administration\LogController::class, 'display'])->middleware('admin');
-Route::get('/api/Logs::clear', [Administration\LogController::class, 'clear'])->middleware('admin');
-Route::get('/Diagnostics', [Administration\DiagnosticsController::class, 'show']);
-
-Route::get('/Update', [Administration\UpdateController::class, 'apply'])->middleware('admin');
-Route::post('/api/Update::Apply', [Administration\UpdateController::class, 'apply'])->middleware('admin');
-Route::post('/api/Update::Check', [Administration\UpdateController::class, 'check'])->middleware('admin');
-
-// unused
-Route::post('/api/Logs::clear', [Administration\LogController::class, 'clear'])->middleware('admin');
-
-Route::post('/api/search', [SearchController::class, 'search']);
+Route::get('/frame', [FrameController::class, 'init'])->name('frame')->middleware(['installation:complete', 'migration:complete']);
 
 // This route NEEDS to be the last one as it will catch anything else.
 Route::get('/{page}', [PageController::class, 'page']);

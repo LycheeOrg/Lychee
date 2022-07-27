@@ -28,7 +28,7 @@
     </ul >
     @endforeach
 
-    @if (!isset($errors) && $phpSupportInfo['supported'])
+    @if (empty($errors) && $phpSupportInfo['supported'])
     <div class="buttons">
         <a class="button" href="{{ route('install-perm') }}">
             Next<i class="fa fa-angle-right fa-fw" aria-hidden="true"></i>

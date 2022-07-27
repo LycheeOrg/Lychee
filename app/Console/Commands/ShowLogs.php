@@ -3,17 +3,21 @@
 namespace App\Console\Commands;
 
 use App\Console\Commands\Utilities\Colorize;
+use App\Contracts\ExternalLycheeException;
+use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\UnexpectedException;
 use App\Models\Logs;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
+use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class ShowLogs extends Command
 {
 	/**
 	 * Add color to the command line output.
-	 *
-	 * @var Colorize
 	 */
-	private $col;
+	private Colorize $col;
 
 	/**
 	 * The name and signature of the console command.
@@ -32,49 +36,63 @@ class ShowLogs extends Command
 	/**
 	 * Create a new command instance.
 	 *
-	 * @return void
+	 * @throws SymfonyConsoleException
 	 */
 	public function __construct(Colorize $colorize)
 	{
 		parent::__construct();
-
 		$this->col = $colorize;
 	}
 
 	/**
 	 * Execute the console command.
 	 *
-	 * @return mixed
+	 * @return int
+	 *
+	 * @throws ExternalLycheeException
 	 */
-	public function handle()
+	public function handle(): int
 	{
-		$action = $this->argument('action');
-		$n = (int) $this->argument('n');
-		$order = $this->argument('order');
+		try {
+			$action = strval($this->argument('action'));
+			$n = (int) $this->argument('n');
+			$order = $this->argument('order');
 
-		if ($action == 'clean') {
-			Logs::truncate();
-			$this->line($this->col->yellow('Log table has been emptied.'));
+			if ($action === 'clean') {
+				Logs::query()->truncate();
+				$this->line($this->col->yellow('Log table has been emptied.'));
 
-			return;
+				return 0;
+			}
+			// we are in the show part but in the case where 'show' has not been defined.
+			// as a results arguments are shifted: n <- action, order <- n.
+			elseif ($action !== 'show') {
+				$n = (int) $this->argument('action');
+				$order = strval($this->argument('n'));
+			}
+			$this->action_show($n, $order);
+
+			return 0;
+		} catch (SymfonyConsoleException|InternalLycheeException $e) {
+			throw new UnexpectedException($e);
 		}
-		// we are in the show part but in the case where 'show' has not be defined.
-		// as a results arguments are shifted: n <- action, order <- n.
-		elseif ($action != 'show') {
-			$n = (int) $this->argument('action');
-			$order = $this->argument('n');
-		}
-		$this->action_show($n, $order);
 	}
 
-	private function action_show($n, $order)
+	/**
+	 * @throws QueryBuilderException
+	 */
+	private function action_show(int $n, string $order): void
 	{
-		$order = ($order == 'ASC' || $order == 'DESC') ? $order : 'DESC';
+		$order = ($order === 'ASC' || $order === 'DESC') ? $order : 'DESC';
 
-		if (Logs::count() == 0) {
+		if (Logs::query()->count() === 0) {
 			$this->line($this->col->green('Everything looks fine, Lychee has not reported any problems!'));
 		} else {
-			$logs = Logs::orderBy('id', $order)->limit($n)->get();
+			/** @var Collection<Logs> $logs */
+			$logs = Logs::query()
+				->orderBy('id', $order)
+				->limit($n)
+				->get();
 			foreach ($logs->reverse() as $log) {
 				$this->line($this->col->magenta($log->created_at)
 					. ' -- '
@@ -82,23 +100,19 @@ class ShowLogs extends Command
 					. ' -- '
 					. $this->col->blue($log->function)
 					. ' -- '
-					. $this->col->green($log->line)
+					. $this->col->green((string) $log->line)
 					. ' -- ' . $log->text);
 			}
 		}
 	}
 
-	private function color_type($type)
+	private function color_type(string $type): string
 	{
-		switch ($type) {
-			case 'error  ':
-				return $this->col->red($type);
-			case 'warning':
-				return $this->col->yellow($type);
-			case 'notice ':
-				return $this->col->cyan($type);
-			default:
-				return $type;
-		}
+		return match ($type) {
+			'error  ' => $this->col->red($type),
+			'warning' => $this->col->yellow($type),
+			'notice ' => $this->col->cyan($type),
+			default => $type,
+		};
 	}
 }

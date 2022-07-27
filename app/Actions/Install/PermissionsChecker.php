@@ -2,17 +2,15 @@
 
 namespace App\Actions\Install;
 
+use function Safe\preg_match;
+use function Safe\substr;
+
 class PermissionsChecker
 {
-	/**
-	 * @var array
-	 */
-	protected $results = [];
+	protected array $results = [];
 
 	/**
 	 * Set the result array permissions and errors.
-	 *
-	 * @return mixed
 	 */
 	public function __construct()
 	{
@@ -31,7 +29,7 @@ class PermissionsChecker
 	/**
 	 * Check for the folders permissions.
 	 *
-	 * @param array $folders
+	 * @param string[] $folders
 	 *
 	 * @return array
 	 */
@@ -59,7 +57,7 @@ class PermissionsChecker
 			preg_match('/(!*)(.*)/', $permission, $f);
 			$return <<= 1;
 			// we overwrite the value if windows and executable check.
-			$return |= ($f[2] === 'is_executable' && $this->is_win()) ? 0 : !($f[2](base_path($folder)) xor ($f[1] == '!'));
+			$return |= ($f[2] === 'is_executable' && $this->is_win()) ? 0 : !($f[2](base_path($folder)) xor ($f[1] === '!'));
 		}
 
 		return $return;
@@ -68,17 +66,17 @@ class PermissionsChecker
 	/**
 	 * Add the file to the list of results.
 	 *
-	 * @param $folder
-	 * @param $permission
-	 * @param $isSet
+	 * @param string $folder
+	 * @param string $permission
+	 * @param int    $isSet
 	 */
-	private function addFile($folder, $permission, $isSet)
+	private function addFile(string $folder, string $permission, int $isSet): void
 	{
-		array_push($this->results['permissions'], [
+		$this->results['permissions'][] = [
 			'folder' => $folder,
 			'permission' => $this->map_perm_set($permission, $isSet),
 			'isSet' => $isSet,
-		]);
+		];
 
 		// set error if $isSet is positive
 		if ($isSet > 0) {
@@ -91,7 +89,7 @@ class PermissionsChecker
 	/**
 	 *  map.
 	 */
-	private function map_perm_set($permissions, $areSet): array
+	private function map_perm_set(string $permissions, int $areSet): array
 	{
 		$array_permission = array_reverse(explode('|', $permissions));
 		$ret = [];

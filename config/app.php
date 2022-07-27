@@ -65,7 +65,7 @@ return [
 
 	'url' => env('APP_URL', 'http://localhost'),
 
-	'asset_url' => env('ASSET_URL', null),
+	'asset_url' => env('ASSET_URL'),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -78,7 +78,7 @@ return [
 	|
 	*/
 
-	'timezone' => env('TIMEZONE', 'UTC'),
+	'timezone' => env('TIMEZONE', date('e')),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -108,6 +108,20 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Log DB SQL statements
+	|--------------------------------------------------------------------------
+	|
+	| If set to true, all SQL statements will be logged to a text file below
+	| storage.
+	| Only use it for debugging and development purposes as it slows down
+	| the performance of the application
+	|
+	*/
+
+	'db_log_sql' => (bool) env('DB_LOG_SQL', false),
+
+	/*
+	|--------------------------------------------------------------------------
 	| Encryption Key
 	|--------------------------------------------------------------------------
 	|
@@ -119,7 +133,7 @@ return [
 
 	'key' => env('APP_KEY'),
 
-	'cipher' => 'AES-256-CBC',
+	'cipher' => env('APP_CIPHER', 'AES-256-CBC'),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -202,7 +216,7 @@ return [
 		'Cookie' => Illuminate\Support\Facades\Cookie::class,
 		'Crypt' => Illuminate\Support\Facades\Crypt::class,
 		'DB' => Illuminate\Support\Facades\DB::class,
-		'DebugBar' => Barryvdh\Debugbar\Facade::class,
+		'DebugBar' => Barryvdh\Debugbar\Facades\Debugbar::class,
 		'Eloquent' => Illuminate\Database\Eloquent\Model::class,
 		'Event' => Illuminate\Support\Facades\Event::class,
 		'File' => Illuminate\Support\Facades\File::class,
@@ -214,7 +228,6 @@ return [
 		'Lang' => App\Facades\Lang::class,
 		'Log' => Illuminate\Support\Facades\Log::class,
 		'Mail' => Illuminate\Support\Facades\Mail::class,
-		'Markdown' => GrahamCampbell\Markdown\Facades\Markdown::class,
 		'Notification' => Illuminate\Support\Facades\Notification::class,
 		// 'Password' => Illuminate\Support\Facades\Password::class,
 		'Queue' => Illuminate\Support\Facades\Queue::class,

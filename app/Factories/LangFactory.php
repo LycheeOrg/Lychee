@@ -4,11 +4,18 @@ namespace App\Factories;
 
 use App\Contracts\Language;
 use App\Locale\English;
+use function Safe\scandir;
+use function Safe\substr;
 
 class LangFactory
 {
-	/** @var array */
-	private $langs = [];
+	/**
+	 * Maps a language code to the name of class which implements this
+	 * language.
+	 *
+	 * @var array<string, class-string<\App\Contracts\Language>>
+	 */
+	private array $langs = [];
 
 	public function __construct()
 	{
@@ -25,7 +32,7 @@ class LangFactory
 		}
 	}
 
-	public function exists($code)
+	public function exists(string $code): bool
 	{
 		return array_key_exists($code, $this->langs);
 	}
@@ -42,7 +49,10 @@ class LangFactory
 		return resolve(English::class);
 	}
 
-	public function getCodes()
+	/**
+	 * @return string[]
+	 */
+	public function getCodes(): array
 	{
 		return array_keys($this->langs);
 	}

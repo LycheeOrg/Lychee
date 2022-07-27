@@ -18,7 +18,7 @@ class DBSupportCheck implements DiagnosticCheckInterface
 
 		$found = false;
 		foreach ($db_possibilities as $db_possibility) {
-			if (config('database.default') == $db_possibility[0]) {
+			if (config('database.default') === $db_possibility[0]) {
 				$found = true;
 				if (!extension_loaded($db_possibility[1])) {
 					$errors[] = 'Error: ' . $db_possibility[0] . ' db driver selected and PHP ' . $db_possibility[1] . ' extension not activated';

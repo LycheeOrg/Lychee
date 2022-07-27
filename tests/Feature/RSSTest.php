@@ -1,91 +1,115 @@
 <?php
 
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
+
 namespace Tests\Feature;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use App\Models\Configs;
-use Illuminate\Http\UploadedFile;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
+use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\TestCase;
 
 class RSSTest extends TestCase
 {
-	public function testRSS0()
+	use RequiresEmptyPhotos;
+
+	protected PhotosUnitTest $photos_tests;
+	protected AlbumsUnitTest $albums_tests;
+
+	public function setUp(): void
 	{
-		// save initial value
-		$init_config_value = Configs::get_value('rss_enable');
+		parent::setUp();
+		$this->photos_tests = new PhotosUnitTest($this);
+		$this->albums_tests = new AlbumsUnitTest($this);
 
-		// set to 0
-		Configs::set('rss_enable', '0');
-		$this->assertEquals(Configs::get_value('rss_enable'), '0');
-
-		// check redirection
-		$response = $this->get('/feed');
-		$response->assertStatus(404);
-
-		Configs::set('Mod_Frame', $init_config_value);
+		$this->setUpRequiresEmptyPhotos();
 	}
 
-	public function testRSS1()
+	public function tearDown(): void
+	{
+		$this->tearDownRequiresEmptyPhotos();
+		parent::tearDown();
+	}
+
+	public function testRSS0(): void
 	{
 		// save initial value
-		$init_config_value = Configs::get_value('rss_enable');
-		$init_full_photo = Configs::get_value('full_photo');
+		$init_config_value = Configs::getValue('rss_enable');
 
-		// set to 0
-		Configs::set('rss_enable', '1');
-		Configs::set('full_photo', '0');
-		$this->assertEquals(Configs::get_value('rss_enable'), '1');
+		try {
+			// set to 0
+			Configs::set('rss_enable', '0');
+			static::assertEquals('0', Configs::getValue('rss_enable'));
 
-		// check redirection
-		$response = $this->get('/feed');
-		$response->assertStatus(200);
+			// check redirection
+			$response = $this->get('/feed');
+			$response->assertStatus(412);
+		} finally {
+			Configs::set('rss_enable', $init_config_value);
+		}
+	}
 
-		// now we start adding some stuff
-		$photos_tests = new PhotosUnitTest($this);
-		$albums_tests = new AlbumsUnitTest($this);
+	public function testRSS1(): void
+	{
+		// save initial value
+		$init_config_value = Configs::getValue('rss_enable');
+		$init_full_photo = Configs::getValue('full_photo');
 
-		// log as admin
-		AccessControl::log_as_id(0);
+		try {
+			// set to 0
+			Configs::set('rss_enable', '1');
+			Configs::set('full_photo', '0');
+			static::assertEquals('1', Configs::getValue('rss_enable'));
 
-		// create an album
-		$albumID = $albums_tests->add('0', 'test_album', 'true');
+			// check redirection
+			$response = $this->get('/feed');
+			$response->assertOk();
 
-		// upload a picture
-		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');
-		$file = new UploadedFile(
-			'public/uploads/import/night.jpg',
-			'night.jpg',
-			'image/jpeg',
-			null,
-			true
-		);
-		$photoID = $photos_tests->upload($file);
+			// log as admin
+			AccessControl::log_as_id(0);
 
-		// set it to public
-		$photos_tests->set_public($photoID);
+			// create an album
+			$albumID = $this->albums_tests->add(null, 'test_album')->offsetGet('id');
 
-		// try to get the RSS feed.
-		$response = $this->get('/feed');
-		$response->assertStatus(200);
+			// upload a picture
+			$photoID = $this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			)->offsetGet('id');
 
-		// set picture to private
-		$photos_tests->set_public($photoID);
+			// set it to public
+			$this->photos_tests->set_public($photoID, true);
 
-		// move picture to album
-		$photos_tests->set_album($albumID, $photoID, 'true');
-		$albums_tests->set_public($albumID, 1, 1, 1, 0, 1, 1, 'true');
+			// try to get the RSS feed.
+			$response = $this->get('/feed');
+			$response->assertOk();
 
-		// try to get the RSS feed.
-		$response = $this->get('/feed');
-		$response->assertStatus(200);
+			// set picture to private
+			$this->photos_tests->set_public($photoID, false);
 
-		$albums_tests->delete($albumID);
+			// move picture to album
+			$this->photos_tests->set_album($albumID, [$photoID]);
+			$this->albums_tests->set_protection_policy($albumID);
 
-		Configs::set('Mod_Frame', $init_config_value);
-		Configs::set('full_photo', $init_full_photo);
+			// try to get the RSS feed.
+			$response = $this->get('/feed');
+			$response->assertOk();
 
-		AccessControl::logout();
+			$this->albums_tests->delete([$albumID]);
+		} finally {
+			Configs::set('rss_enable', $init_config_value);
+			Configs::set('full_photo', $init_full_photo);
+
+			AccessControl::logout();
+		}
 	}
 }

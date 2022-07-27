@@ -2,23 +2,23 @@
 
 namespace App\Console\Commands;
 
-use App\Actions\Photo\Extensions\Constants;
-use App\Actions\Photo\Extensions\ImageEditing;
-use App\Actions\Photo\Extensions\VideoEditing;
-use App\Image\ImageHandlerInterface;
+use App\Contracts\ExternalLycheeException;
+use App\Contracts\LycheeException;
+use App\Contracts\SizeVariantFactory;
+use App\Exceptions\UnexpectedException;
+use App\Image\MediaFile;
 use App\Metadata\Extractor;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Builder;
+use Safe\Exceptions\InfoException;
+use function Safe\set_time_limit;
+use function Safe\sprintf;
+use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class VideoData extends Command
 {
-	use Constants;
-	use VideoEditing;
-	use ImageEditing;
-
-	public $imageHandler;
-
 	/**
 	 * The name and signature of the console command.
 	 *
@@ -34,130 +34,92 @@ class VideoData extends Command
 	protected $description = 'Generate video thumbnails and metadata if missing';
 
 	/**
-	 * @var Extractor
-	 */
-	private Extractor $metadataExtractor;
-
-	/**
-	 * Create a new command instance.
-	 *
-	 * @param Extractor $metadataExtractor
-	 *
-	 * @return void
-	 */
-	public function __construct(Extractor $metadataExtractor)
-	{
-		parent::__construct();
-
-		$this->imageHandler = app(ImageHandlerInterface::class);
-		$this->metadataExtractor = $metadataExtractor;
-	}
-
-	/**
 	 * Execute the console command.
 	 *
-	 * @return mixed
+	 * @return int
+	 *
+	 * @throws ExternalLycheeException
 	 */
-	public function handle()
+	public function handle(): int
 	{
-		set_time_limit($this->argument('timeout'));
-
-		$this->line(
-			sprintf(
-				'Will attempt to generate up to %s video thumbnails/metadata with a timeout of %d seconds...',
-				$this->argument('count'),
-				$this->argument('timeout')
-			)
-		);
-
-		$photos = Photo::whereIn('type', $this->getValidVideoTypes())
-			->where('width', '=', 0)
-			->take($this->argument('count'))
-			->get();
-
-		if (count($photos) == 0) {
-			$this->line('No videos require processing');
-
-			return 0;
-		}
-
-		/** @var Photo $photo */
-		foreach ($photos as $photo) {
-			$this->line('Processing ' . $photo->title . '...');
-			$url = Storage::path('big/' . $photo->url);
-
-			if ($photo->thumbUrl != '') {
-				$thumb = Storage::path('thumb/') . $photo->thumbUrl;
-				if (file_exists($thumb)) {
-					$urlBase = explode('.', $photo->url);
-					$thumbBase = explode('.', $photo->thumbUrl);
-					if ($urlBase[0] !== $thumbBase[0]) {
-						$photo->thumbUrl = $urlBase[0] . '.' . $thumbBase[1];
-						rename($thumb, Storage::path('thumb/') . $photo->thumbUrl);
-						$this->line('Renamed thumb to match the video file');
-					}
-				}
+		$timeout = intval($this->argument('timeout'));
+		$count = intval($this->argument('count'));
+		try {
+			try {
+				set_time_limit($timeout);
+			} catch (InfoException) {
+				// Silently do nothing, if `set_time_limit` is denied.
 			}
 
-			if (file_exists($url)) {
-				$info = $this->metadataExtractor->extract($url, $photo->type);
+			$this->line(
+				sprintf(
+					'Will attempt to generate up to %d video thumbnails/metadata with a timeout of %d seconds...',
+					$count,
+					$timeout
+				)
+			);
 
-				$updated = false;
-				if ($photo->width == 0 && $info['width'] !== 0) {
-					$photo->width = $info['width'];
-					$updated = true;
+			$photos = Photo::query()
+				->with(['size_variants'])
+				->whereIn('type', MediaFile::SUPPORTED_VIDEO_MIME_TYPES)
+				->whereDoesntHave('size_variants', function (Builder $query) {
+					$query->where('type', '=', SizeVariant::THUMB);
+				})
+				->take($count)
+				->get();
+
+			if (count($photos) === 0) {
+				$this->line('No videos require processing');
+
+				return 0;
+			}
+
+			// Initialize factory for size variants
+			$sizeVariantFactory = resolve(SizeVariantFactory::class);
+			/** @var Photo $photo */
+			foreach ($photos as $photo) {
+				$this->line('Processing ' . $photo->title . '...');
+				$originalSizeVariant = $photo->size_variants->getOriginal();
+				$file = $originalSizeVariant->getFile()->toLocalFile();
+
+				$info = Extractor::createFromFile($file);
+
+				if ($originalSizeVariant->width === 0 && $info->width !== 0) {
+					$originalSizeVariant->width = $info->width;
 				}
-				if ($photo->height == 0 && $info['height'] !== 0) {
-					$photo->height = $info['height'];
-					$updated = true;
+				if ($originalSizeVariant->height === 0 && $info->height !== 0) {
+					$originalSizeVariant->height = $info->height;
 				}
-				if ($photo->focal == '' && $info['focal'] !== '') {
-					$photo->focal = $info['focal'];
-					$updated = true;
+				if ($photo->focal === null) {
+					$photo->focal = $info->focal;
 				}
-				if ($photo->aperture == '' && $info['aperture'] !== '') {
-					$photo->aperture = $info['aperture'];
-					$updated = true;
+				if ($photo->aperture === null) {
+					$photo->aperture = $info->aperture;
 				}
-				if ($photo->latitude == null && $info['latitude'] !== null) {
-					$photo->latitude = $info['latitude'];
-					$updated = true;
+				if ($photo->latitude === null) {
+					$photo->latitude = $info->latitude;
 				}
-				if ($photo->longitude == null && $info['longitude'] !== null) {
-					$photo->longitude = $info['longitude'];
-					$updated = true;
+				if ($photo->longitude === null) {
+					$photo->longitude = $info->longitude;
 				}
-				if ($updated) {
+				if ($photo->isDirty()) {
 					$this->line('Updated metadata');
 				}
 
-				if ($photo->thumbUrl === '' || $photo->thumb2x === 0 || $photo->small_width === null || $photo->small2x_width === null) {
-					$frame_tmp = '';
-					try {
-						$frame_tmp = $this->extractVideoFrame($photo);
-					} catch (\Exception $exception) {
-						$this->line($exception->getMessage());
-					}
-					if ($frame_tmp !== '') {
-						$this->line('Extracted video frame for thumbnails');
-						if ($photo->thumbUrl === '' || $photo->thumb2x === 0) {
-							if (!$this->createThumb($photo, $frame_tmp)) {
-								$this->line('Could not create thumbnail for video');
-							}
-							$urlBase = explode('.', $photo->url);
-							$photo->thumbUrl = $urlBase[0] . '.jpeg';
-						}
-						if ($photo->small_width === null || $photo->small2x_width === null) {
-							$this->createSmallerImages($photo, $frame_tmp);
-						}
-						unlink($frame_tmp);
-					}
-				}
-			} else {
-				$this->line('File does not exist');
+				// TODO: Fix this line before PR; init needs more parameters
+				$sizeVariantFactory->init($photo);
+				$sizeVariantFactory->createSizeVariants();
+
+				$photo->save();
 			}
 
-			$photo->save();
+			return 0;
+		} catch (SymfonyConsoleException|LycheeException|\InvalidArgumentException $e) {
+			if ($e instanceof ExternalLycheeException) {
+				throw $e;
+			} else {
+				throw new UnexpectedException($e);
+			}
 		}
 	}
 }
