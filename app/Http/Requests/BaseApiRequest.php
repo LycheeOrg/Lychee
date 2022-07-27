@@ -15,6 +15,7 @@ use App\Models\Photo;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
+use App\Policies\UserPolicy;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -136,7 +137,7 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizeAlbumAccess(?AbstractAlbum $album): bool
 	{
-		return Gate::check('access', $album ?? Album::class);
+		return Gate::check(AlbumPolicy::ACCESS, $album ?? Album::class);
 	}
 
 	/**
@@ -168,7 +169,7 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizeAlbumWrite(?AbstractAlbum $album): bool
 	{
-		return Gate::check('edit', $album ?? Album::class);
+		return Gate::check(AlbumPolicy::EDIT, $album ?? Album::class);
 	}
 
 	/**
@@ -203,7 +204,7 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizeAlbumsWriteByIDs(array $albumIDs): bool
 	{
-		return Gate::check('upload', User::class) && $this->albumPolicy->editById(Auth::user(), $albumIDs);
+		return Gate::check(UserPolicy::UPLOAD, User::class) && $this->albumPolicy->editById(Auth::user(), $albumIDs);
 	}
 
 	/**
@@ -216,7 +217,7 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizePhotoVisible(?Photo $photo): bool
 	{
-		return Gate::check('access', $photo ?? Photo::class);
+		return Gate::check(PhotoPolicy::ACCESS, $photo ?? Photo::class);
 	}
 
 	/**
@@ -228,7 +229,7 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizePhotoDownload(Photo $photo): bool
 	{
-		return Gate::check('download', $photo);
+		return Gate::check(PhotoPolicy::DOWNLOAD, $photo);
 	}
 
 	/**
@@ -259,7 +260,7 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizePhotoWrite(Photo $photo): bool
 	{
-		return Gate::check('edit', $photo);
+		return Gate::check(PhotoPolicy::EDIT, $photo);
 	}
 
 	/**
@@ -290,7 +291,7 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizePhotosWriteByIDs(array $photoIDs): bool
 	{
-		return Gate::check('upload', User::class) && $this->photoPolicy->editByID(Auth::user(), $photoIDs);
+		return Gate::check(UserPolicy::UPLOAD, User::class) && $this->photoPolicy->editByID(Auth::user(), $photoIDs);
 	}
 
 	/**

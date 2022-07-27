@@ -21,6 +21,7 @@ use App\Models\Extensions\SizeVariants;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
+use App\Policies\PhotoPolicy;
 use App\Relations\HasManySizeVariants;
 use App\Relations\LinkedPhotoCollection;
 use Illuminate\Database\Eloquent\Collection;
@@ -336,7 +337,7 @@ class Photo extends Model implements HasRandomID
 	protected function getIsDownloadableAttribute(): bool
 	{
 		return
-			Gate::check('own', $this) ||
+			Gate::check(PhotoPolicy::OWN, $this) ||
 			($this->album_id !== null && $this->album->is_downloadable) ||
 			($this->album_id === null && Configs::getValueAsBool('downloadable'));
 	}
@@ -356,7 +357,7 @@ class Photo extends Model implements HasRandomID
 		$default = Configs::getValueAsBool('share_button_visible');
 
 		return
-			Gate::check('own', $this) ||
+			Gate::check(PhotoPolicy::OWN, $this) ||
 			($this->album_id !== null && $this->album->is_share_button_visible) ||
 			($this->album_id === null && $default);
 	}
@@ -441,7 +442,7 @@ class Photo extends Model implements HasRandomID
 		// The decision logic here is a merge of three formerly independent
 		// (and slightly different) approaches
 		if (
-			!Gate::check('own', $this) &&
+			!Gate::check(PhotoPolicy::OWN, $this) &&
 			!$this->isVideo() &&
 			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null) &&
 			(

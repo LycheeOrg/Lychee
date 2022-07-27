@@ -24,7 +24,10 @@ class AuthServiceProvider extends ServiceProvider
 	 */
 	protected $policies = [
 		User::class => UserPolicy::class,
+
 		Photo::class => PhotoPolicy::class,
+
+		// This ensures that all the kinds of albums are covered in the Gate mapping.
 		BaseSmartAlbum::class => AlbumPolicy::class,
 		BaseAlbum::class => AlbumPolicy::class,
 		BaseAlbumImpl::class => AlbumPolicy::class,
@@ -41,8 +44,6 @@ class AuthServiceProvider extends ServiceProvider
 	{
 		$this->registerPolicies();
 
-		Gate::define('admin', function (User $user) {
-			return $user->isAdmin();
-		});
+		Gate::define('admin', [UserPolicy::class, 'admin']);
 	}
 }

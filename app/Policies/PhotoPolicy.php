@@ -14,6 +14,13 @@ class PhotoPolicy
 	use HandlesAuthorization;
 
 	protected AlbumPolicy $albumPolicy;
+	protected UserPolicy $userPolicy;
+
+	// constants to be used in GATE
+	public const OWN = 'own';
+	public const ACCESS = 'access';
+	public const DOWNLOAD = 'download';
+	public const EDIT = 'edit';
 
 	/**
 	 * @throws FrameworkException
@@ -22,6 +29,7 @@ class PhotoPolicy
 	{
 		try {
 			$this->albumPolicy = resolve(AlbumPolicy::class);
+			$this->userPolicy = resolve(UserPolicy::class);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s provider component', $e);
 		}
@@ -37,7 +45,7 @@ class PhotoPolicy
 	 */
 	public function before(?User $user, $ability)
 	{
-		if ($user?->isAdmin()) {
+		if ($this->userPolicy->admin($user)) {
 			return true;
 		}
 	}

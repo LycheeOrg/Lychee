@@ -10,29 +10,29 @@ use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\AlbumBuilder;
-use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\TagAlbumBuilder;
 use App\Models\TagAlbum;
+use App\Policies\AlbumPolicy;
+use App\Policies\UserPolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Session;
 
 /**
  * Class AlbumAuthorisationProvider.
  */
 class AlbumAuthorisationProvider
 {
-	public const UNLOCKED_ALBUMS_SESSION_KEY = 'unlocked_albums';
-
 	protected AlbumFactory $albumFactory;
+	protected AlbumPolicy $albumPolicy;
 
-	public function __construct(AlbumFactory $albumFactory)
+	public function __construct(AlbumFactory $albumFactory, AlbumPolicy $albumPolicy)
 	{
 		$this->albumFactory = $albumFactory;
+		$this->albumPolicy = $albumPolicy;
 	}
 
 	/**
@@ -58,7 +58,7 @@ class AlbumAuthorisationProvider
 	{
 		$this->prepareModelQueryOrFail($query);
 
-		if (Gate::check('admin')) {
+		if (Gate::check(UserPolicy::ADMIN)) {
 			return $query;
 		}
 
@@ -113,7 +113,7 @@ class AlbumAuthorisationProvider
 	 */
 	public function appendAccessibilityConditions(BaseBuilder $query): BaseBuilder
 	{
-		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
+		$unlockedAlbumIDs = $this->albumPolicy->getUnlockedAlbumIDs();
 		$userID = Auth::id();
 
 		try {
@@ -170,11 +170,11 @@ class AlbumAuthorisationProvider
 	{
 		$this->prepareModelQueryOrFail($query);
 
-		if (Gate::check('admin')) {
+		if (Gate::check(UserPolicy::ADMIN)) {
 			return $query;
 		}
 
-		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
+		$unlockedAlbumIDs = $this->albumPolicy->getUnlockedAlbumIDs();
 		$userID = Auth::id();
 
 		// We must wrap everything into an outer query to avoid any undesired
@@ -271,7 +271,7 @@ class AlbumAuthorisationProvider
 		}
 
 		// ... such that there are no blocked albums on the path to the album.
-		if (Gate::check('admin')) {
+		if (Gate::check(UserPolicy::ADMIN)) {
 			return $query;
 		} else {
 			return $query->whereNotExists(function (BaseBuilder $q) use ($origin) {
@@ -323,7 +323,7 @@ class AlbumAuthorisationProvider
 			throw new LycheeInvalidArgumentException('$originLeft and $originRight must simultaneously either be integers, strings or null');
 		}
 
-		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
+		$unlockedAlbumIDs = $this->albumPolicy->getUnlockedAlbumIDs();
 		$userID = Auth::id();
 
 		try {
@@ -384,24 +384,6 @@ class AlbumAuthorisationProvider
 		} catch (\InvalidArgumentException $e) {
 			throw new QueryBuilderException($e);
 		}
-	}
-
-	/**
-	 * Pushes an album onto the stack of unlocked albums.
-	 *
-	 * @param BaseAlbum|BaseAlbumImpl $album
-	 */
-	public function unlock(BaseAlbum|BaseAlbumImpl $album): void
-	{
-		Session::push(self::UNLOCKED_ALBUMS_SESSION_KEY, $album->id);
-	}
-
-	/**
-	 * @return array
-	 */
-	private function getUnlockedAlbumIDs(): array
-	{
-		return Session::get(self::UNLOCKED_ALBUMS_SESSION_KEY, []);
 	}
 
 	/**

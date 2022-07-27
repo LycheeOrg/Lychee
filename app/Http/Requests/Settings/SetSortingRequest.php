@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Settings;
 
 use App\Http\Requests\BaseApiRequest;
+use App\Policies\UserPolicy;
 use App\Rules\AlbumSortingRule;
 use App\Rules\OrderRule;
 use App\Rules\PhotoSortingRule;
@@ -25,7 +26,7 @@ class SetSortingRequest extends BaseApiRequest
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check('admin');
+		return Gate::check(UserPolicy::ADMIN);
 	}
 
 	/**

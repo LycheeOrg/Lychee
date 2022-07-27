@@ -6,6 +6,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasUser;
 use App\Http\Requests\Traits\HasUserTrait;
 use App\Models\User;
+use App\Policies\UserPolicy;
 use App\Rules\IntegerIDRule;
 use Illuminate\Support\Facades\Gate;
 
@@ -24,7 +25,7 @@ class DeleteUserRequest extends BaseApiRequest implements HasUser
 		// request is made by an admin during authentication (see
 		// `routes/web.php`).
 		// But better safe than sorry.
-		return Gate::check('admin');
+		return Gate::check(UserPolicy::ADMIN);
 	}
 
 	/**

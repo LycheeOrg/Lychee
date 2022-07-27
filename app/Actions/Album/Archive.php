@@ -10,6 +10,7 @@ use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\Models\TagAlbum;
+use App\Policies\PhotoPolicy;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -180,7 +181,7 @@ class Archive extends Action
 				if (
 					// TODO : Consolidate this in policy
 					($album instanceof BaseSmartAlbum || $album instanceof TagAlbum) &&
-					!Gate::check('own', $photo) &&
+					!Gate::check(PhotoPolicy::OWN, $photo) &&
 					!($photo->album_id === null ? $album->is_downloadable : $photo->album->is_downloadable)
 				) {
 					continue;
@@ -232,6 +233,6 @@ class Archive extends Action
 		return
 			$album->is_downloadable ||
 			($album instanceof BaseSmartAlbum && Auth::check()) ||
-			($album instanceof BaseAlbum && Gate::check('own', $album));
+			($album instanceof BaseAlbum && Gate::check(PhotoPolicy::OWN, $album));
 	}
 }

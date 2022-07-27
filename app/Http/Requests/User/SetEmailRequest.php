@@ -4,6 +4,7 @@ namespace App\Http\Requests\User;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Models\User;
+use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 
 class SetEmailRequest extends BaseApiRequest
@@ -14,7 +15,7 @@ class SetEmailRequest extends BaseApiRequest
 
 	public function authorize(): bool
 	{
-		return Gate::check('editSettings', User::class);
+		return Gate::check(UserPolicy::EDIT_SETTINGS, User::class);
 	}
 
 	public function rules(): array

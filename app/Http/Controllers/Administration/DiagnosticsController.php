@@ -12,6 +12,7 @@ use App\Contracts\InternalLycheeException;
 use App\Contracts\LycheeException;
 use App\DTO\DiagnosticInfo;
 use App\Exceptions\Internal\FrameworkException;
+use App\Policies\UserPolicy;
 use Gate;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
@@ -23,7 +24,7 @@ class DiagnosticsController extends Controller
 
 	private function isAuthorized(): bool
 	{
-		return Gate::check('admin') || Authorization::isAdminNotRegistered();
+		return Gate::check(UserPolicy::ADMIN) || Authorization::isAdminNotRegistered();
 	}
 
 	/**

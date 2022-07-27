@@ -9,6 +9,7 @@ use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Photo;
+use App\Policies\UserPolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
@@ -48,7 +49,7 @@ class PhotoAuthorisationProvider
 	{
 		$this->prepareModelQueryOrFail($query, false, true, true);
 
-		if (Gate::check('admin')) {
+		if (Gate::check(UserPolicy::ADMIN)) {
 			return $query;
 		}
 
@@ -112,7 +113,7 @@ class PhotoAuthorisationProvider
 				->where('albums._rgt', '<=', $origin->_rgt);
 		}
 
-		if (Gate::check('admin')) {
+		if (Gate::check(UserPolicy::ADMIN)) {
 			return $query;
 		} else {
 			return $query->where(function (Builder $query) use ($origin) {

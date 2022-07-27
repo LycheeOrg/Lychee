@@ -11,6 +11,7 @@ use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
+use App\Policies\AlbumPolicy;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Collection as BaseCollection;
@@ -61,7 +62,7 @@ class Top
 		$smartAlbums = $this->albumFactory
 			->getAllBuiltInSmartAlbums(false)
 			->map(
-				fn ($smartAlbum) => Gate::check('see', $smartAlbum) ? $smartAlbum : null
+				fn ($smartAlbum) => Gate::check(AlbumPolicy::VISIBLE, $smartAlbum) ? $smartAlbum : null
 			);
 
 		$tagAlbumQuery = $this->albumAuthorisationProvider

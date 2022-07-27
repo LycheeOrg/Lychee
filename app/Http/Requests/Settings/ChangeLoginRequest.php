@@ -7,6 +7,7 @@ use App\Http\Requests\Contracts\HasPassword;
 use App\Http\Requests\Contracts\HasUsername;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Models\User;
+use App\Policies\UserPolicy;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -26,7 +27,7 @@ class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check('editSettings', User::class);
+		return Gate::check(UserPolicy::EDIT_SETTINGS, User::class);
 	}
 
 	/**

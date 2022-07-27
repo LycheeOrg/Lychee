@@ -6,6 +6,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPhoto;
 use App\Http\Requests\Traits\HasPhotoTrait;
 use App\Models\Photo;
+use App\Policies\PhotoPolicy;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
@@ -18,7 +19,7 @@ class GetPhotoRequest extends BaseApiRequest implements HasPhoto
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check('access', $this->photo);
+		return Gate::check(PhotoPolicy::ACCESS, $this->photo);
 	}
 
 	/**

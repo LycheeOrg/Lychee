@@ -18,6 +18,7 @@ use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use function Safe\substr;
 
 /**
  * App\Models\User.
@@ -113,16 +114,6 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	}
 
 	/**
-	 * Property whether user is an Admin.
-	 *
-	 * @return bool
-	 */
-	public function isAdmin(): bool
-	{
-		return $this->id === 0;
-	}
-
-	/**
 	 * Used by Larapass.
 	 *
 	 * @return string
@@ -139,7 +130,8 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	public function name(): string
 	{
-		return $this->isAdmin() ? 'Admin' : $this->username;
+		// If strings starts by '$2y$', it is very likely that it's a blowfish hash.
+		return substr($this->username, 0, 4) === '$2y$' ? 'Admin' : $this->username;
 	}
 
 	/**

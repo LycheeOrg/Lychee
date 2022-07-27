@@ -9,6 +9,7 @@ use App\Exceptions\Internal\NotImplementedException;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Gate;
 
@@ -81,7 +82,7 @@ class HasManyPhotosRecursively extends HasManyPhotos
 	{
 		/** @var Album|null $album */
 		$album = $this->parent;
-		if ($album === null || !Gate::check('access', $album)) {
+		if ($album === null || !Gate::check(AlbumPolicy::ACCESS, $album)) {
 			return $this->related->newCollection();
 		} else {
 			return parent::getResults();
@@ -110,7 +111,7 @@ class HasManyPhotosRecursively extends HasManyPhotos
 		/** @var Album $album */
 		$album = $albums[0];
 
-		if (!Gate::check('access', $album)) {
+		if (!Gate::check(AlbumPolicy::ACCESS, $album)) {
 			$album->setRelation($relation, $this->related->newCollection());
 		} else {
 			$sorting = $album->getEffectiveSorting();

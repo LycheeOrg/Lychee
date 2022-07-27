@@ -9,6 +9,7 @@ use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\Sharing\DeleteSharingRequest;
 use App\Http\Requests\Sharing\SetSharingRequest;
 use App\Models\User;
+use App\Policies\UserPolicy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -31,7 +32,7 @@ class SharingController extends Controller
 	{
 		// Note: This test is part of the request validation for the other
 		// methods of this class.
-		if (!Gate::check('upload', User::class)) {
+		if (!Gate::check(UserPolicy::UPLOAD, User::class)) {
 			throw new UnauthorizedException('Upload privilege required');
 		}
 

@@ -2,6 +2,7 @@
 
 namespace App\Auth;
 
+use App\Actions\User\ResetAdmin;
 use App\Exceptions\ModelDBException;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -24,7 +25,7 @@ class Authorization
 		if ($adminUser !== null) {
 			return $adminUser->password === '' || $adminUser->username === '';
 		}
-		self::resetAdmin();
+		resolve(ResetAdmin::class)->do();
 
 		return true;
 	}
@@ -49,23 +50,5 @@ class Authorization
 		}
 
 		return false;
-	}
-
-	/**
-	 * Reset admin user: set username and password to empty string ''.
-	 *
-	 * @return void
-	 *
-	 * @throws ModelDBException
-	 */
-	public static function resetAdmin(): void
-	{
-		/** @var User $user */
-		$user = User::query()->findOrNew(0);
-		$user->incrementing = false; // disable auto-generation of ID
-		$user->id = 0;
-		$user->username = '';
-		$user->password = '';
-		$user->save();
 	}
 }

@@ -9,6 +9,10 @@ class UserPolicy
 {
 	use HandlesAuthorization;
 
+	public const ADMIN = 'admin';
+	public const UPLOAD = 'upload';
+	public const EDIT_SETTINGS = 'editSettings';
+
 	/**
 	 * Perform pre-authorization checks.
 	 *
@@ -19,9 +23,21 @@ class UserPolicy
 	 */
 	public function before(?User $user, $ability)
 	{
-		if ($user?->isAdmin()) {
+		if ($this->admin($user)) {
 			return true;
 		}
+	}
+
+	/**
+	 * This defines if the user is admin.
+	 *
+	 * @param User|null $user
+	 *
+	 * @return bool
+	 */
+	public function admin(?User $user): bool
+	{
+		return $user?->id === 0;
 	}
 
 	/**

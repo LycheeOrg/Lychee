@@ -16,7 +16,6 @@ use App\Models\User;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
 
 class AlbumPolicy
@@ -24,6 +23,15 @@ class AlbumPolicy
 	use HandlesAuthorization;
 
 	protected UserPolicy $userPolicy;
+
+	public const UNLOCKED_ALBUMS_SESSION_KEY = 'unlocked_albums';
+
+	// constants to be used in GATE
+	public const OWN = 'own';
+	public const ACCESS = 'access';
+	public const DOWNLOAD = 'download';
+	public const EDIT = 'edit';
+	public const VISIBLE = 'visible';
 
 	/**
 	 * @throws FrameworkException
@@ -47,7 +55,7 @@ class AlbumPolicy
 	 */
 	public function before(?User $user, $ability)
 	{
-		if ($user?->isAdmin()) {
+		if ($this->userPolicy->admin($user)) {
 			return true;
 		}
 	}
@@ -111,7 +119,7 @@ class AlbumPolicy
 				throw LycheeAssertionError::createFromUnexpectedException($e);
 			}
 		} elseif ($album instanceof BaseSmartAlbum) {
-			return $this->see($user, $album);
+			return $this->visible($user, $album);
 		} else {
 			// Should never happen
 			return false;
@@ -136,26 +144,6 @@ class AlbumPolicy
 
 		return $this->own($user, $baseAlbum) ||
 			$baseAlbum->is_downloadable;
-	}
-
-	/**
-	 * Check whether the given album has previously been unlocked.
-	 *
-	 * @param BaseAlbum|BaseAlbumImpl $album
-	 *
-	 * @return bool
-	 */
-	public function unlocked(BaseAlbum|BaseAlbumImpl $album): bool
-	{
-		return in_array($album->id, $this->getUnlockedAlbumIDs(), true);
-	}
-
-	/**
-	 * @return array
-	 */
-	private function getUnlockedAlbumIDs(): array
-	{
-		return Session::get(AlbumAuthorisationProvider::UNLOCKED_ALBUMS_SESSION_KEY, []);
 	}
 
 	/**
@@ -253,9 +241,29 @@ class AlbumPolicy
 	 *
 	 * @return bool true, if the album is visible
 	 */
-	public function see(?User $user, BaseSmartAlbum $smartAlbum): bool
+	public function visible(?User $user, BaseSmartAlbum $smartAlbum): bool
 	{
 		return ($user !== null && $this->userPolicy->upload($user)) ||
 			$smartAlbum->is_public;
+	}
+
+	/**
+	 * Check whether the given album has previously been unlocked.
+	 *
+	 * @param BaseAlbum|BaseAlbumImpl $album
+	 *
+	 * @return bool
+	 */
+	public function unlocked(BaseAlbum|BaseAlbumImpl $album): bool
+	{
+		return in_array($album->id, $this->getUnlockedAlbumIDs(), true);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getUnlockedAlbumIDs(): array
+	{
+		return Session::get(self::UNLOCKED_ALBUMS_SESSION_KEY, []);
 	}
 }

@@ -8,6 +8,7 @@ use App\Http\Requests\Contracts\HasUserIDs;
 use App\Http\Requests\Traits\HasAlbumIDsTrait;
 use App\Http\Requests\Traits\HasUserIDsTrait;
 use App\Models\User;
+use App\Policies\UserPolicy;
 use App\Rules\IntegerIDRule;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
@@ -22,7 +23,7 @@ class SetSharingRequest extends BaseApiRequest implements HasAlbumIDs, HasUserID
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check('upload', User::class);
+		return Gate::check(UserPolicy::UPLOAD, User::class);
 	}
 
 	/**

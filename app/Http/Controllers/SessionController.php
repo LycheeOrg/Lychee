@@ -16,6 +16,7 @@ use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\User;
+use App\Policies\UserPolicy;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -67,7 +68,7 @@ class SessionController extends Controller
 
 		// Check if login credentials exist and login if they don't
 		if (Auth::check() || Authorization::loginAsAdminIfNotRegistered()) {
-			if (Gate::check('admin')) {
+			if (Gate::check(UserPolicy::ADMIN)) {
 				$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 				$return['admin'] = true;
 				$return['may_upload'] = true; // not necessary

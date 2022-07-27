@@ -9,6 +9,8 @@ use App\Models\Album;
 use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\Thumb;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
+use App\Policies\UserPolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -178,7 +180,7 @@ class HasAlbumThumb extends Relation
 			->orderBy('photos.is_starred', 'desc')
 			->orderBy('photos.' . $this->sorting->column, $this->sorting->order)
 			->limit(1);
-		if (!Gate::check('admin')) {
+		if (!Gate::check(UserPolicy::ADMIN)) {
 			$bestPhotoIDSelect->where(function (Builder $query2) {
 				$this->photoAuthorisationProvider->appendSearchabilityConditions(
 					$query2->getQuery(),
@@ -207,7 +209,7 @@ class HasAlbumThumb extends Relation
 			$builder->select(['covered_albums.id AS album_id'])
 				->addSelect(['photo_id' => $bestPhotoIDSelect])
 				->whereIn('covered_albums.id', $albumKeys);
-			if ($user?->isAdmin() !== true) {
+			if (!Gate::check(UserPolicy::ADMIN)) {
 				$builder->where(function (BaseBuilder $q) {
 					$this->albumAuthorisationProvider->appendAccessibilityConditions($q);
 				});
@@ -287,7 +289,7 @@ class HasAlbumThumb extends Relation
 	{
 		/** @var Album|null $album */
 		$album = $this->parent;
-		if ($album === null || !Gate::check('access', $album)) {
+		if ($album === null || !Gate::check(AlbumPolicy::ACCESS, $album)) {
 			return null;
 		}
 
