@@ -217,7 +217,7 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizePhotoVisible(?Photo $photo): bool
 	{
-		return Gate::check(PhotoPolicy::ACCESS, $photo ?? Photo::class);
+		return Gate::check(PhotoPolicy::VISIBLE, $photo ?? Photo::class);
 	}
 
 	/**

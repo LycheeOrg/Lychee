@@ -18,7 +18,7 @@ class PhotoPolicy
 
 	// constants to be used in GATE
 	public const OWN = 'own';
-	public const ACCESS = 'access';
+	public const VISIBLE = 'visible';
 	public const DOWNLOAD = 'download';
 	public const EDIT = 'edit';
 
@@ -65,14 +65,14 @@ class PhotoPolicy
 	}
 
 	/**
-	 * Defines whether current user has access to provided album.
+	 * Defines whether the photo is visible to the current user.
 	 *
 	 * @param User|null $user
 	 * @param Photo     $photo
 	 *
 	 * @return bool
 	 */
-	public function access(?User $user, Photo $photo): bool
+	public function visible(?User $user, Photo $photo): bool
 	{
 		return $this->own($user, $photo) ||
 		$photo->is_public ||
@@ -104,7 +104,7 @@ class PhotoPolicy
 	 */
 	public function download(?User $user, Photo $photo): bool
 	{
-		if (!$this->access($user, $photo)) {
+		if (!$this->visible($user, $photo)) {
 			return false;
 		}
 
