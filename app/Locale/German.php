@@ -445,7 +445,7 @@ final class German implements Language
 			'UPLOAD_IMPORT' => 'Importieren',
 			'UPLOAD_IMPORT_SERVER' => 'Importieren von Server',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Der Ordner ist leer oder enthält keine lesbaren Dateien zum Verarbeiten. Schauen Sie bitte ins Protokoll (Einstellungen/Protokoll ansehen).',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Importiert alle Fotos, Ordner und Unterordernern in den folgenden absoluten Pfaden (auf dem Server). Mehrere Pfade können mit Leerzeichen getrennt werden, mit \\ können Sie ein Leerzeichen im Pfad verwenden.',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Importiert alle Fotos, Ordner und Unterordner in den folgenden absoluten Pfaden (auf dem Server). Mehrere Pfade können mit Leerzeichen getrennt werden; mit \\ können Sie ein Leerzeichen im Pfad verwenden.',
 			'UPLOAD_ABSOLUTE_PATH' => 'Absolute Pfade zu Verzeichnissen, mit Leerzeichen getrennt',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Konnte Import nicht starten, weil der Ordner leer ist.',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Originale löschen',
