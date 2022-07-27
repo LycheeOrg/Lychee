@@ -132,7 +132,7 @@ class UpdateController extends Controller
 		// 4. Try to login the normal way.
 		//
 		// TODO: Step 2 will become unnecessary once admin registration has become part of the installation routine; after that the case that no admin is registered cannot occur anymore
-		// TODO: Step 3 will become unnecessary once the admin user of any existing installation has at least login once and the admin user has therewith migrated to use a non-hashed user name
+		// TODO: Step 3 will become unnecessary once the admin user of any existing installation has at least logged in once and the admin user has therewith migrated to use a non-hashed user name
 		$isLoggedIn = Auth::check();
 		$isLoggedIn = $isLoggedIn || Authorization::loginAsAdminIfNotRegistered();
 		$isLoggedIn = $isLoggedIn || Legacy::loginAsAdmin($request->input('username', ''), $request->input('password', ''), $request->ip());
