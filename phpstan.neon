@@ -51,7 +51,5 @@ parameters:
 		- '#Property .* \(App\\Models\\.*(\|null)?\) does not accept (Illuminate\\Database\\Eloquent\\Collection<Illuminate\\Database\\Eloquent\\Model>\|)?Illuminate\\Database\\Eloquent\\Model(\|null)?.#'
 		- '#Property .* \(Illuminate\\Database\\Eloquent\\Collection<App\\Models\\.*>\) does not accept Illuminate\\Database\\Eloquent\\Collection<Illuminate\\Database\\Eloquent\\Model>(\|Illuminate\\Database\\Eloquent\\Model)?.#'
 
-		- '#Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable::\$.*.#'
-
 		# False positive as stub code for PHP has not yet been updated to 2nd parameter, see https://github.com/php/doc-en/issues/1529 and https://www.php.net/imagick.writeimagefile
 		- '#Method Imagick::writeImageFile\(\) invoked with 2 parameters, 1 required#'

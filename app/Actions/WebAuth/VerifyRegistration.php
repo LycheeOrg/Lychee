@@ -2,6 +2,7 @@
 
 namespace App\Actions\WebAuth;
 
+use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
 use App\Models\User;
 use DarkGhostHunter\Larapass\Facades\WebAuthn;
@@ -17,7 +18,7 @@ class VerifyRegistration
 		/**
 		 * @var User
 		 */
-		$user = Auth::authenticate();
+		$user = Auth::user() ?? throw new UnauthenticatedException('User cannot be null');
 
 		// okay.
 		/** @var false|\Webauthn\PublicKeyCredentialSource */

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Exceptions\ModelDBException;
+use App\Exceptions\UnauthenticatedException;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
@@ -149,7 +150,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	public function delete(): bool
 	{
 		$now = Carbon::now();
-		$newOwnerID = Auth::authenticate()->id;
+		$newOwnerID = Auth::id() ?? throw new UnauthenticatedException('ID cannot be null');
 
 		/** @var HasMany[] $ownershipRelations */
 		$ownershipRelations = [$this->photos(), $this->albums()];

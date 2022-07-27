@@ -7,6 +7,7 @@ use App\Contracts\InternalLycheeException;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\AlbumTree;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
+use App\Exceptions\UnauthenticatedException;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use Illuminate\Support\Facades\Auth;
@@ -62,7 +63,7 @@ class Tree
 		/** @var ?NsCollection<Album> $sharedAlbums */
 		$sharedAlbums = null;
 		if (Auth::check()) {
-			$id = Auth::authenticate()->id;
+			$id = Auth::id() ?? throw new UnauthenticatedException('Id cannot be null');
 			// ATTENTION:
 			// For this to work correctly, it is crucial that all child albums
 			// below each top-level album have the same owner!

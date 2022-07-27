@@ -4,6 +4,7 @@ namespace App\Actions\Photo\Strategies;
 
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
+use App\Exceptions\UnauthenticatedException;
 use App\Models\Photo;
 use Illuminate\Support\Facades\Auth;
 
@@ -112,7 +113,9 @@ abstract class AddBaseStrategy
 			// Avoid unnecessary DB request, when we access the album of a
 			// photo later (e.g. when a notification is sent).
 			$this->photo->setRelation('album', null);
-			$this->photo->owner_id = Auth::authenticate()->id;
+			/** @var int */
+			$userId = Auth::id() ?? throw new UnauthenticatedException('Id cannot be null');
+			$this->photo->owner_id = $userId;
 		}
 	}
 }

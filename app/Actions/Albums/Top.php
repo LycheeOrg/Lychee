@@ -7,6 +7,7 @@ use App\Contracts\InternalLycheeException;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\TopAlbums;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
+use App\Exceptions\UnauthenticatedException;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
@@ -83,7 +84,7 @@ class Top
 				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();
 
-			$id = Auth::authenticate()->id;
+			$id = Auth::id() ?? throw new UnauthenticatedException('Id cannot be null');
 			/**
 			 * @var BaseCollection<Album> $a
 			 * @var BaseCollection<Album> $b

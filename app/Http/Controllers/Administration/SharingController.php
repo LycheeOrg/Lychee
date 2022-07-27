@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Administration;
 use App\Actions\Sharing\ListShare;
 use App\DTO\Shares;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\Sharing\DeleteSharingRequest;
 use App\Http\Requests\Sharing\SetSharingRequest;
@@ -36,7 +37,10 @@ class SharingController extends Controller
 			throw new UnauthorizedException('Upload privilege required');
 		}
 
-		return $listShare->do(Auth::authenticate()->id);
+		/** @var int */
+		$userId = Auth::id() ?? throw new UnauthenticatedException('Id cannot be null');
+
+		return $listShare->do($userId);
 	}
 
 	/**

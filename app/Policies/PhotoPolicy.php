@@ -131,6 +131,8 @@ class PhotoPolicy
 		return $this->own($user, $photo);
 	}
 
+	// The following methods are not to be called by Gate.
+
 	/**
 	 * Checks whether the designated photos are editable by the current user.
 	 *

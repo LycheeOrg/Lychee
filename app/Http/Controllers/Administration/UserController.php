@@ -9,6 +9,7 @@ use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
+use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\User\AddUserRequest;
 use App\Http\Requests\User\DeleteUserRequest;
 use App\Http\Requests\User\SetEmailRequest;
@@ -104,7 +105,8 @@ class UserController extends Controller
 	public function setEmail(SetEmailRequest $request): void
 	{
 		try {
-			$user = Auth::authenticate();
+			$user = Auth::user() ?? throw new UnauthenticatedException('User cannot be null');
+
 			$user->email = $request->email();
 
 			if ($request->email() === null) {
@@ -126,8 +128,10 @@ class UserController extends Controller
 	 */
 	public function getEmail(): array
 	{
+		$user = Auth::user() ?? throw new UnauthenticatedException('User cannot be null');
+
 		return [
-			'email' => Auth::authenticate()->email,
+			'email' => $user->email,
 		];
 	}
 }

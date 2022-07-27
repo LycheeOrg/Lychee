@@ -184,6 +184,26 @@ class AlbumPolicy
 	}
 
 	/**
+	 * Checks whether the album is visible by the current user.
+	 *
+	 * Note, at the moment this check is only needed for built-in smart
+	 * albums.
+	 * Hence, the method is only provided for them.
+	 *
+	 * @param User|null      $user
+	 * @param BaseSmartAlbum $smartAlbum
+	 *
+	 * @return bool true, if the album is visible
+	 */
+	public function visible(?User $user, BaseSmartAlbum $smartAlbum): bool
+	{
+		return ($user !== null && $this->userPolicy->upload($user)) ||
+			$smartAlbum->is_public;
+	}
+
+	// The following methods are not to be called by Gate.
+
+	/**
 	 * Checks whether the designated albums are editable by the current user.
 	 *
 	 * See {@link AlbumAuthorisationProvider::isEditable()} for the definition
@@ -227,24 +247,6 @@ class AlbumPolicy
 			->whereIn('id', $albumIDs)
 			->where('owner_id', $user->id)
 			->count() === count($albumIDs);
-	}
-
-	/**
-	 * Checks whether the album is visible by the current user.
-	 *
-	 * Note, at the moment this check is only needed for built-in smart
-	 * albums.
-	 * Hence, the method is only provided for them.
-	 *
-	 * @param User|null      $user
-	 * @param BaseSmartAlbum $smartAlbum
-	 *
-	 * @return bool true, if the album is visible
-	 */
-	public function visible(?User $user, BaseSmartAlbum $smartAlbum): bool
-	{
-		return ($user !== null && $this->userPolicy->upload($user)) ||
-			$smartAlbum->is_public;
 	}
 
 	/**

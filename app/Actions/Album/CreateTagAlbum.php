@@ -3,6 +3,7 @@
 namespace App\Actions\Album;
 
 use App\Exceptions\ModelDBException;
+use App\Exceptions\UnauthenticatedException;
 use App\Models\TagAlbum;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,10 +21,13 @@ class CreateTagAlbum extends Action
 	 */
 	public function create(string $title, array $show_tags): TagAlbum
 	{
+		/** @var int */
+		$userId = Auth::id() ?? throw new UnauthenticatedException('Id cannot be null');
+
 		$album = new TagAlbum();
 		$album->title = $title;
 		$album->show_tags = $show_tags;
-		$album->owner_id = Auth::authenticate()->id;
+		$album->owner_id = $userId;
 		$album->save();
 
 		return $album;

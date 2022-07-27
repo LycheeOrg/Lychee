@@ -3,6 +3,7 @@
 namespace App\Actions\Album;
 
 use App\Exceptions\ModelDBException;
+use App\Exceptions\UnauthenticatedException;
 use App\Models\Album;
 use Illuminate\Support\Facades\Auth;
 
@@ -42,7 +43,9 @@ class Create extends Action
 			// methods of the nested set `NodeTrait`.
 			$album->appendToNode($parentAlbum);
 		} else {
-			$album->owner_id = Auth::authenticate()->id;
+			/** @var int */
+			$userId = Auth::id() ?? throw new UnauthenticatedException('Id cannot be null');
+			$album->owner_id = $userId;
 			$album->makeRoot();
 		}
 	}

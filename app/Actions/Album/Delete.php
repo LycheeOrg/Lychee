@@ -7,6 +7,7 @@ use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
+use App\Exceptions\UnauthenticatedException;
 use App\Image\FileDeleter;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
@@ -72,7 +73,7 @@ class Delete extends Action
 			if (in_array(UnsortedAlbum::ID, $albumIDs, true)) {
 				$query = UnsortedAlbum::getInstance()->photos();
 				if (!Gate::check(UserPolicy::ADMIN)) {
-					$query->where('owner_id', '=', Auth::authenticate()->id);
+					$query->where('owner_id', '=', Auth::id() ?? throw new UnauthenticatedException('Id cannot be null'));
 				}
 				$unsortedPhotoIDs = $query->pluck('id')->all();
 			}

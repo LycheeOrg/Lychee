@@ -2,12 +2,14 @@
 
 namespace App\Actions\WebAuth;
 
+use App\Exceptions\UnauthenticatedException;
 use Illuminate\Support\Facades\Auth;
 
 class Delete
 {
 	public function do(string|array $ids): void
 	{
-		Auth::authenticate()->removeCredential($ids);
+		$user = Auth::user() ?? throw new UnauthenticatedException('User cannot be null');
+		$user->removeCredential($ids);
 	}
 }
