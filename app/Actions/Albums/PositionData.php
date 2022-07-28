@@ -2,22 +2,22 @@
 
 namespace App\Actions\Albums;
 
-use App\Auth\PhotoAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\DTO\PositionData as PositionDataDTO;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use App\Policies\PhotoQueryPolicy;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PositionData
 {
-	protected PhotoAuthorisationProvider $photoAuthorisationProvider;
+	protected PhotoQueryPolicy $photoQueryPolicy;
 
-	public function __construct(PhotoAuthorisationProvider $photoAuthorisationProvider)
+	public function __construct(PhotoQueryPolicy $photoQueryPolicy)
 	{
-		$this->photoAuthorisationProvider = $photoAuthorisationProvider;
+		$this->photoQueryPolicy = $photoQueryPolicy;
 		// caching to avoid further request
 		Configs::get();
 	}
@@ -31,7 +31,7 @@ class PositionData
 	 */
 	public function do(): PositionDataDTO
 	{
-		$photoQuery = $this->photoAuthorisationProvider->applySearchabilityFilter(
+		$photoQuery = $this->photoQueryPolicy->applySearchabilityFilter(
 			Photo::query()
 				->with([
 					'album' => function (BelongsTo $b) {

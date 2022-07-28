@@ -2,11 +2,11 @@
 
 namespace App\Actions\RSS;
 
-use App\Auth\PhotoAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Models\Configs;
 use App\Models\Photo;
+use App\Policies\PhotoQueryPolicy;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\UnitException;
 use Illuminate\Support\Carbon;
@@ -15,11 +15,11 @@ use Spatie\Feed\FeedItem;
 
 class Generate
 {
-	protected PhotoAuthorisationProvider $photoAuthorisationProvider;
+	protected PhotoQueryPolicy $photoQueryPolicy;
 
-	public function __construct(PhotoAuthorisationProvider $photoAuthorisationProvider)
+	public function __construct(PhotoQueryPolicy $photoQueryPolicy)
 	{
-		$this->photoAuthorisationProvider = $photoAuthorisationProvider;
+		$this->photoQueryPolicy = $photoQueryPolicy;
 	}
 
 	private function create_link_to_page(Photo $photo_model): string
@@ -65,7 +65,7 @@ class Generate
 			throw new FrameworkException('Date/Time component (Carbon)', $e);
 		}
 
-		$photos = $this->photoAuthorisationProvider
+		$photos = $this->photoQueryPolicy
 			->applySearchabilityFilter(
 				Photo::with(['album', 'owner', 'size_variants', 'size_variants.sym_links'])
 			)

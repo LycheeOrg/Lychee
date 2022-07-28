@@ -2,7 +2,6 @@
 
 namespace App\SmartAlbums;
 
-use App\Auth\PhotoAuthorisationProvider;
 use App\Contracts\AbstractAlbum;
 use App\Contracts\InternalLycheeException;
 use App\DTO\PhotoSortingCriterion;
@@ -14,6 +13,7 @@ use App\Models\Extensions\SortingDecorator;
 use App\Models\Extensions\Thumb;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Models\Photo;
+use App\Policies\PhotoQueryPolicy;
 use App\SmartAlbums\Utils\MimicModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -34,7 +34,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	use MimicModel;
 	use UTCBasedTimes;
 
-	protected PhotoAuthorisationProvider $photoAuthorisationProvider;
+	protected PhotoQueryPolicy $photoQueryPolicy;
 	protected string $id;
 	protected string $title;
 	protected bool $isPublic;
@@ -46,7 +46,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 
 	protected function __construct(string $id, string $title, bool $isPublic, \Closure $smartCondition)
 	{
-		$this->photoAuthorisationProvider = resolve(PhotoAuthorisationProvider::class);
+		$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
 		$this->id = $id;
 		$this->title = $title;
 		$this->isPublic = $isPublic;
@@ -61,7 +61,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 */
 	public function photos(): Builder
 	{
-		return $this->photoAuthorisationProvider
+		return $this->photoQueryPolicy
 			->applySearchabilityFilter(
 				Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links'])
 			)->where($this->smartPhotoCondition);

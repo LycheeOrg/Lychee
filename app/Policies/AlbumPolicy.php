@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Auth\AlbumAuthorisationProvider;
 use App\Contracts\AbstractAlbum;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
@@ -206,14 +205,14 @@ class AlbumPolicy
 	/**
 	 * Checks whether the designated albums are editable by the current user.
 	 *
-	 * See {@link AlbumAuthorisationProvider::isEditable()} for the definition
+	 * See {@link AlbumQueryPolicy::isEditable()} for the definition
 	 * when an album is editable.
 	 *
 	 * This method is mostly only useful during deletion of albums, when no
 	 * album models are loaded for efficiency reasons.
 	 * If an album model is required anyway (because it shall be edited),
 	 * then first load the album once and use
-	 * {@link AlbumAuthorisationProvider::isEditable()}
+	 * {@link AlbumQueryPolicy::isEditable()}
 	 * instead in order to avoid several DB requests.
 	 *
 	 * @param User  $user

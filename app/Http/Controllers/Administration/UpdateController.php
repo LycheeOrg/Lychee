@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Administration;
 
 use App\Actions\Update\Apply as ApplyUpdate;
 use App\Actions\Update\Check as CheckUpdate;
-use App\Auth\Authorization;
 use App\Contracts\LycheeException;
 use App\Exceptions\VersionControlException;
+use App\Legacy\AdminAuthentication;
 use App\Legacy\Legacy;
 use App\Policies\UserPolicy;
 use Illuminate\Http\Request;
@@ -134,8 +134,8 @@ class UpdateController extends Controller
 		// TODO: Step 2 will become unnecessary once admin registration has become part of the installation routine; after that the case that no admin is registered cannot occur anymore
 		// TODO: Step 3 will become unnecessary once the admin user of any existing installation has at least logged in once and the admin user has therewith migrated to use a non-hashed user name
 		$isLoggedIn = Auth::check();
-		$isLoggedIn = $isLoggedIn || Authorization::loginAsAdminIfNotRegistered();
-		$isLoggedIn = $isLoggedIn || Legacy::loginAsAdmin($request->input('username', ''), $request->input('password', ''), $request->ip());
+		$isLoggedIn = $isLoggedIn || AdminAuthentication::loginAsAdminIfNotRegistered();
+		$isLoggedIn = $isLoggedIn || AdminAuthentication::loginAsAdmin($request->input('username', ''), $request->input('password', ''), $request->ip());
 		$isLoggedIn = $isLoggedIn || Auth::attempt(['username' => $request->input('username', ''), 'password' => $request->input('password', '')]);
 
 		// Check if logged in AND is admin
@@ -144,7 +144,7 @@ class UpdateController extends Controller
 			$this->applyUpdate->migrate($output);
 			$this->applyUpdate->filter($output);
 
-			if (Authorization::isAdminNotRegistered()) {
+			if (AdminAuthentication::isAdminNotRegistered()) {
 				Auth::logout();
 				Session::flush();
 			}

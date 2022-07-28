@@ -2,7 +2,6 @@
 
 namespace App\Relations;
 
-use App\Auth\AlbumAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\SortingCriterion;
@@ -10,13 +9,14 @@ use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
 use App\Models\Extensions\AlbumBuilder;
 use App\Models\Extensions\SortingDecorator;
+use App\Policies\AlbumQueryPolicy;
 use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 class HasManyChildAlbums extends HasManyBidirectionally
 {
-	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
+	protected AlbumQueryPolicy $albumAuthorisationProvider;
 	private AlbumSortingCriterion $sorting;
 
 	public function __construct(Album $owningAlbum)
@@ -25,7 +25,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		// the parent constructor.
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
-		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
+		$this->albumAuthorisationProvider = resolve(AlbumQueryPolicy::class);
 		$this->sorting = AlbumSortingCriterion::createDefault();
 		parent::__construct(
 			$owningAlbum->newQuery(),

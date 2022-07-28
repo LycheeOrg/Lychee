@@ -2,7 +2,6 @@
 
 namespace App\Actions\Albums;
 
-use App\Auth\AlbumAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\AlbumTree;
@@ -10,18 +9,19 @@ use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Exceptions\UnauthenticatedException;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
+use App\Policies\AlbumQueryPolicy;
 use Illuminate\Support\Facades\Auth;
 use Kalnoy\Nestedset\Collection as NsCollection;
 
 class Tree
 {
-	private AlbumAuthorisationProvider $albumAuthorisationProvider;
+	private AlbumQueryPolicy $albumAuthorisationProvider;
 	private AlbumSortingCriterion $sorting;
 
 	/**
 	 * @throws InvalidOrderDirectionException
 	 */
-	public function __construct(AlbumAuthorisationProvider $albumAuthorisationProvider)
+	public function __construct(AlbumQueryPolicy $albumAuthorisationProvider)
 	{
 		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
 		$this->sorting = AlbumSortingCriterion::createDefault();
@@ -36,14 +36,14 @@ class Tree
 	{
 		/*
 		 * Note, strictly speaking
-		 * {@link AlbumAuthorisationProvider::applyBrowsabilityFilter()}
+		 * {@link AlbumQueryPolicy::applyBrowsabilityFilter()}
 		 * would be the correct function in order to scope the query below,
 		 * because we only want albums which are browsable.
 		 * But
-		 * {@link AlbumAuthorisationProvider::applyBrowsabilityFilter()}
+		 * {@link AlbumQueryPolicy::applyBrowsabilityFilter()}
 		 * is rather slow for large sets of albums (O(n²) runtime).
 		 * Luckily,
-		 * {@link AlbumAuthorisationProvider::applyReachabilityFilter()}
+		 * {@link AlbumQueryPolicy::applyReachabilityFilter()}
 		 * is sufficient here, although it does only consider an album's
 		 * reachability _locally_.
 		 * We rely on `->toTree` below to remove orphaned sub-tress and hence

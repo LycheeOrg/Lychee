@@ -2,14 +2,14 @@
 
 namespace App\Relations;
 
-use App\Auth\AlbumAuthorisationProvider;
-use App\Auth\PhotoAuthorisationProvider;
 use App\DTO\PhotoSortingCriterion;
 use App\Models\Album;
 use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\Thumb;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
+use App\Policies\AlbumQueryPolicy;
+use App\Policies\PhotoQueryPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -25,8 +25,8 @@ use Illuminate\Support\Facades\Gate;
  */
 class HasAlbumThumb extends Relation
 {
-	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
-	protected PhotoAuthorisationProvider $photoAuthorisationProvider;
+	protected AlbumQueryPolicy $albumAuthorisationProvider;
+	protected PhotoQueryPolicy $photoQueryPolicy;
 	protected PhotoSortingCriterion $sorting;
 
 	public function __construct(Album $parent)
@@ -35,8 +35,8 @@ class HasAlbumThumb extends Relation
 		// the parent constructor.
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
-		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
-		$this->photoAuthorisationProvider = resolve(PhotoAuthorisationProvider::class);
+		$this->albumAuthorisationProvider = resolve(AlbumQueryPolicy::class);
+		$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
 		$this->sorting = PhotoSortingCriterion::createDefault();
 		parent::__construct(
 			Photo::query()->with(['size_variants' => fn (HasMany $r) => Thumb::sizeVariantsFilter($r)]),
@@ -72,7 +72,7 @@ class HasAlbumThumb extends Relation
 			if ($album->cover_id !== null) {
 				$this->where('photos.id', '=', $album->cover_id);
 			} else {
-				$this->photoAuthorisationProvider
+				$this->photoQueryPolicy
 					->applySearchabilityFilter($this->getRelationQuery(), $album);
 			}
 		}
@@ -182,7 +182,7 @@ class HasAlbumThumb extends Relation
 			->limit(1);
 		if (!Gate::check(UserPolicy::ADMIN)) {
 			$bestPhotoIDSelect->where(function (Builder $query2) {
-				$this->photoAuthorisationProvider->appendSearchabilityConditions(
+				$this->photoQueryPolicy->appendSearchabilityConditions(
 					$query2->getQuery(),
 					'covered_albums._lft',
 					'covered_albums._rgt'

@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Settings;
 
-use App\Auth\Authorization;
 use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\Session\LoginRequest;
+use App\Legacy\AdminAuthentication;
 
 class SetLoginRequest extends LoginRequest
 {
@@ -14,7 +14,7 @@ class SetLoginRequest extends LoginRequest
 	public function authorize(): bool
 	{
 		// Only use this route if there is no admin.
-		return Authorization::isAdminNotRegistered();
+		return AdminAuthentication::isAdminNotRegistered();
 	}
 
 	/**

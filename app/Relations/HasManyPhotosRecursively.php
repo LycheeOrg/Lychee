@@ -2,7 +2,6 @@
 
 namespace App\Relations;
 
-use App\Auth\AlbumAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\DTO\SortingCriterion;
 use App\Exceptions\Internal\NotImplementedException;
@@ -10,12 +9,13 @@ use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
+use App\Policies\AlbumQueryPolicy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Gate;
 
 class HasManyPhotosRecursively extends HasManyPhotos
 {
-	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
+	protected AlbumQueryPolicy $albumQueryPolicy;
 
 	public function __construct(Album $owningAlbum)
 	{
@@ -23,7 +23,7 @@ class HasManyPhotosRecursively extends HasManyPhotos
 		// the parent constructor.
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
-		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
+		$this->albumQueryPolicy = resolve(AlbumQueryPolicy::class);
 		parent::__construct($owningAlbum);
 	}
 
@@ -74,7 +74,7 @@ class HasManyPhotosRecursively extends HasManyPhotos
 			throw new NotImplementedException('eagerly fetching all photos of an album is not implemented for multiple albums');
 		}
 
-		$this->photoAuthorisationProvider
+		$this->photoQueryPolicy
 			->applySearchabilityFilter($this->getRelationQuery(), $albums[0]);
 	}
 

@@ -136,14 +136,14 @@ class PhotoPolicy
 	/**
 	 * Checks whether the designated photos are editable by the current user.
 	 *
-	 * See {@link PhotoAuthorisationProvider::isEditable()} for the definition
+	 * See {@link PhotoQueryPolicy::isEditable()} for the definition
 	 * when a photo is editable.
 	 *
 	 * This method is mostly only useful during deletion of photos, when no
 	 * photo models are loaded for efficiency reasons.
 	 * If a photo model is required anyway (because it shall be edited),
 	 * then first load the photo once and use
-	 * {@link PhotoAuthorisationProvider::isEditable()}
+	 * {@link PhotoQueryPolicy::isEditable()}
 	 * instead in order to avoid several DB requests.
 	 *
 	 * @param User     $user

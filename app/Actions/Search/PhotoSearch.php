@@ -2,21 +2,21 @@
 
 namespace App\Actions\Search;
 
-use App\Auth\PhotoAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\DTO\PhotoSortingCriterion;
 use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
+use App\Policies\PhotoQueryPolicy;
 use Illuminate\Database\Eloquent\Collection;
 
 class PhotoSearch
 {
-	protected PhotoAuthorisationProvider $photoAuthorisationProvider;
+	protected PhotoQueryPolicy $photoQueryPolicy;
 
-	public function __construct(PhotoAuthorisationProvider $photoAuthorisationProvider)
+	public function __construct(PhotoQueryPolicy $photoQueryPolicy)
 	{
-		$this->photoAuthorisationProvider = $photoAuthorisationProvider;
+		$this->photoQueryPolicy = $photoQueryPolicy;
 	}
 
 	/**
@@ -24,7 +24,7 @@ class PhotoSearch
 	 */
 	public function query(array $terms): Collection
 	{
-		$query = $this->photoAuthorisationProvider->applySearchabilityFilter(
+		$query = $this->photoQueryPolicy->applySearchabilityFilter(
 			Photo::with(['album', 'size_variants', 'size_variants.sym_links'])
 		);
 

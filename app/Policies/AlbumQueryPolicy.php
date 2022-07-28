@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Auth;
+namespace App\Policies;
 
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\InvalidQueryModelException;
@@ -14,8 +14,6 @@ use App\Models\Extensions\AlbumBuilder;
 use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\TagAlbumBuilder;
 use App\Models\TagAlbum;
-use App\Policies\AlbumPolicy;
-use App\Policies\UserPolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
@@ -23,9 +21,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Class AlbumAuthorisationProvider.
+ * Class AlbumQueryPolicy.
  */
-class AlbumAuthorisationProvider
+class AlbumQueryPolicy
 {
 	protected AlbumFactory $albumFactory;
 	protected AlbumPolicy $albumPolicy;
@@ -95,7 +93,7 @@ class AlbumAuthorisationProvider
 	 * Adds the conditions of an accessible album to the query.
 	 *
 	 * **Attention:** This method is only meant for internal use by
-	 * this class or {@link PhotoAuthorisationProvider}.
+	 * this class or {@link PhotoQueryPolicy}.
 	 *
 	 * This method adds the WHERE conditions without any further pre-cautions.
 	 * The method silently assumes that the SELECT clause contains the tables
@@ -221,7 +219,7 @@ class AlbumAuthorisationProvider
 	 *   1. there is a path from the origin to the album, and
 	 *   2. all albums on the path are _reachable_
 	 *
-	 * See {@link AlbumAuthorisationProvider::applyReachabilityFilter()}
+	 * See {@link AlbumQueryPolicy::applyReachabilityFilter()}
 	 * for the definition of reachability.
 	 * Note, while _reachability_ (as well as _visibility_ and _accessibility_)
 	 * are a _local_ properties, _browsability_ is a _global_ property.
@@ -289,8 +287,8 @@ class AlbumAuthorisationProvider
 	 * Adds the conditions of an unreachable album to the query.
 	 *
 	 * **Attention:** This method is only meant for internal use by
-	 * this class or {@link PhotoAuthorisationProvider}.
-	 * Use {@link AlbumAuthorisationProvider::applyBrowsabilityFilter()}
+	 * this class or {@link PhotoQueryPolicy}.
+	 * Use {@link AlbumQueryPolicy::applyBrowsabilityFilter()}
 	 * if called from other places instead.
 	 *
 	 * This method adds the WHERE conditions without any further pre-cautions.

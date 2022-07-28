@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Auth\Authorization;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
 use App\Exceptions\UnauthenticatedException;
@@ -10,12 +9,11 @@ use App\Exceptions\VersionControlException;
 use App\Facades\Helpers;
 use App\Facades\Lang;
 use App\Http\Requests\Session\LoginRequest;
-use App\Legacy\Legacy;
+use App\Legacy\AdminAuthentication;
 use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
 use App\Models\Logs;
-use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
@@ -67,7 +65,7 @@ class SessionController extends Controller
 		$return = [];
 
 		// Check if login credentials exist and login if they don't
-		if (Auth::check() || Authorization::loginAsAdminIfNotRegistered()) {
+		if (Auth::check() || AdminAuthentication::loginAsAdminIfNotRegistered()) {
 			if (Gate::check(UserPolicy::ADMIN)) {
 				$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 				$return['admin'] = true;
@@ -91,7 +89,7 @@ class SessionController extends Controller
 
 			// here we say whether we logged in because there is no login/password or if we actually entered a login/password
 			// TODO: Refactor this. At least, rename the flag `login` to something more understandable, like `isAdminUserConfigured`, but rather re-factor the whole logic, i.e. creating the initial user should be part of the installation routine.
-			$return['config']['login'] = !Authorization::isAdminNotRegistered();
+			$return['config']['login'] = !AdminAuthentication::isAdminNotRegistered();
 			$return['config']['lang_available'] = Lang::get_lang_available();
 		} else {
 			// Logged out
@@ -136,13 +134,13 @@ class SessionController extends Controller
 	public function login(LoginRequest $request): void
 	{
 		// No login
-		if (Authorization::loginAsAdminIfNotRegistered()) {
+		if (AdminAuthentication::loginAsAdminIfNotRegistered()) {
 			Logs::warning(__METHOD__, __LINE__, 'DEFAULT LOGIN!');
 
 			return;
 		}
 
-		if (Legacy::loginAsAdmin($request->username(), $request->password(), $request->ip())) {
+		if (AdminAuthentication::loginAsAdmin($request->username(), $request->password(), $request->ip())) {
 			return;
 		}
 

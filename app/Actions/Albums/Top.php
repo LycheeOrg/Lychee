@@ -2,7 +2,6 @@
 
 namespace App\Actions\Albums;
 
-use App\Auth\AlbumAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\TopAlbums;
@@ -13,6 +12,7 @@ use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
+use App\Policies\AlbumQueryPolicy;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Collection as BaseCollection;
@@ -22,14 +22,14 @@ use Kalnoy\Nestedset\QueryBuilder as NsQueryBuilder;
 
 class Top
 {
-	private AlbumAuthorisationProvider $albumAuthorisationProvider;
+	private AlbumQueryPolicy $albumAuthorisationProvider;
 	private AlbumFactory $albumFactory;
 	private AlbumSortingCriterion $sorting;
 
 	/**
 	 * @throws InvalidOrderDirectionException
 	 */
-	public function __construct(AlbumFactory $albumFactory, AlbumAuthorisationProvider $albumAuthorisationProvider)
+	public function __construct(AlbumFactory $albumFactory, AlbumQueryPolicy $albumAuthorisationProvider)
 	{
 		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
 		$this->albumFactory = $albumFactory;

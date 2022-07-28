@@ -2,7 +2,6 @@
 
 namespace App\Actions\Search;
 
-use App\Auth\AlbumAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\DTO\AlbumSortingCriterion;
 use App\Exceptions\Internal\QueryBuilderException;
@@ -11,13 +10,14 @@ use App\Models\Extensions\AlbumBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Extensions\TagAlbumBuilder;
 use App\Models\TagAlbum;
+use App\Policies\AlbumQueryPolicy;
 use Illuminate\Database\Eloquent\Collection;
 
 class AlbumSearch
 {
-	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
+	protected AlbumQueryPolicy $albumAuthorisationProvider;
 
-	public function __construct(AlbumAuthorisationProvider $albumAuthorisationProvider)
+	public function __construct(AlbumQueryPolicy $albumAuthorisationProvider)
 	{
 		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
 	}

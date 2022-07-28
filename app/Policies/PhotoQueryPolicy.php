@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Auth;
+namespace App\Policies;
 
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\InvalidQueryModelException;
@@ -9,20 +9,19 @@ use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Photo;
-use App\Policies\UserPolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
-class PhotoAuthorisationProvider
+class PhotoQueryPolicy
 {
-	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
+	protected AlbumQueryPolicy $albumAuthorisationProvider;
 
 	public function __construct()
 	{
-		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
+		$this->albumAuthorisationProvider = resolve(AlbumQueryPolicy::class);
 	}
 
 	/**
@@ -36,7 +35,7 @@ class PhotoAuthorisationProvider
 	 *  - the user is the admin
 	 *  - the user is the owner of the photo
 	 *  - the photo is part of an album which the user is allowed to access
-	 *    (cp. {@link AlbumAuthorisationProvider::isAccessible()}).
+	 *    (cp. {@link AlbumQueryPolicy::isAccessible()}).
 	 *  - the photo is public
 	 *
 	 * @param FixedQueryBuilder $query
@@ -79,7 +78,7 @@ class PhotoAuthorisationProvider
 	 *  - the user is the owner of the photo
 	 *  - the photo is public and searching through public photos is enabled
 	 *
-	 * See {@link AlbumAuthorisationProvider::applyBrowsabilityFilter()}
+	 * See {@link AlbumQueryPolicy::applyBrowsabilityFilter()}
 	 * for a definition of a browsable album.
 	 *
 	 * The search result is restricted to photos in albums which are below
@@ -130,7 +129,7 @@ class PhotoAuthorisationProvider
 	 * Adds the conditions of _searchable_ photos to the query.
 	 *
 	 * **Attention:** This method is only meant for internal use.
-	 * Use {@link PhotoAuthorisationProvider::applySearchabilityFilter()}
+	 * Use {@link PhotoQueryPolicy::applySearchabilityFilter()}
 	 * if called from other places instead.
 	 *
 	 * This method adds the WHERE conditions without any further pre-cautions.
@@ -138,7 +137,7 @@ class PhotoAuthorisationProvider
 	 *
 	 *  - **`albums`**.
 	 *
-	 * See {@link AlbumAuthorisationProvider::applySearchabilityFilter()}
+	 * See {@link AlbumQueryPolicy::applySearchabilityFilter()}
 	 * for a definition of a searchable photo.
 	 *
 	 * Moreover, the raw clauses are added.
