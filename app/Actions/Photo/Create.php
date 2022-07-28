@@ -2,7 +2,6 @@
 
 namespace App\Actions\Photo;
 
-use App\Actions\Photo\Extensions\Checks;
 use App\Actions\Photo\Strategies\AddDuplicateStrategy;
 use App\Actions\Photo\Strategies\AddPhotoPartnerStrategy;
 use App\Actions\Photo\Strategies\AddStandaloneStrategy;
@@ -33,8 +32,6 @@ use function Safe\substr;
 
 class Create
 {
-	use Checks;
-
 	/** @var AddStrategyParameters the strategy parameters prepared and compiled by this class */
 	protected AddStrategyParameters $strategyParameters;
 
@@ -221,5 +218,27 @@ class Create
 		} else {
 			throw new InvalidPropertyException('The given parent album does not support uploading');
 		}
+	}
+
+	/**
+	 * Check if a picture has a duplicate
+	 * We compare the checksum to the other Photos or LivePhotos.
+	 *
+	 * TODO: Move this method to where it belongs.
+	 *
+	 * @param string $checksum
+	 *
+	 * @return ?Photo
+	 */
+	public function get_duplicate(string $checksum): ?Photo
+	{
+		/** @var Photo|null $photo */
+		$photo = Photo::query()
+			->where('checksum', '=', $checksum)
+			->orWhere('original_checksum', '=', $checksum)
+			->orWhere('live_photo_checksum', '=', $checksum)
+			->first();
+
+		return $photo;
 	}
 }
