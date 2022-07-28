@@ -224,8 +224,6 @@ class Create
 	 * Check if a picture has a duplicate
 	 * We compare the checksum to the other Photos or LivePhotos.
 	 *
-	 * TODO: Move this method to where it belongs.
-	 *
 	 * @param string $checksum
 	 *
 	 * @return ?Photo
