@@ -150,7 +150,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	public function delete(): bool
 	{
 		$now = Carbon::now();
-		$newOwnerID = Auth::id() ?? throw new UnauthenticatedException('ID cannot be null');
+		$newOwnerID = Auth::id() ?? throw new UnauthenticatedException();
 
 		/** @var HasMany[] $ownershipRelations */
 		$ownershipRelations = [$this->photos(), $this->albums()];

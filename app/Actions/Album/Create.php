@@ -44,7 +44,7 @@ class Create extends Action
 			$album->appendToNode($parentAlbum);
 		} else {
 			/** @var int */
-			$userId = Auth::id() ?? throw new UnauthenticatedException('Id cannot be null');
+			$userId = Auth::id() ?? throw new UnauthenticatedException();
 			$album->owner_id = $userId;
 			$album->makeRoot();
 		}

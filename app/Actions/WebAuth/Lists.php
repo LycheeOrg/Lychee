@@ -10,7 +10,7 @@ class Lists
 {
 	public function do(): Collection
 	{
-		$user = Auth::user() ?? throw new UnauthenticatedException('User cannot be null');
+		$user = Auth::user() ?? throw new UnauthenticatedException();
 
 		return $user->webAuthnCredentials->map(fn ($cred) => ['id' => $cred->id]);
 	}

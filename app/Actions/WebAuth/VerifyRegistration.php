@@ -18,7 +18,7 @@ class VerifyRegistration
 		/**
 		 * @var User
 		 */
-		$user = Auth::user() ?? throw new UnauthenticatedException('User cannot be null');
+		$user = Auth::user() ?? throw new UnauthenticatedException();
 
 		// okay.
 		/** @var false|\Webauthn\PublicKeyCredentialSource */

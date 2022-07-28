@@ -22,7 +22,7 @@ class CreateTagAlbum extends Action
 	public function create(string $title, array $show_tags): TagAlbum
 	{
 		/** @var int */
-		$userId = Auth::id() ?? throw new UnauthenticatedException('Id cannot be null');
+		$userId = Auth::id() ?? throw new UnauthenticatedException();
 
 		$album = new TagAlbum();
 		$album->title = $title;

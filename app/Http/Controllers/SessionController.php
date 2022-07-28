@@ -74,7 +74,7 @@ class SessionController extends Controller
 				$return['config']['location'] = base_path('public/');
 			} else {
 				try {
-					$user = Auth::user() ?? throw new UnauthenticatedException('User cannot be null');
+					$user = Auth::user() ?? throw new UnauthenticatedException();
 
 					$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 					$return['config'] = $this->configFunctions->public();

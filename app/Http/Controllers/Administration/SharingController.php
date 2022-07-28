@@ -38,7 +38,7 @@ class SharingController extends Controller
 		}
 
 		/** @var int */
-		$userId = Auth::id() ?? throw new UnauthenticatedException('Id cannot be null');
+		$userId = Auth::id() ?? throw new UnauthenticatedException();
 
 		return $listShare->do($userId);
 	}

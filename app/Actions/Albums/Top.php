@@ -84,7 +84,7 @@ class Top
 				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();
 
-			$id = Auth::id() ?? throw new UnauthenticatedException('Id cannot be null');
+			$id = Auth::id() ?? throw new UnauthenticatedException();
 			/**
 			 * @var BaseCollection<Album> $a
 			 * @var BaseCollection<Album> $b

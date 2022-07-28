@@ -114,7 +114,7 @@ abstract class AddBaseStrategy
 			// photo later (e.g. when a notification is sent).
 			$this->photo->setRelation('album', null);
 			/** @var int */
-			$userId = Auth::id() ?? throw new UnauthenticatedException('Id cannot be null');
+			$userId = Auth::id() ?? throw new UnauthenticatedException();
 			$this->photo->owner_id = $userId;
 		}
 	}

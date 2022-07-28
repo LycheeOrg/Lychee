@@ -9,7 +9,7 @@ class Delete
 {
 	public function do(string|array $ids): void
 	{
-		$user = Auth::user() ?? throw new UnauthenticatedException('User cannot be null');
+		$user = Auth::user() ?? throw new UnauthenticatedException();
 		$user->removeCredential($ids);
 	}
 }

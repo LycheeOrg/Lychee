@@ -105,7 +105,7 @@ class UserController extends Controller
 	public function setEmail(SetEmailRequest $request): void
 	{
 		try {
-			$user = Auth::user() ?? throw new UnauthenticatedException('User cannot be null');
+			$user = Auth::user() ?? throw new UnauthenticatedException();
 
 			$user->email = $request->email();
 
@@ -128,7 +128,7 @@ class UserController extends Controller
 	 */
 	public function getEmail(): array
 	{
-		$user = Auth::user() ?? throw new UnauthenticatedException('User cannot be null');
+		$user = Auth::user() ?? throw new UnauthenticatedException();
 
 		return [
 			'email' => $user->email,

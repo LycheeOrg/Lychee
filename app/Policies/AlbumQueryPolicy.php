@@ -421,7 +421,7 @@ class AlbumQueryPolicy
 		}
 
 		if (Auth::check()) {
-			$userID = Auth::id() ?? throw new UnauthenticatedException('Id cannot be null');
+			$userID = Auth::id() ?? throw new UnauthenticatedException();
 
 			// We must left join with `user_base_album` if and only if we
 			// restrict the eventual query to the ID of the authenticated

@@ -35,7 +35,7 @@ class UpdateLogin
 	public function do(?string $username, string $password, string $oldPassword, string $ip): void
 	{
 		/** @var User $user */
-		$user = Auth::user() ?? throw new UnauthenticatedException('User cannot be null');
+		$user = Auth::user() ?? throw new UnauthenticatedException();
 
 		if (!Hash::check($oldPassword, $user->password)) {
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change their identity from ' . $ip);

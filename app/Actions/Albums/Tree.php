@@ -63,7 +63,7 @@ class Tree
 		/** @var ?NsCollection<Album> $sharedAlbums */
 		$sharedAlbums = null;
 		if (Auth::check()) {
-			$id = Auth::id() ?? throw new UnauthenticatedException('Id cannot be null');
+			$id = Auth::id() ?? throw new UnauthenticatedException();
 			// ATTENTION:
 			// For this to work correctly, it is crucial that all child albums
 			// below each top-level album have the same owner!
