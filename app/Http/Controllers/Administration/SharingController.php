@@ -31,6 +31,7 @@ class SharingController extends Controller
 	 */
 	public function list(ListShare $listShare): Shares
 	{
+		// TODO: move this to Request authorization.
 		// Note: This test is part of the request validation for the other
 		// methods of this class.
 		if (!Gate::check(UserPolicy::UPLOAD, User::class)) {
