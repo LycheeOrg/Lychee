@@ -15,15 +15,15 @@ use Kalnoy\Nestedset\Collection as NsCollection;
 
 class Tree
 {
-	private AlbumQueryPolicy $albumAuthorisationProvider;
+	private AlbumQueryPolicy $albumQueryPolicy;
 	private AlbumSortingCriterion $sorting;
 
 	/**
 	 * @throws InvalidOrderDirectionException
 	 */
-	public function __construct(AlbumQueryPolicy $albumAuthorisationProvider)
+	public function __construct(AlbumQueryPolicy $albumQueryPolicy)
 	{
-		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
+		$this->albumQueryPolicy = $albumQueryPolicy;
 		$this->sorting = AlbumSortingCriterion::createDefault();
 	}
 
@@ -50,7 +50,7 @@ class Tree
 		 * only return a tree of browsable albums.
 		 */
 		$query = new SortingDecorator(
-			$this->albumAuthorisationProvider->applyReachabilityFilter(Album::query())
+			$this->albumQueryPolicy->applyReachabilityFilter(Album::query())
 		);
 		if (Auth::check()) {
 			// For authenticated users we group albums by ownership.

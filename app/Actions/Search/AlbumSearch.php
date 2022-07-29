@@ -15,11 +15,11 @@ use Illuminate\Database\Eloquent\Collection;
 
 class AlbumSearch
 {
-	protected AlbumQueryPolicy $albumAuthorisationProvider;
+	protected AlbumQueryPolicy $albumQueryPolicy;
 
-	public function __construct(AlbumQueryPolicy $albumAuthorisationProvider)
+	public function __construct(AlbumQueryPolicy $albumQueryPolicy)
 	{
-		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
+		$this->albumQueryPolicy = $albumQueryPolicy;
 	}
 
 	/**
@@ -33,7 +33,7 @@ class AlbumSearch
 	{
 		// Note: `applyVisibilityFilter` already adds a JOIN clause with `base_albums`.
 		// No need to add a second JOIN clause.
-		$albumQuery = $this->albumAuthorisationProvider->applyVisibilityFilter(
+		$albumQuery = $this->albumQueryPolicy->applyVisibilityFilter(
 			TagAlbum::query()
 		);
 		$this->addSearchCondition($terms, $albumQuery);
@@ -58,7 +58,7 @@ class AlbumSearch
 			->select(['albums.*'])
 			->join('base_albums', 'base_albums.id', '=', 'albums.id');
 		$this->addSearchCondition($terms, $albumQuery);
-		$this->albumAuthorisationProvider->applyBrowsabilityFilter($albumQuery);
+		$this->albumQueryPolicy->applyBrowsabilityFilter($albumQuery);
 
 		$sorting = AlbumSortingCriterion::createDefault();
 

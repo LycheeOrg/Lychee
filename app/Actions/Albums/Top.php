@@ -22,16 +22,16 @@ use Kalnoy\Nestedset\QueryBuilder as NsQueryBuilder;
 
 class Top
 {
-	private AlbumQueryPolicy $albumAuthorisationProvider;
+	private AlbumQueryPolicy $albumQueryPolicy;
 	private AlbumFactory $albumFactory;
 	private AlbumSortingCriterion $sorting;
 
 	/**
 	 * @throws InvalidOrderDirectionException
 	 */
-	public function __construct(AlbumFactory $albumFactory, AlbumQueryPolicy $albumAuthorisationProvider)
+	public function __construct(AlbumFactory $albumFactory, AlbumQueryPolicy $albumQueryPolicy)
 	{
-		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
+		$this->albumQueryPolicy = $albumQueryPolicy;
 		$this->albumFactory = $albumFactory;
 		$this->sorting = AlbumSortingCriterion::createDefault();
 	}
@@ -66,7 +66,7 @@ class Top
 				fn ($smartAlbum) => Gate::check(AlbumPolicy::VISIBLE, $smartAlbum) ? $smartAlbum : null
 			);
 
-		$tagAlbumQuery = $this->albumAuthorisationProvider
+		$tagAlbumQuery = $this->albumQueryPolicy
 			->applyVisibilityFilter(TagAlbum::query());
 		/** @var Collection<TagAlbum> $tagAlbums */
 		$tagAlbums = (new SortingDecorator($tagAlbumQuery))
@@ -74,7 +74,7 @@ class Top
 			->get();
 
 		/** @var NsQueryBuilder $query */
-		$query = $this->albumAuthorisationProvider
+		$query = $this->albumQueryPolicy
 			->applyVisibilityFilter(Album::query()->whereIsRoot());
 
 		if (Auth::check()) {

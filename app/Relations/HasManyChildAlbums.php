@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class HasManyChildAlbums extends HasManyBidirectionally
 {
-	protected AlbumQueryPolicy $albumAuthorisationProvider;
+	protected AlbumQueryPolicy $albumQueryPolicy;
 	private AlbumSortingCriterion $sorting;
 
 	public function __construct(Album $owningAlbum)
@@ -25,7 +25,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		// the parent constructor.
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
-		$this->albumAuthorisationProvider = resolve(AlbumQueryPolicy::class);
+		$this->albumQueryPolicy = resolve(AlbumQueryPolicy::class);
 		$this->sorting = AlbumSortingCriterion::createDefault();
 		parent::__construct(
 			$owningAlbum->newQuery(),
@@ -55,7 +55,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	{
 		if (static::$constraints) {
 			parent::addConstraints();
-			$this->albumAuthorisationProvider->applyVisibilityFilter($this->getRelationQuery());
+			$this->albumQueryPolicy->applyVisibilityFilter($this->getRelationQuery());
 		}
 	}
 
@@ -65,7 +65,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	public function addEagerConstraints(array $models)
 	{
 		parent::addEagerConstraints($models);
-		$this->albumAuthorisationProvider->applyVisibilityFilter($this->getRelationQuery());
+		$this->albumQueryPolicy->applyVisibilityFilter($this->getRelationQuery());
 	}
 
 	/**

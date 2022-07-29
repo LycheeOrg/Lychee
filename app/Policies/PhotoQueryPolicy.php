@@ -17,11 +17,11 @@ use Illuminate\Support\Facades\Gate;
 
 class PhotoQueryPolicy
 {
-	protected AlbumQueryPolicy $albumAuthorisationProvider;
+	protected AlbumQueryPolicy $albumQueryPolicy;
 
 	public function __construct()
 	{
-		$this->albumAuthorisationProvider = resolve(AlbumQueryPolicy::class);
+		$this->albumQueryPolicy = resolve(AlbumQueryPolicy::class);
 	}
 
 	/**
@@ -58,7 +58,7 @@ class PhotoQueryPolicy
 		// effects in case that the original query already contains an
 		// "OR"-clause.
 		$visibilitySubQuery = function (FixedQueryBuilder $query2) use ($userId) {
-			$this->albumAuthorisationProvider->appendAccessibilityConditions($query2->getQuery());
+			$this->albumQueryPolicy->appendAccessibilityConditions($query2->getQuery());
 			$query2->orWhere('photos.is_public', '=', true);
 			if ($userId !== null) {
 				$query2->orWhere('photos.owner_id', '=', $userId);
@@ -167,7 +167,7 @@ class PhotoQueryPolicy
 		try {
 			// there must be no unreachable album between the origin and the photo
 			$query->whereNotExists(function (BaseBuilder $q) use ($originLeft, $originRight) {
-				$this->albumAuthorisationProvider->appendUnreachableAlbumsCondition($q, $originLeft, $originRight);
+				$this->albumQueryPolicy->appendUnreachableAlbumsCondition($q, $originLeft, $originRight);
 			});
 
 			// Special care needs to be taken for unsorted photo, i.e. photos on

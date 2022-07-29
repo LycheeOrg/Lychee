@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Gate;
  */
 class HasAlbumThumb extends Relation
 {
-	protected AlbumQueryPolicy $albumAuthorisationProvider;
+	protected AlbumQueryPolicy $albumQueryPolicy;
 	protected PhotoQueryPolicy $photoQueryPolicy;
 	protected PhotoSortingCriterion $sorting;
 
@@ -35,7 +35,7 @@ class HasAlbumThumb extends Relation
 		// the parent constructor.
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
-		$this->albumAuthorisationProvider = resolve(AlbumQueryPolicy::class);
+		$this->albumQueryPolicy = resolve(AlbumQueryPolicy::class);
 		$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
 		$this->sorting = PhotoSortingCriterion::createDefault();
 		parent::__construct(
@@ -211,7 +211,7 @@ class HasAlbumThumb extends Relation
 				->whereIn('covered_albums.id', $albumKeys);
 			if (!Gate::check(UserPolicy::ADMIN)) {
 				$builder->where(function (BaseBuilder $q) {
-					$this->albumAuthorisationProvider->appendAccessibilityConditions($q);
+					$this->albumQueryPolicy->appendAccessibilityConditions($q);
 				});
 			}
 		};
