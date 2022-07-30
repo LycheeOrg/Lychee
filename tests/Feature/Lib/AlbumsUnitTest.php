@@ -139,7 +139,7 @@ class AlbumsUnitTest
 	public function unlock(
 		string $id,
 		string $password = '',
-		int $expectedStatusCode = 200,
+		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->postJson(
