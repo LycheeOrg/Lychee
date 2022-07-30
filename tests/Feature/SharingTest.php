@@ -108,6 +108,8 @@ class SharingTest extends PhotoTestBase
 	protected string $albumsSortingOrder;
 	protected string $photosSortingCol;
 	protected string $photosSortingOrder;
+	protected bool $isRecentAlbumPublic;
+	protected bool $isStarredAlbumPublic;
 
 	public function setUp(): void
 	{
@@ -132,6 +134,12 @@ class SharingTest extends PhotoTestBase
 		Configs::set(TestCase::CONFIG_PHOTOS_SORTING_COL, 'title');
 		$this->photosSortingOrder = Configs::getValueAsString(TestCase::CONFIG_PHOTOS_SORTING_ORDER);
 		Configs::set(TestCase::CONFIG_PHOTOS_SORTING_ORDER, 'ASC');
+
+		$this->isRecentAlbumPublic = Configs::getValueAsBool(TestCase::CONFIG_PUBLIC_RECENT);
+		Configs::set(TestCase::CONFIG_PUBLIC_RECENT, true);
+		$this->isStarredAlbumPublic = Configs::getValueAsBool(TestCase::CONFIG_PUBLIC_STARRED);
+		Configs::set(TestCase::CONFIG_PUBLIC_STARRED, true);
+		$this->clearCachedSmartAlbums();
 	}
 
 	public function tearDown(): void
@@ -140,6 +148,10 @@ class SharingTest extends PhotoTestBase
 		Configs::set(TestCase::CONFIG_ALBUMS_SORTING_ORDER, $this->albumsSortingOrder);
 		Configs::set(TestCase::CONFIG_PHOTOS_SORTING_COL, $this->photosSortingCol);
 		Configs::set(TestCase::CONFIG_PHOTOS_SORTING_ORDER, $this->photosSortingOrder);
+
+		Configs::set(TestCase::CONFIG_PUBLIC_RECENT, $this->isRecentAlbumPublic);
+		Configs::set(TestCase::CONFIG_PUBLIC_STARRED, $this->isStarredAlbumPublic);
+		$this->clearCachedSmartAlbums();
 
 		$this->tearDownRequiresEmptyPhotos();
 		$this->tearDownRequiresEmptyAlbums();
@@ -289,7 +301,48 @@ class SharingTest extends PhotoTestBase
 
 	/**
 	 * Uploads a photo, logs out, checks that the anonymous user does not see
-	 * the photo, logs in as another user, checks that the user
+	 * the photo.
+	 *
+	 * In particular the following checks are made:
+	 *  - the user does not see the photo in "Recent"
+	 *  - the user cannot access the photo
+	 *
+	 * @return void
+	 */
+	public function testUnsortedPrivatePhotoWithAnonymousUser(): void
+	{
+		$photoID = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE))->offsetGet('id');
+
+		AccessControl::logout();
+
+		$responseForRoot = $this->root_album_tests->get();
+		$responseForRoot->assertJson([
+			'smart_albums' => [
+				UnsortedAlbum::ID => null,
+				StarredAlbum::ID => ['thumb' => null],
+				PublicAlbum::ID => null,
+				RecentAlbum::ID => ['thumb' => null],
+			],
+			'tag_albums' => [],
+			'albums' => [],
+			'shared_albums' => [],
+		]);
+		$responseForRoot->assertJsonMissing(['id' => $photoID]);
+
+		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
+		$responseForRecent->assertJson([
+			'id' => RecentAlbum::ID,
+			'title' => RecentAlbum::TITLE,
+			'is_public' => true,
+			'thumb' => null,
+			'photos' => [],
+		]);
+		$responseForRecent->assertJsonMissing(['id' => $photoID]);
+		$responseForRecent->assertJsonMissing(['title' => self::PHOTO_MONGOLIA_TITLE]);
+	}
+
+	/**
+	 * Uploads a photo, logs in as another user, checks that the user
 	 * does not see the photo.
 	 *
 	 * In particular the following checks are made:
@@ -299,9 +352,49 @@ class SharingTest extends PhotoTestBase
 	 *
 	 * @return void
 	 */
-	public function testUnsortedPrivatePhoto(): void
+	public function testUnsortedPrivatePhotoWithAuthenticatedUser(): void
 	{
-		static::markTestIncomplete('Not written yet');
+		$photoID = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE))->offsetGet('id');
+		$userID = $this->users_tests->add(self::USER_NAME_1, self::USER_PWD_1)->offsetGet('id');
+
+		AccessControl::logout();
+		AccessControl::log_as_id($userID);
+
+		$responseForRoot = $this->root_album_tests->get();
+		$responseForRoot->assertJson([
+			'smart_albums' => [
+				UnsortedAlbum::ID => ['thumb' => null],
+				StarredAlbum::ID => ['thumb' => null],
+				PublicAlbum::ID => ['thumb' => null],
+				RecentAlbum::ID => ['thumb' => null],
+			],
+			'tag_albums' => [],
+			'albums' => [],
+			'shared_albums' => [],
+		]);
+		$responseForRoot->assertJsonMissing(['id' => $photoID]);
+
+		$responseForUnsorted = $this->albums_tests->get(UnsortedAlbum::ID);
+		$responseForUnsorted->assertJson([
+			'id' => UnsortedAlbum::ID,
+			'title' => UnsortedAlbum::TITLE,
+			'is_public' => false,
+			'thumb' => null,
+			'photos' => [],
+		]);
+		$responseForUnsorted->assertJsonMissing(['id' => $photoID]);
+		$responseForUnsorted->assertJsonMissing(['title' => self::PHOTO_MONGOLIA_TITLE]);
+
+		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
+		$responseForRecent->assertJson([
+			'id' => RecentAlbum::ID,
+			'title' => RecentAlbum::TITLE,
+			'is_public' => true,
+			'thumb' => null,
+			'photos' => [],
+		]);
+		$responseForRecent->assertJsonMissing(['id' => $photoID]);
+		$responseForRecent->assertJsonMissing(['title' => self::PHOTO_MONGOLIA_TITLE]);
 	}
 
 	/**
