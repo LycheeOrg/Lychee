@@ -3,7 +3,6 @@
 namespace App\Actions\WebAuth;
 
 use App\Exceptions\UnauthenticatedException;
-use App\Exceptions\UnauthorizedException;
 use App\Models\User;
 use DarkGhostHunter\Larapass\Facades\WebAuthn;
 use Illuminate\Support\Facades\Auth;
@@ -11,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 class VerifyRegistration
 {
 	/**
-	 * @throws UnauthorizedException
+	 * @throws UnauthenticatedException
 	 */
 	public function do(array $data): void
 	{
@@ -26,7 +25,7 @@ class VerifyRegistration
 		if ($credential !== false) {
 			$user->addCredential($credential);
 		} else {
-			throw new UnauthorizedException('Provided credentials are insufficient');
+			throw new UnauthenticatedException('Provided credentials are insufficient');
 		}
 	}
 }

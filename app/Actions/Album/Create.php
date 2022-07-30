@@ -16,6 +16,7 @@ class Create extends Action
 	 * @return Album
 	 *
 	 * @throws ModelDBException
+	 * @throws UnauthenticatedException
 	 */
 	public function create(string $title, ?Album $parentAlbum): Album
 	{
@@ -32,6 +33,8 @@ class Create extends Action
 	 *
 	 * @param Album      $album
 	 * @param Album|null $parentAlbum
+	 *
+	 * @throws UnauthenticatedException
 	 */
 	private function set_parent(Album $album, ?Album $parentAlbum): void
 	{

@@ -14,6 +14,7 @@ use App\Models\BaseAlbumImpl;
 use App\Models\TagAlbum;
 use App\Policies\UserPolicy;
 use App\SmartAlbums\UnsortedAlbum;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -61,6 +62,8 @@ class Delete extends Action
 	 * @return FileDeleter contains the collected files which became obsolete
 	 *
 	 * @throws ModelDBException
+	 * @throws ModelNotFoundException
+	 * @throws UnauthenticatedException
 	 */
 	public function do(array $albumIDs): FileDeleter
 	{

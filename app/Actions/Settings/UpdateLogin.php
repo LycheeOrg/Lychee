@@ -8,10 +8,8 @@ use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Models\Logs;
 use App\Models\User;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use InvalidArgumentException;
 
 class UpdateLogin
 {
@@ -25,8 +23,6 @@ class UpdateLogin
 	 *
 	 * @return void
 	 *
-	 * @throws InvalidArgumentException
-	 * @throws AuthenticationException
 	 * @throws UnauthenticatedException
 	 * @throws QueryBuilderException
 	 * @throws ConflictingPropertyException
@@ -55,7 +51,5 @@ class UpdateLogin
 
 		$user->password = Hash::make($password);
 		$user->save();
-
-		return;
 	}
 }

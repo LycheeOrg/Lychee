@@ -101,10 +101,12 @@ class UserController extends Controller
 	 *
 	 * @throws InternalLycheeException
 	 * @throws ModelDBException
+	 * @throws UnauthenticatedException
 	 */
 	public function setEmail(SetEmailRequest $request): void
 	{
 		try {
+			/** @var User $user */
 			$user = Auth::user() ?? throw new UnauthenticatedException();
 
 			$user->email = $request->email();
@@ -125,9 +127,12 @@ class UserController extends Controller
 	 * TODO: Why is this an independent request? IMHO this should be combined with the GET request for the other user settings (see session init)
 	 *
 	 * @return array{email: ?string}
+	 *
+	 * @throws UnauthenticatedException
 	 */
 	public function getEmail(): array
 	{
+		/** @var User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();
 
 		return [

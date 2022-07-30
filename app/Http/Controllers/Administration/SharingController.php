@@ -27,19 +27,20 @@ class SharingController extends Controller
 	 * @return Shares
 	 *
 	 * @throws QueryBuilderException
+	 * @throws UnauthenticatedException
 	 * @throws UnauthorizedException
 	 */
 	public function list(ListShare $listShare): Shares
 	{
+		/** @var int */
+		$userId = Auth::id() ?? throw new UnauthenticatedException();
+
 		// TODO: move this to Request authorization.
 		// Note: This test is part of the request validation for the other
 		// methods of this class.
 		if (!Gate::check(UserPolicy::UPLOAD, User::class)) {
 			throw new UnauthorizedException('Upload privilege required');
 		}
-
-		/** @var int */
-		$userId = Auth::id() ?? throw new UnauthenticatedException();
 
 		return $listShare->do($userId);
 	}

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\LycheeException;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
+use App\Exceptions\Internal\FrameworkException;
+use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
-use App\Exceptions\VersionControlException;
 use App\Facades\Helpers;
 use App\Facades\Lang;
 use App\Http\Requests\Session\LoginRequest;
@@ -14,8 +16,9 @@ use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
 use App\Models\Logs;
+use App\Models\User;
 use App\Policies\UserPolicy;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
@@ -56,24 +59,24 @@ class SessionController extends Controller
 	 *
 	 * @return array
 	 *
-	 * @throws ModelNotFoundException
-	 * @throws VersionControlException
+	 * @throws LycheeException
 	 */
 	public function init(): array
 	{
-		// Return settings
-		$return = [];
+		try {
+			// Return settings
+			$return = [];
 
-		// Check if login credentials exist and login if they don't
-		if (Auth::check() || AdminAuthentication::loginAsAdminIfNotRegistered()) {
-			if (Gate::check(UserPolicy::ADMIN)) {
-				$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
-				$return['admin'] = true;
-				$return['may_upload'] = true; // not necessary
-				$return['config'] = $this->configFunctions->admin();
-				$return['config']['location'] = base_path('public/');
-			} else {
-				try {
+			// Check if login credentials exist and login if they don't
+			if (Auth::check() || AdminAuthentication::loginAsAdminIfNotRegistered()) {
+				if (Gate::check(UserPolicy::ADMIN)) {
+					$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
+					$return['admin'] = true;
+					$return['may_upload'] = true; // not necessary
+					$return['config'] = $this->configFunctions->admin();
+					$return['config']['location'] = base_path('public/');
+				} else {
+					/** @var User $user */
 					$user = Auth::user() ?? throw new UnauthenticatedException();
 
 					$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
@@ -81,45 +84,44 @@ class SessionController extends Controller
 					$return['is_locked'] = $user->is_locked;   // may user change their password?
 					$return['may_upload'] = $user->may_upload; // may user upload?
 					$return['username'] = $user->username;
-				} catch (ModelNotFoundException $e) {
-					$this->logout();
-					throw $e;
 				}
+
+				// here we say whether we logged in because there is no login/password or if we actually entered a login/password
+				// TODO: Refactor this. At least, rename the flag `login` to something more understandable, like `isAdminUserConfigured`, but rather re-factor the whole logic, i.e. creating the initial user should be part of the installation routine.
+				$return['config']['login'] = !AdminAuthentication::isAdminNotRegistered();
+				$return['config']['lang_available'] = Lang::get_lang_available();
+			} else {
+				// Logged out
+				$return['config'] = $this->configFunctions->public();
+				if (Configs::getValueAsBool('hide_version_number')) {
+					$return['config']['version'] = '';
+				}
+				$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDOUT');
 			}
 
-			// here we say whether we logged in because there is no login/password or if we actually entered a login/password
-			// TODO: Refactor this. At least, rename the flag `login` to something more understandable, like `isAdminUserConfigured`, but rather re-factor the whole logic, i.e. creating the initial user should be part of the installation routine.
-			$return['config']['login'] = !AdminAuthentication::isAdminNotRegistered();
-			$return['config']['lang_available'] = Lang::get_lang_available();
-		} else {
-			// Logged out
-			$return['config'] = $this->configFunctions->public();
-			if (Configs::getValueAsBool('hide_version_number')) {
-				$return['config']['version'] = '';
-			}
-			$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDOUT');
+			// Consolidate sorting attributes
+			$return['config']['sorting_albums'] = AlbumSortingCriterion::createDefault()->toArray();
+			$return['config']['sorting_photos'] = PhotoSortingCriterion::createDefault()->toArray();
+			unset($return['config']['sorting_albums_col']);
+			unset($return['config']['sorting_albums_order']);
+			unset($return['config']['sorting_photos_col']);
+			unset($return['config']['sorting_photos_order']);
+
+			// Device dependent settings
+			$deviceType = Helpers::getDeviceType();
+			// UI behaviour needs to be slightly modified if client is a TV
+			$return['config_device'] = $this->configFunctions->get_config_device($deviceType);
+
+			// we also return the local
+			$return['locale'] = Lang::get_lang();
+
+			$return['update_json'] = 0;
+			$return['update_available'] = false;
+
+			return array_merge($return, $this->gitHubFunctions->checkUpdates());
+		} catch (BindingResolutionException) {
+			throw new FrameworkException('Laravel\'s path component');
 		}
-
-		// Consolidate sorting attributes
-		$return['config']['sorting_albums'] = AlbumSortingCriterion::createDefault()->toArray();
-		$return['config']['sorting_photos'] = PhotoSortingCriterion::createDefault()->toArray();
-		unset($return['config']['sorting_albums_col']);
-		unset($return['config']['sorting_albums_order']);
-		unset($return['config']['sorting_photos_col']);
-		unset($return['config']['sorting_photos_order']);
-
-		// Device dependent settings
-		$deviceType = Helpers::getDeviceType();
-		// UI behaviour needs to be slightly modified if client is a TV
-		$return['config_device'] = $this->configFunctions->get_config_device($deviceType);
-
-		// we also return the local
-		$return['locale'] = Lang::get_lang();
-
-		$return['update_json'] = 0;
-		$return['update_available'] = false;
-
-		return array_merge($return, $this->gitHubFunctions->checkUpdates());
 	}
 
 	/**
@@ -130,6 +132,7 @@ class SessionController extends Controller
 	 * @return void
 	 *
 	 * @throws UnauthenticatedException
+	 * @throws ModelDBException
 	 */
 	public function login(LoginRequest $request): void
 	{

@@ -100,6 +100,9 @@ abstract class AddBaseStrategy
 		}
 	}
 
+	/**
+	 * @throws UnauthenticatedException
+	 */
 	protected function setParentAndOwnership(): void
 	{
 		if ($this->parameters->album !== null) {

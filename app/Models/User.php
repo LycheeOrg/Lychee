@@ -146,6 +146,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 *
 	 * @throws ModelDBException
 	 * @throws InvalidFormatException
+	 * @throws UnauthenticatedException
 	 */
 	public function delete(): bool
 	{

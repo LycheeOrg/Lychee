@@ -9,6 +9,9 @@ use Webauthn\PublicKeyCredentialCreationOptions;
 
 class GenerateRegistration
 {
+	/**
+	 * @throws UnauthenticatedException
+	 */
 	public function do(): PublicKeyCredentialCreationOptions
 	{
 		/** @var \App\Models\User */

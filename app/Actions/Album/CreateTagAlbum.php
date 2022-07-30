@@ -18,6 +18,7 @@ class CreateTagAlbum extends Action
 	 * @return TagAlbum
 	 *
 	 * @throws ModelDBException
+	 * @throws UnauthenticatedException
 	 */
 	public function create(string $title, array $show_tags): TagAlbum
 	{

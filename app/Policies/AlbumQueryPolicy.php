@@ -6,7 +6,6 @@ use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Exceptions\UnauthenticatedException;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
@@ -420,9 +419,8 @@ class AlbumQueryPolicy
 			$query->join('base_albums', 'base_albums.id', '=', $table . '.id');
 		}
 
-		if (Auth::check()) {
-			$userID = Auth::id() ?? throw new UnauthenticatedException();
-
+		$userID = Auth::id();
+		if ($userID !== null) {
 			// We must left join with `user_base_album` if and only if we
 			// restrict the eventual query to the ID of the authenticated
 			// user by a `WHERE`-clause.

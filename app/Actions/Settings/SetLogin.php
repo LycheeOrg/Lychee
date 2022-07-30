@@ -2,11 +2,10 @@
 
 namespace App\Actions\Settings;
 
+use App\Exceptions\ModelDBException;
 use App\Models\User;
-use Hash;
-use Illuminate\Database\Eloquent\InvalidCastException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use InvalidArgumentException;
+use Illuminate\Support\Facades\Hash;
 
 class SetLogin
 {
@@ -20,8 +19,7 @@ class SetLogin
 	 * @return void
 	 *
 	 * @throws ModelNotFoundException
-	 * @throws InvalidArgumentException
-	 * @throws InvalidCastException
+	 * @throws ModelDBException
 	 */
 	public function do(string $username, string $password): void
 	{
@@ -30,7 +28,5 @@ class SetLogin
 		$adminUser->username = $username;
 		$adminUser->password = Hash::make($password);
 		$adminUser->save();
-
-		return;
 	}
 }

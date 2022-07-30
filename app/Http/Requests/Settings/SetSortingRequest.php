@@ -7,7 +7,7 @@ use App\Policies\UserPolicy;
 use App\Rules\AlbumSortingRule;
 use App\Rules\OrderRule;
 use App\Rules\PhotoSortingRule;
-use Gate;
+use Illuminate\Support\Facades\Gate;
 
 class SetSortingRequest extends BaseApiRequest
 {

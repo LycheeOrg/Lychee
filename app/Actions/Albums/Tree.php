@@ -5,8 +5,8 @@ namespace App\Actions\Albums;
 use App\Contracts\InternalLycheeException;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\AlbumTree;
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
-use App\Exceptions\UnauthenticatedException;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Policies\AlbumQueryPolicy;
@@ -20,6 +20,7 @@ class Tree
 
 	/**
 	 * @throws InvalidOrderDirectionException
+	 * @throws ConfigurationKeyMissingException
 	 */
 	public function __construct(AlbumQueryPolicy $albumQueryPolicy)
 	{
@@ -62,8 +63,8 @@ class Tree
 		$albums = $query->get();
 		/** @var ?NsCollection<Album> $sharedAlbums */
 		$sharedAlbums = null;
-		if (Auth::check()) {
-			$id = Auth::id() ?? throw new UnauthenticatedException();
+		$userID = Auth::id();
+		if ($userID !== null) {
 			// ATTENTION:
 			// For this to work correctly, it is crucial that all child albums
 			// below each top-level album have the same owner!
@@ -71,7 +72,7 @@ class Tree
 			// (sub)-tree and then `toTree` will return garbage as it does
 			// not find connected paths within `$albums` or `$sharedAlbums`,
 			// resp.
-			list($albums, $sharedAlbums) = $albums->partition(fn ($album) => $album->owner_id === $id);
+			list($albums, $sharedAlbums) = $albums->partition(fn ($album) => $album->owner_id === $userID);
 		}
 
 		// We must explicitly pass `null` as the ID of the root album

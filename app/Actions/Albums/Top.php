@@ -5,8 +5,8 @@ namespace App\Actions\Albums;
 use App\Contracts\InternalLycheeException;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\TopAlbums;
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
-use App\Exceptions\UnauthenticatedException;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
@@ -28,6 +28,7 @@ class Top
 
 	/**
 	 * @throws InvalidOrderDirectionException
+	 * @throws ConfigurationKeyMissingException
 	 */
 	public function __construct(AlbumFactory $albumFactory, AlbumQueryPolicy $albumQueryPolicy)
 	{
@@ -77,19 +78,19 @@ class Top
 		$query = $this->albumQueryPolicy
 			->applyVisibilityFilter(Album::query()->whereIsRoot());
 
-		if (Auth::check()) {
+		$userID = Auth::id();
+		if ($userID !== null) {
 			// For authenticated users we group albums by ownership.
 			$albums = (new SortingDecorator($query))
 				->orderBy('owner_id')
 				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();
 
-			$id = Auth::id() ?? throw new UnauthenticatedException();
 			/**
 			 * @var BaseCollection<Album> $a
 			 * @var BaseCollection<Album> $b
 			 */
-			list($a, $b) = $albums->partition(fn ($album) => $album->owner_id === $id);
+			list($a, $b) = $albums->partition(fn ($album) => $album->owner_id === $userID);
 
 			return new TopAlbums($smartAlbums, $tagAlbums, $a->values(), $b->values());
 		} else {
