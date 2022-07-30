@@ -45,7 +45,7 @@ class AdminAuthentication
 	}
 
 	/**
-	 * Checks wether the the admin is unconfigured.
+	 * Checks whether the admin is unconfigured.
 	 * The method is not side-effect free.
 	 * If the admin user happens to not exist at all, the method creates an unconfigured admin.
 	 *
@@ -66,11 +66,11 @@ class AdminAuthentication
 	}
 
 	/**
-	 * TODO: Once the admin user registration is moved to the installation phase this methode can finally be removed.
+	 * TODO: Once the admin user registration is moved to the installation phase this method can finally be removed.
 	 *
 	 * Login as admin temporarily when unconfigured.
 	 *
-	 * @return bool true of successful
+	 * @return bool true if successful
 	 *
 	 * @throws ModelDBException
 	 */

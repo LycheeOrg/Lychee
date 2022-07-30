@@ -6,7 +6,7 @@ use App\Exceptions\ModelDBException;
 use App\Models\User;
 
 /**
- * We allo to reset admin User.
+ * We allow to reset admin User.
  */
 class ResetAdmin
 {

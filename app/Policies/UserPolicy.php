@@ -53,7 +53,7 @@ class UserPolicy
 	}
 
 	/**
-	 * This defines is user has upload rights.
+	 * This defines if user has upload rights.
 	 *
 	 * @param User $user
 	 *
