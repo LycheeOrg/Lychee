@@ -22,6 +22,7 @@ use Tests\Feature\Base\PhotoTestBase;
 use Tests\Feature\Lib\RootAlbumUnitTest;
 use Tests\Feature\Lib\SharingUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
+use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyUsers;
 use Tests\TestCase;
@@ -30,6 +31,7 @@ class SharingTest extends PhotoTestBase
 {
 	use RequiresEmptyAlbums;
 	use RequiresEmptyUsers;
+	use InteractWithSmartAlbums;
 
 	public const PHOTO_NIGHT_TITLE = 'night';
 	public const PHOTO_MONGOLIA_TITLE = 'mongolia';
@@ -252,6 +254,7 @@ class SharingTest extends PhotoTestBase
 
 		AccessControl::logout();
 		AccessControl::log_as_id($userID);
+		$this->clearCachedSmartAlbums();
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson([
@@ -312,8 +315,8 @@ class SharingTest extends PhotoTestBase
 	public function testUnsortedPrivatePhotoWithAnonymousUser(): void
 	{
 		$photoID = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE))->offsetGet('id');
-
 		AccessControl::logout();
+		$this->clearCachedSmartAlbums();
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson([
@@ -359,6 +362,7 @@ class SharingTest extends PhotoTestBase
 
 		AccessControl::logout();
 		AccessControl::log_as_id($userID);
+		$this->clearCachedSmartAlbums();
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson([
@@ -399,19 +403,37 @@ class SharingTest extends PhotoTestBase
 
 	/**
 	 * Uploads two photos, marks the least recent photo as public and stars it,
-	 * logs out, checks that the anonymous user does see the photo, logs in
-	 * as another user, checks again.
+	 * logs out and checks that the anonymous user does see the photo.
 	 *
 	 * In particular the following checks are made:
-	 *  - the (anonymous) user sees the public photo as the cover of
+	 *  - the anonymous user sees the public photo as the cover of
 	 *    "Recent" and "Favorites" (but not the other one which is actually
 	 *    more recent)
-	 *  - the (anonymous) user sees the public photo in "Recent" and
+	 *  - the anonymous user sees the public photo in "Recent" and
 	 *    "Favorites" but not the other one
 	 *
 	 * @return void
 	 */
-	public function testUnsortedPublicPhoto(): void
+	public function testUnsortedPublicPhotoWithAnonymousUser(): void
+	{
+		static::markTestIncomplete('Not written yet');
+	}
+
+	/**
+	 * Uploads two photos, marks the least recent photo as public and stars it,
+	 * logs out, logs in as another user and checks that the user does see the
+	 * photo.
+	 *
+	 * In particular the following checks are made:
+	 *  - the user sees the public photo as the cover of
+	 *    "Recent" and "Favorites" (but not the other one which is actually
+	 *    more recent)
+	 *  - the user sees the public photo in "Recent" and
+	 *    "Favorites" but not the other one
+	 *
+	 * @return void
+	 */
+	public function testUnsortedPublicPhotoWithAuthenticatedUser(): void
 	{
 		static::markTestIncomplete('Not written yet');
 	}
@@ -652,6 +674,7 @@ class SharingTest extends PhotoTestBase
 
 		AccessControl::logout();
 		AccessControl::log_as_id($userID);
+		$this->clearCachedSmartAlbums();
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson([
@@ -723,6 +746,7 @@ class SharingTest extends PhotoTestBase
 		// AFTER UNLOCKING: ENSURE 1&2&3 ARE VISIBLE
 
 		$this->albums_tests->unlock($albumID3, self::ALBUM_PWD_1);
+		$this->clearCachedSmartAlbums();
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson([
