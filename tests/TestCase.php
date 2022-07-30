@@ -90,6 +90,10 @@ abstract class TestCase extends BaseTestCase
 	public const CONFIG_HAS_FFMPEG = 'has_ffmpeg';
 	public const CONFIG_HAS_IMAGICK = 'imagick';
 	public const CONFIG_RAW_FORMATS = 'raw_formats';
+	public const CONFIG_ALBUMS_SORTING_COL = 'sorting_albums_col';
+	public const CONFIG_ALBUMS_SORTING_ORDER = 'sorting_albums_order';
+	public const CONFIG_PHOTOS_SORTING_COL = 'sorting_photos_col';
+	public const CONFIG_PHOTOS_SORTING_ORDER = 'sorting_photos_order';
 
 	/**
 	 * Visit the given URI with a GET request.
