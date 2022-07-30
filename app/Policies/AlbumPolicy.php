@@ -111,8 +111,8 @@ class AlbumPolicy
 			try {
 				return
 					$this->own($user, $album) ||
-					($album->is_public === true && $album->password === null) ||
-					($album->is_public === true && $this->unlocked($album)) ||
+					($album->is_public && $album->password === null) ||
+					($album->is_public && $this->unlocked($album)) ||
 					($album->shared_with()->where('user_id', '=', $user?->id)->count() > 0);
 			} catch (\InvalidArgumentException $e) {
 				throw LycheeAssertionError::createFromUnexpectedException($e);
