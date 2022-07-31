@@ -104,6 +104,10 @@ class PhotoPolicy
 	 */
 	public function download(?User $user, Photo $photo): bool
 	{
+		if ($this->own($user, $photo)) {
+			return true;
+		}
+
 		if (!$this->visible($user, $photo)) {
 			return false;
 		}

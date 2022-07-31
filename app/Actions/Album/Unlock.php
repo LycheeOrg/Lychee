@@ -7,7 +7,6 @@ use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 
 class Unlock extends Action
 {
@@ -68,18 +67,8 @@ class Unlock extends Action
 		/** @var BaseAlbumImpl $album */
 		foreach ($albums as $album) {
 			if (Hash::check($password, $album->password)) {
-				$this->unlock($album);
+				$this->albumPolicy->unlock($album);
 			}
 		}
-	}
-
-	/**
-	 * Pushes an album onto the stack of unlocked albums.
-	 *
-	 * @param BaseAlbum|BaseAlbumImpl $album
-	 */
-	private function unlock(BaseAlbum|BaseAlbumImpl $album): void
-	{
-		Session::push(AlbumPolicy::UNLOCKED_ALBUMS_SESSION_KEY, $album->id);
 	}
 }

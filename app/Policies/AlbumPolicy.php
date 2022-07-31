@@ -249,6 +249,16 @@ class AlbumPolicy
 	}
 
 	/**
+	 * Pushes an album onto the stack of unlocked albums.
+	 *
+	 * @param BaseAlbum|BaseAlbumImpl $album
+	 */
+	public function unlock(BaseAlbum|BaseAlbumImpl $album): void
+	{
+		Session::push(AlbumPolicy::UNLOCKED_ALBUMS_SESSION_KEY, $album->id);
+	}
+
+	/**
 	 * Check whether the given album has previously been unlocked.
 	 *
 	 * @param BaseAlbum|BaseAlbumImpl $album
