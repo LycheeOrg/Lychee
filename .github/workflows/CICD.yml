@@ -267,12 +267,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # - name: Set Up Imagick, FFmpeg & Exiftools
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get --fix-broken install
-      #     sudo apt-get -y install ffmpeg libimage-exiftool-perl
-
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -287,11 +281,11 @@ jobs:
 
       - name: Build Dist
         run: |
-          make clean dist
+          make clean dist-clean
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
         with:
           name: Lychee-Dist.zip
-          path: Lychee.zip
+          path: Lychee
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
