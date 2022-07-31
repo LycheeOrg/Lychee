@@ -5,6 +5,8 @@ namespace App\SmartAlbums;
 use App\Contracts\AbstractAlbum;
 use App\Contracts\InternalLycheeException;
 use App\DTO\PhotoSortingCriterion;
+use App\Exceptions\ConfigurationKeyMissingException;
+use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\InvalidPropertyException;
@@ -15,6 +17,7 @@ use App\Models\Extensions\UTCBasedTimes;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
 use App\SmartAlbums\Utils\MimicModel;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -44,16 +47,24 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	protected Collection $photos;
 	protected \Closure $smartPhotoCondition;
 
+	/**
+	 * @throws ConfigurationKeyMissingException
+	 * @throws FrameworkException
+	 */
 	protected function __construct(string $id, string $title, bool $isPublic, \Closure $smartCondition)
 	{
-		$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
-		$this->id = $id;
-		$this->title = $title;
-		$this->isPublic = $isPublic;
-		$this->isDownloadable = Configs::getValueAsBool('downloadable');
-		$this->isShareButtonVisible = Configs::getValueAsBool('share_button_visible');
-		$this->thumb = null;
-		$this->smartPhotoCondition = $smartCondition;
+		try {
+			$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
+			$this->id = $id;
+			$this->title = $title;
+			$this->isPublic = $isPublic;
+			$this->isDownloadable = Configs::getValueAsBool('downloadable');
+			$this->isShareButtonVisible = Configs::getValueAsBool('share_button_visible');
+			$this->thumb = null;
+			$this->smartPhotoCondition = $smartCondition;
+		} catch (BindingResolutionException $e) {
+			throw new FrameworkException('Laravel\'s service container', $e);
+		}
 	}
 
 	/**

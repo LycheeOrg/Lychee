@@ -14,14 +14,20 @@ namespace Tests\Feature;
 
 use App\Legacy\AdminAuthentication;
 use App\Models\Configs;
+use App\SmartAlbums\PublicAlbum;
+use App\SmartAlbums\StarredAlbum;
+use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Support\Facades\Auth;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\SessionUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
+use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\TestCase;
 
 class UsersTest extends TestCase
 {
+	use InteractWithSmartAlbums;
+
 	public function testSetLogin(): void
 	{
 		/**
@@ -184,15 +190,16 @@ class UsersTest extends TestCase
 		// 18
 		$sessions_test->login('test_abcde', 'password_testing');
 		$sessions_test->init();
+		$this->clearCachedSmartAlbums();
 
 		// 19
-		$album_tests->get('public', 403);
+		$album_tests->get(PublicAlbum::ID, 403);
 
 		// 20
-		$album_tests->get('starred', 403);
+		$album_tests->get(StarredAlbum::ID, 403);
 
 		// 21
-		$album_tests->get('unsorted', 403);
+		$album_tests->get(UnsortedAlbum::ID, 403);
 
 		// 22
 		$sessions_test->update_login('test_abcde', 'password_testing2', '', 422, 'The old password field is required.');

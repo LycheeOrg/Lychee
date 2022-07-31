@@ -12,15 +12,22 @@
 
 namespace Tests\Feature;
 
+use App\SmartAlbums\PublicAlbum;
+use App\SmartAlbums\RecentAlbum;
+use App\SmartAlbums\StarredAlbum;
+use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\RootAlbumUnitTest;
+use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\TestCase;
 
 class AlbumTest extends TestCase
 {
+	use InteractWithSmartAlbums;
+
 	protected AlbumsUnitTest $albums_tests;
 	protected RootAlbumUnitTest $root_album_tests;
 
@@ -38,12 +45,13 @@ class AlbumTest extends TestCase
 	 */
 	public function testAddNotLogged(): void
 	{
+		$this->clearCachedSmartAlbums();
 		$this->albums_tests->add(null, 'test_album', 401);
 
-		$this->albums_tests->get('recent', 401);
-		$this->albums_tests->get('starred', 401);
-		$this->albums_tests->get('public', 401);
-		$this->albums_tests->get('unsorted', 401);
+		$this->albums_tests->get(RecentAlbum::ID, 401);
+		$this->albums_tests->get(StarredAlbum::ID, 401);
+		$this->albums_tests->get(PublicAlbum::ID, 401);
+		$this->albums_tests->get(UnsortedAlbum::ID, 401);
 
 		// Ensure that we get proper 404 (not found) response for a
 		// non-existing album, not a false 403 (forbidden) response
@@ -53,11 +61,12 @@ class AlbumTest extends TestCase
 	public function testAddReadLogged(): void
 	{
 		Auth::loginUsingId(0);
+		$this->clearCachedSmartAlbums();
 
-		$this->albums_tests->get('recent');
-		$this->albums_tests->get('starred');
-		$this->albums_tests->get('public');
-		$this->albums_tests->get('unsorted');
+		$this->albums_tests->get(RecentAlbum::ID);
+		$this->albums_tests->get(StarredAlbum::ID);
+		$this->albums_tests->get(PublicAlbum::ID);
+		$this->albums_tests->get(UnsortedAlbum::ID);
 
 		$albumID1 = $this->albums_tests->add(null, 'test_album')->offsetGet('id');
 		$albumID2 = $this->albums_tests->add(null, 'test_album2')->offsetGet('id');
@@ -294,8 +303,8 @@ class AlbumTest extends TestCase
 
 		$this->albums_tests->set_description('-1', 'new description', 422);
 		$this->albums_tests->set_description('abcdefghijklmnopqrstuvwx', 'new description', 404);
-		$this->albums_tests->set_protection_policy('-1', true, true, false, false, true, true, 422);
-		$this->albums_tests->set_protection_policy('abcdefghijklmnopqrstuvwx', true, true, false, false, true, true, 404);
+		$this->albums_tests->set_protection_policy('-1', true, true, false, false, true, true, null, 422);
+		$this->albums_tests->set_protection_policy('abcdefghijklmnopqrstuvwx', true, true, false, false, true, true, null, 404);
 
 		Auth::logout();
 		Session::flush();
