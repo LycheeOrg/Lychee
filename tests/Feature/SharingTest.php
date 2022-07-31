@@ -711,14 +711,78 @@ class SharingTest extends PhotoTestBase
 	}
 
 	/**
-	 * See {@link SharingTest::testUnsortedPublicPhoto()} but for photos
-	 * in an album.
+	 * Ensure that searching public photos is disabled, creates an album
+	 * with a photo, marks the album as public and stars the photo, logs out
+	 * and checks that the anonymous user sees the photo.
+	 *
+	 * In comparison to
+	 * {@link SharingTest::testUnsortedPublicPhotoWithAnonymousUser1()}
+	 * the photo is visible, although public search is disabled, because
+	 * the photo is inside a public album which is browsable.
 	 *
 	 * @return void
 	 */
-	public function testPublicPhoto(): void
+	public function testPhotoInPublicAlbumWithAnonymousUser1(): void
 	{
-		static::markTestIncomplete('Not written yet');
+		$arePublicPhotosHidden = Configs::getValueAsBool(TestCase::CONFIG_PUBLIC_HIDDEN);
+		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, true);
+
+		$albumID = $this->albums_tests->add(null, self::ALBUM_TITLE_1)->offsetGet('id');
+		$photoID = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $albumID)->offsetGet('id');
+		$this->albums_tests->set_protection_policy($albumID);
+		$this->photos_tests->set_star([$photoID], true);
+		AccessControl::logout();
+		$this->clearCachedSmartAlbums();
+
+		$responseForRoot = $this->root_album_tests->get();
+		$responseForRoot->assertJson([
+			'smart_albums' => [
+				UnsortedAlbum::ID => null,
+				StarredAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($photoID)],
+				PublicAlbum::ID => null,
+				RecentAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($photoID)],
+			],
+			'tag_albums' => [],
+			'albums' => [
+				$this->generateExpectedAlbumJson($albumID, self::ALBUM_TITLE_1, null, $photoID),
+			],
+			'shared_albums' => [],
+		]);
+
+		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
+		$responseForRecent->assertJson([
+			'id' => RecentAlbum::ID,
+			'title' => RecentAlbum::TITLE,
+			'is_public' => true,
+			'thumb' => $this->generateExpectedThumbJson($photoID),
+			'photos' => [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $photoID, $albumID),
+			],
+		]);
+
+		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
+		$responseForStarred->assertJson([
+			'id' => StarredAlbum::ID,
+			'title' => StarredAlbum::TITLE,
+			'is_public' => true,
+			'thumb' => $this->generateExpectedThumbJson($photoID),
+			'photos' => [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $photoID, $albumID),
+			],
+		]);
+
+		$responseForAlbum = $this->albums_tests->get($albumID);
+		$responseForAlbum->assertJson([
+			'id' => $albumID,
+			'title' => self::ALBUM_TITLE_1,
+			'is_public' => true,
+			'thumb' => $this->generateExpectedThumbJson($photoID),
+			'photos' => [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $photoID, $albumID),
+			],
+		]);
+
+		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
 	}
 
 	/**
