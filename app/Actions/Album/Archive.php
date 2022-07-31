@@ -10,6 +10,7 @@ use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\Models\TagAlbum;
+use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection;
