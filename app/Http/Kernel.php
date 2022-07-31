@@ -94,8 +94,6 @@ class Kernel extends HttpKernel
 	 * @var array<string, string>
 	 */
 	protected $routeMiddleware = [
-		// 'can' => \Illuminate\Auth\Middleware\Authorize::class,
-		// this middleware allows the use of gates directly with 'can:access' etc...
 		'admin' => \App\Http\Middleware\AdminCheck::class,
 		'installation' => \App\Http\Middleware\InstallationStatus::class,
 		'migration' => \App\Http\Middleware\MigrationStatus::class,
