@@ -110,13 +110,15 @@ class AlbumsUnitTest
 	 * @param string      $id
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
+	 * @param string|null $assertDontSee
 	 *
 	 * @return TestResponse
 	 */
 	public function get(
 		string $id,
 		int $expectedStatusCode = 200,
-		?string $assertSee = null
+		?string $assertSee = null,
+		?string $assertDontSee = null
 	): TestResponse {
 		$response = $this->testCase->postJson(
 			'/api/Album::get',
@@ -125,6 +127,9 @@ class AlbumsUnitTest
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
+		}
+		if ($assertDontSee) {
+			$response->assertDontSee($assertDontSee, false);
 		}
 
 		return $response;

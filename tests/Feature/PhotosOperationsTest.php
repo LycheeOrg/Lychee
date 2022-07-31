@@ -18,13 +18,20 @@ use App\Image\InMemoryBuffer;
 use App\Image\TemporaryLocalFile;
 use App\Image\VideoHandler;
 use App\Models\Configs;
+use App\SmartAlbums\PublicAlbum;
+use App\SmartAlbums\RecentAlbum;
+use App\SmartAlbums\StarredAlbum;
+use App\SmartAlbums\UnsortedAlbum;
 use Carbon\Carbon;
 use Tests\Feature\Base\PhotoTestBase;
+use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\TestCase;
 use ZipArchive;
 
 class PhotosOperationsTest extends PhotoTestBase
 {
+	use InteractWithSmartAlbums;
+
 	/**
 	 * Tests a lot of photo actions at once.
 	 *
@@ -41,10 +48,11 @@ class PhotosOperationsTest extends PhotoTestBase
 
 		$this->photos_tests->get($id);
 
-		$this->photos_tests->see_in_unsorted($id);
-		$this->photos_tests->see_in_recent($id);
-		$this->photos_tests->dont_see_in_shared($id);
-		$this->photos_tests->dont_see_in_favorite($id);
+		$this->clearCachedSmartAlbums();
+		$this->albums_tests->get(UnsortedAlbum::ID, 200, $id);
+		$this->albums_tests->get(RecentAlbum::ID, 200, $id);
+		$this->albums_tests->get(PublicAlbum::ID, 200, null, $id);
+		$this->albums_tests->get(StarredAlbum::ID, 200, null, $id);
 
 		$this->photos_tests->set_title($id, "Night in Ploumanac'h");
 		$this->photos_tests->set_description($id, 'A night photography');
@@ -85,8 +93,9 @@ class PhotosOperationsTest extends PhotoTestBase
 		$this->photos_tests->set_license($id, 'CC-BY-NC-SA-4.0');
 		$this->photos_tests->set_license($id, 'reserved');
 
-		$this->photos_tests->see_in_favorite($id);
-		$this->photos_tests->see_in_shared($id);
+		$this->clearCachedSmartAlbums();
+		$this->albums_tests->get(StarredAlbum::ID, 200, $id);
+		$this->albums_tests->get(PublicAlbum::ID, 200, $id);
 		$response = $this->photos_tests->get($id);
 
 		/*
@@ -128,7 +137,8 @@ class PhotosOperationsTest extends PhotoTestBase
 		$this->photos_tests->set_album('-1', [$id], 422);
 		$this->photos_tests->set_album($albumID, [$id]);
 		$this->albums_tests->download($albumID);
-		$this->photos_tests->dont_see_in_unsorted($id);
+		$this->clearCachedSmartAlbums();
+		$this->albums_tests->get(UnsortedAlbum::ID, 200, null, $id);
 
 		/**
 		 * Test duplication, the duplicate should be completely identical
@@ -182,8 +192,9 @@ class PhotosOperationsTest extends PhotoTestBase
 		$this->photos_tests->delete([$ids[0]]);
 		$this->photos_tests->get($ids[0], 404);
 
-		$this->photos_tests->dont_see_in_recent($ids[0]);
-		$this->photos_tests->dont_see_in_unsorted($ids[1]);
+		$this->clearCachedSmartAlbums();
+		$this->albums_tests->get(RecentAlbum::ID, 200, null, $ids[0]);
+		$this->albums_tests->get(UnsortedAlbum::ID, 200, null, $ids[1]);
 
 		$this->albums_tests->set_protection_policy($albumID);
 
@@ -207,6 +218,7 @@ class PhotosOperationsTest extends PhotoTestBase
 		static::assertEquals('1', Configs::getValue('gen_demo_js'));
 
 		// check redirection
+		$this->clearCachedSmartAlbums();
 		$response = $this->get('/demo');
 		$response->assertOk();
 		$response->assertViewIs('demo');

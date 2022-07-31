@@ -14,15 +14,18 @@ namespace Tests\Feature;
 
 use App\Facades\AccessControl;
 use App\Models\Configs;
+use App\SmartAlbums\UnsortedAlbum;
 use Carbon\Carbon;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
+use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\TestCase;
 
 class GeoDataTest extends TestCase
 {
 	use RequiresEmptyPhotos;
+	use InteractWithSmartAlbums;
 
 	protected PhotosUnitTest $photos_tests;
 	protected AlbumsUnitTest $albums_tests;
@@ -59,7 +62,7 @@ class GeoDataTest extends TestCase
 			);
 			$photoID = $photoResponse->offsetGet('id');
 
-			$this->photos_tests->see_in_unsorted($photoID);
+			$this->albums_tests->get(UnsortedAlbum::ID, 200, $photoID);
 			/*
 			 * Check some Exif data
 			 * The metadata extractor is unable to extract an explicit timezone
@@ -113,7 +116,8 @@ class GeoDataTest extends TestCase
 			$albumResponse = $this->albums_tests->add(null, 'test_mongolia');
 			$albumID = $albumResponse->offsetGet('id');
 			$this->photos_tests->set_album($albumID, [$photoID]);
-			$this->photos_tests->dont_see_in_unsorted($photoID);
+			$this->clearCachedSmartAlbums();
+			$this->albums_tests->get(UnsortedAlbum::ID, 200, null, $photoID);
 			$albumResponse = $this->albums_tests->get($albumID);
 			$album = static::convertJsonToObject($albumResponse);
 			static::assertCount(1, $album->photos);
