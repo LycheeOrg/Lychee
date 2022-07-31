@@ -96,6 +96,7 @@ abstract class TestCase extends BaseTestCase
 	public const CONFIG_PHOTOS_SORTING_ORDER = 'sorting_photos_order';
 	public const CONFIG_PUBLIC_RECENT = 'public_recent';
 	public const CONFIG_PUBLIC_STARRED = 'public_starred';
+	public const CONFIG_PUBLIC_HIDDEN = 'public_photos_hidden';
 
 	/**
 	 * Visit the given URI with a GET request.
