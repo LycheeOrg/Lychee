@@ -419,7 +419,7 @@ class SharingTest extends PhotoTestBase
 	 *
 	 * @return void
 	 */
-	public function testUnsortedPublicPhotoWithAnonymousUser1(): void
+	public function testUnsortedPublicPhotoWithAnonymousUserAndNoPublicSearch(): void
 	{
 		$arePublicPhotosHidden = Configs::getValueAsBool(TestCase::CONFIG_PUBLIC_HIDDEN);
 		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, true);
@@ -488,7 +488,7 @@ class SharingTest extends PhotoTestBase
 	 *
 	 * @return void
 	 */
-	public function testUnsortedPublicPhotoWithAnonymousUser2(): void
+	public function testUnsortedPublicPhotoWithAnonymousUserAndPublicSearch(): void
 	{
 		$arePublicPhotosHidden = Configs::getValueAsBool(TestCase::CONFIG_PUBLIC_HIDDEN);
 		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, false);
@@ -561,7 +561,7 @@ class SharingTest extends PhotoTestBase
 	 *
 	 * @return void
 	 */
-	public function testUnsortedPublicPhotoWithAuthenticatedUser1(): void
+	public function testUnsortedPublicPhotoWithAuthenticatedUserAndNoPublicSearch(): void
 	{
 		$arePublicPhotosHidden = Configs::getValueAsBool(TestCase::CONFIG_PUBLIC_HIDDEN);
 		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, true);
@@ -642,7 +642,7 @@ class SharingTest extends PhotoTestBase
 	 *
 	 * @return void
 	 */
-	public function testUnsortedPublicPhotoWithAuthenticatedUser2(): void
+	public function testUnsortedPublicPhotoWithAuthenticatedUserAndPublicSearch(): void
 	{
 		$arePublicPhotosHidden = Configs::getValueAsBool(TestCase::CONFIG_PUBLIC_HIDDEN);
 		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, false);
@@ -723,12 +723,12 @@ class SharingTest extends PhotoTestBase
 	 * is public (but not searchable).
 	 *
 	 * This test is similar to
-	 * {@link SharingTest::testUnsortedPublicPhotoWithAnonymousUser1()}
+	 * {@link SharingTest::testUnsortedPublicPhotoWithAnonymousUserAndNoPublicSearch()}
 	 * but with an album.
 	 *
 	 * @return void
 	 */
-	public function testPublicPhotoInPrivateAlbumWithAnonymousUser1(): void
+	public function testPublicPhotoInPrivateAlbumWithAnonymousUserAndNoPublicSearch(): void
 	{
 		$arePublicPhotosHidden = Configs::getValueAsBool(TestCase::CONFIG_PUBLIC_HIDDEN);
 		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, true);
@@ -788,12 +788,12 @@ class SharingTest extends PhotoTestBase
 	 * alphabetically last photo but not the other.
 	 *
 	 * This test is similar to
-	 * {@link SharingTest::testUnsortedPublicPhotoWithAnonymousUser2()}
+	 * {@link SharingTest::testUnsortedPublicPhotoWithAnonymousUserAndPublicSearch()}
 	 * but with an album.
 	 *
 	 * @return void
 	 */
-	public function testPublicPhotoInPrivateAlbumWithAnonymousUser2(): void
+	public function testPublicPhotoInPrivateAlbumWithAnonymousUserAndPublicSearch(): void
 	{
 		$arePublicPhotosHidden = Configs::getValueAsBool(TestCase::CONFIG_PUBLIC_HIDDEN);
 		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, false);
@@ -846,6 +846,9 @@ class SharingTest extends PhotoTestBase
 		$responseForStarred->assertJsonMissing(['id' => $photoID2]);
 		$responseForStarred->assertJsonMissing(['title' => self::PHOTO_MONGOLIA_TITLE]);
 
+		// The album and photo 2 are not accessible, but photo 1 is
+		// because it is public even though it is contained in an inaccessible
+		// album
 		$this->albums_tests->get($albumID, 401);
 		$this->photos_tests->get($photoID1);
 		$this->photos_tests->get($photoID2, 401);
@@ -859,15 +862,18 @@ class SharingTest extends PhotoTestBase
 	 * and checks that the anonymous user sees the photo.
 	 *
 	 * In comparison to
-	 * {@link SharingTest::testUnsortedPublicPhotoWithAnonymousUser1()}
+	 * {@link SharingTest::testUnsortedPublicPhotoWithAnonymousUserAndNoPublicSearch()}
 	 * and
-	 * {@link SharingTest::testPublicPhotoInPrivateAlbumWithAnonymousUser1()}
+	 * {@link SharingTest::testPublicPhotoInPrivateAlbumWithAnonymousUserAndNoPublicSearch()}
 	 * the photo is visible, although public search is disabled, because
 	 * the photo is inside a public album which is browsable.
 	 *
+	 * Note that the setting "public search" only affects photos which are
+	 * made public explicitly.
+	 *
 	 * @return void
 	 */
-	public function testPhotoInPublicAlbumWithAnonymousUser1(): void
+	public function testPhotoInPublicAlbumWithAnonymousUserAndNoPublicSearch(): void
 	{
 		$arePublicPhotosHidden = Configs::getValueAsBool(TestCase::CONFIG_PUBLIC_HIDDEN);
 		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, true);
