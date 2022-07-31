@@ -231,6 +231,6 @@ class Archive extends Action
 		return
 			$album->is_downloadable ||
 			($album instanceof BaseSmartAlbum && Auth::check()) ||
-			($album instanceof BaseAlbum && Gate::check(PhotoPolicy::OWN, $album));
+			($album instanceof BaseAlbum && Gate::check(AlbumPolicy::OWN, $album));
 	}
 }
