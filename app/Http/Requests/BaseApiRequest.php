@@ -15,7 +15,6 @@ use App\Models\Photo;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
-use App\Policies\UserPolicy;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -204,7 +203,7 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizeAlbumsWriteByIDs(array $albumIDs): bool
 	{
-		return Gate::check(UserPolicy::UPLOAD, User::class) && $this->albumPolicy->editById(Auth::user(), $albumIDs);
+		return $this->albumPolicy->editById(Auth::user(), $albumIDs);
 	}
 
 	/**
@@ -291,7 +290,7 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizePhotosWriteByIDs(array $photoIDs): bool
 	{
-		return Gate::check(UserPolicy::UPLOAD, User::class) && $this->photoPolicy->editByID(Auth::user(), $photoIDs);
+		return $this->photoPolicy->editByID(Auth::user(), $photoIDs);
 	}
 
 	/**

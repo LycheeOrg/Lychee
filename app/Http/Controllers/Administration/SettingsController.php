@@ -10,7 +10,7 @@ use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\Lang;
 use App\Http\Requests\Settings\ChangeLoginRequest;
-use App\Http\Requests\Settings\SetLoginRequest;
+use App\Http\Requests\Settings\SetAdminLoginRequest;
 use App\Http\Requests\Settings\SetSortingRequest;
 use App\Models\Configs;
 use App\Rules\LicenseRule;
@@ -32,15 +32,15 @@ class SettingsController extends Controller
 	 * To be noted this function will change the CONFIG table if used by admin
 	 * or the USER table if used by any other user
 	 *
-	 * @param SetLoginRequest $request
-	 * @param SetLogin        $login
+	 * @param SetAdminLoginRequest $request
+	 * @param SetLogin             $login
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
 	 * @throws ModelNotFoundException
 	 */
-	public function setLogin(SetLoginRequest $request, SetLogin $login): void
+	public function setLogin(SetAdminLoginRequest $request, SetLogin $login): void
 	{
 		$login->do(
 			$request->username(),

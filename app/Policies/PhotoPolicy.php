@@ -75,8 +75,11 @@ class PhotoPolicy
 	public function visible(?User $user, Photo $photo): bool
 	{
 		return $this->own($user, $photo) ||
-		$photo->is_public ||
-		$this->albumPolicy->access($user, $photo->album);
+			$photo->is_public ||
+			(
+				$photo->album !== null &&
+				$this->albumPolicy->access($user, $photo->album)
+			);
 	}
 
 	/**
@@ -161,6 +164,10 @@ class PhotoPolicy
 	{
 		if ($this->before($user, 'editById') === true) {
 			return true;
+		}
+
+		if (!$this->userPolicy->upload($user)) {
+			return false;
 		}
 
 		// Make IDs unique as otherwise count will fail.

@@ -6,7 +6,7 @@ use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\Session\LoginRequest;
 use App\Legacy\AdminAuthentication;
 
-class SetLoginRequest extends LoginRequest
+class SetAdminLoginRequest extends LoginRequest
 {
 	/**
 	 * Determines if the user is authorized to make this request.
@@ -22,7 +22,7 @@ class SetLoginRequest extends LoginRequest
 	 *
 	 * @return void
 	 *
-	 * @throws \Illuminate\Auth\Access\AuthorizationException
+	 * @throws UnauthorizedException
 	 */
 	protected function failedAuthorization(): void
 	{
