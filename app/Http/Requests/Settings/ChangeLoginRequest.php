@@ -10,7 +10,6 @@ use App\Models\User;
 use App\Policies\UserPolicy;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Gate;
 
 class ChangeLoginRequest extends BaseApiRequest implements HasPassword
@@ -81,17 +80,5 @@ class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 	public function username(): ?string
 	{
 		return $this->username;
-	}
-
-	/**
-	 * Handle a failed authorization attempt.
-	 *
-	 * @return void
-	 *
-	 * @throws \Illuminate\Auth\Access\AuthorizationException
-	 */
-	protected function failedAuthorization(): void
-	{
-		throw new AuthorizationException('Insufficient privileges');
 	}
 }
