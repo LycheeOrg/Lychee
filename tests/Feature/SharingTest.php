@@ -243,7 +243,7 @@ class SharingTest extends PhotoTestBase
 	 *
 	 * @return void
 	 */
-	public function testAlbumSharedWithUser(): void
+	public function testAlbumSharedNonAdminWithUser(): void
 	{
 		$albumID1 = $this->albums_tests->add(null, self::ALBUM_TITLE_1)->offsetGet('id');
 		$albumID2 = $this->albums_tests->add(null, self::ALBUM_TITLE_2)->offsetGet('id');
@@ -357,7 +357,7 @@ class SharingTest extends PhotoTestBase
 	 *
 	 * @return void
 	 */
-	public function testUnsortedPrivatePhotoWithAuthenticatedUser(): void
+	public function testUnsortedPrivatePhotoWithNonAdminUser(): void
 	{
 		$photoID = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE))->offsetGet('id');
 		$userID = $this->users_tests->add(self::USER_NAME_1, self::USER_PWD_1)->offsetGet('id');
@@ -561,7 +561,7 @@ class SharingTest extends PhotoTestBase
 	 *
 	 * @return void
 	 */
-	public function testUnsortedPublicPhotoWithAuthenticatedUserAndNoPublicSearch(): void
+	public function testUnsortedPublicPhotoWithNonAdminUserAndNoPublicSearch(): void
 	{
 		$arePublicPhotosHidden = Configs::getValueAsBool(TestCase::CONFIG_PUBLIC_HIDDEN);
 		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, true);
@@ -642,7 +642,7 @@ class SharingTest extends PhotoTestBase
 	 *
 	 * @return void
 	 */
-	public function testUnsortedPublicPhotoWithAuthenticatedUserAndPublicSearch(): void
+	public function testUnsortedPublicPhotoWithNonAdminUserAndPublicSearch(): void
 	{
 		$arePublicPhotosHidden = Configs::getValueAsBool(TestCase::CONFIG_PUBLIC_HIDDEN);
 		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, false);
@@ -856,6 +856,16 @@ class SharingTest extends PhotoTestBase
 		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
 	}
 
+	public function testPublicPhotoInPrivateAlbumWithNonAdminUserAndNoPublicSearch(): void
+	{
+		static::markTestIncomplete('Not written yet');
+	}
+
+	public function testPublicPhotoInPrivateAlbumWithAuthenticatedUserAndPublicSearch(): void
+	{
+		static::markTestIncomplete('Not written yet');
+	}
+
 	/**
 	 * Ensure that searching public photos is disabled, creates an album
 	 * with a photo, marks the album as public and stars the photo, logs out
@@ -939,6 +949,21 @@ class SharingTest extends PhotoTestBase
 		$this->photos_tests->get($photoID);
 
 		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
+	}
+
+	public function testPhotoInPublicAlbumWithAnonymousUserAndPublicSearch(): void
+	{
+		static::markTestIncomplete('Not written yet');
+	}
+
+	public function testPhotoInPublicAlbumWithNonAdminUserAndNoPublicSearch(): void
+	{
+		static::markTestIncomplete('Not written yet');
+	}
+
+	public function testPhotoInPublicAlbumWithNonAdminUserAndPublicSearch(): void
+	{
+		static::markTestIncomplete('Not written yet');
 	}
 
 	/**
