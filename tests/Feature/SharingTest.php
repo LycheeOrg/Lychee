@@ -13,34 +13,83 @@
 namespace Tests\Feature;
 
 use App\Facades\AccessControl;
-use Tests\Feature\Lib\AlbumsUnitTest;
+use App\Models\Configs;
+use App\SmartAlbums\PublicAlbum;
+use App\SmartAlbums\RecentAlbum;
+use App\SmartAlbums\StarredAlbum;
+use App\SmartAlbums\UnsortedAlbum;
+use Tests\Feature\Base\SharingTestBase;
 use Tests\TestCase;
 
-class SharingTest extends TestCase
+class SharingTest extends SharingTestBase
 {
-	protected AlbumsUnitTest $albums_tests;
-
-	public function setUp(): void
+	/**
+	 * Uploads two photos into two albums (one photo per album), marks one
+	 * album as public and the other one as password-protected,
+	 * logs out, checks that the anonymous user only sees both albums,
+	 * but only the cover of the public one, provide password, checks that
+	 * now both covers are visible.
+	 *
+	 * In particular the following checks are made:
+	 *  - before the password has been provided the anonymous user only sees
+	 *    the public photo
+	 *     - as a cover of the public album
+	 *     - in "Recent"
+	 *     - in the album tree
+	 *  - after the password has been provided the anonymous user sees both
+	 *    photos
+	 *     - as covers
+	 *     - in "Recent"
+	 *     - in the album tree
+	 *
+	 * @return void
+	 */
+	public function testPublicAlbumAndPasswordProtectedAlbum(): void
 	{
-		parent::setUp();
-		$this->albums_tests = new AlbumsUnitTest($this);
+		static::markTestIncomplete('Not written yet');
 	}
 
 	/**
+	 * Like {@link SharingTest::testPublicAlbumAndPasswordProtectedAlbum},
+	 * but additionally the password-protected photo is starred and the
+	 * "Favorites" album is tested as well.
+	 *
 	 * @return void
 	 */
-	public function testSharing(): void
+	public function testPublicAlbumAndPasswordProtectedAlbumWithStarredPhoto(): void
 	{
-		AccessControl::log_as_id(0);
+		static::markTestIncomplete('Not written yet');
+	}
 
-		$albumID1 = $this->albums_tests->add(null, 'test_album')->offsetGet('id');
-		$albumID2 = $this->albums_tests->add($albumID1, 'test_album2')->offsetGet('id');
+	/**
+	 * Uploads two photos into two albums (one photo per album), marks one
+	 * album as public and the other one as public and hidden,
+	 * logs out, checks that the anonymous user only see the first album,
+	 * accesses the second album and checks again that the anonymous user
+	 * still only sees the first album.
+	 *
+	 * In particular the following checks are made:
+	 *  - before and after the hidden album has been accessed, the anonymous
+	 *    user only sees the public, not hidden photo
+	 *     - as a cover of the public album
+	 *     - in "Recent"
+	 *     - in the album tree
+	 *
+	 * @return void
+	 */
+	public function testPublicAlbumAndHiddenAlbum(): void
+	{
+		static::markTestIncomplete('Not written yet');
+	}
 
-		$response = $this->postJson('/api/Sharing::list');
-		$response->assertStatus(200);
-
-		$this->albums_tests->delete([$albumID1, $albumID2]);
-
-		AccessControl::logout();
+	/**
+	 * Like {@link SharingTest::testPublicAlbumAndHiddenAlbum}, but
+	 * additionally the hidden album is also password protected.
+	 *
+	 * @return void
+	 */
+	public function testPublicAlbumAndHiddenPasswordProtectedAlbum(): void
+	{
+		static::markTestIncomplete('Not written yet');
 	}
 }

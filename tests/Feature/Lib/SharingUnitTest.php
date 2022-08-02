@@ -15,7 +15,7 @@ namespace Tests\Feature\Lib;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
-class RootAlbumUnitTest
+class SharingUnitTest
 {
 	private TestCase $testCase;
 
@@ -25,52 +25,50 @@ class RootAlbumUnitTest
 	}
 
 	/**
-	 * Gets the root album.
+	 * List shares.
 	 *
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
-	 * @param string|null $assertDontSee
 	 *
 	 * @return TestResponse
 	 */
-	public function get(
+	public function list(
 		int $expectedStatusCode = 200,
-		?string $assertSee = null,
-		?string $assertDontSee = null
+		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->postJson('/api/Albums::get');
+		$response = $this->testCase->postJson('/api/Sharing::list');
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
-		}
-		if ($assertDontSee) {
-			$response->assertDontSee($assertDontSee, false);
 		}
 
 		return $response;
 	}
 
 	/**
-	 * Gets the album tree.
+	 * List shares.
 	 *
+	 * @param string[]    $albumIDs
+	 * @param int[]       $userIDs
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
-	 * @param string|null $assertDontSee
 	 *
 	 * @return TestResponse
 	 */
-	public function getTree(
-		int $expectedStatusCode = 200,
-		?string $assertSee = null,
-		?string $assertDontSee = null
+	public function add(
+		array $albumIDs,
+		array $userIDs,
+		int $expectedStatusCode = 204,
+		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->postJson('/api/Albums::tree');
+		$response = $this->testCase->postJson(
+			'/api/Sharing::add', [
+				'albumIDs' => $albumIDs,
+				'userIDs' => $userIDs,
+			]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
-		}
-		if ($assertDontSee) {
-			$response->assertDontSee($assertDontSee, false);
 		}
 
 		return $response;
