@@ -95,11 +95,18 @@ class PhotoAuthorisationProvider
 			return false;
 		}
 
+		// We must explicitly check that the photo is not unsorted before
+		// checking whether the parent album is accessible, because the root
+		// album always is accessible and gets a pass.
+		// However, we do not want every unsorted photo to be publicly
+		// visible.
 		return
 			$photo === null ||
 			AccessControl::is_current_user_or_admin($photo->owner_id) ||
-			$photo->is_public ||
-			$this->albumAuthorisationProvider->isAccessible($photo->album);
+			$photo->is_public || (
+				$photo->album !== null &&
+				$this->albumAuthorisationProvider->isAccessible($photo->album)
+			);
 	}
 
 	/**

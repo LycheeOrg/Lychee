@@ -2,6 +2,8 @@
 
 namespace App\SmartAlbums;
 
+use App\Exceptions\ConfigurationKeyMissingException;
+use App\Exceptions\Internal\FrameworkException;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -36,6 +38,9 @@ class PublicAlbum extends BaseSmartAlbum
 	 * **This is intended behaviour!**
 	 * See description of the whole class {@link PublicAlbum} for an
 	 * explanation.
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 * @throws FrameworkException
 	 */
 	protected function __construct()
 	{
@@ -49,17 +54,6 @@ class PublicAlbum extends BaseSmartAlbum
 
 	public static function getInstance(): self
 	{
-		self::$instance ??= new self();
-
-		// The following two lines are only needed due to testing.
-		// The same instance of this class is used for all tests, because
-		// the singleton stays alive during tests.
-		// This implies that the relation of photos is never reloaded
-		// but remains constant during all tests (it equals the empty set)
-		// and the tests fail.
-		unset(self::$instance->photos);
-		unset(self::$instance->thumb);
-
-		return self::$instance;
+		return self::$instance ??= new self();
 	}
 }

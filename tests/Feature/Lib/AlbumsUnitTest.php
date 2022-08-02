@@ -110,13 +110,15 @@ class AlbumsUnitTest
 	 * @param string      $id
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
+	 * @param string|null $assertDontSee
 	 *
 	 * @return TestResponse
 	 */
 	public function get(
 		string $id,
 		int $expectedStatusCode = 200,
-		?string $assertSee = null
+		?string $assertSee = null,
+		?string $assertDontSee = null
 	): TestResponse {
 		$response = $this->testCase->postJson(
 			'/api/Album::get',
@@ -125,6 +127,9 @@ class AlbumsUnitTest
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
+		}
+		if ($assertDontSee) {
+			$response->assertDontSee($assertDontSee, false);
 		}
 
 		return $response;
@@ -139,7 +144,7 @@ class AlbumsUnitTest
 	public function unlock(
 		string $id,
 		string $password = '',
-		int $expectedStatusCode = 200,
+		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->postJson(
@@ -150,34 +155,6 @@ class AlbumsUnitTest
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
 		}
-	}
-
-	/**
-	 * Check if we see `id` in the list of all visible albums.
-	 *
-	 * Result varies depending on login state.
-	 *
-	 * @param string $id
-	 */
-	public function see_in_albums(string $id): void
-	{
-		$response = $this->testCase->postJson('/api/Albums::get');
-		$response->assertOk();
-		$response->assertSee($id, false);
-	}
-
-	/**
-	 * Check if we don't see id in the list of all visible albums.
-	 *
-	 * Result varies depending on login state!
-	 *
-	 * @param string $id
-	 */
-	public function dont_see_in_albums(string $id): void
-	{
-		$response = $this->testCase->postJson('/api/Albums::get');
-		$response->assertOk();
-		$response->assertDontSee($id, false);
 	}
 
 	/**
@@ -287,6 +264,12 @@ class AlbumsUnitTest
 	 * @param bool        $nsfw
 	 * @param bool        $downloadable
 	 * @param bool        $share_button_visible
+	 * @param string|null $password             `null` does not change password
+	 *                                          settings;
+	 *                                          the empty string `''` removes
+	 *                                          a (potentially set) password;
+	 *                                          a non-empty string sets the
+	 *                                          password accordingly
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
@@ -298,10 +281,11 @@ class AlbumsUnitTest
 		bool $nsfw = false,
 		bool $downloadable = true,
 		bool $share_button_visible = true,
+		?string $password = null,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson('/api/Album::setProtectionPolicy', [
+		$params = [
 			'grants_full_photo' => $full_photo,
 			'albumID' => $id,
 			'is_public' => $public,
@@ -309,7 +293,13 @@ class AlbumsUnitTest
 			'is_nsfw' => $nsfw,
 			'is_downloadable' => $downloadable,
 			'is_share_button_visible' => $share_button_visible,
-		]);
+		];
+
+		if ($password !== null) {
+			$params['password'] = $password;
+		}
+
+		$response = $this->testCase->postJson('/api/Album::setProtectionPolicy', $params);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
