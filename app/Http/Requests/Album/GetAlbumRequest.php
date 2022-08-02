@@ -6,8 +6,11 @@ use App\Exceptions\PasswordRequiredException;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
+use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
+use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
+use Illuminate\Support\Facades\Gate;
 
 class GetAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
 {
@@ -18,7 +21,7 @@ class GetAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
 	 */
 	public function authorize(): bool
 	{
-		$result = $this->authorizeAlbumAccess($this->album);
+		$result = Gate::check(AlbumPolicy::ACCESS, $this->album ?? Album::class);
 
 		// In case of a password protected album, we must throw an exception
 		// with a special error message ("Password required") such that the
