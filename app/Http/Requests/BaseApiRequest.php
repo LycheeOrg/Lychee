@@ -128,25 +128,6 @@ abstract class BaseApiRequest extends FormRequest
 	}
 
 	/**
-	 * Determines if the user is authorized to access the designated albums.
-	 *
-	 * @param BaseCollection<AbstractAlbum> $albums the albums
-	 *
-	 * @return bool true, if the authenticated user is authorized
-	 */
-	protected function authorizeAlbumsAccess(BaseCollection $albums): bool
-	{
-		/** @var AbstractAlbum $album */
-		foreach ($albums as $album) {
-			if (!Gate::check(AlbumPolicy::ACCESS, $this->album ?? Album::class)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	/**
 	 * Determines if the user is authorized to modify or write into the
 	 * designated album.
 	 *
