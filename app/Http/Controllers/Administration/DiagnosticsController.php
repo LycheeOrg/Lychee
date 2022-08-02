@@ -28,7 +28,7 @@ class DiagnosticsController extends Controller
 	 */
 	private function isAuthorized(): bool
 	{
-		return Gate::check(UserPolicy::ADMIN) || AdminAuthentication::isAdminNotRegistered();
+		return Gate::check(UserPolicy::IS_ADMIN) || AdminAuthentication::isAdminNotRegistered();
 	}
 
 	/**

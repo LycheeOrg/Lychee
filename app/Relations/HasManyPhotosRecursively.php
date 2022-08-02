@@ -82,7 +82,7 @@ class HasManyPhotosRecursively extends HasManyPhotos
 	{
 		/** @var Album|null $album */
 		$album = $this->parent;
-		if ($album === null || !Gate::check(AlbumPolicy::ACCESS, $album)) {
+		if ($album === null || !Gate::check(AlbumPolicy::CAN_ACCESS, $album)) {
 			return $this->related->newCollection();
 		} else {
 			return parent::getResults();
@@ -111,7 +111,7 @@ class HasManyPhotosRecursively extends HasManyPhotos
 		/** @var Album $album */
 		$album = $albums[0];
 
-		if (!Gate::check(AlbumPolicy::ACCESS, $album)) {
+		if (!Gate::check(AlbumPolicy::CAN_ACCESS, $album)) {
 			$album->setRelation($relation, $this->related->newCollection());
 		} else {
 			$sorting = $album->getEffectiveSorting();

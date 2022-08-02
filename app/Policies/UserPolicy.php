@@ -9,9 +9,9 @@ class UserPolicy
 {
 	use HandlesAuthorization;
 
-	public const ADMIN = 'admin';
-	public const CAN_UPLOAD = 'upload';
-	public const EDIT_SETTINGS = 'editSettings';
+	public const IS_ADMIN = 'isAdmin';
+	public const CAN_UPLOAD = 'canUpload';
+	public const CAN_EDIT_SETTINGS = 'canEditSettings';
 
 	/**
 	 * Perform pre-authorization checks.
@@ -23,7 +23,7 @@ class UserPolicy
 	 */
 	public function before(?User $user, $ability)
 	{
-		if ($this->admin($user)) {
+		if ($this->isAdmin($user)) {
 			return true;
 		}
 	}
@@ -35,7 +35,7 @@ class UserPolicy
 	 *
 	 * @return bool
 	 */
-	public function admin(?User $user): bool
+	public function isAdmin(?User $user): bool
 	{
 		return $user?->id === 0;
 	}
@@ -47,7 +47,7 @@ class UserPolicy
 	 *
 	 * @return bool
 	 */
-	public function editSettings(User $user): bool
+	public function canEditSettings(User $user): bool
 	{
 		return !$user->is_locked;
 	}
@@ -59,7 +59,7 @@ class UserPolicy
 	 *
 	 * @return bool
 	 */
-	public function upload(User $user): bool
+	public function canUpload(User $user): bool
 	{
 		return $user->may_upload;
 	}

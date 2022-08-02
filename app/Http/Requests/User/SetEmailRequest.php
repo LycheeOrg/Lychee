@@ -15,7 +15,7 @@ class SetEmailRequest extends BaseApiRequest
 
 	public function authorize(): bool
 	{
-		return Gate::check(UserPolicy::EDIT_SETTINGS, User::class);
+		return Gate::check(UserPolicy::CAN_EDIT_SETTINGS, User::class);
 	}
 
 	public function rules(): array

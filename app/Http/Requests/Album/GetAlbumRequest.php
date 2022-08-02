@@ -21,7 +21,7 @@ class GetAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
 	 */
 	public function authorize(): bool
 	{
-		$result = Gate::check(AlbumPolicy::ACCESS, $this->album ?? Album::class);
+		$result = Gate::check(AlbumPolicy::CAN_ACCESS, $this->album ?? Album::class);
 
 		// In case of a password protected album, we must throw an exception
 		// with a special error message ("Password required") such that the

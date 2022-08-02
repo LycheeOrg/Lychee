@@ -56,7 +56,7 @@ class AlbumQueryPolicy
 	{
 		$this->prepareModelQueryOrFail($query);
 
-		if (Gate::check(UserPolicy::ADMIN)) {
+		if (Gate::check(UserPolicy::IS_ADMIN)) {
 			return $query;
 		}
 
@@ -168,7 +168,7 @@ class AlbumQueryPolicy
 	{
 		$this->prepareModelQueryOrFail($query);
 
-		if (Gate::check(UserPolicy::ADMIN)) {
+		if (Gate::check(UserPolicy::IS_ADMIN)) {
 			return $query;
 		}
 
@@ -269,7 +269,7 @@ class AlbumQueryPolicy
 		}
 
 		// ... such that there are no blocked albums on the path to the album.
-		if (Gate::check(UserPolicy::ADMIN)) {
+		if (Gate::check(UserPolicy::IS_ADMIN)) {
 			return $query;
 		} else {
 			return $query->whereNotExists(function (BaseBuilder $q) use ($origin) {

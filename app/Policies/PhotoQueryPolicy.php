@@ -48,7 +48,7 @@ class PhotoQueryPolicy
 	{
 		$this->prepareModelQueryOrFail($query, false, true, true);
 
-		if (Gate::check(UserPolicy::ADMIN)) {
+		if (Gate::check(UserPolicy::IS_ADMIN)) {
 			return $query;
 		}
 
@@ -112,7 +112,7 @@ class PhotoQueryPolicy
 				->where('albums._rgt', '<=', $origin->_rgt);
 		}
 
-		if (Gate::check(UserPolicy::ADMIN)) {
+		if (Gate::check(UserPolicy::IS_ADMIN)) {
 			return $query;
 		} else {
 			return $query->where(function (Builder $query) use ($origin) {

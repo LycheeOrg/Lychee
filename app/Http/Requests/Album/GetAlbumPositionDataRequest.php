@@ -23,7 +23,7 @@ class GetAlbumPositionDataRequest extends BaseApiRequest implements HasAbstractA
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(AlbumPolicy::ACCESS, $this->album ?? Album::class);
+		return Gate::check(AlbumPolicy::CAN_ACCESS, $this->album ?? Album::class);
 	}
 
 	/**

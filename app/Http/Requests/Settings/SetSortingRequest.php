@@ -26,7 +26,7 @@ class SetSortingRequest extends BaseApiRequest
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(UserPolicy::ADMIN);
+		return Gate::check(UserPolicy::IS_ADMIN);
 	}
 
 	/**

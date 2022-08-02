@@ -69,7 +69,7 @@ class SessionController extends Controller
 
 			// Check if login credentials exist and login if they don't
 			if (Auth::check() || AdminAuthentication::loginAsAdminIfNotRegistered()) {
-				if (Gate::check(UserPolicy::ADMIN)) {
+				if (Gate::check(UserPolicy::IS_ADMIN)) {
 					$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 					$return['admin'] = true;
 					$return['may_upload'] = true; // not necessary

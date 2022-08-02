@@ -35,7 +35,7 @@ class ImportServerRequest extends BaseApiRequest implements HasAlbum
 		// request is made by an admin during authentication (see
 		// `routes/web.php`).
 		// But better safe than sorry.
-		return Gate::check(UserPolicy::ADMIN);
+		return Gate::check(UserPolicy::IS_ADMIN);
 	}
 
 	/**

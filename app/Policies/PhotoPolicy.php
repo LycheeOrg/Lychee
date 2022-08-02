@@ -17,10 +17,10 @@ class PhotoPolicy
 	protected UserPolicy $userPolicy;
 
 	// constants to be used in GATE
-	public const IS_OWNER = 'own';
-	public const IS_VISIBLE = 'visible';
-	public const CAN_DOWNLOAD = 'download';
-	public const CAN_EDIT = 'edit';
+	public const IS_OWNER = 'isOwner';
+	public const IS_VISIBLE = 'isVisible';
+	public const CAN_DOWNLOAD = 'canDownload';
+	public const CAN_EDIT = 'canEdit';
 
 	/**
 	 * @throws FrameworkException
@@ -45,7 +45,7 @@ class PhotoPolicy
 	 */
 	public function before(?User $user, $ability)
 	{
-		if ($this->userPolicy->admin($user)) {
+		if ($this->userPolicy->isAdmin($user)) {
 			return true;
 		}
 	}
@@ -59,7 +59,7 @@ class PhotoPolicy
 	 *
 	 * @return bool
 	 */
-	public function own(?User $user, Photo $photo): bool
+	public function isOwner(?User $user, Photo $photo): bool
 	{
 		return $user !== null && $photo->owner_id === $user->id;
 	}
@@ -72,13 +72,13 @@ class PhotoPolicy
 	 *
 	 * @return bool
 	 */
-	public function visible(?User $user, Photo $photo): bool
+	public function isVisible(?User $user, Photo $photo): bool
 	{
-		return $this->own($user, $photo) ||
+		return $this->isOwner($user, $photo) ||
 			$photo->is_public ||
 			(
 				$photo->album !== null &&
-				$this->albumPolicy->access($user, $photo->album)
+				$this->albumPolicy->canAccess($user, $photo->album)
 			);
 	}
 
@@ -105,17 +105,17 @@ class PhotoPolicy
 	 *
 	 * @return bool
 	 */
-	public function download(?User $user, Photo $photo): bool
+	public function canDownload(?User $user, Photo $photo): bool
 	{
-		if ($this->own($user, $photo)) {
+		if ($this->isOwner($user, $photo)) {
 			return true;
 		}
 
-		if (!$this->visible($user, $photo)) {
+		if (!$this->isVisible($user, $photo)) {
 			return false;
 		}
 
-		return $this->albumPolicy->download($user, $photo->album);
+		return $this->albumPolicy->canDownload($user, $photo->album);
 	}
 
 	/**
@@ -133,9 +133,9 @@ class PhotoPolicy
 	 *
 	 * @return bool
 	 */
-	public function edit(User $user, Photo $photo)
+	public function canEdit(User $user, Photo $photo)
 	{
-		return $this->own($user, $photo);
+		return $this->isOwner($user, $photo);
 	}
 
 	// The following methods are not to be called by Gate.
@@ -160,13 +160,13 @@ class PhotoPolicy
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function editByID(User $user, array $photoIDs): bool
+	public function canEditByID(User $user, array $photoIDs): bool
 	{
 		if ($this->before($user, 'editById') === true) {
 			return true;
 		}
 
-		if (!$this->userPolicy->upload($user)) {
+		if (!$this->userPolicy->canUpload($user)) {
 			return false;
 		}
 

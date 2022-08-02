@@ -157,7 +157,7 @@ class SizeVariant extends Model
 		$imageDisk = SizeVariantNamingStrategy::getImageDisk();
 
 		if (
-			Gate::check(UserPolicy::ADMIN) && !Configs::getValueAsBool('SL_for_admin') ||
+			Gate::check(UserPolicy::IS_ADMIN) && !Configs::getValueAsBool('SL_for_admin') ||
 			!Configs::getValueAsBool('SL_enable')
 		) {
 			return $imageDisk->url($this->short_path);

@@ -139,7 +139,7 @@ class UpdateController extends Controller
 		$isLoggedIn = $isLoggedIn || Auth::attempt(['username' => $request->input('username', ''), 'password' => $request->input('password', '')]);
 
 		// Check if logged in AND is admin
-		if (Gate::check(UserPolicy::ADMIN)) {
+		if (Gate::check(UserPolicy::IS_ADMIN)) {
 			$output = [];
 			$this->applyUpdate->migrate($output);
 			$this->applyUpdate->filter($output);

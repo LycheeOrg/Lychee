@@ -36,7 +36,7 @@ class AdminCheck
 			return $next($request);
 		}
 
-		if (!Gate::check(UserPolicy::ADMIN)) {
+		if (!Gate::check(UserPolicy::IS_ADMIN)) {
 			throw new UnauthorizedException('Admin privileges required');
 		}
 

@@ -172,7 +172,7 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizeAlbumsWriteByIDs(array $albumIDs): bool
 	{
-		return $this->albumPolicy->editById(Auth::user(), $albumIDs);
+		return $this->albumPolicy->canEditById(Auth::user(), $albumIDs);
 	}
 
 	/**
@@ -259,7 +259,7 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizePhotosWriteByIDs(array $photoIDs): bool
 	{
-		return $this->photoPolicy->editByID(Auth::user(), $photoIDs);
+		return $this->photoPolicy->canEditByID(Auth::user(), $photoIDs);
 	}
 
 	/**

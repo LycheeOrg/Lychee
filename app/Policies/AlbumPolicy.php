@@ -26,11 +26,11 @@ class AlbumPolicy
 	public const UNLOCKED_ALBUMS_SESSION_KEY = 'unlocked_albums';
 
 	// constants to be used in GATE
-	public const IS_OWNER = 'own';
-	public const ACCESS = 'access';
-	public const CAN_DOWNLOAD = 'download';
-	public const CAN_EDIT = 'edit';
-	public const IS_VISIBLE = 'visible';
+	public const IS_OWNER = 'isOwner';
+	public const CAN_ACCESS = 'canAccess';
+	public const CAN_DOWNLOAD = 'canDownload';
+	public const CAN_EDIT = 'canEdit';
+	public const IS_VISIBLE = 'isVisible';
 
 	/**
 	 * @throws FrameworkException
@@ -54,7 +54,7 @@ class AlbumPolicy
 	 */
 	public function before(?User $user, $ability)
 	{
-		if ($this->userPolicy->admin($user)) {
+		if ($this->userPolicy->isAdmin($user)) {
 			return true;
 		}
 	}
@@ -68,7 +68,7 @@ class AlbumPolicy
 	 *
 	 * @return bool
 	 */
-	public function own(?User $user, BaseAlbum $album): bool
+	public function isOwner(?User $user, BaseAlbum $album): bool
 	{
 		return $user !== null && $album->owner_id === $user->id;
 	}
@@ -101,7 +101,7 @@ class AlbumPolicy
 	 *
 	 * @throws LycheeAssertionError
 	 */
-	public function access(?User $user, ?AbstractAlbum $album): bool
+	public function canAccess(?User $user, ?AbstractAlbum $album): bool
 	{
 		if ($album === null) {
 			return true;
@@ -110,7 +110,7 @@ class AlbumPolicy
 		if ($album instanceof BaseAlbum) {
 			try {
 				return
-					$this->own($user, $album) ||
+					$this->isOwner($user, $album) ||
 					($album->is_public && $album->password === null) ||
 					($album->is_public && $this->unlocked($album)) ||
 					($album->shared_with()->where('user_id', '=', $user?->id)->count() > 0);
@@ -118,7 +118,7 @@ class AlbumPolicy
 				throw LycheeAssertionError::createFromUnexpectedException($e);
 			}
 		} elseif ($album instanceof BaseSmartAlbum) {
-			return $this->visible($user, $album);
+			return $this->isVisible($user, $album);
 		} else {
 			// Should never happen
 			return false;
@@ -135,13 +135,13 @@ class AlbumPolicy
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function download(?User $user, ?BaseAlbum $baseAlbum): bool
+	public function canDownload(?User $user, ?BaseAlbum $baseAlbum): bool
 	{
 		if ($baseAlbum === null) {
 			return Configs::getValueAsBool('downloadable');
 		}
 
-		return $this->own($user, $baseAlbum) ||
+		return $this->isOwner($user, $baseAlbum) ||
 			$baseAlbum->is_downloadable;
 	}
 
@@ -169,9 +169,9 @@ class AlbumPolicy
 	 *
 	 * @return bool
 	 */
-	public function edit(User $user, ?AbstractAlbum $album): bool
+	public function canEdit(User $user, ?AbstractAlbum $album): bool
 	{
-		if (!$this->userPolicy->upload($user)) {
+		if (!$this->userPolicy->canUpload($user)) {
 			return false;
 		}
 
@@ -179,7 +179,7 @@ class AlbumPolicy
 		return
 			$album === null ||
 			$album instanceof BaseSmartAlbum ||
-			($album instanceof BaseAlbum && $this->own($user, $album));
+			($album instanceof BaseAlbum && $this->isOwner($user, $album));
 	}
 
 	/**
@@ -194,9 +194,9 @@ class AlbumPolicy
 	 *
 	 * @return bool true, if the album is visible
 	 */
-	public function visible(?User $user, BaseSmartAlbum $smartAlbum): bool
+	public function isVisible(?User $user, BaseSmartAlbum $smartAlbum): bool
 	{
-		return ($user !== null && $this->userPolicy->upload($user)) ||
+		return ($user !== null && $this->userPolicy->canUpload($user)) ||
 			$smartAlbum->is_public;
 	}
 
@@ -222,13 +222,13 @@ class AlbumPolicy
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function editById(User $user, array $albumIDs): bool
+	public function canEditById(User $user, array $albumIDs): bool
 	{
 		if ($this->before($user, 'editById') === true) {
 			return true;
 		}
 
-		if (!$this->userPolicy->upload($user)) {
+		if (!$this->userPolicy->canUpload($user)) {
 			return false;
 		}
 

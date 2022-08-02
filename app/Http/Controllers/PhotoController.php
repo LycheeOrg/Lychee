@@ -329,7 +329,7 @@ class PhotoController extends Controller
 	 */
 	public function clearSymLink(): void
 	{
-		if (!Gate::check(UserPolicy::ADMIN)) {
+		if (!Gate::check(UserPolicy::IS_ADMIN)) {
 			throw new UnauthorizedException('Admin privileges required');
 		}
 		$this->symLinkFunctions->clearSymLink();
