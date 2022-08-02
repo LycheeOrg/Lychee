@@ -26,11 +26,11 @@ class AlbumPolicy
 	public const UNLOCKED_ALBUMS_SESSION_KEY = 'unlocked_albums';
 
 	// constants to be used in GATE
-	public const OWN = 'own';
+	public const IS_OWNER = 'own';
 	public const ACCESS = 'access';
-	public const DOWNLOAD = 'download';
-	public const EDIT = 'edit';
-	public const VISIBLE = 'visible';
+	public const CAN_DOWNLOAD = 'download';
+	public const CAN_EDIT = 'edit';
+	public const IS_VISIBLE = 'visible';
 
 	/**
 	 * @throws FrameworkException

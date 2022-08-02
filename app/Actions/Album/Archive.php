@@ -181,7 +181,7 @@ class Archive extends Action
 				// in smart albums should be owned by the current user...
 				if (
 					($album instanceof BaseSmartAlbum || $album instanceof TagAlbum) &&
-					!Gate::check(PhotoPolicy::DOWNLOAD, $photo)
+					!Gate::check(PhotoPolicy::CAN_DOWNLOAD, $photo)
 				) {
 					continue;
 				}
@@ -232,6 +232,6 @@ class Archive extends Action
 		return
 			$album->is_downloadable ||
 			($album instanceof BaseSmartAlbum && Auth::check()) ||
-			($album instanceof BaseAlbum && Gate::check(AlbumPolicy::OWN, $album));
+			($album instanceof BaseAlbum && Gate::check(AlbumPolicy::IS_OWNER, $album));
 	}
 }

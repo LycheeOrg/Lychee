@@ -22,7 +22,7 @@ class DeleteSharingRequest extends BaseApiRequest
 	 */
 	public function authorize(): bool
 	{
-		return Gate::any(UserPolicy::UPLOAD, User::class);
+		return Gate::any(UserPolicy::CAN_UPLOAD, User::class);
 	}
 
 	/**

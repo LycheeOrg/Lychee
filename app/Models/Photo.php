@@ -337,7 +337,7 @@ class Photo extends Model implements HasRandomID
 	protected function getIsDownloadableAttribute(): bool
 	{
 		return
-			Gate::check(PhotoPolicy::OWN, $this) ||
+			Gate::check(PhotoPolicy::IS_OWNER, $this) ||
 			($this->album_id !== null && $this->album->is_downloadable) ||
 			($this->album_id === null && Configs::getValueAsBool('downloadable'));
 	}
@@ -357,7 +357,7 @@ class Photo extends Model implements HasRandomID
 		$default = Configs::getValueAsBool('share_button_visible');
 
 		return
-			Gate::check(PhotoPolicy::OWN, $this) ||
+			Gate::check(PhotoPolicy::IS_OWNER, $this) ||
 			($this->album_id !== null && $this->album->is_share_button_visible) ||
 			($this->album_id === null && $default);
 	}
@@ -442,7 +442,7 @@ class Photo extends Model implements HasRandomID
 		// The decision logic here is a merge of three formerly independent
 		// (and slightly different) approaches
 		if (
-			!Gate::check(PhotoPolicy::OWN, $this) &&
+			!Gate::check(PhotoPolicy::IS_OWNER, $this) &&
 			!$this->isVideo() &&
 			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null) &&
 			(

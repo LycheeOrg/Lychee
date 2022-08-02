@@ -137,7 +137,7 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizeAlbumWrite(?AbstractAlbum $album): bool
 	{
-		return Gate::check(AlbumPolicy::EDIT, $album ?? Album::class);
+		return Gate::check(AlbumPolicy::CAN_EDIT, $album ?? Album::class);
 	}
 
 	/**
@@ -185,7 +185,7 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizePhotoVisible(?Photo $photo): bool
 	{
-		return Gate::check(PhotoPolicy::VISIBLE, $photo ?? Photo::class);
+		return Gate::check(PhotoPolicy::IS_VISIBLE, $photo ?? Photo::class);
 	}
 
 	/**
@@ -197,7 +197,7 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizePhotoDownload(Photo $photo): bool
 	{
-		return Gate::check(PhotoPolicy::DOWNLOAD, $photo);
+		return Gate::check(PhotoPolicy::CAN_DOWNLOAD, $photo);
 	}
 
 	/**
@@ -228,7 +228,7 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function authorizePhotoWrite(Photo $photo): bool
 	{
-		return Gate::check(PhotoPolicy::EDIT, $photo);
+		return Gate::check(PhotoPolicy::CAN_EDIT, $photo);
 	}
 
 	/**

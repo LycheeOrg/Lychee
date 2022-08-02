@@ -10,7 +10,7 @@ class UserPolicy
 	use HandlesAuthorization;
 
 	public const ADMIN = 'admin';
-	public const UPLOAD = 'upload';
+	public const CAN_UPLOAD = 'upload';
 	public const EDIT_SETTINGS = 'editSettings';
 
 	/**

@@ -23,7 +23,7 @@ class SetSharingRequest extends BaseApiRequest implements HasAlbumIDs, HasUserID
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(UserPolicy::UPLOAD, User::class);
+		return Gate::check(UserPolicy::CAN_UPLOAD, User::class);
 	}
 
 	/**

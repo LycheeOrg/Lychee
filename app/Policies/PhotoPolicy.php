@@ -17,10 +17,10 @@ class PhotoPolicy
 	protected UserPolicy $userPolicy;
 
 	// constants to be used in GATE
-	public const OWN = 'own';
-	public const VISIBLE = 'visible';
-	public const DOWNLOAD = 'download';
-	public const EDIT = 'edit';
+	public const IS_OWNER = 'own';
+	public const IS_VISIBLE = 'visible';
+	public const CAN_DOWNLOAD = 'download';
+	public const CAN_EDIT = 'edit';
 
 	/**
 	 * @throws FrameworkException
