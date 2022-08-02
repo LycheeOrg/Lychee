@@ -114,7 +114,6 @@ class SharingWithAnonUserAndNoPublicSearchTest extends Base\SharingTestScenarios
 		$responseForRecent->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForRecent->assertJsonMissing(['id' => $this->photoID2]);
 
-
 		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
 		$responseForStarred->assertJson([
 			'is_public' => true,

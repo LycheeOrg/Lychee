@@ -12,14 +12,7 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
-use App\Models\Configs;
-use App\SmartAlbums\PublicAlbum;
-use App\SmartAlbums\RecentAlbum;
-use App\SmartAlbums\StarredAlbum;
-use App\SmartAlbums\UnsortedAlbum;
 use Tests\Feature\Base\SharingTestBase;
-use Tests\TestCase;
 
 class SharingTest extends SharingTestBase
 {

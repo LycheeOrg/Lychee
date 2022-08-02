@@ -375,5 +375,4 @@ class SharingAdvancedTest extends SharingTestBase
 			],
 		]);
 	}
-
 }
