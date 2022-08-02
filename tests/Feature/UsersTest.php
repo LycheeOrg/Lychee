@@ -16,15 +16,21 @@ use App\Facades\AccessControl;
 use App\ModelFunctions\SessionFunctions;
 use App\Models\Configs;
 use App\Models\User;
+use App\SmartAlbums\PublicAlbum;
+use App\SmartAlbums\StarredAlbum;
+use App\SmartAlbums\UnsortedAlbum;
 use function PHPUnit\Framework\assertEquals;
 use function PHPUnit\Framework\assertNotEquals;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\SessionUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
+use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\TestCase;
 
 class UsersTest extends TestCase
 {
+	use InteractWithSmartAlbums;
+
 	public function testSetLogin(): void
 	{
 		/**
@@ -186,15 +192,16 @@ class UsersTest extends TestCase
 		// 18
 		$sessions_test->login('test_abcde', 'testing');
 		$sessions_test->init();
+		$this->clearCachedSmartAlbums();
 
 		// 19
-		$album_tests->get('public', 403);
+		$album_tests->get(PublicAlbum::ID, 403);
 
 		// 20
-		$album_tests->get('starred', 403);
+		$album_tests->get(StarredAlbum::ID, 403);
 
 		// 21
-		$album_tests->get('unsorted', 403);
+		$album_tests->get(UnsortedAlbum::ID, 403);
 
 		// 22
 		$sessions_test->set_new('test_abcde', 'testing2', 401, 'Previous username or password are invalid');

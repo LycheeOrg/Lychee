@@ -12,7 +12,11 @@
 
 namespace Tests\Feature;
 
+use App\SmartAlbums\PublicAlbum;
+use App\SmartAlbums\RecentAlbum;
+use App\SmartAlbums\StarredAlbum;
 use Tests\Feature\Base\PhotoTestBase;
+use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\TestCase;
 
 /**
@@ -20,6 +24,8 @@ use Tests\TestCase;
  */
 class PhotosAddSpecialAlbumTest extends PhotoTestBase
 {
+	use InteractWithSmartAlbums;
+
 	/**
 	 * A simple upload of an ordinary photo to a regular album.
 	 *
@@ -53,7 +59,7 @@ class PhotosAddSpecialAlbumTest extends PhotoTestBase
 	{
 		$response = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
-			'public'
+			PublicAlbum::ID
 		);
 		$response->assertJson([
 			'album_id' => null,
@@ -70,7 +76,7 @@ class PhotosAddSpecialAlbumTest extends PhotoTestBase
 	{
 		$response = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
-			'starred'
+			StarredAlbum::ID
 		);
 		$response->assertJson([
 			'album_id' => null,
@@ -82,7 +88,8 @@ class PhotosAddSpecialAlbumTest extends PhotoTestBase
 	{
 		$ids_before = static::getRecentPhotoIDs();
 
-		$recentAlbumBefore = static::convertJsonToObject($this->albums_tests->get('recent'));
+		$this->clearCachedSmartAlbums();
+		$recentAlbumBefore = static::convertJsonToObject($this->albums_tests->get(RecentAlbum::ID));
 		static::assertCount($ids_before->count(), $recentAlbumBefore->photos);
 
 		$photo_id = $this->photos_tests->upload(
@@ -90,7 +97,8 @@ class PhotosAddSpecialAlbumTest extends PhotoTestBase
 		)->offsetGet('id');
 		$ids_after = static::getRecentPhotoIDs();
 
-		$recentAlbumAfter = static::convertJsonToObject($this->albums_tests->get('recent'));
+		$this->clearCachedSmartAlbums();
+		$recentAlbumAfter = static::convertJsonToObject($this->albums_tests->get(RecentAlbum::ID));
 		static::assertCount($ids_after->count(), $recentAlbumAfter->photos);
 
 		$new_ids = $ids_after->diff($ids_before);
@@ -99,7 +107,8 @@ class PhotosAddSpecialAlbumTest extends PhotoTestBase
 
 		$this->photos_tests->delete([$photo_id]);
 
-		$recentAlbum = static::convertJsonToObject($this->albums_tests->get('recent'));
+		$this->clearCachedSmartAlbums();
+		$recentAlbum = static::convertJsonToObject($this->albums_tests->get(RecentAlbum::ID));
 		static::assertEquals($recentAlbumBefore->photos, $recentAlbum->photos);
 	}
 }
