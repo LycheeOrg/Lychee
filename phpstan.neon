@@ -9,6 +9,10 @@ parameters:
 	excludePaths:
 		- app/View/*
 		- app/Http/Livewire/*
+	stubFiles:
+		# these can be removed after https://github.com/thecodingmachine/safe/issues/283 has been merged
+		- phpstan/stubs/image.stub
+		- phpstan/stubs/imageexception.stub
 	ignoreErrors:
 		# bunch of false positives from Eloquent
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::insert\(\).#'
@@ -44,8 +48,8 @@ parameters:
 		- '#Call to an undefined method COM::getfolder\(\).#'
 		- '#Call to an undefined method League\\Flysystem\\FilesystemInterface::getAdapter\(\)#'
 
-		# https://github.com/thecodingmachine/safe/issues/283
-		- '#Parameter \#(1|2) \$.* of function Safe\\image.* expects (resource|GdImage), (GdImage|resource)?(\|resource)? given.#'
-
 		- '#Property .* \(App\\Models\\.*(\|null)?\) does not accept (Illuminate\\Database\\Eloquent\\Collection<Illuminate\\Database\\Eloquent\\Model>\|)?Illuminate\\Database\\Eloquent\\Model(\|null)?.#'
 		- '#Property .* \(Illuminate\\Database\\Eloquent\\Collection<App\\Models\\.*>\) does not accept Illuminate\\Database\\Eloquent\\Collection<Illuminate\\Database\\Eloquent\\Model>(\|Illuminate\\Database\\Eloquent\\Model)?.#'
+
+		# False positive as stub code for PHP has not yet been updated to 2nd parameter, see https://github.com/php/doc-en/issues/1529 and https://www.php.net/imagick.writeimagefile
+		- '#Method Imagick::writeImageFile\(\) invoked with 2 parameters, 1 required#'
