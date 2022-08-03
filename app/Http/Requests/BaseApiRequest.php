@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Contracts\AbstractAlbum;
 use App\Contracts\LycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSmartIdException;
@@ -20,7 +19,6 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
@@ -125,26 +123,6 @@ abstract class BaseApiRequest extends FormRequest
 	protected function failedAuthorization(): void
 	{
 		throw Auth::check() ? new UnauthorizedException() : new UnauthenticatedException();
-	}
-
-	/**
-	 * Determines if the user is authorized to modify or write into the
-	 * designated albums.
-	 *
-	 * @param BaseCollection<AbstractAlbum> $albums the albums
-	 *
-	 * @return bool true, if the authenticated user is authorized
-	 */
-	protected function authorizeAlbumsWrite(BaseCollection $albums): bool
-	{
-		/** @var AbstractAlbum $album */
-		foreach ($albums as $album) {
-			if (!Gate::check(AlbumPolicy::CAN_EDIT, $album)) {
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	/**

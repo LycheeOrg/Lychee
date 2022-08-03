@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Traits\Authorize;
 
+use App\Contracts\AbstractAlbum;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
@@ -13,7 +14,17 @@ trait AuthorizeCanEditAlbumAlbumsTrait
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(AlbumPolicy::CAN_EDIT, $this->album ?? Album::class) &&
-			$this->authorizeAlbumsWrite($this->albums);
+		if (!Gate::check(AlbumPolicy::CAN_EDIT, $this->album ?? Album::class)) {
+			return false;
+		}
+
+		/** @var AbstractAlbum $album */
+		foreach ($this->albums as $album) {
+			if (!Gate::check(AlbumPolicy::CAN_EDIT, $album)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }
