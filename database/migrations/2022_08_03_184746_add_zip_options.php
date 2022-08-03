@@ -14,19 +14,12 @@ class AddZipOptions extends Migration
 	{
 		DB::table('configs')->insert([
 			[
-				'key' => 'zip_large_file_size',
-				'value' => '30000000',
-				'confidentiality' => 0,
-				'cat' => 'config',
-				'type_range' => 'int',
-				'description' => 'Threshold in bytes above which files are not compressed but simply stored',
-			], [
 				'key' => 'zip_deflate_level',
 				'value' => '6',
 				'confidentiality' => 0,
 				'cat' => 'config',
 				'type_range' => '-1|0|1|2|3|4|5|6|7|8|9',
-				'description' => 'DEFLATE compression level: -1 = disable compression, 0 = no compression, 1 = minimal compression, ... 9 = maximum compression',
+				'description' => 'DEFLATE compression level: -1 = disable compression (use STORE method), 0 = no compression (use DEFLATE method), 1 = minimal compression (fast), ... 9 = maximum compression (slow)',
 			],
 		]);
 	}
@@ -41,7 +34,7 @@ class AddZipOptions extends Migration
 	public function down(): void
 	{
 		DB::table('configs')
-			->whereIn('key', ['zip_large_file_size', 'zip_deflate_level'])
+			->whereIn('key', ['zip_deflate_level'])
 			->delete();
 	}
 }
