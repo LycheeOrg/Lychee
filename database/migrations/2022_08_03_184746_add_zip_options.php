@@ -34,7 +34,7 @@ class AddZipOptions extends Migration
 	public function down(): void
 	{
 		DB::table('configs')
-			->whereIn('key', ['zip_deflate_level'])
+			->where('key', '=', 'zip_deflate_level')
 			->delete();
 	}
 }
