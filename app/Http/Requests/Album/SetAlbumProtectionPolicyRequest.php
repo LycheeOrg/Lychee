@@ -7,6 +7,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasBaseAlbum;
 use App\Http\Requests\Contracts\HasPassword;
+use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasBaseAlbumTrait;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Rules\PasswordRule;
@@ -16,17 +17,10 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 {
 	use HasBaseAlbumTrait;
 	use HasPasswordTrait;
+	use AuthorizeCanEditAlbumTrait;
 
 	protected bool $isPasswordProvided;
 	protected AlbumProtectionPolicy $albumAccessSettings;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function authorize(): bool
-	{
-		return $this->authorizeAlbumWrite($this->album);
-	}
 
 	/**
 	 * {@inheritDoc}

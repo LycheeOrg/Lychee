@@ -6,6 +6,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasTagAlbum;
 use App\Http\Requests\Contracts\HasTags;
+use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasTagAlbumTrait;
 use App\Http\Requests\Traits\HasTagsTrait;
 use App\Models\TagAlbum;
@@ -15,20 +16,13 @@ class SetAlbumTagsRequest extends BaseApiRequest implements HasTagAlbum, HasTags
 {
 	use HasTagAlbumTrait;
 	use HasTagsTrait;
+	use AuthorizeCanEditAlbumTrait;
 
 	/**
 	 * For historical reasons the parameter of the API is called `show_tags`
 	 * and not only `tags`; otherwise `HasTags::TAGS_ATTRIBUTE` could be used.
 	 */
 	public const SHOW_TAGS_ATTRIBUTE = 'show_tags';
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function authorize(): bool
-	{
-		return $this->authorizeAlbumWrite($this->album);
-	}
 
 	/**
 	 * {@inheritDoc}
