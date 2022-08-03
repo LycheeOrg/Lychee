@@ -44,6 +44,9 @@ class Archive extends Action
 		$responseGenerator = function () use ($albums) {
 			$options = new \ZipStream\Option\Archive();
 			$options->setEnableZip64(Configs::getValueAsBool('zip64'));
+			$options->setLargeFileSize(Configs::getValueAsInt('zip_large_file_size'));
+			$options->setDeflateLevel(Configs::getValueAsInt('zip_deflate_level'));
+			$options->setZeroHeader(true);
 			$zip = new ZipStream(null, $options);
 
 			$usedDirNames = [];
