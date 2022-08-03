@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Settings;
+namespace App\Http\Requests\Legacy;
 
 use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\Session\LoginRequest;
