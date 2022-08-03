@@ -9,7 +9,6 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
 use App\Factories\AlbumFactory;
-use App\Models\Album;
 use App\Models\Photo;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
@@ -123,21 +122,6 @@ abstract class BaseApiRequest extends FormRequest
 	protected function failedAuthorization(): void
 	{
 		throw Auth::check() ? new UnauthorizedException() : new UnauthenticatedException();
-	}
-
-	/**
-	 * Determines if the user is authorized to modify or write into the
-	 * designated albums.
-	 *
-	 * @param string[] $albumIDs the album IDs
-	 *
-	 * @return bool true, if the authenticated user is authorized
-	 *
-	 * @throws QueryBuilderException
-	 */
-	protected function authorizeAlbumsWriteByIDs(array $albumIDs): bool
-	{
-		return $this->albumPolicy->canEditById(Auth::user(), $albumIDs);
 	}
 
 	/**

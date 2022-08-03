@@ -6,6 +6,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbumIDs;
 use App\Http\Requests\Traits\HasAlbumIDsTrait;
 use App\Rules\AlbumIDRule;
+use Illuminate\Support\Facades\Auth;
 
 class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbumIDs
 {
@@ -16,7 +17,7 @@ class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbumIDs
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumsWriteByIDs($this->albumIDs);
+		return $this->albumPolicy->canEditById(Auth::user(), $this->albumIDs);
 	}
 
 	/**
