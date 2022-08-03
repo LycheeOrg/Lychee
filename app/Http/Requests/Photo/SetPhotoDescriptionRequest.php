@@ -5,6 +5,7 @@ namespace App\Http\Requests\Photo;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasDescription;
 use App\Http\Requests\Contracts\HasPhoto;
+use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotoTrait;
 use App\Http\Requests\Traits\HasDescriptionTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
 use App\Models\Photo;
@@ -15,14 +16,7 @@ class SetPhotoDescriptionRequest extends BaseApiRequest implements HasPhoto, Has
 {
 	use HasPhotoTrait;
 	use HasDescriptionTrait;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function authorize(): bool
-	{
-		return $this->authorizePhotoWrite($this->photo);
-	}
+	use AuthorizeCanEditPhotoTrait;
 
 	/**
 	 * {@inheritDoc}

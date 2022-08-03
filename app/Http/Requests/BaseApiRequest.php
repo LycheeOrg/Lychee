@@ -125,18 +125,6 @@ abstract class BaseApiRequest extends FormRequest
 	}
 
 	/**
-	 * Determines if the user is authorized to modify the designated photo.
-	 *
-	 * @param Photo $photo the photo
-	 *
-	 * @return bool true, if the authenticated user is authorized
-	 */
-	protected function authorizePhotoWrite(Photo $photo): bool
-	{
-		return Gate::check(PhotoPolicy::CAN_EDIT, $photo);
-	}
-
-	/**
 	 * Determines if the user is authorized to modify the designated photos.
 	 *
 	 * @param EloquentCollection<Photo> $photos the photos
@@ -147,7 +135,7 @@ abstract class BaseApiRequest extends FormRequest
 	{
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
-			if (!$this->authorizePhotoWrite($photo)) {
+			if (!Gate::check(PhotoPolicy::CAN_EDIT, $photo)) {
 				return false;
 			}
 		}
