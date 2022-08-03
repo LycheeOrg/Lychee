@@ -9,7 +9,6 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
 use App\Factories\AlbumFactory;
-use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -119,18 +118,6 @@ abstract class BaseApiRequest extends FormRequest
 	protected function failedAuthorization(): void
 	{
 		throw Auth::check() ? new UnauthorizedException() : new UnauthenticatedException();
-	}
-
-	/**
-	 * Determines if the user is authorized to modify the designated photos.
-	 *
-	 * @param string[] $photoIDs the IDs of the photos
-	 *
-	 * @return bool true, if the authenticated user is authorized
-	 */
-	protected function authorizePhotosWriteByIDs(array $photoIDs): bool
-	{
-		return $this->photoPolicy->canEditByID(Auth::user(), $photoIDs);
 	}
 
 	/**

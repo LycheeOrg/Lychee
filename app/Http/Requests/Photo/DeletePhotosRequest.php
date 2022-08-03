@@ -6,6 +6,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPhotoIDs;
 use App\Http\Requests\Traits\HasPhotoIDsTrait;
 use App\Rules\RandomIDRule;
+use Illuminate\Support\Facades\Auth;
 
 class DeletePhotosRequest extends BaseApiRequest implements HasPhotoIDs
 {
@@ -16,7 +17,7 @@ class DeletePhotosRequest extends BaseApiRequest implements HasPhotoIDs
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizePhotosWriteByIDs($this->photoIDs);
+		return $this->photoPolicy->canEditByID(Auth::user(), $this->photoIDs);
 	}
 
 	/**
