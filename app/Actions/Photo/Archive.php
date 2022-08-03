@@ -175,6 +175,9 @@ class Archive
 		$responseGenerator = function () use ($variant, $photos) {
 			$options = new \ZipStream\Option\Archive();
 			$options->setEnableZip64(Configs::getValueAsBool('zip64'));
+			$options->setLargeFileSize(Configs::getValueAsInt('zip_large_file_size'));
+			$options->setDeflateLevel(Configs::getValueAsInt('zip_deflate_level'));
+			$options->setZeroHeader(true);
 			$zip = new ZipStream(null, $options);
 
 			// We first need to scan the whole array of files to avoid
