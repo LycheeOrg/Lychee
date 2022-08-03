@@ -94,10 +94,16 @@ class AddStandaloneStrategy extends AddBaseStrategy
 				$this->sourceImage = new ImageHandler();
 				$this->sourceImage->load($this->sourceFile);
 			} elseif ($this->photo->isVideo()) {
-				$videoHandler = new VideoHandler();
-				$videoHandler->load($this->sourceFile);
-				$position = is_numeric($this->photo->aperture) ? floatval($this->photo->aperture) / 2 : 0.0;
-				$this->sourceImage = $videoHandler->extractFrame($position);
+				// We try to extract a video frame using FFmpeg; however,
+				// that one's optional, so we need to be able to recover.
+				try {
+					$videoHandler = new VideoHandler();
+					$videoHandler->load($this->sourceFile);
+					$position = is_numeric($this->photo->aperture) ? floatval($this->photo->aperture) / 2 : 0.0;
+					$this->sourceImage = $videoHandler->extractFrame($position);
+				} catch (\Throwable) {
+					$this->sourceImage = null;
+				}
 			} else {
 				// If we have a raw file, we try to treat it as an image, as
 				// Imagick supports a lot of other image-like file types
