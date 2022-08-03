@@ -9,17 +9,14 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
 use App\Factories\AlbumFactory;
-use App\Models\Photo;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
@@ -122,25 +119,6 @@ abstract class BaseApiRequest extends FormRequest
 	protected function failedAuthorization(): void
 	{
 		throw Auth::check() ? new UnauthorizedException() : new UnauthenticatedException();
-	}
-
-	/**
-	 * Determines if the user is authorized to modify the designated photos.
-	 *
-	 * @param EloquentCollection<Photo> $photos the photos
-	 *
-	 * @return bool true, if the authenticated user is authorized
-	 */
-	protected function authorizePhotosWrite(EloquentCollection $photos): bool
-	{
-		/** @var Photo $photo */
-		foreach ($photos as $photo) {
-			if (!Gate::check(PhotoPolicy::CAN_EDIT, $photo)) {
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	/**
