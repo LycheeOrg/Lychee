@@ -210,7 +210,9 @@ class Archive extends Action
 				$zipFileOption->setMethod($this->deflateLevel === -1 ? ZipMethod::STORE() : ZipMethod::DEFLATE());
 				$zipFileOption->setDeflateLevel($this->deflateLevel);
 				$zipFileOption->setComment($photo->title);
-				$zipFileOption->setTime($photo->taken_at);
+				if ($photo->taken_at !== null) {
+					$zipFileOption->setTime($photo->taken_at);
+				}
 				$zip->addFileFromStream($fileName, $file->read(), $zipFileOption);
 				$file->close();
 			} catch (\Throwable $e) {
