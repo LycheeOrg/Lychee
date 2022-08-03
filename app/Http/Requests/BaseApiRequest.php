@@ -129,19 +129,6 @@ abstract class BaseApiRequest extends FormRequest
 
 	/**
 	 * Determines if the user is authorized to modify or write into the
-	 * designated album.
-	 *
-	 * @param AbstractAlbum|null $album the album; `null` designates the root album
-	 *
-	 * @return bool true, if the authenticated user is authorized
-	 */
-	protected function authorizeAlbumWrite(?AbstractAlbum $album): bool
-	{
-		return Gate::check(AlbumPolicy::CAN_EDIT, $album ?? Album::class);
-	}
-
-	/**
-	 * Determines if the user is authorized to modify or write into the
 	 * designated albums.
 	 *
 	 * @param BaseCollection<AbstractAlbum> $albums the albums
@@ -152,7 +139,7 @@ abstract class BaseApiRequest extends FormRequest
 	{
 		/** @var AbstractAlbum $album */
 		foreach ($albums as $album) {
-			if (!$this->authorizeAlbumWrite($album)) {
+			if (!Gate::check(AlbumPolicy::CAN_EDIT, $album)) {
 				return false;
 			}
 		}

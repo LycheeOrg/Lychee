@@ -5,6 +5,7 @@ namespace App\Http\Requests\Import;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasAlbum;
+use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Models\Album;
 use App\Rules\RandomIDRule;
@@ -12,6 +13,7 @@ use App\Rules\RandomIDRule;
 class ImportFromUrlRequest extends BaseApiRequest implements HasAlbum
 {
 	use HasAlbumTrait;
+	use AuthorizeCanEditAlbumTrait;
 
 	public const URLS_ATTRIBUTE = 'urls';
 
@@ -19,14 +21,6 @@ class ImportFromUrlRequest extends BaseApiRequest implements HasAlbum
 	 * @var string[]
 	 */
 	protected array $urls = [];
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function authorize(): bool
-	{
-		return $this->authorizeAlbumWrite($this->album);
-	}
 
 	/**
 	 * {@inheritDoc}

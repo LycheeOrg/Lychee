@@ -7,7 +7,10 @@ use App\Http\Requests\Contracts\HasTags;
 use App\Http\Requests\Contracts\HasTitle;
 use App\Http\Requests\Traits\HasTagsTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
+use App\Models\Album;
+use App\Policies\AlbumPolicy;
 use App\Rules\TitleRule;
+use Illuminate\Support\Facades\Gate;
 
 class AddTagAlbumRequest extends BaseApiRequest implements HasTitle, HasTags
 {
@@ -22,7 +25,7 @@ class AddTagAlbumRequest extends BaseApiRequest implements HasTitle, HasTags
 		// Sic!
 		// Tag albums can only be created below the root album which has the
 		// ID `null`.
-		return $this->authorizeAlbumWrite(null);
+		return Gate::check(AlbumPolicy::CAN_EDIT, Album::class);
 	}
 
 	/**

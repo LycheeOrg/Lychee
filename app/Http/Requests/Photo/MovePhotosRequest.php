@@ -10,7 +10,9 @@ use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Http\Requests\Traits\HasPhotosTrait;
 use App\Models\Album;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
 use App\Rules\RandomIDRule;
+use Illuminate\Support\Facades\Gate;
 
 class MovePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum
 {
@@ -23,7 +25,7 @@ class MovePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum
 	public function authorize(): bool
 	{
 		return $this->authorizePhotosWrite($this->photos) &&
-			$this->authorizeAlbumWrite($this->album);
+			Gate::check(AlbumPolicy::CAN_EDIT, $this->album ?? Album::class);
 	}
 
 	/**

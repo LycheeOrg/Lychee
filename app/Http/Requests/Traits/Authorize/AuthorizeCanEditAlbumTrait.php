@@ -6,6 +6,10 @@ use App\Models\Album;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
+/**
+ * Determines if the user is authorized to modify or write into the
+ * designated album.
+ */
 trait AuthorizeCanEditAlbumTrait
 {
 	/**
