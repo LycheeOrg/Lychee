@@ -372,6 +372,12 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 					'height' => 0,
 					'filesize' => 66781184,
 				],
+				'medium2x' => null,
+				'medium' => null,
+				'small2x' => null,
+				'small' => null,
+				'thumb2x' => null,
+				'thumb' => null,
 			],
 		]);
 
