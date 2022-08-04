@@ -344,4 +344,37 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 			],
 		]);
 	}
+
+	/**
+	 * Tests video upload with ffmpeg or exiftool.
+	 *
+	 * @return void
+	 */
+	public function testVideoUploadWithoutFFmpeg(): void
+	{
+		$hasExifTool = Configs::getValueAsInt(self::CONFIG_HAS_EXIF_TOOL);
+		Configs::set(self::CONFIG_HAS_EXIF_TOOL, 0);
+
+		$hasFFMpeg = Configs::getValueAsInt(TestCase::CONFIG_HAS_FFMPEG);
+		Configs::set(TestCase::CONFIG_HAS_FFMPEG, 0);
+
+		$response = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GAMING_VIDEO)
+		);
+		$response->assertJson([
+			'album_id' => null,
+			'title' => 'gaming',
+			'type' => TestCase::MIME_TYPE_VID_MP4,
+			'size_variants' => [
+				'original' => [
+					'width' => 0,
+					'height' => 0,
+					'filesize' => 66781184,
+				],
+			],
+		]);
+
+		Configs::set(self::CONFIG_HAS_FFMPEG, $hasFFMpeg);
+		Configs::set(self::CONFIG_HAS_EXIF_TOOL, $hasExifTool);
+	}
 }
