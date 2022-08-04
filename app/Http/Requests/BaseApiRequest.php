@@ -9,8 +9,6 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
 use App\Factories\AlbumFactory;
-use App\Policies\AlbumPolicy;
-use App\Policies\PhotoPolicy;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Http\FormRequest;
@@ -22,8 +20,6 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 abstract class BaseApiRequest extends FormRequest
 {
 	protected AlbumFactory $albumFactory;
-	protected AlbumPolicy $albumPolicy;
-	protected PhotoPolicy $photoPolicy;
 
 	/**
 	 * @throws FrameworkException
@@ -39,8 +35,6 @@ abstract class BaseApiRequest extends FormRequest
 	) {
 		try {
 			$this->albumFactory = resolve(AlbumFactory::class);
-			$this->albumPolicy = resolve(AlbumPolicy::class);
-			$this->photoPolicy = resolve(PhotoPolicy::class);
 			parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s provider component', $e);
