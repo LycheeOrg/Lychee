@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\InvalidConfigOption;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Facades\Helpers;
@@ -213,15 +214,15 @@ class Configs extends Model
 	 * Update Lychee configuration
 	 * Note that we must invalidate the cache now.
 	 *
-	 * @param string     $key
-	 * @param string|int $value
+	 * @param string          $key
+	 * @param string|int|bool $value
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 * @throws QueryBuilderException
 	 */
-	public static function set(string $key, string|int $value): void
+	public static function set(string $key, string|int|bool $value): void
 	{
 		try {
 			/** @var Configs $config */
@@ -229,7 +230,12 @@ class Configs extends Model
 				->where('key', '=', $key)
 				->firstOrFail();
 
-			$strValue = strval($value);
+			$strValue = match (gettype($value)) {
+				'boolean' => $value === true ? '1' : '0',
+				'integer', 'string' => strval($value),
+				default => throw new LycheeAssertionError('Unexpected type')
+			};
+
 			/**
 			 * Sanity check. :).
 			 */
