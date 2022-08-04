@@ -288,6 +288,15 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 	 * Tests Google Motion Photo upload with a file which has a broken
 	 * video stream.
 	 *
+	 * We still expect the still part of the photo to be generated, but
+	 * the photo won't be recognized as a Google Motion Photo and the
+	 * video part is expected to be missing.
+	 *
+	 * This is in line with our best effort approach.
+	 *
+	 * Moreover, the logs should contain an error message, telling the user
+	 * what went wrong.
+	 *
 	 * @return void
 	 */
 	public function testBrokenGoogleMotionPhotoUpload(): void
@@ -295,12 +304,33 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 		$this->assertHasExifToolOrSkip();
 		$this->assertHasFFMpegOrSkip();
 
-		$this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_BROKEN_IMAGE),
-			null,
-			500,
-			'MediaFileOperationException'
+		DB::table('logs')->delete();
+
+		$response = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_BROKEN_IMAGE)
 		);
+		// Size variants are generated, because they are extracted from the
+		// still part of the GMP, not the video part.
+		$response->assertJson([
+			'album_id' => null,
+			'title' => 'google_motion_photo_broken',
+			'type' => TestCase::MIME_TYPE_IMG_JPEG,
+			'size_variants' => [
+				'original' => ['width' => 2016, 'height' => 1512],
+				'medium2x' => null,
+				'medium' => ['width' => 1440, 'height' => 1080],
+				'small2x' => ['width' => 960, 'height' => 720],
+				'small' => ['width' => 480, 'height' => 360],
+				'thumb2x' => ['width' => 400, 'height' => 400],
+				'thumb' => ['width' => 200,	'height' => 200],
+			],
+			'live_photo_url' => null,
+		]);
+
+		$logCount = DB::table('logs')
+			->where('text', 'like', '%ffprobe%failed%')
+			->count();
+		self::assertNotEquals(0, $logCount);
 	}
 
 	/**
