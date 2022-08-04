@@ -89,31 +89,29 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		$this->photo->original_checksum = StreamStat::createFromLocalFile($this->sourceFile)->checksum;
 
 		try {
-			// Load source image if it is a supported photo format
-			if ($this->photo->isPhoto()) {
-				$this->sourceImage = new ImageHandler();
-				$this->sourceImage->load($this->sourceFile);
-			} elseif ($this->photo->isVideo()) {
-				// We try to extract a video frame using FFmpeg; however,
-				// that one's optional, so we need to be able to recover.
-				try {
+			try {
+				if ($this->photo->isPhoto()) {
+					// Load source image if it is a supported photo format
+					$this->sourceImage = new ImageHandler();
+					$this->sourceImage->load($this->sourceFile);
+				} elseif ($this->photo->isVideo()) {
 					$videoHandler = new VideoHandler();
 					$videoHandler->load($this->sourceFile);
 					$position = is_numeric($this->photo->aperture) ? floatval($this->photo->aperture) / 2 : 0.0;
 					$this->sourceImage = $videoHandler->extractFrame($position);
-				} catch (\Throwable) {
-					$this->sourceImage = null;
-				}
-			} else {
-				// If we have a raw file, we try to treat it as an image, as
-				// Imagick supports a lot of other image-like file types
-				// But if it fails we don't mind.
-				try {
+				} else {
 					$this->sourceImage = new ImageHandler();
 					$this->sourceImage->load($this->sourceFile);
-				} catch (\Throwable) {
-					$this->sourceImage = null;
 				}
+			} catch (\Throwable $e) {
+				// This may happen for videos if FFmpeg is not available to
+				// extract a still frame, or for raw files (Imagick may be
+				// able to convert them to jpeg, but there are no
+				// guarantees, and Imagick may not be available).
+				$this->sourceImage = null;
+
+				// Log an error without failing.
+				Handler::reportSafely($e);
 			}
 
 			// Handle Google Motion Pictures
@@ -121,10 +119,15 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			// file and stash it away, before the original file is moved into
 			// its (potentially remote) final position
 			if ($this->parameters->exifInfo->microVideoOffset !== 0) {
-				$tmpVideoFile = new TemporaryLocalFile(GoogleMotionPictureHandler::FINAL_VIDEO_FILE_EXTENSION, $this->sourceFile->getBasename());
-				$gmpHandler = new GoogleMotionPictureHandler();
-				$gmpHandler->load($this->sourceFile, $this->parameters->exifInfo->microVideoOffset);
-				$gmpHandler->saveVideoStream($tmpVideoFile);
+				try {
+					$tmpVideoFile = new TemporaryLocalFile(GoogleMotionPictureHandler::FINAL_VIDEO_FILE_EXTENSION, $this->sourceFile->getBasename());
+					$gmpHandler = new GoogleMotionPictureHandler();
+					$gmpHandler->load($this->sourceFile, $this->parameters->exifInfo->microVideoOffset);
+					$gmpHandler->saveVideoStream($tmpVideoFile);
+				} catch (\Throwable $e) {
+					Handler::reportSafely($e);
+					$tmpVideoFile = null;
+				}
 			} else {
 				$tmpVideoFile = null;
 			}
