@@ -359,6 +359,8 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 		$hasFFMpeg = Configs::getValueAsInt(TestCase::CONFIG_HAS_FFMPEG);
 		Configs::set(TestCase::CONFIG_HAS_FFMPEG, 0);
 
+		DB::table('logs')->delete();
+
 		$response = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GAMING_VIDEO)
 		);
@@ -380,6 +382,18 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 				'thumb' => null,
 			],
 		]);
+
+		// In the test suite we cannot really ensure that FFMpeg is not
+		// available, because the executable is still part of the test
+		// environment.
+		// Hence, we can only disable it (see above), but cannot be sure
+		// that it isn't called accidentally.
+		// As a second-best approach, we check at least for the existence
+		// of an error message in the log.
+		$logCount = DB::table('logs')
+			->where('text', 'like', '%FFmpeg%disabled%')
+			->count();
+		self::assertEquals(1, $logCount);
 
 		Configs::set(self::CONFIG_HAS_FFMPEG, $hasFFMpeg);
 		Configs::set(self::CONFIG_HAS_EXIF_TOOL, $hasExifTool);
