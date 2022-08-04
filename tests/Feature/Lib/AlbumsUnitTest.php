@@ -293,6 +293,7 @@ class AlbumsUnitTest
 			'is_nsfw' => $nsfw,
 			'is_downloadable' => $downloadable,
 			'is_share_button_visible' => $share_button_visible,
+			'inherits_protection_policy' => false, // for now.
 		];
 
 		if ($password !== null) {

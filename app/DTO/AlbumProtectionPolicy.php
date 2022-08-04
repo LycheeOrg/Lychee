@@ -10,6 +10,7 @@ class AlbumProtectionPolicy extends DTO
 	public const IS_DOWNLOADABLE_ATTRIBUTE = 'is_downloadable';
 	public const IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE = 'is_share_button_visible';
 	public const GRANTS_FULL_PHOTO_ATTRIBUTE = 'grants_full_photo';
+	public const INHERITS_PROTECTION_POLICY = 'inherits_protection_policy';
 
 	public bool $isPublic;
 	public bool $requiresLink;
@@ -17,6 +18,7 @@ class AlbumProtectionPolicy extends DTO
 	public bool $isDownloadable;
 	public bool $isShareButtonVisible;
 	public bool $grantsFullPhoto;
+	public bool $inheritsProtectionPolicy;
 
 	public function __construct(
 		bool $isPublic,
@@ -24,7 +26,8 @@ class AlbumProtectionPolicy extends DTO
 		bool $isNSFW,
 		bool $isDownloadable,
 		bool $isShareButtonVisible,
-		bool $grantsFullPhoto
+		bool $grantsFullPhoto,
+		bool $inheritsProtectionPolicy
 	) {
 		$this->isPublic = $isPublic;
 		$this->requiresLink = $requiresLink;
@@ -32,6 +35,7 @@ class AlbumProtectionPolicy extends DTO
 		$this->isDownloadable = $isDownloadable;
 		$this->isShareButtonVisible = $isShareButtonVisible;
 		$this->grantsFullPhoto = $grantsFullPhoto;
+		$this->inheritsProtectionPolicy = $inheritsProtectionPolicy;
 	}
 
 	/**
@@ -46,6 +50,7 @@ class AlbumProtectionPolicy extends DTO
 			self::IS_DOWNLOADABLE_ATTRIBUTE => $this->isDownloadable,
 			self::IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE => $this->isShareButtonVisible,
 			self::GRANTS_FULL_PHOTO_ATTRIBUTE => $this->grantsFullPhoto,
+			self::INHERITS_PROTECTION_POLICY => $this->inheritsProtectionPolicy,
 		];
 	}
 }

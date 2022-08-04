@@ -27,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property string|null                $description
  * @property bool                       $is_nsfw
  * @property bool                       $grants_full_photo
+ * @property bool                       $inherits_protection_policy
  * @property int                        $owner_id
  * @property User                       $owner
  * @property Collection                 $shared_with

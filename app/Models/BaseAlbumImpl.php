@@ -95,6 +95,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property bool                       $requires_link
  * @property bool                       $is_downloadable
  * @property bool                       $is_share_button_visible
+ * @property bool                       $inherits_protection_policy
  * @property bool                       $is_nsfw
  * @property Collection                 $shared_with
  * @property string|null                $password
@@ -149,6 +150,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'requires_link' => false,
 		'is_downloadable' => false,
 		'is_share_button_visible' => false,
+		'inherits_protection_policy' => false,
 		'is_nsfw' => false,
 		'password' => null,
 		'sorting_col' => null,
@@ -166,6 +168,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'is_public' => 'boolean',
 		'requires_link' => 'boolean',
 		'is_nsfw' => 'boolean',
+		'inherits_protection_policy' => 'boolean',
 		'owner_id' => 'integer',
 	];
 

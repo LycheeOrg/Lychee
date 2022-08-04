@@ -42,6 +42,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 			AlbumProtectionPolicy::IS_DOWNLOADABLE_ATTRIBUTE => 'required|boolean',
 			AlbumProtectionPolicy::IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE => 'required|boolean',
 			AlbumProtectionPolicy::GRANTS_FULL_PHOTO_ATTRIBUTE => 'required|boolean',
+			AlbumProtectionPolicy::INHERITS_PROTECTION_POLICY => 'required|boolean',
 		];
 	}
 
@@ -60,6 +61,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 			static::toBoolean($values[AlbumProtectionPolicy::IS_DOWNLOADABLE_ATTRIBUTE]),
 			static::toBoolean($values[AlbumProtectionPolicy::IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE]),
 			static::toBoolean($values[AlbumProtectionPolicy::GRANTS_FULL_PHOTO_ATTRIBUTE]),
+			static::toBoolean($values[AlbumProtectionPolicy::INHERITS_PROTECTION_POLICY]),
 		);
 		$this->isPasswordProvided = array_key_exists(HasPassword::PASSWORD_ATTRIBUTE, $values);
 		$this->password = $this->isPasswordProvided ? $values[HasPassword::PASSWORD_ATTRIBUTE] : null;
