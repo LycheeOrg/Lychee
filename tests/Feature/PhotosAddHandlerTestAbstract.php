@@ -12,6 +12,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Configs;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature\Base\PhotoTestBase;
