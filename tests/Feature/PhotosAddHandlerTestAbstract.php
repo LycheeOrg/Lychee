@@ -347,7 +347,7 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 	}
 
 	/**
-	 * Tests video upload with ffmpeg or exiftool.
+	 * Tests video upload without ffmpeg or exiftool.
 	 *
 	 * @return void
 	 */
