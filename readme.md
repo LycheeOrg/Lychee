@@ -85,6 +85,12 @@ In order to use the new photos email notification you will need to have configur
 
 Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particularly the [FAQ](https://lycheeorg.github.io/docs/faq.html) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub! You can also contact us directly on [gitter (login with your github account). &#187;](https://gitter.im/LycheeOrg/Lobby)
 
+## Open Source Community Support
+
+<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/PhpStorm_icon.png" alt="drawing" width="50"/>
+
+We would like to thank Jetbrains for supporting with their [Open Source Development - Community Support][jetbrains-opensource] program.
+
 [1]: https://lycheeorg.github.io/docs/settings.html
 [build-status-shield]: https://img.shields.io/github/workflow/status/LycheeOrg/Lychee/Build
 [codecov-shield]: https://codecov.io/gh/LycheeOrg/Lychee/branch/master/graph/badge.svg
@@ -99,3 +105,6 @@ Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particula
 [frontend-shield]: https://img.shields.io/badge/-Lychee--Front-informational.svg?logo=github
 [docker-shield]: https://img.shields.io/badge/-Lychee--Docker-informational.svg?logo=github
 [gitter-shield]: https://img.shields.io/gitter/room/LycheeOrg/Lobby.svg?logo=gitter
+[phpStorm]: https://resources.jetbrains.com/storage/products/company/brand/logos/PhpStorm_icon.png
+[jetbrains-opensource]: https://www.jetbrains.com/community/opensource/
+
