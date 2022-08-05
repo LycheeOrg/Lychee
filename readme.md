@@ -89,7 +89,7 @@ Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particula
 
 <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/PhpStorm_icon.png" alt="PhpStorm" width="50"/>
 
-We would like to thank Jetbrains for supporting with their [Open Source Development - Community Support][jetbrains-opensource] program.
+We would like to thank Jetbrains for supporting us with their [Open Source Development - Community Support][jetbrains-opensource] program.
 
 [1]: https://lycheeorg.github.io/docs/settings.html
 [build-status-shield]: https://img.shields.io/github/workflow/status/LycheeOrg/Lychee/Build
