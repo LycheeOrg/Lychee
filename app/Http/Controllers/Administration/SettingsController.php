@@ -25,48 +25,39 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 class SettingsController extends Controller
 {
 	/**
-	 * Set the Login information of the Lychee configuration
-	 * Either they are not already set and we directly bcrypt the parameters
-	 * or the current username and password are compared and changed if successful.
-	 *
-	 * To be noted this function will change the CONFIG table if used by admin
-	 * or the USER table if used by any other user
+	 * Set the Login information for the admin user (id = 0)
+	 * when the later is not initialized.
 	 *
 	 * @param SetAdminLoginRequest $request
-	 * @param SetLogin             $login
+	 * @param SetLogin             $setLogin
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
 	 * @throws ModelNotFoundException
 	 */
-	public function setLogin(SetAdminLoginRequest $request, SetLogin $login): void
+	public function setLogin(SetAdminLoginRequest $request, SetLogin $setLogin): void
 	{
-		$login->do(
+		$setLogin->do(
 			$request->username(),
 			$request->password()
 		);
 	}
 
 	/**
-	 * Set the Login information of the Lychee configuration
-	 * Either they are not already set and we directly bcrypt the parameters
-	 * or the current username and password are compared and changed if successful.
-	 *
-	 * To be noted this function will change the CONFIG table if used by admin
-	 * or the USER table if used by any other user
+	 * Update the Login information of a user.
 	 *
 	 * @param ChangeLoginRequest $request
-	 * @param UpdateLogin        $login
+	 * @param UpdateLogin        $updateLogin
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
 	 * @throws ModelNotFoundException
 	 */
-	public function updateLogin(ChangeLoginRequest $request, UpdateLogin $login): void
+	public function updateLogin(ChangeLoginRequest $request, UpdateLogin $updateLogin): void
 	{
-		$login->do(
+		$updateLogin->do(
 			$request->username(),
 			$request->password(),
 			$request->oldPassword(),

@@ -113,7 +113,7 @@ class AlbumPolicy
 				return
 					$this->isOwner($user, $album) ||
 					($album->is_public && $album->password === null) ||
-					($album->is_public && $this->unlocked($album)) ||
+					($album->is_public && $this->isUnlocked($album)) ||
 					($album->shared_with()->where('user_id', '=', $user?->id)->count() > 0);
 			} catch (\InvalidArgumentException $e) {
 				throw LycheeAssertionError::createFromUnexpectedException($e);
@@ -262,13 +262,13 @@ class AlbumPolicy
 	 *
 	 * @return bool
 	 */
-	public function unlocked(BaseAlbum|BaseAlbumImpl $album): bool
+	public function isUnlocked(BaseAlbum|BaseAlbumImpl $album): bool
 	{
 		return in_array($album->id, $this->getUnlockedAlbumIDs(), true);
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getUnlockedAlbumIDs(): array
 	{
