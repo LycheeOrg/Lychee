@@ -2601,15 +2601,15 @@ album.apply_nsfw_filter = function () {
  * @returns {boolean}
  */
 album.isUploadable = function () {
-	if (lychee.admin) {
+	if (lychee.rights.is_admin) {
 		return true;
 	}
-	if (lychee.publicMode || !lychee.may_upload) {
+	if (lychee.publicMode || !lychee.rights.may_upload) {
 		return false;
 	}
 
 	// TODO: Comparison of numeric user IDs (instead of names) should be more robust
-	return album.json === null || !album.json.owner_name || album.json.owner_name === lychee.username;
+	return album.json === null || lychee.user !== null && album.json.owner_name === lychee.user.username;
 };
 
 /**
@@ -3432,7 +3432,7 @@ contextMenu.add = function (e) {
 		items.splice(1);
 	}
 
-	if (!lychee.admin) {
+	if (!lychee.rights.is_admin) {
 		// remove import from dropbox and server if not admin
 		items.splice(3, 2);
 	} else if (!lychee.dropboxKey || lychee.dropboxKey === "") {
@@ -4128,7 +4128,7 @@ contextMenu.move = function (IDs, e, callback) {
 			addItems(data.albums);
 		}
 
-		if (data.shared_albums && data.shared_albums.length > 0 && lychee.admin) {
+		if (data.shared_albums && data.shared_albums.length > 0 && lychee.rights.is_admin) {
 			items = items.concat({});
 			addItems(data.shared_albums);
 		}
@@ -4173,9 +4173,13 @@ contextMenu.sharePhoto = function (photoID, e) {
 			return _photo3.share(photoID, "facebook");
 		} }, { title: build.iconic("envelope-closed") + "Mail", fn: function fn() {
 			return _photo3.share(photoID, "mail");
-		} }, { title: build.iconic("dropbox", iconClass) + "Dropbox", visible: lychee.admin === true, fn: function fn() {
+		} }, {
+		title: build.iconic("dropbox", iconClass) + "Dropbox",
+		visible: lychee.rights.is_admin === true,
+		fn: function fn() {
 			return _photo3.share(photoID, "dropbox");
-		} }, { title: build.iconic("link-intact") + lychee.locale["DIRECT_LINKS"], fn: function fn() {
+		}
+	}, { title: build.iconic("link-intact") + lychee.locale["DIRECT_LINKS"], fn: function fn() {
 			return _photo3.showDirectLinks(photoID);
 		} }, { title: build.iconic("grid-two-up") + lychee.locale["QR_CODE"], fn: function fn() {
 			return _photo3.qrCode(photoID);
@@ -4245,12 +4249,12 @@ contextMenu.config = function (e) {
 	if (lychee.new_photos_notification) {
 		items.push({ title: build.iconic("bell") + lychee.locale["NOTIFICATIONS"], fn: notifications.load });
 	}
-	if (lychee.admin) {
+	if (lychee.rights.is_admin) {
 		items.push({ title: build.iconic("person") + lychee.locale["USERS"], fn: users.list });
 	}
 	items.push({ title: build.iconic("key") + lychee.locale["U2F"], fn: u2f.list });
 	items.push({ title: build.iconic("cloud") + lychee.locale["SHARING"], fn: sharing.list });
-	if (lychee.admin) {
+	if (lychee.rights.is_admin) {
 		items.push({
 			title: build.iconic("align-left") + lychee.locale["LOGS"],
 			fn: function fn() {
@@ -4549,7 +4553,7 @@ header.setMode = function (mode) {
 				tabindex.makeUnfocusable(_e6);
 			}
 
-			if (lychee.enable_button_add && lychee.may_upload) {
+			if (lychee.enable_button_add && lychee.rights.may_upload) {
 				var _e7 = $(".button_add", ".header__toolbar--albums");
 				_e7.show();
 				tabindex.makeFocusable(_e7);
@@ -5435,22 +5439,30 @@ var lychee = {
 	public_photos_hidden: true,
 	share_button_visible: false,
 	/**
-  * Enable admin mode (multi-user)
-  * @type boolean
+  * The authenticated user or `null` if unauthenticated
+  * @type {?User}
   */
-	admin: false,
+	user: null,
 	/**
-  * Enable possibility to upload (multi-user)
-  * @type boolean
+  * The rights granted by the backend
   */
-	may_upload: false,
-	/**
-  * Locked user (multi-user)
-  * @type boolean
-  */
-	is_locked: false,
-	/** @type {?string} */
-	username: null,
+	rights: {
+		/**
+   * Backend grants admin rights
+   * @type boolean
+   */
+		is_admin: false,
+		/**
+   * Backend grants upload rights
+   * @type boolean
+   */
+		may_upload: false,
+		/**
+   * Backend considers the user to be locked
+   * @type boolean
+   */
+		is_locked: false
+	},
 	/**
   * Values:
   *
@@ -5654,23 +5666,21 @@ lychee.init = function () {
 	function (data) {
 		lychee.parseInitializationData(data);
 
-		if (data.status === 2) {
-			// Logged in
+		if (data.user !== null || data.rights.is_admin) {
+			// Authenticated or no admin is registered
 			leftMenu.build();
 			leftMenu.bind();
 			lychee.setMode("logged_in");
 
-			// Show dialog when there is no username and password
-			// TODO: Refactor this. At least rename the flag `login` to something more understandable like `isAdminUserConfigured`, but rather re-factor the whole logic, i.e. the initial user should be created as part of the installation routine.
+			// Show dialog to create admin account, if no user is
+			// authenticated but admin rights are granted.
+			// TODO: Refactor the whole logic, i.e. the initial user should be created as part of the installation routine.
 			// In particular it is completely insane to build the UI as if the admin user was successfully authenticated.
 			// This might leak confidential photos to anybody if the DB is filled
 			// with photos and the admin password reset to `null`.
-			if (data.config.login === false) settings.createLogin();
-		} else if (data.status === 1) {
-			lychee.setMode("public");
+			if (data.user === null && data.rights.is_admin) settings.createLogin();
 		} else {
-			loadingBar.show("error", "Error: Unexpected status");
-			return;
+			lychee.setMode("public");
 		}
 
 		if (isFirstInitialization) {
@@ -5688,6 +5698,8 @@ lychee.init = function () {
  * @returns {void}
  */
 lychee.parseInitializationData = function (data) {
+	lychee.user = data.user;
+	lychee.rights = data.rights;
 	lychee.update_json = data.update_json;
 	lychee.update_available = data.update_available;
 
@@ -5706,23 +5718,9 @@ lychee.parseInitializationData = function (data) {
 		lychee.locale[key] = data.locale[key];
 	}
 
-	// Check status
-	// 0 = No configuration
-	// 1 = Logged out
-	// 2 = Logged in
-	if (data.status === 2) {
-		// Logged in
-		lychee.parsePublicInitializationData(data);
+	lychee.parsePublicInitializationData(data);
+	if (lychee.user !== null || lychee.rights.is_admin) {
 		lychee.parseProtectedInitializationData(data);
-
-		lychee.may_upload = data.admin || data.may_upload;
-		lychee.admin = data.admin;
-		lychee.is_locked = data.is_locked;
-		lychee.username = data.username;
-	} else if (data.status === 1) {
-		lychee.parsePublicInitializationData(data);
-	} else {
-		// should not happen.
 	}
 };
 
@@ -6238,17 +6236,17 @@ lychee.setTitle = function () {
  * @param {string} mode - one out of: `public`, `view`, `logged_in`
  */
 lychee.setMode = function (mode) {
-	if (lychee.is_locked) {
+	if (lychee.rights.is_locked) {
 		$("#button_settings_open").remove();
 	}
-	if (!lychee.may_upload) {
+	if (!lychee.rights.may_upload) {
 		$("#button_sharing").remove();
 
 		$(document).off("click", ".header__title--editable").off("touchend", ".header__title--editable").off("contextmenu", ".photo").off("contextmenu", ".album").off("drop");
 
 		Mousetrap.unbind(["u"]).unbind(["s"]).unbind(["n"]).unbind(["r"]).unbind(["d"]).unbind(["t"]).unbind(["command+backspace", "ctrl+backspace"]).unbind(["command+a", "ctrl+a"]);
 	}
-	if (!lychee.admin) {
+	if (!lychee.rights.is_admin) {
 		$("#button_users, #button_logs, #button_diagnostics").remove();
 	}
 
@@ -7698,7 +7696,7 @@ multiselect.toggleItem = function (object, id) {
  */
 multiselect.addItem = function (object, id) {
 	if (album.isSmartID(id) || album.isSearchID(id)) return;
-	if (!lychee.admin && albums.isShared(id)) return;
+	if (!lychee.rights.is_admin && albums.isShared(id)) return;
 	if (multiselect.isSelected(id).selected === true) return;
 
 	var isAlbum = object.hasClass("album");
@@ -12041,7 +12039,7 @@ view.albums = {
 					html += build.divider(album.owner_name);
 					current_owner = album.owner_name;
 				}
-				return html + build.album(album, !lychee.admin);
+				return html + build.album(album, !lychee.rights.is_admin);
 			}, "");
 
 			if (smartData === "" && tagAlbumsData === "" && albumsData === "" && sharedData === "") {
@@ -12417,7 +12415,7 @@ view.album = {
 					// },
 					targetRowHeight: parseFloat($(".photo").css("--lychee-default-height"))
 				});
-				// if (lychee.admin) console.log(layoutGeometry);
+				// if (lychee.rights.is_admin) console.log(layoutGeometry);
 				$(".justified-layout").css("height", layoutGeometry.containerHeight + "px");
 				$(".justified-layout > div").each(function (i) {
 					if (!layoutGeometry.boxes[i]) {
@@ -12946,7 +12944,7 @@ view.settings = {
 		init: function init() {
 			view.settings.clearContent();
 			view.settings.content.setLogin();
-			if (lychee.admin) {
+			if (lychee.rights.is_admin) {
 				view.settings.content.setSorting();
 				view.settings.content.setDropboxKey();
 				view.settings.content.setLang();
@@ -14025,14 +14023,11 @@ var SmartAlbumID = Object.freeze({
 /**
  * @typedef InitializationData
  *
- * @property {number} status - `1`: unauthenticated, `2`: authenticated
- * @property {boolean} admin
- * @property {boolean} may_upload
- * @property {boolean} is_locked
+ * @property {?User} user
+ * @property {{is_admin: boolean, is_locked: boolean, may_upload: boolean}} rights
  * @property {number} update_json - version number of latest available update
  * @property {boolean} update_available
  * @property {Object.<string, string>} locale
- * @property {string} [username] - only if user is not the admin; TODO: Change that
  * @property {ConfigurationData} config
  * @property {DeviceConfiguration} config_device
  */
