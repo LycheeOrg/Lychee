@@ -281,7 +281,7 @@ class UsersTest extends TestCase
 		AccessControl::logout(0);
 	}
 
-	public function testDisableToken(): void
+	public function testUnsetToken(): void
 	{
 		$users_test = new UsersUnitTest($this);
 
@@ -290,7 +290,8 @@ class UsersTest extends TestCase
 		$oldToken = $users_test->reset_token()->offsetGet('token');
 		assertNotEquals('', $oldToken);
 
-		$newToken = $users_test->disable_token()->offsetGet('token');
+		$users_test->unset_token();
+		$newToken = $users_test->get_user()->offsetGet('token');
 		assertEquals('', $newToken);
 
 		AccessControl::logout(0);

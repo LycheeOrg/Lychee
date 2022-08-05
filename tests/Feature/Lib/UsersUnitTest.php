@@ -218,7 +218,7 @@ class UsersUnitTest
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->postJson('/api/User::getCurrent');
+		$response = $this->testCase->postJson('/api/User::getAuthenticatedUser');
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
@@ -256,11 +256,11 @@ class UsersUnitTest
 	 *
 	 * @return TestResponse
 	 */
-	public function disable_token(
-		int $expectedStatusCode = 200,
+	public function unset_token(
+		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->postJson('/api/User::disableToken');
+		$response = $this->testCase->postJson('/api/User::unsetToken');
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);

@@ -136,7 +136,7 @@ class UserController extends Controller
 	 *
 	 * @return User
 	 */
-	public function getCurrent(): User
+	public function getAuthenticatedUser(): User
 	{
 		return AccessControl::user();
 	}
@@ -144,18 +144,17 @@ class UserController extends Controller
 	/**
 	 * Reset the token of the currently authenticated user.
 	 *
-	 * @return array
+	 * @return User
 	 *
 	 * @throws \Exception
 	 */
-	public function resetToken(): array
+	public function resetToken(): User
 	{
-		AccessControl::user()->token = strtr(base64_encode(random_bytes(16)), '+/', '-_');
-		AccessControl::user()->save();
+		$user = AccessControl::user();
+		$user->token = strtr(base64_encode(random_bytes(16)), '+/', '-_');
+		$user->save();
 
-		return [
-			'token' => AccessControl::user()->token,
-		];
+		return $user;
 	}
 
 	/**
@@ -165,13 +164,10 @@ class UserController extends Controller
 	 *
 	 * @throws \Exception
 	 */
-	public function disableToken(): array
+	public function unsetToken(): void
 	{
-		AccessControl::user()->token = '';
-		AccessControl::user()->save();
-
-		return [
-			'token' => '',
-		];
+		$user = AccessControl::user();
+		$user->token = null;
+		$user->save();
 	}
 }
