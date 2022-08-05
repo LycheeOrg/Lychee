@@ -2,14 +2,17 @@
 
 namespace App\Http\Requests\Album;
 
+use App\Contracts\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbums;
 use App\Http\Requests\Contracts\HasTitle;
 use App\Http\Requests\Traits\HasAlbumsTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
 use App\Models\Extensions\BaseAlbum;
+use App\Policies\AlbumPolicy;
 use App\Rules\RandomIDRule;
 use App\Rules\TitleRule;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * @implements HasAlbums<BaseAlbum>
@@ -24,7 +27,14 @@ class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, HasAlbum
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumsWrite($this->albums);
+		/** @var AbstractAlbum $album */
+		foreach ($this->albums as $album) {
+			if (!Gate::check(AlbumPolicy::CAN_EDIT, $album)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**

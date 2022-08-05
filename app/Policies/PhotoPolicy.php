@@ -21,6 +21,7 @@ class PhotoPolicy
 	public const IS_VISIBLE = 'isVisible';
 	public const CAN_DOWNLOAD = 'canDownload';
 	public const CAN_EDIT = 'canEdit';
+	public const CAN_EDIT_ID = 'canEditById';
 
 	/**
 	 * @throws FrameworkException
@@ -138,8 +139,6 @@ class PhotoPolicy
 		return $this->isOwner($user, $photo);
 	}
 
-	// The following methods are not to be called by Gate.
-
 	/**
 	 * Checks whether the designated photos are editable by the current user.
 	 *
@@ -160,12 +159,8 @@ class PhotoPolicy
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function canEditByID(User $user, array $photoIDs): bool
+	public function canEditById(User $user, array $photoIDs): bool
 	{
-		if ($this->before($user, 'editById') === true) {
-			return true;
-		}
-
 		if (!$this->userPolicy->canUpload($user)) {
 			return false;
 		}

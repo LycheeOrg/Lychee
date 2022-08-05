@@ -31,6 +31,7 @@ class AlbumPolicy
 	public const CAN_DOWNLOAD = 'canDownload';
 	public const CAN_EDIT = 'canEdit';
 	public const IS_VISIBLE = 'isVisible';
+	public const CAN_EDIT_ID = 'canEditById';
 
 	/**
 	 * @throws FrameworkException
@@ -200,8 +201,6 @@ class AlbumPolicy
 			$smartAlbum->is_public;
 	}
 
-	// The following methods are not to be called by Gate.
-
 	/**
 	 * Checks whether the designated albums are editable by the current user.
 	 *
@@ -224,10 +223,6 @@ class AlbumPolicy
 	 */
 	public function canEditById(User $user, array $albumIDs): bool
 	{
-		if ($this->before($user, 'editById') === true) {
-			return true;
-		}
-
 		if (!$this->userPolicy->canUpload($user)) {
 			return false;
 		}
@@ -247,6 +242,8 @@ class AlbumPolicy
 			->where('owner_id', $user->id)
 			->count() === count($albumIDs);
 	}
+
+	// The following methods are not to be called by Gate.
 
 	/**
 	 * Pushes an album onto the stack of unlocked albums.
