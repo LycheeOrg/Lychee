@@ -4,7 +4,6 @@ namespace App\Image;
 
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
-
 use function Safe\filemtime;
 use function Safe\filesize;
 use function Safe\fopen;

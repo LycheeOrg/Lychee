@@ -3,7 +3,6 @@
 namespace App\Image;
 
 use App\Exceptions\MediaFileOperationException;
-
 use function Safe\fopen;
 
 /**
