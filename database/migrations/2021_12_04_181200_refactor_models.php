@@ -1094,7 +1094,7 @@ class RefactorModels extends Migration
 				'owner_id' => $album->owner_id,
 				'is_public' => $album->public,
 				'grants_full_photo' => $album->full_photo,
-				'requires_link' => !$album->viewable,
+				'requires_link' => !($album->viewable),
 				'is_downloadable' => $album->downloadable,
 				'is_share_button_visible' => $album->share_button_visible,
 				'is_nsfw' => $album->nsfw,
@@ -1264,7 +1264,7 @@ class RefactorModels extends Migration
 				'owner_id' => $oldBaseAlbum->owner_id,
 				'public' => $oldBaseAlbum->is_public,
 				'full_photo' => $oldBaseAlbum->grants_full_photo,
-				'viewable' => !$oldBaseAlbum->requires_link,
+				'viewable' => !($oldBaseAlbum->requires_link),
 				'downloadable' => $oldBaseAlbum->is_downloadable,
 				'share_button_visible' => $oldBaseAlbum->is_share_button_visible,
 				'nsfw' => $oldBaseAlbum->is_nsfw,
@@ -1760,7 +1760,7 @@ class RefactorModels extends Migration
 		if ($variantType === self::VARIANT_ORIGINAL || $variantType === self::VARIANT_THUMB) {
 			return true;
 		} elseif ($variantType === self::VARIANT_THUMB2X) {
-			return (bool) $photo->thumb2x;
+			return (bool) ($photo->thumb2x);
 		} else {
 			return $this->getWidth($photo, $variantType) !== 0;
 		}

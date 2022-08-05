@@ -1202,16 +1202,16 @@
         },
         {
             "name": "fideloper/proxy",
-            "version": "4.4.1",
+            "version": "4.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fideloper/TrustedProxy.git",
-                "reference": "c073b2bd04d1c90e04dc1b787662b558dd65ade0"
+                "reference": "a751f2bc86dd8e6cfef12dc0cbdada82f5a18750"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fideloper/TrustedProxy/zipball/c073b2bd04d1c90e04dc1b787662b558dd65ade0",
-                "reference": "c073b2bd04d1c90e04dc1b787662b558dd65ade0",
+                "url": "https://api.github.com/repos/fideloper/TrustedProxy/zipball/a751f2bc86dd8e6cfef12dc0cbdada82f5a18750",
+                "reference": "a751f2bc86dd8e6cfef12dc0cbdada82f5a18750",
                 "shasum": ""
             },
             "require": {
@@ -1221,7 +1221,7 @@
             "require-dev": {
                 "illuminate/http": "^5.0|^6.0|^7.0|^8.0|^9.0",
                 "mockery/mockery": "^1.0",
-                "phpunit/phpunit": "^6.0"
+                "phpunit/phpunit": "^8.5.8|^9.3.3"
             },
             "type": "library",
             "extra": {
@@ -1254,27 +1254,27 @@
             ],
             "support": {
                 "issues": "https://github.com/fideloper/TrustedProxy/issues",
-                "source": "https://github.com/fideloper/TrustedProxy/tree/4.4.1"
+                "source": "https://github.com/fideloper/TrustedProxy/tree/4.4.2"
             },
-            "time": "2020-10-22T13:48:01+00:00"
+            "time": "2022-02-09T13:33:34+00:00"
         },
         {
             "name": "geocoder-php/cache-provider",
-            "version": "4.3.0",
+            "version": "4.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/geocoder-php/cache-provider.git",
-                "reference": "094e272069b4dffda18f10e75f7143a9548da53c"
+                "reference": "0b03ae7c3108c1e48d6615cc52cac3d52bcff797"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/geocoder-php/cache-provider/zipball/094e272069b4dffda18f10e75f7143a9548da53c",
-                "reference": "094e272069b4dffda18f10e75f7143a9548da53c",
+                "url": "https://api.github.com/repos/geocoder-php/cache-provider/zipball/0b03ae7c3108c1e48d6615cc52cac3d52bcff797",
+                "reference": "0b03ae7c3108c1e48d6615cc52cac3d52bcff797",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.3 || ^8.0",
-                "psr/simple-cache": "^1.0",
+                "php": "^7.4 || ^8.0",
+                "psr/simple-cache": "^1.0|^2.0|^3.0",
                 "willdurand/geocoder": "^4.0.0"
             },
             "provide": {
@@ -1310,9 +1310,9 @@
             "description": "Cache the result of a provider",
             "homepage": "http://geocoder-php.org/Geocoder/",
             "support": {
-                "source": "https://github.com/geocoder-php/cache-provider/tree/4.3.0"
+                "source": "https://github.com/geocoder-php/cache-provider/tree/4.4.0"
             },
-            "time": "2020-12-21T16:41:18+00:00"
+            "time": "2022-07-30T12:09:30+00:00"
         },
         {
             "name": "geocoder-php/common-http",
@@ -1381,21 +1381,21 @@
         },
         {
             "name": "geocoder-php/nominatim-provider",
-            "version": "5.5.1",
+            "version": "5.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/geocoder-php/nominatim-provider.git",
-                "reference": "79187d08e7d70ddd9c40c6e58031b69fece9d7c8"
+                "reference": "a59c34388542e25e3ba3eecd4f07d731b1fa98fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/geocoder-php/nominatim-provider/zipball/79187d08e7d70ddd9c40c6e58031b69fece9d7c8",
-                "reference": "79187d08e7d70ddd9c40c6e58031b69fece9d7c8",
+                "url": "https://api.github.com/repos/geocoder-php/nominatim-provider/zipball/a59c34388542e25e3ba3eecd4f07d731b1fa98fe",
+                "reference": "a59c34388542e25e3ba3eecd4f07d731b1fa98fe",
                 "shasum": ""
             },
             "require": {
                 "geocoder-php/common-http": "^4.1",
-                "php": "^7.3 || ^8.0",
+                "php": "^7.4 || ^8.0",
                 "willdurand/geocoder": "^4.0"
             },
             "provide": {
@@ -1434,9 +1434,9 @@
             "description": "Geocoder Nominatim adapter",
             "homepage": "http://geocoder-php.org/Geocoder/",
             "support": {
-                "source": "https://github.com/geocoder-php/nominatim-provider/tree/5.5.1"
+                "source": "https://github.com/geocoder-php/nominatim-provider/tree/5.6.0"
             },
-            "time": "2021-08-20T15:18:10+00:00"
+            "time": "2022-07-30T12:09:30+00:00"
         },
         {
             "name": "graham-campbell/result-type",
@@ -13203,5 +13203,5 @@
     "platform-overrides": {
         "php": "8.0.2"
     },
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
