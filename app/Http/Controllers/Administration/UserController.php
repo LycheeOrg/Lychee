@@ -160,9 +160,7 @@ class UserController extends Controller
 	/**
 	 * Disable the token of the currently authenticated user.
 	 *
-	 * @return array
-	 *
-	 * @throws \Exception
+	 * @return void
 	 */
 	public function unsetToken(): void
 	{
