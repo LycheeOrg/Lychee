@@ -15,6 +15,7 @@ use App\Models\TagAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Safe\Exceptions\ArrayException;
+
 use function Safe\usort;
 
 /**

@@ -4,6 +4,7 @@ namespace App\Image;
 
 use App\Exceptions\MediaFileOperationException;
 use Safe\Exceptions\PcreException;
+
 use function Safe\fclose;
 use function Safe\fopen;
 use function Safe\parse_url;
