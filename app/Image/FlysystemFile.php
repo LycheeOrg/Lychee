@@ -7,7 +7,6 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use League\Flysystem\Adapter\Local as LocalAdapter;
 use League\Flysystem\Exception as FlyException;
-
 use function Safe\fclose;
 
 /**

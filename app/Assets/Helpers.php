@@ -5,12 +5,10 @@ namespace App\Assets;
 use App\Exceptions\Internal\ZeroModuloException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\File;
-
 use function Safe\getallheaders;
 use function Safe\ini_get;
 use function Safe\parse_url;
 use function Safe\substr;
-
 use WhichBrowser\Parser as BrowserParser;
 
 class Helpers

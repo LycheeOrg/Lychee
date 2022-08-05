@@ -7,7 +7,6 @@ use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Date;
 use InvalidArgumentException;
-
 use function Safe\preg_match;
 
 /**
