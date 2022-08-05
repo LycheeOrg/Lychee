@@ -74,7 +74,7 @@ class Ghostbuster extends Command
 			$dryrun = filter_var($this->option('dryrun'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) !== false;
 			$uploadDisk = SizeVariantNamingStrategy::getImageDisk();
 			$symlinkDisk = Storage::disk(SymLink::DISK_NAME);
-			$isLocalDisk = $uploadDisk->getDriver()->getAdapter() instanceof LocalFlysystem;
+			$isLocalDisk = ($uploadDisk->getDriver()->getAdapter() instanceof LocalFlysystem);
 
 			$this->line('');
 

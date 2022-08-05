@@ -134,7 +134,7 @@ class GdHandler extends BaseImageHandler
 			$this->reset();
 
 			$originalStream = $file->read();
-			if (stream_get_meta_data($originalStream)['seekable']) {
+			if ((stream_get_meta_data($originalStream))['seekable']) {
 				$inputStream = $originalStream;
 			} else {
 				// We make an in-memory copy of the provided stream,

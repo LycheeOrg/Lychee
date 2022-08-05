@@ -205,7 +205,7 @@ class GitHubFunctions
 			return [
 				'update_json' => intval($json->lychee->version),
 				'update_available' => (
-					Configs::getValueAsInt('version') <
+					(Configs::getValueAsInt('version')) <
 					$json->lychee->version
 				),
 			];

@@ -111,11 +111,11 @@ class RotateStrategy
 
 		// Re-create original size variant of photo
 		$newOriginalSizeVariant = $this->photo->size_variants->create(
-			SizeVariant::ORIGINAL,
-			$targetFile->getRelativePath(),
-			$image->getDimensions(),
-			$streamStat->bytes
-		);
+				SizeVariant::ORIGINAL,
+				$targetFile->getRelativePath(),
+				$image->getDimensions(),
+				$streamStat->bytes
+			);
 
 		// Re-create remaining size variants
 		try {
@@ -163,11 +163,11 @@ class RotateStrategy
 			/** @var SizeVariant $newSizeVariant */
 			foreach ($newSizeVariants as $newSizeVariant) {
 				$duplicate->size_variants->create(
-					$newSizeVariant->type,
-					$newSizeVariant->short_path,
-					new ImageDimension($newSizeVariant->width, $newSizeVariant->height),
-					$newSizeVariant->filesize
-				);
+						$newSizeVariant->type,
+						$newSizeVariant->short_path,
+						new ImageDimension($newSizeVariant->width, $newSizeVariant->height),
+						$newSizeVariant->filesize
+					);
 			}
 			$duplicate->save();
 		}

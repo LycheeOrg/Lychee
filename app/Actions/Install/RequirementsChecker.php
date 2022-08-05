@@ -25,7 +25,7 @@ class RequirementsChecker
 		$results['errors'] = false;
 		foreach ($requirements as $type => $requirement_) {
 			switch ($type) {
-				// check php requirements
+					// check php requirements
 				case 'php':
 					foreach ($requirement_ as $requirement) {
 						$hasExtension = extension_loaded($requirement);
