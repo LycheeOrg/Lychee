@@ -220,7 +220,7 @@ class UsersUnitTest
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::getAuthenticatedUser');
 		$response->assertStatus($expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 
@@ -241,7 +241,7 @@ class UsersUnitTest
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::resetToken');
 		$response->assertStatus($expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 
@@ -262,7 +262,7 @@ class UsersUnitTest
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::unsetToken');
 		$response->assertStatus($expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 
