@@ -105,6 +105,5 @@ We would like to thank Jetbrains for supporting us with their [Open Source Devel
 [frontend-shield]: https://img.shields.io/badge/-Lychee--Front-informational.svg?logo=github
 [docker-shield]: https://img.shields.io/badge/-Lychee--Docker-informational.svg?logo=github
 [gitter-shield]: https://img.shields.io/gitter/room/LycheeOrg/Lobby.svg?logo=gitter
-[phpStorm]: https://resources.jetbrains.com/storage/products/company/brand/logos/PhpStorm_icon.png
 [jetbrains-opensource]: https://www.jetbrains.com/community/opensource/
 
