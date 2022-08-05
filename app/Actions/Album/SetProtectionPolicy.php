@@ -27,7 +27,7 @@ class SetProtectionPolicy extends Action
 	 * @throws ModelDBException
 	 * @throws FrameworkException
 	 */
-	public function do(BaseAlbum $album, AlbumProtectionPolicy $protectionPolicy, bool $shallSetPassword, ?string $password): void
+	public function do(BaseAlbum $album, AlbumProtectionPolicy $protectionPolicy, bool $shallSetPassword, ?string $password, int $propagateToChildren): void
 	{
 		$this->setAlbumProtectionPolicy($album, $protectionPolicy);
 		$this->setPassword($album, $shallSetPassword, $password);
@@ -39,6 +39,13 @@ class SetProtectionPolicy extends Action
 		}
 
 		// Do propagation.
+		switch ($propagateToChildren) {
+			case 0:
+				// Do nothing
+			break;
+			default:
+				// Do nothing
+		}
 	}
 
 	/**

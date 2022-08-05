@@ -18,6 +18,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 	use HasPasswordTrait;
 
 	protected bool $isPasswordProvided;
+	protected int $propagateToChildren;
 	protected AlbumProtectionPolicy $albumAccessSettings;
 
 	/**
@@ -43,6 +44,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 			AlbumProtectionPolicy::IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE => 'required|boolean',
 			AlbumProtectionPolicy::GRANTS_FULL_PHOTO_ATTRIBUTE => 'required|boolean',
 			AlbumProtectionPolicy::INHERITS_PROTECTION_POLICY => 'required|boolean',
+			AlbumProtectionPolicy::PROPAGATE_TO_CHILDREN => 'required|int',
 		];
 	}
 
@@ -65,6 +67,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 		);
 		$this->isPasswordProvided = array_key_exists(HasPassword::PASSWORD_ATTRIBUTE, $values);
 		$this->password = $this->isPasswordProvided ? $values[HasPassword::PASSWORD_ATTRIBUTE] : null;
+		$this->propagateToChildren = (int) $values[AlbumProtectionPolicy::PROPAGATE_TO_CHILDREN];
 	}
 
 	/**
@@ -78,5 +81,10 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 	public function isPasswordProvided(): bool
 	{
 		return $this->isPasswordProvided;
+	}
+
+	public function getPropagateToChildren(): int
+	{
+		return $this->propagateToChildren;
 	}
 }

@@ -11,6 +11,7 @@ class AlbumProtectionPolicy extends DTO
 	public const IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE = 'is_share_button_visible';
 	public const GRANTS_FULL_PHOTO_ATTRIBUTE = 'grants_full_photo';
 	public const INHERITS_PROTECTION_POLICY = 'inherits_protection_policy';
+	public const PROPAGATE_TO_CHILDREN = 'propagate_to_children';
 
 	public bool $isPublic;
 	public bool $requiresLink;
@@ -27,7 +28,7 @@ class AlbumProtectionPolicy extends DTO
 		bool $isDownloadable,
 		bool $isShareButtonVisible,
 		bool $grantsFullPhoto,
-		bool $inheritsProtectionPolicy
+		bool $inheritsProtectionPolicy,
 	) {
 		$this->isPublic = $isPublic;
 		$this->requiresLink = $requiresLink;

@@ -149,7 +149,8 @@ class AlbumController extends Controller
 			$request->album(),
 			$request->albumProtectionPolicy(),
 			$request->isPasswordProvided(),
-			$request->password()
+			$request->password(),
+			$request->getPropagateToChildren()
 		);
 	}
 
