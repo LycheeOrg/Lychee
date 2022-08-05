@@ -1630,14 +1630,11 @@ var SmartAlbumID = Object.freeze({
 /**
  * @typedef InitializationData
  *
- * @property {number} status - `1`: unauthenticated, `2`: authenticated
- * @property {boolean} admin
- * @property {boolean} may_upload
- * @property {boolean} is_locked
+ * @property {?User} user
+ * @property {{is_admin: boolean, is_locked: boolean, may_upload: boolean}} rights
  * @property {number} update_json - version number of latest available update
  * @property {boolean} update_available
  * @property {Object.<string, string>} locale
- * @property {string} [username] - only if user is not the admin; TODO: Change that
  * @property {ConfigurationData} config
  * @property {DeviceConfiguration} config_device
  */
