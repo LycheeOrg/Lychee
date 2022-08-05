@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\AccessControl;
 use App\Models\User;
 use Closure;
@@ -24,9 +25,8 @@ class VerifyCsrfToken extends Middleware
 
 	/**
 	 * The goal of this function is to allow to bypass the CSRF token requirement
-	 * if an Authorization value is provided in the header and matches the apiKey.
-	 *
-	 * FIXME: Do we want to hash this API key ? Might actually be a good idea...
+	 * if an Authorization value is provided in the header and matches the
+	 * token of a user.
 	 *
 	 * @param Request $request
 	 * @param Closure $next
@@ -34,28 +34,21 @@ class VerifyCsrfToken extends Middleware
 	 * @return mixed
 	 *
 	 * @throws TokenMismatchException
+	 * @throws QueryBuilderException
 	 */
 	public function handle($request, Closure $next): mixed
 	{
-		if ($request->is('api/*')) {
-			$token = $request->header('Authorization');
-			if ($token === null || $token === '') {
-				return parent::handle($request, $next);
-			}
-
+		$token = $request->header('Authorization');
+		if ($request->is('api/*') && is_string($token)) {
 			/** @var User|null $user */
 			$user = User::query()
 				->where('token', '=', $token)
 				->first();
-			if ($user === null) {
-				return parent::handle($request, $next);
-			}
-
-			if (!AccessControl::is_logged_in()) {
+			if ($user instanceof User) {
 				AccessControl::log_as_id($user->id);
-			}
 
-			return $next($request);
+				return $next($request);
+			}
 		}
 
 		return parent::handle($request, $next);
