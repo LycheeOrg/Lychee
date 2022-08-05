@@ -87,7 +87,7 @@ Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particula
 
 ## Open Source Community Support
 
-<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/PhpStorm_icon.png" alt="drawing" width="50"/>
+<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/PhpStorm_icon.png" alt="PhpStorm" width="50"/>
 
 We would like to thank Jetbrains for supporting with their [Open Source Development - Community Support][jetbrains-opensource] program.
 
