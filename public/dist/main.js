@@ -1007,7 +1007,7 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject18 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", " ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'\n\t\t\t\tdraggable='", "'\n\t\t\t\t", ">\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", " ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'\n\t\t\t\tdraggable='", "'\n\t\t\t\t", ">\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
     _templateObject19 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject20 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"], ["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"]),
-    _templateObject21 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'\n\t\t\tdraggable='true'\n\t\t\tondragstart='lychee.startDrag(event)'\n\t\t\tondragend='lychee.endDrag(event)'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'\n\t\t\tdraggable='true'\n\t\t\tondragstart='lychee.startDrag(event)'\n\t\t\tondragend='lychee.endDrag(event)'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
+    _templateObject21 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'\n\t\t\tdraggable='", "'\n\t\t\tondragstart='lychee.startDrag(event)'\n\t\t\tondragend='lychee.endDrag(event)'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'\n\t\t\tdraggable='", "'\n\t\t\tondragstart='lychee.startDrag(event)'\n\t\t\tondragend='lychee.endDrag(event)'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
     _templateObject22 = _taggedTemplateLiteral(["<a><span title='", "'>", "</span>", "</a>"], ["<a><span title='", "'>", "</span>", "</a>"]),
     _templateObject23 = _taggedTemplateLiteral(["<a>", "</a>"], ["<a>", "</a>"]),
     _templateObject24 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
@@ -2996,6 +2996,7 @@ build.album = function (data) {
 	var formattedCreationTs = lychee.locale.printMonthYear(data.created_at);
 	var formattedMinTs = lychee.locale.printMonthYear(data.min_taken_at);
 	var formattedMaxTs = lychee.locale.printMonthYear(data.max_taken_at);
+	var disableDragDrop = !album.isUploadable() || disabled || album.isSmartID(data.id) || data.is_tag_album;
 	var subtitle = formattedCreationTs;
 
 	// check setting album_subtitle_type:
@@ -3032,7 +3033,7 @@ build.album = function (data) {
 			}
 	}
 
-	var html = lychee.html(_templateObject18, disabled ? "disabled" : "", data.is_nsfw && lychee.nsfw_blur ? "blurred" : "", data.id, data.is_nsfw ? "1" : "0", tabindex.get_next_tab_index(), album.isSmartID(data.id) || data.is_tag_album ? "false" : "true", album.isSmartID(data.id) || data.is_tag_album ? "" : "ondragstart='lychee.startDrag(event)'\n\t\t\t\tondragover='lychee.overDrag(event)'\n\t\t\t\tondragleave='lychee.leaveDrag(event)'\n\t\t\t\tondragend='lychee.endDrag(event)'\n\t\t\t\tondrop='lychee.finishDrag(event)'", build.getAlbumThumb(data), build.getAlbumThumb(data), build.getAlbumThumb(data), data.title, data.title, subtitle);
+	var html = lychee.html(_templateObject18, disabled ? "disabled" : "", data.is_nsfw && lychee.nsfw_blur ? "blurred" : "", data.id, data.is_nsfw ? "1" : "0", tabindex.get_next_tab_index(), disableDragDrop ? "false" : "true", disableDragDrop ? "" : "ondragstart='lychee.startDrag(event)'\n\t\t\t\tondragover='lychee.overDrag(event)'\n\t\t\t\tondragleave='lychee.leaveDrag(event)'\n\t\t\t\tondragend='lychee.endDrag(event)'\n\t\t\t\tondrop='lychee.finishDrag(event)'", build.getAlbumThumb(data), build.getAlbumThumb(data), build.getAlbumThumb(data), data.title, data.title, subtitle);
 
 	if (album.isUploadable() && !disabled) {
 		var isCover = album.json && album.json.cover_id && data.thumb.id === album.json.cover_id;
@@ -3130,7 +3131,7 @@ build.photo = function (data) {
 		}
 	}
 
-	html += lychee.html(_templateObject21, disabled ? "disabled" : "", data.album_id, data.id, tabindex.get_next_tab_index(), thumbnail, data.title, data.title);
+	html += lychee.html(_templateObject21, disabled ? "disabled" : "", data.album_id, data.id, tabindex.get_next_tab_index(), !album.isUploadable() || disabled ? "false" : "true", thumbnail, data.title, data.title);
 
 	if (data.taken_at !== null) html += lychee.html(_templateObject22, lychee.locale["CAMERA_DATE"], build.iconic("camera-slr"), lychee.locale.printDateTime(data.taken_at));else html += lychee.html(_templateObject23, lychee.locale.printDateTime(data.created_at));
 
@@ -10065,7 +10066,7 @@ _sidebar.toggle = function (is_user_initiated) {
 		lychee.imageview.toggleClass("image--sidebar");
 		if (typeof view !== "undefined") view.album.content.justify(album.json ? album.json.photos : []);
 		_sidebar.dom().toggleClass("active");
-		_photo3.updateSizeLivePhotoDuringAnimation();
+		if (_photo3.updateSizeLivePhotoDuringAnimation) _photo3.updateSizeLivePhotoDuringAnimation();
 
 		if (is_user_initiated) sessionStorage.setItem("keepSidebarVisible", visible.sidebar() ? "true" : "false");
 	}
