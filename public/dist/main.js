@@ -9900,9 +9900,13 @@ settings.save_enter = function (e) {
  * @returns {void}
  */
 settings.resetToken = function () {
-	api.post("User::resetToken", {}, function (data) {
+	api.post("User::resetToken", {},
+	/**
+  *
+  * @param {User} data
+  */
+	function (data) {
 		var bodyHtml = lychee.html(_templateObject62, data.token, lychee.locale["URL_COPY_TO_CLIPBOARD"], build.iconic("copy", "ionicons"), lychee.locale["DISABLE"], build.iconic("ban"));
-		enableResetButtonText = lychee.locale["RESET"];
 		basicModal.show({
 			body: bodyHtml,
 			buttons: {
@@ -13967,6 +13971,7 @@ var SmartAlbumID = Object.freeze({
  * @property {?string} email
  * @property {boolean} may_upload
  * @property {boolean} is_locked
+ * @property {string} token
  */
 
 /**
