@@ -241,9 +241,9 @@ class UsersUnitTest
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::resetToken');
 		$response->assertStatus($expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
-		}
+		// if ($assertSee !== null) {
+		$response->assertSee($assertSee, false);
+		// }
 
 		return $response;
 	}
