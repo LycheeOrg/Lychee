@@ -4,7 +4,6 @@ namespace App\Factories;
 
 use App\Contracts\Language;
 use App\Locale\English;
-
 use function Safe\scandir;
 use function Safe\substr;
 

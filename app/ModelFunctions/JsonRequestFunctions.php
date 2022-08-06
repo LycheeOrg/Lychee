@@ -4,7 +4,6 @@ namespace App\ModelFunctions;
 
 use App\Exceptions\Internal\JsonRequestFailedException;
 use Illuminate\Support\Facades\Cache;
-
 use function Safe\file_get_contents;
 use function Safe\ini_get;
 

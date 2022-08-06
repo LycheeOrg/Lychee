@@ -12,7 +12,6 @@ use App\Models\SizeVariant;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Safe\Exceptions\InfoException;
-
 use function Safe\set_time_limit;
 
 class ExifLens extends Command
