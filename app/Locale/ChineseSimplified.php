@@ -54,6 +54,11 @@ final class ChineseSimplified implements Language
 			'SET_MAP_PROVIDER' => '设置 OpenStreetMap 图层提供者',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
+			'VIEW_TOKEN' => 'View API token',
+			'RESET' => 'Reset',
+			'DISABLE' => 'Disable',
+			'ENABLE' => 'Enable',
+			'DISABLED' => 'disabled',
 
 			'SMART_ALBUMS' => '智能相册',
 			'SHARED_ALBUMS' => '已共享的相册',

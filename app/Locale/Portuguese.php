@@ -54,6 +54,11 @@ final class Portuguese implements Language
 			'SET_MAP_PROVIDER' => 'Escolher OpenStreetMap tiles provider',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
+			'VIEW_TOKEN' => 'View API token',
+			'RESET' => 'Reset',
+			'DISABLE' => 'Disable',
+			'ENABLE' => 'Enable',
+			'DISABLED' => 'disabled',
 
 			'SMART_ALBUMS' => 'Smart álbums',
 			'SHARED_ALBUMS' => 'Álbums partilhados',

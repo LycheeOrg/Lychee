@@ -54,6 +54,11 @@ final class Vietnamese implements Language
 			'SET_MAP_PROVIDER' => 'Cài đặt nhà cung cấp ô bản đồ OpenStreetMap',
 			'FULL_SETTINGS' => 'Toàn bộ cài đặt',
 			'UPDATE' => 'Cập nhật',
+			'VIEW_TOKEN' => 'View API token',
+			'RESET' => 'Reset',
+			'DISABLE' => 'Disable',
+			'ENABLE' => 'Enable',
+			'DISABLED' => 'disabled',
 
 			'SMART_ALBUMS' => 'Những album thông minh',
 			'SHARED_ALBUMS' => 'Những album được chia sẻ',

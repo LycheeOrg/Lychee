@@ -54,6 +54,11 @@ final class German implements Language
 			'SET_MAP_PROVIDER' => 'Speichere Provider für OpenStreetMap Karten',
 			'FULL_SETTINGS' => 'Alle Einstellungen',
 			'UPDATE' => 'Update',
+			'VIEW_TOKEN' => 'API-Schlüssel anzeigen',
+			'RESET' => 'Zurücksetzen',
+			'DISABLE' => 'Deaktivieren',
+			'ENABLE' => 'Aktivieren',
+			'DISABLED' => 'deaktiviert',
 
 			'SAVE_RISK' => 'Änderungen speichern, ich kenne das Risiko!',
 

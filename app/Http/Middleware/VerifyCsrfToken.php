@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Configs;
+use App\Exceptions\Internal\QueryBuilderException;
+use App\Facades\AccessControl;
+use App\Models\User;
 use Closure;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 use Illuminate\Http\Request;
@@ -23,9 +25,8 @@ class VerifyCsrfToken extends Middleware
 
 	/**
 	 * The goal of this function is to allow to bypass the CSRF token requirement
-	 * if an Authorization value is provided in the header and matches the apiKey.
-	 *
-	 * FIXME: Do we want to hash this API key ? Might actually be a good idea...
+	 * if an Authorization value is provided in the header and matches the
+	 * token of a user.
 	 *
 	 * @param Request $request
 	 * @param Closure $next
@@ -33,28 +34,19 @@ class VerifyCsrfToken extends Middleware
 	 * @return mixed
 	 *
 	 * @throws TokenMismatchException
+	 * @throws QueryBuilderException
 	 */
 	public function handle($request, Closure $next): mixed
 	{
-		if ($request->is('api/*')) {
-			/**
-			 * default value is ''
-			 * we force it in case of the migration has not been done.
-			 */
-			$apiKey = Configs::getValueAsString('api_key');
+		$token = $request->header('Authorization');
+		if ($request->is('api/*') && is_string($token)) {
+			/** @var User|null $user */
+			$user = User::query()
+				->where('token', '=', $token)
+				->first();
+			if ($user instanceof User) {
+				AccessControl::log_as_id($user->id);
 
-			/*
-			 * if apiKey is the empty string we directly return the parent handle.
-			 */
-			if ($apiKey === '') {
-				return parent::handle($request, $next);
-			}
-
-			/*
-			 * We are currently checking for Authorization.
-			 * Do we also want to check if there is a POST value with the apiKey ?
-			 */
-			if ($request->header('Authorization') === $apiKey) {
 				return $next($request);
 			}
 		}

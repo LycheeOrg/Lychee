@@ -130,4 +130,42 @@ class UserController extends Controller
 			'email' => AccessControl::user()->email,
 		];
 	}
+
+	/**
+	 * Returns the currently authenticated user.
+	 *
+	 * @return User
+	 */
+	public function getAuthenticatedUser(): User
+	{
+		return AccessControl::user();
+	}
+
+	/**
+	 * Reset the token of the currently authenticated user.
+	 *
+	 * @return User
+	 *
+	 * @throws \Exception
+	 */
+	public function resetToken(): User
+	{
+		$user = AccessControl::user();
+		$user->token = strtr(base64_encode(random_bytes(16)), '+/', '-_');
+		$user->save();
+
+		return $user;
+	}
+
+	/**
+	 * Disable the token of the currently authenticated user.
+	 *
+	 * @return void
+	 */
+	public function unsetToken(): void
+	{
+		$user = AccessControl::user();
+		$user->token = null;
+		$user->save();
+	}
 }

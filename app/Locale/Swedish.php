@@ -54,6 +54,11 @@ final class Swedish implements Language
 			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
+			'VIEW_TOKEN' => 'View API token',
+			'RESET' => 'Reset',
+			'DISABLE' => 'Disable',
+			'ENABLE' => 'Enable',
+			'DISABLED' => 'disabled',
 
 			'SMART_ALBUMS' => 'Smarta album',
 			'SHARED_ALBUMS' => 'Shared albums',
