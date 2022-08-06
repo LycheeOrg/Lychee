@@ -8,6 +8,7 @@ use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use Safe\Exceptions\ImageException;
+
 use function Safe\imagecopyresampled;
 use function Safe\imagecopyresized;
 use function Safe\imagecreatetruecolor;

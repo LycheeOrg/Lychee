@@ -16,6 +16,7 @@ use PHPExif\Adapter\NoAdapterException;
 use PHPExif\Exif;
 use PHPExif\Reader\Reader;
 use Safe\Exceptions\StringsException;
+
 use function Safe\substr;
 
 /**
@@ -340,7 +341,7 @@ class Extractor
 							// that timezone.
 							$taken_at->setTimezone(new \DateTimeZone(date_default_timezone_get()));
 						}
-						// In the remaining cases the timezone information was
+					// In the remaining cases the timezone information was
 					// extracted and the recording time is assumed exhibit
 					// to original timezone of the location where the video
 					// has been recorded.

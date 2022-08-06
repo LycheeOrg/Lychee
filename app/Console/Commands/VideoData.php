@@ -13,8 +13,10 @@ use App\Models\SizeVariant;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Safe\Exceptions\InfoException;
+
 use function Safe\set_time_limit;
 use function Safe\sprintf;
+
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class VideoData extends Command
