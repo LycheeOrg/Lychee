@@ -291,8 +291,10 @@ class UsersTest extends TestCase
 		assertNotEquals('', $oldToken);
 
 		$users_test->unset_token();
-		$newToken = $users_test->get_user()->offsetGet('token');
-		assertEquals('', $newToken);
+		$userResponse = $users_test->get_user();
+		$userResponse->assertJson([
+			'token' => null,
+		]);
 
 		AccessControl::logout(0);
 	}
