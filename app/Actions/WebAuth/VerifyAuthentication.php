@@ -7,7 +7,6 @@ use App\Exceptions\UnauthenticatedException;
 use App\Facades\AccessControl;
 use App\Models\User;
 use DarkGhostHunter\Larapass\Facades\WebAuthn;
-
 use function Safe\base64_decode;
 
 class VerifyAuthentication

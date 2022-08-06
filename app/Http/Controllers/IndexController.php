@@ -11,7 +11,6 @@ use App\Models\Page;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
-
 use function Safe\phpinfo;
 
 class IndexController extends Controller

@@ -5,7 +5,6 @@ namespace App\DTO;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\Eloquent\JsonEncodingException;
-
 use function Safe\json_encode;
 use function Safe\json_last_error_msg;
 
