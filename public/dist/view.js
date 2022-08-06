@@ -2703,10 +2703,10 @@ lychee.locale = {
 	SAVE_RISK: "Save my modifications, I accept the Risk!",
 	MORE: "More",
 	DEFAULT: "Default",
-	VIEW_TOKEN: "View API token",
+	RESET_TOKEN: "Reset API token",
 	RESET: "Reset",
 	DISABLE: "Disable",
-	ENABLE: "Enable",
+	ENABLE_TOKEN: "Enable API key",
 	DISABLED: "disabled",
 
 	SMART_ALBUMS: "Smart albums",

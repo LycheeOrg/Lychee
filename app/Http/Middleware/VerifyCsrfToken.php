@@ -42,7 +42,7 @@ class VerifyCsrfToken extends Middleware
 		if ($request->is('api/*') && is_string($token)) {
 			/** @var User|null $user */
 			$user = User::query()
-				->where('token', '=', $token)
+				->where('token', '=', hash('SHA512', $token))
 				->first();
 			if ($user instanceof User) {
 				AccessControl::log_as_id($user->id);

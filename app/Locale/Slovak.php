@@ -55,10 +55,10 @@ final class Slovak implements Language
 			'SAVE_RISK' => 'Zmeny uložiť, riziko je známe!',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
-			'VIEW_TOKEN' => 'View API token',
+			'RESET_TOKEN' => 'Reset API token',
 			'RESET' => 'Reset',
 			'DISABLE' => 'Disable',
-			'ENABLE' => 'Enable',
+			'ENABLE_TOKEN' => 'Enable API token',
 			'DISABLED' => 'disabled',
 
 			'SMART_ALBUMS' => 'Inteligentné albumy',

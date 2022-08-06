@@ -54,10 +54,10 @@ final class English implements Language
 			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
-			'VIEW_TOKEN' => 'View API token',
+			'RESET_TOKEN' => 'Reset API token',
 			'RESET' => 'Reset',
 			'DISABLE' => 'Disable',
-			'ENABLE' => 'Enable',
+			'ENABLE_TOKEN' => 'Enable API token',
 			'DISABLED' => 'disabled',
 
 			'SMART_ALBUMS' => 'Smart albums',

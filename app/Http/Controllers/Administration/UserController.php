@@ -151,8 +151,11 @@ class UserController extends Controller
 	public function resetToken(): User
 	{
 		$user = AccessControl::user();
-		$user->token = strtr(base64_encode(random_bytes(16)), '+/', '-_');
+		$token = strtr(base64_encode(random_bytes(16)), '+/', '-_');
+		$user->token = hash('SHA512', $token);
 		$user->save();
+
+		$user->token = $token;
 
 		return $user;
 	}

@@ -1059,7 +1059,7 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject70 = _taggedTemplateLiteral(["\n\t\t\t<p class='importServer'>\n\t\t\t\t", "\n\t\t\t\t<input class='text' name='path' type='text' placeholder='", "' value='", "uploads/import/'>\n\t\t\t</p>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='delete_imported' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='import_via_symlink' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='skip_duplicates' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='resync_metadata' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<p class='importServer'>\n\t\t\t\t", "\n\t\t\t\t<input class='text' name='path' type='text' placeholder='", "' value='", "uploads/import/'>\n\t\t\t</p>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='delete_imported' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='import_via_symlink' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='skip_duplicates' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='resync_metadata' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"]),
     _templateObject71 = _taggedTemplateLiteral(["url(\"", "\")"], ["url(\"", "\")"]),
     _templateObject72 = _taggedTemplateLiteral(["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"], ["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"]),
-    _templateObject73 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setLogin\">\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='oldUsername' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t\t<a id=\"basicModal__action_view_token\" class=\"basicModal__button \">$", "</a>\n\t\t\t</div>\n\t\t\t</div>"], ["\n\t\t\t<div class=\"setLogin\">\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='oldUsername' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t\t<a id=\"basicModal__action_view_token\" class=\"basicModal__button \">$", "</a>\n\t\t\t</div>\n\t\t\t</div>"]),
+    _templateObject73 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setLogin\">\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='oldUsername' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t\t<a id=\"basicModal__action_token\" class=\"basicModal__button \">$", "</a>\n\t\t\t</div>\n\t\t\t</div>"], ["\n\t\t\t<div class=\"setLogin\">\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='oldUsername' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t\t<a id=\"basicModal__action_token\" class=\"basicModal__button \">$", "</a>\n\t\t\t</div>\n\t\t\t</div>"]),
     _templateObject74 = _taggedTemplateLiteral(["\n\t\t\t\t<div class=\"setSorting\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t\t\t<a id=\"basicModal__action_sorting_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t\t<div class=\"setSorting\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t\t\t<a id=\"basicModal__action_sorting_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t"]),
     _templateObject75 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"]),
     _templateObject76 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t<p class=\"warning\">\n\t\t\t\t\t\t", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t"], ["\n\t\t\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t<p class=\"warning\">\n\t\t\t\t\t\t", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t"]),
@@ -6656,10 +6656,10 @@ lychee.locale = {
 	SAVE_RISK: "Save my modifications, I accept the Risk!",
 	MORE: "More",
 	DEFAULT: "Default",
-	VIEW_TOKEN: "View API token",
+	RESET_TOKEN: "Reset API token",
 	RESET: "Reset",
 	DISABLE: "Disable",
-	ENABLE: "Enable",
+	ENABLE_TOKEN: "Enable API key",
 	DISABLED: "disabled",
 
 	SMART_ALBUMS: "Smart albums",
@@ -9899,25 +9899,18 @@ settings.save_enter = function (e) {
 /**
  * @returns {void}
  */
-settings.viewToken = function () {
-	api.post("User::getAuthenticatedUser", {}, function (data) {
-		var bodyHtml = "";
-		var enableResetButtonText = "";
-		if (data.token === "") {
-			bodyHtml = "<div class='directLinks'><p>" + lychee.locale["DISABLED"] + "</p></div>";
-			enableResetButtonText = lychee.locale["ENABLE"];
-		} else {
-			bodyHtml = lychee.html(_templateObject62, data.token, lychee.locale["URL_COPY_TO_CLIPBOARD"], build.iconic("copy", "ionicons"), lychee.locale["DISABLE"], build.iconic("ban"));
-			enableResetButtonText = lychee.locale["RESET"];
-		}
+settings.resetToken = function () {
+	api.post("User::resetToken", {}, function (data) {
+		var bodyHtml = lychee.html(_templateObject62, data.token, lychee.locale["URL_COPY_TO_CLIPBOARD"], build.iconic("copy", "ionicons"), lychee.locale["DISABLE"], build.iconic("ban"));
+		enableResetButtonText = lychee.locale["RESET"];
 		basicModal.show({
 			body: bodyHtml,
 			buttons: {
 				action: {
-					title: enableResetButtonText,
+					title: lychee.locale["RESET"],
 					fn: function fn() {
-						api.post("User::resetToken", {});
 						basicModal.close();
+						settings.resetToken();
 					},
 					class: "red"
 				},
@@ -12976,12 +12969,15 @@ view.settings = {
    * @returns {void}
    */
 		setLogin: function setLogin() {
-			var msg = lychee.html(_templateObject73, lychee.locale["PASSWORD_TITLE"], lychee.locale["USERNAME_CURRENT"], lychee.locale["PASSWORD_CURRENT"], lychee.locale["PASSWORD_TEXT"], lychee.locale["LOGIN_USERNAME"], lychee.locale["LOGIN_PASSWORD"], lychee.locale["LOGIN_PASSWORD_CONFIRM"], lychee.locale["PASSWORD_CHANGE"], lychee.locale["VIEW_TOKEN"]);
+			var hasToken = true;
+			var tokenBtnText = lychee.locale[hasToken ? "RESET_TOKEN" : "ENABLE_TOKEN"];
+
+			var msg = lychee.html(_templateObject73, lychee.locale["PASSWORD_TITLE"], lychee.locale["USERNAME_CURRENT"], lychee.locale["PASSWORD_CURRENT"], lychee.locale["PASSWORD_TEXT"], lychee.locale["LOGIN_USERNAME"], lychee.locale["LOGIN_PASSWORD"], lychee.locale["LOGIN_PASSWORD_CONFIRM"], lychee.locale["PASSWORD_CHANGE"], tokenBtnText);
 
 			$(".settings_view").append(msg);
 
 			settings.bind("#basicModal__action_password_change", ".setLogin", settings.changeLogin);
-			settings.bind("#basicModal__action_view_token", ".setLogin", settings.viewToken);
+			settings.bind("#basicModal__action_token", ".setLogin", settings.resetToken);
 		},
 
 		/**
