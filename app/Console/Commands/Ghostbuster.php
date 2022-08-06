@@ -12,9 +12,11 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Adapter\Local as LocalFlysystem;
+
 use function Safe\readlink;
 use function Safe\scandir;
 use function Safe\unlink;
+
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class Ghostbuster extends Command
@@ -74,7 +76,7 @@ class Ghostbuster extends Command
 			$dryrun = filter_var($this->option('dryrun'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) !== false;
 			$uploadDisk = SizeVariantNamingStrategy::getImageDisk();
 			$symlinkDisk = Storage::disk(SymLink::DISK_NAME);
-			$isLocalDisk = ($uploadDisk->getDriver()->getAdapter() instanceof LocalFlysystem);
+			$isLocalDisk = $uploadDisk->getDriver()->getAdapter() instanceof LocalFlysystem;
 
 			$this->line('');
 

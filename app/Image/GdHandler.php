@@ -8,6 +8,7 @@ use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use Safe\Exceptions\ImageException;
+
 use function Safe\imagecopyresampled;
 use function Safe\imagecopyresized;
 use function Safe\imagecreatetruecolor;
@@ -134,7 +135,7 @@ class GdHandler extends BaseImageHandler
 			$this->reset();
 
 			$originalStream = $file->read();
-			if ((stream_get_meta_data($originalStream))['seekable']) {
+			if (stream_get_meta_data($originalStream)['seekable']) {
 				$inputStream = $originalStream;
 			} else {
 				// We make an in-memory copy of the provided stream,
