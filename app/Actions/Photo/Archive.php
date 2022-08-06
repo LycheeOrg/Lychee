@@ -15,13 +15,11 @@ use App\Models\SizeVariant;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Safe\Exceptions\InfoException;
-
 use function Safe\fclose;
 use function Safe\fopen;
 use function Safe\ini_get;
 use function Safe\set_time_limit;
 use function Safe\stream_copy_to_stream;
-
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\Option\File as ZipFileOption;

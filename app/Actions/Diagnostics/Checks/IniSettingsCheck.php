@@ -4,7 +4,6 @@ namespace App\Actions\Diagnostics\Checks;
 
 use App\Contracts\DiagnosticCheckInterface;
 use App\Models\Configs;
-
 use function Safe\ini_get;
 use function Safe\preg_match;
 

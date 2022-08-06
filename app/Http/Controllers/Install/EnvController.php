@@ -8,7 +8,6 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-
 use function Safe\file_get_contents;
 use function Safe\file_put_contents;
 

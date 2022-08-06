@@ -10,7 +10,6 @@ use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\VersionControlException;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
-
 use function Safe\file_get_contents;
 
 class LycheeVersion
