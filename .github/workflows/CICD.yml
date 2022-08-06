@@ -67,58 +67,6 @@ jobs:
       - name: Check source code for code style errors
         run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
 
-  code_style_errors_fix:
-    name: 2️⃣ PHP - Code Style errors - Fix
-    runs-on: ubuntu-latest
-    if: ${{ always() && failure() && steps.code_style_errors.outcome != 'success' && github.event_name == 'pull_request' && ! startsWith(github.ref, 'refs/heads/auto-fixed/') }}
-    needs:
-      - code_style_errors
-    env:
-      PR_NUMBER: "${{ github.event.number }}"
-      SOURCE_BRANCH: "$GITHUB_HEAD_REF"
-      FIXER_BRANCH: "auto-fixed/$GITHUB_HEAD_REF"
-      TITLE: "Apply fixes from PHP-CS-Fixer"
-      DESCRIPTION: "This merge request applies PHP code style fixes from an analysis carried out through GitHub Actions."
-    steps:
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: latest
-
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Install dependencies
-        uses: ramsey/composer-install@v2
-
-      - name: Prepare Git User
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "action@github.com"
-          git checkout -B "${{ env.FIXER_BRANCH }}"
-
-      - name: Apply auto-fixers
-        run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php
-
-      - name: Create Fixer PR
-        run: |
-          if [[ -z $(git status --porcelain) ]]; then
-            echo "Nothing to fix.. Exiting."
-            exit 0
-          fi
-          OPEN_PRS=`curl --silent -H "Accept: application/vnd.github.v3+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls?state=open"`
-          OPEN_FIXER_PRS=`echo ${OPEN_PRS} | grep -o "\"ref\": \"${{ env.FIXER_BRANCH }}\"" | wc -l`
-          git commit -am "${{ env.TITLE }}"
-          git push origin "${{ env.FIXER_BRANCH }}" --force
-          if [ ${OPEN_FIXER_PRS} -eq "0" ]; then
-            curl -X POST \
-              -H "Accept: application/vnd.github.v3+json" \
-              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-              "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls" \
-              -d "{ \"head\":\"${{ env.FIXER_BRANCH }}\", \"base\":\"${{ env.SOURCE_BRANCH }}\", \"title\":\"${{ env.TITLE }}\", \"body\":\"${{ env.DESCRIPTION }}\n\nTriggered by #${{ env.PR_NUMBER }}\" }"
-          fi
-          exit 1
-
   phpstan:
     name: 2️⃣ PHP 8.0 - PHPStan
     runs-on: ubuntu-latest
