@@ -6,6 +6,7 @@ use App\Exceptions\InstallationFailedException;
 use App\Exceptions\Internal\FrameworkException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Artisan;
+
 use function Safe\unlink;
 
 class ApplyMigration

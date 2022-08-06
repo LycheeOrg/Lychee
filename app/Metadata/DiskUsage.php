@@ -38,7 +38,7 @@ class DiskUsage
 
 		return sprintf(
 			'%.2f %s',
-			($bytes / pow(1024, $exp)),
+			$bytes / pow(1024, $exp),
 			$symbols[$exp]
 		);
 	}

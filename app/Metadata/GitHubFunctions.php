@@ -8,6 +8,7 @@ use App\ModelFunctions\JsonRequestFunctions;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Config;
+
 use function Safe\file_get_contents;
 use function Safe\sprintf;
 use function Safe\substr;
@@ -205,7 +206,7 @@ class GitHubFunctions
 			return [
 				'update_json' => intval($json->lychee->version),
 				'update_available' => (
-					(Configs::getValueAsInt('version')) <
+					Configs::getValueAsInt('version') <
 					$json->lychee->version
 				),
 			];

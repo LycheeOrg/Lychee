@@ -13,6 +13,7 @@
 namespace Tests\Feature\Traits;
 
 use Illuminate\Support\Facades\DB;
+
 use function Safe\fileowner;
 
 trait RequiresEmptyPhotos

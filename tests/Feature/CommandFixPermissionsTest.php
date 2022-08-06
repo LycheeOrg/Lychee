@@ -13,6 +13,7 @@
 namespace Tests\Feature;
 
 use function Safe\chmod;
+
 use Tests\TestCase;
 
 class CommandFixPermissionsTest extends Base\PhotoTestBase

@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Safe\Exceptions\StreamException;
+
 use function Safe\stream_filter_register;
 
 class AppServiceProvider extends ServiceProvider

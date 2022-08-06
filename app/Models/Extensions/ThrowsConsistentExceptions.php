@@ -5,6 +5,7 @@ namespace App\Models\Extensions;
 use App\Exceptions\ModelDBException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Support\Str;
+
 use function Safe\json_encode;
 use function Safe\json_last_error_msg;
 

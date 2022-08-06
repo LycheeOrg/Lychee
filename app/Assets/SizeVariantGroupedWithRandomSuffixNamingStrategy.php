@@ -105,14 +105,14 @@ class SizeVariantGroupedWithRandomSuffixNamingStrategy extends SizeVariantBaseNa
 				// reported, we must be prepared for an optional `/` or `./`
 				// at the beginning.
 				if (\Safe\preg_match(
-						'#^\.?[/\\\\]?' .
-						self::VARIANT_2_PATH_PREFIX[SizeVariant::ORIGINAL] . '[/\\\\]' .
-						'([0-9a-f]{2})[/\\\\]' .
-						'([0-9a-f]{2})[/\\\\]' .
-						'([0-9a-f]{' . (self::NAME_LENGTH - 4) . '})\.#i',
-						$existingRelPath,
-						$matches
-					) === 1) {
+					'#^\.?[/\\\\]?' .
+					self::VARIANT_2_PATH_PREFIX[SizeVariant::ORIGINAL] . '[/\\\\]' .
+					'([0-9a-f]{2})[/\\\\]' .
+					'([0-9a-f]{2})[/\\\\]' .
+					'([0-9a-f]{' . (self::NAME_LENGTH - 4) . '})\.#i',
+					$existingRelPath,
+					$matches
+				) === 1) {
 					// If we have a match, we use the middle path of the original
 					// size variant
 					$this->cachedRndMiddlePath = $matches[1] . DIRECTORY_SEPARATOR . $matches[2] . DIRECTORY_SEPARATOR . $matches[3];
