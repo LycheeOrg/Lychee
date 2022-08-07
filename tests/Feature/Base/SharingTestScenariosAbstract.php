@@ -179,7 +179,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 	protected function preparePublicPhotoAndPhotoInSharedAlbum(): void
 	{
 		$this->albumID1 = $this->albums_tests->add(null, self::ALBUM_TITLE_1)->offsetGet('id');
-		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), null)->offsetGet('id');
+		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE))->offsetGet('id');
 		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID1)->offsetGet('id');
 		$this->sharing_tests->add([$this->albumID1], [$this->userID]);
 		$this->photos_tests->set_public($this->photoID1, true);
@@ -189,4 +189,41 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 	}
 
 	abstract public function testPublicPhotoAndPhotoInSharedAlbum(): void;
+
+	/**
+	 * Uploads two photos into two albums (one photo per album), marks one
+	 * album as public and the other one as password-protected and
+	 * logs out.
+	 *
+	 * Checks that the anonymous user only sees both albums,
+	 * but only the cover of the public one, provide password, checks that
+	 * now both covers are visible.
+	 *
+	 * In particular the following checks are made:
+	 *  - before the password has been provided the anonymous user only sees
+	 *    the public photo
+	 *     - as a cover of the public album
+	 *     - in "Recent"
+	 *     - in the album tree
+	 *  - after the password has been provided the anonymous user sees both
+	 *    photos
+	 *     - as covers
+	 *     - in "Recent"
+	 *     - in the album tree
+	 *
+	 * @return void
+	 */
+	protected function preparePublicAlbumAndPasswordProtectedAlbum(): void
+	{
+		$this->albumID1 = $this->albums_tests->add(null, self::ALBUM_TITLE_1)->offsetGet('id');
+		$this->albumID2 = $this->albums_tests->add(null, self::ALBUM_TITLE_2)->offsetGet('id');
+		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID1)->offsetGet('id');
+		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID2)->offsetGet('id');
+		$this->albums_tests->set_protection_policy($this->albumID1, true, true, false, false, true, true, self::ALBUM_PWD_1);
+		$this->albums_tests->set_protection_policy($this->albumID2);
+		AccessControl::logout();
+		$this->clearCachedSmartAlbums();
+	}
+
+	abstract public function testPublicAlbumAndPasswordProtectedAlbum(): void;
 }

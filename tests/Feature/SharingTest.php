@@ -17,32 +17,6 @@ use Tests\Feature\Base\SharingTestBase;
 class SharingTest extends SharingTestBase
 {
 	/**
-	 * Uploads two photos into two albums (one photo per album), marks one
-	 * album as public and the other one as password-protected,
-	 * logs out, checks that the anonymous user only sees both albums,
-	 * but only the cover of the public one, provide password, checks that
-	 * now both covers are visible.
-	 *
-	 * In particular the following checks are made:
-	 *  - before the password has been provided the anonymous user only sees
-	 *    the public photo
-	 *     - as a cover of the public album
-	 *     - in "Recent"
-	 *     - in the album tree
-	 *  - after the password has been provided the anonymous user sees both
-	 *    photos
-	 *     - as covers
-	 *     - in "Recent"
-	 *     - in the album tree
-	 *
-	 * @return void
-	 */
-	public function testPublicAlbumAndPasswordProtectedAlbum(): void
-	{
-		static::markTestIncomplete('Not written yet');
-	}
-
-	/**
 	 * Like {@link SharingTest::testPublicAlbumAndPasswordProtectedAlbum},
 	 * but additionally the password-protected photo is starred and the
 	 * "Favorites" album is tested as well.
