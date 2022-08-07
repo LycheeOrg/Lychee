@@ -240,4 +240,48 @@ class SharingWithAnonUserAndPublicSearchTest extends Base\SharingTestScenariosAb
 		$this->photos_tests->get($this->photoID1);
 		$this->photos_tests->get($this->photoID2);
 	}
+
+	public function testPublicPhotoAndPhotoInSharedAlbum(): void
+	{
+		$this->preparePublicPhotoAndPhotoInSharedAlbum();
+
+		$responseForRoot = $this->root_album_tests->get();
+		$responseForRoot->assertJson([
+			'smart_albums' => [
+				UnsortedAlbum::ID => null,
+				StarredAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($this->photoID1)],
+				PublicAlbum::ID => null,
+				RecentAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($this->photoID1)],
+			],
+			'tag_albums' => [],
+			'albums' => [],
+			'shared_albums' => [],
+		]);
+		$responseForRoot->assertJsonMissing(['id' => $this->albumID1]);
+		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]);
+
+		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
+		$responseForRecent->assertJson([
+			'is_public' => true,
+			'thumb' => $this->generateExpectedThumbJson($this->photoID1),
+			'photos' => [
+				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, null),
+			],
+		]);
+		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]);
+
+		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
+		$responseForStarred->assertJson([
+			'is_public' => true,
+			'thumb' => $this->generateExpectedThumbJson($this->photoID1),
+			'photos' => [
+				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, null),
+			],
+		]);
+		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
+
+		$this->albums_tests->get($this->albumID1, 401);
+		$this->photos_tests->get($this->photoID1);
+		$this->photos_tests->get($this->photoID2, 401);
+	}
 }
