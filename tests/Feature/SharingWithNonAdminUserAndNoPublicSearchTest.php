@@ -204,7 +204,7 @@ class SharingWithNonAdminUserAndNoPublicSearchTest extends Base\SharingTestScena
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
 
-		$this->albums_tests->get($this->albumID1, 403);
+		$this->albums_tests->get($this->albumID1, 403, self::EXPECTED_FORBIDDEN_MSG, self::EXPECTED_PASSWORD_REQUIRED_MSG);
 		// Even though public search is disabled, the photo is accessible
 		// by its direct link, because it is public.
 		$this->photos_tests->get($this->photoID1);
@@ -398,7 +398,7 @@ class SharingWithNonAdminUserAndNoPublicSearchTest extends Base\SharingTestScena
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
 
-		$this->albums_tests->get($this->albumID1, 403, 'Password required');
+		$this->albums_tests->get($this->albumID1, 403, self::EXPECTED_PASSWORD_REQUIRED_MSG, self::EXPECTED_FORBIDDEN_MSG);
 		$this->photos_tests->get($this->photoID1, 403);
 		$responseForAlbum2 = $this->albums_tests->get($this->albumID2);
 		$responseForAlbum2->assertJson([

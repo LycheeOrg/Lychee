@@ -174,7 +174,7 @@ class SharingWithAnonUserAndPublicSearchTest extends Base\SharingTestScenariosAb
 		]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
 
-		$this->albums_tests->get($this->albumID1, 401);
+		$this->albums_tests->get($this->albumID1, 401, self::EXPECTED_UNAUTHENTICATED_MSG, self::EXPECTED_PASSWORD_REQUIRED_MSG);
 		$this->photos_tests->get($this->photoID1);
 		$this->photos_tests->get($this->photoID2, 401);
 	}
@@ -280,7 +280,7 @@ class SharingWithAnonUserAndPublicSearchTest extends Base\SharingTestScenariosAb
 		]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
 
-		$this->albums_tests->get($this->albumID1, 401);
+		$this->albums_tests->get($this->albumID1, 401, self::EXPECTED_UNAUTHENTICATED_MSG, self::EXPECTED_PASSWORD_REQUIRED_MSG);
 		$this->photos_tests->get($this->photoID1);
 		$this->photos_tests->get($this->photoID2, 401);
 	}
@@ -325,7 +325,7 @@ class SharingWithAnonUserAndPublicSearchTest extends Base\SharingTestScenariosAb
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
 
-		$this->albums_tests->get($this->albumID1, 401, 'Password required');
+		$this->albums_tests->get($this->albumID1, 401, self::EXPECTED_PASSWORD_REQUIRED_MSG, self::EXPECTED_UNAUTHENTICATED_MSG);
 		$this->photos_tests->get($this->photoID1, 401);
 		$responseForAlbum2 = $this->albums_tests->get($this->albumID2);
 		$responseForAlbum2->assertJson([

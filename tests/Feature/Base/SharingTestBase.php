@@ -96,6 +96,10 @@ class SharingTestBase extends PhotoTestBase
 		],
 	];
 
+	public const EXPECTED_UNAUTHENTICATED_MSG = 'User is not authenticated';
+	public const EXPECTED_FORBIDDEN_MSG = 'Insufficient privileges';
+	public const EXPECTED_PASSWORD_REQUIRED_MSG = 'Password required';
+
 	protected SharingUnitTest $sharing_tests;
 	protected UsersUnitTest $users_tests;
 	protected RootAlbumUnitTest $root_album_tests;

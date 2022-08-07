@@ -153,7 +153,7 @@ class SharingWithNonAdminUserAndPublicSearchTest extends Base\SharingTestScenari
 
 	/**
 	 * Ensures that the user sees the public photo, but not the private one.
-	 * Ensures that the user gets a `403 - Unauthenticated` for the album and
+	 * Ensures that the user gets a `403 - Forbidden` for the album and
 	 * the second photo.
 	 *
 	 * See
@@ -199,7 +199,7 @@ class SharingWithNonAdminUserAndPublicSearchTest extends Base\SharingTestScenari
 		]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
 
-		$this->albums_tests->get($this->albumID1, 403);
+		$this->albums_tests->get($this->albumID1, 403, self::EXPECTED_FORBIDDEN_MSG, self::EXPECTED_PASSWORD_REQUIRED_MSG);
 		$this->photos_tests->get($this->photoID1);
 		$this->photos_tests->get($this->photoID2, 403);
 	}
@@ -393,7 +393,7 @@ class SharingWithNonAdminUserAndPublicSearchTest extends Base\SharingTestScenari
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
 
-		$this->albums_tests->get($this->albumID1, 403, 'Password required');
+		$this->albums_tests->get($this->albumID1, 403, self::EXPECTED_PASSWORD_REQUIRED_MSG, self::EXPECTED_FORBIDDEN_MSG);
 		$this->photos_tests->get($this->photoID1, 403);
 		$responseForAlbum2 = $this->albums_tests->get($this->albumID2);
 		$responseForAlbum2->assertJson([

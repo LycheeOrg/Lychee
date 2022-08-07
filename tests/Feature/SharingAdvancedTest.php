@@ -92,7 +92,7 @@ class SharingAdvancedTest extends SharingTestBase
 		$responseForTree->assertJsonMissing(['title' => self::ALBUM_TITLE_2]);
 		$responseForTree->assertJsonMissing(['id' => $photoID2]);
 
-		$this->albums_tests->get($albumID2, 403);
+		$this->albums_tests->get($albumID2, 403, self::EXPECTED_FORBIDDEN_MSG, self::EXPECTED_PASSWORD_REQUIRED_MSG);
 		$this->photos_tests->get($photoID2, 403);
 	}
 
@@ -298,7 +298,7 @@ class SharingAdvancedTest extends SharingTestBase
 			],
 		]);
 
-		$this->albums_tests->get($albumID3, 403);
+		$this->albums_tests->get($albumID3, 403, self::EXPECTED_PASSWORD_REQUIRED_MSG, self::EXPECTED_FORBIDDEN_MSG);
 		$this->photos_tests->get($photoID3, 403);
 
 		// AFTER UNLOCKING: ENSURE 1&2&3 ARE VISIBLE
