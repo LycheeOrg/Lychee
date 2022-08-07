@@ -12,6 +12,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Configs;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature\Base\PhotoTestBase;
@@ -287,6 +288,15 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 	 * Tests Google Motion Photo upload with a file which has a broken
 	 * video stream.
 	 *
+	 * We still expect the still part of the photo to be generated, but
+	 * the photo won't be recognized as a Google Motion Photo and the
+	 * video part is expected to be missing.
+	 *
+	 * This is in line with our best effort approach.
+	 *
+	 * Moreover, the logs should contain an error message, telling the user
+	 * what went wrong.
+	 *
 	 * @return void
 	 */
 	public function testBrokenGoogleMotionPhotoUpload(): void
@@ -294,12 +304,33 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 		$this->assertHasExifToolOrSkip();
 		$this->assertHasFFMpegOrSkip();
 
-		$this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_BROKEN_IMAGE),
-			null,
-			500,
-			'MediaFileOperationException'
+		DB::table('logs')->delete();
+
+		$response = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_BROKEN_IMAGE)
 		);
+		// Size variants are generated, because they are extracted from the
+		// still part of the GMP, not the video part.
+		$response->assertJson([
+			'album_id' => null,
+			'title' => 'google_motion_photo_broken',
+			'type' => TestCase::MIME_TYPE_IMG_JPEG,
+			'size_variants' => [
+				'original' => ['width' => 2016, 'height' => 1512],
+				'medium2x' => null,
+				'medium' => ['width' => 1440, 'height' => 1080],
+				'small2x' => ['width' => 960, 'height' => 720],
+				'small' => ['width' => 480, 'height' => 360],
+				'thumb2x' => ['width' => 400, 'height' => 400],
+				'thumb' => ['width' => 200,	'height' => 200],
+			],
+			'live_photo_url' => null,
+		]);
+
+		$logCount = DB::table('logs')
+			->where('text', 'like', '%ffprobe%failed%')
+			->count();
+		self::assertNotEquals(0, $logCount);
 	}
 
 	/**
@@ -343,5 +374,97 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 				],
 			],
 		]);
+	}
+
+	/**
+	 * Tests video upload without ffmpeg or exiftool.
+	 *
+	 * @return void
+	 */
+	public function testVideoUploadWithoutFFmpeg(): void
+	{
+		$hasExifTool = Configs::getValueAsInt(self::CONFIG_HAS_EXIF_TOOL);
+		Configs::set(self::CONFIG_HAS_EXIF_TOOL, 0);
+
+		$hasFFMpeg = Configs::getValueAsInt(TestCase::CONFIG_HAS_FFMPEG);
+		Configs::set(TestCase::CONFIG_HAS_FFMPEG, 0);
+
+		DB::table('logs')->delete();
+
+		$response = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GAMING_VIDEO)
+		);
+		$response->assertJson([
+			'album_id' => null,
+			'title' => 'gaming',
+			'type' => TestCase::MIME_TYPE_VID_MP4,
+			'size_variants' => [
+				'original' => [
+					'width' => 0,
+					'height' => 0,
+					'filesize' => 66781184,
+				],
+				'medium2x' => null,
+				'medium' => null,
+				'small2x' => null,
+				'small' => null,
+				'thumb2x' => null,
+				'thumb' => null,
+			],
+		]);
+
+		// In the test suite we cannot really ensure that FFMpeg is not
+		// available, because the executable is still part of the test
+		// environment.
+		// Hence, we can only disable it (see above), but cannot be sure
+		// that it isn't called accidentally.
+		// As a second-best approach, we check at least for the existence
+		// of an error message in the log.
+		$logCount = DB::table('logs')
+			->where('text', 'like', '%FFmpeg%disabled%')
+			->count();
+		self::assertEquals(1, $logCount);
+
+		Configs::set(self::CONFIG_HAS_FFMPEG, $hasFFMpeg);
+		Configs::set(self::CONFIG_HAS_EXIF_TOOL, $hasExifTool);
+	}
+
+	/**
+	 * Tests a photo with an undefined EXIF tag (0x0000).
+	 * Expected result is that import proceeds and extract as many EXIF
+	 * information as possible.
+	 *
+	 * @return void
+	 */
+	public function testPhotoUploadWithUndefinedExifTag(): void
+	{
+		$hasExifTool = Configs::getValueAsBool(self::CONFIG_HAS_EXIF_TOOL);
+		Configs::set(self::CONFIG_HAS_EXIF_TOOL, false);
+
+		$response = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_UNDEFINED_EXIF_TAG)
+		);
+		$response->assertJson([
+			'album_id' => null,
+			'aperture' => 'f/10.0',
+			'focal' => '70 mm',
+			'iso' => '100',
+			'lens' => '17-70mm F2.8-4 DC MACRO OS HSM | Contemporary 013',
+			'make' => 'Canon',
+			'model' => 'Canon EOS 100D',
+			'shutter' => '1/250 s',
+			'type' => TestCase::MIME_TYPE_IMG_JPEG,
+			'size_variants' => [
+				'thumb' => ['width' => 200, 'height' => 200],
+				'thumb2x' => ['width' => 400, 'height' => 400],
+				'small' => ['width' => 529,	'height' => 360],
+				'small2x' => ['width' => 1057,	'height' => 720],
+				'medium' => ['width' => 1586, 'height' => 1080],
+				'medium2x' => null,
+				'original' => ['width' => 3059,	'height' => 2083, 'filesize' => 1734545],
+			],
+		]);
+
+		Configs::set(self::CONFIG_HAS_EXIF_TOOL, $hasExifTool);
 	}
 }
