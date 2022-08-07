@@ -23,13 +23,12 @@ class SettingsTest extends TestCase
 	{
 		AccessControl::log_as_id(0);
 
-		$this->postJson('/api/Settings::setSorting',
-			[
-				SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
-				SetSortingRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
-				SetSortingRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
-				SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
-			])->assertStatus(204);
+		$this->postJson('/api/Settings::setSorting', [
+			SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
+			SetSortingRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
+			SetSortingRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
+			SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
+		])->assertStatus(204);
 
 		AccessControl::logout();
 	}
