@@ -28,6 +28,11 @@ $rules = [
 	'concat_space' => ['spacing' => 'one'],
 	'no_superfluous_phpdoc_tags' => false,
 	'phpdoc_to_comment' => false, // required until https://github.com/phpstan/phpstan/issues/7486 got fixed
+	'blank_line_between_import_groups' => false, // not PSR-12 compatible, but preserves old behaviour
+	'ordered_imports' => [
+		'sort_algorithm' => 'alpha',
+		'imports_order' => null, // for PSR-12 compatability, this need to be `['class', 'function', 'const']`, but no grouping preserves old behaviour
+	],
 ];
 $config = new PhpCsFixer\Config();
 

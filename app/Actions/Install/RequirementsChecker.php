@@ -3,7 +3,6 @@
 namespace App\Actions\Install;
 
 use App\Facades\Helpers;
-
 use function Safe\preg_match;
 
 class RequirementsChecker

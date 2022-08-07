@@ -8,7 +8,6 @@ use App\ModelFunctions\JsonRequestFunctions;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Config;
-
 use function Safe\file_get_contents;
 use function Safe\sprintf;
 use function Safe\substr;

@@ -4,7 +4,6 @@ namespace App\Rules;
 
 use App\Contracts\HasRandomID;
 use Illuminate\Contracts\Validation\Rule;
-
 use function Safe\preg_match;
 
 class RandomIDRule implements Rule

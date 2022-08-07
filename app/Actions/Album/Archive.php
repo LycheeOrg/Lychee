@@ -15,10 +15,8 @@ use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection;
 use Safe\Exceptions\InfoException;
-
 use function Safe\ini_get;
 use function Safe\set_time_limit;
-
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\Exception\FileNotFoundException;

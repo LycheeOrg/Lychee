@@ -11,7 +11,6 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Imagick;
-
 use function Safe\ini_get;
 
 class Info extends Diagnostics
