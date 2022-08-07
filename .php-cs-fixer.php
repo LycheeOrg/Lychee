@@ -33,6 +33,9 @@ $rules = [
 		'sort_algorithm' => 'alpha',
 		'imports_order' => null, // for PSR-12 compatability, this need to be `['class', 'function', 'const']`, but no grouping preserves old behaviour
 	],
+	'no_unneeded_control_parentheses' => [
+		'statements' => ['break', 'clone', 'continue', 'echo_print', 'switch_case', 'yield'],
+	],
 ];
 $config = new PhpCsFixer\Config();
 

@@ -43,7 +43,7 @@ class ImagickHandler extends BaseImageHandler
 			$this->reset();
 
 			$originalStream = $file->read();
-			if (stream_get_meta_data($originalStream)['seekable']) {
+			if ((stream_get_meta_data($originalStream))['seekable']) {
 				$inputStream = $originalStream;
 			} else {
 				// We make an in-memory copy of the provided stream,
@@ -149,7 +149,7 @@ class ImagickHandler extends BaseImageHandler
 		try {
 			$clone = clone $this;
 			if (!$clone->imImage->scaleImage(
-				$dstDim->width, $dstDim->height, $dstDim->width !== 0 && $dstDim->height !== 0
+				$dstDim->width, $dstDim->height, ($dstDim->width !== 0 && $dstDim->height !== 0)
 			)) {
 				throw new ImagickException('Failed to scale image');
 			}

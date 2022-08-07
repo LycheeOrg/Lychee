@@ -42,7 +42,7 @@ class AddFileSizeRawCol extends Migration
 			} elseif (strpos($photo->size, 'KB') !== false || strpos($photo->size, 'kB') !== false) {
 				$filesize = (int) (floatval(trim(str_replace(['KB', 'kB'], '', $photo->size))) * 1024);
 			} elseif (strpos($photo->size, 'B') !== false) {
-				$filesize = (int) floatval(trim(str_replace('B', '', $photo->size)));
+				$filesize = (int) (floatval(trim(str_replace('B', '', $photo->size))));
 			} else {
 				$filesize = 0;
 			}
