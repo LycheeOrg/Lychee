@@ -59,6 +59,7 @@ abstract class TestCase extends BaseTestCase
 	public const SAMPLE_FILE_TIFF = 'tests/Samples/tiff.tif';
 	public const SAMPLE_FILE_TRAIN_IMAGE = 'tests/Samples/train.jpg';
 	public const SAMPLE_FILE_TRAIN_VIDEO = 'tests/Samples/train.mov';
+	public const SAMPLE_FILE_UNDEFINED_EXIF_TAG = 'tests/Samples/undefined-exif-tag.jpg';
 	public const SAMPLE_FILE_WEBP = 'tests/Samples/webp.webp';
 	public const SAMPLE_FILE_XCF = 'tests/Samples/xcf.xcf';
 
@@ -79,6 +80,7 @@ abstract class TestCase extends BaseTestCase
 		self::SAMPLE_FILE_TIFF => self::MIME_TYPE_IMG_TIFF,
 		self::SAMPLE_FILE_TRAIN_IMAGE => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_TRAIN_VIDEO => self::MIME_TYPE_VID_QUICKTIME,
+		self::SAMPLE_FILE_UNDEFINED_EXIF_TAG => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_WEBP => self::MIME_TYPE_IMG_WEBP,
 		self::SAMPLE_FILE_XCF => self::MIME_TYPE_IMG_XCF,
 	];
