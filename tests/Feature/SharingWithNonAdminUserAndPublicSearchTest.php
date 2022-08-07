@@ -407,6 +407,16 @@ class SharingWithNonAdminUserAndPublicSearchTest extends Base\SharingTestScenari
 		]);
 		$this->photos_tests->get($this->photoID2);
 
+		$responseForTree = $this->root_album_tests->getTree();
+		$responseForTree->assertJson([
+			'albums' => [],
+			'shared_albums' => [
+				self::generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
+			],
+		]);
+		$responseForTree->assertJsonMissing(['id' => $this->albumID1]);
+		$responseForTree->assertJsonMissing(['id' => $this->photoID1]);
+
 		$this->albums_tests->unlock($this->albumID1, self::ALBUM_PWD_1);
 		$this->clearCachedSmartAlbums();
 
@@ -467,5 +477,14 @@ class SharingWithNonAdminUserAndPublicSearchTest extends Base\SharingTestScenari
 			],
 		]);
 		$this->photos_tests->get($this->photoID2);
+
+		$responseForTree = $this->root_album_tests->getTree();
+		$responseForTree->assertJson([
+			'albums' => [],
+			'shared_albums' => [
+				self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
+				self::generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
+			],
+		]);
 	}
 }
