@@ -3,6 +3,7 @@
 namespace App\Actions\Album;
 
 use App\DTO\AlbumProtectionPolicy;
+use App\Enums\PolicyPropagationEnum;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
@@ -27,7 +28,7 @@ class SetProtectionPolicy extends Action
 	 * @throws ModelDBException
 	 * @throws FrameworkException
 	 */
-	public function do(BaseAlbum $album, AlbumProtectionPolicy $protectionPolicy, bool $shallSetPassword, ?string $password, int $propagateToChildren): void
+	public function do(BaseAlbum $album, AlbumProtectionPolicy $protectionPolicy, bool $shallSetPassword, ?string $password, PolicyPropagationEnum $propagateToChildren): void
 	{
 		$this->setAlbumProtectionPolicy($album, $protectionPolicy);
 		$this->setPassword($album, $shallSetPassword, $password);
@@ -38,14 +39,44 @@ class SetProtectionPolicy extends Action
 			$album->photos()->update(['photos.is_public' => false]);
 		}
 
+		if (!$album instanceof Album) {
+			return;
+		}
+
 		// Do propagation.
 		switch ($propagateToChildren) {
-			case 0:
-				// Do nothing
-			break;
+			case PolicyPropagationEnum::cut():
+				// We remove the inherit from parent from all the direct descendents
+				$album->children()->update([
+					'inherits_protection_policy' => false,
+				]);
+				break;
+
+			case PolicyPropagationEnum::force():
+				// we propagate the current parent change to all children.
+				// Note that we do not propagate the require_link attribute
+				$album->descendants()->update([
+					'inherits_protection_policy' => true,
+					'is_public' => $album->is_public,
+					'is_downloadable' => $album->is_downloadable,
+					'grants_full_photo' => $album->grants_full_photo,
+					'is_share_button_visible' => $album->is_share_button_visible,
+				]);
+				if ($album->is_public) {
+					$album->all_photos()->update(['photos.is_public' => false]);
+				}
+				break;
+
+			// Normal refresh of the children
 			default:
-				// Do nothing
-		}
+			case PolicyPropagationEnum::refresh():
+				$descendansToUpdate = $album->descendants()->where('inherits_protection_policy', '=', '1')->with('parent')->orderBy('_lft', 'asc')->get();
+				foreach ($descendansToUpdate as $descendant) {
+					$this->setAlbumPolicyFromParent($descendant);
+					$descendant->save();
+				}
+				break;
+			}
 	}
 
 	/**
@@ -67,11 +98,7 @@ class SetProtectionPolicy extends Action
 
 		/** @var Album $album : this is is infered, but phpStan does not "remember" it */
 		if ($album->inherits_protection_policy) {
-			$album->grants_full_photo = $album->parent->grants_full_photo;
-			$album->is_public = $album->parent->is_public;
-			$album->is_nsfw = $album->parent->is_nsfw;
-			$album->is_downloadable = $album->parent->is_downloadable;
-			$album->is_share_button_visible = $album->parent->is_share_button_visible;
+			$this->setAlbumPolicyFromParent($album);
 
 			return;
 		}
@@ -81,6 +108,22 @@ class SetProtectionPolicy extends Action
 		$album->is_nsfw = $protectionPolicy->isNSFW;
 		$album->is_downloadable = $protectionPolicy->isDownloadable;
 		$album->is_share_button_visible = $protectionPolicy->isShareButtonVisible;
+	}
+
+	/**
+	 * Given an album, inherit the protection policy from the parent.
+	 *
+	 * @param Album $album
+	 *
+	 * @return void
+	 */
+	private function setAlbumPolicyFromParent(Album $album): void
+	{
+		$album->grants_full_photo = $album->parent->grants_full_photo;
+		$album->is_public = $album->parent->is_public;
+		$album->is_nsfw = $album->parent->is_nsfw;
+		$album->is_downloadable = $album->parent->is_downloadable;
+		$album->is_share_button_visible = $album->parent->is_share_button_visible;
 	}
 
 	/**

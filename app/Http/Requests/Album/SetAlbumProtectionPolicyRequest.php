@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Album;
 
 use App\DTO\AlbumProtectionPolicy;
+use App\Enums\PolicyPropagationEnum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasBaseAlbum;
@@ -11,6 +12,7 @@ use App\Http\Requests\Traits\HasBaseAlbumTrait;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Rules\PasswordRule;
 use App\Rules\RandomIDRule;
+use Spatie\Enum\Laravel\Rules\EnumRule;
 
 class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseAlbum, HasPassword
 {
@@ -18,7 +20,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 	use HasPasswordTrait;
 
 	protected bool $isPasswordProvided;
-	protected int $propagateToChildren;
+	protected PolicyPropagationEnum $propagateToChildren;
 	protected AlbumProtectionPolicy $albumAccessSettings;
 
 	/**
@@ -44,7 +46,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 			AlbumProtectionPolicy::IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE => 'required|boolean',
 			AlbumProtectionPolicy::GRANTS_FULL_PHOTO_ATTRIBUTE => 'required|boolean',
 			AlbumProtectionPolicy::INHERITS_PROTECTION_POLICY => 'required|boolean',
-			AlbumProtectionPolicy::PROPAGATE_TO_CHILDREN => 'required|int',
+			AlbumProtectionPolicy::PROPAGATE_TO_CHILDREN => new EnumRule(PolicyPropagationEnum::class),
 		];
 	}
 
@@ -67,7 +69,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 		);
 		$this->isPasswordProvided = array_key_exists(HasPassword::PASSWORD_ATTRIBUTE, $values);
 		$this->password = $this->isPasswordProvided ? $values[HasPassword::PASSWORD_ATTRIBUTE] : null;
-		$this->propagateToChildren = (int) $values[AlbumProtectionPolicy::PROPAGATE_TO_CHILDREN];
+		$this->propagateToChildren = PolicyPropagationEnum::from($values[AlbumProtectionPolicy::PROPAGATE_TO_CHILDREN]);
 	}
 
 	/**
@@ -83,7 +85,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 		return $this->isPasswordProvided;
 	}
 
-	public function getPropagateToChildren(): int
+	public function getPropagateToChildren(): PolicyPropagationEnum
 	{
 		return $this->propagateToChildren;
 	}
