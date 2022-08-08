@@ -199,6 +199,15 @@ class SharingWithNonAdminUserAndPublicSearchTest extends Base\SharingTestScenari
 		]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
 
+		$responseForTree = $this->root_album_tests->getTree();
+		$responseForTree->assertJson([
+			'albums' => [],
+			'shared_albums' => [],
+		]);
+		$responseForTree->assertJsonMissing(['id' => $this->albumID1]);
+		$responseForTree->assertJsonMissing(['id' => $this->photoID1]);
+		$responseForTree->assertJsonMissing(['id' => $this->photoID2]);
+
 		$this->albums_tests->get($this->albumID1, 403, self::EXPECTED_FORBIDDEN_MSG, self::EXPECTED_PASSWORD_REQUIRED_MSG);
 		$this->photos_tests->get($this->photoID1);
 		$this->photos_tests->get($this->photoID2, 403);
@@ -272,7 +281,15 @@ class SharingWithNonAdminUserAndPublicSearchTest extends Base\SharingTestScenari
 			],
 		]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
-		$responseForStarred->assertJsonMissing(['title' => self::PHOTO_MONGOLIA_TITLE]);
+
+		$responseForTree = $this->root_album_tests->getTree();
+		$responseForTree->assertJson([
+			'albums' => [],
+			'shared_albums' => [
+				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1), // photo 1 is thumb, because starred photo are always picked first
+			],
+		]);
+		$responseForTree->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForAlbum = $this->albums_tests->get($this->albumID1);
 		$responseForAlbum->assertJson([

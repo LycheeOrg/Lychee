@@ -176,6 +176,15 @@ class SharingWithAnonUserAndNoPublicSearchTest extends Base\SharingTestScenarios
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
 
+		$responseForTree = $this->root_album_tests->getTree();
+		$responseForTree->assertJson([
+			'albums' => [],
+			'shared_albums' => [],
+		]);
+		$responseForTree->assertJsonMissing(['id' => $this->albumID1]);
+		$responseForTree->assertJsonMissing(['id' => $this->photoID1]);
+		$responseForTree->assertJsonMissing(['id' => $this->photoID2]);
+
 		// The album and photo 2 are not accessible, but photo 1 is
 		// because it is public even though it is contained in an inaccessible
 		// album
@@ -236,6 +245,15 @@ class SharingWithAnonUserAndNoPublicSearchTest extends Base\SharingTestScenarios
 		]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
 
+		$responseForTree = $this->root_album_tests->getTree();
+		$responseForTree->assertJson([
+			'albums' => [
+				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1), // photo 1 is thumb, because starred photo are always picked first
+			],
+			'shared_albums' => [],
+		]);
+		$responseForTree->assertJsonMissing(['id' => $this->photoID2]);
+
 		$responseForAlbum = $this->albums_tests->get($this->albumID1);
 		$responseForAlbum->assertJson([
 			'id' => $this->albumID1,
@@ -288,6 +306,15 @@ class SharingWithAnonUserAndNoPublicSearchTest extends Base\SharingTestScenarios
 		]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
+
+		$responseForTree = $this->root_album_tests->getTree();
+		$responseForTree->assertJson([
+			'albums' => [
+				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1), // photo 1 is thumb, because starred photo are always picked first
+			],
+			'shared_albums' => [],
+		]);
+		$responseForTree->assertJsonMissing(['id' => $this->photoID2]);
 
 		$this->albums_tests->get($this->albumID1, 401, self::EXPECTED_UNAUTHENTICATED_MSG, self::EXPECTED_PASSWORD_REQUIRED_MSG);
 		$this->photos_tests->get($this->photoID1);

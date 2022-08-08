@@ -151,8 +151,8 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 	abstract public function testPublicAndPrivatePhotoInPrivateAlbum(): void;
 
 	/**
-	 * Creates an album with two photos, marks the album as public and stars
-	 * the alphabetically last photo as public and logs out.
+	 * Creates an album with two photos, marks the album as public, stars
+	 * the alphabetically last photo and logs out.
 	 *
 	 * @return void
 	 */
