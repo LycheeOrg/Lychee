@@ -140,7 +140,8 @@ class Archive
 			$response = new StreamedResponse($responseGenerator);
 			$disposition = HeaderUtils::makeDisposition(
 				HeaderUtils::DISPOSITION_ATTACHMENT,
-				$archiveFileInfo->getFilename()
+				$archiveFileInfo->getFilename(),
+				mb_check_encoding($archiveFileInfo->getFilename(), 'ASCII') ? '' : 'Photo' . $archiveFileInfo->getFile()->getExtension()
 			);
 			$response->headers->set('Content-Type', $photo->type);
 			$response->headers->set('Content-Disposition', $disposition);
