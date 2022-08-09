@@ -124,5 +124,7 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 
 		static::assertEquals($expectedSize1, $fileStat1['size']);
 		static::assertEquals($expectedSize2, $fileStat2['size']);
+
+		$this->albums_tests->delete([$albumID]);
 	}
 }
