@@ -48,7 +48,6 @@ abstract class TestCase extends BaseTestCase
 	public const SAMPLE_FILE_GMP_IMAGE = 'tests/Samples/google_motion_photo.jpg';
 	public const SAMPLE_FILE_MONGOLIA_IMAGE = 'tests/Samples/mongolia.jpeg';
 	public const SAMPLE_FILE_NIGHT_IMAGE = 'tests/Samples/night.jpg';
-	public const SAMPLE_FILE_SUNSET_IMAGE = 'tests/Samples/fin de journée.jpg';
 	public const SAMPLE_FILE_ORIENTATION_180 = 'tests/Samples/orientation-180.jpg';
 	public const SAMPLE_FILE_ORIENTATION_270 = 'tests/Samples/orientation-270.jpg';
 	public const SAMPLE_FILE_ORIENTATION_90 = 'tests/Samples/orientation-90.jpg';
@@ -56,6 +55,7 @@ abstract class TestCase extends BaseTestCase
 	public const SAMPLE_FILE_ORIENTATION_VFLIP = 'tests/Samples/orientation-vflip.jpg';
 	public const SAMPLE_FILE_PDF = 'tests/Samples/pdf.pdf';
 	public const SAMPLE_FILE_PNG = 'tests/Samples/png.png';
+	public const SAMPLE_FILE_SUNSET_IMAGE = 'tests/Samples/fin de journée.jpg';
 	public const SAMPLE_FILE_TIFF = 'tests/Samples/tiff.tif';
 	public const SAMPLE_FILE_TRAIN_IMAGE = 'tests/Samples/train.jpg';
 	public const SAMPLE_FILE_TRAIN_VIDEO = 'tests/Samples/train.mov';
@@ -70,7 +70,6 @@ abstract class TestCase extends BaseTestCase
 		self::SAMPLE_FILE_GMP_IMAGE => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_MONGOLIA_IMAGE => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_NIGHT_IMAGE => self::MIME_TYPE_IMG_JPEG,
-		self::SAMPLE_FILE_SUNSET_IMAGE => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_ORIENTATION_180 => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_ORIENTATION_270 => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_ORIENTATION_90 => self::MIME_TYPE_IMG_JPEG,
@@ -78,6 +77,7 @@ abstract class TestCase extends BaseTestCase
 		self::SAMPLE_FILE_ORIENTATION_VFLIP => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_PDF => self::MIME_TYPE_APP_PDF,
 		self::SAMPLE_FILE_PNG => self::MIME_TYPE_IMG_PNG,
+		self::SAMPLE_FILE_SUNSET_IMAGE => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_TIFF => self::MIME_TYPE_IMG_TIFF,
 		self::SAMPLE_FILE_TRAIN_IMAGE => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_TRAIN_VIDEO => self::MIME_TYPE_VID_QUICKTIME,
