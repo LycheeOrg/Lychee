@@ -15,11 +15,8 @@ namespace Tests\Feature;
 use Tests\Feature\Base\PhotoTestBase;
 use Tests\TestCase;
 
-use function PHPUnit\Framework\assertTrue;
-
 class PhotosMultiBytesTest extends PhotoTestBase
 {
-
 	public function testUploadDownloadMultibyte(): void
 	{
 		$id = $this->photos_tests->upload(
@@ -28,9 +25,9 @@ class PhotosMultiBytesTest extends PhotoTestBase
 
 		$response = $this->photos_tests->get($id);
 		$response->assertJson([
-			'album_id' => NULL,
+			'album_id' => null,
 			'title' => 'fin de journée',
-			'description' => NULL,
+			'description' => null,
 			'tags' => [],
 			'license' => 'none',
 			'is_public' => 0,
