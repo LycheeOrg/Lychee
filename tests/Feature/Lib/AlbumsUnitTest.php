@@ -332,8 +332,10 @@ class AlbumsUnitTest
 	 * We only test for a code 200.
 	 *
 	 * @param string $id
+	 *
+	 * @return TestResponse
 	 */
-	public function download(string $id): void
+	public function download(string $id): TestResponse
 	{
 		$response = $this->testCase->getWithParameters(
 			'/api/Album::getArchive', [
@@ -343,6 +345,8 @@ class AlbumsUnitTest
 			]
 		);
 		$response->assertOk();
+
+		return $response;
 	}
 
 	/**
