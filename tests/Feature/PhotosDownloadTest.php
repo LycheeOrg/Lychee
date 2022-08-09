@@ -22,6 +22,8 @@ use ZipArchive;
 
 class PhotosDownloadTest extends Base\PhotoTestBase
 {
+	public const MULTI_BYTE_ALBUM_TITLE = 'Lychee supporte les caractères multi-octets';
+
 	public function testPhotoDownloadWithMultiByteFilename(): void
 	{
 		$id = $this->photos_tests->upload(
@@ -78,6 +80,47 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 
 		$expectedSize1 = $fileStat1['name'] === 'fin de journée.jpg' ? filesize(base_path(TestCase::SAMPLE_FILE_SUNSET_IMAGE)) : filesize(base_path(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE));
 		$expectedSize2 = $fileStat2['name'] === 'fin de journée.jpg' ? filesize(base_path(TestCase::SAMPLE_FILE_SUNSET_IMAGE)) : filesize(base_path(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE));
+
+		static::assertEquals($expectedSize1, $fileStat1['size']);
+		static::assertEquals($expectedSize2, $fileStat2['size']);
+	}
+
+	public function testAlbumDownloadWithMultibyteTitle(): void
+	{
+		$albumID = $this->albums_tests->add(null, self::MULTI_BYTE_ALBUM_TITLE)->offsetGet('id');
+		$this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_SUNSET_IMAGE), $albumID
+		);
+		$this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID
+		);
+
+		$albumArchiveResponse = $this->albums_tests->download($albumID);
+		$albumArchiveResponse->assertHeader('Content-Type', 'application/x-zip');
+		$albumArchiveResponse->assertHeader('Content-Disposition', HeaderUtils::makeDisposition(
+			HeaderUtils::DISPOSITION_ATTACHMENT,
+			self::MULTI_BYTE_ALBUM_TITLE . '.zip',
+			'Album.zip'
+		));
+
+		$memoryBlob = new InMemoryBuffer();
+		fwrite($memoryBlob->stream(), $albumArchiveResponse->streamedContent());
+		$tmpZipFile = new TemporaryLocalFile('.zip', 'archive');
+		$tmpZipFile->write($memoryBlob->read());
+		$memoryBlob->close();
+
+		$zipArchive = new ZipArchive();
+		$zipArchive->open($tmpZipFile->getRealPath());
+
+		static::assertCount(2, $zipArchive);
+		$fileStat1 = $zipArchive->statIndex(0);
+		$fileStat2 = $zipArchive->statIndex(1);
+
+		static::assertContains($fileStat1['name'], [self::MULTI_BYTE_ALBUM_TITLE . '/fin de journée.jpg', self::MULTI_BYTE_ALBUM_TITLE . '/mongolia.jpeg']);
+		static::assertContains($fileStat2['name'], [self::MULTI_BYTE_ALBUM_TITLE . '/fin de journée.jpg', self::MULTI_BYTE_ALBUM_TITLE . '/mongolia.jpeg']);
+
+		$expectedSize1 = $fileStat1['name'] === self::MULTI_BYTE_ALBUM_TITLE . '/fin de journée.jpg' ? filesize(base_path(TestCase::SAMPLE_FILE_SUNSET_IMAGE)) : filesize(base_path(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE));
+		$expectedSize2 = $fileStat2['name'] === self::MULTI_BYTE_ALBUM_TITLE . '/fin de journée.jpg' ? filesize(base_path(TestCase::SAMPLE_FILE_SUNSET_IMAGE)) : filesize(base_path(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE));
 
 		static::assertEquals($expectedSize1, $fileStat1['size']);
 		static::assertEquals($expectedSize2, $fileStat2['size']);
