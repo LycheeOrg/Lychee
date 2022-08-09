@@ -12,10 +12,13 @@
 
 namespace Tests\Feature;
 
+use App\Image\InMemoryBuffer;
+use App\Image\TemporaryLocalFile;
 use function Safe\file_get_contents;
 use function Safe\filesize;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Tests\TestCase;
+use ZipArchive;
 
 class PhotosDownloadTest extends Base\PhotoTestBase
 {
@@ -35,5 +38,48 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 		));
 		$fileContent = $download->streamedContent();
 		self::assertEquals(file_get_contents(base_path(TestCase::SAMPLE_FILE_SUNSET_IMAGE)), $fileContent);
+	}
+
+	/**
+	 * Downloads an archive of two different photos with one photo having
+	 * a multi-byte file name.
+	 *
+	 * @return void
+	 */
+	public function testMultiplePhotoDownloadWithMultiByteFilename(): void
+	{
+		$photoUploadResponse1 = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_SUNSET_IMAGE)
+		);
+		$photoUploadResponse2 = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+		);
+
+		$photoArchiveResponse = $this->photos_tests->download([
+			$photoUploadResponse1->offsetGet('id'),
+			$photoUploadResponse2->offsetGet('id'),
+		]);
+
+		$memoryBlob = new InMemoryBuffer();
+		fwrite($memoryBlob->stream(), $photoArchiveResponse->streamedContent());
+		$tmpZipFile = new TemporaryLocalFile('.zip', 'archive');
+		$tmpZipFile->write($memoryBlob->read());
+		$memoryBlob->close();
+
+		$zipArchive = new ZipArchive();
+		$zipArchive->open($tmpZipFile->getRealPath());
+
+		static::assertCount(2, $zipArchive);
+		$fileStat1 = $zipArchive->statIndex(0);
+		$fileStat2 = $zipArchive->statIndex(1);
+
+		static::assertContains($fileStat1['name'], ['fin de journée.jpg', 'mongolia.jpeg']);
+		static::assertContains($fileStat2['name'], ['fin de journée.jpg', 'mongolia.jpeg']);
+
+		$expectedSize1 = $fileStat1['name'] === 'fin de journée.jpg' ? filesize(base_path(TestCase::SAMPLE_FILE_SUNSET_IMAGE)) : filesize(base_path(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE));
+		$expectedSize2 = $fileStat2['name'] === 'fin de journée.jpg' ? filesize(base_path(TestCase::SAMPLE_FILE_SUNSET_IMAGE)) : filesize(base_path(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE));
+
+		static::assertEquals($expectedSize1, $fileStat1['size']);
+		static::assertEquals($expectedSize2, $fileStat2['size']);
 	}
 }

@@ -54,6 +54,7 @@
     "require-dev": {
         "ext-imagick": "*",
         "ext-posix": "*",
+        "ext-zip": "*",
         "barryvdh/laravel-debugbar": "^3.6",
         "barryvdh/laravel-ide-helper": "^2.10",
         "filp/whoops": "^2.5",
