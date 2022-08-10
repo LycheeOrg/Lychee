@@ -467,4 +467,53 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 
 		Configs::set(self::CONFIG_HAS_EXIF_TOOL, $hasExifTool);
 	}
+
+	public function testUploadMultibyteTitle(): void
+	{
+		$id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_SUNSET_IMAGE)
+		)->offsetGet('id');
+
+		$response = $this->photos_tests->get($id);
+		$response->assertJson([
+			'album_id' => null,
+			'title' => 'fin de journée',
+			'description' => null,
+			'tags' => [],
+			'license' => 'none',
+			'is_public' => 0,
+			'is_starred' => false,
+			'iso' => '400',
+			'make' => 'Canon',
+			'model' => 'Canon EOS R5',
+			'lens' => 'EF70-200mm f/2.8L IS USM',
+			'aperture' => 'f/8.0',
+			'shutter' => '1/320 s',
+			'focal' => '200 mm',
+			'type' => TestCase::MIME_TYPE_IMG_JPEG,
+			'size_variants' => [
+				'small' => [
+					'width' => 202,
+					'height' => 360,
+				],
+				'medium' => [
+					'width' => 607,
+					'height' => 1080,
+				],
+				'original' => [
+					'width' => 914,
+					'height' => 1625,
+					'filesize' => 270345,
+				],
+			],
+		]);
+	}
+
+	public function testUploadMultibyteTitleWithoutExifTool(): void
+	{
+		$hasExifTool = Configs::getValueAsBool(self::CONFIG_HAS_EXIF_TOOL);
+		Configs::set(self::CONFIG_HAS_EXIF_TOOL, false);
+		$this->testUploadMultibyteTitle();
+		Configs::set(self::CONFIG_HAS_EXIF_TOOL, $hasExifTool);
+	}
 }
