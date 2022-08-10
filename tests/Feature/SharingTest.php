@@ -17,18 +17,6 @@ use Tests\Feature\Base\SharingTestBase;
 class SharingTest extends SharingTestBase
 {
 	/**
-	 * Like {@link SharingTest::testPublicAlbumAndPasswordProtectedAlbum},
-	 * but additionally the password-protected photo is starred and the
-	 * "Favorites" album is tested as well.
-	 *
-	 * @return void
-	 */
-	public function testPublicAlbumAndPasswordProtectedAlbumWithStarredPhoto(): void
-	{
-		static::markTestIncomplete('Not written yet');
-	}
-
-	/**
 	 * Uploads two photos into two albums (one photo per album), marks one
 	 * album as public and the other one as public and hidden,
 	 * logs out, checks that the anonymous user only see the first album,
