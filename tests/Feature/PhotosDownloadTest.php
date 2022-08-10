@@ -12,17 +12,130 @@
 
 namespace Tests\Feature;
 
+use App\Actions\Photo\Archive;
+use App\Image\ImagickHandler;
 use App\Image\InMemoryBuffer;
 use App\Image\TemporaryLocalFile;
+use App\Image\VideoHandler;
 use function Safe\file_get_contents;
 use function Safe\filesize;
 use Symfony\Component\HttpFoundation\HeaderUtils;
+use Tests\Feature\Lib\AssertableZipArchive;
 use Tests\TestCase;
-use ZipArchive;
 
 class PhotosDownloadTest extends Base\PhotoTestBase
 {
 	public const MULTI_BYTE_ALBUM_TITLE = 'Lychee supporte les caractères multi-octets';
+
+	/**
+	 * Downloads a single photo.
+	 *
+	 * @return void
+	 */
+	public function testSinglePhotoDownload(): void
+	{
+		$photoUploadResponse = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		);
+		$photoArchiveResponse = $this->photos_tests->download([$photoUploadResponse->offsetGet('id')]);
+
+		// Stream the response in a temporary file
+		$memoryBlob = new InMemoryBuffer();
+		fwrite($memoryBlob->stream(), $photoArchiveResponse->streamedContent());
+		$imageFile = new TemporaryLocalFile('.jpg', 'night');
+		$imageFile->write($memoryBlob->read());
+		$memoryBlob->close();
+
+		// Just do a simple read test
+		$image = new ImagickHandler();
+		$image->load($imageFile);
+		$imageDim = $image->getDimensions();
+		static::assertEquals(6720, $imageDim->width);
+		static::assertEquals(4480, $imageDim->height);
+	}
+
+	/**
+	 * Downloads an archive of two different photos.
+	 *
+	 * @return void
+	 */
+	public function testMultiplePhotoDownload(): void
+	{
+		$photoID1 = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		)->offsetGet('id');
+		$photoID2 = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+		)->offsetGet('id');
+
+		$photoArchiveResponse = $this->photos_tests->download([$photoID1, $photoID2]);
+
+		$zipArchive = AssertableZipArchive::createFromResponse($photoArchiveResponse);
+		$zipArchive->assertContainsFilesExactly([
+			'night.jpg' => ['size' => filesize(base_path(self::SAMPLE_FILE_NIGHT_IMAGE))],
+			'mongolia.jpeg' => ['size' => filesize(base_path(self::SAMPLE_FILE_MONGOLIA_IMAGE))],
+		]);
+	}
+
+	/**
+	 * Downloads the video part of a Google Motion Photo.
+	 *
+	 * @return void
+	 */
+	public function testGoogleMotionPhotoDownload(): void
+	{
+		static::assertHasExifToolOrSkip();
+		static::assertHasFFMpegOrSkip();
+
+		$photoUploadResponse = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_IMAGE)
+		);
+		$photoArchiveResponse = $this->photos_tests->download(
+			[$photoUploadResponse->offsetGet('id')],
+			Archive::LIVEPHOTOVIDEO
+		);
+
+		// Stream the response in a temporary file
+		$memoryBlob = new InMemoryBuffer();
+		fwrite($memoryBlob->stream(), $photoArchiveResponse->streamedContent());
+		$videoFile = new TemporaryLocalFile('.mov', 'gmp');
+		$videoFile->write($memoryBlob->read());
+		$memoryBlob->close();
+
+		// Just do a simple read test
+		$video = new VideoHandler();
+		$video->load($videoFile);
+	}
+
+	/**
+	 * Downloads an archive of three photos with one photo being included twice.
+	 *
+	 * This tests the capability of the archive function to generate unique
+	 * file names for duplicates.
+	 *
+	 * @return void
+	 */
+	public function testAmbiguousPhotoDownload(): void
+	{
+		$photoID1 = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE)
+		)->offsetGet('id');
+		$photoID2a = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+		)->offsetGet('id');
+		$photoID2b = $this->photos_tests->duplicate(
+			[$photoID2a], null
+		)->offsetGet('id');
+
+		$photoArchiveResponse = $this->photos_tests->download([$photoID1, $photoID2a, $photoID2b]);
+
+		$zipArchive = AssertableZipArchive::createFromResponse($photoArchiveResponse);
+		$zipArchive->assertContainsFilesExactly([
+			'train.jpg' => ['size' => filesize(base_path(self::SAMPLE_FILE_TRAIN_IMAGE))],
+			'mongolia-1.jpeg' => ['size' => filesize(base_path(self::SAMPLE_FILE_MONGOLIA_IMAGE))],
+			'mongolia-2.jpeg' => ['size' => filesize(base_path(self::SAMPLE_FILE_MONGOLIA_IMAGE))],
+		]);
+	}
 
 	public function testPhotoDownloadWithMultiByteFilename(): void
 	{
@@ -50,39 +163,20 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 	 */
 	public function testMultiplePhotoDownloadWithMultiByteFilename(): void
 	{
-		$photoUploadResponse1 = $this->photos_tests->upload(
+		$photoID1 = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_SUNSET_IMAGE)
-		);
-		$photoUploadResponse2 = $this->photos_tests->upload(
+		)->offsetGet('id');
+		$photoID2 = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
-		);
+		)->offsetGet('id');
 
-		$photoArchiveResponse = $this->photos_tests->download([
-			$photoUploadResponse1->offsetGet('id'),
-			$photoUploadResponse2->offsetGet('id'),
+		$photoArchiveResponse = $this->photos_tests->download([$photoID1, $photoID2]);
+
+		$zipArchive = AssertableZipArchive::createFromResponse($photoArchiveResponse);
+		$zipArchive->assertContainsFilesExactly([
+			'fin de journée.jpg' => ['size' => filesize(base_path(TestCase::SAMPLE_FILE_SUNSET_IMAGE))],
+			'mongolia.jpeg' => ['size' => filesize(base_path(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE))],
 		]);
-
-		$memoryBlob = new InMemoryBuffer();
-		fwrite($memoryBlob->stream(), $photoArchiveResponse->streamedContent());
-		$tmpZipFile = new TemporaryLocalFile('.zip', 'archive');
-		$tmpZipFile->write($memoryBlob->read());
-		$memoryBlob->close();
-
-		$zipArchive = new ZipArchive();
-		$zipArchive->open($tmpZipFile->getRealPath());
-
-		static::assertCount(2, $zipArchive);
-		$fileStat1 = $zipArchive->statIndex(0);
-		$fileStat2 = $zipArchive->statIndex(1);
-
-		static::assertContains($fileStat1['name'], ['fin de journée.jpg', 'mongolia.jpeg']);
-		static::assertContains($fileStat2['name'], ['fin de journée.jpg', 'mongolia.jpeg']);
-
-		$expectedSize1 = $fileStat1['name'] === 'fin de journée.jpg' ? filesize(base_path(TestCase::SAMPLE_FILE_SUNSET_IMAGE)) : filesize(base_path(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE));
-		$expectedSize2 = $fileStat2['name'] === 'fin de journée.jpg' ? filesize(base_path(TestCase::SAMPLE_FILE_SUNSET_IMAGE)) : filesize(base_path(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE));
-
-		static::assertEquals($expectedSize1, $fileStat1['size']);
-		static::assertEquals($expectedSize2, $fileStat2['size']);
 	}
 
 	public function testAlbumDownloadWithMultibyteTitle(): void
@@ -103,27 +197,11 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 			'Album.zip'
 		));
 
-		$memoryBlob = new InMemoryBuffer();
-		fwrite($memoryBlob->stream(), $albumArchiveResponse->streamedContent());
-		$tmpZipFile = new TemporaryLocalFile('.zip', 'archive');
-		$tmpZipFile->write($memoryBlob->read());
-		$memoryBlob->close();
-
-		$zipArchive = new ZipArchive();
-		$zipArchive->open($tmpZipFile->getRealPath());
-
-		static::assertCount(2, $zipArchive);
-		$fileStat1 = $zipArchive->statIndex(0);
-		$fileStat2 = $zipArchive->statIndex(1);
-
-		static::assertContains($fileStat1['name'], [self::MULTI_BYTE_ALBUM_TITLE . '/fin de journée.jpg', self::MULTI_BYTE_ALBUM_TITLE . '/mongolia.jpeg']);
-		static::assertContains($fileStat2['name'], [self::MULTI_BYTE_ALBUM_TITLE . '/fin de journée.jpg', self::MULTI_BYTE_ALBUM_TITLE . '/mongolia.jpeg']);
-
-		$expectedSize1 = $fileStat1['name'] === self::MULTI_BYTE_ALBUM_TITLE . '/fin de journée.jpg' ? filesize(base_path(TestCase::SAMPLE_FILE_SUNSET_IMAGE)) : filesize(base_path(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE));
-		$expectedSize2 = $fileStat2['name'] === self::MULTI_BYTE_ALBUM_TITLE . '/fin de journée.jpg' ? filesize(base_path(TestCase::SAMPLE_FILE_SUNSET_IMAGE)) : filesize(base_path(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE));
-
-		static::assertEquals($expectedSize1, $fileStat1['size']);
-		static::assertEquals($expectedSize2, $fileStat2['size']);
+		$zipArchive = AssertableZipArchive::createFromResponse($albumArchiveResponse);
+		$zipArchive->assertContainsFilesExactly([
+			self::MULTI_BYTE_ALBUM_TITLE . '/fin de journée.jpg' => ['size' => filesize(base_path(TestCase::SAMPLE_FILE_SUNSET_IMAGE))],
+			self::MULTI_BYTE_ALBUM_TITLE . '/mongolia.jpeg' => ['size' => filesize(base_path(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE))],
+		]);
 
 		$this->albums_tests->delete([$albumID]);
 	}
