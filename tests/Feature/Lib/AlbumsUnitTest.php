@@ -13,6 +13,7 @@
 namespace Tests\Feature\Lib;
 
 use Illuminate\Testing\TestResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Tests\TestCase;
 
 class AlbumsUnitTest
@@ -345,6 +346,12 @@ class AlbumsUnitTest
 			]
 		);
 		$response->assertOk();
+		if ($response->baseResponse instanceof StreamedResponse) {
+			// The content of a streamed response is not generated unless
+			// the content is fetched.
+			// This ensures that the generator of SUT is actually executed.
+			$response->streamedContent();
+		}
 
 		return $response;
 	}
