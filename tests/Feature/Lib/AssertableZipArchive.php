@@ -65,7 +65,7 @@ class AssertableZipArchive extends \ZipArchive
 	}
 
 	/**
-	 * Asserts that the ZIP archive exactly contains the given files and no more.
+	 * Asserts that the ZIP archive contains exactly the given files and no more.
 	 *
 	 * @param array<string, array{size?: ?int}> $expectedFiles a list of expected file names together with optional file attributes
 	 *
