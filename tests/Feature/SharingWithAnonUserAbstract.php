@@ -37,4 +37,12 @@ abstract class SharingWithAnonUserAbstract extends SharingTestScenariosAbstract
 			'photos' => $expectedPhotos,
 		];
 	}
+
+	protected function generateExpectedTreeJson(array $expectedAlbums = []): array
+	{
+		return [
+			'albums' => $expectedAlbums,
+			'shared_albums' => [],
+		];
+	}
 }

@@ -131,10 +131,7 @@ class SharingWithAnonUserAndPublicSearchTest extends SharingWithAnonUserAbstract
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForTree = $this->root_album_tests->getTree();
-		$responseForTree->assertJson([
-			'albums' => [],
-			'shared_albums' => [],
-		]);
+		$responseForTree->assertJson($this->generateExpectedTreeJson());
 		$responseForTree->assertJsonMissing(['id' => $this->albumID1]);
 		$responseForTree->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForTree->assertJsonMissing(['id' => $this->photoID2]);
@@ -181,12 +178,9 @@ class SharingWithAnonUserAndPublicSearchTest extends SharingWithAnonUserAbstract
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForTree = $this->root_album_tests->getTree();
-		$responseForTree->assertJson([
-			'albums' => [
-				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1), // photo 1 is thumb, because starred photo are always picked first
-			],
-			'shared_albums' => [],
-		]);
+		$responseForTree->assertJson($this->generateExpectedTreeJson([
+			$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1), // photo 1 is thumb, because starred photo are always picked first
+		]));
 		$responseForTree->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForAlbum = $this->albums_tests->get($this->albumID1);
@@ -279,12 +273,9 @@ class SharingWithAnonUserAndPublicSearchTest extends SharingWithAnonUserAbstract
 		$this->photos_tests->get($this->photoID2);
 
 		$responseForTree = $this->root_album_tests->getTree();
-		$responseForTree->assertJson([
-			'albums' => [
-				self::generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
-			],
-			'shared_albums' => [],
-		]);
+		$responseForTree->assertJson($this->generateExpectedTreeJson([
+			self::generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
+		]));
 		$responseForTree->assertJsonMissing(['id' => $this->albumID1]);
 		$responseForTree->assertJsonMissing(['id' => $this->photoID1]);
 	}
@@ -341,13 +332,10 @@ class SharingWithAnonUserAndPublicSearchTest extends SharingWithAnonUserAbstract
 		$this->photos_tests->get($this->photoID2);
 
 		$responseForTree = $this->root_album_tests->getTree();
-		$responseForTree->assertJson([
-			'albums' => [
-				self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
-				self::generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
-			],
-			'shared_albums' => [],
-		]);
+		$responseForTree->assertJson($this->generateExpectedTreeJson([
+			self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
+			self::generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
+		]));
 	}
 
 	public function testPublicAlbumAndPasswordProtectedAlbumWithStarredPhoto(): void
@@ -393,12 +381,9 @@ class SharingWithAnonUserAndPublicSearchTest extends SharingWithAnonUserAbstract
 		$this->photos_tests->get($this->photoID2);
 
 		$responseForTree = $this->root_album_tests->getTree();
-		$responseForTree->assertJson([
-			'albums' => [
-				self::generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
-			],
-			'shared_albums' => [],
-		]);
+		$responseForTree->assertJson($this->generateExpectedTreeJson([
+			self::generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
+		]));
 		$responseForTree->assertJsonMissing(['id' => $this->albumID1]);
 		$responseForTree->assertJsonMissing(['id' => $this->photoID1]);
 	}
@@ -458,13 +443,10 @@ class SharingWithAnonUserAndPublicSearchTest extends SharingWithAnonUserAbstract
 		$this->photos_tests->get($this->photoID2);
 
 		$responseForTree = $this->root_album_tests->getTree();
-		$responseForTree->assertJson([
-			'albums' => [
-				self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
-				self::generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
-			],
-			'shared_albums' => [],
-		]);
+		$responseForTree->assertJson($this->generateExpectedTreeJson([
+			self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
+			self::generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
+		]));
 	}
 
 	public function testPublicAlbumAndHiddenAlbum(): void
@@ -519,12 +501,9 @@ class SharingWithAnonUserAndPublicSearchTest extends SharingWithAnonUserAbstract
 		$this->photos_tests->get($this->photoID2);
 
 		$responseForTree = $this->root_album_tests->getTree();
-		$responseForTree->assertJson([
-			'albums' => [
-				self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
-			],
-			'shared_albums' => [],
-		]);
+		$responseForTree->assertJson($this->generateExpectedTreeJson([
+			self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
+		]));
 		$responseForTree->assertDontSee(['id' => $this->albumID2]);
 	}
 
@@ -571,12 +550,9 @@ class SharingWithAnonUserAndPublicSearchTest extends SharingWithAnonUserAbstract
 		$this->photos_tests->get($this->photoID2, 401, self::EXPECTED_UNAUTHENTICATED_MSG);
 
 		$responseForTree = $this->root_album_tests->getTree();
-		$responseForTree->assertJson([
-			'albums' => [
-				self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
-			],
-			'shared_albums' => [],
-		]);
+		$responseForTree->assertJson($this->generateExpectedTreeJson([
+			self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
+		]));
 		$responseForTree->assertDontSee(['id' => $this->albumID2]);
 	}
 
@@ -633,12 +609,9 @@ class SharingWithAnonUserAndPublicSearchTest extends SharingWithAnonUserAbstract
 		$this->photos_tests->get($this->photoID2);
 
 		$responseForTree = $this->root_album_tests->getTree();
-		$responseForTree->assertJson([
-			'albums' => [
-				self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
-			],
-			'shared_albums' => [],
-		]);
+		$responseForTree->assertJson($this->generateExpectedTreeJson([
+			self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
+		]));
 		$responseForTree->assertDontSee(['id' => $this->albumID2]);
 	}
 }

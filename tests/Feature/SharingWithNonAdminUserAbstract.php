@@ -40,4 +40,12 @@ abstract class SharingWithNonAdminUserAbstract extends SharingTestScenariosAbstr
 			'photos' => $expectedPhotos,
 		];
 	}
+
+	protected function generateExpectedTreeJson(array $expectedSharedAlbums = []): array
+	{
+		return [
+			'albums' => [],
+			'shared_albums' => $expectedSharedAlbums,
+		];
+	}
 }
