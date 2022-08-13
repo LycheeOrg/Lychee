@@ -4695,11 +4695,11 @@ header.setMode = function (mode) {
 			}
 
 			if (album.isUploadable()) {
-				var _e24 = $("#button_trash, #button_move, #button_visibility, #button_star");
+				var _e24 = $("#button_trash, #button_move, #button_visibility, #button_star, #button_rotate_cwise, #button_rotate_ccwise");
 				_e24.show();
 				tabindex.makeFocusable(_e24);
 			} else {
-				var _e25 = $("#button_trash, #button_move, #button_visibility, #button_star");
+				var _e25 = $("#button_trash, #button_move, #button_visibility, #button_star, #button_rotate_cwise, #button_rotate_ccwise");
 				_e25.hide();
 				tabindex.makeUnfocusable(_e25);
 			}
@@ -8175,7 +8175,7 @@ _photo3.load = function (photoID, albumID, autoplay) {
 		// TODO: Why do we overwrite the true album ID of a photo, by the externally provided one? I guess we need it, because the album which the user came from might also be a smart album or a tag album. However, in this case I would prefer to leave the `album_id  untouched (don't rename it to `original_album_id`) and call this one `effective_album_id` instead.
 		_photo3.json.album_id = albumID;
 
-		if (!visible.photo()) view.photo.show();
+		view.photo.show();
 		view.photo.init(autoplay);
 		lychee.imageview.show();
 
@@ -8642,6 +8642,10 @@ _photo3.setAlbum = function (photoIDs, albumID) {
 _photo3.toggleStar = function () {
 	_photo3.json.is_starred = !_photo3.json.is_starred;
 	view.photo.star();
+
+	album.getByID(_photo3.json.id).is_starred = _photo3.json.is_starred;
+	view.album.content.star(_photo3.json.id);
+
 	albums.refresh();
 
 	api.post("Photo::setStar", {
@@ -12575,31 +12579,33 @@ view.photo = {
 		lychee.content.addClass("view");
 		header.setMode("photo");
 
-		// Make body not scrollable
-		// use bodyScrollLock package to enable locking on iOS
-		// Simple overflow: hidden not working on iOS Safari
-		// Only the info pane needs scrolling
-		// Touch event for swiping of photo still work
+		if (!visible.photo()) {
+			// Make body not scrollable
+			// use bodyScrollLock package to enable locking on iOS
+			// Simple overflow: hidden not working on iOS Safari
+			// Only the info pane needs scrolling
+			// Touch event for swiping of photo still work
 
-		scrollLock.disablePageScroll($(".sidebar__wrapper").get());
+			scrollLock.disablePageScroll($(".sidebar__wrapper").get());
 
-		// Fullscreen
-		var timeout = null;
-		$(document).bind("mousemove", function () {
-			clearTimeout(timeout);
-			// For live Photos: header animation only if LivePhoto is not playing
-			if (!_photo3.isLivePhotoPlaying() && lychee.header_auto_hide) {
-				header.show();
-				timeout = setTimeout(header.hideIfLivePhotoNotPlaying, 2500);
+			// Fullscreen
+			var timeout = null;
+			$(document).bind("mousemove", function () {
+				clearTimeout(timeout);
+				// For live Photos: header animation only if LivePhoto is not playing
+				if (!_photo3.isLivePhotoPlaying() && lychee.header_auto_hide) {
+					header.show();
+					timeout = setTimeout(header.hideIfLivePhotoNotPlaying, 2500);
+				}
+			});
+
+			// we also put this timeout to enable it by default when you directly click on a picture.
+			if (lychee.header_auto_hide) {
+				setTimeout(header.hideIfLivePhotoNotPlaying, 2500);
 			}
-		});
 
-		// we also put this timeout to enable it by default when you directly click on a picture.
-		if (lychee.header_auto_hide) {
-			setTimeout(header.hideIfLivePhotoNotPlaying, 2500);
+			lychee.animate(lychee.imageview, "fadeIn");
 		}
-
-		lychee.animate(lychee.imageview, "fadeIn");
 	},
 
 	/**
@@ -12835,8 +12841,6 @@ view.photo = {
 		/* Note: the condition below is duplicated in contextMenu.photoMore() */
 		if (_photo3.json.type && (_photo3.json.type.indexOf("video") === 0 || _photo3.json.type === "raw") || _photo3.json.live_photo_url !== "" && _photo3.json.live_photo_url !== null) {
 			$("#button_rotate_cwise, #button_rotate_ccwise").hide();
-		} else {
-			$("#button_rotate_cwise, #button_rotate_ccwise").show();
 		}
 	},
 

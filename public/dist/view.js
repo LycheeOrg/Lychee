@@ -1509,11 +1509,11 @@ header.setMode = function (mode) {
 			}
 
 			if (album.isUploadable()) {
-				var _e23 = $("#button_trash, #button_move, #button_visibility, #button_star");
+				var _e23 = $("#button_trash, #button_move, #button_visibility, #button_star, #button_rotate_cwise, #button_rotate_ccwise");
 				_e23.show();
 				tabindex.makeFocusable(_e23);
 			} else {
-				var _e24 = $("#button_trash, #button_move, #button_visibility, #button_star");
+				var _e24 = $("#button_trash, #button_move, #button_visibility, #button_star, #button_rotate_cwise, #button_rotate_ccwise");
 				_e24.hide();
 				tabindex.makeUnfocusable(_e24);
 			}
