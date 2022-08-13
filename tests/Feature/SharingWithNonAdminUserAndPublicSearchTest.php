@@ -19,7 +19,7 @@ use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Tests\TestCase;
 
-class SharingWithNonAdminUserAndPublicSearchTest extends Base\SharingWithNonAdminUserAbstract
+class SharingWithNonAdminUserAndPublicSearchTest extends SharingWithNonAdminUserAbstract
 {
 	public function setUp(): void
 	{
@@ -369,9 +369,13 @@ class SharingWithNonAdminUserAndPublicSearchTest extends Base\SharingWithNonAdmi
 		]);
 		$responseForTree->assertJsonMissing(['id' => $this->albumID1]);
 		$responseForTree->assertJsonMissing(['id' => $this->photoID1]);
+	}
 
+	public function testPublicAlbumAndPasswordProtectedUnlockedAlbum(): void
+	{
+		$this->preparePublicAlbumAndPasswordProtectedAlbum();
+		AccessControl::log_as_id($this->userID);
 		$this->albums_tests->unlock($this->albumID1, self::ALBUM_PWD_1);
-		$this->clearCachedSmartAlbums();
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
@@ -409,6 +413,7 @@ class SharingWithNonAdminUserAndPublicSearchTest extends Base\SharingWithNonAdmi
 			],
 		]);
 		$this->photos_tests->get($this->photoID1);
+
 		$responseForAlbum2 = $this->albums_tests->get($this->albumID2);
 		$responseForAlbum2->assertJson([
 			'id' => $this->albumID2,
@@ -431,7 +436,7 @@ class SharingWithNonAdminUserAndPublicSearchTest extends Base\SharingWithNonAdmi
 		]);
 	}
 
-	public function testPublicAlbumAndPasswordProtectedAlbumWithStarredPhoto()
+	public function testPublicAlbumAndPasswordProtectedAlbumWithStarredPhoto(): void
 	{
 		$this->preparePublicAlbumAndPasswordProtectedAlbumWithStarredPhoto();
 		AccessControl::log_as_id($this->userID);
@@ -464,6 +469,7 @@ class SharingWithNonAdminUserAndPublicSearchTest extends Base\SharingWithNonAdmi
 
 		$this->albums_tests->get($this->albumID1, 403, self::EXPECTED_PASSWORD_REQUIRED_MSG, self::EXPECTED_FORBIDDEN_MSG);
 		$this->photos_tests->get($this->photoID1, 403);
+
 		$responseForAlbum2 = $this->albums_tests->get($this->albumID2);
 		$responseForAlbum2->assertJson([
 			'id' => $this->albumID2,
@@ -485,9 +491,13 @@ class SharingWithNonAdminUserAndPublicSearchTest extends Base\SharingWithNonAdmi
 		]);
 		$responseForTree->assertJsonMissing(['id' => $this->albumID1]);
 		$responseForTree->assertJsonMissing(['id' => $this->photoID1]);
+	}
 
+	public function testPublicAlbumAndPasswordProtectedUnlockedAlbumWithStarredPhoto(): void
+	{
+		$this->preparePublicAlbumAndPasswordProtectedAlbumWithStarredPhoto();
+		AccessControl::log_as_id($this->userID);
 		$this->albums_tests->unlock($this->albumID1, self::ALBUM_PWD_1);
-		$this->clearCachedSmartAlbums();
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
@@ -529,6 +539,7 @@ class SharingWithNonAdminUserAndPublicSearchTest extends Base\SharingWithNonAdmi
 			],
 		]);
 		$this->photos_tests->get($this->photoID1);
+
 		$responseForAlbum2 = $this->albums_tests->get($this->albumID2);
 		$responseForAlbum2->assertJson([
 			'id' => $this->albumID2,
@@ -551,7 +562,7 @@ class SharingWithNonAdminUserAndPublicSearchTest extends Base\SharingWithNonAdmi
 		]);
 	}
 
-	public function testPublicAlbumAndHiddenAlbum()
+	public function testPublicAlbumAndHiddenAlbum(): void
 	{
 		$this->preparePublicAlbumAndHiddenAlbum();
 		AccessControl::log_as_id($this->userID);
@@ -616,7 +627,7 @@ class SharingWithNonAdminUserAndPublicSearchTest extends Base\SharingWithNonAdmi
 		$responseForTree->assertDontSee(['id' => $this->albumID2]);
 	}
 
-	public function testPublicAlbumAndHiddenPasswordProtectedAlbum()
+	public function testPublicAlbumAndHiddenPasswordProtectedAlbum(): void
 	{
 		$this->preparePublicAlbumAndHiddenPasswordProtectedAlbum();
 		AccessControl::log_as_id($this->userID);
@@ -670,9 +681,51 @@ class SharingWithNonAdminUserAndPublicSearchTest extends Base\SharingWithNonAdmi
 			],
 		]);
 		$responseForTree->assertDontSee(['id' => $this->albumID2]);
+	}
 
+	public function testPublicAlbumAndHiddenPasswordProtectedUnlockedAlbum(): void
+	{
+		$this->preparePublicAlbumAndHiddenPasswordProtectedAlbum();
+		AccessControl::log_as_id($this->userID);
 		$this->albums_tests->unlock($this->albumID2, self::ALBUM_PWD_2);
-		$this->clearCachedSmartAlbums();
+
+		$responseForRoot = $this->root_album_tests->get();
+		$responseForRoot->assertJson($this->generateExpectedRootJson(
+			null,
+			null,
+			null,
+			$this->photoID1, [ // album 2 is hidden
+				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
+			]
+		));
+		$responseForRoot->assertJsonMissing(['id' => $this->albumID2]); // album 2 is hidden
+		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]); // album 2 is hidden
+
+		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
+		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID1, [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
+			]
+		));
+		$responseForRecent->assertJsonMissing(['id' => $this->photoID2]);
+
+		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
+		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(true));
+		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
+		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
+
+		$responseForAlbum1 = $this->albums_tests->get($this->albumID1);
+		$responseForAlbum1->assertJson([
+			'id' => $this->albumID1,
+			'title' => self::ALBUM_TITLE_1,
+			'is_public' => true,
+			'thumb' => $this->generateExpectedThumbJson($this->photoID1),
+			'photos' => [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
+			],
+		]);
+		$this->photos_tests->get($this->photoID1);
 
 		$responseForAlbum2 = $this->albums_tests->get($this->albumID2);
 		$responseForAlbum2->assertJson([

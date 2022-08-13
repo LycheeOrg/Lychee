@@ -10,10 +10,11 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature\Base;
+namespace Tests\Feature;
 
 use App\Facades\AccessControl;
 use App\Models\Configs;
+use Tests\Feature\Base\SharingTestBase;
 use Tests\TestCase;
 
 /**
@@ -211,6 +212,8 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 
 	abstract public function testPublicAlbumAndPasswordProtectedAlbum(): void;
 
+	abstract public function testPublicAlbumAndPasswordProtectedUnlockedAlbum(): void;
+
 	/**
 	 * Like {@link SharingTestScenariosAbstract::preparePublicAlbumAndPasswordProtectedAlbum},
 	 * but additionally the password-protected photo is starred.
@@ -230,7 +233,9 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$this->clearCachedSmartAlbums();
 	}
 
-	abstract public function testPublicAlbumAndPasswordProtectedAlbumWithStarredPhoto();
+	abstract public function testPublicAlbumAndPasswordProtectedAlbumWithStarredPhoto(): void;
+
+	abstract public function testPublicAlbumAndPasswordProtectedUnlockedAlbumWithStarredPhoto(): void;
 
 	/**
 	 * Uploads two photos into two albums (one photo per album), marks one
@@ -252,7 +257,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$this->clearCachedSmartAlbums();
 	}
 
-	abstract public function testPublicAlbumAndHiddenAlbum();
+	abstract public function testPublicAlbumAndHiddenAlbum(): void;
 
 	/**
 	 * Like {@link SharingTestScenariosAbstract::preparePublicAlbumAndHiddenAlbum}, but
@@ -273,5 +278,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$this->clearCachedSmartAlbums();
 	}
 
-	abstract public function testPublicAlbumAndHiddenPasswordProtectedAlbum();
+	abstract public function testPublicAlbumAndHiddenPasswordProtectedAlbum(): void;
+
+	abstract public function testPublicAlbumAndHiddenPasswordProtectedUnlockedAlbum(): void;
 }
