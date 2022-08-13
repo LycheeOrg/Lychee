@@ -781,6 +781,26 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForTree->assertDontSee(['id' => $this->albumID2]);
 	}
 
+	/**
+	 * Creates two albums, puts a single photo in each, shares one
+	 * album with a user and logs out.
+	 *
+	 * @return void
+	 */
+	protected function preparePhotosInSharedAndPrivateAlbum(): void
+	{
+		$this->albumID1 = $this->albums_tests->add(null, self::ALBUM_TITLE_1)->offsetGet('id');
+		$this->albumID2 = $this->albums_tests->add(null, self::ALBUM_TITLE_2)->offsetGet('id');
+		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID1)->offsetGet('id');
+		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID2)->offsetGet('id');
+		$this->sharing_tests->add([$this->albumID1], [$this->userID]);
+		AccessControl::logout();
+		$this->clearCachedSmartAlbums();
+		$this->performPostPreparatorySteps();
+	}
+
+	abstract public function testPhotosInSharedAndPrivateAlbum(): void;
+
 	abstract protected function performPostPreparatorySteps(): void;
 
 	abstract protected function getExpectedInaccessibleHttpStatusCode(): int;
