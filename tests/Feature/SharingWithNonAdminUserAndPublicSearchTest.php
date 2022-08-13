@@ -550,4 +550,149 @@ class SharingWithNonAdminUserAndPublicSearchTest extends Base\SharingWithNonAdmi
 			],
 		]);
 	}
+
+	public function testPublicAlbumAndHiddenAlbum()
+	{
+		$this->preparePublicAlbumAndHiddenAlbum();
+		AccessControl::log_as_id($this->userID);
+
+		$responseForRoot = $this->root_album_tests->get();
+		$responseForRoot->assertJson($this->generateExpectedRootJson(
+			null,
+			null,
+			null,
+			$this->photoID1, [ // album 2 is hidden
+				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
+			]
+		));
+		$responseForRoot->assertJsonMissing(['id' => $this->albumID2]); // album 2 is hidden
+		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]); // album 2 is hidden
+
+		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
+		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID1, [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
+			]
+		));
+		$responseForRecent->assertJsonMissing(['id' => $this->photoID2]);
+
+		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
+		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(true));
+		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
+		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
+
+		$responseForAlbum1 = $this->albums_tests->get($this->albumID1);
+		$responseForAlbum1->assertJson([
+			'id' => $this->albumID1,
+			'title' => self::ALBUM_TITLE_1,
+			'is_public' => true,
+			'thumb' => $this->generateExpectedThumbJson($this->photoID1),
+			'photos' => [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
+			],
+		]);
+		$this->photos_tests->get($this->photoID1);
+
+		$responseForAlbum2 = $this->albums_tests->get($this->albumID2);
+		$responseForAlbum2->assertJson([
+			'id' => $this->albumID2,
+			'title' => self::ALBUM_TITLE_2,
+			'is_public' => true,
+			'thumb' => $this->generateExpectedThumbJson($this->photoID2),
+			'photos' => [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
+			],
+		]);
+		$this->photos_tests->get($this->photoID2);
+
+		$responseForTree = $this->root_album_tests->getTree();
+		$responseForTree->assertJson([
+			'albums' => [],
+			'shared_albums' => [
+				self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
+			],
+		]);
+		$responseForTree->assertDontSee(['id' => $this->albumID2]);
+	}
+
+	public function testPublicAlbumAndHiddenPasswordProtectedAlbum()
+	{
+		$this->preparePublicAlbumAndHiddenPasswordProtectedAlbum();
+		AccessControl::log_as_id($this->userID);
+
+		$responseForRoot = $this->root_album_tests->get();
+		$responseForRoot->assertJson($this->generateExpectedRootJson(
+			null,
+			null,
+			null,
+			$this->photoID1, [ // album 2 is hidden
+				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
+			]
+		));
+		$responseForRoot->assertJsonMissing(['id' => $this->albumID2]); // album 2 is hidden
+		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]); // album 2 is hidden
+
+		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
+		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID1, [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
+			]
+		));
+		$responseForRecent->assertJsonMissing(['id' => $this->photoID2]);
+
+		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
+		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(true));
+		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
+		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
+
+		$responseForAlbum1 = $this->albums_tests->get($this->albumID1);
+		$responseForAlbum1->assertJson([
+			'id' => $this->albumID1,
+			'title' => self::ALBUM_TITLE_1,
+			'is_public' => true,
+			'thumb' => $this->generateExpectedThumbJson($this->photoID1),
+			'photos' => [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
+			],
+		]);
+		$this->photos_tests->get($this->photoID1);
+
+		$this->albums_tests->get($this->albumID2, 403, self::EXPECTED_PASSWORD_REQUIRED_MSG, self::EXPECTED_FORBIDDEN_MSG);
+		$this->photos_tests->get($this->photoID2, 403, self::EXPECTED_FORBIDDEN_MSG);
+
+		$responseForTree = $this->root_album_tests->getTree();
+		$responseForTree->assertJson([
+			'albums' => [],
+			'shared_albums' => [
+				self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
+			],
+		]);
+		$responseForTree->assertDontSee(['id' => $this->albumID2]);
+
+		$this->albums_tests->unlock($this->albumID2, self::ALBUM_PWD_2);
+		$this->clearCachedSmartAlbums();
+
+		$responseForAlbum2 = $this->albums_tests->get($this->albumID2);
+		$responseForAlbum2->assertJson([
+			'id' => $this->albumID2,
+			'title' => self::ALBUM_TITLE_2,
+			'is_public' => true,
+			'thumb' => $this->generateExpectedThumbJson($this->photoID2),
+			'photos' => [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
+			],
+		]);
+		$this->photos_tests->get($this->photoID2);
+
+		$responseForTree = $this->root_album_tests->getTree();
+		$responseForTree->assertJson([
+			'albums' => [],
+			'shared_albums' => [
+				self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
+			],
+		]);
+		$responseForTree->assertDontSee(['id' => $this->albumID2]);
+	}
 }

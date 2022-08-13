@@ -231,4 +231,47 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 	}
 
 	abstract public function testPublicAlbumAndPasswordProtectedAlbumWithStarredPhoto();
+
+	/**
+	 * Uploads two photos into two albums (one photo per album), marks one
+	 * album as public and the other one as public as well as hidden,
+	 * stars the photo in the hidden album and logs out.
+	 *
+	 * @return void
+	 */
+	protected function preparePublicAlbumAndHiddenAlbum(): void
+	{
+		$this->albumID1 = $this->albums_tests->add(null, self::ALBUM_TITLE_1)->offsetGet('id');
+		$this->albumID2 = $this->albums_tests->add(null, self::ALBUM_TITLE_2)->offsetGet('id');
+		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID1)->offsetGet('id');
+		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID2)->offsetGet('id');
+		$this->albums_tests->set_protection_policy($this->albumID1);
+		$this->albums_tests->set_protection_policy($this->albumID2, true, true, true);
+		$this->photos_tests->set_star([$this->photoID2], true);
+		AccessControl::logout();
+		$this->clearCachedSmartAlbums();
+	}
+
+	abstract public function testPublicAlbumAndHiddenAlbum();
+
+	/**
+	 * Like {@link SharingTestScenariosAbstract::preparePublicAlbumAndHiddenAlbum}, but
+	 * additionally the hidden album is also password protected.
+	 *
+	 * @return void
+	 */
+	protected function preparePublicAlbumAndHiddenPasswordProtectedAlbum(): void
+	{
+		$this->albumID1 = $this->albums_tests->add(null, self::ALBUM_TITLE_1)->offsetGet('id');
+		$this->albumID2 = $this->albums_tests->add(null, self::ALBUM_TITLE_2)->offsetGet('id');
+		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID1)->offsetGet('id');
+		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID2)->offsetGet('id');
+		$this->albums_tests->set_protection_policy($this->albumID1);
+		$this->albums_tests->set_protection_policy($this->albumID2, true, true, true, false, true, true, self::ALBUM_PWD_2);
+		$this->photos_tests->set_star([$this->photoID2], true);
+		AccessControl::logout();
+		$this->clearCachedSmartAlbums();
+	}
+
+	abstract public function testPublicAlbumAndHiddenPasswordProtectedAlbum();
 }
