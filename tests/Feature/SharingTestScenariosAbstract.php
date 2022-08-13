@@ -863,6 +863,49 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$this->photos_tests->get($this->photoID1);
 	}
 
+	/**
+	 * Create three albums with on photo each, share the first and second with
+	 * a user, mark the second and third as public and password protected
+	 * with the same password and logs out.
+	 *
+	 * This scenario asserts that unlocking an album does not badly interfere
+	 * with another album which is shared but also happens to be protected
+	 * by the same password.
+	 *
+	 * @return void
+	 */
+	protected function prepareThreeAlbumsWithMixedSharingAndPasswordProtection(): void
+	{
+		$this->albumID1 = $this->albums_tests->add(null, self::ALBUM_TITLE_1)->offsetGet('id');
+		$this->albumID2 = $this->albums_tests->add(null, self::ALBUM_TITLE_2)->offsetGet('id');
+		$this->albumID3 = $this->albums_tests->add(null, self::ALBUM_TITLE_3)->offsetGet('id');
+		// The mis-order of photos by there title (N, T, M) is on purpose such that
+		// we first receive the result (N, T) as long as album 3 is locked and
+		// then (M, N, T) after album 3 has been unlocked, with album 3
+		// being in the front position.
+		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_NIGHT_IMAGE), $this->albumID1)->offsetGet('id');
+		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID2)->offsetGet('id');
+		$this->photoID3 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID3)->offsetGet('id');
+		$this->sharing_tests->add([$this->albumID1, $this->albumID2], [$this->userID]);
+		// Sic! We use the same password for both albums here, because we want
+		// to ensure that incidentally "unlocking" an album which is also
+		// shared has no negative side effect.
+		$this->albums_tests->set_protection_policy(
+			$this->albumID2, true, true, false, true, true, true, self::ALBUM_PWD_1
+		);
+		$this->albums_tests->set_protection_policy(
+			$this->albumID3, true, true, false, true, true, true, self::ALBUM_PWD_1
+		);
+
+		AccessControl::logout();
+		$this->clearCachedSmartAlbums();
+		$this->performPostPreparatorySteps();
+	}
+
+	abstract public function testThreeAlbumsWithMixedSharingAndPasswordProtection(): void;
+
+	abstract public function testThreeUnlockedAlbumsWithMixedSharingAndPasswordProtection(): void;
+
 	abstract protected function performPostPreparatorySteps(): void;
 
 	abstract protected function getExpectedInaccessibleHttpStatusCode(): int;
