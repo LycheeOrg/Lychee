@@ -801,6 +801,68 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 
 	abstract public function testPhotosInSharedAndPrivateAlbum(): void;
 
+	/**
+	 * Creates an album, uploads a photo, shares the album with a user, marks
+	 * it as public as well as password protected and logs out.
+	 *
+	 * This scenario asserts that sharing an album with a user takes
+	 * precedence over password protection.
+	 *
+	 * @return void
+	 */
+	protected function preparePhotoInSharedPublicPasswordProtectedAlbum(): void
+	{
+		$this->albumID1 = $this->albums_tests->add(null, self::ALBUM_TITLE_1)->offsetGet('id');
+		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID1)->offsetGet('id');
+		$this->albums_tests->set_protection_policy($this->albumID1, true, true, false, false, true, true, self::ALBUM_PWD_1);
+		$this->sharing_tests->add([$this->albumID1], [$this->userID]);
+		AccessControl::logout();
+		$this->clearCachedSmartAlbums();
+		$this->performPostPreparatorySteps();
+	}
+
+	abstract public function testPhotoInSharedPublicPasswordProtectedAlbum(): void;
+
+	public function testPhotoInSharedPublicPasswordProtectedUnlockedAlbum(): void
+	{
+		$this->preparePhotoInSharedPublicPasswordProtectedAlbum();
+		$this->albums_tests->unlock($this->albumID1, self::ALBUM_PWD_1);
+
+		$responseForRoot = $this->root_album_tests->get();
+		$responseForRoot->assertJson($this->generateExpectedRootJson(
+			null,
+			null,
+			null,
+			$this->photoID1, [
+				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
+			]
+		));
+
+		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
+		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(true));
+		$responseForStarred->assertJsonMissing(['id' => $this->albumID1]);
+		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
+
+		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
+		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID1, [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
+			]
+		));
+
+		$responseForTree = $this->root_album_tests->getTree();
+		$responseForTree->assertJson($this->generateExpectedTreeJson([
+			$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
+		]));
+
+		$responseForAlbum = $this->albums_tests->get($this->albumID1);
+		$responseForAlbum->assertJson($this->generateExpectedAlbumJson(
+			$this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1
+		));
+		$this->photos_tests->get($this->photoID1);
+	}
+
 	abstract protected function performPostPreparatorySteps(): void;
 
 	abstract protected function getExpectedInaccessibleHttpStatusCode(): int;

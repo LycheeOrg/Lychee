@@ -35,6 +35,13 @@ abstract class SharingWithAnonUserAbstract extends SharingTestScenariosAbstract
 		$responseForRoot->assertJsonMissing(['id' => $this->albumID2]);
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]);
 
+		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
+		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(true));
+		$responseForStarred->assertJsonMissing(['id' => $this->albumID1]);
+		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
+		$responseForStarred->assertJsonMissing(['id' => $this->albumID2]);
+		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
+
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(true));
 		$responseForRecent->assertJsonMissing(['id' => $this->albumID1]);
@@ -53,6 +60,40 @@ abstract class SharingWithAnonUserAbstract extends SharingTestScenariosAbstract
 		$this->photos_tests->get($this->photoID1, $this->getExpectedInaccessibleHttpStatusCode());
 		$this->albums_tests->get($this->albumID2, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), self::EXPECTED_PASSWORD_REQUIRED_MSG);
 		$this->photos_tests->get($this->photoID2, $this->getExpectedInaccessibleHttpStatusCode());
+	}
+
+	public function testPhotoInSharedPublicPasswordProtectedAlbum(): void
+	{
+		$this->preparePhotoInSharedPublicPasswordProtectedAlbum();
+
+		$responseForRoot = $this->root_album_tests->get();
+		$responseForRoot->assertJson($this->generateExpectedRootJson(
+			null,
+			null,
+			null,
+			null, [
+				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1),
+			]
+		));
+		$responseForRoot->assertJsonMissing(['id' => $this->photoID1]);
+
+		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
+		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(true));
+		$responseForStarred->assertJsonMissing(['id' => $this->albumID1]);
+		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
+
+		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
+		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(true));
+		$responseForRecent->assertJsonMissing(['id' => $this->albumID1]);
+		$responseForRecent->assertJsonMissing(['id' => $this->photoID1]);
+
+		$responseForTree = $this->root_album_tests->getTree();
+		$responseForTree->assertJson($this->generateExpectedTreeJson());
+		$responseForTree->assertJsonMissing(['id' => $this->albumID1]);
+		$responseForTree->assertJsonMissing(['id' => $this->photoID1]);
+
+		$this->albums_tests->get($this->albumID1, $this->getExpectedInaccessibleHttpStatusCode(), self::EXPECTED_PASSWORD_REQUIRED_MSG, $this->getExpectedDefaultInaccessibleMessage());
+		$this->photos_tests->get($this->photoID1, $this->getExpectedInaccessibleHttpStatusCode());
 	}
 
 	protected function generateExpectedRootJson(

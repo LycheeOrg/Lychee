@@ -96,21 +96,6 @@ class SharingAdvancedTest extends SharingTestBase
 	}
 
 	/**
-	 * Create an album, upload a photo, share it with a user, mark it as
-	 * public and password protected, login as user, access album, logout,
-	 * provide password, access album.
-	 *
-	 * This test asserts that a sharing an album with a user takes
-	 * precedence over password protection.
-	 *
-	 * @return void
-	 */
-	public function testSharedPasswordProtectedAlbum(): void
-	{
-		static::markTestIncomplete('Not written yet');
-	}
-
-	/**
 	 * Create three albums with on photo each, share the first and second with
 	 * a user, mark the second and third as public and password protected
 	 * with the same password, login as user, check that album 1 and 2 are

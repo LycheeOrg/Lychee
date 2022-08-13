@@ -88,10 +88,53 @@ abstract class SharingWithNonAdminUserAbstract extends SharingTestScenariosAbstr
 		$responseForTree->assertJsonMissing(['id' => $this->albumID2]);
 		$responseForTree->assertJsonMissing(['id' => $this->photoID2]);
 
-		$this->albums_tests->get($this->albumID1);
+		$responseForAlbum1 = $this->albums_tests->get($this->albumID1);
+		$responseForAlbum1->assertJson(self::generateExpectedAlbumJson(
+			$this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1
+		));
 		$this->photos_tests->get($this->photoID1);
+
 		$this->albums_tests->get($this->albumID2, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), self::EXPECTED_PASSWORD_REQUIRED_MSG);
 		$this->photos_tests->get($this->photoID2, $this->getExpectedInaccessibleHttpStatusCode());
+	}
+
+	public function testPhotoInSharedPublicPasswordProtectedAlbum(): void
+	{
+		$this->preparePhotoInSharedPublicPasswordProtectedAlbum();
+
+		$responseForRoot = $this->root_album_tests->get();
+		$responseForRoot->assertJson($this->generateExpectedRootJson(
+			null,
+			null,
+			null,
+			$this->photoID1, [
+				self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
+			]
+		));
+
+		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
+		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(true));
+		$responseForStarred->assertJsonMissing(['id' => $this->albumID1]);
+		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
+
+		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
+		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID1, [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
+			]
+		));
+
+		$responseForTree = $this->root_album_tests->getTree();
+		$responseForTree->assertJson($this->generateExpectedTreeJson([
+			self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
+		]));
+
+		$responseForAlbum = $this->albums_tests->get($this->albumID1);
+		$responseForAlbum->assertJson($this->generateExpectedAlbumJson(
+			$this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1
+		));
+		$this->photos_tests->get($this->photoID1);
 	}
 
 	protected function generateExpectedRootJson(
