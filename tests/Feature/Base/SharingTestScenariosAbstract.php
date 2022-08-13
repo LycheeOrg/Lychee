@@ -172,11 +172,11 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 	/**
 	 * Uploads an unsorted photo and another photo into an album, marks the
 	 * unsorted photo as public and stars it, shares the album with a
-	 * non-admin user, stars the phot inside the shared album and logs out.
+	 * non-admin user, stars the photo inside the shared album and logs out.
 	 *
 	 * @return void
 	 */
-	protected function preparePublicPhotoAndPhotoInSharedAlbum(): void
+	protected function preparePublicUnsortedPhotoAndPhotoInSharedAlbum(): void
 	{
 		$this->albumID1 = $this->albums_tests->add(null, self::ALBUM_TITLE_1)->offsetGet('id');
 		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE))->offsetGet('id');
@@ -188,7 +188,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$this->clearCachedSmartAlbums();
 	}
 
-	abstract public function testPublicPhotoAndPhotoInSharedAlbum(): void;
+	abstract public function testPublicUnsortedPhotoAndPhotoInSharedAlbum(): void;
 
 	/**
 	 * Uploads two photos into two albums (one photo per album), marks one
