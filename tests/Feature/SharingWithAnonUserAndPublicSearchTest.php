@@ -43,12 +43,13 @@ class SharingWithAnonUserAndPublicSearchTest extends SharingWithAnonUserAbstract
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
-			$this->photoID1, $this->photoID1
+			null, $this->photoID1, null, $this->photoID1
 		));
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
 			$this->photoID1, [
 				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, null),
 			]
@@ -57,6 +58,7 @@ class SharingWithAnonUserAndPublicSearchTest extends SharingWithAnonUserAbstract
 
 		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
 		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
 			$this->photoID1, [
 				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, null),
 			]
@@ -64,7 +66,7 @@ class SharingWithAnonUserAndPublicSearchTest extends SharingWithAnonUserAbstract
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
 
 		$this->photos_tests->get($this->photoID1);
-		$this->photos_tests->get($this->photoID2, 401);
+		$this->photos_tests->get($this->photoID2, $this->getExpectedInaccessibleHttpStatusCode());
 	}
 
 	/**
@@ -82,12 +84,13 @@ class SharingWithAnonUserAndPublicSearchTest extends SharingWithAnonUserAbstract
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
-			$this->photoID1, $this->photoID1
+			null, $this->photoID1, null, $this->photoID1
 		));
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
 			$this->photoID1, [
 				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, $this->albumID1),
 			]
@@ -96,6 +99,7 @@ class SharingWithAnonUserAndPublicSearchTest extends SharingWithAnonUserAbstract
 
 		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
 		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
 			$this->photoID1, [
 				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, $this->albumID1),
 			]
@@ -108,9 +112,9 @@ class SharingWithAnonUserAndPublicSearchTest extends SharingWithAnonUserAbstract
 		$responseForTree->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForTree->assertJsonMissing(['id' => $this->photoID2]);
 
-		$this->albums_tests->get($this->albumID1, 401, self::EXPECTED_UNAUTHENTICATED_MSG, self::EXPECTED_PASSWORD_REQUIRED_MSG);
+		$this->albums_tests->get($this->albumID1, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), self::EXPECTED_PASSWORD_REQUIRED_MSG);
 		$this->photos_tests->get($this->photoID1);
-		$this->photos_tests->get($this->photoID2, 401);
+		$this->photos_tests->get($this->photoID2, $this->getExpectedInaccessibleHttpStatusCode());
 	}
 
 	public function testPublicUnsortedPhotoAndPhotoInSharedAlbum(): void
@@ -119,13 +123,14 @@ class SharingWithAnonUserAndPublicSearchTest extends SharingWithAnonUserAbstract
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
-			$this->photoID1, $this->photoID1
+			null, $this->photoID1, null, $this->photoID1
 		));
 		$responseForRoot->assertJsonMissing(['id' => $this->albumID1]);
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
 			$this->photoID1, [
 				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, null),
 			],
@@ -134,6 +139,7 @@ class SharingWithAnonUserAndPublicSearchTest extends SharingWithAnonUserAbstract
 
 		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
 		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
 			$this->photoID1, [
 				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, null),
 			],
@@ -144,8 +150,8 @@ class SharingWithAnonUserAndPublicSearchTest extends SharingWithAnonUserAbstract
 		$responseForTree->assertJson($this->generateExpectedTreeJson());
 		$responseForTree->assertJsonMissing(['id' => $this->photoID2]);
 
-		$this->albums_tests->get($this->albumID1, 401, self::EXPECTED_UNAUTHENTICATED_MSG, self::EXPECTED_PASSWORD_REQUIRED_MSG);
+		$this->albums_tests->get($this->albumID1, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), self::EXPECTED_PASSWORD_REQUIRED_MSG);
 		$this->photos_tests->get($this->photoID1);
-		$this->photos_tests->get($this->photoID2, 401);
+		$this->photos_tests->get($this->photoID2, $this->getExpectedInaccessibleHttpStatusCode());
 	}
 }

@@ -12,7 +12,6 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
@@ -42,7 +41,6 @@ class SharingWithNonAdminUserAndPublicSearchTest extends SharingWithNonAdminUser
 	public function testUnsortedPublicAndPrivatePhoto(): void
 	{
 		$this->prepareUnsortedPublicAndPrivatePhoto();
-		AccessControl::log_as_id($this->userID);
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
@@ -81,7 +79,7 @@ class SharingWithNonAdminUserAndPublicSearchTest extends SharingWithNonAdminUser
 		$responseForStarred->assertJsonMissing(['title' => self::PHOTO_MONGOLIA_TITLE]);
 
 		$this->photos_tests->get($this->photoID1);
-		$this->photos_tests->get($this->photoID2, 403);
+		$this->photos_tests->get($this->photoID2, $this->getExpectedInaccessibleHttpStatusCode());
 	}
 
 	/**
@@ -96,7 +94,6 @@ class SharingWithNonAdminUserAndPublicSearchTest extends SharingWithNonAdminUser
 	public function testPublicAndPrivatePhotoInPrivateAlbum(): void
 	{
 		$this->preparePublicAndPrivatePhotoInPrivateAlbum();
-		AccessControl::log_as_id($this->userID);
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
@@ -128,15 +125,14 @@ class SharingWithNonAdminUserAndPublicSearchTest extends SharingWithNonAdminUser
 		$responseForTree->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForTree->assertJsonMissing(['id' => $this->photoID2]);
 
-		$this->albums_tests->get($this->albumID1, 403, self::EXPECTED_FORBIDDEN_MSG, self::EXPECTED_PASSWORD_REQUIRED_MSG);
+		$this->albums_tests->get($this->albumID1, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), self::EXPECTED_PASSWORD_REQUIRED_MSG);
 		$this->photos_tests->get($this->photoID1);
-		$this->photos_tests->get($this->photoID2, 403);
+		$this->photos_tests->get($this->photoID2, $this->getExpectedInaccessibleHttpStatusCode());
 	}
 
 	public function testPublicUnsortedPhotoAndPhotoInSharedAlbum(): void
 	{
 		$this->preparePublicUnsortedPhotoAndPhotoInSharedAlbum();
-		AccessControl::log_as_id($this->userID);
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(

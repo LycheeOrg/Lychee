@@ -47,19 +47,19 @@ class SharingWithAnonUserAndNoPublicSearchTest extends SharingWithAnonUserAbstra
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
-		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson());
+		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(true));
 		$responseForRecent->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForRecent->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
-		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson());
+		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(true));
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
 
 		// Even though the public photo is not searchable and hence does not
 		// show up in the smart albums, it can be fetched directly
 		$this->photos_tests->get($this->photoID1);
-		$this->photos_tests->get($this->photoID2, 401);
+		$this->photos_tests->get($this->photoID2, $this->getExpectedInaccessibleHttpStatusCode());
 	}
 
 	/**
@@ -82,12 +82,12 @@ class SharingWithAnonUserAndNoPublicSearchTest extends SharingWithAnonUserAbstra
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
-		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson());
+		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(true));
 		$responseForRecent->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForRecent->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
-		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson());
+		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(true));
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
 
@@ -100,9 +100,9 @@ class SharingWithAnonUserAndNoPublicSearchTest extends SharingWithAnonUserAbstra
 		// The album and photo 2 are not accessible, but photo 1 is
 		// because it is public even though it is contained in an inaccessible
 		// album
-		$this->albums_tests->get($this->albumID1, 401, self::EXPECTED_UNAUTHENTICATED_MSG, self::EXPECTED_PASSWORD_REQUIRED_MSG);
+		$this->albums_tests->get($this->albumID1, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), self::EXPECTED_PASSWORD_REQUIRED_MSG);
 		$this->photos_tests->get($this->photoID1);
-		$this->photos_tests->get($this->photoID2, 401);
+		$this->photos_tests->get($this->photoID2, $this->getExpectedInaccessibleHttpStatusCode());
 	}
 
 	public function testPublicUnsortedPhotoAndPhotoInSharedAlbum(): void
@@ -116,12 +116,12 @@ class SharingWithAnonUserAndNoPublicSearchTest extends SharingWithAnonUserAbstra
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
-		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson());
+		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(true));
 		$responseForRecent->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForRecent->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
-		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson());
+		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(true));
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
 
@@ -129,8 +129,8 @@ class SharingWithAnonUserAndNoPublicSearchTest extends SharingWithAnonUserAbstra
 		$responseForTree->assertJson($this->generateExpectedTreeJson());
 		$responseForTree->assertJsonMissing(['id' => $this->photoID2]);
 
-		$this->albums_tests->get($this->albumID1, 401, self::EXPECTED_UNAUTHENTICATED_MSG, self::EXPECTED_PASSWORD_REQUIRED_MSG);
+		$this->albums_tests->get($this->albumID1, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), self::EXPECTED_PASSWORD_REQUIRED_MSG);
 		$this->photos_tests->get($this->photoID1);
-		$this->photos_tests->get($this->photoID2, 401);
+		$this->photos_tests->get($this->photoID2, $this->getExpectedInaccessibleHttpStatusCode());
 	}
 }
