@@ -18,32 +18,39 @@ use App\SmartAlbums\UnsortedAlbum;
 use Carbon\Carbon;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
+use Tests\Feature\Lib\RootAlbumUnitTest;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
+use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\TestCase;
 
 class GeoDataTest extends TestCase
 {
 	use RequiresEmptyPhotos;
+	use RequiresEmptyAlbums;
 	use InteractWithSmartAlbums;
 
 	protected PhotosUnitTest $photos_tests;
 	protected AlbumsUnitTest $albums_tests;
+	protected RootAlbumUnitTest $root_album_tests;
 
 	public function setUp(): void
 	{
 		parent::setUp();
 		$this->photos_tests = new PhotosUnitTest($this);
 		$this->albums_tests = new AlbumsUnitTest($this);
+		$this->root_album_tests = new RootAlbumUnitTest($this);
 
 		AccessControl::log_as_id(0);
 
 		$this->setUpRequiresEmptyPhotos();
+		$this->setUpRequiresEmptyAlbums();
 	}
 
 	public function tearDown(): void
 	{
 		$this->tearDownRequiresEmptyPhotos();
+		$this->tearDownRequiresEmptyAlbums();
 		AccessControl::logout();
 		parent::tearDown();
 	}
@@ -54,7 +61,7 @@ class GeoDataTest extends TestCase
 	public function testGeo(): void
 	{
 		// save initial value
-		$map_display_value = Configs::getValue('map_display');
+		$map_display_value = Configs::getValue(self::CONFIG_MAP_DISPLAY);
 
 		try {
 			$photoResponse = $this->photos_tests->upload(
@@ -125,35 +132,35 @@ class GeoDataTest extends TestCase
 
 			// now we test position Data
 
-			// set to 0
-			Configs::set('map_display', '0');
-			static::assertEquals('0', Configs::getValue('map_display'));
-			$this->albums_tests->AlbumsGetPositionDataFull(); // we need to fix this
+			// set to false
+			Configs::set(self::CONFIG_MAP_DISPLAY, false);
+			static::assertEquals(false, Configs::getValueAsBool(self::CONFIG_MAP_DISPLAY));
+			$this->root_album_tests->getPositionData();
 
-			// set to 1
-			Configs::set('map_display', '1');
-			static::assertEquals('1', Configs::getValue('map_display'));
-			$positionDataResponse = $this->albums_tests->AlbumsGetPositionDataFull();
+			// set to true
+			Configs::set(self::CONFIG_MAP_DISPLAY, true);
+			static::assertEquals(true, Configs::getValueAsBool(self::CONFIG_MAP_DISPLAY));
+			$positionDataResponse = $this->root_album_tests->getPositionData();
 			$positionData = static::convertJsonToObject($positionDataResponse);
 			static::assertObjectHasAttribute('photos', $positionData);
 			static::assertCount(1, $positionData->photos);
 			static::assertEquals($photoID, $positionData->photos[0]->id);
 
-			// set to 0
-			Configs::set('map_display', '0');
-			static::assertEquals('0', Configs::getValue('map_display'));
-			$this->albums_tests->AlbumGetPositionDataFull($albumID); // we need to fix this
+			// set to false
+			Configs::set(self::CONFIG_MAP_DISPLAY, false);
+			static::assertEquals(false, Configs::getValueAsBool(self::CONFIG_MAP_DISPLAY));
+			$this->albums_tests->getPositionData($albumID, false);
 
-			// set to 1
-			Configs::set('map_display', '1');
-			static::assertEquals('1', Configs::getValue('map_display'));
-			$positionDataResponse = $this->albums_tests->AlbumGetPositionDataFull($albumID);
+			// set to true
+			Configs::set(self::CONFIG_MAP_DISPLAY, true);
+			static::assertEquals(true, Configs::getValueAsBool(self::CONFIG_MAP_DISPLAY));
+			$positionDataResponse = $this->albums_tests->getPositionData($albumID, false);
 			$positionData = static::convertJsonToObject($positionDataResponse);
 			static::assertObjectHasAttribute('photos', $positionData);
 			static::assertCount(1, $positionData->photos);
 			static::assertEquals($photoID, $positionData->photos[0]->id);
 		} finally {
-			Configs::set('map_display', $map_display_value);
+			Configs::set(self::CONFIG_MAP_DISPLAY, $map_display_value);
 		}
 	}
 }

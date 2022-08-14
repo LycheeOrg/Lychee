@@ -92,6 +92,9 @@ abstract class TestCase extends BaseTestCase
 	public const CONFIG_RAW_FORMATS = 'raw_formats';
 	public const CONFIG_ALBUMS_SORTING_COL = 'sorting_albums_col';
 	public const CONFIG_ALBUMS_SORTING_ORDER = 'sorting_albums_order';
+	public const CONFIG_MAP_DISPLAY = 'map_display';
+	public const CONFIG_MAP_DISPLAY_PUBLIC = 'map_display_public';
+	public const CONFIG_MAP_INCLUDE_SUBALBUMS = 'map_include_subalbums';
 	public const CONFIG_PHOTOS_SORTING_COL = 'sorting_photos_col';
 	public const CONFIG_PHOTOS_SORTING_ORDER = 'sorting_photos_order';
 	public const CONFIG_PUBLIC_RECENT = 'public_recent';
