@@ -29,6 +29,7 @@ class SharingTestBase extends PhotoTestBase
 
 	public const PHOTO_NIGHT_TITLE = 'night';
 	public const PHOTO_MONGOLIA_TITLE = 'mongolia';
+	public const PHOTO_SUNSET_TITLE = 'fin de journée';
 	public const PHOTO_TRAIN_TITLE = 'train';
 
 	public const ALBUM_TITLE_1 = 'Test Album 1';
@@ -75,6 +76,21 @@ class SharingTestBase extends PhotoTestBase
 				'medium' => null,
 				'small2x' => ['type' => 3, 'width' => 1084,	'height' => 720],
 				'small' => ['type' => 4, 'width' => 542, 'height' => 360],
+				'thumb2x' => ['type' => 5, 'width' => 400, 'height' => 400],
+				'thumb' => ['type' => 6, 'width' => 200, 'height' => 200],
+			],
+		],
+		TestCase::SAMPLE_FILE_SUNSET_IMAGE => [
+			'id' => null,
+			'album_id' => null,
+			'title' => self::PHOTO_SUNSET_TITLE,
+			'type' => 'image/jpeg',
+			'size_variants' => [
+				'original' => ['type' => 0, 'width' => 914, 'height' => 1625],
+				'medium2x' => null,
+				'medium' => ['type' => 2, 'width' => 607, 'height' => 1080],
+				'small2x' => ['type' => 3, 'width' => 405,	'height' => 720],
+				'small' => ['type' => 4, 'width' => 202, 'height' => 360],
 				'thumb2x' => ['type' => 5, 'width' => 400, 'height' => 400],
 				'thumb' => ['type' => 6, 'width' => 200, 'height' => 200],
 			],
@@ -193,7 +209,7 @@ class SharingTestBase extends PhotoTestBase
 		$json['id'] = $photoID;
 		$json['album_id'] = $albumID;
 
-		return array_merge_recursive($json, $attrToMerge);
+		return array_replace_recursive($json, $attrToMerge);
 	}
 
 	protected function generateExpectedThumbJson(?string $photoID): array|null
@@ -203,7 +219,7 @@ class SharingTestBase extends PhotoTestBase
 
 	protected function generateExpectedAlbumJson(string $albumID, string $albumTitle, ?string $parentAlbumID = null, ?string $thumbID = null, array $attrToMerge = []): array
 	{
-		return array_merge_recursive([
+		return array_replace_recursive([
 			'id' => $albumID,
 			'title' => $albumTitle,
 			'thumb' => $this->generateExpectedThumbJson($thumbID),
