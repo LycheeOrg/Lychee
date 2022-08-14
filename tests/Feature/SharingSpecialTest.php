@@ -27,11 +27,55 @@ class SharingSpecialTest extends SharingTestBase
 	public const ALBUM_TITLE_5 = 'Test Album 5';
 	public const ALBUM_TITLE_6 = 'Test Album 6';
 
+	protected ?string $albumID1 = null;
+	protected ?string $albumID2 = null;
+	protected ?string $albumID3 = null;
+	protected ?string $albumID4 = null;
+	protected ?string $albumID5 = null;
+	protected ?string $albumID6 = null;
+	protected ?string $photoID1 = null;
+	protected ?string $photoID2 = null;
+	protected ?string $photoID3 = null;
+	protected ?string $photoID4 = null;
+	protected ?string $photoID5 = null;
+	protected ?string $photoID6 = null;
+
+	protected bool $arePublicPhotosHidden = false;
+
+	public function setUp(): void
+	{
+		parent::setUp();
+
+		// Clear temporary variables between tests
+		$this->albumID1 = null;
+		$this->albumID2 = null;
+		$this->albumID3 = null;
+		$this->albumID4 = null;
+		$this->albumID5 = null;
+		$this->albumID6 = null;
+		$this->photoID1 = null;
+		$this->photoID2 = null;
+		$this->photoID3 = null;
+		$this->photoID4 = null;
+		$this->photoID5 = null;
+		$this->photoID6 = null;
+
+		$this->arePublicPhotosHidden = Configs::getValueAsBool(TestCase::CONFIG_PUBLIC_HIDDEN);
+		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, false);
+	}
+
+	public function tearDown(): void
+	{
+		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, $this->arePublicPhotosHidden);
+		parent::tearDown();
+	}
+
 	/**
-	 * Tests six albums with one photo each and varying protection settings.
+	 * Preparse a scenario with six albums and one photo each as well as
+	 * varying protection settings.
 	 *
-	 * This is the test for [Bug #1155](https://github.com/LycheeOrg/Lychee/issues/1155).
-	 * Scenario:
+	 * This is the scenario for
+	 * [Bug #1155](https://github.com/LycheeOrg/Lychee/issues/1155).
 	 *
 	 * ```
 	 *  A       (public, password-protected "foo")
@@ -47,116 +91,379 @@ class SharingSpecialTest extends SharingTestBase
 	 *  +-- F   (public, password-protected "bar", hidden)
 	 * ```
 	 *
-	 * The anonymous user proceeds as follows:
-	 *
-	 *  1. Get root album view
-	 *
-	 *     _Expected result:_ Album A is visible, but without cover, it is still locked
-	 *
-	 *  2. Unlock albums with password "foo"
-	 *
-	 *     _Expected result:_
-	 *      - Album A is visible with cover
-	 *      - Album B is visible with cover
-	 *      - Album C is visible with cover, as it became unlocked simultaneously
-	 *      - Album D remains invisible
-	 *      - Album E is visible without cover, as it is still locked
-	 *      - Album F remains invisible
-	 *
-	 *  3. Directly access album D
-	 *
-	 *     _Expected result:_
-	 *      - Access is granted without asking for a password as it has already been unlocked
-	 *      - Image inside D is visible as part of D, but nowhere else
-	 *
-	 *  4. Directly access album F
-	 *
-	 *     _Expected result:_ Access is denied
-	 *
-	 *  5. Unlock albums with password "bar"
-	 *
-	 *     _Expected result:_
-	 *      - Album A is visible with cover
-	 *      - Album B is visible with cover
-	 *      - Album C is visible with cover, as it became unlocked simultaneously
-	 *      - Album D remains invisible
-	 *      - Album E is visible with cover, as it became unlocked simultaneously
-	 *      - Album F remains invisible
-	 *
-	 *  6. Directly access album F
-	 *
-	 *     _Expected result:_
-	 *      - Access is granted without asking for a password as it has already been unlocked
-	 *      - Image inside F is visible as part of F, but nowhere else
-	 *
-	 * In particular, each visibility check includes
-	 *  - the content inside the album itself
-	 *  - the album "Recent"
-	 *  - the album tree
-	 *
 	 * @return void
 	 */
-	public function testSixAlbumsWithDifferentProtectionSettings(): void
+	protected function prepareSixAlbumsWithDifferentProtectionSettings(): void
 	{
-		$arePublicPhotosHidden = Configs::getValueAsBool(TestCase::CONFIG_PUBLIC_HIDDEN);
-		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, false);
+		$this->albumID1 = $this->albums_tests->add(null, self::ALBUM_TITLE_1)->offsetGet('id');
+		$this->albumID2 = $this->albums_tests->add($this->albumID1, self::ALBUM_TITLE_2)->offsetGet('id');
+		$this->albumID3 = $this->albums_tests->add($this->albumID1, self::ALBUM_TITLE_3)->offsetGet('id');
+		$this->albumID4 = $this->albums_tests->add($this->albumID1, self::ALBUM_TITLE_4)->offsetGet('id');
+		$this->albumID5 = $this->albums_tests->add($this->albumID1, self::ALBUM_TITLE_5)->offsetGet('id');
+		$this->albumID6 = $this->albums_tests->add($this->albumID1, self::ALBUM_TITLE_6)->offsetGet('id');
+		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_NIGHT_IMAGE), $this->albumID1)->offsetGet('id');
+		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID2)->offsetGet('id');
+		$this->photoID3 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID3)->offsetGet('id');
+		$this->photoID4 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_SUNSET_IMAGE), $this->albumID4)->offsetGet('id');
+		$this->photoID5 = $this->photos_tests->duplicate([$this->photoID4], $this->albumID5)->offsetGet('id');
+		$this->photoID6 = $this->photos_tests->duplicate([$this->photoID2], $this->albumID6)->offsetGet('id');
+		$this->photos_tests->set_title($this->photoID5, 'Abenddämmerung'); // we rename the duplicated images, such that we can ensure
+		$this->photos_tests->set_title($this->photoID6, 'Zug'); // a deterministic, alphabetic order which makes testing easier
 
-		// PREPARATION
-
-		$albumID1 = $this->albums_tests->add(null, self::ALBUM_TITLE_1)->offsetGet('id');
-		$albumID2 = $this->albums_tests->add($albumID1, self::ALBUM_TITLE_2)->offsetGet('id');
-		$albumID3 = $this->albums_tests->add($albumID1, self::ALBUM_TITLE_3)->offsetGet('id');
-		$albumID4 = $this->albums_tests->add($albumID1, self::ALBUM_TITLE_4)->offsetGet('id');
-		$albumID5 = $this->albums_tests->add($albumID1, self::ALBUM_TITLE_5)->offsetGet('id');
-		$albumID6 = $this->albums_tests->add($albumID1, self::ALBUM_TITLE_6)->offsetGet('id');
-		$photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_NIGHT_IMAGE), $albumID1)->offsetGet('id');
-		$photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $albumID2)->offsetGet('id');
-		$photoID3 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID3)->offsetGet('id');
-		$photoID4 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_SUNSET_IMAGE), $albumID4)->offsetGet('id');
-		$photoID5 = $this->photos_tests->duplicate([$photoID3], $albumID5);
-		$photoID6 = $this->photos_tests->duplicate([$photoID2], $albumID6);
-
-		$this->albums_tests->set_protection_policy($albumID1, true, true, false, false, true, true, self::ALBUM_PWD_1);
-		$this->albums_tests->set_protection_policy($albumID2);
-		$this->albums_tests->set_protection_policy($albumID3, true, true, false, false, true, true, self::ALBUM_PWD_1);
-		$this->albums_tests->set_protection_policy($albumID4, true, true, true, false, true, true, self::ALBUM_PWD_1);
-		$this->albums_tests->set_protection_policy($albumID5, true, true, false, false, true, true, self::ALBUM_PWD_2);
-		$this->albums_tests->set_protection_policy($albumID6, true, true, true, false, true, true, self::ALBUM_PWD_2);
+		$this->albums_tests->set_protection_policy($this->albumID1, true, true, false, false, true, true, self::ALBUM_PWD_1);
+		$this->albums_tests->set_protection_policy($this->albumID2);
+		$this->albums_tests->set_protection_policy($this->albumID3, true, true, false, false, true, true, self::ALBUM_PWD_1);
+		$this->albums_tests->set_protection_policy($this->albumID4, true, true, true, false, true, true, self::ALBUM_PWD_1);
+		$this->albums_tests->set_protection_policy($this->albumID5, true, true, false, false, true, true, self::ALBUM_PWD_2);
+		$this->albums_tests->set_protection_policy($this->albumID6, true, true, true, false, true, true, self::ALBUM_PWD_2);
 
 		AccessControl::logout();
 		$this->clearCachedSmartAlbums();
+	}
 
-		// EVERYTHING IS LOCKED
+	/**
+	 * Tests scenario
+	 * {@link SharingSpecialTest::prepareSixAlbumsWithDifferentProtectionSettings()}
+	 * with the anonymous user and all albums being locked.
+	 *
+	 * The following results are expected:
+	 *
+	 *  - The root album shows album 1 but without a cover as album 1 is still
+	 *    locked.
+	 *  - The smart album Recent is empty
+	 *  - The album tree does is empty
+	 *    (TODO: Check if we want it this way)
+	 *  - Album 2 and photo 2 are accessible; album 2 is public and behaves
+	 *    like a hidden album
+	 *    (TODO: Check if we want it this way)
+	 *  - All other albums and photos are inaccessible
+	 *
+	 * @return void
+	 */
+	public function testSixAlbumsWithDifferentProtectionSettingsAndAllLocked(): void
+	{
+		$this->prepareSixAlbumsWithDifferentProtectionSettings();
+
+		// 1. Check root album
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
 			null, [
-				$this->generateExpectedAlbumJson($albumID1, self::ALBUM_TITLE_1), // no thumb as album 1 is still locked
+				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1), // no thumb as album 1 is still locked
 			]
 		));
-		foreach ([$photoID1, $albumID2, $photoID2, $albumID3, $photoID3, $albumID4, $photoID4, $albumID5, $photoID5, $albumID6, $photoID6] as $id) {
+		foreach ([
+			$this->photoID1,
+			$this->albumID2,
+			$this->photoID2,
+			$this->albumID3,
+			$this->photoID3,
+			$this->albumID4,
+			$this->photoID4,
+			$this->albumID5,
+			$this->photoID5,
+			$this->albumID6,
+			$this->photoID6,
+		] as $id) {
 			$responseForRoot->assertJsonMissing(['id' => $id]);
 		}
 
+		// 2. Check Recent album
+
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(true));
-		foreach ([$albumID1, $photoID1, $albumID2, $photoID2, $albumID3, $photoID3, $albumID4, $photoID4, $albumID5, $photoID5, $albumID6, $photoID6] as $id) {
+		foreach ([
+			$this->albumID1,
+			$this->photoID1,
+			$this->albumID2,
+			$this->photoID2,
+			$this->albumID3,
+			$this->photoID3,
+			$this->albumID4,
+			$this->photoID4,
+			$this->albumID5,
+			$this->photoID5,
+			$this->albumID6,
+			$this->photoID6,
+		] as $id) {
 			$responseForRecent->assertJsonMissing(['id' => $id]);
 		}
+
+		// 3. Check tree
 
 		$responseForTree = $this->root_album_tests->getTree();
 		// TODO: Should public and password-protected albums appear in tree? Regression?
 		$responseForTree->assertJson($this->generateExpectedTreeJson([
 			// $this->generateExpectedAlbumJson($albumID1, self::ALBUM_TITLE_1), // no thumb as album 1 is still locked
 		]));
-		foreach ([$albumID1, $photoID1, $albumID2, $photoID2, $albumID3, $photoID3, $albumID4, $photoID4, $albumID5, $photoID5, $albumID6, $photoID6] as $id) {
+		foreach ([
+			$this->albumID1,
+			$this->photoID1,
+			$this->albumID2,
+			$this->photoID2,
+			$this->albumID3,
+			$this->photoID3,
+			$this->albumID4,
+			$this->photoID4,
+			$this->albumID5,
+			$this->photoID5,
+			$this->albumID6,
+			$this->photoID6,
+		] as $id) {
 			$responseForTree->assertJsonMissing(['id' => $id]);
 		}
 
-		// UNLOCK ALBUM 1 (and ALBUM 3 SIMULTANEOUSLY)
+		// 4. Check album/photo access
 
-		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
-		static::markTestIncomplete('Not written yet');
+		foreach ([
+			$this->albumID1,
+			$this->albumID3,
+			$this->albumID4,
+			$this->albumID5,
+			$this->albumID6,
+		] as $id) {
+			$this->albums_tests->get($id, 401, self::EXPECTED_PASSWORD_REQUIRED_MSG, self::EXPECTED_UNAUTHENTICATED_MSG);
+		}
+		foreach ([$this->photoID1, $this->photoID3, $this->photoID4, $this->photoID5, $this->photoID6] as $id) {
+			$this->photos_tests->get($id, 401);
+		}
+		// Album 2 is a child of a password-protected, locked album and hence
+		// it is not browsable.
+		// However, it is public (without own password protection) and hence
+		// directly accessible.
+		// In other words, it behaves like a hidden album.
+		// TODO: Do we want this that way?
+		$responseForAlbum2 = $this->albums_tests->get($this->albumID2);
+		$responseForAlbum2->assertJson($this->generateExpectedAlbumJson(
+			$this->albumID2, self::ALBUM_TITLE_2, $this->albumID1, $this->photoID2
+		));
+		$this->photos_tests->get($this->photoID2);
+	}
+
+	/**
+	 * Tests scenario
+	 * {@link SharingSpecialTest::prepareSixAlbumsWithDifferentProtectionSettings()}
+	 * with the anonymous user and albums with password 1 unlocked, but
+	 * albums with password 2 still being locked.
+	 *
+	 * The following results are expected:
+	 *
+	 *  - The root album shows album 1 but with photo 3 as cover as
+	 *    album 1-4 have been unlocked and photo 3 is alphabetically fist
+	 *  - The smart album Recent shows photos 1-3; in particular photo 4
+	 *    is not shown although it has been unlocked, too, but it is part of a
+	 *    hidden album
+	 *  - The album tree shows album 1-3; it does not show album 5 as it is
+	 *    password-protected and still locked
+	 *    (TODO: Check if we want it this way)
+	 *  - Albums 1-4 and photos 1-4 are accessible
+	 *  - Albums 5+6 and photos 5+6 are still inaccessible
+	 *
+	 * @return void
+	 */
+	public function testSixAlbumsWithDifferentProtectionSettingsAndSomeUnlocked(): void
+	{
+		$this->prepareSixAlbumsWithDifferentProtectionSettings();
+		$this->albums_tests->unlock($this->albumID1, self::ALBUM_PWD_1);
+
+		// 1. Check root album
+
+		$responseForRoot = $this->root_album_tests->get();
+		$responseForRoot->assertJson($this->generateExpectedRootJson(
+			$this->photoID3, [ // albums 1-3 are accessible, photo 3 is alphabetically first
+				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID3), // thumb available as album 1 has been unlocked
+			]
+		));
+		foreach ([
+			$this->photoID1,
+			$this->albumID2,
+			$this->photoID2,
+			$this->albumID3,
+			$this->albumID4,
+			$this->photoID4,
+			$this->albumID5,
+			$this->photoID5,
+			$this->albumID6,
+			$this->photoID6,
+		] as $id) {
+			$responseForRoot->assertJsonMissing(['id' => $id]);
+		}
+
+		// 2. Check Recent album
+
+		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
+		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID3, [ // albums 1-3 are accessible, photo 3 is alphabetically first
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID3, $this->albumID3),
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_NIGHT_IMAGE, $this->photoID1, $this->albumID1),
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
+			]
+		));
+		foreach ([$this->albumID4, $this->photoID4, $this->albumID5, $this->photoID5, $this->albumID6, $this->photoID6] as $id) {
+			$responseForRecent->assertJsonMissing(['id' => $id]);
+		}
+
+		// 3. Check tree
+
+		$responseForTree = $this->root_album_tests->getTree();
+		// TODO: Should public and password-protected albums appear in tree? Regression?
+		$responseForTree->assertJson($this->generateExpectedTreeJson([
+			$this->generateExpectedAlbumJson(
+				$this->albumID1,
+				self::ALBUM_TITLE_1,
+				null,
+				$this->photoID3,
+				['albums' => [
+					$this->generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, $this->albumID1, $this->photoID2),
+					$this->generateExpectedAlbumJson($this->albumID3, self::ALBUM_TITLE_3, $this->albumID1, $this->photoID3),
+					// album 4 has been unlocked simultaneously with password 1, but is hidden and hence not part of the tree
+					// $this->generateExpectedAlbumJson($albumID5, self::ALBUM_TITLE_5, $albumID1), // shown without thumb, as album 5 is still locked
+					// album 5 is not part of the tree, because it protected by a different password and still locked; regression?
+				]]
+			),
+		]));
+		foreach ([
+			$this->photoID1,
+			$this->albumID4,
+			$this->photoID4,
+			$this->albumID5,
+			$this->photoID5,
+			$this->albumID6,
+			$this->photoID6,
+		] as $id) {
+			$responseForTree->assertJsonMissing(['id' => $id]);
+		}
+
+		// 4. Check album/photo access
+
+		foreach ([
+			[$this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID3], // photo 3 is alphabetically first of all child photos
+			[$this->albumID2, self::ALBUM_TITLE_2, $this->albumID1, $this->photoID2],
+			[$this->albumID3, self::ALBUM_TITLE_3, $this->albumID1, $this->photoID3],
+			[$this->albumID4, self::ALBUM_TITLE_4, $this->albumID1, $this->photoID4], // album 4 has been unlocked simultaneously with password 1 and hence is directly accessible, although it is hidden
+		] as $albumInfo) {
+			$responseForAlbum = $this->albums_tests->get($albumInfo[0]);
+			$responseForAlbum->assertJson($this->generateExpectedAlbumJson(
+				$albumInfo[0], $albumInfo[1], $albumInfo[2], $albumInfo[3]
+			));
+		}
+		foreach ([$this->albumID5, $this->albumID6] as $id) {
+			$this->albums_tests->get($id, 401, self::EXPECTED_PASSWORD_REQUIRED_MSG, self::EXPECTED_UNAUTHENTICATED_MSG);
+		}
+
+		foreach ([$this->photoID1, $this->photoID2, $this->photoID3, $this->photoID4] as $id) {
+			$this->photos_tests->get($id);
+		}
+		foreach ([$this->photoID5, $this->photoID6] as $id) {
+			$this->photos_tests->get($id, 401);
+		}
+	}
+
+	/**
+	 * Tests scenario
+	 * {@link SharingSpecialTest::prepareSixAlbumsWithDifferentProtectionSettings()}
+	 * with the anonymous user and all albums being unlocked.
+	 *
+	 * The following results are expected:
+	 *
+	 *  - The root album shows album 1 but with photo 5 as cover as
+	 *    album 1-6 have been unlocked and photo 5 is alphabetically fist
+	 *  - The smart album Recent shows photos 1-3+5; in particular photo 4+6
+	 *    are not shown, although they have been unlocked, too, but they are
+	 *    part of hidden albums
+	 *  - The album tree shows album 1-3+5
+	 *  - Albums 1-6 and photos 1-6 are accessible
+	 *
+	 * @return void
+	 */
+	public function testSixAlbumsWithDifferentProtectionSettingsAndAllUnlocked(): void
+	{
+		$this->prepareSixAlbumsWithDifferentProtectionSettings();
+		$this->albums_tests->unlock($this->albumID1, self::ALBUM_PWD_1);
+		$this->albums_tests->unlock($this->albumID5, self::ALBUM_PWD_2);
+
+		// 1. Check root album
+
+		$responseForRoot = $this->root_album_tests->get();
+		$responseForRoot->assertJson($this->generateExpectedRootJson(
+			$this->photoID5, [ // albums 1-6 are accessible, photo 5 is alphabetically first
+				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID5), // thumb available as album 1 has been unlocked
+			]
+		));
+		foreach ([$this->photoID1, $this->albumID2, $this->photoID2, $this->albumID3, $this->photoID3, $this->albumID4, $this->photoID4, $this->albumID5, $this->albumID6, $this->photoID6] as $id) {
+			$responseForRoot->assertJsonMissing(['id' => $id]);
+		}
+
+		// 2. Check Recent album
+
+		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
+		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID5, [ // albums 1-3 and 5 are accessible, photo 5 is alphabetically first
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_SUNSET_IMAGE, $this->photoID5, $this->albumID5, ['title' => 'Abenddämmerung']),
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID3, $this->albumID3),
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_NIGHT_IMAGE, $this->photoID1, $this->albumID1),
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
+			]
+		));
+		foreach ([$this->albumID4, $this->photoID4, $this->albumID6, $this->photoID6] as $id) {
+			$responseForRecent->assertJsonMissing(['id' => $id]);
+		}
+
+		// 3. Check tree
+
+		$responseForTree = $this->root_album_tests->getTree();
+		$responseForTree->assertJson($this->generateExpectedTreeJson([
+			$this->generateExpectedAlbumJson(
+				$this->albumID1,
+				self::ALBUM_TITLE_1,
+				null,
+				$this->photoID5,
+				['albums' => [
+					$this->generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, $this->albumID1, $this->photoID2),
+					$this->generateExpectedAlbumJson($this->albumID3, self::ALBUM_TITLE_3, $this->albumID1, $this->photoID3),
+					// album 4 has been unlocked simultaneously with password 1, but is hidden and hence not part of the tree
+					$this->generateExpectedAlbumJson($this->albumID5, self::ALBUM_TITLE_5, $this->albumID1, $this->photoID5),
+					// album 6 has been unlocked simultaneously with password 2, but is hidden and hence not part of the tree
+				]]
+			),
+		]));
+		foreach ([
+			$this->photoID1,
+			$this->albumID4,
+			$this->photoID4,
+			$this->albumID6,
+			$this->photoID6,
+		] as $id) {
+			$responseForTree->assertJsonMissing(['id' => $id]);
+		}
+
+		// 4. Check album/photo access
+
+		foreach ([
+			[$this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID5], // photo 5 is alphabetically first of all child photos
+			[$this->albumID2, self::ALBUM_TITLE_2, $this->albumID1, $this->photoID2],
+			[$this->albumID3, self::ALBUM_TITLE_3, $this->albumID1, $this->photoID3],
+			[$this->albumID4, self::ALBUM_TITLE_4, $this->albumID1, $this->photoID4], // album 4 has been unlocked simultaneously with password 1 and hence is directly accessible, although it is hidden
+			[$this->albumID5, self::ALBUM_TITLE_5, $this->albumID1, $this->photoID5],
+			[$this->albumID6, self::ALBUM_TITLE_6, $this->albumID1, $this->photoID6], // album 6 has been unlocked simultaneously with password 2 and hence is directly accessible, although it is hidden
+		] as $albumInfo) {
+			$responseForAlbum = $this->albums_tests->get($albumInfo[0]);
+			$responseForAlbum->assertJson($this->generateExpectedAlbumJson(
+				$albumInfo[0], $albumInfo[1], $albumInfo[2], $albumInfo[3]
+			));
+		}
+		foreach ([
+			$this->photoID1,
+			$this->photoID2,
+			$this->photoID3,
+			$this->photoID4,
+			$this->photoID5,
+			$this->photoID5,
+		] as $id) {
+			$this->photos_tests->get($id);
+		}
 	}
 
 	protected function generateExpectedRootJson(
