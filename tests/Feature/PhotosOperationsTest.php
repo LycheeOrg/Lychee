@@ -21,28 +21,38 @@ use App\SmartAlbums\UnsortedAlbum;
 use Carbon\Carbon;
 use Tests\Feature\Base\PhotoTestBase;
 use Tests\Feature\Lib\RootAlbumUnitTest;
+use Tests\Feature\Lib\SharingUnitTest;
+use Tests\Feature\Lib\UsersUnitTest;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
+use Tests\Feature\Traits\RequiresEmptyUsers;
 use Tests\TestCase;
 
 class PhotosOperationsTest extends PhotoTestBase
 {
 	use InteractWithSmartAlbums;
 	use RequiresEmptyAlbums;
+	use RequiresEmptyUsers;
 
 	protected RootAlbumUnitTest $root_album_tests;
+	protected UsersUnitTest $users_tests;
+	protected SharingUnitTest $sharing_tests;
 
 	public function setUp(): void
 	{
 		parent::setUp();
+		$this->setUpRequiresEmptyUsers();
 		$this->setUpRequiresEmptyAlbums();
 		$this->root_album_tests = new RootAlbumUnitTest($this);
+		$this->users_tests = new UsersUnitTest($this);
+		$this->sharing_tests = new SharingUnitTest($this);
 	}
 
 	public function tearDown(): void
 	{
 		$this->tearDownRequiresEmptyPhotos();
 		$this->tearDownRequiresEmptyAlbums();
+		$this->tearDownRequiresEmptyUsers();
 		parent::tearDown();
 	}
 
@@ -444,5 +454,40 @@ class PhotosOperationsTest extends PhotoTestBase
 			Configs::set(self::CONFIG_PUBLIC_RECENT, $isRecentPublic);
 			AccessControl::logout();
 		}
+	}
+
+	public function testDeleteMultiplePhotosByAnonUser(): void
+	{
+		AccessControl::log_as_id(0);
+		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
+		$photoID1 = $this->photos_tests->upload(
+			self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID
+		)->offsetGet('id');
+		$photoID2 = $this->photos_tests->upload(
+			self::createUploadedFile(self::SAMPLE_FILE_TRAIN_IMAGE), $albumID
+		)->offsetGet('id');
+		$this->albums_tests->set_protection_policy($albumID);
+		AccessControl::logout();
+		$this->photos_tests->delete([$photoID1, $photoID2], 401);
+	}
+
+	public function testDeleteMultiplePhotosByNonOwner(): void
+	{
+		AccessControl::log_as_id(0);
+		$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
+		$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
+		AccessControl::logout();
+		AccessControl::log_as_id($userID1);
+		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
+		$photoID1 = $this->photos_tests->upload(
+			self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID
+		)->offsetGet('id');
+		$photoID2 = $this->photos_tests->upload(
+			self::createUploadedFile(self::SAMPLE_FILE_TRAIN_IMAGE), $albumID
+		)->offsetGet('id');
+		$this->sharing_tests->add([$albumID], [$userID2]);
+		AccessControl::logout();
+		AccessControl::log_as_id($userID2);
+		$this->photos_tests->delete([$photoID1, $photoID2], 403);
 	}
 }
