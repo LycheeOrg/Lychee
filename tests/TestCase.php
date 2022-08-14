@@ -42,10 +42,13 @@ abstract class TestCase extends BaseTestCase
 	public const SAMPLE_DOWNLOAD_JPG = 'https://github.com/LycheeOrg/Lychee/raw/master/tests/Samples/mongolia.jpeg';
 	public const SAMPLE_DOWNLOAD_TIFF = 'https://github.com/LycheeOrg/Lychee/raw/master/tests/Samples/tiff.tif';
 
+	public const SAMPLE_FILE_AARHUS = 'tests/Samples/aarhus.jpg';
+	public const SAMPLE_FILE_ETTLINGEN = 'tests/Samples/ettlinger-alb.jpg';
 	public const SAMPLE_FILE_GAMING_VIDEO = 'tests/Samples/gaming.mp4';
 	public const SAMPLE_FILE_GIF = 'tests/Samples/gif.gif';
 	public const SAMPLE_FILE_GMP_BROKEN_IMAGE = 'tests/Samples/google_motion_photo_broken.jpg';
 	public const SAMPLE_FILE_GMP_IMAGE = 'tests/Samples/google_motion_photo.jpg';
+	public const SAMPLE_FILE_HOCHUFERWEG = 'tests/Samples/hochuferweg.jpg';
 	public const SAMPLE_FILE_MONGOLIA_IMAGE = 'tests/Samples/mongolia.jpeg';
 	public const SAMPLE_FILE_NIGHT_IMAGE = 'tests/Samples/night.jpg';
 	public const SAMPLE_FILE_ORIENTATION_180 = 'tests/Samples/orientation-180.jpg';
@@ -64,10 +67,13 @@ abstract class TestCase extends BaseTestCase
 	public const SAMPLE_FILE_XCF = 'tests/Samples/xcf.xcf';
 
 	public const SAMPLE_FILES_2_MIME = [
+		self::SAMPLE_FILE_AARHUS => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_ETTLINGEN => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_GAMING_VIDEO => self::MIME_TYPE_VID_MP4,
 		self::SAMPLE_FILE_GIF => self::MIME_TYPE_IMG_GIF,
 		self::SAMPLE_FILE_GMP_BROKEN_IMAGE => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_GMP_IMAGE => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_HOCHUFERWEG => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_MONGOLIA_IMAGE => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_NIGHT_IMAGE => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_ORIENTATION_180 => self::MIME_TYPE_IMG_JPEG,
