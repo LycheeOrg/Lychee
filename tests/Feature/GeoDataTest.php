@@ -265,13 +265,7 @@ class GeoDataTest extends TestCase
 			$response->assertJson([
 				'id' => $albumID1,
 				'title' => 'Test Album 1',
-				'photos' => [[
-					'id' => $photoID1,
-					'title' => 'aarhus',
-					'latitude' => 56.153775,
-					'longitude' => 10.19931667,
-					'altitude' => 73,
-				]],
+				'photos' => [['id' => $photoID1, 'title' => 'aarhus']],
 			]);
 			foreach ([$photoID11, $photoID12, $photoID121, $photoID13] as $id) {
 				$response->assertJsonMissing(['id' => $id]);
@@ -282,71 +276,26 @@ class GeoDataTest extends TestCase
 				'id' => $albumID1,
 				'title' => 'Test Album 1',
 			]);
-			$response->assertJsonFragment([
-				'id' => $photoID1,
-				'title' => 'aarhus',
-				'latitude' => 56.153775,
-				'longitude' => 10.19931667,
-				'altitude' => 73,
-			]);
-			$response->assertJsonFragment([
-				'id' => $photoID12,
-				'title' => 'train',
-				'latitude' => 52.20967778,
-				'longitude' => -0.89553056,
-				'altitude' => 103.6399,
-			]);
-			$response->assertJsonFragment([
-				'id' => $photoID121,
-				'title' => 'hochuferweg',
-				'latitude' => 54.53646667,
-				'longitude' => 13.67768056,
-				'altitude' => 104,
-			]);
-			$response->assertJsonFragment([
-				'id' => $photoID13,
-				'title' => 'aarhus',
-				'latitude' => 46.898392,
-				'longitude' => 102.76863098,
-				'altitude' => 1633,
-			]);
+			$response->assertJsonFragment(['id' => $photoID1, 'title' => 'aarhus']);
+			$response->assertJsonFragment(['id' => $photoID12, 'title' => 'train']);
+			$response->assertJsonFragment(['id' => $photoID121,	'title' => 'hochuferweg']);
+			$response->assertJsonFragment(['id' => $photoID13, 'title' => 'mongolia']);
 			$response->assertJsonMissing(['id' => $photoID11]); // photo 1.1 has not been made public
 
 			$response = $this->albums_tests->getPositionData($albumID12, false);
 			$response->assertJson([
 				'id' => $albumID12,
 				'title' => 'Test Album 1.2',
-				'photos' => [[
-					'id' => $photoID12,
-					'title' => 'train',
-					'latitude' => 52.20967778,
-					'longitude' => -0.89553056,
-					'altitude' => 103.6399,
-				]],
+				'photos' => [['id' => $photoID12, 'title' => 'train']],
 			]);
 			foreach ([$photoID1, $photoID11, $photoID121, $photoID13] as $id) {
 				$response->assertJsonMissing(['id' => $id]);
 			}
 
 			$response = $this->albums_tests->getPositionData($albumID12, true);
-			$response->assertJson([
-				'id' => $albumID12,
-				'title' => 'Test Album 1.2',
-			]);
-			$response->assertJsonFragment([
-				'id' => $photoID12,
-				'title' => 'train',
-				'latitude' => 52.20967778,
-				'longitude' => -0.89553056,
-				'altitude' => 103.6399,
-			]);
-			$response->assertJsonFragment([
-				'id' => $photoID121,
-				'title' => 'hochuferweg',
-				'latitude' => 54.53646667,
-				'longitude' => 13.67768056,
-				'altitude' => 104,
-			]);
+			$response->assertJson(['id' => $albumID12, 'title' => 'Test Album 1.2']);
+			$response->assertJsonFragment(['id' => $photoID12, 'title' => 'train']);
+			$response->assertJsonFragment(['id' => $photoID121,	'title' => 'hochuferweg']);
 			foreach ([$photoID1, $photoID11, $photoID13] as $id) {
 				$response->assertJsonMissing(['id' => $id]);
 			}
