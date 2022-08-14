@@ -12,6 +12,7 @@
 
 namespace Tests\Feature;
 
+use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
@@ -19,12 +20,31 @@ use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Carbon\Carbon;
 use Tests\Feature\Base\PhotoTestBase;
+use Tests\Feature\Lib\RootAlbumUnitTest;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
+use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\TestCase;
 
 class PhotosOperationsTest extends PhotoTestBase
 {
 	use InteractWithSmartAlbums;
+	use RequiresEmptyAlbums;
+
+	protected RootAlbumUnitTest $root_album_tests;
+
+	public function setUp(): void
+	{
+		parent::setUp();
+		$this->setUpRequiresEmptyAlbums();
+		$this->root_album_tests = new RootAlbumUnitTest($this);
+	}
+
+	public function tearDown(): void
+	{
+		$this->tearDownRequiresEmptyPhotos();
+		$this->tearDownRequiresEmptyAlbums();
+		parent::tearDown();
+	}
 
 	/**
 	 * Tests a lot of photo actions at once.
@@ -272,5 +292,157 @@ class PhotosOperationsTest extends PhotoTestBase
 		$this->photos_tests->set_album('abcdefghijklmnopxyrstuvx', ['abcdefghijklmnopxyrstuvx'], 404);
 		$this->photos_tests->set_license('-1', 'CC0', 422);
 		$this->photos_tests->set_license('abcdefghijklmnopxyrstuvx', 'CC0', 404);
+	}
+
+	/**
+	 * Tests that sub-albums show the correct thumbnail if displayed from
+	 * within a hidden album.
+	 *
+	 * Normally, photos of albums which are not browseable are not searchable
+	 * either, because there is no "clickable" path from the root the album.
+	 * However, this is not true, if the user is already _within_ the hidden
+	 * album.
+	 * In this case the search "base" is the hidden album and photos within
+	 * sub-albums are searched to determine the best thumb.
+	 *
+	 * @return void
+	 */
+	public function testThumbnailsInsideHiddenAlbum(): void
+	{
+		$isRecentPublic = Configs::getValueAsBool(self::CONFIG_PUBLIC_RECENT);
+		$arePublicPhotosHidden = Configs::getValueAsBool(self::CONFIG_PUBLIC_HIDDEN);
+		$isPublicSearchEnabled = Configs::getValueAsBool(self::CONFIG_PUBLIC_SEARCH);
+		$albumSortingColumn = Configs::getValueAsString(self::CONFIG_ALBUMS_SORTING_COL);
+		$albumSortingOrder = Configs::getValueAsString(self::CONFIG_ALBUMS_SORTING_ORDER);
+		$photoSortingColumn = Configs::getValueAsString(self::CONFIG_PHOTOS_SORTING_COL);
+		$photoSortingOrder = Configs::getValueAsString(self::CONFIG_PHOTOS_SORTING_ORDER);
+
+		try {
+			AccessControl::log_as_id(0);
+			Configs::set(self::CONFIG_PUBLIC_RECENT, true);
+			Configs::set(self::CONFIG_PUBLIC_HIDDEN, false);
+			Configs::set(self::CONFIG_PUBLIC_SEARCH, true);
+			Configs::set(self::CONFIG_ALBUMS_SORTING_COL, 'title');
+			Configs::set(self::CONFIG_ALBUMS_SORTING_ORDER, 'ASC');
+			Configs::set(self::CONFIG_PHOTOS_SORTING_COL, 'title');
+			Configs::set(self::CONFIG_PHOTOS_SORTING_ORDER, 'ASC');
+
+			// Sic! This out-of-order creation of albums is on purpose in order to
+			// catch errors where the album tree is accidentally ordered as
+			// expected, because we created the albums in correct order
+			$albumID1 = $this->albums_tests->add(null, 'Test Album 1')->offsetGet('id');
+			$albumID12 = $this->albums_tests->add($albumID1, 'Test Album 1.2')->offsetGet('id');
+			$albumID13 = $this->albums_tests->add($albumID1, 'Test Album 1.3')->offsetGet('id');
+			$albumID121 = $this->albums_tests->add($albumID12, 'Test Album 1.2.1')->offsetGet('id');
+			$albumID11 = $this->albums_tests->add($albumID1, 'Test Album 1.1')->offsetGet('id');
+
+			$photoID11 = $this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE), $albumID11
+			)->offsetGet('id');
+			$photoID13 = $this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID13
+			)->offsetGet('id');
+			$photoID12 = $this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE), $albumID12
+			)->offsetGet('id');
+			$photoID121 = $this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_SUNSET_IMAGE), $albumID121
+			)->offsetGet('id');
+
+			$this->albums_tests->set_protection_policy($albumID1, true, true, true);
+			$this->albums_tests->set_protection_policy($albumID11);
+			$this->albums_tests->set_protection_policy($albumID12);
+			$this->albums_tests->set_protection_policy($albumID121);
+			$this->albums_tests->set_protection_policy($albumID13);
+
+			AccessControl::logout();
+			$this->clearCachedSmartAlbums();
+
+			// Check that Recent and root album show nothing to ensure
+			// that we eventually really test the special searchability
+			// condition for thumbnails within hidden albums do not
+			// accidentally see the expected thumbnails, because we see them
+			// anyway.
+
+			$responseForRoot = $this->root_album_tests->get();
+			$responseForRoot->assertJson([
+				'smart_albums' => [
+					'unsorted' => null,
+					'starred' => null,
+					'public' => null,
+					'recent' => ['thumb' => null],
+				],
+				'tag_albums' => [],
+				'albums' => [],
+				'shared_albums' => [],
+			]);
+			foreach ([$albumID1, $photoID11, $photoID12, $photoID121, $photoID13] as $id) {
+				$responseForRoot->assertJsonMissing(['id' => $id]);
+			}
+
+			$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
+			$responseForRecent->assertJson([
+				'thumb' => null,
+				'photos' => [],
+			]);
+			foreach ([$photoID11, $photoID12, $photoID121, $photoID13] as $id) {
+				$responseForRecent->assertJsonMissing(['id' => $id]);
+			}
+
+			// Access the hidden, but public albums and check whether we see
+			// the correct thumbnails
+			$responseForAlbum1 = $this->albums_tests->get($albumID1);
+			$responseForAlbum1->assertJson([
+				'id' => $albumID1,
+				'parent_id' => null,
+				'title' => 'Test Album 1',
+				'thumb' => ['id' => $photoID121], // photo 1.2.1 "fin de journée" is alphabetically first
+				'photos' => [],
+				'albums' => [[
+					'id' => $albumID11,
+					'parent_id' => $albumID1,
+					'title' => 'Test Album 1.1',
+					'thumb' => ['id' => $photoID11],
+				], [
+					'id' => $albumID12,
+					'parent_id' => $albumID1,
+					'title' => 'Test Album 1.2',
+					'thumb' => ['id' => $photoID121], // photo 1.2.1 "fin de journée" is alphabetically first
+				], [
+					'id' => $albumID13,
+					'parent_id' => $albumID1,
+					'title' => 'Test Album 1.3',
+					'thumb' => ['id' => $photoID13],
+				]],
+			]);
+
+			$responseForAlbum12 = $this->albums_tests->get($albumID12);
+			$responseForAlbum12->assertJson([
+				'id' => $albumID12,
+				'parent_id' => $albumID1,
+				'title' => 'Test Album 1.2',
+				'thumb' => ['id' => $photoID121], // photo 1.2.1 "fin de journée" is alphabetically first
+				'photos' => [[
+					'id' => $photoID12,
+					'album_id' => $albumID12,
+					'title' => 'train',
+				]],
+				'albums' => [[
+					'id' => $albumID121,
+					'parent_id' => $albumID12,
+					'title' => 'Test Album 1.2.1',
+					'thumb' => ['id' => $photoID121],
+				]],
+			]);
+		} finally {
+			Configs::set(self::CONFIG_ALBUMS_SORTING_COL, $albumSortingColumn);
+			Configs::set(self::CONFIG_ALBUMS_SORTING_ORDER, $albumSortingOrder);
+			Configs::set(self::CONFIG_PHOTOS_SORTING_COL, $photoSortingColumn);
+			Configs::set(self::CONFIG_PHOTOS_SORTING_ORDER, $photoSortingOrder);
+			Configs::set(self::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
+			Configs::set(self::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
+			Configs::set(self::CONFIG_PUBLIC_RECENT, $isRecentPublic);
+			AccessControl::logout();
+		}
 	}
 }
