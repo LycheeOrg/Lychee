@@ -400,7 +400,7 @@ class AlbumTest extends TestCase
 	{
 		AccessControl::log_as_id(0);
 		$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
-		$userID2 = $this->users_tests->add('Test user 2', 'Test password 1')->offsetGet('id');
+		$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
 		AccessControl::logout();
 		AccessControl::log_as_id($userID1);
 		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
@@ -418,5 +418,52 @@ class AlbumTest extends TestCase
 		AccessControl::log_as_id($userID);
 		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 		$this->albums_tests->set_title($albumID, 'New title for test album');
+	}
+
+	public function testDeleteMultipleAlbumsByAnonUser(): void
+	{
+		AccessControl::log_as_id(0);
+		$albumID1 = $this->albums_tests->add(null, 'Test Album 1')->offsetGet('id');
+		$albumID2 = $this->albums_tests->add(null, 'Test Album 2')->offsetGet('id');
+		AccessControl::logout();
+		$this->albums_tests->delete([$albumID1, $albumID2], 401);
+	}
+
+	public function testDeleteMultipleAlbumsByNonAdminUserWithoutUploadPrivilege(): void
+	{
+		AccessControl::log_as_id(0);
+		$albumID1 = $this->albums_tests->add(null, 'Test Album 1')->offsetGet('id');
+		$albumID2 = $this->albums_tests->add(null, 'Test Album 2')->offsetGet('id');
+		$userID = $this->users_tests->add('Test user', 'Test password', false)->offsetGet('id');
+		$this->sharing_tests->add([$albumID1, $albumID2], [$userID]);
+		AccessControl::logout();
+		AccessControl::log_as_id($userID);
+		$this->albums_tests->delete([$albumID1, $albumID2], 403);
+	}
+
+	public function testDeleteMultipleAlbumsByNonOwner(): void
+	{
+		AccessControl::log_as_id(0);
+		$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
+		$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
+		AccessControl::logout();
+		AccessControl::log_as_id($userID1);
+		$albumID1 = $this->albums_tests->add(null, 'Test Album 1')->offsetGet('id');
+		$albumID2 = $this->albums_tests->add(null, 'Test Album 2')->offsetGet('id');
+		$this->sharing_tests->add([$albumID1, $albumID2], [$userID2]);
+		AccessControl::logout();
+		AccessControl::log_as_id($userID2);
+		$this->albums_tests->delete([$albumID1, $albumID2], 403);
+	}
+
+	public function testDeleteMultipleAlbumsByOwner(): void
+	{
+		AccessControl::log_as_id(0);
+		$userID = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
+		AccessControl::logout();
+		AccessControl::log_as_id($userID);
+		$albumID1 = $this->albums_tests->add(null, 'Test Album 1')->offsetGet('id');
+		$albumID2 = $this->albums_tests->add(null, 'Test Album 2')->offsetGet('id');
+		$this->albums_tests->delete([$albumID1, $albumID2]);
 	}
 }
