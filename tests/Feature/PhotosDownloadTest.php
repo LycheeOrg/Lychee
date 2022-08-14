@@ -13,19 +13,48 @@
 namespace Tests\Feature;
 
 use App\Actions\Photo\Archive;
+use App\Facades\AccessControl;
 use App\Image\ImagickHandler;
 use App\Image\InMemoryBuffer;
 use App\Image\TemporaryLocalFile;
 use App\Image\VideoHandler;
+use App\Models\Configs;
 use function Safe\file_get_contents;
 use function Safe\filesize;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Tests\Feature\Lib\AssertableZipArchive;
+use Tests\Feature\Lib\SharingUnitTest;
+use Tests\Feature\Lib\UsersUnitTest;
+use Tests\Feature\Traits\RequiresEmptyAlbums;
+use Tests\Feature\Traits\RequiresEmptyUsers;
 use Tests\TestCase;
 
 class PhotosDownloadTest extends Base\PhotoTestBase
 {
+	use RequiresEmptyUsers;
+	use RequiresEmptyAlbums;
+
 	public const MULTI_BYTE_ALBUM_TITLE = 'Lychee supporte les caractères multi-octets';
+
+	protected UsersUnitTest $users_tests;
+	protected SharingUnitTest $sharing_tests;
+
+	public function setUp(): void
+	{
+		parent::setUp();
+		$this->setUpRequiresEmptyUsers();
+		$this->setUpRequiresEmptyAlbums();
+		$this->users_tests = new UsersUnitTest($this);
+		$this->sharing_tests = new SharingUnitTest($this);
+	}
+
+	public function tearDown(): void
+	{
+		$this->tearDownRequiresEmptyPhotos();
+		$this->tearDownRequiresEmptyAlbums();
+		$this->tearDownRequiresEmptyUsers();
+		parent::tearDown();
+	}
 
 	/**
 	 * Downloads a single photo.
@@ -204,5 +233,68 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 		]);
 
 		$this->albums_tests->delete([$albumID]);
+	}
+
+	public function testDownloadOfInvisibleUnsortedPhotoByNonOwner(): void
+	{
+		AccessControl::log_as_id(0);
+		$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
+		$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
+		AccessControl::logout();
+		AccessControl::log_as_id($userID1);
+		$photoID = $this->photos_tests->upload(
+			self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE)
+		)->offsetGet('id');
+		AccessControl::logout();
+		AccessControl::log_as_id($userID2);
+		$this->photos_tests->download([$photoID], Archive::FULL, 403);
+	}
+
+	public function testDownloadOfPhotoInSharedDownloadableAlbum(): void
+	{
+		$areAlbumsDownloadable = Configs::getValueAsBool(self::CONFIG_DOWNLOADABLE);
+		try {
+			Configs::set(self::CONFIG_DOWNLOADABLE, true);
+			AccessControl::log_as_id(0);
+			$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
+			$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
+			AccessControl::logout();
+			AccessControl::log_as_id($userID1);
+			$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
+			$photoID = $this->photos_tests->upload(
+				self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE),
+				$albumID
+			)->offsetGet('id');
+			$this->sharing_tests->add([$albumID], [$userID2]);
+			AccessControl::logout();
+			AccessControl::log_as_id($userID2);
+			$this->photos_tests->download([$photoID]);
+		} finally {
+			Configs::set(self::CONFIG_DOWNLOADABLE, $areAlbumsDownloadable);
+		}
+	}
+
+	public function testDownloadOfPhotoInSharedNonDownloadableAlbum(): void
+	{
+		$areAlbumsDownloadable = Configs::getValueAsBool(self::CONFIG_DOWNLOADABLE);
+		try {
+			Configs::set(self::CONFIG_DOWNLOADABLE, false);
+			AccessControl::log_as_id(0);
+			$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
+			$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
+			AccessControl::logout();
+			AccessControl::log_as_id($userID1);
+			$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
+			$photoID = $this->photos_tests->upload(
+				self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE),
+				$albumID
+			)->offsetGet('id');
+			$this->sharing_tests->add([$albumID], [$userID2]);
+			AccessControl::logout();
+			AccessControl::log_as_id($userID2);
+			$this->photos_tests->download([$photoID], Archive::FULL, 403);
+		} finally {
+			Configs::set(self::CONFIG_DOWNLOADABLE, $areAlbumsDownloadable);
+		}
 	}
 }

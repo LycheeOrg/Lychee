@@ -339,7 +339,8 @@ class PhotosUnitTest
 	 */
 	public function download(
 		array $ids,
-		string $kind = Archive::FULL
+		string $kind = Archive::FULL,
+		int $expectedStatusCode = 200
 	): TestResponse {
 		$response = $this->testCase->getWithParameters(
 			'/api/Photo::getArchive', [
@@ -349,7 +350,7 @@ class PhotosUnitTest
 				'Accept' => '*/*',
 			]
 		);
-		$response->assertOk();
+		$response->assertStatus($expectedStatusCode);
 		if ($response->baseResponse instanceof StreamedResponse) {
 			// The content of a streamed response is not generated unless
 			// the content is fetched.
