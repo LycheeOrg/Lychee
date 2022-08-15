@@ -298,42 +298,31 @@ class AlbumAuthorisationProvider
 	 * of the origin), the runtime is O(n), but for a high tree (the nodes are
 	 * basically a sequence), the runtime is O(n²).
 	 *
-	 * @param AlbumBuilder $query  the album query which shall be restricted
-	 * @param Album|null   $origin the optional top album which is used as a search base
+	 * @param AlbumBuilder $query the album query which shall be restricted
 	 *
 	 * @return AlbumBuilder the restricted album query
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function applyBrowsabilityFilter(AlbumBuilder $query, ?Album $origin = null): AlbumBuilder
+	public function applyBrowsabilityFilter(AlbumBuilder $query): AlbumBuilder
 	{
 		$table = $query->getQuery()->from;
 		if (!($query->getModel() instanceof Album) || $table !== 'albums') {
 			throw new LycheeInvalidArgumentException('the given query does not query for albums');
 		}
 
-		// Ensures that only those albums of the original query are
-		// returned for which a path from the origin to the album exist ...
-		if ($origin !== null) {
-			$query
-				// (We include the origin here, because we want the
-				// origin to be browsable from itself)
-				->where('albums._lft', '>=', $origin->_lft)
-				->where('albums._rgt', '<=', $origin->_rgt);
-		}
-
-		// ... such that there are no blocked albums on the path to the album.
 		if (AccessControl::is_admin()) {
 			return $query;
-		} else {
-			return $query->whereNotExists(function (BaseBuilder $q) use ($origin) {
-				$this->appendUnreachableAlbumsCondition(
-					$q,
-					$origin?->_lft,
-					$origin?->_rgt,
-				);
-			});
 		}
+
+		// Ensures that only those albums of the original query are
+		// returned for which a path from the origin to the album exist
+		// such that there are no blocked albums on the path to the album.
+		return $query->whereNotExists(function (BaseBuilder $q) {
+			$this->appendUnreachableAlbumsCondition(
+				$q, null, null,
+			);
+		});
 	}
 
 	/**
