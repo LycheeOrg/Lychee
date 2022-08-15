@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Traits\Authorize;
 
-use App\Models\Album;
+use App\Contracts\AbstractAlbum;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
@@ -18,7 +18,7 @@ trait AuthorizeCanEditPhotosAlbumTrait
 	 */
 	public function authorize(): bool
 	{
-		if (!Gate::check(AlbumPolicy::CAN_EDIT, $this->album ?? Album::class)) {
+		if (!Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->album])) {
 			return false;
 		}
 

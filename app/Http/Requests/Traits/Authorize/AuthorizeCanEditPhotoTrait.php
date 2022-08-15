@@ -17,6 +17,6 @@ trait AuthorizeCanEditPhotoTrait
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(PhotoPolicy::CAN_EDIT, $this->photo ?? Photo::class);
+		return Gate::check(PhotoPolicy::CAN_EDIT, [Photo::class, $this->photo]);
 	}
 }

@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Traits\Authorize;
 
 use App\Contracts\AbstractAlbum;
-use App\Models\Album;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
@@ -14,7 +13,7 @@ trait AuthorizeCanEditAlbumAlbumsTrait
 	 */
 	public function authorize(): bool
 	{
-		if (!Gate::check(AlbumPolicy::CAN_EDIT, $this->album ?? Album::class)) {
+		if (!Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->album])) {
 			return false;
 		}
 

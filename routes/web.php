@@ -26,7 +26,8 @@ if (config('app.env') === 'dev') {
 Route::feeds();
 
 Route::get('/', [IndexController::class, 'show'])->name('home')->middleware(['migration:complete']);
-Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware(['migration:complete']);
+Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware(['migration:complete'])
+		->name('login');
 Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::class, 'migrate'])
 		->name('migrate')
 		->middleware(['migration:incomplete']);

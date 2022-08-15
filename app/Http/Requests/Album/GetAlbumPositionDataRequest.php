@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests\Album;
 
+use App\Contracts\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
-use App\Models\Album;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
 use Illuminate\Support\Facades\Gate;
@@ -23,7 +23,7 @@ class GetAlbumPositionDataRequest extends BaseApiRequest implements HasAbstractA
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(AlbumPolicy::CAN_ACCESS, $this->album ?? Album::class);
+		return Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
 	}
 
 	/**

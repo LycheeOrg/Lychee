@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Album;
 
+use App\Contracts\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasParentAlbum;
 use App\Http\Requests\Contracts\HasTitle;
@@ -23,7 +24,7 @@ class AddAlbumRequest extends BaseApiRequest implements HasTitle, HasParentAlbum
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(AlbumPolicy::CAN_EDIT, $this->parentAlbum ?? Album::class);
+		return Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->parentAlbum]);
 	}
 
 	/**
