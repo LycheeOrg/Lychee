@@ -16,17 +16,19 @@ class SetLogin
 	 * @param string $username
 	 * @param string $password
 	 *
-	 * @return void
+	 * @return User the updated user model for the admin
 	 *
 	 * @throws ModelNotFoundException
 	 * @throws ModelDBException
 	 */
-	public function do(string $username, string $password): void
+	public function do(string $username, string $password): User
 	{
 		/** @var User $adminUser */
 		$adminUser = User::query()->findOrFail(0);
 		$adminUser->username = $username;
 		$adminUser->password = Hash::make($password);
 		$adminUser->save();
+
+		return $adminUser;
 	}
 }

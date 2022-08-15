@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -38,10 +39,14 @@ class SettingsController extends Controller
 	 */
 	public function setLogin(SetAdminLoginRequest $request, SetLogin $setLogin): void
 	{
-		$setLogin->do(
+		$adminUser = $setLogin->do(
 			$request->username(),
 			$request->password()
 		);
+		// Update the session with the new credentials of the user.
+		// Otherwise, the session is out-of-sync and falsely assumes the user
+		// to be unauthenticated upon the next request.
+		Auth::login($adminUser);
 	}
 
 	/**
