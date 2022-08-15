@@ -13,6 +13,7 @@
 namespace Tests\Feature\Lib;
 
 use Illuminate\Testing\TestResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Tests\TestCase;
 
 class AlbumsUnitTest
@@ -345,6 +346,12 @@ class AlbumsUnitTest
 			]
 		);
 		$response->assertOk();
+		if ($response->baseResponse instanceof StreamedResponse) {
+			// The content of a streamed response is not generated unless
+			// the content is fetched.
+			// This ensures that the generator of SUT is actually executed.
+			$response->streamedContent();
+		}
 
 		return $response;
 	}
@@ -369,43 +376,24 @@ class AlbumsUnitTest
 	}
 
 	/**
-	 * Test position data (Albums).
-	 *
-	 * @param int         $expectedStatusCode
-	 * @param string|null $assertSee
-	 *
-	 * @return TestResponse
-	 */
-	public function AlbumsGetPositionDataFull(
-		int $expectedStatusCode = 200,
-		?string $assertSee = null
-	): TestResponse {
-		$response = $this->testCase->postJson('/api/Albums::getPositionData');
-		$response->assertStatus($expectedStatusCode);
-		if ($assertSee) {
-			$response->assertSee($assertSee, false);
-		}
-
-		return $response;
-	}
-
-	/**
-	 * Test position data (Album).
+	 * Get position data of photos below the designated album.
 	 *
 	 * @param string      $id
+	 * @param bool        $includeSubAlbums
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
 	 * @return TestResponse
 	 */
-	public function AlbumGetPositionDataFull(
+	public function getPositionData(
 		string $id,
+		bool $includeSubAlbums,
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Album::getPositionData', [
 			'albumID' => $id,
-			'includeSubAlbums' => false,
+			'includeSubAlbums' => $includeSubAlbums,
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {

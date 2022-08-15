@@ -16,6 +16,10 @@ else
         printf "\n${ORANGE}Dev mode detected${NO_COLOR}\n"
         echo "composer install --no-suggest"
         composer install --no-suggest
+        if command -v npm > /dev/null; then
+        	echo "npm install --no-audit --no-fund"
+        	npm install --no-audit --no-fund
+        fi
     else
         printf "\n${ORANGE}--no-dev mode detected${NO_COLOR}\n"
         echo "composer install --no-dev --prefer-dist --no-suggest"
