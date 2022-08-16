@@ -21,7 +21,7 @@ class UpdateLogin
 	 * @param string      $oldPassword
 	 * @param string      $ip
 	 *
-	 * @return User update user
+	 * @return User updated user
 	 *
 	 * @throws UnauthenticatedException
 	 * @throws QueryBuilderException
