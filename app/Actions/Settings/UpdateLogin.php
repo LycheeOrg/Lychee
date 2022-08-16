@@ -21,14 +21,14 @@ class UpdateLogin
 	 * @param string      $oldPassword
 	 * @param string      $ip
 	 *
-	 * @return void
+	 * @return User update user
 	 *
 	 * @throws UnauthenticatedException
 	 * @throws QueryBuilderException
 	 * @throws ConflictingPropertyException
 	 * @throws ModelDBException
 	 */
-	public function do(?string $username, string $password, string $oldPassword, string $ip): void
+	public function do(?string $username, string $password, string $oldPassword, string $ip): User
 	{
 		/** @var User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();
@@ -51,5 +51,7 @@ class UpdateLogin
 
 		$user->password = Hash::make($password);
 		$user->save();
+
+		return $user;
 	}
 }

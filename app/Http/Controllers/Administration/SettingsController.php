@@ -50,7 +50,7 @@ class SettingsController extends Controller
 	}
 
 	/**
-	 * Update the Login information of a user.
+	 * Update the Login information of the current user.
 	 *
 	 * @param ChangeLoginRequest $request
 	 * @param UpdateLogin        $updateLogin
@@ -62,12 +62,16 @@ class SettingsController extends Controller
 	 */
 	public function updateLogin(ChangeLoginRequest $request, UpdateLogin $updateLogin): void
 	{
-		$updateLogin->do(
+		$currentUser = $updateLogin->do(
 			$request->username(),
 			$request->password(),
 			$request->oldPassword(),
 			$request->ip()
 		);
+		// Update the session with the new credentials of the user.
+		// Otherwise, the session is out-of-sync and falsely assumes the user
+		// to be unauthenticated upon the next request.
+		Auth::login($currentUser);
 	}
 
 	/**
