@@ -26,16 +26,7 @@ if (config('app.env') === 'dev') {
 Route::feeds();
 
 Route::get('/', [IndexController::class, 'show'])->name('home')->middleware(['migration:complete']);
-// Laravel uses 'login' as the default redirection route for unauthenticated
-// HTTP requests which request content-type `text/html`.
-// See: Illuminate\Foundation\Exceptions\Handler::unauthenticated().
-// Moreover, `Illuminate\Session\Middleware\AuthenticateSession::logout()`
-// unconditionally throws an `AuthenticationException` as the final step
-// to trigger such a redirection.
-// We use /gallery for that.
-// Note: This does not affect API calls, because they request content type
-// `application/json`.
-Route::get('/gallery', [IndexController::class, 'gallery'])->name('login')->middleware(['migration:complete']);
+Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware(['migration:complete']);
 Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::class, 'migrate'])
 		->name('migrate')
 		->middleware(['migration:incomplete']);
