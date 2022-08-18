@@ -67,7 +67,7 @@ class SetProtectionPolicy extends Action
 				}
 				break;
 
-			// Normal refresh of the children
+				// Normal refresh of the children
 			default:
 			case PolicyPropagationEnum::refresh():
 				$descendansToUpdate = $album->descendants()->where('inherits_protection_policy', '=', '1')->with('parent')->orderBy('_lft', 'asc')->get();
@@ -76,7 +76,7 @@ class SetProtectionPolicy extends Action
 					$descendant->save();
 				}
 				break;
-			}
+		}
 	}
 
 	/**

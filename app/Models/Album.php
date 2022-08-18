@@ -36,10 +36,10 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property int               $_lft
  * @property int               $_rgt
  *
- * @method static       AlbumBuilder query()                       Begin querying the model.
- * @method static       AlbumBuilder with(array|string $relations) Begin querying the model with eager loading.
- * @method AlbumBuilder newModelQuery()                            Get a new, "pure" query builder for the model's table without any scopes, eager loading, etc.
- * @method AlbumBuilder newQuery()                                 Get a new query builder for the model's table.
+ * @method static AlbumBuilder query()                       Begin querying the model.
+ * @method static AlbumBuilder with(array|string $relations) Begin querying the model with eager loading.
+ * @method        AlbumBuilder newModelQuery()               Get a new, "pure" query builder for the model's table without any scopes, eager loading, etc.
+ * @method        AlbumBuilder newQuery()                    Get a new query builder for the model's table.
  */
 class Album extends BaseAlbum implements Node
 {

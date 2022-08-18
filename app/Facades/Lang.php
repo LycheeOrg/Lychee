@@ -12,10 +12,10 @@ use Illuminate\Support\Facades\Facade;
  *
  * Keep the list of documented method in sync with {@link \App\Locale\Lang}.
  *
- * @method static string get(string $string)
- * @method static string get_code()
- * @method static string[] get_lang()
- * @method static string[] get_lang_available()
+ * @method static string      get(string $string)
+ * @method static string      get_code()
+ * @method static string[]    get_lang()
+ * @method static string[]    get_lang_available()
  * @method static LangFactory factory()
  */
 class Lang extends Facade
