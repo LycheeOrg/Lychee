@@ -265,12 +265,16 @@ class AlbumsUnitTest
 	 * @param bool        $nsfw
 	 * @param bool        $downloadable
 	 * @param bool        $share_button_visible
-	 * @param string|null $password             `null` does not change password
-	 *                                          settings;
-	 *                                          the empty string `''` removes
-	 *                                          a (potentially set) password;
-	 *                                          a non-empty string sets the
-	 *                                          password accordingly
+	 * @param bool        $inherits_protection_policy
+	 * @param int         $propagate_to_children      0 : refresh
+	 *                                                1 : cut
+	 *                                                2 : force
+	 * @param string|null $password                   `null` does not change password
+	 *                                                settings;
+	 *                                                the empty string `''` removes
+	 *                                                a (potentially set) password;
+	 *                                                a non-empty string sets the
+	 *                                                password accordingly
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
@@ -282,6 +286,8 @@ class AlbumsUnitTest
 		bool $nsfw = false,
 		bool $downloadable = true,
 		bool $share_button_visible = true,
+		bool $inherits_protection_policy = false,
+		int $propagate_to_children = 0,
 		?string $password = null,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
@@ -294,8 +300,8 @@ class AlbumsUnitTest
 			'is_nsfw' => $nsfw,
 			'is_downloadable' => $downloadable,
 			'is_share_button_visible' => $share_button_visible,
-			'inherits_protection_policy' => false, // for now.
-			'propagate_to_children' => 0, // for now
+			'inherits_protection_policy' => $inherits_protection_policy,
+			'propagate_to_children' => $propagate_to_children,
 		];
 
 		if ($password !== null) {

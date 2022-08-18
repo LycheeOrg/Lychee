@@ -117,7 +117,7 @@ class SetProtectionPolicy extends Action
 	 *
 	 * @return void
 	 */
-	private function setAlbumPolicyFromParent(Album $album): void
+	private function setAlbumPolicyFromParent(Album &$album): void
 	{
 		$album->grants_full_photo = $album->parent->grants_full_photo;
 		$album->is_public = $album->parent->is_public;
