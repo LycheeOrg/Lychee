@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static bool is_logged_in()
  * @method static bool is_admin()
  * @method static bool can_upload()
- * @method static int id()
+ * @method static int  id()
  * @method static User accessUserData()
  * @method static User user()
  * @method static bool is_current_user_or_admin(int $userId)
