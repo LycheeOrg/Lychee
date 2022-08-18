@@ -33,7 +33,8 @@ class ListShare
 
 			$albums_query = DB::table('base_albums')
 				->leftJoin('albums', 'albums.id', '=', 'base_albums.id')
-				->select(['base_albums.id', 'title', 'parent_id']);
+				->select(['base_albums.id', 'title', 'parent_id'])
+				->orderBy('title', 'ASC');
 
 			// apply filter
 			if ($userId !== 0) {

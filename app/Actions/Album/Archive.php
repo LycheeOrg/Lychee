@@ -3,6 +3,7 @@
 namespace App\Actions\Album;
 
 use App\Contracts\AbstractAlbum;
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\FrameworkException;
 use App\Facades\AccessControl;
@@ -20,6 +21,9 @@ use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\Exception\FileNotFoundException;
 use ZipStream\Exception\FileNotReadableException;
+use ZipStream\Option\Archive as ZipArchiveOption;
+use ZipStream\Option\File as ZipFileOption;
+use ZipStream\Option\Method as ZipMethod;
 use ZipStream\ZipStream;
 
 class Archive extends Action
@@ -32,18 +36,24 @@ class Archive extends Action
 		'<', '>', ':', '"', '/', '\\', '|', '?', '*',
 	];
 
+	protected int $deflateLevel = -1;
+
 	/**
 	 * @param Collection<AbstractAlbum> $albums
 	 *
 	 * @return StreamedResponse
 	 *
 	 * @throws FrameworkException
+	 * @throws ConfigurationKeyMissingException
 	 */
 	public function do(Collection $albums): StreamedResponse
 	{
+		$this->deflateLevel = Configs::getValueAsInt('zip_deflate_level');
+
 		$responseGenerator = function () use ($albums) {
-			$options = new \ZipStream\Option\Archive();
+			$options = new ZipArchiveOption();
 			$options->setEnableZip64(Configs::getValueAsBool('zip64'));
+			$options->setZeroHeader(true);
 			$zip = new ZipStream(null, $options);
 
 			$usedDirNames = [];
@@ -196,7 +206,14 @@ class Archive extends Action
 				} catch (InfoException) {
 					// Silently do nothing, if `set_time_limit` is denied.
 				}
-				$zip->addFileFromStream($fileName, $file->read());
+				$zipFileOption = new ZipFileOption();
+				$zipFileOption->setMethod($this->deflateLevel === -1 ? ZipMethod::STORE() : ZipMethod::DEFLATE());
+				$zipFileOption->setDeflateLevel($this->deflateLevel);
+				$zipFileOption->setComment($photo->title);
+				if ($photo->taken_at !== null) {
+					$zipFileOption->setTime($photo->taken_at);
+				}
+				$zip->addFileFromStream($fileName, $file->read(), $zipFileOption);
 				$file->close();
 			} catch (\Throwable $e) {
 				Handler::reportSafely($e);

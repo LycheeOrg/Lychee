@@ -3,6 +3,7 @@
 namespace App\Image;
 
 use App\DTO\ImageDimension;
+use App\Exceptions\Handler;
 use App\Exceptions\ImageProcessingException;
 use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\MediaFileOperationException;
@@ -176,10 +177,32 @@ class GdHandler extends BaseImageHandler
 			// `exif_read_data` only supports JPEGs
 			if (in_array($this->gdImageType, [IMAGETYPE_JPEG, IMAGETYPE_JPEG2000], true)) {
 				error_clear_last();
+				// `exif_read_data` raises E_WARNING/E_NOTICE errors for unsupported
+				// tags, which could result in exceptions being thrown, even though
+				// the function would otherwise succeed to return valid tags.
+				// We explicitly disable this undesirable behavior and use
+				// the silence operator to suck out as much EXIF data as
+				// possible even if some EXIF tags are unsupported.
+				// As this way, `exif_read_data` does not throw any exception
+				// at all (even for catastrophic errors), we need to check
+				// manually, if we need to throw an exception.
 				// TODO: Replace `exif_read_data` by `\Safe\exif_read_data` after https://github.com/thecodingmachine/safe/issues/215 has been resolved
-				$exifData = exif_read_data($inputStream);
-				if ($exifData === false) {
-					throw ImageException::createFromPhpError();
+				// @phpstan-ignore-next-line
+				$exifData = @exif_read_data($inputStream);
+				$phpError = error_get_last();
+				if ($exifData === false || $phpError !== null) {
+					$exception = ImageException::createFromPhpError();
+					if ($exifData === false) {
+						// something went wrong catastrophically, throw the
+						// exception as `exif_read_data` would have done without @
+						throw $exception;
+					} else {
+						// exif_read_data() returned an array and has been able
+						// to extract some useful data, but still reported a
+						// warning; don't throw the exception, but log it and
+						// proceed
+						Handler::reportSafely($exception);
+					}
 				}
 
 				// Auto-rotate image

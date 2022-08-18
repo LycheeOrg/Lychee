@@ -12,11 +12,7 @@
 
 namespace Tests\Feature;
 
-use App\Actions\Photo\Archive;
-use App\Image\ImagickHandler;
-use App\Image\InMemoryBuffer;
-use App\Image\TemporaryLocalFile;
-use App\Image\VideoHandler;
+use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
@@ -24,13 +20,41 @@ use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Carbon\Carbon;
 use Tests\Feature\Base\PhotoTestBase;
+use Tests\Feature\Lib\RootAlbumUnitTest;
+use Tests\Feature\Lib\SharingUnitTest;
+use Tests\Feature\Lib\UsersUnitTest;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
+use Tests\Feature\Traits\RequiresEmptyAlbums;
+use Tests\Feature\Traits\RequiresEmptyUsers;
 use Tests\TestCase;
-use ZipArchive;
 
 class PhotosOperationsTest extends PhotoTestBase
 {
 	use InteractWithSmartAlbums;
+	use RequiresEmptyAlbums;
+	use RequiresEmptyUsers;
+
+	protected RootAlbumUnitTest $root_album_tests;
+	protected UsersUnitTest $users_tests;
+	protected SharingUnitTest $sharing_tests;
+
+	public function setUp(): void
+	{
+		parent::setUp();
+		$this->setUpRequiresEmptyUsers();
+		$this->setUpRequiresEmptyAlbums();
+		$this->root_album_tests = new RootAlbumUnitTest($this);
+		$this->users_tests = new UsersUnitTest($this);
+		$this->sharing_tests = new SharingUnitTest($this);
+	}
+
+	public function tearDown(): void
+	{
+		$this->tearDownRequiresEmptyPhotos();
+		$this->tearDownRequiresEmptyAlbums();
+		$this->tearDownRequiresEmptyUsers();
+		parent::tearDown();
+	}
 
 	/**
 	 * Tests a lot of photo actions at once.
@@ -281,152 +305,189 @@ class PhotosOperationsTest extends PhotoTestBase
 	}
 
 	/**
-	 * Downloads a single photo.
+	 * Tests that sub-albums show the correct thumbnail if displayed from
+	 * within a hidden album.
+	 *
+	 * Normally, photos of albums which are not browseable are not searchable
+	 * either, because there is no "clickable" path from the root the album.
+	 * However, this is not true, if the user is already _within_ the hidden
+	 * album.
+	 * In this case the search "base" is the hidden album and photos within
+	 * sub-albums are searched to determine the best thumb.
 	 *
 	 * @return void
 	 */
-	public function testSinglePhotoDownload(): void
+	public function testThumbnailsInsideHiddenAlbum(): void
 	{
-		$photoUploadResponse = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
-		);
-		$photoArchiveResponse = $this->photos_tests->download([$photoUploadResponse->offsetGet('id')]);
+		$isRecentPublic = Configs::getValueAsBool(self::CONFIG_PUBLIC_RECENT);
+		$arePublicPhotosHidden = Configs::getValueAsBool(self::CONFIG_PUBLIC_HIDDEN);
+		$isPublicSearchEnabled = Configs::getValueAsBool(self::CONFIG_PUBLIC_SEARCH);
+		$albumSortingColumn = Configs::getValueAsString(self::CONFIG_ALBUMS_SORTING_COL);
+		$albumSortingOrder = Configs::getValueAsString(self::CONFIG_ALBUMS_SORTING_ORDER);
+		$photoSortingColumn = Configs::getValueAsString(self::CONFIG_PHOTOS_SORTING_COL);
+		$photoSortingOrder = Configs::getValueAsString(self::CONFIG_PHOTOS_SORTING_ORDER);
 
-		// Stream the response in a temporary file
-		$memoryBlob = new InMemoryBuffer();
-		fwrite($memoryBlob->stream(), $photoArchiveResponse->streamedContent());
-		$imageFile = new TemporaryLocalFile('.jpg', 'night');
-		$imageFile->write($memoryBlob->read());
-		$memoryBlob->close();
+		try {
+			AccessControl::log_as_id(0);
+			Configs::set(self::CONFIG_PUBLIC_RECENT, true);
+			Configs::set(self::CONFIG_PUBLIC_HIDDEN, false);
+			Configs::set(self::CONFIG_PUBLIC_SEARCH, true);
+			Configs::set(self::CONFIG_ALBUMS_SORTING_COL, 'title');
+			Configs::set(self::CONFIG_ALBUMS_SORTING_ORDER, 'ASC');
+			Configs::set(self::CONFIG_PHOTOS_SORTING_COL, 'title');
+			Configs::set(self::CONFIG_PHOTOS_SORTING_ORDER, 'ASC');
 
-		// Just do a simple read test
-		$image = new ImagickHandler();
-		$image->load($imageFile);
-		$imageDim = $image->getDimensions();
-		static::assertEquals(6720, $imageDim->width);
-		static::assertEquals(4480, $imageDim->height);
+			// Sic! This out-of-order creation of albums is on purpose in order to
+			// catch errors where the album tree is accidentally ordered as
+			// expected, because we created the albums in correct order
+			$albumID1 = $this->albums_tests->add(null, 'Test Album 1')->offsetGet('id');
+			$albumID12 = $this->albums_tests->add($albumID1, 'Test Album 1.2')->offsetGet('id');
+			$albumID13 = $this->albums_tests->add($albumID1, 'Test Album 1.3')->offsetGet('id');
+			$albumID121 = $this->albums_tests->add($albumID12, 'Test Album 1.2.1')->offsetGet('id');
+			$albumID11 = $this->albums_tests->add($albumID1, 'Test Album 1.1')->offsetGet('id');
+
+			$photoID11 = $this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE), $albumID11
+			)->offsetGet('id');
+			$photoID13 = $this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID13
+			)->offsetGet('id');
+			$photoID12 = $this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE), $albumID12
+			)->offsetGet('id');
+			$photoID121 = $this->photos_tests->upload(
+				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_SUNSET_IMAGE), $albumID121
+			)->offsetGet('id');
+
+			$this->albums_tests->set_protection_policy($albumID1, true, true, true);
+			$this->albums_tests->set_protection_policy($albumID11);
+			$this->albums_tests->set_protection_policy($albumID12);
+			$this->albums_tests->set_protection_policy($albumID121);
+			$this->albums_tests->set_protection_policy($albumID13);
+
+			AccessControl::logout();
+			$this->clearCachedSmartAlbums();
+
+			// Check that Recent and root album show nothing to ensure
+			// that we eventually really test the special searchability
+			// condition for thumbnails within hidden albums do not
+			// accidentally see the expected thumbnails, because we see them
+			// anyway.
+
+			$responseForRoot = $this->root_album_tests->get();
+			$responseForRoot->assertJson([
+				'smart_albums' => [
+					'unsorted' => null,
+					'starred' => null,
+					'public' => null,
+					'recent' => ['thumb' => null],
+				],
+				'tag_albums' => [],
+				'albums' => [],
+				'shared_albums' => [],
+			]);
+			foreach ([$albumID1, $photoID11, $photoID12, $photoID121, $photoID13] as $id) {
+				$responseForRoot->assertJsonMissing(['id' => $id]);
+			}
+
+			$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
+			$responseForRecent->assertJson([
+				'thumb' => null,
+				'photos' => [],
+			]);
+			foreach ([$photoID11, $photoID12, $photoID121, $photoID13] as $id) {
+				$responseForRecent->assertJsonMissing(['id' => $id]);
+			}
+
+			// Access the hidden, but public albums and check whether we see
+			// the correct thumbnails
+			$responseForAlbum1 = $this->albums_tests->get($albumID1);
+			$responseForAlbum1->assertJson([
+				'id' => $albumID1,
+				'parent_id' => null,
+				'title' => 'Test Album 1',
+				'thumb' => ['id' => $photoID121], // photo 1.2.1 "fin de journée" is alphabetically first
+				'photos' => [],
+				'albums' => [[
+					'id' => $albumID11,
+					'parent_id' => $albumID1,
+					'title' => 'Test Album 1.1',
+					'thumb' => ['id' => $photoID11],
+				], [
+					'id' => $albumID12,
+					'parent_id' => $albumID1,
+					'title' => 'Test Album 1.2',
+					'thumb' => ['id' => $photoID121], // photo 1.2.1 "fin de journée" is alphabetically first
+				], [
+					'id' => $albumID13,
+					'parent_id' => $albumID1,
+					'title' => 'Test Album 1.3',
+					'thumb' => ['id' => $photoID13],
+				]],
+			]);
+
+			$responseForAlbum12 = $this->albums_tests->get($albumID12);
+			$responseForAlbum12->assertJson([
+				'id' => $albumID12,
+				'parent_id' => $albumID1,
+				'title' => 'Test Album 1.2',
+				'thumb' => ['id' => $photoID121], // photo 1.2.1 "fin de journée" is alphabetically first
+				'photos' => [[
+					'id' => $photoID12,
+					'album_id' => $albumID12,
+					'title' => 'train',
+				]],
+				'albums' => [[
+					'id' => $albumID121,
+					'parent_id' => $albumID12,
+					'title' => 'Test Album 1.2.1',
+					'thumb' => ['id' => $photoID121],
+				]],
+			]);
+		} finally {
+			Configs::set(self::CONFIG_ALBUMS_SORTING_COL, $albumSortingColumn);
+			Configs::set(self::CONFIG_ALBUMS_SORTING_ORDER, $albumSortingOrder);
+			Configs::set(self::CONFIG_PHOTOS_SORTING_COL, $photoSortingColumn);
+			Configs::set(self::CONFIG_PHOTOS_SORTING_ORDER, $photoSortingOrder);
+			Configs::set(self::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
+			Configs::set(self::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
+			Configs::set(self::CONFIG_PUBLIC_RECENT, $isRecentPublic);
+			AccessControl::logout();
+		}
 	}
 
-	/**
-	 * Downloads an archive of two different photos.
-	 *
-	 * @return void
-	 */
-	public function testMultiplePhotoDownload(): void
+	public function testDeleteMultiplePhotosByAnonUser(): void
 	{
-		$photoUploadResponse1 = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
-		);
-		$photoUploadResponse2 = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
-		);
-
-		$photoArchiveResponse = $this->photos_tests->download([
-			$photoUploadResponse1->offsetGet('id'),
-			$photoUploadResponse2->offsetGet('id'),
-		]);
-
-		$memoryBlob = new InMemoryBuffer();
-		fwrite($memoryBlob->stream(), $photoArchiveResponse->streamedContent());
-		$tmpZipFile = new TemporaryLocalFile('.zip', 'archive');
-		$tmpZipFile->write($memoryBlob->read());
-		$memoryBlob->close();
-
-		$zipArchive = new ZipArchive();
-		$zipArchive->open($tmpZipFile->getRealPath());
-
-		static::assertCount(2, $zipArchive);
-		$fileStat1 = $zipArchive->statIndex(0);
-		$fileStat2 = $zipArchive->statIndex(1);
-
-		static::assertContains($fileStat1['name'], ['night.jpg', 'mongolia.jpeg']);
-		static::assertContains($fileStat2['name'], ['night.jpg', 'mongolia.jpeg']);
-
-		$expectedSize1 = $fileStat1['name'] === 'night.jpg' ? 21106422 : 201316;
-		$expectedSize2 = $fileStat2['name'] === 'night.jpg' ? 21106422 : 201316;
-
-		static::assertEquals($expectedSize1, $fileStat1['size']);
-		static::assertEquals($expectedSize2, $fileStat2['size']);
+		AccessControl::log_as_id(0);
+		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
+		$photoID1 = $this->photos_tests->upload(
+			self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID
+		)->offsetGet('id');
+		$photoID2 = $this->photos_tests->upload(
+			self::createUploadedFile(self::SAMPLE_FILE_TRAIN_IMAGE), $albumID
+		)->offsetGet('id');
+		$this->albums_tests->set_protection_policy($albumID);
+		AccessControl::logout();
+		$this->photos_tests->delete([$photoID1, $photoID2], 401);
 	}
 
-	/**
-	 * Downloads the video part of a Google Motion Photo.
-	 *
-	 * @return void
-	 */
-	public function testGoogleMotionPhotoDownload(): void
+	public function testDeleteMultiplePhotosByNonOwner(): void
 	{
-		static::assertHasExifToolOrSkip();
-		static::assertHasFFMpegOrSkip();
-
-		$photoUploadResponse = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_IMAGE)
-		);
-		$photoArchiveResponse = $this->photos_tests->download(
-			[$photoUploadResponse->offsetGet('id')],
-			Archive::LIVEPHOTOVIDEO
-		);
-
-		// Stream the response in a temporary file
-		$memoryBlob = new InMemoryBuffer();
-		fwrite($memoryBlob->stream(), $photoArchiveResponse->streamedContent());
-		$videoFile = new TemporaryLocalFile('.mov', 'gmp');
-		$videoFile->write($memoryBlob->read());
-		$memoryBlob->close();
-
-		// Just do a simple read test
-		$video = new VideoHandler();
-		$video->load($videoFile);
-	}
-
-	/**
-	 * Downloads an archive of three photos with one photo being included twice.
-	 *
-	 * This tests the capability of the archive function to generate unique
-	 * file names for duplicates.
-	 *
-	 * @return void
-	 */
-	public function testAmbiguousPhotoDownload(): void
-	{
-		$photoUploadResponse1 = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE)
-		);
-		$photoUploadResponse2 = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
-		);
-		$photoDuplicateResponse = $this->photos_tests->duplicate([$photoUploadResponse2->offsetGet('id')], null);
-
-		$photoArchiveResponse = $this->photos_tests->download([
-			$photoUploadResponse1->offsetGet('id'),
-			$photoUploadResponse2->offsetGet('id'),
-			$photoDuplicateResponse->offsetGet('id'),
-		]);
-
-		$memoryBlob = new InMemoryBuffer();
-		fwrite($memoryBlob->stream(), $photoArchiveResponse->streamedContent());
-		$tmpZipFile = new TemporaryLocalFile('.zip', 'archive');
-		$tmpZipFile->write($memoryBlob->read());
-		$memoryBlob->close();
-
-		$zipArchive = new ZipArchive();
-		$zipArchive->open($tmpZipFile->getRealPath());
-
-		static::assertCount(3, $zipArchive);
-		$fileStat1 = $zipArchive->statIndex(0);
-		$fileStat2 = $zipArchive->statIndex(1);
-		$fileStat3 = $zipArchive->statIndex(2);
-
-		static::assertContains($fileStat1['name'], ['train.jpg', 'mongolia-1.jpeg', 'mongolia-2.jpeg']);
-		static::assertContains($fileStat2['name'], ['train.jpg', 'mongolia-1.jpeg', 'mongolia-2.jpeg']);
-		static::assertContains($fileStat3['name'], ['train.jpg', 'mongolia-1.jpeg', 'mongolia-2.jpeg']);
-
-		$expectedSize1 = $fileStat1['name'] === 'train.jpg' ? 3478530 : 201316;
-		$expectedSize2 = $fileStat2['name'] === 'train.jpg' ? 3478530 : 201316;
-		$expectedSize3 = $fileStat3['name'] === 'train.jpg' ? 3478530 : 201316;
-
-		static::assertEquals($expectedSize1, $fileStat1['size']);
-		static::assertEquals($expectedSize2, $fileStat2['size']);
-		static::assertEquals($expectedSize3, $fileStat3['size']);
+		AccessControl::log_as_id(0);
+		$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
+		$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
+		AccessControl::logout();
+		AccessControl::log_as_id($userID1);
+		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
+		$photoID1 = $this->photos_tests->upload(
+			self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID
+		)->offsetGet('id');
+		$photoID2 = $this->photos_tests->upload(
+			self::createUploadedFile(self::SAMPLE_FILE_TRAIN_IMAGE), $albumID
+		)->offsetGet('id');
+		$this->sharing_tests->add([$albumID], [$userID2]);
+		AccessControl::logout();
+		AccessControl::log_as_id($userID2);
+		$this->photos_tests->delete([$photoID1, $photoID2], 403);
 	}
 }
