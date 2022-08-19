@@ -13,15 +13,16 @@
 namespace Tests\Feature;
 
 use App\DTO\SortingCriterion;
-use App\Facades\AccessControl;
 use App\Http\Requests\Settings\SetSortingRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
 
 class SettingsTest extends TestCase
 {
 	public function testSetSorting(): void
 	{
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 
 		$this->postJson('/api/Settings::setSorting', [
 			SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
@@ -30,12 +31,13 @@ class SettingsTest extends TestCase
 			SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
 		])->assertStatus(204);
 
-		AccessControl::logout();
+		Auth::logout();
+		Session::flush();
 	}
 
 	public function testSetSortingWithIllegalAlbumAttribute(): void
 	{
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 
 		$response = $this->postJson('/api/Settings::setSorting',
 			[
@@ -48,12 +50,13 @@ class SettingsTest extends TestCase
 		$response->assertStatus(422);
 		$response->assertSee('sorting albums column must be null or one out of');
 
-		AccessControl::logout();
+		Auth::logout();
+		Session::flush();
 	}
 
 	public function testSetSortingWithIllegalPhotoAttribute(): void
 	{
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 
 		$response = $this->postJson('/api/Settings::setSorting',
 			[
@@ -66,12 +69,13 @@ class SettingsTest extends TestCase
 		$response->assertStatus(422);
 		$response->assertSee('sorting photos column must be null or one out of');
 
-		AccessControl::logout();
+		Auth::logout();
+		Session::flush();
 	}
 
 	public function testSetSortingWithUnknownOrder(): void
 	{
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 
 		$response = $this->postJson('/api/Settings::setSorting',
 			[
@@ -84,6 +88,7 @@ class SettingsTest extends TestCase
 		$response->assertStatus(422);
 		$response->assertSee('order must be either');
 
-		AccessControl::logout();
+		Auth::logout();
+		Session::flush();
 	}
 }

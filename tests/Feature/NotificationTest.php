@@ -12,9 +12,9 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
 use App\Mail\PhotosAdded;
 use App\Models\Configs;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Tests\Feature\Lib\SessionUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
@@ -28,7 +28,7 @@ class NotificationTest extends TestCase
 		$init_config_value = Configs::getValue('new_photos_notification');
 
 		try {
-			AccessControl::log_as_id(0);
+			Auth::loginUsingId(0);
 
 			$response = $this->postJson('/api/Settings::setNewPhotosNotification', [
 				'new_photos_notification' => '1',
@@ -38,6 +38,8 @@ class NotificationTest extends TestCase
 		} finally {
 			// set to initial
 			Configs::set('new_photos_notification', $init_config_value);
+			$sessions_test = new SessionUnitTest($this);
+			$sessions_test->logout();
 		}
 	}
 
@@ -47,7 +49,7 @@ class NotificationTest extends TestCase
 		$sessions_test = new SessionUnitTest($this);
 
 		// add email to admin
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 		$users_test->update_email('test@test.com');
 
 		$sessions_test->logout();

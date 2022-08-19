@@ -6,6 +6,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasAlbum;
 use App\Http\Requests\Contracts\HasLicense;
+use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Http\Requests\Traits\HasLicenseTrait;
 use App\Models\Album;
@@ -16,14 +17,7 @@ class SetAlbumLicenseRequest extends BaseApiRequest implements HasAlbum, HasLice
 {
 	use HasAlbumTrait;
 	use HasLicenseTrait;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function authorize(): bool
-	{
-		return $this->authorizeAlbumWrite($this->album);
-	}
+	use AuthorizeCanEditAlbumTrait;
 
 	/**
 	 * {@inheritDoc}

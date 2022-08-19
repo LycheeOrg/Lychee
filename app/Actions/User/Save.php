@@ -7,6 +7,7 @@ use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class Save
 {
@@ -37,7 +38,7 @@ class Save
 		$user->is_locked = $isLocked;
 		if ($password !== null) {
 			try {
-				$user->password = bcrypt($password);
+				$user->password = Hash::make($password);
 			} catch (\InvalidArgumentException $e) {
 				throw new InvalidPropertyException('Could not hash password');
 			}

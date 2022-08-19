@@ -336,7 +336,6 @@ final class French implements Language
 			'LOGIN_CREATE' => 'Créer les informations de connexion',
 
 			'PASSWORD_TITLE' => 'Entrez votre mot de passe existant :',
-			'USERNAME_CURRENT' => 'Nom d’utilisateur actuel :',
 			'PASSWORD_CURRENT' => 'Mot de passe existant :',
 			'PASSWORD_TEXT' => 'Votre nom d’utilisateur et votre mot de passe seront modifiés comme suit :',
 			'PASSWORD_CHANGE' => 'Modifier les informations de connexion',

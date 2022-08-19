@@ -336,7 +336,6 @@ final class Spanish implements Language
 			'LOGIN_CREATE' => 'Crear inicio de sesión',
 
 			'PASSWORD_TITLE' => 'Introduce tu contraseña actual:',
-			'USERNAME_CURRENT' => 'Nombre de usuario actual',
 			'PASSWORD_CURRENT' => 'Contraseña actual',
 			'PASSWORD_TEXT' => 'Su nombre de usuario y contraseña se cambiarán a lo siguiente:',
 			'PASSWORD_CHANGE' => 'Cambiar inicio de sesión',

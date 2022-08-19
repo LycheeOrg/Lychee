@@ -12,7 +12,8 @@
 
 namespace Tests\Feature\Base;
 
-use App\Facades\AccessControl;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
@@ -37,12 +38,13 @@ abstract class PhotoTestBase extends TestCase
 		$this->setUpRequiresExifTool();
 		$this->setUpRequiresFFMpeg();
 		$this->setUpRequiresEmptyPhotos();
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 	}
 
 	public function tearDown(): void
 	{
-		AccessControl::logout();
+		Auth::logout();
+		Session::flush();
 		$this->tearDownRequiresEmptyPhotos();
 		$this->tearDownRequiresFFMpeg();
 		$this->tearDownRequiresExifTool();

@@ -5,6 +5,7 @@ namespace App\Http\Requests\Photo;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPhotos;
 use App\Http\Requests\Contracts\HasTitle;
+use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotosTrait;
 use App\Http\Requests\Traits\HasPhotosTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
 use App\Models\Photo;
@@ -15,14 +16,7 @@ class SetPhotosTitleRequest extends BaseApiRequest implements HasPhotos, HasTitl
 {
 	use HasPhotosTrait;
 	use HasTitleTrait;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function authorize(): bool
-	{
-		return $this->authorizePhotosWrite($this->photos);
-	}
+	use AuthorizeCanEditPhotosTrait;
 
 	/**
 	 * {@inheritDoc}

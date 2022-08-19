@@ -2,10 +2,13 @@
 
 namespace App\Http\Requests\Album;
 
+use App\Contracts\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbums;
 use App\Http\Requests\Traits\HasAlbumsTrait;
+use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDListRule;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * @implements HasAlbums<\App\Contracts\AbstractAlbum>
@@ -19,7 +22,14 @@ class ArchiveAlbumsRequest extends BaseApiRequest implements HasAlbums
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumsAccess($this->albums);
+		/** @var AbstractAlbum $album */
+		foreach ($this->albums as $album) {
+			if (!Gate::check(AlbumPolicy::CAN_ACCESS, $album)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**

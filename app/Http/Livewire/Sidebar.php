@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire;
 
-use App\Facades\AccessControl;
 use App\Facades\Lang;
 use App\Models\Album;
 use App\Models\Photo;
@@ -96,7 +95,7 @@ class Sidebar extends Component
 
 		$this->data = [$basic, $album, $license];
 
-		if (AccessControl::is_logged_in()) {
+		if (Auth::check()) {
 			$this->data[] = $share;
 		}
 	}

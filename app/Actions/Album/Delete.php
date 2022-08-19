@@ -7,13 +7,17 @@ use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
-use App\Facades\AccessControl;
+use App\Exceptions\UnauthenticatedException;
 use App\Image\FileDeleter;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\TagAlbum;
+use App\Policies\UserPolicy;
 use App\SmartAlbums\UnsortedAlbum;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Query\Builder as BaseBuilder;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Safe\Exceptions\ArrayException;
 use function Safe\usort;
 
@@ -58,6 +62,8 @@ class Delete extends Action
 	 * @return FileDeleter contains the collected files which became obsolete
 	 *
 	 * @throws ModelDBException
+	 * @throws ModelNotFoundException
+	 * @throws UnauthenticatedException
 	 */
 	public function do(array $albumIDs): FileDeleter
 	{
@@ -69,8 +75,8 @@ class Delete extends Action
 			// because it provides deletion of photos
 			if (in_array(UnsortedAlbum::ID, $albumIDs, true)) {
 				$query = UnsortedAlbum::getInstance()->photos();
-				if (!AccessControl::is_admin()) {
-					$query->where('owner_id', '=', AccessControl::id());
+				if (!Gate::check(UserPolicy::IS_ADMIN)) {
+					$query->where('owner_id', '=', Auth::id() ?? throw new UnauthenticatedException());
 				}
 				$unsortedPhotoIDs = $query->pluck('id')->all();
 			}

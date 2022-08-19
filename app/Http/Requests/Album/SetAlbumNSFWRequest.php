@@ -5,6 +5,7 @@ namespace App\Http\Requests\Album;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasBaseAlbum;
+use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasBaseAlbumTrait;
 use App\Rules\RandomIDRule;
 
@@ -14,17 +15,11 @@ use App\Rules\RandomIDRule;
 class SetAlbumNSFWRequest extends BaseApiRequest implements HasBaseAlbum
 {
 	use HasBaseAlbumTrait;
+	use AuthorizeCanEditAlbumTrait;
+
 	public const IS_NSFW_ATTRIBUTE = 'is_nsfw';
 
 	protected bool $isNSFW = false;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function authorize(): bool
-	{
-		return $this->authorizeAlbumWrite($this->album);
-	}
 
 	/**
 	 * {@inheritDoc}

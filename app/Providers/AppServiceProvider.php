@@ -2,8 +2,6 @@
 
 namespace App\Providers;
 
-use App\Actions\AlbumAuthorisationProvider;
-use App\Actions\PhotoAuthorisationProvider;
 use App\Actions\Update\Apply as ApplyUpdate;
 use App\Actions\Update\Check as CheckUpdate;
 use App\Assets\Helpers;
@@ -19,8 +17,9 @@ use App\Metadata\GitHubFunctions;
 use App\Metadata\GitRequest;
 use App\Metadata\LycheeVersion;
 use App\ModelFunctions\ConfigFunctions;
-use App\ModelFunctions\SessionFunctions;
 use App\ModelFunctions\SymLinkFunctions;
+use App\Policies\AlbumQueryPolicy;
+use App\Policies\PhotoQueryPolicy;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
@@ -36,15 +35,14 @@ class AppServiceProvider extends ServiceProvider
 		LangFactory::class => LangFactory::class,
 		Lang::class => Lang::class,
 		Helpers::class => Helpers::class,
-		SessionFunctions::class => SessionFunctions::class,
 		GitRequest::class => GitRequest::class,
 		GitHubFunctions::class => GitHubFunctions::class,
 		LycheeVersion::class => LycheeVersion::class,
 		CheckUpdate::class => CheckUpdate::class,
 		ApplyUpdate::class => ApplyUpdate::class,
 		AlbumFactory::class => AlbumFactory::class,
-		AlbumAuthorisationProvider::class => AlbumAuthorisationProvider::class,
-		PhotoAuthorisationProvider::class => PhotoAuthorisationProvider::class,
+		AlbumQueryPolicy::class => AlbumQueryPolicy::class,
+		PhotoQueryPolicy::class => PhotoQueryPolicy::class,
 	];
 
 	/**
@@ -80,10 +78,6 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function register()
 	{
-		$this->app->bind('AccessControl', function () {
-			return resolve(SessionFunctions::class);
-		});
-
 		$this->app->bind('lang', function () {
 			return resolve(Lang::class);
 		});

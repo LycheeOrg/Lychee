@@ -12,13 +12,14 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Tests\Feature\Base\PhotoTestBase;
 use Tests\Feature\Lib\RootAlbumUnitTest;
 use Tests\Feature\Lib\SharingUnitTest;
@@ -328,7 +329,7 @@ class PhotosOperationsTest extends PhotoTestBase
 		$photoSortingOrder = Configs::getValueAsString(self::CONFIG_PHOTOS_SORTING_ORDER);
 
 		try {
-			AccessControl::log_as_id(0);
+			Auth::loginUsingId(0);
 			Configs::set(self::CONFIG_PUBLIC_RECENT, true);
 			Configs::set(self::CONFIG_PUBLIC_HIDDEN, false);
 			Configs::set(self::CONFIG_PUBLIC_SEARCH, true);
@@ -365,7 +366,8 @@ class PhotosOperationsTest extends PhotoTestBase
 			$this->albums_tests->set_protection_policy($albumID121);
 			$this->albums_tests->set_protection_policy($albumID13);
 
-			AccessControl::logout();
+			Auth::logout();
+			Session::flush();
 			$this->clearCachedSmartAlbums();
 
 			// Check that Recent and root album show nothing to ensure
@@ -452,13 +454,14 @@ class PhotosOperationsTest extends PhotoTestBase
 			Configs::set(self::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
 			Configs::set(self::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
 			Configs::set(self::CONFIG_PUBLIC_RECENT, $isRecentPublic);
-			AccessControl::logout();
+			Auth::logout();
+			Session::flush();
 		}
 	}
 
 	public function testDeleteMultiplePhotosByAnonUser(): void
 	{
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 		$photoID1 = $this->photos_tests->upload(
 			self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID
@@ -467,17 +470,19 @@ class PhotosOperationsTest extends PhotoTestBase
 			self::createUploadedFile(self::SAMPLE_FILE_TRAIN_IMAGE), $albumID
 		)->offsetGet('id');
 		$this->albums_tests->set_protection_policy($albumID);
-		AccessControl::logout();
+		Auth::logout();
+		Session::flush();
 		$this->photos_tests->delete([$photoID1, $photoID2], 401);
 	}
 
 	public function testDeleteMultiplePhotosByNonOwner(): void
 	{
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 		$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
 		$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
-		AccessControl::logout();
-		AccessControl::log_as_id($userID1);
+		Auth::logout();
+		Session::flush();
+		Auth::loginUsingId($userID1);
 		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 		$photoID1 = $this->photos_tests->upload(
 			self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID
@@ -486,8 +491,9 @@ class PhotosOperationsTest extends PhotoTestBase
 			self::createUploadedFile(self::SAMPLE_FILE_TRAIN_IMAGE), $albumID
 		)->offsetGet('id');
 		$this->sharing_tests->add([$albumID], [$userID2]);
-		AccessControl::logout();
-		AccessControl::log_as_id($userID2);
+		Auth::logout();
+		Session::flush();
+		Auth::loginUsingId($userID2);
 		$this->photos_tests->delete([$photoID1, $photoID2], 403);
 	}
 }

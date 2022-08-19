@@ -12,11 +12,11 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Implements the tests of {@link SharingTestScenariosAbstract} for a
@@ -287,7 +287,7 @@ abstract class SharingWithNonAdminUserAbstract extends SharingTestScenariosAbstr
 
 	protected function performPostPreparatorySteps(): void
 	{
-		AccessControl::log_as_id($this->userID);
+		Auth::loginUsingId($this->userID);
 	}
 
 	protected function getExpectedInaccessibleHttpStatusCode(): int

@@ -12,8 +12,9 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
 use App\Models\Configs;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
@@ -76,7 +77,7 @@ class RSSTest extends TestCase
 			$response->assertOk();
 
 			// log as admin
-			AccessControl::log_as_id(0);
+			Auth::loginUsingId(0);
 
 			// create an album
 			$albumID = $this->albums_tests->add(null, 'test_album')->offsetGet('id');
@@ -109,7 +110,8 @@ class RSSTest extends TestCase
 			Configs::set('rss_enable', $init_config_value);
 			Configs::set('full_photo', $init_full_photo);
 
-			AccessControl::logout();
+			Auth::logout();
+			Session::flush();
 		}
 	}
 }
