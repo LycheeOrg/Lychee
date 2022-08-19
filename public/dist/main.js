@@ -1423,7 +1423,7 @@ album.isSmartID = function (id) {
  * @returns {boolean}
  */
 album.isSearchID = function (id) {
-	return id === SearchAlbumID;
+	return id === SearchAlbumIDPrefix || id.startsWith(SearchAlbumIDPrefix + "/");
 };
 
 /**
@@ -1453,7 +1453,7 @@ album.getID = function () {
 
 	// this is a Lambda
 	var isID = function isID(_id) {
-		return album.isSmartID(_id) || /*album.isSearchID(_id) || */album.isModelID(_id);
+		return album.isSmartID(_id) || album.isSearchID(_id) || album.isModelID(_id);
 	};
 
 	if (_photo3.json) id = _photo3.json.album_id;else if (album.json) id = album.json.id;else if (mapview.albumID) id = mapview.albumID;
@@ -1580,17 +1580,26 @@ album.deleteSubByID = function (albumID) {
 /**
  * @param {string} albumID
  * @param {?AlbumLoadedCB} [albumLoadedCB=null]
+ * @param {?string} parentID
  *
  * @returns {void}
  */
 album.load = function (albumID) {
 	var albumLoadedCB = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+	var parentID = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
 	/**
   * @param {Album} data
   */
 	var processAlbum = function processAlbum(data) {
 		album.json = data;
+
+		if (parentID !== null) {
+			// Used with search so that the back button sends back to the
+			// search results.
+			album.json.original_parent_id = album.json.parent_id;
+			album.json.parent_id = parentID;
+		}
 
 		if (albumLoadedCB === null) {
 			lychee.animate(lychee.content, "contentZoomOut");
@@ -3803,7 +3812,7 @@ contextMenu.photo = function (photoID, e) {
 		} }, { title: build.iconic("cloud-download") + lychee.locale["DOWNLOAD"], fn: function fn() {
 			return _photo3.getArchive([photoID]);
 		} }];
-	if (album.isSmartID(album.getID()) || album.isSearchID(album.getID) || album.isTagAlbum()) {
+	if (album.isSmartID(album.getID()) || album.isSearchID(album.getID()) || album.isTagAlbum()) {
 		// Cover setting not supported for smart or tag albums and search results.
 		items.splice(2, 1);
 	}
@@ -4403,7 +4412,7 @@ header.bind = function () {
 
 	header.dom(".header__search").on("keyup click", function () {
 		if ($(this).val().length > 0) {
-			lychee.goto("search/" + encodeURIComponent($(this).val()));
+			lychee.goto(SearchAlbumIDPrefix + "/" + encodeURIComponent($(this).val()));
 		} else if (search.json !== null) {
 			search.reset();
 		}
@@ -5974,6 +5983,21 @@ lychee.reloadIfLegacyIDs = function (albumID, photoID, autoplay) {
 };
 
 /**
+ * This is a "God method" that is used to load pretty much anything, based
+ * on what's in the web browser's URL bar after the '#' character:
+ *
+ * (nothing) --> load root album, assign null to albumID and photoID
+ * {albumID} --> load the album; albumID equals the given ID, photoID is null
+ * {albumID}/{photoID} --> load album (if not already loaded) and then the
+ *   corresponding photo, assign the respective values to albumID and photoID
+ * map --> load the map of all albums
+ * map/{albumID} --> load the map of the respective album
+ * search/{term} --> load or go back to "search" album for the given term,
+ *   assign 'search/{term}' as fictitious albumID and assign null to photoID
+ * search/{term}/{photoID} --> load photo within fictitious search album,
+ *   assign 'search/{term}' as fictitious albumID and assign the given ID to
+ *   photoID
+ *
  * @param {boolean} [autoplay=true]
  * @returns {void}
  */
@@ -5982,7 +6006,10 @@ lychee.load = function () {
 
 	var hash = document.location.hash.replace("#", "").split("/");
 	var albumID = hash[0];
-	var photoID = hash[1];
+	if (albumID === SearchAlbumIDPrefix && hash.length > 1) {
+		albumID += "/" + hash[1];
+	}
+	var photoID = hash[album.isSearchID(albumID) ? 2 : 1];
 
 	contextMenu.close();
 	multiselect.close();
@@ -6011,24 +6038,6 @@ lychee.load = function () {
 			}
 			mapview.open(albumID);
 			lychee.footer_hide();
-		} else if (albumID === "search") {
-			// Search has been triggered
-			var search_string = decodeURIComponent(photoID);
-
-			if (search_string.trim() === "") {
-				// do nothing on "only space" search strings
-				return;
-			}
-			// If public search is disabled -> do nothing
-			if (lychee.publicMode === true && !lychee.public_search) {
-				loadingBar.show("error", lychee.locale["ERROR_SEARCH_DEACTIVATED"]);
-				return;
-			}
-
-			header.dom(".header__search").val(search_string);
-			search.find(search_string);
-
-			lychee.footer_show();
 		} else {
 			if (lychee.reloadIfLegacyIDs(albumID, photoID, autoplay)) {
 				return;
@@ -6066,7 +6075,7 @@ lychee.load = function () {
 			// If we don't have an album or the wrong album load the album
 			// first and let the album loader load the photo afterwards or
 			// load the photo directly.
-			if (lychee.content.html() === "" || album.json === null || album.json.id !== albumID || header.dom(".header__search").length && header.dom(".header__search").val().length !== 0) {
+			if (lychee.content.html() === "" || album.json === null || album.json.id !== albumID) {
 				lychee.content.hide();
 				album.load(albumID, loadPhoto);
 			} else {
@@ -6091,8 +6100,6 @@ lychee.load = function () {
 			if (visible.sidebar()) _sidebar.toggle(false);
 			mapview.open();
 			lychee.footer_hide();
-		} else if (albumID === "search") {
-			// search string is empty -> do nothing
 		} else {
 			if (lychee.reloadIfLegacyIDs(albumID, photoID, autoplay)) {
 				return;
@@ -6111,12 +6118,46 @@ lychee.load = function () {
 			if (visible.sidebar() && (album.isSmartID(albumID) || album.isSearchID(albumID))) _sidebar.toggle(false);
 			$("#sensitive_warning").hide();
 			if (album.json && albumID === album.json.id) {
-				view.album.title();
+				if (album.isSearchID(albumID)) {
+					// We are probably coming back to the search results from
+					// viewing an image.  Because search results is not a
+					// regular album, it needs to be treated a little
+					// differently.
+					header.setMode("albums");
+					lychee.setTitle(lychee.locale["SEARCH_RESULTS"], false);
+				} else {
+					view.album.title();
+				}
 				lychee.content.show();
 				tabindex.makeFocusable(lychee.content, true);
 				// If the album was loaded in the background (when content is
 				// hidden), scrolling may not have worked.
 				view.album.content.restoreScroll();
+			} else if (album.isSearchID(albumID)) {
+				// Search has been triggered
+				var search_string = decodeURIComponent(hash[1]).trim();
+
+				if (search_string === "") {
+					// do nothing on "only space" search strings
+					return;
+				}
+				// If public search is disabled -> do nothing
+				if (lychee.publicMode === true && !lychee.public_search) {
+					loadingBar.show("error", lychee.locale["ERROR_SEARCH_DEACTIVATED"]);
+					return;
+				}
+
+				header.dom(".header__search").val(search_string);
+				search.find(search_string);
+			} else if (visible.search()) {
+				// Somebody clicked on an album in search results.  We
+				// will alter the parent_id of that album once it's loaded
+				// so that the back button sends us back to the search
+				// results.
+				// Trash data so that it's reloaded if needed (just as we
+				// would for a regular parent album).
+				search.json = null;
+				album.load(albumID, null, album.getID());
 			} else {
 				album.load(albumID);
 			}
@@ -8457,9 +8498,9 @@ _photo3.delete = function (photoIDs) {
 		// Show album otherwise.
 		if (visible.photo()) {
 			if (nextPhotoID !== null && nextPhotoID !== _photo3.getID()) {
-				lychee.goto(album.getID() + "/" + nextPhotoID);
+				lychee.goto(album.getID() + "/" + nextPhotoID, false);
 			} else if (previousPhotoID !== null && previousPhotoID !== _photo3.getID()) {
-				lychee.goto(album.getID() + "/" + previousPhotoID);
+				lychee.goto(album.getID() + "/" + previousPhotoID, false);
 			} else {
 				lychee.goto(album.getID());
 			}
@@ -9259,7 +9300,7 @@ photoeditor.rotate = function (photoID, direction) {
  *
  * @type {string}
  */
-var SearchAlbumID = "search";
+var SearchAlbumIDPrefix = "search";
 
 /**
  * @typedef SearchAlbum
@@ -9268,7 +9309,7 @@ var SearchAlbumID = "search";
  * mostly compatible with the other album types, i.e.
  * {@link Album}, {@link TagAlbum} and {@link SmartAlbum}.
  *
- * @property {string}  id                       - always equals `SearchAlbumID`
+ * @property {string}  id                       - always equals `SearchAlbumIDPrefix/search-term`
  * @property {string}  title                    - always equals `lychee.locale["SEARCH_RESULTS"]`
  * @property {Photo[]} photos                   - the found photos
  * @property {Album[]} albums                   - the found albums
@@ -9296,8 +9337,10 @@ search.find = function (term) {
 
 	/** @param {SearchResult} data */
 	var successHandler = function successHandler(data) {
-		// Do nothing, if search result is identical to previous result
 		if (search.json && search.json.checksum === data.checksum) {
+			// If search result is identical to previous result, just
+			// update the album id with the new search term and bail out.
+			album.json.id = SearchAlbumIDPrefix + "/" + term;
 			return;
 		}
 
@@ -9305,7 +9348,7 @@ search.find = function (term) {
 
 		// Create and assign a `SearchAlbum`
 		album.json = {
-			id: SearchAlbumID,
+			id: SearchAlbumIDPrefix + "/" + term,
 			title: lychee.locale["SEARCH_RESULTS"],
 			photos: search.json.photos,
 			albums: search.json.albums,
@@ -10046,7 +10089,7 @@ _sidebar.triggerSearch = function (search_string) {
 
 	search.json = null;
 	// We're either logged in or public search is allowed
-	lychee.goto("search/" + encodeURIComponent(search_string));
+	lychee.goto(SearchAlbumIDPrefix + "/" + encodeURIComponent(search_string));
 };
 
 /**
@@ -13671,7 +13714,7 @@ visible.config = function () {
 
 /** @returns {boolean} */
 visible.search = function () {
-	return search.json !== null;
+	return visible.albums() && album.json !== null && album.isSearchID(album.json.id);
 };
 
 /** @returns {boolean} */

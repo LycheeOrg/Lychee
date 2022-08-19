@@ -1217,7 +1217,7 @@ header.bind = function () {
 
 	header.dom(".header__search").on("keyup click", function () {
 		if ($(this).val().length > 0) {
-			lychee.goto("search/" + encodeURIComponent($(this).val()));
+			lychee.goto(SearchAlbumIDPrefix + "/" + encodeURIComponent($(this).val()));
 		} else if (search.json !== null) {
 			search.reset();
 		}
@@ -1633,7 +1633,7 @@ visible.config = function () {
 
 /** @returns {boolean} */
 visible.search = function () {
-	return search.json !== null;
+	return visible.albums() && album.json !== null && album.isSearchID(album.json.id);
 };
 
 /** @returns {boolean} */
@@ -1753,7 +1753,7 @@ sidebar.triggerSearch = function (search_string) {
 
 	search.json = null;
 	// We're either logged in or public search is allowed
-	lychee.goto("search/" + encodeURIComponent(search_string));
+	lychee.goto(SearchAlbumIDPrefix + "/" + encodeURIComponent(search_string));
 };
 
 /**
