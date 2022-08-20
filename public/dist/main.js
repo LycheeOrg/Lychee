@@ -9490,6 +9490,14 @@ settings.createLogin = function () {
 	};
 
 	/**
+  * @param {User} updatedAdminUser
+  * @returns {void}
+  */
+	var successHandler = function successHandler(updatedAdminUser) {
+		lychee.user = updatedAdminUser;
+	};
+
+	/**
   * @typedef SetLoginDialogResult
   *
   * @property {string} username
@@ -9528,7 +9536,7 @@ settings.createLogin = function () {
 			password: password
 		};
 
-		api.post("Settings::setLogin", params, null, null, errorHandler);
+		api.post("Settings::setLogin", params, successHandler, null, errorHandler);
 	};
 
 	var msg = "\n\t\t<p>\n\t\t\t" + lychee.locale["LOGIN_TITLE"] + "\n\t\t\t<input name='username' class='text' type='text' placeholder='" + lychee.locale["LOGIN_USERNAME"] + "' value=''>\n\t\t\t<input name='password' class='text' type='password' placeholder='" + lychee.locale["LOGIN_PASSWORD"] + "' value=''>\n\t\t\t<input name='confirm' class='text' type='password' placeholder='" + lychee.locale["LOGIN_PASSWORD_CONFIRM"] + "' value=''>\n\t\t</p>";
@@ -9644,10 +9652,12 @@ settings.changeLogin = function (params) {
 		$("input[name=confirm]").removeClass("error");
 	}
 
-	api.post("Settings::updateLogin", params, function () {
+	api.post("Settings::updateLogin", params,
+	/** @param {User} updatedUser */function (updatedUser) {
 		$("input[name]").removeClass("error");
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LOGIN"]);
 		view.settings.content.clearLogin();
+		lychee.user = updatedUser;
 	});
 };
 
