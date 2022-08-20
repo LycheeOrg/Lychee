@@ -13,6 +13,7 @@ use App\Http\Requests\Legacy\SetAdminLoginRequest;
 use App\Http\Requests\Settings\ChangeLoginRequest;
 use App\Http\Requests\Settings\SetSortingRequest;
 use App\Models\Configs;
+use App\Models\User;
 use App\Rules\LicenseRule;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -27,17 +28,17 @@ class SettingsController extends Controller
 {
 	/**
 	 * Set the Login information for the admin user (id = 0)
-	 * when the later is not initialized.
+	 * when the latter is not initialized.
 	 *
 	 * @param SetAdminLoginRequest $request
 	 * @param SetLogin             $setLogin
 	 *
-	 * @return void
+	 * @return User
 	 *
 	 * @throws LycheeException
 	 * @throws ModelNotFoundException
 	 */
-	public function setLogin(SetAdminLoginRequest $request, SetLogin $setLogin): void
+	public function setLogin(SetAdminLoginRequest $request, SetLogin $setLogin): User
 	{
 		$adminUser = $setLogin->do(
 			$request->username(),
@@ -47,6 +48,8 @@ class SettingsController extends Controller
 		// Otherwise, the session is out-of-sync and falsely assumes the user
 		// to be unauthenticated upon the next request.
 		Auth::login($adminUser);
+
+		return $adminUser;
 	}
 
 	/**
@@ -55,12 +58,11 @@ class SettingsController extends Controller
 	 * @param ChangeLoginRequest $request
 	 * @param UpdateLogin        $updateLogin
 	 *
-	 * @return void
+	 * @return User
 	 *
 	 * @throws LycheeException
-	 * @throws ModelNotFoundException
 	 */
-	public function updateLogin(ChangeLoginRequest $request, UpdateLogin $updateLogin): void
+	public function updateLogin(ChangeLoginRequest $request, UpdateLogin $updateLogin): User
 	{
 		$currentUser = $updateLogin->do(
 			$request->username(),
@@ -72,6 +74,8 @@ class SettingsController extends Controller
 		// Otherwise, the session is out-of-sync and falsely assumes the user
 		// to be unauthenticated upon the next request.
 		Auth::login($currentUser);
+
+		return $currentUser;
 	}
 
 	/**
