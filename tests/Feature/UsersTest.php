@@ -28,49 +28,30 @@ class UsersTest extends TestCase
 {
 	use InteractWithSmartAlbums;
 
-	public function testSetLogin(): void
+	public function testSetAminLoginIfAdminUnconfigured(): void
 	{
 		/**
 		 * because there is no dependency injection in test cases.
 		 */
 		$sessions_test = new SessionUnitTest($this);
 
-		$clear = false;
-		$configs = Configs::get();
-
-		/*
-		 * Check if password and username are set
-		 */
-		if ($configs['password'] === '' && $configs['username'] === '') {
-			$clear = true;
-
-			$sessions_test->set_admin('lychee', 'password');
-			$sessions_test->logout();
-
-			$sessions_test->set_admin('lychee', 'password', 403, 'Admin user is already registered');
-
-			$sessions_test->login('lychee', 'password');
-			$sessions_test->logout();
-		} else {
-			static::markTestSkipped('Username and Password are set. We do not bother testing further.');
+		if (!AdminAuthentication::isAdminNotRegistered()) {
+			static::markTestSkipped('Admin user is registered; test skipped.');
 		}
 
-		/*
-		 * We check that there are username and password set in the database
-		 */
+		$sessions_test->login('i-dont-exist', 'i-dont-matter');
+		$sessions_test->set_admin('lychee', 'password');
+		$sessions_test->logout();
 		static::assertFalse(AdminAuthentication::isAdminNotRegistered());
+
+		$sessions_test->set_admin('lychee', 'password', 403, 'Admin user is already registered');
+
+		$sessions_test->login('lychee', 'password');
+		$sessions_test->logout();
 
 		$sessions_test->login('foo', 'bar', 401);
 		$sessions_test->login('lychee', 'bar', 401);
 		$sessions_test->login('foo', 'password', 401);
-
-		/*
-		 * If we did set login and password we clear them
-		 */
-		if ($clear) {
-			Configs::set('username', '');
-			Configs::set('password', '');
-		}
 	}
 
 	public function testUsers(): void
