@@ -1681,6 +1681,21 @@ album.load = function (albumID) {
 				album.load(albumID, albumLoadedCB);
 			});
 			return true;
+		} else if (lycheeException.exception.endsWith("UnauthenticatedException") && !albumLoadedCB) {
+			// If no password is required, but we still get a 401 error
+			// try to properly log in as a user
+			// We only try this, if `albumLoadedCB` is not set.
+			// This is not optimal, but the best we can do without too much
+			// refactoring for now.
+			// `albumLoadedCB` is set, if the user directly jumps to a photo
+			// in an album via a direct link.
+			// Even though the album might be private, the photo could still
+			// be visible.
+			// If we caught users for a direct link to a public photo
+			// within a private album, we would "trap" the users in a login
+			// dialog which they cannot pass by.
+			lychee.loginDialog();
+			return true;
 		} else if (albumLoadedCB) {
 			// In case we could not successfully load and unlock the album,
 			// but we have a callback, we call that and consider the error
@@ -2694,6 +2709,37 @@ var albums = {
  * @returns {void}
  */
 albums.load = function () {
+	var showRootAlbum = function showRootAlbum() {
+		header.setMode("albums");
+		view.albums.init();
+		lychee.animate(lychee.content, "contentZoomIn");
+
+		tabindex.makeFocusable(lychee.content);
+
+		if (lychee.active_focus_on_page_load) {
+			// Put focus on first element - either album or photo
+			var first_album = $(".album:first");
+			if (first_album.length !== 0) {
+				first_album.focus();
+			} else {
+				var first_photo = $(".photo:first");
+				if (first_photo.length !== 0) {
+					first_photo.focus();
+				}
+			}
+		}
+
+		setTimeout(function () {
+			lychee.footer_show();
+		}, 300);
+
+		// If no user is authenticated and there is nothing to see in the
+		// root album, we automatically show the login dialog
+		if (lychee.publicMode === true && lychee.viewMode === false && albums.isEmpty()) {
+			lychee.loginDialog();
+		}
+	};
+
 	var startTime = new Date().getTime();
 
 	lychee.animate(lychee.content, "contentZoomOut");
@@ -2714,28 +2760,7 @@ albums.load = function () {
 		var waitTime = durationTime > 300 || skipDelay ? 0 : 300 - durationTime;
 
 		setTimeout(function () {
-			header.setMode("albums");
-			view.albums.init();
-			lychee.animate(lychee.content, "contentZoomIn");
-
-			tabindex.makeFocusable(lychee.content);
-
-			if (lychee.active_focus_on_page_load) {
-				// Put focus on first element - either album or photo
-				var first_album = $(".album:first");
-				if (first_album.length !== 0) {
-					first_album.focus();
-				} else {
-					var first_photo = $(".photo:first");
-					if (first_photo.length !== 0) {
-						first_photo.focus();
-					}
-				}
-			}
-
-			setTimeout(function () {
-				lychee.footer_show();
-			}, 300);
+			showRootAlbum();
 		}, waitTime);
 	};
 
@@ -2743,24 +2768,7 @@ albums.load = function () {
 		api.post("Albums::get", {}, successCallback);
 	} else {
 		setTimeout(function () {
-			header.setMode("albums");
-			view.albums.init();
-			lychee.animate(lychee.content, "contentZoomIn");
-
-			tabindex.makeFocusable(lychee.content);
-
-			if (lychee.active_focus_on_page_load) {
-				// Put focus on first element - either album or photo
-				var first_album = $(".album:first");
-				if (first_album.length !== 0) {
-					first_album.focus();
-				} else {
-					var first_photo = $(".photo:first");
-					if (first_photo.length !== 0) {
-						first_photo.focus();
-					}
-				}
-			}
+			showRootAlbum();
 		}, 300);
 	}
 };
@@ -2923,6 +2931,24 @@ albums.isTagAlbum = function (albumID) {
 	return albums.json && albums.json.tag_albums.find(function (tagAlbum) {
 		return tagAlbum.id === albumID;
 	});
+};
+
+/**
+ * Returns true if the root album is empty in the sense that there is no
+ * visible user content.
+ *
+ * @returns {boolean}
+ */
+albums.isEmpty = function () {
+	return albums.json === null || albums.isSmartAlbumEmpty(albums.json.smart_albums.public) && albums.isSmartAlbumEmpty(albums.json.smart_albums.recent) && albums.isSmartAlbumEmpty(albums.json.smart_albums.starred) && albums.isSmartAlbumEmpty(albums.json.smart_albums.unsorted) && albums.json.albums.length === 0 && albums.json.shared_albums.length === 0 && albums.json.tag_albums.length === 0;
+};
+
+/**
+ * @param {?SmartAlbum} smartAlbum
+ * @returns {boolean}
+ */
+albums.isSmartAlbumEmpty = function (smartAlbum) {
+	return smartAlbum === null || !smartAlbum.photos || smartAlbum.photos.length === 0;
 };
 
 //noinspection HtmlUnknownTarget
@@ -13891,7 +13917,7 @@ visible.leftMenu = function () {
  *
  * @property {string}  id
  * @property {string}  title
- * @property {Photo[]} photos
+ * @property {Photo[]} [photos]
  * @property {?Thumb}  thumb
  * @property {boolean} is_public
  * @property {boolean} is_downloadable
