@@ -28,7 +28,7 @@ class UsersTest extends TestCase
 {
 	use InteractWithSmartAlbums;
 
-	public function testSetAminLoginIfAdminUnconfigured(): void
+	public function testSetAdminLoginIfAdminUnconfigured(): void
 	{
 		/**
 		 * because there is no dependency injection in test cases.
