@@ -21,11 +21,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Tests\Feature\Lib\AlbumsUnitTest;
+use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\Feature\Lib\RootAlbumUnitTest;
 use Tests\Feature\Lib\SharingUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
+use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\Feature\Traits\RequiresEmptyUsers;
 use Tests\TestCase;
 
@@ -34,25 +36,30 @@ class AlbumTest extends TestCase
 	use InteractWithSmartAlbums;
 	use RequiresEmptyAlbums;
 	use RequiresEmptyUsers;
+	use RequiresEmptyPhotos;
 
 	protected AlbumsUnitTest $albums_tests;
 	protected RootAlbumUnitTest $root_album_tests;
 	protected UsersUnitTest $users_tests;
 	protected SharingUnitTest $sharing_tests;
+	protected PhotosUnitTest $photos_tests;
 
 	public function setUp(): void
 	{
 		parent::setUp();
 		$this->setUpRequiresEmptyUsers();
 		$this->setUpRequiresEmptyAlbums();
+		$this->setUpRequiresEmptyPhotos();
 		$this->albums_tests = new AlbumsUnitTest($this);
 		$this->root_album_tests = new RootAlbumUnitTest($this);
 		$this->users_tests = new UsersUnitTest($this);
 		$this->sharing_tests = new SharingUnitTest($this);
+		$this->photos_tests = new PhotosUnitTest($this);
 	}
 
 	public function tearDown(): void
 	{
+		$this->tearDownRequiresEmptyPhotos();
 		$this->tearDownRequiresEmptyAlbums();
 		$this->tearDownRequiresEmptyUsers();
 		parent::tearDown();
@@ -481,5 +488,42 @@ class AlbumTest extends TestCase
 		$albumID1 = $this->albums_tests->add(null, 'Test Album 1')->offsetGet('id');
 		$albumID2 = $this->albums_tests->add(null, 'Test Album 2')->offsetGet('id');
 		$this->albums_tests->delete([$albumID1, $albumID2]);
+	}
+
+	/**
+	 * Creates a (regular) album, put some photos in it, tags some of them,
+	 * creates a corresponding tag album and deletes the tag album again.
+	 *
+	 * This test ensures that only and ONLY the tag album is deleted.
+	 *
+	 * In particular, the test assures:
+	 *  - deleting the tag album does not delete the photos inside it
+	 *  - deleting the tah album does not delete the regular album which
+	 *    contains the tagged photos
+	 *
+	 * Test for issue
+	 * [LycheeOrg/Lychee#1472](https://github.com/LycheeOrg/Lychee/issues/1472).
+	 *
+	 * @return void
+	 */
+	public function testDeleteNonEmptyTagAlbumWithPhotosFromRegularAlbum(): void
+	{
+		Auth::loginUsingId(0);
+		$regularAlbumID = $this->albums_tests->add(null, 'Regular Album for Delete Test')->offsetGet('id');
+		$photoID = $this->photos_tests->upload(
+			self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE), $regularAlbumID
+		)->offsetGet('id');
+		$this->photos_tests->set_tag([$photoID], ['tag-for-delete-test']);
+		$tagAlbumID = $this->albums_tests->addByTags('Tag Album for Delete Test', ['tag-for-delete-test'])->offsetGet('id');
+
+		// Ensure that the photo is actually part of the tag album and that
+		// we are testing what we want to test
+		$this->albums_tests->get($tagAlbumID)->assertJson([]);
+
+		$this->albums_tests->delete([$tagAlbumID]);
+
+		// Ensure that the regular album and the photo are still there
+		$this->albums_tests->get($regularAlbumID);
+		$this->photos_tests->get($photoID);
 	}
 }
