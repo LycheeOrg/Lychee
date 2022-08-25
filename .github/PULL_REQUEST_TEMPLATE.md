@@ -7,12 +7,14 @@ If you're pushing a Feature:
 - Title it: "This new feature"
 - Describe what the new feature enables
 - Ensure it doesn't break any feature.
+- Add tests to test the feature.
 
 If you're pushing a Fix:
 - Title it: "Fixes the bug name"
 - If it is a fix an an existing issue start the description with `fixes #xxxx` where xxxx is the issue number.
 - Describe how it fixes in a few words.
 - Ensure it doesn't break any feature.
+- Add a test that triggered the bug before fixing it.
 
 All Pull Requests run with extensive tests for stable and latest versions of PHP. 
 Ensure your tests pass or your PR may be taken down.
