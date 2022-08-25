@@ -4,6 +4,7 @@ namespace App\Http\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPhoto;
+use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotoTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
 use App\Models\Photo;
 use App\Rules\RandomIDRule;
@@ -14,17 +15,11 @@ use App\Rules\RandomIDRule;
 class SetPhotoPublicRequest extends BaseApiRequest implements HasPhoto
 {
 	use HasPhotoTrait;
+	use AuthorizeCanEditPhotoTrait;
+
 	public const IS_PUBLIC_ATTRIBUTE = 'is_public';
 
 	protected bool $isPublic = false;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function authorize(): bool
-	{
-		return $this->authorizePhotoWrite($this->photo);
-	}
 
 	/**
 	 * {@inheritDoc}

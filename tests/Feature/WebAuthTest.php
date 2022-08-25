@@ -12,9 +12,10 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
 use App\Models\User;
 use DarkGhostHunter\Larapass\Eloquent\WebAuthnCredential;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
 
 class WebAuthTest extends TestCase
@@ -26,7 +27,7 @@ class WebAuthTest extends TestCase
 	 */
 	public function testWebAuthTest(): void
 	{
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 
 		$response = $this->postJson('/api/WebAuthn::register/gen');
 		$response->assertOk();
@@ -42,7 +43,8 @@ class WebAuthTest extends TestCase
 		]);
 		$response->assertForbidden();
 
-		AccessControl::logout();
+		Auth::logout();
+		Session::flush();
 
 		$response = $this->postJson('/api/WebAuthn::login/gen', ['user_id' => 0]);
 		$response->assertOk();
@@ -60,7 +62,7 @@ class WebAuthTest extends TestCase
 		]);
 		$response->assertUnauthorized();
 
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 
 		$response = $this->postJson('/api/WebAuthn::list');
 		$response->assertOk(); // code 200 something
@@ -82,9 +84,10 @@ class WebAuthTest extends TestCase
 		$response = $this->postJson('/api/WebAuthn::delete', ['id' => '1234']);
 		$response->assertNoContent();
 
-		AccessControl::logout();
+		Auth::logout();
+		Session::flush();
 
 		$response = $this->postJson('/api/WebAuthn::delete', ['id' => '1234']);
-		$response->assertUnauthorized();
+		$response->assertForbidden();
 	}
 }

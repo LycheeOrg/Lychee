@@ -64,12 +64,6 @@ class DefaultConfig
 			'public/img/' => 'file_exists|is_readable|is_writable|is_executable',
 			'public/sym/' => 'file_exists|is_readable|is_writable|is_executable',
 			'public/uploads/' => 'file_exists|is_readable|is_writable|is_executable',
-			'public/uploads/big/' => 'file_exists|is_readable|is_writable|is_executable',
-			'public/uploads/import/' => 'file_exists|is_readable|is_writable|is_executable',
-			'public/uploads/medium/' => 'file_exists|is_readable|is_writable|is_executable',
-			'public/uploads/raw/' => 'file_exists|is_readable|is_writable|is_executable',
-			'public/uploads/small/' => 'file_exists|is_readable|is_writable|is_executable',
-			'public/uploads/thumb/' => 'file_exists|is_readable|is_writable|is_executable',
 		],
 		// This is from https://github.com/rashidlaasri/LaravelInstaller
 		// We keep it so we can make the .env edition a bit more friendly (later).

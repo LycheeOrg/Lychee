@@ -2,13 +2,19 @@
 
 namespace App\Actions\WebAuth;
 
-use App\Facades\AccessControl;
+use App\Exceptions\UnauthenticatedException;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class Delete
 {
+	/**
+	 * @throws UnauthenticatedException
+	 */
 	public function do(string|array $ids): void
 	{
-		$user = AccessControl::user();
+		/** @var User $user */
+		$user = Auth::user() ?? throw new UnauthenticatedException();
 		$user->removeCredential($ids);
 	}
 }

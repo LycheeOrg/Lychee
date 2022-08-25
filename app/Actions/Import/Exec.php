@@ -128,10 +128,41 @@ class Exec
 			}
 
 			// Skip folders of Lychee
+			// Currently we must check for each directory which might be used
+			// by Lychee below `uploads/` individually, because the folder
+			// `uploads/import` is a potential source for imports and also
+			// placed below `uploads`.
+			// This is a design error and needs to be changed, at last when
+			// the media is stored remotely on a network storage such as
+			// AWS S3.
+			// A much better folder structure would be
+			//
+			// ```
+			//  |
+			//  +-- staging           // new directory which temporarily stores media which is not yet, but going to be added to Lychee
+			//  |     +-- imports     // replaces the current `uploads/import`
+			//  |     +-- uploads     // temporary storage location for images which have been uploaded via an HTTP POST request
+			//  |     +-- downloads   // temporary storage location for images which have been downloaded from a remote URL
+			//  +-- vault             // replaces the current `uploads/` and could be outsourced to a remote network storage
+			//        +-- original
+			//        +-- medium2x
+			//        +-- medium
+			//        +-- small2x
+			//        +-- small
+			//        +-- thumb2x
+			//        +-- thumb
+			// ```
+			//
+			// This way we could simply check if the path is anything below `vault`
 			if (
 				$realPath === Storage::path('big') ||
+				$realPath === Storage::path('raw') ||
+				$realPath === Storage::path('original') ||
+				$realPath === Storage::path('medium2x') ||
 				$realPath === Storage::path('medium') ||
+				$realPath === Storage::path('small2x') ||
 				$realPath === Storage::path('small') ||
+				$realPath === Storage::path('thumb2x') ||
 				$realPath === Storage::path('thumb')
 			) {
 				throw new ReservedDirectoryException('The given path is a reserved path of Lychee (' . $path . ')');

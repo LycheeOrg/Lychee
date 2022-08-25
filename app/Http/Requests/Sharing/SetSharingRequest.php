@@ -2,14 +2,16 @@
 
 namespace App\Http\Requests\Sharing;
 
-use App\Facades\AccessControl;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbumIDs;
 use App\Http\Requests\Contracts\HasUserIDs;
 use App\Http\Requests\Traits\HasAlbumIDsTrait;
 use App\Http\Requests\Traits\HasUserIDsTrait;
+use App\Models\User;
+use App\Policies\UserPolicy;
 use App\Rules\IntegerIDRule;
 use App\Rules\RandomIDRule;
+use Illuminate\Support\Facades\Gate;
 
 class SetSharingRequest extends BaseApiRequest implements HasAlbumIDs, HasUserIDs
 {
@@ -21,7 +23,7 @@ class SetSharingRequest extends BaseApiRequest implements HasAlbumIDs, HasUserID
 	 */
 	public function authorize(): bool
 	{
-		return AccessControl::can_upload();
+		return Gate::check(UserPolicy::CAN_UPLOAD, User::class);
 	}
 
 	/**

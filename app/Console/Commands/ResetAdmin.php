@@ -2,12 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Actions\User\ResetAdmin as UserResetAdmin;
 use App\Console\Commands\Utilities\Colorize;
 use App\Contracts\ExternalLycheeException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnexpectedException;
-use App\Legacy\Legacy;
-use App\Models\User;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
@@ -33,14 +32,22 @@ class ResetAdmin extends Command
 	protected $description = 'Reset Login and Password of the admin user.';
 
 	/**
+	 * Access to the reset admin function.
+	 *
+	 * @var UserResetAdmin
+	 */
+	protected UserResetAdmin $userResetAdmin;
+
+	/**
 	 * Create a new command instance.
 	 *
 	 * @throws SymfonyConsoleException
 	 */
-	public function __construct(Colorize $colorize)
+	public function __construct(Colorize $colorize, UserResetAdmin $userResetAdmin)
 	{
 		parent::__construct();
 		$this->col = $colorize;
+		$this->userResetAdmin = $userResetAdmin;
 	}
 
 	/**
@@ -53,15 +60,7 @@ class ResetAdmin extends Command
 	public function handle(): int
 	{
 		try {
-			Legacy::resetAdmin();
-
-			/** @var User $user */
-			$user = User::query()->findOrNew(0);
-			$user->incrementing = false; // disable auto-generation of ID
-			$user->id = 0;
-			$user->username = '';
-			$user->password = '';
-			$user->save();
+			$this->userResetAdmin->do();
 
 			$this->line($this->col->yellow('Admin username and password reset.'));
 
