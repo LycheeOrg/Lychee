@@ -7,7 +7,7 @@ If you're pushing a Feature:
 - Title it: "This new feature"
 - Describe what the new feature enables
 - Add tests to test the new feature.
-- Ensure it doesn't break any feature.
+- Ensure it doesn't break any existing features.
 
 If you're pushing a Fix:
 - Title it: "Fixes the bug name"
