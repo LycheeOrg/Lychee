@@ -1451,16 +1451,25 @@ album.getID = function () {
 	/** @type {?string} */
 	var id = null;
 
-	// this is a Lambda
+	/** @param {?string} _id */
 	var isID = function isID(_id) {
 		return album.isSmartID(_id) || album.isSearchID(_id) || album.isModelID(_id);
 	};
 
 	if (_photo3.json) id = _photo3.json.album_id;else if (album.json) id = album.json.id;else if (mapview.albumID) id = mapview.albumID;
 
-	// Search
-	if (isID(id) === false) id = $(".album:hover, .album.active").attr("data-id");
-	if (isID(id) === false) id = $(".photo:hover, .photo.active").attr("data-album-id");
+	if (isID(id) === false) {
+		var active = $(".album:hover, .album.active");
+		if (active.length === 1) {
+			id = active.attr("data-id") || null;
+		}
+	}
+	if (isID(id) === false) {
+		var _active = $(".photo:hover, .photo.active");
+		if (_active.length === 1) {
+			id = _active.attr("data-album-id") || null;
+		}
+	}
 
 	if (isID(id) === true) return id;else return null;
 };
