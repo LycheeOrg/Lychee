@@ -3,6 +3,8 @@
 use Carbon\Carbon;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class DropPageSupport extends Migration
@@ -13,19 +15,13 @@ class DropPageSupport extends Migration
 	private const CREATED_AT_COL_NAME = 'created_at';
 	private const UPDATED_AT_COL_NAME = 'updated_at';
 	private const DATETIME_PRECISION = 0;
-	private const TABLE_NAMES = [
-		'pages',
-	];
-	// The longest named timezones are "America/North_Dakota/New_Salem" and
-	// "America/Argentina/Buenos_Aires" (both have 30 letters)
-	private const TZ_NAME_MAX_LENGTH = 31;
 
 	/**
 	 * Run the migrations.
 	 *
 	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		Schema::dropIfExists('page_contents');
 		Schema::dropIfExists('pages');
@@ -36,7 +32,7 @@ class DropPageSupport extends Migration
 	 *
 	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		$now = Carbon::now();
 		if (!$this->needsConversion()) {
