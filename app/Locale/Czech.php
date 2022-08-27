@@ -24,6 +24,7 @@ final class Czech implements Language
 			'SEARCH' => 'Hledat ...',
 			'MORE' => 'Rozšířená nastavení',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Uživatelé',
 			'CREATE' => 'Create',

@@ -27,6 +27,7 @@ final class French implements Language
 			'ALBUM_SET_ORDER' => 'Changer l\'ordre',
 			'ALBUM_ORDERING' => 'Trier par',
 			'ALBUM_OWNER' => 'Propriétaire',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Utilisateurs',
 			'CREATE' => 'Create',

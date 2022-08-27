@@ -24,6 +24,7 @@ final class Polish implements Language
 			'SEARCH' => 'Szukaj ...',
 			'MORE' => 'Więcej',
 			'DEFAULT' => 'Domyślne',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Użytkownicy',
 			'CREATE' => 'Create',
