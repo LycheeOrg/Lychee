@@ -13,7 +13,6 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
@@ -49,7 +48,7 @@ class InstallTest extends TestCase
 		 * Clearing things up. We could do an Artisan migrate but this is more efficient.
 		 */
 
-		// The order is important: referring tables must be deleted first, referred tables last
+		Schema::disableForeignKeyConstraints();
 		$tables = [
 			'sym_links',
 			'size_variants',
@@ -67,18 +66,10 @@ class InstallTest extends TestCase
 			'web_authn_credentials',
 			'users',
 		];
-
-		if (Schema::connection(null)->getConnection()->getDriverName() !== 'sqlite') {
-			// We must remove the foreign constraint from `albums` to `photos` to
-			// break up circular dependencies.
-			Schema::table('albums', function (Blueprint $table) {
-				$table->dropForeign('albums_cover_id_foreign');
-			});
-		}
-
 		foreach ($tables as $table) {
 			Schema::dropIfExists($table);
 		}
+		Schema::enableForeignKeyConstraints();
 
 		/**
 		 * No database: we should be redirected to install: default case.

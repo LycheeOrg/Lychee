@@ -298,4 +298,12 @@ class Configs extends Model
 	{
 		return $query->where('confidentiality', '<=', 3);
 	}
+
+	/**
+	 * Reset the cache.
+	 */
+	public static function dropCache(): void
+	{
+		self::$cache = [];
+	}
 }

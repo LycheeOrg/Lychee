@@ -21,6 +21,7 @@ class MigrateAdminUser extends Migration
 		$user = User::query()->findOrNew(0);
 		$user->incrementing = false; // disable auto-generation of ID
 		$user->id = 0;
+		Configs::dropCache();
 		$user->username = Configs::getValueAsString('username', '');
 		$user->password = Configs::getValueAsString('password', '');
 		$user->save();
