@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
@@ -13,7 +12,8 @@ class DropAdminUserConfig extends Migration
 	 */
 	public function up()
 	{
-		DB::table('configs')->whereIn('key', ['username', 'password'])->delete();
+		DB::table('configs')->where('key', '=', 'username')
+		->orWhere('key', '=', 'password')->delete();
 	}
 
 	/**
@@ -25,21 +25,22 @@ class DropAdminUserConfig extends Migration
 	{
 		defined('STRING_REQ') or define('STRING_REQ', 'string_required');
 
-		Configs::insert(
+		DB::table('configs')->insert([
 			[
 				'key' => 'username',
 				'value' => '',
+				'confidentiality' => '4',
 				'cat' => 'Admin',
 				'type_range' => STRING_REQ,
-				'confidentiality' => '4',
 			],
 			[
 				'key' => 'password',
 				'value' => '',
+				'confidentiality' => '4',
 				'cat' => 'Admin',
 				'type_range' => STRING_REQ,
-				'confidentiality' => '4',
-			]
+			],
+		]
 		);
 	}
 }
