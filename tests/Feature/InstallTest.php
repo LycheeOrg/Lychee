@@ -50,7 +50,6 @@ class InstallTest extends TestCase
 		 * Clearing things up. We could do an Artisan migrate but this is more efficient.
 		 */
 
-		Schema::disableForeignKeyConstraints();
 		$tables = [
 			'sym_links',
 			'size_variants',
@@ -80,7 +79,6 @@ class InstallTest extends TestCase
 		foreach ($tables as $table) {
 			Schema::dropIfExists($table);
 		}
-		Schema::enableForeignKeyConstraints();
 
 		/**
 		 * No database: we should be redirected to install: default case.
@@ -142,7 +140,7 @@ class InstallTest extends TestCase
 		/**
 		 * We now should NOT be redirected.
 		 */
-		Configs::dropCache();
+		Configs::invalidateCache();
 		$response = $this->get('/');
 		$response->assertOk();
 

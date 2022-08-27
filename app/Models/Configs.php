@@ -302,7 +302,7 @@ class Configs extends Model
 	/**
 	 * Reset the cache.
 	 */
-	public static function dropCache(): void
+	public static function invalidateCache(): void
 	{
 		self::$cache = [];
 	}
