@@ -12,8 +12,9 @@ class DropAdminUserConfig extends Migration
 	 */
 	public function up()
 	{
-		DB::table('configs')->where('key', '=', 'username')
-		->orWhere('key', '=', 'password')->delete();
+		DB::table('configs')
+			->whereIn('key', ['username', 'password'])
+			->delete();
 	}
 
 	/**
