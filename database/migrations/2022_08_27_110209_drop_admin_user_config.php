@@ -2,6 +2,7 @@
 
 use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
 class DropAdminUserConfig extends Migration
 {
@@ -12,7 +13,7 @@ class DropAdminUserConfig extends Migration
 	 */
 	public function up()
 	{
-		Configs::whereIn('key', ['username', 'password'])->delete();
+		DB::table('configs')->whereIn('key', ['username', 'password'])->delete();
 	}
 
 	/**
