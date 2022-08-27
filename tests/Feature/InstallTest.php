@@ -50,6 +50,7 @@ class InstallTest extends TestCase
 		 * Clearing things up. We could do an Artisan migrate but this is more efficient.
 		 */
 
+		// The order is important: referring tables must be deleted first, referred tables last
 		$tables = [
 			'sym_links',
 			'size_variants',
