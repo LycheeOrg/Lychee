@@ -9,7 +9,7 @@
 
     @if($infos['copyright_enable'] == '1')
         <p class="home_copyright">
-			{!! sprintf($locale['FOOTER_COPYRIGHT'], $infos['owner'], $infos['copyright_year']) !!}</p>
+			{!! sprintf(Lang::get('FOOTER_COPYRIGHT'), $infos['owner'], $infos['copyright_year']) !!}</p>
     @endif
 
     @if($infos['additional_footer_text'] != '')
@@ -18,6 +18,6 @@
 
 
     @if($page_config['show_hosted_by'])
-        <p class="hosted_by"><a rel="noopener noreferrer" target="_blank" href="https://LycheeOrg.github.io" tabindex="-1">{{ $locale['HOSTED_WITH_LYCHEE'] }}</a></p>
+        <p class="hosted_by"><a rel="noopener noreferrer" target="_blank" href="https://LycheeOrg.github.io" tabindex="-1">{{ Lang::get('HOSTED_WITH_LYCHEE') }}</a></p>
     @endif
 </div>

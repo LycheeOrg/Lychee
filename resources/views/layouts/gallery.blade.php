@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="{{ $locale['language'] }}" style="visibility: hidden;">
+<html lang="{{ str_replace('_', '-', Lang::get_code()) }}" style="visibility: hidden;">
 <head>
 @include('includes.head')
 </head>
