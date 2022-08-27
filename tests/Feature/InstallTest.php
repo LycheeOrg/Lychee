@@ -12,6 +12,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
@@ -131,6 +132,7 @@ class InstallTest extends TestCase
 		/**
 		 * We now should NOT be redirected.
 		 */
+		Configs::dropCache();
 		$response = $this->get('/');
 		$response->assertOk();
 
