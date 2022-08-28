@@ -18,7 +18,7 @@ d.init=function(){var a=d(u),b;for(b in a)"_"!==b.charAt(0)&&(d[b]=function(b){r
 
 (function(a){var c={},d=a.prototype.stopCallback;a.prototype.stopCallback=function(e,b,a,f){return this.paused?!0:c[a]||c[f]?!1:d.call(this,e,b,a)};a.prototype.bindGlobal=function(a,b,d){this.bind(a,b,d);if(a instanceof Array)for(b=0;b<a.length;b++)c[a[b]]=!0;else c[a]=!0};a.init()})(Mousetrap);
 
-!function(n){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=n();else if("function"==typeof define&&define.amd)define([],n);else{var t;t="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this,t.basicModal=n()}}(function(){return function n(t,e,o){function l(c,s){if(!e[c]){if(!t[c]){var i="function"==typeof require&&require;if(!s&&i)return i(c,!0);if(a)return a(c,!0);var r=new Error("Cannot find module '"+c+"'");throw r.code="MODULE_NOT_FOUND",r}var u=e[c]={exports:{}};t[c][0].call(u.exports,function(n){var e=t[c][1][n];return l(e||n)},u,u.exports,n,t,e,o)}return e[c].exports}for(var a="function"==typeof require&&require,c=0;c<o.length;c++)l(o[c]);return l}({1:[function(n,t,e){"use strict";Object.defineProperty(e,"__esModule",{value:!0});var o=null,l=(e.THEME={small:"basicModal__small",xclose:"basicModal__xclose"},function(){var n=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"";return!0===(arguments.length>1&&void 0!==arguments[1]&&arguments[1])?document.querySelectorAll(".basicModal "+n):document.querySelector(".basicModal "+n)}),a=function(n,t){return null!=n&&(n.constructor===Object?Array.prototype.forEach.call(Object.keys(n),function(e){return t(n[e],e,n)}):Array.prototype.forEach.call(n,function(e,o){return t(e,o,n)}))},c=function(n){return null==n||0===Object.keys(n).length?(console.error("Missing or empty modal configuration object"),!1):(null==n.body&&(n.body=""),null==n.class&&(n.class=""),!1!==n.closable&&(n.closable=!0),null==n.buttons?(console.error("basicModal requires at least one button"),!1):null!=n.buttons.action&&(null==n.buttons.action.class&&(n.buttons.action.class=""),null==n.buttons.action.title&&(n.buttons.action.title="OK"),null==n.buttons.action.fn)?(console.error("Missing fn for action-button"),!1):null==n.buttons.cancel||(null==n.buttons.cancel.class&&(n.buttons.cancel.class=""),null==n.buttons.cancel.title&&(n.buttons.cancel.title="Cancel"),null!=n.buttons.cancel.fn)||(console.error("Missing fn for cancel-button"),!1))},s=function(n){var t="";return t+="\n\t        <div class='basicModalContainer basicModalContainer--fadeIn' data-closable='"+n.closable+"'>\n\t            <div class='basicModal basicModal--fadeIn "+n.class+"' role=\"dialog\">\n\t                <div class='basicModal__content'>\n\t                    "+n.body+"\n\t                </div>\n\t                <div class='basicModal__buttons'>\n\t        ",null!=n.buttons.cancel&&(-1===n.buttons.cancel.class.indexOf("basicModal__xclose")?t+="<a id='basicModal__cancel' class='basicModal__button "+n.buttons.cancel.class+"'>"+n.buttons.cancel.title+"</a>":t+="<div id='basicModal__cancel' class='basicModal__button "+n.buttons.cancel.class+'\' aria-label=\'close\'><svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M405 136.798l-29.798-29.798-119.202 119.202-119.202-119.202-29.798 29.798 119.202 119.202-119.202 119.202 29.798 29.798 119.202-119.202 119.202 119.202 29.798-29.798-119.202-119.202z"/></svg></div>'),null!=n.buttons.action&&(t+="<a id='basicModal__action' class='basicModal__button "+n.buttons.action.class+"'>"+n.buttons.action.title+"</a>"),t+="\n\t                </div>\n\t            </div>\n\t        </div>\n\t        "},i=e.getValues=function(){var n={},t=l("input[name]",!0),e=l("select[name]",!0);return a(t,function(t){var e=t.getAttribute("name"),o=t.value;n[e]=o}),a(e,function(t){var e=t.getAttribute("name"),o=t.options[t.selectedIndex].value;n[e]=o}),0===Object.keys(n).length?null:n},r=function(n){return null!=n.buttons.cancel&&(l("#basicModal__cancel").onclick=function(){if(!0===this.classList.contains("basicModal__button--active"))return!1;this.classList.add("basicModal__button--active"),n.buttons.cancel.fn()}),null!=n.buttons.action&&(l("#basicModal__action").onclick=function(){if(!0===this.classList.contains("basicModal__button--active"))return!1;this.classList.add("basicModal__button--active"),n.buttons.action.fn(i())}),a(l("input",!0),function(n){n.oninput=n.onblur=function(){this.classList.remove("error")}}),a(l("select",!0),function(n){n.onchange=n.onblur=function(){this.classList.remove("error")}}),!0},u=(e.show=function n(t){if(!1===c(t))return!1;if(null!=l())return b(!0),setTimeout(function(){return n(t)},301),!1;o=document.activeElement;var e=s(t);document.body.insertAdjacentHTML("beforeend",e),r(t);var a=l("input");null!=a&&a.select();var i=l("select");return null==a&&null!=i&&i.focus(),null!=t.callback&&t.callback(t),!0},e.error=function(n){d();var t=l("input[name='"+n+"']")||l("select[name='"+n+"']");if(null==t)return!1;t.classList.add("error"),"function"==typeof t.select?t.select():t.focus(),l().classList.remove("basicModal--fadeIn","basicModal--shake"),setTimeout(function(){return l().classList.add("basicModal--shake")},1)},e.visible=function(){return null!=l()}),d=(e.action=function(){var n=l("#basicModal__action");return null!=n&&(n.click(),!0)},e.cancel=function(){var n=l("#basicModal__cancel");return null!=n&&(n.click(),!0)},e.reset=function(){var n=l(".basicModal__button",!0);a(n,function(n){return n.classList.remove("basicModal__button--active")});var t=l("input",!0);a(t,function(n){return n.classList.remove("error")});var e=l("select",!0);return a(e,function(n){return n.classList.remove("error")}),!0}),b=e.close=function(){var n=arguments.length>0&&void 0!==arguments[0]&&arguments[0];if(!1===u())return!1;var t=l().parentElement;return("false"!==t.getAttribute("data-closable")||!1!==n)&&(t.classList.remove("basicModalContainer--fadeIn"),t.classList.add("basicModalContainer--fadeOut"),setTimeout(function(){return null!=t&&(null!=t.parentElement&&void t.parentElement.removeChild(t))},300),null!=o&&(o.focus(),o=null),!0)}},{}]},{},[1])(1)});
+!function(t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define([],t):("undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this).basicModal=t()}(function(){return function o(a,c,i){function l(n,t){if(!c[n]){if(!a[n]){var e="function"==typeof require&&require;if(!t&&e)return e(n,!0);if(s)return s(n,!0);throw(t=new Error("Cannot find module '"+n+"'")).code="MODULE_NOT_FOUND",t}e=c[n]={exports:{}},a[n][0].call(e.exports,function(t){return l(a[n][1][t]||t)},e,e.exports,o,a,c,i)}return c[n].exports}for(var s="function"==typeof require&&require,t=0;t<i.length;t++)l(i[t]);return l}({1:[function(t,n,e){"use strict";function m(t,n){return function(t){if(Array.isArray(t))return t}(t)||function(t,n){var e=null==t?null:"undefined"!=typeof Symbol&&t[Symbol.iterator]||t["@@iterator"];if(null!=e){var o,a,c=[],i=!0,l=!1;try{for(e=e.call(t);!(i=(o=e.next()).done)&&(c.push(o.value),!n||c.length!==n);i=!0);}catch(t){l=!0,a=t}finally{try{i||null==e.return||e.return()}finally{if(l)throw a}}return c}}(t,n)||o(t,n)||function(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function b(t){return function(t){if(Array.isArray(t))return a(t)}(t)||function(t){if("undefined"!=typeof Symbol&&null!=t[Symbol.iterator]||null!=t["@@iterator"])return Array.from(t)}(t)||o(t)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function o(t,n){var e;if(t)return"string"==typeof t?a(t,n):"Map"===(e="Object"===(e=Object.prototype.toString.call(t).slice(8,-1))&&t.constructor?t.constructor.name:e)||"Set"===e?Array.from(t):"Arguments"===e||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(e)?a(t,n):void 0}function a(t,n){(null==n||n>t.length)&&(n=t.length);for(var e=0,o=new Array(n);e<n;e++)o[e]=t[e];return o}Object.defineProperty(e,"__esModule",{value:!0}),e.ModalDialogException=p,e.showCancelButton=e.showActionButton=e.show=e.reset=e.markCancelButtonAsIdle=e.markCancelButtonAsBusy=e.markActionButtonAsIdle=e.markActionButtonAsBusy=e.isVisible=e.isCancelButtonVisible=e.isCancelButtonHidden=e.isCancelButtonBusy=e.isActionButtonVisible=e.isActionButtonHidden=e.isActionButtonBusy=e.hideCancelButton=e.hideActionButton=e.getValues=e.focusError=e.close=e.cancel=e.cacheFormElements=e.action=e.THEME=void 0;var B={lastFocus:null,container:null,dialog:null,dialogContent:null,dialogButtons:null,cancelButton:null,actionButton:null,inputElements:null,selectElements:null,textAreaElements:null,namedFormElements:null};function p(){var t=0<arguments.length&&void 0!==arguments[0]?arguments[0]:null;this.message=null!=t?t:"Unknown exception",this.name="ModalDialogException"}e.THEME={small:"basicModal__small",xclose:"basicModal__xclose"};function g(){B.inputElements=B.dialog.querySelectorAll("div.basicModal__content input"),B.selectElements=B.dialog.querySelectorAll("div.basicModal__content select"),B.textAreaElements=B.dialog.querySelectorAll("div.basicModal__content textarea"),B.namedFormElements={},B.inputElements.forEach(function(t){t.name&&(B.namedFormElements[t.name]=t)}),B.selectElements.forEach(function(t){t.name&&(B.namedFormElements[t.name]=t)}),B.textAreaElements.forEach(function(t){t.name&&(B.namedFormElements[t.name]=t)})}e.cacheFormElements=g;var h=function(){var n={};return B.inputElements.forEach(function(t){if(t.name)switch(t.type){case"checkbox":case"radio":n[t.name]=t.checked;break;case"number":case"range":n[t.name]=parseInt(t.value,10);break;case"file":n[t.name]=t.files;break;default:switch(t.inputMode){case"numeric":n[t.name]=parseInt(t.value,10);break;case"decimal":n[t.name]=parseFloat(t.value);break;default:n[t.name]=t.value}}}),B.selectElements.forEach(function(t){t.name&&(n[t.name]=-1!==t.selectedIndex?t.options[t.selectedIndex].value:null)}),B.textAreaElements.forEach(function(t){t.name&&(n[t.name]=t.value)}),n};function E(t){(t.target instanceof HTMLInputElement||t.target instanceof HTMLSelectElement||t.target instanceof HTMLTextAreaElement)&&t.target.classList.remove("error")}e.getValues=h;e.show=function t(n){var e=n;if(!e||0===Object.keys(e).length)throw new p("Missing or empty modal configuration object");if(e.body||(e.body=""),e.classList||(e.classList=[]),!1!==e.closable&&(e.closable=!0),!e.buttons)throw new p("basicModal requires at least one button");if(e.buttons.action&&(e.buttons.action.classList||(e.buttons.action.classList=[]),e.buttons.action.attributes||(e.buttons.action.attributes={}),e.buttons.action.title||(e.buttons.action.title="OK"),"function"!=typeof e.buttons.action.fn))throw new p("Missing callback function for action button");if(e.buttons.cancel&&(e.buttons.cancel.classList||(e.buttons.cancel.classList=[]),e.buttons.cancel.attributes||(e.buttons.cancel.attributes={}),e.buttons.cancel.title||(e.buttons.cancel.title="Cancel"),"function"!=typeof e.buttons.cancel.fn))throw new p("Missing callback function for cancel button");if(y())C(!0),setTimeout(function(){return t(n)},301);else{B.lastFocus=document.activeElement;var o,a,e=n;if(B.container=document.createElement("div"),B.container.classList.add("basicModalContainer","basicModalContainer--fadeIn"),B.container.dataset.closable=e.closable?"true":"false",B.dialog=B.container.appendChild(document.createElement("div")),B.dialog.classList.add("basicModal","basicModal--fadeIn"),(o=B.dialog.classList).add.apply(o,b(e.classList)),B.dialog.setAttribute("role","dialog"),B.dialogContent=B.dialog.appendChild(document.createElement("div")),B.dialogContent.classList.add("basicModal__content"),B.dialogContent.innerHTML=e.body,B.dialogButtons=B.dialog.appendChild(document.createElement("div")),B.dialogButtons.classList.add("basicModal__buttons"),B.cancelButton=null,e.buttons.cancel){e.buttons.cancel.classList.includes("basicModal__xclose")?(B.cancelButton=B.dialogButtons.appendChild(document.createElement("div")),B.cancelButton.setAttribute("aria-label","close"),B.cancelButton.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M405 136.798l-29.798-29.798-119.202 119.202-119.202-119.202-29.798 29.798 119.202 119.202-119.202 119.202 29.798 29.798 119.202-119.202 119.202 119.202 29.798-29.798-119.202-119.202z"/></svg>'):(B.cancelButton=B.dialogButtons.appendChild(document.createElement("a")),B.cancelButton.textContent=e.buttons.cancel.title),B.cancelButton.id="basicModal__cancel",B.cancelButton.classList.add("basicModal__button"),(o=B.cancelButton.classList).add.apply(o,b(e.buttons.cancel.classList));for(var c=0,i=Object.entries(e.buttons.cancel.attributes);c<i.length;c++){var l=m(i[c],2),s=l[0],l=l[1];B.cancelButton.setAttribute(s,l)}}if(B.actionButton=null,e.buttons.action){B.actionButton=B.dialogButtons.appendChild(document.createElement("a")),B.actionButton.textContent=e.buttons.action.title,B.actionButton.id="basicModal__action",B.actionButton.classList.add("basicModal__button"),(o=B.actionButton.classList).add.apply(o,b(e.buttons.action.classList));for(var u=0,r=Object.entries(e.buttons.action.attributes);u<r.length;u++){var d=m(r[u],2),f=d[0],d=d[1];B.actionButton.setAttribute(f,d)}}document.body.appendChild(B.container),g(),(a=n).buttons.cancel&&B.cancelButton&&B.cancelButton.addEventListener("click",function(){M()||(L(),a.buttons.cancel.fn(h()))}),a.buttons.action&&B.actionButton&&B.actionButton.addEventListener("click",function(){v()||(A(),a.buttons.action.fn(h()))}),B.dialog.addEventListener("input",E),B.dialog.addEventListener("blur",E),B.dialog.addEventListener("change",E),0!==B.inputElements.length?B.inputElements.item(0).select():0!==B.textAreaElements.length?B.textAreaElements.item(0).select():0!==B.selectElements.length?B.selectElements.item(0).focus():B.actionButton?B.actionButton.focus():B.cancelButton&&B.cancelButton.focus(),n.readyCB&&n.readyCB(B.namedFormElements,B.dialogContent)}};function c(){return B.actionButton&&B.dialogButtons.contains(B.actionButton)}function i(){return B.actionButton&&!B.dialogButtons.contains(B.actionButton)}function l(){return B.cancelButton&&B.dialogButtons.contains(B.cancelButton)}function s(){return B.cancelButton&&!B.dialogButtons.contains(B.cancelButton)}e.focusError=function(t){y()&&(u(),(t=B.namedFormElements[t]||null)&&(t.classList.add("error"),t.focus(),(t instanceof HTMLInputElement||t instanceof HTMLTextAreaElement)&&t.select(),B.dialog.classList.remove("basicModal--fadeIn","basicModal--shake"),setTimeout(function(){return B.dialog.classList.add("basicModal--shake")},1)))};var y=function(){return null!==B.container},u=(e.isVisible=y,e.action=function(){return!!B.actionButton&&(B.actionButton.click(),!0)},e.cancel=function(){return!!B.cancelButton&&(B.cancelButton.click(),!0)},function(){y()&&(r(),d(),B.inputElements.forEach(function(t){return t.classList.remove("error")}),B.textAreaElements.forEach(function(t){return t.classList.remove("error")}),B.selectElements.forEach(function(t){return t.classList.remove("error")}))}),v=(e.reset=u,function(){return!!B.actionButton&&B.actionButton.classList.contains("basicModal__button--busy")}),A=(e.isActionButtonBusy=v,function(){B.actionButton&&B.actionButton.classList.add("basicModal__button--busy")}),r=(e.markActionButtonAsBusy=A,function(){B.actionButton&&B.actionButton.classList.remove("basicModal__button--busy")}),M=(e.markActionButtonAsIdle=r,e.isActionButtonVisible=c,e.isActionButtonHidden=i,e.hideActionButton=function(){c()&&B.dialogButtons.removeChild(B.actionButton)},e.showActionButton=function(){i()&&B.dialogButtons.appendChild(B.actionButton)},function(){return!!B.cancelButton&&B.cancelButton.classList.contains("basicModal__button--busy")}),L=(e.isCancelButtonBusy=M,function(){B.cancelButton&&B.cancelButton.classList.add("basicModal__button--busy")}),d=(e.markCancelButtonAsBusy=L,function(){B.cancelButton&&B.cancelButton.classList.remove("basicModal__button--busy")}),C=(e.markCancelButtonAsIdle=d,e.isCancelButtonVisible=l,e.isCancelButtonHidden=s,e.hideCancelButton=function(){l()&&B.dialogButtons.removeChild(B.cancelButton)},e.showCancelButton=function(){s()&&(c()?B.dialogButtons.insertBefore(B.cancelButton,B.actionButton):B.dialogButtons.appendChild(B.cancelButton))},function(){var t=0<arguments.length&&void 0!==arguments[0]&&arguments[0],n=1<arguments.length?arguments[1]:void 0;y()?"false"===B.container.dataset.closable&&!t||(t=B.container.classList.replace("basicModalContainer--fadeIn","basicModalContainer--fadeOut"),setTimeout(function(){B.container.remove(),B.container=null,B.dialog=null,B.actionButton=null,B.cancelButton=null,B.inputElements=null,B.selectElements=null,(B.textAreaElements=null)!==B.lastFocus&&(B.lastFocus.focus(),B.lastFocus=null),n&&n()},t?300:0)):n&&setTimeout(n,0)});e.close=C},{}]},{},[1])(1)});
 !function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t():"function"==typeof define&&define.amd?define([],t):"object"==typeof exports?exports.scrollLock=t():e.scrollLock=t()}(this,function(){return function(l){var r={};function o(e){if(r[e])return r[e].exports;var t=r[e]={i:e,l:!1,exports:{}};return l[e].call(t.exports,t,t.exports,o),t.l=!0,t.exports}return o.m=l,o.c=r,o.d=function(e,t,l){o.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:l})},o.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},o.t=function(t,e){if(1&e&&(t=o(t)),8&e)return t;if(4&e&&"object"==typeof t&&t&&t.__esModule)return t;var l=Object.create(null);if(o.r(l),Object.defineProperty(l,"default",{enumerable:!0,value:t}),2&e&&"string"!=typeof t)for(var r in t)o.d(l,r,function(e){return t[e]}.bind(null,r));return l},o.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return o.d(t,"a",t),t},o.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},o.p="",o(o.s=0)}([function(e,t,l){"use strict";l.r(t);var r=function(e){return Array.isArray(e)?e:[e]},a=function(e){return e instanceof Node},o=function(e,t){if(e&&t){e=e instanceof NodeList?e:[e];for(var l=0;l<e.length&&!0!==t(e[l],l,e.length);l++);}},n=function(e){return console.error("[scroll-lock] ".concat(e))},b=function(e){if(Array.isArray(e))return e.join(", ")},c=function(e){var t=[];return o(e,function(e){return t.push(e)}),t},h=function(e,t){var l=!(2<arguments.length&&void 0!==arguments[2])||arguments[2],r=3<arguments.length&&void 0!==arguments[3]?arguments[3]:document;if(l&&-1!==c(r.querySelectorAll(t)).indexOf(e))return e;for(;(e=e.parentElement)&&-1===c(r.querySelectorAll(t)).indexOf(e););return e},v=function(e,t){var l=2<arguments.length&&void 0!==arguments[2]?arguments[2]:document;return-1!==c(l.querySelectorAll(t)).indexOf(e)},i=function(e){if(e)return"hidden"===getComputedStyle(e).overflow},m=function(e){if(e)return!!i(e)||e.scrollTop<=0},S=function(e){if(e){if(i(e))return!0;var t=e.scrollTop;return e.scrollHeight<=t+e.offsetHeight}},y=function(e){if(e)return!!i(e)||e.scrollLeft<=0},k=function(e){if(e){if(i(e))return!0;var t=e.scrollLeft;return e.scrollWidth<=t+e.offsetWidth}};l.d(t,"disablePageScroll",function(){return d}),l.d(t,"enablePageScroll",function(){return s}),l.d(t,"getScrollState",function(){return f}),l.d(t,"clearQueueScrollLocks",function(){return p}),l.d(t,"getTargetScrollBarWidth",function(){return g}),l.d(t,"getCurrentTargetScrollBarWidth",function(){return A}),l.d(t,"getPageScrollBarWidth",function(){return G}),l.d(t,"getCurrentPageScrollBarWidth",function(){return T}),l.d(t,"addScrollableTarget",function(){return L}),l.d(t,"removeScrollableTarget",function(){return W}),l.d(t,"addScrollableSelector",function(){return x}),l.d(t,"removeScrollableSelector",function(){return F}),l.d(t,"addLockableTarget",function(){return Y}),l.d(t,"addLockableSelector",function(){return E}),l.d(t,"setFillGapMethod",function(){return O}),l.d(t,"addFillGapTarget",function(){return P}),l.d(t,"removeFillGapTarget",function(){return j}),l.d(t,"addFillGapSelector",function(){return q}),l.d(t,"removeFillGapSelector",function(){return M}),l.d(t,"refillGaps",function(){return N});var u=["padding","margin","width","max-width","none"],w={scroll:!0,queue:0,scrollableSelectors:["[data-scroll-lock-scrollable]"],lockableSelectors:["body","[data-scroll-lock-lockable]"],fillGapSelectors:["body","[data-scroll-lock-fill-gap]","[data-scroll-lock-lockable]"],fillGapMethod:u[0],startTouchY:0,startTouchX:0},d=function(e){w.queue<=0&&(w.scroll=!1,B(),X()),L(e),w.queue++},s=function(e){0<w.queue&&w.queue--,w.queue<=0&&(w.scroll=!0,C(),Q()),W(e)},f=function(){return w.scroll},p=function(){w.queue=0},g=function(e){var t=1<arguments.length&&void 0!==arguments[1]&&arguments[1];if(a(e)){var l=e.style.overflowY;t?f()||(e.style.overflowY=e.getAttribute("data-scroll-lock-saved-overflow-y-property")):e.style.overflowY="scroll";var r=A(e);return e.style.overflowY=l,r}return 0},A=function(e){if(a(e)){if(e===document.body){var t=document.documentElement.clientWidth;return window.innerWidth-t}var l=e.style.borderLeftWidth,r=e.style.borderRightWidth;e.style.borderLeftWidth="0px",e.style.borderRightWidth="0px";var o=e.offsetWidth-e.clientWidth;return e.style.borderLeftWidth=l,e.style.borderRightWidth=r,o}return 0},G=function(){var e=0<arguments.length&&void 0!==arguments[0]&&arguments[0];return g(document.body,e)},T=function(){return A(document.body)},L=function(e){e&&r(e).map(function(e){o(e,function(e){a(e)?e.setAttribute("data-scroll-lock-scrollable",""):n('"'.concat(e,'" is not a Element.'))})})},W=function(e){e&&r(e).map(function(e){o(e,function(e){a(e)?e.removeAttribute("data-scroll-lock-scrollable"):n('"'.concat(e,'" is not a Element.'))})})},x=function(e){e&&r(e).map(function(e){w.scrollableSelectors.push(e)})},F=function(e){e&&r(e).map(function(t){w.scrollableSelectors=w.scrollableSelectors.filter(function(e){return e!==t})})},Y=function(e){e&&(r(e).map(function(e){o(e,function(e){a(e)?e.setAttribute("data-scroll-lock-lockable",""):n('"'.concat(e,'" is not a Element.'))})}),f()||B())},E=function(e){e&&(r(e).map(function(e){w.lockableSelectors.push(e)}),f()||B(),q(e))},O=function(e){if(e)if(-1!==u.indexOf(e))w.fillGapMethod=e,N();else{var t=u.join(", ");n('"'.concat(e,'" method is not available!\nAvailable fill gap methods: ').concat(t,"."))}},P=function(e){e&&r(e).map(function(e){o(e,function(e){a(e)?(e.setAttribute("data-scroll-lock-fill-gap",""),w.scroll||H(e)):n('"'.concat(e,'" is not a Element.'))})})},j=function(e){e&&r(e).map(function(e){o(e,function(e){a(e)?(e.removeAttribute("data-scroll-lock-fill-gap"),w.scroll||I(e)):n('"'.concat(e,'" is not a Element.'))})})},q=function(e){e&&r(e).map(function(e){-1===w.fillGapSelectors.indexOf(e)&&(w.fillGapSelectors.push(e),w.scroll||D(e))})},M=function(e){e&&r(e).map(function(t){w.fillGapSelectors=w.fillGapSelectors.filter(function(e){return e!==t}),w.scroll||z(t)})},N=function(){w.scroll||X()},B=function(){var e=b(w.lockableSelectors);K(e)},C=function(){var e=b(w.lockableSelectors);R(e)},K=function(e){var t=document.querySelectorAll(e);o(t,function(e){U(e)})},R=function(e){var t=document.querySelectorAll(e);o(t,function(e){_(e)})},U=function(e){if(a(e)&&"true"!==e.getAttribute("data-scroll-lock-locked")){var t=window.getComputedStyle(e);e.setAttribute("data-scroll-lock-saved-overflow-y-property",t.overflowY),e.setAttribute("data-scroll-lock-saved-inline-overflow-property",e.style.overflow),e.setAttribute("data-scroll-lock-saved-inline-overflow-y-property",e.style.overflowY),e.style.overflow="hidden",e.setAttribute("data-scroll-lock-locked","true")}},_=function(e){a(e)&&"true"===e.getAttribute("data-scroll-lock-locked")&&(e.style.overflow=e.getAttribute("data-scroll-lock-saved-inline-overflow-property"),e.style.overflowY=e.getAttribute("data-scroll-lock-saved-inline-overflow-y-property"),e.removeAttribute("data-scroll-lock-saved-overflow-property"),e.removeAttribute("data-scroll-lock-saved-inline-overflow-property"),e.removeAttribute("data-scroll-lock-saved-inline-overflow-y-property"),e.removeAttribute("data-scroll-lock-locked"))},X=function(){w.fillGapSelectors.map(function(e){D(e)})},Q=function(){w.fillGapSelectors.map(function(e){z(e)})},D=function(e){var t=document.querySelectorAll(e),l=-1!==w.lockableSelectors.indexOf(e);o(t,function(e){H(e,l)})},H=function(e){var t=1<arguments.length&&void 0!==arguments[1]&&arguments[1];if(a(e)){var l;if(""===e.getAttribute("data-scroll-lock-lockable")||t)l=g(e,!0);else{var r=h(e,b(w.lockableSelectors));l=g(r,!0)}"true"===e.getAttribute("data-scroll-lock-filled-gap")&&I(e);var o=window.getComputedStyle(e);if(e.setAttribute("data-scroll-lock-filled-gap","true"),e.setAttribute("data-scroll-lock-current-fill-gap-method",w.fillGapMethod),"margin"===w.fillGapMethod){var n=parseFloat(o.marginRight);e.style.marginRight="".concat(n+l,"px")}else if("width"===w.fillGapMethod)e.style.width="calc(100% - ".concat(l,"px)");else if("max-width"===w.fillGapMethod)e.style.maxWidth="calc(100% - ".concat(l,"px)");else if("padding"===w.fillGapMethod){var c=parseFloat(o.paddingRight);e.style.paddingRight="".concat(c+l,"px")}}},z=function(e){var t=document.querySelectorAll(e);o(t,function(e){I(e)})},I=function(e){if(a(e)&&"true"===e.getAttribute("data-scroll-lock-filled-gap")){var t=e.getAttribute("data-scroll-lock-current-fill-gap-method");e.removeAttribute("data-scroll-lock-filled-gap"),e.removeAttribute("data-scroll-lock-current-fill-gap-method"),"margin"===t?e.style.marginRight="":"width"===t?e.style.width="":"max-width"===t?e.style.maxWidth="":"padding"===t&&(e.style.paddingRight="")}};"undefined"!=typeof window&&window.addEventListener("resize",function(e){N()}),"undefined"!=typeof document&&(document.addEventListener("touchstart",function(e){w.scroll||(w.startTouchY=e.touches[0].clientY,w.startTouchX=e.touches[0].clientX)}),document.addEventListener("touchmove",function(n){if(!w.scroll){var e=w.startTouchY,t=w.startTouchX,l=n.touches[0].clientY,r=n.touches[0].clientX;if(n.touches.length<2){var c=b(w.scrollableSelectors),a=e<l,i=l<e,u=t<r,d=r<t,s=e+3<l,f=l<e-3,p=t+3<r,g=r<t-3;!function e(t){var l=1<arguments.length&&void 0!==arguments[1]&&arguments[1];if(t){var r=h(t,c,!1);if(v(t,'input[type="range"]'))return!1;if(l||v(t,'textarea, [contenteditable="true"]')&&h(t,c)||v(t,c)){var o=!1;y(t)&&k(t)?(a&&m(t)||i&&S(t))&&(o=!0):m(t)&&S(t)?(u&&y(t)||d&&k(t))&&(o=!0):(s&&m(t)||f&&S(t)||p&&y(t)||g&&k(t))&&(o=!0),o&&(r?e(r,!0):n.cancelable&&n.preventDefault())}else e(r)}else n.cancelable&&n.preventDefault()}(n.target)}}},{passive:!1}),document.addEventListener("touchend",function(e){w.scroll||(w.startTouchY=0,w.startTouchX=0)}));var J={hide:function(e){n('"hide" is deprecated! Use "disablePageScroll" instead. \n https://github.com/FL3NKEY/scroll-lock#disablepagescrollscrollabletarget'),d(e)},show:function(e){n('"show" is deprecated! Use "enablePageScroll" instead. \n https://github.com/FL3NKEY/scroll-lock#enablepagescrollscrollabletarget'),s(e)},toggle:function(e){n('"toggle" is deprecated! Do not use it.'),f()?d():s(e)},getState:function(){return n('"getState" is deprecated! Use "getScrollState" instead. \n https://github.com/FL3NKEY/scroll-lock#getscrollstate'),f()},getWidth:function(){return n('"getWidth" is deprecated! Use "getPageScrollBarWidth" instead. \n https://github.com/FL3NKEY/scroll-lock#getpagescrollbarwidth'),G()},getCurrentWidth:function(){return n('"getCurrentWidth" is deprecated! Use "getCurrentPageScrollBarWidth" instead. \n https://github.com/FL3NKEY/scroll-lock#getcurrentpagescrollbarwidth'),T()},setScrollableTargets:function(e){n('"setScrollableTargets" is deprecated! Use "addScrollableTarget" instead. \n https://github.com/FL3NKEY/scroll-lock#addscrollabletargetscrollabletarget'),L(e)},setFillGapSelectors:function(e){n('"setFillGapSelectors" is deprecated! Use "addFillGapSelector" instead. \n https://github.com/FL3NKEY/scroll-lock#addfillgapselectorfillgapselector'),q(e)},setFillGapTargets:function(e){n('"setFillGapTargets" is deprecated! Use "addFillGapTarget" instead. \n https://github.com/FL3NKEY/scroll-lock#addfillgaptargetfillgaptarget'),P(e)},clearQueue:function(){n('"clearQueue" is deprecated! Use "clearQueueScrollLocks" instead. \n https://github.com/FL3NKEY/scroll-lock#clearqueuescrolllocks'),p()}},V=function(o){for(var e=1;e<arguments.length;e++){var n=null!=arguments[e]?arguments[e]:{},t=Object.keys(n);"function"==typeof Object.getOwnPropertySymbols&&(t=t.concat(Object.getOwnPropertySymbols(n).filter(function(e){return Object.getOwnPropertyDescriptor(n,e).enumerable}))),t.forEach(function(e){var t,l,r;t=o,r=n[l=e],l in t?Object.defineProperty(t,l,{value:r,enumerable:!0,configurable:!0,writable:!0}):t[l]=r})}return o}({disablePageScroll:d,enablePageScroll:s,getScrollState:f,clearQueueScrollLocks:p,getTargetScrollBarWidth:g,getCurrentTargetScrollBarWidth:A,getPageScrollBarWidth:G,getCurrentPageScrollBarWidth:T,addScrollableSelector:x,removeScrollableSelector:F,addScrollableTarget:L,removeScrollableTarget:W,addLockableSelector:E,addLockableTarget:Y,addFillGapSelector:q,removeFillGapSelector:M,addFillGapTarget:P,removeFillGapTarget:j,setFillGapMethod:O,refillGaps:N,_state:w},J);t.default=V}]).default});
 /*
  * @license
@@ -987,85 +987,53 @@ if (L.MarkerClusterGroup) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='", "'></p>"], ["<p>", " <input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='", "'></p>"]),
-    _templateObject2 = _taggedTemplateLiteral(["<p>", "\n\t\t\t\t\t\t\t<input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='", "'>\n\t\t\t\t\t\t\t<input class='text' name='tags' type='text' minlength='1' placeholder='Tags' value=''>\n\t\t\t\t\t\t</p>"], ["<p>", "\n\t\t\t\t\t\t\t<input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='", "'>\n\t\t\t\t\t\t\t<input class='text' name='tags' type='text' minlength='1' placeholder='Tags' value=''>\n\t\t\t\t\t\t</p>"]),
-    _templateObject3 = _taggedTemplateLiteral(["\n\t\t\t<p>", "\n\t\t\t\t<input\n\t\t\t\t\tclass='text'\n\t\t\t\t\tname='show_tags'\n\t\t\t\t\ttype='text'\n\t\t\t\t\tminlength='1'\n\t\t\t\t\tplaceholder='Tags'\n\t\t\t\t\tvalue='$", "'\n\t\t\t\t>\n\t\t\t</p>"], ["\n\t\t\t<p>", "\n\t\t\t\t<input\n\t\t\t\t\tclass='text'\n\t\t\t\t\tname='show_tags'\n\t\t\t\t\ttype='text'\n\t\t\t\t\tminlength='1'\n\t\t\t\t\tplaceholder='Tags'\n\t\t\t\t\tvalue='$", "'\n\t\t\t\t>\n\t\t\t</p>"]),
-    _templateObject4 = _taggedTemplateLiteral(["<input class='text' name='title' type='text' maxlength='100' placeholder='$", "' value='$", "'>"], ["<input class='text' name='title' type='text' maxlength='100' placeholder='$", "' value='$", "'>"]),
-    _templateObject5 = _taggedTemplateLiteral(["<p>", " ", "</p>"], ["<p>", " ", "</p>"]),
-    _templateObject6 = _taggedTemplateLiteral(["<p>", "<input class='text' name='description' type='text' maxlength='800' placeholder='$", "' value='$", "'></p>"], ["<p>", "<input class='text' name='description' type='text' maxlength='800' placeholder='$", "' value='$", "'></p>"]),
-    _templateObject7 = _taggedTemplateLiteral(["\n\t<div>\n\t\t<p>", "\n\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t<select name=\"license\" id=\"license\">\n\t\t\t\t<option value=\"none\">", "</option>\n\t\t\t\t<option value=\"reserved\">", "</option>\n\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t<option value=\"CC-BY-1.0\">CC Attribution 1.0</option>\n\t\t\t\t<option value=\"CC-BY-2.0\">CC Attribution 2.0</option>\n\t\t\t\t<option value=\"CC-BY-2.5\">CC Attribution 2.5</option>\n\t\t\t\t<option value=\"CC-BY-3.0\">CC Attribution 3.0</option>\n\t\t\t\t<option value=\"CC-BY-4.0\">CC Attribution 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-1.0\">CC Attribution-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.0\">CC Attribution-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.5\">CC Attribution-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-ND-3.0\">CC Attribution-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-4.0\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-1.0\">CC Attribution-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.0\">CC Attribution-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.5\">CC Attribution-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-SA-3.0\">CC Attribution-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-4.0\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-1.0\">CC Attribution-NonCommercial 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.0\">CC Attribution-NonCommercial 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.5\">CC Attribution-NonCommercial 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-3.0\">CC Attribution-NonCommercial 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-4.0\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-1.0\">CC Attribution-NonCommercial-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.0\">CC Attribution-NonCommercial-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.5\">CC Attribution-NonCommercial-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-3.0\">CC Attribution-NonCommercial-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-4.0\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-1.0\">CC Attribution-NonCommercial-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.0\">CC Attribution-NonCommercial-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.5\">CC Attribution-NonCommercial-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-3.0\">CC Attribution-NonCommercial-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-4.0\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t</select>\n\t\t</span>\n\t\t<br />\n\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">", "</a>\n\t\t</p>\n\t</div>"], ["\n\t<div>\n\t\t<p>", "\n\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t<select name=\"license\" id=\"license\">\n\t\t\t\t<option value=\"none\">", "</option>\n\t\t\t\t<option value=\"reserved\">", "</option>\n\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t<option value=\"CC-BY-1.0\">CC Attribution 1.0</option>\n\t\t\t\t<option value=\"CC-BY-2.0\">CC Attribution 2.0</option>\n\t\t\t\t<option value=\"CC-BY-2.5\">CC Attribution 2.5</option>\n\t\t\t\t<option value=\"CC-BY-3.0\">CC Attribution 3.0</option>\n\t\t\t\t<option value=\"CC-BY-4.0\">CC Attribution 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-1.0\">CC Attribution-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.0\">CC Attribution-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.5\">CC Attribution-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-ND-3.0\">CC Attribution-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-4.0\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-1.0\">CC Attribution-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.0\">CC Attribution-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.5\">CC Attribution-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-SA-3.0\">CC Attribution-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-4.0\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-1.0\">CC Attribution-NonCommercial 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.0\">CC Attribution-NonCommercial 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.5\">CC Attribution-NonCommercial 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-3.0\">CC Attribution-NonCommercial 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-4.0\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-1.0\">CC Attribution-NonCommercial-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.0\">CC Attribution-NonCommercial-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.5\">CC Attribution-NonCommercial-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-3.0\">CC Attribution-NonCommercial-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-4.0\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-1.0\">CC Attribution-NonCommercial-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.0\">CC Attribution-NonCommercial-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.5\">CC Attribution-NonCommercial-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-3.0\">CC Attribution-NonCommercial-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-4.0\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t</select>\n\t\t</span>\n\t\t<br />\n\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">", "</a>\n\t\t</p>\n\t</div>"]),
-    _templateObject8 = _taggedTemplateLiteral(["\n\t\t<div><p>\n\t\t\t", "\n\t\t</p></div>"], ["\n\t\t<div><p>\n\t\t\t", "\n\t\t</p></div>"]),
-    _templateObject9 = _taggedTemplateLiteral(["\n\t\t<form>\n\t\t\t<div class='switch'>\n\t\t\t\t<label>\n\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t<input type='checkbox' name='is_public'>\n\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='grants_full_photo'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='requires_link'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='is_downloadable'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='is_share_button_visible'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='has_password'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t\t<input class='text' name='passwordtext' type='text' placeholder='", "' value=''>\n\t\t\t</div>\n\t\t\t<div class='hr'><hr></div>\n\t\t\t<div class='switch'>\n\t\t\t\t<label>\n\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t<input type='checkbox' name='is_nsfw'>\n\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t</form>\n\t"], ["\n\t\t<form>\n\t\t\t<div class='switch'>\n\t\t\t\t<label>\n\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t<input type='checkbox' name='is_public'>\n\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='grants_full_photo'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='requires_link'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='is_downloadable'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='is_share_button_visible'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='has_password'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t\t<input class='text' name='passwordtext' type='text' placeholder='", "' value=''>\n\t\t\t</div>\n\t\t\t<div class='hr'><hr></div>\n\t\t\t<div class='switch'>\n\t\t\t\t<label>\n\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t<input type='checkbox' name='is_nsfw'>\n\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t</form>\n\t"]),
-    _templateObject10 = _taggedTemplateLiteral(["<div class='choice'>\n\t\t\t\t\t\t<label>\n\t\t\t\t\t\t\t<input type='checkbox' name='", "'>\n\t\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t\t</label>\n\t\t\t\t\t\t<p></p>\n\t\t\t\t\t</div>"], ["<div class='choice'>\n\t\t\t\t\t\t<label>\n\t\t\t\t\t\t\t<input type='checkbox' name='", "'>\n\t\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t\t</label>\n\t\t\t\t\t\t<p></p>\n\t\t\t\t\t</div>"]),
-    _templateObject11 = _taggedTemplateLiteral(["\n\t\t<div id='qr-code' class='downloads'></div>\n\t"], ["\n\t\t<div id='qr-code' class='downloads'></div>\n\t"]),
-    _templateObject12 = _taggedTemplateLiteral(["<p>", "'</p>"], ["<p>", "'</p>"]),
-    _templateObject13 = _taggedTemplateLiteral(["<p>", "</p>"], ["<p>", "</p>"]),
-    _templateObject14 = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xlink:href='#", "' /></svg>"], ["<svg class='iconic ", "'><use xlink:href='#", "' /></svg>"]),
-    _templateObject15 = _taggedTemplateLiteral(["<div class='divider'><h1>", "</h1></div>"], ["<div class='divider'><h1>", "</h1></div>"]),
-    _templateObject16 = _taggedTemplateLiteral(["<div id='", "' class='edit'>", "</div>"], ["<div id='", "' class='edit'>", "</div>"]),
-    _templateObject17 = _taggedTemplateLiteral(["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"], ["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"]),
-    _templateObject18 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", " ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'\n\t\t\t\tdraggable='", "'\n\t\t\t\t", ">\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", " ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'\n\t\t\t\tdraggable='", "'\n\t\t\t\t", ">\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
-    _templateObject19 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
-    _templateObject20 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"], ["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"]),
-    _templateObject21 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'\n\t\t\tdraggable='", "'\n\t\t\tondragstart='lychee.startDrag(event)'\n\t\t\tondragend='lychee.endDrag(event)'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'\n\t\t\tdraggable='", "'\n\t\t\tondragstart='lychee.startDrag(event)'\n\t\t\tondragend='lychee.endDrag(event)'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
-    _templateObject22 = _taggedTemplateLiteral(["<a><span title='", "'>", "</span>", "</a>"], ["<a><span title='", "'>", "</span>", "</a>"]),
-    _templateObject23 = _taggedTemplateLiteral(["<a>", "</a>"], ["<a>", "</a>"]),
-    _templateObject24 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
-    _templateObject25 = _taggedTemplateLiteral(["\n\t\t<div id=\"image_overlay\">\n\t\t<h1>$", "</h1>\n\t\t"], ["\n\t\t<div id=\"image_overlay\">\n\t\t<h1>$", "</h1>\n\t\t"]),
-    _templateObject26 = _taggedTemplateLiteral(["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autobuffer ", " data-tabindex='", "'><source src='", "'>Your browser does not support the video tag.</video>"], ["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autobuffer ", " data-tabindex='", "'><source src='", "'>Your browser does not support the video tag.</video>"]),
-    _templateObject27 = _taggedTemplateLiteral(["<img id='image' class='", "' src='img/placeholder.png' draggable='false' alt='big' data-tabindex='", "'>"], ["<img id='image' class='", "' src='img/placeholder.png' draggable='false' alt='big' data-tabindex='", "'>"]),
-    _templateObject28 = _taggedTemplateLiteral(["", ""], ["", ""]),
-    _templateObject29 = _taggedTemplateLiteral(["<div class='no_content fadeIn'>", ""], ["<div class='no_content fadeIn'>", ""]),
-    _templateObject30 = _taggedTemplateLiteral(["\n\t\t\t<h1>$", "</h1>\n\t\t\t<div class='rows'>\n\t\t\t"], ["\n\t\t\t<h1>$", "</h1>\n\t\t\t<div class='rows'>\n\t\t\t"]),
-    _templateObject31 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='row'>\n\t\t\t\t\t<a class='name'>", "</a>\n\t\t\t\t\t<a class='status'></a>\n\t\t\t\t\t<p class='notice'></p>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='row'>\n\t\t\t\t\t<a class='name'>", "</a>\n\t\t\t\t\t<a class='status'></a>\n\t\t\t\t\t<p class='notice'></p>\n\t\t\t\t</div>\n\t\t\t\t"]),
-    _templateObject32 = _taggedTemplateLiteral(["\n\t\t<div class='row'>\n\t\t\t<a class='name'>", "</a>\n\t\t\t<a class='status'></a>\n\t\t\t<p class='notice'></p>\n\t\t</div>\n\t\t"], ["\n\t\t<div class='row'>\n\t\t\t<a class='name'>", "</a>\n\t\t\t<a class='status'></a>\n\t\t\t<p class='notice'></p>\n\t\t</div>\n\t\t"]),
-    _templateObject33 = _taggedTemplateLiteral(["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"], ["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"]),
-    _templateObject34 = _taggedTemplateLiteral(["<a class='", "'>$", "</a>"], ["<a class='", "'>$", "</a>"]),
-    _templateObject35 = _taggedTemplateLiteral(["<div class='empty'>", "</div>"], ["<div class='empty'>", "</div>"]),
-    _templateObject36 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
-    _templateObject37 = _taggedTemplateLiteral(["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
-    _templateObject38 = _taggedTemplateLiteral(["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "' alt=\"thumbnail\">\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "], ["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "' alt=\"thumbnail\">\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "]),
-    _templateObject39 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
-    _templateObject40 = _taggedTemplateLiteral(["\n\t\t<a id=\"text_settings_close\" class=\"closetxt\" data-tabindex=\"-1\">", "</a>\n\t\t<a id=\"button_settings_close\" class=\"closebtn\" data-tabindex=\"20\">&times;</a>\n\t\t<a class=\"linkMenu\" id=\"button_settings_open\" data-tabindex=\"-1\"><svg class=\"iconic\"><use xlink:href=\"#cog\"></use></svg>", "</a>"], ["\n\t\t<a id=\"text_settings_close\" class=\"closetxt\" data-tabindex=\"-1\">", "</a>\n\t\t<a id=\"button_settings_close\" class=\"closebtn\" data-tabindex=\"20\">&times;</a>\n\t\t<a class=\"linkMenu\" id=\"button_settings_open\" data-tabindex=\"-1\"><svg class=\"iconic\"><use xlink:href=\"#cog\"></use></svg>", "</a>"]),
-    _templateObject41 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_notifications\" data-tabindex=\"-1\">", "", " </a>\n\t\t"], ["\n\t\t<a class=\"linkMenu\" id=\"button_notifications\" data-tabindex=\"-1\">", "", " </a>\n\t\t"]),
-    _templateObject42 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_users\" data-tabindex=\"-1\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_u2f\" data-tabindex=\"-1\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_sharing\" data-tabindex=\"-1\">", "", "</a>"], ["\n\t\t<a class=\"linkMenu\" id=\"button_users\" data-tabindex=\"-1\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_u2f\" data-tabindex=\"-1\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_sharing\" data-tabindex=\"-1\">", "", "</a>"]),
-    _templateObject43 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_logs\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_diagnostics\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_about\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_signout\" data-tabindex=\"21\">", "", "</a>"], ["\n\t\t<a class=\"linkMenu\" id=\"button_logs\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_diagnostics\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_about\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_signout\" data-tabindex=\"21\">", "", "</a>"]),
-    _templateObject44 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_update\"  data-tabindex=\"-1\">", "", "</a>\n\t\t"], ["\n\t\t<a class=\"linkMenu\" id=\"button_update\"  data-tabindex=\"-1\">", "", "</a>\n\t\t"]),
-    _templateObject45 = _taggedTemplateLiteral(["\n\t\t\t\t<h1>Lychee ", "</h1>\n\t\t\t\t<div class='version'><span><a target='_blank' href='", "'>", "</a></span></div>\n\t\t\t\t<h1>", "</h1>\n\t\t\t\t<p>", "</p>\n\t\t\t  "], ["\n\t\t\t\t<h1>Lychee ", "</h1>\n\t\t\t\t<div class='version'><span><a target='_blank' href='", "'>", "</a></span></div>\n\t\t\t\t<h1>", "</h1>\n\t\t\t\t<p>", "</p>\n\t\t\t  "]),
-    _templateObject46 = _taggedTemplateLiteral(["\n\t\t\t<a class='signInKeyLess' id='signInKeyLess'>", "</a>\n\t\t\t<form>\n\t\t\t\t<p class='signIn'>\n\t\t\t\t\t<input class='text' name='username' autocomplete='on' type='text' placeholder='$", "' autocapitalize='off' data-tabindex='", "'>\n\t\t\t\t\t<input class='text' name='password' autocomplete='current-password' type='password' placeholder='$", "' data-tabindex='", "'>\n\t\t\t\t</p>\n\t\t\t\t<p class='version'>Lychee ", "<span> &#8211; <a target='_blank' href='", "' data-tabindex='-1'>", "</a><span></p>\n\t\t\t</form>\n\t\t\t"], ["\n\t\t\t<a class='signInKeyLess' id='signInKeyLess'>", "</a>\n\t\t\t<form>\n\t\t\t\t<p class='signIn'>\n\t\t\t\t\t<input class='text' name='username' autocomplete='on' type='text' placeholder='$", "' autocapitalize='off' data-tabindex='", "'>\n\t\t\t\t\t<input class='text' name='password' autocomplete='current-password' type='password' placeholder='$", "' data-tabindex='", "'>\n\t\t\t\t</p>\n\t\t\t\t<p class='version'>Lychee ", "<span> &#8211; <a target='_blank' href='", "' data-tabindex='-1'>", "</a><span></p>\n\t\t\t</form>\n\t\t\t"]),
-    _templateObject47 = _taggedTemplateLiteral(["<link data-prefetch rel=\"prefetch\" href=\"", "\">"], ["<link data-prefetch rel=\"prefetch\" href=\"", "\">"]),
-    _templateObject48 = _taggedTemplateLiteral(["<input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='$", "'>"], ["<input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='$", "'>"]),
-    _templateObject49 = _taggedTemplateLiteral(["\n\t\t<div class='switch'>\n\t\t\t<label>\n\t\t\t\t<span class='label'>", ":</span>\n\t\t\t\t<input type='checkbox' name='is_public'>\n\t\t\t\t<span class='slider round'></span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t"], ["\n\t\t<div class='switch'>\n\t\t\t<label>\n\t\t\t\t<span class='label'>", ":</span>\n\t\t\t\t<input type='checkbox' name='is_public'>\n\t\t\t\t<span class='slider round'></span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t"]),
-    _templateObject50 = _taggedTemplateLiteral(["\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='grants_full_photo' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='requires_link' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='is_downloadable' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='is_share_button_visible' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='has_password' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t"], ["\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='grants_full_photo' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='requires_link' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='is_downloadable' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='is_share_button_visible' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='has_password' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t"]),
-    _templateObject51 = _taggedTemplateLiteral(["\n\t\t\t<p class='less'>", "</p>\n\t\t\t", "\n\t\t\t", "\n\t\t"], ["\n\t\t\t<p class='less'>", "</p>\n\t\t\t", "\n\t\t\t", "\n\t\t"]),
-    _templateObject52 = _taggedTemplateLiteral(["\n\t\t\t", "\n\t\t\t<p class='photoPublic'>", "</p>\n\t\t\t", "\n\t\t"], ["\n\t\t\t", "\n\t\t\t<p class='photoPublic'>", "</p>\n\t\t\t", "\n\t\t"]),
-    _templateObject53 = _taggedTemplateLiteral(["<p>", " <input class='text' name='description' type='text' maxlength='800' placeholder='", "' value='$", "'></p>"], ["<p>", " <input class='text' name='description' type='text' maxlength='800' placeholder='", "' value='$", "'></p>"]),
-    _templateObject54 = _taggedTemplateLiteral(["<input class='text' name='tags' type='text' maxlength='800' placeholder='Tags' value='$", "'>"], ["<input class='text' name='tags' type='text' maxlength='800' placeholder='Tags' value='$", "'>"]),
-    _templateObject55 = _taggedTemplateLiteral(["\n\t\t\t\t<a class='basicModal__button' id='", "' title='", "'>\n\t\t\t\t\t", "", "\n\t\t\t\t</a>\n\t\t\t"], ["\n\t\t\t\t<a class='basicModal__button' id='", "' title='", "'>\n\t\t\t\t\t", "", "\n\t\t\t\t</a>\n\t\t\t"]),
-    _templateObject56 = _taggedTemplateLiteral(["\n\t\t\t<div class='downloads'>\n\t\t"], ["\n\t\t\t<div class='downloads'>\n\t\t"]),
-    _templateObject57 = _taggedTemplateLiteral(["\n\t\t\t</div>\n\t\t"], ["\n\t\t\t</div>\n\t\t"]),
-    _templateObject58 = _taggedTemplateLiteral(["\n\t\t\t<p>\n\t\t\t\t", "\n\t\t\t\t<br />\n\t\t\t\t<input class='text' readonly value='", "'>\n\t\t\t\t<a class='basicModal__button' title='", "'>\n\t\t\t\t\t", "\n\t\t\t\t</a>\n\t\t\t</p>\n\t\t"], ["\n\t\t\t<p>\n\t\t\t\t", "\n\t\t\t\t<br />\n\t\t\t\t<input class='text' readonly value='", "'>\n\t\t\t\t<a class='basicModal__button' title='", "'>\n\t\t\t\t\t", "\n\t\t\t\t</a>\n\t\t\t</p>\n\t\t"]),
-    _templateObject59 = _taggedTemplateLiteral(["\n\t\t<div class='directLinks'>\n\t\t\t", "\n\t\t\t<p class='less'>\n\t\t\t\t", "\n\t\t\t</p>\n\t\t\t<div class='imageLinks'>\n\t"], ["\n\t\t<div class='directLinks'>\n\t\t\t", "\n\t\t\t<p class='less'>\n\t\t\t\t", "\n\t\t\t</p>\n\t\t\t<div class='imageLinks'>\n\t"]),
-    _templateObject60 = _taggedTemplateLiteral(["\n\t\t</div>\n\t\t</div>\n\t"], ["\n\t\t</div>\n\t\t</div>\n\t"]),
-    _templateObject61 = _taggedTemplateLiteral(["<p style=\"color: #d92c34; font-size: 1.3em; font-weight: bold; text-transform: capitalize; text-align: center;\">", "</p>"], ["<p style=\"color: #d92c34; font-size: 1.3em; font-weight: bold; text-transform: capitalize; text-align: center;\">", "</p>"]),
-    _templateObject62 = _taggedTemplateLiteral(["<span class='attr_", "_separator'>, </span>"], ["<span class='attr_", "_separator'>, </span>"]),
-    _templateObject63 = _taggedTemplateLiteral(["<span class='attr_", " search'>$", "</span>"], ["<span class='attr_", " search'>$", "</span>"]),
-    _templateObject64 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
-    _templateObject65 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t <tr>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t </tr>\n\t\t\t\t\t\t "], ["\n\t\t\t\t\t\t <tr>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t </tr>\n\t\t\t\t\t\t "]),
-    _templateObject66 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]),
-    _templateObject67 = _taggedTemplateLiteral(["<h1>", "</h1>"], ["<h1>", "</h1>"]),
-    _templateObject68 = _taggedTemplateLiteral(["<p>"], ["<p>"]),
-    _templateObject69 = _taggedTemplateLiteral(["\n\t\t\t<p class='importServer'>\n\t\t\t\t", "\n\t\t\t\t<input class='text' name='paths' type='text' placeholder='", "' value='", "uploads/import/'>\n\t\t\t</p>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='delete_imported' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='import_via_symlink' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='skip_duplicates' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='resync_metadata' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<p class='importServer'>\n\t\t\t\t", "\n\t\t\t\t<input class='text' name='paths' type='text' placeholder='", "' value='", "uploads/import/'>\n\t\t\t</p>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='delete_imported' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='import_via_symlink' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='skip_duplicates' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='resync_metadata' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"]),
-    _templateObject70 = _taggedTemplateLiteral(["url(\"", "\")"], ["url(\"", "\")"]),
-    _templateObject71 = _taggedTemplateLiteral(["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"], ["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"]),
-    _templateObject72 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setLogin\">\n\t\t\t<form>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t</div>\n\t\t\t</form>\n\t\t\t</div>"], ["\n\t\t\t<div class=\"setLogin\">\n\t\t\t<form>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t</div>\n\t\t\t</form>\n\t\t\t</div>"]),
-    _templateObject73 = _taggedTemplateLiteral(["\n\t\t\t\t<div class=\"setSorting\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t\t\t<a id=\"basicModal__action_sorting_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t\t<div class=\"setSorting\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t\t\t<a id=\"basicModal__action_sorting_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t"]),
-    _templateObject74 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"]),
-    _templateObject75 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t<p class=\"warning\">\n\t\t\t\t\t\t", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t"], ["\n\t\t\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t<p class=\"warning\">\n\t\t\t\t\t\t", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t"]),
-    _templateObject76 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t\t\t<div class=\"setting_category\">\n\t\t\t\t\t\t\t\t\t<p>$", "</p>\n\t\t\t\t\t\t\t\t</div>"], ["\n\t\t\t\t\t\t\t\t<div class=\"setting_category\">\n\t\t\t\t\t\t\t\t\t<p>$", "</p>\n\t\t\t\t\t\t\t\t</div>"]),
-    _templateObject77 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t\t\t<p>\n\t\t\t\t\t\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t\t\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t</div>"], ["\n\t\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t\t\t<p>\n\t\t\t\t\t\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t\t\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t</div>"]),
-    _templateObject78 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t\t\t\t\t</div>"], ["\n\t\t\t\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t\t\t\t\t</div>"]),
-    _templateObject79 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"clear_logs_update\">\n\t\t\t\t<a id=\"Clean_Noise\" class=\"basicModal__button\">\n\t\t\t\t\t", "\n\t\t\t\t</a>\n\t\t\t\t<a id=\"Clear\" class=\"basicModal__button\">\n\t\t\t\t\t", "\n\t\t\t\t</a>\n\t\t\t</div>\n\t\t\t<pre class=\"logs_diagnostics_view\"></pre>"], ["\n\t\t\t<div class=\"clear_logs_update\">\n\t\t\t\t<a id=\"Clean_Noise\" class=\"basicModal__button\">\n\t\t\t\t\t", "\n\t\t\t\t</a>\n\t\t\t\t<a id=\"Clear\" class=\"basicModal__button\">\n\t\t\t\t\t", "\n\t\t\t\t</a>\n\t\t\t</div>\n\t\t\t<pre class=\"logs_diagnostics_view\"></pre>"]);
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xlink:href='#", "' /></svg>"], ["<svg class='iconic ", "'><use xlink:href='#", "' /></svg>"]),
+    _templateObject2 = _taggedTemplateLiteral(["<div class='divider'><h1>", "</h1></div>"], ["<div class='divider'><h1>", "</h1></div>"]),
+    _templateObject3 = _taggedTemplateLiteral(["<div id='", "' class='edit'>", "</div>"], ["<div id='", "' class='edit'>", "</div>"]),
+    _templateObject4 = _taggedTemplateLiteral(["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"], ["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"]),
+    _templateObject5 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", " ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'\n\t\t\t\tdraggable='", "'\n\t\t\t\t", ">\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", " ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'\n\t\t\t\tdraggable='", "'\n\t\t\t\t", ">\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
+    _templateObject6 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
+    _templateObject7 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"], ["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"]),
+    _templateObject8 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'\n\t\t\tdraggable='", "'\n\t\t\tondragstart='lychee.startDrag(event)'\n\t\t\tondragend='lychee.endDrag(event)'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'\n\t\t\tdraggable='", "'\n\t\t\tondragstart='lychee.startDrag(event)'\n\t\t\tondragend='lychee.endDrag(event)'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
+    _templateObject9 = _taggedTemplateLiteral(["<a><span title='", "'>", "</span>", "</a>"], ["<a><span title='", "'>", "</span>", "</a>"]),
+    _templateObject10 = _taggedTemplateLiteral(["<a>", "</a>"], ["<a>", "</a>"]),
+    _templateObject11 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
+    _templateObject12 = _taggedTemplateLiteral(["\n\t\t<div id=\"image_overlay\">\n\t\t<h1>$", "</h1>\n\t\t"], ["\n\t\t<div id=\"image_overlay\">\n\t\t<h1>$", "</h1>\n\t\t"]),
+    _templateObject13 = _taggedTemplateLiteral(["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autobuffer ", " data-tabindex='", "'><source src='", "'>Your browser does not support the video tag.</video>"], ["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autobuffer ", " data-tabindex='", "'><source src='", "'>Your browser does not support the video tag.</video>"]),
+    _templateObject14 = _taggedTemplateLiteral(["<img id='image' class='", "' src='img/placeholder.png' draggable='false' alt='big' data-tabindex='", "'>"], ["<img id='image' class='", "' src='img/placeholder.png' draggable='false' alt='big' data-tabindex='", "'>"]),
+    _templateObject15 = _taggedTemplateLiteral(["", ""], ["", ""]),
+    _templateObject16 = _taggedTemplateLiteral(["<div class='no_content fadeIn'>", ""], ["<div class='no_content fadeIn'>", ""]),
+    _templateObject17 = _taggedTemplateLiteral(["<p>", "</p>"], ["<p>", "</p>"]),
+    _templateObject18 = _taggedTemplateLiteral(["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"], ["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"]),
+    _templateObject19 = _taggedTemplateLiteral(["<a class='", "'>$", "</a>"], ["<a class='", "'>$", "</a>"]),
+    _templateObject20 = _taggedTemplateLiteral(["<div class='empty'>", "</div>"], ["<div class='empty'>", "</div>"]),
+    _templateObject21 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
+    _templateObject22 = _taggedTemplateLiteral(["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
+    _templateObject23 = _taggedTemplateLiteral(["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "' alt=\"thumbnail\">\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "], ["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "' alt=\"thumbnail\">\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "]),
+    _templateObject24 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
+    _templateObject25 = _taggedTemplateLiteral(["\n\t\t<a id=\"text_settings_close\" class=\"closetxt\" data-tabindex=\"-1\">", "</a>\n\t\t<a id=\"button_settings_close\" class=\"closebtn\" data-tabindex=\"20\">&times;</a>\n\t\t<a class=\"linkMenu\" id=\"button_settings_open\" data-tabindex=\"-1\"><svg class=\"iconic\"><use xlink:href=\"#cog\"></use></svg>", "</a>"], ["\n\t\t<a id=\"text_settings_close\" class=\"closetxt\" data-tabindex=\"-1\">", "</a>\n\t\t<a id=\"button_settings_close\" class=\"closebtn\" data-tabindex=\"20\">&times;</a>\n\t\t<a class=\"linkMenu\" id=\"button_settings_open\" data-tabindex=\"-1\"><svg class=\"iconic\"><use xlink:href=\"#cog\"></use></svg>", "</a>"]),
+    _templateObject26 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_notifications\" data-tabindex=\"-1\">", "", " </a>\n\t\t"], ["\n\t\t<a class=\"linkMenu\" id=\"button_notifications\" data-tabindex=\"-1\">", "", " </a>\n\t\t"]),
+    _templateObject27 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_users\" data-tabindex=\"-1\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_u2f\" data-tabindex=\"-1\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_sharing\" data-tabindex=\"-1\">", "", "</a>"], ["\n\t\t<a class=\"linkMenu\" id=\"button_users\" data-tabindex=\"-1\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_u2f\" data-tabindex=\"-1\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_sharing\" data-tabindex=\"-1\">", "", "</a>"]),
+    _templateObject28 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_logs\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_diagnostics\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_about\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_signout\" data-tabindex=\"21\">", "", "</a>"], ["\n\t\t<a class=\"linkMenu\" id=\"button_logs\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_diagnostics\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_about\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_signout\" data-tabindex=\"21\">", "", "</a>"]),
+    _templateObject29 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_update\"  data-tabindex=\"-1\">", "", "</a>\n\t\t"], ["\n\t\t<a class=\"linkMenu\" id=\"button_update\"  data-tabindex=\"-1\">", "", "</a>\n\t\t"]),
+    _templateObject30 = _taggedTemplateLiteral(["<link data-prefetch rel=\"prefetch\" href=\"", "\">"], ["<link data-prefetch rel=\"prefetch\" href=\"", "\">"]),
+    _templateObject31 = _taggedTemplateLiteral(["<span class='attr_", "_separator'>, </span>"], ["<span class='attr_", "_separator'>, </span>"]),
+    _templateObject32 = _taggedTemplateLiteral(["<span class='attr_", " search'>$", "</span>"], ["<span class='attr_", " search'>$", "</span>"]),
+    _templateObject33 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
+    _templateObject34 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t <tr>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t </tr>\n\t\t\t\t\t\t "], ["\n\t\t\t\t\t\t <tr>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t </tr>\n\t\t\t\t\t\t "]),
+    _templateObject35 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]),
+    _templateObject36 = _taggedTemplateLiteral(["url(\"", "\")"], ["url(\"", "\")"]),
+    _templateObject37 = _taggedTemplateLiteral(["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"], ["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"]),
+    _templateObject38 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setLogin\">\n\t\t\t<form>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t</div>\n\t\t\t</form>\n\t\t\t</div>"], ["\n\t\t\t<div class=\"setLogin\">\n\t\t\t<form>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t</div>\n\t\t\t</form>\n\t\t\t</div>"]),
+    _templateObject39 = _taggedTemplateLiteral(["\n\t\t\t\t<div class=\"setSorting\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t\t\t<a id=\"basicModal__action_sorting_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t\t<div class=\"setSorting\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t\t\t<a id=\"basicModal__action_sorting_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t"]),
+    _templateObject40 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"]),
+    _templateObject41 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t<p class=\"warning\">\n\t\t\t\t\t\t", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t"], ["\n\t\t\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t<p class=\"warning\">\n\t\t\t\t\t\t", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t"]),
+    _templateObject42 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t\t\t<div class=\"setting_category\">\n\t\t\t\t\t\t\t\t\t<p>$", "</p>\n\t\t\t\t\t\t\t\t</div>"], ["\n\t\t\t\t\t\t\t\t<div class=\"setting_category\">\n\t\t\t\t\t\t\t\t\t<p>$", "</p>\n\t\t\t\t\t\t\t\t</div>"]),
+    _templateObject43 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t\t\t<p>\n\t\t\t\t\t\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t\t\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t</div>"], ["\n\t\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t\t\t<p>\n\t\t\t\t\t\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t\t\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t</div>"]),
+    _templateObject44 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t\t\t\t\t</div>"], ["\n\t\t\t\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t\t\t\t\t</div>"]),
+    _templateObject45 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"clear_logs_update\">\n\t\t\t\t<a id=\"Clean_Noise\" class=\"basicModal__button\">\n\t\t\t\t\t", "\n\t\t\t\t</a>\n\t\t\t\t<a id=\"Clear\" class=\"basicModal__button\">\n\t\t\t\t\t", "\n\t\t\t\t</a>\n\t\t\t</div>\n\t\t\t<pre class=\"logs_diagnostics_view\"></pre>"], ["\n\t\t\t<div class=\"clear_logs_update\">\n\t\t\t\t<a id=\"Clean_Noise\" class=\"basicModal__button\">\n\t\t\t\t\t", "\n\t\t\t\t</a>\n\t\t\t\t<a id=\"Clear\" class=\"basicModal__button\">\n\t\t\t\t\t", "\n\t\t\t\t</a>\n\t\t\t</div>\n\t\t\t<pre class=\"logs_diagnostics_view\"></pre>"]);
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
@@ -1751,10 +1719,8 @@ album.add = function () {
   * @returns {void}
   */
 	var action = function action(data) {
-		// let title = data.title;
-
 		if (!data.title.trim()) {
-			basicModal.error("title");
+			basicModal.focusError("title");
 			return;
 		}
 
@@ -1785,8 +1751,22 @@ album.add = function () {
 		});
 	};
 
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initAddAlbumDialog = function initAddAlbumDialog(formElements, dialog) {
+		dialog.querySelector("p").textContent = lychee.locale["TITLE_NEW_ALBUM"];
+		formElements.title.placeholder = "Title";
+		formElements.title.value = lychee.locale["UNTITLED"];
+	};
+
+	var addAlbumDialogBody = "\n\t\t<p></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\"><input class='text' name='title' type='text' maxlength='100'/></div>\n\t\t</form>\n\t";
+
 	basicModal.show({
-		body: lychee.html(_templateObject, lychee.locale["TITLE_NEW_ALBUM"], lychee.locale["UNTITLED"]),
+		body: addAlbumDialogBody,
+		readyCB: initAddAlbumDialog,
 		buttons: {
 			action: {
 				title: lychee.locale["CREATE_ALBUM"],
@@ -1807,11 +1787,11 @@ album.addByTags = function () {
 	/** @param {{title: string, tags: string}} data */
 	var action = function action(data) {
 		if (!data.title.trim()) {
-			basicModal.error("title");
+			basicModal.focusError("title");
 			return;
 		}
 		if (!data.tags.trim()) {
-			basicModal.error("tags");
+			basicModal.focusError("tags");
 			return;
 		}
 
@@ -1828,8 +1808,23 @@ album.addByTags = function () {
 		});
 	};
 
+	var addTagAlbumDialogBody = "\n\t\t<p></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\"><input class='text' name='title' type='text' maxlength='100'></div>\n\t\t\t<div class=\"input-group stacked\"><input class='text' name='tags' type='text' minlength='1'></div>\n\t\t</form>";
+
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initAddTagAlbumDialog = function initAddTagAlbumDialog(formElements, dialog) {
+		dialog.querySelector("p").textContent = lychee.locale["TITLE_NEW_ALBUM"];
+		formElements.title.placeholder = "Title";
+		formElements.title.value = lychee.locale["UNTITLED"];
+		formElements.tags.placeholder = "Tags";
+	};
+
 	basicModal.show({
-		body: lychee.html(_templateObject2, lychee.locale["TITLE_NEW_ALBUM"], lychee.locale["UNTITLED"]),
+		body: addTagAlbumDialogBody,
+		readyCB: initAddTagAlbumDialog,
 		buttons: {
 			action: {
 				title: lychee.locale["CREATE_TAG_ALBUM"],
@@ -1851,7 +1846,7 @@ album.setShowTags = function (albumID) {
 	/** @param {{show_tags: string}} data */
 	var action = function action(data) {
 		if (!data.show_tags.trim()) {
-			basicModal.error("show_tags");
+			basicModal.focusError("show_tags");
 			return;
 		}
 		var new_show_tags = data.show_tags.split(",").map(function (tag) {
@@ -1875,8 +1870,22 @@ album.setShowTags = function (albumID) {
 		});
 	};
 
+	var setShowTagDialogBody = "\n\t\t<p></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\"><input class='text' name='show_tags' type='text' minlength='1'></div>\n\t\t</form>";
+
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initShowTagAlbumDialog = function initShowTagAlbumDialog(formElements, dialog) {
+		dialog.querySelector("p").textContent = lychee.locale["ALBUM_NEW_SHOWTAGS"];
+		formElements.show_tags.placeholder = "Tags";
+		formElements.show_tags.value = album.json.show_tags.sort().join(", ");
+	};
+
 	basicModal.show({
-		body: lychee.html(_templateObject3, lychee.locale["ALBUM_NEW_SHOWTAGS"], album.json.show_tags.sort().join(", ")),
+		body: setShowTagDialogBody,
+		readyCB: initShowTagAlbumDialog,
 		buttons: {
 			action: {
 				title: lychee.locale["ALBUM_SET_SHOWTAGS"],
@@ -1914,7 +1923,7 @@ album.setTitle = function (albumIDs) {
 	/** @param {{title: string}} data */
 	var action = function action(data) {
 		if (!data.title.trim()) {
-			basicModal.error("title");
+			basicModal.focusError("title");
 			return;
 		}
 
@@ -1956,12 +1965,22 @@ album.setTitle = function (albumIDs) {
 		});
 	};
 
-	var inputHTML = lychee.html(_templateObject4, lychee.locale["ALBUM_TITLE"], oldTitle);
+	var setAlbumTitleDialogBody = "\n\t\t<p></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\"><input class='text' name='title' type='text' maxlength='100'></div>\n\t\t</form>";
 
-	var dialogHTML = albumIDs.length === 1 ? lychee.html(_templateObject5, lychee.locale["ALBUM_NEW_TITLE"], inputHTML) : lychee.html(_templateObject5, sprintf(lychee.locale["ALBUMS_NEW_TITLE"], albumIDs.length), inputHTML);
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initSetAlbumTitleDialog = function initSetAlbumTitleDialog(formElements, dialog) {
+		dialog.querySelector("p").textContent = albumIDs.length === 1 ? lychee.locale["ALBUM_NEW_TITLE"] : sprintf(lychee.locale["ALBUMS_NEW_TITLE"], albumIDs.length);
+		formElements.title.placeholder = lychee.locale["ALBUM_TITLE"];
+		formElements.title.value = oldTitle;
+	};
 
 	basicModal.show({
-		body: dialogHTML,
+		body: setAlbumTitleDialogBody,
+		readyCB: initSetAlbumTitleDialog,
 		buttons: {
 			action: {
 				title: lychee.locale["ALBUM_SET_TITLE"],
@@ -1980,8 +1999,6 @@ album.setTitle = function (albumIDs) {
  * @returns {void}
  */
 album.setDescription = function (albumID) {
-	var oldDescription = album.json.description ? album.json.description : "";
-
 	/** @param {{description: string}} data */
 	var action = function action(data) {
 		var description = data.description ? data.description : null;
@@ -1999,8 +2016,22 @@ album.setDescription = function (albumID) {
 		});
 	};
 
+	var setAlbumDescriptionDialogBody = "\n\t\t<p></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\"><input class='text' name='description' type='text' maxlength='800'></div>\n\t\t</form>";
+
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initSetAlbumDescriptionDialog = function initSetAlbumDescriptionDialog(formElements, dialog) {
+		dialog.querySelector("p").textContent = lychee.locale["ALBUM_NEW_DESCRIPTION"];
+		formElements.description.placeholder = lychee.locale["ALBUM_DESCRIPTION"];
+		formElements.description.value = album.json.description ? album.json.description : "";
+	};
+
 	basicModal.show({
-		body: lychee.html(_templateObject6, lychee.locale["ALBUM_NEW_DESCRIPTION"], lychee.locale["ALBUM_DESCRIPTION"], oldDescription),
+		body: setAlbumDescriptionDialogBody,
+		readyCB: initSetAlbumDescriptionDialog,
 		buttons: {
 			action: {
 				title: lychee.locale["ALBUM_SET_DESCRIPTION"],
@@ -2039,10 +2070,6 @@ album.toggleCover = function (photoID) {
  * @returns {void}
  */
 album.setLicense = function (albumID) {
-	var callback = function callback() {
-		$("select#license").val(album.json.license === "" ? "none" : album.json.license);
-	};
-
 	/** @param {{license: string}} data */
 	var action = function action(data) {
 		basicModal.close();
@@ -2058,11 +2085,24 @@ album.setLicense = function (albumID) {
 		});
 	};
 
-	var msg = lychee.html(_templateObject7, lychee.locale["ALBUM_LICENSE"], lychee.locale["ALBUM_LICENSE_NONE"], lychee.locale["ALBUM_RESERVED"], lychee.locale["ALBUM_LICENSE_HELP"]);
+	var setAlbumLicenseDialogBody = "\n\t\t<form>\n\t\t\t<div class=\"input-group compact\">\n\t\t\t\t<label for=\"license_dialog_license_select\"></label>\n\t\t\t\t<div class=\"select\"><select name=\"license\" id=\"license_dialog_license_select\">\n\t\t\t\t\t<option value=\"none\"></option>\n\t\t\t\t\t<option value=\"reserved\"></option>\n\t\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t\t<option value=\"CC-BY-1.0\">CC Attribution 1.0</option>\n\t\t\t\t\t<option value=\"CC-BY-2.0\">CC Attribution 2.0</option>\n\t\t\t\t\t<option value=\"CC-BY-2.5\">CC Attribution 2.5</option>\n\t\t\t\t\t<option value=\"CC-BY-3.0\">CC Attribution 3.0</option>\n\t\t\t\t\t<option value=\"CC-BY-4.0\">CC Attribution 4.0</option>\n\t\t\t\t\t<option value=\"CC-BY-ND-1.0\">CC Attribution-NoDerivatives 1.0</option>\n\t\t\t\t\t<option value=\"CC-BY-ND-2.0\">CC Attribution-NoDerivatives 2.0</option>\n\t\t\t\t\t<option value=\"CC-BY-ND-2.5\">CC Attribution-NoDerivatives 2.5</option>\n\t\t\t\t\t<option value=\"CC-BY-ND-3.0\">CC Attribution-NoDerivatives 3.0</option>\n\t\t\t\t\t<option value=\"CC-BY-ND-4.0\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t\t<option value=\"CC-BY-SA-1.0\">CC Attribution-ShareAlike 1.0</option>\n\t\t\t\t\t<option value=\"CC-BY-SA-2.0\">CC Attribution-ShareAlike 2.0</option>\n\t\t\t\t\t<option value=\"CC-BY-SA-2.5\">CC Attribution-ShareAlike 2.5</option>\n\t\t\t\t\t<option value=\"CC-BY-SA-3.0\">CC Attribution-ShareAlike 3.0</option>\n\t\t\t\t\t<option value=\"CC-BY-SA-4.0\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-1.0\">CC Attribution-NonCommercial 1.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-2.0\">CC Attribution-NonCommercial 2.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-2.5\">CC Attribution-NonCommercial 2.5</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-3.0\">CC Attribution-NonCommercial 3.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-4.0\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-ND-1.0\">CC Attribution-NonCommercial-NoDerivatives 1.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-ND-2.0\">CC Attribution-NonCommercial-NoDerivatives 2.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-ND-2.5\">CC Attribution-NonCommercial-NoDerivatives 2.5</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-ND-3.0\">CC Attribution-NonCommercial-NoDerivatives 3.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-ND-4.0\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-SA-1.0\">CC Attribution-NonCommercial-ShareAlike 1.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-SA-2.0\">CC Attribution-NonCommercial-ShareAlike 2.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-SA-2.5\">CC Attribution-NonCommercial-ShareAlike 2.5</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-SA-3.0\">CC Attribution-NonCommercial-ShareAlike 3.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-SA-4.0\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t\t</select></div>\n\t\t\t\t<p><a href=\"https://creativecommons.org/choose/\" target=\"_blank\"></a></p>\n\t\t\t</div>\n\t\t</form>";
+
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initSetAlbumLicenseDialog = function initSetAlbumLicenseDialog(formElements, dialog) {
+		formElements.license.labels[0].textContent = lychee.locale["ALBUM_LICENSE"];
+		formElements.license.item(0).textContent = lychee.locale["ALBUM_LICENSE_NONE"];
+		formElements.license.item(1).textContent = lychee.locale["ALBUM_RESERVED"];
+		formElements.license.value = album.json.license === "" ? "none" : album.json.license;
+		dialog.querySelector("p a").textContent = lychee.locale["ALBUM_LICENSE_HELP"];
+	};
 
 	basicModal.show({
-		body: msg,
-		callback: callback,
+		body: setAlbumLicenseDialogBody,
+		readyCB: initSetAlbumLicenseDialog,
 		buttons: {
 			action: {
 				title: lychee.locale["ALBUM_SET_LICENSE"],
@@ -2081,24 +2121,14 @@ album.setLicense = function (albumID) {
  * @returns {void}
  */
 album.setSorting = function (albumID) {
-	var callback = function callback() {
-		if (album.json.sorting) {
-			$("select#sortingCol").val(album.json.sorting.column);
-			$("select#sortingOrder").val(album.json.sorting.order);
-		} else {
-			$("select#sortingCol").val("");
-			$("select#sortingOrder").val("");
-		}
-	};
-
-	/** @param {{sortingCol: string, sortingOrder: string}} data */
+	/** @param {{sorting_col: string, sorting_order: string}} data */
 	var action = function action(data) {
 		basicModal.close();
 
 		api.post("Album::setSorting", {
 			albumID: albumID,
-			sorting_column: data.sortingCol,
-			sorting_order: data.sortingOrder
+			sorting_column: data.sorting_col,
+			sorting_order: data.sorting_order
 		}, function () {
 			if (visible.album()) {
 				album.reload();
@@ -2106,11 +2136,39 @@ album.setSorting = function (albumID) {
 		});
 	};
 
-	var msg = lychee.html(_templateObject8, sprintf(lychee.locale["SORT_PHOTO_BY"], "<span class=\"select\">\n\t\t\t\t<select id=\"sortingCol\" name=\"sortingCol\">\n\t\t\t\t\t<option value=''>-</option>\n\t\t\t\t\t<option value='created_at'>" + lychee.locale["SORT_PHOTO_SELECT_1"] + "</option>\n\t\t\t\t\t<option value='taken_at'>" + lychee.locale["SORT_PHOTO_SELECT_2"] + "</option>\n\t\t\t\t\t<option value='title'>" + lychee.locale["SORT_PHOTO_SELECT_3"] + "</option>\n\t\t\t\t\t<option value='description'>" + lychee.locale["SORT_PHOTO_SELECT_4"] + "</option>\n\t\t\t\t\t<option value='is_public'>" + lychee.locale["SORT_PHOTO_SELECT_5"] + "</option>\n\t\t\t\t\t<option value='is_starred'>" + lychee.locale["SORT_PHOTO_SELECT_6"] + "</option>\n\t\t\t\t\t<option value='type'>" + lychee.locale["SORT_PHOTO_SELECT_7"] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>", "<span class=\"select\">\n\t\t\t\t<select id=\"sortingOrder\" name=\"sortingOrder\">\n\t\t\t\t\t<option value=''>-</option>\n\t\t\t\t\t<option value='ASC'>" + lychee.locale["SORT_ASCENDING"] + "</option>\n\t\t\t\t\t<option value='DESC'>" + lychee.locale["SORT_DESCENDING"] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>"));
+	var setAlbumSortingDialogBody = "\n\t\t<form>\n\t\t\t<div class=\"input-group compact\">\n\t\t\t\t<label for=\"sorting_dialog_column_select\"></label>\n\t\t\t\t<div class=\"select\"><select name=\"sorting_col\" id=\"sorting_dialog_column_select\">\n\t\t\t\t\t<option value=''>&mdash;</option>\n\t\t\t\t\t<option value='created_at'/>\n\t\t\t\t\t<option value='taken_at'/>\n\t\t\t\t\t<option value='title'/>\n\t\t\t\t\t<option value='description'/>\n\t\t\t\t\t<option value='is_public'/>\n\t\t\t\t\t<option value='is_starred'/>\n\t\t\t\t\t<option value='type'/>\n\t\t\t\t</select></div>\n\t\t\t</div>\n\t\t\t<div class=\"input-group compact\">\n\t\t\t\t<label for=\"sorting_dialog_order_select\"></label>\n\t\t\t\t<div class=\"select\"><select name=\"sorting_order\" id=\"sorting_dialog_order_select\">\n\t\t\t\t\t<option value=''>&mdash;</option>\n\t\t\t\t\t<option value='ASC'/>\n\t\t\t\t\t<option value='DESC'/>\n\t\t\t\t</select></div>\n\t\t\t</div>\n\t\t</form>";
+
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initSetAlbumSortingDialog = function initSetAlbumSortingDialog(formElements, dialog) {
+		formElements.sorting_col.labels[0].textContent = "Attribute";
+		formElements.sorting_col.item(1).textContent = lychee.locale["SORT_PHOTO_SELECT_1"];
+		formElements.sorting_col.item(2).textContent = lychee.locale["SORT_PHOTO_SELECT_2"];
+		formElements.sorting_col.item(3).textContent = lychee.locale["SORT_PHOTO_SELECT_3"];
+		formElements.sorting_col.item(4).textContent = lychee.locale["SORT_PHOTO_SELECT_4"];
+		formElements.sorting_col.item(5).textContent = lychee.locale["SORT_PHOTO_SELECT_5"];
+		formElements.sorting_col.item(6).textContent = lychee.locale["SORT_PHOTO_SELECT_6"];
+		formElements.sorting_col.item(7).textContent = lychee.locale["SORT_PHOTO_SELECT_7"];
+
+		formElements.sorting_order.labels[0].textContent = "Order";
+		formElements.sorting_order.item(1).textContent = lychee.locale["SORT_ASCENDING"];
+		formElements.sorting_order.item(2).textContent = lychee.locale["SORT_DESCENDING"];
+
+		if (album.json.sorting) {
+			formElements.sorting_col.value = album.json.sorting.column;
+			formElements.sorting_order.value = album.json.sorting.order;
+		} else {
+			formElements.sorting_col.value = "";
+			formElements.sorting_order.value = "";
+		}
+	};
 
 	basicModal.show({
-		body: msg,
-		callback: callback,
+		body: setAlbumSortingDialogBody,
+		readyCB: initSetAlbumSortingDialog,
 		buttons: {
 			action: {
 				title: lychee.locale["ALBUM_SET_ORDER"],
@@ -2131,21 +2189,20 @@ album.setSorting = function (albumID) {
  * @returns {void}
  */
 album.setProtectionPolicy = function (albumID) {
+	/**
+  * @param {ModalDialogResult} data
+  */
 	var action = function action(data) {
+		basicModal.close();
 		albums.refresh();
 
-		// TODO: If the modal dialog would provide us with proper boolean values for the checkboxes as part of `data` the same way as it does for text inputs, then we would not need these slow and awkward jQeury selectors
-		album.json.is_nsfw = $('.basicModal .switch input[name="is_nsfw"]:checked').length === 1;
-		album.json.is_public = $('.basicModal .switch input[name="is_public"]:checked').length === 1;
-		album.json.grants_full_photo = $('.basicModal .choice input[name="grants_full_photo"]:checked').length === 1;
-		album.json.requires_link = $('.basicModal .choice input[name="requires_link"]:checked').length === 1;
-		album.json.is_downloadable = $('.basicModal .choice input[name="is_downloadable"]:checked').length === 1;
-		album.json.is_share_button_visible = $('.basicModal .choice input[name="is_share_button_visible"]:checked').length === 1;
-		album.json.has_password = $('.basicModal .choice input[name="has_password"]:checked').length === 1;
-		var newPassword = $('.basicModal .choice input[name="passwordtext"]').val() || null;
-
-		// Modal input has been processed, now it can be closed
-		basicModal.close();
+		album.json.is_nsfw = data.is_nsfw;
+		album.json.is_public = data.is_public;
+		album.json.grants_full_photo = data.grants_full_photo;
+		album.json.requires_link = data.requires_link;
+		album.json.is_downloadable = data.is_downloadable;
+		album.json.is_share_button_visible = data.is_share_button_visible;
+		album.json.has_password = data.has_password;
 
 		// Set data and refresh view
 		if (visible.album()) {
@@ -2167,10 +2224,10 @@ album.setProtectionPolicy = function (albumID) {
 			is_share_button_visible: album.json.is_share_button_visible
 		};
 		if (album.json.has_password) {
-			if (newPassword) {
+			if (data.password) {
 				// We send the password only if there's been a change; that way the
 				// server will keep the current password if it wasn't changed.
-				params.password = newPassword;
+				params.password = data.password;
 			}
 		} else {
 			params.password = null;
@@ -2179,50 +2236,101 @@ album.setProtectionPolicy = function (albumID) {
 		api.post("Album::setProtectionPolicy", params);
 	};
 
-	var msg = lychee.html(_templateObject9, lychee.locale["ALBUM_PUBLIC"], lychee.locale["ALBUM_PUBLIC_EXPL"], build.iconic("check"), lychee.locale["ALBUM_FULL"], lychee.locale["ALBUM_FULL_EXPL"], build.iconic("check"), lychee.locale["ALBUM_HIDDEN"], lychee.locale["ALBUM_HIDDEN_EXPL"], build.iconic("check"), lychee.locale["ALBUM_DOWNLOADABLE"], lychee.locale["ALBUM_DOWNLOADABLE_EXPL"], build.iconic("check"), lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE"], lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE_EXPL"], build.iconic("check"), lychee.locale["ALBUM_PASSWORD_PROT"], lychee.locale["ALBUM_PASSWORD_PROT_EXPL"], lychee.locale["PASSWORD"], lychee.locale["ALBUM_NSFW"], lychee.locale["ALBUM_NSFW_EXPL"]);
+	var setAlbumProtectionPolicyBody = "\n\t\t<form>\n\t\t\t<div class='input-group compact-no-indent'>\n\t\t\t\t<label for=\"pp_dialog_public_check\"></label>\n\t\t\t\t<input type='checkbox' class=\"slider\" id='pp_dialog_public_check' name='is_public' />\n\t\t\t\t<p></p>\n\t\t\t</div>\n\t\t\t<div class='input-group compact-inverse'>\n\t\t\t\t<label for=\"pp_dialog_full_photo_check\"></label>\n\t\t\t\t<input type='checkbox' id='pp_dialog_full_photo_check' name='grants_full_photo' />\n\t\t\t\t<p></p>\n\t\t\t</div>\n\t\t\t<div class='input-group compact-inverse'>\n\t\t\t\t<label for=\"pp_dialog_link_check\"></label>\n\t\t\t\t<input type='checkbox' id='pp_dialog_link_check' name='requires_link' />\n\t\t\t\t<p></p>\n\t\t\t</div>\n\t\t\t<div class='input-group compact-inverse'>\n\t\t\t\t<label for=\"pp_dialog_downloadable_check\"></label>\n\t\t\t\t<input type='checkbox' id='pp_dialog_downloadable_check' name='is_downloadable' />\n\t\t\t\t<p></p>\n\t\t\t</div>\n\t\t\t<div class='input-group compact-inverse'>\n\t\t\t\t<label for=\"pp_dialog_share_check\"></label>\n\t\t\t\t<input type='checkbox' id='pp_dialog_share_check' name='is_share_button_visible' />\n\t\t\t\t<p></p>\n\t\t\t</div>\n\t\t\t<div class='input-group compact-inverse'>\n\t\t\t\t<label for=\"pp_dialog_password_check\"></label>\n\t\t\t\t<input type='checkbox' id='pp_dialog_password_check' name='has_password'>\n\t\t\t\t<p></p>\n\t\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t\t<input class='text' id='pp_dialog_password_input' name='password' type='text'>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</form>\n\t\t<hr/>\n\t\t<form>\n\t\t\t<div class='input-group compact-no-indent'>\n\t\t\t\t<label for='pp_dialog_nsfw_check'></label>\n\t\t\t\t<input type='checkbox' class=\"slider\" id='pp_dialog_nsfw_check' name='is_nsfw'>\n\t\t\t\t<p></p>\n\t\t\t</div>\n\t\t</form>";
 
-	var dialogSetupCB = function dialogSetupCB() {
-		// TODO: If the modal dialog would provide this callback with proper jQuery objects for all input/select/choice elements, then we would not need these jQuery selectors
-		$('.basicModal .switch input[name="is_public"]').prop("checked", album.json.is_public);
-		$('.basicModal .switch input[name="is_nsfw"]').prop("checked", album.json.is_nsfw);
+	/**
+  * @typedef ProtectionPolicyDialogFormElements
+  * @property {HTMLInputElement} is_public
+  * @property {HTMLInputElement} grants_full_photo
+  * @property {HTMLInputElement} requires_link
+  * @property {HTMLInputElement} is_downloadable
+  * @property {HTMLInputElement} is_share_button_visible
+  * @property {HTMLInputElement} has_password
+  * @property {HTMLInputElement} password
+  * @property {HTMLInputElement} is_nsfw
+  */
+
+	/**
+  * @param {ProtectionPolicyDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initAlbumProtectionPolicyDialog = function initAlbumProtectionPolicyDialog(formElements, dialog) {
+		formElements.is_public.previousElementSibling.textContent = lychee.locale["ALBUM_PUBLIC"];
+		formElements.is_public.nextElementSibling.textContent = lychee.locale["ALBUM_PUBLIC_EXPL"];
+		formElements.grants_full_photo.previousElementSibling.textContent = lychee.locale["ALBUM_FULL"];
+		formElements.grants_full_photo.nextElementSibling.textContent = lychee.locale["ALBUM_FULL_EXPL"];
+		formElements.requires_link.previousElementSibling.textContent = lychee.locale["ALBUM_HIDDEN"];
+		formElements.requires_link.nextElementSibling.textContent = lychee.locale["ALBUM_HIDDEN_EXPL"];
+		formElements.is_downloadable.previousElementSibling.textContent = lychee.locale["ALBUM_DOWNLOADABLE"];
+		formElements.is_downloadable.nextElementSibling.textContent = lychee.locale["ALBUM_DOWNLOADABLE_EXPL"];
+		formElements.is_share_button_visible.previousElementSibling.textContent = lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE"];
+		formElements.is_share_button_visible.nextElementSibling.textContent = lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE_EXPL"];
+		formElements.has_password.previousElementSibling.textContent = lychee.locale["ALBUM_PASSWORD_PROT"];
+		formElements.has_password.nextElementSibling.textContent = lychee.locale["ALBUM_PASSWORD_PROT_EXPL"];
+		formElements.password.placeholder = lychee.locale["PASSWORD"];
+		formElements.is_nsfw.previousElementSibling.textContent = lychee.locale["ALBUM_NSFW"];
+		formElements.is_nsfw.nextElementSibling.textContent = lychee.locale["ALBUM_NSFW_EXPL"];
+
+		formElements.is_public.checked = album.json.is_public;
+		formElements.is_nsfw.checked = album.json.is_nsfw;
+
+		/**
+   * Array of checkboxes which are enable/disabled wrt. the state of `is_public`
+   * @type {HTMLInputElement[]}
+   */
+		var tristateCheckboxes = [formElements.grants_full_photo, formElements.requires_link, formElements.is_downloadable, formElements.is_share_button_visible, formElements.has_password];
+
 		if (album.json.is_public) {
-			$(".basicModal .choice input").attr("disabled", false);
-			// Initialize options based on album settings.
-			$('.basicModal .choice input[name="grants_full_photo"]').prop("checked", album.json.grants_full_photo);
-			$('.basicModal .choice input[name="requires_link"]').prop("checked", album.json.requires_link);
-			$('.basicModal .choice input[name="is_downloadable"]').prop("checked", album.json.is_downloadable);
-			$('.basicModal .choice input[name="is_share_button_visible"]').prop("checked", album.json.is_share_button_visible);
-			$('.basicModal .choice input[name="has_password"]').prop("checked", album.json.has_password);
+			tristateCheckboxes.forEach(function (checkbox) {
+				checkbox.parentElement.classList.remove("disabled");
+				checkbox.disabled = false;
+			});
+			// Initialize options based on global settings.
+			formElements.grants_full_photo.checked = album.json.grants_full_photo;
+			formElements.requires_link.checked = album.json.requires_link;
+			formElements.is_downloadable.checked = album.json.is_downloadable;
+			formElements.is_share_button_visible.checked = album.json.is_share_button_visible;
+			formElements.has_password.checked = album.json.has_password;
 			if (album.json.has_password) {
-				$('.basicModal .choice input[name="passwordtext"]').show();
+				formElements.password.parentElement.classList.remove("hidden");
+			} else {
+				formElements.password.parentElement.classList.add("hidden");
 			}
 		} else {
-			$(".basicModal .choice input").attr("disabled", true);
+			tristateCheckboxes.forEach(function (checkbox) {
+				checkbox.parentElement.classList.add("disabled");
+				checkbox.disabled = true;
+			});
 			// Initialize options based on global settings.
-			$('.basicModal .choice input[name="grants_full_photo"]').prop("checked", lychee.grants_full_photo);
-			$('.basicModal .choice input[name="requires_link"]').prop("checked", false);
-			$('.basicModal .choice input[name="is_downloadable"]').prop("checked", lychee.is_downloadable);
-			$('.basicModal .choice input[name="is_share_button_visible"]').prop("checked", lychee.is_share_button_visible);
-			$('.basicModal .choice input[name="has_password"]').prop("checked", false);
-			$('.basicModal .choice input[name="passwordtext"]').hide();
+			formElements.grants_full_photo.checked = lychee.grants_full_photo;
+			formElements.requires_link.checked = false;
+			formElements.is_downloadable.checked = lychee.is_downloadable;
+			formElements.is_share_button_visible.checked = lychee.is_share_button_visible;
+			formElements.has_password.checked = false;
+			formElements.password.parentElement.classList.add("hidden");
 		}
 
-		$('.basicModal .switch input[name="is_public"]').on("change", function () {
-			$(".basicModal .choice input").attr("disabled", $(this).prop("checked") !== true);
+		formElements.is_public.addEventListener("change", function () {
+			tristateCheckboxes.forEach(function (checkbox) {
+				checkbox.parentElement.classList.toggle("disabled");
+				checkbox.disabled = !formElements.is_public.checked;
+			});
 		});
 
-		$('.basicModal .choice input[name="has_password"]').on("change", function () {
-			if ($(this).prop("checked") === true) {
-				$('.basicModal .choice input[name="passwordtext"]').show().focus();
+		formElements.has_password.addEventListener("change", function () {
+			if (formElements.has_password.checked) {
+				formElements.password.parentElement.classList.remove("hidden");
+				formElements.password.focus();
 			} else {
-				$('.basicModal .choice input[name="passwordtext"]').hide();
+				formElements.password.parentElement.classList.add("hidden");
 			}
 		});
 	};
 
 	basicModal.show({
-		body: msg,
-		callback: dialogSetupCB,
+		body: setAlbumProtectionPolicyBody,
+		readyCB: initAlbumProtectionPolicyDialog,
 		buttons: {
 			action: {
 				title: lychee.locale["SAVE"],
@@ -2243,74 +2351,84 @@ album.setProtectionPolicy = function (albumID) {
  * @returns {void}
  */
 album.shareUsers = function (albumID) {
+	/**
+  * @param {ModalDialogResult} data
+  */
 	var action = function action(data) {
 		basicModal.close();
 
 		/** @type {number[]} */
-		var sharingToAdd = [];
-		/** @type {number[]} */
-		var sharingToDelete = [];
-		$(".basicModal .choice input").each(function (_, input) {
-			var $input = $(input);
-			if ($input.is(":checked")) {
-				if ($input.data("sharingId") === undefined) {
-					// Input is checked but has no sharing id => new share to create
-					sharingToAdd.push(Number.parseInt(input.name));
-				}
-			} else {
-				var sharingId = $input.data("sharingId");
-				if (sharingId !== undefined) {
-					// Input is not checked but has a sharing id => existing share to remove
-					sharingToDelete.push(Number.parseInt(sharingId));
-				}
-			}
+		var selectedUserIds = Object.entries(data).filter(function (_ref) {
+			var _ref2 = _slicedToArray(_ref, 2),
+			    userId = _ref2[0],
+			    isChecked = _ref2[1];
+
+			return isChecked;
+		}).map(function (_ref3) {
+			var _ref4 = _slicedToArray(_ref3, 2),
+			    userId = _ref4[0],
+			    isChecked = _ref4[1];
+
+			return parseInt(userId, 10);
 		});
 
-		if (sharingToDelete.length > 0) {
-			api.post("Sharing::delete", {
-				shareIDs: sharingToDelete
-			});
-		}
-		if (sharingToAdd.length > 0) {
-			api.post("Sharing::add", {
-				albumIDs: [albumID],
-				userIDs: sharingToAdd
-			});
-		}
+		api.post("Sharing::setByAlbum", {
+			albumID: albumID,
+			userIDs: selectedUserIds
+		});
 	};
 
-	var msg = "<form id=\"sharing_people_form\"><p>" + lychee.locale["WAIT_FETCH_DATA"] + "</p></form>";
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initSharingDialog = function initSharingDialog(formElements, dialog) {
+		/** @type {HTMLParagraphElement} */
+		var p = dialog.querySelector("p");
+		p.textContent = lychee.locale["WAIT_FETCH_DATA"];
 
-	var dialogSetupCB = function dialogSetupCB() {
 		/** @param {SharingInfo} data */
 		var successCallback = function successCallback(data) {
-			var sharingForm = $("#sharing_people_form");
-			sharingForm.empty();
-			if (data.users.length !== 0) {
-				sharingForm.append("<p>" + lychee.locale["SHARING_ALBUM_USERS_LONG_MESSAGE"] + "</p>");
-				// Fill with the list of users
-				data.users.forEach(function (user) {
-					sharingForm.append(lychee.html(_templateObject10, user.id, build.iconic("check"), user.username));
-				});
-				data.shared.filter(function (val) {
-					return val.album_id === albumID;
-				}).forEach(function (sharing) {
-					// Check all the shares that already exist, and store their sharing id on the element
-					var elem = $(".basicModal .choice input[name=\"" + sharing.user_id + "\"]");
-					elem.prop("checked", true);
-					elem.data("sharingId", sharing.id);
-				});
-			} else {
-				sharingForm.append("<p>" + lychee.locale["SHARING_ALBUM_USERS_NO_USERS"] + "</p>");
+			if (data.users.length === 0) {
+				p.textContent = lychee.locale["SHARING_ALBUM_USERS_NO_USERS"];
+				return;
 			}
+
+			p.textContent = lychee.locale["SHARING_ALBUM_USERS_LONG_MESSAGE"];
+
+			/** @type {HTMLFormElement} */
+			var form = document.createElement("form");
+
+			var existingShares = new Set(data.shared.map(function (value) {
+				return value.user_id;
+			}));
+
+			// Create a list with one checkbox per user
+			data.users.forEach(function (user) {
+				var div = form.appendChild(document.createElement("div"));
+				div.classList.add("input-group", "compact-inverse");
+				var label = div.appendChild(document.createElement("label"));
+				label.htmlFor = "share_dialog_user_" + user.id;
+				label.textContent = user.username;
+				var input = div.appendChild(document.createElement("input"));
+				input.type = "checkbox";
+				input.id = label.htmlFor;
+				input.name = user.id.toString();
+				input.checked = existingShares.has(user.id);
+			});
+
+			// Append the pre-constructed form to the dialog after the paragraph
+			dialog.appendChild(form);
+			basicModal.cacheFormElements();
 		};
 
-		api.post("Sharing::list", {}, successCallback);
+		api.post("Sharing::list", { albumID: albumID }, successCallback);
 	};
 
 	basicModal.show({
-		body: msg,
-		callback: dialogSetupCB,
+		body: "<p></p>",
+		readyCB: initSharingDialog,
 		buttons: {
 			action: {
 				title: lychee.locale["SAVE"],
@@ -2374,20 +2492,19 @@ album.qrCode = function () {
 		return;
 	}
 
-	var msg = lychee.html(_templateObject11);
-
 	basicModal.show({
-		body: msg,
-		callback: function callback() {
-			var qrcode = $("#qr-code");
+		body: "<div class='qr-code-canvas'></div>",
+		classList: ["qr-code"],
+		readyCB: function readyCB(formElements, dialog) {
+			var qrcode = dialog.querySelector("div.qr-code-canvas");
 			QrCreator.render({
 				text: location.href,
 				radius: 0.0,
 				ecLevel: "H",
 				fill: "#000000",
 				background: "#FFFFFF",
-				size: qrcode.width()
-			}, qrcode[0]);
+				size: qrcode.clientWidth
+			}, qrcode);
 		},
 		buttons: {
 			cancel: {
@@ -2411,7 +2528,7 @@ album.getArchive = function (albumIDs) {
  * @param {?string} albumID
  * @param {string} op1
  * @param {string} ops
- * @returns {string} the HTML content of the dialog
+ * @returns {string} the message
  */
 album.buildMessage = function (albumIDs, albumID, op1, ops) {
 	var targetTitle = lychee.locale["UNTITLED"];
@@ -2435,9 +2552,9 @@ album.buildMessage = function (albumIDs, albumID, op1, ops) {
 			sourceTitle = sourceAlbum.title;
 		}
 
-		msg = lychee.html(_templateObject12, sprintf(lychee.locale[op1], sourceTitle, targetTitle));
+		msg = sprintf(lychee.locale[op1], sourceTitle, targetTitle);
 	} else {
-		msg = lychee.html(_templateObject13, sprintf(lychee.locale[ops], targetTitle));
+		msg = sprintf(lychee.locale[ops], targetTitle);
 	}
 
 	return msg;
@@ -2448,79 +2565,79 @@ album.buildMessage = function (albumIDs, albumID, op1, ops) {
  * @returns {void}
  */
 album.delete = function (albumIDs) {
-	var action = {};
-	var cancel = {};
-	var msg = "";
+	var isTagAlbum = albumIDs.length === 1 && albums.isTagAlbum(albumIDs[0]);
 
-	action.fn = function () {
-		basicModal.close();
-
-		api.post("Album::delete", {
-			albumIDs: albumIDs
-		}, function () {
-			if (visible.albums()) {
+	var handleSuccessfulDeletion = function handleSuccessfulDeletion() {
+		if (visible.albums()) {
+			albumIDs.forEach(function (id) {
+				view.albums.content.delete(id);
+				albums.deleteByID(id);
+			});
+		} else if (visible.album()) {
+			albums.refresh();
+			if (albumIDs.length === 1 && album.getID() === albumIDs[0]) {
+				lychee.goto(album.getParentID());
+			} else {
 				albumIDs.forEach(function (id) {
-					view.albums.content.delete(id);
-					albums.deleteByID(id);
+					album.deleteSubByID(id);
+					view.album.content.deleteSub(id);
 				});
-			} else if (visible.album()) {
-				albums.refresh();
-				if (albumIDs.length === 1 && album.getID() === albumIDs[0]) {
-					lychee.goto(album.getParentID());
-				} else {
-					albumIDs.forEach(function (id) {
-						album.deleteSubByID(id);
-						view.album.content.deleteSub(id);
-					});
-				}
 			}
-		});
+		}
 	};
 
-	if (albumIDs.length === 1 && albumIDs[0] === "unsorted") {
-		action.title = lychee.locale["CLEAR_UNSORTED"];
-		cancel.title = lychee.locale["KEEP_UNSORTED"];
+	var action = function action() {
+		basicModal.close();
+		api.post("Album::delete", { albumIDs: albumIDs }, handleSuccessfulDeletion);
+	};
 
-		msg = "<p>" + lychee.locale["DELETE_UNSORTED_CONFIRM"] + "</p>";
-	} else if (albumIDs.length === 1) {
-		var albumTitle = "";
-		var isTagAlbum = albums.isTagAlbum(albumIDs[0]);
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  */
+	var initConfirmDeletionDialog = function initConfirmDeletionDialog(formElements, dialog) {
+		/** @type {HTMLParagraphElement} */
+		var p = dialog.querySelector("p");
+		if (albumIDs.length === 1 && albumIDs[0] === SmartAlbumID.UNSORTED) {
+			p.textContent = lychee.locale["DELETE_UNSORTED_CONFIRM"];
+		} else if (albumIDs.length === 1) {
+			var albumTitle = "";
 
-		action.title = lychee.locale[isTagAlbum ? "DELETE_TAG_ALBUM_QUESTION" : "DELETE_ALBUM_QUESTION"];
-		cancel.title = lychee.locale["KEEP_ALBUM"];
+			// Get title
+			if (album.json) {
+				if (album.getID() === albumIDs[0]) {
+					albumTitle = album.json.title;
+				} else albumTitle = album.getSubByID(albumIDs[0]).title;
+			}
+			if (!albumTitle) {
+				var a = albums.getByID(albumIDs[0]);
+				if (a) albumTitle = a.title;
+			}
 
-		// Get title
-		if (album.json) {
-			if (album.getID() === albumIDs[0]) {
-				albumTitle = album.json.title;
-			} else albumTitle = album.getSubByID(albumIDs[0]).title;
+			// Fallback for album without a title
+			if (!albumTitle) albumTitle = lychee.locale["UNTITLED"];
+
+			p.textContent = isTagAlbum ? sprintf(lychee.locale["DELETE_TAG_ALBUM_CONFIRMATION"], albumTitle) : sprintf(lychee.locale["DELETE_ALBUM_CONFIRMATION"], albumTitle);
+		} else {
+			p.textContent = sprintf(lychee.locale["DELETE_ALBUMS_CONFIRMATION"], albumIDs.length);
 		}
-		if (!albumTitle) {
-			var a = albums.getByID(albumIDs[0]);
-			if (a) albumTitle = a.title;
-		}
+	};
 
-		// Fallback for album without a title
-		if (!albumTitle) albumTitle = lychee.locale["UNTITLED"];
+	var actionButtonLabel = albumIDs.length === 1 ? albumIDs[0] === SmartAlbumID.UNSORTED ? lychee.locale["CLEAR_UNSORTED"] : isTagAlbum ? lychee.locale["DELETE_TAG_ALBUM_QUESTION"] : lychee.locale["DELETE_ALBUM_QUESTION"] : lychee.locale["DELETE_ALBUMS_QUESTION"];
 
-		msg = lychee.html(_templateObject13, sprintf(lychee.locale[isTagAlbum ? "DELETE_TAG_ALBUM_CONFIRMATION" : "DELETE_ALBUM_CONFIRMATION"], albumTitle));
-	} else {
-		action.title = lychee.locale["DELETE_ALBUMS_QUESTION"];
-		cancel.title = lychee.locale["KEEP_ALBUMS"];
-
-		msg = lychee.html(_templateObject13, sprintf(lychee.locale["DELETE_ALBUMS_CONFIRMATION"], albumIDs.length));
-	}
+	var cancelButtonLabel = albumIDs.length === 1 ? albumIDs[0] === SmartAlbumID.UNSORTED ? lychee.locale["KEEP_UNSORTED"] : lychee.locale["KEEP_ALBUM"] : lychee.locale["KEEP_ALBUMS"];
 
 	basicModal.show({
-		body: msg,
+		body: "<p></p>",
+		readyCB: initConfirmDeletionDialog,
 		buttons: {
 			action: {
-				title: action.title,
-				fn: action.fn,
-				class: "red"
+				title: actionButtonLabel,
+				fn: action,
+				classList: ["red"]
 			},
 			cancel: {
-				title: cancel.title,
+				title: cancelButtonLabel,
 				fn: basicModal.close
 			}
 		}
@@ -2548,12 +2665,15 @@ album.merge = function (albumIDs, albumID) {
 
 	if (confirm) {
 		basicModal.show({
-			body: album.buildMessage(albumIDs, albumID, "ALBUM_MERGE", "ALBUMS_MERGE"),
+			body: "<p></p>",
+			readyCB: function readyCB(formElements, dialog) {
+				return dialog.querySelector("p").textContent = album.buildMessage(albumIDs, albumID, "ALBUM_MERGE", "ALBUMS_MERGE");
+			},
 			buttons: {
 				action: {
 					title: lychee.locale["MERGE_ALBUM"],
 					fn: action,
-					class: "red"
+					classList: ["red"]
 				},
 				cancel: {
 					title: lychee.locale["DONT_MERGE"],
@@ -2587,12 +2707,15 @@ album.setAlbum = function (albumIDs, albumID) {
 
 	if (confirm) {
 		basicModal.show({
-			body: album.buildMessage(albumIDs, albumID, "ALBUM_MOVE", "ALBUMS_MOVE"),
+			body: "<p></p>",
+			readyCB: function readyCB(formElements, dialog) {
+				return dialog.querySelector("p").textContent = album.buildMessage(albumIDs, albumID, "ALBUM_MOVE", "ALBUMS_MOVE");
+			},
 			buttons: {
 				action: {
 					title: lychee.locale["MOVE_ALBUMS"],
 					fn: action,
-					class: "red"
+					classList: ["red"]
 				},
 				cancel: {
 					title: lychee.locale["NOT_MOVE_ALBUMS"],
@@ -2977,7 +3100,7 @@ var build = {};
 build.iconic = function (icon) {
 	var classes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
 
-	return lychee.html(_templateObject14, classes, icon);
+	return lychee.html(_templateObject, classes, icon);
 };
 
 /**
@@ -2985,7 +3108,7 @@ build.iconic = function (icon) {
  * @returns {string}
  */
 build.divider = function (title) {
-	return lychee.html(_templateObject15, title);
+	return lychee.html(_templateObject2, title);
 };
 
 /**
@@ -2993,7 +3116,7 @@ build.divider = function (title) {
  * @returns {string}
  */
 build.editIcon = function (id) {
-	return lychee.html(_templateObject16, id, build.iconic("pencil"));
+	return lychee.html(_templateObject3, id, build.iconic("pencil"));
 };
 
 /**
@@ -3002,7 +3125,7 @@ build.editIcon = function (id) {
  * @returns {string}
  */
 build.multiselect = function (top, left) {
-	return lychee.html(_templateObject17, top, left);
+	return lychee.html(_templateObject4, top, left);
 };
 
 /**
@@ -3077,15 +3200,15 @@ build.album = function (data) {
 			}
 	}
 
-	var html = lychee.html(_templateObject18, disabled ? "disabled" : "", data.is_nsfw && lychee.nsfw_blur ? "blurred" : "", data.id, data.is_nsfw ? "1" : "0", tabindex.get_next_tab_index(), disableDragDrop ? "false" : "true", disableDragDrop ? "" : "ondragstart='lychee.startDrag(event)'\n\t\t\t\tondragover='lychee.overDrag(event)'\n\t\t\t\tondragleave='lychee.leaveDrag(event)'\n\t\t\t\tondragend='lychee.endDrag(event)'\n\t\t\t\tondrop='lychee.finishDrag(event)'", build.getAlbumThumb(data), build.getAlbumThumb(data), build.getAlbumThumb(data), data.title, data.title, subtitle);
+	var html = lychee.html(_templateObject5, disabled ? "disabled" : "", data.is_nsfw && lychee.nsfw_blur ? "blurred" : "", data.id, data.is_nsfw ? "1" : "0", tabindex.get_next_tab_index(), disableDragDrop ? "false" : "true", disableDragDrop ? "" : "ondragstart='lychee.startDrag(event)'\n\t\t\t\tondragover='lychee.overDrag(event)'\n\t\t\t\tondragleave='lychee.leaveDrag(event)'\n\t\t\t\tondragend='lychee.endDrag(event)'\n\t\t\t\tondrop='lychee.finishDrag(event)'", build.getAlbumThumb(data), build.getAlbumThumb(data), build.getAlbumThumb(data), data.title, data.title, subtitle);
 
 	if (album.isUploadable() && !disabled) {
 		var isCover = album.json && album.json.cover_id && data.thumb.id === album.json.cover_id;
-		html += lychee.html(_templateObject19, data.is_nsfw ? "badge--nsfw" : "", build.iconic("warning"), data.id === SmartAlbumID.STARRED ? "badge--star" : "", build.iconic("star"), data.id === SmartAlbumID.RECENT ? "badge--visible badge--list" : "", build.iconic("clock"), data.id === SmartAlbumID.PUBLIC || data.is_public ? "badge--visible" : "", data.requires_link ? "badge--hidden" : "badge--not--hidden", build.iconic("eye"), data.id === SmartAlbumID.UNSORTED ? "badge--visible" : "", build.iconic("list"), data.has_password ? "badge--visible" : "", build.iconic("lock-locked"), data.is_tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
+		html += lychee.html(_templateObject6, data.is_nsfw ? "badge--nsfw" : "", build.iconic("warning"), data.id === SmartAlbumID.STARRED ? "badge--star" : "", build.iconic("star"), data.id === SmartAlbumID.RECENT ? "badge--visible badge--list" : "", build.iconic("clock"), data.id === SmartAlbumID.PUBLIC || data.is_public ? "badge--visible" : "", data.requires_link ? "badge--hidden" : "badge--not--hidden", build.iconic("eye"), data.id === SmartAlbumID.UNSORTED ? "badge--visible" : "", build.iconic("list"), data.has_password ? "badge--visible" : "", build.iconic("lock-locked"), data.is_tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
 
 	if (data.albums && data.albums.length > 0 || data.has_albums) {
-		html += lychee.html(_templateObject20, build.iconic("layers"));
+		html += lychee.html(_templateObject7, build.iconic("layers"));
 	}
 
 	html += "</div>";
@@ -3175,9 +3298,9 @@ build.photo = function (data) {
 		}
 	}
 
-	html += lychee.html(_templateObject21, disabled ? "disabled" : "", data.album_id, data.id, tabindex.get_next_tab_index(), !album.isUploadable() || disabled ? "false" : "true", thumbnail, data.title, data.title);
+	html += lychee.html(_templateObject8, disabled ? "disabled" : "", data.album_id, data.id, tabindex.get_next_tab_index(), !album.isUploadable() || disabled ? "false" : "true", thumbnail, data.title, data.title);
 
-	if (data.taken_at !== null) html += lychee.html(_templateObject22, lychee.locale["CAMERA_DATE"], build.iconic("camera-slr"), lychee.locale.printDateTime(data.taken_at));else html += lychee.html(_templateObject23, lychee.locale.printDateTime(data.created_at));
+	if (data.taken_at !== null) html += lychee.html(_templateObject9, lychee.locale["CAMERA_DATE"], build.iconic("camera-slr"), lychee.locale.printDateTime(data.taken_at));else html += lychee.html(_templateObject10, lychee.locale.printDateTime(data.created_at));
 
 	html += "</div>";
 
@@ -3189,7 +3312,7 @@ build.photo = function (data) {
 		// This also means that the displayed variant of the public badge of
 		// a photo depends on the availability of the parent album.
 		// This seems to be an undesired but unavoidable side effect.
-		html += lychee.html(_templateObject24, data.is_starred ? "badge--star" : "", build.iconic("star"), data.is_public && album.json && !album.json.is_public ? "badge--visible badge--hidden" : "", build.iconic("eye"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
+		html += lychee.html(_templateObject11, data.is_starred ? "badge--star" : "", build.iconic("star"), data.is_public && album.json && !album.json.is_public ? "badge--visible badge--hidden" : "", build.iconic("eye"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
 
 	html += "</div>";
@@ -3257,7 +3380,7 @@ build.overlay_image = function (data) {
 			return "";
 	}
 
-	return lychee.html(_templateObject25, data.title ? data.title : lychee.locale["UNTITLED"]) + (overlay !== "" ? "<p>" + overlay + "</p>" : "") + "\n\t\t</div>\n\t\t";
+	return lychee.html(_templateObject12, data.title ? data.title : lychee.locale["UNTITLED"]) + (overlay !== "" ? "<p>" + overlay + "</p>" : "") + "\n\t\t</div>\n\t\t";
 };
 
 /**
@@ -3271,9 +3394,9 @@ build.imageview = function (data, areControlsVisible, autoplay) {
 	var thumb = "";
 
 	if (data.type.indexOf("video") > -1) {
-		html += lychee.html(_templateObject26, areControlsVisible ? "" : "full", autoplay ? "autoplay" : "", tabindex.get_next_tab_index(), data.size_variants.original.url);
+		html += lychee.html(_templateObject13, areControlsVisible ? "" : "full", autoplay ? "autoplay" : "", tabindex.get_next_tab_index(), data.size_variants.original.url);
 	} else if (data.type.indexOf("raw") > -1 && data.size_variants.medium === null) {
-		html += lychee.html(_templateObject27, areControlsVisible ? "" : "full", tabindex.get_next_tab_index());
+		html += lychee.html(_templateObject14, areControlsVisible ? "" : "full", tabindex.get_next_tab_index());
 	} else {
 		var img = "";
 
@@ -3313,7 +3436,7 @@ build.imageview = function (data, areControlsVisible, autoplay) {
 			}
 		}
 
-		html += lychee.html(_templateObject28, img);
+		html += lychee.html(_templateObject15, img);
 	}
 
 	html += build.overlay_image(data) + ("\n\t\t\t<div class='arrow_wrapper arrow_wrapper--previous'><a id='previous'>" + build.iconic("caret-left") + "</a></div>\n\t\t\t<div class='arrow_wrapper arrow_wrapper--next'><a id='next'>" + build.iconic("caret-right") + "</a></div>\n\t\t\t");
@@ -3328,67 +3451,26 @@ build.imageview = function (data, areControlsVisible, autoplay) {
 build.no_content = function (type) {
 	var html = "";
 
-	html += lychee.html(_templateObject29, build.iconic(type));
+	html += lychee.html(_templateObject16, build.iconic(type));
 
 	switch (type) {
 		case "magnifying-glass":
-			html += lychee.html(_templateObject13, lychee.locale["VIEW_NO_RESULT"]);
+			html += lychee.html(_templateObject17, lychee.locale["VIEW_NO_RESULT"]);
 			break;
 		case "eye":
-			html += lychee.html(_templateObject13, lychee.locale["VIEW_NO_PUBLIC_ALBUMS"]);
+			html += lychee.html(_templateObject17, lychee.locale["VIEW_NO_PUBLIC_ALBUMS"]);
 			break;
 		case "cog":
-			html += lychee.html(_templateObject13, lychee.locale["VIEW_NO_CONFIGURATION"]);
+			html += lychee.html(_templateObject17, lychee.locale["VIEW_NO_CONFIGURATION"]);
 			break;
 		case "question-mark":
-			html += lychee.html(_templateObject13, lychee.locale["VIEW_PHOTO_NOT_FOUND"]);
+			html += lychee.html(_templateObject17, lychee.locale["VIEW_PHOTO_NOT_FOUND"]);
 			break;
 	}
 
 	html += "</div>";
 
 	return html;
-};
-
-/**
- * @param {string}                                           title the title of the dialog
- * @param {(FileList|File[]|DropboxFile[]|{name: string}[])} files a list of file entries to be shown in the dialog
- * @returns {string}                                                the HTML fragment for the dialog
- */
-build.uploadModal = function (title, files) {
-	var html = "";
-
-	html += lychee.html(_templateObject30, title);
-
-	var i = 0;
-
-	while (i < files.length) {
-		var file = files[i];
-
-		if (file.name.length > 40) file.name = file.name.substr(0, 17) + "..." + file.name.substr(file.name.length - 20, 20);
-
-		html += lychee.html(_templateObject31, file.name);
-
-		i++;
-	}
-
-	html += "</div>";
-
-	return html;
-};
-
-/**
- * Builds the HTML snippet for a row in the upload dialog.
- *
- * @param {string} name
- * @returns {string}
- */
-build.uploadNewFile = function (name) {
-	if (name.length > 40) {
-		name = name.substring(0, 17) + "..." + name.substring(name.length - 20, name.length);
-	}
-
-	return lychee.html(_templateObject32, name);
 };
 
 /**
@@ -3408,13 +3490,13 @@ build.tags = function (tags) {
 	if (tags.length !== 0) {
 		tags.forEach(function (tag, index) {
 			if (editable) {
-				html += lychee.html(_templateObject33, a_class, tag, index, build.iconic("x"));
+				html += lychee.html(_templateObject18, a_class, tag, index, build.iconic("x"));
 			} else {
-				html += lychee.html(_templateObject34, a_class, tag);
+				html += lychee.html(_templateObject19, a_class, tag);
 			}
 		});
 	} else {
-		html = lychee.html(_templateObject35, lychee.locale["NO_TAGS"]);
+		html = lychee.html(_templateObject20, lychee.locale["NO_TAGS"]);
 	}
 
 	return html;
@@ -3425,7 +3507,7 @@ build.tags = function (tags) {
  * @returns {string}
  */
 build.user = function (user) {
-	return lychee.html(_templateObject36, user.id, user.id, user.username, lychee.locale["USERNAME"], lychee.locale["NEW_PASSWORD"], lychee.locale["ALLOW_UPLOADS"], lychee.locale["RESTRICTED_ACCOUNT"], user.id, user.id);
+	return lychee.html(_templateObject21, user.id, user.id, user.username, lychee.locale["USERNAME"], lychee.locale["NEW_PASSWORD"], lychee.locale["ALLOW_UPLOADS"], lychee.locale["RESTRICTED_ACCOUNT"], user.id, user.id);
 };
 
 /**
@@ -3433,7 +3515,7 @@ build.user = function (user) {
  * @returns {string}
  */
 build.u2f = function (credential) {
-	return lychee.html(_templateObject37, credential.id, credential.id, credential.id.slice(0, 30), credential.id);
+	return lychee.html(_templateObject22, credential.id, credential.id, credential.id.slice(0, 30), credential.id);
 };
 
 /**
@@ -3733,7 +3815,7 @@ contextMenu.buildList = function (lists, exclude, action) {
 
 		var prefix = layer > 0 ? "&nbsp;&nbsp;".repeat(layer - 1) + "└ " : "";
 
-		var html = lychee.html(_templateObject38, prefix, thumb, item.title);
+		var html = lychee.html(_templateObject23, prefix, thumb, item.title);
 
 		items.push({
 			title: html,
@@ -4503,7 +4585,7 @@ header.hideIfLivePhotoNotPlaying = function () {
  * @returns {void}
  */
 header.hide = function () {
-	if (visible.photo() && !visible.sidebar() && !visible.contextMenu() && basicModal.visible() === false) {
+	if (visible.photo() && !visible.sidebar() && !visible.contextMenu() && basicModal.isVisible() === false) {
 		tabindex.saveSettings(header.dom());
 		tabindex.makeUnfocusable(header.dom());
 
@@ -4520,7 +4602,7 @@ header.hide = function () {
  */
 header.setTitle = function (title) {
 	var $title = header.dom(".header__title");
-	var html = lychee.html(_templateObject39, title, build.iconic("caret-bottom"));
+	var html = lychee.html(_templateObject24, title, build.iconic("caret-bottom"));
 
 	$title.html(html);
 };
@@ -4944,19 +5026,19 @@ $(document).ready(function () {
 		}
 	}).bind(["command+backspace", "ctrl+backspace"], function () {
 		if (album.isUploadable()) {
-			if (visible.photo() && basicModal.visible() === false) {
+			if (visible.photo() && basicModal.isVisible() === false) {
 				_photo3.delete([_photo3.getID()]);
 				return false;
-			} else if (visible.album() && basicModal.visible() === false) {
+			} else if (visible.album() && basicModal.isVisible() === false) {
 				album.delete([album.getID()]);
 				return false;
 			}
 		}
 	}).bind(["command+a", "ctrl+a"], function () {
-		if (visible.album() && basicModal.visible() === false) {
+		if (visible.album() && basicModal.isVisible() === false) {
 			multiselect.selectAll();
 			return false;
-		} else if (visible.albums() && basicModal.visible() === false) {
+		} else if (visible.albums() && basicModal.isVisible() === false) {
 			multiselect.selectAll();
 			return false;
 		}
@@ -4986,7 +5068,7 @@ $(document).ready(function () {
 	});
 
 	Mousetrap.bindGlobal("enter", function () {
-		if (basicModal.visible() === true) {
+		if (basicModal.isVisible() === true) {
 			// check if any of the input fields is focussed
 			// apply action, other do nothing
 			if ($(".basicModal__content input").is(":focus")) {
@@ -5020,7 +5102,7 @@ $(document).ready(function () {
 	}, "keyup");
 
 	Mousetrap.bindGlobal(["esc", "command+up"], function () {
-		if (basicModal.visible() === true) basicModal.cancel();else if (visible.config() || visible.leftMenu()) leftMenu.close();else if (visible.contextMenu()) contextMenu.close();else if (visible.photo()) lychee.goto(album.getID());else if (visible.album() && !album.json.parent_id) lychee.goto();else if (visible.album()) lychee.goto(album.getParentID());else if (visible.albums() && search.json !== null) search.reset();else if (visible.mapview()) mapview.close();else if (visible.albums() && lychee.enable_close_tab_on_esc) {
+		if (basicModal.isVisible() === true) basicModal.cancel();else if (visible.config() || visible.leftMenu()) leftMenu.close();else if (visible.contextMenu()) contextMenu.close();else if (visible.photo()) lychee.goto(album.getID());else if (visible.album() && !album.json.parent_id) lychee.goto();else if (visible.album()) lychee.goto(album.getParentID());else if (visible.albums() && search.json !== null) search.reset();else if (visible.mapview()) mapview.close();else if (visible.albums() && lychee.enable_close_tab_on_esc) {
 			window.open("", "_self").close();
 		}
 		return false;
@@ -5081,18 +5163,24 @@ $(document).ready(function () {
 	})
 	// Upload
 	.on("change", "#upload_files", function () {
-		basicModal.close();
-		upload.start.local(this.files);
+		var _this = this;
+
+		basicModal.close(false, function () {
+			return upload.start.local(_this.files);
+		});
 	}).on("change", "#upload_track_file", function () {
-		basicModal.close();
-		upload.uploadTrack(this.files);
+		var _this2 = this;
+
+		basicModal.close(false, function () {
+			return upload.uploadTrack(_this2.files);
+		});
 	})
 	// Drag and Drop upload
 	.on("dragover", function () {
 		return false;
 	}, false).on("drop",
 	/** @param {jQuery.Event} e */function (e) {
-		if (album.isUploadable() && !visible.contextMenu() && !basicModal.visible() && !visible.leftMenu() && !visible.config() && (visible.album() || visible.albums())) {
+		if (album.isUploadable() && !visible.contextMenu() && !basicModal.isVisible() && !visible.leftMenu() && !visible.config() && (visible.album() || visible.albums())) {
 			// Detect if dropped item is a file or a link
 			if (e.originalEvent.dataTransfer.files.length > 0) {
 				upload.start.local(e.originalEvent.dataTransfer.files);
@@ -5124,7 +5212,7 @@ $(document).ready(function () {
 
 			// We perform the check so deep because we don't want to
 			// prevent the paste from working in text input fields, etc.
-			if (filesToUpload.length > 0 && album.isUploadable() && !visible.contextMenu() && !basicModal.visible() && !visible.leftMenu() && !visible.config() && (visible.album() || visible.albums())) {
+			if (filesToUpload.length > 0 && album.isUploadable() && !visible.contextMenu() && !basicModal.isVisible() && !visible.leftMenu() && !visible.config() && (visible.album() || visible.albums())) {
 				upload.start.local(filesToUpload);
 
 				return false;
@@ -5208,14 +5296,14 @@ leftMenu.dom = function (selector) {
  * @returns {void}
  */
 leftMenu.build = function () {
-	var html = lychee.html(_templateObject40, lychee.locale["CLOSE"], lychee.locale["SETTINGS"]);
+	var html = lychee.html(_templateObject25, lychee.locale["CLOSE"], lychee.locale["SETTINGS"]);
 	if (lychee.new_photos_notification) {
-		html += lychee.html(_templateObject41, build.iconic("bell"), lychee.locale["NOTIFICATIONS"]);
+		html += lychee.html(_templateObject26, build.iconic("bell"), lychee.locale["NOTIFICATIONS"]);
 	}
-	html += lychee.html(_templateObject42, build.iconic("person"), lychee.locale["USERS"], build.iconic("key"), lychee.locale["U2F"], build.iconic("cloud"), lychee.locale["SHARING"]);
-	html += lychee.html(_templateObject43, build.iconic("align-left"), lychee.locale["LOGS"], build.iconic("wrench"), lychee.locale["DIAGNOSTICS"], build.iconic("info"), lychee.locale["ABOUT_LYCHEE"], build.iconic("account-logout"), lychee.locale["SIGN_OUT"]);
+	html += lychee.html(_templateObject27, build.iconic("person"), lychee.locale["USERS"], build.iconic("key"), lychee.locale["U2F"], build.iconic("cloud"), lychee.locale["SHARING"]);
+	html += lychee.html(_templateObject28, build.iconic("align-left"), lychee.locale["LOGS"], build.iconic("wrench"), lychee.locale["DIAGNOSTICS"], build.iconic("info"), lychee.locale["ABOUT_LYCHEE"], build.iconic("account-logout"), lychee.locale["SIGN_OUT"]);
 	if (lychee.update_available) {
-		html += lychee.html(_templateObject44, build.iconic("timer"), lychee.locale["UPDATE_AVAILABLE"]);
+		html += lychee.html(_templateObject29, build.iconic("timer"), lychee.locale["UPDATE_AVAILABLE"]);
 	}
 	leftMenu._dom.html(html);
 };
@@ -5369,7 +5457,7 @@ loadingBar.show = function (status, errorText) {
 		if (visible.header()) header.dom().addClass("header--error");
 
 		// Also move down the dark background
-		if (basicModal.visible()) {
+		if (basicModal.isVisible()) {
 			$(".basicModalContainer").addClass("basicModalContainer--error");
 			$(".basicModal").addClass("basicModal--error");
 		}
@@ -5398,7 +5486,7 @@ loadingBar.show = function (status, errorText) {
 		if (visible.header()) header.dom().addClass("header--error");
 
 		// Also move down the dark background
-		if (basicModal.visible()) {
+		if (basicModal.isVisible()) {
 			$(".basicModalContainer").addClass("basicModalContainer--error");
 			$(".basicModal").addClass("basicModal--error");
 		}
@@ -5460,8 +5548,16 @@ loadingBar.hide = function (force) {
 
 var lychee = {
 	title: document.title,
+	/**
+  * The version of the backend in human-readable, printable form, e.g. `'4.6.3'`.
+  *
+  * TODO: Make format of this attribute and {@link lychee.update_json} consistent.
+  *
+  * TODO: Let the backend report the version as a proper object with properties for major, minor and patch level
+  *
+  * @type {string}
+  */
 	version: "",
-	versionCode: "", // not really needed anymore
 
 	updatePath: "https://LycheeOrg.github.io/update.json",
 	updateURL: "https://github.com/LycheeOrg/Lychee/releases",
@@ -5510,7 +5606,7 @@ var lychee = {
 	layout: 1,
 	/**
   * Display search in public mode.
-  * @type boolean
+  * @type {boolean}
   */
 	public_search: false,
 	/**
@@ -5525,17 +5621,17 @@ var lychee = {
 	image_overlay_type_default: "exif",
 	/**
   * Display photo coordinates on map
-  * @type boolean
+  * @type {boolean}
   */
 	map_display: false,
 	/**
   * Display photos of public album on map (user not logged in)
-  * @type boolean
+  * @type {boolean}
   */
 	map_display_public: false,
 	/**
   * Use the GPS direction data on displayed maps
-  * @type boolean
+  * @type {boolean}
   */
 	map_display_direction: true,
 	/**
@@ -5545,12 +5641,12 @@ var lychee = {
 	map_provider: "Wikimedia",
 	/**
   * Include photos of subalbums on map
-  * @type boolean
+  * @type {boolean}
   */
 	map_include_subalbums: false,
 	/**
   * Retrieve location name from GPS data
-  * @type boolean
+  * @type {boolean}
   */
 	location_decoding: false,
 	/**
@@ -5560,12 +5656,12 @@ var lychee = {
 	location_decoding_caching_type: "Harddisk",
 	/**
   * Show location name
-  * @type boolean
+  * @type {boolean}
   */
 	location_show: false,
 	/**
   * Show location name for public albums
-  * @type boolean
+  * @type {boolean}
   */
 	location_show_public: false,
 	/**
@@ -5581,7 +5677,7 @@ var lychee = {
 
 	/**
   * Is landing page enabled?
-  * @type boolean
+  * @type {boolean}
   */
 	landing_page_enabled: false,
 	delete_imported: false,
@@ -5618,7 +5714,12 @@ var lychee = {
 
 	checkForUpdates: true,
 	/**
-  * The most recent, available Lychee version encoded as an integer, e.g. 040506
+  * The most recent, available Lychee version encoded as an integer, e.g. 040506.
+  *
+  * TODO: Make format of this attribute and {@link lychee.version} consistent.
+  *
+  * TODO: Let the backend report the version as a proper object with properties for major, minor and patch level
+  *
   * @type {number}
   */
 	update_json: 0,
@@ -5669,10 +5770,34 @@ lychee.logs = function () {
  * @returns {void}
  */
 lychee.aboutDialog = function () {
-	var msg = lychee.html(_templateObject45, lychee.version, lychee.updateURL, lychee.locale["UPDATE_AVAILABLE"], lychee.locale["ABOUT_SUBTITLE"], sprintf(lychee.locale["ABOUT_DESCRIPTION"], lychee.website));
+	var aboutDialogBody = "\n\t\t<h1>Lychee <span class=\"version-number\"></span></h1>\n\t\t<p class=\"update-status up-to-date\"><a target='_blank' href='" + lychee.updateURL + "'></a></p>\n\t\t<h2></h2>\n\t\t<p class=\"about-desc\"></p>";
+
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initAboutDialog = function initAboutDialog(formElements, dialog) {
+		dialog.querySelector("span.version-number").textContent = lychee.version;
+		var updClassList = dialog.querySelector("p.update-status").classList;
+		if (lychee.update_available) {
+			updClassList.remove("up-to-date");
+		} else {
+			updClassList.add("up-to-date");
+		}
+		dialog.querySelector("p a").textContent = lychee.locale["UPDATE_AVAILABLE"];
+		dialog.querySelector("h2").textContent = lychee.locale["ABOUT_SUBTITLE"];
+		// We should not use `innerHTML`, but either hard-code HTML or build it
+		// programmatically.
+		// Also, localized strings should not contain HTML tags.
+		// TODO: Find a better solution for this.
+		dialog.querySelector("p.about-desc").innerHTML = sprintf(lychee.locale["ABOUT_DESCRIPTION"], lychee.website);
+	};
 
 	basicModal.show({
-		body: msg,
+		body: aboutDialogBody,
+		readyCB: initAboutDialog,
+		classList: ["about-dialog"],
 		buttons: {
 			cancel: {
 				title: lychee.locale["CLOSE"],
@@ -5680,8 +5805,6 @@ lychee.aboutDialog = function () {
 			}
 		}
 	});
-
-	if (lychee.checkForUpdates) lychee.getUpdate();
 };
 
 /**
@@ -5738,10 +5861,18 @@ lychee.parseInitializationData = function (data) {
 	lychee.update_json = data.update_json;
 	lychee.update_available = data.update_available;
 
+	// Here we convert a version string with six digits but without dots
+	// as reported by the backend, e.g. `'040603'`, into a dot-separated,
+	// human-readable version string `'4.6.3'`.
+	// It is ridiculous how many variants we have to represent a version
+	// number.
+	// At least there are the following three:
+	//  - a string in human-readable format with dots: `'4.6.3'`
+	//  - a string with six digits, zero-padded, without dots: `'040603'`
+	//  - an integer: `40603`
 	// TODO: Let the backend report the version as a proper object with properties for major, minor and patch level
-	lychee.versionCode = data.config.version;
-	if (lychee.versionCode !== "") {
-		var digits = lychee.versionCode.match(/.{1,2}/g);
+	if (data.config.version !== "") {
+		var digits = data.config.version.match(/.{1,2}/g);
 		lychee.version = parseInt(digits[0]).toString() + "." + parseInt(digits[1]).toString() + "." + parseInt(digits[2]).toString();
 	}
 
@@ -5871,40 +6002,56 @@ lychee.login = function (data) {
  * @returns {void}
  */
 lychee.loginDialog = function () {
-	// Make background unfocusable
-	tabindex.makeUnfocusable(header.dom());
-	tabindex.makeUnfocusable(lychee.content);
-	tabindex.makeUnfocusable(lychee.imageview);
+	var loginDialogBody = "\n\t\t<a id='signInKeyLess' class=\"button\"><svg class='iconic'><use xlink:href='#key'/></svg></a>\n\t\t<form class=\"force-first-child\">\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input class='text' name='username' autocomplete='username' type='text' autocapitalize='off' data-tabindex='" + tabindex.get_next_tab_index() + "'>\n\t\t\t</div>\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input class='text' name='password' autocomplete='current-password' type='password' data-tabindex='" + tabindex.get_next_tab_index() + "'>\n\t\t\t</div>\n\t\t</form>\n\t\t<p class='version'>Lychee <span class='version-number'></span><span class=\"update-status up-to-date\"> &#8211; <a target='_blank' href='" + lychee.updateURL + "' data-tabindex='-1'></a></span></p>\n\t\t";
 
-	var msg = lychee.html(_templateObject46, build.iconic("key"), lychee.locale["USERNAME"], tabindex.get_next_tab_index(), lychee.locale["PASSWORD"], tabindex.get_next_tab_index(), lychee.version, lychee.updateURL, lychee.locale["UPDATE_AVAILABLE"]);
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initLoginDialog = function initLoginDialog(formElements, dialog) {
+		tabindex.makeUnfocusable(header.dom());
+		tabindex.makeUnfocusable(lychee.content);
+		tabindex.makeUnfocusable(lychee.imageview);
+		tabindex.makeFocusable($(dialog));
+
+		formElements.username.placeholder = lychee.locale["USERNAME"];
+		formElements.password.placeholder = lychee.locale["PASSWORD"];
+		dialog.querySelector("span.version-number").textContent = lychee.version;
+		var updClassList = dialog.querySelector("span.update-status").classList;
+		if (lychee.update_available) {
+			updClassList.remove("up-to-date");
+		} else {
+			updClassList.add("up-to-date");
+		}
+		dialog.querySelector("span.update-status a").textContent = lychee.locale["UPDATE_AVAILABLE"];
+
+		// This feels awkward, because this hooks into the modal dialog in some
+		// unpredictable way.
+		// It would be better to have a checkbox for password-less login in the
+		// dialog and then let the action handler of the modal dialog, i.e.
+		// `lychee.login` handle both cases.
+		// TODO: Refactor this.
+		dialog.querySelector("#signInKeyLess").addEventListener("click", u2f.login);
+	};
 
 	basicModal.show({
-		body: msg,
+		body: loginDialogBody,
+		readyCB: initLoginDialog,
+		classList: ["login"],
 		buttons: {
 			action: {
 				title: lychee.locale["SIGN_IN"],
 				fn: lychee.login,
-				attributes: [["data-tabindex", tabindex.get_next_tab_index()]]
+				attributes: { "data-tabindex": tabindex.get_next_tab_index() }
 			},
 			cancel: {
 				title: lychee.locale["CANCEL"],
 				fn: basicModal.close,
-				attributes: [["data-tabindex", tabindex.get_next_tab_index()]]
+				attributes: { "data-tabindex": tabindex.get_next_tab_index() }
 			}
 		}
 	});
-
-	// This feels awkward, because this hooks into the modal dialog in some
-	// unpredictable way.
-	// It would be better to have a checkbox for password-less login in the
-	// dialog and then let the action handler of the modal dialog, i.e.
-	// `lychee.login` handle both cases.
-	// TODO: Refactor this.
-	$("#signInKeyLess").on("click", u2f.login);
-
-	if (lychee.checkForUpdates) lychee.getUpdate();
-
-	tabindex.makeFocusable($(".basicModal"));
 };
 
 /**
@@ -6217,32 +6364,6 @@ lychee.load = function () {
 		lychee.content.show();
 		lychee.footer_show();
 		albums.load();
-	}
-};
-
-/**
- * @returns {void}
- */
-lychee.getUpdate = function () {
-	// console.log(lychee.update_available);
-	// console.log(lychee.update_json);
-
-	if (lychee.update_json !== 0) {
-		if (lychee.update_available) {
-			$(".version span").show();
-		}
-	} else {
-		/**
-   * @param {{lychee: {version: number}}} data
-   */
-		var success = function success(data) {
-			if (data.lychee.version > parseInt(lychee.versionCode)) $(".version span").show();
-		};
-
-		$.ajax({
-			url: lychee.updatePath,
-			success: success
-		});
 	}
 };
 
@@ -6696,8 +6817,8 @@ lychee.endDrag = function (ev) {
  */
 
 lychee.locale = {
-	USERNAME: "username",
-	PASSWORD: "password",
+	USERNAME: "Username",
+	PASSWORD: "Password",
 	ENTER: "Enter",
 	CANCEL: "Cancel",
 	SIGN_IN: "Sign In",
@@ -6757,7 +6878,7 @@ lychee.locale = {
 
 	DELETE_ALBUM_QUESTION: "Delete Album and Photos",
 	KEEP_ALBUM: "Keep Album",
-	DELETE_ALBUM_CONFIRMATION_1: "Are you sure you want to delete the album '%s' and all of the photos it contains? This action can't be undone!",
+	DELETE_ALBUM_CONFIRMATION: "Are you sure you want to delete the album '%s' and all of the photos it contains? This action can't be undone!",
 
 	DELETE_TAG_ALBUM_QUESTION: "Delete Album",
 	DELETE_TAG_ALBUM_CONFIRMATION: "Are you sure you want to delete the album %s (any photos inside will not be deleted)? This action can't be undone!",
@@ -6766,7 +6887,7 @@ lychee.locale = {
 	KEEP_ALBUMS: "Keep Albums",
 	DELETE_ALBUMS_CONFIRMATION: "Are you sure you want to delete all %d selected albums and all of the photos they contain? This action can't be undone!",
 
-	DELETE_UNSORTED_CONFIRM: "Are you sure you want to delete all photos from 'Unsorted'?<br>This action can't be undone!",
+	DELETE_UNSORTED_CONFIRM: "Are you sure you want to delete all photos from 'Unsorted'? This action can't be undone!",
 	CLEAR_UNSORTED: "Clear Unsorted",
 	KEEP_UNSORTED: "Keep Unsorted",
 
@@ -6991,7 +7112,7 @@ lychee.locale = {
 
 	NEW_PHOTOS_NOTIFICATION: "Send new photos notification emails.",
 	SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION: "New photos notification updated",
-	USER_EMAIL_INSTRUCTION: "Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.",
+	USER_EMAIL_INSTRUCTION: "Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.",
 
 	SETTINGS_SUCCESS_CSS: "CSS updated",
 	SETTINGS_SUCCESS_UPDATE: "Settings updated with success",
@@ -8158,12 +8279,7 @@ var password = {};
  * @param {UnlockSuccessCB} callback - called in case of success
  */
 password.getDialog = function (albumID, callback) {
-	/**
-  * @typedef UnlockDialogResult
-  * @property {string} password
-  */
-
-	/** @param {UnlockDialogResult} data */
+	/** @param {{password: string}} data */
 	var action = function action(data) {
 		var params = {
 			albumID: albumID,
@@ -8171,11 +8287,10 @@ password.getDialog = function (albumID, callback) {
 		};
 
 		api.post("Album::unlock", params, function () {
-			basicModal.close();
-			callback();
+			basicModal.close(false, callback);
 		}, null, function (jqXHR, params2, lycheeException) {
 			if ((jqXHR.status === 401 || jqXHR.status === 403) && lycheeException.message.includes("Password is invalid")) {
-				basicModal.error("password");
+				basicModal.focusError("password");
 				return true;
 			}
 			basicModal.close();
@@ -8184,14 +8299,26 @@ password.getDialog = function (albumID, callback) {
 	};
 
 	var cancel = function cancel() {
-		basicModal.close();
-		if (!visible.albums() && !visible.album()) lychee.goto();
+		basicModal.close(false, function () {
+			if (!visible.albums() && !visible.album()) lychee.goto();
+		});
 	};
 
-	var msg = "\n\t\t\t  <p>\n\t\t\t\t  " + lychee.locale["ALBUM_PASSWORD_REQUIRED"] + "\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='" + lychee.locale["PASSWORD"] + "' value=''>\n\t\t\t  </p>\n\t\t\t  ";
+	var enterPasswordDialogBody = "\n\t\t  <p></p>\n\t\t  <form>\n\t\t  \t<div class=\"input-group stacked\"><input name='password' class='text' type='password'></div>\n\t\t  </form>";
+
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initEnterPasswordDialog = function initEnterPasswordDialog(formElements, dialog) {
+		dialog.querySelector("p").textContent = lychee.locale["ALBUM_PASSWORD_REQUIRED"];
+		formElements.password.placeholder = lychee.locale["PASSWORD"];
+	};
 
 	basicModal.show({
-		body: msg,
+		body: enterPasswordDialogBody,
+		readyCB: initEnterPasswordDialog,
 		buttons: {
 			action: {
 				title: lychee.locale["ENTER"],
@@ -8391,7 +8518,7 @@ _photo3.preloadNextPrev = function (photoID) {
 			}
 
 			if (photo.supportsPrefetch) {
-				$("head").append(lychee.html(_templateObject47, href));
+				$("head").append(lychee.html(_templateObject30, href));
 			} else {
 				// According to https://caniuse.com/#feat=link-rel-prefetch,
 				// as of mid-2019 it's mainly Safari (both on desktop and mobile)
@@ -8486,20 +8613,7 @@ _photo3.next = function (animate) {
  * @returns {boolean}
  */
 _photo3.delete = function (photoIDs) {
-	var action = {};
-	var cancel = {};
-	var msg = "";
-	var photoTitle = "";
-
-	if (photoIDs.length === 1) {
-		// Get title if only one photo is selected
-		if (visible.photo()) photoTitle = _photo3.json.title;else photoTitle = album.getByID(photoIDs[0]).title;
-
-		// Fallback for photos without a title
-		if (!photoTitle) photoTitle = lychee.locale["UNTITLED"];
-	}
-
-	action.fn = function () {
+	var deletePhotos = function deletePhotos() {
 		var nextPhotoID = null;
 		var previousPhotoID = null;
 
@@ -8544,28 +8658,31 @@ _photo3.delete = function (photoIDs) {
 		api.post("Photo::delete", { photoIDs: photoIDs });
 	};
 
-	if (photoIDs.length === 1) {
-		action.title = lychee.locale["PHOTO_DELETE"];
-		cancel.title = lychee.locale["PHOTO_KEEP"];
-
-		msg = lychee.html(_templateObject13, sprintf(lychee.locale["PHOTO_DELETE_CONFIRMATION"], photoTitle));
-	} else {
-		action.title = lychee.locale["PHOTO_DELETE"];
-		cancel.title = lychee.locale["PHOTO_KEEP"];
-
-		msg = lychee.html(_templateObject13, sprintf(lychee.locale["PHOTO_DELETE_ALL"], photoIDs.length));
-	}
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initDeletePhotoDialog = function initDeletePhotoDialog(formElements, dialog) {
+		if (photoIDs.length === 1) {
+			var photoTitle = (visible.photo() ? _photo3.json.title : album.getByID(photoIDs[0]).title) || lychee.locale["UNTITLED"];
+			dialog.querySelector("p").textContent = sprintf(lychee.locale["PHOTO_DELETE_CONFIRMATION"], photoTitle);
+		} else {
+			dialog.querySelector("p").textContent = sprintf(lychee.locale["PHOTO_DELETE_ALL"], photoIDs.length);
+		}
+	};
 
 	basicModal.show({
-		body: msg,
+		body: "<p></p>",
+		readyCB: initDeletePhotoDialog,
 		buttons: {
 			action: {
-				title: action.title,
-				fn: action.fn,
-				class: "red"
+				title: lychee.locale["PHOTO_DELETE"],
+				fn: deletePhotos,
+				classList: ["red"]
 			},
 			cancel: {
-				title: cancel.title,
+				title: lychee.locale["PHOTO_KEEP"],
 				fn: basicModal.close
 			}
 		}
@@ -8578,21 +8695,13 @@ _photo3.delete = function (photoIDs) {
  * @returns {void}
  */
 _photo3.setTitle = function (photoIDs) {
-	var oldTitle = "";
-	var msg = "";
-
-	if (photoIDs.length === 1) {
-		// Get old title if only one photo is selected
-		if (_photo3.json) oldTitle = _photo3.json.title;else if (album.json) oldTitle = album.getByID(photoIDs[0]).title;
-	}
-
 	/**
   * @param {{title: string}} data
   * @returns {void}
   */
 	var action = function action(data) {
 		if (!data.title.trim()) {
-			basicModal.error("title");
+			basicModal.focusError("title");
 			return;
 		}
 
@@ -8617,12 +8726,23 @@ _photo3.setTitle = function (photoIDs) {
 		});
 	};
 
-	var input = lychee.html(_templateObject48, oldTitle);
+	var setPhotoTitleDialogBody = "\n\t\t<p></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\"><input class='text' name='title' type='text' maxlength='100'></div>\n\t\t</form>";
 
-	if (photoIDs.length === 1) msg = lychee.html(_templateObject5, lychee.locale["PHOTO_NEW_TITLE"], input);else msg = lychee.html(_templateObject5, sprintf(lychee.locale["PHOTOS_NEW_TITLE"], photoIDs.length), input);
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initSetPhotoTitleDialog = function initSetPhotoTitleDialog(formElements, dialog) {
+		var oldTitle = photoIDs.length === 1 ? _photo3.json ? _photo3.json.title : album.getByID(photoIDs[0]).title : "";
+		dialog.querySelector("p").textContent = photoIDs.length === 1 ? lychee.locale["PHOTO_NEW_TITLE"] : sprintf(lychee.locale["PHOTOS_NEW_TITLE"], photoIDs.length);
+		formElements.title.placeholder = "Title";
+		formElements.title.value = oldTitle;
+	};
 
 	basicModal.show({
-		body: msg,
+		body: setPhotoTitleDialogBody,
+		readyCB: initSetPhotoTitleDialog,
 		buttons: {
 			action: {
 				title: lychee.locale["PHOTO_SET_TITLE"],
@@ -8759,115 +8879,117 @@ _photo3.setStar = function (photoIDs, isStarred) {
  * @returns {void}
  */
 _photo3.setProtectionPolicy = function (photoID) {
-	var msg_switch = lychee.html(_templateObject49, lychee.locale["PHOTO_PUBLIC"], lychee.locale["PHOTO_PUBLIC_EXPL"]);
+	/**
+  * @param {{is_public: boolean}} data
+  */
+	var action = function action(data) {
+		/**
+   * Note: `newIsPublic` must be `0` or `1` and no boolean, because
+   * `photo.is_public` is an integer between `0` and `2`.
+   */
+		var newIsPublic = data.is_public ? 1 : 0;
 
-	var msg_choices = lychee.html(_templateObject50, build.iconic("check"), lychee.locale["PHOTO_FULL"], lychee.locale["PHOTO_FULL_EXPL"], build.iconic("check"), lychee.locale["PHOTO_HIDDEN"], lychee.locale["PHOTO_HIDDEN_EXPL"], build.iconic("check"), lychee.locale["PHOTO_DOWNLOADABLE"], lychee.locale["PHOTO_DOWNLOADABLE_EXPL"], build.iconic("check"), lychee.locale["PHOTO_SHARE_BUTTON_VISIBLE"], lychee.locale["PHOTO_SHARE_BUTTON_VISIBLE_EXPL"], build.iconic("check"), lychee.locale["PHOTO_PASSWORD_PROT"], lychee.locale["PHOTO_PASSWORD_PROT_EXPL"]);
-
-	if (_photo3.json.is_public === 2) {
-		// Public album. We can't actually change anything, but we will
-		// display the current settings.
-
-		var msg = lychee.html(_templateObject51, lychee.locale["PHOTO_NO_EDIT_SHARING_TEXT"], msg_switch, msg_choices);
-
-		basicModal.show({
-			body: msg,
-			buttons: {
-				cancel: {
-					title: lychee.locale["CLOSE"],
-					fn: basicModal.close
-				}
+		if (newIsPublic !== _photo3.json.is_public) {
+			if (visible.photo()) {
+				_photo3.json.is_public = newIsPublic;
+				view.photo.public();
 			}
-		});
 
-		$('.basicModal .switch input[name="is_public"]').prop("checked", true);
-		if (album.json) {
-			if (album.json.grants_full_photo) {
-				$('.basicModal .choice input[name="grants_full_photo"]').prop("checked", true);
-			}
-			// Photos in public albums are never hidden as such.  It's the
-			// album that's hidden.  Or is that distinction irrelevant to end
-			// users?
-			if (album.json.is_downloadable) {
-				$('.basicModal .choice input[name="is_downloadable"]').prop("checked", true);
-			}
-			if (album.json.has_password) {
-				$('.basicModal .choice input[name="has_password"]').prop("checked", true);
-			}
+			album.getByID(photoID).is_public = newIsPublic;
+			view.album.content.public(photoID);
+
+			albums.refresh();
+
+			api.post("Photo::setPublic", {
+				photoID: photoID,
+				is_public: newIsPublic !== 0
+			});
 		}
 
-		$(".basicModal .switch input").attr("disabled", true);
-		$(".basicModal .switch .label").addClass("label--disabled");
-	} else {
-		// Private album -- each photo can be shared individually.
+		basicModal.close();
+	};
 
-		var _msg = lychee.html(_templateObject52, msg_switch, lychee.locale["PHOTO_EDIT_GLOBAL_SHARING_TEXT"], msg_choices);
+	var setPhotoProtectionPolicyBody = "\n\t\t<p id=\"ppp_dialog_no_edit_expl\"></p>\n\t\t<form>\n\t\t\t<div class='input-group compact-no-indent'>\n\t\t\t\t<label for=\"ppp_dialog_public_check\"></label>\n\t\t\t\t<input type='checkbox' class=\"slider\" id='ppp_dialog_public_check' name='is_public' />\n\t\t\t\t<p></p>\n\t\t\t</div>\n\t\t\t<p id=\"ppp_dialog_global_expl\"></p>\n\t\t\t<div class='input-group compact-inverse disabled'>\n\t\t\t\t<label for=\"ppp_dialog_full_photo_check\"></label>\n\t\t\t\t<input type='checkbox' id='ppp_dialog_full_photo_check' name='grants_full_photo' disabled=\"disabled\" />\n\t\t\t\t<p></p>\n\t\t\t</div>\n\t\t\t<div class='input-group compact-inverse disabled'>\n\t\t\t\t<label for=\"ppp_dialog_link_check\"></label>\n\t\t\t\t<input type='checkbox' id='ppp_dialog_link_check' name='requires_link' disabled=\"disabled\" />\n\t\t\t\t<p></p>\n\t\t\t</div>\n\t\t\t<div class='input-group compact-inverse disabled'>\n\t\t\t\t<label for=\"ppp_dialog_downloadable_check\"></label>\n\t\t\t\t<input type='checkbox' id='ppp_dialog_downloadable_check' name='is_downloadable' disabled=\"disabled\" />\n\t\t\t\t<p></p>\n\t\t\t</div>\n\t\t\t<div class='input-group compact-inverse disabled'>\n\t\t\t\t<label for=\"ppp_dialog_share_check\"></label>\n\t\t\t\t<input type='checkbox' id='ppp_dialog_share_check' name='is_share_button_visible' disabled=\"disabled\" />\n\t\t\t\t<p></p>\n\t\t\t</div>\n\t\t\t<div class='input-group compact-inverse disabled'>\n\t\t\t\t<label for=\"ppp_dialog_password_check\"></label>\n\t\t\t\t<input type='checkbox' id='ppp_dialog_password_check' name='has_password' disabled=\"disabled\">\n\t\t\t\t<p></p>\n\t\t\t</div>\n\t\t</form>";
 
-		// TODO: Actually, the action handler receives an object with values of all input fields. There is no need to run use a jQuery-selector
-		var action = function action() {
-			/**
-    * Note: `newIsPublic` must be of type `number`, because `photo.is_public` is a number, too
-    * @type {number}
-    */
-			var newIsPublic = $('.basicModal .switch input[name="is_public"]:checked').length;
+	/**
+  * @typedef PhotoProtectionPolicyDialogFormElements
+  * @property {HTMLInputElement} is_public
+  * @property {HTMLInputElement} grants_full_photo
+  * @property {HTMLInputElement} requires_link
+  * @property {HTMLInputElement} is_downloadable
+  * @property {HTMLInputElement} is_share_button_visible
+  * @property {HTMLInputElement} has_password
+  */
 
-			if (newIsPublic !== _photo3.json.is_public) {
-				if (visible.photo()) {
-					_photo3.json.is_public = newIsPublic;
-					view.photo.public();
-				}
+	/**
+  * @param {PhotoProtectionPolicyDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initPhotoProtectionPolicyDialog = function initPhotoProtectionPolicyDialog(formElements, dialog) {
+		formElements.is_public.previousElementSibling.textContent = lychee.locale["PHOTO_PUBLIC"];
+		formElements.is_public.nextElementSibling.textContent = lychee.locale["PHOTO_PUBLIC_EXPL"];
+		formElements.grants_full_photo.previousElementSibling.textContent = lychee.locale["PHOTO_FULL"];
+		formElements.grants_full_photo.nextElementSibling.textContent = lychee.locale["PHOTO_FULL_EXPL"];
+		formElements.requires_link.previousElementSibling.textContent = lychee.locale["PHOTO_HIDDEN"];
+		formElements.requires_link.nextElementSibling.textContent = lychee.locale["PHOTO_HIDDEN_EXPL"];
+		formElements.is_downloadable.previousElementSibling.textContent = lychee.locale["PHOTO_DOWNLOADABLE"];
+		formElements.is_downloadable.nextElementSibling.textContent = lychee.locale["PHOTO_DOWNLOADABLE_EXPL"];
+		formElements.is_share_button_visible.previousElementSibling.textContent = lychee.locale["PHOTO_SHARE_BUTTON_VISIBLE"];
+		formElements.is_share_button_visible.nextElementSibling.textContent = lychee.locale["PHOTO_SHARE_BUTTON_VISIBLE_EXPL"];
+		formElements.has_password.previousElementSibling.textContent = lychee.locale["PHOTO_PASSWORD_PROT"];
+		formElements.has_password.nextElementSibling.textContent = lychee.locale["PHOTO_PASSWORD_PROT_EXPL"];
 
-				album.getByID(photoID).is_public = newIsPublic;
-				view.album.content.public(photoID);
-
-				albums.refresh();
-
-				api.post("Photo::setPublic", {
-					photoID: photoID,
-					is_public: newIsPublic !== 0
-				});
+		if (_photo3.json.is_public === 2) {
+			// Public album.
+			dialog.querySelector("p#ppp_dialog_no_edit_expl").textContent = lychee.locale["PHOTO_NO_EDIT_SHARING_TEXT"];
+			dialog.querySelector("p#ppp_dialog_global_expl").remove();
+			// Initialize values of detailed settings according to album
+			// settings and hide action button as we can't actually change
+			// anything.
+			formElements.is_public.checked = true;
+			formElements.is_public.disabled = true;
+			formElements.is_public.parentElement.classList.add("disabled");
+			if (album.json) {
+				formElements.grants_full_photo.checked = album.json.grants_full_photo;
+				// Photos in public albums are never hidden as such.  It's the
+				// album that's hidden.  Or is that distinction irrelevant to end
+				// users?
+				formElements.requires_link.checked = false;
+				formElements.is_downloadable.checked = album.json.is_downloadable;
+				formElements.is_share_button_visible = album.json.is_share_button_visible;
+				formElements.has_password.checked = album.json.has_password;
 			}
-
-			basicModal.close();
-		};
-
-		basicModal.show({
-			body: _msg,
-			buttons: {
-				action: {
-					title: lychee.locale["SAVE"],
-					fn: action
-				},
-				cancel: {
-					title: lychee.locale["CANCEL"],
-					fn: basicModal.close
-				}
-			}
-		});
-
-		$('.basicModal .switch input[name="is_public"]').on("click", function () {
-			if ($(this).prop("checked") === true) {
-				if (lychee.full_photo) {
-					$('.basicModal .choice input[name="grants_full_photo"]').prop("checked", true);
-				}
-				if (lychee.public_photos_hidden) {
-					$('.basicModal .choice input[name="requires_link"]').prop("checked", true);
-				}
-				if (lychee.downloadable) {
-					$('.basicModal .choice input[name="is_downloadable"]').prop("checked", true);
-				}
-				if (lychee.share_button_visible) {
-					$('.basicModal .choice input[name="is_share_button_visible"]').prop("checked", true);
-				}
-				// Photos shared individually can't be password-protected.
-			} else {
-				$(".basicModal .choice input").prop("checked", false);
-			}
-		});
-
-		if (_photo3.json.is_public === 1) {
-			$('.basicModal .switch input[name="is_public"]').click();
+			basicModal.hideActionButton();
+		} else {
+			// Private album
+			dialog.querySelector("p#ppp_dialog_no_edit_expl").remove();
+			dialog.querySelector("p#ppp_dialog_global_expl").textContent = lychee.locale["PHOTO_EDIT_GLOBAL_SHARING_TEXT"];
+			// Initialize values of detailed settings according to global
+			// configuration.
+			formElements.is_public.checked = _photo3.json.is_public !== 0;
+			formElements.grants_full_photo.checked = lychee.full_photo;
+			formElements.requires_link.checked = lychee.public_photos_hidden;
+			formElements.is_downloadable.checked = !!album.downloadable;
+			formElements.is_share_button_visible = lychee.share_button_visible;
+			formElements.has_password.checked = false;
 		}
-	}
+	};
+
+	basicModal.show({
+		body: setPhotoProtectionPolicyBody,
+		readyCB: initPhotoProtectionPolicyDialog,
+		buttons: {
+			action: {
+				title: lychee.locale["SAVE"],
+				fn: action
+			},
+			cancel: {
+				title: lychee.locale["CANCEL"],
+				fn: basicModal.close
+			}
+		}
+	});
 };
 
 /**
@@ -8879,8 +9001,6 @@ _photo3.setProtectionPolicy = function (photoID) {
  * @returns {void}
  */
 _photo3.setDescription = function (photoID) {
-	var oldDescription = _photo3.json.description ? _photo3.json.description : "";
-
 	/**
   * @param {{description: string}} data
   */
@@ -8900,8 +9020,22 @@ _photo3.setDescription = function (photoID) {
 		});
 	};
 
+	var setPhotoDescriptionDialogBody = "\n\t\t<p></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\"><input class='text' name='description' type='text' maxlength='800'></div>\n\t\t</form>";
+
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initSetPhotoDescriptionDialog = function initSetPhotoDescriptionDialog(formElements, dialog) {
+		dialog.querySelector("p").textContent = lychee.locale["PHOTO_NEW_DESCRIPTION"];
+		formElements.description.placeholder = lychee.locale["PHOTO_DESCRIPTION"];
+		formElements.description.value = _photo3.json.description ? _photo3.json.description : "";
+	};
+
 	basicModal.show({
-		body: lychee.html(_templateObject53, lychee.locale["PHOTO_NEW_DESCRIPTION"], lychee.locale["PHOTO_DESCRIPTION"], oldDescription),
+		body: setPhotoDescriptionDialogBody,
+		readyCB: initSetPhotoDescriptionDialog,
 		buttons: {
 			action: {
 				title: lychee.locale["PHOTO_SET_DESCRIPTION"],
@@ -8951,12 +9085,22 @@ _photo3.editTags = function (photoIDs) {
 		_photo3.setTags(photoIDs, newTags);
 	};
 
-	var input = lychee.html(_templateObject54, oldTags.join(", "));
+	var setTagDialogBody = "\n\t\t<p></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\"><input class='text' name='tags' type='text' minlength='1'></div>\n\t\t</form>";
 
-	var msg = photoIDs.length === 1 ? lychee.html(_templateObject5, lychee.locale["PHOTO_NEW_TAGS"], input) : lychee.html(_templateObject5, sprintf(lychee.locale["PHOTOS_NEW_TAGS"], photoIDs.length), input);
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initSetTagAlbumDialog = function initSetTagAlbumDialog(formElements, dialog) {
+		dialog.querySelector("p").textContent = photoIDs.length === 1 ? lychee.locale["PHOTO_NEW_TAGS"] : sprintf(lychee.locale["PHOTOS_NEW_TAGS"], photoIDs.length);
+		formElements.tags.placeholder = "Tags";
+		formElements.tags.value = oldTags.join(", ");
+	};
 
 	basicModal.show({
-		body: msg,
+		body: setTagDialogBody,
+		readyCB: initSetTagAlbumDialog,
 		buttons: {
 			action: {
 				title: lychee.locale["PHOTO_SET_TAGS"],
@@ -9048,27 +9192,35 @@ _photo3.setLicense = function (photoID) {
   */
 	var action = function action(data) {
 		basicModal.close();
-		var license = data.license;
 
-		var params = {
+		api.post("Photo::setLicense", {
 			photoID: photoID,
-			license: license
-		};
-
-		api.post("Photo::setLicense", params, function () {
+			license: data.license
+		}, function () {
 			// update the photo JSON and reload the license in the sidebar
-			_photo3.json.license = params.license;
+			_photo3.json.license = data.license;
 			view.photo.license();
 		});
 	};
 
-	var msg = lychee.html(_templateObject7, lychee.locale["PHOTO_LICENSE"], lychee.locale["PHOTO_LICENSE_NONE"], lychee.locale["PHOTO_RESERVED"], lychee.locale["PHOTO_LICENSE_HELP"]);
+	var setPhotoLicenseDialogBody = "\n\t\t<form><div class=\"input-group compact\">\n\t\t\t<label for=\"photo_license_dialog_license_select\"></label>\n\t\t\t<div class=\"select\"><select name=\"license\" id=\"photo_license_dialog_license_select\">\n\t\t\t\t<option value=\"none\"></option>\n\t\t\t\t<option value=\"reserved\"></option>\n\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t<option value=\"CC-BY-1.0\">CC Attribution 1.0</option>\n\t\t\t\t<option value=\"CC-BY-2.0\">CC Attribution 2.0</option>\n\t\t\t\t<option value=\"CC-BY-2.5\">CC Attribution 2.5</option>\n\t\t\t\t<option value=\"CC-BY-3.0\">CC Attribution 3.0</option>\n\t\t\t\t<option value=\"CC-BY-4.0\">CC Attribution 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-1.0\">CC Attribution-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.0\">CC Attribution-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.5\">CC Attribution-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-ND-3.0\">CC Attribution-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-4.0\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-1.0\">CC Attribution-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.0\">CC Attribution-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.5\">CC Attribution-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-SA-3.0\">CC Attribution-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-4.0\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-1.0\">CC Attribution-NonCommercial 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.0\">CC Attribution-NonCommercial 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.5\">CC Attribution-NonCommercial 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-3.0\">CC Attribution-NonCommercial 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-4.0\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-1.0\">CC Attribution-NonCommercial-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.0\">CC Attribution-NonCommercial-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.5\">CC Attribution-NonCommercial-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-3.0\">CC Attribution-NonCommercial-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-4.0\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-1.0\">CC Attribution-NonCommercial-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.0\">CC Attribution-NonCommercial-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.5\">CC Attribution-NonCommercial-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-3.0\">CC Attribution-NonCommercial-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-4.0\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t</select></div>\n\t\t\t<p><a href=\"https://creativecommons.org/choose/\" target=\"_blank\"></a></p>\n\t\t</div></form>";
+
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initSetPhotoLicenseDialog = function initSetPhotoLicenseDialog(formElements, dialog) {
+		formElements.license.labels[0].textContent = lychee.locale["PHOTO_LICENSE"];
+		formElements.license.item(0).textContent = lychee.locale["PHOTO_LICENSE_NONE"];
+		formElements.license.item(1).textContent = lychee.locale["PHOTO_RESERVED"];
+		formElements.license.value = _photo3.json.license === "" ? "none" : _photo3.json.license;
+		dialog.querySelector("p a").textContent = lychee.locale["PHOTO_LICENSE_HELP"];
+	};
 
 	basicModal.show({
-		body: msg,
-		callback: function callback() {
-			$("select#license").val(_photo3.json.license === "" ? "none" : _photo3.json.license);
-		},
+		body: setPhotoLicenseDialogBody,
+		readyCB: initSetPhotoLicenseDialog,
 		buttons: {
 			action: {
 				title: lychee.locale["PHOTO_SET_LICENSE"],
@@ -9093,73 +9245,96 @@ _photo3.setLicense = function (photoID) {
 _photo3.getArchive = function (photoIDs) {
 	var kind = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
-	if (photoIDs.length === 1 && kind === null) {
-		// For a single photo, allow to pick the kind via a dialog box.
+	if (photoIDs.length !== 1 || kind !== null) {
+		location.href = "api/Photo::getArchive?photoIDs=" + photoIDs.join() + "&kind=" + kind;
+		return;
+	}
 
-		var myPhoto = void 0;
+	// For a single photo without a specified kind, allow to pick the kind
+	// via a dialog box and re-call this method later on.
 
-		if (_photo3.json && _photo3.json.id === photoIDs[0]) {
-			myPhoto = _photo3.json;
-		} else {
-			myPhoto = album.getByID(photoIDs[0]);
-		}
+	var myPhoto = _photo3.json && _photo3.json.id === photoIDs[0] ? _photo3.json : album.getByID(photoIDs[0]);
 
-		/**
-   * @param {string} id - the ID of the button, same semantics as "kind"
-   * @param {string} label - the caption on the button
-   * @returns {string} - HTML
-   */
-		var buildButton = function buildButton(id, label) {
-			return lychee.html(_templateObject55, id, lychee.locale["DOWNLOAD"], build.iconic("cloud-download"), label);
-		};
+	var kind2VariantAndLocalizedLabel = {
+		FULL: ["original", lychee.locale["PHOTO_FULL"]],
+		MEDIUM2X: ["medium2x", lychee.locale["PHOTO_MEDIUM_HIDPI"]],
+		MEDIUM: ["medium", lychee.locale["PHOTO_MEDIUM"]],
+		SMALL2X: ["small2x", lychee.locale["PHOTO_SMALL_HIDPI"]],
+		SMALL: ["small", lychee.locale["PHOTO_SMALL"]],
+		THUMB2X: ["thumb2x", lychee.locale["PHOTO_THUMB_HIDPI"]],
+		THUMB: ["thumb", lychee.locale["PHOTO_THUMB"]]
+	};
 
-		var msg = lychee.html(_templateObject56);
+	/**
+  * @param {string} kind - the kind this button is for, used to construct the ID
+  * @returns {string} - HTML
+  */
+	var buildButton = function buildButton(kind) {
+		return "\n\t\t\t\t<a class='button' data-photo-kind=\"" + kind + "\">\n\t\t\t\t\t<svg class='iconic ionicons'><use xlink:href='#cloud-download' /></svg>\n\t\t\t\t\t<span></span>\n\t\t\t\t</a>\n\t\t\t";
+	};
 
-		if (myPhoto.size_variants.original.url) {
-			msg += buildButton("FULL", lychee.locale["PHOTO_FULL"] + " (" + myPhoto.size_variants.original.width + "x" + myPhoto.size_variants.original.height + ",\n\t\t\t\t" + lychee.locale.printFilesizeLocalized(myPhoto.size_variants.original.filesize) + ")");
-		}
-		if (myPhoto.live_photo_url !== null) {
-			msg += buildButton("LIVEPHOTOVIDEO", "" + lychee.locale["PHOTO_LIVE_VIDEO"]);
-		}
-		if (myPhoto.size_variants.medium2x !== null) {
-			msg += buildButton("MEDIUM2X", lychee.locale["PHOTO_MEDIUM_HIDPI"] + " (" + myPhoto.size_variants.medium2x.width + "x" + myPhoto.size_variants.medium2x.height + ",\n\t\t\t\t" + lychee.locale.printFilesizeLocalized(myPhoto.size_variants.medium2x.filesize) + ")");
-		}
-		if (myPhoto.size_variants.medium !== null) {
-			msg += buildButton("MEDIUM", lychee.locale["PHOTO_MEDIUM"] + " (" + myPhoto.size_variants.medium.width + "x" + myPhoto.size_variants.medium.height + ",\n\t\t\t\t" + lychee.locale.printFilesizeLocalized(myPhoto.size_variants.medium.filesize) + ")");
-		}
-		if (myPhoto.size_variants.small2x !== null) {
-			msg += buildButton("SMALL2X", lychee.locale["PHOTO_SMALL_HIDPI"] + " (" + myPhoto.size_variants.small2x.width + "x" + myPhoto.size_variants.small2x.height + ",\n\t\t\t\t" + lychee.locale.printFilesizeLocalized(myPhoto.size_variants.small2x.filesize) + ")");
-		}
-		if (myPhoto.size_variants.small !== null) {
-			msg += buildButton("SMALL", lychee.locale["PHOTO_SMALL"] + " (" + myPhoto.size_variants.small.width + "x" + myPhoto.size_variants.small.height + ",\n\t\t\t\t" + lychee.locale.printFilesizeLocalized(myPhoto.size_variants.small.filesize) + ")");
-		}
-		if (myPhoto.size_variants.thumb2x !== null) {
-			msg += buildButton("THUMB2X", lychee.locale["PHOTO_THUMB_HIDPI"] + " (" + myPhoto.size_variants.thumb2x.width + "x" + myPhoto.size_variants.thumb2x.height + ",\n\t\t\t\t" + lychee.locale.printFilesizeLocalized(myPhoto.size_variants.thumb2x.filesize) + ")");
-		}
-		if (myPhoto.size_variants.thumb !== null) {
-			msg += buildButton("THUMB", lychee.locale["PHOTO_THUMB"] + " (" + myPhoto.size_variants.thumb.width + "x" + myPhoto.size_variants.thumb.height + ",\n\t\t\t\t" + lychee.locale.printFilesizeLocalized(myPhoto.size_variants.thumb.filesize) + ")");
-		}
+	var getPhotoArchiveDialogBody = Object.entries(kind2VariantAndLocalizedLabel).reduce(function (html, _ref5) {
+		var _ref6 = _slicedToArray(_ref5, 1),
+		    kind = _ref6[0];
 
-		msg += lychee.html(_templateObject57);
+		return html + buildButton(kind);
+	}, "") + buildButton("LIVEPHOTOVIDEO");
 
-		basicModal.show({
-			body: msg,
-			buttons: {
-				cancel: {
-					title: lychee.locale["CLOSE"],
-					fn: basicModal.close
-				}
+	/** @param {TouchEvent|MouseEvent} ev */
+	var onClickOrTouch = function onClickOrTouch(ev) {
+		if (ev.currentTarget instanceof HTMLAnchorElement) {
+			basicModal.close();
+			_photo3.getArchive(photoIDs, ev.currentTarget.dataset.photoKind);
+			ev.stopPropagation();
+		}
+	};
+
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  */
+	var initGetPhotoArchiveDialog = function initGetPhotoArchiveDialog(formElements, dialog) {
+		Object.entries(kind2VariantAndLocalizedLabel).forEach(function (_ref7) {
+			var _ref8 = _slicedToArray(_ref7, 2),
+			    kind = _ref8[0],
+			    _ref8$ = _slicedToArray(_ref8[1], 2),
+			    variant = _ref8$[0],
+			    lLabel = _ref8$[1];
+
+			/** @type {HTMLAnchorElement} */
+			var button = dialog.querySelector('a[data-photo-kind="' + kind + '"]');
+			/** @type {?SizeVariant} */
+			var sv = myPhoto.size_variants[variant];
+			if (!!sv) {
+				button.title = lychee.locale["DOWNLOAD"];
+				button.addEventListener(lychee.getEventName(), onClickOrTouch);
+				button.lastElementChild.textContent = lLabel + "(" + sv.width + "×" + sv.height + ", " + lychee.locale.printFilesizeLocalized(sv.filesize) + ")";
+			} else {
+				button.remove();
 			}
 		});
+		/** @type {HTMLAnchorElement} */
+		var liveButton = dialog.querySelector('a[data-photo-kind="LIVEPHOTOVIDEO"]');
+		if (myPhoto.live_photo_url !== null) {
+			liveButton.title = lychee.locale["DOWNLOAD"];
+			liveButton.addEventListener(lychee.getEventName(), onClickOrTouch);
+			liveButton.lastElementChild.textContent = lychee.locale["PHOTO_LIVE_VIDEO"];
+		} else {
+			liveButton.remove();
+		}
+	};
 
-		$(".downloads .basicModal__button").on(lychee.getEventName(), function () {
-			var kind = this.id;
-			basicModal.close();
-			_photo3.getArchive(photoIDs, kind);
-		});
-	} else {
-		location.href = "api/Photo::getArchive?photoIDs=" + photoIDs.join() + "&kind=" + kind;
-	}
+	basicModal.show({
+		body: getPhotoArchiveDialogBody,
+		readyCB: initGetPhotoArchiveDialog,
+		classList: ["downloads"],
+		buttons: {
+			cancel: {
+				title: lychee.locale["CLOSE"],
+				fn: basicModal.close
+			}
+		}
+	});
 };
 
 /**
@@ -9177,20 +9352,19 @@ _photo3.qrCode = function (photoID) {
 		return;
 	}
 
-	var msg = lychee.html(_templateObject11);
-
 	basicModal.show({
-		body: msg,
-		callback: function callback() {
-			qrcode = $("#qr-code");
+		body: "<div class='qr-code-canvas'></div>",
+		classList: ["qr-code"],
+		readyCB: function readyCB(formElements, dialog) {
+			var qrcode = dialog.querySelector("div.qr-code-canvas");
 			QrCreator.render({
 				text: _photo3.getViewLink(myPhoto.id),
 				radius: 0.0,
 				ecLevel: "H",
 				fill: "#000000",
 				background: "#FFFFFF",
-				size: qrcode.width()
-			}, qrcode[0]);
+				size: qrcode.clientWidth
+			}, qrcode);
 		},
 		buttons: {
 			cancel: {
@@ -9226,45 +9400,79 @@ _photo3.showDirectLinks = function (photoID) {
 	}
 
 	/**
-  * @param {string} label
-  * @param {string} url
+  * @param {string} name - name of the HTML input element
   * @returns {string} - HTML
   */
-	var buildLine = function buildLine(label, url) {
-		return lychee.html(_templateObject58, label, url, lychee.locale["URL_COPY_TO_CLIPBOARD"], build.iconic("copy", "ionicons"));
+	var buildLine = function buildLine(name) {
+		return "\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<label for=\"" + ("dialog-direct-links-input-" + name) + "\"></label>\n\t\t\t\t<input id=\"" + ("dialog-direct-links-input-" + name) + "\" name=\"" + name + "\" type='text' readonly />\n\t\t\t\t<a class='button'><svg class='iconic ionicons'><use xlink:href='#copy' /></svg></a>\n\t\t\t</div>";
 	};
 
-	var msg = lychee.html(_templateObject59, buildLine(lychee.locale["PHOTO_VIEW"], _photo3.getViewLink(photoID)), lychee.locale["PHOTO_DIRECT_LINKS_TO_IMAGES"]);
+	var localizations = {
+		original: lychee.locale["PHOTO_FULL"],
+		medium2x: lychee.locale["PHOTO_MEDIUM_HIDPI"],
+		medium: lychee.locale["PHOTO_MEDIUM"],
+		small2x: lychee.locale["PHOTO_SMALL_HIDPI"],
+		small: lychee.locale["PHOTO_SMALL"],
+		thumb2x: lychee.locale["PHOTO_THUMB_HIDPI"],
+		thumb: lychee.locale["PHOTO_THUMB"]
+	};
 
-	if (_photo3.json.size_variants.original.url) {
-		msg += buildLine(lychee.locale["PHOTO_FULL"] + " (" + _photo3.json.size_variants.original.width + "x" + _photo3.json.size_variants.original.height + ")", lychee.getBaseUrl() + _photo3.json.size_variants.original.url);
-	}
-	if (_photo3.json.size_variants.medium2x !== null) {
-		msg += buildLine(lychee.locale["PHOTO_MEDIUM_HIDPI"] + " (" + _photo3.json.size_variants.medium2x.width + "x" + _photo3.json.size_variants.medium2x.height + ")", lychee.getBaseUrl() + _photo3.json.size_variants.medium2x.url);
-	}
-	if (_photo3.json.size_variants.medium !== null) {
-		msg += buildLine(lychee.locale["PHOTO_MEDIUM"] + " (" + _photo3.json.size_variants.medium.width + "x" + _photo3.json.size_variants.medium.height + ")", lychee.getBaseUrl() + _photo3.json.size_variants.medium.url);
-	}
-	if (_photo3.json.size_variants.small2x !== null) {
-		msg += buildLine(lychee.locale["PHOTO_SMALL_HIDPI"] + " (" + _photo3.json.size_variants.small2x.width + "x" + _photo3.json.size_variants.small2x.height + ")", lychee.getBaseUrl() + _photo3.json.size_variants.small2x.url);
-	}
-	if (_photo3.json.size_variants.small !== null) {
-		msg += buildLine(lychee.locale["PHOTO_SMALL"] + " (" + _photo3.json.size_variants.small.width + "x" + _photo3.json.size_variants.small.height + ")", lychee.getBaseUrl() + _photo3.json.size_variants.small.url);
-	}
-	if (_photo3.json.size_variants.thumb2x !== null) {
-		msg += buildLine(lychee.locale["PHOTO_THUMB_HIDPI"] + " (" + _photo3.json.size_variants.thumb2x.width + "x" + _photo3.json.size_variants.thumb2x.height + ")", lychee.getBaseUrl() + _photo3.json.size_variants.thumb2x.url);
-	}
-	if (_photo3.json.size_variants.thumb !== null) {
-		msg += buildLine(lychee.locale["PHOTO_THUMB"] + " (" + _photo3.json.size_variants.thumb.width + "x" + _photo3.json.size_variants.thumb.height + ")", lychee.getBaseUrl() + _photo3.json.size_variants.thumb.url);
-	}
-	if (_photo3.json.live_photo_url) {
-		msg += buildLine(" " + lychee.locale["PHOTO_LIVE_VIDEO"] + " ", lychee.getBaseUrl() + _photo3.json.live_photo_url);
-	}
+	var showDirectLinksDialogBody = '<form class="photo-links">' + buildLine("view") + '</form><p></p><form class="photo-links">' + Object.entries(localizations).reduce(function (html, _ref9) {
+		var _ref10 = _slicedToArray(_ref9, 1),
+		    type = _ref10[0];
 
-	msg += lychee.html(_templateObject60);
+		return html + buildLine(type);
+	}, "") + buildLine("live") + "</form>";
+
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  */
+	var initShowDirectLinksDialog = function initShowDirectLinksDialog(formElements, dialog) {
+		formElements.view.value = _photo3.getViewLink(photoID);
+		formElements.view.previousElementSibling.textContent = lychee.locale["PHOTO_VIEW"];
+		formElements.view.nextElementSibling.title = "Copy to clipboard";
+		dialog.querySelector("p").textContent = lychee.locale["PHOTO_DIRECT_LINKS_TO_IMAGES"];
+
+		for (var type in localizations) {
+			/** @type {?SizeVariant} */
+			var sv = _photo3.json.size_variants[type];
+			if (sv !== null) {
+				formElements[type].value = lychee.getBaseUrl() + sv.url;
+				formElements[type].previousElementSibling.textContent = localizations[type] + " (" + sv.width + "×" + sv.height + ")";
+				formElements[type].nextElementSibling.title = "Copy to clipboard";
+			} else {
+				// The form element is the `<input>` element, the parent
+				// element is the `<div>` which binds the label, the input
+				// and the button together.
+				// We remove that `<div>` for non-existing variants.
+				formElements[type].parentElement.remove();
+			}
+		}
+
+		if (_photo3.json.live_photo_url !== null) {
+			formElements.live.value = lychee.getBaseUrl() + _photo3.json.live_photo_url;
+			formElements.live.previousElementSibling.textContent = lychee.locale["PHOTO_LIVE_VIDEO"];
+			formElements.live.nextElementSibling.title = "Copy to clipboard";
+		} else {
+			formElements.live.parentElement.remove();
+		}
+
+		/** @param {TouchEvent|MouseEvent} ev */
+		var onClickOrTouch = function onClickOrTouch(ev) {
+			navigator.clipboard.writeText(ev.currentTarget.previousElementSibling.value).then(function () {
+				return loadingBar.show("success", lychee.locale["URL_COPIED_TO_CLIPBOARD"]);
+			});
+			ev.stopPropagation();
+		};
+		dialog.querySelectorAll("a.button").forEach(function (a) {
+			a.addEventListener(lychee.getEventName(), onClickOrTouch);
+		});
+	};
 
 	basicModal.show({
-		body: msg,
+		body: showDirectLinksDialogBody,
+		readyCB: initShowDirectLinksDialog,
 		buttons: {
 			cancel: {
 				title: lychee.locale["CLOSE"],
@@ -9272,9 +9480,6 @@ _photo3.showDirectLinks = function (photoID) {
 			}
 		}
 	});
-
-	// Ensure that no input line is selected on opening.
-	$(".basicModal input:focus").blur();
 
 	$(".directLinks .basicModal__button").on(lychee.getEventName(), function () {
 		navigator.clipboard.writeText($(this).prev().val()).then(function () {
@@ -9508,10 +9713,14 @@ settings.createLogin = function () {
   * @returns {boolean}
   */
 	var errorHandler = function errorHandler(jqXHR, params, lycheeException) {
-		var htmlBody = "<p>" + lychee.locale["ERROR_LOGIN"] + "</p>";
-		htmlBody += lycheeException ? "<p>" + lycheeException.message + "</p>" : "";
 		basicModal.show({
-			body: htmlBody,
+			body: "<p></p><p></p>",
+			readyCB: function readyCB(formElement, dialog) {
+				/** @type {NodeList<HTMLParagraphElement>} */
+				var paragraphs = dialog.querySelectorAll("p");
+				paragraphs.item(0).textContent = lychee.locale["ERROR_LOGIN"];
+				paragraphs.item(1).textContent = lycheeException ? "<p>" + lycheeException.message + "</p>" : "";
+			},
 			buttons: {
 				action: {
 					title: lychee.locale["RETRY"],
@@ -9533,51 +9742,52 @@ settings.createLogin = function () {
 	};
 
 	/**
-  * @typedef SetLoginDialogResult
-  *
-  * @property {string} username
-  * @property {string} password
-  * @property {string} confirm
-  */
-
-	/**
-  * @param {SetLoginDialogResult} data
+  * @param {ModalDialogResult} data
   * @returns {void}
   */
 	var action = function action(data) {
-		var username = data.username;
-		var password = data.password;
-		var confirm = data.confirm;
-
-		if (!username.trim()) {
-			basicModal.error("username");
+		if (!data.username.trim()) {
+			basicModal.focusError("username");
 			return;
 		}
 
-		if (!password.trim()) {
-			basicModal.error("password");
+		if (!data.password.trim()) {
+			basicModal.focusError("password");
 			return;
 		}
 
-		if (password !== confirm) {
-			basicModal.error("confirm");
+		if (data.password !== data.confirm) {
+			basicModal.focusError("confirm");
 			return;
 		}
 
 		basicModal.close();
 
 		var params = {
-			username: username,
-			password: password
+			username: data.username,
+			password: data.password
 		};
 
 		api.post("Settings::setLogin", params, successHandler, null, errorHandler);
 	};
 
-	var msg = "\n\t\t<p>\n\t\t\t" + lychee.locale["LOGIN_TITLE"] + "\n\t\t\t<input name='username' class='text' type='text' placeholder='" + lychee.locale["LOGIN_USERNAME"] + "' value=''>\n\t\t\t<input name='password' class='text' type='password' placeholder='" + lychee.locale["LOGIN_PASSWORD"] + "' value=''>\n\t\t\t<input name='confirm' class='text' type='password' placeholder='" + lychee.locale["LOGIN_PASSWORD_CONFIRM"] + "' value=''>\n\t\t</p>";
+	var createLoginDialogBody = "\n\t\t<p></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input name='username' class='text' type='text' autocapitalize='off'>\n\t\t\t</div>\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input name='password' class='text' type='password'>\n\t\t\t</div>\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input name='confirm' class='text' type='password'>\n\t\t\t</div>\n\t\t</form>";
+
+	/**
+  * @param {ModalDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initDialog = function initDialog(formElements, dialog) {
+		dialog.querySelector("p").textContent = lychee.locale["LOGIN_TITLE"];
+		formElements.username.placeholder = lychee.locale["LOGIN_USERNAME"];
+		formElements.password.placeholder = lychee.locale["LOGIN_PASSWORD"];
+		formElements.confirm.placeholder = lychee.locale["LOGIN_PASSWORD_CONFIRM"];
+	};
 
 	basicModal.show({
-		body: msg,
+		body: createLoginDialogBody,
+		readyCB: initDialog,
 		buttons: {
 			action: {
 				title: lychee.locale["LOGIN_CREATE"],
@@ -9939,32 +10149,24 @@ settings.save_enter = function (e) {
 	// We only handle "enter"
 	if (e.which !== 13) return;
 
-	// show confirmation box
-	$(":focus").blur();
-
-	var action = {};
-	var cancel = {};
-
-	action.title = lychee.locale["ENTER"];
-	action.msg = lychee.html(_templateObject61, lychee.locale["SAVE_RISK"]);
-
-	cancel.title = lychee.locale["CANCEL"];
-
-	action.fn = function () {
-		settings.save(settings.getValues("#fullSettings"));
-		basicModal.close();
-	};
+	var saveSettingsConfirmationDialogBody = '<p style="color: #d92c34; font-size: 1.3em; font-weight: bold; text-transform: capitalize; text-align: center;"></p>';
 
 	basicModal.show({
-		body: action.msg,
+		body: saveSettingsConfirmationDialogBody,
+		readyCB: function readyCB(formElements, dialog) {
+			dialog.querySelector("p").textContent = lychee.locale["SAVE_RISK"];
+		},
 		buttons: {
 			action: {
-				title: action.title,
-				fn: action.fn,
-				class: "red"
+				title: lychee.locale["ENTER"],
+				fn: function fn() {
+					settings.save(settings.getValues("#fullSettings"));
+					basicModal.close();
+				},
+				classList: ["red"]
 			},
 			cancel: {
-				title: cancel.title,
+				title: lychee.locale["CANCEL"],
 				fn: basicModal.close
 			}
 		}
@@ -10569,18 +10771,18 @@ _sidebar.render = function (structure) {
 					function (prev, cur) {
 						// Add separator if needed
 						if (prev !== "") {
-							prev += lychee.html(_templateObject62, row.kind);
+							prev += lychee.html(_templateObject31, row.kind);
 						}
-						return prev + lychee.html(_templateObject63, row.kind, cur);
+						return prev + lychee.html(_templateObject32, row.kind, cur);
 					}, "");
 				} else {
-					value = lychee.html(_templateObject64, row.kind, value);
+					value = lychee.html(_templateObject33, row.kind, value);
 				}
 
 				// Add edit-icon to the value when editable
 				if (row.editable === true) value += " " + build.editIcon("edit_" + row.kind);
 
-				_html += lychee.html(_templateObject65, row.title, value);
+				_html += lychee.html(_templateObject34, row.title, value);
 			}
 		});
 
@@ -10601,7 +10803,7 @@ _sidebar.render = function (structure) {
 		// Add edit-icon to the value when editable
 		if (section.editable === true) editable = build.editIcon("edit_tags");
 
-		_html += lychee.html(_templateObject66, section.title, section.title.toLowerCase(), section.value, editable);
+		_html += lychee.html(_templateObject35, section.title, section.title.toLowerCase(), section.value, editable);
 
 		return _html;
 	};
@@ -10919,10 +11121,11 @@ var u2f = {
  */
 u2f.is_available = function () {
 	if (!window.isSecureContext && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
-		var msg = lychee.html(_templateObject67, lychee.locale["U2F_NOT_SECURE"]);
-
 		basicModal.show({
-			body: msg,
+			body: "<p></p>",
+			readyCB: function readyCB(formElements, dialog) {
+				dialog.querySelector("p").textContent = lychee.locale["U2F_NOT_SECURE"];
+			},
 			buttons: {
 				cancel: {
 					title: lychee.locale["CLOSE"],
@@ -11004,25 +11207,107 @@ u2f.list = function () {
  * @description Takes care of every action an album can handle and execute.
  */
 
-var upload = {};
+/**
+ * @typedef ProgressReportDialogRow
+ * @property {HTMLLIElement} listEntry
+ * @property {HTMLHeadingElement} header
+ * @property {HTMLParagraphElement} status
+ * @property {HTMLParagraphElement} notice
+ */
 
-var choiceDeleteSelector = '.basicModal .choice input[name="delete_imported"]';
-var choiceSymlinkSelector = '.basicModal .choice input[name="import_via_symlink"]';
-var choiceDuplicateSelector = '.basicModal .choice input[name="skip_duplicates"]';
-var choiceResyncSelector = '.basicModal .choice input[name="resync_metadata"]';
-var actionSelector = ".basicModal #basicModal__action";
-var cancelSelector = ".basicModal #basicModal__cancel";
-var firstRowStatusSelector = ".basicModal .rows .row .status";
-var firstRowNoticeSelector = ".basicModal .rows .row p.notice";
+var upload = {
+	SCROLL_OPTIONS: {
+		inline: "nearest",
+		block: "nearest",
+		behavior: "smooth"
+	},
 
-var nRowStatusSelector = function nRowStatusSelector(row) {
-	return ".basicModal .rows .row:nth-child(" + row + ") .status";
+	_dom: {
+		/**
+   * Holds the ordered list (`<ol>`) with the individual reports
+   * of a Progress Report dialog.
+   *
+   * @type {HTMLOListElement|null}
+   */
+		reportList: null,
+
+		/**
+   * Maps a path (as the unique identifier) to a tuple of UI elements
+   * which visualize the report row for that path.
+   *
+   * Note, rows for event reports which are not associated to a
+   * particular file or directory are not kept in this map, but
+   * of course they are visualized inside the list of reports.
+   *
+   * This map allows fast access to the rows without running
+   * (inefficient) CSS selector queries and/or relying on a specific
+   * order (i.e. no need for `nth-child`-selector).
+   *
+   * @type {Map<string, ProgressReportDialogRow>|null}
+   */
+		progressRowsByPath: null
+	}
 };
 
-var showCloseButton = function showCloseButton() {
-	$(actionSelector).show();
-	// re-activate cancel button to close modal panel if needed
-	$(cancelSelector).removeClass("basicModal__button--active").hide();
+upload.showProgressReportCloseButton = function () {
+	basicModal.showActionButton();
+	basicModal.hideCancelButton();
+	// Re-activate cancel button to close modal panel if needed
+	basicModal.markActionButtonAsIdle();
+};
+
+upload.closeProgressReportDialog = function () {
+	basicModal.close();
+	upload._dom.reportList = null;
+	upload._dom.progressRowsByPath = null;
+};
+
+/**
+ * Builds the HTML snippet for a single entry in the Progress Report dialog.
+ *
+ * Constructs an entry for the list of reports made up of a caption,
+ * a status and a notice.
+ *
+ * @param {string} caption the caption of the list entry; for reports about
+ *                         files this is typically the filename
+ * @returns {ProgressReportDialogRow}
+ */
+upload.buildReportRow = function (caption) {
+	var listEntry = document.createElement("li");
+
+	var header = listEntry.appendChild(document.createElement("h2"));
+	header.textContent = caption.length <= 40 ? caption : caption.substring(0, 19) + "…" + caption.substring(caption.length - 20, caption.length);
+	var status = listEntry.appendChild(document.createElement("p"));
+	status.classList.add("status");
+	var notice = listEntry.appendChild(document.createElement("p"));
+	notice.classList.add("notice");
+
+	return { listEntry: listEntry, header: header, status: status, notice: notice };
+};
+
+/**
+ * Builds the HTML snippet for the list of reports in the Progress Report dialog.
+ *
+ * The list is initially filled with the given list of files.
+ * More items to this list may be added on-the-fly during an ongoing import.
+ *
+ * Note: This is used for downloading files from a remote URL, importing from
+ * Dropbox or uploading, i.e. whenever the list is known in advance.
+ * For importing from server, the list initially only contains the selected
+ * server directory and more items are added while the backend scans the
+ * directory on the server.
+ *
+ * @param {(FileList|File[]|DropboxFile[]|{name: string}[])} files
+ * @returns {void}
+ */
+upload.buildReportList = function (files) {
+	upload._dom.reportList = document.createElement("ol");
+	upload._dom.progressRowsByPath = new Map();
+	for (var idx = 0; idx !== files.length; idx++) {
+		var row = upload.buildReportRow(files[idx].name);
+		upload._dom.progressRowsByPath.set(files[idx].name, row);
+		upload._dom.reportList.appendChild(row.listEntry);
+	}
 };
 
 /**
@@ -11031,40 +11316,74 @@ var showCloseButton = function showCloseButton() {
  * @param {ModalDialogReadyCB} run_callback
  * @param {?ModalDialogButtonCB} cancel_callback
  */
-upload.show = function (title, files, run_callback) {
+upload.showProgressReportDialog = function (title, files, run_callback) {
 	var cancel_callback = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initImportProgressReportDialog = function initImportProgressReportDialog(formElements, dialog) {
+		// Initially, the normal Action (aka "Close") button is hidden and
+		// remains hidden as long as an import is running.
+		// Users must use the Cancel button to interrupt an ongoing import.
+		// The Action button becomes visible after the import has been
+		// terminated (eiter successfully, with error or due to interruption).
+		basicModal.hideActionButton();
+
+		var caption = dialog.querySelector("h1");
+		caption.textContent = title;
+		upload.buildReportList(files);
+		dialog.appendChild(upload._dom.reportList);
+
+		setTimeout(function () {
+			return run_callback(formElements, dialog);
+		}, 0);
+	};
+
 	basicModal.show({
-		body: build.uploadModal(title, files),
+		body: "<h1></h1>",
+		classList: ["import"],
+		readyCB: initImportProgressReportDialog,
 		buttons: {
 			action: {
 				title: lychee.locale["CLOSE"],
-				class: "hidden",
 				fn: function fn() {
-					if ($(actionSelector).is(":visible")) basicModal.close();
+					return upload.closeProgressReportDialog();
 				}
 			},
 			cancel: {
 				title: lychee.locale["CANCEL"],
-				class: "red hidden",
-				fn: function fn() {
-					// close modal if close button is displayed
-					if ($(actionSelector).is(":visible")) basicModal.close();
-					if (cancel_callback) {
-						$(cancelSelector).addClass("busy");
-						cancel_callback();
+				classList: ["red"],
+				fn: function fn(resultData) {
+					// If Action button is visible, the Cancel button behaves
+					// like the Close button; otherwise the button only calls
+					// the callback to cancel the import
+					if (basicModal.isActionButtonVisible()) {
+						upload.closeProgressReportDialog();
+					} else {
+						if (cancel_callback) {
+							cancel_callback(resultData);
+						}
 					}
 				}
 			}
-		},
-		callback: run_callback
+		}
 	});
 };
 
-upload.notify = function (title, text) {
-	if (text == null || text === "") text = lychee.locale["UPLOAD_MANAGE_NEW_PHOTOS"];
+/**
+ * @param {string} title
+ * @param {string} [text=""]
+ * @returns {void}
+ */
+upload.notify = function (title) {
+	var text = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
 
-	if (!window.webkitNotifications) return false;
+	if (text === "") text = lychee.locale["UPLOAD_MANAGE_NEW_PHOTOS"];
+
+	if (!window.webkitNotifications) return;
 
 	if (window.webkitNotifications.checkPermission() !== 0) window.webkitNotifications.requestPermission();
 
@@ -11136,17 +11455,20 @@ upload.start = {
 
 			if (!hasErrorOccurred && !hasWarningOccurred) {
 				// Success
-				basicModal.close();
+				upload.closeProgressReportDialog();
 				upload.notify(lychee.locale["UPLOAD_COMPLETE"]);
 			} else if (!hasErrorOccurred && hasWarningOccurred) {
 				// Warning
-				showCloseButton();
+				upload.showProgressReportCloseButton();
 				upload.notify(lychee.locale["UPLOAD_COMPLETE"]);
 			} else {
 				// Error
-				showCloseButton();
+				upload.showProgressReportCloseButton();
 				if (shallCancelUpload) {
-					$(".basicModal .rows .row:nth-child(n+" + (latestFileIdx + 2).toString() + ") .status").html(lychee.locale["UPLOAD_CANCELLED"]).addClass("warning");
+					var row = upload.buildReportRow("General");
+					row.status.textContent = lychee.locale["UPLOAD_CANCELLED"];
+					row.status.classList.add("warning");
+					upload._dom.reportList.appendChild(row.listEntry);
 				}
 				upload.notify(lychee.locale["UPLOAD_COMPLETE"], lychee.locale["UPLOAD_COMPLETE_FAILED"]);
 			}
@@ -11204,16 +11526,13 @@ upload.start = {
 				// Set progress when progress has changed
 				if (progress > uploadProgress) {
 					uploadProgress = progress;
-					/** @type {?jQuery} */
-					var jqStatusMsg = $(nRowStatusSelector(fileIdx + 1));
-					jqStatusMsg.html(uploadProgress + "%");
+					var row = upload._dom.progressRowsByPath.get(files[fileIdx].name);
+					row.listEntry.scrollIntoView(upload.SCROLL_OPTIONS);
+					row.status.textContent = "" + uploadProgress + "%";
 
 					if (progress >= 100) {
-						jqStatusMsg.html(lychee.locale["UPLOAD_PROCESSING"]);
+						row.status.textContent = lychee.locale["UPLOAD_PROCESSING"];
 						isUploadRunning = false;
-						var scrollPos = 0;
-						if (fileIdx + 1 > 4) scrollPos = (fileIdx + 1 - 4) * 40;
-						$(".basicModal .rows").scrollTop(scrollPos);
 
 						// Start a new upload, if there are still pending
 						// files
@@ -11233,47 +11552,37 @@ upload.start = {
     * @this XMLHttpRequest
     */
 			var onLoaded = function onLoaded() {
+				var row = upload._dom.progressRowsByPath.get(files[fileIdx].name);
 				/** @type {?LycheeException} */
 				var lycheeException = this.status >= 400 ? this.response : null;
-				var errorText = "";
-				var statusText = void 0;
-				var statusClass = void 0;
 
 				switch (this.status) {
 					case 200:
 					case 201:
 					case 204:
-						statusText = lychee.locale["UPLOAD_FINISHED"];
-						statusClass = "success";
+						row.status.textContent = lychee.locale["UPLOAD_FINISHED"];
+						row.status.classList.add("success");
 						break;
 					case 409:
-						statusText = lychee.locale["UPLOAD_SKIPPED"];
-						errorText = lycheeException ? lycheeException.message : lychee.locale["UPLOAD_ERROR_UNKNOWN"];
+						row.status.textContent = lychee.locale["UPLOAD_SKIPPED"];
+						row.status.classList.add("warning");
+						row.notice.textContent = lycheeException ? lycheeException.message : lychee.locale["UPLOAD_ERROR_UNKNOWN"];
 						hasWarningOccurred = true;
-						statusClass = "warning";
 						break;
 					case 413:
-						statusText = lychee.locale["UPLOAD_FAILED"];
-						errorText = lychee.locale["UPLOAD_ERROR_POSTSIZE"];
+						row.status.textContent = lychee.locale["UPLOAD_FAILED"];
+						row.status.classList.add("error");
+						row.notice.textContent = lychee.locale["UPLOAD_ERROR_POSTSIZE"];
 						hasErrorOccurred = true;
-						statusClass = "error";
+						api.onError(this, { albumID: albumID }, lycheeException);
 						break;
 					default:
-						statusText = lychee.locale["UPLOAD_FAILED"];
-						errorText = lycheeException ? lycheeException.message : lychee.locale["UPLOAD_ERROR_UNKNOWN"];
+						row.status.textContent = lychee.locale["UPLOAD_FAILED"];
+						row.status.classList.add("error");
+						row.notice.textContent = lycheeException ? lycheeException.message : lychee.locale["UPLOAD_ERROR_UNKNOWN"];
 						hasErrorOccurred = true;
-						statusClass = "error";
+						api.onError(this, { albumID: albumID }, lycheeException);
 						break;
-				}
-
-				$(nRowStatusSelector(fileIdx + 1)).html(statusText).addClass(statusClass);
-
-				if (statusClass === "error") {
-					api.onError(this, { albumID: albumID }, lycheeException);
-				}
-
-				if (errorText !== "") {
-					$(".basicModal .rows .row:nth-child(" + (fileIdx + 1) + ") p.notice").html(errorText).show();
 				}
 			};
 
@@ -11346,9 +11655,9 @@ upload.start = {
 			return lychee.locale["UPLOAD_IN_PROGRESS"];
 		};
 
-		upload.show(lychee.locale["UPLOAD_UPLOADING"], files, function () {
+		upload.showProgressReportDialog(lychee.locale["UPLOAD_UPLOADING"], files, function () {
 			// Upload first file
-			$(cancelSelector).show();
+			basicModal.showCancelButton();
 			process(0);
 		}, function () {
 			shallCancelUpload = true;
@@ -11364,19 +11673,12 @@ upload.start = {
 
 		var albumID = album.getID();
 
-		/**
-   * @typedef UrlDialogResult
-   * @property {string} url
-   */
-
-		/** @param {UrlDialogResult} data */
-		var action = function action(data) {
+		/** @param {{url: string}} data */
+		var importFromUrl = function importFromUrl(data) {
 			var runImport = function runImport() {
-				$(firstRowStatusSelector).html(lychee.locale["UPLOAD_IMPORTING"]);
-
 				var successHandler = function successHandler() {
 					// Same code as in import.dropbox()
-					basicModal.close();
+					upload.closeProgressReportDialog();
 					upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"]);
 					album.reload();
 				};
@@ -11389,31 +11691,30 @@ upload.start = {
      */
 				var errorHandler = function errorHandler(jqXHR, params, lycheeException) {
 					// Same code as in import.dropbox()
-					var errorText = void 0;
-					var statusText = void 0;
-					var statusClass = void 0;
+					/** @type {ProgressReportDialogRow} */
+					var row = upload._dom.progressRowsByPath.get(data.url);
 
 					switch (jqXHR.status) {
 						case 409:
-							statusText = lychee.locale["UPLOAD_SKIPPED"];
-							errorText = lycheeException ? lycheeException.message : lychee.locale["UPLOAD_IMPORT_WARN_ERR"];
-							statusClass = "warning";
+							row.status.textContent = lychee.locale["UPLOAD_SKIPPED"];
+							row.status.classList.add("warning");
+							row.notice.textContent = lycheeException ? lycheeException.message : lychee.locale["UPLOAD_IMPORT_WARN_ERR"];
 							break;
 						default:
-							statusText = lychee.locale["UPLOAD_FAILED"];
-							errorText = lycheeException ? lycheeException.message : lychee.locale["UPLOAD_IMPORT_WARN_ERR"];
-							statusClass = "error";
+							row.status.textContent = lychee.locale["UPLOAD_FAILED"];
+							row.status.classList.add("error");
+							row.notice.textContent = lycheeException ? lycheeException.message : lychee.locale["UPLOAD_IMPORT_WARN_ERR"];
 							break;
 					}
 
-					$(firstRowNoticeSelector).html(errorText).show();
-					$(firstRowStatusSelector).html(statusText).addClass(statusClass);
 					// Show close button
-					$(".basicModal #basicModal__action.hidden").show();
+					basicModal.showActionButton();
 					upload.notify(lychee.locale["UPLOAD_IMPORT_WARN_ERR"]);
 					album.reload();
 					return true;
 				};
+
+				upload._dom.progressRowsByPath.get(data.url).status.textContent = lychee.locale["UPLOAD_IMPORTING"];
 
 				// In theory, the backend is prepared to download a list of
 				// URLs (note that `data.url`) is wrapped into an array.
@@ -11438,18 +11739,38 @@ upload.start = {
 				}, successHandler, null, errorHandler);
 			};
 
+			upload.showProgressReportDialog(lychee.locale["UPLOAD_IMPORTING_URL"], [{ name: data.url }], runImport);
+		};
+
+		/** @param {{url: string}} data */
+		var processImportFromUrlDialog = function processImportFromUrlDialog(data) {
 			if (data.url && data.url.trim().length > 3) {
-				basicModal.close();
-				upload.show(lychee.locale["UPLOAD_IMPORTING_URL"], [{ name: data.url }], runImport);
-			} else basicModal.error("link");
+				basicModal.close(false, function () {
+					return importFromUrl(data);
+				});
+			} else basicModal.focusError("url");
+		};
+
+		var importFromUrlDialogBody = "\n\t\t\t<p></p>\n\t\t\t<form>\n\t\t\t\t<div class=\"input-group stacked\"><input class='text' name='url' type='text'></div>\n\t\t\t</form>";
+
+		/**
+   * @param {ModelDialogFormElements} formElements
+   * @param {HTMLDivElement} dialog
+   * @returns {void}
+   */
+		var initImportFromUrlDialog = function initImportFromUrlDialog(formElements, dialog) {
+			dialog.querySelector("p").textContent = lychee.locale["UPLOAD_IMPORT_INSTR"];
+			formElements.url.placeholder = "https://";
+			formElements.url.value = preselectedUrl;
 		};
 
 		basicModal.show({
-			body: lychee.html(_templateObject68) + lychee.locale["UPLOAD_IMPORT_INSTR"] + (" <input class='text' name='url' type='text' placeholder='https://' value='" + preselectedUrl + "'></p>"),
+			body: importFromUrlDialogBody,
+			readyCB: initImportFromUrlDialog,
 			buttons: {
 				action: {
 					title: lychee.locale["UPLOAD_IMPORT"],
-					fn: action
+					fn: processImportFromUrlDialog
 				},
 				cancel: {
 					title: lychee.locale["CANCEL"],
@@ -11462,32 +11783,98 @@ upload.start = {
 	server: function server() {
 		var albumID = album.getID();
 
-		var importDialogSetupCB = function importDialogSetupCB() {
-			var $delete = $(choiceDeleteSelector);
-			var $symlinks = $(choiceSymlinkSelector);
-			var $duplicates = $(choiceDuplicateSelector);
-			var $resync = $(choiceResyncSelector);
+		/**
+   * @typedef ImportFromServerDialogFormElements
+   *
+   * @property {HTMLInputElement} path
+   * @property {HTMLInputElement} delete_imported
+   * @property {HTMLInputElement} import_via_symlink
+   * @property {HTMLInputElement} skip_duplicates
+   * @property {HTMLInputElement} resync_metadata
+   */
 
+		/**
+   * @param {ImportFromServerDialogFormElements} formElements
+   * @param {HTMLDivElement} dialog
+   * @returns {void}
+   */
+		var initImportFromServerDialog = function initImportFromServerDialog(formElements, dialog) {
+			dialog.querySelector("p").textContent = lychee.locale["UPLOAD_IMPORT_SERVER_INSTR"];
+			formElements.path.placeholder = lychee.locale["UPLOAD_ABSOLUTE_PATH"];
+			formElements.path.value = lychee.location + "uploads/import/";
+			formElements.delete_imported.previousElementSibling.textContent = lychee.locale["UPLOAD_IMPORT_DELETE_ORIGINALS"];
+			formElements.delete_imported.nextElementSibling.textContent = lychee.locale["UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL"];
+			formElements.import_via_symlink.previousElementSibling.textContent = lychee.locale["UPLOAD_IMPORT_VIA_SYMLINK"];
+			formElements.import_via_symlink.nextElementSibling.textContent = lychee.locale["UPLOAD_IMPORT_VIA_SYMLINK_EXPL"];
+			formElements.skip_duplicates.previousElementSibling.textContent = lychee.locale["UPLOAD_IMPORT_SKIP_DUPLICATES"];
+			formElements.skip_duplicates.nextElementSibling.textContent = lychee.locale["UPLOAD_IMPORT_SKIP_DUPLICATES_EXPL"];
+			formElements.resync_metadata.previousElementSibling.textContent = lychee.locale["UPLOAD_IMPORT_RESYNC_METADATA"];
+			formElements.resync_metadata.nextElementSibling.textContent = lychee.locale["UPLOAD_IMPORT_RESYNC_METADATA_EXPL"];
+
+			// Initialize form elements (and dependent form elements) based on
+			// global configuration settings.
 			if (lychee.delete_imported) {
-				$delete.prop("checked", true);
-				$symlinks.prop("checked", false).prop("disabled", true);
+				formElements.delete_imported.checked = true;
+				formElements.import_via_symlink.checked = false;
+				formElements.import_via_symlink.disabled = true;
+				formElements.import_via_symlink.parentElement.classList.add("disabled");
 			} else {
 				if (lychee.import_via_symlink) {
-					$symlinks.prop("checked", true);
-					$delete.prop("checked", false).prop("disabled", true);
+					formElements.delete_imported.checked = false;
+					formElements.delete_imported.disabled = true;
+					formElements.delete_imported.parentElement.classList.add("disabled");
+					formElements.import_via_symlink.checked = true;
 				}
 			}
+
 			if (lychee.skip_duplicates) {
-				$duplicates.prop("checked", true);
-				if (lychee.resync_metadata) $resync.prop("checked", true);
+				formElements.skip_duplicates.checked = true;
+				formElements.resync_metadata.checked = lychee.resync_metadata;
 			} else {
-				$resync.prop("disabled", true);
+				formElements.skip_duplicates.checked = false;
+				formElements.resync_metadata.checked = false;
+				formElements.resync_metadata.disabled = true;
+				formElements.resync_metadata.parentElement.classList.add("disabled");
 			}
+
+			// Checkbox action handler to visualize contradictory settings
+			formElements.delete_imported.addEventListener("change", function () {
+				if (formElements.delete_imported.checked) {
+					formElements.import_via_symlink.checked = false;
+					formElements.import_via_symlink.disabled = true;
+					formElements.import_via_symlink.parentElement.classList.add("disabled");
+				} else {
+					formElements.import_via_symlink.disabled = false;
+					formElements.import_via_symlink.parentElement.classList.remove("disabled");
+				}
+			});
+
+			formElements.import_via_symlink.addEventListener("change", function () {
+				if (formElements.import_via_symlink.checked) {
+					formElements.delete_imported.checked = false;
+					formElements.delete_imported.disabled = true;
+					formElements.delete_imported.parentElement.classList.add("disabled");
+				} else {
+					formElements.delete_imported.disabled = false;
+					formElements.delete_imported.parentElement.classList.remove("disabled");
+				}
+			});
+
+			formElements.skip_duplicates.addEventListener("change", function () {
+				if (formElements.skip_duplicates.checked) {
+					formElements.resync_metadata.disabled = false;
+					formElements.resync_metadata.parentElement.classList.remove("disabled");
+				} else {
+					formElements.resync_metadata.checked = false;
+					formElements.resync_metadata.disabled = true;
+					formElements.resync_metadata.parentElement.classList.add("disabled");
+				}
+			});
 		};
 
 		/**
    * @typedef ServerImportDialogResult
-   * @property {string} paths
+   * @property {string|string[]} paths
    * @property {boolean} delete_imported
    * @property {boolean} import_via_symlink
    * @property {boolean} skip_duplicates
@@ -11495,21 +11882,7 @@ upload.start = {
    */
 
 		/** @param {ServerImportDialogResult} data */
-		var action = function action(data) {
-			if (!data.paths.trim()) {
-				basicModal.error("paths");
-				return;
-			} else {
-				// Consolidate `data` before we close the modal dialog
-				// TODO: We should fix the modal dialog to properly return the values of all input fields, incl. check boxes
-				data.paths = data.paths.match(/(?:\\.|\S)+/g);
-				data.delete_imported = !!$(choiceDeleteSelector).prop("checked");
-				data.import_via_symlink = !!$(choiceSymlinkSelector).prop("checked");
-				data.skip_duplicates = !!$(choiceDuplicateSelector).prop("checked");
-				data.resync_metadata = !!$(choiceResyncSelector).prop("checked");
-				basicModal.close();
-			}
-
+		var importFromServer = function importFromServer(data) {
 			var isUploadCancelled = false;
 
 			var cancelUpload = function cancelUpload() {
@@ -11521,16 +11894,12 @@ upload.start = {
 			};
 
 			var runUpload = function runUpload() {
-				$(cancelSelector).show();
+				basicModal.showCancelButton();
 
 				// Variables holding state across the invocations of
 				// processIncremental().
-				var jqRows = $(".basicModal .rows");
 				var lastReadIdx = 0;
-				var currentPath = null;
-				var jqCurrentRow = null; // the jQuery object of the current row
 				var encounteredProblems = false;
-				var topSkip = 0;
 
 				/**
      * Worker function invoked from both the response progress
@@ -11541,44 +11910,47 @@ upload.start = {
 				var processIncremental = function processIncremental(reports) {
 					reports.slice(lastReadIdx).forEach(function (report) {
 						if (report.type === "progress") {
-							if (currentPath !== report.path) {
-								// New directory. Add a new line to the dialog box at the end
-								currentPath = report.path;
-								jqCurrentRow = $(build.uploadNewFile(currentPath)).appendTo(jqRows);
-								topSkip += jqCurrentRow.outerHeight();
+							// Gets existing row for the current path or creates a new one
+							var row = upload._dom.progressRowsByPath.get(report.path) || upload.buildReportRow(report.path);
+							upload._dom.progressRowsByPath.set(report.path, row);
+							if (!upload._dom.reportList.contains(row.listEntry)) {
+								// New directory. Add a new row to the dialog box at the end
+								upload._dom.reportList.appendChild(row.listEntry);
 							}
+							row.listEntry.scrollIntoView(upload.SCROLL_OPTIONS);
 
 							if (report.progress !== 100) {
-								$(".status", jqCurrentRow).text("" + report.progress + "%");
+								row.status.textContent = "" + report.progress + "%";
 							} else {
 								// Final status report for this directory.
-								$(".status", jqCurrentRow).text(lychee.locale["UPLOAD_FINISHED"]).addClass("success");
+								row.status.textContent = lychee.locale["UPLOAD_FINISHED"];
+								row.status.classList.add("success");
 							}
 						} else if (report.type === "event") {
-							var jqEventRow = void 0;
-							if (jqCurrentRow) {
-								if (currentPath !== report.path) {
-									// If we already have a current row (for
-									// progress reports) and the event does
-									// not refer to that directory, we
-									// insert the event row _before_ the
-									// current row, so that the progress
-									// report stays in sight.
-									jqEventRow = $(build.uploadNewFile(report.path || "General")).insertBefore(jqCurrentRow);
-									topSkip += jqEventRow.outerHeight();
-								} else {
-									// The problem is with the directory
-									// itself, so alter its existing line.
-									jqEventRow = jqCurrentRow;
+							var _row = void 0;
+							if (!!report.path) {
+								// The event report refers to a specific path,
+								// hence get the existing row for that path
+								// or create a new one.
+								_row = upload._dom.progressRowsByPath.get(report.path) || upload.buildReportRow(report.path);
+								upload._dom.progressRowsByPath.set(report.path, _row);
+								if (!upload._dom.reportList.contains(_row.listEntry)) {
+									// New directory. Add a new row to the dialog box at the end.
+									// This might happen, if the event occurs
+									// before the first progress report for that
+									// path.
+									upload._dom.reportList.appendChild(_row.listEntry);
 								}
 							} else {
-								// If we do not have a current row yet, we
-								// simply append it to the list of rows
-								// (this might happen if the event occurs
-								// before the first progress report)
-								jqEventRow = $(build.uploadNewFile(report.path || "General")).appendTo(jqRows);
-								topSkip += jqEventRow.outerHeight();
+								// The event report does not refer to a
+								// specific directory.
+								// We insert the event row _before_ the row
+								// before the last row, so that the latest
+								// progress report stays in sight.
+								_row = upload.buildReportRow("General");
+								upload._dom.reportList.insertBefore(_row.listEntry, upload._dom.reportList.lastElementChild);
 							}
+							_row.listEntry.scrollIntoView(upload.SCROLL_OPTIONS);
 
 							var severityClass = "";
 							var statusText = "";
@@ -11639,14 +12011,14 @@ upload.start = {
 									break;
 							}
 
-							$(".status", jqEventRow).text(statusText).addClass(severityClass);
-							$(".notice", jqEventRow).text(noteText).show();
+							_row.notice.textContent = noteText;
+							_row.status.textContent = statusText;
+							_row.status.classList.add(severityClass);
 
 							encounteredProblems = true;
 						}
 					}); // forEach (resp)
 					lastReadIdx = reports.length;
-					$(jqRows).scrollTop(topSkip);
 				}; // processIncremental
 
 				/**
@@ -11660,7 +12032,7 @@ upload.start = {
 
 					album.reload();
 
-					if (encounteredProblems) showCloseButton();else basicModal.close();
+					if (encounteredProblems) upload.showProgressReportCloseButton();else upload.closeProgressReportDialog();
 				};
 
 				/**
@@ -11697,7 +12069,7 @@ upload.start = {
 
 								album.reload();
 
-								showCloseButton();
+								upload.showProgressReportCloseButton();
 
 								return;
 							}
@@ -11720,18 +12092,32 @@ upload.start = {
 				api.post("Import::server", params, successHandler, progressHandler);
 			};
 
-			upload.show(lychee.locale["UPLOAD_IMPORT_SERVER"], [], runUpload, cancelUpload);
-		}; // action
+			upload.showProgressReportDialog(lychee.locale["UPLOAD_IMPORT_SERVER"], [], runUpload, cancelUpload);
+		}; // importFromServer
 
-		var msg = lychee.html(_templateObject69, lychee.locale["UPLOAD_IMPORT_SERVER_INSTR"], lychee.locale["UPLOAD_ABSOLUTE_PATH"], lychee.location, build.iconic("check"), lychee.locale["UPLOAD_IMPORT_DELETE_ORIGINALS"], lychee.locale["UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL"], build.iconic("check"), lychee.locale["UPLOAD_IMPORT_VIA_SYMLINK"], lychee.locale["UPLOAD_IMPORT_VIA_SYMLINK_EXPL"], build.iconic("check"), lychee.locale["UPLOAD_IMPORT_SKIP_DUPLICATES"], lychee.locale["UPLOAD_IMPORT_SKIP_DUPLICATES_EXPL"], build.iconic("check"), lychee.locale["UPLOAD_IMPORT_RESYNC_METADATA"], lychee.locale["UPLOAD_IMPORT_RESYNC_METADATA_EXPL"]);
+		/** @param {ServerImportDialogResult} data */
+		var processImportFromServerDialog = function processImportFromServerDialog(data) {
+			if (!data.path.trim()) {
+				basicModal.focusError("paths");
+				return;
+			}
+
+			// Consolidate `data` before we close the modal dialog
+			data.paths = data.paths.match(/(?:\\.|\S)+/g);
+			basicModal.close(false, function () {
+				return importFromServer(data);
+			});
+		};
+
+		var importFromServerDialogBody = "\n\t\t\t<p></p>\n\t\t\t<form>\n\t\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t\t<input class='text' id=\"server_import_dialog_path_input\" name='paths' type='text' />\n\t\t\t\t</div>\n\t\t\t\t<div class='input-group compact-inverse'>\n\t\t\t\t\t<label for=\"server_import_dialog_delete_imported_check\"></label>\n\t\t\t\t\t<input type='checkbox' id=\"server_import_dialog_delete_imported_check\" name='delete_imported' />\n\t\t\t\t\t<p></p>\n\t\t\t\t</div>\n\t\t\t\t<div class='input-group compact-inverse'>\n\t\t\t\t\t<label for=\"server_import_dialog_symlink_check\"></label>\n\t\t\t\t\t<input type='checkbox' id=\"server_import_dialog_symlink_check\" name='import_via_symlink' />\n\t\t\t\t\t<p></p>\n\t\t\t\t</div>\n\t\t\t\t<div class='input-group compact-inverse'>\n\t\t\t\t\t<label for=\"server_import_dialog_skip_check\"></label>\n\t\t\t\t\t<input type='checkbox' id=\"server_import_dialog_skip_check\" name='skip_duplicates' />\n\t\t\t\t\t<p></p>\n\t\t\t\t</div>\n\t\t\t\t<div class='input-group compact-inverse'>\n\t\t\t\t\t<label for=\"server_import_dialog_resync_check\"></label>\n\t\t\t\t\t<input type='checkbox' id=\"server_import_dialog_resync_check\" name='resync_metadata' />\n\t\t\t\t\t<p></p>\n\t\t\t\t</div>\n\t\t\t</form>";
 
 		basicModal.show({
-			body: msg,
-			callback: importDialogSetupCB,
+			body: importFromServerDialogBody,
+			readyCB: initImportFromServerDialog,
 			buttons: {
 				action: {
 					title: lychee.locale["UPLOAD_IMPORT"],
-					fn: action
+					fn: processImportFromServerDialog
 				},
 				cancel: {
 					title: lychee.locale["CANCEL"],
@@ -11751,7 +12137,7 @@ upload.start = {
 			var runImport = function runImport() {
 				var successHandler = function successHandler() {
 					// Same code as in import.url()
-					basicModal.close();
+					upload.closeProgressReportDialog();
 					upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"]);
 					album.reload();
 				};
@@ -11764,33 +12150,34 @@ upload.start = {
      */
 				var errorHandler = function errorHandler(jqXHR, params, lycheeException) {
 					// Same code as in import.url()
-					var errorText = void 0;
-					var statusText = void 0;
-					var statusClass = void 0;
+					// Note, this is complete rubbish:
+					// Dropbox allows to import several photos at once, but
+					// here we assume that `files` has only a single entry.
+					// This seems to be a long-standing, open bug
+					/** @type {ProgressReportDialogRow} */
+					var row = upload._dom.progressRowsByPath.get(files[0].link);
 
 					switch (jqXHR.status) {
 						case 409:
-							statusText = lychee.locale["UPLOAD_SKIPPED"];
-							errorText = lycheeException ? lycheeException.message : lychee.locale["UPLOAD_IMPORT_WARN_ERR"];
-							statusClass = "warning";
+							row.status.textContent = lychee.locale["UPLOAD_SKIPPED"];
+							row.status.classList.add("warning");
+							row.notice.textContent = lycheeException ? lycheeException.message : lychee.locale["UPLOAD_IMPORT_WARN_ERR"];
 							break;
 						default:
-							statusText = lychee.locale["UPLOAD_FAILED"];
-							errorText = lycheeException ? lycheeException.message : lychee.locale["UPLOAD_IMPORT_WARN_ERR"];
-							statusClass = "error";
+							row.status.textContent = lychee.locale["UPLOAD_FAILED"];
+							row.status.classList.add("error");
+							row.notice.textContent = lycheeException ? lycheeException.message : lychee.locale["UPLOAD_IMPORT_WARN_ERR"];
 							break;
 					}
 
-					$(firstRowNoticeSelector).html(errorText).show();
-					$(firstRowStatusSelector).html(statusText).addClass(statusClass);
 					// Show close button
-					$(".basicModal #basicModal__action.hidden").show();
+					basicModal.showActionButton();
 					upload.notify(lychee.locale["UPLOAD_IMPORT_WARN_ERR"]);
 					album.reload();
 					return true;
 				};
 
-				$(firstRowStatusSelector).html(lychee.locale["UPLOAD_IMPORTING"]);
+				upload._dom.progressRowsByPath.get(files[0].link).status.textContent = lychee.locale["UPLOAD_IMPORTING"];
 
 				// TODO: Use a streamed response; see long comment in `import.url()` for the reasons
 				api.post("Import::url", {
@@ -11804,7 +12191,7 @@ upload.start = {
 			files.forEach(function (file) {
 				return file.name = file.link;
 			});
-			upload.show("Importing from Dropbox", files, runImport);
+			upload.showProgressReportDialog("Importing from Dropbox", files, runImport);
 		};
 
 		lychee.loadDropbox(function () {
@@ -11814,31 +12201,6 @@ upload.start = {
 				success: action
 			});
 		});
-	}
-};
-
-upload.check = function () {
-	var $delete = $(choiceDeleteSelector);
-	var $symlinks = $(choiceSymlinkSelector);
-
-	if ($delete.prop("checked")) {
-		$symlinks.prop("checked", false).prop("disabled", true);
-	} else {
-		$symlinks.prop("disabled", false);
-		if ($symlinks.prop("checked")) {
-			$delete.prop("checked", false).prop("disabled", true);
-		} else {
-			$delete.prop("disabled", false);
-		}
-	}
-
-	var $duplicates = $(choiceDuplicateSelector);
-	var $resync = $(choiceResyncSelector);
-
-	if ($duplicates.prop("checked")) {
-		$resync.prop("disabled", false);
-	} else {
-		$resync.prop("checked", false).prop("disabled", true);
 	}
 };
 
@@ -11852,6 +12214,10 @@ upload.uploadTrack = function (files) {
 	if (files.length <= 0 || albumID === null) return;
 
 	var runUpload = function runUpload() {
+		// Only a single track can be uploaded at once, hence the only
+		// file is at position 0.
+		var row = upload._dom.progressRowsByPath.get(files[0].name);
+
 		/**
    * A function to be called when a response has been received.
    *
@@ -11888,23 +12254,23 @@ upload.uploadTrack = function (files) {
 					break;
 			}
 
-			$(firstRowStatusSelector).html(statusText).addClass(statusClass);
+			row.status.textContent = statusText;
 
 			if (errorText !== "") {
-				$(firstRowNoticeSelector).html(errorText).show();
+				row.notice.textContent = errorText;
 
 				api.onError(this, { albumID: albumID }, lycheeException);
-				showCloseButton();
+				upload.showProgressReportCloseButton();
 				upload.notify(lychee.locale["UPLOAD_COMPLETE"], lychee.locale["UPLOAD_COMPLETE_FAILED"]);
 			} else {
-				basicModal.close();
+				upload.closeProgressReportDialog();
 				upload.notify(lychee.locale["UPLOAD_COMPLETE"]);
 			}
 
 			album.reload();
 		}; // finish
 
-		$(firstRowStatusSelector).html(lychee.locale["UPLOAD_UPLOADING"]);
+		row.status.textContent = lychee.locale["UPLOAD_UPLOADING"];
 
 		var formData = new FormData();
 		var xhr = new XMLHttpRequest();
@@ -11921,7 +12287,7 @@ upload.uploadTrack = function (files) {
 		xhr.send(formData);
 	}; // runUpload
 
-	upload.show(lychee.locale["UPLOAD_UPLOADING"], files, runUpload);
+	upload.showProgressReportDialog(lychee.locale["UPLOAD_UPLOADING"], files, runUpload);
 };
 
 var users = {
@@ -12837,7 +13203,7 @@ view.photo = {
 				// Image is still loading.  Display the thumb version in the
 				// background.
 				if (ret.thumb !== "") {
-					img.css("background-image", lychee.html(_templateObject70, ret.thumb));
+					img.css("background-image", lychee.html(_templateObject36, ret.thumb));
 				}
 
 				// Don't preload next/prev until the requested image is
@@ -12860,7 +13226,7 @@ view.photo = {
 			} else if (nextPhotoInAlbum.type.indexOf("video") > -1) {
 				thumbUrl = "img/play-icon.png";
 			}
-			$nextArrow.css("background-image", lychee.html(_templateObject71, thumbUrl));
+			$nextArrow.css("background-image", lychee.html(_templateObject37, thumbUrl));
 		}
 
 		if (prevPhotoInAlbum === null || lychee.viewMode === true) {
@@ -12873,7 +13239,7 @@ view.photo = {
 			} else if (prevPhotoInAlbum.type.indexOf("video") > -1) {
 				_thumbUrl = "img/play-icon.png";
 			}
-			$previousArrow.css("background-image", lychee.html(_templateObject71, _thumbUrl));
+			$previousArrow.css("background-image", lychee.html(_templateObject37, _thumbUrl));
 		}
 	},
 
@@ -13010,7 +13376,7 @@ view.settings = {
    * @returns {void}
    */
 		setLogin: function setLogin() {
-			var msg = lychee.html(_templateObject72, lychee.locale["PASSWORD_TITLE"], lychee.locale["PASSWORD_CURRENT"], lychee.locale["PASSWORD_TEXT"], lychee.locale["LOGIN_USERNAME"], lychee.locale["LOGIN_PASSWORD"], lychee.locale["LOGIN_PASSWORD_CONFIRM"], lychee.locale["PASSWORD_CHANGE"]);
+			var msg = lychee.html(_templateObject38, lychee.locale["PASSWORD_TITLE"], lychee.locale["PASSWORD_CURRENT"], lychee.locale["PASSWORD_TEXT"], lychee.locale["LOGIN_USERNAME"], lychee.locale["LOGIN_PASSWORD"], lychee.locale["LOGIN_PASSWORD_CONFIRM"], lychee.locale["PASSWORD_CHANGE"]);
 
 			$(".settings_view").append(msg);
 
@@ -13035,7 +13401,7 @@ view.settings = {
    * @returns {void}
    */
 		setSorting: function setSorting() {
-			var msg = lychee.html(_templateObject73, sprintf(lychee.locale["SORT_ALBUM_BY"], "<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_albums_sorting_column\" name=\"sorting_albums_column\">\n\t\t\t\t\t\t\t\t<option value='created_at'>" + lychee.locale["SORT_ALBUM_SELECT_1"] + "</option>\n\t\t\t\t\t\t\t\t<option value='title'>" + lychee.locale["SORT_ALBUM_SELECT_2"] + "</option>\n\t\t\t\t\t\t\t\t<option value='description'>" + lychee.locale["SORT_ALBUM_SELECT_3"] + "</option>\n\t\t\t\t\t\t\t\t<option value='is_public'>" + lychee.locale["SORT_ALBUM_SELECT_4"] + "</option>\n\t\t\t\t\t\t\t\t<option value='max_taken_at'>" + lychee.locale["SORT_ALBUM_SELECT_5"] + "</option>\n\t\t\t\t\t\t\t\t<option value='min_taken_at'>" + lychee.locale["SORT_ALBUM_SELECT_6"] + "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>", "<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_albums_sorting_order\" name=\"sorting_albums_order\">\n\t\t\t\t\t\t\t\t<option value='ASC'>" + lychee.locale["SORT_ASCENDING"] + "</option>\n\t\t\t\t\t\t\t\t<option value='DESC'>" + lychee.locale["SORT_DESCENDING"] + "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>"), sprintf(lychee.locale["SORT_PHOTO_BY"], "<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_photos_sorting_column\" name=\"sorting_photos_column\">\n\t\t\t\t\t\t\t\t<option value='created_at'>" + lychee.locale["SORT_PHOTO_SELECT_1"] + "</option>\n\t\t\t\t\t\t\t\t<option value='taken_at'>" + lychee.locale["SORT_PHOTO_SELECT_2"] + "</option>\n\t\t\t\t\t\t\t\t<option value='title'>" + lychee.locale["SORT_PHOTO_SELECT_3"] + "</option>\n\t\t\t\t\t\t\t\t<option value='description'>" + lychee.locale["SORT_PHOTO_SELECT_4"] + "</option>\n\t\t\t\t\t\t\t\t<option value='is_public'>" + lychee.locale["SORT_PHOTO_SELECT_5"] + "</option>\n\t\t\t\t\t\t\t\t<option value='is_starred'>" + lychee.locale["SORT_PHOTO_SELECT_6"] + "</option>\n\t\t\t\t\t\t\t\t<option value='type'>" + lychee.locale["SORT_PHOTO_SELECT_7"] + "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t  \t\t</span>", "<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_photos_sorting_order\" name=\"sorting_photos_order\">\n\t\t\t\t\t\t\t\t<option value='ASC'>" + lychee.locale["SORT_ASCENDING"] + "</option>\n\t\t\t\t\t\t\t\t<option value='DESC'>" + lychee.locale["SORT_DESCENDING"] + "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>"), lychee.locale["SORT_CHANGE"]);
+			var msg = lychee.html(_templateObject39, sprintf(lychee.locale["SORT_ALBUM_BY"], "<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_albums_sorting_column\" name=\"sorting_albums_column\">\n\t\t\t\t\t\t\t\t<option value='created_at'>" + lychee.locale["SORT_ALBUM_SELECT_1"] + "</option>\n\t\t\t\t\t\t\t\t<option value='title'>" + lychee.locale["SORT_ALBUM_SELECT_2"] + "</option>\n\t\t\t\t\t\t\t\t<option value='description'>" + lychee.locale["SORT_ALBUM_SELECT_3"] + "</option>\n\t\t\t\t\t\t\t\t<option value='is_public'>" + lychee.locale["SORT_ALBUM_SELECT_4"] + "</option>\n\t\t\t\t\t\t\t\t<option value='max_taken_at'>" + lychee.locale["SORT_ALBUM_SELECT_5"] + "</option>\n\t\t\t\t\t\t\t\t<option value='min_taken_at'>" + lychee.locale["SORT_ALBUM_SELECT_6"] + "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>", "<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_albums_sorting_order\" name=\"sorting_albums_order\">\n\t\t\t\t\t\t\t\t<option value='ASC'>" + lychee.locale["SORT_ASCENDING"] + "</option>\n\t\t\t\t\t\t\t\t<option value='DESC'>" + lychee.locale["SORT_DESCENDING"] + "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>"), sprintf(lychee.locale["SORT_PHOTO_BY"], "<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_photos_sorting_column\" name=\"sorting_photos_column\">\n\t\t\t\t\t\t\t\t<option value='created_at'>" + lychee.locale["SORT_PHOTO_SELECT_1"] + "</option>\n\t\t\t\t\t\t\t\t<option value='taken_at'>" + lychee.locale["SORT_PHOTO_SELECT_2"] + "</option>\n\t\t\t\t\t\t\t\t<option value='title'>" + lychee.locale["SORT_PHOTO_SELECT_3"] + "</option>\n\t\t\t\t\t\t\t\t<option value='description'>" + lychee.locale["SORT_PHOTO_SELECT_4"] + "</option>\n\t\t\t\t\t\t\t\t<option value='is_public'>" + lychee.locale["SORT_PHOTO_SELECT_5"] + "</option>\n\t\t\t\t\t\t\t\t<option value='is_starred'>" + lychee.locale["SORT_PHOTO_SELECT_6"] + "</option>\n\t\t\t\t\t\t\t\t<option value='type'>" + lychee.locale["SORT_PHOTO_SELECT_7"] + "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t  \t\t</span>", "<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_photos_sorting_order\" name=\"sorting_photos_order\">\n\t\t\t\t\t\t\t\t<option value='ASC'>" + lychee.locale["SORT_ASCENDING"] + "</option>\n\t\t\t\t\t\t\t\t<option value='DESC'>" + lychee.locale["SORT_DESCENDING"] + "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>"), lychee.locale["SORT_CHANGE"]);
 
 			$(".settings_view").append(msg);
 
@@ -13220,7 +13586,7 @@ view.settings = {
    * @returns {void}
    */
 		moreButton: function moreButton() {
-			var msg = lychee.html(_templateObject74, lychee.locale["MORE"]);
+			var msg = lychee.html(_templateObject40, lychee.locale["MORE"]);
 
 			$(".settings_view").append(msg);
 
@@ -13261,20 +13627,20 @@ view.full_settings = {
 			api.post("Settings::getAll", {},
 			/** @param {ConfigSetting[]} data */
 			function (data) {
-				var msg = lychee.html(_templateObject75, lychee.locale["SETTINGS_WARNING"]);
+				var msg = lychee.html(_templateObject41, lychee.locale["SETTINGS_WARNING"]);
 
 				var prev = "";
 				data.forEach(function (_config) {
 					if (_config.cat && prev !== _config.cat) {
-						msg += lychee.html(_templateObject76, _config.cat);
+						msg += lychee.html(_templateObject42, _config.cat);
 						prev = _config.cat;
 					}
 					// prevent 'null' string for empty values
 					var val = _config.value ? _config.value : "";
-					msg += lychee.html(_templateObject77, _config.key, _config.key, val);
+					msg += lychee.html(_templateObject43, _config.key, _config.key, val);
 				});
 
-				msg += lychee.html(_templateObject78, lychee.locale["SAVE_RISK"]);
+				msg += lychee.html(_templateObject44, lychee.locale["SAVE_RISK"]);
 
 				$(".settings_view").append(msg);
 
@@ -13457,7 +13823,7 @@ view.logs = {
 
 	/** @returns {void} */
 	clearContent: function clearContent() {
-		var html = lychee.html(_templateObject79, lychee.locale["CLEAN_LOGS"], lychee.locale["CLEAR"]);
+		var html = lychee.html(_templateObject45, lychee.locale["CLEAN_LOGS"], lychee.locale["CLEAR"]);
 		lychee.content.html(html);
 
 		$("#Clean_Noise").on("click", function () {
@@ -13567,7 +13933,7 @@ view.diagnostics = {
 			html += view.diagnostics.content.block("sys", "System Information", data.infos);
 			html += '<a id="Get_Size_Lychee" class="basicModal__button button_left">';
 			html += '<svg class="iconic"><use xlink:href="#reload"></use></svg>';
-			html += lychee.html(_templateObject28, lychee.locale["DIAGNOSTICS_GET_SIZE"]);
+			html += lychee.html(_templateObject15, lychee.locale["DIAGNOSTICS_GET_SIZE"]);
 			html += "</a>";
 			html += view.diagnostics.content.block("conf", "Config Information", data.configs);
 
@@ -14117,7 +14483,7 @@ var SmartAlbumID = Object.freeze({
  * @property {string}   swipe_tolerance_x       - actually a number
  * @property {string}   swipe_tolerance_y       - actually a number
  * @property {string}   upload_processing_limit - actually a number
- * @property {string}   version                 - actually a number
+ * @property {string}   version                 - a string of 6 digits without separating dots, i.e. version 4.6.3 is reported as `'040603'`
  */
 
 /**
