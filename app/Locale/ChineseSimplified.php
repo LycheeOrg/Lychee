@@ -94,7 +94,7 @@ final class ChineseSimplified implements Language
 			'KEEP_ALBUMS' => '保留相册',
 			'DELETE_ALBUMS_CONFIRMATION' => '是否确认删除全部 %d 选中的相册和其中的所有照片？操作后不可恢复！',
 
-			'DELETE_UNSORTED_CONFIRM' => '是否确认删除\'未分类\'的所有照片？<br>操作后不可恢复！',
+			'DELETE_UNSORTED_CONFIRM' => '是否确认删除\'未分类\'的所有照片？操作后不可恢复！',
 			'CLEAR_UNSORTED' => '清除未分类',
 			'KEEP_UNSORTED' => '保留未分类',
 
@@ -320,7 +320,7 @@ final class ChineseSimplified implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => '请在下方输入你的数据库连接信息：',
 			'DB_INFO_HOST' => '数据库主机（可选）',

@@ -95,7 +95,7 @@ final class Czech implements Language
 			'KEEP_ALBUMS' => 'Ponechat alba',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Opravdu smazat všechna vybraná %d alba a fotografie, které obsahují? Tento krok je nevratný!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Opravdu odstranit všechny \'Nesetříděné\' fotografie?<br> Tento krok je nevratný!',
+			'DELETE_UNSORTED_CONFIRM' => 'Opravdu odstranit všechny \'Nesetříděné\' fotografie? Tento krok je nevratný!',
 			'CLEAR_UNSORTED' => 'Odstranit Nesetříděné',
 			'KEEP_UNSORTED' => 'Ponechat Nesetříděné',
 
@@ -323,7 +323,7 @@ final class Czech implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Níže zadejte parametry připojení k databázi:',
 			'DB_INFO_HOST' => 'Hostitel (volitelný)',

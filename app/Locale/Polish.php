@@ -94,7 +94,7 @@ final class Polish implements Language
 			'KEEP_ALBUMS' => 'Zatrzymaj Albumy',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Czy na pewno usunąć %d zaznaczone albumy wraz z zawartością? Ta akcja jest nieodwracalna!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Czy na pewno usunąć wszystkie zdjęcia z \'Nieposortowane\'?<br>Ta operacja nie może zostać cofnięta!',
+			'DELETE_UNSORTED_CONFIRM' => 'Czy na pewno usunąć wszystkie zdjęcia z \'Nieposortowane\'? Ta operacja nie może zostać cofnięta!',
 			'CLEAR_UNSORTED' => 'Wyczyść Nieposortowane',
 			'KEEP_UNSORTED' => 'Zatrzymaj Nieposortowane',
 
@@ -319,7 +319,7 @@ final class Polish implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Uzupełnij dane niezbędne do połączenia z bazą danych:',
 			'DB_INFO_HOST' => 'Host (opcjonalnie)',

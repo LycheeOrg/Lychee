@@ -94,7 +94,7 @@ final class Dutch implements Language
 			'KEEP_ALBUMS' => 'Behoud Albums',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Weet je zeker dat je deze albums en alle foto\'s die ze %d bevatten wilt verwijderen? Deze actie kan niet ongedaan gemaakt worden!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Weet je zeker dat je alle foto\'s van \'Ongesoorteerd\' wilt verwijdren?<br>Deze actie kan niet ongedaan gemaakt worden!',
+			'DELETE_UNSORTED_CONFIRM' => 'Weet je zeker dat je alle foto\'s van \'Ongesoorteerd\' wilt verwijdren? Deze actie kan niet ongedaan gemaakt worden!',
 			'CLEAR_UNSORTED' => 'Wis Ongesoorteerd',
 			'KEEP_UNSORTED' => 'Behoud Ongesoorteerd',
 
@@ -319,7 +319,7 @@ final class Dutch implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Voer je database connectie gegevens hieronder in:',
 			'DB_INFO_HOST' => 'Database Host (optioneel)',

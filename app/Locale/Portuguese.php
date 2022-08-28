@@ -94,7 +94,7 @@ final class Portuguese implements Language
 			'KEEP_ALBUMS' => 'Manter Álbums',
 			'DELETE_ALBUMS_CONFIRMATION' => 'De certeza que quer eliminar todos %d os álbums e todas as fotografias neles contidas? Esta ação não pode ser desfeita!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'De certeza que quer eliminar todas as fotografias de \'Desordenadas\'?<br>Esta ação não pode ser desfeita!',
+			'DELETE_UNSORTED_CONFIRM' => 'De certeza que quer eliminar todas as fotografias de \'Desordenadas\'? Esta ação não pode ser desfeita!',
 			'CLEAR_UNSORTED' => 'Limpar Desordenadas',
 			'KEEP_UNSORTED' => 'Manter Desordenadas',
 
@@ -319,7 +319,7 @@ final class Portuguese implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Inserir os detalhes da conecção à base de dados abaixo:',
 			'DB_INFO_HOST' => 'Host da Base de Dados (opcional)',

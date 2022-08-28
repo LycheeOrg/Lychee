@@ -94,7 +94,7 @@ final class English implements Language
 			'KEEP_ALBUMS' => 'Keep Albums',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Are you sure you want to delete all %d selected albums and all of the photos they contain? This action can\'t be undone!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Are you sure you want to delete all photos from \'Unsorted\'?<br>This action can\'t be undone!',
+			'DELETE_UNSORTED_CONFIRM' => 'Are you sure you want to delete all photos from \'Unsorted\'? This action can\'t be undone!',
 			'CLEAR_UNSORTED' => 'Clear Unsorted',
 			'KEEP_UNSORTED' => 'Keep Unsorted',
 
@@ -319,7 +319,7 @@ final class English implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Enter your database connection details below:',
 			'DB_INFO_HOST' => 'Database Host (optional)',

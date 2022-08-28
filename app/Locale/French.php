@@ -97,7 +97,7 @@ final class French implements Language
 			'KEEP_ALBUMS' => 'Garder les albums',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Voulez-vous vraiment supprimer les %d albums selectionnés et toutes leurs photos ? Cette action est irréversible !',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Voulez-vous vraiment supprimer toutes les photos de «Non-triés» ?<br>Cette action est irréversible !',
+			'DELETE_UNSORTED_CONFIRM' => 'Voulez-vous vraiment supprimer toutes les photos de «Non-triés» ? Cette action est irréversible !',
 			'CLEAR_UNSORTED' => 'Vider Non-triés',
 			'KEEP_UNSORTED' => 'Garder Non-triés',
 
@@ -319,7 +319,7 @@ final class French implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Entrez vos identifiants de connexion à la base de données ci-dessous :',
 			'DB_INFO_HOST' => 'Hôte de la base de donnees (facultatif)',

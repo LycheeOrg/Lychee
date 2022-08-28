@@ -96,7 +96,7 @@ final class German implements Language
 			'KEEP_ALBUMS' => 'Alben behalten',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Sind Sie sicher, dass Sie alle %d ausgewählten Alben und die enthaltenen Fotos löschen wollen? Diese Aktion kann nicht rückgängig gemacht werden!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Sind Sie sicher, dass Sie alle Fotos aus „Unsortiert“ löschen wollen?<br>Diese Aktion kann nicht rückgängig gemacht werden!',
+			'DELETE_UNSORTED_CONFIRM' => 'Sind Sie sicher, dass Sie alle Fotos aus „Unsortiert“ löschen wollen? Diese Aktion kann nicht rückgängig gemacht werden!',
 			'CLEAR_UNSORTED' => 'Unsortierte löschen',
 			'KEEP_UNSORTED' => 'Unsortierte behalten',
 
@@ -324,7 +324,7 @@ final class German implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'E-Mails für neue Fotos senden',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Geben Sie Ihre E-Mail-Adresse unten ein, um Benachrichtigungen zu aktivieren.<br />Um Benachrichtigungen zu deaktivieren, entfernen Sie die E-Mail-Adresse unten einfach.',
+			'USER_EMAIL_INSTRUCTION' => 'Geben Sie Ihre E-Mail-Adresse unten ein, um Benachrichtigungen zu aktivieren. Um Benachrichtigungen zu deaktivieren, entfernen Sie die E-Mail-Adresse unten einfach.',
 
 			'DB_INFO_TITLE' => 'Geben Sie die Informationen zu Ihrer Datenbankverbindung an:',
 			'DB_INFO_HOST' => 'Name des Datenbankservers (optional)',

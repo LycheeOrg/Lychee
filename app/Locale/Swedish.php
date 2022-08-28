@@ -94,7 +94,7 @@ final class Swedish implements Language
 			'KEEP_ALBUMS' => 'Behåll album',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Är du säker på att du vill radera alla %d valda album och alla fotografier de innehåller? Raderingen går inte att ångra!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Är du säker på att du vill radera alla fotografier från \'Osorterat\'?<br>Det här går inte att ångra!',
+			'DELETE_UNSORTED_CONFIRM' => 'Är du säker på att du vill radera alla fotografier från \'Osorterat\'? Det här går inte att ångra!',
 			'CLEAR_UNSORTED' => 'Rensa osorterade',
 			'KEEP_UNSORTED' => 'Behåll osorterade',
 
@@ -319,7 +319,7 @@ final class Swedish implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Ange dina uppgifter för databasanslutninge nedan:',
 			'DB_INFO_HOST' => 'Databasens adress (valfritt)',

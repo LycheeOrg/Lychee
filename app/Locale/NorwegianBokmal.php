@@ -94,7 +94,7 @@ final class NorwegianBokmal implements Language
 			'KEEP_ALBUMS' => 'Behold Album',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Ønsker du virkelig å fjerne %d valgte album og alle bildene i disse? Denne handlingen kan ikke angres!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Ønsker du virkelig å fjerne alle bilder fra \'Usorterte\'?<br>Denne handlingen kan ikke angres!',
+			'DELETE_UNSORTED_CONFIRM' => 'Ønsker du virkelig å fjerne alle bilder fra \'Usorterte\'? Denne handlingen kan ikke angres!',
 			'CLEAR_UNSORTED' => 'Fjern Usorterte',
 			'KEEP_UNSORTED' => 'Behold Usorterte',
 
@@ -319,7 +319,7 @@ final class NorwegianBokmal implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Fyll inn detaljer om databaseforbindelsen under:',
 			'DB_INFO_HOST' => 'Database Adresse (valgfritt)',

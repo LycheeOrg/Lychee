@@ -94,7 +94,7 @@ final class Italian implements Language
 			'KEEP_ALBUMS' => 'Mantieni gli Album',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Sei sicuro di voler eliminare tutti %d gli album selezionati e le immagini contenute in essi? Questa azione non può essere annullata successivamente!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Sei sicuro di voler eliminare tutte le immagini da \'Non Catalogate\'?<br> Questa azione non può essere annullata successivamente!',
+			'DELETE_UNSORTED_CONFIRM' => 'Sei sicuro di voler eliminare tutte le immagini da \'Non Catalogate\'? Questa azione non può essere annullata successivamente!',
 			'CLEAR_UNSORTED' => 'Rimuovi Immagini Non Catalogate',
 			'KEEP_UNSORTED' => 'Mantieni Immagini Non Catalogate',
 
@@ -321,7 +321,7 @@ final class Italian implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Inserisci i dati per la connessione al database di seguito:',
 			'DB_INFO_HOST' => 'Host Database (opzionale)',

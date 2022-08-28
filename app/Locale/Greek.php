@@ -94,7 +94,7 @@ final class Greek implements Language
 			'KEEP_ALBUMS' => 'Διατήρηση Λευκωμάτων',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Είστε σίγουρη/ος πως θέλετε να διαγράψετε όλα %d τα επιλεγμένα λευκώματα και όλες τις φωτογραφίες που περιέχουν; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Είστε σίγουρη/ος πως θέλετε να διαγράψετε όλες τις \'Μη Ταξινομημένες\' φωτογραφίες;<br>Αυτή η ενέργεια δεν μπορεί να αναιρεθεί!',
+			'DELETE_UNSORTED_CONFIRM' => 'Είστε σίγουρη/ος πως θέλετε να διαγράψετε όλες τις \'Μη Ταξινομημένες\' φωτογραφίες; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί!',
 			'CLEAR_UNSORTED' => 'Καθαρισμός των μη ταξινομημένων φωτογραφιών',
 			'KEEP_UNSORTED' => 'Διατήρηση των Μη Ταξινομημένων',
 
@@ -319,7 +319,7 @@ final class Greek implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Εισάγετε τις ρυθμίσεις της βάσης δεδομένων παρακάτω:',
 			'DB_INFO_HOST' => 'Εξυπηρετητής Βάσης Δεδομένων (προαιρετικό)',

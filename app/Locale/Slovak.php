@@ -95,7 +95,7 @@ final class Slovak implements Language
 			'KEEP_ALBUMS' => 'Albumy ponechať',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Ste si istý, že chcete všetky %d vybrané albumy a všetky obrázky v nich zmazať? Táto akcia je nevratná!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Ste si istý, že chcete všetky obrázky z \'Netriedené\' zmazať?<br>Táto akcia je nevratná!',
+			'DELETE_UNSORTED_CONFIRM' => 'Ste si istý, že chcete všetky obrázky z \'Netriedené\' zmazať? Táto akcia je nevratná!',
 			'CLEAR_UNSORTED' => 'Netriedené zmazať',
 			'KEEP_UNSORTED' => 'Netriedené ponechať',
 
@@ -323,7 +323,7 @@ final class Slovak implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Zadajte prístupové údaje k databáze:',
 			'DB_INFO_HOST' => 'Názov databázového servera (voliteľné)',

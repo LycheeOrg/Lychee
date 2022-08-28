@@ -94,7 +94,7 @@ final class Spanish implements Language
 			'KEEP_ALBUMS' => 'Mantener Álbumes',
 			'DELETE_ALBUMS_CONFIRMATION' => '¿Está seguro de que desea eliminar todo %d Ha seleccionado álbumes y todas las fotos que contienen? ¡Esta acción no se puede deshacer!',
 
-			'DELETE_UNSORTED_CONFIRM' => '¿Estás seguro de que deseas eliminar todas las fotos de \'Sin clasificar\'?<br>¡Esta acción no se puede deshacer!',
+			'DELETE_UNSORTED_CONFIRM' => '¿Estás seguro de que deseas eliminar todas las fotos de \'Sin clasificar\'? ¡Esta acción no se puede deshacer!',
 			'CLEAR_UNSORTED' => 'Borrar \'Sin Clasificar\'',
 			'KEEP_UNSORTED' => 'Mantener \'Sin Clasificar\'',
 
@@ -319,7 +319,7 @@ final class Spanish implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Ingrese los detalles de conexión de su base de datos a continuación:',
 			'DB_INFO_HOST' => 'Host de base de datos (opcional)',
