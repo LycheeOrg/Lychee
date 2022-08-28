@@ -18,7 +18,7 @@ d.init=function(){var a=d(u),b;for(b in a)"_"!==b.charAt(0)&&(d[b]=function(b){r
 
 (function(a){var c={},d=a.prototype.stopCallback;a.prototype.stopCallback=function(e,b,a,f){return this.paused?!0:c[a]||c[f]?!1:d.call(this,e,b,a)};a.prototype.bindGlobal=function(a,b,d){this.bind(a,b,d);if(a instanceof Array)for(b=0;b<a.length;b++)c[a[b]]=!0;else c[a]=!0};a.init()})(Mousetrap);
 
-!function(n){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=n();else if("function"==typeof define&&define.amd)define([],n);else{var t;t="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this,t.basicModal=n()}}(function(){return function n(t,e,o){function l(c,s){if(!e[c]){if(!t[c]){var i="function"==typeof require&&require;if(!s&&i)return i(c,!0);if(a)return a(c,!0);var r=new Error("Cannot find module '"+c+"'");throw r.code="MODULE_NOT_FOUND",r}var u=e[c]={exports:{}};t[c][0].call(u.exports,function(n){var e=t[c][1][n];return l(e||n)},u,u.exports,n,t,e,o)}return e[c].exports}for(var a="function"==typeof require&&require,c=0;c<o.length;c++)l(o[c]);return l}({1:[function(n,t,e){"use strict";Object.defineProperty(e,"__esModule",{value:!0});var o=null,l=(e.THEME={small:"basicModal__small",xclose:"basicModal__xclose"},function(){var n=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"";return!0===(arguments.length>1&&void 0!==arguments[1]&&arguments[1])?document.querySelectorAll(".basicModal "+n):document.querySelector(".basicModal "+n)}),a=function(n,t){return null!=n&&(n.constructor===Object?Array.prototype.forEach.call(Object.keys(n),function(e){return t(n[e],e,n)}):Array.prototype.forEach.call(n,function(e,o){return t(e,o,n)}))},c=function(n){return null==n||0===Object.keys(n).length?(console.error("Missing or empty modal configuration object"),!1):(null==n.body&&(n.body=""),null==n.class&&(n.class=""),!1!==n.closable&&(n.closable=!0),null==n.buttons?(console.error("basicModal requires at least one button"),!1):null!=n.buttons.action&&(null==n.buttons.action.class&&(n.buttons.action.class=""),null==n.buttons.action.title&&(n.buttons.action.title="OK"),null==n.buttons.action.fn)?(console.error("Missing fn for action-button"),!1):null==n.buttons.cancel||(null==n.buttons.cancel.class&&(n.buttons.cancel.class=""),null==n.buttons.cancel.title&&(n.buttons.cancel.title="Cancel"),null!=n.buttons.cancel.fn)||(console.error("Missing fn for cancel-button"),!1))},s=function(n){var t="";return t+="\n\t        <div class='basicModalContainer basicModalContainer--fadeIn' data-closable='"+n.closable+"'>\n\t            <div class='basicModal basicModal--fadeIn "+n.class+"' role=\"dialog\">\n\t                <div class='basicModal__content'>\n\t                    "+n.body+"\n\t                </div>\n\t                <div class='basicModal__buttons'>\n\t        ",null!=n.buttons.cancel&&(-1===n.buttons.cancel.class.indexOf("basicModal__xclose")?t+="<a id='basicModal__cancel' class='basicModal__button "+n.buttons.cancel.class+"'>"+n.buttons.cancel.title+"</a>":t+="<div id='basicModal__cancel' class='basicModal__button "+n.buttons.cancel.class+'\' aria-label=\'close\'><svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M405 136.798l-29.798-29.798-119.202 119.202-119.202-119.202-29.798 29.798 119.202 119.202-119.202 119.202 29.798 29.798 119.202-119.202 119.202 119.202 29.798-29.798-119.202-119.202z"/></svg></div>'),null!=n.buttons.action&&(t+="<a id='basicModal__action' class='basicModal__button "+n.buttons.action.class+"'>"+n.buttons.action.title+"</a>"),t+="\n\t                </div>\n\t            </div>\n\t        </div>\n\t        "},i=e.getValues=function(){var n={},t=l("input[name]",!0),e=l("select[name]",!0);return a(t,function(t){var e=t.getAttribute("name"),o=t.value;n[e]=o}),a(e,function(t){var e=t.getAttribute("name"),o=t.options[t.selectedIndex].value;n[e]=o}),0===Object.keys(n).length?null:n},r=function(n){return null!=n.buttons.cancel&&(l("#basicModal__cancel").onclick=function(){if(!0===this.classList.contains("basicModal__button--active"))return!1;this.classList.add("basicModal__button--active"),n.buttons.cancel.fn()}),null!=n.buttons.action&&(l("#basicModal__action").onclick=function(){if(!0===this.classList.contains("basicModal__button--active"))return!1;this.classList.add("basicModal__button--active"),n.buttons.action.fn(i())}),a(l("input",!0),function(n){n.oninput=n.onblur=function(){this.classList.remove("error")}}),a(l("select",!0),function(n){n.onchange=n.onblur=function(){this.classList.remove("error")}}),!0},u=(e.show=function n(t){if(!1===c(t))return!1;if(null!=l())return b(!0),setTimeout(function(){return n(t)},301),!1;o=document.activeElement;var e=s(t);document.body.insertAdjacentHTML("beforeend",e),r(t);var a=l("input");null!=a&&a.select();var i=l("select");return null==a&&null!=i&&i.focus(),null!=t.callback&&t.callback(t),!0},e.error=function(n){d();var t=l("input[name='"+n+"']")||l("select[name='"+n+"']");if(null==t)return!1;t.classList.add("error"),"function"==typeof t.select?t.select():t.focus(),l().classList.remove("basicModal--fadeIn","basicModal--shake"),setTimeout(function(){return l().classList.add("basicModal--shake")},1)},e.visible=function(){return null!=l()}),d=(e.action=function(){var n=l("#basicModal__action");return null!=n&&(n.click(),!0)},e.cancel=function(){var n=l("#basicModal__cancel");return null!=n&&(n.click(),!0)},e.reset=function(){var n=l(".basicModal__button",!0);a(n,function(n){return n.classList.remove("basicModal__button--active")});var t=l("input",!0);a(t,function(n){return n.classList.remove("error")});var e=l("select",!0);return a(e,function(n){return n.classList.remove("error")}),!0}),b=e.close=function(){var n=arguments.length>0&&void 0!==arguments[0]&&arguments[0];if(!1===u())return!1;var t=l().parentElement;return("false"!==t.getAttribute("data-closable")||!1!==n)&&(t.classList.remove("basicModalContainer--fadeIn"),t.classList.add("basicModalContainer--fadeOut"),setTimeout(function(){return null!=t&&(null!=t.parentElement&&void t.parentElement.removeChild(t))},300),null!=o&&(o.focus(),o=null),!0)}},{}]},{},[1])(1)});
+!function(t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define([],t):("undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this).basicModal=t()}(function(){return function a(o,l,c){function i(e,t){if(!l[e]){if(!o[e]){var n="function"==typeof require&&require;if(!t&&n)return n(e,!0);if(s)return s(e,!0);throw(t=new Error("Cannot find module '"+e+"'")).code="MODULE_NOT_FOUND",t}n=l[e]={exports:{}},o[e][0].call(n.exports,function(t){return i(o[e][1][t]||t)},n,n.exports,a,o,l,c)}return l[e].exports}for(var s="function"==typeof require&&require,t=0;t<c.length;t++)i(c[t]);return i}({1:[function(t,e,n){"use strict";function E(t,e){return function(t){if(Array.isArray(t))return t}(t)||function(t,e){var n=null==t?null:"undefined"!=typeof Symbol&&t[Symbol.iterator]||t["@@iterator"];if(null!=n){var a,o,l=[],c=!0,i=!1;try{for(n=n.call(t);!(c=(a=n.next()).done)&&(l.push(a.value),!e||l.length!==e);c=!0);}catch(t){i=!0,o=t}finally{try{c||null==n.return||n.return()}finally{if(i)throw o}}return l}}(t,e)||a(t,e)||function(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function p(t){return function(t){if(Array.isArray(t))return o(t)}(t)||function(t){if("undefined"!=typeof Symbol&&null!=t[Symbol.iterator]||null!=t["@@iterator"])return Array.from(t)}(t)||a(t)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function a(t,e){if(t){if("string"==typeof t)return o(t,e);var n=Object.prototype.toString.call(t).slice(8,-1);return"Map"===(n="Object"===n&&t.constructor?t.constructor.name:n)||"Set"===n?Array.from(t):"Arguments"===n||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)?o(t,e):void 0}}function o(t,e){(null==e||e>t.length)&&(e=t.length);for(var n=0,a=new Array(e);n<e;n++)a[n]=t[n];return a}Object.defineProperty(n,"__esModule",{value:!0}),n.ModalDialogException=h,n.show=n.reset=n.isVisible=n.getValues=n.focusError=n.close=n.cancel=n.action=n.THEME=void 0;var v={lastFocus:null,container:null,dialog:null,cancelButton:null,actionButton:null,inputElements:null,selectElements:null,textAreaElements:null,namedFormElements:null};function h(){var t=0<arguments.length&&void 0!==arguments[0]?arguments[0]:null;this.message=null!=t?t:"Unknown exception",this.name="ModalDialogException"}n.THEME={small:"basicModal__small",xclose:"basicModal__xclose"};var g=function(){var e={};return v.inputElements.forEach(function(t){if(t.name)switch(t.type){case"checkbox":case"radio":e[t.name]=t.checked;break;case"number":case"range":e[t.name]=parseInt(t.value);break;case"file":e[t.name]=t.files;break;default:e[t.name]=t.value}}),v.selectElements.forEach(function(t){t.name&&(e[t.name]=-1!==t.selectedIndex?t.options[t.selectedIndex].value:null)}),v.textAreaElements.forEach(function(t){t.name&&(e[t.name]=t.value)}),e};function y(t){(t.target instanceof HTMLInputElement||t.target instanceof HTMLSelectElement||t.target instanceof HTMLTextAreaElement)&&t.target.classList.remove("error")}n.getValues=g;n.show=function t(e){var n=e;if(!n||0===Object.keys(n).length)throw new h("Missing or empty modal configuration object");if(n.body||(n.body=""),n.classList||(n.classList=[]),!1!==n.closable&&(n.closable=!0),!n.buttons)throw new h("basicModal requires at least one button");if(n.buttons.action&&(n.buttons.action.classList||(n.buttons.action.classList=[]),n.buttons.action.attributes||(n.buttons.action.attributes={}),n.buttons.action.title||(n.buttons.action.title="OK"),"function"!=typeof n.buttons.action.fn))throw new h("Missing callback function for action button");if(n.buttons.cancel&&(n.buttons.cancel.classList||(n.buttons.cancel.classList=[]),n.buttons.cancel.attributes||(n.buttons.cancel.attributes={}),n.buttons.cancel.title||(n.buttons.cancel.title="Cancel"),"function"!=typeof n.buttons.cancel.fn))throw new h("Missing callback function for cancel button");if(L())return M(!0),void setTimeout(function(){return t(e)},301);v.lastFocus=document.activeElement;n=e;v.container=document.createElement("div"),v.container.classList.add("basicModalContainer","basicModalContainer--fadeIn"),v.container.dataset.closable=n.closable?"true":"false",v.dialog=document.createElement("div"),v.dialog.classList.add("basicModal","basicModal--fadeIn"),(l=v.dialog.classList).add.apply(l,p(n.classList)),v.dialog.setAttribute("role","dialog"),v.container.appendChild(v.dialog);var a,o,l=document.createElement("div"),c=(l.classList.add("basicModal__content"),l.innerHTML=n.body,v.dialog.appendChild(l),document.createElement("div"));if(c.classList.add("basicModal__buttons"),v.dialog.appendChild(c),v.cancelButton=null,n.buttons.cancel){n.buttons.cancel.classList.includes("basicModal__xclose")?(v.cancelButton=document.createElement("div"),v.cancelButton.setAttribute("aria-label","close"),v.cancelButton.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M405 136.798l-29.798-29.798-119.202 119.202-119.202-119.202-29.798 29.798 119.202 119.202-119.202 119.202 29.798 29.798 119.202-119.202 119.202 119.202 29.798-29.798-119.202-119.202z"/></svg>'):(v.cancelButton=document.createElement("a"),v.cancelButton.textContent=n.buttons.cancel.title),v.cancelButton.id="basicModal__cancel",v.cancelButton.classList.add("basicModal__button"),(a=v.cancelButton.classList).add.apply(a,p(n.buttons.cancel.classList));for(var i=0,s=Object.entries(n.buttons.cancel.attributes);i<s.length;i++){var r=E(s[i],2),u=r[0],r=r[1];v.cancelButton.setAttribute(u,r)}c.appendChild(v.cancelButton)}if(v.actionButton=null,n.buttons.action){v.actionButton=document.createElement("a"),v.actionButton.textContent=n.buttons.action.title,v.actionButton.id="basicModal__action",v.actionButton.classList.add("basicModal__button");for(var d=0,f=Object.entries(n.buttons.action.attributes);d<f.length;d++){var m=E(f[d],2),b=m[0],m=m[1];v.actionButton.setAttribute(b,m)}c.appendChild(v.actionButton)}document.body.appendChild(v.container),v.inputElements=l.querySelectorAll("input"),v.selectElements=l.querySelectorAll("select"),v.textAreaElements=l.querySelectorAll("textarea"),v.namedFormElements={},v.inputElements.forEach(function(t){t.name&&(v.namedFormElements[t.name]=t)}),v.selectElements.forEach(function(t){t.name&&(v.namedFormElements[t.name]=t)}),v.textAreaElements.forEach(function(t){t.name&&(v.namedFormElements[t.name]=t)}),(o=e).buttons.cancel&&v.cancelButton&&v.cancelButton.addEventListener("click",function(){this.classList.contains("basicModal__button--active")||(this.classList.add("basicModal__button--active"),o.buttons.cancel.fn(g()))}),o.buttons.action&&v.actionButton&&v.actionButton.addEventListener("click",function(){this.classList.contains("basicModal__button--active")||(this.classList.add("basicModal__button--active"),o.buttons.action.fn(g()))}),v.dialog.addEventListener("input",y),v.dialog.addEventListener("blur",y),v.dialog.addEventListener("change",y),0!==v.inputElements.length?v.inputElements.item(0).select():0!==v.textAreaElements.length?v.textAreaElements.item(0).select():0!==v.selectElements.length?v.selectElements.item(0).focus():v.actionButton?v.actionButton.focus():v.cancelButton&&v.cancelButton.focus(),e.readyCB&&e.readyCB(v.namedFormElements,v.dialog)};n.focusError=function(t){L()&&(l(),(t=v.namedFormElements[t]||null)&&(t.classList.add("error"),t.focus(),(t instanceof HTMLInputElement||t instanceof HTMLTextAreaElement)&&t.select(),v.dialog.classList.remove("basicModal--fadeIn","basicModal--shake"),setTimeout(function(){return v.dialog.classList.add("basicModal--shake")},1)))};var L=function(){return null!==v.container},l=(n.isVisible=L,n.action=function(){return!!v.actionButton&&(v.actionButton.click(),!0)},n.cancel=function(){return!!v.cancelButton&&(v.cancelButton.click(),!0)},function(){L()&&(v.actionButton&&v.actionButton.classList.remove("basicModal__button--active"),v.cancelButton&&v.cancelButton.classList.remove("basicModal__button--active"),v.inputElements.forEach(function(t){return t.classList.remove("error")}),v.textAreaElements.forEach(function(t){return t.classList.remove("error")}),v.selectElements.forEach(function(t){return t.classList.remove("error")}))}),M=(n.reset=l,function(){var t=0<arguments.length&&void 0!==arguments[0]&&arguments[0];L()&&("false"!==v.container.dataset.closable||t)&&(v.container.classList.remove("basicModalContainer--fadeIn"),v.container.classList.add("basicModalContainer--fadeOut"),setTimeout(function(){v.container.remove(),v.container=null,v.dialog=null,v.actionButton=null,v.cancelButton=null,v.inputElements=null,v.selectElements=null,v.textAreaElements=null},300),null!==v.lastFocus&&(v.lastFocus.focus(),v.lastFocus=null))});n.close=M},{}]},{},[1])(1)});
 !function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t():"function"==typeof define&&define.amd?define([],t):"object"==typeof exports?exports.scrollLock=t():e.scrollLock=t()}(this,function(){return function(l){var r={};function o(e){if(r[e])return r[e].exports;var t=r[e]={i:e,l:!1,exports:{}};return l[e].call(t.exports,t,t.exports,o),t.l=!0,t.exports}return o.m=l,o.c=r,o.d=function(e,t,l){o.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:l})},o.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},o.t=function(t,e){if(1&e&&(t=o(t)),8&e)return t;if(4&e&&"object"==typeof t&&t&&t.__esModule)return t;var l=Object.create(null);if(o.r(l),Object.defineProperty(l,"default",{enumerable:!0,value:t}),2&e&&"string"!=typeof t)for(var r in t)o.d(l,r,function(e){return t[e]}.bind(null,r));return l},o.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return o.d(t,"a",t),t},o.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},o.p="",o(o.s=0)}([function(e,t,l){"use strict";l.r(t);var r=function(e){return Array.isArray(e)?e:[e]},a=function(e){return e instanceof Node},o=function(e,t){if(e&&t){e=e instanceof NodeList?e:[e];for(var l=0;l<e.length&&!0!==t(e[l],l,e.length);l++);}},n=function(e){return console.error("[scroll-lock] ".concat(e))},b=function(e){if(Array.isArray(e))return e.join(", ")},c=function(e){var t=[];return o(e,function(e){return t.push(e)}),t},h=function(e,t){var l=!(2<arguments.length&&void 0!==arguments[2])||arguments[2],r=3<arguments.length&&void 0!==arguments[3]?arguments[3]:document;if(l&&-1!==c(r.querySelectorAll(t)).indexOf(e))return e;for(;(e=e.parentElement)&&-1===c(r.querySelectorAll(t)).indexOf(e););return e},v=function(e,t){var l=2<arguments.length&&void 0!==arguments[2]?arguments[2]:document;return-1!==c(l.querySelectorAll(t)).indexOf(e)},i=function(e){if(e)return"hidden"===getComputedStyle(e).overflow},m=function(e){if(e)return!!i(e)||e.scrollTop<=0},S=function(e){if(e){if(i(e))return!0;var t=e.scrollTop;return e.scrollHeight<=t+e.offsetHeight}},y=function(e){if(e)return!!i(e)||e.scrollLeft<=0},k=function(e){if(e){if(i(e))return!0;var t=e.scrollLeft;return e.scrollWidth<=t+e.offsetWidth}};l.d(t,"disablePageScroll",function(){return d}),l.d(t,"enablePageScroll",function(){return s}),l.d(t,"getScrollState",function(){return f}),l.d(t,"clearQueueScrollLocks",function(){return p}),l.d(t,"getTargetScrollBarWidth",function(){return g}),l.d(t,"getCurrentTargetScrollBarWidth",function(){return A}),l.d(t,"getPageScrollBarWidth",function(){return G}),l.d(t,"getCurrentPageScrollBarWidth",function(){return T}),l.d(t,"addScrollableTarget",function(){return L}),l.d(t,"removeScrollableTarget",function(){return W}),l.d(t,"addScrollableSelector",function(){return x}),l.d(t,"removeScrollableSelector",function(){return F}),l.d(t,"addLockableTarget",function(){return Y}),l.d(t,"addLockableSelector",function(){return E}),l.d(t,"setFillGapMethod",function(){return O}),l.d(t,"addFillGapTarget",function(){return P}),l.d(t,"removeFillGapTarget",function(){return j}),l.d(t,"addFillGapSelector",function(){return q}),l.d(t,"removeFillGapSelector",function(){return M}),l.d(t,"refillGaps",function(){return N});var u=["padding","margin","width","max-width","none"],w={scroll:!0,queue:0,scrollableSelectors:["[data-scroll-lock-scrollable]"],lockableSelectors:["body","[data-scroll-lock-lockable]"],fillGapSelectors:["body","[data-scroll-lock-fill-gap]","[data-scroll-lock-lockable]"],fillGapMethod:u[0],startTouchY:0,startTouchX:0},d=function(e){w.queue<=0&&(w.scroll=!1,B(),X()),L(e),w.queue++},s=function(e){0<w.queue&&w.queue--,w.queue<=0&&(w.scroll=!0,C(),Q()),W(e)},f=function(){return w.scroll},p=function(){w.queue=0},g=function(e){var t=1<arguments.length&&void 0!==arguments[1]&&arguments[1];if(a(e)){var l=e.style.overflowY;t?f()||(e.style.overflowY=e.getAttribute("data-scroll-lock-saved-overflow-y-property")):e.style.overflowY="scroll";var r=A(e);return e.style.overflowY=l,r}return 0},A=function(e){if(a(e)){if(e===document.body){var t=document.documentElement.clientWidth;return window.innerWidth-t}var l=e.style.borderLeftWidth,r=e.style.borderRightWidth;e.style.borderLeftWidth="0px",e.style.borderRightWidth="0px";var o=e.offsetWidth-e.clientWidth;return e.style.borderLeftWidth=l,e.style.borderRightWidth=r,o}return 0},G=function(){var e=0<arguments.length&&void 0!==arguments[0]&&arguments[0];return g(document.body,e)},T=function(){return A(document.body)},L=function(e){e&&r(e).map(function(e){o(e,function(e){a(e)?e.setAttribute("data-scroll-lock-scrollable",""):n('"'.concat(e,'" is not a Element.'))})})},W=function(e){e&&r(e).map(function(e){o(e,function(e){a(e)?e.removeAttribute("data-scroll-lock-scrollable"):n('"'.concat(e,'" is not a Element.'))})})},x=function(e){e&&r(e).map(function(e){w.scrollableSelectors.push(e)})},F=function(e){e&&r(e).map(function(t){w.scrollableSelectors=w.scrollableSelectors.filter(function(e){return e!==t})})},Y=function(e){e&&(r(e).map(function(e){o(e,function(e){a(e)?e.setAttribute("data-scroll-lock-lockable",""):n('"'.concat(e,'" is not a Element.'))})}),f()||B())},E=function(e){e&&(r(e).map(function(e){w.lockableSelectors.push(e)}),f()||B(),q(e))},O=function(e){if(e)if(-1!==u.indexOf(e))w.fillGapMethod=e,N();else{var t=u.join(", ");n('"'.concat(e,'" method is not available!\nAvailable fill gap methods: ').concat(t,"."))}},P=function(e){e&&r(e).map(function(e){o(e,function(e){a(e)?(e.setAttribute("data-scroll-lock-fill-gap",""),w.scroll||H(e)):n('"'.concat(e,'" is not a Element.'))})})},j=function(e){e&&r(e).map(function(e){o(e,function(e){a(e)?(e.removeAttribute("data-scroll-lock-fill-gap"),w.scroll||I(e)):n('"'.concat(e,'" is not a Element.'))})})},q=function(e){e&&r(e).map(function(e){-1===w.fillGapSelectors.indexOf(e)&&(w.fillGapSelectors.push(e),w.scroll||D(e))})},M=function(e){e&&r(e).map(function(t){w.fillGapSelectors=w.fillGapSelectors.filter(function(e){return e!==t}),w.scroll||z(t)})},N=function(){w.scroll||X()},B=function(){var e=b(w.lockableSelectors);K(e)},C=function(){var e=b(w.lockableSelectors);R(e)},K=function(e){var t=document.querySelectorAll(e);o(t,function(e){U(e)})},R=function(e){var t=document.querySelectorAll(e);o(t,function(e){_(e)})},U=function(e){if(a(e)&&"true"!==e.getAttribute("data-scroll-lock-locked")){var t=window.getComputedStyle(e);e.setAttribute("data-scroll-lock-saved-overflow-y-property",t.overflowY),e.setAttribute("data-scroll-lock-saved-inline-overflow-property",e.style.overflow),e.setAttribute("data-scroll-lock-saved-inline-overflow-y-property",e.style.overflowY),e.style.overflow="hidden",e.setAttribute("data-scroll-lock-locked","true")}},_=function(e){a(e)&&"true"===e.getAttribute("data-scroll-lock-locked")&&(e.style.overflow=e.getAttribute("data-scroll-lock-saved-inline-overflow-property"),e.style.overflowY=e.getAttribute("data-scroll-lock-saved-inline-overflow-y-property"),e.removeAttribute("data-scroll-lock-saved-overflow-property"),e.removeAttribute("data-scroll-lock-saved-inline-overflow-property"),e.removeAttribute("data-scroll-lock-saved-inline-overflow-y-property"),e.removeAttribute("data-scroll-lock-locked"))},X=function(){w.fillGapSelectors.map(function(e){D(e)})},Q=function(){w.fillGapSelectors.map(function(e){z(e)})},D=function(e){var t=document.querySelectorAll(e),l=-1!==w.lockableSelectors.indexOf(e);o(t,function(e){H(e,l)})},H=function(e){var t=1<arguments.length&&void 0!==arguments[1]&&arguments[1];if(a(e)){var l;if(""===e.getAttribute("data-scroll-lock-lockable")||t)l=g(e,!0);else{var r=h(e,b(w.lockableSelectors));l=g(r,!0)}"true"===e.getAttribute("data-scroll-lock-filled-gap")&&I(e);var o=window.getComputedStyle(e);if(e.setAttribute("data-scroll-lock-filled-gap","true"),e.setAttribute("data-scroll-lock-current-fill-gap-method",w.fillGapMethod),"margin"===w.fillGapMethod){var n=parseFloat(o.marginRight);e.style.marginRight="".concat(n+l,"px")}else if("width"===w.fillGapMethod)e.style.width="calc(100% - ".concat(l,"px)");else if("max-width"===w.fillGapMethod)e.style.maxWidth="calc(100% - ".concat(l,"px)");else if("padding"===w.fillGapMethod){var c=parseFloat(o.paddingRight);e.style.paddingRight="".concat(c+l,"px")}}},z=function(e){var t=document.querySelectorAll(e);o(t,function(e){I(e)})},I=function(e){if(a(e)&&"true"===e.getAttribute("data-scroll-lock-filled-gap")){var t=e.getAttribute("data-scroll-lock-current-fill-gap-method");e.removeAttribute("data-scroll-lock-filled-gap"),e.removeAttribute("data-scroll-lock-current-fill-gap-method"),"margin"===t?e.style.marginRight="":"width"===t?e.style.width="":"max-width"===t?e.style.maxWidth="":"padding"===t&&(e.style.paddingRight="")}};"undefined"!=typeof window&&window.addEventListener("resize",function(e){N()}),"undefined"!=typeof document&&(document.addEventListener("touchstart",function(e){w.scroll||(w.startTouchY=e.touches[0].clientY,w.startTouchX=e.touches[0].clientX)}),document.addEventListener("touchmove",function(n){if(!w.scroll){var e=w.startTouchY,t=w.startTouchX,l=n.touches[0].clientY,r=n.touches[0].clientX;if(n.touches.length<2){var c=b(w.scrollableSelectors),a=e<l,i=l<e,u=t<r,d=r<t,s=e+3<l,f=l<e-3,p=t+3<r,g=r<t-3;!function e(t){var l=1<arguments.length&&void 0!==arguments[1]&&arguments[1];if(t){var r=h(t,c,!1);if(v(t,'input[type="range"]'))return!1;if(l||v(t,'textarea, [contenteditable="true"]')&&h(t,c)||v(t,c)){var o=!1;y(t)&&k(t)?(a&&m(t)||i&&S(t))&&(o=!0):m(t)&&S(t)?(u&&y(t)||d&&k(t))&&(o=!0):(s&&m(t)||f&&S(t)||p&&y(t)||g&&k(t))&&(o=!0),o&&(r?e(r,!0):n.cancelable&&n.preventDefault())}else e(r)}else n.cancelable&&n.preventDefault()}(n.target)}}},{passive:!1}),document.addEventListener("touchend",function(e){w.scroll||(w.startTouchY=0,w.startTouchX=0)}));var J={hide:function(e){n('"hide" is deprecated! Use "disablePageScroll" instead. \n https://github.com/FL3NKEY/scroll-lock#disablepagescrollscrollabletarget'),d(e)},show:function(e){n('"show" is deprecated! Use "enablePageScroll" instead. \n https://github.com/FL3NKEY/scroll-lock#enablepagescrollscrollabletarget'),s(e)},toggle:function(e){n('"toggle" is deprecated! Do not use it.'),f()?d():s(e)},getState:function(){return n('"getState" is deprecated! Use "getScrollState" instead. \n https://github.com/FL3NKEY/scroll-lock#getscrollstate'),f()},getWidth:function(){return n('"getWidth" is deprecated! Use "getPageScrollBarWidth" instead. \n https://github.com/FL3NKEY/scroll-lock#getpagescrollbarwidth'),G()},getCurrentWidth:function(){return n('"getCurrentWidth" is deprecated! Use "getCurrentPageScrollBarWidth" instead. \n https://github.com/FL3NKEY/scroll-lock#getcurrentpagescrollbarwidth'),T()},setScrollableTargets:function(e){n('"setScrollableTargets" is deprecated! Use "addScrollableTarget" instead. \n https://github.com/FL3NKEY/scroll-lock#addscrollabletargetscrollabletarget'),L(e)},setFillGapSelectors:function(e){n('"setFillGapSelectors" is deprecated! Use "addFillGapSelector" instead. \n https://github.com/FL3NKEY/scroll-lock#addfillgapselectorfillgapselector'),q(e)},setFillGapTargets:function(e){n('"setFillGapTargets" is deprecated! Use "addFillGapTarget" instead. \n https://github.com/FL3NKEY/scroll-lock#addfillgaptargetfillgaptarget'),P(e)},clearQueue:function(){n('"clearQueue" is deprecated! Use "clearQueueScrollLocks" instead. \n https://github.com/FL3NKEY/scroll-lock#clearqueuescrolllocks'),p()}},V=function(o){for(var e=1;e<arguments.length;e++){var n=null!=arguments[e]?arguments[e]:{},t=Object.keys(n);"function"==typeof Object.getOwnPropertySymbols&&(t=t.concat(Object.getOwnPropertySymbols(n).filter(function(e){return Object.getOwnPropertyDescriptor(n,e).enumerable}))),t.forEach(function(e){var t,l,r;t=o,r=n[l=e],l in t?Object.defineProperty(t,l,{value:r,enumerable:!0,configurable:!0,writable:!0}):t[l]=r})}return o}({disablePageScroll:d,enablePageScroll:s,getScrollState:f,clearQueueScrollLocks:p,getTargetScrollBarWidth:g,getCurrentTargetScrollBarWidth:A,getPageScrollBarWidth:G,getCurrentPageScrollBarWidth:T,addScrollableSelector:x,removeScrollableSelector:F,addScrollableTarget:L,removeScrollableTarget:W,addLockableSelector:E,addLockableTarget:Y,addFillGapSelector:q,removeFillGapSelector:M,addFillGapTarget:P,removeFillGapTarget:j,setFillGapMethod:O,refillGaps:N,_state:w},J);t.default=V}]).default});
 /*
  * @license
@@ -3815,7 +3815,7 @@ contextMenu.photo = function (photoID, e) {
 		fn: function fn() {
 			return _photo3.setStar([photoID], !isPhotoStarred);
 		}
-	}, { title: build.iconic("tag") + lychee.locale["TAGS"], fn: function fn() {
+	}, { title: build.iconic("tag") + lychee.locale["TAG"], fn: function fn() {
 			return _photo3.editTags([photoID]);
 		} },
 	// for future work, use a list of all the ancestors.
@@ -3903,7 +3903,7 @@ contextMenu.photoMulti = function (photoIDs, e) {
 		fn: function fn() {
 			return _photo3.setStar(photoIDs, arePhotosNotStarred);
 		}
-	}, { title: build.iconic("tag") + lychee.locale["TAGS_ALL"], fn: function fn() {
+	}, { title: build.iconic("tag") + lychee.locale["TAG_ALL"], fn: function fn() {
 			return _photo3.editTags(photoIDs);
 		} }, {}, { title: build.iconic("pencil") + lychee.locale["RENAME_ALL"], fn: function fn() {
 			return _photo3.setTitle(photoIDs);
@@ -6724,11 +6724,11 @@ lychee.locale = {
 	UPDATE_AVAILABLE: "Update available!",
 	MIGRATION_AVAILABLE: "Migration available!",
 	CHECK_FOR_UPDATE: "Check for updates",
-	DEFAULT_LICENSE: "Default License for new uploads:",
+	DEFAULT_LICENSE: "Default license for new uploads:",
 	SET_LICENSE: "Set License",
 	SET_OVERLAY_TYPE: "Set Overlay",
 	SET_MAP_PROVIDER: "Set OpenStreetMap tiles provider",
-	SAVE_RISK: "Save my modifications, I accept the Risk!",
+	SETTINGS_ADVANCED_SAVE: "Save my modifications, I accept the risk!",
 	MORE: "More",
 	DEFAULT: "Default",
 
@@ -6739,16 +6739,18 @@ lychee.locale = {
 	SEARCH_RESULTS: "Search results",
 
 	RENAME: "Rename",
-	RENAME_ALL: "Rename All",
+	RENAME_ALL: "Rename Selected",
 	MERGE: "Merge",
-	MERGE_ALL: "Merge All",
+	MERGE_ALL: "Merge Selected",
 	MAKE_PUBLIC: "Make Public",
 	SHARE_ALBUM: "Share Album",
 	SHARE_PHOTO: "Share Photo",
-	SHARE_WITH: "Share with...",
+	VISIBILITY_ALBUM: "Album Visibility",
+	VISIBILITY_PHOTO: "Photo Visibility",
 	DOWNLOAD_ALBUM: "Download Album",
 	ABOUT_ALBUM: "About Album",
 	DELETE_ALBUM: "Delete Album",
+	MOVE_ALBUM: "Move Album",
 	FULLSCREEN_ENTER: "Enter Fullscreen",
 	FULLSCREEN_EXIT: "Exit Fullscreen",
 
@@ -6759,16 +6761,16 @@ lychee.locale = {
 
 	DELETE_ALBUM_QUESTION: "Delete Album and Photos",
 	KEEP_ALBUM: "Keep Album",
-	DELETE_ALBUM_CONFIRMATION_1: "Are you sure you want to delete the album '%s' and all of the photos it contains? This action can't be undone!",
+	DELETE_ALBUM_CONFIRMATION: "Are you sure you want to delete the album “%s” and all of the photos it contains? This action can’t be undone!",
 
 	DELETE_TAG_ALBUM_QUESTION: "Delete Album",
-	DELETE_TAG_ALBUM_CONFIRMATION: "Are you sure you want to delete the album %s (any photos inside will not be deleted)? This action can't be undone!",
+	DELETE_TAG_ALBUM_CONFIRMATION: "Are you sure you want to delete the album “%s” (any photos inside will not be deleted)? This action can’t be undone!",
 
 	DELETE_ALBUMS_QUESTION: "Delete Albums and Photos",
 	KEEP_ALBUMS: "Keep Albums",
-	DELETE_ALBUMS_CONFIRMATION: "Are you sure you want to delete all %d selected albums and all of the photos they contain? This action can't be undone!",
+	DELETE_ALBUMS_CONFIRMATION: "Are you sure you want to delete all %d selected albums and all of the photos they contain? This action can’t be undone!",
 
-	DELETE_UNSORTED_CONFIRM: "Are you sure you want to delete all photos from 'Unsorted'?<br>This action can't be undone!",
+	DELETE_UNSORTED_CONFIRM: "Are you sure you want to delete all photos from “Unsorted”? This action can’t be undone!",
 	CLEAR_UNSORTED: "Clear Unsorted",
 	KEEP_UNSORTED: "Keep Unsorted",
 
@@ -6781,16 +6783,15 @@ lychee.locale = {
 
 	ADD: "Add",
 	MOVE: "Move",
-	MOVE_ALL: "Move All",
+	MOVE_ALL: "Move Selected",
 	DUPLICATE: "Duplicate",
-	DUPLICATE_ALL: "Duplicate All",
+	DUPLICATE_ALL: "Duplicate Selected",
 	COPY_TO: "Copy to...",
-	COPY_ALL_TO: "Copy All to...",
+	COPY_ALL_TO: "Copy Selected to...",
 	DELETE: "Delete",
-	DELETE_ALL: "Delete All",
+	DELETE_ALL: "Delete Selected",
 	DOWNLOAD: "Download",
-	DOWNLOAD_MEDIUM: "Download medium size",
-	DOWNLOAD_SMALL: "Download small size",
+	DOWNLOAD_ALL: "Download Selected",
 	UPLOAD_PHOTO: "Upload Photo",
 	IMPORT_LINK: "Import from Link",
 	IMPORT_DROPBOX: "Import from Dropbox",
@@ -6816,11 +6817,13 @@ lychee.locale = {
 	UNSTAR: "Unstar",
 	STAR_ALL: "Star Selected",
 	UNSTAR_ALL: "Unstar Selected",
-	TAGS: "Tags",
-	TAGS_ALL: "Tags All",
+	TAG: "Tag",
+	TAG_ALL: "Tag Selected",
 	UNSTAR_PHOTO: "Unstar Photo",
+	SET_COVER: "Set Album Cover",
+	REMOVE_COVER: "Remove Album Cover",
 
-	FULL_PHOTO: "Full Photo",
+	FULL_PHOTO: "Open Original",
 	ABOUT_PHOTO: "About Photo",
 	DISPLAY_FULL_MAP: "Map",
 	DIRECT_LINK: "Direct Link",
@@ -6843,37 +6846,38 @@ lychee.locale = {
 	ALBUM_CREATED: "Created",
 	ALBUM_IMAGES: "Images",
 	ALBUM_VIDEOS: "Videos",
+	ALBUM_SUBALBUMS: "Subalbums",
 	ALBUM_SHARING: "Share",
 	ALBUM_OWNER: "Owner",
 	ALBUM_SHR_YES: "YES",
 	ALBUM_SHR_NO: "No",
 	ALBUM_PUBLIC: "Public",
-	ALBUM_PUBLIC_EXPL: "Album can be viewed by others, subject to the restrictions below.",
-	ALBUM_FULL: "Full size (v4 only)",
-	ALBUM_FULL_EXPL: "Full size pictures are available",
+	ALBUM_PUBLIC_EXPL: "Anonymous users can access this album, subject to the restrictions below.",
+	ALBUM_FULL: "Original",
+	ALBUM_FULL_EXPL: "Full-resolution pictures are available.",
 	ALBUM_HIDDEN: "Hidden",
-	ALBUM_HIDDEN_EXPL: "Only people with the direct link can view this album.",
+	ALBUM_HIDDEN_EXPL: "Anonymous users need a direct link to access this album.",
 	ALBUM_MARK_NSFW: "Mark album as sensitive",
 	ALBUM_UNMARK_NSFW: "Unmark album as sensitive",
 	ALBUM_NSFW: "Sensitive",
 	ALBUM_NSFW_EXPL: "Album contains sensitive content.",
 	ALBUM_DOWNLOADABLE: "Downloadable",
-	ALBUM_DOWNLOADABLE_EXPL: "Visitors of your Lychee can download this album.",
+	ALBUM_DOWNLOADABLE_EXPL: "Anonymous users can download this album.",
 	ALBUM_SHARE_BUTTON_VISIBLE: "Share button is visible",
-	ALBUM_SHARE_BUTTON_VISIBLE_EXPL: "Display social media sharing links.",
+	ALBUM_SHARE_BUTTON_VISIBLE_EXPL: "Anonymous users can see social media sharing links.",
 	ALBUM_PASSWORD: "Password",
 	ALBUM_PASSWORD_PROT: "Password protected",
-	ALBUM_PASSWORD_PROT_EXPL: "Album only accessible with a valid password.",
+	ALBUM_PASSWORD_PROT_EXPL: "Anonymous users need a shared password to access this album.",
 	ALBUM_PASSWORD_REQUIRED: "This album is protected by a password. Enter the password below to view the photos of this album:",
-	ALBUM_MERGE: "Are you sure you want to merge the album '%1$s' into the album '%2$s'?",
-	ALBUMS_MERGE: "Are you sure you want to merge all selected albums into the album '%s'?",
+	ALBUM_MERGE: "Are you sure you want to merge the album “%1$s” into the album “%2$s”?",
+	ALBUMS_MERGE: "Are you sure you want to merge all selected albums into the album “%s”?",
 	MERGE_ALBUM: "Merge Albums",
-	DONT_MERGE: "Don't Merge",
-	ALBUM_MOVE: "Are you sure you want to move the album '%1$s' into the album '%2$s'?",
-	ALBUMS_MOVE: "Are you sure you want to move all selected albums into the album '%s'?",
+	DONT_MERGE: "Don’t Merge",
+	ALBUM_MOVE: "Are you sure you want to move the album “%1$s” into the album “%2$s”?",
+	ALBUMS_MOVE: "Are you sure you want to move all selected albums into the album “%s”?",
 	MOVE_ALBUMS: "Move Albums",
-	NOT_MOVE_ALBUMS: "Don't Move",
-	ROOT: "Root",
+	NOT_MOVE_ALBUMS: "Don’t Move",
+	ROOT: "Albums",
 	ALBUM_REUSE: "Reuse",
 	ALBUM_LICENSE: "License",
 	ALBUM_SET_LICENSE: "Set License",
@@ -6927,13 +6931,13 @@ lychee.locale = {
 	PHOTO_SHR_NO: "No",
 	PHOTO_DELETE: "Delete Photo",
 	PHOTO_KEEP: "Keep Photo",
-	PHOTO_DELETE_CONFIRMATION: "Are you sure you want to delete the photo '%s'? This action can't be undone!",
-	PHOTO_DELETE_ALL: "Are you sure you want to delete all %d selected photo? This action can't be undone!",
+	PHOTO_DELETE_CONFIRMATION: "Are you sure you want to delete the photo “%s”? This action can’t be undone!",
+	PHOTO_DELETE_ALL: "Are you sure you want to delete all %d selected photo? This action can’t be undone!",
 	PHOTOS_NEW_TITLE: "Enter a title for all %d selected photos:",
 	PHOTO_MAKE_PRIVATE_ALBUM: "This photo is located in a public album. To make this photo private or public, edit the visibility of the associated album.",
 	PHOTO_SHOW_ALBUM: "Show Album",
 	PHOTO_PUBLIC: "Public",
-	PHOTO_PUBLIC_EXPL: "Photo can be viewed by others, subject to the restrictions below.",
+	PHOTO_PUBLIC_EXPL: "Anonymous users can view this photo, subject to the restrictions below.",
 	PHOTO_FULL: "Original",
 	PHOTO_FULL_EXPL: "Full-resolution picture is available.",
 	PHOTO_HIDDEN: "Hidden",
@@ -6945,7 +6949,7 @@ lychee.locale = {
 	PHOTO_PASSWORD_PROT: "Password protected",
 	PHOTO_PASSWORD_PROT_EXPL: "Photo only accessible with a valid password.",
 	PHOTO_EDIT_SHARING_TEXT: "The sharing properties of this photo will be changed to the following:",
-	PHOTO_NO_EDIT_SHARING_TEXT: "Because this photo is located in a public album, it inherits that album's visibility settings.  Its current visibility is shown below for informational purposes only.",
+	PHOTO_NO_EDIT_SHARING_TEXT: "Because this photo is located in a public album, it inherits that album’s visibility settings.  Its current visibility is shown below for informational purposes only.",
 	PHOTO_EDIT_GLOBAL_SHARING_TEXT: "The visibility of this photo can be fine-tuned using global Lychee settings. Its current visibility is shown below for informational purposes only.",
 	PHOTO_LOCATION: "Location",
 	PHOTO_LATITUDE: "Latitude",
@@ -6958,7 +6962,6 @@ lychee.locale = {
 	ERROR_TEXT: "Whoops, it looks like something went wrong. Please reload the site and try again!",
 	ERROR_DB_1: "Unable to connect to host database because access was denied. Double-check your host, username and password and ensure that access from your current location is permitted.",
 	ERROR_DB_2: "Unable to create the database. Double-check your host, username and password and ensure that the specified user has the rights to modify and add content to the database.",
-	ERROR_CONFIG_FILE: "Unable to save this configuration. Permission denied in <b>'data/'</b>. Please set the read, write and execute rights for others in <b>'data/'</b> and <b>'uploads/'</b>. Take a look at the readme for more information.",
 	ERROR_UNKNOWN: "Something unexpected happened. Please try again and check your installation and server. Take a look at the readme for more information.",
 	ERROR_LOGIN: "Unable to save login. Please try again with another username and password!",
 	ERROR_MAP_DEACTIVATED: "Map functionality has been deactivated under settings.",
@@ -6967,10 +6970,11 @@ lychee.locale = {
 	ERROR_ALBUM_NOT_FOUND: "Error: album %s not found",
 	ERROR_DROPBOX_KEY: "Error: Dropbox key not set",
 	ERROR_SESSION: "Session expired.",
+	CAMERA_DATE: "Camera date",
 	SUCCESS: "OK",
 	RETRY: "Retry",
 
-	SETTINGS_WARNING: "Changing these advanced settings can be harmful to the stability, security and performance of this application. You should only modify them if you are sure of what you are doing.",
+	SETTINGS_ADVANCED_WARNING_EXPL: "Changing these advanced settings can be harmful to the stability, security and performance of this application. You should only modify them if you are sure of what you are doing.",
 	SETTINGS_SUCCESS_LOGIN: "Login Info updated.",
 	SETTINGS_SUCCESS_SORT: "Sorting order updated.",
 	SETTINGS_SUCCESS_DROPBOX: "Dropbox Key updated.",
@@ -6996,7 +7000,7 @@ lychee.locale = {
 	USER_EMAIL_INSTRUCTION: "Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.",
 
 	SETTINGS_SUCCESS_CSS: "CSS updated",
-	SETTINGS_SUCCESS_UPDATE: "Settings updated with success",
+	SETTINGS_SUCCESS_UPDATE: "Settings updated successfully",
 
 	DB_INFO_TITLE: "Enter your database connection details below:",
 	DB_INFO_HOST: "Database Host (optional)",
@@ -7019,7 +7023,7 @@ lychee.locale = {
 	PASSWORD_CHANGE: "Change Login",
 
 	EDIT_SHARING_TITLE: "Edit Sharing",
-	EDIT_SHARING_TEXT: "The sharing-properties of this album will be changed to the following:",
+	EDIT_SHARING_TEXT: "The sharing properties of this album will be changed to the following:",
 	SHARE_ALBUM_TEXT: "This album will be shared with the following properties:",
 
 	SORT_ALBUM_BY: "Sort albums by %1$s in an %2$s order.",
@@ -7051,7 +7055,7 @@ lychee.locale = {
 	LANG_TEXT: "Change Lychee language for:",
 	LANG_TITLE: "Change Language",
 
-	CSS_TEXT: "Personalize your CSS:",
+	CSS_TEXT: "Personalize CSS:",
 	CSS_TITLE: "Change CSS",
 
 	LAYOUT_TYPE: "Layout of photos:",
@@ -7061,8 +7065,6 @@ lychee.locale = {
 	SET_LAYOUT: "Change layout",
 	PUBLIC_SEARCH_TEXT: "Public search allowed:",
 
-	IMAGE_OVERLAY_TEXT: "Display image overlay by default:",
-
 	OVERLAY_TYPE: "Photo overlay:",
 	OVERLAY_NONE: "None",
 	OVERLAY_EXIF: "EXIF data",
@@ -7071,10 +7073,10 @@ lychee.locale = {
 
 	MAP_PROVIDER: "Provider of OpenStreetMap tiles:",
 	MAP_PROVIDER_WIKIMEDIA: "Wikimedia",
-	MAP_PROVIDER_OSM_ORG: "OpenStreetMap.org (no retina)",
-	MAP_PROVIDER_OSM_DE: "OpenStreetMap.de (no retina)",
-	MAP_PROVIDER_OSM_FR: "OpenStreetMap.fr (no retina)",
-	MAP_PROVIDER_RRZE: "University of Erlangen, Germany (only retina)",
+	MAP_PROVIDER_OSM_ORG: "OpenStreetMap.org (no HiDPI)",
+	MAP_PROVIDER_OSM_DE: "OpenStreetMap.de (no HiDPI)",
+	MAP_PROVIDER_OSM_FR: "OpenStreetMap.fr (no HiDPI)",
+	MAP_PROVIDER_RRZE: "University of Erlangen, Germany (only HiDPI)",
 
 	MAP_DISPLAY_TEXT: "Enable maps (provided by OpenStreetMap):",
 	MAP_DISPLAY_PUBLIC_TEXT: "Enable maps for public albums (provided by OpenStreetMap):",
@@ -7105,15 +7107,16 @@ lychee.locale = {
 	UPLOAD_FAILED: "Failed",
 	UPLOAD_FAILED_ERROR: "Upload failed. Server returned an error!",
 	UPLOAD_FAILED_WARNING: "Upload failed. Server returned a warning!",
+	UPLOAD_CANCELLED: "Cancelled",
 	UPLOAD_SKIPPED: "Skipped",
 	UPLOAD_UPDATED: "Updated",
-	UPLOAD_IMPORT_SKIPPED_DUPLICATE: "This photo has been skipped because it's already in your library.",
-	UPLOAD_IMPORT_RESYNCED_DUPLICATE: "This photo has been skipped because it's already in your library, but its metadata has been updated.",
+	UPLOAD_IMPORT_SKIPPED_DUPLICATE: "This photo has been skipped because it’s already in your library.",
+	UPLOAD_IMPORT_RESYNCED_DUPLICATE: "This photo has been skipped because it’s already in your library, but its metadata has been updated.",
 	UPLOAD_ERROR_CONSOLE: "Please take a look at the console of your browser for further details.",
 	UPLOAD_UNKNOWN: "Server returned an unknown response. Please take a look at the console of your browser for further details.",
 	UPLOAD_ERROR_UNKNOWN: "Upload failed. Server returned an unkown error!",
-	UPLOAD_ERROR_POSTSIZE: "Upload failed. The PHP post_max_size limit is too small!",
-	UPLOAD_ERROR_FILESIZE: "Upload failed. The PHP upload_max_filesize limit is too small!",
+	UPLOAD_ERROR_POSTSIZE: "Upload failed. The PHP post_max_size limit may be too small! Otherwise check the FAQ.",
+	UPLOAD_ERROR_FILESIZE: "Upload failed. The PHP upload_max_filesize limit may be too small! Otherwise check the FAQ.",
 	UPLOAD_IN_PROGRESS: "Lychee is currently uploading!",
 	UPLOAD_IMPORT_WARN_ERR: "The import has been finished, but returned warnings or errors. Please take a look at the log (Settings -> Show Log) for further details.",
 	UPLOAD_IMPORT_COMPLETE: "Import complete",
@@ -7121,9 +7124,24 @@ lychee.locale = {
 	UPLOAD_IMPORT: "Import",
 	UPLOAD_IMPORT_SERVER: "Importing from server",
 	UPLOAD_IMPORT_SERVER_FOLD: "Folder empty or no readable files to process. Please take a look at the log (Settings -> Show Log) for further details.",
-	UPLOAD_IMPORT_SERVER_INSTR: "This action will import all photos, folders and sub-folders which are located in the following directory. The <b>original files will be deleted</b> after the import when possible.",
+	UPLOAD_IMPORT_SERVER_INSTR: "Import all photos, folders and sub-folders located in the folder with the following absolute path (on server):",
 	UPLOAD_ABSOLUTE_PATH: "Absolute path to directory",
 	UPLOAD_IMPORT_SERVER_EMPT: "Could not start import because the folder was empty!",
+	UPLOAD_IMPORT_DELETE_ORIGINALS: "Delete originals",
+	UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL: "Original files will be deleted after the import when possible.",
+	UPLOAD_IMPORT_VIA_SYMLINK: "Symbolic links",
+	UPLOAD_IMPORT_VIA_SYMLINK_EXPL: "Import files using symbolic links to originals.",
+	UPLOAD_IMPORT_SKIP_DUPLICATES: "Skip duplicates",
+	UPLOAD_IMPORT_SKIP_DUPLICATES_EXPL: "Existing media files are skipped.",
+	UPLOAD_IMPORT_RESYNC_METADATA: "Re-sync metadata",
+	UPLOAD_IMPORT_RESYNC_METADATA_EXPL: "Update metadata of existing media files.",
+	UPLOAD_IMPORT_LOW_MEMORY_EXPL: "The import process on the server is approaching the memory limit and may end up being terminated prematurely.",
+	UPLOAD_WARNING: "Warning",
+	UPLOAD_IMPORT_NOT_A_DIRECTORY: "The given path is not a readable directory!",
+	UPLOAD_IMPORT_PATH_RESERVED: "The given path is a reserved path of Lychee!",
+	UPLOAD_IMPORT_FAILED: "Could not import the file!",
+	UPLOAD_IMPORT_UNSUPPORTED: "Unsupported file type!",
+	UPLOAD_IMPORT_CANCELLED: "Import cancelled",
 
 	ABOUT_SUBTITLE: "Self-hosted photo-management done right",
 	ABOUT_DESCRIPTION: "<a target='_blank' href='%s'>Lychee</a> is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.",
@@ -7137,10 +7155,12 @@ lychee.locale = {
 	PHOTO_SMALL_HIDPI: "Thumb HiDPI",
 	PHOTO_THUMB: "Square thumb",
 	PHOTO_THUMB_HIDPI: "Square thumb HiDPI",
+	PHOTO_THUMBNAIL: "Photo thumbnail",
 	PHOTO_LIVE_VIDEO: "Video part of live-photo",
 	PHOTO_VIEW: "Lychee Photo View:",
-	PHOTO_THUMBNAIL: "Photo thumbnail",
-	CAMERA_DATE: "Camera date",
+
+	PHOTO_EDIT_ROTATECWISE: "Rotate clockwise",
+	PHOTO_EDIT_ROTATECCWISE: "Rotate counter-clockwise",
 
 	NEW_PASSWORD: "new password",
 	ALLOW_UPLOADS: "Allow uploads",
@@ -7165,13 +7185,13 @@ lychee.locale = {
 	USER_CREATED: "User created!",
 	USER_DELETED: "User deleted!",
 	USER_UPDATED: "User updated!",
-	FULL_SETTINGS: "Full settings",
+	FULL_SETTINGS: "Full Settings",
 	ENTER_EMAIL: "Enter your email address:",
 	CREATE: "Create",
 	REMOVE: "Remove",
 	SHARE: "Share",
 	UPDATE: "Update",
-	SETTINGS_DROPBOX_KEY: "Dropbox-API-Schlüssel",
+	SETTINGS_DROPBOX_KEY: "Dropbox API Key",
 
 	/**
   * Formats a number representing a filesize in bytes as a localized string
@@ -9938,7 +9958,7 @@ settings.save_enter = function (e) {
 	var cancel = {};
 
 	action.title = lychee.locale["ENTER"];
-	action.msg = lychee.html(_templateObject61, lychee.locale["SAVE_RISK"]);
+	action.msg = lychee.html(_templateObject61, lychee.locale["SETTINGS_ADVANCED_SAVE"]);
 
 	cancel.title = lychee.locale["CANCEL"];
 
@@ -13252,7 +13272,7 @@ view.full_settings = {
 			api.post("Settings::getAll", {},
 			/** @param {ConfigSetting[]} data */
 			function (data) {
-				var msg = lychee.html(_templateObject75, lychee.locale["SETTINGS_WARNING"]);
+				var msg = lychee.html(_templateObject75, lychee.locale["SETTINGS_ADVANCED_WARNING_EXPL"]);
 
 				var prev = "";
 				data.forEach(function (_config) {
@@ -13265,7 +13285,7 @@ view.full_settings = {
 					msg += lychee.html(_templateObject77, _config.key, _config.key, val);
 				});
 
-				msg += lychee.html(_templateObject78, lychee.locale["SAVE_RISK"]);
+				msg += lychee.html(_templateObject78, lychee.locale["SETTINGS_ADVANCED_SAVE"]);
 
 				$(".settings_view").append(msg);
 
