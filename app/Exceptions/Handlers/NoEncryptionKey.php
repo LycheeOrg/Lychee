@@ -26,6 +26,9 @@ class NoEncryptionKey implements HttpExceptionHandler
 			if ($e instanceof MissingAppKeyException) {
 				return true;
 			}
+			if ($e->getMessage() === 'No application encryption key has been specified.') {
+				return true;
+			}
 		} while ($e = $e->getPrevious());
 
 		return false;
@@ -37,7 +40,11 @@ class NoEncryptionKey implements HttpExceptionHandler
 	public function renderHttpException(SymfonyResponse $defaultResponse, HttpException $e): SymfonyResponse
 	{
 		try {
-			touch(base_path('.NO_SECURE_KEY'));
+			try {
+				touch(base_path('.NO_SECURE_KEY'));
+			} catch (Throwable) {
+				// do nothing
+			}
 			$redirectResponse = ToInstall::go();
 			$contentType = $defaultResponse->headers->get('Content-Type');
 			if ($contentType !== null && $contentType !== '') {
