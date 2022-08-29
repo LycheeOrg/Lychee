@@ -54,6 +54,7 @@ class DefaultConfig
 			*/
 		'permissions' => [
 			'.' => 'file_exists|is_readable|is_writable|is_executable',
+			'database/' => 'file_exists|is_readable|is_writable|is_executable',
 			'database/database.sqlite' => 'file_exists|is_readable|is_writable',
 			'storage/framework/' => 'file_exists|is_readable|is_writable|is_executable',
 			'storage/framework/views/' => 'file_exists|is_readable|is_writable|is_executable',
