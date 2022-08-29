@@ -62,7 +62,6 @@ class DefaultConfig
 			'storage/logs/' => 'file_exists|is_readable|is_writable|is_executable',
 			'bootstrap/cache/' => 'file_exists|is_readable|is_writable|is_executable',
 			'public/dist/' => 'file_exists|is_readable|is_writable|is_executable',
-			'public/img/' => 'file_exists|is_readable|is_writable|is_executable',
 			'public/sym/' => 'file_exists|is_readable|is_writable|is_executable',
 			'public/uploads/' => 'file_exists|is_readable|is_writable|is_executable',
 		],
