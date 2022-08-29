@@ -1,13 +1,10 @@
 <?php
 
-namespace App\Actions;
+namespace App\Policies;
 
-use App\Actions\Photo\Archive;
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Exceptions\UnauthorizedException;
-use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\FixedQueryBuilder;
@@ -15,14 +12,16 @@ use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
-class PhotoAuthorisationProvider
+class PhotoQueryPolicy
 {
-	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
+	protected AlbumQueryPolicy $albumQueryPolicy;
 
 	public function __construct()
 	{
-		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
+		$this->albumQueryPolicy = resolve(AlbumQueryPolicy::class);
 	}
 
 	/**
@@ -36,7 +35,7 @@ class PhotoAuthorisationProvider
 	 *  - the user is the admin
 	 *  - the user is the owner of the photo
 	 *  - the photo is part of an album which the user is allowed to access
-	 *    (cp. {@link AlbumAuthorisationProvider::isAccessible()}).
+	 *    (cp. {@link AlbumQueryPolicy::isAccessible()}).
 	 *  - the photo is public
 	 *
 	 * @param FixedQueryBuilder $query
@@ -49,85 +48,24 @@ class PhotoAuthorisationProvider
 	{
 		$this->prepareModelQueryOrFail($query, false, true, true);
 
-		if (AccessControl::is_admin()) {
+		if (Gate::check(UserPolicy::IS_ADMIN)) {
 			return $query;
 		}
 
-		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+		$userId = Auth::id();
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
 		// "OR"-clause.
-		$visibilitySubQuery = function (FixedQueryBuilder $query2) use ($userID) {
-			$this->albumAuthorisationProvider->appendAccessibilityConditions($query2->getQuery());
+		$visibilitySubQuery = function (FixedQueryBuilder $query2) use ($userId) {
+			$this->albumQueryPolicy->appendAccessibilityConditions($query2->getQuery());
 			$query2->orWhere('photos.is_public', '=', true);
-			if ($userID !== null) {
-				$query2->orWhere('photos.owner_id', '=', $userID);
+			if ($userId !== null) {
+				$query2->orWhere('photos.owner_id', '=', $userId);
 			}
 		};
 
 		return $query->where($visibilitySubQuery);
-	}
-
-	/**
-	 * Checks whether the photo is visible by the current user.
-	 *
-	 * See {@link PhotoAuthorisationProvider::applyVisibilityFilter()} for a
-	 * specification of the rules when a photo is visible.
-	 *
-	 * @param Photo|null $photo the photo; `null` is accepted for convenience
-	 *                          and the `null` photo is always authorized
-	 *
-	 * @return bool true, if the authenticated user is authorized
-	 */
-	public function isVisible(?Photo $photo): bool
-	{
-		// We must explicitly check that the photo is not unsorted before
-		// checking whether the parent album is accessible, because the root
-		// album always is accessible and gets a pass.
-		// However, we do not want every unsorted photo to be publicly
-		// visible.
-		return
-			$photo === null ||
-			AccessControl::is_current_user_or_admin($photo->owner_id) ||
-			$photo->is_public || (
-				$photo->album !== null &&
-				$this->albumAuthorisationProvider->isAccessible($photo->album)
-			);
-	}
-
-	/**
-	 * Checks whether the photo may be downloaded by the current user.
-	 *
-	 * Previously, this code was part of {@link Archive::extractFileInfo()}.
-	 * In particular, the method threw to {@link UnauthorizedException} with
-	 * custom error messages:
-	 *
-	 *  - `'User is not allowed to download the image'`, if the user was not
-	 *    the owner, the user was allowed to see the photo (i.e. the album
-	 *    is shared with the user), but the album does not allow to dowload
-	 *    photos
-	 *  - `'Permission to download is disabled by configuration'`, if the
-	 *    user was not the owner, the photo was not part of any album (i.e.
-	 *    unsorted), the photo was public and downloading was disabled by
-	 *    configuration.
-	 *
-	 * TODO: Check if these custom error messages are still needed. If yes, consider not to return a boolean value but rename the method to `assert...` and throw exceptions with custom error messages.
-	 *
-	 * @param Photo $photo
-	 *
-	 * @return bool
-	 */
-	public function isDownloadable(Photo $photo): bool
-	{
-		if (!$this->isVisible($photo)) {
-			return false;
-		}
-
-		return
-			AccessControl::is_current_user_or_admin($photo->owner_id) ||
-			$photo->album?->is_downloadable ||
-			($photo->album === null && Configs::getValueAsBool('downloadable'));
 	}
 
 	/**
@@ -140,7 +78,7 @@ class PhotoAuthorisationProvider
 	 *  - the user is the owner of the photo
 	 *  - the photo is public and searching through public photos is enabled
 	 *
-	 * See {@link AlbumAuthorisationProvider::applyBrowsabilityFilter()}
+	 * See {@link AlbumQueryPolicy::applyBrowsabilityFilter()}
 	 * for a definition of a browsable album.
 	 *
 	 * The search result is restricted to photos in albums which are below
@@ -174,7 +112,7 @@ class PhotoAuthorisationProvider
 				->where('albums._rgt', '<=', $origin->_rgt);
 		}
 
-		if (AccessControl::is_admin()) {
+		if (Gate::check(UserPolicy::IS_ADMIN)) {
 			return $query;
 		} else {
 			return $query->where(function (Builder $query) use ($origin) {
@@ -191,7 +129,7 @@ class PhotoAuthorisationProvider
 	 * Adds the conditions of _searchable_ photos to the query.
 	 *
 	 * **Attention:** This method is only meant for internal use.
-	 * Use {@link PhotoAuthorisationProvider::applySearchabilityFilter()}
+	 * Use {@link PhotoQueryPolicy::applySearchabilityFilter()}
 	 * if called from other places instead.
 	 *
 	 * This method adds the WHERE conditions without any further pre-cautions.
@@ -199,7 +137,7 @@ class PhotoAuthorisationProvider
 	 *
 	 *  - **`albums`**.
 	 *
-	 * See {@link AlbumAuthorisationProvider::applySearchabilityFilter()}
+	 * See {@link AlbumQueryPolicy::applySearchabilityFilter()}
 	 * for a definition of a searchable photo.
 	 *
 	 * Moreover, the raw clauses are added.
@@ -223,13 +161,13 @@ class PhotoAuthorisationProvider
 	 */
 	public function appendSearchabilityConditions(BaseBuilder $query, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
 	{
-		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+		$userId = Auth::id();
 		$maySearchPublic = !Configs::getValueAsBool('public_photos_hidden');
 
 		try {
 			// there must be no unreachable album between the origin and the photo
 			$query->whereNotExists(function (BaseBuilder $q) use ($originLeft, $originRight) {
-				$this->albumAuthorisationProvider->appendUnreachableAlbumsCondition($q, $originLeft, $originRight);
+				$this->albumQueryPolicy->appendUnreachableAlbumsCondition($q, $originLeft, $originRight);
 			});
 
 			// Special care needs to be taken for unsorted photo, i.e. photos on
@@ -247,75 +185,14 @@ class PhotoAuthorisationProvider
 			if ($maySearchPublic) {
 				$query->orWhere('photos.is_public', '=', true);
 			}
-			if ($userID !== null) {
-				$query->orWhere('photos.owner_id', '=', $userID);
+			if ($userId !== null) {
+				$query->orWhere('photos.owner_id', '=', $userId);
 			}
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
 
 		return $query;
-	}
-
-	/**
-	 * Checks whether the photo is editable by the current user.
-	 *
-	 * A photo is called _editable_ if the current user is allowed to edit
-	 * the photo's properties.
-	 * A photo is _editable_ if any of the following conditions hold
-	 * (OR-clause)
-	 *
-	 *  - the user is an admin
-	 *  - the user is the owner of the photo
-	 *
-	 * @param Photo $photo
-	 *
-	 * @return bool
-	 */
-	public function isEditable(Photo $photo): bool
-	{
-		return AccessControl::is_current_user_or_admin($photo->owner_id);
-	}
-
-	/**
-	 * Checks whether the designated photos are editable by the current user.
-	 *
-	 * See {@link PhotoAuthorisationProvider::isEditable()} for the definition
-	 * when a photo is editable.
-	 *
-	 * This method is mostly only useful during deletion of photos, when no
-	 * photo models are loaded for efficiency reasons.
-	 * If a photo model is required anyway (because it shall be edited),
-	 * then first load the photo once and use
-	 * {@link PhotoAuthorisationProvider::isEditable()}
-	 * instead in order to avoid several DB requests.
-	 *
-	 * @param string[] $photoIDs
-	 *
-	 * @return bool
-	 *
-	 * @throws QueryBuilderException
-	 */
-	public function areEditableByIDs(array $photoIDs): bool
-	{
-		if (AccessControl::is_admin()) {
-			return true;
-		}
-		if (!AccessControl::is_logged_in()) {
-			return false;
-		}
-
-		$user = AccessControl::user();
-
-		// Make IDs unique as otherwise count will fail.
-		$photoIDs = array_unique($photoIDs);
-
-		return
-			count($photoIDs) === 0 ||
-			Photo::query()
-				->whereIn('id', $photoIDs)
-				->where('owner_id', $user->id)
-				->count() === count($photoIDs);
 	}
 
 	/**
@@ -346,7 +223,7 @@ class PhotoAuthorisationProvider
 		// Hence, we must restrict the `LEFT JOIN` to the user ID which
 		// is also used in the outer `WHERE`-clause.
 		// See `applyVisibilityFilter`.
-		$addShares = $addShares && AccessControl::is_logged_in();
+		$addShares = $addShares && Auth::check();
 
 		// Ensure that only columns of the photos are selected,
 		// if no specific columns are yet set.
@@ -363,13 +240,13 @@ class PhotoAuthorisationProvider
 			$query->leftJoin('base_albums', 'base_albums.id', '=', 'photos.album_id');
 		}
 		if ($addShares) {
-			$userID = AccessControl::id();
+			$userId = Auth::id();
 			$query->leftJoin(
 				'user_base_album',
-				function (JoinClause $join) use ($userID) {
+				function (JoinClause $join) use ($userId) {
 					$join
 						->on('user_base_album.base_album_id', '=', 'base_albums.id')
-						->where('user_base_album.user_id', '=', $userID);
+						->where('user_base_album.user_id', '=', $userId);
 				}
 			);
 		}

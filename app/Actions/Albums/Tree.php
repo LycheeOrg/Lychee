@@ -2,27 +2,29 @@
 
 namespace App\Actions\Albums;
 
-use App\Actions\AlbumAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\AlbumTree;
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
-use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
+use App\Policies\AlbumQueryPolicy;
+use Illuminate\Support\Facades\Auth;
 use Kalnoy\Nestedset\Collection as NsCollection;
 
 class Tree
 {
-	private AlbumAuthorisationProvider $albumAuthorisationProvider;
+	private AlbumQueryPolicy $albumQueryPolicy;
 	private AlbumSortingCriterion $sorting;
 
 	/**
 	 * @throws InvalidOrderDirectionException
+	 * @throws ConfigurationKeyMissingException
 	 */
-	public function __construct(AlbumAuthorisationProvider $albumAuthorisationProvider)
+	public function __construct(AlbumQueryPolicy $albumQueryPolicy)
 	{
-		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
+		$this->albumQueryPolicy = $albumQueryPolicy;
 		$this->sorting = AlbumSortingCriterion::createDefault();
 	}
 
@@ -35,23 +37,23 @@ class Tree
 	{
 		/*
 		 * Note, strictly speaking
-		 * {@link AlbumAuthorisationProvider::applyBrowsabilityFilter()}
+		 * {@link AlbumQueryPolicy::applyBrowsabilityFilter()}
 		 * would be the correct function in order to scope the query below,
 		 * because we only want albums which are browsable.
 		 * But
-		 * {@link AlbumAuthorisationProvider::applyBrowsabilityFilter()}
+		 * {@link AlbumQueryPolicy::applyBrowsabilityFilter()}
 		 * is rather slow for large sets of albums (O(n²) runtime).
 		 * Luckily,
-		 * {@link AlbumAuthorisationProvider::applyReachabilityFilter()}
+		 * {@link AlbumQueryPolicy::applyReachabilityFilter()}
 		 * is sufficient here, although it does only consider an album's
 		 * reachability _locally_.
 		 * We rely on `->toTree` below to remove orphaned sub-tress and hence
 		 * only return a tree of browsable albums.
 		 */
 		$query = new SortingDecorator(
-			$this->albumAuthorisationProvider->applyReachabilityFilter(Album::query())
+			$this->albumQueryPolicy->applyReachabilityFilter(Album::query())
 		);
-		if (AccessControl::is_logged_in()) {
+		if (Auth::check()) {
 			// For authenticated users we group albums by ownership.
 			$query->orderBy('owner_id');
 		}
@@ -61,8 +63,8 @@ class Tree
 		$albums = $query->get();
 		/** @var ?NsCollection<Album> $sharedAlbums */
 		$sharedAlbums = null;
-		if (AccessControl::is_logged_in()) {
-			$id = AccessControl::id();
+		$userID = Auth::id();
+		if ($userID !== null) {
 			// ATTENTION:
 			// For this to work correctly, it is crucial that all child albums
 			// below each top-level album have the same owner!
@@ -70,7 +72,7 @@ class Tree
 			// (sub)-tree and then `toTree` will return garbage as it does
 			// not find connected paths within `$albums` or `$sharedAlbums`,
 			// resp.
-			list($albums, $sharedAlbums) = $albums->partition(fn ($album) => $album->owner_id === $id);
+			list($albums, $sharedAlbums) = $albums->partition(fn ($album) => $album->owner_id === $userID);
 		}
 
 		// We must explicitly pass `null` as the ID of the root album

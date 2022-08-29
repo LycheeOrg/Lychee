@@ -5,6 +5,7 @@ namespace App\Http\Requests\Album;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasAlbum;
+use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Models\Album;
 use App\Rules\AlbumIDRule;
@@ -12,14 +13,7 @@ use App\Rules\AlbumIDRule;
 class DeleteTrackRequest extends BaseApiRequest implements HasAlbum
 {
 	use HasAlbumTrait;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function authorize(): bool
-	{
-		return $this->authorizeAlbumWrite($this->album);
-	}
+	use AuthorizeCanEditAlbumTrait;
 
 	/**
 	 * {@inheritDoc}

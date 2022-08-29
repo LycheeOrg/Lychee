@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Administration;
 
-use App\Actions\Settings\Login;
+use App\Actions\Settings\SetLogin;
+use App\Actions\Settings\UpdateLogin;
 use App\Contracts\LycheeException;
 use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\Lang;
+use App\Http\Requests\Legacy\SetAdminLoginRequest;
 use App\Http\Requests\Settings\ChangeLoginRequest;
 use App\Http\Requests\Settings\SetSortingRequest;
 use App\Models\Configs;
@@ -16,6 +18,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -23,30 +26,52 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 class SettingsController extends Controller
 {
 	/**
-	 * Set the Login information of the Lychee configuration
-	 * Either they are not already set and we directly bcrypt the parameters
-	 * or the current username and password are compared and changed if successful.
+	 * Set the Login information for the admin user (id = 0)
+	 * when the later is not initialized.
 	 *
-	 * To be noted this function will change the CONFIG table if used by admin
-	 * or the USER table if used by any other user
-	 *
-	 * @param ChangeLoginRequest $request
-	 * @param Login              $login
+	 * @param SetAdminLoginRequest $request
+	 * @param SetLogin             $setLogin
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
 	 * @throws ModelNotFoundException
 	 */
-	public function setLogin(ChangeLoginRequest $request, Login $login): void
+	public function setLogin(SetAdminLoginRequest $request, SetLogin $setLogin): void
 	{
-		$login->do(
+		$adminUser = $setLogin->do(
+			$request->username(),
+			$request->password()
+		);
+		// Update the session with the new credentials of the user.
+		// Otherwise, the session is out-of-sync and falsely assumes the user
+		// to be unauthenticated upon the next request.
+		Auth::login($adminUser);
+	}
+
+	/**
+	 * Update the Login information of the current user.
+	 *
+	 * @param ChangeLoginRequest $request
+	 * @param UpdateLogin        $updateLogin
+	 *
+	 * @return void
+	 *
+	 * @throws LycheeException
+	 * @throws ModelNotFoundException
+	 */
+	public function updateLogin(ChangeLoginRequest $request, UpdateLogin $updateLogin): void
+	{
+		$currentUser = $updateLogin->do(
 			$request->username(),
 			$request->password(),
-			$request->oldUsername(),
 			$request->oldPassword(),
 			$request->ip()
 		);
+		// Update the session with the new credentials of the user.
+		// Otherwise, the session is out-of-sync and falsely assumes the user
+		// to be unauthenticated upon the next request.
+		Auth::login($currentUser);
 	}
 
 	/**

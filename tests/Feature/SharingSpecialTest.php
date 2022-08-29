@@ -12,12 +12,13 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Tests\Feature\Base\SharingTestBase;
 use Tests\TestCase;
 
@@ -117,7 +118,8 @@ class SharingSpecialTest extends SharingTestBase
 		$this->albums_tests->set_protection_policy($this->albumID5, true, true, false, false, true, true, self::ALBUM_PWD_2);
 		$this->albums_tests->set_protection_policy($this->albumID6, true, true, true, false, true, true, self::ALBUM_PWD_2);
 
-		AccessControl::logout();
+		Auth::logout();
+		Session::flush();
 		$this->clearCachedSmartAlbums();
 	}
 

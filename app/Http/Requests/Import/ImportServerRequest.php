@@ -3,14 +3,15 @@
 namespace App\Http\Requests\Import;
 
 use App\Actions\Photo\Strategies\ImportMode;
-use App\Facades\AccessControl;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasAlbum;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Models\Album;
 use App\Models\Configs;
+use App\Policies\UserPolicy;
 use App\Rules\RandomIDRule;
+use Illuminate\Support\Facades\Gate;
 
 class ImportServerRequest extends BaseApiRequest implements HasAlbum
 {
@@ -34,7 +35,7 @@ class ImportServerRequest extends BaseApiRequest implements HasAlbum
 		// request is made by an admin during authentication (see
 		// `routes/web.php`).
 		// But better safe than sorry.
-		return AccessControl::is_admin();
+		return Gate::check(UserPolicy::IS_ADMIN);
 	}
 
 	/**

@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Contracts\HasRandomID;
 use App\DTO\PhotoSortingCriterion;
-use App\Facades\AccessControl;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
@@ -16,6 +15,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class BaseAlbumImpl.
@@ -274,7 +274,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	public function toArray(): array
 	{
 		$result = parent::toArray();
-		if (AccessControl::is_logged_in()) {
+		if (Auth::check()) {
 			$result['owner_name'] = $this->owner->name();
 		}
 

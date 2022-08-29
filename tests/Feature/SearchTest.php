@@ -12,8 +12,9 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
 use App\Models\Configs;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Testing\TestResponse;
 use Tests\Feature\Base\PhotoTestBase;
 use Tests\Feature\Lib\SharingUnitTest;
@@ -194,7 +195,8 @@ class SearchTest extends PhotoTestBase
 		try {
 			Configs::set(self::CONFIG_PUBLIC_SEARCH, false);
 			$this->albums_tests->add(null, 'Matching private album')->offsetGet('id');
-			AccessControl::logout();
+			Auth::logout();
+			Session::flush();
 			$this->runSearch('Matching', 401);
 		} finally {
 			Configs::set(self::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
@@ -218,7 +220,8 @@ class SearchTest extends PhotoTestBase
 			$this->albums_tests->set_protection_policy($albumID3);
 			$this->albums_tests->set_protection_policy($albumID4);
 
-			AccessControl::logout();
+			Auth::logout();
+			Session::flush();
 
 			$response = $this->runSearch('Matching');
 			$response->assertJson([
@@ -261,8 +264,9 @@ class SearchTest extends PhotoTestBase
 			$this->albums_tests->set_protection_policy($albumID3);
 			$this->albums_tests->set_protection_policy($albumID4);
 
-			AccessControl::logout();
-			AccessControl::log_as_id($userID);
+			Auth::logout();
+			Session::flush();
+			Auth::loginUsingId($userID);
 
 			$response = $this->runSearch('Matching');
 			$response->assertJson([

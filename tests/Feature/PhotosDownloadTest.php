@@ -13,12 +13,13 @@
 namespace Tests\Feature;
 
 use App\Actions\Photo\Archive;
-use App\Facades\AccessControl;
 use App\Image\ImagickHandler;
 use App\Image\InMemoryBuffer;
 use App\Image\TemporaryLocalFile;
 use App\Image\VideoHandler;
 use App\Models\Configs;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use function Safe\file_get_contents;
 use function Safe\filesize;
 use Symfony\Component\HttpFoundation\HeaderUtils;
@@ -237,16 +238,18 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 
 	public function testDownloadOfInvisibleUnsortedPhotoByNonOwner(): void
 	{
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 		$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
 		$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
-		AccessControl::logout();
-		AccessControl::log_as_id($userID1);
+		Auth::logout();
+		Session::flush();
+		Auth::loginUsingId($userID1);
 		$photoID = $this->photos_tests->upload(
 			self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE)
 		)->offsetGet('id');
-		AccessControl::logout();
-		AccessControl::log_as_id($userID2);
+		Auth::logout();
+		Session::flush();
+		Auth::loginUsingId($userID2);
 		$this->photos_tests->download([$photoID], Archive::FULL, 403);
 	}
 
@@ -255,19 +258,21 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 		$areAlbumsDownloadable = Configs::getValueAsBool(self::CONFIG_DOWNLOADABLE);
 		try {
 			Configs::set(self::CONFIG_DOWNLOADABLE, true);
-			AccessControl::log_as_id(0);
+			Auth::loginUsingId(0);
 			$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
 			$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
-			AccessControl::logout();
-			AccessControl::log_as_id($userID1);
+			Auth::logout();
+			Session::flush();
+			Auth::loginUsingId($userID1);
 			$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 			$photoID = $this->photos_tests->upload(
 				self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE),
 				$albumID
 			)->offsetGet('id');
 			$this->sharing_tests->add([$albumID], [$userID2]);
-			AccessControl::logout();
-			AccessControl::log_as_id($userID2);
+			Auth::logout();
+			Session::flush();
+			Auth::loginUsingId($userID2);
 			$this->photos_tests->download([$photoID]);
 		} finally {
 			Configs::set(self::CONFIG_DOWNLOADABLE, $areAlbumsDownloadable);
@@ -279,19 +284,21 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 		$areAlbumsDownloadable = Configs::getValueAsBool(self::CONFIG_DOWNLOADABLE);
 		try {
 			Configs::set(self::CONFIG_DOWNLOADABLE, false);
-			AccessControl::log_as_id(0);
+			Auth::loginUsingId(0);
 			$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
 			$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
-			AccessControl::logout();
-			AccessControl::log_as_id($userID1);
+			Auth::logout();
+			Session::flush();
+			Auth::loginUsingId($userID1);
 			$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 			$photoID = $this->photos_tests->upload(
 				self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE),
 				$albumID
 			)->offsetGet('id');
 			$this->sharing_tests->add([$albumID], [$userID2]);
-			AccessControl::logout();
-			AccessControl::log_as_id($userID2);
+			Auth::logout();
+			Session::flush();
+			Auth::loginUsingId($userID2);
 			$this->photos_tests->download([$photoID], Archive::FULL, 403);
 		} finally {
 			Configs::set(self::CONFIG_DOWNLOADABLE, $areAlbumsDownloadable);

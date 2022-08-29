@@ -5,7 +5,10 @@ namespace App\Http\Requests\Album;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbumIDs;
 use App\Http\Requests\Traits\HasAlbumIDsTrait;
+use App\Models\Album;
+use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
+use Illuminate\Support\Facades\Gate;
 
 class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbumIDs
 {
@@ -16,7 +19,7 @@ class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbumIDs
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumsWriteByIDs($this->albumIDs);
+		return Gate::check(AlbumPolicy::CAN_EDIT_ID, [Album::class, $this->albumIDs()]);
 	}
 
 	/**

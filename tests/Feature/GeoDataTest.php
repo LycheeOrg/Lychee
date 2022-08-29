@@ -12,11 +12,12 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\Feature\Lib\RootAlbumUnitTest;
@@ -42,7 +43,7 @@ class GeoDataTest extends TestCase
 		$this->albums_tests = new AlbumsUnitTest($this);
 		$this->root_album_tests = new RootAlbumUnitTest($this);
 
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 
 		$this->setUpRequiresEmptyPhotos();
 		$this->setUpRequiresEmptyAlbums();
@@ -52,7 +53,8 @@ class GeoDataTest extends TestCase
 	{
 		$this->tearDownRequiresEmptyPhotos();
 		$this->tearDownRequiresEmptyAlbums();
-		AccessControl::logout();
+		Auth::logout();
+		Session::flush();
 		parent::tearDown();
 	}
 
@@ -188,7 +190,7 @@ class GeoDataTest extends TestCase
 		$includeSubAlbums = Configs::getValueAsBool(self::CONFIG_MAP_INCLUDE_SUBALBUMS);
 
 		try {
-			AccessControl::log_as_id(0);
+			Auth::loginUsingId(0);
 			Configs::set(self::CONFIG_PUBLIC_RECENT, true);
 			Configs::set(self::CONFIG_PUBLIC_HIDDEN, false);
 			Configs::set(self::CONFIG_PUBLIC_SEARCH, true);
@@ -225,7 +227,8 @@ class GeoDataTest extends TestCase
 			$this->albums_tests->set_protection_policy($albumID121);
 			$this->albums_tests->set_protection_policy($albumID13);
 
-			AccessControl::logout();
+			Auth::logout();
+			Session::flush();
 			$this->clearCachedSmartAlbums();
 
 			// Check that Recent and root album show nothing to ensure
@@ -306,7 +309,8 @@ class GeoDataTest extends TestCase
 			Configs::set(self::CONFIG_MAP_DISPLAY, $displayMap);
 			Configs::set(self::CONFIG_MAP_DISPLAY_PUBLIC, $displayMapPublicly);
 			Configs::set(self::CONFIG_MAP_INCLUDE_SUBALBUMS, $includeSubAlbums);
-			AccessControl::logout();
+			Auth::logout();
+			Session::flush();
 		}
 	}
 }

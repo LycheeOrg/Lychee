@@ -94,7 +94,7 @@ class SessionUnitTest
 	 *
 	 * @return TestResponse
 	 */
-	public function set_new(
+	public function set_admin(
 		string $login,
 		string $password,
 		int $expectedStatusCode = 204,
@@ -124,18 +124,16 @@ class SessionUnitTest
 	 *
 	 * @return TestResponse
 	 */
-	public function set_old(
+	public function update_login(
 		string $login,
 		string $password,
-		string $oldUsername,
 		string $oldPassword,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->postJson('/api/Settings::setLogin', [
+		$response = $this->testCase->postJson('/api/Settings::updateLogin', [
 			'username' => $login,
 			'password' => $password,
-			'oldUsername' => $oldUsername,
 			'oldPassword' => $oldPassword,
 		]);
 		$response->assertStatus($expectedStatusCode);

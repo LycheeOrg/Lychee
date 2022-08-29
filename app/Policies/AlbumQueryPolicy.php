@@ -1,39 +1,36 @@
 <?php
 
-namespace App\Actions;
+namespace App\Policies;
 
-use App\Contracts\AbstractAlbum;
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\InvalidQueryModelException;
-use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\AlbumBuilder;
-use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\TagAlbumBuilder;
 use App\Models\TagAlbum;
-use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 /**
- * Class AlbumAuthorisationProvider.
+ * Class AlbumQueryPolicy.
  */
-class AlbumAuthorisationProvider
+class AlbumQueryPolicy
 {
-	public const UNLOCKED_ALBUMS_SESSION_KEY = 'unlocked_albums';
 	protected AlbumFactory $albumFactory;
+	protected AlbumPolicy $albumPolicy;
 
-	public function __construct(AlbumFactory $albumFactory)
+	public function __construct(AlbumFactory $albumFactory, AlbumPolicy $albumPolicy)
 	{
 		$this->albumFactory = $albumFactory;
+		$this->albumPolicy = $albumPolicy;
 	}
 
 	/**
@@ -59,11 +56,11 @@ class AlbumAuthorisationProvider
 	{
 		$this->prepareModelQueryOrFail($query);
 
-		if (AccessControl::is_admin()) {
+		if (Gate::check(UserPolicy::IS_ADMIN)) {
 			return $query;
 		}
 
-		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+		$userID = Auth::id();
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
@@ -95,7 +92,7 @@ class AlbumAuthorisationProvider
 	 * Adds the conditions of an accessible album to the query.
 	 *
 	 * **Attention:** This method is only meant for internal use by
-	 * this class or {@link PhotoAuthorisationProvider}.
+	 * this class or {@link PhotoQueryPolicy}.
 	 *
 	 * This method adds the WHERE conditions without any further pre-cautions.
 	 * The method silently assumes that the SELECT clause contains the tables
@@ -114,8 +111,8 @@ class AlbumAuthorisationProvider
 	 */
 	public function appendAccessibilityConditions(BaseBuilder $query): BaseBuilder
 	{
-		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
-		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+		$unlockedAlbumIDs = $this->albumPolicy->getUnlockedAlbumIDs();
+		$userID = Auth::id();
 
 		try {
 			$query
@@ -171,12 +168,12 @@ class AlbumAuthorisationProvider
 	{
 		$this->prepareModelQueryOrFail($query);
 
-		if (AccessControl::is_admin()) {
+		if (Gate::check(UserPolicy::IS_ADMIN)) {
 			return $query;
 		}
 
-		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
-		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+		$unlockedAlbumIDs = $this->albumPolicy->getUnlockedAlbumIDs();
+		$userID = Auth::id();
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
@@ -212,57 +209,6 @@ class AlbumAuthorisationProvider
 	}
 
 	/**
-	 * Checks whether the album is accessible by the current user.
-	 *
-	 * A real albums (i.e. albums that are stored in the DB) is called
-	 * _accessible_ if the current user is allowed to browse into it, i.e. if
-	 * the current user may open it and see its content.
-	 * An album is _accessible_ if any of the following conditions hold
-	 * (OR-clause)
-	 *
-	 *  - the user is an admin
-	 *  - the user is the owner of the album
-	 *  - the album is shared with the user
-	 *  - the album is public AND no password is set
-	 *  - the album is public AND has been unlocked
-	 *
-	 * In other cases, the following holds:
-	 *  - the root album is accessible by everybody
-	 *  - the built-in smart albums are accessible, if
-	 *     - the user is authenticated and is granted the right of uploading, or
-	 *     - the album is public
-	 *
-	 * @param AbstractAlbum|null $album
-	 *
-	 * @return bool
-	 */
-	public function isAccessible(?AbstractAlbum $album): bool
-	{
-		if ($album === null || AccessControl::is_admin()) {
-			return true;
-		}
-
-		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
-
-		if ($album instanceof BaseAlbum) {
-			try {
-				return
-					($album->owner_id === $userID) ||
-					($album->is_public && $album->password === null) ||
-					($album->is_public && $this->isUnlocked($album)) ||
-					($album->shared_with()->where('user_id', '=', $userID)->count() > 0);
-			} catch (\InvalidArgumentException $e) {
-				throw LycheeAssertionError::createFromUnexpectedException($e);
-			}
-		} elseif ($album instanceof BaseSmartAlbum) {
-			return AccessControl::can_upload() || $album->is_public;
-		} else {
-			// Should never happen
-			return false;
-		}
-	}
-
-	/**
 	 * Restricts an album query to _browsable_ albums.
 	 *
 	 * Intuitively, an album is browsable if users can find a path to the
@@ -272,7 +218,7 @@ class AlbumAuthorisationProvider
 	 *   1. there is a path from the origin to the album, and
 	 *   2. all albums on the path are _reachable_
 	 *
-	 * See {@link AlbumAuthorisationProvider::applyReachabilityFilter()}
+	 * See {@link AlbumQueryPolicy::applyReachabilityFilter()}
 	 * for the definition of reachability.
 	 * Note, while _reachability_ (as well as _visibility_ and _accessibility_)
 	 * are a _local_ properties, _browsability_ is a _global_ property.
@@ -311,7 +257,7 @@ class AlbumAuthorisationProvider
 			throw new LycheeInvalidArgumentException('the given query does not query for albums');
 		}
 
-		if (AccessControl::is_admin()) {
+		if (Gate::check(UserPolicy::IS_ADMIN)) {
 			return $query;
 		}
 
@@ -329,8 +275,8 @@ class AlbumAuthorisationProvider
 	 * Adds the conditions of an unreachable album to the query.
 	 *
 	 * **Attention:** This method is only meant for internal use by
-	 * this class or {@link PhotoAuthorisationProvider}.
-	 * Use {@link AlbumAuthorisationProvider::applyBrowsabilityFilter()}
+	 * this class or {@link PhotoQueryPolicy}.
+	 * Use {@link AlbumQueryPolicy::applyBrowsabilityFilter()}
 	 * if called from other places instead.
 	 *
 	 * This method adds the WHERE conditions without any further pre-cautions.
@@ -364,8 +310,8 @@ class AlbumAuthorisationProvider
 			throw new LycheeInvalidArgumentException('$originLeft and $originRight must simultaneously either be integers, strings or null');
 		}
 
-		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
-		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+		$unlockedAlbumIDs = $this->albumPolicy->getUnlockedAlbumIDs();
+		$userID = Auth::id();
 
 		try {
 			// There are inner albums ...
@@ -428,128 +374,6 @@ class AlbumAuthorisationProvider
 	}
 
 	/**
-	 * Pushes an album onto the stack of unlocked albums.
-	 *
-	 * @param BaseAlbum|BaseAlbumImpl $album
-	 */
-	public function unlock(BaseAlbum|BaseAlbumImpl $album): void
-	{
-		Session::push(self::UNLOCKED_ALBUMS_SESSION_KEY, $album->id);
-	}
-
-	/**
-	 * Check whether the given album has previously been unlocked.
-	 *
-	 * @param BaseAlbum|BaseAlbumImpl $album
-	 *
-	 * @return bool
-	 */
-	public function isUnlocked(BaseAlbum|BaseAlbumImpl $album): bool
-	{
-		return in_array($album->id, $this->getUnlockedAlbumIDs(), true);
-	}
-
-	private function getUnlockedAlbumIDs(): array
-	{
-		return Session::get(self::UNLOCKED_ALBUMS_SESSION_KEY, []);
-	}
-
-	/**
-	 * Checks whether the album is editable by the current user.
-	 *
-	 * An album is called _editable_ if the current user is allowed to edit
-	 * the album's properties.
-	 * This also covers adding new photos to an album.
-	 * An album is _editable_ if any of the following conditions hold
-	 * (OR-clause)
-	 *
-	 *  - the user is an admin
-	 *  - the user has the upload privilege and is the owner of the album
-	 *
-	 * Note about built-in smart albums:
-	 * The built-in smart albums (starred, public, recent, unsorted) do not
-	 * have any editable properties.
-	 * Hence, it is pointless whether a smart album is editable or not.
-	 * In order to silently ignore/skip this condition for smart albums,
-	 * this method always returns `true` for a smart album.
-	 *
-	 * @param AbstractAlbum|null $album the album; `null` designates the root album
-	 *
-	 * @return bool
-	 */
-	public function isEditable(?AbstractAlbum $album): bool
-	{
-		if (AccessControl::is_admin()) {
-			return true;
-		}
-		if (!AccessControl::is_logged_in()) {
-			return false;
-		}
-
-		$user = AccessControl::user();
-
-		if (!$user->may_upload) {
-			return false;
-		}
-
-		// The root album and smart albums get a pass
-		return
-			$album === null ||
-			$album instanceof BaseSmartAlbum ||
-			($album instanceof BaseAlbum && $album->owner_id === $user->id);
-	}
-
-	/**
-	 * Checks whether the designated albums are editable by the current user.
-	 *
-	 * See {@link AlbumAuthorisationProvider::isEditable()} for the definition
-	 * when an album is editable.
-	 *
-	 * This method is mostly only useful during deletion of albums, when no
-	 * album models are loaded for efficiency reasons.
-	 * If an album model is required anyway (because it shall be edited),
-	 * then first load the album once and use
-	 * {@link AlbumAuthorisationProvider::isEditable()}
-	 * instead in order to avoid several DB requests.
-	 *
-	 * @param array $albumIDs
-	 *
-	 * @return bool
-	 *
-	 * @throws QueryBuilderException
-	 */
-	public function areEditableByIDs(array $albumIDs): bool
-	{
-		if (AccessControl::is_admin()) {
-			return true;
-		}
-		if (!AccessControl::is_logged_in()) {
-			return false;
-		}
-
-		$user = AccessControl::user();
-
-		if (!$user->may_upload) {
-			return false;
-		}
-
-		// Remove root and smart albums, as they get a pass.
-		// Make IDs unique as otherwise count will fail.
-		$albumIDs = array_diff(
-			array_unique($albumIDs),
-			array_keys(AlbumFactory::BUILTIN_SMARTS),
-			[null]
-		);
-
-		return
-			count($albumIDs) === 0 ||
-			BaseAlbumImpl::query()
-			->whereIn('id', $albumIDs)
-			->where('owner_id', $user->id)
-			->count() === count($albumIDs);
-	}
-
-	/**
 	 * Throws an exception if the given query does not query for an album.
 	 *
 	 * @param AlbumBuilder|FixedQueryBuilder $query
@@ -584,8 +408,8 @@ class AlbumAuthorisationProvider
 			$query->join('base_albums', 'base_albums.id', '=', $table . '.id');
 		}
 
-		if (AccessControl::is_logged_in()) {
-			$userID = AccessControl::id();
+		$userID = Auth::id();
+		if ($userID !== null) {
 			// We must left join with `user_base_album` if and only if we
 			// restrict the eventual query to the ID of the authenticated
 			// user by a `WHERE`-clause.
@@ -604,23 +428,5 @@ class AlbumAuthorisationProvider
 				}
 			);
 		}
-	}
-
-	/**
-	 * Checks whether the album is visible by the current user.
-	 *
-	 * Note, at the moment this check is only needed for built-in smart
-	 * albums.
-	 * Hence, the method is only provided for them.
-	 *
-	 * @param BaseSmartAlbum $smartAlbum
-	 *
-	 * @return bool true, if the album is visible
-	 */
-	public function isVisible(BaseSmartAlbum $smartAlbum): bool
-	{
-		return
-			(AccessControl::is_logged_in() && AccessControl::can_upload()) ||
-			$smartAlbum->is_public;
 	}
 }

@@ -12,19 +12,22 @@
 
 namespace Tests\Feature;
 
-use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Tests\Feature\Lib\AlbumsUnitTest;
+use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\Feature\Lib\RootAlbumUnitTest;
 use Tests\Feature\Lib\SharingUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
+use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\Feature\Traits\RequiresEmptyUsers;
 use Tests\TestCase;
 
@@ -33,25 +36,30 @@ class AlbumTest extends TestCase
 	use InteractWithSmartAlbums;
 	use RequiresEmptyAlbums;
 	use RequiresEmptyUsers;
+	use RequiresEmptyPhotos;
 
 	protected AlbumsUnitTest $albums_tests;
 	protected RootAlbumUnitTest $root_album_tests;
 	protected UsersUnitTest $users_tests;
 	protected SharingUnitTest $sharing_tests;
+	protected PhotosUnitTest $photos_tests;
 
 	public function setUp(): void
 	{
 		parent::setUp();
 		$this->setUpRequiresEmptyUsers();
 		$this->setUpRequiresEmptyAlbums();
+		$this->setUpRequiresEmptyPhotos();
 		$this->albums_tests = new AlbumsUnitTest($this);
 		$this->root_album_tests = new RootAlbumUnitTest($this);
 		$this->users_tests = new UsersUnitTest($this);
 		$this->sharing_tests = new SharingUnitTest($this);
+		$this->photos_tests = new PhotosUnitTest($this);
 	}
 
 	public function tearDown(): void
 	{
+		$this->tearDownRequiresEmptyPhotos();
 		$this->tearDownRequiresEmptyAlbums();
 		$this->tearDownRequiresEmptyUsers();
 		parent::tearDown();
@@ -79,7 +87,7 @@ class AlbumTest extends TestCase
 
 	public function testAddReadLogged(): void
 	{
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 		$this->clearCachedSmartAlbums();
 
 		$this->albums_tests->get(RecentAlbum::ID);
@@ -142,7 +150,8 @@ class AlbumTest extends TestCase
 		/*
 		 * Flush the session to see if we can access the album
 		 */
-		AccessControl::logout();
+		Auth::logout();
+		Session::flush();
 
 		/*
 		 * Let's try to get the info of the album we just created.
@@ -151,7 +160,7 @@ class AlbumTest extends TestCase
 		$this->albums_tests->unlock($albumID1, 'wrong-password', 403);
 		$this->albums_tests->get($albumID1, 401);
 
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 
 		/*
 		 * Let's try to delete this album.
@@ -167,7 +176,8 @@ class AlbumTest extends TestCase
 		$this->root_album_tests->get(200, null, $albumID3);
 		$this->root_album_tests->get(200, null, $albumTagID1);
 
-		AccessControl::logout();
+		Auth::logout();
+		Session::flush();
 	}
 
 	/**
@@ -214,7 +224,7 @@ class AlbumTest extends TestCase
 			// tests.
 			static::assertDatabaseCount('base_albums', 0);
 
-			AccessControl::log_as_id(0);
+			Auth::loginUsingId(0);
 
 			// Create the test layout
 			$albumID1 = $this->albums_tests->add(null, 'Album 1')->offsetGet('id');
@@ -306,20 +316,22 @@ class AlbumTest extends TestCase
 				],
 			], $albumStat);
 		} finally {
-			AccessControl::logout();
+			Auth::logout();
+			Session::flush();
 		}
 	}
 
 	public function testTrueNegative(): void
 	{
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 
 		$this->albums_tests->set_description('-1', 'new description', 422);
 		$this->albums_tests->set_description('abcdefghijklmnopqrstuvwx', 'new description', 404);
 		$this->albums_tests->set_protection_policy('-1', true, true, false, false, true, true, null, 422);
 		$this->albums_tests->set_protection_policy('abcdefghijklmnopqrstuvwx', true, true, false, false, true, true, null, 404);
 
-		AccessControl::logout();
+		Auth::logout();
+		Session::flush();
 	}
 
 	public function testAlbumTree(): void
@@ -328,7 +340,7 @@ class AlbumTest extends TestCase
 		$albumSortingOrder = Configs::getValueAsString(self::CONFIG_ALBUMS_SORTING_ORDER);
 
 		try {
-			AccessControl::log_as_id(0);
+			Auth::loginUsingId(0);
 			Configs::set(self::CONFIG_ALBUMS_SORTING_COL, 'title');
 			Configs::set(self::CONFIG_ALBUMS_SORTING_ORDER, 'ASC');
 
@@ -374,96 +386,144 @@ class AlbumTest extends TestCase
 		} finally {
 			Configs::set(self::CONFIG_ALBUMS_SORTING_COL, $albumSortingColumn);
 			Configs::set(self::CONFIG_ALBUMS_SORTING_ORDER, $albumSortingOrder);
-			AccessControl::logout();
+			Auth::logout();
+			Session::flush();
 		}
 	}
 
 	public function testAddAlbumByNonAdminUserWithoutUploadPrivilege(): void
 	{
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 		$userID = $this->users_tests->add('Test user', 'Test password', false)->offsetGet('id');
-		AccessControl::logout();
-		AccessControl::log_as_id($userID);
+		Auth::logout();
+		Session::flush();
+		Auth::loginUsingId($userID);
 		$this->albums_tests->add(null, 'Test Album', 403);
 	}
 
 	public function testAddAlbumByNonAdminUserWithUploadPrivilege(): void
 	{
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 		$userID = $this->users_tests->add('Test user', 'Test password')->offsetGet('id');
-		AccessControl::logout();
-		AccessControl::log_as_id($userID);
+		Auth::logout();
+		Session::flush();
+		Auth::loginUsingId($userID);
 		$this->albums_tests->add(null, 'Test Album');
 	}
 
 	public function testEditAlbumByNonOwner(): void
 	{
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 		$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
 		$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
-		AccessControl::logout();
-		AccessControl::log_as_id($userID1);
+		Auth::logout();
+		Session::flush();
+		Auth::loginUsingId($userID1);
 		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 		$this->sharing_tests->add([$albumID], [$userID2]);
-		AccessControl::logout();
-		AccessControl::log_as_id($userID2);
+		Auth::logout();
+		Session::flush();
+		Auth::loginUsingId($userID2);
 		$this->albums_tests->set_title($albumID, 'New title for test album', 403);
 	}
 
 	public function testEditAlbumByOwner(): void
 	{
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 		$userID = $this->users_tests->add('Test user', 'Test password 1')->offsetGet('id');
-		AccessControl::logout();
-		AccessControl::log_as_id($userID);
+		Auth::logout();
+		Session::flush();
+		Auth::loginUsingId($userID);
 		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 		$this->albums_tests->set_title($albumID, 'New title for test album');
 	}
 
 	public function testDeleteMultipleAlbumsByAnonUser(): void
 	{
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 		$albumID1 = $this->albums_tests->add(null, 'Test Album 1')->offsetGet('id');
 		$albumID2 = $this->albums_tests->add(null, 'Test Album 2')->offsetGet('id');
-		AccessControl::logout();
+		Auth::logout();
+		Session::flush();
 		$this->albums_tests->delete([$albumID1, $albumID2], 401);
 	}
 
 	public function testDeleteMultipleAlbumsByNonAdminUserWithoutUploadPrivilege(): void
 	{
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 		$albumID1 = $this->albums_tests->add(null, 'Test Album 1')->offsetGet('id');
 		$albumID2 = $this->albums_tests->add(null, 'Test Album 2')->offsetGet('id');
 		$userID = $this->users_tests->add('Test user', 'Test password', false)->offsetGet('id');
 		$this->sharing_tests->add([$albumID1, $albumID2], [$userID]);
-		AccessControl::logout();
-		AccessControl::log_as_id($userID);
+		Auth::logout();
+		Session::flush();
+		Auth::loginUsingId($userID);
 		$this->albums_tests->delete([$albumID1, $albumID2], 403);
 	}
 
 	public function testDeleteMultipleAlbumsByNonOwner(): void
 	{
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 		$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
 		$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
-		AccessControl::logout();
-		AccessControl::log_as_id($userID1);
+		Auth::logout();
+		Session::flush();
+		Auth::loginUsingId($userID1);
 		$albumID1 = $this->albums_tests->add(null, 'Test Album 1')->offsetGet('id');
 		$albumID2 = $this->albums_tests->add(null, 'Test Album 2')->offsetGet('id');
 		$this->sharing_tests->add([$albumID1, $albumID2], [$userID2]);
-		AccessControl::logout();
-		AccessControl::log_as_id($userID2);
+		Auth::logout();
+		Session::flush();
+		Auth::loginUsingId($userID2);
 		$this->albums_tests->delete([$albumID1, $albumID2], 403);
 	}
 
 	public function testDeleteMultipleAlbumsByOwner(): void
 	{
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 		$userID = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
-		AccessControl::logout();
-		AccessControl::log_as_id($userID);
+		Auth::logout();
+		Session::flush();
+		Auth::loginUsingId($userID);
 		$albumID1 = $this->albums_tests->add(null, 'Test Album 1')->offsetGet('id');
 		$albumID2 = $this->albums_tests->add(null, 'Test Album 2')->offsetGet('id');
 		$this->albums_tests->delete([$albumID1, $albumID2]);
+	}
+
+	/**
+	 * Creates a (regular) album, put some photos in it, tags some of them,
+	 * creates a corresponding tag album and deletes the tag album again.
+	 *
+	 * This test ensures that only and ONLY the tag album is deleted.
+	 *
+	 * In particular, the test assures:
+	 *  - deleting the tag album does not delete the photos inside it
+	 *  - deleting the tah album does not delete the regular album which
+	 *    contains the tagged photos
+	 *
+	 * Test for issue
+	 * [LycheeOrg/Lychee#1472](https://github.com/LycheeOrg/Lychee/issues/1472).
+	 *
+	 * @return void
+	 */
+	public function testDeleteNonEmptyTagAlbumWithPhotosFromRegularAlbum(): void
+	{
+		Auth::loginUsingId(0);
+		$regularAlbumID = $this->albums_tests->add(null, 'Regular Album for Delete Test')->offsetGet('id');
+		$photoID = $this->photos_tests->upload(
+			self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE), $regularAlbumID
+		)->offsetGet('id');
+		$this->photos_tests->set_tag([$photoID], ['tag-for-delete-test']);
+		$tagAlbumID = $this->albums_tests->addByTags('Tag Album for Delete Test', ['tag-for-delete-test'])->offsetGet('id');
+
+		// Ensure that the photo is actually part of the tag album and that
+		// we are testing what we want to test
+		$this->albums_tests->get($tagAlbumID)->assertJson([]);
+
+		$this->albums_tests->delete([$tagAlbumID]);
+
+		// Ensure that the regular album and the photo are still there
+		$this->albums_tests->get($regularAlbumID);
+		$this->photos_tests->get($photoID);
 	}
 }

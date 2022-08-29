@@ -1007,7 +1007,7 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject18 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", " ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'\n\t\t\t\tdraggable='", "'\n\t\t\t\t", ">\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", " ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'\n\t\t\t\tdraggable='", "'\n\t\t\t\t", ">\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
     _templateObject19 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject20 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"], ["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"]),
-    _templateObject21 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'\n\t\t\tdraggable='true'\n\t\t\tondragstart='lychee.startDrag(event)'\n\t\t\tondragend='lychee.endDrag(event)'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'\n\t\t\tdraggable='true'\n\t\t\tondragstart='lychee.startDrag(event)'\n\t\t\tondragend='lychee.endDrag(event)'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
+    _templateObject21 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'\n\t\t\tdraggable='", "'\n\t\t\tondragstart='lychee.startDrag(event)'\n\t\t\tondragend='lychee.endDrag(event)'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'\n\t\t\tdraggable='", "'\n\t\t\tondragstart='lychee.startDrag(event)'\n\t\t\tondragend='lychee.endDrag(event)'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
     _templateObject22 = _taggedTemplateLiteral(["<a><span title='", "'>", "</span>", "</a>"], ["<a><span title='", "'>", "</span>", "</a>"]),
     _templateObject23 = _taggedTemplateLiteral(["<a>", "</a>"], ["<a>", "</a>"]),
     _templateObject24 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
@@ -1058,7 +1058,7 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject69 = _taggedTemplateLiteral(["\n\t\t\t<p class='importServer'>\n\t\t\t\t", "\n\t\t\t\t<input class='text' name='path' type='text' placeholder='", "' value='", "uploads/import/'>\n\t\t\t</p>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='delete_imported' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='import_via_symlink' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='skip_duplicates' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='resync_metadata' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<p class='importServer'>\n\t\t\t\t", "\n\t\t\t\t<input class='text' name='path' type='text' placeholder='", "' value='", "uploads/import/'>\n\t\t\t</p>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='delete_imported' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='import_via_symlink' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='skip_duplicates' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='resync_metadata' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"]),
     _templateObject70 = _taggedTemplateLiteral(["url(\"", "\")"], ["url(\"", "\")"]),
     _templateObject71 = _taggedTemplateLiteral(["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"], ["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"]),
-    _templateObject72 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setLogin\">\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='oldUsername' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t</div>\n\t\t\t</div>"], ["\n\t\t\t<div class=\"setLogin\">\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='oldUsername' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t</div>\n\t\t\t</div>"]),
+    _templateObject72 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setLogin\">\n\t\t\t<form>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t</div>\n\t\t\t</form>\n\t\t\t</div>"], ["\n\t\t\t<div class=\"setLogin\">\n\t\t\t<form>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t</div>\n\t\t\t</form>\n\t\t\t</div>"]),
     _templateObject73 = _taggedTemplateLiteral(["\n\t\t\t\t<div class=\"setSorting\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t\t\t<a id=\"basicModal__action_sorting_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t\t<div class=\"setSorting\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t\t\t<a id=\"basicModal__action_sorting_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t"]),
     _templateObject74 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"]),
     _templateObject75 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t<p class=\"warning\">\n\t\t\t\t\t\t", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t"], ["\n\t\t\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t<p class=\"warning\">\n\t\t\t\t\t\t", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t"]),
@@ -1423,7 +1423,7 @@ album.isSmartID = function (id) {
  * @returns {boolean}
  */
 album.isSearchID = function (id) {
-	return id === SearchAlbumID;
+	return id !== null && (id === SearchAlbumIDPrefix || id.startsWith(SearchAlbumIDPrefix + "/"));
 };
 
 /**
@@ -1451,16 +1451,25 @@ album.getID = function () {
 	/** @type {?string} */
 	var id = null;
 
-	// this is a Lambda
+	/** @param {?string} _id */
 	var isID = function isID(_id) {
-		return album.isSmartID(_id) || /*album.isSearchID(_id) || */album.isModelID(_id);
+		return album.isSmartID(_id) || album.isSearchID(_id) || album.isModelID(_id);
 	};
 
 	if (_photo3.json) id = _photo3.json.album_id;else if (album.json) id = album.json.id;else if (mapview.albumID) id = mapview.albumID;
 
-	// Search
-	if (isID(id) === false) id = $(".album:hover, .album.active").attr("data-id");
-	if (isID(id) === false) id = $(".photo:hover, .photo.active").attr("data-album-id");
+	if (isID(id) === false) {
+		var active = $(".album:hover, .album.active");
+		if (active.length === 1) {
+			id = active.attr("data-id") || null;
+		}
+	}
+	if (isID(id) === false) {
+		var _active = $(".photo:hover, .photo.active");
+		if (_active.length === 1) {
+			id = _active.attr("data-album-id") || null;
+		}
+	}
 
 	if (isID(id) === true) return id;else return null;
 };
@@ -1580,17 +1589,26 @@ album.deleteSubByID = function (albumID) {
 /**
  * @param {string} albumID
  * @param {?AlbumLoadedCB} [albumLoadedCB=null]
+ * @param {?string} parentID
  *
  * @returns {void}
  */
 album.load = function (albumID) {
 	var albumLoadedCB = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+	var parentID = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
 	/**
   * @param {Album} data
   */
 	var processAlbum = function processAlbum(data) {
 		album.json = data;
+
+		if (parentID !== null) {
+			// Used with search so that the back button sends back to the
+			// search results.
+			album.json.original_parent_id = album.json.parent_id;
+			album.json.parent_id = parentID;
+		}
 
 		if (albumLoadedCB === null) {
 			lychee.animate(lychee.content, "contentZoomOut");
@@ -1671,6 +1689,21 @@ album.load = function (albumID) {
 				albums.refresh();
 				album.load(albumID, albumLoadedCB);
 			});
+			return true;
+		} else if (lycheeException.exception.endsWith("UnauthenticatedException") && !albumLoadedCB) {
+			// If no password is required, but we still get a 401 error
+			// try to properly log in as a user
+			// We only try this, if `albumLoadedCB` is not set.
+			// This is not optimal, but the best we can do without too much
+			// refactoring for now.
+			// `albumLoadedCB` is set, if the user directly jumps to a photo
+			// in an album via a direct link.
+			// Even though the album might be private, the photo could still
+			// be visible.
+			// If we caught users for a direct link to a public photo
+			// within a private album, we would "trap" the users in a login
+			// dialog which they cannot pass by.
+			lychee.loginDialog();
 			return true;
 		} else if (albumLoadedCB) {
 			// In case we could not successfully load and unlock the album,
@@ -2685,6 +2718,37 @@ var albums = {
  * @returns {void}
  */
 albums.load = function () {
+	var showRootAlbum = function showRootAlbum() {
+		header.setMode("albums");
+		view.albums.init();
+		lychee.animate(lychee.content, "contentZoomIn");
+
+		tabindex.makeFocusable(lychee.content);
+
+		if (lychee.active_focus_on_page_load) {
+			// Put focus on first element - either album or photo
+			var first_album = $(".album:first");
+			if (first_album.length !== 0) {
+				first_album.focus();
+			} else {
+				var first_photo = $(".photo:first");
+				if (first_photo.length !== 0) {
+					first_photo.focus();
+				}
+			}
+		}
+
+		setTimeout(function () {
+			lychee.footer_show();
+		}, 300);
+
+		// If no user is authenticated and there is nothing to see in the
+		// root album, we automatically show the login dialog
+		if (lychee.publicMode === true && lychee.viewMode === false && albums.isEmpty()) {
+			lychee.loginDialog();
+		}
+	};
+
 	var startTime = new Date().getTime();
 
 	lychee.animate(lychee.content, "contentZoomOut");
@@ -2705,28 +2769,7 @@ albums.load = function () {
 		var waitTime = durationTime > 300 || skipDelay ? 0 : 300 - durationTime;
 
 		setTimeout(function () {
-			header.setMode("albums");
-			view.albums.init();
-			lychee.animate(lychee.content, "contentZoomIn");
-
-			tabindex.makeFocusable(lychee.content);
-
-			if (lychee.active_focus_on_page_load) {
-				// Put focus on first element - either album or photo
-				var first_album = $(".album:first");
-				if (first_album.length !== 0) {
-					first_album.focus();
-				} else {
-					var first_photo = $(".photo:first");
-					if (first_photo.length !== 0) {
-						first_photo.focus();
-					}
-				}
-			}
-
-			setTimeout(function () {
-				lychee.footer_show();
-			}, 300);
+			showRootAlbum();
 		}, waitTime);
 	};
 
@@ -2734,24 +2777,7 @@ albums.load = function () {
 		api.post("Albums::get", {}, successCallback);
 	} else {
 		setTimeout(function () {
-			header.setMode("albums");
-			view.albums.init();
-			lychee.animate(lychee.content, "contentZoomIn");
-
-			tabindex.makeFocusable(lychee.content);
-
-			if (lychee.active_focus_on_page_load) {
-				// Put focus on first element - either album or photo
-				var first_album = $(".album:first");
-				if (first_album.length !== 0) {
-					first_album.focus();
-				} else {
-					var first_photo = $(".photo:first");
-					if (first_photo.length !== 0) {
-						first_photo.focus();
-					}
-				}
-			}
+			showRootAlbum();
 		}, 300);
 	}
 };
@@ -2916,6 +2942,24 @@ albums.isTagAlbum = function (albumID) {
 	});
 };
 
+/**
+ * Returns true if the root album is empty in the sense that there is no
+ * visible user content.
+ *
+ * @returns {boolean}
+ */
+albums.isEmpty = function () {
+	return albums.json === null || albums.isSmartAlbumEmpty(albums.json.smart_albums.public) && albums.isSmartAlbumEmpty(albums.json.smart_albums.recent) && albums.isSmartAlbumEmpty(albums.json.smart_albums.starred) && albums.isSmartAlbumEmpty(albums.json.smart_albums.unsorted) && albums.json.albums.length === 0 && albums.json.shared_albums.length === 0 && albums.json.tag_albums.length === 0;
+};
+
+/**
+ * @param {?SmartAlbum} smartAlbum
+ * @returns {boolean}
+ */
+albums.isSmartAlbumEmpty = function (smartAlbum) {
+	return smartAlbum === null || !smartAlbum.photos || smartAlbum.photos.length === 0;
+};
+
 //noinspection HtmlUnknownTarget
 
 /**
@@ -2996,6 +3040,7 @@ build.album = function (data) {
 	var formattedCreationTs = lychee.locale.printMonthYear(data.created_at);
 	var formattedMinTs = lychee.locale.printMonthYear(data.min_taken_at);
 	var formattedMaxTs = lychee.locale.printMonthYear(data.max_taken_at);
+	var disableDragDrop = !album.isUploadable() || disabled || album.isSmartID(data.id) || data.is_tag_album;
 	var subtitle = formattedCreationTs;
 
 	// check setting album_subtitle_type:
@@ -3032,7 +3077,7 @@ build.album = function (data) {
 			}
 	}
 
-	var html = lychee.html(_templateObject18, disabled ? "disabled" : "", data.is_nsfw && lychee.nsfw_blur ? "blurred" : "", data.id, data.is_nsfw ? "1" : "0", tabindex.get_next_tab_index(), album.isSmartID(data.id) || data.is_tag_album ? "false" : "true", album.isSmartID(data.id) || data.is_tag_album ? "" : "ondragstart='lychee.startDrag(event)'\n\t\t\t\tondragover='lychee.overDrag(event)'\n\t\t\t\tondragleave='lychee.leaveDrag(event)'\n\t\t\t\tondragend='lychee.endDrag(event)'\n\t\t\t\tondrop='lychee.finishDrag(event)'", build.getAlbumThumb(data), build.getAlbumThumb(data), build.getAlbumThumb(data), data.title, data.title, subtitle);
+	var html = lychee.html(_templateObject18, disabled ? "disabled" : "", data.is_nsfw && lychee.nsfw_blur ? "blurred" : "", data.id, data.is_nsfw ? "1" : "0", tabindex.get_next_tab_index(), disableDragDrop ? "false" : "true", disableDragDrop ? "" : "ondragstart='lychee.startDrag(event)'\n\t\t\t\tondragover='lychee.overDrag(event)'\n\t\t\t\tondragleave='lychee.leaveDrag(event)'\n\t\t\t\tondragend='lychee.endDrag(event)'\n\t\t\t\tondrop='lychee.finishDrag(event)'", build.getAlbumThumb(data), build.getAlbumThumb(data), build.getAlbumThumb(data), data.title, data.title, subtitle);
 
 	if (album.isUploadable() && !disabled) {
 		var isCover = album.json && album.json.cover_id && data.thumb.id === album.json.cover_id;
@@ -3130,7 +3175,7 @@ build.photo = function (data) {
 		}
 	}
 
-	html += lychee.html(_templateObject21, disabled ? "disabled" : "", data.album_id, data.id, tabindex.get_next_tab_index(), thumbnail, data.title, data.title);
+	html += lychee.html(_templateObject21, disabled ? "disabled" : "", data.album_id, data.id, tabindex.get_next_tab_index(), !album.isUploadable() || disabled ? "false" : "true", thumbnail, data.title, data.title);
 
 	if (data.taken_at !== null) html += lychee.html(_templateObject22, lychee.locale["CAMERA_DATE"], build.iconic("camera-slr"), lychee.locale.printDateTime(data.taken_at));else html += lychee.html(_templateObject23, lychee.locale.printDateTime(data.created_at));
 
@@ -3802,7 +3847,7 @@ contextMenu.photo = function (photoID, e) {
 		} }, { title: build.iconic("cloud-download") + lychee.locale["DOWNLOAD"], fn: function fn() {
 			return _photo3.getArchive([photoID]);
 		} }];
-	if (album.isSmartID(album.getID()) || album.isSearchID(album.getID) || album.isTagAlbum()) {
+	if (album.isSmartID(album.getID()) || album.isSearchID(album.getID()) || album.isTagAlbum()) {
 		// Cover setting not supported for smart or tag albums and search results.
 		items.splice(2, 1);
 	}
@@ -4402,7 +4447,7 @@ header.bind = function () {
 
 	header.dom(".header__search").on("keyup click", function () {
 		if ($(this).val().length > 0) {
-			lychee.goto("search/" + encodeURIComponent($(this).val()));
+			lychee.goto(SearchAlbumIDPrefix + "/" + encodeURIComponent($(this).val()));
 		} else if (search.json !== null) {
 			search.reset();
 		}
@@ -4694,11 +4739,11 @@ header.setMode = function (mode) {
 			}
 
 			if (album.isUploadable()) {
-				var _e24 = $("#button_trash, #button_move, #button_visibility, #button_star");
+				var _e24 = $("#button_trash, #button_move, #button_visibility, #button_star, #button_rotate_cwise, #button_rotate_ccwise");
 				_e24.show();
 				tabindex.makeFocusable(_e24);
 			} else {
-				var _e25 = $("#button_trash, #button_move, #button_visibility, #button_star");
+				var _e25 = $("#button_trash, #button_move, #button_visibility, #button_star, #button_rotate_cwise, #button_rotate_ccwise");
 				_e25.hide();
 				tabindex.makeUnfocusable(_e25);
 			}
@@ -5973,6 +6018,21 @@ lychee.reloadIfLegacyIDs = function (albumID, photoID, autoplay) {
 };
 
 /**
+ * This is a "God method" that is used to load pretty much anything, based
+ * on what's in the web browser's URL bar after the '#' character:
+ *
+ * (nothing) --> load root album, assign null to albumID and photoID
+ * {albumID} --> load the album; albumID equals the given ID, photoID is null
+ * {albumID}/{photoID} --> load album (if not already loaded) and then the
+ *   corresponding photo, assign the respective values to albumID and photoID
+ * map --> load the map of all albums
+ * map/{albumID} --> load the map of the respective album
+ * search/{term} --> load or go back to "search" album for the given term,
+ *   assign 'search/{term}' as fictitious albumID and assign null to photoID
+ * search/{term}/{photoID} --> load photo within fictitious search album,
+ *   assign 'search/{term}' as fictitious albumID and assign the given ID to
+ *   photoID
+ *
  * @param {boolean} [autoplay=true]
  * @returns {void}
  */
@@ -5981,7 +6041,10 @@ lychee.load = function () {
 
 	var hash = document.location.hash.replace("#", "").split("/");
 	var albumID = hash[0];
-	var photoID = hash[1];
+	if (albumID === SearchAlbumIDPrefix && hash.length > 1) {
+		albumID += "/" + hash[1];
+	}
+	var photoID = hash[album.isSearchID(albumID) ? 2 : 1];
 
 	contextMenu.close();
 	multiselect.close();
@@ -6010,24 +6073,6 @@ lychee.load = function () {
 			}
 			mapview.open(albumID);
 			lychee.footer_hide();
-		} else if (albumID === "search") {
-			// Search has been triggered
-			var search_string = decodeURIComponent(photoID);
-
-			if (search_string.trim() === "") {
-				// do nothing on "only space" search strings
-				return;
-			}
-			// If public search is disabled -> do nothing
-			if (lychee.publicMode === true && !lychee.public_search) {
-				loadingBar.show("error", lychee.locale["ERROR_SEARCH_DEACTIVATED"]);
-				return;
-			}
-
-			header.dom(".header__search").val(search_string);
-			search.find(search_string);
-
-			lychee.footer_show();
 		} else {
 			if (lychee.reloadIfLegacyIDs(albumID, photoID, autoplay)) {
 				return;
@@ -6065,7 +6110,7 @@ lychee.load = function () {
 			// If we don't have an album or the wrong album load the album
 			// first and let the album loader load the photo afterwards or
 			// load the photo directly.
-			if (lychee.content.html() === "" || album.json === null || album.json.id !== albumID || header.dom(".header__search").length && header.dom(".header__search").val().length !== 0) {
+			if (lychee.content.html() === "" || album.json === null || album.json.id !== albumID) {
 				lychee.content.hide();
 				album.load(albumID, loadPhoto);
 			} else {
@@ -6090,8 +6135,6 @@ lychee.load = function () {
 			if (visible.sidebar()) _sidebar.toggle(false);
 			mapview.open();
 			lychee.footer_hide();
-		} else if (albumID === "search") {
-			// search string is empty -> do nothing
 		} else {
 			if (lychee.reloadIfLegacyIDs(albumID, photoID, autoplay)) {
 				return;
@@ -6110,12 +6153,46 @@ lychee.load = function () {
 			if (visible.sidebar() && (album.isSmartID(albumID) || album.isSearchID(albumID))) _sidebar.toggle(false);
 			$("#sensitive_warning").hide();
 			if (album.json && albumID === album.json.id) {
-				view.album.title();
+				if (album.isSearchID(albumID)) {
+					// We are probably coming back to the search results from
+					// viewing an image.  Because search results is not a
+					// regular album, it needs to be treated a little
+					// differently.
+					header.setMode("albums");
+					lychee.setTitle(lychee.locale["SEARCH_RESULTS"], false);
+				} else {
+					view.album.title();
+				}
 				lychee.content.show();
 				tabindex.makeFocusable(lychee.content, true);
 				// If the album was loaded in the background (when content is
 				// hidden), scrolling may not have worked.
 				view.album.content.restoreScroll();
+			} else if (album.isSearchID(albumID)) {
+				// Search has been triggered
+				var search_string = decodeURIComponent(hash[1]).trim();
+
+				if (search_string === "") {
+					// do nothing on "only space" search strings
+					return;
+				}
+				// If public search is disabled -> do nothing
+				if (lychee.publicMode === true && !lychee.public_search) {
+					loadingBar.show("error", lychee.locale["ERROR_SEARCH_DEACTIVATED"]);
+					return;
+				}
+
+				header.dom(".header__search").val(search_string);
+				search.find(search_string);
+			} else if (visible.search()) {
+				// Somebody clicked on an album in search results.  We
+				// will alter the parent_id of that album once it's loaded
+				// so that the back button sends us back to the search
+				// results.
+				// Trash data so that it's reloaded if needed (just as we
+				// would for a regular parent album).
+				search.json = null;
+				album.load(albumID, null, album.getID());
 			} else {
 				album.load(albumID);
 			}
@@ -6936,8 +7013,7 @@ lychee.locale = {
 	LOGIN_PASSWORD_CONFIRM: "Confirm Password",
 	LOGIN_CREATE: "Create Login",
 
-	PASSWORD_TITLE: "Enter your current username and password:",
-	USERNAME_CURRENT: "Current Username",
+	PASSWORD_TITLE: "Enter your current password:",
 	PASSWORD_CURRENT: "Current Password",
 	PASSWORD_TEXT: "Your username and password will be changed to the following:",
 	PASSWORD_CHANGE: "Change Login",
@@ -8175,7 +8251,7 @@ _photo3.load = function (photoID, albumID, autoplay) {
 		// TODO: Why do we overwrite the true album ID of a photo, by the externally provided one? I guess we need it, because the album which the user came from might also be a smart album or a tag album. However, in this case I would prefer to leave the `album_id  untouched (don't rename it to `original_album_id`) and call this one `effective_album_id` instead.
 		_photo3.json.album_id = albumID;
 
-		if (!visible.photo()) view.photo.show();
+		view.photo.show();
 		view.photo.init(autoplay);
 		lychee.imageview.show();
 
@@ -8457,9 +8533,9 @@ _photo3.delete = function (photoIDs) {
 		// Show album otherwise.
 		if (visible.photo()) {
 			if (nextPhotoID !== null && nextPhotoID !== _photo3.getID()) {
-				lychee.goto(album.getID() + "/" + nextPhotoID);
+				lychee.goto(album.getID() + "/" + nextPhotoID, false);
 			} else if (previousPhotoID !== null && previousPhotoID !== _photo3.getID()) {
-				lychee.goto(album.getID() + "/" + previousPhotoID);
+				lychee.goto(album.getID() + "/" + previousPhotoID, false);
 			} else {
 				lychee.goto(album.getID());
 			}
@@ -8642,6 +8718,10 @@ _photo3.setAlbum = function (photoIDs, albumID) {
 _photo3.toggleStar = function () {
 	_photo3.json.is_starred = !_photo3.json.is_starred;
 	view.photo.star();
+
+	album.getByID(_photo3.json.id).is_starred = _photo3.json.is_starred;
+	view.album.content.star(_photo3.json.id);
+
 	albums.refresh();
 
 	api.post("Photo::setStar", {
@@ -9255,7 +9335,7 @@ photoeditor.rotate = function (photoID, direction) {
  *
  * @type {string}
  */
-var SearchAlbumID = "search";
+var SearchAlbumIDPrefix = "search";
 
 /**
  * @typedef SearchAlbum
@@ -9264,7 +9344,7 @@ var SearchAlbumID = "search";
  * mostly compatible with the other album types, i.e.
  * {@link Album}, {@link TagAlbum} and {@link SmartAlbum}.
  *
- * @property {string}  id                       - always equals `SearchAlbumID`
+ * @property {string}  id                       - always equals `SearchAlbumIDPrefix/search-term`
  * @property {string}  title                    - always equals `lychee.locale["SEARCH_RESULTS"]`
  * @property {Photo[]} photos                   - the found photos
  * @property {Album[]} albums                   - the found albums
@@ -9292,8 +9372,10 @@ search.find = function (term) {
 
 	/** @param {SearchResult} data */
 	var successHandler = function successHandler(data) {
-		// Do nothing, if search result is identical to previous result
 		if (search.json && search.json.checksum === data.checksum) {
+			// If search result is identical to previous result, just
+			// update the album id with the new search term and bail out.
+			album.json.id = SearchAlbumIDPrefix + "/" + term;
 			return;
 		}
 
@@ -9301,7 +9383,7 @@ search.find = function (term) {
 
 		// Create and assign a `SearchAlbum`
 		album.json = {
-			id: SearchAlbumID,
+			id: SearchAlbumIDPrefix + "/" + term,
 			title: lychee.locale["SEARCH_RESULTS"],
 			photos: search.json.photos,
 			albums: search.json.albums,
@@ -9583,14 +9665,6 @@ settings.bind = function (inputSelector, formSelector, settingClickCB) {
  * @returns {void}
  */
 settings.changeLogin = function (params) {
-	if (params.username.length < 1) {
-		loadingBar.show("error", lychee.locale["ERROR_EMPTY_USERNAME"]);
-		$("input[name=username]").addClass("error");
-		return;
-	} else {
-		$("input[name=username]").removeClass("error");
-	}
-
 	if (params.password.length < 1) {
 		loadingBar.show("error", lychee.locale["ERROR_EMPTY_PASSWORD"]);
 		$("input[name=password]").addClass("error");
@@ -9607,7 +9681,7 @@ settings.changeLogin = function (params) {
 		$("input[name=confirm]").removeClass("error");
 	}
 
-	api.post("Settings::setLogin", params, function () {
+	api.post("Settings::updateLogin", params, function () {
 		$("input[name]").removeClass("error");
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LOGIN"]);
 		view.settings.content.clearLogin();
@@ -10050,7 +10124,7 @@ _sidebar.triggerSearch = function (search_string) {
 
 	search.json = null;
 	// We're either logged in or public search is allowed
-	lychee.goto("search/" + encodeURIComponent(search_string));
+	lychee.goto(SearchAlbumIDPrefix + "/" + encodeURIComponent(search_string));
 };
 
 /**
@@ -10074,7 +10148,7 @@ _sidebar.toggle = function (is_user_initiated) {
 		lychee.imageview.toggleClass("image--sidebar");
 		if (typeof view !== "undefined") view.album.content.justify(album.json ? album.json.photos : []);
 		_sidebar.dom().toggleClass("active");
-		_photo3.updateSizeLivePhotoDuringAnimation();
+		if (_photo3.updateSizeLivePhotoDuringAnimation) _photo3.updateSizeLivePhotoDuringAnimation();
 
 		if (is_user_initiated) sessionStorage.setItem("keepSidebarVisible", visible.sidebar() ? "true" : "false");
 	}
@@ -12179,8 +12253,8 @@ view.album = {
    * @returns {void}
    */
 		titleSub: function titleSub(albumID) {
-			var album = album.getSubByID(albumID);
-			var title = album.title ? album.title : lychee.locale["UNTITLED"];
+			var subalbum = album.getSubByID(albumID);
+			var title = subalbum.title ? subalbum.title : lychee.locale["UNTITLED"];
 
 			$('.album[data-id="' + albumID + '"] .overlay h1').text(title).attr("title", title);
 		},
@@ -12583,31 +12657,33 @@ view.photo = {
 		lychee.content.addClass("view");
 		header.setMode("photo");
 
-		// Make body not scrollable
-		// use bodyScrollLock package to enable locking on iOS
-		// Simple overflow: hidden not working on iOS Safari
-		// Only the info pane needs scrolling
-		// Touch event for swiping of photo still work
+		if (!visible.photo()) {
+			// Make body not scrollable
+			// use bodyScrollLock package to enable locking on iOS
+			// Simple overflow: hidden not working on iOS Safari
+			// Only the info pane needs scrolling
+			// Touch event for swiping of photo still work
 
-		scrollLock.disablePageScroll($(".sidebar__wrapper").get());
+			scrollLock.disablePageScroll($(".sidebar__wrapper").get());
 
-		// Fullscreen
-		var timeout = null;
-		$(document).bind("mousemove", function () {
-			clearTimeout(timeout);
-			// For live Photos: header animation only if LivePhoto is not playing
-			if (!_photo3.isLivePhotoPlaying() && lychee.header_auto_hide) {
-				header.show();
-				timeout = setTimeout(header.hideIfLivePhotoNotPlaying, 2500);
+			// Fullscreen
+			var timeout = null;
+			$(document).bind("mousemove", function () {
+				clearTimeout(timeout);
+				// For live Photos: header animation only if LivePhoto is not playing
+				if (!_photo3.isLivePhotoPlaying() && lychee.header_auto_hide) {
+					header.show();
+					timeout = setTimeout(header.hideIfLivePhotoNotPlaying, 2500);
+				}
+			});
+
+			// we also put this timeout to enable it by default when you directly click on a picture.
+			if (lychee.header_auto_hide) {
+				setTimeout(header.hideIfLivePhotoNotPlaying, 2500);
 			}
-		});
 
-		// we also put this timeout to enable it by default when you directly click on a picture.
-		if (lychee.header_auto_hide) {
-			setTimeout(header.hideIfLivePhotoNotPlaying, 2500);
+			lychee.animate(lychee.imageview, "fadeIn");
 		}
-
-		lychee.animate(lychee.imageview, "fadeIn");
 	},
 
 	/**
@@ -12843,8 +12919,6 @@ view.photo = {
 		/* Note: the condition below is duplicated in contextMenu.photoMore() */
 		if (_photo3.json.type && (_photo3.json.type.indexOf("video") === 0 || _photo3.json.type === "raw") || _photo3.json.live_photo_url !== "" && _photo3.json.live_photo_url !== null) {
 			$("#button_rotate_cwise, #button_rotate_ccwise").hide();
-		} else {
-			$("#button_rotate_cwise, #button_rotate_ccwise").show();
 		}
 	},
 
@@ -12927,7 +13001,7 @@ view.settings = {
    * @returns {void}
    */
 		setLogin: function setLogin() {
-			var msg = lychee.html(_templateObject72, lychee.locale["PASSWORD_TITLE"], lychee.locale["USERNAME_CURRENT"], lychee.locale["PASSWORD_CURRENT"], lychee.locale["PASSWORD_TEXT"], lychee.locale["LOGIN_USERNAME"], lychee.locale["LOGIN_PASSWORD"], lychee.locale["LOGIN_PASSWORD_CONFIRM"], lychee.locale["PASSWORD_CHANGE"]);
+			var msg = lychee.html(_templateObject72, lychee.locale["PASSWORD_TITLE"], lychee.locale["PASSWORD_CURRENT"], lychee.locale["PASSWORD_TEXT"], lychee.locale["LOGIN_USERNAME"], lychee.locale["LOGIN_PASSWORD"], lychee.locale["LOGIN_PASSWORD_CONFIRM"], lychee.locale["PASSWORD_CHANGE"]);
 
 			$(".settings_view").append(msg);
 
@@ -13675,7 +13749,7 @@ visible.config = function () {
 
 /** @returns {boolean} */
 visible.search = function () {
-	return search.json !== null;
+	return visible.albums() && album.json !== null && album.isSearchID(album.json.id);
 };
 
 /** @returns {boolean} */
@@ -13844,7 +13918,7 @@ visible.leftMenu = function () {
  *
  * @property {string}  id
  * @property {string}  title
- * @property {Photo[]} photos
+ * @property {Photo[]} [photos]
  * @property {?Thumb}  thumb
  * @property {boolean} is_public
  * @property {boolean} is_downloadable
