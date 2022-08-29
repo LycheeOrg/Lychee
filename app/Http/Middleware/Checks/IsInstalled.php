@@ -32,7 +32,10 @@ class IsInstalled implements MiddlewareCheck
 			//
 			// We only check Authentication to DB failled and just skip in
 			// the other cases to get a proper message error.
-			return !Str::contains($e->getMessage(), 'SQLSTATE[HY000] [1045]');
+			if (!Str::contains($e->getMessage(), 'SQLSTATE[HY000] [1045]')) {
+				return true;
+			}
+			throw $e;
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);
 		}
