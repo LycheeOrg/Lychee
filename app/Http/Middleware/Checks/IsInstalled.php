@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 namespace App\Http\Middleware\Checks;
 
@@ -22,6 +22,13 @@ class IsInstalled implements MiddlewareCheck
 				!file_exists(base_path('.NO_SECURE_KEY')) &&
 				Schema::hasTable('configs');
 		} catch (QueryException $e) {
+			// Authentication to DB failled.
+			// This means that we cannot even check that `configs` is present,
+			// therefore we will just assume it is not.
+			//
+			// This can only happen if:
+			// - Connection with DB is broken (firewall?)
+			// - Connection with DB is not set (MySql without credentials)
 			return !Str::contains($e->getMessage(), 'SQLSTATE[HY000] [1045]');
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);

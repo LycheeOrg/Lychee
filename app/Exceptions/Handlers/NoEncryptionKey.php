@@ -43,7 +43,13 @@ class NoEncryptionKey implements HttpExceptionHandler
 			try {
 				touch(base_path('.NO_SECURE_KEY'));
 			} catch (Throwable) {
-				// do nothing
+				// We do nothing. Does it matter? Not really.
+				// .NO_SECURE_KEY is just used in the IsInstalled check for the middleware
+				// to guarantee a redirection to install when coming back to `lychee.org/`
+				// e.g. when reloading a page.
+				//
+				// Also here we directly redirect to /install
+				// During installation, the file is removed if it exists.
 			}
 			$redirectResponse = ToInstall::go();
 			$contentType = $defaultResponse->headers->get('Content-Type');
