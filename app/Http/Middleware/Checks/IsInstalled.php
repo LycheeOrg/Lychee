@@ -29,6 +29,9 @@ class IsInstalled implements MiddlewareCheck
 			// This can only happen if:
 			// - Connection with DB is broken (firewall?)
 			// - Connection with DB is not set (MySql without credentials)
+			//
+			// We only check Authentication to DB failled and just skip in
+			// the other cases to get a proper message error.
 			return !Str::contains($e->getMessage(), 'SQLSTATE[HY000] [1045]');
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);
