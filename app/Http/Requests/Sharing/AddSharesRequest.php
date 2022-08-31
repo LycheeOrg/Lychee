@@ -13,7 +13,7 @@ use App\Rules\IntegerIDRule;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
-class SetSharingRequest extends BaseApiRequest implements HasAlbumIDs, HasUserIDs
+class AddSharesRequest extends BaseApiRequest implements HasAlbumIDs, HasUserIDs
 {
 	use HasAlbumIDsTrait;
 	use HasUserIDsTrait;

@@ -5,56 +5,42 @@ namespace App\Http\Controllers\Administration;
 use App\Actions\Sharing\ListShare;
 use App\DTO\Shares;
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Exceptions\UnauthenticatedException;
-use App\Exceptions\UnauthorizedException;
+use App\Http\Requests\Sharing\AddSharesRequest;
 use App\Http\Requests\Sharing\DeleteSharingRequest;
-use App\Http\Requests\Sharing\SetSharingRequest;
+use App\Http\Requests\Sharing\ListSharingRequest;
+use App\Http\Requests\Sharing\SetSharesByAlbumRequest;
 use App\Models\User;
-use App\Policies\UserPolicy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 
 class SharingController extends Controller
 {
 	/**
 	 * Returns the list of sharing permissions wrt. the authenticated user.
 	 *
-	 * @param ListShare $listShare
+	 * @param ListSharingRequest $request
+	 * @param ListShare          $listShare
 	 *
 	 * @return Shares
 	 *
 	 * @throws QueryBuilderException
-	 * @throws UnauthenticatedException
-	 * @throws UnauthorizedException
 	 */
-	public function list(ListShare $listShare): Shares
+	public function list(ListSharingRequest $request, ListShare $listShare): Shares
 	{
-		/** @var int */
-		$userId = Auth::id() ?? throw new UnauthenticatedException();
-
-		// TODO: move this to Request authorization.
-		// Note: This test is part of the request validation for the other
-		// methods of this class.
-		if (!Gate::check(UserPolicy::CAN_UPLOAD, User::class)) {
-			throw new UnauthorizedException('Upload privilege required');
-		}
-
-		return $listShare->do($userId);
+		return $listShare->do($request->user2(), $request->album());
 	}
 
 	/**
 	 * Add a sharing between selected users and selected albums.
 	 *
-	 * @param SetSharingRequest $request
+	 * @param AddSharesRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function add(SetSharingRequest $request): void
+	public function add(AddSharesRequest $request): void
 	{
 		/** @var Collection<User> $users */
 		$users = User::query()
@@ -65,6 +51,22 @@ class SharingController extends Controller
 		foreach ($users as $user) {
 			$user->shared()->sync($request->albumIDs(), false);
 		}
+	}
+
+	/**
+	 * Set the shares for the given album.
+	 *
+	 * Note: This method *sets* the shares (in contrast to *add*).
+	 * This means, any user not given in the list of user IDs is removed
+	 * if the album has been shared with this user before.
+	 *
+	 * @param SetSharesByAlbumRequest $request
+	 *
+	 * @return void
+	 */
+	public function setByAlbum(SetSharesByAlbumRequest $request): void
+	{
+		$request->album()->shared_with()->sync($request->userIDs());
 	}
 
 	/**

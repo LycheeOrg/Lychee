@@ -4,19 +4,22 @@ namespace App\Actions\Sharing;
 
 use App\DTO\Shares;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Models\Extensions\BaseAlbum;
+use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class ListShare
 {
 	/**
-	 * @param int $userId
+	 * @param User|null      $user
+	 * @param BaseAlbum|null $baseAlbum
 	 *
 	 * @return Shares
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function do(int $userId): Shares
+	public function do(?User $user, ?BaseAlbum $baseAlbum): Shares
 	{
 		try {
 			// prepare query
@@ -37,9 +40,13 @@ class ListShare
 				->orderBy('title', 'ASC');
 
 			// apply filter
-			if ($userId !== 0) {
-				$shared_query = $shared_query->where('base_albums.owner_id', '=', $userId);
-				$albums_query = $albums_query->where('owner_id', '=', $userId);
+			if ($user !== null) {
+				$shared_query->where('base_albums.owner_id', '=', $user->id);
+				$albums_query->where('owner_id', '=', $user->id);
+			}
+			if ($baseAlbum !== null) {
+				$shared_query->where('base_albums.id', '=', $baseAlbum->id);
+				$albums_query->where('base_albums.id', '=', $baseAlbum->id);
 			}
 
 			// get arrays
@@ -103,7 +110,24 @@ class ListShare
 		$groupedAlbums = $albums->groupBy('parent_id');
 
 		foreach ($albums as $album) {
-			if (!$album->parent_id) {
+			// We must ensure that for each album the property `parent` is
+			// defined as `breadcrumbPath` accesses this property.
+			// At the same time, we must not _unconditionally_ initialize this
+			// property with `null`, as the `parent` property might already
+			// have been set to its final value in case the parent of current
+			// object has already been processed earlier and has initialized
+			// the property (see `foreach` below).
+			// Keep in mind that the order of albums is arbitrary, hence
+			// we cannot guarantee whether parents are processed before its
+			// children or vice versa.
+			// However, we must not use `$album->parent_id !== null` to check
+			// whether there is such a parent object eventually.
+			// An album may have a parent (i.e. `$album->parent_id !== null`
+			// holds), but the parent might not be part of the result set,
+			// if the query has been restricted to a particular album and
+			// the album tree has become disintegrated into a forest of
+			// subtrees.
+			if (!isset($album->parent)) {
 				$album->parent = null;
 			}
 			$childAlbums = $groupedAlbums->get($album->id, []);
