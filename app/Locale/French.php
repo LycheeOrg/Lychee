@@ -84,7 +84,6 @@ final class French implements Language
 			'DELETE_ALBUM_CONFIRMATION' => 'Voulez-vous vraiment supprimer l’album «%s» et toutes les photos qu’il contient ? Cette action est irréversible !',
 
 			'DELETE_TAG_ALBUM_QUESTION' => 'Supprimer l’album',
-
 			'DELETE_TAG_ALBUM_CONFIRMATION' => 'Voulez-vous vraiment supprimer l’album «%s» (les photos qu’il contient ne seront pas supprimées)? Cette action est irréversible !',
 
 			'DELETE_ALBUMS_QUESTION' => 'Supprimer les albums et leurs photos',
