@@ -222,7 +222,7 @@ class Handler extends ExceptionHandler
 	 */
 	protected function prepareResponse($request, \Throwable $e): SymfonyResponse
 	{
-		if (!$this->isHttpException($e) && config('app.debug')) {
+		if (!$this->isHttpException($e) && config('app.debug') !== null) {
 			return $this->toIlluminateResponse($this->convertExceptionToResponse($e), $e);
 		}
 
@@ -230,9 +230,12 @@ class Handler extends ExceptionHandler
 			$e = new HttpException(500, $e->getMessage(), $e);
 		}
 
-		return $this->toIlluminateResponse(
-			$this->renderHttpException($e), $e
-		);
+		// `renderHttpException` expects `$e` to be an instance of
+		// `HttpExceptionInterface`.
+		// This is ensured by `isHttpException` above, but PHPStan does not
+		// understand that.
+		// @phpstan-ignore-next-line
+		return $this->toIlluminateResponse($this->renderHttpException($e), $e);
 	}
 
 	/**
