@@ -5,7 +5,6 @@ namespace App\Exceptions\Handlers;
 use App\Contracts\HttpExceptionHandler;
 use App\Redirections\ToInstall;
 use Illuminate\Encryption\MissingAppKeyException;
-use function Safe\touch;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface as HttpException;
 use Throwable;
