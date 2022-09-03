@@ -37,7 +37,6 @@ class NoEncryptionKey implements HttpExceptionHandler
 	public function renderHttpException(SymfonyResponse $defaultResponse, HttpException $e): SymfonyResponse
 	{
 		try {
-			touch(base_path('.NO_SECURE_KEY'));
 			$redirectResponse = ToInstall::go();
 			$contentType = $defaultResponse->headers->get('Content-Type');
 			if ($contentType !== null && $contentType !== '') {
