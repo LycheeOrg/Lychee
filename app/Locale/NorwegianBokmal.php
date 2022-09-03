@@ -1,4 +1,4 @@
-<? /** @noinspection SpellCheckingInspection */
+<?php /** @noinspection SpellCheckingInspection */
 
 namespace App\Locale;
 
