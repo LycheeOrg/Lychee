@@ -9,6 +9,8 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class IsInstalled implements MiddlewareCheck
 {
@@ -19,7 +21,7 @@ class IsInstalled implements MiddlewareCheck
 	{
 		try {
 			return
-				!file_exists(base_path('.NO_SECURE_KEY')) &&
+				config('app.key') !== null &&
 				Schema::hasTable('configs');
 		} catch (QueryException $e) {
 			// Authentication to DB failled.
@@ -36,7 +38,7 @@ class IsInstalled implements MiddlewareCheck
 				return false;
 			}
 			throw $e;
-		} catch (BindingResolutionException $e) {
+		} catch (BindingResolutionException|NotFoundExceptionInterface|ContainerExceptionInterface $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);
 		}
 	}
