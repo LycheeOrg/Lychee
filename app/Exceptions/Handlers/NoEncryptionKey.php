@@ -26,9 +26,6 @@ class NoEncryptionKey implements HttpExceptionHandler
 			if ($e instanceof MissingAppKeyException) {
 				return true;
 			}
-			if ($e->getMessage() === 'No application encryption key has been specified.') {
-				return true;
-			}
 		} while ($e = $e->getPrevious());
 
 		return false;
