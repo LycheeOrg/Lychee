@@ -206,7 +206,7 @@ class Handler extends ExceptionHandler
 	 * decided that the client expects a HTML response, but _before_ the
 	 * actual work horse {@link Handler::renderHttpException} is called.
 	 *
-	 * This method is 99% identical to the parent method expects for a tiny
+	 * This method is 99% identical to the parent method except for a tiny
 	 * bug fix which adds the original exception to the encapsulating
 	 * `HttpException`.
 	 *
