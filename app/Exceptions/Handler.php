@@ -222,7 +222,7 @@ class Handler extends ExceptionHandler
 	 */
 	protected function prepareResponse($request, \Throwable $e): SymfonyResponse
 	{
-		if (!$this->isHttpException($e) && config('app.debug') !== null) {
+		if (!$this->isHttpException($e) && config('app.debug') === true) {
 			return $this->toIlluminateResponse($this->convertExceptionToResponse($e), $e);
 		}
 
