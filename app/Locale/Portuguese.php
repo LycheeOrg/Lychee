@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection SpellCheckingInspection */
 
 namespace App\Locale;
 
@@ -13,7 +13,7 @@ final class Portuguese implements Language
 
 	public function get_locale(): array
 	{
-		$locale = [
+		return [
 			'USERNAME' => 'Nome de utilizador',
 			'PASSWORD' => 'Password',
 			'ENTER' => 'Inserir',
@@ -495,7 +495,5 @@ final class Portuguese implements Language
 			'RESTRICTED_ACCOUNT' => 'Restricted account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
-
-		return $locale;
 	}
 }

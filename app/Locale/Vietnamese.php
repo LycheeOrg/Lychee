@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection SpellCheckingInspection */
 
 namespace App\Locale;
 
@@ -13,7 +13,7 @@ final class Vietnamese implements Language
 
 	public function get_locale(): array
 	{
-		$locale = [
+		return [
 			'USERNAME' => 'Tên đăng nhập',
 			'PASSWORD' => 'Mật khẩu',
 			'ENTER' => 'Ok',
@@ -495,7 +495,5 @@ final class Vietnamese implements Language
 			'RESTRICTED_ACCOUNT' => 'Không được chỉnh cài đặt',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
-
-		return $locale;
 	}
 }

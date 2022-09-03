@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection SpellCheckingInspection */
 
 namespace App\Locale;
 
@@ -13,7 +13,7 @@ final class Slovak implements Language
 
 	public function get_locale(): array
 	{
-		$locale = [
+		return [
 			'USERNAME' => 'Meno užívateľa',
 			'PASSWORD' => 'Heslo',
 			'ENTER' => 'Zadať',
@@ -495,7 +495,5 @@ final class Slovak implements Language
 			'RESTRICTED_ACCOUNT' => 'Restricted account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
-
-		return $locale;
 	}
 }

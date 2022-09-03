@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection SpellCheckingInspection */
 
 namespace App\Locale;
 
@@ -13,7 +13,7 @@ final class Italian implements Language
 
 	public function get_locale(): array
 	{
-		$locale = [
+		return [
 			'USERNAME' => 'Nome utente',
 			'PASSWORD' => 'Password',
 			'ENTER' => 'Invia',
@@ -495,7 +495,5 @@ final class Italian implements Language
 			'RESTRICTED_ACCOUNT' => 'Restricted account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
-
-		return $locale;
 	}
 }

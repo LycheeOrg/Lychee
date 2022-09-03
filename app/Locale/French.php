@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection SpellCheckingInspection */
 
 namespace App\Locale;
 
@@ -13,7 +13,7 @@ final class French implements Language
 
 	public function get_locale(): array
 	{
-		$locale = [
+		return [
 			'USERNAME' => 'Nom d’utilisateur',
 			'PASSWORD' => 'Mot de passe',
 			'ENTER' => 'OK',
@@ -495,7 +495,5 @@ final class French implements Language
 			'RESTRICTED_ACCOUNT' => 'Compte restraint',
 			'OSM_CONTRIBUTORS' => 'Contributeur OpenStreetMap',
 		];
-
-		return $locale;
 	}
 }

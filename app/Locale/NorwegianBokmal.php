@@ -1,4 +1,4 @@
-<?php
+<? /** @noinspection SpellCheckingInspection */
 
 namespace App\Locale;
 
@@ -13,7 +13,7 @@ final class NorwegianBokmal implements Language
 
 	public function get_locale(): array
 	{
-		$locale = [
+		return [
 			'USERNAME' => 'Brukernavn',
 			'PASSWORD' => 'Passord',
 			'ENTER' => 'Stig inn',
@@ -495,7 +495,5 @@ final class NorwegianBokmal implements Language
 			'RESTRICTED_ACCOUNT' => 'Restricted account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
-
-		return $locale;
 	}
 }

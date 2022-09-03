@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection SpellCheckingInspection */
 
 namespace App\Locale;
 
@@ -13,7 +13,7 @@ final class German implements Language
 
 	public function get_locale(): array
 	{
-		$locale = [
+		return [
 			'USERNAME' => 'Benutzername',
 			'PASSWORD' => 'Kennwort',
 			'ENTER' => 'Eingabe',
@@ -495,7 +495,5 @@ final class German implements Language
 			'RESTRICTED_ACCOUNT' => 'Eingeschränkter Account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap-Beitragende',
 		];
-
-		return $locale;
 	}
 }
