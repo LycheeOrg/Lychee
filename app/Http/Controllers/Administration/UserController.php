@@ -147,7 +147,8 @@ class UserController extends Controller
 	 */
 	public function getAuthenticatedUser(): User
 	{
-		return AccessControl::user();
+		/** @var User */
+		return Auth::user();
 	}
 
 	/**
@@ -159,7 +160,8 @@ class UserController extends Controller
 	 */
 	public function resetToken(): User
 	{
-		$user = AccessControl::user();
+		/** @var User $user */
+		$user = Auth::user();
 		$token = strtr(base64_encode(random_bytes(16)), '+/', '-_');
 		$user->token = hash('SHA512', $token);
 		$user->save();
