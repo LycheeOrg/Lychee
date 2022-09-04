@@ -9,9 +9,11 @@ use App\Http\Requests\Contracts\HasSizeVariant;
 use App\Http\Requests\Traits\HasPhotosTrait;
 use App\Http\Requests\Traits\HasSizeVariantTrait;
 use App\Models\Photo;
+use App\Policies\PhotoPolicy;
 use App\Rules\RandomIDListRule;
 use App\Rules\SizeVariantRule;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Gate;
 
 class ArchivePhotosRequest extends BaseApiRequest implements HasPhotos, HasSizeVariant
 {
@@ -23,7 +25,14 @@ class ArchivePhotosRequest extends BaseApiRequest implements HasPhotos, HasSizeV
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizePhotosDownload($this->photos);
+		/** @var Photo $photo */
+		foreach ($this->photos as $photo) {
+			if (!Gate::check(PhotoPolicy::CAN_DOWNLOAD, $photo)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**

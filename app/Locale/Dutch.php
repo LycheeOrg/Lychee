@@ -341,7 +341,6 @@ final class Dutch implements Language
 			'LOGIN_CREATE' => 'Maak Login',
 
 			'PASSWORD_TITLE' => 'Voer je huidige wachtwoord in:',
-			'USERNAME_CURRENT' => 'Current Username',
 			'PASSWORD_CURRENT' => 'Huidig Wachtwoord',
 			'PASSWORD_TEXT' => 'Je gebruikersnaam en wachtwoord worden verandert naar:',
 			'PASSWORD_CHANGE' => 'Verander Login',

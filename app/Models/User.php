@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Exceptions\ModelDBException;
-use App\Facades\AccessControl;
+use App\Exceptions\UnauthenticatedException;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
@@ -18,6 +18,8 @@ use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use function Safe\substr;
 
 /**
  * App\Models\User.
@@ -113,11 +115,6 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		);
 	}
 
-	public function is_admin(): bool
-	{
-		return $this->id === 0;
-	}
-
 	/**
 	 * Used by Larapass.
 	 *
@@ -135,7 +132,8 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	public function name(): string
 	{
-		return ($this->id === 0) ? 'Admin' : $this->username;
+		// If strings starts by '$2y$', it is very likely that it's a blowfish hash.
+		return substr($this->username, 0, 4) === '$2y$' ? 'Admin' : $this->username;
 	}
 
 	/**
@@ -149,11 +147,12 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 *
 	 * @throws ModelDBException
 	 * @throws InvalidFormatException
+	 * @throws UnauthenticatedException
 	 */
 	public function delete(): bool
 	{
 		$now = Carbon::now();
-		$newOwnerID = AccessControl::id();
+		$newOwnerID = Auth::id() ?? throw new UnauthenticatedException();
 
 		/** @var HasMany[] $ownershipRelations */
 		$ownershipRelations = [$this->photos(), $this->albums()];

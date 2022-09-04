@@ -345,7 +345,6 @@ final class Czech implements Language
 			'LOGIN_CREATE' => 'Vytvořit uživatele',
 
 			'PASSWORD_TITLE' => 'Zadejte aktuální heslo:',
-			'USERNAME_CURRENT' => 'Aktuální uživatelské jméno',
 			'PASSWORD_CURRENT' => 'Aktuální heslo',
 			'PASSWORD_TEXT' => 'Vaše uživatelské jméno a heslo budou změněny následovně:',
 			'PASSWORD_CHANGE' => 'Změnit přihlášení',

@@ -345,7 +345,6 @@ final class Slovak implements Language
 			'LOGIN_CREATE' => 'Založiť užívateľa',
 
 			'PASSWORD_TITLE' => 'Zadajte vaše heslo:',
-			'USERNAME_CURRENT' => 'Vaše pôvodné meno',
 			'PASSWORD_CURRENT' => 'Vaše pôvodné heslo',
 			'PASSWORD_TEXT' => 'Vaše meno a heslo bolo zmenené nasledovne:',
 			'PASSWORD_CHANGE' => 'Prihlásenie zmeniť',

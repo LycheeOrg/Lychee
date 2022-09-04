@@ -428,4 +428,92 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 		Configs::set(self::CONFIG_HAS_FFMPEG, $hasFFMpeg);
 		Configs::set(self::CONFIG_HAS_EXIF_TOOL, $hasExifTool);
 	}
+
+	/**
+	 * Tests a photo with an undefined EXIF tag (0x0000).
+	 * Expected result is that import proceeds and extract as many EXIF
+	 * information as possible.
+	 *
+	 * @return void
+	 */
+	public function testPhotoUploadWithUndefinedExifTag(): void
+	{
+		$hasExifTool = Configs::getValueAsBool(self::CONFIG_HAS_EXIF_TOOL);
+		Configs::set(self::CONFIG_HAS_EXIF_TOOL, false);
+
+		$response = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_UNDEFINED_EXIF_TAG)
+		);
+		$response->assertJson([
+			'album_id' => null,
+			'aperture' => 'f/10.0',
+			'focal' => '70 mm',
+			'iso' => '100',
+			'lens' => '17-70mm F2.8-4 DC MACRO OS HSM | Contemporary 013',
+			'make' => 'Canon',
+			'model' => 'Canon EOS 100D',
+			'shutter' => '1/250 s',
+			'type' => TestCase::MIME_TYPE_IMG_JPEG,
+			'size_variants' => [
+				'thumb' => ['width' => 200, 'height' => 200],
+				'thumb2x' => ['width' => 400, 'height' => 400],
+				'small' => ['width' => 529,	'height' => 360],
+				'small2x' => ['width' => 1057,	'height' => 720],
+				'medium' => ['width' => 1586, 'height' => 1080],
+				'medium2x' => null,
+				'original' => ['width' => 3059,	'height' => 2083, 'filesize' => 1734545],
+			],
+		]);
+
+		Configs::set(self::CONFIG_HAS_EXIF_TOOL, $hasExifTool);
+	}
+
+	public function testUploadMultibyteTitle(): void
+	{
+		$id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_SUNSET_IMAGE)
+		)->offsetGet('id');
+
+		$response = $this->photos_tests->get($id);
+		$response->assertJson([
+			'album_id' => null,
+			'title' => 'fin de journée',
+			'description' => null,
+			'tags' => [],
+			'license' => 'none',
+			'is_public' => 0,
+			'is_starred' => false,
+			'iso' => '400',
+			'make' => 'Canon',
+			'model' => 'Canon EOS R5',
+			'lens' => 'EF70-200mm f/2.8L IS USM',
+			'aperture' => 'f/8.0',
+			'shutter' => '1/320 s',
+			'focal' => '200 mm',
+			'type' => TestCase::MIME_TYPE_IMG_JPEG,
+			'size_variants' => [
+				'small' => [
+					'width' => 202,
+					'height' => 360,
+				],
+				'medium' => [
+					'width' => 607,
+					'height' => 1080,
+				],
+				'original' => [
+					'width' => 914,
+					'height' => 1625,
+					'filesize' => 270345,
+				],
+			],
+		]);
+	}
+
+	public function testUploadMultibyteTitleWithoutExifTool(): void
+	{
+		$hasExifTool = Configs::getValueAsBool(self::CONFIG_HAS_EXIF_TOOL);
+		Configs::set(self::CONFIG_HAS_EXIF_TOOL, false);
+		$this->testUploadMultibyteTitle();
+		Configs::set(self::CONFIG_HAS_EXIF_TOOL, $hasExifTool);
+	}
 }

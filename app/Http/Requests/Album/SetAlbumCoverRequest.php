@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Album;
 
+use App\Contracts\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasAlbum;
@@ -10,7 +11,10 @@ use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
 use App\Models\Album;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
+use App\Policies\PhotoPolicy;
 use App\Rules\RandomIDRule;
+use Illuminate\Support\Facades\Gate;
 
 class SetAlbumCoverRequest extends BaseApiRequest implements HasAlbum, HasPhoto
 {
@@ -22,8 +26,7 @@ class SetAlbumCoverRequest extends BaseApiRequest implements HasAlbum, HasPhoto
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumWrite($this->album) &&
-			$this->authorizePhotoVisible($this->photo);
+		return Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->album]) && Gate::check(PhotoPolicy::IS_VISIBLE, $this->photo);
 	}
 
 	/**

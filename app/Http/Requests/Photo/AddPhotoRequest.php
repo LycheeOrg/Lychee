@@ -4,6 +4,7 @@ namespace App\Http\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
+use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Rules\AlbumIDRule;
 use Illuminate\Http\UploadedFile;
@@ -11,17 +12,10 @@ use Illuminate\Http\UploadedFile;
 class AddPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 {
 	use HasAbstractAlbumTrait;
+	use AuthorizeCanEditAlbumTrait;
 
 	public const FILE_ATTRIBUTE = 'file';
 	protected UploadedFile $file;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function authorize(): bool
-	{
-		return $this->authorizeAlbumWrite($this->album);
-	}
 
 	/**
 	 * {@inheritDoc}

@@ -34,7 +34,6 @@ _ide*
 .php-cs-fixer.cache
 
 *.log
-package-lock.json
 clover.xml
 *.swp
 installed.log

@@ -25,8 +25,6 @@ parameters:
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::update\(\).#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::update\(\)#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::with(Only)?\(\)#'
-		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::getLft\(\).#'
-		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::getRgt\(\).#'
 		- '#Call to private method latest\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\HasMany<Illuminate\\Database\\Eloquent\\Model>#'
 		- '#Call to private method where(Not)?(Null|In|Exists|Column)?\(\) of parent class Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>.#'
 		- '#Call to protected method asDateTime\(\) of class Illuminate\\Database\\Eloquent\\Model.#'
@@ -53,3 +51,6 @@ parameters:
 
 		# False positive as stub code for PHP has not yet been updated to 2nd parameter, see https://github.com/php/doc-en/issues/1529 and https://www.php.net/imagick.writeimagefile
 		- '#Method Imagick::writeImageFile\(\) invoked with 2 parameters, 1 required#'
+
+		# False positive from maennchen/ZipStream
+		- '#Call to an undefined static method ZipStream\\Option\\Method::(STORE|DEFLATE)\(\)#'

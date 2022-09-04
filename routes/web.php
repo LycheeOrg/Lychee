@@ -28,8 +28,8 @@ Route::feeds();
 Route::get('/', [IndexController::class, 'show'])->name('home')->middleware(['installation:complete', 'migration:complete']);
 Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware(['installation:complete', 'migration:complete']);
 Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::class, 'migrate'])
-	->name('migrate')
-	->middleware(['installation:complete', 'migration:incomplete']);
+		->name('migrate')
+		->middleware(['installation:complete', 'migration:incomplete']);
 
 /*
  * TODO see to add better redirection functionality later.

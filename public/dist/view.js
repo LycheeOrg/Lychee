@@ -1217,7 +1217,7 @@ header.bind = function () {
 
 	header.dom(".header__search").on("keyup click", function () {
 		if ($(this).val().length > 0) {
-			lychee.goto("search/" + encodeURIComponent($(this).val()));
+			lychee.goto(SearchAlbumIDPrefix + "/" + encodeURIComponent($(this).val()));
 		} else if (search.json !== null) {
 			search.reset();
 		}
@@ -1509,11 +1509,11 @@ header.setMode = function (mode) {
 			}
 
 			if (album.isUploadable()) {
-				var _e23 = $("#button_trash, #button_move, #button_visibility, #button_star");
+				var _e23 = $("#button_trash, #button_move, #button_visibility, #button_star, #button_rotate_cwise, #button_rotate_ccwise");
 				_e23.show();
 				tabindex.makeFocusable(_e23);
 			} else {
-				var _e24 = $("#button_trash, #button_move, #button_visibility, #button_star");
+				var _e24 = $("#button_trash, #button_move, #button_visibility, #button_star, #button_rotate_cwise, #button_rotate_ccwise");
 				_e24.hide();
 				tabindex.makeUnfocusable(_e24);
 			}
@@ -1633,7 +1633,7 @@ visible.config = function () {
 
 /** @returns {boolean} */
 visible.search = function () {
-	return search.json !== null;
+	return visible.albums() && album.json !== null && album.isSearchID(album.json.id);
 };
 
 /** @returns {boolean} */
@@ -1753,7 +1753,7 @@ sidebar.triggerSearch = function (search_string) {
 
 	search.json = null;
 	// We're either logged in or public search is allowed
-	lychee.goto("search/" + encodeURIComponent(search_string));
+	lychee.goto(SearchAlbumIDPrefix + "/" + encodeURIComponent(search_string));
 };
 
 /**
@@ -2990,8 +2990,7 @@ lychee.locale = {
 	LOGIN_PASSWORD_CONFIRM: "Confirm Password",
 	LOGIN_CREATE: "Create Login",
 
-	PASSWORD_TITLE: "Enter your current username and password:",
-	USERNAME_CURRENT: "Current Username",
+	PASSWORD_TITLE: "Enter your current password:",
 	PASSWORD_CURRENT: "Current Password",
 	PASSWORD_TEXT: "Your username and password will be changed to the following:",
 	PASSWORD_CHANGE: "Change Login",
@@ -3532,7 +3531,7 @@ tabindex.reset = function () {
  *
  * @property {string}  id
  * @property {string}  title
- * @property {Photo[]} photos
+ * @property {Photo[]} [photos]
  * @property {?Thumb}  thumb
  * @property {boolean} is_public
  * @property {boolean} is_downloadable
