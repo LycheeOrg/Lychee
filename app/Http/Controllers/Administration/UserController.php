@@ -178,7 +178,8 @@ class UserController extends Controller
 	 */
 	public function unsetToken(): void
 	{
-		$user = AccessControl::user();
+		/** @var User $user */
+		$user = Auth::user();
 		$user->token = null;
 		$user->save();
 	}
