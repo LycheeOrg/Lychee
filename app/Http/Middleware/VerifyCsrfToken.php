@@ -3,12 +3,12 @@
 namespace App\Http\Middleware;
 
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Facades\AccessControl;
 use App\Models\User;
 use Closure;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Session\TokenMismatchException;
+use Illuminate\Support\Facades\Auth;
 
 class VerifyCsrfToken extends Middleware
 {
@@ -45,7 +45,7 @@ class VerifyCsrfToken extends Middleware
 				->where('token', '=', hash('SHA512', $token))
 				->first();
 			if ($user instanceof User) {
-				AccessControl::log_as_id($user->id);
+				Auth::loginUsingId($user->id);
 
 				return $next($request);
 			}
