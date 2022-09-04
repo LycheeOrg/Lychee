@@ -253,20 +253,20 @@ class UsersTest extends TestCase
 	{
 		$users_test = new UsersUnitTest($this);
 
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 
 		$oldToken = $users_test->get_user()->offsetGet('token');
 		$newToken = $users_test->reset_token()->offsetGet('token');
 		assertNotEquals($oldToken, $newToken);
 
-		AccessControl::logout(0);
+		Auth::logout();
 	}
 
 	public function testUnsetToken(): void
 	{
 		$users_test = new UsersUnitTest($this);
 
-		AccessControl::log_as_id(0);
+		Auth::loginUsingId(0);
 
 		$oldToken = $users_test->reset_token()->offsetGet('token');
 		assertNotEquals('', $oldToken);
@@ -277,6 +277,6 @@ class UsersTest extends TestCase
 			'token' => null,
 		]);
 
-		AccessControl::logout(0);
+		Auth::logout();
 	}
 }
