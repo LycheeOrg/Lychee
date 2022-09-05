@@ -24,6 +24,7 @@ final class German implements Language
 			'SEARCH' => 'Suchen ...',
 			'MORE' => 'Mehr',
 			'DEFAULT' => 'Standard',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Benutzer',
 			'CREATE' => 'Erstellen',

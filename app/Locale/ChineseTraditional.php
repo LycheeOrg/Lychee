@@ -24,6 +24,7 @@ final class ChineseTraditional implements Language
 			'SEARCH' => '搜尋...',
 			'MORE' => '更多',
 			'DEFAULT' => '默認',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => '使用者',
 			'CREATE' => 'Create',

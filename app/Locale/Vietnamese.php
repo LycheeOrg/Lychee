@@ -24,6 +24,7 @@ final class Vietnamese implements Language
 			'SEARCH' => 'Tìm kiếm ...',
 			'MORE' => 'Xem thêm',
 			'DEFAULT' => 'Mặc định',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Người dùng',
 			'CREATE' => 'Tạo',
