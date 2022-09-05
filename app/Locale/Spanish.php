@@ -24,6 +24,7 @@ final class Spanish implements Language
 			'SEARCH' => 'Buscar...',
 			'MORE' => 'Más',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Usuarios',
 			'CREATE' => 'Create',

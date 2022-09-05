@@ -41,8 +41,6 @@ class IndexController extends Controller
 		if (Configs::getValueAsBool('landing_page_enable')) {
 			$infos = $this->configFunctions->get_pages_infos();
 
-			$menus = Page::menu()->get();
-
 			$title = Configs::getValueAsString('site_title');
 			$rss_enable = Configs::getValueAsBool('rss_enable');
 
@@ -53,7 +51,6 @@ class IndexController extends Controller
 			return view('landing', [
 				'title' => $title,
 				'infos' => $infos,
-				'menus' => $menus,
 				'page_config' => $page_config,
 				'rss_enable' => $rss_enable,
 			]);
