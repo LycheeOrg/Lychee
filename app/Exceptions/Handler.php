@@ -10,13 +10,60 @@ use App\Exceptions\Handlers\MigrationHandler;
 use App\Exceptions\Handlers\NoEncryptionKey;
 use App\Models\Logs;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Support\Arr;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
+/**
+ * Lychee's custom exception handler.
+ *
+ * While the overall architectural approach of the original exception handler
+ * of the framework is fine, the original exception handler is mostly broken
+ * when it comes to the details.
+ *
+ * The overall architectural approach is as follows:
+ *
+ *  1. Substitute or wrap certain exceptions by or into other exceptions
+ *     (i.e. via `mapException`)
+ *  2. Decide whether the client expects an HTML or JSON response
+ *  3. Convert (or "render") the exception into a response with said content
+ *     type
+ *
+ * However, there are two major issues with the original exception handler:
+ *
+ *  - Substitution of exception is not limited to `mapException` but happens
+ *    all the time which makes it hard to reliably predict what happens to
+ *    an exception when a method (other than `mapException`) is called.
+ *    One might end up with a different exception.
+ *    Moreover, not all of these substitution are sensible enough to add the
+ *    original exception as a predecessor to the new exception.
+ *  - A constant mix-up of the terms "HTTP" and "HTML".
+ *    The framework frequently uses the term "HTTP" as an antonym to "JSON"
+ *    when "HTML" would be rather appropriate.
+ *    For example like in `renderJsonResponse($e)` vs. `renderHttpResponse($e)`.
+ *    The latter is called, when an exception shall be converted into HTML.
+ *    But of course, a JSON response is also an HTTP response.
+ *    It seems as if the framework is not even aware of this confusion.
+ *
+ * 90% of this handler are bug fixes.
+ * This means, parent methods are not overwritten, because we need a special
+ * non-standard behaviour, but simply the _right_ behaviour.
+ * Unfortunately, this class cannot solve the unfortunate naming of some
+ * methods, but must stick to the names used by the parent class.
+ * Alternatively, this class could overwrite the entry method `render($e)`,
+ * re-implement everything which comes after that (even using better names)
+ * and let the rest of the parent class go down the drain.
+ * However, this bears the risk that some 3rd-party calls unfixed methods of
+ * the original exception handler.
+ */
 class Handler extends ExceptionHandler
 {
 	/**
@@ -153,11 +200,60 @@ class Handler extends ExceptionHandler
 	}
 
 	/**
-	 * Renders the given HttpException.
+	 * Prepare a response for the given exception.
+	 *
+	 * This method is called by the framework, _after_ the framework has
+	 * decided that the client expects a HTML response, but _before_ the
+	 * actual work horse {@link Handler::renderHttpException} is called.
+	 *
+	 * This method is 99% identical to the parent method except for a tiny
+	 * bug fix which adds the original exception to the encapsulating
+	 * `HttpException`.
+	 *
+	 * @param Request    $request
+	 * @param \Throwable $e
+	 *
+	 * @return SymfonyResponse
+	 *
+	 * @throws BindingResolutionException
+	 * @throws \InvalidArgumentException
+	 * @throws ContainerExceptionInterface
+	 * @throws NotFoundExceptionInterface
+	 */
+	protected function prepareResponse($request, \Throwable $e): SymfonyResponse
+	{
+		if (!$this->isHttpException($e) && config('app.debug') === true) {
+			return $this->toIlluminateResponse($this->convertExceptionToResponse($e), $e);
+		}
+
+		if (!$this->isHttpException($e)) {
+			$e = new HttpException(500, $e->getMessage(), $e);
+		}
+
+		// `renderHttpException` expects `$e` to be an instance of
+		// `HttpExceptionInterface`.
+		// This is ensured by `isHttpException` above, but PHPStan does not
+		// understand that.
+		// @phpstan-ignore-next-line
+		return $this->toIlluminateResponse($this->renderHttpException($e), $e);
+	}
+
+	/**
+	 * Renders the given HttpException into HTML.
 	 *
 	 * This method is called by the framework if
 	 *  1. `config('app.debug')` is not set, i.e. the application is not in debug mode
 	 *  2. the client expects an HTML response
+	 *
+	 * **Attention:**
+	 * This method is a misnomer caused by the framework.
+	 * The framework provides two methods `renderHttpException` and
+	 * `renderJsonException` with the former being called if the client
+	 * expects HTML.
+	 * Hence, the method should rather be named `renderHtmlException`.
+	 * That current name of the method, if meant as an antonym to
+	 * `renderJsonException` is obviously nonsense as JSON is also transported
+	 * over HTTP.
 	 *
 	 * @param HttpExceptionInterface $e
 	 *

@@ -24,6 +24,7 @@ final class Italian implements Language
 			'SEARCH' => 'Cerca...',
 			'MORE' => 'Altro',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Utenti',
 			'CREATE' => 'Create',

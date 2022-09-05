@@ -24,6 +24,7 @@ final class NorwegianBokmal implements Language
 			'SEARCH' => 'Søk ...',
 			'MORE' => 'Mer',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Brukere',
 			'CREATE' => 'Create',
