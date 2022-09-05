@@ -24,6 +24,7 @@ final class Portuguese implements Language
 			'SEARCH' => 'Pesquisar ...',
 			'MORE' => 'Mais',
 			'DEFAULT' => 'Predefinição',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Utilizadores',
 			'CREATE' => 'Create',

@@ -24,6 +24,7 @@ final class Slovak implements Language
 			'SEARCH' => 'Hľadaj ...',
 			'MORE' => 'Viac',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Užívatelia',
 			'CREATE' => 'Create',

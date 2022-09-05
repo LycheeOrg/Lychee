@@ -24,6 +24,7 @@ final class Russian implements Language
 			'SEARCH' => 'Search ...',
 			'MORE' => 'More',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Пользователи',
 			'CREATE' => 'Create',
