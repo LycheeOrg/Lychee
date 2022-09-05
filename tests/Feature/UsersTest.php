@@ -14,15 +14,19 @@ namespace Tests\Feature;
 
 use App\Legacy\AdminAuthentication;
 use App\Models\Configs;
+use App\Models\User;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Support\Facades\Auth;
+use PHPUnit\Framework\ExpectationFailedException;
+use SebastianBergmann\RecursionContext\InvalidArgumentException;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\SessionUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\TestCase;
+use Throwable;
 
 class UsersTest extends TestCase
 {
@@ -245,5 +249,60 @@ class UsersTest extends TestCase
 		// 37
 		$sessions_test->logout();
 		Configs::set('new_photos_notification', $store_new_photos_notification);
+	}
+
+	/**
+	 * TODO adapt this test when the admin rights are decoupled from ID = 0.
+	 *
+	 * @return void
+	 *
+	 * @throws InvalidArgumentException
+	 * @throws ExpectationFailedException
+	 * @throws Throwable
+	 */
+	public function regressionTestAdminAllMighty(): void
+	{
+		// We first check that the rights are set securely by default
+		$sessions_test = new SessionUnitTest($this);
+		$response = $sessions_test->init();
+		$response->assertJsonFragment([
+			'rights' => [
+				'is_admin' => false,
+				'may_upload' => false,
+				'is_locked' => true,
+			], ]);
+
+		// update Admin user to non valid rights
+		$admin = User::findOrFail(0);
+		$admin->may_upload = false;
+		$admin->is_locked = true;
+		$admin->save();
+
+		// Log as admin and check the rights
+		Auth::loginUsingId(0);
+		$response = $sessions_test->init();
+		$response->assertJsonFragment([
+			'rights' => [
+				'is_admin' => true,
+				'may_upload' => true,
+				'is_locked' => false,
+			], ]);
+		$sessions_test->logout();
+
+		// Correct the rights
+		$admin->may_upload = true;
+		$admin->is_locked = false;
+		$admin->save();
+
+		// Log as admin and verify behaviour
+		Auth::loginUsingId(0);
+		$response = $sessions_test->init();
+		$response->assertJsonFragment([
+			'rights' => [
+				'is_admin' => true,
+				'may_upload' => true,
+				'is_locked' => false,
+			], ]);
+		$sessions_test->logout();
 	}
 }
