@@ -2,6 +2,7 @@
 
 use App\Exceptions\ModelDBException;
 use App\Models\Configs;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -17,13 +18,13 @@ class MigrateAdminUser extends Migration
 	 */
 	public function up(): void
 	{
-		DB::table('users')->insert([
-			'id' => 0,
-			'username' => Configs::getValueAsString('username', ''),
-			'password' => Configs::getValueAsString('password', ''),
-			'lock' => false,
-			'upload' => true,
-		]);
+		$user = User::query()->findOrNew(0);
+		$user->incrementing = false; // disable auto-generation of ID
+		$user->id = 0;
+		Configs::invalidateCache();
+		$user->username = Configs::getValueAsString('username', '');
+		$user->password = Configs::getValueAsString('password', '');
+		$user->save();
 	}
 
 	/**

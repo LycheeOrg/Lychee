@@ -12,6 +12,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -143,6 +144,7 @@ class InstallTest extends TestCase
 		/**
 		 * We now should NOT be redirected.
 		 */
+		Configs::invalidateCache();
 		$response = $this->get('/');
 		$response->assertOk();
 

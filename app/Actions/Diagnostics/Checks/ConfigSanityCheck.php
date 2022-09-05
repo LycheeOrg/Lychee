@@ -25,7 +25,7 @@ class ConfigSanityCheck implements DiagnosticCheckInterface
 		$settings = Configs::get();
 
 		$keys_checked = [
-			'username', 'password', 'sorting_photos_col', 'sorting_albums_col',
+			'sorting_photos_col', 'sorting_albums_col',
 			'imagick', 'skip_duplicates', 'check_for_updates', 'version',
 		];
 
