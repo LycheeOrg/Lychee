@@ -73,9 +73,9 @@ class SessionController extends Controller
 				$user = Auth::user();
 				$return['user'] = $user?->toArray();
 				$return['rights'] = [
-					'is_admin' => Gate::check(UserPolicy::IS_ADMIN),
-					'is_locked' => $user?->is_locked ?? true,
-					'may_upload' => $user?->may_upload ?? false,
+					'is_admin' => Gate::check(UserPolicy::IS_ADMIN, User::class),
+					'is_locked' => !Gate::check(UserPolicy::CAN_EDIT_SETTINGS, User::class), // the use of the negation should be removed later
+					'may_upload' => Gate::check(UserPolicy::CAN_UPLOAD, User::class),
 				];
 			}
 
