@@ -35,10 +35,12 @@ class SharingTestBase extends PhotoTestBase
 	public const ALBUM_TITLE_1 = 'Test Album 1';
 	public const ALBUM_TITLE_2 = 'Test Album 2';
 	public const ALBUM_TITLE_3 = 'Test Album 3';
+	public const ALBUM_TITLE_4 = 'Test Album 4';
 
 	public const ALBUM_PWD_1 = 'Album Password 1';
 	public const ALBUM_PWD_2 = 'Album Password 2';
 	public const ALBUM_PWD_3 = 'Album Password 3';
+	public const ALBUM_PWD_4 = 'Album Password 4';
 
 	public const USER_NAME_1 = 'Test User 1';
 	public const USER_NAME_2 = 'Test User 2';
