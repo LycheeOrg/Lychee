@@ -78,8 +78,8 @@ abstract class SharingWithNonAdminUserAbstract extends SharingTestScenariosAbstr
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID3, [
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_SUNSET_IMAGE, $this->photoID3, $this->albumID3),
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
 			]
 		));
 		$responseForRecent->assertJsonMissing(['id' => $this->albumID2]);
