@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Basic PanicAttack class.
+ *
+ * Used only in case of emergency: e.g. vendor not found
+ */
 class PanicAttack
 {
 	private $title = '';
