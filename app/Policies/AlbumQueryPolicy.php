@@ -77,11 +77,7 @@ class AlbumQueryPolicy
 			if ($userID !== null) {
 				$query2
 					->orWhere('base_albums.owner_id', '=', $userID)
-					->orWhere(
-						fn (AlbumBuilder|TagAlbumBuilder $q) => $q
-							->where('base_albums.requires_link', '=', false)
-							->where('user_base_album.user_id', '=', $userID)
-					);
+					->orWhere('user_base_album.user_id', '=', $userID);
 			}
 		};
 
