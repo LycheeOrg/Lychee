@@ -12,6 +12,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -32,13 +33,16 @@ class InstallTest extends TestCase
 		/** @var User $admin */
 		$admin = User::query()->find(0);
 
-		touch(base_path('.NO_SECURE_KEY'));
+		$prevAppKey = config('app.key');
+		config(['app.key' => null]);
 		$response = $this->get('install/');
 		$response->assertOk();
-		unlink(base_path('.NO_SECURE_KEY'));
+		config(['app.key' => $prevAppKey]);
 
 		// TODO: Why does a `git pull` delete `installed.log`? This test needs to be discussed with @ildyria
-		unlink(base_path('installed.log'));
+		if (file_exists(base_path('installed.log'))) {
+			unlink(base_path('installed.log'));
+		}
 		/**
 		 * No installed.log: we should not be redirected to install (case where we have not done the last migration).
 		 */
@@ -140,6 +144,7 @@ class InstallTest extends TestCase
 		/**
 		 * We now should NOT be redirected.
 		 */
+		Configs::invalidateCache();
 		$response = $this->get('/');
 		$response->assertOk();
 

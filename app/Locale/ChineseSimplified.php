@@ -24,6 +24,7 @@ final class ChineseSimplified implements Language
 			'SEARCH' => '搜索 ...',
 			'MORE' => '更多',
 			'DEFAULT' => '默认',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => '用户',
 			'CREATE' => 'Create',

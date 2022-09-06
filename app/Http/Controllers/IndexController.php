@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\ModelDBException;
-use App\Facades\Lang;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
@@ -40,12 +39,7 @@ class IndexController extends Controller
 	public function show(): View
 	{
 		if (Configs::getValueAsBool('landing_page_enable')) {
-			$lang = Lang::get_lang();
-			$lang['language'] = Configs::getValueAsString('lang');
-
 			$infos = $this->configFunctions->get_pages_infos();
-
-			$menus = Page::menu()->get();
 
 			$title = Configs::getValueAsString('site_title');
 			$rss_enable = Configs::getValueAsBool('rss_enable');
@@ -55,10 +49,8 @@ class IndexController extends Controller
 			$page_config['display_socials'] = false;
 
 			return view('landing', [
-				'locale' => $lang,
 				'title' => $title,
 				'infos' => $infos,
-				'menus' => $menus,
 				'page_config' => $page_config,
 				'rss_enable' => $rss_enable,
 			]);
@@ -94,9 +86,6 @@ class IndexController extends Controller
 		$this->symLinkFunctions->remove_outdated();
 		$infos = $this->configFunctions->get_pages_infos();
 
-		$lang = Lang::get_lang();
-		$lang['language'] = Configs::getValueAsString('lang');
-
 		$title = Configs::getValueAsString('site_title');
 		$rss_enable = Configs::getValueAsBool('rss_enable');
 		$page_config = [];
@@ -104,7 +93,6 @@ class IndexController extends Controller
 		$page_config['display_socials'] = Configs::getValueAsBool('display_social_in_gallery');
 
 		return view('gallery', [
-			'locale' => $lang,
 			'title' => $title,
 			'infos' => $infos,
 			'page_config' => $page_config,

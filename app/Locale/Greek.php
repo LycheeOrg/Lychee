@@ -24,6 +24,7 @@ final class Greek implements Language
 			'SEARCH' => 'Αναζήτηση ...',
 			'MORE' => 'Περισσότερα',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Χρήστες',
 			'CREATE' => 'Create',
