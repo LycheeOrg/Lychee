@@ -814,7 +814,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$this->albumID3 = $this->albums_tests->add(null, self::ALBUM_TITLE_3)->offsetGet('id');
 		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID1)->offsetGet('id');
 		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID2)->offsetGet('id');
-		$this->photoID3 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_AARHUS), $this->albumID3)->offsetGet('id');
+		$this->photoID3 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_SUNSET_IMAGE), $this->albumID3)->offsetGet('id');
 		$this->sharing_tests->add([$this->albumID1, $this->albumID3], [$this->userID]);
 		$this->albums_tests->set_protection_policy(id: $this->albumID3, requiresLink: true);
 		Auth::logout();
