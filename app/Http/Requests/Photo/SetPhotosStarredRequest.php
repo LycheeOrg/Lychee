@@ -4,6 +4,7 @@ namespace App\Http\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPhotos;
+use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotosTrait;
 use App\Http\Requests\Traits\HasPhotosTrait;
 use App\Models\Photo;
 use App\Rules\RandomIDRule;
@@ -14,17 +15,11 @@ use App\Rules\RandomIDRule;
 class SetPhotosStarredRequest extends BaseApiRequest implements HasPhotos
 {
 	use HasPhotosTrait;
+	use AuthorizeCanEditPhotosTrait;
+
 	public const IS_STARRED_ATTRIBUTE = 'is_starred';
 
 	protected bool $isStarred = false;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function authorize(): bool
-	{
-		return $this->authorizePhotosWrite($this->photos);
-	}
 
 	/**
 	 * {@inheritDoc}

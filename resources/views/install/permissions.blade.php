@@ -17,8 +17,21 @@
     @foreach ($permissions as $permission)
         <li class="list__item list__item--permissions">
         <span>{{ $permission['folder'] }}</span>
+        @if (count($permission['permission']) < 4)
+            @for ($i = 0;$i < 4 - count($permission['permission']); $i++)
+                <span class="perm float-right">
+                    &nbsp;
+                </span>
+            @endfor
+        @endif
         @foreach ($permission['permission'] as $perm)
-            @include('install.permission-line')
+            <span class="perm float-right">
+            @if($perm[1] & 1)
+                <i class="fa fa-fw fa-exclamation-circle error"></i>
+            @else
+                <i class="fa fa-fw fa-check-circle-o success"></i>
+            @endif
+            {{ $perm[0] }}</span>
         @endforeach
     @endforeach
     </ul>

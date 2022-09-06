@@ -24,6 +24,7 @@ final class ChineseSimplified implements Language
 			'SEARCH' => '搜索 ...',
 			'MORE' => '更多',
 			'DEFAULT' => '默认',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => '用户',
 			'CREATE' => 'Create',
@@ -337,7 +338,6 @@ final class ChineseSimplified implements Language
 			'LOGIN_CREATE' => '创建',
 
 			'PASSWORD_TITLE' => '输入您当前的密码：',
-			'USERNAME_CURRENT' => '当前用户名',
 			'PASSWORD_CURRENT' => '当前密码',
 			'PASSWORD_TEXT' => '您的用户名和密码将被修改为：',
 			'PASSWORD_CHANGE' => '修改登录信息',

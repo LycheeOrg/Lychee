@@ -2,14 +2,17 @@
 
 namespace App\Http\Requests\Album;
 
+use App\Contracts\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasParentAlbum;
 use App\Http\Requests\Contracts\HasTitle;
 use App\Http\Requests\Traits\HasParentAlbumTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
 use App\Models\Album;
+use App\Policies\AlbumPolicy;
 use App\Rules\RandomIDRule;
 use App\Rules\TitleRule;
+use Illuminate\Support\Facades\Gate;
 
 class AddAlbumRequest extends BaseApiRequest implements HasTitle, HasParentAlbum
 {
@@ -21,7 +24,7 @@ class AddAlbumRequest extends BaseApiRequest implements HasTitle, HasParentAlbum
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumWrite($this->parentAlbum);
+		return Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->parentAlbum]);
 	}
 
 	/**

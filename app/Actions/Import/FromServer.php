@@ -66,7 +66,7 @@ class FromServer
 					break;
 				default:
 					break;
-				// @codeCoverageIgnoreEnd
+					// @codeCoverageIgnoreEnd
 			}
 		}
 

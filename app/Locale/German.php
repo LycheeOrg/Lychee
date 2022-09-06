@@ -24,6 +24,7 @@ final class German implements Language
 			'SEARCH' => 'Suchen ...',
 			'MORE' => 'Mehr',
 			'DEFAULT' => 'Standard',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Benutzer',
 			'CREATE' => 'Erstellen',
@@ -341,7 +342,6 @@ final class German implements Language
 			'LOGIN_CREATE' => 'Benutzer anlegen',
 
 			'PASSWORD_TITLE' => 'Geben Sie Ihr bestehendes Kennwort ein:',
-			'USERNAME_CURRENT' => 'Bestehender Benutzername',
 			'PASSWORD_CURRENT' => 'Bestehendes Kennwort',
 			'PASSWORD_TEXT' => 'Ihr Benutzername und Passwort werden wie folgt geändert:',
 			'PASSWORD_CHANGE' => 'Benutzer ändern',

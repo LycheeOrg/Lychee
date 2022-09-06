@@ -24,6 +24,7 @@ final class English implements Language
 			'SEARCH' => 'Search ...',
 			'MORE' => 'More',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Users',
 			'CREATE' => 'Create',
@@ -336,7 +337,6 @@ final class English implements Language
 			'LOGIN_CREATE' => 'Create Login',
 
 			'PASSWORD_TITLE' => 'Enter your current password:',
-			'USERNAME_CURRENT' => 'Current Username',
 			'PASSWORD_CURRENT' => 'Current Password',
 			'PASSWORD_TEXT' => 'Your username and password will be changed to the following:',
 			'PASSWORD_CHANGE' => 'Change Login',

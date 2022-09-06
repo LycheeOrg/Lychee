@@ -9,13 +9,61 @@ use App\Exceptions\Handlers\InstallationHandler;
 use App\Exceptions\Handlers\MigrationHandler;
 use App\Exceptions\Handlers\NoEncryptionKey;
 use App\Models\Logs;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Support\Arr;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
+/**
+ * Lychee's custom exception handler.
+ *
+ * While the overall architectural approach of the original exception handler
+ * of the framework is fine, the original exception handler is mostly broken
+ * when it comes to the details.
+ *
+ * The overall architectural approach is as follows:
+ *
+ *  1. Substitute or wrap certain exceptions by or into other exceptions
+ *     (i.e. via `mapException`)
+ *  2. Decide whether the client expects an HTML or JSON response
+ *  3. Convert (or "render") the exception into a response with said content
+ *     type
+ *
+ * However, there are two major issues with the original exception handler:
+ *
+ *  - Substitution of exception is not limited to `mapException` but happens
+ *    all the time which makes it hard to reliably predict what happens to
+ *    an exception when a method (other than `mapException`) is called.
+ *    One might end up with a different exception.
+ *    Moreover, not all of these substitution are sensible enough to add the
+ *    original exception as a predecessor to the new exception.
+ *  - A constant mix-up of the terms "HTTP" and "HTML".
+ *    The framework frequently uses the term "HTTP" as an antonym to "JSON"
+ *    when "HTML" would be rather appropriate.
+ *    For example like in `renderJsonResponse($e)` vs. `renderHttpResponse($e)`.
+ *    The latter is called, when an exception shall be converted into HTML.
+ *    But of course, a JSON response is also an HTTP response.
+ *    It seems as if the framework is not even aware of this confusion.
+ *
+ * 90% of this handler are bug fixes.
+ * This means, parent methods are not overwritten, because we need a special
+ * non-standard behaviour, but simply the _right_ behaviour.
+ * Unfortunately, this class cannot solve the unfortunate naming of some
+ * methods, but must stick to the names used by the parent class.
+ * Alternatively, this class could overwrite the entry method `render($e)`,
+ * re-implement everything which comes after that (even using better names)
+ * and let the rest of the parent class go down the drain.
+ * However, this bears the risk that some 3rd-party calls unfixed methods of
+ * the original exception handler.
+ */
 class Handler extends ExceptionHandler
 {
 	/**
@@ -68,45 +116,144 @@ class Handler extends ExceptionHandler
 	 * {@link Handler::renderHttpException()},
 	 * {@link Handler::convertExceptionToArray()}.
 	 *
-	 * We overwrite this method such that {@link TokenMismatchException}
-	 * is not replaced by a generic HTTP exception but something more
-	 * specific, which we can detect more easily.
-	 * Note, that the default Laravel handler has actually **two** methods
-	 * which both replace exceptions by other exceptions:
+	 * We overwrite this method to wrap the following exception into proper
+	 * HTTP exceptions which masquerades them and avoids that the framework
+	 * handles them in special ways:
+	 *
+	 *  - {@link TokenMismatchException}
+	 *  - {@link AuthenticationException}
+	 *
+	 * Note, that the default Laravel handler actually replaces exceptions by
+	 * other exception at **three** places.
+	 * The method {@link ExceptionHandler::render()} is the entry point for
+	 * exception handling.
+	 * This method calls
 	 *
 	 *  - {@link ExceptionHandler::mapException()}
 	 *  - {@link ExceptionHandler::prepareException()}
 	 *
-	 * which are chained one after the other like this
+	 * in that order which both replace exceptions.
+	 * Finally, the parent method {@link ExceptionHandler::render()} also
+	 * replaces some exceptions, too.
+	 * We hook into the earliest of the three methods, i.e. `mapException`.
 	 *
-	 *     $e = $this->prepareException($this->mapException($e));
+	 * **`TokenMismatchException`**
 	 *
-	 * in {@link ExceptionHandler::render()}.
-	 * Indeed, it is the second method
-	 * {@link ExceptionHandler::prepareException()}
-	 * which replaces {@link TokenMismatchException} by a generic HTTP
-	 * exception.
-	 * We hook into the earlier method to prevent this.
+	 * Per default, the framework eventually replaces
+	 * {@link TokenMismatchException} by generic HTTP exception in
+	 * {@link ExceptionHandler::prepareException()}.
+	 * We want to keep it more specific in order to detect this kind of
+	 * exception more easily in the frontend.
+	 *
+	 * **`AuthenticationException`**
+	 *
+	 * Per default, the framework replaces {@link AuthenticationException}
+	 * by a redirection to the route `login` in
+	 * {@link ExceptionHandler::render()}.
+	 * This is problematic for various reasons:
+	 *
+	 *  1. We do not really have a dedicated login page to which users
+	 *     could be redirected.
+	 *     Our login dialog is implemented in JavaScript.
+	 *     Surely, we could use the main page `/gallery` as a redirection
+	 *     target, but it would probably confuse people to be redirected there
+	 *     without obvious reason.
+	 *  2. In theory, all requests for content type `text/html` should always
+	 *     succeed.
+	 *     Any interaction which might trigger an authorization error is done
+	 *     via JavaScript and JSON requests.
+	 *     If an authorization error occurs for an HTML request, this indicates
+	 *     a programming error.
+	 *     In this case we want to be informed about that, and we want users
+	 *     to tell us so, instead of suppressing the error by silent
+	 *     redirection (cp. previous point).
+	 *     Moreover, such an event always implies that the backend and the
+	 *     frontend are out-of-sync with respect to the authentication state.
+	 *     The backend considers the session to be unauthenticated while the
+	 *     frontend considers the user still to be authenticated.
+	 *     In particular, users could not even login again, even if the knew
+	 *     what was going on, because the frontend did not provide the option
+	 *     to do so.
+	 *     Hence, we are in an unrecoverable situation anyway.
+	 *  3. For JSON requests, we want the structure of the JSON response to
+	 *     match our error reporting scheme as defined by
+	 *     {@link Handler::convertExceptionToArray} such that the frontend
+	 *     can properly interpret and display it.
+	 *     By default, the framework would return a JSON response whose format
+	 *     is unique to the {@link AuthenticationException}.
 	 *
 	 * @param \Throwable $e
 	 *
 	 * @return \Throwable
 	 */
-	protected function mapException(\Throwable $e)
+	protected function mapException(\Throwable $e): \Throwable
 	{
 		if ($e instanceof TokenMismatchException) {
 			return new SessionExpiredException(SessionExpiredException::DEFAULT_MESSAGE, $e);
 		}
 
-		return parent::mapException($e); // TODO: Change the autogenerated stub
+		if ($e instanceof AuthenticationException) {
+			return new UnauthenticatedException(UnauthenticatedException::DEFAULT_MESSAGE, $e);
+		}
+
+		return parent::mapException($e);
 	}
 
 	/**
-	 * Renders the given HttpException.
+	 * Prepare a response for the given exception.
+	 *
+	 * This method is called by the framework, _after_ the framework has
+	 * decided that the client expects a HTML response, but _before_ the
+	 * actual work horse {@link Handler::renderHttpException} is called.
+	 *
+	 * This method is 99% identical to the parent method except for a tiny
+	 * bug fix which adds the original exception to the encapsulating
+	 * `HttpException`.
+	 *
+	 * @param Request    $request
+	 * @param \Throwable $e
+	 *
+	 * @return SymfonyResponse
+	 *
+	 * @throws BindingResolutionException
+	 * @throws \InvalidArgumentException
+	 * @throws ContainerExceptionInterface
+	 * @throws NotFoundExceptionInterface
+	 */
+	protected function prepareResponse($request, \Throwable $e): SymfonyResponse
+	{
+		if (!$this->isHttpException($e) && config('app.debug') === true) {
+			return $this->toIlluminateResponse($this->convertExceptionToResponse($e), $e);
+		}
+
+		if (!$this->isHttpException($e)) {
+			$e = new HttpException(500, $e->getMessage(), $e);
+		}
+
+		// `renderHttpException` expects `$e` to be an instance of
+		// `HttpExceptionInterface`.
+		// This is ensured by `isHttpException` above, but PHPStan does not
+		// understand that.
+		// @phpstan-ignore-next-line
+		return $this->toIlluminateResponse($this->renderHttpException($e), $e);
+	}
+
+	/**
+	 * Renders the given HttpException into HTML.
 	 *
 	 * This method is called by the framework if
 	 *  1. `config('app.debug')` is not set, i.e. the application is not in debug mode
 	 *  2. the client expects an HTML response
+	 *
+	 * **Attention:**
+	 * This method is a misnomer caused by the framework.
+	 * The framework provides two methods `renderHttpException` and
+	 * `renderJsonException` with the former being called if the client
+	 * expects HTML.
+	 * Hence, the method should rather be named `renderHtmlException`.
+	 * That current name of the method, if meant as an antonym to
+	 * `renderJsonException` is obviously nonsense as JSON is also transported
+	 * over HTTP.
 	 *
 	 * @param HttpExceptionInterface $e
 	 *

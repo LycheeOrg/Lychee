@@ -24,6 +24,7 @@ final class Vietnamese implements Language
 			'SEARCH' => 'Tìm kiếm ...',
 			'MORE' => 'Xem thêm',
 			'DEFAULT' => 'Mặc định',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Người dùng',
 			'CREATE' => 'Tạo',
@@ -337,7 +338,6 @@ final class Vietnamese implements Language
 			'LOGIN_CREATE' => 'Tạo thông tin đăng nhập',
 
 			'PASSWORD_TITLE' => 'Nhập mật khẩu cũ của bạn:',
-			'USERNAME_CURRENT' => 'Tên đăng nhập cũ',
 			'PASSWORD_CURRENT' => 'Mật khẩu cũ',
 			'PASSWORD_TEXT' => 'Tên đăng nhập và mật khẩu của bạn sẽ được thay đổi thành như sau:',
 			'PASSWORD_CHANGE' => 'Thay đổi thông tin đăng nhập',

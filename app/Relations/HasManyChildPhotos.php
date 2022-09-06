@@ -2,7 +2,6 @@
 
 namespace App\Relations;
 
-use App\Actions\PhotoAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\DTO\SortingCriterion;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
@@ -10,6 +9,7 @@ use App\Models\Album;
 use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
+use App\Policies\PhotoQueryPolicy;
 use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\InvalidCastException;
@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class HasManyChildPhotos extends HasManyBidirectionally
 {
-	protected PhotoAuthorisationProvider $photoAuthorisationProvider;
+	protected PhotoQueryPolicy $photoQueryPolicy;
 
 	public function __construct(Album $owningAlbum)
 	{
@@ -25,7 +25,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 		// the parent constructor.
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
-		$this->photoAuthorisationProvider = resolve(PhotoAuthorisationProvider::class);
+		$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
 		parent::__construct(
 			Photo::query(),
 			$owningAlbum,
@@ -66,7 +66,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 	{
 		if (static::$constraints) {
 			parent::addConstraints();
-			$this->photoAuthorisationProvider->applyVisibilityFilter($this->getRelationQuery());
+			$this->photoQueryPolicy->applyVisibilityFilter($this->getRelationQuery());
 		}
 	}
 
@@ -76,7 +76,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 	public function addEagerConstraints(array $models)
 	{
 		parent::addEagerConstraints($models);
-		$this->photoAuthorisationProvider->applyVisibilityFilter($this->getRelationQuery());
+		$this->photoQueryPolicy->applyVisibilityFilter($this->getRelationQuery());
 	}
 
 	/**

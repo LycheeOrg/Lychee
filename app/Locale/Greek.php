@@ -24,6 +24,7 @@ final class Greek implements Language
 			'SEARCH' => 'Αναζήτηση ...',
 			'MORE' => 'Περισσότερα',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Χρήστες',
 			'CREATE' => 'Create',
@@ -336,7 +337,6 @@ final class Greek implements Language
 			'LOGIN_CREATE' => 'Δημιουργία στοιχείων εισόδου',
 
 			'PASSWORD_TITLE' => 'Εισάγετε τον τρέχον κωδικό πρόσβασης:',
-			'USERNAME_CURRENT' => 'Τρέχον Όνομα Χρήστη',
 			'PASSWORD_CURRENT' => 'Τρέχον κωδικός πρόσβασης',
 			'PASSWORD_TEXT' => 'Το όνομα χρήστη και ο κωδικός πρόσβασής σας θα αλλάξουν στα παρακάτω:',
 			'PASSWORD_CHANGE' => 'Αλλαγή στοιχείων εισόδου',

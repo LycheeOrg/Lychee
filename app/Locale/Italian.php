@@ -24,6 +24,7 @@ final class Italian implements Language
 			'SEARCH' => 'Cerca...',
 			'MORE' => 'Altro',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Utenti',
 			'CREATE' => 'Create',
@@ -338,7 +339,6 @@ final class Italian implements Language
 			'LOGIN_CREATE' => 'Crea Login',
 
 			'PASSWORD_TITLE' => 'Inserisci la tua password attuale:',
-			'USERNAME_CURRENT' => 'Nome Utente Attuale',
 			'PASSWORD_CURRENT' => 'Password Attuale',
 			'PASSWORD_TEXT' => 'Il tuo nome utente e password verrano cambiati nei seguenti:',
 			'PASSWORD_CHANGE' => 'Cambia Login',

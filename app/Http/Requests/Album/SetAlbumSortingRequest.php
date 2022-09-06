@@ -7,6 +7,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasBaseAlbum;
 use App\Http\Requests\Contracts\HasSortingCriterion;
+use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasBaseAlbumTrait;
 use App\Http\Requests\Traits\HasSortingCriterionTrait;
 use App\Rules\OrderRule;
@@ -17,14 +18,7 @@ class SetAlbumSortingRequest extends BaseApiRequest implements HasBaseAlbum, Has
 {
 	use HasBaseAlbumTrait;
 	use HasSortingCriterionTrait;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function authorize(): bool
-	{
-		return $this->authorizeAlbumWrite($this->album);
-	}
+	use AuthorizeCanEditAlbumTrait;
 
 	/**
 	 * {@inheritDoc}

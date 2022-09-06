@@ -24,6 +24,7 @@ final class Swedish implements Language
 			'SEARCH' => 'Search ...',
 			'MORE' => 'More',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Users',
 			'CREATE' => 'Create',
@@ -336,7 +337,6 @@ final class Swedish implements Language
 			'LOGIN_CREATE' => 'Skapa inloggning',
 
 			'PASSWORD_TITLE' => 'Ange dina befintliga inloggningsuppgifter:',
-			'USERNAME_CURRENT' => 'Befintligt användarnamn',
 			'PASSWORD_CURRENT' => 'Befintligt lösenord',
 			'PASSWORD_TEXT' => 'Ditt inloggningsuppgifter kommer att ändras till:',
 			'PASSWORD_CHANGE' => 'Spara ändringar av inloggningsuppgifter',

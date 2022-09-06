@@ -15,6 +15,7 @@ namespace Tests\Feature\Lib;
 use App\Actions\Photo\Archive;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Testing\TestResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Tests\TestCase;
 
 class PhotosUnitTest
@@ -338,7 +339,8 @@ class PhotosUnitTest
 	 */
 	public function download(
 		array $ids,
-		string $kind = Archive::FULL
+		string $kind = Archive::FULL,
+		int $expectedStatusCode = 200
 	): TestResponse {
 		$response = $this->testCase->getWithParameters(
 			'/api/Photo::getArchive', [
@@ -348,7 +350,13 @@ class PhotosUnitTest
 				'Accept' => '*/*',
 			]
 		);
-		$response->assertOk();
+		$response->assertStatus($expectedStatusCode);
+		if ($response->baseResponse instanceof StreamedResponse) {
+			// The content of a streamed response is not generated unless
+			// the content is fetched.
+			// This ensures that the generator of SUT is actually executed.
+			$response->streamedContent();
+		}
 
 		return $response;
 	}

@@ -4,10 +4,11 @@ namespace App\Http\Middleware;
 
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\UnauthorizedException;
-use App\Facades\AccessControl;
 use App\Http\Middleware\Checks\IsInstalled;
+use App\Policies\UserPolicy;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class AdminCheck
 {
@@ -35,7 +36,7 @@ class AdminCheck
 			return $next($request);
 		}
 
-		if (!AccessControl::is_admin()) {
+		if (!Gate::check(UserPolicy::IS_ADMIN)) {
 			throw new UnauthorizedException('Admin privileges required');
 		}
 

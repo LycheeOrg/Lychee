@@ -24,6 +24,7 @@ final class Russian implements Language
 			'SEARCH' => 'Search ...',
 			'MORE' => 'More',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Пользователи',
 			'CREATE' => 'Create',
@@ -336,7 +337,6 @@ final class Russian implements Language
 			'LOGIN_CREATE' => 'Создать',
 
 			'PASSWORD_TITLE' => 'Введите текущий пароль:',
-			'USERNAME_CURRENT' => 'Текущий логин',
 			'PASSWORD_CURRENT' => 'Текущий пароль',
 			'PASSWORD_TEXT' => 'Ваши логин и пароль будут изменены на следующие:',
 			'PASSWORD_CHANGE' => 'Изменить данные',
