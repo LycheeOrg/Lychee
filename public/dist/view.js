@@ -3093,8 +3093,8 @@ lychee.locale = {
 	UPLOAD_IMPORT: "Import",
 	UPLOAD_IMPORT_SERVER: "Importing from server",
 	UPLOAD_IMPORT_SERVER_FOLD: "Folder empty or no readable files to process. Please take a look at the log (Settings -> Show Log) for further details.",
-	UPLOAD_IMPORT_SERVER_INSTR: "This action will import all photos, folders and sub-folders which are located in the following directory. The <b>original files will be deleted</b> after the import when possible.",
-	UPLOAD_ABSOLUTE_PATH: "Absolute path to directory",
+	UPLOAD_IMPORT_SERVER_INSTR: "Import all photos, folders and sub-folders located in the folder with the following absolute path (on server). Paths are space separated, use \\ to escape a space in a path.",
+	UPLOAD_ABSOLUTE_PATH: "Absolute path to directories, space separated.",
 	UPLOAD_IMPORT_SERVER_EMPT: "Could not start import because the folder was empty!",
 
 	ABOUT_SUBTITLE: "Self-hosted photo-management done right",
