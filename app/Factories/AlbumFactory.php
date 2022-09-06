@@ -62,6 +62,7 @@ class AlbumFactory
 	 * @return BaseAlbum the album for the ID
 	 *
 	 * @throws ModelNotFoundException thrown, if no album with the given ID exists
+	 *
 	 * @noinspection PhpIncompatibleReturnTypeInspection
 	 */
 	public function findBaseAlbumOrFail(string $albumId, bool $withRelations = true): BaseAlbum

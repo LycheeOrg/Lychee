@@ -20,6 +20,7 @@ class GenerateThumbs extends Command
 {
 	/**
 	 * @var array<string, int>
+	 *
 	 * @phpstan-var array<string, int<0,6>>
 	 */
 	public const SIZE_VARIANTS = [
