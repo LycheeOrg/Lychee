@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
  * See {@link FixedQueryBuilderTrait} for details.
  *
  * @template TModelClass of \Illuminate\Database\Eloquent\Model
+ *
  * @extends Builder<TModelClass>
  *
  * Although this class extends `Builder<TModelClass>` and `Builder<TModelClass>`
