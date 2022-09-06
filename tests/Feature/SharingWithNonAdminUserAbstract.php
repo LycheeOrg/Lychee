@@ -59,7 +59,7 @@ abstract class SharingWithNonAdminUserAbstract extends SharingTestScenariosAbstr
 			null,
 			null,
 			null,
-			$this->photoID1, [
+			$this->photoID3, [
 				self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
 				self::generateExpectedAlbumJson($this->albumID3, self::ALBUM_TITLE_3, null, $this->photoID3),
 			]
@@ -77,7 +77,7 @@ abstract class SharingWithNonAdminUserAbstract extends SharingTestScenariosAbstr
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
-			$this->photoID1, [
+			$this->photoID3, [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_SUNSET_IMAGE, $this->photoID3, $this->albumID3),
 			]
