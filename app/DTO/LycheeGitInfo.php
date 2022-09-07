@@ -2,8 +2,6 @@
 
 namespace App\DTO;
 
-use function Safe\sprintf;
-
 class LycheeGitInfo extends DTO
 {
 	public string $branch;

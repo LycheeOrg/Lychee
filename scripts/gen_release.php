@@ -8,8 +8,6 @@ use Safe\Exceptions\FilesystemException;
 use function Safe\file_get_contents;
 use function Safe\file_put_contents;
 use function Safe\scandir;
-use function Safe\sprintf;
-use function Safe\substr;
 
 /**
  * Template for migration.

@@ -387,7 +387,7 @@ class SettingsController extends Controller
 		$request->validate(['css' => 'present|nullable|string']);
 		$css = $request->get('css') ?? '';
 
-		if (!Storage::disk('dist')->put('user.css', $css)) {
+		if (Storage::disk('dist')->put('user.css', $css) === false) {
 			throw new InsufficientFilesystemPermissions('Could not save CSS');
 		}
 	}

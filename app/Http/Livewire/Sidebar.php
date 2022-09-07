@@ -8,6 +8,7 @@ use App\Models\Photo;
 use App\Models\TagAlbum;
 use DebugBar\DebugBar;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Sidebar extends Component
@@ -84,7 +85,7 @@ class Sidebar extends Component
 			['head' => Lang::get('ALBUM_PASSWORD'), 'value' => $_password],
 		];
 		if ($this->album->owner_id !== null) {
-			$share->content[] = ['head' => Lang::get('ALBUM_OWNER'), 'value' => $this->album->owner->name()];
+			$share->content[] = ['head' => Lang::get('ALBUM_OWNER'), 'value' => $this->album->owner->name];
 		}
 
 		$license = new \stdClass();

@@ -7,7 +7,6 @@ use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
-use function Safe\substr;
 
 /**
  * App\Logs.

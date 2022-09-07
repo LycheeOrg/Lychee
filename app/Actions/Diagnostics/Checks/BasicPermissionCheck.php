@@ -11,10 +11,14 @@ use App\Models\SymLink;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
-use League\Flysystem\Adapter\Local as LocalFlysystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
-use function Safe\sprintf;
+use Safe\Exceptions\FilesystemException;
+use Safe\Exceptions\PosixException;
+use function Safe\fileperms;
+use function Safe\posix_getgrgid;
+use function Safe\posix_getgroups;
 
 class BasicPermissionCheck implements DiagnosticCheckInterface
 {
@@ -62,8 +66,9 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 		$this->numOwnerIssues = 0;
 		$this->numPermissionIssues = 0;
 		$this->numAccessIssues = 0;
-		$groupIDsOrFalse = posix_getgroups();
-		if ($groupIDsOrFalse === false) {
+		try {
+			$groupIDsOrFalse = posix_getgroups();
+		} catch (PosixException) {
 			$errors[] = 'Error: Could not determine groups of process';
 
 			return;
@@ -74,9 +79,11 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 		$this->groupIDs = array_unique($this->groupIDs);
 		$this->groupNames = implode(', ', array_map(
 			function (int $gid): string {
-				$groupNameOrFalse = posix_getgrgid($gid);
-
-				return $groupNameOrFalse === false ? '<unknown>' : $groupNameOrFalse['name'];
+				try {
+					return posix_getgrgid($gid)['name'];
+				} catch (PosixException) {
+					return '<unknown>';
+				}
 			},
 			$this->groupIDs
 		));
@@ -88,7 +95,7 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 		];
 
 		foreach ($disks as $disk) {
-			if ($disk->getDriver()->getAdapter() instanceof LocalFlysystem) {
+			if ($disk->getAdapter() instanceof LocalFilesystemAdapter) {
 				$this->checkDirectoryPermissionsRecursively($disk->path(''), $errors);
 			}
 		}
@@ -134,8 +141,9 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 				return;
 			}
 
-			$actualPerm = fileperms($path);
-			if ($actualPerm === false) {
+			try {
+				$actualPerm = fileperms($path);
+			} catch (FilesystemException) {
 				$errors[] = sprintf('Warning: Unable to determine permissions for %s' . PHP_EOL, $path);
 
 				return;
@@ -146,7 +154,15 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 			// interested in
 			$actualPerm &= 07777;
 			$owningGroupIdOrFalse = filegroup($path);
-			$owningGroupNameOrFalse = $owningGroupIdOrFalse === false ? false : posix_getgrgid($owningGroupIdOrFalse);
+			if ($owningGroupIdOrFalse !== false) {
+				try {
+					$owningGroupNameOrFalse = posix_getgrgid($owningGroupIdOrFalse);
+				} catch (PosixException) {
+					$owningGroupNameOrFalse = false;
+				}
+			} else {
+				$owningGroupNameOrFalse = false;
+			}
 			$owningGroupName = $owningGroupNameOrFalse === false ? '<unknown>' : $owningGroupNameOrFalse['name'];
 			$expectedPerm = self::getConfiguredDirectoryPerm();
 

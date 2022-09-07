@@ -5,7 +5,7 @@ namespace App\Actions\Diagnostics\Checks;
 use App\Contracts\DiagnosticCheckInterface;
 use App\Facades\Helpers;
 use App\Models\Configs;
-use function Safe\substr;
+use function Safe\exec;
 use Spatie\ImageOptimizer\Optimizers\Cwebp;
 use Spatie\ImageOptimizer\Optimizers\Gifsicle;
 use Spatie\ImageOptimizer\Optimizers\Jpegoptim;

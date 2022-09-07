@@ -6,6 +6,8 @@ use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Facades\Helpers;
+use function Safe\exec;
 
 trait ConfigsHas
 {
@@ -32,7 +34,7 @@ trait ConfigsHas
 		$has_exiftool = self::getValueAsInt('has_exiftool');
 
 		// value not yet set -> let's see if exiftool is available
-		if ($has_exiftool === 2) {
+		if ($has_exiftool === 2 && Helpers::isExecAvailable()) {
 			try {
 				$cmd_output = exec('command -v exiftool');
 			} catch (\Exception $e) {
@@ -65,7 +67,7 @@ trait ConfigsHas
 		$has_ffmpeg = self::getValueAsInt('has_ffmpeg');
 
 		// value not yet set -> let's see if ffmpeg is available
-		if ($has_ffmpeg === 2) {
+		if ($has_ffmpeg === 2 && Helpers::isExecAvailable()) {
 			try {
 				$cmd_output = exec('command -v ffmpeg');
 			} catch (\Exception $e) {

@@ -69,7 +69,7 @@ class PhotosAddNegativeTest extends PhotoTestBase
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
 			null,
 			500,
-			'Impossible to create the root directory'
+			'Unable to create a directory'
 		);
 	}
 

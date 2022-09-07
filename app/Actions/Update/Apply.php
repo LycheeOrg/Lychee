@@ -12,6 +12,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use function Safe\chdir;
+use function Safe\exec;
 use function Safe\preg_replace;
 use function Safe\putenv;
 

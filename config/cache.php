@@ -28,6 +28,9 @@ return [
 	| well as their drivers. You may even define multiple stores for the
 	| same cache driver to group types of items stored in your caches.
 	|
+	| Supported drivers: "apc", "array", "database", "file",
+	|         "memcached", "redis", "dynamodb", "octane", "null"
+	|
 	*/
 
 	'stores' => [
@@ -44,6 +47,7 @@ return [
 			'driver' => 'database',
 			'table' => 'cache',
 			'connection' => env('DB_CONNECTION'),
+			'lock_connection' => null,
 		],
 
 		'file' => [
@@ -70,6 +74,7 @@ return [
 		'redis' => [
 			'driver' => 'redis',
 			'connection' => 'cache',
+			'lock_connection' => 'default',
 		],
 
 		'dynamodb' => [
@@ -79,6 +84,10 @@ return [
 			'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
 			'table' => env('DYNAMODB_CACHE_TABLE', 'cache'),
 			'endpoint' => env('DYNAMODB_ENDPOINT'),
+		],
+
+		'octane' => [
+			'driver' => 'octane',
 		],
 	],
 
@@ -93,8 +102,5 @@ return [
 	|
 	*/
 
-	'prefix' => env(
-		'CACHE_PREFIX',
-		Str::slug(env('APP_NAME', 'Lychee'), '_') . '_cache'
-	),
+	'prefix' => env('CACHE_PREFIX', Str::slug(env('APP_NAME', 'Lychee'), '_') . '_cache_'),
 ];

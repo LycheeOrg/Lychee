@@ -156,11 +156,11 @@ class SizeVariantGroupedWithRandomSuffixNamingStrategy extends SizeVariantBaseNa
 			$rndStr = bin2hex(random_bytes(self::NAME_LENGTH / 2));
 
 			return
-				\Safe\substr($rndStr, 0, 2) .
+				substr($rndStr, 0, 2) .
 				DIRECTORY_SEPARATOR .
-				\Safe\substr($rndStr, 2, 2) .
+				substr($rndStr, 2, 2) .
 				DIRECTORY_SEPARATOR .
-				\Safe\substr($rndStr, 4);
+				substr($rndStr, 4);
 		} catch (\Exception $e) {
 			throw new InsufficientEntropyException($e);
 		}

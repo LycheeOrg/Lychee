@@ -6,8 +6,9 @@ use App\Actions\Diagnostics\Checks\BasicPermissionCheck;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use function Safe\chmod;
+use Safe\Exceptions\FilesystemException;
 use function Safe\fileowner;
-use function Safe\sprintf;
+use function Safe\fileperms;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 
 class FixPermissions extends Command
@@ -88,8 +89,9 @@ class FixPermissions extends Command
 	private function fixPermissionsRecursively(string $path): void
 	{
 		try {
-			$actualPerm = fileperms($path);
-			if ($actualPerm === false) {
+			try {
+				$actualPerm = fileperms($path);
+			} catch (FilesystemException) {
 				$this->warn(sprintf('Unable to determine permissions for %s' . PHP_EOL, $path));
 
 				return;

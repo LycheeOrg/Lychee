@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
-use League\Flysystem\Adapter\Local;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 
 // TODO: Uncomment the following line, if Lychee really starts to support AWS s3.
 // The previous code already contained some first steps for S3, but relied
@@ -82,7 +82,7 @@ class SizeVariant extends Model
 	public $timestamps = false;
 
 	/**
-	 * @var string[]
+	 * @var array<string,string>
 	 */
 	protected $casts = [
 		'id' => 'integer',
@@ -95,8 +95,8 @@ class SizeVariant extends Model
 	];
 
 	/**
-	 * @var string[] The list of attributes which exist as columns of the DB
-	 *               relation but shall not be serialized to JSON
+	 * @var array<int,string> The list of attributes which exist as columns of the DB
+	 *                        relation but shall not be serialized to JSON
 	 */
 	protected $hidden = [
 		'id', // irrelevant, because a size variant is always serialized as an embedded object of its photo
@@ -168,14 +168,14 @@ class SizeVariant extends Model
 		$maxLifetime = Configs::getValueAsInt('SL_life_time_days') * 24 * 60 * 60;
 		$gracePeriod = $maxLifetime / 3;
 
-		$storageAdapter = $imageDisk->getDriver()->getAdapter();
+		$storageAdapter = $imageDisk->getAdapter();
 
 		// TODO: Uncomment these line when Laravel really starts to support s3
 		/*if ($storageAdapter instanceof AwsS3Adapter) {
 			return $imageDisk->temporaryUrl($this->short_path, now()->addSeconds($maxLifetime));
 		}*/
 
-		if ($storageAdapter instanceof Local) {
+		if ($storageAdapter instanceof LocalFilesystemAdapter) {
 			/** @var ?SymLink $symLink */
 			$symLink = $this->sym_links()->latest()->first();
 			if ($symLink === null || $symLink->created_at->isBefore(now()->subSeconds($gracePeriod))) {

@@ -10,10 +10,8 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
-use function Safe\array_flip;
 use Safe\Exceptions\InfoException;
 use function Safe\set_time_limit;
-use function Safe\sprintf;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class GenerateThumbs extends Command

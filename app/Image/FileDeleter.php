@@ -7,7 +7,7 @@ use App\Exceptions\MediaFileOperationException;
 use App\Models\SymLink;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
-use League\Flysystem\Adapter\Local as LocalAdapter;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use function Safe\unlink;
 
 /**
@@ -104,11 +104,11 @@ class FileDeleter
 
 		// If the disk uses the local driver, we use low-level routines as
 		// these are also able to handle symbolic links in case of doubt
-		$isLocalDisk = $defaultDisk->getDriver()->getAdapter() instanceof LocalAdapter;
+		$isLocalDisk = $defaultDisk->getAdapter() instanceof LocalFilesystemAdapter;
 		if ($isLocalDisk) {
 			foreach ($this->regularFilesOrSymbolicLinks as $fileOrLink) {
 				try {
-					$absolutePath = $defaultDisk->path($fileOrLink);
+					$absolutePath = Storage::path($fileOrLink);
 					// Note, `file_exist` returns `false` for existing,
 					// but dead links.
 					// So the first part takes care of deleting links no matter

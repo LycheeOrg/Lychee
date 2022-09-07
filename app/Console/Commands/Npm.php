@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Contracts\ExternalLycheeException;
 use App\Exceptions\UnexpectedException;
 use Illuminate\Console\Command;
+use function Safe\exec;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class Npm extends Command
