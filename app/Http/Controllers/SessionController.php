@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
+use App\DTO\UserCapabilities;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
@@ -19,11 +20,9 @@ use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\User;
-use App\Policies\UserPolicy;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
 
 class SessionController extends Controller
@@ -63,24 +62,16 @@ class SessionController extends Controller
 				// If the session is unauthenticated ('user' === null), but grants admin rights nonetheless,
 				// the front-end shows the dialog to create an admin account.
 				$return['user'] = null;
-				$return['rights'] = [
-					'may_administrate' => true,
-					'may_edit_own_settings' => true,
-					'may_upload' => true,
-				];
+				$return['rights'] = new UserCapabilities(true, true, true);
 			} else {
 				/** @var User|null $user */
 				$user = Auth::user();
 				$return['user'] = $user?->toArray();
-				$return['rights'] = [
-					'may_administrate' => Gate::check(UserPolicy::IS_ADMIN, User::class),
-					'may_edit_own_settings' => Gate::check(UserPolicy::MAY_EDIT_OWN_SETTINGS, User::class), // the use of the negation should be removed later
-					'may_upload' => Gate::check(UserPolicy::MAY_UPLOAD, User::class),
-				];
+				$return['rights'] = UserCapabilities::ofCurrentUser();
 			}
 
 			// Load configuration settings acc. to authentication status
-			if ($return['rights']['may_administrate'] === true) {
+			if ($return['rights']->may_administrate === true) {
 				// Admin rights (either properly authenticated or not registered)
 				$return['config'] = $this->configFunctions->admin();
 				$return['config']['location'] = base_path('public/');
