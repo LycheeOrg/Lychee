@@ -37,7 +37,7 @@ class UserPolicy
 	 */
 	public function isAdmin(?User $user): bool
 	{
-		return $user?->id === 0;
+		return $user?->may_administrate === true;
 	}
 
 	/**
@@ -49,7 +49,7 @@ class UserPolicy
 	 */
 	public function mayEditOwnSettings(User $user): bool
 	{
-		return !$user->is_locked;
+		return $user->may_edit_own_settings;
 	}
 
 	/**

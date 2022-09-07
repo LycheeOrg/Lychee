@@ -35,7 +35,7 @@ class Save
 
 		$user->username = $username;
 		$user->may_upload = $mayUpload;
-		$user->is_locked = $isLocked;
+		$user->may_edit_own_settings = !$isLocked;
 		if ($password !== null) {
 			try {
 				$user->password = Hash::make($password);

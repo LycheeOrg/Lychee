@@ -21,7 +21,8 @@ class Create
 		}
 		$user = new User();
 		$user->may_upload = $mayUpload;
-		$user->is_locked = $isLocked;
+		$user->may_edit_own_settings = !$isLocked;
+		$user->may_administrate = false;
 		$user->username = $username;
 		$user->password = Hash::make($password);
 		$user->save();

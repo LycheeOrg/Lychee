@@ -27,8 +27,9 @@ class SetLogin
 		$adminUser = User::query()->findOrFail(0);
 		$adminUser->username = $username;
 		$adminUser->password = Hash::make($password);
-		$adminUser->is_locked = false;
+		$adminUser->may_edit_own_settings = true;
 		$adminUser->may_upload = true;
+		$adminUser->may_administrate = true;
 		$adminUser->save();
 
 		return $adminUser;
