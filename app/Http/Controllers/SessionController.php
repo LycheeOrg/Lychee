@@ -65,7 +65,7 @@ class SessionController extends Controller
 				$return['user'] = null;
 				$return['rights'] = [
 					'may_administrate' => true,
-					'may_selfedit' => true,
+					'may_edit_own_settings' => true,
 					'may_upload' => true,
 				];
 			} else {
@@ -74,7 +74,7 @@ class SessionController extends Controller
 				$return['user'] = $user?->toArray();
 				$return['rights'] = [
 					'may_administrate' => Gate::check(UserPolicy::IS_ADMIN, User::class),
-					'may_self_edit' => Gate::check(UserPolicy::MAY_EDIT_OWN_SETTINGS, User::class), // the use of the negation should be removed later
+					'may_edit_own_settings' => Gate::check(UserPolicy::MAY_EDIT_OWN_SETTINGS, User::class), // the use of the negation should be removed later
 					'may_upload' => Gate::check(UserPolicy::MAY_UPLOAD, User::class),
 				];
 			}
