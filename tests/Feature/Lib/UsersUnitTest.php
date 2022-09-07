@@ -70,7 +70,7 @@ class UsersUnitTest
 	 * @param string      $username
 	 * @param string      $password
 	 * @param bool        $mayUpload
-	 * @param bool        $isLocked
+	 * @param bool        $mayEditOwnSettings
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
@@ -80,7 +80,7 @@ class UsersUnitTest
 		string $username,
 		string $password,
 		bool $mayUpload = true,
-		bool $isLocked = false,
+		bool $mayEditOwnSettings = true,
 		int $expectedStatusCode = 201,
 		?string $assertSee = null
 	): TestResponse {
@@ -88,7 +88,7 @@ class UsersUnitTest
 			'username' => $username,
 			'password' => $password,
 			'may_upload' => $mayUpload,
-			'may_edit_own_settings' => $isLocked,
+			'may_edit_own_settings' => $mayEditOwnSettings,
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
@@ -130,7 +130,7 @@ class UsersUnitTest
 	 * @param string      $username
 	 * @param string      $password
 	 * @param bool        $mayUpload
-	 * @param bool        $isLocked
+	 * @param bool        $mayEditOwnSettings
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
@@ -141,7 +141,7 @@ class UsersUnitTest
 		string $username,
 		string $password,
 		bool $mayUpload = true,
-		bool $isLocked = false,
+		bool $mayEditOwnSettings = true,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): TestResponse {
@@ -150,7 +150,7 @@ class UsersUnitTest
 			'username' => $username,
 			'password' => $password,
 			'may_upload' => $mayUpload,
-			'may_edit_own_settings' => $isLocked,
+			'may_edit_own_settings' => $mayEditOwnSettings,
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
