@@ -67,7 +67,7 @@ class ImportController extends Controller
 	public function server(ImportServerRequest $request, FromServer $fromServer): StreamedResponse
 	{
 		return $fromServer->do(
-			$request->path(), $request->album(), $request->importMode()
+			$request->paths(), $request->album(), $request->importMode()
 		);
 	}
 
