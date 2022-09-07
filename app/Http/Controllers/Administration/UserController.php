@@ -53,7 +53,7 @@ class UserController extends Controller
 			$request->username(),
 			$request->password(),
 			$request->mayUpload(),
-			$request->isLocked()
+			$request->mayEditOwnSettings()
 		);
 	}
 
@@ -89,7 +89,7 @@ class UserController extends Controller
 	 */
 	public function create(AddUserRequest $request, Create $create): User
 	{
-		return $create->do($request->username(), $request->password(), $request->mayUpload(), $request->isLocked());
+		return $create->do($request->username(), $request->password(), $request->mayUpload(), $request->mayEditOwnSettings());
 	}
 
 	/**

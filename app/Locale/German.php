@@ -521,7 +521,7 @@ final class German implements Language
 			'CAMERA_DATE' => 'Kameradatum',
 			'NEW_PASSWORD' => 'Neues Password',
 			'ALLOW_UPLOADS' => 'Hochladen erlauben',
-			'RESTRICTED_ACCOUNT' => 'Eingeschränkter Account',
+			'ALLOW_USER_SELF_EDIT' => 'Eingeschränkter Account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap-Beitragende',
 		];
 

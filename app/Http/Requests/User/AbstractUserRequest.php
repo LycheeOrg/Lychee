@@ -18,10 +18,10 @@ abstract class AbstractUserRequest extends BaseApiRequest implements HasUsername
 	use HasPasswordTrait;
 
 	public const MAY_UPLOAD_ATTRIBUTE = 'may_upload';
-	public const IS_LOCKED_ATTRIBUTE = 'is_locked';
+	public const MAY_EDIT_OWN_SETTINGS_ATTRIBUTE = 'may_edit_own_settings';
 
 	protected bool $mayUpload = false;
-	protected bool $isLocked = false;
+	protected bool $mayEditOwnSettings = false;
 
 	/**
 	 * {@inheritDoc}
@@ -44,7 +44,7 @@ abstract class AbstractUserRequest extends BaseApiRequest implements HasUsername
 			HasUsername::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
 			HasPassword::PASSWORD_ATTRIBUTE => ['sometimes', new PasswordRule(false)],
 			self::MAY_UPLOAD_ATTRIBUTE => 'present|boolean',
-			self::IS_LOCKED_ATTRIBUTE => 'present|boolean',
+			self::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE => 'present|boolean',
 		];
 	}
 
@@ -62,7 +62,7 @@ abstract class AbstractUserRequest extends BaseApiRequest implements HasUsername
 			$this->password = null;
 		}
 		$this->mayUpload = static::toBoolean($values[self::MAY_UPLOAD_ATTRIBUTE]);
-		$this->isLocked = static::toBoolean($values[self::IS_LOCKED_ATTRIBUTE]);
+		$this->mayEditOwnSettings = static::toBoolean($values[self::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE]);
 	}
 
 	public function mayUpload(): bool
@@ -70,8 +70,8 @@ abstract class AbstractUserRequest extends BaseApiRequest implements HasUsername
 		return $this->mayUpload;
 	}
 
-	public function isLocked(): bool
+	public function mayEditOwnSettings(): bool
 	{
-		return $this->isLocked;
+		return $this->mayEditOwnSettings;
 	}
 }

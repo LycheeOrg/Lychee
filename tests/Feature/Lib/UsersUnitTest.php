@@ -88,7 +88,7 @@ class UsersUnitTest
 			'username' => $username,
 			'password' => $password,
 			'may_upload' => $mayUpload,
-			'is_locked' => $isLocked,
+			'may_edit_own_settings' => $isLocked,
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
@@ -150,7 +150,7 @@ class UsersUnitTest
 			'username' => $username,
 			'password' => $password,
 			'may_upload' => $mayUpload,
-			'is_locked' => $isLocked,
+			'may_edit_own_settings' => $isLocked,
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {

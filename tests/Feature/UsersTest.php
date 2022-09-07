@@ -128,7 +128,7 @@ class UsersTest extends TestCase
 			'id' => $id,
 			'username' => 'test_abcd',
 			'may_upload' => true,
-			'is_locked' => true,
+			'may_edit_own_settings' => true,
 		]);
 
 		// 5
@@ -307,7 +307,7 @@ class UsersTest extends TestCase
 		// update Admin user to non valid rights
 		$admin = User::findOrFail(0);
 		$admin->may_upload = false;
-		$admin->is_locked = true;
+		$admin->may_edit_own_settings = true;
 		$admin->save();
 
 		// Log as admin and check the rights
@@ -323,7 +323,7 @@ class UsersTest extends TestCase
 
 		// Correct the rights
 		$admin->may_upload = true;
-		$admin->is_locked = false;
+		$admin->may_edit_own_settings = false;
 		$admin->save();
 
 		// Log as admin and verify behaviour

@@ -513,7 +513,7 @@ final class English implements Language
 			'CAMERA_DATE' => 'Camera date',
 			'NEW_PASSWORD' => 'new password',
 			'ALLOW_UPLOADS' => 'Allow uploads',
-			'RESTRICTED_ACCOUNT' => 'Restricted account',
+			'ALLOW_USER_SELF_EDIT' => 'Allow user modifications',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
 
