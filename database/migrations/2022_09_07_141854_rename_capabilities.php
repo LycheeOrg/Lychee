@@ -20,6 +20,7 @@ class RenameCapabilities extends Migration
 		$ids = DB::table('users')->where('is_locked', '=', true)->get('id')->pluck('id');
 		DB::table('users')->whereIn('id', $ids)->update(['is_locked' => 0]);
 		DB::table('users')->whereNotIn('id', $ids)->update(['is_locked' => 1]);
+		DB::commit();
 
 		// rename the column
 		Schema::table('users', function (Blueprint $table) {
@@ -31,8 +32,6 @@ class RenameCapabilities extends Migration
 			$table->boolean('may_administrate')->after('email')->default(false);
 		});
 		DB::table('users')->where('id', '=', '0')->update(['may_administrate' => true]);
-
-		DB::commit();
 	}
 
 	/**
@@ -42,8 +41,6 @@ class RenameCapabilities extends Migration
 	 */
 	public function down()
 	{
-		DB::beginTransaction();
-
 		Schema::table('users', function (Blueprint $table) {
 			$table->dropColumn('may_administrate');
 		});
@@ -53,9 +50,9 @@ class RenameCapabilities extends Migration
 			$table->renameColumn('may_edit_own_settings', 'is_locked');
 		});
 		$ids = DB::table('users')->where('is_locked', '=', true)->get('id')->pluck('id');
+		DB::beginTransaction();
 		DB::table('users')->whereIn('id', $ids)->update(['is_locked' => 0]);
 		DB::table('users')->whereNotIn('id', $ids)->update(['is_locked' => 1]);
-
 		DB::commit();
 	}
 }
