@@ -33,9 +33,9 @@ class UserCapabilities extends DTO
 	public static function ofCurrentUser(): UserCapabilities
 	{
 		return new UserCapabilities(
-			Gate::check(UserPolicy::IS_ADMIN, User::class),
-			Gate::check(UserPolicy::MAY_UPLOAD, User::class),
-			Gate::check(UserPolicy::MAY_EDIT_OWN_SETTINGS, User::class)
+			may_administrate: Gate::check(UserPolicy::IS_ADMIN, User::class),
+			may_upload: Gate::check(UserPolicy::MAY_UPLOAD, User::class),
+			may_edit_own_settings: Gate::check(UserPolicy::MAY_EDIT_OWN_SETTINGS, User::class)
 		);
 	}
 
