@@ -172,7 +172,7 @@ class AlbumPolicy
 	 */
 	public function canEdit(User $user, ?AbstractAlbum $album): bool
 	{
-		if (!$this->userPolicy->canUpload($user)) {
+		if (!$this->userPolicy->mayUpload($user)) {
 			return false;
 		}
 
@@ -197,7 +197,7 @@ class AlbumPolicy
 	 */
 	public function isVisible(?User $user, BaseSmartAlbum $smartAlbum): bool
 	{
-		return ($user !== null && $this->userPolicy->canUpload($user)) ||
+		return ($user !== null && $this->userPolicy->mayUpload($user)) ||
 			$smartAlbum->is_public;
 	}
 
@@ -223,7 +223,7 @@ class AlbumPolicy
 	 */
 	public function canEditById(User $user, array $albumIDs): bool
 	{
-		if (!$this->userPolicy->canUpload($user)) {
+		if (!$this->userPolicy->mayUpload($user)) {
 			return false;
 		}
 

@@ -161,7 +161,7 @@ class PhotoPolicy
 	 */
 	public function canEditById(User $user, array $photoIDs): bool
 	{
-		if (!$this->userPolicy->canUpload($user)) {
+		if (!$this->userPolicy->mayUpload($user)) {
 			return false;
 		}
 
