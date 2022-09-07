@@ -47,7 +47,7 @@ class UserPolicy
 	 *
 	 * @return bool
 	 */
-	public function canEditOwnSettings(User $user): bool
+	public function mayEditOwnSettings(User $user): bool
 	{
 		return !$user->is_locked;
 	}
@@ -59,7 +59,7 @@ class UserPolicy
 	 *
 	 * @return bool
 	 */
-	public function canUpload(User $user): bool
+	public function mayUpload(User $user): bool
 	{
 		return $user->may_upload;
 	}
