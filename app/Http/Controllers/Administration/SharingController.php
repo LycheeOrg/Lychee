@@ -38,7 +38,7 @@ class SharingController extends Controller
 		// TODO: move this to Request authorization.
 		// Note: This test is part of the request validation for the other
 		// methods of this class.
-		if (!Gate::check(UserPolicy::CAN_UPLOAD, User::class)) {
+		if (!Gate::check(UserPolicy::MAY_UPLOAD, User::class)) {
 			throw new UnauthorizedException('Upload privilege required');
 		}
 

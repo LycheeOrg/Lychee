@@ -10,8 +10,8 @@ class UserPolicy
 	use HandlesAuthorization;
 
 	public const IS_ADMIN = 'isAdmin';
-	public const CAN_UPLOAD = 'canUpload';
-	public const CAN_EDIT_SETTINGS = 'canEditSettings';
+	public const MAY_UPLOAD = 'mayUpload';
+	public const MAY_EDIT_OWN_SETTINGS = 'mayEditOwnSettings';
 
 	/**
 	 * Perform pre-authorization checks.
@@ -47,7 +47,7 @@ class UserPolicy
 	 *
 	 * @return bool
 	 */
-	public function canEditSettings(User $user): bool
+	public function canEditOwnSettings(User $user): bool
 	{
 		return !$user->is_locked;
 	}

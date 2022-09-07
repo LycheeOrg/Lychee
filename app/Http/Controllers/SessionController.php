@@ -64,8 +64,8 @@ class SessionController extends Controller
 				// the front-end shows the dialog to create an admin account.
 				$return['user'] = null;
 				$return['rights'] = [
-					'is_admin' => true,
-					'is_locked' => false,
+					'may_administrate' => true,
+					'may_selfedit' => true,
 					'may_upload' => true,
 				];
 			} else {
@@ -73,14 +73,14 @@ class SessionController extends Controller
 				$user = Auth::user();
 				$return['user'] = $user?->toArray();
 				$return['rights'] = [
-					'is_admin' => Gate::check(UserPolicy::IS_ADMIN, User::class),
-					'is_locked' => !Gate::check(UserPolicy::CAN_EDIT_SETTINGS, User::class), // the use of the negation should be removed later
-					'may_upload' => Gate::check(UserPolicy::CAN_UPLOAD, User::class),
+					'may_administrate' => Gate::check(UserPolicy::IS_ADMIN, User::class),
+					'may_self_edit' => Gate::check(UserPolicy::MAY_EDIT_OWN_SETTINGS, User::class), // the use of the negation should be removed later
+					'may_upload' => Gate::check(UserPolicy::MAY_UPLOAD, User::class),
 				];
 			}
 
 			// Load configuration settings acc. to authentication status
-			if ($return['rights']['is_admin'] === true) {
+			if ($return['rights']['may_administrate'] === true) {
 				// Admin rights (either properly authenticated or not registered)
 				$return['config'] = $this->configFunctions->admin();
 				$return['config']['location'] = base_path('public/');
