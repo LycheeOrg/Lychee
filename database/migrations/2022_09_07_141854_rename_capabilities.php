@@ -14,13 +14,8 @@ class RenameCapabilities extends Migration
 	 */
 	public function up()
 	{
-		DB::beginTransaction();
-
 		// flip the locked value
-		$ids = DB::table('users')->where('is_locked', '=', true)->get('id')->pluck('id');
-		DB::table('users')->whereIn('id', $ids)->update(['is_locked' => 0]);
-		DB::table('users')->whereNotIn('id', $ids)->update(['is_locked' => 1]);
-		DB::commit();
+		DB::table('users')->update(['is_locked' => DB::raw('NOT is_locked')]);
 
 		// rename the column
 		Schema::table('users', function (Blueprint $table) {
@@ -49,10 +44,7 @@ class RenameCapabilities extends Migration
 		Schema::table('users', function (Blueprint $table) {
 			$table->renameColumn('may_edit_own_settings', 'is_locked');
 		});
-		$ids = DB::table('users')->where('is_locked', '=', true)->get('id')->pluck('id');
-		DB::beginTransaction();
-		DB::table('users')->whereIn('id', $ids)->update(['is_locked' => 0]);
-		DB::table('users')->whereNotIn('id', $ids)->update(['is_locked' => 1]);
-		DB::commit();
+		// flip the locked value
+		DB::table('users')->update(['is_locked' => DB::raw('NOT is_locked')]);
 	}
 }

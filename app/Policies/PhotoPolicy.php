@@ -39,8 +39,8 @@ class PhotoPolicy
 	/**
 	 * Perform pre-authorization checks.
 	 *
-	 * @param \App\Models\User $user
-	 * @param string           $ability
+	 * @param User|null $user
+	 * @param string    $ability
 	 *
 	 * @return void|bool
 	 */

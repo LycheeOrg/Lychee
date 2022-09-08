@@ -70,6 +70,11 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'created_at',
 		'updated_at',
 		'token',
+
+		// We do not forward those anymore to the front end.
+		'may_administrate',
+		'may_upload',
+		'may_edit_own_settings',
 	];
 
 	/**

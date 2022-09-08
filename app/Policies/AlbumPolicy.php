@@ -32,6 +32,7 @@ class AlbumPolicy
 	public const CAN_EDIT = 'canEdit';
 	public const IS_VISIBLE = 'isVisible';
 	public const CAN_EDIT_ID = 'canEditById';
+	public const CAN_UPLOAD = 'canUpload';
 
 	/**
 	 * @throws FrameworkException
@@ -48,8 +49,8 @@ class AlbumPolicy
 	/**
 	 * Perform pre-authorization checks.
 	 *
-	 * @param \App\Models\User $user
-	 * @param string           $ability
+	 * @param User|null $user
+	 * @param string    $ability
 	 *
 	 * @return void|bool
 	 */
@@ -142,8 +143,29 @@ class AlbumPolicy
 			return Configs::getValueAsBool('downloadable');
 		}
 
+		// TODO: when download rights are assigned to albums, we add more logic can be added here.
 		return $this->isOwner($user, $baseAlbum) ||
 			$baseAlbum->is_downloadable;
+	}
+
+	/**
+	 * Check if user is allowed to upload in current albumn.
+	 *
+	 * @param User|null      $user
+	 * @param BaseAlbum|null $baseAlbum
+	 *
+	 * @return bool
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	public function canUpload(?User $user, ?BaseAlbum $baseAlbum): bool
+	{
+		if ($baseAlbum === null) {
+			return $user->may_upload;
+		}
+
+		// TODO: when upload rights are assigned to albums, we add more logic can be added here.
+		return $user->may_upload;
 	}
 
 	/**
@@ -172,7 +194,7 @@ class AlbumPolicy
 	 */
 	public function canEdit(User $user, ?AbstractAlbum $album): bool
 	{
-		if (!$this->userPolicy->mayUpload($user)) {
+		if (!$user->may_upload) {
 			return false;
 		}
 
@@ -197,7 +219,7 @@ class AlbumPolicy
 	 */
 	public function isVisible(?User $user, BaseSmartAlbum $smartAlbum): bool
 	{
-		return ($user !== null && $this->userPolicy->mayUpload($user)) ||
+		return ($user?->may_upload === true) ||
 			$smartAlbum->is_public;
 	}
 

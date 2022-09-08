@@ -11,13 +11,13 @@ class UserPolicy
 
 	public const IS_ADMIN = 'isAdmin';
 	public const MAY_UPLOAD = 'mayUpload';
-	public const MAY_EDIT_OWN_SETTINGS = 'mayEditOwnSettings';
+	public const CAN_EDIT_OWN_SETTINGS = 'canEditOwnSettings';
 
 	/**
 	 * Perform pre-authorization checks.
 	 *
-	 * @param \App\Models\User $user
-	 * @param string           $ability
+	 * @param User|null $user
+	 * @param string    $ability
 	 *
 	 * @return void|bool
 	 */
@@ -47,7 +47,7 @@ class UserPolicy
 	 *
 	 * @return bool
 	 */
-	public function mayEditOwnSettings(User $user): bool
+	public function canEditOwnSettings(User $user): bool
 	{
 		return $user->may_edit_own_settings;
 	}
