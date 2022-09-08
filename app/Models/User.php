@@ -81,6 +81,13 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	];
 
 	/**
+	 * @var array<string, string>
+	 */
+	protected $appends = [
+		'has_token',
+	];
+
+	/**
 	 * Return the albums owned by the user.
 	 *
 	 * @return HasMany
@@ -169,5 +176,13 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		$this->shared()->delete();
 
 		return $this->parentDelete();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getHasTokenAttribute(): bool
+	{
+		return $this->token !== null;
 	}
 }
