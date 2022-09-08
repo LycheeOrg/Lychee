@@ -24,6 +24,7 @@ final class Polish implements Language
 			'SEARCH' => 'Szukaj ...',
 			'MORE' => 'Więcej',
 			'DEFAULT' => 'Domyślne',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Użytkownicy',
 			'CREATE' => 'Create',
@@ -441,8 +442,8 @@ final class Polish implements Language
 			'UPLOAD_IMPORT' => 'Import',
 			'UPLOAD_IMPORT_SERVER' => 'Importing from server',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Folder empty or no readable files to process. Please take a look at the log (Settings -> Show Log) for further details.',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'This action will import all photos, folders and sub-folders which are located in the following directory.',
-			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directory',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Import all photos, folders and sub-folders located in the folders with the following absolute paths (on server). Paths are space separated, use \\ to escape a space in a path.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directories, space separated',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Could not start import because the folder was empty!',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Delete originals',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Original files will be deleted after the import when possible.',

@@ -20,11 +20,15 @@ use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Support\Facades\Auth;
 use function PHPUnit\Framework\assertNotEquals;
+use function PHPUnit\Framework\assertNotNull;
+use PHPUnit\Framework\ExpectationFailedException;
+use SebastianBergmann\RecursionContext\InvalidArgumentException;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\SessionUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\TestCase;
+use Throwable;
 
 class UsersTest extends TestCase
 {
@@ -269,7 +273,7 @@ class UsersTest extends TestCase
 		Auth::loginUsingId(0);
 
 		$oldToken = $users_test->reset_token()->offsetGet('token');
-		assertNotEquals('', $oldToken);
+		assertNotNull($oldToken);
 
 		$users_test->unset_token();
 		$userResponse = $users_test->get_user();
@@ -278,5 +282,60 @@ class UsersTest extends TestCase
 		]);
 
 		Auth::logout();
+	}
+
+	/**
+	 * TODO adapt this test when the admin rights are decoupled from ID = 0.
+	 *
+	 * @return void
+	 *
+	 * @throws InvalidArgumentException
+	 * @throws ExpectationFailedException
+	 * @throws Throwable
+	 */
+	public function regressionTestAdminAllMighty(): void
+	{
+		// We first check that the rights are set securely by default
+		$sessions_test = new SessionUnitTest($this);
+		$response = $sessions_test->init();
+		$response->assertJsonFragment([
+			'rights' => [
+				'is_admin' => false,
+				'may_upload' => false,
+				'is_locked' => true,
+			], ]);
+
+		// update Admin user to non valid rights
+		$admin = User::findOrFail(0);
+		$admin->may_upload = false;
+		$admin->is_locked = true;
+		$admin->save();
+
+		// Log as admin and check the rights
+		Auth::loginUsingId(0);
+		$response = $sessions_test->init();
+		$response->assertJsonFragment([
+			'rights' => [
+				'is_admin' => true,
+				'may_upload' => true,
+				'is_locked' => false,
+			], ]);
+		$sessions_test->logout();
+
+		// Correct the rights
+		$admin->may_upload = true;
+		$admin->is_locked = false;
+		$admin->save();
+
+		// Log as admin and verify behaviour
+		Auth::loginUsingId(0);
+		$response = $sessions_test->init();
+		$response->assertJsonFragment([
+			'rights' => [
+				'is_admin' => true,
+				'may_upload' => true,
+				'is_locked' => false,
+			], ]);
+		$sessions_test->logout();
 	}
 }

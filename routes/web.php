@@ -25,11 +25,11 @@ if (config('app.env') === 'dev') {
 
 Route::feeds();
 
-Route::get('/', [IndexController::class, 'show'])->name('home')->middleware(['installation:complete', 'migration:complete']);
-Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware(['installation:complete', 'migration:complete']);
+Route::get('/', [IndexController::class, 'show'])->name('home')->middleware(['migration:complete']);
+Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware(['migration:complete']);
 Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::class, 'migrate'])
-		->name('migrate')
-		->middleware(['installation:complete', 'migration:incomplete']);
+	->name('migrate')
+	->middleware(['migration:incomplete']);
 
 /*
  * TODO see to add better redirection functionality later.
@@ -38,12 +38,10 @@ Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::clas
  *
  * Other ideas, redirection by album name, photo title...
  */
-Route::get('/r/{albumID}/{photoID}', [RedirectController::class, 'photo'])->middleware(['installation:complete', 'migration:complete']);
-Route::get('/r/{albumID}', [RedirectController::class, 'album'])->middleware(['installation:complete', 'migration:complete']);
+Route::get('/r/{albumID}/{photoID}', [RedirectController::class, 'photo'])->middleware(['migration:complete']);
+Route::get('/r/{albumID}', [RedirectController::class, 'album'])->middleware(['migration:complete']);
 
 Route::get('/view', [ViewController::class, 'view'])->name('view')->middleware(['redirect-legacy-id']);
 Route::get('/demo', [DemoController::class, 'js']);
-Route::get('/frame', [FrameController::class, 'init'])->name('frame')->middleware(['installation:complete', 'migration:complete']);
+Route::get('/frame', [FrameController::class, 'init'])->name('frame')->middleware(['migration:complete']);
 
-// This route NEEDS to be the last one as it will catch anything else.
-Route::get('/{page}', [PageController::class, 'page']);

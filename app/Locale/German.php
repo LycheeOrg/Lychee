@@ -24,6 +24,7 @@ final class German implements Language
 			'SEARCH' => 'Suchen ...',
 			'MORE' => 'Mehr',
 			'DEFAULT' => 'Standard',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Benutzer',
 			'CREATE' => 'Erstellen',
@@ -449,8 +450,8 @@ final class German implements Language
 			'UPLOAD_IMPORT' => 'Importieren',
 			'UPLOAD_IMPORT_SERVER' => 'Importieren von Server',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Der Ordner ist leer oder enthält keine lesbaren Dateien zum Verarbeiten. Schauen Sie bitte ins Protokoll (Einstellungen/Protokoll ansehen).',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Diese Aktion wird alle Fotos, Ordner und Unterordner importieren, die sich in folgendem Verzeichnis befinden.',
-			'UPLOAD_ABSOLUTE_PATH' => 'Absoluter Pfad zum Verzeichnis',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Importiert alle Fotos, Ordner und Unterordner in den folgenden absoluten Pfaden (auf dem Server). Mehrere Pfade können mit Leerzeichen getrennt werden; mit \\ können Sie ein Leerzeichen im Pfad verwenden.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute Pfade zu Verzeichnissen, mit Leerzeichen getrennt',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Konnte Import nicht starten, weil der Ordner leer ist.',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Originale löschen',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Die Originaldateien werden nach dem Import gelöscht, falls möglich.',

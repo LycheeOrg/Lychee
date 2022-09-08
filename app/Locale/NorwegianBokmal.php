@@ -24,6 +24,7 @@ final class NorwegianBokmal implements Language
 			'SEARCH' => 'Søk ...',
 			'MORE' => 'Mer',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Brukere',
 			'CREATE' => 'Create',
@@ -441,8 +442,8 @@ final class NorwegianBokmal implements Language
 			'UPLOAD_IMPORT' => 'Importer',
 			'UPLOAD_IMPORT_SERVER' => 'Importer fra server',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Mappen er tom eller inneholder ingen lesbare filer som kan behandles. Vennligst se loggen (Innstillinger -> Vis Logg) for mer informasjon.',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Denne handlingen vil importere alle bilder, mapper, og undermapper som er plassert i følgende mappe.',
-			'UPLOAD_ABSOLUTE_PATH' => 'Full sti til mappen',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Import all photos, folders and sub-folders located in the folders with the following absolute paths (on server). Paths are space separated, use \\ to escape a space in a path.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directories, space separated',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Kunne ikke starte importeringen siden mappen var tom!',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Fjern originalene',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'De opprinnelige filene vil bli fjernet etter importeringen når mulig.',

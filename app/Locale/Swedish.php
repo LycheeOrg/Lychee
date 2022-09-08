@@ -24,6 +24,7 @@ final class Swedish implements Language
 			'SEARCH' => 'Search ...',
 			'MORE' => 'More',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Users',
 			'CREATE' => 'Create',
@@ -440,8 +441,8 @@ final class Swedish implements Language
 			'UPLOAD_IMPORT' => 'Importera',
 			'UPLOAD_IMPORT_SERVER' => 'Importera från server',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Mappen du angav var tom eller saknade läsbara filer. Kontrollera logfilen (Inställningar -> Visa logfilen) för ytterligare detaljer',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Den här processen kommer att importera alla fotografier, inklusive alla mappar och undermappar från platse du angav.',
-			'UPLOAD_ABSOLUTE_PATH' => 'Exakt sökväg till mappen',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Import all photos, folders and sub-folders located in the folders with the following absolute paths (on server). Paths are space separated, use \\ to escape a space in a path.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directories, space separated',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Kunde inte påbörja importeringen då mappen saknade innehåll!',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Delete originals',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Originalfotografierna kommer att raderas efter att importering genomförts.',

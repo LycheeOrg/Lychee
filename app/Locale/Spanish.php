@@ -24,6 +24,7 @@ final class Spanish implements Language
 			'SEARCH' => 'Buscar...',
 			'MORE' => 'Más',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Usuarios',
 			'CREATE' => 'Create',
@@ -440,8 +441,8 @@ final class Spanish implements Language
 			'UPLOAD_IMPORT' => 'Importar',
 			'UPLOAD_IMPORT_SERVER' => 'Importando desde el servidor',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Carpeta vacía o no hay archivos legibles para procesar. Por favor, eche un vistazo al registro (Configuración -> Mostrar registro) para obtener más detalles.',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Esta acción importará todas las fotos, carpetas y subcarpetas que se encuentran en el siguiente directorio. Los <b> archivos originales se eliminarán </b> después de la importación cuando sea posible.',
-			'UPLOAD_ABSOLUTE_PATH' => 'Ruta absoluta al directorio',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Import all photos, folders and sub-folders located in the folders with the following absolute paths (on server). Paths are space separated, use \\ to escape a space in a path.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directories, space separated',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'No se pudo iniciar la importación porque la carpeta estaba vacía',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Eliminar originales',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Los archivos originales se eliminarán después de la importación cuando sea posible',

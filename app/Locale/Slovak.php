@@ -24,6 +24,7 @@ final class Slovak implements Language
 			'SEARCH' => 'Hľadaj ...',
 			'MORE' => 'Viac',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Užívatelia',
 			'CREATE' => 'Create',
@@ -447,8 +448,8 @@ final class Slovak implements Language
 			'UPLOAD_IMPORT' => 'Import',
 			'UPLOAD_IMPORT_SERVER' => 'Import zo servera',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Priečinok je prázdny alebo obsahuje nečitateľný obsah pre spracovanie. Skontrolujte protokoly (Nastavenia/ Protokoly) pre zistenie ďalších podrobností.',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Táto akcia naimportuje všetky obrázky, priečinky a podpriečinky, ktoré sa v danom adresári nachádzajú.</b>',
-			'UPLOAD_ABSOLUTE_PATH' => 'Absolútna cesta k adresáru',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Import all photos, folders and sub-folders located in the folders with the following absolute paths (on server). Paths are space separated, use \\ to escape a space in a path.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directories, space separated',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Import sa nedá spustiť, priečinok je prázdny.',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Zmazať originály',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Ak je možné, budú pôvodné súbory po importe zmazané.',

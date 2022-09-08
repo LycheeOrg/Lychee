@@ -24,6 +24,7 @@ final class ChineseTraditional implements Language
 			'SEARCH' => '搜尋...',
 			'MORE' => '更多',
 			'DEFAULT' => '默認',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => '使用者',
 			'CREATE' => 'Create',
@@ -440,8 +441,8 @@ final class ChineseTraditional implements Language
 			'UPLOAD_IMPORT' => '導入',
 			'UPLOAD_IMPORT_SERVER' => '從伺服器導入',
 			'UPLOAD_IMPORT_SERVER_FOLD' => '文件夾中沒有可讀的文件。請查看日誌（設置->顯示日誌）以獲取詳細信息。',
-			'UPLOAD_IMPORT_SERVER_INSTR' => '此操作將導入位於以下目錄中的所有照片，文件夾和子文件夾。',
-			'UPLOAD_ABSOLUTE_PATH' => '絕對路徑',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Import all photos, folders and sub-folders located in the folders with the following absolute paths (on server). Paths are space separated, use \\ to escape a space in a path.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directories, space separated',
 			'UPLOAD_IMPORT_SERVER_EMPT' => '無法導入空文件夾！',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => '刪除原件',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => '如果可能，原始文件將在導入後刪除。',
