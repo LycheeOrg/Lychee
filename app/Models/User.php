@@ -81,7 +81,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	];
 
 	/**
-	 * @var array<string, string>
+	 * @var array
 	 */
 	protected $appends = [
 		'has_token',
