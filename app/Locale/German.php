@@ -60,7 +60,7 @@ final class German implements Language
 			'ENABLE_TOKEN' => 'API-Schlüssel aktivieren',
 			'DISABLED_TOKEN_STATUS_MSG' => 'Deaktiviert',
 			'TOKEN_BUTTON' => 'API-Schlüssel ...',
-			'TOKEN_NOT_AVAILABLE' => 'Nicht verfügbar, Sie haben diesen Schlüssel bereits angesehen.',
+			'TOKEN_NOT_AVAILABLE' => 'Sie haben diesen Schlüssel bereits angesehen.',
 
 			'SAVE_RISK' => 'Änderungen speichern, ich kenne das Risiko!',
 

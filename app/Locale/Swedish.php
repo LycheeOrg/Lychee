@@ -60,7 +60,7 @@ final class Swedish implements Language
 			'ENABLE_TOKEN' => 'Enable API token',
 			'DISABLED_TOKEN_STATUS_MSG' => 'disabled',
 			'TOKEN_BUTTON' => 'API token ...',
-			'TOKEN_NOT_AVAILABLE' => 'Not available, you already viewed this token.',
+			'TOKEN_NOT_AVAILABLE' => 'You already viewed this token.',
 
 			'SMART_ALBUMS' => 'Smarta album',
 			'SHARED_ALBUMS' => 'Shared albums',

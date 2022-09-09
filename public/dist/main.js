@@ -1048,7 +1048,7 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject59 = _taggedTemplateLiteral(["\n\t\t<div class='directLinks'>\n\t\t\t", "\n\t\t\t<p class='less'>\n\t\t\t\t", "\n\t\t\t</p>\n\t\t\t<div class='imageLinks'>\n\t"], ["\n\t\t<div class='directLinks'>\n\t\t\t", "\n\t\t\t<p class='less'>\n\t\t\t\t", "\n\t\t\t</p>\n\t\t\t<div class='imageLinks'>\n\t"]),
     _templateObject60 = _taggedTemplateLiteral(["\n\t\t</div>\n\t\t</div>\n\t"], ["\n\t\t</div>\n\t\t</div>\n\t"]),
     _templateObject61 = _taggedTemplateLiteral(["<p style=\"color: #d92c34; font-size: 1.3em; font-weight: bold; text-transform: capitalize; text-align: center;\">", "</p>"], ["<p style=\"color: #d92c34; font-size: 1.3em; font-weight: bold; text-transform: capitalize; text-align: center;\">", "</p>"]),
-    _templateObject62 = _taggedTemplateLiteral(["<div class='directLinks'><p><span id=\"apiToken\">", "</span> <a id=\"button_copy_token\" class='basicModal__button' title='", "'>", "</a> <a id=\"button_disable_token\" class='basicModal__button' title='", "'>", "</a></p></div>"], ["<div class='directLinks'><p><span id=\"apiToken\">", "</span> <a id=\"button_copy_token\" class='basicModal__button' title='", "'>", "</a> <a id=\"button_disable_token\" class='basicModal__button' title='", "'>", "</a></p></div>"]),
+    _templateObject62 = _taggedTemplateLiteral(["<div class='directLinks'><p><span id=\"apiToken\">", "</span> <a id=\"button_reset_token\" class='basicModal__button' title='", "'>", "</a> <a id=\"button_copy_token\" class='basicModal__button' title='", "'>", "</a> <a id=\"button_disable_token\" class='basicModal__button' title='", "'>", "</a></p></div>"], ["<div class='directLinks'><p><span id=\"apiToken\">", "</span> <a id=\"button_reset_token\" class='basicModal__button' title='", "'>", "</a> <a id=\"button_copy_token\" class='basicModal__button' title='", "'>", "</a> <a id=\"button_disable_token\" class='basicModal__button' title='", "'>", "</a></p></div>"]),
     _templateObject63 = _taggedTemplateLiteral(["<span class='attr_", "_separator'>, </span>"], ["<span class='attr_", "_separator'>, </span>"]),
     _templateObject64 = _taggedTemplateLiteral(["<span class='attr_", " search'>$", "</span>"], ["<span class='attr_", " search'>$", "</span>"]),
     _templateObject65 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
@@ -6735,7 +6735,7 @@ lychee.locale = {
 	ENABLE_TOKEN: "Enable API key",
 	DISABLED_TOKEN_STATUS_MSG: "disabled",
 	TOKEN_BUTTON: "API token ...",
-	TOKEN_NOT_AVAILABLE: "Not available, you already viewed this token.",
+	TOKEN_NOT_AVAILABLE: "You already viewed this token.",
 
 	SMART_ALBUMS: "Smart albums",
 	SHARED_ALBUMS: "Shared albums",
@@ -10003,32 +10003,11 @@ settings.openTokenDialog = function () {
 		}
 	};
 
-	var reset = function reset() {
-		api.post("User::resetToken", {},
-		/**
-   *
-   * @param {User} data
-   */
-		function (data) {
-			token = data.token;
-			$("#apiToken").text(data.token);
-			lychee.user.has_token = true;
-			updateBtnVisibility(true, true);
-		});
-	};
-
-	var bodyHtml = lychee.html(_templateObject62, lychee.user.has_token ? lychee.locale["TOKEN_NOT_AVAILABLE"] : lychee.locale["DISABLED_TOKEN_STATUS_MSG"], lychee.locale["URL_COPY_TO_CLIPBOARD"], build.iconic("copy", "ionicons"), lychee.locale["DISABLE_TOKEN_TOOLTIP"], build.iconic("ban"));
+	var bodyHtml = lychee.html(_templateObject62, lychee.user.has_token ? lychee.locale["TOKEN_NOT_AVAILABLE"] : lychee.locale["DISABLED_TOKEN_STATUS_MSG"], lychee.locale["RESET"], build.iconic("reload", "ionicons"), lychee.locale["URL_COPY_TO_CLIPBOARD"], build.iconic("copy", "ionicons"), lychee.locale["DISABLE_TOKEN_TOOLTIP"], build.iconic("ban"));
 
 	basicModal.show({
 		body: bodyHtml,
 		buttons: {
-			action: {
-				title: lychee.locale["RESET"],
-				fn: function fn() {
-					reset();
-				},
-				class: "red"
-			},
 			cancel: {
 				title: lychee.locale["CLOSE"],
 				fn: basicModal.close
@@ -10040,6 +10019,20 @@ settings.openTokenDialog = function () {
 
 	$("#button_copy_token").on(lychee.getEventName(), function () {
 		navigator.clipboard.writeText(token);
+	});
+
+	$("#button_reset_token").on(lychee.getEventName(), function () {
+		api.post("User::resetToken", {},
+		/**
+   *
+   * @param {User} data
+   */
+		function (data) {
+			token = data.token;
+			$("#apiToken").text(data.token);
+			lychee.user.has_token = true;
+			updateBtnVisibility(true, true);
+		});
 	});
 
 	$("#button_disable_token").on(lychee.getEventName(), function () {
