@@ -33,6 +33,7 @@ use function Safe\substr;
  * @property bool                                                  $may_upload
  * @property bool                                                  $is_locked
  * @property string|null                                           $token
+ * @property bool                                                  $has_token
  * @property string|null                                           $remember_token
  * @property Collection<BaseAlbumImpl>                             $albums
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
@@ -67,6 +68,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'remember_token',
 		'created_at',
 		'updated_at',
+		'token',
 	];
 
 	/**

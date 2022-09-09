@@ -20,8 +20,6 @@ use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use function PHPUnit\Framework\assertNotEquals;
-use function PHPUnit\Framework\assertNotNull;
 use PHPUnit\Framework\ExpectationFailedException;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 use Tests\Feature\Lib\AlbumsUnitTest;
@@ -260,9 +258,9 @@ class UsersTest extends TestCase
 
 		Auth::loginUsingId(0);
 
-		$oldToken = $users_test->get_user()->offsetGet('token');
+		$oldToken = $users_test->reset_token()->offsetGet('token');
 		$newToken = $users_test->reset_token()->offsetGet('token');
-		assertNotEquals($oldToken, $newToken);
+		self::assertNotEquals($oldToken, $newToken);
 
 		Auth::logout();
 	}
@@ -274,12 +272,12 @@ class UsersTest extends TestCase
 		Auth::loginUsingId(0);
 
 		$oldToken = $users_test->reset_token()->offsetGet('token');
-		assertNotNull($oldToken);
+		self::assertNotNull($oldToken);
 
 		$users_test->unset_token();
 		$userResponse = $users_test->get_user();
 		$userResponse->assertJson([
-			'token' => null,
+			'has_token' => false,
 		]);
 
 		Auth::logout();

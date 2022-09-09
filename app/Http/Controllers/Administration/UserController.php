@@ -154,11 +154,11 @@ class UserController extends Controller
 	/**
 	 * Reset the token of the currently authenticated user.
 	 *
-	 * @return User
+	 * @return array{'token': string}
 	 *
 	 * @throws \Exception
 	 */
-	public function resetToken(): User
+	public function resetToken(): array
 	{
 		/** @var User $user */
 		$user = Auth::user();
@@ -166,9 +166,7 @@ class UserController extends Controller
 		$user->token = hash('SHA512', $token);
 		$user->save();
 
-		$user->token = $token;
-
-		return $user;
+		return ['token' => $token];
 	}
 
 	/**
