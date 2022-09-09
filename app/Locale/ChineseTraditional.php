@@ -61,8 +61,6 @@ final class ChineseTraditional implements Language
 			'DISABLED_TOKEN_STATUS_MSG' => 'disabled',
 			'TOKEN_BUTTON' => 'API token ...',
 			'TOKEN_NOT_AVAILABLE' => 'Not available, you already viewed this token.',
-			'TOKEN_BUTTON' => 'API token ...',
-			'TOKEN_NOT_AVAILABLE' => 'Not available, you already viewed this token.',
 
 			'SMART_ALBUMS' => '智能相簿',
 			'SHARED_ALBUMS' => '共享的相簿',
