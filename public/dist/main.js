@@ -6730,11 +6730,12 @@ lychee.locale = {
 	SAVE_RISK: "Save my modifications, I accept the Risk!",
 	MORE: "More",
 	DEFAULT: "Default",
-	RESET_TOKEN: "Reset API token",
 	RESET: "Reset",
-	DISABLE: "Disable",
+	DISABLE_TOKEN_TOOLTIP: "Disable",
 	ENABLE_TOKEN: "Enable API key",
-	DISABLED: "disabled",
+	DISABLED_TOKEN_STATUS_MSG: "disabled",
+	TOKEN_BUTTON: "API token ...",
+	TOKEN_NOT_AVAILABLE: "Not available, you already viewed this token.",
 
 	SMART_ALBUMS: "Smart albums",
 	SHARED_ALBUMS: "Shared albums",
@@ -9980,38 +9981,73 @@ settings.save_enter = function (e) {
 /**
  * @returns {void}
  */
-settings.resetToken = function () {
-	api.post("User::resetToken", {},
+settings.openTokenDialog = function () {
+	var token = "";
+
 	/**
-  *
-  * @param {User} data
+  * @param {boolean} has
+  * @param {boolean} canBeViewed
   */
-	function (data) {
-		var bodyHtml = lychee.html(_templateObject62, data.token, lychee.locale["URL_COPY_TO_CLIPBOARD"], build.iconic("copy", "ionicons"), lychee.locale["DISABLE"], build.iconic("ban"));
-		basicModal.show({
-			body: bodyHtml,
-			buttons: {
-				action: {
-					title: lychee.locale["RESET"],
-					fn: function fn() {
-						basicModal.close();
-						settings.resetToken();
-					},
-					class: "red"
-				},
-				cancel: {
-					title: lychee.locale["CLOSE"],
-					fn: basicModal.close
-				}
+	var updateBtnVisibility = function updateBtnVisibility(has, canBeViewed) {
+		if (!has) {
+			$("#button_copy_token").hide();
+			$("#button_disable_token").hide();
+		} else {
+			$("#button_disable_token").show();
+
+			if (!canBeViewed) {
+				$("#button_copy_token").hide();
+			} else {
+				$("#button_copy_token").show();
 			}
+		}
+	};
+
+	var reset = function reset() {
+		api.post("User::resetToken", {},
+		/**
+   *
+   * @param {User} data
+   */
+		function (data) {
+			token = data.token;
+			$("#apiToken").text(data.token);
+			lychee.user.has_token = true;
+			updateBtnVisibility(true, true);
 		});
-		$("#button_copy_token").on(lychee.getEventName(), function () {
-			navigator.clipboard.writeText(data.token);
-		});
-		$("#button_disable_token").on(lychee.getEventName(), function () {
-			api.post("User::unsetToken", {}, function () {
-				$("#apiToken").html(lychee.locale["DISABLED"]);
-			});
+	};
+
+	var bodyHtml = lychee.html(_templateObject62, lychee.user.has_token ? lychee.locale["TOKEN_NOT_AVAILABLE"] : lychee.locale["DISABLED_TOKEN_STATUS_MSG"], lychee.locale["URL_COPY_TO_CLIPBOARD"], build.iconic("copy", "ionicons"), lychee.locale["DISABLE_TOKEN_TOOLTIP"], build.iconic("ban"));
+
+	basicModal.show({
+		body: bodyHtml,
+		buttons: {
+			action: {
+				title: lychee.locale["RESET"],
+				fn: function fn() {
+					reset();
+				},
+				class: "red"
+			},
+			cancel: {
+				title: lychee.locale["CLOSE"],
+				fn: basicModal.close
+			}
+		}
+	});
+
+	updateBtnVisibility(lychee.user.has_token, false);
+
+	$("#button_copy_token").on(lychee.getEventName(), function () {
+		navigator.clipboard.writeText(token);
+	});
+
+	$("#button_disable_token").on(lychee.getEventName(), function () {
+		api.post("User::unsetToken", {}, function () {
+			$("#button_copy_token").hide();
+			$("#button_disable_token").hide();
+			$("#apiToken").html(lychee.locale["DISABLED"]);
+			lychee.user.has_token = false;
 		});
 	});
 };
@@ -13055,14 +13091,12 @@ view.settings = {
    * @returns {void}
    */
 		setLogin: function setLogin() {
-			var tokenBtnText = lychee.locale[lychee.user.has_token ? "RESET_TOKEN" : "ENABLE_TOKEN"];
-
-			var msg = lychee.html(_templateObject73, lychee.locale["PASSWORD_TITLE"], lychee.locale["PASSWORD_CURRENT"], lychee.locale["PASSWORD_TEXT"], lychee.locale["LOGIN_USERNAME"], lychee.locale["LOGIN_PASSWORD"], lychee.locale["LOGIN_PASSWORD_CONFIRM"], lychee.locale["PASSWORD_CHANGE"], tokenBtnText);
+			var msg = lychee.html(_templateObject73, lychee.locale["PASSWORD_TITLE"], lychee.locale["PASSWORD_CURRENT"], lychee.locale["PASSWORD_TEXT"], lychee.locale["LOGIN_USERNAME"], lychee.locale["LOGIN_PASSWORD"], lychee.locale["LOGIN_PASSWORD_CONFIRM"], lychee.locale["PASSWORD_CHANGE"], lychee.locale["TOKEN_BUTTON"]);
 
 			$(".settings_view").append(msg);
 
 			settings.bind("#basicModal__action_password_change", ".setLogin", settings.changeLogin);
-			settings.bind("#basicModal__action_token", ".setLogin", settings.resetToken);
+			settings.bind("#basicModal__action_token", ".setLogin", settings.openTokenDialog);
 		},
 
 		/**

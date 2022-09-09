@@ -55,11 +55,12 @@ final class German implements Language
 			'SET_MAP_PROVIDER' => 'Speichere Provider für OpenStreetMap Karten',
 			'FULL_SETTINGS' => 'Alle Einstellungen',
 			'UPDATE' => 'Update',
-			'RESET_TOKEN' => 'API-Schlüssel zurücksetzen',
 			'RESET' => 'Zurücksetzen',
-			'DISABLE' => 'Deaktivieren',
+			'DISABLE_TOKEN_TOOLTIP' => 'Deaktivieren',
 			'ENABLE_TOKEN' => 'API-Schlüssel aktivieren',
-			'DISABLED' => 'deaktiviert',
+			'DISABLED_TOKEN_STATUS_MSG' => 'Deaktiviert',
+			'TOKEN_BUTTON' => 'API-Schlüssel ...',
+			'TOKEN_NOT_AVAILABLE' => 'Nicht verfügbar, Sie haben diesen Schlüssel bereits angesehen.',
 
 			'SAVE_RISK' => 'Änderungen speichern, ich kenne das Risiko!',
 
