@@ -19,6 +19,7 @@ use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use function PHPUnit\Framework\assertNotEquals;
 use function PHPUnit\Framework\assertNotNull;
 use PHPUnit\Framework\ExpectationFailedException;
@@ -337,5 +338,21 @@ class UsersTest extends TestCase
 				'is_locked' => false,
 			], ]);
 		$sessions_test->logout();
+	}
+
+	public function testGetAuthenticatedUser()
+	{
+		$users_test = new UsersUnitTest($this);
+
+		Auth::logout();
+		Session::flush();
+
+		$users_test->get_user(403);
+
+		Auth::loginUsingId(0);
+
+		$users_test->get_user(200, [
+			'id' => 0,
+		]);
 	}
 }

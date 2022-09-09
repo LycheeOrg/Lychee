@@ -216,7 +216,7 @@ class UsersUnitTest
 	 */
 	public function get_user(
 		int $expectedStatusCode = 200,
-		?string $assertSee = null
+		string|array|null $assertSee = null
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::getAuthenticatedUser');
 		$response->assertStatus($expectedStatusCode);

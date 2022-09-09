@@ -32,7 +32,6 @@ class ApiTokenTest extends TestCase
 		Session::flush();
 
 		$response = $this->postJson('/api/User::getAuthenticatedUser');
-		$response->assertSee(['test' => '123'], false);
 		$response->assertStatus(403);
 
 		$response = $this->postJson('/api/User::getAuthenticatedUser', [], [
