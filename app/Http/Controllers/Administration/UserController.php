@@ -15,6 +15,7 @@ use App\Http\Requests\User\DeleteUserRequest;
 use App\Http\Requests\User\SetEmailRequest;
 use App\Http\Requests\User\SetUserSettingsRequest;
 use App\Models\User;
+use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -67,6 +68,8 @@ class UserController extends Controller
 	 * @return void
 	 *
 	 * @throws ModelDBException
+	 * @throws UnauthenticatedException
+	 * @throws InvalidFormatException
 	 */
 	public function delete(DeleteUserRequest $request): void
 	{
@@ -141,13 +144,14 @@ class UserController extends Controller
 	}
 
 	/**
-	 * Returns the currently authenticated user.
+	 * Returns the currently authenticated user or `null` if no user
+	 * is authenticated.
 	 *
-	 * @return User
+	 * @return User|null
 	 */
-	public function getAuthenticatedUser(): User
+	public function getAuthenticatedUser(): ?User
 	{
-		/** @var User */
+		/** @var User|null */
 		return Auth::user();
 	}
 
@@ -156,12 +160,14 @@ class UserController extends Controller
 	 *
 	 * @return array{'token': string}
 	 *
+	 * @throws UnauthenticatedException
+	 * @throws ModelDBException
 	 * @throws \Exception
 	 */
 	public function resetToken(): array
 	{
 		/** @var User $user */
-		$user = Auth::user();
+		$user = Auth::user() ?? throw new UnauthenticatedException();
 		$token = strtr(base64_encode(random_bytes(16)), '+/', '-_');
 		$user->token = hash('SHA512', $token);
 		$user->save();
@@ -173,11 +179,14 @@ class UserController extends Controller
 	 * Disable the token of the currently authenticated user.
 	 *
 	 * @return void
+	 *
+	 * @throws UnauthenticatedException
+	 * @throws ModelDBException
 	 */
 	public function unsetToken(): void
 	{
 		/** @var User $user */
-		$user = Auth::user();
+		$user = Auth::user() ?? throw new UnauthenticatedException();
 		$user->token = null;
 		$user->save();
 	}
