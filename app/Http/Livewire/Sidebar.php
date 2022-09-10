@@ -8,6 +8,7 @@ use App\Models\Photo;
 use App\Models\TagAlbum;
 use DebugBar\DebugBar;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Sidebar extends Component

@@ -20,7 +20,7 @@ class GetPhotoViewRequest extends BaseApiRequest implements HasPhoto
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(PhotoPolicy::IS_VISIBLE, $this->photo);
+		return Gate::check(PhotoPolicy::CAN_SEE, $this->photo);
 	}
 
 	/**
