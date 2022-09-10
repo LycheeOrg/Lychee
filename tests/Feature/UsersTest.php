@@ -345,7 +345,7 @@ class UsersTest extends TestCase
 		Auth::logout();
 		Session::flush();
 
-		$users_test->get_user(403);
+		$users_test->get_user(204);
 
 		Auth::loginUsingId(0);
 
