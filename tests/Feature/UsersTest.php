@@ -358,9 +358,9 @@ class UsersTest extends TestCase
 		$response = $sessions_test->init();
 		$response->assertJsonFragment([
 			'rights' => [
-				'may_administrate' => false,
-				'may_upload' => false,
-				'may_edit_own_settings' => true,
+				'can_administrate' => false,
+				'can_upload_root' => false,
+				'can_edit_own_settings' => true,
 			], ]);
 
 		// update Admin user to non valid rights
@@ -374,9 +374,9 @@ class UsersTest extends TestCase
 		$response = $sessions_test->init();
 		$response->assertJsonFragment([
 			'rights' => [
-				'may_administrate' => true,
-				'may_upload' => true,
-				'may_edit_own_settings' => false,
+				'can_administrate' => true,
+				'can_upload_root' => true,
+				'can_edit_own_settings' => false,
 			], ]);
 		$sessions_test->logout();
 
@@ -390,9 +390,9 @@ class UsersTest extends TestCase
 		$response = $sessions_test->init();
 		$response->assertJsonFragment([
 			'rights' => [
-				'may_administrate' => true,
-				'may_upload' => true,
-				'may_edit_own_settings' => false,
+				'can_administrate' => true,
+				'can_upload_root' => true,
+				'can_edit_own_settings' => false,
 			], ]);
 		$sessions_test->logout();
 	}

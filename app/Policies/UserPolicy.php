@@ -10,8 +10,19 @@ class UserPolicy
 	use HandlesAuthorization;
 
 	public const IS_ADMIN = 'isAdmin';
-	public const MAY_UPLOAD = 'mayUpload';
 	public const CAN_EDIT_OWN_SETTINGS = 'canEditOwnSettings';
+
+	/**
+	 * This defines if the user is admin.
+	 *
+	 * @param User|null $user
+	 *
+	 * @return bool
+	 */
+	public function isAdmin(?User $user): bool
+	{
+		return $user?->may_administrate === true;
+	}
 
 	/**
 	 * Perform pre-authorization checks.
@@ -29,18 +40,6 @@ class UserPolicy
 	}
 
 	/**
-	 * This defines if the user is admin.
-	 *
-	 * @param User|null $user
-	 *
-	 * @return bool
-	 */
-	public function isAdmin(?User $user): bool
-	{
-		return $user?->may_administrate === true;
-	}
-
-	/**
 	 * This defines if user can edit their settings.
 	 *
 	 * @param User $user
@@ -50,17 +49,5 @@ class UserPolicy
 	public function canEditOwnSettings(User $user): bool
 	{
 		return $user->may_edit_own_settings;
-	}
-
-	/**
-	 * This defines if user has upload rights.
-	 *
-	 * @param User $user
-	 *
-	 * @return bool
-	 */
-	public function mayUpload(User $user): bool
-	{
-		return $user->may_upload;
 	}
 }

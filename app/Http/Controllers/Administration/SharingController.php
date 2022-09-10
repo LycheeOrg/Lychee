@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Administration;
 
 use App\Actions\Sharing\ListShare;
+use App\Contracts\AbstractAlbum;
 use App\DTO\Shares;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnauthenticatedException;
@@ -10,7 +11,7 @@ use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\Sharing\DeleteSharingRequest;
 use App\Http\Requests\Sharing\SetSharingRequest;
 use App\Models\User;
-use App\Policies\UserPolicy;
+use App\Policies\AlbumPolicy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -38,7 +39,7 @@ class SharingController extends Controller
 		// TODO: move this to Request authorization.
 		// Note: This test is part of the request validation for the other
 		// methods of this class.
-		if (!Gate::check(UserPolicy::MAY_UPLOAD, User::class)) {
+		if (!Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, null])) {
 			throw new UnauthorizedException('Upload privilege required');
 		}
 

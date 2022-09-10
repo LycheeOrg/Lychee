@@ -19,6 +19,7 @@ class PhotoPolicy
 	// constants to be used in GATE
 	public const IS_OWNER = 'isOwner';
 	public const IS_VISIBLE = 'isVisible';
+
 	public const CAN_DOWNLOAD = 'canDownload';
 	public const CAN_EDIT = 'canEdit';
 	public const CAN_EDIT_ID = 'canEditById';
@@ -161,7 +162,7 @@ class PhotoPolicy
 	 */
 	public function canEditById(User $user, array $photoIDs): bool
 	{
-		if (!$this->userPolicy->mayUpload($user)) {
+		if (!$this->albumPolicy->canUpload($user, null)) {
 			return false;
 		}
 

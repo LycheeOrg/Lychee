@@ -27,12 +27,14 @@ class AlbumPolicy
 
 	// constants to be used in GATE
 	public const IS_OWNER = 'isOwner';
+	public const IS_VISIBLE = 'isVisible';
+
 	public const CAN_ACCESS = 'canAccess';
 	public const CAN_DOWNLOAD = 'canDownload';
-	public const CAN_EDIT = 'canEdit';
-	public const IS_VISIBLE = 'isVisible';
-	public const CAN_EDIT_ID = 'canEditById';
 	public const CAN_UPLOAD = 'canUpload';
+	public const CAN_EDIT = 'canEdit';
+	public const CAN_EDIT_ID = 'canEditById';
+	public const CAN_SHARE_ID = 'canShareById';
 
 	/**
 	 * @throws FrameworkException
@@ -76,7 +78,25 @@ class AlbumPolicy
 	}
 
 	/**
-	 * Checks whether the album is accessible by the current user.
+	 * Checks whether the album is visible by the current user.
+	 *
+	 * Note, at the moment this check is only needed for built-in smart
+	 * albums.
+	 * Hence, the method is only provided for them.
+	 *
+	 * @param User|null      $user
+	 * @param BaseSmartAlbum $smartAlbum
+	 *
+	 * @return bool true, if the album is visible
+	 */
+	public function isVisible(?User $user, BaseSmartAlbum $smartAlbum): bool
+	{
+		return ($user?->may_upload === true) ||
+			$smartAlbum->is_public;
+	}
+
+	/**
+	 * Checks whether current user can access the album.
 	 *
 	 * A real albums (i.e. albums that are stored in the DB) is called
 	 * _accessible_ if the current user is allowed to browse into it, i.e. if
@@ -128,7 +148,7 @@ class AlbumPolicy
 	}
 
 	/**
-	 * Check if an album is dowmloadable.
+	 * Check if current user can download the album.
 	 *
 	 * @param User|null      $user
 	 * @param BaseAlbum|null $baseAlbum
@@ -151,15 +171,16 @@ class AlbumPolicy
 	/**
 	 * Check if user is allowed to upload in current albumn.
 	 *
-	 * @param User|null      $user
+	 * @param User           $user
 	 * @param BaseAlbum|null $baseAlbum
 	 *
 	 * @return bool
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function canUpload(?User $user, ?BaseAlbum $baseAlbum): bool
+	public function canUpload(User $user, ?BaseAlbum $baseAlbum = null): bool
 	{
+		// If base album is null, we consider root
 		if ($baseAlbum === null) {
 			return $user->may_upload;
 		}
@@ -206,24 +227,6 @@ class AlbumPolicy
 	}
 
 	/**
-	 * Checks whether the album is visible by the current user.
-	 *
-	 * Note, at the moment this check is only needed for built-in smart
-	 * albums.
-	 * Hence, the method is only provided for them.
-	 *
-	 * @param User|null      $user
-	 * @param BaseSmartAlbum $smartAlbum
-	 *
-	 * @return bool true, if the album is visible
-	 */
-	public function isVisible(?User $user, BaseSmartAlbum $smartAlbum): bool
-	{
-		return ($user?->may_upload === true) ||
-			$smartAlbum->is_public;
-	}
-
-	/**
 	 * Checks whether the designated albums are editable by the current user.
 	 *
 	 * See {@link AlbumQueryPolicy::isEditable()} for the definition
@@ -245,7 +248,7 @@ class AlbumPolicy
 	 */
 	public function canEditById(User $user, array $albumIDs): bool
 	{
-		if (!$this->userPolicy->mayUpload($user)) {
+		if (!$user->may_upload) {
 			return false;
 		}
 
@@ -263,6 +266,21 @@ class AlbumPolicy
 			->whereIn('id', $albumIDs)
 			->where('owner_id', $user->id)
 			->count() === count($albumIDs);
+	}
+
+	/**
+	 * Check if user can share selected albums.
+	 *
+	 * @param User  $user
+	 * @param array $albumIDs
+	 *
+	 * @return bool
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	public function canShareById(User $user, array $albumIDs): bool
+	{
+		return $this->canEditById($user, $albumIDs);
 	}
 
 	// The following methods are not to be called by Gate.

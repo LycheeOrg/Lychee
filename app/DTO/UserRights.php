@@ -2,7 +2,9 @@
 
 namespace App\DTO;
 
+use App\Contracts\AbstractAlbum;
 use App\Models\User;
+use App\Policies\AlbumPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 
@@ -11,18 +13,11 @@ use Illuminate\Support\Facades\Gate;
  */
 class UserRights extends DTO
 {
-	public bool $can_administrate;
-	public bool $can_upload;
-	public bool $can_edit_own_settings;
-
 	public function __construct(
-		bool $can_administrate,
-		bool $can_upload,
-		bool $can_edit_own_settings)
+		public bool $can_administrate,
+		public bool $can_upload_root,
+		public bool $can_edit_own_settings)
 	{
-		$this->can_administrate = $can_administrate;
-		$this->can_upload = $can_upload;
-		$this->can_edit_own_settings = $can_edit_own_settings;
 	}
 
 	/**
@@ -34,7 +29,7 @@ class UserRights extends DTO
 	{
 		return new UserRights(
 			can_administrate: Gate::check(UserPolicy::IS_ADMIN, User::class),
-			can_upload: Gate::check(UserPolicy::MAY_UPLOAD, User::class),
+			can_upload_root: Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, null]),
 			can_edit_own_settings: Gate::check(UserPolicy::CAN_EDIT_OWN_SETTINGS, User::class)
 		);
 	}
@@ -46,7 +41,7 @@ class UserRights extends DTO
 	{
 		return [
 			'can_administrate' => $this->can_administrate,
-			'can_upload' => $this->can_upload,
+			'can_upload_root' => $this->can_upload_root,
 			'can_edit_own_settings' => $this->can_edit_own_settings,
 		];
 	}
