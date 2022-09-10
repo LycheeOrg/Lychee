@@ -18,8 +18,8 @@ class PhotoPolicy
 
 	// constants to be used in GATE
 	public const IS_OWNER = 'isOwner';
-	public const IS_VISIBLE = 'isVisible';
 
+	public const CAN_SEE = 'canSee';
 	public const CAN_DOWNLOAD = 'canDownload';
 	public const CAN_EDIT = 'canEdit';
 	public const CAN_EDIT_ID = 'canEditById';
@@ -74,7 +74,7 @@ class PhotoPolicy
 	 *
 	 * @return bool
 	 */
-	public function isVisible(?User $user, Photo $photo): bool
+	public function canSee(?User $user, Photo $photo): bool
 	{
 		return $this->isOwner($user, $photo) ||
 			$photo->is_public ||
@@ -113,7 +113,7 @@ class PhotoPolicy
 			return true;
 		}
 
-		if (!$this->isVisible($user, $photo)) {
+		if (!$this->canSee($user, $photo)) {
 			return false;
 		}
 

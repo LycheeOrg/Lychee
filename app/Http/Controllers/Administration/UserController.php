@@ -17,8 +17,8 @@ use App\Http\Requests\User\SetEmailRequest;
 use App\Http\Requests\User\SetUserSettingsRequest;
 use App\Models\User;
 use Carbon\Exceptions\InvalidFormatException;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller

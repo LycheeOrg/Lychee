@@ -27,8 +27,8 @@ class AlbumPolicy
 
 	// constants to be used in GATE
 	public const IS_OWNER = 'isOwner';
-	public const IS_VISIBLE = 'isVisible';
 
+	public const CAN_SEE = 'canSee';
 	public const CAN_ACCESS = 'canAccess';
 	public const CAN_DOWNLOAD = 'canDownload';
 	public const CAN_UPLOAD = 'canUpload';
@@ -78,7 +78,7 @@ class AlbumPolicy
 	}
 
 	/**
-	 * Checks whether the album is visible by the current user.
+	 * Checks whether the currentuser can see said album.
 	 *
 	 * Note, at the moment this check is only needed for built-in smart
 	 * albums.
@@ -89,7 +89,7 @@ class AlbumPolicy
 	 *
 	 * @return bool true, if the album is visible
 	 */
-	public function isVisible(?User $user, BaseSmartAlbum $smartAlbum): bool
+	public function canSee(?User $user, BaseSmartAlbum $smartAlbum): bool
 	{
 		return ($user?->may_upload === true) ||
 			$smartAlbum->is_public;
@@ -140,7 +140,7 @@ class AlbumPolicy
 				throw LycheeAssertionError::createFromUnexpectedException($e);
 			}
 		} elseif ($album instanceof BaseSmartAlbum) {
-			return $this->isVisible($user, $album);
+			return $this->canSee($user, $album);
 		} else {
 			// Should never happen
 			return false;
