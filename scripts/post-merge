@@ -26,6 +26,8 @@ else
         composer install --no-dev --prefer-dist
     fi
     if [ -f ".env" ]; then
+        echo "php artisan optimize:clear"
+        php artisan optimize:clear
         echo "php artisan migrate --force"
         php artisan migrate --force
     fi
