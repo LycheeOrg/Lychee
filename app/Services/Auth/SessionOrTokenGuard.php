@@ -93,6 +93,12 @@ class SessionOrTokenGuard extends SessionGuard
 	public const TOKEN_COLUMN_NAME = 'token';
 	public const TOKEN_HASH_METHOD = 'SHA512';
 
+	public const AUTH_STATE_UNAUTHENTICATED = 0;
+	public const AUTH_STATE_STATELESS = 1;
+	public const AUTH_STATE_STATEFUL = 2;
+
+	protected int $authState = self::AUTH_STATE_UNAUTHENTICATED;
+
 	/**
 	 * Creates an instance of this guard.
 	 *
@@ -157,20 +163,31 @@ class SessionOrTokenGuard extends SessionGuard
 		if ($userBySession !== null) {
 			if ($userByToken === null || $userBySession->getAuthIdentifier() === $userByToken->getAuthIdentifier()) {
 				// We are good, no contradiction!
-				$this->setUser($userBySession);
+				// We call the parent method here to skip the additional token
+				// check added by the overwritten method of this class.
+				parent::setUser($userBySession);
+				// `setUser()` sets `authState` to stateless, but here we
+				// used the user from a previous session _without_ logging in
+				// again, hence we must set `authState` explicitly.
+				$this->authState = self::AUTH_STATE_STATEFUL;
 			} else {
 				throw new BadRequestHeaderException('Token- and session-based user mismatch');
 			}
 		} elseif ($userByToken !== null) {
-			// We handle a token-based user like {@link SessionGuard::user}
-			// handles a recalled user from a remember-me cookie except
-			// that we don't set the remember-me cookie.
-			$this->login($userByToken, false, true);
+			// A token-based authentication is considered stateless, so we
+			// call `setUser` and not `login`.
+			// We call the parent method here to skip the additional token
+			// check added by the overwritten method of this class.
+			parent::setUser($userByToken);
+			// As we called the parent method `setUser`, we must set the
+			// new authentication state explicitly.
+			$this->authState = self::AUTH_STATE_STATELESS;
 		} elseif ($userByRecaller !== null) {
-			$this->login($userByRecaller, true, true);
+			$this->login($userByRecaller, true);
 		} else {
 			// In the other cases, `$this->user` has implicitly been set by
-			// `$this->setUser` or `$this->login`.
+			// `parent::setUser` or `$this->login`.
+			$this->authState = self::AUTH_STATE_UNAUTHENTICATED;
 			$this->user = null; /* @phpstan-ignore-line; in {@link \Illuminate\Auth\GuardHelpers} this property is erroneously annotated as non-nullable */
 		}
 
@@ -198,37 +215,60 @@ class SessionOrTokenGuard extends SessionGuard
 	}
 
 	/**
-	 * Logins the given user.
+	 * Sets the given user without changing the session.
+	 *
+	 * If an API token is given, setting another user than the user given by
+	 * the API token is considered an error.
+	 *
+	 * If the method succeeds, {@link SessionOrTokenGuard::$authState} equals
+	 * {@link SessionOrTokenGuard::AUTH_STATE_STATELESS} afterwards.
+	 *
+	 * @return $this
+	 *
+	 * @throws BadRequestHeaderException
+	 */
+	public function setUser(Authenticatable $user): static
+	{
+		$userByToken = $this->getUserByToken();
+		if ($userByToken !== null && $user->getAuthIdentifier() !== $userByToken->getAuthIdentifier()) {
+			throw new BadRequestHeaderException('Cannot set another user than the one provided by the API token');
+		}
+		parent::setUser($user);
+		$this->authState = self::AUTH_STATE_STATELESS;
+
+		return $this;
+	}
+
+	/**
+	 * Logs-in the given user stateful.
 	 *
 	 * If an API token is given, logging in another user than the user
 	 * given by the API token is considered an error.
 	 *
+	 * If the method succeeds, {@link SessionOrTokenGuard::$authState} equals
+	 * {@link SessionOrTokenGuard::AUTH_STATE_STATEFUL} afterwards.
+	 *
 	 * @param AuthenticatableContract $user
 	 * @param bool                    $remember
-	 * @param bool                    $skipTokenCheck
 	 *
 	 * @return void
 	 *
 	 * @throws BadRequestHeaderException
 	 * @throws \RuntimeException
 	 */
-	public function login(AuthenticatableContract $user, $remember = false, bool $skipTokenCheck = false): void
+	public function login(AuthenticatableContract $user, $remember = false): void
 	{
-		if (!$skipTokenCheck) {
-			$userByToken = $this->getUserByToken();
-			if ($userByToken !== null && $user->getAuthIdentifier() !== $userByToken->getAuthIdentifier()) {
-				throw new BadRequestHeaderException('Cannot login as another user than the one provided by the API token');
-			}
-		}
-
 		parent::login($user, $remember);
+		$this->authState = self::AUTH_STATE_STATEFUL;
 	}
 
 	/**
-	 * Logs out the current user.
+	 * Logs out the current stateful user.
 	 *
-	 * An attempt to logout while an API token is provided is considered an
-	 * error.
+	 * If the method succeeds, {@link SessionOrTokenGuard::$authState} equals
+	 * {@link SessionOrTokenGuard::AUTH_STATE_STATELESS} or
+	 * {@link SessionOrTokenGuard::AUTH_STATE_UNAUTHENTICATED} afterwards,
+	 * depending on whether a token is given in the request or not.
 	 *
 	 * @return void
 	 *
@@ -237,11 +277,21 @@ class SessionOrTokenGuard extends SessionGuard
 	 */
 	public function logout(): void
 	{
-		if ($this->getUserByToken() !== null) {
-			throw new BadRequestHeaderException('Cannot logout if user is provided by API token');
-		}
-
 		parent::logout();
+		$this->authState = self::AUTH_STATE_UNAUTHENTICATED;
+
+		// Re-authenticate as token-based user if given.
+		$userByToken = $this->getUserByToken();
+		if ($userByToken !== null) {
+			// A token-based authentication is considered stateless, so we
+			// call `setUser` and not `login`.
+			// We call the parent method here to skip the additional token
+			// check added by the overwritten method of this class.
+			parent::setUser($userByToken);
+			// As we called the parent method `setUser`, we must set the
+			// new authentication state explicitly.
+			$this->authState = self::AUTH_STATE_STATELESS;
+		}
 	}
 
 	/**
