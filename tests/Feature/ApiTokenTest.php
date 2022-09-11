@@ -141,9 +141,11 @@ class ApiTokenTest extends TestCase
 	 * Ensures that (stateful) login still works if token is additionally
 	 * provided, and that login remains valid even without token.
 	 *
+	 * Do the same for the logout.
+	 *
 	 * @return void
 	 */
-	public function testLoginWithToken(): void
+	public function testLoginAndLogoutWithToken(): void
 	{
 		list($userId, $userToken) = $this->createUserWithToken('user', 'pwd');
 
@@ -156,6 +158,15 @@ class ApiTokenTest extends TestCase
 			'id' => $userId,
 		], false);
 
+		// We need to call this to mimic the behaviour of real-world
+		// requests.
+		// Normally, the service classes incl. guards are re-created for
+		// each request.
+		// In contrast to `testChangeOfTokensWithoutSession` we do not
+		// re-create the whole application, because we want to keep the
+		// session.
+		Auth::forgetGuards();
+
 		// Login stateful
 		$response = $this->postJson('/api/Session::login', [
 			'username' => 'user',
@@ -165,12 +176,28 @@ class ApiTokenTest extends TestCase
 		]);
 		$response->assertStatus(204);
 
+		Auth::forgetGuards();
+
 		// Ensure that we are still logged in even without providing the token
 		$response = $this->postJson('/api/User::getAuthenticatedUser');
 		$response->assertStatus(200);
 		$response->assertSee([
 			'id' => $userId,
 		], false);
+
+		Auth::forgetGuards();
+
+		// Ensure that we can log out (stateful) while still providing the token
+		$response = $this->postJson('/api/Session::logout', [], [
+			'Authorization' => $userToken,
+		]);
+		$response->assertStatus(204);
+
+		Auth::forgetGuards();
+
+		// Ensure that we are logged out without the token
+		$response = $this->postJson('/api/User::getAuthenticatedUser');
+		$response->assertStatus(204);
 	}
 
 	/**
