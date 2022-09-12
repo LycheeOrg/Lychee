@@ -10,11 +10,11 @@ use App\Models\User as UserModel;
 class User extends DTO
 {
 	public function __construct(
-		private int $id,
-		private string $username,
-		private bool $may_administrate,
-		private bool $may_upload,
-		private bool $may_edit_own_settings
+		public int $id,
+		public string $username,
+		public bool $may_administrate,
+		public bool $may_upload,
+		public bool $may_edit_own_settings
 	) {
 	}
 
