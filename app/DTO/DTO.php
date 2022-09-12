@@ -6,6 +6,7 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 use ReflectionClass;
+use ReflectionProperty;
 use function Safe\json_encode;
 use function Safe\json_last_error_msg;
 
@@ -76,7 +77,7 @@ abstract class DTO implements Arrayable, Jsonable, \JsonSerializable
 	{
 		$result = [];
 		$cls = new ReflectionClass($this);
-		$props = $cls->getProperties();
+		$props = $cls->getProperties(ReflectionProperty::IS_PUBLIC);
 		foreach ($props as $prop) {
 			$result[$prop->getName()] = $prop->getValue($this);
 		}
