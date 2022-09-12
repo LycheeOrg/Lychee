@@ -290,7 +290,7 @@ class AlbumPolicy
 			return false;
 		}
 
-		return $this->isOwner($user, $abstractAlbum);
+		return $abstractAlbum instanceof BaseAlbum && $this->isOwner($user, $abstractAlbum);
 	}
 
 	/**
