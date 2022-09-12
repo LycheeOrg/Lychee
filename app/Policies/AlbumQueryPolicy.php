@@ -71,7 +71,7 @@ class AlbumQueryPolicy
 			$query2
 				->where(
 					fn (AlbumBuilder|TagAlbumBuilder $q) => $q
-						->where('base_albums.requires_link', '=', false)
+						->where('base_albums.is_link_required', '=', false)
 						->where('base_albums.is_public', '=', true)
 				);
 			if ($userID !== null) {
@@ -180,13 +180,13 @@ class AlbumQueryPolicy
 			$query2
 				->where(
 					fn (Builder $q) => $q
-						->where('base_albums.requires_link', '=', false)
+						->where('base_albums.is_link_required', '=', false)
 						->where('base_albums.is_public', '=', true)
 						->whereNull('base_albums.password')
 				)
 				->orWhere(
 					fn (Builder $q) => $q
-						->where('base_albums.requires_link', '=', false)
+						->where('base_albums.is_link_required', '=', false)
 						->where('base_albums.is_public', '=', true)
 						->whereIn('base_albums.id', $unlockedAlbumIDs)
 				);
@@ -334,13 +334,13 @@ class AlbumQueryPolicy
 			$builder
 				->where(
 					fn (BaseBuilder $q) => $q
-						->where('inner_base_albums.requires_link', '=', true)
+						->where('inner_base_albums.is_link_required', '=', true)
 						->orWhere('inner_base_albums.is_public', '=', false)
 						->orWhereNotNull('inner_base_albums.password')
 				)
 				->where(
 					fn (BaseBuilder $q) => $q
-						->where('inner_base_albums.requires_link', '=', true)
+						->where('inner_base_albums.is_link_required', '=', true)
 						->orWhere('inner_base_albums.is_public', '=', false)
 						->orWhereNotIn('inner_base_albums.id', $unlockedAlbumIDs)
 				);

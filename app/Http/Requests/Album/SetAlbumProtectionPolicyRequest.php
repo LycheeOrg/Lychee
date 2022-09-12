@@ -19,11 +19,11 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 	use HasPasswordTrait;
 	use AuthorizeCanEditAlbumTrait;
 	public const IS_PUBLIC_ATTRIBUTE = 'is_public';
-	public const REQUIRES_LINK_ATTRIBUTE = 'requires_link';
+	public const REQUIRES_LINK_ATTRIBUTE = 'is_link_required';
 	public const IS_NSFW_ATTRIBUTE = 'is_nsfw';
-	public const IS_DOWNLOADABLE_ATTRIBUTE = 'is_downloadable';
+	public const IS_DOWNLOADABLE_ATTRIBUTE = 'grant_download';
 	public const IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE = 'is_share_button_visible';
-	public const GRANTS_FULL_PHOTO_ATTRIBUTE = 'grants_full_photo';
+	public const GRANTS_FULL_PHOTO_ATTRIBUTE = 'grant_access_full_photo';
 
 	protected bool $isPasswordProvided;
 	protected AlbumProtectionPolicy $albumAccessSettings;
@@ -54,12 +54,12 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 			$values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]
 		);
 		$this->albumAccessSettings = new AlbumProtectionPolicy(
-			static::toBoolean($values[self::IS_PUBLIC_ATTRIBUTE]),
-			static::toBoolean($values[self::REQUIRES_LINK_ATTRIBUTE]),
-			static::toBoolean($values[self::IS_NSFW_ATTRIBUTE]),
-			static::toBoolean($values[self::IS_DOWNLOADABLE_ATTRIBUTE]),
-			static::toBoolean($values[self::IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE]),
-			static::toBoolean($values[self::GRANTS_FULL_PHOTO_ATTRIBUTE]),
+			is_public: static::toBoolean($values[self::IS_PUBLIC_ATTRIBUTE]),
+			is_link_required: static::toBoolean($values[self::REQUIRES_LINK_ATTRIBUTE]),
+			is_share_button_visible: static::toBoolean($values[self::IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE]),
+			is_nsfw: static::toBoolean($values[self::IS_NSFW_ATTRIBUTE]),
+			grant_download: static::toBoolean($values[self::IS_DOWNLOADABLE_ATTRIBUTE]),
+			grant_access_full_photo: static::toBoolean($values[self::GRANTS_FULL_PHOTO_ATTRIBUTE]),
 		);
 		$this->isPasswordProvided = array_key_exists(HasPassword::PASSWORD_ATTRIBUTE, $values);
 		$this->password = $this->isPasswordProvided ? $values[HasPassword::PASSWORD_ATTRIBUTE] : null;

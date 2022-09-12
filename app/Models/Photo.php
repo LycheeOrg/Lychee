@@ -72,7 +72,7 @@ use function Safe\preg_match;
  * @property Album|null   $album
  * @property User         $owner
  * @property SizeVariants $size_variants
- * @property bool         $is_downloadable
+ * @property bool         $grant_download
  * @property bool         $is_share_button_visible
  */
 class Photo extends Model implements HasRandomID
@@ -104,7 +104,7 @@ class Photo extends Model implements HasRandomID
 		'taken_at' => DateTimeWithTimezoneCast::class,
 		'live_photo_full_path' => MustNotSetCast::class . ':live_photo_short_path',
 		'live_photo_url' => MustNotSetCast::class . ':live_photo_short_path',
-		'is_downloadable' => MustNotSetCast::class,
+		'grant_download' => MustNotSetCast::class,
 		'is_share_button_visible' => MustNotSetCast::class,
 		'owner_id' => 'integer',
 		'is_starred' => 'boolean',
@@ -135,7 +135,7 @@ class Photo extends Model implements HasRandomID
 	 */
 	protected $appends = [
 		'live_photo_url',
-		'is_downloadable',
+		'grant_download',
 		'is_share_button_visible',
 	];
 
@@ -325,7 +325,7 @@ class Photo extends Model implements HasRandomID
 	}
 
 	/**
-	 * Accessor for the "virtual" attribute {@see Photo::$is_downloadable}.
+	 * Accessor for the "virtual" attribute {@see Photo::$grant_download}.
 	 *
 	 * The photo is downloadable if the currently authenticated user is the
 	 * owner or if the photo is part of a downloadable album or if it is
@@ -338,7 +338,7 @@ class Photo extends Model implements HasRandomID
 	{
 		return
 			Gate::check(PhotoPolicy::IS_OWNER, $this) ||
-			($this->album_id !== null && $this->album->is_downloadable) ||
+			($this->album_id !== null && $this->album->grant_download) ||
 			($this->album_id === null && Configs::getValueAsBool('downloadable'));
 	}
 
@@ -446,7 +446,7 @@ class Photo extends Model implements HasRandomID
 			!$this->isVideo() &&
 			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null) &&
 			(
-				($this->album_id !== null && !$this->album->grants_full_photo) ||
+				($this->album_id !== null && !$this->album->grant_access_full_photo) ||
 				($this->album_id === null && !Configs::getValueAsBool('full_photo'))
 			)
 		) {

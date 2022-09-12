@@ -27,7 +27,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  * @property Collection $photos
  * @property Thumb|null $thumb
  * @property bool       $is_public
- * @property bool       $is_downloadable
+ * @property bool       $grant_download
  * @property bool       $is_share_button_visible
  */
 interface AbstractAlbum extends \JsonSerializable, Arrayable, Jsonable

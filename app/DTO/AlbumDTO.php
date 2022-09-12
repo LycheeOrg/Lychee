@@ -3,6 +3,8 @@
 namespace App\DTO;
 
 use App\Contracts\AbstractAlbum;
+use App\Policies\AlbumPolicy;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Data Transfer Object (DTO) for Albums.
@@ -25,6 +27,10 @@ class AlbumDTO extends DTO
 	{
 		$albumDTO = $this->album->toArray();
 		$albumDTO['rights'] = AlbumRights::ofAlbum($this->album);
+
+		if (Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->album])) {
+			$albumDTO['policies'] = AlbumProtectionPolicy::ofAlbum($this->album);
+		}
 
 		return $albumDTO;
 	}

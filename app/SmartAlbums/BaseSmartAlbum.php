@@ -145,12 +145,11 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		//     relation has been loaded.
 		//     This avoids unnecessary hydration of photos if the album is
 		//     only used within a listing of sub-albums.
-
 		$result = [
 			'id' => $this->id,
 			'title' => $this->title,
-			'is_public' => $this->isPublic,
-			'is_share_button_visible' => $this->isShareButtonVisible,
+			// 'is_public' => $this->isPublic,
+			// 'is_share_button_visible' => $this->isShareButtonVisible,
 			'thumb' => $this->getThumbAttribute(),
 		];
 

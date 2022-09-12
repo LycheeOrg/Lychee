@@ -91,11 +91,11 @@ use Illuminate\Support\Facades\Auth;
  * @property int                        $owner_id
  * @property User                       $owner
  * @property bool                       $is_public
- * @property bool                       $grants_full_photo
- * @property bool                       $requires_link
- * @property bool                       $is_downloadable
+ * @property bool                       $is_link_required
  * @property bool                       $is_share_button_visible
  * @property bool                       $is_nsfw
+ * @property bool                       $grant_access_full_photo
+ * @property bool                       $grant_download
  * @property Collection                 $shared_with
  * @property string|null                $password
  * @property bool                       $has_password
@@ -145,11 +145,11 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'description' => null,
 		'owner_id' => 0,
 		'is_public' => false,
-		'grants_full_photo' => true,
-		'requires_link' => false,
-		'is_downloadable' => false,
+		'is_link_required' => false,
 		'is_share_button_visible' => false,
 		'is_nsfw' => false,
+		'grant_access_full_photo' => true,
+		'grant_download' => false,
 		'password' => null,
 		'sorting_col' => null,
 		'sorting_order' => null,
@@ -164,7 +164,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'is_public' => 'boolean',
-		'requires_link' => 'boolean',
+		'is_link_required' => 'boolean',
 		'is_nsfw' => 'boolean',
 		'owner_id' => 'integer',
 	];
@@ -181,9 +181,11 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'sorting_col',   // serialize DTO `order` instead
 		'sorting_order', // serialize DTO `order` instead
 
-		// Taken care of by rights
-		'grants_full_photo',
-		'is_downloadable',
+		// Taken care of by rights and attributes
+		'grant_download',
+		'grant_access_full_photo',
+		// 'is_public',
+		'is_share_button_visible',
 	];
 
 	/**
@@ -192,7 +194,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 *               JSON from accessors
 	 */
 	protected $appends = [
-		'has_password',
+		// 'has_password',
 		'sorting',
 	];
 
@@ -254,10 +256,10 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		}
 	}
 
-	protected function getHasPasswordAttribute(): bool
-	{
-		return $this->password !== null && $this->password !== '';
-	}
+	// protected function getHasPasswordAttribute(): bool
+	// {
+	// 	return $this->password !== null && $this->password !== '';
+	// }
 
 	protected function getSortingAttribute(): ?PhotoSortingCriterion
 	{
