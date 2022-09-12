@@ -39,12 +39,6 @@ class UserRights extends DTO
 	 */
 	public function toArray(): array
 	{
-		// casting an object to an array automatically convert the attributes to an associative array.
 		return (array) $this;
-		// return [
-		// 	'can_administrate' => $this->can_administrate,
-		// 	'can_upload_root' => $this->can_upload_root,
-		// 	'can_edit_own_settings' => $this->can_edit_own_settings,
-		// ];
 	}
 }

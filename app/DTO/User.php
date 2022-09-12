@@ -41,12 +41,6 @@ class User extends DTO
 	 */
 	public function toArray(): array
 	{
-		return [
-			'id' => $this->id,
-			'username' => $this->username,
-			'may_administrate' => $this->may_administrate,
-			'may_upload' => $this->may_upload,
-			'may_edit_own_settings' => $this->may_edit_own_settings,
-		];
+		return (array) $this;
 	}
 }
