@@ -13,6 +13,7 @@ use function Safe\sprintf;
  * we can directly make use of a reflection which returns an array containing
  * all the PUBLIC attributes of the DTO.
  */
+
 class ArrayableDTO extends DTO
 {
 	/**

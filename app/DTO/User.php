@@ -7,7 +7,7 @@ use App\Models\User as UserModel;
 /**
  * Data Transfer Object (DTO) to transmit the attributes of a User.
  */
-class User extends DTO
+class User extends ArrayableDTO
 {
 	public function __construct(
 		public int $id,

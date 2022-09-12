@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-class AlbumProtectionPolicy extends DTO
+class AlbumProtectionPolicy extends ArrayableDTO
 {
 	public function __construct(
 		public bool $is_public,

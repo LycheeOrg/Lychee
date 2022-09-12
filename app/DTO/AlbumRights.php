@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Gate;
 /**
  * Data Transfer Object (DTO) to transmit the rights of a User.
  */
-class AlbumRights extends DTO
+class AlbumRights extends ArrayableDTO
 {
 	public function __construct(
 		public bool $can_edit,

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Gate;
 /**
  * Data Transfer Object (DTO) to transmit the rights of a User.
  */
-class UserRights extends DTO
+class UserRights extends ArrayableDTO
 {
 	public function __construct(
 		public bool $can_administrate,
