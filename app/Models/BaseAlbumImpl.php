@@ -180,6 +180,10 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'password',
 		'sorting_col',   // serialize DTO `order` instead
 		'sorting_order', // serialize DTO `order` instead
+
+		// Taken care of by rights
+		'grants_full_photo',
+		'is_downloadable',
 	];
 
 	/**

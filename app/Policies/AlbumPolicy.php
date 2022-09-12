@@ -30,6 +30,7 @@ class AlbumPolicy
 
 	public const CAN_SEE = 'canSee';
 	public const CAN_ACCESS = 'canAccess';
+	public const CAN_SEE_FULL_PHOTO = 'canSeeFullPhoto';
 	public const CAN_DOWNLOAD = 'canDownload';
 	public const CAN_UPLOAD = 'canUpload';
 	public const CAN_EDIT = 'canEdit';
@@ -94,6 +95,33 @@ class AlbumPolicy
 	{
 		return ($user?->may_upload === true) ||
 			$smartAlbum->is_public;
+	}
+
+	/**
+	 * Check whether current user can access the full photos.
+	 *
+	 * @param User|null     $user
+	 * @param AbstractAlbum $abstractAlbum
+	 *
+	 * @return bool
+	 */
+	public function canSeeFullPhoto(?User $user, AbstractAlbum $abstractAlbum): bool
+	{
+		if ($abstractAlbum instanceof BaseAlbum) {
+			try {
+				return
+					$this->isOwner($user, $abstractAlbum) ||
+					$abstractAlbum->grants_full_photo ||
+					$abstractAlbum->shared_with()->where('user_id', '=', $user?->id)->count() > 0;
+			} catch (\InvalidArgumentException $e) {
+				throw LycheeAssertionError::createFromUnexpectedException($e);
+			}
+		} elseif ($abstractAlbum instanceof BaseSmartAlbum) {
+			return $this->canSee($user, $abstractAlbum);
+		} else {
+			// Should never happen
+			return false;
+		}
 	}
 
 	/**

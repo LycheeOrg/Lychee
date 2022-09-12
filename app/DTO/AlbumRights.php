@@ -16,6 +16,7 @@ class AlbumRights extends ArrayableDTO
 		public bool $can_share,
 		public bool $can_download,
 		public bool $can_upload,
+		public bool $can_see_full_photo,
 	) {
 	}
 
@@ -36,7 +37,8 @@ class AlbumRights extends ArrayableDTO
 			can_edit: Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $abstractAlbum]),
 			can_share: Gate::check(AlbumPolicy::CAN_SHARE, [AbstractAlbum::class, $abstractAlbum]),
 			can_download: Gate::check(AlbumPolicy::CAN_DOWNLOAD, [AbstractAlbum::class, $abstractAlbum]),
-			can_upload: Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, $abstractAlbum])
+			can_upload: Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, $abstractAlbum]),
+			can_see_full_photo: Gate::check(AlbumPolicy::CAN_SEE_FULL_PHOTO, [AbstractAlbum::class, $abstractAlbum]),
 		);
 	}
 }
