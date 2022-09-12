@@ -34,7 +34,7 @@ class AlbumRights extends ArrayableDTO
 	{
 		return new AlbumRights(
 			can_edit: Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $abstractAlbum]),
-			can_share: Gate::check(AlbumPolicy::CAN_SHARE_ID, [AbstractAlbum::class, $abstractAlbum->id]),
+			can_share: Gate::check(AlbumPolicy::CAN_SHARE, [AbstractAlbum::class, $abstractAlbum]),
 			can_download: Gate::check(AlbumPolicy::CAN_DOWNLOAD, [AbstractAlbum::class, $abstractAlbum]),
 			can_upload: Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, $abstractAlbum])
 		);

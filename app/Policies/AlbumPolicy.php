@@ -34,6 +34,7 @@ class AlbumPolicy
 	public const CAN_UPLOAD = 'canUpload';
 	public const CAN_EDIT = 'canEdit';
 	public const CAN_EDIT_ID = 'canEditById';
+	public const CAN_SHARE = 'canShare';
 	public const CAN_SHARE_ID = 'canShareById';
 
 	/**
@@ -267,6 +268,29 @@ class AlbumPolicy
 			->whereIn('id', $albumIDs)
 			->where('owner_id', $user->id)
 			->count() === count($albumIDs);
+	}
+
+	/**
+	 * Check if user can share selected albums.
+	 *
+	 * @param User          $user
+	 * @param AbstractAlbum $abstractAlbum
+	 *
+	 * @return bool
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	public function canShare(User $user, AbstractAlbum $abstractAlbum): bool
+	{
+		if (!$user->may_upload) {
+			return false;
+		}
+
+		if (in_array($abstractAlbum->id, AlbumFactory::BUILTIN_SMARTS, true)) {
+			return false;
+		}
+
+		return $this->isOwner($user, $abstractAlbum);
 	}
 
 	/**
