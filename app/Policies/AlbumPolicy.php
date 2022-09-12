@@ -150,38 +150,39 @@ class AlbumPolicy
 	/**
 	 * Check if current user can download the album.
 	 *
-	 * @param User|null      $user
-	 * @param BaseAlbum|null $baseAlbum
+	 * @param User|null          $user
+	 * @param AbstractAlbum|null $abstractAlbum
 	 *
 	 * @return bool
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function canDownload(?User $user, ?BaseAlbum $baseAlbum): bool
+	public function canDownload(?User $user, ?AbstractAlbum $abstractAlbum): bool
 	{
-		if ($baseAlbum === null) {
+		if ($abstractAlbum === null) {
 			return Configs::getValueAsBool('downloadable');
 		}
 
 		// TODO: when download rights are assigned to albums, we add more logic can be added here.
-		return $this->isOwner($user, $baseAlbum) ||
-			$baseAlbum->is_downloadable;
+		return $abstractAlbum->is_downloadable ||
+		($abstractAlbum instanceof BaseSmartAlbum && $user !== null) ||
+		($abstractAlbum instanceof BaseAlbum && $this->isOwner($user, $abstractAlbum));
 	}
 
 	/**
 	 * Check if user is allowed to upload in current albumn.
 	 *
-	 * @param User           $user
-	 * @param BaseAlbum|null $baseAlbum
+	 * @param User               $user
+	 * @param AbstractAlbum|null $abstractAlbum
 	 *
 	 * @return bool
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function canUpload(User $user, ?BaseAlbum $baseAlbum = null): bool
+	public function canUpload(User $user, ?AbstractAlbum $abstractAlbum = null): bool
 	{
 		// If base album is null, we consider root
-		if ($baseAlbum === null) {
+		if ($abstractAlbum === null) {
 			return $user->may_upload;
 		}
 
