@@ -71,7 +71,7 @@ class SessionController extends Controller
 			}
 
 			// Load configuration settings acc. to authentication status
-			if ($return['rights']->can_administrate === true) {
+			if ($return['rights']->can_administrate) {
 				// Admin rights (either properly authenticated or not registered)
 				$return['config'] = $this->configFunctions->admin();
 				$return['config']['location'] = base_path('public/');
