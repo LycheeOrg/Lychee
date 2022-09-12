@@ -35,12 +35,4 @@ class User extends DTO
 			$user->may_edit_own_settings
 		);
 	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function toArray(): array
-	{
-		return (array) $this;
-	}
 }

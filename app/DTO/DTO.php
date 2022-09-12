@@ -5,6 +5,7 @@ namespace App\DTO;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\Eloquent\JsonEncodingException;
+use ReflectionClass;
 use function Safe\json_encode;
 use function Safe\json_last_error_msg;
 
@@ -71,5 +72,15 @@ abstract class DTO implements Arrayable, Jsonable, \JsonSerializable
 	/**
 	 * {@inheritDoc}
 	 */
-	abstract public function toArray(): array;
+	public function toArray(): array
+	{
+		$result = [];
+		$cls = new ReflectionClass($this);
+		$props = $cls->getProperties();
+		foreach ($props as $prop) {
+			$result[$prop->getName()] = $prop->getValue($this);
+		}
+
+		return $result;
+	}
 }

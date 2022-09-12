@@ -13,12 +13,4 @@ class AlbumProtectionPolicy extends DTO
 		public bool $grants_full_photo
 	) {
 	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function toArray(): array
-	{
-		return (array) $this;
-	}
 }

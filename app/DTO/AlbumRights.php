@@ -39,9 +39,4 @@ class AlbumRights extends DTO
 			can_upload: Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, $abstractAlbum])
 		);
 	}
-
-	public function toArray(): array
-	{
-		return (array) $this;
-	}
 }

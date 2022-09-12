@@ -33,12 +33,4 @@ class UserRights extends DTO
 			can_edit_own_settings: Gate::check(UserPolicy::CAN_EDIT_OWN_SETTINGS, User::class)
 		);
 	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function toArray(): array
-	{
-		return (array) $this;
-	}
 }
