@@ -144,15 +144,17 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'title' => null, // Sic! `title` is actually non-nullable, but using `null` here forces the caller to actually set a title before saving.
 		'description' => null,
 		'owner_id' => 0,
+		'sorting_col' => null,
+		'sorting_order' => null,
+		// Security attributes
+		'is_nsfw' => false, // this is a special case.
 		'is_public' => false,
 		'is_link_required' => false,
 		'is_share_button_visible' => false,
-		'is_nsfw' => false,
+		'password' => null,
+		// Permissions
 		'grant_access_full_photo' => true,
 		'grant_download' => false,
-		'password' => null,
-		'sorting_col' => null,
-		'sorting_order' => null,
 	];
 
 	/**
@@ -181,11 +183,13 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'sorting_col',   // serialize DTO `order` instead
 		'sorting_order', // serialize DTO `order` instead
 
-		// Taken care of by rights and attributes
+		// Security attributes attributes
+		'is_public',
+		'is_link_required',
+		'is_share_button_visible',
+		// Permissions taken care by Rights
 		'grant_download',
 		'grant_access_full_photo',
-		// 'is_public',
-		'is_share_button_visible',
 	];
 
 	/**
@@ -194,7 +198,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 *               JSON from accessors
 	 */
 	protected $appends = [
-		// 'has_password',
 		'sorting',
 	];
 

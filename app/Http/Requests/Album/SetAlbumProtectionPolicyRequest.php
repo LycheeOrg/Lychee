@@ -18,12 +18,13 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 	use HasBaseAlbumTrait;
 	use HasPasswordTrait;
 	use AuthorizeCanEditAlbumTrait;
-	public const IS_PUBLIC_ATTRIBUTE = 'is_public';
-	public const REQUIRES_LINK_ATTRIBUTE = 'is_link_required';
+
 	public const IS_NSFW_ATTRIBUTE = 'is_nsfw';
-	public const IS_DOWNLOADABLE_ATTRIBUTE = 'grant_download';
+	public const IS_PUBLIC_ATTRIBUTE = 'is_public';
+	public const IS_LINK_REQUIRED_ATTRIBUTE = 'is_link_required';
 	public const IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE = 'is_share_button_visible';
-	public const GRANTS_FULL_PHOTO_ATTRIBUTE = 'grant_access_full_photo';
+	public const GRANT_DOWNLOAD_ATTRIBUTE = 'grant_download';
+	public const GRANT_ACCESS_FULL_PHOTO_ATTRIBUTE = 'grant_access_full_photo';
 
 	protected bool $isPasswordProvided;
 	protected AlbumProtectionPolicy $albumAccessSettings;
@@ -37,11 +38,11 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 			HasPassword::PASSWORD_ATTRIBUTE => ['sometimes', new PasswordRule(true)],
 			self::IS_PUBLIC_ATTRIBUTE => 'required|boolean',
-			self::REQUIRES_LINK_ATTRIBUTE => 'required|boolean',
+			self::IS_LINK_REQUIRED_ATTRIBUTE => 'required|boolean',
 			self::IS_NSFW_ATTRIBUTE => 'required|boolean',
-			self::IS_DOWNLOADABLE_ATTRIBUTE => 'required|boolean',
+			self::GRANT_DOWNLOAD_ATTRIBUTE => 'required|boolean',
 			self::IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE => 'required|boolean',
-			self::GRANTS_FULL_PHOTO_ATTRIBUTE => 'required|boolean',
+			self::GRANT_ACCESS_FULL_PHOTO_ATTRIBUTE => 'required|boolean',
 		];
 	}
 
@@ -55,11 +56,11 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 		);
 		$this->albumAccessSettings = new AlbumProtectionPolicy(
 			is_public: static::toBoolean($values[self::IS_PUBLIC_ATTRIBUTE]),
-			is_link_required: static::toBoolean($values[self::REQUIRES_LINK_ATTRIBUTE]),
+			is_link_required: static::toBoolean($values[self::IS_LINK_REQUIRED_ATTRIBUTE]),
 			is_share_button_visible: static::toBoolean($values[self::IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE]),
 			is_nsfw: static::toBoolean($values[self::IS_NSFW_ATTRIBUTE]),
-			grant_download: static::toBoolean($values[self::IS_DOWNLOADABLE_ATTRIBUTE]),
-			grant_access_full_photo: static::toBoolean($values[self::GRANTS_FULL_PHOTO_ATTRIBUTE]),
+			grant_download: static::toBoolean($values[self::GRANT_DOWNLOAD_ATTRIBUTE]),
+			grant_access_full_photo: static::toBoolean($values[self::GRANT_ACCESS_FULL_PHOTO_ATTRIBUTE]),
 		);
 		$this->isPasswordProvided = array_key_exists(HasPassword::PASSWORD_ATTRIBUTE, $values);
 		$this->password = $this->isPasswordProvided ? $values[HasPassword::PASSWORD_ATTRIBUTE] : null;
