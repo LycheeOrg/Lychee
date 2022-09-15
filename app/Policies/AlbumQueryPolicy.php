@@ -43,7 +43,7 @@ class AlbumQueryPolicy
 	 *
 	 *  - the user is an admin
 	 *  - the user is the owner of the album
-	 *  - the album is shared with the user and the album does not require a direct link
+	 *  - the album is shared with the user
 	 *  - the album is public and the album does not require a direct link
 	 *
 	 * @param AlbumBuilder|TagAlbumBuilder $query
@@ -77,11 +77,7 @@ class AlbumQueryPolicy
 			if ($userID !== null) {
 				$query2
 					->orWhere('base_albums.owner_id', '=', $userID)
-					->orWhere(
-						fn (AlbumBuilder|TagAlbumBuilder $q) => $q
-							->where('base_albums.requires_link', '=', false)
-							->where('user_base_album.user_id', '=', $userID)
-					);
+					->orWhere('user_base_album.user_id', '=', $userID);
 			}
 		};
 
@@ -153,7 +149,7 @@ class AlbumQueryPolicy
 	 *
 	 *  - the user is the admin, or
 	 *  - the user is the owner, or
-	 *  - the album does not require a direct link and is shared with the user, or
+	 *  - the album is shared with the user, or
 	 *  - the album does not require a direct link, is public and has no password set, or
 	 *  - the album does not require a direct link, is public and has been unlocked
 	 *
@@ -197,11 +193,7 @@ class AlbumQueryPolicy
 			if ($userID !== null) {
 				$query2
 					->orWhere('base_albums.owner_id', '=', $userID)
-					->orWhere(
-						fn (Builder $q) => $q
-							->where('base_albums.requires_link', '=', false)
-							->where('user_base_album.user_id', '=', $userID)
-					);
+					->orWhere('user_base_album.user_id', '=', $userID);
 			}
 		};
 
@@ -355,15 +347,11 @@ class AlbumQueryPolicy
 			if ($userID !== null) {
 				$builder
 					->where('inner_base_albums.owner_id', '<>', $userID)
-					->where(
+					->whereNotExists(
 						fn (BaseBuilder $q) => $q
-							->where('inner_base_albums.requires_link', '=', true)
-							->orWhereNotExists(
-								fn (BaseBuilder $q2) => $q2
-									->from('user_base_album', 'user_inner_base_album')
-									->whereColumn('user_inner_base_album.base_album_id', '=', 'inner_base_albums.id')
-									->where('user_inner_base_album.user_id', '=', $userID)
-							)
+							->from('user_base_album', 'user_inner_base_album')
+							->whereColumn('user_inner_base_album.base_album_id', '=', 'inner_base_albums.id')
+							->where('user_inner_base_album.user_id', '=', $userID)
 					);
 			}
 

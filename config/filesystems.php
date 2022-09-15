@@ -12,7 +12,7 @@ return [
 	|
 	*/
 
-	'default' => env('FILESYSTEM_DRIVER', 'images'),
+	'default' => 'images',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -69,7 +69,7 @@ return [
 			'driver' => 's3',
 			'key' => env('AWS_ACCESS_KEY_ID'),
 			'secret' => env('AWS_SECRET_ACCESS_KEY'),
-			'region' => env('AWS_DEFAULT_REGION'),
+			'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
 			'bucket' => env('AWS_BUCKET'),
 			'url' => env('AWS_URL'),
 			'endpoint' => env('AWS_ENDPOINT'),
@@ -80,8 +80,8 @@ return [
 		// TODO: Maybe we should drop this Flysystem disk, because neither the driver nor the root must be changed and hence the whole point of using the Flysystem abstraction is gone.
 		'dist' => [
 			'driver' => 'local',
-			'root' => env('LYCHEE_DIST', public_path('dist/')),
-			'url' => env('LYCHEE_DIST_URL', 'dist/'),
+			'root' => public_path('dist/'),
+			'url' => 'dist/',
 			'visibility' => 'public',
 		],
 
@@ -96,20 +96,5 @@ return [
 			'url' => 'sym',
 			'visibility' => 'public',
 		],
-	],
-
-	/*
-	|--------------------------------------------------------------------------
-	| Symbolic Links
-	|--------------------------------------------------------------------------
-	|
-	| Here you may configure the symbolic links that will be created when the
-	| `storage:link` Artisan command is executed. The array keys should be
-	| the locations of the links and the values should be their targets.
-	|
-	*/
-
-	'links' => [
-		public_path('storage') => storage_path('app/public'),
 	],
 ];

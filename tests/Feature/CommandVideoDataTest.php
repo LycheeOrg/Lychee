@@ -23,6 +23,8 @@ class CommandVideoDataTest extends PhotoTestBase
 
 	public function testThumbRecreation(): void
 	{
+		$this->assertHasFFMpegOrSkip();
+
 		$photo1 = static::convertJsonToObject($this->photos_tests->upload(
 			static::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_VIDEO)
 		));

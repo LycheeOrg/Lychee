@@ -220,7 +220,7 @@ class GeoDataTest extends TestCase
 				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID13
 			)->offsetGet('id');
 
-			$this->albums_tests->set_protection_policy($albumID1, true, true, true);
+			$this->albums_tests->set_protection_policy(id: $albumID1, full_photo: true, public: true, requiresLink: true);
 			// Sic! We do not make album 1.1 public to ensure that the
 			// search filter does not include too much
 			$this->albums_tests->set_protection_policy($albumID12);
