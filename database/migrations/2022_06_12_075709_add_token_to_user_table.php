@@ -19,9 +19,11 @@ class AddTokenToUserTable extends Migration
 	{
 		Configs::where('key', '=', 'api_key')->delete();
 
-		Schema::table('users', function (Blueprint $table) {
-			$table->char('token', 128)->after('email')->unique()->nullable()->default(null);
-		});
+		if (!Schema::hasColumn('users', 'token')) {
+			Schema::table('users', function (Blueprint $table) {
+				$table->char('token', 128)->after('email')->unique()->nullable()->default(null);
+			});
+		}
 	}
 
 	/**
