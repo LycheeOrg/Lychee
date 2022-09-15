@@ -11567,7 +11567,7 @@ upload.start = {
 
 		/**
    * @typedef ServerImportDialogResult
-   * @property {string} paths
+   * @property {string|string[]} paths
    * @property {boolean} delete_imported
    * @property {boolean} import_via_symlink
    * @property {boolean} skip_duplicates
@@ -11582,7 +11582,15 @@ upload.start = {
 			} else {
 				// Consolidate `data` before we close the modal dialog
 				// TODO: We should fix the modal dialog to properly return the values of all input fields, incl. check boxes
-				data.paths = data.paths.match(/(?:\\.|\S)+/g);
+				// We split the given path string at unescaped spaces into an
+				// array or more precisely we create an array whose entries
+				// matches strings with non-space characters or escaped spaces.
+				// After splitting, the escaped spaces must be replaced by
+				// proper spaces as escaping of spaces is a GUI-only thing to
+				// allow input of several paths into a single input field.
+				data.paths = data.paths.match(/(?:\\ |\S)+/g).map(function (path) {
+					return path.replaceAll("\\ ", " ");
+				});
 				data.delete_imported = !!$(choiceDeleteSelector).prop("checked");
 				data.import_via_symlink = !!$(choiceSymlinkSelector).prop("checked");
 				data.skip_duplicates = !!$(choiceDuplicateSelector).prop("checked");
