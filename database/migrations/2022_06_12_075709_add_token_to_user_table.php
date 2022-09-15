@@ -39,10 +39,5 @@ class AddTokenToUserTable extends Migration
 				'cat' => 'Admin',
 			],
 		]);
-		Schema::disableForeignKeyConstraints();
-		Schema::table('users', function (Blueprint $table) {
-			$table->dropColumn('token');
-		});
-		Schema::enableForeignKeyConstraints();
 	}
 }
