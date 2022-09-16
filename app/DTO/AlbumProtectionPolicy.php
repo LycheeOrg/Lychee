@@ -6,6 +6,12 @@ use App\Contracts\AbstractAlbum;
 use App\Models\Extensions\BaseAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 
+/**
+ * This defines the Protection policy.
+ *
+ * In other words this gives the info of the security attributes of an album.
+ * It should not be used in the front end to determine whether an action is doable or not (e.g. share link available).
+ */
 class AlbumProtectionPolicy extends ArrayableDTO
 {
 	public function __construct(

@@ -37,9 +37,9 @@ trait RequiresEmptyAlbums
 	protected function setUpRequiresEmptyAlbums(): void
 	{
 		// Assert that album tables are empty
-		static::assertDatabaseCount('base_albums', 0);
-		static::assertDatabaseCount('albums', 0);
-		static::assertDatabaseCount('tag_albums', 0);
+		$this->assertDatabaseCount('base_albums', 0);
+		$this->assertDatabaseCount('albums', 0);
+		$this->assertDatabaseCount('tag_albums', 0);
 	}
 
 	protected function tearDownRequiresEmptyAlbums(): void

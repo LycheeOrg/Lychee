@@ -34,7 +34,8 @@ class AlbumPolicy
 	public const CAN_UPLOAD = 'canUpload';
 	public const CAN_EDIT = 'canEdit';
 	public const CAN_EDIT_ID = 'canEditById';
-	public const CAN_SHARE = 'canShare';
+	public const CAN_SHARE_WITH_USERS = 'canShareWithUsers';
+	public const CAN_SAHRE_BY_LINK = 'canShareByLink';
 	public const CAN_SHARE_ID = 'canShareById';
 
 	/**
@@ -271,18 +272,18 @@ class AlbumPolicy
 	}
 
 	/**
-	 * Check if user can share selected albums.
+	 * Check if user can share selected album with another user.
 	 *
-	 * @param User          $user
+	 * @param User|null     $user
 	 * @param AbstractAlbum $abstractAlbum
 	 *
 	 * @return bool
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function canShare(User $user, AbstractAlbum $abstractAlbum): bool
+	public function canShareWithUsers(?User $user, AbstractAlbum $abstractAlbum): bool
 	{
-		if (!$user->may_upload) {
+		if ($user?->may_upload !== true) {
 			return false;
 		}
 
@@ -294,7 +295,7 @@ class AlbumPolicy
 	}
 
 	/**
-	 * Check if user can share selected albums.
+	 * Check if user can share selected albums with other users.
 	 *
 	 * @param User  $user
 	 * @param array $albumIDs
@@ -306,6 +307,25 @@ class AlbumPolicy
 	public function canShareById(User $user, array $albumIDs): bool
 	{
 		return $this->canEditById($user, $albumIDs);
+	}
+
+	/**
+	 * Check if user can share selected albums by link.
+	 *
+	 * @param User|null     $user
+	 * @param AbstractAlbum $abstractAlbum
+	 *
+	 * @return bool
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	public function canShareByLink(?User $user, AbstractAlbum $abstractAlbum): bool
+	{
+		if ($abstractAlbum instanceof BaseAlbum && $this->isOwner($user, $abstractAlbum) && $user?->may_upload === true) {
+			return true;
+		}
+
+		return $abstractAlbum->is_share_button_visible;
 	}
 
 	// The following methods are not to be called by Gate.

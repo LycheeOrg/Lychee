@@ -4,8 +4,6 @@ namespace App\DTO;
 
 use App\Contracts\AbstractAlbum;
 use App\Models\Album;
-use App\Policies\AlbumPolicy;
-use Illuminate\Support\Facades\Gate;
 
 /**
  * Data Transfer Object (DTO) for Albums.
@@ -26,13 +24,19 @@ class AlbumDTO extends DTO
 	 */
 	public function toArray(): array
 	{
+		// Base convertion to array
 		$albumDTO = $this->album->toArray();
+
+		// if albums has sub-albums provided also apply conversion on them
 		if (key_exists('albums', $albumDTO) && $this->album instanceof Album) {
 			$albumDTO['albums'] = $this->album->children->map(fn (Album $a) => ((new AlbumDTO($a))->toArray()));
 		}
+
+		// add the rights
 		$albumDTO['rights'] = AlbumRights::ofAlbum($this->album);
 
-		if (Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->album])) {
+		// Provide the policies if the user can edit.
+		if ($albumDTO['rights']->can_edit) {
 			$albumDTO['policies'] = AlbumProtectionPolicy::ofAlbum($this->album);
 		}
 
