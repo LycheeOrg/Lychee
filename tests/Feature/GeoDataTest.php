@@ -101,8 +101,10 @@ class GeoDataTest extends TestCase
 					'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
 					'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
 					'is_public' => 0,
-					'grant_download' => true,
-					'is_share_button_visible' => true,
+					'rights' => [
+						'can_download' => true,
+						'can_share_by_link' => true,
+					],
 					'size_variants' => [
 						'thumb' => [
 							'width' => 200,

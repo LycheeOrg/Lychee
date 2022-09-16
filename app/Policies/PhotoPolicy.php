@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -23,6 +24,8 @@ class PhotoPolicy
 	public const CAN_DOWNLOAD = 'canDownload';
 	public const CAN_EDIT = 'canEdit';
 	public const CAN_EDIT_ID = 'canEditById';
+	public const CAN_SHARE_BY_LINK = 'canShareByLink';
+	public const CAN_ACCESS_FULL_PHOTO = 'canAccessFullPhoto';
 
 	/**
 	 * @throws FrameworkException
@@ -175,5 +178,52 @@ class PhotoPolicy
 				->whereIn('id', $photoIDs)
 				->where('owner_id', $user->id)
 				->count() === count($photoIDs);
+	}
+
+	/**
+	 * Check if user can share selected albums by link.
+	 *
+	 * @param User|null $user
+	 * @param Photo     $photo
+	 *
+	 * @return bool
+	 */
+	public function canShareByLink(?User $user, Photo $photo): bool
+	{
+		if ($this->isOwner($user, $photo)) {
+			return true;
+		}
+
+		if (!$this->albumPolicy->canUpload($user, $photo->album)) {
+			return false;
+		}
+
+		$default = Configs::getValueAsBool('share_button_visible');
+
+		return $photo->album?->is_share_button_visible === true ||
+			($this->album_id === null && $default);
+	}
+
+	/**
+	 * Checks whether the photo may be seen full resolution by the current user.
+	 *
+	 * @param User|null $user
+	 * @param Photo     $photo
+	 *
+	 * @return bool
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	public function canAccessFullPhoto(?User $user, Photo $photo): bool
+	{
+		if ($this->isOwner($user, $photo)) {
+			return true;
+		}
+
+		if (!$this->canSee($user, $photo)) {
+			return false;
+		}
+
+		return $photo->album?->grant_access_full_photo === true;
 	}
 }

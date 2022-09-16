@@ -35,7 +35,7 @@ class AlbumPolicy
 	public const CAN_EDIT = 'canEdit';
 	public const CAN_EDIT_ID = 'canEditById';
 	public const CAN_SHARE_WITH_USERS = 'canShareWithUsers';
-	public const CAN_SAHRE_BY_LINK = 'canShareByLink';
+	public const CAN_SHARE_BY_LINK = 'canShareByLink';
 	public const CAN_SHARE_ID = 'canShareById';
 
 	/**
@@ -325,11 +325,16 @@ class AlbumPolicy
 	 */
 	public function canShareByLink(?User $user, ?AbstractAlbum $abstractAlbum): bool
 	{
-		if ($abstractAlbum instanceof BaseAlbum && $this->isOwner($user, $abstractAlbum) && $user?->may_upload === true) {
+		if ($abstractAlbum instanceof BaseAlbum
+			&& $this->isOwner($user, $abstractAlbum)
+			&& $user?->may_upload === true) {
 			return true;
 		}
 
-		return $abstractAlbum?->is_share_button_visible === true;
+		$default = Configs::getValueAsBool('share_button_visible');
+
+		return ($abstractAlbum === null && $default)
+			|| $abstractAlbum?->is_share_button_visible === true;
 	}
 
 	// The following methods are not to be called by Gate.

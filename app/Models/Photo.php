@@ -7,6 +7,7 @@ use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Contracts\HasRandomID;
+use App\DTO\PhotoRights;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\ZeroModuloException;
@@ -135,8 +136,9 @@ class Photo extends Model implements HasRandomID
 	 */
 	protected $appends = [
 		'live_photo_url',
-		'grant_download',
-		'is_share_button_visible',
+		// No longer provided because parts of Rights DTO
+		// 'grant_download',
+		// 'is_share_button_visible',
 	];
 
 	/**
@@ -325,44 +327,6 @@ class Photo extends Model implements HasRandomID
 	}
 
 	/**
-	 * Accessor for the "virtual" attribute {@see Photo::$grant_download}.
-	 *
-	 * The photo is downloadable if the currently authenticated user is the
-	 * owner or if the photo is part of a downloadable album or if it is
-	 * unsorted and unsorted photos are configured to be downloadable by
-	 * default.
-	 *
-	 * @return bool true if the photo is downloadable
-	 */
-	protected function getIsDownloadableAttribute(): bool
-	{
-		return
-			Gate::check(PhotoPolicy::IS_OWNER, $this) ||
-			($this->album_id !== null && $this->album->grant_download) ||
-			($this->album_id === null && Configs::getValueAsBool('downloadable'));
-	}
-
-	/**
-	 * Accessor for the "virtual" attribute {@see Photo::$is_share_button_visible}.
-	 *
-	 * The share button is visible if the currently authenticated user is the
-	 * owner or if the photo is part of an album which has enabled the
-	 * share button or if the photo is unsorted and unsorted photos are
-	 * configured to be sharable by default.
-	 *
-	 * @return bool true if the share button is visible for this photo
-	 */
-	protected function getIsShareButtonVisibleAttribute(): bool
-	{
-		$default = Configs::getValueAsBool('share_button_visible');
-
-		return
-			Gate::check(PhotoPolicy::IS_OWNER, $this) ||
-			($this->album_id !== null && $this->album->is_share_button_visible) ||
-			($this->album_id === null && $default);
-	}
-
-	/**
 	 * Checks if the photo represents a (real) photo (as opposed to video or raw).
 	 *
 	 * @return bool
@@ -452,6 +416,8 @@ class Photo extends Model implements HasRandomID
 		) {
 			unset($result['size_variants']['original']['url']);
 		}
+
+		$results['rights'] = PhotoRights::ofPhoto($this);
 
 		return $result;
 	}

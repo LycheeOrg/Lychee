@@ -23,9 +23,9 @@ trait RequiresEmptyPhotos
 	{
 		$this->setUpInteractsWithFilesystemPermissions();
 		// Assert that photo table is empty
-		static::assertDatabaseCount('sym_links', 0);
-		static::assertDatabaseCount('size_variants', 0);
-		static::assertDatabaseCount('photos', 0);
+		$this->assertDatabaseCount('sym_links', 0);
+		$this->assertDatabaseCount('size_variants', 0);
+		$this->assertDatabaseCount('photos', 0);
 	}
 
 	protected function tearDownRequiresEmptyPhotos(): void

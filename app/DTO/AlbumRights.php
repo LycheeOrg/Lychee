@@ -21,7 +21,7 @@ class AlbumRights extends ArrayableDTO
 	}
 
 	/**
-	 * Given an album returns the access rights associated to it.
+	 * Given an album, returns the access rights associated to it.
 	 * TODO: Double check the different cases:
 	 * - Tag albums
 	 * - Smart albums
@@ -38,7 +38,7 @@ class AlbumRights extends ArrayableDTO
 			can_share_with_users: Gate::check(AlbumPolicy::CAN_SHARE_WITH_USERS, [AbstractAlbum::class, $abstractAlbum]),
 			can_download: Gate::check(AlbumPolicy::CAN_DOWNLOAD, [AbstractAlbum::class, $abstractAlbum]),
 			can_upload: Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, $abstractAlbum]),
-			can_share_by_link: Gate::check(AlbumPolicy::CAN_SAHRE_BY_LINK, [AbstractAlbum::class, $abstractAlbum])
+			can_share_by_link: Gate::check(AlbumPolicy::CAN_SHARE_BY_LINK, [AbstractAlbum::class, $abstractAlbum])
 		);
 	}
 }
