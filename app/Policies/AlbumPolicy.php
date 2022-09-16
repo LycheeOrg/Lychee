@@ -242,8 +242,8 @@ class AlbumPolicy
 	 * {@link AlbumQueryPolicy::isEditable()}
 	 * instead in order to avoid several DB requests.
 	 *
-	 * @param User  $user
-	 * @param array $albumIDs
+	 * @param User              $user
+	 * @param array<int,string> $albumIDs
 	 *
 	 * @return bool
 	 *
@@ -281,8 +281,12 @@ class AlbumPolicy
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function canShareWithUsers(?User $user, AbstractAlbum $abstractAlbum): bool
+	public function canShareWithUsers(?User $user, ?AbstractAlbum $abstractAlbum): bool
 	{
+		if ($abstractAlbum === null) {
+			return false;
+		}
+
 		if ($user?->may_upload !== true) {
 			return false;
 		}
@@ -297,8 +301,8 @@ class AlbumPolicy
 	/**
 	 * Check if user can share selected albums with other users.
 	 *
-	 * @param User  $user
-	 * @param array $albumIDs
+	 * @param User              $user
+	 * @param array<int,string> $albumIDs
 	 *
 	 * @return bool
 	 *
@@ -319,13 +323,13 @@ class AlbumPolicy
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function canShareByLink(?User $user, AbstractAlbum $abstractAlbum): bool
+	public function canShareByLink(?User $user, ?AbstractAlbum $abstractAlbum): bool
 	{
 		if ($abstractAlbum instanceof BaseAlbum && $this->isOwner($user, $abstractAlbum) && $user?->may_upload === true) {
 			return true;
 		}
 
-		return $abstractAlbum->is_share_button_visible;
+		return $abstractAlbum?->is_share_button_visible === true;
 	}
 
 	// The following methods are not to be called by Gate.
