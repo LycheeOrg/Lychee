@@ -137,13 +137,6 @@ class SessionController extends Controller
 	 */
 	public function login(LoginRequest $request): void
 	{
-		// No login
-		if (AdminAuthentication::loginAsAdminIfNotRegistered()) {
-			Logs::warning(__METHOD__, __LINE__, 'DEFAULT LOGIN!');
-
-			return;
-		}
-
 		if (AdminAuthentication::loginAsAdmin($request->username(), $request->password(), $request->ip())) {
 			return;
 		}

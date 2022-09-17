@@ -19,6 +19,7 @@ use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use PHPUnit\Framework\ExpectationFailedException;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 use Tests\Feature\Lib\AlbumsUnitTest;
@@ -251,6 +252,37 @@ class UsersTest extends TestCase
 		Configs::set('new_photos_notification', $store_new_photos_notification);
 	}
 
+	public function testResetToken(): void
+	{
+		$users_test = new UsersUnitTest($this);
+
+		Auth::loginUsingId(0);
+
+		$oldToken = $users_test->reset_token()->offsetGet('token');
+		$newToken = $users_test->reset_token()->offsetGet('token');
+		self::assertNotEquals($oldToken, $newToken);
+
+		Auth::logout();
+	}
+
+	public function testUnsetToken(): void
+	{
+		$users_test = new UsersUnitTest($this);
+
+		Auth::loginUsingId(0);
+
+		$oldToken = $users_test->reset_token()->offsetGet('token');
+		self::assertNotNull($oldToken);
+
+		$users_test->unset_token();
+		$userResponse = $users_test->get_user();
+		$userResponse->assertJson([
+			'has_token' => false,
+		]);
+
+		Auth::logout();
+	}
+
 	/**
 	 * TODO adapt this test when the admin rights are decoupled from ID = 0.
 	 *
@@ -304,5 +336,21 @@ class UsersTest extends TestCase
 				'is_locked' => false,
 			], ]);
 		$sessions_test->logout();
+	}
+
+	public function testGetAuthenticatedUser()
+	{
+		$users_test = new UsersUnitTest($this);
+
+		Auth::logout();
+		Session::flush();
+
+		$users_test->get_user(204);
+
+		Auth::loginUsingId(0);
+
+		$users_test->get_user(200, [
+			'id' => 0,
+		]);
 	}
 }
