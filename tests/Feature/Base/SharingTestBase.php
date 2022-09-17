@@ -235,7 +235,7 @@ class SharingTestBase extends PhotoTestBase
 		return [
 			'thumb' => $this->generateExpectedThumbJson($thumbID),
 			'photos' => $expectedPhotos,
-			'policies' => ['is_public' => $isPublic], // TODO: Verified if always needed in test.
+			// 'policies' => ['is_public' => $isPublic], // TODO: Verified if always needed in test.
 		];
 	}
 }
