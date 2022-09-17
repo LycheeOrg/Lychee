@@ -417,7 +417,7 @@ class Photo extends Model implements HasRandomID
 			unset($result['size_variants']['original']['url']);
 		}
 
-		$results['rights'] = PhotoRights::ofPhoto($this);
+		$result['rights'] = PhotoRights::ofPhoto($this);
 
 		return $result;
 	}

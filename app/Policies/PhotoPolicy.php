@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Configs;
@@ -201,7 +202,7 @@ class PhotoPolicy
 		$default = Configs::getValueAsBool('share_button_visible');
 
 		return $photo->album?->is_share_button_visible === true ||
-			($this->album_id === null && $default);
+			($photo->album_id === null && $default);
 	}
 
 	/**
