@@ -2659,6 +2659,13 @@ lychee.locale = {
 	SAVE_RISK: "Save my modifications, I accept the Risk!",
 	MORE: "More",
 	DEFAULT: "Default",
+	RESET: "Reset",
+	DISABLE_TOKEN_TOOLTIP: "Disable",
+	ENABLE_TOKEN: "Enable API key",
+	DISABLED_TOKEN_STATUS_MSG: "Disabled",
+	TOKEN_BUTTON: "API Token ...",
+	TOKEN_NOT_AVAILABLE: "You have already viewed this token.",
+	TOKEN_WAIT: "Wait ...",
 
 	SMART_ALBUMS: "Smart albums",
 	SHARED_ALBUMS: "Shared albums",
@@ -3559,6 +3566,7 @@ var SmartAlbumID = Object.freeze({
  * @property {?string} email
  * @property {boolean} may_upload
  * @property {boolean} is_locked
+ * @property {boolean} has_token
  */
 
 /**

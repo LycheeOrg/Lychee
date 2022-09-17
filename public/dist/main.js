@@ -1026,7 +1026,7 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject35 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]),
     _templateObject36 = _taggedTemplateLiteral(["url(\"", "\")"], ["url(\"", "\")"]),
     _templateObject37 = _taggedTemplateLiteral(["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"], ["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"]),
-    _templateObject38 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setLogin\">\n\t\t\t<form>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t</div>\n\t\t\t</form>\n\t\t\t</div>"], ["\n\t\t\t<div class=\"setLogin\">\n\t\t\t<form>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t</div>\n\t\t\t</form>\n\t\t\t</div>"]),
+    _templateObject38 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setLogin\">\n\t\t\t<form>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t\t<a id=\"basicModal__action_token\" class=\"basicModal__button \">$", "</a>\n\t\t\t</div>\n\t\t\t</form>\n\t\t\t</div>"], ["\n\t\t\t<div class=\"setLogin\">\n\t\t\t<form>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t\t<a id=\"basicModal__action_token\" class=\"basicModal__button \">$", "</a>\n\t\t\t</div>\n\t\t\t</form>\n\t\t\t</div>"]),
     _templateObject39 = _taggedTemplateLiteral(["\n\t\t\t\t<div class=\"setSorting\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t\t\t<a id=\"basicModal__action_sorting_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t\t<div class=\"setSorting\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t\t\t<a id=\"basicModal__action_sorting_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t"]),
     _templateObject40 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"]),
     _templateObject41 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t<p class=\"warning\">\n\t\t\t\t\t\t", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t"], ["\n\t\t\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t<p class=\"warning\">\n\t\t\t\t\t\t", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t"]),
@@ -6850,6 +6850,13 @@ lychee.locale = {
 	SAVE_RISK: "Save my modifications, I accept the Risk!",
 	MORE: "More",
 	DEFAULT: "Default",
+	RESET: "Reset",
+	DISABLE_TOKEN_TOOLTIP: "Disable",
+	ENABLE_TOKEN: "Enable API key",
+	DISABLED_TOKEN_STATUS_MSG: "Disabled",
+	TOKEN_BUTTON: "API Token ...",
+	TOKEN_NOT_AVAILABLE: "You have already viewed this token.",
+	TOKEN_WAIT: "Wait ...",
 
 	SMART_ALBUMS: "Smart albums",
 	SHARED_ALBUMS: "Shared albums",
@@ -10173,6 +10180,121 @@ settings.save_enter = function (e) {
 	});
 };
 
+/**
+ * @returns {void}
+ */
+settings.openTokenDialog = function () {
+	/** @type {string} */
+	var tokenValue = "";
+	/** @type {?HTMLAnchorElement} */
+	var resetTokenButton = null;
+	/** @type {?HTMLAnchorElement} */
+	var copyTokenButton = null;
+	/** @type {?HTMLAnchorElement} */
+	var disableTokenButton = null;
+	/** @type {?HTMLInputElement} */
+	var tokenInputElement = null;
+
+	var bodyHtml = "\n\t\t<form class=\"token\">\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<label for=\"token-dialog-token\"></label>\n\t\t\t\t<input id=\"token-dialog-token\" name=\"token\" type=\"text\" readonly=\"readonly\" />\n\t\t\t\t<div class=\"button-group\">\n\t\t\t\t\t<a id=\"button_reset_token\" class='button'><svg class='iconic ionicons'><use xlink:href='#reload' /></svg></a>\n\t\t\t\t\t<a id=\"button_copy_token\" class='button'><svg class='iconic ionicons'><use xlink:href='#copy' /></svg></a>\n\t\t\t\t\t<a id=\"button_disable_token\" class='button'><svg class='iconic ionicons'><use xlink:href='#ban' /></svg></a>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</form>";
+
+	/**
+  * @returns {void}
+  */
+	var updateTokenDialog = function updateTokenDialog() {
+		if (lychee.user.has_token) {
+			disableTokenButton.style.display = null;
+
+			if (!!tokenValue) {
+				tokenInputElement.value = tokenValue;
+				tokenInputElement.disabled = false;
+				copyTokenButton.style.display = null;
+			} else {
+				tokenInputElement.value = lychee.locale["TOKEN_NOT_AVAILABLE"];
+				tokenInputElement.disabled = true;
+				copyTokenButton.style.display = "none";
+			}
+		} else {
+			tokenInputElement.value = lychee.locale["DISABLED_TOKEN_STATUS_MSG"];
+			tokenInputElement.disabled = true;
+			copyTokenButton.style.display = "none";
+			disableTokenButton.style.display = "none";
+		}
+	};
+
+	/**
+  * @param {MouseEvent|TouchEvent} ev
+  */
+	var onCopyToken = function onCopyToken(ev) {
+		navigator.clipboard.writeText(tokenValue);
+		ev.stopPropagation();
+	};
+
+	/**
+  * @param {MouseEvent|TouchEvent} ev
+  */
+	var onResetToken = function onResetToken(ev) {
+		tokenInputElement.value = "";
+		ev.stopPropagation();
+		api.post("User::resetToken", {},
+		/**
+   * @param {{token: string}} data
+   */
+		function (data) {
+			tokenValue = data.token;
+			lychee.user.has_token = true;
+			updateTokenDialog();
+		});
+	};
+
+	/**
+  * @param {MouseEvent|TouchEvent} ev
+  */
+	var onDisableToken = function onDisableToken(ev) {
+		tokenInputElement.value = "";
+		ev.stopPropagation();
+		api.post("User::unsetToken", {}, function () {
+			tokenValue = "";
+			lychee.user.has_token = false;
+			updateTokenDialog();
+		});
+	};
+
+	/**
+  * @param {ModelDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initTokenDialog = function initTokenDialog(formElements, dialog) {
+		resetTokenButton = dialog.querySelector("a#button_reset_token");
+		resetTokenButton.title = lychee.locale["RESET"];
+		copyTokenButton = dialog.querySelector("a#button_copy_token");
+		copyTokenButton.title = lychee.locale["URL_COPY_TO_CLIPBOARD"];
+		disableTokenButton = dialog.querySelector("a#button_disable_token");
+		disableTokenButton.title = lychee.locale["DISABLE_TOKEN_TOOLTIP"];
+		tokenInputElement = formElements.token;
+		tokenInputElement.placeholder = lychee.locale["TOKEN_WAIT"];
+		tokenInputElement.labels[0].textContent = "Token";
+		tokenInputElement.blur();
+
+		updateTokenDialog();
+
+		copyTokenButton.addEventListener(lychee.getEventName(), onCopyToken);
+		resetTokenButton.addEventListener(lychee.getEventName(), onResetToken);
+		disableTokenButton.addEventListener(lychee.getEventName(), onDisableToken);
+	};
+
+	basicModal.show({
+		body: bodyHtml,
+		readyCB: initTokenDialog,
+		buttons: {
+			cancel: {
+				title: lychee.locale["CLOSE"],
+				fn: basicModal.close
+			}
+		}
+	});
+};
+
 var sharing = {
 	/** @type {?SharingInfo} */
 	json: null
@@ -11882,7 +12004,21 @@ upload.start = {
    */
 
 		/** @param {ServerImportDialogResult} data */
-		var importFromServer = function importFromServer(data) {
+		var action = function action(data) {
+			if (!data.paths.trim()) {
+				basicModal.error("paths");
+				return;
+			} else {
+				// Consolidate `data` before we close the modal dialog
+				// TODO: We should fix the modal dialog to properly return the values of all input fields, incl. check boxes
+				data.paths = data.paths.match(/(?:\\.|\S)+/g);
+				data.delete_imported = !!$(choiceDeleteSelector).prop("checked");
+				data.import_via_symlink = !!$(choiceSymlinkSelector).prop("checked");
+				data.skip_duplicates = !!$(choiceDuplicateSelector).prop("checked");
+				data.resync_metadata = !!$(choiceResyncSelector).prop("checked");
+				basicModal.close();
+			}
+
 			var isUploadCancelled = false;
 
 			var cancelUpload = function cancelUpload() {
@@ -12103,7 +12239,15 @@ upload.start = {
 			}
 
 			// Consolidate `data` before we close the modal dialog
-			data.paths = data.paths.match(/(?:\\.|\S)+/g);
+			// We split the given path string at unescaped spaces into an
+			// array or more precisely we create an array whose entries
+			// match strings with non-space characters or escaped spaces.
+			// After splitting, the escaped spaces must be replaced by
+			// proper spaces as escaping of spaces is a GUI-only thing to
+			// allow input of several paths into a single input field.
+			data.paths = data.paths.match(/(?:\\ |\S)+/g).map(function (path) {
+				return path.replaceAll("\\ ", " ");
+			});
 			basicModal.close(false, function () {
 				return importFromServer(data);
 			});
@@ -13376,11 +13520,12 @@ view.settings = {
    * @returns {void}
    */
 		setLogin: function setLogin() {
-			var msg = lychee.html(_templateObject38, lychee.locale["PASSWORD_TITLE"], lychee.locale["PASSWORD_CURRENT"], lychee.locale["PASSWORD_TEXT"], lychee.locale["LOGIN_USERNAME"], lychee.locale["LOGIN_PASSWORD"], lychee.locale["LOGIN_PASSWORD_CONFIRM"], lychee.locale["PASSWORD_CHANGE"]);
+			var msg = lychee.html(_templateObject38, lychee.locale["PASSWORD_TITLE"], lychee.locale["PASSWORD_CURRENT"], lychee.locale["PASSWORD_TEXT"], lychee.locale["LOGIN_USERNAME"], lychee.locale["LOGIN_PASSWORD"], lychee.locale["LOGIN_PASSWORD_CONFIRM"], lychee.locale["PASSWORD_CHANGE"], lychee.locale["TOKEN_BUTTON"]);
 
 			$(".settings_view").append(msg);
 
 			settings.bind("#basicModal__action_password_change", ".setLogin", settings.changeLogin);
+			settings.bind("#basicModal__action_token", ".setLogin", settings.openTokenDialog);
 		},
 
 		/**
@@ -14370,6 +14515,7 @@ var SmartAlbumID = Object.freeze({
  * @property {?string} email
  * @property {boolean} may_upload
  * @property {boolean} is_locked
+ * @property {boolean} has_token
  */
 
 /**

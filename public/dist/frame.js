@@ -1565,6 +1565,7 @@ var SmartAlbumID = Object.freeze({
  * @property {?string} email
  * @property {boolean} may_upload
  * @property {boolean} is_locked
+ * @property {boolean} has_token
  */
 
 /**
