@@ -7,6 +7,7 @@ use App\Facades\Lang;
 use App\Http\Requests\View\GetPhotoViewRequest;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
 use Psr\Container\ContainerExceptionInterface;
@@ -18,14 +19,16 @@ class ViewController extends Controller
 	 *
 	 * @param GetPhotoViewRequest $request
 	 *
-	 * @return View
+	 * @return RedirectResponse
 	 *
 	 * @throws FrameworkException
 	 */
-	public function view(GetPhotoViewRequest $request): View
+	public function view(GetPhotoViewRequest $request): RedirectResponse
 	{
 		try {
 			$photo = $request->photo();
+			return redirect('/#view/' . $photo->id);
+			/*
 			$sizeVariant = $photo->size_variants->getMedium() ?? $photo->size_variants->getOriginal();
 			$title = Configs::getValueAsString('site_title');
 			$rss_enable = Configs::getValueAsBool('rss_enable');
@@ -44,6 +47,7 @@ class ViewController extends Controller
 				'title' => $title,
 				'rss_enable' => $rss_enable,
 			]);
+			*/
 		} catch (BindingResolutionException|ContainerExceptionInterface $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);
 		}

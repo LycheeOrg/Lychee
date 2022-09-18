@@ -462,7 +462,7 @@ final class ChineseSimplified implements Language
 
 			'ABOUT_SUBTITLE' => '自托管照片管理的正确之选',
 			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> 是一个自由的照片管理工具，其其运行于您的服务器或Web空间。仅需几分钟即可安装。Lychee 为您提供了像原生应用那样上传、管理和分享照片所需的一切，您的所有照片都将安全地存储。',
-			'FOOTER_COPYRIGHT' => '本网站上的所有图像均受制于版权 %1$s &copy; %2$s',
+			'FOOTER_COPYRIGHT' => '本网站上的所有图像均受制于版权 %1$s © %2$s',
 			'HOSTED_WITH_LYCHEE' => '由 Lychee 托管',
 
 			'URL_COPY_TO_CLIPBOARD' => '复制到剪贴板',

@@ -20,18 +20,18 @@ class ConfigFunctions
 	public function get_pages_infos(): array
 	{
 		$infos = [
-			'owner' => Configs::getValueAsString('landing_owner'),
+			'owner' => Configs::getValueAsString('site_owner'),
 			'title' => Configs::getValueAsString('landing_title'),
 			'subtitle' => Configs::getValueAsString('landing_subtitle'),
-			'facebook' => Configs::getValueAsString('landing_facebook'),
-			'flickr' => Configs::getValueAsString('landing_flickr'),
-			'twitter' => Configs::getValueAsString('landing_twitter'),
-			'instagram' => Configs::getValueAsString('landing_instagram'),
-			'youtube' => Configs::getValueAsString('landing_youtube'),
+			'facebook' => Configs::getValueAsString('sm_facebook_url'),
+			'flickr' => Configs::getValueAsString('sm_flickr_url'),
+			'twitter' => Configs::getValueAsString('sm_twitter_url'),
+			'instagram' => Configs::getValueAsString('sm_instagram_url'),
+			'youtube' => Configs::getValueAsString('sm_youtube_url'),
 			'background' => Configs::getValueAsString('landing_background'),
-			'copyright_enable' => Configs::getValueAsString('site_copyright_enable'),
+			'copyright_enable' => Configs::getValueAsString('footer_show_copyright'),
 			'copyright_year' => Configs::getValueAsString('site_copyright_begin'),
-			'additional_footer_text' => Configs::getValueAsString('additional_footer_text'),
+			'additional_footer_text' => Configs::getValueAsString('footer_additional_text'),
 		];
 		if (Configs::getValueAsString('site_copyright_begin') !== Configs::getValueAsString('site_copyright_end')) {
 			$infos['copyright_year'] = Configs::getValueAsString('site_copyright_begin') . '-' . Configs::getValueAsString('site_copyright_end');

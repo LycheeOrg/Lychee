@@ -462,7 +462,7 @@ final class NorwegianBokmal implements Language
 
 			'ABOUT_SUBTITLE' => 'Selvlevert bildehåndtering den riktige måten!',
 			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> er et gratis bildehåndteringsverktøy, som kjører på serveren eller en webhost som du eier og kontrollerer. Installasjon tar sekunder. Last opp, håndter, og del bilder som om det er din egen maskin. Lychee leverer alt du trenger, og alle bildene er trygt lagret.',
-			'FOOTER_COPYRIGHT' => 'Alle bildene på denne nettsiden er bundet av opphavsrett fra %1$s &copy; %2$s',
+			'FOOTER_COPYRIGHT' => 'Alle bildene på denne nettsiden er bundet av opphavsrett fra %1$s © %2$s',
 			'HOSTED_WITH_LYCHEE' => 'Levert av Lychee',
 
 			'URL_COPY_TO_CLIPBOARD' => 'Kopier til utklippstavlen',

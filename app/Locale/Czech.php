@@ -462,7 +462,7 @@ final class Czech implements Language
 
 			'ABOUT_SUBTITLE' => 'Ideální řešení vlastního hostování a správy fotografií',
 			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> je open-source nástroj na správu fotogragfií na Vašem serveru nebo webu. Instalace je hotova dílem okmažiku. Upload, správa a sdílení fotografií se provádí běžnými aplikacemi. Lychee přináší vše, co je třeba pro bezpečné online uložení Vašich fotografií.',
-			'FOOTER_COPYRIGHT' => 'Všechny fotografie na tomto webu jsou ve vlastnictví copyright %1$s &copy; %2$s',
+			'FOOTER_COPYRIGHT' => 'Všechny fotografie na tomto webu jsou ve vlastnictví copyright %1$s © %2$s',
 			'HOSTED_WITH_LYCHEE' => 'Hostováno na Lychee',
 
 			'URL_COPY_TO_CLIPBOARD' => 'Kopírovat do schránky',

@@ -462,7 +462,7 @@ final class German implements Language
 
 			'ABOUT_SUBTITLE' => 'Selbst gehostetes Foto-Management, aber richtig!',
 			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> ist ein freies Foto-Management-Werkzeug, dass auf Ihrem Server oder Webspace läuft. Die Installation ist eine Sache von Sekunden. Hochladen, Organisieren und Teilen von Fotos funktioniert wie in einer nativen Anwendung. Lychee hält alles bereit, was Sie benötigen, und alle Bilder werden sicher abgespeichert.',
-			'FOOTER_COPYRIGHT' => 'Alle Bilder auf dieser Website unterliegen dem Urheberrecht von %1$s &copy; %2$s',
+			'FOOTER_COPYRIGHT' => 'Alle Bilder auf dieser Website unterliegen dem Urheberrecht von %1$s © %2$s',
 			'HOSTED_WITH_LYCHEE' => 'Läuft mit Lychee',
 
 			'URL_COPY_TO_CLIPBOARD' => 'In die Zwischenablage kopiert',

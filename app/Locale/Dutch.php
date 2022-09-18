@@ -462,7 +462,7 @@ final class Dutch implements Language
 
 			'ABOUT_SUBTITLE' => 'Self-hosted photo-management done right',
 			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.',
-			'FOOTER_COPYRIGHT' => 'Alle afbeeldingen op deze website zijn onderworpen aan het auteursrecht van %1$s &copy; %2$s',
+			'FOOTER_COPYRIGHT' => 'Alle afbeeldingen op deze website zijn onderworpen aan het auteursrecht van %1$s © %2$s',
 			'HOSTED_WITH_LYCHEE' => 'Hosted with Lychee',
 
 			'URL_COPY_TO_CLIPBOARD' => 'Copy to clipboard',

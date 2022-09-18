@@ -462,7 +462,7 @@ final class Russian implements Language
 
 			'ABOUT_SUBTITLE' => 'Self-hosted photo-management done right',
 			'ABOUT_DESCRIPTION' => "<a target=\'_blank\' href=\'%0\'>Lychee</a> - это бесплатный фотоменеджер для Вашего сервера или хостинга. Установка занимает считанные секунды. Загружайте, редактируйте и делитесь фотографиями как в любимом приложении! Lychee обеспечит Вас всем необходимым, включая безопасность хранения Ваших фотографий! На русский язык перевёл Евгений Лебедев. Пожалуйста, <a href='mailto://k-t-c(at)ya.ru'>дайте мне знать</a>, если заметите неточности.",
-			'FOOTER_COPYRIGHT' => 'All images on this website are subject to copyright by %1$s &copy; %2$s',
+			'FOOTER_COPYRIGHT' => 'All images on this website are subject to copyright by %1$s © %2$s',
 			'HOSTED_WITH_LYCHEE' => 'Hosted with Lychee',
 
 			'URL_COPY_TO_CLIPBOARD' => 'Copy to clipboard',

@@ -462,7 +462,7 @@ final class Spanish implements Language
 
 			'ABOUT_SUBTITLE' => 'Un auto-hosteado gestor de imagenes, bien hecho',
 			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> es una herramienta gratuita de gestión de fotos, que se ejecuta en su servidor o espacio web. La instalación es cuestión de segundos. Cargue, administre y comparta fotos como desde una aplicación nativa. Lychee viene con todo lo que necesitas y todas tus fotos se almacenan de forma segura.',
-			'FOOTER_COPYRIGHT' => 'Todas las imágenes de este sitio web están sujetas a copyright por %1$s &copy; %2$s',
+			'FOOTER_COPYRIGHT' => 'Todas las imágenes de este sitio web están sujetas a copyright por %1$s © %2$s',
 			'HOSTED_WITH_LYCHEE' => 'Alojado con Lychee',
 
 			'URL_COPY_TO_CLIPBOARD' => 'Copiar al portapapeles',
