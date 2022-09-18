@@ -32,7 +32,8 @@ return [
 	'channels' => [
 		'log' => [
 			'path' => storage_path('logs/laravel.log'),
-			'driver' => 'log',
+			'driver' => 'single',
+			'level' => 'debug',
 		],
 	],
 ];
