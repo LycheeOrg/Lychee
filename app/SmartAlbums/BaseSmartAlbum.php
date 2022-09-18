@@ -40,9 +40,9 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	protected PhotoQueryPolicy $photoQueryPolicy;
 	protected string $id;
 	protected string $title;
-	protected bool $isPublic;
-	protected bool $isDownloadable;
-	protected bool $isShareButtonVisible;
+	protected bool $grant_download;
+	protected bool $is_public;
+	protected bool $is_share_button_visible;
 	protected ?Thumb $thumb;
 	protected Collection $photos;
 	protected \Closure $smartPhotoCondition;
@@ -51,15 +51,15 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 * @throws ConfigurationKeyMissingException
 	 * @throws FrameworkException
 	 */
-	protected function __construct(string $id, string $title, bool $isPublic, \Closure $smartCondition)
+	protected function __construct(string $id, string $title, bool $is_public, \Closure $smartCondition)
 	{
 		try {
 			$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
 			$this->id = $id;
 			$this->title = $title;
-			$this->isPublic = $isPublic;
-			$this->isDownloadable = Configs::getValueAsBool('downloadable');
-			$this->isShareButtonVisible = Configs::getValueAsBool('share_button_visible');
+			$this->is_public = $is_public;
+			$this->grant_download = Configs::getValueAsBool('downloadable');
+			$this->is_share_button_visible = Configs::getValueAsBool('share_button_visible');
 			$this->thumb = null;
 			$this->smartPhotoCondition = $smartCondition;
 		} catch (BindingResolutionException $e) {

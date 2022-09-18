@@ -226,16 +226,4 @@ class SharingTestBase extends PhotoTestBase
 			'parent_id' => $parentAlbumID,
 		], $attrToMerge);
 	}
-
-	protected function generateExpectedSmartAlbumJson(
-		bool $isPublic,
-		?string $thumbID = null,
-		array $expectedPhotos = []
-	): array {
-		return [
-			'thumb' => $this->generateExpectedThumbJson($thumbID),
-			'photos' => $expectedPhotos,
-			// 'policies' => ['is_public' => $isPublic], // TODO: Verified if always needed in test.
-		];
-	}
 }

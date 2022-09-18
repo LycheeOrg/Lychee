@@ -165,6 +165,7 @@ class AlbumPolicy
 			return Configs::getValueAsBool('downloadable');
 		}
 
+		// dd($abstractAlbum);
 		// TODO: when download rights are assigned to albums, we add more logic can be added here.
 		return ($abstractAlbum instanceof BaseSmartAlbum && $user !== null) ||
 		($abstractAlbum instanceof BaseAlbum && $this->isOwner($user, $abstractAlbum) ||

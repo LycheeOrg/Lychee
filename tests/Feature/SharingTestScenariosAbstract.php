@@ -114,6 +114,12 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 
 	abstract protected function generateExpectedTreeJson(array $expectedAlbums = []): array;
 
+	abstract protected function generateExpectedSmartAlbumJson(
+		bool $isPublic,
+		?string $thumbID = null,
+		array $expectedPhotos = []
+	);
+
 	/**
 	 * Uploads an unsorted, private photo and logs out.
 	 *
@@ -275,15 +281,13 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForAlbum->assertJson([
 			'id' => $this->albumID1,
 			'title' => self::ALBUM_TITLE_1,
-			'policies' => [
-				'is_public' => true,
-			],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID1), // photo 1 is thumb, because starred photo are always picked first
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID2, $this->albumID1), // photo 2 is alphabetically first
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, $this->albumID1), // despite that photo 1 is starred
 			],
 		]);
+		$responseForAlbum->assertJsonMissing(['policies']);
 		$this->photos_tests->get($this->photoID1);
 		$this->photos_tests->get($this->photoID2);
 	}
@@ -369,14 +373,12 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForAlbum2->assertJson([
 			'id' => $this->albumID2,
 			'title' => self::ALBUM_TITLE_2,
-			'policies' => [
-				'is_public' => true,
-			],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID2),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
 			],
 		]);
+		$responseForAlbum2->assertJsonMissing(['policies']);
 		$this->photos_tests->get($this->photoID2);
 
 		$responseForTree = $this->root_album_tests->getTree();
@@ -421,28 +423,24 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForAlbum1->assertJson([
 			'id' => $this->albumID1,
 			'title' => self::ALBUM_TITLE_1,
-			'policies' => [
-				'is_public' => true,
-			],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID1),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
 			],
 		]);
+		$responseForAlbum1->assertJsonMissing(['policies']);
 		$this->photos_tests->get($this->photoID1);
 
 		$responseForAlbum2 = $this->albums_tests->get($this->albumID2);
 		$responseForAlbum2->assertJson([
 			'id' => $this->albumID2,
 			'title' => self::ALBUM_TITLE_2,
-			'policies' => [
-				'is_public' => true,
-			],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID2),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
 			],
 		]);
+		$responseForAlbum2->assertJsonMissing(['policies']);
 		$this->photos_tests->get($this->photoID2);
 
 		$responseForTree = $this->root_album_tests->getTree();
@@ -510,14 +508,12 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForAlbum2->assertJson([
 			'id' => $this->albumID2,
 			'title' => self::ALBUM_TITLE_2,
-			'policies' => [
-				'is_public' => true,
-			],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID2),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
 			],
 		]);
+		$responseForAlbum2->assertJsonMissing(['policies']);
 		$this->photos_tests->get($this->photoID2);
 
 		$responseForTree = $this->root_album_tests->getTree();
@@ -566,28 +562,24 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForAlbum1->assertJson([
 			'id' => $this->albumID1,
 			'title' => self::ALBUM_TITLE_1,
-			'policies' => [
-				'is_public' => true,
-			],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID1),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
 			],
 		]);
+		$responseForAlbum1->assertJsonMissing(['policies']);
 		$this->photos_tests->get($this->photoID1);
 
 		$responseForAlbum2 = $this->albums_tests->get($this->albumID2);
 		$responseForAlbum2->assertJson([
 			'id' => $this->albumID2,
 			'title' => self::ALBUM_TITLE_2,
-			'policies' => [
-				'is_public' => true,
-			],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID2),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
 			],
 		]);
+		$responseForAlbum2->assertJsonMissing(['policies']);
 		$this->photos_tests->get($this->photoID2);
 
 		$responseForTree = $this->root_album_tests->getTree();
@@ -653,28 +645,24 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForAlbum1->assertJson([
 			'id' => $this->albumID1,
 			'title' => self::ALBUM_TITLE_1,
-			'policies' => [
-				'is_public' => true,
-			],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID1),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
 			],
 		]);
+		$responseForAlbum1->assertJsonMissing(['policies']);
 		$this->photos_tests->get($this->photoID1);
 
 		$responseForAlbum2 = $this->albums_tests->get($this->albumID2);
 		$responseForAlbum2->assertJson([
 			'id' => $this->albumID2,
 			'title' => self::ALBUM_TITLE_2,
-			'policies' => [
-				'is_public' => true,
-			],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID2),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
 			],
 		]);
+		$responseForAlbum2->assertJsonMissing(['policies']);
 		$this->photos_tests->get($this->photoID2);
 
 		$responseForTree = $this->root_album_tests->getTree();
@@ -739,14 +727,12 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForAlbum1->assertJson([
 			'id' => $this->albumID1,
 			'title' => self::ALBUM_TITLE_1,
-			'policies' => [
-				'is_public' => true,
-			],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID1),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
 			],
 		]);
+		$responseForAlbum1->assertJsonMissing(['policies']);
 		$this->photos_tests->get($this->photoID1);
 
 		$this->albums_tests->get($this->albumID2, $this->getExpectedInaccessibleHttpStatusCode(), self::EXPECTED_PASSWORD_REQUIRED_MSG, $this->getExpectedDefaultInaccessibleMessage());
@@ -794,28 +780,24 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForAlbum1->assertJson([
 			'id' => $this->albumID1,
 			'title' => self::ALBUM_TITLE_1,
-			'policies' => [
-				'is_public' => true,
-			],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID1),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
 			],
 		]);
+		$responseForAlbum1->assertJsonMissing(['policies']);
 		$this->photos_tests->get($this->photoID1);
 
 		$responseForAlbum2 = $this->albums_tests->get($this->albumID2);
 		$responseForAlbum2->assertJson([
 			'id' => $this->albumID2,
 			'title' => self::ALBUM_TITLE_2,
-			'policies' => [
-				'is_public' => true,
-			],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID2),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
 			],
 		]);
+		$responseForAlbum2->assertJsonMissing(['policies']);
 		$this->photos_tests->get($this->photoID2);
 
 		$responseForTree = $this->root_album_tests->getTree();

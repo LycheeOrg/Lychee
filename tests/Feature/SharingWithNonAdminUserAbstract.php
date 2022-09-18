@@ -25,6 +25,18 @@ use Illuminate\Support\Facades\Auth;
  */
 abstract class SharingWithNonAdminUserAbstract extends SharingTestScenariosAbstract
 {
+	protected function generateExpectedSmartAlbumJson(
+		bool $isPublic,
+		?string $thumbID = null,
+		array $expectedPhotos = []
+	): array {
+		return [
+			'thumb' => $this->generateExpectedThumbJson($thumbID),
+			'photos' => $expectedPhotos,
+			'policies' => ['is_public' => $isPublic],
+		];
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
