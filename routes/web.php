@@ -23,6 +23,10 @@ if (config('app.env') === 'dev') {
 	URL::forceScheme('https');
 }
 
+Route::feeds();
+
+Route::get('/', [IndexController::class, 'show'])->name('home')->middleware(['migration:complete']);
+Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware(['migration:complete']);
 Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::class, 'migrate'])
 	->name('migrate')
 	->middleware(['migration:incomplete']);
@@ -39,8 +43,4 @@ Route::get('/r/{albumID}', [RedirectController::class, 'album'])->middleware(['m
 
 Route::get('/view', [ViewController::class, 'view'])->name('view')->middleware(['redirect-legacy-id']);
 Route::get('/demo', [DemoController::class, 'js']);
-
-Route::feeds();
-Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware(['migration:complete']);
-Route::redirect('/frame', '/gallery')->name('frame');
-Route::get('/', [IndexController::class, 'show'])->name('home')->middleware(['migration:complete']);
+Route::get('/frame', [FrameController::class, 'init'])->name('frame')->middleware(['migration:complete']);

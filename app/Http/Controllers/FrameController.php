@@ -29,28 +29,31 @@ class FrameController extends Controller
 	}
 
 	/**
-	 * Return the page /frame if enabled.
+	 * Redirects to `#frame' if enabled.
 	 *
-	 * @return RedirectResponse|View
+	 * @return RedirectResponse
 	 *
 	 * @throws LycheeException
 	 */
-	public function init(): RedirectResponse|View
+	public function init(): RedirectResponse
 	{
 		try {
-			Configs::get();
+			// Configs::get();
 
 			if (!Configs::getValueAsBool('Mod_Frame')) {
 				return redirect()->route('home');
 			}
 
-			$lang = Lang::get_lang();
+			return redirect('/#frame');
+
+			/*$lang = Lang::get_lang();
 			$lang['language'] = Configs::getValueAsString('lang');
 
 			$infos = $this->configFunctions->get_pages_infos();
 			$title = Configs::getValueAsString('site_title');
 
 			return view('frame', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'rss_enable' => false]);
+			*/
 		} catch (BindingResolutionException|RouteNotFoundException $e) {
 			throw new FrameworkException('Laravel\'s redirect or render component', $e);
 		}
