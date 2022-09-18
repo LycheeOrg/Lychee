@@ -118,6 +118,11 @@ class MakeWuiSettingsPublic extends Migration
 		DB::table('configs')
 			->where('key', '=', 'site_copyright_end')
 			->update(['confidentiality' => 0]);
+
+		// Remove NSFW text setting which is replaced by a localized text
+		DB::table('configs')
+			->where('key', '=', 'nsfw_warning_text')
+			->delete();
 	}
 
 	/**
@@ -190,6 +195,14 @@ class MakeWuiSettingsPublic extends Migration
 				'key' => 'additional_footer_text',
 				'cat' => self::CONF_CATEGORY_CONF,
 				'confidentiality' => 2,
+			]);
+		DB::table('configs')
+			->insert([
+				'key' => 'nsfw_warning_text',
+				'cat' => 'Mod NSFW',
+				'confidentiality' => 3,
+				'type_range' => 'string_required',
+				'value' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
 			]);
 	}
 }
