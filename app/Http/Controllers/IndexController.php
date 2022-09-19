@@ -10,8 +10,8 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use function Safe\phpinfo;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class IndexController extends Controller
 {
@@ -85,21 +85,7 @@ class IndexController extends Controller
 	public function gallery(): BinaryFileResponse
 	{
 		$this->symLinkFunctions->remove_outdated();
-		$infos = $this->configFunctions->get_pages_infos();
-
-		$title = Configs::getValueAsString('site_title');
-		$rss_enable = Configs::getValueAsBool('rss_enable');
-		$page_config = [];
-		$page_config['show_hosted_by'] = true;
-		$page_config['display_socials'] = Configs::getValueAsBool('footer_show_social_media');
 
 		return response()->file(public_path('frontend.html'));
-
-		/*return view('gallery', [
-			'title' => $title,
-			'infos' => $infos,
-			'page_config' => $page_config,
-			'rss_enable' => $rss_enable,
-		]);*/
 	}
 }

@@ -137,6 +137,7 @@ class MakeWuiSettingsPublic extends Migration
 	 * Reverse the migrations.
 	 *
 	 * @return void
+	 *
 	 * @throws InvalidArgumentException
 	 */
 	public function down(): void

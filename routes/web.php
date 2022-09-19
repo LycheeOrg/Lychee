@@ -43,4 +43,4 @@ Route::get('/r/{albumID}', [RedirectController::class, 'album'])->middleware(['m
 
 Route::get('/view', [ViewController::class, 'view'])->name('view')->middleware(['redirect-legacy-id']);
 Route::get('/demo', [DemoController::class, 'js']);
-Route::get('/frame', [FrameController::class, 'init'])->name('frame')->middleware(['migration:complete']);
+Route::redirect('/frame', '/#frame')->name('frame')->middleware(['migration:complete']);
