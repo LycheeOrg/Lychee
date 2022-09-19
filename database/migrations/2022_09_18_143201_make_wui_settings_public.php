@@ -123,6 +123,14 @@ class MakeWuiSettingsPublic extends Migration
 		DB::table('configs')
 			->where('key', '=', 'nsfw_warning_text')
 			->delete();
+
+		// Make setting key use small letters like everywhere else
+		DB::table('configs')
+			->where('key', '=', 'Mod_Frame')
+			->update(['key' => 'mod_frame_enabled']);
+		DB::table('configs')
+			->where('key', '=', 'Mod_Frame_refresh')
+			->update(['key' => 'mod_frame_refresh']);
 	}
 
 	/**
@@ -204,5 +212,11 @@ class MakeWuiSettingsPublic extends Migration
 				'type_range' => 'string_required',
 				'value' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
 			]);
+		DB::table('configs')
+			->where('key', '=', 'mod_frame_enabled')
+			->update(['key' => 'Mod_Frame']);
+		DB::table('configs')
+			->where('key', '=', 'mod_frame_refresh')
+			->update(['key' => 'Mod_Frame_refresh']);
 	}
 }

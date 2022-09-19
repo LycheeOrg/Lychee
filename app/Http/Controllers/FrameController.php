@@ -40,7 +40,7 @@ class FrameController extends Controller
 		try {
 			// Configs::get();
 
-			if (!Configs::getValueAsBool('Mod_Frame')) {
+			if (!Configs::getValueAsBool('mod_frame_enabled')) {
 				return redirect()->route('home');
 			}
 
@@ -70,12 +70,12 @@ class FrameController extends Controller
 	{
 		Configs::get();
 
-		if (!Configs::getValueAsBool('Mod_Frame')) {
+		if (!Configs::getValueAsBool('mod_frame_enabled')) {
 			throw new ConfigurationException('Frame is not enabled');
 		}
 
 		$return = [];
-		$return['refresh'] = Configs::getValueAsInt('Mod_Frame_refresh') * 1000;
+		$return['refresh'] = Configs::getValueAsInt('mod_frame_refresh') * 1000;
 
 		return $return;
 	}
