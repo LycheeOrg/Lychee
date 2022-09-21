@@ -404,7 +404,7 @@ class Photo extends Model implements HasRandomID
 
 		// Downgrades the accessible resolution of a photo
 		if (
-			$result['rights']->can_access_full_photo &&
+			!$result['rights']->can_access_full_photo &&
 			!$this->isVideo() &&
 			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null)
 		) {
