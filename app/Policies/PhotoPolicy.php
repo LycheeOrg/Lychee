@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -182,7 +181,7 @@ class PhotoPolicy
 	}
 
 	/**
-	 * Check if user can share selected albums by link.
+	 * Check if user can share selected photo by link.
 	 *
 	 * @param User|null $user
 	 * @param Photo     $photo
@@ -195,14 +194,7 @@ class PhotoPolicy
 			return true;
 		}
 
-		if (!$this->albumPolicy->canUpload($user, $photo->album)) {
-			return false;
-		}
-
-		$default = Configs::getValueAsBool('share_button_visible');
-
-		return $photo->album?->is_share_button_visible === true ||
-			($photo->album_id === null && $default);
+		return $this->albumPolicy->canShareByLink($user, $photo->album);
 	}
 
 	/**

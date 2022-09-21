@@ -161,14 +161,15 @@ class AlbumPolicy
 	 */
 	public function canDownload(?User $user, ?AbstractAlbum $abstractAlbum): bool
 	{
+		$default = Configs::getValueAsBool('downloadable');
 		if ($abstractAlbum === null) {
-			return Configs::getValueAsBool('downloadable');
+			return $default;
 		}
 
-		// dd($abstractAlbum);
 		// TODO: when download rights are assigned to albums, we add more logic can be added here.
 		return ($abstractAlbum instanceof BaseSmartAlbum && $user !== null) ||
 		($abstractAlbum instanceof BaseAlbum && $this->isOwner($user, $abstractAlbum) ||
+		($abstractAlbum instanceof BaseAlbum && $abstractAlbum->shared_with()->where('user_id', '=', $user?->id)->count() > 0 && $default) ||
 		$abstractAlbum->grant_download);
 	}
 
