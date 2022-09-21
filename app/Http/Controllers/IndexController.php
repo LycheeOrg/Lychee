@@ -47,7 +47,7 @@ class IndexController extends Controller
 
 			$page_config = [];
 			$page_config['show_hosted_by'] = false;
-			$page_config['display_socials'] = false;
+			$page_config['display_socials'] = true;
 
 			return view('landing', [
 				'title' => $title,
