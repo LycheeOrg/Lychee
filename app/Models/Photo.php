@@ -22,14 +22,12 @@ use App\Models\Extensions\SizeVariants;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
-use App\Policies\PhotoPolicy;
 use App\Relations\HasManySizeVariants;
 use App\Relations\LinkedPhotoCollection;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use function Safe\preg_match;
 
@@ -402,22 +400,16 @@ class Photo extends Model implements HasRandomID
 			$result['is_public'] = $result['is_public'] === true ? 1 : 0;
 		}
 
+		$result['rights'] = PhotoRights::ofPhoto($this);
+
 		// Downgrades the accessible resolution of a photo
-		// The decision logic here is a merge of three formerly independent
-		// (and slightly different) approaches
 		if (
-			!Gate::check(PhotoPolicy::IS_OWNER, $this) &&
+			$result['rights']->can_access_full_photo &&
 			!$this->isVideo() &&
-			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null) &&
-			(
-				($this->album_id !== null && !$this->album->grant_access_full_photo) ||
-				($this->album_id === null && !Configs::getValueAsBool('full_photo'))
-			)
+			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null)
 		) {
 			unset($result['size_variants']['original']['url']);
 		}
-
-		$result['rights'] = PhotoRights::ofPhoto($this);
 
 		return $result;
 	}

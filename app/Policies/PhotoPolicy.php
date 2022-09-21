@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -217,6 +218,7 @@ class PhotoPolicy
 			return false;
 		}
 
-		return $photo->album?->grant_access_full_photo === true;
+		return ($photo->album !== null && $photo->album->grant_access_full_photo) ||
+			($photo->album === null && Configs::getValueAsBool('full_photo'));
 	}
 }
