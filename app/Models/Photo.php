@@ -72,7 +72,6 @@ use function Safe\preg_match;
  * @property User         $owner
  * @property SizeVariants $size_variants
  * @property bool         $grant_download
- * @property bool         $is_share_button_visible
  */
 class Photo extends Model implements HasRandomID
 {

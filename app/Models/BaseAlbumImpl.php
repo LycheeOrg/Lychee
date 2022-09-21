@@ -198,6 +198,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 *               JSON from accessors
 	 */
 	protected $appends = [
+		'has_password',
 		'sorting',
 	];
 
@@ -259,10 +260,10 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		}
 	}
 
-	// protected function getHasPasswordAttribute(): bool
-	// {
-	// 	return $this->password !== null && $this->password !== '';
-	// }
+	protected function getHasPasswordAttribute(): bool
+	{
+		return $this->password !== null && $this->password !== '';
+	}
 
 	protected function getSortingAttribute(): ?PhotoSortingCriterion
 	{
