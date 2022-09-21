@@ -58,8 +58,7 @@
         "spatie/guzzle-rate-limiter-middleware": "^2.0",
         "spatie/laravel-feed": "^4.0",
         "spatie/laravel-image-optimizer": "^1.6.2",
-        "symfony/cache": "^v6.0.0",
-        "whichbrowser/parser": "^2.0"
+        "symfony/cache": "^v6.0.0"
     },
     "require-dev": {
         "ext-imagick": "*",

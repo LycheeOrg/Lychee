@@ -10,7 +10,6 @@ use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\VersionControlException;
-use App\Facades\Helpers;
 use App\Facades\Lang;
 use App\Http\Requests\Session\LoginRequest;
 use App\Legacy\AdminAuthentication;
@@ -104,11 +103,6 @@ class SessionController extends Controller
 			unset($return['config']['sorting_albums_order']);
 			unset($return['config']['sorting_photos_col']);
 			unset($return['config']['sorting_photos_order']);
-
-			// Device dependent settings
-			$deviceType = Helpers::getDeviceType();
-			// UI behaviour needs to be slightly modified if client is a TV
-			$return['config_device'] = $this->configFunctions->get_config_device($deviceType);
 
 			// we also return the local
 			$return['locale'] = Lang::get_lang();
