@@ -146,6 +146,16 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	}
 
 	/**
+	 * Used by Larapass since 2022-09-21.
+	 *
+	 * @return string
+	 */
+	public function getNameAttribute(): string
+	{
+		return $this->name();
+	}
+
+	/**
 	 * Deletes a user from the DB and re-assigns ownership of albums and photos
 	 * to the currently authenticated user.
 	 *
