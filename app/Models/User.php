@@ -141,6 +141,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	public function getNameAttribute(): string
 	{
+		// If strings starts by '$2y$', it is very likely that it's a blowfish hash.
 		return substr($this->username, 0, 4) === '$2y$' ? 'Admin' : $this->username;
 	}
 
