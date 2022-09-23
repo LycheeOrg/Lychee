@@ -23,8 +23,8 @@
 <header class="header">
     <div class="header__toolbar header__toolbar--public">
 
-        <a class="button" id="button_signin" title="{{ Lang::get('SIGN_IN') }}" data-tabindex="{{ Helpers::data_index_r() }}">
-			<x-iconic icon='account-login' />
+		<a class="button" id="button_signin" title="{{ Lang::get('SIGN_IN') }}" data-tabindex="{{ Helpers::data_index_r() }}">
+			<x-icons.iconic icon='account-login' />
         </a>
 
         <a class="header__title" data-tabindex="{{ Helpers::data_index() }}"></a>

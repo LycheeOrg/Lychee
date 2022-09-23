@@ -17,5 +17,10 @@
         "resolve-url-loader": "^5.0.0",
         "sass": "^1.32.11",
         "sass-loader": "^13.0.2"
+    },
+    "dependencies": {
+        "lazysizes": "^5.3.2",
+        "mousetrap": "^1.6.5",
+        "mousetrap-global-bind": "^1.1.0"
     }
 }

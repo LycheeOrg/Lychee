@@ -2,10 +2,10 @@
 
 namespace App\Metadata;
 
+use App\Facades\Helpers;
 use function Safe\disk_free_space;
 use function Safe\disk_total_space;
 use function Safe\filesize;
-use function Safe\sprintf;
 use function Safe\substr;
 
 class DiskUsage
@@ -20,27 +20,6 @@ class DiskUsage
 		$os = strtoupper(substr(PHP_OS, 0, 3));
 
 		return $os === 'WIN';
-	}
-
-	/**
-	 * From https://www.php.net/manual/en/function.disk-total-space.php.
-	 *
-	 * @param float $bytes
-	 *
-	 * @return string
-	 */
-	public function getSymbolByQuantity(float $bytes): string
-	{
-		$symbols = [
-			'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB',
-		];
-		$exp = intval(floor(log($bytes) / log(1024)));
-
-		return sprintf(
-			'%.2f %s',
-			($bytes / pow(1024, $exp)),
-			$symbols[$exp]
-		);
 	}
 
 	/**
@@ -96,7 +75,7 @@ class DiskUsage
 		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
 		$dts = disk_total_space(base_path(''));
 
-		return $this->getSymbolByQuantity($dts);
+		return Helpers::getSymbolByQuantity($dts);
 	}
 
 	/**
@@ -109,7 +88,7 @@ class DiskUsage
 		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
 		$dfs = disk_free_space(base_path(''));
 
-		return $this->getSymbolByQuantity($dfs);
+		return Helpers::getSymbolByQuantity($dfs);
 	}
 
 	/**
@@ -135,7 +114,7 @@ class DiskUsage
 	{
 		$ds = $this->getTotalSize(base_path(''));
 
-		return $this->getSymbolByQuantity($ds);
+		return Helpers::getSymbolByQuantity($ds);
 	}
 
 	/**
@@ -148,6 +127,6 @@ class DiskUsage
 		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
 		$ds = $this->getTotalSize(base_path('public/uploads/'));
 
-		return $this->getSymbolByQuantity($ds);
+		return Helpers::getSymbolByQuantity($ds);
 	}
 }

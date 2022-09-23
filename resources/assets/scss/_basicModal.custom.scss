@@ -1,0 +1,45 @@
+.basicModal .select select option {
+	background: #333333 !important;
+	color: #ffffff !important;
+}
+
+.basicModal .switch:last-child {
+	padding-bottom: 42px;
+}
+
+.basicModal .hr {
+	padding: 0 30px 15px;
+	width: 100%;
+
+	hr {
+		border: none;
+		border-top: 1px solid rgba(0, 0, 0, 0.2);
+	}
+}
+
+// responsive web design for smaller screens
+@media only screen and (max-width: 567px), only screen and (max-width: 640px) and (orientation: portrait) {
+	.basicModal {
+		max-width: 90%;
+
+		.basicModal__content,
+		.basicModal__content .choice,
+		.basicModal__content .switch {
+			h1,
+			p {
+				padding-left: 20px;
+				padding-right: 20px;
+			}
+
+			p {
+				font-size: 12px;
+				line-height: 14px;
+			}
+
+			h1 {
+				font-size: 14px;
+				line-height: 16px;
+			}
+		}
+	}
+}

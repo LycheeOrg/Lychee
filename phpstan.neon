@@ -6,11 +6,9 @@ parameters:
 	paths:
 		- app
 		- scripts
-	excludePaths:
-		- app/View/*
-		- app/Http/Livewire/*
 	stubFiles:
 		# these can be removed after https://github.com/thecodingmachine/safe/issues/283 has been merged
+		- phpstan/stubs/Wireable.stub
 		- phpstan/stubs/image.stub
 		- phpstan/stubs/imageexception.stub
 	ignoreErrors:

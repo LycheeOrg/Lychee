@@ -179,6 +179,7 @@ final class NorwegianBokmal implements Language
 			'ALBUM_IMAGES' => 'Bilder',
 			'ALBUM_VIDEOS' => 'Filmer',
 			'ALBUM_SUBALBUMS' => 'Underalbum',
+			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Deling',
 			'ALBUM_SHR_YES' => 'JA',
 			'ALBUM_SHR_NO' => 'Nei',
@@ -217,7 +218,6 @@ final class NorwegianBokmal implements Language
 			'ALBUM_RESERVED' => 'Alle Rettigheter Forbeholdt',
 			'ALBUM_SET_ORDER' => 'Set Order',
 			'ALBUM_ORDERING' => 'Order by',
-			'ALBUM_OWNER' => 'Owner',
 
 			'PHOTO_ABOUT' => 'Om',
 			'PHOTO_BASICS' => 'Grunnleggende',

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\File;
 use function Safe\getallheaders;
 use function Safe\ini_get;
 use function Safe\parse_url;
+use function Safe\sprintf;
 use function Safe\substr;
 use WhichBrowser\Parser as BrowserParser;
 
@@ -180,6 +181,8 @@ class Helpers
 	}
 
 	/**
+	 * !TODO is it still needed?
+	 *
 	 * Properly convert a boolean to a string
 	 * the default php function returns '' in case of false, this is not the behavior we want.
 	 */
@@ -256,6 +259,23 @@ class Helpers
 	public function data_index_set(int $idx = 0): void
 	{
 		$this->numTab = $idx;
+	}
+
+	/**
+	 * From https://www.php.net/manual/en/function.disk-total-space.php.
+	 *
+	 * @param float $bytes
+	 *
+	 * @return string
+	 */
+	public function getSymbolByQuantity(float $bytes): string
+	{
+		$symbols = [
+			'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB',
+		];
+		$exp = intval(floor(log($bytes) / log(1024.0)));
+
+		return sprintf('%.2f %s', ($bytes / pow(1024, $exp)), $symbols[$exp]);
 	}
 
 	/**

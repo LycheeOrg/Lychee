@@ -8,6 +8,7 @@ use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Livewire\Wireable;
 
 /**
  * Interface BaseAlbum.
@@ -30,7 +31,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  * @property bool       $is_downloadable
  * @property bool       $is_share_button_visible
  */
-interface AbstractAlbum extends \JsonSerializable, Arrayable, Jsonable
+interface AbstractAlbum extends \JsonSerializable, Arrayable, Jsonable, Wireable
 {
 	/**
 	 * @return Relation|Builder
