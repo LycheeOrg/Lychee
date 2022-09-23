@@ -9,6 +9,7 @@ class LycheeChannelInfo extends DTO
 
 	/**
 	 * @var int either {@link LycheeChannelInfo::RELEASE_CHANNEL} or {@link LycheeChannelInfo::GIT_CHANNEL}
+	 *
 	 * @phpstan-var int<0,1>
 	 */
 	public int $channelType;

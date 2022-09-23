@@ -2,33 +2,37 @@
 
 namespace App\Actions\Albums;
 
-use App\Actions\AlbumAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\TopAlbums;
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
-use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
+use App\Policies\AlbumPolicy;
+use App\Policies\AlbumQueryPolicy;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Kalnoy\Nestedset\QueryBuilder as NsQueryBuilder;
 
 class Top
 {
-	private AlbumAuthorisationProvider $albumAuthorisationProvider;
+	private AlbumQueryPolicy $albumQueryPolicy;
 	private AlbumFactory $albumFactory;
 	private AlbumSortingCriterion $sorting;
 
 	/**
 	 * @throws InvalidOrderDirectionException
+	 * @throws ConfigurationKeyMissingException
 	 */
-	public function __construct(AlbumFactory $albumFactory, AlbumAuthorisationProvider $albumAuthorisationProvider)
+	public function __construct(AlbumFactory $albumFactory, AlbumQueryPolicy $albumQueryPolicy)
 	{
-		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
+		$this->albumQueryPolicy = $albumQueryPolicy;
 		$this->albumFactory = $albumFactory;
 		$this->sorting = AlbumSortingCriterion::createDefault();
 	}
@@ -60,10 +64,10 @@ class Top
 		$smartAlbums = $this->albumFactory
 			->getAllBuiltInSmartAlbums(false)
 			->map(
-				fn ($smartAlbum) => $this->albumAuthorisationProvider->isVisible($smartAlbum) ? $smartAlbum : null
+				fn ($smartAlbum) => Gate::check(AlbumPolicy::IS_VISIBLE, $smartAlbum) ? $smartAlbum : null
 			);
 
-		$tagAlbumQuery = $this->albumAuthorisationProvider
+		$tagAlbumQuery = $this->albumQueryPolicy
 			->applyVisibilityFilter(TagAlbum::query());
 		/** @var Collection<TagAlbum> $tagAlbums */
 		$tagAlbums = (new SortingDecorator($tagAlbumQuery))
@@ -71,22 +75,22 @@ class Top
 			->get();
 
 		/** @var NsQueryBuilder $query */
-		$query = $this->albumAuthorisationProvider
+		$query = $this->albumQueryPolicy
 			->applyVisibilityFilter(Album::query()->whereIsRoot());
 
-		if (AccessControl::is_logged_in()) {
+		$userID = Auth::id();
+		if ($userID !== null) {
 			// For authenticated users we group albums by ownership.
 			$albums = (new SortingDecorator($query))
 				->orderBy('owner_id')
 				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();
 
-			$id = AccessControl::id();
 			/**
 			 * @var BaseCollection<Album> $a
 			 * @var BaseCollection<Album> $b
 			 */
-			list($a, $b) = $albums->partition(fn ($album) => $album->owner_id === $id);
+			list($a, $b) = $albums->partition(fn ($album) => $album->owner_id === $userID);
 
 			return new TopAlbums($smartAlbums, $tagAlbums, $a->values(), $b->values());
 		} else {

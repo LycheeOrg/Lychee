@@ -15,6 +15,7 @@ namespace Tests\Feature\Lib;
 use App\Actions\Photo\Archive;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Testing\TestResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Tests\TestCase;
 
 class PhotosUnitTest
@@ -32,10 +33,14 @@ class PhotosUnitTest
 	 * @param UploadedFile $file
 	 * @param string|null  $albumID
 	 *
-	 * @return string the id of the photo
+	 * @return TestResponse
 	 */
-	public function upload(UploadedFile $file, ?string $albumID = null): string
-	{
+	public function upload(
+		UploadedFile $file,
+		?string $albumID = null,
+		int $expectedStatusCode = 201,
+		?string $assertSee = null
+	): TestResponse {
 		$response = $this->testCase->post(
 			'/api/Photo::add', [
 				'albumID' => $albumID,
@@ -46,10 +51,12 @@ class PhotosUnitTest
 			]
 		);
 
-		$response->assertSuccessful();
-		$response->assertDontSee('Error');
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
 
-		return $response->offsetGet('id');
+		return $response;
 	}
 
 	/**
@@ -113,118 +120,6 @@ class PhotosUnitTest
 		}
 
 		return $response;
-	}
-
-	/**
-	 * is photo with given ID visible in unsorted?
-	 *
-	 * @param string $photoID
-	 */
-	public function see_in_unsorted(string $photoID): void
-	{
-		$response = $this->testCase->postJson('/api/Album::get', [
-			'albumID' => 'unsorted',
-		]);
-		$response->assertOk();
-		$response->assertSee($photoID, false);
-	}
-
-	/**
-	 * is photo with given ID NOT visible in unsorted?
-	 *
-	 * @param string $id
-	 */
-	public function dont_see_in_unsorted(string $id): void
-	{
-		$response = $this->testCase->postJson('/api/Album::get', [
-			'albumID' => 'unsorted',
-		]);
-		$response->assertOk();
-		$response->assertDontSee($id, false);
-	}
-
-	/**
-	 * is photo with given ID visible in recent?
-	 *
-	 * @param string $id
-	 */
-	public function see_in_recent(string $id): void
-	{
-		$response = $this->testCase->postJson('/api/Album::get', [
-			'albumID' => 'recent',
-		]);
-		$response->assertOk();
-		$response->assertSee($id, false);
-	}
-
-	/**
-	 * is photo with given ID NOT visible in recent?
-	 *
-	 * @param string $id
-	 */
-	public function dont_see_in_recent(string $id): void
-	{
-		$response = $this->testCase->postJson('/api/Album::get', [
-			'albumID' => 'recent',
-		]);
-		$response->assertOk();
-		$response->assertDontSee($id, false);
-	}
-
-	/**
-	 * is photo with given ID visible in shared?
-	 *
-	 * @param string $id
-	 */
-	public function see_in_shared(string $id): void
-	{
-		$response = $this->testCase->postJson('/api/Album::get', [
-			'albumID' => 'public',
-		]);
-		$response->assertOk();
-		$response->assertSee($id, false);
-	}
-
-	/**
-	 * is photo with given ID NOT visible in shared?
-	 *
-	 * @param string $id
-	 */
-	public function dont_see_in_shared(string $id): void
-	{
-		$response = $this->testCase->postJson('/api/Album::get', [
-			'albumID' => 'public',
-		]);
-		$response->assertOk();
-		$response->assertDontSee($id, false);
-	}
-
-	/**
-	 * is photo with given ID visible in favorite?
-	 *
-	 * @param string $id
-	 */
-	public function see_in_favorite(string $id): void
-	{
-		$response = $this->testCase->postJson('/api/Album::get', [
-			'albumID' => 'starred',
-		]);
-		$response->assertOk();
-		$response->assertSee($id, false);
-	}
-
-	/**
-	 * is photo with given ID NOT visible in favorite ?
-	 *
-	 * @param string $id
-	 */
-	public function dont_see_in_favorite(string $id): void
-	{
-		$response = $this->testCase->postJson('/api/Album::get', [
-			'albumID' => 'starred',
-		]);
-		$response->assertOk();
-		$response->assertDontSee($id, false);
 	}
 
 	/**
@@ -437,22 +332,33 @@ class PhotosUnitTest
 	/**
 	 * We only test for a code 200.
 	 *
-	 * @param string $id
-	 * @param string $kind
+	 * @param string[] $ids
+	 * @param string   $kind
+	 *
+	 * @return TestResponse
 	 */
 	public function download(
-		string $id,
-		string $kind = Archive::FULL
-	): void {
+		array $ids,
+		string $kind = Archive::FULL,
+		int $expectedStatusCode = 200
+	): TestResponse {
 		$response = $this->testCase->getWithParameters(
 			'/api/Photo::getArchive', [
-				'photoIDs' => $id,
+				'photoIDs' => implode(',', $ids),
 				'kind' => $kind,
 			], [
 				'Accept' => '*/*',
 			]
 		);
-		$response->assertOk();
+		$response->assertStatus($expectedStatusCode);
+		if ($response->baseResponse instanceof StreamedResponse) {
+			// The content of a streamed response is not generated unless
+			// the content is fetched.
+			// This ensures that the generator of SUT is actually executed.
+			$response->streamedContent();
+		}
+
+		return $response;
 	}
 
 	/**
@@ -480,32 +386,88 @@ class PhotosUnitTest
 	 * Import a picture.
 	 *
 	 * @param string      $path
-	 * @param bool        $delete_imported
 	 * @param string|null $album_id
+	 * @param bool|null   $delete_imported    tri-state, `null` means let the server pick the configured default
+	 * @param bool|null   $skip_duplicates    tri-state, `null` means let the server pick the configured default
+	 * @param bool|null   $import_via_symlink tri-state, `null` means let the server pick the configured default
+	 * @param bool|null   $resync_metadata    tri-state, `null` means let the server pick the configured default
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return string
+	 * @return string the streamed progress report
 	 */
-	public function import(
+	public function importFromServer(
 		string $path,
-		bool $delete_imported = false,
 		?string $album_id = null,
+		?bool $delete_imported = null,
+		?bool $skip_duplicates = null,
+		?bool $import_via_symlink = null,
+		?bool $resync_metadata = null,
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): string {
-		$response = $this->testCase->postJson('/api/Import::server', [
-			'function' => 'Import::server',
+		$requestParams = [
 			'albumID' => $album_id,
-			'path' => $path,
-			'delete_imported' => $delete_imported,
-		]);
+			'paths' => [$path],
+		];
+
+		if ($delete_imported !== null) {
+			$requestParams['delete_imported'] = $delete_imported;
+		}
+
+		if ($skip_duplicates !== null) {
+			$requestParams['skip_duplicates'] = $skip_duplicates;
+		}
+
+		if ($import_via_symlink !== null) {
+			$requestParams['import_via_symlink'] = $import_via_symlink;
+		}
+
+		if ($resync_metadata !== null) {
+			$requestParams['resync_metadata'] = $resync_metadata;
+		}
+
+		$response = $this->testCase->postJson(
+			'/api/Import::server',
+			$requestParams
+		);
+
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
 		}
 
 		return $response->streamedContent();
+	}
+
+	/**
+	 * Imports a photo from a remote URL.
+	 *
+	 * @param string[]    $urls               URLs to import photos from
+	 * @param string|null $album_id           ID of album to import into
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 *
+	 * @return TestResponse
+	 */
+	public function importFromUrl(
+		array $urls,
+		?string $album_id = null,
+		int $expectedStatusCode = 200,
+		?string $assertSee = null
+	): TestResponse {
+		$response = $this->testCase->postJson(
+			'/api/Import::url', [
+				'albumID' => $album_id,
+				'urls' => $urls,
+			]);
+
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
+
+		return $response;
 	}
 
 	/**

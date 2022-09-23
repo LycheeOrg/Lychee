@@ -2,24 +2,14 @@
 
 namespace App\Actions\Photo\Strategies;
 
-use App\Exceptions\ConfigurationException;
-use App\Exceptions\Internal\LycheeAssertionError;
-use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
-use App\Facades\AccessControl;
-use App\Image\FlysystemFile;
-use App\Image\MediaFile;
-use App\Image\NativeLocalFile;
+use App\Exceptions\UnauthenticatedException;
 use App\Models\Photo;
-use Illuminate\Support\Facades\Storage;
-use League\Flysystem\Adapter\Local;
-use function Safe\symlink;
+use Illuminate\Support\Facades\Auth;
 
 abstract class AddBaseStrategy
 {
-	public const IMAGE_DISK_NAME = 'images';
-
 	protected AddStrategyParameters $parameters;
 	protected Photo $photo;
 
@@ -110,6 +100,9 @@ abstract class AddBaseStrategy
 		}
 	}
 
+	/**
+	 * @throws UnauthenticatedException
+	 */
 	protected function setParentAndOwnership(): void
 	{
 		if ($this->parameters->album !== null) {
@@ -123,63 +116,9 @@ abstract class AddBaseStrategy
 			// Avoid unnecessary DB request, when we access the album of a
 			// photo later (e.g. when a notification is sent).
 			$this->photo->setRelation('album', null);
-			$this->photo->owner_id = AccessControl::id();
-		}
-	}
-
-	/**
-	 * Moves/copies/symlinks source file to final destination.
-	 *
-	 * @param MediaFile $sourceFile the source file
-	 * @param string    $targetPath the path of the final destination relative
-	 *                              to the disk
-	 *                              {@link AddBaseStrategy::IMAGE_DISK_NAME}
-	 *
-	 * @throws MediaFileOperationException
-	 * @throws ConfigurationException
-	 */
-	protected function putSourceIntoFinalDestination(MediaFile $sourceFile, string $targetPath): void
-	{
-		$targetFile = new FlysystemFile(Storage::disk(self::IMAGE_DISK_NAME), $targetPath);
-		$isTargetLocal = $targetFile->getStorageAdapter() instanceof Local;
-		if ($this->parameters->importMode->shallImportViaSymlink()) {
-			if (!$isTargetLocal) {
-				throw new ConfigurationException('Symlinking is only supported on local filesystems');
-			}
-			if (!($sourceFile instanceof NativeLocalFile)) {
-				throw new ConfigurationException('Symlinking is only supported to local files');
-			}
-			$targetAbsolutePath = $targetFile->getAbsolutePath();
-			$sourceAbsolutePath = $sourceFile->getAbsolutePath();
-			try {
-				symlink($sourceAbsolutePath, $targetAbsolutePath);
-			} catch (\Throwable $e) {
-				throw new MediaFileOperationException('Could not create symbolic link at "' . $targetAbsolutePath . '" for photo at "' . $sourceAbsolutePath . '"', $e);
-			}
-		} else {
-			try {
-				$targetFile->write($sourceFile->read());
-				$sourceFile->close();
-				if ($this->parameters->importMode->shallDeleteImported()) {
-					// This may throw an exception, if the original has been
-					// readable, but is not writable
-					// In this case, the media file will have been copied, but
-					// cannot be "moved".
-					try {
-						$sourceFile->delete();
-					} catch (MediaFileOperationException $e) {
-						// If deletion failed, we do not cancel the whole
-						// import, but fall back to copy-semantics and
-						// log the exception
-						report($e);
-					}
-				}
-			} catch (LycheeLogicException $e) {
-				// the exception is thrown if read/write/close are invoked
-				// in wrong order
-				// something we don't do
-				throw LycheeAssertionError::createFromUnexpectedException($e);
-			}
+			/** @var int */
+			$userId = Auth::id() ?? throw new UnauthenticatedException();
+			$this->photo->owner_id = $userId;
 		}
 	}
 }

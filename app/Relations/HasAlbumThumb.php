@@ -2,28 +2,31 @@
 
 namespace App\Relations;
 
-use App\Actions\AlbumAuthorisationProvider;
-use App\Actions\PhotoAuthorisationProvider;
 use App\DTO\PhotoSortingCriterion;
-use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\Thumb;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
+use App\Policies\AlbumQueryPolicy;
+use App\Policies\PhotoQueryPolicy;
+use App\Policies\UserPolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * @mixin Builder
  */
 class HasAlbumThumb extends Relation
 {
-	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
-	protected PhotoAuthorisationProvider $photoAuthorisationProvider;
+	protected AlbumQueryPolicy $albumQueryPolicy;
+	protected PhotoQueryPolicy $photoQueryPolicy;
 	protected PhotoSortingCriterion $sorting;
 
 	public function __construct(Album $parent)
@@ -32,8 +35,8 @@ class HasAlbumThumb extends Relation
 		// the parent constructor.
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
-		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
-		$this->photoAuthorisationProvider = resolve(PhotoAuthorisationProvider::class);
+		$this->albumQueryPolicy = resolve(AlbumQueryPolicy::class);
+		$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
 		$this->sorting = PhotoSortingCriterion::createDefault();
 		parent::__construct(
 			Photo::query()->with(['size_variants' => fn (HasMany $r) => Thumb::sizeVariantsFilter($r)]),
@@ -48,6 +51,7 @@ class HasAlbumThumb extends Relation
 		 * because it was set in the constructor as `Photo::query()`.
 		 *
 		 * @noinspection PhpIncompatibleReturnTypeInspection
+		 *
 		 * @phpstan-ignore-next-line
 		 */
 		return $this->query;
@@ -69,7 +73,7 @@ class HasAlbumThumb extends Relation
 			if ($album->cover_id !== null) {
 				$this->where('photos.id', '=', $album->cover_id);
 			} else {
-				$this->photoAuthorisationProvider
+				$this->photoQueryPolicy
 					->applySearchabilityFilter($this->getRelationQuery(), $album);
 			}
 		}
@@ -177,9 +181,9 @@ class HasAlbumThumb extends Relation
 			->orderBy('photos.is_starred', 'desc')
 			->orderBy('photos.' . $this->sorting->column, $this->sorting->order)
 			->limit(1);
-		if (!AccessControl::is_admin()) {
+		if (!Gate::check(UserPolicy::IS_ADMIN)) {
 			$bestPhotoIDSelect->where(function (Builder $query2) {
-				$this->photoAuthorisationProvider->appendSearchabilityConditions(
+				$this->photoQueryPolicy->appendSearchabilityConditions(
 					$query2->getQuery(),
 					'covered_albums._lft',
 					'covered_albums._rgt'
@@ -187,28 +191,28 @@ class HasAlbumThumb extends Relation
 			});
 		}
 
-		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+		$user = Auth::user();
 
-		$album2Cover = function (BaseBuilder $builder) use ($bestPhotoIDSelect, $albumKeys, $userID) {
+		$album2Cover = function (BaseBuilder $builder) use ($bestPhotoIDSelect, $albumKeys, $user) {
 			$builder
 				->from('albums as covered_albums')
 				->join('base_albums', 'base_albums.id', '=', 'covered_albums.id');
-			if ($userID !== null) {
+			if ($user !== null) {
 				$builder->leftJoin(
 					'user_base_album',
-					function (JoinClause $join) use ($userID) {
+					function (JoinClause $join) use ($user) {
 						$join
 							->on('user_base_album.base_album_id', '=', 'base_albums.id')
-							->where('user_base_album.user_id', '=', $userID);
+							->where('user_base_album.user_id', '=', $user->id);
 					}
 				);
 			}
 			$builder->select(['covered_albums.id AS album_id'])
 				->addSelect(['photo_id' => $bestPhotoIDSelect])
 				->whereIn('covered_albums.id', $albumKeys);
-			if (!AccessControl::is_admin()) {
+			if (!Gate::check(UserPolicy::IS_ADMIN)) {
 				$builder->where(function (BaseBuilder $q) {
-					$this->albumAuthorisationProvider->appendAccessibilityConditions($q);
+					$this->albumQueryPolicy->appendAccessibilityConditions($q);
 				});
 			}
 		};
@@ -286,7 +290,7 @@ class HasAlbumThumb extends Relation
 	{
 		/** @var Album|null $album */
 		$album = $this->parent;
-		if ($album === null || !$this->albumAuthorisationProvider->isAccessible($album)) {
+		if ($album === null || !Gate::check(AlbumPolicy::CAN_ACCESS, $album)) {
 			return null;
 		}
 

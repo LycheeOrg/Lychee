@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Exceptions\ModelDBException;
-use App\Facades\AccessControl;
+use App\Exceptions\UnauthenticatedException;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
@@ -18,6 +18,8 @@ use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use function Safe\substr;
 
 /**
  * App\Models\User.
@@ -30,6 +32,8 @@ use Illuminate\Support\Carbon;
  * @property string|null                                           $email
  * @property bool                                                  $may_upload
  * @property bool                                                  $is_locked
+ * @property string|null                                           $token
+ * @property bool                                                  $has_token
  * @property string|null                                           $remember_token
  * @property Collection<BaseAlbumImpl>                             $albums
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
@@ -64,6 +68,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'remember_token',
 		'created_at',
 		'updated_at',
+		'token',
 	];
 
 	/**
@@ -75,6 +80,13 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'updated_at' => 'datetime',
 		'may_upload' => 'boolean',
 		'is_locked' => 'boolean',
+	];
+
+	/**
+	 * @var array
+	 */
+	protected $appends = [
+		'has_token',
 	];
 
 	/**
@@ -112,11 +124,6 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		);
 	}
 
-	public function is_admin(): bool
-	{
-		return $this->id === 0;
-	}
-
 	/**
 	 * Used by Larapass.
 	 *
@@ -134,7 +141,8 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	public function name(): string
 	{
-		return ($this->id === 0) ? 'Admin' : $this->username;
+		// If strings starts by '$2y$', it is very likely that it's a blowfish hash.
+		return substr($this->username, 0, 4) === '$2y$' ? 'Admin' : $this->username;
 	}
 
 	/**
@@ -148,11 +156,12 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 *
 	 * @throws ModelDBException
 	 * @throws InvalidFormatException
+	 * @throws UnauthenticatedException
 	 */
 	public function delete(): bool
 	{
 		$now = Carbon::now();
-		$newOwnerID = AccessControl::id();
+		$newOwnerID = Auth::id() ?? throw new UnauthenticatedException();
 
 		/** @var HasMany[] $ownershipRelations */
 		$ownershipRelations = [$this->photos(), $this->albums()];
@@ -169,5 +178,13 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		$this->shared()->delete();
 
 		return $this->parentDelete();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getHasTokenAttribute(): bool
+	{
+		return $this->token !== null;
 	}
 }

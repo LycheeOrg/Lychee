@@ -6,6 +6,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasAlbum;
 use App\Http\Requests\Contracts\HasAlbums;
+use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumAlbumsTrait;
 use App\Http\Requests\Traits\HasAlbumsTrait;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Models\Album;
@@ -19,15 +20,7 @@ class MoveAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 	use HasAlbumTrait;
 	/** @phpstan-use HasAlbumsTrait<Album> */
 	use HasAlbumsTrait;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function authorize(): bool
-	{
-		return $this->authorizeAlbumWrite($this->album) &&
-			$this->authorizeAlbumsWrite($this->albums);
-	}
+	use AuthorizeCanEditAlbumAlbumsTrait;
 
 	/**
 	 * {@inheritDoc}

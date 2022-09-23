@@ -2,13 +2,13 @@
 
 namespace App\Relations;
 
-use App\Actions\PhotoAuthorisationProvider;
 use App\DTO\SortingCriterion;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
+use App\Policies\PhotoQueryPolicy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  */
 abstract class HasManyPhotos extends Relation
 {
-	protected PhotoAuthorisationProvider $photoAuthorisationProvider;
+	protected PhotoQueryPolicy $photoQueryPolicy;
 
 	public function __construct(BaseAlbum $owningAlbum)
 	{
@@ -27,7 +27,7 @@ abstract class HasManyPhotos extends Relation
 		// the parent constructor.
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
-		$this->photoAuthorisationProvider = resolve(PhotoAuthorisationProvider::class);
+		$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
 		// This is a hack.
 		// The abstract class
 		// {@link \Illuminate\Database\Eloquent\Relations\Relation}
@@ -65,6 +65,7 @@ abstract class HasManyPhotos extends Relation
 		 * because it was set in the constructor as `Photo::query()`.
 		 *
 		 * @noinspection PhpIncompatibleReturnTypeInspection
+		 *
 		 * @phpstan-ignore-next-line
 		 */
 		return $this->query;
@@ -77,6 +78,7 @@ abstract class HasManyPhotos extends Relation
 		 * because it was set in the constructor as `$owningAlbum`.
 		 *
 		 * @noinspection PhpIncompatibleReturnTypeInspection
+		 *
 		 * @phpstan-ignore-next-line
 		 */
 		return $this->parent;

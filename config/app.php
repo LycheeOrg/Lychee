@@ -65,7 +65,7 @@ return [
 
 	'url' => env('APP_URL', 'http://localhost'),
 
-	'asset_url' => env('ASSET_URL'),
+	'asset_url' => null,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -188,7 +188,6 @@ return [
 		App\Providers\EventServiceProvider::class,
 		App\Providers\RouteServiceProvider::class,
 		// App\Providers\LangServiceProvider::class,
-		// App\Providers\AccessControlServiceProvider::class,
 	],
 
 	/*
@@ -204,7 +203,6 @@ return [
 
 	'aliases' => [
 		'App' => Illuminate\Support\Facades\App::class,
-		'AccessControl' => App\Facades\AccessControl::class,
 		'Arr' => Illuminate\Support\Arr::class,
 		'Artisan' => Illuminate\Support\Facades\Artisan::class,
 		'Auth' => Illuminate\Support\Facades\Auth::class,

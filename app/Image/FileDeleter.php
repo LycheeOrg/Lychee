@@ -2,6 +2,7 @@
 
 namespace App\Image;
 
+use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\MediaFileOperationException;
 use App\Models\SymLink;
 use Illuminate\Support\Collection;
@@ -87,8 +88,8 @@ class FileDeleter
 		$firstException = null;
 
 		// TODO: When we use proper `File` objects, each file knows its associated disk
-		// In the mean time, we assume that any regular file is stored on the default disk.
-		$defaultDisk = Storage::disk();
+		// In the mean time, we assume that any regular file is stored on the default image disk.
+		$defaultDisk = SizeVariantNamingStrategy::getImageDisk();
 		foreach ($this->regularFiles as $regularFile) {
 			try {
 				if ($defaultDisk->exists($regularFile)) {
@@ -103,7 +104,7 @@ class FileDeleter
 
 		// If the disk uses the local driver, we use low-level routines as
 		// these are also able to handle symbolic links in case of doubt
-		$isLocalDisk = ($defaultDisk->getDriver()->getAdapter() instanceof LocalAdapter);
+		$isLocalDisk = $defaultDisk->getDriver()->getAdapter() instanceof LocalAdapter;
 		if ($isLocalDisk) {
 			foreach ($this->regularFilesOrSymbolicLinks as $fileOrLink) {
 				try {

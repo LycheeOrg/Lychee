@@ -7,11 +7,11 @@ use App\Actions\Photo\Strategies\ImportMode;
 use App\Contracts\ExternalLycheeException;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\UnexpectedException;
-use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Configs;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Auth;
 use function Safe\sprintf;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
@@ -27,7 +27,7 @@ class Sync extends Command
 	 */
 	protected $signature =
 	'lychee:sync ' .
-		'{dir : directory to sync} ' . // string
+		'{dir* : directory to sync} ' . // string[]
 		'{--album_id= : Album ID to import to} ' . // string or null
 		'{--owner_id=0 : Owner ID of imported photos} ' . // string
 		'{--resync_metadata : Re-sync metadata of existing files}  ' . // bool
@@ -71,9 +71,9 @@ class Sync extends Command
 	public function handle(): int
 	{
 		try {
-			$directory = $this->argument('dir');
-			if (is_array($directory) || $directory === null) {
-				$this->error('Synchronize one folder at a time.');
+			$directories = $this->argument('dir');
+			if (!is_array($directories)) {
+				$this->error('List of directories not recognized.');
 
 				return 1;
 			}
@@ -110,14 +110,16 @@ class Sync extends Command
 				0
 			);
 
-			AccessControl::log_as_id($owner_id);
+			Auth::loginUsingId($owner_id);
 
 			$this->info('Start syncing.');
 
-			try {
-				$exec->do($directory, $album);
-			} catch (Exception $e) {
-				$this->error($e);
+			foreach ($directories as $directory) {
+				try {
+					$exec->do($directory, $album);
+				} catch (Exception $e) {
+					$this->error($e);
+				}
 			}
 
 			$this->info('Done syncing.');

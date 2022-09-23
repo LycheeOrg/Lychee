@@ -24,6 +24,7 @@ final class German implements Language
 			'SEARCH' => 'Suchen ...',
 			'MORE' => 'Mehr',
 			'DEFAULT' => 'Standard',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Benutzer',
 			'CREATE' => 'Erstellen',
@@ -44,6 +45,7 @@ final class German implements Language
 			'DIAGNOSTICS_GET_SIZE' => 'Speicherplatz-Nutzung abrufen',
 			'LOGS' => 'Logs anzeigen',
 			'CLEAN_LOGS' => 'Unnötiges aufräumen',
+			'CLEAR' => 'Leeren',
 			'SIGN_OUT' => 'Abmelden',
 			'UPDATE_AVAILABLE' => 'Update verfügbar!',
 			'MIGRATION_AVAILABLE' => 'Migration verfügbar!',
@@ -53,6 +55,13 @@ final class German implements Language
 			'SET_MAP_PROVIDER' => 'Speichere Provider für OpenStreetMap Karten',
 			'FULL_SETTINGS' => 'Alle Einstellungen',
 			'UPDATE' => 'Update',
+			'RESET' => 'Zurücksetzen',
+			'DISABLE_TOKEN_TOOLTIP' => 'Deaktivieren',
+			'ENABLE_TOKEN' => 'API-Schlüssel aktivieren',
+			'DISABLED_TOKEN_STATUS_MSG' => 'Deaktiviert',
+			'TOKEN_BUTTON' => 'API-Schlüssel ...',
+			'TOKEN_NOT_AVAILABLE' => 'Sie haben diesen Schlüssel bereits angesehen.',
+			'TOKEN_WAIT' => 'Warten ...',
 
 			'SAVE_RISK' => 'Änderungen speichern, ich kenne das Risiko!',
 
@@ -340,7 +349,6 @@ final class German implements Language
 			'LOGIN_CREATE' => 'Benutzer anlegen',
 
 			'PASSWORD_TITLE' => 'Geben Sie Ihr bestehendes Kennwort ein:',
-			'USERNAME_CURRENT' => 'Bestehender Benutzername',
 			'PASSWORD_CURRENT' => 'Bestehendes Kennwort',
 			'PASSWORD_TEXT' => 'Ihr Benutzername und Passwort werden wie folgt geändert:',
 			'PASSWORD_CHANGE' => 'Benutzer ändern',
@@ -444,8 +452,8 @@ final class German implements Language
 			'UPLOAD_IMPORT' => 'Importieren',
 			'UPLOAD_IMPORT_SERVER' => 'Importieren von Server',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Der Ordner ist leer oder enthält keine lesbaren Dateien zum Verarbeiten. Schauen Sie bitte ins Protokoll (Einstellungen/Protokoll ansehen).',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Diese Aktion wird alle Fotos, Ordner und Unterordner importieren, die sich in folgendem Verzeichnis befinden.',
-			'UPLOAD_ABSOLUTE_PATH' => 'Absoluter Pfad zum Verzeichnis',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Importiert alle Fotos, Ordner und Unterordner in den folgenden absoluten Pfaden (auf dem Server). Mehrere Pfade können mit Leerzeichen getrennt werden; mit \\ können Sie ein Leerzeichen im Pfad verwenden.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute Pfade zu Verzeichnissen, mit Leerzeichen getrennt',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Konnte Import nicht starten, weil der Ordner leer ist.',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Originale löschen',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Die Originaldateien werden nach dem Import gelöscht, falls möglich.',

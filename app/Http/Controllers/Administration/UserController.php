@@ -9,14 +9,16 @@ use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
-use App\Facades\AccessControl;
+use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\User\AddUserRequest;
 use App\Http\Requests\User\DeleteUserRequest;
 use App\Http\Requests\User\SetEmailRequest;
 use App\Http\Requests\User\SetUserSettingsRequest;
 use App\Models\User;
+use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -66,6 +68,8 @@ class UserController extends Controller
 	 * @return void
 	 *
 	 * @throws ModelDBException
+	 * @throws UnauthenticatedException
+	 * @throws InvalidFormatException
 	 */
 	public function delete(DeleteUserRequest $request): void
 	{
@@ -100,11 +104,14 @@ class UserController extends Controller
 	 *
 	 * @throws InternalLycheeException
 	 * @throws ModelDBException
+	 * @throws UnauthenticatedException
 	 */
 	public function setEmail(SetEmailRequest $request): void
 	{
 		try {
-			$user = AccessControl::user();
+			/** @var User $user */
+			$user = Auth::user() ?? throw new UnauthenticatedException();
+
 			$user->email = $request->email();
 
 			if ($request->email() === null) {
@@ -123,11 +130,64 @@ class UserController extends Controller
 	 * TODO: Why is this an independent request? IMHO this should be combined with the GET request for the other user settings (see session init)
 	 *
 	 * @return array{email: ?string}
+	 *
+	 * @throws UnauthenticatedException
 	 */
 	public function getEmail(): array
 	{
+		/** @var User $user */
+		$user = Auth::user() ?? throw new UnauthenticatedException();
+
 		return [
-			'email' => AccessControl::user()->email,
+			'email' => $user->email,
 		];
+	}
+
+	/**
+	 * Returns the currently authenticated user or `null` if no user
+	 * is authenticated.
+	 *
+	 * @return User|null
+	 */
+	public function getAuthenticatedUser(): ?User
+	{
+		/** @var User|null */
+		return Auth::user();
+	}
+
+	/**
+	 * Reset the token of the currently authenticated user.
+	 *
+	 * @return array{'token': string}
+	 *
+	 * @throws UnauthenticatedException
+	 * @throws ModelDBException
+	 * @throws \Exception
+	 */
+	public function resetToken(): array
+	{
+		/** @var User $user */
+		$user = Auth::user() ?? throw new UnauthenticatedException();
+		$token = strtr(base64_encode(random_bytes(16)), '+/', '-_');
+		$user->token = hash('SHA512', $token);
+		$user->save();
+
+		return ['token' => $token];
+	}
+
+	/**
+	 * Disable the token of the currently authenticated user.
+	 *
+	 * @return void
+	 *
+	 * @throws UnauthenticatedException
+	 * @throws ModelDBException
+	 */
+	public function unsetToken(): void
+	{
+		/** @var User $user */
+		$user = Auth::user() ?? throw new UnauthenticatedException();
+		$user->token = null;
+		$user->save();
 	}
 }

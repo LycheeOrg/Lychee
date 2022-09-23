@@ -4,6 +4,8 @@ namespace App\Actions\Photo;
 
 use App\Actions\Photo\Extensions\ArchiveFileInfo;
 use App\Contracts\LycheeException;
+use App\Contracts\SizeVariantNamingStrategy;
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Image\FlysystemFile;
@@ -12,7 +14,6 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Storage;
 use Safe\Exceptions\InfoException;
 use function Safe\fclose;
 use function Safe\fopen;
@@ -21,6 +22,8 @@ use function Safe\set_time_limit;
 use function Safe\stream_copy_to_stream;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use ZipStream\Option\File as ZipFileOption;
+use ZipStream\Option\Method as ZipMethod;
 use ZipStream\ZipStream;
 
 class Archive
@@ -55,13 +58,15 @@ class Archive
 		self::THUMB => SizeVariant::THUMB,
 	];
 
-	private array $badChars;
+	public const BAD_CHARS = [
+		"\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06", "\x07",
+		"\x08", "\x09", "\x0a", "\x0b", "\x0c", "\x0d", "\x0e", "\x0f",
+		"\x10", "\x11", "\x12", "\x13", "\x14", "\x15", "\x16", "\x17",
+		"\x18", "\x19", "\x1a", "\x1b", "\x1c", "\x1d", "\x1e", "\x1f",
+		'<', '>', ':', '"', '/', '\\', '|', '?', '*',
+	];
 
-	public function __construct()
-	{
-		// Illicit chars
-		$this->badChars = array_merge(array_map('chr', range(0, 31)), ['<', '>', ':', '"', '/', '\\', '|', '?', '*']);
-	}
+	protected int $deflateLevel = -1;
 
 	/**
 	 * Returns a response for a downloadable file.
@@ -135,7 +140,8 @@ class Archive
 			$response = new StreamedResponse($responseGenerator);
 			$disposition = HeaderUtils::makeDisposition(
 				HeaderUtils::DISPOSITION_ATTACHMENT,
-				$archiveFileInfo->getFilename()
+				$archiveFileInfo->getFilename(),
+				mb_check_encoding($archiveFileInfo->getFilename(), 'ASCII') ? '' : 'Photo' . $archiveFileInfo->getFile()->getExtension()
 			);
 			$response->headers->set('Content-Type', $photo->type);
 			$response->headers->set('Content-Disposition', $disposition);
@@ -148,7 +154,12 @@ class Archive
 			// The only reason why we don't use the path directly is that
 			// we must avoid illegal characters like `/` and md5 returns a
 			// hexadecimal string.
-			$response->headers->set('ETag', md5($archiveFileInfo->getFile()->getAbsolutePath()));
+			$response->headers->set('ETag', md5(
+				$archiveFileInfo->getFile()->getBasename() .
+				$variant .
+				$photo->updated_at->toAtomString() .
+				$archiveFileInfo->getFile()->getFilesize())
+			);
 			$response->headers->set('Last-Modified', $photo->updated_at->format(DateTimeInterface::RFC7231));
 
 			return $response;
@@ -164,12 +175,16 @@ class Archive
 	 * @return StreamedResponse
 	 *
 	 * @throws FrameworkException
+	 * @throws ConfigurationKeyMissingException
 	 */
 	protected function zip(Collection $photos, string $variant): StreamedResponse
 	{
+		$this->deflateLevel = Configs::getValueAsInt('zip_deflate_level');
+
 		$responseGenerator = function () use ($variant, $photos) {
 			$options = new \ZipStream\Option\Archive();
 			$options->setEnableZip64(Configs::getValueAsBool('zip64'));
+			$options->setZeroHeader(true);
 			$zip = new ZipStream(null, $options);
 
 			// We first need to scan the whole array of files to avoid
@@ -261,7 +276,10 @@ class Archive
 						);
 					} while (array_key_exists($filename, $uniqueFilenames));
 				}
-				$zip->addFileFromStream($filename, $archiveFileInfo->getFile()->read());
+				$zipFileOption = new ZipFileOption();
+				$zipFileOption->setMethod($this->deflateLevel === -1 ? ZipMethod::STORE() : ZipMethod::DEFLATE());
+				$zipFileOption->setDeflateLevel($this->deflateLevel);
+				$zip->addFileFromStream($filename, $archiveFileInfo->getFile()->read(), $zipFileOption);
 				$archiveFileInfo->getFile()->close();
 				// Reset the execution timeout for every iteration.
 				try {
@@ -317,11 +335,11 @@ class Archive
 	 */
 	protected function extractFileInfo(Photo $photo, string $variant): ArchiveFileInfo
 	{
-		$validFilename = str_replace($this->badChars, '', $photo->title);
+		$validFilename = str_replace(self::BAD_CHARS, '', $photo->title);
 		$baseFilename = $validFilename !== '' ? $validFilename : 'Untitled';
 
 		if ($variant === self::LIVEPHOTOVIDEO) {
-			$sourceFile = new FlysystemFile(Storage::disk(), $photo->live_photo_short_path);
+			$sourceFile = new FlysystemFile(SizeVariantNamingStrategy::getImageDisk(), $photo->live_photo_short_path);
 			$baseFilenameAddon = '';
 		} elseif (array_key_exists($variant, self::VARIANT2VARIANT)) {
 			$sv = $photo->size_variants->getSizeVariant(self::VARIANT2VARIANT[$variant]);

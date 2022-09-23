@@ -18,14 +18,12 @@ class MigrateAdminUser extends Migration
 	 */
 	public function up(): void
 	{
-		$user = new User();
+		$user = User::query()->findOrNew(0);
+		$user->incrementing = false; // disable auto-generation of ID
+		$user->id = 0;
+		Configs::invalidateCache();
 		$user->username = Configs::getValueAsString('username', '');
 		$user->password = Configs::getValueAsString('password', '');
-		$user->save();
-
-		// User will have an ID which is NOT 0.
-		// We want this user to have an ID of 0 as it is the ADMIN ID.
-		$user->id = 0;
 		$user->save();
 	}
 

@@ -3,12 +3,14 @@ includes:
 	- vendor/lychee-org/phpstan-lychee/phpstan.neon
 
 parameters:
-	stubFiles:
-		- phpstan/stubs/Wireable.stub
 	paths:
 		- app
 		- scripts
-	excludePaths:
+	stubFiles:
+		# these can be removed after https://github.com/thecodingmachine/safe/issues/283 has been merged
+		- phpstan/stubs/Wireable.stub
+		- phpstan/stubs/image.stub
+		- phpstan/stubs/imageexception.stub
 	ignoreErrors:
 		# bunch of false positives from Eloquent
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::insert\(\).#'
@@ -21,8 +23,6 @@ parameters:
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::update\(\).#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::update\(\)#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::with(Only)?\(\)#'
-		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::getLft\(\).#'
-		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::getRgt\(\).#'
 		- '#Call to private method latest\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\HasMany<Illuminate\\Database\\Eloquent\\Model>#'
 		- '#Call to private method where(Not)?(Null|In|Exists|Column)?\(\) of parent class Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>.#'
 		- '#Call to protected method asDateTime\(\) of class Illuminate\\Database\\Eloquent\\Model.#'
@@ -44,8 +44,11 @@ parameters:
 		- '#Call to an undefined method COM::getfolder\(\).#'
 		- '#Call to an undefined method League\\Flysystem\\FilesystemInterface::getAdapter\(\)#'
 
-		# https://github.com/thecodingmachine/safe/issues/283
-		- '#Parameter \#(1|2) \$.* of function Safe\\image.* expects (resource|GdImage), (GdImage|resource)?(\|resource)? given.#'
-
 		- '#Property .* \(App\\Models\\.*(\|null)?\) does not accept (Illuminate\\Database\\Eloquent\\Collection<Illuminate\\Database\\Eloquent\\Model>\|)?Illuminate\\Database\\Eloquent\\Model(\|null)?.#'
 		- '#Property .* \(Illuminate\\Database\\Eloquent\\Collection<App\\Models\\.*>\) does not accept Illuminate\\Database\\Eloquent\\Collection<Illuminate\\Database\\Eloquent\\Model>(\|Illuminate\\Database\\Eloquent\\Model)?.#'
+
+		# False positive as stub code for PHP has not yet been updated to 2nd parameter, see https://github.com/php/doc-en/issues/1529 and https://www.php.net/imagick.writeimagefile
+		- '#Method Imagick::writeImageFile\(\) invoked with 2 parameters, 1 required#'
+
+		# False positive from maennchen/ZipStream
+		- '#Call to an undefined static method ZipStream\\Option\\Method::(STORE|DEFLATE)\(\)#'

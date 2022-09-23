@@ -2,7 +2,6 @@
 
 namespace App\Actions\Photo;
 
-use App\Actions\Photo\Extensions\Checks;
 use App\Actions\Photo\Strategies\AddDuplicateStrategy;
 use App\Actions\Photo\Strategies\AddPhotoPartnerStrategy;
 use App\Actions\Photo\Strategies\AddStandaloneStrategy;
@@ -21,6 +20,7 @@ use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\MediaFileOperationException;
 use App\Image\MediaFile;
 use App\Image\NativeLocalFile;
+use App\Image\StreamStat;
 use App\Metadata\Extractor;
 use App\Models\Album;
 use App\Models\Photo;
@@ -32,8 +32,6 @@ use function Safe\substr;
 
 class Create
 {
-	use Checks;
-
 	/** @var AddStrategyParameters the strategy parameters prepared and compiled by this class */
 	protected AddStrategyParameters $strategyParameters;
 
@@ -63,12 +61,6 @@ class Create
 	{
 		$sourceFile->assertIsSupportedMediaOrAcceptedRaw();
 
-		// Check permissions
-		// throws InsufficientFilesystemPermissions
-		// TODO: Why do we explicitly perform this check here? We could just let the photo addition fail.
-		// There is similar odd test in {@link \App\Actions\Import\FromUrl::__construct()} which uses another "check" trait.
-		$this->checkPermissions();
-
 		// Fill in information about targeted parent album
 		// throws InvalidPropertyException
 		$this->initParentAlbum($album);
@@ -78,7 +70,7 @@ class Create
 
 		// Look up potential duplicates/partners in order to select the
 		// proper strategy
-		$duplicate = $this->get_duplicate(Extractor::checksum($sourceFile));
+		$duplicate = $this->get_duplicate(StreamStat::createFromLocalFile($sourceFile)->checksum);
 		$livePartner = $this->findLivePartner(
 			$this->strategyParameters->exifInfo->livePhotoContentID,
 			$this->strategyParameters->exifInfo->type,
@@ -226,5 +218,25 @@ class Create
 		} else {
 			throw new InvalidPropertyException('The given parent album does not support uploading');
 		}
+	}
+
+	/**
+	 * Check if a picture has a duplicate
+	 * We compare the checksum to the other Photos or LivePhotos.
+	 *
+	 * @param string $checksum
+	 *
+	 * @return ?Photo
+	 */
+	public function get_duplicate(string $checksum): ?Photo
+	{
+		/** @var Photo|null $photo */
+		$photo = Photo::query()
+			->where('checksum', '=', $checksum)
+			->orWhere('original_checksum', '=', $checksum)
+			->orWhere('live_photo_checksum', '=', $checksum)
+			->first();
+
+		return $photo;
 	}
 }

@@ -71,7 +71,8 @@ return [
 	|
 	*/
 
-	'connection' => env('SESSION_CONNECTION'),
+	'connection' => env('SESSION_DRIVER') === 'database' ?
+		env('DB_CONNECTION', 'mysql') : 'cache',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -127,7 +128,7 @@ return [
 
 	'cookie' => env(
 		'SESSION_COOKIE',
-		Str::slug(env('APP_NAME', 'lychee'), '_') . '_session'
+		Str::slug(env('APP_NAME', 'Lychee'), '_') . '_session'
 	),
 
 	/*

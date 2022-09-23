@@ -12,7 +12,6 @@ use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\ZeroModuloException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
-use App\Facades\AccessControl;
 use App\Facades\Helpers;
 use App\Image\MediaFile;
 use App\Models\Extensions\HasAttributesPatch;
@@ -22,11 +21,13 @@ use App\Models\Extensions\SizeVariants;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
+use App\Policies\PhotoPolicy;
 use App\Relations\HasManySizeVariants;
 use App\Relations\LinkedPhotoCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use function Safe\preg_match;
 
@@ -335,7 +336,7 @@ class Photo extends Model implements HasRandomID
 	protected function getIsDownloadableAttribute(): bool
 	{
 		return
-			AccessControl::is_current_user_or_admin($this->owner_id) ||
+			Gate::check(PhotoPolicy::IS_OWNER, $this) ||
 			($this->album_id !== null && $this->album->is_downloadable) ||
 			($this->album_id === null && Configs::getValueAsBool('downloadable'));
 	}
@@ -355,7 +356,7 @@ class Photo extends Model implements HasRandomID
 		$default = Configs::getValueAsBool('share_button_visible');
 
 		return
-			AccessControl::is_current_user_or_admin($this->owner_id) ||
+			Gate::check(PhotoPolicy::IS_OWNER, $this) ||
 			($this->album_id !== null && $this->album->is_share_button_visible) ||
 			($this->album_id === null && $default);
 	}
@@ -440,7 +441,7 @@ class Photo extends Model implements HasRandomID
 		// The decision logic here is a merge of three formerly independent
 		// (and slightly different) approaches
 		if (
-			!AccessControl::is_current_user_or_admin($this->owner_id) &&
+			!Gate::check(PhotoPolicy::IS_OWNER, $this) &&
 			!$this->isVideo() &&
 			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null) &&
 			(
