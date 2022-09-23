@@ -29,6 +29,7 @@ abstract class LivewireEnum extends Enum implements Wireable
 
 	/**
 	 * @return string[]|int[]|Closure
+	 *
 	 * @psalm-return array<string, string|int> | Closure(string):(int|string)
 	 */
 	protected static function values()

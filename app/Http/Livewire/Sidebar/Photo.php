@@ -120,6 +120,7 @@ class Photo extends Component
 	 * @param float $decimal
 	 * @param bool  $type    - indicates if the passed decimal indicates a
 	 *                       latitude (`true`) or a longitude (`false`)
+	 *
 	 * @returns string
 	 */
 	private function decimalToDegreeMinutesSeconds(float $decimal, bool $type): string
