@@ -135,24 +135,13 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	}
 
 	/**
-	 * Used by Larapass.
-	 *
-	 * @return string
-	 */
-	public function name(): string
-	{
-		// If strings starts by '$2y$', it is very likely that it's a blowfish hash.
-		return substr($this->username, 0, 4) === '$2y$' ? 'Admin' : $this->username;
-	}
-
-	/**
 	 * Used by Larapass since 2022-09-21.
 	 *
 	 * @return string
 	 */
 	public function getNameAttribute(): string
 	{
-		return $this->name();
+		return substr($this->username, 0, 4) === '$2y$' ? 'Admin' : $this->username;
 	}
 
 	/**
