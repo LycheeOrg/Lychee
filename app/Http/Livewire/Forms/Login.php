@@ -3,9 +3,9 @@
 namespace App\Http\Livewire\Forms;
 
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Facades\AccessControl;
 use App\Models\Logs;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 use Throwable;
@@ -88,14 +88,8 @@ class Login extends BaseForm
 		$data = $this->validate()['form'];
 
 		// apply login as admin and trigger a reload
-		if (AccessControl::log_as_admin($data['username'], $data['password'], request()->ip()) === true) {
-			$this->emitTo('pages.fullpage', 'reloadPage');
-
-			return;
-		}
-
-		// apply login as user and trigger a reload
-		if (AccessControl::log_as_user($data['username'], $data['password'], request()->ip()) === true) {
+		if (Auth::attempt(['username' => $data['username'], 'password' => $data['password']])) {
+			Logs::notice(__METHOD__, __LINE__, 'User (' . $data['username'] . ') has logged in from ' . request()->ip());
 			$this->emitTo('pages.fullpage', 'reloadPage');
 
 			return;

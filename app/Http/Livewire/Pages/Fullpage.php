@@ -10,6 +10,7 @@ use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\SmartAlbums\BaseSmartAlbum;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Livewire\Component;
 use Livewire\Redirector;
@@ -43,7 +44,9 @@ class Fullpage extends Component
 
 			if ($photoId !== null) {
 				$this->mode = PageMode::PHOTO();
-				$this->photo = Photo::with('album')->findOrFail($photoId);
+				/** @var Photo $photoItem */
+				$photoItem = Photo::with('album')->findOrFail($photoId);
+				$this->photo = $photoItem;
 				$this->title = $this->photo->title;
 			}
 		}
@@ -57,7 +60,7 @@ class Fullpage extends Component
 	/*
 	 *          Interactions
 	 */
-	public function reloadPage(): Redirector
+	public function reloadPage(): Redirector|RedirectResponse
 	{
 		if ($this->photo !== null) {
 			return redirect('/livewire/' . $this->getAlbumProperty()->id . '/' . $this->photo->id);
@@ -66,18 +69,18 @@ class Fullpage extends Component
 		return redirect('/livewire/' . ($this->getAlbumProperty()?->id ?? ''));
 	}
 
-	public function openAlbum(string $albumId): Redirector
+	public function openAlbum(string $albumId): Redirector|RedirectResponse
 	{
 		return redirect('/livewire/' . $albumId);
 	}
 
-	public function openPhoto(string $photoId): Redirector
+	public function openPhoto(string $photoId): Redirector|RedirectResponse
 	{
 		return redirect('/livewire/' . $this->getAlbumProperty()->id . '/' . $photoId);
 	}
 
 	// Ideal we would like to avoid the redirect as they are slow.
-	public function back(): Redirector
+	public function back(): Redirector|RedirectResponse
 	{
 		if ($this->photo !== null) {
 			// $this->photo = null;

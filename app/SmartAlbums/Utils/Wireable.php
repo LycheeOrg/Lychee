@@ -3,13 +3,14 @@
 namespace App\SmartAlbums\Utils;
 
 use App\Factories\AlbumFactory;
+use App\SmartAlbums\BaseSmartAlbum;
 
 trait Wireable
 {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function toLivewire()
+	public function toLivewire(): string
 	{
 		return $this->id;
 	}
@@ -17,10 +18,10 @@ trait Wireable
 	/**
 	 * {@inheritdoc}
 	 */
-	public static function fromLivewire($value)
+	public static function fromLivewire(mixed $value): BaseSmartAlbum
 	{
 		$albumFactory = resolve(AlbumFactory::class);
 
-		return $albumFactory->createSmartAlbum($value, true);
+		return $albumFactory->createSmartAlbum(strval($value), true);
 	}
 }

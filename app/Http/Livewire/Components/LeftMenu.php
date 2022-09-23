@@ -2,8 +2,9 @@
 
 namespace App\Http\Livewire\Components;
 
-use App\Facades\AccessControl;
 use App\Http\Livewire\Components\Base\Openable;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 /**
@@ -26,7 +27,8 @@ class LeftMenu extends Openable
 	 */
 	public function logout(): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
 	{
-		AccessControl::logout();
+		Auth::logout();
+		Session::flush();
 
 		return redirect('/livewire/');
 	}

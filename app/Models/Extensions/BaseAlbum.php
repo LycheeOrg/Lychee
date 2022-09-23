@@ -116,10 +116,10 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID, Wi
 	/**
 	 * {@inheritdoc}
 	 */
-	public static function fromLivewire($value)
+	public static function fromLivewire(mixed $value): AbstractAlbum
 	{
 		$factory = resolve(AlbumFactory::class);
 
-		return $factory->findAbstractAlbumOrFail($value);
+		return $factory->findAbstractAlbumOrFail(strval($value));
 	}
 }

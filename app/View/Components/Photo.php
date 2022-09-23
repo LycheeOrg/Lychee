@@ -53,16 +53,16 @@ class Photo extends Component
 
 		$this->class = '';
 		$this->class .= $data->isVideo() ? ' video' : '';
-		$this->class .= $data->isLivePhoto() ? ' livephoto' : '';
+		$this->class .= $data->live_photo_url !== null ? ' livephoto' : '';
 
 		$this->layout = Configs::getValueAsInt('layout') === 0;
 
 		$this->src = URL::asset('img/placeholder.png');
 
 		// TODO: Don't hardcode paths
-		if ($data->size_variants->getSizeVariant(SizeVariant::THUMB) == null) {
+		if ($data->size_variants->getSizeVariant(SizeVariant::THUMB) === null) {
 			$this->src = $data->isVideo() ? URL::asset('img/play-icon.png') : $this->src;
-			$this->src = $data->isLivePhoto() ? URL::asset('img/live-photo-icon.png') : $this->src;
+			$this->src = $data->live_photo_url !== null ? URL::asset('img/live-photo-icon.png') : $this->src;
 
 			$this->is_lazyload = false;
 		}
@@ -122,7 +122,7 @@ class Photo extends Component
 			$thumb2x_src = sprintf("data-srcset='%s %dw, %s %dw'", URL::asset($thumbUrl), $dim, URL::asset($thumb2xUrl), $dim2x);
 		}
 
-		$this->srcset2x = $thumb2xUrl != '' ? $thumb2x_src : '';
+		$this->srcset2x = $thumb2xUrl !== '' ? $thumb2x_src : '';
 	}
 
 	/**
