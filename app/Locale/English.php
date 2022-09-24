@@ -352,6 +352,9 @@ final class English implements Language
 			'EDIT_SHARING_TEXT' => 'The sharing properties of this album will be changed to the following:',
 			'SHARE_ALBUM_TEXT' => 'This album will be shared with the following properties:',
 
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
+
 			'SORT_ALBUM_BY' => 'Sort albums by %1$s in an %2$s order.',
 
 			'SORT_ALBUM_SELECT_1' => 'Creation Time',

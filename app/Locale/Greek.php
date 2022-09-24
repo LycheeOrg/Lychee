@@ -352,6 +352,9 @@ final class Greek implements Language
 			'EDIT_SHARING_TEXT' => 'Οι ιδιότητες κοινής χρήσης αυτού του λευκώματος θα αλλάξουν στις παρακάτω:',
 			'SHARE_ALBUM_TEXT' => 'Αυτό το λεύκωμα θα κοινοποιείται με τις παρακάτω ιδιότητες:',
 
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
+
 			'SORT_ALBUM_BY' => 'Ταξινόμηση λευκωμάτων κατά %1$s με %2$s σειρά.',
 
 			'SORT_ALBUM_SELECT_1' => 'Ημερομηνία Δημιουργίας',

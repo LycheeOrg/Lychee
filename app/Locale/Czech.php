@@ -356,6 +356,9 @@ final class Czech implements Language
 			'EDIT_SHARING_TEXT' => 'Vlastnosti sdílení tohoto alba budou změněny následovně:',
 			'SHARE_ALBUM_TEXT' => 'Album bude sdíleno s následujícími parametry:',
 
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
+
 			'SORT_ALBUM_BY' => 'Řadit alba podle %1$s ve %2$s pořadí.',
 
 			'SORT_ALBUM_SELECT_1' => 'Data vytvoření',

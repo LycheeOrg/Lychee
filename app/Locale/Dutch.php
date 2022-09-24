@@ -352,6 +352,9 @@ final class Dutch implements Language
 			'EDIT_SHARING_TEXT' => 'De deelinstellingen van dit album worden alsvolgt ingesteld:',
 			'SHARE_ALBUM_TEXT' => 'Dit album wordt gedeeld met de volgende instellingen:',
 
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
+
 			'SORT_ALBUM_BY' => 'Sorteer albums op %1$s in een %2$s volgorde.',
 
 			'SORT_ALBUM_SELECT_1' => 'Aangemaakt op',

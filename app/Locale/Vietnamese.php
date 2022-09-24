@@ -352,6 +352,10 @@ final class Vietnamese implements Language
 			'EDIT_SHARING_TITLE' => 'Chỉnh sửa chế độ chia sẻ',
 			'EDIT_SHARING_TEXT' => 'Những đặc điểm chia sẻ của tấm hình này sẽ được thay đổi thành như sau:',
 			'SHARE_ALBUM_TEXT' => 'Album này sẽ được chia sẻ với những đặc điểm sau:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
+
 			'ALBUM_SHARING_CONFIRM' => 'Lưu',
 
 			'SORT_ALBUM_BY' => 'Sắp xếp album theo %1$s một %2$s thứ tự.',

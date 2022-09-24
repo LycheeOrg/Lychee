@@ -352,6 +352,9 @@ final class Swedish implements Language
 			'EDIT_SHARING_TEXT' => 'Albumets egenskaper för delning kommer att ändras till:',
 			'SHARE_ALBUM_TEXT' => 'Det här albumet kommer att delas ut med dessa egenskaper::',
 
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
+
 			'SORT_ALBUM_BY' => 'Sortera album efter %1$s i en %2$s ordning.',
 
 			'SORT_ALBUM_SELECT_1' => 'skapelsetid',

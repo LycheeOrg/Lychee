@@ -356,6 +356,9 @@ final class Slovak implements Language
 			'EDIT_SHARING_TEXT' => 'Nastavenie zdieľania pre tento album bolo zmenené nasledovne:',
 			'SHARE_ALBUM_TEXT' => 'Tento album bude zdieľaný s nasledovnými vlastnosťami:',
 
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
+
 			'SORT_ALBUM_BY' => 'Triediť albumy podľa %1$s v %2$s rade.',
 
 			'SORT_ALBUM_SELECT_1' => 'Čas vytvorenia',

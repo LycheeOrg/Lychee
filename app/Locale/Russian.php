@@ -352,6 +352,9 @@ final class Russian implements Language
 			'EDIT_SHARING_TEXT' => 'Параметры доступа к выбранному альбому будут изменены на следующие:',
 			'SHARE_ALBUM_TEXT' => 'Этот альбом будет доступен со следующими условиями:',
 
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
+
 			'SORT_ALBUM_BY' => 'Сортировать альбомы %1$s в порядке %2$s.',
 
 			'SORT_ALBUM_SELECT_1' => 'даты создания',

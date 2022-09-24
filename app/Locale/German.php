@@ -357,6 +357,9 @@ final class German implements Language
 			'EDIT_SHARING_TEXT' => 'Die Freigabeeinstellungen für dieses Album werden wie folgt geändert:',
 			'SHARE_ALBUM_TEXT' => 'Dieses Album wird mit folgenden Einstellungen freigegeben:',
 
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribut',
+			'SORT_DIALOG_ORDER_LABEL' => 'Reihenfolge',
+
 			'SORT_ALBUM_BY' => 'Alben nach %1$s in einer %2$s Reihenfolge sortieren.',
 
 			'SORT_ALBUM_SELECT_1' => 'Erstellungszeitpunkt',

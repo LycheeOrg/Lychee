@@ -352,6 +352,9 @@ final class Spanish implements Language
 			'EDIT_SHARING_TEXT' => 'Las propiedades para compartir de este álbum se cambiarán a lo siguiente:',
 			'SHARE_ALBUM_TEXT' => 'Este álbum se compartirá con las siguientes propiedades:',
 
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
+
 			'SORT_ALBUM_BY' => 'Ordenar álbumes por %1$s en un %2$s orden.',
 
 			'SORT_ALBUM_SELECT_1' => 'Tiempo de creación',

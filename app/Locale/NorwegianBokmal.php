@@ -352,6 +352,9 @@ final class NorwegianBokmal implements Language
 			'EDIT_SHARING_TEXT' => 'Egenskapene for deling for dette albumet vil bli endret til følgende:',
 			'SHARE_ALBUM_TEXT' => 'Albumet vil bli delt med følgende egenskaper:',
 
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
+
 			'SORT_ALBUM_BY' => 'Sorter album etter %1$s i en %2$s rekkefølge.',
 
 			'SORT_ALBUM_SELECT_1' => 'Opprettelsestid',

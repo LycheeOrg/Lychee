@@ -354,6 +354,9 @@ final class Italian implements Language
 			'EDIT_SHARING_TEXT' => 'Le proprietà di condivisione di questo album verrano cambiate nelle seguenti:',
 			'SHARE_ALBUM_TEXT' => 'Questo album verrà condiviso con le seguenti proprietà:',
 
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
+
 			'SORT_ALBUM_BY' => 'Ordina album per %1$s in un ordine %2$s.',
 
 			'SORT_ALBUM_SELECT_1' => 'Data di Creazione',

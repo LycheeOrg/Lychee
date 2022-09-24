@@ -352,6 +352,9 @@ final class Polish implements Language
 			'EDIT_SHARING_TEXT' => 'Ustawienia udostępniania zostaną zmienione na następujące:',
 			'SHARE_ALBUM_TEXT' => 'Album zostanie udostępniony z następującymi ustawieniami:',
 
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
+
 			'SORT_ALBUM_BY' => 'Sortuj albumy według pola %1$s w kolejności %2$s',
 
 			'SORT_ALBUM_SELECT_1' => 'data utworzenia',

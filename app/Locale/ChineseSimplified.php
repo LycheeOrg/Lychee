@@ -353,6 +353,9 @@ final class ChineseSimplified implements Language
 			'EDIT_SHARING_TEXT' => '此相册的共享属性将被修改为：',
 			'SHARE_ALBUM_TEXT' => '此相册将会以下列的属性共享：',
 
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
+
 			'SORT_ALBUM_BY' => '相册排序：根据 %1$s 的 %2$s 排序。',
 
 			'SORT_ALBUM_SELECT_1' => '创建时间',

@@ -2144,7 +2144,7 @@ album.setSorting = function (albumID) {
   * @returns {void}
   */
 	var initSetAlbumSortingDialog = function initSetAlbumSortingDialog(formElements, dialog) {
-		formElements.sorting_col.labels[0].textContent = "Attribute";
+		formElements.sorting_col.labels[0].textContent = lychee.locale["SORT_DIALOG_ATTRIBUTE_LABEL"];
 		formElements.sorting_col.item(1).textContent = lychee.locale["SORT_PHOTO_SELECT_1"];
 		formElements.sorting_col.item(2).textContent = lychee.locale["SORT_PHOTO_SELECT_2"];
 		formElements.sorting_col.item(3).textContent = lychee.locale["SORT_PHOTO_SELECT_3"];
@@ -2153,7 +2153,7 @@ album.setSorting = function (albumID) {
 		formElements.sorting_col.item(6).textContent = lychee.locale["SORT_PHOTO_SELECT_6"];
 		formElements.sorting_col.item(7).textContent = lychee.locale["SORT_PHOTO_SELECT_7"];
 
-		formElements.sorting_order.labels[0].textContent = "Order";
+		formElements.sorting_order.labels[0].textContent = lychee.locale["SORT_DIALOG_ORDER_LABEL"];
 		formElements.sorting_order.item(1).textContent = lychee.locale["SORT_ASCENDING"];
 		formElements.sorting_order.item(2).textContent = lychee.locale["SORT_DESCENDING"];
 
@@ -2286,7 +2286,7 @@ album.setProtectionPolicy = function (albumID) {
 				checkbox.parentElement.classList.remove("disabled");
 				checkbox.disabled = false;
 			});
-			// Initialize options based on global settings.
+			// Initialize options based on album settings.
 			formElements.grants_full_photo.checked = album.json.grants_full_photo;
 			formElements.requires_link.checked = album.json.requires_link;
 			formElements.is_downloadable.checked = album.json.is_downloadable;
@@ -2303,10 +2303,10 @@ album.setProtectionPolicy = function (albumID) {
 				checkbox.disabled = true;
 			});
 			// Initialize options based on global settings.
-			formElements.grants_full_photo.checked = lychee.grants_full_photo;
+			formElements.grants_full_photo.checked = lychee.full_photo;
 			formElements.requires_link.checked = false;
-			formElements.is_downloadable.checked = lychee.is_downloadable;
-			formElements.is_share_button_visible.checked = lychee.is_share_button_visible;
+			formElements.is_downloadable.checked = lychee.downloadable;
+			formElements.is_share_button_visible.checked = lychee.share_button_visible;
 			formElements.has_password.checked = false;
 			formElements.password.parentElement.classList.add("hidden");
 		}
@@ -5782,8 +5782,6 @@ lychee.aboutDialog = function () {
 		var updClassList = dialog.querySelector("p.update-status").classList;
 		if (lychee.update_available) {
 			updClassList.remove("up-to-date");
-		} else {
-			updClassList.add("up-to-date");
 		}
 		dialog.querySelector("p a").textContent = lychee.locale["UPDATE_AVAILABLE"];
 		dialog.querySelector("h2").textContent = lychee.locale["ABOUT_SUBTITLE"];
@@ -6021,8 +6019,6 @@ lychee.loginDialog = function () {
 		var updClassList = dialog.querySelector("span.update-status").classList;
 		if (lychee.update_available) {
 			updClassList.remove("up-to-date");
-		} else {
-			updClassList.add("up-to-date");
 		}
 		dialog.querySelector("span.update-status a").textContent = lychee.locale["UPDATE_AVAILABLE"];
 
@@ -7147,6 +7143,9 @@ lychee.locale = {
 	EDIT_SHARING_TITLE: "Edit Sharing",
 	EDIT_SHARING_TEXT: "The sharing-properties of this album will be changed to the following:",
 	SHARE_ALBUM_TEXT: "This album will be shared with the following properties:",
+
+	SORT_DIALOG_ATTRIBUTE_LABEL: "Attribute",
+	SORT_DIALOG_ORDER_LABEL: "Order",
 
 	SORT_ALBUM_BY: "Sort albums by %1$s in an %2$s order.",
 
@@ -8977,7 +8976,7 @@ _photo3.setProtectionPolicy = function (photoID) {
 			formElements.is_public.checked = _photo3.json.is_public !== 0;
 			formElements.grants_full_photo.checked = lychee.full_photo;
 			formElements.requires_link.checked = lychee.public_photos_hidden;
-			formElements.is_downloadable.checked = !!album.downloadable;
+			formElements.is_downloadable.checked = lychee.downloadable;
 			formElements.is_share_button_visible = lychee.share_button_visible;
 			formElements.has_password.checked = false;
 		}
@@ -9312,7 +9311,7 @@ _photo3.getArchive = function (photoIDs) {
 			var button = dialog.querySelector('a[data-photo-kind="' + kind + '"]');
 			/** @type {?SizeVariant} */
 			var sv = myPhoto.size_variants[variant];
-			if (!!sv) {
+			if (sv) {
 				button.title = lychee.locale["DOWNLOAD"];
 				button.addEventListener(lychee.getEventName(), onClickOrTouch);
 				button.lastElementChild.textContent = lLabel + "(" + sv.width + "×" + sv.height + ", " + lychee.locale.printFilesizeLocalized(sv.filesize) + ")";
@@ -9438,7 +9437,7 @@ _photo3.showDirectLinks = function (photoID) {
 	var initShowDirectLinksDialog = function initShowDirectLinksDialog(formElements, dialog) {
 		formElements.view.value = _photo3.getViewLink(photoID);
 		formElements.view.previousElementSibling.textContent = lychee.locale["PHOTO_VIEW"];
-		formElements.view.nextElementSibling.title = "Copy to clipboard";
+		formElements.view.nextElementSibling.title = lychee.locale["URL_COPY_TO_CLIPBOARD"];
 		dialog.querySelector("p").textContent = lychee.locale["PHOTO_DIRECT_LINKS_TO_IMAGES"];
 
 		for (var type in localizations) {
@@ -9447,7 +9446,7 @@ _photo3.showDirectLinks = function (photoID) {
 			if (sv !== null) {
 				formElements[type].value = lychee.getBaseUrl() + sv.url;
 				formElements[type].previousElementSibling.textContent = localizations[type] + " (" + sv.width + "×" + sv.height + ")";
-				formElements[type].nextElementSibling.title = "Copy to clipboard";
+				formElements[type].nextElementSibling.title = lychee.locale["URL_COPY_TO_CLIPBOARD"];
 			} else {
 				// The form element is the `<input>` element, the parent
 				// element is the `<div>` which binds the label, the input
@@ -9460,7 +9459,7 @@ _photo3.showDirectLinks = function (photoID) {
 		if (_photo3.json.live_photo_url !== null) {
 			formElements.live.value = lychee.getBaseUrl() + _photo3.json.live_photo_url;
 			formElements.live.previousElementSibling.textContent = lychee.locale["PHOTO_LIVE_VIDEO"];
-			formElements.live.nextElementSibling.title = "Copy to clipboard";
+			formElements.live.nextElementSibling.title = lychee.locale["URL_COPY_TO_CLIPBOARD"];
 		} else {
 			formElements.live.parentElement.remove();
 		}
@@ -9726,7 +9725,7 @@ settings.createLogin = function () {
 				/** @type {NodeList<HTMLParagraphElement>} */
 				var paragraphs = dialog.querySelectorAll("p");
 				paragraphs.item(0).textContent = lychee.locale["ERROR_LOGIN"];
-				paragraphs.item(1).textContent = lycheeException ? "<p>" + lycheeException.message + "</p>" : "";
+				paragraphs.item(1).textContent = lycheeException ? lycheeException.message : "";
 			},
 			buttons: {
 				action: {
@@ -10156,7 +10155,9 @@ settings.save_enter = function (e) {
 	// We only handle "enter"
 	if (e.which !== 13) return;
 
-	var saveSettingsConfirmationDialogBody = '<p style="color: #d92c34; font-size: 1.3em; font-weight: bold; text-transform: capitalize; text-align: center;"></p>';
+	var saveSettingsConfirmationDialogBody =
+	// TODO: move the style to the style file, where it belongs.
+	'<p style="color: #d92c34; font-size: 1.3em; font-weight: bold; text-transform: capitalize; text-align: center;"></p>';
 
 	basicModal.show({
 		body: saveSettingsConfirmationDialogBody,

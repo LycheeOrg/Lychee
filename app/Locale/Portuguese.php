@@ -352,6 +352,9 @@ final class Portuguese implements Language
 			'EDIT_SHARING_TEXT' => 'As propriedades de partilha deste álbum vão ser alteradas para o seguinte:',
 			'SHARE_ALBUM_TEXT' => 'Este álbum vai ser partilhado com as seguintes propriedades:',
 
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
+
 			'SORT_ALBUM_BY' => 'Ordenar álbums por %1$s numa %2$s ordem.',
 
 			'SORT_ALBUM_SELECT_1' => 'Hora de Criação',

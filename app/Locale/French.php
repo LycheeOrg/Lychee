@@ -352,6 +352,9 @@ final class French implements Language
 			'EDIT_SHARING_TEXT' => 'Les propriétés de partage de cet album vont etre modifiées comme suit :',
 			'SHARE_ALBUM_TEXT' => 'Cet album sera partagé avec les propriétés suivantes :',
 
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribut',
+			'SORT_DIALOG_ORDER_LABEL' => 'Ordre',
+
 			'SORT_ALBUM_BY' => 'Trier les albums %1$s dans l’ordre %2$s.',
 
 			'SORT_ALBUM_SELECT_1' => 'Heure de création',

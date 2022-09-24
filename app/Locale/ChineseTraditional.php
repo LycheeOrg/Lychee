@@ -352,6 +352,9 @@ final class ChineseTraditional implements Language
 			'EDIT_SHARING_TEXT' => '相簿的共享屬性將被修改為：',
 			'SHARE_ALBUM_TEXT' => '該相簿的共享屬性：',
 
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
+
 			'SORT_ALBUM_BY' => '相簿排序 %1$s 在一個 %2$s 排序',
 
 			'SORT_ALBUM_SELECT_1' => '創建時間',
