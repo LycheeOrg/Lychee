@@ -275,7 +275,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	{
 		$result = parent::toArray();
 		if (Auth::check()) {
-			$result['owner_name'] = $this->owner->name();
+			$result['owner_name'] = $this->owner->name;
 		}
 
 		return $result;
