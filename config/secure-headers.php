@@ -372,6 +372,24 @@ return [
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/img-src
 		'img-src' => [
+			'self' => true,
+			// Allow OpenStreetMap tile images to be fetched from the different provides
+			// Allow image to be directly encoded at the img source parameter
+			'allow' => [
+				'https://maps.wikimedia.org/osm-intl/',
+				'https://a.tile.osm.org/',
+				'https://b.tile.osm.org/',
+				'https://c.tile.osm.org/',
+				'https://a.tile.openstreetmap.de/',
+				'https://b.tile.openstreetmap.de/',
+				'https://c.tile.openstreetmap.de/',
+				'https://a.tile.openstreetmap.fr/osmfr/',
+				'https://b.tile.openstreetmap.fr/osmfr/',
+				'https://c.tile.openstreetmap.fr/osmfr/',
+				'https://a.osm.rrze.fau.de/osmhd/',
+				'https://b.osm.rrze.fau.de/osmhd/',
+				'https://c.osm.rrze.fau.de/osmhd/',
+			],
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/manifest-src
@@ -381,9 +399,6 @@ return [
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/media-src
 		'media-src' => [
 			'self' => true,
-			'allow' => [
-				'blob:',
-			],
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/navigate-to
@@ -477,7 +492,6 @@ return [
 			'hashes' => [
 				'sha256' => [
 					// 'sha256-hash-value-with-base64-encode',
-					'8bLztrDF3NUpheSuvAzpebgX1DpPJEfhmUHKTwGF4qA=',
 				],
 
 				'sha384' => [
@@ -510,7 +524,8 @@ return [
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src
 		'style-src' => [
-			// 'unsafe-inline', // TODO: CHECK IF SECURITY RISK
+			'self' => true,
+			'unsafe-inline' => true, // We sadly need this one
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src-attr
@@ -537,40 +552,8 @@ return [
 		'worker-src' => [
 		],
 
-		'img-src' => [
-			'self' => true,
-			// Allow OpenStreetMap tile images to be fetched from the different provides
-			// Allow image to be directly encoded at the img source parameter
-			'allow' => [
-				'https://maps.wikimedia.org/osm-intl/',
-				'https://a.tile.osm.org/',
-				'https://b.tile.osm.org/',
-				'https://c.tile.osm.org/',
-				'https://a.tile.openstreetmap.de/',
-				'https://b.tile.openstreetmap.de/',
-				'https://c.tile.openstreetmap.de/',
-				'https://a.tile.openstreetmap.fr/osmfr/',
-				'https://b.tile.openstreetmap.fr/osmfr/',
-				'https://c.tile.openstreetmap.fr/osmfr/',
-				'https://a.osm.rrze.fau.de/osmhd/',
-				'https://b.osm.rrze.fau.de/osmhd/',
-				'https://c.osm.rrze.fau.de/osmhd/',
-				env('LYCHEE_UPLOADS_URL', 'https://lycheeorg.github.io/'),
-				'data:',
-				'blob:',
-			],
-		],
-
-		'style-src' => [
-			'self' => true,
-			'unsafe-inline' => true, // We sadly need this one
-		],
-
 		'default-src' => [
-			'self' => true,
-			'allow' => [
-				'blob:',
-			],
+			'self' => false,
 		],
 	],
 ];
