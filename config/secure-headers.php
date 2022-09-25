@@ -1,7 +1,5 @@
 <?php
 
-use PhpOption\None;
-
 return [
 	/*
 	 * Server
