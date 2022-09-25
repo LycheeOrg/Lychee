@@ -314,7 +314,7 @@ return [
 	 */
 
 	/*
-	 * There is no easy way to use CSP with debug bar at the moment so we disable CSP if debug bar is enabled.
+	 * There is no easy way to use CSP with debug bar at the moment, so we disable CSP if debug bar is enabled.
 	 */
 	'csp' => [
 		'enable' => ((bool) env('DEBUGBAR_ENABLED', false)) === false,
@@ -351,6 +351,7 @@ return [
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/default-src
 		'default-src' => [
+			'self' => false,
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/font-src
@@ -506,11 +507,9 @@ return [
 			'nonces' => [
 				// 'base64-encoded',
 			],
-			'schemes' => [
-				// 'https:',
-			],
-			'unsafe-eval' => false,
+
 			'unsafe-hashed-attributes' => false,
+
 			'add-generated-nonce' => false,
 		],
 
@@ -550,10 +549,6 @@ return [
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/worker-src
 		'worker-src' => [
-		],
-
-		'default-src' => [
-			'self' => false,
 		],
 	],
 ];
