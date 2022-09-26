@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Gate;
 
 /**
  * Data Transfer Object (DTO) to transmit the rights of a User.
+ *
+ * TODO: REMOVE ME
  */
 class UserRights extends ArrayableDTO
 {

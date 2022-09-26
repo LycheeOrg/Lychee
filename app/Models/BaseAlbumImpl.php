@@ -94,8 +94,8 @@ use Illuminate\Support\Facades\Auth;
  * @property bool                       $is_link_required
  * @property bool                       $is_share_button_visible
  * @property bool                       $is_nsfw
- * @property bool                       $grant_access_full_photo
- * @property bool                       $grant_download
+ * @property bool                       $grants_access_full_photo
+ * @property bool                       $grants_download
  * @property Collection                 $shared_with
  * @property string|null                $password
  * @property bool                       $has_password
@@ -153,8 +153,8 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'is_share_button_visible' => false,
 		'password' => null,
 		// Permissions
-		'grant_access_full_photo' => true,
-		'grant_download' => false,
+		'grants_access_full_photo' => true,
+		'grants_download' => false,
 	];
 
 	/**
@@ -188,8 +188,8 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'is_link_required',
 		'is_share_button_visible',
 		// Permissions taken care by Rights
-		'grant_download',
-		'grant_access_full_photo',
+		'grants_download',
+		'grants_access_full_photo',
 	];
 
 	/**

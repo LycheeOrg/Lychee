@@ -17,7 +17,6 @@ use Illuminate\Support\Collection;
  */
 class TopAlbums extends DTO
 {
-
 	public function __construct(
 		public Collection $smart_albums,
 		public Collection $tag_albums,
@@ -49,7 +48,7 @@ class TopAlbums extends DTO
 	 */
 	private static function toAlbumDTOArray(AbstractAlbum $abstractAlbum): array
 	{
-		$dto = new AlbumDTO($abstractAlbum);
+		$dto = new AbstractAlbumDTO($abstractAlbum);
 
 		return $dto->toArray();
 	}

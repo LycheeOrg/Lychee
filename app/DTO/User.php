@@ -6,6 +6,8 @@ use App\Models\User as UserModel;
 
 /**
  * Data Transfer Object (DTO) to transmit the attributes of a User.
+ *
+ * This is used in the Admin part to manage users.
  */
 class User extends ArrayableDTO
 {

@@ -12,7 +12,7 @@ use App\Actions\Album\PositionData;
 use App\Actions\Album\SetProtectionPolicy;
 use App\Actions\Album\Unlock;
 use App\Contracts\LycheeException;
-use App\DTO\AlbumDTO;
+use App\DTO\AbstractAlbumDTO;
 use App\DTO\PositionData as PositionDataDTO;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
@@ -80,11 +80,11 @@ class AlbumController extends Controller
 	 *
 	 * @param GetAlbumRequest $request
 	 *
-	 * @return AlbumDTO
+	 * @return AbstractAlbumDTO
 	 */
-	public function get(GetAlbumRequest $request): AlbumDTO
+	public function get(GetAlbumRequest $request): AbstractAlbumDTO
 	{
-		return new AlbumDTO($request->album());
+		return new AbstractAlbumDTO($request->album());
 	}
 
 	/**

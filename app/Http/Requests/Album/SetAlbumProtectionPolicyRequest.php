@@ -59,8 +59,8 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 			is_link_required: static::toBoolean($values[self::IS_LINK_REQUIRED_ATTRIBUTE]),
 			is_share_button_visible: static::toBoolean($values[self::IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE]),
 			is_nsfw: static::toBoolean($values[self::IS_NSFW_ATTRIBUTE]),
-			grant_download: static::toBoolean($values[self::GRANT_DOWNLOAD_ATTRIBUTE]),
-			grant_access_full_photo: static::toBoolean($values[self::GRANT_ACCESS_FULL_PHOTO_ATTRIBUTE]),
+			grants_download: static::toBoolean($values[self::GRANT_DOWNLOAD_ATTRIBUTE]),
+			grants_access_full_photo: static::toBoolean($values[self::GRANT_ACCESS_FULL_PHOTO_ATTRIBUTE]),
 		);
 		$this->isPasswordProvided = array_key_exists(HasPassword::PASSWORD_ATTRIBUTE, $values);
 		$this->password = $this->isPasswordProvided ? $values[HasPassword::PASSWORD_ATTRIBUTE] : null;

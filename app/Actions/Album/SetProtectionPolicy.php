@@ -33,8 +33,8 @@ class SetProtectionPolicy extends Action
 		$album->is_link_required = $protectionPolicy->is_link_required;
 		$album->is_nsfw = $protectionPolicy->is_nsfw;
 		$album->is_share_button_visible = $protectionPolicy->is_share_button_visible;
-		$album->grant_download = $protectionPolicy->grant_download;
-		$album->grant_access_full_photo = $protectionPolicy->grant_access_full_photo;
+		$album->grant_download = $protectionPolicy->grants_download;
+		$album->grant_access_full_photo = $protectionPolicy->grants_access_full_photo;
 
 		// Set password if provided
 		if ($shallSetPassword) {

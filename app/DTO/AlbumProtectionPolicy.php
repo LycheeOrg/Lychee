@@ -7,10 +7,18 @@ use App\Models\Extensions\BaseAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 
 /**
- * This defines the Protection policy.
+ * This represents the Album Protection policy.
  *
- * In other words this gives the info of the security attributes of an album.
- * It should not be used in the front end to determine whether an action is doable or not (e.g. share link available).
+ * In other words it provides information on the security attributes of an album.
+ * It MUST not be used in the front-end to determine whether an action is permitted or not (e.g. share link available).
+ *
+ * It is used in two places:
+ * 1. When sent to the front-end:
+ *   - provides an overview of the policy of the current visited album
+ *   - allows modification of the policy on non-smart albums
+ * 2. When gotten from the front-end:
+ *   - to allow easy interface between the validated request {@link \App\Http\Requests\Album\SetAlbumProtectionPolicyRequest}
+ *     and the applied action {@link \App\Actions\Album\SetProtectionPolicy}.
  */
 class AlbumProtectionPolicy extends ArrayableDTO
 {
@@ -19,9 +27,9 @@ class AlbumProtectionPolicy extends ArrayableDTO
 		public bool $is_link_required,
 		public bool $is_nsfw,
 		public bool $is_share_button_visible,
-		public bool $grant_access_full_photo,
-		public bool $grant_download,
-		public bool $is_password_required = false,
+		public bool $grants_access_full_photo,
+		public bool $grants_download,
+		public bool $is_password_required = false, // Only used when sending info to the front-end
 	) {
 	}
 
@@ -44,21 +52,21 @@ class AlbumProtectionPolicy extends ArrayableDTO
 				is_link_required: $abstractAlbum->is_link_required,
 				is_nsfw: $abstractAlbum->is_nsfw,
 				is_share_button_visible: $abstractAlbum->is_share_button_visible,
+				grants_access_full_photo: $abstractAlbum->grant_access_full_photo,
+				grants_download: $abstractAlbum->grant_download,
 				is_password_required: $abstractAlbum->password !== null && $abstractAlbum->password !== '',
-				grant_access_full_photo: $abstractAlbum->grant_access_full_photo,
-				grant_download: $abstractAlbum->grant_download,
 			);
 		}
 
 		if ($abstractAlbum instanceof BaseSmartAlbum) {
 			return new AlbumProtectionPolicy(
-				is_public: $abstractAlbum->is_public,
-				is_link_required: false,
+				is_public: $abstractAlbum->is_public, // TODO: FIX ME
+				is_link_required: false, // TODO: FIX ME
 				is_nsfw: false,
-				is_share_button_visible: $abstractAlbum->is_share_button_visible,
+				is_share_button_visible: $abstractAlbum->is_share_button_visible, // TODO: FIX ME
+				grants_access_full_photo: false, // TODO: FIX ME
+				grants_download: false,
 				is_password_required: false,
-				grant_access_full_photo: false,
-				grant_download: false,
 			);
 		}
 
