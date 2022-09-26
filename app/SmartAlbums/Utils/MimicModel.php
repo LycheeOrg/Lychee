@@ -4,7 +4,6 @@ namespace App\SmartAlbums\Utils;
 
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
-use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Support\Str;
 
@@ -63,7 +62,6 @@ trait MimicModel
 	 */
 	public function __get(string $key)
 	{
-		Debugbar::warning($key);
 		if ($key === '') {
 			throw new LycheeInvalidArgumentException('property name must not be empty');
 		}
