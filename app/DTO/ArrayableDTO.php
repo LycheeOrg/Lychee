@@ -31,7 +31,7 @@ class ArrayableDTO extends DTO
 				if ($value instanceof Arrayable) {
 					$value = $value->toArray();
 				} else {
-					throw new LycheeLogicException(sprintf("Unable to convert %s into an array", get_class($value)));
+					throw new LycheeLogicException(sprintf('Unable to convert %s into an array', get_class($value)));
 				}
 			}
 			$result[$prop->getName()] = $value;
