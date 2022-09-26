@@ -390,6 +390,7 @@ return [
 				'https://a.osm.rrze.fau.de/osmhd/',
 				'https://b.osm.rrze.fau.de/osmhd/',
 				'https://c.osm.rrze.fau.de/osmhd/',
+				'data:', // required by openstreetmap
 			],
 		],
 
