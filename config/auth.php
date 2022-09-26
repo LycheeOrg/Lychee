@@ -13,7 +13,7 @@ return [
 	*/
 
 	'defaults' => [
-		'guard' => 'web',
+		'guard' => 'lychee',
 		'passwords' => 'users',
 	],
 
@@ -32,18 +32,15 @@ return [
 	|
 	| Supported: "session", "token"
 	|
+	| The custom identifier "session-or-token" is registered in
+	| App\Providers\AuthServiceProvider and resolves to
+	| App\Services\Auth\SessionOrTokenGuard.
 	*/
 
 	'guards' => [
-		'web' => [
-			'driver' => 'session',
+		'lychee' => [
+			'driver' => 'session-or-token',
 			'provider' => 'users',
-		],
-
-		'api' => [
-			'driver' => 'token',
-			'provider' => 'users',
-			'hash' => false,
 		],
 	],
 

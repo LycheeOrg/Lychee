@@ -360,7 +360,7 @@ class PhotosOperationsTest extends PhotoTestBase
 				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_SUNSET_IMAGE), $albumID121
 			)->offsetGet('id');
 
-			$this->albums_tests->set_protection_policy($albumID1, true, true, true);
+			$this->albums_tests->set_protection_policy(id: $albumID1, full_photo: true, public: true, requiresLink: true);
 			$this->albums_tests->set_protection_policy($albumID11);
 			$this->albums_tests->set_protection_policy($albumID12);
 			$this->albums_tests->set_protection_policy($albumID121);

@@ -6,7 +6,6 @@ use App\Exceptions\ModelDBException;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
-use App\Models\Page;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
