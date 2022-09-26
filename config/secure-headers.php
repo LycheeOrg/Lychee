@@ -524,7 +524,7 @@ return [
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src
 		'style-src' => [
 			'self' => true,
-			'unsafe-inline' => true, // We sadly need this one
+			'unsafe-inline' => true, // We need this one due to direct styles (not just style classes) applied by JavaScript
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src-attr
