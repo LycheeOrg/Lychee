@@ -35,7 +35,6 @@ class AbstractAlbumDTO extends DTO
 		// add the rights
 		$albumDTO['rights'] = AlbumRights::ofAlbum($this->album);
 
-
 		// TODO: add this to appends in toArray of Album.
 		// Provide the policies if the user can edit.
 		$albumDTO['policies'] = $albumDTO['rights']->can_edit ? AlbumProtectionPolicy::ofAlbum($this->album) : null;
