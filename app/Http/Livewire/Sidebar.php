@@ -73,7 +73,7 @@ class Sidebar extends Component
 		$share = new \stdClass();
 		$share->title = Lang::get('ALBUM_SHARING');
 		$_public = $this->album->is_public ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO');
-		$_hidden = $this->album->is_link_required ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO');
+		$_hidden = $this->album->is_link_required ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO'); // TODO : double check;
 		$_downloadable = $this->album->grants_download ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO');
 		$_share_button_visible = $this->album->is_share_button_visible ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO');
 		$_password = $this->album->has_password ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO');

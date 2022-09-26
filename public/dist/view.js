@@ -3492,7 +3492,7 @@ tabindex.reset = function () {
  * @property {string}  [owner_name] optional, only shown in authenticated mode
  * @property {boolean} is_nsfw
  * @property {{can_edit: boolean, can_share_with_users: boolean, can_download: boolean, can_upload: boolean, can_share_by_link: boolean}} rights
- * @property {?{is_nsfw: boolean, is_public: boolean, is_link_required: boolean, is_share_button_visible: boolean, is_password_required: boolean,  grant_access_full_photo: boolean, grant_download: boolean}} policies
+ * @property {?{is_nsfw: boolean, is_public: boolean, is_link_required: boolean, is_share_button_visible: boolean, is_password_required: boolean,  grants_access_full_photo: boolean, grants_download: boolean}} policies
  * @property {boolean} has_albums
  * @property {boolean} has_password
  * @property {?string} min_taken_at
@@ -3514,7 +3514,7 @@ tabindex.reset = function () {
  * @property {string}   [owner_name] optional, only shown in authenticated mode
  * @property {boolean} is_nsfw
  * @property {{can_edit: boolean, can_share_with_users: boolean, can_download: boolean, can_upload: boolean, can_share_by_link: boolean}} rights
- * @property {?{is_nsfw: boolean, is_public: boolean, is_link_required: boolean, is_share_button_visible: boolean, is_password_required: boolean, grant_access_full_photo: boolean, grant_download: boolean}} policies
+ * @property {?{is_nsfw: boolean, is_public: boolean, is_link_required: boolean, is_share_button_visible: boolean, is_password_required: boolean, grants_access_full_photo: boolean, grants_download: boolean}} policies
  * @property {?string}  min_taken_at
  * @property {?string}  max_taken_at
  * @property {?SortingCriterion}  sorting
@@ -3529,7 +3529,7 @@ tabindex.reset = function () {
  * @property {Photo[]} [photos]
  * @property {?Thumb}  thumb
  * @property {{can_edit: boolean, can_share: boolean, can_download: boolean, can_upload: boolean, can_share_by_link: boolean}} rights
- * @property {?{is_nsfw: boolean, is_public: boolean, is_link_required: boolean, is_share_button_visible: boolean, is_password_required: boolean, grant_access_full_photo: boolean, grant_download: boolean}} policies
+ * @property {?{is_nsfw: boolean, is_public: boolean, is_link_required: boolean, is_share_button_visible: boolean, is_password_required: boolean, grants_access_full_photo: boolean, grants_download: boolean}} policies
  */
 
 /**

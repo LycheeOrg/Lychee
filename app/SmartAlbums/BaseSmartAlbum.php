@@ -40,7 +40,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	protected PhotoQueryPolicy $photoQueryPolicy;
 	protected string $id;
 	protected string $title;
-	protected bool $grant_download;
+	protected bool $grants_download;
 	protected bool $is_public;
 	protected bool $is_share_button_visible;
 	protected ?Thumb $thumb;
@@ -58,7 +58,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			$this->id = $id;
 			$this->title = $title;
 			$this->is_public = $is_public;
-			$this->grant_download = Configs::getValueAsBool('downloadable');
+			$this->grants_download = Configs::getValueAsBool('downloadable');
 			$this->is_share_button_visible = Configs::getValueAsBool('share_button_visible');
 			$this->thumb = null;
 			$this->smartPhotoCondition = $smartCondition;

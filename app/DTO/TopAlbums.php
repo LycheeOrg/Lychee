@@ -32,10 +32,10 @@ class TopAlbums extends DTO
 	public function toArray(): array
 	{
 		return [
-			'smart_albums' => $this->smartAlbums->toArray(),
-			'tag_albums' => $this->tagAlbums->map(fn ($a) => self::toAlbumDTOArray($a))->toArray(),
+			'smart_albums' => $this->smart_albums->toArray(),
+			'tag_albums' => $this->tag_albums->map(fn ($a) => self::toAlbumDTOArray($a))->toArray(),
 			'albums' => $this->albums->map(fn ($a) => self::toAlbumDTOArray($a))->toArray(),
-			'shared_albums' => $this->sharedAlbums->map(fn ($a) => self::toAlbumDTOArray($a))->toArray(),
+			'shared_albums' => $this->shared_albums->map(fn ($a) => self::toAlbumDTOArray($a))->toArray(),
 		];
 	}
 

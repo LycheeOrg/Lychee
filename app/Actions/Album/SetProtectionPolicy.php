@@ -29,12 +29,19 @@ class SetProtectionPolicy extends Action
 	 */
 	public function do(BaseAlbum $album, AlbumProtectionPolicy $protectionPolicy, bool $shallSetPassword, ?string $password): void
 	{
+		// Security attributes of the album itself independent of a particular user
+		// Note: The first one (`is_public`) will become implicit in the future when the following three attributes are
+		// move to a separate table for sharing albums with anonymous users
 		$album->is_public = $protectionPolicy->is_public;
 		$album->is_link_required = $protectionPolicy->is_link_required;
 		$album->is_nsfw = $protectionPolicy->is_nsfw;
 		$album->is_share_button_visible = $protectionPolicy->is_share_button_visible;
-		$album->grant_download = $protectionPolicy->grants_download;
-		$album->grant_access_full_photo = $protectionPolicy->grants_access_full_photo;
+
+		// (Future) permissions on an album-user relation.
+		// Note: For the time being these are still "globally" defined on the album for all users, but they will be
+		// moved to a separate table for sharing albums with users.
+		$album->grants_download = $protectionPolicy->grants_download;
+		$album->grants_access_full_photo = $protectionPolicy->grants_access_full_photo;
 
 		// Set password if provided
 		if ($shallSetPassword) {

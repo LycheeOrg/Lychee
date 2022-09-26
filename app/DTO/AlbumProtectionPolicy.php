@@ -52,8 +52,8 @@ class AlbumProtectionPolicy extends ArrayableDTO
 				is_link_required: $abstractAlbum->is_link_required,
 				is_nsfw: $abstractAlbum->is_nsfw,
 				is_share_button_visible: $abstractAlbum->is_share_button_visible,
-				grants_access_full_photo: $abstractAlbum->grant_access_full_photo,
-				grants_download: $abstractAlbum->grant_download,
+				grants_access_full_photo: $abstractAlbum->grants_access_full_photo,
+				grants_download: $abstractAlbum->grants_download,
 				is_password_required: $abstractAlbum->password !== null && $abstractAlbum->password !== '',
 			);
 		}

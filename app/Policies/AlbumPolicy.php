@@ -170,7 +170,7 @@ class AlbumPolicy
 		return ($abstractAlbum instanceof BaseSmartAlbum && $user !== null) ||
 		($abstractAlbum instanceof BaseAlbum && $this->isOwner($user, $abstractAlbum) ||
 		($abstractAlbum instanceof BaseAlbum && $abstractAlbum->shared_with()->where('user_id', '=', $user?->id)->count() > 0 && $default) ||
-		$abstractAlbum->grant_download);
+		$abstractAlbum->grants_download);
 	}
 
 	/**

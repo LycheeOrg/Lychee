@@ -290,12 +290,12 @@ class AlbumsUnitTest
 		?string $assertSee = null
 	): void {
 		$params = [
-			'grant_access_full_photo' => $full_photo,
+			'grants_access_full_photo' => $full_photo,
 			'albumID' => $id,
 			'is_public' => $public,
 			'is_link_required' => $requiresLink,
 			'is_nsfw' => $nsfw,
-			'grant_download' => $downloadable,
+			'grants_download' => $downloadable,
 			'is_share_button_visible' => $share_button_visible,
 		];
 
