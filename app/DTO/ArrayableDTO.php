@@ -2,6 +2,8 @@
 
 namespace App\DTO;
 
+use App\Exceptions\Internal\LycheeLogicException;
+use Illuminate\Contracts\Support\Arrayable;
 use ReflectionClass;
 use ReflectionProperty;
 
@@ -23,7 +25,15 @@ class ArrayableDTO extends DTO
 		$cls = new ReflectionClass($this);
 		$props = $cls->getProperties(ReflectionProperty::IS_PUBLIC);
 		foreach ($props as $prop) {
-			$result[$prop->getName()] = $prop->getValue($this);
+			$value = $prop->getValue($this);
+			if (is_object($value)) {
+				if ($value instanceof Arrayable) {
+					$value = $value->toArray();
+				} else {
+					throw new LycheeLogicException(sprintf("We don't know how to %s.", get_class($value)));
+				}
+			}
+			$result[$prop->getName()] = $value;
 		}
 
 		return $result;
