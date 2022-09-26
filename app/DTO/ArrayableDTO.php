@@ -6,6 +6,7 @@ use App\Exceptions\Internal\LycheeLogicException;
 use Illuminate\Contracts\Support\Arrayable;
 use ReflectionClass;
 use ReflectionProperty;
+use function Safe\sprintf;
 
 /**
  * In some cases, when a DTO does not need to apply casts on attributes
