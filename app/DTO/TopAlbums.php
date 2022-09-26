@@ -20,7 +20,8 @@ class TopAlbums extends ArrayableDTO
 		public Collection $smart_albums,
 		public Collection $tag_albums,
 		public Collection $albums,
-		public ?Collection $shared_albums = new Collection()
+		public ?Collection $shared_albums = null
 	) {
+		$this->shared_albums ??= new Collection();
 	}
 }
