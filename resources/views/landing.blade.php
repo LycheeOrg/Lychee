@@ -49,6 +49,5 @@
 		</div>
 		@include('includes.footer')
 		<script type="text/javascript" src="{{ Helpers::cacheBusting('dist/landing.js') }}"></script>
-		<script src="dist/Larapass.js"></script>
 	</body>
 </html>
