@@ -30,7 +30,7 @@ use App\Image\UploadedFile;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Models\Photo;
-use App\Policies\UserPolicy;
+use App\Policies\BasePolicy;
 use App\SmartAlbums\StarredAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
@@ -329,7 +329,7 @@ class PhotoController extends Controller
 	 */
 	public function clearSymLink(): void
 	{
-		if (!Gate::check(UserPolicy::IS_ADMIN)) {
+		if (!Gate::check(BasePolicy::IS_ADMIN)) { // TODO: FIX ME IN REQUEST
 			throw new UnauthorizedException('Admin privileges required');
 		}
 		$this->symLinkFunctions->clearSymLink();

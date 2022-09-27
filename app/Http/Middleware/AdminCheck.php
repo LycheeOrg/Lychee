@@ -3,9 +3,10 @@
 namespace App\Http\Middleware;
 
 use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\UnauthorizedException;
 use App\Http\Middleware\Checks\IsInstalled;
-use App\Policies\UserPolicy;
+use App\Policies\BasePolicy;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -36,10 +37,11 @@ class AdminCheck
 			return $next($request);
 		}
 
-		if (!Gate::check(UserPolicy::IS_ADMIN)) {
-			throw new UnauthorizedException('Admin privileges required');
-		}
+		throw new LycheeLogicException('Remove me');
+		// if (!Gate::check(BasePolicy::IS_ADMIN)) {
+		// 	throw new UnauthorizedException('Admin privileges required');
+		// }
 
-		return $next($request);
+		// return $next($request);
 	}
 }

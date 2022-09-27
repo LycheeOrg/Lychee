@@ -3,6 +3,7 @@
 namespace App\DTO;
 
 use App\Contracts\AbstractAlbum;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Models\Extensions\BaseAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 
@@ -34,42 +35,60 @@ class AlbumProtectionPolicy extends ArrayableDTO
 	}
 
 	/**
-	 * Given an album returns the Protection Policy associated to it.
-	 * TODO: Double check the different cases:
-	 * - Tag albums
-	 * - Smart albums
-	 * - Normal albums.
+	 * TODO: To be removed.
 	 *
 	 * @param AbstractAlbum $abstractAlbum
 	 *
-	 * @return AlbumProtectionPolicy|null
+	 * @return AlbumProtectionPolicy
+	 *
+	 * @throws LycheeLogicException
 	 */
-	public static function ofAlbum(AbstractAlbum $abstractAlbum): AlbumProtectionPolicy|null
+	public static function ofAlbum(AbstractAlbum $abstractAlbum): AlbumProtectionPolicy
 	{
-		if ($abstractAlbum instanceof BaseAlbum) {
-			return new AlbumProtectionPolicy(
-				is_public: $abstractAlbum->is_public,
-				is_link_required: $abstractAlbum->is_link_required,
-				is_nsfw: $abstractAlbum->is_nsfw,
-				is_share_button_visible: $abstractAlbum->is_share_button_visible,
-				grants_access_full_photo: $abstractAlbum->grants_access_full_photo,
-				grants_download: $abstractAlbum->grants_download,
-				is_password_required: $abstractAlbum->password !== null && $abstractAlbum->password !== '',
-			);
-		}
+		return match (true) {
+			$abstractAlbum instanceof BaseAlbum => self::ofBaseAlbum($abstractAlbum),
+			$abstractAlbum instanceof BaseSmartAlbum => self::ofSmartAlbum($abstractAlbum),
+			default => throw new LycheeLogicException('Cannot provide Album Protection Policy to ' . get_class($abstractAlbum))
+		};
+	}
 
-		if ($abstractAlbum instanceof BaseSmartAlbum) {
-			return new AlbumProtectionPolicy(
-				is_public: $abstractAlbum->is_public, // TODO: FIX ME
-				is_link_required: false, // TODO: FIX ME
-				is_nsfw: false,
-				is_share_button_visible: $abstractAlbum->is_share_button_visible, // TODO: FIX ME
-				grants_access_full_photo: false, // TODO: FIX ME
-				grants_download: false,
-				is_password_required: false,
-			);
-		}
+	/**
+	 * Given a BaseAlbum, returns the Protection Policy associated to it.
+	 *
+	 * @param BaseAlbum $baseAlbum
+	 *
+	 * @return AlbumProtectionPolicy
+	 */
+	public static function ofBaseAlbum(BaseAlbum $baseAlbum): AlbumProtectionPolicy
+	{
+		return new AlbumProtectionPolicy(
+			is_public: $baseAlbum->is_public,
+			is_link_required: $baseAlbum->is_link_required,
+			is_nsfw: $baseAlbum->is_nsfw,
+			is_share_button_visible: $baseAlbum->is_share_button_visible,
+			grants_access_full_photo: $baseAlbum->grants_access_full_photo,
+			grants_download: $baseAlbum->grants_download,
+			is_password_required: $baseAlbum->password !== null && $baseAlbum->password !== '',
+		);
+	}
 
-		return null;
+	/**
+	 * Given a smart album, returns the Protection Policy associated to it.
+	 *
+	 * @param BaseSmartAlbum $baseSmartAlbum
+	 *
+	 * @return AlbumProtectionPolicy
+	 */
+	public static function ofSmartAlbum(BaseSmartAlbum $baseSmartAlbum): AlbumProtectionPolicy
+	{
+		return new AlbumProtectionPolicy(
+			is_public: $baseSmartAlbum->is_public, // TODO: FIX ME
+			is_link_required: false, // TODO: FIX ME
+			is_nsfw: false,
+			is_share_button_visible: $baseSmartAlbum->is_share_button_visible, // TODO: FIX ME
+			grants_access_full_photo: false, // TODO: FIX ME
+			grants_download: false,
+			is_password_required: false,
+		);
 	}
 }

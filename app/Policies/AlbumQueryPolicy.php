@@ -17,12 +17,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 
 /**
  * Class AlbumQueryPolicy.
  */
-class AlbumQueryPolicy
+class AlbumQueryPolicy extends BasePolicy
 {
 	protected AlbumFactory $albumFactory;
 	protected AlbumPolicy $albumPolicy;
@@ -56,7 +55,7 @@ class AlbumQueryPolicy
 	{
 		$this->prepareModelQueryOrFail($query);
 
-		if (Gate::check(UserPolicy::IS_ADMIN)) {
+		if ($this->isAdmin()) {
 			return $query;
 		}
 
@@ -164,7 +163,7 @@ class AlbumQueryPolicy
 	{
 		$this->prepareModelQueryOrFail($query);
 
-		if (Gate::check(UserPolicy::IS_ADMIN)) {
+		if ($this->isAdmin()) {
 			return $query;
 		}
 
@@ -249,7 +248,7 @@ class AlbumQueryPolicy
 			throw new LycheeInvalidArgumentException('the given query does not query for albums');
 		}
 
-		if (Gate::check(UserPolicy::IS_ADMIN)) {
+		if ($this->isAdmin()) {
 			return $query;
 		}
 

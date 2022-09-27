@@ -13,14 +13,11 @@ use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\User;
 use App\SmartAlbums\BaseSmartAlbum;
-use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Session;
 
-class AlbumPolicy
+class AlbumPolicy extends BasePolicy
 {
-	use HandlesAuthorization;
-
 	protected UserPolicy $userPolicy;
 
 	public const UNLOCKED_ALBUMS_SESSION_KEY = 'unlocked_albums';
@@ -47,21 +44,6 @@ class AlbumPolicy
 			$this->userPolicy = resolve(UserPolicy::class);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s provider component', $e);
-		}
-	}
-
-	/**
-	 * Perform pre-authorization checks.
-	 *
-	 * @param User|null $user
-	 * @param string    $ability
-	 *
-	 * @return void|bool
-	 */
-	public function before(?User $user, $ability)
-	{
-		if ($this->userPolicy->isAdmin($user)) {
-			return true;
 		}
 	}
 

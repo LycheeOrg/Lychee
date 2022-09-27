@@ -8,13 +8,10 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
-use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Contracts\Container\BindingResolutionException;
 
-class PhotoPolicy
+class PhotoPolicy extends BasePolicy
 {
-	use HandlesAuthorization;
-
 	protected AlbumPolicy $albumPolicy;
 	protected UserPolicy $userPolicy;
 
@@ -38,21 +35,6 @@ class PhotoPolicy
 			$this->userPolicy = resolve(UserPolicy::class);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s provider component', $e);
-		}
-	}
-
-	/**
-	 * Perform pre-authorization checks.
-	 *
-	 * @param User|null $user
-	 * @param string    $ability
-	 *
-	 * @return void|bool
-	 */
-	public function before(?User $user, $ability)
-	{
-		if ($this->userPolicy->isAdmin($user)) {
-			return true;
 		}
 	}
 
@@ -218,7 +200,7 @@ class PhotoPolicy
 			return false;
 		}
 
-		return ($photo->album !== null && $photo->album->grant_access_full_photo) ||
+		return ($photo->album !== null && $photo->album->grants_access_full_photo) ||
 			($photo->album === null && Configs::getValueAsBool('full_photo'));
 	}
 }

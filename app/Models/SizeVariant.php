@@ -15,7 +15,7 @@ use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
-use App\Policies\UserPolicy;
+use App\Policies\BasePolicy;
 use App\Relations\HasManyBidirectionally;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -157,7 +157,7 @@ class SizeVariant extends Model
 		$imageDisk = SizeVariantNamingStrategy::getImageDisk();
 
 		if (
-			Gate::check(UserPolicy::IS_ADMIN) && !Configs::getValueAsBool('SL_for_admin') ||
+			Gate::check(BasePolicy::IS_ADMIN) && !Configs::getValueAsBool('SL_for_admin') ||
 			!Configs::getValueAsBool('SL_enable')
 		) {
 			return $imageDisk->url($this->short_path);

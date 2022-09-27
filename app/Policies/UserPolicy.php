@@ -3,41 +3,11 @@
 namespace App\Policies;
 
 use App\Models\User;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
-class UserPolicy
+class UserPolicy extends BasePolicy
 {
-	use HandlesAuthorization;
-
-	public const IS_ADMIN = 'isAdmin';
 	public const CAN_EDIT_OWN_SETTINGS = 'canEditOwnSettings';
-
-	/**
-	 * This defines if the user is admin.
-	 *
-	 * @param User|null $user
-	 *
-	 * @return bool
-	 */
-	public function isAdmin(?User $user): bool
-	{
-		return $user?->may_administrate === true;
-	}
-
-	/**
-	 * Perform pre-authorization checks.
-	 *
-	 * @param User|null $user
-	 * @param string    $ability
-	 *
-	 * @return void|bool
-	 */
-	public function before(?User $user, $ability)
-	{
-		if ($this->isAdmin($user)) {
-			return true;
-		}
-	}
+	public const CAN_CREATE_OR_DELETE = 'canCreateOrDelete';
 
 	/**
 	 * This defines if user can edit their settings.
@@ -49,5 +19,11 @@ class UserPolicy
 	public function canEditOwnSettings(User $user): bool
 	{
 		return $user->may_edit_own_settings;
+	}
+
+	public function canCreateOrDelete(User $user): bool
+	{
+		// Note, the administrator is already handled in the `before()` method and every one else is not allowed to create/delete users.
+		return false;
 	}
 }

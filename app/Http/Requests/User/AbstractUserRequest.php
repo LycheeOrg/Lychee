@@ -7,7 +7,7 @@ use App\Http\Requests\Contracts\HasPassword;
 use App\Http\Requests\Contracts\HasUsername;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Requests\Traits\HasUsernameTrait;
-use App\Policies\UserPolicy;
+use App\Policies\BasePolicy;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
 use Illuminate\Support\Facades\Gate;
@@ -32,7 +32,7 @@ abstract class AbstractUserRequest extends BaseApiRequest implements HasUsername
 		// request is made by an admin during authentication (see
 		// `routes/web.php`).
 		// But better safe than sorry.
-		return Gate::check(UserPolicy::IS_ADMIN);
+		return Gate::check(BasePolicy::IS_ADMIN); // TODO: REPLACE WITH PROPER POLICY GATE
 	}
 
 	/**
