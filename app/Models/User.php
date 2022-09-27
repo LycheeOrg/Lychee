@@ -134,7 +134,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	}
 
 	/**
-	 * Used by Larapass.
+	 * Used by Larapass since 2022-09-21.
 	 *
 	 * @return string
 	 */
