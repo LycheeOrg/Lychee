@@ -6,8 +6,29 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Foundation\Console\OptimizeCommand;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use function Safe\sprintf;
 use Symfony\Component\Console\Exception\ExceptionInterface as ConsoleException;
+use Symfony\Component\Console\Exception\InvalidOptionException;
 
+/**
+ * Improves the original "optimize" command provided by the framework.
+ *
+ * There are three improvements:
+ *
+ *  1) This command explicitly clears the old cache before building a new one.
+ *     Note that rebuilding a new cache is not sufficient, because this
+ *     does *not* overwrite the entire cache but some leftovers may remain.
+ *     This actually looks like an oversight and bug in the original command.
+ *  2) This command adds a "clever" mode which only rebuilds a new cache if
+ *     a previous cache has existed.
+ *     We use this in our install/update scripts in order to rebuild the cache
+ *     after installation/update without enforcing to use a cache for everyone.
+ *  3) This command adds a confirmation, if the user requests to build a cache
+ *     for non-productive environments as this is most likely an error and
+ *     undesired.
+ *     The confirmation can be skipped by pre-selecting the answer via a
+ *     command line option.
+ */
 class Optimize extends OptimizeCommand
 {
 	/**
@@ -17,7 +38,7 @@ class Optimize extends OptimizeCommand
 	 */
 	protected $signature = 'optimize
 		{--clever : Only (re-)creates cache if cache has already been created before and if not in production mode}
-		{--force : Don\'t ask for confirmation, if cache shall be created in debug mode (same behaviour as original Laravel command)}';
+		{--dont-confirm= : [assume-yes|assume-no] Don\'t ask for confirmation, but silently assume yes or no; "assume-yes" yields same behaviour as the original Laravel command}';
 
 	/**
 	 * Execute the console command.
@@ -31,8 +52,13 @@ class Optimize extends OptimizeCommand
 	 */
 	public function handle(): void
 	{
-		$shallBeClever = $this->hasOption('clever') && $this->option('no-clever') === true;
-		$shallEnforce = $this->hasOption('force') && $this->option('force') === true;
+		$shallBeClever = $this->hasOption('clever') && $this->option('clever') === true;
+		$confirmationDefault = match ($this->option('dont-confirm')) {
+			'assume-yes' => true,
+			'assume-no' => false,
+			null => null,
+			default => throw new InvalidOptionException(sprintf('Unexpected option value %s for --dont-confirm', $this->option('dont-confirm')))
+		};
 		$hasPreviousCache = file_exists($this->laravel->getCachedConfigPath()) || file_exists($this->laravel->getCachedRoutesPath());
 
 		$this->call('optimize:clear');
@@ -41,10 +67,10 @@ class Optimize extends OptimizeCommand
 			return;
 		}
 
-		if ($this->isNonProductive() && !$shallEnforce) {
-			$this->alert('Application In Production!');
+		if ($this->isNonProductive()) {
+			$this->alert('Application not in Production!');
 
-			$hasConfirmed = $this->confirm('Do you really wish to run this command?');
+			$hasConfirmed = $confirmationDefault ?? $this->confirm('Do you really wish to run this command?');
 
 			if (!$hasConfirmed) {
 				$this->comment('Command Canceled!');
@@ -57,7 +83,7 @@ class Optimize extends OptimizeCommand
 	}
 
 	/**
-	 * Checks whether Lychee is running in a non-prduction environment.
+	 * Checks whether Lychee is running in a non-production environment.
 	 *
 	 * Note, this method deliberately tends to `true` in case of doubt.
 	 * This means if anything indicates that the setup might be used for
