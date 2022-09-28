@@ -1773,6 +1773,7 @@ var SmartAlbumID = Object.freeze({
  * @property {boolean} can_see_logs
  * @property {boolean} can_clear_logs
  * @property {boolean} can_see_diagnostics
+ * @property {boolean} can_update
  */
 
 /**
@@ -1783,6 +1784,7 @@ var SmartAlbumID = Object.freeze({
  * @property {boolean} can_edit
  * @property {boolean} can_upload
  * @property {boolean} can_download
+ * @property {boolean} can_import_from_server
  */
 
 /**
