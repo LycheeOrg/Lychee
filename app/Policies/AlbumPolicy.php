@@ -145,6 +145,7 @@ class AlbumPolicy extends BasePolicy
 	public function canDownload(?User $user, ?AbstractAlbum $abstractAlbum): bool
 	{
 		$default = Configs::getValueAsBool('downloadable');
+		// The root album always uses the global setting
 		if ($abstractAlbum === null) {
 			return $default;
 		}
@@ -168,12 +169,12 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function canUpload(User $user, ?AbstractAlbum $abstractAlbum = null): bool
 	{
-		// If base album is null, we consider root
+		// The upload right on the root album is directly determined by the user's capabilities.
 		if ($abstractAlbum === null) {
 			return $user->may_upload;
 		}
 
-		// TODO: when upload rights are assigned to albums, we add more logic can be added here.
+		// TODO: when upload rights are assigned to albums, more logic can be added here.
 		return $user->may_upload;
 	}
 

@@ -148,8 +148,6 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		$result = [
 			'id' => $this->id,
 			'title' => $this->title,
-			// 'is_public' => $this->isPublic,
-			// 'is_share_button_visible' => $this->isShareButtonVisible,
 			'thumb' => $this->getThumbAttribute(),
 		];
 

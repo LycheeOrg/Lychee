@@ -72,7 +72,6 @@ use function Safe\preg_match;
  * @property Album|null   $album
  * @property User         $owner
  * @property SizeVariants $size_variants
- * @property bool         $grants_download
  */
 class Photo extends Model implements HasRandomID
 {

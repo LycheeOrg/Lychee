@@ -183,11 +183,13 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'sorting_col',   // serialize DTO `order` instead
 		'sorting_order', // serialize DTO `order` instead
 
-		// Security attributes attributes
+		// Security attributes are hidden because provided by the DTO AlbumProtectionPolicy
 		'is_public',
 		'is_link_required',
 		'is_share_button_visible',
-		// Permissions taken care by Rights
+
+		// Permissions are hidden because they will eventually be replaced by an external table
+		// and are provided by the AlbumRightsDTO
 		'grants_download',
 		'grants_access_full_photo',
 	];
