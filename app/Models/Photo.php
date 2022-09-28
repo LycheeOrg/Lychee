@@ -7,7 +7,7 @@ use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Contracts\HasRandomID;
-use App\DTO\PhotoRights;
+use App\DTO\Rights\PhotoRightsDTO;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\ZeroModuloException;
@@ -22,12 +22,13 @@ use App\Models\Extensions\SizeVariants;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
+use App\Policies\PhotoPolicy;
 use App\Relations\HasManySizeVariants;
 use App\Relations\LinkedPhotoCollection;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use function Safe\preg_match;
 
@@ -71,7 +72,7 @@ use function Safe\preg_match;
  * @property Album|null   $album
  * @property User         $owner
  * @property SizeVariants $size_variants
- * @property bool         $grant_download
+ * @property bool         $grants_download
  */
 class Photo extends Model implements HasRandomID
 {
@@ -102,8 +103,6 @@ class Photo extends Model implements HasRandomID
 		'taken_at' => DateTimeWithTimezoneCast::class,
 		'live_photo_full_path' => MustNotSetCast::class . ':live_photo_short_path',
 		'live_photo_url' => MustNotSetCast::class . ':live_photo_short_path',
-		'grant_download' => MustNotSetCast::class,
-		'is_share_button_visible' => MustNotSetCast::class,
 		'owner_id' => 'integer',
 		'is_starred' => 'boolean',
 		'is_public' => 'boolean',
@@ -133,9 +132,6 @@ class Photo extends Model implements HasRandomID
 	 */
 	protected $appends = [
 		'live_photo_url',
-		// No longer provided because parts of Rights DTO
-		// 'grant_download',
-		// 'is_share_button_visible',
 	];
 
 	/**
@@ -387,23 +383,11 @@ class Photo extends Model implements HasRandomID
 	{
 		$result = parent::toArray();
 
-		// Modify the attribute `public`
-		// The current front-end implementation does not expect a boolean
-		// but a tri-state integer acc. to the following interpretation
-		//  - 0 => the photo is not publicly visible
-		//  - 1 => the photo is publicly visible on its own right
-		//  - 2 => the photo is publicly visible because its album is public
-		if ($this->album_id !== null && $this->album->is_public) {
-			$result['is_public'] = 2;
-		} else {
-			$result['is_public'] = $result['is_public'] === true ? 1 : 0;
-		}
-
-		$result['rights'] = PhotoRights::ofPhoto($this);
+		$result['rights'] = PhotoRightsDTO::ofPhoto($this);
 
 		// Downgrades the accessible resolution of a photo
 		if (
-			!$result['rights']->can_access_full_photo &&
+			!Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $this]) &&
 			!$this->isVideo() &&
 			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null)
 		) {

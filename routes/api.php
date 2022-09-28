@@ -54,8 +54,8 @@ Route::post('/Albums::tree', [AlbumsController::class, 'tree']);
 Route::post('/Frame::getSettings', [FrameController::class, 'getSettings']);
 
 Route::post('/Import::url', [ImportController::class, 'url']);
-Route::post('/Import::server', [ImportController::class, 'server'])->middleware('admin');
-Route::post('/Import::serverCancel', [ImportController::class, 'serverCancel'])->middleware('admin');
+Route::post('/Import::server', [ImportController::class, 'server']);
+Route::post('/Import::serverCancel', [ImportController::class, 'serverCancel']);
 
 Route::post('/Legacy::translateLegacyModelIDs', [LegacyController::class, 'translateLegacyModelIDs']);
 
@@ -97,5 +97,5 @@ Route::post('/WebAuthn::register/gen', [Administration\WebAuthController::class,
 Route::post('/WebAuthn::register', [Administration\WebAuthController::class, 'verifyRegistration']);
 Route::post('/WebAuthn::login/gen', [Administration\WebAuthController::class, 'generateAuthentication']);
 Route::post('/WebAuthn::login', [Administration\WebAuthController::class, 'verifyAuthentication']);
-Route::post('/WebAuthn::list', [Administration\WebAuthController::class, 'list'])->middleware(['admin']);
-Route::post('/WebAuthn::delete', [Administration\WebAuthController::class, 'delete'])->middleware(['admin']);
+Route::post('/WebAuthn::list', [Administration\WebAuthController::class, 'list']);
+Route::post('/WebAuthn::delete', [Administration\WebAuthController::class, 'delete']);

@@ -1356,7 +1356,7 @@ header.setMode = function (mode) {
 				tabindex.makeUnfocusable(_e5);
 			}
 
-			if (lychee.enable_button_add && lychee.rights.can_upload_root) {
+			if (lychee.enable_button_add && lychee.rights.root_album.can_upload) {
 				var _e6 = $(".button_add", ".header__toolbar--albums");
 				_e6.show();
 				tabindex.makeFocusable(_e6);
@@ -3447,7 +3447,7 @@ tabindex.reset = function () {
  * @property {SizeVariants} size_variants
  * @property {?string}      [next_photo_id]
  * @property {?string}      [previous_photo_id]
- * @property {{can_edit: boolean, can_download: boolean, can_share_by_link: boolean, can_access_full_photo: boolean}} rights
+ * @property {PhotoRightsDTO} rights
  */
 
 /**
@@ -3495,8 +3495,8 @@ tabindex.reset = function () {
  * @property {?Thumb}  thumb
  * @property {string}  [owner_name] optional, only shown in authenticated mode
  * @property {boolean} is_nsfw
- * @property {{can_edit: boolean, can_share_with_users: boolean, can_download: boolean, can_upload: boolean, can_share_by_link: boolean}} rights
- * @property {?{is_nsfw: boolean, is_public: boolean, is_link_required: boolean, is_share_button_visible: boolean, is_password_required: boolean,  grants_access_full_photo: boolean, grants_download: boolean}} policies
+ * @property {AlbumRightsDTO} rights
+ * @property {?AlbumProtectionPolicy} policies
  * @property {boolean} has_albums
  * @property {boolean} has_password
  * @property {?string} min_taken_at
@@ -3517,8 +3517,8 @@ tabindex.reset = function () {
  * @property {?Thumb}   thumb
  * @property {string}   [owner_name] optional, only shown in authenticated mode
  * @property {boolean} is_nsfw
- * @property {{can_edit: boolean, can_share_with_users: boolean, can_download: boolean, can_upload: boolean, can_share_by_link: boolean}} rights
- * @property {?{is_nsfw: boolean, is_public: boolean, is_link_required: boolean, is_share_button_visible: boolean, is_password_required: boolean, grants_access_full_photo: boolean, grants_download: boolean}} policies
+ * @property {AlbumRightsDTO} rights
+ * @property {?AlbumProtectionPolicy} policies
  * @property {?string}  min_taken_at
  * @property {?string}  max_taken_at
  * @property {?SortingCriterion}  sorting
@@ -3532,8 +3532,8 @@ tabindex.reset = function () {
  * @property {string}  title
  * @property {Photo[]} [photos]
  * @property {?Thumb}  thumb
- * @property {{can_edit: boolean, can_share: boolean, can_download: boolean, can_upload: boolean, can_share_by_link: boolean}} rights
- * @property {?{is_nsfw: boolean, is_public: boolean, is_link_required: boolean, is_share_button_visible: boolean, is_password_required: boolean, grants_access_full_photo: boolean, grants_download: boolean}} policies
+ * @property {AlbumRightsDTO} rights
+ * @property {?AlbumProtectionPolicy} policies
  */
 
 /**
@@ -3681,7 +3681,7 @@ var SmartAlbumID = Object.freeze({
  * @typedef InitializationData
  *
  * @property {?User} user
- * @property {{can_administrate: boolean, can_edit_own_settings: boolean, can_upload_root: boolean}} rights
+ * @property {InitRightsDTO} rights
  * @property {number} update_json - version number of latest available update
  * @property {boolean} update_available
  * @property {Object.<string, string>} locale
@@ -3785,6 +3785,87 @@ var SmartAlbumID = Object.freeze({
  * @property {number} severity - either `'debug'`, `'info'`, `'notice'`, `'warning'`, `'error'`, `'critical'` or `'emergency'`
  * @property {?string} path - the path to the affected file or directory
  * @property {string} message - a message text
+ */
+
+/**
+ * The JSON object for Policies on Albums
+ *
+ * @typedef AlbumProtectionPolicy
+ *
+ * @property {is_nsfw} boolean
+ * @property {boolean} is_public
+ * @property {boolean} is_link_required
+ * @property {boolean} is_share_button_visible
+ * @property {boolean} is_password_required
+ * @property {boolean} grants_access_full_photo
+ * @property {boolean} grants_download
+ */
+
+/**
+ * The JSON object for Rights on Users
+ *
+ * @typedef UserRightsDTO
+ *
+ * @property {boolean} can_create
+ * @property {boolean} can_list
+ * @property {boolean} can_edit
+ * @property {boolean} can_delete
+ */
+
+/**
+ * The JSON object for Rights on Settings
+ *
+ * @typedef SettingsRightsDTO
+ *
+ * @property {boolean} can_edit
+ * @property {boolean} can_edit_own_settings
+ * @property {boolean} can_use_2fa
+ * @property {boolean} can_see_logs
+ * @property {boolean} can_clear_logs
+ * @property {boolean} can_see_diagnostics
+ */
+
+/**
+ * The JSON object for Rights on Settings
+ *
+ * @typedef RootAlbumRightsDTO
+ *
+ * @property {boolean} can_edit
+ * @property {boolean} can_upload
+ * @property {boolean} can_download
+ */
+
+/**
+ * The JSON object for Rights on Photos
+ *
+ * @typedef PhotoRightsDTO
+ *
+ * @property {boolean} can_edit
+ * @property {boolean} can_download
+ * @property {boolean} can_share_by_link
+ * @property {boolean} can_access_full_photo
+ */
+
+/**
+ * The JSON object for Rights on Album
+ *
+ * @typedef AlbumRightsDTO
+ *
+ * @property {boolean} can_edit
+ * @property {boolean} can_share_with_users
+ * @property {boolean} can_download
+ * @property {boolean} can_upload
+ * @property {boolean} can_share_by_link
+ */
+
+/**
+ * The JSON object for Rights on Album
+ *
+ * @typedef InitRightsDTO
+ *
+ * @property {RootAlbumRightsDTO} root_album
+ * @property {SettingsRightsDTO} settings
+ * @property {UserRightsDTO} users
  */
 
 (function (window, factory) {

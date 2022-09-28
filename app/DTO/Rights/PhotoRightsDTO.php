@@ -1,7 +1,8 @@
 <?php
 
-namespace App\DTO;
+namespace App\DTO\Rights;
 
+use App\DTO\ArrayableDTO;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
 use Illuminate\Support\Facades\Gate;
@@ -9,12 +10,12 @@ use Illuminate\Support\Facades\Gate;
 /**
  * This DTO provides the information whether some actions are available to the user.
  */
-class PhotoRights extends ArrayableDTO
+class PhotoRightsDTO extends ArrayableDTO
 {
 	public function __construct(
 		public bool $can_edit,
 		public bool $can_download,
-		public bool $can_share_by_link,
+		public bool $can_share_by_link, // TODO: Move this to root level
 		public bool $can_access_full_photo
 	) {
 	}
@@ -24,11 +25,11 @@ class PhotoRights extends ArrayableDTO
 	 *
 	 * @param Photo $photo
 	 *
-	 * @return PhotoRights
+	 * @return self
 	 */
-	public static function ofPhoto(Photo $photo): PhotoRights
+	public static function ofPhoto(Photo $photo): self
 	{
-		return new PhotoRights(
+		return new self(
 			can_edit: Gate::check(PhotoPolicy::CAN_EDIT, [Photo::class, $photo]),
 			can_download: Gate::check(PhotoPolicy::CAN_DOWNLOAD, [Photo::class, $photo]),
 			can_share_by_link: Gate::check(PhotoPolicy::CAN_SHARE_BY_LINK, [Photo::class, $photo]),

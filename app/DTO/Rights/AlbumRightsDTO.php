@@ -1,22 +1,23 @@
 <?php
 
-namespace App\DTO;
+namespace App\DTO\Rights;
 
 use App\Contracts\AbstractAlbum;
+use App\DTO\ArrayableDTO;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
 /**
  * This DTO provides the information whether some actions are available to the user.
  */
-class AlbumRights extends ArrayableDTO
+class AlbumRightsDTO extends ArrayableDTO
 {
 	public function __construct(
 		public bool $can_edit,
 		public bool $can_share_with_users,
 		public bool $can_download,
 		public bool $can_upload,
-		public bool $can_share_by_link
+		public bool $can_share_by_link  // TODO: Move this to root level
 	) {
 	}
 
@@ -29,11 +30,11 @@ class AlbumRights extends ArrayableDTO
 	 *
 	 * @param AbstractAlbum $abstractAlbum
 	 *
-	 * @return AlbumRights
+	 * @return self
 	 */
-	public static function ofAlbum(AbstractAlbum $abstractAlbum): AlbumRights
+	public static function ofAlbum(AbstractAlbum $abstractAlbum): self
 	{
-		return new AlbumRights(
+		return new self(
 			can_edit: Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $abstractAlbum]),
 			can_share_with_users: Gate::check(AlbumPolicy::CAN_SHARE_WITH_USERS, [AbstractAlbum::class, $abstractAlbum]),
 			can_download: Gate::check(AlbumPolicy::CAN_DOWNLOAD, [AbstractAlbum::class, $abstractAlbum]),

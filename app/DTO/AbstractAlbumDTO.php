@@ -3,6 +3,7 @@
 namespace App\DTO;
 
 use App\Contracts\AbstractAlbum;
+use App\DTO\Rights\AlbumRightsDTO;
 use App\Models\Album;
 
 /**
@@ -33,7 +34,7 @@ class AbstractAlbumDTO extends DTO
 		}
 
 		// add the rights
-		$albumDTO['rights'] = AlbumRights::ofAlbum($this->album);
+		$albumDTO['rights'] = AlbumRightsDTO::ofAlbum($this->album);
 
 		// TODO: add this to appends in toArray of Album?
 		// Provide the policies if the user can edit.

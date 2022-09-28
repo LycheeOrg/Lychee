@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
-use App\DTO\UserRights;
+use App\DTO\Rights\InitRightsDTO;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
@@ -20,9 +20,11 @@ use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\User;
+use App\Policies\SettingsPolicy;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
 
 class SessionController extends Controller
@@ -62,16 +64,16 @@ class SessionController extends Controller
 				// If the session is unauthenticated ('user' === null), but grants admin rights nonetheless,
 				// the front-end shows the dialog to create an admin account.
 				$return['user'] = null;
-				$return['rights'] = new UserRights(true, true, true);
+				$return['rights'] = InitRightsDTO::ofAdminIsNotRegistered();
 			} else {
 				/** @var User|null $user */
 				$user = Auth::user();
 				$return['user'] = $user?->toArray();
-				$return['rights'] = UserRights::ofCurrentUser();
+				$return['rights'] = InitRightsDTO::ofCurrentUser();
 			}
 
 			// Load configuration settings acc. to authentication status
-			if ($return['rights']->can_administrate) {
+			if (Gate::check(SettingsPolicy::CAN_EDIT, [Configs::class])) {
 				// Admin rights (either properly authenticated or not registered)
 				$return['config'] = $this->configFunctions->admin();
 				$return['config']['location'] = base_path('public/');
