@@ -32,7 +32,7 @@ class BasePolicy
 	 *
 	 * @return bool
 	 */
-	protected function isAdmin(?User $user = null): bool
+	public function isAdmin(?User $user = null): bool
 	{
 		return ($user ?? Auth::user())?->may_administrate === true;
 	}

@@ -25,4 +25,24 @@ trait CatchFailures
 			$exception['previous_exception'] = $this->trimException($exception['previous_exception']);
 		}
 	}
+
+	protected function assertOk(TestResponse $response): void
+	{
+		$this->assertStatus($response, 200);
+	}
+
+	protected function assertForbidden(TestResponse $response): void
+	{
+		$this->assertStatus($response, 403);
+	}
+
+	protected function assertUnauthorized(TestResponse $response): void
+	{
+		$this->assertStatus($response, 401);
+	}
+
+	protected function assertNoContent(TestResponse $response): void
+	{
+		$this->assertStatus($response, 204);
+	}
 }

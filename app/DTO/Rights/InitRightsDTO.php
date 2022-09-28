@@ -38,9 +38,9 @@ class InitRightsDTO extends ArrayableDTO
 	public static function ofAdminIsNotRegistered(): self
 	{
 		return new self(
-			root_album: new RootAlbumRightsDTO(true, true, true),
-			settings: new SettingsRightsDTO(true, true, true, true, true, true),
-			users: new UserRightsDTO(true, true, true, true),
+			root_album: RootAlbumRightsDTO::ofTrue(),
+			settings: SettingsRightsDTO::ofTrue(),
+			users: UserRightsDTO::ofTrue(),
 		);
 	}
 }

@@ -10,6 +10,7 @@ use App\Actions\WebAuth\VerifyAuthentication;
 use App\Actions\WebAuth\VerifyRegistration;
 use App\Exceptions\Internal\InvalidUserIdException;
 use App\Exceptions\UnauthenticatedException;
+use App\Http\Requests\Settings\U2FRequest;
 use DarkGhostHunter\Larapass\Http\WebAuthnRules;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -55,12 +56,12 @@ class WebAuthController extends Controller
 	 * disableCredential(): Excludes an existing Credential ID from authentication.
 	 * getFromCredentialId(): Returns the user using the given Credential ID, if any.
 	 */
-	public function generateRegistration(): PublicKeyCredentialCreationOptions
+	public function generateRegistration(U2FRequest $request): PublicKeyCredentialCreationOptions
 	{
 		return $this->generateRegistration->do();
 	}
 
-	public function verifyRegistration(Request $request): void
+	public function verifyRegistration(U2FRequest $request): void
 	{
 		$data = $request->validate($this->attestationRules());
 
@@ -83,12 +84,12 @@ class WebAuthController extends Controller
 		$this->verifyAuthentication->do($credential);
 	}
 
-	public function list(): Collection
+	public function list(U2FRequest $request): Collection
 	{
 		return $this->listDevices->do();
 	}
 
-	public function delete(Request $request): void
+	public function delete(U2FRequest $request): void
 	{
 		$id = $request->validate(['id' => 'required|string']);
 		$this->deleteDevices->do($id);

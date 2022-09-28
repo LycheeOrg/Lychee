@@ -20,7 +20,8 @@ class SettingsRightsDTO extends ArrayableDTO
 		public bool $can_use_2fa,
 		public bool $can_see_logs,
 		public bool $can_clear_logs,
-		public bool $can_see_diagnostics
+		public bool $can_see_diagnostics,
+		public bool $can_update,
 	) {
 	}
 
@@ -38,6 +39,15 @@ class SettingsRightsDTO extends ArrayableDTO
 			can_see_logs: Gate::check(SettingsPolicy::CAN_SEE_LOGS, [Configs::class]),
 			can_clear_logs: Gate::check(SettingsPolicy::CAN_CLEAR_LOGS, [Configs::class]),
 			can_see_diagnostics: Gate::check(SettingsPolicy::CAN_SEE_DIAGNOSTICS, [Configs::class]),
+			can_update: Gate::check(SettingsPolicy::CAN_UPDATE, Configs::class),
 		);
+	}
+
+	/**
+	 * @return self
+	 */
+	public static function ofTrue(): self
+	{
+		return new self(true, true, true, true, true, true, true);
 	}
 }

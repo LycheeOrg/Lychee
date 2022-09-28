@@ -15,10 +15,13 @@ namespace Tests\Feature;
 use App\Models\Logs;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Tests\Feature\Traits\CatchFailures;
 use Tests\TestCase;
 
 class LogsTest extends TestCase
 {
+	use CatchFailures;
+
 	/**
 	 * Test log handling.
 	 *
@@ -27,14 +30,14 @@ class LogsTest extends TestCase
 	public function testLogs(): void
 	{
 		$response = $this->get('/Logs');
-		$response->assertForbidden();
+		$this->assertUnauthorized($response);
 
 		// set user as admin
 		Auth::loginUsingId(0);
 
 		Logs::notice(__METHOD__, __LINE__, 'test');
 		$response = $this->get('/Logs');
-		$response->assertOk();
+		$this->assertOk($response);
 		$response->assertViewIs('logs.list');
 
 		Auth::logout();
@@ -44,28 +47,28 @@ class LogsTest extends TestCase
 	public function testApiLogs(): void
 	{
 		$response = $this->postJson('/api/Logs::list');
-		$response->assertForbidden();
+		$this->assertUnauthorized($response);
 	}
 
 	public function testClearLogs(): void
 	{
 		$response = $this->postJson('/api/Logs::clearNoise');
-		$response->assertForbidden();
+		$this->assertUnauthorized($response);
 
 		$response = $this->postJson('/api/Logs::clear');
-		$response->assertForbidden();
+		$this->assertUnauthorized($response);
 
 		// set user as admin
 		Auth::loginUsingId(0);
 
 		$response = $this->postJson('/api/Logs::clearNoise');
-		$response->assertNoContent();
+		$this->assertNoContent($response);
 
 		$response = $this->postJson('/api/Logs::clear');
-		$response->assertNoContent();
+		$this->assertNoContent($response);
 
 		$response = $this->get('/Logs');
-		$response->assertOk();
+		$this->assertOk($response);
 		$response->assertSeeText('Everything looks fine, Lychee has not reported any problems!');
 
 		Auth::logout();

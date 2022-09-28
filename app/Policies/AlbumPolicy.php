@@ -33,6 +33,7 @@ class AlbumPolicy extends BasePolicy
 	public const CAN_EDIT_ID = 'canEditById';
 	public const CAN_SHARE_WITH_USERS = 'canShareWithUsers';
 	public const CAN_SHARE_BY_LINK = 'canShareByLink';
+	public const CAN_IMPORT_FROM_SERVER = 'canImportFromServer';
 	public const CAN_SHARE_ID = 'canShareById';
 
 	/**
@@ -319,6 +320,11 @@ class AlbumPolicy extends BasePolicy
 
 		return ($abstractAlbum === null && $default)
 			|| $abstractAlbum?->is_share_button_visible === true;
+	}
+
+	public function canImportFromServer(?User $user): bool
+	{
+		return false;
 	}
 
 	// The following methods are not to be called by Gate.

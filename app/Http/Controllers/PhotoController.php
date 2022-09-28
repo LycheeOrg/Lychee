@@ -30,13 +30,12 @@ use App\Image\UploadedFile;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Models\Photo;
-use App\Policies\BasePolicy;
 use App\SmartAlbums\StarredAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class PhotoController extends Controller
@@ -329,7 +328,7 @@ class PhotoController extends Controller
 	 */
 	public function clearSymLink(): void
 	{
-		if (!Gate::check(BasePolicy::IS_ADMIN)) { // TODO: FIX ME IN REQUEST
+		if (Auth::user()?->may_administrate !== true) { // TODO: FIX ME IN REQUEST
 			throw new UnauthorizedException('Admin privileges required');
 		}
 		$this->symLinkFunctions->clearSymLink();

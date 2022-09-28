@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Import\FromServer;
 use App\Actions\Import\FromUrl;
 use App\Exceptions\MassImportException;
+use App\Http\Requests\Import\CancelImportServerRequest;
 use App\Http\Requests\Import\ImportFromUrlRequest;
 use App\Http\Requests\Import\ImportServerRequest;
 use App\Models\Photo;
@@ -74,7 +75,7 @@ class ImportController extends Controller
 	/**
 	 * @return void
 	 */
-	public function serverCancel(): void
+	public function serverCancel(CancelImportServerRequest $request): void
 	{
 		Session::put('cancel', true);
 	}

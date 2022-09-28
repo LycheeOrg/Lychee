@@ -15,6 +15,7 @@ class SettingsPolicy extends BasePolicy
 	public const CAN_SEE_LOGS = 'canSeeLogs';
 	public const CAN_CLEAR_LOGS = 'canClearLogs';
 	public const CAN_SEE_DIAGNOSTICS = 'canSeeDiagnostics';
+	public const CAN_UPDATE = 'canUpdate';
 
 	public function canEdit(User $user): bool
 	{
@@ -37,6 +38,11 @@ class SettingsPolicy extends BasePolicy
 	}
 
 	public function canSeeDiagnostics(User $user): bool
+	{
+		return false;
+	}
+
+	public function canUpdate(User $user): bool
 	{
 		return false;
 	}

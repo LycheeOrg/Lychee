@@ -6,8 +6,10 @@ use App\Exceptions\ModelDBException;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
+use App\Policies\SettingsPolicy;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use function Safe\phpinfo;
 
@@ -67,9 +69,10 @@ class IndexController extends Controller
 	// @codeCoverageIgnoreStart
 	public function phpinfo(): void
 	{
+		Gate::authorize(SettingsPolicy::CAN_SEE_DIAGNOSTICS, Configs::class);
+
 		phpinfo();
 	}
-
 	// @codeCoverageIgnoreEnd
 
 	/**

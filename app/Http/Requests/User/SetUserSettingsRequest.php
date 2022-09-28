@@ -7,7 +7,7 @@ use App\Http\Requests\Traits\HasUserTrait;
 use App\Models\User;
 use App\Rules\IntegerIDRule;
 
-class SetUserSettingsRequest extends AbstractUserRequest implements HasUser
+class SetUserSettingsRequest extends AbstractUsernamePasswordRequest implements HasUser
 {
 	use HasUserTrait;
 

@@ -5,7 +5,7 @@ namespace App\Http\Requests\User;
 use App\Http\Requests\Contracts\HasPassword;
 use App\Rules\PasswordRule;
 
-class AddUserRequest extends AbstractUserRequest
+class AddUserRequest extends AbstractUsernamePasswordRequest
 {
 	/**
 	 * {@inheritDoc}

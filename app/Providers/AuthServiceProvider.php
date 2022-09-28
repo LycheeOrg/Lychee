@@ -10,7 +10,6 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
-use App\Policies\BasePolicy;
 use App\Policies\PhotoPolicy;
 use App\Policies\SettingsPolicy;
 use App\Policies\UserPolicy;
@@ -55,6 +54,5 @@ class AuthServiceProvider extends ServiceProvider
 		Auth::extend('session-or-token', function (Application $app, string $name, array $config) {
 			return SessionOrTokenGuard::createGuard($app, $name, $config);
 		});
-		Gate::define(BasePolicy::IS_ADMIN, [UserPolicy::class, 'isAdmin']);
 	}
 }

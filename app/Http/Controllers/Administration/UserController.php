@@ -13,8 +13,10 @@ use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\User\AddUserRequest;
 use App\Http\Requests\User\DeleteUserRequest;
-use App\Http\Requests\User\SetEmailRequest;
+use App\Http\Requests\User\Self\SetEmailRequest;
 use App\Http\Requests\User\SetUserSettingsRequest;
+use App\Http\Requests\User\UserListingRequest;
+use App\Http\Requests\User\UserSettingsRequest;
 use App\Models\User;
 use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Routing\Controller;
@@ -28,7 +30,7 @@ class UserController extends Controller
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function list(): Collection
+	public function list(UserListingRequest $request): Collection
 	{
 		// PHPStan does not understand that `get` returns `Collection<User>`, but assumes that it returns `Collection<Model>`
 		// @phpstan-ignore-next-line
@@ -134,7 +136,7 @@ class UserController extends Controller
 	 *
 	 * @throws UnauthenticatedException
 	 */
-	public function getEmail(): array
+	public function getEmail(UserSettingsRequest $request): array
 	{
 		/** @var User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();
@@ -165,7 +167,7 @@ class UserController extends Controller
 	 * @throws ModelDBException
 	 * @throws \Exception
 	 */
-	public function resetToken(): array
+	public function resetToken(UserSettingsRequest $request): array
 	{
 		/** @var User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();
@@ -184,7 +186,7 @@ class UserController extends Controller
 	 * @throws UnauthenticatedException
 	 * @throws ModelDBException
 	 */
-	public function unsetToken(): void
+	public function unsetToken(UserSettingsRequest $request): void
 	{
 		/** @var User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();

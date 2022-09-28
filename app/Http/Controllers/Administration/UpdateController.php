@@ -6,9 +6,11 @@ use App\Actions\Update\Apply as ApplyUpdate;
 use App\Actions\Update\Check as CheckUpdate;
 use App\Contracts\LycheeException;
 use App\Exceptions\VersionControlException;
+use App\Http\Requests\Settings\MigrateRequest;
+use App\Http\Requests\Settings\UpdateRequest;
 use App\Legacy\AdminAuthentication;
-use App\Policies\BasePolicy;
-use Illuminate\Http\Request;
+use App\Models\Configs;
+use App\Policies\SettingsPolicy;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -99,7 +101,7 @@ class UpdateController extends Controller
 	 *
 	 * @throws LycheeException
 	 */
-	public function view(): View
+	public function view(UpdateRequest $request): View
 	{
 		$this->checkUpdate->assertUpdatability();
 		$output = $this->applyUpdate->run();
@@ -122,7 +124,7 @@ class UpdateController extends Controller
 	 * The whole code around installation/upgrade/migration should
 	 * thoroughly be revised an refactored.
 	 */
-	public function migrate(Request $request): View|Response
+	public function migrate(MigrateRequest $request): View|Response
 	{
 		// This conditional code makes use of lazy boolean evaluation: a || b does not execute b if a is true.
 		// 1. Check whether the user is already logged in properly
@@ -134,11 +136,11 @@ class UpdateController extends Controller
 		// TODO: Step 3 will become unnecessary once the admin user of any existing installation has at least logged in once and the admin user has therewith migrated to use a non-hashed user name
 		$isLoggedIn = Auth::check();
 		$isLoggedIn = $isLoggedIn || AdminAuthentication::loginAsAdminIfNotRegistered();
-		$isLoggedIn = $isLoggedIn || AdminAuthentication::loginAsAdmin($request->input('username', ''), $request->input('password', ''), $request->ip());
-		$isLoggedIn = $isLoggedIn || Auth::attempt(['username' => $request->input('username', ''), 'password' => $request->input('password', '')]);
+		$isLoggedIn = $isLoggedIn || AdminAuthentication::loginAsAdmin($request->username(), $request->password(), $request->ip());
+		$isLoggedIn = $isLoggedIn || Auth::attempt(['username' => $request->username(), 'password' => $request->password()]);
 
 		// Check if logged in AND is admin
-		if (Gate::check(BasePolicy::IS_ADMIN)) {
+		if (Gate::check(SettingsPolicy::CAN_UPDATE, Configs::class)) {
 			$output = [];
 			$this->applyUpdate->migrate($output);
 			$this->applyUpdate->filter($output);
