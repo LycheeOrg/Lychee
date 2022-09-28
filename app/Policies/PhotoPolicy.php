@@ -15,9 +15,6 @@ class PhotoPolicy extends BasePolicy
 	protected AlbumPolicy $albumPolicy;
 	protected UserPolicy $userPolicy;
 
-	// constants to be used in GATE
-	public const IS_OWNER = 'isOwner';
-
 	public const CAN_SEE = 'canSee';
 	public const CAN_DOWNLOAD = 'canDownload';
 	public const CAN_EDIT = 'canEdit';
@@ -39,15 +36,14 @@ class PhotoPolicy extends BasePolicy
 	}
 
 	/**
-	 * This gate policy ensures that the Photo is owned by current user.
-	 * Do note that in case of current user being admin, it will be skipped due to the before method.
+	 * This ensures that current photo is owned by current user.
 	 *
 	 * @param User|null $user
 	 * @param Photo     $photo
 	 *
 	 * @return bool
 	 */
-	public function isOwner(?User $user, Photo $photo): bool
+	private function isOwner(?User $user, Photo $photo): bool
 	{
 		return $user !== null && $photo->owner_id === $user->id;
 	}

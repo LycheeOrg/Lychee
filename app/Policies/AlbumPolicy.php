@@ -22,9 +22,6 @@ class AlbumPolicy extends BasePolicy
 
 	public const UNLOCKED_ALBUMS_SESSION_KEY = 'unlocked_albums';
 
-	// constants to be used in GATE
-	public const IS_OWNER = 'isOwner';
-
 	public const CAN_SEE = 'canSee';
 	public const CAN_ACCESS = 'canAccess';
 	public const CAN_DOWNLOAD = 'canDownload';
@@ -49,15 +46,14 @@ class AlbumPolicy extends BasePolicy
 	}
 
 	/**
-	 * This gate policy ensures that the Album is owned by current user.
-	 * Do note that in case of current user being admin, it will be skipped due to the before method.
+	 * This ensures that current album is owned by current user.
 	 *
 	 * @param User|null $user
 	 * @param BaseAlbum $album
 	 *
 	 * @return bool
 	 */
-	public function isOwner(?User $user, BaseAlbum $album): bool
+	private function isOwner(?User $user, BaseAlbum $album): bool
 	{
 		return $user !== null && $album->owner_id === $user->id;
 	}
