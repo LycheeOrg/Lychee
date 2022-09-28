@@ -2,7 +2,7 @@
 
 namespace App\ModelFunctions;
 
-use App\Assets\Helpers;
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\Lang;
 use App\Models\Configs;
@@ -14,6 +14,8 @@ class ConfigFunctions
 	 * return the basic information for a Page.
 	 *
 	 * @return array
+	 *
+	 * @throws ConfigurationKeyMissingException
 	 */
 	public function get_pages_infos(): array
 	{
@@ -101,7 +103,7 @@ class ConfigFunctions
 	 * However, the client knows by itself if it is a television or not.
 	 * Hence, these values should be part of the front-end code.
 	 *
-	 * See also {@link Helpers::getDeviceType()}.
+	 * See also {@link \App\Assets\Helpers::getDeviceType()}.
 	 *
 	 * @param string $device
 	 *
