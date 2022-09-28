@@ -93,7 +93,7 @@ class Optimize extends OptimizeCommand
 	 * If we are not in production mode, this command asks for confirmation,
 	 * and we rather ask one time too often than not.
 	 *
-	 * @return bool `true`, if the
+	 * @return bool `true`, if Lychee is found to run in non-production mode
 	 *
 	 * @throws BindingResolutionException
 	 * @throws NotFoundExceptionInterface
