@@ -134,7 +134,7 @@ final class English implements Language
 			'DELETE_TRACK' => 'Delete track',
 
 			'TITLE_NEW_ALBUM' => 'Enter a title for the new album:',
-			'UNTITLED' => 'Untilted',
+			'UNTITLED' => 'Untitled',
 			'UNSORTED' => 'Unsorted',
 			'STARRED' => 'Starred',
 			'RECENT' => 'Recent',

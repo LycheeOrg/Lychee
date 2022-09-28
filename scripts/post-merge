@@ -26,6 +26,8 @@ else
         composer install --no-dev --prefer-dist
     fi
     if [ -f ".env" ]; then
+        echo "php artisan optimize --clever --dont-confirm=assume-no"
+        php artisan optimize --clever --dont-confirm=assume-no
         echo "php artisan migrate --force"
         php artisan migrate --force
     fi
