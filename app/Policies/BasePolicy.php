@@ -4,13 +4,10 @@ namespace App\Policies;
 
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Auth;
 
 class BasePolicy
 {
 	use HandlesAuthorization;
-
-	public const IS_ADMIN = 'isAdmin';
 
 	/**
 	 * Perform pre-authorization checks.
@@ -22,18 +19,8 @@ class BasePolicy
 	 */
 	public function before(?User $user, $ability)
 	{
-		if ($this->isAdmin($user)) {
+		if ($user?->may_administrate === true) {
 			return true;
 		}
-	}
-
-	/**
-	 * In some.
-	 *
-	 * @return bool
-	 */
-	public function isAdmin(?User $user = null): bool
-	{
-		return ($user ?? Auth::user())?->may_administrate === true;
 	}
 }

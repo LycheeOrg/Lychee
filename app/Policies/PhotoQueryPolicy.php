@@ -47,7 +47,7 @@ class PhotoQueryPolicy extends BasePolicy
 	{
 		$this->prepareModelQueryOrFail($query, false, true, true);
 
-		if ($this->isAdmin()) {
+		if (Auth::user()?->may_administrate === true) {
 			return $query;
 		}
 
@@ -111,7 +111,7 @@ class PhotoQueryPolicy extends BasePolicy
 				->where('albums._rgt', '<=', $origin->_rgt);
 		}
 
-		if ($this->isAdmin()) {
+		if (Auth::user()?->may_administrate === true) {
 			return $query;
 		} else {
 			return $query->where(function (Builder $query) use ($origin) {

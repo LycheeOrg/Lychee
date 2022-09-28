@@ -55,7 +55,7 @@ class AlbumQueryPolicy extends BasePolicy
 	{
 		$this->prepareModelQueryOrFail($query);
 
-		if ($this->isAdmin()) {
+		if (Auth::user()?->may_administrate === true) {
 			return $query;
 		}
 
@@ -163,7 +163,7 @@ class AlbumQueryPolicy extends BasePolicy
 	{
 		$this->prepareModelQueryOrFail($query);
 
-		if ($this->isAdmin()) {
+		if (Auth::user()?->may_administrate === true) {
 			return $query;
 		}
 
@@ -248,7 +248,7 @@ class AlbumQueryPolicy extends BasePolicy
 			throw new LycheeInvalidArgumentException('the given query does not query for albums');
 		}
 
-		if ($this->isAdmin()) {
+		if (Auth::user()?->may_administrate === true) {
 			return $query;
 		}
 
