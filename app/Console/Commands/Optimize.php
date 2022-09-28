@@ -90,7 +90,7 @@ class Optimize extends OptimizeCommand
 	 * developing or testing purposes, the result is `true`.
 	 * Such indicators are the environment setting, enabled debug mode or
 	 * debug bar, installed PhpUnit or PhpStan.
-	 * If we are not in production mode, this command ask for confirmation,
+	 * If we are not in production mode, this command asks for confirmation,
 	 * and we rather ask one time too often than not.
 	 *
 	 * @return bool `true`, if the
