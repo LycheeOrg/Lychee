@@ -6,6 +6,7 @@ use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Facades\Helpers;
 
 trait ConfigsHas
 {
@@ -32,7 +33,7 @@ trait ConfigsHas
 		$has_exiftool = self::getValueAsInt('has_exiftool');
 
 		// value not yet set -> let's see if exiftool is available
-		if ($has_exiftool === 2) {
+		if ($has_exiftool === 2 && Helpers::isExecAvailable()) {
 			try {
 				$cmd_output = exec('command -v exiftool');
 			} catch (\Exception $e) {
