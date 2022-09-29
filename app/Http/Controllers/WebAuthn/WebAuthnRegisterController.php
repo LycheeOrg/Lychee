@@ -4,11 +4,9 @@ namespace App\Http\Controllers\WebAuthn;
 
 use App\Exceptions\UnauthenticatedException;
 use Illuminate\Contracts\Support\Responsable;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Laragear\WebAuthn\Http\Requests\AttestationRequest;
 use Laragear\WebAuthn\Http\Requests\AttestedRequest;
-use function response;
 
 class WebAuthnRegisterController
 {
@@ -25,8 +23,6 @@ class WebAuthnRegisterController
 
 		return $request
 			->fastRegistration()
-//            ->userless()
-//            ->allowDuplicates()
 			->toCreate();
 	}
 
@@ -35,14 +31,11 @@ class WebAuthnRegisterController
 	 *
 	 * @param \Laragear\WebAuthn\Http\Requests\AttestedRequest $request
 	 *
-	 * @return \Illuminate\Http\Response
+	 * @return void
 	 */
-	public function register(AttestedRequest $request): Response
+	public function register(AttestedRequest $request): void
 	{
 		$request->user = Auth::user() ?? throw new UnauthenticatedException();
-
 		$request->save();
-
-		return response()->noContent();
 	}
 }

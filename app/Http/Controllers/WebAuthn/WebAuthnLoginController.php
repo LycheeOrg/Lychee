@@ -35,8 +35,9 @@ class WebAuthnLoginController
 	public function login(AssertedRequest $request, AssertionValidator $assertion): void
 	{
 		$credential = $assertion
-		->send(new AssertionValidation($request, User::findOrFail(0)))
-		->thenReturn()->credential;
+			->send(new AssertionValidation($request, User::findOrFail(0)))
+			->thenReturn()
+			->credential;
 
 		if ($credential === null) {
 			throw new UnauthenticatedException('Invalid credentials');

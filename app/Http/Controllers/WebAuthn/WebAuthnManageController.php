@@ -25,10 +25,9 @@ class WebAuthnManageController
 	 */
 	public function delete(Request $request): void
 	{
-		$id = $request->validate(['id' => 'required|string']);
-
 		/** @var \App\Models\User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();
+		$id = $request->validate(['id' => 'required|string']);
 		$user->webAuthnCredentials()->where('id', $id)->delete();
 	}
 }
