@@ -7,7 +7,6 @@ use App\Exceptions\PasswordRequiredException;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
-use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
