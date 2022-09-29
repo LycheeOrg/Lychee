@@ -20,11 +20,20 @@ use Laragear\WebAuthn\Assertion\Validator\Pipes\RetrieveChallenge;
 use Laragear\WebAuthn\Assertion\Validator\Pipes\RetrievesCredentialId;
 
 /**
- * This validator is literally a copy of the one in WebAuthn,
- * It is needed because Laragear makes use of is() which is wrong in Laravel
- * We Update the CheckCredentialsForUser pipe for this reason.
+ * This validator is literally a copy of {@link Laragear\WebAuthn\Assertion\Validator\Pipes\AssertionValidator},
+ * This copy is needed because {@link Laragear\WebAuthn\Assertion\Validator\Pipes\CheckCredentialIsForUser}
+ * uses isNot() from {@link Illuminate\Database\Eloquent\Relations\Concerns\ComparesRelatedModels} which
+ * internally calls is() and subsequently compareKeys().
  *
- * TODO: remove once Laravel fixed their stupidity: https://github.com/laravel/framework/pull/43860
+ * compareKeys() uses the lose check empty() on id to prune the null ones.
+ * However, this also returns false on 0. As a result, two related models with a same id of 0 (admin in our case)
+ * will be considered different entities.
+ *
+ * For this reason, we replace {@link Laragear\WebAuthn\Assertion\Validator\Pipes\CheckCredentialIsForUser}
+ * by our own {@link App\Pipelines\Pipes\CheckCredentialIsForUser} to achieve the expected behaviour.
+ *
+ * The Laravel team, in their brilliant stupidity, decided this was not worth their reading consideration.
+ * See here: https://github.com/laravel/framework/pull/43860
  *
  * @method \Laragear\WebAuthn\Assertion\Validator\AssertionValidation thenReturn()
  */
