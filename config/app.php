@@ -235,7 +235,6 @@ return [
 	*/
 
 	'aliases' => Facade::defaultAliases()->merge([
-		// 'ExampleClass' => App\Example\ExampleClass::class,
 		'DebugBar' => Barryvdh\Debugbar\Facades\Debugbar::class,
 		'Helpers' => App\Facades\Helpers::class,
 		'Lang' => App\Facades\Lang::class,
