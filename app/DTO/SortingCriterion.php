@@ -4,7 +4,7 @@ namespace App\DTO;
 
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 
-abstract class SortingCriterion extends DTO
+abstract class SortingCriterion extends ArrayableDTO
 {
 	public const ASC = 'ASC';
 	public const DESC = 'DESC';
@@ -34,16 +34,5 @@ abstract class SortingCriterion extends DTO
 		}
 		$this->column = $column;
 		$this->order = $order;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function toArray(): array
-	{
-		return [
-			'column' => $this->column,
-			'order' => $this->order,
-		];
 	}
 }
