@@ -89,13 +89,7 @@ class FixPermissions extends Command
 	private function fixPermissionsRecursively(string $path): void
 	{
 		try {
-			try {
-				$actualPerm = fileperms($path);
-			} catch (FilesystemException) {
-				$this->warn(sprintf('Unable to determine permissions for %s' . PHP_EOL, $path));
-
-				return;
-			}
+			$actualPerm = fileperms($path);
 
 			// `fileperms` also returns the higher bits of the inode mode.
 			// Hence, we must AND it with 07777 to only get what we are
@@ -143,6 +137,8 @@ class FixPermissions extends Command
 					}
 				}
 			}
+		} catch (FilesystemException) {
+			$this->warn(sprintf('Unable to determine permissions for %s' . PHP_EOL, $path));
 		} catch (\Exception $e) {
 			$this->error($e->getMessage());
 		}
