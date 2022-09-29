@@ -1720,16 +1720,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v9.31.0",
+            "version": "v9.32.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "75013d4fffe3b24748d313fbbea53206351214f7"
+                "reference": "aae3b59f82434176546c9dd10804adda16da5278"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/75013d4fffe3b24748d313fbbea53206351214f7",
-                "reference": "75013d4fffe3b24748d313fbbea53206351214f7",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/aae3b59f82434176546c9dd10804adda16da5278",
+                "reference": "aae3b59f82434176546c9dd10804adda16da5278",
                 "shasum": ""
             },
             "require": {
@@ -1902,7 +1902,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2022-09-20T13:32:50+00:00"
+            "time": "2022-09-27T13:32:56+00:00"
         },
         {
             "name": "laravel/serializable-closure",
@@ -2441,12 +2441,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/php-exif.git",
-                "reference": "802775056b2505436dd379a342a57181bb4f409a"
+                "reference": "f2c5cb5661a4c804550331e2e63a9794189f17fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/802775056b2505436dd379a342a57181bb4f409a",
-                "reference": "802775056b2505436dd379a342a57181bb4f409a",
+                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/f2c5cb5661a4c804550331e2e63a9794189f17fd",
+                "reference": "f2c5cb5661a4c804550331e2e63a9794189f17fd",
                 "shasum": ""
             },
             "require": {
@@ -2520,7 +2520,7 @@
                 "source": "https://github.com/LycheeOrg/php-exif/tree/code-safe-2.2",
                 "issues": "https://github.com/LycheeOrg/php-exif/issues"
             },
-            "time": "2022-08-08T07:35:25+00:00"
+            "time": "2022-09-29T16:10:11+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
