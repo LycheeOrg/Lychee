@@ -4,6 +4,7 @@ namespace App\SmartAlbums;
 
 use App\Contracts\AbstractAlbum;
 use App\Contracts\InternalLycheeException;
+use App\DTO\AlbumProtectionPolicy;
 use App\DTO\PhotoSortingCriterion;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
@@ -15,11 +16,13 @@ use App\Models\Extensions\SortingDecorator;
 use App\Models\Extensions\Thumb;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\SmartAlbums\Utils\MimicModel;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Class BaseSmartAlbum.
@@ -41,6 +44,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	protected string $id;
 	protected string $title;
 	protected bool $grants_download;
+	protected bool $grants_access_full_photo;
 	protected bool $is_public;
 	protected ?Thumb $thumb;
 	protected Collection $photos;
@@ -58,6 +62,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			$this->title = $title;
 			$this->is_public = $is_public;
 			$this->grants_download = Configs::getValueAsBool('downloadable');
+			$this->grants_access_full_photo = Configs::getValueAsBool('full_photo');
 			$this->thumb = null;
 			$this->smartPhotoCondition = $smartCondition;
 		} catch (BindingResolutionException $e) {
@@ -147,6 +152,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			'id' => $this->id,
 			'title' => $this->title,
 			'thumb' => $this->getThumbAttribute(),
+			'policies' => Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this]) ? AlbumProtectionPolicy::ofSmartAlbum($this) : null,
 		];
 
 		if (isset($this->photos)) {

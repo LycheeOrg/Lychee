@@ -19,7 +19,6 @@ class PhotoPolicy extends BasePolicy
 	public const CAN_DOWNLOAD = 'canDownload';
 	public const CAN_EDIT = 'canEdit';
 	public const CAN_EDIT_ID = 'canEditById';
-	public const CAN_SHARE_BY_LINK = 'canShareByLink';
 	public const CAN_ACCESS_FULL_PHOTO = 'canAccessFullPhoto';
 
 	/**
@@ -157,23 +156,6 @@ class PhotoPolicy extends BasePolicy
 				->whereIn('id', $photoIDs)
 				->where('owner_id', $user->id)
 				->count() === count($photoIDs);
-	}
-
-	/**
-	 * Check if user can share selected photo by link.
-	 *
-	 * @param User|null $user
-	 * @param Photo     $photo
-	 *
-	 * @return bool
-	 */
-	public function canShareByLink(?User $user, Photo $photo): bool
-	{
-		if ($this->isOwner($user, $photo)) {
-			return true;
-		}
-
-		return $this->albumPolicy->canShareByLink($user, $photo->album);
 	}
 
 	/**

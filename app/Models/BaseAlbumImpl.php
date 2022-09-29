@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Contracts\AbstractAlbum;
 use App\Contracts\HasRandomID;
+use App\DTO\AlbumProtectionPolicy;
 use App\DTO\PhotoSortingCriterion;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
@@ -10,12 +12,14 @@ use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
+use App\Policies\AlbumPolicy;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Class BaseAlbumImpl.
@@ -199,6 +203,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	protected $appends = [
 		'has_password',
 		'sorting',
+		'policies',
 	];
 
 	/**
@@ -269,6 +274,17 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	{
 		$this->attributes['sorting_col'] = $sorting?->column;
 		$this->attributes['sorting_order'] = $sorting?->order;
+	}
+
+	/**
+	 * Provide the policy attributes for said album.
+	 *
+	 * @return AlbumProtectionPolicy|null
+	 */
+	protected function getPoliciesAttribute(): AlbumProtectionPolicy|null
+	{
+		// Provide the policies if the user can edit.
+		return Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this]) ? AlbumProtectionPolicy::ofBaseAlbum($this) : null;
 	}
 
 	public function toArray(): array

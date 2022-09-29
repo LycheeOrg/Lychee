@@ -2,8 +2,7 @@
 
 namespace App\DTO;
 
-use App\Contracts\AbstractAlbum;
-use App\Exceptions\Internal\LycheeLogicException;
+use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\BaseAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 
@@ -34,31 +33,13 @@ class AlbumProtectionPolicy extends ArrayableDTO
 	}
 
 	/**
-	 * TODO: To be removed.
-	 *
-	 * @param AbstractAlbum $abstractAlbum
-	 *
-	 * @return AlbumProtectionPolicy
-	 *
-	 * @throws LycheeLogicException
-	 */
-	public static function ofAlbum(AbstractAlbum $abstractAlbum): AlbumProtectionPolicy
-	{
-		return match (true) {
-			$abstractAlbum instanceof BaseAlbum => self::ofBaseAlbum($abstractAlbum),
-			$abstractAlbum instanceof BaseSmartAlbum => self::ofSmartAlbum($abstractAlbum),
-			default => throw new LycheeLogicException('Cannot provide Album Protection Policy to ' . get_class($abstractAlbum))
-		};
-	}
-
-	/**
 	 * Given a BaseAlbum, returns the Protection Policy associated to it.
 	 *
-	 * @param BaseAlbum $baseAlbum
+	 * @param BaseAlbum|BaseAlbumImpl $baseAlbum
 	 *
 	 * @return AlbumProtectionPolicy
 	 */
-	public static function ofBaseAlbum(BaseAlbum $baseAlbum): AlbumProtectionPolicy
+	public static function ofBaseAlbum(BaseAlbum|BaseAlbumImpl $baseAlbum): AlbumProtectionPolicy
 	{
 		return new AlbumProtectionPolicy(
 			is_public: $baseAlbum->is_public,
@@ -80,11 +61,11 @@ class AlbumProtectionPolicy extends ArrayableDTO
 	public static function ofSmartAlbum(BaseSmartAlbum $baseSmartAlbum): AlbumProtectionPolicy
 	{
 		return new AlbumProtectionPolicy(
-			is_public: $baseSmartAlbum->is_public, // TODO: FIX ME
-			is_link_required: false, // TODO: FIX ME
+			is_public: $baseSmartAlbum->is_public,
+			is_link_required: false,
 			is_nsfw: false,
-			grants_access_full_photo: false, // TODO: FIX ME
-			grants_download: false,
+			grants_access_full_photo: $baseSmartAlbum->grants_access_full_photo,
+			grants_download: $baseSmartAlbum->grants_download,
 			is_password_required: false,
 		);
 	}
