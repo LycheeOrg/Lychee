@@ -29,7 +29,6 @@ class AlbumPolicy extends BasePolicy
 	public const CAN_EDIT = 'canEdit';
 	public const CAN_EDIT_ID = 'canEditById';
 	public const CAN_SHARE_WITH_USERS = 'canShareWithUsers';
-	public const CAN_SHARE_BY_LINK = 'canShareByLink';
 	public const CAN_IMPORT_FROM_SERVER = 'canImportFromServer';
 	public const CAN_SHARE_ID = 'canShareById';
 
@@ -296,29 +295,12 @@ class AlbumPolicy extends BasePolicy
 	}
 
 	/**
-	 * Check if user can share selected albums by link.
+	 * Check whether user can import from server.
 	 *
-	 * @param User|null     $user
-	 * @param AbstractAlbum $abstractAlbum
+	 * @param User|null $user
 	 *
 	 * @return bool
-	 *
-	 * @throws ConfigurationKeyMissingException
 	 */
-	public function canShareByLink(?User $user, ?AbstractAlbum $abstractAlbum): bool
-	{
-		if ($abstractAlbum instanceof BaseAlbum
-			&& $this->isOwner($user, $abstractAlbum)
-			&& $user?->may_upload === true) {
-			return true;
-		}
-
-		$default = Configs::getValueAsBool('share_button_visible');
-
-		return ($abstractAlbum === null && $default)
-			|| $abstractAlbum?->is_share_button_visible === true;
-	}
-
 	public function canImportFromServer(?User $user): bool
 	{
 		return false;

@@ -558,7 +558,7 @@ var loadPhotoInfo = function loadPhotoInfo(photoID) {
 		document.title = "Lychee – " + _title;
 		header.dom(".header__title").text(_title);
 
-		if (photo.json.hasOwnProperty("is_share_button_visible") && !photo.json.is_share_button_visible) {
+		if (!lychee.share_button_visible) {
 			$("#button_share").hide();
 		}
 
@@ -1389,7 +1389,7 @@ header.setMode = function (mode) {
 				tabindex.makeFocusable(_e9);
 			}
 
-			if (album.json && !album.json.rights.can_share_by_link) {
+			if (!lychee.share_button_visible) {
 				var _e10 = $("#button_share_album");
 				_e10.hide();
 				tabindex.makeUnfocusable(_e10);
@@ -1520,7 +1520,7 @@ header.setMode = function (mode) {
 				tabindex.makeUnfocusable(_e24);
 			}
 
-			if (photo.json && !photo.json.rights.can_share_by_link) {
+			if (!lychee.share_button_visible) {
 				var _e25 = $("#button_share");
 				_e25.hide();
 				tabindex.makeUnfocusable(_e25);
@@ -2044,7 +2044,6 @@ sidebar.createStructure.album = function (data) {
 	var isPublic = !!data.policies && data.policies.is_public ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
 	var requiresLink = !!data.policies && data.policies.is_link_required ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
 	var isDownloadable = !!data.policies && data.policies.grant_download ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
-	var isShareButtonVisible = !!data.policies && data.policies.is_share_button_visible ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
 	var hasPassword = data.has_password ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
 	var license = "";
 	var sorting = "";
@@ -2108,7 +2107,7 @@ sidebar.createStructure.album = function (data) {
 	structure.share = {
 		title: lychee.locale["ALBUM_SHARING"],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["ALBUM_PUBLIC"], kind: "public", value: isPublic }, { title: lychee.locale["ALBUM_HIDDEN"], kind: "hidden", value: requiresLink }, { title: lychee.locale["ALBUM_DOWNLOADABLE"], kind: "downloadable", value: isDownloadable }, { title: lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE"], kind: "share_button_visible", value: isShareButtonVisible }, { title: lychee.locale["ALBUM_PASSWORD"], kind: "password", value: hasPassword }]
+		rows: [{ title: lychee.locale["ALBUM_PUBLIC"], kind: "public", value: isPublic }, { title: lychee.locale["ALBUM_HIDDEN"], kind: "hidden", value: requiresLink }, { title: lychee.locale["ALBUM_DOWNLOADABLE"], kind: "downloadable", value: isDownloadable }, { title: lychee.locale["ALBUM_PASSWORD"], kind: "password", value: hasPassword }]
 	};
 
 	if (data.owner_name) {
@@ -3795,7 +3794,6 @@ var SmartAlbumID = Object.freeze({
  * @property {is_nsfw} boolean
  * @property {boolean} is_public
  * @property {boolean} is_link_required
- * @property {boolean} is_share_button_visible
  * @property {boolean} is_password_required
  * @property {boolean} grants_access_full_photo
  * @property {boolean} grants_download
@@ -3844,7 +3842,6 @@ var SmartAlbumID = Object.freeze({
  *
  * @property {boolean} can_edit
  * @property {boolean} can_download
- * @property {boolean} can_share_by_link
  * @property {boolean} can_access_full_photo
  */
 
@@ -3857,7 +3854,6 @@ var SmartAlbumID = Object.freeze({
  * @property {boolean} can_share_with_users
  * @property {boolean} can_download
  * @property {boolean} can_upload
- * @property {boolean} can_share_by_link
  */
 
 /**

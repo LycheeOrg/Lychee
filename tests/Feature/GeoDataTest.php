@@ -103,7 +103,6 @@ class GeoDataTest extends TestCase
 					'is_public' => 0,
 					'rights' => [
 						'can_download' => true,
-						'can_share_by_link' => true,
 					],
 					'size_variants' => [
 						'thumb' => [

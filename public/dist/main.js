@@ -995,7 +995,7 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject6 = _taggedTemplateLiteral(["<p>", "<input class='text' name='description' type='text' maxlength='800' placeholder='$", "' value='$", "'></p>"], ["<p>", "<input class='text' name='description' type='text' maxlength='800' placeholder='$", "' value='$", "'></p>"]),
     _templateObject7 = _taggedTemplateLiteral(["\n\t<div>\n\t\t<p>", "\n\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t<select name=\"license\" id=\"license\">\n\t\t\t\t<option value=\"none\">", "</option>\n\t\t\t\t<option value=\"reserved\">", "</option>\n\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t<option value=\"CC-BY-1.0\">CC Attribution 1.0</option>\n\t\t\t\t<option value=\"CC-BY-2.0\">CC Attribution 2.0</option>\n\t\t\t\t<option value=\"CC-BY-2.5\">CC Attribution 2.5</option>\n\t\t\t\t<option value=\"CC-BY-3.0\">CC Attribution 3.0</option>\n\t\t\t\t<option value=\"CC-BY-4.0\">CC Attribution 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-1.0\">CC Attribution-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.0\">CC Attribution-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.5\">CC Attribution-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-ND-3.0\">CC Attribution-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-4.0\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-1.0\">CC Attribution-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.0\">CC Attribution-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.5\">CC Attribution-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-SA-3.0\">CC Attribution-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-4.0\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-1.0\">CC Attribution-NonCommercial 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.0\">CC Attribution-NonCommercial 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.5\">CC Attribution-NonCommercial 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-3.0\">CC Attribution-NonCommercial 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-4.0\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-1.0\">CC Attribution-NonCommercial-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.0\">CC Attribution-NonCommercial-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.5\">CC Attribution-NonCommercial-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-3.0\">CC Attribution-NonCommercial-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-4.0\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-1.0\">CC Attribution-NonCommercial-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.0\">CC Attribution-NonCommercial-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.5\">CC Attribution-NonCommercial-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-3.0\">CC Attribution-NonCommercial-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-4.0\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t</select>\n\t\t</span>\n\t\t<br />\n\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">", "</a>\n\t\t</p>\n\t</div>"], ["\n\t<div>\n\t\t<p>", "\n\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t<select name=\"license\" id=\"license\">\n\t\t\t\t<option value=\"none\">", "</option>\n\t\t\t\t<option value=\"reserved\">", "</option>\n\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t<option value=\"CC-BY-1.0\">CC Attribution 1.0</option>\n\t\t\t\t<option value=\"CC-BY-2.0\">CC Attribution 2.0</option>\n\t\t\t\t<option value=\"CC-BY-2.5\">CC Attribution 2.5</option>\n\t\t\t\t<option value=\"CC-BY-3.0\">CC Attribution 3.0</option>\n\t\t\t\t<option value=\"CC-BY-4.0\">CC Attribution 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-1.0\">CC Attribution-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.0\">CC Attribution-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.5\">CC Attribution-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-ND-3.0\">CC Attribution-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-4.0\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-1.0\">CC Attribution-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.0\">CC Attribution-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.5\">CC Attribution-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-SA-3.0\">CC Attribution-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-4.0\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-1.0\">CC Attribution-NonCommercial 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.0\">CC Attribution-NonCommercial 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.5\">CC Attribution-NonCommercial 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-3.0\">CC Attribution-NonCommercial 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-4.0\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-1.0\">CC Attribution-NonCommercial-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.0\">CC Attribution-NonCommercial-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.5\">CC Attribution-NonCommercial-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-3.0\">CC Attribution-NonCommercial-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-4.0\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-1.0\">CC Attribution-NonCommercial-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.0\">CC Attribution-NonCommercial-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.5\">CC Attribution-NonCommercial-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-3.0\">CC Attribution-NonCommercial-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-4.0\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t</select>\n\t\t</span>\n\t\t<br />\n\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">", "</a>\n\t\t</p>\n\t</div>"]),
     _templateObject8 = _taggedTemplateLiteral(["\n\t\t<div><p>\n\t\t\t", "\n\t\t</p></div>"], ["\n\t\t<div><p>\n\t\t\t", "\n\t\t</p></div>"]),
-    _templateObject9 = _taggedTemplateLiteral(["\n\t\t<form>\n\t\t\t<div class='switch'>\n\t\t\t\t<label>\n\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t<input type='checkbox' name='is_public'>\n\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='grants_access_full_photo'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='is_link_required'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='grants_download'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='is_share_button_visible'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='is_password_required'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t\t<input class='text' name='passwordtext' type='text' placeholder='", "' value=''>\n\t\t\t</div>\n\t\t\t<div class='hr'><hr></div>\n\t\t\t<div class='switch'>\n\t\t\t\t<label>\n\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t<input type='checkbox' name='is_nsfw'>\n\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t</form>\n\t"], ["\n\t\t<form>\n\t\t\t<div class='switch'>\n\t\t\t\t<label>\n\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t<input type='checkbox' name='is_public'>\n\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='grants_access_full_photo'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='is_link_required'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='grants_download'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='is_share_button_visible'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='is_password_required'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t\t<input class='text' name='passwordtext' type='text' placeholder='", "' value=''>\n\t\t\t</div>\n\t\t\t<div class='hr'><hr></div>\n\t\t\t<div class='switch'>\n\t\t\t\t<label>\n\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t<input type='checkbox' name='is_nsfw'>\n\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t</form>\n\t"]),
+    _templateObject9 = _taggedTemplateLiteral(["\n\t\t<form>\n\t\t\t<div class='switch'>\n\t\t\t\t<label>\n\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t<input type='checkbox' name='is_public'>\n\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='grants_access_full_photo'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='is_link_required'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='grants_download'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='is_password_required'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t\t<input class='text' name='passwordtext' type='text' placeholder='", "' value=''>\n\t\t\t</div>\n\t\t\t<div class='hr'><hr></div>\n\t\t\t<div class='switch'>\n\t\t\t\t<label>\n\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t<input type='checkbox' name='is_nsfw'>\n\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t</form>\n\t"], ["\n\t\t<form>\n\t\t\t<div class='switch'>\n\t\t\t\t<label>\n\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t<input type='checkbox' name='is_public'>\n\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='grants_access_full_photo'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='is_link_required'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='grants_download'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='is_password_required'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t\t<input class='text' name='passwordtext' type='text' placeholder='", "' value=''>\n\t\t\t</div>\n\t\t\t<div class='hr'><hr></div>\n\t\t\t<div class='switch'>\n\t\t\t\t<label>\n\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t<input type='checkbox' name='is_nsfw'>\n\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t</form>\n\t"]),
     _templateObject10 = _taggedTemplateLiteral(["<div class='choice'>\n\t\t\t\t\t\t<label>\n\t\t\t\t\t\t\t<input type='checkbox' name='", "'>\n\t\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t\t<span class='label'>$", "</span>\n\t\t\t\t\t\t</label>\n\t\t\t\t\t\t<p></p>\n\t\t\t\t\t</div>"], ["<div class='choice'>\n\t\t\t\t\t\t<label>\n\t\t\t\t\t\t\t<input type='checkbox' name='", "'>\n\t\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t\t<span class='label'>$", "</span>\n\t\t\t\t\t\t</label>\n\t\t\t\t\t\t<p></p>\n\t\t\t\t\t</div>"]),
     _templateObject11 = _taggedTemplateLiteral(["\n\t\t<div id='qr-code' class='downloads'></div>\n\t"], ["\n\t\t<div id='qr-code' class='downloads'></div>\n\t"]),
     _templateObject12 = _taggedTemplateLiteral(["<p>", "'</p>"], ["<p>", "'</p>"]),
@@ -1042,7 +1042,7 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject53 = _taggedTemplateLiteral(["<link data-prefetch rel=\"prefetch\" href=\"", "\">"], ["<link data-prefetch rel=\"prefetch\" href=\"", "\">"]),
     _templateObject54 = _taggedTemplateLiteral(["<input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='$", "'>"], ["<input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='$", "'>"]),
     _templateObject55 = _taggedTemplateLiteral(["\n\t\t<div class='switch'>\n\t\t\t<label>\n\t\t\t\t<span class='label'>", ":</span>\n\t\t\t\t<input type='checkbox' name='is_public'>\n\t\t\t\t<span class='slider round'></span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t"], ["\n\t\t<div class='switch'>\n\t\t\t<label>\n\t\t\t\t<span class='label'>", ":</span>\n\t\t\t\t<input type='checkbox' name='is_public'>\n\t\t\t\t<span class='slider round'></span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t"]),
-    _templateObject56 = _taggedTemplateLiteral(["\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='grant_access_full_photo' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='is_link_required' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='grant_download' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='is_share_button_visible' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='has_password' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t"], ["\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='grant_access_full_photo' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='is_link_required' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='grant_download' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='is_share_button_visible' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='has_password' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t"]),
+    _templateObject56 = _taggedTemplateLiteral(["\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='grant_access_full_photo' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='is_link_required' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='grant_download' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='has_password' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t"], ["\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='grant_access_full_photo' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='is_link_required' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='grant_download' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t\t<div class='choice'>\n\t\t\t<label>\n\t\t\t\t<input type='checkbox' name='has_password' disabled>\n\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t<span class='label'>", "</span>\n\t\t\t</label>\n\t\t\t<p>", "</p>\n\t\t</div>\n\t"]),
     _templateObject57 = _taggedTemplateLiteral(["\n\t\t\t<p class='less'>", "</p>\n\t\t\t", "\n\t\t\t", "\n\t\t"], ["\n\t\t\t<p class='less'>", "</p>\n\t\t\t", "\n\t\t\t", "\n\t\t"]),
     _templateObject58 = _taggedTemplateLiteral(["\n\t\t\t", "\n\t\t\t<p class='photoPublic'>", "</p>\n\t\t\t", "\n\t\t"], ["\n\t\t\t", "\n\t\t\t<p class='photoPublic'>", "</p>\n\t\t\t", "\n\t\t"]),
     _templateObject59 = _taggedTemplateLiteral(["<p>", " <input class='text' name='description' type='text' maxlength='800' placeholder='", "' value='$", "'></p>"], ["<p>", " <input class='text' name='description' type='text' maxlength='800' placeholder='", "' value='$", "'></p>"]),
@@ -2151,7 +2151,6 @@ album.setProtectionPolicy = function (albumID) {
 		album.json.policies.grants_access_full_photo = $('.basicModal .choice input[name="grants_access_full_photo"]:checked').length === 1;
 		album.json.policies.is_link_required = $('.basicModal .choice input[name="is_link_required"]:checked').length === 1;
 		album.json.policies.grants_download = $('.basicModal .choice input[name="grants_download"]:checked').length === 1;
-		album.json.policies.is_share_button_visible = $('.basicModal .choice input[name="is_share_button_visible"]:checked').length === 1;
 		album.json.policies.is_password_required = $('.basicModal .choice input[name="is_password_required"]:checked').length === 1;
 		var newPassword = $('.basicModal .choice input[name="passwordtext"]').val() || null;
 
@@ -2164,7 +2163,6 @@ album.setProtectionPolicy = function (albumID) {
 			view.album.public();
 			view.album.requiresLink();
 			view.album.downloadable();
-			view.album.shareButtonVisible();
 			view.album.password();
 		}
 
@@ -2174,8 +2172,7 @@ album.setProtectionPolicy = function (albumID) {
 			is_public: album.json.policies.is_public,
 			is_nsfw: album.json.policies.is_nsfw,
 			is_link_required: album.json.policies.is_link_required,
-			grants_download: album.json.policies.grants_download,
-			is_share_button_visible: album.json.policies.is_share_button_visible
+			grants_download: album.json.policies.grants_download
 		};
 		if (album.json.policies.is_password_required) {
 			if (newPassword) {
@@ -2190,7 +2187,7 @@ album.setProtectionPolicy = function (albumID) {
 		api.post("Album::setProtectionPolicy", params);
 	};
 
-	var msg = lychee.html(_templateObject9, lychee.locale["ALBUM_PUBLIC"], lychee.locale["ALBUM_PUBLIC_EXPL"], build.iconic("check"), lychee.locale["ALBUM_FULL"], lychee.locale["ALBUM_FULL_EXPL"], build.iconic("check"), lychee.locale["ALBUM_HIDDEN"], lychee.locale["ALBUM_HIDDEN_EXPL"], build.iconic("check"), lychee.locale["ALBUM_DOWNLOADABLE"], lychee.locale["ALBUM_DOWNLOADABLE_EXPL"], build.iconic("check"), lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE"], lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE_EXPL"], build.iconic("check"), lychee.locale["ALBUM_PASSWORD_PROT"], lychee.locale["ALBUM_PASSWORD_PROT_EXPL"], lychee.locale["PASSWORD"], lychee.locale["ALBUM_NSFW"], lychee.locale["ALBUM_NSFW_EXPL"]);
+	var msg = lychee.html(_templateObject9, lychee.locale["ALBUM_PUBLIC"], lychee.locale["ALBUM_PUBLIC_EXPL"], build.iconic("check"), lychee.locale["ALBUM_FULL"], lychee.locale["ALBUM_FULL_EXPL"], build.iconic("check"), lychee.locale["ALBUM_HIDDEN"], lychee.locale["ALBUM_HIDDEN_EXPL"], build.iconic("check"), lychee.locale["ALBUM_DOWNLOADABLE"], lychee.locale["ALBUM_DOWNLOADABLE_EXPL"], build.iconic("check"), lychee.locale["ALBUM_PASSWORD_PROT"], lychee.locale["ALBUM_PASSWORD_PROT_EXPL"], lychee.locale["PASSWORD"], lychee.locale["ALBUM_NSFW"], lychee.locale["ALBUM_NSFW_EXPL"]);
 
 	var dialogSetupCB = function dialogSetupCB() {
 		// TODO: If the modal dialog would provide this callback with proper jQuery objects for all input/select/choice elements, then we would not need these jQuery selectors
@@ -2202,7 +2199,6 @@ album.setProtectionPolicy = function (albumID) {
 			$('.basicModal .choice input[name="grants_access_full_photo"]').prop("checked", album.json.policies.grants_access_full_photo);
 			$('.basicModal .choice input[name="is_link_required"]').prop("checked", album.json.policies.is_link_required);
 			$('.basicModal .choice input[name="grants_download"]').prop("checked", album.json.policies.grants_download);
-			$('.basicModal .choice input[name="is_share_button_visible"]').prop("checked", album.json.policies.is_share_button_visible);
 			$('.basicModal .choice input[name="is_password_required"]').prop("checked", album.json.policies.is_password_required);
 			if (album.json.policies.is_password_required) {
 				$('.basicModal .choice input[name="passwordtext"]').show();
@@ -2213,7 +2209,6 @@ album.setProtectionPolicy = function (albumID) {
 			$('.basicModal .choice input[name="grants_access_full_photo"]').prop("checked", lychee.grants_access_full_photo);
 			$('.basicModal .choice input[name="is_link_required"]').prop("checked", false);
 			$('.basicModal .choice input[name="grants_download"]').prop("checked", lychee.grants_download);
-			$('.basicModal .choice input[name="is_share_button_visible"]').prop("checked", lychee.is_share_button_visible);
 			$('.basicModal .choice input[name="is_password_required"]').prop("checked", false);
 			$('.basicModal .choice input[name="passwordtext"]').hide();
 		}
@@ -2358,8 +2353,7 @@ album.toggleNSFW = function () {
  * @returns {void}
  */
 album.share = function (service) {
-	// TODO: FIX ME THIS IS A RIGHT: CAN_SHARE_SOMETHING
-	if (album.json.policies.hasOwnProperty("is_share_button_visible") && !album.json.policies.is_share_button_visible) {
+	if (!lychee.share_button_visible) {
 		return;
 	}
 
@@ -2382,8 +2376,7 @@ album.share = function (service) {
  * @returns {void}
  */
 album.qrCode = function () {
-	// TODO: FIX ME THIS IS A RIGHT: CAN_SHARE_SOMETHING
-	if (album.json.hasOwnProperty("is_share_button_visible") && !album.json.is_share_button_visible) {
+	if (!lychee.share_button_visible) {
 		return;
 	}
 
@@ -4210,7 +4203,7 @@ contextMenu.move = function (IDs, e, callback) {
  * @returns {void}
  */
 contextMenu.sharePhoto = function (photoID, e) {
-	if (!_photo3.json.rights.can_share_by_link) {
+	if (!lychee.share_button_visible) {
 		return;
 	}
 
@@ -4244,7 +4237,7 @@ contextMenu.sharePhoto = function (photoID, e) {
  * @returns {void}
  */
 contextMenu.shareAlbum = function (albumID, e) {
-	if (!album.json.rights.can_share_by_link) {
+	if (!lychee.share_button_visible) {
 		return;
 	}
 
@@ -4635,7 +4628,7 @@ header.setMode = function (mode) {
 				tabindex.makeFocusable(_e10);
 			}
 
-			if (album.json && !album.json.rights.can_share_by_link) {
+			if (!lychee.share_button_visible) {
 				var _e11 = $("#button_share_album");
 				_e11.hide();
 				tabindex.makeUnfocusable(_e11);
@@ -4766,7 +4759,7 @@ header.setMode = function (mode) {
 				tabindex.makeUnfocusable(_e25);
 			}
 
-			if (_photo3.json && !_photo3.json.rights.can_share_by_link) {
+			if (!lychee.share_button_visible) {
 				var _e26 = $("#button_share");
 				_e26.hide();
 				tabindex.makeUnfocusable(_e26);
@@ -5812,6 +5805,7 @@ lychee.parsePublicInitializationData = function (data) {
 
 	lychee.header_auto_hide = data.config_device.header_auto_hide;
 	lychee.active_focus_on_page_load = data.config_device.active_focus_on_page_load;
+	lychee.share_button_visible = data.config.share_button_visible === "1";
 	lychee.enable_button_visibility = data.config_device.enable_button_visibility;
 	lychee.enable_button_share = data.config_device.enable_button_share;
 	lychee.enable_button_archive = data.config_device.enable_button_archive;
@@ -5849,7 +5843,6 @@ lychee.parseProtectedInitializationData = function (data) {
 	lychee.full_photo = data.config.full_photo === "1";
 	lychee.downloadable = data.config.downloadable === "1";
 	lychee.public_photos_hidden = data.config.public_photos_hidden === "1";
-	lychee.share_button_visible = data.config.share_button_visible === "1";
 	lychee.delete_imported = data.config.delete_imported === "1";
 	lychee.import_via_symlink = data.config.import_via_symlink === "1";
 	lychee.skip_duplicates = data.config.skip_duplicates === "1";
@@ -8785,7 +8778,7 @@ _photo3.setStar = function (photoIDs, isStarred) {
 _photo3.setProtectionPolicy = function (photoID) {
 	var msg_switch = lychee.html(_templateObject55, lychee.locale["PHOTO_PUBLIC"], lychee.locale["PHOTO_PUBLIC_EXPL"]);
 
-	var msg_choices = lychee.html(_templateObject56, build.iconic("check"), lychee.locale["PHOTO_FULL"], lychee.locale["PHOTO_FULL_EXPL"], build.iconic("check"), lychee.locale["PHOTO_HIDDEN"], lychee.locale["PHOTO_HIDDEN_EXPL"], build.iconic("check"), lychee.locale["PHOTO_DOWNLOADABLE"], lychee.locale["PHOTO_DOWNLOADABLE_EXPL"], build.iconic("check"), lychee.locale["PHOTO_SHARE_BUTTON_VISIBLE"], lychee.locale["PHOTO_SHARE_BUTTON_VISIBLE_EXPL"], build.iconic("check"), lychee.locale["PHOTO_PASSWORD_PROT"], lychee.locale["PHOTO_PASSWORD_PROT_EXPL"]);
+	var msg_choices = lychee.html(_templateObject56, build.iconic("check"), lychee.locale["PHOTO_FULL"], lychee.locale["PHOTO_FULL_EXPL"], build.iconic("check"), lychee.locale["PHOTO_HIDDEN"], lychee.locale["PHOTO_HIDDEN_EXPL"], build.iconic("check"), lychee.locale["PHOTO_DOWNLOADABLE"], lychee.locale["PHOTO_DOWNLOADABLE_EXPL"], build.iconic("check"), lychee.locale["PHOTO_PASSWORD_PROT"], lychee.locale["PHOTO_PASSWORD_PROT_EXPL"]);
 
 	if (_photo3.json.is_public === 2) {
 		// Public album. We can't actually change anything, but we will
@@ -8878,9 +8871,6 @@ _photo3.setProtectionPolicy = function (photoID) {
 				}
 				if (lychee.downloadable) {
 					$('.basicModal .choice input[name="grant_download"]').prop("checked", true);
-				}
-				if (lychee.share_button_visible) {
-					$('.basicModal .choice input[name="is_share_button_visible"]').prop("checked", true);
 				}
 				// Photos shared individually can't be password-protected.
 			} else {
@@ -9037,7 +9027,7 @@ _photo3.deleteTag = function (photoID, index) {
  * @returns {void}
  */
 _photo3.share = function (photoID, service) {
-	if (!_photo3.json.is_share_button_visible) {
+	if (!lychee.share_button_visible) {
 		return;
 	}
 
@@ -9374,7 +9364,6 @@ var SearchAlbumIDPrefix = "search";
  * @property {?Thumb}  thumb                    - always `null`; just a dummy entry, because all other albums {@link Album}, {@link TagAlbum}, {@link SmartAlbum} have it
  * @property {boolean} is_public                - always `false`; just a dummy entry, because all other albums {@link Album}, {@link TagAlbum}, {@link SmartAlbum} have it
  * @property {boolean} grant_download          - always `false`; just a dummy entry, because all other albums {@link Album}, {@link TagAlbum}, {@link SmartAlbum} have it
- * @property {boolean} is_share_button_visible  - always `false`; just a dummy entry, because all other albums {@link Album}, {@link TagAlbum}, {@link SmartAlbum} have it
  */
 
 /**
@@ -9412,8 +9401,7 @@ search.find = function (term) {
 			tag_albums: search.json.tag_albums,
 			thumb: null,
 			is_public: false,
-			grant_download: false,
-			is_share_button_visible: false
+			grant_download: false
 		};
 
 		var albumsData = "";
@@ -10517,7 +10505,6 @@ _sidebar.createStructure.album = function (data) {
 	var isPublic = !!data.policies && data.policies.is_public ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
 	var requiresLink = !!data.policies && data.policies.is_link_required ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
 	var isDownloadable = !!data.policies && data.policies.grant_download ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
-	var isShareButtonVisible = !!data.policies && data.policies.is_share_button_visible ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
 	var hasPassword = data.has_password ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
 	var license = "";
 	var sorting = "";
@@ -10581,7 +10568,7 @@ _sidebar.createStructure.album = function (data) {
 	structure.share = {
 		title: lychee.locale["ALBUM_SHARING"],
 		type: _sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["ALBUM_PUBLIC"], kind: "public", value: isPublic }, { title: lychee.locale["ALBUM_HIDDEN"], kind: "hidden", value: requiresLink }, { title: lychee.locale["ALBUM_DOWNLOADABLE"], kind: "downloadable", value: isDownloadable }, { title: lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE"], kind: "share_button_visible", value: isShareButtonVisible }, { title: lychee.locale["ALBUM_PASSWORD"], kind: "password", value: hasPassword }]
+		rows: [{ title: lychee.locale["ALBUM_PUBLIC"], kind: "public", value: isPublic }, { title: lychee.locale["ALBUM_HIDDEN"], kind: "hidden", value: requiresLink }, { title: lychee.locale["ALBUM_DOWNLOADABLE"], kind: "downloadable", value: isDownloadable }, { title: lychee.locale["ALBUM_PASSWORD"], kind: "password", value: hasPassword }]
 	};
 
 	if (data.owner_name) {
@@ -12721,14 +12708,6 @@ view.album = {
 	/**
   * @returns {void}
   */
-	shareButtonVisible: function shareButtonVisible() {
-		// TODO: DOUBLE CHECK
-		if (album.json.policies.is_share_button_visible) _sidebar.changeAttr("share_button_visible", lychee.locale["ALBUM_SHR_YES"]);else _sidebar.changeAttr("share_button_visible", lychee.locale["ALBUM_SHR_NO"]);
-	},
-
-	/**
-  * @returns {void}
-  */
 	password: function password() {
 		if (album.json.policies.is_password_required) _sidebar.changeAttr("password", lychee.locale["ALBUM_SHR_YES"]);else _sidebar.changeAttr("password", lychee.locale["ALBUM_SHR_NO"]);
 	},
@@ -14300,7 +14279,6 @@ var SmartAlbumID = Object.freeze({
  * @property {is_nsfw} boolean
  * @property {boolean} is_public
  * @property {boolean} is_link_required
- * @property {boolean} is_share_button_visible
  * @property {boolean} is_password_required
  * @property {boolean} grants_access_full_photo
  * @property {boolean} grants_download
@@ -14349,7 +14327,6 @@ var SmartAlbumID = Object.freeze({
  *
  * @property {boolean} can_edit
  * @property {boolean} can_download
- * @property {boolean} can_share_by_link
  * @property {boolean} can_access_full_photo
  */
 
@@ -14362,7 +14339,6 @@ var SmartAlbumID = Object.freeze({
  * @property {boolean} can_share_with_users
  * @property {boolean} can_download
  * @property {boolean} can_upload
- * @property {boolean} can_share_by_link
  */
 
 /**

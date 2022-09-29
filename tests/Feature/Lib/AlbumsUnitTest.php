@@ -267,13 +267,12 @@ class AlbumsUnitTest
 	 * @param bool        $requiresLink
 	 * @param bool        $nsfw
 	 * @param bool        $downloadable
-	 * @param bool        $share_button_visible
-	 * @param string|null $password             `null` does not change password
-	 *                                          settings;
-	 *                                          the empty string `''` removes
-	 *                                          a (potentially set) password;
-	 *                                          a non-empty string sets the
-	 *                                          password accordingly
+	 * @param string|null $password           `null` does not change password
+	 *                                        settings;
+	 *                                        the empty string `''` removes
+	 *                                        a (potentially set) password;
+	 *                                        a non-empty string sets the
+	 *                                        password accordingly
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
@@ -284,7 +283,6 @@ class AlbumsUnitTest
 		bool $requiresLink = false,
 		bool $nsfw = false,
 		bool $downloadable = true,
-		bool $share_button_visible = true,
 		?string $password = null,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
@@ -296,7 +294,6 @@ class AlbumsUnitTest
 			'is_link_required' => $requiresLink,
 			'is_nsfw' => $nsfw,
 			'grants_download' => $downloadable,
-			'is_share_button_visible' => $share_button_visible,
 		];
 
 		if ($password !== null) {

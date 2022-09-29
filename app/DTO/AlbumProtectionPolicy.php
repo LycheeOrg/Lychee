@@ -27,7 +27,6 @@ class AlbumProtectionPolicy extends ArrayableDTO
 		public bool $is_public,
 		public bool $is_link_required,
 		public bool $is_nsfw,
-		public bool $is_share_button_visible,
 		public bool $grants_access_full_photo,
 		public bool $grants_download,
 		public bool $is_password_required = false, // Only used when sending info to the front-end
@@ -65,7 +64,6 @@ class AlbumProtectionPolicy extends ArrayableDTO
 			is_public: $baseAlbum->is_public,
 			is_link_required: $baseAlbum->is_link_required,
 			is_nsfw: $baseAlbum->is_nsfw,
-			is_share_button_visible: $baseAlbum->is_share_button_visible,
 			grants_access_full_photo: $baseAlbum->grants_access_full_photo,
 			grants_download: $baseAlbum->grants_download,
 			is_password_required: $baseAlbum->password !== null && $baseAlbum->password !== '',
@@ -85,7 +83,6 @@ class AlbumProtectionPolicy extends ArrayableDTO
 			is_public: $baseSmartAlbum->is_public, // TODO: FIX ME
 			is_link_required: false, // TODO: FIX ME
 			is_nsfw: false,
-			is_share_button_visible: $baseSmartAlbum->is_share_button_visible, // TODO: FIX ME
 			grants_access_full_photo: false, // TODO: FIX ME
 			grants_download: false,
 			is_password_required: false,

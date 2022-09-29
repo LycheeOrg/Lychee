@@ -15,7 +15,6 @@ class PhotoRightsDTO extends ArrayableDTO
 	public function __construct(
 		public bool $can_edit,
 		public bool $can_download,
-		public bool $can_share_by_link, // TODO: Move this to root level
 		public bool $can_access_full_photo
 	) {
 	}
@@ -32,7 +31,6 @@ class PhotoRightsDTO extends ArrayableDTO
 		return new self(
 			can_edit: Gate::check(PhotoPolicy::CAN_EDIT, [Photo::class, $photo]),
 			can_download: Gate::check(PhotoPolicy::CAN_DOWNLOAD, [Photo::class, $photo]),
-			can_share_by_link: Gate::check(PhotoPolicy::CAN_SHARE_BY_LINK, [Photo::class, $photo]),
 			can_access_full_photo: Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo]),
 		);
 	}

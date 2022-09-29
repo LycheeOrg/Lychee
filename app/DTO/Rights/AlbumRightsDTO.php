@@ -17,7 +17,6 @@ class AlbumRightsDTO extends ArrayableDTO
 		public bool $can_share_with_users,
 		public bool $can_download,
 		public bool $can_upload,
-		public bool $can_share_by_link  // TODO: Move this to root level
 	) {
 	}
 
@@ -39,7 +38,6 @@ class AlbumRightsDTO extends ArrayableDTO
 			can_share_with_users: Gate::check(AlbumPolicy::CAN_SHARE_WITH_USERS, [AbstractAlbum::class, $abstractAlbum]),
 			can_download: Gate::check(AlbumPolicy::CAN_DOWNLOAD, [AbstractAlbum::class, $abstractAlbum]),
 			can_upload: Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, $abstractAlbum]),
-			can_share_by_link: Gate::check(AlbumPolicy::CAN_SHARE_BY_LINK, [AbstractAlbum::class, $abstractAlbum])
 		);
 	}
 }

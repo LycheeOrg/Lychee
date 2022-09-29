@@ -92,7 +92,6 @@ use Illuminate\Support\Facades\Auth;
  * @property User                       $owner
  * @property bool                       $is_public
  * @property bool                       $is_link_required
- * @property bool                       $is_share_button_visible
  * @property bool                       $is_nsfw
  * @property bool                       $grants_access_full_photo
  * @property bool                       $grants_download
@@ -147,10 +146,9 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'sorting_col' => null,
 		'sorting_order' => null,
 		// Security attributes
-		'is_nsfw' => false, // this is a special case.
+		'is_nsfw' => false,
 		'is_public' => false,
 		'is_link_required' => false,
-		'is_share_button_visible' => false,
 		'password' => null,
 		// Permissions
 		'grants_access_full_photo' => true,
@@ -186,7 +184,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		// Security attributes are hidden because provided by the DTO AlbumProtectionPolicy
 		'is_public',
 		'is_link_required',
-		'is_share_button_visible',
 
 		// Permissions are hidden because they will eventually be replaced by an external table
 		// and are provided by the AlbumRightsDTO
@@ -250,15 +247,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 			return $value;
 		} else {
 			return Configs::getValueAsBool('downloadable');
-		}
-	}
-
-	protected function getIsShareButtonVisibleAttribute(bool $value): bool
-	{
-		if ($this->is_public) {
-			return $value;
-		} else {
-			return Configs::getValueAsBool('share_button_visible');
 		}
 	}
 

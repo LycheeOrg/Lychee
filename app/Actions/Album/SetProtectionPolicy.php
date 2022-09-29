@@ -35,7 +35,6 @@ class SetProtectionPolicy extends Action
 		$album->is_public = $protectionPolicy->is_public;
 		$album->is_link_required = $protectionPolicy->is_link_required;
 		$album->is_nsfw = $protectionPolicy->is_nsfw;
-		$album->is_share_button_visible = $protectionPolicy->is_share_button_visible;
 
 		// (Future) permissions on an album-user relation.
 		// Note: For the time being these are still "globally" defined on the album for all users, but they will be

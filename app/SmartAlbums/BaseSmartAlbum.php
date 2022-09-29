@@ -42,7 +42,6 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	protected string $title;
 	protected bool $grants_download;
 	protected bool $is_public;
-	protected bool $is_share_button_visible;
 	protected ?Thumb $thumb;
 	protected Collection $photos;
 	protected \Closure $smartPhotoCondition;
@@ -59,7 +58,6 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			$this->title = $title;
 			$this->is_public = $is_public;
 			$this->grants_download = Configs::getValueAsBool('downloadable');
-			$this->is_share_button_visible = Configs::getValueAsBool('share_button_visible');
 			$this->thumb = null;
 			$this->smartPhotoCondition = $smartCondition;
 		} catch (BindingResolutionException $e) {

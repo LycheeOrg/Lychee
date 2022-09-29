@@ -1745,7 +1745,6 @@ var SmartAlbumID = Object.freeze({
  * @property {is_nsfw} boolean
  * @property {boolean} is_public
  * @property {boolean} is_link_required
- * @property {boolean} is_share_button_visible
  * @property {boolean} is_password_required
  * @property {boolean} grants_access_full_photo
  * @property {boolean} grants_download
@@ -1794,7 +1793,6 @@ var SmartAlbumID = Object.freeze({
  *
  * @property {boolean} can_edit
  * @property {boolean} can_download
- * @property {boolean} can_share_by_link
  * @property {boolean} can_access_full_photo
  */
 
@@ -1807,7 +1805,6 @@ var SmartAlbumID = Object.freeze({
  * @property {boolean} can_share_with_users
  * @property {boolean} can_download
  * @property {boolean} can_upload
- * @property {boolean} can_share_by_link
  */
 
 /**
