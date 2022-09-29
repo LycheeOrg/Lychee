@@ -63,11 +63,13 @@ class UpdateController extends Controller
 	 * Return if up to date or the number of commits behind
 	 * This invalidates the cache for the url.
 	 *
+	 * @param UpdateRequest $request
+	 *
 	 * @return array{updateStatus: string}
 	 *
 	 * @throws VersionControlException
 	 */
-	public function check(): array
+	public function check(UpdateRequest $request): array
 	{
 		return ['updateStatus' => $this->checkUpdate->getText()];
 	}
@@ -79,11 +81,13 @@ class UpdateController extends Controller
 	 * Except for the return type this method is identical to
 	 * {@link UpdateController::view()}.
 	 *
+	 * @param UpdateRequest $request
+	 *
 	 * @return array{updateMsgs: array<string>}
 	 *
 	 * @throws LycheeException
 	 */
-	public function apply(): array
+	public function apply(UpdateRequest $request): array
 	{
 		$this->checkUpdate->assertUpdatability();
 
@@ -96,6 +100,8 @@ class UpdateController extends Controller
 	 * The method requires PHP to have shell access.
 	 * Except for the return type this method is identical to
 	 * {@link UpdateController::apply()}.
+	 *
+	 * @param UpdateRequest $request
 	 *
 	 * @return View
 	 *
@@ -123,6 +129,10 @@ class UpdateController extends Controller
 	 * However, both methods are very similar, too.
 	 * The whole code around installation/upgrade/migration should
 	 * thoroughly be revised an refactored.
+	 *
+	 * @param MigrateRequest $request
+	 *
+	 * @return View|Response
 	 */
 	public function migrate(MigrateRequest $request): View|Response
 	{
