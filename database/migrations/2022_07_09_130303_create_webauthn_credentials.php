@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Schema;
 /**
  * @see \Laragear\WebAuthn\Models\WebAuthnCredential
  */
-return new class() extends Migration {
+class CreateWebauthnCredentials extends Migration
+{
 	/**
 	 * Run the migrations.
 	 *
@@ -17,10 +18,6 @@ return new class() extends Migration {
 	{
 		Schema::create('webauthn_credentials', static function (Blueprint $table): void {
 			static::defaultBlueprint($table);
-
-			// You may add here your own columns...
-			//
-			// $table->timestamp('last_login_at')->nullable();
 		});
 	}
 
@@ -73,7 +70,8 @@ return new class() extends Migration {
 		$table->json('certificates')->nullable();
 
 		// A way to disable the credential without deleting it.
-		$table->timestamp('disabled_at')->nullable();
-		$table->timestamps();
+		$table->dateTime('disabled_at')->nullable();
+		$table->dateTime('created_at')->nullable(false);
+		$table->dateTime('updated_at')->nullable(false);
 	}
-};
+}

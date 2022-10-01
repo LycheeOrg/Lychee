@@ -280,7 +280,6 @@ class RefactorModels extends Migration
 		$this->createSizeVariantTableUp();
 		$this->createSymLinkTableUp();
 		$this->createRemainingForeignConstraints();
-		// $this->createWebAuthnTableUp();
 		$this->createPageTableUp();
 		$this->createPageContentTableUp();
 		$this->createLogTableUp();
@@ -319,7 +318,6 @@ class RefactorModels extends Migration
 		$this->createUserAlbumTableDown();
 		$this->createPhotoTableDown();
 		$this->createSymLinkTableDown();
-		// $this->createWebAuthnTableDown();
 		$this->createPageTableDown();
 		$this->createPageContentTableDown();
 		$this->createLogTableDown();
@@ -991,41 +989,6 @@ class RefactorModels extends Migration
 		}
 		Schema::drop('page_contents');
 	}
-
-	// private function createWebAuthnTable(int $precision): void
-	// {
-	// 	Schema::create('web_authn_credentials', function (Blueprint $table) use ($precision) {
-	// 		$table->string('id', 255);
-	// 		$table->dateTime('created_at', $precision)->nullable(false);
-	// 		$table->dateTime('updated_at', $precision)->nullable(false);
-	// 		$table->dateTime('disabled_at', $precision)->nullable(true);
-	// 		$table->unsignedInteger('user_id')->nullable(false);
-	// 		$table->string('name')->nullable();
-	// 		$table->string('type', 16);
-	// 		$table->json('transports');
-	// 		$table->json('attestation_type');
-	// 		$table->json('trust_path');
-	// 		$table->uuid('aaguid');
-	// 		$table->binary('public_key');
-	// 		$table->unsignedInteger('counter')->default(0);
-	// 		$table->uuid('user_handle')->nullable();
-	// 		// Indices
-	// 		$table->primary(['id', 'user_id']);
-	// 		$table->foreign('user_id')
-	// 			->references('id')->on('users')
-	// 			->cascadeOnDelete();
-	// 	});
-	// }
-
-	// private function createWebAuthnTableUp(): void
-	// {
-	// 	$this->createWebAuthnTable(6);
-	// }
-
-	// private function createWebAuthnTableDown(): void
-	// {
-	// 	$this->createWebAuthnTable(0);
-	// }
 
 	/**
 	 * Creates remaining foreign constraints which could not immediately be
