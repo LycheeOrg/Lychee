@@ -13444,7 +13444,7 @@ view.users = {
 			view.users.clearContent();
 
 			if (users.json.length === 0) {
-				$(".users_view").append('<div class="users_view_line" style="margin-bottom: 50px;"><p style="text-align: center">User list is empty!</p></div>');
+				$(".users_view").append('<div class="users_view_line" style="margin-bottom: 50px;"><p style="text-align: center">' + lychee.locale["USERS_EMPTY"] + '</p></div>');
 			}
 
 			var html = "\n\t\t\t\t<div class=\"users_view_line\"><p>\n\t\t\t\t\t<span class=\"text\">username</span>\n\t\t\t\t\t<span class=\"text\">new password</span>\n\t\t\t\t\t<span class=\"text_icon\" title=\"" + lychee.locale["ALLOW_UPLOADS"] + "\">\n\t\t\t\t\t\t" + build.iconic("data-transfer-upload") + "\n\t\t\t\t\t</span>\n\t\t\t\t\t<span class=\"text_icon\" title=\"" + lychee.locale["RESTRICTED_ACCOUNT"] + "\">\n\t\t\t\t\t\t" + build.iconic("lock-locked") + "\n\t\t\t\t\t</span>\n\t\t\t\t</p></div>";
@@ -13498,7 +13498,7 @@ view.sharing = {
 			view.sharing.clearContent();
 
 			if (sharing.json.shared.length === 0) {
-				$(".sharing_view").append('<div class="sharing_view_line" style="margin-bottom: 50px;"><p style="text-align: center">Sharing list is empty!</p></div>');
+				$(".sharing_view").append('<div class="sharing_view_line" style="margin-bottom: 50px;"><p style="text-align: center">' + lychee.locale["SHARING_EMPTY"] + '</p></div>');
 			}
 
 			var albumOptions = sharing.json.albums.reduce(function (acc, _album) {
@@ -13803,7 +13803,7 @@ view.u2f = {
 			view.u2f.clearContent();
 
 			if (u2f.json.length === 0) {
-				$(".u2f_view").append('<div class="u2f_view_line"><p class="single">Credentials list is empty!</p></div>');
+				$(".u2f_view").append('<div class="u2f_view_line"><p class="single">' + lychee.locale["U2F_NO_CREDENTIALS"] + '</p></div>');
 			} else {
 				var _html2 = "\n\t\t\t\t\t<div class=\"u2f_view_line\"><p><span class=\"text\">\n\t\t\t\t\t\t" + lychee.locale["U2F_CREDENTIALS"] + "\n\t\t\t\t\t</span></p></div>";
 
