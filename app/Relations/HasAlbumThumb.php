@@ -115,7 +115,7 @@ class HasAlbumThumb extends Relation
 	 *     ON (
 	 *       albums._lft >= covered_albums._lft AND
 	 *       albums._rgt <= covered_albums._rgt AND
-	 *       "complicated seachability filter goes here"
+	 *       "complicated searchability filter goes here"
 	 *     )
 	 *     WHERE covered_albums.id IN $albumKeys
 	 *     ORDER BY album_id ASC, photos.is_starred DESC, photos.created_at DESC

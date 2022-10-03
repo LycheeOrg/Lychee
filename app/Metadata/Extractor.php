@@ -352,7 +352,7 @@ class Extractor
 					} elseif ($taken_at->getTimezone()->getName() === 'Z') {
 						// This is a video format where we expect the takestamp
 						// to be provided in local time but the timezone is
-						// (erroneuously) set to Zulu (UTC).  This will trigger,
+						// (erroneously) set to Zulu (UTC).  This will trigger,
 						// e.g., for mov files with the FFprobe extractor.
 						// We recreate the recording time as a timestamp in the
 						// application's default timezone.
