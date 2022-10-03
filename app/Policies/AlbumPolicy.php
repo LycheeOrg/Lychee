@@ -127,7 +127,7 @@ class AlbumPolicy
 	}
 
 	/**
-	 * Check if an album is dowmloadable.
+	 * Check if an album is downloadable.
 	 *
 	 * @param User|null      $user
 	 * @param BaseAlbum|null $baseAlbum
