@@ -93,19 +93,13 @@ Route::post('/Sharing::list', [Administration\SharingController::class, 'list'])
 Route::post('/Sharing::add', [Administration\SharingController::class, 'add']);
 Route::post('/Sharing::delete', [Administration\SharingController::class, 'delete']);
 
-// Route::post('/WebAuthn::register/gen', [Administration\WebAuthController::class, 'generateRegistration']);
-// Route::post('/WebAuthn::register', [Administration\WebAuthController::class, 'verifyRegistration']);
-// Route::post('/WebAuthn::login/gen', [Administration\WebAuthController::class, 'generateAuthentication']);
-// Route::post('/WebAuthn::login', [Administration\WebAuthController::class, 'verifyAuthentication']);
+// WebAuthn Routes
 Route::post('/WebAuthn::list', [WebAuthn\WebAuthnManageController::class, 'list']);
 Route::post('/WebAuthn::delete', [WebAuthn\WebAuthnManageController::class, 'delete']);
-
-// WebAuthn Routes
 Route::post('/WebAuthn::register/options', [\App\Http\Controllers\WebAuthn\WebAuthnRegisterController::class, 'options'])
 	->name('webauthn.register.options');
 Route::post('/WebAuthn::register', [\App\Http\Controllers\WebAuthn\WebAuthnRegisterController::class, 'register'])
 	->name('webauthn.register');
-
 Route::post('/WebAuthn::login/options', [\App\Http\Controllers\WebAuthn\WebAuthnLoginController::class, 'options'])
 	->name('webauthn.login.options');
 Route::post('/WebAuthn::login', [\App\Http\Controllers\WebAuthn\WebAuthnLoginController::class, 'login'])
