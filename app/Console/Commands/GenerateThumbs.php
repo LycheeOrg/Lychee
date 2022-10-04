@@ -24,6 +24,8 @@ class GenerateThumbs extends Command
 	 * @phpstan-var array<string, int<0,6>>
 	 */
 	public const SIZE_VARIANTS = [
+		'thumb' => SizeVariant::THUMB,
+		'thumb2x' => SizeVariant::THUMB2X,
 		'small' => SizeVariant::SMALL,
 		'small2x' => SizeVariant::SMALL2X,
 		'medium' => SizeVariant::MEDIUM,
