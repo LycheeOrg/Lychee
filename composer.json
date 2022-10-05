@@ -70,6 +70,7 @@
         "ext-zip": "*",
         "barryvdh/laravel-debugbar": "^3.6",
         "barryvdh/laravel-ide-helper": "^2.10",
+        "dedoc/scramble": "^0.5.0",
         "filp/whoops": "^2.5",
         "friendsofphp/php-cs-fixer": "^3.3",
         "itsgoingd/clockwork": "^5.1",
