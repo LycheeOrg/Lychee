@@ -158,7 +158,7 @@ class UserController extends Controller
 	/**
 	 * Reset the token of the currently authenticated user.
 	 *
-	 * @return array{'token': string}
+	 * @return array{token: string}
 	 *
 	 * @throws UnauthenticatedException
 	 * @throws ModelDBException
