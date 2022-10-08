@@ -65,8 +65,4 @@
 
 <!-- JS -->
 <script type="text/javascript" src="{{ Helpers::cacheBusting('dist/view.js') }}"></script>
-
-<script type="text/javascript">
-lychee.api_V2 = true;
-</script>
 @endsection
