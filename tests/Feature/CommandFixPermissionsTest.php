@@ -50,8 +50,8 @@ class CommandFixPermissionsTest extends Base\PhotoTestBase
 		])->assertSuccessful();
 
 		clearstatcache(true);
-		static::assertEquals(00664, fileperms($filePath) & 07777, $filePath);
-		static::assertEquals(02775, fileperms($dirPath) & 07777, $dirPath);
+		static::assertEquals(00664, fileperms($filePath) & 07777);
+		static::assertEquals(02775, fileperms($dirPath) & 07777);
 
 		chmod($filePath, 00777);
 		chmod($dirPath, 06777);
