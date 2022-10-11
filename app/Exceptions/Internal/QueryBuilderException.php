@@ -8,7 +8,7 @@ namespace App\Exceptions\Internal;
  * This exception is meant to wrap the generic PHP standard exceptions which
  * are thrown by the Laravel DB and Eloquent Query Builder.
  * Unfortunately, neither Laravel nor Eloquent wrap their exceptions
- * nicely into some "Laraval exception".
+ * nicely into some "Laravel exception".
  * In order to keep our code clean and not throwing generic exception,
  * we must work around this Laravel flaw.
  */

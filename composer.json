@@ -109,6 +109,7 @@
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan optimize --clever --dont-confirm=assume-no",
             "@php artisan package:discover",
             "@install_files"
         ],

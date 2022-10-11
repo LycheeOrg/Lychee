@@ -17,6 +17,7 @@ parameters:
 		- phpstan/stubs/imageexception.stub
 	ignoreErrors:
 		# bunch of false positives from Eloquent
+		- '#Dynamic call to static method App\\Models\\Extensions\\FixedQueryBuilder<Illuminate\\Database\\Eloquent\\Model>::from\(\).#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::insert\(\).#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::select\(\).#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::orderBy\(\)#'

@@ -92,7 +92,7 @@ class GdHandler extends BaseImageHandler
 			// However, it has two drawbacks:
 			//  - In order to be on the safe side, the copied image always
 			//    has a transparency channel for true color images even if
-			//    the image does not use transparancy at all.
+			//    the image does not use transparency at all.
 			//  - Due to its usage of `imagealphablending` it turns out to be
 			//    incredibly slow, even slower than just re-loading the
 			//    GD image from disk and decoding the image stream.

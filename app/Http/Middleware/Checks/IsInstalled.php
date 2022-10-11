@@ -25,7 +25,7 @@ class IsInstalled implements MiddlewareCheck
 				config('app.key') !== '' &&
 				Schema::hasTable('configs');
 		} catch (QueryException $e) {
-			// Authentication to DB failled.
+			// Authentication to DB failed.
 			// This means that we cannot even check that `configs` is present,
 			// therefore we will just assume it is not.
 			//
@@ -33,7 +33,7 @@ class IsInstalled implements MiddlewareCheck
 			// - Connection with DB is broken (firewall?)
 			// - Connection with DB is not set (MySql without credentials)
 			//
-			// We only check Authentication to DB failled and just skip in
+			// We only check Authentication to DB failed and just skip in
 			// the other cases to get a proper message error.
 			if (Str::contains($e->getMessage(), 'SQLSTATE[HY000] [1045]')) {
 				return false;
