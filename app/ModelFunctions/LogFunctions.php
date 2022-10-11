@@ -38,7 +38,7 @@ class LogFunctions extends AbstractLogger
 	/**
 	 * Implements log so that AbstractLogger works.
 	 */
-	public function log($log, Stringable|string $message, array $context = []): void
+	public function log($level, Stringable|string $message, array $context = []): void
 	{
 		$dbt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
 		// debug_backtrace return the backtrace of all the function calls
@@ -53,7 +53,7 @@ class LogFunctions extends AbstractLogger
 		}
 
 		$log = Logs::create([
-			'type' => $log,
+			'type' => $level,
 			'function' => $fun,
 			'line' => $line,
 			'text' => $text,
