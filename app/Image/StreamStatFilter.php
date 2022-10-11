@@ -27,9 +27,8 @@ class StreamStatFilter extends \php_user_filter
 		while ($bucket = stream_bucket_make_writeable($in)) {
 			$consumed += $bucket->datalen;
 
-			$streamStat = $this->getStreamStats();
-			if ($streamStat !== null) {
-				$streamStat->bytes += $bucket->datalen;
+			if ($this->params instanceof StreamStat) {
+				$this->params->bytes += $bucket->datalen;
 				\hash_update($this->hashContext, $bucket->data);
 			}
 			stream_bucket_append($out, $bucket);
@@ -47,9 +46,8 @@ class StreamStatFilter extends \php_user_filter
 	 */
 	public function onClose(): void
 	{
-		$streamStat = $this->getStreamStats();
-		if ($streamStat !== null) {
-			$streamStat->checksum = \hash_final($this->hashContext);
+		if ($this->params instanceof StreamStat) {
+			$this->params->checksum = \hash_final($this->hashContext);
 		}
 		parent::onClose();
 	}
@@ -63,33 +61,11 @@ class StreamStatFilter extends \php_user_filter
 	 */
 	public function onCreate(): bool
 	{
-		$streamStat = $this->getStreamStats();
-		if ($streamStat !== null) {
-			$streamStat->bytes = 0;
+		if ($this->params instanceof StreamStat) {
+			$this->params->bytes = 0;
 			$this->hashContext = \hash_init(self::HASH_ALGO_NAME);
 		}
 
 		return parent::onCreate();
-	}
-
-	/**
-	 * Retrieve StreamStat.
-	 *
-	 * @return StreamStat|null
-	 */
-	private function getStreamStats(): StreamStat|null
-	{
-		if ($this->params instanceof StreamStat) {
-			return $this->params;
-		}
-		if (is_array($this->params)) {
-			for ($i = 0; $i < count($this->params); $i++) {
-				if ($this->params[$i] instanceof StreamStat) {
-					return $this->params[$i];
-				}
-			}
-		}
-
-		return null;
 	}
 }

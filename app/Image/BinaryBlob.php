@@ -109,7 +109,7 @@ abstract class BinaryBlob
 			$stream,
 			StreamStatFilter::REGISTERED_NAME,
 			STREAM_FILTER_READ,
-			[$streamStat]
+			$streamStat
 		);
 
 		return $streamStat;

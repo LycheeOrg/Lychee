@@ -62,6 +62,7 @@
         "spatie/laravel-feed": "^4.0",
         "spatie/laravel-image-optimizer": "^1.6.2",
         "symfony/cache": "^v6.0.0",
+        "thecodingmachine/safe": "^2.4",
         "whichbrowser/parser": "^2.1"
     },
     "require-dev": {
