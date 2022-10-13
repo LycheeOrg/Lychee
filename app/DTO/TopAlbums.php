@@ -14,35 +14,14 @@ use Illuminate\Support\Collection;
  * other users.)
  * Actually, in this context "shared albums" means "foreign albums".
  */
-class TopAlbums extends DTO
+class TopAlbums extends ArrayableDTO
 {
-	public Collection $smartAlbums;
-	public Collection $tagAlbums;
-	public Collection $albums;
-	public Collection $sharedAlbums;
-
 	public function __construct(
-		Collection $smartAlbums,
-		Collection $tagAlbums,
-		Collection $albums,
-		?Collection $sharedAlbums = null
+		public Collection $smart_albums,
+		public Collection $tag_albums,
+		public Collection $albums,
+		public ?Collection $shared_albums = null
 	) {
-		$this->smartAlbums = $smartAlbums;
-		$this->tagAlbums = $tagAlbums;
-		$this->albums = $albums;
-		$this->sharedAlbums = $sharedAlbums ?? new Collection();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function toArray(): array
-	{
-		return [
-			'smart_albums' => $this->smartAlbums->toArray(),
-			'tag_albums' => $this->tagAlbums->toArray(),
-			'albums' => $this->albums->toArray(),
-			'shared_albums' => $this->sharedAlbums->toArray(),
-		];
+		$this->shared_albums ??= new Collection();
 	}
 }
