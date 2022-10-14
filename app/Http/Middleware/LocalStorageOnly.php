@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\RequestUnsupportedException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 
 class LocalStorageOnly
@@ -21,7 +21,7 @@ class LocalStorageOnly
 	 */
 	public function handle(Request $request, \Closure $next)
 	{
-		$storageAdapter = Storage::disk()->getAdapter();
+		$storageAdapter = SizeVariantNamingStrategy::getImageDisk()->getAdapter();
 		if (!($storageAdapter instanceof LocalFilesystemAdapter)) {
 			throw new RequestUnsupportedException($request->url() . ' not implemented for non-local storage');
 		}

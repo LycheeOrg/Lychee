@@ -108,7 +108,7 @@ class FileDeleter
 		if ($isLocalDisk) {
 			foreach ($this->regularFilesOrSymbolicLinks as $fileOrLink) {
 				try {
-					$absolutePath = Storage::path($fileOrLink);
+					$absolutePath = $defaultDisk->path($fileOrLink);
 					// Note, `file_exist` returns `false` for existing,
 					// but dead links.
 					// So the first part takes care of deleting links no matter

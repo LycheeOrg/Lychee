@@ -6,7 +6,6 @@ use App\Exceptions\FlySystemLycheeException;
 use App\Exceptions\MediaFileOperationException;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Storage;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use function Safe\fclose;
@@ -176,6 +175,6 @@ class FlysystemFile extends MediaFile
 			throw new MediaFileOperationException('file is not hosted locally');
 		}
 
-		return new NativeLocalFile(Storage::path($this->relativePath));
+		return new NativeLocalFile($this->disk->path($this->relativePath));
 	}
 }
