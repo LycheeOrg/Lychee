@@ -1,13 +1,14 @@
 <?php
 
 use App\Models\Configs;
-use DarkGhostHunter\Larapass\Eloquent\WebAuthnCredential;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 class CreateWebAuthnTables extends Migration
 {
+	public const DELETED_AT = 'disabled_at';
+
 	/**
 	 * Run the migrations.
 	 *
@@ -38,7 +39,7 @@ class CreateWebAuthnTables extends Migration
 			$table->uuid('user_handle')->nullable();
 
 			$table->timestamps();
-			$table->softDeletes(WebAuthnCredential::DELETED_AT);
+			$table->softDeletes(self::DELETED_AT);
 			Configs::where('key', '=', 'username')->orWhere('key', '=', 'password')->update(['type_range' => STRING]);
 
 			$table->primary(['id', 'user_id']);
