@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Kalnoy\Nestedset\Node;
 use Kalnoy\Nestedset\NodeTrait;
-use League\Flysystem\FilesystemException;
+use League\Flysystem\FileNotFoundException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
@@ -280,6 +280,7 @@ class RefactorModels extends Migration
 		$this->createSizeVariantTableUp();
 		$this->createSymLinkTableUp();
 		$this->createRemainingForeignConstraints();
+		$this->createWebAuthnTableUp();
 		$this->createPageTableUp();
 		$this->createPageContentTableUp();
 		$this->createLogTableUp();
@@ -318,6 +319,7 @@ class RefactorModels extends Migration
 		$this->createUserAlbumTableDown();
 		$this->createPhotoTableDown();
 		$this->createSymLinkTableDown();
+		$this->createWebAuthnTableDown();
 		$this->createPageTableDown();
 		$this->createPageContentTableDown();
 		$this->createLogTableDown();
@@ -386,12 +388,10 @@ class RefactorModels extends Migration
 			$this->dropIndexIfExists($table, 'photos_album_id_is_starred_type_index');
 		});
 		Schema::rename('photos', 'photos_tmp');
-		if (Schema::hasTable('web_authn_credentials')) {
-			Schema::table('web_authn_credentials', function (Blueprint $table) {
-				$this->dropForeignIfExists($table, 'web_authn_credentials_user_id_foreign');
-			});
-			Schema::rename('web_authn_credentials', 'web_authn_credentials_tmp');
-		}
+		Schema::table('web_authn_credentials', function (Blueprint $table) {
+			$this->dropForeignIfExists($table, 'web_authn_credentials_user_id_foreign');
+		});
+		Schema::rename('web_authn_credentials', 'web_authn_credentials_tmp');
 		Schema::table('users', function (Blueprint $table) {
 			$this->dropUniqueIfExists($table, 'users_username_unique');
 			$this->dropUniqueIfExists($table, 'users_email_unique');
@@ -417,9 +417,7 @@ class RefactorModels extends Migration
 		DB::table('albums_tmp')->update(['cover_id' => null]);
 		Schema::drop('photos_tmp');
 		Schema::drop('albums_tmp');
-		if (Schema::hasTable('web_authn_credentials_tmp')) {
-			Schema::drop('web_authn_credentials_tmp');
-		}
+		Schema::drop('web_authn_credentials_tmp');
 		Schema::drop('users_tmp');
 		Schema::drop('page_contents_tmp');
 		Schema::drop('pages_tmp');
@@ -444,9 +442,7 @@ class RefactorModels extends Migration
 		Schema::drop('albums_tmp');
 		Schema::drop('tag_albums');
 		Schema::drop('base_albums');
-		if (Schema::hasTable('web_authn_credentials_tmp')) {
-			Schema::drop('web_authn_credentials_tmp');
-		}
+		Schema::drop('web_authn_credentials_tmp');
 		Schema::drop('users_tmp');
 		Schema::drop('page_contents_tmp');
 		Schema::drop('pages_tmp');
@@ -990,6 +986,41 @@ class RefactorModels extends Migration
 		Schema::drop('page_contents');
 	}
 
+	private function createWebAuthnTable(int $precision): void
+	{
+		Schema::create('web_authn_credentials', function (Blueprint $table) use ($precision) {
+			$table->string('id', 255);
+			$table->dateTime('created_at', $precision)->nullable(false);
+			$table->dateTime('updated_at', $precision)->nullable(false);
+			$table->dateTime('disabled_at', $precision)->nullable(true);
+			$table->unsignedInteger('user_id')->nullable(false);
+			$table->string('name')->nullable();
+			$table->string('type', 16);
+			$table->json('transports');
+			$table->json('attestation_type');
+			$table->json('trust_path');
+			$table->uuid('aaguid');
+			$table->binary('public_key');
+			$table->unsignedInteger('counter')->default(0);
+			$table->uuid('user_handle')->nullable();
+			// Indices
+			$table->primary(['id', 'user_id']);
+			$table->foreign('user_id')
+				->references('id')->on('users')
+				->cascadeOnDelete();
+		});
+	}
+
+	private function createWebAuthnTableUp(): void
+	{
+		$this->createWebAuthnTable(6);
+	}
+
+	private function createWebAuthnTableDown(): void
+	{
+		$this->createWebAuthnTable(0);
+	}
+
 	/**
 	 * Creates remaining foreign constraints which could not immediately be
 	 * created while the owning table was created due to circular dependencies.
@@ -1397,7 +1428,7 @@ class RefactorModels extends Migration
 				if ($sizeVariant->short_path !== $expectedShortPath) {
 					try {
 						Storage::move($sizeVariant->short_path, $expectedShortPath);
-					} catch (FilesystemException $e) {
+					} catch (FileNotFoundException $e) {
 						// sic! just ignore
 						// This exception is thrown if there are duplicate
 						// photos which point to the same physical file.
@@ -1445,29 +1476,27 @@ class RefactorModels extends Migration
 	 */
 	private function copyStructurallyUnchangedTables(): void
 	{
-		if (Schema::hasTable('web_authn_credentials')) {
-			$pgBar = $this->getProgressBar('web_authn_credentials');
-			$credentials = DB::table('web_authn_credentials_tmp')->get();
-			$pgBar->setMaxSteps($credentials->count());
-			foreach ($credentials as $credential) {
-				$pgBar->advance();
-				DB::table('web_authn_credentials')->insert([
-					'id' => $credential->id,
-					'created_at' => $credential->created_at,
-					'updated_at' => $credential->updated_at,
-					'disabled_at' => $credential->disabled_at,
-					'user_id' => $credential->user_id,
-					'name' => $credential->name,
-					'type' => $credential->type,
-					'transports' => $credential->transports,
-					'attestation_type' => $credential->attestation_type,
-					'trust_path' => $credential->trust_path,
-					'aaguid' => $credential->aaguid,
-					'public_key' => $credential->public_key,
-					'counter' => $credential->counter,
-					'user_handle' => $credential->user_handle,
-				]);
-			}
+		$pgBar = $this->getProgressBar('web_authn_credentials');
+		$credentials = DB::table('web_authn_credentials_tmp')->get();
+		$pgBar->setMaxSteps($credentials->count());
+		foreach ($credentials as $credential) {
+			$pgBar->advance();
+			DB::table('web_authn_credentials')->insert([
+				'id' => $credential->id,
+				'created_at' => $credential->created_at,
+				'updated_at' => $credential->updated_at,
+				'disabled_at' => $credential->disabled_at,
+				'user_id' => $credential->user_id,
+				'name' => $credential->name,
+				'type' => $credential->type,
+				'transports' => $credential->transports,
+				'attestation_type' => $credential->attestation_type,
+				'trust_path' => $credential->trust_path,
+				'aaguid' => $credential->aaguid,
+				'public_key' => $credential->public_key,
+				'counter' => $credential->counter,
+				'user_handle' => $credential->user_handle,
+			]);
 		}
 
 		$pgBar = $this->getProgressBar('pages');
@@ -2015,9 +2044,7 @@ class RefactorModels extends Migration
 		// If the album of a photo is missing, assign it to root (unsorted) album
 		$isConsistent &= $checkRelation('photo', 'photos', 'album_id', 'album', 'albums', 'nullify');
 		// Delete orphaned WebAuthn credentials
-		if (Schema::hasTable('web_authn_credentials')) {
-			$isConsistent &= $checkRelation('web authentication credential', 'web_authn_credentials', 'user_id', 'user', 'users', 'delete');
-		}
+		$isConsistent &= $checkRelation('web authentication credential', 'web_authn_credentials', 'user_id', 'user', 'users', 'delete');
 		// There is no obvious fix for orphaned page content
 		$isConsistent &= $checkRelation('page content', 'page_contents', 'page_id', 'page', 'pages');
 
