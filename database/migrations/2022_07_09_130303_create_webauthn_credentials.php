@@ -30,6 +30,9 @@ class CreateWebauthnCredentials extends Migration
 	public function down(): void
 	{
 		Schema::dropIfExists('webauthn_credentials');
+		Schema::create('web_authn_credentials', function (Blueprint $table): void {
+			static::oldTable($table);
+		});
 	}
 
 	/**
@@ -74,5 +77,35 @@ class CreateWebauthnCredentials extends Migration
 		$table->dateTime('disabled_at')->nullable();
 		$table->dateTime('created_at')->nullable(false);
 		$table->dateTime('updated_at')->nullable(false);
+	}
+
+	/**
+	 * Generate the default blueprint for the WebAuthn credentials table.
+	 *
+	 * @param \Illuminate\Database\Schema\Blueprint $table
+	 *
+	 * @return void
+	 */
+	protected static function oldTable(Blueprint $table): void
+	{
+		$table->string('id', 255);
+		$table->dateTime('created_at', 6)->nullable(false);
+		$table->dateTime('updated_at', 6)->nullable(false);
+		$table->dateTime('disabled_at', 6)->nullable(true);
+		$table->unsignedInteger('user_id')->nullable(false);
+		$table->string('name')->nullable();
+		$table->string('type', 16);
+		$table->json('transports');
+		$table->json('attestation_type');
+		$table->json('trust_path');
+		$table->uuid('aaguid');
+		$table->binary('public_key');
+		$table->unsignedInteger('counter')->default(0);
+		$table->uuid('user_handle')->nullable();
+		// Indices
+		$table->primary(['id', 'user_id']);
+		$table->foreign('user_id')
+			->references('id')->on('users')
+			->cascadeOnDelete();
 	}
 }
