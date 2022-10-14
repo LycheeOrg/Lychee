@@ -6,7 +6,6 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Foundation\Console\OptimizeCommand;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
-use function Safe\sprintf;
 use Symfony\Component\Console\Exception\ExceptionInterface as ConsoleException;
 use Symfony\Component\Console\Exception\InvalidOptionException;
 
@@ -57,7 +56,7 @@ class Optimize extends OptimizeCommand
 			'assume-yes' => true,
 			'assume-no' => false,
 			null => null,
-			default => throw new InvalidOptionException(sprintf('Unexpected option value %s for --dont-confirm', $this->option('dont-confirm')))
+			default => throw new InvalidOptionException(sprintf('Unexpected option value %s for --dont-confirm', strval($this->option('dont-confirm'))))
 		};
 		$hasPreviousCache = file_exists($this->laravel->getCachedConfigPath()) || file_exists($this->laravel->getCachedRoutesPath());
 
