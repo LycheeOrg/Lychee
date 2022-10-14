@@ -16,6 +16,7 @@ class CreateWebauthnCredentials extends Migration
 	 */
 	public function up(): void
 	{
+		Schema::dropIfExists('web_authn_credentials');
 		Schema::create('webauthn_credentials', static function (Blueprint $table): void {
 			static::defaultBlueprint($table);
 		});
