@@ -53,7 +53,6 @@ final class Slovak implements Language
 			'SET_LICENSE' => 'Použiť licenciu',
 			'SET_OVERLAY_TYPE' => 'Nastaviť typ overlay',
 			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
-			'SAVE_RISK' => 'Zmeny uložiť, riziko je známe!',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
 			'RESET' => 'Reset',
@@ -303,7 +302,6 @@ final class Slovak implements Language
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Opakovať',
 
-			'SETTINGS_WARNING' => 'Zmena rozšírených nastavení môže mať negatívny vplyv na stabilitu, bezpečnosť a rýchlosť tejto aplikácie. Upravujte len to, o čom presne viete, čo robíte.',
 			'SETTINGS_SUCCESS_LOGIN' => 'Užívateľské dáta aktualizované',
 			'SETTINGS_SUCCESS_SORT' => 'Triedenie aktualizované',
 			'SETTINGS_SUCCESS_DROPBOX' => 'Kľúč Dropbox aktualizovaný',
@@ -312,8 +310,6 @@ final class Slovak implements Language
 			'SETTINGS_SUCCESS_IMAGE_OVERLAY' => 'EXIF-Overlay nastavenia aktualizované',
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Verejné vyhľadávanie bolo aktualizované',
 			'SETTINGS_SUCCESS_LICENSE' => 'Prednastavená licencia aktualizovaná',
-			'SETTINGS_SUCCESS_CSS' => 'CSS aktualizované',
-			'SETTINGS_SUCCESS_UPDATE' => 'Nastavenia úspešne aktualizované',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Nastavenie zobrazenia mapy aktualizované',
 			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
 			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
@@ -385,8 +381,6 @@ final class Slovak implements Language
 			'LANG_TEXT' => 'Zmeniť jazyk Lychee na:',
 			'LANG_TITLE' => 'Zmena jazyka',
 
-			'CSS_TEXT' => 'Vlastné CSS:',
-			'CSS_TITLE' => 'CSS zmeniť',
 			'PUBLIC_SEARCH_TEXT' => 'Verejné vyhľadávanie povolené:',
 			'OVERLAY_TYPE' => 'Dáta použité pre overlay:',
 			'OVERLAY_NONE' => 'None',

@@ -63,8 +63,6 @@ final class German implements Language
 			'TOKEN_NOT_AVAILABLE' => 'Sie haben diesen Schlüssel bereits angesehen.',
 			'TOKEN_WAIT' => 'Warten ...',
 
-			'SAVE_RISK' => 'Änderungen speichern, ich kenne das Risiko!',
-
 			'SMART_ALBUMS' => 'Intelligente Alben',
 			'SHARED_ALBUMS' => 'Freigegebene Alben',
 			'ALBUMS' => 'Alben',
@@ -304,7 +302,6 @@ final class German implements Language
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Noch einmal versuchen',
 
-			'SETTINGS_WARNING' => 'Ändern dieser erweiterten Einstellungen kann sich negativ auf die Stabilität, Sicherheit und Geschwindigkeit dieser Anwendung auswirken. Sie sollten sie nur ändern, wenn Sie genau wissen, was Sie tun.',
 			'SETTINGS_SUCCESS_LOGIN' => 'Benutzerdaten aktualisiert',
 			'SETTINGS_SUCCESS_SORT' => 'Sortierreihenfolge aktualisiert',
 			'SETTINGS_SUCCESS_DROPBOX' => 'Dropbox-Schlüssel aktualisiert',
@@ -316,8 +313,6 @@ final class German implements Language
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Karteneinstellungen erfolgreich aktualisiert',
 			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Karteneinstellungen für öffentlichen Alben erfolgreich aktualisiert',
 			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Provider für Karten erfolgreich aktualisiert',
-			'SETTINGS_SUCCESS_CSS' => 'CSS aktualisiert',
-			'SETTINGS_SUCCESS_UPDATE' => 'Einstellungen erfolgreich aktualisiert',
 			'SETTINGS_DROPBOX_KEY' => 'Dropbox-API-Schlüssel',
 
 			'U2F_NOT_SUPPORTED' => 'U2F wird nicht unterstützt. Sorry.',
@@ -386,8 +381,6 @@ final class German implements Language
 			'LANG_TEXT' => 'Sprache für Lychee ändern:',
 			'LANG_TITLE' => 'Sprache festlegen',
 
-			'CSS_TEXT' => 'CSS personalisieren:',
-			'CSS_TITLE' => 'CSS ändern',
 			'PUBLIC_SEARCH_TEXT' => 'Öffentliche Suche erlauben',
 			'OVERLAY_TYPE' => 'Daten für Foto-Overlay:',
 			'OVERLAY_NONE' => 'Kein Overlay',

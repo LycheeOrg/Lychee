@@ -124,8 +124,6 @@ final class Italian implements Language
 			'DELETE_ALL' => 'Elimina Tutto',
 			'DOWNLOAD' => 'Scarica',
 			'DOWNLOAD_ALL' => 'Scarica Tutto',
-			'DOWNLOAD_MEDIUM' => 'Scarica a grandezza media',
-			'DOWNLOAD_SMALL' => 'Scarica a grandezza piccola',
 			'UPLOAD_PHOTO' => 'Carica Foto',
 			'IMPORT_LINK' => 'Importa da Link',
 			'IMPORT_DROPBOX' => 'Importa da Dropbox',

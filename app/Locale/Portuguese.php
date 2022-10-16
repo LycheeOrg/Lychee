@@ -381,7 +381,6 @@ final class Portuguese implements Language
 			'LANG_TEXT' => 'Alterar língua do Lychee para:',
 			'LANG_TITLE' => 'Alterar Linguagem',
 			'PUBLIC_SEARCH_TEXT' => 'Pesquisa pública permitida:',
-			'IMAGE_OVERLAY_TEXT' => 'Mostrar o overlay da data por defeito:',
 			'OVERLAY_TYPE' => 'Data a usar no overlay da imagem:',
 			'OVERLAY_NONE' => 'None',
 			'OVERLAY_EXIF' => 'Informação EXIF da fotografia',

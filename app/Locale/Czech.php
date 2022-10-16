@@ -53,7 +53,6 @@ final class Czech implements Language
 			'SET_LICENSE' => 'Nastavit licenci',
 			'SET_OVERLAY_TYPE' => 'Nastavit překrytí',
 			'SET_MAP_PROVIDER' => 'Nastavit providera OpenStreetMap',
-			'SAVE_RISK' => 'Uložit změny, rizika jsou mi známa!',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
 			'RESET' => 'Reset',
@@ -303,7 +302,6 @@ final class Czech implements Language
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Opakovat',
 
-			'SETTINGS_WARNING' => 'Změna rozšířených nastavení může mít negativní vliv na stabilitu, bezpečnost a rychlost Lychee. Měňte pouze to, co opravdu dobře chápete.',
 			'SETTINGS_SUCCESS_LOGIN' => 'Přihlašovací údaje byly aktualizovány.',
 			'SETTINGS_SUCCESS_SORT' => 'Stav řazení byl aktulizován.',
 			'SETTINGS_SUCCESS_DROPBOX' => 'Dropbox Key byl aktualizován.',
@@ -312,8 +310,6 @@ final class Czech implements Language
 			'SETTINGS_SUCCESS_IMAGE_OVERLAY' => 'EXIF překryv byl aktulizován',
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Veřejné vyhledávání bylo aktulizováno',
 			'SETTINGS_SUCCESS_LICENSE' => 'Výchozí licence byla aktualizována',
-			'SETTINGS_SUCCESS_CSS' => 'CSS aktualizováno',
-			'SETTINGS_SUCCESS_UPDATE' => 'Nastavení úspešně aktualizováno',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Nastavení zobrazeni Map bylo aktualizováno',
 			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Nastavení zobrazeni Map pro veřejná alba bylo aktualizováno',
 			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Poskytovatel Map byl aktualizován',
@@ -385,8 +381,6 @@ final class Czech implements Language
 			'LANG_TEXT' => 'Změnit jazyk Lychee na:',
 			'LANG_TITLE' => 'Změnit jazyk',
 
-			'CSS_TEXT' => 'Vlastní CSS:',
-			'CSS_TITLE' => 'Změnit CSS',
 			'PUBLIC_SEARCH_TEXT' => 'Veřejné vyhledávání povoleno:',
 			'OVERLAY_TYPE' => 'Data, která budou použita na překryvu:',
 			'OVERLAY_NONE' => 'None',

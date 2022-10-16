@@ -260,8 +260,8 @@ final class Vietnamese implements Language
 			'PHOTO_SHUTTER' => 'Tốc độ màn trập',
 			'PHOTO_APERTURE' => 'Khẩu độ',
 			'PHOTO_FOCAL' => 'Tiêu cự',
+			'PHOTO_SHARING' => 'Sharing',
 			'PHOTO_ISO' => 'Độ nhạy sáng %s',
-			'PHOTO_SHARING' => 'Chia sẻ',
 			'PHOTO_SHR_PUBLIC' => 'Chia sẻ công cộng',
 			'PHOTO_SHR_ALB' => 'Có chia sẻ (cả album)',
 			'PHOTO_SHR_PHT' => 'Có chia sẻ (chỉ hình ảnh này)',
@@ -288,7 +288,6 @@ final class Vietnamese implements Language
 			'PHOTO_EDIT_SHARING_TEXT' => 'Những đặc điểm chia sẻ của tấm hình này sẽ được thay đổi thành như sau:',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => 'Vì tấm hình này đang có trong một album công cộng, nó có chế độ hiển thị công cộng giống như cài đặt hiển thị của album. Chế độ hiển thị hiện tại của hình được hiển thị bên dưới để người dùng biết thêm thông tin.',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'Chế độ hiển thị của tấm hình này có thể được chỉnh chỉ tiết hơn với cài đặt tổng của Lychee. Chế độ hiển thị hiện thời của tấm hình được hiển thị để người dùng biết thêm thông tin.',
-			'PHOTO_SHARING_CONFIRM' => 'Lưu',
 
 			'LOADING' => 'Đang tải',
 			'ERROR' => 'Bị lỗi',
@@ -352,7 +351,6 @@ final class Vietnamese implements Language
 			'EDIT_SHARING_TITLE' => 'Chỉnh sửa chế độ chia sẻ',
 			'EDIT_SHARING_TEXT' => 'Những đặc điểm chia sẻ của tấm hình này sẽ được thay đổi thành như sau:',
 			'SHARE_ALBUM_TEXT' => 'Album này sẽ được chia sẻ với những đặc điểm sau:',
-			'ALBUM_SHARING_CONFIRM' => 'Lưu',
 
 			'SORT_ALBUM_BY' => 'Sắp xếp album theo %1$s một %2$s thứ tự.',
 
