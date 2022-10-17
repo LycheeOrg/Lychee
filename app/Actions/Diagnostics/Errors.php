@@ -29,7 +29,7 @@ class Errors extends Diagnostics
 
 		foreach ($checks as $check) {
 			$check_name = (new \ReflectionClass($check))->getShortName();
-			if (!in_array($check_name, $skip, false)) {
+			if (!in_array($check_name, $skip, true)) {
 				$check->check($errors);
 			}
 		}
