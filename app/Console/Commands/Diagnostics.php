@@ -74,6 +74,7 @@ class Diagnostics extends Command
 	 */
 	public function handle(): int
 	{
+		/** @var array $skip_diagnostics */
 		$skip_diagnostics = $this->option('skip');
 		try {
 			$this->line('');
