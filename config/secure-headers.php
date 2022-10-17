@@ -484,7 +484,7 @@ return [
 			'unsafe-eval' => false,
 
 			// https://www.w3.org/TR/CSP3/#unsafe-hashes-usage
-			'unsafe-hashes' => false,
+			'unsafe-hashes' => true,
 
 			// Enable `strict-dynamic` will *ignore* `self`, `unsafe-inline`,
 			// `allow` and `schemes`. You can find more information from:
@@ -494,6 +494,38 @@ return [
 			'hashes' => [
 				'sha256' => [
 					// 'sha256-hash-value-with-base64-encode',
+
+					// lychee.startDrag(event)
+					'FdKE+KVp/tkYM5hwGXGeKZ1EmS4DJ8kbnsKo5YymNrc=',
+
+					// lychee.endDrag(event)
+					'bY67+0U7yUmtjaisfHv+mZXHsAptKwcV1a4EacCUL5M=',
+
+					// lychee.overDrag(event)
+					'fwPcZ6SFcvBLfJYjzlBRZfKzcidwsD4GPcmkVECbSKM=',
+
+					// lychee.leaveDrag(event)
+					'FCPseLYJ4+r0Mbp93zyaq/x4zQEEPLgEectDgkA/V3A=',
+
+					// lychee.finishDrag(event)
+					'T0Fzr5h5zkZyE3QOpQ9anSTcWp19WQ14eO86qdlSdvA=',
+
+					// upload.check()
+					'CL4mGy9ZhHM+PkLDZsWVuM25kEFBv3FXlmWe/O9Unmc=',
+
+					/*
+	document.addEventListener("DOMContentLoaded", function(event) {
+		document.querySelector("form").addEventListener("submit", function(e){
+			document.querySelector("form").hidden = true;
+			var text = document.createElement("div");
+			text.innerHTML = "Migration started. <b>DO NOT REFRESH THE PAGE</b>.";
+			document.querySelector(".form").appendChild(text);
+			// e.preventDefault();    //stop form from submitting
+		});
+	});
+
+*/
+					'hHvKTS0wUaMuiFMar2j4TbjYjlLQMR/c5b0bA9DLi6g=',
 				],
 
 				'sha384' => [

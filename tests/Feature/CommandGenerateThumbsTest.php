@@ -30,7 +30,7 @@ class CommandGenerateThumbsTest extends PhotoTestBase
 	public function testInvalidSizeVariantArgument(): void
 	{
 		$this->artisan(self::COMMAND, ['type' => 'smally'])
-			->expectsOutput('Type smally is not one of small, small2x, medium, medium2x')
+			->expectsOutput('Type smally is not one of thumb, thumb2x, small, small2x, medium, medium2x')
 			->assertExitCode(1);
 	}
 

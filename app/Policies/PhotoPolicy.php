@@ -92,7 +92,7 @@ class PhotoPolicy
 	 *
 	 *  - `'User is not allowed to download the image'`, if the user was not
 	 *    the owner, the user was allowed to see the photo (i.e. the album
-	 *    is shared with the user), but the album does not allow to dowload
+	 *    is shared with the user), but the album does not allow to download
 	 *    photos
 	 *  - `'Permission to download is disabled by configuration'`, if the
 	 *    user was not the owner, the photo was not part of any album (i.e.

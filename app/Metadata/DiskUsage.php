@@ -2,6 +2,7 @@
 
 namespace App\Metadata;
 
+use App\Facades\Helpers;
 use function Safe\disk_free_space;
 use function Safe\disk_total_space;
 use function Safe\filesize;
@@ -56,7 +57,7 @@ class DiskUsage
 
 		if (is_dir($dir) === true) {
 			// If on a Unix Host (Linux, Mac OS)
-			if (!$this->is_win()) {
+			if (!$this->is_win() && Helpers::isExecAvailable()) {
 				$command = "ls -ltrR {$dir} |awk '{print $5}'|awk 'BEGIN{sum=0} {sum=sum+$1} END {print sum}' 2>&1";
 				exec($command, $output);
 				$size = $output[0] ?? 0;
