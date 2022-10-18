@@ -223,11 +223,9 @@ abstract class MediaFile extends BinaryBlob
 	protected static function getSupportedImageMimeTypes(): array
 	{
 		if (self::$cachedSupportedImageMimeTypes === null) {
-			if (Configs::hasImagick()) {
-				self::$cachedSupportedImageMimeTypes = array_merge(self::SUPPORTED_IMAGE_MIME_TYPES, self::SUPPORTED_IMAGICK_MIME_TYPES);
-			} else {
-				self::$cachedSupportedImageMimeTypes = self::SUPPORTED_IMAGE_MIME_TYPES;
-			}
+			self::$cachedSupportedImageMimeTypes = Configs::hasImagick()
+				? array_merge(self::SUPPORTED_IMAGE_MIME_TYPES, self::SUPPORTED_IMAGICK_MIME_TYPES)
+				: self::SUPPORTED_IMAGE_MIME_TYPES;
 		}
 
 		return self::$cachedSupportedImageMimeTypes;
@@ -265,11 +263,9 @@ abstract class MediaFile extends BinaryBlob
 	protected static function getSupporedImageFileExtensions(): array
 	{
 		if (self::$cachedSupporedImageFileExtensions === null) {
-			if (Configs::hasImagick()) {
-				self::$cachedSupporedImageFileExtensions = array_merge(self::SUPPORTED_IMAGE_FILE_EXTENSIONS, self::SUPPORTED_IMAGICK_FILE_EXTENSIONS);
-			} else {
-				self::$cachedSupporedImageFileExtensions = self::SUPPORTED_IMAGE_FILE_EXTENSIONS;
-			}
+			self::$cachedSupporedImageFileExtensions = Configs::hasImagick()
+				? array_merge(self::SUPPORTED_IMAGE_FILE_EXTENSIONS, self::SUPPORTED_IMAGICK_FILE_EXTENSIONS)
+				: self::SUPPORTED_IMAGE_FILE_EXTENSIONS;
 		}
 
 		return self::$cachedSupporedImageFileExtensions;

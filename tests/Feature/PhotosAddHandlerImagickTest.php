@@ -73,7 +73,6 @@ class PhotosAddHandlerImagickTest extends PhotosAddHandlerTestAbstract
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_PSD)
 		));
-
 		static::assertStringEndsWith('.psd', $photo->size_variants->original->url);
 		static::assertEquals(TestCase::MIME_TYPE_APP_PSD, $photo->type);
 		static::assertNotNull($photo->size_variants->thumb);
