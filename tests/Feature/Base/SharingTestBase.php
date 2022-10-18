@@ -55,7 +55,7 @@ class SharingTestBase extends PhotoTestBase
 			'id' => null,
 			'album_id' => null,
 			'title' => self::PHOTO_NIGHT_TITLE,
-			'type' => TestCase::MIME_TYPE_IMG_JPEG,
+			'type' => 'image/jpeg',
 			'size_variants' => [
 				'original' => ['type' => 0, 'width' => 6720, 'height' => 4480],
 				'medium2x' => ['type' => 1, 'width' => 3240, 'height' => 2160],
@@ -70,7 +70,7 @@ class SharingTestBase extends PhotoTestBase
 			'id' => null,
 			'album_id' => null,
 			'title' => self::PHOTO_MONGOLIA_TITLE,
-			'type' => TestCase::MIME_TYPE_IMG_JPEG,
+			'type' => 'image/jpeg',
 			'size_variants' => [
 				'original' => ['type' => 0, 'width' => 1280, 'height' => 850],
 				'medium2x' => null,
@@ -85,7 +85,7 @@ class SharingTestBase extends PhotoTestBase
 			'id' => null,
 			'album_id' => null,
 			'title' => self::PHOTO_SUNSET_TITLE,
-			'type' => TestCase::MIME_TYPE_IMG_JPEG,
+			'type' => 'image/jpeg',
 			'size_variants' => [
 				'original' => ['type' => 0, 'width' => 914, 'height' => 1625],
 				'medium2x' => null,
@@ -100,7 +100,7 @@ class SharingTestBase extends PhotoTestBase
 			'id' => null,
 			'album_id' => null,
 			'title' => self::PHOTO_TRAIN_TITLE,
-			'type' => TestCase::MIME_TYPE_IMG_JPEG,
+			'type' => 'image/jpeg',
 			'size_variants' => [
 				'original' => ['type' => 0, 'width' => 4032, 'height' => 3024],
 				'medium2x' => ['type' => 1, 'width' => 2880, 'height' => 2160],

@@ -70,6 +70,8 @@ class PhotosAddHandlerImagickTest extends PhotosAddHandlerTestAbstract
 	 */
 	public function testAcceptedPsdUpload(): void
 	{
+		TestCase::createUploadedFile(TestCase::SAMPLE_FILE_PSD);
+
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_PSD)
 		));

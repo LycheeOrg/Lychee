@@ -67,7 +67,6 @@ abstract class MediaFile extends BinaryBlob
 
 	public const SUPPORTED_IMAGICK_MIME_TYPES = [
 		'image/vnd.adobe.photoshop', // .psd files
-		'application/vnd.adobe.photoshop', // .psd files
 	];
 
 	public const SUPPORTED_VIDEO_MIME_TYPES = [
