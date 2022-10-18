@@ -9318,7 +9318,7 @@ _photo3.getArchive = function (photoIDs) {
 			if (sv) {
 				button.title = lychee.locale["DOWNLOAD"];
 				button.addEventListener(lychee.getEventName(), onClickOrTouch);
-				button.lastElementChild.textContent = lLabel + "(" + sv.width + "×" + sv.height + ", " + lychee.locale.printFilesizeLocalized(sv.filesize) + ")";
+				button.lastElementChild.textContent = lLabel + " (" + sv.width + "×" + sv.height + ", " + lychee.locale.printFilesizeLocalized(sv.filesize) + ")";
 			} else {
 				button.remove();
 			}
@@ -12034,12 +12034,27 @@ upload.start = {
 					reports.slice(lastReadIdx).forEach(function (report) {
 						if (report.type === "progress") {
 							// Gets existing row for the current path or creates a new one
+							/** @type {ProgressReportDialogRow} */
 							var row = upload._dom.progressRowsByPath.get(report.path) || upload.buildReportRow(report.path);
 							upload._dom.progressRowsByPath.set(report.path, row);
-							if (!upload._dom.reportList.contains(row.listEntry)) {
-								// New directory. Add a new row to the dialog box at the end
-								upload._dom.reportList.appendChild(row.listEntry);
-							}
+							// Always unconditionally append the list entry to
+							// the end of the list even if the `reportList`
+							// already contains `listEntry`.
+							//  1. If `listEntry` is not yet an element of
+							//     `reportList` (e.g. this happens for
+							//     new directories), then appending the
+							//     element does the obvious thing
+							//  2. If `listEntry` is already an element
+							//     of `reportList` (e.g. this happens for
+							//     follow-up reports), then `appendChild`
+							//     *moves* `listEntry` the end of the list.
+							//     We don't need to take care of accidentally
+							//     duplicating the entry, the DOM tree is
+							//     clever enough.
+							//     Moving `listEntry` is an intended effect,
+							//     as we always want the most recent entry at
+							//     the end of the list.
+							upload._dom.reportList.appendChild(row.listEntry);
 							row.listEntry.scrollIntoView(upload.SCROLL_OPTIONS);
 
 							if (report.progress !== 100) {
@@ -12055,23 +12070,32 @@ upload.start = {
 								// The event report refers to a specific path,
 								// hence get the existing row for that path
 								// or create a new one.
+								/** @type {ProgressReportDialogRow} */
 								_row = upload._dom.progressRowsByPath.get(report.path) || upload.buildReportRow(report.path);
 								upload._dom.progressRowsByPath.set(report.path, _row);
-								if (!upload._dom.reportList.contains(_row.listEntry)) {
-									// New directory. Add a new row to the dialog box at the end.
-									// This might happen, if the event occurs
-									// before the first progress report for that
-									// path.
-									upload._dom.reportList.appendChild(_row.listEntry);
-								}
+								// Always unconditionally append the list entry to
+								// the end of the list even if the `reportList`
+								// already contains `listEntry`.
+								//  1. If `listEntry` is not yet an element of
+								//     `reportList` (e.g. this happens for
+								//     new directories), then appending the
+								//     element does the obvious thing
+								//  2. If `listEntry` is already an element
+								//     of `reportList` (e.g. this happens for
+								//     follow-up reports), then `appendChild`
+								//     *moves* `listEntry` the end of the list.
+								//     We don't need to take care of accidentally
+								//     duplicating the entry, the DOM tree is
+								//     clever enough.
+								//     Moving `listEntry` is an intended effect,
+								//     as we always want the most recent entry at
+								//     the end of the list.
+								upload._dom.reportList.appendChild(_row.listEntry);
 							} else {
 								// The event report does not refer to a
 								// specific directory.
-								// We insert the event row _before_ the last
-								// row, so that the latest
-								// progress report stays in sight.
 								_row = upload.buildReportRow("General");
-								upload._dom.reportList.insertBefore(_row.listEntry, upload._dom.reportList.lastElementChild);
+								upload._dom.reportList.appendChild(_row.listEntry);
 							}
 							_row.listEntry.scrollIntoView(upload.SCROLL_OPTIONS);
 
