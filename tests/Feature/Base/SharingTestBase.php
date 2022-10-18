@@ -111,21 +111,6 @@ class SharingTestBase extends PhotoTestBase
 				'thumb' => ['type' => 6, 'width' => 200, 'height' => 200],
 			],
 		],
-		// TestCase::SAMPLE_FILE_PSD => [
-		// 	'id' => null,
-		// 	'album_id' => null,
-		// 	'title' => self::PHOTO_TRAIN_PSD,
-		// 	'type' => TestCase::MIME_TYPE_APP_PSD,
-		// 	'size_variants' => [
-		// 		'original' => ['type' => 0, 'width' => 640, 'height' => 426],
-		// 		'medium2x' => null,
-		// 		'medium' => null,
-		// 		'small2x' => null,
-		// 		'small' => null,
-		// 		'thumb2x' => ['type' => 5, 'width' => 400, 'height' => 400],
-		// 		'thumb' => ['type' => 6, 'width' => 200, 'height' => 200],
-		// 	],
-		// ],
 	];
 
 	public const EXPECTED_UNAUTHENTICATED_MSG = 'User is not authenticated';
