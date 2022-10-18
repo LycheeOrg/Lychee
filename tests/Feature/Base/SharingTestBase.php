@@ -31,6 +31,7 @@ class SharingTestBase extends PhotoTestBase
 	public const PHOTO_MONGOLIA_TITLE = 'mongolia';
 	public const PHOTO_SUNSET_TITLE = 'fin de journée';
 	public const PHOTO_TRAIN_TITLE = 'train';
+	public const PHOTO_TRAIN_PSD = 'sample_640x426';
 
 	public const ALBUM_TITLE_1 = 'Test Album 1';
 	public const ALBUM_TITLE_2 = 'Test Album 2';
@@ -54,7 +55,7 @@ class SharingTestBase extends PhotoTestBase
 			'id' => null,
 			'album_id' => null,
 			'title' => self::PHOTO_NIGHT_TITLE,
-			'type' => 'image/jpeg',
+			'type' => TestCase::MIME_TYPE_IMG_JPEG,
 			'size_variants' => [
 				'original' => ['type' => 0, 'width' => 6720, 'height' => 4480],
 				'medium2x' => ['type' => 1, 'width' => 3240, 'height' => 2160],
@@ -69,7 +70,7 @@ class SharingTestBase extends PhotoTestBase
 			'id' => null,
 			'album_id' => null,
 			'title' => self::PHOTO_MONGOLIA_TITLE,
-			'type' => 'image/jpeg',
+			'type' => TestCase::MIME_TYPE_IMG_JPEG,
 			'size_variants' => [
 				'original' => ['type' => 0, 'width' => 1280, 'height' => 850],
 				'medium2x' => null,
@@ -84,7 +85,7 @@ class SharingTestBase extends PhotoTestBase
 			'id' => null,
 			'album_id' => null,
 			'title' => self::PHOTO_SUNSET_TITLE,
-			'type' => 'image/jpeg',
+			'type' => TestCase::MIME_TYPE_IMG_JPEG,
 			'size_variants' => [
 				'original' => ['type' => 0, 'width' => 914, 'height' => 1625],
 				'medium2x' => null,
@@ -99,7 +100,7 @@ class SharingTestBase extends PhotoTestBase
 			'id' => null,
 			'album_id' => null,
 			'title' => self::PHOTO_TRAIN_TITLE,
-			'type' => 'image/jpeg',
+			'type' => TestCase::MIME_TYPE_IMG_JPEG,
 			'size_variants' => [
 				'original' => ['type' => 0, 'width' => 4032, 'height' => 3024],
 				'medium2x' => ['type' => 1, 'width' => 2880, 'height' => 2160],
@@ -113,14 +114,14 @@ class SharingTestBase extends PhotoTestBase
 		TestCase::SAMPLE_FILE_PSD => [
 			'id' => null,
 			'album_id' => null,
-			'title' => self::PHOTO_TRAIN_TITLE,
-			'type' => 'image/jpeg',
+			'title' => self::PHOTO_TRAIN_PSD,
+			'type' => TestCase::MIME_TYPE_APP_PSD,
 			'size_variants' => [
-				'original' => ['type' => 0, 'width' => 4032, 'height' => 3024],
-				'medium2x' => ['type' => 1, 'width' => 2880, 'height' => 2160],
-				'medium' => ['type' => 2, 'width' => 1440, 'height' => 1080],
-				'small2x' => ['type' => 3, 'width' => 960,	'height' => 720],
-				'small' => ['type' => 4, 'width' => 480, 'height' => 360],
+				'original' => ['type' => 0, 'width' => 640, 'height' => 426],
+				'medium2x' => null,
+				'medium' => null,
+				'small2x' => null,
+				'small' => null,
 				'thumb2x' => ['type' => 5, 'width' => 400, 'height' => 400],
 				'thumb' => ['type' => 6, 'width' => 200, 'height' => 200],
 			],
