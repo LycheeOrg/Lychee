@@ -33,6 +33,8 @@ abstract class TestCase extends BaseTestCase
 	public const MIME_TYPE_IMG_GIF = 'image/gif';
 	public const MIME_TYPE_IMG_JPEG = 'image/jpeg';
 	public const MIME_TYPE_IMG_PNG = 'image/png';
+	public const MIME_TYPE_IMG_PSD = 'image/vnd.adobe.photoshop';
+	public const MIME_TYPE_APP_PSD = 'application/vnd.adobe.photoshop';
 	public const MIME_TYPE_IMG_TIFF = 'image/tiff';
 	public const MIME_TYPE_IMG_WEBP = 'image/webp';
 	public const MIME_TYPE_IMG_XCF = 'image/x-xcf';
@@ -58,6 +60,7 @@ abstract class TestCase extends BaseTestCase
 	public const SAMPLE_FILE_ORIENTATION_VFLIP = 'tests/Samples/orientation-vflip.jpg';
 	public const SAMPLE_FILE_PDF = 'tests/Samples/pdf.pdf';
 	public const SAMPLE_FILE_PNG = 'tests/Samples/png.png';
+	public const SAMPLE_FILE_PSD = 'tests/Samples/sample_640x426.psd';
 	public const SAMPLE_FILE_SUNSET_IMAGE = 'tests/Samples/fin de journée.jpg';
 	public const SAMPLE_FILE_TIFF = 'tests/Samples/tiff.tif';
 	public const SAMPLE_FILE_TRAIN_IMAGE = 'tests/Samples/train.jpg';
@@ -83,6 +86,7 @@ abstract class TestCase extends BaseTestCase
 		self::SAMPLE_FILE_ORIENTATION_VFLIP => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_PDF => self::MIME_TYPE_APP_PDF,
 		self::SAMPLE_FILE_PNG => self::MIME_TYPE_IMG_PNG,
+		self::SAMPLE_FILE_PSD => self::MIME_TYPE_APP_PSD,
 		self::SAMPLE_FILE_SUNSET_IMAGE => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_TIFF => self::MIME_TYPE_IMG_TIFF,
 		self::SAMPLE_FILE_TRAIN_IMAGE => self::MIME_TYPE_IMG_JPEG,
