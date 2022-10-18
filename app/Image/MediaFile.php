@@ -32,6 +32,7 @@ abstract class MediaFile extends BinaryBlob
 		IMAGETYPE_JPEG,
 		IMAGETYPE_PNG,
 		IMAGETYPE_WEBP,
+		IMAGETYPE_PSD,
 	];
 
 	public const SUPPORTED_IMAGE_FILE_EXTENSIONS = [
@@ -40,6 +41,10 @@ abstract class MediaFile extends BinaryBlob
 		'.png',
 		'.gif',
 		'.webp',
+	];
+
+	public const SUPPORTED_IMAGICK_FILE_EXTENSIONS = [
+		'.psd',
 	];
 
 	public const SUPPORTED_VIDEO_FILE_EXTENSIONS = [
@@ -60,6 +65,10 @@ abstract class MediaFile extends BinaryBlob
 		'image/webp',
 	];
 
+	public const SUPPORTED_IMAGICK_MIME_TYPES = [
+		'image/vnd.adobe.photoshop', // .psd files
+	];
+
 	public const SUPPORTED_VIDEO_MIME_TYPES = [
 		'video/mp4',
 		'video/mpeg',
@@ -73,6 +82,12 @@ abstract class MediaFile extends BinaryBlob
 		'video/x-m4v', // Avi
 		'application/octet-stream', // Some mp4 files; will be corrected by the metadata extractor
 	];
+
+	/** @var string[]|null the supported image mime types */
+	private static ?array $cachedSupportedImageMimeTypes = null;
+
+	/** @var string[]|null the supported image file extensions */
+	private static ?array $cachedSupporedImageFileExtensions = null;
 
 	/** @var string[]|null the accepted raw file extensions minus supported extensions */
 	private static ?array $cachedAcceptedRawFileExtensions = null;
@@ -200,6 +215,24 @@ abstract class MediaFile extends BinaryBlob
 	}
 
 	/**
+	 * Returns {@link MediaFile::$cachedSupportedImageMimeTypes} and creates it, if necessary.
+	 *
+	 * @return string[]
+	 */
+	protected static function getSupportedImageMimeTypes(): array
+	{
+		if (self::$cachedSupportedImageMimeTypes === null) {
+			if (Configs::hasImagick()) {
+				self::$cachedSupportedImageMimeTypes = array_merge(self::SUPPORTED_IMAGE_MIME_TYPES, self::SUPPORTED_IMAGICK_MIME_TYPES);
+			} else {
+				self::$cachedSupportedImageMimeTypes = self::SUPPORTED_IMAGE_MIME_TYPES;
+			}
+		}
+
+		return self::$cachedSupportedImageMimeTypes;
+	}
+
+	/**
 	 * Checks if the given MIME type designates a supported image type.
 	 *
 	 * @param string $mimeType the MIME type
@@ -208,7 +241,7 @@ abstract class MediaFile extends BinaryBlob
 	 */
 	public static function isSupportedImageMimeType(string $mimeType): bool
 	{
-		return in_array($mimeType, self::SUPPORTED_IMAGE_MIME_TYPES, true);
+		return in_array($mimeType, self::getSupportedImageMimeTypes(), true);
 	}
 
 	/**
@@ -224,6 +257,24 @@ abstract class MediaFile extends BinaryBlob
 	}
 
 	/**
+	 * Returns {@link MediaFile::$cachedSupportedImageMimeTypes} and creates it, if necessary.
+	 *
+	 * @return string[]
+	 */
+	protected static function getSupporedImageFileExtensions(): array
+	{
+		if (self::$cachedSupporedImageFileExtensions === null) {
+			if (Configs::hasImagick()) {
+				self::$cachedSupporedImageFileExtensions = array_merge(self::SUPPORTED_IMAGE_FILE_EXTENSIONS, self::SUPPORTED_IMAGICK_FILE_EXTENSIONS);
+			} else {
+				self::$cachedSupporedImageFileExtensions = self::SUPPORTED_IMAGE_FILE_EXTENSIONS;
+			}
+		}
+
+		return self::$cachedSupporedImageFileExtensions;
+	}
+
+	/**
 	 * Checks if the given file extension is a supported image extension.
 	 *
 	 * @param string $extension the file extension
@@ -232,7 +283,7 @@ abstract class MediaFile extends BinaryBlob
 	 */
 	public static function isSupportedImageFileExtension(string $extension): bool
 	{
-		return in_array(strtolower($extension), self::SUPPORTED_IMAGE_FILE_EXTENSIONS, true);
+		return in_array(strtolower($extension), self::getSupporedImageFileExtensions(), true);
 	}
 
 	/**
@@ -273,7 +324,7 @@ abstract class MediaFile extends BinaryBlob
 			// Explode may return `false` on error
 			// Our supported file extensions always take precedence over any
 			// custom configured extension
-			self::$cachedAcceptedRawFileExtensions = array_diff($tmp, self::SUPPORTED_IMAGE_FILE_EXTENSIONS, self::SUPPORTED_VIDEO_FILE_EXTENSIONS);
+			self::$cachedAcceptedRawFileExtensions = array_diff($tmp, self::getSupporedImageFileExtensions(), self::SUPPORTED_VIDEO_FILE_EXTENSIONS);
 		}
 
 		return self::$cachedAcceptedRawFileExtensions;
