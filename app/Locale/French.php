@@ -26,9 +26,6 @@ final class French implements Language
 			'SEARCH' => 'Rechercher…',
 			'MORE' => 'Plus',
 			'DEFAULT' => 'Valeur par défaut',
-			'ALBUM_SET_ORDER' => 'Changer l’ordre',
-			'ALBUM_ORDERING' => 'Trier par',
-			'ALBUM_OWNER' => 'Propriétaire',
 			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Utilisateurs',
