@@ -101,7 +101,7 @@ final class ChineseSimplified implements Language
 			'KEEP_ALBUMS' => '保留相册',
 			'DELETE_ALBUMS_CONFIRMATION' => '是否确认删除全部 %d 选中的相册和其中的所有照片？操作后不可恢复！',
 
-			'DELETE_UNSORTED_CONFIRM' => '是否确认删除\'未分类\'的所有照片？<br>操作后不可恢复！',
+			'DELETE_UNSORTED_CONFIRM' => '是否确认删除\'未分类\'的所有照片？操作后不可恢复！',
 			'CLEAR_UNSORTED' => '清除未分类',
 			'KEEP_UNSORTED' => '保留未分类',
 
@@ -327,7 +327,7 @@ final class ChineseSimplified implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => '请在下方输入你的数据库连接信息：',
 			'DB_INFO_HOST' => '数据库主机（可选）',
@@ -352,6 +352,9 @@ final class ChineseSimplified implements Language
 			'EDIT_SHARING_TITLE' => '编辑共享',
 			'EDIT_SHARING_TEXT' => '此相册的共享属性将被修改为：',
 			'SHARE_ALBUM_TEXT' => '此相册将会以下列的属性共享：',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => '相册排序：根据 %1$s 的 %2$s 排序。',
 
@@ -430,6 +433,7 @@ final class ChineseSimplified implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => '已跳过',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => '请查看浏览器控制台获取详细信息。',

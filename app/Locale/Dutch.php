@@ -101,7 +101,7 @@ final class Dutch implements Language
 			'KEEP_ALBUMS' => 'Behoud Albums',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Weet je zeker dat je deze albums en alle foto\'s die ze %d bevatten wilt verwijderen? Deze actie kan niet ongedaan gemaakt worden!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Weet je zeker dat je alle foto\'s van \'Ongesoorteerd\' wilt verwijdren?<br>Deze actie kan niet ongedaan gemaakt worden!',
+			'DELETE_UNSORTED_CONFIRM' => 'Weet je zeker dat je alle foto\'s van \'Ongesoorteerd\' wilt verwijdren? Deze actie kan niet ongedaan gemaakt worden!',
 			'CLEAR_UNSORTED' => 'Wis Ongesoorteerd',
 			'KEEP_UNSORTED' => 'Behoud Ongesoorteerd',
 
@@ -326,7 +326,7 @@ final class Dutch implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Voer je database connectie gegevens hieronder in:',
 			'DB_INFO_HOST' => 'Database Host (optioneel)',
@@ -351,6 +351,9 @@ final class Dutch implements Language
 			'EDIT_SHARING_TITLE' => 'Bewerk delen',
 			'EDIT_SHARING_TEXT' => 'De deelinstellingen van dit album worden alsvolgt ingesteld:',
 			'SHARE_ALBUM_TEXT' => 'Dit album wordt gedeeld met de volgende instellingen:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => 'Sorteer albums op %1$s in een %2$s volgorde.',
 
@@ -429,6 +432,7 @@ final class Dutch implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Overgeslagen',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => 'Kijk naar je browsers console voor meer informatie.',

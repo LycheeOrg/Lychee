@@ -101,7 +101,7 @@ final class Spanish implements Language
 			'KEEP_ALBUMS' => 'Mantener Álbumes',
 			'DELETE_ALBUMS_CONFIRMATION' => '¿Está seguro de que desea eliminar todo %d? Ha seleccionado álbumes y todas las fotos que contienen ¡Esta acción no se puede deshacer!',
 
-			'DELETE_UNSORTED_CONFIRM' => '¿Estás seguro de que deseas eliminar todas las fotos de \'Sin clasificar\'?<br>¡Esta acción no se puede deshacer!',
+			'DELETE_UNSORTED_CONFIRM' => '¿Estás seguro de que deseas eliminar todas las fotos de \'Sin clasificar\'? ¡Esta acción no se puede deshacer!',
 			'CLEAR_UNSORTED' => 'Borrar \'Sin Clasificar\'',
 			'KEEP_UNSORTED' => 'Mantener \'Sin Clasificar\'',
 
@@ -326,7 +326,7 @@ final class Spanish implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Enviar correos electrónicos de notificación de nuevas fotos.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'Notificación de nuevas fotos actualizada',
-			'USER_EMAIL_INSTRUCTION' => 'Agregue su correo electrónico a continuación para habilitar la recepción de notificaciones.<br />Para dejar de recibir correos electrónicos, simplemente elimine su correo electrónico a continuación.',
+			'USER_EMAIL_INSTRUCTION' => 'Agregue su correo electrónico a continuación para habilitar la recepción de notificaciones. Para dejar de recibir correos electrónicos, simplemente elimine su correo electrónico a continuación.',
 
 			'DB_INFO_TITLE' => 'Ingrese los detalles de conexión de su base de datos a continuación:',
 			'DB_INFO_HOST' => 'Servidor de base de datos (opcional)',
@@ -351,6 +351,9 @@ final class Spanish implements Language
 			'EDIT_SHARING_TITLE' => 'Editar compartir',
 			'EDIT_SHARING_TEXT' => 'Las propiedades para compartir de este álbum se cambiarán a lo siguiente:',
 			'SHARE_ALBUM_TEXT' => 'Este álbum se compartirá con las siguientes propiedades:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => 'Ordenar álbumes por %1$s en un %2$s orden.',
 
@@ -429,6 +432,7 @@ final class Spanish implements Language
 			'UPLOAD_CANCELLED' => 'Cancelado',
 			'UPLOAD_SKIPPED' => 'Saltado',
 			'UPLOAD_UPDATED' => 'Actualizado',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'Esta foto ha sido omitida porque ya está en tu biblioteca.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'Esta foto se omitió porque ya está en tu biblioteca, pero sus metadatos se actualizaron.',
 			'UPLOAD_ERROR_CONSOLE' => 'Por favor, eche un vistazo a la consola de su navegador para más detalles.',

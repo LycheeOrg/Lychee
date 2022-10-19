@@ -101,7 +101,7 @@ final class ChineseTraditional implements Language
 			'KEEP_ALBUMS' => '保留相簿',
 			'DELETE_ALBUMS_CONFIRMATION' => '確定要刪除全部照片 %d 選取的相簿和其中的所有照片？此動作無法還原！',
 
-			'DELETE_UNSORTED_CONFIRM' => '確定刪除\'未分類\'的所有照片？<br>此動作無法還原！',
+			'DELETE_UNSORTED_CONFIRM' => '確定刪除\'未分類\'的所有照片？ 此動作無法還原！',
 			'CLEAR_UNSORTED' => '清除未分類',
 			'KEEP_UNSORTED' => '保留未分類',
 
@@ -326,7 +326,7 @@ final class ChineseTraditional implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => '請輸入數據庫信息',
 			'DB_INFO_HOST' => '數據庫主機（選填）',
@@ -351,6 +351,9 @@ final class ChineseTraditional implements Language
 			'EDIT_SHARING_TITLE' => '編輯共享',
 			'EDIT_SHARING_TEXT' => '相簿的共享屬性將被修改為：',
 			'SHARE_ALBUM_TEXT' => '該相簿的共享屬性：',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => '相簿排序 %1$s 在一個 %2$s 排序',
 
@@ -429,6 +432,7 @@ final class ChineseTraditional implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => '已跳過',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => '請查看瀏覽器控制台獲取詳細信息。',
@@ -466,7 +470,7 @@ final class ChineseTraditional implements Language
 			'UPLOAD_IMPORT_CANCELLED' => 'Import cancelled',
 
 			'ABOUT_SUBTITLE' => 'Lychee自主託管的照片管理程序',
-			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> 是一個免費的照片管理工具，可在您的伺服器或網站空間上運行。安裝僅需幾秒鐘。<br>上傳，管理和分享照片(例如從本機應用程序)。<br>Lychee提供您所需的一切，所有照片均安全存儲。',
+			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> 是一個免費的照片管理工具，可在您的伺服器或網站空間上運行。安裝僅需幾秒鐘。上傳，管理和分享照片(例如從本機應用程序)。Lychee提供您所需的一切，所有照片均安全存儲。',
 			'FOOTER_COPYRIGHT' => '本網站的照片均受版權所有 %1$s &copy; %2$s',
 			'HOSTED_WITH_LYCHEE' => '使用Lychee託管照片(繁中由CYL翻譯)',
 

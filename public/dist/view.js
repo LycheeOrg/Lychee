@@ -30,21 +30,18 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject16 = _taggedTemplateLiteral(["", ""], ["", ""]),
     _templateObject17 = _taggedTemplateLiteral(["<div class='no_content fadeIn'>", ""], ["<div class='no_content fadeIn'>", ""]),
     _templateObject18 = _taggedTemplateLiteral(["<p>", "</p>"], ["<p>", "</p>"]),
-    _templateObject19 = _taggedTemplateLiteral(["\n\t\t\t<h1>$", "</h1>\n\t\t\t<div class='rows'>\n\t\t\t"], ["\n\t\t\t<h1>$", "</h1>\n\t\t\t<div class='rows'>\n\t\t\t"]),
-    _templateObject20 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='row'>\n\t\t\t\t\t<a class='name'>$", "</a>\n\t\t\t\t\t<a class='status'></a>\n\t\t\t\t\t<p class='notice'></p>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='row'>\n\t\t\t\t\t<a class='name'>$", "</a>\n\t\t\t\t\t<a class='status'></a>\n\t\t\t\t\t<p class='notice'></p>\n\t\t\t\t</div>\n\t\t\t\t"]),
-    _templateObject21 = _taggedTemplateLiteral(["\n\t\t<div class='row'>\n\t\t\t<a class='name'>$", "</a>\n\t\t\t<a class='status'></a>\n\t\t\t<p class='notice'></p>\n\t\t</div>\n\t\t"], ["\n\t\t<div class='row'>\n\t\t\t<a class='name'>$", "</a>\n\t\t\t<a class='status'></a>\n\t\t\t<p class='notice'></p>\n\t\t</div>\n\t\t"]),
-    _templateObject22 = _taggedTemplateLiteral(["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"], ["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"]),
-    _templateObject23 = _taggedTemplateLiteral(["<a class='", "'>$", "</a>"], ["<a class='", "'>$", "</a>"]),
-    _templateObject24 = _taggedTemplateLiteral(["<div class='empty'>", "</div>"], ["<div class='empty'>", "</div>"]),
-    _templateObject25 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
-    _templateObject26 = _taggedTemplateLiteral(["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
-    _templateObject27 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
-    _templateObject28 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <table>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <table>\n\t\t\t\t "]),
-    _templateObject29 = _taggedTemplateLiteral(["<span class='attr_", "_separator'>, </span>"], ["<span class='attr_", "_separator'>, </span>"]),
-    _templateObject30 = _taggedTemplateLiteral(["<span class='attr_", " search'>$", "</span>"], ["<span class='attr_", " search'>$", "</span>"]),
-    _templateObject31 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
-    _templateObject32 = _taggedTemplateLiteral(["<tr><td>$", "</td><td>", "</td></tr>"], ["<tr><td>$", "</td><td>", "</td></tr>"]),
-    _templateObject33 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]);
+    _templateObject19 = _taggedTemplateLiteral(["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"], ["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"]),
+    _templateObject20 = _taggedTemplateLiteral(["<a class='", "'>$", "</a>"], ["<a class='", "'>$", "</a>"]),
+    _templateObject21 = _taggedTemplateLiteral(["<div class='empty'>", "</div>"], ["<div class='empty'>", "</div>"]),
+    _templateObject22 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
+    _templateObject23 = _taggedTemplateLiteral(["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
+    _templateObject24 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
+    _templateObject25 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <table>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <table>\n\t\t\t\t "]),
+    _templateObject26 = _taggedTemplateLiteral(["<span class='attr_", "_separator'>, </span>"], ["<span class='attr_", "_separator'>, </span>"]),
+    _templateObject27 = _taggedTemplateLiteral(["<span class='attr_", " search'>$", "</span>"], ["<span class='attr_", " search'>$", "</span>"]),
+    _templateObject28 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
+    _templateObject29 = _taggedTemplateLiteral(["<tr><td>$", "</td><td>", "</td></tr>"], ["<tr><td>$", "</td><td>", "</td></tr>"]),
+    _templateObject30 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]);
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
@@ -995,47 +992,6 @@ build.no_content = function (type) {
 };
 
 /**
- * @param {string}                                           title the title of the dialog
- * @param {(FileList|File[]|DropboxFile[]|{name: string}[])} files a list of file entries to be shown in the dialog
- * @returns {string}                                                the HTML fragment for the dialog
- */
-build.uploadModal = function (title, files) {
-	var html = "";
-
-	html += lychee.html(_templateObject19, title);
-
-	var i = 0;
-
-	while (i < files.length) {
-		var file = files[i];
-
-		if (file.name.length > 40) file.name = file.name.substr(0, 17) + "..." + file.name.substr(file.name.length - 20, 20);
-
-		html += lychee.html(_templateObject20, file.name);
-
-		i++;
-	}
-
-	html += "</div>";
-
-	return html;
-};
-
-/**
- * Builds the HTML snippet for a row in the upload dialog.
- *
- * @param {string} name
- * @returns {string}
- */
-build.uploadNewFile = function (name) {
-	if (name.length > 40) {
-		name = name.substring(0, 17) + "..." + name.substring(name.length - 20, name.length);
-	}
-
-	return lychee.html(_templateObject21, name);
-};
-
-/**
  * @param {string[]} tags
  * @returns {string} return safe HTMl code
  */
@@ -1052,13 +1008,13 @@ build.tags = function (tags) {
 	if (tags.length !== 0) {
 		tags.forEach(function (tag, index) {
 			if (editable) {
-				html += lychee.html(_templateObject22, a_class, tag, index, build.iconic("x"));
+				html += lychee.html(_templateObject19, a_class, tag, index, build.iconic("x"));
 			} else {
-				html += lychee.html(_templateObject23, a_class, tag);
+				html += lychee.html(_templateObject20, a_class, tag);
 			}
 		});
 	} else {
-		html = lychee.html(_templateObject24, lychee.locale["NO_TAGS"]);
+		html = lychee.html(_templateObject21, lychee.locale["NO_TAGS"]);
 	}
 
 	return html;
@@ -1069,7 +1025,7 @@ build.tags = function (tags) {
  * @returns {string}
  */
 build.user = function (user) {
-	return lychee.html(_templateObject25, user.id, user.id, user.username, lychee.locale["USERNAME"], lychee.locale["NEW_PASSWORD"], lychee.locale["ALLOW_UPLOADS"], lychee.locale["RESTRICTED_ACCOUNT"], user.id, user.id);
+	return lychee.html(_templateObject22, user.id, user.id, user.username, lychee.locale["USERNAME"], lychee.locale["NEW_PASSWORD"], lychee.locale["ALLOW_UPLOADS"], lychee.locale["RESTRICTED_ACCOUNT"], user.id, user.id);
 };
 
 /**
@@ -1077,7 +1033,7 @@ build.user = function (user) {
  * @returns {string}
  */
 build.u2f = function (credential) {
-	return lychee.html(_templateObject26, credential.id, credential.id, credential.id.slice(0, 30), credential.id);
+	return lychee.html(_templateObject23, credential.id, credential.id, credential.id.slice(0, 30), credential.id);
 };
 
 /**
@@ -1271,7 +1227,7 @@ header.hideIfLivePhotoNotPlaying = function () {
  * @returns {void}
  */
 header.hide = function () {
-	if (visible.photo() && !visible.sidebar() && !visible.contextMenu() && basicModal.visible() === false) {
+	if (visible.photo() && !visible.sidebar() && !visible.contextMenu() && basicModal.isVisible() === false) {
 		tabindex.saveSettings(header.dom());
 		tabindex.makeUnfocusable(header.dom());
 
@@ -1288,7 +1244,7 @@ header.hide = function () {
  */
 header.setTitle = function (title) {
 	var $title = header.dom(".header__title");
-	var html = lychee.html(_templateObject27, title, build.iconic("caret-bottom"));
+	var html = lychee.html(_templateObject24, title, build.iconic("caret-bottom"));
 
 	$title.html(html);
 };
@@ -2155,7 +2111,7 @@ sidebar.render = function (structure) {
   * @returns {string}
   */
 	var renderDefault = function renderDefault(section) {
-		var _html = lychee.html(_templateObject28, section.title);
+		var _html = lychee.html(_templateObject25, section.title);
 
 		if (section.title === lychee.locale["PHOTO_LOCATION"]) {
 			var _has_latitude = section.rows.findIndex(function (row) {
@@ -2197,18 +2153,18 @@ sidebar.render = function (structure) {
 				function (prev, cur) {
 					// Add separator if needed
 					if (prev !== "") {
-						prev += lychee.html(_templateObject29, row.kind);
+						prev += lychee.html(_templateObject26, row.kind);
 					}
-					return prev + lychee.html(_templateObject30, row.kind, cur);
+					return prev + lychee.html(_templateObject27, row.kind, cur);
 				}, "");
 			} else {
-				htmlValue = lychee.html(_templateObject31, row.kind, rawValue);
+				htmlValue = lychee.html(_templateObject28, row.kind, rawValue);
 			}
 
 			// Add edit-icon to the value when editable
 			if (row.editable === true) htmlValue += " " + build.editIcon("edit_" + row.kind);
 
-			_html += lychee.html(_templateObject32, row.title, htmlValue);
+			_html += lychee.html(_templateObject29, row.title, htmlValue);
 		});
 
 		_html += "</table>";
@@ -2228,7 +2184,7 @@ sidebar.render = function (structure) {
 		// Note: In case of tags `section.value` already contains proper
 		// HTML (with each tag wrapped into a `<span>`-element), because
 		// `section.value` is the result of `build.renderTags`.
-		return lychee.html(_templateObject33, section.title, section.title.toLowerCase(), section.value, htmlEditable);
+		return lychee.html(_templateObject30, section.title, section.title.toLowerCase(), section.value, htmlEditable);
 	};
 
 	var html = "";
@@ -2674,8 +2630,8 @@ mapview.goto = function (elem) {
  */
 
 lychee.locale = {
-	USERNAME: "username",
-	PASSWORD: "password",
+	USERNAME: "Username",
+	PASSWORD: "Password",
 	ENTER: "Enter",
 	CANCEL: "Cancel",
 	SIGN_IN: "Sign In",
@@ -2742,7 +2698,7 @@ lychee.locale = {
 
 	DELETE_ALBUM_QUESTION: "Delete Album and Photos",
 	KEEP_ALBUM: "Keep Album",
-	DELETE_ALBUM_CONFIRMATION_1: "Are you sure you want to delete the album '%s' and all of the photos it contains? This action can't be undone!",
+	DELETE_ALBUM_CONFIRMATION: "Are you sure you want to delete the album '%s' and all of the photos it contains? This action can't be undone!",
 
 	DELETE_TAG_ALBUM_QUESTION: "Delete Album",
 	DELETE_TAG_ALBUM_CONFIRMATION: "Are you sure you want to delete the album %s (any photos inside will not be deleted)? This action can't be undone!",
@@ -2751,7 +2707,7 @@ lychee.locale = {
 	KEEP_ALBUMS: "Keep Albums",
 	DELETE_ALBUMS_CONFIRMATION: "Are you sure you want to delete all %d selected albums and all of the photos they contain? This action can't be undone!",
 
-	DELETE_UNSORTED_CONFIRM: "Are you sure you want to delete all photos from 'Unsorted'?<br>This action can't be undone!",
+	DELETE_UNSORTED_CONFIRM: "Are you sure you want to delete all photos from 'Unsorted'? This action can't be undone!",
 	CLEAR_UNSORTED: "Clear Unsorted",
 	KEEP_UNSORTED: "Keep Unsorted",
 
@@ -2976,7 +2932,7 @@ lychee.locale = {
 
 	NEW_PHOTOS_NOTIFICATION: "Send new photos notification emails.",
 	SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION: "New photos notification updated",
-	USER_EMAIL_INSTRUCTION: "Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.",
+	USER_EMAIL_INSTRUCTION: "Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.",
 
 	SETTINGS_SUCCESS_CSS: "CSS updated",
 	SETTINGS_SUCCESS_UPDATE: "Settings updated with success",
@@ -3004,6 +2960,9 @@ lychee.locale = {
 	EDIT_SHARING_TITLE: "Edit Sharing",
 	EDIT_SHARING_TEXT: "The sharing-properties of this album will be changed to the following:",
 	SHARE_ALBUM_TEXT: "This album will be shared with the following properties:",
+
+	SORT_DIALOG_ATTRIBUTE_LABEL: "Attribute",
+	SORT_DIALOG_ORDER_LABEL: "Order",
 
 	SORT_ALBUM_BY: "Sort albums by %1$s in an %2$s order.",
 
@@ -3090,6 +3049,7 @@ lychee.locale = {
 	UPLOAD_FAILED_WARNING: "Upload failed. Server returned a warning!",
 	UPLOAD_SKIPPED: "Skipped",
 	UPLOAD_UPDATED: "Updated",
+	UPLOAD_GENERAL: "General",
 	UPLOAD_IMPORT_SKIPPED_DUPLICATE: "This photo has been skipped because it's already in your library.",
 	UPLOAD_IMPORT_RESYNCED_DUPLICATE: "This photo has been skipped because it's already in your library, but its metadata has been updated.",
 	UPLOAD_ERROR_CONSOLE: "Please take a look at the console of your browser for further details.",
@@ -3728,7 +3688,7 @@ var SmartAlbumID = Object.freeze({
  * @property {string}   swipe_tolerance_x       - actually a number
  * @property {string}   swipe_tolerance_y       - actually a number
  * @property {string}   upload_processing_limit - actually a number
- * @property {string}   version                 - actually a number
+ * @property {string}   version                 - a string of 6 digits without separating dots, i.e. version 4.6.3 is reported as `'040603'`
  */
 
 /**

@@ -102,7 +102,7 @@ final class Slovak implements Language
 			'KEEP_ALBUMS' => 'Albumy ponechať',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Ste si istý, že chcete všetky %d vybrané albumy a všetky obrázky v nich zmazať? Táto akcia je nevratná!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Ste si istý, že chcete všetky obrázky z \'Netriedené\' zmazať?<br>Táto akcia je nevratná!',
+			'DELETE_UNSORTED_CONFIRM' => 'Ste si istý, že chcete všetky obrázky z \'Netriedené\' zmazať? Táto akcia je nevratná!',
 			'CLEAR_UNSORTED' => 'Netriedené zmazať',
 			'KEEP_UNSORTED' => 'Netriedené ponechať',
 
@@ -330,7 +330,7 @@ final class Slovak implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Zadajte prístupové údaje k databáze:',
 			'DB_INFO_HOST' => 'Názov databázového servera (voliteľné)',
@@ -355,6 +355,9 @@ final class Slovak implements Language
 			'EDIT_SHARING_TITLE' => 'Zdieľanie spracovať',
 			'EDIT_SHARING_TEXT' => 'Nastavenie zdieľania pre tento album bolo zmenené nasledovne:',
 			'SHARE_ALBUM_TEXT' => 'Tento album bude zdieľaný s nasledovnými vlastnosťami:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => 'Triediť albumy podľa %1$s v %2$s rade.',
 
@@ -436,6 +439,7 @@ final class Slovak implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Preskočiť',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => 'Skontrolujte konzolu prehliadača, pre zistenie ďalších podrobností.',

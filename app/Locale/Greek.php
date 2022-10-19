@@ -101,7 +101,7 @@ final class Greek implements Language
 			'KEEP_ALBUMS' => 'Διατήρηση Λευκωμάτων',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Είστε σίγουρη/ος πως θέλετε να διαγράψετε όλα %d τα επιλεγμένα λευκώματα και όλες τις φωτογραφίες που περιέχουν; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Είστε σίγουρη/ος πως θέλετε να διαγράψετε όλες τις \'Μη Ταξινομημένες\' φωτογραφίες;<br>Αυτή η ενέργεια δεν μπορεί να αναιρεθεί!',
+			'DELETE_UNSORTED_CONFIRM' => 'Είστε σίγουρη/ος πως θέλετε να διαγράψετε όλες τις \'Μη Ταξινομημένες\' φωτογραφίες; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί!',
 			'CLEAR_UNSORTED' => 'Καθαρισμός των μη ταξινομημένων φωτογραφιών',
 			'KEEP_UNSORTED' => 'Διατήρηση των Μη Ταξινομημένων',
 
@@ -326,7 +326,7 @@ final class Greek implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Εισάγετε τις ρυθμίσεις της βάσης δεδομένων παρακάτω:',
 			'DB_INFO_HOST' => 'Εξυπηρετητής Βάσης Δεδομένων (προαιρετικό)',
@@ -351,6 +351,9 @@ final class Greek implements Language
 			'EDIT_SHARING_TITLE' => 'Επεξεργασία κοινής χρήσης',
 			'EDIT_SHARING_TEXT' => 'Οι ιδιότητες κοινής χρήσης αυτού του λευκώματος θα αλλάξουν στις παρακάτω:',
 			'SHARE_ALBUM_TEXT' => 'Αυτό το λεύκωμα θα κοινοποιείται με τις παρακάτω ιδιότητες:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => 'Ταξινόμηση λευκωμάτων κατά %1$s με %2$s σειρά.',
 
@@ -429,6 +432,7 @@ final class Greek implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Παραλείφθηκε',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => 'Παρακαλούμε ρίξτε μια ματιά στην κονσόλα του περιηγητή σας για περισσότερες λεπτομέρειες.',

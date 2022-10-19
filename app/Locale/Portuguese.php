@@ -101,7 +101,7 @@ final class Portuguese implements Language
 			'KEEP_ALBUMS' => 'Manter Álbums',
 			'DELETE_ALBUMS_CONFIRMATION' => 'De certeza que quer eliminar todos %d os álbums e todas as fotografias neles contidas? Esta ação não pode ser desfeita!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'De certeza que quer eliminar todas as fotografias de \'Desordenadas\'?<br>Esta ação não pode ser desfeita!',
+			'DELETE_UNSORTED_CONFIRM' => 'De certeza que quer eliminar todas as fotografias de \'Desordenadas\'? Esta ação não pode ser desfeita!',
 			'CLEAR_UNSORTED' => 'Limpar Desordenadas',
 			'KEEP_UNSORTED' => 'Manter Desordenadas',
 
@@ -326,7 +326,7 @@ final class Portuguese implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Inserir os detalhes da conecção à base de dados abaixo:',
 			'DB_INFO_HOST' => 'Host da Base de Dados (opcional)',
@@ -351,6 +351,9 @@ final class Portuguese implements Language
 			'EDIT_SHARING_TITLE' => 'Editar Partilha',
 			'EDIT_SHARING_TEXT' => 'As propriedades de partilha deste álbum vão ser alteradas para o seguinte:',
 			'SHARE_ALBUM_TEXT' => 'Este álbum vai ser partilhado com as seguintes propriedades:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => 'Ordenar álbums por %1$s numa %2$s ordem.',
 
@@ -431,6 +434,7 @@ final class Portuguese implements Language
 			'UPLOAD_CANCELLED' => 'Cancelado',
 			'UPLOAD_SKIPPED' => 'Saltado',
 			'UPLOAD_UPDATED' => 'Ignorado',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'Esta fotografia foi ignorada porque já está na sua livraria.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'Esta fotografia foi ignorada porque já está na sua livraria, mas os seus metadados foram atualizados.',
 			'UPLOAD_ERROR_CONSOLE' => 'Por favor dá uma vista de olhos na consola do teu navegador para mais detalhes.',

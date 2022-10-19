@@ -104,7 +104,7 @@ final class French implements Language
 			'KEEP_ALBUMS' => 'Garder les albums',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Voulez-vous vraiment supprimer les %d albums selectionnés et toutes leurs photos ? Cette action est irréversible !',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Voulez-vous vraiment supprimer toutes les photos de «Non-triés» ?<br>Cette action est irréversible !',
+			'DELETE_UNSORTED_CONFIRM' => 'Voulez-vous vraiment supprimer toutes les photos de «Non-triés» ? Cette action est irréversible !',
 			'CLEAR_UNSORTED' => 'Vider Non-triés',
 			'KEEP_UNSORTED' => 'Garder Non-triés',
 
@@ -326,7 +326,7 @@ final class French implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Entrez vos identifiants de connexion à la base de données ci-dessous :',
 			'DB_INFO_HOST' => 'Hôte de la base de donnees (facultatif)',
@@ -351,6 +351,9 @@ final class French implements Language
 			'EDIT_SHARING_TITLE' => 'Modifier le partage',
 			'EDIT_SHARING_TEXT' => 'Les propriétés de partage de cet album vont etre modifiées comme suit :',
 			'SHARE_ALBUM_TEXT' => 'Cet album sera partagé avec les propriétés suivantes :',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribut',
+			'SORT_DIALOG_ORDER_LABEL' => 'Ordre',
 
 			'SORT_ALBUM_BY' => 'Trier les albums %1$s dans l’ordre %2$s.',
 
@@ -429,6 +432,7 @@ final class French implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Ignoré',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it’s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it’s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => 'Veuillez consulter la console de votre navigateur pour obtenir plus de détails.',

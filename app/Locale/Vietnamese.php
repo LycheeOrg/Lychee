@@ -101,7 +101,7 @@ final class Vietnamese implements Language
 			'KEEP_ALBUMS' => 'Giữ lại các album này',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Bạn có chắc chắn là muốn xóa hết tất cả %d các album được chọn và cả những hình ảnh chứa trong đó? Thao tác này sẽ không được phục hồi lại!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Bạn có chắc là muốn xóa hết tất cả hình ảnh trong album \'Chưa được phân loại\'?<br>Thao tác này sẽ không được phục hồi!',
+			'DELETE_UNSORTED_CONFIRM' => 'Bạn có chắc là muốn xóa hết tất cả hình ảnh trong album \'Chưa được phân loại\'? Thao tác này sẽ không được phục hồi!',
 			'CLEAR_UNSORTED' => 'Dọn trống album Chưa phân loại',
 			'KEEP_UNSORTED' => 'Giữ nguyên hình trong album Chưa phân loại',
 
@@ -327,7 +327,7 @@ final class Vietnamese implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Gửi email thông báo đăng hình ảnh mới.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'Thông báo đăng hình mới được cập nhật',
-			'USER_EMAIL_INSTRUCTION' => 'Thêm email của bạn vào bên dưới để nhận được thông báo qua email.<br />Để ngưng nhận email, bạn chỉ cần xóa email của bạn ở bên dưới.',
+			'USER_EMAIL_INSTRUCTION' => 'Thêm email của bạn vào bên dưới để nhận được thông báo qua email. Để ngưng nhận email, bạn chỉ cần xóa email của bạn ở bên dưới.',
 
 			'DB_INFO_TITLE' => 'Nhập thông tin kết nối cơ sở dữ liệu của bạn vào bên dưới:',
 			'DB_INFO_HOST' => 'Chủ chạy cơ sở dữ liệu (không bắt buộc)',
@@ -352,6 +352,10 @@ final class Vietnamese implements Language
 			'EDIT_SHARING_TITLE' => 'Chỉnh sửa chế độ chia sẻ',
 			'EDIT_SHARING_TEXT' => 'Những đặc điểm chia sẻ của tấm hình này sẽ được thay đổi thành như sau:',
 			'SHARE_ALBUM_TEXT' => 'Album này sẽ được chia sẻ với những đặc điểm sau:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
+
 			'ALBUM_SHARING_CONFIRM' => 'Lưu',
 
 			'SORT_ALBUM_BY' => 'Sắp xếp album theo %1$s một %2$s thứ tự.',
@@ -432,6 +436,7 @@ final class Vietnamese implements Language
 			'UPLOAD_CANCELLED' => 'Đã hủy bỏ',
 			'UPLOAD_SKIPPED' => 'Đã bỏ qua',
 			'UPLOAD_UPDATED' => 'Đã cập nhật',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'Hình ảnh này đã được bỏ qua vì nó đã có ở trong album ảnh của bạn rồi.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'Hình ảnh này đã được bỏ qua vì nó đã có ở trong album ảnh của bạn rồi, nhưng thông tin meta về hình ảnh đã được cập nhật.',
 			'UPLOAD_ERROR_CONSOLE' => 'Xin hãy xem qua thử bảng console ở trong trình duyệt của bạn để biết thêm thông tin chi tiết.',

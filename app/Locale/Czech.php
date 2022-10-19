@@ -102,7 +102,7 @@ final class Czech implements Language
 			'KEEP_ALBUMS' => 'Ponechat alba',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Opravdu smazat všechna vybraná %d alba a fotografie, které obsahují? Tento krok je nevratný!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Opravdu odstranit všechny \'Nesetříděné\' fotografie?<br> Tento krok je nevratný!',
+			'DELETE_UNSORTED_CONFIRM' => 'Opravdu odstranit všechny \'Nesetříděné\' fotografie? Tento krok je nevratný!',
 			'CLEAR_UNSORTED' => 'Odstranit Nesetříděné',
 			'KEEP_UNSORTED' => 'Ponechat Nesetříděné',
 
@@ -330,7 +330,7 @@ final class Czech implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Níže zadejte parametry připojení k databázi:',
 			'DB_INFO_HOST' => 'Hostitel (volitelný)',
@@ -355,6 +355,9 @@ final class Czech implements Language
 			'EDIT_SHARING_TITLE' => 'Editace sdílení',
 			'EDIT_SHARING_TEXT' => 'Vlastnosti sdílení tohoto alba budou změněny následovně:',
 			'SHARE_ALBUM_TEXT' => 'Album bude sdíleno s následujícími parametry:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => 'Řadit alba podle %1$s ve %2$s pořadí.',
 
@@ -436,6 +439,7 @@ final class Czech implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Vynecháno',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => 'Podrobnosti získáte v konzoli svého prohlížeče.',

@@ -101,7 +101,7 @@ final class Italian implements Language
 			'KEEP_ALBUMS' => 'Mantieni gli Album',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Sei sicuro di voler eliminare tutti %d gli album selezionati e le immagini contenute in essi? Questa azione non può essere annullata successivamente!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Sei sicuro di voler eliminare tutte le immagini da \'Non Catalogate\'?<br> Questa azione non può essere annullata successivamente!',
+			'DELETE_UNSORTED_CONFIRM' => 'Sei sicuro di voler eliminare tutte le immagini da \'Non Catalogate\'? Questa azione non può essere annullata successivamente!',
 			'CLEAR_UNSORTED' => 'Rimuovi Immagini Non Catalogate',
 			'KEEP_UNSORTED' => 'Mantieni Immagini Non Catalogate',
 
@@ -328,7 +328,7 @@ final class Italian implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Inserisci i dati per la connessione al database di seguito:',
 			'DB_INFO_HOST' => 'Host Database (opzionale)',
@@ -353,6 +353,9 @@ final class Italian implements Language
 			'EDIT_SHARING_TITLE' => 'Modifica Condivisibilità',
 			'EDIT_SHARING_TEXT' => 'Le proprietà di condivisione di questo album verrano cambiate nelle seguenti:',
 			'SHARE_ALBUM_TEXT' => 'Questo album verrà condiviso con le seguenti proprietà:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => 'Ordina album per %1$s in un ordine %2$s.',
 
@@ -433,6 +436,7 @@ final class Italian implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Saltato',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => 'Per favore controlla la console del tuo browser per ulteriori dettagli.',

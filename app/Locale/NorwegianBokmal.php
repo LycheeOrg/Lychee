@@ -101,7 +101,7 @@ final class NorwegianBokmal implements Language
 			'KEEP_ALBUMS' => 'Behold Album',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Ønsker du virkelig å fjerne %d valgte album og alle bildene i disse? Denne handlingen kan ikke angres!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Ønsker du virkelig å fjerne alle bilder fra \'Usorterte\'?<br>Denne handlingen kan ikke angres!',
+			'DELETE_UNSORTED_CONFIRM' => 'Ønsker du virkelig å fjerne alle bilder fra \'Usorterte\'? Denne handlingen kan ikke angres!',
 			'CLEAR_UNSORTED' => 'Fjern Usorterte',
 			'KEEP_UNSORTED' => 'Behold Usorterte',
 
@@ -326,7 +326,7 @@ final class NorwegianBokmal implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Fyll inn detaljer om databaseforbindelsen under:',
 			'DB_INFO_HOST' => 'Database Adresse (valgfritt)',
@@ -351,6 +351,9 @@ final class NorwegianBokmal implements Language
 			'EDIT_SHARING_TITLE' => 'Endre Deling',
 			'EDIT_SHARING_TEXT' => 'Egenskapene for deling for dette albumet vil bli endret til følgende:',
 			'SHARE_ALBUM_TEXT' => 'Albumet vil bli delt med følgende egenskaper:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => 'Sorter album etter %1$s i en %2$s rekkefølge.',
 
@@ -430,6 +433,7 @@ final class NorwegianBokmal implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Hoppet over',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => 'Vennligst se konsollen i nettleseren for mer informasjon.',

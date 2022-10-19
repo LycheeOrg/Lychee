@@ -101,7 +101,7 @@ final class Russian implements Language
 			'KEEP_ALBUMS' => 'Сохранить альбомы',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Вы точно хотите удалить альбомы %d со всеми фотографиями? Это действие необратимо!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Вы точно хотите удалить все фото из \'Unsorted\'?<br>Это действие необратимо!',
+			'DELETE_UNSORTED_CONFIRM' => 'Вы точно хотите удалить все фото из \'Unsorted\'? Это действие необратимо!',
 			'CLEAR_UNSORTED' => 'Очистить Unsorted',
 			'KEEP_UNSORTED' => 'Сохранить Unsorted',
 
@@ -326,7 +326,7 @@ final class Russian implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Укажите данные для подключения к базе данных:',
 			'DB_INFO_HOST' => 'Сервер баз данных (не обязательно)',
@@ -351,6 +351,9 @@ final class Russian implements Language
 			'EDIT_SHARING_TITLE' => 'Параметры доступа',
 			'EDIT_SHARING_TEXT' => 'Параметры доступа к выбранному альбому будут изменены на следующие:',
 			'SHARE_ALBUM_TEXT' => 'Этот альбом будет доступен со следующими условиями:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => 'Сортировать альбомы %1$s в порядке %2$s.',
 
@@ -430,6 +433,7 @@ final class Russian implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Пропущено',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => 'Подробности смотрите в консоли браузера.',
@@ -467,7 +471,7 @@ final class Russian implements Language
 			'UPLOAD_IMPORT_CANCELLED' => 'Import cancelled',
 
 			'ABOUT_SUBTITLE' => 'Self-hosted photo-management done right',
-			'ABOUT_DESCRIPTION' => "<a target=\'_blank\' href=\'%0\'>Lychee</a> - это бесплатный фотоменеджер для Вашего сервера или хостинга. Установка занимает считанные секунды. Загружайте, редактируйте и делитесь фотографиями как в любимом приложении! Lychee обеспечит Вас всем необходимым, включая безопасность хранения Ваших фотографий! <br />На русский язык перевёл Евгений Лебедев. Пожалуйста, <a href='mailto://k-t-c(at)ya.ru'>дайте мне знать</a>, если заметите неточности.",
+			'ABOUT_DESCRIPTION' => "<a target=\'_blank\' href=\'%0\'>Lychee</a> - это бесплатный фотоменеджер для Вашего сервера или хостинга. Установка занимает считанные секунды. Загружайте, редактируйте и делитесь фотографиями как в любимом приложении! Lychee обеспечит Вас всем необходимым, включая безопасность хранения Ваших фотографий! На русский язык перевёл Евгений Лебедев. Пожалуйста, <a href='mailto://k-t-c(at)ya.ru'>дайте мне знать</a>, если заметите неточности.",
 			'FOOTER_COPYRIGHT' => 'All images on this website are subject to Copyright by %1$s &copy; %2$s',
 			'HOSTED_WITH_LYCHEE' => 'Hosted with Lychee',
 
