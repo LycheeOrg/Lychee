@@ -1,5 +1,7 @@
 <?php
 
+/** @noinspection SpellCheckingInspection */
+
 namespace App\Locale;
 
 use App\Contracts\Language;
@@ -13,30 +15,26 @@ final class Vietnamese implements Language
 
 	public function get_locale(): array
 	{
-		$locale = [
-			'USERNAME' => 'tên đăng nhập',
-			'PASSWORD' => 'mật khẩu',
+		return [
+			'USERNAME' => 'Tên đăng nhập',
+			'PASSWORD' => 'Mật khẩu',
 			'ENTER' => 'Ok',
 			'CANCEL' => 'Bỏ',
 			'SIGN_IN' => 'Đăng nhập',
 			'CLOSE' => 'Đóng',
 			'SETTINGS' => 'Cài đặt',
-			'SEARCH' => 'Tìm kiếm ...',
+			'SEARCH' => 'Tìm kiếm …',
 			'MORE' => 'Xem thêm',
 			'DEFAULT' => 'Mặc định',
 			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Người dùng',
 			'CREATE' => 'Tạo',
-			'USERS_EMPTY' => 'Danh sách người dùng đang trống!',
+			'REMOVE' => 'Remove',
+			'SHARE' => 'Share',
 			'U2F' => 'Xác minh 2 Bước',
 			'NOTIFICATIONS' => 'Thông báo',
 			'SHARING' => 'Chia sẻ',
-			'SHARING_EMPTY' => 'Danh sách chia sẻ đang trống!',
-			'SHARING_WITH' => 'với',
-			'SHARING_SHARE' => 'Chia sẻ',
-			'SHARING_UNDO' => 'hoàn tác',
-			'SHARING_REDO' => 'hồi tác',
 			'CHANGE_LOGIN' => 'Thay đổi thông tin đăng nhập',
 			'CHANGE_SORTING' => 'Thay đổi cách sắp xếp',
 			'SET_DROPBOX' => 'Chỉnh Dropbox',
@@ -49,6 +47,7 @@ final class Vietnamese implements Language
 			'SIGN_OUT' => 'Thoát',
 			'UPDATE_AVAILABLE' => 'Có phiên bản mới!',
 			'MIGRATION_AVAILABLE' => 'Có thể sang chuyển hệ thống được rồi!',
+			'CHECK_FOR_UPDATE' => 'Check for updates',
 			'DEFAULT_LICENSE' => 'Bản quyền mặc định cho hình ảnh video tải lên:',
 			'SET_LICENSE' => 'Cài đặt bản quyền',
 			'SET_OVERLAY_TYPE' => 'Cài đặt thông tin hiển thị trên hình',
@@ -86,22 +85,22 @@ final class Vietnamese implements Language
 			'FULLSCREEN_EXIT' => 'Thoát chế độ xem toàn màn hình',
 
 			'SHARING_ALBUM_USERS' => 'Chia sẻ album này với những người dùng khác',
-			'WAIT_FETCH_DATA' => 'Vui lòng chờ khi chúng tôi lấy dữ liệu...',
+			'WAIT_FETCH_DATA' => 'Vui lòng chờ khi chúng tôi lấy dữ liệu …',
 			'SHARING_ALBUM_USERS_NO_USERS' => 'Không có người dùng hiện hữu để chia sẻ album cùng với',
 			'SHARING_ALBUM_USERS_LONG_MESSAGE' => 'Chọn những người dùng để chia sẻ album cùng',
 
 			'DELETE_ALBUM_QUESTION' => 'Xóa album và hình ảnh',
 			'KEEP_ALBUM' => 'Giữ lại album',
-			'DELETE_ALBUM_CONFIRMATION' => 'Bạn có chắc là bạn muốn xóa album này không \'%s\' và tất cả những hình ảnh chứa trong đó? Thao tác này sẽ không được phục hồi lại!',
+			'DELETE_ALBUM_CONFIRMATION' => 'Bạn có chắc là bạn muốn xóa album này không “%s” và tất cả những hình ảnh chứa trong đó? Thao tác này sẽ không được phục hồi lại!',
 
 			'DELETE_TAG_ALBUM_QUESTION' => 'Xóa album',
-			'DELETE_TAG_ALBUM_CONFIRMATION' => 'Bạn có chắc là bạn muốn xóa album này không \'%s\' (những hình ảnh bên trong album sẽ không bị xóa đi)? Thao tác này sẽ không được phục hồi lại!',
+			'DELETE_TAG_ALBUM_CONFIRMATION' => 'Bạn có chắc là bạn muốn xóa album này không “%s” (những hình ảnh bên trong album sẽ không bị xóa đi)? Thao tác này sẽ không được phục hồi lại!',
 
 			'DELETE_ALBUMS_QUESTION' => 'Xóa nhiều album và hình ảnh',
 			'KEEP_ALBUMS' => 'Giữ lại các album này',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Bạn có chắc chắn là muốn xóa hết tất cả %d các album được chọn và cả những hình ảnh chứa trong đó? Thao tác này sẽ không được phục hồi lại!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Bạn có chắc là muốn xóa hết tất cả hình ảnh trong album \'Chưa được phân loại\'? Thao tác này sẽ không được phục hồi!',
+			'DELETE_UNSORTED_CONFIRM' => 'Bạn có chắc là muốn xóa hết tất cả hình ảnh trong album “Chưa được phân loại”? Thao tác này sẽ không được phục hồi!',
 			'CLEAR_UNSORTED' => 'Dọn trống album Chưa phân loại',
 			'KEEP_UNSORTED' => 'Giữ nguyên hình trong album Chưa phân loại',
 
@@ -117,8 +116,8 @@ final class Vietnamese implements Language
 			'MOVE_ALL' => 'Di chuyển phần được chọn',
 			'DUPLICATE' => 'Tạo 1 bản nữa',
 			'DUPLICATE_ALL' => 'Tạo 1 bản nữa cho phần được chọn',
-			'COPY_TO' => 'Sao chép đến...',
-			'COPY_ALL_TO' => 'Sao chép phần được chọn đến...',
+			'COPY_TO' => 'Sao chép đến …',
+			'COPY_ALL_TO' => 'Sao chép phần được chọn đến …',
 			'DELETE' => 'Xóa',
 			'SAVE' => 'Lưu',
 			'DELETE_ALL' => 'Xóa phần được chọn',
@@ -149,8 +148,8 @@ final class Vietnamese implements Language
 			'UNSTAR' => 'Gỡ dấu sao',
 			'STAR_ALL' => 'Đánh dấu sao mục được chọn',
 			'UNSTAR_ALL' => 'Gỡ dấu sao mục được chọn',
-			'TAGS' => 'Đánh dấu tag',
-			'TAGS_ALL' => 'Đánh dấu tag mục được chọn',
+			'TAG' => 'Đánh dấu tag',
+			'TAG_ALL' => 'Đánh dấu tag mục được chọn',
 			'UNSTAR_PHOTO' => 'Gỡ dấu sao hình ảnh',
 			'SET_COVER' => 'Cài hình ảnh nền cho album',
 			'REMOVE_COVER' => 'Xóa hình ảnh nền album',
@@ -183,29 +182,29 @@ final class Vietnamese implements Language
 			'ALBUM_SHR_YES' => 'Có',
 			'ALBUM_SHR_NO' => 'Không',
 			'ALBUM_PUBLIC' => 'Công cộng',
-			'ALBUM_PUBLIC_EXPL' => 'Người khác có thể xem album này, với những hạn chế bên dưới.',
+			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Hình ảnh gốc',
-			'ALBUM_FULL_EXPL' => 'Có hình ảnh độ phân giải gốc đầy đủ để xem.',
+			'ALBUM_FULL_EXPL' => 'Anonymous users can behold full-resolution photos.',
 			'ALBUM_HIDDEN' => 'Đã ẩn',
-			'ALBUM_HIDDEN_EXPL' => 'Chỉ những ai có đường link trực tiếp mới có thể xem album này.',
+			'ALBUM_HIDDEN_EXPL' => 'Anonymous users need a direct link to access this album.',
 			'ALBUM_MARK_NSFW' => 'Đánh dấu đây là album nhạy cảm',
 			'ALBUM_UNMARK_NSFW' => 'Gỡ đánh dấu đây là album nhạy cảm',
 			'ALBUM_NSFW' => 'Nhạy cảm',
 			'ALBUM_NSFW_EXPL' => 'Album được đánh dấu là chứa hình ảnh nhạy cảm.',
 			'ALBUM_DOWNLOADABLE' => 'Có thể tải về máy',
-			'ALBUM_DOWNLOADABLE_EXPL' => 'Những người khách ghé xem trang album của bạn có thể tải album về máy họ.',
+			'ALBUM_DOWNLOADABLE_EXPL' => 'Anonymous users can download this album.',
 			'ALBUM_SHARE_BUTTON_VISIBLE' => 'Nút chia sẻ được bật',
 			'ALBUM_SHARE_BUTTON_VISIBLE_EXPL' => 'Hiển thị những đường link chia sẻ lên mạng xã hội.',
 			'ALBUM_PASSWORD' => 'Mật khẩu',
 			'ALBUM_PASSWORD_PROT' => 'Có mật khẩu mới xem được',
-			'ALBUM_PASSWORD_PROT_EXPL' => 'Album chỉ có thể truy cập được với một mật khẩu hợp lệ.',
+			'ALBUM_PASSWORD_PROT_EXPL' => 'Anonymous users need a shared password to access this album.',
 			'ALBUM_PASSWORD_REQUIRED' => 'Album này phải có mật khẩu mới xem được. Bạn hãy nhập mật khẩu vào bên dưới để xem hình ảnh trong album nhé:',
-			'ALBUM_MERGE' => 'Bạn có chắc chắn là muốn gộp chung album \'%$1s\' vào album \'%$2s\'?',
-			'ALBUMS_MERGE' => 'Bạn có chắc là muốn gộp hết tất cả những album được chọn vào trong cùng album \'%s\'?',
+			'ALBUM_MERGE' => 'Bạn có chắc chắn là muốn gộp chung album “%1$s” vào album “%2$s”?',
+			'ALBUMS_MERGE' => 'Bạn có chắc là muốn gộp hết tất cả những album được chọn vào trong cùng album “%s”?',
 			'MERGE_ALBUM' => 'Gộp những album lại với nhau',
 			'DONT_MERGE' => 'Không gộp',
-			'ALBUM_MOVE' => 'Bạn có chắc là muốn di chuyển album \'%1$s\' qua album \'%2$s\'?',
-			'ALBUMS_MOVE' => 'Bạn có chắc là muốn di chuyển tất cả những album được chọn vào trong album \'%s\'?',
+			'ALBUM_MOVE' => 'Bạn có chắc là muốn di chuyển album “%1$s” qua album “%2$s”?',
+			'ALBUMS_MOVE' => 'Bạn có chắc là muốn di chuyển tất cả những album được chọn vào trong album “%s”?',
 			'MOVE_ALBUMS' => 'Di chuyển những album này',
 			'NOT_MOVE_ALBUMS' => 'Không di chuyển',
 			'ROOT' => 'Albums',
@@ -268,7 +267,7 @@ final class Vietnamese implements Language
 			'PHOTO_SHR_NO' => 'Không chia sẻ',
 			'PHOTO_DELETE' => 'Xóa hình ảnh',
 			'PHOTO_KEEP' => 'Giữ hình ảnh',
-			'PHOTO_DELETE_CONFIRMATION' => 'Bạn có chắc là bạn muốn xóa hình ảnh này \'%s\'? Thao tác này sẽ không được khôi phục lại!',
+			'PHOTO_DELETE_CONFIRMATION' => 'Bạn có chắc là bạn muốn xóa hình ảnh này “%s”? Thao tác này sẽ không được khôi phục lại!',
 			'PHOTO_DELETE_ALL' => 'Bạn có chắc là bạn muốn xóa tất cả %d hình ảnh được chọn? Thao tác này sẽ không khôi phục lại được!',
 			'PHOTOS_NEW_TITLE' => 'Nhập tên cho tất cả %d những hình ảnh được chọn:',
 			'PHOTO_MAKE_PRIVATE_ALBUM' => 'Tấm hình này đang có ở trong một album công cộng. Để chỉnh hình lại thành chế độ riêng tư, hãy chỉnh sửa chế độ hiển thị của album liên quan.',
@@ -276,26 +275,22 @@ final class Vietnamese implements Language
 			'PHOTO_PUBLIC' => 'Chia sẻ công cộng',
 			'PHOTO_PUBLIC_EXPL' => 'Người khác có thể xem tấm hình này, với những hạn chế bên dưới.',
 			'PHOTO_FULL' => 'Hình ảnh gốc',
-			'PHOTO_FULL_EXPL' => 'Có hình ảnh độ phân giải gốc đầy đủ để xem.',
+			'PHOTO_FULL_EXPL' => 'Anonymous users can behold full-resolution photo.',
 			'PHOTO_HIDDEN' => 'Đã ẩn',
-			'PHOTO_HIDDEN_EXPL' => 'Chỉ những ai có đường link trực tiếp mới có thể xem tấm hình này.',
+			'PHOTO_HIDDEN_EXPL' => 'Anonymous users need a direct link to view this photo.',
 			'PHOTO_DOWNLOADABLE' => 'Có thể tải về máy',
-			'PHOTO_DOWNLOADABLE_EXPL' => 'Những người khách ghé xem trang album của bạn có thể tải tấm hình về máy họ.',
+			'PHOTO_DOWNLOADABLE_EXPL' => 'Anonymous users may download this photo.',
 			'PHOTO_SHARE_BUTTON_VISIBLE' => 'Nút chia sẻ được bật',
-			'PHOTO_SHARE_BUTTON_VISIBLE_EXPL' => 'Hiển thị những đường link chia sẻ lên mạng xã hội.',
+			'PHOTO_SHARE_BUTTON_VISIBLE_EXPL' => 'Anonymous users can see social media sharing links.',
 			'PHOTO_PASSWORD_PROT' => 'Có mật khẩu mới xem được',
-			'PHOTO_PASSWORD_PROT_EXPL' => 'Tấm hình chỉ có thể truy cập được với một mật khẩu hợp lệ.',
+			'PHOTO_PASSWORD_PROT_EXPL' => 'Anonymous users need a shared password to view this photo.',
 			'PHOTO_EDIT_SHARING_TEXT' => 'Những đặc điểm chia sẻ của tấm hình này sẽ được thay đổi thành như sau:',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => 'Vì tấm hình này đang có trong một album công cộng, nó có chế độ hiển thị công cộng giống như cài đặt hiển thị của album. Chế độ hiển thị hiện tại của hình được hiển thị bên dưới để người dùng biết thêm thông tin.',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'Chế độ hiển thị của tấm hình này có thể được chỉnh chỉ tiết hơn với cài đặt tổng của Lychee. Chế độ hiển thị hiện thời của tấm hình được hiển thị để người dùng biết thêm thông tin.',
-			'PHOTO_SHARING_CONFIRM' => 'Lưu',
 
 			'LOADING' => 'Đang tải',
 			'ERROR' => 'Bị lỗi',
 			'ERROR_TEXT' => 'Èo, hình như có trục trặc gì đó xảy ra. Xin hãy thử tải lại trang và thử lại nhé!',
-			'ERROR_DB_1' => 'Không thể kết nối với cơ sở dữ liệu chủ vì truy cập của hệ thống đã bị từ chối. Hãy kiểm tra lại cơ sở dữ liệu chủ, tên đăng nhập và mật khẩu và đảm bảo rằng quyền truy cập từ địa điểm kết nối của bạn là được cho phép.',
-			'ERROR_DB_2' => 'Không thể tạo cơ sở dữ liệu. Hãy kiểm tra lại cơ sở dữ liệu chủ, tên đăng nhập và mật khẩu và đảm bảo rằng người dùng được nhập vào có quyền chỉnh sửa và thêm dữ liệu vào trong cơ sở dữ liệu.',
-			'ERROR_CONFIG_FILE' => "Không thể lưu cấu hình này. Quyền chỉnh sửa bị từ chối trong phần <b>'dữ liệu/'</b>. Xin hãy đặt quyền đọc, ghi và thực hiện cho những người dùng khác trong phần <b>'dữ liệu/'</b> và phần <b>'tải lên/'</b>. Hãy đọc phần readme để biết thêm thông tin chi tiết.",
 			'ERROR_UNKNOWN' => 'Có sự cố bất ngờ nào đó đã xảy ra. Xin hãy thử lại và kiểm tra phần cài đặt hệ thống và máy chủ của bạn. Hãy đọc phần readme để biết thêm thông tin chi tiết.',
 			'ERROR_LOGIN' => 'Không thể tạo tên đăng nhập. Xin hãy thử lại với một tên đăng nhập và mật khẩu khác!',
 			'ERROR_MAP_DEACTIVATED' => 'Tính năng hiển thị bản đồ đã tắt trong phần cài đặt.',
@@ -314,7 +309,11 @@ final class Vietnamese implements Language
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Đã cập nhật cài đặt hiển thị bản đồ',
 			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Đã cập nhật cài đặt hiển thị bản đồ cho những album chia sẻ công cộng',
 			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Đã cập nhật cài đặt nhà cung cấp bản đồ',
+			'SETTINGS_SUCCESS_CSS' => 'Stylesheets updated',
+			'SETTINGS_SUCCESS_UPDATE' => 'Settings updated successfully',
 			'SETTINGS_DROPBOX_KEY' => 'Mã API Dropbox',
+			'SETTINGS_ADVANCED_WARNING_EXPL' => 'Changing these advanced settings can be harmful to the stability, security and performance of this application. You should only modify them if you are sure of what you are doing.',
+			'SETTINGS_ADVANCED_SAVE' => 'Save my modifications, I accept the risk!',
 
 			'U2F_NOT_SUPPORTED' => 'Xác minh 2 Bước chưa được hỗ trợ. Thật xin lỗi nha.',
 			'U2F_NOT_SECURE' => 'Môi trường đăng tải chưa được bảo mật. Xác minh 2 Bước chưa được cài đặt.',
@@ -322,21 +321,11 @@ final class Vietnamese implements Language
 			'U2F_REGISTRATION_SUCCESS' => 'Đã đăng ký thiết bị mới thành công!',
 			'U2F_AUTHENTIFICATION_SUCCESS' => 'Xác minh thành công!',
 			'U2F_CREDENTIALS' => 'Tên và Mật mã',
-			'U2F_NO_CREDENTIALS' => 'Danh sách tên và mật mã hiện đang trống!',
 			'U2F_CREDENTIALS_DELETED' => 'Tên và mật mã đã được xóa!',
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Gửi email thông báo đăng hình ảnh mới.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'Thông báo đăng hình mới được cập nhật',
 			'USER_EMAIL_INSTRUCTION' => 'Thêm email của bạn vào bên dưới để nhận được thông báo qua email. Để ngưng nhận email, bạn chỉ cần xóa email của bạn ở bên dưới.',
-
-			'DB_INFO_TITLE' => 'Nhập thông tin kết nối cơ sở dữ liệu của bạn vào bên dưới:',
-			'DB_INFO_HOST' => 'Chủ chạy cơ sở dữ liệu (không bắt buộc)',
-			'DB_INFO_USER' => 'Tên cơ sở dữ liệu',
-			'DB_INFO_PASSWORD' => 'Mật khẩu cơ sở dữ liệu',
-			'DB_INFO_TEXT' => 'Lychee sẽ tạo một cơ sở dữ liệu riêng để lưu trữ hình ảnh và video. Nếu cần thiết, bạn có thể nhập vào tên của một cơ sở dữ liệu thay thế bạn đang có:',
-			'DB_NAME' => 'Tên cơ sở dữ liệu (không bắt buộc)',
-			'DB_PREFIX' => 'Tên tiền tố của bảng (không bắt buộc)',
-			'DB_CONNECT' => 'Kết nối',
 
 			'LOGIN_TITLE' => 'Nhập tên và mật khẩu đăng nhập cho phần cài đặt của bạn:',
 			'LOGIN_USERNAME' => 'Tên đăng nhập mới',
@@ -355,8 +344,6 @@ final class Vietnamese implements Language
 
 			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
 			'SORT_DIALOG_ORDER_LABEL' => 'Order',
-
-			'ALBUM_SHARING_CONFIRM' => 'Lưu',
 
 			'SORT_ALBUM_BY' => 'Sắp xếp album theo %1$s một %2$s thứ tự.',
 
@@ -386,6 +373,9 @@ final class Vietnamese implements Language
 
 			'LANG_TEXT' => 'Thay đổi ngôn ngữ trên Lychee cho:',
 			'LANG_TITLE' => 'Thay đổi ngôn ngữ',
+
+			'CSS_TEXT' => 'Personalize CSS:',
+			'CSS_TITLE' => 'Change CSS',
 			'PUBLIC_SEARCH_TEXT' => 'Cho phép tìm kiếm công cộng:',
 			'OVERLAY_TYPE' => 'Thông tin hiển thị trên hình:',
 			'OVERLAY_NONE' => 'Không hiển thị gì cả',
@@ -394,9 +384,6 @@ final class Vietnamese implements Language
 			'OVERLAY_DATE' => 'Hiển thị ngày chụp',
 			'MAP_DISPLAY_TEXT' => 'Bật chế độ bản đồ (nhà cung cấp OpenStreetMap):',
 			'MAP_DISPLAY_PUBLIC_TEXT' => 'Bật chế độ bản đồ cho những album chia sẻ công cộng (nhà cung cấp OpenStreetMap):',
-			'LOCATION_DECODING' => 'Giải mã dữ liệu GPS thành tên địa điểm',
-			'LOCATION_SHOW' => 'Hiển thị tên địa điểm',
-			'LOCATION_SHOW_PUBLIC' => 'Hiển thị tên địa điểm cho chế độ chia sẻ công cộng',
 			'MAP_PROVIDER' => 'Nhà cung cấp của những ô bản đồ OpenStreetMap:',
 			'MAP_PROVIDER_WIKIMEDIA' => 'Wikimedia',
 			'MAP_PROVIDER_OSM_ORG' => 'OpenStreetMap.org (không có độ phân giải cao HiDPI)',
@@ -404,6 +391,9 @@ final class Vietnamese implements Language
 			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (không có độ phân giải cao HiDPI)',
 			'MAP_PROVIDER_RRZE' => 'University of Erlangen, Germany (chỉ có HiDPI)',
 			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Hiển thị hình ảnh của album con trên bản đồ:',
+			'LOCATION_DECODING' => 'Giải mã dữ liệu GPS thành tên địa điểm',
+			'LOCATION_SHOW' => 'Hiển thị tên địa điểm',
+			'LOCATION_SHOW_PUBLIC' => 'Hiển thị tên địa điểm cho chế độ chia sẻ công cộng',
 
 			'LAYOUT_TYPE' => 'Cách trình bày hình ảnh:',
 			'LAYOUT_SQUARES' => 'Ô vuông hình nhỏ',
@@ -412,7 +402,7 @@ final class Vietnamese implements Language
 			'SET_LAYOUT' => 'Thay đổi cách trình bày',
 
 			'NSFW_VISIBLE_TEXT_1' => 'Tự động cho hiển thị những album nhạy cảm.',
-			'NSFW_VISIBLE_TEXT_2' => 'Nếu album được chia sẻ công cộng, album nhạy cảm vẫn có thể được truy cập, chỉ là tạm làm mờ khỏi tầm nhìn và <b>có thể được hiện rõ ra bằng cách bấm phím <hkb>H</hkb></b>.',
+			'NSFW_VISIBLE_TEXT_2' => 'Nếu album được chia sẻ công cộng, album nhạy cảm vẫn có thể được truy cập, chỉ là tạm làm mờ khỏi tầm nhìn và <b>có thể được hiện rõ ra bằng cách bấm phím <kbd>H</kbd></b>.',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Chế độ hiển thị album nhạy cảm được cập nhật thành công.',
 
 			'VIEW_NO_RESULT' => 'Không có kết quả nào',
@@ -462,15 +452,12 @@ final class Vietnamese implements Language
 			'UPLOAD_IMPORT_SKIP_DUPLICATES_EXPL' => 'Những tấm hình đã có trong album rồi sẽ được bỏ qua.',
 			'UPLOAD_IMPORT_RESYNC_METADATA' => 'Đồng bộ lại thông tin meta',
 			'UPLOAD_IMPORT_RESYNC_METADATA_EXPL' => 'Cập nhật thông tin meta của những tập tin hình ảnh đang có trong album.',
-			'UPLOAD_IMPORT_LOW_MEMORY' => 'Bộ nhớ còn rất ít!',
 			'UPLOAD_IMPORT_LOW_MEMORY_EXPL' => 'Quá trình nhập hình trên hệ thống đang đến giới hạn bộ nhớ và có thể dừng bất thình lình bất cứ lúc nào.',
 			'UPLOAD_WARNING' => 'Cảnh báo',
 			'UPLOAD_IMPORT_NOT_A_DIRECTORY' => 'Đường dẫn bỏ vào không phải là một thư mục có thể đọc được!',
 			'UPLOAD_IMPORT_PATH_RESERVED' => 'Đường dẫn bỏ vào là một đường dẫn dành riêng cho Lychee!',
-			'UPLOAD_IMPORT_UNREADABLE' => 'Không thể đọc tập tin hình ảnh!',
 			'UPLOAD_IMPORT_FAILED' => 'Không thể nhập tập tin hình ảnh vào!',
 			'UPLOAD_IMPORT_UNSUPPORTED' => 'Định dạng hình ảnh không được hỗ trợ!',
-			'UPLOAD_IMPORT_ALBUM_FAILED' => 'Không thể tạo album!',
 			'UPLOAD_IMPORT_CANCELLED' => 'Quá trình nhập hình đã được hủy bỏ',
 
 			'ABOUT_SUBTITLE' => 'Phần mềm tự chạy quản lý hình ảnh đúng chuẩn',
@@ -490,13 +477,11 @@ final class Vietnamese implements Language
 			'PHOTO_THUMBNAIL' => 'Hình thu nhỏ của hình ảnh gốc',
 			'PHOTO_LIVE_VIDEO' => 'Phần video của hình động live-photo',
 			'PHOTO_VIEW' => 'Khung hiển thị hình ảnh Lychee:',
-			'VIDEO_NOT_SUPPORTED' => 'Trình duyệt của bạn hiện không hỗ trợ video.',
 
 			'PHOTO_EDIT_ROTATECWISE' => 'Xoay thuận chiều kim đồng hồ',
 			'PHOTO_EDIT_ROTATECCWISE' => 'Xoay ngược chiều kim đồng hồ',
 
 			'ERROR_GPX' => 'Có lỗi khi tải tập tin GPX: ',
-
 			'ERROR_EITHER_ALBUMS_OR_PHOTOS' => 'Please select either albums or photos!',
 			'ERROR_COULD_NOT_FIND' => 'Could not find what you want.',
 			'ERROR_INVALID_EMAIL' => 'Not a valid email address.',
@@ -511,7 +496,7 @@ final class Vietnamese implements Language
 			'SHARING_SUCCESS' => 'Sharing updated!',
 			'SHARING_REMOVED' => 'Sharing removed!',
 			'USER_CREATED' => 'User created!',
-			'USER_REMOVED' => 'User deleted!',
+			'USER_DELETED' => 'User deleted!',
 			'USER_UPDATED' => 'User updated!',
 			'ENTER_EMAIL' => 'Enter your email address:',
 			'ERROR_ALBUM_JSON_NOT_FOUND' => 'Error: Album json not found!',
@@ -524,7 +509,5 @@ final class Vietnamese implements Language
 			'RESTRICTED_ACCOUNT' => 'Không được chỉnh cài đặt',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
-
-		return $locale;
 	}
 }

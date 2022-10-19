@@ -16,6 +16,7 @@ use App\Facades\Lang;
 use App\Factories\LangFactory;
 use App\Models\Configs;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Tests\TestCase;
 
 class LangTest extends TestCase
@@ -25,22 +26,32 @@ class LangTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function testLang(): void
+	public function testLanguageConsistency(): void
 	{
-		$lang_available = Lang::get_lang_available();
-		$keys = array_keys(Lang::get_lang());
-
-		foreach ($lang_available as $code) {
-			$lang_test = Lang::factory()->make($code);
-			$locale = $lang_test->get_locale();
-
-			foreach ($keys as $key) {
-				static::assertArrayHasKey($key, $locale, 'Language ' . $lang_test->code() . ' is incomplete.');
-			}
-		}
-
 		static::assertEquals('en', Lang::get_code());
 		static::assertEquals('OK', Lang::get('SUCCESS'));
+
+		$msgSection = (new ConsoleOutput())->section();
+
+		$englishDictionary = Lang::get_lang();
+		$availableDictionaries = Lang::get_lang_available();
+		$failed = false;
+
+		foreach ($availableDictionaries as $locale) {
+			$dictionary = Lang::factory()->make($locale)->get_locale();
+			$missingKeys = array_diff_key($englishDictionary, $dictionary);
+			foreach ($missingKeys as $key => $value) {
+				$msgSection->writeln(sprintf('<comment>Error:</comment> Locale %s misses the following key: %s', str_pad($locale, 8), $key));
+				$failed = true;
+			}
+
+			$extraKeys = array_diff_key($dictionary, $englishDictionary);
+			foreach ($extraKeys as $key => $value) {
+				$msgSection->writeln(sprintf('<comment>Error:</comment> Locale %s has the following extra key: %s', str_pad($locale, 8), $key));
+				$failed = true;
+			}
+		}
+		static::assertFalse($failed);
 	}
 
 	public function testEnglishAsFallbackIfLangConfigIsMissing(): void
