@@ -7312,6 +7312,8 @@ lychee.locale = {
 	RESTRICTED_ACCOUNT: "Restricted account",
 	OSM_CONTRIBUTORS: "OpenStreetMap contributors",
 
+	dateTimeFormatter: new Intl.DateTimeFormat("default", { dateStyle: "medium", timeStyle: "medium" }),
+
 	/**
   * Formats a number representing a filesize in bytes as a localized string
   * @param {!number} filesize
@@ -7385,9 +7387,7 @@ lychee.locale = {
 		//  - 3: the timezone separator, i.e. "Z", "-" or "+" (if present)
 		//  - 4: the absolute timezone offset without the sign (if present)
 		console.assert(splitDateTime.length === 5, "'jsonDateTime' is not formatted acc. to ISO 8601; passed string was: " + jsonDateTime);
-		var locale = "default"; // use the user's browser settings
-		var format = { dateStyle: "medium", timeStyle: "medium" };
-		var result = new Date(splitDateTime[1]).toLocaleString(locale, format);
+		var result = lychee.locale.dateTimeFormatter.format(new Date(splitDateTime[1]));
 		if (splitDateTime[3] === "Z" || splitDateTime[4] === "00:00") {
 			result += " UTC";
 		} else {
