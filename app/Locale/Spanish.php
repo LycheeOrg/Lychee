@@ -432,6 +432,7 @@ final class Spanish implements Language
 			'UPLOAD_CANCELLED' => 'Cancelado',
 			'UPLOAD_SKIPPED' => 'Saltado',
 			'UPLOAD_UPDATED' => 'Actualizado',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'Esta foto ha sido omitida porque ya está en tu biblioteca.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'Esta foto se omitió porque ya está en tu biblioteca, pero sus metadatos se actualizaron.',
 			'UPLOAD_ERROR_CONSOLE' => 'Por favor, eche un vistazo a la consola de su navegador para más detalles.',

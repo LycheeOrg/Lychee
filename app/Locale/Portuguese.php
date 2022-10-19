@@ -434,6 +434,7 @@ final class Portuguese implements Language
 			'UPLOAD_CANCELLED' => 'Cancelado',
 			'UPLOAD_SKIPPED' => 'Saltado',
 			'UPLOAD_UPDATED' => 'Ignorado',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'Esta fotografia foi ignorada porque já está na sua livraria.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'Esta fotografia foi ignorada porque já está na sua livraria, mas os seus metadados foram atualizados.',
 			'UPLOAD_ERROR_CONSOLE' => 'Por favor dá uma vista de olhos na consola do teu navegador para mais detalhes.',

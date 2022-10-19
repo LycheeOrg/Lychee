@@ -436,6 +436,7 @@ final class Vietnamese implements Language
 			'UPLOAD_CANCELLED' => 'Đã hủy bỏ',
 			'UPLOAD_SKIPPED' => 'Đã bỏ qua',
 			'UPLOAD_UPDATED' => 'Đã cập nhật',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'Hình ảnh này đã được bỏ qua vì nó đã có ở trong album ảnh của bạn rồi.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'Hình ảnh này đã được bỏ qua vì nó đã có ở trong album ảnh của bạn rồi, nhưng thông tin meta về hình ảnh đã được cập nhật.',
 			'UPLOAD_ERROR_CONSOLE' => 'Xin hãy xem qua thử bảng console ở trong trình duyệt của bạn để biết thêm thông tin chi tiết.',

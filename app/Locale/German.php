@@ -441,6 +441,7 @@ final class German implements Language
 			'UPLOAD_CANCELLED' => 'Abgebrochen',
 			'UPLOAD_SKIPPED' => 'Übersprungen',
 			'UPLOAD_UPDATED' => 'Upgedatet',
+			'UPLOAD_GENERAL' => 'Allgemein',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'Dieses Foto wurde übersprungen, da es bereits in deiner Bibliothek vorhanden ist.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'Dieses Foto wurde übersprungen, da es bereits in deiner Bibliothek vorhanden ist, jedoch wurden die Metadaten upgedatet.',
 			'UPLOAD_ERROR_CONSOLE' => 'Bitte schauen Sie in die Konsole Ihres Browsers, um weiter Details zu erfahren.',
