@@ -74,10 +74,12 @@ class Diagnostics extends Command
 	 */
 	public function handle(): int
 	{
-		/** @var array $skip_diagnostics */
+		/** @var string[] $skip_diagnostics */
 		$skip_diagnostics = config('app.skip_diagnostics_checks');
-		if (sizeof($this->option('skip')) > 0) {
-			$skip_diagnostics = $this->option('skip');
+		/** @var string[] $options */
+		$options = $this->option('skip');
+		if (sizeof($options) > 0) {
+			$skip_diagnostics = $options;
 		}
 		try {
 			$this->line('');
