@@ -14,15 +14,20 @@ namespace Tests\Feature;
 
 use App\Legacy\AdminAuthentication;
 use App\Models\Configs;
+use App\Models\User;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use PHPUnit\Framework\ExpectationFailedException;
+use SebastianBergmann\RecursionContext\InvalidArgumentException;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\SessionUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\TestCase;
+use Throwable;
 
 class UsersTest extends TestCase
 {
@@ -245,5 +250,107 @@ class UsersTest extends TestCase
 		// 37
 		$sessions_test->logout();
 		Configs::set('new_photos_notification', $store_new_photos_notification);
+	}
+
+	public function testResetToken(): void
+	{
+		$users_test = new UsersUnitTest($this);
+
+		Auth::loginUsingId(0);
+
+		$oldToken = $users_test->reset_token()->offsetGet('token');
+		$newToken = $users_test->reset_token()->offsetGet('token');
+		self::assertNotEquals($oldToken, $newToken);
+
+		Auth::logout();
+	}
+
+	public function testUnsetToken(): void
+	{
+		$users_test = new UsersUnitTest($this);
+
+		Auth::loginUsingId(0);
+
+		$oldToken = $users_test->reset_token()->offsetGet('token');
+		self::assertNotNull($oldToken);
+
+		$users_test->unset_token();
+		$userResponse = $users_test->get_user();
+		$userResponse->assertJson([
+			'has_token' => false,
+		]);
+
+		Auth::logout();
+	}
+
+	/**
+	 * TODO adapt this test when the admin rights are decoupled from ID = 0.
+	 *
+	 * @return void
+	 *
+	 * @throws InvalidArgumentException
+	 * @throws ExpectationFailedException
+	 * @throws Throwable
+	 */
+	public function regressionTestAdminAllMighty(): void
+	{
+		// We first check that the rights are set securely by default
+		$sessions_test = new SessionUnitTest($this);
+		$response = $sessions_test->init();
+		$response->assertJsonFragment([
+			'rights' => [
+				'is_admin' => false,
+				'may_upload' => false,
+				'is_locked' => true,
+			], ]);
+
+		// update Admin user to non valid rights
+		$admin = User::findOrFail(0);
+		$admin->may_upload = false;
+		$admin->is_locked = true;
+		$admin->save();
+
+		// Log as admin and check the rights
+		Auth::loginUsingId(0);
+		$response = $sessions_test->init();
+		$response->assertJsonFragment([
+			'rights' => [
+				'is_admin' => true,
+				'may_upload' => true,
+				'is_locked' => false,
+			], ]);
+		$sessions_test->logout();
+
+		// Correct the rights
+		$admin->may_upload = true;
+		$admin->is_locked = false;
+		$admin->save();
+
+		// Log as admin and verify behaviour
+		Auth::loginUsingId(0);
+		$response = $sessions_test->init();
+		$response->assertJsonFragment([
+			'rights' => [
+				'is_admin' => true,
+				'may_upload' => true,
+				'is_locked' => false,
+			], ]);
+		$sessions_test->logout();
+	}
+
+	public function testGetAuthenticatedUser()
+	{
+		$users_test = new UsersUnitTest($this);
+
+		Auth::logout();
+		Session::flush();
+
+		$users_test->get_user(204);
+
+		Auth::loginUsingId(0);
+
+		$users_test->get_user(200, [
+			'id' => 0,
+		]);
 	}
 }

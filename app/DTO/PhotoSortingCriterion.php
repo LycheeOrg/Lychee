@@ -22,6 +22,7 @@ class PhotoSortingCriterion extends SortingCriterion
 
 	/**
 	 * @return self
+	 *
 	 * @noinspection PhpDocMissingThrowsInspection
 	 */
 	public static function createDefault(): self

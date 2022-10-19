@@ -10,13 +10,13 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class FromServer
 {
 	/**
-	 * @param string     $path       the server path to import from
+	 * @param string[]   $paths      the server path to import from
 	 * @param Album|null $album      the album to import into
 	 * @param ImportMode $importMode the import mode
 	 *
 	 * @return StreamedResponse
 	 */
-	public function do(string $path, ?Album $album, ImportMode $importMode): StreamedResponse
+	public function do(array $paths, ?Album $album, ImportMode $importMode): StreamedResponse
 	{
 		$exec = new Exec($importMode, false, $this->determineMemLimit());
 
@@ -25,10 +25,12 @@ class FromServer
 		$response->headers->set('Cache-Control', 'no-store');
 		// nginx-specific voodoo, as per https://symfony.com/doc/current/components/http_foundation.html#streaming-a-response
 		$response->headers->set('X-Accel-Buffering', 'no');
-		$response->setCallback(function () use ($path, $album, $exec) {
+		$response->setCallback(function () use ($paths, $album, $exec) {
 			// Surround the response by `[]` to make it a valid JSON array.
 			echo '[';
-			$exec->do($path, $album);
+			foreach ($paths as $path) {
+				$exec->do($path, $album);
+			}
 			echo ']';
 		});
 

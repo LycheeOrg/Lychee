@@ -205,4 +205,67 @@ class UsersUnitTest
 
 		return $response;
 	}
+
+	/**
+	 * Retrieve currentUser.
+	 *
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 *
+	 * @return TestResponse
+	 */
+	public function get_user(
+		int $expectedStatusCode = 200,
+		string|array|null $assertSee = null
+	): TestResponse {
+		$response = $this->testCase->postJson('/api/User::getAuthenticatedUser');
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee !== null) {
+			$response->assertSee($assertSee, false);
+		}
+
+		return $response;
+	}
+
+	/**
+	 * reset Token of a user.
+	 *
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 *
+	 * @return TestResponse
+	 */
+	public function reset_token(
+		int $expectedStatusCode = 200,
+		?string $assertSee = null
+	): TestResponse {
+		$response = $this->testCase->postJson('/api/User::resetToken');
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee !== null) {
+			$response->assertSee($assertSee, false);
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Disable Token of a user.
+	 *
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 *
+	 * @return TestResponse
+	 */
+	public function unset_token(
+		int $expectedStatusCode = 204,
+		?string $assertSee = null
+	): TestResponse {
+		$response = $this->testCase->postJson('/api/User::unsetToken');
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee !== null) {
+			$response->assertSee($assertSee, false);
+		}
+
+		return $response;
+	}
 }

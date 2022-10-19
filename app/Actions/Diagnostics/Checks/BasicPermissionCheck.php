@@ -124,6 +124,7 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 	 *
 	 * @param string   $path   the path of the directory or file to check
 	 * @param string[] $errors the list of errors to append to
+	 *
 	 * @noinspection PhpComposerExtensionStubsInspection
 	 */
 	private function checkDirectoryPermissionsRecursively(string $path, array &$errors): void

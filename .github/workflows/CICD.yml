@@ -36,7 +36,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: latest
+          php-version: 8.0
 
       - name: Checkout code
         uses: actions/checkout@v3
@@ -255,6 +255,7 @@ jobs:
 
   createArtifact:
     name: 4️⃣ Build Artifact
+    if: github.ref == 'refs/heads/master'
     needs:
       - phpstan
       - dist
@@ -281,11 +282,11 @@ jobs:
 
       - name: Build Dist
         run: |
-          make clean dist-clean
+          make clean dist
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
         with:
           name: Lychee-Dist.zip
-          path: Lychee
+          path: Lychee.zip
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`

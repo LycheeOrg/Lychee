@@ -18,7 +18,15 @@
     </div><!-- header -->
 
 
-    @include('includes.menu')
+    <div id="menu_wrap" class="animate animate-down">
+        <div id="menu">
+                <ul class="menu">
+                    <li class="menu-item">
+                        <a href="/gallery">{{ Lang::get('GALLERY') }}</a>
+                    </li>
+                </ul>
+        </div><!-- menu -->
+    </div><!-- wrap -->
 
     <div id="intro">
         <div id="intro_content">

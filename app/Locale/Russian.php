@@ -26,6 +26,7 @@ final class Russian implements Language
 			'SEARCH' => 'Search …',
 			'MORE' => 'More',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Пользователи',
 			'CREATE' => 'Create',
@@ -53,6 +54,13 @@ final class Russian implements Language
 			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
+			'RESET' => 'Reset',
+			'DISABLE_TOKEN_TOOLTIP' => 'Disable',
+			'ENABLE_TOKEN' => 'Enable API token',
+			'DISABLED_TOKEN_STATUS_MSG' => 'Disabled',
+			'TOKEN_BUTTON' => 'API Token ...',
+			'TOKEN_NOT_AVAILABLE' => 'You have already viewed this token.',
+			'TOKEN_WAIT' => 'Wait ...',
 
 			'SMART_ALBUMS' => 'Метаальбомы',
 			'SHARED_ALBUMS' => 'Общие альбомы',
@@ -317,7 +325,7 @@ final class Russian implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'LOGIN_TITLE' => 'Введите логин и пароль для входа:',
 			'LOGIN_USERNAME' => 'Новый логин',
@@ -333,6 +341,9 @@ final class Russian implements Language
 			'EDIT_SHARING_TITLE' => 'Параметры доступа',
 			'EDIT_SHARING_TEXT' => 'Параметры доступа к выбранному альбому будут изменены на следующие:',
 			'SHARE_ALBUM_TEXT' => 'Этот альбом будет доступен со следующими условиями:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => 'Сортировать альбомы %1$s в порядке %2$s.',
 
@@ -415,6 +426,7 @@ final class Russian implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Пропущено',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it’s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it’s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => 'Подробности смотрите в консоли браузера.',
@@ -429,8 +441,8 @@ final class Russian implements Language
 			'UPLOAD_IMPORT' => 'Импорт',
 			'UPLOAD_IMPORT_SERVER' => 'Загрузка с сервера',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Каталог пуст или не содержит файлов, которые можно обработать. Пожалуйста, проверьте лог (Settings -> Логи).',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Будет выполнен импорт всех изображений из указанного каталога и всех его подкаталогов, после чего <b>исходные файлы будут удалены</b>, если это возможно.',
-			'UPLOAD_ABSOLUTE_PATH' => 'Полный путь к каталогу',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Import all photos, folders and sub-folders located in the folders with the following absolute paths (on server). Paths are space separated, use \\ to escape a space in a path.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directories, space separated',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Не могу импортировать: указанный каталог пуст!',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Delete originals',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Original files will be deleted after the import when possible.',
@@ -449,7 +461,7 @@ final class Russian implements Language
 			'UPLOAD_IMPORT_CANCELLED' => 'Import cancelled',
 
 			'ABOUT_SUBTITLE' => 'Self-hosted photo-management done right',
-			'ABOUT_DESCRIPTION' => "<a target=\'_blank\' href=\'%0\'>Lychee</a> - это бесплатный фотоменеджер для Вашего сервера или хостинга. Установка занимает считанные секунды. Загружайте, редактируйте и делитесь фотографиями как в любимом приложении! Lychee обеспечит Вас всем необходимым, включая безопасность хранения Ваших фотографий! <br />На русский язык перевёл Евгений Лебедев. Пожалуйста, <a href='mailto://k-t-c(at)ya.ru'>дайте мне знать</a>, если заметите неточности.",
+			'ABOUT_DESCRIPTION' => "<a target=\'_blank\' href=\'%0\'>Lychee</a> - это бесплатный фотоменеджер для Вашего сервера или хостинга. Установка занимает считанные секунды. Загружайте, редактируйте и делитесь фотографиями как в любимом приложении! Lychee обеспечит Вас всем необходимым, включая безопасность хранения Ваших фотографий! На русский язык перевёл Евгений Лебедев. Пожалуйста, <a href='mailto://k-t-c(at)ya.ru'>дайте мне знать</a>, если заметите неточности.",
 			'FOOTER_COPYRIGHT' => 'All images on this website are subject to Copyright by %1$s &copy; %2$s',
 			'HOSTED_WITH_LYCHEE' => 'Hosted with Lychee',
 

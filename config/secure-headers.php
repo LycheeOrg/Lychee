@@ -314,49 +314,64 @@ return [
 	 */
 
 	/*
-	 * There is no easy way to use CSP with debug bar at the moment so we disable CSP if debug bar is enabled.
+	 * There is no easy way to use CSP with debug bar at the moment, so we disable CSP if debug bar is enabled.
 	 */
-	'custom-csp' => ((bool) env('DEBUGBAR_ENABLED', false)) ? '' : null,
-
 	'csp' => [
+		'enable' => ((bool) env('DEBUGBAR_ENABLED', false)) === false,
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy-Report-Only
 		'report-only' => false,
-		'report-uri' => null,
-		'block-all-mixed-content' => false,
-		'upgrade-insecure-requests' => false,
 
-		/*
-		 * Please references script-src directive for available values, only `script-src` and `style-src`
-		 * supports `add-generated-nonce`.
-		 *
-		 * Note: when directive value is empty, it will use `none` for that directive.
-		 */
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/report-to
+		'report-to' => '',
 
-		'script-src' => [
-			'allow' => [
-				'https://www.dropbox.com/static/api/1/dropins.js',
-				// 'url',
-			],
-			'hashes' => [
-				'sha256' => [
-					'8bLztrDF3NUpheSuvAzpebgX1DpPJEfhmUHKTwGF4qA=',
-				],
-			],
-			'nonces' => [
-				// 'base64-encoded',
-			],
-			'schemes' => [
-				// 'https:',
-			],
-			'self' => true,
-			'unsafe-inline' => false,
-			'unsafe-eval' => false,
-			'strict-dynamic' => false,
-			'unsafe-hashed-attributes' => false,
-			// https://www.chromestatus.com/feature/5792234276388864
-			'report-sample' => true,
-			'add-generated-nonce' => false,
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/report-uri
+		'report-uri' => [
+			// uri
 		],
 
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/block-all-mixed-content
+		'block-all-mixed-content' => false,
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/upgrade-insecure-requests
+		'upgrade-insecure-requests' => false,
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/base-uri
+		'base-uri' => [
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/child-src
+		'child-src' => [
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/connect-src
+		'connect-src' => [
+			'https://lycheeorg.github.io/update.json',
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/default-src
+		'default-src' => [
+			'self' => false,
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/font-src
+		'font-src' => [
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/form-action
+		'form-action' => [
+			'self' => true,
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors
+		'frame-ancestors' => [
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src
+		'frame-src' => [
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/img-src
 		'img-src' => [
 			'self' => true,
 			// Allow OpenStreetMap tile images to be fetched from the different provides
@@ -375,43 +390,198 @@ return [
 				'https://a.osm.rrze.fau.de/osmhd/',
 				'https://b.osm.rrze.fau.de/osmhd/',
 				'https://c.osm.rrze.fau.de/osmhd/',
-				env('LYCHEE_UPLOADS_URL', 'https://lycheeorg.github.io/'),
-				'data:',
-				'blob:',
+				'data:', // required by openstreetmap
 			],
 		],
-		'default-src' => [
-			'self' => true,
-			'allow' => [
-				'blob:',
-			],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/manifest-src
+		'manifest-src' => [
 		],
-		'base-uri' => [],
-		'connect-src' => [
-			'allow' => [
-				'http://lycheeorg.github.io/update.json',
-				'blob:',
-			],
-			'self' => true,
-		],
-		'form-action' => [
-			'self' => true,
-		],
-		'frame-ancestors' => [],
-		'frame-src' => [],
-		'manifest-src' => [],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/media-src
 		'media-src' => [
 			'self' => true,
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/navigate-to
+		'navigate-to' => [
+			'unsafe-allow-redirects' => false,
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/object-src
+		'object-src' => [
+			'none' => true,
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/plugin-types
+		'plugin-types' => [
+			// 'application/pdf',
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/prefetch-src
+		'prefetch-src' => [
+		],
+
+		// https://w3c.github.io/webappsec-trusted-types/dist/spec/#integration-with-content-security-policy
+		'require-trusted-types-for' => [
+			'script' => false,
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/sandbox
+		'sandbox' => [
+			'enable' => false,
+
+			'allow-downloads-without-user-activation' => false,
+
+			'allow-forms' => false,
+
+			'allow-modals' => false,
+
+			'allow-orientation-lock' => false,
+
+			'allow-pointer-lock' => false,
+
+			'allow-popups' => false,
+
+			'allow-popups-to-escape-sandbox' => false,
+
+			'allow-presentation' => false,
+
+			'allow-same-origin' => false,
+
+			'allow-scripts' => false,
+
+			'allow-storage-access-by-user-activation' => false,
+
+			'allow-top-navigation' => false,
+
+			'allow-top-navigation-by-user-activation' => false,
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src
+		'script-src' => [
+			'none' => false,
+
+			'self' => true,
+
+			// https://www.chromestatus.com/feature/5792234276388864
+			'report-sample' => true,
+
 			'allow' => [
-				'blob:',
+				'https://www.dropbox.com/static/api/1/dropins.js',
+				// 'url',
+			],
+
+			'schemes' => [
+				// 'data:',
+				// 'https:',
+			],
+
+			/* followings are only work for `script` and `style` related directives */
+
+			'unsafe-inline' => false,
+
+			'unsafe-eval' => false,
+
+			// https://www.w3.org/TR/CSP3/#unsafe-hashes-usage
+			'unsafe-hashes' => true,
+
+			// Enable `strict-dynamic` will *ignore* `self`, `unsafe-inline`,
+			// `allow` and `schemes`. You can find more information from:
+			// https://www.w3.org/TR/CSP3/#strict-dynamic-usage
+			'strict-dynamic' => false,
+
+			'hashes' => [
+				'sha256' => [
+					// 'sha256-hash-value-with-base64-encode',
+
+					// lychee.startDrag(event)
+					'FdKE+KVp/tkYM5hwGXGeKZ1EmS4DJ8kbnsKo5YymNrc=',
+
+					// lychee.endDrag(event)
+					'bY67+0U7yUmtjaisfHv+mZXHsAptKwcV1a4EacCUL5M=',
+
+					// lychee.overDrag(event)
+					'fwPcZ6SFcvBLfJYjzlBRZfKzcidwsD4GPcmkVECbSKM=',
+
+					// lychee.leaveDrag(event)
+					'FCPseLYJ4+r0Mbp93zyaq/x4zQEEPLgEectDgkA/V3A=',
+
+					// lychee.finishDrag(event)
+					'T0Fzr5h5zkZyE3QOpQ9anSTcWp19WQ14eO86qdlSdvA=',
+
+					// upload.check()
+					'CL4mGy9ZhHM+PkLDZsWVuM25kEFBv3FXlmWe/O9Unmc=',
+
+					/*
+	document.addEventListener("DOMContentLoaded", function(event) {
+		document.querySelector("form").addEventListener("submit", function(e){
+			document.querySelector("form").hidden = true;
+			var text = document.createElement("div");
+			text.innerHTML = "Migration started. <b>DO NOT REFRESH THE PAGE</b>.";
+			document.querySelector(".form").appendChild(text);
+			// e.preventDefault();    //stop form from submitting
+		});
+	});
+
+*/
+					'hHvKTS0wUaMuiFMar2j4TbjYjlLQMR/c5b0bA9DLi6g=',
+				],
+
+				'sha384' => [
+					// 'sha384-hash-value-with-base64-encode',
+				],
+
+				'sha512' => [
+					// 'sha512-hash-value-with-base64-encode',
+				],
+			],
+
+			'nonces' => [
+				// 'base64-encoded',
+			],
+
+			'unsafe-hashed-attributes' => false,
+
+			'add-generated-nonce' => false,
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src-attr
+		'script-src-attr' => [
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src-elem
+		'script-src-elem' => [
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src
+		'style-src' => [
+			'self' => true,
+			'unsafe-inline' => true, // We need this one due to direct styles (not just style classes) applied by JavaScript
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src-attr
+		'style-src-attr' => [
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src-elem
+		'style-src-elem' => [
+		],
+
+		// https://w3c.github.io/webappsec-trusted-types/dist/spec/#trusted-types-csp-directive
+		'trusted-types' => [
+			'enable' => false,
+
+			'allow-duplicates' => false,
+
+			'default' => false,
+
+			'policies' => [
 			],
 		],
-		'object-src' => [],
-		'worker-src' => [],
-		'plugin-types' => [
-			// 'application/x-shockwave-flash',
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/worker-src
+		'worker-src' => [
 		],
-		'require-sri-for' => '',
-		'sandbox' => '',
 	],
 ];

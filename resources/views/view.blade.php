@@ -58,15 +58,11 @@
 <!-- Infobox -->
 <div class="sidebar">
     <div class="sidebar__header">
-        <h1>{{ $locale['PHOTO_ABOUT'] }}</h1>
+        <h1>{{ Lang::get('PHOTO_ABOUT') }}</h1>
     </div>
     <div class="sidebar__wrapper"></div>
 </div>
 
 <!-- JS -->
 <script type="text/javascript" src="{{ Helpers::cacheBusting('dist/view.js') }}"></script>
-
-<script type="text/javascript">
-lychee.api_V2 = true;
-</script>
 @endsection

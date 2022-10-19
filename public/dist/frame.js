@@ -1565,6 +1565,7 @@ var SmartAlbumID = Object.freeze({
  * @property {?string} email
  * @property {boolean} may_upload
  * @property {boolean} is_locked
+ * @property {boolean} has_token
  */
 
 /**
@@ -1630,14 +1631,11 @@ var SmartAlbumID = Object.freeze({
 /**
  * @typedef InitializationData
  *
- * @property {number} status - `1`: unauthenticated, `2`: authenticated
- * @property {boolean} admin
- * @property {boolean} may_upload
- * @property {boolean} is_locked
+ * @property {?User} user
+ * @property {{is_admin: boolean, is_locked: boolean, may_upload: boolean}} rights
  * @property {number} update_json - version number of latest available update
  * @property {boolean} update_available
  * @property {Object.<string, string>} locale
- * @property {string} [username] - only if user is not the admin; TODO: Change that
  * @property {ConfigurationData} config
  * @property {DeviceConfiguration} config_device
  */
@@ -1681,7 +1679,7 @@ var SmartAlbumID = Object.freeze({
  * @property {string}   swipe_tolerance_x       - actually a number
  * @property {string}   swipe_tolerance_y       - actually a number
  * @property {string}   upload_processing_limit - actually a number
- * @property {string}   version                 - actually a number
+ * @property {string}   version                 - a string of 6 digits without separating dots, i.e. version 4.6.3 is reported as `'040603'`
  */
 
 /**

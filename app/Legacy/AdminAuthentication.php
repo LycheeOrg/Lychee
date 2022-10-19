@@ -60,7 +60,7 @@ class AdminAuthentication
 		if ($adminUser !== null) {
 			return $adminUser->password === '' || $adminUser->username === '';
 		}
-		resolve(ResetAdmin::class)->do();
+		(new ResetAdmin())->do();
 
 		return true;
 	}

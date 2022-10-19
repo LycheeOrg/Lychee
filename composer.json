@@ -1,10 +1,20 @@
 {
-    "name": "lycheeorg/lychee-laravel",
+    "name": "lychee-org/lychee",
     "description": "A great looking and easy-to-use photo-management-system you can run on your server, to manage and share photos.",
     "homepage": "https://lycheeorg.github.io/",
+    "readme": "readme.md",
+    "support": {
+        "source": "https://github.com/LycheeOrg/Lychee",
+        "issues": "https://github.com/LycheeOrg/Lychee/issues",
+        "docs": "https://lycheeorg.github.io/docs/",
+        "chat": "https://gitter.im/LycheeOrg/Lobby"
+    },
     "keywords": [
-        "framework",
-        "laravel"
+        "photos",
+        "gallery",
+        "photo management",
+        "album software",
+        "image organizer"
     ],
     "repositories": [
         {
@@ -40,7 +50,7 @@
         "laravel/framework": "^8.83.14",
         "livewire/livewire": "^2.7",
         "lychee-org/nestedset": "^6",
-        "lychee-org/php-exif": "^0.7.11",
+        "lychee-org/php-exif": "^0.7.12",
         "maennchen/zipstream-php": "^2.1",
         "php-ffmpeg/php-ffmpeg": "^1.0",
         "php-http/guzzle7-adapter": "^1.0",
@@ -96,6 +106,7 @@
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan optimize --clever --dont-confirm=assume-no",
             "@php artisan package:discover",
             "@install_files"
         ],

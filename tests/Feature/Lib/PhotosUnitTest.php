@@ -408,7 +408,7 @@ class PhotosUnitTest
 	): string {
 		$requestParams = [
 			'albumID' => $album_id,
-			'path' => $path,
+			'paths' => [$path],
 		];
 
 		if ($delete_imported !== null) {

@@ -26,6 +26,7 @@ final class Italian implements Language
 			'SEARCH' => 'Cerca …',
 			'MORE' => 'Altro',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Utenti',
 			'CREATE' => 'Create',
@@ -53,6 +54,13 @@ final class Italian implements Language
 			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
+			'RESET' => 'Reset',
+			'DISABLE_TOKEN_TOOLTIP' => 'Disable',
+			'ENABLE_TOKEN' => 'Enable API token',
+			'DISABLED_TOKEN_STATUS_MSG' => 'Disabled',
+			'TOKEN_BUTTON' => 'API Token ...',
+			'TOKEN_NOT_AVAILABLE' => 'You have already viewed this token.',
+			'TOKEN_WAIT' => 'Wait ...',
 
 			'SMART_ALBUMS' => 'Album smart',
 			'SHARED_ALBUMS' => 'Album condivisi',
@@ -317,7 +325,7 @@ final class Italian implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'LOGIN_TITLE' => 'Inserisci un nome utente e una password per la tua installazione:',
 			'LOGIN_USERNAME' => 'Nuovo Nome Utente',
@@ -333,6 +341,9 @@ final class Italian implements Language
 			'EDIT_SHARING_TITLE' => 'Modifica Condivisibilità',
 			'EDIT_SHARING_TEXT' => 'Le proprietà di condivisione di questo album verrano cambiate nelle seguenti:',
 			'SHARE_ALBUM_TEXT' => 'Questo album verrà condiviso con le seguenti proprietà:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => 'Ordina album per %1$s in un ordine %2$s.',
 
@@ -415,6 +426,7 @@ final class Italian implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Saltato',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it’s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it’s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => 'Per favore controlla la console del tuo browser per ulteriori dettagli.',
@@ -429,8 +441,8 @@ final class Italian implements Language
 			'UPLOAD_IMPORT' => 'Importa',
 			'UPLOAD_IMPORT_SERVER' => 'Importa da server',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Cartella vuota o nessun file leggibile da elaborare. Per favore controlla il log (Impostazioni -> Visualizza Log) per ulteriori dettagli.',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Questa azione importerà tutte le foto, cartelle e sottocartelle presenti nella seguente directory.',
-			'UPLOAD_ABSOLUTE_PATH' => 'Percorso assoluto alla directory',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Import all photos, folders and sub-folders located in the folders with the following absolute paths (on server). Paths are space separated, use \\ to escape a space in a path.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directories, space separated',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'È stato impossibile avviare l’importazione dato che la cartella era vuota!',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Delete originals',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'I file originali saranno eliminati dopo l’importazione se possibile.',

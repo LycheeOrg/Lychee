@@ -30,6 +30,6 @@ class RandomIDListRule implements Rule
 	 */
 	public function message(): string
 	{
-		return ':attribute must be a comma-seperated string of strings with ' . HasRandomID::ID_LENGTH . ' characters each.';
+		return ':attribute must be a comma-separated string of strings with ' . HasRandomID::ID_LENGTH . ' characters each.';
 	}
 }

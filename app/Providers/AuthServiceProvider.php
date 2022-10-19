@@ -11,8 +11,11 @@ use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use App\Policies\UserPolicy;
+use App\Services\Auth\SessionOrTokenGuard;
 use App\SmartAlbums\BaseSmartAlbum;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
@@ -43,7 +46,10 @@ class AuthServiceProvider extends ServiceProvider
 	public function boot(): void
 	{
 		$this->registerPolicies();
-
+		// The identifier "session-or-token" is used in config/auth.php.
+		Auth::extend('session-or-token', function (Application $app, string $name, array $config) {
+			return SessionOrTokenGuard::createGuard($app, $name, $config);
+		});
 		Gate::define(UserPolicy::IS_ADMIN, [UserPolicy::class, 'isAdmin']);
 	}
 }

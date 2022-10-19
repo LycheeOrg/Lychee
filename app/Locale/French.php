@@ -26,6 +26,10 @@ final class French implements Language
 			'SEARCH' => 'Rechercher…',
 			'MORE' => 'Plus',
 			'DEFAULT' => 'Valeur par défaut',
+			'ALBUM_SET_ORDER' => 'Changer l’ordre',
+			'ALBUM_ORDERING' => 'Trier par',
+			'ALBUM_OWNER' => 'Propriétaire',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Utilisateurs',
 			'CREATE' => 'Créer',
@@ -53,6 +57,13 @@ final class French implements Language
 			'SET_MAP_PROVIDER' => 'Sélectioner le fournisseur de données cartographiques',
 			'FULL_SETTINGS' => 'Tous les paramètres',
 			'UPDATE' => 'Mettre à jour',
+			'RESET' => 'Reset',
+			'DISABLE_TOKEN_TOOLTIP' => 'Disable',
+			'ENABLE_TOKEN' => 'Enable API token',
+			'DISABLED_TOKEN_STATUS_MSG' => 'Disabled',
+			'TOKEN_BUTTON' => 'API Token ...',
+			'TOKEN_NOT_AVAILABLE' => 'You have already viewed this token.',
+			'TOKEN_WAIT' => 'Wait ...',
 
 			'SMART_ALBUMS' => 'Smart Albums',
 			'SHARED_ALBUMS' => 'Albums partagés',
@@ -317,7 +328,7 @@ final class French implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Envoyer les notifications de nouvelles photos par emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'Notification de nouvelles photos mise à jour',
-			'USER_EMAIL_INSTRUCTION' => 'Ajouter votre email Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Ajouter votre email Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'LOGIN_TITLE' => 'Entrez un nom d’utilisateur et un mot de passe pour votre installation :',
 			'LOGIN_USERNAME' => 'Nouvel utilisateur',
@@ -333,6 +344,9 @@ final class French implements Language
 			'EDIT_SHARING_TITLE' => 'Modifier le partage',
 			'EDIT_SHARING_TEXT' => 'Les propriétés de partage de cet album vont être modifiées comme suit :',
 			'SHARE_ALBUM_TEXT' => 'Cet album sera partagé avec les propriétés suivantes :',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribut',
+			'SORT_DIALOG_ORDER_LABEL' => 'Ordre',
 
 			'SORT_ALBUM_BY' => 'Trier les albums %1$s dans l’ordre %2$s.',
 
@@ -415,6 +429,7 @@ final class French implements Language
 			'UPLOAD_CANCELLED' => 'Annulé',
 			'UPLOAD_SKIPPED' => 'Ignoré',
 			'UPLOAD_UPDATED' => 'Mis à jour',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'Cette photo a été sautée parce qu’elle est deja dans votre gallerie.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'Cette photo a été sautée parce qu’elle est deja dans votre gallerie, mais ses metadatas ont été mises à jour.',
 			'UPLOAD_ERROR_CONSOLE' => 'Veuillez consulter la console de votre navigateur pour obtenir plus de détails.',
@@ -429,8 +444,8 @@ final class French implements Language
 			'UPLOAD_IMPORT' => 'Importer',
 			'UPLOAD_IMPORT_SERVER' => 'Importation à partir du serveur',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Dossier vide ou aucun fichier lisible à traiter. Veuillez consulter le journal (Paramètres -> Afficher le journal) pour obtenir plus de détails.',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Cette action importera toutes les photos ainsi que tous les dossiers et sous-dossiers situés dans le répertoire suivant.',
-			'UPLOAD_ABSOLUTE_PATH' => 'Chemin absolu du répertoire',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Cette action importera toutes les photos ainsi que tous les dossiers et sous-dossiers situés dans les répertoires suivants séparés par des espaces. Utilisez \\ pour les espaces dans les chemins.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Chemin absolu des répertoires, séparés par des espaces',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Impossible de démarrer l’importation car le dossier était vide !',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Supprimer les originaux',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Les fichiers originaux seront supprimés après l’importation lorsque cela est possible.',

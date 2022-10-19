@@ -26,6 +26,7 @@ final class Czech implements Language
 			'SEARCH' => 'Hledat …',
 			'MORE' => 'Rozšířená nastavení',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Uživatelé',
 			'CREATE' => 'Create',
@@ -53,6 +54,13 @@ final class Czech implements Language
 			'SET_MAP_PROVIDER' => 'Nastavit providera OpenStreetMap',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
+			'RESET' => 'Reset',
+			'DISABLE_TOKEN_TOOLTIP' => 'Disable',
+			'ENABLE_TOKEN' => 'Enable API token',
+			'DISABLED_TOKEN_STATUS_MSG' => 'Disabled',
+			'TOKEN_BUTTON' => 'API Token ...',
+			'TOKEN_NOT_AVAILABLE' => 'You have already viewed this token.',
+			'TOKEN_WAIT' => 'Wait ...',
 
 			'SMART_ALBUMS' => 'Chytrá alba',
 			'SHARED_ALBUMS' => 'Sdílená alba',
@@ -317,7 +325,7 @@ final class Czech implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'LOGIN_TITLE' => 'Zadejte jméno uživatele a heslo pro svoji instalaci:',
 			'LOGIN_USERNAME' => 'Jméno uživatele',
@@ -333,6 +341,9 @@ final class Czech implements Language
 			'EDIT_SHARING_TITLE' => 'Editace sdílení',
 			'EDIT_SHARING_TEXT' => 'Vlastnosti sdílení tohoto alba budou změněny následovně:',
 			'SHARE_ALBUM_TEXT' => 'Album bude sdíleno s následujícími parametry:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => 'Řadit alba podle %1$s ve %2$s pořadí.',
 
@@ -415,6 +426,7 @@ final class Czech implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Vynecháno',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it’s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it’s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => 'Podrobnosti získáte v konzoli svého prohlížeče.',
@@ -429,8 +441,8 @@ final class Czech implements Language
 			'UPLOAD_IMPORT' => 'Importovat',
 			'UPLOAD_IMPORT_SERVER' => 'Import ze serveru',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Složka je prázdná nebo neobsahuje soubory, které lze zpracovat. Podrobnosti si prosím prohlédněte v protokolu (Nastavení -> Protokoly).',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Tato akce importuje všechny fotografie, včetně složek a podsložek, které jsou v uvedeném umístění k dispozici.',
-			'UPLOAD_ABSOLUTE_PATH' => 'Absolutní cesta ke složce',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Import all photos, folders and sub-folders located in the folders with the following absolute paths (on server). Paths are space separated, use \\ to escape a space in a path.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directories, space separated',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Import neproběhl, protože složka je prázdná!',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Odstranit původní soubory',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Pokud to bude možné, původní soubory budou po importu odstraněny.',

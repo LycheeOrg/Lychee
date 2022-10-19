@@ -26,6 +26,7 @@ final class German implements Language
 			'SEARCH' => 'Suchen …',
 			'MORE' => 'Mehr',
 			'DEFAULT' => 'Standard',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Benutzer',
 			'CREATE' => 'Erstellen',
@@ -53,6 +54,13 @@ final class German implements Language
 			'SET_MAP_PROVIDER' => 'Speichere Provider für OpenStreetMap Karten',
 			'FULL_SETTINGS' => 'Alle Einstellungen',
 			'UPDATE' => 'Update',
+			'RESET' => 'Zurücksetzen',
+			'DISABLE_TOKEN_TOOLTIP' => 'Deaktivieren',
+			'ENABLE_TOKEN' => 'API-Schlüssel aktivieren',
+			'DISABLED_TOKEN_STATUS_MSG' => 'Deaktiviert',
+			'TOKEN_BUTTON' => 'API-Schlüssel ...',
+			'TOKEN_NOT_AVAILABLE' => 'Sie haben diesen Schlüssel bereits angesehen.',
+			'TOKEN_WAIT' => 'Warten ...',
 
 			'SMART_ALBUMS' => 'Intelligente Alben',
 			'SHARED_ALBUMS' => 'Freigegebene Alben',
@@ -317,7 +325,7 @@ final class German implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'E-Mails für neue Fotos senden',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Geben Sie Ihre E-Mail-Adresse unten ein, um Benachrichtigungen zu aktivieren.<br />Um Benachrichtigungen zu deaktivieren, entfernen Sie die E-Mail-Adresse unten einfach.',
+			'USER_EMAIL_INSTRUCTION' => 'Geben Sie Ihre E-Mail-Adresse unten ein, um Benachrichtigungen zu aktivieren. Um Benachrichtigungen zu deaktivieren, entfernen Sie die E-Mail-Adresse unten einfach.',
 
 			'LOGIN_TITLE' => 'Geben Sie Benutzername und Kennwort für Ihre Installation an:',
 			'LOGIN_USERNAME' => 'Neuer Benutzername',
@@ -333,6 +341,9 @@ final class German implements Language
 			'EDIT_SHARING_TITLE' => 'Freigabe bearbeiten',
 			'EDIT_SHARING_TEXT' => 'Die Freigabeeinstellungen für dieses Album werden wie folgt geändert:',
 			'SHARE_ALBUM_TEXT' => 'Dieses Album wird mit folgenden Einstellungen freigegeben:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribut',
+			'SORT_DIALOG_ORDER_LABEL' => 'Reihenfolge',
 
 			'SORT_ALBUM_BY' => 'Alben nach %1$s in einer %2$s Reihenfolge sortieren.',
 
@@ -415,6 +426,7 @@ final class German implements Language
 			'UPLOAD_CANCELLED' => 'Abgebrochen',
 			'UPLOAD_SKIPPED' => 'Übersprungen',
 			'UPLOAD_UPDATED' => 'Upgedatet',
+			'UPLOAD_GENERAL' => 'Allgemein',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'Dieses Foto wurde übersprungen, da es bereits in deiner Bibliothek vorhanden ist.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'Dieses Foto wurde übersprungen, da es bereits in deiner Bibliothek vorhanden ist, jedoch wurden die Metadaten upgedatet.',
 			'UPLOAD_ERROR_CONSOLE' => 'Bitte schauen Sie in die Konsole Ihres Browsers, um weiter Details zu erfahren.',
@@ -429,8 +441,8 @@ final class German implements Language
 			'UPLOAD_IMPORT' => 'Importieren',
 			'UPLOAD_IMPORT_SERVER' => 'Importieren von Server',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Der Ordner ist leer oder enthält keine lesbaren Dateien zum Verarbeiten. Schauen Sie bitte ins Protokoll (Einstellungen/Protokoll ansehen).',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Diese Aktion wird alle Fotos, Ordner und Unterordner importieren, die sich in folgendem Verzeichnis befinden.',
-			'UPLOAD_ABSOLUTE_PATH' => 'Absoluter Pfad zum Verzeichnis',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Importiert alle Fotos, Ordner und Unterordner in den folgenden absoluten Pfaden (auf dem Server). Mehrere Pfade können mit Leerzeichen getrennt werden; mit \\ können Sie ein Leerzeichen im Pfad verwenden.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute Pfade zu Verzeichnissen, mit Leerzeichen getrennt',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Konnte Import nicht starten, weil der Ordner leer ist.',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Originale löschen',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Die Originaldateien werden nach dem Import gelöscht, falls möglich.',

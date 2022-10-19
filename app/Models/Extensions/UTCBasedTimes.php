@@ -23,7 +23,7 @@ use function Safe\preg_match;
  *
  * **Attention:**
  * For this class to work properly, the timezone of the database connection
- * must be set to UTC for those RDBM systems (e.g. PosgreSQL, MySQL) which
+ * must be set to UTC for those RDBM systems (e.g. PostgreSQL, MySQL) which
  * support "timezone aware" database connections.
  * This means the database configuration for MySQL should explicitly include
  * the option `'timezone' => '+00:00'` and the configuration for PostgreSQL

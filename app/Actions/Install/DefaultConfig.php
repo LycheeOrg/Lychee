@@ -54,6 +54,8 @@ class DefaultConfig
 			*/
 		'permissions' => [
 			'.' => 'file_exists|is_readable|is_writable|is_executable',
+			'database/' => 'file_exists|is_readable|is_writable|is_executable',
+			'database/database.sqlite' => 'file_exists|is_readable|is_writable',
 			'storage/framework/' => 'file_exists|is_readable|is_writable|is_executable',
 			'storage/framework/views/' => 'file_exists|is_readable|is_writable|is_executable',
 			'storage/framework/cache/' => 'file_exists|is_readable|is_writable|is_executable',
@@ -61,7 +63,6 @@ class DefaultConfig
 			'storage/logs/' => 'file_exists|is_readable|is_writable|is_executable',
 			'bootstrap/cache/' => 'file_exists|is_readable|is_writable|is_executable',
 			'public/dist/' => 'file_exists|is_readable|is_writable|is_executable',
-			'public/img/' => 'file_exists|is_readable|is_writable|is_executable',
 			'public/sym/' => 'file_exists|is_readable|is_writable|is_executable',
 			'public/uploads/' => 'file_exists|is_readable|is_writable|is_executable',
 		],

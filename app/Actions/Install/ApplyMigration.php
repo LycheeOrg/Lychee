@@ -6,7 +6,8 @@ use App\Exceptions\InstallationFailedException;
 use App\Exceptions\Internal\FrameworkException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Artisan;
-use function Safe\unlink;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class ApplyMigration
 {
@@ -73,26 +74,14 @@ class ApplyMigration
 		try {
 			Artisan::call('key:generate', ['--force' => true]);
 			$this->str_to_array(Artisan::output(), $output);
-			if (!str_contains(end($output), 'Application key set successfully')) {
+			if (
+				!str_contains(end($output), 'Application key set successfully') ||
+				config('app.key') === null
+			) {
 				$output[] = 'We could not generate the encryption key.';
 				throw new InstallationFailedException('Could not generate encryption key');
 			}
-
-			// key is generated, we can safely remove that file (in theory)
-			$filename = base_path('.NO_SECURE_KEY');
-			if (file_exists($filename)) {
-				if (is_file($filename)) {
-					unlink($filename);
-				} else {
-					throw new InstallationFailedException('A filesystem object . ' . $filename . ' exists, but is not an ordinary file.');
-				}
-			}
-		} catch (\ErrorException $e) {
-			// possibly thrown by `unlink`
-			$output[] = $e->getMessage();
-			$output[] = 'Could not remove file `.NO_SECURE_KEY`.';
-			throw new InstallationFailedException('Could not remove file `.NO_SECURE_KEY`', $e);
-		} catch (BindingResolutionException $e) {
+		} catch (BindingResolutionException|NotFoundExceptionInterface|ContainerExceptionInterface $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);
 		}
 	}

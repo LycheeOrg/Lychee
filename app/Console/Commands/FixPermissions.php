@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Actions\Diagnostics\Checks\BasicPermissionCheck;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Storage;
 use function Safe\chmod;
 use function Safe\fileowner;
 use function Safe\sprintf;
@@ -11,11 +12,6 @@ use Symfony\Component\Console\Exception\InvalidArgumentException;
 
 class FixPermissions extends Command
 {
-	public const DIRECTORIES = [
-		'public/uploads',
-		'public/sym',
-	];
-
 	/**
 	 * The name and signature of the console command.
 	 *
@@ -52,6 +48,11 @@ class FixPermissions extends Command
 	 */
 	public function handle(): int
 	{
+		$directories = [
+			Storage::disk('images')->path(''),
+			Storage::disk('symbolic')->path(''),
+		];
+
 		if (!extension_loaded('posix')) {
 			$this->error('Non-POSIX OS detected: Command unsupported');
 
@@ -63,7 +64,7 @@ class FixPermissions extends Command
 		clearstatcache(true);
 		$this->effUserId = posix_geteuid();
 
-		foreach (self::DIRECTORIES as $directory) {
+		foreach ($directories as $directory) {
 			$this->line(sprintf('Scanning: <info>%s</info>', $directory));
 			$this->fixPermissionsRecursively($directory);
 		}

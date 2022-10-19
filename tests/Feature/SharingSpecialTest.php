@@ -111,12 +111,12 @@ class SharingSpecialTest extends SharingTestBase
 		$this->photos_tests->set_title($this->photoID5, 'Abenddämmerung'); // we rename the duplicated images, such that we can ensure
 		$this->photos_tests->set_title($this->photoID6, 'Zug'); // a deterministic, alphabetic order which makes testing easier
 
-		$this->albums_tests->set_protection_policy($this->albumID1, true, true, false, false, true, true, self::ALBUM_PWD_1);
-		$this->albums_tests->set_protection_policy($this->albumID2);
-		$this->albums_tests->set_protection_policy($this->albumID3, true, true, false, false, true, true, self::ALBUM_PWD_1);
-		$this->albums_tests->set_protection_policy($this->albumID4, true, true, true, false, true, true, self::ALBUM_PWD_1);
-		$this->albums_tests->set_protection_policy($this->albumID5, true, true, false, false, true, true, self::ALBUM_PWD_2);
-		$this->albums_tests->set_protection_policy($this->albumID6, true, true, true, false, true, true, self::ALBUM_PWD_2);
+		$this->albums_tests->set_protection_policy(id: $this->albumID1, password: self::ALBUM_PWD_1);
+		$this->albums_tests->set_protection_policy(id: $this->albumID2);
+		$this->albums_tests->set_protection_policy(id: $this->albumID3, password: self::ALBUM_PWD_1);
+		$this->albums_tests->set_protection_policy(id: $this->albumID4, requiresLink: true, password: self::ALBUM_PWD_1);
+		$this->albums_tests->set_protection_policy(id: $this->albumID5, password: self::ALBUM_PWD_2);
+		$this->albums_tests->set_protection_policy(id: $this->albumID6, requiresLink: true, password: self::ALBUM_PWD_2);
 
 		Auth::logout();
 		Session::flush();

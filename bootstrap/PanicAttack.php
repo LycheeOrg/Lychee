@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Basic PanicAttack class.
+ *
+ * Used only in case of emergency: e.g. vendor not found
+ */
 class PanicAttack
 {
 	private $title = '';
@@ -129,7 +134,7 @@ class PanicAttack
 			}
 		}
 		// var_dump($error_message);
-		// if nothing has been catched so far
+		// if nothing has been caught so far
 		// $this->title = 'Error !';
 		// $this->code = 500;
 		// $this->message = 'Oups, something went wrong !';

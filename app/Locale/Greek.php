@@ -26,6 +26,7 @@ final class Greek implements Language
 			'SEARCH' => 'Αναζήτηση …',
 			'MORE' => 'Περισσότερα',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Χρήστες',
 			'CREATE' => 'Create',
@@ -53,6 +54,13 @@ final class Greek implements Language
 			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
+			'RESET' => 'Reset',
+			'DISABLE_TOKEN_TOOLTIP' => 'Disable',
+			'ENABLE_TOKEN' => 'Enable API token',
+			'DISABLED_TOKEN_STATUS_MSG' => 'Disabled',
+			'TOKEN_BUTTON' => 'API Token ...',
+			'TOKEN_NOT_AVAILABLE' => 'You have already viewed this token.',
+			'TOKEN_WAIT' => 'Wait ...',
 
 			'SMART_ALBUMS' => 'Έξυπνα λευκώματα',
 			'SHARED_ALBUMS' => 'Κοινόχρηστα λευκώματα',
@@ -317,7 +325,7 @@ final class Greek implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'LOGIN_TITLE' => 'Εισάγετε ένα όνομα χρήστη και κωδικό πρόσβασης για την εγκατάστασή σας:',
 			'LOGIN_USERNAME' => 'Νέο όνομα χρήστη',
@@ -333,6 +341,9 @@ final class Greek implements Language
 			'EDIT_SHARING_TITLE' => 'Επεξεργασία κοινής χρήσης',
 			'EDIT_SHARING_TEXT' => 'Οι ιδιότητες κοινής χρήσης αυτού του λευκώματος θα αλλάξουν στις παρακάτω:',
 			'SHARE_ALBUM_TEXT' => 'Αυτό το λεύκωμα θα κοινοποιείται με τις παρακάτω ιδιότητες:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => 'Ταξινόμηση λευκωμάτων κατά %1$s με %2$s σειρά.',
 
@@ -415,6 +426,7 @@ final class Greek implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Παραλείφθηκε',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it’s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it’s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => 'Παρακαλούμε ρίξτε μια ματιά στην κονσόλα του περιηγητή σας για περισσότερες λεπτομέρειες.',
@@ -429,8 +441,8 @@ final class Greek implements Language
 			'UPLOAD_IMPORT' => 'Εισαγωγή',
 			'UPLOAD_IMPORT_SERVER' => 'Γίνεται εισαγωγή από εξυπηρετητή',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Ο φάκελος είναι άδειος ή μη αναγνώσιμα αρχεία προς επεξεργασία. Παρακαλούμε ρίξτε μια ματία στις καταγραφές (Ρυθμίσεις -> Εμφάνιση Καταγραφών) για περισσότερες λεπτομέρειες.',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Αυτή η ενέργεια θα εισάγει όλες τις φωτογραφίες, φακέλους και υπο-φακέλους οι οποίοι βρίσκονται στον παρακάτω κατάλογο.',
-			'UPLOAD_ABSOLUTE_PATH' => 'Απόλυτη διαδρομή του καταλόγου',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Import all photos, folders and sub-folders located in the folders with the following absolute paths (on server). Paths are space separated, use \\ to escape a space in a path.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directories, space separated',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Δεν ήταν δυνατό να ξεκινήσει η διαδικασία εισαγωγής, διότι ο κατάλογος ήταν άδειος!',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Διαγραφή πρωτότυπων',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Αν είναι εφικτό τα πρωτότυπα αρχεία θα διαγραφούν αφού ολοκληρωθεί η εισαγωγή τους.',

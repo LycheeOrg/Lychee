@@ -26,6 +26,7 @@ final class Swedish implements Language
 			'SEARCH' => 'Search …',
 			'MORE' => 'More',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Users',
 			'CREATE' => 'Create',
@@ -53,6 +54,13 @@ final class Swedish implements Language
 			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
+			'RESET' => 'Reset',
+			'DISABLE_TOKEN_TOOLTIP' => 'Disable',
+			'ENABLE_TOKEN' => 'Enable API token',
+			'DISABLED_TOKEN_STATUS_MSG' => 'Disabled',
+			'TOKEN_BUTTON' => 'API Token ...',
+			'TOKEN_NOT_AVAILABLE' => 'You have already viewed this token.',
+			'TOKEN_WAIT' => 'Wait ...',
 
 			'SMART_ALBUMS' => 'Smarta album',
 			'SHARED_ALBUMS' => 'Shared albums',
@@ -317,7 +325,7 @@ final class Swedish implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'LOGIN_TITLE' => 'Ange ett användarnamn och lösenord för din installation:',
 			'LOGIN_USERNAME' => 'Nytt användarnamn',
@@ -333,6 +341,9 @@ final class Swedish implements Language
 			'EDIT_SHARING_TITLE' => 'Redigera delning',
 			'EDIT_SHARING_TEXT' => 'Albumets egenskaper för delning kommer att ändras till:',
 			'SHARE_ALBUM_TEXT' => 'Det här albumet kommer att delas ut med dessa egenskaper::',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => 'Sortera album efter %1$s i en %2$s ordning.',
 
@@ -415,6 +426,7 @@ final class Swedish implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Ignorerade',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it’s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it’s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => 'Kontrollera din webbläsares konsoll för ytterligare information.',
@@ -429,8 +441,8 @@ final class Swedish implements Language
 			'UPLOAD_IMPORT' => 'Importera',
 			'UPLOAD_IMPORT_SERVER' => 'Importera från server',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Mappen du angav var tom eller saknade läsbara filer. Kontrollera logfilen (Inställningar -> Visa logfilen) för ytterligare detaljer',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Den här processen kommer att importera alla fotografier, inklusive alla mappar och undermappar från platse du angav.',
-			'UPLOAD_ABSOLUTE_PATH' => 'Exakt sökväg till mappen',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Import all photos, folders and sub-folders located in the folders with the following absolute paths (on server). Paths are space separated, use \\ to escape a space in a path.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directories, space separated',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Kunde inte påbörja importeringen då mappen saknade innehåll!',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Delete originals',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Originalfotografierna kommer att raderas efter att importering genomförts.',

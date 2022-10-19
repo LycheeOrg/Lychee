@@ -4,17 +4,13 @@ namespace App\DTO;
 
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 
-class Version extends DTO
+class Version extends ArrayableDTO
 {
-	public int $major;
-	public int $minor;
-	public int $patch;
-
-	public function __construct(int $major, int $minor, int $patch)
-	{
-		$this->major = $major;
-		$this->minor = $minor;
-		$this->patch = $patch;
+	public function __construct(
+		public int $major,
+		public int $minor,
+		public int $patch
+	) {
 	}
 
 	/**
@@ -95,17 +91,5 @@ class Version extends DTO
 	public function __toString(): string
 	{
 		return $this->major . '.' . $this->minor . '.' . $this->patch;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function toArray(): array
-	{
-		return [
-			'major' => $this->major,
-			'minor' => $this->minor,
-			'patch' => $this->patch,
-		];
 	}
 }

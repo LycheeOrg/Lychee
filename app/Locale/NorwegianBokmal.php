@@ -26,6 +26,7 @@ final class NorwegianBokmal implements Language
 			'SEARCH' => 'Søk …',
 			'MORE' => 'Mer',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Brukere',
 			'CREATE' => 'Create',
@@ -53,6 +54,13 @@ final class NorwegianBokmal implements Language
 			'SET_MAP_PROVIDER' => 'Lagre leverandør for OpenStreetMap fliser',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
+			'RESET' => 'Reset',
+			'DISABLE_TOKEN_TOOLTIP' => 'Disable',
+			'ENABLE_TOKEN' => 'Enable API token',
+			'DISABLED_TOKEN_STATUS_MSG' => 'Disabled',
+			'TOKEN_BUTTON' => 'API Token ...',
+			'TOKEN_NOT_AVAILABLE' => 'You have already viewed this token.',
+			'TOKEN_WAIT' => 'Wait ...',
 
 			'SMART_ALBUMS' => 'Automatiske album',
 			'SHARED_ALBUMS' => 'Delte album',
@@ -317,7 +325,7 @@ final class NorwegianBokmal implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'LOGIN_TITLE' => 'Fyll inn et brukernavn og passord for installasjonen:',
 			'LOGIN_USERNAME' => 'Nytt Brukernavn',
@@ -333,6 +341,9 @@ final class NorwegianBokmal implements Language
 			'EDIT_SHARING_TITLE' => 'Endre Deling',
 			'EDIT_SHARING_TEXT' => 'Egenskapene for deling for dette albumet vil bli endret til følgende:',
 			'SHARE_ALBUM_TEXT' => 'Albumet vil bli delt med følgende egenskaper:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => 'Sorter album etter %1$s i en %2$s rekkefølge.',
 
@@ -415,6 +426,7 @@ final class NorwegianBokmal implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Hoppet over',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it’s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it’s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => 'Vennligst se konsollen i nettleseren for mer informasjon.',
@@ -429,8 +441,8 @@ final class NorwegianBokmal implements Language
 			'UPLOAD_IMPORT' => 'Importer',
 			'UPLOAD_IMPORT_SERVER' => 'Importer fra server',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Mappen er tom eller inneholder ingen lesbare filer som kan behandles. Vennligst se loggen (Innstillinger -> Vis Logg) for mer informasjon.',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Denne handlingen vil importere alle bilder, mapper, og undermapper som er plassert i følgende mappe.',
-			'UPLOAD_ABSOLUTE_PATH' => 'Full sti til mappen',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Import all photos, folders and sub-folders located in the folders with the following absolute paths (on server). Paths are space separated, use \\ to escape a space in a path.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directories, space separated',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Kunne ikke starte importeringen siden mappen var tom!',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Fjern originalene',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'De opprinnelige filene vil bli fjernet etter importeringen når mulig.',

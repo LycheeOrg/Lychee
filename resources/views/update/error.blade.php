@@ -103,6 +103,8 @@
             </form>
         </div>
     </div>
+	<!-- Do not change even a single character in the block below without
+	     also updating the checksum in config/secure-headers.php! -->
 	<script>
 	document.addEventListener("DOMContentLoaded", function(event) {
 		document.querySelector("form").addEventListener("submit", function(e){

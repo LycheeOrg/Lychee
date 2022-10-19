@@ -26,6 +26,7 @@ final class ChineseSimplified implements Language
 			'SEARCH' => '搜索 …',
 			'MORE' => '更多',
 			'DEFAULT' => '默认',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => '用户',
 			'CREATE' => 'Create',
@@ -53,6 +54,13 @@ final class ChineseSimplified implements Language
 			'SET_MAP_PROVIDER' => '设置 OpenStreetMap 图层提供者',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
+			'RESET' => 'Reset',
+			'DISABLE_TOKEN_TOOLTIP' => 'Disable',
+			'ENABLE_TOKEN' => 'Enable API token',
+			'DISABLED_TOKEN_STATUS_MSG' => 'Disabled',
+			'TOKEN_BUTTON' => 'API Token ...',
+			'TOKEN_NOT_AVAILABLE' => 'You have already viewed this token.',
+			'TOKEN_WAIT' => 'Wait ...',
 
 			'SMART_ALBUMS' => '智能相册',
 			'SHARED_ALBUMS' => '已共享的相册',
@@ -317,7 +325,7 @@ final class ChineseSimplified implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'LOGIN_TITLE' => '输入管理员用户名和密码：',
 			'LOGIN_USERNAME' => '新用户名',
@@ -333,6 +341,9 @@ final class ChineseSimplified implements Language
 			'EDIT_SHARING_TITLE' => '编辑共享',
 			'EDIT_SHARING_TEXT' => '此相册的共享属性将被修改为：',
 			'SHARE_ALBUM_TEXT' => '此相册将会以下列的属性共享：',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => '相册排序：根据 %1$s 的 %2$s 排序。',
 
@@ -415,6 +426,7 @@ final class ChineseSimplified implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => '已跳过',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it’s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it’s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => '请查看浏览器控制台获取详细信息。',
@@ -429,8 +441,8 @@ final class ChineseSimplified implements Language
 			'UPLOAD_IMPORT' => '导入',
 			'UPLOAD_IMPORT_SERVER' => '从服务器导入',
 			'UPLOAD_IMPORT_SERVER_FOLD' => '文件夹为空或其中没有可读的文件。请查看日志（设置->显示日志）以获取详细信息。',
-			'UPLOAD_IMPORT_SERVER_INSTR' => '此操作将会导入位于下列目录中的所有图片、文件夹和子文件夹。',
-			'UPLOAD_ABSOLUTE_PATH' => '目录的绝对路径',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Import all photos, folders and sub-folders located in the folders with the following absolute paths (on server). Paths are space separated, use \\ to escape a space in a path.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directories, space separated',
 			'UPLOAD_IMPORT_SERVER_EMPT' => '无法导入空文件夹！',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => '删除原始图像',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => '原始图像将在导入后尝试删除。',

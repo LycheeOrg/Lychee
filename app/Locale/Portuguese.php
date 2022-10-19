@@ -26,6 +26,7 @@ final class Portuguese implements Language
 			'SEARCH' => 'Pesquisar …',
 			'MORE' => 'Mais',
 			'DEFAULT' => 'Predefinição',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Utilizadores',
 			'CREATE' => 'Create',
@@ -53,6 +54,13 @@ final class Portuguese implements Language
 			'SET_MAP_PROVIDER' => 'Escolher OpenStreetMap tiles provider',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
+			'RESET' => 'Reset',
+			'DISABLE_TOKEN_TOOLTIP' => 'Disable',
+			'ENABLE_TOKEN' => 'Enable API token',
+			'DISABLED_TOKEN_STATUS_MSG' => 'Disabled',
+			'TOKEN_BUTTON' => 'API Token ...',
+			'TOKEN_NOT_AVAILABLE' => 'You have already viewed this token.',
+			'TOKEN_WAIT' => 'Wait ...',
 
 			'SMART_ALBUMS' => 'Smart álbums',
 			'SHARED_ALBUMS' => 'Álbums partilhados',
@@ -317,7 +325,7 @@ final class Portuguese implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'LOGIN_TITLE' => 'Inserir um nome de utilizador e uma password para a sua instalação:',
 			'LOGIN_USERNAME' => 'Novo Nome de Utilizador',
@@ -333,6 +341,9 @@ final class Portuguese implements Language
 			'EDIT_SHARING_TITLE' => 'Editar Partilha',
 			'EDIT_SHARING_TEXT' => 'As propriedades de partilha deste álbum vão ser alteradas para o seguinte:',
 			'SHARE_ALBUM_TEXT' => 'Este álbum vai ser partilhado com as seguintes propriedades:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => 'Ordenar álbums por %1$s numa %2$s ordem.',
 
@@ -415,6 +426,7 @@ final class Portuguese implements Language
 			'UPLOAD_CANCELLED' => 'Cancelado',
 			'UPLOAD_SKIPPED' => 'Saltado',
 			'UPLOAD_UPDATED' => 'Ignorado',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'Esta fotografia foi ignorada porque já está na sua livraria.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'Esta fotografia foi ignorada porque já está na sua livraria, mas os seus metadados foram atualizados.',
 			'UPLOAD_ERROR_CONSOLE' => 'Por favor dá uma vista de olhos na consola do teu navegador para mais detalhes.',
@@ -429,8 +441,8 @@ final class Portuguese implements Language
 			'UPLOAD_IMPORT' => 'Importar',
 			'UPLOAD_IMPORT_SERVER' => 'A importar do servidor',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Pasta vazia ou sem ficheiros legíveis para processar. Por favor, dá uma vista de olhos no log (Configurações -> Mostrar Log) para mais detalhes.',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Importar todas as fotografias, pastas e sub-pastas localizadas na pasta com o seguinte caminho absoluto (no servidor):',
-			'UPLOAD_ABSOLUTE_PATH' => 'Caminho absoluto para o diretório',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Import all photos, folders and sub-folders located in the folders with the following absolute paths (on server). Paths are space separated, use \\ to escape a space in a path.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directories, space separated',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Não foi conseguido iniciar a importação porque a pasta estava vazia!',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Eliminar originais',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Ficheiros originais vão ser eliminados depois da importação assim que possível.',

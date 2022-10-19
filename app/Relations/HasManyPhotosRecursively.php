@@ -34,6 +34,7 @@ class HasManyPhotosRecursively extends HasManyPhotos
 		 * because it was set in the constructor as `$owningAlbum`.
 		 *
 		 * @noinspection PhpIncompatibleReturnTypeInspection
+		 *
 		 * @phpstan-ignore-next-line
 		 */
 		return $this->parent;

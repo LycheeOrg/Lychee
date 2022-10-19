@@ -26,6 +26,7 @@ final class Polish implements Language
 			'SEARCH' => 'Szukaj …',
 			'MORE' => 'Więcej',
 			'DEFAULT' => 'Domyślne',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Użytkownicy',
 			'CREATE' => 'Create',
@@ -53,6 +54,13 @@ final class Polish implements Language
 			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
+			'RESET' => 'Reset',
+			'DISABLE_TOKEN_TOOLTIP' => 'Disable',
+			'ENABLE_TOKEN' => 'Enable API token',
+			'DISABLED_TOKEN_STATUS_MSG' => 'Disabled',
+			'TOKEN_BUTTON' => 'API Token ...',
+			'TOKEN_NOT_AVAILABLE' => 'You have already viewed this token.',
+			'TOKEN_WAIT' => 'Wait ...',
 
 			'SMART_ALBUMS' => 'Inteligentne albumy',
 			'SHARED_ALBUMS' => 'Udostępnione albumy',
@@ -317,7 +325,7 @@ final class Polish implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'LOGIN_TITLE' => 'Wpisz nazwę użytkownika oraz hasło dla swojej instalacji:',
 			'LOGIN_USERNAME' => 'Nowa nazwa użytkownika',
@@ -333,6 +341,9 @@ final class Polish implements Language
 			'EDIT_SHARING_TITLE' => 'Edytuj udostępnianie',
 			'EDIT_SHARING_TEXT' => 'Ustawienia udostępniania zostaną zmienione na następujące:',
 			'SHARE_ALBUM_TEXT' => 'Album zostanie udostępniony z następującymi ustawieniami:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => 'Sortuj albumy według pola %1$s w kolejności %2$s',
 
@@ -415,6 +426,7 @@ final class Polish implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Pominięto',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it’s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it’s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => 'Proszę przejrzeć konsolę błędów przeglądarki aby spradzić szczegóły.',
@@ -429,8 +441,8 @@ final class Polish implements Language
 			'UPLOAD_IMPORT' => 'Import',
 			'UPLOAD_IMPORT_SERVER' => 'Importing from server',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Folder empty or no readable files to process. Please take a look at the log (Settings -> Show Log) for further details.',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'This action will import all photos, folders and sub-folders which are located in the following directory.',
-			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directory',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Import all photos, folders and sub-folders located in the folders with the following absolute paths (on server). Paths are space separated, use \\ to escape a space in a path.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directories, space separated',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Could not start import because the folder was empty!',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Delete originals',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Original files will be deleted after the import when possible.',

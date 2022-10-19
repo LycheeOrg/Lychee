@@ -27,7 +27,7 @@ class Sync extends Command
 	 */
 	protected $signature =
 	'lychee:sync ' .
-		'{dir : directory to sync} ' . // string
+		'{dir* : directory to sync} ' . // string[]
 		'{--album_id= : Album ID to import to} ' . // string or null
 		'{--owner_id=0 : Owner ID of imported photos} ' . // string
 		'{--resync_metadata : Re-sync metadata of existing files}  ' . // bool
@@ -71,9 +71,9 @@ class Sync extends Command
 	public function handle(): int
 	{
 		try {
-			$directory = $this->argument('dir');
-			if (is_array($directory) || $directory === null) {
-				$this->error('Synchronize one folder at a time.');
+			$directories = $this->argument('dir');
+			if (!is_array($directories)) {
+				$this->error('List of directories not recognized.');
 
 				return 1;
 			}
@@ -114,10 +114,12 @@ class Sync extends Command
 
 			$this->info('Start syncing.');
 
-			try {
-				$exec->do($directory, $album);
-			} catch (Exception $e) {
-				$this->error($e);
+			foreach ($directories as $directory) {
+				try {
+					$exec->do($directory, $album);
+				} catch (Exception $e) {
+					$this->error($e);
+				}
 			}
 
 			$this->info('Done syncing.');

@@ -26,6 +26,7 @@ final class ChineseTraditional implements Language
 			'SEARCH' => '搜尋 …',
 			'MORE' => '更多',
 			'DEFAULT' => '默認',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => '使用者',
 			'CREATE' => 'Create',
@@ -53,6 +54,13 @@ final class ChineseTraditional implements Language
 			'SET_MAP_PROVIDER' => '設置OpenStreetMap圖層提供者',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
+			'RESET' => 'Reset',
+			'DISABLE_TOKEN_TOOLTIP' => 'Disable',
+			'ENABLE_TOKEN' => 'Enable API token',
+			'DISABLED_TOKEN_STATUS_MSG' => 'Disabled',
+			'TOKEN_BUTTON' => 'API Token ...',
+			'TOKEN_NOT_AVAILABLE' => 'You have already viewed this token.',
+			'TOKEN_WAIT' => 'Wait ...',
 
 			'SMART_ALBUMS' => '智能相簿',
 			'SHARED_ALBUMS' => '共享的相簿',
@@ -317,7 +325,7 @@ final class ChineseTraditional implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'LOGIN_TITLE' => '輸入管理員用戶名和密碼：',
 			'LOGIN_USERNAME' => '新用戶名',
@@ -333,6 +341,9 @@ final class ChineseTraditional implements Language
 			'EDIT_SHARING_TITLE' => '編輯共享',
 			'EDIT_SHARING_TEXT' => '相簿的共享屬性將被修改為：',
 			'SHARE_ALBUM_TEXT' => '該相簿的共享屬性：',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => '相簿排序 %1$s 在一個 %2$s 排序',
 
@@ -415,6 +426,7 @@ final class ChineseTraditional implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => '已跳過',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it’s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it’s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => '請查看瀏覽器控制台獲取詳細信息。',
@@ -429,8 +441,8 @@ final class ChineseTraditional implements Language
 			'UPLOAD_IMPORT' => '導入',
 			'UPLOAD_IMPORT_SERVER' => '從伺服器導入',
 			'UPLOAD_IMPORT_SERVER_FOLD' => '文件夾中沒有可讀的文件。請查看日誌（設置->顯示日誌）以獲取詳細信息。',
-			'UPLOAD_IMPORT_SERVER_INSTR' => '此操作將導入位於以下目錄中的所有照片，文件夾和子文件夾。',
-			'UPLOAD_ABSOLUTE_PATH' => '絕對路徑',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Import all photos, folders and sub-folders located in the folders with the following absolute paths (on server). Paths are space separated, use \\ to escape a space in a path.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directories, space separated',
 			'UPLOAD_IMPORT_SERVER_EMPT' => '無法導入空文件夾！',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => '刪除原件',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => '如果可能，原始文件將在導入後刪除。',

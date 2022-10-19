@@ -32,6 +32,7 @@ class Kernel extends HttpKernel
 	 */
 	protected $middlewareGroups = [
 		'web' => [
+			'installation:complete',
 			'accept_content_type:html',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
 			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
@@ -60,6 +61,7 @@ class Kernel extends HttpKernel
 		],
 
 		'api' => [
+			'installation:complete',
 			'accept_content_type:json',
 			'content_type:json',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
@@ -72,6 +74,7 @@ class Kernel extends HttpKernel
 		],
 
 		'api-admin' => [
+			'installation:complete',
 			'accept_content_type:json',
 			'content_type:json',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,

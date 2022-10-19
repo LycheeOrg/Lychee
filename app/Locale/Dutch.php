@@ -26,6 +26,7 @@ final class Dutch implements Language
 			'SEARCH' => 'Search …',
 			'MORE' => 'More',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Users',
 			'CREATE' => 'Create',
@@ -53,6 +54,13 @@ final class Dutch implements Language
 			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
+			'RESET' => 'Reset',
+			'DISABLE_TOKEN_TOOLTIP' => 'Disable',
+			'ENABLE_TOKEN' => 'Enable API token',
+			'DISABLED_TOKEN_STATUS_MSG' => 'Disabled',
+			'TOKEN_BUTTON' => 'API Token ...',
+			'TOKEN_NOT_AVAILABLE' => 'You have already viewed this token.',
+			'TOKEN_WAIT' => 'Wait ...',
 
 			'SMART_ALBUMS' => 'Slimme albums',
 			'SHARED_ALBUMS' => 'Shared albums',
@@ -317,7 +325,7 @@ final class Dutch implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'LOGIN_TITLE' => 'Voer een gebruikersnaam en wachtwoord in voor je installatie:',
 			'LOGIN_USERNAME' => 'Nieuw Gebruikersnaam',
@@ -333,6 +341,9 @@ final class Dutch implements Language
 			'EDIT_SHARING_TITLE' => 'Bewerk delen',
 			'EDIT_SHARING_TEXT' => 'De deelinstellingen van dit album worden alsvolgt ingesteld:',
 			'SHARE_ALBUM_TEXT' => 'Dit album wordt gedeeld met de volgende instellingen:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => 'Sorteer albums op %1$s in een %2$s volgorde.',
 
@@ -415,6 +426,7 @@ final class Dutch implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Overgeslagen',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it’s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it’s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => 'Kijk naar je browsers console voor meer informatie.',
@@ -429,8 +441,8 @@ final class Dutch implements Language
 			'UPLOAD_IMPORT' => 'Import',
 			'UPLOAD_IMPORT_SERVER' => 'Importing from server',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Folder empty or no readable files to process. Please take a look at the log (Settings -> Laat logs zien) voor meer informatie.',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Deze actie importeert alle foto’s, folders en sub-folders vanuit de volgende folder.',
-			'UPLOAD_ABSOLUTE_PATH' => 'Absoluut pad naar de folder',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Import all photos, folders and sub-folders located in the folders with the following absolute paths (on server). Paths are space separated, use \\ to escape a space in a path.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directories, space separated',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Kan de import niet starten, folder is leeg!',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Delete originals',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'De orginele bestanden worden verwijderd na de import indien mogelijk.',

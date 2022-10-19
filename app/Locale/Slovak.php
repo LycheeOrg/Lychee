@@ -26,6 +26,7 @@ final class Slovak implements Language
 			'SEARCH' => 'Hľadaj …',
 			'MORE' => 'Viac',
 			'DEFAULT' => 'Default',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Užívatelia',
 			'CREATE' => 'Create',
@@ -53,6 +54,13 @@ final class Slovak implements Language
 			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 			'FULL_SETTINGS' => 'Full Settings',
 			'UPDATE' => 'Update',
+			'RESET' => 'Reset',
+			'DISABLE_TOKEN_TOOLTIP' => 'Disable',
+			'ENABLE_TOKEN' => 'Enable API token',
+			'DISABLED_TOKEN_STATUS_MSG' => 'Disabled',
+			'TOKEN_BUTTON' => 'API Token ...',
+			'TOKEN_NOT_AVAILABLE' => 'You have already viewed this token.',
+			'TOKEN_WAIT' => 'Wait ...',
 
 			'SMART_ALBUMS' => 'Inteligentné albumy',
 			'SHARED_ALBUMS' => 'Zdieľané albumy',
@@ -317,7 +325,7 @@ final class Slovak implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
 			'LOGIN_TITLE' => 'Zadajte meno a heslo pre vašu inštaláciu:',
 			'LOGIN_USERNAME' => 'Nový užívateľ',
@@ -333,6 +341,9 @@ final class Slovak implements Language
 			'EDIT_SHARING_TITLE' => 'Zdieľanie spracovať',
 			'EDIT_SHARING_TEXT' => 'Nastavenie zdieľania pre tento album bolo zmenené nasledovne:',
 			'SHARE_ALBUM_TEXT' => 'Tento album bude zdieľaný s nasledovnými vlastnosťami:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => 'Triediť albumy podľa %1$s v %2$s rade.',
 
@@ -415,6 +426,7 @@ final class Slovak implements Language
 			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Preskočiť',
 			'UPLOAD_UPDATED' => 'Updated',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it’s already in your library.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'This photo has been skipped because it’s already in your library, but its metadata has been updated.',
 			'UPLOAD_ERROR_CONSOLE' => 'Skontrolujte konzolu prehliadača, pre zistenie ďalších podrobností.',
@@ -429,8 +441,8 @@ final class Slovak implements Language
 			'UPLOAD_IMPORT' => 'Import',
 			'UPLOAD_IMPORT_SERVER' => 'Import zo servera',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Priečinok je prázdny alebo obsahuje nečitateľný obsah pre spracovanie. Skontrolujte protokoly (Nastavenia/ Protokoly) pre zistenie ďalších podrobností.',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Táto akcia naimportuje všetky obrázky, priečinky a podpriečinky, ktoré sa v danom adresári nachádzajú.</b>',
-			'UPLOAD_ABSOLUTE_PATH' => 'Absolútna cesta k adresáru',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Import all photos, folders and sub-folders located in the folders with the following absolute paths (on server). Paths are space separated, use \\ to escape a space in a path.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directories, space separated',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Import sa nedá spustiť, priečinok je prázdny.',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Zmazať originály',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Ak je možné, budú pôvodné súbory po importe zmazané.',

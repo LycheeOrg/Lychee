@@ -17,8 +17,8 @@ trait HasUserTrait
 	 * This method is called `user2`, because Laravel already defines
 	 * {@link \Illuminate\Http\Request::user()} which returns the user which
 	 * is currently authenticated within the HTTP session.
-	 * This method returns another user object which is part of the request
-	 * and shall be manipulated as part of the user management.
+	 * This method returns another user object which is explicitly part of the
+	 * request.
 	 *
 	 * @return User
 	 */

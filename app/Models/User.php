@@ -32,6 +32,8 @@ use function Safe\substr;
  * @property string|null                                           $email
  * @property bool                                                  $may_upload
  * @property bool                                                  $is_locked
+ * @property string|null                                           $token
+ * @property bool                                                  $has_token
  * @property string|null                                           $remember_token
  * @property Collection<BaseAlbumImpl>                             $albums
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
@@ -66,6 +68,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'remember_token',
 		'created_at',
 		'updated_at',
+		'token',
 	];
 
 	/**
@@ -77,6 +80,13 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'updated_at' => 'datetime',
 		'may_upload' => 'boolean',
 		'is_locked' => 'boolean',
+	];
+
+	/**
+	 * @var array
+	 */
+	protected $appends = [
+		'has_token',
 	];
 
 	/**
@@ -125,11 +135,11 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	}
 
 	/**
-	 * Used by Larapass.
+	 * Used by Larapass since 2022-09-21.
 	 *
 	 * @return string
 	 */
-	public function name(): string
+	public function getNameAttribute(): string
 	{
 		// If strings starts by '$2y$', it is very likely that it's a blowfish hash.
 		return substr($this->username, 0, 4) === '$2y$' ? 'Admin' : $this->username;
@@ -168,5 +178,13 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		$this->shared()->delete();
 
 		return $this->parentDelete();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getHasTokenAttribute(): bool
+	{
+		return $this->token !== null;
 	}
 }

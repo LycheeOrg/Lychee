@@ -84,7 +84,7 @@ class Sidebar extends Component
 			['head' => Lang::get('ALBUM_PASSWORD'), 'value' => $_password],
 		];
 		if ($this->album->owner_id !== null) {
-			$share->content[] = ['head' => Lang::get('ALBUM_OWNER'), 'value' => $this->album->owner->name()];
+			$share->content[] = ['head' => Lang::get('ALBUM_OWNER'), 'value' => $this->album->owner->name];
 		}
 
 		$license = new \stdClass();

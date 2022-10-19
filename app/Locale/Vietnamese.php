@@ -26,6 +26,7 @@ final class Vietnamese implements Language
 			'SEARCH' => 'Tìm kiếm …',
 			'MORE' => 'Xem thêm',
 			'DEFAULT' => 'Mặc định',
+			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Người dùng',
 			'CREATE' => 'Tạo',
@@ -53,6 +54,13 @@ final class Vietnamese implements Language
 			'SET_MAP_PROVIDER' => 'Cài đặt nhà cung cấp ô bản đồ OpenStreetMap',
 			'FULL_SETTINGS' => 'Toàn bộ cài đặt',
 			'UPDATE' => 'Cập nhật',
+			'RESET' => 'Reset',
+			'DISABLE_TOKEN_TOOLTIP' => 'Disable',
+			'ENABLE_TOKEN' => 'Enable API token',
+			'DISABLED_TOKEN_STATUS_MSG' => 'Disabled',
+			'TOKEN_BUTTON' => 'API Token ...',
+			'TOKEN_NOT_AVAILABLE' => 'You have already viewed this token.',
+			'TOKEN_WAIT' => 'Wait ...',
 
 			'SMART_ALBUMS' => 'Những album thông minh',
 			'SHARED_ALBUMS' => 'Những album được chia sẻ',
@@ -317,7 +325,7 @@ final class Vietnamese implements Language
 
 			'NEW_PHOTOS_NOTIFICATION' => 'Gửi email thông báo đăng hình ảnh mới.',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'Thông báo đăng hình mới được cập nhật',
-			'USER_EMAIL_INSTRUCTION' => 'Thêm email của bạn vào bên dưới để nhận được thông báo qua email.<br />Để ngưng nhận email, bạn chỉ cần xóa email của bạn ở bên dưới.',
+			'USER_EMAIL_INSTRUCTION' => 'Thêm email của bạn vào bên dưới để nhận được thông báo qua email. Để ngưng nhận email, bạn chỉ cần xóa email của bạn ở bên dưới.',
 
 			'LOGIN_TITLE' => 'Nhập tên và mật khẩu đăng nhập cho phần cài đặt của bạn:',
 			'LOGIN_USERNAME' => 'Tên đăng nhập mới',
@@ -333,6 +341,9 @@ final class Vietnamese implements Language
 			'EDIT_SHARING_TITLE' => 'Chỉnh sửa chế độ chia sẻ',
 			'EDIT_SHARING_TEXT' => 'Những đặc điểm chia sẻ của tấm hình này sẽ được thay đổi thành như sau:',
 			'SHARE_ALBUM_TEXT' => 'Album này sẽ được chia sẻ với những đặc điểm sau:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribute',
+			'SORT_DIALOG_ORDER_LABEL' => 'Order',
 
 			'SORT_ALBUM_BY' => 'Sắp xếp album theo %1$s một %2$s thứ tự.',
 
@@ -415,6 +426,7 @@ final class Vietnamese implements Language
 			'UPLOAD_CANCELLED' => 'Đã hủy bỏ',
 			'UPLOAD_SKIPPED' => 'Đã bỏ qua',
 			'UPLOAD_UPDATED' => 'Đã cập nhật',
+			'UPLOAD_GENERAL' => 'General',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'Hình ảnh này đã được bỏ qua vì nó đã có ở trong album ảnh của bạn rồi.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'Hình ảnh này đã được bỏ qua vì nó đã có ở trong album ảnh của bạn rồi, nhưng thông tin meta về hình ảnh đã được cập nhật.',
 			'UPLOAD_ERROR_CONSOLE' => 'Xin hãy xem qua thử bảng console ở trong trình duyệt của bạn để biết thêm thông tin chi tiết.',
@@ -429,8 +441,8 @@ final class Vietnamese implements Language
 			'UPLOAD_IMPORT' => 'Nhập hình',
 			'UPLOAD_IMPORT_SERVER' => 'Nhập hình từ máy chủ',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Thư mục đang trống hoặc không có tập tin nào có thể đọc được để xử lý. Xin hãy xem phần nhật ký thay đổi (Cài đặ -> Hiển thị nhật ký thay đổi) để biết thêm thông tin chi tiết.',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Nhập vào tất cả các hình ảnh, thư mục và thư mục con trong thư mục có đường dẫn cố định sau đây trên máy chủ:',
-			'UPLOAD_ABSOLUTE_PATH' => 'Đường dẫn cố định đến thư mục',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Import all photos, folders and sub-folders located in the folders with the following absolute paths (on server). Paths are space separated, use \\ to escape a space in a path.',
+			'UPLOAD_ABSOLUTE_PATH' => 'Absolute path to directories, space separated',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Không thể bắt đầu nhập hình vì thư mục không có hình ảnh gì cả!',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Xóa hình ảnh gốc',
 			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Những tập tin hình ảnh gốc sẽ được xóa đi sau lúc nhập hình khi có thể.',
