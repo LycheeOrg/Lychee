@@ -16,6 +16,8 @@ class Errors extends Diagnostics
 	/**
 	 * Return the list of error which are currently breaking Lychee.
 	 *
+	 * @param string[] $skip class names of checks that will be skipped
+	 *
 	 * @return string[] array of messages
 	 */
 	public function get(array $skip = []): array

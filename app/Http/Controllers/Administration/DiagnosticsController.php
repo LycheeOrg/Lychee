@@ -49,7 +49,7 @@ class DiagnosticsController extends Controller
 	{
 		$authorized = $this->isAuthorized();
 
-		return new DiagnosticInfo($checkErrors->get(), $authorized ? $collectInfo->get() : [self::ERROR_MSG], $authorized ? $config->get() : [self::ERROR_MSG], $checkUpdate->getCode());
+		return new DiagnosticInfo($checkErrors->get(config('app.skip_diagnostics_checks')), $authorized ? $collectInfo->get() : [self::ERROR_MSG], $authorized ? $config->get() : [self::ERROR_MSG], $checkUpdate->getCode());
 	}
 
 	/**
