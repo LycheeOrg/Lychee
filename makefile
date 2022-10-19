@@ -58,15 +58,6 @@ dist-clean: dist-gen
 dist: dist-clean
 	@zip -r Lychee.zip Lychee
 
-contrib_add:
-	@echo "npx all-contributors-cli add <user> <bug|code|design|doc|question|tool|test|translation>"
-
-contrib_generate:
-	npx all-contributors-cli generate
-
-contrib_check:
-	npx all-contributors-cli check
-
 clean:
 	@rm -r Lychee 2> /dev/null || true
 

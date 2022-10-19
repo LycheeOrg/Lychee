@@ -3,7 +3,7 @@
 This guide contains some tricks and "do"s and "don't"s for new developer.
 In particular, it highlights some pitfalls one can easily trap into.
 
-# TLTR for the Impatient
+# TL;DR for the Impatient
 
  1. If you create a new Eloquent model, use the trait
     `\App\Models\Extensions\UTCBasedTimes`.
