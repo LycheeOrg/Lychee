@@ -3049,6 +3049,7 @@ lychee.locale = {
 	UPLOAD_FAILED_WARNING: "Upload failed. Server returned a warning!",
 	UPLOAD_SKIPPED: "Skipped",
 	UPLOAD_UPDATED: "Updated",
+	UPLOAD_GENERAL: "General",
 	UPLOAD_IMPORT_SKIPPED_DUPLICATE: "This photo has been skipped because it's already in your library.",
 	UPLOAD_IMPORT_RESYNCED_DUPLICATE: "This photo has been skipped because it's already in your library, but its metadata has been updated.",
 	UPLOAD_ERROR_CONSOLE: "Please take a look at the console of your browser for further details.",

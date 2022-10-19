@@ -7238,6 +7238,7 @@ lychee.locale = {
 	UPLOAD_FAILED_WARNING: "Upload failed. Server returned a warning!",
 	UPLOAD_SKIPPED: "Skipped",
 	UPLOAD_UPDATED: "Updated",
+	UPLOAD_GENERAL: "General",
 	UPLOAD_IMPORT_SKIPPED_DUPLICATE: "This photo has been skipped because it's already in your library.",
 	UPLOAD_IMPORT_RESYNCED_DUPLICATE: "This photo has been skipped because it's already in your library, but its metadata has been updated.",
 	UPLOAD_ERROR_CONSOLE: "Please take a look at the console of your browser for further details.",
@@ -11590,7 +11591,7 @@ upload.start = {
 				// Error
 				upload.showProgressReportCloseButton();
 				if (shallCancelUpload) {
-					var row = upload.buildReportRow("General");
+					var row = upload.buildReportRow(lychee.locale["UPLOAD_GENERAL"]);
 					row.status.textContent = lychee.locale["UPLOAD_CANCELLED"];
 					row.status.classList.add("warning");
 					upload._dom.reportList.appendChild(row.listEntry);
@@ -12096,7 +12097,7 @@ upload.start = {
 							} else {
 								// The event report does not refer to a
 								// specific directory.
-								_row = upload.buildReportRow("General");
+								_row = upload.buildReportRow(lychee.locale["UPLOAD_GENERAL"]);
 								upload._dom.reportList.appendChild(_row.listEntry);
 							}
 							_row.listEntry.scrollIntoView(upload.SCROLL_OPTIONS);
