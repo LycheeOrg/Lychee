@@ -2,31 +2,47 @@
 
 namespace App\Actions\User;
 
+use App\Exceptions\ConfigurationKeyMissingException;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
 use App\Notifications\PhotoAdded;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\MultipleRecordsFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 
 class Notify
 {
+	/**
+	 * Notify users that a new photo has been uploaded.
+	 *
+	 * @param Photo $photo
+	 *
+	 * @return void
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 * @throws QueryBuilderException
+	 * @throws ModelNotFoundException
+	 * @throws MultipleRecordsFoundException
+	 */
 	public function do(Photo $photo): void
 	{
 		if (!Configs::getValueAsBool('new_photos_notification')) {
 			return;
 		}
 
+		/** @var Collection<int,User> Users to be informed */
+		$users = new Collection();
+
 		// The admin is always informed
-		$users = new Collection([User::query()->find(0)]);
+		$users->add(User::where('id', '=', 0)->sole());
+
 		$album = $photo->album;
 		if ($album !== null) {
-			// phpstan throws this error
-			// Parameter #1 ...$values of method Illuminate\Support\Collection<int,Illuminate\Database\Eloquent\Model|null>::push() expects Illuminate\Database\Eloquent\Model|null, Illuminate\Database\Eloquent\Collection given.
-			// However the signature is push(... $values) which also consider collection/array...
-			// @phpstan-ignore-next-line
-			$users->push($album->shared_with);
+			$users = $users->concat($album->shared_with);
 			$users->push($album->owner);
 		}
 
