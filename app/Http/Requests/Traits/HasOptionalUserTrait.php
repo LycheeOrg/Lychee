@@ -4,12 +4,12 @@ namespace App\Http\Requests\Traits;
 
 use App\Models\User;
 
-trait HasUserTrait
+trait HasOptionalUserTrait
 {
 	/**
-	 * @var User
+	 * @var User|null
 	 */
-	protected User $user2;
+	protected ?User $user2;
 
 	/**
 	 * Returns an _additional_ {@link User} object associated with this request.
@@ -20,9 +20,9 @@ trait HasUserTrait
 	 * This method returns another user object which is explicitly part of the
 	 * request.
 	 *
-	 * @return User
+	 * @return User|null
 	 */
-	public function user2(): User
+	public function user2(): ?User
 	{
 		return $this->user2;
 	}

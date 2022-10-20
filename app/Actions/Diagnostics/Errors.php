@@ -16,9 +16,11 @@ class Errors extends Diagnostics
 	/**
 	 * Return the list of error which are currently breaking Lychee.
 	 *
+	 * @param string[] $skip class names of checks that will be skipped
+	 *
 	 * @return string[] array of messages
 	 */
-	public function get(): array
+	public function get(array $skip = []): array
 	{
 		/** @var string[] $errors */
 		$errors = [];
@@ -28,7 +30,10 @@ class Errors extends Diagnostics
 		$checks = $this->diagnosticsChecksFactory->makeAll();
 
 		foreach ($checks as $check) {
-			$check->check($errors);
+			$check_name = (new \ReflectionClass($check))->getShortName();
+			if (!in_array($check_name, $skip, true)) {
+				$check->check($errors);
+			}
 		}
 		// @codeCoverageIgnoreEnd
 

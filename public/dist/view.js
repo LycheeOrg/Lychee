@@ -30,21 +30,18 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject16 = _taggedTemplateLiteral(["", ""], ["", ""]),
     _templateObject17 = _taggedTemplateLiteral(["<div class='no_content fadeIn'>", ""], ["<div class='no_content fadeIn'>", ""]),
     _templateObject18 = _taggedTemplateLiteral(["<p>", "</p>"], ["<p>", "</p>"]),
-    _templateObject19 = _taggedTemplateLiteral(["\n\t\t\t<h1>$", "</h1>\n\t\t\t<div class='rows'>\n\t\t\t"], ["\n\t\t\t<h1>$", "</h1>\n\t\t\t<div class='rows'>\n\t\t\t"]),
-    _templateObject20 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='row'>\n\t\t\t\t\t<a class='name'>$", "</a>\n\t\t\t\t\t<a class='status'></a>\n\t\t\t\t\t<p class='notice'></p>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='row'>\n\t\t\t\t\t<a class='name'>$", "</a>\n\t\t\t\t\t<a class='status'></a>\n\t\t\t\t\t<p class='notice'></p>\n\t\t\t\t</div>\n\t\t\t\t"]),
-    _templateObject21 = _taggedTemplateLiteral(["\n\t\t<div class='row'>\n\t\t\t<a class='name'>$", "</a>\n\t\t\t<a class='status'></a>\n\t\t\t<p class='notice'></p>\n\t\t</div>\n\t\t"], ["\n\t\t<div class='row'>\n\t\t\t<a class='name'>$", "</a>\n\t\t\t<a class='status'></a>\n\t\t\t<p class='notice'></p>\n\t\t</div>\n\t\t"]),
-    _templateObject22 = _taggedTemplateLiteral(["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"], ["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"]),
-    _templateObject23 = _taggedTemplateLiteral(["<a class='", "'>$", "</a>"], ["<a class='", "'>$", "</a>"]),
-    _templateObject24 = _taggedTemplateLiteral(["<div class='empty'>", "</div>"], ["<div class='empty'>", "</div>"]),
-    _templateObject25 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
-    _templateObject26 = _taggedTemplateLiteral(["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"string\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"string\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
-    _templateObject27 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
-    _templateObject28 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <table>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <table>\n\t\t\t\t "]),
-    _templateObject29 = _taggedTemplateLiteral(["<span class='attr_", "_separator'>, </span>"], ["<span class='attr_", "_separator'>, </span>"]),
-    _templateObject30 = _taggedTemplateLiteral(["<span class='attr_", " search'>$", "</span>"], ["<span class='attr_", " search'>$", "</span>"]),
-    _templateObject31 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
-    _templateObject32 = _taggedTemplateLiteral(["<tr><td>$", "</td><td>", "</td></tr>"], ["<tr><td>$", "</td><td>", "</td></tr>"]),
-    _templateObject33 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]);
+    _templateObject19 = _taggedTemplateLiteral(["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"], ["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"]),
+    _templateObject20 = _taggedTemplateLiteral(["<a class='", "'>$", "</a>"], ["<a class='", "'>$", "</a>"]),
+    _templateObject21 = _taggedTemplateLiteral(["<div class='empty'>", "</div>"], ["<div class='empty'>", "</div>"]),
+    _templateObject22 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
+    _templateObject23 = _taggedTemplateLiteral(["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
+    _templateObject24 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
+    _templateObject25 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <table>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <table>\n\t\t\t\t "]),
+    _templateObject26 = _taggedTemplateLiteral(["<span class='attr_", "_separator'>, </span>"], ["<span class='attr_", "_separator'>, </span>"]),
+    _templateObject27 = _taggedTemplateLiteral(["<span class='attr_", " search'>$", "</span>"], ["<span class='attr_", " search'>$", "</span>"]),
+    _templateObject28 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
+    _templateObject29 = _taggedTemplateLiteral(["<tr><td>$", "</td><td>", "</td></tr>"], ["<tr><td>$", "</td><td>", "</td></tr>"]),
+    _templateObject30 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]);
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
@@ -995,47 +992,6 @@ build.no_content = function (type) {
 };
 
 /**
- * @param {string}                                           title the title of the dialog
- * @param {(FileList|File[]|DropboxFile[]|{name: string}[])} files a list of file entries to be shown in the dialog
- * @returns {string}                                                the HTML fragment for the dialog
- */
-build.uploadModal = function (title, files) {
-	var html = "";
-
-	html += lychee.html(_templateObject19, title);
-
-	var i = 0;
-
-	while (i < files.length) {
-		var file = files[i];
-
-		if (file.name.length > 40) file.name = file.name.substr(0, 17) + "..." + file.name.substr(file.name.length - 20, 20);
-
-		html += lychee.html(_templateObject20, file.name);
-
-		i++;
-	}
-
-	html += "</div>";
-
-	return html;
-};
-
-/**
- * Builds the HTML snippet for a row in the upload dialog.
- *
- * @param {string} name
- * @returns {string}
- */
-build.uploadNewFile = function (name) {
-	if (name.length > 40) {
-		name = name.substring(0, 17) + "..." + name.substring(name.length - 20, name.length);
-	}
-
-	return lychee.html(_templateObject21, name);
-};
-
-/**
  * @param {string[]} tags
  * @returns {string} return safe HTMl code
  */
@@ -1052,13 +1008,13 @@ build.tags = function (tags) {
 	if (tags.length !== 0) {
 		tags.forEach(function (tag, index) {
 			if (editable) {
-				html += lychee.html(_templateObject22, a_class, tag, index, build.iconic("x"));
+				html += lychee.html(_templateObject19, a_class, tag, index, build.iconic("x"));
 			} else {
-				html += lychee.html(_templateObject23, a_class, tag);
+				html += lychee.html(_templateObject20, a_class, tag);
 			}
 		});
 	} else {
-		html = lychee.html(_templateObject24, lychee.locale["NO_TAGS"]);
+		html = lychee.html(_templateObject21, lychee.locale["NO_TAGS"]);
 	}
 
 	return html;
@@ -1069,7 +1025,7 @@ build.tags = function (tags) {
  * @returns {string}
  */
 build.user = function (user) {
-	return lychee.html(_templateObject25, user.id, user.id, user.username, lychee.locale["USERNAME"], lychee.locale["NEW_PASSWORD"], lychee.locale["ALLOW_UPLOADS"], lychee.locale["RESTRICTED_ACCOUNT"], user.id, user.id);
+	return lychee.html(_templateObject22, user.id, user.id, user.username, lychee.locale["USERNAME"], lychee.locale["NEW_PASSWORD"], lychee.locale["ALLOW_UPLOADS"], lychee.locale["RESTRICTED_ACCOUNT"], user.id, user.id);
 };
 
 /**
@@ -1077,7 +1033,7 @@ build.user = function (user) {
  * @returns {string}
  */
 build.u2f = function (credential) {
-	return lychee.html(_templateObject26, credential.id, credential.id, credential.id.slice(0, 30), credential.id);
+	return lychee.html(_templateObject23, credential.id, credential.id, credential.id.slice(0, 30), credential.id);
 };
 
 /**
@@ -1271,7 +1227,7 @@ header.hideIfLivePhotoNotPlaying = function () {
  * @returns {void}
  */
 header.hide = function () {
-	if (visible.photo() && !visible.sidebar() && !visible.contextMenu() && basicModal.visible() === false) {
+	if (visible.photo() && !visible.sidebar() && !visible.contextMenu() && basicModal.isVisible() === false) {
 		tabindex.saveSettings(header.dom());
 		tabindex.makeUnfocusable(header.dom());
 
@@ -1288,7 +1244,7 @@ header.hide = function () {
  */
 header.setTitle = function (title) {
 	var $title = header.dom(".header__title");
-	var html = lychee.html(_templateObject27, title, build.iconic("caret-bottom"));
+	var html = lychee.html(_templateObject24, title, build.iconic("caret-bottom"));
 
 	$title.html(html);
 };
@@ -2155,7 +2111,7 @@ sidebar.render = function (structure) {
   * @returns {string}
   */
 	var renderDefault = function renderDefault(section) {
-		var _html = lychee.html(_templateObject28, section.title);
+		var _html = lychee.html(_templateObject25, section.title);
 
 		if (section.title === lychee.locale["PHOTO_LOCATION"]) {
 			var _has_latitude = section.rows.findIndex(function (row) {
@@ -2197,18 +2153,18 @@ sidebar.render = function (structure) {
 				function (prev, cur) {
 					// Add separator if needed
 					if (prev !== "") {
-						prev += lychee.html(_templateObject29, row.kind);
+						prev += lychee.html(_templateObject26, row.kind);
 					}
-					return prev + lychee.html(_templateObject30, row.kind, cur);
+					return prev + lychee.html(_templateObject27, row.kind, cur);
 				}, "");
 			} else {
-				htmlValue = lychee.html(_templateObject31, row.kind, rawValue);
+				htmlValue = lychee.html(_templateObject28, row.kind, rawValue);
 			}
 
 			// Add edit-icon to the value when editable
 			if (row.editable === true) htmlValue += " " + build.editIcon("edit_" + row.kind);
 
-			_html += lychee.html(_templateObject32, row.title, htmlValue);
+			_html += lychee.html(_templateObject29, row.title, htmlValue);
 		});
 
 		_html += "</table>";
@@ -2228,7 +2184,7 @@ sidebar.render = function (structure) {
 		// Note: In case of tags `section.value` already contains proper
 		// HTML (with each tag wrapped into a `<span>`-element), because
 		// `section.value` is the result of `build.renderTags`.
-		return lychee.html(_templateObject33, section.title, section.title.toLowerCase(), section.value, htmlEditable);
+		return lychee.html(_templateObject30, section.title, section.title.toLowerCase(), section.value, htmlEditable);
 	};
 
 	var html = "";
@@ -2674,16 +2630,22 @@ mapview.goto = function (elem) {
  */
 
 lychee.locale = {
-	USERNAME: "username",
-	PASSWORD: "password",
+	USERNAME: "Username",
+	PASSWORD: "Password",
 	ENTER: "Enter",
 	CANCEL: "Cancel",
 	SIGN_IN: "Sign In",
 	CLOSE: "Close",
-	SAVE: "Save",
-
 	SETTINGS: "Settings",
+	SEARCH: "Search …",
+	MORE: "More",
+	DEFAULT: "Default",
+	GALLERY: "Gallery",
+
 	USERS: "Users",
+	CREATE: "Create",
+	REMOVE: "Remove",
+	SHARE: "Share",
 	U2F: "U2F",
 	NOTIFICATIONS: "Notifications",
 	SHARING: "Sharing",
@@ -2700,16 +2662,15 @@ lychee.locale = {
 	UPDATE_AVAILABLE: "Update available!",
 	MIGRATION_AVAILABLE: "Migration available!",
 	CHECK_FOR_UPDATE: "Check for updates",
-	DEFAULT_LICENSE: "Default License for new uploads:",
+	DEFAULT_LICENSE: "Default license for new uploads:",
 	SET_LICENSE: "Set License",
 	SET_OVERLAY_TYPE: "Set Overlay",
 	SET_MAP_PROVIDER: "Set OpenStreetMap tiles provider",
-	SAVE_RISK: "Save my modifications, I accept the Risk!",
-	MORE: "More",
-	DEFAULT: "Default",
+	FULL_SETTINGS: "Full Settings",
+	UPDATE: "Update",
 	RESET: "Reset",
 	DISABLE_TOKEN_TOOLTIP: "Disable",
-	ENABLE_TOKEN: "Enable API key",
+	ENABLE_TOKEN: "Enable API token",
 	DISABLED_TOKEN_STATUS_MSG: "Disabled",
 	TOKEN_BUTTON: "API Token ...",
 	TOKEN_NOT_AVAILABLE: "You have already viewed this token.",
@@ -2722,36 +2683,38 @@ lychee.locale = {
 	SEARCH_RESULTS: "Search results",
 
 	RENAME: "Rename",
-	RENAME_ALL: "Rename All",
+	RENAME_ALL: "Rename Selected",
 	MERGE: "Merge",
-	MERGE_ALL: "Merge All",
+	MERGE_ALL: "Merge Selected",
 	MAKE_PUBLIC: "Make Public",
 	SHARE_ALBUM: "Share Album",
 	SHARE_PHOTO: "Share Photo",
-	SHARE_WITH: "Share with...",
+	VISIBILITY_ALBUM: "Album Visibility",
+	VISIBILITY_PHOTO: "Photo Visibility",
 	DOWNLOAD_ALBUM: "Download Album",
 	ABOUT_ALBUM: "About Album",
 	DELETE_ALBUM: "Delete Album",
+	MOVE_ALBUM: "Move Album",
 	FULLSCREEN_ENTER: "Enter Fullscreen",
 	FULLSCREEN_EXIT: "Exit Fullscreen",
 
 	SHARING_ALBUM_USERS: "Share this album with users",
-	SHARING_ALBUM_USERS_LONG_MESSAGE: "Select the users to share this album with",
-	WAIT_FETCH_DATA: "Please wait while we get the data...",
+	WAIT_FETCH_DATA: "Please wait while we get the data …",
 	SHARING_ALBUM_USERS_NO_USERS: "There are no users to share the album with",
+	SHARING_ALBUM_USERS_LONG_MESSAGE: "Select the users to share this album with",
 
 	DELETE_ALBUM_QUESTION: "Delete Album and Photos",
 	KEEP_ALBUM: "Keep Album",
-	DELETE_ALBUM_CONFIRMATION_1: "Are you sure you want to delete the album '%s' and all of the photos it contains? This action can't be undone!",
+	DELETE_ALBUM_CONFIRMATION: "Are you sure you want to delete the album “%s” and all of the photos it contains? This action can’t be undone!",
 
 	DELETE_TAG_ALBUM_QUESTION: "Delete Album",
-	DELETE_TAG_ALBUM_CONFIRMATION: "Are you sure you want to delete the album %s (any photos inside will not be deleted)? This action can't be undone!",
+	DELETE_TAG_ALBUM_CONFIRMATION: "Are you sure you want to delete the album “%s” (any photos inside will not be deleted)? This action can’t be undone!",
 
 	DELETE_ALBUMS_QUESTION: "Delete Albums and Photos",
 	KEEP_ALBUMS: "Keep Albums",
-	DELETE_ALBUMS_CONFIRMATION: "Are you sure you want to delete all %d selected albums and all of the photos they contain? This action can't be undone!",
+	DELETE_ALBUMS_CONFIRMATION: "Are you sure you want to delete all %d selected albums and all of the photos they contain? This action can’t be undone!",
 
-	DELETE_UNSORTED_CONFIRM: "Are you sure you want to delete all photos from 'Unsorted'?<br>This action can't be undone!",
+	DELETE_UNSORTED_CONFIRM: "Are you sure you want to delete all photos from “Unsorted”? This action can’t be undone!",
 	CLEAR_UNSORTED: "Clear Unsorted",
 	KEEP_UNSORTED: "Keep Unsorted",
 
@@ -2764,16 +2727,16 @@ lychee.locale = {
 
 	ADD: "Add",
 	MOVE: "Move",
-	MOVE_ALL: "Move All",
+	MOVE_ALL: "Move Selected",
 	DUPLICATE: "Duplicate",
-	DUPLICATE_ALL: "Duplicate All",
-	COPY_TO: "Copy to...",
-	COPY_ALL_TO: "Copy All to...",
+	DUPLICATE_ALL: "Duplicate Selected",
+	COPY_TO: "Copy to …",
+	COPY_ALL_TO: "Copy Selected to …",
 	DELETE: "Delete",
-	DELETE_ALL: "Delete All",
+	SAVE: "Save",
+	DELETE_ALL: "Delete Selected",
 	DOWNLOAD: "Download",
-	DOWNLOAD_MEDIUM: "Download medium size",
-	DOWNLOAD_SMALL: "Download small size",
+	DOWNLOAD_ALL: "Download Selected",
 	UPLOAD_PHOTO: "Upload Photo",
 	IMPORT_LINK: "Import from Link",
 	IMPORT_DROPBOX: "Import from Dropbox",
@@ -2799,11 +2762,13 @@ lychee.locale = {
 	UNSTAR: "Unstar",
 	STAR_ALL: "Star Selected",
 	UNSTAR_ALL: "Unstar Selected",
-	TAGS: "Tags",
-	TAGS_ALL: "Tags All",
+	TAG: "Tag",
+	TAG_ALL: "Tag Selected",
 	UNSTAR_PHOTO: "Unstar Photo",
+	SET_COVER: "Set Album Cover",
+	REMOVE_COVER: "Remove Album Cover",
 
-	FULL_PHOTO: "Full Photo",
+	FULL_PHOTO: "Open Original",
 	ABOUT_PHOTO: "About Photo",
 	DISPLAY_FULL_MAP: "Map",
 	DIRECT_LINK: "Direct Link",
@@ -2826,37 +2791,37 @@ lychee.locale = {
 	ALBUM_CREATED: "Created",
 	ALBUM_IMAGES: "Images",
 	ALBUM_VIDEOS: "Videos",
+	ALBUM_SUBALBUMS: "Subalbums",
 	ALBUM_SHARING: "Share",
-	ALBUM_OWNER: "Owner",
 	ALBUM_SHR_YES: "YES",
 	ALBUM_SHR_NO: "No",
 	ALBUM_PUBLIC: "Public",
-	ALBUM_PUBLIC_EXPL: "Album can be viewed by others, subject to the restrictions below.",
-	ALBUM_FULL: "Full size (v4 only)",
-	ALBUM_FULL_EXPL: "Full size pictures are available",
+	ALBUM_PUBLIC_EXPL: "Anonymous users can access this album, subject to the restrictions below.",
+	ALBUM_FULL: "Original",
+	ALBUM_FULL_EXPL: "Anonymous users can behold full-resolution photos.",
 	ALBUM_HIDDEN: "Hidden",
-	ALBUM_HIDDEN_EXPL: "Only people with the direct link can view this album.",
+	ALBUM_HIDDEN_EXPL: "Anonymous users need a direct link to access this album.",
 	ALBUM_MARK_NSFW: "Mark album as sensitive",
 	ALBUM_UNMARK_NSFW: "Unmark album as sensitive",
 	ALBUM_NSFW: "Sensitive",
 	ALBUM_NSFW_EXPL: "Album contains sensitive content.",
 	ALBUM_DOWNLOADABLE: "Downloadable",
-	ALBUM_DOWNLOADABLE_EXPL: "Visitors of your Lychee can download this album.",
+	ALBUM_DOWNLOADABLE_EXPL: "Anonymous users can download this album.",
 	ALBUM_SHARE_BUTTON_VISIBLE: "Share button is visible",
-	ALBUM_SHARE_BUTTON_VISIBLE_EXPL: "Display social media sharing links.",
+	ALBUM_SHARE_BUTTON_VISIBLE_EXPL: "Anonymous users can see social media sharing links.",
 	ALBUM_PASSWORD: "Password",
 	ALBUM_PASSWORD_PROT: "Password protected",
-	ALBUM_PASSWORD_PROT_EXPL: "Album only accessible with a valid password.",
+	ALBUM_PASSWORD_PROT_EXPL: "Anonymous users need a shared password to access this album.",
 	ALBUM_PASSWORD_REQUIRED: "This album is protected by a password. Enter the password below to view the photos of this album:",
-	ALBUM_MERGE: "Are you sure you want to merge the album '%1$s' into the album '%2$s'?",
-	ALBUMS_MERGE: "Are you sure you want to merge all selected albums into the album '%s'?",
+	ALBUM_MERGE: "Are you sure you want to merge the album “%1$s” into the album “%2$s”?",
+	ALBUMS_MERGE: "Are you sure you want to merge all selected albums into the album “%s”?",
 	MERGE_ALBUM: "Merge Albums",
-	DONT_MERGE: "Don't Merge",
-	ALBUM_MOVE: "Are you sure you want to move the album '%1$s' into the album '%2$s'?",
-	ALBUMS_MOVE: "Are you sure you want to move all selected albums into the album '%s'?",
+	DONT_MERGE: "Don’t Merge",
+	ALBUM_MOVE: "Are you sure you want to move the album “%1$s” into the album “%2$s”?",
+	ALBUMS_MOVE: "Are you sure you want to move all selected albums into the album “%s”?",
 	MOVE_ALBUMS: "Move Albums",
-	NOT_MOVE_ALBUMS: "Don't Move",
-	ROOT: "Root",
+	NOT_MOVE_ALBUMS: "Don’t Move",
+	ROOT: "Albums",
 	ALBUM_REUSE: "Reuse",
 	ALBUM_LICENSE: "License",
 	ALBUM_SET_LICENSE: "Set License",
@@ -2865,6 +2830,7 @@ lychee.locale = {
 	ALBUM_RESERVED: "All Rights Reserved",
 	ALBUM_SET_ORDER: "Set Order",
 	ALBUM_ORDERING: "Order by",
+	ALBUM_OWNER: "Owner",
 
 	PHOTO_ABOUT: "About",
 	PHOTO_BASICS: "Basics",
@@ -2877,11 +2843,16 @@ lychee.locale = {
 	PHOTO_SET_DESCRIPTION: "Set Description",
 	PHOTO_NEW_LICENSE: "Add a License",
 	PHOTO_SET_LICENSE: "Set License",
-	PHOTO_REUSE: "Reuse",
 	PHOTO_LICENSE: "License",
 	PHOTO_LICENSE_HELP: "Need help choosing?",
+	PHOTO_REUSE: "Reuse",
 	PHOTO_LICENSE_NONE: "None",
 	PHOTO_RESERVED: "All Rights Reserved",
+	PHOTO_LATITUDE: "Latitude",
+	PHOTO_LONGITUDE: "Longitude",
+	PHOTO_ALTITUDE: "Altitude",
+	PHOTO_IMGDIRECTION: "Direction",
+	PHOTO_LOCATION: "Location",
 	PHOTO_IMAGE: "Image",
 	PHOTO_VIDEO: "Video",
 	PHOTO_SIZE: "Size",
@@ -2910,50 +2881,37 @@ lychee.locale = {
 	PHOTO_SHR_NO: "No",
 	PHOTO_DELETE: "Delete Photo",
 	PHOTO_KEEP: "Keep Photo",
-	PHOTO_DELETE_CONFIRMATION: "Are you sure you want to delete the photo '%s'? This action can't be undone!",
-	PHOTO_DELETE_ALL: "Are you sure you want to delete all %d selected photo? This action can't be undone!",
+	PHOTO_DELETE_CONFIRMATION: "Are you sure you want to delete the photo “%s”? This action can’t be undone!",
+	PHOTO_DELETE_ALL: "Are you sure you want to delete all %d selected photo? This action can’t be undone!",
 	PHOTOS_NEW_TITLE: "Enter a title for all %d selected photos:",
 	PHOTO_MAKE_PRIVATE_ALBUM: "This photo is located in a public album. To make this photo private or public, edit the visibility of the associated album.",
 	PHOTO_SHOW_ALBUM: "Show Album",
 	PHOTO_PUBLIC: "Public",
-	PHOTO_PUBLIC_EXPL: "Photo can be viewed by others, subject to the restrictions below.",
+	PHOTO_PUBLIC_EXPL: "Anonymous users can view this photo, subject to the restrictions below.",
 	PHOTO_FULL: "Original",
-	PHOTO_FULL_EXPL: "Full-resolution picture is available.",
+	PHOTO_FULL_EXPL: "Anonymous users can behold full-resolution photo.",
 	PHOTO_HIDDEN: "Hidden",
-	PHOTO_HIDDEN_EXPL: "Only people with the direct link can view this photo.",
+	PHOTO_HIDDEN_EXPL: "Anonymous users need a direct link to view this photo.",
 	PHOTO_DOWNLOADABLE: "Downloadable",
-	PHOTO_DOWNLOADABLE_EXPL: "Visitors of your gallery can download this photo.",
+	PHOTO_DOWNLOADABLE_EXPL: "Anonymous users may download this photo.",
 	PHOTO_SHARE_BUTTON_VISIBLE: "Share button is visible",
-	PHOTO_SHARE_BUTTON_VISIBLE_EXPL: "Display social media sharing links.",
+	PHOTO_SHARE_BUTTON_VISIBLE_EXPL: "Anonymous users can see social media sharing links.",
 	PHOTO_PASSWORD_PROT: "Password protected",
-	PHOTO_PASSWORD_PROT_EXPL: "Photo only accessible with a valid password.",
+	PHOTO_PASSWORD_PROT_EXPL: "Anonymous users need a shared password to view this photo.",
 	PHOTO_EDIT_SHARING_TEXT: "The sharing properties of this photo will be changed to the following:",
-	PHOTO_NO_EDIT_SHARING_TEXT: "Because this photo is located in a public album, it inherits that album's visibility settings.  Its current visibility is shown below for informational purposes only.",
+	PHOTO_NO_EDIT_SHARING_TEXT: "Because this photo is located in a public album, it inherits that album’s visibility settings.  Its current visibility is shown below for informational purposes only.",
 	PHOTO_EDIT_GLOBAL_SHARING_TEXT: "The visibility of this photo can be fine-tuned using global Lychee settings. Its current visibility is shown below for informational purposes only.",
-	PHOTO_LOCATION: "Location",
-	PHOTO_LATITUDE: "Latitude",
-	PHOTO_LONGITUDE: "Longitude",
-	PHOTO_ALTITUDE: "Altitude",
-	PHOTO_IMGDIRECTION: "Direction",
 
 	LOADING: "Loading",
 	ERROR: "Error",
 	ERROR_TEXT: "Whoops, it looks like something went wrong. Please reload the site and try again!",
-	ERROR_DB_1: "Unable to connect to host database because access was denied. Double-check your host, username and password and ensure that access from your current location is permitted.",
-	ERROR_DB_2: "Unable to create the database. Double-check your host, username and password and ensure that the specified user has the rights to modify and add content to the database.",
-	ERROR_CONFIG_FILE: "Unable to save this configuration. Permission denied in <b>'data/'</b>. Please set the read, write and execute rights for others in <b>'data/'</b> and <b>'uploads/'</b>. Take a look at the readme for more information.",
 	ERROR_UNKNOWN: "Something unexpected happened. Please try again and check your installation and server. Take a look at the readme for more information.",
 	ERROR_LOGIN: "Unable to save login. Please try again with another username and password!",
 	ERROR_MAP_DEACTIVATED: "Map functionality has been deactivated under settings.",
 	ERROR_SEARCH_DEACTIVATED: "Search functionality has been deactivated under settings.",
-	ERROR_ALBUM_JSON_NOT_FOUND: "Error: Album json not found!",
-	ERROR_ALBUM_NOT_FOUND: "Error: album %s not found",
-	ERROR_DROPBOX_KEY: "Error: Dropbox key not set",
-	ERROR_SESSION: "Session expired.",
 	SUCCESS: "OK",
 	RETRY: "Retry",
 
-	SETTINGS_WARNING: "Changing these advanced settings can be harmful to the stability, security and performance of this application. You should only modify them if you are sure of what you are doing.",
 	SETTINGS_SUCCESS_LOGIN: "Login Info updated.",
 	SETTINGS_SUCCESS_SORT: "Sorting order updated.",
 	SETTINGS_SUCCESS_DROPBOX: "Dropbox Key updated.",
@@ -2965,6 +2923,11 @@ lychee.locale = {
 	SETTINGS_SUCCESS_MAP_DISPLAY: "Map display settings updated",
 	SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC: "Map display settings for public albums updated",
 	SETTINGS_SUCCESS_MAP_PROVIDER: "Map provider settings updated",
+	SETTINGS_SUCCESS_CSS: "CSS updated",
+	SETTINGS_SUCCESS_UPDATE: "Settings updated successfully",
+	SETTINGS_DROPBOX_KEY: "Dropbox API Key",
+	SETTINGS_ADVANCED_WARNING_EXPL: "Changing these advanced settings can be harmful to the stability, security and performance of this application. You should only modify them if you are sure of what you are doing.",
+	SETTINGS_ADVANCED_SAVE: "Save my modifications, I accept the risk!",
 
 	U2F_NOT_SUPPORTED: "U2F not supported. Sorry.",
 	U2F_NOT_SECURE: "Environment not secured. U2F not available.",
@@ -2976,19 +2939,7 @@ lychee.locale = {
 
 	NEW_PHOTOS_NOTIFICATION: "Send new photos notification emails.",
 	SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION: "New photos notification updated",
-	USER_EMAIL_INSTRUCTION: "Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.",
-
-	SETTINGS_SUCCESS_CSS: "CSS updated",
-	SETTINGS_SUCCESS_UPDATE: "Settings updated with success",
-
-	DB_INFO_TITLE: "Enter your database connection details below:",
-	DB_INFO_HOST: "Database Host (optional)",
-	DB_INFO_USER: "Database Username",
-	DB_INFO_PASSWORD: "Database Password",
-	DB_INFO_TEXT: "Lychee will create its own database. If required, you can enter the name of an existing database instead:",
-	DB_NAME: "Database Name (optional)",
-	DB_PREFIX: "Table prefix (optional)",
-	DB_CONNECT: "Connect",
+	USER_EMAIL_INSTRUCTION: "Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.",
 
 	LOGIN_TITLE: "Enter a username and password for your installation:",
 	LOGIN_USERNAME: "New Username",
@@ -3002,8 +2953,11 @@ lychee.locale = {
 	PASSWORD_CHANGE: "Change Login",
 
 	EDIT_SHARING_TITLE: "Edit Sharing",
-	EDIT_SHARING_TEXT: "The sharing-properties of this album will be changed to the following:",
+	EDIT_SHARING_TEXT: "The sharing properties of this album will be changed to the following:",
 	SHARE_ALBUM_TEXT: "This album will be shared with the following properties:",
+
+	SORT_DIALOG_ATTRIBUTE_LABEL: "Attribute",
+	SORT_DIALOG_ORDER_LABEL: "Order",
 
 	SORT_ALBUM_BY: "Sort albums by %1$s in an %2$s order.",
 
@@ -3034,37 +2988,32 @@ lychee.locale = {
 	LANG_TEXT: "Change Lychee language for:",
 	LANG_TITLE: "Change Language",
 
-	CSS_TEXT: "Personalize your CSS:",
+	CSS_TEXT: "Personalize CSS:",
 	CSS_TITLE: "Change CSS",
+	PUBLIC_SEARCH_TEXT: "Public search allowed:",
+	OVERLAY_TYPE: "Photo overlay:",
+	OVERLAY_NONE: "None",
+	OVERLAY_EXIF: "EXIF data",
+	OVERLAY_DESCRIPTION: "Description",
+	OVERLAY_DATE: "Date taken",
+	MAP_DISPLAY_TEXT: "Enable maps (provided by OpenStreetMap):",
+	MAP_DISPLAY_PUBLIC_TEXT: "Enable maps for public albums (provided by OpenStreetMap):",
+	MAP_PROVIDER: "Provider of OpenStreetMap tiles:",
+	MAP_PROVIDER_WIKIMEDIA: "Wikimedia",
+	MAP_PROVIDER_OSM_ORG: "OpenStreetMap.org (no HiDPI)",
+	MAP_PROVIDER_OSM_DE: "OpenStreetMap.de (no HiDPI)",
+	MAP_PROVIDER_OSM_FR: "OpenStreetMap.fr (no HiDPI)",
+	MAP_PROVIDER_RRZE: "University of Erlangen, Germany (only HiDPI)",
+	MAP_INCLUDE_SUBALBUMS_TEXT: "Include photos of subalbums on map:",
+	LOCATION_DECODING: "Decode GPS data into location name",
+	LOCATION_SHOW: "Show location name",
+	LOCATION_SHOW_PUBLIC: "Show location name for public mode",
 
 	LAYOUT_TYPE: "Layout of photos:",
 	LAYOUT_SQUARES: "Square thumbnails",
 	LAYOUT_JUSTIFIED: "With aspect, justified",
 	LAYOUT_UNJUSTIFIED: "With aspect, unjustified",
 	SET_LAYOUT: "Change layout",
-	PUBLIC_SEARCH_TEXT: "Public search allowed:",
-
-	IMAGE_OVERLAY_TEXT: "Display image overlay by default:",
-
-	OVERLAY_TYPE: "Photo overlay:",
-	OVERLAY_NONE: "None",
-	OVERLAY_EXIF: "EXIF data",
-	OVERLAY_DESCRIPTION: "Description",
-	OVERLAY_DATE: "Date taken",
-
-	MAP_PROVIDER: "Provider of OpenStreetMap tiles:",
-	MAP_PROVIDER_WIKIMEDIA: "Wikimedia",
-	MAP_PROVIDER_OSM_ORG: "OpenStreetMap.org (no retina)",
-	MAP_PROVIDER_OSM_DE: "OpenStreetMap.de (no retina)",
-	MAP_PROVIDER_OSM_FR: "OpenStreetMap.fr (no retina)",
-	MAP_PROVIDER_RRZE: "University of Erlangen, Germany (only retina)",
-
-	MAP_DISPLAY_TEXT: "Enable maps (provided by OpenStreetMap):",
-	MAP_DISPLAY_PUBLIC_TEXT: "Enable maps for public albums (provided by OpenStreetMap):",
-	MAP_INCLUDE_SUBALBUMS_TEXT: "Include photos of subalbums on map:",
-	LOCATION_DECODING: "Decode GPS data into location name",
-	LOCATION_SHOW: "Show location name",
-	LOCATION_SHOW_PUBLIC: "Show location name for public mode",
 
 	NSFW_VISIBLE_TEXT_1: "Make Sensitive albums visible by default.",
 	NSFW_VISIBLE_TEXT_2: "If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <kbd>H</kbd></b>.",
@@ -3086,17 +3035,19 @@ lychee.locale = {
 	UPLOAD_FINISHED: "Finished",
 	UPLOAD_PROCESSING: "Processing",
 	UPLOAD_FAILED: "Failed",
-	UPLOAD_FAILED_ERROR: "Upload failed. Server returned an error!",
-	UPLOAD_FAILED_WARNING: "Upload failed. Server returned a warning!",
+	UPLOAD_FAILED_ERROR: "Upload failed. The server returned an error!",
+	UPLOAD_FAILED_WARNING: "Upload failed. The server returned a warning!",
+	UPLOAD_CANCELLED: "Cancelled",
 	UPLOAD_SKIPPED: "Skipped",
 	UPLOAD_UPDATED: "Updated",
-	UPLOAD_IMPORT_SKIPPED_DUPLICATE: "This photo has been skipped because it's already in your library.",
-	UPLOAD_IMPORT_RESYNCED_DUPLICATE: "This photo has been skipped because it's already in your library, but its metadata has been updated.",
+	UPLOAD_GENERAL: "General",
+	UPLOAD_IMPORT_SKIPPED_DUPLICATE: "This photo has been skipped because it’s already in your library.",
+	UPLOAD_IMPORT_RESYNCED_DUPLICATE: "This photo has been skipped because it’s already in your library, but its metadata has been updated.",
 	UPLOAD_ERROR_CONSOLE: "Please take a look at the console of your browser for further details.",
 	UPLOAD_UNKNOWN: "Server returned an unknown response. Please take a look at the console of your browser for further details.",
-	UPLOAD_ERROR_UNKNOWN: "Upload failed. Server returned an unkown error!",
-	UPLOAD_ERROR_POSTSIZE: "Upload failed. The PHP post_max_size limit is too small!",
-	UPLOAD_ERROR_FILESIZE: "Upload failed. The PHP upload_max_filesize limit is too small!",
+	UPLOAD_ERROR_UNKNOWN: "Upload failed. The server returned an unknown error!",
+	UPLOAD_ERROR_POSTSIZE: "Upload failed. The PHP post_max_size may be too small! Otherwise check the FAQ.",
+	UPLOAD_ERROR_FILESIZE: "Upload failed. The PHP upload_max_filesize may be too small! Otherwise check the FAQ.",
 	UPLOAD_IN_PROGRESS: "Lychee is currently uploading!",
 	UPLOAD_IMPORT_WARN_ERR: "The import has been finished, but returned warnings or errors. Please take a look at the log (Settings -> Show Log) for further details.",
 	UPLOAD_IMPORT_COMPLETE: "Import complete",
@@ -3104,12 +3055,29 @@ lychee.locale = {
 	UPLOAD_IMPORT: "Import",
 	UPLOAD_IMPORT_SERVER: "Importing from server",
 	UPLOAD_IMPORT_SERVER_FOLD: "Folder empty or no readable files to process. Please take a look at the log (Settings -> Show Log) for further details.",
-	UPLOAD_IMPORT_SERVER_INSTR: "Import all photos, folders and sub-folders located in the folder with the following absolute path (on server). Paths are space separated, use \\ to escape a space in a path.",
-	UPLOAD_ABSOLUTE_PATH: "Absolute path to directories, space separated.",
+	UPLOAD_IMPORT_SERVER_INSTR: "Import all photos, folders, and sub-folders located in the folders with the following absolute paths (on the server). Paths are space-separated, use \\ to escape a space in a path.",
+	UPLOAD_ABSOLUTE_PATH: "Absolute path to directories, space separated",
 	UPLOAD_IMPORT_SERVER_EMPT: "Could not start import because the folder was empty!",
+	UPLOAD_IMPORT_DELETE_ORIGINALS: "Delete originals",
+	UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL: "Original files will be deleted after the import when possible.",
+	UPLOAD_IMPORT_VIA_SYMLINK: "Symbolic links",
+	UPLOAD_IMPORT_VIA_SYMLINK_EXPL: "Import files using symbolic links to originals.",
+	UPLOAD_IMPORT_SKIP_DUPLICATES: "Skip duplicates",
+	UPLOAD_IMPORT_SKIP_DUPLICATES_EXPL: "Existing media files are skipped.",
+	UPLOAD_IMPORT_RESYNC_METADATA: "Re-sync metadata",
+	UPLOAD_IMPORT_RESYNC_METADATA_EXPL: "Update metadata of existing media files.",
+	UPLOAD_IMPORT_LOW_MEMORY_EXPL: "The import process on the server is approaching the memory limit and may end up being terminated prematurely.",
+	UPLOAD_WARNING: "Warning",
+	UPLOAD_IMPORT_NOT_A_DIRECTORY: "The given path is not a readable directory!",
+	UPLOAD_IMPORT_PATH_RESERVED: "The given path is a reserved path of Lychee!",
+	UPLOAD_IMPORT_FAILED: "Could not import the file!",
+	UPLOAD_IMPORT_UNSUPPORTED: "Unsupported file type!",
+	UPLOAD_IMPORT_CANCELLED: "Import cancelled",
 
 	ABOUT_SUBTITLE: "Self-hosted photo-management done right",
 	ABOUT_DESCRIPTION: "<a target='_blank' href='%s'>Lychee</a> is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.",
+	FOOTER_COPYRIGHT: "All images on this website are subject to copyright by %1$s &copy; %2$s",
+	HOSTED_WITH_LYCHEE: "Hosted with Lychee",
 
 	URL_COPY_TO_CLIPBOARD: "Copy to clipboard",
 	URL_COPIED_TO_CLIPBOARD: "Copied URL to clipboard!",
@@ -3120,23 +3088,19 @@ lychee.locale = {
 	PHOTO_SMALL_HIDPI: "Thumb HiDPI",
 	PHOTO_THUMB: "Square thumb",
 	PHOTO_THUMB_HIDPI: "Square thumb HiDPI",
+	PHOTO_THUMBNAIL: "Photo thumbnail",
 	PHOTO_LIVE_VIDEO: "Video part of live-photo",
 	PHOTO_VIEW: "Lychee Photo View:",
-	PHOTO_THUMBNAIL: "Photo thumbnail",
-	CAMERA_DATE: "Camera date",
 
-	NEW_PASSWORD: "new password",
-	ALLOW_UPLOADS: "Allow uploads",
-	RESTRICTED_ACCOUNT: "Restricted account",
-
-	OSM_CONTRIBUTORS: "OpenStreetMap contributors",
+	PHOTO_EDIT_ROTATECWISE: "Rotate clockwise",
+	PHOTO_EDIT_ROTATECCWISE: "Rotate counter-clockwise",
 
 	ERROR_GPX: "Error loading GPX file: ",
 	ERROR_EITHER_ALBUMS_OR_PHOTOS: "Please select either albums or photos!",
 	ERROR_COULD_NOT_FIND: "Could not find what you want.",
 	ERROR_INVALID_EMAIL: "Not a valid email address.",
 	EMAIL_SUCCESS: "Email updated!",
-	ERROR_PHOTO_NOT_FOUND: "Error: photo %s not found !",
+	ERROR_PHOTO_NOT_FOUND: "Error: photo %s not found!",
 	ERROR_EMPTY_USERNAME: "new username cannot be empty.",
 	ERROR_PASSWORD_DOES_NOT_MATCH: "new password does not match.",
 	ERROR_EMPTY_PASSWORD: "new password cannot be empty.",
@@ -3148,13 +3112,18 @@ lychee.locale = {
 	USER_CREATED: "User created!",
 	USER_DELETED: "User deleted!",
 	USER_UPDATED: "User updated!",
-	FULL_SETTINGS: "Full settings",
 	ENTER_EMAIL: "Enter your email address:",
-	CREATE: "Create",
-	REMOVE: "Remove",
-	SHARE: "Share",
-	UPDATE: "Update",
-	SETTINGS_DROPBOX_KEY: "Dropbox-API-Schlüssel",
+	ERROR_ALBUM_JSON_NOT_FOUND: "Error: Album JSON not found!",
+	ERROR_ALBUM_NOT_FOUND: "Error: album %s not found",
+	ERROR_DROPBOX_KEY: "Error: Dropbox key not set",
+	ERROR_SESSION: "Session expired.",
+	CAMERA_DATE: "Camera date",
+	NEW_PASSWORD: "new password",
+	ALLOW_UPLOADS: "Allow uploads",
+	RESTRICTED_ACCOUNT: "Restricted account",
+	OSM_CONTRIBUTORS: "OpenStreetMap contributors",
+
+	dateTimeFormatter: new Intl.DateTimeFormat("default", { dateStyle: "medium", timeStyle: "medium" }),
 
 	/**
   * Formats a number representing a filesize in bytes as a localized string
@@ -3229,9 +3198,7 @@ lychee.locale = {
 		//  - 3: the timezone separator, i.e. "Z", "-" or "+" (if present)
 		//  - 4: the absolute timezone offset without the sign (if present)
 		console.assert(splitDateTime.length === 5, "'jsonDateTime' is not formatted acc. to ISO 8601; passed string was: " + jsonDateTime);
-		var locale = "default"; // use the user's browser settings
-		var format = { dateStyle: "medium", timeStyle: "medium" };
-		var result = new Date(splitDateTime[1]).toLocaleString(locale, format);
+		var result = lychee.locale.dateTimeFormatter.format(new Date(splitDateTime[1]));
 		if (splitDateTime[3] === "Z" || splitDateTime[4] === "00:00") {
 			result += " UTC";
 		} else {
@@ -3728,7 +3695,7 @@ var SmartAlbumID = Object.freeze({
  * @property {string}   swipe_tolerance_x       - actually a number
  * @property {string}   swipe_tolerance_y       - actually a number
  * @property {string}   upload_processing_limit - actually a number
- * @property {string}   version                 - actually a number
+ * @property {string}   version                 - a string of 6 digits without separating dots, i.e. version 4.6.3 is reported as `'040603'`
  */
 
 /**

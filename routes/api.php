@@ -91,6 +91,7 @@ Route::post('/Settings::updateLogin', [Administration\SettingsController::class,
 
 Route::post('/Sharing::list', [Administration\SharingController::class, 'list']);
 Route::post('/Sharing::add', [Administration\SharingController::class, 'add']);
+Route::post('/Sharing::setByAlbum', [Administration\SharingController::class, 'setByAlbum']);
 Route::post('/Sharing::delete', [Administration\SharingController::class, 'delete']);
 
 // WebAuthn Routes

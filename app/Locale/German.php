@@ -1,5 +1,7 @@
 <?php
 
+/** @noinspection SpellCheckingInspection */
+
 namespace App\Locale;
 
 use App\Contracts\Language;
@@ -13,7 +15,7 @@ final class German implements Language
 
 	public function get_locale(): array
 	{
-		$locale = [
+		return [
 			'USERNAME' => 'Benutzername',
 			'PASSWORD' => 'Kennwort',
 			'ENTER' => 'Eingabe',
@@ -21,22 +23,18 @@ final class German implements Language
 			'SIGN_IN' => 'Anmelden',
 			'CLOSE' => 'Schließen',
 			'SETTINGS' => 'Einstellungen',
-			'SEARCH' => 'Suchen ...',
+			'SEARCH' => 'Suchen …',
 			'MORE' => 'Mehr',
 			'DEFAULT' => 'Standard',
 			'GALLERY' => 'Gallery',
 
 			'USERS' => 'Benutzer',
 			'CREATE' => 'Erstellen',
-			'USERS_EMPTY' => 'Benutzerliste ist leer!',
+			'REMOVE' => 'Entfernen',
+			'SHARE' => 'Freigeben',
 			'U2F' => 'U2F',
 			'NOTIFICATIONS' => 'Benachrichtigungen',
 			'SHARING' => 'Freigabe',
-			'SHARING_EMPTY' => 'Freigabeliste ist leer!',
-			'SHARING_WITH' => 'mit',
-			'SHARING_SHARE' => 'Teilen',
-			'SHARING_UNDO' => 'rückgängig',
-			'SHARING_REDO' => 'wiederholen',
 			'CHANGE_LOGIN' => 'Anmeldung ändern',
 			'CHANGE_SORTING' => 'Sortierung ändern',
 			'SET_DROPBOX' => 'Dropbox einrichten',
@@ -49,6 +47,7 @@ final class German implements Language
 			'SIGN_OUT' => 'Abmelden',
 			'UPDATE_AVAILABLE' => 'Update verfügbar!',
 			'MIGRATION_AVAILABLE' => 'Migration verfügbar!',
+			'CHECK_FOR_UPDATE' => 'Check for updates',
 			'DEFAULT_LICENSE' => 'Standard-Lizenz für neue Uploads:',
 			'SET_LICENSE' => 'Lizenz anwenden',
 			'SET_OVERLAY_TYPE' => 'Setze Overlay',
@@ -62,8 +61,6 @@ final class German implements Language
 			'TOKEN_BUTTON' => 'API-Schlüssel ...',
 			'TOKEN_NOT_AVAILABLE' => 'Sie haben diesen Schlüssel bereits angesehen.',
 			'TOKEN_WAIT' => 'Warten ...',
-
-			'SAVE_RISK' => 'Änderungen speichern, ich kenne das Risiko!',
 
 			'SMART_ALBUMS' => 'Intelligente Alben',
 			'SHARED_ALBUMS' => 'Freigegebene Alben',
@@ -88,7 +85,7 @@ final class German implements Language
 			'FULLSCREEN_EXIT' => 'Vollbild beenden',
 
 			'SHARING_ALBUM_USERS' => 'Teile dieses Album mit Benutzern',
-			'WAIT_FETCH_DATA' => 'Bitte warten Sie, während die Daten abgerufen werden...',
+			'WAIT_FETCH_DATA' => 'Bitte warten Sie, während die Daten abgerufen werden…',
 			'SHARING_ALBUM_USERS_NO_USERS' => 'Es sind keine Benutzer vorhanden, mit denen das Album geteilt werden kann',
 			'SHARING_ALBUM_USERS_LONG_MESSAGE' => 'Wählen Sie die Benutzer aus, mit denen das Album geteilt werden soll',
 
@@ -103,7 +100,7 @@ final class German implements Language
 			'KEEP_ALBUMS' => 'Alben behalten',
 			'DELETE_ALBUMS_CONFIRMATION' => 'Sind Sie sicher, dass Sie alle %d ausgewählten Alben und die enthaltenen Fotos löschen wollen? Diese Aktion kann nicht rückgängig gemacht werden!',
 
-			'DELETE_UNSORTED_CONFIRM' => 'Sind Sie sicher, dass Sie alle Fotos aus „Unsortiert“ löschen wollen?<br>Diese Aktion kann nicht rückgängig gemacht werden!',
+			'DELETE_UNSORTED_CONFIRM' => 'Sind Sie sicher, dass Sie alle Fotos aus „Unsortiert“ löschen wollen? Diese Aktion kann nicht rückgängig gemacht werden!',
 			'CLEAR_UNSORTED' => 'Unsortierte löschen',
 			'KEEP_UNSORTED' => 'Unsortierte behalten',
 
@@ -119,8 +116,8 @@ final class German implements Language
 			'MOVE_ALL' => 'Ausgewählte verschieben',
 			'DUPLICATE' => 'Duplizieren',
 			'DUPLICATE_ALL' => 'Ausgewählte duplizieren',
-			'COPY_TO' => 'Kopieren nach...',
-			'COPY_ALL_TO' => 'Ausgewählte kopieren nach...',
+			'COPY_TO' => 'Kopieren nach …',
+			'COPY_ALL_TO' => 'Ausgewählte kopieren nach …',
 			'DELETE' => 'Löschen',
 			'SAVE' => 'Speichern',
 			'DELETE_ALL' => 'Ausgewählte löschen',
@@ -151,8 +148,8 @@ final class German implements Language
 			'UNSTAR' => 'Als Favorit demarkieren',
 			'STAR_ALL' => 'Ausgewählte als Favoriten markieren',
 			'UNSTAR_ALL' => 'Ausgewählte als Favoriten demarkieren',
-			'TAGS' => 'Taggen',
-			'TAGS_ALL' => 'Ausgewählte taggen',
+			'TAG' => 'Taggen',
+			'TAG_ALL' => 'Ausgewählte taggen',
 			'UNSTAR_PHOTO' => 'Foto von Favoriten entfernen',
 			'SET_COVER' => 'Als Album-Cover setzen',
 			'REMOVE_COVER' => 'Als Album-Cover entfernen',
@@ -185,22 +182,22 @@ final class German implements Language
 			'ALBUM_SHR_YES' => 'Ja',
 			'ALBUM_SHR_NO' => 'Nein',
 			'ALBUM_PUBLIC' => 'Öffentlich',
-			'ALBUM_PUBLIC_EXPL' => 'Dieses Album kann, abhängig von den Einstellungen unten, von anderen betrachtet werden.',
+			'ALBUM_PUBLIC_EXPL' => 'Anonyme Nutzer können, abhängig von den Einstellungen unten, auf dieses Album zugreifen.',
 			'ALBUM_FULL' => 'Original',
-			'ALBUM_FULL_EXPL' => 'Original Bilder sind verfügbar.',
+			'ALBUM_FULL_EXPL' => 'Anonyme Nutzer können Fotos in Originalauflösung betrachten.',
 			'ALBUM_HIDDEN' => 'Versteckt',
-			'ALBUM_HIDDEN_EXPL' => 'Nur Personen mit dem direkten Link können dieses Album ansehen.',
+			'ALBUM_HIDDEN_EXPL' => 'Anonyme Nutzer benötigen einen direkten Link, um auf dieses Album zuzugreifen.',
 			'ALBUM_MARK_NSFW' => 'Markiere Album als sensibel',
 			'ALBUM_UNMARK_NSFW' => 'Entferne Markierung des Albums als sensibel',
 			'ALBUM_NSFW' => 'Sensibel',
 			'ALBUM_NSFW_EXPL' => 'Album enthält sensible Inhalte.',
 			'ALBUM_DOWNLOADABLE' => 'Zum Herunterladen',
-			'ALBUM_DOWNLOADABLE_EXPL' => 'Besucher können dieses Album herunterladen.',
+			'ALBUM_DOWNLOADABLE_EXPL' => 'Anonyme Nutzer können dieses Album herunterladen.',
 			'ALBUM_SHARE_BUTTON_VISIBLE' => 'Teilen-Button ist sichtbar',
-			'ALBUM_SHARE_BUTTON_VISIBLE_EXPL' => 'Zeige Links zum Teilen in sozialen Medien.',
+			'ALBUM_SHARE_BUTTON_VISIBLE_EXPL' => 'Anonyme Nutzer können Links zum Teilen in sozialen Medien sehen.',
 			'ALBUM_PASSWORD' => 'Kennwort',
 			'ALBUM_PASSWORD_PROT' => 'Kennwortgeschützt',
-			'ALBUM_PASSWORD_PROT_EXPL' => 'Album nur mit gültigem Kennwort einsehbar.',
+			'ALBUM_PASSWORD_PROT_EXPL' => 'Anonyme Nutzer benötigen ein Passwort, um auf dieses Album zuzugreifen.',
 			'ALBUM_PASSWORD_REQUIRED' => 'Dieses Album ist mit einem Kennwort geschützt. Geben Sie unten das Kennwort ein, um das Album anzusehen:',
 			'ALBUM_MERGE' => 'Sind Sie sicher, dass Sie das Album „%1$s“ mit dem Album „%2%s“ zusammenführen wollen?',
 			'ALBUMS_MERGE' => 'Sind Sie sicher, dass Sie alle ausgewählten Alben mit dem Album „%s“ zusammenführen möchten?',
@@ -276,17 +273,17 @@ final class German implements Language
 			'PHOTO_MAKE_PRIVATE_ALBUM' => 'Dieses Foto befindet sich in einem öffentlichen Album. Um dieses Foto als privat oder öffentlich zu markieren, bearbeiten Sie die Sichtbarkeit des übergeordneten Albums.',
 			'PHOTO_SHOW_ALBUM' => 'Album anzeigen',
 			'PHOTO_PUBLIC' => 'Öffentlich',
-			'PHOTO_PUBLIC_EXPL' => 'Fotos können, abhängig von den Einstellungen unten, von anderen betrachtet werden.',
+			'PHOTO_PUBLIC_EXPL' => 'Anonyme Nutzer können, abhängig von den Einstellungen unten, dieses Foto betrachten.',
 			'PHOTO_FULL' => 'Original',
-			'PHOTO_FULL_EXPL' => 'Original Bild verfügbar.',
+			'PHOTO_FULL_EXPL' => 'Anonyme Nutzer können das Foto in Originalauflösung betrachten.',
 			'PHOTO_HIDDEN' => 'Versteckt',
-			'PHOTO_HIDDEN_EXPL' => 'Nur Besucher mit dem direkten Link können dieses Foto sehen.',
+			'PHOTO_HIDDEN_EXPL' => 'Anonyme Nutzer benötigen einen direkten Link, um auf das Foto zu betrachten.',
 			'PHOTO_DOWNLOADABLE' => 'Herunterladbar',
-			'PHOTO_DOWNLOADABLE_EXPL' => 'Besucher der Galerie können dieses Foto herunterladen.',
+			'PHOTO_DOWNLOADABLE_EXPL' => 'Anonyme Nutzer können dieses Foto herunterladen.',
 			'PHOTO_SHARE_BUTTON_VISIBLE' => 'Teilen-Button ist sichtbar',
-			'PHOTO_SHARE_BUTTON_VISIBLE_EXPL' => 'Zeige Links zum Teilen in sozialen Medien.',
+			'PHOTO_SHARE_BUTTON_VISIBLE_EXPL' => 'Anonyme Nutzer können Links zum Teilen in sozialen Medien sehen.',
 			'PHOTO_PASSWORD_PROT' => 'Passwortgeschützt',
-			'PHOTO_PASSWORD_PROT_EXPL' => 'Foto nur mit gültigen Passwort verfügbar.',
+			'PHOTO_PASSWORD_PROT_EXPL' => 'Anonyme Nutzer benötigen ein Passwort, um dieses Foto zu sehen.',
 			'PHOTO_EDIT_SHARING_TEXT' => 'Die Einstellungen zum Teilen des Foto werden wie folgt angepasst:',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => 'Dieses Foto ist in einem öffentlichen Album und erbt deshalb die Sichtbarkeitseinstellungen des Albums. Die aktuellen Sichtbarkeitseinstellungen werden unten nur zur Info dargestellt.',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'Die Sichtbarkeit dieses Fotos kann über die globalen Lychee Einstellungen modifiziert werden. Die aktuellen Sichtbarkeitseinstellungen werden unten nur zur Info dargestellt.',
@@ -294,9 +291,6 @@ final class German implements Language
 			'LOADING' => 'Laden',
 			'ERROR' => 'Fehler',
 			'ERROR_TEXT' => 'Hoppla, da ist etwas schiefgegangen. Bitte laden Sie die Seite erneut und probieren Sie es noch einmal!',
-			'ERROR_DB_1' => 'Kann keine Verbindung zur Datenbank herstellen, weil der Zugriff verweigert wurde. Überprüfen Sie Host, Benutzername und Kennwort und stellen Sie sicher, dass der Zugriff von Ihrem momentanen Standort erlaubt ist.',
-			'ERROR_DB_2' => 'Kann die Datenbank nicht erstellen. Überprüfen Sie Host, Benutzername und Kennwort und stellen Sie sicher, dass der angegebene Benutzer Inhalte zur Datenbank hinzufügen darf.',
-			'ERROR_CONFIG_FILE' => 'Kann diese Konfiguration nicht speichern. Zugriff verweigert auf <b>„data/“</b>. Bitte setzen Sie die Schreibrechte auf <b>„data/“</b> and <b>„uploads/“</b>. Lesen Sie die README-Datei für mehr Informationen.',
 			'ERROR_UNKNOWN' => 'Etwas Unerwartetes ist passiert. Bitte probieren Sie es erneut und überprüfen Sie die Installation und Ihren Server. Lesen Sie die README-Datei für mehr Informationen.',
 			'ERROR_LOGIN' => 'Kann Login nicht speichern. Bitte versuchen Sie es erneut mit einem anderen Benutzernamen und Kennwort!',
 			'ERROR_MAP_DEACTIVATED' => 'Karten sind unter Einstellungen deaktiviert worden.',
@@ -304,7 +298,6 @@ final class German implements Language
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Noch einmal versuchen',
 
-			'SETTINGS_WARNING' => 'Ändern dieser erweiterten Einstellungen kann sich negativ auf die Stabilität, Sicherheit und Geschwindigkeit dieser Anwendung auswirken. Sie sollten sie nur ändern, wenn Sie genau wissen, was Sie tun.',
 			'SETTINGS_SUCCESS_LOGIN' => 'Benutzerdaten aktualisiert',
 			'SETTINGS_SUCCESS_SORT' => 'Sortierreihenfolge aktualisiert',
 			'SETTINGS_SUCCESS_DROPBOX' => 'Dropbox-Schlüssel aktualisiert',
@@ -319,6 +312,8 @@ final class German implements Language
 			'SETTINGS_SUCCESS_CSS' => 'CSS aktualisiert',
 			'SETTINGS_SUCCESS_UPDATE' => 'Einstellungen erfolgreich aktualisiert',
 			'SETTINGS_DROPBOX_KEY' => 'Dropbox-API-Schlüssel',
+			'SETTINGS_ADVANCED_WARNING_EXPL' => 'Ändern dieser erweiterten Einstellungen kann sich negativ auf die Stabilität, Sicherheit und Geschwindigkeit dieser Anwendung auswirken. Sie sollten sie nur ändern, wenn Sie genau wissen, was Sie tun.',
+			'SETTINGS_ADVANCED_SAVE' => 'Änderungen speichern, ich kenne das Risiko!',
 
 			'U2F_NOT_SUPPORTED' => 'U2F wird nicht unterstützt. Sorry.',
 			'U2F_NOT_SECURE' => 'Umgebung ist nicht sicher. U2F ist nicht verfügbar.',
@@ -327,20 +322,10 @@ final class German implements Language
 			'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentifizierung erfolgreich!',
 			'U2F_CREDENTIALS' => 'Anmeldedaten',
 			'U2F_CREDENTIALS_DELETED' => 'Anmeldedaten gelöscht!',
-			'U2F_NO_CREDENTIALS' => 'Credentials list is empty!',
 
 			'NEW_PHOTOS_NOTIFICATION' => 'E-Mails für neue Fotos senden',
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
-			'USER_EMAIL_INSTRUCTION' => 'Geben Sie Ihre E-Mail-Adresse unten ein, um Benachrichtigungen zu aktivieren.<br />Um Benachrichtigungen zu deaktivieren, entfernen Sie die E-Mail-Adresse unten einfach.',
-
-			'DB_INFO_TITLE' => 'Geben Sie die Informationen zu Ihrer Datenbankverbindung an:',
-			'DB_INFO_HOST' => 'Name des Datenbankservers (optional)',
-			'DB_INFO_USER' => 'Benutzername für die Datenbank',
-			'DB_INFO_PASSWORD' => 'Kennwort für die Datenbank',
-			'DB_INFO_TEXT' => 'Lychee wird eine eigene Datenbank erstellen. Falls erforderlich, können Sie stattdessen den Namen einer bestehenden Datenbank angeben:',
-			'DB_NAME' => 'Name der Datenbank (optional)',
-			'DB_PREFIX' => 'Präfix für den Tabellennamen (optional)',
-			'DB_CONNECT' => 'Verbinden',
+			'USER_EMAIL_INSTRUCTION' => 'Geben Sie Ihre E-Mail-Adresse unten ein, um Benachrichtigungen zu aktivieren. Um Benachrichtigungen zu deaktivieren, entfernen Sie die E-Mail-Adresse unten einfach.',
 
 			'LOGIN_TITLE' => 'Geben Sie Benutzername und Kennwort für Ihre Installation an:',
 			'LOGIN_USERNAME' => 'Neuer Benutzername',
@@ -356,6 +341,9 @@ final class German implements Language
 			'EDIT_SHARING_TITLE' => 'Freigabe bearbeiten',
 			'EDIT_SHARING_TEXT' => 'Die Freigabeeinstellungen für dieses Album werden wie folgt geändert:',
 			'SHARE_ALBUM_TEXT' => 'Dieses Album wird mit folgenden Einstellungen freigegeben:',
+
+			'SORT_DIALOG_ATTRIBUTE_LABEL' => 'Attribut',
+			'SORT_DIALOG_ORDER_LABEL' => 'Reihenfolge',
 
 			'SORT_ALBUM_BY' => 'Alben nach %1$s in einer %2$s Reihenfolge sortieren.',
 
@@ -396,9 +384,6 @@ final class German implements Language
 			'OVERLAY_DATE' => 'Erstellungsdatum des Fotos',
 			'MAP_DISPLAY_TEXT' => 'Kartenfunktionalitäten aktivieren (OpenStreetMap)',
 			'MAP_DISPLAY_PUBLIC_TEXT' => 'Kartenfunktionalität für öffentliche Alben aktivieren (OpenStreetMap)',
-			'LOCATION_DECODING' => 'Ortsnamen mittels GPS-Daten bestimmen',
-			'LOCATION_SHOW' => 'Zeige Ortsnamen',
-			'LOCATION_SHOW_PUBLIC' => 'Zeige Ortsnamen für öffentliche Alben',
 			'MAP_PROVIDER' => 'Provider für OpenStreetMap-Karten:',
 			'MAP_PROVIDER_WIKIMEDIA' => 'Wikimedia',
 			'MAP_PROVIDER_OSM_ORG' => 'OpenStreetMap.org (kein HiDPI)',
@@ -406,6 +391,9 @@ final class German implements Language
 			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (kein HiDPI)',
 			'MAP_PROVIDER_RRZE' => 'Universtät Erlangen, Deutschland (nur HiDPI)',
 			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Fotos von Unterordnern für Karten berücksichtigen',
+			'LOCATION_DECODING' => 'Ortsnamen mittels GPS-Daten bestimmen',
+			'LOCATION_SHOW' => 'Zeige Ortsnamen',
+			'LOCATION_SHOW_PUBLIC' => 'Zeige Ortsnamen für öffentliche Alben',
 
 			'LAYOUT_TYPE' => 'Layout des Fotos:',
 			'LAYOUT_SQUARES' => 'Quadratische Miniaturansichten',
@@ -414,7 +402,7 @@ final class German implements Language
 			'SET_LAYOUT' => 'Ausgerichtetes Layout benutzen:',
 
 			'NSFW_VISIBLE_TEXT_1' => 'Sensible Alben sind standardmäßig auf sichtbar',
-			'NSFW_VISIBLE_TEXT_2' => 'Wenn das Album öffentlich ist, kann weiterhin zugegriffen werden. Es wird nur ausgeblendet und kann <b>durch Pressen der Taste <hkb>H</hkb> sichtbar gemacht werden.</b>.',
+			'NSFW_VISIBLE_TEXT_2' => 'Wenn das Album öffentlich ist, kann weiterhin zugegriffen werden. Es wird nur ausgeblendet und kann <b>durch Pressen der Taste <kbd>H</kbd> sichtbar gemacht werden.</b>.',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Standardmäßige Sichtbarkeit wurde erfolgreich geändert.',
 
 			'VIEW_NO_RESULT' => 'Keine Ergebnisse',
@@ -438,6 +426,7 @@ final class German implements Language
 			'UPLOAD_CANCELLED' => 'Abgebrochen',
 			'UPLOAD_SKIPPED' => 'Übersprungen',
 			'UPLOAD_UPDATED' => 'Upgedatet',
+			'UPLOAD_GENERAL' => 'Allgemein',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'Dieses Foto wurde übersprungen, da es bereits in deiner Bibliothek vorhanden ist.',
 			'UPLOAD_IMPORT_RESYNCED_DUPLICATE' => 'Dieses Foto wurde übersprungen, da es bereits in deiner Bibliothek vorhanden ist, jedoch wurden die Metadaten upgedatet.',
 			'UPLOAD_ERROR_CONSOLE' => 'Bitte schauen Sie in die Konsole Ihres Browsers, um weiter Details zu erfahren.',
@@ -463,20 +452,17 @@ final class German implements Language
 			'UPLOAD_IMPORT_SKIP_DUPLICATES_EXPL' => 'Bestehende Medien-Dateien wurden übersprungen.',
 			'UPLOAD_IMPORT_RESYNC_METADATA' => 'Synchronisiere Metadaten erneut',
 			'UPLOAD_IMPORT_RESYNC_METADATA_EXPL' => 'Update Metadaten der bestehenden Medien-Dateien.',
-			'UPLOAD_IMPORT_LOW_MEMORY' => 'Sehr wenig Speicher!',
 			'UPLOAD_IMPORT_LOW_MEMORY_EXPL' => 'Der Importprozess auf dem Server nähert sich dem Speicherlimit und wird eventuell vorzeitig beendet.',
 			'UPLOAD_WARNING' => 'Warnung',
 			'UPLOAD_IMPORT_NOT_A_DIRECTORY' => 'Der angegebene Pfad ist kein lesbares Verzeichnis!',
 			'UPLOAD_IMPORT_PATH_RESERVED' => 'Der angegebene Pfad ist ein von Lychee reservierter Pfad!',
-			'UPLOAD_IMPORT_UNREADABLE' => 'Die Datei konnte nicht gelesen werden!',
 			'UPLOAD_IMPORT_FAILED' => 'The Datei konnte nicht importiert werden!',
 			'UPLOAD_IMPORT_UNSUPPORTED' => 'Dateityp wird nicht unterstützt!',
-			'UPLOAD_IMPORT_ALBUM_FAILED' => 'Album konnte nicht erstellt werden!',
 			'UPLOAD_IMPORT_CANCELLED' => 'Import abgebrochen',
 
 			'ABOUT_SUBTITLE' => 'Selbst gehostetes Foto-Management, aber richtig!',
 			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> ist ein freies Foto-Management-Werkzeug, dass auf Ihrem Server oder Webspace läuft. Die Installation ist eine Sache von Sekunden. Hochladen, Organisieren und Teilen von Fotos funktioniert wie in einer nativen Anwendung. Lychee hält alles bereit, was Sie benötigen, und alle Bilder werden sicher abgespeichert.',
-			'FOOTER_COPYRIGHT' => 'Alle Bilder auf dieser Website unterliegen dem Copyright von %1$s &copy; %2$s',
+			'FOOTER_COPYRIGHT' => 'Alle Bilder auf dieser Website unterliegen dem Urheberrecht von %1$s &copy; %2$s',
 			'HOSTED_WITH_LYCHEE' => 'Läuft mit Lychee',
 
 			'URL_COPY_TO_CLIPBOARD' => 'In die Zwischenablage kopiert',
@@ -489,9 +475,8 @@ final class German implements Language
 			'PHOTO_THUMB' => 'Quadratische Miniaturansicht',
 			'PHOTO_THUMB_HIDPI' => 'Quadratische Miniaturansicht HiDPI',
 			'PHOTO_THUMBNAIL' => 'Foto-Vorschau',
-			'PHOTO_LIVE_VIDEO' => 'Video des Live-Photos',
+			'PHOTO_LIVE_VIDEO' => 'Video des Live-Fotos',
 			'PHOTO_VIEW' => 'Lychees Foto-Ansicht:',
-			'VIDEO_NOT_SUPPORTED' => 'Ihr Browser unterstützt den Video-Tag nicht.',
 
 			'PHOTO_EDIT_ROTATECWISE' => 'Im Uhrzeigersinn drehen',
 			'PHOTO_EDIT_ROTATECCWISE' => 'Gegen den Uhrzeigersinn drehen',
@@ -501,7 +486,7 @@ final class German implements Language
 			'ERROR_COULD_NOT_FIND' => 'Konnte nicht finden, was Sie suchen.',
 			'ERROR_INVALID_EMAIL' => 'Ungültige E-Mail-Adresse',
 			'EMAIL_SUCCESS' => 'E-Mail-Adresse aktualisiert!',
-			'ERROR_PHOTO_NOT_FOUND' => 'Fehler: Foto %s wurde nicht gefunden!',
+			'ERROR_PHOTO_NOT_FOUND' => 'Fehler: Foto „%s“ wurde nicht gefunden!',
 			'ERROR_EMPTY_USERNAME' => 'Neuer Benutzername kann nicht leer sein.',
 			'ERROR_PASSWORD_DOES_NOT_MATCH' => 'Passwörter stimmt nicht überein.',
 			'ERROR_EMPTY_PASSWORD' => 'Neues Passwort kann nicht leer sein.',
@@ -511,11 +496,11 @@ final class German implements Language
 			'SHARING_SUCCESS' => 'Freigabe aktualisiert!',
 			'SHARING_REMOVED' => 'Freigabe entfernt!',
 			'USER_CREATED' => 'Benutzer erstellt!',
-			'USER_REMOVED' => 'Benutzer gelöscht!',
+			'USER_DELETED' => 'Benutzer gelöscht!',
 			'USER_UPDATED' => 'Benutzer aktualisiert!',
 			'ENTER_EMAIL' => 'Geben Sie Ihre E-Mail-Adresse ein:',
 			'ERROR_ALBUM_JSON_NOT_FOUND' => 'Fehler: Album-JSON wurde nicht gefunden!',
-			'ERROR_ALBUM_NOT_FOUND' => 'Fehler: Album %s wurde nicht gefunden',
+			'ERROR_ALBUM_NOT_FOUND' => 'Fehler: Album „%s“ wurde nicht gefunden',
 			'ERROR_DROPBOX_KEY' => 'Fehler: Dropbox-Schlüssel nicht gesetzt',
 			'ERROR_SESSION' => 'Sitzung abgelaufen',
 			'CAMERA_DATE' => 'Kameradatum',
@@ -524,7 +509,5 @@ final class German implements Language
 			'RESTRICTED_ACCOUNT' => 'Eingeschränkter Account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap-Beitragende',
 		];
-
-		return $locale;
 	}
 }
