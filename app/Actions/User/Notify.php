@@ -34,11 +34,8 @@ class Notify
 			return;
 		}
 
-		/** @var Collection<int,User> Users to be informed */
-		$users = new Collection();
-
-		// The admin is always informed
-		$users->add(User::where('id', '=', 0)->sole());
+		// Admin user is always notified
+		$users = new Collection([User::find(0)]);
 
 		$album = $photo->album;
 		if ($album !== null) {
