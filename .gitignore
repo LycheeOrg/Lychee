@@ -1,12 +1,5 @@
 /node_modules
 
-public/Lychee-front/node_modules/
-public/Lychee-front/package-lock.json
-
-public/Lychee-front/node_modules/
-public/Lychee-front/bower_components/
-public/Lychee-front/package-lock.json
-
 public/dist/user.css
 
 public/uploads/**
