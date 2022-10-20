@@ -2,7 +2,7 @@
     "name": "lychee-org/lychee",
     "description": "A great looking and easy-to-use photo-management-system you can run on your server, to manage and share photos.",
     "homepage": "https://lycheeorg.github.io/",
-    "readme": "readme.md",
+    "readme": "README.md",
     "support": {
         "source": "https://github.com/LycheeOrg/Lychee",
         "issues": "https://github.com/LycheeOrg/Lychee/issues",
@@ -70,7 +70,6 @@
         "filp/whoops": "^2.5",
         "friendsofphp/php-cs-fixer": "^3.3",
         "itsgoingd/clockwork": "^5.0",
-        "laravel/homestead": "^v13.2.1",
         "lychee-org/phpstan-lychee": "dev-master",
         "mockery/mockery": "^1.5",
         "nunomaduro/collision": "^5.0",
