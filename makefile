@@ -39,7 +39,6 @@ dist-gen: clean composer
 	@cp -r index.php                        Lychee
 	@cp -r LICENSE                          Lychee
 	@cp -r README.md                        Lychee
-	@cp -r server.php                       Lychee
 	@cp -r simple_error_template.html       Lychee
 	@cp -r version.md                       Lychee
 	@touch Lychee/storage/logs/laravel.log
