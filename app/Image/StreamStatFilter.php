@@ -26,7 +26,6 @@ class StreamStatFilter extends \php_user_filter
 	{
 		while ($bucket = stream_bucket_make_writeable($in)) {
 			$consumed += $bucket->datalen;
-
 			if ($this->params instanceof StreamStat) {
 				$this->params->bytes += $bucket->datalen;
 				\hash_update($this->hashContext, $bucket->data);

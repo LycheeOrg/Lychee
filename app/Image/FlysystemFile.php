@@ -62,7 +62,7 @@ class FlysystemFile extends MediaFile
 			$streamStat = $collectStatistics ? static::appendStatFilter($stream) : null;
 
 			if (!$this->disk->writeStream($this->relativePath, $stream)) {
-				throw new FlySystemLycheeException('Filesystem::put failed');
+				throw new FlySystemLycheeException('Filesystem::writeStream failed');
 			}
 
 			return $streamStat;
