@@ -49,7 +49,7 @@ class FromUrl
 					// Silently do nothing, if `set_time_limit` is denied.
 				}
 
-				// If the component parameter is specified, this function returns a string (or int in case of PHP_URL_PORT )
+				// If the component parameter is specified, this function returns a string (or int in case of PHP_URL_PORT)
 				/** @var string $path */
 				$path = parse_url($url, PHP_URL_PATH);
 				$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
