@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Traits;
+namespace App\Http\Requests\Contracts;
 
 use App\Models\User;
 
-trait HasUserTrait
+interface HasOptionalUser
 {
-	/**
-	 * @var User
-	 */
-	protected User $user2;
+	public const USER_ID_ATTRIBUTE = 'userID';
 
 	/**
 	 * Returns an _additional_ {@link User} object associated with this request.
@@ -20,10 +17,7 @@ trait HasUserTrait
 	 * This method returns another user object which is explicitly part of the
 	 * request.
 	 *
-	 * @return User
+	 * @return User|null
 	 */
-	public function user2(): User
-	{
-		return $this->user2;
-	}
+	public function user2(): ?User;
 }

@@ -1679,7 +1679,7 @@ var SmartAlbumID = Object.freeze({
  * @property {string}   swipe_tolerance_x       - actually a number
  * @property {string}   swipe_tolerance_y       - actually a number
  * @property {string}   upload_processing_limit - actually a number
- * @property {string}   version                 - actually a number
+ * @property {string}   version                 - a string of 6 digits without separating dots, i.e. version 4.6.3 is reported as `'040603'`
  */
 
 /**

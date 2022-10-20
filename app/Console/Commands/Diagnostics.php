@@ -24,7 +24,8 @@ class Diagnostics extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'lychee:diagnostics';
+	protected $signature = 'lychee:diagnostics
+	                {--skip=* : Skip certain diagnostics check, overrides SKIP_DIAGNOSTICS_CHECKS config}';
 
 	/**
 	 * The console command description.
@@ -73,10 +74,17 @@ class Diagnostics extends Command
 	 */
 	public function handle(): int
 	{
+		/** @var string[] $skip_diagnostics */
+		$skip_diagnostics = config('app.skip_diagnostics_checks');
+		/** @var string[] $options */
+		$options = $this->option('skip');
+		if (sizeof($options) > 0) {
+			$skip_diagnostics = $options;
+		}
 		try {
 			$this->line('');
 			$this->line('');
-			$this->block('Diagnostics', resolve(Errors::class)->get());
+			$this->block('Diagnostics', resolve(Errors::class)->get($skip_diagnostics));
 			$this->line('');
 			$this->block('System Information', resolve(Info::class)->get());
 			$this->line('');
