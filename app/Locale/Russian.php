@@ -179,8 +179,6 @@ final class Russian implements Language
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Subalbums',
 			'ALBUM_SHARING' => 'Общее',
-			'ALBUM_SHR_YES' => 'Да',
-			'ALBUM_SHR_NO' => 'Нет',
 			'ALBUM_PUBLIC' => 'Доступ',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Original',
@@ -261,10 +259,6 @@ final class Russian implements Language
 			'PHOTO_FOCAL' => 'Фокусное расстояние',
 			'PHOTO_ISO' => 'ISO %s',
 			'PHOTO_SHARING' => 'Доступность',
-			'PHOTO_SHR_PUBLIC' => 'Публичный',
-			'PHOTO_SHR_ALB' => 'Да (альбом)',
-			'PHOTO_SHR_PHT' => 'Да (фото)',
-			'PHOTO_SHR_NO' => 'Нет',
 			'PHOTO_DELETE' => 'Удалить фото',
 			'PHOTO_KEEP' => 'Сохранить фото',
 			'PHOTO_DELETE_CONFIRMATION' => 'Вы точно хотите удалить фото «%s»? Это действие необратимо!',
@@ -508,7 +502,7 @@ final class Russian implements Language
 			'CAMERA_DATE' => 'Camera date',
 			'NEW_PASSWORD' => 'new password',
 			'ALLOW_UPLOADS' => 'Allow uploads',
-			'RESTRICTED_ACCOUNT' => 'Restricted account',
+			'ALLOW_USER_SELF_EDIT' => 'Allow self-management of user account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
 	}

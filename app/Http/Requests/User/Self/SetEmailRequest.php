@@ -1,22 +1,12 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\User\Self;
 
-use App\Http\Requests\BaseApiRequest;
-use App\Models\User;
-use App\Policies\UserPolicy;
-use Illuminate\Support\Facades\Gate;
-
-class SetEmailRequest extends BaseApiRequest
+class SetEmailRequest extends AbstractSelfEditRequest
 {
 	public const EMAIL_ATTRIBUTE = 'email';
 
 	protected ?string $email = null;
-
-	public function authorize(): bool
-	{
-		return Gate::check(UserPolicy::CAN_EDIT_SETTINGS, User::class);
-	}
 
 	public function rules(): array
 	{

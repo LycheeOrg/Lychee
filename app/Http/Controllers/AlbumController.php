@@ -11,8 +11,8 @@ use App\Actions\Album\Move;
 use App\Actions\Album\PositionData;
 use App\Actions\Album\SetProtectionPolicy;
 use App\Actions\Album\Unlock;
-use App\Contracts\AbstractAlbum;
 use App\Contracts\LycheeException;
+use App\DTO\AbstractAlbumDTO;
 use App\DTO\PositionData as PositionDataDTO;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
@@ -80,11 +80,11 @@ class AlbumController extends Controller
 	 *
 	 * @param GetAlbumRequest $request
 	 *
-	 * @return AbstractAlbum
+	 * @return AbstractAlbumDTO
 	 */
-	public function get(GetAlbumRequest $request): AbstractAlbum
+	public function get(GetAlbumRequest $request): AbstractAlbumDTO
 	{
-		return $request->album();
+		return new AbstractAlbumDTO($request->album());
 	}
 
 	/**

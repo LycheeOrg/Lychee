@@ -10,7 +10,6 @@ use App\Models\Photo;
 use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
-use App\Policies\UserPolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -181,7 +180,7 @@ class HasAlbumThumb extends Relation
 			->orderBy('photos.is_starred', 'desc')
 			->orderBy('photos.' . $this->sorting->column, $this->sorting->order)
 			->limit(1);
-		if (!Gate::check(UserPolicy::IS_ADMIN)) {
+		if (Auth::user()?->may_administrate !== true) {
 			$bestPhotoIDSelect->where(function (Builder $query2) {
 				$this->photoQueryPolicy->appendSearchabilityConditions(
 					$query2->getQuery(),
@@ -210,7 +209,7 @@ class HasAlbumThumb extends Relation
 			$builder->select(['covered_albums.id AS album_id'])
 				->addSelect(['photo_id' => $bestPhotoIDSelect])
 				->whereIn('covered_albums.id', $albumKeys);
-			if (!Gate::check(UserPolicy::IS_ADMIN)) {
+			if (Auth::user()?->may_administrate !== true) {
 				$builder->where(function (BaseBuilder $q) {
 					$this->albumQueryPolicy->appendAccessibilityConditions($q);
 				});

@@ -12,6 +12,8 @@
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+var _lychee$locale;
+
 var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xlink:href='#", "' /></svg>"], ["<svg class='iconic ", "'><use xlink:href='#", "' /></svg>"]),
     _templateObject2 = _taggedTemplateLiteral(["<div class='divider'><h1>$", "</h1></div>"], ["<div class='divider'><h1>$", "</h1></div>"]),
     _templateObject3 = _taggedTemplateLiteral(["<div id='", "' class='edit'>", "</div>"], ["<div id='", "' class='edit'>", "</div>"]),
@@ -33,8 +35,8 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject19 = _taggedTemplateLiteral(["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"], ["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"]),
     _templateObject20 = _taggedTemplateLiteral(["<a class='", "'>$", "</a>"], ["<a class='", "'>$", "</a>"]),
     _templateObject21 = _taggedTemplateLiteral(["<div class='empty'>", "</div>"], ["<div class='empty'>", "</div>"]),
-    _templateObject22 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
-    _templateObject23 = _taggedTemplateLiteral(["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"string\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"string\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
+    _templateObject22 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_edit_own_settings\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_edit_own_settings\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
+    _templateObject23 = _taggedTemplateLiteral(["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"string\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"string\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
     _templateObject24 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
     _templateObject25 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <table>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <table>\n\t\t\t\t "]),
     _templateObject26 = _taggedTemplateLiteral(["<span class='attr_", "_separator'>, </span>"], ["<span class='attr_", "_separator'>, </span>"]),
@@ -42,6 +44,8 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject28 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
     _templateObject29 = _taggedTemplateLiteral(["<tr><td>$", "</td><td>", "</td></tr>"], ["<tr><td>$", "</td><td>", "</td></tr>"]),
     _templateObject30 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]);
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
@@ -555,7 +559,7 @@ var loadPhotoInfo = function loadPhotoInfo(photoID) {
 		document.title = "Lychee – " + _title;
 		header.dom(".header__title").text(_title);
 
-		if (photo.json.hasOwnProperty("is_share_button_visible") && !photo.json.is_share_button_visible) {
+		if (!lychee.share_button_visible) {
 			$("#button_share").hide();
 		}
 
@@ -722,7 +726,7 @@ build.album = function (data) {
 
 	if (album.isUploadable() && !disabled) {
 		var isCover = album.json && album.json.cover_id && data.thumb.id === album.json.cover_id;
-		html += lychee.html(_templateObject7, data.is_nsfw ? "badge--nsfw" : "", build.iconic("warning"), data.id === SmartAlbumID.STARRED ? "badge--star" : "", build.iconic("star"), data.id === SmartAlbumID.RECENT ? "badge--visible badge--list" : "", build.iconic("clock"), data.id === SmartAlbumID.PUBLIC || data.is_public ? "badge--visible" : "", data.requires_link ? "badge--hidden" : "badge--not--hidden", build.iconic("eye"), data.id === SmartAlbumID.UNSORTED ? "badge--visible" : "", build.iconic("list"), data.has_password ? "badge--visible" : "", build.iconic("lock-locked"), data.is_tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
+		html += lychee.html(_templateObject7, data.policies && data.policies.is_nsfw ? "badge--nsfw" : "", build.iconic("warning"), data.id === SmartAlbumID.STARRED ? "badge--star" : "", build.iconic("star"), data.id === SmartAlbumID.RECENT ? "badge--visible badge--list" : "", build.iconic("clock"), data.id === SmartAlbumID.PUBLIC || data.policies && data.policies.is_public ? "badge--visible" : "", data.policies && data.policies.is_link_required ? "badge--hidden" : "badge--not--hidden", build.iconic("eye"), data.id === SmartAlbumID.UNSORTED ? "badge--visible" : "", build.iconic("list"), data.policies && data.policies.is_password_required ? "badge--visible" : "", build.iconic("lock-unlocked"), data.is_tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
 
 	if (data.albums && data.albums.length > 0 || data.has_albums) {
@@ -830,7 +834,7 @@ build.photo = function (data) {
 		// This also means that the displayed variant of the public badge of
 		// a photo depends on the availability of the parent album.
 		// This seems to be an undesired but unavoidable side effect.
-		html += lychee.html(_templateObject12, data.is_starred ? "badge--star" : "", build.iconic("star"), data.is_public && album.json && !album.json.is_public ? "badge--visible badge--hidden" : "", build.iconic("eye"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
+		html += lychee.html(_templateObject12, data.is_starred ? "badge--star" : "", build.iconic("star"), data.is_public && album.json && album.json.policies && !album.json.policies.is_public ? "badge--visible badge--hidden" : "", build.iconic("eye"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
 
 	html += "</div>";
@@ -1025,7 +1029,7 @@ build.tags = function (tags) {
  * @returns {string}
  */
 build.user = function (user) {
-	return lychee.html(_templateObject22, user.id, user.id, user.username, lychee.locale["USERNAME"], lychee.locale["NEW_PASSWORD"], lychee.locale["ALLOW_UPLOADS"], lychee.locale["RESTRICTED_ACCOUNT"], user.id, user.id);
+	return lychee.html(_templateObject22, user.id, user.id, user.username, lychee.locale["USERNAME"], lychee.locale["NEW_PASSWORD"], lychee.locale["ALLOW_UPLOADS"], lychee.locale["ALLOW_USER_SELF_EDIT"], user.id, user.id);
 };
 
 /**
@@ -1312,7 +1316,7 @@ header.setMode = function (mode) {
 				tabindex.makeUnfocusable(_e5);
 			}
 
-			if (lychee.enable_button_add && lychee.rights.may_upload) {
+			if (lychee.enable_button_add && lychee.rights.root_album.can_upload) {
 				var _e6 = $(".button_add", ".header__toolbar--albums");
 				_e6.show();
 				tabindex.makeFocusable(_e6);
@@ -1335,7 +1339,7 @@ header.setMode = function (mode) {
 
 			// Hide download button when album empty or we are not allowed to
 			// upload to it and it's not explicitly marked as downloadable.
-			if (!album.json || album.json.photos.length === 0 && album.json.albums && album.json.albums.length === 0 || !album.isUploadable() && !album.json.is_downloadable) {
+			if (!album.json || album.json.photos.length === 0 && album.json.albums && album.json.albums.length === 0 || !album.json.rights.can_download) {
 				var _e8 = $("#button_archive");
 				_e8.hide();
 				tabindex.makeUnfocusable(_e8);
@@ -1345,7 +1349,7 @@ header.setMode = function (mode) {
 				tabindex.makeFocusable(_e9);
 			}
 
-			if (album.json && album.json.hasOwnProperty("is_share_button_visible") && !album.json.is_share_button_visible) {
+			if (!lychee.share_button_visible) {
 				var _e10 = $("#button_share_album");
 				_e10.hide();
 				tabindex.makeUnfocusable(_e10);
@@ -1476,7 +1480,7 @@ header.setMode = function (mode) {
 				tabindex.makeUnfocusable(_e24);
 			}
 
-			if (photo.json && photo.json.hasOwnProperty("is_share_button_visible") && !photo.json.is_share_button_visible) {
+			if (!lychee.share_button_visible) {
 				var _e25 = $("#button_share");
 				_e25.hide();
 				tabindex.makeUnfocusable(_e25);
@@ -1489,7 +1493,7 @@ header.setMode = function (mode) {
 			// Hide More menu if empty (see contextMenu.photoMore)
 			$("#button_more").show();
 			tabindex.makeFocusable($("#button_more"));
-			if (!(album.isUploadable() || (photo.json.hasOwnProperty("is_downloadable") ? photo.json.is_downloadable : album.json && album.json.is_downloadable)) && !(photo.json.size_variants.original.url && photo.json.size_variants.original.url !== "")) {
+			if (photo.json && !photo.json.rights.can_download && (!photo.json.rights.can_access_full_photo || !(photo.json.size_variants.original.url && photo.json.size_variants.original.url !== ""))) {
 				var _e27 = $("#button_more");
 				_e27.hide();
 				tabindex.makeUnfocusable(_e27);
@@ -1825,7 +1829,8 @@ sidebar.secondsToHMS = function (d) {
 sidebar.createStructure.photo = function (data) {
 	if (!data) return [];
 
-	var editable = typeof album !== "undefined" ? album.isUploadable() : false;
+	var editable = data.rights.can_edit;
+
 	var hasExif = !!data.taken_at || !!data.make || !!data.model || !!data.shutter || !!data.aperture || !!data.focal || !!data.iso;
 	// Attributes for geo-position are nullable floats.
 	// The geo-position 0°00'00'', 0°00'00'' at zero altitude is very unlikely
@@ -1994,12 +1999,11 @@ sidebar.createStructure.photo = function (data) {
 sidebar.createStructure.album = function (data) {
 	if (!data) return [];
 
-	var editable = album.isUploadable();
+	var editable = data.rights.can_edit;
 	var structure = {};
-	var isPublic = data.is_public ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
-	var requiresLink = data.requires_link ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
-	var isDownloadable = data.is_downloadable ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
-	var isShareButtonVisible = data.is_share_button_visible ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
+	var isPublic = !!data.policies && data.policies.is_public ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
+	var requiresLink = !!data.policies && data.policies.is_link_required ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
+	var isDownloadable = !!data.policies && data.policies.grant_download ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
 	var hasPassword = data.has_password ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
 	var license = "";
 	var sorting = "";
@@ -2063,7 +2067,7 @@ sidebar.createStructure.album = function (data) {
 	structure.share = {
 		title: lychee.locale["ALBUM_SHARING"],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["ALBUM_PUBLIC"], kind: "public", value: isPublic }, { title: lychee.locale["ALBUM_HIDDEN"], kind: "hidden", value: requiresLink }, { title: lychee.locale["ALBUM_DOWNLOADABLE"], kind: "downloadable", value: isDownloadable }, { title: lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE"], kind: "share_button_visible", value: isShareButtonVisible }, { title: lychee.locale["ALBUM_PASSWORD"], kind: "password", value: hasPassword }]
+		rows: [{ title: lychee.locale["ALBUM_PUBLIC"], kind: "public", value: isPublic }, { title: lychee.locale["ALBUM_HIDDEN"], kind: "hidden", value: requiresLink }, { title: lychee.locale["ALBUM_DOWNLOADABLE"], kind: "downloadable", value: isDownloadable }, { title: lychee.locale["ALBUM_PASSWORD"], kind: "password", value: hasPassword }]
 	};
 
 	if (data.owner_name) {
@@ -2629,7 +2633,7 @@ mapview.goto = function (elem) {
  * @property {function} printMonthYear
  */
 
-lychee.locale = {
+lychee.locale = (_lychee$locale = {
 	USERNAME: "Username",
 	PASSWORD: "Password",
 	ENTER: "Enter",
@@ -3094,6 +3098,11 @@ lychee.locale = {
 	PHOTO_LIVE_VIDEO: "Video part of live-photo",
 	PHOTO_VIEW: "Lychee Photo View:",
 
+	NEW_PASSWORD: "new password",
+	ALLOW_UPLOADS: "Allow uploads",
+	ALLOW_USER_SELF_EDIT: "Allow self-management of user account",
+
+	OSM_CONTRIBUTORS: "OpenStreetMap contributors",
 	PHOTO_EDIT_ROTATECWISE: "Rotate clockwise",
 	PHOTO_EDIT_ROTATECCWISE: "Rotate counter-clockwise",
 
@@ -3119,112 +3128,72 @@ lychee.locale = {
 	ERROR_ALBUM_NOT_FOUND: "Error: album %s not found",
 	ERROR_DROPBOX_KEY: "Error: Dropbox key not set",
 	ERROR_SESSION: "Session expired.",
-	CAMERA_DATE: "Camera date",
-	NEW_PASSWORD: "new password",
-	ALLOW_UPLOADS: "Allow uploads",
-	RESTRICTED_ACCOUNT: "Restricted account",
-	OSM_CONTRIBUTORS: "OpenStreetMap contributors",
-
-	dateTimeFormatter: new Intl.DateTimeFormat("default", { dateStyle: "medium", timeStyle: "medium" }),
-
-	/**
-  * Formats a number representing a filesize in bytes as a localized string
-  * @param {!number} filesize
-  * @returns {string} A formatted and localized string
-  */
-	printFilesizeLocalized: function printFilesizeLocalized(filesize) {
-		var suffix = [" B", " kB", " MB", " GB"];
-		var i = 0;
-		// Sic! We check if the number is larger than 1000 but divide by 1024 by intention
-		// We aim at a number which has at most 3 non-decimal digits, i.e. the result shall be in the interval
-		// [1000/1024, 1000) = [0.977, 1000)  (lower bound included, upper bound excluded)
-		while (filesize >= 1000.0 && i < suffix.length) {
-			filesize = filesize / 1024.0;
-			i++;
-		}
-
-		// The number of decimal digits is anti-proportional to the number of non-decimal digits
-		// In total, there shall always be three digits
-		if (filesize >= 100.0) {
-			filesize = Math.round(filesize);
-		} else if (filesize >= 10.0) {
-			filesize = Math.round(filesize * 10.0) / 10.0;
-		} else {
-			filesize = Math.round(filesize * 100.0) / 100.0;
-		}
-
-		return Number(filesize).toLocaleString() + suffix[i];
-	},
-
-	/**
-  * Converts a JSON encoded date/time into a localized string relative to
-  * the original timezone
-  *
-  * The localized string uses the JS "medium" verbosity.
-  * The precise definition of "medium verbosity" depends on the current locale, but for Western languages this
-  * means that the date portion is fully printed with digits (e.g. something like 03/30/2021 for English,
-  * 30/03/2021 for French and 30.03.2021 for German), and that the time portion is printed with a resolution of
-  * seconds with two digits for all parts either in 24h or 12h scheme (e.g. something like 02:24:13pm for English
-  * and 14:24:13 for French/German).
-  *
-  * @param {?string} jsonDateTime
-  * @returns {string} A formatted and localized time
-  */
-	printDateTime: function printDateTime(jsonDateTime) {
-		if (typeof jsonDateTime !== "string" || jsonDateTime === "") return "";
-
-		// Unfortunately, the built-in JS Date object is rather dumb.
-		// It is only required to support the timezone of the runtime
-		// environment and UTC.
-		// Moreover, the method `toLocalString` may or may not convert
-		// the represented time to the timezone of the runtime environment
-		// before formatting it as a string.
-		// However, we want to keep the printed time in the original timezone,
-		// because this facilitates human interaction with a photo.
-		// To this end we apply a "dirty" trick here.
-		// We first cut off any explicit timezone indication from the JSON
-		// string and only pass a date/time of the form `YYYYMMDDThhmmss` to
-		// `Date`.
-		// `Date` is required to interpret those time values according to the
-		// local timezone (see [MDN Web Docs - Date Time String Format](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse#date_time_string_format)).
-		// Most likely, the resulting `Date` object will represent the
-		// wrong instant in time (given in seconds since epoch), but we only
-		// want to call `toLocalString` which is fine and don't do any time
-		// arithmetics.
-		// Then we add the original timezone to the string manually.
-		var splitDateTime = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([,.]\d{1,6})?)([-Z+])(\d{2}:\d{2})?$/.exec(jsonDateTime);
-		// The capturing groups are:
-		//  - 0: the whole string
-		//  - 1: the whole date/time segment incl. fractional seconds
-		//  - 2: the fractional seconds (if present)
-		//  - 3: the timezone separator, i.e. "Z", "-" or "+" (if present)
-		//  - 4: the absolute timezone offset without the sign (if present)
-		console.assert(splitDateTime.length === 5, "'jsonDateTime' is not formatted acc. to ISO 8601; passed string was: " + jsonDateTime);
-		var result = lychee.locale.dateTimeFormatter.format(new Date(splitDateTime[1]));
-		if (splitDateTime[3] === "Z" || splitDateTime[4] === "00:00") {
-			result += " UTC";
-		} else {
-			result += " UTC" + splitDateTime[3] + splitDateTime[4];
-		}
-		return result;
-	},
-
-	/**
-  * Converts a JSON encoded date/time into a localized string which only displays month and year.
-  *
-  * The month is printed as a shortened word with 3/4 letters, the year is printed with 4 digits (e.g. something like
-  * "Aug 2020" in English or "Août 2020" in French).
-  *
-  * @param {?string} jsonDateTime
-  * @returns {string} A formatted and localized month and year
-  */
-	printMonthYear: function printMonthYear(jsonDateTime) {
-		if (typeof jsonDateTime !== "string" || jsonDateTime === "") return "";
-		var locale = "default"; // use the user's browser settings
-		var format = { month: "short", year: "numeric" };
-		return new Date(jsonDateTime).toLocaleDateString(locale, format);
+	CAMERA_DATE: "Camera date"
+}, _defineProperty(_lychee$locale, "NEW_PASSWORD", "new password"), _defineProperty(_lychee$locale, "ALLOW_UPLOADS", "Allow uploads"), _defineProperty(_lychee$locale, "RESTRICTED_ACCOUNT", "Restricted account"), _defineProperty(_lychee$locale, "OSM_CONTRIBUTORS", "OpenStreetMap contributors"), _defineProperty(_lychee$locale, "dateTimeFormatter", new Intl.DateTimeFormat("default", { dateStyle: "medium", timeStyle: "medium" })), _defineProperty(_lychee$locale, "printFilesizeLocalized", function printFilesizeLocalized(filesize) {
+	var suffix = [" B", " kB", " MB", " GB"];
+	var i = 0;
+	// Sic! We check if the number is larger than 1000 but divide by 1024 by intention
+	// We aim at a number which has at most 3 non-decimal digits, i.e. the result shall be in the interval
+	// [1000/1024, 1000) = [0.977, 1000)  (lower bound included, upper bound excluded)
+	while (filesize >= 1000.0 && i < suffix.length) {
+		filesize = filesize / 1024.0;
+		i++;
 	}
-};
+
+	// The number of decimal digits is anti-proportional to the number of non-decimal digits
+	// In total, there shall always be three digits
+	if (filesize >= 100.0) {
+		filesize = Math.round(filesize);
+	} else if (filesize >= 10.0) {
+		filesize = Math.round(filesize * 10.0) / 10.0;
+	} else {
+		filesize = Math.round(filesize * 100.0) / 100.0;
+	}
+
+	return Number(filesize).toLocaleString() + suffix[i];
+}), _defineProperty(_lychee$locale, "printDateTime", function printDateTime(jsonDateTime) {
+	if (typeof jsonDateTime !== "string" || jsonDateTime === "") return "";
+
+	// Unfortunately, the built-in JS Date object is rather dumb.
+	// It is only required to support the timezone of the runtime
+	// environment and UTC.
+	// Moreover, the method `toLocalString` may or may not convert
+	// the represented time to the timezone of the runtime environment
+	// before formatting it as a string.
+	// However, we want to keep the printed time in the original timezone,
+	// because this facilitates human interaction with a photo.
+	// To this end we apply a "dirty" trick here.
+	// We first cut off any explicit timezone indication from the JSON
+	// string and only pass a date/time of the form `YYYYMMDDThhmmss` to
+	// `Date`.
+	// `Date` is required to interpret those time values according to the
+	// local timezone (see [MDN Web Docs - Date Time String Format](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse#date_time_string_format)).
+	// Most likely, the resulting `Date` object will represent the
+	// wrong instant in time (given in seconds since epoch), but we only
+	// want to call `toLocalString` which is fine and don't do any time
+	// arithmetics.
+	// Then we add the original timezone to the string manually.
+	var splitDateTime = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([,.]\d{1,6})?)([-Z+])(\d{2}:\d{2})?$/.exec(jsonDateTime);
+	// The capturing groups are:
+	//  - 0: the whole string
+	//  - 1: the whole date/time segment incl. fractional seconds
+	//  - 2: the fractional seconds (if present)
+	//  - 3: the timezone separator, i.e. "Z", "-" or "+" (if present)
+	//  - 4: the absolute timezone offset without the sign (if present)
+	console.assert(splitDateTime.length === 5, "'jsonDateTime' is not formatted acc. to ISO 8601; passed string was: " + jsonDateTime);
+	var result = lychee.locale.dateTimeFormatter.format(new Date(splitDateTime[1]));
+	if (splitDateTime[3] === "Z" || splitDateTime[4] === "00:00") {
+		result += " UTC";
+	} else {
+		result += " UTC" + splitDateTime[3] + splitDateTime[4];
+	}
+	return result;
+}), _defineProperty(_lychee$locale, "printMonthYear", function printMonthYear(jsonDateTime) {
+	if (typeof jsonDateTime !== "string" || jsonDateTime === "") return "";
+	var locale = "default"; // use the user's browser settings
+	var format = { month: "short", year: "numeric" };
+	return new Date(jsonDateTime).toLocaleDateString(locale, format);
+}), _lychee$locale);
 
 /**
  * @description Helper class to manage tabindex
@@ -3413,10 +3382,9 @@ tabindex.reset = function () {
  * @property {?string}      live_photo_content_id
  * @property {?string}      live_photo_checksum
  * @property {SizeVariants} size_variants
- * @property {boolean}      is_downloadable
- * @property {boolean}      is_share_button_visible
  * @property {?string}      [next_photo_id]
  * @property {?string}      [previous_photo_id]
+ * @property {PhotoRightsDTO} rights
  */
 
 /**
@@ -3463,14 +3431,11 @@ tabindex.reset = function () {
  * @property {?string} cover_id
  * @property {?Thumb}  thumb
  * @property {string}  [owner_name] optional, only shown in authenticated mode
- * @property {boolean} is_public
- * @property {boolean} is_downloadable
- * @property {boolean} is_share_button_visible
  * @property {boolean} is_nsfw
- * @property {boolean} grants_full_photo
- * @property {boolean} requires_link
- * @property {boolean} has_password
+ * @property {AlbumRightsDTO} rights
+ * @property {?AlbumProtectionPolicy} policies
  * @property {boolean} has_albums
+ * @property {boolean} has_password
  * @property {?string} min_taken_at
  * @property {?string} max_taken_at
  * @property {?SortingCriterion} sorting
@@ -3488,13 +3453,9 @@ tabindex.reset = function () {
  * @property {Photo[]}  photos
  * @property {?Thumb}   thumb
  * @property {string}   [owner_name] optional, only shown in authenticated mode
- * @property {boolean}  is_public
- * @property {boolean}  is_downloadable
- * @property {boolean}  is_share_button_visible
- * @property {boolean}  is_nsfw
- * @property {boolean}  grants_full_photo
- * @property {boolean}  requires_link
- * @property {boolean}  has_password
+ * @property {boolean} is_nsfw
+ * @property {AlbumRightsDTO} rights
+ * @property {?AlbumProtectionPolicy} policies
  * @property {?string}  min_taken_at
  * @property {?string}  max_taken_at
  * @property {?SortingCriterion}  sorting
@@ -3508,9 +3469,8 @@ tabindex.reset = function () {
  * @property {string}  title
  * @property {Photo[]} [photos]
  * @property {?Thumb}  thumb
- * @property {boolean} is_public
- * @property {boolean} is_downloadable
- * @property {boolean} is_share_button_visible
+ * @property {AlbumRightsDTO} rights
+ * @property {?AlbumProtectionPolicy} policies
  */
 
 /**
@@ -3580,10 +3540,18 @@ var SmartAlbumID = Object.freeze({
  *
  * @property {number}  id
  * @property {string}  username
- * @property {?string} email
- * @property {boolean} may_upload
- * @property {boolean} is_locked
+ * @property {string}  email
  * @property {boolean} has_token
+ */
+
+/**
+ * @typedef UserDTO
+ *
+ * @property {number}  id
+ * @property {string}  username
+ * @property {boolean} may_administrate
+ * @property {boolean} may_upload
+ * @property {boolean} may_edit_own_settings
  */
 
 /**
@@ -3650,7 +3618,7 @@ var SmartAlbumID = Object.freeze({
  * @typedef InitializationData
  *
  * @property {?User} user
- * @property {{is_admin: boolean, is_locked: boolean, may_upload: boolean}} rights
+ * @property {InitRightsDTO} rights
  * @property {number} update_json - version number of latest available update
  * @property {boolean} update_available
  * @property {Object.<string, string>} locale
@@ -3754,6 +3722,86 @@ var SmartAlbumID = Object.freeze({
  * @property {number} severity - either `'debug'`, `'info'`, `'notice'`, `'warning'`, `'error'`, `'critical'` or `'emergency'`
  * @property {?string} path - the path to the affected file or directory
  * @property {string} message - a message text
+ */
+
+/**
+ * The JSON object for Policies on Albums
+ *
+ * @typedef AlbumProtectionPolicy
+ *
+ * @property {is_nsfw} boolean
+ * @property {boolean} is_public
+ * @property {boolean} is_link_required
+ * @property {boolean} is_password_required
+ * @property {boolean} grants_access_full_photo
+ * @property {boolean} grants_download
+ */
+
+/**
+ * The JSON object for Rights on Users
+ *
+ * @typedef UserRightsDTO
+ *
+ * @property {boolean} can_create
+ * @property {boolean} can_list
+ * @property {boolean} can_edit
+ * @property {boolean} can_delete
+ */
+
+/**
+ * The JSON object for Rights on Settings
+ *
+ * @typedef SettingsRightsDTO
+ *
+ * @property {boolean} can_edit
+ * @property {boolean} can_edit_own_settings
+ * @property {boolean} can_use_2fa
+ * @property {boolean} can_see_logs
+ * @property {boolean} can_clear_logs
+ * @property {boolean} can_see_diagnostics
+ * @property {boolean} can_update
+ */
+
+/**
+ * The JSON object for Rights on Settings
+ *
+ * @typedef RootAlbumRightsDTO
+ *
+ * @property {boolean} can_edit
+ * @property {boolean} can_upload
+ * @property {boolean} can_download
+ * @property {boolean} can_import_from_server
+ */
+
+/**
+ * The JSON object for Rights on Photos
+ *
+ * @typedef PhotoRightsDTO
+ *
+ * @property {boolean} can_edit
+ * @property {boolean} can_download
+ * @property {boolean} can_access_full_photo
+ */
+
+/**
+ * The JSON object for Rights on Album
+ *
+ * @typedef AlbumRightsDTO
+ *
+ * @property {boolean} can_edit
+ * @property {boolean} can_share_with_users
+ * @property {boolean} can_download
+ * @property {boolean} can_upload
+ */
+
+/**
+ * The JSON object for Rights on Album
+ *
+ * @typedef InitRightsDTO
+ *
+ * @property {RootAlbumRightsDTO} root_album
+ * @property {SettingsRightsDTO} settings
+ * @property {UserRightsDTO} users
  */
 
 (function (window, factory) {

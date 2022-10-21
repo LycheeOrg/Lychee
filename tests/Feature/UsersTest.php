@@ -116,7 +116,11 @@ class UsersTest extends TestCase
 		Auth::loginUsingId(0);
 
 		// 2
-		$users_test->add('test_abcd', 'password_abcd', true, true);
+		$users_test->add(
+			username: 'test_abcd',
+			password: 'password_abcd',
+			mayUpload: true,
+			mayEditOwnSettings: false);
 
 		// 3
 		$response = $users_test->list();
@@ -128,23 +132,45 @@ class UsersTest extends TestCase
 			'id' => $id,
 			'username' => 'test_abcd',
 			'may_upload' => true,
-			'is_locked' => true,
+			'may_edit_own_settings' => false,
 		]);
 
 		// 5
-		$users_test->add('test_abcd', 'password_abcd', true, true, 409, 'Username already exists');
+		$users_test->add(
+			username: 'test_abcd',
+			password: 'password_abcd',
+			mayUpload: true,
+			mayEditOwnSettings: false,
+			expectedStatusCode: 409,
+			assertSee: 'Username already exists');
 
 		// 6
-		$users_test->save($id, 'test_abcde', 'password_testing', false, true);
+		$users_test->save(
+			id: $id,
+			username: 'test_abcde',
+			password: 'password_testing',
+			mayUpload: false,
+			mayEditOwnSettings: false);
 
 		// 7
-		$users_test->add('test_abcd2', 'password_abcd', true, true);
+		$users_test->add(
+			username: 'test_abcd2',
+			password: 'password_abcd',
+			mayUpload: true,
+			mayEditOwnSettings: false);
 		$response = $users_test->list();
 		$t = json_decode($response->getContent());
 		$id2 = end($t)->id;
 
 		// 8
-		$users_test->save($id2, 'test_abcde', 'password_testing', false, true, 409, 'Username already exists');
+		$users_test->save(
+			id: $id2,
+			username: 'test_abcde',
+			password: 'password_testing',
+			mayUpload: false,
+			mayEditOwnSettings: false,
+			expectedStatusCode: 409,
+			assertSee: 'Username already exists');
 
 		// 9
 		$sessions_test->logout();
@@ -156,10 +182,20 @@ class UsersTest extends TestCase
 		$users_test->list(403);
 
 		// 12
-		$sessions_test->update_login('test_abcde', 'password_testing2', '', 422, 'The old password field is required.');
+		$sessions_test->update_login(
+			login: 'test_abcde',
+			password: 'password_testing2',
+			oldPassword: '',
+			expectedStatusCode: 422,
+			assertSee: 'The old password field is required.');
 
 		// 13
-		$sessions_test->update_login('test_abcde', 'password_testing2', 'password_testing2', 403, 'Insufficient privileges');
+		$sessions_test->update_login(
+			login: 'test_abcde',
+			password: 'password_testing2',
+			oldPassword: 'password_testing2',
+			expectedStatusCode: 403,
+			assertSee: 'Insufficient privileges');
 
 		// 14
 		$sessions_test->logout();
@@ -168,7 +204,12 @@ class UsersTest extends TestCase
 		Auth::loginUsingId(0);
 
 		// 16
-		$users_test->save($id, 'test_abcde', 'password_testing', false, false);
+		$users_test->save(
+			id: $id,
+			username: 'test_abcde',
+			password: 'password_testing',
+			mayUpload: false,
+			mayEditOwnSettings: true);
 
 		// 17
 		$sessions_test->logout();
@@ -188,16 +229,34 @@ class UsersTest extends TestCase
 		$album_tests->get(UnsortedAlbum::ID, 403);
 
 		// 22
-		$sessions_test->update_login('test_abcde', 'password_testing2', '', 422, 'The old password field is required.');
+		$sessions_test->update_login(
+			login: 'test_abcde',
+			password: 'password_testing2',
+			oldPassword: '',
+			expectedStatusCode: 422,
+			assertSee: 'The old password field is required.');
 
 		// 23
-		$sessions_test->update_login('test_abcde', 'password_testing2', 'password_testing2', 401, 'Previous password is invalid');
+		$sessions_test->update_login(
+			login: 'test_abcde',
+			password: 'password_testing2',
+			oldPassword: 'password_testing2',
+			expectedStatusCode: 401,
+			assertSee: 'Previous password is invalid');
 
 		// 24
-		$sessions_test->update_login('test_abcd2', 'password_testing2', 'password_testing', 409, 'Username already exists');
+		$sessions_test->update_login(
+			login: 'test_abcd2',
+			password: 'password_testing2',
+			oldPassword: 'password_testing',
+			expectedStatusCode: 409,
+			assertSee: 'Username already exists');
 
 		// 25
-		$sessions_test->update_login('test_abcdef', 'password_testing2', 'password_testing');
+		$sessions_test->update_login(
+			login: 'test_abcdef',
+			password: 'password_testing2',
+			oldPassword: 'password_testing');
 
 		// 26
 		$sessions_test->logout();
@@ -299,15 +358,15 @@ class UsersTest extends TestCase
 		$response = $sessions_test->init();
 		$response->assertJsonFragment([
 			'rights' => [
-				'is_admin' => false,
-				'may_upload' => false,
-				'is_locked' => true,
+				'can_administrate' => false,
+				'can_upload_root' => false,
+				'can_edit_own_settings' => true,
 			], ]);
 
 		// update Admin user to non valid rights
 		$admin = User::findOrFail(0);
 		$admin->may_upload = false;
-		$admin->is_locked = true;
+		$admin->may_edit_own_settings = true;
 		$admin->save();
 
 		// Log as admin and check the rights
@@ -315,15 +374,15 @@ class UsersTest extends TestCase
 		$response = $sessions_test->init();
 		$response->assertJsonFragment([
 			'rights' => [
-				'is_admin' => true,
-				'may_upload' => true,
-				'is_locked' => false,
+				'can_administrate' => true,
+				'can_upload_root' => true,
+				'can_edit_own_settings' => false,
 			], ]);
 		$sessions_test->logout();
 
 		// Correct the rights
 		$admin->may_upload = true;
-		$admin->is_locked = false;
+		$admin->may_edit_own_settings = false;
 		$admin->save();
 
 		// Log as admin and verify behaviour
@@ -331,9 +390,9 @@ class UsersTest extends TestCase
 		$response = $sessions_test->init();
 		$response->assertJsonFragment([
 			'rights' => [
-				'is_admin' => true,
-				'may_upload' => true,
-				'is_locked' => false,
+				'can_administrate' => true,
+				'can_upload_root' => true,
+				'can_edit_own_settings' => false,
 			], ]);
 		$sessions_test->logout();
 	}

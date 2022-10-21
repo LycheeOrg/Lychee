@@ -2,26 +2,24 @@
 
 namespace App\Policies;
 
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
-use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Contracts\Container\BindingResolutionException;
 
-class PhotoPolicy
+class PhotoPolicy extends BasePolicy
 {
-	use HandlesAuthorization;
-
 	protected AlbumPolicy $albumPolicy;
 	protected UserPolicy $userPolicy;
 
-	// constants to be used in GATE
-	public const IS_OWNER = 'isOwner';
-	public const IS_VISIBLE = 'isVisible';
+	public const CAN_SEE = 'canSee';
 	public const CAN_DOWNLOAD = 'canDownload';
 	public const CAN_EDIT = 'canEdit';
 	public const CAN_EDIT_ID = 'canEditById';
+	public const CAN_ACCESS_FULL_PHOTO = 'canAccessFullPhoto';
 
 	/**
 	 * @throws FrameworkException
@@ -37,30 +35,14 @@ class PhotoPolicy
 	}
 
 	/**
-	 * Perform pre-authorization checks.
-	 *
-	 * @param \App\Models\User $user
-	 * @param string           $ability
-	 *
-	 * @return void|bool
-	 */
-	public function before(?User $user, $ability)
-	{
-		if ($this->userPolicy->isAdmin($user)) {
-			return true;
-		}
-	}
-
-	/**
-	 * This gate policy ensures that the Photo is owned by current user.
-	 * Do note that in case of current user being admin, it will be skipped due to the before method.
+	 * This ensures that current photo is owned by current user.
 	 *
 	 * @param User|null $user
 	 * @param Photo     $photo
 	 *
 	 * @return bool
 	 */
-	public function isOwner(?User $user, Photo $photo): bool
+	private function isOwner(?User $user, Photo $photo): bool
 	{
 		return $user !== null && $photo->owner_id === $user->id;
 	}
@@ -73,7 +55,7 @@ class PhotoPolicy
 	 *
 	 * @return bool
 	 */
-	public function isVisible(?User $user, Photo $photo): bool
+	public function canSee(?User $user, Photo $photo): bool
 	{
 		return $this->isOwner($user, $photo) ||
 			$photo->is_public ||
@@ -112,7 +94,7 @@ class PhotoPolicy
 			return true;
 		}
 
-		if (!$this->isVisible($user, $photo)) {
+		if (!$this->canSee($user, $photo)) {
 			return false;
 		}
 
@@ -161,7 +143,7 @@ class PhotoPolicy
 	 */
 	public function canEditById(User $user, array $photoIDs): bool
 	{
-		if (!$this->userPolicy->canUpload($user)) {
+		if (!$this->albumPolicy->canUpload($user, null)) {
 			return false;
 		}
 
@@ -174,5 +156,29 @@ class PhotoPolicy
 				->whereIn('id', $photoIDs)
 				->where('owner_id', $user->id)
 				->count() === count($photoIDs);
+	}
+
+	/**
+	 * Checks whether the photo may be seen full resolution by the current user.
+	 *
+	 * @param User|null $user
+	 * @param Photo     $photo
+	 *
+	 * @return bool
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	public function canAccessFullPhoto(?User $user, Photo $photo): bool
+	{
+		if ($this->isOwner($user, $photo)) {
+			return true;
+		}
+
+		if (!$this->canSee($user, $photo)) {
+			return false;
+		}
+
+		return ($photo->album !== null && $photo->album->grants_access_full_photo) ||
+			($photo->album === null && Configs::getValueAsBool('full_photo'));
 	}
 }

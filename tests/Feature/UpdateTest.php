@@ -12,28 +12,29 @@
 
 namespace Tests\Feature;
 
-use App\Http\Middleware\MigrationStatus;
 use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
-use function PHPUnit\Framework\assertEquals;
 use PHPUnit\Framework\ExpectationFailedException;
+use Tests\Feature\Traits\CatchFailures;
 use Tests\TestCase;
 
 class UpdateTest extends TestCase
 {
+	use CatchFailures;
+
 	public function testDoNotLogged(): void
 	{
 		$response = $this->get('/Update', []);
-		$response->assertForbidden();
+		$this->assertUnauthorized($response);
 
 		$response = $this->postJson('/api/Update::apply');
-		$response->assertForbidden();
+		$this->assertUnauthorized($response);
 
 		$response = $this->postJson('/api/Update::check');
-		$response->assertForbidden();
+		$this->assertUnauthorized($response);
 	}
 
 	public function testDoLogged(): void
@@ -44,16 +45,16 @@ class UpdateTest extends TestCase
 
 		Configs::set('allow_online_git_pull', '0');
 		$response = $this->postJson('/api/Update::apply');
-		$response->assertStatus(412);
+		$this->assertStatus($response, 412);
 		$response->assertSee('Online updates are disabled by configuration');
 
 		Configs::set('allow_online_git_pull', '1');
 
 		$response = $this->get('/Update', []);
-		$response->assertOk();
+		$this->assertOk($response);
 
 		$response = $this->postJson('/api/Update::apply');
-		$response->assertOk();
+		$this->assertOk($response);
 
 		$response = $this->postJson('/api/Update::check');
 		if ($response->status() === 500) {
@@ -70,7 +71,7 @@ class UpdateTest extends TestCase
 				$response->assertSee('Could not determine the branch');
 			}
 		} else {
-			$response->assertOk();
+			$this->assertOk($response);
 		}
 
 		Configs::set('allow_online_git_pull', $gitpull);
@@ -81,7 +82,7 @@ class UpdateTest extends TestCase
 
 	/**
 	 * We check that we can apply migration.
-	 * This requires us to disable the MigrationStatus middleware otherwise
+	 * This requires us to disable the {@link \App\Http\Middleware\MigrationStatus} middleware otherwise
 	 * we will be thrown out all the time.
 	 */
 	public function testApplyMigration()
@@ -102,14 +103,14 @@ class UpdateTest extends TestCase
 		Auth::logout();
 		Session::flush();
 		$response = $this->postJson('/migrate');
-		$response->assertForbidden();
+		$this->assertForbidden($response);
 
 		$response = $this->postJson('/migrate', ['username' => 'test_login', 'password' => 'test_password']);
-		$response->assertOk();
+		$this->assertOk($response);
 
 		// check that Legacy did change the username
 		$adminUser = User::findOrFail(0);
-		assertEquals('test_login', $adminUser->username);
+		$this->assertEquals('test_login', $adminUser->username);
 
 		// clean up
 		Auth::logout();

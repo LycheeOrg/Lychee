@@ -179,8 +179,6 @@ final class Spanish implements Language
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Subalbums',
 			'ALBUM_SHARING' => 'Compartir',
-			'ALBUM_SHR_YES' => 'SI',
-			'ALBUM_SHR_NO' => 'No',
 			'ALBUM_PUBLIC' => 'Público',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Original',
@@ -261,10 +259,6 @@ final class Spanish implements Language
 			'PHOTO_FOCAL' => 'Longitud focal',
 			'PHOTO_ISO' => 'ISO %s',
 			'PHOTO_SHARING' => 'Compartir',
-			'PHOTO_SHR_PUBLIC' => 'Público',
-			'PHOTO_SHR_ALB' => 'Sí (Álbum)',
-			'PHOTO_SHR_PHT' => 'Sí (Foto)',
-			'PHOTO_SHR_NO' => 'No',
 			'PHOTO_DELETE' => 'Borrar Foto',
 			'PHOTO_KEEP' => 'Mantener Foto',
 			'PHOTO_DELETE_CONFIRMATION' => '¿Estás seguro de que deseas eliminar la foto «%s»? ¡Esta acción no se puede deshacer!',
@@ -508,7 +502,7 @@ final class Spanish implements Language
 			'CAMERA_DATE' => 'Fecha de la cámara',
 			'NEW_PASSWORD' => 'nueva contraseña',
 			'ALLOW_UPLOADS' => 'Permitir subidas',
-			'RESTRICTED_ACCOUNT' => 'Cuenta restringida',
+			'ALLOW_USER_SELF_EDIT' => 'Allow self-management of user account',
 			'OSM_CONTRIBUTORS' => 'Contribuidores de OpenStreetMap',
 		];
 	}

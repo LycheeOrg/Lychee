@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
 /**
- * Interface BaseAlbum.
+ * Interface AbsractAlbum.
  *
  * This is the common interface with the minimal set of functions which is
  * provided by *all* albums even the true smart albums like the album
@@ -19,16 +19,16 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  * Hence, this interface does *not* declares properties which are typical
  * for persistable models like `created_at`, etc., because the built-in
  * smart models exist "forever".
- * See {@link \App\Contracts\BaseAlbum} for the common interface of
+ * See {@link \App\Models\Extensions\BaseAlbum} for the common interface of
  * all models which are persisted to DB.
  *
  * @property string     $id
  * @property string     $title
  * @property Collection $photos
  * @property Thumb|null $thumb
- * @property bool       $is_public
- * @property bool       $is_downloadable
- * @property bool       $is_share_button_visible
+ * @property bool       $is_public                // Not serialized directly but provided via DTO to the front-end
+ * @property bool       $grants_download          // Not serialized directly but provided via DTO to the front-end
+ * @property bool       $grants_access_full_photo // Not serialized directly but provided via DTO to the front-end
  */
 interface AbstractAlbum extends \JsonSerializable, Arrayable, Jsonable
 {

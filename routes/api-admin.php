@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Administration;
 
-use App\Http\Middleware\AdminCheck;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 
@@ -47,8 +46,8 @@ Route::post('/User::list', [UserController::class, 'list']);
 Route::post('/User::save', [UserController::class, 'save']);
 Route::post('/User::delete', [UserController::class, 'delete']);
 Route::post('/User::create', [UserController::class, 'create']);
-Route::post('/User::setEmail', [UserController::class, 'setEmail'])->withoutMiddleware([AdminCheck::class]);
-Route::post('/User::getEmail', [UserController::class, 'getEmail'])->withoutMiddleware([AdminCheck::class]);
-Route::post('/User::getAuthenticatedUser', [UserController::class, 'getAuthenticatedUser'])->withoutMiddleware([AdminCheck::class]);
-Route::post('/User::resetToken', [UserController::class, 'resetToken'])->withoutMiddleware([AdminCheck::class]);
-Route::post('/User::unsetToken', [UserController::class, 'unsetToken'])->withoutMiddleware([AdminCheck::class]);
+Route::post('/User::setEmail', [UserController::class, 'setEmail']);
+Route::post('/User::getEmail', [UserController::class, 'getEmail']);
+Route::post('/User::getAuthenticatedUser', [UserController::class, 'getAuthenticatedUser']);
+Route::post('/User::resetToken', [UserController::class, 'resetToken']);
+Route::post('/User::unsetToken', [UserController::class, 'unsetToken']);

@@ -52,7 +52,6 @@ class Kernel extends HttpKernel
 			\Illuminate\View\Middleware\ShareErrorsFromSession::class,
 			\App\Http\Middleware\VerifyCsrfToken::class,
 			\Illuminate\Routing\Middleware\SubstituteBindings::class,
-			'admin',
 		],
 
 		'web-install' => [
@@ -84,7 +83,6 @@ class Kernel extends HttpKernel
 			\Illuminate\View\Middleware\ShareErrorsFromSession::class,
 			\App\Http\Middleware\VerifyCsrfToken::class,
 			\Illuminate\Routing\Middleware\SubstituteBindings::class,
-			'admin',
 		],
 	];
 
@@ -96,7 +94,6 @@ class Kernel extends HttpKernel
 	 * @var array<string, string>
 	 */
 	protected $routeMiddleware = [
-		'admin' => \App\Http\Middleware\AdminCheck::class,
 		'installation' => \App\Http\Middleware\InstallationStatus::class,
 		'migration' => \App\Http\Middleware\MigrationStatus::class,
 		'local_storage' => \App\Http\Middleware\LocalStorageOnly::class,

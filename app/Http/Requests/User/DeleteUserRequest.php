@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\User;
 
-use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasUser;
 use App\Http\Requests\Traits\HasUserTrait;
 use App\Models\User;
@@ -10,7 +9,7 @@ use App\Policies\UserPolicy;
 use App\Rules\IntegerIDRule;
 use Illuminate\Support\Facades\Gate;
 
-class DeleteUserRequest extends BaseApiRequest implements HasUser
+class DeleteUserRequest extends AbstractUserRequest implements HasUser
 {
 	use HasUserTrait;
 
@@ -21,11 +20,7 @@ class DeleteUserRequest extends BaseApiRequest implements HasUser
 	 */
 	public function authorize(): bool
 	{
-		// This should always return true, because we already check that the
-		// request is made by an admin during authentication (see
-		// `routes/web.php`).
-		// But better safe than sorry.
-		return Gate::check(UserPolicy::IS_ADMIN);
+		return Gate::check(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, User::class);
 	}
 
 	/**

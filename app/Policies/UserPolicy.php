@@ -3,42 +3,12 @@
 namespace App\Policies;
 
 use App\Models\User;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
-class UserPolicy
+class UserPolicy extends BasePolicy
 {
-	use HandlesAuthorization;
-
-	public const IS_ADMIN = 'isAdmin';
-	public const CAN_UPLOAD = 'canUpload';
-	public const CAN_EDIT_SETTINGS = 'canEditSettings';
-
-	/**
-	 * Perform pre-authorization checks.
-	 *
-	 * @param \App\Models\User $user
-	 * @param string           $ability
-	 *
-	 * @return void|bool
-	 */
-	public function before(?User $user, $ability)
-	{
-		if ($this->isAdmin($user)) {
-			return true;
-		}
-	}
-
-	/**
-	 * This defines if the user is admin.
-	 *
-	 * @param User|null $user
-	 *
-	 * @return bool
-	 */
-	public function isAdmin(?User $user): bool
-	{
-		return $user?->id === 0;
-	}
+	public const CAN_EDIT_OWN_SETTINGS = 'canEditOwnSettings';
+	public const CAN_CREATE_OR_EDIT_OR_DELETE = 'canCreateOrEditOrDelete';
+	public const CAN_LIST = 'canList';
 
 	/**
 	 * This defines if user can edit their settings.
@@ -47,19 +17,18 @@ class UserPolicy
 	 *
 	 * @return bool
 	 */
-	public function canEditSettings(User $user): bool
+	public function canEditOwnSettings(User $user): bool
 	{
-		return !$user->is_locked;
+		return $user->may_edit_own_settings;
 	}
 
-	/**
-	 * This defines if user has upload rights.
-	 *
-	 * @param User $user
-	 *
-	 * @return bool
-	 */
-	public function canUpload(User $user): bool
+	public function canCreateOrEditOrDelete(User $user): bool
+	{
+		// Note, the administrator is already handled in the `before()` method and every one else is not allowed to create/delete users.
+		return false;
+	}
+
+	public function canList(User $user): bool
 	{
 		return $user->may_upload;
 	}

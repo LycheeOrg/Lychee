@@ -13,25 +13,24 @@ use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\User;
 use App\SmartAlbums\BaseSmartAlbum;
-use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Session;
 
-class AlbumPolicy
+class AlbumPolicy extends BasePolicy
 {
-	use HandlesAuthorization;
-
 	protected UserPolicy $userPolicy;
 
 	public const UNLOCKED_ALBUMS_SESSION_KEY = 'unlocked_albums';
 
-	// constants to be used in GATE
-	public const IS_OWNER = 'isOwner';
+	public const CAN_SEE = 'canSee';
 	public const CAN_ACCESS = 'canAccess';
 	public const CAN_DOWNLOAD = 'canDownload';
+	public const CAN_UPLOAD = 'canUpload';
 	public const CAN_EDIT = 'canEdit';
-	public const IS_VISIBLE = 'isVisible';
 	public const CAN_EDIT_ID = 'canEditById';
+	public const CAN_SHARE_WITH_USERS = 'canShareWithUsers';
+	public const CAN_IMPORT_FROM_SERVER = 'canImportFromServer';
+	public const CAN_SHARE_ID = 'canShareById';
 
 	/**
 	 * @throws FrameworkException
@@ -46,36 +45,38 @@ class AlbumPolicy
 	}
 
 	/**
-	 * Perform pre-authorization checks.
-	 *
-	 * @param \App\Models\User $user
-	 * @param string           $ability
-	 *
-	 * @return void|bool
-	 */
-	public function before(?User $user, $ability)
-	{
-		if ($this->userPolicy->isAdmin($user)) {
-			return true;
-		}
-	}
-
-	/**
-	 * This gate policy ensures that the Album is owned by current user.
-	 * Do note that in case of current user being admin, it will be skipped due to the before method.
+	 * This ensures that current album is owned by current user.
 	 *
 	 * @param User|null $user
 	 * @param BaseAlbum $album
 	 *
 	 * @return bool
 	 */
-	public function isOwner(?User $user, BaseAlbum $album): bool
+	private function isOwner(?User $user, BaseAlbum|BaseAlbumImpl $album): bool
 	{
 		return $user !== null && $album->owner_id === $user->id;
 	}
 
 	/**
-	 * Checks whether the album is accessible by the current user.
+	 * Checks whether the currentuser can see said album.
+	 *
+	 * Note, at the moment this check is only needed for built-in smart
+	 * albums.
+	 * Hence, the method is only provided for them.
+	 *
+	 * @param User|null      $user
+	 * @param BaseSmartAlbum $smartAlbum
+	 *
+	 * @return bool true, if the album is visible
+	 */
+	public function canSee(?User $user, BaseSmartAlbum $smartAlbum): bool
+	{
+		return ($user?->may_upload === true) ||
+			$smartAlbum->is_public;
+	}
+
+	/**
+	 * Checks whether current user can access the album.
 	 *
 	 * A real albums (i.e. albums that are stored in the DB) is called
 	 * _accessible_ if the current user is allowed to browse into it, i.e. if
@@ -119,7 +120,7 @@ class AlbumPolicy
 				throw LycheeAssertionError::createFromUnexpectedException($e);
 			}
 		} elseif ($album instanceof BaseSmartAlbum) {
-			return $this->isVisible($user, $album);
+			return $this->canSee($user, $album);
 		} else {
 			// Should never happen
 			return false;
@@ -127,23 +128,49 @@ class AlbumPolicy
 	}
 
 	/**
-	 * Check if an album is downloadable.
+	 * Check if current user can download the album.
 	 *
-	 * @param User|null      $user
-	 * @param BaseAlbum|null $baseAlbum
+	 * @param User|null          $user
+	 * @param AbstractAlbum|null $abstractAlbum
 	 *
 	 * @return bool
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function canDownload(?User $user, ?BaseAlbum $baseAlbum): bool
+	public function canDownload(?User $user, ?AbstractAlbum $abstractAlbum): bool
 	{
-		if ($baseAlbum === null) {
-			return Configs::getValueAsBool('downloadable');
+		$default = Configs::getValueAsBool('downloadable');
+		// The root album always uses the global setting
+		if ($abstractAlbum === null) {
+			return $default;
 		}
 
-		return $this->isOwner($user, $baseAlbum) ||
-			$baseAlbum->is_downloadable;
+		// TODO: when download rights are assigned to albums, we add more logic can be added here.
+		return ($abstractAlbum instanceof BaseSmartAlbum && $user !== null) ||
+		($abstractAlbum instanceof BaseAlbum && $this->isOwner($user, $abstractAlbum) ||
+		($abstractAlbum instanceof BaseAlbum && $abstractAlbum->shared_with()->where('user_id', '=', $user?->id)->count() > 0 && $default) ||
+		$abstractAlbum->grants_download);
+	}
+
+	/**
+	 * Check if user is allowed to upload in current albumn.
+	 *
+	 * @param User               $user
+	 * @param AbstractAlbum|null $abstractAlbum
+	 *
+	 * @return bool
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	public function canUpload(User $user, ?AbstractAlbum $abstractAlbum = null): bool
+	{
+		// The upload right on the root album is directly determined by the user's capabilities.
+		if ($abstractAlbum === null) {
+			return $user->may_upload;
+		}
+
+		// TODO: when upload rights are assigned to albums, more logic can be added here.
+		return $user->may_upload;
 	}
 
 	/**
@@ -165,14 +192,14 @@ class AlbumPolicy
 	 * In order to silently ignore/skip this condition for smart albums,
 	 * this method always returns `true` for a smart album.
 	 *
-	 * @param User               $user
-	 * @param AbstractAlbum|null $album the album; `null` designates the root album
+	 * @param User                             $user
+	 * @param AbstractAlbum|BaseAlbumImpl|null $album the album; `null` designates the root album
 	 *
 	 * @return bool
 	 */
-	public function canEdit(User $user, ?AbstractAlbum $album): bool
+	public function canEdit(User $user, AbstractAlbum|BaseAlbumImpl|null $album): bool
 	{
-		if (!$this->userPolicy->canUpload($user)) {
+		if (!$user->may_upload) {
 			return false;
 		}
 
@@ -180,25 +207,7 @@ class AlbumPolicy
 		return
 			$album === null ||
 			$album instanceof BaseSmartAlbum ||
-			($album instanceof BaseAlbum && $this->isOwner($user, $album));
-	}
-
-	/**
-	 * Checks whether the album is visible by the current user.
-	 *
-	 * Note, at the moment this check is only needed for built-in smart
-	 * albums.
-	 * Hence, the method is only provided for them.
-	 *
-	 * @param User|null      $user
-	 * @param BaseSmartAlbum $smartAlbum
-	 *
-	 * @return bool true, if the album is visible
-	 */
-	public function isVisible(?User $user, BaseSmartAlbum $smartAlbum): bool
-	{
-		return ($user !== null && $this->userPolicy->canUpload($user)) ||
-			$smartAlbum->is_public;
+			(($album instanceof BaseAlbum || $album instanceof BaseAlbumImpl) && $this->isOwner($user, $album));
 	}
 
 	/**
@@ -214,8 +223,8 @@ class AlbumPolicy
 	 * {@link AlbumQueryPolicy::isEditable()}
 	 * instead in order to avoid several DB requests.
 	 *
-	 * @param User  $user
-	 * @param array $albumIDs
+	 * @param User              $user
+	 * @param array<int,string> $albumIDs
 	 *
 	 * @return bool
 	 *
@@ -223,7 +232,7 @@ class AlbumPolicy
 	 */
 	public function canEditById(User $user, array $albumIDs): bool
 	{
-		if (!$this->userPolicy->canUpload($user)) {
+		if (!$user->may_upload) {
 			return false;
 		}
 
@@ -241,6 +250,60 @@ class AlbumPolicy
 			->whereIn('id', $albumIDs)
 			->where('owner_id', $user->id)
 			->count() === count($albumIDs);
+	}
+
+	/**
+	 * Check if user can share selected album with another user.
+	 *
+	 * @param User|null     $user
+	 * @param AbstractAlbum $abstractAlbum
+	 *
+	 * @return bool
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	public function canShareWithUsers(?User $user, ?AbstractAlbum $abstractAlbum): bool
+	{
+		if ($abstractAlbum === null) {
+			return false;
+		}
+
+		if ($user?->may_upload !== true) {
+			return false;
+		}
+
+		if (in_array($abstractAlbum->id, AlbumFactory::BUILTIN_SMARTS, true)) {
+			return false;
+		}
+
+		return $abstractAlbum instanceof BaseAlbum && $this->isOwner($user, $abstractAlbum);
+	}
+
+	/**
+	 * Check if user can share selected albums with other users.
+	 *
+	 * @param User              $user
+	 * @param array<int,string> $albumIDs
+	 *
+	 * @return bool
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	public function canShareById(User $user, array $albumIDs): bool
+	{
+		return $this->canEditById($user, $albumIDs);
+	}
+
+	/**
+	 * Check whether user can import from server.
+	 *
+	 * @param User|null $user
+	 *
+	 * @return bool
+	 */
+	public function canImportFromServer(?User $user): bool
+	{
+		return false;
 	}
 
 	// The following methods are not to be called by Gate.

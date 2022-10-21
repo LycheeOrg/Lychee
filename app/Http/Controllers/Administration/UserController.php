@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Administration;
 use App\Actions\User\Create;
 use App\Actions\User\Save;
 use App\Contracts\InternalLycheeException;
+use App\DTO\User as UserDTO;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\InvalidPropertyException;
@@ -12,26 +13,28 @@ use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\User\AddUserRequest;
 use App\Http\Requests\User\DeleteUserRequest;
-use App\Http\Requests\User\SetEmailRequest;
+use App\Http\Requests\User\Self\SetEmailRequest;
 use App\Http\Requests\User\SetUserSettingsRequest;
+use App\Http\Requests\User\UserListingRequest;
+use App\Http\Requests\User\UserSettingsRequest;
 use App\Models\User;
 use Carbon\Exceptions\InvalidFormatException;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
 	/**
-	 * @return Collection<User>
+	 * @return Collection<UserDTO>
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function list(): Collection
+	public function list(UserListingRequest $request): Collection
 	{
 		// PHPStan does not understand that `get` returns `Collection<User>`, but assumes that it returns `Collection<Model>`
 		// @phpstan-ignore-next-line
-		return User::query()->where('id', '>', 0)->get();
+		return User::query()->where('id', '>', 0)->get()->map(fn ($u) => UserDTO::ofUser($u));
 	}
 
 	/**
@@ -53,7 +56,7 @@ class UserController extends Controller
 			$request->username(),
 			$request->password(),
 			$request->mayUpload(),
-			$request->isLocked()
+			$request->mayEditOwnSettings()
 		);
 	}
 
@@ -89,7 +92,7 @@ class UserController extends Controller
 	 */
 	public function create(AddUserRequest $request, Create $create): User
 	{
-		return $create->do($request->username(), $request->password(), $request->mayUpload(), $request->isLocked());
+		return $create->do($request->username(), $request->password(), $request->mayUpload(), $request->mayEditOwnSettings());
 	}
 
 	/**
@@ -133,7 +136,7 @@ class UserController extends Controller
 	 *
 	 * @throws UnauthenticatedException
 	 */
-	public function getEmail(): array
+	public function getEmail(UserSettingsRequest $request): array
 	{
 		/** @var User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();
@@ -164,7 +167,7 @@ class UserController extends Controller
 	 * @throws ModelDBException
 	 * @throws \Exception
 	 */
-	public function resetToken(): array
+	public function resetToken(UserSettingsRequest $request): array
 	{
 		/** @var User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();
@@ -183,7 +186,7 @@ class UserController extends Controller
 	 * @throws UnauthenticatedException
 	 * @throws ModelDBException
 	 */
-	public function unsetToken(): void
+	public function unsetToken(UserSettingsRequest $request): void
 	{
 		/** @var User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();

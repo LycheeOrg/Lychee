@@ -15,12 +15,11 @@ use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
-use App\Policies\UserPolicy;
 use App\Relations\HasManyBidirectionally;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 
@@ -157,7 +156,7 @@ class SizeVariant extends Model
 		$imageDisk = SizeVariantNamingStrategy::getImageDisk();
 
 		if (
-			Gate::check(UserPolicy::IS_ADMIN) && !Configs::getValueAsBool('SL_for_admin') ||
+			(Auth::user()?->may_administrate === true && !Configs::getValueAsBool('SL_for_admin')) ||
 			!Configs::getValueAsBool('SL_enable')
 		) {
 			return $imageDisk->url($this->short_path);

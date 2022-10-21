@@ -179,8 +179,6 @@ final class Vietnamese implements Language
 			'ALBUM_VIDEOS' => 'Video',
 			'ALBUM_SUBALBUMS' => 'Album con',
 			'ALBUM_SHARING' => 'Chia sẻ',
-			'ALBUM_SHR_YES' => 'Có',
-			'ALBUM_SHR_NO' => 'Không',
 			'ALBUM_PUBLIC' => 'Công cộng',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Hình ảnh gốc',
@@ -261,10 +259,6 @@ final class Vietnamese implements Language
 			'PHOTO_FOCAL' => 'Tiêu cự',
 			'PHOTO_ISO' => 'Độ nhạy sáng %s',
 			'PHOTO_SHARING' => 'Chia sẻ',
-			'PHOTO_SHR_PUBLIC' => 'Chia sẻ công cộng',
-			'PHOTO_SHR_ALB' => 'Có chia sẻ (cả album)',
-			'PHOTO_SHR_PHT' => 'Có chia sẻ (chỉ hình ảnh này)',
-			'PHOTO_SHR_NO' => 'Không chia sẻ',
 			'PHOTO_DELETE' => 'Xóa hình ảnh',
 			'PHOTO_KEEP' => 'Giữ hình ảnh',
 			'PHOTO_DELETE_CONFIRMATION' => 'Bạn có chắc là bạn muốn xóa hình ảnh này “%s”? Thao tác này sẽ không được khôi phục lại!',
@@ -508,7 +502,7 @@ final class Vietnamese implements Language
 			'CAMERA_DATE' => 'Camera date',
 			'NEW_PASSWORD' => 'new password',
 			'ALLOW_UPLOADS' => 'Cho phép đăng hình ảnh video',
-			'RESTRICTED_ACCOUNT' => 'Không được chỉnh cài đặt',
+			'ALLOW_USER_SELF_EDIT' => 'Allow self-management of user account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
 	}

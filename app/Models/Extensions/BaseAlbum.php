@@ -26,11 +26,11 @@ use Illuminate\Support\Carbon;
  * @property Carbon                     $updated_at
  * @property string|null                $description
  * @property bool                       $is_nsfw
- * @property bool                       $grants_full_photo
+ * @property bool                       $grants_access_full_photo
  * @property int                        $owner_id
  * @property User                       $owner
  * @property Collection                 $shared_with
- * @property bool                       $requires_link
+ * @property bool                       $is_link_required
  * @property string|null                $password
  * @property bool                       $has_password
  * @property Carbon|null                $min_taken_at

@@ -17,12 +17,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 
 /**
  * Class AlbumQueryPolicy.
  */
-class AlbumQueryPolicy
+class AlbumQueryPolicy extends BasePolicy
 {
 	protected AlbumFactory $albumFactory;
 	protected AlbumPolicy $albumPolicy;
@@ -56,7 +55,7 @@ class AlbumQueryPolicy
 	{
 		$this->prepareModelQueryOrFail($query);
 
-		if (Gate::check(UserPolicy::IS_ADMIN)) {
+		if (Auth::user()?->may_administrate === true) {
 			return $query;
 		}
 
@@ -71,7 +70,7 @@ class AlbumQueryPolicy
 			$query2
 				->where(
 					fn (AlbumBuilder|TagAlbumBuilder $q) => $q
-						->where('base_albums.requires_link', '=', false)
+						->where('base_albums.is_link_required', '=', false)
 						->where('base_albums.is_public', '=', true)
 				);
 			if ($userID !== null) {
@@ -164,7 +163,7 @@ class AlbumQueryPolicy
 	{
 		$this->prepareModelQueryOrFail($query);
 
-		if (Gate::check(UserPolicy::IS_ADMIN)) {
+		if (Auth::user()?->may_administrate === true) {
 			return $query;
 		}
 
@@ -180,13 +179,13 @@ class AlbumQueryPolicy
 			$query2
 				->where(
 					fn (Builder $q) => $q
-						->where('base_albums.requires_link', '=', false)
+						->where('base_albums.is_link_required', '=', false)
 						->where('base_albums.is_public', '=', true)
 						->whereNull('base_albums.password')
 				)
 				->orWhere(
 					fn (Builder $q) => $q
-						->where('base_albums.requires_link', '=', false)
+						->where('base_albums.is_link_required', '=', false)
 						->where('base_albums.is_public', '=', true)
 						->whereIn('base_albums.id', $unlockedAlbumIDs)
 				);
@@ -249,7 +248,7 @@ class AlbumQueryPolicy
 			throw new LycheeInvalidArgumentException('the given query does not query for albums');
 		}
 
-		if (Gate::check(UserPolicy::IS_ADMIN)) {
+		if (Auth::user()?->may_administrate === true) {
 			return $query;
 		}
 
@@ -334,13 +333,13 @@ class AlbumQueryPolicy
 			$builder
 				->where(
 					fn (BaseBuilder $q) => $q
-						->where('inner_base_albums.requires_link', '=', true)
+						->where('inner_base_albums.is_link_required', '=', true)
 						->orWhere('inner_base_albums.is_public', '=', false)
 						->orWhereNotNull('inner_base_albums.password')
 				)
 				->where(
 					fn (BaseBuilder $q) => $q
-						->where('inner_base_albums.requires_link', '=', true)
+						->where('inner_base_albums.is_link_required', '=', true)
 						->orWhere('inner_base_albums.is_public', '=', false)
 						->orWhereNotIn('inner_base_albums.id', $unlockedAlbumIDs)
 				);

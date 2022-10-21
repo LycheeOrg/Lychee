@@ -4,6 +4,7 @@ namespace App\SmartAlbums;
 
 use App\Contracts\AbstractAlbum;
 use App\Contracts\InternalLycheeException;
+use App\DTO\AlbumProtectionPolicy;
 use App\DTO\PhotoSortingCriterion;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
@@ -15,11 +16,13 @@ use App\Models\Extensions\SortingDecorator;
 use App\Models\Extensions\Thumb;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\SmartAlbums\Utils\MimicModel;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Class BaseSmartAlbum.
@@ -40,9 +43,9 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	protected PhotoQueryPolicy $photoQueryPolicy;
 	protected string $id;
 	protected string $title;
-	protected bool $isPublic;
-	protected bool $isDownloadable;
-	protected bool $isShareButtonVisible;
+	protected bool $grants_download;
+	protected bool $grants_access_full_photo;
+	protected bool $is_public;
 	protected ?Thumb $thumb;
 	protected Collection $photos;
 	protected \Closure $smartPhotoCondition;
@@ -51,15 +54,15 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 * @throws ConfigurationKeyMissingException
 	 * @throws FrameworkException
 	 */
-	protected function __construct(string $id, string $title, bool $isPublic, \Closure $smartCondition)
+	protected function __construct(string $id, string $title, bool $is_public, \Closure $smartCondition)
 	{
 		try {
 			$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
 			$this->id = $id;
 			$this->title = $title;
-			$this->isPublic = $isPublic;
-			$this->isDownloadable = Configs::getValueAsBool('downloadable');
-			$this->isShareButtonVisible = Configs::getValueAsBool('share_button_visible');
+			$this->is_public = $is_public;
+			$this->grants_download = Configs::getValueAsBool('downloadable');
+			$this->grants_access_full_photo = Configs::getValueAsBool('full_photo');
 			$this->thumb = null;
 			$this->smartPhotoCondition = $smartCondition;
 		} catch (BindingResolutionException $e) {
@@ -145,14 +148,11 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		//     relation has been loaded.
 		//     This avoids unnecessary hydration of photos if the album is
 		//     only used within a listing of sub-albums.
-
 		$result = [
 			'id' => $this->id,
 			'title' => $this->title,
-			'is_public' => $this->isPublic,
-			'is_downloadable' => $this->isDownloadable,
-			'is_share_button_visible' => $this->isShareButtonVisible,
 			'thumb' => $this->getThumbAttribute(),
+			'policies' => Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this]) ? AlbumProtectionPolicy::ofSmartAlbum($this) : null,
 		];
 
 		if (isset($this->photos)) {

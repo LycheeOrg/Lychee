@@ -179,8 +179,6 @@ final class Greek implements Language
 			'ALBUM_VIDEOS' => 'Βίντεο',
 			'ALBUM_SUBALBUMS' => 'Υπο-λευκώματα',
 			'ALBUM_SHARING' => 'Κοινή Χρήση',
-			'ALBUM_SHR_YES' => 'ΝΑΙ',
-			'ALBUM_SHR_NO' => 'Όχι',
 			'ALBUM_PUBLIC' => 'Δημόσιο',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Πρωτότυπο',
@@ -261,10 +259,6 @@ final class Greek implements Language
 			'PHOTO_FOCAL' => 'Εστιακό μήκος',
 			'PHOTO_ISO' => 'ISO %s',
 			'PHOTO_SHARING' => 'Κοινή Χρήση',
-			'PHOTO_SHR_PUBLIC' => 'Δημόσια',
-			'PHOTO_SHR_ALB' => 'Ναι (Λεύκωμα)',
-			'PHOTO_SHR_PHT' => 'Ναι (Φωτογραφία)',
-			'PHOTO_SHR_NO' => 'Όχι',
 			'PHOTO_DELETE' => 'Διαγραφή Φωτογραφίας',
 			'PHOTO_KEEP' => 'Να μη γίνει διαγραφή',
 			'PHOTO_DELETE_CONFIRMATION' => 'Είστε σίγουρη/ος πως θέλετε να διαγράψετε αυτή τη φωτογραφία «%s»? Αυτή η ενέργεια δεν μπορεί να αναιρεθεί!',
@@ -508,7 +502,7 @@ final class Greek implements Language
 			'CAMERA_DATE' => 'Camera date',
 			'NEW_PASSWORD' => 'new password',
 			'ALLOW_UPLOADS' => 'Allow uploads',
-			'RESTRICTED_ACCOUNT' => 'Restricted account',
+			'ALLOW_USER_SELF_EDIT' => 'Allow self-management of user account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
 	}

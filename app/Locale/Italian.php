@@ -179,8 +179,6 @@ final class Italian implements Language
 			'ALBUM_VIDEOS' => 'Video',
 			'ALBUM_SUBALBUMS' => 'Subalbums',
 			'ALBUM_SHARING' => 'Condividi',
-			'ALBUM_SHR_YES' => 'SI',
-			'ALBUM_SHR_NO' => 'No',
 			'ALBUM_PUBLIC' => 'Pubblico',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Original',
@@ -261,10 +259,6 @@ final class Italian implements Language
 			'PHOTO_FOCAL' => 'Lunghezza Focale',
 			'PHOTO_ISO' => 'ISO %s',
 			'PHOTO_SHARING' => 'Condivisione',
-			'PHOTO_SHR_PUBLIC' => 'Pubblica',
-			'PHOTO_SHR_ALB' => 'Si (Album)',
-			'PHOTO_SHR_PHT' => 'Si (Foto)',
-			'PHOTO_SHR_NO' => 'No',
 			'PHOTO_DELETE' => 'Elimina Photo',
 			'PHOTO_KEEP' => 'Mantieni Photo',
 			'PHOTO_DELETE_CONFIRMATION' => 'Sei sicuro di voler eliminare la foto «%s»? Questa operazione non può essere annullata successivamente!',
@@ -508,7 +502,7 @@ final class Italian implements Language
 			'CAMERA_DATE' => 'Camera date',
 			'NEW_PASSWORD' => 'new password',
 			'ALLOW_UPLOADS' => 'Allow uploads',
-			'RESTRICTED_ACCOUNT' => 'Restricted account',
+			'ALLOW_USER_SELF_EDIT' => 'Allow self-management of user account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
 	}

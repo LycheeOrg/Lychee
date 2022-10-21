@@ -25,7 +25,8 @@ class ResetAdmin
 		$user->id = 0;
 		$user->username = '';
 		$user->password = '';
-		$user->is_locked = false;
+		$user->may_edit_own_settings = true;
+		$user->may_administrate = true;
 		$user->may_upload = true;
 		$user->save();
 	}

@@ -16,10 +16,13 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
+use Tests\Feature\Traits\CatchFailures;
 use Tests\TestCase;
 
 class WebAuthTest extends TestCase
 {
+	use CatchFailures;
+
 	/**
 	 * Testing the Login interface.
 	 *
@@ -30,7 +33,7 @@ class WebAuthTest extends TestCase
 		Auth::loginUsingId(0);
 
 		$response = $this->postJson('/api/WebAuthn::register/options');
-		$response->assertOk();
+		$this->assertOk($response);
 
 		$response = $this->postJson('/api/WebAuthn::register', [
 			'id' => '-PhslGzltOv3nJ0j8Or1AuNHh9kgmMQmOdM0A7eF7yJcAuSZzFa9YhSHfrYvyllhNUhuIMTE6hFYA3Ef7gCOwg',
@@ -47,7 +50,7 @@ class WebAuthTest extends TestCase
 		Session::flush();
 
 		$response = $this->postJson('/api/WebAuthn::login/options', ['user_id' => 0]);
-		$response->assertOk();
+		$this->assertOk($response);
 
 		$response = $this->postJson('/api/WebAuthn::login', [
 			'id' => 'jQJF5u0Fn-MsdabIxKJoxc19XSLXDCSDqs4g8TV1rXXXBDSEoT6LeRN60CfxZskRxq15EEl43OIbPluD7dVT0A',
@@ -81,15 +84,15 @@ class WebAuthTest extends TestCase
 		Auth::loginUsingId(0);
 
 		$response = $this->postJson('/api/WebAuthn::list');
-		$response->assertOk(); // code 200 something
+		$this->assertOk($response); // code 200 something
 
 		$response = $this->postJson('/api/WebAuthn::delete', ['id' => 'hyxPTjCUCWYPcVTxFy7WjCXATwU7UDLI9nPGqifqs9ohskBuVih4Nzdp3UAl-wHTda4CUoAE_ylfQveayx07ug']);
-		$response->assertNoContent();
+		$this->assertNoContent($response);
 
 		Auth::logout();
 		Session::flush();
 
 		$response = $this->postJson('/api/WebAuthn::delete', ['id' => 'hyxPTjCUCWYPcVTxFy7WjCXATwU7UDLI9nPGqifqs9ohskBuVih4Nzdp3UAl-wHTda4CUoAE_ylfQveayx07ug']);
-		$response->assertUnauthorized();
+		$this->assertUnauthorized($response);
 	}
 }

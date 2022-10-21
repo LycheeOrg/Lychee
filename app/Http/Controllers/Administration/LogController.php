@@ -3,12 +3,17 @@
 namespace App\Http\Controllers\Administration;
 
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Http\Requests\Logs\ClearLogsRequest;
+use App\Http\Requests\Logs\ShowLogsRequest;
+use App\Legacy\AdminAuthentication;
 use App\Models\Configs;
 use App\Models\Logs;
+use App\Policies\SettingsPolicy;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class LogController extends Controller
@@ -20,7 +25,7 @@ class LogController extends Controller
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function list(string $order = 'desc'): Collection
+	public function list(ShowLogsRequest $request, string $order = 'desc'): Collection
 	{
 		// PHPStan does not understand that `get` returns `Collection<Logs>`, but assumes that it returns `Collection<Model>`
 		// @phpstan-ignore-next-line
@@ -38,9 +43,13 @@ class LogController extends Controller
 	 * @throws BindingResolutionException
 	 * @throws QueryBuilderException
 	 */
-	public function view(): View
+	public function view(ShowLogsRequest $request): View
 	{
-		return view('logs.list', ['logs' => $this->list()]);
+		if (!AdminAuthentication::isAdminNotRegistered()) {
+			Gate::authorize(SettingsPolicy::CAN_SEE_LOGS, Configs::class);
+		}
+
+		return view('logs.list', ['logs' => $this->list($request)]);
 	}
 
 	/**
@@ -48,8 +57,10 @@ class LogController extends Controller
 	 *
 	 * @return void
 	 */
-	public static function clear(): void
+	public static function clear(ClearLogsRequest $request): void
 	{
+		Gate::authorize(SettingsPolicy::CAN_CLEAR_LOGS, Configs::class);
+
 		DB::table('logs')->truncate();
 	}
 
@@ -61,8 +72,10 @@ class LogController extends Controller
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public static function clearNoise(): void
+	public static function clearNoise(ClearLogsRequest $request): void
 	{
+		Gate::authorize(SettingsPolicy::CAN_CLEAR_LOGS, Configs::class);
+
 		Logs::query()
 			->where('function', '!=', 'App\Http\Controllers\SessionController::login')
 			->where('type', '=', 'notice')

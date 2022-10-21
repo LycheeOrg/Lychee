@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Sharing;
 
+use App\Contracts\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasBaseAlbum;
@@ -10,7 +11,6 @@ use App\Http\Requests\Traits\HasBaseAlbumTrait;
 use App\Http\Requests\Traits\HasOptionalUserTrait;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
-use App\Policies\UserPolicy;
 use App\Rules\IntegerIDRule;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Auth;
@@ -38,15 +38,7 @@ class ListSharingRequest extends BaseApiRequest implements HasBaseAlbum, HasOpti
 	 */
 	public function authorize(): bool
 	{
-		if (Gate::check(UserPolicy::IS_ADMIN)) {
-			return true;
-		}
-
-		if (!Gate::check(UserPolicy::CAN_UPLOAD, User::class)) {
-			return false;
-		}
-
-		if ($this->album !== null && Gate::check(AlbumPolicy::IS_OWNER, $this->album)) {
+		if (Gate::check(AlbumPolicy::CAN_SHARE_WITH_USERS, [AbstractAlbum::class, $this->album])) {
 			return true;
 		}
 

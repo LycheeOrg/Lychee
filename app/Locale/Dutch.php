@@ -179,8 +179,6 @@ final class Dutch implements Language
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Subalbums',
 			'ALBUM_SHARING' => 'Deel',
-			'ALBUM_SHR_YES' => 'Ja',
-			'ALBUM_SHR_NO' => 'Nee',
 			'ALBUM_PUBLIC' => 'Publiekelijk',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Original',
@@ -261,10 +259,6 @@ final class Dutch implements Language
 			'PHOTO_FOCAL' => 'Brandpuntafstand',
 			'PHOTO_ISO' => 'ISO %s',
 			'PHOTO_SHARING' => 'Deling',
-			'PHOTO_SHR_PUBLIC' => 'Publiekelijk',
-			'PHOTO_SHR_ALB' => 'Ja (Album)',
-			'PHOTO_SHR_PHT' => 'Ja (Foto)',
-			'PHOTO_SHR_NO' => 'Nee',
 			'PHOTO_DELETE' => 'Verwijder Foto',
 			'PHOTO_KEEP' => 'Behoud Foto',
 			'PHOTO_DELETE_CONFIRMATION' => 'Weet je zeker dat je deze foto “%s” wilt verwijderen? Deze actie kan niet ongedaan gemaakt worden!',
@@ -508,7 +502,7 @@ final class Dutch implements Language
 			'CAMERA_DATE' => 'Camera date',
 			'NEW_PASSWORD' => 'new password',
 			'ALLOW_UPLOADS' => 'Allow uploads',
-			'RESTRICTED_ACCOUNT' => 'Restricted account',
+			'ALLOW_USER_SELF_EDIT' => 'Allow self-management of user account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
 	}

@@ -26,7 +26,7 @@ class SharingWithAnonUserAndNoPublicSearchTest extends SharingWithAnonUserAbstra
 	}
 
 	/**
-	 * Ensures that the user does not the unsorted public photos as covers nor
+	 * Ensures that the user does not see the unsorted public photos as covers nor
 	 * inside "Recent" and "Favorites" (as public search is disabled).
 	 * The user can access the public photo nonetheless, but gets
 	 * "401 - Unauthenticated" for the other.
