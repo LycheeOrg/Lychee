@@ -204,6 +204,7 @@ class PhotosUnitTest
 	 *
 	 * @param string[]    $ids
 	 * @param string[]    $tags
+	 * @param bool        $override
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
