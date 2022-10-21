@@ -26,7 +26,7 @@
 			<div id="menu">
 				<ul class="menu">
 					<li class="menu-item">
-						<a href="/gallery">{{ Lang::get('GALLERY') }}</a>
+						<a href="gallery">{{ Lang::get('GALLERY') }}</a>
 					</li>
 				</ul>
 			</div><!-- menu -->
