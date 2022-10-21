@@ -9,10 +9,10 @@ class StreamStatFilter extends \php_user_filter
 {
 	public const REGISTERED_NAME = 'stream-stat-filter';
 
-	/** @var string the used hashing algorithm; value must be supported by PHP, see {@link hash_algos()} */
+	/** @var string -- the used hashing algorithm; value must be supported by PHP, see {@link hash_algos()} */
 	public const HASH_ALGO_NAME = 'sha1';
 
-	/** @var \HashContext|null the hash context for progressive hashing */
+	/** @var \HashContext|null -- the hash context for progressive hashing */
 	protected ?\HashContext $hashContext = null;
 
 	/**

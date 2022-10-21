@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class MustNotSetCast implements CastsInboundAttributes
 {
-	/** @var string|null the name of an alternative attribute */
+	/** @var string|null -- the name of an alternative attribute */
 	private ?string $alternative;
 
 	/**

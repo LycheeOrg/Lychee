@@ -12,13 +12,6 @@ use function Safe\fclose;
 
 /**
  * Class FlysystemFile.
- *
- * This class is based on legacy Flysystem v1 which ships with Laravel 8.
- * Laravel 9 will migrate to Flysystem v3 which provides a different and
- * more consistent API.
- *
- * For v1, this documentation is relevant:
- * https://flysystem.thephpleague.com/v1/docs/usage/filesystem-api/
  */
 class FlysystemFile extends MediaFile
 {
