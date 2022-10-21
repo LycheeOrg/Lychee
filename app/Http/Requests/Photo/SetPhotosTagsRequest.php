@@ -17,12 +17,17 @@ class SetPhotosTagsRequest extends BaseApiRequest implements HasPhotos, HasTags
 	use HasTagsTrait;
 	use AuthorizeCanEditPhotosTrait;
 
+	public const SHALL_OVERRIDE_ATTRIBUTE = 'shall_override';
+
+	public bool $shallOverride;
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function rules(): array
 	{
 		return [
+			self::SHALL_OVERRIDE_ATTRIBUTE => 'required|boolean',
 			HasPhotos::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
 			HasPhotos::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
 			HasTags::TAGS_ATTRIBUTE => 'present|array',
@@ -37,5 +42,6 @@ class SetPhotosTagsRequest extends BaseApiRequest implements HasPhotos, HasTags
 	{
 		$this->photos = Photo::query()->findOrFail($values[HasPhotos::PHOTO_IDS_ATTRIBUTE]);
 		$this->tags = $values[HasTags::TAGS_ATTRIBUTE];
+		$this->shallOverride = $values[self::SHALL_OVERRIDE_ATTRIBUTE];
 	}
 }

@@ -83,6 +83,7 @@ class PhotosOperationsTest extends PhotoTestBase
 		$this->photos_tests->set_description($id, 'A night photography');
 		$this->photos_tests->set_star([$id], true);
 		$this->photos_tests->set_tag([$id], ['night']);
+		$this->photos_tests->set_tag([$id], ['trees'], false);
 		$this->photos_tests->set_public($id, true);
 		$this->photos_tests->set_license($id, 'WTFPL', 422, 'license must be one out of');
 		$this->photos_tests->set_license($id, 'CC0');
@@ -141,7 +142,7 @@ class PhotosOperationsTest extends PhotoTestBase
 			'license' => 'reserved',
 			'is_public' => 1,
 			'is_starred' => true,
-			'tags' => ['night'],
+			'tags' => ['night', 'trees'],
 		]);
 
 		/**

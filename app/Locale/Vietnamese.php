@@ -297,6 +297,8 @@ final class Vietnamese implements Language
 			'ERROR_SEARCH_DEACTIVATED' => 'Tính năng tìm kiếm đã tắt trong phần cài đặt',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Thử lại',
+			'OVERRIDE' => 'Override',
+			'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Thông tin đăng nhập đã được cập nhật.',
 			'SETTINGS_SUCCESS_SORT' => 'Thứ tự sắp xếp đã được cập nhật.',

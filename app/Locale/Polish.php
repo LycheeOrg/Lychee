@@ -297,6 +297,8 @@ final class Polish implements Language
 			'ERROR_SEARCH_DEACTIVATED' => 'Funkcja wyszkukiwania została wyłączona w ustawieniach.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Ponów',
+			'OVERRIDE' => 'Override',
+			'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Zaktualizowano informacje o loginie.',
 			'SETTINGS_SUCCESS_SORT' => 'Zaktualizowano kolejność sortowania.',

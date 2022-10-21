@@ -297,6 +297,8 @@ final class Spanish implements Language
 			'ERROR_SEARCH_DEACTIVATED' => 'La función de búsqueda se ha desactivado en la configuración.',
 			'SUCCESS' => 'Vale',
 			'RETRY' => 'Procesar de nuevo',
+			'OVERRIDE' => 'Override',
+			'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Información de inicio de sesión actualizada',
 			'SETTINGS_SUCCESS_SORT' => 'Orden de clasificación actualizado',

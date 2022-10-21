@@ -297,6 +297,8 @@ final class Italian implements Language
 			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Riprova',
+			'OVERRIDE' => 'Override',
+			'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Informazioni di Login Aggiornate.',
 			'SETTINGS_SUCCESS_SORT' => 'Modalità di ordinamento aggiornate.',
