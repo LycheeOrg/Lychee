@@ -5350,7 +5350,7 @@ frame.stop = function () {
 };
 
 /**
- * Initialized the DOM (if called for the very first time), sets the frontend
+ * Initializes the DOM (if called for the very first time), sets the frontend
  * into "frame mode" and enters the photo loading loop.
  *
  * @returns {void}
@@ -5364,7 +5364,7 @@ frame.initAndStart = function () {
 			// version on the canvas.
 			StackBlur.image(frame._dom.bgImage, frame._dom.canvas, 20);
 			// We must reset the canvas to its originally defined dimensions
-			// as StackBlur reset its.
+			// as StackBlur resets it.
 			frame._dom.canvas.style.width = null;
 			frame._dom.canvas.style.height = null;
 		});
@@ -7504,7 +7504,7 @@ lychee.load = function () {
 	multiselect.close();
 	tabindex.reset();
 
-	// If Lychee is currently in frame or view mode, we need to re-initialized.
+	// If Lychee is currently in frame or view mode, we need to re-initialize.
 	// Note, this is a temporary nasty hack.
 	// In an optimal world, we would simply call `lychee.setMode` to leave
 	// view or frame mode and to enter gallery or public mode.
@@ -7736,7 +7736,7 @@ lychee.setTitle = function () {
  * This method only hides elements and unbinds events, but does not support
  * to show elements and bind events.
  * This method relies on {@link lychee.init} to have bound particular events
- * which can unbound here.
+ * which can be unbound here.
  * TODO: Refactor this. There should be one (or several) methods to change modes, but each of the methods should be symmetric.
  *
  * @param {string} mode - one out of: `public`, `view`, `logged_in`, `frame`
@@ -7776,11 +7776,10 @@ lychee.setMode = function (mode) {
 			$("#button_rotate_ccwise").hide();
 		}
 		return;
-	} else {
-		$(".header__search, .header__clear", ".header__toolbar--albums").hide();
-		$("#button_rotate_cwise").hide();
-		$("#button_rotate_ccwise").hide();
 	}
+	$(".header__search, .header__clear", ".header__toolbar--albums").hide();
+	$("#button_rotate_cwise").hide();
+	$("#button_rotate_ccwise").hide();
 
 	$("#button_settings, .header__divider, .leftMenu").hide();
 
