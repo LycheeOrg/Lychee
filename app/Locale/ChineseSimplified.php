@@ -297,6 +297,7 @@ final class ChineseSimplified implements Language
 			'ERROR_SEARCH_DEACTIVATED' => '搜索功能已在设置中停用。',
 			'SUCCESS' => 'OK',
 			'RETRY' => '重试',
+			'OVERRIDE' => 'Override',
 
 			'SETTINGS_SUCCESS_LOGIN' => '登录信息已更新.',
 			'SETTINGS_SUCCESS_SORT' => '排序顺序已更新。',

@@ -297,6 +297,7 @@ final class Slovak implements Language
 			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Opakovať',
+			'OVERRIDE' => 'Override',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Užívateľské dáta aktualizované',
 			'SETTINGS_SUCCESS_SORT' => 'Triedenie aktualizované',

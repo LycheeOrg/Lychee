@@ -297,6 +297,7 @@ final class French implements Language
 			'ERROR_SEARCH_DEACTIVATED' => 'La recherche a été désactivée dans les paramètres.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Réessayer',
+			'OVERRIDE' => 'Override',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Informations de connexions mise à jour.',
 			'SETTINGS_SUCCESS_SORT' => 'Ordre d’affichage mis à jour.',

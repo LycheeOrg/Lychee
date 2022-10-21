@@ -297,6 +297,7 @@ final class English implements Language
 			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Retry',
+			'OVERRIDE' => 'Override',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Login Info updated.',
 			'SETTINGS_SUCCESS_SORT' => 'Sorting order updated.',

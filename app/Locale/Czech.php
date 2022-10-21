@@ -297,6 +297,7 @@ final class Czech implements Language
 			'ERROR_SEARCH_DEACTIVATED' => 'Funkce hledání byla v nastavení deaktivována.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Opakovat',
+			'OVERRIDE' => 'Override',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Přihlašovací údaje byly aktualizovány.',
 			'SETTINGS_SUCCESS_SORT' => 'Stav řazení byl aktulizován.',

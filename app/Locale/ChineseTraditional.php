@@ -297,6 +297,7 @@ final class ChineseTraditional implements Language
 			'ERROR_SEARCH_DEACTIVATED' => '搜索功能已在設為停用。',
 			'SUCCESS' => '好',
 			'RETRY' => '重試',
+			'OVERRIDE' => 'Override',
 
 			'SETTINGS_SUCCESS_LOGIN' => '登錄信息已更新',
 			'SETTINGS_SUCCESS_SORT' => '排序順序已更新。',

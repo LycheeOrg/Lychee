@@ -297,6 +297,7 @@ final class Portuguese implements Language
 			'ERROR_SEARCH_DEACTIVATED' => 'A funcionalidade de procura foi desativada nas configurações.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Tentar de novo',
+			'OVERRIDE' => 'Override',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Informação de Login atualizada.',
 			'SETTINGS_SUCCESS_SORT' => 'Ordenação atualizada.',

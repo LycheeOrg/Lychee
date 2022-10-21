@@ -5982,11 +5982,11 @@ lychee.parseProtectedInitializationData = function (data) {
  */
 lychee.login = function (data) {
 	if (!data.username.trim()) {
-		basicModal.error("username");
+		basicModal.focusError("username");
 		return;
 	}
 	if (!data.password.trim()) {
-		basicModal.error("password");
+		basicModal.focusError("password");
 		return;
 	}
 
@@ -5994,7 +5994,7 @@ lychee.login = function (data) {
 		return window.location.reload();
 	}, null, function (jqXHR) {
 		if (jqXHR.status === 401) {
-			basicModal.error("password");
+			basicModal.focusError("password");
 			return true;
 		} else {
 			return false;
@@ -7100,6 +7100,7 @@ lychee.locale = {
 	ERROR_SEARCH_DEACTIVATED: "Search functionality has been deactivated under settings.",
 	SUCCESS: "OK",
 	RETRY: "Retry",
+	OVERRIDE: "Override",
 
 	SETTINGS_SUCCESS_LOGIN: "Login Info updated.",
 	SETTINGS_SUCCESS_SORT: "Sorting order updated.",
@@ -9092,7 +9093,7 @@ _photo3.editTags = function (photoIDs) {
 	}
 
 	/**
-  * @param {{tags: string}} data
+  * @param {{tags: string,override: boolean}} data
   * @returns {void}
   */
 	var action = function action(data) {
@@ -9102,10 +9103,10 @@ _photo3.editTags = function (photoIDs) {
 		}).filter(function (tag) {
 			return tag !== "" && tag.indexOf(",") === -1;
 		}).sort();
-		_photo3.setTags(photoIDs, newTags);
+		_photo3.setTags(photoIDs, newTags, data.override);
 	};
 
-	var setTagDialogBody = "\n\t\t<p></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\"><input class='text' name='tags' type='text' minlength='1'></div>\n\t\t</form>";
+	var setTagDialogBody = "\n\t\t<p></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\"><input class='text' name='tags' type='text' minlength='1'></div>\n\t\t\t<div class='input-group compact-inverse'>\n\t\t\t\t<label for=\"override\">" + lychee.locale["OVERRIDE"] + "</label>\n\t\t\t\t<input type='checkbox' id='override' name='override' />\n\t\t\t</div>\n\t\t</form>";
 
 	/**
   * @param {ModalDialogFormElements} formElements
@@ -9116,6 +9117,7 @@ _photo3.editTags = function (photoIDs) {
 		dialog.querySelector("p").textContent = photoIDs.length === 1 ? lychee.locale["PHOTO_NEW_TAGS"] : sprintf(lychee.locale["PHOTOS_NEW_TAGS"], photoIDs.length);
 		formElements.tags.placeholder = "Tags";
 		formElements.tags.value = oldTags.join(", ");
+		formElements.override.checked = true;
 	};
 
 	basicModal.show({
@@ -9137,11 +9139,14 @@ _photo3.editTags = function (photoIDs) {
 /**
  * @param {string[]} photoIDs
  * @param {string[]} tags
+ * @param {boolean} override
  * @returns {void}
  */
-_photo3.setTags = function (photoIDs, tags) {
+_photo3.setTags = function (photoIDs, tags, override) {
 	if (visible.photo()) {
-		_photo3.json.tags = tags;
+		_photo3.json.tags = override ? tags : _photo3.json.tags.concat(tags.filter(function (t) {
+			return !_photo3.json.tags.includes(t);
+		}));
 		view.photo.tags();
 	}
 
@@ -9151,7 +9156,8 @@ _photo3.setTags = function (photoIDs, tags) {
 
 	api.post("Photo::setTags", {
 		photoIDs: photoIDs,
-		tags: tags
+		tags: tags,
+		override: override
 	}, function () {
 		// If we have any tag albums, force a refresh.
 		if (albums.json && albums.json.tag_albums.length !== 0) {
@@ -9168,7 +9174,7 @@ _photo3.setTags = function (photoIDs, tags) {
  */
 _photo3.deleteTag = function (photoID, index) {
 	_photo3.json.tags.splice(index, 1);
-	_photo3.setTags([photoID], _photo3.json.tags);
+	_photo3.setTags([photoID], _photo3.json.tags, true);
 };
 
 /**

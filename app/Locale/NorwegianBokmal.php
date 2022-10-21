@@ -297,6 +297,7 @@ final class NorwegianBokmal implements Language
 			'ERROR_SEARCH_DEACTIVATED' => 'Søkefunksjoner har blitt deaktivert under innstillinger',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Prøv igjen',
+			'OVERRIDE' => 'Override',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Innlogging oppdatert.',
 			'SETTINGS_SUCCESS_SORT' => 'Sorteringsrekkefølge oppdatert.',

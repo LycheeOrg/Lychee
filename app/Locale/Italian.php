@@ -297,6 +297,7 @@ final class Italian implements Language
 			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Riprova',
+			'OVERRIDE' => 'Override',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Informazioni di Login Aggiornate.',
 			'SETTINGS_SUCCESS_SORT' => 'Modalità di ordinamento aggiornate.',

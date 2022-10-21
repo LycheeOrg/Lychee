@@ -297,6 +297,7 @@ final class Greek implements Language
 			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Προσπάθεια ξανά',
+			'OVERRIDE' => 'Override',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Τα στοιχεία εισόδου ενημερώθηκαν.',
 			'SETTINGS_SUCCESS_SORT' => 'Η Ταξινόμηση ενημερώθηκε.',

@@ -219,9 +219,14 @@ class PhotoController extends Controller
 	public function setTags(SetPhotosTagsRequest $request): void
 	{
 		$tags = $request->tags();
+
 		/** @var Photo $photo */
 		foreach ($request->photos() as $photo) {
-			$photo->tags = $tags;
+			if ($request->override) {
+				$photo->tags = $tags;
+			} else {
+				$photo->tags = array_unique(array_merge($photo->tags, $tags));
+			}
 			$photo->save();
 		}
 	}

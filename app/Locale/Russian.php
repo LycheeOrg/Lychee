@@ -297,6 +297,7 @@ final class Russian implements Language
 			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'Ок',
 			'RETRY' => 'Повторить',
+			'OVERRIDE' => 'Override',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Учётные данные обновлены.',
 			'SETTINGS_SUCCESS_SORT' => 'Порядок сортировки обновлён.',

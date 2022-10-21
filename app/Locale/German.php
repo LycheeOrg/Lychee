@@ -297,6 +297,7 @@ final class German implements Language
 			'ERROR_SEARCH_DEACTIVATED' => 'Suchfunktion wurde unter Einstellungen deaktiviert.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Noch einmal versuchen',
+			'OVERRIDE' => 'Überschreiben',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Benutzerdaten aktualisiert',
 			'SETTINGS_SUCCESS_SORT' => 'Sortierreihenfolge aktualisiert',
