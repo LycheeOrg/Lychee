@@ -64,8 +64,8 @@ function get_version(): array
 /**
  * Given the current version and the update array return the new version number.
  *
- * @param array  $curr_version : current version number
- * @param string $kind         : 'minor' or 'major'
+ * @param array  $curr_version current version number
+ * @param string $kind         'minor' or 'major'
  *
  * @return array
  */
