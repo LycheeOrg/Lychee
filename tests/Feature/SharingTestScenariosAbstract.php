@@ -57,28 +57,28 @@ use Tests\TestCase;
  */
 abstract class SharingTestScenariosAbstract extends SharingTestBase
 {
-	/** @var bool -- the previously configured visibility for public photos */
+	/** @var bool the previously configured visibility for public photos */
 	protected bool $arePublicPhotosHidden;
 
-	/** @var string|null -- the ID of the current album 1 (if applicable by the test) */
+	/** @var string|null the ID of the current album 1 (if applicable by the test) */
 	protected ?string $albumID1;
 
-	/** @var string|null -- the ID of the current album 2 (if applicable by the test) */
+	/** @var string|null the ID of the current album 2 (if applicable by the test) */
 	protected ?string $albumID2;
 
-	/** @var string|null -- the ID of the current album 3 (if applicable by the test) */
+	/** @var string|null the ID of the current album 3 (if applicable by the test) */
 	protected ?string $albumID3;
 
-	/** @var string|null -- the ID of the current photo 1 (if applicable by the test) */
+	/** @var string|null the ID of the current photo 1 (if applicable by the test) */
 	protected ?string $photoID1;
 
-	/** @var string|null -- the ID of the current photo 2 (if applicable by the test) */
+	/** @var string|null the ID of the current photo 2 (if applicable by the test) */
 	protected ?string $photoID2;
 
-	/** @var string|null -- the ID of the current photo 3 (if applicable by the test) */
+	/** @var string|null the ID of the current photo 3 (if applicable by the test) */
 	protected ?string $photoID3;
 
-	/** @var int|null -- the ID of the current user (if applicable by the test) */
+	/** @var int|null the ID of the current user (if applicable by the test) */
 	protected ?int $userID;
 
 	public function setUp(): void

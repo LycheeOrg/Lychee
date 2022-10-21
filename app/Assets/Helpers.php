@@ -103,7 +103,7 @@ class Helpers
 	{
 		// If $filename is an URI, get only the path component
 		if ($isURI === true) {
-			/** @var string $filename -- this is true because PHP_URL_PATH is specified */
+			/** @var string $filename this is true because PHP_URL_PATH is specified */
 			$filename = parse_url($filename, PHP_URL_PATH);
 		}
 

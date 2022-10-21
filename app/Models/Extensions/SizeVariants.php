@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Collection;
  */
 class SizeVariants extends DTO
 {
-	/** @var Photo -- the parent object this object is tied to */
+	/** @var Photo the parent object this object is tied to */
 	private Photo $photo;
 
 	private ?SizeVariant $original = null;

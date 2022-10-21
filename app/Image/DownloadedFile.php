@@ -27,7 +27,7 @@ class DownloadedFile extends TemporaryLocalFile
 	public function __construct(string $url)
 	{
 		try {
-			/** @var string $path -- because we provide directly PHP_URL_PATH */
+			/** @var string $path because we provide directly PHP_URL_PATH */
 			$path = parse_url($url, PHP_URL_PATH);
 			$basename = pathinfo($path, PATHINFO_FILENAME);
 			$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);

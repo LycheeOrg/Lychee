@@ -25,7 +25,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	public const THUMBNAIL_DIM = 200;
 	public const THUMBNAIL2X_DIM = 400;
 
-	/** @var ImageHandlerInterface -- the image handler (gd, imagick, ...) which is used to generate image files */
+	/** @var ImageHandlerInterface the image handler (gd, imagick, ...) which is used to generate image files */
 	protected ImageHandlerInterface $referenceImage;
 	protected ?Photo $photo = null;
 	protected ?SizeVariantNamingStrategy $namingStrategy = null;

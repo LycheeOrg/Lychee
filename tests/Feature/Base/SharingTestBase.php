@@ -48,7 +48,7 @@ class SharingTestBase extends PhotoTestBase
 	public const USER_PWD_2 = 'User Password 2';
 	public const USER_PWD_3 = 'User Password 3';
 
-	/** @var array[] -- defines the expected JSON result for each sample image such that we can avoid repeating this again and again during the tests */
+	/** @var array[] EXPECTED_PHOTO_JSON defines the expected JSON result for each sample image such that we can avoid repeating this again and again during the tests */
 	public const EXPECTED_PHOTO_JSON = [
 		TestCase::SAMPLE_FILE_NIGHT_IMAGE => [
 			'id' => null,
@@ -120,22 +120,22 @@ class SharingTestBase extends PhotoTestBase
 	protected UsersUnitTest $users_tests;
 	protected RootAlbumUnitTest $root_album_tests;
 
-	/** @var string -- the previously configured column for album sorting */
+	/** @var string the previously configured column for album sorting */
 	private string $albumsSortingCol;
 
-	/** @var string -- the previously configured order for album sorting */
+	/** @var string the previously configured order for album sorting */
 	private string $albumsSortingOrder;
 
-	/** @var string -- the previously configured column for photo sorting */
+	/** @var string the previously configured column for photo sorting */
 	private string $photosSortingCol;
 
-	/** @var string -- the previously configured order for photo sorting */
+	/** @var string the previously configured order for photo sorting */
 	private string $photosSortingOrder;
 
-	/** @var bool -- the previously configured public visibility for "Recent" */
+	/** @var bool the previously configured public visibility for "Recent" */
 	private bool $isRecentAlbumPublic;
 
-	/** @var bool -- the previously configured public visibility for "Starred" */
+	/** @var bool the previously configured public visibility for "Starred" */
 	private bool $isStarredAlbumPublic;
 
 	public function setUp(): void
