@@ -210,12 +210,14 @@ class PhotosUnitTest
 	public function set_tag(
 		array $ids,
 		array $tags,
+		bool $override = true,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->postJson('/api/Photo::setTags', [
 			'photoIDs' => $ids,
 			'tags' => $tags,
+			'override' => $override,
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
