@@ -9157,7 +9157,7 @@ _photo3.setTags = function (photoIDs, tags, override) {
 	api.post("Photo::setTags", {
 		photoIDs: photoIDs,
 		tags: tags,
-		override: override
+		shall_override: override
 	}, function () {
 		// If we have any tag albums, force a refresh.
 		if (albums.json && albums.json.tag_albums.length !== 0) {
