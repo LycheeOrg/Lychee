@@ -298,6 +298,7 @@ final class ChineseTraditional implements Language
 			'SUCCESS' => '好',
 			'RETRY' => '重試',
 			'OVERRIDE' => 'Override',
+			'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
 
 			'SETTINGS_SUCCESS_LOGIN' => '登錄信息已更新',
 			'SETTINGS_SUCCESS_SORT' => '排序順序已更新。',

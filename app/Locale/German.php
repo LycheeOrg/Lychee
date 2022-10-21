@@ -298,6 +298,7 @@ final class German implements Language
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Noch einmal versuchen',
 			'OVERRIDE' => 'Überschreiben',
+			'TAGS_OVERRIDE_INFO' => 'Wenn das nicht aktiviert ist, werden die Tags zu den vorhandenen Tags des Fotos hinzugefügt.',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Benutzerdaten aktualisiert',
 			'SETTINGS_SUCCESS_SORT' => 'Sortierreihenfolge aktualisiert',

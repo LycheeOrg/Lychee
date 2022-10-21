@@ -298,6 +298,7 @@ final class French implements Language
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Réessayer',
 			'OVERRIDE' => 'Override',
+			'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Informations de connexions mise à jour.',
 			'SETTINGS_SUCCESS_SORT' => 'Ordre d’affichage mis à jour.',

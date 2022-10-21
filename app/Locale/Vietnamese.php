@@ -298,6 +298,7 @@ final class Vietnamese implements Language
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Thử lại',
 			'OVERRIDE' => 'Override',
+			'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Thông tin đăng nhập đã được cập nhật.',
 			'SETTINGS_SUCCESS_SORT' => 'Thứ tự sắp xếp đã được cập nhật.',

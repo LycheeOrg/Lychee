@@ -298,6 +298,7 @@ final class NorwegianBokmal implements Language
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Prøv igjen',
 			'OVERRIDE' => 'Override',
+			'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Innlogging oppdatert.',
 			'SETTINGS_SUCCESS_SORT' => 'Sorteringsrekkefølge oppdatert.',

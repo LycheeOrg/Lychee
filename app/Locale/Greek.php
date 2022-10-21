@@ -298,6 +298,7 @@ final class Greek implements Language
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Προσπάθεια ξανά',
 			'OVERRIDE' => 'Override',
+			'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Τα στοιχεία εισόδου ενημερώθηκαν.',
 			'SETTINGS_SUCCESS_SORT' => 'Η Ταξινόμηση ενημερώθηκε.',

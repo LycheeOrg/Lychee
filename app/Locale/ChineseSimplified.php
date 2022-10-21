@@ -298,6 +298,7 @@ final class ChineseSimplified implements Language
 			'SUCCESS' => 'OK',
 			'RETRY' => '重试',
 			'OVERRIDE' => 'Override',
+			'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
 
 			'SETTINGS_SUCCESS_LOGIN' => '登录信息已更新.',
 			'SETTINGS_SUCCESS_SORT' => '排序顺序已更新。',

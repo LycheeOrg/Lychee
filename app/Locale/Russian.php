@@ -298,6 +298,7 @@ final class Russian implements Language
 			'SUCCESS' => 'Ок',
 			'RETRY' => 'Повторить',
 			'OVERRIDE' => 'Override',
+			'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Учётные данные обновлены.',
 			'SETTINGS_SUCCESS_SORT' => 'Порядок сортировки обновлён.',

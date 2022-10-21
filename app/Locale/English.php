@@ -298,6 +298,7 @@ final class English implements Language
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Retry',
 			'OVERRIDE' => 'Override',
+			'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Login Info updated.',
 			'SETTINGS_SUCCESS_SORT' => 'Sorting order updated.',
