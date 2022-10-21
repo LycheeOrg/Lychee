@@ -8,8 +8,6 @@ use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use Carbon\Exceptions\InvalidFormatException;
-use DarkGhostHunter\Larapass\Contracts\WebAuthnAuthenticatable;
-use DarkGhostHunter\Larapass\WebAuthnAuthentication;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -19,7 +17,8 @@ use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use function Safe\substr;
+use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
+use Laragear\WebAuthn\WebAuthnAuthentication;
 
 /**
  * App\Models\User.
@@ -61,7 +60,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	];
 
 	/**
-	 * @var string[] the attributes that should be hidden for arrays
+	 * @var array<int,string> the attributes that should be hidden for arrays
 	 */
 	protected $hidden = [
 		'password',

@@ -17,7 +17,7 @@ class Kernel extends HttpKernel
 	 */
 	protected $middleware = [
 		\App\Http\Middleware\FixStatusCode::class,
-		\Fideloper\Proxy\TrustProxies::class, // required to get proper (i.e. original) client IP instead of proxy IP, if run behind a reverse proxy
+		\Illuminate\Http\Middleware\TrustProxies::class,
 		\Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance::class,
 		\Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
 		\App\Http\Middleware\TrimStrings::class,

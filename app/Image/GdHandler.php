@@ -11,6 +11,7 @@ use App\Exceptions\MediaFileUnsupportedException;
 use Safe\Exceptions\ImageException;
 use function Safe\imagecopyresampled;
 use function Safe\imagecopyresized;
+use function Safe\imagecreatefromstring;
 use function Safe\imagecreatetruecolor;
 use function Safe\imagecrop;
 use function Safe\imageflip;
@@ -151,7 +152,6 @@ class GdHandler extends BaseImageHandler
 
 			// Determine the type of image, so that we can later save the
 			// image using the same type
-			// TODO: Replace `imagecreatefromstring` by `\Safe\imagecreatefromstring` after https://github.com/thecodingmachine/safe/issues/352 has been resolved
 			error_clear_last();
 			$gdImgStat = getimagesizefromstring($imgBinary);
 			if ($gdImgStat === false) {
@@ -166,11 +166,8 @@ class GdHandler extends BaseImageHandler
 
 			// Load image
 			error_clear_last();
-			// TODO: Replace `imagecreatefromstring` by `\Safe\imagecreatefromstring` after https://github.com/thecodingmachine/safe/issues/352 has been resolved
+			/** @var \GdImage $img */
 			$img = imagecreatefromstring($imgBinary);
-			if ($img === false) {
-				throw ImageException::createFromPhpError();
-			}
 			$this->gdImage = $img;
 
 			// Get EXIF data to determine whether rotation is required

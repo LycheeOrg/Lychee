@@ -10,6 +10,7 @@ use App\Metadata\GitHubFunctions;
 use App\Metadata\GitRequest;
 use App\Metadata\LycheeVersion;
 use App\Models\Configs;
+use function Safe\exec;
 
 class Check
 {

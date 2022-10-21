@@ -13,7 +13,6 @@
 namespace Tests\Feature\Traits;
 
 use function Safe\fileowner;
-use function Safe\sprintf;
 
 trait InteractsWithFilesystemPermissions
 {

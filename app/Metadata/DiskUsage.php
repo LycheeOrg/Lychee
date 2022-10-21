@@ -5,9 +5,8 @@ namespace App\Metadata;
 use App\Facades\Helpers;
 use function Safe\disk_free_space;
 use function Safe\disk_total_space;
+use function Safe\exec;
 use function Safe\filesize;
-use function Safe\sprintf;
-use function Safe\substr;
 
 class DiskUsage
 {

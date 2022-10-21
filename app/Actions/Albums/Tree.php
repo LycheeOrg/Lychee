@@ -72,7 +72,7 @@ class Tree
 			// (sub)-tree and then `toTree` will return garbage as it does
 			// not find connected paths within `$albums` or `$sharedAlbums`,
 			// resp.
-			list($albums, $sharedAlbums) = $albums->partition(fn ($album) => $album->owner_id === $userID);
+			list($albums, $sharedAlbums) = $albums->partition(fn (Album $album) => $album->owner_id === $userID);
 		}
 
 		// We must explicitly pass `null` as the ID of the root album

@@ -65,6 +65,7 @@ class Generate
 			throw new FrameworkException('Date/Time component (Carbon)', $e);
 		}
 
+		/** @var Collection<int,Photo> $photos */
 		$photos = $this->photoQueryPolicy
 			->applySearchabilityFilter(
 				Photo::with(['album', 'owner', 'size_variants', 'size_variants.sym_links'])

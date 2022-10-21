@@ -94,9 +94,14 @@ Route::post('/Sharing::add', [Administration\SharingController::class, 'add']);
 Route::post('/Sharing::setByAlbum', [Administration\SharingController::class, 'setByAlbum']);
 Route::post('/Sharing::delete', [Administration\SharingController::class, 'delete']);
 
-Route::post('/WebAuthn::register/gen', [Administration\WebAuthController::class, 'generateRegistration']);
-Route::post('/WebAuthn::register', [Administration\WebAuthController::class, 'verifyRegistration']);
-Route::post('/WebAuthn::login/gen', [Administration\WebAuthController::class, 'generateAuthentication']);
-Route::post('/WebAuthn::login', [Administration\WebAuthController::class, 'verifyAuthentication']);
-Route::post('/WebAuthn::list', [Administration\WebAuthController::class, 'list'])->middleware(['admin']);
-Route::post('/WebAuthn::delete', [Administration\WebAuthController::class, 'delete'])->middleware(['admin']);
+// WebAuthn Routes
+Route::post('/WebAuthn::list', [WebAuthn\WebAuthnManageController::class, 'list']);
+Route::post('/WebAuthn::delete', [WebAuthn\WebAuthnManageController::class, 'delete']);
+Route::post('/WebAuthn::register/options', [\App\Http\Controllers\WebAuthn\WebAuthnRegisterController::class, 'options'])
+	->name('webauthn.register.options');
+Route::post('/WebAuthn::register', [\App\Http\Controllers\WebAuthn\WebAuthnRegisterController::class, 'register'])
+	->name('webauthn.register');
+Route::post('/WebAuthn::login/options', [\App\Http\Controllers\WebAuthn\WebAuthnLoginController::class, 'options'])
+	->name('webauthn.login.options');
+Route::post('/WebAuthn::login', [\App\Http\Controllers\WebAuthn\WebAuthnLoginController::class, 'login'])
+	->name('webauthn.login');
