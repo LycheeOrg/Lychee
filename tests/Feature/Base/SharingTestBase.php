@@ -48,7 +48,7 @@ class SharingTestBase extends PhotoTestBase
 	public const USER_PWD_2 = 'User Password 2';
 	public const USER_PWD_3 = 'User Password 3';
 
-	/** @var array[] defines the expected JSON result for each sample image such that we can avoid repeating this again and again during the tests */
+	/** @var array[] EXPECTED_PHOTO_JSON defines the expected JSON result for each sample image such that we can avoid repeating this again and again during the tests */
 	public const EXPECTED_PHOTO_JSON = [
 		TestCase::SAMPLE_FILE_NIGHT_IMAGE => [
 			'id' => null,

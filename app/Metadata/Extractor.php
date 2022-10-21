@@ -16,7 +16,6 @@ use PHPExif\Adapter\NoAdapterException;
 use PHPExif\Exif;
 use PHPExif\Reader\Reader;
 use Safe\Exceptions\StringsException;
-use function Safe\substr;
 
 /**
  * Collects normalized EXIF info about an image/video.

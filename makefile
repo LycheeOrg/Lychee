@@ -38,8 +38,7 @@ dist-gen: clean composer
 	@cp -r composer.lock                    Lychee
 	@cp -r index.php                        Lychee
 	@cp -r LICENSE                          Lychee
-	@cp -r readme.md                        Lychee
-	@cp -r server.php                       Lychee
+	@cp -r README.md                        Lychee
 	@cp -r simple_error_template.html       Lychee
 	@cp -r version.md                       Lychee
 	@touch Lychee/storage/logs/laravel.log
@@ -57,15 +56,6 @@ dist-clean: dist-gen
 
 dist: dist-clean
 	@zip -r Lychee.zip Lychee
-
-contrib_add:
-	@echo "npx all-contributors-cli add <user> <bug|code|design|doc|question|tool|test|translation>"
-
-contrib_generate:
-	npx all-contributors-cli generate
-
-contrib_check:
-	npx all-contributors-cli check
 
 clean:
 	@rm -r Lychee 2> /dev/null || true

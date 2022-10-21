@@ -3,7 +3,6 @@
 namespace App\Actions\Install;
 
 use function Safe\preg_match;
-use function Safe\substr;
 
 class PermissionsChecker
 {

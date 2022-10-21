@@ -2,8 +2,6 @@
 
 namespace App\Actions\Diagnostics;
 
-use function Safe\sprintf;
-
 abstract class Diagnostics
 {
 	/**

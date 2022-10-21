@@ -22,7 +22,7 @@ class LicenseRule implements Rule
 	 */
 	public function message(): string
 	{
-		return ':attribute must be one out of ' .
+		return ':attribute must be one out of: ' .
 			implode(', ', Helpers::get_all_licenses());
 	}
 }

@@ -13,9 +13,9 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use DarkGhostHunter\Larapass\Eloquent\WebAuthnCredential;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Laragear\WebAuthn\Models\WebAuthnCredential;
 use Tests\TestCase;
 
 class WebAuthTest extends TestCase
@@ -29,7 +29,7 @@ class WebAuthTest extends TestCase
 	{
 		Auth::loginUsingId(0);
 
-		$response = $this->postJson('/api/WebAuthn::register/gen');
+		$response = $this->postJson('/api/WebAuthn::register/options');
 		$response->assertOk();
 
 		$response = $this->postJson('/api/WebAuthn::register', [
@@ -41,12 +41,12 @@ class WebAuthTest extends TestCase
 			],
 			'type' => 'public-key',
 		]);
-		$response->assertForbidden();
+		$response->assertStatus(422);
 
 		Auth::logout();
 		Session::flush();
 
-		$response = $this->postJson('/api/WebAuthn::login/gen', ['user_id' => 0]);
+		$response = $this->postJson('/api/WebAuthn::login/options', ['user_id' => 0]);
 		$response->assertOk();
 
 		$response = $this->postJson('/api/WebAuthn::login', [
@@ -60,34 +60,36 @@ class WebAuthTest extends TestCase
 			],
 			'type' => 'public-key',
 		]);
-		$response->assertUnauthorized();
+		$response->assertStatus(422);
+
+		$key = (new WebAuthnCredential())->forceFill([
+			'id' => 'hyxPTjCUCWYPcVTxFy7WjCXATwU7UDLI9nPGqifqs9ohskBuVih4Nzdp3UAl-wHTda4CUoAE_ylfQveayx07ug',
+			'authenticatable_id' => 0,
+			'user_id' => '9058e01e7d84466595fd3ae7b8ad89a3',
+			'alias' => '',
+			'counter' => '0',
+			'rp_id' => 'https://localhost',
+			'origin' => 'https://localhost',
+			'transports' => '[]',
+			'aaguid' => '00000000-0000-0000-0000-000000000000',
+			'attestation_format' => 'none',
+			'public_key' => '',
+		]);
+		$user = User::query()->find(0);
+		$user->webAuthnCredentials()->save($key);
 
 		Auth::loginUsingId(0);
 
 		$response = $this->postJson('/api/WebAuthn::list');
 		$response->assertOk(); // code 200 something
 
-		$key = new WebAuthnCredential([
-			'id' => '1234',
-			'user_handle' => '575bcef3-5e74-4785-b089-575dcefbff33',
-			'type' => 'public-key',
-			'transports' => '[]',
-			'attestation_type' => '"none"',
-			'trust_path' => '{"type":"Webauthn\\TrustPath\\EmptyTrustPath"}',
-			'aaguid' => '00000000-0000-0000-0000-000000000000',
-			'public_key' => '',
-			'counter' => '0',
-		]);
-		$user = User::query()->find(0);
-		$user->webAuthnCredentials()->save($key);
-
-		$response = $this->postJson('/api/WebAuthn::delete', ['id' => '1234']);
+		$response = $this->postJson('/api/WebAuthn::delete', ['id' => 'hyxPTjCUCWYPcVTxFy7WjCXATwU7UDLI9nPGqifqs9ohskBuVih4Nzdp3UAl-wHTda4CUoAE_ylfQveayx07ug']);
 		$response->assertNoContent();
 
 		Auth::logout();
 		Session::flush();
 
-		$response = $this->postJson('/api/WebAuthn::delete', ['id' => '1234']);
-		$response->assertForbidden();
+		$response = $this->postJson('/api/WebAuthn::delete', ['id' => 'hyxPTjCUCWYPcVTxFy7WjCXATwU7UDLI9nPGqifqs9ohskBuVih4Nzdp3UAl-wHTda4CUoAE_ylfQveayx07ug']);
+		$response->assertUnauthorized();
 	}
 }

@@ -6,7 +6,6 @@ use App\Exceptions\Internal\ZeroModuloException;
 use Illuminate\Support\Facades\File;
 use function Safe\ini_get;
 use function Safe\parse_url;
-use function Safe\substr;
 
 class Helpers
 {
@@ -75,6 +74,7 @@ class Helpers
 	{
 		// If $filename is an URI, get only the path component
 		if ($isURI === true) {
+			/** @var string $filename this is true because PHP_URL_PATH is specified */
 			$filename = parse_url($filename, PHP_URL_PATH);
 		}
 

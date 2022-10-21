@@ -7,6 +7,7 @@ use App\Exceptions\Handler;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\Helpers;
+use function Safe\exec;
 
 trait ConfigsHas
 {
