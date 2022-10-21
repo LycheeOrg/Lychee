@@ -8,8 +8,6 @@ use Safe\Exceptions\FilesystemException;
 use function Safe\file_get_contents;
 use function Safe\file_put_contents;
 use function Safe\scandir;
-use function Safe\sprintf;
-use function Safe\substr;
 
 /**
  * Template for migration.
@@ -66,8 +64,8 @@ function get_version(): array
 /**
  * Given the current version and the update array return the new version number.
  *
- * @param array  $curr_version : current version number
- * @param string $kind         : 'minor' or 'major'
+ * @param array  $curr_version current version number
+ * @param string $kind         'minor' or 'major'
  *
  * @return array
  */

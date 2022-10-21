@@ -68,7 +68,7 @@ class InstallTest extends TestCase
 			'tag_albums',
 			'albums',
 			'base_albums',
-			'web_authn_credentials',
+			'webauthn_credentials',
 			'users',
 		];
 

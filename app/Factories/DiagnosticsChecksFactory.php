@@ -4,7 +4,6 @@ namespace App\Factories;
 
 use App\Contracts\DiagnosticCheckInterface;
 use function Safe\scandir;
-use function Safe\substr;
 
 class DiagnosticsChecksFactory
 {

@@ -26,7 +26,7 @@
 	  @include('feed::links')
 	@endif --}}
 
-	<script src="{{ URL::asset('dist/Larapass.js') }}"></script>
+	<script src="{{ URL::asset('dist/WebAuthn.js') }}"></script>
 
 	@yield('head-meta')
 @livewireStyles

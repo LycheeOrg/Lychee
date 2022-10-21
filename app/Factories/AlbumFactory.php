@@ -153,6 +153,7 @@ class AlbumFactory
 			$albumQuery->with(['photos', 'children', 'photos.size_variants']);
 		}
 
+		/** @var Collection<int,BaseAlbum> $result */
 		$result = new Collection(array_merge(
 			$tagAlbumQuery->findMany($albumIDs)->all(),
 			$albumQuery->findMany($albumIDs)->all(),

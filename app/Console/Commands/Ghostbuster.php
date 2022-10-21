@@ -11,7 +11,7 @@ use App\Models\SymLink;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
-use League\Flysystem\Adapter\Local as LocalFlysystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use function Safe\readlink;
 use function Safe\scandir;
 use function Safe\unlink;
@@ -74,7 +74,7 @@ class Ghostbuster extends Command
 			$dryrun = filter_var($this->option('dryrun'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) !== false;
 			$uploadDisk = SizeVariantNamingStrategy::getImageDisk();
 			$symlinkDisk = Storage::disk(SymLink::DISK_NAME);
-			$isLocalDisk = $uploadDisk->getDriver()->getAdapter() instanceof LocalFlysystem;
+			$isLocalDisk = $uploadDisk->getAdapter() instanceof LocalFilesystemAdapter;
 
 			$this->line('');
 

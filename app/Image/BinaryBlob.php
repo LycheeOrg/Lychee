@@ -3,6 +3,7 @@
 namespace App\Image;
 
 use App\Exceptions\MediaFileOperationException;
+use function Safe\stream_filter_append;
 
 /**
  * Class BinaryBlob.
@@ -104,7 +105,7 @@ abstract class BinaryBlob
 	protected static function appendStatFilter($stream): StreamStat
 	{
 		$streamStat = new StreamStat();
-		\Safe\stream_filter_append(
+		stream_filter_append(
 			$stream,
 			StreamStatFilter::REGISTERED_NAME,
 			STREAM_FILTER_READ,

@@ -14,7 +14,6 @@ use App\Image\MediaFile;
 use App\Image\NativeLocalFile;
 use App\Image\StreamStat;
 use App\Models\Photo;
-use function Safe\substr;
 
 /**
  * Adds a video as partner to an existing photo.
