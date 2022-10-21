@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c63f50a9c7b75f80e4aa24b41d07b8a9",
+    "content-hash": "1061802c57a1df0955dfc63f1c9156c9",
     "packages": [
         {
             "name": "bepsvpt/secure-headers",
@@ -1721,16 +1721,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v9.36.3",
+            "version": "v9.36.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "80ba0561b3682b96743e1c152fde0698bbdb2412"
+                "reference": "15ce569fd93124e8e2257c24e3ed85b9ef9951d6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/80ba0561b3682b96743e1c152fde0698bbdb2412",
-                "reference": "80ba0561b3682b96743e1c152fde0698bbdb2412",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/15ce569fd93124e8e2257c24e3ed85b9ef9951d6",
+                "reference": "15ce569fd93124e8e2257c24e3ed85b9ef9951d6",
                 "shasum": ""
             },
             "require": {
@@ -1742,7 +1742,7 @@
                 "fruitcake/php-cors": "^1.2",
                 "laravel/serializable-closure": "^1.2.2",
                 "league/commonmark": "^2.2",
-                "league/flysystem": "^3.0.16",
+                "league/flysystem": "^3.8.0",
                 "monolog/monolog": "^2.0",
                 "nesbot/carbon": "^2.62.1",
                 "nunomaduro/termwind": "^1.13",
@@ -1903,7 +1903,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2022-10-19T13:23:53+00:00"
+            "time": "2022-10-20T16:11:03+00:00"
         },
         {
             "name": "laravel/serializable-closure",
@@ -2438,16 +2438,16 @@
         },
         {
             "name": "lychee-org/php-exif",
-            "version": "dev-code-safe-2.2",
+            "version": "v0.7.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/php-exif.git",
-                "reference": "f2c5cb5661a4c804550331e2e63a9794189f17fd"
+                "reference": "ada5def97d3845e646f6975b3ea2b9e0fcb0e87d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/f2c5cb5661a4c804550331e2e63a9794189f17fd",
-                "reference": "f2c5cb5661a4c804550331e2e63a9794189f17fd",
+                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/ada5def97d3845e646f6975b3ea2b9e0fcb0e87d",
+                "reference": "ada5def97d3845e646f6975b3ea2b9e0fcb0e87d",
                 "shasum": ""
             },
             "require": {
@@ -2518,10 +2518,10 @@
                 "tiff"
             ],
             "support": {
-                "source": "https://github.com/LycheeOrg/php-exif/tree/code-safe-2.2",
+                "source": "https://github.com/LycheeOrg/php-exif/tree/v0.7.13",
                 "issues": "https://github.com/LycheeOrg/php-exif/issues"
             },
-            "time": "2022-09-29T16:10:11+00:00"
+            "time": "2022-10-21T12:50:48+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
@@ -11392,7 +11392,6 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "laragear/webauthn": 20,
-        "lychee-org/php-exif": 20,
         "lychee-org/phpstan-lychee": 20
     },
     "prefer-stable": true,

@@ -5982,11 +5982,11 @@ lychee.parseProtectedInitializationData = function (data) {
  */
 lychee.login = function (data) {
 	if (!data.username.trim()) {
-		basicModal.error("username");
+		basicModal.focusError("username");
 		return;
 	}
 	if (!data.password.trim()) {
-		basicModal.error("password");
+		basicModal.focusError("password");
 		return;
 	}
 
@@ -5994,7 +5994,7 @@ lychee.login = function (data) {
 		return window.location.reload();
 	}, null, function (jqXHR) {
 		if (jqXHR.status === 401) {
-			basicModal.error("password");
+			basicModal.focusError("password");
 			return true;
 		} else {
 			return false;
