@@ -2865,6 +2865,7 @@ lychee.locale = {
 	PHOTO_NEW_TAGS: "Enter your tags for this photo. You can add multiple tags by separating them with a comma:",
 	PHOTOS_NEW_TAGS: "Enter your tags for all %d selected photos. Existing tags will be overwritten. You can add multiple tags by separating them with a comma:",
 	PHOTO_SET_TAGS: "Set Tags",
+	TAGS_OVERRIDE_INFO: "If this is unchecked, the tags will be added to the existing tags of the photo.",
 	PHOTO_CAMERA: "Camera",
 	PHOTO_CAPTURED: "Captured",
 	PHOTO_MAKE: "Make",

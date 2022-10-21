@@ -7054,6 +7054,7 @@ lychee.locale = {
 	PHOTO_NEW_TAGS: "Enter your tags for this photo. You can add multiple tags by separating them with a comma:",
 	PHOTOS_NEW_TAGS: "Enter your tags for all %d selected photos. Existing tags will be overwritten. You can add multiple tags by separating them with a comma:",
 	PHOTO_SET_TAGS: "Set Tags",
+	TAGS_OVERRIDE_INFO: "If this is unchecked, the tags will be added to the existing tags of the photo.",
 	PHOTO_CAMERA: "Camera",
 	PHOTO_CAPTURED: "Captured",
 	PHOTO_MAKE: "Make",
@@ -9106,7 +9107,7 @@ _photo3.editTags = function (photoIDs) {
 		_photo3.setTags(photoIDs, newTags, data.override);
 	};
 
-	var setTagDialogBody = "\n\t\t<p></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\"><input class='text' name='tags' type='text' minlength='1'></div>\n\t\t\t<div class='input-group compact-inverse'>\n\t\t\t\t<label for=\"override\">" + lychee.locale["OVERRIDE"] + "</label>\n\t\t\t\t<input type='checkbox' id='override' name='override' />\n\t\t\t</div>\n\t\t</form>";
+	var setTagDialogBody = "\n\t\t<p></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\"><input class='text' name='tags' type='text' minlength='1'></div>\n\t\t\t<div class='input-group compact-inverse'>\n\t\t\t\t<label for=\"override\"></label>\n\t\t\t\t<input type='checkbox' id='tag_dialog_override_input' name='override' />\n\t\t\t\t<p></p>\n\t\t\t</div>\n\t\t</form>";
 
 	/**
   * @param {ModalDialogFormElements} formElements
@@ -9117,7 +9118,8 @@ _photo3.editTags = function (photoIDs) {
 		dialog.querySelector("p").textContent = photoIDs.length === 1 ? lychee.locale["PHOTO_NEW_TAGS"] : sprintf(lychee.locale["PHOTOS_NEW_TAGS"], photoIDs.length);
 		formElements.tags.placeholder = "Tags";
 		formElements.tags.value = oldTags.join(", ");
-		formElements.override.checked = true;
+		formElements.override.previousElementSibling.textContent = lychee.locale["OVERRIDE"];
+		formElements.override.nextElementSibling.textContent = lychee.locale["TAGS_OVERRIDE_INFO"];
 	};
 
 	basicModal.show({
@@ -9139,10 +9141,10 @@ _photo3.editTags = function (photoIDs) {
 /**
  * @param {string[]} photoIDs
  * @param {string[]} tags
- * @param {boolean} override
+ * @param {boolean} shall_override
  * @returns {void}
  */
-_photo3.setTags = function (photoIDs, tags, override) {
+_photo3.setTags = function (photoIDs, tags, shall_override) {
 	if (visible.photo()) {
 		_photo3.json.tags = override ? tags : _photo3.json.tags.concat(tags.filter(function (t) {
 			return !_photo3.json.tags.includes(t);
@@ -9157,7 +9159,7 @@ _photo3.setTags = function (photoIDs, tags, override) {
 	api.post("Photo::setTags", {
 		photoIDs: photoIDs,
 		tags: tags,
-		shall_override: override
+		shall_override: shall_override
 	}, function () {
 		// If we have any tag albums, force a refresh.
 		if (albums.json && albums.json.tag_albums.length !== 0) {
