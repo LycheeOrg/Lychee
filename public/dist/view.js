@@ -8,11 +8,8 @@
 !function(){"use strict";var g={not_string:/[^s]/,not_bool:/[^t]/,not_type:/[^T]/,not_primitive:/[^v]/,number:/[diefg]/,numeric_arg:/[bcdiefguxX]/,json:/[j]/,not_json:/[^j]/,text:/^[^\x25]+/,modulo:/^\x25{2}/,placeholder:/^\x25(?:([1-9]\d*)\$|\(([^)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijostTuvxX])/,key:/^([a-z_][a-z_\d]*)/i,key_access:/^\.([a-z_][a-z_\d]*)/i,index_access:/^\[(\d+)\]/,sign:/^[+-]/};function y(e){return function(e,t){var r,n,i,s,a,o,p,c,l,u=1,f=e.length,d="";for(n=0;n<f;n++)if("string"==typeof e[n])d+=e[n];else if("object"==typeof e[n]){if((s=e[n]).keys)for(r=t[u],i=0;i<s.keys.length;i++){if(null==r)throw new Error(y('[sprintf] Cannot access property "%s" of undefined value "%s"',s.keys[i],s.keys[i-1]));r=r[s.keys[i]]}else r=s.param_no?t[s.param_no]:t[u++];if(g.not_type.test(s.type)&&g.not_primitive.test(s.type)&&r instanceof Function&&(r=r()),g.numeric_arg.test(s.type)&&"number"!=typeof r&&isNaN(r))throw new TypeError(y("[sprintf] expecting number but found %T",r));switch(g.number.test(s.type)&&(c=0<=r),s.type){case"b":r=parseInt(r,10).toString(2);break;case"c":r=String.fromCharCode(parseInt(r,10));break;case"d":case"i":r=parseInt(r,10);break;case"j":r=JSON.stringify(r,null,s.width?parseInt(s.width):0);break;case"e":r=s.precision?parseFloat(r).toExponential(s.precision):parseFloat(r).toExponential();break;case"f":r=s.precision?parseFloat(r).toFixed(s.precision):parseFloat(r);break;case"g":r=s.precision?String(Number(r.toPrecision(s.precision))):parseFloat(r);break;case"o":r=(parseInt(r,10)>>>0).toString(8);break;case"s":r=String(r),r=s.precision?r.substring(0,s.precision):r;break;case"t":r=String(!!r),r=s.precision?r.substring(0,s.precision):r;break;case"T":r=Object.prototype.toString.call(r).slice(8,-1).toLowerCase(),r=s.precision?r.substring(0,s.precision):r;break;case"u":r=parseInt(r,10)>>>0;break;case"v":r=r.valueOf(),r=s.precision?r.substring(0,s.precision):r;break;case"x":r=(parseInt(r,10)>>>0).toString(16);break;case"X":r=(parseInt(r,10)>>>0).toString(16).toUpperCase()}g.json.test(s.type)?d+=r:(!g.number.test(s.type)||c&&!s.sign?l="":(l=c?"+":"-",r=r.toString().replace(g.sign,"")),o=s.pad_char?"0"===s.pad_char?"0":s.pad_char.charAt(1):" ",p=s.width-(l+r).length,a=s.width&&0<p?o.repeat(p):"",d+=s.align?l+r+a:"0"===o?l+a+r:a+l+r)}return d}(function(e){if(p[e])return p[e];var t,r=e,n=[],i=0;for(;r;){if(null!==(t=g.text.exec(r)))n.push(t[0]);else if(null!==(t=g.modulo.exec(r)))n.push("%");else{if(null===(t=g.placeholder.exec(r)))throw new SyntaxError("[sprintf] unexpected placeholder");if(t[2]){i|=1;var s=[],a=t[2],o=[];if(null===(o=g.key.exec(a)))throw new SyntaxError("[sprintf] failed to parse named argument key");for(s.push(o[1]);""!==(a=a.substring(o[0].length));)if(null!==(o=g.key_access.exec(a)))s.push(o[1]);else{if(null===(o=g.index_access.exec(a)))throw new SyntaxError("[sprintf] failed to parse named argument key");s.push(o[1])}t[2]=s}else i|=2;if(3===i)throw new Error("[sprintf] mixing positional and named placeholders is not (yet) supported");n.push({placeholder:t[0],param_no:t[1],keys:t[2],sign:t[3],pad_char:t[4],align:t[5],width:t[6],precision:t[7],type:t[8]})}r=r.substring(t[0].length)}return p[e]=n}(e),arguments)}function e(e,t){return y.apply(null,[e].concat(t||[]))}var p=Object.create(null);"undefined"!=typeof exports&&(exports.sprintf=y,exports.vsprintf=e),"undefined"!=typeof window&&(window.sprintf=y,window.vsprintf=e,"function"==typeof define&&define.amd&&define(function(){return{sprintf:y,vsprintf:e}}))}();
 //# sourceMappingURL=sprintf.min.js.map
 
+!function(t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define([],t):("undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this).basicContext=t()}(function(){return function o(i,c,l){function r(n,t){if(!c[n]){if(!i[n]){var e="function"==typeof require&&require;if(!t&&e)return e(n,!0);if(a)return a(n,!0);throw(t=new Error("Cannot find module '"+n+"'")).code="MODULE_NOT_FOUND",t}e=c[n]={exports:{}},i[n][0].call(e.exports,function(t){return r(i[n][1][t]||t)},e,e.exports,o,i,c,l)}return c[n].exports}for(var a="function"==typeof require&&require,t=0;t<l.length;t++)r(l[t]);return r}({1:[function(t,n,e){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.visible=e.show=e.close=e.SEPARATOR=e.ITEM=void 0;function y(){var t=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{};return null!=t.fn&&(!1!==t.visible&&(!0!==t.disabled&&(b("td[data-num='".concat(t.num,"']")).onclick=t.fn,b("td[data-num='".concat(t.num,"']")).oncontextmenu=t.fn,!0)))}function o(){var t=b();return!(null==t||0===t.length)}var i="item",c=(e.ITEM=i,"separator"),b=(e.SEPARATOR=c,function(){return document.querySelector(".basicContext "+(0<arguments.length&&void 0!==arguments[0]?arguments[0]:""))}),x=function(t,n){var e="",o="";return!1===function(){var t=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{};return!0==(0===Object.keys(t).length)&&(t.type=c),null==t.type&&(t.type=i),null==t.class&&(t.class=""),!1!==t.visible&&(t.visible=!0),null==t.icon&&(t.icon=null),null==t.title&&(t.title="Undefined"),!0!==t.disabled&&(t.disabled=!1),!0===t.disabled&&(t.class+=" basicContext__item--disabled"),null!=t.fn||t.type===c||!1!==t.disabled||(console.warn("Missing fn for item '".concat(t.title,"'")),!1)}(t)||!1===t.visible?"":(t.num=n,null!==t.icon&&(o="<span class='basicContext__icon ".concat(t.icon,"'></span>")),t.type===i?e="\n\t\t\t\t <tr class='basicContext__item ".concat(t.class,"'>\n\t\t\t\t\t\t <td class='basicContext__data' data-num='").concat(t.num,"'>").concat(o).concat(t.title,"</td>\n\t\t\t\t </tr>\n\t\t\t\t "):t.type===c&&(e="\n\t\t\t\t <tr class='basicContext__item basicContext__item--separator'></tr>\n\t\t\t\t "),e)},v=function(){var t=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{},n={x:t.clientX,y:t.clientY};return"touchend"!==t.type||null!=n.x&&null!=n.y||null!=(t=t.changedTouches)&&0<t.length&&(n.x=t[0].clientX,n.y=t[0].clientY),(null==n.x||n.x<0)&&(n.x=0),(null==n.y||n.y<0)&&(n.y=0),n},m=(e.show=function(t,n,e,o){i="",i+="\n\t\t\t\t<div class='basicContextContainer'>\n\t\t\t\t\t\t<div class='basicContext'>\n\t\t\t\t\t\t\t\t<table>\n\t\t\t\t\t\t\t\t\t\t<tbody>\n\t\t\t\t",t.forEach(function(t,n){return i+=x(t,n)});var i,c,l,r,a,s,u,f,d=i+="\n\t\t\t\t\t\t\t\t\t\t</tbody>\n\t\t\t\t\t\t\t\t</table>\n\t\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t",d=(document.body.insertAdjacentHTML("beforeend",d),b()),p=(l=d,c=v(c=n),r=c.x,a=c.y,s=document.querySelector(".basicContextContainer"),p=s.offsetWidth,s=s.offsetHeight,u=l.offsetWidth,f=l.offsetHeight,p<r+u&&(r-=r+u-p),s<a+f&&(a-=a+f-s),s<f&&(a=0,l.classList.add("basicContext--scrollable")),u=c.x-r,{x:r,y:a,rx:u,ry:c.y-a});return d.style.left="".concat(p.x,"px"),d.style.top="".concat(p.y,"px"),d.style.transformOrigin="".concat(p.rx,"px ").concat(p.ry,"px"),d.style.opacity=1,d.parentElement.onclick=e=null==e?m:e,d.parentElement.oncontextmenu=e,t.forEach(y),"function"==typeof n.preventDefault&&n.preventDefault(),"function"==typeof n.stopPropagation&&n.stopPropagation(),"function"==typeof o&&o(),!0},e.visible=o,function(){var t;return!1!==o()&&((t=document.querySelector(".basicContextContainer")).parentElement.removeChild(t),!0)});e.close=m},{}]},{},[1])(1)});
 "use strict";
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _lychee$locale;
 
 var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xlink:href='#", "' /></svg>"], ["<svg class='iconic ", "'><use xlink:href='#", "' /></svg>"]),
     _templateObject2 = _taggedTemplateLiteral(["<div class='divider'><h1>$", "</h1></div>"], ["<div class='divider'><h1>$", "</h1></div>"]),
@@ -35,8 +32,8 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject19 = _taggedTemplateLiteral(["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"], ["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"]),
     _templateObject20 = _taggedTemplateLiteral(["<a class='", "'>$", "</a>"], ["<a class='", "'>$", "</a>"]),
     _templateObject21 = _taggedTemplateLiteral(["<div class='empty'>", "</div>"], ["<div class='empty'>", "</div>"]),
-    _templateObject22 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_edit_own_settings\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_edit_own_settings\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
-    _templateObject23 = _taggedTemplateLiteral(["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"string\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"string\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
+    _templateObject22 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
+    _templateObject23 = _taggedTemplateLiteral(["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"string\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"string\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
     _templateObject24 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
     _templateObject25 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <table>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <table>\n\t\t\t\t "]),
     _templateObject26 = _taggedTemplateLiteral(["<span class='attr_", "_separator'>, </span>"], ["<span class='attr_", "_separator'>, </span>"]),
@@ -44,8 +41,6 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject28 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
     _templateObject29 = _taggedTemplateLiteral(["<tr><td>$", "</td><td>", "</td></tr>"], ["<tr><td>$", "</td><td>", "</td></tr>"]),
     _templateObject30 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]);
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
@@ -559,7 +554,7 @@ var loadPhotoInfo = function loadPhotoInfo(photoID) {
 		document.title = "Lychee – " + _title;
 		header.dom(".header__title").text(_title);
 
-		if (!lychee.share_button_visible) {
+		if (photo.json.hasOwnProperty("is_share_button_visible") && !photo.json.is_share_button_visible) {
 			$("#button_share").hide();
 		}
 
@@ -726,7 +721,7 @@ build.album = function (data) {
 
 	if (album.isUploadable() && !disabled) {
 		var isCover = album.json && album.json.cover_id && data.thumb.id === album.json.cover_id;
-		html += lychee.html(_templateObject7, data.policies && data.policies.is_nsfw ? "badge--nsfw" : "", build.iconic("warning"), data.id === SmartAlbumID.STARRED ? "badge--star" : "", build.iconic("star"), data.id === SmartAlbumID.RECENT ? "badge--visible badge--list" : "", build.iconic("clock"), data.id === SmartAlbumID.PUBLIC || data.policies && data.policies.is_public ? "badge--visible" : "", data.policies && data.policies.is_link_required ? "badge--hidden" : "badge--not--hidden", build.iconic("eye"), data.id === SmartAlbumID.UNSORTED ? "badge--visible" : "", build.iconic("list"), data.policies && data.policies.is_password_required ? "badge--visible" : "", build.iconic("lock-unlocked"), data.is_tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
+		html += lychee.html(_templateObject7, data.is_nsfw ? "badge--nsfw" : "", build.iconic("warning"), data.id === SmartAlbumID.STARRED ? "badge--star" : "", build.iconic("star"), data.id === SmartAlbumID.RECENT ? "badge--visible badge--list" : "", build.iconic("clock"), data.id === SmartAlbumID.PUBLIC || data.is_public ? "badge--visible" : "", data.requires_link ? "badge--hidden" : "badge--not--hidden", build.iconic("eye"), data.id === SmartAlbumID.UNSORTED ? "badge--visible" : "", build.iconic("list"), data.has_password ? "badge--visible" : "", build.iconic("lock-locked"), data.is_tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
 
 	if (data.albums && data.albums.length > 0 || data.has_albums) {
@@ -834,7 +829,7 @@ build.photo = function (data) {
 		// This also means that the displayed variant of the public badge of
 		// a photo depends on the availability of the parent album.
 		// This seems to be an undesired but unavoidable side effect.
-		html += lychee.html(_templateObject12, data.is_starred ? "badge--star" : "", build.iconic("star"), data.is_public && album.json && album.json.policies && !album.json.policies.is_public ? "badge--visible badge--hidden" : "", build.iconic("eye"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
+		html += lychee.html(_templateObject12, data.is_starred ? "badge--star" : "", build.iconic("star"), data.is_public && album.json && !album.json.is_public ? "badge--visible badge--hidden" : "", build.iconic("eye"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
 
 	html += "</div>";
@@ -1029,7 +1024,7 @@ build.tags = function (tags) {
  * @returns {string}
  */
 build.user = function (user) {
-	return lychee.html(_templateObject22, user.id, user.id, user.username, lychee.locale["USERNAME"], lychee.locale["NEW_PASSWORD"], lychee.locale["ALLOW_UPLOADS"], lychee.locale["ALLOW_USER_SELF_EDIT"], user.id, user.id);
+	return lychee.html(_templateObject22, user.id, user.id, user.username, lychee.locale["USERNAME"], lychee.locale["NEW_PASSWORD"], lychee.locale["ALLOW_UPLOADS"], lychee.locale["RESTRICTED_ACCOUNT"], user.id, user.id);
 };
 
 /**
@@ -1316,7 +1311,7 @@ header.setMode = function (mode) {
 				tabindex.makeUnfocusable(_e5);
 			}
 
-			if (lychee.enable_button_add && lychee.rights.root_album.can_upload) {
+			if (lychee.enable_button_add && lychee.rights.may_upload) {
 				var _e6 = $(".button_add", ".header__toolbar--albums");
 				_e6.show();
 				tabindex.makeFocusable(_e6);
@@ -1339,7 +1334,7 @@ header.setMode = function (mode) {
 
 			// Hide download button when album empty or we are not allowed to
 			// upload to it and it's not explicitly marked as downloadable.
-			if (!album.json || album.json.photos.length === 0 && album.json.albums && album.json.albums.length === 0 || !album.json.rights.can_download) {
+			if (!album.json || album.json.photos.length === 0 && album.json.albums && album.json.albums.length === 0 || !album.isUploadable() && !album.json.is_downloadable) {
 				var _e8 = $("#button_archive");
 				_e8.hide();
 				tabindex.makeUnfocusable(_e8);
@@ -1349,7 +1344,7 @@ header.setMode = function (mode) {
 				tabindex.makeFocusable(_e9);
 			}
 
-			if (!lychee.share_button_visible) {
+			if (album.json && album.json.hasOwnProperty("is_share_button_visible") && !album.json.is_share_button_visible) {
 				var _e10 = $("#button_share_album");
 				_e10.hide();
 				tabindex.makeUnfocusable(_e10);
@@ -1480,7 +1475,7 @@ header.setMode = function (mode) {
 				tabindex.makeUnfocusable(_e24);
 			}
 
-			if (!lychee.share_button_visible) {
+			if (photo.json && photo.json.hasOwnProperty("is_share_button_visible") && !photo.json.is_share_button_visible) {
 				var _e25 = $("#button_share");
 				_e25.hide();
 				tabindex.makeUnfocusable(_e25);
@@ -1493,7 +1488,7 @@ header.setMode = function (mode) {
 			// Hide More menu if empty (see contextMenu.photoMore)
 			$("#button_more").show();
 			tabindex.makeFocusable($("#button_more"));
-			if (photo.json && !photo.json.rights.can_download && (!photo.json.rights.can_access_full_photo || !(photo.json.size_variants.original.url && photo.json.size_variants.original.url !== ""))) {
+			if (!(album.isUploadable() || (photo.json.hasOwnProperty("is_downloadable") ? photo.json.is_downloadable : album.json && album.json.is_downloadable)) && !(photo.json.size_variants.original.url && photo.json.size_variants.original.url !== "")) {
 				var _e27 = $("#button_more");
 				_e27.hide();
 				tabindex.makeUnfocusable(_e27);
@@ -1829,8 +1824,7 @@ sidebar.secondsToHMS = function (d) {
 sidebar.createStructure.photo = function (data) {
 	if (!data) return [];
 
-	var editable = data.rights.can_edit;
-
+	var editable = typeof album !== "undefined" ? album.isUploadable() : false;
 	var hasExif = !!data.taken_at || !!data.make || !!data.model || !!data.shutter || !!data.aperture || !!data.focal || !!data.iso;
 	// Attributes for geo-position are nullable floats.
 	// The geo-position 0°00'00'', 0°00'00'' at zero altitude is very unlikely
@@ -1999,11 +1993,12 @@ sidebar.createStructure.photo = function (data) {
 sidebar.createStructure.album = function (data) {
 	if (!data) return [];
 
-	var editable = data.rights.can_edit;
+	var editable = album.isUploadable();
 	var structure = {};
-	var isPublic = !!data.policies && data.policies.is_public ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
-	var requiresLink = !!data.policies && data.policies.is_link_required ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
-	var isDownloadable = !!data.policies && data.policies.grant_download ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
+	var isPublic = data.is_public ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
+	var requiresLink = data.requires_link ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
+	var isDownloadable = data.is_downloadable ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
+	var isShareButtonVisible = data.is_share_button_visible ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
 	var hasPassword = data.has_password ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
 	var license = "";
 	var sorting = "";
@@ -2067,7 +2062,7 @@ sidebar.createStructure.album = function (data) {
 	structure.share = {
 		title: lychee.locale["ALBUM_SHARING"],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["ALBUM_PUBLIC"], kind: "public", value: isPublic }, { title: lychee.locale["ALBUM_HIDDEN"], kind: "hidden", value: requiresLink }, { title: lychee.locale["ALBUM_DOWNLOADABLE"], kind: "downloadable", value: isDownloadable }, { title: lychee.locale["ALBUM_PASSWORD"], kind: "password", value: hasPassword }]
+		rows: [{ title: lychee.locale["ALBUM_PUBLIC"], kind: "public", value: isPublic }, { title: lychee.locale["ALBUM_HIDDEN"], kind: "hidden", value: requiresLink }, { title: lychee.locale["ALBUM_DOWNLOADABLE"], kind: "downloadable", value: isDownloadable }, { title: lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE"], kind: "share_button_visible", value: isShareButtonVisible }, { title: lychee.locale["ALBUM_PASSWORD"], kind: "password", value: hasPassword }]
 	};
 
 	if (data.owner_name) {
@@ -2633,7 +2628,7 @@ mapview.goto = function (elem) {
  * @property {function} printMonthYear
  */
 
-lychee.locale = (_lychee$locale = {
+lychee.locale = {
 	USERNAME: "Username",
 	PASSWORD: "Password",
 	ENTER: "Enter",
@@ -3098,11 +3093,6 @@ lychee.locale = (_lychee$locale = {
 	PHOTO_LIVE_VIDEO: "Video part of live-photo",
 	PHOTO_VIEW: "Lychee Photo View:",
 
-	NEW_PASSWORD: "new password",
-	ALLOW_UPLOADS: "Allow uploads",
-	ALLOW_USER_SELF_EDIT: "Allow self-management of user account",
-
-	OSM_CONTRIBUTORS: "OpenStreetMap contributors",
 	PHOTO_EDIT_ROTATECWISE: "Rotate clockwise",
 	PHOTO_EDIT_ROTATECCWISE: "Rotate counter-clockwise",
 
@@ -3128,72 +3118,112 @@ lychee.locale = (_lychee$locale = {
 	ERROR_ALBUM_NOT_FOUND: "Error: album %s not found",
 	ERROR_DROPBOX_KEY: "Error: Dropbox key not set",
 	ERROR_SESSION: "Session expired.",
-	CAMERA_DATE: "Camera date"
-}, _defineProperty(_lychee$locale, "NEW_PASSWORD", "new password"), _defineProperty(_lychee$locale, "ALLOW_UPLOADS", "Allow uploads"), _defineProperty(_lychee$locale, "RESTRICTED_ACCOUNT", "Restricted account"), _defineProperty(_lychee$locale, "OSM_CONTRIBUTORS", "OpenStreetMap contributors"), _defineProperty(_lychee$locale, "dateTimeFormatter", new Intl.DateTimeFormat("default", { dateStyle: "medium", timeStyle: "medium" })), _defineProperty(_lychee$locale, "printFilesizeLocalized", function printFilesizeLocalized(filesize) {
-	var suffix = [" B", " kB", " MB", " GB"];
-	var i = 0;
-	// Sic! We check if the number is larger than 1000 but divide by 1024 by intention
-	// We aim at a number which has at most 3 non-decimal digits, i.e. the result shall be in the interval
-	// [1000/1024, 1000) = [0.977, 1000)  (lower bound included, upper bound excluded)
-	while (filesize >= 1000.0 && i < suffix.length) {
-		filesize = filesize / 1024.0;
-		i++;
-	}
+	CAMERA_DATE: "Camera date",
+	NEW_PASSWORD: "new password",
+	ALLOW_UPLOADS: "Allow uploads",
+	RESTRICTED_ACCOUNT: "Restricted account",
+	OSM_CONTRIBUTORS: "OpenStreetMap contributors",
 
-	// The number of decimal digits is anti-proportional to the number of non-decimal digits
-	// In total, there shall always be three digits
-	if (filesize >= 100.0) {
-		filesize = Math.round(filesize);
-	} else if (filesize >= 10.0) {
-		filesize = Math.round(filesize * 10.0) / 10.0;
-	} else {
-		filesize = Math.round(filesize * 100.0) / 100.0;
-	}
+	dateTimeFormatter: new Intl.DateTimeFormat("default", { dateStyle: "medium", timeStyle: "medium" }),
 
-	return Number(filesize).toLocaleString() + suffix[i];
-}), _defineProperty(_lychee$locale, "printDateTime", function printDateTime(jsonDateTime) {
-	if (typeof jsonDateTime !== "string" || jsonDateTime === "") return "";
+	/**
+  * Formats a number representing a filesize in bytes as a localized string
+  * @param {!number} filesize
+  * @returns {string} A formatted and localized string
+  */
+	printFilesizeLocalized: function printFilesizeLocalized(filesize) {
+		var suffix = [" B", " kB", " MB", " GB"];
+		var i = 0;
+		// Sic! We check if the number is larger than 1000 but divide by 1024 by intention
+		// We aim at a number which has at most 3 non-decimal digits, i.e. the result shall be in the interval
+		// [1000/1024, 1000) = [0.977, 1000)  (lower bound included, upper bound excluded)
+		while (filesize >= 1000.0 && i < suffix.length) {
+			filesize = filesize / 1024.0;
+			i++;
+		}
 
-	// Unfortunately, the built-in JS Date object is rather dumb.
-	// It is only required to support the timezone of the runtime
-	// environment and UTC.
-	// Moreover, the method `toLocalString` may or may not convert
-	// the represented time to the timezone of the runtime environment
-	// before formatting it as a string.
-	// However, we want to keep the printed time in the original timezone,
-	// because this facilitates human interaction with a photo.
-	// To this end we apply a "dirty" trick here.
-	// We first cut off any explicit timezone indication from the JSON
-	// string and only pass a date/time of the form `YYYYMMDDThhmmss` to
-	// `Date`.
-	// `Date` is required to interpret those time values according to the
-	// local timezone (see [MDN Web Docs - Date Time String Format](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse#date_time_string_format)).
-	// Most likely, the resulting `Date` object will represent the
-	// wrong instant in time (given in seconds since epoch), but we only
-	// want to call `toLocalString` which is fine and don't do any time
-	// arithmetics.
-	// Then we add the original timezone to the string manually.
-	var splitDateTime = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([,.]\d{1,6})?)([-Z+])(\d{2}:\d{2})?$/.exec(jsonDateTime);
-	// The capturing groups are:
-	//  - 0: the whole string
-	//  - 1: the whole date/time segment incl. fractional seconds
-	//  - 2: the fractional seconds (if present)
-	//  - 3: the timezone separator, i.e. "Z", "-" or "+" (if present)
-	//  - 4: the absolute timezone offset without the sign (if present)
-	console.assert(splitDateTime.length === 5, "'jsonDateTime' is not formatted acc. to ISO 8601; passed string was: " + jsonDateTime);
-	var result = lychee.locale.dateTimeFormatter.format(new Date(splitDateTime[1]));
-	if (splitDateTime[3] === "Z" || splitDateTime[4] === "00:00") {
-		result += " UTC";
-	} else {
-		result += " UTC" + splitDateTime[3] + splitDateTime[4];
+		// The number of decimal digits is anti-proportional to the number of non-decimal digits
+		// In total, there shall always be three digits
+		if (filesize >= 100.0) {
+			filesize = Math.round(filesize);
+		} else if (filesize >= 10.0) {
+			filesize = Math.round(filesize * 10.0) / 10.0;
+		} else {
+			filesize = Math.round(filesize * 100.0) / 100.0;
+		}
+
+		return Number(filesize).toLocaleString() + suffix[i];
+	},
+
+	/**
+  * Converts a JSON encoded date/time into a localized string relative to
+  * the original timezone
+  *
+  * The localized string uses the JS "medium" verbosity.
+  * The precise definition of "medium verbosity" depends on the current locale, but for Western languages this
+  * means that the date portion is fully printed with digits (e.g. something like 03/30/2021 for English,
+  * 30/03/2021 for French and 30.03.2021 for German), and that the time portion is printed with a resolution of
+  * seconds with two digits for all parts either in 24h or 12h scheme (e.g. something like 02:24:13pm for English
+  * and 14:24:13 for French/German).
+  *
+  * @param {?string} jsonDateTime
+  * @returns {string} A formatted and localized time
+  */
+	printDateTime: function printDateTime(jsonDateTime) {
+		if (typeof jsonDateTime !== "string" || jsonDateTime === "") return "";
+
+		// Unfortunately, the built-in JS Date object is rather dumb.
+		// It is only required to support the timezone of the runtime
+		// environment and UTC.
+		// Moreover, the method `toLocalString` may or may not convert
+		// the represented time to the timezone of the runtime environment
+		// before formatting it as a string.
+		// However, we want to keep the printed time in the original timezone,
+		// because this facilitates human interaction with a photo.
+		// To this end we apply a "dirty" trick here.
+		// We first cut off any explicit timezone indication from the JSON
+		// string and only pass a date/time of the form `YYYYMMDDThhmmss` to
+		// `Date`.
+		// `Date` is required to interpret those time values according to the
+		// local timezone (see [MDN Web Docs - Date Time String Format](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse#date_time_string_format)).
+		// Most likely, the resulting `Date` object will represent the
+		// wrong instant in time (given in seconds since epoch), but we only
+		// want to call `toLocalString` which is fine and don't do any time
+		// arithmetics.
+		// Then we add the original timezone to the string manually.
+		var splitDateTime = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([,.]\d{1,6})?)([-Z+])(\d{2}:\d{2})?$/.exec(jsonDateTime);
+		// The capturing groups are:
+		//  - 0: the whole string
+		//  - 1: the whole date/time segment incl. fractional seconds
+		//  - 2: the fractional seconds (if present)
+		//  - 3: the timezone separator, i.e. "Z", "-" or "+" (if present)
+		//  - 4: the absolute timezone offset without the sign (if present)
+		console.assert(splitDateTime.length === 5, "'jsonDateTime' is not formatted acc. to ISO 8601; passed string was: " + jsonDateTime);
+		var result = lychee.locale.dateTimeFormatter.format(new Date(splitDateTime[1]));
+		if (splitDateTime[3] === "Z" || splitDateTime[4] === "00:00") {
+			result += " UTC";
+		} else {
+			result += " UTC" + splitDateTime[3] + splitDateTime[4];
+		}
+		return result;
+	},
+
+	/**
+  * Converts a JSON encoded date/time into a localized string which only displays month and year.
+  *
+  * The month is printed as a shortened word with 3/4 letters, the year is printed with 4 digits (e.g. something like
+  * "Aug 2020" in English or "Août 2020" in French).
+  *
+  * @param {?string} jsonDateTime
+  * @returns {string} A formatted and localized month and year
+  */
+	printMonthYear: function printMonthYear(jsonDateTime) {
+		if (typeof jsonDateTime !== "string" || jsonDateTime === "") return "";
+		var locale = "default"; // use the user's browser settings
+		var format = { month: "short", year: "numeric" };
+		return new Date(jsonDateTime).toLocaleDateString(locale, format);
 	}
-	return result;
-}), _defineProperty(_lychee$locale, "printMonthYear", function printMonthYear(jsonDateTime) {
-	if (typeof jsonDateTime !== "string" || jsonDateTime === "") return "";
-	var locale = "default"; // use the user's browser settings
-	var format = { month: "short", year: "numeric" };
-	return new Date(jsonDateTime).toLocaleDateString(locale, format);
-}), _lychee$locale);
+};
 
 /**
  * @description Helper class to manage tabindex
@@ -3382,9 +3412,10 @@ tabindex.reset = function () {
  * @property {?string}      live_photo_content_id
  * @property {?string}      live_photo_checksum
  * @property {SizeVariants} size_variants
+ * @property {boolean}      is_downloadable
+ * @property {boolean}      is_share_button_visible
  * @property {?string}      [next_photo_id]
  * @property {?string}      [previous_photo_id]
- * @property {PhotoRightsDTO} rights
  */
 
 /**
@@ -3431,11 +3462,14 @@ tabindex.reset = function () {
  * @property {?string} cover_id
  * @property {?Thumb}  thumb
  * @property {string}  [owner_name] optional, only shown in authenticated mode
+ * @property {boolean} is_public
+ * @property {boolean} is_downloadable
+ * @property {boolean} is_share_button_visible
  * @property {boolean} is_nsfw
- * @property {AlbumRightsDTO} rights
- * @property {?AlbumProtectionPolicy} policies
- * @property {boolean} has_albums
+ * @property {boolean} grants_full_photo
+ * @property {boolean} requires_link
  * @property {boolean} has_password
+ * @property {boolean} has_albums
  * @property {?string} min_taken_at
  * @property {?string} max_taken_at
  * @property {?SortingCriterion} sorting
@@ -3453,9 +3487,13 @@ tabindex.reset = function () {
  * @property {Photo[]}  photos
  * @property {?Thumb}   thumb
  * @property {string}   [owner_name] optional, only shown in authenticated mode
- * @property {boolean} is_nsfw
- * @property {AlbumRightsDTO} rights
- * @property {?AlbumProtectionPolicy} policies
+ * @property {boolean}  is_public
+ * @property {boolean}  is_downloadable
+ * @property {boolean}  is_share_button_visible
+ * @property {boolean}  is_nsfw
+ * @property {boolean}  grants_full_photo
+ * @property {boolean}  requires_link
+ * @property {boolean}  has_password
  * @property {?string}  min_taken_at
  * @property {?string}  max_taken_at
  * @property {?SortingCriterion}  sorting
@@ -3469,8 +3507,9 @@ tabindex.reset = function () {
  * @property {string}  title
  * @property {Photo[]} [photos]
  * @property {?Thumb}  thumb
- * @property {AlbumRightsDTO} rights
- * @property {?AlbumProtectionPolicy} policies
+ * @property {boolean} is_public
+ * @property {boolean} is_downloadable
+ * @property {boolean} is_share_button_visible
  */
 
 /**
@@ -3540,18 +3579,10 @@ var SmartAlbumID = Object.freeze({
  *
  * @property {number}  id
  * @property {string}  username
- * @property {string}  email
- * @property {boolean} has_token
- */
-
-/**
- * @typedef UserDTO
- *
- * @property {number}  id
- * @property {string}  username
- * @property {boolean} may_administrate
+ * @property {?string} email
  * @property {boolean} may_upload
- * @property {boolean} may_edit_own_settings
+ * @property {boolean} is_locked
+ * @property {boolean} has_token
  */
 
 /**
@@ -3618,7 +3649,7 @@ var SmartAlbumID = Object.freeze({
  * @typedef InitializationData
  *
  * @property {?User} user
- * @property {InitRightsDTO} rights
+ * @property {{is_admin: boolean, is_locked: boolean, may_upload: boolean}} rights
  * @property {number} update_json - version number of latest available update
  * @property {boolean} update_available
  * @property {Object.<string, string>} locale
@@ -3723,309 +3754,3 @@ var SmartAlbumID = Object.freeze({
  * @property {?string} path - the path to the affected file or directory
  * @property {string} message - a message text
  */
-
-/**
- * The JSON object for Policies on Albums
- *
- * @typedef AlbumProtectionPolicy
- *
- * @property {is_nsfw} boolean
- * @property {boolean} is_public
- * @property {boolean} is_link_required
- * @property {boolean} is_password_required
- * @property {boolean} grants_access_full_photo
- * @property {boolean} grants_download
- */
-
-/**
- * The JSON object for Rights on Users
- *
- * @typedef UserRightsDTO
- *
- * @property {boolean} can_create
- * @property {boolean} can_list
- * @property {boolean} can_edit
- * @property {boolean} can_delete
- */
-
-/**
- * The JSON object for Rights on Settings
- *
- * @typedef SettingsRightsDTO
- *
- * @property {boolean} can_edit
- * @property {boolean} can_edit_own_settings
- * @property {boolean} can_use_2fa
- * @property {boolean} can_see_logs
- * @property {boolean} can_clear_logs
- * @property {boolean} can_see_diagnostics
- * @property {boolean} can_update
- */
-
-/**
- * The JSON object for Rights on Settings
- *
- * @typedef RootAlbumRightsDTO
- *
- * @property {boolean} can_edit
- * @property {boolean} can_upload
- * @property {boolean} can_download
- * @property {boolean} can_import_from_server
- */
-
-/**
- * The JSON object for Rights on Photos
- *
- * @typedef PhotoRightsDTO
- *
- * @property {boolean} can_edit
- * @property {boolean} can_download
- * @property {boolean} can_access_full_photo
- */
-
-/**
- * The JSON object for Rights on Album
- *
- * @typedef AlbumRightsDTO
- *
- * @property {boolean} can_edit
- * @property {boolean} can_share_with_users
- * @property {boolean} can_download
- * @property {boolean} can_upload
- */
-
-/**
- * The JSON object for Rights on Album
- *
- * @typedef InitRightsDTO
- *
- * @property {RootAlbumRightsDTO} root_album
- * @property {SettingsRightsDTO} settings
- * @property {UserRightsDTO} users
- */
-
-(function (window, factory) {
-	var basicContext = factory(window, window.document);
-	window.basicContext = basicContext;
-	if ((typeof module === "undefined" ? "undefined" : _typeof(module)) == "object" && module.exports) {
-		module.exports = basicContext;
-	}
-})(window, function l(window, document) {
-	var ITEM = "item",
-	    SEPARATOR = "separator";
-
-	var dom = function dom() {
-		var elem = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
-
-		return document.querySelector(".basicContext " + elem);
-	};
-
-	var valid = function valid() {
-		var item = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-		var emptyItem = Object.keys(item).length === 0 ? true : false;
-
-		if (emptyItem === true) item.type = SEPARATOR;
-		if (item.type == null) item.type = ITEM;
-		if (item.class == null) item.class = "";
-		if (item.visible !== false) item.visible = true;
-		if (item.icon == null) item.icon = null;
-		if (item.title == null) item.title = "Undefined";
-
-		// Add disabled class when item disabled
-		if (item.disabled !== true) item.disabled = false;
-		if (item.disabled === true) item.class += " basicContext__item--disabled";
-
-		// Item requires a function when
-		// it's not a separator and not disabled
-		if (item.fn == null && item.type !== SEPARATOR && item.disabled === false) {
-			console.warn("Missing fn for item '" + item.title + "'");
-			return false;
-		}
-
-		return true;
-	};
-
-	var buildItem = function buildItem(item, num) {
-		var html = "",
-		    span = "";
-
-		// Parse and validate item
-		if (valid(item) === false) return "";
-
-		// Skip when invisible
-		if (item.visible === false) return "";
-
-		// Give item a unique number
-		item.num = num;
-
-		// Generate span/icon-element
-		if (item.icon !== null) span = "<span class='basicContext__icon " + item.icon + "'></span>";
-
-		// Generate item
-		if (item.type === ITEM) {
-			html = "\n\t\t       <tr class='basicContext__item " + item.class + "'>\n\t\t           <td class='basicContext__data' data-num='" + item.num + "'>" + span + item.title + "</td>\n\t\t       </tr>\n\t\t       ";
-		} else if (item.type === SEPARATOR) {
-			html = "\n\t\t       <tr class='basicContext__item basicContext__item--separator'></tr>\n\t\t       ";
-		}
-
-		return html;
-	};
-
-	var build = function build(items) {
-		var html = "";
-
-		html += "\n\t        <div class='basicContextContainer'>\n\t            <div class='basicContext'>\n\t                <table>\n\t                    <tbody>\n\t        ";
-
-		items.forEach(function (item, i) {
-			return html += buildItem(item, i);
-		});
-
-		html += "\n\t                    </tbody>\n\t                </table>\n\t            </div>\n\t        </div>\n\t        ";
-
-		return html;
-	};
-
-	var getNormalizedEvent = function getNormalizedEvent() {
-		var e = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-		var pos = {
-			x: e.clientX,
-			y: e.clientY
-		};
-
-		if (e.type === "touchend" && (pos.x == null || pos.y == null)) {
-			// We need to capture clientX and clientY from original event
-			// when the event 'touchend' does not return the touch position
-
-			var touches = e.changedTouches;
-
-			if (touches != null && touches.length > 0) {
-				pos.x = touches[0].clientX;
-				pos.y = touches[0].clientY;
-			}
-		}
-
-		// Position unknown
-		if (pos.x == null || pos.x < 0) pos.x = 0;
-		if (pos.y == null || pos.y < 0) pos.y = 0;
-
-		return pos;
-	};
-
-	var getPosition = function getPosition(e, context) {
-		// Get the click position
-		var normalizedEvent = getNormalizedEvent(e);
-
-		// Set the initial position
-		var x = normalizedEvent.x,
-		    y = normalizedEvent.y;
-
-		var container = document.querySelector(".basicContextContainer");
-
-		// Get size of browser
-		var browserSize = {
-			width: container.offsetWidth,
-			height: container.offsetHeight
-		};
-
-		// Get size of context
-		var contextSize = {
-			width: context.offsetWidth,
-			height: context.offsetHeight
-		};
-
-		// Fix position based on context and browser size
-		if (x + contextSize.width > browserSize.width) x = x - (x + contextSize.width - browserSize.width);
-		if (y + contextSize.height > browserSize.height) y = y - (y + contextSize.height - browserSize.height);
-
-		// Make context scrollable and start at the top of the browser
-		// when context is higher than the browser
-		if (contextSize.height > browserSize.height) {
-			y = 0;
-			context.classList.add("basicContext--scrollable");
-		}
-
-		// Calculate the relative position of the mouse to the context
-		var rx = normalizedEvent.x - x,
-		    ry = normalizedEvent.y - y;
-
-		return { x: x, y: y, rx: rx, ry: ry };
-	};
-
-	var bind = function bind() {
-		var item = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-		if (item.fn == null) return false;
-		if (item.visible === false) return false;
-		if (item.disabled === true) return false;
-
-		dom("td[data-num='" + item.num + "']").onclick = item.fn;
-		dom("td[data-num='" + item.num + "']").oncontextmenu = item.fn;
-
-		return true;
-	};
-
-	var show = function show(items, e, fnClose, fnCallback) {
-		// Build context
-		var html = build(items);
-
-		// Add context to the body
-		document.body.insertAdjacentHTML("beforeend", html);
-
-		// Cache the context
-		var context = dom();
-
-		// Calculate position
-		var position = getPosition(e, context);
-
-		// Set position
-		context.style.left = position.x + "px";
-		context.style.top = position.y + "px";
-		context.style.transformOrigin = position.rx + "px " + position.ry + "px";
-		context.style.opacity = 1;
-
-		// Close fn fallback
-		if (fnClose == null) fnClose = close;
-
-		// Bind click on background
-		context.parentElement.onclick = fnClose;
-		context.parentElement.oncontextmenu = fnClose;
-
-		// Bind click on items
-		items.forEach(bind);
-
-		// Do not trigger default event or further propagation
-		if (typeof e.preventDefault === "function") e.preventDefault();
-		if (typeof e.stopPropagation === "function") e.stopPropagation();
-
-		// Call callback when a function
-		if (typeof fnCallback === "function") fnCallback();
-
-		return true;
-	};
-
-	var visible = function visible() {
-		var elem = dom();
-
-		return !(elem == null || elem.length === 0);
-	};
-
-	var close = function close() {
-		if (visible() === false) return false;
-
-		var container = document.querySelector(".basicContextContainer");
-
-		container.parentElement.removeChild(container);
-
-		return true;
-	};
-
-	return {
-		ITEM: ITEM,
-		SEPARATOR: SEPARATOR,
-		show: show,
-		visible: visible,
-		close: close
-	};
-});
