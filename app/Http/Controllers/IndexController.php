@@ -86,6 +86,6 @@ class IndexController extends Controller
 	{
 		$this->symLinkFunctions->remove_outdated();
 
-		return response()->file(public_path('frontend.html'));
+		return response()->file(public_path('./dist/frontend.html'));
 	}
 }
