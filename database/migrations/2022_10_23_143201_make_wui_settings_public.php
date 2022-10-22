@@ -119,10 +119,20 @@ class MakeWuiSettingsPublic extends Migration
 			->where('key', '=', 'site_copyright_end')
 			->update(['confidentiality' => 0]);
 
-		// Remove NSFW text setting which is replaced by a localized text
+		// Rename NSFW text config, make it available to WUI and clear its
+		// value, if it still equals the default value in order to use the
+		// localized variant in the default case
 		DB::table('configs')
 			->where('key', '=', 'nsfw_warning_text')
-			->delete();
+			->update([
+				'key' => 'nsfw_banner_override',
+				'type_range' => 'string',
+				'confidentiality' => 0,
+			]);
+		DB::table('configs')
+			->where('key', '=', 'nsfw_banner_override')
+			->where('value', '=', '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>')
+			->update(['value' => '']);
 
 		// Make setting key use small letters like everywhere else
 		DB::table('configs')
@@ -206,13 +216,16 @@ class MakeWuiSettingsPublic extends Migration
 				'confidentiality' => 2,
 			]);
 		DB::table('configs')
-			->insert([
+			->where('key', '=', 'nsfw_banner_override')
+			->update([
 				'key' => 'nsfw_warning_text',
-				'cat' => 'Mod NSFW',
 				'confidentiality' => 3,
 				'type_range' => 'string_required',
-				'value' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
 			]);
+		DB::table('configs')
+			->where('key', '=', 'nsfw_warning_text')
+			->where('value', '=', '')
+			->update(['value' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>']);
 		DB::table('configs')
 			->where('key', '=', 'mod_frame_enabled')
 			->update(['key' => 'Mod_Frame']);

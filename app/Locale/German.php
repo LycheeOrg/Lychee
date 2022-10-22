@@ -405,9 +405,7 @@ final class German implements Language
 			'NSFW_VISIBLE_TEXT_2' => 'Wenn das Album öffentlich ist, kann weiterhin zugegriffen werden. Es wird nur ausgeblendet und kann <b>durch Pressen der Taste <kbd>H</kbd> sichtbar gemacht werden.</b>.',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Standardmäßige Sichtbarkeit wurde erfolgreich geändert.',
 
-			'NSFW_BANNER_HEADER' => 'Krititscher Inhalt',
-			'NSFW_BANNER_EXPL' => 'Diese Album enthält krititsche Inhalte, die manche Personen anstößig oder verstörend finden könnten.',
-			'NSFW_BANNER_CONSENT_TAP' => 'Zur Einwilligung klicken.',
+			'NSFW_BANNER' => '<h1>Krititscher Inhalt</h1><p>Diese Album enthält krititsche Inhalte, die manche Personen anstößig oder verstörend finden könnten.</p><p>Zur Einwilligung klicken.</p>',
 
 			'VIEW_NO_RESULT' => 'Keine Ergebnisse',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Keine öffentlichen Alben',

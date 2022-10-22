@@ -875,6 +875,9 @@ typeof e)throw Error("bad rs block @ typeNumber:"+b+"/errorCorrectLevel:"+a);b=e
 !function(){"use strict";var g={not_string:/[^s]/,not_bool:/[^t]/,not_type:/[^T]/,not_primitive:/[^v]/,number:/[diefg]/,numeric_arg:/[bcdiefguxX]/,json:/[j]/,not_json:/[^j]/,text:/^[^\x25]+/,modulo:/^\x25{2}/,placeholder:/^\x25(?:([1-9]\d*)\$|\(([^)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijostTuvxX])/,key:/^([a-z_][a-z_\d]*)/i,key_access:/^\.([a-z_][a-z_\d]*)/i,index_access:/^\[(\d+)\]/,sign:/^[+-]/};function y(e){return function(e,t){var r,n,i,s,a,o,p,c,l,u=1,f=e.length,d="";for(n=0;n<f;n++)if("string"==typeof e[n])d+=e[n];else if("object"==typeof e[n]){if((s=e[n]).keys)for(r=t[u],i=0;i<s.keys.length;i++){if(null==r)throw new Error(y('[sprintf] Cannot access property "%s" of undefined value "%s"',s.keys[i],s.keys[i-1]));r=r[s.keys[i]]}else r=s.param_no?t[s.param_no]:t[u++];if(g.not_type.test(s.type)&&g.not_primitive.test(s.type)&&r instanceof Function&&(r=r()),g.numeric_arg.test(s.type)&&"number"!=typeof r&&isNaN(r))throw new TypeError(y("[sprintf] expecting number but found %T",r));switch(g.number.test(s.type)&&(c=0<=r),s.type){case"b":r=parseInt(r,10).toString(2);break;case"c":r=String.fromCharCode(parseInt(r,10));break;case"d":case"i":r=parseInt(r,10);break;case"j":r=JSON.stringify(r,null,s.width?parseInt(s.width):0);break;case"e":r=s.precision?parseFloat(r).toExponential(s.precision):parseFloat(r).toExponential();break;case"f":r=s.precision?parseFloat(r).toFixed(s.precision):parseFloat(r);break;case"g":r=s.precision?String(Number(r.toPrecision(s.precision))):parseFloat(r);break;case"o":r=(parseInt(r,10)>>>0).toString(8);break;case"s":r=String(r),r=s.precision?r.substring(0,s.precision):r;break;case"t":r=String(!!r),r=s.precision?r.substring(0,s.precision):r;break;case"T":r=Object.prototype.toString.call(r).slice(8,-1).toLowerCase(),r=s.precision?r.substring(0,s.precision):r;break;case"u":r=parseInt(r,10)>>>0;break;case"v":r=r.valueOf(),r=s.precision?r.substring(0,s.precision):r;break;case"x":r=(parseInt(r,10)>>>0).toString(16);break;case"X":r=(parseInt(r,10)>>>0).toString(16).toUpperCase()}g.json.test(s.type)?d+=r:(!g.number.test(s.type)||c&&!s.sign?l="":(l=c?"+":"-",r=r.toString().replace(g.sign,"")),o=s.pad_char?"0"===s.pad_char?"0":s.pad_char.charAt(1):" ",p=s.width-(l+r).length,a=s.width&&0<p?o.repeat(p):"",d+=s.align?l+r+a:"0"===o?l+a+r:a+l+r)}return d}(function(e){if(p[e])return p[e];var t,r=e,n=[],i=0;for(;r;){if(null!==(t=g.text.exec(r)))n.push(t[0]);else if(null!==(t=g.modulo.exec(r)))n.push("%");else{if(null===(t=g.placeholder.exec(r)))throw new SyntaxError("[sprintf] unexpected placeholder");if(t[2]){i|=1;var s=[],a=t[2],o=[];if(null===(o=g.key.exec(a)))throw new SyntaxError("[sprintf] failed to parse named argument key");for(s.push(o[1]);""!==(a=a.substring(o[0].length));)if(null!==(o=g.key_access.exec(a)))s.push(o[1]);else{if(null===(o=g.index_access.exec(a)))throw new SyntaxError("[sprintf] failed to parse named argument key");s.push(o[1])}t[2]=s}else i|=2;if(3===i)throw new Error("[sprintf] mixing positional and named placeholders is not (yet) supported");n.push({placeholder:t[0],param_no:t[1],keys:t[2],sign:t[3],pad_char:t[4],align:t[5],width:t[6],precision:t[7],type:t[8]})}r=r.substring(t[0].length)}return p[e]=n}(e),arguments)}function e(e,t){return y.apply(null,[e].concat(t||[]))}var p=Object.create(null);"undefined"!=typeof exports&&(exports.sprintf=y,exports.vsprintf=e),"undefined"!=typeof window&&(window.sprintf=y,window.vsprintf=e,"function"==typeof define&&define.amd&&define(function(){return{sprintf:y,vsprintf:e}}))}();
 //# sourceMappingURL=sprintf.min.js.map
 
+!function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"function"==typeof define&&define.amd?define(["exports"],e):e((t="undefined"!=typeof globalThis?globalThis:t||self).StackBlur={})}(this,(function(t){"use strict";function e(t){return(e="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}var r=[512,512,456,512,328,456,335,512,405,328,271,456,388,335,292,512,454,405,364,328,298,271,496,456,420,388,360,335,312,292,273,512,482,454,428,405,383,364,345,328,312,298,284,271,259,496,475,456,437,420,404,388,374,360,347,335,323,312,302,292,282,273,265,512,497,482,468,454,441,428,417,405,394,383,373,364,354,345,337,328,320,312,305,298,291,284,278,271,265,259,507,496,485,475,465,456,446,437,428,420,412,404,396,388,381,374,367,360,354,347,341,335,329,323,318,312,307,302,297,292,287,282,278,273,269,265,261,512,505,497,489,482,475,468,461,454,447,441,435,428,422,417,411,405,399,394,389,383,378,373,368,364,359,354,350,345,341,337,332,328,324,320,316,312,309,305,301,298,294,291,287,284,281,278,274,271,268,265,262,259,257,507,501,496,491,485,480,475,470,465,460,456,451,446,442,437,433,428,424,420,416,412,408,404,400,396,392,388,385,381,377,374,370,367,363,360,357,354,350,347,344,341,338,335,332,329,326,323,320,318,315,312,310,307,304,302,299,297,294,292,289,287,285,282,280,278,275,273,271,269,267,265,263,261,259],n=[9,11,12,13,13,14,14,15,15,15,15,16,16,16,16,17,17,17,17,17,17,17,18,18,18,18,18,18,18,18,18,19,19,19,19,19,19,19,19,19,19,19,19,19,19,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24];function a(t,r,n,a,o){if("string"==typeof t&&(t=document.getElementById(t)),!t||"object"!==e(t)||!("getContext"in t))throw new TypeError("Expecting canvas with `getContext` method in processCanvasRGB(A) calls!");var i=t.getContext("2d");try{return i.getImageData(r,n,a,o)}catch(t){throw new Error("unable to access image data: "+t)}}function o(t,e,r,n,o,f){if(!(isNaN(f)||f<1)){f|=0;var g=a(t,e,r,n,o);g=i(g,e,r,n,o,f),t.getContext("2d").putImageData(g,e,r)}}function i(t,e,a,o,i,f){for(var g,l=t.data,c=2*f+1,s=o-1,v=i-1,b=f+1,x=b*(b+1)/2,d=new u,y=d,h=1;h<c;h++)y=y.next=new u,h===b&&(g=y);y.next=d;for(var p=null,m=null,w=0,B=0,C=r[f],E=n[f],I=0;I<i;I++){y=d;for(var S=l[B],N=l[B+1],R=l[B+2],D=l[B+3],G=0;G<b;G++)y.r=S,y.g=N,y.b=R,y.a=D,y=y.next;for(var T=0,j=0,A=0,W=0,k=b*S,H=b*N,_=b*R,M=b*D,O=x*S,P=x*N,q=x*R,z=x*D,F=1;F<b;F++){var J=B+((s<F?s:F)<<2),K=l[J],L=l[J+1],Q=l[J+2],U=l[J+3],V=b-F;O+=(y.r=K)*V,P+=(y.g=L)*V,q+=(y.b=Q)*V,z+=(y.a=U)*V,T+=K,j+=L,A+=Q,W+=U,y=y.next}p=d,m=g;for(var X=0;X<o;X++){var Y=z*C>>E;if(l[B+3]=Y,0!==Y){var Z=255/Y;l[B]=(O*C>>E)*Z,l[B+1]=(P*C>>E)*Z,l[B+2]=(q*C>>E)*Z}else l[B]=l[B+1]=l[B+2]=0;O-=k,P-=H,q-=_,z-=M,k-=p.r,H-=p.g,_-=p.b,M-=p.a;var $=X+f+1;$=w+($<s?$:s)<<2,O+=T+=p.r=l[$],P+=j+=p.g=l[$+1],q+=A+=p.b=l[$+2],z+=W+=p.a=l[$+3],p=p.next;var tt=m,et=tt.r,rt=tt.g,nt=tt.b,at=tt.a;k+=et,H+=rt,_+=nt,M+=at,T-=et,j-=rt,A-=nt,W-=at,m=m.next,B+=4}w+=o}for(var ot=0;ot<o;ot++){var it=l[B=ot<<2],ft=l[B+1],gt=l[B+2],ut=l[B+3],lt=b*it,ct=b*ft,st=b*gt,vt=b*ut,bt=x*it,xt=x*ft,dt=x*gt,yt=x*ut;y=d;for(var ht=0;ht<b;ht++)y.r=it,y.g=ft,y.b=gt,y.a=ut,y=y.next;for(var pt=o,mt=0,wt=0,Bt=0,Ct=0,Et=1;Et<=f;Et++){B=pt+ot<<2;var It=b-Et;bt+=(y.r=it=l[B])*It,xt+=(y.g=ft=l[B+1])*It,dt+=(y.b=gt=l[B+2])*It,yt+=(y.a=ut=l[B+3])*It,Ct+=it,mt+=ft,wt+=gt,Bt+=ut,y=y.next,Et<v&&(pt+=o)}B=ot,p=d,m=g;for(var St=0;St<i;St++){var Nt=B<<2;l[Nt+3]=ut=yt*C>>E,ut>0?(ut=255/ut,l[Nt]=(bt*C>>E)*ut,l[Nt+1]=(xt*C>>E)*ut,l[Nt+2]=(dt*C>>E)*ut):l[Nt]=l[Nt+1]=l[Nt+2]=0,bt-=lt,xt-=ct,dt-=st,yt-=vt,lt-=p.r,ct-=p.g,st-=p.b,vt-=p.a,Nt=ot+((Nt=St+b)<v?Nt:v)*o<<2,bt+=Ct+=p.r=l[Nt],xt+=mt+=p.g=l[Nt+1],dt+=wt+=p.b=l[Nt+2],yt+=Bt+=p.a=l[Nt+3],p=p.next,lt+=it=m.r,ct+=ft=m.g,st+=gt=m.b,vt+=ut=m.a,Ct-=it,mt-=ft,wt-=gt,Bt-=ut,m=m.next,B+=o}}return t}function f(t,e,r,n,o,i){if(!(isNaN(i)||i<1)){i|=0;var f=a(t,e,r,n,o);f=g(f,e,r,n,o,i),t.getContext("2d").putImageData(f,e,r)}}function g(t,e,a,o,i,f){for(var g,l=t.data,c=2*f+1,s=o-1,v=i-1,b=f+1,x=b*(b+1)/2,d=new u,y=d,h=1;h<c;h++)y=y.next=new u,h===b&&(g=y);y.next=d;for(var p,m,w=null,B=null,C=r[f],E=n[f],I=0,S=0,N=0;N<i;N++){var R=l[S],D=l[S+1],G=l[S+2],T=b*R,j=b*D,A=b*G,W=x*R,k=x*D,H=x*G;y=d;for(var _=0;_<b;_++)y.r=R,y.g=D,y.b=G,y=y.next;for(var M=0,O=0,P=0,q=1;q<b;q++)p=S+((s<q?s:q)<<2),W+=(y.r=R=l[p])*(m=b-q),k+=(y.g=D=l[p+1])*m,H+=(y.b=G=l[p+2])*m,M+=R,O+=D,P+=G,y=y.next;w=d,B=g;for(var z=0;z<o;z++)l[S]=W*C>>E,l[S+1]=k*C>>E,l[S+2]=H*C>>E,W-=T,k-=j,H-=A,T-=w.r,j-=w.g,A-=w.b,p=I+((p=z+f+1)<s?p:s)<<2,W+=M+=w.r=l[p],k+=O+=w.g=l[p+1],H+=P+=w.b=l[p+2],w=w.next,T+=R=B.r,j+=D=B.g,A+=G=B.b,M-=R,O-=D,P-=G,B=B.next,S+=4;I+=o}for(var F=0;F<o;F++){var J=l[S=F<<2],K=l[S+1],L=l[S+2],Q=b*J,U=b*K,V=b*L,X=x*J,Y=x*K,Z=x*L;y=d;for(var $=0;$<b;$++)y.r=J,y.g=K,y.b=L,y=y.next;for(var tt=0,et=0,rt=0,nt=1,at=o;nt<=f;nt++)S=at+F<<2,X+=(y.r=J=l[S])*(m=b-nt),Y+=(y.g=K=l[S+1])*m,Z+=(y.b=L=l[S+2])*m,tt+=J,et+=K,rt+=L,y=y.next,nt<v&&(at+=o);S=F,w=d,B=g;for(var ot=0;ot<i;ot++)l[p=S<<2]=X*C>>E,l[p+1]=Y*C>>E,l[p+2]=Z*C>>E,X-=Q,Y-=U,Z-=V,Q-=w.r,U-=w.g,V-=w.b,p=F+((p=ot+b)<v?p:v)*o<<2,X+=tt+=w.r=l[p],Y+=et+=w.g=l[p+1],Z+=rt+=w.b=l[p+2],w=w.next,Q+=J=B.r,U+=K=B.g,V+=L=B.b,tt-=J,et-=K,rt-=L,B=B.next,S+=o}return t}var u=function t(){!function(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}(this,t),this.r=0,this.g=0,this.b=0,this.a=0,this.next=null};t.BlurStack=u,t.canvasRGB=f,t.canvasRGBA=o,t.image=function(t,e,r,n,a,i){if("string"==typeof t&&(t=document.getElementById(t)),t&&"naturalWidth"in t){var g=a?"offset":"natural",u=t[g+"Width"],l=t[g+"Height"];if("string"==typeof e&&(e=document.getElementById(e)),e&&"getContext"in e){i||(e.style.width=u+"px",e.style.height=l+"px"),e.width=u,e.height=l;var c=e.getContext("2d");c.clearRect(0,0,u,l),c.drawImage(t,0,0,t.naturalWidth,t.naturalHeight,0,0,u,l),isNaN(r)||r<1||(n?o(e,0,0,u,l,r):f(e,0,0,u,l,r))}}},t.imageDataRGB=g,t.imageDataRGBA=i,Object.defineProperty(t,"__esModule",{value:!0})}));
+//# sourceMappingURL=stackblur.min.js.map
+
 L.Photo = L.FeatureGroup.extend({
 	options: {
 		icon: {
@@ -985,890 +988,6 @@ if (L.MarkerClusterGroup) {
 	};
 }
 
-!(function (t, e) {
-	"object" == typeof exports && "undefined" != typeof module
-		? e(exports)
-		: "function" == typeof define && define.amd
-		? define(["exports"], e)
-		: e((t.StackBlur = {}));
-})(this, function (t) {
-	"use strict";
-	function e(t) {
-		return (e =
-			"function" == typeof Symbol && "symbol" == typeof Symbol.iterator
-				? function (t) {
-						return typeof t;
-				  }
-				: function (t) {
-						return t && "function" == typeof Symbol && t.constructor === Symbol && t !== Symbol.prototype ? "symbol" : typeof t;
-				  })(t);
-	}
-	var n = [
-			512,
-			512,
-			456,
-			512,
-			328,
-			456,
-			335,
-			512,
-			405,
-			328,
-			271,
-			456,
-			388,
-			335,
-			292,
-			512,
-			454,
-			405,
-			364,
-			328,
-			298,
-			271,
-			496,
-			456,
-			420,
-			388,
-			360,
-			335,
-			312,
-			292,
-			273,
-			512,
-			482,
-			454,
-			428,
-			405,
-			383,
-			364,
-			345,
-			328,
-			312,
-			298,
-			284,
-			271,
-			259,
-			496,
-			475,
-			456,
-			437,
-			420,
-			404,
-			388,
-			374,
-			360,
-			347,
-			335,
-			323,
-			312,
-			302,
-			292,
-			282,
-			273,
-			265,
-			512,
-			497,
-			482,
-			468,
-			454,
-			441,
-			428,
-			417,
-			405,
-			394,
-			383,
-			373,
-			364,
-			354,
-			345,
-			337,
-			328,
-			320,
-			312,
-			305,
-			298,
-			291,
-			284,
-			278,
-			271,
-			265,
-			259,
-			507,
-			496,
-			485,
-			475,
-			465,
-			456,
-			446,
-			437,
-			428,
-			420,
-			412,
-			404,
-			396,
-			388,
-			381,
-			374,
-			367,
-			360,
-			354,
-			347,
-			341,
-			335,
-			329,
-			323,
-			318,
-			312,
-			307,
-			302,
-			297,
-			292,
-			287,
-			282,
-			278,
-			273,
-			269,
-			265,
-			261,
-			512,
-			505,
-			497,
-			489,
-			482,
-			475,
-			468,
-			461,
-			454,
-			447,
-			441,
-			435,
-			428,
-			422,
-			417,
-			411,
-			405,
-			399,
-			394,
-			389,
-			383,
-			378,
-			373,
-			368,
-			364,
-			359,
-			354,
-			350,
-			345,
-			341,
-			337,
-			332,
-			328,
-			324,
-			320,
-			316,
-			312,
-			309,
-			305,
-			301,
-			298,
-			294,
-			291,
-			287,
-			284,
-			281,
-			278,
-			274,
-			271,
-			268,
-			265,
-			262,
-			259,
-			257,
-			507,
-			501,
-			496,
-			491,
-			485,
-			480,
-			475,
-			470,
-			465,
-			460,
-			456,
-			451,
-			446,
-			442,
-			437,
-			433,
-			428,
-			424,
-			420,
-			416,
-			412,
-			408,
-			404,
-			400,
-			396,
-			392,
-			388,
-			385,
-			381,
-			377,
-			374,
-			370,
-			367,
-			363,
-			360,
-			357,
-			354,
-			350,
-			347,
-			344,
-			341,
-			338,
-			335,
-			332,
-			329,
-			326,
-			323,
-			320,
-			318,
-			315,
-			312,
-			310,
-			307,
-			304,
-			302,
-			299,
-			297,
-			294,
-			292,
-			289,
-			287,
-			285,
-			282,
-			280,
-			278,
-			275,
-			273,
-			271,
-			269,
-			267,
-			265,
-			263,
-			261,
-			259,
-		],
-		r = [
-			9,
-			11,
-			12,
-			13,
-			13,
-			14,
-			14,
-			15,
-			15,
-			15,
-			15,
-			16,
-			16,
-			16,
-			16,
-			17,
-			17,
-			17,
-			17,
-			17,
-			17,
-			17,
-			18,
-			18,
-			18,
-			18,
-			18,
-			18,
-			18,
-			18,
-			18,
-			19,
-			19,
-			19,
-			19,
-			19,
-			19,
-			19,
-			19,
-			19,
-			19,
-			19,
-			19,
-			19,
-			19,
-			20,
-			20,
-			20,
-			20,
-			20,
-			20,
-			20,
-			20,
-			20,
-			20,
-			20,
-			20,
-			20,
-			20,
-			20,
-			20,
-			20,
-			20,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			21,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			22,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			23,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-			24,
-		];
-	function o(t, n, r, o, a) {
-		if (("string" == typeof t && (t = document.getElementById(t)), !(t && "object" === e(t) && "getContext" in t)))
-			throw new TypeError("Expecting canvas with `getContext` method in processCanvasRGB(A) calls!");
-		var i = t.getContext("2d");
-		try {
-			return i.getImageData(n, r, o, a);
-		} catch (t) {
-			throw new Error("unable to access image data: " + t);
-		}
-	}
-	function a(t, e, n, r, a, f) {
-		if (!(isNaN(f) || f < 1)) {
-			f |= 0;
-			var g = o(t, e, n, r, a);
-			(g = i(g, e, n, r, a, f)), t.getContext("2d").putImageData(g, e, n);
-		}
-	}
-	function i(t, e, o, a, i, f) {
-		var g,
-			c,
-			l,
-			s,
-			x,
-			b,
-			d,
-			y,
-			p,
-			m,
-			h,
-			v,
-			w,
-			B,
-			C,
-			E,
-			I,
-			S,
-			N,
-			R,
-			D,
-			G,
-			j,
-			A,
-			k,
-			T = t.data,
-			W = 2 * f + 1,
-			_ = a - 1,
-			H = i - 1,
-			M = f + 1,
-			O = (M * (M + 1)) / 2,
-			P = new u(),
-			q = P;
-		for (l = 1; l < W; l++) (q = q.next = new u()), l === M && (k = q);
-		q.next = P;
-		var z = null,
-			F = null;
-		d = b = 0;
-		var J = n[f],
-			K = r[f];
-		for (c = 0; c < i; c++) {
-			for (
-				E = I = S = N = y = p = m = h = 0,
-					v = M * (R = T[b]),
-					w = M * (D = T[b + 1]),
-					B = M * (G = T[b + 2]),
-					C = M * (j = T[b + 3]),
-					y += O * R,
-					p += O * D,
-					m += O * G,
-					h += O * j,
-					q = P,
-					l = 0;
-				l < M;
-				l++
-			)
-				(q.r = R), (q.g = D), (q.b = G), (q.a = j), (q = q.next);
-			for (l = 1; l < M; l++)
-				(s = b + ((_ < l ? _ : l) << 2)),
-					(y += (q.r = R = T[s]) * (A = M - l)),
-					(p += (q.g = D = T[s + 1]) * A),
-					(m += (q.b = G = T[s + 2]) * A),
-					(h += (q.a = j = T[s + 3]) * A),
-					(E += R),
-					(I += D),
-					(S += G),
-					(N += j),
-					(q = q.next);
-			for (z = P, F = k, g = 0; g < a; g++)
-				(T[b + 3] = j = (h * J) >> K),
-					0 !== j
-						? ((j = 255 / j), (T[b] = ((y * J) >> K) * j), (T[b + 1] = ((p * J) >> K) * j), (T[b + 2] = ((m * J) >> K) * j))
-						: (T[b] = T[b + 1] = T[b + 2] = 0),
-					(y -= v),
-					(p -= w),
-					(m -= B),
-					(h -= C),
-					(v -= z.r),
-					(w -= z.g),
-					(B -= z.b),
-					(C -= z.a),
-					(s = (d + ((s = g + f + 1) < _ ? s : _)) << 2),
-					(y += E += z.r = T[s]),
-					(p += I += z.g = T[s + 1]),
-					(m += S += z.b = T[s + 2]),
-					(h += N += z.a = T[s + 3]),
-					(z = z.next),
-					(v += R = F.r),
-					(w += D = F.g),
-					(B += G = F.b),
-					(C += j = F.a),
-					(E -= R),
-					(I -= D),
-					(S -= G),
-					(N -= j),
-					(F = F.next),
-					(b += 4);
-			d += a;
-		}
-		for (g = 0; g < a; g++) {
-			for (
-				I = S = N = E = p = m = h = y = 0,
-					v = M * (R = T[(b = g << 2)]),
-					w = M * (D = T[b + 1]),
-					B = M * (G = T[b + 2]),
-					C = M * (j = T[b + 3]),
-					y += O * R,
-					p += O * D,
-					m += O * G,
-					h += O * j,
-					q = P,
-					l = 0;
-				l < M;
-				l++
-			)
-				(q.r = R), (q.g = D), (q.b = G), (q.a = j), (q = q.next);
-			for (x = a, l = 1; l <= f; l++)
-				(b = (x + g) << 2),
-					(y += (q.r = R = T[b]) * (A = M - l)),
-					(p += (q.g = D = T[b + 1]) * A),
-					(m += (q.b = G = T[b + 2]) * A),
-					(h += (q.a = j = T[b + 3]) * A),
-					(E += R),
-					(I += D),
-					(S += G),
-					(N += j),
-					(q = q.next),
-					l < H && (x += a);
-			for (b = g, z = P, F = k, c = 0; c < i; c++)
-				(T[(s = b << 2) + 3] = j = (h * J) >> K),
-					j > 0
-						? ((j = 255 / j), (T[s] = ((y * J) >> K) * j), (T[s + 1] = ((p * J) >> K) * j), (T[s + 2] = ((m * J) >> K) * j))
-						: (T[s] = T[s + 1] = T[s + 2] = 0),
-					(y -= v),
-					(p -= w),
-					(m -= B),
-					(h -= C),
-					(v -= z.r),
-					(w -= z.g),
-					(B -= z.b),
-					(C -= z.a),
-					(s = (g + ((s = c + M) < H ? s : H) * a) << 2),
-					(y += E += z.r = T[s]),
-					(p += I += z.g = T[s + 1]),
-					(m += S += z.b = T[s + 2]),
-					(h += N += z.a = T[s + 3]),
-					(z = z.next),
-					(v += R = F.r),
-					(w += D = F.g),
-					(B += G = F.b),
-					(C += j = F.a),
-					(E -= R),
-					(I -= D),
-					(S -= G),
-					(N -= j),
-					(F = F.next),
-					(b += a);
-		}
-		return t;
-	}
-	function f(t, e, n, r, a, i) {
-		if (!(isNaN(i) || i < 1)) {
-			i |= 0;
-			var f = o(t, e, n, r, a);
-			(f = g(f, e, n, r, a, i)), t.getContext("2d").putImageData(f, e, n);
-		}
-	}
-	function g(t, e, o, a, i, f) {
-		var g,
-			c,
-			l,
-			s,
-			x,
-			b,
-			d,
-			y,
-			p,
-			m,
-			h,
-			v,
-			w,
-			B,
-			C,
-			E,
-			I,
-			S,
-			N,
-			R,
-			D,
-			G = t.data,
-			j = 2 * f + 1,
-			A = a - 1,
-			k = i - 1,
-			T = f + 1,
-			W = (T * (T + 1)) / 2,
-			_ = new u(),
-			H = _;
-		for (l = 1; l < j; l++) (H = H.next = new u()), l === T && (D = H);
-		H.next = _;
-		var M = null,
-			O = null;
-		d = b = 0;
-		var P = n[f],
-			q = r[f];
-		for (c = 0; c < i; c++) {
-			for (
-				B = C = E = y = p = m = 0,
-					h = T * (I = G[b]),
-					v = T * (S = G[b + 1]),
-					w = T * (N = G[b + 2]),
-					y += W * I,
-					p += W * S,
-					m += W * N,
-					H = _,
-					l = 0;
-				l < T;
-				l++
-			)
-				(H.r = I), (H.g = S), (H.b = N), (H = H.next);
-			for (l = 1; l < T; l++)
-				(s = b + ((A < l ? A : l) << 2)),
-					(y += (H.r = I = G[s]) * (R = T - l)),
-					(p += (H.g = S = G[s + 1]) * R),
-					(m += (H.b = N = G[s + 2]) * R),
-					(B += I),
-					(C += S),
-					(E += N),
-					(H = H.next);
-			for (M = _, O = D, g = 0; g < a; g++)
-				(G[b] = (y * P) >> q),
-					(G[b + 1] = (p * P) >> q),
-					(G[b + 2] = (m * P) >> q),
-					(y -= h),
-					(p -= v),
-					(m -= w),
-					(h -= M.r),
-					(v -= M.g),
-					(w -= M.b),
-					(s = (d + ((s = g + f + 1) < A ? s : A)) << 2),
-					(y += B += M.r = G[s]),
-					(p += C += M.g = G[s + 1]),
-					(m += E += M.b = G[s + 2]),
-					(M = M.next),
-					(h += I = O.r),
-					(v += S = O.g),
-					(w += N = O.b),
-					(B -= I),
-					(C -= S),
-					(E -= N),
-					(O = O.next),
-					(b += 4);
-			d += a;
-		}
-		for (g = 0; g < a; g++) {
-			for (
-				C = E = B = p = m = y = 0,
-					h = T * (I = G[(b = g << 2)]),
-					v = T * (S = G[b + 1]),
-					w = T * (N = G[b + 2]),
-					y += W * I,
-					p += W * S,
-					m += W * N,
-					H = _,
-					l = 0;
-				l < T;
-				l++
-			)
-				(H.r = I), (H.g = S), (H.b = N), (H = H.next);
-			for (x = a, l = 1; l <= f; l++)
-				(b = (x + g) << 2),
-					(y += (H.r = I = G[b]) * (R = T - l)),
-					(p += (H.g = S = G[b + 1]) * R),
-					(m += (H.b = N = G[b + 2]) * R),
-					(B += I),
-					(C += S),
-					(E += N),
-					(H = H.next),
-					l < k && (x += a);
-			for (b = g, M = _, O = D, c = 0; c < i; c++)
-				(G[(s = b << 2)] = (y * P) >> q),
-					(G[s + 1] = (p * P) >> q),
-					(G[s + 2] = (m * P) >> q),
-					(y -= h),
-					(p -= v),
-					(m -= w),
-					(h -= M.r),
-					(v -= M.g),
-					(w -= M.b),
-					(s = (g + ((s = c + T) < k ? s : k) * a) << 2),
-					(y += B += M.r = G[s]),
-					(p += C += M.g = G[s + 1]),
-					(m += E += M.b = G[s + 2]),
-					(M = M.next),
-					(h += I = O.r),
-					(v += S = O.g),
-					(w += N = O.b),
-					(B -= I),
-					(C -= S),
-					(E -= N),
-					(O = O.next),
-					(b += a);
-		}
-		return t;
-	}
-	var u = function t() {
-		!(function (t, e) {
-			if (!(t instanceof e)) throw new TypeError("Cannot call a class as a function");
-		})(this, t),
-			(this.r = 0),
-			(this.g = 0),
-			(this.b = 0),
-			(this.a = 0),
-			(this.next = null);
-	};
-	(t.BlurStack = u),
-		(t.image = function (t, e, n, r) {
-			if (("string" == typeof t && (t = document.getElementById(t)), t && "naturalWidth" in t)) {
-				var o = t.naturalWidth,
-					i = t.naturalHeight;
-				if (("string" == typeof e && (e = document.getElementById(e)), e && "getContext" in e)) {
-					(e.style.width = o + "px"), (e.style.height = i + "px"), (e.width = o), (e.height = i);
-					var g = e.getContext("2d");
-					g.clearRect(0, 0, o, i), g.drawImage(t, 0, 0), isNaN(n) || n < 1 || (r ? a(e, 0, 0, o, i, n) : f(e, 0, 0, o, i, n));
-				}
-			}
-		}),
-		(t.canvasRGBA = a),
-		(t.canvasRGB = f),
-		(t.imageDataRGBA = i),
-		(t.imageDataRGB = g),
-		Object.defineProperty(t, "__esModule", { value: !0 });
-});
-//# sourceMappingURL=stackblur.min.js.map
-
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -1897,7 +1016,7 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject20 = _taggedTemplateLiteral(["<a class='", "'>$", "</a>"], ["<a class='", "'>$", "</a>"]),
     _templateObject21 = _taggedTemplateLiteral(["<div class='empty'>", "</div>"], ["<div class='empty'>", "</div>"]),
     _templateObject22 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
-    _templateObject23 = _taggedTemplateLiteral(["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
+    _templateObject23 = _taggedTemplateLiteral(["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"string\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"string\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
     _templateObject24 = _taggedTemplateLiteral(["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "' alt=\"thumbnail\">\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "], ["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "' alt=\"thumbnail\">\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "]),
     _templateObject25 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
     _templateObject26 = _taggedTemplateLiteral(["\n\t\t<a id=\"text_settings_close\" class=\"closetxt\" data-tabindex=\"-1\">", "</a>\n\t\t<a id=\"button_settings_close\" class=\"closebtn\" data-tabindex=\"20\">&times;</a>\n\t\t<a class=\"linkMenu\" id=\"button_settings_open\" data-tabindex=\"-1\"><svg class=\"iconic\"><use xlink:href=\"#cog\"></use></svg>", "</a>"], ["\n\t\t<a id=\"text_settings_close\" class=\"closetxt\" data-tabindex=\"-1\">", "</a>\n\t\t<a id=\"button_settings_close\" class=\"closebtn\" data-tabindex=\"20\">&times;</a>\n\t\t<a class=\"linkMenu\" id=\"button_settings_open\" data-tabindex=\"-1\"><svg class=\"iconic\"><use xlink:href=\"#cog\"></use></svg>", "</a>"]),
@@ -5422,8 +4541,17 @@ frame.runPhotoLoop = function () {
   *
   * This is the old error handler when the frame mode was independently
   * implemented of the remaining frontend.
-  * For historic reasons, the error is shown in a browser-provided
-  * alert box.
+  * Historically, any error was shown in a browser-provided alert box,
+  * because the native Lychee error was not available in frame mode.
+  * Currently, no error is shown at all as it was decided that an
+  * alert box which needs to be clicked away manually is not a good
+  * solution for the frame mode.
+  * When the box model will have been revamped, i.e. after
+  * https://github.com/LycheeOrg/Lychee-front/pull/335
+  * will have been merged, then this error handler will become irrelevant
+  * as we can then use the normal Lychee error handler and error bar.
+  * In other words, this whole method will become obsolete.
+  * TODO: Remove this method after https://github.com/LycheeOrg/Lychee-front/pull/335
   *
   * @param {XMLHttpRequest} jqXHR
   * @param {Object} params
@@ -5438,8 +4566,6 @@ frame.runPhotoLoop = function () {
 			params: params,
 			response: lycheeException
 		});
-		alert(msg);
-		frame.stop();
 		return true;
 	};
 
@@ -6804,6 +5930,8 @@ var lychee = {
 	nsfw_visible_saved: true,
 	nsfw_blur: false,
 	nsfw_warning: false,
+	/** @type {string} */
+	nsfw_banner_override: "",
 
 	album_subtitle_type: "oldstyle",
 
@@ -7152,9 +6280,7 @@ lychee.localizeStaticGuiElements = function () {
 	// NSFW Warning Banner
 	/** @type {HTMLDivElement} */
 	var nsfwBanner = document.querySelector("div#sensitive_warning");
-	nsfwBanner.children.item(0).textContent = lychee.locale["NSFW_BANNER_HEADER"];
-	nsfwBanner.children.item(1).textContent = lychee.locale["NSFW_BANNER_EXPL"];
-	nsfwBanner.children.item(2).textContent = lychee.locale["NSFW_BANNER_CONSENT_TAP"];
+	nsfwBanner.innerHTML = lychee.nsfw_banner_override ? lychee.nsfw_banner_override : lychee.locale["NSFW_BANNER"];
 
 	// Footer
 	var footer = document.querySelector("div#footer");
@@ -7208,6 +6334,7 @@ lychee.parsePublicInitializationData = function (data) {
 	lychee.nsfw_visible_saved = lychee.nsfw_visible;
 	lychee.nsfw_blur = data.config.nsfw_blur === "1";
 	lychee.nsfw_warning = data.config.nsfw_warning === "1";
+	lychee.nsfw_banner_override = data.config.nsfw_banner_override || "";
 
 	lychee.sm_facebook_url = data.config.sm_facebook_url;
 	lychee.sm_flickr_url = data.config.sm_flickr_url;
@@ -7282,11 +6409,11 @@ lychee.parseProtectedInitializationData = function (data) {
  */
 lychee.login = function (data) {
 	if (!data.username.trim()) {
-		basicModal.error("username");
+		basicModal.focusError("username");
 		return;
 	}
 	if (!data.password.trim()) {
-		basicModal.error("password");
+		basicModal.focusError("password");
 		return;
 	}
 
@@ -7294,7 +6421,7 @@ lychee.login = function (data) {
 		return window.location.reload();
 	}, null, function (jqXHR) {
 		if (jqXHR.status === 401) {
-			basicModal.error("password");
+			basicModal.focusError("password");
 			return true;
 		} else {
 			return false;
@@ -7643,7 +6770,7 @@ lychee.load = function () {
 					// regular album, it needs to be treated a little
 					// differently.
 					header.setMode("albums");
-					lychee.setTitle(lychee.locale["SEARCH_RESULTS"], false);
+					lychee.setMetaData(lychee.locale["SEARCH_RESULTS"]);
 				} else {
 					view.album.title();
 				}
@@ -7707,23 +6834,48 @@ lychee.load = function () {
 };
 
 /**
- * Sets the title of the browser window and the title shown in the header bar.
+ * Sets the title and various other meta for the current page.
  *
+ * The title is shown in the browser window and in the header bar.
  * The window title is prefixed by the value of the configuration setting
  * `lychee.site_title`.
- *
  * If both, the prefix `lychee.site_title` and the given title, are not empty,
  * they are seperated by an en-dash.
  *
- * @param {string} [title=""]
- * @param {boolean} [editable=false]
+ * The description is postfixed with `" – via Lychee"` if not empty.
+ *
+ * @param {string=""} title
+ * @param {boolean=false} isTitleEditable
+ * @param {string=""} description
+ * @param {string=""} photoUrl
  */
-lychee.setTitle = function () {
+lychee.setMetaData = function () {
 	var title = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
-	var editable = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+	var isTitleEditable = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+	var description = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
+	var photoUrl = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "";
 
-	document.title = lychee.site_title + (lychee.site_title && title ? " – " : "") + title;
-	header.setEditable(editable);
+	var pageTitle = lychee.site_title + (lychee.site_title && title ? " – " : "") + title;
+	var pageDescription = description ? description + " – via Lychee" : "";
+
+	// General Meta Data
+	document.title = pageTitle;
+	document.querySelector('meta[name="description"]').content = pageDescription;
+	document.querySelector('meta[name="author"]').content = lychee.site_owner;
+	document.querySelector('meta[name="publisher"]').content = lychee.site_owner;
+
+	// Twitter Meta Data
+	document.querySelector('meta[name="twitter:title"]').content = pageTitle;
+	document.querySelector('meta[name="twitter:description"]').content = pageDescription;
+	document.querySelector('meta[name="twitter:image"]').content = photoUrl;
+
+	// OpenGraph Meta Data (e.g. used by Facebook)
+	document.querySelector('meta[property="og:title"]').content = pageTitle;
+	document.querySelector('meta[property="og:description"]').content = pageDescription;
+	document.querySelector('meta[property="og:image"]').content = photoUrl;
+	document.querySelector('meta[property="og:url"]').content = window.location.href;
+
+	header.setEditable(isTitleEditable);
 	header.setTitle(title);
 };
 
@@ -8575,9 +7727,7 @@ lychee.locale = {
 	NSFW_VISIBLE_TEXT_2: "If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <kbd>H</kbd></b>.",
 	SETTINGS_SUCCESS_NSFW_VISIBLE: "Default sensitive album visibility updated with success.",
 
-	NSFW_BANNER_HEADER: "Sensitive content",
-	NSFW_BANNER_EXPL: "This album contains sensitive content which some people may find offensive or disturbing.",
-	NSFW_BANNER_CONSENT_TAP: "Tap to consent.",
+	NSFW_BANNER: "<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>",
 
 	VIEW_NO_RESULT: "No results",
 	VIEW_NO_PUBLIC_ALBUMS: "No public albums",
@@ -8876,22 +8026,22 @@ mapview.isInitialized = function () {
 mapview.title = function (_albumID, _albumTitle) {
 	switch (_albumID) {
 		case SmartAlbumID.STARRED:
-			lychee.setTitle(lychee.locale["STARRED"], false);
+			lychee.setMetaData(lychee.locale["STARRED"]);
 			break;
 		case SmartAlbumID.PUBLIC:
-			lychee.setTitle(lychee.locale["PUBLIC"], false);
+			lychee.setMetaData(lychee.locale["PUBLIC"]);
 			break;
 		case SmartAlbumID.RECENT:
-			lychee.setTitle(lychee.locale["RECENT"], false);
+			lychee.setMetaData(lychee.locale["RECENT"]);
 			break;
 		case SmartAlbumID.UNSORTED:
-			lychee.setTitle(lychee.locale["UNSORTED"], false);
+			lychee.setMetaData(lychee.locale["UNSORTED"]);
 			break;
 		case null:
-			lychee.setTitle(lychee.locale["ALBUMS"], false);
+			lychee.setMetaData(lychee.locale["ALBUMS"]);
 			break;
 		default:
-			lychee.setTitle(_albumTitle ? _albumTitle : lychee.locale["UNTITLED"], false);
+			lychee.setMetaData(_albumTitle ? _albumTitle : lychee.locale["UNTITLED"]);
 			break;
 	}
 };
@@ -11046,7 +10196,7 @@ search.find = function (term) {
 				view.album.content.justify(search.json.photos);
 				lychee.animate(lychee.content, "contentZoomIn");
 			}
-			lychee.setTitle(lychee.locale["SEARCH_RESULTS"], false);
+			lychee.setMetaData(lychee.locale["SEARCH_RESULTS"]);
 
 			$(window).scrollTop(0);
 		}, 300);
@@ -12657,10 +11807,10 @@ u2f.login = function () {
 		return;
 	}
 
-	new Larapass({
+	new WebAuthn({
 		login: "/api/WebAuthn::login",
-		loginOptions: "/api/WebAuthn::login/gen"
-	}).login({
+		loginOptions: "/api/WebAuthn::login/options"
+	}, {}, false).login({
 		user_id: 0 // for now it is only available to Admin user via a secret key shortcut.
 	}).then(function () {
 		loadingBar.show("success", lychee.locale["U2F_AUTHENTIFICATION_SUCCESS"]);
@@ -12678,12 +11828,12 @@ u2f.register = function () {
 		return;
 	}
 
-	var larapass = new Larapass({
+	var webauthn = new WebAuthn({
 		register: "/api/WebAuthn::register",
-		registerOptions: "/api/WebAuthn::register/gen"
-	});
-	if (Larapass.supportsWebAuthn()) {
-		larapass.register().then(function () {
+		registerOptions: "/api/WebAuthn::register/options"
+	}, {}, false);
+	if (WebAuthn.supportsWebAuthn()) {
+		webauthn.register().then(function () {
 			loadingBar.show("success", lychee.locale["U2F_REGISTRATION_SUCCESS"]);
 			u2f.list(); // reload credential list
 		}).catch(function () {
@@ -13937,9 +13087,9 @@ view.albums = {
 	/** @returns {void} */
 	title: function title() {
 		if (lychee.landing_page_enable) {
-			lychee.setTitle("", false);
+			lychee.setMetaData();
 		} else {
-			lychee.setTitle(lychee.locale["ALBUMS"], false);
+			lychee.setMetaData(lychee.locale["ALBUMS"]);
 		}
 	},
 
@@ -14059,20 +13209,20 @@ view.album = {
 		if ((visible.album() || !album.json.init) && !visible.photo()) {
 			switch (album.getID()) {
 				case SmartAlbumID.STARRED:
-					lychee.setTitle(lychee.locale["STARRED"], true);
+					lychee.setMetaData(lychee.locale["STARRED"]);
 					break;
 				case SmartAlbumID.PUBLIC:
-					lychee.setTitle(lychee.locale["PUBLIC"], true);
+					lychee.setMetaData(lychee.locale["PUBLIC"]);
 					break;
 				case SmartAlbumID.RECENT:
-					lychee.setTitle(lychee.locale["RECENT"], true);
+					lychee.setMetaData(lychee.locale["RECENT"]);
 					break;
 				case SmartAlbumID.UNSORTED:
-					lychee.setTitle(lychee.locale["UNSORTED"], true);
+					lychee.setMetaData(lychee.locale["UNSORTED"]);
 					break;
 				default:
 					if (album.json.init) _sidebar.changeAttr("title", album.json.title);
-					lychee.setTitle(album.json.title, true);
+					lychee.setMetaData(album.json.title, true, album.json.description);
 					break;
 			}
 		}
@@ -14634,7 +13784,8 @@ view.photo = {
   */
 	title: function title() {
 		if (_photo3.json.init) _sidebar.changeAttr("title", _photo3.json.title ? _photo3.json.title : "");
-		lychee.setTitle(_photo3.json.title ? _photo3.json.title : lychee.locale["UNTITLED"], true);
+		var photoUrl = _photo3.json.size_variants.medium ? _photo3.json.size_variants.medium.url : _photo3.json.size_variants.original.url;
+		lychee.setMetaData(_photo3.json.title ? _photo3.json.title : lychee.locale["UNTITLED"], true, _photo3.json.description, photoUrl);
 	},
 
 	/**
@@ -14881,7 +14032,7 @@ view.settings = {
   * @returns {void}
   */
 	title: function title() {
-		lychee.setTitle(lychee.locale["SETTINGS"], false);
+		lychee.setMetaData(lychee.locale["SETTINGS"]);
 	},
 
 	/**
@@ -15153,7 +14304,7 @@ view.full_settings = {
   * @returns {void}
   */
 	title: function title() {
-		lychee.setTitle(lychee.locale["FULL_SETTINGS"], false);
+		lychee.setMetaData(lychee.locale["FULL_SETTINGS"]);
 	},
 
 	/**
@@ -15210,7 +14361,7 @@ view.notifications = {
 
 	/** @returns {void} */
 	title: function title() {
-		lychee.setTitle(lychee.locale["NOTIFICATIONS"], false);
+		lychee.setMetaData(lychee.locale["NOTIFICATIONS"]);
 	},
 
 	/** @returns {void} */
@@ -15244,7 +14395,7 @@ view.users = {
 
 	/** @returns {void} */
 	title: function title() {
-		lychee.setTitle(lychee.locale["USERS"], false);
+		lychee.setMetaData(lychee.locale["USERS"]);
 	},
 
 	/** @returns {void} */
@@ -15298,7 +14449,7 @@ view.sharing = {
 
 	/** @returns {void} */
 	title: function title() {
-		lychee.setTitle(lychee.locale["SHARING"], false);
+		lychee.setMetaData(lychee.locale["SHARING"]);
 	},
 
 	/** @returns {void} */
@@ -15361,7 +14512,7 @@ view.logs = {
 
 	/** @returns {void} */
 	title: function title() {
-		lychee.setTitle(lychee.locale["LOGS"], false);
+		lychee.setMetaData(lychee.locale["LOGS"]);
 	},
 
 	/** @returns {void} */
@@ -15421,7 +14572,7 @@ view.diagnostics = {
 
 	/** @returns {void} */
 	title: function title() {
-		lychee.setTitle(lychee.locale["DIAGNOSTICS"], false);
+		lychee.setMetaData(lychee.locale["DIAGNOSTICS"]);
 	},
 
 	/**
@@ -15555,7 +14706,7 @@ view.update = {
 
 	/** @returns {void} */
 	title: function title() {
-		lychee.setTitle(lychee.locale["UPDATE"], false);
+		lychee.setMetaData(lychee.locale["UPDATE"]);
 	},
 
 	/** @returns {void} */
@@ -15603,7 +14754,7 @@ view.u2f = {
 
 	/** @returns {void} */
 	title: function title() {
-		lychee.setTitle(lychee.locale["U2F"], false);
+		lychee.setMetaData(lychee.locale["U2F"]);
 	},
 
 	/** @returns {void} */
@@ -16021,6 +15172,7 @@ var SmartAlbumID = Object.freeze({
  * @property {string}   nsfw_visible            - actually a boolean
  * @property {string}   nsfw_warning            - actually a boolean
  * @property {string}   nsfw_warning_admin      - actually a boolean
+ * @property {string}   nsfw_banner_override    - custom HTML instead of the default NSFW banner
  * @property {string}   public_photos_hidden    - actually a boolean
  * @property {string}   public_search           - actually a boolean
  * @property {string}   share_button_visible    - actually a boolean

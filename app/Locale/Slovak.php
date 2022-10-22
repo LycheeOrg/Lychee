@@ -405,9 +405,7 @@ final class Slovak implements Language
 			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <kbd>H</kbd></b>.',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
-			'NSFW_BANNER_HEADER' => 'Sensitive content',
-			'NSFW_BANNER_EXPL' => 'This album contains sensitive content which some people may find offensive or disturbing.',
-			'NSFW_BANNER_CONSENT_TAP' => 'Tap to consent.',
+			'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
 
 			'VIEW_NO_RESULT' => 'Žiadny výsledok',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Žiadne verejné albumy',

@@ -405,9 +405,7 @@ final class ChineseSimplified implements Language
 			'NSFW_VISIBLE_TEXT_2' => '如果相册是公开的，其将仍然可以访问，只是会从视图中隐藏并<b>可以通过按下<kbd>H</kbd>键来显示</b>。',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => '敏感相册的默认可见性成功更新。',
 
-			'NSFW_BANNER_HEADER' => 'Sensitive content',
-			'NSFW_BANNER_EXPL' => 'This album contains sensitive content which some people may find offensive or disturbing.',
-			'NSFW_BANNER_CONSENT_TAP' => 'Tap to consent.',
+			'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
 
 			'VIEW_NO_RESULT' => '无结果',
 			'VIEW_NO_PUBLIC_ALBUMS' => '没有公开相册',

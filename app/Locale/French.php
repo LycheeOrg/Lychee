@@ -405,9 +405,7 @@ final class French implements Language
 			'NSFW_VISIBLE_TEXT_2' => 'Si l’album est public, il est toujours accessible, juste masqué et <b>peut-être révélé avec la touche <kbd>H</kbd></b>.',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Visibilé par default des albums sensible mis à jour.',
 
-			'NSFW_BANNER_HEADER' => 'Sensitive content',
-			'NSFW_BANNER_EXPL' => 'This album contains sensitive content which some people may find offensive or disturbing.',
-			'NSFW_BANNER_CONSENT_TAP' => 'Tap to consent.',
+			'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
 
 			'VIEW_NO_RESULT' => 'Aucun résultat',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Aucun album public',

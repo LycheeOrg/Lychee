@@ -405,9 +405,7 @@ final class Portuguese implements Language
 			'NSFW_VISIBLE_TEXT_2' => 'Se o álbum é público, continua acessível, apenas ocultado da visualização e <b>pode ser mostrado pressionando <kbd>H</kbd></b>.',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Sensibilidade predefinida do álbum visível atualizada com sucesso.',
 
-			'NSFW_BANNER_HEADER' => 'Sensitive content',
-			'NSFW_BANNER_EXPL' => 'This album contains sensitive content which some people may find offensive or disturbing.',
-			'NSFW_BANNER_CONSENT_TAP' => 'Tap to consent.',
+			'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
 
 			'VIEW_NO_RESULT' => 'Sem resultados',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Sem álbums públicos',
