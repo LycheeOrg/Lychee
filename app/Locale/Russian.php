@@ -297,6 +297,8 @@ final class Russian implements Language
 			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'Ок',
 			'RETRY' => 'Повторить',
+			'OVERRIDE' => 'Override',
+			'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
 
 			'SETTINGS_SUCCESS_LOGIN' => 'Учётные данные обновлены.',
 			'SETTINGS_SUCCESS_SORT' => 'Порядок сортировки обновлён.',
