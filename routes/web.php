@@ -41,6 +41,6 @@ Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::clas
 Route::get('/r/{albumID}/{photoID}', [RedirectController::class, 'photo'])->middleware(['migration:complete']);
 Route::get('/r/{albumID}', [RedirectController::class, 'album'])->middleware(['migration:complete']);
 
-Route::get('/view', [ViewController::class, 'view'])->name('view')->middleware(['redirect-legacy-id']);
+Route::get('/view', [IndexController::class, 'view'])->name('view')->middleware(['redirect-legacy-id']);
 Route::get('/demo', [DemoController::class, 'js']);
-Route::redirect('/frame', './#frame')->name('frame')->middleware(['migration:complete']);
+Route::get('/frame', [IndexController::class, 'frame'])->name('frame')->middleware(['migration:complete']);

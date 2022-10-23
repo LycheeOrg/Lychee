@@ -6215,9 +6215,9 @@ lychee.initHtmlHeader = function () {
 	document.querySelector('meta[name="publisher"]').content = lychee.site_owner;
 	// RSS feeds
 	if (lychee.rss_enable) {
-		var head = document.querySelector('head');
+		var head = document.querySelector("head");
 		lychee.rss_feeds.forEach(function (feed) {
-			var link = document.createElement('link');
+			var link = document.createElement("link");
 			link.rel = "alternate";
 			link.type = feed.mimetype;
 			link.href = feed.url;
@@ -6617,7 +6617,11 @@ lychee.reloadIfLegacyIDs = function (albumID, photoID, autoplay) {
 
 /**
  * This is a "God method" that is used to load pretty much anything, based
- * on what's in the web browser's URL bar after the '#' character:
+ * on what's in the web browser's URL.
+ *
+ * Traditionally, Lychee has been using client-side navigation based on
+ * URL fragments (i.e. based on the part after the '#' character)
+ * Fragments can match one of the following cases:
  *
  *  - (nothing): load root album, assign `null` to `albumID` and `photoID`
  *  - `{albumID}`: load the album; `albumID` equals the given ID, `photoID` is
@@ -6638,18 +6642,37 @@ lychee.reloadIfLegacyIDs = function (albumID, photoID, autoplay) {
  *    which assumes that the user is always unauthenticated.
  *  - `frame`: shows random, starred photos in a kiosk mode
  *
+ * Additionally, Lychee supports the following proper paths:
+ *
+ *  - `/view/{photoID}` and `/view?p={photoID}`: See `view/{photoID}` above
+ *    for the fragment-based approach
+ *  - `/frame`: See `frame` above for the fragment-based approach.
+ *
  * @param {boolean} [autoplay=true]
  * @returns {void}
  */
 lychee.load = function () {
 	var autoplay = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
-	var hash = document.location.hash.replace("#", "").split("/");
-	var albumID = hash[0];
-	if (albumID === SearchAlbumIDPrefix && hash.length > 1) {
-		albumID += "/" + hash[1];
+	var albumID = "";
+	var photoID = "";
+
+	var viewMatch = document.location.href.match(/\/view(?:\/|(\?p=))(?<photoID>[-_0-9A-Za-z]+)$/);
+	var hashMatch = document.location.hash.replace("#", "").split("/");
+
+	if (/\/frame\/?$/.test(document.location.href)) {
+		albumID = "frame";
+		photoID = "";
+	} else if (viewMatch !== null && viewMatch.groups.photoID) {
+		albumID = "view";
+		photoID = viewMatch.groups.photoID;
+	} else {
+		albumID = hashMatch[0];
+		if (albumID === SearchAlbumIDPrefix && hashMatch.length > 1) {
+			albumID += "/" + hashMatch[1];
+		}
+		photoID = hashMatch[album.isSearchID(albumID) ? 2 : 1];
 	}
-	var photoID = hash[album.isSearchID(albumID) ? 2 : 1];
 
 	contextMenu.close();
 	multiselect.close();
@@ -6805,7 +6828,7 @@ lychee.load = function () {
 				view.album.content.restoreScroll();
 			} else if (album.isSearchID(albumID)) {
 				// Search has been triggered
-				var search_string = decodeURIComponent(hash[1]).trim();
+				var search_string = decodeURIComponent(hashMatch[1]).trim();
 
 				if (search_string === "") {
 					// do nothing on "only space" search strings
