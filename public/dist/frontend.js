@@ -4836,6 +4836,18 @@ header.setTitle = function (title) {
 };
 
 /**
+ * Applies the "mode" of the application to the header.
+ *
+ * Note, in contrast to {@link lychee.setMode} this method does **not**
+ * support the mode "view".
+ * Reminder: The mode "view" is used to display a single photo in Lychee's
+ * special "view" mode which is somewhat similar to "public" for albums.
+ * In lack of a dedicated "view" mode here, the method must be called with
+ * `mode === "photo"` (even in "view" mode) and then this method internally
+ * depends on {@link lychee.publicMode} being set to hide certain buttons.
+ * Note: This strange design decision has (assumingly) been made, because
+ * both the view and photo mode call {@link view.photo.show} which in turn
+ * calls this method and passes `"photo"` as the parameter in both cases.
  *
  * @param {string} mode either one out of `"public"`, `"albums"`, `"album"`,
  *                      `"photo"`, `"map"` or `"config"`
@@ -5072,46 +5084,74 @@ header.setMode = function (mode) {
 				tabindex.makeFocusable(_e27);
 			}
 
-			// Hide More menu if empty (see contextMenu.photoMore)
-			$("#button_more").show();
-			tabindex.makeFocusable($("#button_more"));
-			if (!(album.isUploadable() || (_photo3.json.hasOwnProperty("is_downloadable") ? _photo3.json.is_downloadable : album.json && album.json.is_downloadable)) && !(_photo3.json.size_variants.original.url && _photo3.json.size_variants.original.url !== "")) {
-				var _e28 = $("#button_more");
-				_e28.hide();
-				tabindex.makeUnfocusable(_e28);
+			// Hide More menu if
+			// - empty (see contextMenu.photoMore)
+			// - not enabled
+			// - in "public" mode
+			var buttonMore = $("#button_more");
+			if (!(album.isUploadable() || (_photo3.json.hasOwnProperty("is_downloadable") ? _photo3.json.is_downloadable : album.json && album.json.is_downloadable)) && !(_photo3.json.size_variants.original.url && _photo3.json.size_variants.original.url !== "") || !lychee.enable_button_more || lychee.publicMode) {
+				buttonMore.hide();
+				tabindex.makeUnfocusable(buttonMore);
+			} else {
+				buttonMore.show();
+				tabindex.makeFocusable(buttonMore);
 			}
 
-			// Remove buttons if needed
-			if (!lychee.enable_button_visibility) {
-				var _e29 = $("#button_visibility", ".header__toolbar--photo");
-				_e29.remove();
+			// Hide buttons if needed
+			if (lychee.publicMode) {
+				var _e28 = $("#button_star", ".header__toolbar--photo");
+				_e28.hide();
+			} else {
+				var _e29 = $("#button_star", ".header__toolbar--photo");
+				_e29.show();
+			}
+			if (!lychee.enable_button_visibility || lychee.publicMode) {
+				var _e30 = $("#button_visibility", ".header__toolbar--photo");
+				_e30.hide();
+			} else {
+				var _e31 = $("#button_visibility", ".header__toolbar--photo");
+				_e31.show();
 			}
 			if (!lychee.enable_button_share) {
-				var _e30 = $("#button_share", ".header__toolbar--photo");
-				_e30.remove();
+				var _e32 = $("#button_share", ".header__toolbar--photo");
+				_e32.hide();
+			} else {
+				var _e33 = $("#button_share", ".header__toolbar--photo");
+				_e33.show();
 			}
-			if (!lychee.enable_button_move) {
-				var _e31 = $("#button_move", ".header__toolbar--photo");
-				_e31.remove();
+			if (!lychee.enable_button_move || lychee.publicMode) {
+				var _e34 = $("#button_move", ".header__toolbar--photo");
+				_e34.hide();
+			} else {
+				var _e35 = $("#button_move", ".header__toolbar--photo");
+				_e35.show();
 			}
-			if (!lychee.enable_button_trash) {
-				var _e32 = $("#button_trash", ".header__toolbar--photo");
-				_e32.remove();
+			if (!lychee.enable_button_trash || lychee.publicMode) {
+				var _e36 = $("#button_trash", ".header__toolbar--photo");
+				_e36.hide();
+			} else {
+				var _e37 = $("#button_trash", ".header__toolbar--photo");
+				_e37.show();
 			}
-			if (!lychee.enable_button_fullscreen || !lychee.fullscreenAvailable()) {
-				var _e33 = $("#button_fs_enter", ".header__toolbar--photo");
-				_e33.remove();
+			if (!lychee.enable_button_fullscreen || !lychee.fullscreenAvailable() || lychee.publicMode) {
+				var _e38 = $("#button_fs_enter", ".header__toolbar--photo");
+				_e38.hide();
+			} else {
+				var _e39 = $("#button_fs_enter", ".header__toolbar--photo");
+				_e39.show();
 			}
-			if (!lychee.enable_button_more) {
-				var _e34 = $("#button_more", ".header__toolbar--photo");
-				_e34.remove();
-			}
-			if (!lychee.enable_button_rotate) {
-				var _e35 = $("#button_rotate_cwise", ".header__toolbar--photo");
-				_e35.remove();
+			if (!lychee.enable_button_rotate || lychee.publicMode) {
+				var _e40 = $("#button_rotate_cwise", ".header__toolbar--photo");
+				_e40.hide();
 
-				_e35 = $("#button_rotate_ccwise", ".header__toolbar--photo");
-				_e35.remove();
+				_e40 = $("#button_rotate_ccwise", ".header__toolbar--photo");
+				_e40.hide();
+			} else {
+				var _e41 = $("#button_rotate_cwise", ".header__toolbar--photo");
+				_e41.show();
+
+				_e41 = $("#button_rotate_ccwise", ".header__toolbar--photo");
+				_e41.show();
 			}
 			return;
 		case "map":
@@ -5141,7 +5181,7 @@ header.setMode = function (mode) {
 header.setEditable = function (editable) {
 	var $title = header.dom(".header__title");
 
-	if (editable) $title.addClass("header__title--editable");else $title.removeClass("header__title--editable");
+	if (editable && !lychee.publicMode) $title.addClass("header__title--editable");else $title.removeClass("header__title--editable");
 };
 
 /**
