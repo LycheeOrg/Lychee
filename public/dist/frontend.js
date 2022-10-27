@@ -7415,6 +7415,20 @@ lychee.endDrag = function (ev) {
 };
 
 /**
+ * Adds the given event listener to the event target for both a `"click"` and
+ * `"touchend"` event.
+ *
+ * @param {Element} eventTarget
+ * @param {EventListenerOrEventListenerObject} listener
+ * @param {boolean|AddEventListenerOptions} [options]
+ * @return {void}
+ */
+lychee.addClickOrTouchListener = function (eventTarget, listener, options) {
+	eventTarget.addEventListener("click", listener, options);
+	eventTarget.addEventListener("touchend", listener, options);
+};
+
+/**
  * @typedef {Object.<string, string>} Locale
  * @property {function} printFilesizeLocalized
  * @property {function} printDateTime
@@ -9940,8 +9954,7 @@ _photo3.getArchive = function (photoIDs) {
 			var sv = myPhoto.size_variants[variant];
 			if (sv) {
 				button.title = lychee.locale["DOWNLOAD"];
-				button.addEventListener("click", onClickOrTouch);
-				button.addEventListener("touchend", onClickOrTouch);
+				lychee.addClickOrTouchListener(button, onClickOrTouch);
 				button.lastElementChild.textContent = lLabel + " (" + sv.width + "×" + sv.height + ", " + lychee.locale.printFilesizeLocalized(sv.filesize) + ")";
 			} else {
 				button.remove();
@@ -9951,8 +9964,7 @@ _photo3.getArchive = function (photoIDs) {
 		var liveButton = dialog.querySelector('a[data-photo-kind="LIVEPHOTOVIDEO"]');
 		if (myPhoto.live_photo_url !== null) {
 			liveButton.title = lychee.locale["DOWNLOAD"];
-			liveButton.addEventListener("click", onClickOrTouch);
-			liveButton.addEventListener("touchend", onClickOrTouch);
+			lychee.addClickOrTouchListener(liveButton, onClickOrTouch);
 			liveButton.lastElementChild.textContent = lychee.locale["PHOTO_LIVE_VIDEO"];
 		} else {
 			liveButton.remove();
@@ -10101,8 +10113,7 @@ _photo3.showDirectLinks = function (photoID) {
 			ev.stopPropagation();
 		};
 		dialog.querySelectorAll("a.button").forEach(function (a) {
-			a.addEventListener("click", onClickOrTouch);
-			a.addEventListener("touchend", onClickOrTouch);
+			return lychee.addClickOrTouchListener(a, onClickOrTouch);
 		});
 	};
 
@@ -10904,12 +10915,9 @@ settings.openTokenDialog = function () {
 
 		updateTokenDialog();
 
-		copyTokenButton.addEventListener("click", onCopyToken);
-		copyTokenButton.addEventListener("touchend", onCopyToken);
-		resetTokenButton.addEventListener("click", onResetToken);
-		resetTokenButton.addEventListener("touchend", onResetToken);
-		disableTokenButton.addEventListener("click", onDisableToken);
-		disableTokenButton.addEventListener("touchend", onDisableToken);
+		lychee.addClickOrTouchListener(copyTokenButton, onCopyToken);
+		lychee.addClickOrTouchListener(resetTokenButton, onResetToken);
+		lychee.addClickOrTouchListener(disableTokenButton, onDisableToken);
 	};
 
 	basicModal.show({
