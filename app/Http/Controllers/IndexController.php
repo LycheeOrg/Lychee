@@ -184,7 +184,7 @@ class IndexController extends Controller
 				'imageUrl' => $imageUrl ?? '',
 				'pageUrl' => url()->current(),
 				'rss_enable' => Configs::getValueAsBool('rss_enable'),
-				'bodyHtml' => file_get_contents('./dist/frontend.html'),
+				'bodyHtml' => file_get_contents(public_path('dist/frontend.html')),
 			]);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);

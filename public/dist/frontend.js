@@ -5480,8 +5480,7 @@ $(document).ready(function () {
 	$(window)
 	// resize
 	.on("resize", function () {
-		if (visible.album()) view.album.content.justify(album.json ? album.json.photos : []);
-		if (visible.search()) view.album.content.justify(search.json.photos);
+		view.album.content.justify();
 		if (visible.photo()) view.photo.onresize();
 		frame.resize();
 	})
@@ -10246,12 +10245,13 @@ search.find = function (term) {
 				// `view.photos` (note the plural form) which takes care of
 				// all photo listings independent of the surrounding "thing"
 				// (i.e. regular album, tag album, search result)
-				view.album.content.justify(search.json.photos);
-				lychee.animate(lychee.content, "contentZoomIn");
+				setTimeout(function () {
+					view.album.content.justify();
+					lychee.animate(lychee.content, "contentZoomIn");
+					$(window).scrollTop(0);
+				}, 0);
 			}
 			lychee.setMetaData(lychee.locale["SEARCH_RESULTS"]);
-
-			$(window).scrollTop(0);
 		}, 300);
 	};
 
@@ -11067,7 +11067,9 @@ _sidebar.toggle = function (is_user_initiated) {
 		header.dom(".button--info").toggleClass("active");
 		lychee.content.toggleClass("content--sidebar");
 		lychee.imageview.toggleClass("image--sidebar");
-		if (typeof view !== "undefined") view.album.content.justify(album.json ? album.json.photos : []);
+		setTimeout(function () {
+			return view.album.content.justify();
+		}, 0);
 		_sidebar.dom().toggleClass("active");
 		if (_photo3.updateSizeLivePhotoDuringAnimation) _photo3.updateSizeLivePhotoDuringAnimation();
 
@@ -13325,6 +13327,17 @@ view.album = {
 
 			if (photosData !== "") {
 				if (lychee.layout === 1) {
+					// The CSS class 'laying-out' prevents the DIV from being
+					// rendered.
+					// The CSS class will eventually be removed by the
+					// layout routine `view.album.content.justify` after all
+					// child nodes have been arranged.
+					// ---- Update 2022-10-20, temporary fix ----
+					// However, the reported width of hidden elements is zero.
+					// Hence, using the CSS class `laying-out` currently
+					// prevent `view.album.content.justify` from calculating
+					// the correct width of the container.
+					// TODO: Re-add the CSS class `laying-out` here after https://github.com/LycheeOrg/Lychee-front/pull/335 has been merged.
 					photosData = '<div class="justified-layout">' + photosData + "</div>";
 				} else if (lychee.layout === 2) {
 					photosData = '<div class="unjustified-layout">' + photosData + "</div>";
@@ -13344,9 +13357,10 @@ view.album = {
 			lychee.content.html(html);
 			album.apply_nsfw_filter();
 
-			view.album.content.justify(album.json ? album.json.photos : []);
-
-			view.album.content.restoreScroll();
+			setTimeout(function () {
+				view.album.content.justify();
+				view.album.content.restoreScroll();
+			}, 0);
 		},
 
 		/** @returns {void} */
@@ -13459,7 +13473,9 @@ view.album = {
 
 			$('.photo[data-id="' + data.id + '"] > span.thumbimg > img').attr("data-src", src).attr("data-srcset", srcset).addClass("lazyload");
 
-			view.album.content.justify(album.json ? album.json.photos : []);
+			setTimeout(function () {
+				return view.album.content.justify();
+			}, 0);
 		},
 
 		/**
@@ -13499,7 +13515,9 @@ view.album = {
 						lychee.content.find(".divider").remove();
 					}
 					if (justify) {
-						view.album.content.justify(album.json ? album.json.photos : []);
+						setTimeout(function () {
+							return view.album.content.justify();
+						}, 0);
 					}
 				}
 			});
@@ -13541,17 +13559,54 @@ view.album = {
    * Hence, this method would better not be part of `view.album.content`,
    * because it is not exclusively used for an album.
    *
-   * @param {Photo[]} photos - the photos to be laid out
-   *
    * @returns {void}
    */
-		justify: function justify(photos) {
-			if (photos.length === 0) return;
+		justify: function justify() {
+			// Note, this also works for search results as the search creates
+			// a virtual "search smart album" which fills `album.json`.
+			if (album.json === null || album.json.photos.length === 0) return;
+			/**
+    * @type {Photo[]}
+    */
+			var photos = album.json.photos;
+
 			if (lychee.layout === 1) {
-				var containerWidth = parseFloat($(".justified-layout").width());
+				/** @type {jQuery} */
+				var jqJustifiedLayout = $(".justified-layout");
+				var containerWidth = parseFloat(jqJustifiedLayout.width());
 				if (containerWidth === 0) {
-					// Triggered on Reload in photo view.
-					containerWidth = $(window).width() - parseFloat($(".justified-layout").css("margin-left")) - parseFloat($(".justified-layout").css("margin-right")) - parseFloat($(".content").css("padding-right"));
+					// The reported width is zero, if `.justified-layout`
+					// or any parent element is hidden via `display: none`.
+					// Currently, this happens when a page reload is triggered
+					// in photo view due to dorky timing constraints.
+					// (In short: `lychee.load` initially hides the parent
+					// container `.content`, and the parent container only
+					// becomes visible _after_ the photo has been loaded which
+					// is too late for this method.)
+					// Also note, that this container and the parent
+					// container are normally always visible, even if a photo
+					// is shown as the photo view is drawn in the foreground
+					// and covers this container.
+					// Hence, this edge case here is really only a problem
+					// during a full page reload in combination with
+					// `lychee.load`.
+					// Also note that the code below is wrong and outdated.
+					// The alternative way to calculate the container width
+					// depends on the window width and (falsely) assumes that
+					// neither the left menu nor the right sidebar are open,
+					// but that the `.content` box covers the whole viewport.
+					// That was a correct assumption in the past, as the
+					// sidebar was always closed after a full page reload, but
+					// this assumption isn't true anymore since Lychee
+					// remembers the state of the sidebar.
+					// Luckily, this whole problem vanishes with the new
+					// box model after
+					// https://github.com/LycheeOrg/Lychee-front/pull/335 has been merged.
+					// Then, we can use the view of the view container which
+					// is always visible and always has the correct width
+					// even for opened sidebars.
+					// TODO: Unconditionally use the width of the view container and remove this alternative width calculation after https://github.com/LycheeOrg/Lychee-front/pull/335 has been merged
+					containerWidth = $(window).width() - parseFloat(jqJustifiedLayout.css("margin-left")) - parseFloat(jqJustifiedLayout.css("margin-right")) - parseFloat($(".content").css("padding-right"));
 				}
 				/** @type {number[]} */
 				var ratio = photos.map(function (_photo) {
@@ -13563,47 +13618,67 @@ view.album = {
 					return _photo.type && _photo.type.indexOf("video") !== -1 && _photo.size_variants.small === null && _photo.size_variants.medium === null ? 1 : ratio;
 				});
 
+				/**
+     * An album listing has potentially hundreds of photos, hence
+     * only query for them once.
+     * @type {jQuery}
+     */
+				var jqPhotoElements = $(".justified-layout > div.photo");
+				var photoDefaultHeight = parseFloat(jqPhotoElements.css("--lychee-default-height"));
+
 				var layoutGeometry = require("justified-layout")(ratio, {
 					containerWidth: containerWidth,
 					containerPadding: 0,
-					// boxSpacing: {
-					//     horizontal: 42,
-					//     vertical: 150
-					// },
-					targetRowHeight: parseFloat($(".photo").css("--lychee-default-height"))
+					targetRowHeight: photoDefaultHeight
 				});
-				// if (lychee.rights.is_admin) console.log(layoutGeometry);
-				$(".justified-layout").css("height", layoutGeometry.containerHeight + "px");
-				$(".justified-layout > div").each(function (i) {
+				// Temporarily hide the container such that not each
+				// modification of every photo triggers a UI update.
+				jqJustifiedLayout.addClass("laying-out");
+				// We must set the height of the `justified-layout` box
+				// explicitly, because all photos inside are positioned
+				// absolutely and hence do not contribute to the height of the
+				// `justified-layout` box automatically.
+				jqJustifiedLayout.css("height", layoutGeometry.containerHeight + "px");
+				jqPhotoElements.each(function (i) {
 					if (!layoutGeometry.boxes[i]) {
 						// Race condition in search.find -- window content
 						// and `photos` can get out of sync as search
 						// query is being modified.
 						return false;
 					}
-					$(this).css("top", layoutGeometry.boxes[i].top);
-					$(this).css("width", layoutGeometry.boxes[i].width);
-					$(this).css("height", layoutGeometry.boxes[i].height);
-					$(this).css("left", layoutGeometry.boxes[i].left);
+					var imgs = $(this).css({
+						top: layoutGeometry.boxes[i].top + "px",
+						width: layoutGeometry.boxes[i].width + "px",
+						height: layoutGeometry.boxes[i].height + "px",
+						left: layoutGeometry.boxes[i].left + "px"
+					}).find(".thumbimg > img");
 
-					var imgs = $(this).find(".thumbimg > img");
 					if (imgs.length > 0 && imgs[0].getAttribute("data-srcset")) {
 						imgs[0].setAttribute("sizes", layoutGeometry.boxes[i].width + "px");
 					}
 				});
+				// Show updated layout
+				jqJustifiedLayout.removeClass("laying-out");
 			} else if (lychee.layout === 2) {
-				var _containerWidth = parseFloat($(".unjustified-layout").width());
+				/** @type {jQuery} */
+				var jqUnjustifiedLayout = $(".unjustified-layout");
+				var _containerWidth = parseFloat(jqUnjustifiedLayout.width());
 				if (_containerWidth === 0) {
 					// Triggered on Reload in photo view.
-					_containerWidth = $(window).width() - parseFloat($(".unjustified-layout").css("margin-left")) - parseFloat($(".unjustified-layout").css("margin-right")) - parseFloat($(".content").css("padding-right"));
+					_containerWidth = $(window).width() - parseFloat(jqUnjustifiedLayout.css("margin-left")) - parseFloat(jqUnjustifiedLayout.css("margin-right")) - parseFloat($(".content").css("padding-right"));
 				}
-				// For whatever reason, the calculation of margin is
-				// super-slow in Firefox (tested with 68), so we make sure to
-				// do it just once, outside the loop.  Height doesn't seem to
-				// be affected, but we do it the same way for consistency.
-				var margin = parseFloat($(".photo").css("margin-right"));
-				var origHeight = parseFloat($(".photo").css("max-height"));
-				$(".unjustified-layout > div").each(function (i) {
+				/**
+     * An album listing has potentially hundreds of photos, hence
+     * only query for them once.
+     * @type {jQuery}
+     */
+				var _jqPhotoElements = $(".unjustified-layout > div.photo");
+				var photoMaxHeight = parseFloat(_jqPhotoElements.css("max-height"));
+				var photoMargin = parseFloat(_jqPhotoElements.css("margin-right"));
+				// Temporarily hide the container such that not each
+				// modification of every photo triggers a UI update.
+				jqUnjustifiedLayout.addClass("laying-out");
+				_jqPhotoElements.each(function (i) {
 					if (!photos[i]) {
 						// Race condition in search.find -- window content
 						// and `photos` can get out of sync as search
@@ -13619,21 +13694,24 @@ view.album = {
 						}
 					}
 
-					var height = origHeight;
+					var height = photoMaxHeight;
 					var width = height * ratio;
-					var imgs = $(this).find(".thumbimg > img");
 
-					if (width > _containerWidth - margin) {
-						width = _containerWidth - margin;
+					if (width > _containerWidth - photoMargin) {
+						width = _containerWidth - photoMargin;
 						height = width / ratio;
 					}
 
-					$(this).css("width", width + "px");
-					$(this).css("height", height + "px");
+					var imgs = $(this).css({
+						width: width + "px",
+						height: height + "px"
+					}).find(".thumbimg > img");
 					if (imgs.length > 0 && imgs[0].getAttribute("data-srcset")) {
 						imgs[0].setAttribute("sizes", width + "px");
 					}
 				});
+				// Show updated layout
+				jqUnjustifiedLayout.removeClass("laying-out");
 			}
 		}
 	},
