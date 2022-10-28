@@ -3,6 +3,22 @@
 ini_set('user_agent', 'Lychee/4 (https://lycheeorg.github.io/)');
 
 /*
+ * Ensure that the umask does not deny any user or group permissions,
+ * but honor the system-provided setting for world.
+ *
+ * The recommended setup is to run the web server within a security context
+ * with its own owner and group, e.g. let's say `apache:www-data`.
+ * An web admin user for CLI operations is supposed to be a member of the
+ * group of the web server, e.g. `www-data` in the example above.
+ * (Note, such an admin is not necessarily root).
+ * Objects inside file-based caches (like the one below ./storage) must be
+ * created group-writable.
+ * Otherwise, the web admin cannot successfully clear the cache after an
+ * upgrade (or run commands such as `./artisan optimize:clear` manually).
+ */
+\umask(0007 & umask());
+
+/*
 |--------------------------------------------------------------------------
 | Create The Application
 |--------------------------------------------------------------------------
