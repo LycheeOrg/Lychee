@@ -5195,7 +5195,11 @@ $(document).ready(function () {
 	// Set API error handler
 	api.onError = lychee.handleAPIError;
 
-	$("html").css("visibility", "visible");
+	// Make the application visible; initially the `<body>` has an inline
+	// style `display: none` to avoid an ugly flash of massively over-sized
+	// icons from the header in case the HTML engine starts rendering before
+	// the (asynchronously loaded) CSS becomes available.
+	document.querySelector("body").style.display = null;
 
 	// Multiselect
 	multiselect.bind();
