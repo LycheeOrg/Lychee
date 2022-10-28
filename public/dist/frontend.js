@@ -19,7 +19,6 @@ d.init=function(){var a=d(u),b;for(b in a)"_"!==b.charAt(0)&&(d[b]=function(b){r
 (function(a){var c={},d=a.prototype.stopCallback;a.prototype.stopCallback=function(e,b,a,f){return this.paused?!0:c[a]||c[f]?!1:d.call(this,e,b,a)};a.prototype.bindGlobal=function(a,b,d){this.bind(a,b,d);if(a instanceof Array)for(b=0;b<a.length;b++)c[a[b]]=!0;else c[a]=!0};a.init()})(Mousetrap);
 
 !function(t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define([],t):("undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this).basicModal=t()}(function(){return function o(a,c,i){function l(n,t){if(!c[n]){if(!a[n]){var e="function"==typeof require&&require;if(!t&&e)return e(n,!0);if(s)return s(n,!0);throw(t=new Error("Cannot find module '"+n+"'")).code="MODULE_NOT_FOUND",t}e=c[n]={exports:{}},a[n][0].call(e.exports,function(t){return l(a[n][1][t]||t)},e,e.exports,o,a,c,i)}return c[n].exports}for(var s="function"==typeof require&&require,t=0;t<i.length;t++)l(i[t]);return l}({1:[function(t,n,e){"use strict";function m(t,n){return function(t){if(Array.isArray(t))return t}(t)||function(t,n){var e=null==t?null:"undefined"!=typeof Symbol&&t[Symbol.iterator]||t["@@iterator"];if(null!=e){var o,a,c=[],i=!0,l=!1;try{for(e=e.call(t);!(i=(o=e.next()).done)&&(c.push(o.value),!n||c.length!==n);i=!0);}catch(t){l=!0,a=t}finally{try{i||null==e.return||e.return()}finally{if(l)throw a}}return c}}(t,n)||o(t,n)||function(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function b(t){return function(t){if(Array.isArray(t))return a(t)}(t)||function(t){if("undefined"!=typeof Symbol&&null!=t[Symbol.iterator]||null!=t["@@iterator"])return Array.from(t)}(t)||o(t)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function o(t,n){var e;if(t)return"string"==typeof t?a(t,n):"Map"===(e="Object"===(e=Object.prototype.toString.call(t).slice(8,-1))&&t.constructor?t.constructor.name:e)||"Set"===e?Array.from(t):"Arguments"===e||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(e)?a(t,n):void 0}function a(t,n){(null==n||n>t.length)&&(n=t.length);for(var e=0,o=new Array(n);e<n;e++)o[e]=t[e];return o}Object.defineProperty(e,"__esModule",{value:!0}),e.ModalDialogException=p,e.showCancelButton=e.showActionButton=e.show=e.reset=e.markCancelButtonAsIdle=e.markCancelButtonAsBusy=e.markActionButtonAsIdle=e.markActionButtonAsBusy=e.isVisible=e.isCancelButtonVisible=e.isCancelButtonHidden=e.isCancelButtonBusy=e.isActionButtonVisible=e.isActionButtonHidden=e.isActionButtonBusy=e.hideCancelButton=e.hideActionButton=e.getValues=e.focusError=e.close=e.cancel=e.cacheFormElements=e.action=e.THEME=void 0;var B={lastFocus:null,container:null,dialog:null,dialogContent:null,dialogButtons:null,cancelButton:null,actionButton:null,inputElements:null,selectElements:null,textAreaElements:null,namedFormElements:null};function p(){var t=0<arguments.length&&void 0!==arguments[0]?arguments[0]:null;this.message=null!=t?t:"Unknown exception",this.name="ModalDialogException"}e.THEME={small:"basicModal__small",xclose:"basicModal__xclose"};function g(){B.inputElements=B.dialog.querySelectorAll("div.basicModal__content input"),B.selectElements=B.dialog.querySelectorAll("div.basicModal__content select"),B.textAreaElements=B.dialog.querySelectorAll("div.basicModal__content textarea"),B.namedFormElements={},B.inputElements.forEach(function(t){t.name&&(B.namedFormElements[t.name]=t)}),B.selectElements.forEach(function(t){t.name&&(B.namedFormElements[t.name]=t)}),B.textAreaElements.forEach(function(t){t.name&&(B.namedFormElements[t.name]=t)})}e.cacheFormElements=g;var h=function(){var n={};return B.inputElements.forEach(function(t){if(t.name)switch(t.type){case"checkbox":case"radio":n[t.name]=t.checked;break;case"number":case"range":n[t.name]=parseInt(t.value,10);break;case"file":n[t.name]=t.files;break;default:switch(t.inputMode){case"numeric":n[t.name]=parseInt(t.value,10);break;case"decimal":n[t.name]=parseFloat(t.value);break;default:n[t.name]=t.value}}}),B.selectElements.forEach(function(t){t.name&&(n[t.name]=-1!==t.selectedIndex?t.options[t.selectedIndex].value:null)}),B.textAreaElements.forEach(function(t){t.name&&(n[t.name]=t.value)}),n};function E(t){(t.target instanceof HTMLInputElement||t.target instanceof HTMLSelectElement||t.target instanceof HTMLTextAreaElement)&&t.target.classList.remove("error")}e.getValues=h;e.show=function t(n){var e=n;if(!e||0===Object.keys(e).length)throw new p("Missing or empty modal configuration object");if(e.body||(e.body=""),e.classList||(e.classList=[]),!1!==e.closable&&(e.closable=!0),!e.buttons)throw new p("basicModal requires at least one button");if(e.buttons.action&&(e.buttons.action.classList||(e.buttons.action.classList=[]),e.buttons.action.attributes||(e.buttons.action.attributes={}),e.buttons.action.title||(e.buttons.action.title="OK"),"function"!=typeof e.buttons.action.fn))throw new p("Missing callback function for action button");if(e.buttons.cancel&&(e.buttons.cancel.classList||(e.buttons.cancel.classList=[]),e.buttons.cancel.attributes||(e.buttons.cancel.attributes={}),e.buttons.cancel.title||(e.buttons.cancel.title="Cancel"),"function"!=typeof e.buttons.cancel.fn))throw new p("Missing callback function for cancel button");if(y())C(!0,function(){return t(n)});else{B.lastFocus=document.activeElement;var o,a,e=n;if(B.container=document.createElement("div"),B.container.classList.add("basicModalContainer","basicModalContainer--fadeIn"),B.container.dataset.closable=e.closable?"true":"false",B.dialog=B.container.appendChild(document.createElement("div")),B.dialog.classList.add("basicModal","basicModal--fadeIn"),(o=B.dialog.classList).add.apply(o,b(e.classList)),B.dialog.setAttribute("role","dialog"),B.dialogContent=B.dialog.appendChild(document.createElement("div")),B.dialogContent.classList.add("basicModal__content"),B.dialogContent.innerHTML=e.body,B.dialogButtons=B.dialog.appendChild(document.createElement("div")),B.dialogButtons.classList.add("basicModal__buttons"),B.cancelButton=null,e.buttons.cancel){e.buttons.cancel.classList.includes("basicModal__xclose")?(B.cancelButton=B.dialogButtons.appendChild(document.createElement("div")),B.cancelButton.setAttribute("aria-label","close"),B.cancelButton.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M405 136.798l-29.798-29.798-119.202 119.202-119.202-119.202-29.798 29.798 119.202 119.202-119.202 119.202 29.798 29.798 119.202-119.202 119.202 119.202 29.798-29.798-119.202-119.202z"/></svg>'):(B.cancelButton=B.dialogButtons.appendChild(document.createElement("a")),B.cancelButton.textContent=e.buttons.cancel.title),B.cancelButton.id="basicModal__cancel",B.cancelButton.classList.add("basicModal__button"),(o=B.cancelButton.classList).add.apply(o,b(e.buttons.cancel.classList));for(var c=0,i=Object.entries(e.buttons.cancel.attributes);c<i.length;c++){var l=m(i[c],2),s=l[0],l=l[1];B.cancelButton.setAttribute(s,l)}}if(B.actionButton=null,e.buttons.action){B.actionButton=B.dialogButtons.appendChild(document.createElement("a")),B.actionButton.textContent=e.buttons.action.title,B.actionButton.id="basicModal__action",B.actionButton.classList.add("basicModal__button"),(o=B.actionButton.classList).add.apply(o,b(e.buttons.action.classList));for(var u=0,r=Object.entries(e.buttons.action.attributes);u<r.length;u++){var d=m(r[u],2),f=d[0],d=d[1];B.actionButton.setAttribute(f,d)}}g(),(a=n).buttons.cancel&&B.cancelButton&&B.cancelButton.addEventListener("click",function(){M()||(L(),a.buttons.cancel.fn(h()))}),a.buttons.action&&B.actionButton&&B.actionButton.addEventListener("click",function(){v()||(A(),a.buttons.action.fn(h()))}),B.dialog.addEventListener("input",E),B.dialog.addEventListener("blur",E),B.dialog.addEventListener("change",E),n.readyCB&&n.readyCB(B.namedFormElements,B.dialogContent),document.body.appendChild(B.container),0!==B.inputElements.length?(B.inputElements.item(0).focus(),B.inputElements.item(0).select()):0!==B.textAreaElements.length?(B.textAreaElements.item(0).focus(),B.textAreaElements.item(0).select()):0!==B.selectElements.length?B.selectElements.item(0).focus():B.actionButton?B.actionButton.focus():B.cancelButton&&B.cancelButton.focus()}};function c(){return B.actionButton&&B.dialogButtons.contains(B.actionButton)}function i(){return B.actionButton&&!B.dialogButtons.contains(B.actionButton)}function l(){return B.cancelButton&&B.dialogButtons.contains(B.cancelButton)}function s(){return B.cancelButton&&!B.dialogButtons.contains(B.cancelButton)}e.focusError=function(t){y()&&(u(),(t=B.namedFormElements[t]||null)&&(t.classList.add("error"),t.focus(),(t instanceof HTMLInputElement||t instanceof HTMLTextAreaElement)&&t.select(),B.dialog.classList.remove("basicModal--fadeIn","basicModal--shake"),setTimeout(function(){return B.dialog.classList.add("basicModal--shake")},1)))};var y=function(){return null!==B.container},u=(e.isVisible=y,e.action=function(){return!!B.actionButton&&(B.actionButton.click(),!0)},e.cancel=function(){return!!B.cancelButton&&(B.cancelButton.click(),!0)},function(){y()&&(r(),d(),B.inputElements.forEach(function(t){return t.classList.remove("error")}),B.textAreaElements.forEach(function(t){return t.classList.remove("error")}),B.selectElements.forEach(function(t){return t.classList.remove("error")}))}),v=(e.reset=u,function(){return!!B.actionButton&&B.actionButton.classList.contains("basicModal__button--busy")}),A=(e.isActionButtonBusy=v,function(){B.actionButton&&B.actionButton.classList.add("basicModal__button--busy")}),r=(e.markActionButtonAsBusy=A,function(){B.actionButton&&B.actionButton.classList.remove("basicModal__button--busy")}),M=(e.markActionButtonAsIdle=r,e.isActionButtonVisible=c,e.isActionButtonHidden=i,e.hideActionButton=function(){c()&&B.dialogButtons.removeChild(B.actionButton)},e.showActionButton=function(){i()&&B.dialogButtons.appendChild(B.actionButton)},function(){return!!B.cancelButton&&B.cancelButton.classList.contains("basicModal__button--busy")}),L=(e.isCancelButtonBusy=M,function(){B.cancelButton&&B.cancelButton.classList.add("basicModal__button--busy")}),d=(e.markCancelButtonAsBusy=L,function(){B.cancelButton&&B.cancelButton.classList.remove("basicModal__button--busy")}),C=(e.markCancelButtonAsIdle=d,e.isCancelButtonVisible=l,e.isCancelButtonHidden=s,e.hideCancelButton=function(){l()&&B.dialogButtons.removeChild(B.cancelButton)},e.showCancelButton=function(){s()&&(c()?B.dialogButtons.insertBefore(B.cancelButton,B.actionButton):B.dialogButtons.appendChild(B.cancelButton))},function(){var t=0<arguments.length&&void 0!==arguments[0]&&arguments[0],n=1<arguments.length?arguments[1]:void 0;y()?"false"===B.container.dataset.closable&&!t||(t=B.container.classList.replace("basicModalContainer--fadeIn","basicModalContainer--fadeOut"),setTimeout(function(){B.container.remove(),B.container=null,B.dialog=null,B.actionButton=null,B.cancelButton=null,B.inputElements=null,B.selectElements=null,(B.textAreaElements=null)!==B.lastFocus&&(B.lastFocus.focus(),B.lastFocus=null),n&&n()},t?300:0)):n&&setTimeout(n,0)});e.close=C},{}]},{},[1])(1)});
-!function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t():"function"==typeof define&&define.amd?define([],t):"object"==typeof exports?exports.scrollLock=t():e.scrollLock=t()}(this,function(){return function(l){var r={};function o(e){if(r[e])return r[e].exports;var t=r[e]={i:e,l:!1,exports:{}};return l[e].call(t.exports,t,t.exports,o),t.l=!0,t.exports}return o.m=l,o.c=r,o.d=function(e,t,l){o.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:l})},o.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},o.t=function(t,e){if(1&e&&(t=o(t)),8&e)return t;if(4&e&&"object"==typeof t&&t&&t.__esModule)return t;var l=Object.create(null);if(o.r(l),Object.defineProperty(l,"default",{enumerable:!0,value:t}),2&e&&"string"!=typeof t)for(var r in t)o.d(l,r,function(e){return t[e]}.bind(null,r));return l},o.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return o.d(t,"a",t),t},o.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},o.p="",o(o.s=0)}([function(e,t,l){"use strict";l.r(t);var r=function(e){return Array.isArray(e)?e:[e]},a=function(e){return e instanceof Node},o=function(e,t){if(e&&t){e=e instanceof NodeList?e:[e];for(var l=0;l<e.length&&!0!==t(e[l],l,e.length);l++);}},n=function(e){return console.error("[scroll-lock] ".concat(e))},b=function(e){if(Array.isArray(e))return e.join(", ")},c=function(e){var t=[];return o(e,function(e){return t.push(e)}),t},h=function(e,t){var l=!(2<arguments.length&&void 0!==arguments[2])||arguments[2],r=3<arguments.length&&void 0!==arguments[3]?arguments[3]:document;if(l&&-1!==c(r.querySelectorAll(t)).indexOf(e))return e;for(;(e=e.parentElement)&&-1===c(r.querySelectorAll(t)).indexOf(e););return e},v=function(e,t){var l=2<arguments.length&&void 0!==arguments[2]?arguments[2]:document;return-1!==c(l.querySelectorAll(t)).indexOf(e)},i=function(e){if(e)return"hidden"===getComputedStyle(e).overflow},m=function(e){if(e)return!!i(e)||e.scrollTop<=0},S=function(e){if(e){if(i(e))return!0;var t=e.scrollTop;return e.scrollHeight<=t+e.offsetHeight}},y=function(e){if(e)return!!i(e)||e.scrollLeft<=0},k=function(e){if(e){if(i(e))return!0;var t=e.scrollLeft;return e.scrollWidth<=t+e.offsetWidth}};l.d(t,"disablePageScroll",function(){return d}),l.d(t,"enablePageScroll",function(){return s}),l.d(t,"getScrollState",function(){return f}),l.d(t,"clearQueueScrollLocks",function(){return p}),l.d(t,"getTargetScrollBarWidth",function(){return g}),l.d(t,"getCurrentTargetScrollBarWidth",function(){return A}),l.d(t,"getPageScrollBarWidth",function(){return G}),l.d(t,"getCurrentPageScrollBarWidth",function(){return T}),l.d(t,"addScrollableTarget",function(){return L}),l.d(t,"removeScrollableTarget",function(){return W}),l.d(t,"addScrollableSelector",function(){return x}),l.d(t,"removeScrollableSelector",function(){return F}),l.d(t,"addLockableTarget",function(){return Y}),l.d(t,"addLockableSelector",function(){return E}),l.d(t,"setFillGapMethod",function(){return O}),l.d(t,"addFillGapTarget",function(){return P}),l.d(t,"removeFillGapTarget",function(){return j}),l.d(t,"addFillGapSelector",function(){return q}),l.d(t,"removeFillGapSelector",function(){return M}),l.d(t,"refillGaps",function(){return N});var u=["padding","margin","width","max-width","none"],w={scroll:!0,queue:0,scrollableSelectors:["[data-scroll-lock-scrollable]"],lockableSelectors:["body","[data-scroll-lock-lockable]"],fillGapSelectors:["body","[data-scroll-lock-fill-gap]","[data-scroll-lock-lockable]"],fillGapMethod:u[0],startTouchY:0,startTouchX:0},d=function(e){w.queue<=0&&(w.scroll=!1,B(),X()),L(e),w.queue++},s=function(e){0<w.queue&&w.queue--,w.queue<=0&&(w.scroll=!0,C(),Q()),W(e)},f=function(){return w.scroll},p=function(){w.queue=0},g=function(e){var t=1<arguments.length&&void 0!==arguments[1]&&arguments[1];if(a(e)){var l=e.style.overflowY;t?f()||(e.style.overflowY=e.getAttribute("data-scroll-lock-saved-overflow-y-property")):e.style.overflowY="scroll";var r=A(e);return e.style.overflowY=l,r}return 0},A=function(e){if(a(e)){if(e===document.body){var t=document.documentElement.clientWidth;return window.innerWidth-t}var l=e.style.borderLeftWidth,r=e.style.borderRightWidth;e.style.borderLeftWidth="0px",e.style.borderRightWidth="0px";var o=e.offsetWidth-e.clientWidth;return e.style.borderLeftWidth=l,e.style.borderRightWidth=r,o}return 0},G=function(){var e=0<arguments.length&&void 0!==arguments[0]&&arguments[0];return g(document.body,e)},T=function(){return A(document.body)},L=function(e){e&&r(e).map(function(e){o(e,function(e){a(e)?e.setAttribute("data-scroll-lock-scrollable",""):n('"'.concat(e,'" is not a Element.'))})})},W=function(e){e&&r(e).map(function(e){o(e,function(e){a(e)?e.removeAttribute("data-scroll-lock-scrollable"):n('"'.concat(e,'" is not a Element.'))})})},x=function(e){e&&r(e).map(function(e){w.scrollableSelectors.push(e)})},F=function(e){e&&r(e).map(function(t){w.scrollableSelectors=w.scrollableSelectors.filter(function(e){return e!==t})})},Y=function(e){e&&(r(e).map(function(e){o(e,function(e){a(e)?e.setAttribute("data-scroll-lock-lockable",""):n('"'.concat(e,'" is not a Element.'))})}),f()||B())},E=function(e){e&&(r(e).map(function(e){w.lockableSelectors.push(e)}),f()||B(),q(e))},O=function(e){if(e)if(-1!==u.indexOf(e))w.fillGapMethod=e,N();else{var t=u.join(", ");n('"'.concat(e,'" method is not available!\nAvailable fill gap methods: ').concat(t,"."))}},P=function(e){e&&r(e).map(function(e){o(e,function(e){a(e)?(e.setAttribute("data-scroll-lock-fill-gap",""),w.scroll||H(e)):n('"'.concat(e,'" is not a Element.'))})})},j=function(e){e&&r(e).map(function(e){o(e,function(e){a(e)?(e.removeAttribute("data-scroll-lock-fill-gap"),w.scroll||I(e)):n('"'.concat(e,'" is not a Element.'))})})},q=function(e){e&&r(e).map(function(e){-1===w.fillGapSelectors.indexOf(e)&&(w.fillGapSelectors.push(e),w.scroll||D(e))})},M=function(e){e&&r(e).map(function(t){w.fillGapSelectors=w.fillGapSelectors.filter(function(e){return e!==t}),w.scroll||z(t)})},N=function(){w.scroll||X()},B=function(){var e=b(w.lockableSelectors);K(e)},C=function(){var e=b(w.lockableSelectors);R(e)},K=function(e){var t=document.querySelectorAll(e);o(t,function(e){U(e)})},R=function(e){var t=document.querySelectorAll(e);o(t,function(e){_(e)})},U=function(e){if(a(e)&&"true"!==e.getAttribute("data-scroll-lock-locked")){var t=window.getComputedStyle(e);e.setAttribute("data-scroll-lock-saved-overflow-y-property",t.overflowY),e.setAttribute("data-scroll-lock-saved-inline-overflow-property",e.style.overflow),e.setAttribute("data-scroll-lock-saved-inline-overflow-y-property",e.style.overflowY),e.style.overflow="hidden",e.setAttribute("data-scroll-lock-locked","true")}},_=function(e){a(e)&&"true"===e.getAttribute("data-scroll-lock-locked")&&(e.style.overflow=e.getAttribute("data-scroll-lock-saved-inline-overflow-property"),e.style.overflowY=e.getAttribute("data-scroll-lock-saved-inline-overflow-y-property"),e.removeAttribute("data-scroll-lock-saved-overflow-property"),e.removeAttribute("data-scroll-lock-saved-inline-overflow-property"),e.removeAttribute("data-scroll-lock-saved-inline-overflow-y-property"),e.removeAttribute("data-scroll-lock-locked"))},X=function(){w.fillGapSelectors.map(function(e){D(e)})},Q=function(){w.fillGapSelectors.map(function(e){z(e)})},D=function(e){var t=document.querySelectorAll(e),l=-1!==w.lockableSelectors.indexOf(e);o(t,function(e){H(e,l)})},H=function(e){var t=1<arguments.length&&void 0!==arguments[1]&&arguments[1];if(a(e)){var l;if(""===e.getAttribute("data-scroll-lock-lockable")||t)l=g(e,!0);else{var r=h(e,b(w.lockableSelectors));l=g(r,!0)}"true"===e.getAttribute("data-scroll-lock-filled-gap")&&I(e);var o=window.getComputedStyle(e);if(e.setAttribute("data-scroll-lock-filled-gap","true"),e.setAttribute("data-scroll-lock-current-fill-gap-method",w.fillGapMethod),"margin"===w.fillGapMethod){var n=parseFloat(o.marginRight);e.style.marginRight="".concat(n+l,"px")}else if("width"===w.fillGapMethod)e.style.width="calc(100% - ".concat(l,"px)");else if("max-width"===w.fillGapMethod)e.style.maxWidth="calc(100% - ".concat(l,"px)");else if("padding"===w.fillGapMethod){var c=parseFloat(o.paddingRight);e.style.paddingRight="".concat(c+l,"px")}}},z=function(e){var t=document.querySelectorAll(e);o(t,function(e){I(e)})},I=function(e){if(a(e)&&"true"===e.getAttribute("data-scroll-lock-filled-gap")){var t=e.getAttribute("data-scroll-lock-current-fill-gap-method");e.removeAttribute("data-scroll-lock-filled-gap"),e.removeAttribute("data-scroll-lock-current-fill-gap-method"),"margin"===t?e.style.marginRight="":"width"===t?e.style.width="":"max-width"===t?e.style.maxWidth="":"padding"===t&&(e.style.paddingRight="")}};"undefined"!=typeof window&&window.addEventListener("resize",function(e){N()}),"undefined"!=typeof document&&(document.addEventListener("touchstart",function(e){w.scroll||(w.startTouchY=e.touches[0].clientY,w.startTouchX=e.touches[0].clientX)}),document.addEventListener("touchmove",function(n){if(!w.scroll){var e=w.startTouchY,t=w.startTouchX,l=n.touches[0].clientY,r=n.touches[0].clientX;if(n.touches.length<2){var c=b(w.scrollableSelectors),a=e<l,i=l<e,u=t<r,d=r<t,s=e+3<l,f=l<e-3,p=t+3<r,g=r<t-3;!function e(t){var l=1<arguments.length&&void 0!==arguments[1]&&arguments[1];if(t){var r=h(t,c,!1);if(v(t,'input[type="range"]'))return!1;if(l||v(t,'textarea, [contenteditable="true"]')&&h(t,c)||v(t,c)){var o=!1;y(t)&&k(t)?(a&&m(t)||i&&S(t))&&(o=!0):m(t)&&S(t)?(u&&y(t)||d&&k(t))&&(o=!0):(s&&m(t)||f&&S(t)||p&&y(t)||g&&k(t))&&(o=!0),o&&(r?e(r,!0):n.cancelable&&n.preventDefault())}else e(r)}else n.cancelable&&n.preventDefault()}(n.target)}}},{passive:!1}),document.addEventListener("touchend",function(e){w.scroll||(w.startTouchY=0,w.startTouchX=0)}));var J={hide:function(e){n('"hide" is deprecated! Use "disablePageScroll" instead. \n https://github.com/FL3NKEY/scroll-lock#disablepagescrollscrollabletarget'),d(e)},show:function(e){n('"show" is deprecated! Use "enablePageScroll" instead. \n https://github.com/FL3NKEY/scroll-lock#enablepagescrollscrollabletarget'),s(e)},toggle:function(e){n('"toggle" is deprecated! Do not use it.'),f()?d():s(e)},getState:function(){return n('"getState" is deprecated! Use "getScrollState" instead. \n https://github.com/FL3NKEY/scroll-lock#getscrollstate'),f()},getWidth:function(){return n('"getWidth" is deprecated! Use "getPageScrollBarWidth" instead. \n https://github.com/FL3NKEY/scroll-lock#getpagescrollbarwidth'),G()},getCurrentWidth:function(){return n('"getCurrentWidth" is deprecated! Use "getCurrentPageScrollBarWidth" instead. \n https://github.com/FL3NKEY/scroll-lock#getcurrentpagescrollbarwidth'),T()},setScrollableTargets:function(e){n('"setScrollableTargets" is deprecated! Use "addScrollableTarget" instead. \n https://github.com/FL3NKEY/scroll-lock#addscrollabletargetscrollabletarget'),L(e)},setFillGapSelectors:function(e){n('"setFillGapSelectors" is deprecated! Use "addFillGapSelector" instead. \n https://github.com/FL3NKEY/scroll-lock#addfillgapselectorfillgapselector'),q(e)},setFillGapTargets:function(e){n('"setFillGapTargets" is deprecated! Use "addFillGapTarget" instead. \n https://github.com/FL3NKEY/scroll-lock#addfillgaptargetfillgaptarget'),P(e)},clearQueue:function(){n('"clearQueue" is deprecated! Use "clearQueueScrollLocks" instead. \n https://github.com/FL3NKEY/scroll-lock#clearqueuescrolllocks'),p()}},V=function(o){for(var e=1;e<arguments.length;e++){var n=null!=arguments[e]?arguments[e]:{},t=Object.keys(n);"function"==typeof Object.getOwnPropertySymbols&&(t=t.concat(Object.getOwnPropertySymbols(n).filter(function(e){return Object.getOwnPropertyDescriptor(n,e).enumerable}))),t.forEach(function(e){var t,l,r;t=o,r=n[l=e],l in t?Object.defineProperty(t,l,{value:r,enumerable:!0,configurable:!0,writable:!0}):t[l]=r})}return o}({disablePageScroll:d,enablePageScroll:s,getScrollState:f,clearQueueScrollLocks:p,getTargetScrollBarWidth:g,getCurrentTargetScrollBarWidth:A,getPageScrollBarWidth:G,getCurrentPageScrollBarWidth:T,addScrollableSelector:x,removeScrollableSelector:F,addScrollableTarget:L,removeScrollableTarget:W,addLockableSelector:E,addLockableTarget:Y,addFillGapSelector:q,removeFillGapSelector:M,addFillGapTarget:P,removeFillGapTarget:j,setFillGapMethod:O,refillGaps:N,_state:w},J);t.default=V}]).default});
 /*
  * @license
  *
@@ -4514,7 +4513,7 @@ var frame = {
 
 	_dom: {
 		/**
-   * Hidden image element with thumb variant of current picture used
+   * Hidden image element with thumb variant of current image used
    * as a source for blurring.
    * @type {?HTMLImageElement}
    */
@@ -4568,7 +4567,7 @@ frame.stop = function () {
 frame.initAndStart = function () {
 	lychee.setMode("frame");
 	if (frame._dom.bgImage === null) {
-		frame._dom.bgImage = document.getElementById("background");
+		frame._dom.bgImage = document.getElementById("lychee_frame_bg_image");
 		frame._dom.bgImage.addEventListener("load", function () {
 			// After a new background image has been loaded, draw a blurry
 			// version on the canvas.
@@ -4580,17 +4579,17 @@ frame.initAndStart = function () {
 		});
 	}
 	if (frame._dom.canvas === null) {
-		frame._dom.canvas = document.getElementById("background_canvas");
+		frame._dom.canvas = document.getElementById("lychee_frame_bg_canvas");
 	}
 	if (frame._dom.image === null) {
-		frame._dom.image = document.getElementById("picture");
+		frame._dom.image = document.getElementById("lychee_frame_image");
 		frame._dom.image.addEventListener("load", function () {
 			// After a new image has been loaded, open the shutter
 			frame._dom.shutter.classList.add("opened");
 		});
 	}
 	if (frame._dom.shutter === null) {
-		frame._dom.shutter = document.getElementById("frame-shutter");
+		frame._dom.shutter = document.getElementById("lychee_frame_shutter");
 	}
 
 	// We also must call the very first invocation of `runPhotoLoop`
@@ -4603,61 +4602,28 @@ frame.initAndStart = function () {
 };
 
 /**
- * Repeatedly loads random photos by calling {@link frame.loadRandomPhoto}
- * every {@link lychee.mod_frame_refresh} interval forever unless an error
- * occurs.
+ * Repeatedly loads random photos every {@link lychee.mod_frame_refresh}
+ * interval.
  *
- * The method stops loading photos upon an error or when {@link frame.stop}
- * is called.
+ * The method stops loading photos when {@link frame.stop} is called.
  *
  * @returns {void}
  */
 frame.runPhotoLoop = function () {
 	/**
-  * Recalls this method after the refresh timeout unless the loop
-  * hasn't been stopped in the meantime.
+  * Forwards loaded photo to handler and recalls this method after the
+  * refresh timeout unless the loop hasn't been stopped in the meantime.
   *
+  * @param {Photo} data
   * @returns {void}
   */
-	var onSuccess = function onSuccess() {
+	var onSuccess = function onSuccess(data) {
+		frame.onRandomPhotoLoaded(data);
 		if (frame.nextTimeOutId !== 0) {
 			frame.nextTimeOutId = setTimeout(function () {
 				return frame.runPhotoLoop();
 			}, 1000 * lychee.mod_frame_refresh);
 		}
-	};
-
-	/**
-  * Shows the error prominently and stops the loop.
-  *
-  * This is the old error handler when the frame mode was independently
-  * implemented of the remaining frontend.
-  * Historically, any error was shown in a browser-provided alert box,
-  * because the native Lychee error was not available in frame mode.
-  * Currently, no error is shown at all as it was decided that an
-  * alert box which needs to be clicked away manually is not a good
-  * solution for the frame mode.
-  * When the box model will have been revamped, i.e. after
-  * https://github.com/LycheeOrg/Lychee-front/pull/335
-  * will have been merged, then this error handler will become irrelevant
-  * as we can then use the normal Lychee error handler and error bar.
-  * In other words, this whole method will become obsolete.
-  * TODO: Remove this method after https://github.com/LycheeOrg/Lychee-front/pull/335
-  *
-  * @param {XMLHttpRequest} jqXHR
-  * @param {Object} params
-  * @param {?LycheeException} lycheeException
-  *
-  * @returns {boolean}
-  */
-	var onError = function onError(jqXHR, params, lycheeException) {
-		var msg = jqXHR.statusText + (lycheeException ? " - " + lycheeException.message : "");
-		console.error("The server returned an error response", {
-			description: msg,
-			params: params,
-			response: lycheeException
-		});
-		return true;
 	};
 
 	// Closes the shutter and loads a new, random photo after that.
@@ -4669,7 +4635,7 @@ frame.runPhotoLoop = function () {
 	// meantime
 	if (frame.nextTimeOutId !== 0) {
 		frame.nextTimeOutId = setTimeout(function () {
-			return frame.loadRandomPhoto(onSuccess, onError);
+			return api.post("Photo::getRandom", {}, onSuccess);
 		}, 1000);
 	}
 };
@@ -4697,7 +4663,8 @@ frame.loadRandomPhoto = function (successCallback, errorCallback) {
 /**
  * Displays the given photo in the central image area of the frame mode.
  *
- * This method is called by {@link frame.loadRandomPhoto} on success.
+ * This method is called by {@link frame.runPhotoLoop} for each successfully
+ * loaded, random photo.
  *
  * @param {Photo} photo
  *
@@ -4722,7 +4689,7 @@ frame.onRandomPhotoLoaded = function (photo) {
  */
 frame.resize = function () {
 	if (frame.photo && frame._dom.image) {
-		var ratio = this.photo.size_variants.original.height > 0 ? this.photo.size_variants.original.width / this.photo.size_variants.original.height : 1;
+		var ratio = frame.photo.size_variants.original.height > 0 ? frame.photo.size_variants.original.width / frame.photo.size_variants.original.height : 1;
 		// Our math assumes that the image occupies the whole frame.  That's
 		// not quite the case (the default css sets it to 95%) but it's close
 		// enough.
@@ -4741,7 +4708,7 @@ frame.resize = function () {
  * @property {jQuery} _dom
  */
 var header = {
-	_dom: $(".header")
+	_dom: $("#lychee_toolbar_container")
 };
 
 /**
@@ -4789,7 +4756,10 @@ header.bind = function () {
 
 	header.dom("#button_signin").on(eventName, lychee.loginDialog);
 	header.dom("#button_settings").on(eventName, function (e) {
-		if ($(".leftMenu").css("display") === "none") {
+		// Querying the CSS of an element is highly inefficient.
+		// Instead, we should use the same media query here as in the CSS.
+		// TODO: Fix this.
+		if ($("#lychee_left_menu_container").css("display") === "none") {
 			// left menu disabled on small screens
 			contextMenu.config(e);
 		} else {
@@ -4901,11 +4871,9 @@ header.bind_back = function () {
  */
 header.show = function () {
 	lychee.imageview.removeClass("full");
-	header.dom().removeClass("header--hidden");
+	header.dom().removeClass("hidden");
 
 	tabindex.restoreSettings(header.dom());
-
-	_photo3.updateSizeLivePhotoDuringAnimation();
 };
 
 /**
@@ -4925,9 +4893,7 @@ header.hide = function () {
 		tabindex.makeUnfocusable(header.dom());
 
 		lychee.imageview.addClass("full");
-		header.dom().addClass("header--hidden");
-
-		_photo3.updateSizeLivePhotoDuringAnimation();
+		header.dom().addClass("hidden");
 	}
 };
 
@@ -4965,29 +4931,28 @@ header.setMode = function (mode) {
 
 	switch (mode) {
 		case "public":
-			header.dom().removeClass("header--view");
-			header.dom(".header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map, .header__toolbar--config").removeClass("header__toolbar--visible");
-			header.dom(".header__toolbar--public").addClass("header__toolbar--visible");
-			tabindex.makeFocusable(header.dom(".header__toolbar--public"));
-			tabindex.makeUnfocusable(header.dom(".header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map, .header__toolbar--config"));
+			header.dom(".toolbar").removeClass("visible");
+			header.dom("#lychee_toolbar_public").addClass("visible");
+			tabindex.makeUnfocusable(header.dom(".toolbar"));
+			tabindex.makeFocusable(header.dom("#lychee_toolbar_public"));
 
 			if (lychee.public_search) {
-				var e = $(".header__search, .header__clear", ".header__toolbar--public");
+				var e = $(".header__search, .header__clear", "#lychee_toolbar_public");
 				e.show();
 				tabindex.makeFocusable(e);
 			} else {
-				var _e2 = $(".header__search, .header__clear", ".header__toolbar--public");
+				var _e2 = $(".header__search, .header__clear", "#lychee_toolbar_public");
 				_e2.hide();
 				tabindex.makeUnfocusable(_e2);
 			}
 
 			// Set icon in Public mode
 			if (lychee.map_display_public) {
-				var _e3 = $(".button--map-albums", ".header__toolbar--public");
+				var _e3 = $(".button--map-albums", "#lychee_toolbar_public");
 				_e3.show();
 				tabindex.makeFocusable(_e3);
 			} else {
-				var _e4 = $(".button--map-albums", ".header__toolbar--public");
+				var _e4 = $(".button--map-albums", "#lychee_toolbar_public");
 				_e4.hide();
 				tabindex.makeUnfocusable(_e4);
 			}
@@ -4999,30 +4964,28 @@ header.setMode = function (mode) {
 			return;
 
 		case "albums":
-			header.dom().removeClass("header--view");
-			header.dom(".header__toolbar--public, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map, .header__toolbar--config").removeClass("header__toolbar--visible");
-			header.dom(".header__toolbar--albums").addClass("header__toolbar--visible");
-
-			tabindex.makeFocusable(header.dom(".header__toolbar--albums"));
-			tabindex.makeUnfocusable(header.dom(".header__toolbar--public, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map, .header__toolbar--config"));
+			header.dom(".toolbar").removeClass("visible");
+			header.dom("#lychee_toolbar_albums").addClass("visible");
+			tabindex.makeUnfocusable(header.dom(".toolbar"));
+			tabindex.makeFocusable(header.dom("#lychee_toolbar_albums"));
 
 			// If map is disabled, we should hide the icon
 			if (lychee.map_display) {
-				var _e5 = $(".button--map-albums", ".header__toolbar--albums");
+				var _e5 = $(".button--map-albums", "#lychee_toolbar_albums");
 				_e5.show();
 				tabindex.makeFocusable(_e5);
 			} else {
-				var _e6 = $(".button--map-albums", ".header__toolbar--albums");
+				var _e6 = $(".button--map-albums", "#lychee_toolbar_albums");
 				_e6.hide();
 				tabindex.makeUnfocusable(_e6);
 			}
 
 			if (lychee.enable_button_add && lychee.rights.may_upload) {
-				var _e7 = $(".button_add", ".header__toolbar--albums");
+				var _e7 = $(".button_add", "#lychee_toolbar_albums");
 				_e7.show();
 				tabindex.makeFocusable(_e7);
 			} else {
-				var _e8 = $(".button_add", ".header__toolbar--albums");
+				var _e8 = $(".button_add", "#lychee_toolbar_albums");
 				_e8.remove();
 			}
 
@@ -5031,12 +4994,10 @@ header.setMode = function (mode) {
 		case "album":
 			var albumID = album.getID();
 
-			header.dom().removeClass("header--view");
-			header.dom(".header__toolbar--public, .header__toolbar--albums, .header__toolbar--photo, .header__toolbar--map, .header__toolbar--config").removeClass("header__toolbar--visible");
-			header.dom(".header__toolbar--album").addClass("header__toolbar--visible");
-
-			tabindex.makeFocusable(header.dom(".header__toolbar--album"));
-			tabindex.makeUnfocusable(header.dom(".header__toolbar--public, .header__toolbar--albums, .header__toolbar--photo, .header__toolbar--map, .header__toolbar--config"));
+			header.dom(".toolbar").removeClass("visible");
+			header.dom("#lychee_toolbar_album").addClass("visible");
+			tabindex.makeUnfocusable(header.dom(".toolbar"));
+			tabindex.makeFocusable(header.dom("#lychee_toolbar_album"));
 
 			// Hide download button when album empty or we are not allowed to
 			// upload to it and it's not explicitly marked as downloadable.
@@ -5078,26 +5039,26 @@ header.setMode = function (mode) {
 			if (albumID === SmartAlbumID.STARRED || albumID === SmartAlbumID.PUBLIC || albumID === SmartAlbumID.RECENT) {
 				$("#button_nsfw_album, #button_info_album, #button_trash_album, #button_visibility_album, #button_sharing_album_users, #button_move_album").hide();
 				if (album.isUploadable()) {
-					$(".button_add, .header__divider", ".header__toolbar--album").show();
-					tabindex.makeFocusable($(".button_add, .header__divider", ".header__toolbar--album"));
+					$(".button_add, .header__divider", "#lychee_toolbar_album").show();
+					tabindex.makeFocusable($(".button_add, .header__divider", "#lychee_toolbar_album"));
 				} else {
-					$(".button_add, .header__divider", ".header__toolbar--album").hide();
-					tabindex.makeUnfocusable($(".button_add, .header__divider", ".header__toolbar--album"));
+					$(".button_add, .header__divider", "#lychee_toolbar_album").hide();
+					tabindex.makeUnfocusable($(".button_add, .header__divider", "#lychee_toolbar_album"));
 				}
 				tabindex.makeUnfocusable($("#button_nsfw_album, #button_info_album, #button_trash_album, #button_visibility_album, #button_sharing_album_users, #button_move_album"));
 			} else if (albumID === SmartAlbumID.UNSORTED) {
 				$("#button_nsfw_album, #button_info_album, #button_visibility_album, #button_sharing_album_users, #button_move_album").hide();
-				$("#button_trash_album, .button_add, .header__divider", ".header__toolbar--album").show();
-				tabindex.makeFocusable($("#button_trash_album, .button_add, .header__divider", ".header__toolbar--album"));
+				$("#button_trash_album, .button_add, .header__divider", "#lychee_toolbar_album").show();
+				tabindex.makeFocusable($("#button_trash_album, .button_add, .header__divider", "#lychee_toolbar_album"));
 				tabindex.makeUnfocusable($("#button_nsfw_album, #button_info_album, #button_visibility_album, #button_sharing_album_users, #button_move_album"));
 			} else if (album.isTagAlbum()) {
 				$("#button_info_album").show();
 				if (_sidebar.keepSidebarVisible() && !visible.sidebar()) _sidebar.toggle(false);
 				$("#button_move_album").hide();
-				$(".button_add, .header__divider", ".header__toolbar--album").hide();
+				$(".button_add, .header__divider", "#lychee_toolbar_album").hide();
 				tabindex.makeFocusable($("#button_info_album"));
 				tabindex.makeUnfocusable($("#button_move_album"));
-				tabindex.makeUnfocusable($(".button_add, .header__divider", ".header__toolbar--album"));
+				tabindex.makeUnfocusable($(".button_add, .header__divider", "#lychee_toolbar_album"));
 				if (album.isUploadable()) {
 					$("#button_nsfw_album, #button_visibility_album, #button_sharing_album_users, #button_trash_album").show();
 					tabindex.makeFocusable($("#button_nsfw_album, #button_visibility_album, #button_sharing_album_users, #button_trash_album"));
@@ -5105,8 +5066,8 @@ header.setMode = function (mode) {
 						// This can happen with narrow screens.  In that
 						// case we re-enable the add button which will
 						// contain the overflow items.
-						$(".button_add, .header__divider", ".header__toolbar--album").show();
-						tabindex.makeFocusable($(".button_add, .header__divider", ".header__toolbar--album"));
+						$(".button_add, .header__divider", "#lychee_toolbar_album").show();
+						tabindex.makeFocusable($(".button_add, .header__divider", "#lychee_toolbar_album"));
 					}
 				} else {
 					$("#button_nsfw_album, #button_visibility_album, #button_sharing_album_users, #button_trash_album").hide();
@@ -5117,171 +5078,170 @@ header.setMode = function (mode) {
 				if (_sidebar.keepSidebarVisible() && !visible.sidebar()) _sidebar.toggle(false);
 				tabindex.makeFocusable($("#button_info_album"));
 				if (album.isUploadable()) {
-					$("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, #button_sharing_album_users, .button_add, .header__divider", ".header__toolbar--album").show();
-					tabindex.makeFocusable($("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, #button_sharing_album_users, .button_add, .header__divider", ".header__toolbar--album"));
+					$("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, #button_sharing_album_users, .button_add, .header__divider", "#lychee_toolbar_album").show();
+					tabindex.makeFocusable($("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, #button_sharing_album_users, .button_add, .header__divider", "#lychee_toolbar_album"));
 				} else {
-					$("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, #button_sharing_album_users, .button_add, .header__divider", ".header__toolbar--album").hide();
-					tabindex.makeUnfocusable($("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, #button_sharing_album_users, .button_add, .header__divider", ".header__toolbar--album"));
+					$("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, #button_sharing_album_users, .button_add, .header__divider", "#lychee_toolbar_album").hide();
+					tabindex.makeUnfocusable($("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, #button_sharing_album_users, .button_add, .header__divider", "#lychee_toolbar_album"));
 				}
 			}
 
 			// Remove buttons if needed
 			if (!lychee.enable_button_visibility) {
-				var _e15 = $("#button_visibility_album", "#button_sharing_album_users", ".header__toolbar--album");
+				var _e15 = $("#button_visibility_album", "#button_sharing_album_users", "#lychee_toolbar_album");
 				_e15.remove();
 			}
 			if (!lychee.enable_button_share) {
-				var _e16 = $("#button_share_album", ".header__toolbar--album");
+				var _e16 = $("#button_share_album", "#lychee_toolbar_album");
 				_e16.remove();
 			}
 			if (!lychee.enable_button_archive) {
-				var _e17 = $("#button_archive", ".header__toolbar--album");
+				var _e17 = $("#button_archive", "#lychee_toolbar_album");
 				_e17.remove();
 			}
 			if (!lychee.enable_button_move) {
-				var _e18 = $("#button_move_album", ".header__toolbar--album");
+				var _e18 = $("#button_move_album", "#lychee_toolbar_album");
 				_e18.remove();
 			}
 			if (!lychee.enable_button_trash) {
-				var _e19 = $("#button_trash_album", ".header__toolbar--album");
+				var _e19 = $("#button_trash_album", "#lychee_toolbar_album");
 				_e19.remove();
 			}
 			if (!lychee.enable_button_fullscreen || !lychee.fullscreenAvailable()) {
-				var _e20 = $("#button_fs_album_enter", ".header__toolbar--album");
+				var _e20 = $("#button_fs_album_enter", "#lychee_toolbar_album");
 				_e20.remove();
 			}
 			if (!lychee.enable_button_add) {
-				var _e21 = $(".button_add", ".header__toolbar--album");
+				var _e21 = $(".button_add", "#lychee_toolbar_album");
 				_e21.remove();
 			}
 
 			return;
 
 		case "photo":
-			header.dom().addClass("header--view");
-			header.dom(".header__toolbar--public, .header__toolbar--albums, .header__toolbar--album, .header__toolbar--map, .header__toolbar--config").removeClass("header__toolbar--visible");
-			header.dom(".header__toolbar--photo").addClass("header__toolbar--visible");
-
-			tabindex.makeFocusable(header.dom(".header__toolbar--photo"));
-			tabindex.makeUnfocusable(header.dom(".header__toolbar--public, .header__toolbar--albums, .header__toolbar--album, .header__toolbar--map, .header__toolbar--config"));
-
-			// Editorial notes:
-			//  a) Keep the order of buttons as defined in the HTML
-			//  b) Only manipulate each button at most once
-			// Otherwise, the code will become completely unmaintainable.
-
-			// These conditions are highly fragile.
-			// The code which stars/unstars a photo assumes that the album
-			// of the photo is loaded, because that code internally uses
-			// `album.getPhotoId`.
-			// (Note, this is surely an error of its own.)
-			// If one attempts to star/unstar a photo and the corresponding
-			// album is not loaded, the code throws an exception.
-			// "By accident" it is safe to assume that the corresponding album
-			// is always loaded if we are not in public mode and the album is
-			// uploadable.
-			// Hence, it is (fortunately) safe to show the button in this case.
-			if (album.isUploadable()) {
-				var _e22 = $("#button_star");
+			header.dom(".toolbar").removeClass("visible");
+			header.dom("#lychee_toolbar_photo").addClass("visible");
+			tabindex.makeUnfocusable(header.dom(".toolbar"));
+			tabindex.makeFocusable(header.dom("#lychee_toolbar_photo"));
+			// If map is disabled, we should hide the icon
+			if (lychee.publicMode === true ? lychee.map_display_public : lychee.map_display) {
+				var _e22 = $("#button_map");
 				_e22.show();
+				tabindex.makeFocusable(_e22);
 			} else {
-				var _e23 = $("#button_star");
+				var _e23 = $("#button_map");
 				_e23.hide();
+				tabindex.makeUnfocusable(_e23);
 			}
 
-			if (lychee.enable_button_visibility && album.isUploadable()) {
-				var _e24 = $("#button_visibility");
+			if (lychee.enable_button_move && album.isUploadable()) {
+				var _e24 = $("#button_move");
 				_e24.show();
 				tabindex.makeFocusable(_e24);
 			} else {
-				var _e25 = $("#button_visibility");
+				var _e25 = $("#button_move");
 				_e25.hide();
 				tabindex.makeUnfocusable(_e25);
 			}
 
-			if (lychee.enable_button_rotate && album.isUploadable()) {
-				var _e26 = $("#button_rotate_cwise, #button_rotate_ccwise");
+			if (lychee.enable_button_trash && album.isUploadable()) {
+				var _e26 = $("#button_trash");
 				_e26.show();
 				tabindex.makeFocusable(_e26);
 			} else {
-				var _e27 = $("#button_rotate_cwise, #button_rotate_ccwise");
+				var _e27 = $("#button_trash");
 				_e27.hide();
 				tabindex.makeUnfocusable(_e27);
 			}
 
-			if (lychee.enable_button_share && _photo3.json && _photo3.json.is_share_button_visible) {
-				var _e28 = $("#button_share");
-				_e28.show();
-				tabindex.makeFocusable(_e28);
-			} else {
-				var _e29 = $("#button_share");
-				_e29.hide();
-				tabindex.makeUnfocusable(_e29);
-			}
-
-			if (lychee.publicMode === true ? lychee.map_display_public : lychee.map_display) {
-				var _e30 = $("#button_map");
-				_e30.show();
-				tabindex.makeFocusable(_e30);
-			} else {
-				var _e31 = $("#button_map");
-				_e31.hide();
-				tabindex.makeUnfocusable(_e31);
-			}
-
-			if (lychee.enable_button_move && album.isUploadable()) {
-				var _e32 = $("#button_move");
-				_e32.show();
-				tabindex.makeFocusable(_e32);
-			} else {
-				var _e33 = $("#button_move");
-				_e33.hide();
-				tabindex.makeUnfocusable(_e33);
-			}
-
-			if (lychee.enable_button_trash && album.isUploadable()) {
-				var _e34 = $("#button_trash");
-				_e34.show();
-				tabindex.makeFocusable(_e34);
-			} else {
-				var _e35 = $("#button_trash");
-				_e35.hide();
-				tabindex.makeUnfocusable(_e35);
-			}
-
 			if (lychee.enable_button_fullscreen && lychee.fullscreenAvailable()) {
-				var _e36 = $("#button_fs_enter");
-				_e36.show();
+				var _e28 = $("#button_fs_enter");
+				_e28.show();
 			} else {
-				var _e37 = $("#button_fs_enter");
-				_e37.hide();
+				var _e29 = $("#button_fs_enter");
+				_e29.hide();
 			}
 
 			// Hide More menu if
 			// - empty (see contextMenu.photoMore)
 			// - not enabled
 			if (!(album.isUploadable() || (_photo3.json.hasOwnProperty("is_downloadable") ? _photo3.json.is_downloadable : album.json && album.json.is_downloadable)) && !(_photo3.json.size_variants.original.url && _photo3.json.size_variants.original.url !== "") || !lychee.enable_button_more) {
-				var _e38 = $("#button_more");
-				_e38.hide();
-				tabindex.makeUnfocusable(_e38);
+				buttonMore.hide();
+				tabindex.makeUnfocusable(buttonMore);
 			} else {
-				var _e39 = $("#button_more");
+				buttonMore.show();
+				tabindex.makeFocusable(buttonMore);
+			}
+
+			// Hide buttons if needed
+			if (lychee.publicMode) {
+				var _e30 = $("#button_star", "#lychee_toolbar_photo");
+				_e30.hide();
+				tabindex.makeUnfocusable(_e30);
+			} else {
+				var _e31 = $("#button_star", "#lychee_toolbar_photo");
+				_e31.show();
+			}
+
+			if (!lychee.enable_button_visibility || lychee.publicMode) {
+				var _e32 = $("#button_visibility", "#lychee_toolbar_photo");
+				_e32.hide();
+			} else {
+				var _e33 = $("#button_visibility", "#lychee_toolbar_photo");
+				_e33.show();
+			}
+			if (!lychee.enable_button_share) {
+				var _e34 = $("#button_share", "#lychee_toolbar_photo");
+				_e34.hide();
+			} else {
+				var _e35 = $("#button_share", "#lychee_toolbar_photo");
+				_e35.show();
+			}
+			if (!lychee.enable_button_move || lychee.publicMode) {
+				var _e36 = $("#button_move", "#lychee_toolbar_photo");
+				_e36.hide();
+			} else {
+				var _e37 = $("#button_move", "#lychee_toolbar_photo");
+				_e37.show();
+			}
+			if (!lychee.enable_button_trash || lychee.publicMode) {
+				var _e38 = $("#button_trash", "#lychee_toolbar_photo");
+				_e38.hide();
+			} else {
+				var _e39 = $("#button_trash", "#lychee_toolbar_photo");
 				_e39.show();
-				tabindex.makeFocusable(_e39);
+			}
+			if (!lychee.enable_button_fullscreen || !lychee.fullscreenAvailable() || lychee.publicMode) {
+				var _e40 = $("#button_fs_enter", "#lychee_toolbar_photo");
+				_e40.hide();
+			} else {
+				var _e41 = $("#button_fs_enter", "#lychee_toolbar_photo");
+				_e41.show();
+			}
+			if (!lychee.enable_button_rotate || lychee.publicMode) {
+				var _e42 = $("#button_rotate_cwise", "#lychee_toolbar_photo");
+				_e42.hide();
+
+				_e42 = $("#button_rotate_ccwise", "#lychee_toolbar_photo");
+				_e42.hide();
+			} else {
+				var _e43 = $("#button_rotate_cwise", "#lychee_toolbar_photo");
+				_e43.show();
+
+				_e43 = $("#button_rotate_ccwise", "#lychee_toolbar_photo");
+				_e43.show();
+				tabindex.makeFocusable(_e43);
 			}
 			return;
 		case "map":
-			header.dom().removeClass("header--view");
-			header.dom(".header__toolbar--public, .header__toolbar--album, .header__toolbar--albums, .header__toolbar--photo, .header__toolbar--config").removeClass("header__toolbar--visible");
-			header.dom(".header__toolbar--map").addClass("header__toolbar--visible");
-
-			tabindex.makeFocusable(header.dom(".header__toolbar--map"));
-			tabindex.makeUnfocusable(header.dom(".header__toolbar--public, .header__toolbar--album, .header__toolbar--albums, .header__toolbar--photo, .header__toolbar--config"));
+			header.dom(".toolbar").removeClass("visible");
+			header.dom("#lychee_toolbar_map").addClass("visible");
+			tabindex.makeUnfocusable(header.dom(".toolbar"));
+			tabindex.makeFocusable(header.dom("#lychee_toolbar_map"));
 			return;
 		case "config":
-			header.dom().addClass("header--view");
-			header.dom(".header__toolbar--public, .header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map").removeClass("header__toolbar--visible");
-			header.dom(".header__toolbar--config").addClass("header__toolbar--visible");
+			header.dom(".toolbar").removeClass("visible");
+			header.dom("#lychee_toolbar_config").addClass("visible");
 			return;
 	}
 };
@@ -5633,10 +5593,9 @@ $(document).ready(function () {
 	$("#sensitive_warning").on("click", view.album.nsfw_warning.next);
 
 	/**
-  * @param {number} scrollPos
   * @returns {void}
   */
-	var rememberScrollPage = function rememberScrollPage(scrollPos) {
+	var rememberScrollPage = function rememberScrollPage() {
 		if (visible.albums() && !visible.search() || visible.album()) {
 			var urls = JSON.parse(localStorage.getItem("scroll"));
 			if (urls == null || urls.length < 1) {
@@ -5644,7 +5603,7 @@ $(document).ready(function () {
 			}
 
 			var urlWindow = window.location.href;
-			var urlScroll = scrollPos;
+			var urlScroll = $("#lychee_view_container").scrollTop();
 
 			urls[urlWindow] = urlScroll;
 
@@ -5656,17 +5615,13 @@ $(document).ready(function () {
 		}
 	};
 
-	$(window)
-	// resize
-	.on("resize", function () {
-		view.album.content.justify();
+	$(window).on("resize", function () {
 		if (visible.photo()) view.photo.onresize();
 		frame.resize();
-	})
-	// remember scroll positions
-	.on("scroll", function () {
-		var topScroll = $(window).scrollTop();
-		rememberScrollPage(topScroll);
+	});
+
+	$("#lychee_view_container").on("scroll", function () {
+		rememberScrollPage();
 	});
 
 	// Init
@@ -5682,7 +5637,7 @@ $(document).ready(function () {
  * @property {jQuery} _dom
  */
 var leftMenu = {
-	_dom: $(".leftMenu")
+	_dom: $("#lychee_left_menu_container")
 };
 
 /**
@@ -5710,7 +5665,7 @@ leftMenu.build = function () {
 	if (lychee.update_available) {
 		html += lychee.html(_templateObject30, build.iconic("timer"), lychee.locale["UPDATE_AVAILABLE"]);
 	}
-	leftMenu._dom.html(html);
+	leftMenu.dom("#lychee_left_menu").html(html);
 };
 
 /** Set the width of the side navigation to 250px and the left margin of the page content to 250px
@@ -5718,16 +5673,12 @@ leftMenu.build = function () {
  * @returns {void}
  */
 leftMenu.open = function () {
-	leftMenu._dom.addClass("leftMenu__visible");
-	lychee.content.addClass("leftMenu__open");
-	lychee.footer.addClass("leftMenu__open");
-	header.dom(".header__title").addClass("leftMenu__open");
-	loadingBar.dom().addClass("leftMenu__open");
+	leftMenu.dom().addClass("visible");
 
 	// Make background unfocusable
 	tabindex.makeUnfocusable(header.dom());
 	tabindex.makeUnfocusable(lychee.content);
-	tabindex.makeFocusable(leftMenu._dom);
+	tabindex.makeFocusable(leftMenu.dom());
 	$("#button_signout").focus();
 
 	multiselect.unbind();
@@ -5739,16 +5690,11 @@ leftMenu.open = function () {
  * @returns {void}
  */
 leftMenu.close = function () {
-	leftMenu._dom.removeClass("leftMenu__visible");
-	lychee.content.removeClass("leftMenu__open");
-	lychee.footer.removeClass("leftMenu__open");
-	$(".content").removeClass("leftMenu__open");
-	header.dom(".header__title").removeClass("leftMenu__open");
-	loadingBar.dom().removeClass("leftMenu__open");
+	leftMenu.dom().removeClass("visible");
 
 	tabindex.makeFocusable(header.dom());
 	tabindex.makeFocusable(lychee.content);
-	tabindex.makeUnfocusable(leftMenu._dom);
+	tabindex.makeUnfocusable(leftMenu.dom());
 
 	multiselect.bind();
 	lychee.load();
@@ -5832,7 +5778,7 @@ var loadingBar = {
 	/** @type {?string} */
 	status: null,
 	/** @type {jQuery} */
-	_dom: $("#loading")
+	_dom: $("#lychee_loading")
 };
 
 /**
@@ -5845,11 +5791,14 @@ loadingBar.dom = function (selector) {
 };
 
 /**
- * @param {?string} status the status, either `null`, `"error"` or `"success"`
- * @param {?string} errorText the error text to show
+ * @param {?string} [status=null] the status, either `null`, `"error"` or `"success"`
+ * @param {?string} [errorText=null] the error text to show
  * @returns {void}
  */
-loadingBar.show = function (status, errorText) {
+loadingBar.show = function () {
+	var status = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+	var errorText = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
 	if (status === "error") {
 		// Set status
 		loadingBar.status = "error";
@@ -5858,17 +5807,8 @@ loadingBar.show = function (status, errorText) {
 		if (errorText) errorText = errorText.replace("<br>", "");
 		if (!errorText) errorText = lychee.locale["ERROR_TEXT"];
 
-		// Move header down
-		if (visible.header()) header.dom().addClass("header--error");
-
-		// Also move down the dark background
-		if (basicModal.isVisible()) {
-			$(".basicModalContainer").addClass("basicModalContainer--error");
-			$(".basicModal").addClass("basicModal--error");
-		}
-
 		// Modify loading
-		loadingBar.dom().removeClass("loading uploading error success").html("<h1>" + lychee.locale["ERROR"] + (": <span>" + errorText + "</span></h1>")).addClass(status).show();
+		loadingBar.dom().removeClass().html("<h1>" + lychee.locale["ERROR"] + (": <span>" + errorText + "</span></h1>")).addClass(status);
 
 		// Set timeout
 		clearTimeout(loadingBar._timeout);
@@ -5887,17 +5827,8 @@ loadingBar.show = function (status, errorText) {
 		if (errorText) errorText = errorText.replace("<br>", "");
 		if (!errorText) errorText = lychee.locale["ERROR_TEXT"];
 
-		// Move header down
-		if (visible.header()) header.dom().addClass("header--error");
-
-		// Also move down the dark background
-		if (basicModal.isVisible()) {
-			$(".basicModalContainer").addClass("basicModalContainer--error");
-			$(".basicModal").addClass("basicModal--error");
-		}
-
 		// Modify loading
-		loadingBar.dom().removeClass("loading uploading error success").html("<h1>" + lychee.locale["SUCCESS"] + (": <span>" + errorText + "</span></h1>")).addClass(status).show();
+		loadingBar.dom().removeClass().html("<h1>" + lychee.locale["SUCCESS"] + (": <span>" + errorText + "</span></h1>")).addClass(status);
 
 		// Set timeout
 		clearTimeout(loadingBar._timeout);
@@ -5915,11 +5846,8 @@ loadingBar.show = function (status, errorText) {
 		// Set timeout
 		clearTimeout(loadingBar._timeout);
 		loadingBar._timeout = setTimeout(function () {
-			// Move header down
-			if (visible.header()) header.dom().addClass("header--loading");
-
 			// Modify loading
-			loadingBar.dom().removeClass("loading uploading error").html("").addClass("loading").show();
+			loadingBar.dom().removeClass().html("").addClass("loading");
 		}, 1000);
 	}
 };
@@ -5933,8 +5861,6 @@ loadingBar.hide = function (force) {
 		// Remove status
 		loadingBar.status = null;
 
-		// Move header up
-		header.dom().removeClass("header--error header--loading");
 		// Also move up the dark background
 		$(".basicModalContainer").removeClass("basicModalContainer--error");
 		$(".basicModal").removeClass("basicModal--error");
@@ -5942,7 +5868,7 @@ loadingBar.hide = function (force) {
 		// Set timeout
 		clearTimeout(loadingBar._timeout);
 		setTimeout(function () {
-			return loadingBar.dom().hide();
+			return loadingBar.dom().removeClass();
 		}, 300);
 	}
 };
@@ -6230,9 +6156,9 @@ var lychee = {
 	dropbox: false,
 	dropboxKey: "",
 
-	content: $(".content"),
+	content: $("#lychee_view_content"),
 	imageview: $("#imageview"),
-	footer: $("#footer"),
+	footer: $("#lychee_footer"),
 
 	/** @type {Locale} */
 	locale: {},
@@ -6302,8 +6228,6 @@ lychee.aboutDialog = function () {
  */
 lychee.init = function () {
 	var isFirstInitialization = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-
-	lychee.adjustContentHeight();
 
 	api.post("Session::init", {},
 	/** @param {InitializationData} data */
@@ -6418,7 +6342,7 @@ lychee.initHtmlHeader = function () {
  */
 lychee.localizeStaticGuiElements = function () {
 	// Toolbars in the header
-	var tbPublic = document.querySelector("div.header__toolbar--public");
+	var tbPublic = document.querySelector("div#lychee_toolbar_public");
 	tbPublic.querySelector("a#button_signin").title = lychee.locale["SIGN_IN"];
 	var tbPublicSearch = tbPublic.querySelector("input.header__search");
 	if (tbPublicSearch instanceof HTMLInputElement) {
@@ -6427,7 +6351,7 @@ lychee.localizeStaticGuiElements = function () {
 	}
 	tbPublic.querySelector("a.button--map-albums").title = lychee.locale["DISPLAY_FULL_MAP"];
 
-	var tbAlbums = document.querySelector("div.header__toolbar--albums");
+	var tbAlbums = document.querySelector("div#lychee_toolbar_albums");
 	tbAlbums.querySelector("a#button_settings").title = lychee.locale["SETTINGS"];
 	var tbAlbumsSearch = tbAlbums.querySelector("input.header__search");
 	if (tbAlbumsSearch instanceof HTMLInputElement) {
@@ -6437,7 +6361,7 @@ lychee.localizeStaticGuiElements = function () {
 	tbAlbums.querySelector("a.button--map-albums").title = lychee.locale["DISPLAY_FULL_MAP"];
 	tbAlbums.querySelector("a.button_add").title = lychee.locale["ADD"];
 
-	var tbAlbum = document.querySelector("div.header__toolbar--album");
+	var tbAlbum = document.querySelector("div#lychee_toolbar_album");
 	tbAlbum.querySelector("a#button_back_home").title = lychee.locale["CLOSE_ALBUM"];
 	tbAlbum.querySelector("a#button_visibility_album").title = lychee.locale["VISIBILITY_ALBUM"];
 	tbAlbum.querySelector("a#button_sharing_album_users").title = lychee.locale["SHARING_ALBUM_USERS"];
@@ -6452,7 +6376,7 @@ lychee.localizeStaticGuiElements = function () {
 	tbAlbum.querySelector("a#button_fs_album_exit").title = lychee.locale["FULLSCREEN_EXIT"];
 	tbAlbum.querySelector("a.button_add").title = lychee.locale["ADD"];
 
-	var tbPhoto = document.querySelector("div.header__toolbar--photo");
+	var tbPhoto = document.querySelector("div#lychee_toolbar_photo");
 	tbPhoto.querySelector("a#button_back").title = lychee.locale["CLOSE_PHOTO"];
 	tbPhoto.querySelector("a#button_star").title = lychee.locale["STAR_PHOTO"];
 	tbPhoto.querySelector("a#button_visibility").title = lychee.locale["VISIBILITY_PHOTO"];
@@ -6467,22 +6391,22 @@ lychee.localizeStaticGuiElements = function () {
 	tbPhoto.querySelector("a#button_fs_exit").title = lychee.locale["FULLSCREEN_EXIT"];
 	tbPhoto.querySelector("a#button_more").title = lychee.locale["MORE"];
 
-	var tbMap = document.querySelector("div.header__toolbar--map");
+	var tbMap = document.querySelector("div#lychee_toolbar_map");
 	tbMap.querySelector("a#button_back_map").title = lychee.locale["CLOSE_MAP"];
 
-	var tbConfig = document.querySelector("div.header__toolbar--config");
+	var tbConfig = document.querySelector("div#lychee_toolbar_config");
 	tbConfig.querySelector("a#button_close_config").title = lychee.locale["CLOSE"];
 
 	// Sidebar
-	document.querySelector("div.sidebar__header h1").textContent = lychee.locale["PHOTO_ABOUT"];
+	document.querySelector("#lychee_sidebar_header h1").textContent = lychee.locale["PHOTO_ABOUT"];
 
 	// NSFW Warning Banner
 	/** @type {HTMLDivElement} */
-	var nsfwBanner = document.querySelector("div#sensitive_warning");
+	var nsfwBanner = document.querySelector("#sensitive_warning");
 	nsfwBanner.innerHTML = lychee.nsfw_banner_override ? lychee.nsfw_banner_override : lychee.locale["NSFW_BANNER"];
 
 	// Footer
-	var footer = document.querySelector("div#footer");
+	var footer = document.querySelector("#lychee_footer");
 	footer.querySelector("p.home_copyright").textContent = lychee.footer_show_copyright ? sprintf(lychee.locale["FOOTER_COPYRIGHT"], lychee.site_owner, lychee.site_copyright_begin === lychee.site_copyright_end ? lychee.site_copyright_begin : lychee.site_copyright_begin + "–" + lychee.site_copyright_begin) : "";
 	footer.querySelector("p.personal_text").textContent = lychee.footer_additional_text;
 	footer.querySelector("p.hosted_by a").textContent = lychee.locale["HOSTED_WITH_LYCHEE"];
@@ -6987,7 +6911,7 @@ lychee.load = function () {
 			}
 			if (visible.mapview()) mapview.close();
 			if (visible.sidebar() && (album.isSmartID(albumID) || album.isSearchID(albumID))) _sidebar.toggle(false);
-			$("#sensitive_warning").hide();
+			$("#sensitive_warning").removeClass("active");
 			if (album.json && albumID === album.json.id) {
 				if (album.isSearchID(albumID)) {
 					// We are probably coming back to the search results from
@@ -7051,7 +6975,7 @@ lychee.load = function () {
 			tabindex.makeUnfocusable(lychee.imageview);
 		}
 		if (visible.mapview()) mapview.close();
-		$("#sensitive_warning").hide();
+		$("#sensitive_warning").removeClass("active");
 		lychee.content.show();
 		lychee.footer_show();
 		albums.load();
@@ -7144,7 +7068,7 @@ lychee.setMode = function (mode) {
 		Mousetrap.unbind(["l"]).unbind(["k"]);
 
 		// The code searches by class, so remove the other instance.
-		$(".header__search, .header__clear", ".header__toolbar--public").hide();
+		$(".header__search, .header__clear", "#lychee_toolbar_public").hide();
 
 		if (!lychee.editor_enabled) {
 			$("#button_rotate_cwise").hide();
@@ -7152,11 +7076,11 @@ lychee.setMode = function (mode) {
 		}
 		return;
 	}
-	$(".header__search, .header__clear", ".header__toolbar--albums").hide();
+	$(".header__search, .header__clear", "#lychee_toolbar_albums").hide();
 	$("#button_rotate_cwise").hide();
 	$("#button_rotate_ccwise").hide();
 
-	$("#button_settings, .header__divider, .leftMenu").hide();
+	$("#button_settings, .header__divider, #lychee_left_menu_container").hide();
 
 	if (mode === "public") {
 		if (!bodyClasses.contains("mode-gallery")) {
@@ -7449,23 +7373,6 @@ lychee.footer_show = function () {
  */
 lychee.footer_hide = function () {
 	lychee.footer.addClass("hide_footer");
-};
-
-/**
- * Sets the height of the content area.
- *
- * Because the height of the footer can vary, we need to set some
- * dimensions dynamically, at startup.
- *
- * @returns {void}
- */
-lychee.adjustContentHeight = function () {
-	if (lychee.footer.length > 0) {
-		lychee.content.css("min-height", "calc(100vh - " + lychee.content.css("padding-top") + " - " + lychee.content.css("padding-bottom") + " - " + lychee.footer.outerHeight() + "px)");
-		$("#container").css("padding-bottom", lychee.footer.outerHeight());
-	} else {
-		lychee.content.css("min-height", "calc(100vh - " + lychee.content.css("padding-top") + " - " + lychee.content.css("padding-bottom") + ")");
-	}
 };
 
 /**
@@ -8300,8 +8207,9 @@ mapview.open = function () {
 		return;
 	}
 
-	lychee.animate($("#mapview"), "fadeIn");
-	$("#mapview").show();
+	var mapContainer = $("#lychee_map_container");
+	lychee.animate(mapContainer, "fadeIn");
+	mapContainer.addClass("active");
 	header.setMode("map");
 
 	mapview.albumID = albumID;
@@ -8318,7 +8226,7 @@ mapview.open = function () {
 		});
 
 		// Set initial view to (0,0)
-		mapview.map = L.map("leaflet_map_full").setView([0.0, 0.0], 13);
+		mapview.map = L.map("lychee_map_container").setView([0.0, 0.0], 13);
 
 		L.tileLayer(map_provider_layer_attribution[lychee.map_provider].layer, {
 			attribution: map_provider_layer_attribution[lychee.map_provider].attribution
@@ -8527,8 +8435,18 @@ mapview.close = function () {
 	// If map functionality is disabled -> do nothing
 	if (!lychee.map_display) return;
 
-	lychee.animate($("#mapview"), "fadeOut");
-	$("#mapview").hide();
+	var mapContainer = $("#lychee_map_container");
+	lychee.animate(mapContainer, "fadeOut");
+	// TODO: Reconsider the line below
+	// The line below is inconsistent to the corresponding code for
+	// the photo view (cp. `view.photo.hide()`).
+	// Here, we remove the `active` class immediately, in `view.photo.hide()`
+	// we remove that class after the animation has ended.
+	mapContainer.removeClass("active");
+	// TODO: Fix the line below
+	// The map view can also be opened from a single photo and probably a
+	// users expect to go back to the photo if they close the photo.
+	// Currently, Lychee jumps back to the album of that photo.
 	header.setMode("album");
 
 	// Make album focusable
@@ -8587,7 +8505,7 @@ var multiselect = {
 multiselect.position = null;
 
 multiselect.bind = function () {
-	$(".content").on("mousedown", function (e) {
+	$("#lychee_view_content").on("mousedown", function (e) {
 		if (e.which === 1) multiselect.show(e);
 	});
 
@@ -8598,7 +8516,7 @@ multiselect.bind = function () {
  * @returns {void}
  */
 multiselect.unbind = function () {
-	$(".content").off("mousedown");
+	$("#lychee_view_content").off("mousedown");
 };
 
 /**
@@ -9158,7 +9076,6 @@ _photo3.load = function (photoID, albumID, autoplay) {
 
 		view.photo.show();
 		view.photo.init(autoplay);
-		lychee.imageview.show();
 
 		if (!lychee.hide_content_during_imgview) {
 			setTimeout(function () {
@@ -9313,29 +9230,6 @@ _photo3.preloadNextPrev = function (photoID) {
 	if (photo.previous_photo_id) {
 		preload(photo.previous_photo_id);
 	}
-};
-
-/**
- * @param {number} [animationDuration=300]
- * @param {number} [pauseBetweenUpdated=10]
- * @returns {void}
- */
-_photo3.updateSizeLivePhotoDuringAnimation = function () {
-	var animationDuration = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 300;
-	var pauseBetweenUpdated = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
-
-	// For the LivePhotoKit, we need to call the updateSize manually
-	// during CSS animations
-	//
-	var interval = setInterval(function () {
-		if (_photo3.isLivePhotoInitialized()) {
-			_photo3.livePhotosObject.updateSize();
-		}
-	}, pauseBetweenUpdated);
-
-	setTimeout(function () {
-		clearInterval(interval);
-	}, animationDuration);
 };
 
 /**
@@ -10434,7 +10328,7 @@ search.find = function (term) {
 		var html = albumsData === "" && photosData === "" ? "" : albumsData === "" ? build.divider(photos_divider) + photosData : photosData === "" ? build.divider(albums_divider) + albumsData : build.divider(albums_divider) + albumsData + build.divider(photos_divider) + photosData;
 
 		$(".no_content").remove();
-		lychee.animate($(".content"), "contentZoomOut");
+		lychee.animate(lychee.content, "contentZoomOut");
 
 		setTimeout(function () {
 			if (visible.photo()) view.photo.hide();
@@ -10445,7 +10339,7 @@ search.find = function (term) {
 
 			if (html === "") {
 				lychee.content.html("");
-				$("body").append(build.no_content("magnifying-glass"));
+				lychee.content.append(build.no_content("magnifying-glass"));
 			} else {
 				lychee.content.html(html);
 				// Here we exploit the layout method of an album although
@@ -10457,7 +10351,7 @@ search.find = function (term) {
 				setTimeout(function () {
 					view.album.content.justify();
 					lychee.animate(lychee.content, "contentZoomIn");
-					$(window).scrollTop(0);
+					$("#lychee_view_container").scrollTop(0);
 				}, 0);
 			}
 			lychee.setMetaData(lychee.locale["SEARCH_RESULTS"]);
@@ -11182,7 +11076,7 @@ sharing.list = function () {
  */
 var _sidebar = {
 	/** @type {jQuery} */
-	_dom: $(".sidebar"),
+	_dom: $("#lychee_sidebar_container"),
 	types: {
 		DEFAULT: 0,
 		TAGS: 1
@@ -11280,14 +11174,7 @@ _sidebar.keepSidebarVisible = function () {
 _sidebar.toggle = function (is_user_initiated) {
 	if (visible.sidebar() || visible.sidebarbutton()) {
 		header.dom(".button--info").toggleClass("active");
-		lychee.content.toggleClass("content--sidebar");
-		lychee.imageview.toggleClass("image--sidebar");
-		setTimeout(function () {
-			return view.album.content.justify();
-		}, 0);
 		_sidebar.dom().toggleClass("active");
-		if (_photo3.updateSizeLivePhotoDuringAnimation) _photo3.updateSizeLivePhotoDuringAnimation();
-
 		if (is_user_initiated) sessionStorage.setItem("keepSidebarVisible", visible.sidebar() ? "true" : "false");
 	}
 };
@@ -13343,7 +13230,44 @@ users.list = function () {
  * @description Responsible to reflect data changes to the UI.
  */
 
-var view = {};
+var view = {
+	/** @type {ResizeObserver} */
+	resizeObserver: function () {
+		/**
+   * @type {HTMLDivElement}
+   */
+		var viewContainer = document.getElementById("lychee_view_container");
+
+		var resizeHandler = function () {
+			var viewContainerWidth = 0;
+
+			return function () {
+				// Avoid infinite loops
+				// The layout method `view.album.content.justify()` below will
+				// change the height of the container as the height depends on
+				// the amount of content.
+				// Hence, `view.album.content.justify()` re-triggers the
+				// event handler.
+				// However, we are only interested into changes of the width,
+				// which is independent of content but solely depends on
+				// window size.
+				// We bail out early if the width has not changed since last
+				// time.
+				if (viewContainer.clientWidth === viewContainerWidth) return;
+				viewContainerWidth = viewContainer.clientWidth;
+				view.album.content.justify();
+				if (_photo3.isLivePhotoInitialized()) {
+					_photo3.livePhotosObject.updateSize();
+				}
+			};
+		}();
+
+		var observer = new ResizeObserver(resizeHandler);
+		observer.observe(viewContainer);
+
+		return observer;
+	}()
+};
 
 view.albums = {
 	/** @returns {void} */
@@ -13418,17 +13342,13 @@ view.albums = {
 
 			if (smartData === "" && tagAlbumsData === "" && albumsData === "" && sharedData === "") {
 				lychee.content.html("");
-				$("body").append(build.no_content("eye"));
+				lychee.content.append(build.no_content("eye"));
 			} else {
 				lychee.content.html(smartData + tagAlbumsData + albumsData + sharedData);
 			}
 
 			album.apply_nsfw_filter();
-
-			// Restore scroll position
-			var urls = JSON.parse(localStorage.getItem("scroll"));
-			var urlWindow = window.location.href;
-			$(window).scrollTop(urls != null && urls[urlWindow] ? urls[urlWindow] : 0);
+			view.album.content.restoreScroll();
 		},
 
 		/**
@@ -13502,21 +13422,21 @@ view.album = {
 		/** @returns {void} */
 		init: function init() {
 			if (!lychee.nsfw_warning) {
-				$("#sensitive_warning").hide();
+				$("#sensitive_warning").removeClass("active");
 				return;
 			}
 
 			if (album.json.is_nsfw && !lychee.nsfw_unlocked_albums.includes(album.json.id)) {
-				$("#sensitive_warning").show();
+				$("#sensitive_warning").addClass("active");
 			} else {
-				$("#sensitive_warning").hide();
+				$("#sensitive_warning").removeClass("active");
 			}
 		},
 
 		/** @returns {void} */
 		next: function next() {
 			lychee.nsfw_unlocked_albums.push(album.json.id);
-			$("#sensitive_warning").hide();
+			$("#sensitive_warning").removeClass("active");
 		}
 	},
 
@@ -13574,7 +13494,6 @@ view.album = {
 
 			setTimeout(function () {
 				view.album.content.justify();
-				view.album.content.restoreScroll();
 			}, 0);
 		},
 
@@ -13583,7 +13502,7 @@ view.album = {
 			// Restore scroll position
 			var urls = JSON.parse(localStorage.getItem("scroll"));
 			var urlWindow = window.location.href;
-			$(window).scrollTop(urls != null && urls[urlWindow] ? urls[urlWindow] : 0);
+			$("#lychee_view_container").scrollTop(urls != null && urls[urlWindow] ? urls[urlWindow] : 0);
 		},
 
 		/**
@@ -13821,7 +13740,7 @@ view.album = {
 					// is always visible and always has the correct width
 					// even for opened sidebars.
 					// TODO: Unconditionally use the width of the view container and remove this alternative width calculation after https://github.com/LycheeOrg/Lychee-front/pull/335 has been merged
-					containerWidth = $(window).width() - parseFloat(jqJustifiedLayout.css("margin-left")) - parseFloat(jqJustifiedLayout.css("margin-right")) - parseFloat($(".content").css("padding-right"));
+					containerWidth = $(window).width() - 2 * parseFloat(jqJustifiedLayout.css("margin"));
 				}
 				/** @type {number[]} */
 				var ratio = photos.map(function (_photo) {
@@ -13880,7 +13799,7 @@ view.album = {
 				var _containerWidth = parseFloat(jqUnjustifiedLayout.width());
 				if (_containerWidth === 0) {
 					// Triggered on Reload in photo view.
-					_containerWidth = $(window).width() - parseFloat(jqUnjustifiedLayout.css("margin-left")) - parseFloat(jqUnjustifiedLayout.css("margin-right")) - parseFloat($(".content").css("padding-right"));
+					_containerWidth = $(window).width() - 2 * parseFloat(jqUnjustifiedLayout.css("margin"));
 				}
 				/**
      * An album listing has potentially hundreds of photos, hence
@@ -13928,6 +13847,7 @@ view.album = {
 				// Show updated layout
 				jqUnjustifiedLayout.removeClass("laying-out");
 			}
+			view.album.content.restoreScroll();
 		}
 	},
 
@@ -14037,7 +13957,7 @@ view.album = {
 			var structure = _sidebar.createStructure.album(album.json);
 			var html = _sidebar.render(structure);
 
-			_sidebar.dom(".sidebar__wrapper").html(html);
+			_sidebar.dom("#lychee_sidebar_content").html(html);
 			_sidebar.bind();
 		}
 	}
@@ -14071,14 +13991,6 @@ view.photo = {
 		header.setMode("photo");
 
 		if (!visible.photo()) {
-			// Make body not scrollable
-			// use bodyScrollLock package to enable locking on iOS
-			// Simple overflow: hidden not working on iOS Safari
-			// Only the info pane needs scrolling
-			// Touch event for swiping of photo still work
-
-			scrollLock.disablePageScroll($(".sidebar__wrapper").get());
-
 			// Fullscreen
 			var timeout = null;
 			$(document).bind("mousemove", function () {
@@ -14096,6 +14008,7 @@ view.photo = {
 			}
 
 			lychee.animate(lychee.imageview, "fadeIn");
+			lychee.imageview.addClass("active");
 		}
 	},
 
@@ -14108,9 +14021,6 @@ view.photo = {
 		lychee.content.removeClass("view");
 		header.setMode("album");
 
-		// Make body scrollable
-		scrollLock.enablePageScroll($(".sidebar__wrapper").get());
-
 		// Disable Fullscreen
 		$(document).unbind("mousemove");
 		if ($("video").length) {
@@ -14119,8 +14029,13 @@ view.photo = {
 
 		// Hide Photo
 		lychee.animate(lychee.imageview, "fadeOut");
+		// TODO: Reconsider the lines below
+		// The lines below are inconsistent to the corresponding code for
+		// the mapview (cp. `mapview.close()`).
+		// Here, we remove the `active` class after the animation has ended,
+		// in `mapview.close()` we remove that class immediately.
 		setTimeout(function () {
-			lychee.imageview.hide();
+			lychee.imageview.removeClass("active");
 			view.album.sidebar();
 		}, 300);
 	},
@@ -14290,7 +14205,7 @@ view.photo = {
 		var html = _sidebar.render(structure);
 		var has_location = !!(_photo3.json.latitude && _photo3.json.longitude);
 
-		_sidebar.dom(".sidebar__wrapper").html(html);
+		_sidebar.dom("#lychee_sidebar_content").html(html);
 		_sidebar.bind();
 
 		if (has_location && lychee.map_display) {
@@ -15140,14 +15055,17 @@ view.u2f = {
 
 var visible = {};
 
-/** @returns {boolean} */
+/**
+ * TODO: Whether the albums view is visible or not should not be determined based on the visibility of a toolbar, especially as this does not work for the photo view in full screen mode which makes this approach inconsistent.
+ * @returns {boolean}
+ */
 visible.albums = function () {
-	return !!header.dom(".header__toolbar--public").hasClass("header__toolbar--visible") || !!header.dom(".header__toolbar--albums").hasClass("header__toolbar--visible");
+	return !!header.dom("#lychee_toolbar_public").hasClass("visible") || !!header.dom("#lychee_toolbar_albums").hasClass("visible");
 };
 
 /** @returns {boolean} */
 visible.album = function () {
-	return !!header.dom(".header__toolbar--album").hasClass("header__toolbar--visible");
+	return !!header.dom("#lychee_toolbar_album").hasClass("visible");
 };
 
 /** @returns {boolean} */
@@ -15157,12 +15075,12 @@ visible.photo = function () {
 
 /** @returns {boolean} */
 visible.mapview = function () {
-	return $("#mapview.fadeIn").length > 0;
+	return $("#lychee_map_container.fadeIn").length > 0;
 };
 
 /** @returns {boolean} */
 visible.config = function () {
-	return !!header.dom(".header__toolbar--config").hasClass("header__toolbar--visible");
+	return !!header.dom("#lychee_toolbar_config").hasClass("visible");
 };
 
 /** @returns {boolean} */
@@ -15182,7 +15100,7 @@ visible.sidebarbutton = function () {
 
 /** @returns {boolean} */
 visible.header = function () {
-	return !header.dom().hasClass("header--hidden");
+	return !header.dom().hasClass("hidden");
 };
 
 /** @returns {boolean} */
@@ -15197,7 +15115,7 @@ visible.multiselect = function () {
 
 /** @returns {boolean} */
 visible.leftMenu = function () {
-	return !!leftMenu.dom().hasClass("leftMenu__visible");
+	return !!leftMenu.dom().hasClass("visible");
 };
 
 /**
