@@ -210,7 +210,7 @@ csrf.getCSRFCookieValue = function () {
   // When we send back the value to the server as part of an AJAX request,
   // Laravel expects an unpadded value.
   // Hence, we must remove the `%3D`.
-  return cookie ? cookie.split("=")[1].trim().replaceAll("%3D", "") : null;
+  return cookie ? cookie.split("=")[1].trim().replace(/%3D/g, "") : null;
 };
 
 /**

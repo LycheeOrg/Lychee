@@ -8,9 +8,8 @@
 !function(){"use strict";var g={not_string:/[^s]/,not_bool:/[^t]/,not_type:/[^T]/,not_primitive:/[^v]/,number:/[diefg]/,numeric_arg:/[bcdiefguxX]/,json:/[j]/,not_json:/[^j]/,text:/^[^\x25]+/,modulo:/^\x25{2}/,placeholder:/^\x25(?:([1-9]\d*)\$|\(([^)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijostTuvxX])/,key:/^([a-z_][a-z_\d]*)/i,key_access:/^\.([a-z_][a-z_\d]*)/i,index_access:/^\[(\d+)\]/,sign:/^[+-]/};function y(e){return function(e,t){var r,n,i,s,a,o,p,c,l,u=1,f=e.length,d="";for(n=0;n<f;n++)if("string"==typeof e[n])d+=e[n];else if("object"==typeof e[n]){if((s=e[n]).keys)for(r=t[u],i=0;i<s.keys.length;i++){if(null==r)throw new Error(y('[sprintf] Cannot access property "%s" of undefined value "%s"',s.keys[i],s.keys[i-1]));r=r[s.keys[i]]}else r=s.param_no?t[s.param_no]:t[u++];if(g.not_type.test(s.type)&&g.not_primitive.test(s.type)&&r instanceof Function&&(r=r()),g.numeric_arg.test(s.type)&&"number"!=typeof r&&isNaN(r))throw new TypeError(y("[sprintf] expecting number but found %T",r));switch(g.number.test(s.type)&&(c=0<=r),s.type){case"b":r=parseInt(r,10).toString(2);break;case"c":r=String.fromCharCode(parseInt(r,10));break;case"d":case"i":r=parseInt(r,10);break;case"j":r=JSON.stringify(r,null,s.width?parseInt(s.width):0);break;case"e":r=s.precision?parseFloat(r).toExponential(s.precision):parseFloat(r).toExponential();break;case"f":r=s.precision?parseFloat(r).toFixed(s.precision):parseFloat(r);break;case"g":r=s.precision?String(Number(r.toPrecision(s.precision))):parseFloat(r);break;case"o":r=(parseInt(r,10)>>>0).toString(8);break;case"s":r=String(r),r=s.precision?r.substring(0,s.precision):r;break;case"t":r=String(!!r),r=s.precision?r.substring(0,s.precision):r;break;case"T":r=Object.prototype.toString.call(r).slice(8,-1).toLowerCase(),r=s.precision?r.substring(0,s.precision):r;break;case"u":r=parseInt(r,10)>>>0;break;case"v":r=r.valueOf(),r=s.precision?r.substring(0,s.precision):r;break;case"x":r=(parseInt(r,10)>>>0).toString(16);break;case"X":r=(parseInt(r,10)>>>0).toString(16).toUpperCase()}g.json.test(s.type)?d+=r:(!g.number.test(s.type)||c&&!s.sign?l="":(l=c?"+":"-",r=r.toString().replace(g.sign,"")),o=s.pad_char?"0"===s.pad_char?"0":s.pad_char.charAt(1):" ",p=s.width-(l+r).length,a=s.width&&0<p?o.repeat(p):"",d+=s.align?l+r+a:"0"===o?l+a+r:a+l+r)}return d}(function(e){if(p[e])return p[e];var t,r=e,n=[],i=0;for(;r;){if(null!==(t=g.text.exec(r)))n.push(t[0]);else if(null!==(t=g.modulo.exec(r)))n.push("%");else{if(null===(t=g.placeholder.exec(r)))throw new SyntaxError("[sprintf] unexpected placeholder");if(t[2]){i|=1;var s=[],a=t[2],o=[];if(null===(o=g.key.exec(a)))throw new SyntaxError("[sprintf] failed to parse named argument key");for(s.push(o[1]);""!==(a=a.substring(o[0].length));)if(null!==(o=g.key_access.exec(a)))s.push(o[1]);else{if(null===(o=g.index_access.exec(a)))throw new SyntaxError("[sprintf] failed to parse named argument key");s.push(o[1])}t[2]=s}else i|=2;if(3===i)throw new Error("[sprintf] mixing positional and named placeholders is not (yet) supported");n.push({placeholder:t[0],param_no:t[1],keys:t[2],sign:t[3],pad_char:t[4],align:t[5],width:t[6],precision:t[7],type:t[8]})}r=r.substring(t[0].length)}return p[e]=n}(e),arguments)}function e(e,t){return y.apply(null,[e].concat(t||[]))}var p=Object.create(null);"undefined"!=typeof exports&&(exports.sprintf=y,exports.vsprintf=e),"undefined"!=typeof window&&(window.sprintf=y,window.vsprintf=e,"function"==typeof define&&define.amd&&define(function(){return{sprintf:y,vsprintf:e}}))}();
 //# sourceMappingURL=sprintf.min.js.map
 
+!function(t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define([],t):("undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this).basicContext=t()}(function(){return function o(i,c,l){function r(n,t){if(!c[n]){if(!i[n]){var e="function"==typeof require&&require;if(!t&&e)return e(n,!0);if(a)return a(n,!0);throw(t=new Error("Cannot find module '"+n+"'")).code="MODULE_NOT_FOUND",t}e=c[n]={exports:{}},i[n][0].call(e.exports,function(t){return r(i[n][1][t]||t)},e,e.exports,o,i,c,l)}return c[n].exports}for(var a="function"==typeof require&&require,t=0;t<l.length;t++)r(l[t]);return r}({1:[function(t,n,e){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.visible=e.show=e.close=e.SEPARATOR=e.ITEM=void 0;function y(){var t=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{};return null!=t.fn&&(!1!==t.visible&&(!0!==t.disabled&&(b("td[data-num='".concat(t.num,"']")).onclick=t.fn,b("td[data-num='".concat(t.num,"']")).oncontextmenu=t.fn,!0)))}function o(){var t=b();return!(null==t||0===t.length)}var i="item",c=(e.ITEM=i,"separator"),b=(e.SEPARATOR=c,function(){return document.querySelector(".basicContext "+(0<arguments.length&&void 0!==arguments[0]?arguments[0]:""))}),x=function(t,n){var e="",o="";return!1===function(){var t=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{};return!0==(0===Object.keys(t).length)&&(t.type=c),null==t.type&&(t.type=i),null==t.class&&(t.class=""),!1!==t.visible&&(t.visible=!0),null==t.icon&&(t.icon=null),null==t.title&&(t.title="Undefined"),!0!==t.disabled&&(t.disabled=!1),!0===t.disabled&&(t.class+=" basicContext__item--disabled"),null!=t.fn||t.type===c||!1!==t.disabled||(console.warn("Missing fn for item '".concat(t.title,"'")),!1)}(t)||!1===t.visible?"":(t.num=n,null!==t.icon&&(o="<span class='basicContext__icon ".concat(t.icon,"'></span>")),t.type===i?e="\n\t\t\t\t <tr class='basicContext__item ".concat(t.class,"'>\n\t\t\t\t\t\t <td class='basicContext__data' data-num='").concat(t.num,"'>").concat(o).concat(t.title,"</td>\n\t\t\t\t </tr>\n\t\t\t\t "):t.type===c&&(e="\n\t\t\t\t <tr class='basicContext__item basicContext__item--separator'></tr>\n\t\t\t\t "),e)},v=function(){var t=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{},n={x:t.clientX,y:t.clientY};return"touchend"!==t.type||null!=n.x&&null!=n.y||null!=(t=t.changedTouches)&&0<t.length&&(n.x=t[0].clientX,n.y=t[0].clientY),(null==n.x||n.x<0)&&(n.x=0),(null==n.y||n.y<0)&&(n.y=0),n},m=(e.show=function(t,n,e,o){i="",i+="\n\t\t\t\t<div class='basicContextContainer'>\n\t\t\t\t\t\t<div class='basicContext'>\n\t\t\t\t\t\t\t\t<table>\n\t\t\t\t\t\t\t\t\t\t<tbody>\n\t\t\t\t",t.forEach(function(t,n){return i+=x(t,n)});var i,c,l,r,a,s,u,f,d=i+="\n\t\t\t\t\t\t\t\t\t\t</tbody>\n\t\t\t\t\t\t\t\t</table>\n\t\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t",d=(document.body.insertAdjacentHTML("beforeend",d),b()),p=(l=d,c=v(c=n),r=c.x,a=c.y,s=document.querySelector(".basicContextContainer"),p=s.offsetWidth,s=s.offsetHeight,u=l.offsetWidth,f=l.offsetHeight,p<r+u&&(r-=r+u-p),s<a+f&&(a-=a+f-s),s<f&&(a=0,l.classList.add("basicContext--scrollable")),u=c.x-r,{x:r,y:a,rx:u,ry:c.y-a});return d.style.left="".concat(p.x,"px"),d.style.top="".concat(p.y,"px"),d.style.transformOrigin="".concat(p.rx,"px ").concat(p.ry,"px"),d.style.opacity=1,d.parentElement.onclick=e=null==e?m:e,d.parentElement.oncontextmenu=e,t.forEach(y),"function"==typeof n.preventDefault&&n.preventDefault(),"function"==typeof n.stopPropagation&&n.stopPropagation(),"function"==typeof o&&o(),!0},e.visible=o,function(){var t;return!1!==o()&&((t=document.querySelector(".basicContextContainer")).parentElement.removeChild(t),!0)});e.close=m},{}]},{},[1])(1)});
 "use strict";
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xlink:href='#", "' /></svg>"], ["<svg class='iconic ", "'><use xlink:href='#", "' /></svg>"]),
     _templateObject2 = _taggedTemplateLiteral(["<div class='divider'><h1>$", "</h1></div>"], ["<div class='divider'><h1>$", "</h1></div>"]),
@@ -246,7 +245,7 @@ csrf.getCSRFCookieValue = function () {
 	// When we send back the value to the server as part of an AJAX request,
 	// Laravel expects an unpadded value.
 	// Hence, we must remove the `%3D`.
-	return cookie ? cookie.split("=")[1].trim().replaceAll("%3D", "") : null;
+	return cookie ? cookie.split("=")[1].trim().replace(/%3D/g, "") : null;
 };
 
 /**
@@ -1733,7 +1732,9 @@ sidebar.toggle = function (is_user_initiated) {
 		header.dom(".button--info").toggleClass("active");
 		lychee.content.toggleClass("content--sidebar");
 		lychee.imageview.toggleClass("image--sidebar");
-		if (typeof view !== "undefined") view.album.content.justify(album.json ? album.json.photos : []);
+		setTimeout(function () {
+			return view.album.content.justify();
+		}, 0);
 		sidebar.dom().toggleClass("active");
 		if (photo.updateSizeLivePhotoDuringAnimation) photo.updateSizeLivePhotoDuringAnimation();
 
@@ -3755,229 +3756,3 @@ var SmartAlbumID = Object.freeze({
  * @property {?string} path - the path to the affected file or directory
  * @property {string} message - a message text
  */
-
-(function (window, factory) {
-	var basicContext = factory(window, window.document);
-	window.basicContext = basicContext;
-	if ((typeof module === "undefined" ? "undefined" : _typeof(module)) == "object" && module.exports) {
-		module.exports = basicContext;
-	}
-})(window, function l(window, document) {
-	var ITEM = "item",
-	    SEPARATOR = "separator";
-
-	var dom = function dom() {
-		var elem = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
-
-		return document.querySelector(".basicContext " + elem);
-	};
-
-	var valid = function valid() {
-		var item = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-		var emptyItem = Object.keys(item).length === 0 ? true : false;
-
-		if (emptyItem === true) item.type = SEPARATOR;
-		if (item.type == null) item.type = ITEM;
-		if (item.class == null) item.class = "";
-		if (item.visible !== false) item.visible = true;
-		if (item.icon == null) item.icon = null;
-		if (item.title == null) item.title = "Undefined";
-
-		// Add disabled class when item disabled
-		if (item.disabled !== true) item.disabled = false;
-		if (item.disabled === true) item.class += " basicContext__item--disabled";
-
-		// Item requires a function when
-		// it's not a separator and not disabled
-		if (item.fn == null && item.type !== SEPARATOR && item.disabled === false) {
-			console.warn("Missing fn for item '" + item.title + "'");
-			return false;
-		}
-
-		return true;
-	};
-
-	var buildItem = function buildItem(item, num) {
-		var html = "",
-		    span = "";
-
-		// Parse and validate item
-		if (valid(item) === false) return "";
-
-		// Skip when invisible
-		if (item.visible === false) return "";
-
-		// Give item a unique number
-		item.num = num;
-
-		// Generate span/icon-element
-		if (item.icon !== null) span = "<span class='basicContext__icon " + item.icon + "'></span>";
-
-		// Generate item
-		if (item.type === ITEM) {
-			html = "\n\t\t       <tr class='basicContext__item " + item.class + "'>\n\t\t           <td class='basicContext__data' data-num='" + item.num + "'>" + span + item.title + "</td>\n\t\t       </tr>\n\t\t       ";
-		} else if (item.type === SEPARATOR) {
-			html = "\n\t\t       <tr class='basicContext__item basicContext__item--separator'></tr>\n\t\t       ";
-		}
-
-		return html;
-	};
-
-	var build = function build(items) {
-		var html = "";
-
-		html += "\n\t        <div class='basicContextContainer'>\n\t            <div class='basicContext'>\n\t                <table>\n\t                    <tbody>\n\t        ";
-
-		items.forEach(function (item, i) {
-			return html += buildItem(item, i);
-		});
-
-		html += "\n\t                    </tbody>\n\t                </table>\n\t            </div>\n\t        </div>\n\t        ";
-
-		return html;
-	};
-
-	var getNormalizedEvent = function getNormalizedEvent() {
-		var e = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-		var pos = {
-			x: e.clientX,
-			y: e.clientY
-		};
-
-		if (e.type === "touchend" && (pos.x == null || pos.y == null)) {
-			// We need to capture clientX and clientY from original event
-			// when the event 'touchend' does not return the touch position
-
-			var touches = e.changedTouches;
-
-			if (touches != null && touches.length > 0) {
-				pos.x = touches[0].clientX;
-				pos.y = touches[0].clientY;
-			}
-		}
-
-		// Position unknown
-		if (pos.x == null || pos.x < 0) pos.x = 0;
-		if (pos.y == null || pos.y < 0) pos.y = 0;
-
-		return pos;
-	};
-
-	var getPosition = function getPosition(e, context) {
-		// Get the click position
-		var normalizedEvent = getNormalizedEvent(e);
-
-		// Set the initial position
-		var x = normalizedEvent.x,
-		    y = normalizedEvent.y;
-
-		var container = document.querySelector(".basicContextContainer");
-
-		// Get size of browser
-		var browserSize = {
-			width: container.offsetWidth,
-			height: container.offsetHeight
-		};
-
-		// Get size of context
-		var contextSize = {
-			width: context.offsetWidth,
-			height: context.offsetHeight
-		};
-
-		// Fix position based on context and browser size
-		if (x + contextSize.width > browserSize.width) x = x - (x + contextSize.width - browserSize.width);
-		if (y + contextSize.height > browserSize.height) y = y - (y + contextSize.height - browserSize.height);
-
-		// Make context scrollable and start at the top of the browser
-		// when context is higher than the browser
-		if (contextSize.height > browserSize.height) {
-			y = 0;
-			context.classList.add("basicContext--scrollable");
-		}
-
-		// Calculate the relative position of the mouse to the context
-		var rx = normalizedEvent.x - x,
-		    ry = normalizedEvent.y - y;
-
-		return { x: x, y: y, rx: rx, ry: ry };
-	};
-
-	var bind = function bind() {
-		var item = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-		if (item.fn == null) return false;
-		if (item.visible === false) return false;
-		if (item.disabled === true) return false;
-
-		dom("td[data-num='" + item.num + "']").onclick = item.fn;
-		dom("td[data-num='" + item.num + "']").oncontextmenu = item.fn;
-
-		return true;
-	};
-
-	var show = function show(items, e, fnClose, fnCallback) {
-		// Build context
-		var html = build(items);
-
-		// Add context to the body
-		document.body.insertAdjacentHTML("beforeend", html);
-
-		// Cache the context
-		var context = dom();
-
-		// Calculate position
-		var position = getPosition(e, context);
-
-		// Set position
-		context.style.left = position.x + "px";
-		context.style.top = position.y + "px";
-		context.style.transformOrigin = position.rx + "px " + position.ry + "px";
-		context.style.opacity = 1;
-
-		// Close fn fallback
-		if (fnClose == null) fnClose = close;
-
-		// Bind click on background
-		context.parentElement.onclick = fnClose;
-		context.parentElement.oncontextmenu = fnClose;
-
-		// Bind click on items
-		items.forEach(bind);
-
-		// Do not trigger default event or further propagation
-		if (typeof e.preventDefault === "function") e.preventDefault();
-		if (typeof e.stopPropagation === "function") e.stopPropagation();
-
-		// Call callback when a function
-		if (typeof fnCallback === "function") fnCallback();
-
-		return true;
-	};
-
-	var visible = function visible() {
-		var elem = dom();
-
-		return !(elem == null || elem.length === 0);
-	};
-
-	var close = function close() {
-		if (visible() === false) return false;
-
-		var container = document.querySelector(".basicContextContainer");
-
-		container.parentElement.removeChild(container);
-
-		return true;
-	};
-
-	return {
-		ITEM: ITEM,
-		SEPARATOR: SEPARATOR,
-		show: show,
-		visible: visible,
-		close: close
-	};
-});
