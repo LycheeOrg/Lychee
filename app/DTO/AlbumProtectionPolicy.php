@@ -10,7 +10,7 @@ use App\SmartAlbums\BaseSmartAlbum;
  * This represents the Album Protection policy.
  *
  * In other words it provides information on the security attributes of an album.
- * It MUST not be used in the front-end to determine whether an action is permitted or not (e.g. share link available).
+ * It MUST NOT be used in the front-end to determine whether an action is permitted or not (e.g. share link available).
  *
  * It is used in two places:
  * 1. When sent to the front-end:
