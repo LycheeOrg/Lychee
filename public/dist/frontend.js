@@ -2753,6 +2753,26 @@ album.apply_nsfw_filter = function () {
  * @returns {boolean}
  */
 album.isUploadable = function () {
+	// If no album is loaded, nobody (not even the admin) can upload photos.
+	// We must check this first, before we test for the admin short-cut.
+	//
+	// Particular photo actions (such as starring/unstarring a photo) assume
+	// that the corresponding album is loaded, because their code use
+	// `album.getPhotoId` under the hood.
+	// (Note, this is a bug on its own.)
+	// In the special view mode for single photos no album is loaded, even if
+	// the currently authenticated user had the right to load (and see) the
+	// album.
+	// Hence, invoking those actions without a properly loaded album, results
+	// in exceptions.
+	// The method `header.setMode` relies on this method to decide whether
+	// particular action buttons shall be hidden in single photo view.
+	// If the admin is authenticated and opens the view mode, those "buggy"
+	// actions must be hidden.
+	if (album.json === null) {
+		return false;
+	}
+
 	if (lychee.rights.is_admin) {
 		return true;
 	}
@@ -2761,7 +2781,7 @@ album.isUploadable = function () {
 	}
 
 	// TODO: Comparison of numeric user IDs (instead of names) should be more robust
-	return album.json === null || lychee.user !== null && album.json.owner_name === lychee.user.username;
+	return lychee.user !== null && album.json.owner_name === lychee.user.username;
 };
 
 /**
@@ -5053,105 +5073,110 @@ header.setMode = function (mode) {
 
 			tabindex.makeFocusable(header.dom(".header__toolbar--photo"));
 			tabindex.makeUnfocusable(header.dom(".header__toolbar--public, .header__toolbar--albums, .header__toolbar--album, .header__toolbar--map, .header__toolbar--config"));
-			// If map is disabled, we should hide the icon
-			if (lychee.publicMode === true ? lychee.map_display_public : lychee.map_display) {
-				var _e22 = $("#button_map");
+
+			// Editorial notes:
+			//  a) Keep the order of buttons as defined in the HTML
+			//  b) Only manipulate each button at most once
+			// Otherwise, the code will become completely unmaintainable.
+
+			// These conditions are highly fragile.
+			// The code which stars/unstars a photo assumes that the album
+			// of the photo is loaded, because that code internally uses
+			// `album.getPhotoId`.
+			// (Note, this is surely an error of its own.)
+			// If one attempts to star/unstar a photo and the corresponding
+			// album is not loaded, the code throws an exception.
+			// "By accident" it is safe to assume that the corresponding album
+			// is always loaded if we are not in public mode and the album is
+			// uploadable.
+			// Hence, it is (fortunately) safe to show the button in this case.
+			if (album.isUploadable()) {
+				var _e22 = $("#button_star");
 				_e22.show();
-				tabindex.makeFocusable(_e22);
 			} else {
-				var _e23 = $("#button_map");
+				var _e23 = $("#button_star");
 				_e23.hide();
-				tabindex.makeUnfocusable(_e23);
 			}
 
-			if (album.isUploadable()) {
-				var _e24 = $("#button_trash, #button_move, #button_visibility, #button_star, #button_rotate_cwise, #button_rotate_ccwise");
+			if (lychee.enable_button_visibility && album.isUploadable()) {
+				var _e24 = $("#button_visibility");
 				_e24.show();
 				tabindex.makeFocusable(_e24);
 			} else {
-				var _e25 = $("#button_trash, #button_move, #button_visibility, #button_star, #button_rotate_cwise, #button_rotate_ccwise");
+				var _e25 = $("#button_visibility");
 				_e25.hide();
 				tabindex.makeUnfocusable(_e25);
 			}
 
-			if (_photo3.json && _photo3.json.hasOwnProperty("is_share_button_visible") && !_photo3.json.is_share_button_visible) {
-				var _e26 = $("#button_share");
-				_e26.hide();
-				tabindex.makeUnfocusable(_e26);
+			if (lychee.enable_button_rotate && album.isUploadable()) {
+				var _e26 = $("#button_rotate_cwise, #button_rotate_ccwise");
+				_e26.show();
+				tabindex.makeFocusable(_e26);
 			} else {
-				var _e27 = $("#button_share");
-				_e27.show();
-				tabindex.makeFocusable(_e27);
+				var _e27 = $("#button_rotate_cwise, #button_rotate_ccwise");
+				_e27.hide();
+				tabindex.makeUnfocusable(_e27);
+			}
+
+			if (lychee.enable_button_share && _photo3.json && _photo3.json.is_share_button_visible) {
+				var _e28 = $("#button_share");
+				_e28.show();
+				tabindex.makeUnfocusable(_e28);
+			} else {
+				var _e29 = $("#button_share");
+				_e29.hide();
+				tabindex.makeFocusable(_e29);
+			}
+
+			if (lychee.publicMode === true ? lychee.map_display_public : lychee.map_display) {
+				var _e30 = $("#button_map");
+				_e30.show();
+				tabindex.makeFocusable(_e30);
+			} else {
+				var _e31 = $("#button_map");
+				_e31.hide();
+				tabindex.makeUnfocusable(_e31);
+			}
+
+			if (lychee.enable_button_move && album.isUploadable()) {
+				var _e32 = $("#button_move");
+				_e32.show();
+				tabindex.makeFocusable(_e32);
+			} else {
+				var _e33 = $("#button_move");
+				_e33.hide();
+				tabindex.makeUnfocusable(_e33);
+			}
+
+			if (lychee.enable_button_trash && album.isUploadable()) {
+				var _e34 = $("#button_trash");
+				_e34.show();
+				tabindex.makeFocusable(_e34);
+			} else {
+				var _e35 = $("#button_trash");
+				_e35.hide();
+				tabindex.makeUnfocusable(_e35);
+			}
+
+			if (lychee.enable_button_fullscreen && lychee.fullscreenAvailable()) {
+				var _e36 = $("#button_fs_enter");
+				_e36.show();
+			} else {
+				var _e37 = $("#button_fs_enter");
+				_e37.hide();
 			}
 
 			// Hide More menu if
 			// - empty (see contextMenu.photoMore)
 			// - not enabled
-			// - in "public" mode
-			var buttonMore = $("#button_more");
-			if (!(album.isUploadable() || (_photo3.json.hasOwnProperty("is_downloadable") ? _photo3.json.is_downloadable : album.json && album.json.is_downloadable)) && !(_photo3.json.size_variants.original.url && _photo3.json.size_variants.original.url !== "") || !lychee.enable_button_more || lychee.publicMode) {
-				buttonMore.hide();
-				tabindex.makeUnfocusable(buttonMore);
-			} else {
-				buttonMore.show();
-				tabindex.makeFocusable(buttonMore);
-			}
-
-			// Hide buttons if needed
-			if (lychee.publicMode) {
-				var _e28 = $("#button_star", ".header__toolbar--photo");
-				_e28.hide();
-			} else {
-				var _e29 = $("#button_star", ".header__toolbar--photo");
-				_e29.show();
-			}
-			if (!lychee.enable_button_visibility || lychee.publicMode) {
-				var _e30 = $("#button_visibility", ".header__toolbar--photo");
-				_e30.hide();
-			} else {
-				var _e31 = $("#button_visibility", ".header__toolbar--photo");
-				_e31.show();
-			}
-			if (!lychee.enable_button_share) {
-				var _e32 = $("#button_share", ".header__toolbar--photo");
-				_e32.hide();
-			} else {
-				var _e33 = $("#button_share", ".header__toolbar--photo");
-				_e33.show();
-			}
-			if (!lychee.enable_button_move || lychee.publicMode) {
-				var _e34 = $("#button_move", ".header__toolbar--photo");
-				_e34.hide();
-			} else {
-				var _e35 = $("#button_move", ".header__toolbar--photo");
-				_e35.show();
-			}
-			if (!lychee.enable_button_trash || lychee.publicMode) {
-				var _e36 = $("#button_trash", ".header__toolbar--photo");
-				_e36.hide();
-			} else {
-				var _e37 = $("#button_trash", ".header__toolbar--photo");
-				_e37.show();
-			}
-			if (!lychee.enable_button_fullscreen || !lychee.fullscreenAvailable() || lychee.publicMode) {
-				var _e38 = $("#button_fs_enter", ".header__toolbar--photo");
+			if (!(album.isUploadable() || (_photo3.json.hasOwnProperty("is_downloadable") ? _photo3.json.is_downloadable : album.json && album.json.is_downloadable)) && !(_photo3.json.size_variants.original.url && _photo3.json.size_variants.original.url !== "") || !lychee.enable_button_more) {
+				var _e38 = $("#button_more");
 				_e38.hide();
+				tabindex.makeUnfocusable(_e38);
 			} else {
-				var _e39 = $("#button_fs_enter", ".header__toolbar--photo");
+				var _e39 = $("#button_more");
 				_e39.show();
-			}
-			if (!lychee.enable_button_rotate || lychee.publicMode) {
-				var _e40 = $("#button_rotate_cwise", ".header__toolbar--photo");
-				_e40.hide();
-
-				_e40 = $("#button_rotate_ccwise", ".header__toolbar--photo");
-				_e40.hide();
-			} else {
-				var _e41 = $("#button_rotate_cwise", ".header__toolbar--photo");
-				_e41.show();
-
-				_e41 = $("#button_rotate_ccwise", ".header__toolbar--photo");
-				_e41.show();
+				tabindex.makeFocusable(_e39);
 			}
 			return;
 		case "map":
