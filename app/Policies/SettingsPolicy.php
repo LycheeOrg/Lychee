@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Legacy\AdminAuthentication;
 use App\Models\User;
 
 /**
@@ -47,16 +48,15 @@ class SettingsPolicy extends BasePolicy
 	}
 
 	/**
-	 * This function returns false as it is bypassed by the before()
-	 * which directly checks for admin rights.
+	 * We are allowed to see the logs if we are not logged in and if there are no Admins.
 	 *
-	 * @param User $user
+	 * @param ?User $user
 	 *
 	 * @return bool
 	 */
-	public function canSeeLogs(User $user): bool
+	public function canSeeLogs(?User $user): bool
 	{
-		return false;
+		return AdminAuthentication::isAdminNotRegistered();
 	}
 
 	/**
