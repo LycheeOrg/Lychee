@@ -155,7 +155,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'is_link_required' => false,
 		'password' => null,
 		// Permissions
-		'grants_access_full_photo' => true,
+		'grants_full_photo_access' => true,
 		'grants_download' => false,
 	];
 
@@ -192,7 +192,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		// Permissions are hidden because they will eventually be replaced by an external table
 		// and are provided by the AlbumRightsDTO
 		'grants_download',
-		'grants_access_full_photo',
+		'grants_full_photo_access',
 	];
 
 	/**
