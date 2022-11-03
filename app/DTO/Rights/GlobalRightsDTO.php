@@ -7,7 +7,7 @@ use App\DTO\ArrayableDTO;
 /**
  * This DTO provides the information whether some actions are available to the user.
  */
-class InitRightsDTO extends ArrayableDTO
+class GlobalRightsDTO extends ArrayableDTO
 {
 	public function __construct(
 		public RootAlbumRightsDTO $root_album,
@@ -35,12 +35,12 @@ class InitRightsDTO extends ArrayableDTO
 	 *
 	 * @return self
 	 */
-	public static function ofAdminIsNotRegistered(): self
+	public static function ofUnregisteredAdmin(): self
 	{
 		return new self(
-			root_album: RootAlbumRightsDTO::ofTrue(),
-			settings: SettingsRightsDTO::ofTrue(),
-			users: UserRightsDTO::ofTrue(),
+			root_album: RootAlbumRightsDTO::ofUnregisteredAdmin(),
+			settings: SettingsRightsDTO::ofUnregisteredAdmin(),
+			users: UserRightsDTO::ofUnregisteredAdmin(),
 		);
 	}
 }

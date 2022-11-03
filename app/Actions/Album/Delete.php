@@ -72,7 +72,7 @@ class Delete extends Action
 			// because it provides deletion of photos
 			if (in_array(UnsortedAlbum::ID, $albumIDs, true)) {
 				$query = UnsortedAlbum::getInstance()->photos();
-				if (Auth::user()?->may_administrate === true) {
+				if (Auth::user()?->may_administrate !== true) {
 					$query->where('owner_id', '=', Auth::id() ?? throw new UnauthenticatedException());
 				}
 				$unsortedPhotoIDs = $query->pluck('id')->all();

@@ -97,7 +97,7 @@ use Illuminate\Support\Facades\Gate;
  * @property bool                       $is_public
  * @property bool                       $is_link_required
  * @property bool                       $is_nsfw
- * @property bool                       $grants_access_full_photo
+ * @property bool                       $grants_full_photo_access
  * @property bool                       $grants_download
  * @property Collection                 $shared_with
  * @property string|null                $password

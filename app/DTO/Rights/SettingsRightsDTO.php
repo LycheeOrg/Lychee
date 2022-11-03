@@ -10,7 +10,7 @@ use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Data Transfer Object (DTO) to transmit the rights of a User at the root level.
+ * Data Transfer Object (DTO) to transmit the rights of an user on the application settings.
  */
 class SettingsRightsDTO extends ArrayableDTO
 {
@@ -46,7 +46,7 @@ class SettingsRightsDTO extends ArrayableDTO
 	/**
 	 * @return self
 	 */
-	public static function ofTrue(): self
+	public static function ofUnregisteredAdmin(): self
 	{
 		return new self(true, true, true, true, true, true, true);
 	}

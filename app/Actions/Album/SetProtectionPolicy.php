@@ -40,7 +40,7 @@ class SetProtectionPolicy extends Action
 		// Note: For the time being these are still "globally" defined on the album for all users, but they will be
 		// moved to a separate table for sharing albums with users.
 		$album->grants_download = $protectionPolicy->grants_download;
-		$album->grants_access_full_photo = $protectionPolicy->grants_access_full_photo;
+		$album->grants_full_photo_access = $protectionPolicy->grants_full_photo_access;
 
 		// Set password if provided
 		if ($shallSetPassword) {

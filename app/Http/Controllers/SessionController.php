@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
-use App\DTO\Rights\InitRightsDTO;
+use App\DTO\Rights\GlobalRightsDTO;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
@@ -64,12 +64,12 @@ class SessionController extends Controller
 				// If the session is unauthenticated ('user' === null), but grants admin rights nonetheless,
 				// the front-end shows the dialog to create an admin account.
 				$return['user'] = null;
-				$return['rights'] = InitRightsDTO::ofAdminIsNotRegistered();
+				$return['rights'] = GlobalRightsDTO::ofUnregisteredAdmin();
 			} else {
 				/** @var User|null $user */
 				$user = Auth::user();
 				$return['user'] = $user?->toArray();
-				$return['rights'] = InitRightsDTO::ofCurrentUser();
+				$return['rights'] = GlobalRightsDTO::ofCurrentUser();
 			}
 
 			// Load configuration settings acc. to authentication status

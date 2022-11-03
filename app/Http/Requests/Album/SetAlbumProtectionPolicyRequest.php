@@ -23,7 +23,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 	public const IS_PUBLIC_ATTRIBUTE = 'is_public';
 	public const IS_LINK_REQUIRED_ATTRIBUTE = 'is_link_required';
 	public const GRANTS_DOWNLOAD_ATTRIBUTE = 'grants_download';
-	public const GRANTS_ACCESS_FULL_PHOTO_ATTRIBUTE = 'grants_access_full_photo';
+	public const GRANTS_FULL_PHOTO_ACCESS_ATTRIBUTE = 'grants_full_photo_access';
 
 	protected bool $isPasswordProvided;
 	protected AlbumProtectionPolicy $albumAccessSettings;
@@ -40,7 +40,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 			self::IS_LINK_REQUIRED_ATTRIBUTE => 'required|boolean',
 			self::IS_NSFW_ATTRIBUTE => 'required|boolean',
 			self::GRANTS_DOWNLOAD_ATTRIBUTE => 'required|boolean',
-			self::GRANTS_ACCESS_FULL_PHOTO_ATTRIBUTE => 'required|boolean',
+			self::GRANTS_FULL_PHOTO_ACCESS_ATTRIBUTE => 'required|boolean',
 		];
 	}
 
@@ -56,7 +56,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 			is_public: static::toBoolean($values[self::IS_PUBLIC_ATTRIBUTE]),
 			is_link_required: static::toBoolean($values[self::IS_LINK_REQUIRED_ATTRIBUTE]),
 			is_nsfw: static::toBoolean($values[self::IS_NSFW_ATTRIBUTE]),
-			grants_access_full_photo: static::toBoolean($values[self::GRANTS_ACCESS_FULL_PHOTO_ATTRIBUTE]),
+			grants_full_photo_access: static::toBoolean($values[self::GRANTS_FULL_PHOTO_ACCESS_ATTRIBUTE]),
 			grants_download: static::toBoolean($values[self::GRANTS_DOWNLOAD_ATTRIBUTE]),
 		);
 		$this->isPasswordProvided = array_key_exists(HasPassword::PASSWORD_ATTRIBUTE, $values);

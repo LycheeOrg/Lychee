@@ -8,7 +8,7 @@ use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Data Transfer Object (DTO) to transmit the rights of a User.
+ * Data Transfer Object (DTO) to transmit the rights of an user on a (potentially different) user account.
  */
 class UserRightsDTO extends ArrayableDTO
 {
@@ -38,7 +38,7 @@ class UserRightsDTO extends ArrayableDTO
 	/**
 	 * @return self
 	 */
-	public static function ofTrue(): self
+	public static function ofUnregisteredAdmin(): self
 	{
 		return new self(true, true, true, true);
 	}

@@ -23,7 +23,7 @@ class RenameAttributesGrants extends Migration
 			$table->renameColumn('is_downloadable', 'grants_download');
 		});
 		Schema::table('base_albums', function (Blueprint $table) {
-			$table->renameColumn('grants_full_photo', 'grants_access_full_photo');
+			$table->renameColumn('grants_full_photo', 'grants_full_photo_access');
 		});
 		if (Schema::connection(null)->getConnection()->getDriverName() === 'sqlite') {
 			Schema::enableForeignKeyConstraints();
@@ -47,7 +47,7 @@ class RenameAttributesGrants extends Migration
 			$table->renameColumn('grants_download', 'is_downloadable');
 		});
 		Schema::table('base_albums', function (Blueprint $table) {
-			$table->renameColumn('grants_access_full_photo', 'grants_full_photo');
+			$table->renameColumn('grants_full_photo_access', 'grants_full_photo');
 		});
 		if (Schema::connection(null)->getConnection()->getDriverName() === 'sqlite') {
 			Schema::enableForeignKeyConstraints();
