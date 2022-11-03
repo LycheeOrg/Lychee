@@ -64,7 +64,7 @@ class AlbumProtectionPolicy extends ArrayableDTO
 			is_public: $baseSmartAlbum->is_public,
 			is_link_required: false,
 			is_nsfw: false,
-			grants_full_photo_access: $baseSmartAlbum->grants_access_full_photo,
+			grants_full_photo_access: $baseSmartAlbum->grants_full_photo_access,
 			grants_download: $baseSmartAlbum->grants_download,
 			is_password_required: false,
 		);

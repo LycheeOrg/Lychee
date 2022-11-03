@@ -28,7 +28,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  * @property Thumb|null $thumb
  * @property bool       $is_public                // Not serialized directly but provided via DTO to the front-end
  * @property bool       $grants_download          // Not serialized directly but provided via DTO to the front-end
- * @property bool       $grants_access_full_photo // Not serialized directly but provided via DTO to the front-end
+ * @property bool       $grants_full_photo_access // Not serialized directly but provided via DTO to the front-end
  */
 interface AbstractAlbum extends \JsonSerializable, Arrayable, Jsonable
 {
