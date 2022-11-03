@@ -210,7 +210,7 @@ csrf.getCSRFCookieValue = function () {
   // When we send back the value to the server as part of an AJAX request,
   // Laravel expects an unpadded value.
   // Hence, we must remove the `%3D`.
-  return cookie ? cookie.split("=")[1].trim().replaceAll("%3D", "") : null;
+  return cookie ? cookie.split("=")[1].trim().replace(/%3D/g, "") : null;
 };
 
 /**
@@ -514,10 +514,9 @@ $(function () {
  * @property {?string}      live_photo_content_id
  * @property {?string}      live_photo_checksum
  * @property {SizeVariants} size_variants
- * @property {boolean}      is_downloadable
- * @property {boolean}      is_share_button_visible
  * @property {?string}      [next_photo_id]
  * @property {?string}      [previous_photo_id]
+ * @property {PhotoRightsDTO} rights
  */
 
 /**
@@ -564,14 +563,11 @@ $(function () {
  * @property {?string} cover_id
  * @property {?Thumb}  thumb
  * @property {string}  [owner_name] optional, only shown in authenticated mode
- * @property {boolean} is_public
- * @property {boolean} is_downloadable
- * @property {boolean} is_share_button_visible
  * @property {boolean} is_nsfw
- * @property {boolean} grants_full_photo
- * @property {boolean} requires_link
- * @property {boolean} has_password
+ * @property {AlbumRightsDTO} rights
+ * @property {?AlbumProtectionPolicy} policies
  * @property {boolean} has_albums
+ * @property {boolean} has_password
  * @property {?string} min_taken_at
  * @property {?string} max_taken_at
  * @property {?SortingCriterion} sorting
@@ -589,13 +585,9 @@ $(function () {
  * @property {Photo[]}  photos
  * @property {?Thumb}   thumb
  * @property {string}   [owner_name] optional, only shown in authenticated mode
- * @property {boolean}  is_public
- * @property {boolean}  is_downloadable
- * @property {boolean}  is_share_button_visible
- * @property {boolean}  is_nsfw
- * @property {boolean}  grants_full_photo
- * @property {boolean}  requires_link
- * @property {boolean}  has_password
+ * @property {boolean} is_nsfw
+ * @property {AlbumRightsDTO} rights
+ * @property {?AlbumProtectionPolicy} policies
  * @property {?string}  min_taken_at
  * @property {?string}  max_taken_at
  * @property {?SortingCriterion}  sorting
@@ -609,9 +601,8 @@ $(function () {
  * @property {string}  title
  * @property {Photo[]} [photos]
  * @property {?Thumb}  thumb
- * @property {boolean} is_public
- * @property {boolean} is_downloadable
- * @property {boolean} is_share_button_visible
+ * @property {AlbumRightsDTO} rights
+ * @property {?AlbumProtectionPolicy} policies
  */
 
 /**
@@ -681,10 +672,18 @@ var SmartAlbumID = Object.freeze({
  *
  * @property {number}  id
  * @property {string}  username
- * @property {?string} email
- * @property {boolean} may_upload
- * @property {boolean} is_locked
+ * @property {string}  email
  * @property {boolean} has_token
+ */
+
+/**
+ * @typedef UserDTO
+ *
+ * @property {number}  id
+ * @property {string}  username
+ * @property {boolean} may_administrate
+ * @property {boolean} may_upload
+ * @property {boolean} may_edit_own_settings
  */
 
 /**
@@ -751,7 +750,7 @@ var SmartAlbumID = Object.freeze({
  * @typedef InitializationData
  *
  * @property {?User} user
- * @property {{is_admin: boolean, is_locked: boolean, may_upload: boolean}} rights
+ * @property {InitRightsDTO} rights
  * @property {number} update_json - version number of latest available update
  * @property {boolean} update_available
  * @property {Object.<string, string>} locale
@@ -855,4 +854,84 @@ var SmartAlbumID = Object.freeze({
  * @property {number} severity - either `'debug'`, `'info'`, `'notice'`, `'warning'`, `'error'`, `'critical'` or `'emergency'`
  * @property {?string} path - the path to the affected file or directory
  * @property {string} message - a message text
+ */
+
+/**
+ * The JSON object for Policies on Albums
+ *
+ * @typedef AlbumProtectionPolicy
+ *
+ * @property {is_nsfw} boolean
+ * @property {boolean} is_public
+ * @property {boolean} is_link_required
+ * @property {boolean} is_password_required
+ * @property {boolean} grants_full_photo_access
+ * @property {boolean} grants_download
+ */
+
+/**
+ * The JSON object for Rights on Users
+ *
+ * @typedef UserRightsDTO
+ *
+ * @property {boolean} can_create
+ * @property {boolean} can_list
+ * @property {boolean} can_edit
+ * @property {boolean} can_delete
+ */
+
+/**
+ * The JSON object for Rights on Settings
+ *
+ * @typedef SettingsRightsDTO
+ *
+ * @property {boolean} can_edit
+ * @property {boolean} can_edit_own_settings
+ * @property {boolean} can_use_2fa
+ * @property {boolean} can_see_logs
+ * @property {boolean} can_clear_logs
+ * @property {boolean} can_see_diagnostics
+ * @property {boolean} can_update
+ */
+
+/**
+ * The JSON object for Rights on Settings
+ *
+ * @typedef RootAlbumRightsDTO
+ *
+ * @property {boolean} can_edit
+ * @property {boolean} can_upload
+ * @property {boolean} can_download
+ * @property {boolean} can_import_from_server
+ */
+
+/**
+ * The JSON object for Rights on Photos
+ *
+ * @typedef PhotoRightsDTO
+ *
+ * @property {boolean} can_edit
+ * @property {boolean} can_download
+ * @property {boolean} can_access_full_photo
+ */
+
+/**
+ * The JSON object for Rights on Album
+ *
+ * @typedef AlbumRightsDTO
+ *
+ * @property {boolean} can_edit
+ * @property {boolean} can_share_with_users
+ * @property {boolean} can_download
+ * @property {boolean} can_upload
+ */
+
+/**
+ * The JSON object for Rights on Album
+ *
+ * @typedef InitRightsDTO
+ *
+ * @property {RootAlbumRightsDTO} root_album
+ * @property {SettingsRightsDTO} settings
+ * @property {UserRightsDTO} users
  */
