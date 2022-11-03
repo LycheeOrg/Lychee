@@ -7,9 +7,15 @@ use App\Http\Requests\Contracts\HasPassword;
 use App\Http\Requests\Contracts\HasUsername;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Requests\Traits\HasUsernameTrait;
+use App\Legacy\AdminAuthentication;
+use App\Models\Configs;
+use App\Policies\SettingsPolicy;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * @mixin Request
@@ -24,7 +30,21 @@ class MigrateRequest extends BaseApiRequest implements HasUsername, HasPassword
 	 */
 	public function authorize(): bool
 	{
-		return true;
+		// This conditional code makes use of lazy boolean evaluation: a || b does not execute b if a is true.
+		// 1. Check whether the user is already logged in properly
+		// 2. Check if the admin user is registered and login as admin, if not
+		// 3. Attempt to login as an admin user using the legacy method: hash(username) + hash(password).
+		// 4. Try to login the normal way.
+		//
+		// TODO: Step 2 will become unnecessary once admin registration has become part of the installation routine; after that the case that no admin is registered cannot occur anymore
+		// TODO: Step 3 will become unnecessary once the admin user of any existing installation has at least logged in once and the admin user has therewith migrated to use a non-hashed user name
+		$isLoggedIn = Auth::check();
+		$isLoggedIn = $isLoggedIn || AdminAuthentication::loginAsAdminIfNotRegistered();
+		$isLoggedIn = $isLoggedIn || AdminAuthentication::loginAsAdmin($this->username(), $this->password(), $this->ip());
+		$isLoggedIn = $isLoggedIn || Auth::attempt(['username' => $this->username(), 'password' => $this->password()]);
+
+		// Check if logged in AND is admin
+		return $isLoggedIn && Gate::check(SettingsPolicy::CAN_UPDATE, Configs::class);
 	}
 
 	/**
@@ -45,5 +65,13 @@ class MigrateRequest extends BaseApiRequest implements HasUsername, HasPassword
 	{
 		$this->username = $values[HasUsername::USERNAME_ATTRIBUTE] ?? '';
 		$this->password = $values[HasPassword::PASSWORD_ATTRIBUTE] ?? '';
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function failedAuthorization(): void
+	{
+		throw new HttpResponseException(response()->view('update.error', ['code' => '403', 'message' => 'Incorrect username or password'], 403));
 	}
 }
