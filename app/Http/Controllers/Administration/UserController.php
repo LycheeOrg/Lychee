@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Auth;
 class UserController extends Controller
 {
 	/**
-	 * @return Collection<UserDTO>
+	 * @return Collection<UserWithCapabilitiesDTO>
 	 *
 	 * @throws QueryBuilderException
 	 */
