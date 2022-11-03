@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Administration;
 use App\Actions\User\Create;
 use App\Actions\User\Save;
 use App\Contracts\InternalLycheeException;
-use App\DTO\User as UserDTO;
+use App\DTO\UserWithCapabilitiesDTO;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\InvalidPropertyException;
@@ -34,7 +34,7 @@ class UserController extends Controller
 	{
 		// PHPStan does not understand that `get` returns `Collection<User>`, but assumes that it returns `Collection<Model>`
 		// @phpstan-ignore-next-line
-		return User::query()->where('id', '>', 0)->get()->map(fn ($u) => UserDTO::ofUser($u));
+		return User::query()->where('id', '>', 0)->get()->map(fn ($u) => UserWithCapabilitiesDTO::ofUser($u));
 	}
 
 	/**

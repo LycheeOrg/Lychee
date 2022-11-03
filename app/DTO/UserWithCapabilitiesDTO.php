@@ -17,7 +17,7 @@ use App\Models\User as UserModel;
  *
  * This is because we do not send more than the front-end needs to know.
  */
-class User extends ArrayableDTO
+class UserWithCapabilitiesDTO extends ArrayableDTO
 {
 	public function __construct(
 		public int $id,
@@ -33,11 +33,11 @@ class User extends ArrayableDTO
 	 *
 	 * @param UserModel $user
 	 *
-	 * @return User
+	 * @return UserWithCapabilitiesDTO
 	 */
-	public static function ofUser(UserModel $user): User
+	public static function ofUser(UserModel $user): UserWithCapabilitiesDTO
 	{
-		return new User(
+		return new UserWithCapabilitiesDTO(
 			$user->id,
 			$user->username,
 			$user->may_administrate,
