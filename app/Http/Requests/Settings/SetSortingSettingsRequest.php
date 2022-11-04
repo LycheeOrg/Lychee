@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Settings;
 
 use App\Http\Requests\BaseApiRequest;
+use App\Models\Configs;
 use App\Policies\SettingsPolicy;
 use App\Rules\AlbumSortingRule;
 use App\Rules\OrderRule;

@@ -30,7 +30,7 @@ abstract class AbstractSettingRequest extends BaseApiRequest
 		return $this->name;
 	}
 
-	public function getSettingValue(): string
+	public function getSettingValue(): string|int|bool
 	{
 		return $this->value;
 	}

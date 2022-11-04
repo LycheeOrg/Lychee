@@ -20,6 +20,6 @@ class SetCSSSettingRequest extends AbstractSettingRequest
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->name = self::ATTRIBUTE;
-		$this->value = $values[self::ATTRIBUTE];
+		$this->value = $values[self::ATTRIBUTE] ?? '';
 	}
 }

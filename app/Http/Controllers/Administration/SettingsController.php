@@ -27,7 +27,6 @@ use App\Http\Requests\Settings\SetNewPhotosNotificationSettingRequest;
 use App\Http\Requests\Settings\SetNSFWVisibilityRequest;
 use App\Http\Requests\Settings\SetPublicSearchSettingRequest;
 use App\Http\Requests\Settings\SetSortingSettingsRequest;
-use App\Http\Requests\Settings\SettingRequest;
 use App\Http\Requests\User\Self\ChangeLoginRequest;
 use App\Models\Configs;
 use App\Models\User;
@@ -143,7 +142,7 @@ class SettingsController extends Controller
 	/**
 	 * Set the dropbox key for the API.
 	 *
-	 * @param SettingRequest $request
+	 * @param SetDropboxKeySettingRequest $request
 	 *
 	 * @return void
 	 *
@@ -191,7 +190,7 @@ class SettingsController extends Controller
 	 * date: date of the photo
 	 * exif: exif information.
 	 *
-	 * @param SettingRequest $request
+	 * @param SetImageOverlaySettingRequest $request
 	 *
 	 * @return void
 	 *
@@ -270,7 +269,7 @@ class SettingsController extends Controller
 	/**
 	 * Enable display of photos of sub-albums on map.
 	 *
-	 * @param SettingRequest $request
+	 * @param SetMapIncludeSubAlbumsSettingRequest $request
 	 *
 	 * @return void
 	 *
@@ -300,7 +299,7 @@ class SettingsController extends Controller
 	/**
 	 * Enable display of location name.
 	 *
-	 * @param SettingRequest $request
+	 * @param SetLocationShowSettingRequest $request
 	 *
 	 * @return void
 	 *
@@ -330,7 +329,7 @@ class SettingsController extends Controller
 	/**
 	 * Enable sending of new photos notification emails.
 	 *
-	 * @param SettingRequest $request
+	 * @param SetNewPhotosNotificationSettingRequest $request
 	 *
 	 * @return void
 	 *
@@ -355,8 +354,8 @@ class SettingsController extends Controller
 	 */
 	public function setCSS(SetCSSSettingRequest $request): void
 	{
-		$css = $request->getSettingValue() ?? '';
-
+		/** @var string $css */
+		$css = $request->getSettingValue();
 		if (Storage::disk('dist')->put('user.css', $css) === false) {
 			throw new InsufficientFilesystemPermissions('Could not save CSS');
 		}
