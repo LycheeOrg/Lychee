@@ -35,7 +35,6 @@ parameters:
 		- '#Call to private method latest\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\HasMany<Illuminate\\Database\\Eloquent\\Model>#'
 		- '#Call to private method where(Not)?(Null|In|Exists|Column)?\(\) of parent class Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>.#'
 		- '#Call to protected method asDateTime\(\) of class Illuminate\\Database\\Eloquent\\Model.#'
-		- '#Dynamic call to static method Illuminate\\Http\\Request::validate\(\)#'
 
 		# Covariance - LSP princinple: https://en.wikipedia.org/wiki/Liskov_substitution_principle
 		- '#Return type \(Illuminate\\Support\\Carbon\|null\) of method App\\Models\\.*::asDateTime\(\) should be covariant with return type \(Illuminate\\Support\\Carbon\) of method Illuminate\\Database\\Eloquent\\Model::asDateTime\(\)#'

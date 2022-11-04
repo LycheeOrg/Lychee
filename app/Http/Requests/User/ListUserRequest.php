@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class UserListingRequest extends AbstractEmptyRequest
+class ListUserRequest extends AbstractEmptyRequest
 {
 	public function authorize(): bool
 	{

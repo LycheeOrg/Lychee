@@ -13,7 +13,6 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 class PhotoPolicy extends BasePolicy
 {
 	protected AlbumPolicy $albumPolicy;
-	protected UserPolicy $userPolicy;
 
 	public const CAN_SEE = 'canSee';
 	public const CAN_DOWNLOAD = 'canDownload';
@@ -28,7 +27,6 @@ class PhotoPolicy extends BasePolicy
 	{
 		try {
 			$this->albumPolicy = resolve(AlbumPolicy::class);
-			$this->userPolicy = resolve(UserPolicy::class);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s provider component', $e);
 		}

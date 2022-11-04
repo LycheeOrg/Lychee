@@ -13,9 +13,9 @@ use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\User\AddUserRequest;
 use App\Http\Requests\User\DeleteUserRequest;
+use App\Http\Requests\User\ListUserRequest;
 use App\Http\Requests\User\Self\SetEmailRequest;
 use App\Http\Requests\User\SetUserSettingsRequest;
-use App\Http\Requests\User\UserListingRequest;
 use App\Http\Requests\User\UserSettingsRequest;
 use App\Models\User;
 use Carbon\Exceptions\InvalidFormatException;
@@ -30,7 +30,7 @@ class UserController extends Controller
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function list(UserListingRequest $request): Collection
+	public function list(ListUserRequest $request): Collection
 	{
 		// PHPStan does not understand that `get` returns `Collection<User>`, but assumes that it returns `Collection<Model>`
 		// @phpstan-ignore-next-line

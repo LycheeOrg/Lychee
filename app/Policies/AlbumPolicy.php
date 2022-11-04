@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Contracts\AbstractAlbum;
 use App\Exceptions\ConfigurationKeyMissingException;
-use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Factories\AlbumFactory;
@@ -13,13 +12,10 @@ use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\User;
 use App\SmartAlbums\BaseSmartAlbum;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Session;
 
 class AlbumPolicy extends BasePolicy
 {
-	protected UserPolicy $userPolicy;
-
 	public const UNLOCKED_ALBUMS_SESSION_KEY = 'unlocked_albums';
 
 	public const CAN_SEE = 'canSee';
@@ -31,18 +27,6 @@ class AlbumPolicy extends BasePolicy
 	public const CAN_SHARE_WITH_USERS = 'canShareWithUsers';
 	public const CAN_IMPORT_FROM_SERVER = 'canImportFromServer';
 	public const CAN_SHARE_ID = 'canShareById';
-
-	/**
-	 * @throws FrameworkException
-	 */
-	public function __construct()
-	{
-		try {
-			$this->userPolicy = resolve(UserPolicy::class);
-		} catch (BindingResolutionException $e) {
-			throw new FrameworkException('Laravel\'s provider component', $e);
-		}
-	}
 
 	/**
 	 * This ensures that current album is owned by current user.
