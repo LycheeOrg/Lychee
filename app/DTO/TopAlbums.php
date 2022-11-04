@@ -32,7 +32,7 @@ class TopAlbums extends ArrayableDTO
 	public function toArray(): array
 	{
 		return [
-			'smart_albums' => $this->smart_albums->toArray(),
+			'smart_albums' => $this->smart_albums->map(fn ($a) => self::toAlbumDTOArray($a))->toArray(),
 			'tag_albums' => $this->tag_albums->map(fn ($a) => self::toAlbumDTOArray($a))->toArray(),
 			'albums' => $this->albums->map(fn ($a) => self::toAlbumDTOArray($a))->toArray(),
 			'shared_albums' => $this->shared_albums->map(fn ($a) => self::toAlbumDTOArray($a))->toArray(),
@@ -44,12 +44,10 @@ class TopAlbums extends ArrayableDTO
 	 *
 	 * @param AbstractAlbum $abstractAlbum
 	 *
-	 * @return array resulting array
+	 * @return AbstractAlbumDTO resulting DTO
 	 */
-	private static function toAlbumDTOArray(AbstractAlbum $abstractAlbum): array
+	private static function toAlbumDTOArray(AbstractAlbum $abstractAlbum): AbstractAlbumDTO
 	{
-		$dto = new AbstractAlbumDTO($abstractAlbum);
-
-		return $dto->toArray();
+		return new AbstractAlbumDTO($abstractAlbum);
 	}
 }

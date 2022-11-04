@@ -13,9 +13,8 @@ use Illuminate\Support\Facades\Gate;
 class RootAlbumRightsDTO extends ArrayableDTO
 {
 	public function __construct(
-		public bool $can_edit,  // is it needed?
+		public bool $can_edit,     // needed because we want to allow user interaction like moving albums
 		public bool $can_upload,
-		public bool $can_download,  // is it needed?
 		public bool $can_import_from_server,
 	) {
 	}
@@ -30,7 +29,6 @@ class RootAlbumRightsDTO extends ArrayableDTO
 		return new self(
 			can_edit: Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, null]),
 			can_upload: Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, null]),
-			can_download: Gate::check(AlbumPolicy::CAN_DOWNLOAD, [AbstractAlbum::class, null]),
 			can_import_from_server: Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, AbstractAlbum::class),
 		);
 	}
@@ -40,6 +38,6 @@ class RootAlbumRightsDTO extends ArrayableDTO
 	 */
 	public static function ofUnregisteredAdmin(): self
 	{
-		return new self(true, true, true, true);
+		return new self(true, true, true);
 	}
 }

@@ -5,7 +5,7 @@ namespace App\DTO\Rights;
 use App\DTO\ArrayableDTO;
 
 /**
- * This DTO provides the information whether some actions are available to the user.
+ * This DTO provides the application rights of the user.
  */
 class GlobalRightsDTO extends ArrayableDTO
 {

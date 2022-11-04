@@ -9,7 +9,7 @@ use App\Models\Album;
 /**
  * Data Transfer Object (DTO) for Abstract Albums.
  *
- * This allows us to decorate the Album with its associated current user rights.
+ * This allows us to decorate the album with its associated current user rights.
  */
 class AbstractAlbumDTO extends DTO
 {
