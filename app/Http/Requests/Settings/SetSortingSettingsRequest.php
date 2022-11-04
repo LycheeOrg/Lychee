@@ -2,11 +2,14 @@
 
 namespace App\Http\Requests\Settings;
 
+use App\Http\Requests\BaseApiRequest;
+use App\Policies\SettingsPolicy;
 use App\Rules\AlbumSortingRule;
 use App\Rules\OrderRule;
 use App\Rules\PhotoSortingRule;
+use Illuminate\Support\Facades\Gate;
 
-class SetSortingRequest extends SettingRequest
+class SetSortingSettingsRequest extends BaseApiRequest
 {
 	public const PHOTO_SORTING_COLUMN_ATTRIBUTE = 'sorting_photos_column';
 	public const PHOTO_SORTING_ORDER_ATTRIBUTE = 'sorting_photos_order';
@@ -17,6 +20,14 @@ class SetSortingRequest extends SettingRequest
 	protected string $photoSortingOrder;
 	protected string $albumSortingColumn;
 	protected string $albumSortingOrder;
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function authorize(): bool
+	{
+		return Gate::check(SettingsPolicy::CAN_EDIT, Configs::class);
+	}
 
 	/**
 	 * {@inheritDoc}
