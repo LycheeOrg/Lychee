@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Auth;
 /**
  * Class AlbumQueryPolicy.
  */
-class AlbumQueryPolicy extends BasePolicy
+class AlbumQueryPolicy
 {
 	protected AlbumFactory $albumFactory;
 	protected AlbumPolicy $albumPolicy;

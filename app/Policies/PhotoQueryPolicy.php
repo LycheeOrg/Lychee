@@ -14,7 +14,7 @@ use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Auth;
 
-class PhotoQueryPolicy extends BasePolicy
+class PhotoQueryPolicy
 {
 	protected AlbumQueryPolicy $albumQueryPolicy;
 
