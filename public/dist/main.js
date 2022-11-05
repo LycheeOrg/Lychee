@@ -2732,21 +2732,58 @@ album.apply_nsfw_filter = function () {
 /**
  * Determines whether the user can upload to the currently active album.
  *
- * For special cases of no album / smart album / etc. we return true.
- * It's only for regular, non-matching albums that we return false.
+ * It is safe to call this method even if no album is loaded at all.
+ * In this case, the method simply returns `false` (even for admin users).
+ *
+ * If no user is authenticated or the authenticated user has no upload
+ * capabilities, the method returns `false` (even for albums owned by the
+ * user).
+ * For admin users the method returns `true`.
+ *
+ * For non-admin, authenticated users with the upload capability
+ *
+ *  - the method returns `true` for smart albums
+ *  - the method returns `true` for regular albums if and only if the album is
+ *    owned by the currently authenticated user.
  *
  * @returns {boolean}
  */
 album.isUploadable = function () {
-	if (lychee.rights.is_admin) {
-		return true;
-	}
-	if (lychee.publicMode || !lychee.rights.may_upload) {
+	// If no album is loaded, nobody (not even the admin) can upload photos.
+	// We must check this first, before we test for the admin short-cut.
+	//
+	// Particular photo actions (such as starring/unstarring a photo) assume
+	// that the corresponding album is loaded, because their code use
+	// `album.getPhotoId` under the hood.
+	// (Note, this is a bug on its own.)
+	// In the special view mode for single photos no album is loaded, even if
+	// the currently authenticated user had the right to load (and see) the
+	// album.
+	// Hence, invoking those actions without a properly loaded album, results
+	// in exceptions.
+	// The method `header.setMode` relies on this method to decide whether
+	// particular action buttons shall be hidden in single photo view.
+	// If the admin is authenticated and opens the view mode, those "buggy"
+	// actions must be hidden.
+	if (album.json === null) {
 		return false;
 	}
 
+	if (lychee.rights.is_admin) {
+		return true;
+	}
+	if (lychee.user === null || lychee.publicMode || !lychee.rights.may_upload) {
+		return false;
+	}
+
+	// Smart albums are considered to be owned by everybody and hence get
+	// a pass
+	if (album.isSmartID(album.json.id)) {
+		return true;
+	}
+
 	// TODO: Comparison of numeric user IDs (instead of names) should be more robust
-	return album.json === null || lychee.user !== null && album.json.owner_name === lychee.user.username;
+	return album.json.owner_name === lychee.user.username;
 };
 
 /**
