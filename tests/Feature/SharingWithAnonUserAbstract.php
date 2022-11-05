@@ -246,17 +246,6 @@ abstract class SharingWithAnonUserAbstract extends SharingTestScenariosAbstract
 		];
 	}
 
-	protected function generateExpectedSmartAlbumJson(
-		bool $isPublic,
-		?string $thumbID = null,
-		array $expectedPhotos = []
-	): array {
-		return [
-			'thumb' => $this->generateExpectedThumbJson($thumbID),
-			'photos' => $expectedPhotos,
-		];
-	}
-
 	protected function generateExpectedTreeJson(array $expectedAlbums = []): array
 	{
 		return [

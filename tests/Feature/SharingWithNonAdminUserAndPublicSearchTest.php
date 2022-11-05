@@ -164,7 +164,7 @@ class SharingWithNonAdminUserAndPublicSearchTest extends SharingWithNonAdminUser
 
 		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
 		$responseForStarred->assertJson([
-			// 'is_public' => true,
+			'policies' => ['is_public' => true],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID2),
 			'photos' => [
 				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID2, $this->albumID1), // photo 2 is alphabetically first
@@ -181,7 +181,7 @@ class SharingWithNonAdminUserAndPublicSearchTest extends SharingWithNonAdminUser
 		$responseForAlbum->assertJson([
 			'id' => $this->albumID1,
 			'title' => self::ALBUM_TITLE_1,
-			// 'is_public' => false,
+			'policies' => ['is_public' => false],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID2),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID2, $this->albumID1),
