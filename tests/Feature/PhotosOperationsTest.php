@@ -222,7 +222,7 @@ class PhotosOperationsTest extends PhotoTestBase
 		$this->albums_tests->get(RecentAlbum::ID, 200, null, $ids[0]);
 		$this->albums_tests->get(UnsortedAlbum::ID, 200, null, $ids[1]);
 
-		$this->albums_tests->set_protection_policy($albumID);
+		$this->albums_tests->set_protection_policies($albumID);
 
 		/**
 		 * Actually try to display the picture.
@@ -361,11 +361,11 @@ class PhotosOperationsTest extends PhotoTestBase
 				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_SUNSET_IMAGE), $albumID121
 			)->offsetGet('id');
 
-			$this->albums_tests->set_protection_policy(id: $albumID1, full_photo: true, public: true, requiresLink: true);
-			$this->albums_tests->set_protection_policy($albumID11);
-			$this->albums_tests->set_protection_policy($albumID12);
-			$this->albums_tests->set_protection_policy($albumID121);
-			$this->albums_tests->set_protection_policy($albumID13);
+			$this->albums_tests->set_protection_policies(id: $albumID1, full_photo: true, public: true, requiresLink: true);
+			$this->albums_tests->set_protection_policies($albumID11);
+			$this->albums_tests->set_protection_policies($albumID12);
+			$this->albums_tests->set_protection_policies($albumID121);
+			$this->albums_tests->set_protection_policies($albumID13);
 
 			Auth::logout();
 			Session::flush();
@@ -470,7 +470,7 @@ class PhotosOperationsTest extends PhotoTestBase
 		$photoID2 = $this->photos_tests->upload(
 			self::createUploadedFile(self::SAMPLE_FILE_TRAIN_IMAGE), $albumID
 		)->offsetGet('id');
-		$this->albums_tests->set_protection_policy($albumID);
+		$this->albums_tests->set_protection_policies($albumID);
 		Auth::logout();
 		Session::flush();
 		$this->photos_tests->delete([$photoID1, $photoID2], 401);

@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Contracts\HasRandomID;
-use App\DTO\AlbumProtectionPolicy;
+use App\DTO\AlbumProtectionPolicies;
 use App\DTO\PhotoSortingCriterion;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
@@ -182,7 +182,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'sorting_col',   // serialize DTO `order` instead
 		'sorting_order', // serialize DTO `order` instead
 
-		// Security attributes are hidden because provided by the DTO AlbumProtectionPolicy
+		// Security attributes are hidden because provided by the DTO AlbumProtectionPolicies
 		'is_public',
 		'is_nsfw',
 		'is_link_required',
@@ -201,7 +201,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 */
 	protected $appends = [
 		'sorting',
-		'policy',
+		'policies',
 	];
 
 	/**
@@ -275,13 +275,13 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	}
 
 	/**
-	 * Provide the policy attributes for said album.
+	 * Provide the policies attributes for said album.
 	 *
-	 * @return AlbumProtectionPolicy|null
+	 * @return AlbumProtectionPolicies|null
 	 */
-	protected function getPolicyAttribute(): AlbumProtectionPolicy|null
+	protected function getPoliciesAttribute(): AlbumProtectionPolicies|null
 	{
-		return AlbumProtectionPolicy::ofBaseAlbumImplementation($this);
+		return AlbumProtectionPolicies::ofBaseAlbumImplementation($this);
 	}
 
 	public function toArray(): array

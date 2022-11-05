@@ -327,8 +327,8 @@ class AlbumTest extends TestCase
 
 		$this->albums_tests->set_description('-1', 'new description', 422);
 		$this->albums_tests->set_description('abcdefghijklmnopqrstuvwx', 'new description', 404);
-		$this->albums_tests->set_protection_policy(id: '-1', expectedStatusCode: 422);
-		$this->albums_tests->set_protection_policy(id: 'abcdefghijklmnopqrstuvwx', expectedStatusCode: 404);
+		$this->albums_tests->set_protection_policies(id: '-1', expectedStatusCode: 422);
+		$this->albums_tests->set_protection_policies(id: 'abcdefghijklmnopqrstuvwx', expectedStatusCode: 404);
 
 		Auth::logout();
 		Session::flush();

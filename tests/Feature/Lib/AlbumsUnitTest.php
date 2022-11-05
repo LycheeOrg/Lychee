@@ -276,7 +276,7 @@ class AlbumsUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
-	public function set_protection_policy(
+	public function set_protection_policies(
 		string $id,
 		bool $full_photo = true,
 		bool $public = true,
@@ -300,7 +300,7 @@ class AlbumsUnitTest
 			$params['password'] = $password;
 		}
 
-		$response = $this->testCase->postJson('/api/Album::setProtectionPolicy', $params);
+		$response = $this->testCase->postJson('/api/Album::setProtectionPolicies', $params);
 		$this->assertStatus($response, $expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);

@@ -217,8 +217,8 @@ class SearchTest extends PhotoTestBase
 			$albumID4 = $this->albums_tests->add(null, 'Other public album')->offsetGet('id');
 			$userID = $this->users_tests->add('Test User', 'Test password')->offsetGet('id');
 			$this->sharing_test->add([$albumID2], [$userID]);
-			$this->albums_tests->set_protection_policy($albumID3);
-			$this->albums_tests->set_protection_policy($albumID4);
+			$this->albums_tests->set_protection_policies($albumID3);
+			$this->albums_tests->set_protection_policies($albumID4);
 
 			Auth::logout();
 			Session::flush();
@@ -261,8 +261,8 @@ class SearchTest extends PhotoTestBase
 			$albumID4 = $this->albums_tests->add(null, 'Other public album')->offsetGet('id');
 			$userID = $this->users_tests->add('Test User', 'Test password')->offsetGet('id');
 			$this->sharing_test->add([$albumID2], [$userID]);
-			$this->albums_tests->set_protection_policy($albumID3);
-			$this->albums_tests->set_protection_policy($albumID4);
+			$this->albums_tests->set_protection_policies($albumID3);
+			$this->albums_tests->set_protection_policies($albumID4);
 
 			Auth::logout();
 			Session::flush();
