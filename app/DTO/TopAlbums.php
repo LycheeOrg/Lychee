@@ -42,12 +42,15 @@ class TopAlbums extends ArrayableDTO
 	/**
 	 * Convert an Abstract album into it's DTO form.
 	 *
-	 * @param AbstractAlbum $abstractAlbum
+	 * @param AbstractAlbum|null $abstractAlbum
 	 *
-	 * @return AbstractAlbumDTO resulting DTO
+	 * @return AbstractAlbumDTO|null resulting DTO
 	 */
-	private static function toAlbumDTOArray(AbstractAlbum $abstractAlbum): AbstractAlbumDTO
+	private static function toAlbumDTOArray(AbstractAlbum|null $abstractAlbum): AbstractAlbumDTO|null
 	{
-		return new AbstractAlbumDTO($abstractAlbum);
+		return match ($abstractAlbum) {
+			null => null,
+			default => new AbstractAlbumDTO($abstractAlbum)
+		};
 	}
 }
