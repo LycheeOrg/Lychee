@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\UserManagement;
+namespace App\Http\Requests\Users;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPassword;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\UserManagement;
+namespace App\Http\Requests\Users;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasUser;
@@ -21,7 +21,7 @@ class DeleteUserRequest extends BaseApiRequest implements HasUser
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, User::class);
+		return Gate::check(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class]);
 	}
 
 	/**

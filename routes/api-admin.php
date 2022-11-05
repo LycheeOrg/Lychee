@@ -42,12 +42,13 @@ Route::post('/Settings::setNewPhotosNotification', [SettingsController::class, '
 Route::post('/Update::apply', [UpdateController::class, 'apply']);
 Route::post('/Update::check', [UpdateController::class, 'check']);
 
-Route::post('/User::list', [UserController::class, 'list']);
-Route::post('/User::save', [UserController::class, 'save']);
-Route::post('/User::delete', [UserController::class, 'delete']);
-Route::post('/User::create', [UserController::class, 'create']);
+Route::post('/Users::list', [UsersController::class, 'list']);
+Route::post('/Users::save', [UsersController::class, 'save']);
+Route::post('/Users::delete', [UsersController::class, 'delete']);
+Route::post('/Users::create', [UsersController::class, 'create']);
+
 Route::post('/User::setEmail', [UserController::class, 'setEmail']);
-Route::post('/User::getEmail', [UserController::class, 'getEmail']);
+Route::post('/User::getEmail', [UserController::class, 'getAuthenticatedUser']); // Just BW compatibility
 Route::post('/User::getAuthenticatedUser', [UserController::class, 'getAuthenticatedUser']);
 Route::post('/User::resetToken', [UserController::class, 'resetToken']);
 Route::post('/User::unsetToken', [UserController::class, 'unsetToken']);
