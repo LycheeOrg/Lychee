@@ -8,7 +8,7 @@ use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Data Transfer Object (DTO) to transmit the rights of an user on a (potentially different) user account.
+ * Data Transfer Object (DTO) to transmit the rights of an user.
  */
 class UserRightsDTO extends ArrayableDTO
 {
