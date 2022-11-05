@@ -179,6 +179,8 @@ final class ChineseTraditional implements Language
 			'ALBUM_VIDEOS' => '影片',
 			'ALBUM_SUBALBUMS' => '子相簿',
 			'ALBUM_SHARING' => '分享',
+			'ALBUM_SHR_YES' => '是',
+			'ALBUM_SHR_NO' => '否',
 			'ALBUM_PUBLIC' => '公開',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => '原圖',

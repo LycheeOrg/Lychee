@@ -179,6 +179,8 @@ final class French implements Language
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Sous-albums',
 			'ALBUM_SHARING' => 'Partager',
+			'ALBUM_SHR_YES' => 'Oui',
+			'ALBUM_SHR_NO' => 'Non',
 			'ALBUM_PUBLIC' => 'Public',
 			'ALBUM_PUBLIC_EXPL' => 'Les utilisateurs anonymes peuvent accéder à cet album, sous réserve des restrictions suivantes.',
 			'ALBUM_FULL' => 'Originaux',

@@ -179,6 +179,8 @@ final class English implements Language
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Subalbums',
 			'ALBUM_SHARING' => 'Share',
+			'ALBUM_SHR_YES' => 'YES',
+			'ALBUM_SHR_NO' => 'No',
 			'ALBUM_PUBLIC' => 'Public',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Original',

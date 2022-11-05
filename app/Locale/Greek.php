@@ -179,6 +179,8 @@ final class Greek implements Language
 			'ALBUM_VIDEOS' => 'Βίντεο',
 			'ALBUM_SUBALBUMS' => 'Υπο-λευκώματα',
 			'ALBUM_SHARING' => 'Κοινή Χρήση',
+			'ALBUM_SHR_YES' => 'ΝΑΙ',
+			'ALBUM_SHR_NO' => 'Όχι',
 			'ALBUM_PUBLIC' => 'Δημόσιο',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Πρωτότυπο',

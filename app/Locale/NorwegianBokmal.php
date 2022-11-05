@@ -179,6 +179,8 @@ final class NorwegianBokmal implements Language
 			'ALBUM_VIDEOS' => 'Filmer',
 			'ALBUM_SUBALBUMS' => 'Underalbum',
 			'ALBUM_SHARING' => 'Deling',
+			'ALBUM_SHR_YES' => 'JA',
+			'ALBUM_SHR_NO' => 'Nei',
 			'ALBUM_PUBLIC' => 'Offentlig',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Original',

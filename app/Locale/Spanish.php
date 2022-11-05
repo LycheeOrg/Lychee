@@ -179,6 +179,8 @@ final class Spanish implements Language
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Subalbums',
 			'ALBUM_SHARING' => 'Compartir',
+			'ALBUM_SHR_YES' => 'SI',
+			'ALBUM_SHR_NO' => 'No',
 			'ALBUM_PUBLIC' => 'Público',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Original',

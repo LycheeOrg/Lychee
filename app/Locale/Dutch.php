@@ -179,6 +179,8 @@ final class Dutch implements Language
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Subalbums',
 			'ALBUM_SHARING' => 'Deel',
+			'ALBUM_SHR_YES' => 'Ja',
+			'ALBUM_SHR_NO' => 'Nee',
 			'ALBUM_PUBLIC' => 'Publiekelijk',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Original',

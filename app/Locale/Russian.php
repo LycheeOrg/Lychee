@@ -179,6 +179,8 @@ final class Russian implements Language
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Subalbums',
 			'ALBUM_SHARING' => 'Общее',
+			'ALBUM_SHR_YES' => 'Да',
+			'ALBUM_SHR_NO' => 'Нет',
 			'ALBUM_PUBLIC' => 'Доступ',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Original',

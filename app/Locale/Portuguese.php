@@ -179,6 +179,8 @@ final class Portuguese implements Language
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Subálbums',
 			'ALBUM_SHARING' => 'Partilhar',
+			'ALBUM_SHR_YES' => 'SIM',
+			'ALBUM_SHR_NO' => 'Não',
 			'ALBUM_PUBLIC' => 'Público',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Original',

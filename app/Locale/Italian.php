@@ -179,6 +179,8 @@ final class Italian implements Language
 			'ALBUM_VIDEOS' => 'Video',
 			'ALBUM_SUBALBUMS' => 'Subalbums',
 			'ALBUM_SHARING' => 'Condividi',
+			'ALBUM_SHR_YES' => 'SI',
+			'ALBUM_SHR_NO' => 'No',
 			'ALBUM_PUBLIC' => 'Pubblico',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Original',

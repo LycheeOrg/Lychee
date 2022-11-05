@@ -179,6 +179,8 @@ final class Vietnamese implements Language
 			'ALBUM_VIDEOS' => 'Video',
 			'ALBUM_SUBALBUMS' => 'Album con',
 			'ALBUM_SHARING' => 'Chia sẻ',
+			'ALBUM_SHR_YES' => 'Có',
+			'ALBUM_SHR_NO' => 'Không',
 			'ALBUM_PUBLIC' => 'Công cộng',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Hình ảnh gốc',

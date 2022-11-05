@@ -179,6 +179,8 @@ final class Polish implements Language
 			'ALBUM_VIDEOS' => 'Filmy',
 			'ALBUM_SUBALBUMS' => 'Albumy podrzędne',
 			'ALBUM_SHARING' => 'Udostępnianie',
+			'ALBUM_SHR_YES' => 'TAK',
+			'ALBUM_SHR_NO' => 'Nie',
 			'ALBUM_PUBLIC' => 'Publiczny',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Oryginalne zdjęcia',

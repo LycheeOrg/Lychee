@@ -179,6 +179,8 @@ final class Czech implements Language
 			'ALBUM_VIDEOS' => 'Videa',
 			'ALBUM_SUBALBUMS' => 'Subalba',
 			'ALBUM_SHARING' => 'Sdílení',
+			'ALBUM_SHR_YES' => 'Ano',
+			'ALBUM_SHR_NO' => 'Ne',
 			'ALBUM_PUBLIC' => 'Veřejné',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Originál',

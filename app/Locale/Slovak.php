@@ -179,6 +179,8 @@ final class Slovak implements Language
 			'ALBUM_VIDEOS' => 'Videá',
 			'ALBUM_SUBALBUMS' => 'Subalbumy',
 			'ALBUM_SHARING' => 'Zdieľanie',
+			'ALBUM_SHR_YES' => 'Áno',
+			'ALBUM_SHR_NO' => 'Nie',
 			'ALBUM_PUBLIC' => 'Verejný',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Originál',

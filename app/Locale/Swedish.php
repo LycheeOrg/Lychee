@@ -179,6 +179,8 @@ final class Swedish implements Language
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Subalbums',
 			'ALBUM_SHARING' => 'Dela',
+			'ALBUM_SHR_YES' => 'Ja',
+			'ALBUM_SHR_NO' => 'Nej',
 			'ALBUM_PUBLIC' => 'Publikt',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Original',

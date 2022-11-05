@@ -179,6 +179,8 @@ final class German implements Language
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Unteralben',
 			'ALBUM_SHARING' => 'Teilen',
+			'ALBUM_SHR_YES' => 'Ja',
+			'ALBUM_SHR_NO' => 'Nein',
 			'ALBUM_PUBLIC' => 'Öffentlich',
 			'ALBUM_PUBLIC_EXPL' => 'Anonyme Nutzer können, abhängig von den Einstellungen unten, auf dieses Album zugreifen.',
 			'ALBUM_FULL' => 'Original',

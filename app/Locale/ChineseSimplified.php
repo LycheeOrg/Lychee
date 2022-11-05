@@ -179,6 +179,8 @@ final class ChineseSimplified implements Language
 			'ALBUM_VIDEOS' => '视频数',
 			'ALBUM_SUBALBUMS' => '子相册数',
 			'ALBUM_SHARING' => '共享',
+			'ALBUM_SHR_YES' => '是',
+			'ALBUM_SHR_NO' => '否',
 			'ALBUM_PUBLIC' => '公开',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
 			'ALBUM_FULL' => '原始图像',
