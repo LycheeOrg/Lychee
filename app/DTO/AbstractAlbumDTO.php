@@ -28,7 +28,7 @@ class AbstractAlbumDTO extends DTO
 		// Base conversion to array
 		$albumDTO = $this->album->toArray();
 
-		// if albums has sub-albums provided also apply conversion on them
+		// If album provides sub-albums also apply conversion to them
 		if (key_exists('albums', $albumDTO) && $this->album instanceof Album) {
 			/** @var \Illuminate\Support\Collection<int,Album> $children */
 			$children = $this->album->children;
