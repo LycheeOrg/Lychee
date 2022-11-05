@@ -129,11 +129,18 @@ class AlbumPolicy extends BasePolicy
 			return $default;
 		}
 
+		if ($abstractAlbum instanceof BaseSmartAlbum) {
+			return $user !== null || $abstractAlbum->grants_download;
+		}
+
 		// TODO: when download rights are assigned to albums, we add more logic can be added here.
-		return ($abstractAlbum instanceof BaseSmartAlbum && $user !== null) ||
-		($abstractAlbum instanceof BaseAlbum && $this->isOwner($user, $abstractAlbum) ||
-		($abstractAlbum instanceof BaseAlbum && $abstractAlbum->shared_with()->where('user_id', '=', $user?->id)->count() > 0 && $default) ||
-		$abstractAlbum->grants_download);
+		if ($abstractAlbum instanceof BaseAlbum) {
+			return $this->isOwner($user, $abstractAlbum) ||
+				$abstractAlbum->grants_download ||
+				($abstractAlbum->shared_with()->where('user_id', '=', $user?->id)->count() > 0 && $default);
+		}
+
+		return false;
 	}
 
 	/**

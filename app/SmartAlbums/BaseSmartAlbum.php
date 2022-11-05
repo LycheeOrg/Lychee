@@ -16,13 +16,11 @@ use App\Models\Extensions\SortingDecorator;
 use App\Models\Extensions\Thumb;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Models\Photo;
-use App\Policies\AlbumPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\SmartAlbums\Utils\MimicModel;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Gate;
 
 /**
  * Class BaseSmartAlbum.
@@ -34,6 +32,9 @@ use Illuminate\Support\Facades\Gate;
  * starred, being recently added, etc.
  *
  * @property string $id
+ * @property bool   $is_public
+ * @property bool   $grants_full_photo_access
+ * @property bool   $grants_download
  */
 abstract class BaseSmartAlbum implements AbstractAlbum
 {
@@ -152,7 +153,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			'id' => $this->id,
 			'title' => $this->title,
 			'thumb' => $this->getThumbAttribute(),
-			'policies' => Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this]) ? AlbumProtectionPolicy::ofSmartAlbum($this) : null,
+			'policy' => AlbumProtectionPolicy::ofSmartAlbum($this),
 		];
 
 		if (isset($this->photos)) {
