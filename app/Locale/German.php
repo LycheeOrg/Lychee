@@ -502,7 +502,7 @@ final class German implements Language
 			'CAMERA_DATE' => 'Kameradatum',
 			'NEW_PASSWORD' => 'Neues Password',
 			'ALLOW_UPLOADS' => 'Hochladen erlauben',
-			'ALLOW_USER_SELF_EDIT' => 'Eingeschränkter Account',
+			'ALLOW_USER_SELF_EDIT' => 'Erlaube Selbstverwaltung des Nutzerkontos',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap-Beitragende',
 		];
 	}
