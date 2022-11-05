@@ -141,7 +141,7 @@ class PhotoPolicy extends BasePolicy
 	 */
 	public function canEditById(User $user, array $photoIDs): bool
 	{
-		if (!$this->albumPolicy->canUpload($user, null)) {
+		if (!$user->may_upload) {
 			return false;
 		}
 
