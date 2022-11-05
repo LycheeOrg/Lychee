@@ -29,7 +29,7 @@ class RootAlbumRightsDTO extends ArrayableDTO
 		return new self(
 			can_edit: Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, null]),
 			can_upload: Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, null]),
-			can_import_from_server: Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, AbstractAlbum::class),
+			can_import_from_server: Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, [AbstractAlbum::class]),
 		);
 	}
 

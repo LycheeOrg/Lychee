@@ -1,15 +1,19 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\UserManagement;
 
+use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPassword;
 use App\Http\Requests\Contracts\HasUsername;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Requests\Traits\HasUsernameTrait;
+use App\Models\User;
+use App\Policies\UserPolicy;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
+use Illuminate\Support\Facades\Gate;
 
-abstract class AbstractUsernamePasswordRequest extends AbstractUserRequest implements HasUsername, HasPassword
+class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword
 {
 	use HasUsernameTrait;
 	use HasPasswordTrait;
@@ -23,11 +27,19 @@ abstract class AbstractUsernamePasswordRequest extends AbstractUserRequest imple
 	/**
 	 * {@inheritDoc}
 	 */
+	public function authorize(): bool
+	{
+		return Gate::check(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class]);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function rules(): array
 	{
 		return [
 			HasUsername::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
-			HasPassword::PASSWORD_ATTRIBUTE => ['sometimes', new PasswordRule(false)],
+			HasPassword::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
 			self::MAY_UPLOAD_ATTRIBUTE => 'present|boolean',
 			self::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE => 'present|boolean',
 		];
@@ -39,13 +51,7 @@ abstract class AbstractUsernamePasswordRequest extends AbstractUserRequest imple
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->username = $values[HasUsername::USERNAME_ATTRIBUTE];
-		if (array_key_exists(HasPassword::PASSWORD_ATTRIBUTE, $values)) {
-			// See {@link HasPasswordTrait::password()} for an explanation
-			// of the semantic difference between `null` and `''`.
-			$this->password = $values[HasPassword::PASSWORD_ATTRIBUTE] ?? '';
-		} else {
-			$this->password = null;
-		}
+		$this->password = $values[HasPassword::PASSWORD_ATTRIBUTE];
 		$this->mayUpload = static::toBoolean($values[self::MAY_UPLOAD_ATTRIBUTE]);
 		$this->mayEditOwnSettings = static::toBoolean($values[self::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE]);
 	}

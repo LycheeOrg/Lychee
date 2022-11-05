@@ -12,7 +12,8 @@ class GlobalRightsDTO extends ArrayableDTO
 	public function __construct(
 		public RootAlbumRightsDTO $root_album,
 		public SettingsRightsDTO $settings,
-		public UserRightsDTO $users
+		public UserManagementRightsDTO $user_management,
+		public UserRightsDTO $user,
 	) {
 	}
 
@@ -26,7 +27,8 @@ class GlobalRightsDTO extends ArrayableDTO
 		return new self(
 			root_album: RootAlbumRightsDTO::ofCurrentUser(),
 			settings: SettingsRightsDTO::ofCurrentUser(),
-			users: UserRightsDTO::ofCurrentUser()
+			user_management: UserManagementRightsDTO::ofCurrentUser(),
+			user: UserRightsDTO::ofCurrentUser(),
 		);
 	}
 
@@ -40,7 +42,8 @@ class GlobalRightsDTO extends ArrayableDTO
 		return new self(
 			root_album: RootAlbumRightsDTO::ofUnregisteredAdmin(),
 			settings: SettingsRightsDTO::ofUnregisteredAdmin(),
-			users: UserRightsDTO::ofUnregisteredAdmin(),
+			user_management: UserManagementRightsDTO::ofUnregisteredAdmin(),
+			user: UserRightsDTO::ofUnregisteredAdmin(),
 		);
 	}
 }

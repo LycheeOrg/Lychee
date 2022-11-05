@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\UserManagement;
 
+use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasUser;
 use App\Http\Requests\Traits\HasUserTrait;
 use App\Models\User;
@@ -9,7 +10,7 @@ use App\Policies\UserPolicy;
 use App\Rules\IntegerIDRule;
 use Illuminate\Support\Facades\Gate;
 
-class DeleteUserRequest extends AbstractUserRequest implements HasUser
+class DeleteUserRequest extends BaseApiRequest implements HasUser
 {
 	use HasUserTrait;
 

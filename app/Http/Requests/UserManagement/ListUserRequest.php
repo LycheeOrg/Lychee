@@ -1,16 +1,19 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\UserManagement;
 
 use App\Http\Requests\AbstractEmptyRequest;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class UserSettingsRequest extends AbstractEmptyRequest
+class ListUserRequest extends AbstractEmptyRequest
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function authorize(): bool
 	{
-		return Gate::check(UserPolicy::CAN_EDIT_OWN_SETTINGS, User::class);
+		return Gate::check(UserPolicy::CAN_LIST, User::class);
 	}
 }

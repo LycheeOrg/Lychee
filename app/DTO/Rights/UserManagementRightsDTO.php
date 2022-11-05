@@ -10,12 +10,14 @@ use Illuminate\Support\Facades\Gate;
 /**
  * Data Transfer Object (DTO) to transmit the rights of an user on a (potentially different) user account.
  */
-class UserRightsDTO extends ArrayableDTO
+class UserManagementRightsDTO extends ArrayableDTO
 {
 	public function __construct(
+		public bool $can_create,
+		public bool $can_list,
 		public bool $can_edit,
-		public bool $can_use_2fa
-	) {
+		public bool $can_delete)
+	{
 	}
 
 	/**
@@ -26,8 +28,10 @@ class UserRightsDTO extends ArrayableDTO
 	public static function ofCurrentUser(): self
 	{
 		return new self(
-			can_edit: Gate::check(UserPolicy::CAN_EDIT, [User::class]),
-			can_use_2fa: Gate::check(UserPolicy::CAN_USE_2FA, [User::class]),
+			can_create: Gate::check(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class]),
+			can_list: Gate::check(UserPolicy::CAN_LIST, [User::class]),
+			can_edit: Gate::check(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class]),
+			can_delete: Gate::check(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class])
 		);
 	}
 
@@ -36,6 +40,6 @@ class UserRightsDTO extends ArrayableDTO
 	 */
 	public static function ofUnregisteredAdmin(): self
 	{
-		return new self(true, true);
+		return new self(true, true, true, true);
 	}
 }

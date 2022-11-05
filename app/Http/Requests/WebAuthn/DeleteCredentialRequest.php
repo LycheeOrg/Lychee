@@ -3,8 +3,8 @@
 namespace App\Http\Requests\WebAuthn;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Models\Configs;
-use App\Policies\SettingsPolicy;
+use App\Models\User;
+use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 
 class DeleteCredentialRequest extends BaseApiRequest
@@ -16,7 +16,7 @@ class DeleteCredentialRequest extends BaseApiRequest
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(SettingsPolicy::CAN_USE_2FA, Configs::class);
+		return Gate::check(UserPolicy::CAN_USE_2FA, [User::class]);
 	}
 
 	public function rules(): array

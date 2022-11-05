@@ -1,14 +1,18 @@
 <?php
 
-namespace App\Http\Requests\User\Self;
+namespace App\Http\Requests\User;
 
+use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPassword;
 use App\Http\Requests\Contracts\HasUsername;
 use App\Http\Requests\Traits\HasPasswordTrait;
+use App\Models\User;
+use App\Policies\UserPolicy;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
+use Illuminate\Support\Facades\Gate;
 
-class ChangeLoginRequest extends AbstractSelfEditRequest implements HasPassword
+class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 {
 	use HasPasswordTrait;
 
@@ -16,6 +20,14 @@ class ChangeLoginRequest extends AbstractSelfEditRequest implements HasPassword
 
 	protected string $oldPassword;
 	protected ?string $username = null;
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function authorize(): bool
+	{
+		return Gate::check(UserPolicy::CAN_EDIT, [User::class]);
+	}
 
 	/**
 	 * {@inheritDoc}

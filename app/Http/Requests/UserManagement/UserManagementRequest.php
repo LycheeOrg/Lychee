@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\UserManagement;
 
-use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\AbstractEmptyRequest;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 
-abstract class AbstractUserRequest extends BaseApiRequest
+class UserManagementRequest extends AbstractEmptyRequest
 {
 	/**
 	 * {@inheritDoc}

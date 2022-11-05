@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Administration;
 
 use App\Actions\Settings\SetLogin;
-use App\Actions\Settings\UpdateLogin;
 use App\Contracts\LycheeException;
 use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\Internal\InvalidConfigOption;
@@ -27,7 +26,6 @@ use App\Http\Requests\Settings\SetNewPhotosNotificationSettingRequest;
 use App\Http\Requests\Settings\SetNSFWVisibilityRequest;
 use App\Http\Requests\Settings\SetPublicSearchSettingRequest;
 use App\Http\Requests\Settings\SetSortingSettingsRequest;
-use App\Http\Requests\User\Self\ChangeLoginRequest;
 use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
@@ -63,32 +61,6 @@ class SettingsController extends Controller
 		Auth::login($adminUser);
 
 		return $adminUser;
-	}
-
-	/**
-	 * Update the Login information of the current user.
-	 *
-	 * @param ChangeLoginRequest $request
-	 * @param UpdateLogin        $updateLogin
-	 *
-	 * @return User
-	 *
-	 * @throws LycheeException
-	 */
-	public function updateLogin(ChangeLoginRequest $request, UpdateLogin $updateLogin): User
-	{
-		$currentUser = $updateLogin->do(
-			$request->username(),
-			$request->password(),
-			$request->oldPassword(),
-			$request->ip()
-		);
-		// Update the session with the new credentials of the user.
-		// Otherwise, the session is out-of-sync and falsely assumes the user
-		// to be unauthenticated upon the next request.
-		Auth::login($currentUser);
-
-		return $currentUser;
 	}
 
 	/**
