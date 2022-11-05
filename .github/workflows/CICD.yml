@@ -7,11 +7,13 @@ on:
       - '**/*.md'
       - 'public/dist/*.js'
       - 'public/dist/**/*.js'
+      - 'public/Lychee-front'
   pull_request:
     paths-ignore:
       - '**/*.md'
       - 'public/dist/*.js'
       - 'public/dist/**/*.js'
+      - 'public/Lychee-front'
   # Allow manually triggering the workflow.
   workflow_dispatch:
 
