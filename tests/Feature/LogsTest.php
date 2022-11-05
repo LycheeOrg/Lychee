@@ -13,6 +13,7 @@
 namespace Tests\Feature;
 
 use App\Models\Logs;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Tests\Feature\Traits\CatchFailures;
@@ -22,6 +23,10 @@ class LogsTest extends TestCase
 {
 	use CatchFailures;
 
+	private string $saveUsername;
+	private string $savedPassword;
+	private User $admin;
+
 	/**
 	 * Test log handling.
 	 *
@@ -29,6 +34,8 @@ class LogsTest extends TestCase
 	 */
 	public function testLogs(): void
 	{
+		$this->initAdmin();
+
 		$response = $this->get('/Logs');
 		$this->assertUnauthorized($response);
 
@@ -42,12 +49,18 @@ class LogsTest extends TestCase
 
 		Auth::logout();
 		Session::flush();
+
+		$this->revertAdmin();
 	}
 
 	public function testApiLogs(): void
 	{
+		$this->initAdmin();
+
 		$response = $this->postJson('/api/Logs::list');
 		$this->assertUnauthorized($response);
+
+		$this->revertAdmin();
 	}
 
 	public function testClearLogs(): void
@@ -73,5 +86,23 @@ class LogsTest extends TestCase
 
 		Auth::logout();
 		Session::flush();
+	}
+
+	private function initAdmin(): void
+	{
+		$this->admin = User::find(0);
+		$this->name = $this->admin->username;
+		$this->pw = $this->admin->password;
+		$this->admin->username = 'temp';
+		$this->admin->password = 'temp';
+		$this->admin->save();
+	}
+
+	private function revertAdmin(): void
+	{
+		$this->admin = User::find(0);
+		$this->admin->username = $this->name;
+		$this->admin->password = $this->pw;
+		$this->admin->save();
 	}
 }
