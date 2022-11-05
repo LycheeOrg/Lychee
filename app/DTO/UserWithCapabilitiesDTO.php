@@ -5,11 +5,11 @@ namespace App\DTO;
 use App\Models\User as UserModel;
 
 /**
- * Data Transfer Object (DTO) to transmit the capabilities of a User.
+ * Data Transfer Object (DTO) to transmit the capabilities of a user.
  *
- * This is used in the Admin part to manage users.
+ * This DTO is used by the admin part to manage users.
  *
- * If we return directly the User (e.g. for sharing), we are given only the following attributes:
+ * If we directly return the user (e.g. for sharing), we only transmit the following attributes:
  * - id
  * - username
  * - email
