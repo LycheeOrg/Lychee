@@ -133,7 +133,6 @@ class AlbumPolicy extends BasePolicy
 			return $user !== null || $abstractAlbum->grants_download;
 		}
 
-		// TODO: when download rights are assigned to albums, we add more logic can be added here.
 		if ($abstractAlbum instanceof BaseAlbum) {
 			return $this->isOwner($user, $abstractAlbum) ||
 				$abstractAlbum->grants_download ||
@@ -160,7 +159,6 @@ class AlbumPolicy extends BasePolicy
 			return $user->may_upload;
 		}
 
-		// TODO: when upload rights are assigned to albums, more logic can be added here.
 		return $user->may_upload;
 	}
 
