@@ -30,11 +30,6 @@ use Illuminate\Database\Eloquent\Collection;
  * Smart albums are never explicit "parent albums" of photos.
  * Photos belong to these albums due to certain properties like being
  * starred, being recently added, etc.
- *
- * @property string $id
- * @property bool   $is_public
- * @property bool   $grants_full_photo_access
- * @property bool   $grants_download
  */
 abstract class BaseSmartAlbum implements AbstractAlbum
 {

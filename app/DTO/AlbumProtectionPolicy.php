@@ -3,7 +3,6 @@
 namespace App\DTO;
 
 use App\Models\BaseAlbumImpl;
-use App\Models\Extensions\BaseAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 
 /**
@@ -33,13 +32,13 @@ class AlbumProtectionPolicy extends ArrayableDTO
 	}
 
 	/**
-	 * Given a BaseAlbum, returns the Protection Policy associated to it.
+	 * Given a BaseAlbumImplementation, returns the Protection Policy associated to it.
 	 *
-	 * @param BaseAlbum|BaseAlbumImpl $baseAlbum
+	 * @param BaseAlbumImpl $baseAlbum
 	 *
 	 * @return AlbumProtectionPolicy
 	 */
-	public static function ofBaseAlbum(BaseAlbum|BaseAlbumImpl $baseAlbum): AlbumProtectionPolicy
+	public static function ofBaseAlbumImplementation(BaseAlbumImpl $baseAlbum): AlbumProtectionPolicy
 	{
 		return new AlbumProtectionPolicy(
 			is_public: $baseAlbum->is_public,

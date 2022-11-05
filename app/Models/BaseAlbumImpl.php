@@ -281,7 +281,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 */
 	protected function getPolicyAttribute(): AlbumProtectionPolicy|null
 	{
-		return AlbumProtectionPolicy::ofBaseAlbum($this);
+		return AlbumProtectionPolicy::ofBaseAlbumImplementation($this);
 	}
 
 	public function toArray(): array
