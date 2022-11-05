@@ -11,7 +11,6 @@ trait CatchFailures
 		if ($response->getStatusCode() === 500) {
 			$exception = $response->json();
 			$this->trimException($exception);
-			// $exception['trace'] = array_slice($exception['trace'], 0 ,3);
 			dump($exception);
 		}
 		$response->assertStatus($expectedStatusCode);
