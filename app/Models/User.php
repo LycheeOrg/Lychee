@@ -70,7 +70,10 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'updated_at',
 		'token',
 
-		// We do not forward those anymore to the front end.
+		/**
+		 * We do not forward those to the front end: they are provided by {@link \App\DTO\UserWithCapabilitiesDTO}.
+		 * We do not need to inform every user on Lychee who can upload etc.
+		 */
 		'may_administrate',
 		'may_upload',
 		'may_edit_own_settings',

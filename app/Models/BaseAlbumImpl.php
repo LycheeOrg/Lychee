@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\MustNotSetCast;
 use App\Contracts\HasRandomID;
 use App\DTO\AlbumProtectionPolicies;
 use App\DTO\PhotoSortingCriterion;
@@ -168,6 +169,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'is_link_required' => 'boolean',
 		'is_nsfw' => 'boolean',
 		'owner_id' => 'integer',
+		'policies' => MustNotSetCast::class, // There is no setter, please use {@link \App\Actions\Album\SetProtectionPolicies}
 	];
 
 	/**
@@ -182,14 +184,14 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'sorting_col',   // serialize DTO `order` instead
 		'sorting_order', // serialize DTO `order` instead
 
-		// Security attributes are hidden because provided by the DTO AlbumProtectionPolicies
+		// Security attributes are hidden because provided by the DTO {@link \App\DTO\AlbumProtectionPolicies}
 		'is_public',
 		'is_nsfw',
 		'is_link_required',
 		'is_share_button_visible', // TODO: DELETE ME once we are able to remove columns
 
 		// Permissions are hidden because they will eventually be replaced by an external table
-		// and are provided by the AlbumRightsDTO
+		// and are provided by the DTO {@link \App\DTO\Rights\AlbumRightsDTO}
 		'grants_download',
 		'grants_full_photo_access',
 	];
