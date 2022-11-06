@@ -47,6 +47,7 @@ return [
 			'root' => env('LYCHEE_UPLOADS', public_path('uploads/')),
 			'url' => env('LYCHEE_UPLOADS_URL', 'uploads/'),
 			'visibility' => env('LYCHEE_IMAGE_VISIBILITY', 'public'),
+			'directory_visibility' => env('LYCHEE_IMAGE_VISIBILITY', 'public'),
 			'permissions' => [
 				'file' => [
 					'world' => 00666,
