@@ -565,7 +565,7 @@ $(function () {
  * @property {string}  [owner_name] optional, only shown in authenticated mode
  * @property {boolean} is_nsfw
  * @property {AlbumRightsDTO} rights
- * @property {?AlbumProtectionPolicies} policies
+ * @property {?AlbumProtectionPolicy} policies
  * @property {boolean} has_albums
  * @property {boolean} has_password
  * @property {?string} min_taken_at
@@ -587,7 +587,7 @@ $(function () {
  * @property {string}   [owner_name] optional, only shown in authenticated mode
  * @property {boolean} is_nsfw
  * @property {AlbumRightsDTO} rights
- * @property {?AlbumProtectionPolicies} policies
+ * @property {?AlbumProtectionPolicy} policies
  * @property {?string}  min_taken_at
  * @property {?string}  max_taken_at
  * @property {?SortingCriterion}  sorting
@@ -602,7 +602,7 @@ $(function () {
  * @property {Photo[]} [photos]
  * @property {?Thumb}  thumb
  * @property {AlbumRightsDTO} rights
- * @property {?AlbumProtectionPolicies} policies
+ * @property {?AlbumProtectionPolicy} policies
  */
 
 /**
@@ -859,7 +859,7 @@ var SmartAlbumID = Object.freeze({
 /**
  * The JSON object for Policies on Albums
  *
- * @typedef AlbumProtectionPolicies
+ * @typedef AlbumProtectionPolicy
  *
  * @property {is_nsfw} boolean
  * @property {boolean} is_public

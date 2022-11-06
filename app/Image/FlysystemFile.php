@@ -54,9 +54,30 @@ class FlysystemFile extends MediaFile
 		try {
 			$streamStat = $collectStatistics ? static::appendStatFilter($stream) : null;
 
+			// The underlying Flysystem currently behaves inconsistent
+			// with respect to whether it honors the umask value or not.
+			// Hence, we explicitly set umask to zero to achieve consistent
+			// behaviour.
+			// Setting umask can be removed, after
+			// https://github.com/thephpleague/flysystem/issues/1584
+			// has been solved.
+			// Also consider the warning in
+			// https://www.php.net/manual/en/function.umask.php
+			// regarding timing issues:
+			// "Avoid using this function [...]. It is better to change the
+			// file permissions with chmod() after creating the file. Using
+			// umask() can lead to unexpected behavior of concurrently running
+			// scripts and the webserver itself because they all use the same
+			// umask."
+			// However, Lychee cannot use `chmod`, because Flysystem may
+			// also recursively create missing parent directories and/or
+			// not be local.
+			// This problem must be fixed on the library layer.
+			$umask = \umask(0);
 			if (!$this->disk->writeStream($this->relativePath, $stream)) {
 				throw new FlySystemLycheeException('Filesystem::writeStream failed');
 			}
+			\umask($umask);
 
 			return $streamStat;
 		} catch (\ErrorException|FilesystemException $e) {
