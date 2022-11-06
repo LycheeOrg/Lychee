@@ -36,7 +36,7 @@ class AlbumPolicy extends BasePolicy
 	 *
 	 * @return bool
 	 */
-	private function isOwner(?User $user, BaseAlbum|BaseAlbumImpl $album): bool
+	private function isOwner(?User $user, BaseAlbum $album): bool
 	{
 		return $user !== null && $album->owner_id === $user->id;
 	}
@@ -181,12 +181,12 @@ class AlbumPolicy extends BasePolicy
 	 * In order to silently ignore/skip this condition for smart albums,
 	 * this method always returns `true` for a smart album.
 	 *
-	 * @param User                             $user
-	 * @param AbstractAlbum|BaseAlbumImpl|null $album the album; `null` designates the root album
+	 * @param User               $user
+	 * @param AbstractAlbum|null $album the album; `null` designates the root album
 	 *
 	 * @return bool
 	 */
-	public function canEdit(User $user, AbstractAlbum|BaseAlbumImpl|null $album): bool
+	public function canEdit(User $user, AbstractAlbum|null $album): bool
 	{
 		if (!$user->may_upload) {
 			return false;
@@ -196,7 +196,7 @@ class AlbumPolicy extends BasePolicy
 		return
 			$album === null ||
 			$album instanceof BaseSmartAlbum ||
-			(($album instanceof BaseAlbum || $album instanceof BaseAlbumImpl) && $this->isOwner($user, $album));
+			(($album instanceof BaseAlbum) && $this->isOwner($user, $album));
 	}
 
 	/**
