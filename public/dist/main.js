@@ -2744,6 +2744,16 @@ album.apply_nsfw_filter = function () {
  *  - the method returns `true` for regular albums if and only if the album is
  *    owned by the currently authenticated user.
  *
+ * Note, for the time being this method contains a work-around in case
+ * no album is loaded, but the root view is visible.
+ * Currently, this is necessary, because this method is (erroneously) called
+ * for the root view as well.
+ * In order to determine whether the work-around for the root view needs to
+ * be applied, this method checks if the root view is visible based on the
+ * visibility of the corresponding headers.
+ * Hence, the caller must ensure that the appropriate header is set first
+ * in order to obtain a correct result from this method.
+ *
  * @returns {boolean}
  */
 album.isUploadable = function () {
@@ -2841,6 +2851,26 @@ var albums = {
  */
 albums.load = function () {
 	var showRootAlbum = function showRootAlbum() {
+		// DO NOT change the order of `header.setMode` and `view.albums.init`.
+		// The latter relies on the header being set correctly.
+		//
+		// `view.albums.init` builds the HTML of the albums view (note the
+		// plural-s).
+		// Internally, this exploits code for regular albums which in
+		// turn calls `album.isUploadabe` (note the missing plural-s) to
+		// check whether the current album supports drag-&-drop.
+		// In order to return the correct value `album.isUploadabe` resorts
+		// to a hack: if no (regular) album is loaded `album.isUploadabe`
+		// normally returns `false` except the root album is visible.
+		// In that case `album.isUploadabe` returns a "fake" `true`.
+		// However, in order to do so `album.isUploadabe` needs to check
+		// whether the root album is visible which is determined by the
+		// visibility of the corresponding header.
+		// That is why the header needs to be set first.
+		//
+		// However, the actual bug is to call `album.isUploadable` for the
+		// root view.
+		// TODO: Fix the bug described above.
 		header.setMode("albums");
 		view.albums.init();
 		lychee.animate(lychee.content, "contentZoomIn");
@@ -3163,6 +3193,37 @@ build.album = function (data) {
 	var formattedCreationTs = lychee.locale.printMonthYear(data.created_at);
 	var formattedMinTs = lychee.locale.printMonthYear(data.min_taken_at);
 	var formattedMaxTs = lychee.locale.printMonthYear(data.max_taken_at);
+	// The condition below is faulty wrt. to two issues:
+	//
+	//  a) The condition only checks whether the owning/current album is
+	//     uploadable (aka "editable"), but it does not check whether the
+	//     album at hand whose icon is built is editable.
+	//     But this is of similar importance.
+	//     Currently, we only check whether the album at hand is a smart
+	//     album or tag album which are always considered non-editable.
+	//     But this is only half of the story.
+	//     For example, a regular album might still be non-editable, if the
+	//     current user is not the owner of that album.
+	//  b) This method is not only called if the owning/current album is a
+	//     proper album, but also for the root view.
+	//     However, `album.isUploadable` should not be called for the root
+	//     view.
+	//
+	// Moreover, we have to distinguish between "drag" and "drop".
+	// Doing so would also solve the problems above:
+	//
+	// - "Drag": If the current child album at hand can be dragged (away)
+	//   is mostly determined by the user's rights on the parent album.
+	//   Instead of (erroneously) using `album.isUploadable()` for that
+	//   (even for the root view), the "right to drag" should be passed to
+	//   this method as a parameter very much like `disabled` such that this
+	//   method can be used for both regular albums and the root view.
+	// - "Drop": If something (e.g. a photo) can be dropped onto the child
+	//   album at hand is independent of the user's rights on the containing
+	//   album.
+	//   Whether the child album supports the drop event depends on the type
+	//   of the album (i.e. it must not be a smart or tag album), but also
+	//   on the ownership of the album.
 	var disableDragDrop = !data.rights.can_edit || disabled || album.isSmartID(data.id) || data.is_tag_album;
 	var subtitle = formattedCreationTs;
 
@@ -4703,7 +4764,11 @@ header.setMode = function (mode) {
 				tabindex.makeFocusable(_e10);
 			}
 
-			if (!lychee.share_button_visible) {
+			if (!lychee.is_share_button_visible && (
+			// The owner of an album (or the admin) shall always see
+			// the share button and be unaffected by the settings of
+			// the album
+			lychee.user === null || lychee.user.username !== album.json.owner_name) && !lychee.rights.is_admin) {
 				var _e11 = $("#button_share_album");
 				_e11.hide();
 				tabindex.makeUnfocusable(_e11);
@@ -5178,7 +5243,26 @@ $(document).ready(function () {
 	// Drag and Drop upload
 	.on("dragover", function () {
 		return false;
-	}, false).on("drop",
+	}, false)
+	// In the long run, the "drop" event should not be defined on the
+	// global document element, but on the `DIV` which corresponds to the
+	// view onto which something is dropped.
+	// This would also avoid this highly fragile condition below.
+	// For example, in order to avoid that a photo unintentionally ends
+	// up in the root album when someone drops a photo while the
+	// setting screen is opened, we check for `!visible.config()`.
+	// This would simply not be necessary, if the drop event was directly
+	// defined on the albums view where it belongs.
+	// The conditions whether a user is allowed to upload to the root
+	// album (cp. `visible.albums()` below) or to a regular album
+	// (cp. `visible.album()` below) are slightly different.
+	// Nonetheless, we only have a single method `album.isUploadable`
+	// which tries to cover both cases and is prone to fail in certain
+	// corner cases.
+	// If the drop event was defined on the DIV for the root view and on
+	// the DIV for an album view, the whole problem would not exist.
+	// TODO: Fix that
+	.on("drop",
 	/** @param {jQuery.Event} e */function (e) {
 		if (album.isUploadable() && !visible.contextMenu() && !basicModal.isVisible() && !visible.leftMenu() && !visible.config() && (visible.album() || visible.albums())) {
 			// Detect if dropped item is a file or a link
@@ -8982,7 +9066,7 @@ _photo3.setProtectionPolicy = function (photoID) {
 			// Initialize values of detailed settings according to global
 			// configuration.
 			formElements.is_public.checked = _photo3.json.is_public !== 0;
-			formElements.grants_full_photo_access.checked = lychee.grants_full_photo_access;
+			formElements.grants_full_photo_access.checked = lychee.full_photo;
 			formElements.is_link_required.checked = lychee.public_photos_hidden;
 			formElements.grants_download.checked = lychee.grants_download;
 			formElements.is_password_required.checked = false;
