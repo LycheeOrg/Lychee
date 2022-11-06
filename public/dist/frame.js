@@ -565,7 +565,7 @@ $(function () {
  * @property {string}  [owner_name] optional, only shown in authenticated mode
  * @property {boolean} is_nsfw
  * @property {AlbumRightsDTO} rights
- * @property {?AlbumProtectionPolicy} policies
+ * @property {AlbumProtectionPolicies} policies
  * @property {boolean} has_albums
  * @property {boolean} has_password
  * @property {?string} min_taken_at
@@ -587,7 +587,7 @@ $(function () {
  * @property {string}   [owner_name] optional, only shown in authenticated mode
  * @property {boolean} is_nsfw
  * @property {AlbumRightsDTO} rights
- * @property {?AlbumProtectionPolicy} policies
+ * @property {AlbumProtectionPolicies} policies
  * @property {?string}  min_taken_at
  * @property {?string}  max_taken_at
  * @property {?SortingCriterion}  sorting
@@ -602,7 +602,7 @@ $(function () {
  * @property {Photo[]} [photos]
  * @property {?Thumb}  thumb
  * @property {AlbumRightsDTO} rights
- * @property {?AlbumProtectionPolicy} policies
+ * @property {AlbumProtectionPolicies} policies
  */
 
 /**
@@ -677,7 +677,7 @@ var SmartAlbumID = Object.freeze({
  */
 
 /**
- * @typedef UserDTO
+ * @typedef UserWithCapabilitiesDTO
  *
  * @property {number}  id
  * @property {string}  username
@@ -699,12 +699,6 @@ var SmartAlbumID = Object.freeze({
  * @property {?string} title - album title
  * @property {Photo[]} photos
  * @property {?string} track_url - URL to GPX track
- */
-
-/**
- * @typedef EMailData
- *
- * @property {?string} email
  */
 
 /**
@@ -750,7 +744,7 @@ var SmartAlbumID = Object.freeze({
  * @typedef InitializationData
  *
  * @property {?User} user
- * @property {InitRightsDTO} rights
+ * @property {GlobalRightsDTO} rights
  * @property {number} update_json - version number of latest available update
  * @property {boolean} update_available
  * @property {Object.<string, string>} locale
@@ -859,7 +853,7 @@ var SmartAlbumID = Object.freeze({
 /**
  * The JSON object for Policies on Albums
  *
- * @typedef AlbumProtectionPolicy
+ * @typedef AlbumProtectionPolicies
  *
  * @property {is_nsfw} boolean
  * @property {boolean} is_public
@@ -870,9 +864,9 @@ var SmartAlbumID = Object.freeze({
  */
 
 /**
- * The JSON object for Rights on Users
+ * The JSON object for Rights on users management
  *
- * @typedef UserRightsDTO
+ * @typedef UserManagementRightsDTO
  *
  * @property {boolean} can_create
  * @property {boolean} can_list
@@ -881,13 +875,20 @@ var SmartAlbumID = Object.freeze({
  */
 
 /**
+ * The JSON object for Rights on a User
+ *
+ * @typedef UserRightsDTO
+ *
+ * @property {boolean} can_edit
+ * @property {boolean} can_use_2fa
+ */
+
+/**
  * The JSON object for Rights on Settings
  *
  * @typedef SettingsRightsDTO
  *
  * @property {boolean} can_edit
- * @property {boolean} can_edit_own_settings
- * @property {boolean} can_use_2fa
  * @property {boolean} can_see_logs
  * @property {boolean} can_clear_logs
  * @property {boolean} can_see_diagnostics
@@ -927,11 +928,12 @@ var SmartAlbumID = Object.freeze({
  */
 
 /**
- * The JSON object for Rights on Album
+ * The JSON object for Rights on Global Application
  *
- * @typedef InitRightsDTO
+ * @typedef GlobalRightsDTO
  *
  * @property {RootAlbumRightsDTO} root_album
  * @property {SettingsRightsDTO} settings
- * @property {UserRightsDTO} users
+ * @property {UserManagementRightsDTO} user_management
+ * @property {UserRightsDTO} user
  */

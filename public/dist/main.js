@@ -2938,8 +2938,8 @@ albums.localizeSmartAlbums = function (data) {
 	if (data.public) {
 		data.public.title = lychee.locale["PUBLIC"];
 		// TODO: Why do we need to set these two attributes? What component relies upon them, what happens if we don't set them? Is it legacy?
-		data.public.is_public = true;
-		data.public.is_link_required = true;
+		// data.public.is_public = true;
+		// data.public.is_link_required = true;
 	}
 
 	if (data.recent) {
@@ -3163,7 +3163,7 @@ build.album = function (data) {
 	var formattedCreationTs = lychee.locale.printMonthYear(data.created_at);
 	var formattedMinTs = lychee.locale.printMonthYear(data.min_taken_at);
 	var formattedMaxTs = lychee.locale.printMonthYear(data.max_taken_at);
-	var disableDragDrop = !album.isUploadable() || disabled || album.isSmartID(data.id) || data.is_tag_album;
+	var disableDragDrop = !data.rights.can_edit || disabled || album.isSmartID(data.id) || data.is_tag_album;
 	var subtitle = formattedCreationTs;
 
 	// check setting album_subtitle_type:
@@ -3200,9 +3200,9 @@ build.album = function (data) {
 			}
 	}
 
-	var html = lychee.html(_templateObject6, disabled ? "disabled" : "", data.is_nsfw && lychee.nsfw_blur ? "blurred" : "", data.id, data.is_nsfw ? "1" : "0", tabindex.get_next_tab_index(), disableDragDrop ? "false" : "true", disableDragDrop ? "" : "ondragstart='lychee.startDrag(event)'\n\t\t\t\tondragover='lychee.overDrag(event)'\n\t\t\t\tondragleave='lychee.leaveDrag(event)'\n\t\t\t\tondragend='lychee.endDrag(event)'\n\t\t\t\tondrop='lychee.finishDrag(event)'", build.getAlbumThumb(data), build.getAlbumThumb(data), build.getAlbumThumb(data), data.title, data.title, subtitle);
+	var html = lychee.html(_templateObject6, disabled ? "disabled" : "", data.policies.is_nsfw && lychee.nsfw_blur ? "blurred" : "", data.id, data.policies.is_nsfw ? "1" : "0", tabindex.get_next_tab_index(), disableDragDrop ? "false" : "true", disableDragDrop ? "" : "ondragstart='lychee.startDrag(event)'\n\t\t\t\tondragover='lychee.overDrag(event)'\n\t\t\t\tondragleave='lychee.leaveDrag(event)'\n\t\t\t\tondragend='lychee.endDrag(event)'\n\t\t\t\tondrop='lychee.finishDrag(event)'", build.getAlbumThumb(data), build.getAlbumThumb(data), build.getAlbumThumb(data), data.title, data.title, subtitle);
 
-	if (album.isUploadable() && !disabled) {
+	if (data.rights.can_edit && !disabled) {
 		var isCover = album.json && album.json.cover_id && data.thumb.id === album.json.cover_id;
 		html += lychee.html(_templateObject7, data.policies && data.policies.is_nsfw ? "badge--nsfw" : "", build.iconic("warning"), data.id === SmartAlbumID.STARRED ? "badge--star" : "", build.iconic("star"), data.id === SmartAlbumID.RECENT ? "badge--visible badge--list" : "", build.iconic("clock"), data.id === SmartAlbumID.PUBLIC || data.policies && data.policies.is_public ? "badge--visible" : "", data.policies && data.policies.is_link_required ? "badge--hidden" : "badge--not--hidden", build.iconic("eye"), data.id === SmartAlbumID.UNSORTED ? "badge--visible" : "", build.iconic("list"), data.policies && data.policies.is_password_required ? "badge--visible" : "", build.iconic("lock-unlocked"), data.is_tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
@@ -5297,16 +5297,16 @@ leftMenu.dom = function (selector) {
 leftMenu.build = function () {
 	var html = lychee.html(_templateObject26, lychee.locale["CLOSE"]);
 
-	if (lychee.rights.settings.can_edit_own_settings || lychee.rights.settings.can_edit) {
+	if (lychee.rights.settings.can_edit || lychee.rights.user.can_edit) {
 		html += lychee.html(_templateObject27, lychee.locale["SETTINGS"]);
 	}
 	if (lychee.new_photos_notification) {
 		html += lychee.html(_templateObject28, build.iconic("bell"), lychee.locale["NOTIFICATIONS"]);
 	}
-	if (lychee.rights.users.can_edit) {
+	if (lychee.rights.user_management.can_edit) {
 		html += lychee.html(_templateObject29, build.iconic("person"), lychee.locale["USERS"]);
 	}
-	if (lychee.rights.settings.can_use_2fa) {
+	if (lychee.rights.user.can_use_2fa) {
 		html += lychee.html(_templateObject30, build.iconic("key"), lychee.locale["U2F"]);
 	}
 	if (lychee.rights.root_album.can_upload) {
@@ -5593,7 +5593,7 @@ var lychee = {
 	user: null,
 	/**
   * The rights granted by the backend
-  * @type {?InitRightsDTO}
+  * @type {?GlobalRightsDTO}
   */
 	rights: null,
 	/**
@@ -5836,7 +5836,7 @@ lychee.init = function () {
 			// In particular it is completely insane to build the UI as if the admin user was successfully authenticated.
 			// This might leak confidential photos to anybody if the DB is filled
 			// with photos and the admin password reset to `null`.
-			if (data.user === null && data.rights.settings.can_edit) settings.createLogin();
+			if (data.user === null && data.rights.user.can_edit) settings.createLogin();
 		} else {
 			lychee.setMode("public");
 		}
@@ -6390,7 +6390,7 @@ lychee.setTitle = function () {
  * @param {string} mode - one out of: `public`, `view`, `logged_in`
  */
 lychee.setMode = function (mode) {
-	// if (!lychee.rights.settings.can_edit || lychee.rights.users.can_edit_own_settings) {
+	// if (!lychee.rights.settings.can_edit || lychee.rights.user_management.can_edit_own_settings) {
 	// 	$("#button_settings_open").remove();
 	// }
 	if (!lychee.rights.root_album.can_upload) {
@@ -8271,9 +8271,9 @@ notifications.update = function (params) {
 };
 
 notifications.load = function () {
-	api.post("User::getEmail", {},
+	api.post("User::getAuthenticatedUser", {},
 	/** @param {EMailData} data */function (data) {
-		notifications.json = data;
+		notifications.json = data.email;
 		view.notifications.init();
 	});
 };
@@ -8888,9 +8888,9 @@ _photo3.setStar = function (photoIDs, isStarred) {
 };
 
 /**
- * Edits the protection policy of a photo.
+ * Edits the protection policies of a photo.
  *
- * This method is a misnomer, it does not only set the policy, it also creates
+ * This method is a misnomer, it does not only set the policies, it also creates
  * and handles the edit dialog
  *
  * @param {string} photoID
@@ -9604,8 +9604,8 @@ search.find = function (term) {
 			albums: search.json.albums,
 			tag_albums: search.json.tag_albums,
 			thumb: null,
-			is_public: false,
-			grant_download: false
+			rights: { can_download: false },
+			policies: { is_public: false }
 		};
 
 		var albumsData = "";
@@ -12580,32 +12580,32 @@ view.albums = {
 			}
 			if (albums.json.smart_albums.unsorted) {
 				albums.parse(albums.json.smart_albums.unsorted);
-				smartData += build.album(albums.json.smart_albums.unsorted);
+				smartData += build.album(albums.json.smart_albums.unsorted, !lychee.rights.root_album.can_edit);
 			}
 			if (albums.json.smart_albums.public) {
 				albums.parse(albums.json.smart_albums.public);
-				smartData += build.album(albums.json.smart_albums.public);
+				smartData += build.album(albums.json.smart_albums.public, !lychee.rights.root_album.can_edit);
 			}
 			if (albums.json.smart_albums.starred) {
 				albums.parse(albums.json.smart_albums.starred);
-				smartData += build.album(albums.json.smart_albums.starred);
+				smartData += build.album(albums.json.smart_albums.starred, !lychee.rights.root_album.can_edit);
 			}
 			if (albums.json.smart_albums.recent) {
 				albums.parse(albums.json.smart_albums.recent);
-				smartData += build.album(albums.json.smart_albums.recent);
+				smartData += build.album(albums.json.smart_albums.recent, !lychee.rights.root_album.can_edit);
 			}
 
 			// Tag albums
 			tagAlbumsData += albums.json.tag_albums.reduce(function (html, tagAlbum) {
 				albums.parse(tagAlbum);
-				return html + build.album(tagAlbum);
+				return html + build.album(tagAlbum, !lychee.rights.root_album.can_edit);
 			}, "");
 
 			// Albums
 			if (lychee.publicMode === false && albums.json.albums.length > 0) albumsData = build.divider(lychee.locale["ALBUMS"]);
 			albumsData += albums.json.albums.reduce(function (html, album) {
 				albums.parse(album);
-				return html + build.album(album);
+				return html + build.album(album, !lychee.rights.root_album.can_edit);
 			}, "");
 
 			var current_owner = "";
@@ -12709,7 +12709,7 @@ view.album = {
 				return;
 			}
 
-			if (album.json.is_nsfw && !lychee.nsfw_unlocked_albums.includes(album.json.id)) {
+			if (album.json.policies.is_nsfw && !lychee.nsfw_unlocked_albums.includes(album.json.id)) {
 				$("#sensitive_warning").show();
 			} else {
 				$("#sensitive_warning").hide();
@@ -12733,13 +12733,13 @@ view.album = {
 			if (album.json.albums) {
 				album.json.albums.forEach(function (_album) {
 					albums.parse(_album);
-					albumsData += build.album(_album, !album.isUploadable());
+					albumsData += build.album(_album, !album.rights.can_edit);
 				});
 			}
 			if (album.json.photos) {
 				// Build photos
 				album.json.photos.forEach(function (_photo) {
-					photosData += build.photo(_photo, !album.isUploadable());
+					photosData += build.photo(_photo, !album.rights.can_edit);
 				});
 			}
 
@@ -12977,6 +12977,8 @@ view.album = {
    * Hence, this method would better not be part of `view.album.content`,
    * because it is not exclusively used for an album.
    *
+   * TODO: Livewire front-end will make this a pure CSS solution.
+   *
    * @returns {void}
    */
 		justify: function justify() {
@@ -13170,7 +13172,7 @@ view.album = {
 	public: function _public() {
 		$("#button_visibility_album, #button_sharing_album_users").removeClass("active--not-hidden active--hidden");
 
-		if (album.json.policies && album.json.policies.is_public) {
+		if (album.json.policies.is_public) {
 			if (album.json.policies.is_link_required) {
 				$("#button_visibility_album, #button_sharing_album_users").addClass("active--hidden");
 			} else {
@@ -13196,7 +13198,7 @@ view.album = {
   * @returns {void}
   */
 	nsfw: function nsfw() {
-		if (album.json.policies && album.json.policies.is_nsfw) {
+		if (album.json.policies.is_nsfw) {
 			// Sensitive
 			$("#button_nsfw_album").addClass("active").attr("title", lychee.locale["ALBUM_UNMARK_NSFW"]);
 		} else {
@@ -13583,7 +13585,9 @@ view.settings = {
    */
 		init: function init() {
 			view.settings.clearContent();
-			view.settings.content.setLogin();
+			if (lychee.rights.user.can_edit) {
+				view.settings.content.setLogin();
+			}
 			if (lychee.rights.settings.can_edit) {
 				view.settings.content.setSorting();
 				view.settings.content.setDropboxKey();
@@ -14487,7 +14491,7 @@ visible.leftMenu = function () {
  * @property {string}  [owner_name] optional, only shown in authenticated mode
  * @property {boolean} is_nsfw
  * @property {AlbumRightsDTO} rights
- * @property {?AlbumProtectionPolicy} policies
+ * @property {AlbumProtectionPolicies} policies
  * @property {boolean} has_albums
  * @property {boolean} has_password
  * @property {?string} min_taken_at
@@ -14509,7 +14513,7 @@ visible.leftMenu = function () {
  * @property {string}   [owner_name] optional, only shown in authenticated mode
  * @property {boolean} is_nsfw
  * @property {AlbumRightsDTO} rights
- * @property {?AlbumProtectionPolicy} policies
+ * @property {AlbumProtectionPolicies} policies
  * @property {?string}  min_taken_at
  * @property {?string}  max_taken_at
  * @property {?SortingCriterion}  sorting
@@ -14524,7 +14528,7 @@ visible.leftMenu = function () {
  * @property {Photo[]} [photos]
  * @property {?Thumb}  thumb
  * @property {AlbumRightsDTO} rights
- * @property {?AlbumProtectionPolicy} policies
+ * @property {AlbumProtectionPolicies} policies
  */
 
 /**
@@ -14599,7 +14603,7 @@ var SmartAlbumID = Object.freeze({
  */
 
 /**
- * @typedef UserDTO
+ * @typedef UserWithCapabilitiesDTO
  *
  * @property {number}  id
  * @property {string}  username
@@ -14621,12 +14625,6 @@ var SmartAlbumID = Object.freeze({
  * @property {?string} title - album title
  * @property {Photo[]} photos
  * @property {?string} track_url - URL to GPX track
- */
-
-/**
- * @typedef EMailData
- *
- * @property {?string} email
  */
 
 /**
@@ -14672,7 +14670,7 @@ var SmartAlbumID = Object.freeze({
  * @typedef InitializationData
  *
  * @property {?User} user
- * @property {InitRightsDTO} rights
+ * @property {GlobalRightsDTO} rights
  * @property {number} update_json - version number of latest available update
  * @property {boolean} update_available
  * @property {Object.<string, string>} locale
@@ -14781,7 +14779,7 @@ var SmartAlbumID = Object.freeze({
 /**
  * The JSON object for Policies on Albums
  *
- * @typedef AlbumProtectionPolicy
+ * @typedef AlbumProtectionPolicies
  *
  * @property {is_nsfw} boolean
  * @property {boolean} is_public
@@ -14792,9 +14790,9 @@ var SmartAlbumID = Object.freeze({
  */
 
 /**
- * The JSON object for Rights on Users
+ * The JSON object for Rights on users management
  *
- * @typedef UserRightsDTO
+ * @typedef UserManagementRightsDTO
  *
  * @property {boolean} can_create
  * @property {boolean} can_list
@@ -14803,13 +14801,20 @@ var SmartAlbumID = Object.freeze({
  */
 
 /**
+ * The JSON object for Rights on a User
+ *
+ * @typedef UserRightsDTO
+ *
+ * @property {boolean} can_edit
+ * @property {boolean} can_use_2fa
+ */
+
+/**
  * The JSON object for Rights on Settings
  *
  * @typedef SettingsRightsDTO
  *
  * @property {boolean} can_edit
- * @property {boolean} can_edit_own_settings
- * @property {boolean} can_use_2fa
  * @property {boolean} can_see_logs
  * @property {boolean} can_clear_logs
  * @property {boolean} can_see_diagnostics
@@ -14849,11 +14854,12 @@ var SmartAlbumID = Object.freeze({
  */
 
 /**
- * The JSON object for Rights on Album
+ * The JSON object for Rights on Global Application
  *
- * @typedef InitRightsDTO
+ * @typedef GlobalRightsDTO
  *
  * @property {RootAlbumRightsDTO} root_album
  * @property {SettingsRightsDTO} settings
- * @property {UserRightsDTO} users
+ * @property {UserManagementRightsDTO} user_management
+ * @property {UserRightsDTO} user
  */

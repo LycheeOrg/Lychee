@@ -680,7 +680,7 @@ build.album = function (data) {
 	var formattedCreationTs = lychee.locale.printMonthYear(data.created_at);
 	var formattedMinTs = lychee.locale.printMonthYear(data.min_taken_at);
 	var formattedMaxTs = lychee.locale.printMonthYear(data.max_taken_at);
-	var disableDragDrop = !album.isUploadable() || disabled || album.isSmartID(data.id) || data.is_tag_album;
+	var disableDragDrop = !data.rights.can_edit || disabled || album.isSmartID(data.id) || data.is_tag_album;
 	var subtitle = formattedCreationTs;
 
 	// check setting album_subtitle_type:
@@ -717,9 +717,9 @@ build.album = function (data) {
 			}
 	}
 
-	var html = lychee.html(_templateObject6, disabled ? "disabled" : "", data.is_nsfw && lychee.nsfw_blur ? "blurred" : "", data.id, data.is_nsfw ? "1" : "0", tabindex.get_next_tab_index(), disableDragDrop ? "false" : "true", disableDragDrop ? "" : "ondragstart='lychee.startDrag(event)'\n\t\t\t\tondragover='lychee.overDrag(event)'\n\t\t\t\tondragleave='lychee.leaveDrag(event)'\n\t\t\t\tondragend='lychee.endDrag(event)'\n\t\t\t\tondrop='lychee.finishDrag(event)'", build.getAlbumThumb(data), build.getAlbumThumb(data), build.getAlbumThumb(data), data.title, data.title, subtitle);
+	var html = lychee.html(_templateObject6, disabled ? "disabled" : "", data.policies.is_nsfw && lychee.nsfw_blur ? "blurred" : "", data.id, data.policies.is_nsfw ? "1" : "0", tabindex.get_next_tab_index(), disableDragDrop ? "false" : "true", disableDragDrop ? "" : "ondragstart='lychee.startDrag(event)'\n\t\t\t\tondragover='lychee.overDrag(event)'\n\t\t\t\tondragleave='lychee.leaveDrag(event)'\n\t\t\t\tondragend='lychee.endDrag(event)'\n\t\t\t\tondrop='lychee.finishDrag(event)'", build.getAlbumThumb(data), build.getAlbumThumb(data), build.getAlbumThumb(data), data.title, data.title, subtitle);
 
-	if (album.isUploadable() && !disabled) {
+	if (data.rights.can_edit && !disabled) {
 		var isCover = album.json && album.json.cover_id && data.thumb.id === album.json.cover_id;
 		html += lychee.html(_templateObject7, data.policies && data.policies.is_nsfw ? "badge--nsfw" : "", build.iconic("warning"), data.id === SmartAlbumID.STARRED ? "badge--star" : "", build.iconic("star"), data.id === SmartAlbumID.RECENT ? "badge--visible badge--list" : "", build.iconic("clock"), data.id === SmartAlbumID.PUBLIC || data.policies && data.policies.is_public ? "badge--visible" : "", data.policies && data.policies.is_link_required ? "badge--hidden" : "badge--not--hidden", build.iconic("eye"), data.id === SmartAlbumID.UNSORTED ? "badge--visible" : "", build.iconic("list"), data.policies && data.policies.is_password_required ? "badge--visible" : "", build.iconic("lock-unlocked"), data.is_tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
@@ -3465,7 +3465,7 @@ tabindex.reset = function () {
  * @property {string}  [owner_name] optional, only shown in authenticated mode
  * @property {boolean} is_nsfw
  * @property {AlbumRightsDTO} rights
- * @property {?AlbumProtectionPolicy} policies
+ * @property {AlbumProtectionPolicies} policies
  * @property {boolean} has_albums
  * @property {boolean} has_password
  * @property {?string} min_taken_at
@@ -3487,7 +3487,7 @@ tabindex.reset = function () {
  * @property {string}   [owner_name] optional, only shown in authenticated mode
  * @property {boolean} is_nsfw
  * @property {AlbumRightsDTO} rights
- * @property {?AlbumProtectionPolicy} policies
+ * @property {AlbumProtectionPolicies} policies
  * @property {?string}  min_taken_at
  * @property {?string}  max_taken_at
  * @property {?SortingCriterion}  sorting
@@ -3502,7 +3502,7 @@ tabindex.reset = function () {
  * @property {Photo[]} [photos]
  * @property {?Thumb}  thumb
  * @property {AlbumRightsDTO} rights
- * @property {?AlbumProtectionPolicy} policies
+ * @property {AlbumProtectionPolicies} policies
  */
 
 /**
@@ -3577,7 +3577,7 @@ var SmartAlbumID = Object.freeze({
  */
 
 /**
- * @typedef UserDTO
+ * @typedef UserWithCapabilitiesDTO
  *
  * @property {number}  id
  * @property {string}  username
@@ -3599,12 +3599,6 @@ var SmartAlbumID = Object.freeze({
  * @property {?string} title - album title
  * @property {Photo[]} photos
  * @property {?string} track_url - URL to GPX track
- */
-
-/**
- * @typedef EMailData
- *
- * @property {?string} email
  */
 
 /**
@@ -3650,7 +3644,7 @@ var SmartAlbumID = Object.freeze({
  * @typedef InitializationData
  *
  * @property {?User} user
- * @property {InitRightsDTO} rights
+ * @property {GlobalRightsDTO} rights
  * @property {number} update_json - version number of latest available update
  * @property {boolean} update_available
  * @property {Object.<string, string>} locale
@@ -3759,7 +3753,7 @@ var SmartAlbumID = Object.freeze({
 /**
  * The JSON object for Policies on Albums
  *
- * @typedef AlbumProtectionPolicy
+ * @typedef AlbumProtectionPolicies
  *
  * @property {is_nsfw} boolean
  * @property {boolean} is_public
@@ -3770,9 +3764,9 @@ var SmartAlbumID = Object.freeze({
  */
 
 /**
- * The JSON object for Rights on Users
+ * The JSON object for Rights on users management
  *
- * @typedef UserRightsDTO
+ * @typedef UserManagementRightsDTO
  *
  * @property {boolean} can_create
  * @property {boolean} can_list
@@ -3781,13 +3775,20 @@ var SmartAlbumID = Object.freeze({
  */
 
 /**
+ * The JSON object for Rights on a User
+ *
+ * @typedef UserRightsDTO
+ *
+ * @property {boolean} can_edit
+ * @property {boolean} can_use_2fa
+ */
+
+/**
  * The JSON object for Rights on Settings
  *
  * @typedef SettingsRightsDTO
  *
  * @property {boolean} can_edit
- * @property {boolean} can_edit_own_settings
- * @property {boolean} can_use_2fa
  * @property {boolean} can_see_logs
  * @property {boolean} can_clear_logs
  * @property {boolean} can_see_diagnostics
@@ -3827,11 +3828,12 @@ var SmartAlbumID = Object.freeze({
  */
 
 /**
- * The JSON object for Rights on Album
+ * The JSON object for Rights on Global Application
  *
- * @typedef InitRightsDTO
+ * @typedef GlobalRightsDTO
  *
  * @property {RootAlbumRightsDTO} root_album
  * @property {SettingsRightsDTO} settings
- * @property {UserRightsDTO} users
+ * @property {UserManagementRightsDTO} user_management
+ * @property {UserRightsDTO} user
  */
