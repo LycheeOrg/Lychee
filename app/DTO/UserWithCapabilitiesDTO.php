@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-use App\Models\User as UserModel;
+use App\Models\User;
 
 /**
  * Data Transfer Object (DTO) to transmit the capabilities of a user.
@@ -31,11 +31,11 @@ class UserWithCapabilitiesDTO extends ArrayableDTO
 	/**
 	 * Serialize User with the required attributes.
 	 *
-	 * @param UserModel $user
+	 * @param User $user
 	 *
 	 * @return UserWithCapabilitiesDTO
 	 */
-	public static function ofUser(UserModel $user): UserWithCapabilitiesDTO
+	public static function ofUser(User $user): UserWithCapabilitiesDTO
 	{
 		return new UserWithCapabilitiesDTO(
 			$user->id,
