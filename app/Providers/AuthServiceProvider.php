@@ -4,7 +4,6 @@ namespace App\Providers;
 
 use App\Contracts\AbstractAlbum;
 use App\Models\Album;
-use App\Models\BaseAlbumImpl;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
@@ -34,7 +33,6 @@ class AuthServiceProvider extends ServiceProvider
 		// This ensures that all the kinds of albums are covered in the Gate mapping.
 		BaseSmartAlbum::class => AlbumPolicy::class,
 		BaseAlbum::class => AlbumPolicy::class,
-		BaseAlbumImpl::class => AlbumPolicy::class,
 		Album::class => AlbumPolicy::class,
 		AbstractAlbum::class => AlbumPolicy::class,
 
