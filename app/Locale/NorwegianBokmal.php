@@ -261,10 +261,6 @@ final class NorwegianBokmal implements Language
 			'PHOTO_FOCAL' => 'Brennvidde',
 			'PHOTO_ISO' => 'ISO %s',
 			'PHOTO_SHARING' => 'Deling',
-			'PHOTO_SHR_PUBLIC' => 'Offentlig',
-			'PHOTO_SHR_ALB' => 'Ja (Album)',
-			'PHOTO_SHR_PHT' => 'Ja (Bilde)',
-			'PHOTO_SHR_NO' => 'Nei',
 			'PHOTO_DELETE' => 'Fjern Bilde',
 			'PHOTO_KEEP' => 'Behold Bilde',
 			'PHOTO_DELETE_CONFIRMATION' => 'Ønsker du virkelig å fjerne bilde «%s»? Denne handlingen kan ikke angres!',
@@ -508,7 +504,7 @@ final class NorwegianBokmal implements Language
 			'CAMERA_DATE' => 'Camera date',
 			'NEW_PASSWORD' => 'new password',
 			'ALLOW_UPLOADS' => 'Allow uploads',
-			'RESTRICTED_ACCOUNT' => 'Restricted account',
+			'ALLOW_USER_SELF_EDIT' => 'Allow self-management of user account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
 	}

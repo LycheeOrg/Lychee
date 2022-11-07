@@ -33,7 +33,6 @@ Route::get('/Logs', [LogController::class, 'view']);
 // broken that even logging in as an administrator fails, it poses a security
 // risk.
 // TODO: Reconsider, if we really want the diagnostic page to be world-wide accessible.
-Route::get('/Diagnostics', [DiagnosticsController::class, 'view'])
-	->withoutMiddleware('admin');
+Route::get('/Diagnostics', [DiagnosticsController::class, 'view']);
 
 Route::get('/Update', [UpdateController::class, 'view']);

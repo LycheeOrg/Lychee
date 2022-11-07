@@ -29,8 +29,9 @@ use Laragear\WebAuthn\WebAuthnAuthentication;
  * @property string                                                $username
  * @property string|null                                           $password
  * @property string|null                                           $email
+ * @property bool                                                  $may_administrate
  * @property bool                                                  $may_upload
- * @property bool                                                  $is_locked
+ * @property bool                                                  $may_edit_own_settings
  * @property string|null                                           $token
  * @property bool                                                  $has_token
  * @property string|null                                           $remember_token
@@ -68,6 +69,14 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'created_at',
 		'updated_at',
 		'token',
+
+		/**
+		 * We do not forward those to the front end: they are provided by {@link \App\DTO\UserWithCapabilitiesDTO}.
+		 * We do not need to inform every user on Lychee who can upload etc.
+		 */
+		'may_administrate',
+		'may_upload',
+		'may_edit_own_settings',
 	];
 
 	/**
@@ -77,8 +86,9 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'id' => 'integer',
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
+		'may_administrate' => 'boolean',
 		'may_upload' => 'boolean',
-		'is_locked' => 'boolean',
+		'may_edit_own_settings' => 'boolean',
 	];
 
 	/**

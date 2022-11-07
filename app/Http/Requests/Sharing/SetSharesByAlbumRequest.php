@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Sharing;
 
+use App\Contracts\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasBaseAlbum;
@@ -28,7 +29,7 @@ class SetSharesByAlbumRequest extends BaseApiRequest implements HasBaseAlbum, Ha
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(AlbumPolicy::IS_OWNER, $this->album);
+		return Gate::check(AlbumPolicy::CAN_SHARE_WITH_USERS, [AbstractAlbum::class, $this->album]);
 	}
 
 	/**

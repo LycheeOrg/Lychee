@@ -32,8 +32,8 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject19 = _taggedTemplateLiteral(["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"], ["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"]),
     _templateObject20 = _taggedTemplateLiteral(["<a class='", "'>$", "</a>"], ["<a class='", "'>$", "</a>"]),
     _templateObject21 = _taggedTemplateLiteral(["<div class='empty'>", "</div>"], ["<div class='empty'>", "</div>"]),
-    _templateObject22 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
-    _templateObject23 = _taggedTemplateLiteral(["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"string\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"string\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
+    _templateObject22 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_edit_own_settings\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_edit_own_settings\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
+    _templateObject23 = _taggedTemplateLiteral(["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"string\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"string\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
     _templateObject24 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
     _templateObject25 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <table>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>$", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <table>\n\t\t\t\t "]),
     _templateObject26 = _taggedTemplateLiteral(["<span class='attr_", "_separator'>, </span>"], ["<span class='attr_", "_separator'>, </span>"]),
@@ -554,7 +554,7 @@ var loadPhotoInfo = function loadPhotoInfo(photoID) {
 		document.title = "Lychee – " + _title;
 		header.dom(".header__title").text(_title);
 
-		if (photo.json.hasOwnProperty("is_share_button_visible") && !photo.json.is_share_button_visible) {
+		if (!lychee.share_button_visible) {
 			$("#button_share").hide();
 		}
 
@@ -711,7 +711,7 @@ build.album = function (data) {
 	//   Whether the child album supports the drop event depends on the type
 	//   of the album (i.e. it must not be a smart or tag album), but also
 	//   on the ownership of the album.
-	var disableDragDrop = !album.isUploadable() || disabled || album.isSmartID(data.id) || data.is_tag_album;
+	var disableDragDrop = !data.rights.can_edit || disabled || album.isSmartID(data.id) || data.is_tag_album;
 	var subtitle = formattedCreationTs;
 
 	// check setting album_subtitle_type:
@@ -748,11 +748,11 @@ build.album = function (data) {
 			}
 	}
 
-	var html = lychee.html(_templateObject6, disabled ? "disabled" : "", data.is_nsfw && lychee.nsfw_blur ? "blurred" : "", data.id, data.is_nsfw ? "1" : "0", tabindex.get_next_tab_index(), disableDragDrop ? "false" : "true", disableDragDrop ? "" : "ondragstart='lychee.startDrag(event)'\n\t\t\t\tondragover='lychee.overDrag(event)'\n\t\t\t\tondragleave='lychee.leaveDrag(event)'\n\t\t\t\tondragend='lychee.endDrag(event)'\n\t\t\t\tondrop='lychee.finishDrag(event)'", build.getAlbumThumb(data), build.getAlbumThumb(data), build.getAlbumThumb(data), data.title, data.title, subtitle);
+	var html = lychee.html(_templateObject6, disabled ? "disabled" : "", data.policies.is_nsfw && lychee.nsfw_blur ? "blurred" : "", data.id, data.policies.is_nsfw ? "1" : "0", tabindex.get_next_tab_index(), disableDragDrop ? "false" : "true", disableDragDrop ? "" : "ondragstart='lychee.startDrag(event)'\n\t\t\t\tondragover='lychee.overDrag(event)'\n\t\t\t\tondragleave='lychee.leaveDrag(event)'\n\t\t\t\tondragend='lychee.endDrag(event)'\n\t\t\t\tondrop='lychee.finishDrag(event)'", build.getAlbumThumb(data), build.getAlbumThumb(data), build.getAlbumThumb(data), data.title, data.title, subtitle);
 
-	if (album.isUploadable() && !disabled) {
+	if (data.rights.can_edit && !disabled) {
 		var isCover = album.json && album.json.cover_id && data.thumb.id === album.json.cover_id;
-		html += lychee.html(_templateObject7, data.is_nsfw ? "badge--nsfw" : "", build.iconic("warning"), data.id === SmartAlbumID.STARRED ? "badge--star" : "", build.iconic("star"), data.id === SmartAlbumID.RECENT ? "badge--visible badge--list" : "", build.iconic("clock"), data.id === SmartAlbumID.PUBLIC || data.is_public ? "badge--visible" : "", data.requires_link ? "badge--hidden" : "badge--not--hidden", build.iconic("eye"), data.id === SmartAlbumID.UNSORTED ? "badge--visible" : "", build.iconic("list"), data.has_password ? "badge--visible" : "", build.iconic("lock-locked"), data.is_tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
+		html += lychee.html(_templateObject7, data.policies && data.policies.is_nsfw ? "badge--nsfw" : "", build.iconic("warning"), data.id === SmartAlbumID.STARRED ? "badge--star" : "", build.iconic("star"), data.id === SmartAlbumID.RECENT ? "badge--visible badge--list" : "", build.iconic("clock"), data.id === SmartAlbumID.PUBLIC || data.policies && data.policies.is_public ? "badge--visible" : "", data.policies && data.policies.is_link_required ? "badge--hidden" : "badge--not--hidden", build.iconic("eye"), data.id === SmartAlbumID.UNSORTED ? "badge--visible" : "", build.iconic("list"), data.policies && data.policies.is_password_required ? "badge--visible" : "", build.iconic("lock-unlocked"), data.is_tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
 
 	if (data.albums && data.albums.length > 0 || data.has_albums) {
@@ -860,7 +860,7 @@ build.photo = function (data) {
 		// This also means that the displayed variant of the public badge of
 		// a photo depends on the availability of the parent album.
 		// This seems to be an undesired but unavoidable side effect.
-		html += lychee.html(_templateObject12, data.is_starred ? "badge--star" : "", build.iconic("star"), data.is_public && album.json && !album.json.is_public ? "badge--visible badge--hidden" : "", build.iconic("eye"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
+		html += lychee.html(_templateObject12, data.is_starred ? "badge--star" : "", build.iconic("star"), data.is_public && album.json && album.json.policies && !album.json.policies.is_public ? "badge--visible badge--hidden" : "", build.iconic("eye"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
 
 	html += "</div>";
@@ -1055,7 +1055,7 @@ build.tags = function (tags) {
  * @returns {string}
  */
 build.user = function (user) {
-	return lychee.html(_templateObject22, user.id, user.id, user.username, lychee.locale["USERNAME"], lychee.locale["NEW_PASSWORD"], lychee.locale["ALLOW_UPLOADS"], lychee.locale["RESTRICTED_ACCOUNT"], user.id, user.id);
+	return lychee.html(_templateObject22, user.id, user.id, user.username, lychee.locale["USERNAME"], lychee.locale["NEW_PASSWORD"], lychee.locale["ALLOW_UPLOADS"], lychee.locale["ALLOW_USER_SELF_EDIT"], user.id, user.id);
 };
 
 /**
@@ -1342,7 +1342,7 @@ header.setMode = function (mode) {
 				tabindex.makeUnfocusable(_e5);
 			}
 
-			if (lychee.enable_button_add && lychee.rights.may_upload) {
+			if (lychee.enable_button_add && lychee.rights.root_album.can_upload) {
 				var _e6 = $(".button_add", ".header__toolbar--albums");
 				_e6.show();
 				tabindex.makeFocusable(_e6);
@@ -1365,7 +1365,7 @@ header.setMode = function (mode) {
 
 			// Hide download button when album empty or we are not allowed to
 			// upload to it and it's not explicitly marked as downloadable.
-			if (!album.json || album.json.photos.length === 0 && album.json.albums && album.json.albums.length === 0 || !album.isUploadable() && !album.json.is_downloadable) {
+			if (!album.json || album.json.photos.length === 0 && album.json.albums && album.json.albums.length === 0 || !album.json.rights.can_download) {
 				var _e8 = $("#button_archive");
 				_e8.hide();
 				tabindex.makeUnfocusable(_e8);
@@ -1375,7 +1375,7 @@ header.setMode = function (mode) {
 				tabindex.makeFocusable(_e9);
 			}
 
-			if (album.json && album.json.is_share_button_visible === false && (
+			if (!lychee.is_share_button_visible && (
 			// The owner of an album (or the admin) shall always see
 			// the share button and be unaffected by the settings of
 			// the album
@@ -1510,7 +1510,7 @@ header.setMode = function (mode) {
 				tabindex.makeUnfocusable(_e24);
 			}
 
-			if (photo.json && photo.json.hasOwnProperty("is_share_button_visible") && !photo.json.is_share_button_visible) {
+			if (!lychee.share_button_visible) {
 				var _e25 = $("#button_share");
 				_e25.hide();
 				tabindex.makeUnfocusable(_e25);
@@ -1523,7 +1523,7 @@ header.setMode = function (mode) {
 			// Hide More menu if empty (see contextMenu.photoMore)
 			$("#button_more").show();
 			tabindex.makeFocusable($("#button_more"));
-			if (!(album.isUploadable() || (photo.json.hasOwnProperty("is_downloadable") ? photo.json.is_downloadable : album.json && album.json.is_downloadable)) && !(photo.json.size_variants.original.url && photo.json.size_variants.original.url !== "")) {
+			if (photo.json && !photo.json.rights.can_download && (!photo.json.rights.can_access_full_photo || !(photo.json.size_variants.original.url && photo.json.size_variants.original.url !== ""))) {
 				var _e27 = $("#button_more");
 				_e27.hide();
 				tabindex.makeUnfocusable(_e27);
@@ -1861,7 +1861,8 @@ sidebar.secondsToHMS = function (d) {
 sidebar.createStructure.photo = function (data) {
 	if (!data) return [];
 
-	var editable = typeof album !== "undefined" ? album.isUploadable() : false;
+	var editable = data.rights.can_edit;
+
 	var hasExif = !!data.taken_at || !!data.make || !!data.model || !!data.shutter || !!data.aperture || !!data.focal || !!data.iso;
 	// Attributes for geo-position are nullable floats.
 	// The geo-position 0°00'00'', 0°00'00'' at zero altitude is very unlikely
@@ -2030,12 +2031,11 @@ sidebar.createStructure.photo = function (data) {
 sidebar.createStructure.album = function (data) {
 	if (!data) return [];
 
-	var editable = album.isUploadable();
+	var editable = data.rights.can_edit;
 	var structure = {};
-	var isPublic = data.is_public ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
-	var requiresLink = data.requires_link ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
-	var isDownloadable = data.is_downloadable ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
-	var isShareButtonVisible = data.is_share_button_visible ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
+	var isPublic = !!data.policies && data.policies.is_public ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
+	var requiresLink = !!data.policies && data.policies.is_link_required ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
+	var isDownloadable = !!data.policies && data.policies.grant_download ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
 	var hasPassword = data.has_password ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
 	var license = "";
 	var sorting = "";
@@ -2099,7 +2099,7 @@ sidebar.createStructure.album = function (data) {
 	structure.share = {
 		title: lychee.locale["ALBUM_SHARING"],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["ALBUM_PUBLIC"], kind: "public", value: isPublic }, { title: lychee.locale["ALBUM_HIDDEN"], kind: "hidden", value: requiresLink }, { title: lychee.locale["ALBUM_DOWNLOADABLE"], kind: "downloadable", value: isDownloadable }, { title: lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE"], kind: "share_button_visible", value: isShareButtonVisible }, { title: lychee.locale["ALBUM_PASSWORD"], kind: "password", value: hasPassword }]
+		rows: [{ title: lychee.locale["ALBUM_PUBLIC"], kind: "public", value: isPublic }, { title: lychee.locale["ALBUM_HIDDEN"], kind: "hidden", value: requiresLink }, { title: lychee.locale["ALBUM_DOWNLOADABLE"], kind: "downloadable", value: isDownloadable }, { title: lychee.locale["ALBUM_PASSWORD"], kind: "password", value: hasPassword }]
 	};
 
 	if (data.owner_name) {
@@ -3158,7 +3158,7 @@ lychee.locale = {
 	CAMERA_DATE: "Camera date",
 	NEW_PASSWORD: "new password",
 	ALLOW_UPLOADS: "Allow uploads",
-	RESTRICTED_ACCOUNT: "Restricted account",
+	ALLOW_USER_SELF_EDIT: "Allow self-management of user account",
 	OSM_CONTRIBUTORS: "OpenStreetMap contributors",
 
 	dateTimeFormatter: new Intl.DateTimeFormat("default", { dateStyle: "medium", timeStyle: "medium" }),
@@ -3449,10 +3449,9 @@ tabindex.reset = function () {
  * @property {?string}      live_photo_content_id
  * @property {?string}      live_photo_checksum
  * @property {SizeVariants} size_variants
- * @property {boolean}      is_downloadable
- * @property {boolean}      is_share_button_visible
  * @property {?string}      [next_photo_id]
  * @property {?string}      [previous_photo_id]
+ * @property {PhotoRightsDTO} rights
  */
 
 /**
@@ -3499,14 +3498,11 @@ tabindex.reset = function () {
  * @property {?string} cover_id
  * @property {?Thumb}  thumb
  * @property {string}  [owner_name] optional, only shown in authenticated mode
- * @property {boolean} is_public
- * @property {boolean} is_downloadable
- * @property {boolean} is_share_button_visible
  * @property {boolean} is_nsfw
- * @property {boolean} grants_full_photo
- * @property {boolean} requires_link
- * @property {boolean} has_password
+ * @property {AlbumRightsDTO} rights
+ * @property {AlbumProtectionPolicies} policies
  * @property {boolean} has_albums
+ * @property {boolean} has_password
  * @property {?string} min_taken_at
  * @property {?string} max_taken_at
  * @property {?SortingCriterion} sorting
@@ -3524,13 +3520,9 @@ tabindex.reset = function () {
  * @property {Photo[]}  photos
  * @property {?Thumb}   thumb
  * @property {string}   [owner_name] optional, only shown in authenticated mode
- * @property {boolean}  is_public
- * @property {boolean}  is_downloadable
- * @property {boolean}  is_share_button_visible
- * @property {boolean}  is_nsfw
- * @property {boolean}  grants_full_photo
- * @property {boolean}  requires_link
- * @property {boolean}  has_password
+ * @property {boolean} is_nsfw
+ * @property {AlbumRightsDTO} rights
+ * @property {AlbumProtectionPolicies} policies
  * @property {?string}  min_taken_at
  * @property {?string}  max_taken_at
  * @property {?SortingCriterion}  sorting
@@ -3544,9 +3536,8 @@ tabindex.reset = function () {
  * @property {string}  title
  * @property {Photo[]} [photos]
  * @property {?Thumb}  thumb
- * @property {boolean} is_public
- * @property {boolean} is_downloadable
- * @property {boolean} is_share_button_visible
+ * @property {AlbumRightsDTO} rights
+ * @property {AlbumProtectionPolicies} policies
  */
 
 /**
@@ -3616,10 +3607,18 @@ var SmartAlbumID = Object.freeze({
  *
  * @property {number}  id
  * @property {string}  username
- * @property {?string} email
- * @property {boolean} may_upload
- * @property {boolean} is_locked
+ * @property {string}  email
  * @property {boolean} has_token
+ */
+
+/**
+ * @typedef UserWithCapabilitiesDTO
+ *
+ * @property {number}  id
+ * @property {string}  username
+ * @property {boolean} may_administrate
+ * @property {boolean} may_upload
+ * @property {boolean} may_edit_own_settings
  */
 
 /**
@@ -3635,12 +3634,6 @@ var SmartAlbumID = Object.freeze({
  * @property {?string} title - album title
  * @property {Photo[]} photos
  * @property {?string} track_url - URL to GPX track
- */
-
-/**
- * @typedef EMailData
- *
- * @property {?string} email
  */
 
 /**
@@ -3686,7 +3679,7 @@ var SmartAlbumID = Object.freeze({
  * @typedef InitializationData
  *
  * @property {?User} user
- * @property {{is_admin: boolean, is_locked: boolean, may_upload: boolean}} rights
+ * @property {GlobalRightsDTO} rights
  * @property {number} update_json - version number of latest available update
  * @property {boolean} update_available
  * @property {Object.<string, string>} locale
@@ -3790,4 +3783,92 @@ var SmartAlbumID = Object.freeze({
  * @property {number} severity - either `'debug'`, `'info'`, `'notice'`, `'warning'`, `'error'`, `'critical'` or `'emergency'`
  * @property {?string} path - the path to the affected file or directory
  * @property {string} message - a message text
+ */
+
+/**
+ * The JSON object for Policies on Albums
+ *
+ * @typedef AlbumProtectionPolicies
+ *
+ * @property {is_nsfw} boolean
+ * @property {boolean} is_public
+ * @property {boolean} is_link_required
+ * @property {boolean} is_password_required
+ * @property {boolean} grants_full_photo_access
+ * @property {boolean} grants_download
+ */
+
+/**
+ * The JSON object for Rights on users management
+ *
+ * @typedef UserManagementRightsDTO
+ *
+ * @property {boolean} can_create
+ * @property {boolean} can_list
+ * @property {boolean} can_edit
+ * @property {boolean} can_delete
+ */
+
+/**
+ * The JSON object for Rights on a User
+ *
+ * @typedef UserRightsDTO
+ *
+ * @property {boolean} can_edit
+ * @property {boolean} can_use_2fa
+ */
+
+/**
+ * The JSON object for Rights on Settings
+ *
+ * @typedef SettingsRightsDTO
+ *
+ * @property {boolean} can_edit
+ * @property {boolean} can_see_logs
+ * @property {boolean} can_clear_logs
+ * @property {boolean} can_see_diagnostics
+ * @property {boolean} can_update
+ */
+
+/**
+ * The JSON object for Rights on Settings
+ *
+ * @typedef RootAlbumRightsDTO
+ *
+ * @property {boolean} can_edit
+ * @property {boolean} can_upload
+ * @property {boolean} can_download
+ * @property {boolean} can_import_from_server
+ */
+
+/**
+ * The JSON object for Rights on Photos
+ *
+ * @typedef PhotoRightsDTO
+ *
+ * @property {boolean} can_edit
+ * @property {boolean} can_download
+ * @property {boolean} can_access_full_photo
+ */
+
+/**
+ * The JSON object for Rights on Album
+ *
+ * @typedef AlbumRightsDTO
+ *
+ * @property {boolean} can_edit
+ * @property {boolean} can_share_with_users
+ * @property {boolean} can_download
+ * @property {boolean} can_upload
+ */
+
+/**
+ * The JSON object for Rights on Global Application
+ *
+ * @typedef GlobalRightsDTO
+ *
+ * @property {RootAlbumRightsDTO} root_album
+ * @property {SettingsRightsDTO} settings
+ * @property {UserManagementRightsDTO} user_management
+ * @property {UserRightsDTO} user
  */

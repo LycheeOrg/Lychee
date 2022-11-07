@@ -6,7 +6,6 @@ use App\Facades\Lang;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\TagAlbum;
-use DebugBar\DebugBar;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -21,7 +20,6 @@ class Sidebar extends Component
 	public function mount(Album $album = null, Photo $photo = null)
 	{
 		$this->album = $album;
-		DebugBar::notice($album);
 		$this->photo = $photo;
 	}
 
@@ -73,15 +71,13 @@ class Sidebar extends Component
 		$share = new \stdClass();
 		$share->title = Lang::get('ALBUM_SHARING');
 		$_public = $this->album->is_public ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO');
-		$_hidden = $this->album->requires_link ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO'); // TODO : double check;
-		$_downloadable = $this->album->is_downloadable ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO');
-		$_share_button_visible = $this->album->is_share_button_visible ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO');
+		$_hidden = $this->album->is_link_required ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO');
+		$_downloadable = $this->album->grants_download ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO');
 		$_password = $this->album->has_password ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO');
 		$share->content = [
 			['head' => Lang::get('ALBUM_PUBLIC'), 'value' => $_public],
 			['head' => Lang::get('ALBUM_HIDDEN'), 'value' => $_hidden],
 			['head' => Lang::get('ALBUM_DOWNLOADABLE'), 'value' => $_downloadable],
-			['head' => Lang::get('ALBUM_SHARE_BUTTON_VISIBLE'), 'value' => $_share_button_visible],
 			['head' => Lang::get('ALBUM_PASSWORD'), 'value' => $_password],
 		];
 		if ($this->album->owner_id !== null) {

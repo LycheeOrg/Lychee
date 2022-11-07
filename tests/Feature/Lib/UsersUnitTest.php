@@ -13,10 +13,13 @@
 namespace Tests\Feature\Lib;
 
 use Illuminate\Testing\TestResponse;
+use Tests\Feature\Traits\CatchFailures;
 use Tests\TestCase;
 
 class UsersUnitTest
 {
+	use CatchFailures;
+
 	private TestCase $testCase;
 
 	public function __construct(TestCase $testCase)
@@ -36,8 +39,8 @@ class UsersUnitTest
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->postJson('/api/User::list');
-		$response->assertStatus($expectedStatusCode);
+		$response = $this->testCase->postJson('/api/Users::list');
+		$this->assertStatus($response, $expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
 		}
@@ -56,7 +59,7 @@ class UsersUnitTest
 		?string $assertSee = null
 	): TestResponse {
 		$response = $this->testCase->postJson('/php/index.php');
-		$response->assertStatus($expectedStatusCode);
+		$this->assertStatus($response, $expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
 		}
@@ -70,7 +73,7 @@ class UsersUnitTest
 	 * @param string      $username
 	 * @param string      $password
 	 * @param bool        $mayUpload
-	 * @param bool        $isLocked
+	 * @param bool        $mayEditOwnSettings
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
@@ -80,17 +83,17 @@ class UsersUnitTest
 		string $username,
 		string $password,
 		bool $mayUpload = true,
-		bool $isLocked = false,
+		bool $mayEditOwnSettings = true,
 		int $expectedStatusCode = 201,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->postJson('/api/User::create', [
+		$response = $this->testCase->postJson('/api/Users::create', [
 			'username' => $username,
 			'password' => $password,
 			'may_upload' => $mayUpload,
-			'is_locked' => $isLocked,
+			'may_edit_own_settings' => $mayEditOwnSettings,
 		]);
-		$response->assertStatus($expectedStatusCode);
+		$this->assertStatus($response, $expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
 		}
@@ -112,10 +115,10 @@ class UsersUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->postJson('/api/User::delete', [
+		$response = $this->testCase->postJson('/api/Users::delete', [
 			'id' => $id,
 		]);
-		$response->assertStatus($expectedStatusCode);
+		$this->assertStatus($response, $expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
 		}
@@ -130,7 +133,7 @@ class UsersUnitTest
 	 * @param string      $username
 	 * @param string      $password
 	 * @param bool        $mayUpload
-	 * @param bool        $isLocked
+	 * @param bool        $mayEditOwnSettings
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
@@ -141,18 +144,18 @@ class UsersUnitTest
 		string $username,
 		string $password,
 		bool $mayUpload = true,
-		bool $isLocked = false,
+		bool $mayEditOwnSettings = true,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->postJson('/api/User::save', [
+		$response = $this->testCase->postJson('/api/Users::save', [
 			'id' => $id,
 			'username' => $username,
 			'password' => $password,
 			'may_upload' => $mayUpload,
-			'is_locked' => $isLocked,
+			'may_edit_own_settings' => $mayEditOwnSettings,
 		]);
-		$response->assertStatus($expectedStatusCode);
+		$this->assertStatus($response, $expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
 		}
@@ -177,7 +180,7 @@ class UsersUnitTest
 		$response = $this->testCase->postJson('/api/User::setEmail', [
 			'email' => $email,
 		]);
-		$response->assertStatus($expectedStatusCode);
+		$this->assertStatus($response, $expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
 		}
@@ -197,8 +200,8 @@ class UsersUnitTest
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->postJson('/api/User::getEmail');
-		$response->assertStatus($expectedStatusCode);
+		$response = $this->testCase->postJson('/api/User::getAuthenticatedUser');
+		$this->assertStatus($response, $expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
 		}
@@ -219,7 +222,7 @@ class UsersUnitTest
 		string|array|null $assertSee = null
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::getAuthenticatedUser');
-		$response->assertStatus($expectedStatusCode);
+		$this->assertStatus($response, $expectedStatusCode);
 		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
@@ -240,7 +243,7 @@ class UsersUnitTest
 		?string $assertSee = null
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::resetToken');
-		$response->assertStatus($expectedStatusCode);
+		$this->assertStatus($response, $expectedStatusCode);
 		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
@@ -261,7 +264,7 @@ class UsersUnitTest
 		?string $assertSee = null
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::unsetToken');
-		$response->assertStatus($expectedStatusCode);
+		$this->assertStatus($response, $expectedStatusCode);
 		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}

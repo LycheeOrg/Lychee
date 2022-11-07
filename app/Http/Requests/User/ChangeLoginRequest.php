@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Settings;
+namespace App\Http\Requests\User;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPassword;
@@ -22,11 +22,11 @@ class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 	protected ?string $username = null;
 
 	/**
-	 * Determines if the user is authorized to make this request.
+	 * {@inheritDoc}
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(UserPolicy::CAN_EDIT_SETTINGS, User::class);
+		return Gate::check(UserPolicy::CAN_EDIT, [User::class]);
 	}
 
 	/**

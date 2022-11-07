@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 
 class PhotoQueryPolicy
 {
@@ -48,7 +47,7 @@ class PhotoQueryPolicy
 	{
 		$this->prepareModelQueryOrFail($query, false, true, true);
 
-		if (Gate::check(UserPolicy::IS_ADMIN)) {
+		if (Auth::user()?->may_administrate === true) {
 			return $query;
 		}
 
@@ -112,7 +111,7 @@ class PhotoQueryPolicy
 				->where('albums._rgt', '<=', $origin->_rgt);
 		}
 
-		if (Gate::check(UserPolicy::IS_ADMIN)) {
+		if (Auth::user()?->may_administrate === true) {
 			return $query;
 		} else {
 			return $query->where(function (Builder $query) use ($origin) {

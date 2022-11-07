@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Casts\MustNotSetCast;
 use App\Contracts\HasRandomID;
+use App\DTO\AlbumProtectionPolicy;
 use App\DTO\PhotoSortingCriterion;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
@@ -91,11 +93,10 @@ use Illuminate\Support\Facades\Auth;
  * @property int                        $owner_id
  * @property User                       $owner
  * @property bool                       $is_public
- * @property bool                       $grants_full_photo
- * @property bool                       $requires_link
- * @property bool                       $is_downloadable
- * @property bool                       $is_share_button_visible
+ * @property bool                       $is_link_required
  * @property bool                       $is_nsfw
+ * @property bool                       $grants_full_photo_access
+ * @property bool                       $grants_download
  * @property Collection                 $shared_with
  * @property string|null                $password
  * @property bool                       $has_password
@@ -144,15 +145,16 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'title' => null, // Sic! `title` is actually non-nullable, but using `null` here forces the caller to actually set a title before saving.
 		'description' => null,
 		'owner_id' => 0,
-		'is_public' => false,
-		'grants_full_photo' => true,
-		'requires_link' => false,
-		'is_downloadable' => false,
-		'is_share_button_visible' => false,
-		'is_nsfw' => false,
-		'password' => null,
 		'sorting_col' => null,
 		'sorting_order' => null,
+		// Security attributes
+		'is_nsfw' => false,
+		'is_public' => false,
+		'is_link_required' => false,
+		'password' => null,
+		// Permissions
+		'grants_full_photo_access' => true,
+		'grants_download' => false,
 	];
 
 	/**
@@ -164,9 +166,10 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'is_public' => 'boolean',
-		'requires_link' => 'boolean',
+		'is_link_required' => 'boolean',
 		'is_nsfw' => 'boolean',
 		'owner_id' => 'integer',
+		'policy' => MustNotSetCast::class, // There is no setter, please use {@link \App\Actions\Album\SetProtectionPolicy}
 	];
 
 	/**
@@ -180,6 +183,17 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'password',
 		'sorting_col',   // serialize DTO `order` instead
 		'sorting_order', // serialize DTO `order` instead
+
+		// Security attributes are hidden because provided by the DTO {@link \App\DTO\AlbumProtectionPolicy}
+		'is_public',
+		'is_nsfw',
+		'is_link_required',
+		'is_share_button_visible', // TODO: DELETE ME once we are able to remove columns
+
+		// Permissions are hidden because they will eventually be replaced by an external table
+		// and are provided by the DTO {@link \App\DTO\Rights\AlbumRightsDTO}
+		'grants_download',
+		'grants_full_photo_access',
 	];
 
 	/**
@@ -188,8 +202,8 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 *                        JSON from accessors
 	 */
 	protected $appends = [
-		'has_password',
 		'sorting',
+		'policy',
 	];
 
 	/**
@@ -241,15 +255,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		}
 	}
 
-	protected function getIsShareButtonVisibleAttribute(bool $value): bool
-	{
-		if ($this->is_public) {
-			return $value;
-		} else {
-			return Configs::getValueAsBool('share_button_visible');
-		}
-	}
-
 	protected function getHasPasswordAttribute(): bool
 	{
 		return $this->password !== null && $this->password !== '';
@@ -269,6 +274,16 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	{
 		$this->attributes['sorting_col'] = $sorting?->column;
 		$this->attributes['sorting_order'] = $sorting?->order;
+	}
+
+	/**
+	 * Provide the policy attributes for said album.
+	 *
+	 * @return AlbumProtectionPolicy|null
+	 */
+	protected function getPolicyAttribute(): AlbumProtectionPolicy|null
+	{
+		return AlbumProtectionPolicy::ofBaseAlbumImplementation($this);
 	}
 
 	public function toArray(): array

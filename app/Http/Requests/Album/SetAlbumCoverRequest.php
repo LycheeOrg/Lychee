@@ -26,7 +26,7 @@ class SetAlbumCoverRequest extends BaseApiRequest implements HasAlbum, HasPhoto
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->album]) && Gate::check(PhotoPolicy::IS_VISIBLE, $this->photo);
+		return Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->album]) && Gate::check(PhotoPolicy::CAN_SEE, $this->photo);
 	}
 
 	/**

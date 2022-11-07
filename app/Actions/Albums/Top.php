@@ -64,7 +64,7 @@ class Top
 		$smartAlbums = $this->albumFactory
 			->getAllBuiltInSmartAlbums(false)
 			->map(
-				fn ($smartAlbum) => Gate::check(AlbumPolicy::IS_VISIBLE, $smartAlbum) ? $smartAlbum : null
+				fn ($smartAlbum) => Gate::check(AlbumPolicy::CAN_SEE, $smartAlbum) ? $smartAlbum : null
 			);
 
 		$tagAlbumQuery = $this->albumQueryPolicy

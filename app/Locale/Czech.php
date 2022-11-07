@@ -261,10 +261,6 @@ final class Czech implements Language
 			'PHOTO_FOCAL' => 'Fokus',
 			'PHOTO_ISO' => 'ISO %s',
 			'PHOTO_SHARING' => 'Sdílet',
-			'PHOTO_SHR_PUBLIC' => 'Veřejné',
-			'PHOTO_SHR_ALB' => 'Ano (Album)',
-			'PHOTO_SHR_PHT' => 'Ano (Foto)',
-			'PHOTO_SHR_NO' => 'Ne',
 			'PHOTO_DELETE' => 'Odstranit fotografii',
 			'PHOTO_KEEP' => 'Ponechat fotografii',
 			'PHOTO_DELETE_CONFIRMATION' => 'Opravdu odstranit fotografii „%s“? Tento krok je nevratný!',
@@ -508,7 +504,7 @@ final class Czech implements Language
 			'CAMERA_DATE' => 'Camera date',
 			'NEW_PASSWORD' => 'new password',
 			'ALLOW_UPLOADS' => 'Allow uploads',
-			'RESTRICTED_ACCOUNT' => 'Restricted account',
+			'ALLOW_USER_SELF_EDIT' => 'Allow self-management of user account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
 	}

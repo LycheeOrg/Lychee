@@ -2,6 +2,7 @@
 
 namespace App\DTO;
 
+use App\Contracts\AbstractAlbum;
 use Illuminate\Support\Collection;
 
 /**
@@ -23,5 +24,33 @@ class TopAlbums extends ArrayableDTO
 		public ?Collection $shared_albums = null
 	) {
 		$this->shared_albums ??= new Collection();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function toArray(): array
+	{
+		return [
+			'smart_albums' => $this->smart_albums->map(fn ($a) => self::toAlbumDTOArray($a))->toArray(),
+			'tag_albums' => $this->tag_albums->map(fn ($a) => self::toAlbumDTOArray($a))->toArray(),
+			'albums' => $this->albums->map(fn ($a) => self::toAlbumDTOArray($a))->toArray(),
+			'shared_albums' => $this->shared_albums->map(fn ($a) => self::toAlbumDTOArray($a))->toArray(),
+		];
+	}
+
+	/**
+	 * Convert an Abstract album into it's DTO form.
+	 *
+	 * @param AbstractAlbum|null $abstractAlbum
+	 *
+	 * @return AbstractAlbumDTO|null resulting DTO
+	 */
+	private static function toAlbumDTOArray(AbstractAlbum|null $abstractAlbum): AbstractAlbumDTO|null
+	{
+		return match ($abstractAlbum) {
+			null => null,
+			default => new AbstractAlbumDTO($abstractAlbum)
+		};
 	}
 }

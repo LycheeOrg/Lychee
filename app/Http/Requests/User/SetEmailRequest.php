@@ -13,11 +13,17 @@ class SetEmailRequest extends BaseApiRequest
 
 	protected ?string $email = null;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function authorize(): bool
 	{
-		return Gate::check(UserPolicy::CAN_EDIT_SETTINGS, User::class);
+		return Gate::check(UserPolicy::CAN_EDIT, [User::class]);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function rules(): array
 	{
 		return [

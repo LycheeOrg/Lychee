@@ -79,7 +79,7 @@ class DemoController extends Controller
 			->with(['photos', 'photos.size_variants', 'photos.size_variants.sym_links'])
 			->join('base_albums', 'base_albums.id', '=', 'albums.id')
 			->where('base_albums.is_public', '=', true)
-			->where('base_albums.requires_link', '=', false)
+			->where('base_albums.is_link_required', '=', false)
 			->get();
 		/** @var Album $album */
 		foreach ($albums as $album) {

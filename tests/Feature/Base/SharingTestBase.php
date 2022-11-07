@@ -233,9 +233,9 @@ class SharingTestBase extends PhotoTestBase
 		array $expectedPhotos = []
 	): array {
 		return [
-			'is_public' => $isPublic,
 			'thumb' => $this->generateExpectedThumbJson($thumbID),
 			'photos' => $expectedPhotos,
+			'policy' => ['is_public' => $isPublic],
 		];
 	}
 }

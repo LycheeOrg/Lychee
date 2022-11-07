@@ -26,13 +26,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon                     $updated_at
  * @property string|null                $description
  * @property bool                       $is_nsfw
- * @property bool                       $grants_full_photo
+ * @property bool                       $is_link_required
  * @property int                        $owner_id
  * @property User                       $owner
  * @property Collection                 $shared_with
- * @property bool                       $requires_link
  * @property string|null                $password
- * @property bool                       $has_password
+ * @property bool                       $is_password_required
  * @property Carbon|null                $min_taken_at
  * @property Carbon|null                $max_taken_at
  * @property PhotoSortingCriterion|null $sorting

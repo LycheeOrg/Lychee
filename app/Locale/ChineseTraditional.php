@@ -261,10 +261,6 @@ final class ChineseTraditional implements Language
 			'PHOTO_FOCAL' => '焦距',
 			'PHOTO_ISO' => 'ISO感光度 %s',
 			'PHOTO_SHARING' => '共享',
-			'PHOTO_SHR_PUBLIC' => '公開',
-			'PHOTO_SHR_ALB' => '是 (相簿)',
-			'PHOTO_SHR_PHT' => '是 (照片)',
-			'PHOTO_SHR_NO' => '否',
 			'PHOTO_DELETE' => '刪除照片',
 			'PHOTO_KEEP' => '保留照片',
 			'PHOTO_DELETE_CONFIRMATION' => '是否要刪除照片《%s》？此動作無法還原！',
@@ -508,7 +504,7 @@ final class ChineseTraditional implements Language
 			'CAMERA_DATE' => 'Camera date',
 			'NEW_PASSWORD' => 'new password',
 			'ALLOW_UPLOADS' => 'Allow uploads',
-			'RESTRICTED_ACCOUNT' => 'Restricted account',
+			'ALLOW_USER_SELF_EDIT' => 'Allow self-management of user account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
 	}
