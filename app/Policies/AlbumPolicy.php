@@ -123,7 +123,7 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function canDownload(?User $user, ?AbstractAlbum $abstractAlbum): bool
 	{
-		$default = Configs::getValueAsBool('downloadable');
+		$default = Configs::getValueAsBool('grants_download');
 		// The root album always uses the global setting
 		if ($abstractAlbum === null) {
 			return $default;
