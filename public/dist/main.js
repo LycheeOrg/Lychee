@@ -2192,12 +2192,12 @@ album.setProtectionPolicy = function (albumID) {
 		basicModal.close();
 		albums.refresh();
 
-		album.json.policies.is_nsfw = data.is_nsfw;
-		album.json.policies.is_public = data.is_public;
-		album.json.policies.grants_full_photo_access = data.grants_full_photo_access;
-		album.json.policies.is_link_required = data.is_link_required;
-		album.json.policies.grants_download = data.grants_download;
-		album.json.policies.is_password_required = data.is_password_required;
+		album.json.policy.is_nsfw = data.is_nsfw;
+		album.json.policy.is_public = data.is_public;
+		album.json.policy.grants_full_photo_access = data.grants_full_photo_access;
+		album.json.policy.is_link_required = data.is_link_required;
+		album.json.policy.grants_download = data.grants_download;
+		album.json.policy.is_password_required = data.is_password_required;
 
 		// Set data and refresh view
 		if (visible.album()) {
@@ -2210,13 +2210,13 @@ album.setProtectionPolicy = function (albumID) {
 
 		var params = {
 			albumID: albumID,
-			grants_full_photo_access: album.json.policies.grants_full_photo_access,
-			is_public: album.json.policies.is_public,
-			is_nsfw: album.json.policies.is_nsfw,
-			is_link_required: album.json.policies.is_link_required,
-			grants_download: album.json.policies.grants_download
+			grants_full_photo_access: album.json.policy.grants_full_photo_access,
+			is_public: album.json.policy.is_public,
+			is_nsfw: album.json.policy.is_nsfw,
+			is_link_required: album.json.policy.is_link_required,
+			grants_download: album.json.policy.grants_download
 		};
-		if (album.json.policies.is_password_required) {
+		if (album.json.policy.is_password_required) {
 			if (data.password) {
 				// We send the password only if there's been a change; that way the
 				// server will keep the current password if it wasn't changed.
@@ -2271,17 +2271,17 @@ album.setProtectionPolicy = function (albumID) {
    */
 		var tristateCheckboxes = [formElements.grants_full_photo, formElements.requires_link, formElements.is_downloadable, formElements.is_share_button_visible, formElements.has_password];
 
-		if (album.json.policies.is_public) {
+		if (album.json.policy.is_public) {
 			tristateCheckboxes.forEach(function (checkbox) {
 				checkbox.parentElement.classList.remove("disabled");
 				checkbox.disabled = false;
 			});
 			// Initialize options based on album settings.
-			formElements.grants_full_photo_access.checked = album.json.policies.grants_full_photo_access;
-			formElements.is_link_required.checked = album.json.policies.is_link_required;
-			formElements.grants_download.checked = album.json.policies.grants_download;
-			formElements.is_password_required.checked = album.json.policies.is_password_required;
-			if (album.json.policies.is_password_required) {
+			formElements.grants_full_photo_access.checked = album.json.policy.grants_full_photo_access;
+			formElements.is_link_required.checked = album.json.policy.is_link_required;
+			formElements.grants_download.checked = album.json.policy.grants_download;
+			formElements.is_password_required.checked = album.json.policy.is_password_required;
+			if (album.json.policy.is_password_required) {
 				formElements.password.parentElement.classList.remove("hidden");
 			} else {
 				formElements.password.parentElement.classList.add("hidden");
@@ -2437,13 +2437,13 @@ album.shareUsers = function (albumID) {
  * @returns {void}
  */
 album.toggleNSFW = function () {
-	album.json.policies.is_nsfw = !album.json.policies.is_nsfw;
+	album.json.policy.is_nsfw = !album.json.policy.is_nsfw;
 
 	view.album.nsfw();
 
 	api.post("Album::setNSFW", {
 		albumID: album.json.id,
-		is_nsfw: album.json.policies.is_nsfw
+		is_nsfw: album.json.policy.is_nsfw
 	}, function () {
 		return albums.refresh();
 	});
@@ -3261,11 +3261,11 @@ build.album = function (data) {
 			}
 	}
 
-	var html = lychee.html(_templateObject6, disabled ? "disabled" : "", data.policies.is_nsfw && lychee.nsfw_blur ? "blurred" : "", data.id, data.policies.is_nsfw ? "1" : "0", tabindex.get_next_tab_index(), disableDragDrop ? "false" : "true", disableDragDrop ? "" : "ondragstart='lychee.startDrag(event)'\n\t\t\t\tondragover='lychee.overDrag(event)'\n\t\t\t\tondragleave='lychee.leaveDrag(event)'\n\t\t\t\tondragend='lychee.endDrag(event)'\n\t\t\t\tondrop='lychee.finishDrag(event)'", build.getAlbumThumb(data), build.getAlbumThumb(data), build.getAlbumThumb(data), data.title, data.title, subtitle);
+	var html = lychee.html(_templateObject6, disabled ? "disabled" : "", data.policy.is_nsfw && lychee.nsfw_blur ? "blurred" : "", data.id, data.policy.is_nsfw ? "1" : "0", tabindex.get_next_tab_index(), disableDragDrop ? "false" : "true", disableDragDrop ? "" : "ondragstart='lychee.startDrag(event)'\n\t\t\t\tondragover='lychee.overDrag(event)'\n\t\t\t\tondragleave='lychee.leaveDrag(event)'\n\t\t\t\tondragend='lychee.endDrag(event)'\n\t\t\t\tondrop='lychee.finishDrag(event)'", build.getAlbumThumb(data), build.getAlbumThumb(data), build.getAlbumThumb(data), data.title, data.title, subtitle);
 
 	if (data.rights.can_edit && !disabled) {
 		var isCover = album.json && album.json.cover_id && data.thumb.id === album.json.cover_id;
-		html += lychee.html(_templateObject7, data.policies && data.policies.is_nsfw ? "badge--nsfw" : "", build.iconic("warning"), data.id === SmartAlbumID.STARRED ? "badge--star" : "", build.iconic("star"), data.id === SmartAlbumID.RECENT ? "badge--visible badge--list" : "", build.iconic("clock"), data.id === SmartAlbumID.PUBLIC || data.policies && data.policies.is_public ? "badge--visible" : "", data.policies && data.policies.is_link_required ? "badge--hidden" : "badge--not--hidden", build.iconic("eye"), data.id === SmartAlbumID.UNSORTED ? "badge--visible" : "", build.iconic("list"), data.policies && data.policies.is_password_required ? "badge--visible" : "", build.iconic("lock-unlocked"), data.is_tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
+		html += lychee.html(_templateObject7, data.policy && data.policy.is_nsfw ? "badge--nsfw" : "", build.iconic("warning"), data.id === SmartAlbumID.STARRED ? "badge--star" : "", build.iconic("star"), data.id === SmartAlbumID.RECENT ? "badge--visible badge--list" : "", build.iconic("clock"), data.id === SmartAlbumID.PUBLIC || data.policy && data.policy.is_public ? "badge--visible" : "", data.policy && data.policy.is_link_required ? "badge--hidden" : "badge--not--hidden", build.iconic("eye"), data.id === SmartAlbumID.UNSORTED ? "badge--visible" : "", build.iconic("list"), data.policy && data.policy.is_password_required ? "badge--visible" : "", build.iconic("lock-unlocked"), data.is_tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
 
 	if (data.albums && data.albums.length > 0 || data.has_albums) {
@@ -3373,7 +3373,7 @@ build.photo = function (data) {
 		// This also means that the displayed variant of the public badge of
 		// a photo depends on the availability of the parent album.
 		// This seems to be an undesired but unavoidable side effect.
-		html += lychee.html(_templateObject12, data.is_starred ? "badge--star" : "", build.iconic("star"), data.is_public && album.json && album.json.policies && !album.json.policies.is_public ? "badge--visible badge--hidden" : "", build.iconic("eye"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
+		html += lychee.html(_templateObject12, data.is_starred ? "badge--star" : "", build.iconic("star"), data.is_public && album.json && album.json.policy && !album.json.policy.is_public ? "badge--visible badge--hidden" : "", build.iconic("eye"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
 
 	html += "</div>";
@@ -8972,9 +8972,9 @@ _photo3.setStar = function (photoIDs, isStarred) {
 };
 
 /**
- * Edits the protection policies of a photo.
+ * Edits the protection policy of a photo.
  *
- * This method is a misnomer, it does not only set the policies, it also creates
+ * This method is a misnomer, it does not only set the policy, it also creates
  * and handles the edit dialog
  *
  * @param {string} photoID
@@ -9689,7 +9689,7 @@ search.find = function (term) {
 			tag_albums: search.json.tag_albums,
 			thumb: null,
 			rights: { can_download: false },
-			policies: { is_public: false }
+			policy: { is_public: false }
 		};
 
 		var albumsData = "";
@@ -10835,9 +10835,9 @@ _sidebar.createStructure.album = function (data) {
 
 	var editable = data.rights.can_edit;
 	var structure = {};
-	var isPublic = !!data.policies && data.policies.is_public ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
-	var requiresLink = !!data.policies && data.policies.is_link_required ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
-	var isDownloadable = !!data.policies && data.policies.grant_download ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
+	var isPublic = !!data.policy && data.policy.is_public ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
+	var requiresLink = !!data.policy && data.policy.is_link_required ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
+	var isDownloadable = !!data.policy && data.policy.grant_download ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
 	var hasPassword = data.has_password ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
 	var license = "";
 	var sorting = "";
@@ -12793,7 +12793,7 @@ view.album = {
 				return;
 			}
 
-			if (album.json.policies.is_nsfw && !lychee.nsfw_unlocked_albums.includes(album.json.id)) {
+			if (album.json.policy.is_nsfw && !lychee.nsfw_unlocked_albums.includes(album.json.id)) {
 				$("#sensitive_warning").show();
 			} else {
 				$("#sensitive_warning").hide();
@@ -13256,8 +13256,8 @@ view.album = {
 	public: function _public() {
 		$("#button_visibility_album, #button_sharing_album_users").removeClass("active--not-hidden active--hidden");
 
-		if (album.json.policies.is_public) {
-			if (album.json.policies.is_link_required) {
+		if (album.json.policy.is_public) {
+			if (album.json.policy.is_link_required) {
 				$("#button_visibility_album, #button_sharing_album_users").addClass("active--hidden");
 			} else {
 				$("#button_visibility_album, #button_sharing_album_users").addClass("active--not-hidden");
@@ -13275,14 +13275,14 @@ view.album = {
   * @returns {void}
   */
 	requiresLink: function requiresLink() {
-		if (album.json.policies.is_link_required) _sidebar.changeAttr("hidden", lychee.locale["ALBUM_SHR_YES"]);else _sidebar.changeAttr("hidden", lychee.locale["ALBUM_SHR_NO"]);
+		if (album.json.policy.is_link_required) _sidebar.changeAttr("hidden", lychee.locale["ALBUM_SHR_YES"]);else _sidebar.changeAttr("hidden", lychee.locale["ALBUM_SHR_NO"]);
 	},
 
 	/**
   * @returns {void}
   */
 	nsfw: function nsfw() {
-		if (album.json.policies.is_nsfw) {
+		if (album.json.policy.is_nsfw) {
 			// Sensitive
 			$("#button_nsfw_album").addClass("active").attr("title", lychee.locale["ALBUM_UNMARK_NSFW"]);
 		} else {
@@ -13295,14 +13295,14 @@ view.album = {
   * @returns {void}
   */
 	downloadable: function downloadable() {
-		if (album.json.policies.grants_download) _sidebar.changeAttr("downloadable", lychee.locale["ALBUM_SHR_YES"]);else _sidebar.changeAttr("downloadable", lychee.locale["ALBUM_SHR_NO"]);
+		if (album.json.policy.grants_download) _sidebar.changeAttr("downloadable", lychee.locale["ALBUM_SHR_YES"]);else _sidebar.changeAttr("downloadable", lychee.locale["ALBUM_SHR_NO"]);
 	},
 
 	/**
   * @returns {void}
   */
 	password: function password() {
-		if (album.json.policies.is_password_required) _sidebar.changeAttr("password", lychee.locale["ALBUM_SHR_YES"]);else _sidebar.changeAttr("password", lychee.locale["ALBUM_SHR_NO"]);
+		if (album.json.policy.is_password_required) _sidebar.changeAttr("password", lychee.locale["ALBUM_SHR_YES"]);else _sidebar.changeAttr("password", lychee.locale["ALBUM_SHR_NO"]);
 	},
 
 	/**
@@ -14575,7 +14575,7 @@ visible.leftMenu = function () {
  * @property {string}  [owner_name] optional, only shown in authenticated mode
  * @property {boolean} is_nsfw
  * @property {AlbumRightsDTO} rights
- * @property {AlbumProtectionPolicies} policies
+ * @property {AlbumProtectionPolicy} policy
  * @property {boolean} has_albums
  * @property {boolean} has_password
  * @property {?string} min_taken_at
@@ -14597,7 +14597,7 @@ visible.leftMenu = function () {
  * @property {string}   [owner_name] optional, only shown in authenticated mode
  * @property {boolean} is_nsfw
  * @property {AlbumRightsDTO} rights
- * @property {AlbumProtectionPolicies} policies
+ * @property {AlbumProtectionPolicy} policy
  * @property {?string}  min_taken_at
  * @property {?string}  max_taken_at
  * @property {?SortingCriterion}  sorting
@@ -14612,7 +14612,7 @@ visible.leftMenu = function () {
  * @property {Photo[]} [photos]
  * @property {?Thumb}  thumb
  * @property {AlbumRightsDTO} rights
- * @property {AlbumProtectionPolicies} policies
+ * @property {AlbumProtectionPolicy} policy
  */
 
 /**
@@ -14861,9 +14861,9 @@ var SmartAlbumID = Object.freeze({
  */
 
 /**
- * The JSON object for Policies on Albums
+ * The JSON object for Policy on Albums
  *
- * @typedef AlbumProtectionPolicies
+ * @typedef AlbumProtectionPolicy
  *
  * @property {is_nsfw} boolean
  * @property {boolean} is_public
