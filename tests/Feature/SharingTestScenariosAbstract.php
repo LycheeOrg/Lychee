@@ -211,7 +211,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$this->albumID1 = $this->albums_tests->add(null, self::ALBUM_TITLE_1)->offsetGet('id');
 		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID1)->offsetGet('id');
 		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID1)->offsetGet('id');
-		$this->albums_tests->set_protection_policies($this->albumID1);
+		$this->albums_tests->set_protection_policy($this->albumID1);
 		$this->photos_tests->set_star([$this->photoID1], true);
 		Auth::logout();
 		Session::flush();
@@ -275,7 +275,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForAlbum->assertJson([
 			'id' => $this->albumID1,
 			'title' => self::ALBUM_TITLE_1,
-			'policies' => ['is_public' => true],
+			'policy' => ['is_public' => true],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID1), // photo 1 is thumb, because starred photo are always picked first
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID2, $this->albumID1), // photo 2 is alphabetically first
@@ -322,8 +322,8 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$this->albumID2 = $this->albums_tests->add(null, self::ALBUM_TITLE_2)->offsetGet('id');
 		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID1)->offsetGet('id');
 		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID2)->offsetGet('id');
-		$this->albums_tests->set_protection_policies(id: $this->albumID1, password: self::ALBUM_PWD_1);
-		$this->albums_tests->set_protection_policies(id: $this->albumID2);
+		$this->albums_tests->set_protection_policy(id: $this->albumID1, password: self::ALBUM_PWD_1);
+		$this->albums_tests->set_protection_policy(id: $this->albumID2);
 		Auth::logout();
 		Session::flush();
 		$this->clearCachedSmartAlbums();
@@ -367,7 +367,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForAlbum2->assertJson([
 			'id' => $this->albumID2,
 			'title' => self::ALBUM_TITLE_2,
-			'policies' => ['is_public' => true],
+			'policy' => ['is_public' => true],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID2),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
@@ -417,7 +417,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForAlbum1->assertJson([
 			'id' => $this->albumID1,
 			'title' => self::ALBUM_TITLE_1,
-			'policies' => ['is_public' => true],
+			'policy' => ['is_public' => true],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID1),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
@@ -429,7 +429,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForAlbum2->assertJson([
 			'id' => $this->albumID2,
 			'title' => self::ALBUM_TITLE_2,
-			'policies' => ['is_public' => true],
+			'policy' => ['is_public' => true],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID2),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
@@ -456,8 +456,8 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$this->albumID2 = $this->albums_tests->add(null, self::ALBUM_TITLE_2)->offsetGet('id');
 		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID1)->offsetGet('id');
 		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID2)->offsetGet('id');
-		$this->albums_tests->set_protection_policies(id: $this->albumID1, password: self::ALBUM_PWD_1);
-		$this->albums_tests->set_protection_policies($this->albumID2);
+		$this->albums_tests->set_protection_policy(id: $this->albumID1, password: self::ALBUM_PWD_1);
+		$this->albums_tests->set_protection_policy($this->albumID2);
 		$this->photos_tests->set_star([$this->photoID1], true);
 		Auth::logout();
 		Session::flush();
@@ -502,7 +502,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForAlbum2->assertJson([
 			'id' => $this->albumID2,
 			'title' => self::ALBUM_TITLE_2,
-			'policies' => ['is_public' => true],
+			'policy' => ['is_public' => true],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID2),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
@@ -556,7 +556,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForAlbum1->assertJson([
 			'id' => $this->albumID1,
 			'title' => self::ALBUM_TITLE_1,
-			'policies' => ['is_public' => true],
+			'policy' => ['is_public' => true],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID1),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
@@ -568,7 +568,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForAlbum2->assertJson([
 			'id' => $this->albumID2,
 			'title' => self::ALBUM_TITLE_2,
-			'policies' => ['is_public' => true],
+			'policy' => ['is_public' => true],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID2),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
@@ -596,8 +596,8 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$this->albumID2 = $this->albums_tests->add(null, self::ALBUM_TITLE_2)->offsetGet('id');
 		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID1)->offsetGet('id');
 		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID2)->offsetGet('id');
-		$this->albums_tests->set_protection_policies(id: $this->albumID1);
-		$this->albums_tests->set_protection_policies(id: $this->albumID2, requiresLink: true);
+		$this->albums_tests->set_protection_policy(id: $this->albumID1);
+		$this->albums_tests->set_protection_policy(id: $this->albumID2, requiresLink: true);
 		$this->photos_tests->set_star([$this->photoID2], true);
 		Auth::logout();
 		Session::flush();
@@ -639,7 +639,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForAlbum1->assertJson([
 			'id' => $this->albumID1,
 			'title' => self::ALBUM_TITLE_1,
-			'policies' => ['is_public' => true],
+			'policy' => ['is_public' => true],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID1),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
@@ -651,7 +651,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForAlbum2->assertJson([
 			'id' => $this->albumID2,
 			'title' => self::ALBUM_TITLE_2,
-			'policies' => ['is_public' => true],
+			'policy' => ['is_public' => true],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID2),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
@@ -678,8 +678,8 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$this->albumID2 = $this->albums_tests->add(null, self::ALBUM_TITLE_2)->offsetGet('id');
 		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID1)->offsetGet('id');
 		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID2)->offsetGet('id');
-		$this->albums_tests->set_protection_policies(id: $this->albumID1);
-		$this->albums_tests->set_protection_policies(id: $this->albumID2, requiresLink: true, password: self::ALBUM_PWD_2);
+		$this->albums_tests->set_protection_policy(id: $this->albumID1);
+		$this->albums_tests->set_protection_policy(id: $this->albumID2, requiresLink: true, password: self::ALBUM_PWD_2);
 		$this->photos_tests->set_star([$this->photoID2], true);
 		Auth::logout();
 		Session::flush();
@@ -721,7 +721,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForAlbum1->assertJson([
 			'id' => $this->albumID1,
 			'title' => self::ALBUM_TITLE_1,
-			'policies' => ['is_public' => true],
+			'policy' => ['is_public' => true],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID1),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
@@ -774,7 +774,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForAlbum1->assertJson([
 			'id' => $this->albumID1,
 			'title' => self::ALBUM_TITLE_1,
-			'policies' => ['is_public' => true],
+			'policy' => ['is_public' => true],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID1),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
@@ -786,7 +786,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$responseForAlbum2->assertJson([
 			'id' => $this->albumID2,
 			'title' => self::ALBUM_TITLE_2,
-			'policies' => ['is_public' => true],
+			'policy' => ['is_public' => true],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID2),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
@@ -816,7 +816,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID2)->offsetGet('id');
 		$this->photoID3 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_SUNSET_IMAGE), $this->albumID3)->offsetGet('id');
 		$this->sharing_tests->add([$this->albumID1, $this->albumID3], [$this->userID]);
-		$this->albums_tests->set_protection_policies(id: $this->albumID3, requiresLink: true);
+		$this->albums_tests->set_protection_policy(id: $this->albumID3, requiresLink: true);
 		Auth::logout();
 		Session::flush();
 		$this->clearCachedSmartAlbums();
@@ -838,7 +838,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 	{
 		$this->albumID1 = $this->albums_tests->add(null, self::ALBUM_TITLE_1)->offsetGet('id');
 		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID1)->offsetGet('id');
-		$this->albums_tests->set_protection_policies(id: $this->albumID1, password: self::ALBUM_PWD_1);
+		$this->albums_tests->set_protection_policy(id: $this->albumID1, password: self::ALBUM_PWD_1);
 		$this->sharing_tests->add([$this->albumID1], [$this->userID]);
 		Auth::logout();
 		Session::flush();
@@ -915,8 +915,8 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		// Sic! We use the same password for both albums here, because we want
 		// to ensure that incidentally "unlocking" an album which is also
 		// shared has no negative side effect.
-		$this->albums_tests->set_protection_policies(id: $this->albumID2, nsfw: true, password: self::ALBUM_PWD_1);
-		$this->albums_tests->set_protection_policies(id: $this->albumID3, nsfw: true, password: self::ALBUM_PWD_1);
+		$this->albums_tests->set_protection_policy(id: $this->albumID2, nsfw: true, password: self::ALBUM_PWD_1);
+		$this->albums_tests->set_protection_policy(id: $this->albumID3, nsfw: true, password: self::ALBUM_PWD_1);
 
 		Auth::logout();
 		Session::flush();

@@ -6,20 +6,20 @@ use App\Models\BaseAlbumImpl;
 use App\SmartAlbums\BaseSmartAlbum;
 
 /**
- * This represents the Album Protection policies.
+ * This represents the Album Protection Policy.
  *
  * In other words it provides information on the security attributes of an album.
  * It MUST NOT be used in the front-end to determine whether an action is permitted or not (e.g. share link available).
  *
  * It is used in two places:
  * 1. When sent to the front-end:
- *   - provides the policies of the currently visited album
- *   - allows modification of the policies on non-smart albums
+ *   - provides the policy of the currently visited album
+ *   - allows modification of the policy on non-smart albums
  * 2. When received from the front-end:
- *   - allows for an easy interface between the validated request {@link \App\Http\Requests\Album\SetAlbumProtectionPoliciesRequest}
- *     and the applied action {@link \App\Actions\Album\SetProtectionPolicies}.
+ *   - allows for an easy interface between the validated request {@link \App\Http\Requests\Album\SetAlbumProtectionPolicyRequest}
+ *     and the applied action {@link \App\Actions\Album\SetProtectionPolicy}.
  */
-class AlbumProtectionPolicies extends ArrayableDTO
+class AlbumProtectionPolicy extends ArrayableDTO
 {
 	public function __construct(
 		public bool $is_public,
@@ -32,15 +32,15 @@ class AlbumProtectionPolicies extends ArrayableDTO
 	}
 
 	/**
-	 * Given a BaseAlbumImplementation, returns the Protection Policies associated to it.
+	 * Given a BaseAlbumImplementation, returns the Protection Policy associated to it.
 	 *
 	 * @param BaseAlbumImpl $baseAlbum
 	 *
-	 * @return AlbumProtectionPolicies
+	 * @return AlbumProtectionPolicy
 	 */
-	public static function ofBaseAlbumImplementation(BaseAlbumImpl $baseAlbum): AlbumProtectionPolicies
+	public static function ofBaseAlbumImplementation(BaseAlbumImpl $baseAlbum): AlbumProtectionPolicy
 	{
-		return new AlbumProtectionPolicies(
+		return new AlbumProtectionPolicy(
 			is_public: $baseAlbum->is_public,
 			is_link_required: $baseAlbum->is_link_required,
 			is_nsfw: $baseAlbum->is_nsfw,
@@ -51,15 +51,15 @@ class AlbumProtectionPolicies extends ArrayableDTO
 	}
 
 	/**
-	 * Given a smart album, returns the Protection Policies associated to it.
+	 * Given a smart album, returns the Protection Policy associated to it.
 	 *
 	 * @param BaseSmartAlbum $baseSmartAlbum
 	 *
-	 * @return AlbumProtectionPolicies
+	 * @return AlbumProtectionPolicy
 	 */
-	public static function ofSmartAlbum(BaseSmartAlbum $baseSmartAlbum): AlbumProtectionPolicies
+	public static function ofSmartAlbum(BaseSmartAlbum $baseSmartAlbum): AlbumProtectionPolicy
 	{
-		return new AlbumProtectionPolicies(
+		return new AlbumProtectionPolicy(
 			is_public: $baseSmartAlbum->is_public,
 			is_link_required: false,
 			is_nsfw: false,

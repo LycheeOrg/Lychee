@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Casts\MustNotSetCast;
 use App\Contracts\HasRandomID;
-use App\DTO\AlbumProtectionPolicies;
+use App\DTO\AlbumProtectionPolicy;
 use App\DTO\PhotoSortingCriterion;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
@@ -169,7 +169,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'is_link_required' => 'boolean',
 		'is_nsfw' => 'boolean',
 		'owner_id' => 'integer',
-		'policies' => MustNotSetCast::class, // There is no setter, please use {@link \App\Actions\Album\SetProtectionPolicies}
+		'policy' => MustNotSetCast::class, // There is no setter, please use {@link \App\Actions\Album\SetProtectionPolicy}
 	];
 
 	/**
@@ -184,7 +184,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'sorting_col',   // serialize DTO `order` instead
 		'sorting_order', // serialize DTO `order` instead
 
-		// Security attributes are hidden because provided by the DTO {@link \App\DTO\AlbumProtectionPolicies}
+		// Security attributes are hidden because provided by the DTO {@link \App\DTO\AlbumProtectionPolicy}
 		'is_public',
 		'is_nsfw',
 		'is_link_required',
@@ -203,7 +203,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 */
 	protected $appends = [
 		'sorting',
-		'policies',
+		'policy',
 	];
 
 	/**
@@ -277,13 +277,13 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	}
 
 	/**
-	 * Provide the policies attributes for said album.
+	 * Provide the policy attributes for said album.
 	 *
-	 * @return AlbumProtectionPolicies|null
+	 * @return AlbumProtectionPolicy|null
 	 */
-	protected function getPoliciesAttribute(): AlbumProtectionPolicies|null
+	protected function getPolicyAttribute(): AlbumProtectionPolicy|null
 	{
-		return AlbumProtectionPolicies::ofBaseAlbumImplementation($this);
+		return AlbumProtectionPolicy::ofBaseAlbumImplementation($this);
 	}
 
 	public function toArray(): array

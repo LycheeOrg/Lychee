@@ -4,7 +4,7 @@ namespace App\SmartAlbums;
 
 use App\Contracts\AbstractAlbum;
 use App\Contracts\InternalLycheeException;
-use App\DTO\AlbumProtectionPolicies;
+use App\DTO\AlbumProtectionPolicy;
 use App\DTO\PhotoSortingCriterion;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
@@ -148,7 +148,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			'id' => $this->id,
 			'title' => $this->title,
 			'thumb' => $this->getThumbAttribute(),
-			'policies' => AlbumProtectionPolicies::ofSmartAlbum($this),
+			'policy' => AlbumProtectionPolicy::ofSmartAlbum($this),
 		];
 
 		if (isset($this->photos)) {

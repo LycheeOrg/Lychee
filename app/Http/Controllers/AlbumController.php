@@ -9,7 +9,7 @@ use App\Actions\Album\Delete;
 use App\Actions\Album\Merge;
 use App\Actions\Album\Move;
 use App\Actions\Album\PositionData;
-use App\Actions\Album\SetProtectionPolicies;
+use App\Actions\Album\SetProtectionPolicy;
 use App\Actions\Album\Unlock;
 use App\Contracts\LycheeException;
 use App\DTO\AbstractAlbumDTO;
@@ -29,7 +29,7 @@ use App\Http\Requests\Album\SetAlbumCoverRequest;
 use App\Http\Requests\Album\SetAlbumDescriptionRequest;
 use App\Http\Requests\Album\SetAlbumLicenseRequest;
 use App\Http\Requests\Album\SetAlbumNSFWRequest;
-use App\Http\Requests\Album\SetAlbumProtectionPoliciesRequest;
+use App\Http\Requests\Album\SetAlbumProtectionPolicyRequest;
 use App\Http\Requests\Album\SetAlbumSortingRequest;
 use App\Http\Requests\Album\SetAlbumsTitleRequest;
 use App\Http\Requests\Album\SetAlbumTagsRequest;
@@ -134,20 +134,20 @@ class AlbumController extends Controller
 	}
 
 	/**
-	 * Sets the protection policies of the album.
+	 * Sets the protection policy of the album.
 	 *
-	 * @param SetAlbumProtectionPoliciesRequest $request
-	 * @param SetProtectionPolicies             $setProtectionPolicies
+	 * @param SetAlbumProtectionPolicyRequest $request
+	 * @param SetProtectionPolicy             $setProtectionPolicy
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
 	 */
-	public function setProtectionPolicies(SetAlbumProtectionPoliciesRequest $request, SetProtectionPolicies $setProtectionPolicies): void
+	public function setProtectionPolicy(SetAlbumProtectionPolicyRequest $request, SetProtectionPolicy $setProtectionPolicy): void
 	{
-		$setProtectionPolicies->do(
+		$setProtectionPolicy->do(
 			$request->album(),
-			$request->albumProtectionPolicies(),
+			$request->albumProtectionPolicy(),
 			$request->isPasswordProvided(),
 			$request->password()
 		);

@@ -2,7 +2,7 @@
 
 namespace App\Actions\Album;
 
-use App\DTO\AlbumProtectionPolicies;
+use App\DTO\AlbumProtectionPolicy;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
@@ -11,13 +11,13 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Hash;
 
 /**
- * Class SetProtectionPolicies.
+ * Class SetProtectionPolicy.
  */
-class SetProtectionPolicies extends Action
+class SetProtectionPolicy extends Action
 {
 	/**
 	 * @param BaseAlbum               $album
-	 * @param AlbumProtectionPolicies $protectionPolicies
+	 * @param AlbumProtectionPolicy $protectionPolicy
 	 * @param bool                    $shallSetPassword
 	 * @param string|null             $password
 	 *
@@ -27,20 +27,20 @@ class SetProtectionPolicies extends Action
 	 * @throws ModelDBException
 	 * @throws FrameworkException
 	 */
-	public function do(BaseAlbum $album, AlbumProtectionPolicies $protectionPolicies, bool $shallSetPassword, ?string $password): void
+	public function do(BaseAlbum $album, AlbumProtectionPolicy $protectionPolicy, bool $shallSetPassword, ?string $password): void
 	{
 		// Security attributes of the album itself independent of a particular user
 		// Note: The first one (`is_public`) will become implicit in the future when the following three attributes are
 		// move to a separate table for sharing albums with anonymous users
-		$album->is_public = $protectionPolicies->is_public;
-		$album->is_link_required = $protectionPolicies->is_link_required;
-		$album->is_nsfw = $protectionPolicies->is_nsfw;
+		$album->is_public = $protectionPolicy->is_public;
+		$album->is_link_required = $protectionPolicy->is_link_required;
+		$album->is_nsfw = $protectionPolicy->is_nsfw;
 
 		// (Future) permissions on an album-user relation.
 		// Note: For the time being these are still "globally" defined on the album for all users, but they will be
 		// moved to a separate table for sharing albums with users.
-		$album->grants_download = $protectionPolicies->grants_download;
-		$album->grants_full_photo_access = $protectionPolicies->grants_full_photo_access;
+		$album->grants_download = $protectionPolicy->grants_download;
+		$album->grants_full_photo_access = $protectionPolicy->grants_full_photo_access;
 
 		// Set password if provided
 		if ($shallSetPassword) {

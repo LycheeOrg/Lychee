@@ -99,7 +99,7 @@ class RSSTest extends TestCase
 
 			// move picture to album
 			$this->photos_tests->set_album($albumID, [$photoID]);
-			$this->albums_tests->set_protection_policies($albumID);
+			$this->albums_tests->set_protection_policy($albumID);
 
 			// try to get the RSS feed.
 			$response = $this->get('/feed');

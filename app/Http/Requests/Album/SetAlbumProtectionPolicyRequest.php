@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Album;
 
-use App\DTO\AlbumProtectionPolicies;
+use App\DTO\AlbumProtectionPolicy;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasBaseAlbum;
@@ -13,7 +13,7 @@ use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Rules\PasswordRule;
 use App\Rules\RandomIDRule;
 
-class SetAlbumProtectionPoliciesRequest extends BaseApiRequest implements HasBaseAlbum, HasPassword
+class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseAlbum, HasPassword
 {
 	use HasBaseAlbumTrait;
 	use HasPasswordTrait;
@@ -26,7 +26,7 @@ class SetAlbumProtectionPoliciesRequest extends BaseApiRequest implements HasBas
 	public const GRANTS_FULL_PHOTO_ACCESS_ATTRIBUTE = 'grants_full_photo_access';
 
 	protected bool $isPasswordProvided;
-	protected AlbumProtectionPolicies $albumProtectionPolicies;
+	protected AlbumProtectionPolicy $albumProtectionPolicy;
 
 	/**
 	 * {@inheritDoc}
@@ -52,7 +52,7 @@ class SetAlbumProtectionPoliciesRequest extends BaseApiRequest implements HasBas
 		$this->album = $this->albumFactory->findBaseAlbumOrFail(
 			$values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]
 		);
-		$this->albumProtectionPolicies = new AlbumProtectionPolicies(
+		$this->albumProtectionPolicy = new AlbumProtectionPolicy(
 			is_public: static::toBoolean($values[self::IS_PUBLIC_ATTRIBUTE]),
 			is_link_required: static::toBoolean($values[self::IS_LINK_REQUIRED_ATTRIBUTE]),
 			is_nsfw: static::toBoolean($values[self::IS_NSFW_ATTRIBUTE]),
@@ -64,11 +64,11 @@ class SetAlbumProtectionPoliciesRequest extends BaseApiRequest implements HasBas
 	}
 
 	/**
-	 * @return AlbumProtectionPolicies
+	 * @return AlbumProtectionPolicy
 	 */
-	public function albumProtectionPolicies(): AlbumProtectionPolicies
+	public function albumProtectionPolicy(): AlbumProtectionPolicy
 	{
-		return $this->albumProtectionPolicies;
+		return $this->albumProtectionPolicy;
 	}
 
 	public function isPasswordProvided(): bool

@@ -33,7 +33,7 @@ Route::post('/Album::setNSFW', [AlbumController::class, 'setNSFW']);
 Route::post('/Album::setDescription', [AlbumController::class, 'setDescription']);
 Route::post('/Album::setCover', [AlbumController::class, 'setCover']);
 Route::post('/Album::setShowTags', [AlbumController::class, 'setShowTags']);
-Route::post('/Album::setProtectionPolicies', [AlbumController::class, 'setProtectionPolicies']);
+Route::post('/Album::setProtectionPolicy', [AlbumController::class, 'setProtectionPolicy']);
 Route::post('/Album::delete', [AlbumController::class, 'delete']);
 Route::post('/Album::merge', [AlbumController::class, 'merge']);
 Route::post('/Album::move', [AlbumController::class, 'move']);
