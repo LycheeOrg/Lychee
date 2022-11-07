@@ -16,10 +16,10 @@ use Illuminate\Support\Facades\Hash;
 class SetProtectionPolicy extends Action
 {
 	/**
-	 * @param BaseAlbum               $album
+	 * @param BaseAlbum             $album
 	 * @param AlbumProtectionPolicy $protectionPolicy
-	 * @param bool                    $shallSetPassword
-	 * @param string|null             $password
+	 * @param bool                  $shallSetPassword
+	 * @param string|null           $password
 	 *
 	 * @return void
 	 *
