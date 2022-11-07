@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b8b1ac45b0d7d878b4574cfdbc1c8714",
+    "content-hash": "0f00af82fe6875fb5884dca6271c411f",
     "packages": [
         {
             "name": "bepsvpt/secure-headers",
@@ -8112,16 +8112,16 @@
         },
         {
             "name": "dedoc/scramble",
-            "version": "v0.5.0",
+            "version": "v0.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dedoc/scramble.git",
-                "reference": "7ffe0d451f176d6f4cf25b9bec779b7ccda96fd3"
+                "reference": "7cad768b859f3f972ea54d2427cf55d9501161ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dedoc/scramble/zipball/7ffe0d451f176d6f4cf25b9bec779b7ccda96fd3",
-                "reference": "7ffe0d451f176d6f4cf25b9bec779b7ccda96fd3",
+                "url": "https://api.github.com/repos/dedoc/scramble/zipball/7cad768b859f3f972ea54d2427cf55d9501161ae",
+                "reference": "7cad768b859f3f972ea54d2427cf55d9501161ae",
                 "shasum": ""
             },
             "require": {
@@ -8175,7 +8175,7 @@
             ],
             "support": {
                 "issues": "https://github.com/dedoc/scramble/issues",
-                "source": "https://github.com/dedoc/scramble/tree/v0.5.0"
+                "source": "https://github.com/dedoc/scramble/tree/v0.6.0"
             },
             "funding": [
                 {
@@ -8183,7 +8183,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-10-02T17:16:02+00:00"
+            "time": "2022-10-30T19:09:45+00:00"
         },
         {
             "name": "doctrine/annotations",

@@ -84,6 +84,9 @@ class AlbumController extends Controller
 	 */
 	public function get(GetAlbumRequest $request): AbstractAlbum
 	{
+		/**
+		 * @body array{'id': string, 'title': string}
+		 */
 		return $request->album();
 	}
 
