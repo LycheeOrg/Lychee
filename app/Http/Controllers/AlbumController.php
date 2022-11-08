@@ -206,6 +206,10 @@ class AlbumController extends Controller
 	 *
 	 * @param SetAlbumLicenseRequest $request
 	 *
+	 * @code 204
+	 *
+	 * @status 204
+	 *
 	 * @return void
 	 *
 	 * @throws ModelDBException
