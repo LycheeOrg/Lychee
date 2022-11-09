@@ -100,7 +100,7 @@ return new class() extends Migration {
 		DB::table('configs')->where('key', 'map_display_direction')->update(['description' => 'Display the direction of the picture on the map if available']);
 		DB::table('configs')->where('key', 'album_subtitle_type')->update(['description' => 'Defines the subtitle of album in albums view']);
 		DB::table('configs')->where('key', 'upload_processing_limit')->update(['description' => 'Maximum number of images processed in parallel']);
-		DB::table('configs')->where('key', 'public_photos_hidden')->update(['description' => 'Includes singular public pictures in Search results']);
+		DB::table('configs')->where('key', 'public_photos_hidden')->update(['description' => 'Keep singular public pictures hidden from search results, smart albums & tag albums']);
 		DB::table('configs')->where('key', 'new_photos_notification')->update(['description' => 'Enable notifications when new photos are added']);
 	}
 
