@@ -62,7 +62,7 @@ return new class() extends Migration {
 		DB::table('configs')->where('key', 'recent_age')->update(['description' => 'Maximum age of pictures in Recent in days']);
 		DB::table('configs')->where('key', 'public_starred')->update(['description' => 'Make Starred smart album accessible to anonymous users']);
 		DB::table('configs')->where('key', 'SL_enable')->update(['description' => 'Enable symbolic link protection']);
-		DB::table('configs')->where('key', 'SL_for_admin')->update(['description' => 'Also enable symbolic links on logged admin users']);
+		DB::table('configs')->where('key', 'SL_for_admin')->update(['description' => 'Enable symbolic links on logged in admin user']);
 		DB::table('configs')->where('key', 'SL_life_time_days')->update(['description' => 'Maximum life time for symbolic link']);
 		DB::table('configs')->where('key', 'photos_wraparound')->update(['description' => 'Once reaching last picture of an album, loop back to the start']);
 		DB::table('configs')->where('key', 'raw_formats')->update(['description' => 'Allowed extra formats, will not be processed']);
