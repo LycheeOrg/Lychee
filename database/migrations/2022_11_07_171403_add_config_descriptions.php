@@ -87,7 +87,7 @@ return new class() extends Migration {
 		DB::table('configs')->where('key', 'rss_max_items')->update(['description' => 'Max number of items in the RSS feed']);
 		DB::table('configs')->where('key', 'prefer_available_xmp_metadata')->update(['description' => 'Use sidecar if provided instead of exif metadata']);
 		DB::table('configs')->where('key', 'editor_enabled')->update(['description' => 'Enable manual rotation of images']);
-		DB::table('configs')->where('key', 'lossless_optimization')->update(['description' => 'Apply compression on images']);
+		DB::table('configs')->where('key', 'lossless_optimization')->update(['description' => 'Apply additional compression on images']);
 		DB::table('configs')->where('key', 'swipe_tolerance_x')->update(['description' => 'Defines default horizontal swipe tolerance for mobile interactions']);
 		DB::table('configs')->where('key', 'swipe_tolerance_y')->update(['description' => 'Defines default vertical swipe tolerance for mobile interactions']);
 		DB::table('configs')->where('key', 'log_max_num_line')->update(['description' => 'Display the last X most recent lines in Logs']);
