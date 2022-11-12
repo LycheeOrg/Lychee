@@ -10485,10 +10485,19 @@ sharing.delete = function () {
 };
 
 /**
+ * Queries the backend for a list of active shares, sharable albums and users
+ * with whom albums can be shared.
+ *
+ * For admin user, the query is unrestricted, for non-admin user the
+ * query is restricted to albums which are owned by the currently
+ * authenticated user.
+ * The latter is required as the backend forbids unrestricted queries for
+ * non-admin users.
+ *
  * @returns {void}
  */
 sharing.list = function () {
-	api.post("Sharing::list", {},
+	api.post("Sharing::list", lychee.rights.is_admin ? {} : { ownerID: lychee.user.id },
 	/** @param {SharingInfo} data */
 	function (data) {
 		sharing.json = data;
