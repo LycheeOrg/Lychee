@@ -28,7 +28,7 @@ class SharingController extends Controller
 	 */
 	public function list(ListSharingRequest $request, ListShare $listShare): Shares
 	{
-		return $listShare->do($request->user2(), $request->album());
+		return $listShare->do($request->participant(), $request->owner(), $request->album());
 	}
 
 	/**
