@@ -118,6 +118,8 @@ class PhotosOperationsTest extends PhotoTestBase
 		$this->photos_tests->set_license($id, 'CC-BY-NC-SA-3.0');
 		$this->photos_tests->set_license($id, 'CC-BY-NC-SA-4.0');
 		$this->photos_tests->set_license($id, 'reserved');
+		$testUploadDate = Carbon::create(2020, 6, 1, 1, 28, 25, '+02:00');
+		$this->photos_tests->set_upload_date($id, $testUploadDate->toIso8601String());
 
 		$this->clearCachedSmartAlbums();
 		$this->albums_tests->get(StarredAlbum::ID, 200, $id);
@@ -174,6 +176,7 @@ class PhotosOperationsTest extends PhotoTestBase
 		$response->assertJson([
 			'album_id' => $albumID,
 			'aperture' => 'f/2.8',
+			'created_at' => $testUploadDate->format('Y-m-d\TH:i:s.uP'),
 			'description' => 'A night photography',
 			'focal' => '16 mm',
 			'iso' => '1250',
