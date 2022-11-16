@@ -141,6 +141,7 @@ class PhotosOperationsTest extends PhotoTestBase
 		$response->assertJson([
 			'album_id' => null,
 			'id' => $id,
+			'created_at' => $testUploadDate->format('Y-m-d\TH:i:s.uP'),
 			'license' => 'reserved',
 			'is_public' => 1,
 			'is_starred' => true,
@@ -176,7 +177,6 @@ class PhotosOperationsTest extends PhotoTestBase
 		$response->assertJson([
 			'album_id' => $albumID,
 			'aperture' => 'f/2.8',
-			'created_at' => $testUploadDate->format('Y-m-d\TH:i:s.uP'),
 			'description' => 'A night photography',
 			'focal' => '16 mm',
 			'iso' => '1250',
