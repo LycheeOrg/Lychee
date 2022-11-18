@@ -279,7 +279,7 @@ class PhotosUnitTest
 	}
 
 	/**
-	 * Set license.
+	 * Set upload date.
 	 *
 	 * @param string      $id
 	 * @param string      $date

@@ -118,13 +118,6 @@ class PhotosOperationsTest extends PhotoTestBase
 		$this->photos_tests->set_license($id, 'CC-BY-NC-SA-3.0');
 		$this->photos_tests->set_license($id, 'CC-BY-NC-SA-4.0');
 		$this->photos_tests->set_license($id, 'reserved');
-		$testUploadDate = Carbon::create(2020, 6, 1, 1, 28, 25, '+02:00');
-		$this->photos_tests->set_upload_date($id, $testUploadDate->toIso8601String());
-
-		$this->clearCachedSmartAlbums();
-		$this->albums_tests->get(StarredAlbum::ID, 200, $id);
-		$this->albums_tests->get(PublicAlbum::ID, 200, $id);
-		$response = $this->photos_tests->get($id);
 
 		/*
 		 * Check some Exif data
@@ -138,10 +131,18 @@ class PhotosOperationsTest extends PhotoTestBase
 			25,
 			'+02:00'
 		);
+
+		$this->photos_tests->set_upload_date($id, $taken_at->addYear()->toIso8601String());
+
+		$this->clearCachedSmartAlbums();
+		$this->albums_tests->get(StarredAlbum::ID, 200, $id);
+		$this->albums_tests->get(PublicAlbum::ID, 200, $id);
+		$response = $this->photos_tests->get($id);
+
 		$response->assertJson([
 			'album_id' => null,
 			'id' => $id,
-			'created_at' => $testUploadDate->format('Y-m-d\TH:i:s.uP'),
+			'created_at' => $taken_at->addYear()->format('Y-m-d\TH:i:s.uP'),
 			'license' => 'reserved',
 			'is_public' => 1,
 			'is_starred' => true,
