@@ -143,7 +143,7 @@ class PhotosOperationsTest extends PhotoTestBase
 		$response->assertJson([
 			'album_id' => null,
 			'id' => $id,
-			'created_at' => $updated_taken_at->format('Y-m-d\TH:i:s.uP'),
+			'created_at' => $updated_taken_at->setTimezone('UTC')->format('Y-m-d\TH:i:s.uP'),
 			'license' => 'reserved',
 			'is_public' => 1,
 			'is_starred' => true,
@@ -190,7 +190,7 @@ class PhotosOperationsTest extends PhotoTestBase
 			'shutter' => '30 s',
 			'is_starred' => true,
 			'tags' => [],
-			'taken_at' => $updated_taken_at->format('Y-m-d\TH:i:s.uP'),
+			'taken_at' => $updated_taken_at->setTimezone('UTC')->format('Y-m-d\TH:i:s.uP'),
 			'taken_at_orig_tz' => $updated_taken_at->getTimezone()->getName(),
 			'title' => "Night in Ploumanac'h",
 			'type' => TestCase::MIME_TYPE_IMG_JPEG,
