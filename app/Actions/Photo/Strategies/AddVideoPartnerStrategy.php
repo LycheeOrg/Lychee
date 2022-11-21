@@ -2,7 +2,7 @@
 
 namespace App\Actions\Photo\Strategies;
 
-use App\Actions\Diagnostics\Checks\BasicPermissionCheck;
+use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Handler;

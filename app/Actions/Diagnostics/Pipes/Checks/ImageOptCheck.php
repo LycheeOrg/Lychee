@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Actions\Diagnostics\Checks;
+namespace App\Actions\Diagnostics\Pipes\Checks;
 
-use App\Contracts\DiagnosticCheckInterface;
+use App\Contracts\DiagnosticPipe;
 use App\Facades\Helpers;
 use App\Models\Configs;
 use function Safe\exec;
@@ -13,9 +13,9 @@ use Spatie\ImageOptimizer\Optimizers\Optipng;
 use Spatie\ImageOptimizer\Optimizers\Pngquant;
 use Spatie\ImageOptimizer\Optimizers\Svgo;
 
-class ImageOptCheck implements DiagnosticCheckInterface
+class ImageOptCheck implements DiagnosticPipe
 {
-	public function check(array &$errors): void
+	public function handle(array &$data, \Closure $next): array
 	{
 		$tools = [];
 		$tools[] = new Cwebp();
@@ -27,7 +27,7 @@ class ImageOptCheck implements DiagnosticCheckInterface
 
 		$settings = Configs::get();
 		if (!isset($settings['lossless_optimization']) || $settings['lossless_optimization'] !== '1') {
-			return;
+			return $next($data);
 		}
 
 		$binaryPath = config('image-optimizer.binary_path');
@@ -40,11 +40,13 @@ class ImageOptCheck implements DiagnosticCheckInterface
 			foreach ($tools as $tool) {
 				$path = exec('command -v ' . $binaryPath . $tool->binaryName());
 				if ($path === '') {
-					$errors[] = 'Warning: lossless_optimization set to 1 but ' . $binaryPath . $tool->binaryName() . ' not found!';
+					$data[] = 'Warning: lossless_optimization set to 1 but ' . $binaryPath . $tool->binaryName() . ' not found!';
 				}
 			}
 		} else {
-			$errors[] = 'Warning: lossless_optimization set to 1 but exec() is not enabled.';
+			$data[] = 'Warning: lossless_optimization set to 1 but exec() is not enabled.';
 		}
+
+		return $next($data);
 	}
 }

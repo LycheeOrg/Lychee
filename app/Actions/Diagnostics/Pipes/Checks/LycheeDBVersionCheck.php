@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Actions\Diagnostics\Checks;
+namespace App\Actions\Diagnostics\Pipes\Checks;
 
-use App\Contracts\DiagnosticCheckInterface;
+use App\Contracts\DiagnosticPipe;
 use App\Metadata\LycheeVersion;
+use Closure;
 
-class LycheeDBVersionCheck implements DiagnosticCheckInterface
+class LycheeDBVersionCheck implements DiagnosticPipe
 {
 	private LycheeVersion $lycheeVersion;
 
@@ -27,18 +28,21 @@ class LycheeDBVersionCheck implements DiagnosticCheckInterface
 	 *
 	 * TODO: Probably, the whole logic around installation and updating should be re-factored. The whole code is wicked.
 	 *
-	 * @param string[] $errors list of error messages
+	 * @param array<int,string> $data list of error messages
+	 * @param Closure(array<int,string> $data): array<int,string> $next
 	 *
-	 * @return void
+	 * @return array<int,string>
 	 */
-	public function check(array &$errors): void
+	public function handle(array &$data, Closure $next): array
 	{
 		if ($this->lycheeVersion->isRelease) {
 			$db_ver = $this->lycheeVersion->getDBVersion();
 			$file_ver = $this->lycheeVersion->getFileVersion();
 			if ($db_ver->toInteger() < $file_ver->toInteger()) {
-				$errors[] = 'Error: Database is behind file versions. Please apply the migration.';
+				$data[] = 'Error: Database is behind file versions. Please apply the migration.';
 			}
 		}
+
+		return $next($data);
 	}
 }
