@@ -131,8 +131,9 @@ class PhotosOperationsTest extends PhotoTestBase
 			25,
 			'+02:00'
 		);
+		$updated_taken_at = $taken_at->addYear();
 
-		$this->photos_tests->set_upload_date($id, $taken_at->addYear()->toIso8601String());
+		$this->photos_tests->set_upload_date($id, $updated_taken_at->toIso8601String());
 
 		$this->clearCachedSmartAlbums();
 		$this->albums_tests->get(StarredAlbum::ID, 200, $id);
@@ -142,7 +143,7 @@ class PhotosOperationsTest extends PhotoTestBase
 		$response->assertJson([
 			'album_id' => null,
 			'id' => $id,
-			'created_at' => $taken_at->addYear()->format('Y-m-d\TH:i:s.uP'),
+			'created_at' => $updated_taken_at->format('Y-m-d\TH:i:s.uP'),
 			'license' => 'reserved',
 			'is_public' => 1,
 			'is_starred' => true,
@@ -189,8 +190,8 @@ class PhotosOperationsTest extends PhotoTestBase
 			'shutter' => '30 s',
 			'is_starred' => true,
 			'tags' => [],
-			'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
-			'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
+			'taken_at' => $updated_taken_at->format('Y-m-d\TH:i:s.uP'),
+			'taken_at_orig_tz' => $updated_taken_at->getTimezone()->getName(),
 			'title' => "Night in Ploumanac'h",
 			'type' => TestCase::MIME_TYPE_IMG_JPEG,
 			'size_variants' => [
