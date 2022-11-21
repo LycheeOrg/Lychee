@@ -2470,10 +2470,6 @@ album.toggleNSFW = function () {
  * @returns {void}
  */
 album.share = function (service) {
-	if (album.json.hasOwnProperty("is_share_button_visible") && !album.json.is_share_button_visible) {
-		return;
-	}
-
 	var url = location.href;
 
 	switch (service) {
@@ -2493,23 +2489,39 @@ album.share = function (service) {
  * @returns {void}
  */
 album.qrCode = function () {
-	if (album.json.hasOwnProperty("is_share_button_visible") && !album.json.is_share_button_visible) {
-		return;
-	}
-
-	basicModal.show({
-		body: "<div class='qr-code-canvas'></div>",
-		classList: ["qr-code"],
-		readyCB: function readyCB(formElements, dialog) {
-			var qrcode = dialog.querySelector("div.qr-code-canvas");
+	// We need this indirection based on a resize observer, because the ready
+	// callback of the dialog is invoked _before_ the dialog is made visible
+	// in order to allow the ready callback to make initializations of
+	// form elements without causing flicker.
+	// However, for invisible elements `.clientWidth` returns zero, hence
+	// we cannot paint the QR code onto the canvas before it becomes visible.
+	var qrCodeCanvasObserver = function () {
+		var width = 0;
+		return new ResizeObserver(function (entries, observer) {
+			var qrCodeCanvas = entries[0].target;
+			// Avoid infinite resize events due to clearing and repainting
+			// the same QR code on the canvas.
+			if (width === qrCodeCanvas.clientWidth) {
+				return;
+			}
+			width = qrCodeCanvas.clientWidth;
 			QrCreator.render({
 				text: location.href,
 				radius: 0.0,
 				ecLevel: "H",
 				fill: "#000000",
 				background: "#FFFFFF",
-				size: qrcode.clientWidth
-			}, qrcode);
+				size: width
+			}, qrCodeCanvas);
+		});
+	}();
+
+	basicModal.show({
+		body: "<canvas></canvas>",
+		classList: ["qr-code"],
+		readyCB: function readyCB(formElements, dialog) {
+			var qrCodeCanvas = dialog.querySelector("canvas");
+			qrCodeCanvasObserver.observe(qrCodeCanvas);
 		},
 		buttons: {
 			cancel: {
@@ -4386,10 +4398,6 @@ contextMenu.move = function (IDs, e, callback) {
  * @returns {void}
  */
 contextMenu.sharePhoto = function (photoID, e) {
-	if (!_photo3.json.is_share_button_visible) {
-		return;
-	}
-
 	var iconClass = "ionicons";
 
 	var items = [{ title: build.iconic("twitter", iconClass) + "Twitter", fn: function fn() {
@@ -4420,10 +4428,6 @@ contextMenu.sharePhoto = function (photoID, e) {
  * @returns {void}
  */
 contextMenu.shareAlbum = function (albumID, e) {
-	if (!album.json.is_share_button_visible) {
-		return;
-	}
-
 	var iconClass = "ionicons";
 
 	var items = [{ title: build.iconic("twitter", iconClass) + "Twitter", fn: function fn() {
@@ -5208,11 +5212,11 @@ header.setMode = function (mode) {
 			if (lychee.enable_button_share && _photo3.json && _photo3.json.is_share_button_visible) {
 				var _e28 = $("#button_share");
 				_e28.show();
-				tabindex.makeUnfocusable(_e28);
+				tabindex.makeFocusable(_e28);
 			} else {
 				var _e29 = $("#button_share");
 				_e29.hide();
-				tabindex.makeFocusable(_e29);
+				tabindex.makeUnfocusable(_e29);
 			}
 
 			if (lychee.publicMode === true ? lychee.map_display_public : lychee.map_display) {
@@ -9939,10 +9943,6 @@ _photo3.deleteTag = function (photoID, index) {
  * @returns {void}
  */
 _photo3.share = function (photoID, service) {
-	if (!_photo3.json.is_share_button_visible) {
-		return;
-	}
-
 	var url = _photo3.getViewLink(photoID);
 
 	switch (service) {
@@ -10134,24 +10134,47 @@ _photo3.qrCode = function (photoID) {
 		return;
 	}
 
-	basicModal.show({
-		body: "<div class='qr-code-canvas'></div>",
-		classList: ["qr-code"],
-		readyCB: function readyCB(formElements, dialog) {
-			var qrcode = dialog.querySelector("div.qr-code-canvas");
+	// We need this indirection based on a resize observer, because the ready
+	// callback of the dialog is invoked _before_ the dialog is made visible
+	// in order to allow the ready callback to make initializations of
+	// form elements without causing flicker.
+	// However, for invisible elements `.clientWidth` returns zero, hence
+	// we cannot paint the QR code onto the canvas before it becomes visible.
+	var qrCodeCanvasObserver = function () {
+		var width = 0;
+		return new ResizeObserver(function (entries, observer) {
+			var qrCodeCanvas = entries[0].target;
+			// Avoid infinite resize events due to clearing and repainting
+			// the same QR code on the canvas.
+			if (width === qrCodeCanvas.clientWidth) {
+				return;
+			}
+			width = qrCodeCanvas.clientWidth;
 			QrCreator.render({
 				text: _photo3.getViewLink(myPhoto.id),
 				radius: 0.0,
 				ecLevel: "H",
 				fill: "#000000",
 				background: "#FFFFFF",
-				size: qrcode.clientWidth
-			}, qrcode);
+				size: width
+			}, qrCodeCanvas);
+		});
+	}();
+
+	basicModal.show({
+		body: "<canvas></canvas>",
+		classList: ["qr-code"],
+		readyCB: function readyCB(formElements, dialog) {
+			var qrCodeCanvas = dialog.querySelector("canvas");
+			qrCodeCanvasObserver.observe(qrCodeCanvas);
 		},
 		buttons: {
 			cancel: {
 				title: lychee.locale["CLOSE"],
-				fn: basicModal.close
+				fn: function fn() {
+					qrCodeCanvasObserver.disconnect();
+					basicModal.close();
+				}
 			}
 		}
 	});
@@ -11130,10 +11153,19 @@ sharing.delete = function () {
 };
 
 /**
+ * Queries the backend for a list of active shares, sharable albums and users
+ * with whom albums can be shared.
+ *
+ * For admin user, the query is unrestricted, for non-admin user the
+ * query is restricted to albums which are owned by the currently
+ * authenticated user.
+ * The latter is required as the backend forbids unrestricted queries for
+ * non-admin users.
+ *
  * @returns {void}
  */
 sharing.list = function () {
-	api.post("Sharing::list", {},
+	api.post("Sharing::list", lychee.rights.is_admin ? {} : { ownerID: lychee.user.id },
 	/** @param {SharingInfo} data */
 	function (data) {
 		sharing.json = data;
