@@ -287,6 +287,8 @@ final class ChineseTraditional implements Language
 			'PHOTO_EDIT_SHARING_TEXT' => '此照片的共享屬性將更改為以下內容:',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => '由於此照片位於公開相簿中，因此它會繼承該相冊的公開範圍設置。 下面顯示了它的當前可見性，僅供參考。',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => '可以使用全局Lychee設置微調這張照片的可見性。 下面顯示了它的當前可見性，僅供參考。',
+			'PHOTO_NEW_CREATED_AT' => 'Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]',
+			'PHOTO_SET_CREATED_AT' => 'Set upload date',
 
 			'LOADING' => '載入中',
 			'ERROR' => '錯誤',

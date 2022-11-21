@@ -287,6 +287,8 @@ final class French implements Language
 			'PHOTO_EDIT_SHARING_TEXT' => 'Les propriété de partages de cette photo seront changé pour les suivantes :',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => 'Parce que cette photo est dans un album public, elle hérite des propriété de partage de l’album. Sa visibilité est montrée ci dessous pour votre information.',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'La visibilité de cette photo est ajustable avec les paramètres generaux de Lychee.  Sa visibilité est montrée ci dessous pour votre information.',
+			'PHOTO_NEW_CREATED_AT' => 'Entrez la date d’upload de cette photo. mm/dd/yyyy, hh:mm [am/pm]',
+			'PHOTO_SET_CREATED_AT' => 'Changer la date',
 
 			'LOADING' => 'Chargement en cours',
 			'ERROR' => 'Erreur',

@@ -1703,6 +1703,10 @@ sidebar.bind = function () {
 		if (visible.photo()) photo.setDescription(photo.getID());else if (visible.album()) album.setDescription(album.getID());
 	});
 
+	sidebar.dom("#edit_uploaded").off(eventName).on(eventName, function () {
+		if (visible.photo()) photo.setCreatedAt(photo.getID());
+	});
+
 	sidebar.dom("#edit_showtags").off(eventName).on(eventName, function () {
 		album.setShowTags(album.getID());
 	});
@@ -1908,7 +1912,7 @@ sidebar.createStructure.photo = function (data) {
 	structure.basics = {
 		title: lychee.locale["PHOTO_BASICS"],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["PHOTO_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["PHOTO_UPLOADED"], kind: "uploaded", value: lychee.locale.printDateTime(data.created_at) }, { title: lychee.locale["PHOTO_DESCRIPTION"], kind: "description", value: data.description ? data.description : "", editable: editable }]
+		rows: [{ title: lychee.locale["PHOTO_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["PHOTO_UPLOADED"], kind: "uploaded", value: lychee.locale.printDateTime(data.created_at), editable: editable }, { title: lychee.locale["PHOTO_DESCRIPTION"], kind: "description", value: data.description ? data.description : "", editable: editable }]
 	};
 
 	structure.image = {
@@ -2938,6 +2942,8 @@ lychee.locale = {
 	PHOTO_EDIT_SHARING_TEXT: "The sharing properties of this photo will be changed to the following:",
 	PHOTO_NO_EDIT_SHARING_TEXT: "Because this photo is located in a public album, it inherits that album’s visibility settings.  Its current visibility is shown below for informational purposes only.",
 	PHOTO_EDIT_GLOBAL_SHARING_TEXT: "The visibility of this photo can be fine-tuned using global Lychee settings. Its current visibility is shown below for informational purposes only.",
+	PHOTO_NEW_CREATED_AT: "Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]",
+	PHOTO_SET_CREATED_AT: "Set upload date",
 
 	LOADING: "Loading",
 	ERROR: "Error",

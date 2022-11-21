@@ -7220,6 +7220,8 @@ lychee.locale = {
 	PHOTO_EDIT_SHARING_TEXT: "The sharing properties of this photo will be changed to the following:",
 	PHOTO_NO_EDIT_SHARING_TEXT: "Because this photo is located in a public album, it inherits that album’s visibility settings.  Its current visibility is shown below for informational purposes only.",
 	PHOTO_EDIT_GLOBAL_SHARING_TEXT: "The visibility of this photo can be fine-tuned using global Lychee settings. Its current visibility is shown below for informational purposes only.",
+	PHOTO_NEW_CREATED_AT: "Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]",
+	PHOTO_SET_CREATED_AT: "Set upload date",
 
 	LOADING: "Loading",
 	ERROR: "Error",
@@ -9201,6 +9203,63 @@ _photo3.setDescription = function (photoID) {
 };
 
 /**
+ * Edits the upload date of a photo.
+ *
+ * This method is a misnomer, it does not only set the description, it also creates and handles the edit dialog
+ *
+ * @param {string} photoID
+ * @returns {void}
+ */
+_photo3.setCreatedAt = function (photoID) {
+	/**
+  * @param {{date: string}} data
+  */
+	var action = function action(data) {
+		basicModal.close();
+
+		var created_at = data.created_at ? data.created_at.concat(":", data.tz) : null;
+
+		if (visible.photo()) {
+			_photo3.json.created_at = created_at;
+			view.photo.uploaded();
+		}
+
+		api.post("Photo::setUploadDate", {
+			photoID: photoID,
+			date: created_at
+		});
+	};
+
+	var setPhotoCreatedAtDialogBody = "\n\t\t<p></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\"><input class='text' name='created_at' type='datetime-local'\n\t\t\tpattern='[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}'\n\t\t\t>\n\t\t\t<input name='tz' type='hidden'>\n\t\t\t</div>\n\t\t</form>";
+
+	/**
+  * @param {ModalDialogFormElements} formElements
+  * @param {HTMLDivElement} dialog
+  * @returns {void}
+  */
+	var initSetPhotoCreatedAtDialog = function initSetPhotoCreatedAtDialog(formElements, dialog) {
+		dialog.querySelector("p").textContent = lychee.locale["PHOTO_NEW_CREATED_AT"];
+		formElements.created_at.value = _photo3.json.created_at ? _photo3.json.created_at.slice(0, 16) : "";
+		formElements.tz.value = _photo3.json.created_at ? _photo3.json.created_at.slice(17) : "";
+	};
+
+	basicModal.show({
+		body: setPhotoCreatedAtDialogBody,
+		readyCB: initSetPhotoCreatedAtDialog,
+		buttons: {
+			action: {
+				title: lychee.locale["PHOTO_SET_CREATED_AT"],
+				fn: action
+			},
+			cancel: {
+				title: lychee.locale["CANCEL"],
+				fn: basicModal.close
+			}
+		}
+	});
+};
+
+/**
  * @param {string[]} photoIDs
  * @returns {void}
  */
@@ -10593,6 +10652,10 @@ _sidebar.bind = function () {
 		if (visible.photo()) _photo3.setDescription(_photo3.getID());else if (visible.album()) album.setDescription(album.getID());
 	});
 
+	_sidebar.dom("#edit_uploaded").off(eventName).on(eventName, function () {
+		if (visible.photo()) _photo3.setCreatedAt(_photo3.getID());
+	});
+
 	_sidebar.dom("#edit_showtags").off(eventName).on(eventName, function () {
 		album.setShowTags(album.getID());
 	});
@@ -10798,7 +10861,7 @@ _sidebar.createStructure.photo = function (data) {
 	structure.basics = {
 		title: lychee.locale["PHOTO_BASICS"],
 		type: _sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["PHOTO_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["PHOTO_UPLOADED"], kind: "uploaded", value: lychee.locale.printDateTime(data.created_at) }, { title: lychee.locale["PHOTO_DESCRIPTION"], kind: "description", value: data.description ? data.description : "", editable: editable }]
+		rows: [{ title: lychee.locale["PHOTO_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["PHOTO_UPLOADED"], kind: "uploaded", value: lychee.locale.printDateTime(data.created_at), editable: editable }, { title: lychee.locale["PHOTO_DESCRIPTION"], kind: "description", value: data.description ? data.description : "", editable: editable }]
 	};
 
 	structure.image = {
@@ -13513,6 +13576,13 @@ view.photo = {
   */
 	description: function description() {
 		if (_photo3.json.init) _sidebar.changeAttr("description", _photo3.json.description ? _photo3.json.description : "");
+	},
+
+	/**
+  * @returns {void}
+  */
+	uploaded: function uploaded() {
+		if (_photo3.json.init) _sidebar.changeAttr("uploaded", _photo3.json.created_at ? lychee.locale.printDateTime(_photo3.json.created_at) : "");
 	},
 
 	/**
