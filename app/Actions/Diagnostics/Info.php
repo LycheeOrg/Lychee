@@ -15,7 +15,7 @@ class Info extends Diagnostics
 	 *
 	 * @var array<int,class-string>
 	 */
-	public $pipes = [
+	private $pipes = [
 		VersionInfo::class,
 		InstallTypeInfo::class,
 		SystemInfo::class,

@@ -21,7 +21,7 @@ class Errors extends Diagnostics
 	 *
 	 * @var array<int,class-string>
 	 */
-	public $pipes = [
+	private $pipes = [
 		AdminUserExistsCheck::class,
 		BasicPermissionCheck::class,
 		ConfigSanityCheck::class,
