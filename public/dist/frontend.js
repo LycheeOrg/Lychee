@@ -5166,71 +5166,73 @@ header.setMode = function (mode) {
 			// - empty (see contextMenu.photoMore)
 			// - not enabled
 			if (!(album.isUploadable() || (_photo3.json.hasOwnProperty("is_downloadable") ? _photo3.json.is_downloadable : album.json && album.json.is_downloadable)) && !(_photo3.json.size_variants.original.url && _photo3.json.size_variants.original.url !== "") || !lychee.enable_button_more) {
-				buttonMore.hide();
-				tabindex.makeUnfocusable(buttonMore);
+				var _e30 = $("#button_more");
+				_e30.hide();
+				tabindex.makeUnfocusable(_e30);
 			} else {
-				buttonMore.show();
-				tabindex.makeFocusable(buttonMore);
+				var _e31 = $("#button_more");
+				_e31.show();
+				tabindex.makeFocusable(_e31);
 			}
 
 			// Hide buttons if needed
 			if (lychee.publicMode) {
-				var _e30 = $("#button_star", "#lychee_toolbar_photo");
-				_e30.hide();
-				tabindex.makeUnfocusable(_e30);
+				var _e32 = $("#button_star", "#lychee_toolbar_photo");
+				_e32.hide();
+				tabindex.makeUnfocusable(_e32);
 			} else {
-				var _e31 = $("#button_star", "#lychee_toolbar_photo");
-				_e31.show();
+				var _e33 = $("#button_star", "#lychee_toolbar_photo");
+				_e33.show();
 			}
 
 			if (!lychee.enable_button_visibility || lychee.publicMode) {
-				var _e32 = $("#button_visibility", "#lychee_toolbar_photo");
-				_e32.hide();
-			} else {
-				var _e33 = $("#button_visibility", "#lychee_toolbar_photo");
-				_e33.show();
-			}
-			if (!lychee.enable_button_share) {
-				var _e34 = $("#button_share", "#lychee_toolbar_photo");
+				var _e34 = $("#button_visibility", "#lychee_toolbar_photo");
 				_e34.hide();
 			} else {
-				var _e35 = $("#button_share", "#lychee_toolbar_photo");
+				var _e35 = $("#button_visibility", "#lychee_toolbar_photo");
 				_e35.show();
 			}
-			if (!lychee.enable_button_move || lychee.publicMode) {
-				var _e36 = $("#button_move", "#lychee_toolbar_photo");
+			if (!lychee.enable_button_share) {
+				var _e36 = $("#button_share", "#lychee_toolbar_photo");
 				_e36.hide();
 			} else {
-				var _e37 = $("#button_move", "#lychee_toolbar_photo");
+				var _e37 = $("#button_share", "#lychee_toolbar_photo");
 				_e37.show();
 			}
-			if (!lychee.enable_button_trash || lychee.publicMode) {
-				var _e38 = $("#button_trash", "#lychee_toolbar_photo");
+			if (!lychee.enable_button_move || lychee.publicMode) {
+				var _e38 = $("#button_move", "#lychee_toolbar_photo");
 				_e38.hide();
 			} else {
-				var _e39 = $("#button_trash", "#lychee_toolbar_photo");
+				var _e39 = $("#button_move", "#lychee_toolbar_photo");
 				_e39.show();
 			}
-			if (!lychee.enable_button_fullscreen || !lychee.fullscreenAvailable() || lychee.publicMode) {
-				var _e40 = $("#button_fs_enter", "#lychee_toolbar_photo");
+			if (!lychee.enable_button_trash || lychee.publicMode) {
+				var _e40 = $("#button_trash", "#lychee_toolbar_photo");
 				_e40.hide();
 			} else {
-				var _e41 = $("#button_fs_enter", "#lychee_toolbar_photo");
+				var _e41 = $("#button_trash", "#lychee_toolbar_photo");
 				_e41.show();
 			}
-			if (!lychee.enable_button_rotate || lychee.publicMode) {
-				var _e42 = $("#button_rotate_cwise", "#lychee_toolbar_photo");
-				_e42.hide();
-
-				_e42 = $("#button_rotate_ccwise", "#lychee_toolbar_photo");
+			if (!lychee.enable_button_fullscreen || !lychee.fullscreenAvailable() || lychee.publicMode) {
+				var _e42 = $("#button_fs_enter", "#lychee_toolbar_photo");
 				_e42.hide();
 			} else {
-				var _e43 = $("#button_rotate_cwise", "#lychee_toolbar_photo");
+				var _e43 = $("#button_fs_enter", "#lychee_toolbar_photo");
 				_e43.show();
+			}
+			if (!lychee.enable_button_rotate || lychee.publicMode) {
+				var _e44 = $("#button_rotate_cwise", "#lychee_toolbar_photo");
+				_e44.hide();
 
-				_e43 = $("#button_rotate_ccwise", "#lychee_toolbar_photo");
-				_e43.show();
-				tabindex.makeFocusable(_e43);
+				_e44 = $("#button_rotate_ccwise", "#lychee_toolbar_photo");
+				_e44.hide();
+			} else {
+				var _e45 = $("#button_rotate_cwise", "#lychee_toolbar_photo");
+				_e45.show();
+
+				_e45 = $("#button_rotate_ccwise", "#lychee_toolbar_photo");
+				_e45.show();
+				tabindex.makeFocusable(_e45);
 			}
 			return;
 		case "map":
