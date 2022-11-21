@@ -36,11 +36,13 @@ class LycheeDBVersionCheck implements DiagnosticPipe
 	public function handle(array &$data, Closure $next): array
 	{
 		if ($this->lycheeVersion->isRelease) {
+			// @codeCoverageIgnoreStart
 			$db_ver = $this->lycheeVersion->getDBVersion();
 			$file_ver = $this->lycheeVersion->getFileVersion();
 			if ($db_ver->toInteger() < $file_ver->toInteger()) {
 				$data[] = 'Error: Database is behind file versions. Please apply the migration.';
 			}
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $next($data);

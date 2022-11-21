@@ -23,16 +23,20 @@ class VersionInfo implements DiagnosticPipe
 		$lycheeChannelInfo = $this->lycheeVersion->getLycheeChannelInfo();
 		switch ($lycheeChannelInfo->channelType) {
 			case LycheeChannelInfo::RELEASE_CHANNEL:
+				// @codeCoverageIgnoreStart
 				$lycheeChannelName = 'release';
 				$lycheeInfoString = $lycheeChannelInfo->releaseVersion->toString();
 				break;
+				// @codeCoverageIgnoreEnd
 			case LycheeChannelInfo::GIT_CHANNEL:
 				$lycheeChannelName = 'git';
 				$lycheeInfoString = $lycheeChannelInfo->gitInfo !== null ? $lycheeChannelInfo->gitInfo->toString() : 'No git data found.';
 				break;
 			default:
+				// @codeCoverageIgnoreStart
 				$lycheeChannelName = 'unknown';
 				$lycheeInfoString = 'not available (this indicates an error)';
+				// @codeCoverageIgnoreEnd
 		}
 
 		$data[] = Diagnostics::line('Lychee Version (' . $lycheeChannelName . '):', $lycheeInfoString);

@@ -22,12 +22,16 @@ class DBSupportCheck implements DiagnosticPipe
 			if (config('database.default') === $db_possibility[0]) {
 				$found = true;
 				if (!extension_loaded($db_possibility[1])) {
+					// @codeCoverageIgnoreStart
 					$data[] = 'Error: ' . $db_possibility[0] . ' db driver selected and PHP ' . $db_possibility[1] . ' extension not activated';
+					// @codeCoverageIgnoreEnd
 				}
 			}
 		}
 		if (!$found) {
+			// @codeCoverageIgnoreStart
 			$data[] = 'Error: could not find the database solution for ' . config('database.default');
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $next($data);

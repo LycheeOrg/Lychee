@@ -29,6 +29,7 @@ class ImageOptCheck implements DiagnosticPipe
 		if (!isset($settings['lossless_optimization']) || $settings['lossless_optimization'] !== '1') {
 			return $next($data);
 		}
+		// @codeCoverageIgnoreStart
 
 		$binaryPath = config('image-optimizer.binary_path');
 
@@ -48,5 +49,6 @@ class ImageOptCheck implements DiagnosticPipe
 		}
 
 		return $next($data);
+		// @codeCoverageIgnoreEnd
 	}
 }

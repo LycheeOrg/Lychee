@@ -3,6 +3,7 @@
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
+use App\Facades\Helpers;
 use App\Models\Configs;
 use Closure;
 use function Safe\ini_get;
@@ -32,23 +33,33 @@ class IniSettingsCheck implements DiagnosticPipe
 
 		// Check imagick
 		if (!extension_loaded('imagick')) {
+			// @codeCoverageIgnoreStart
 			$data[] = 'Warning: Pictures that are rotated lose their metadata! Please install Imagick to avoid that.';
+		// @codeCoverageIgnoreEnd
 		} else {
 			if (!isset($settings['imagick'])) {
+				// @codeCoverageIgnoreStart
 				$data[] = 'Warning: Pictures that are rotated lose their metadata! Please enable Imagick in settings to avoid that.';
+				// @codeCoverageIgnoreEnd
 			}
 		}
 
-		if (!function_exists('exec')) {
+		if (!Helpers::isExecAvailable()) {
+			// @codeCoverageIgnoreStart
 			$data[] = 'Warning: exec function has been disabled. You may experience some error 500, please report them to us.';
+			// @codeCoverageIgnoreEnd
 		}
 
 		if (preg_match('!^[-_a-zA-Z]+/\d+(\.\d+)*[a-z]? \(.*\)!', ini_get('user_agent')) === 0) {
+			// @codeCoverageIgnoreStart
 			$data[] = 'Warning: user_agent for PHP is not properly set. You may experience problems when importing images via URL.';
+			// @codeCoverageIgnoreEnd
 		}
 
 		if (ini_get('assert.exception') !== '1') {
+			// @codeCoverageIgnoreStart
 			$data[] = 'Warning: assert.exception is set to false. Lychee assumes that failing assertions throw proper exceptions.';
+			// @codeCoverageIgnoreEnd
 		}
 
 		if (ini_get('zend.assertions') !== '-1' && config('app.debug') !== true) {
