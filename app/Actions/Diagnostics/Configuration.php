@@ -11,7 +11,7 @@ class Configuration extends Diagnostics
 	 * Return the config pieces of information of the Lychee installation.
 	 * Note that some information such as password and username are hidden.
 	 *
-	 * @return string<int,string> array of messages
+	 * @return array<int,string> array of messages
 	 *
 	 * @throws QueryBuilderException
 	 */
