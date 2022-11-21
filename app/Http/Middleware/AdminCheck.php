@@ -6,7 +6,6 @@ use App\Contracts\InternalLycheeException;
 use App\Exceptions\UnauthorizedException;
 use App\Http\Middleware\Checks\IsInstalled;
 use App\Policies\UserPolicy;
-use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -22,15 +21,15 @@ class AdminCheck
 	/**
 	 * Handle an incoming request.
 	 *
-	 * @param Request $request
-	 * @param Closure $next
+	 * @param Request  $request
+	 * @param \Closure $next
 	 *
 	 * @return mixed
 	 *
 	 * @throws UnauthorizedException
 	 * @throws InternalLycheeException
 	 */
-	public function handle(Request $request, Closure $next): mixed
+	public function handle(Request $request, \Closure $next): mixed
 	{
 		if (!$this->isInstalled->assert()) {
 			return $next($request);
