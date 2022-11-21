@@ -187,7 +187,7 @@ class Ghostbuster extends Command
 				$this->line($totalFiles . ' files would be deleted.');
 				$this->line($totalDbEntries . ' photos would be deleted or sanitized');
 				$this->line('');
-				$this->line("Rerun the command '" . $this->col->yellow('php artisan lychee:ghostbuster ' . ($removeDeadSymLinks ? '1' : '0') . ' ' . ($removeZombiePhotos ? '1' : '0') . ' 0') . "' to effectively remove the files.");
+				$this->line("Rerun the command '" . $this->col->yellow('php artisan lychee:ghostbuster --removeDeadSymLinks ' . ($removeDeadSymLinks ? '1' : '0') . ' --removeZombiePhotos ' . ($removeZombiePhotos ? '1' : '0') . '--dryrun 0') . "' to effectively remove the files.");
 			}
 			if ($total > 0 && !$dryrun) {
 				$this->line($totalDeadSymLinks . ' dead symbolic links have been deleted.');
