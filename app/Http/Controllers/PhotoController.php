@@ -287,6 +287,9 @@ class PhotoController extends Controller
 	public function setUploadDate(SetPhotoUploadDate $request): void
 	{
 		$request->photo()->created_at = $request->requestDate();
+		if ($request->photo()->updated_at->isBefore($request->requestDate())) {
+			$request->photo()->updated_at = $request->requestDate();
+		}
 		$request->photo()->save();
 	}
 
