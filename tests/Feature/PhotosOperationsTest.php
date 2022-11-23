@@ -119,11 +119,6 @@ class PhotosOperationsTest extends PhotoTestBase
 		$this->photos_tests->set_license($id, 'CC-BY-NC-SA-4.0');
 		$this->photos_tests->set_license($id, 'reserved');
 
-		$this->clearCachedSmartAlbums();
-		$this->albums_tests->get(StarredAlbum::ID, 200, $id);
-		$this->albums_tests->get(PublicAlbum::ID, 200, $id);
-		$response = $this->photos_tests->get($id);
-
 		/*
 		 * Check some Exif data
 		 */
@@ -136,9 +131,20 @@ class PhotosOperationsTest extends PhotoTestBase
 			25,
 			'+02:00'
 		);
+
+		$updated_taken_at = $taken_at->addYear();
+
+		$this->photos_tests->set_upload_date($id, $updated_taken_at->toIso8601String());
+
+		$this->clearCachedSmartAlbums();
+		$this->albums_tests->get(StarredAlbum::ID, 200, $id);
+		$this->albums_tests->get(PublicAlbum::ID, 200, $id);
+		$response = $this->photos_tests->get($id);
+
 		$response->assertJson([
 			'album_id' => null,
 			'id' => $id,
+			'created_at' => $updated_taken_at->setTimezone('UTC')->format('Y-m-d\TH:i:s.uP'),
 			'license' => 'reserved',
 			'is_public' => 1,
 			'is_starred' => true,
@@ -185,8 +191,8 @@ class PhotosOperationsTest extends PhotoTestBase
 			'shutter' => '30 s',
 			'is_starred' => true,
 			'tags' => [],
-			'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
-			'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
+			'taken_at' => '2019-06-01T01:28:25.000000+02:00',
+			'taken_at_orig_tz' => '+02:00',
 			'title' => "Night in Ploumanac'h",
 			'type' => TestCase::MIME_TYPE_IMG_JPEG,
 			'size_variants' => [

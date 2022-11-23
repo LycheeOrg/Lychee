@@ -287,6 +287,8 @@ final class German implements Language
 			'PHOTO_EDIT_SHARING_TEXT' => 'Die Einstellungen zum Teilen des Foto werden wie folgt angepasst:',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => 'Dieses Foto ist in einem öffentlichen Album und erbt deshalb die Sichtbarkeitseinstellungen des Albums. Die aktuellen Sichtbarkeitseinstellungen werden unten nur zur Info dargestellt.',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'Die Sichtbarkeit dieses Fotos kann über die globalen Lychee Einstellungen modifiziert werden. Die aktuellen Sichtbarkeitseinstellungen werden unten nur zur Info dargestellt.',
+			'PHOTO_NEW_CREATED_AT' => 'Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]',
+			'PHOTO_SET_CREATED_AT' => 'Set upload date',
 
 			'LOADING' => 'Laden',
 			'ERROR' => 'Fehler',

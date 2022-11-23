@@ -73,6 +73,7 @@ Route::post('/Photo::add', [PhotoController::class, 'add'])
 Route::post('/Photo::delete', [PhotoController::class, 'delete']);
 Route::post('/Photo::duplicate', [PhotoController::class, 'duplicate']);
 Route::post('/Photo::setLicense', [PhotoController::class, 'setLicense']);
+Route::post('/Photo::setUploadDate', [PhotoController::class, 'setUploadDate']);
 Route::get('/Photo::getArchive', [PhotoController::class, 'getArchive'])
 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
 	->middleware(['local_storage', 'accept_content_type:any']);

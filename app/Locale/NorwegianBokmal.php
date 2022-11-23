@@ -287,6 +287,8 @@ final class NorwegianBokmal implements Language
 			'PHOTO_EDIT_SHARING_TEXT' => 'Innstillingene for deling av bildet vil bli endret til:',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => 'Dette bildet er i et offentlig album som arver synligheten til albumet. Nåværende synlighet er vist bare for informasjon.',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'Synligeten til bildet kan bli finjustert gjennom innstillingene til Lychee. Nåværende synlighet er vist bare for informasjon.',
+			'PHOTO_NEW_CREATED_AT' => 'Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]',
+			'PHOTO_SET_CREATED_AT' => 'Set upload date',
 
 			'LOADING' => 'Laster',
 			'ERROR' => 'Feil',

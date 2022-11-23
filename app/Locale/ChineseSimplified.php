@@ -287,6 +287,8 @@ final class ChineseSimplified implements Language
 			'PHOTO_EDIT_SHARING_TEXT' => '此照片的共享属性将被修改为：',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => '因为此照片位于一个公开相册中，其继承了相册的可见性设置。其当前的可见性仅在下方作为提示的作用而显示。',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => '此照片的可见性可以使用全局的 Lychee 设置进行更细致的调整。其当前的可见性仅在下方作为提示的作用而显示。',
+			'PHOTO_NEW_CREATED_AT' => 'Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]',
+			'PHOTO_SET_CREATED_AT' => 'Set upload date',
 
 			'LOADING' => '载入中',
 			'ERROR' => '错误',
