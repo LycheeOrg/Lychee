@@ -9173,7 +9173,7 @@ _photo3.setDescription = function (photoID) {
 		});
 	};
 
-	var setPhotoDescriptionDialogBody = "\n\t\t<p></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\"><input class='text' name='description' type='text' maxlength='800'></div>\n\t\t</form>";
+	var setPhotoDescriptionDialogBody = "\n\t\t<p  id=\"ppp_dialog_description_expl\"></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\"><input class='text' name='description' type='text' maxlength='800'></div>\n\t\t</form>";
 
 	/**
   * @param {ModalDialogFormElements} formElements
@@ -9181,7 +9181,7 @@ _photo3.setDescription = function (photoID) {
   * @returns {void}
   */
 	var initSetPhotoDescriptionDialog = function initSetPhotoDescriptionDialog(formElements, dialog) {
-		dialog.querySelector("p").textContent = lychee.locale["PHOTO_NEW_DESCRIPTION"];
+		dialog.querySelector("p#ppp_dialog_description_expl").textContent = lychee.locale["PHOTO_NEW_DESCRIPTION"];
 		formElements.description.placeholder = lychee.locale["PHOTO_DESCRIPTION"];
 		formElements.description.value = _photo3.json.description ? _photo3.json.description : "";
 	};
@@ -9230,7 +9230,7 @@ _photo3.setCreatedAt = function (photoID) {
 		});
 	};
 
-	var setPhotoCreatedAtDialogBody = "\n\t\t<p></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\"><input class='text' name='created_at' type='datetime-local'\n\t\t\tpattern='[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}'\n\t\t\t>\n\t\t\t<input name='tz' type='hidden'>\n\t\t\t</div>\n\t\t</form>";
+	var setPhotoCreatedAtDialogBody = "\n\t\t<p id=\"ppp_dialog_uploaddate_expl\"></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\"><input class='text' name='created_at' type='datetime-local'\n\t\t\tpattern='[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}'\n\t\t\t>\n\t\t\t<input name='tz' type='hidden'>\n\t\t\t</div>\n\t\t</form>";
 
 	/**
   * @param {ModalDialogFormElements} formElements
@@ -9238,7 +9238,7 @@ _photo3.setCreatedAt = function (photoID) {
   * @returns {void}
   */
 	var initSetPhotoCreatedAtDialog = function initSetPhotoCreatedAtDialog(formElements, dialog) {
-		dialog.querySelector("p").textContent = lychee.locale["PHOTO_NEW_CREATED_AT"];
+		dialog.querySelector("p#ppp_dialog_uploaddate_expl").textContent = lychee.locale["PHOTO_NEW_CREATED_AT"];
 		formElements.created_at.value = _photo3.json.created_at ? _photo3.json.created_at.slice(0, 16) : "";
 		formElements.tz.value = _photo3.json.created_at ? _photo3.json.created_at.slice(17) : "";
 	};
