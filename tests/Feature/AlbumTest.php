@@ -526,4 +526,50 @@ class AlbumTest extends TestCase
 		$this->albums_tests->get($regularAlbumID);
 		$this->photos_tests->get($photoID);
 	}
+
+	public function testSetCoverByNonOwner()
+	{
+		Auth::loginUsingId(0);
+		$userID = $this->users_tests->add('Test user', 'Test password 1')->offsetGet('id');
+		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
+		$photoID1 = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
+			$albumID
+		)->offsetGet('id');
+		Auth::logout();
+		Session::flush();
+
+		Auth::loginUsingId($userID);
+		$this->albums_tests->set_cover($albumID, $photoID1, 403);
+	}
+
+	public function testSetCoverByOwner()
+	{
+		Auth::loginUsingId(0);
+		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
+		$photoID1 = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
+			$albumID
+		)->offsetGet('id');
+		$photoID2 = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_HOCHUFERWEG),
+			$albumID
+		)->offsetGet('id');
+		$initialCoverID = $this->albums_tests->get($albumID)->offsetGet('cover_id');
+
+		$this->albums_tests->set_cover($albumID, $photoID1);
+		$coverID = $this->albums_tests->get($albumID)->offsetGet('cover_id');
+		assert($photoID1, $coverID);
+
+		$this->albums_tests->set_cover($albumID, $photoID2);
+		$coverID = $this->albums_tests->get($albumID)->offsetGet('cover_id');
+		assert($photoID2, $coverID);
+
+		$this->albums_tests->set_cover($albumID, null);
+		$coverID = $this->albums_tests->get($albumID)->offsetGet('cover_id');
+		assert($initialCoverID, $coverID);
+
+		Auth::logout();
+		Session::flush();
+	}
 }
