@@ -559,15 +559,15 @@ class AlbumTest extends TestCase
 
 		$this->albums_tests->set_cover($albumID, $photoID1);
 		$coverID = $this->albums_tests->get($albumID)->offsetGet('cover_id');
-		assert($photoID1, $coverID);
+		$this->assertEquals($photoID1, $coverID);
 
 		$this->albums_tests->set_cover($albumID, $photoID2);
 		$coverID = $this->albums_tests->get($albumID)->offsetGet('cover_id');
-		assert($photoID2, $coverID);
+		$this->assertEquals($photoID2, $coverID);
 
 		$this->albums_tests->set_cover($albumID, null);
 		$coverID = $this->albums_tests->get($albumID)->offsetGet('cover_id');
-		assert($initialCoverID, $coverID);
+		$this->assertEquals($initialCoverID, $coverID);
 
 		Auth::logout();
 		Session::flush();
