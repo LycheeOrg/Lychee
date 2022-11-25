@@ -180,15 +180,6 @@ class Helpers
 	}
 
 	/**
-	 * Properly convert a boolean to a string
-	 * the default php function returns '' in case of false, this is not the behavior we want.
-	 */
-	public function str_of_bool(bool $b): string
-	{
-		return $b ? '1' : '0';
-	}
-
-	/**
 	 * Returns the available licenses.
 	 */
 	public function get_all_licenses(): array
