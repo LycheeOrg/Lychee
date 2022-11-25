@@ -207,6 +207,30 @@ class AlbumsUnitTest
 	}
 
 	/**
+	 * Change cover.
+	 *
+	 * @param string      $id
+	 * @param string|null $photoID
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 */
+	public function set_cover(
+		string $id,
+		?string $photoID,
+		int $expectedStatusCode = 204,
+		?string $assertSee = null
+	): void {
+		$response = $this->testCase->postJson(
+			'/api/Album::setCover',
+			['albumID' => $id, 'photoID' => $photoID]
+		);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
+	}
+
+	/**
 	 * Set the licence.
 	 *
 	 * @param string      $id
