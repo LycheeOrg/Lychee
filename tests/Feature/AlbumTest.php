@@ -527,6 +527,13 @@ class AlbumTest extends TestCase
 		$this->photos_tests->get($photoID);
 	}
 
+	/**
+	 * Creates an extra User.
+	 * Creates a (regular) album, put a photo in it.
+	 * Log are extra user, and try to set the cover of the album, expect to fail.
+	 *
+	 * @return void
+	 */
 	public function testSetCoverByNonOwner()
 	{
 		Auth::loginUsingId(0);
@@ -543,6 +550,15 @@ class AlbumTest extends TestCase
 		$this->albums_tests->set_cover($albumID, $photoID1, 403);
 	}
 
+	/**
+	 * Creates a (regular) album, put 2 photos in it.
+	 * Get original cover_id.
+	 * Set cover of album to photo 1, check that cover_id is photo1.
+	 * Set cover of album to photo 2, check that cover_id is photo2.
+	 * Unset cover of album, check that cover_id is back to original.
+	 *
+	 * @return void
+	 */
 	public function testSetCoverByOwner()
 	{
 		Auth::loginUsingId(0);
