@@ -600,12 +600,11 @@ class AlbumTest extends TestCase
 		$this->albums_tests->set_title($albumID, 'New title for test album');
 		// Set password
 		$this->albums_tests->set_protection_policy(id: $albumID,
-			full_photo: false,
-			public: true,
-			requiresLink: false,
-			nsfw: false,
-			downloadable: true,
-			share_button_visible: false,
+			grants_full_photo_access: false,
+			is_public: true,
+			is_link_required: false,
+			is_nsfw: false,
+			grants_downloadable: true,
 			password: 'PASSWORD');
 		Auth::logout();
 		Session::flush();

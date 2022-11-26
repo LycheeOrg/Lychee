@@ -310,38 +310,38 @@ class AlbumsUnitTest
 
 	/**
 	 * @param string      $id
-	 * @param bool        $full_photo
-	 * @param bool        $public
-	 * @param bool        $requiresLink
-	 * @param bool        $nsfw
-	 * @param bool        $downloadable
-	 * @param string|null $password           `null` does not change password
-	 *                                        settings;
-	 *                                        the empty string `''` removes
-	 *                                        a (potentially set) password;
-	 *                                        a non-empty string sets the
-	 *                                        password accordingly
+	 * @param bool        $grants_full_photo_access
+	 * @param bool        $is_public
+	 * @param bool        $is_link_required
+	 * @param bool        $is_nsfw
+	 * @param bool        $grants_downloadable
+	 * @param string|null $password                 `null` does not change password
+	 *                                              settings;
+	 *                                              the empty string `''` removes
+	 *                                              a (potentially set) password;
+	 *                                              a non-empty string sets the
+	 *                                              password accordingly
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
 	public function set_protection_policy(
 		string $id,
-		bool $full_photo = true,
-		bool $public = true,
-		bool $requiresLink = false,
-		bool $nsfw = false,
-		bool $downloadable = true,
+		bool $grants_full_photo_access = true,
+		bool $is_public = true,
+		bool $is_link_required = false,
+		bool $is_nsfw = false,
+		bool $grants_downloadable = true,
 		?string $password = null,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$params = [
-			'grants_full_photo_access' => $full_photo,
+			'grants_full_photo_access' => $grants_full_photo_access,
 			'albumID' => $id,
-			'is_public' => $public,
-			'is_link_required' => $requiresLink,
-			'is_nsfw' => $nsfw,
-			'grants_download' => $downloadable,
+			'is_public' => $is_public,
+			'is_link_required' => $is_link_required,
+			'is_nsfw' => $is_nsfw,
+			'grants_download' => $grants_downloadable,
 		];
 
 		if ($password !== null) {
