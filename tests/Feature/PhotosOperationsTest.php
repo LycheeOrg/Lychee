@@ -12,7 +12,10 @@
 
 namespace Tests\Feature;
 
+use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Exceptions\Internal\NotImplementedException;
 use App\Models\Configs;
+use App\Models\Photo;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
@@ -502,5 +505,44 @@ class PhotosOperationsTest extends PhotoTestBase
 		Session::flush();
 		Auth::loginUsingId($userID2);
 		$this->photos_tests->delete([$photoID1, $photoID2], 403);
+	}
+
+	/**
+	 * Test setting legacy ID.
+	 *
+	 * @return void
+	 */
+	public function testNotImplemented(): void
+	{
+		$this->expectException(NotImplementedException::class);
+
+		$photo = new Photo();
+		$photo->legacy_id = 'SHOULD BREAK';
+	}
+
+	/**
+	 * Test setting legacy ID.
+	 *
+	 * @return void
+	 */
+	public function testNotImplemented2(): void
+	{
+		$this->expectException(NotImplementedException::class);
+
+		$photo = new Photo();
+		$photo->id = 0000;
+	}
+
+	/**
+	 * Testing setting unsettable attributes.
+	 *
+	 * @return void
+	 */
+	public function testMustNotSet(): void
+	{
+		$this->expectException(IllegalOrderOfOperationException::class);
+
+		$photo = new Photo();
+		$photo->is_share_button_visible = true;
 	}
 }
