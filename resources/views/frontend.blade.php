@@ -31,14 +31,7 @@
 			@include('feed::links')
 		@endif
 	</head>
-	<!--
-	-- The inline style `display: none` is removed during the JS
-	-- initialization routine.
-	-- We need this tweak to avoid an ugly flash of massively over-sized
-	-- icons from the header in case the HTML engine starts rendering before
-	-- the (asynchronously loaded) CSS becomes available.
-	-->
-	<body class="mode-none" style="display: none;">
+	<body class="mode-none vflex-container">
 		{!! $bodyHtml !!}
 		<script async defer type="text/javascript" src="dist/frontend.js"></script>
 		<script async defer type="text/javascript" src="dist/WebAuthn.js"></script>
