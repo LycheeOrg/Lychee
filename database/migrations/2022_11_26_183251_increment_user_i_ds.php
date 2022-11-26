@@ -6,7 +6,8 @@ use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-return new class() extends Migration {
+class IncrementUserIDs extends Migration
+{
 	/**
 	 * Run the migrations.
 	 *
@@ -33,7 +34,7 @@ return new class() extends Migration {
 			Photo::query()->where('owner_id', '=', $oldID)->update(['owner_id' => $newID]);
 			DB::table('user_base_album')->where('user_id', '=', $oldID)->update(['user_id' => $newID]);
 			DB::table('webauthn_credentials')->where('authenticatable_id', '=', $oldID)->update(['authenticatable_id' => $newID]);
-			User::query()->where('id', '=', $oldID)->delete();
+			DB::table('users')->where('id', '=', $oldID)->delete();
 		}
 	}
 
@@ -59,4 +60,4 @@ return new class() extends Migration {
 			User::query()->where('id', '=', $oldID)->delete();
 		}
 	}
-};
+}
