@@ -287,6 +287,8 @@ final class Slovak implements Language
 			'PHOTO_EDIT_SHARING_TEXT' => 'Vlastnosti zdieľania tejto fotografie sa zmenia na nasledujúce:',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => 'Pretože je táto fotografia umiestnená vo verejnom albume, zdedí nastavenie viditeľnosti daného albumu. Jeho aktuálna viditeľnosť je uvedená len na informačné účely.',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'Viditeľnosť tejto fotografie je možné doladiť pomocou globálnych nastavení. Jeho aktuálna viditeľnosť je uvedená len na informačné účely.',
+			'PHOTO_NEW_CREATED_AT' => 'Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]',
+			'PHOTO_SET_CREATED_AT' => 'Set upload date',
 
 			'LOADING' => 'Nahráva sa',
 			'ERROR' => 'Chyba',

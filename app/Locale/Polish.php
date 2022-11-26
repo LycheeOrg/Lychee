@@ -287,6 +287,8 @@ final class Polish implements Language
 			'PHOTO_EDIT_SHARING_TEXT' => 'Ustawienia udostępniania tego zdjęcia zostaną zmienione na następujące:',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => 'Ponieważ zdjęcie znajduje się w albumie publicznym, dzieli jego ustawienia widoczności. Aktualna wartość widoczna jest poniżej (tylko informacyjnie).',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'Widoczność zdjęcia można dostosować używając globalnych ustawień Lychee. Aktualna wartość widoczna jest poniżej (tylko informacyjnie).',
+			'PHOTO_NEW_CREATED_AT' => 'Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]',
+			'PHOTO_SET_CREATED_AT' => 'Set upload date',
 
 			'LOADING' => 'Wczytywanie',
 			'ERROR' => 'Błąd',

@@ -287,6 +287,8 @@ final class Vietnamese implements Language
 			'PHOTO_EDIT_SHARING_TEXT' => 'Những đặc điểm chia sẻ của tấm hình này sẽ được thay đổi thành như sau:',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => 'Vì tấm hình này đang có trong một album công cộng, nó có chế độ hiển thị công cộng giống như cài đặt hiển thị của album. Chế độ hiển thị hiện tại của hình được hiển thị bên dưới để người dùng biết thêm thông tin.',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'Chế độ hiển thị của tấm hình này có thể được chỉnh chỉ tiết hơn với cài đặt tổng của Lychee. Chế độ hiển thị hiện thời của tấm hình được hiển thị để người dùng biết thêm thông tin.',
+			'PHOTO_NEW_CREATED_AT' => 'Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]',
+			'PHOTO_SET_CREATED_AT' => 'Set upload date',
 
 			'LOADING' => 'Đang tải',
 			'ERROR' => 'Bị lỗi',
