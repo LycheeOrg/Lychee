@@ -287,6 +287,8 @@ final class Czech implements Language
 			'PHOTO_EDIT_SHARING_TEXT' => 'Vlastnosti sdílení fotografie budou změněny takto:',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => 'Protože je tato fotografie umístěna ve veřejném albu, zdědí i nastavení tohoto veřejného alba. Aktuální stav viditelnosti je uveden pouze pro informaci.',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'Viditelnost této fotografie lze doladit pomocí globálních nastavení. Aktuální stav viditelnosti je uveden pouze pro informaci.',
+			'PHOTO_NEW_CREATED_AT' => 'Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]',
+			'PHOTO_SET_CREATED_AT' => 'Set upload date',
 
 			'LOADING' => 'Probíhá příprava',
 			'ERROR' => 'Chyba',

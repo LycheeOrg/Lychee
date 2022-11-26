@@ -36,7 +36,7 @@ class VerifyCsrfToken extends Middleware
 	 */
 	public function handle($request, \Closure $next): mixed
 	{
-		$token = $request->get(SessionOrTokenGuard::TOKEN_COLUMN_NAME);
+		$token = $request->headers->get(SessionOrTokenGuard::HTTP_TOKEN_HEADER);
 		if (is_string($token) && $token !== '') {
 			return $next($request);
 		}

@@ -16,12 +16,44 @@ use App\Mail\PhotosAdded;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
-use Tests\Feature\Lib\SessionUnitTest;
+use Illuminate\Support\Facades\Session;
+use Tests\Feature\Lib\AlbumsUnitTest;
+use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
+use Tests\Feature\Traits\RequiresEmptyAlbums;
+use Tests\Feature\Traits\RequiresEmptyPhotos;
+use Tests\Feature\Traits\RequiresEmptyUsers;
 use Tests\TestCase;
 
 class NotificationTest extends TestCase
 {
+	use RequiresEmptyAlbums;
+	use RequiresEmptyUsers;
+	use RequiresEmptyPhotos;
+
+	protected AlbumsUnitTest $albums_tests;
+	protected UsersUnitTest $users_tests;
+	protected PhotosUnitTest $photos_tests;
+
+	public function setUp(): void
+	{
+		parent::setUp();
+		$this->setUpRequiresEmptyUsers();
+		$this->setUpRequiresEmptyAlbums();
+		$this->setUpRequiresEmptyPhotos();
+		$this->albums_tests = new AlbumsUnitTest($this);
+		$this->users_tests = new UsersUnitTest($this);
+		$this->photos_tests = new PhotosUnitTest($this);
+	}
+
+	public function tearDown(): void
+	{
+		$this->tearDownRequiresEmptyPhotos();
+		$this->tearDownRequiresEmptyAlbums();
+		$this->tearDownRequiresEmptyUsers();
+		parent::tearDown();
+	}
+
 	public function testNotificationSetting(): void
 	{
 		// save initial value
@@ -38,21 +70,20 @@ class NotificationTest extends TestCase
 		} finally {
 			// set to initial
 			Configs::set('new_photos_notification', $init_config_value);
-			$sessions_test = new SessionUnitTest($this);
-			$sessions_test->logout();
+
+			Auth::logout();
+			Session::flush();
 		}
 	}
 
 	public function testSetupUserEmail(): void
 	{
-		$users_test = new UsersUnitTest($this);
-		$sessions_test = new SessionUnitTest($this);
-
 		// add email to admin
 		Auth::loginUsingId(0);
-		$users_test->update_email('test@test.com');
+		$this->users_tests->update_email('test@test.com');
 
-		$sessions_test->logout();
+		Auth::logout();
+		Session::flush();
 	}
 
 	public function testMailNotifications(): void
@@ -81,5 +112,21 @@ class NotificationTest extends TestCase
 		} finally {
 			Configs::set('new_photos_notification', $init_config_value);
 		}
+	}
+
+	public function testSetAlbumForNotification(): void
+	{
+		// save initial value
+		$init_config_value = Configs::getValue('new_photos_notification');
+		Configs::set('new_photos_notification', '1');
+
+		Auth::loginUsingId(0);
+		$albumID = $this->albums_tests->add(null, 'Album 1')->offsetGet('id');
+		$photoID = $this->photos_tests->upload(
+			self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE))->offsetGet('id');
+
+		$this->photos_tests->set_album($albumID, [$photoID]);
+
+		Configs::set('new_photos_notification', $init_config_value);
 	}
 }

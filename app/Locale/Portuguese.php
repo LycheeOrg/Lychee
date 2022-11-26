@@ -287,6 +287,8 @@ final class Portuguese implements Language
 			'PHOTO_EDIT_SHARING_TEXT' => 'As propriedades de partilha desta fotografia vão ser alteradas para o seguinte:',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => 'Porque esta fotografia está localizada num álbum público, herda as configurações de visibilidade desse álbum.  A sua visibilidade atual é mostrada abaixo apenas como informação.',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'A visibilidade desta fotografia pode ser afinada através das configurações globais do Lychee. A sua visibilidade atual é mostrada abaixo apenas como informação.',
+			'PHOTO_NEW_CREATED_AT' => 'Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]',
+			'PHOTO_SET_CREATED_AT' => 'Set upload date',
 
 			'LOADING' => 'A carregar',
 			'ERROR' => 'Erro',
