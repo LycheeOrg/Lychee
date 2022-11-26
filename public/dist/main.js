@@ -2269,11 +2269,8 @@ album.setProtectionPolicy = function (albumID) {
    * Array of checkboxes which are enable/disabled wrt. the state of `is_public`
    * @type {HTMLInputElement[]}
    */
-		var tristateCheckboxes = [formElements.grants_full_photo_access, formElements.is_link_required, formElements.grants_download,
-		//formElements.is_share_button_visible,
-		formElements.is_password_required];
+		var tristateCheckboxes = [formElements.grants_full_photo, formElements.requires_link, formElements.is_downloadable, formElements.is_share_button_visible, formElements.has_password];
 
-		formElements.is_public.checked = album.json.policy.is_public;
 		if (album.json.policy.is_public) {
 			tristateCheckboxes.forEach(function (checkbox) {
 				checkbox.parentElement.classList.remove("disabled");
@@ -2298,7 +2295,7 @@ album.setProtectionPolicy = function (albumID) {
 			formElements.grants_full_photo_access.checked = lychee.grants_full_photo_access;
 			formElements.is_link_required.checked = false;
 			formElements.grants_download.checked = lychee.grants_download;
-			//formElements.is_share_button_visible.checked = lychee.share_button_visible;
+			formElements.is_share_button_visible.checked = lychee.share_button_visible;
 			formElements.is_password_required.checked = false;
 			formElements.password.parentElement.classList.add("hidden");
 		}
@@ -2310,7 +2307,7 @@ album.setProtectionPolicy = function (albumID) {
 			});
 		});
 
-		formElements.is_password_required.addEventListener("change", function () {
+		formElements.has_password.addEventListener("change", function () {
 			if (formElements.is_password_required.checked) {
 				formElements.password.parentElement.classList.remove("hidden");
 				formElements.password.focus();
@@ -5916,14 +5913,6 @@ lychee.init = function () {
 			leftMenu.build();
 			leftMenu.bind();
 			lychee.setMode("logged_in");
-
-			// Show dialog to create admin account, if no user is
-			// authenticated but admin rights are granted.
-			// TODO: Refactor the whole logic, i.e. the initial user should be created as part of the installation routine.
-			// In particular it is completely insane to build the UI as if the admin user was successfully authenticated.
-			// This might leak confidential photos to anybody if the DB is filled
-			// with photos and the admin password reset to `null`.
-			if (data.user === null && data.rights.user.can_edit) settings.createLogin();
 		} else {
 			lychee.setMode("public");
 		}
@@ -9804,98 +9793,6 @@ settings.open = function () {
 	view.settings.init();
 };
 
-settings.createLogin = function () {
-	/**
-  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
-  * @param {Object} params the original JSON parameters of the request
-  * @param {?LycheeException} lycheeException the Lychee exception
-  * @returns {boolean}
-  */
-	var errorHandler = function errorHandler(jqXHR, params, lycheeException) {
-		basicModal.show({
-			body: "<p></p><p></p>",
-			readyCB: function readyCB(formElement, dialog) {
-				/** @type {NodeList<HTMLParagraphElement>} */
-				var paragraphs = dialog.querySelectorAll("p");
-				paragraphs.item(0).textContent = lychee.locale["ERROR_LOGIN"];
-				paragraphs.item(1).textContent = lycheeException ? lycheeException.message : "";
-			},
-			buttons: {
-				action: {
-					title: lychee.locale["RETRY"],
-					fn: function fn() {
-						return settings.createLogin();
-					}
-				}
-			}
-		});
-		return true;
-	};
-
-	/**
-  * @param {User} updatedAdminUser
-  * @returns {void}
-  */
-	var successHandler = function successHandler(updatedAdminUser) {
-		lychee.user = updatedAdminUser;
-	};
-
-	/**
-  * @param {ModalDialogResult} data
-  * @returns {void}
-  */
-	var action = function action(data) {
-		if (!data.username.trim()) {
-			basicModal.focusError("username");
-			return;
-		}
-
-		if (!data.password.trim()) {
-			basicModal.focusError("password");
-			return;
-		}
-
-		if (data.password !== data.confirm) {
-			basicModal.focusError("confirm");
-			return;
-		}
-
-		basicModal.close();
-
-		var params = {
-			username: data.username,
-			password: data.password
-		};
-
-		api.post("Settings::setLogin", params, successHandler, null, errorHandler);
-	};
-
-	var createLoginDialogBody = "\n\t\t<p></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input name='username' class='text' type='text' autocapitalize='off'>\n\t\t\t</div>\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input name='password' class='text' type='password'>\n\t\t\t</div>\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input name='confirm' class='text' type='password'>\n\t\t\t</div>\n\t\t</form>";
-
-	/**
-  * @param {ModalDialogFormElements} formElements
-  * @param {HTMLDivElement} dialog
-  * @returns {void}
-  */
-	var initDialog = function initDialog(formElements, dialog) {
-		dialog.querySelector("p").textContent = lychee.locale["LOGIN_TITLE"];
-		formElements.username.placeholder = lychee.locale["LOGIN_USERNAME"];
-		formElements.password.placeholder = lychee.locale["LOGIN_PASSWORD"];
-		formElements.confirm.placeholder = lychee.locale["LOGIN_PASSWORD_CONFIRM"];
-	};
-
-	basicModal.show({
-		body: createLoginDialogBody,
-		readyCB: initDialog,
-		buttons: {
-			action: {
-				title: lychee.locale["LOGIN_CREATE"],
-				fn: action
-			}
-		}
-	});
-};
-
 /**
  * A dictionary of (name,value)-pairs of the form.
  *
@@ -12570,7 +12467,7 @@ users.update = function (params) {
 		delete params.password;
 	}
 
-	api.post("Users::save", params, function () {
+	api.post("User::save", params, function () {
 		loadingBar.show("success", lychee.locale["USER_UPDATED"]);
 		users.list(); // reload user list
 	});
@@ -12595,7 +12492,7 @@ users.create = function (params) {
 		return;
 	}
 
-	api.post("Users::create", params, function () {
+	api.post("User::create", params, function () {
 		loadingBar.show("success", lychee.locale["USER_CREATED"]);
 		users.list(); // reload user list
 	});
@@ -12611,7 +12508,7 @@ users.create = function (params) {
  * @returns {boolean}
  */
 users.delete = function (params) {
-	api.post("Users::delete", params, function () {
+	api.post("User::delete", params, function () {
 		loadingBar.show("success", lychee.locale["USER_DELETED"]);
 		users.list(); // reload user list
 	});
@@ -12621,7 +12518,7 @@ users.delete = function (params) {
  * @returns {void}
  */
 users.list = function () {
-	api.post("Users::list", {},
+	api.post("User::list", {},
 	/** @param {UserDTO[]} data */
 	function (data) {
 		users.json = data;
@@ -12820,13 +12717,13 @@ view.album = {
 			if (album.json.albums) {
 				album.json.albums.forEach(function (_album) {
 					albums.parse(_album);
-					albumsData += build.album(_album, !album.json.rights.can_edit);
+					albumsData += build.album(_album, !album.rights.can_edit);
 				});
 			}
 			if (album.json.photos) {
 				// Build photos
 				album.json.photos.forEach(function (_photo) {
-					photosData += build.photo(_photo, !album.json.rights.can_edit);
+					photosData += build.photo(_photo, !album.rights.can_edit);
 				});
 			}
 
