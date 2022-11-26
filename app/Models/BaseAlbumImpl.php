@@ -242,7 +242,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		if ($this->is_public) {
 			return $value;
 		} else {
-			return Configs::getValueAsBool('full_photo');
+			return Configs::getValueAsBool('grants_full_photo_access');
 		}
 	}
 
@@ -251,7 +251,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		if ($this->is_public) {
 			return $value;
 		} else {
-			return Configs::getValueAsBool('downloadable');
+			return Configs::getValueAsBool('grants_download');
 		}
 	}
 

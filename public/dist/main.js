@@ -2269,9 +2269,7 @@ album.setProtectionPolicy = function (albumID) {
    * Array of checkboxes which are enable/disabled wrt. the state of `is_public`
    * @type {HTMLInputElement[]}
    */
-		var tristateCheckboxes = [formElements.grants_full_photo_access, formElements.is_link_required, formElements.grants_download,
-		//formElements.is_share_button_visible,
-		formElements.is_password_required];
+		var tristateCheckboxes = [formElements.grants_full_photo_access, formElements.is_link_required, formElements.grants_download, formElements.is_password_required];
 
 		formElements.is_public.checked = album.json.policy.is_public;
 		if (album.json.policy.is_public) {
@@ -2298,7 +2296,6 @@ album.setProtectionPolicy = function (albumID) {
 			formElements.grants_full_photo_access.checked = lychee.grants_full_photo_access;
 			formElements.is_link_required.checked = false;
 			formElements.grants_download.checked = lychee.grants_download;
-			//formElements.is_share_button_visible.checked = lychee.share_button_visible;
 			formElements.is_password_required.checked = false;
 			formElements.password.parentElement.classList.add("hidden");
 		}
@@ -5669,8 +5666,8 @@ var lychee = {
 
 	publicMode: false,
 	viewMode: false,
-	full_photo: true,
-	downloadable: false,
+	grants_full_photo_access: true,
+	grants_download: false,
 	public_photos_hidden: true,
 	share_button_visible: false,
 	/**
@@ -6048,8 +6045,8 @@ lychee.parseProtectedInitializationData = function (data) {
 	lychee.location_decoding = data.config.location_decoding === "1";
 	lychee.default_license = data.config.default_license || "none";
 	lychee.css = data.config.css || "";
-	lychee.full_photo = data.config.full_photo === "1";
-	lychee.downloadable = data.config.downloadable === "1";
+	lychee.grants_full_photo_access = data.config.grants_full_photo_access === "1";
+	lychee.grants_download = data.config.grants_download === "1";
 	lychee.public_photos_hidden = data.config.public_photos_hidden === "1";
 	lychee.delete_imported = data.config.delete_imported === "1";
 	lychee.import_via_symlink = data.config.import_via_symlink === "1";
@@ -9069,7 +9066,7 @@ _photo3.setProtectionPolicy = function (photoID) {
 			// Initialize values of detailed settings according to global
 			// configuration.
 			formElements.is_public.checked = _photo3.json.is_public !== 0;
-			formElements.grants_full_photo_access.checked = lychee.full_photo;
+			formElements.grants_full_photo_access.checked = lychee.grants_full_photo_access;
 			formElements.is_link_required.checked = lychee.public_photos_hidden;
 			formElements.grants_download.checked = lychee.grants_download;
 			formElements.is_password_required.checked = false;
@@ -14769,42 +14766,42 @@ var SmartAlbumID = Object.freeze({
  * @typedef ConfigurationData
  *
  * @property {string}   album_subtitle_type
- * @property {string}   check_for_updates       - actually a boolean
+ * @property {string}   check_for_updates        - actually a boolean
  * @property {string}   [default_license]
- * @property {string}   [delete_imported]       - actually a boolean
- * @property {string}   downloadable            - actually a boolean
+ * @property {string}   [delete_imported]        - actually a boolean
+ * @property {string}   grants_download          - actually a boolean
  * @property {string}   [dropbox_key]
- * @property {string}   editor_enabled          - actually a boolean
- * @property {string}   full_photo              - actually a boolean
+ * @property {string}   editor_enabled           - actually a boolean
+ * @property {string}   grants_full_photo_access - actually a boolean
  * @property {string}   image_overlay_type
- * @property {string}   landing_page_enable     - actually a boolean
+ * @property {string}   landing_page_enable      - actually a boolean
  * @property {string}   lang
  * @property {string[]} lang_available
- * @property {string}   layout                  - actually a number: `0`, `1` or `2`
+ * @property {string}   layout                   - actually a number: `0`, `1` or `2`
  * @property {string}   [location]
- * @property {string}   location_decoding       - actually a boolean
- * @property {string}   location_show           - actually a boolean
- * @property {string}   location_show_public    - actually a boolean
- * @property {string}   map_display             - actually a boolean
- * @property {string}   map_display_direction   - actually a boolean
- * @property {string}   map_display_public      - actually a boolean
- * @property {string}   map_include_subalbums   - actually a boolean
+ * @property {string}   location_decoding        - actually a boolean
+ * @property {string}   location_show            - actually a boolean
+ * @property {string}   location_show_public     - actually a boolean
+ * @property {string}   map_display              - actually a boolean
+ * @property {string}   map_display_direction    - actually a boolean
+ * @property {string}   map_display_public       - actually a boolean
+ * @property {string}   map_include_subalbums    - actually a boolean
  * @property {string}   map_provider
- * @property {string}   new_photos_notification - actually a boolean
- * @property {string}   nsfw_blur               - actually a boolean
- * @property {string}   nsfw_visible            - actually a boolean
- * @property {string}   nsfw_warning            - actually a boolean
- * @property {string}   nsfw_warning_admin      - actually a boolean
- * @property {string}   public_photos_hidden    - actually a boolean
- * @property {string}   public_search           - actually a boolean
- * @property {string}   share_button_visible    - actually a boolean
- * @property {string}   [skip_duplicates]       - actually a boolean
+ * @property {string}   new_photos_notification  - actually a boolean
+ * @property {string}   nsfw_blur                - actually a boolean
+ * @property {string}   nsfw_visible             - actually a boolean
+ * @property {string}   nsfw_warning             - actually a boolean
+ * @property {string}   nsfw_warning_admin       - actually a boolean
+ * @property {string}   public_photos_hidden     - actually a boolean
+ * @property {string}   public_search            - actually a boolean
+ * @property {string}   share_button_visible     - actually a boolean
+ * @property {string}   [skip_duplicates]        - actually a boolean
  * @property {SortingCriterion} sorting_albums
  * @property {SortingCriterion} sorting_photos
- * @property {string}   swipe_tolerance_x       - actually a number
- * @property {string}   swipe_tolerance_y       - actually a number
- * @property {string}   upload_processing_limit - actually a number
- * @property {string}   version                 - a string of 6 digits without separating dots, i.e. version 4.6.3 is reported as `'040603'`
+ * @property {string}   swipe_tolerance_x        - actually a number
+ * @property {string}   swipe_tolerance_y        - actually a number
+ * @property {string}   upload_processing_limit  - actually a number
+ * @property {string}   version                  - a string of 6 digits without separating dots, i.e. version 4.6.3 is reported as `'040603'`
  */
 
 /**
