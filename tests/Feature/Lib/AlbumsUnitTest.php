@@ -106,6 +106,30 @@ class AlbumsUnitTest
 	}
 
 	/**
+	 * Move albums.
+	 *
+	 * @param string[]    $ids
+	 * @param string|null $to
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 */
+	public function merge(
+		array $ids,
+		?string $to,
+		int $expectedStatusCode = 204,
+		?string $assertSee = null
+	): void {
+		$response = $this->testCase->postJson('/api/Album::merge', [
+			'albumID' => $to,
+			'albumIDs' => $ids,
+		]);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
+	}
+
+	/**
 	 * Get album by ID.
 	 *
 	 * @param string      $id
