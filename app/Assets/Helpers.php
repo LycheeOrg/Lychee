@@ -73,12 +73,14 @@ class Helpers
 	 *
 	 * @param string $id
 	 * @param int    $prevShortId
+	 * @param int    $phpMax      predefined so set to MAX php during migration
+	 *                            but allow to actually test the code
 	 *
 	 * @return string updated ID
 	 */
-	public function trancateIf32(string $id, int $prevShortId = 0): string
+	public function trancateIf32(string $id, int $prevShortId = 0, int $phpMax = PHP_INT_MAX): string
 	{
-		if (PHP_INT_MAX > 2147483647) {
+		if ($phpMax > 2147483647) {
 			return $id;
 		}
 
@@ -177,15 +179,6 @@ class Helpers
 		}
 
 		return ($a % $b) !== 0 ? $this->gcd($b, $a % $b) : $b;
-	}
-
-	/**
-	 * Properly convert a boolean to a string
-	 * the default php function returns '' in case of false, this is not the behavior we want.
-	 */
-	public function str_of_bool(bool $b): string
-	{
-		return $b ? '1' : '0';
 	}
 
 	/**

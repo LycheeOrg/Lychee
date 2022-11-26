@@ -321,6 +321,168 @@ class AlbumTest extends TestCase
 		}
 	}
 
+	/**
+	 * Tests that the nested-set model remains consistent for a multi-delete of a forest.
+	 *
+	 * This tests considers the following album layout (the `_lft`, `_rgt`
+	 * indices of the nested set model are illustrated):
+	 *
+	 *                             (root)
+	 *                               |
+	 *                            Album 1
+	 *                            ( 1,14)
+	 *                               |
+	 *            +------------------+------------------+
+	 *            |                  |                  |
+	 *      Sub-Album 1.1      Sub-Album 1.2      Sub-Album 1.3
+	 *          (2,5)              (6,9)             (10,13)
+	 *            |                  |                  |
+	 *     Sub-Album 1.1.1    Sub-Album 1.2.1    Sub-Album 1.3.1
+	 *          (3,4)              (7,8)             (11,12)
+	 *
+	 * We then do a merge for album 1.1 and 1.2
+	 * and expect the nested-set model to be updated like
+	 *
+	 *                             (root)
+	 *                               |
+	 *                            Album 1
+	 *                            ( 1,12)
+	 *                               |
+	 *            +------------------+------------------+
+	 *            |                                     |
+	 *      Sub-Album 1.1                         Sub-Album 1.3
+	 *          (2,7)                                (8,11)
+	 *            |                                     |
+	 *            +------------------+                  |
+	 *     Sub-Album 1.1.1    Sub-Album 1.2.1    Sub-Album 1.3.1
+	 *          (3,4)              (5,6)             (9,10)
+	 *
+	 * @return void
+	 */
+	public function testMerge(): void
+	{
+		try {
+			// In order check the (_lft,_rgt)-indices we need deterministic
+			// indices.
+			// Hence, we must ensure that there are no left-overs from previous
+			// tests.
+			static::assertDatabaseCount('base_albums', 0);
+
+			Auth::loginUsingId(0);
+
+			// Create the test layout
+			$albumID1 = $this->albums_tests->add(null, 'Album 1')->offsetGet('id');
+			$albumID11 = $this->albums_tests->add($albumID1, 'Album 1.1')->offsetGet('id');
+			$albumID12 = $this->albums_tests->add($albumID1, 'Album 1.2')->offsetGet('id');
+			$albumID13 = $this->albums_tests->add($albumID1, 'Album 1.3')->offsetGet('id');
+			$albumID111 = $this->albums_tests->add($albumID11, 'Album 1.1.1')->offsetGet('id');
+			$albumID121 = $this->albums_tests->add($albumID12, 'Album 1.2.1')->offsetGet('id');
+			$albumID131 = $this->albums_tests->add($albumID13, 'Album 1.3.1')->offsetGet('id');
+
+			// Low-level tests on the DB layer to check of nested-set IDs are as expected
+			$albumStat = DB::table('albums')
+				->get(['id', 'parent_id', '_lft', '_rgt'])
+				->map(fn ($row) => get_object_vars($row))
+				->keyBy('id')
+				->toArray();
+			static::assertEquals([
+				$albumID1 => [
+					'id' => $albumID1,
+					'parent_id' => null,
+					'_lft' => 1,
+					'_rgt' => 14,
+				],
+				$albumID11 => [
+					'id' => $albumID11,
+					'parent_id' => $albumID1,
+					'_lft' => 2,
+					'_rgt' => 5,
+				],
+				$albumID12 => [
+					'id' => $albumID12,
+					'parent_id' => $albumID1,
+					'_lft' => 6,
+					'_rgt' => 9,
+				],
+				$albumID13 => [
+					'id' => $albumID13,
+					'parent_id' => $albumID1,
+					'_lft' => 10,
+					'_rgt' => 13,
+				],
+				$albumID111 => [
+					'id' => $albumID111,
+					'parent_id' => $albumID11,
+					'_lft' => 3,
+					'_rgt' => 4,
+				],
+				$albumID121 => [
+					'id' => $albumID121,
+					'parent_id' => $albumID12,
+					'_lft' => 7,
+					'_rgt' => 8,
+				],
+				$albumID131 => [
+					'id' => $albumID131,
+					'parent_id' => $albumID13,
+					'_lft' => 11,
+					'_rgt' => 12,
+				],
+			], $albumStat);
+
+			// Now let's do the multi-delete of a sub-forest
+			$this->albums_tests->merge([$albumID12], $albumID11);
+
+			// Re-check on the lowest level
+			$albumStat = DB::table('albums')
+				->get(['id', 'parent_id', '_lft', '_rgt'])
+				->map(fn ($row) => get_object_vars($row))
+				->keyBy('id')
+				->toArray();
+			static::assertEquals([
+				$albumID1 => [
+					'id' => $albumID1,
+					'parent_id' => null,
+					'_lft' => 1,
+					'_rgt' => 12,
+				],
+				$albumID11 => [
+					'id' => $albumID11,
+					'parent_id' => $albumID1,
+					'_lft' => 2,
+					'_rgt' => 7,
+				],
+				$albumID13 => [
+					'id' => $albumID13,
+					'parent_id' => $albumID1,
+					'_lft' => 8,
+					'_rgt' => 11,
+				],
+				$albumID111 => [
+					'id' => $albumID111,
+					'parent_id' => $albumID11,
+					'_lft' => 3,
+					'_rgt' => 4,
+				],
+				$albumID121 => [
+					'id' => $albumID121,
+					'parent_id' => $albumID11,
+					'_lft' => 5,
+					'_rgt' => 6,
+				],
+				$albumID131 => [
+					'id' => $albumID131,
+					'parent_id' => $albumID13,
+					'_lft' => 9,
+					'_rgt' => 10,
+				],
+			], $albumStat);
+		} finally {
+			Auth::logout();
+			Session::flush();
+		}
+	}
+
 	public function testTrueNegative(): void
 	{
 		Auth::loginUsingId(0);
@@ -436,6 +598,28 @@ class AlbumTest extends TestCase
 		Auth::loginUsingId($userID);
 		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 		$this->albums_tests->set_title($albumID, 'New title for test album');
+		// Set password
+		$this->albums_tests->set_protection_policy(id: $albumID,
+			full_photo: false,
+			public: true,
+			requiresLink: false,
+			nsfw: false,
+			downloadable: true,
+			share_button_visible: false,
+			password: 'PASSWORD');
+		Auth::logout();
+		Session::flush();
+
+		// check password is required
+		$this->albums_tests->get($albumID, 401);
+
+		// We remove the password if it was set
+		Auth::loginUsingId($userID);
+		$this->albums_tests->set_protection_policy(id: $albumID, password: '');
+
+		Auth::logout();
+		Session::flush();
+		$this->albums_tests->get($albumID);
 	}
 
 	public function testDeleteMultipleAlbumsByAnonUser(): void
@@ -588,4 +772,26 @@ class AlbumTest extends TestCase
 		Auth::logout();
 		Session::flush();
 	}
+
+   /**
+    * Check that deleting in Unsorted results in removing Unsorted pictures.
+    *
+    * @return void
+    */
+   public function testDeleteUnsorted(): void
+   {
+   	Auth::loginUsingId(0);
+   	$id = $this->photos_tests->upload(
+   		TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+   	)->offsetGet('id');
+
+   	$this->photos_tests->get($id);
+
+   	$this->clearCachedSmartAlbums();
+   	$this->albums_tests->get(UnsortedAlbum::ID, 200, $id);
+   	$this->albums_tests->delete([UnsortedAlbum::ID], 204);
+   	$this->clearCachedSmartAlbums();
+   	$this->albums_tests->get(UnsortedAlbum::ID, 200, null, $id);
+   	$this->photos_tests->get($id, 404);
+   }
 }
