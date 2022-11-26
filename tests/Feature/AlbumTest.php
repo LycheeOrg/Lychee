@@ -615,7 +615,7 @@ class AlbumTest extends TestCase
 
 		// We remove the password if it was set
 		Auth::loginUsingId($userID);
-		$this->albums_tests->set_protection_policy(id: $albumID);
+		$this->albums_tests->set_protection_policy(id: $albumID, password: '');
 
 		Auth::logout();
 		Session::flush();
@@ -790,6 +790,7 @@ class AlbumTest extends TestCase
    	$this->clearCachedSmartAlbums();
    	$this->albums_tests->get(UnsortedAlbum::ID, 200, $id);
    	$this->albums_tests->delete([UnsortedAlbum::ID], 204);
+   	$this->clearCachedSmartAlbums();
    	$this->albums_tests->get(UnsortedAlbum::ID, 200, null, $id);
    	$this->photos_tests->get($id, 404);
    }
