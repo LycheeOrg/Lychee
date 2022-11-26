@@ -88,7 +88,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	{
 		// Cache query result for later use
 		// (this mimics the behaviour of relations of true Eloquent models)
-		if ($this->photos === null) {
+		if ($this->photos->isEmpty()) {
 			$sorting = PhotoSortingCriterion::createDefault();
 
 			$this->photos = (new SortingDecorator($this->photos()))
@@ -155,7 +155,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			'thumb' => $this->getThumbAttribute(),
 		];
 
-		if ($this->photos !== null) {
+		if (!$this->photos->isEmpty()) {
 			$result['photos'] = $this->photos->toArray();
 		}
 
