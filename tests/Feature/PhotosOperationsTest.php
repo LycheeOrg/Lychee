@@ -534,7 +534,7 @@ class PhotosOperationsTest extends PhotoTestBase
 	}
 
 	/**
-	 * Testing setting unsettable attributes.
+	 * Test setting unsettable attributes.
 	 *
 	 * @return void
 	 */
