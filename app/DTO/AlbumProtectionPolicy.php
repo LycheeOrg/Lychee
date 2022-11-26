@@ -102,8 +102,8 @@ class AlbumProtectionPolicy extends ArrayableDTO
 			is_public: false,
 			is_link_required: false,
 			is_nsfw: false,
-			grants_full_photo_access: Configs::getValueAsBool('full_photo'),
-			grants_download: Configs::getValueAsBool('downloadable'),
+			grants_full_photo_access: Configs::getValueAsBool('grants_full_photo_access'),
+			grants_download: Configs::getValueAsBool('grants_download'),
 			is_password_required: false,
 		);
 	}
@@ -119,8 +119,8 @@ class AlbumProtectionPolicy extends ArrayableDTO
 			is_public: true,
 			is_link_required: false,
 			is_nsfw: false,
-			grants_full_photo_access: Configs::getValueAsBool('full_photo'),
-			grants_download: Configs::getValueAsBool('downloadable'),
+			grants_full_photo_access: Configs::getValueAsBool('grants_full_photo_access'),
+			grants_download: Configs::getValueAsBool('grants_download'),
 			is_password_required: false,
 		);
 	}
