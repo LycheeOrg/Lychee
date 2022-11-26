@@ -12,6 +12,7 @@
 
 namespace Tests\Feature\Traits;
 
+use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
@@ -33,6 +34,7 @@ trait InteractWithSmartAlbums
 			RecentAlbum::class,
 			StarredAlbum::class,
 			UnsortedAlbum::class,
+			OnThisDayAlbum::class,
 		] as $smartAlbumClass) {
 			$reflection = new \ReflectionClass($smartAlbumClass);
 			$reflection->setStaticPropertyValue('instance', null);

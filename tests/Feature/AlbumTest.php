@@ -13,6 +13,7 @@
 namespace Tests\Feature;
 
 use App\Models\Configs;
+use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
@@ -79,6 +80,7 @@ class AlbumTest extends TestCase
 		$this->albums_tests->get(StarredAlbum::ID, 401);
 		$this->albums_tests->get(PublicAlbum::ID, 401);
 		$this->albums_tests->get(UnsortedAlbum::ID, 401);
+		$this->albums_tests->get(OnThisDayAlbum::ID, 401);
 
 		// Ensure that we get proper 404 (not found) response for a
 		// non-existing album, not a false 403 (forbidden) response
@@ -94,6 +96,7 @@ class AlbumTest extends TestCase
 		$this->albums_tests->get(StarredAlbum::ID);
 		$this->albums_tests->get(PublicAlbum::ID);
 		$this->albums_tests->get(UnsortedAlbum::ID);
+		$this->albums_tests->get(OnThisDayAlbum::ID);
 
 		$albumID1 = $this->albums_tests->add(null, 'test_album')->offsetGet('id');
 		$albumID2 = $this->albums_tests->add(null, 'test_album2')->offsetGet('id');
