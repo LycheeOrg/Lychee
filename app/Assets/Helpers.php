@@ -73,12 +73,14 @@ class Helpers
 	 *
 	 * @param string $id
 	 * @param int    $prevShortId
+	 * @param int    $phpMax      predefined so set to MAX php during migration
+	 *                            but allow to actually test the code
 	 *
 	 * @return string updated ID
 	 */
-	public function trancateIf32(string $id, int $prevShortId = 0): string
+	public function trancateIf32(string $id, int $prevShortId = 0, int $phpMax = PHP_INT_MAX): string
 	{
-		if (PHP_INT_MAX > 2147483647) {
+		if ($phpMax > 2147483647) {
 			return $id;
 		}
 
