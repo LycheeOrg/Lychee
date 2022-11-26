@@ -20,11 +20,7 @@ coverage:
 ignore:
 - "^app/Console/.*"
 - "^app/Exceptions/.*"
-- "^app/Http/ControllersFunctions/Diagnostics/.*"
-- "^app/Http/Controllers/Auth/.*"
-- "^app/Http/Middleware/LoginCheck.*"
 - "^app/Http/Middleware/VerifyCsrfToken.*"
-- "^app/Http/Middleware/RedirectIfAuthenticated.*"
 - "^app/Providers/BroadcastServiceProvider.*"
 parsers:
   gcov:
