@@ -10,6 +10,7 @@ use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
+use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
@@ -24,6 +25,7 @@ class AlbumFactory
 		StarredAlbum::ID => StarredAlbum::class,
 		PublicAlbum::ID => PublicAlbum::class,
 		RecentAlbum::ID => RecentAlbum::class,
+		OnThisDayAlbum::ID => OnThisDayAlbum::class,
 	];
 
 	/**
