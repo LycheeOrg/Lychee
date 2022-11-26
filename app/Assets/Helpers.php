@@ -3,12 +3,9 @@
 namespace App\Assets;
 
 use App\Exceptions\Internal\ZeroModuloException;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\File;
-use function Safe\getallheaders;
 use function Safe\ini_get;
 use function Safe\parse_url;
-use WhichBrowser\Parser as BrowserParser;
 
 class Helpers
 {
@@ -40,32 +37,6 @@ class Helpers
 		}
 
 		return $filePath;
-	}
-
-	/**
-	 * Returns the device type as string:
-	 * desktop, mobile, pda, dect, tablet, gaming, ereader,
-	 * media, headset, watch, emulator, television, monitor,
-	 * camera, printer, signage, whiteboard, devboard, inflight,
-	 * appliance, gps, car, pos, bot, projector.
-	 *
-	 * This method is only used to report the type of device back to the
-	 * client.
-	 * This is totally insane, because the client knows its own type anyway.
-	 * This could be completely done in JS code and CSS on the client side.
-	 * See also {@link ConfigFunctions::get_config_device()}.
-	 *
-	 * TODO: Remove this method.
-	 *
-	 * @return string
-	 *
-	 * @throws BindingResolutionException
-	 */
-	public function getDeviceType(): string
-	{
-		$result = new BrowserParser(getallheaders(), ['cache' => app('cache.store')]);
-
-		return $result->getType();
 	}
 
 	/**

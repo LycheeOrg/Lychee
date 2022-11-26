@@ -61,7 +61,6 @@ class IndexTest extends TestCase
 
 		$response = $this->get('/gallery');
 		$response->assertOk();
-		$response->assertViewIs('gallery');
 
 		Configs::set('landing_page_enable', $landing_on_off);
 	}

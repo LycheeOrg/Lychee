@@ -409,6 +409,8 @@ final class Polish implements Language
 			'NSFW_VISIBLE_TEXT_2' => 'Jeśli album jest publiczny, wciąż jest dostępny, jedynie został ukryty do przeglądania i <b>może zostać pokazany poprzez naciśnięcie <kbd>H</kbd></b>.',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Domyślne ustawienie dotyczące widoczności albumów poufnych ostało zaktualizowane.',
 
+			'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+
 			'VIEW_NO_RESULT' => 'Brak wyników',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Brak albumów publicznych',
 			'VIEW_NO_CONFIGURATION' => 'Brak konfiguracji',
@@ -466,7 +468,7 @@ final class Polish implements Language
 
 			'ABOUT_SUBTITLE' => 'Self-hosted photo-management done right',
 			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.',
-			'FOOTER_COPYRIGHT' => 'All images on this website are subject to copyright by %1$s &copy; %2$s',
+			'FOOTER_COPYRIGHT' => 'All images on this website are subject to copyright by %1$s © %2$s',
 			'HOSTED_WITH_LYCHEE' => 'Hosted with Lychee',
 
 			'URL_COPY_TO_CLIPBOARD' => 'Kopiuj do schowka',

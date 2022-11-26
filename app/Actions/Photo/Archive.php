@@ -12,7 +12,6 @@ use App\Image\FlysystemFile;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
-use DateTimeInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Safe\Exceptions\InfoException;
 use function Safe\fclose;
@@ -160,7 +159,7 @@ class Archive
 				$photo->updated_at->toAtomString() .
 				$archiveFileInfo->getFile()->getFilesize())
 			);
-			$response->headers->set('Last-Modified', $photo->updated_at->format(DateTimeInterface::RFC7231));
+			$response->headers->set('Last-Modified', $photo->updated_at->format(\DateTimeInterface::RFC7231));
 
 			return $response;
 		} catch (\InvalidArgumentException $e) {

@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html lang="{{ str_replace('_', '-', Lang::get_code()) }}">
+	<head>
+		<meta charset="UTF-8">
+		<link type="text/css" rel="stylesheet" href="dist/frontend.css">
+		<link type="text/css" rel="stylesheet" href="dist/user.css">
+		<link rel="shortcut icon" href="favicon.ico">
+		<link rel="apple-touch-icon" href="img/apple-touch-icon-ipad.png" sizes="120x120">
+		<link rel="apple-touch-icon" href="img/apple-touch-icon-iphone.png" sizes="152x152">
+		<link rel="apple-touch-icon" href="img/apple-touch-icon-iphone-plus.png" sizes="180x180">
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=4.0, user-scalable=yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="generator" content="Lychee v4">
+		<!--General Meta Data -->
+		<title>{{ $pageTitle }}</title>
+		<meta name="description" content="{{ $pageDescription }}">
+		<meta name="author" content="{{ $siteOwner }}">
+		<meta name="publisher" content="{{ $siteOwner }}">
+		<!-- Twitter Meta Data -->
+		<meta name="twitter:title" content="{{ $pageTitle }}">
+		<meta name="twitter:description" content="{{ $pageDescription }}">
+		<meta name="twitter:image" content="{{ $imageUrl }}">
+		<!-- OpenGraph Meta Data (e.g. used by Facebook) -->
+		<meta property="og:title" content="{{ $pageTitle }}">
+		<meta property="og:description" content="{{ $pageDescription }}">
+		<meta property="og:image" content="{{ $imageUrl }}">
+		<meta property="og:url" content="{{ $pageUrl }}">
+		<!-- RSS feeds -->
+		@if($rss_enable)
+			@include('feed::links')
+		@endif
+	</head>
+	<!--
+	-- The inline style `display: none` is removed during the JS
+	-- initialization routine.
+	-- We need this tweak to avoid an ugly flash of massively over-sized
+	-- icons from the header in case the HTML engine starts rendering before
+	-- the (asynchronously loaded) CSS becomes available.
+	-->
+	<body class="mode-none" style="display: none;">
+		{!! $bodyHtml !!}
+		<script async defer type="text/javascript" src="dist/frontend.js"></script>
+		<script async defer type="text/javascript" src="dist/WebAuthn.js"></script>
+	</body>
+</html>

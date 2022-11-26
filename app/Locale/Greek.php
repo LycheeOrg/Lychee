@@ -409,6 +409,8 @@ final class Greek implements Language
 			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <kbd>H</kbd></b>.',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
+			'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+
 			'VIEW_NO_RESULT' => 'Κανένα αποτέλεσμα',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Κανένα δημόσιο λεύκωμα',
 			'VIEW_NO_CONFIGURATION' => 'Καμία ρύθμιση',
@@ -466,7 +468,7 @@ final class Greek implements Language
 
 			'ABOUT_SUBTITLE' => 'Αυτό-φιλοξενούμενη διαχείριση φωτογραφιών καμωμένη σωστά',
 			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> είναι ένα δωρεάν εργαλείο διαχείρισης φωτογραφιών, το οποίο "τρέχει" στον δικό σας εξυπηρετητή ή δικτυακό-χώρο. Εγκαθίσταται σε μερικά δευτερόλεπτα. Μεταφορτώστε, διαχειριστείτε και κοινοποιήστε φωτογραφίες σαν από εγκατεστημένη εφαρμογή. Το Lychee παρέχεται με όλες τις λειτουργίες που χρειάζεστε και όλες οι φωτογραφίες σας είναι αποθηκευμένες με ασφάλεια.',
-			'FOOTER_COPYRIGHT' => 'Όλες οι εικόνες σε αυτή την ιστοσελίδα υπόκεινται σε πνευματικά δικαιώματα από %1$s &copy; %2$s',
+			'FOOTER_COPYRIGHT' => 'Όλες οι εικόνες σε αυτή την ιστοσελίδα υπόκεινται σε πνευματικά δικαιώματα από %1$s © %2$s',
 			'HOSTED_WITH_LYCHEE' => 'Φιλοξενείται από το Lychee',
 
 			'URL_COPY_TO_CLIPBOARD' => 'Αντιγραφή στο πρόχειρο',

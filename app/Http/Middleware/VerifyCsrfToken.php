@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Services\Auth\SessionOrTokenGuard;
-use Closure;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Session\TokenMismatchException;
@@ -28,14 +27,14 @@ class VerifyCsrfToken extends Middleware
 	 * non-existing user), then {@link \App\Services\Auth\SessionOrTokenGuard}
 	 * bails out.
 	 *
-	 * @param Request $request
-	 * @param Closure $next
+	 * @param Request  $request
+	 * @param \Closure $next
 	 *
 	 * @return mixed
 	 *
 	 * @throws TokenMismatchException
 	 */
-	public function handle($request, Closure $next): mixed
+	public function handle($request, \Closure $next): mixed
 	{
 		$token = $request->headers->get(SessionOrTokenGuard::HTTP_TOKEN_HEADER);
 		if (is_string($token) && $token !== '') {

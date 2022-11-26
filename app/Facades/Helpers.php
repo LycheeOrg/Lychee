@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Facade;
  * Keep the list of documented method in sync with {@link \App\Assets\Helpers}.
  *
  * @method static string cacheBusting(string $filePath)
- * @method static string getDeviceType()
  * @method static string trancateIf32(string $id, int $prevShortId = 0)
  * @method static string getExtension(string $filename, bool $isURI = false)
  * @method static bool   hasPermissions(string $path)

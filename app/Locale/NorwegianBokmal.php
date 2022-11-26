@@ -409,6 +409,8 @@ final class NorwegianBokmal implements Language
 			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <kbd>H</kbd></b>.',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
+			'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+
 			'VIEW_NO_RESULT' => 'Ingen resultater',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Ingen offentlige album',
 			'VIEW_NO_CONFIGURATION' => 'Ingen innstillinger',
@@ -466,7 +468,7 @@ final class NorwegianBokmal implements Language
 
 			'ABOUT_SUBTITLE' => 'Selvlevert bildehåndtering den riktige måten!',
 			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> er et gratis bildehåndteringsverktøy, som kjører på serveren eller en webhost som du eier og kontrollerer. Installasjon tar sekunder. Last opp, håndter, og del bilder som om det er din egen maskin. Lychee leverer alt du trenger, og alle bildene er trygt lagret.',
-			'FOOTER_COPYRIGHT' => 'Alle bildene på denne nettsiden er bundet av opphavsrett fra %1$s &copy; %2$s',
+			'FOOTER_COPYRIGHT' => 'Alle bildene på denne nettsiden er bundet av opphavsrett fra %1$s © %2$s',
 			'HOSTED_WITH_LYCHEE' => 'Levert av Lychee',
 
 			'URL_COPY_TO_CLIPBOARD' => 'Kopier til utklippstavlen',

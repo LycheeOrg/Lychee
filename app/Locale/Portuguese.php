@@ -409,6 +409,8 @@ final class Portuguese implements Language
 			'NSFW_VISIBLE_TEXT_2' => 'Se o álbum é público, continua acessível, apenas ocultado da visualização e <b>pode ser mostrado pressionando <kbd>H</kbd></b>.',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Sensibilidade predefinida do álbum visível atualizada com sucesso.',
 
+			'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+
 			'VIEW_NO_RESULT' => 'Sem resultados',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Sem álbums públicos',
 			'VIEW_NO_CONFIGURATION' => 'Sem configuração',
@@ -466,7 +468,7 @@ final class Portuguese implements Language
 
 			'ABOUT_SUBTITLE' => 'Gestão de fotografias auto-hospedada e bem feita',
 			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> é uma ferramenta gratuita de gestão de fotografias, que corre no teu servidor ou espaço web. A instalação demora segundos. Enviar, gerir e partilhar fotografias como uma aplicação nativa. O Lychee vem com tudo o que precisas e todas as tuas fotografias são guardadas de forma segura.',
-			'FOOTER_COPYRIGHT' => 'Todas as imagens neste website estão sujeitas a direitos autorais por %0 &copy; %1',
+			'FOOTER_COPYRIGHT' => 'Todas as imagens neste website estão sujeitas a direitos autorais por %0 © %1',
 			'HOSTED_WITH_LYCHEE' => 'Hospedado com Lychee',
 
 			'URL_COPY_TO_CLIPBOARD' => 'Copiar para o clipboard',

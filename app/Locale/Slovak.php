@@ -409,6 +409,8 @@ final class Slovak implements Language
 			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <kbd>H</kbd></b>.',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
+			'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+
 			'VIEW_NO_RESULT' => 'Žiadny výsledok',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Žiadne verejné albumy',
 			'VIEW_NO_CONFIGURATION' => 'Žiadna konfigurácia',
@@ -466,7 +468,7 @@ final class Slovak implements Language
 
 			'ABOUT_SUBTITLE' => 'Vlastný hostovaný manažment obrázkov!',
 			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> je open-source nástroj, bežiaci na vašom vlastnom serveri alebo v cloude. Inštalácia je otázkou sekúnd. Nahrať, spravovať a zdieľať obrázky ako v natívnej aplikácii. Lychee ponúka všetko čo potrebujete vy a vaše obrázky pre bezpečné uloženie.',
-			'FOOTER_COPYRIGHT' => 'Všetky obrázky na tejto webovej stránke sú chránené autorským právom %1$s &copy; %2$s',
+			'FOOTER_COPYRIGHT' => 'Všetky obrázky na tejto webovej stránke sú chránené autorským právom %1$s © %2$s',
 			'HOSTED_WITH_LYCHEE' => 'Hostované s Lychee',
 
 			'URL_COPY_TO_CLIPBOARD' => 'Skopírovať do schránky',

@@ -409,6 +409,8 @@ final class Vietnamese implements Language
 			'NSFW_VISIBLE_TEXT_2' => 'Nếu album được chia sẻ công cộng, album nhạy cảm vẫn có thể được truy cập, chỉ là tạm làm mờ khỏi tầm nhìn và <b>có thể được hiện rõ ra bằng cách bấm phím <kbd>H</kbd></b>.',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Chế độ hiển thị album nhạy cảm được cập nhật thành công.',
 
+			'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+
 			'VIEW_NO_RESULT' => 'Không có kết quả nào',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Chưa có album chia sẻ công cộng nào',
 			'VIEW_NO_CONFIGURATION' => 'Chưa có thiết lập',
