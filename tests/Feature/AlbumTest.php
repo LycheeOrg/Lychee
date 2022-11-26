@@ -710,4 +710,25 @@ class AlbumTest extends TestCase
 		$this->albums_tests->get($regularAlbumID);
 		$this->photos_tests->get($photoID);
 	}
+
+	/**
+	 * Check that deleting in Unsorted results in removing Unsorted pictures.
+	 *
+	 * @return void
+	 */
+	public function testDeleteUnsorted(): void
+	{
+		Auth::loginUsingId(0);
+		$id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		)->offsetGet('id');
+
+		$this->photos_tests->get($id);
+
+		$this->clearCachedSmartAlbums();
+		$this->albums_tests->get(UnsortedAlbum::ID, 200, $id);
+		$this->albums_tests->delete([UnsortedAlbum::ID], 204);
+		$this->albums_tests->get(UnsortedAlbum::ID, 200, null, $id);
+		$this->photos_tests->get($id, 404);
+	}
 }
