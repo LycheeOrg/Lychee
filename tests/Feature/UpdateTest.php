@@ -89,7 +89,7 @@ class UpdateTest extends TestCase
 	{
 		// Prepare for test: we need to make sure there is an admin user registered.
 		/** @var User $adminUser */
-		$adminUser = User::findOrFail(0);
+		$adminUser = User::findOrFail(1);
 		$login = $adminUser->username;
 		$pw = $adminUser->password;
 		$adminUser->username = Hash::make('test_login');
@@ -109,7 +109,7 @@ class UpdateTest extends TestCase
 		$this->assertOk($response);
 
 		// check that Legacy did change the username
-		$adminUser = User::findOrFail(0);
+		$adminUser = User::findOrFail(1);
 		$this->assertEquals('test_login', $adminUser->username);
 
 		// clean up

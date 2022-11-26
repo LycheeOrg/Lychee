@@ -12,7 +12,6 @@
 
 namespace Tests\Feature;
 
-use App\Legacy\AdminAuthentication;
 use App\Models\Configs;
 use App\Models\User;
 use App\SmartAlbums\PublicAlbum;
@@ -32,32 +31,6 @@ use Throwable;
 class UsersTest extends TestCase
 {
 	use InteractWithSmartAlbums;
-
-	public function testSetAdminLoginIfAdminUnconfigured(): void
-	{
-		/**
-		 * because there is no dependency injection in test cases.
-		 */
-		$sessions_test = new SessionUnitTest($this);
-
-		if (!AdminAuthentication::isAdminNotRegistered()) {
-			static::markTestSkipped('Admin user is registered; test skipped.');
-		}
-
-		static::assertTrue(AdminAuthentication::loginAsAdminIfNotRegistered());
-		$sessions_test->set_admin('lychee', 'password');
-		$sessions_test->logout();
-		static::assertFalse(AdminAuthentication::isAdminNotRegistered());
-
-		$sessions_test->set_admin('lychee', 'password', 403, 'Admin user is already registered');
-
-		$sessions_test->login('lychee', 'password');
-		$sessions_test->logout();
-
-		$sessions_test->login('foo', 'bar', 401);
-		$sessions_test->login('lychee', 'bar', 401);
-		$sessions_test->login('foo', 'password', 401);
-	}
 
 	public function testUsers(): void
 	{
@@ -364,7 +337,7 @@ class UsersTest extends TestCase
 			], ]);
 
 		// update Admin user to non valid rights
-		$admin = User::findOrFail(0);
+		$admin = User::findOrFail(1);
 		$admin->may_upload = false;
 		$admin->may_edit_own_settings = true;
 		$admin->save();

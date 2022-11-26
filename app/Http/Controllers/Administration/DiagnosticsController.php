@@ -11,7 +11,6 @@ use App\Contracts\LycheeException;
 use App\DTO\DiagnosticInfo;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\ModelDBException;
-use App\Legacy\AdminAuthentication;
 use App\Models\Configs;
 use App\Policies\SettingsPolicy;
 use Carbon\Exceptions\InvalidTimeZoneException;
@@ -29,7 +28,7 @@ class DiagnosticsController extends Controller
 	 */
 	private function isAuthorized(): bool
 	{
-		return Gate::check(SettingsPolicy::CAN_SEE_DIAGNOSTICS, Configs::class) || AdminAuthentication::isAdminNotRegistered();
+		return Gate::check(SettingsPolicy::CAN_SEE_DIAGNOSTICS, Configs::class);
 	}
 
 	/**

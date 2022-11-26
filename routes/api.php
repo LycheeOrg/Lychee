@@ -86,7 +86,6 @@ Route::post('/Session::init', [SessionController::class, 'init']);
 Route::post('/Session::login', [SessionController::class, 'login']);
 Route::post('/Session::logout', [SessionController::class, 'logout']);
 
-Route::post('/Settings::setLogin', [Administration\SettingsController::class, 'setLogin']);
 Route::post('/User::updateLogin', [Administration\UserController::class, 'updateLogin']);
 
 Route::post('/Sharing::list', [Administration\SharingController::class, 'list']);
@@ -97,13 +96,13 @@ Route::post('/Sharing::delete', [Administration\SharingController::class, 'delet
 // WebAuthn Routes
 Route::post('/WebAuthn::list', [WebAuthn\WebAuthnManageController::class, 'list']);
 Route::post('/WebAuthn::delete', [WebAuthn\WebAuthnManageController::class, 'delete']);
-Route::post('/WebAuthn::register/options', [\App\Http\Controllers\WebAuthn\WebAuthnRegisterController::class, 'options'])
+Route::post('/WebAuthn::register/options', [WebAuthn\WebAuthnRegisterController::class, 'options'])
 	->name('webauthn.register.options');
-Route::post('/WebAuthn::register', [\App\Http\Controllers\WebAuthn\WebAuthnRegisterController::class, 'register'])
+Route::post('/WebAuthn::register', [WebAuthn\WebAuthnRegisterController::class, 'register'])
 	->name('webauthn.register');
-Route::post('/WebAuthn::login/options', [\App\Http\Controllers\WebAuthn\WebAuthnLoginController::class, 'options'])
+Route::post('/WebAuthn::login/options', [WebAuthn\WebAuthnLoginController::class, 'options'])
 	->name('webauthn.login.options');
-Route::post('/WebAuthn::login', [\App\Http\Controllers\WebAuthn\WebAuthnLoginController::class, 'login'])
+Route::post('/WebAuthn::login', [WebAuthn\WebAuthnLoginController::class, 'login'])
 	->name('webauthn.login');
 
 Route::post('/Diagnostics::get', [Administration\DiagnosticsController::class, 'get']);

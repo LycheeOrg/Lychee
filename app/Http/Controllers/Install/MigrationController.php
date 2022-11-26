@@ -3,11 +3,19 @@
 namespace App\Http\Controllers\Install;
 
 use App\Actions\Install\ApplyMigration;
+use App\Actions\User\Create;
 use App\Exceptions\InstallationFailedException;
 use App\Exceptions\Internal\FrameworkException;
+use App\Http\Requests\Contracts\HasPassword;
+use App\Http\Requests\Contracts\HasUsername;
+use App\Models\User;
+use App\Rules\PasswordRule;
+use App\Rules\UsernameRule;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Hash;
 use function Safe\date;
 use function Safe\file_put_contents;
 
@@ -29,10 +37,12 @@ use function Safe\file_put_contents;
 class MigrationController extends Controller
 {
 	protected ApplyMigration $applyMigration;
+	protected Create $create;
 
-	public function __construct(ApplyMigration $applyMigration)
+	public function __construct(ApplyMigration $applyMigration, Create $create)
 	{
 		$this->applyMigration = $applyMigration;
+		$this->create = $create;
 	}
 
 	/**
@@ -54,8 +64,13 @@ class MigrationController extends Controller
 	 *
 	 * @throws FrameworkException
 	 */
-	public function view(): View
+	public function view(Request $request): View
 	{
+		$values = $request->validate([
+			HasUsername::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
+			HasPassword::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
+		]);
+
 		$output = [];
 		$hasErrors = false;
 		try {
@@ -66,6 +81,18 @@ class MigrationController extends Controller
 			$this->installed($output);
 		} catch (InstallationFailedException) {
 			$hasErrors = true;
+		}
+
+		if (!$hasErrors) {
+			$user = new User();
+			$user->incrementing = false;
+			$user->id = 0;
+			$user->may_upload = true;
+			$user->may_edit_own_settings = true;
+			$user->may_administrate = true;
+			$user->username = $values[HasUsername::USERNAME_ATTRIBUTE];
+			$user->password = Hash::make($values[HasPassword::PASSWORD_ATTRIBUTE]);
+			$user->save();
 		}
 
 		try {

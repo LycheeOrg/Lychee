@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Legacy\AdminAuthentication;
 use App\Models\User;
 
 /**
@@ -39,7 +38,7 @@ class SettingsPolicy extends BasePolicy
 	 */
 	public function canSeeLogs(?User $user): bool
 	{
-		return AdminAuthentication::isAdminNotRegistered();
+		return $user !== null && $user->may_administrate;
 	}
 
 	/**

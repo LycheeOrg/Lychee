@@ -78,7 +78,7 @@ class WebAuthTest extends TestCase
 			'attestation_format' => 'none',
 			'public_key' => '',
 		]);
-		$user = User::query()->find(0);
+		$user = User::query()->find(1);
 		$user->webAuthnCredentials()->save($key);
 
 		Auth::loginUsingId(0);

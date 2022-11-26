@@ -90,7 +90,7 @@ class LogsTest extends TestCase
 
 	private function initAdmin(): void
 	{
-		$this->admin = User::find(0);
+		$this->admin = User::find(1);
 		$this->name = $this->admin->username;
 		$this->pw = $this->admin->password;
 		$this->admin->username = 'temp';
@@ -100,7 +100,7 @@ class LogsTest extends TestCase
 
 	private function revertAdmin(): void
 	{
-		$this->admin = User::find(0);
+		$this->admin = User::find(1);
 		$this->admin->username = $this->name;
 		$this->admin->password = $this->pw;
 		$this->admin->save();

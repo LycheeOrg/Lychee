@@ -31,7 +31,7 @@ class InstallTest extends TestCase
 		 * Get previous config
 		 */
 		/** @var User $admin */
-		$admin = User::query()->find(0);
+		$admin = User::query()->find(1);
 
 		$prevAppKey = config('app.key');
 		config(['app.key' => null]);

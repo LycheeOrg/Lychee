@@ -21,12 +21,18 @@ active
     </form>
 
     @if($exists == true)
-    <div class="buttons-container">
-        <a class="button float-right" href="{{ route('install-migrate') }}">
-            <i class="fa fa-check fa-fw" aria-hidden="true"></i>
-            Install
-            <i class="fa fa-angle-double-right fa-fw" aria-hidden="true"></i>
-        </a>
-    </div>
+		<form method="post" action="{{ route('install-migrate') }}">
+			Create a new user that will be an admin:
+			<label for="username">Username</label><input required type="text" name="username" id="username">
+			<label for="password">Password</label><input required type="password" name="password" id="password">
+
+			<div class="buttons-container">
+				<button type="submit" class="button float-right" >
+					<i class="fa fa-check fa-fw" aria-hidden="true"></i>
+					Install
+					<i class="fa fa-angle-double-right fa-fw" aria-hidden="true"></i>
+				</button>
+			</div>
+		</form>
     @endif
 @endsection

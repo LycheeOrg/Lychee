@@ -32,12 +32,4 @@ class RootAlbumRightsDTO extends ArrayableDTO
 			can_import_from_server: Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, [AbstractAlbum::class]),
 		);
 	}
-
-	/**
-	 * @return self
-	 */
-	public static function ofUnregisteredAdmin(): self
-	{
-		return new self(true, true, true);
-	}
 }

@@ -10,7 +10,6 @@ use App\Models\User;
 use App\Notifications\PhotoAdded;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\MultipleRecordsFoundException;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 
@@ -35,7 +34,7 @@ class Notify
 		}
 
 		// Admin user is always notified
-		$users = new Collection([User::find(0)]);
+		$users = User::query()->where('may_administrate', '=', true)->get();
 
 		$album = $photo->album;
 		if ($album !== null) {

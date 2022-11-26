@@ -37,12 +37,4 @@ class SettingsRightsDTO extends ArrayableDTO
 			can_update: Gate::check(SettingsPolicy::CAN_UPDATE, [Configs::class]),
 		);
 	}
-
-	/**
-	 * @return self
-	 */
-	public static function ofUnregisteredAdmin(): self
-	{
-		return new self(true, true, true, true, true);
-	}
 }

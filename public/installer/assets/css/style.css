@@ -4006,6 +4006,7 @@ input[type=text] {
 	-webkit-transition: background-color .2s ease, -webkit-box-shadow .2s ease;
 	transition: box-shadow .2s ease, background-color .2s ease, -webkit-box-shadow .2s ease;
 	cursor: pointer;
+	font-size: 12px;
 }
 
 .button:hover {
