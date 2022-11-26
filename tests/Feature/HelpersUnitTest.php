@@ -24,7 +24,7 @@ class HelpersUnitTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function testInstall(): void
+	public function testTrancateIf32(): void
 	{
 		$this->assertEquals('1', Helpers::trancateIf32('10000', 0, 1000)); // check first call => returns 1
 		$this->assertEquals('2', Helpers::trancateIf32('10000', 1, 1000)); // check equal => returns +1
