@@ -29,38 +29,17 @@ class Create extends Action
 
 		switch (Configs::getValueAsInt('default_album_protection')) {
 			case 2:
-				$protectionPolicy = new AlbumProtectionPolicy(
-					is_public: true,
-					is_link_required: false,
-					is_nsfw: false,
-					grants_full_photo_access: true,
-					grants_download: true,
-					is_password_required: false,
-				);
+				$protectionPolicy = AlbumProtectionPolicy::ofDefaultPublic();
 				break;
 			case 3:
 				if ($parentAlbum !== null) {
 					$protectionPolicy = AlbumProtectionPolicy::ofBaseAlbum($parentAlbum);
 				} else {
-					$protectionPolicy = new AlbumProtectionPolicy(
-						is_public: false,
-						is_link_required: false,
-						is_nsfw: false,
-						grants_full_photo_access: true,
-						grants_download: true,
-						is_password_required: false,
-					);
+					$protectionPolicy = AlbumProtectionPolicy::ofDefaultPrivate();
 				}
 				break;
 			default:
-				$protectionPolicy = new AlbumProtectionPolicy(
-					is_public: false,
-					is_link_required: false,
-					is_nsfw: false,
-					grants_full_photo_access: true,
-					grants_download: true,
-					is_password_required: false,
-				);
+				$protectionPolicy = AlbumProtectionPolicy::ofDefaultPrivate();
 				break;
 		}
 
