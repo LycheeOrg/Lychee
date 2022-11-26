@@ -2,9 +2,11 @@
 
 namespace App\Actions\Album;
 
+use App\DTO\AlbumProtectionPolicy;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Models\Album;
+use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
 
 class Create extends Action
@@ -24,6 +26,46 @@ class Create extends Action
 		$album->title = $title;
 		$this->set_parent($album, $parentAlbum);
 		$album->save();
+
+		switch (Configs::getValueAsInt('default_album_protection')) {
+			case 2:
+				$protectionPolicy = new AlbumProtectionPolicy(
+					is_public: true,
+					is_link_required: false,
+					is_nsfw: false,
+					grants_full_photo_access: true,
+					grants_download: true,
+					is_password_required: false,
+				);
+				break;
+			case 3:
+				if ($parentAlbum !== null) {
+					$protectionPolicy = AlbumProtectionPolicy::ofBaseAlbum($parentAlbum);
+				} else {
+					$protectionPolicy = new AlbumProtectionPolicy(
+						is_public: false,
+						is_link_required: false,
+						is_nsfw: false,
+						grants_full_photo_access: true,
+						grants_download: true,
+						is_password_required: false,
+					);
+				}
+				break;
+			default:
+				$protectionPolicy = new AlbumProtectionPolicy(
+					is_public: false,
+					is_link_required: false,
+					is_nsfw: false,
+					grants_full_photo_access: true,
+					grants_download: true,
+					is_password_required: false,
+				);
+				break;
+		}
+
+		$setter = new SetProtectionPolicy();
+		$setter->do($album, $protectionPolicy, false, null);
 
 		return $album;
 	}
@@ -46,7 +88,7 @@ class Create extends Action
 			// methods of the nested set `NodeTrait`.
 			$album->appendToNode($parentAlbum);
 		} else {
-			/** @var int */
+			/** @var int $userId */
 			$userId = Auth::id() ?? throw new UnauthenticatedException();
 			$album->owner_id = $userId;
 			$album->makeRoot();
