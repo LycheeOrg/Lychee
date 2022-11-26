@@ -2269,8 +2269,9 @@ album.setProtectionPolicy = function (albumID) {
    * Array of checkboxes which are enable/disabled wrt. the state of `is_public`
    * @type {HTMLInputElement[]}
    */
-		var tristateCheckboxes = [formElements.grants_full_photo, formElements.requires_link, formElements.is_downloadable, formElements.is_share_button_visible, formElements.has_password];
+		var tristateCheckboxes = [formElements.grants_full_photo_access, formElements.is_link_required, formElements.grants_download, formElements.is_password_required];
 
+		formElements.is_public.checked = album.json.policy.is_public;
 		if (album.json.policy.is_public) {
 			tristateCheckboxes.forEach(function (checkbox) {
 				checkbox.parentElement.classList.remove("disabled");
@@ -2295,7 +2296,6 @@ album.setProtectionPolicy = function (albumID) {
 			formElements.grants_full_photo_access.checked = lychee.grants_full_photo_access;
 			formElements.is_link_required.checked = false;
 			formElements.grants_download.checked = lychee.grants_download;
-			formElements.is_share_button_visible.checked = lychee.share_button_visible;
 			formElements.is_password_required.checked = false;
 			formElements.password.parentElement.classList.add("hidden");
 		}
@@ -2307,7 +2307,7 @@ album.setProtectionPolicy = function (albumID) {
 			});
 		});
 
-		formElements.has_password.addEventListener("change", function () {
+		formElements.is_password_required.addEventListener("change", function () {
 			if (formElements.is_password_required.checked) {
 				formElements.password.parentElement.classList.remove("hidden");
 				formElements.password.focus();
@@ -12567,7 +12567,7 @@ users.update = function (params) {
 		delete params.password;
 	}
 
-	api.post("User::save", params, function () {
+	api.post("Users::save", params, function () {
 		loadingBar.show("success", lychee.locale["USER_UPDATED"]);
 		users.list(); // reload user list
 	});
@@ -12592,7 +12592,7 @@ users.create = function (params) {
 		return;
 	}
 
-	api.post("User::create", params, function () {
+	api.post("Users::create", params, function () {
 		loadingBar.show("success", lychee.locale["USER_CREATED"]);
 		users.list(); // reload user list
 	});
@@ -12608,7 +12608,7 @@ users.create = function (params) {
  * @returns {boolean}
  */
 users.delete = function (params) {
-	api.post("User::delete", params, function () {
+	api.post("Users::delete", params, function () {
 		loadingBar.show("success", lychee.locale["USER_DELETED"]);
 		users.list(); // reload user list
 	});
@@ -12618,7 +12618,7 @@ users.delete = function (params) {
  * @returns {void}
  */
 users.list = function () {
-	api.post("User::list", {},
+	api.post("Users::list", {},
 	/** @param {UserDTO[]} data */
 	function (data) {
 		users.json = data;
@@ -12817,13 +12817,13 @@ view.album = {
 			if (album.json.albums) {
 				album.json.albums.forEach(function (_album) {
 					albums.parse(_album);
-					albumsData += build.album(_album, !album.rights.can_edit);
+					albumsData += build.album(_album, !album.json.rights.can_edit);
 				});
 			}
 			if (album.json.photos) {
 				// Build photos
 				album.json.photos.forEach(function (_photo) {
-					photosData += build.photo(_photo, !album.rights.can_edit);
+					photosData += build.photo(_photo, !album.json.rights.can_edit);
 				});
 			}
 
