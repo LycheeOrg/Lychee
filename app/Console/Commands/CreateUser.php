@@ -52,7 +52,9 @@ class CreateUser extends Command
 	 */
 	public function handle(): int
 	{
+		/** @var string $username */
 		$username = $this->option('username');
+		/** @var string $password */
 		$password = $this->option('password');
 
 		if ($username === null || $username === '') {
@@ -68,9 +70,9 @@ class CreateUser extends Command
 
 		$count = User::query()->count();
 
-		$mayAdministrate = $count < 1 || $this->option('may-administrate');
-		$mayEditOwnSettings = $mayAdministrate || $this->option('may-edit-own-settings');
-		$mayUpload = $mayAdministrate || $this->option('may-upload');
+		$mayAdministrate = $count < 1 || /** @var bool */ $this->option('may-administrate');
+		$mayEditOwnSettings = $mayAdministrate || /** @var bool */ $this->option('may-edit-own-settings');
+		$mayUpload = $mayAdministrate || /** @var bool */ $this->option('may-upload');
 
 		$user = $this->create->do($username, $password, $mayUpload, $mayEditOwnSettings);
 		$user->may_administrate = $mayAdministrate;
