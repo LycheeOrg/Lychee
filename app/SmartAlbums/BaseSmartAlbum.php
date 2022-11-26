@@ -57,8 +57,8 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			$this->id = $id;
 			$this->title = $title;
 			$this->is_public = $is_public;
-			$this->grants_download = Configs::getValueAsBool('downloadable');
-			$this->grants_full_photo_access = Configs::getValueAsBool('full_photo');
+			$this->grants_download = Configs::getValueAsBool('grants_download');
+			$this->grants_full_photo_access = Configs::getValueAsBool('grants_full_photo_access');
 			$this->thumb = null;
 			$this->smartPhotoCondition = $smartCondition;
 		} catch (BindingResolutionException $e) {
