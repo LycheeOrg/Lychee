@@ -283,6 +283,8 @@ final class German implements Language
 			'PHOTO_EDIT_SHARING_TEXT' => 'Die Einstellungen zum Teilen des Foto werden wie folgt angepasst:',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => 'Dieses Foto ist in einem öffentlichen Album und erbt deshalb die Sichtbarkeitseinstellungen des Albums. Die aktuellen Sichtbarkeitseinstellungen werden unten nur zur Info dargestellt.',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'Die Sichtbarkeit dieses Fotos kann über die globalen Lychee Einstellungen modifiziert werden. Die aktuellen Sichtbarkeitseinstellungen werden unten nur zur Info dargestellt.',
+			'PHOTO_NEW_CREATED_AT' => 'Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]',
+			'PHOTO_SET_CREATED_AT' => 'Set upload date',
 
 			'LOADING' => 'Laden',
 			'ERROR' => 'Fehler',
@@ -403,6 +405,8 @@ final class German implements Language
 			'NSFW_VISIBLE_TEXT_2' => 'Wenn das Album öffentlich ist, kann weiterhin zugegriffen werden. Es wird nur ausgeblendet und kann <b>durch Pressen der Taste <kbd>H</kbd> sichtbar gemacht werden.</b>.',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Standardmäßige Sichtbarkeit wurde erfolgreich geändert.',
 
+			'NSFW_BANNER' => '<h1>Krititscher Inhalt</h1><p>Diese Album enthält krititsche Inhalte, die manche Personen anstößig oder verstörend finden könnten.</p><p>Zur Einwilligung klicken.</p>',
+
 			'VIEW_NO_RESULT' => 'Keine Ergebnisse',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Keine öffentlichen Alben',
 			'VIEW_NO_CONFIGURATION' => 'Keine Konfiguration',
@@ -460,7 +464,7 @@ final class German implements Language
 
 			'ABOUT_SUBTITLE' => 'Selbst gehostetes Foto-Management, aber richtig!',
 			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> ist ein freies Foto-Management-Werkzeug, dass auf Ihrem Server oder Webspace läuft. Die Installation ist eine Sache von Sekunden. Hochladen, Organisieren und Teilen von Fotos funktioniert wie in einer nativen Anwendung. Lychee hält alles bereit, was Sie benötigen, und alle Bilder werden sicher abgespeichert.',
-			'FOOTER_COPYRIGHT' => 'Alle Bilder auf dieser Website unterliegen dem Urheberrecht von %1$s &copy; %2$s',
+			'FOOTER_COPYRIGHT' => 'Alle Bilder auf dieser Website unterliegen dem Urheberrecht von %1$s © %2$s',
 			'HOSTED_WITH_LYCHEE' => 'Läuft mit Lychee',
 
 			'URL_COPY_TO_CLIPBOARD' => 'In die Zwischenablage kopiert',

@@ -283,6 +283,8 @@ final class Spanish implements Language
 			'PHOTO_EDIT_SHARING_TEXT' => 'Las propiedades para compartir de esta foto se cambiarán a lo siguiente:',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => 'Debido a que esta foto se encuentra en un álbum público, hereda la configuración de visibilidad de ese álbum. Su visibilidad actual se muestra a continuación solo con fines informativos.',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'La visibilidad de esta foto se puede ajustar utilizando la configuración global de Lychee. Su visibilidad actual se muestra a continuación solo con fines informativos.',
+			'PHOTO_NEW_CREATED_AT' => 'Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]',
+			'PHOTO_SET_CREATED_AT' => 'Set upload date',
 
 			'LOADING' => 'Cargando',
 			'ERROR' => 'Error',
@@ -403,6 +405,8 @@ final class Spanish implements Language
 			'NSFW_VISIBLE_TEXT_2' => 'Si el álbum es público, todavía está accesible, simplemente oculto a la vista y <b>puede revelarse presionando <kbd>H</kbd></b>.',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Visibilidad predeterminada del álbum sensible actualizada con éxito.',
 
+			'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+
 			'VIEW_NO_RESULT' => 'No hay resultados',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Sin álbumes públicos',
 			'VIEW_NO_CONFIGURATION' => 'Sin configuración',
@@ -460,7 +464,7 @@ final class Spanish implements Language
 
 			'ABOUT_SUBTITLE' => 'Un auto-hosteado gestor de imagenes, bien hecho',
 			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> es una herramienta gratuita de gestión de fotos, que se ejecuta en su servidor o espacio web. La instalación es cuestión de segundos. Cargue, administre y comparta fotos como desde una aplicación nativa. Lychee viene con todo lo que necesitas y todas tus fotos se almacenan de forma segura.',
-			'FOOTER_COPYRIGHT' => 'Todas las imágenes de este sitio web están sujetas a copyright por %1$s &copy; %2$s',
+			'FOOTER_COPYRIGHT' => 'Todas las imágenes de este sitio web están sujetas a copyright por %1$s © %2$s',
 			'HOSTED_WITH_LYCHEE' => 'Alojado con Lychee',
 
 			'URL_COPY_TO_CLIPBOARD' => 'Copiar al portapapeles',

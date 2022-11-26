@@ -39,7 +39,7 @@ class Info extends Diagnostics
 		// About Imagick version
 		$imagick = extension_loaded('imagick');
 		if ($imagick === true) {
-			$imagickVersion = Imagick::getVersion();
+			$imagickVersion = \Imagick::getVersion();
 		} else {
 			// @codeCoverageIgnoreStart
 			$imagick = '-';

@@ -282,6 +282,32 @@ class PhotosUnitTest
 	}
 
 	/**
+	 * Set upload date.
+	 *
+	 * @param string      $id
+	 * @param string      $date
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 */
+	public function set_upload_date(
+		string $id,
+		string $date,
+		int $expectedStatusCode = 204,
+		?string $assertSee = null
+	): void {
+		$response = $this->testCase->postJson(
+			'/api/Photo::setUploadDate', [
+				'photoID' => $id,
+				'date' => $date,
+			]
+		);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
+	}
+
+	/**
 	 * Set Album.
 	 *
 	 * @param string      $album_id

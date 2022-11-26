@@ -20,18 +20,18 @@ class ConfigFunctions
 	public function get_pages_infos(): array
 	{
 		$infos = [
-			'owner' => Configs::getValueAsString('landing_owner'),
+			'owner' => Configs::getValueAsString('site_owner'),
 			'title' => Configs::getValueAsString('landing_title'),
 			'subtitle' => Configs::getValueAsString('landing_subtitle'),
-			'facebook' => Configs::getValueAsString('landing_facebook'),
-			'flickr' => Configs::getValueAsString('landing_flickr'),
-			'twitter' => Configs::getValueAsString('landing_twitter'),
-			'instagram' => Configs::getValueAsString('landing_instagram'),
-			'youtube' => Configs::getValueAsString('landing_youtube'),
+			'facebook' => Configs::getValueAsString('sm_facebook_url'),
+			'flickr' => Configs::getValueAsString('sm_flickr_url'),
+			'twitter' => Configs::getValueAsString('sm_twitter_url'),
+			'instagram' => Configs::getValueAsString('sm_instagram_url'),
+			'youtube' => Configs::getValueAsString('sm_youtube_url'),
 			'background' => Configs::getValueAsString('landing_background'),
-			'copyright_enable' => Configs::getValueAsString('site_copyright_enable'),
+			'copyright_enable' => Configs::getValueAsString('footer_show_copyright'),
 			'copyright_year' => Configs::getValueAsString('site_copyright_begin'),
-			'additional_footer_text' => Configs::getValueAsString('additional_footer_text'),
+			'additional_footer_text' => Configs::getValueAsString('footer_additional_text'),
 		];
 		if (Configs::getValueAsString('site_copyright_begin') !== Configs::getValueAsString('site_copyright_end')) {
 			$infos['copyright_year'] = Configs::getValueAsString('site_copyright_begin') . '-' . Configs::getValueAsString('site_copyright_end');
@@ -93,53 +93,5 @@ class ConfigFunctions
 				$return[] = $message;
 			}
 		}
-	}
-
-	/**
-	 * TODO: Get rid of this method.
-	 *
-	 * This method returns a hard-coded array of booleans which are flipped
-	 * if the client is a television.
-	 * However, the client knows by itself if it is a television or not.
-	 * Hence, these values should be part of the front-end code.
-	 *
-	 * See also {@link \App\Assets\Helpers::getDeviceType()}.
-	 *
-	 * @param string $device
-	 *
-	 * @return array
-	 */
-	public function get_config_device(string $device): array
-	{
-		$true = true;
-		$false = false;
-
-		// we just flip the values in the television case
-		if ($device === 'television') {
-			// @codeCoverageIgnoreStart
-			$true = false;
-			$false = true;
-			// @codeCoverageIgnoreEnd
-		}
-
-		return [
-			'header_auto_hide' => $true,
-			'active_focus_on_page_load' => $false,
-			'enable_button_visibility' => $true,
-			'enable_button_share' => $true,
-			'enable_button_archive' => $true,
-			'enable_button_move' => $true,
-			'enable_button_trash' => $true,
-			'enable_button_fullscreen' => $true,
-			'enable_button_download' => $true,
-			'enable_button_add' => $true,
-			'enable_button_more' => $true,
-			'enable_button_rotate' => $true,
-			'enable_close_tab_on_esc' => $false,
-			'enable_contextmenu_header' => $true,
-			'hide_content_during_imgview' => $false,
-			'enable_tabindex' => $false,
-			'device_type' => $device,
-		];
 	}
 }

@@ -283,6 +283,8 @@ final class Czech implements Language
 			'PHOTO_EDIT_SHARING_TEXT' => 'Vlastnosti sdílení fotografie budou změněny takto:',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => 'Protože je tato fotografie umístěna ve veřejném albu, zdědí i nastavení tohoto veřejného alba. Aktuální stav viditelnosti je uveden pouze pro informaci.',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'Viditelnost této fotografie lze doladit pomocí globálních nastavení. Aktuální stav viditelnosti je uveden pouze pro informaci.',
+			'PHOTO_NEW_CREATED_AT' => 'Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]',
+			'PHOTO_SET_CREATED_AT' => 'Set upload date',
 
 			'LOADING' => 'Probíhá příprava',
 			'ERROR' => 'Chyba',
@@ -403,6 +405,8 @@ final class Czech implements Language
 			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <kbd>H</kbd></b>.',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
+			'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+
 			'VIEW_NO_RESULT' => 'Bez výsledku',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Veřejná alba nejsou k dispozici',
 			'VIEW_NO_CONFIGURATION' => 'Žádná konfigurace',
@@ -460,7 +464,7 @@ final class Czech implements Language
 
 			'ABOUT_SUBTITLE' => 'Ideální řešení vlastního hostování a správy fotografií',
 			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> je open-source nástroj na správu fotogragfií na Vašem serveru nebo webu. Instalace je hotova dílem okmažiku. Upload, správa a sdílení fotografií se provádí běžnými aplikacemi. Lychee přináší vše, co je třeba pro bezpečné online uložení Vašich fotografií.',
-			'FOOTER_COPYRIGHT' => 'Všechny fotografie na tomto webu jsou ve vlastnictví copyright %1$s &copy; %2$s',
+			'FOOTER_COPYRIGHT' => 'Všechny fotografie na tomto webu jsou ve vlastnictví copyright %1$s © %2$s',
 			'HOSTED_WITH_LYCHEE' => 'Hostováno na Lychee',
 
 			'URL_COPY_TO_CLIPBOARD' => 'Kopírovat do schránky',

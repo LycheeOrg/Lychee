@@ -50,6 +50,8 @@ class FromServer
 		$value = 0;
 		$suffix = '';
 		if (sscanf(ini_get('memory_limit'), '%d%c', $value, $suffix) === 2) {
+			/** @var int $value */
+			/** @var string $suffix */
 			switch (strtolower($suffix)) {
 				// @codeCoverageIgnoreStart
 				case 'k':
@@ -68,6 +70,8 @@ class FromServer
 					break;
 					// @codeCoverageIgnoreEnd
 			}
+		} else {
+			$value = 0;
 		}
 
 		// We set the warning threshold at 90% of the limit.
