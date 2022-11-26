@@ -25,14 +25,14 @@ return new class() extends Migration {
 		foreach (User::query()->orderByDesc('id')->get() as $user) {
 			$oldID = $user->id;
 			$newID = $oldID + 1;
+			$user->id = $newID;
+			$user->incrementing = false;
+			$user->save();
 			// update other columns referencing user ID
 			BaseAlbumImpl::query()->where('owner_id', '=', $oldID)->update(['owner_id' => $newID]);
 			Photo::query()->where('owner_id', '=', $oldID)->update(['owner_id' => $newID]);
 			DB::table('user_base_album')->where('user_id', '=', $oldID)->update(['user_id' => $newID]);
 			DB::table('webauthn_credentials')->where('authenticatable_id', '=', $oldID)->update(['authenticatable_id' => $newID]);
-			$user->id = $newID;
-			$user->incrementing = false;
-			$user->save();
 			User::query()->where('id', '=', $oldID)->delete();
 		}
 	}
@@ -48,14 +48,14 @@ return new class() extends Migration {
 		foreach (User::all() as $user) {
 			$oldID = $user->id;
 			$newID = $oldID - 1;
+			$user->id = $newID;
+			$user->incrementing = false;
+			$user->save();
 			// update other columns referencing user ID
 			BaseAlbumImpl::query()->where('owner_id', '=', $oldID)->update(['owner_id' => $newID]);
 			Photo::query()->where('owner_id', '=', $oldID)->update(['owner_id' => $newID]);
 			DB::table('user_base_album')->where('user_id', '=', $oldID)->update(['user_id' => $newID]);
 			DB::table('webauthn_credentials')->where('authenticatable_id', '=', $oldID)->update(['authenticatable_id' => $newID]);
-			$user->id = $newID;
-			$user->incrementing = false;
-			$user->save();
 			User::query()->where('id', '=', $oldID)->delete();
 		}
 	}
