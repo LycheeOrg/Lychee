@@ -13,12 +13,12 @@ class IncrementUserIDs extends Migration
 	public function up(): void
 	{
 		/** @var App\Models\User $user */
-		$user = DB::table('users')::find(0);
+		$user = DB::table('users')->find(0);
 		if ($user !== null && ($user->username === '' || $user->password === '')) {
 			// The admin user (id 0) has never set a username and password, so we remove it.
 			// This should only happen on a completely new installation where the admin user is created by the
 			// MigrateAdminUser migration and the user has never logged in.
-			$user->delete();
+			DB::table('users')->delete(0);
 		}
 		foreach (DB::table('users')->orderByDesc('id')->get() as $user) {
 			$oldID = $user->id;
@@ -31,7 +31,7 @@ class IncrementUserIDs extends Migration
 			DB::table('photos')->where('owner_id', '=', $oldID)->update(['owner_id' => $newID]);
 			DB::table('user_base_album')->where('user_id', '=', $oldID)->update(['user_id' => $newID]);
 			DB::table('webauthn_credentials')->where('authenticatable_id', '=', $oldID)->update(['authenticatable_id' => $newID]);
-			DB::table('users')->where('id', '=', $oldID)->delete();
+			DB::table('users')->delete($oldID);
 		}
 	}
 
@@ -54,7 +54,7 @@ class IncrementUserIDs extends Migration
 			DB::table('photos')->where('owner_id', '=', $oldID)->update(['owner_id' => $newID]);
 			DB::table('user_base_album')->where('user_id', '=', $oldID)->update(['user_id' => $newID]);
 			DB::table('webauthn_credentials')->where('authenticatable_id', '=', $oldID)->update(['authenticatable_id' => $newID]);
-			DB::table('users')->where('id', '=', $oldID)->delete();
+			DB::table('users')->delete($oldID);
 		}
 	}
 }
