@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Casts\MustNotSetCast;
 use App\Contracts\HasRandomID;
 use App\DTO\AlbumProtectionPolicy;
 use App\DTO\PhotoSortingCriterion;
@@ -169,7 +168,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'is_link_required' => 'boolean',
 		'is_nsfw' => 'boolean',
 		'owner_id' => 'integer',
-		'policy' => MustNotSetCast::class, // There is no setter, please use {@link \App\Actions\Album\SetProtectionPolicy}
 	];
 
 	/**
@@ -274,6 +272,22 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	{
 		$this->attributes['sorting_col'] = $sorting?->column;
 		$this->attributes['sorting_order'] = $sorting?->order;
+	}
+
+	protected function setPolicyAttribute(AlbumProtectionPolicy $protectionPolicy): void
+	{
+		// Security attributes of the album itself independent of a particular user
+		// Note: The first one (`is_public`) will become implicit in the future when the following three attributes are
+		// move to a separate table for sharing albums with anonymous users
+		$this->attributes['is_public'] = $protectionPolicy->is_public;
+		$this->attributes['is_nsfw'] = $protectionPolicy->is_nsfw;
+		$this->attributes['is_link_required'] = $protectionPolicy->is_link_required;
+
+		// (Future) permissions on an album-user relation.
+		// Note: For the time being these are still "globally" defined on the album for all users, but they will be
+		// moved to a separate table for sharing albums with users.
+		$this->attributes['grants_full_photo_access'] = $protectionPolicy->grants_full_photo_access;
+		$this->attributes['grants_download'] = $protectionPolicy->grants_download;
 	}
 
 	/**

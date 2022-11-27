@@ -25,26 +25,16 @@ class Create extends Action
 		$album = new Album();
 		$album->title = $title;
 		$this->set_parent($album, $parentAlbum);
+
+		// We do not transfer the password
+		$album->policy = match (Configs::getValueAsInt('default_album_protection')) {
+			1 => AlbumProtectionPolicy::ofDefaultPrivate(),
+			2 => AlbumProtectionPolicy::ofDefaultPublic(),
+			3 => ($parentAlbum !== null ? AlbumProtectionPolicy::ofBaseAlbum($parentAlbum) : AlbumProtectionPolicy::ofDefaultPrivate()),
+			default => AlbumProtectionPolicy::ofDefaultPrivate() // just to be safe of stupid values
+		};
+
 		$album->save();
-
-		switch (Configs::getValueAsInt('default_album_protection')) {
-			case 2:
-				$protectionPolicy = AlbumProtectionPolicy::ofDefaultPublic();
-				break;
-			case 3:
-				if ($parentAlbum !== null) {
-					$protectionPolicy = AlbumProtectionPolicy::ofBaseAlbum($parentAlbum);
-				} else {
-					$protectionPolicy = AlbumProtectionPolicy::ofDefaultPrivate();
-				}
-				break;
-			default:
-				$protectionPolicy = AlbumProtectionPolicy::ofDefaultPrivate();
-				break;
-		}
-
-		$setter = new SetProtectionPolicy();
-		$setter->do($album, $protectionPolicy, false, null);
 
 		return $album;
 	}
