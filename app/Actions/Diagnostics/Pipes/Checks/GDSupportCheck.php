@@ -3,11 +3,10 @@
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
-use Closure;
 
 class GDSupportCheck implements DiagnosticPipe
 {
-	public function handle(array &$data, Closure $next): array
+	public function handle(array &$data, \Closure $next): array
 	{
 		if (function_exists('gd_info')) {
 			$gdVersion = gd_info();

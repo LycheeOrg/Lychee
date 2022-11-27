@@ -5,7 +5,6 @@ namespace App\Actions\Diagnostics\Pipes\Infos;
 use App\Actions\Diagnostics\Diagnostics;
 use App\Contracts\DiagnosticPipe;
 use App\Metadata\LycheeVersion;
-use Closure;
 use Illuminate\Support\Facades\Config;
 
 class InstallTypeInfo implements DiagnosticPipe
@@ -17,7 +16,7 @@ class InstallTypeInfo implements DiagnosticPipe
 		$this->lycheeVersion = $lycheeVersion;
 	}
 
-	public function handle(array &$data, Closure $next): array
+	public function handle(array &$data, \Closure $next): array
 	{
 		$data[] = Diagnostics::line('composer install:', $this->lycheeVersion->phpUnit ? 'dev' : '--no-dev');
 		$data[] = Diagnostics::line('APP_ENV:', Config::get('app.env')); // check if production

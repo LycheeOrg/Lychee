@@ -3,8 +3,6 @@
 namespace App\Pipelines\Pipes;
 
 use App\Models\User;
-use Closure;
-use function hash_equals;
 use Laragear\WebAuthn\Assertion\Validator\AssertionValidation;
 use Laragear\WebAuthn\Exceptions\AssertionException;
 use Ramsey\Uuid\Uuid;
@@ -38,7 +36,7 @@ class CheckCredentialIsForUser
 	 *
 	 * @throws \Laragear\WebAuthn\Exceptions\AssertionException
 	 */
-	public function handle(AssertionValidation $validation, Closure $next): mixed
+	public function handle(AssertionValidation $validation, \Closure $next): mixed
 	{
 		if ($validation->user !== null) {
 			$this->validateUser($validation);
@@ -79,7 +77,7 @@ class CheckCredentialIsForUser
 	{
 		$handle = $validation->request->json('response.userHandle');
 
-		if ($handle === null || !hash_equals(Uuid::fromString($validation->credential->user_id)->getHex()->toString(), $handle)) {
+		if ($handle === null || !\hash_equals(Uuid::fromString($validation->credential->user_id)->getHex()->toString(), $handle)) {
 			throw AssertionException::make('User ID is not owner of the stored credential.');
 		}
 	}

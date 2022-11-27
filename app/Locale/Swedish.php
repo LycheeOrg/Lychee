@@ -287,6 +287,8 @@ final class Swedish implements Language
 			'PHOTO_EDIT_SHARING_TEXT' => 'The sharing properties of this photo will be changed to the following:',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => 'Because this photo is located in a public album, it inherits that album’s visibility settings.  Its current visibility is shown below for informational purposes only.',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'The visibility of this photo can be fine-tuned using global Lychee settings. Its current visibility is shown below for informational purposes only.',
+			'PHOTO_NEW_CREATED_AT' => 'Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]',
+			'PHOTO_SET_CREATED_AT' => 'Set upload date',
 
 			'LOADING' => 'Laddar',
 			'ERROR' => 'Fel',
@@ -407,6 +409,8 @@ final class Swedish implements Language
 			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <kbd>H</kbd></b>.',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
+			'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+
 			'VIEW_NO_RESULT' => 'Inget resultat',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Inga publika album',
 			'VIEW_NO_CONFIGURATION' => 'Ingen konfigurering',
@@ -464,7 +468,7 @@ final class Swedish implements Language
 
 			'ABOUT_SUBTITLE' => 'Self-hosted photo-management done right',
 			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.',
-			'FOOTER_COPYRIGHT' => 'Alla bilder på denna webbplats är föremål för upphovsrätt från %1$s &copy; %2$s',
+			'FOOTER_COPYRIGHT' => 'Alla bilder på denna webbplats är föremål för upphovsrätt från %1$s © %2$s',
 			'HOSTED_WITH_LYCHEE' => 'Hosted with Lychee',
 
 			'URL_COPY_TO_CLIPBOARD' => 'Copy to clipboard',

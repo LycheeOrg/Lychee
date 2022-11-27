@@ -6,7 +6,6 @@ use App\Actions\Diagnostics\Diagnostics;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\LycheeChannelInfo;
 use App\Metadata\LycheeVersion;
-use Closure;
 
 class VersionInfo implements DiagnosticPipe
 {
@@ -17,7 +16,7 @@ class VersionInfo implements DiagnosticPipe
 		$this->lycheeVersion = $lycheeVersion;
 	}
 
-	public function handle(array &$data, Closure $next): array
+	public function handle(array &$data, \Closure $next): array
 	{
 		// Format Lychee Information
 		$lycheeChannelInfo = $this->lycheeVersion->getLycheeChannelInfo();

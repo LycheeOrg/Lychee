@@ -106,6 +106,30 @@ class AlbumsUnitTest
 	}
 
 	/**
+	 * Move albums.
+	 *
+	 * @param string[]    $ids
+	 * @param string|null $to
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 */
+	public function merge(
+		array $ids,
+		?string $to,
+		int $expectedStatusCode = 204,
+		?string $assertSee = null
+	): void {
+		$response = $this->testCase->postJson('/api/Album::merge', [
+			'albumID' => $to,
+			'albumIDs' => $ids,
+		]);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
+	}
+
+	/**
 	 * Get album by ID.
 	 *
 	 * @param string      $id
@@ -199,6 +223,30 @@ class AlbumsUnitTest
 		$response = $this->testCase->postJson(
 			'/api/Album::setDescription',
 			['albumID' => $id, 'description' => $description]
+		);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
+	}
+
+	/**
+	 * Change cover.
+	 *
+	 * @param string      $id
+	 * @param string|null $photoID
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 */
+	public function set_cover(
+		string $id,
+		?string $photoID,
+		int $expectedStatusCode = 204,
+		?string $assertSee = null
+	): void {
+		$response = $this->testCase->postJson(
+			'/api/Album::setCover',
+			['albumID' => $id, 'photoID' => $photoID]
 		);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {

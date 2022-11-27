@@ -5,7 +5,6 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Contracts\DiagnosticPipe;
 use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
-use Closure;
 
 class ConfigSanityCheck implements DiagnosticPipe
 {
@@ -22,7 +21,7 @@ class ConfigSanityCheck implements DiagnosticPipe
 		$this->configFunctions = $configFunctions;
 	}
 
-	public function handle(array &$data, Closure $next): array
+	public function handle(array &$data, \Closure $next): array
 	{
 		// Load settings
 		$this->settings = Configs::get();

@@ -6,12 +6,10 @@ use App\Actions\Diagnostics\Diagnostics;
 use App\Contracts\DiagnosticPipe;
 use App\Facades\Helpers;
 use App\Models\Configs;
-use Closure;
-use Imagick;
 
 class ExtensionsInfo implements DiagnosticPipe
 {
-	public function handle(array &$data, Closure $next): array
+	public function handle(array &$data, \Closure $next): array
 	{
 		// Load settings
 		$settings = Configs::get();
@@ -19,7 +17,7 @@ class ExtensionsInfo implements DiagnosticPipe
 		// About Imagick version
 		$imagick = extension_loaded('imagick');
 		if ($imagick === true) {
-			$imagickVersion = Imagick::getVersion();
+			$imagickVersion = \Imagick::getVersion();
 		} else {
 			// @codeCoverageIgnoreStart
 			$imagick = '-';

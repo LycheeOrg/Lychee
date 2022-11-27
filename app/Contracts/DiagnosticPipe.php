@@ -2,8 +2,6 @@
 
 namespace App\Contracts;
 
-use Closure;
-
 /**
  * Basic definition of a Diagnostic pipe.
  *
@@ -14,9 +12,9 @@ interface DiagnosticPipe
 {
 	/**
 	 * @param array<int,string> &$data
-	 * @param Closure(array<int,string> $data): array<int,string> $next
+	 * @param \Closure(array<int,string> $data): array<int,string> $next
 	 *
 	 * @return array<int,string>
 	 */
-	public function handle(array &$data, Closure $next): array;
+	public function handle(array &$data, \Closure $next): array;
 }

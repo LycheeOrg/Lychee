@@ -5,13 +5,12 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Contracts\DiagnosticPipe;
 use App\Facades\Helpers;
 use App\Models\Configs;
-use Closure;
 use function Safe\ini_get;
 use function Safe\preg_match;
 
 class IniSettingsCheck implements DiagnosticPipe
 {
-	public function handle(array &$data, Closure $next): array
+	public function handle(array &$data, \Closure $next): array
 	{
 		// Check php.ini Settings
 		// Load settings

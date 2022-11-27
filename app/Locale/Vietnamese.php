@@ -287,6 +287,8 @@ final class Vietnamese implements Language
 			'PHOTO_EDIT_SHARING_TEXT' => 'Những đặc điểm chia sẻ của tấm hình này sẽ được thay đổi thành như sau:',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => 'Vì tấm hình này đang có trong một album công cộng, nó có chế độ hiển thị công cộng giống như cài đặt hiển thị của album. Chế độ hiển thị hiện tại của hình được hiển thị bên dưới để người dùng biết thêm thông tin.',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'Chế độ hiển thị của tấm hình này có thể được chỉnh chỉ tiết hơn với cài đặt tổng của Lychee. Chế độ hiển thị hiện thời của tấm hình được hiển thị để người dùng biết thêm thông tin.',
+			'PHOTO_NEW_CREATED_AT' => 'Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]',
+			'PHOTO_SET_CREATED_AT' => 'Set upload date',
 
 			'LOADING' => 'Đang tải',
 			'ERROR' => 'Bị lỗi',
@@ -406,6 +408,8 @@ final class Vietnamese implements Language
 			'NSFW_VISIBLE_TEXT_1' => 'Tự động cho hiển thị những album nhạy cảm.',
 			'NSFW_VISIBLE_TEXT_2' => 'Nếu album được chia sẻ công cộng, album nhạy cảm vẫn có thể được truy cập, chỉ là tạm làm mờ khỏi tầm nhìn và <b>có thể được hiện rõ ra bằng cách bấm phím <kbd>H</kbd></b>.',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Chế độ hiển thị album nhạy cảm được cập nhật thành công.',
+
+			'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
 
 			'VIEW_NO_RESULT' => 'Không có kết quả nào',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Chưa có album chia sẻ công cộng nào',

@@ -51,8 +51,6 @@ Route::post('/Albums::get', [AlbumsController::class, 'get']);
 Route::post('/Albums::getPositionData', [AlbumsController::class, 'getPositionData']);
 Route::post('/Albums::tree', [AlbumsController::class, 'tree']);
 
-Route::post('/Frame::getSettings', [FrameController::class, 'getSettings']);
-
 Route::post('/Import::url', [ImportController::class, 'url']);
 Route::post('/Import::server', [ImportController::class, 'server'])->middleware('admin');
 Route::post('/Import::serverCancel', [ImportController::class, 'serverCancel'])->middleware('admin');
@@ -73,6 +71,7 @@ Route::post('/Photo::add', [PhotoController::class, 'add'])
 Route::post('/Photo::delete', [PhotoController::class, 'delete']);
 Route::post('/Photo::duplicate', [PhotoController::class, 'duplicate']);
 Route::post('/Photo::setLicense', [PhotoController::class, 'setLicense']);
+Route::post('/Photo::setUploadDate', [PhotoController::class, 'setUploadDate']);
 Route::get('/Photo::getArchive', [PhotoController::class, 'getArchive'])
 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
 	->middleware(['local_storage', 'accept_content_type:any']);

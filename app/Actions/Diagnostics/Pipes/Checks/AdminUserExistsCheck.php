@@ -4,11 +4,10 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\Models\User;
-use Closure;
 
 class AdminUserExistsCheck implements DiagnosticPipe
 {
-	public function handle(array &$data, Closure $next): array
+	public function handle(array &$data, \Closure $next): array
 	{
 		$admin = User::query()->find(0);
 		if ($admin === null) {

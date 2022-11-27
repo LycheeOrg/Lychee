@@ -116,7 +116,7 @@ class Sync extends Command
 			foreach ($directories as $directory) {
 				try {
 					$exec->do($directory, $album);
-				} catch (Exception $e) {
+				} catch (\Exception $e) {
 					$this->error($e);
 				}
 			}

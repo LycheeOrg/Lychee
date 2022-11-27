@@ -4,8 +4,6 @@ namespace App\DTO;
 
 use App\Exceptions\Internal\LycheeLogicException;
 use Illuminate\Contracts\Support\Arrayable;
-use ReflectionClass;
-use ReflectionProperty;
 
 /**
  * In some cases, when a DTO does not need to apply casts on attributes
@@ -22,8 +20,8 @@ class ArrayableDTO extends DTO
 	public function toArray(): array
 	{
 		$result = [];
-		$cls = new ReflectionClass($this);
-		$props = $cls->getProperties(ReflectionProperty::IS_PUBLIC);
+		$cls = new \ReflectionClass($this);
+		$props = $cls->getProperties(\ReflectionProperty::IS_PUBLIC);
 		foreach ($props as $prop) {
 			$value = $prop->getValue($this);
 			if (is_object($value)) {
