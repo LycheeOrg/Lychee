@@ -283,6 +283,8 @@ final class ChineseTraditional implements Language
 			'PHOTO_EDIT_SHARING_TEXT' => '此照片的共享屬性將更改為以下內容:',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => '由於此照片位於公開相簿中，因此它會繼承該相冊的公開範圍設置。 下面顯示了它的當前可見性，僅供參考。',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => '可以使用全局Lychee設置微調這張照片的可見性。 下面顯示了它的當前可見性，僅供參考。',
+			'PHOTO_NEW_CREATED_AT' => 'Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]',
+			'PHOTO_SET_CREATED_AT' => 'Set upload date',
 
 			'LOADING' => '載入中',
 			'ERROR' => '錯誤',
@@ -403,6 +405,8 @@ final class ChineseTraditional implements Language
 			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <kbd>H</kbd></b>.',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
+			'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+
 			'VIEW_NO_RESULT' => '無結果',
 			'VIEW_NO_PUBLIC_ALBUMS' => '沒有公開相簿',
 			'VIEW_NO_CONFIGURATION' => '没有配置',
@@ -460,7 +464,7 @@ final class ChineseTraditional implements Language
 
 			'ABOUT_SUBTITLE' => 'Lychee自主託管的照片管理程序',
 			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> 是一個免費的照片管理工具，可在您的伺服器或網站空間上運行。安裝僅需幾秒鐘。上傳，管理和分享照片(例如從本機應用程序)。Lychee提供您所需的一切，所有照片均安全存儲。',
-			'FOOTER_COPYRIGHT' => '本網站的照片均受版權所有 %1$s &copy; %2$s',
+			'FOOTER_COPYRIGHT' => '本網站的照片均受版權所有 %1$s © %2$s',
 			'HOSTED_WITH_LYCHEE' => '使用Lychee託管照片(繁中由CYL翻譯)',
 
 			'URL_COPY_TO_CLIPBOARD' => '複製到剪貼板',

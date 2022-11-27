@@ -283,6 +283,8 @@ final class Greek implements Language
 			'PHOTO_EDIT_SHARING_TEXT' => 'Οι ιδιότητες κοινής χρήσης αυτής της φωτογραφίας θα αλλάξουν στις ακόλουθες:',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => 'Επειδή αυτή η φωτογραφία βρίσκεται σε ένα δημόσιο λεύκωμα, κληρονομεί τις ρυθμίσεις ορατότητας του λευκώματος στο οποίο ανήκει. Η τρέχουσα ορατότητά της φαίνεται παρακάτω για ενημερωτικούς λόγους μόνο.',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'Η ορατότητα αυτής της φωτογραφίας μπορεί να ρυθμιστεί με μεγαλύτερη λεπτομέρεια χρησιμοποιώντας τις γενικές ρυθμίσεις του Lychee. Η τρέχουσα ορατότητά της φαίνεται παρακάτω για ενημερωτικούς λόγους μόνο.',
+			'PHOTO_NEW_CREATED_AT' => 'Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]',
+			'PHOTO_SET_CREATED_AT' => 'Set upload date',
 
 			'LOADING' => 'Φορτώνει',
 			'ERROR' => 'Σφάλμα',
@@ -403,6 +405,8 @@ final class Greek implements Language
 			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <kbd>H</kbd></b>.',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
+			'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+
 			'VIEW_NO_RESULT' => 'Κανένα αποτέλεσμα',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Κανένα δημόσιο λεύκωμα',
 			'VIEW_NO_CONFIGURATION' => 'Καμία ρύθμιση',
@@ -460,7 +464,7 @@ final class Greek implements Language
 
 			'ABOUT_SUBTITLE' => 'Αυτό-φιλοξενούμενη διαχείριση φωτογραφιών καμωμένη σωστά',
 			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> είναι ένα δωρεάν εργαλείο διαχείρισης φωτογραφιών, το οποίο "τρέχει" στον δικό σας εξυπηρετητή ή δικτυακό-χώρο. Εγκαθίσταται σε μερικά δευτερόλεπτα. Μεταφορτώστε, διαχειριστείτε και κοινοποιήστε φωτογραφίες σαν από εγκατεστημένη εφαρμογή. Το Lychee παρέχεται με όλες τις λειτουργίες που χρειάζεστε και όλες οι φωτογραφίες σας είναι αποθηκευμένες με ασφάλεια.',
-			'FOOTER_COPYRIGHT' => 'Όλες οι εικόνες σε αυτή την ιστοσελίδα υπόκεινται σε πνευματικά δικαιώματα από %1$s &copy; %2$s',
+			'FOOTER_COPYRIGHT' => 'Όλες οι εικόνες σε αυτή την ιστοσελίδα υπόκεινται σε πνευματικά δικαιώματα από %1$s © %2$s',
 			'HOSTED_WITH_LYCHEE' => 'Φιλοξενείται από το Lychee',
 
 			'URL_COPY_TO_CLIPBOARD' => 'Αντιγραφή στο πρόχειρο',

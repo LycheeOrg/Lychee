@@ -283,6 +283,8 @@ final class ChineseSimplified implements Language
 			'PHOTO_EDIT_SHARING_TEXT' => '此照片的共享属性将被修改为：',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => '因为此照片位于一个公开相册中，其继承了相册的可见性设置。其当前的可见性仅在下方作为提示的作用而显示。',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => '此照片的可见性可以使用全局的 Lychee 设置进行更细致的调整。其当前的可见性仅在下方作为提示的作用而显示。',
+			'PHOTO_NEW_CREATED_AT' => 'Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]',
+			'PHOTO_SET_CREATED_AT' => 'Set upload date',
 
 			'LOADING' => '载入中',
 			'ERROR' => '错误',
@@ -403,6 +405,8 @@ final class ChineseSimplified implements Language
 			'NSFW_VISIBLE_TEXT_2' => '如果相册是公开的，其将仍然可以访问，只是会从视图中隐藏并<b>可以通过按下<kbd>H</kbd>键来显示</b>。',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => '敏感相册的默认可见性成功更新。',
 
+			'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+
 			'VIEW_NO_RESULT' => '无结果',
 			'VIEW_NO_PUBLIC_ALBUMS' => '没有公开相册',
 			'VIEW_NO_CONFIGURATION' => '没有配置',
@@ -460,7 +464,7 @@ final class ChineseSimplified implements Language
 
 			'ABOUT_SUBTITLE' => '自托管照片管理的正确之选',
 			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> 是一个自由的照片管理工具，其其运行于您的服务器或Web空间。仅需几分钟即可安装。Lychee 为您提供了像原生应用那样上传、管理和分享照片所需的一切，您的所有照片都将安全地存储。',
-			'FOOTER_COPYRIGHT' => '本网站上的所有图像均受制于版权 %1$s &copy; %2$s',
+			'FOOTER_COPYRIGHT' => '本网站上的所有图像均受制于版权 %1$s © %2$s',
 			'HOSTED_WITH_LYCHEE' => '由 Lychee 托管',
 
 			'URL_COPY_TO_CLIPBOARD' => '复制到剪贴板',

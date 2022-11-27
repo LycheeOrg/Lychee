@@ -283,6 +283,8 @@ final class Russian implements Language
 			'PHOTO_EDIT_SHARING_TEXT' => 'The sharing properties of this photo will be changed to the following:',
 			'PHOTO_NO_EDIT_SHARING_TEXT' => 'Because this photo is located in a public album, it inherits that album’s visibility settings.  Its current visibility is shown below for informational purposes only.',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'The visibility of this photo can be fine-tuned using global Lychee settings. Its current visibility is shown below for informational purposes only.',
+			'PHOTO_NEW_CREATED_AT' => 'Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]',
+			'PHOTO_SET_CREATED_AT' => 'Set upload date',
 
 			'LOADING' => 'Загрузка',
 			'ERROR' => 'Ошибка',
@@ -403,6 +405,8 @@ final class Russian implements Language
 			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <kbd>H</kbd></b>.',
 			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
+			'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+
 			'VIEW_NO_RESULT' => 'Не найдено',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Нет публичных альбомов',
 			'VIEW_NO_CONFIGURATION' => 'Не настроено',
@@ -460,7 +464,7 @@ final class Russian implements Language
 
 			'ABOUT_SUBTITLE' => 'Self-hosted photo-management done right',
 			'ABOUT_DESCRIPTION' => "<a target=\'_blank\' href=\'%0\'>Lychee</a> - это бесплатный фотоменеджер для Вашего сервера или хостинга. Установка занимает считанные секунды. Загружайте, редактируйте и делитесь фотографиями как в любимом приложении! Lychee обеспечит Вас всем необходимым, включая безопасность хранения Ваших фотографий! На русский язык перевёл Евгений Лебедев. Пожалуйста, <a href='mailto://k-t-c(at)ya.ru'>дайте мне знать</a>, если заметите неточности.",
-			'FOOTER_COPYRIGHT' => 'All images on this website are subject to copyright by %1$s &copy; %2$s',
+			'FOOTER_COPYRIGHT' => 'All images on this website are subject to copyright by %1$s © %2$s',
 			'HOSTED_WITH_LYCHEE' => 'Hosted with Lychee',
 
 			'URL_COPY_TO_CLIPBOARD' => 'Copy to clipboard',

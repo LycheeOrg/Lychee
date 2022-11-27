@@ -26,7 +26,6 @@ use Tests\Feature\Lib\SessionUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\TestCase;
-use Throwable;
 
 class UsersTest extends TestCase
 {
@@ -322,7 +321,7 @@ class UsersTest extends TestCase
 	 *
 	 * @throws InvalidArgumentException
 	 * @throws ExpectationFailedException
-	 * @throws Throwable
+	 * @throws \Throwable
 	 */
 	public function regressionTestAdminAllMighty(): void
 	{

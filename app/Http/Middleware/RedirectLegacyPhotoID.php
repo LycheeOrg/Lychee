@@ -7,7 +7,6 @@ use App\Exceptions\Internal\FrameworkException;
 use App\Http\Controllers\ViewController;
 use App\Http\Requests\View\GetPhotoViewRequest;
 use App\Legacy\Legacy;
-use Closure;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Request;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
@@ -24,15 +23,15 @@ class RedirectLegacyPhotoID
 	/**
 	 * Handle an incoming request.
 	 *
-	 * @param Request $request
-	 * @param Closure $next
+	 * @param Request  $request
+	 * @param \Closure $next
 	 *
 	 * @return mixed
 	 *
 	 * @throws ConfigurationException
 	 * @throws FrameworkException
 	 */
-	public function handle(Request $request, Closure $next): mixed
+	public function handle(Request $request, \Closure $next): mixed
 	{
 		try {
 			$photoID = $request->query->get(GetPhotoViewRequest::URL_QUERY_PARAM);

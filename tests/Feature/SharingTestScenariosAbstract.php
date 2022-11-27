@@ -597,7 +597,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID1)->offsetGet('id');
 		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID2)->offsetGet('id');
 		$this->albums_tests->set_protection_policy(id: $this->albumID1);
-		$this->albums_tests->set_protection_policy(id: $this->albumID2, requiresLink: true);
+		$this->albums_tests->set_protection_policy(id: $this->albumID2, is_link_required: true);
 		$this->photos_tests->set_star([$this->photoID2], true);
 		Auth::logout();
 		Session::flush();
@@ -679,7 +679,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID1)->offsetGet('id');
 		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID2)->offsetGet('id');
 		$this->albums_tests->set_protection_policy(id: $this->albumID1);
-		$this->albums_tests->set_protection_policy(id: $this->albumID2, requiresLink: true, password: self::ALBUM_PWD_2);
+		$this->albums_tests->set_protection_policy(id: $this->albumID2, is_link_required: true, password: self::ALBUM_PWD_2);
 		$this->photos_tests->set_star([$this->photoID2], true);
 		Auth::logout();
 		Session::flush();
@@ -816,7 +816,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID2)->offsetGet('id');
 		$this->photoID3 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_SUNSET_IMAGE), $this->albumID3)->offsetGet('id');
 		$this->sharing_tests->add([$this->albumID1, $this->albumID3], [$this->userID]);
-		$this->albums_tests->set_protection_policy(id: $this->albumID3, requiresLink: true);
+		$this->albums_tests->set_protection_policy(id: $this->albumID3, is_link_required: true);
 		Auth::logout();
 		Session::flush();
 		$this->clearCachedSmartAlbums();
@@ -915,8 +915,8 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 		// Sic! We use the same password for both albums here, because we want
 		// to ensure that incidentally "unlocking" an album which is also
 		// shared has no negative side effect.
-		$this->albums_tests->set_protection_policy(id: $this->albumID2, nsfw: true, password: self::ALBUM_PWD_1);
-		$this->albums_tests->set_protection_policy(id: $this->albumID3, nsfw: true, password: self::ALBUM_PWD_1);
+		$this->albums_tests->set_protection_policy(id: $this->albumID2, is_nsfw: true, password: self::ALBUM_PWD_1);
+		$this->albums_tests->set_protection_policy(id: $this->albumID3, is_nsfw: true, password: self::ALBUM_PWD_1);
 
 		Auth::logout();
 		Session::flush();

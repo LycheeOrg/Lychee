@@ -3,12 +3,9 @@
 namespace App\Assets;
 
 use App\Exceptions\Internal\ZeroModuloException;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\File;
-use function Safe\getallheaders;
 use function Safe\ini_get;
 use function Safe\parse_url;
-use WhichBrowser\Parser as BrowserParser;
 
 class Helpers
 {
@@ -43,42 +40,18 @@ class Helpers
 	}
 
 	/**
-	 * Returns the device type as string:
-	 * desktop, mobile, pda, dect, tablet, gaming, ereader,
-	 * media, headset, watch, emulator, television, monitor,
-	 * camera, printer, signage, whiteboard, devboard, inflight,
-	 * appliance, gps, car, pos, bot, projector.
-	 *
-	 * This method is only used to report the type of device back to the
-	 * client.
-	 * This is totally insane, because the client knows its own type anyway.
-	 * This could be completely done in JS code and CSS on the client side.
-	 * See also {@link ConfigFunctions::get_config_device()}.
-	 *
-	 * TODO: Remove this method.
-	 *
-	 * @return string
-	 *
-	 * @throws BindingResolutionException
-	 */
-	public function getDeviceType(): string
-	{
-		$result = new BrowserParser(getallheaders(), ['cache' => app('cache.store')]);
-
-		return $result->getType();
-	}
-
-	/**
 	 * Return the 32bit truncated version of a number seen as string.
 	 *
 	 * @param string $id
 	 * @param int    $prevShortId
+	 * @param int    $phpMax      predefined so set to MAX php during migration
+	 *                            but allow to actually test the code
 	 *
 	 * @return string updated ID
 	 */
-	public function trancateIf32(string $id, int $prevShortId = 0): string
+	public function trancateIf32(string $id, int $prevShortId = 0, int $phpMax = PHP_INT_MAX): string
 	{
-		if (PHP_INT_MAX > 2147483647) {
+		if ($phpMax > 2147483647) {
 			return $id;
 		}
 
@@ -177,15 +150,6 @@ class Helpers
 		}
 
 		return ($a % $b) !== 0 ? $this->gcd($b, $a % $b) : $b;
-	}
-
-	/**
-	 * Properly convert a boolean to a string
-	 * the default php function returns '' in case of false, this is not the behavior we want.
-	 */
-	public function str_of_bool(bool $b): string
-	{
-		return $b ? '1' : '0';
 	}
 
 	/**

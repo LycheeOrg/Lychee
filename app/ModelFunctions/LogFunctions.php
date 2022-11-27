@@ -4,7 +4,6 @@ namespace App\ModelFunctions;
 
 use App\Models\Logs;
 use Psr\Log\AbstractLogger;
-use Stringable;
 
 // Class for FFMpeg to convert files to mov format
 class LogFunctions extends AbstractLogger
@@ -38,7 +37,7 @@ class LogFunctions extends AbstractLogger
 	/**
 	 * Implements log so that AbstractLogger works.
 	 */
-	public function log($level, Stringable|string $message, array $context = []): void
+	public function log($level, \Stringable|string $message, array $context = []): void
 	{
 		$dbt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
 		// debug_backtrace return the backtrace of all the function calls
