@@ -4,7 +4,6 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\Metadata\LycheeVersion;
-use Closure;
 
 class LycheeDBVersionCheck implements DiagnosticPipe
 {
@@ -29,7 +28,7 @@ class LycheeDBVersionCheck implements DiagnosticPipe
 	 * TODO: Probably, the whole logic around installation and updating should be re-factored. The whole code is wicked.
 	 *
 	 * @param array<int,string> $data list of error messages
-	 * @param Closure(array<int,string> $data): array<int,string> $next
+	 * @param \Closure(array<int,string> $data): array<int,string> $next
 	 *
 	 * @return array<int,string>
 	 */

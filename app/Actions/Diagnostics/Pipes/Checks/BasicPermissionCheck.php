@@ -8,7 +8,6 @@ use App\Exceptions\Handler;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Facades\Helpers;
 use App\Models\SymLink;
-use Closure;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
@@ -43,7 +42,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 
 	/**
 	 * @param array<int,string> $data
-	 * @param Closure(array<int,string> $data): array<int,string> $next
+	 * @param \Closure(array<int,string> $data): array<int,string> $next
 	 *
 	 * @return array<int,string>
 	 */
