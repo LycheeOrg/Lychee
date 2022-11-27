@@ -100,6 +100,7 @@ use Illuminate\Support\Facades\Auth;
  * @property string|null                $password
  * @property bool                       $has_password
  * @property PhotoSortingCriterion|null $sorting
+ * @property AlbumProtectionPolicy      $policy
  */
 class BaseAlbumImpl extends Model implements HasRandomID
 {
@@ -293,9 +294,9 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	/**
 	 * Provide the policy attributes for said album.
 	 *
-	 * @return AlbumProtectionPolicy|null
+	 * @return AlbumProtectionPolicy
 	 */
-	protected function getPolicyAttribute(): AlbumProtectionPolicy|null
+	protected function getPolicyAttribute(): AlbumProtectionPolicy
 	{
 		return AlbumProtectionPolicy::ofBaseAlbumImplementation($this);
 	}

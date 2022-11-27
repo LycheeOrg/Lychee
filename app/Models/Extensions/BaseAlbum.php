@@ -4,6 +4,7 @@ namespace App\Models\Extensions;
 
 use App\Contracts\AbstractAlbum;
 use App\Contracts\HasRandomID;
+use App\DTO\AlbumProtectionPolicy;
 use App\DTO\PhotoSortingCriterion;
 use App\Models\BaseAlbumImpl;
 use App\Models\User;
@@ -35,6 +36,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null                $min_taken_at
  * @property Carbon|null                $max_taken_at
  * @property PhotoSortingCriterion|null $sorting
+ * @property AlbumProtectionPolicy      $policy
  * @property BaseAlbumImpl              $base_class
  */
 abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
