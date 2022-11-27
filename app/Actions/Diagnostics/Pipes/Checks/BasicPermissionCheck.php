@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Actions\Diagnostics\Checks;
+namespace App\Actions\Diagnostics\Pipes\Checks;
 
-use App\Contracts\DiagnosticCheckInterface;
+use App\Contracts\DiagnosticPipe;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Facades\Helpers;
 use App\Models\SymLink;
+use Closure;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
@@ -20,7 +21,7 @@ use function Safe\fileperms;
 use function Safe\posix_getgrgid;
 use function Safe\posix_getgroups;
 
-class BasicPermissionCheck implements DiagnosticCheckInterface
+class BasicPermissionCheck implements DiagnosticPipe
 {
 	public const MAX_ISSUE_REPORTS_PER_TYPE = 5;
 
@@ -41,22 +42,25 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 	protected int $numAccessIssues;
 
 	/**
-	 * @param string[] $errors
+	 * @param array<int,string> $data
+	 * @param Closure(array<int,string> $data): array<int,string> $next
 	 *
-	 * @return void
+	 * @return array<int,string>
 	 */
-	public function check(array &$errors): void
+	public function handle(array &$data, \Closure $next): array
 	{
-		$this->folders($errors);
-		$this->userCSS($errors);
+		$this->folders($data);
+		$this->userCSS($data);
+
+		return $next($data);
 	}
 
 	/**
-	 * @param string[] $errors
+	 * @param array<int,string> $data
 	 *
 	 * @return void
 	 */
-	public function folders(array &$errors): void
+	public function folders(array &$data): void
 	{
 		if (!extension_loaded('posix')) {
 			return;
@@ -69,7 +73,7 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 		try {
 			$groupIDsOrFalse = posix_getgroups();
 		} catch (PosixException) {
-			$errors[] = 'Error: Could not determine groups of process';
+			$data[] = 'Error: Could not determine groups of process';
 
 			return;
 		}
@@ -96,29 +100,34 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 
 		foreach ($disks as $disk) {
 			if ($disk->getAdapter() instanceof LocalFilesystemAdapter) {
-				$this->checkDirectoryPermissionsRecursively($disk->path(''), $errors);
+				$this->checkDirectoryPermissionsRecursively($disk->path(''), $data);
 			}
 		}
 
 		if ($this->numOwnerIssues > self::MAX_ISSUE_REPORTS_PER_TYPE) {
-			$errors[] = sprintf('Warning: %d more directories with wrong owner', $this->numOwnerIssues - self::MAX_ISSUE_REPORTS_PER_TYPE);
+			$data[] = sprintf('Warning: %d more directories with wrong owner', $this->numOwnerIssues - self::MAX_ISSUE_REPORTS_PER_TYPE);
 		}
 		if ($this->numPermissionIssues > self::MAX_ISSUE_REPORTS_PER_TYPE) {
-			$errors[] = sprintf('Warning: %d more directories with wrong permissions', $this->numPermissionIssues - self::MAX_ISSUE_REPORTS_PER_TYPE);
+			$data[] = sprintf('Warning: %d more directories with wrong permissions', $this->numPermissionIssues - self::MAX_ISSUE_REPORTS_PER_TYPE);
 		}
 		if ($this->numAccessIssues > self::MAX_ISSUE_REPORTS_PER_TYPE) {
-			$errors[] = sprintf('Warning: %d more inaccessible directories', $this->numAccessIssues - self::MAX_ISSUE_REPORTS_PER_TYPE);
+			$data[] = sprintf('Warning: %d more inaccessible directories', $this->numAccessIssues - self::MAX_ISSUE_REPORTS_PER_TYPE);
 		}
 	}
 
-	public function userCSS(array &$errors): void
+	/**
+	 * @param array<int,string> $data
+	 *
+	 * @return void
+	 */
+	public function userCSS(array &$data): void
 	{
 		$p = Storage::disk('dist')->path('user.css');
 		if (!Helpers::hasPermissions($p)) {
-			$errors[] = "Warning: '" . $p . "' does not exist or has insufficient read/write privileges.";
+			$data[] = "Warning: '" . $p . "' does not exist or has insufficient read/write privileges.";
 			$p = Storage::disk('dist')->path('');
 			if (!Helpers::hasPermissions($p)) {
-				$errors[] = "Warning: '" . $p . "' has insufficient read/write privileges.";
+				$data[] = "Warning: '" . $p . "' has insufficient read/write privileges.";
 			}
 		}
 	}
@@ -129,12 +138,12 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 	 * For efficiency reasons only the directory permissions are checked,
 	 * not the permissions of every single file.
 	 *
-	 * @param string   $path   the path of the directory or file to check
-	 * @param string[] $errors the list of errors to append to
+	 * @param string   $path the path of the directory or file to check
+	 * @param string[] $data the list of errors to append to
 	 *
 	 * @noinspection PhpComposerExtensionStubsInspection
 	 */
-	private function checkDirectoryPermissionsRecursively(string $path, array &$errors): void
+	private function checkDirectoryPermissionsRecursively(string $path, array &$data): void
 	{
 		try {
 			if (!is_dir($path)) {
@@ -144,7 +153,7 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 			try {
 				$actualPerm = fileperms($path);
 			} catch (FilesystemException) {
-				$errors[] = sprintf('Warning: Unable to determine permissions for %s' . PHP_EOL, $path);
+				$data[] = sprintf('Warning: Unable to determine permissions for %s' . PHP_EOL, $path);
 
 				return;
 			}
@@ -169,14 +178,14 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 			if (!in_array($owningGroupIdOrFalse, $this->groupIDs, true)) {
 				$this->numOwnerIssues++;
 				if ($this->numOwnerIssues <= self::MAX_ISSUE_REPORTS_PER_TYPE) {
-					$errors[] = sprintf('Warning: %s is owned by group %s, but should be owned by one out of %s', $path, $owningGroupName, $this->groupNames);
+					$data[] = sprintf('Warning: %s is owned by group %s, but should be owned by one out of %s', $path, $owningGroupName, $this->groupNames);
 				}
 			}
 
 			if ($expectedPerm !== $actualPerm) {
 				$this->numPermissionIssues++;
 				if ($this->numPermissionIssues <= self::MAX_ISSUE_REPORTS_PER_TYPE) {
-					$errors[] = sprintf(
+					$data[] = sprintf(
 						'Warning: %s has permissions %04o, but should have %04o',
 						$path,
 						$actualPerm,
@@ -194,18 +203,18 @@ class BasicPermissionCheck implements DiagnosticCheckInterface
 						!is_readable($path) => 'not readable',
 						default => ''
 					};
-					$errors[] = sprintf('Error: %s is %s by %s', $path, $problem, $this->groupNames);
+					$data[] = sprintf('Error: %s is %s by %s', $path, $problem, $this->groupNames);
 				}
 			}
 
 			$dir = new \DirectoryIterator($path);
 			foreach ($dir as $dirEntry) {
 				if ($dirEntry->isDir() && !$dirEntry->isDot()) {
-					$this->checkDirectoryPermissionsRecursively($dirEntry->getPathname(), $errors);
+					$this->checkDirectoryPermissionsRecursively($dirEntry->getPathname(), $data);
 				}
 			}
 		} catch (\Exception $e) {
-			$errors[] = 'Error: ' . $e->getMessage();
+			$data[] = 'Error: ' . $e->getMessage();
 			Handler::reportSafely($e);
 		}
 	}

@@ -1,12 +1,21 @@
 <?php
 
-namespace App\Actions\Diagnostics\Checks;
+namespace App\Actions\Diagnostics\Pipes\Checks;
 
-use App\Contracts\DiagnosticCheckInterface;
+use App\Contracts\DiagnosticPipe;
 
-class PHPVersionCheck implements DiagnosticCheckInterface
+class PHPVersionCheck implements DiagnosticPipe
 {
-	public function check(array &$errors): void
+	public function handle(array &$data, \Closure $next): array
+	{
+		$this->checkPhpVersion($data);
+		$this->check32Bits($data);
+		$this->checkExtensions($data);
+
+		return $next($data);
+	}
+
+	private function checkPhpVersion(array &$data): void
 	{
 		// As we cannot test this as those are just raising warnings which we cannot check via Travis.
 		// I hereby solemnly declare this code as covered !
@@ -16,31 +25,35 @@ class PHPVersionCheck implements DiagnosticCheckInterface
 		// 28 Nov 2019	 => 7.4 = RELEASED   => 7.3 = WARNING
 		// 26 Nov 2020	 => 8.0 = RELEASED   => 7.4 = WARNING
 		// 6 Dec 2020	 => 7.3 = DEPRECATED = ERROR
-		// ! 25 Nov 2021	 => 8.1 = Released   => 8.0 = WARNING & 7.4 = ERROR
+		// 25 Nov 2021	 => 8.1 = Released   => 8.0 = WARNING & 7.4 = ERROR
 		$php_error = 7.4;
 		$php_warning = 8;
 		$php_latest = 8.1;
 
-		// ! 26 Nov 2022	 => 8.0 = DEPRECATED = ERROR
+		// ! 08 Dec 2022	 => 8.0 = DEPRECATED = ERROR
 		// $php_error = 8.1;
 		// $php_warning = 8.1;
-		// $php_latest = 8.1;
-
-		if (floatval(phpversion()) < $php_latest) {
-			$errors[] = 'Info: Latest version of PHP is ' . $php_latest;
-		}
+		// $php_latest = 8.2;
 
 		if (floatval(phpversion()) <= $php_error) {
-			$errors[] = 'Error: Upgrade to PHP ' . $php_warning . ' or higher';
+			$data[] = 'Error: Upgrade to PHP ' . $php_warning . ' or higher';
 		} elseif (floatval(phpversion()) < $php_warning) {
-			$errors[] = 'Warning: Upgrade to PHP ' . $php_latest . ' or higher';
+			$data[] = 'Warning: Upgrade to PHP ' . $php_latest . ' or higher';
+		} elseif (floatval(phpversion()) < $php_latest) {
+			$data[] = 'Info: Latest version of PHP is ' . $php_latest;
 		}
+	}
 
+	private function check32Bits(array &$data): void
+	{
 		// 32 or 64 bits ?
 		if (PHP_INT_MAX === 2147483647) {
-			$errors[] = 'Warning: Using 32 bit PHP, recommended upgrade to 64 bit';
+			$data[] = 'Warning: Using 32 bit PHP, recommended upgrade to 64 bit';
 		}
+	}
 
+	private function checkExtensions(array &$data): void
+	{
 		// Extensions
 		$extensions = [
 			'bcmath', // Required by Laravel
@@ -65,7 +78,7 @@ class PHPVersionCheck implements DiagnosticCheckInterface
 
 		foreach ($extensions as $extension) {
 			if (!extension_loaded($extension)) {
-				$errors[] = 'Error: PHP ' . $extension . ' extension not activated';
+				$data[] = 'Error: PHP ' . $extension . ' extension not activated';
 			}
 		}
 	}
