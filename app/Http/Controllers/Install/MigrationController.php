@@ -85,8 +85,6 @@ class MigrationController extends Controller
 
 		if (!$hasErrors) {
 			$user = new User();
-			$user->incrementing = false;
-			$user->id = 0;
 			$user->may_upload = true;
 			$user->may_edit_own_settings = true;
 			$user->may_administrate = true;
