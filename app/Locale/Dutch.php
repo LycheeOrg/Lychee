@@ -138,7 +138,7 @@ final class Dutch implements Language
 			'STARRED' => 'Met ster',
 			'RECENT' => 'Recentelijk',
 			'PUBLIC' => 'Publiekelijk',
-			'ON_THIS_DAY' => 'On This Day',
+			'ON_THIS_DAY' => 'Deze Dag',
 			'NUM_PHOTOS' => 'Foto’s',
 
 			'CREATE_ALBUM' => 'Maak Album',
