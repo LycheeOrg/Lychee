@@ -41,7 +41,7 @@ class UpdateTest extends TestCase
 	{
 		$gitpull = Configs::getValue('allow_online_git_pull', '0');
 
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		Configs::set('allow_online_git_pull', '0');
 		$response = $this->postJson('/api/Update::apply');

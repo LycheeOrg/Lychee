@@ -30,7 +30,7 @@ class WebAuthTest extends TestCase
 	 */
 	public function testWebAuthTest(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$response = $this->postJson('/api/WebAuthn::register/options');
 		$this->assertOk($response);
@@ -81,7 +81,7 @@ class WebAuthTest extends TestCase
 		$user = User::query()->find(1);
 		$user->webAuthnCredentials()->save($key);
 
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$response = $this->postJson('/api/WebAuthn::list');
 		$this->assertOk($response); // code 200 something

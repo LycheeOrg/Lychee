@@ -193,6 +193,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		}
 
 		$this->shared()->delete();
+		// TODO delete webauthn credentials
 
 		return $this->parentDelete();
 	}

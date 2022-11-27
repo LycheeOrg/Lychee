@@ -24,7 +24,7 @@ trait RequiresEmptyUsers
 		static::assertEquals(
 			0,
 			DB::table('users')
-				->where('id', '!=', 0)
+				->where('may_administrate', '=', false)
 				->count()
 		);
 	}
@@ -32,6 +32,6 @@ trait RequiresEmptyUsers
 	protected function tearDownRequiresEmptyUsers(): void
 	{
 		// Clean up remaining stuff from tests
-		DB::table('users')->where('id', '!=', 0)->delete();
+		DB::table('users')->where('may_administrate', '=', false)->delete();
 	}
 }

@@ -57,7 +57,7 @@ class LegacyTest extends TestCase
 	 */
 	public function testLegacyConversion(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 		$photoID = $this->photos_tests->upload(
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),

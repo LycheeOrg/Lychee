@@ -40,7 +40,7 @@ class LogsTest extends TestCase
 		$this->assertUnauthorized($response);
 
 		// set user as admin
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		Logs::notice(__METHOD__, __LINE__, 'test');
 		$response = $this->get('/Logs');
@@ -72,7 +72,7 @@ class LogsTest extends TestCase
 		$this->assertUnauthorized($response);
 
 		// set user as admin
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$response = $this->postJson('/api/Logs::clearNoise');
 		$this->assertNoContent($response);

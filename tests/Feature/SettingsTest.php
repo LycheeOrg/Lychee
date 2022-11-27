@@ -22,7 +22,7 @@ class SettingsTest extends TestCase
 {
 	public function testSetSorting(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$this->postJson('/api/Settings::setSorting', [
 			SetSortingSettingsRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
@@ -37,7 +37,7 @@ class SettingsTest extends TestCase
 
 	public function testSetSortingWithIllegalAlbumAttribute(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$response = $this->postJson('/api/Settings::setSorting',
 			[
@@ -56,7 +56,7 @@ class SettingsTest extends TestCase
 
 	public function testSetSortingWithIllegalPhotoAttribute(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$response = $this->postJson('/api/Settings::setSorting',
 			[
@@ -75,7 +75,7 @@ class SettingsTest extends TestCase
 
 	public function testSetSortingWithUnknownOrder(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$response = $this->postJson('/api/Settings::setSorting',
 			[

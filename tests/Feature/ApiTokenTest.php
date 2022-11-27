@@ -50,7 +50,7 @@ class ApiTokenTest extends TestCase
 		]);
 		$response->assertStatus(200);
 		$response->assertSee([
-			'id' => 0,
+			'id' => 1,
 		], false);
 
 		$this->assertAuthenticated();
@@ -73,7 +73,7 @@ class ApiTokenTest extends TestCase
 		]);
 		$response->assertStatus(200);
 		$response->assertSee([
-			'id' => 0,
+			'id' => 1,
 		], false);
 
 		// We need to call this to mimic the behaviour of real-world
@@ -113,7 +113,7 @@ class ApiTokenTest extends TestCase
 		]);
 		$response->assertStatus(200);
 		$response->assertSee([
-			'id' => 0,
+			'id' => 1,
 		], false);
 
 		// We need to call this to mimic the behaviour of real-world
@@ -264,7 +264,7 @@ class ApiTokenTest extends TestCase
 	 */
 	protected function resetAdminToken(): string
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$token = $this->users_tests->reset_token()->offsetGet('token');
 		Auth::logout();
 		Session::flush();
@@ -280,7 +280,7 @@ class ApiTokenTest extends TestCase
 	 */
 	protected function createUserWithToken(string $userName, string $password): array
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$id = $this->users_tests->add($userName, $password)->offsetGet('id');
 		Auth::logout();
 		Session::flush();

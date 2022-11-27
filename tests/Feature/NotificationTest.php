@@ -60,7 +60,7 @@ class NotificationTest extends TestCase
 		$init_config_value = Configs::getValue('new_photos_notification');
 
 		try {
-			Auth::loginUsingId(0);
+			Auth::loginUsingId(1);
 
 			$response = $this->postJson('/api/Settings::setNewPhotosNotification', [
 				'new_photos_notification' => '1',
@@ -79,7 +79,7 @@ class NotificationTest extends TestCase
 	public function testSetupUserEmail(): void
 	{
 		// add email to admin
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$this->users_tests->update_email('test@test.com');
 
 		Auth::logout();
@@ -120,7 +120,7 @@ class NotificationTest extends TestCase
 		$init_config_value = Configs::getValue('new_photos_notification');
 		Configs::set('new_photos_notification', '1');
 
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$albumID = $this->albums_tests->add(null, 'Album 1')->offsetGet('id');
 		$photoID = $this->photos_tests->upload(
 			self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE))->offsetGet('id');

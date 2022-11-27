@@ -29,7 +29,7 @@ class DiagnosticsTest extends TestCase
 		$response = $this->get('/Diagnostics');
 		$response->assertOk(); // code 200 something
 
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$response = $this->get('/Diagnostics');
 		$response->assertOk(); // code 200 something

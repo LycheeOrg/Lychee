@@ -85,7 +85,7 @@ class UsersTest extends TestCase
 		 */
 
 		// 1
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		// 2
 		$users_test->add(
@@ -173,7 +173,7 @@ class UsersTest extends TestCase
 		$sessions_test->logout();
 
 		// 15
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		// 16
 		$users_test->save(
@@ -240,7 +240,7 @@ class UsersTest extends TestCase
 		$sessions_test->logout();
 
 		// 29
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		// 30
 		$users_test->delete($id);
@@ -256,7 +256,7 @@ class UsersTest extends TestCase
 		$sessions_test->logout();
 
 		// 32
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$configs = Configs::get();
 		$store_new_photos_notification = $configs['new_photos_notification'];
@@ -287,7 +287,7 @@ class UsersTest extends TestCase
 	{
 		$users_test = new UsersUnitTest($this);
 
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$oldToken = $users_test->reset_token()->offsetGet('token');
 		$newToken = $users_test->reset_token()->offsetGet('token');
@@ -300,7 +300,7 @@ class UsersTest extends TestCase
 	{
 		$users_test = new UsersUnitTest($this);
 
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$oldToken = $users_test->reset_token()->offsetGet('token');
 		self::assertNotNull($oldToken);
@@ -342,7 +342,7 @@ class UsersTest extends TestCase
 		$admin->save();
 
 		// Log as admin and check the rights
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$response = $sessions_test->init();
 		$response->assertJsonFragment([
 			'rights' => [
@@ -358,7 +358,7 @@ class UsersTest extends TestCase
 		$admin->save();
 
 		// Log as admin and verify behaviour
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$response = $sessions_test->init();
 		$response->assertJsonFragment([
 			'rights' => [
@@ -378,10 +378,10 @@ class UsersTest extends TestCase
 
 		$users_test->get_user(204);
 
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$users_test->get_user(200, [
-			'id' => 0,
+			'id' => 1,
 		]);
 	}
 }
