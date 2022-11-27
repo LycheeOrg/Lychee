@@ -59,7 +59,7 @@ class Thumb extends DTO
 		try {
 			/** @var Photo|null $cover */
 			$cover = $photoQueryable
-				->withOnly(['size_variants' => fn (HasMany $r) => self::sizeVariantsFilter($r)])
+				->withOnly(['size_variants' => (fn (HasMany $r) => self::sizeVariantsFilter($r))])
 				->orderBy('photos.' . PhotoSortingCriterion::COLUMN_IS_STARRED, SortingCriterion::DESC)
 				->orderBy('photos.' . $sorting->column, $sorting->order)
 				->select(['photos.id', 'photos.type'])
