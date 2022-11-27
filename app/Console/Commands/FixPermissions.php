@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Actions\Diagnostics\Checks\BasicPermissionCheck;
+use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use function Safe\chmod;
