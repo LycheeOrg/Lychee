@@ -33,7 +33,7 @@ class LycheeDBVersionCheck implements DiagnosticPipe
 	 *
 	 * @return array<int,string>
 	 */
-	public function handle(array &$data, \Closure $next): array
+	public function handle(array &$data, Closure $next): array
 	{
 		if ($this->lycheeVersion->isRelease) {
 			// @codeCoverageIgnoreStart

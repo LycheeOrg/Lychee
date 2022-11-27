@@ -47,7 +47,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 	 *
 	 * @return array<int,string>
 	 */
-	public function handle(array &$data, \Closure $next): array
+	public function handle(array &$data, Closure $next): array
 	{
 		$this->folders($data);
 		$this->userCSS($data);
