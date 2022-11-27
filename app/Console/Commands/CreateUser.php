@@ -9,9 +9,6 @@ use Illuminate\Console\Command;
 
 class CreateUser extends Command
 {
-	/**
-	 * Add color to the command line output.
-	 */
 	private Create $create;
 
 	/**
