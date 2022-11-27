@@ -138,6 +138,7 @@ final class French implements Language
 			'STARRED' => 'Favoris',
 			'RECENT' => 'Récent',
 			'PUBLIC' => 'Public',
+			'ON_THIS_DAY' => 'On This Day',
 			'NUM_PHOTOS' => 'Photos',
 
 			'CREATE_ALBUM' => 'Créer un album',

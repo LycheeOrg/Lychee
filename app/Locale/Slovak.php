@@ -138,6 +138,7 @@ final class Slovak implements Language
 			'STARRED' => 'Obľúbený',
 			'RECENT' => 'Naposledy použitý',
 			'PUBLIC' => 'Verejný',
+			'ON_THIS_DAY' => 'On This Day',
 			'NUM_PHOTOS' => 'obrázkov',
 
 			'CREATE_ALBUM' => 'Album vytvoriť',
