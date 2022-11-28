@@ -24,10 +24,14 @@ class IniSettingsCheck implements DiagnosticPipe
 		}
 		$max_execution_time = intval(ini_get('max_execution_time'));
 		if (0 < $max_execution_time && $max_execution_time < 200) {
+			// @codeCoverageIgnoreStart
 			$data[] = 'Warning: You may experience problems when uploading a photo of large size or handling many/large albums. Take a look in the FAQ for details.';
+			// @codeCoverageIgnoreEnd
 		}
 		if (filter_var(ini_get('allow_url_fopen'), FILTER_VALIDATE_BOOLEAN) !== true) {
+			// @codeCoverageIgnoreStart
 			$data[] = 'Warning: You may experience problems with the Dropbox- and URL-Import. Edit your php.ini and set allow_url_fopen to 1.';
+			// @codeCoverageIgnoreEnd
 		}
 
 		// Check imagick
@@ -62,7 +66,9 @@ class IniSettingsCheck implements DiagnosticPipe
 		}
 
 		if (ini_get('zend.assertions') !== '-1' && config('app.debug') !== true) {
+			// @codeCoverageIgnoreStart
 			$data[] = 'Warning: zend.assertions is enabled although Lychee is not in debug mode. Outside of debugging, code generation for assertions is recommended to be disabled for efficiency reasons';
+			// @codeCoverageIgnoreEnd
 		}
 
 		if (ini_get('zend.assertions') !== '1' && config('app.debug') === true) {

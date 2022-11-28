@@ -140,6 +140,13 @@ class Photo extends Model implements HasRandomID
 	];
 
 	/**
+	 * @var array<int,string> By default preload all the size_variants
+	 */
+	protected $with = [
+		'size_variants',
+	];
+
+	/**
 	 * Creates a new instance of {@link LinkedPhotoCollection}.
 	 *
 	 * The only difference between an ordinary {@link Collection} and a

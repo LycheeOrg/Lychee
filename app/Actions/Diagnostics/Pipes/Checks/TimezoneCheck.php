@@ -11,10 +11,12 @@ class TimezoneCheck implements DiagnosticPipe
 	{
 		$timezone = CarbonTimeZone::create();
 		if ($timezone === false) {
+			// @codeCoverageIgnoreStart
 			$data[]
 				= 'Error: Could not retrieve timezone; you might experience strange results when importing photos without explicit EXIF timezone';
 
 			return $next($data);
+			// @codeCoverageIgnoreEnd
 		}
 		$timezoneName = $timezone->getName();
 		$tzArray = explode('/', $timezoneName);
