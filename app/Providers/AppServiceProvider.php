@@ -20,6 +20,7 @@ use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
@@ -58,6 +59,15 @@ class AppServiceProvider extends ServiceProvider
 				Log::info($msg);
 			});
 		}
+
+		/**
+		 * We enforce strict mode
+		 * this has the following effect:
+		 * - lazy loading is disabled
+		 * - non-fillable attributes on creation of model are not discarded but throw an error
+		 * - prevents accessing missing attributes.
+		 */
+		Model::shouldBeStrict();
 
 		try {
 			stream_filter_register(

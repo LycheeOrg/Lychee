@@ -52,7 +52,7 @@ parameters:
 		- '#Parameter \#1 \$key of method .*::partition\(\) expects \(callable\(.*\): bool\)\|Illuminate\\Database\\Eloquent\\Model\|string, Closure\(.*\): bool given.#'
 
 
-		- '#Call to an undefined( static)? method Kalnoy\\Nestedset\\.*::(whereIn|select|join|leftJoin|orderBy|addSelect)\(\)#'
+		- '#Call to an undefined( static)? method Kalnoy\\Nestedset\\.*::(whereIn|select|join|leftJoin|orderBy|addSelect|without)\(\)#'
 		- '#Parameter .* of method .*::newEloquentBuilder\(\) should be contravariant with parameter \$query \(mixed\) of method Kalnoy\\Nestedset\\Node::newEloquentBuilder\(\)#'
 		- '#Call to an undefined method Geocoder\\Location::getDisplayName\(\)#'
 		- '#Call to an undefined method COM::getfolder\(\).#'
