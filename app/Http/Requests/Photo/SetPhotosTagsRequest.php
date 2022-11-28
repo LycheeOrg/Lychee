@@ -40,7 +40,7 @@ class SetPhotosTagsRequest extends BaseApiRequest implements HasPhotos, HasTags
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photos = Photo::query()->without(['size_variants'])->findOrFail($values[HasPhotos::PHOTO_IDS_ATTRIBUTE]);
+		$this->photos = Photo::query()->findOrFail($values[HasPhotos::PHOTO_IDS_ATTRIBUTE]);
 		$this->tags = $values[HasTags::TAGS_ATTRIBUTE];
 		$this->shallOverride = $values[self::SHALL_OVERRIDE_ATTRIBUTE];
 	}

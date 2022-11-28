@@ -34,7 +34,7 @@ class SetPhotoDescriptionRequest extends BaseApiRequest implements HasPhoto, Has
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photo = Photo::query()->without(['size_variants'])->findOrFail($values[HasPhoto::PHOTO_ID_ATTRIBUTE]);
+		$this->photo = Photo::query()->findOrFail($values[HasPhoto::PHOTO_ID_ATTRIBUTE]);
 		$this->description = $values[HasDescription::DESCRIPTION_ATTRIBUTE];
 	}
 }
