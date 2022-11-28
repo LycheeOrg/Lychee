@@ -35,7 +35,7 @@ class SetPhotosTitleRequest extends BaseApiRequest implements HasPhotos, HasTitl
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photos = Photo::query()->findOrFail($values[HasPhotos::PHOTO_IDS_ATTRIBUTE]);
+		$this->photos = Photo::query()->without(['size_variants'])->findOrFail($values[HasPhotos::PHOTO_IDS_ATTRIBUTE]);
 		$this->title = $values[HasTitle::TITLE_ATTRIBUTE];
 	}
 }
