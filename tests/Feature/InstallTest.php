@@ -30,8 +30,6 @@ class InstallTest extends TestCase
 		/*
 		 * Get previous config
 		 */
-		/** @var User $admin */
-		$admin = User::query()->find(1);
 
 		$prevAppKey = config('app.key');
 		config(['app.key' => null]);
@@ -131,7 +129,7 @@ class InstallTest extends TestCase
 		/**
 		 * apply migration.
 		 */
-		$response = $this->get('install/migrate');
+		$response = $this->post('install/migrate', ['username' => 'admin', 'password' => 'password']);
 		$response->assertOk();
 		$response->assertViewIs('install.migrate');
 
@@ -148,8 +146,24 @@ class InstallTest extends TestCase
 		$response = $this->get('/');
 		$response->assertOk();
 
-		$admin->save();
-		$admin->id = 0;
-		$admin->save();
+		/*
+		 * make sure there's still an admin user with ID 1
+		 */
+		/** @var User $admin */
+		$admin = User::find(1);
+		if ($admin === null) {
+			$admin = new User();
+			$admin->incrementing = false;
+			$admin->id = 1;
+			$admin->may_upload = true;
+			$admin->may_edit_own_settings = true;
+			$admin->may_administrate = true;
+			$admin->username = 'admin';
+			$admin->password = Hash::make('password');
+			$admin->save();
+		} elseif (!$admin->may_administrate) {
+			$admin->may_administrate = true;
+			$admin->save();
+		}
 	}
 }

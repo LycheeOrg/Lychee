@@ -6,6 +6,8 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Support\Responsable;
 use Laragear\WebAuthn\Http\Requests\AssertedRequest;
 use Laragear\WebAuthn\Http\Requests\AssertionRequest;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class WebAuthnLoginController
 {
@@ -32,6 +34,9 @@ class WebAuthnLoginController
 	 */
 	public function login(AssertedRequest $request): void
 	{
-		$request->login();
+		$user = $request->login();
+		if ($user === null) {
+			throw new HttpException(Response::HTTP_UNPROCESSABLE_ENTITY);
+		}
 	}
 }
