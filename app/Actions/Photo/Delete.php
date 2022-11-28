@@ -70,6 +70,7 @@ class Delete
 	 */
 	public function do(array $photoIDs, array $albumIDs = []): FileDeleter
 	{
+		// TODO: replace this with pipelines, This is typically the kind of pattern.
 		try {
 			$this->collectSizeVariantPathsByPhotoID($photoIDs);
 			$this->collectSizeVariantPathsByAlbumID($albumIDs);
@@ -78,9 +79,11 @@ class Delete
 			$this->collectSymLinksByPhotoID($photoIDs);
 			$this->collectSymLinksByAlbumID($albumIDs);
 			$this->deleteDBRecords($photoIDs, $albumIDs);
+			// @codeCoverageIgnoreStart
 		} catch (QueryBuilderException $e) {
 			throw ModelDBException::create('photos', 'deleting', $e);
 		}
+		// @codeCoverageIgnoreEnd
 
 		return $this->fileDeleter;
 	}
@@ -118,9 +121,11 @@ class Delete
 				->whereNull('dup.id')
 				->pluck('sv.short_path');
 			$this->fileDeleter->addRegularFilesOrSymbolicLinks($svShortPaths);
+			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -156,9 +161,11 @@ class Delete
 				->whereNull('dup.id')
 				->pluck('sv.short_path');
 			$this->fileDeleter->addRegularFilesOrSymbolicLinks($svShortPaths);
+			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -194,9 +201,11 @@ class Delete
 				->whereNotNull('p.live_photo_short_path')
 				->pluck('p.live_photo_short_path');
 			$this->fileDeleter->addRegularFilesOrSymbolicLinks($livePhotoShortPaths);
+			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -232,9 +241,11 @@ class Delete
 				->whereNotNull('p.live_photo_short_path')
 				->pluck('p.live_photo_short_path');
 			$this->fileDeleter->addRegularFilesOrSymbolicLinks($livePhotoShortPaths);
+			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -260,9 +271,11 @@ class Delete
 				->whereIn('sv.photo_id', $photoIDs)
 				->pluck('sl.short_path');
 			$this->fileDeleter->addSymbolicLinks($symLinkPaths);
+			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -289,9 +302,11 @@ class Delete
 				->whereIn('p.album_id', $albumIDs)
 				->pluck('sl.short_path');
 			$this->fileDeleter->addSymbolicLinks($symLinkPaths);
+			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -352,8 +367,10 @@ class Delete
 			if (count($albumIDs) !== 0) {
 				Photo::query()->whereIn('album_id', $albumIDs)->delete();
 			}
+			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 }
