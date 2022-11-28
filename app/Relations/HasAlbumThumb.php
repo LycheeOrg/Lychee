@@ -39,7 +39,7 @@ class HasAlbumThumb extends Relation
 		$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
 		$this->sorting = PhotoSortingCriterion::createDefault();
 		parent::__construct(
-			Photo::query()->with(['size_variants' => fn (HasMany $r) => Thumb::sizeVariantsFilter($r)]),
+			Photo::query()->with(['size_variants' => (fn (HasMany $r) => Thumb::sizeVariantsFilter($r))]),
 			$parent
 		);
 	}
