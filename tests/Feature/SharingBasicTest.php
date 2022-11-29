@@ -73,11 +73,12 @@ class SharingBasicTest extends Base\SharingTestBase
 				['id' => $albumID1, 'title' => self::ALBUM_TITLE_1],
 				['id' => $albumID2, 'title' => self::ALBUM_TITLE_2],
 			],
-			'users' => [
-				['id' => $userID1, 'username' => self::USER_NAME_1],
-				['id' => $userID2, 'username' => self::USER_NAME_2],
-				['id' => 1, 'username' => 'admin'],
-			],
 		]);
+
+		/** @var array $users */
+		$users = $response->offsetGet('users');
+		$this->assertContains(['id' => $userID1, 'username' => self::USER_NAME_1], $users);
+		$this->assertContains(['id' => $userID2, 'username' => self::USER_NAME_2], $users);
+		$this->assertContains(['id' => 1, 'username' => 'admin'], $users);
 	}
 }

@@ -14,9 +14,7 @@ class IncrementUserIDs extends Migration
 	 */
 	public function up(): void
 	{
-		if (Schema::connection(null)->getConnection()->getDriverName() === 'sqlite') {
-			Schema::disableForeignKeyConstraints();
-		}
+		Schema::disableForeignKeyConstraints();
 		/** @var App\Models\User $user */
 		$user = DB::table('users')->find(0);
 		if ($user !== null && ($user->username === '' || $user->password === '')) {
@@ -38,9 +36,7 @@ class IncrementUserIDs extends Migration
 			DB::table('webauthn_credentials')->where('authenticatable_id', '=', $oldID)->update(['authenticatable_id' => $newID]);
 			DB::table('users')->delete($oldID);
 		}
-		if (Schema::connection(null)->getConnection()->getDriverName() === 'sqlite') {
-			Schema::enableForeignKeyConstraints();
-		}
+		Schema::enableForeignKeyConstraints();
 	}
 
 	/**
@@ -50,11 +46,9 @@ class IncrementUserIDs extends Migration
 	 */
 	public function down(): void
 	{
-		if (Schema::connection(null)->getConnection()->getDriverName() === 'sqlite') {
-			Schema::disableForeignKeyConstraints();
-		}
+		Schema::disableForeignKeyConstraints();
 		/** @var App\Models\User $user */
-		foreach (DB::table('users')->get() as $user) {
+		foreach (User::query()->orderBy('id')->get() as $user) {
 			$oldID = $user->id;
 			$newID = $oldID - 1;
 			$user->id = $newID;
@@ -67,8 +61,6 @@ class IncrementUserIDs extends Migration
 			DB::table('webauthn_credentials')->where('authenticatable_id', '=', $oldID)->update(['authenticatable_id' => $newID]);
 			DB::table('users')->delete($oldID);
 		}
-		if (Schema::connection(null)->getConnection()->getDriverName() === 'sqlite') {
-			Schema::enableForeignKeyConstraints();
-		}
+		Schema::enableForeignKeyConstraints();
 	}
 }
