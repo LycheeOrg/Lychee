@@ -47,7 +47,7 @@ class SettingsTest extends TestCase
 				SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
 			]);
 
-		$response->assertStatus(422);
+		$this->assertStatus($response, 422);
 		$response->assertSee('sorting albums column must be null or one out of');
 
 		Auth::logout();
@@ -66,7 +66,7 @@ class SettingsTest extends TestCase
 				SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
 			]);
 
-		$response->assertStatus(422);
+		$this->assertStatus($response, 422);
 		$response->assertSee('sorting photos column must be null or one out of');
 
 		Auth::logout();
@@ -85,7 +85,7 @@ class SettingsTest extends TestCase
 				SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => '123',
 			]);
 
-		$response->assertStatus(422);
+		$this->assertStatus($response, 422);
 		$response->assertSee('order must be either');
 
 		Auth::logout();

@@ -158,7 +158,7 @@ class PhotosOperationsTest extends PhotoTestBase
 		 * Actually try to display the picture.
 		 */
 		$response = $this->postJson('/api/Photo::getRandom');
-		$response->assertOk();
+		$this->assertOk($response);
 
 		/*
 		 * Erase tag
@@ -237,7 +237,7 @@ class PhotosOperationsTest extends PhotoTestBase
 		 * Actually try to display the picture.
 		 */
 		$response = $this->postJson('/api/Photo::getRandom');
-		$response->assertOk();
+		$this->assertOk($response);
 
 		// delete the picture after displaying it
 		$this->photos_tests->delete([$ids[1]]);
@@ -255,7 +255,7 @@ class PhotosOperationsTest extends PhotoTestBase
 		// check redirection
 		$this->clearCachedSmartAlbums();
 		$response = $this->get('/demo');
-		$response->assertOk();
+		$this->assertOk($response);
 		$response->assertViewIs('demo');
 
 		// set back to initial value
@@ -264,7 +264,7 @@ class PhotosOperationsTest extends PhotoTestBase
 		$this->albums_tests->delete([$albumID]);
 
 		$response = $this->postJson('/api/Photo::clearSymLink');
-		$response->assertNoContent();
+		$this->assertNoContent($response);
 	}
 
 	/**

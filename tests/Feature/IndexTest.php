@@ -30,10 +30,10 @@ class IndexTest extends TestCase
 		 * check if we can actually get a nice answer.
 		 */
 		$response = $this->get('/');
-		$response->assertOk();
+		$this->assertOk($response);
 
 		$response = $this->postJson('/api/Albums::get');
-		$response->assertOk();
+		$this->assertOk($response);
 	}
 
 	/**
@@ -47,7 +47,7 @@ class IndexTest extends TestCase
 		Session::flush();
 		// we don't want a non admin to access this
 		$response = $this->get('/phpinfo');
-		$response->assertForbidden();
+		$this->assertForbidden($response);
 	}
 
 	public function testLandingPage(): void
@@ -56,11 +56,11 @@ class IndexTest extends TestCase
 		Configs::set('landing_page_enable', 1);
 
 		$response = $this->get('/');
-		$response->assertOk();
+		$this->assertOk($response);
 		$response->assertViewIs('landing');
 
 		$response = $this->get('/gallery');
-		$response->assertOk();
+		$this->assertOk($response);
 
 		Configs::set('landing_page_enable', $landing_on_off);
 	}
