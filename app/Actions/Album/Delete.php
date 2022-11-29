@@ -94,7 +94,7 @@ class Delete extends Action
 			/** @var Album $album */
 			foreach ($albums as $album) {
 				// Collect all (aka recursive) sub-albums in each album
-				$subAlbums = $album->descendants()->select(['id', 'track_short_path'])->get();
+				$subAlbums = $album->descendants()->without(['cover', 'thumb'])->select(['id', 'track_short_path'])->get();
 				$recursiveAlbumIDs = array_merge($recursiveAlbumIDs, $subAlbums->pluck('id')->all());
 				$recursiveAlbumTracks = $recursiveAlbumTracks->merge($subAlbums->pluck('track_short_path'));
 			}

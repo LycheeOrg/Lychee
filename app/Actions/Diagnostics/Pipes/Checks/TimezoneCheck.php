@@ -1,27 +1,31 @@
 <?php
 
-namespace App\Actions\Diagnostics\Checks;
+namespace App\Actions\Diagnostics\Pipes\Checks;
 
-use App\Contracts\DiagnosticCheckInterface;
+use App\Contracts\DiagnosticPipe;
 use Carbon\CarbonTimeZone;
 
-class TimezoneCheck implements DiagnosticCheckInterface
+class TimezoneCheck implements DiagnosticPipe
 {
-	public function check(array &$errors): void
+	public function handle(array &$data, \Closure $next): array
 	{
 		$timezone = CarbonTimeZone::create();
 		if ($timezone === false) {
-			$errors[]
+			// @codeCoverageIgnoreStart
+			$data[]
 				= 'Error: Could not retrieve timezone; you might experience strange results when importing photos without explicit EXIF timezone';
 
-			return;
+			return $next($data);
+			// @codeCoverageIgnoreEnd
 		}
 		$timezoneName = $timezone->getName();
 		$tzArray = explode('/', $timezoneName);
 
 		if (count($tzArray) !== 2 || $tzArray[0] === 'Etc') {
-			$errors[]
+			$data[]
 				= 'Warning: Default timezone not properly set; you might experience strange results when importing photos without explicit EXIF timezone';
 		}
+
+		return $next($data);
 	}
 }

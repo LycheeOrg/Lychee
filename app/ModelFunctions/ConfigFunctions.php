@@ -3,10 +3,8 @@
 namespace App\ModelFunctions;
 
 use App\Exceptions\ConfigurationKeyMissingException;
-use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\Lang;
 use App\Models\Configs;
-use Illuminate\Support\Collection;
 
 class ConfigFunctions
 {
@@ -38,21 +36,6 @@ class ConfigFunctions
 		}
 
 		return $infos;
-	}
-
-	/**
-	 * Returns the public settings of Lychee (served to diagnostics).
-	 *
-	 * @return Collection
-	 *
-	 * @throws QueryBuilderException
-	 */
-	public function min_info(): Collection
-	{
-		return Configs::info()
-			->orderBy('id', 'ASC')
-			->get()
-			->pluck('value', 'key');
 	}
 
 	/**

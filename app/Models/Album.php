@@ -92,7 +92,7 @@ class Album extends BaseAlbum implements Node
 	/**
 	 * The relationships that should always be eagerly loaded by default.
 	 */
-	protected $with = ['cover', 'thumb'];
+	protected $with = ['cover', 'cover.size_variants', 'thumb'];
 
 	/**
 	 * @var string[] The list of "virtual" attributes which do not exist as
