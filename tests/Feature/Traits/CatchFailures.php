@@ -17,7 +17,7 @@ trait CatchFailures
 			$this->trimException($exception);
 			dump($exception);
 		}
-		$this->assertStatus($response, $expectedStatusCode);
+		$response->assertStatus($expectedStatusCode);
 	}
 
 	/**
