@@ -27,14 +27,14 @@ class LogsTest extends TestCase
 	public function testLogs(): void
 	{
 		$response = $this->get('/Logs');
-		$response->assertForbidden();
+		$this->assertForbidden($response);
 
 		// set user as admin
 		Auth::loginUsingId(0);
 
 		Logs::notice(__METHOD__, __LINE__, 'test');
 		$response = $this->get('/Logs');
-		$response->assertOk();
+		$this->assertOk($response);
 		$response->assertViewIs('logs.list');
 
 		Auth::logout();
@@ -44,28 +44,28 @@ class LogsTest extends TestCase
 	public function testApiLogs(): void
 	{
 		$response = $this->postJson('/api/Logs::list');
-		$response->assertForbidden();
+		$this->assertForbidden($response);
 	}
 
 	public function testClearLogs(): void
 	{
 		$response = $this->postJson('/api/Logs::clearNoise');
-		$response->assertForbidden();
+		$this->assertForbidden($response);
 
 		$response = $this->postJson('/api/Logs::clear');
-		$response->assertForbidden();
+		$this->assertForbidden($response);
 
 		// set user as admin
 		Auth::loginUsingId(0);
 
 		$response = $this->postJson('/api/Logs::clearNoise');
-		$response->assertNoContent();
+		$this->assertNoContent($response);
 
 		$response = $this->postJson('/api/Logs::clear');
-		$response->assertNoContent();
+		$this->assertNoContent($response);
 
 		$response = $this->get('/Logs');
-		$response->assertOk();
+		$this->assertOk($response);
 		$response->assertSeeText('Everything looks fine, Lychee has not reported any problems!');
 
 		Auth::logout();
