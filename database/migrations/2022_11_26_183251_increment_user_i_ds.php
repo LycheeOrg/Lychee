@@ -36,6 +36,10 @@ class IncrementUserIDs extends Migration
 			DB::table('webauthn_credentials')->where('authenticatable_id', '=', $oldID)->update(['authenticatable_id' => $newID]);
 			DB::table('users')->delete($oldID);
 		}
+		if (Schema::connection(null)->getConnection()->getDriverName() === 'pgsql' && DB::table('users')->count() > 0) {
+			// when using PostgreSQL, the new IDs are not updated after incrementing. Thus, we need to reset the index to the greatest ID + 1
+			DB::statement('ALTER SEQUENCE users_id_seq RESTART WITH ' . DB::table('users')->orderByDesc('id')->first()->id + 1);
+		}
 		Schema::enableForeignKeyConstraints();
 	}
 
