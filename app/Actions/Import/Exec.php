@@ -5,9 +5,9 @@ namespace App\Actions\Import;
 use App\Actions\Album\Create as AlbumCreate;
 use App\Actions\Photo\Create as PhotoCreate;
 use App\Actions\Photo\Strategies\ImportMode;
+use App\DTO\AbstractImportReport;
 use App\DTO\ImportEventReport;
 use App\DTO\ImportProgressReport;
-use App\DTO\ImportReport;
 use App\Exceptions\FileOperationException;
 use App\Exceptions\Handler;
 use App\Exceptions\ImportCancelledException;
@@ -76,11 +76,11 @@ class Exec
 	 * If the `ImportReport` carries an exception, the exception is logged
 	 * via the standard mechanism of the exception handler.
 	 *
-	 * @param ImportReport $report the report
+	 * @param AbstractImportReport $report the report
 	 *
 	 * @return void
 	 */
-	private function report(ImportReport $report): void
+	private function report(AbstractImportReport $report): void
 	{
 		if (!$this->enableCLIFormatting) {
 			try {
