@@ -6,7 +6,7 @@ use App\Actions\Photo\Delete;
 use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
-use App\Contracts\HasRandomID;
+use App\Constants\RandomID;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\ZeroModuloException;
@@ -75,7 +75,7 @@ use function Safe\preg_match;
  * @property bool         $is_downloadable
  * @property bool         $is_share_button_visible
  */
-class Photo extends Model implements HasRandomID
+class Photo extends Model
 {
 	use UTCBasedTimes;
 	use HasAttributesPatch;
@@ -98,7 +98,7 @@ class Photo extends Model implements HasRandomID
 	public $incrementing = false;
 
 	protected $casts = [
-		HasRandomID::LEGACY_ID_NAME => HasRandomID::LEGACY_ID_TYPE,
+		RandomID::LEGACY_ID_NAME => RandomID::LEGACY_ID_TYPE,
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'taken_at' => DateTimeWithTimezoneCast::class,
@@ -121,7 +121,7 @@ class Photo extends Model implements HasRandomID
 	 *                        relation but shall not be serialized to JSON
 	 */
 	protected $hidden = [
-		HasRandomID::LEGACY_ID_NAME,
+		RandomID::LEGACY_ID_NAME,
 		'album',  // do not serialize relation in order to avoid infinite loops
 		'owner',  // do not serialize relation
 		'owner_id',

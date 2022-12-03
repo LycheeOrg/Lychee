@@ -24,7 +24,7 @@ use App\Models\Photo;
  * This allows to use {@link MediaFile} as the source of the video, because
  * no EXIF data needs to be extracted from the video.
  */
-class AddVideoPartnerStrategy extends AbsractAddStrategy
+class AddVideoPartnerStrategy extends AbstractAddStrategy
 {
 	protected BaseMediaFile $videoSourceFile;
 

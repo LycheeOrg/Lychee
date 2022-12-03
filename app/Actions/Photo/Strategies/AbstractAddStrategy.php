@@ -8,7 +8,7 @@ use App\Exceptions\UnauthenticatedException;
 use App\Models\Photo;
 use Illuminate\Support\Facades\Auth;
 
-abstract class AbsractAddStrategy
+abstract class AbstractAddStrategy
 {
 	protected AddStrategyParameters $parameters;
 	protected Photo $photo;

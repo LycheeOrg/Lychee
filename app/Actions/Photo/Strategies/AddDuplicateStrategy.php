@@ -9,7 +9,7 @@ use App\Models\Logs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class AddDuplicateStrategy extends AbsractAddStrategy
+class AddDuplicateStrategy extends AbstractAddStrategy
 {
 	public function __construct(AddStrategyParameters $parameters, Photo $existing)
 	{

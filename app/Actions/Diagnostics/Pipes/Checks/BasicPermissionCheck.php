@@ -171,6 +171,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 			} else {
 				$owningGroupNameOrFalse = false;
 			}
+			/** @var string $owningGroupName */
 			$owningGroupName = $owningGroupNameOrFalse === false ? '<unknown>' : $owningGroupNameOrFalse['name'];
 			$expectedPerm = self::getConfiguredDirectoryPerm();
 

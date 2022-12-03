@@ -4,7 +4,7 @@ namespace App\Actions\Diagnostics;
 
 use App\Metadata\DiskUsage;
 
-class Space extends Diagnostics
+class Space
 {
 	private DiskUsage $diskUsage;
 

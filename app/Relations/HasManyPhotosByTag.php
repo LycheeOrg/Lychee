@@ -10,7 +10,7 @@ use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
-class HasManyPhotosByTag extends HasManyPhotos
+class HasManyPhotosByTag extends BaseHasManyPhotos
 {
 	public function __construct(TagAlbum $owningAlbum)
 	{

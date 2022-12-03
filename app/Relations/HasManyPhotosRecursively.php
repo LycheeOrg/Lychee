@@ -13,7 +13,7 @@ use App\Policies\AlbumQueryPolicy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Gate;
 
-class HasManyPhotosRecursively extends HasManyPhotos
+class HasManyPhotosRecursively extends BaseHasManyPhotos
 {
 	protected AlbumQueryPolicy $albumQueryPolicy;
 
