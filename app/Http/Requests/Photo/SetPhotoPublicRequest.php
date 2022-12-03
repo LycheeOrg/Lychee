@@ -4,6 +4,7 @@ namespace App\Http\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPhoto;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotoTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
 use App\Models\Photo;
@@ -27,7 +28,7 @@ class SetPhotoPublicRequest extends BaseApiRequest implements HasPhoto
 	public function rules(): array
 	{
 		return [
-			HasPhoto::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			RequestAttribute::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 			self::IS_PUBLIC_ATTRIBUTE => 'required|boolean',
 		];
 	}
@@ -37,7 +38,7 @@ class SetPhotoPublicRequest extends BaseApiRequest implements HasPhoto
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photo = Photo::query()->findOrFail($values[HasPhoto::PHOTO_ID_ATTRIBUTE]);
+		$this->photo = Photo::query()->findOrFail($values[RequestAttribute::PHOTO_ID_ATTRIBUTE]);
 		$this->isPublic = static::toBoolean($values[self::IS_PUBLIC_ATTRIBUTE]);
 	}
 

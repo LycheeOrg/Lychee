@@ -6,8 +6,6 @@ use App\Models\User;
 
 interface HasOptionalUser
 {
-	public const USER_ID_ATTRIBUTE = 'userID';
-
 	/**
 	 * Returns an _additional_ {@link User} object associated with this request.
 	 *

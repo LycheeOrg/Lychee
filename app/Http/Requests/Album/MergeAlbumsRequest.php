@@ -3,9 +3,9 @@
 namespace App\Http\Requests\Album;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasAlbum;
 use App\Http\Requests\Contracts\HasAlbums;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumAlbumsTrait;
 use App\Http\Requests\Traits\HasAlbumsTrait;
 use App\Http\Requests\Traits\HasAlbumTrait;
@@ -28,9 +28,9 @@ class MergeAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 	public function rules(): array
 	{
 		return [
-			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
-			HasAlbums::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
-			HasAlbums::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			RequestAttribute::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
+			RequestAttribute::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
 		];
 	}
 
@@ -39,7 +39,7 @@ class MergeAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = Album::query()->findOrFail($values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]);
+		$this->album = Album::query()->findOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
 		// `findOrFail` returns a union type, but we know that it returns the
 		// correct collection in this case
 		// TODO: As part of our `FixedQueryBuilder` we should also consider adding a method `findManyOrFail` which does not return an union type, but only a `Collection`.
@@ -47,6 +47,6 @@ class MergeAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 		// @phpstan-ignore-next-line
 		$this->albums = Album::query()
 			->with(['children'])
-			->findOrFail($values[HasAlbums::ALBUM_IDS_ATTRIBUTE]);
+			->findOrFail($values[RequestAttribute::ALBUM_IDS_ATTRIBUTE]);
 	}
 }

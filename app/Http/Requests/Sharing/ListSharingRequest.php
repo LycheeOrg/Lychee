@@ -3,8 +3,8 @@
 namespace App\Http\Requests\Sharing;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasBaseAlbum;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasBaseAlbumTrait;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
@@ -78,7 +78,7 @@ class ListSharingRequest extends BaseApiRequest implements HasBaseAlbum
 	public function rules(): array
 	{
 		return [
-			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['sometimes', new RandomIDRule(false)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['sometimes', new RandomIDRule(false)],
 			self::OWNER_ID_ATTRIBUTE => ['sometimes', new IntegerIDRule(false)],
 			self::PARTICIPANT_ID_ATTRIBUTE => ['sometimes', new IntegerIDRule(false)],
 		];
@@ -89,8 +89,8 @@ class ListSharingRequest extends BaseApiRequest implements HasBaseAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = key_exists(HasAbstractAlbum::ALBUM_ID_ATTRIBUTE, $values) ?
-			$this->albumFactory->findBaseAlbumOrFail($values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]) :
+		$this->album = key_exists(RequestAttribute::ALBUM_ID_ATTRIBUTE, $values) ?
+			$this->albumFactory->findBaseAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]) :
 			null;
 		$this->owner = key_exists(self::OWNER_ID_ATTRIBUTE, $values) ?
 			User::query()->findOrFail($values[self::OWNER_ID_ATTRIBUTE]) :
