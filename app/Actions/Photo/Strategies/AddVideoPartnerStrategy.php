@@ -3,7 +3,7 @@
 namespace App\Actions\Photo\Strategies;
 
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
-use App\Contracts\SizeVariantNamingStrategy;
+use App\Contracts\AbstractSizeVariantNamingStrategy;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\LycheeAssertionError;
@@ -48,7 +48,7 @@ class AddVideoPartnerStrategy extends AbsractAddStrategy
 		$photoExt = $photoFile->getOriginalExtension();
 		$videoExt = $this->videoSourceFile->getOriginalExtension();
 		$videoPath = substr($photoPath, 0, -strlen($photoExt)) . $videoExt;
-		$videoTargetFile = new FlysystemFile(SizeVariantNamingStrategy::getImageDisk(), $videoPath);
+		$videoTargetFile = new FlysystemFile(AbstractSizeVariantNamingStrategy::getImageDisk(), $videoPath);
 		$streamStat = $this->putSourceIntoFinalDestination($videoTargetFile);
 		$this->photo->live_photo_short_path = $videoPath;
 		$this->photo->live_photo_checksum = $streamStat?->checksum;

@@ -27,13 +27,13 @@ abstract class SizeVariantFactory
 	 * However, there is no consistency check, if the provided reference
 	 * image matches the original size variant of the photo.
 	 *
-	 * @param Photo                          $photo
-	 * @param ImageHandlerInterface|null     $referenceImage
-	 * @param SizeVariantNamingStrategy|null $namingStrategy
+	 * @param Photo                                  $photo
+	 * @param ImageHandlerInterface|null             $referenceImage
+	 * @param AbstractSizeVariantNamingStrategy|null $namingStrategy
 	 *
 	 * @throws LycheeException
 	 */
-	abstract public function init(Photo $photo, ?ImageHandlerInterface $referenceImage = null, ?SizeVariantNamingStrategy $namingStrategy = null): void;
+	abstract public function init(Photo $photo, ?ImageHandlerInterface $referenceImage = null, ?AbstractSizeVariantNamingStrategy $namingStrategy = null): void;
 
 	/**
 	 * Conditionally creates a size variant for the designated size variant.

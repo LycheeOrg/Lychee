@@ -3,8 +3,8 @@
 namespace App\Actions\Photo;
 
 use App\Actions\Photo\Extensions\ArchiveFileInfo;
+use App\Contracts\AbstractSizeVariantNamingStrategy;
 use App\Contracts\LycheeException;
-use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
@@ -338,7 +338,7 @@ class Archive
 		$baseFilename = $validFilename !== '' ? $validFilename : 'Untitled';
 
 		if ($variant === self::LIVEPHOTOVIDEO) {
-			$sourceFile = new FlysystemFile(SizeVariantNamingStrategy::getImageDisk(), $photo->live_photo_short_path);
+			$sourceFile = new FlysystemFile(AbstractSizeVariantNamingStrategy::getImageDisk(), $photo->live_photo_short_path);
 			$baseFilenameAddon = '';
 		} elseif (array_key_exists($variant, self::VARIANT2VARIANT)) {
 			$sv = $photo->size_variants->getSizeVariant(self::VARIANT2VARIANT[$variant]);

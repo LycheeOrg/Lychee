@@ -2,8 +2,8 @@
 
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
+use App\Contracts\AbstractSizeVariantNamingStrategy;
 use App\Contracts\DiagnosticPipe;
-use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Facades\Helpers;
@@ -93,7 +93,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 
 		/** @var Filesystem[] $disks */
 		$disks = [
-			SizeVariantNamingStrategy::getImageDisk(),
+			AbstractSizeVariantNamingStrategy::getImageDisk(),
 			Storage::disk(SymLink::DISK_NAME),
 		];
 
@@ -246,12 +246,12 @@ class BasicPermissionCheck implements DiagnosticPipe
 	private static function getConfiguredPerm(string $type): int
 	{
 		try {
-			$visibility = (string) config(sprintf('filesystems.disks.%s.visibility', SizeVariantNamingStrategy::IMAGE_DISK_NAME));
+			$visibility = (string) config(sprintf('filesystems.disks.%s.visibility', AbstractSizeVariantNamingStrategy::IMAGE_DISK_NAME));
 			if ($visibility === '') {
 				throw new InvalidConfigOption('File/directory visibility not configured');
 			}
 
-			$perm = (int) config(sprintf('filesystems.disks.%s.permissions.%s.%s', SizeVariantNamingStrategy::IMAGE_DISK_NAME, $type, $visibility));
+			$perm = (int) config(sprintf('filesystems.disks.%s.permissions.%s.%s', AbstractSizeVariantNamingStrategy::IMAGE_DISK_NAME, $type, $visibility));
 			if ($perm === 0) {
 				throw new InvalidConfigOption('Configured file/directory permission is invalid');
 			}
