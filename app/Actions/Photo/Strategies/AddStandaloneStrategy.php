@@ -23,7 +23,7 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
 
-class AddStandaloneStrategy extends AddBaseStrategy
+class AddStandaloneStrategy extends AbsractAddStrategy
 {
 	protected ?ImageHandlerInterface $sourceImage;
 	protected NativeLocalFile $sourceFile;
