@@ -25,7 +25,7 @@ use App\Models\Configs;
  * Copying via streams avoids issues like
  * [LycheeOrg/Lychee#1198](https://github.com/LycheeOrg/Lychee/issues/1198).
  */
-abstract class MediaFile extends BinaryBlob
+abstract class BaseMediaFile extends AbstractBinaryBlob
 {
 	public const SUPPORTED_PHP_EXIF_IMAGE_TYPES = [
 		IMAGETYPE_GIF,

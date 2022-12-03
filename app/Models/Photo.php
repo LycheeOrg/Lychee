@@ -13,7 +13,7 @@ use App\Exceptions\Internal\ZeroModuloException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Facades\Helpers;
-use App\Image\MediaFile;
+use App\Image\BaseMediaFile;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
@@ -375,7 +375,7 @@ class Photo extends Model implements HasRandomID
 			throw new IllegalOrderOfOperationException('Photo::isPhoto() must not be called before Photo::$type has been set');
 		}
 
-		return MediaFile::isSupportedImageMimeType($this->type);
+		return BaseMediaFile::isSupportedImageMimeType($this->type);
 	}
 
 	/**
@@ -391,7 +391,7 @@ class Photo extends Model implements HasRandomID
 			throw new IllegalOrderOfOperationException('Photo::isVideo() must not be called before Photo::$type has been set');
 		}
 
-		return MediaFile::isSupportedVideoMimeType($this->type);
+		return BaseMediaFile::isSupportedVideoMimeType($this->type);
 	}
 
 	/**

@@ -9,8 +9,8 @@ use App\Exceptions\Handler;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
+use App\Image\BaseMediaFile;
 use App\Image\FlysystemFile;
-use App\Image\MediaFile;
 use App\Image\NativeLocalFile;
 use App\Image\StreamStat;
 use App\Models\Photo;
@@ -26,9 +26,9 @@ use App\Models\Photo;
  */
 class AddVideoPartnerStrategy extends AbsractAddStrategy
 {
-	protected MediaFile $videoSourceFile;
+	protected BaseMediaFile $videoSourceFile;
 
-	public function __construct(AddStrategyParameters $parameters, MediaFile $videoSourceFile, Photo $existingPhoto)
+	public function __construct(AddStrategyParameters $parameters, BaseMediaFile $videoSourceFile, Photo $existingPhoto)
 	{
 		parent::__construct($parameters, $existingPhoto);
 		$this->videoSourceFile = $videoSourceFile;
