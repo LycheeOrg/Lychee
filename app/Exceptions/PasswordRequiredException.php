@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
  * HTTP client depends on whether the user has already logged in or is
  * anonymous.
  */
-class PasswordRequiredException extends LycheeBaseException
+class PasswordRequiredException extends BaseLycheeException
 {
 	public const DEFAULT_MESSAGE = 'Password required';
 

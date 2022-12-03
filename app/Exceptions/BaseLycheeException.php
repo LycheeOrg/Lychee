@@ -40,7 +40,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  * or
  * {@link \Illuminate\Foundation\Exceptions\Handler::prepareResponse()}).
  */
-abstract class LycheeBaseException extends HttpException implements ExternalLycheeException
+abstract class BaseLycheeException extends HttpException implements ExternalLycheeException
 {
 	/**
 	 * Constructor.

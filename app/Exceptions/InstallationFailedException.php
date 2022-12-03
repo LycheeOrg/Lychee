@@ -4,7 +4,7 @@ namespace App\Exceptions;
 
 use Symfony\Component\HttpFoundation\Response;
 
-class InstallationFailedException extends LycheeBaseException
+class InstallationFailedException extends BaseLycheeException
 {
 	public function __construct(string $msg, \Throwable $previous = null)
 	{
