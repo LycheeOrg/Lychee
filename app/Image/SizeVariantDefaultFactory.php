@@ -20,7 +20,7 @@ use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 
-class SizeVariantDefaultFactory extends SizeVariantFactory
+class SizeVariantDefaultFactory implements SizeVariantFactory
 {
 	public const THUMBNAIL_DIM = 200;
 	public const THUMBNAIL2X_DIM = 400;
