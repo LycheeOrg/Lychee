@@ -221,7 +221,7 @@ class PhotosAddMethodsTest extends PhotoTestBase
 		try {
 			Configs::set(self::CONFIG_RAW_FORMATS, '.tif');
 			$reflection = new \ReflectionClass(MediaFile::class);
-			$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', null);
+			$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', []);
 
 			$response = $this->photos_tests->importFromUrl([TestCase::SAMPLE_DOWNLOAD_TIFF]);
 

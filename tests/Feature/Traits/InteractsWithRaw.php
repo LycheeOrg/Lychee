@@ -17,6 +17,6 @@ trait InteractsWithRaw
 	{
 		Configs::set(TestCase::CONFIG_RAW_FORMATS, $acceptedRawFormats);
 		$reflection = new \ReflectionClass(MediaFile::class);
-		$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', null);
+		$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', []);
 	}
 }
