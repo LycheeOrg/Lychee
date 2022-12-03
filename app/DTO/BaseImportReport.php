@@ -16,7 +16,7 @@ namespace App\DTO;
  * mechanism, but must be reported "inline" within the streamed response
  * as an event report.
  */
-abstract class AbstractImportReport extends AbstractDTO
+abstract class BaseImportReport extends AbstractDTO
 {
 	/**
 	 * Indicates the type (i.e. the subclass) of this class.
