@@ -38,7 +38,7 @@ class SettingsPolicy extends BasePolicy
 	 */
 	public function canSeeLogs(?User $user): bool
 	{
-		return $user !== null && $user->may_administrate;
+		return $user?->may_administrate === true;
 	}
 
 	/**
