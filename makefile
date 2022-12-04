@@ -27,6 +27,7 @@ dist-gen: clean composer
 	@cp -r public/index.php                 Lychee/public
 	@cp -r public/robots.txt                Lychee/public
 	@cp -r public/web.config                Lychee/public
+	@cp -r lang                             Lychee
 	@cp -r resources                        Lychee
 	@cp -r routes                           Lychee
 	@cp -r scripts                          Lychee
