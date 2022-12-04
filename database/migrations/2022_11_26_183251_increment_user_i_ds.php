@@ -38,7 +38,8 @@ class IncrementUserIDs extends Migration
 		}
 		if (Schema::connection(null)->getConnection()->getDriverName() === 'pgsql' && DB::table('users')->count() > 0) {
 			// when using PostgreSQL, the new IDs are not updated after incrementing. Thus, we need to reset the index to the greatest ID + 1
-			DB::statement('ALTER SEQUENCE users_id_seq RESTART WITH ' . DB::table('users')->orderByDesc('id')->first()->id + 1);
+			// the sequence is called `users_id_seq1`
+			DB::statement('ALTER SEQUENCE users_id_seq1 RESTART WITH ' . DB::table('users')->orderByDesc('id')->first()->id + 1);
 		}
 		Schema::enableForeignKeyConstraints();
 	}
