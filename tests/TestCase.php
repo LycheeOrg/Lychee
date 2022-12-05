@@ -22,10 +22,12 @@ use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Testing\TestResponse;
 use function Safe\json_decode;
 use function Safe\tempnam;
+use Tests\Feature\Traits\CatchFailures;
 
 abstract class TestCase extends BaseTestCase
 {
 	use CreatesApplication;
+	use CatchFailures;
 
 	public const PATH_IMPORT_DIR = 'uploads/import/';
 
