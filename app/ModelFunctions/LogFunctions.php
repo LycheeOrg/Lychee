@@ -2,6 +2,7 @@
 
 namespace App\ModelFunctions;
 
+use App\Models\Extensions\SeverityType;
 use App\Models\Logs;
 use Psr\Log\AbstractLogger;
 
@@ -51,8 +52,12 @@ class LogFunctions extends AbstractLogger
 			$text = 'argument is not stringable!';
 		}
 
+		// Just make sure that the level is valid.
+		// if not report as critical
+		$log_level = SeverityType::tryFrom($level) ?? SeverityType::CRITICAL;
+
 		$log = Logs::create([
-			'type' => $level,
+			'type' => $log_level,
 			'function' => $fun,
 			'line' => $line,
 			'text' => $text,
