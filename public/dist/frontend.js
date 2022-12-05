@@ -3168,7 +3168,7 @@ albums.isEmpty = function () {
  * @returns {boolean}
  */
 albums.isSmartAlbumEmpty = function (smartAlbum) {
-	return smartAlbum === null || !smartAlbum.photos || smartAlbum.photos.length === 0;
+	return !smartAlbum || !smartAlbum.photos || smartAlbum.photos.length === 0;
 };
 
 //noinspection HtmlUnknownTarget
