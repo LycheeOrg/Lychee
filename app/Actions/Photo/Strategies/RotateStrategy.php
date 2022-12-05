@@ -15,6 +15,7 @@ use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Image\FlysystemFile;
 use App\Image\ImageHandler;
+use App\Models\Extensions\SizeVariantType;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -101,7 +102,7 @@ class RotateStrategy
 
 		// Create new target file for rotated original size variant,
 		// and stream it into the final place
-		$targetFile = $this->namingStrategy->createFile(SizeVariant::ORIGINAL);
+		$targetFile = $this->namingStrategy->createFile(SizeVariantType::ORIGINAL);
 		$streamStat = $image->save($targetFile, true);
 
 		// The checksum has been changed due to rotation.
@@ -111,7 +112,7 @@ class RotateStrategy
 
 		// Re-create original size variant of photo
 		$newOriginalSizeVariant = $this->photo->size_variants->create(
-			SizeVariant::ORIGINAL,
+			SizeVariantType::ORIGINAL,
 			$targetFile->getRelativePath(),
 			$image->getDimensions(),
 			$streamStat->bytes

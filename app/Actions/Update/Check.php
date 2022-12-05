@@ -114,16 +114,16 @@ class Check
 	 *
 	 * TODO: Probably, the whole logic around installation and updating should be re-factored. The whole code is wicked.
 	 *
-	 * @return int the update state between 0..3
+	 * @return UpdateStatus the update state between 0..3
 	 */
-	public function getCode(): int
+	public function getCode(): UpdateStatus
 	{
 		if ($this->lycheeVersion->isRelease) {
 			// @codeCoverageIgnoreStart
 			$db_ver = $this->lycheeVersion->getDBVersion();
 			$file_ver = $this->lycheeVersion->getFileVersion();
 
-			return 3 * intval($db_ver->toInteger() < $file_ver->toInteger());
+			return $db_ver->toInteger() < $file_ver->toInteger() ? UpdateStatus::REQUIRE_MIGRATION : UpdateStatus::NOT_MASTER;
 			// @codeCoverageIgnoreEnd
 		}
 
@@ -131,13 +131,13 @@ class Check
 			$this->assertUpdatability();
 			// @codeCoverageIgnoreStart
 			if (!$this->gitHubFunctions->is_up_to_date()) {
-				return 2;
+				return UpdateStatus::NOT_UP_TO_DATE;
 			} else {
-				return 1;
+				return UpdateStatus::UP_TO_DATE;
 			}
 			// @codeCoverageIgnoreEnd
 		} catch (\Exception $e) {
-			return 0;
+			return UpdateStatus::NOT_MASTER;
 		}
 	}
 }

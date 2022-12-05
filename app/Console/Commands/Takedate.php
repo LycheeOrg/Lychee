@@ -6,8 +6,8 @@ use App\Contracts\ExternalLycheeException;
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\UnexpectedException;
 use App\Metadata\Extractor;
+use App\Models\Extensions\SizeVariantType;
 use App\Models\Photo;
-use App\Models\SizeVariant;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
@@ -106,7 +106,7 @@ class Takedate extends Command
 			// For faster iteration we eagerly load the original size variant,
 			// but only the original size variant
 			$photoQuery = Photo::with(['size_variants' => function (HasMany $r) {
-				$r->where('type', '=', SizeVariant::ORIGINAL);
+				$r->where('type', '=', SizeVariantType::ORIGINAL);
 			}]);
 
 			if (!$force) {

@@ -7,7 +7,6 @@ use App\DTO\PhotoSortingCriterion;
 use App\DTO\SortingCriterion;
 use App\Exceptions\InvalidPropertyException;
 use App\Models\Photo;
-use App\Models\SizeVariant;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -37,7 +36,7 @@ class Thumb extends DTO
 	 */
 	public static function sizeVariantsFilter(HasMany $relation): HasMany
 	{
-		return $relation->whereIn('type', [SizeVariant::THUMB, SizeVariant::THUMB2X]);
+		return $relation->whereIn('type', [SizeVariantType::THUMB, SizeVariantType::THUMB2X]);
 	}
 
 	/**

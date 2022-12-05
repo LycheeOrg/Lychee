@@ -3,6 +3,7 @@
 namespace App\Contracts;
 
 use App\Image\ImageHandlerInterface;
+use App\Models\Extensions\SizeVariantType;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Support\Collection;
@@ -47,22 +48,20 @@ abstract class SizeVariantFactory
 	 * {@link SizeVariantFactory::createSizeVariant()}.
 	 * Refer there for further information.
 	 *
-	 * @param int $sizeVariant the desired size variant; admissible values
-	 *                         are:
-	 *                         {@link SizeVariant::THUMB},
-	 *                         {@link SizeVariant::THUMB2X},
-	 *                         {@link SizeVariant::SMALL},
-	 *                         {@link SizeVariant::SMALL2X},
-	 *                         {@link SizeVariant::MEDIUM} and
-	 *                         {@link SizeVariant::MEDIUM2X}
+	 * @param SizeVariantType $sizeVariant the desired size variant; admissible values
+	 *                                     are:
+	 *                                     {@link SizeVariantType::THUMB},
+	 *                                     {@link SizeVariantType::THUMB2X},
+	 *                                     {@link SizeVariantType::SMALL},
+	 *                                     {@link SizeVariantType::SMALL2X},
+	 *                                     {@link SizeVariantType::MEDIUM} and
+	 *                                     {@link SizeVariantType::MEDIUM2X}
 	 *
 	 * @return SizeVariant|null the freshly created and persisted size variant
 	 *
 	 * @throws LycheeException
-	 *
-	 * @phpstan-param int<0,6> $sizeVariant
 	 */
-	abstract public function createSizeVariantCond(int $sizeVariant): ?SizeVariant;
+	abstract public function createSizeVariantCond(SizeVariantType $sizeVariant): ?SizeVariant;
 
 	/**
 	 * Creates a selected set of size variants.

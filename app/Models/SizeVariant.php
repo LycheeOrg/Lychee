@@ -6,12 +6,12 @@ use App\Actions\SizeVariant\Delete;
 use App\Casts\MustNotSetCast;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\ConfigurationException;
-use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Image\FlysystemFile;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
+use App\Models\Extensions\SizeVariantType;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
@@ -45,7 +45,7 @@ use League\Flysystem\Local\LocalFilesystemAdapter;
  * @property int                 $id
  * @property string              $photo_id
  * @property Photo               $photo
- * @property int                 $type
+ * @property SizeVariantType     $type
  * @property string              $short_path
  * @property string              $url
  * @property string              $full_path
@@ -53,8 +53,6 @@ use League\Flysystem\Local\LocalFilesystemAdapter;
  * @property int                 $height
  * @property int                 $filesize
  * @property Collection<SymLink> $sym_links
- *
- * @phpstan-property int<0,6>   $type
  */
 class SizeVariant extends Model
 {
@@ -64,14 +62,6 @@ class SizeVariant extends Model
 	use ThrowsConsistentExceptions;
 	/** @phpstan-use UseFixedQueryBuilder<SizeVariant> */
 	use UseFixedQueryBuilder;
-
-	public const ORIGINAL = 0;
-	public const MEDIUM2X = 1;
-	public const MEDIUM = 2;
-	public const SMALL2X = 3;
-	public const SMALL = 4;
-	public const THUMB2X = 5;
-	public const THUMB = 6;
 
 	/**
 	 * This model has no own timestamps as it is inseparably bound to its
@@ -86,7 +76,7 @@ class SizeVariant extends Model
 	 */
 	protected $casts = [
 		'id' => 'integer',
-		'type' => 'integer',
+		'type' => SizeVariantType::class,
 		'full_path' => MustNotSetCast::class . ':short_path',
 		'url' => MustNotSetCast::class . ':short_path',
 		'width' => 'integer',
@@ -209,36 +199,6 @@ class SizeVariant extends Model
 	public function getFile(): FlysystemFile
 	{
 		return new FlysystemFile(SizeVariantNamingStrategy::getImageDisk(), $this->short_path);
-	}
-
-	/**
-	 * Mutator of the attribute {@link SizeVariant::$type}.
-	 *
-	 * @param int $sizeVariantType the type of size variant; allowed values are
-	 *                             {@link SizeVariant::ORIGINAL},
-	 *                             {@link SizeVariant::MEDIUM2X},
-	 *                             {@link SizeVariant::MEDIUM},
-	 *                             {@link SizeVariant::SMALL2X},
-	 *                             {@link SizeVariant::SMALL},
-	 *                             {@link SizeVariant::THUMB2X}, and
-	 *                             {@link SizeVariant::THUMB}
-	 *
-	 * @throws InvalidSizeVariantException thrown if `$sizeVariantType` is
-	 *                                     out-of-bounds
-	 *
-	 * @phpstan-param int<0,6> $sizeVariantType
-	 */
-	public function setTypeAttribute(int $sizeVariantType): void
-	{
-		// This method is also invoked if the model is hydrated from the DB.
-		// Hence, we cannot ensure by static code analyzing that the
-		// restriction `int<0,6>` always holds.
-		// We must check at runtime, too.
-		// @phpstan-ignore-next-line
-		if (self::ORIGINAL > $sizeVariantType || $sizeVariantType > self::THUMB) {
-			throw new InvalidSizeVariantException('passed size variant ' . $sizeVariantType . ' out-of-range');
-		}
-		$this->attributes['type'] = $sizeVariantType;
 	}
 
 	/**

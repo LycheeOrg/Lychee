@@ -8,8 +8,8 @@ use App\Contracts\SizeVariantFactory;
 use App\Exceptions\UnexpectedException;
 use App\Image\MediaFile;
 use App\Metadata\Extractor;
+use App\Models\Extensions\SizeVariantType;
 use App\Models\Photo;
-use App\Models\SizeVariant;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Safe\Exceptions\InfoException;
@@ -62,7 +62,7 @@ class VideoData extends Command
 				->with(['size_variants'])
 				->whereIn('type', MediaFile::SUPPORTED_VIDEO_MIME_TYPES)
 				->whereDoesntHave('size_variants', function (Builder $query) {
-					$query->where('type', '=', SizeVariant::THUMB);
+					$query->where('type', '=', SizeVariantType::THUMB);
 				})
 				->take($count)
 				->get();

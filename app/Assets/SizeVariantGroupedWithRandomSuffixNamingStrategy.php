@@ -3,11 +3,10 @@
 namespace App\Assets;
 
 use App\Exceptions\InsufficientEntropyException;
-use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Image\FlysystemFile;
+use App\Models\Extensions\SizeVariantType;
 use App\Models\Photo;
-use App\Models\SizeVariant;
 use Safe\Exceptions\PcreException;
 
 /**
@@ -20,19 +19,6 @@ use Safe\Exceptions\PcreException;
  */
 class SizeVariantGroupedWithRandomSuffixNamingStrategy extends SizeVariantBaseNamingStrategy
 {
-	/**
-	 * Maps a size variant to the path prefix (directory) where the file for that size variant is stored.
-	 */
-	public const VARIANT_2_PATH_PREFIX = [
-		SizeVariant::THUMB => 'thumb',
-		SizeVariant::THUMB2X => 'thumb2x',
-		SizeVariant::SMALL => 'small',
-		SizeVariant::SMALL2X => 'small2x',
-		SizeVariant::MEDIUM => 'medium',
-		SizeVariant::MEDIUM2X => 'medium2x',
-		SizeVariant::ORIGINAL => 'original',
-	];
-
 	/**
 	 * The length of the random file name without file extension.
 	 *
@@ -106,7 +92,7 @@ class SizeVariantGroupedWithRandomSuffixNamingStrategy extends SizeVariantBaseNa
 				// at the beginning.
 				if (\Safe\preg_match(
 					'#^\.?[/\\\\]?' .
-					self::VARIANT_2_PATH_PREFIX[SizeVariant::ORIGINAL] . '[/\\\\]' .
+					SizeVariantType::ORIGINAL->name() . '[/\\\\]' .
 					'([0-9a-f]{2})[/\\\\]' .
 					'([0-9a-f]{2})[/\\\\]' .
 					'([0-9a-f]{' . (self::NAME_LENGTH - 4) . '})\.#i',
@@ -131,14 +117,10 @@ class SizeVariantGroupedWithRandomSuffixNamingStrategy extends SizeVariantBaseNa
 	/**
 	 * {@inheritDoc}
 	 */
-	public function createFile(int $sizeVariant): FlysystemFile
+	public function createFile(SizeVariantType $sizeVariant): FlysystemFile
 	{
-		if (SizeVariant::ORIGINAL > $sizeVariant || $sizeVariant > SizeVariant::THUMB) {
-			throw new InvalidSizeVariantException('invalid $sizeVariant = ' . $sizeVariant);
-		}
-
 		$relativePath =
-			self::VARIANT_2_PATH_PREFIX[$sizeVariant] . DIRECTORY_SEPARATOR .
+			$sizeVariant->name() . DIRECTORY_SEPARATOR .
 			$this->cachedRndMiddlePath .
 			$this->generateExtension($sizeVariant);
 

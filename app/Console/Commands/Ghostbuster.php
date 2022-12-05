@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Console\Commands\Utilities\Colorize;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\UnexpectedException;
+use App\Models\Extensions\SizeVariantType;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\SymLink;
@@ -168,7 +169,7 @@ class Ghostbuster extends Command
 					if ($dryrun) {
 						$this->line(str_pad($sizeVariant->short_path, 50) . $this->col->red(' does not exist and photo would be removed') . '.');
 					} else {
-						if ($sizeVariant->type === SizeVariant::ORIGINAL) {
+						if ($sizeVariant->type === SizeVariantType::ORIGINAL) {
 							$sizeVariant->photo->delete();
 						} else {
 							$sizeVariant->delete();
