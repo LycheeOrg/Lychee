@@ -19,6 +19,7 @@ return new class() extends Migration {
 				'confidentiality' => 2,
 				'cat' => 'Smart Albums',
 				'type_range' => BOOL,
+				'description' => 'Enable Smart Albums',
 			],
 		]);
 	}
