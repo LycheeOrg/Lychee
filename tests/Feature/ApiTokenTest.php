@@ -12,7 +12,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Tests\Feature\Lib\UsersUnitTest;
@@ -43,12 +42,12 @@ class ApiTokenTest extends TestCase
 		$token = $this->resetAdminToken();
 
 		$response = $this->postJson('/api/User::getAuthenticatedUser');
-		$response->assertStatus(204);
+		$this->assertStatus($response, 204);
 
 		$response = $this->postJson('/api/User::getAuthenticatedUser', [], [
 			'Authorization' => $token,
 		]);
-		$response->assertStatus(200);
+		$this->assertStatus($response, 200);
 		$response->assertSee([
 			'id' => 0,
 		], false);
@@ -71,7 +70,7 @@ class ApiTokenTest extends TestCase
 		$response = $this->postJson('/api/User::getAuthenticatedUser', [], [
 			'Authorization' => $adminToken,
 		]);
-		$response->assertStatus(200);
+		$this->assertStatus($response, 200);
 		$response->assertSee([
 			'id' => 0,
 		], false);
@@ -90,7 +89,7 @@ class ApiTokenTest extends TestCase
 		$response = $this->postJson('/api/User::getAuthenticatedUser', [], [
 			'Authorization' => $userToken,
 		]);
-		$response->assertStatus(200);
+		$this->assertStatus($response, 200);
 		$response->assertSee([
 			'id' => $userId,
 		], false);
@@ -111,7 +110,7 @@ class ApiTokenTest extends TestCase
 		$response = $this->postJson('/api/User::getAuthenticatedUser', [], [
 			'Authorization' => $adminToken,
 		]);
-		$response->assertStatus(200);
+		$this->assertStatus($response, 200);
 		$response->assertSee([
 			'id' => 0,
 		], false);
@@ -134,7 +133,7 @@ class ApiTokenTest extends TestCase
 		$response = $this->postJson('/api/User::getAuthenticatedUser', [], [
 			'Authorization' => $userToken,
 		]);
-		$response->assertStatus(401);
+		$this->assertStatus($response, 401);
 	}
 
 	/**
@@ -153,7 +152,7 @@ class ApiTokenTest extends TestCase
 		$response = $this->postJson('/api/User::getAuthenticatedUser', [], [
 			'Authorization' => $userToken,
 		]);
-		$response->assertStatus(200);
+		$this->assertStatus($response, 200);
 		$response->assertSee([
 			'id' => $userId,
 		], false);
@@ -174,13 +173,13 @@ class ApiTokenTest extends TestCase
 		], [
 			'Authorization' => $userToken,
 		]);
-		$response->assertStatus(204);
+		$this->assertStatus($response, 204);
 
 		Auth::forgetGuards();
 
 		// Ensure that we are still logged in even without providing the token
 		$response = $this->postJson('/api/User::getAuthenticatedUser');
-		$response->assertStatus(200);
+		$this->assertStatus($response, 200);
 		$response->assertSee([
 			'id' => $userId,
 		], false);
@@ -191,13 +190,13 @@ class ApiTokenTest extends TestCase
 		$response = $this->postJson('/api/Session::logout', [], [
 			'Authorization' => $userToken,
 		]);
-		$response->assertStatus(204);
+		$this->assertStatus($response, 204);
 
 		Auth::forgetGuards();
 
 		// Ensure that we are logged out without the token
 		$response = $this->postJson('/api/User::getAuthenticatedUser');
-		$response->assertStatus(204);
+		$this->assertStatus($response, 204);
 	}
 
 	/**
@@ -217,7 +216,7 @@ class ApiTokenTest extends TestCase
 		], [
 			'Authorization' => $userToken2,
 		]);
-		$response->assertStatus(400);
+		$this->assertStatus($response, 400);
 	}
 
 	/**
@@ -236,9 +235,9 @@ class ApiTokenTest extends TestCase
 			'username' => 'user1',
 			'password' => 'pwd1',
 		]);
-		$response->assertStatus(204);
+		$this->assertStatus($response, 204);
 		$response = $this->postJson('/api/User::getAuthenticatedUser');
-		$response->assertStatus(200);
+		$this->assertStatus($response, 200);
 		$response->assertSee([
 			'id' => $userId1,
 		], false);
@@ -256,7 +255,7 @@ class ApiTokenTest extends TestCase
 		$response = $this->postJson('/api/User::getAuthenticatedUser', [], [
 			'Authorization' => $userToken2,
 		]);
-		$response->assertStatus(400);
+		$this->assertStatus($response, 400);
 	}
 
 	/**

@@ -27,13 +27,13 @@ class UpdateTest extends TestCase
 	public function testDoNotLogged(): void
 	{
 		$response = $this->get('/Update', []);
-		$response->assertForbidden();
+		$this->assertForbidden($response);
 
 		$response = $this->postJson('/api/Update::apply');
-		$response->assertForbidden();
+		$this->assertForbidden($response);
 
 		$response = $this->postJson('/api/Update::check');
-		$response->assertForbidden();
+		$this->assertForbidden($response);
 	}
 
 	public function testDoLogged(): void
@@ -44,16 +44,16 @@ class UpdateTest extends TestCase
 
 		Configs::set('allow_online_git_pull', '0');
 		$response = $this->postJson('/api/Update::apply');
-		$response->assertStatus(412);
+		$this->assertStatus($response, 412);
 		$response->assertSee('Online updates are disabled by configuration');
 
 		Configs::set('allow_online_git_pull', '1');
 
 		$response = $this->get('/Update', []);
-		$response->assertOk();
+		$this->assertOk($response);
 
 		$response = $this->postJson('/api/Update::apply');
-		$response->assertOk();
+		$this->assertOk($response);
 
 		$response = $this->postJson('/api/Update::check');
 		if ($response->status() === 500) {
@@ -70,7 +70,7 @@ class UpdateTest extends TestCase
 				$response->assertSee('Could not determine the branch');
 			}
 		} else {
-			$response->assertOk();
+			$this->assertOk($response);
 		}
 
 		Configs::set('allow_online_git_pull', $gitpull);
@@ -102,10 +102,10 @@ class UpdateTest extends TestCase
 		Auth::logout();
 		Session::flush();
 		$response = $this->postJson('/migrate');
-		$response->assertForbidden();
+		$this->assertForbidden($response);
 
 		$response = $this->postJson('/migrate', ['username' => 'test_login', 'password' => 'test_password']);
-		$response->assertOk();
+		$this->assertOk($response);
 
 		// check that Legacy did change the username
 		$adminUser = User::findOrFail(0);
