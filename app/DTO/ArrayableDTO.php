@@ -27,7 +27,7 @@ class ArrayableDTO extends DTO
 			if (is_object($propertyValue)) {
 				if ($propertyValue instanceof Arrayable) {
 					$propertyValue = $propertyValue->toArray();
-				} elseif ($propertyValue instanceof \UnitEnum) {
+				} elseif ($propertyValue instanceof \BackedEnum) {
 					$propertyValue = $propertyValue->value;
 				} else {
 					throw new LycheeLogicException(sprintf('Unable to convert %s into an array', get_class($propertyValue)));
