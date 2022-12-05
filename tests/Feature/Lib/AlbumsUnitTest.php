@@ -126,7 +126,7 @@ class AlbumsUnitTest
 			'albumID' => $to,
 			'albumIDs' => $ids,
 		]);
-		$response->assertStatus($expectedStatusCode);
+		$this->assertStatus($response, $expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
 		}
@@ -251,7 +251,7 @@ class AlbumsUnitTest
 			'/api/Album::setCover',
 			['albumID' => $id, 'photoID' => $photoID]
 		);
-		$response->assertStatus($expectedStatusCode);
+		$this->assertStatus($response, $expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
 		}
@@ -393,7 +393,7 @@ class AlbumsUnitTest
 				'Accept' => '*/*',
 			]
 		);
-		$response->assertOk();
+		$this->assertOk($response);
 		if ($response->baseResponse instanceof StreamedResponse) {
 			// The content of a streamed response is not generated unless
 			// the content is fetched.

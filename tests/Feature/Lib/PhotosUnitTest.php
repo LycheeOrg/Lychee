@@ -301,7 +301,7 @@ class PhotosUnitTest
 				'date' => $date,
 			]
 		);
-		$response->assertStatus($expectedStatusCode);
+		$this->assertStatus($response, $expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
 		}
