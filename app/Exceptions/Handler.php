@@ -4,11 +4,11 @@ namespace App\Exceptions;
 
 use App\Contracts\HttpExceptionHandler;
 use App\DTO\BacktraceRecord;
+use App\Enum\SeverityType;
 use App\Exceptions\Handlers\AccessDBDenied;
 use App\Exceptions\Handlers\InstallationHandler;
 use App\Exceptions\Handlers\MigrationHandler;
 use App\Exceptions\Handlers\NoEncryptionKey;
-use App\Models\Extensions\SeverityType;
 use App\Models\Logs;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Container\BindingResolutionException;

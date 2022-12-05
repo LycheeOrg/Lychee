@@ -2,8 +2,8 @@
 
 namespace App\Contracts;
 
+use App\Enum\SizeVariantType;
 use App\Image\FlysystemFile;
-use App\Models\Extensions\SizeVariantType;
 use App\Models\Photo;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;

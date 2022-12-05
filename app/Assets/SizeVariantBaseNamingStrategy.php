@@ -3,10 +3,9 @@
 namespace App\Assets;
 
 use App\Contracts\SizeVariantNamingStrategy;
+use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\MissingValueException;
-use App\Models\Extensions\SizeVariantType;
-use App\Models\Photo;
 
 abstract class SizeVariantBaseNamingStrategy extends SizeVariantNamingStrategy
 {

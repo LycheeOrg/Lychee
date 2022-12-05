@@ -3,11 +3,11 @@
 namespace App\Console\Commands;
 
 use App\Contracts\ExternalLycheeException;
+use App\Enum\SizeVariantType;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnexpectedException;
 use App\Image\MediaFile;
 use App\Metadata\Extractor;
-use App\Models\Extensions\SizeVariantType;
 use App\Models\Photo;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\HasMany;

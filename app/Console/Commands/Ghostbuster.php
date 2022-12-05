@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use App\Console\Commands\Utilities\Colorize;
 use App\Contracts\SizeVariantNamingStrategy;
+use App\Enum\SizeVariantType;
 use App\Exceptions\UnexpectedException;
-use App\Models\Extensions\SizeVariantType;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\SymLink;

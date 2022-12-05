@@ -2,8 +2,8 @@
 
 namespace App\Contracts;
 
+use App\Enum\SizeVariantType;
 use App\Image\ImageHandlerInterface;
-use App\Models\Extensions\SizeVariantType;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Support\Collection;

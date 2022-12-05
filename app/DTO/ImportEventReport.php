@@ -2,8 +2,8 @@
 
 namespace App\DTO;
 
+use App\Enum\SeverityType;
 use App\Exceptions\Handler as ExceptionHandler;
-use App\Models\Extensions\SeverityType;
 
 class ImportEventReport extends ImportReport
 {

@@ -7,6 +7,7 @@ use App\Contracts\LycheeException;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\DTO\ImageDimension;
+use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\FrameworkException;
@@ -19,7 +20,6 @@ use App\Image\NativeLocalFile;
 use App\Image\StreamStat;
 use App\Image\TemporaryLocalFile;
 use App\Image\VideoHandler;
-use App\Models\Extensions\SizeVariantType;
 use App\Models\Photo;
 use Illuminate\Contracts\Container\BindingResolutionException;
 

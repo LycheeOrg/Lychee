@@ -12,7 +12,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Extensions\SizeVariantType;
+use App\Enum\SizeVariantType;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature\Base\PhotoTestBase;
 use Tests\TestCase;

@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-use App\Actions\Update\UpdateStatus;
+use App\Enum\UpdateStatus;
 
 class DiagnosticInfo extends ArrayableDTO
 {

@@ -5,6 +5,7 @@ namespace App\Models\Extensions;
 use App\Actions\SizeVariant\Delete;
 use App\DTO\DTO;
 use App\DTO\ImageDimension;
+use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\Internal\LycheeAssertionError;

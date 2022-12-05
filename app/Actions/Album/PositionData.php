@@ -4,8 +4,8 @@ namespace App\Actions\Album;
 
 use App\Contracts\AbstractAlbum;
 use App\DTO\PositionData as PositionDataDTO;
+use App\Enum\SizeVariantType;
 use App\Models\Album;
-use App\Models\Extensions\SizeVariantType;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 

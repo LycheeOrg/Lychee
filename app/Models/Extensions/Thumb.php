@@ -5,6 +5,7 @@ namespace App\Models\Extensions;
 use App\DTO\DTO;
 use App\DTO\PhotoSortingCriterion;
 use App\DTO\SortingCriterion;
+use App\Enum\SizeVariantType;
 use App\Exceptions\InvalidPropertyException;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;

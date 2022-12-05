@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Update;
+namespace App\Enum;
 
 enum UpdateStatus: int
 {

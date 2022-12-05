@@ -2,6 +2,7 @@
 
 namespace App\Actions\Update;
 
+use App\Enum\UpdateStatus;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\InsufficientFilesystemPermissions;

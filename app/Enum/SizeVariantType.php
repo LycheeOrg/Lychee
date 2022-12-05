@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Extensions;
+namespace App\Enum;
 
 /**
  * Enum SizeVariantType.

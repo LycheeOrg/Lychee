@@ -2,7 +2,7 @@
 
 namespace App\ModelFunctions;
 
-use App\Models\Extensions\SeverityType;
+use App\Enum\SeverityType;
 use App\Models\Logs;
 use Psr\Log\AbstractLogger;
 

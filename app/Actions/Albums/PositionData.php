@@ -4,8 +4,8 @@ namespace App\Actions\Albums;
 
 use App\Contracts\InternalLycheeException;
 use App\DTO\PositionData as PositionDataDTO;
+use App\Enum\SizeVariantType;
 use App\Models\Configs;
-use App\Models\Extensions\SizeVariantType;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

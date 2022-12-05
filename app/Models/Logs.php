@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Extensions\SeverityType;
+use App\Enum\SeverityType;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
