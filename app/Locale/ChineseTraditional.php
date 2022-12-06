@@ -138,6 +138,7 @@ final class ChineseTraditional implements Language
 			'STARRED' => '我的最愛',
 			'RECENT' => '最新',
 			'PUBLIC' => '公開',
+			'ON_THIS_DAY' => 'On This Day',
 			'NUM_PHOTOS' => '照片',
 
 			'CREATE_ALBUM' => '創建相簿',
