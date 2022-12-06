@@ -18,6 +18,7 @@ use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -797,4 +798,77 @@ class AlbumTest extends TestCase
    	$this->albums_tests->get(UnsortedAlbum::ID, 200, null, $id);
    	$this->photos_tests->get($id, 404);
    }
+
+	public function testOnThisDayAlbumWhenThereIsPhotoTakenAtCurrentMonthAndDay(): void
+	{
+		Auth::loginUsingId(0);
+		$today = CarbonImmutable::today();
+		$photoID = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		)->offsetGet('id');
+
+		DB::table('photos')
+			->where('id', '=', $photoID)
+			->update([
+				'taken_at' => $today->subYear()->format('Y-m-d H:i:s.u'),
+				'created_at' => $today->subDay()->format('Y-m-d H:i:s.u'),
+			]);
+
+		$response = static::convertJsonToObject($this->albums_tests->get(OnThisDayAlbum::ID, 200, 'photos'));
+
+		self::assertCount(1, $response->photos);
+		self::assertIsObject($response->photos[0]);
+		self::assertObjectHasAttribute('id', $response->photos[0]);
+		self::assertEquals($photoID, $response->photos[0]->id);
+
+		$this->clearCachedSmartAlbums();
+		Auth::logout();
+	}
+
+	public function testOnThisDayAlbumWhenThereIsPhotoCreatedAtCurrentMonthAndDay(): void
+	{
+		Auth::loginUsingId(0);
+		$today = CarbonImmutable::today();
+		$photoID = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		)->offsetGet('id');
+
+		DB::table('photos')
+			->where('id', '=', $photoID)
+			->update([
+				'taken_at' => null,
+				'created_at' => $today->subYear()->format('Y-m-d H:i:s.u'),
+			]);
+		$response = static::convertJsonToObject($this->albums_tests->get(OnThisDayAlbum::ID, 200, 'photos'));
+
+		self::assertCount(1, $response->photos);
+		self::assertIsObject($response->photos[0]);
+		self::assertObjectHasAttribute('id', $response->photos[0]);
+		self::assertEquals($photoID, $response->photos[0]->id);
+
+		$this->clearCachedSmartAlbums();
+		Auth::logout();
+	}
+
+	public function testOnThisDayAlbumWhenIsEmpty(): void
+	{
+		Auth::loginUsingId(0);
+		$today = CarbonImmutable::today();
+		$photoID = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		)->offsetGet('id');
+
+		DB::table('photos')
+			->where('id', '=', $photoID)
+			->update([
+				'taken_at' => null,
+				'created_at' => $today->subDay()->format('Y-m-d H:i:s.u'),
+			]);
+		$response = static::convertJsonToObject($this->albums_tests->get(OnThisDayAlbum::ID, 200, 'photos'));
+
+		self::assertCount(0, $response->photos);
+
+		$this->clearCachedSmartAlbums();
+		Auth::logout();
+	}
 }
