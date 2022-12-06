@@ -138,6 +138,7 @@ final class Czech implements Language
 			'STARRED' => 'Oblíbené',
 			'RECENT' => 'Poslední',
 			'PUBLIC' => 'Veřejné',
+			'ON_THIS_DAY' => 'On This Day',
 			'NUM_PHOTOS' => 'fotografií',
 
 			'CREATE_ALBUM' => 'Vytvořit album',

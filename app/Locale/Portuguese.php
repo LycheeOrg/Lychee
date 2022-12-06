@@ -138,6 +138,7 @@ final class Portuguese implements Language
 			'STARRED' => 'Favoritas',
 			'RECENT' => 'Recentes',
 			'PUBLIC' => 'Públicas',
+			'ON_THIS_DAY' => 'On This Day',
 			'NUM_PHOTOS' => 'Fotografias',
 
 			'CREATE_ALBUM' => 'Criar Álbum',
