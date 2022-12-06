@@ -3,6 +3,8 @@
 namespace App\Relations;
 
 use App\DTO\PhotoSortingCriterion;
+use App\Enum\ColumnSortingPhotoType;
+use App\Enum\OrderSortingType;
 use App\Models\Album;
 use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\Thumb;
@@ -178,8 +180,8 @@ class HasAlbumThumb extends Relation
 			->join('albums', 'albums.id', '=', 'photos.album_id')
 			->whereColumn('albums._lft', '>=', 'covered_albums._lft')
 			->whereColumn('albums._rgt', '<=', 'covered_albums._rgt')
-			->orderBy('photos.is_starred', 'desc')
-			->orderBy('photos.' . $this->sorting->column, $this->sorting->order)
+			->orderBy('photos.' . ColumnSortingPhotoType::IS_STARRED->name, OrderSortingType::DESC->value)
+			->orderBy('photos.' . $this->sorting->column->name, $this->sorting->order->name)
 			->limit(1);
 		if (!Gate::check(UserPolicy::IS_ADMIN)) {
 			$bestPhotoIDSelect->where(function (Builder $query2) {

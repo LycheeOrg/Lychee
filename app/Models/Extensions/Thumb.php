@@ -3,8 +3,9 @@
 namespace App\Models\Extensions;
 
 use App\DTO\DTO;
-use App\DTO\PhotoSortingCriterion;
 use App\DTO\SortingCriterion;
+use App\Enum\ColumnSortingPhotoType;
+use App\Enum\OrderSortingType;
 use App\Enum\SizeVariantType;
 use App\Exceptions\InvalidPropertyException;
 use App\Models\Photo;
@@ -60,8 +61,8 @@ class Thumb extends DTO
 			/** @var Photo|null $cover */
 			$cover = $photoQueryable
 				->withOnly(['size_variants' => (fn (HasMany $r) => self::sizeVariantsFilter($r))])
-				->orderBy('photos.' . PhotoSortingCriterion::COLUMN_IS_STARRED, SortingCriterion::DESC)
-				->orderBy('photos.' . $sorting->column, $sorting->order)
+				->orderBy('photos.' . ColumnSortingPhotoType::IS_STARRED->value, OrderSortingType::DESC->value)
+				->orderBy('photos.' . $sorting->column->value, $sorting->order->value)
 				->select(['photos.id', 'photos.type'])
 				->first();
 

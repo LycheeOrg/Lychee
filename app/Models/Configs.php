@@ -221,13 +221,18 @@ class Configs extends Model
 	 * @throws InvalidConfigOption
 	 * @throws QueryBuilderException
 	 */
-	public static function set(string $key, string|int|bool $value): void
+	public static function set(string $key, string|int|bool|\BackedEnum $value): void
 	{
 		try {
 			/** @var Configs $config */
 			$config = Configs::query()
 				->where('key', '=', $key)
 				->firstOrFail();
+
+			// For BackEnm we take the value. In theory this is no longer necessary because we enforce at the column type.
+			if ($value instanceof \BackedEnum) {
+				$value = $value->value;
+			}
 
 			$strValue = match (gettype($value)) {
 				'boolean' => $value === true ? '1' : '0',
