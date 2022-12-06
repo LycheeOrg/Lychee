@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Contracts;
 
+use App\Enum\DonwloadVariantType;
+
 interface HasSizeVariant
 {
 	/**
@@ -18,7 +20,7 @@ interface HasSizeVariant
 	public const SIZE_VARIANT_ATTRIBUTE = 'kind';
 
 	/**
-	 * @return string
+	 * @return DonwloadVariantType
 	 */
-	public function sizeVariant(): string;
+	public function sizeVariant(): DonwloadVariantType;
 }

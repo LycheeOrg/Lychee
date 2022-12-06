@@ -983,7 +983,7 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject4 = _taggedTemplateLiteral(["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"], ["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"]),
     _templateObject5 = _taggedTemplateLiteral(["<span title='", "'>", "</span>$", ""], ["<span title='", "'>", "</span>$", ""]),
     _templateObject6 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", " ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'\n\t\t\t\tdraggable='", "'\n\t\t\t\t", ">\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", " ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'\n\t\t\t\tdraggable='", "'\n\t\t\t\t", ">\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
-    _templateObject7 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
+    _templateObject7 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject8 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"], ["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"]),
     _templateObject9 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'\n\t\t\tdraggable='", "'\n\t\t\tondragstart='lychee.startDrag(event)'\n\t\t\tondragend='lychee.endDrag(event)'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'\n\t\t\tdraggable='", "'\n\t\t\tondragstart='lychee.startDrag(event)'\n\t\t\tondragend='lychee.endDrag(event)'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
     _templateObject10 = _taggedTemplateLiteral(["<a><span title='", "'>", "</span>", "</a>"], ["<a><span title='", "'>", "</span>", "</a>"]),
@@ -1387,7 +1387,7 @@ var album = {
  * @returns {boolean}
  */
 album.isSmartID = function (id) {
-	return id === SmartAlbumID.UNSORTED || id === SmartAlbumID.STARRED || id === SmartAlbumID.PUBLIC || id === SmartAlbumID.RECENT;
+	return id === SmartAlbumID.UNSORTED || id === SmartAlbumID.STARRED || id === SmartAlbumID.PUBLIC || id === SmartAlbumID.RECENT || id === SmartAlbumID.ON_THIS_DAY;
 };
 
 /**
@@ -3033,6 +3033,10 @@ albums.localizeSmartAlbums = function (data) {
 	if (data.recent) {
 		data.recent.title = lychee.locale["RECENT"];
 	}
+
+	if (data.on_this_day) {
+		data.on_this_day.title = lychee.locale["ON_THIS_DAY"];
+	}
 };
 
 /**
@@ -3160,7 +3164,7 @@ albums.isTagAlbum = function (albumID) {
  * @returns {boolean}
  */
 albums.isEmpty = function () {
-	return albums.json === null || albums.isSmartAlbumEmpty(albums.json.smart_albums.public) && albums.isSmartAlbumEmpty(albums.json.smart_albums.recent) && albums.isSmartAlbumEmpty(albums.json.smart_albums.starred) && albums.isSmartAlbumEmpty(albums.json.smart_albums.unsorted) && albums.json.albums.length === 0 && albums.json.shared_albums.length === 0 && albums.json.tag_albums.length === 0;
+	return albums.json === null || albums.isSmartAlbumEmpty(albums.json.smart_albums.public) && albums.isSmartAlbumEmpty(albums.json.smart_albums.recent) && albums.isSmartAlbumEmpty(albums.json.smart_albums.starred) && albums.isSmartAlbumEmpty(albums.json.smart_albums.unsorted) && albums.isSmartAlbumEmpty(albums.json.smart_albums.on_this_day) && albums.json.albums.length === 0 && albums.json.shared_albums.length === 0 && albums.json.tag_albums.length === 0;
 };
 
 /**
@@ -3323,7 +3327,7 @@ build.album = function (data) {
 
 	if (album.isUploadable() && !disabled) {
 		var isCover = album.json && album.json.cover_id && data.thumb.id === album.json.cover_id;
-		html += lychee.html(_templateObject7, data.is_nsfw ? "badge--nsfw" : "", build.iconic("warning"), data.id === SmartAlbumID.STARRED ? "badge--star" : "", build.iconic("star"), data.id === SmartAlbumID.RECENT ? "badge--visible badge--list" : "", build.iconic("clock"), data.id === SmartAlbumID.PUBLIC || data.is_public ? "badge--visible" : "", data.requires_link ? "badge--hidden" : "badge--not--hidden", build.iconic("eye"), data.id === SmartAlbumID.UNSORTED ? "badge--visible" : "", build.iconic("list"), data.has_password ? "badge--visible" : "", build.iconic("lock-locked"), data.is_tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
+		html += lychee.html(_templateObject7, data.is_nsfw ? "badge--nsfw" : "", build.iconic("warning"), data.id === SmartAlbumID.STARRED ? "badge--star" : "", build.iconic("star"), data.id === SmartAlbumID.RECENT ? "badge--visible badge--list" : "", build.iconic("clock"), data.id === SmartAlbumID.ON_THIS_DAY ? "badge--tag badge--list" : "", build.iconic("calendar"), data.id === SmartAlbumID.PUBLIC || data.is_public ? "badge--visible" : "", data.requires_link ? "badge--hidden" : "badge--not--hidden", build.iconic("eye"), data.id === SmartAlbumID.UNSORTED ? "badge--visible" : "", build.iconic("list"), data.has_password ? "badge--visible" : "", build.iconic("lock-locked"), data.is_tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
 
 	if (data.albums && data.albums.length > 0 || data.has_albums) {
@@ -4123,7 +4127,7 @@ contextMenu.photoMulti = function (photoIDs, e) {
 	}, { title: build.iconic("trash") + lychee.locale["DELETE_ALL"], fn: function fn() {
 			return _photo3.delete(photoIDs);
 		} }, { title: build.iconic("cloud-download") + lychee.locale["DOWNLOAD_ALL"], fn: function fn() {
-			return _photo3.getArchive(photoIDs, "FULL");
+			return _photo3.getArchive(photoIDs, "ORIGINAL");
 		} }];
 
 	basicContext.show(items, e.originalEvent, contextMenu.close);
@@ -5036,7 +5040,7 @@ header.setMode = function (mode) {
 				tabindex.makeUnfocusable(_e14);
 			}
 
-			if (albumID === SmartAlbumID.STARRED || albumID === SmartAlbumID.PUBLIC || albumID === SmartAlbumID.RECENT) {
+			if (albumID === SmartAlbumID.STARRED || albumID === SmartAlbumID.PUBLIC || albumID === SmartAlbumID.RECENT || albumID === SmartAlbumID.ON_THIS_DAY) {
 				$("#button_nsfw_album, #button_info_album, #button_trash_album, #button_visibility_album, #button_sharing_album_users, #button_move_album").hide();
 				if (album.isUploadable()) {
 					$(".button_add, .header__divider", "#lychee_toolbar_album").show();
@@ -7606,6 +7610,7 @@ lychee.locale = {
 	STARRED: "Starred",
 	RECENT: "Recent",
 	PUBLIC: "Public",
+	ON_THIS_DAY: "On This Day",
 	NUM_PHOTOS: "Photos",
 
 	CREATE_ALBUM: "Create Album",
@@ -8186,6 +8191,9 @@ mapview.title = function (_albumID, _albumTitle) {
 			break;
 		case SmartAlbumID.UNSORTED:
 			lychee.setMetaData(lychee.locale["UNSORTED"]);
+			break;
+		case SmartAlbumID.ON_THIS_DAY:
+			lychee.setMetaData(lychee.locale["ON_THIS_DAY"]);
 			break;
 		case null:
 			lychee.setMetaData(lychee.locale["ALBUMS"]);
@@ -9974,7 +9982,7 @@ _photo3.setLicense = function (photoID) {
 /**
  * @param {string[]} photoIDs
  * @param {?string} [kind=null] - the type of size variant; one out of
- *                                `"FULL"`, `"MEDIUM2X"`, `"MEDIUM"`,
+ *                                `"ORIGINAL"`, `"MEDIUM2X"`, `"MEDIUM"`,
  *                                `"SMALL2X"`, `"SMALL"`, `"THUMB2X"` or
  *                                `"THUMB"`,
  * @returns {void}
@@ -9993,7 +10001,7 @@ _photo3.getArchive = function (photoIDs) {
 	var myPhoto = _photo3.json && _photo3.json.id === photoIDs[0] ? _photo3.json : album.getByID(photoIDs[0]);
 
 	var kind2VariantAndLocalizedLabel = {
-		FULL: ["original", lychee.locale["PHOTO_FULL"]],
+		ORIGINAL: ["original", lychee.locale["PHOTO_FULL"]],
 		MEDIUM2X: ["medium2x", lychee.locale["PHOTO_MEDIUM_HIDPI"]],
 		MEDIUM: ["medium", lychee.locale["PHOTO_MEDIUM"]],
 		SMALL2X: ["small2x", lychee.locale["PHOTO_SMALL_HIDPI"]],
@@ -13361,7 +13369,7 @@ view.albums = {
 			var sharedData = "";
 
 			// Smart Albums
-			if (lychee.publicMode === false && (albums.json.smart_albums.public || albums.json.smart_albums.recent || albums.json.smart_albums.starred || albums.json.smart_albums.unsorted || albums.json.tag_albums.length > 0)) {
+			if (lychee.publicMode === false && (albums.json.smart_albums.public || albums.json.smart_albums.recent || albums.json.smart_albums.starred || albums.json.smart_albums.unsorted || albums.json.smart_albums.on_this_day || albums.json.tag_albums.length > 0)) {
 				smartData = build.divider(lychee.locale["SMART_ALBUMS"]);
 			}
 			if (albums.json.smart_albums.unsorted) {
@@ -13379,6 +13387,10 @@ view.albums = {
 			if (albums.json.smart_albums.recent) {
 				albums.parse(albums.json.smart_albums.recent);
 				smartData += build.album(albums.json.smart_albums.recent);
+			}
+			if (albums.json.smart_albums.on_this_day) {
+				albums.parse(albums.json.smart_albums.on_this_day);
+				smartData += build.album(albums.json.smart_albums.on_this_day);
 			}
 
 			// Tag albums
@@ -13474,6 +13486,9 @@ view.album = {
 					break;
 				case SmartAlbumID.UNSORTED:
 					lychee.setMetaData(lychee.locale["UNSORTED"]);
+					break;
+				case SmartAlbumID.ON_THIS_DAY:
+					lychee.setMetaData(lychee.locale["ON_THIS_DAY"]);
 					break;
 				default:
 					if (album.json.init) _sidebar.changeAttr("title", album.json.title);
@@ -15381,18 +15396,20 @@ visible.leftMenu = function () {
  * @property {?SmartAlbum} starred
  * @property {?SmartAlbum} public
  * @property {?SmartAlbum} recent
+ * @property {?SmartAlbum} on_this_day
  */
 
 /**
  * The IDs of the built-in, smart albums.
  *
- * @type {Readonly<{RECENT: string, STARRED: string, PUBLIC: string, UNSORTED: string}>}
+ * @type {Readonly<{RECENT: string, STARRED: string, PUBLIC: string, UNSORTED: string, ON_THIS_DAY: string}>}
  */
 var SmartAlbumID = Object.freeze({
 	UNSORTED: "unsorted",
 	STARRED: "starred",
 	PUBLIC: "public",
-	RECENT: "recent"
+	RECENT: "recent",
+	ON_THIS_DAY: "on_this_day"
 });
 
 /**
