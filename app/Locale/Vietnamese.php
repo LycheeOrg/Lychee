@@ -138,6 +138,7 @@ final class Vietnamese implements Language
 			'STARRED' => 'Được dánh dấu sao',
 			'RECENT' => 'Gần đây',
 			'PUBLIC' => 'Công cộng',
+			'ON_THIS_DAY' => 'On This Day',
 			'NUM_PHOTOS' => 'Hình ảnh',
 
 			'CREATE_ALBUM' => 'Tạo album',

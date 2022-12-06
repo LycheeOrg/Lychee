@@ -13,10 +13,12 @@
 namespace Tests\Feature;
 
 use App\Models\Configs;
+use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -79,6 +81,7 @@ class AlbumTest extends TestCase
 		$this->albums_tests->get(StarredAlbum::ID, 401);
 		$this->albums_tests->get(PublicAlbum::ID, 401);
 		$this->albums_tests->get(UnsortedAlbum::ID, 401);
+		$this->albums_tests->get(OnThisDayAlbum::ID, 401);
 
 		// Ensure that we get proper 404 (not found) response for a
 		// non-existing album, not a false 403 (forbidden) response
@@ -94,6 +97,7 @@ class AlbumTest extends TestCase
 		$this->albums_tests->get(StarredAlbum::ID);
 		$this->albums_tests->get(PublicAlbum::ID);
 		$this->albums_tests->get(UnsortedAlbum::ID);
+		$this->albums_tests->get(OnThisDayAlbum::ID);
 
 		$albumID1 = $this->albums_tests->add(null, 'test_album')->offsetGet('id');
 		$albumID2 = $this->albums_tests->add(null, 'test_album2')->offsetGet('id');
@@ -793,4 +797,69 @@ class AlbumTest extends TestCase
    	$this->albums_tests->get(UnsortedAlbum::ID, 200, null, $id);
    	$this->photos_tests->get($id, 404);
    }
+
+	public function testOnThisDayAlbumWhenThereIsPhotoTakenAtCurrentMonthAndDay(): void
+	{
+		Auth::loginUsingId(0);
+		$today = CarbonImmutable::today();
+		$photoID = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		)->offsetGet('id');
+
+		DB::table('photos')
+			->where('id', '=', $photoID)
+			->update([
+				'taken_at' => $today->subYear()->format('Y-m-d H:i:s.u'),
+				'created_at' => $today->subDay()->format('Y-m-d H:i:s.u'),
+			]);
+
+		$response = $this->albums_tests->get(OnThisDayAlbum::ID, 200, 'photos');
+		$response->assertSee($photoID);
+
+		$this->clearCachedSmartAlbums();
+		Auth::logout();
+	}
+
+	public function testOnThisDayAlbumWhenThereIsPhotoCreatedAtCurrentMonthAndDay(): void
+	{
+		Auth::loginUsingId(0);
+		$today = CarbonImmutable::today();
+		$photoID = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		)->offsetGet('id');
+
+		DB::table('photos')
+			->where('id', '=', $photoID)
+			->update([
+				'taken_at' => null,
+				'created_at' => $today->subYear()->format('Y-m-d H:i:s.u'),
+			]);
+		$response = $this->albums_tests->get(OnThisDayAlbum::ID, 200, 'photos');
+		$response->assertSee($photoID);
+
+		$this->clearCachedSmartAlbums();
+		Auth::logout();
+	}
+
+	public function testOnThisDayAlbumWhenIsEmpty(): void
+	{
+		Auth::loginUsingId(0);
+		$today = CarbonImmutable::today();
+		$photoID = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		)->offsetGet('id');
+
+		DB::table('photos')
+			->where('id', '=', $photoID)
+			->update([
+				'taken_at' => null,
+				'created_at' => $today->subDay()->format('Y-m-d H:i:s.u'),
+			]);
+
+		$response = $this->albums_tests->get(OnThisDayAlbum::ID, 200, 'photos');
+		$response->assertDontSee($photoID);
+
+		$this->clearCachedSmartAlbums();
+		Auth::logout();
+	}
 }

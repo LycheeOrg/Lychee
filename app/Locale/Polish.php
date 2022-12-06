@@ -138,6 +138,7 @@ final class Polish implements Language
 			'STARRED' => 'Oznaczone',
 			'RECENT' => 'Ostatnie',
 			'PUBLIC' => 'Publiczne',
+			'ON_THIS_DAY' => 'On This Day',
 			'NUM_PHOTOS' => 'Zdjęć',
 
 			'CREATE_ALBUM' => 'Utwórz album',

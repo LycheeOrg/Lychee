@@ -138,6 +138,7 @@ final class English implements Language
 			'STARRED' => 'Starred',
 			'RECENT' => 'Recent',
 			'PUBLIC' => 'Public',
+			'ON_THIS_DAY' => 'On This Day',
 			'NUM_PHOTOS' => 'Photos',
 
 			'CREATE_ALBUM' => 'Create Album',

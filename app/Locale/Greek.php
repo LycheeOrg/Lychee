@@ -138,6 +138,7 @@ final class Greek implements Language
 			'STARRED' => 'Με Αστέρι',
 			'RECENT' => 'Πρόσφατα',
 			'PUBLIC' => 'Δημόσια',
+			'ON_THIS_DAY' => 'On This Day',
 			'NUM_PHOTOS' => 'Φωτογραφίες',
 
 			'CREATE_ALBUM' => 'Δημιουργία Λευκώματος',

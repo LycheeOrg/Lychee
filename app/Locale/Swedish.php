@@ -138,6 +138,7 @@ final class Swedish implements Language
 			'STARRED' => 'Stjärnmärkta',
 			'RECENT' => 'Nyligen',
 			'PUBLIC' => 'Publika',
+			'ON_THIS_DAY' => 'On This Day',
 			'NUM_PHOTOS' => 'Fotografier',
 
 			'CREATE_ALBUM' => 'Skapa album',

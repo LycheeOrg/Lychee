@@ -244,6 +244,7 @@ class GeoDataTest extends TestCase
 					'unsorted' => null,
 					'starred' => null,
 					'public' => null,
+					'on_this_day' => null,
 					'recent' => ['thumb' => null],
 				],
 				'tag_albums' => [],
