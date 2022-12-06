@@ -35,6 +35,7 @@ class OnThisDayAlbum extends BaseSmartAlbum
 					->whereDay('photos.taken_at', '=', $today->day))
 				->orWhere(fn (Builder $q) => $q
 					->whereNull('photos.taken_at')
+					->whereYear('photos.created_at', '<', $today->year)
 					->whereMonth('photos.created_at', '=', $today->month)
 					->whereDay('photos.created_at', '=', $today->day));
 			}
