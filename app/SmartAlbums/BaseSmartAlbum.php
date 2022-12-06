@@ -90,9 +90,8 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		// (this mimics the behaviour of relations of true Eloquent models)
 		if (!isset($this->photos)) {
 			$sorting = PhotoSortingCriterion::createDefault();
-
 			$this->photos = (new SortingDecorator($this->photos()))
-				->orderBy('photos.' . $sorting->column, $sorting->order)
+				->orderPhotosBy($sorting->column, $sorting->order)
 				->get();
 		}
 

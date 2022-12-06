@@ -3,10 +3,9 @@
 namespace App\Assets;
 
 use App\Contracts\SizeVariantNamingStrategy;
+use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\MissingValueException;
-use App\Models\Photo;
-use App\Models\SizeVariant;
 
 abstract class SizeVariantBaseNamingStrategy extends SizeVariantNamingStrategy
 {
@@ -24,11 +23,11 @@ abstract class SizeVariantBaseNamingStrategy extends SizeVariantNamingStrategy
 	 * @throws MissingValueException
 	 * @throws IllegalOrderOfOperationException
 	 */
-	protected function generateExtension(int $sizeVariant): string
+	protected function generateExtension(SizeVariantType $sizeVariant): string
 	{
-		if ($sizeVariant === SizeVariant::THUMB ||
-			$sizeVariant === SizeVariant::THUMB2X ||
-			($sizeVariant !== SizeVariant::ORIGINAL && !$this->photo->isPhoto())
+		if ($sizeVariant === SizeVariantType::THUMB ||
+			$sizeVariant === SizeVariantType::THUMB2X ||
+			($sizeVariant !== SizeVariantType::ORIGINAL && !$this->photo->isPhoto())
 		) {
 			return self::THUMB_EXTENSION;
 		}

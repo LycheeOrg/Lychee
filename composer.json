@@ -33,7 +33,7 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^8.0.2",
+        "php": "^8.1",
         "ext-bcmath": "*",
         "ext-ctype": "*",
         "ext-exif": "*",
@@ -117,7 +117,7 @@
     },
     "config": {
         "platform": {
-            "php": "8.0.2"
+            "php": "8.1"
         },
         "preferred-install": "dist",
         "sort-packages": true,

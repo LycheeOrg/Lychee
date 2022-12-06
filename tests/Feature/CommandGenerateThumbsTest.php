@@ -12,7 +12,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\SizeVariant;
+use App\Enum\SizeVariantType;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature\Base\PhotoTestBase;
 use Tests\TestCase;
@@ -51,7 +51,7 @@ class CommandGenerateThumbsTest extends PhotoTestBase
 		\Safe\unlink(public_path($photo1->size_variants->small->url));
 		DB::table('size_variants')
 			->where('photo_id', '=', $photo1->id)
-			->where('type', '=', SizeVariant::SMALL)
+			->where('type', '=', SizeVariantType::SMALL)
 			->delete();
 
 		// Re-create it

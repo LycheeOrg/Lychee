@@ -3,7 +3,7 @@
 namespace App\Relations;
 
 use App\Contracts\InternalLycheeException;
-use App\DTO\SortingCriterion;
+use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
 use App\Models\Extensions\FixedQueryBuilder;
@@ -93,8 +93,8 @@ class HasManyChildPhotos extends HasManyBidirectionally
 		$albumSorting = $this->getParent()->getEffectiveSorting();
 
 		return (new SortingDecorator($this->query))
-			->orderBy(
-				'photos.' . $albumSorting->column,
+			->orderPhotosBy(
+				$albumSorting->column,
 				$albumSorting->order
 			)
 			->get();
@@ -128,9 +128,9 @@ class HasManyChildPhotos extends HasManyBidirectionally
 				$sorting = $model->getEffectiveSorting();
 				$childrenOfModel = $childrenOfModel
 					->sortBy(
-						$sorting->column,
+						$sorting->column->value,
 						in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
-						$sorting->order === SortingCriterion::DESC
+						$sorting->order === OrderSortingType::DESC
 					)
 					->values();
 				$model->setRelation($relation, $childrenOfModel);
