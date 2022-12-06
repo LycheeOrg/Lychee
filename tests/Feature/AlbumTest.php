@@ -814,12 +814,8 @@ class AlbumTest extends TestCase
 				'created_at' => $today->subDay()->format('Y-m-d H:i:s.u'),
 			]);
 
-		$response = static::convertJsonToObject($this->albums_tests->get(OnThisDayAlbum::ID, 200, 'photos'));
-
-		self::assertCount(1, $response->photos);
-		self::assertIsObject($response->photos[0]);
-		self::assertObjectHasAttribute('id', $response->photos[0]);
-		self::assertEquals($photoID, $response->photos[0]->id);
+		$response = $this->albums_tests->get(OnThisDayAlbum::ID, 200, 'photos');
+		$response->assertSee($photoID);
 
 		$this->clearCachedSmartAlbums();
 		Auth::logout();
@@ -839,12 +835,8 @@ class AlbumTest extends TestCase
 				'taken_at' => null,
 				'created_at' => $today->subYear()->format('Y-m-d H:i:s.u'),
 			]);
-		$response = static::convertJsonToObject($this->albums_tests->get(OnThisDayAlbum::ID, 200, 'photos'));
-
-		self::assertCount(1, $response->photos);
-		self::assertIsObject($response->photos[0]);
-		self::assertObjectHasAttribute('id', $response->photos[0]);
-		self::assertEquals($photoID, $response->photos[0]->id);
+		$response = $this->albums_tests->get(OnThisDayAlbum::ID, 200, 'photos');
+		$response->assertSee($photoID);
 
 		$this->clearCachedSmartAlbums();
 		Auth::logout();
@@ -864,9 +856,9 @@ class AlbumTest extends TestCase
 				'taken_at' => null,
 				'created_at' => $today->subDay()->format('Y-m-d H:i:s.u'),
 			]);
-		$response = static::convertJsonToObject($this->albums_tests->get(OnThisDayAlbum::ID, 200, 'photos'));
 
-		self::assertCount(0, $response->photos);
+		$response = $this->albums_tests->get(OnThisDayAlbum::ID, 200, 'photos');
+		$response->assertDontSee($photoID);
 
 		$this->clearCachedSmartAlbums();
 		Auth::logout();
