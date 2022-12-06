@@ -14,11 +14,10 @@ class PhotoSortingCriterion extends SortingCriterion
 	 */
 	public static function createDefault(): self
 	{
-		$columSortingString = Configs::getValueAsString('sorting_photos_col');
-		$columnSorting = ColumnSortingPhotoType::tryFrom($columSortingString)?->toColumnSortingType();
+		$columnSorting = Configs::getValueAsEnum('sorting_photos_col', ColumnSortingPhotoType::class);
+		$columnSorting = $columnSorting?->toColumnSortingType();
 
-		$orderSortingString = Configs::getValueAsString('sorting_photos_order');
-		$orderSorting = OrderSortingType::tryFrom($orderSortingString);
+		$orderSorting = Configs::getValueAsEnum('sorting_photos_order', OrderSortingType::class);
 
 		return new self(
 			$columnSorting ?? ColumnSortingType::CREATED_AT,

@@ -49,7 +49,7 @@ class SettingsTest extends TestCase
 			]);
 
 		$this->assertStatus($response, 422);
-		$response->assertSee('The selected sorting album column is invalid');
+		$response->assertSee('The selected sorting albums column is invalid');
 
 		Auth::logout();
 		Session::flush();

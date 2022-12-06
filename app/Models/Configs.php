@@ -7,11 +7,13 @@ use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
+use App\Exceptions\UnexpectedException;
 use App\Facades\Helpers;
 use App\Models\Extensions\ConfigsHas;
 use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
+use BackedEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -207,6 +209,23 @@ class Configs extends Model
 	public static function getValueAsBool(string $key): bool
 	{
 		return self::getValue($key) === '1';
+	}
+
+	/**
+	 * @template T of BackedEnum
+	 *
+	 * @param string          $key
+	 * @param class-string<T> $type
+	 *
+	 * @return T|null
+	 */
+	public static function getValueAsEnum(string $key, string $type): \BackedEnum|null
+	{
+		if (!function_exists('enum_exists') || !enum_exists($type) || !method_exists($type, 'tryFrom')) {
+			throw new UnexpectedException();
+		}
+
+		return $type::tryFrom(self::getValue($key));
 	}
 
 	/**

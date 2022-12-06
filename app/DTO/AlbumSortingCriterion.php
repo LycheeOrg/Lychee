@@ -14,11 +14,10 @@ class AlbumSortingCriterion extends SortingCriterion
 	 */
 	public static function createDefault(): self
 	{
-		$columSortingString = Configs::getValueAsString('sorting_albums_col');
-		$columnSorting = ColumnSortingAlbumType::tryFrom($columSortingString)?->toColumnSortingType();
+		$columnSorting = Configs::getValueAsEnum('sorting_albums_col', ColumnSortingAlbumType::class);
+		$columnSorting = $columnSorting?->toColumnSortingType();
 
-		$orderSortingString = Configs::getValueAsString('sorting_albums_order');
-		$orderSorting = OrderSortingType::tryFrom($orderSortingString);
+		$orderSorting = Configs::getValueAsEnum('sorting_albums_order', OrderSortingType::class);
 
 		return new self(
 			$columnSorting ?? ColumnSortingType::CREATED_AT,
