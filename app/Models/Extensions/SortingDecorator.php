@@ -152,11 +152,12 @@ class SortingDecorator
 			$column = $this->orderBy[$i]['column'];
 
 			// This conversion is necessary
-			$columnSortingType = ColumnSortingType::tryFrom($column) ?? ColumnSortingType::CREATED_AT;
+			$columnSortingName = str_replace('photos.', '', $column);
+			$columnSortingType = ColumnSortingType::tryFrom($columnSortingName) ?? ColumnSortingType::CREATED_AT;
 
 			$options = in_array($columnSortingType, self::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR;
 			$result = $result->sortBy(
-				$column,
+				$columnSortingName,
 				$options,
 				$this->orderBy[$i]['direction'] === OrderSortingType::DESC->value
 			)->values();
