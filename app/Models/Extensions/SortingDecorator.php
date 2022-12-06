@@ -158,7 +158,7 @@ class SortingDecorator
 			$result = $result->sortBy(
 				$column,
 				$options,
-				$this->orderBy[$i]['direction'] === 'desc'
+				$this->orderBy[$i]['direction'] === OrderSortingType::DESC->value
 			)->values();
 		}
 

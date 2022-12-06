@@ -12,7 +12,8 @@
 
 namespace Tests\Feature;
 
-use App\DTO\SortingCriterion;
+use App\Enum\ColumnSortingType;
+use App\Enum\OrderSortingType;
 use App\Http\Requests\Settings\SetSortingRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -25,10 +26,10 @@ class SettingsTest extends TestCase
 		Auth::loginUsingId(0);
 
 		$this->postJson('/api/Settings::setSorting', [
-			SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
-			SetSortingRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
-			SetSortingRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
-			SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
+			SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => ColumnSortingType::CREATED_AT->value,
+			SetSortingRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => ColumnSortingType::CREATED_AT->value,
+			SetSortingRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => OrderSortingType::ASC->value,
+			SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => OrderSortingType::ASC->value,
 		])->assertStatus(204);
 
 		Auth::logout();
@@ -42,13 +43,13 @@ class SettingsTest extends TestCase
 		$response = $this->postJson('/api/Settings::setSorting',
 			[
 				SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => '123',
-				SetSortingRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
-				SetSortingRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
-				SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
+				SetSortingRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => ColumnSortingType::CREATED_AT->value,
+				SetSortingRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => OrderSortingType::ASC->value,
+				SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => OrderSortingType::ASC->value,
 			]);
 
 		$this->assertStatus($response, 422);
-		$response->assertSee('sorting albums column must be null or one out of');
+		$response->assertSee('The selected sorting album column is invalid');
 
 		Auth::logout();
 		Session::flush();
@@ -60,14 +61,14 @@ class SettingsTest extends TestCase
 
 		$response = $this->postJson('/api/Settings::setSorting',
 			[
-				SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
+				SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => ColumnSortingType::CREATED_AT->value,
 				SetSortingRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => '123',
-				SetSortingRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
-				SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
+				SetSortingRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => OrderSortingType::ASC->value,
+				SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => OrderSortingType::ASC->value,
 			]);
 
 		$this->assertStatus($response, 422);
-		$response->assertSee('sorting photos column must be null or one out of');
+		$response->assertSee('The selected sorting photos column is invalid');
 
 		Auth::logout();
 		Session::flush();
@@ -79,14 +80,14 @@ class SettingsTest extends TestCase
 
 		$response = $this->postJson('/api/Settings::setSorting',
 			[
-				SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
-				SetSortingRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
+				SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => ColumnSortingType::CREATED_AT->value,
+				SetSortingRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => ColumnSortingType::CREATED_AT->value,
 				SetSortingRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => '123',
 				SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => '123',
 			]);
 
 		$this->assertStatus($response, 422);
-		$response->assertSee('order must be either');
+		$response->assertSee('The selected sorting photos order is invalid');
 
 		Auth::logout();
 		Session::flush();

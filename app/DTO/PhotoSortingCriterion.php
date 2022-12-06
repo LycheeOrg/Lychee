@@ -22,7 +22,7 @@ class PhotoSortingCriterion extends SortingCriterion
 
 		return new self(
 			$columnSorting ?? ColumnSortingType::CREATED_AT,
-			$orderSorting ?? OrderSortingType::DESC
+			$orderSorting ?? OrderSortingType::ASC
 		);
 	}
 }
