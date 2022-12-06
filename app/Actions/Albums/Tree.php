@@ -5,6 +5,8 @@ namespace App\Actions\Albums;
 use App\Contracts\InternalLycheeException;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\AlbumTree;
+use App\Enum\ColumnSortingType;
+use App\Enum\OrderSortingType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
@@ -55,7 +57,7 @@ class Tree
 		);
 		if (Auth::check()) {
 			// For authenticated users we group albums by ownership.
-			$query->orderBy('owner_id');
+			$query->orderBy(ColumnSortingType::OWNER_ID, OrderSortingType::ASC);
 		}
 		$query->orderBy($this->sorting->column, $this->sorting->order);
 

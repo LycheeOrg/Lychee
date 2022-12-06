@@ -2,8 +2,8 @@
 
 namespace App\DTO;
 
+use App\Enum\SeverityType;
 use App\Exceptions\Handler as ExceptionHandler;
-use App\Models\Logs;
 
 class ImportEventReport extends ImportReport
 {
@@ -11,11 +11,11 @@ class ImportEventReport extends ImportReport
 
 	protected string $subtype;
 	protected ?string $path;
-	protected int $severity;
+	protected SeverityType $severity;
 	protected string $message;
 	protected ?\Throwable $throwable;
 
-	protected function __construct(string $subtype, int $severity, ?string $path, string $message, ?\Throwable $throwable = null)
+	protected function __construct(string $subtype, SeverityType $severity, ?string $path, string $message, ?\Throwable $throwable = null)
 	{
 		parent::__construct(self::REPORT_TYPE);
 		$this->subtype = $subtype;
@@ -27,7 +27,7 @@ class ImportEventReport extends ImportReport
 
 	public static function createWarning(string $subtype, ?string $path, string $message): self
 	{
-		return new self($subtype, Logs::SEVERITY_WARNING, $path, $message);
+		return new self($subtype, SeverityType::WARNING, $path, $message);
 	}
 
 	public static function createFromException(\Throwable $e, ?string $path): self
@@ -47,7 +47,7 @@ class ImportEventReport extends ImportReport
 	{
 		return array_merge(parent::toArray(), [
 			'subtype' => $this->subtype,
-			'severity' => Logs::SEVERITY_2_STRING[$this->severity],
+			'severity' => $this->severity->value,
 			'path' => $this->path,
 			'message' => $this->message,
 		]);

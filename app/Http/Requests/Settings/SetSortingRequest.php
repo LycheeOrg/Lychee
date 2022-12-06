@@ -2,12 +2,13 @@
 
 namespace App\Http\Requests\Settings;
 
+use App\Enum\ColumnSortingAlbumType;
+use App\Enum\ColumnSortingPhotoType;
+use App\Enum\OrderSortingType;
 use App\Http\Requests\BaseApiRequest;
 use App\Policies\UserPolicy;
-use App\Rules\AlbumSortingRule;
-use App\Rules\OrderRule;
-use App\Rules\PhotoSortingRule;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rules\Enum;
 
 class SetSortingRequest extends BaseApiRequest
 {
@@ -16,10 +17,10 @@ class SetSortingRequest extends BaseApiRequest
 	public const ALBUM_SORTING_COLUMN_ATTRIBUTE = 'sorting_albums_column';
 	public const ALBUM_SORTING_ORDER_ATTRIBUTE = 'sorting_albums_order';
 
-	protected string $photoSortingColumn;
-	protected string $photoSortingOrder;
-	protected string $albumSortingColumn;
-	protected string $albumSortingOrder;
+	protected ColumnSortingPhotoType $photoSortingColumn;
+	protected OrderSortingType $photoSortingOrder;
+	protected ColumnSortingAlbumType $albumSortingColumn;
+	protected OrderSortingType $albumSortingOrder;
 
 	/**
 	 * {@inheritDoc}
@@ -35,10 +36,10 @@ class SetSortingRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			self::PHOTO_SORTING_COLUMN_ATTRIBUTE => ['required', new PhotoSortingRule()],
-			self::PHOTO_SORTING_ORDER_ATTRIBUTE => ['required', new OrderRule(false)],
-			self::ALBUM_SORTING_COLUMN_ATTRIBUTE => ['required', new AlbumSortingRule()],
-			self::ALBUM_SORTING_ORDER_ATTRIBUTE => ['required', new OrderRule(false)],
+			self::PHOTO_SORTING_COLUMN_ATTRIBUTE => ['required', new Enum(ColumnSortingPhotoType::class)],
+			self::PHOTO_SORTING_ORDER_ATTRIBUTE => ['required', new Enum(OrderSortingType::class)],
+			self::ALBUM_SORTING_COLUMN_ATTRIBUTE => ['required', new Enum(ColumnSortingAlbumType::class)],
+			self::ALBUM_SORTING_ORDER_ATTRIBUTE => ['required', new Enum(OrderSortingType::class)],
 		];
 	}
 
@@ -47,40 +48,40 @@ class SetSortingRequest extends BaseApiRequest
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photoSortingColumn = $values[self::PHOTO_SORTING_COLUMN_ATTRIBUTE];
-		$this->photoSortingOrder = $values[self::PHOTO_SORTING_ORDER_ATTRIBUTE];
-		$this->albumSortingColumn = $values[self::ALBUM_SORTING_COLUMN_ATTRIBUTE];
-		$this->albumSortingOrder = $values[self::ALBUM_SORTING_ORDER_ATTRIBUTE];
+		$this->photoSortingColumn = ColumnSortingPhotoType::from($values[self::PHOTO_SORTING_COLUMN_ATTRIBUTE]);
+		$this->photoSortingOrder = OrderSortingType::from($values[self::PHOTO_SORTING_ORDER_ATTRIBUTE]);
+		$this->albumSortingColumn = ColumnSortingAlbumType::from($values[self::ALBUM_SORTING_COLUMN_ATTRIBUTE]);
+		$this->albumSortingOrder = OrderSortingType::from($values[self::ALBUM_SORTING_ORDER_ATTRIBUTE]);
 	}
 
 	/**
-	 * @return string
+	 * @return ColumnSortingPhotoType
 	 */
-	public function photoSortingColumn(): string
+	public function photoSortingColumn(): ColumnSortingPhotoType
 	{
 		return $this->photoSortingColumn;
 	}
 
 	/**
-	 * @return string
+	 * @return OrderSortingType
 	 */
-	public function photoSortingOrder(): string
+	public function photoSortingOrder(): OrderSortingType
 	{
 		return $this->photoSortingOrder;
 	}
 
 	/**
-	 * @return string
+	 * @return ColumnSortingAlbumType
 	 */
-	public function albumSortingColumn(): string
+	public function albumSortingColumn(): ColumnSortingAlbumType
 	{
 		return $this->albumSortingColumn;
 	}
 
 	/**
-	 * @return string
+	 * @return OrderSortingType
 	 */
-	public function albumSortingOrder(): string
+	public function albumSortingOrder(): OrderSortingType
 	{
 		return $this->albumSortingOrder;
 	}

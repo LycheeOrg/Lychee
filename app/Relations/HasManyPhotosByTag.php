@@ -3,7 +3,7 @@
 namespace App\Relations;
 
 use App\Contracts\InternalLycheeException;
-use App\DTO\SortingCriterion;
+use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
@@ -91,9 +91,9 @@ class HasManyPhotosByTag extends HasManyPhotos
 		$sorting = $album->getEffectiveSorting();
 
 		$photos = $photos->sortBy(
-			$sorting->column,
+			$sorting->column->value,
 			in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
-			$sorting->order === SortingCriterion::DESC
+			$sorting->order === OrderSortingType::DESC
 		)->values();
 		$album->setRelation($relation, $photos);
 

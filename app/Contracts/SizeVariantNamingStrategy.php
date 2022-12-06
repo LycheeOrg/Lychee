@@ -2,6 +2,7 @@
 
 namespace App\Contracts;
 
+use App\Enum\SizeVariantType;
 use App\Image\FlysystemFile;
 use App\Models\Photo;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -66,11 +67,11 @@ abstract class SizeVariantNamingStrategy
 	/**
 	 * Creates a file for the designated size variant.
 	 *
-	 * @param int $sizeVariant the size variant
+	 * @param SizeVariantType $sizeVariant the size variant
 	 *
 	 * @return FlysystemFile the file
 	 *
 	 * @throws LycheeException
 	 */
-	abstract public function createFile(int $sizeVariant): FlysystemFile;
+	abstract public function createFile(SizeVariantType $sizeVariant): FlysystemFile;
 }

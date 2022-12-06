@@ -5,13 +5,13 @@ namespace App\Actions\Photo;
 use App\Actions\Photo\Extensions\ArchiveFileInfo;
 use App\Contracts\LycheeException;
 use App\Contracts\SizeVariantNamingStrategy;
+use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Image\FlysystemFile;
 use App\Models\Configs;
 use App\Models\Photo;
-use App\Models\SizeVariant;
 use Illuminate\Database\Eloquent\Collection;
 use Safe\Exceptions\InfoException;
 use function Safe\fclose;
@@ -48,13 +48,13 @@ class Archive
 	];
 
 	public const VARIANT2VARIANT = [
-		self::FULL => SizeVariant::ORIGINAL,
-		self::MEDIUM2X => SizeVariant::MEDIUM2X,
-		self::MEDIUM => SizeVariant::MEDIUM,
-		self::SMALL2X => SizeVariant::SMALL2X,
-		self::SMALL => SizeVariant::SMALL,
-		self::THUMB2X => SizeVariant::THUMB2X,
-		self::THUMB => SizeVariant::THUMB,
+		self::FULL => SizeVariantType::ORIGINAL,
+		self::MEDIUM2X => SizeVariantType::MEDIUM2X,
+		self::MEDIUM => SizeVariantType::MEDIUM,
+		self::SMALL2X => SizeVariantType::SMALL2X,
+		self::SMALL => SizeVariantType::SMALL,
+		self::THUMB2X => SizeVariantType::THUMB2X,
+		self::THUMB => SizeVariantType::THUMB,
 	];
 
 	public const BAD_CHARS = [
@@ -349,7 +349,7 @@ class Archive
 				// particular suffix but remain as is.
 				// All other size variants (i.e. the generated, smaller ones)
 				// get size information as suffix.
-				if ($sv->type !== SizeVariant::ORIGINAL) {
+				if ($sv->type !== SizeVariantType::ORIGINAL) {
 					$baseFilenameAddon = '-' . $sv->width . 'x' . $sv->height;
 				}
 			} else {

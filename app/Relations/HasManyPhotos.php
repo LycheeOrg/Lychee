@@ -129,7 +129,7 @@ abstract class HasManyPhotos extends Relation
 		$sorting = $parent->getEffectiveSorting();
 
 		return (new SortingDecorator($this->getRelationQuery()))
-			->orderBy('photos.' . $sorting->column, $sorting->order)
+			->orderPhotosBy($sorting->column, $sorting->order)
 			->get();
 	}
 }

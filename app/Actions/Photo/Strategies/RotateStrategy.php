@@ -6,6 +6,7 @@ use App\Contracts\LycheeException;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\DTO\ImageDimension;
+use App\Enum\SizeVariantType;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
@@ -101,7 +102,7 @@ class RotateStrategy
 
 		// Create new target file for rotated original size variant,
 		// and stream it into the final place
-		$targetFile = $this->namingStrategy->createFile(SizeVariant::ORIGINAL);
+		$targetFile = $this->namingStrategy->createFile(SizeVariantType::ORIGINAL);
 		$streamStat = $image->save($targetFile, true);
 
 		// The checksum has been changed due to rotation.
@@ -111,7 +112,7 @@ class RotateStrategy
 
 		// Re-create original size variant of photo
 		$newOriginalSizeVariant = $this->photo->size_variants->create(
-			SizeVariant::ORIGINAL,
+			SizeVariantType::ORIGINAL,
 			$targetFile->getRelativePath(),
 			$image->getDimensions(),
 			$streamStat->bytes
