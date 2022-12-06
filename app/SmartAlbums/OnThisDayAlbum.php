@@ -30,11 +30,13 @@ class OnThisDayAlbum extends BaseSmartAlbum
 			self::TITLE,
 			false,
 			function (Builder $query) use ($today) {
-				$query->where(fn (Builder $q) => $q->whereMonth('photos.taken_at', '=', $today->month)
-					  ->whereDay('photos.taken_at', '=', $today->day))
-				->orWhere(fn (Builder $q) => $q->whereNull('photos.taken_at')
-					  ->whereMonth('photos.created_at', '=', $today->month)
-					  ->whereDay('photos.created_at', '=', $today->day));
+				$query->where(fn (Builder $q) => $q
+					->whereMonth('photos.taken_at', '=', $today->month)
+					->whereDay('photos.taken_at', '=', $today->day))
+				->orWhere(fn (Builder $q) => $q
+					->whereNull('photos.taken_at')
+					->whereMonth('photos.created_at', '=', $today->month)
+					->whereDay('photos.created_at', '=', $today->day));
 			}
 		);
 	}
