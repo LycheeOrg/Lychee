@@ -219,7 +219,7 @@ class Configs extends Model
 	 *
 	 * @return T|null
 	 */
-	public static function getValueAsEnum(string $key, string $type): \BackedEnum|null
+	public static function getValueAsEnum(string $key, string $type): BackedEnum|null
 	{
 		if (!function_exists('enum_exists') || !enum_exists($type) || !method_exists($type, 'tryFrom')) {
 			throw new UnexpectedException();
@@ -240,7 +240,7 @@ class Configs extends Model
 	 * @throws InvalidConfigOption
 	 * @throws QueryBuilderException
 	 */
-	public static function set(string $key, string|int|bool|\BackedEnum $value): void
+	public static function set(string $key, string|int|bool|BackedEnum $value): void
 	{
 		try {
 			/** @var Configs $config */
