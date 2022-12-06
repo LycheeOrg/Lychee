@@ -47,7 +47,7 @@ class ImportEventReport extends ImportReport
 	{
 		return array_merge(parent::toArray(), [
 			'subtype' => $this->subtype,
-			'severity' => $this->severity->name,
+			'severity' => $this->severity->value,
 			'path' => $this->path,
 			'message' => $this->message,
 		]);

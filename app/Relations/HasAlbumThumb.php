@@ -180,8 +180,8 @@ class HasAlbumThumb extends Relation
 			->join('albums', 'albums.id', '=', 'photos.album_id')
 			->whereColumn('albums._lft', '>=', 'covered_albums._lft')
 			->whereColumn('albums._rgt', '<=', 'covered_albums._rgt')
-			->orderBy('photos.' . ColumnSortingPhotoType::IS_STARRED->name, OrderSortingType::DESC->value)
-			->orderBy('photos.' . $this->sorting->column->name, $this->sorting->order->name)
+			->orderBy('photos.' . ColumnSortingPhotoType::IS_STARRED->value, OrderSortingType::DESC->value)
+			->orderBy('photos.' . $this->sorting->column->value, $this->sorting->order->value)
 			->limit(1);
 		if (!Gate::check(UserPolicy::IS_ADMIN)) {
 			$bestPhotoIDSelect->where(function (Builder $query2) {
