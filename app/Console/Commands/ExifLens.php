@@ -3,12 +3,12 @@
 namespace App\Console\Commands;
 
 use App\Contracts\ExternalLycheeException;
+use App\Enum\SizeVariantType;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnexpectedException;
 use App\Image\BaseMediaFile;
 use App\Metadata\Extractor;
 use App\Models\Photo;
-use App\Models\SizeVariant;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Safe\Exceptions\InfoException;
@@ -52,7 +52,7 @@ class ExifLens extends Command
 
 			// we use lens because this is the one which is most likely to be empty.
 			$photos = Photo::with(['size_variants' => function (HasMany $r) {
-				$r->where('type', '=', SizeVariant::ORIGINAL);
+				$r->where('type', '=', SizeVariantType::ORIGINAL);
 			}])
 				->where('lens', '=', '')
 				->whereNotIn('type', BaseMediaFile::SUPPORTED_VIDEO_MIME_TYPES)

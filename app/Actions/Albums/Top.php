@@ -5,6 +5,8 @@ namespace App\Actions\Albums;
 use App\Contracts\InternalLycheeException;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\TopAlbums;
+use App\Enum\ColumnSortingType;
+use App\Enum\OrderSortingType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Factories\AlbumFactory;
@@ -86,7 +88,7 @@ class Top
 		if ($userID !== null) {
 			// For authenticated users we group albums by ownership.
 			$albums = (new SortingDecorator($query))
-				->orderBy('owner_id')
+				->orderBy(ColumnSortingType::OWNER_ID, OrderSortingType::ASC)
 				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();
 
