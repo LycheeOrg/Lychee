@@ -13,9 +13,7 @@ use Geocoder\StatefulGeocoder;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\HandlerStack;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Support\Facades\Cache;
 use Spatie\GuzzleRateLimiterMiddleware\RateLimiterMiddleware;
-use Spatie\GuzzleRateLimiterMiddleware\Store;
 
 class Geodecoder
 {
@@ -101,18 +99,5 @@ class Geodecoder
 			throw new LocationDecodingFailed('Location (' . $latitude . ', ' . $longitude . ') could not be decoded.', $e);
 		}
 		// @codeCoverageIgnoreEnd
-	}
-}
-
-class RateLimiterStore implements Store
-{
-	public function get(): array
-	{
-		return Cache::get('rate-limiter', []);
-	}
-
-	public function push(int $timestamp, int $limit): void
-	{
-		Cache::put('rate-limiter', array_merge($this->get(), [$timestamp]));
 	}
 }

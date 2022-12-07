@@ -43,8 +43,8 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	protected bool $isPublic;
 	protected bool $isDownloadable;
 	protected bool $isShareButtonVisible;
-	protected ?Thumb $thumb;
-	protected Collection $photos;
+	protected ?Thumb $thumb = null;
+	protected ?Collection $photos = null;
 	protected \Closure $smartPhotoCondition;
 
 	/**
@@ -60,7 +60,6 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			$this->isPublic = $isPublic;
 			$this->isDownloadable = Configs::getValueAsBool('downloadable');
 			$this->isShareButtonVisible = Configs::getValueAsBool('share_button_visible');
-			$this->thumb = null;
 			$this->smartPhotoCondition = $smartCondition;
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s service container', $e);
@@ -88,7 +87,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	{
 		// Cache query result for later use
 		// (this mimics the behaviour of relations of true Eloquent models)
-		if (!isset($this->photos)) {
+		if ($this->photos === null) {
 			$sorting = PhotoSortingCriterion::createDefault();
 
 			$this->photos = (new SortingDecorator($this->photos()))
@@ -105,7 +104,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 */
 	protected function getThumbAttribute(): ?Thumb
 	{
-		if (!isset($this->thumb)) {
+		if ($this->thumb === null) {
 			/*
 			 * Note, `photos()` already applies a "security filter" and
 			 * only returns photos which are accessible by the current
@@ -153,11 +152,8 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			'is_downloadable' => $this->isDownloadable,
 			'is_share_button_visible' => $this->isShareButtonVisible,
 			'thumb' => $this->getThumbAttribute(),
+			'photos' => $this->photos?->toArray(),
 		];
-
-		if (isset($this->photos)) {
-			$result['photos'] = $this->photos->toArray();
-		}
 
 		return $result;
 	}

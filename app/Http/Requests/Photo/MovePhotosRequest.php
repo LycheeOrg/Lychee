@@ -3,9 +3,9 @@
 namespace App\Http\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasAlbum;
 use App\Http\Requests\Contracts\HasPhotos;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotosAlbumTrait;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Http\Requests\Traits\HasPhotosTrait;
@@ -25,9 +25,9 @@ class MovePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum
 	public function rules(): array
 	{
 		return [
-			HasPhotos::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
-			HasPhotos::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
-			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
+			RequestAttribute::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
+			RequestAttribute::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 		];
 	}
 
@@ -37,9 +37,9 @@ class MovePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->photos = Photo::query()->findOrFail(
-			$values[HasPhotos::PHOTO_IDS_ATTRIBUTE]
+			$values[RequestAttribute::PHOTO_IDS_ATTRIBUTE]
 		);
-		$targetAlbumID = $values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE];
+		$targetAlbumID = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
 		$this->album = $targetAlbumID === null ?
 			null :
 			Album::query()->findOrFail($targetAlbumID);

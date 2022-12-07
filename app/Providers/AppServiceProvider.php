@@ -6,8 +6,8 @@ use App\Actions\Update\Apply as ApplyUpdate;
 use App\Actions\Update\Check as CheckUpdate;
 use App\Assets\Helpers;
 use App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy;
+use App\Contracts\AbstractSizeVariantNamingStrategy;
 use App\Contracts\SizeVariantFactory;
-use App\Contracts\SizeVariantNamingStrategy;
 use App\Factories\AlbumFactory;
 use App\Factories\LangFactory;
 use App\Image\SizeVariantDefaultFactory;
@@ -97,7 +97,7 @@ class AppServiceProvider extends ServiceProvider
 		});
 
 		$this->app->bind(
-			SizeVariantNamingStrategy::class,
+			AbstractSizeVariantNamingStrategy::class,
 			SizeVariantGroupedWithRandomSuffixNamingStrategy::class
 		);
 

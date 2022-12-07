@@ -5,6 +5,7 @@ namespace App\Http\Requests\Photo;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasDescription;
 use App\Http\Requests\Contracts\HasPhoto;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotoTrait;
 use App\Http\Requests\Traits\HasDescriptionTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
@@ -24,8 +25,8 @@ class SetPhotoDescriptionRequest extends BaseApiRequest implements HasPhoto, Has
 	public function rules(): array
 	{
 		return [
-			HasPhoto::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
-			HasDescription::DESCRIPTION_ATTRIBUTE => ['required', new DescriptionRule()],
+			RequestAttribute::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['required', new DescriptionRule()],
 		];
 	}
 
@@ -34,7 +35,7 @@ class SetPhotoDescriptionRequest extends BaseApiRequest implements HasPhoto, Has
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photo = Photo::query()->findOrFail($values[HasPhoto::PHOTO_ID_ATTRIBUTE]);
-		$this->description = $values[HasDescription::DESCRIPTION_ATTRIBUTE];
+		$this->photo = Photo::query()->findOrFail($values[RequestAttribute::PHOTO_ID_ATTRIBUTE]);
+		$this->description = $values[RequestAttribute::DESCRIPTION_ATTRIBUTE];
 	}
 }

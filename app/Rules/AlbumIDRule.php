@@ -2,7 +2,7 @@
 
 namespace App\Rules;
 
-use App\Contracts\HasRandomID;
+use App\Constants\RandomID;
 use App\Factories\AlbumFactory;
 use Illuminate\Contracts\Validation\Rule;
 
@@ -22,7 +22,7 @@ class AlbumIDRule implements Rule
 	{
 		return
 			($value === null && $this->isNullable) ||
-			strlen($value) === HasRandomID::ID_LENGTH ||
+			strlen($value) === RandomID::ID_LENGTH ||
 			array_key_exists($value, AlbumFactory::BUILTIN_SMARTS);
 	}
 
@@ -32,7 +32,7 @@ class AlbumIDRule implements Rule
 	public function message(): string
 	{
 		return ':attribute ' .
-			' must either be null, a string with ' . HasRandomID::ID_LENGTH . ' characters or one of the built-in IDs ' .
+			' must either be null, a string with ' . RandomID::ID_LENGTH . ' characters or one of the built-in IDs ' .
 			implode(', ', array_keys(AlbumFactory::BUILTIN_SMARTS));
 	}
 }

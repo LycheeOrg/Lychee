@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Actions\SizeVariant\Delete;
 use App\Casts\MustNotSetCast;
-use App\Contracts\SizeVariantNamingStrategy;
+use App\Contracts\AbstractSizeVariantNamingStrategy;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\MediaFileOperationException;
@@ -21,7 +21,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 
 // TODO: Uncomment the following line, if Lychee really starts to support AWS s3.
@@ -154,7 +153,7 @@ class SizeVariant extends Model
 	 */
 	public function getUrlAttribute(): string
 	{
-		$imageDisk = SizeVariantNamingStrategy::getImageDisk();
+		$imageDisk = AbstractSizeVariantNamingStrategy::getImageDisk();
 
 		if (
 			Gate::check(UserPolicy::IS_ADMIN) && !Configs::getValueAsBool('SL_for_admin') ||
@@ -203,12 +202,12 @@ class SizeVariant extends Model
 	 */
 	public function getFullPathAttribute(): string
 	{
-		return SizeVariantNamingStrategy::getImageDisk()->path($this->short_path);
+		return AbstractSizeVariantNamingStrategy::getImageDisk()->path($this->short_path);
 	}
 
 	public function getFile(): FlysystemFile
 	{
-		return new FlysystemFile(SizeVariantNamingStrategy::getImageDisk(), $this->short_path);
+		return new FlysystemFile(AbstractSizeVariantNamingStrategy::getImageDisk(), $this->short_path);
 	}
 
 	/**

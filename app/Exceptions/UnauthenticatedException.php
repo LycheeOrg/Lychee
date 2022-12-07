@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Side remark: If one really wants to express that a user is unauthorized,
  * the suitable HTTP Status Code would equal 403 (Forbidden).
  */
-class UnauthenticatedException extends LycheeBaseException
+class UnauthenticatedException extends BaseLycheeException
 {
 	public const DEFAULT_MESSAGE = 'User is not authenticated';
 

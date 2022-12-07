@@ -3,7 +3,7 @@
 namespace App\Models\Extensions;
 
 use App\DTO\AlbumSortingCriterion;
-use App\DTO\SortingCriterion;
+use App\DTO\BaseSortingCriterion;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -11,8 +11,8 @@ use Illuminate\Database\Eloquent\Collection;
 class SortingDecorator
 {
 	public const POSTPONE_COLUMNS = [
-		SortingCriterion::COLUMN_TITLE,
-		SortingCriterion::COLUMN_DESCRIPTION,
+		BaseSortingCriterion::COLUMN_TITLE,
+		BaseSortingCriterion::COLUMN_DESCRIPTION,
 	];
 
 	protected Builder $baseBuilder;
@@ -90,7 +90,7 @@ class SortingDecorator
 	 *
 	 * @throws InvalidOrderDirectionException
 	 */
-	public function orderBy(string $column, string $direction = SortingCriterion::ASC): SortingDecorator
+	public function orderBy(string $column, string $direction = BaseSortingCriterion::ASC): SortingDecorator
 	{
 		$direction = strtolower($direction);
 		if (!in_array($direction, ['asc', 'desc'], true)) {

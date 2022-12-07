@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Returns status code 503 (Service unavailable) to an HTTP client.
  */
-class InsufficientEntropyException extends LycheeBaseException
+class InsufficientEntropyException extends BaseLycheeException
 {
 	public function __construct(\Throwable $previous = null)
 	{

@@ -3,9 +3,9 @@
 namespace App\Http\Requests\Album;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasTagAlbum;
 use App\Http\Requests\Contracts\HasTags;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasTagAlbumTrait;
 use App\Http\Requests\Traits\HasTagsTrait;
@@ -30,7 +30,7 @@ class SetAlbumTagsRequest extends BaseApiRequest implements HasTagAlbum, HasTags
 	public function rules(): array
 	{
 		return [
-			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 			self::SHOW_TAGS_ATTRIBUTE => 'required|array|min:1',
 			self::SHOW_TAGS_ATTRIBUTE . '.*' => 'required|string|min:1',
 		];
@@ -45,7 +45,7 @@ class SetAlbumTagsRequest extends BaseApiRequest implements HasTagAlbum, HasTags
 		// which is not assignable to `TagAlbum`; but as we query for the ID
 		// we never get a collection
 		// @phpstan-ignore-next-line
-		$this->album = TagAlbum::query()->findOrFail($values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]);
+		$this->album = TagAlbum::query()->findOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
 		$this->tags = $values[self::SHOW_TAGS_ATTRIBUTE];
 	}
 }

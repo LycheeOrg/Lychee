@@ -3,9 +3,9 @@
 namespace App\Actions\Photo\Strategies;
 
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
+use App\Contracts\AbstractSizeVariantNamingStrategy;
 use App\Contracts\LycheeException;
 use App\Contracts\SizeVariantFactory;
-use App\Contracts\SizeVariantNamingStrategy;
 use App\DTO\ImageDimension;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Handler;
@@ -23,11 +23,11 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
 
-class AddStandaloneStrategy extends AddBaseStrategy
+class AddStandaloneStrategy extends AbstractAddStrategy
 {
 	protected ?ImageHandlerInterface $sourceImage;
 	protected NativeLocalFile $sourceFile;
-	protected SizeVariantNamingStrategy $namingStrategy;
+	protected AbstractSizeVariantNamingStrategy $namingStrategy;
 
 	/**
 	 * @throws FrameworkException
@@ -51,7 +51,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			$this->photo->updateTimestamps();
 			$this->sourceImage = null;
 			$this->sourceFile = $sourceFile;
-			$this->namingStrategy = resolve(SizeVariantNamingStrategy::class);
+			$this->namingStrategy = resolve(AbstractSizeVariantNamingStrategy::class);
 			$this->namingStrategy->setPhoto($this->photo);
 			$this->namingStrategy->setExtension(
 				$this->sourceFile->getOriginalExtension()

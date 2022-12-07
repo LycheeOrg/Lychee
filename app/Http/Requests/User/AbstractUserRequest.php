@@ -5,6 +5,7 @@ namespace App\Http\Requests\User;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPassword;
 use App\Http\Requests\Contracts\HasUsername;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Requests\Traits\HasUsernameTrait;
 use App\Policies\UserPolicy;
@@ -41,8 +42,8 @@ abstract class AbstractUserRequest extends BaseApiRequest implements HasUsername
 	public function rules(): array
 	{
 		return [
-			HasUsername::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
-			HasPassword::PASSWORD_ATTRIBUTE => ['sometimes', new PasswordRule(false)],
+			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
+			RequestAttribute::PASSWORD_ATTRIBUTE => ['sometimes', new PasswordRule(false)],
 			self::MAY_UPLOAD_ATTRIBUTE => 'present|boolean',
 			self::IS_LOCKED_ATTRIBUTE => 'present|boolean',
 		];
@@ -53,11 +54,11 @@ abstract class AbstractUserRequest extends BaseApiRequest implements HasUsername
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->username = $values[HasUsername::USERNAME_ATTRIBUTE];
-		if (array_key_exists(HasPassword::PASSWORD_ATTRIBUTE, $values)) {
+		$this->username = $values[RequestAttribute::USERNAME_ATTRIBUTE];
+		if (array_key_exists(RequestAttribute::PASSWORD_ATTRIBUTE, $values)) {
 			// See {@link HasPasswordTrait::password()} for an explanation
 			// of the semantic difference between `null` and `''`.
-			$this->password = $values[HasPassword::PASSWORD_ATTRIBUTE] ?? '';
+			$this->password = $values[RequestAttribute::PASSWORD_ATTRIBUTE] ?? '';
 		} else {
 			$this->password = null;
 		}

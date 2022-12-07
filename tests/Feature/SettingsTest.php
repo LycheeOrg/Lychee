@@ -12,7 +12,7 @@
 
 namespace Tests\Feature;
 
-use App\DTO\SortingCriterion;
+use App\DTO\BaseSortingCriterion;
 use App\Http\Requests\Settings\SetSortingRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -25,10 +25,10 @@ class SettingsTest extends TestCase
 		Auth::loginUsingId(0);
 
 		$this->postJson('/api/Settings::setSorting', [
-			SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
-			SetSortingRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
-			SetSortingRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
-			SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
+			SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => BaseSortingCriterion::COLUMN_CREATED_AT,
+			SetSortingRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => BaseSortingCriterion::COLUMN_CREATED_AT,
+			SetSortingRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => BaseSortingCriterion::ASC,
+			SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => BaseSortingCriterion::ASC,
 		])->assertStatus(204);
 
 		Auth::logout();
@@ -42,9 +42,9 @@ class SettingsTest extends TestCase
 		$response = $this->postJson('/api/Settings::setSorting',
 			[
 				SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => '123',
-				SetSortingRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
-				SetSortingRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
-				SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
+				SetSortingRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => BaseSortingCriterion::COLUMN_CREATED_AT,
+				SetSortingRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => BaseSortingCriterion::ASC,
+				SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => BaseSortingCriterion::ASC,
 			]);
 
 		$this->assertStatus($response, 422);
@@ -60,10 +60,10 @@ class SettingsTest extends TestCase
 
 		$response = $this->postJson('/api/Settings::setSorting',
 			[
-				SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
+				SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => BaseSortingCriterion::COLUMN_CREATED_AT,
 				SetSortingRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => '123',
-				SetSortingRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
-				SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => SortingCriterion::ASC,
+				SetSortingRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => BaseSortingCriterion::ASC,
+				SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => BaseSortingCriterion::ASC,
 			]);
 
 		$this->assertStatus($response, 422);
@@ -79,8 +79,8 @@ class SettingsTest extends TestCase
 
 		$response = $this->postJson('/api/Settings::setSorting',
 			[
-				SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
-				SetSortingRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => SortingCriterion::COLUMN_CREATED_AT,
+				SetSortingRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => BaseSortingCriterion::COLUMN_CREATED_AT,
+				SetSortingRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => BaseSortingCriterion::COLUMN_CREATED_AT,
 				SetSortingRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => '123',
 				SetSortingRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => '123',
 			]);

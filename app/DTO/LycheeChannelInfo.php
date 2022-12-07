@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-class LycheeChannelInfo extends DTO
+class LycheeChannelInfo extends AbstractDTO
 {
 	public const RELEASE_CHANNEL = 0;
 	public const GIT_CHANNEL = 1;

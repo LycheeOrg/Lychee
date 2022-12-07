@@ -4,9 +4,9 @@ namespace App\Http\Requests\Album;
 
 use App\Contracts\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasAlbum;
 use App\Http\Requests\Contracts\HasPhoto;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
 use App\Models\Album;
@@ -36,8 +36,8 @@ class SetAlbumCoverRequest extends BaseApiRequest implements HasAlbum, HasPhoto
 	public function rules(): array
 	{
 		return [
-			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
-			HasPhoto::PHOTO_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			RequestAttribute::PHOTO_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 		];
 	}
 
@@ -46,10 +46,10 @@ class SetAlbumCoverRequest extends BaseApiRequest implements HasAlbum, HasPhoto
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = Album::query()->findOrFail($values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]);
-		$photoID = $values[HasPhoto::PHOTO_ID_ATTRIBUTE];
+		$this->album = Album::query()->findOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
+		$photoID = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
 		$this->photo = $photoID === null ?
 			null :
-			Photo::query()->findOrFail($values[HasPhoto::PHOTO_ID_ATTRIBUTE]);
+			Photo::query()->findOrFail($values[RequestAttribute::PHOTO_ID_ATTRIBUTE]);
 	}
 }

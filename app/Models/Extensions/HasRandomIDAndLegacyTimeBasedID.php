@@ -2,7 +2,7 @@
 
 namespace App\Models\Extensions;
 
-use App\Contracts\HasRandomID;
+use App\Constants\RandomID;
 use App\Exceptions\InsufficientEntropyException;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Exceptions\Internal\TimeBasedIdException;
@@ -58,7 +58,7 @@ trait HasRandomIDAndLegacyTimeBasedID
 		if ($key === $this->getKeyName()) {
 			throw new NotImplementedException('must not set primary key explicitly, primary key will be set on first insert');
 		}
-		if ($key === HasRandomID::LEGACY_ID_NAME) {
+		if ($key === RandomID::LEGACY_ID_NAME) {
 			throw new NotImplementedException('must not set legacy key explicitly, legacy key will be set on first insert');
 		}
 
@@ -149,7 +149,7 @@ trait HasRandomIDAndLegacyTimeBasedID
 		// The other characters (a-z, A-Z, 0-9) are legal within an URL.
 		// As the number of bytes is divisible by 3, no trailing `=` occurs.
 		try {
-			$id = strtr(base64_encode(random_bytes(3 * HasRandomID::ID_LENGTH / 4)), '+/', '-_');
+			$id = strtr(base64_encode(random_bytes(3 * RandomID::ID_LENGTH / 4)), '+/', '-_');
 		} catch (\Exception $e) {
 			throw new InsufficientEntropyException($e);
 		}
@@ -172,6 +172,6 @@ trait HasRandomIDAndLegacyTimeBasedID
 			$legacyID = str_replace('.', '', $legacyID);
 		}
 		$this->attributes[$this->getKeyName()] = $id;
-		$this->attributes[HasRandomID::LEGACY_ID_NAME] = intval($legacyID);
+		$this->attributes[RandomID::LEGACY_ID_NAME] = intval($legacyID);
 	}
 }

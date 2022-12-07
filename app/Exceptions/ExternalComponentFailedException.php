@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Returns status code 503 (Service unavailable) to an HTTP client.
  */
-class ExternalComponentFailedException extends LycheeBaseException
+class ExternalComponentFailedException extends BaseLycheeException
 {
 	public function __construct(string $msg, \Throwable $previous = null)
 	{

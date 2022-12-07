@@ -11,8 +11,8 @@ use Illuminate\Routing\Controller;
 
 final class RequirementsController extends Controller
 {
-	protected RequirementsChecker $requirements;
-	protected DefaultConfig $config;
+	private RequirementsChecker $requirements;
+	private DefaultConfig $config;
 
 	/**
 	 * @param RequirementsChecker $checker

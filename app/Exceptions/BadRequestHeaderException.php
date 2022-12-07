@@ -4,7 +4,7 @@ namespace App\Exceptions;
 
 use Symfony\Component\HttpFoundation\Response;
 
-class BadRequestHeaderException extends LycheeBaseException
+class BadRequestHeaderException extends BaseLycheeException
 {
 	public function __construct(string $msg, \Throwable $previous = null)
 	{

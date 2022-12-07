@@ -11,8 +11,8 @@ use Illuminate\Routing\Controller;
 
 final class PermissionsController extends Controller
 {
-	protected PermissionsChecker $permissions;
-	protected DefaultConfig $config;
+	private PermissionsChecker $permissions;
+	private DefaultConfig $config;
 
 	/**
 	 * @param PermissionsChecker $checker

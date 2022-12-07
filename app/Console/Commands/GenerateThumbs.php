@@ -73,7 +73,7 @@ class GenerateThumbs extends Command
 
 			$this->line(
 				sprintf(
-					'Will attempt to generate up to %s %s images with a timeout of %d seconds...',
+					'Will attempt to generate up to %d %s images with a timeout of %d seconds...',
 					$amount,
 					$sizeVariantName,
 					$timeout

@@ -12,7 +12,7 @@
 
 namespace Tests\Feature;
 
-use App\Image\MediaFile;
+use App\Image\BaseMediaFile;
 use App\Models\Configs;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature\Base\PhotoTestBase;
@@ -220,8 +220,8 @@ class PhotosAddMethodsTest extends PhotoTestBase
 		$acceptedRawFormats = Configs::getValueAsString(self::CONFIG_RAW_FORMATS);
 		try {
 			Configs::set(self::CONFIG_RAW_FORMATS, '.tif');
-			$reflection = new \ReflectionClass(MediaFile::class);
-			$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', null);
+			$reflection = new \ReflectionClass(BaseMediaFile::class);
+			$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', []);
 
 			$response = $this->photos_tests->importFromUrl([TestCase::SAMPLE_DOWNLOAD_TIFF]);
 

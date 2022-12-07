@@ -6,6 +6,7 @@ use App\Actions\Photo\Archive;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPhotos;
 use App\Http\Requests\Contracts\HasSizeVariant;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasPhotosTrait;
 use App\Http\Requests\Traits\HasSizeVariantTrait;
 use App\Models\Photo;
@@ -41,8 +42,8 @@ class ArchivePhotosRequest extends BaseApiRequest implements HasPhotos, HasSizeV
 	public function rules(): array
 	{
 		return [
-			HasPhotos::PHOTO_IDS_ATTRIBUTE => ['required', new RandomIDListRule()],
-			HasSizeVariant::SIZE_VARIANT_ATTRIBUTE => ['required', new SizeVariantRule()],
+			RequestAttribute::PHOTO_IDS_ATTRIBUTE => ['required', new RandomIDListRule()],
+			RequestAttribute::SIZE_VARIANT_ATTRIBUTE => ['required', new SizeVariantRule()],
 		];
 	}
 
@@ -51,7 +52,7 @@ class ArchivePhotosRequest extends BaseApiRequest implements HasPhotos, HasSizeV
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->sizeVariant = $values[HasSizeVariant::SIZE_VARIANT_ATTRIBUTE];
+		$this->sizeVariant = $values[RequestAttribute::SIZE_VARIANT_ATTRIBUTE];
 
 		$photoQuery = Photo::with(['album']);
 		// The condition is required, because Lychee also supports to archive
@@ -79,7 +80,7 @@ class ArchivePhotosRequest extends BaseApiRequest implements HasPhotos, HasSizeV
 		// array only contains a single ID).
 		// @phpstan-ignore-next-line
 		$this->photos = $photoQuery->findOrFail(
-			explode(',', $values[HasPhotos::PHOTO_IDS_ATTRIBUTE])
+			explode(',', $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE])
 		);
 	}
 }

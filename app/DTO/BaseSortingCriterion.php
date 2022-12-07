@@ -4,7 +4,7 @@ namespace App\DTO;
 
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 
-abstract class SortingCriterion extends ArrayableDTO
+abstract class BaseSortingCriterion extends ArrayableDTO
 {
 	public const ASC = 'ASC';
 	public const DESC = 'DESC';
