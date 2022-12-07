@@ -777,27 +777,71 @@ class AlbumTest extends TestCase
 		Session::flush();
 	}
 
-   /**
-    * Check that deleting in Unsorted results in removing Unsorted pictures.
-    *
-    * @return void
-    */
-   public function testDeleteUnsorted(): void
-   {
-   	Auth::loginUsingId(0);
-   	$id = $this->photos_tests->upload(
-   		TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
-   	)->offsetGet('id');
+	/**
+	 * Check that deleting in Unsorted results in removing Unsorted pictures.
+	 *
+	 * @return void
+	 */
+	public function testDeleteUnsorted(): void
+	{
+		Auth::loginUsingId(0);
+		$id = $this->photos_tests->upload(
+			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+		)->offsetGet('id');
 
-   	$this->photos_tests->get($id);
+		$this->photos_tests->get($id);
 
-   	$this->clearCachedSmartAlbums();
-   	$this->albums_tests->get(UnsortedAlbum::ID, 200, $id);
-   	$this->albums_tests->delete([UnsortedAlbum::ID], 204);
-   	$this->clearCachedSmartAlbums();
-   	$this->albums_tests->get(UnsortedAlbum::ID, 200, null, $id);
-   	$this->photos_tests->get($id, 404);
-   }
+		$this->clearCachedSmartAlbums();
+		$this->albums_tests->get(UnsortedAlbum::ID, 200, $id);
+		$this->albums_tests->delete([UnsortedAlbum::ID], 204);
+		$this->clearCachedSmartAlbums();
+		$this->albums_tests->get(UnsortedAlbum::ID, 200, null, $id);
+		$this->photos_tests->get($id, 404);
+
+		Auth::logout();
+		Session::flush();
+	}
+
+	public function testHiddenSmartAlbums(): void
+	{
+		Auth::loginUsingId(0);
+
+		$this->clearCachedSmartAlbums();
+		Configs::set('SA_enabled', true);
+		$response = $this->postJson('/api/Albums::get');
+		$this->assertOk($response);
+		$response->assertJson([
+			'smart_albums' => [
+				'unsorted' => [],
+				'starred' => [],
+				'public' => [],
+				'recent' => [],
+				'on_this_day' => [],
+			],
+			'tag_albums' => [],
+			'albums' => [],
+			'shared_albums' => [],
+		]);
+
+		$this->clearCachedSmartAlbums();
+		Configs::set('SA_enabled', false);
+		$response = $this->postJson('/api/Albums::get');
+		$this->assertOk($response);
+		$response->assertJson([
+			'smart_albums' => [],
+			'tag_albums' => [],
+			'albums' => [],
+			'shared_albums' => [],
+		]);
+		$response->assertDontSee('unsorted');
+		$response->assertDontSee('starred');
+		$response->assertDontSee('public');
+		$response->assertDontSee('recent');
+
+		Configs::set('SA_enabled', true);
+		Auth::logout();
+		Session::flush();
+	}
 
 	public function testOnThisDayAlbumWhenThereIsPhotoTakenAtCurrentMonthAndDay(): void
 	{
