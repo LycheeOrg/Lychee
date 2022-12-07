@@ -2,10 +2,10 @@
 
 namespace App\Assets;
 
+use App\Contracts\AbstractSizeVariantNamingStrategy;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\MissingValueException;
-use App\Contracts\AbstractSizeVariantNamingStrategy;
 
 abstract class BaseSizeVariantNamingStrategy extends AbstractSizeVariantNamingStrategy
 {
