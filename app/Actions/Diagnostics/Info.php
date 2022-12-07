@@ -8,7 +8,7 @@ use App\Actions\Diagnostics\Pipes\Infos\SystemInfo;
 use App\Actions\Diagnostics\Pipes\Infos\VersionInfo;
 use Illuminate\Pipeline\Pipeline;
 
-class Info extends Diagnostics
+class Info
 {
 	/**
 	 * The array of class pipes.

@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-class ImportProgressReport extends ImportReport
+class ImportProgressReport extends BaseImportReport
 {
 	public const REPORT_TYPE = 'progress';
 

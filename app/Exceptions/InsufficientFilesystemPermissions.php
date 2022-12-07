@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Returns status code 501 (Not implemented) to an HTTP client.
  */
-class InsufficientFilesystemPermissions extends LycheeBaseException
+class InsufficientFilesystemPermissions extends BaseLycheeException
 {
 	public function __construct(string $msg, \Throwable $previous = null)
 	{

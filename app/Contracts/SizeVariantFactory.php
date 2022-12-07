@@ -7,7 +7,7 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Support\Collection;
 
-abstract class SizeVariantFactory
+interface SizeVariantFactory
 {
 	/**
 	 * Initializes the factory and associates.
@@ -27,13 +27,13 @@ abstract class SizeVariantFactory
 	 * However, there is no consistency check, if the provided reference
 	 * image matches the original size variant of the photo.
 	 *
-	 * @param Photo                          $photo
-	 * @param ImageHandlerInterface|null     $referenceImage
-	 * @param SizeVariantNamingStrategy|null $namingStrategy
+	 * @param Photo                                  $photo
+	 * @param ImageHandlerInterface|null             $referenceImage
+	 * @param AbstractSizeVariantNamingStrategy|null $namingStrategy
 	 *
 	 * @throws LycheeException
 	 */
-	abstract public function init(Photo $photo, ?ImageHandlerInterface $referenceImage = null, ?SizeVariantNamingStrategy $namingStrategy = null): void;
+	public function init(Photo $photo, ?ImageHandlerInterface $referenceImage = null, ?AbstractSizeVariantNamingStrategy $namingStrategy = null): void;
 
 	/**
 	 * Conditionally creates a size variant for the designated size variant.
@@ -62,7 +62,7 @@ abstract class SizeVariantFactory
 	 *
 	 * @phpstan-param int<0,6> $sizeVariant
 	 */
-	abstract public function createSizeVariantCond(int $sizeVariant): ?SizeVariant;
+	public function createSizeVariantCond(int $sizeVariant): ?SizeVariant;
 
 	/**
 	 * Creates a selected set of size variants.
@@ -86,5 +86,5 @@ abstract class SizeVariantFactory
 	 *
 	 * @throws LycheeException
 	 */
-	abstract public function createSizeVariants(): Collection;
+	public function createSizeVariants(): Collection;
 }

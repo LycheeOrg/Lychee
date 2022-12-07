@@ -11,7 +11,7 @@ use App\Models\Album;
  *
  * This allows us to decorate the album with its associated current user rights.
  */
-class AbstractAlbumDTO extends DTO
+class AbstractAlbumDTO extends AbstractDTO
 {
 	public function __construct(
 		private AbstractAlbum $album

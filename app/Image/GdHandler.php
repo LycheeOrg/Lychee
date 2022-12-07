@@ -129,7 +129,7 @@ class GdHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function load(MediaFile $file): void
+	public function load(BaseMediaFile $file): void
 	{
 		try {
 			$inMemoryBuffer = new InMemoryBuffer();
@@ -218,7 +218,7 @@ class GdHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStat
+	public function save(BaseMediaFile $file, bool $collectStatistics = false): ?StreamStat
 	{
 		if ($this->gdImage === null) {
 			throw new MediaFileOperationException('No image loaded');

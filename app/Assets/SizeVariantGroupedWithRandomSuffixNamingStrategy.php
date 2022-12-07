@@ -18,7 +18,7 @@ use Safe\Exceptions\PcreException;
  * Size variants which belong to the same photo share the same random
  * end section.
  */
-class SizeVariantGroupedWithRandomSuffixNamingStrategy extends SizeVariantBaseNamingStrategy
+class SizeVariantGroupedWithRandomSuffixNamingStrategy extends BaseSizeVariantNamingStrategy
 {
 	/**
 	 * Maps a size variant to the path prefix (directory) where the file for that size variant is stored.

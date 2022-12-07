@@ -3,13 +3,11 @@
 namespace App\Http\Requests\Legacy;
 
 use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Rules\IntegerIDRule;
 
 class TranslateIDRequest extends BaseApiRequest
 {
-	public const ALBUM_ID_ATTRIBUTE = 'albumID';
-	public const PHOTO_ID_ATTRIBUTE = 'photoID';
-
 	protected ?int $albumID = null;
 	protected ?int $photoID = null;
 
@@ -27,14 +25,14 @@ class TranslateIDRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			self::ALBUM_ID_ATTRIBUTE => [
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => [
 				'sometimes',
-				'required_without:' . self::PHOTO_ID_ATTRIBUTE,
+				'required_without:' . RequestAttribute::PHOTO_ID_ATTRIBUTE,
 				new IntegerIDRule(false),
 			],
-			self::PHOTO_ID_ATTRIBUTE => [
+			RequestAttribute::PHOTO_ID_ATTRIBUTE => [
 				'sometimes',
-				'required_without:' . self::ALBUM_ID_ATTRIBUTE,
+				'required_without:' . RequestAttribute::ALBUM_ID_ATTRIBUTE,
 				new IntegerIDRule(false),
 			],
 		];
@@ -45,8 +43,8 @@ class TranslateIDRequest extends BaseApiRequest
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumID = $values[self::ALBUM_ID_ATTRIBUTE] ?? null;
-		$this->photoID = $values[self::PHOTO_ID_ATTRIBUTE] ?? null;
+		$this->albumID = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE] ?? null;
+		$this->photoID = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE] ?? null;
 	}
 
 	/**

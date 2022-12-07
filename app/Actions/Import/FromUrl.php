@@ -6,8 +6,8 @@ use App\Actions\Photo\Create;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\Exceptions\Handler;
 use App\Exceptions\MassImportException;
+use App\Image\BaseMediaFile;
 use App\Image\DownloadedFile;
-use App\Image\MediaFile;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -56,7 +56,7 @@ class FromUrl
 
 				// Validate photo extension even when `$create->add()` will do later.
 				// This prevents us from downloading unsupported files.
-				MediaFile::assertIsSupportedOrAcceptedFileExtension($extension);
+				BaseMediaFile::assertIsSupportedOrAcceptedFileExtension($extension);
 
 				// Download file
 				$downloadedFile = new DownloadedFile($url);

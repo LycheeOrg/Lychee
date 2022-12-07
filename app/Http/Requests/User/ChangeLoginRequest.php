@@ -4,7 +4,7 @@ namespace App\Http\Requests\User;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPassword;
-use App\Http\Requests\Contracts\HasUsername;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Models\User;
 use App\Policies\UserPolicy;
@@ -35,8 +35,8 @@ class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 	public function rules(): array
 	{
 		return [
-			HasUsername::USERNAME_ATTRIBUTE => ['sometimes', new UsernameRule()],
-			HasPassword::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
+			RequestAttribute::USERNAME_ATTRIBUTE => ['sometimes', new UsernameRule()],
+			RequestAttribute::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
 			self::OLD_PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
 		];
 	}
@@ -46,12 +46,12 @@ class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->password = $values[HasPassword::PASSWORD_ATTRIBUTE];
+		$this->password = $values[RequestAttribute::PASSWORD_ATTRIBUTE];
 		$this->oldPassword = $values[self::OLD_PASSWORD_ATTRIBUTE];
 
 		// We do not allow '' as a username. So any such input will be cast to null
-		if (array_key_exists(HasUsername::USERNAME_ATTRIBUTE, $values)) {
-			$this->username = trim($values[HasUsername::USERNAME_ATTRIBUTE]);
+		if (array_key_exists(RequestAttribute::USERNAME_ATTRIBUTE, $values)) {
+			$this->username = trim($values[RequestAttribute::USERNAME_ATTRIBUTE]);
 			$this->username = $this->username === '' ? null : $this->username;
 		} else {
 			$this->username = null;

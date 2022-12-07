@@ -25,7 +25,7 @@ use App\Models\Configs;
  * Copying via streams avoids issues like
  * [LycheeOrg/Lychee#1198](https://github.com/LycheeOrg/Lychee/issues/1198).
  */
-abstract class MediaFile extends BinaryBlob
+abstract class BaseMediaFile extends AbstractBinaryBlob
 {
 	public const SUPPORTED_PHP_EXIF_IMAGE_TYPES = [
 		IMAGETYPE_GIF,
@@ -74,8 +74,8 @@ abstract class MediaFile extends BinaryBlob
 		'application/octet-stream', // Some mp4 files; will be corrected by the metadata extractor
 	];
 
-	/** @var string[]|null the accepted raw file extensions minus supported extensions */
-	private static ?array $cachedAcceptedRawFileExtensions = null;
+	/** @var string[] the accepted raw file extensions minus supported extensions */
+	private static array $cachedAcceptedRawFileExtensions = [];
 
 	/**
 	 * Writes the content of the provided stream into the file.
@@ -268,7 +268,7 @@ abstract class MediaFile extends BinaryBlob
 	 */
 	protected static function getSanitizedAcceptedRawFileExtensions(): array
 	{
-		if (self::$cachedAcceptedRawFileExtensions === null) {
+		if (count(self::$cachedAcceptedRawFileExtensions) === 0) {
 			$tmp = explode('|', strtolower(Configs::getValueAsString('raw_formats')));
 			// Explode may return `false` on error
 			// Our supported file extensions always take precedence over any

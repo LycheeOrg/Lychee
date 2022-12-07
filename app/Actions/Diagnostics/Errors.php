@@ -14,7 +14,7 @@ use App\Actions\Diagnostics\Pipes\Checks\PHPVersionCheck;
 use App\Actions\Diagnostics\Pipes\Checks\TimezoneCheck;
 use Illuminate\Pipeline\Pipeline;
 
-class Errors extends Diagnostics
+class Errors
 {
 	/**
 	 * The array of class pipes.

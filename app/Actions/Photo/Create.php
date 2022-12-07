@@ -18,7 +18,7 @@ use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\MediaFileOperationException;
-use App\Image\MediaFile;
+use App\Image\BaseMediaFile;
 use App\Image\NativeLocalFile;
 use App\Image\StreamStat;
 use App\Metadata\Extractor;
@@ -173,8 +173,8 @@ class Create
 			// different kind then the uploaded media.
 			if (
 				$livePartner !== null && !(
-					MediaFile::isSupportedImageMimeType($mimeType) && $livePartner->isVideo() ||
-					MediaFile::isSupportedVideoMimeType($mimeType) && $livePartner->isPhoto()
+					BaseMediaFile::isSupportedImageMimeType($mimeType) && $livePartner->isVideo() ||
+					BaseMediaFile::isSupportedVideoMimeType($mimeType) && $livePartner->isPhoto()
 				)
 			) {
 				$livePartner = null;

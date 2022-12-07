@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Constants\RandomID;
 use App\Contracts\HasRandomID;
 use App\DTO\AlbumProtectionPolicy;
 use App\DTO\PhotoSortingCriterion;
@@ -117,7 +118,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	/**
 	 * @var string The type of the primary key
 	 */
-	protected $keyType = \App\Contracts\HasRandomID::ID_TYPE;
+	protected $keyType = RandomID::ID_TYPE;
 
 	/**
 	 * Indicates if the model's primary key is auto-incrementing.
@@ -139,7 +140,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 */
 	protected $attributes = [
 		'id' => null,
-		HasRandomID::LEGACY_ID_NAME => null,
+		RandomID::LEGACY_ID_NAME => null,
 		'created_at' => null,
 		'updated_at' => null,
 		'title' => null, // Sic! `title` is actually non-nullable, but using `null` here forces the caller to actually set a title before saving.
@@ -161,8 +162,8 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 * @var array<string, string>
 	 */
 	protected $casts = [
-		'id' => HasRandomID::ID_TYPE,
-		HasRandomID::LEGACY_ID_NAME => HasRandomID::LEGACY_ID_TYPE,
+		'id' => RandomID::ID_TYPE,
+		RandomID::LEGACY_ID_NAME => RandomID::LEGACY_ID_TYPE,
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'is_public' => 'boolean',
@@ -176,7 +177,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 *                        relation but shall not be serialized to JSON
 	 */
 	protected $hidden = [
-		HasRandomID::LEGACY_ID_NAME,
+		RandomID::LEGACY_ID_NAME,
 		'owner_id',
 		'owner',
 		'password',

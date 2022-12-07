@@ -3,14 +3,14 @@
 namespace App\Relations;
 
 use App\Contracts\InternalLycheeException;
-use App\DTO\SortingCriterion;
+use App\DTO\BaseSortingCriterion;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
-class HasManyPhotosByTag extends HasManyPhotos
+class HasManyPhotosByTag extends BaseHasManyPhotos
 {
 	public function __construct(TagAlbum $owningAlbum)
 	{
@@ -93,7 +93,7 @@ class HasManyPhotosByTag extends HasManyPhotos
 		$photos = $photos->sortBy(
 			$sorting->column,
 			in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
-			$sorting->order === SortingCriterion::DESC
+			$sorting->order === BaseSortingCriterion::DESC
 		)->values();
 		$album->setRelation($relation, $photos);
 

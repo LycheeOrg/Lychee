@@ -5,6 +5,7 @@ namespace App\Http\Requests\Album;
 use App\Contracts\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbums;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasAlbumsTrait;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDListRule;
@@ -38,7 +39,7 @@ class ArchiveAlbumsRequest extends BaseApiRequest implements HasAlbums
 	public function rules(): array
 	{
 		return [
-			HasAlbums::ALBUM_IDS_ATTRIBUTE => ['required', new AlbumIDListRule()],
+			RequestAttribute::ALBUM_IDS_ATTRIBUTE => ['required', new AlbumIDListRule()],
 		];
 	}
 
@@ -49,7 +50,7 @@ class ArchiveAlbumsRequest extends BaseApiRequest implements HasAlbums
 	{
 		// TODO: `App\Actions\Album\Archive::compressAlbum` iterates over the original size variant of each photo in the album; we should eagerly load them for higher efficiency.
 		$this->albums = $this->albumFactory->findAbstractAlbumsOrFail(
-			explode(',', $values[HasAlbums::ALBUM_IDS_ATTRIBUTE])
+			explode(',', $values[RequestAttribute::ALBUM_IDS_ATTRIBUTE])
 		);
 	}
 }

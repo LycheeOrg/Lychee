@@ -5,6 +5,7 @@ namespace App\Http\Requests\Settings;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPassword;
 use App\Http\Requests\Contracts\HasUsername;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Requests\Traits\HasUsernameTrait;
 use App\Legacy\AdminAuthentication;
@@ -53,8 +54,8 @@ class MigrateRequest extends BaseApiRequest implements HasUsername, HasPassword
 	public function rules(): array
 	{
 		return [
-			HasUsername::USERNAME_ATTRIBUTE => ['sometimes', new UsernameRule()],
-			HasPassword::PASSWORD_ATTRIBUTE => ['sometimes', new PasswordRule(false)],
+			RequestAttribute::USERNAME_ATTRIBUTE => ['sometimes', new UsernameRule()],
+			RequestAttribute::PASSWORD_ATTRIBUTE => ['sometimes', new PasswordRule(false)],
 		];
 	}
 
@@ -63,8 +64,8 @@ class MigrateRequest extends BaseApiRequest implements HasUsername, HasPassword
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->username = $values[HasUsername::USERNAME_ATTRIBUTE] ?? '';
-		$this->password = $values[HasPassword::PASSWORD_ATTRIBUTE] ?? '';
+		$this->username = $values[RequestAttribute::USERNAME_ATTRIBUTE] ?? '';
+		$this->password = $values[RequestAttribute::PASSWORD_ATTRIBUTE] ?? '';
 	}
 
 	/**

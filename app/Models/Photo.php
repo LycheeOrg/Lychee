@@ -6,7 +6,7 @@ use App\Actions\Photo\Delete;
 use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
-use App\Contracts\HasRandomID;
+use App\Constants\RandomID;
 use App\DTO\Rights\PhotoRightsDTO;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\LycheeAssertionError;
@@ -14,7 +14,7 @@ use App\Exceptions\Internal\ZeroModuloException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Facades\Helpers;
-use App\Image\MediaFile;
+use App\Image\BaseMediaFile;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
@@ -73,7 +73,7 @@ use function Safe\preg_match;
  * @property User         $owner
  * @property SizeVariants $size_variants
  */
-class Photo extends Model implements HasRandomID
+class Photo extends Model
 {
 	use UTCBasedTimes;
 	use HasAttributesPatch;
@@ -96,7 +96,7 @@ class Photo extends Model implements HasRandomID
 	public $incrementing = false;
 
 	protected $casts = [
-		HasRandomID::LEGACY_ID_NAME => HasRandomID::LEGACY_ID_TYPE,
+		RandomID::LEGACY_ID_NAME => RandomID::LEGACY_ID_TYPE,
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'taken_at' => DateTimeWithTimezoneCast::class,
@@ -117,7 +117,7 @@ class Photo extends Model implements HasRandomID
 	 *                        relation but shall not be serialized to JSON
 	 */
 	protected $hidden = [
-		HasRandomID::LEGACY_ID_NAME,
+		RandomID::LEGACY_ID_NAME,
 		'album',  // do not serialize relation in order to avoid infinite loops
 		'owner',  // do not serialize relation
 		'owner_id',
@@ -331,7 +331,7 @@ class Photo extends Model implements HasRandomID
 			throw new IllegalOrderOfOperationException('Photo::isPhoto() must not be called before Photo::$type has been set');
 		}
 
-		return MediaFile::isSupportedImageMimeType($this->type);
+		return BaseMediaFile::isSupportedImageMimeType($this->type);
 	}
 
 	/**
@@ -347,7 +347,7 @@ class Photo extends Model implements HasRandomID
 			throw new IllegalOrderOfOperationException('Photo::isVideo() must not be called before Photo::$type has been set');
 		}
 
-		return MediaFile::isSupportedVideoMimeType($this->type);
+		return BaseMediaFile::isSupportedVideoMimeType($this->type);
 	}
 
 	/**

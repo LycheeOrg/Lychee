@@ -5,7 +5,7 @@ namespace App\Actions\Diagnostics;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Configs;
 
-class Configuration extends Diagnostics
+class Configuration
 {
 	/**
 	 * Return the config pieces of information of the Lychee installation.
