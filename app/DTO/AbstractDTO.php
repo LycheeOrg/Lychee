@@ -2,8 +2,7 @@
 
 namespace App\DTO;
 
-use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Contracts\Support\Jsonable;
+use App\Contracts\DTO;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 use function Safe\json_encode;
 
@@ -15,7 +14,7 @@ use function Safe\json_encode;
  * return proper models.
  * Thereby we avoid using associative arrays and have a bit more type safety.
  */
-abstract class DTO implements Arrayable, Jsonable, \JsonSerializable
+abstract class AbstractDTO implements DTO
 {
 	/**
 	 * Convert the instance into a JSON string.

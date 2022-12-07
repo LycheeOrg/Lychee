@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Returns status code 500 to an HTTP client.
  */
-class FlySystemLycheeException extends LycheeBaseException implements FilesystemException
+class FlySystemLycheeException extends BaseLycheeException implements FilesystemException
 {
 	public function __construct(string $msg, \Throwable $previous = null)
 	{

@@ -13,7 +13,7 @@ use function Safe\fclose;
 /**
  * Class FlysystemFile.
  */
-class FlysystemFile extends MediaFile
+class FlysystemFile extends BaseMediaFile
 {
 	protected Filesystem $disk;
 	protected string $relativePath;

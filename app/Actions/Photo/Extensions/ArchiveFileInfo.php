@@ -2,7 +2,7 @@
 
 namespace App\Actions\Photo\Extensions;
 
-use App\Image\MediaFile;
+use App\Image\BaseMediaFile;
 
 /**
  * Class ArchiveFileInfo.
@@ -35,17 +35,17 @@ class ArchiveFileInfo
 {
 	protected string $baseFilename;
 	protected string $baseFilenameAddon;
-	protected MediaFile $file;
+	protected BaseMediaFile $file;
 
 	/**
 	 * ArchiveFileInfo constructor.
 	 *
-	 * @param string    $baseFilename      the base filename (without directory
-	 *                                     and extension)
-	 * @param string    $baseFilenameAddon the "addon" to the base filename
-	 * @param MediaFile $file              the source file
+	 * @param string        $baseFilename      the base filename (without directory
+	 *                                         and extension)
+	 * @param string        $baseFilenameAddon the "addon" to the base filename
+	 * @param BaseMediaFile $file              the source file
 	 */
-	public function __construct(string $baseFilename, string $baseFilenameAddon, MediaFile $file)
+	public function __construct(string $baseFilename, string $baseFilenameAddon, BaseMediaFile $file)
 	{
 		$this->baseFilename = $baseFilename;
 		$this->baseFilenameAddon = $baseFilenameAddon;
@@ -96,9 +96,9 @@ class ArchiveFileInfo
 	/**
 	 * Returns the source file.
 	 *
-	 * @return MediaFile the source file
+	 * @return BaseMediaFile the source file
 	 */
-	public function getFile(): MediaFile
+	public function getFile(): BaseMediaFile
 	{
 		return $this->file;
 	}

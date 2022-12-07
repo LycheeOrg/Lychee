@@ -17,7 +17,7 @@ use Safe\Exceptions\PcreException;
  * Size variants which belong to the same photo share the same random
  * end section.
  */
-class SizeVariantGroupedWithRandomSuffixNamingStrategy extends SizeVariantBaseNamingStrategy
+class SizeVariantGroupedWithRandomSuffixNamingStrategy extends BaseSizeVariantNamingStrategy
 {
 	/**
 	 * The length of the random file name without file extension.

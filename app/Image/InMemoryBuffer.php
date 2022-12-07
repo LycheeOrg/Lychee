@@ -4,7 +4,7 @@ namespace App\Image;
 
 use App\Exceptions\MediaFileOperationException;
 
-class InMemoryBuffer extends BinaryBlob
+class InMemoryBuffer extends AbstractBinaryBlob
 {
 	/**
 	 * The maximum size of the buffer in bytes which is kept in memory.

@@ -2,12 +2,12 @@
 
 namespace App\Assets;
 
-use App\Contracts\SizeVariantNamingStrategy;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\MissingValueException;
+use App\Contracts\AbstractSizeVariantNamingStrategy;
 
-abstract class SizeVariantBaseNamingStrategy extends SizeVariantNamingStrategy
+abstract class BaseSizeVariantNamingStrategy extends AbstractSizeVariantNamingStrategy
 {
 	/**
 	 * The file extension which is always used by both "thumb" variants.

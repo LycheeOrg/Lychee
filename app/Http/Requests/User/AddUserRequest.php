@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\User;
 
-use App\Http\Requests\Contracts\HasPassword;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Rules\PasswordRule;
 
 class AddUserRequest extends AbstractUserRequest
@@ -13,7 +13,7 @@ class AddUserRequest extends AbstractUserRequest
 	public function rules(): array
 	{
 		$rules = parent::rules();
-		$rules[HasPassword::PASSWORD_ATTRIBUTE] = ['required', new PasswordRule(false)];
+		$rules[RequestAttribute::PASSWORD_ATTRIBUTE] = ['required', new PasswordRule(false)];
 
 		return $rules;
 	}

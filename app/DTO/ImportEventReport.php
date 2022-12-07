@@ -5,7 +5,7 @@ namespace App\DTO;
 use App\Enum\SeverityType;
 use App\Exceptions\Handler as ExceptionHandler;
 
-class ImportEventReport extends ImportReport
+class ImportEventReport extends BaseImportReport
 {
 	public const REPORT_TYPE = 'event';
 

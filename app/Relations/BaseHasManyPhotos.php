@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  * direct parent of the queried photos, but include the photo due to some
  * indirect condition.
  */
-abstract class HasManyPhotos extends Relation
+abstract class BaseHasManyPhotos extends Relation
 {
 	protected PhotoQueryPolicy $photoQueryPolicy;
 

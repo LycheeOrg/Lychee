@@ -10,7 +10,7 @@ use Illuminate\Contracts\Support\Arrayable;
  * we can directly make use of a reflection which returns an array containing
  * all the PUBLIC attributes of the DTO.
  */
-class ArrayableDTO extends DTO
+class ArrayableDTO extends AbstractDTO
 {
 	/**
 	 * By default, we return an array containing the PUBLIC attributes of the DTO.

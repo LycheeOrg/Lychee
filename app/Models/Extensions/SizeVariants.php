@@ -3,7 +3,7 @@
 namespace App\Models\Extensions;
 
 use App\Actions\SizeVariant\Delete;
-use App\DTO\DTO;
+use App\DTO\AbstractDTO;
 use App\DTO\ImageDimension;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Collection;
 /**
  * Class SizeVariants.
  */
-class SizeVariants extends DTO
+class SizeVariants extends AbstractDTO
 {
 	/** @var Photo the parent object this object is tied to */
 	private Photo $photo;

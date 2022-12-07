@@ -2,9 +2,9 @@
 
 namespace App\Image;
 
+use App\Contracts\AbstractSizeVariantNamingStrategy;
 use App\Contracts\LycheeException;
 use App\Contracts\SizeVariantFactory;
-use App\Contracts\SizeVariantNamingStrategy;
 use App\DTO\ImageDimension;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationException;
@@ -21,7 +21,7 @@ use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 
-class SizeVariantDefaultFactory extends SizeVariantFactory
+class SizeVariantDefaultFactory implements SizeVariantFactory
 {
 	public const THUMBNAIL_DIM = 200;
 	public const THUMBNAIL2X_DIM = 400;
@@ -29,12 +29,12 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	/** @var ImageHandlerInterface the image handler (gd, imagick, ...) which is used to generate image files */
 	protected ImageHandlerInterface $referenceImage;
 	protected ?Photo $photo = null;
-	protected ?SizeVariantNamingStrategy $namingStrategy = null;
+	protected ?AbstractSizeVariantNamingStrategy $namingStrategy = null;
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function init(Photo $photo, ?ImageHandlerInterface $referenceImage = null, ?SizeVariantNamingStrategy $namingStrategy = null): void
+	public function init(Photo $photo, ?ImageHandlerInterface $referenceImage = null, ?AbstractSizeVariantNamingStrategy $namingStrategy = null): void
 	{
 		try {
 			$this->photo = $photo;
@@ -43,7 +43,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 			} else {
 				$this->loadReferenceImage();
 			}
-			$this->namingStrategy = $namingStrategy ?? resolve(SizeVariantNamingStrategy::class);
+			$this->namingStrategy = $namingStrategy ?? resolve(AbstractSizeVariantNamingStrategy::class);
 			// Ensure that the naming strategy is linked to this photo
 			$this->namingStrategy->setPhoto($this->photo);
 		} catch (BindingResolutionException $e) {

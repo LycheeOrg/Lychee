@@ -2,7 +2,7 @@
 
 namespace App\Models\Extensions;
 
-use App\DTO\DTO;
+use App\DTO\AbstractDTO;
 use App\DTO\SortingCriterion;
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\OrderSortingType;
@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
-class Thumb extends DTO
+class Thumb extends AbstractDTO
 {
 	protected string $id;
 	protected string $type;

@@ -3,14 +3,14 @@
 namespace App\Actions\Photo\Strategies;
 
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
-use App\Contracts\SizeVariantNamingStrategy;
+use App\Contracts\AbstractSizeVariantNamingStrategy;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
+use App\Image\BaseMediaFile;
 use App\Image\FlysystemFile;
-use App\Image\MediaFile;
 use App\Image\NativeLocalFile;
 use App\Image\StreamStat;
 use App\Models\Photo;
@@ -24,11 +24,11 @@ use App\Models\Photo;
  * This allows to use {@link MediaFile} as the source of the video, because
  * no EXIF data needs to be extracted from the video.
  */
-class AddVideoPartnerStrategy extends AddBaseStrategy
+class AddVideoPartnerStrategy extends AbstractAddStrategy
 {
-	protected MediaFile $videoSourceFile;
+	protected BaseMediaFile $videoSourceFile;
 
-	public function __construct(AddStrategyParameters $parameters, MediaFile $videoSourceFile, Photo $existingPhoto)
+	public function __construct(AddStrategyParameters $parameters, BaseMediaFile $videoSourceFile, Photo $existingPhoto)
 	{
 		parent::__construct($parameters, $existingPhoto);
 		$this->videoSourceFile = $videoSourceFile;
@@ -48,7 +48,7 @@ class AddVideoPartnerStrategy extends AddBaseStrategy
 		$photoExt = $photoFile->getOriginalExtension();
 		$videoExt = $this->videoSourceFile->getOriginalExtension();
 		$videoPath = substr($photoPath, 0, -strlen($photoExt)) . $videoExt;
-		$videoTargetFile = new FlysystemFile(SizeVariantNamingStrategy::getImageDisk(), $videoPath);
+		$videoTargetFile = new FlysystemFile(AbstractSizeVariantNamingStrategy::getImageDisk(), $videoPath);
 		$streamStat = $this->putSourceIntoFinalDestination($videoTargetFile);
 		$this->photo->live_photo_short_path = $videoPath;
 		$this->photo->live_photo_checksum = $streamStat?->checksum;

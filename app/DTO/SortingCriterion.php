@@ -5,7 +5,7 @@ namespace App\DTO;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 
-abstract class SortingCriterion extends ArrayableDTO
+class SortingCriterion extends ArrayableDTO
 {
 	/**
 	 * Sorting criterion.

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 /**
  * Interface SizeVariantNamingStrategy.
  */
-abstract class SizeVariantNamingStrategy
+abstract class AbstractSizeVariantNamingStrategy
 {
 	/**
 	 * The name of the Flysystem disk where images are stored.

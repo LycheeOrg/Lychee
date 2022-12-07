@@ -4,7 +4,7 @@ namespace App\Exceptions;
 
 use Symfony\Component\HttpFoundation\Response;
 
-class ImportCancelledException extends LycheeBaseException
+class ImportCancelledException extends BaseLycheeException
 {
 	public const DEFAULT_MESSAGE = 'Import cancelled';
 

@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-class AlbumProtectionPolicy extends DTO
+class AlbumProtectionPolicy extends AbstractDTO
 {
 	public const IS_PUBLIC_ATTRIBUTE = 'is_public';
 	public const REQUIRES_LINK_ATTRIBUTE = 'requires_link';

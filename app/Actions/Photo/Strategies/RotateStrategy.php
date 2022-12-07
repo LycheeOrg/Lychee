@@ -2,9 +2,9 @@
 
 namespace App\Actions\Photo\Strategies;
 
+use App\Contracts\AbstractSizeVariantNamingStrategy;
 use App\Contracts\LycheeException;
 use App\Contracts\SizeVariantFactory;
-use App\Contracts\SizeVariantNamingStrategy;
 use App\DTO\ImageDimension;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Handler;
@@ -27,7 +27,7 @@ class RotateStrategy
 	/** @var int either `1` for counterclockwise or `-1` for clockwise rotation */
 	protected int $direction;
 	protected FlysystemFile $sourceFile;
-	protected SizeVariantNamingStrategy $namingStrategy;
+	protected AbstractSizeVariantNamingStrategy $namingStrategy;
 
 	/**
 	 * @param Photo $photo
@@ -59,7 +59,7 @@ class RotateStrategy
 			$this->photo = $photo;
 			$this->direction = $direction;
 			$this->sourceFile = $this->photo->size_variants->getOriginal()->getFile();
-			$this->namingStrategy = resolve(SizeVariantNamingStrategy::class);
+			$this->namingStrategy = resolve(AbstractSizeVariantNamingStrategy::class);
 			$this->namingStrategy->setPhoto($this->photo);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);

@@ -15,7 +15,7 @@ use Illuminate\Support\Collection;
  * other users.)
  * Actually, in this context "shared albums" means "foreign albums".
  */
-class AlbumTree extends DTO
+class AlbumTree extends AbstractDTO
 {
 	public Collection $albums;
 	public Collection $sharedAlbums;

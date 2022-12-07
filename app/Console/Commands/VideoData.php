@@ -7,7 +7,7 @@ use App\Contracts\LycheeException;
 use App\Contracts\SizeVariantFactory;
 use App\Enum\SizeVariantType;
 use App\Exceptions\UnexpectedException;
-use App\Image\MediaFile;
+use App\Image\BaseMediaFile;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use Illuminate\Console\Command;
@@ -60,7 +60,7 @@ class VideoData extends Command
 
 			$photos = Photo::query()
 				->with(['size_variants'])
-				->whereIn('type', MediaFile::SUPPORTED_VIDEO_MIME_TYPES)
+				->whereIn('type', BaseMediaFile::SUPPORTED_VIDEO_MIME_TYPES)
 				->whereDoesntHave('size_variants', function (Builder $query) {
 					$query->where('type', '=', SizeVariantType::THUMB);
 				})

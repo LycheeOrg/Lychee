@@ -4,6 +4,7 @@ namespace App\Http\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPhoto;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotoTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
 use App\Models\Photo;
@@ -25,7 +26,7 @@ class RotatePhotoRequest extends BaseApiRequest implements HasPhoto
 	public function rules(): array
 	{
 		return [
-			HasPhoto::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			RequestAttribute::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 			self::DIRECTION_ATTRIBUTE => ['required', Rule::in([-1, 1])],
 		];
 	}
@@ -37,7 +38,7 @@ class RotatePhotoRequest extends BaseApiRequest implements HasPhoto
 	{
 		$this->photo = Photo::query()
 			->with(['size_variants'])
-			->findOrFail($values[HasPhoto::PHOTO_ID_ATTRIBUTE]);
+			->findOrFail($values[RequestAttribute::PHOTO_ID_ATTRIBUTE]);
 		$this->direction = intval($values[self::DIRECTION_ATTRIBUTE]);
 	}
 

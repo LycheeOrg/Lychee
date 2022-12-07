@@ -5,6 +5,7 @@ namespace App\Http\Requests\Sharing;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbumIDs;
 use App\Http\Requests\Contracts\HasUserIDs;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasAlbumIDsTrait;
 use App\Http\Requests\Traits\HasUserIDsTrait;
 use App\Models\User;
@@ -32,10 +33,10 @@ class AddSharesRequest extends BaseApiRequest implements HasAlbumIDs, HasUserIDs
 	public function rules(): array
 	{
 		return [
-			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
-			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
-			HasUserIDs::USER_IDS_ATTRIBUTE => 'required|array|min:1',
-			HasUserIDs::USER_IDS_ATTRIBUTE . '.*' => ['required', new IntegerIDRule(false)],
+			RequestAttribute::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
+			RequestAttribute::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
+			RequestAttribute::USER_IDS_ATTRIBUTE => 'required|array|min:1',
+			RequestAttribute::USER_IDS_ATTRIBUTE . '.*' => ['required', new IntegerIDRule(false)],
 		];
 	}
 
@@ -44,7 +45,7 @@ class AddSharesRequest extends BaseApiRequest implements HasAlbumIDs, HasUserIDs
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumIDs = $values[HasAlbumIDs::ALBUM_IDS_ATTRIBUTE];
-		$this->userIDs = $values[HasUserIDs::USER_IDS_ATTRIBUTE];
+		$this->albumIDs = $values[RequestAttribute::ALBUM_IDS_ATTRIBUTE];
+		$this->userIDs = $values[RequestAttribute::USER_IDS_ATTRIBUTE];
 	}
 }

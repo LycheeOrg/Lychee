@@ -138,6 +138,7 @@ final class Russian implements Language
 			'STARRED' => 'Отмеченные',
 			'RECENT' => 'Последние',
 			'PUBLIC' => 'Общие',
+			'ON_THIS_DAY' => 'On This Day',
 			'NUM_PHOTOS' => 'фотографий',
 
 			'CREATE_ALBUM' => 'Создать альбом',

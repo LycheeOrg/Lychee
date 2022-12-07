@@ -4,7 +4,7 @@ namespace App\DTO;
 
 use Illuminate\Support\Str;
 
-class BacktraceRecord extends DTO
+class BacktraceRecord extends AbstractDTO
 {
 	public const UNKNOWN_PLACEHOLDER = '<unknown>';
 	public const NAMESPACE_SEPARATOR = '::';

@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
  * This means the failing operation is typically expected not to fail and
  * the client or user cannot do anything about it.
  */
-class FileOperationException extends LycheeBaseException
+class FileOperationException extends BaseLycheeException
 {
 	public function __construct(string $msg, ?\Throwable $previous = null)
 	{

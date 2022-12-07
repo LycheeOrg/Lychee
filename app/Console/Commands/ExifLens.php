@@ -6,7 +6,7 @@ use App\Contracts\ExternalLycheeException;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnexpectedException;
-use App\Image\MediaFile;
+use App\Image\BaseMediaFile;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use Illuminate\Console\Command;
@@ -55,7 +55,7 @@ class ExifLens extends Command
 				$r->where('type', '=', SizeVariantType::ORIGINAL);
 			}])
 				->where('lens', '=', '')
-				->whereNotIn('type', MediaFile::SUPPORTED_VIDEO_MIME_TYPES)
+				->whereNotIn('type', BaseMediaFile::SUPPORTED_VIDEO_MIME_TYPES)
 				->offset($offset)
 				->limit($limit)
 				->get();

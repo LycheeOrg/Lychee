@@ -16,7 +16,7 @@ interface ImageHandlerInterface
 	/**
 	 * Loads an image from the provided file.
 	 *
-	 * @param MediaFile $file the file to read from
+	 * @param BaseMediaFile $file the file to read from
 	 *
 	 * @return void
 	 *
@@ -24,19 +24,19 @@ interface ImageHandlerInterface
 	 * @throws MediaFileOperationException
 	 * @throws ImageProcessingException
 	 */
-	public function load(MediaFile $file): void;
+	public function load(BaseMediaFile $file): void;
 
 	/**
 	 * Save the image into the provided file.
 	 *
-	 * @param MediaFile $file              the file to write into
-	 * @param bool      $collectStatistics if true, the method returns statistics about the stream
+	 * @param BaseMediaFile $file              the file to write into
+	 * @param bool          $collectStatistics if true, the method returns statistics about the stream
 	 *
 	 * @return StreamStat|null optional statistics about the stream, if requested
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStat;
+	public function save(BaseMediaFile $file, bool $collectStatistics = false): ?StreamStat;
 
 	/**
 	 * Frees all internal resources.
