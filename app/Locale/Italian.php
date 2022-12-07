@@ -138,6 +138,7 @@ final class Italian implements Language
 			'STARRED' => 'Speciali',
 			'RECENT' => 'Recenti',
 			'PUBLIC' => 'Pubbliche',
+			'ON_THIS_DAY' => 'On This Day',
 			'NUM_PHOTOS' => 'Foto',
 
 			'CREATE_ALBUM' => 'Crea Album',

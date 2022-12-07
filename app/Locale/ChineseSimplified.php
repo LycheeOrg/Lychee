@@ -138,6 +138,7 @@ final class ChineseSimplified implements Language
 			'STARRED' => '星标',
 			'RECENT' => '最新',
 			'PUBLIC' => '公开',
+			'ON_THIS_DAY' => 'On This Day',
 			'NUM_PHOTOS' => '照片',
 
 			'CREATE_ALBUM' => '创建相册',

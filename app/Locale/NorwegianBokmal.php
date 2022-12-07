@@ -138,6 +138,7 @@ final class NorwegianBokmal implements Language
 			'STARRED' => 'Favoritter',
 			'RECENT' => 'Nylige',
 			'PUBLIC' => 'Offentlige',
+			'ON_THIS_DAY' => 'On This Day',
 			'NUM_PHOTOS' => 'Bilder',
 
 			'CREATE_ALBUM' => 'Lag Album',

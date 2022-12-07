@@ -15,6 +15,7 @@ namespace Tests\Feature;
 use App\Legacy\AdminAuthentication;
 use App\Models\Configs;
 use App\Models\User;
+use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
@@ -90,25 +91,26 @@ class UsersTest extends TestCase
 		 * 19. try access shared pictures (public)
 		 * 20. try access starred pictures
 		 * 21. try access recent pictures
-		 * 22. change password without old password => should fail
-		 * 23. change password with wrong password => should fail
-		 * 24. change username & password with duplicate username => should fail
-		 * 25. change username & password
-		 * 26. log out
+		 * 22. try access on_this_day pictures
+		 * 23. change password without old password => should fail
+		 * 24. change password with wrong password => should fail
+		 * 25. change username & password with duplicate username => should fail
+		 * 26. change username & password
+		 * 27. log out
 		 *
-		 * 27. log as 'test_abcde'
-		 * 28. log out
+		 * 28. log as 'test_abcde'
+		 * 29. log out
 		 *
-		 * 29. log as admin
-		 * 30. delete user
-		 * 31. log out
+		 * 30. log as admin
+		 * 31. delete user
+		 * 32. log out
 		 *
-		 * 32. log as admin
-		 * 33  get email => should be blank
-		 * 34. update email
-		 * 35. get email
-		 * 36  update email to blank
-		 * 37. log out
+		 * 33. log as admin
+		 * 34  get email => should be blank
+		 * 35. update email
+		 * 36. get email
+		 * 37. update email to blank
+		 * 38. log out
 		 */
 
 		// 1
@@ -187,30 +189,33 @@ class UsersTest extends TestCase
 		$album_tests->get(UnsortedAlbum::ID, 403);
 
 		// 22
-		$sessions_test->update_login('test_abcde', 'password_testing2', '', 422, 'The old password field is required.');
+		$album_tests->get(OnThisDayAlbum::ID, 403);
 
 		// 23
-		$sessions_test->update_login('test_abcde', 'password_testing2', 'password_testing2', 401, 'Previous password is invalid');
+		$sessions_test->update_login('test_abcde', 'password_testing2', '', 422, 'The old password field is required.');
 
 		// 24
-		$sessions_test->update_login('test_abcd2', 'password_testing2', 'password_testing', 409, 'Username already exists');
+		$sessions_test->update_login('test_abcde', 'password_testing2', 'password_testing2', 401, 'Previous password is invalid');
 
 		// 25
-		$sessions_test->update_login('test_abcdef', 'password_testing2', 'password_testing');
+		$sessions_test->update_login('test_abcd2', 'password_testing2', 'password_testing', 409, 'Username already exists');
 
 		// 26
-		$sessions_test->logout();
+		$sessions_test->update_login('test_abcdef', 'password_testing2', 'password_testing');
 
 		// 27
-		$sessions_test->login('test_abcdef', 'password_testing2');
-
-		// 28
 		$sessions_test->logout();
 
+		// 28
+		$sessions_test->login('test_abcdef', 'password_testing2');
+
 		// 29
-		Auth::loginUsingId(0);
+		$sessions_test->logout();
 
 		// 30
+		Auth::loginUsingId(0);
+
+		// 31
 		$users_test->delete($id);
 		$users_test->delete($id2);
 
@@ -220,33 +225,33 @@ class UsersTest extends TestCase
 		$users_test->delete('-1', 422);
 		$users_test->save('-1', 'toto', 'test', false, true, 422);
 
-		// 31
+		// 32
 		$sessions_test->logout();
 
-		// 32
+		// 33
 		Auth::loginUsingId(0);
 
 		$configs = Configs::get();
 		$store_new_photos_notification = $configs['new_photos_notification'];
 		Configs::set('new_photos_notification', '1');
 
-		// 33
+		// 34
 		$users_test->get_email();
 
-		// 34
+		// 35
 		// Note, this must be a proper email address for an existing mail
 		// domain, as the Laravel validator runs a DNS lookup.
 		// This means, `void@unexisting.nowhere` though syntactically being
 		// correct will trigger an error response.
 		$users_test->update_email('legal@support.github.com');
 
-		// 35
+		// 36
 		$users_test->get_email();
 
-		// 36
+		// 37
 		$users_test->update_email(null);
 
-		// 37
+		// 38
 		$sessions_test->logout();
 		Configs::set('new_photos_notification', $store_new_photos_notification);
 	}

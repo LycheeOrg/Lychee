@@ -16,28 +16,16 @@ class SystemInfo implements DiagnosticPipe
 		// About SQL version
 		// @codeCoverageIgnoreStart
 		try {
-			switch (DB::getDriverName()) {
-				case 'mysql':
-					$dbtype = 'MySQL';
-					$results = DB::select(DB::raw('select version() as version'));
-					$dbver = $results[0]->version;
-					break;
-				case 'sqlite':
-					$dbtype = 'SQLite';
-					$results = DB::select(DB::raw('select sqlite_version() as version'));
-					$dbver = $results[0]->version;
-					break;
-				case 'pgsql':
-					$dbtype = 'PostgreSQL';
-					$results = DB::select(DB::raw('select version() as version'));
-					$dbver = $results[0]->version;
-					break;
-				default:
-					$dbtype = DB::getDriverName();
-					$results = DB::select(DB::raw('select version() as version'));
-					$dbver = $results[0]->version;
-					break;
-			}
+			$sql = match (DB::getDriverName()) {
+				'mysql' => ['MySQL', 'select version() as version'],
+				'sqlite' => ['SQLite', 'select sqlite_version() as version'],
+				'pgsql' => ['PostgreSQL', 'select version() as version'],
+				default => [DB::getDriverName(), 'select version() as version']
+			};
+
+			$dbtype = $sql[0];
+			$results = DB::select(DB::raw($sql[1]));
+			$dbver = $results[0]->version;
 		} catch (QueryException $e) {
 			$dbtype = 'Unknown SQL';
 			$dbver = 'unknown';
