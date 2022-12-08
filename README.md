@@ -3,6 +3,8 @@
 [![GitHub Release][release-shield]](https://github.com/LycheeOrg/Lychee/releases)
 [![PHP 8.0 & 8.1][php-shield]](https://lycheeorg.github.io/docs/#server-requirements)
 [![MIT License][license-shield]](https://github.com/LycheeOrg/Lychee/blob/master/LICENSE)
+[![Downloads][download-shield]](https://github.com/LycheeOrg/Lychee/releases)
+
 <br>
 [![Build Status][build-status-shield]](https://github.com/LycheeOrg/Lychee/actions)
 [![Code Coverage][codecov-shield]](https://codecov.io/gh/LycheeOrg/Lychee)
@@ -106,4 +108,4 @@ We would like to thank Jetbrains for supporting us with their [Open Source Devel
 [docker-shield]: https://img.shields.io/badge/-Lychee--Docker-informational.svg?logo=github
 [gitter-shield]: https://img.shields.io/gitter/room/LycheeOrg/Lobby.svg?logo=gitter
 [jetbrains-opensource]: https://www.jetbrains.com/community/opensource/
-
+[download-shield]: https://img.shields.io/github/downloads/LycheeOrg/Lychee/total
