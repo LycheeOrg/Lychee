@@ -90,16 +90,13 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 
 		try {
 			try {
-				if ($this->photo->isPhoto()) {
-					// Load source image if it is a supported photo format
-					$this->sourceImage = new ImageHandler();
-					$this->sourceImage->load($this->sourceFile);
-				} elseif ($this->photo->isVideo()) {
+				if ($this->photo->isVideo()) {
 					$videoHandler = new VideoHandler();
 					$videoHandler->load($this->sourceFile);
 					$position = is_numeric($this->photo->aperture) ? floatval($this->photo->aperture) / 2 : 0.0;
 					$this->sourceImage = $videoHandler->extractFrame($position);
 				} else {
+					// Load source image if it is a supported photo format
 					$this->sourceImage = new ImageHandler();
 					$this->sourceImage->load($this->sourceFile);
 				}
