@@ -2,7 +2,6 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
@@ -35,6 +34,6 @@ class ConfigCheckUpdateEvery extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', '=', 'update_check_every_days')->delete();
+		DB::table('configs')->where('key', '=', 'update_check_every_days')->delete();
 	}
 }

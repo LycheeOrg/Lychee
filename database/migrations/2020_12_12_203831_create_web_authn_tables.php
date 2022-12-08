@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -40,7 +39,7 @@ class CreateWebAuthnTables extends Migration
 
 			$table->timestamps();
 			$table->softDeletes(self::DELETED_AT);
-			Configs::where('key', '=', 'username')->orWhere('key', '=', 'password')->update(['type_range' => STRING]);
+			DB::table('configs')->where('key', '=', 'username')->orWhere('key', '=', 'password')->update(['type_range' => STRING]);
 
 			$table->primary(['id', 'user_id']);
 		});
@@ -56,7 +55,7 @@ class CreateWebAuthnTables extends Migration
 		defined('STRING_REQ') or define('STRING_REQ', 'string_required');
 
 		if (Schema::hasTable('configs')) {
-			Configs::where('key', '=', 'username')->orWhere('key', '=', 'password')->update(['type_range' => STRING_REQ]);
+			DB::table('configs')->where('key', '=', 'username')->orWhere('key', '=', 'password')->update(['type_range' => STRING_REQ]);
 		}
 		Schema::dropIfExists('web_authn_credentials');
 	}

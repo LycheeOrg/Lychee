@@ -2,7 +2,6 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -61,10 +60,10 @@ class LocationDecoding extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', '=', 'location_decoding')->delete();
-		Configs::where('key', '=', 'location_decoding_timeout')->delete();
-		Configs::where('key', '=', 'location_show')->delete();
-		Configs::where('key', '=', 'location_show_public')->delete();
+		DB::table('configs')->where('key', '=', 'location_decoding')->delete();
+		DB::table('configs')->where('key', '=', 'location_decoding_timeout')->delete();
+		DB::table('configs')->where('key', '=', 'location_show')->delete();
+		DB::table('configs')->where('key', '=', 'location_show_public')->delete();
 		Schema::table('photos', function (Blueprint $table) {
 			$table->dropColumn('location');
 		});

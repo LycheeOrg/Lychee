@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
@@ -32,6 +31,6 @@ class ConfigPasswordUrlParamForSmartAlbum extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', '=', 'unlock_password_photos_with_url_param')->delete();
+		DB::table('configs')->where('key', '=', 'unlock_password_photos_with_url_param')->delete();
 	}
 }

@@ -3,7 +3,6 @@
 /** @noinspection PhpUndefinedClassInspection */
 
 use App\Models\Logs;
-use App\Models\Photo;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +12,7 @@ class PhotosFix extends Migration
 	private function fix_thumbs()
 	{
 		// from fix_thumb2x_default
-		Photo::where('thumbUrl', '=', '')
+		DB::table('photos')->where('thumbUrl', '=', '')
 			->where('thumb2x', '=', '1')
 			->update([
 				'thumb2x' => '0',

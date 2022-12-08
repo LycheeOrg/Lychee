@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
@@ -39,7 +38,7 @@ class ConfigSwipeTolerance extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', '=', 'swipe_tolerance_x')->delete();
-		Configs::where('key', '=', 'swipe_tolerance_y')->delete();
+		DB::table('configs')->where('key', '=', 'swipe_tolerance_x')->delete();
+		DB::table('configs')->where('key', '=', 'swipe_tolerance_y')->delete();
 	}
 }

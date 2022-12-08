@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Migrations\Migration;
 
@@ -14,7 +13,7 @@ class UpdateLicences extends Migration
 	private function update_fields(array &$default_values)
 	{
 		foreach ($default_values as $value) {
-			Configs::updateOrCreate(
+			DB::table('configs')->updateOrInsert(
 				['key' => $value['key']],
 				[
 					'cat' => $value['cat'],

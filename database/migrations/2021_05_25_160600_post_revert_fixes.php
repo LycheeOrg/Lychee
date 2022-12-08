@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Carbon;
@@ -52,7 +51,8 @@ class PostRevertFixes extends Migration
 	 */
 	public function up()
 	{
-		if (Configs::getValueAsString('version') !== '040303') {
+		$version = DB::table('configs')->select(['value'])->where('key', '=', 'version')->first()?->value;
+		if ($version !== '040303') {
 			return;
 		}
 
@@ -108,7 +108,7 @@ class PostRevertFixes extends Migration
 			]);
 		});
 
-		Configs::where('key', 'version')->update(['value' => '040302']);
+		DB::table('configs')->where('key', 'version')->update(['value' => '040302']);
 	}
 
 	/**

@@ -1,7 +1,6 @@
 <?php
 
 use App\Facades\Helpers;
-use App\Models\Album;
 use App\Models\Logs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
@@ -50,7 +49,7 @@ class MoveAlbums extends Migration
 	{
 		if (Schema::hasTable('lychee_albums')) {
 			Schema::disableForeignKeyConstraints();
-			Album::truncate();
+			DB::table('albums')->truncate();
 			Schema::enableForeignKeyConstraints();
 		}
 	}

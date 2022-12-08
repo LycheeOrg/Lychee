@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
@@ -48,8 +47,8 @@ class Rss extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', '=', 'rss_enable')->delete();
-		Configs::where('key', '=', 'rss_recent_days')->delete();
-		Configs::where('key', '=', 'rss_max_items')->delete();
+		DB::table('configs')->where('key', '=', 'rss_enable')->delete();
+		DB::table('configs')->where('key', '=', 'rss_recent_days')->delete();
+		DB::table('configs')->where('key', '=', 'rss_max_items')->delete();
 	}
 }

@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 
 class ConfigMapMod extends Migration
@@ -12,7 +11,7 @@ class ConfigMapMod extends Migration
 	 */
 	public function up()
 	{
-		Configs::where('key', '=', 'map_display')->update(['cat' => 'Mod Map']);
+		DB::table('configs')->where('key', '=', 'map_display')->update(['cat' => 'Mod Map']);
 	}
 
 	/**
@@ -22,6 +21,6 @@ class ConfigMapMod extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', '=', 'map_display')->update(['cat' => 'config']);
+		DB::table('configs')->where('key', '=', 'map_display')->update(['cat' => 'config']);
 	}
 }

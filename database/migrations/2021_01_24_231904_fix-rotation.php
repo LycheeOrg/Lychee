@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\Photo;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
 class FixRotation extends Migration
 {
@@ -12,10 +12,10 @@ class FixRotation extends Migration
 	 */
 	public function up()
 	{
-		Photo::where('small', 'x')->update(['small' => '']);
-		Photo::where('small2x', 'x')->update(['small2x' => '']);
-		Photo::where('medium', 'x')->update(['medium' => '']);
-		Photo::where('medium2x', 'x')->update(['medium2x' => '']);
+		DB::table('photos')->where('small', 'x')->update(['small' => '']);
+		DB::table('photos')->where('small2x', 'x')->update(['small2x' => '']);
+		DB::table('photos')->where('medium', 'x')->update(['medium' => '']);
+		DB::table('photos')->where('medium2x', 'x')->update(['medium2x' => '']);
 	}
 
 	/**

@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 
 class BumpVersion040008 extends Migration
@@ -12,7 +11,7 @@ class BumpVersion040008 extends Migration
 	 */
 	public function up()
 	{
-		Configs::where('key', 'version')->update(['value' => '040008']);
+		DB::table('configs')->where('key', 'version')->update(['value' => '040008']);
 	}
 
 	/**
@@ -22,6 +21,6 @@ class BumpVersion040008 extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', 'version')->update(['value' => '040007']);
+		DB::table('configs')->where('key', 'version')->update(['value' => '040007']);
 	}
 }

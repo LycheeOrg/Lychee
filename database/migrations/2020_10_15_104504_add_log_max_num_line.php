@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
@@ -33,6 +32,6 @@ class AddLogMaxNumLine extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', '=', 'log_max_num_line')->delete();
+		DB::table('configs')->where('key', '=', 'log_max_num_line')->delete();
 	}
 }

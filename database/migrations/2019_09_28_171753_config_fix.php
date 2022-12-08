@@ -29,15 +29,15 @@ class ConfigFix extends Migration
 	 */
 	private function update_names()
 	{
-		Configs::where('key', '=', 'justified_layout')->update(['key' => 'layout']);
-		Configs::where('key', '=', 'checkForUpdates')->update(['key' => 'check_for_updates']);
-		Configs::where('key', '=', 'sortingPhotos_col')->update(['key' => 'sorting_Photos_col']);
-		Configs::where('key', '=', 'sortingPhotos_order')->update(['key' => 'sorting_Photos_order']);
-		Configs::where('key', '=', 'sortingAlbums_col')->update(['key' => 'sorting_Albums_col']);
-		Configs::where('key', '=', 'sortingAlbums_order')->update(['key' => 'sorting_Albums_order']);
-		Configs::where('key', '=', 'skipDuplicates')->update(['key' => 'skip_duplicates']);
-		Configs::where('key', '=', 'deleteImported')->update(['key' => 'delete_imported']);
-		Configs::where('key', '=', 'dropboxKey')->update(['key' => 'dropbox_key']);
+		DB::table('configs')->where('key', '=', 'justified_layout')->update(['key' => 'layout']);
+		DB::table('configs')->where('key', '=', 'checkForUpdates')->update(['key' => 'check_for_updates']);
+		DB::table('configs')->where('key', '=', 'sortingPhotos_col')->update(['key' => 'sorting_Photos_col']);
+		DB::table('configs')->where('key', '=', 'sortingPhotos_order')->update(['key' => 'sorting_Photos_order']);
+		DB::table('configs')->where('key', '=', 'sortingAlbums_col')->update(['key' => 'sorting_Albums_col']);
+		DB::table('configs')->where('key', '=', 'sortingAlbums_order')->update(['key' => 'sorting_Albums_order']);
+		DB::table('configs')->where('key', '=', 'skipDuplicates')->update(['key' => 'skip_duplicates']);
+		DB::table('configs')->where('key', '=', 'deleteImported')->update(['key' => 'delete_imported']);
+		DB::table('configs')->where('key', '=', 'dropboxKey')->update(['key' => 'dropbox_key']);
 	}
 
 	/**
@@ -55,7 +55,7 @@ class ConfigFix extends Migration
 		$keys = array_map('get_key', $values);
 
 		try {
-			Configs::whereNotIn('key', $keys)->delete();
+			DB::table('configs')->whereNotIn('key', $keys)->delete();
 		} catch (Exception $e) {
 			Logs::warning(__FUNCTION__, __LINE__, 'Something weird happened.');
 		}

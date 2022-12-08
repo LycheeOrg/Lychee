@@ -2,8 +2,8 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
 class ConfigPublicSorting extends Migration
 {
@@ -14,8 +14,8 @@ class ConfigPublicSorting extends Migration
 	 */
 	public function up()
 	{
-		Configs::where('key', 'sorting_Albums_col')->update(['confidentiality' => '0']);
-		Configs::where('key', 'sorting_Albums_order')->update(['confidentiality' => '0']);
+		DB::table('configs')->where('key', 'sorting_Albums_col')->update(['confidentiality' => '0']);
+		DB::table('configs')->where('key', 'sorting_Albums_order')->update(['confidentiality' => '0']);
 	}
 
 	/**
@@ -25,7 +25,7 @@ class ConfigPublicSorting extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', 'sorting_Albums_col')->update(['confidentiality' => '2']);
-		Configs::where('key', 'sorting_Albums_order')->update(['confidentiality' => '2']);
+		DB::table('configs')->where('key', 'sorting_Albums_col')->update(['confidentiality' => '2']);
+		DB::table('configs')->where('key', 'sorting_Albums_order')->update(['confidentiality' => '2']);
 	}
 }

@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Configs;
 use App\Models\Logs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +16,7 @@ class MoveSettings extends Migration
 	{
 		// this test is to make sure this is not executed when we passed a certain migration point
 		if (Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_settings')) {
-			if (Configs::where('key', '=', 'check_for_updates')->count() === 0) {
+			if (DB::table('configs')->where('key', '=', 'check_for_updates')->count() === 0) {
 				$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_settings')->select('*')->orderBy('key', 'asc')->get();
 
 				foreach ($results as $result) {
@@ -55,10 +54,10 @@ class MoveSettings extends Migration
 					*/
 					if (in_array($result->key, ['sortingAlbums', 'sortingPhotos'])) {
 						$order_by = explode(' ', $result->value);
-						Configs::where('key', '=', $result->key . '_col')->update(['value' => $order_by[2] ?? 'id']);
-						Configs::where('key', '=', $result->key . '_order')->update(['value' => $order_by[3] ?? 'DESC']);
+						DB::table('configs')->where('key', '=', $result->key . '_col')->update(['value' => $order_by[2] ?? 'id']);
+						DB::table('configs')->where('key', '=', $result->key . '_order')->update(['value' => $order_by[3] ?? 'DESC']);
 					} elseif (!in_array($result->key, ['checkForUpdates', 'hide_version_number', 'identifier', 'php_script_limit', 'plugins', 'public_search', 'useExiftool', 'version'])) {
-						Configs::where('key', '=', $result->key)->update(['value' => $result->value ?? '']);
+						DB::table('configs')->where('key', '=', $result->key)->update(['value' => $result->value ?? '']);
 					}
 				}
 			} else {

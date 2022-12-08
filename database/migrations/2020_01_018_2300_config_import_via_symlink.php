@@ -2,7 +2,6 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
@@ -35,6 +34,6 @@ class ConfigImportViaSymlink extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', '=', 'import_via_symlink')->delete();
+		DB::table('configs')->where('key', '=', 'import_via_symlink')->delete();
 	}
 }

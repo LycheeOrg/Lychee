@@ -3,7 +3,6 @@
 /** @noinspection PhpUndefinedClassInspection */
 
 use App\Facades\Helpers;
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
@@ -55,6 +54,6 @@ class ConfigHasFFmpeg extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', '=', 'has_ffmpeg')->delete();
+		DB::table('configs')->where('key', '=', 'has_ffmpeg')->delete();
 	}
 }
