@@ -251,7 +251,7 @@ class Archive
 				$archiveFileInfos[] = $archiveFileInfo;
 				$filename = $archiveFileInfo->getFilename();
 				if (array_key_exists($filename, $ambiguousFilenames)) {
-					continue;
+					// do nothing
 				} elseif (array_key_exists($filename, $uniqueFilenames)) {
 					unset($uniqueFilenames[$filename]);
 					$ambiguousFilenames[$filename] = 0;

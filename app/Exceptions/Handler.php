@@ -312,22 +312,52 @@ class Handler extends ExceptionHandler
 	protected function convertExceptionToArray(\Throwable $e): array
 	{
 		try {
-			return config('app.debug') === true ? [
-				'message' => $e->getMessage(),
-				'exception' => get_class($e),
-				'file' => $e->getFile(),
-				'line' => $e->getLine(),
-				'trace' => collect($e->getTrace())->map(function ($trace) {
-					return Arr::except($trace, ['args']);
-				})->all(),
-				'previous_exception' => $e->getPrevious() !== null ? $this->convertExceptionToArray($e->getPrevious()) : null,
-			] : [
+			// debub mode.
+			if (config('app.debug') === true) {
+				return $this->convertDebugExceptionToArray($e);
+			}
+
+			// normal use
+			return [
 				'message' => $this->isHttpException($e) ? $e->getMessage() : 'Server Error',
 				'exception' => class_basename($e),
 			];
 		} catch (\Throwable) {
 			return [];
 		}
+	}
+
+	/**
+	 * Converts the given exception to an array.
+	 *
+	 * The result only includes details about the exception, if the
+	 * application is in debug mode.
+	 * Identical to
+	 * {@link \Illuminate\Foundation\Exceptions\Handler::convertExceptionToAray()}
+	 * but recursively adds the previous exceptions, too.
+	 *
+	 * @param \Throwable|null $e
+	 *
+	 * @return ($e is null ? null : array)
+	 */
+	private function convertDebugExceptionToArray(\Throwable|null $e): array|null
+	{
+		if ($e === null) {
+			return null;
+		}
+
+		$previous_exception = $this->convertDebugExceptionToArray($e->getPrevious());
+
+		return [
+			'message' => $e->getMessage(),
+			'exception' => get_class($e),
+			'file' => $e->getFile(),
+			'line' => $e->getLine(),
+			'trace' => collect($e->getTrace())->map(function ($trace) {
+				return Arr::except($trace, ['args']);
+			})->all(),
+			'previous_exception' => $previous_exception,
+		];
 	}
 
 	/**
