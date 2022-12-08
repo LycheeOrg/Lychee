@@ -7,6 +7,7 @@ use App\Actions\Update\Check as CheckUpdate;
 use App\Assets\Helpers;
 use App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy;
 use App\Contracts\AbstractSizeVariantNamingStrategy;
+use App\Contracts\GitHubVersionControl;
 use App\Contracts\SizeVariantFactory;
 use App\Factories\AlbumFactory;
 use App\Factories\LangFactory;
@@ -32,12 +33,12 @@ class AppServiceProvider extends ServiceProvider
 	public array $singletons
 	= [
 		SymLinkFunctions::class => SymLinkFunctions::class,
+		GitHubVersionControl::class => GitHubFunctions::class,
 		ConfigFunctions::class => ConfigFunctions::class,
 		LangFactory::class => LangFactory::class,
 		Lang::class => Lang::class,
 		Helpers::class => Helpers::class,
 		GitRequest::class => GitRequest::class,
-		GitHubFunctions::class => GitHubFunctions::class,
 		LycheeVersion::class => LycheeVersion::class,
 		CheckUpdate::class => CheckUpdate::class,
 		ApplyUpdate::class => ApplyUpdate::class,

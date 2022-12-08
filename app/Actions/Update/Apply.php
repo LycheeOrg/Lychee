@@ -2,9 +2,9 @@
 
 namespace App\Actions\Update;
 
+use App\Contracts\GitHubVersionControl;
 use App\Exceptions\Internal\FrameworkException;
 use App\Facades\Helpers;
-use App\Metadata\GitHubFunctions;
 use App\Metadata\LycheeVersion;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -23,18 +23,19 @@ class Apply
 		'Update not applied: `APP_ENV` in `.env` is `production` and `force_migration_in_production` is set to `0`.';
 
 	private LycheeVersion $lycheeVersion;
-	private GitHubFunctions $githubFunctions;
+	private GitHubVersionControl $githubFunctions;
 
 	/**
-	 * @param LycheeVersion   $lycheeVersion
-	 * @param GitHubFunctions $githubFunctions
+	 * @param LycheeVersion        $lycheeVersion
+	 * @param GitHubVersionControl $githubFunctions
 	 */
 	public function __construct(
 		LycheeVersion $lycheeVersion,
-		GitHubFunctions $githubFunctions
+		GitHubVersionControl $githubFunctions
 	) {
 		$this->lycheeVersion = $lycheeVersion;
 		$this->githubFunctions = $githubFunctions;
+		$this->githubFunctions->hydrate();
 	}
 
 	/**
@@ -164,7 +165,7 @@ class Apply
 	{
 		$output = [];
 		if (
-			$this->githubFunctions->is_master_branch() &&
+			$this->githubFunctions->isMasterBranch() &&
 			$this->check_prod_env_allow_migration($output)
 		) {
 			if (!$this->lycheeVersion->isRelease) {

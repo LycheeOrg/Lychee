@@ -3,6 +3,7 @@
 namespace App\ModelFunctions;
 
 use App\Exceptions\Internal\JsonRequestFailedException;
+use App\Models\Logs;
 use Illuminate\Support\Facades\Cache;
 use function Safe\file_get_contents;
 use function Safe\ini_get;
@@ -105,9 +106,6 @@ class JsonRequestFunctions
 	 * @return mixed the type of the response depends on the content of the
 	 *               HTTP response and may be anything: a primitive type,
 	 *               an array or an object
-	 *
-	 * @throws JsonRequestFailedException
-	 * @throws \JsonException
 	 */
 	public function get_json(bool $useCache = false): mixed
 	{
@@ -124,9 +122,13 @@ class JsonRequestFunctions
 			}
 
 			return $this->decodedJson;
+		} catch (JsonRequestFailedException $e) {
+			Logs::error(__METHOD__, __LINE__, $e->getMessage());
 		} catch (\JsonException $e) {
-			$this->clear_cache();
-			throw $e;
+			Logs::error(__METHOD__, __LINE__, $e->getMessage());
 		}
+		$this->clear_cache();
+
+		return null;
 	}
 }

@@ -2,35 +2,30 @@
 
 namespace App\Actions\Update;
 
+use App\Contracts\GitHubVersionControl;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\InsufficientFilesystemPermissions;
-use App\Exceptions\VersionControlException;
-use App\Metadata\GitHubFunctions;
-use App\Metadata\GitRequest;
 use App\Metadata\LycheeVersion;
 use App\Models\Configs;
 use function Safe\exec;
 
 class Check
 {
-	private GitHubFunctions $gitHubFunctions;
-	private GitRequest $gitRequest;
+	private GitHubVersionControl $gitHubFunctions;
 	private LycheeVersion $lycheeVersion;
 
 	/**
-	 * @param GitHubFunctions $gitHubFunctions
-	 * @param GitRequest      $gitRequest
-	 * @param LycheeVersion   $lycheeVersion
+	 * @param GitHubVersionControl $gitHubFunctions
+	 * @param LycheeVersion        $lycheeVersion
 	 */
 	public function __construct(
-		GitHubFunctions $gitHubFunctions,
-		GitRequest $gitRequest,
+		GitHubVersionControl $gitHubFunctions,
 		LycheeVersion $lycheeVersion
 	) {
 		$this->gitHubFunctions = $gitHubFunctions;
-		$this->gitRequest = $gitRequest;
 		$this->lycheeVersion = $lycheeVersion;
+		$gitHubFunctions->hydrate();
 	}
 
 	/**
@@ -61,42 +56,20 @@ class Check
 			throw new ExternalComponentMissingException('git (software) is not available.');
 		}
 
-		if (!$this->gitHubFunctions->has_permissions()) {
+		if (!$this->gitHubFunctions->hasPermissions()) {
 			throw new InsufficientFilesystemPermissions(base_path('.git') . ' (and subdirectories) are not executable, check the permissions');
 		}
 		// @codeCoverageIgnoreEnd
 	}
 
 	/**
-	 * Clear cache and check if up to date.
-	 *
-	 * @return bool
-	 *
-	 * @throws VersionControlException
-	 */
-	private function forget_and_check(): bool
-	{
-		$this->gitRequest->clear_cache();
-
-		return $this->gitHubFunctions->is_up_to_date(false);
-	}
-
-	/**
 	 * Check for updates, return text or an exception if not possible.
-	 *
-	 * @throws VersionControlException
 	 */
 	public function getText(): string
 	{
-		$up_to_date = $this->forget_and_check();
+		$this->gitHubFunctions->hydrate(false);
 
-		if (!$up_to_date) {
-			// @codeCoverageIgnoreStart
-			return $this->gitHubFunctions->get_behind_text();
-		// @codeCoverageIgnoreEnd
-		} else {
-			return 'Already up to date';
-		}
+		return $this->gitHubFunctions->getBehindTest();
 	}
 
 	/**
@@ -130,7 +103,7 @@ class Check
 		try {
 			$this->assertUpdatability();
 			// @codeCoverageIgnoreStart
-			if (!$this->gitHubFunctions->is_up_to_date()) {
+			if (!$this->gitHubFunctions->isUpToDate()) {
 				return 2;
 			} else {
 				return 1;

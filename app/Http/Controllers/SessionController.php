@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\GitHubVersionControl;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
 use App\Exceptions\ConfigurationKeyMissingException;
@@ -14,7 +15,6 @@ use App\Exceptions\VersionControlException;
 use App\Facades\Lang;
 use App\Http\Requests\Session\LoginRequest;
 use App\Legacy\AdminAuthentication;
-use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -31,13 +31,13 @@ use Spatie\Feed\Helpers\FeedContentType;
 class SessionController extends Controller
 {
 	/**
-	 * @param ConfigFunctions $configFunctions
-	 * @param GitHubFunctions $gitHubFunctions
-	 * @param Repository      $configRepository
+	 * @param ConfigFunctions      $configFunctions
+	 * @param GitHubVersionControl $gitHubFunctions
+	 * @param Repository           $configRepository
 	 */
 	public function __construct(
 		private ConfigFunctions $configFunctions,
-		private GitHubFunctions $gitHubFunctions,
+		private GitHubVersionControl $gitHubFunctions,
 		private Repository $configRepository,
 	) {
 	}
@@ -133,10 +133,11 @@ class SessionController extends Controller
 			// we also return the local
 			$return['locale'] = Lang::get_lang();
 
-			$return['update_json'] = 0;
-			$return['update_available'] = false;
+			// TODO: add back
+			// $return['update_json'] = '';
+			$return['update_available'] = $this->gitHubFunctions->isUpToDate();
 
-			return array_merge($return, $this->gitHubFunctions->checkUpdates());
+			return $return;
 		} catch (ModelDBException $e) {
 			$this->logout();
 			throw $e;

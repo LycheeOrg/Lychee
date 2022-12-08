@@ -2,6 +2,7 @@
 
 namespace App\Metadata;
 
+use App\Contracts\GitHubVersionControl;
 use App\DTO\LycheeChannelInfo;
 use App\DTO\LycheeGitInfo;
 use App\DTO\Version;
@@ -10,11 +11,11 @@ use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\VersionControlException;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use function Safe\file_get_contents;
+use Illuminate\Support\Facades\File;
 
 class LycheeVersion
 {
-	private GitHubFunctions $gitHubFunctions;
+	private GitHubVersionControl $gitHubFunctions;
 
 	public bool $isRelease;
 
@@ -26,12 +27,10 @@ class LycheeVersion
 
 	/**
 	 * Base constructor.
-	 *
-	 * @param GitHubFunctions $gitHubFunctions
 	 */
-	public function __construct(GitHubFunctions $gitHubFunctions)
+	public function __construct()
 	{
-		$this->gitHubFunctions = $gitHubFunctions;
+		$this->gitHubFunctions = resolve(GitHubVersionControl::class);
 		$this->isRelease = $this->fetchReleaseInfo();
 		$this->phpUnit = $this->fetchComposerInfo();
 	}
@@ -42,7 +41,7 @@ class LycheeVersion
 	 */
 	private function fetchReleaseInfo(): bool
 	{
-		return !file_exists(base_path('.git'));
+		return !File::exists(base_path('.git'));
 	}
 
 	/**
@@ -51,7 +50,7 @@ class LycheeVersion
 	 */
 	private function fetchComposerInfo(): bool
 	{
-		return file_exists(base_path('vendor/bin/phpunit'));
+		return File::exists(base_path('vendor/bin/phpunit'));
 	}
 
 	/**
@@ -76,7 +75,7 @@ class LycheeVersion
 	{
 		try {
 			return Version::createFromString(
-				file_get_contents(base_path('version.md'))
+				File::get(base_path('version.md'))
 			);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);
@@ -99,15 +98,13 @@ class LycheeVersion
 		}
 
 		try {
-			$branch = $this->gitHubFunctions->getLocalBranch();
-			$commit = $this->gitHubFunctions->getLocalHead();
-			if ($commit === '' && $branch === '') {
+			$branch = $this->gitHubFunctions->localBranch;
+			$commit = $this->gitHubFunctions->localHead;
+			if ($commit === null || $branch === null) {
 				return LycheeChannelInfo::createGitInfo(null);
 			}
 
-			return LycheeChannelInfo::createGitInfo(
-				new LycheeGitInfo($branch, $commit, $this->gitHubFunctions->get_behind_text())
-			);
+			return LycheeChannelInfo::createGitInfo(new LycheeGitInfo($this->gitHubFunctions));
 		} catch (VersionControlException) {
 			return LycheeChannelInfo::createGitInfo(null);
 		}
