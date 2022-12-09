@@ -47,7 +47,10 @@
 
 @if ((isset($data['num_albums']) && $data['num_albums'] > 0) || (isset($data['albums']) && count($data['albums']) > 0))
 <div class='subalbum_badge'>
-	<x-icon class='badge--folder' icon='layers' />
+	<x-icon class='badge--folder' icon='folder' />
+	@if ((isset($data['num_albums']) && $data['num_albums'] > 1) || (isset($data['albums']) && count($data['albums']) > 1))
+		<span>{{ $data['num_albums'] }}</span>
+	@endif
 </div>
 @endif
 </div>
