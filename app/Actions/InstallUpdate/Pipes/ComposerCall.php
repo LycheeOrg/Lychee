@@ -10,7 +10,7 @@ use function Safe\chdir;
 use function Safe\exec;
 use function Safe\putenv;
 
-class ComposerCall extends AbstractUpdaterPipe
+class ComposerCall extends AbstractUpdateInstallerPipe
 {
 	/**
 	 * {@inheritDoc}

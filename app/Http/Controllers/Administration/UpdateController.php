@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Administration;
 
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
-use App\Actions\InstallUpdate\Apply as ApplyUpdate;
-use App\Actions\InstallUpdate\Check as CheckUpdate;
+use App\Actions\InstallUpdate\ApplyUpdate;
+use App\Actions\InstallUpdate\CheckUpdate;
 use App\Contracts\LycheeException;
 use App\Exceptions\VersionControlException;
 use App\Legacy\AdminAuthentication;
@@ -141,9 +141,7 @@ class UpdateController extends Controller
 
 		// Check if logged in AND is admin
 		if (Gate::check(UserPolicy::IS_ADMIN)) {
-			$output = [];
-			$this->applyUpdate->migrate($output);
-			$this->applyUpdate->filter($output);
+			$output = $this->applyUpdate->run();
 
 			if (AdminAuthentication::isAdminNotRegistered()) {
 				Auth::logout();

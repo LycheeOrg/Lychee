@@ -6,7 +6,7 @@ use App\Actions\Diagnostics\Configuration;
 use App\Actions\Diagnostics\Errors;
 use App\Actions\Diagnostics\Info;
 use App\Actions\Diagnostics\Space;
-use App\Actions\InstallUpdate\Check as CheckUpdate;
+use App\Actions\InstallUpdate\CheckUpdate;
 use App\Contracts\LycheeException;
 use App\DTO\DiagnosticInfo;
 use App\Exceptions\Internal\FrameworkException;

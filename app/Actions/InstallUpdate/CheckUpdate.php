@@ -6,7 +6,7 @@ use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
 use App\Contracts\Versions\GitHubVersionControl;
 use App\Metadata\Versions\LycheeVersion;
 
-class Check
+class CheckUpdate
 {
 	private GitHubVersionControl $gitHubFunctions;
 	private LycheeVersion $lycheeVersion;
@@ -25,7 +25,7 @@ class Check
 	}
 
 	/**
-	 * Check for updates, return text or an exception if not possible.
+	 * CheckUpdate for updates, return text or an exception if not possible.
 	 */
 	public function getText(): string
 	{
@@ -35,7 +35,7 @@ class Check
 	}
 
 	/**
-	 * Check for updates and returns the update state.
+	 * CheckUpdate for updates and returns the update state.
 	 *
 	 * The return codes have the following semantics:
 	 *  - `0` - Not on master branch

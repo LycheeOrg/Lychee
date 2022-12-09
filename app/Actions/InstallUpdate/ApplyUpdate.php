@@ -3,15 +3,14 @@
 namespace App\Actions\InstallUpdate;
 
 use App\Actions\InstallUpdate\Pipes\AllowMigrationCheck;
+use App\Actions\InstallUpdate\Pipes\ArtisanMigrate;
 use App\Actions\InstallUpdate\Pipes\BranchCheck;
 use App\Actions\InstallUpdate\Pipes\ComposerCall;
 use App\Actions\InstallUpdate\Pipes\GitPull;
-use App\Actions\InstallUpdate\Pipes\Migrate;
 use Illuminate\Pipeline\Pipeline;
-use Safe\Exceptions\PcreException;
 use function Safe\preg_replace;
 
-class Apply
+class ApplyUpdate
 {
 	/**
 	 * @var array<int,string> application of the updates
@@ -20,7 +19,7 @@ class Apply
 		BranchCheck::class,
 		AllowMigrationCheck::class,
 		GitPull::class,
-		Migrate::class,
+		ArtisanMigrate::class,
 		ComposerCall::class,
 	];
 
@@ -30,8 +29,6 @@ class Apply
 	 * 2. artisan migrate.
 	 *
 	 * @return array<int,string> the per-line console output
-	 *
-	 * @throws PcreException
 	 */
 	public function run(): array
 	{

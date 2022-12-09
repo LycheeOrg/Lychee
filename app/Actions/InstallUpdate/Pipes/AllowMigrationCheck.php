@@ -6,7 +6,7 @@ use App\Models\Configs;
 use App\Models\Logs;
 use Illuminate\Support\Facades\Config;
 
-class AllowMigrationCheck extends AbstractUpdaterPipe
+class AllowMigrationCheck extends AbstractUpdateInstallerPipe
 {
 	public const ERROR_MSG =
 		/* @lang text */

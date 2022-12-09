@@ -7,7 +7,7 @@ use App\Facades\Helpers;
 use Illuminate\Support\Facades\Config;
 use function Safe\exec;
 
-class GitPull extends AbstractUpdaterPipe
+class GitPull extends AbstractUpdateInstallerPipe
 {
 	/**
 	 * {@inheritDoc}

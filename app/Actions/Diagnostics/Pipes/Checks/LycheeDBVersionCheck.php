@@ -22,7 +22,7 @@ class LycheeDBVersionCheck implements DiagnosticPipe
 	 * TBD.
 	 *
 	 * The following line of codes are duplicated in
-	 *  - {@link \App\Actions\InstallUpdate\Check::getCode()}
+	 *  - {@link \App\Actions\InstallUpdate\CheckUpdate::getCode()}
 	 *  - {@link \App\Http\Middleware\Checks\IsMigrated::assert()}.
 	 *
 	 * TODO: Probably, the whole logic around installation and updating should be re-factored. The whole code is wicked.

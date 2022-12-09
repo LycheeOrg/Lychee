@@ -4,7 +4,7 @@ namespace App\Actions\InstallUpdate\Pipes;
 
 use App\Contracts\Versions\GitHubVersionControl;
 
-class BranchCheck extends AbstractUpdaterPipe
+class BranchCheck extends AbstractUpdateInstallerPipe
 {
 	/**
 	 * {@inheritDoc}
