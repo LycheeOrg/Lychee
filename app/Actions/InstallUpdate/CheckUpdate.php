@@ -5,24 +5,23 @@ namespace App\Actions\InstallUpdate;
 use App\Actions\Diagnostics\Pipes\Checks\MigrationCheck;
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
 use App\Contracts\Versions\GitHubVersionControl;
+use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\LycheeVersion;
 
 class CheckUpdate
 {
-	private GitHubVersionControl $gitHubFunctions;
-	private LycheeVersion $lycheeVersion;
-
 	/**
 	 * @param GitHubVersionControl $gitHubFunctions
 	 * @param LycheeVersion        $lycheeVersion
+	 * @param FileVersion          $fileVersion
 	 */
 	public function __construct(
-		GitHubVersionControl $gitHubFunctions,
-		LycheeVersion $lycheeVersion
+		private GitHubVersionControl $gitHubFunctions,
+		private LycheeVersion $lycheeVersion,
+		private FileVersion $fileVersion,
 	) {
-		$this->gitHubFunctions = $gitHubFunctions;
-		$this->lycheeVersion = $lycheeVersion;
-		$gitHubFunctions->hydrate();
+		$this->gitHubFunctions->hydrate();
+		$this->fileVersion->hydrate();
 	}
 
 	/**
@@ -40,7 +39,11 @@ class CheckUpdate
 	{
 		if ($this->lycheeVersion->isRelease()) {
 			// @codeCoverageIgnoreStart
-			return MigrationCheck::isUpToDate() ? 1 : 3;
+			return match (false) {
+				MigrationCheck::isUpToDate() => 3,
+				$this->fileVersion->isUpToDate() => 2,
+				default => 1
+			};
 			// @codeCoverageIgnoreEnd
 		}
 

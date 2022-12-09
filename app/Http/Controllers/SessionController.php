@@ -136,8 +136,10 @@ class SessionController extends Controller
 			// we also return the local
 			$return['locale'] = Lang::get_lang();
 
-			$this->fileVersion->hydrate();
-			$this->gitHubVersion->hydrate();
+			if (Configs::getValueAsBool('check_for_updates')) {
+				$this->fileVersion->hydrate();
+				$this->gitHubVersion->hydrate();
+			}
 			$return['update_json'] = !$this->fileVersion->isUpToDate();
 			$return['update_available'] = !$this->gitHubVersion->isUpToDate();
 
