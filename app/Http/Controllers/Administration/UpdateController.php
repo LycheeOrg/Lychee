@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Administration;
 
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
 use App\Actions\InstallUpdate\ApplyUpdate;
-use App\Actions\InstallUpdate\CheckUpdate;
 use App\Contracts\LycheeException;
+use App\Contracts\Versions\GitHubVersionControl;
 use App\Exceptions\VersionControlException;
 use App\Legacy\AdminAuthentication;
 use App\Policies\UserPolicy;
@@ -49,12 +49,10 @@ use Illuminate\View\View;
  */
 class UpdateController extends Controller
 {
-	protected CheckUpdate $checkUpdate;
 	protected ApplyUpdate $applyUpdate;
 
-	public function __construct(CheckUpdate $checkUpdate, ApplyUpdate $applyUpdate)
+	public function __construct(ApplyUpdate $applyUpdate)
 	{
-		$this->checkUpdate = $checkUpdate;
 		$this->applyUpdate = $applyUpdate;
 	}
 
@@ -68,7 +66,10 @@ class UpdateController extends Controller
 	 */
 	public function check(): array
 	{
-		return ['updateStatus' => $this->checkUpdate->getText()];
+		$gitHubFunctions = resolve(GitHubVersionControl::class);
+		$gitHubFunctions->hydrate(true, false);
+
+		return ['updateStatus' => $gitHubFunctions->getBehindTest()];
 	}
 
 	/**

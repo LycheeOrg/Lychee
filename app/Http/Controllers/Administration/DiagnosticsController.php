@@ -35,30 +35,29 @@ class DiagnosticsController extends Controller
 	 * This function return the Diagnostic data as an JSON array.
 	 * should be used for AJAX request.
 	 *
-	 * @param Errors        $checkErrors
-	 * @param Info          $collectInfo
-	 * @param Configuration $config
-	 * @param CheckUpdate   $checkUpdate
-	 *
 	 * @return DiagnosticInfo
 	 *
 	 * @throws LycheeException
 	 * @throws InvalidTimeZoneException
 	 */
-	public function get(Errors $checkErrors, Info $collectInfo, Configuration $config, CheckUpdate $checkUpdate): DiagnosticInfo
+	public function get(): DiagnosticInfo
 	{
+		$collectErrors = resolve(Errors::class);
+		$collectInfo = resolve(Info::class);
+		$collectConfig = resolve(Configuration::class);
+		$checkUpdate = resolve(CheckUpdate::class);
+
 		$authorized = $this->isAuthorized();
 
-		return new DiagnosticInfo($checkErrors->get(config('app.skip_diagnostics_checks')), $authorized ? $collectInfo->get() : [self::ERROR_MSG], $authorized ? $config->get() : [self::ERROR_MSG], $checkUpdate->getCode());
+		$errors = $collectErrors->get(config('app.skip_diagnostics_checks'));
+		$infos = $authorized ? $collectInfo->get() : [self::ERROR_MSG];
+		$configs = $authorized ? $collectConfig->get() : [self::ERROR_MSG];
+
+		return new DiagnosticInfo($errors, $infos, $configs, $checkUpdate->getCode());
 	}
 
 	/**
 	 * Return the diagnostic information as a page.
-	 *
-	 * @param Errors        $checkErrors
-	 * @param Info          $collectInfo
-	 * @param Configuration $config
-	 * @param CheckUpdate   $checkUpdate
 	 *
 	 * @return View
 	 *
@@ -66,10 +65,10 @@ class DiagnosticsController extends Controller
 	 * @throws InvalidTimeZoneException
 	 * @throws LycheeException
 	 */
-	public function view(Errors $checkErrors, Info $collectInfo, Configuration $config, CheckUpdate $checkUpdate): View
+	public function view(): View
 	{
 		try {
-			return view('diagnostics', $this->get($checkErrors, $collectInfo, $config, $checkUpdate));
+			return view('diagnostics', $this->get());
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s view component', $e);
 		}

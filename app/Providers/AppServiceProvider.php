@@ -16,7 +16,7 @@ use App\Image\SizeVariantDefaultFactory;
 use App\Image\StreamStatFilter;
 use App\Locale\Lang;
 use App\Metadata\Json\UpdateRequest;
-use App\Metadata\Versions\GitHubFunctions;
+use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\LycheeVersion;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SymLinkFunctions;
@@ -34,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
 	public array $singletons
 	= [
 		SymLinkFunctions::class => SymLinkFunctions::class,
-		GitHubVersionControl::class => GitHubFunctions::class,
+		GitHubVersionControl::class => GitHubVersion::class,
 		ConfigFunctions::class => ConfigFunctions::class,
 		LangFactory::class => LangFactory::class,
 		Lang::class => Lang::class,

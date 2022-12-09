@@ -9,7 +9,7 @@ use App\Actions\Diagnostics\Pipes\Checks\DBSupportCheck;
 use App\Actions\Diagnostics\Pipes\Checks\GDSupportCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ImageOptCheck;
 use App\Actions\Diagnostics\Pipes\Checks\IniSettingsCheck;
-use App\Actions\Diagnostics\Pipes\Checks\LycheeDBVersionCheck;
+use App\Actions\Diagnostics\Pipes\Checks\MigrationCheck;
 use App\Actions\Diagnostics\Pipes\Checks\PHPVersionCheck;
 use App\Actions\Diagnostics\Pipes\Checks\TimezoneCheck;
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
@@ -30,7 +30,7 @@ class Errors
 		GDSupportCheck::class,
 		ImageOptCheck::class,
 		IniSettingsCheck::class,
-		LycheeDBVersionCheck::class,
+		MigrationCheck::class,
 		PHPVersionCheck::class,
 		TimezoneCheck::class,
 		UpdatableCheck::class,

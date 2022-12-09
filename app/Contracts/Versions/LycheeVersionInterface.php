@@ -3,24 +3,9 @@
 namespace App\Contracts\Versions;
 
 use App\DTO\LycheeChannelInfo;
-use App\DTO\Version;
 
 interface LycheeVersionInterface
 {
-	/**
-	 * Return the info about the database.
-	 *
-	 * @return Version
-	 */
-	public function getDBVersion(): Version;
-
-	/**
-	 * Return the info about the version.md file.
-	 *
-	 * @return Version
-	 */
-	public function getFileVersion(): Version;
-
 	/**
 	 * Return the information with respect to Lychee.
 	 *

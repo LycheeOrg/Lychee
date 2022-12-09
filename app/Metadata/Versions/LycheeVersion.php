@@ -3,6 +3,7 @@
 namespace App\Metadata\Versions;
 
 use App\Contracts\Versions\GitHubVersionControl;
+use App\Contracts\Versions\HasVersion;
 use App\Contracts\Versions\LycheeVersionInterface;
 use App\DTO\LycheeChannelInfo;
 use App\DTO\LycheeGitInfo;
@@ -14,7 +15,7 @@ use App\Models\Configs;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\File;
 
-class LycheeVersion implements LycheeVersionInterface
+class LycheeVersion implements LycheeVersionInterface, HasVersion
 {
 	private bool $isRelease;
 
@@ -29,8 +30,8 @@ class LycheeVersion implements LycheeVersionInterface
 	 */
 	public function __construct()
 	{
-		$this->isRelease = $this->fetchReleaseInfo();
-		$this->phpUnit = $this->fetchComposerInfo();
+		$this->isRelease = !File::exists(base_path('.git'));
+		$this->phpUnit = File::exists(base_path('vendor/bin/phpunit'));
 	}
 
 	/**
@@ -54,21 +55,9 @@ class LycheeVersion implements LycheeVersionInterface
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function getDBVersion(): Version
+	public function getVersion(): Version
 	{
 		return Version::createFromInt(Configs::getValueAsInt('version'));
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws FileNotFoundException
-	 */
-	public function getFileVersion(): Version
-	{
-		return Version::createFromString(
-			File::get(base_path('version.md'))
-		);
 	}
 
 	/**
@@ -76,9 +65,12 @@ class LycheeVersion implements LycheeVersionInterface
 	 */
 	public function getLycheeChannelInfo(): LycheeChannelInfo
 	{
+		$fileVersion = resolve(FileVersion::class);
+		$fileVersion->hydrate(false, false);
+
 		if ($this->isRelease) {
 			try {
-				return LycheeChannelInfo::createReleaseInfo($this->getFileVersion());
+				return LycheeChannelInfo::createReleaseInfo($fileVersion->getVersion());
 			} catch (FileNotFoundException|ConfigurationKeyMissingException|LycheeInvalidArgumentException $e) {
 				return LycheeChannelInfo::createReleaseInfo(null);
 			}
@@ -99,23 +91,5 @@ class LycheeVersion implements LycheeVersionInterface
 		} catch (VersionControlException) {
 			return LycheeChannelInfo::createGitInfo(null);
 		}
-	}
-
-	/**
-	 * Returns true if we are using the release channel
-	 * Returns false if we are using the git channel.
-	 */
-	private function fetchReleaseInfo(): bool
-	{
-		return !File::exists(base_path('.git'));
-	}
-
-	/**
-	 * Returns true if we are using the --dev mode,
-	 * Returns false if we are using the --no-dev mode.
-	 */
-	private function fetchComposerInfo(): bool
-	{
-		return File::exists(base_path('vendor/bin/phpunit'));
 	}
 }

@@ -39,7 +39,7 @@ class VersionInfo implements DiagnosticPipe
 		}
 
 		$data[] = Diagnostics::line('Lychee Version (' . $lycheeChannelName . '):', $lycheeInfoString);
-		$data[] = Diagnostics::line('DB Version:', $this->lycheeVersion->getDBVersion()->toString());
+		$data[] = Diagnostics::line('DB Version:', $this->lycheeVersion->getVersion()->toString());
 		$data[] = '';
 
 		return $next($data);

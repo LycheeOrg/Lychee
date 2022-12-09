@@ -15,6 +15,7 @@ use App\Exceptions\VersionControlException;
 use App\Facades\Lang;
 use App\Http\Requests\Session\LoginRequest;
 use App\Legacy\AdminAuthentication;
+use App\Metadata\Versions\FileVersion;
 use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -32,12 +33,14 @@ class SessionController extends Controller
 {
 	/**
 	 * @param ConfigFunctions      $configFunctions
-	 * @param GitHubVersionControl $gitHubFunctions
+	 * @param GitHubVersionControl $gitHubVersion
+	 * @param FileVersion          $fileVersion,
 	 * @param Repository           $configRepository
 	 */
 	public function __construct(
 		private ConfigFunctions $configFunctions,
-		private GitHubVersionControl $gitHubFunctions,
+		private GitHubVersionControl $gitHubVersion,
+		private FileVersion $fileVersion,
 		private Repository $configRepository,
 	) {
 	}
@@ -133,9 +136,10 @@ class SessionController extends Controller
 			// we also return the local
 			$return['locale'] = Lang::get_lang();
 
-			// TODO: add back
-			// $return['update_json'] = '';
-			$return['update_available'] = $this->gitHubFunctions->isUpToDate();
+			$this->fileVersion->hydrate();
+			$this->gitHubVersion->hydrate();
+			$return['update_json'] = !$this->fileVersion->isUpToDate();
+			$return['update_available'] = !$this->gitHubVersion->isUpToDate();
 
 			return $return;
 		} catch (ModelDBException $e) {

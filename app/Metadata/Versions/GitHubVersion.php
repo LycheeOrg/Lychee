@@ -4,11 +4,11 @@ namespace App\Metadata\Versions;
 
 use App\Contracts\Versions\GitHubVersionControl;
 use App\Facades\Helpers;
-use App\Metadata\Json\UpdateRequest;
+use App\Metadata\Json\GitRequest;
 use App\Models\Logs;
 use Illuminate\Support\Facades\File;
 
-class GitHubFunctions implements GitHubVersionControl
+class GitHubVersion implements GitHubVersionControl
 {
 	public ?string $localBranch = null;
 	public ?string $localHead = null;
@@ -135,7 +135,7 @@ class GitHubFunctions implements GitHubVersionControl
 			return [];
 		}
 
-		$gitRequest = resolve(UpdateRequest::class);
+		$gitRequest = resolve(GitRequest::class);
 		// We fetch the commits
 		$commits = $gitRequest->get_json($useCache);
 		if (!is_array($commits) || count($commits) === 0) {
