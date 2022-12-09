@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Install;
 
-use App\Actions\Install\ApplyMigration;
+use App\Actions\InstallUpdate\ApplyMigration;
 use App\Exceptions\InstallationFailedException;
 use App\Exceptions\Internal\FrameworkException;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -45,7 +45,7 @@ class MigrationController extends Controller
 	 * a new API key.
 	 * Also note, that this method internally uses
 	 * {@link ApplyMigration::migrate()} while `UpdateController::migrate`
-	 * uses {@link \App\Actions\Update\Apply::migrate()}.
+	 * uses {@link \App\Actions\InstallUpdate\Apply::migrate()}.
 	 * However, both methods are very similar, too.
 	 * The whole code around installation/upgrade/migration should
 	 * thoroughly be revised an refactored.

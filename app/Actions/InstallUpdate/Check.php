@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Update;
+namespace App\Actions\InstallUpdate;
 
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
 use App\Contracts\Versions\GitHubVersionControl;

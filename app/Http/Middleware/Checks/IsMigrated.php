@@ -19,7 +19,7 @@ class IsMigrated implements MiddlewareCheck
 	 *
 	 * The following line of codes are duplicated in
 	 *  - {@link \App\Actions\Diagnostics\Checks\LycheeDBVersionCheck::check()}
-	 *  - {@link \App\Actions\Update\Check::getCode()}.
+	 *  - {@link \App\Actions\InstallUpdate\Check::getCode()}.
 	 *
 	 * TODO: Probably, the whole logic around installation and updating should be re-factored. The whole code is wicked.
 	 *

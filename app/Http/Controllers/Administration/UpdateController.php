@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Administration;
 
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
-use App\Actions\Update\Apply as ApplyUpdate;
-use App\Actions\Update\Check as CheckUpdate;
+use App\Actions\InstallUpdate\Apply as ApplyUpdate;
+use App\Actions\InstallUpdate\Check as CheckUpdate;
 use App\Contracts\LycheeException;
 use App\Exceptions\VersionControlException;
 use App\Legacy\AdminAuthentication;
@@ -119,7 +119,7 @@ class UpdateController extends Controller
 	 * trigger a migration, but also generates a new API key.
 	 * Also note, that this method internally uses
 	 * {@link ApplyUpdate::migrate()} while `MigrationController::view`
-	 * uses {@link \App\Actions\Install\ApplyMigration::migrate()}.
+	 * uses {@link \App\Actions\InstallUpdate\ApplyMigration::migrate()}.
 	 * However, both methods are very similar, too.
 	 * The whole code around installation/upgrade/migration should
 	 * thoroughly be revised an refactored.

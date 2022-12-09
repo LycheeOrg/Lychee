@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Install;
+namespace App\Actions\InstallUpdate;
 
 use App\Exceptions\InstallationFailedException;
 use App\Exceptions\Internal\FrameworkException;
@@ -8,6 +8,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Artisan;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use function App\Actions\Install\str_contains;
 
 class ApplyMigration
 {
@@ -32,7 +33,7 @@ class ApplyMigration
 	/**
 	 * Runs the migration via the Artisan Facade.
 	 *
-	 * **TODO:** Consolidate with {@link \App\Actions\Update\Apply::migrate()}.
+	 * **TODO:** Consolidate with {@link \App\Actions\InstallUpdate\Apply::migrate()}.
 	 *
 	 * **ATTENTION:** This method serves the same purpose as
 	 * `ApplyMigration::migrate()`.

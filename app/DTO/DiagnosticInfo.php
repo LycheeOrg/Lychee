@@ -9,7 +9,7 @@ class DiagnosticInfo extends ArrayableDTO
 	 * @param string[] $infos   list of informational messages
 	 * @param string[] $configs list of configuration settings
 	 * @param int      $update  the update status, see
-	 *                          {@link \App\Actions\Update\Check::getCode()}
+	 *                          {@link \App\Actions\InstallUpdate\Check::getCode()}
 	 */
 	public function __construct(
 		public array $errors,

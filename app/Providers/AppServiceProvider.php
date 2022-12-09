@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Actions\Update\Apply as ApplyUpdate;
-use App\Actions\Update\Check as CheckUpdate;
+use App\Actions\InstallUpdate\Apply as ApplyUpdate;
+use App\Actions\InstallUpdate\Check as CheckUpdate;
 use App\Assets\Helpers;
 use App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy;
 use App\Contracts\AbstractSizeVariantNamingStrategy;

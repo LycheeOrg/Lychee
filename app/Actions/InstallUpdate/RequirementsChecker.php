@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Install;
+namespace App\Actions\InstallUpdate;
 
 use App\Facades\Helpers;
 use function Safe\preg_match;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Update\Pipes;
+namespace App\Actions\InstallUpdate\Pipes;
 
 use App\Models\Configs;
 use App\Models\Logs;

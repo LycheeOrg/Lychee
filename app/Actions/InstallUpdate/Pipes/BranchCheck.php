@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Update\Pipes;
+namespace App\Actions\InstallUpdate\Pipes;
 
 use App\Contracts\Versions\GitHubVersionControl;
 

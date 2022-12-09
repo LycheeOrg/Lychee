@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Update\Pipes;
+namespace App\Actions\InstallUpdate\Pipes;
 
 use Illuminate\Support\Facades\Artisan;
 
@@ -9,7 +9,7 @@ class Migrate extends AbstractUpdaterPipe
 	/**
 	 * Runs the migration via the Artisan Facade.
 	 *
-	 * **TODO:** Consolidate with {@link \App\Actions\Install\ApplyMigration::migrate()}.
+	 * **TODO:** Consolidate with {@link \App\Actions\InstallUpdate\ApplyMigration::migrate()}.
 	 *
 	 * **ATTENTION:** This method serves the same purpose as
 	 * `ApplyMigration::migrate()`.

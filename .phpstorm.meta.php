@@ -13,8 +13,8 @@ namespace PHPSTORM_META;
  */
 override(new \Illuminate\Contracts\Container\Container(), map([
 	'' => '@',
-	'App\Actions\Update\Apply' => \App\Actions\Update\Apply::class,
-	'App\Actions\Update\Check' => \App\Actions\Update\Check::class,
+	'App\Actions\Update\Apply' => \App\Actions\InstallUpdate\Apply::class,
+	'App\Actions\Update\Check' => \App\Actions\InstallUpdate\Check::class,
 	'App\Assets\Helpers' => \App\Assets\Helpers::class,
 	'App\Contracts\SizeVariantFactory' => \App\Image\SizeVariantDefaultFactory::class,
 	'App\Contracts\SizeVariantNamingStrategy' => \App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy::class,
@@ -215,8 +215,8 @@ override(new \Illuminate\Contracts\Container\Container(), map([
 ]));
 override(\Illuminate\Container\Container::makeWith(0), map([
 	'' => '@',
-	'App\Actions\Update\Apply' => \App\Actions\Update\Apply::class,
-	'App\Actions\Update\Check' => \App\Actions\Update\Check::class,
+	'App\Actions\Update\Apply' => \App\Actions\InstallUpdate\Apply::class,
+	'App\Actions\Update\Check' => \App\Actions\InstallUpdate\Check::class,
 	'App\Assets\Helpers' => \App\Assets\Helpers::class,
 	'App\Contracts\SizeVariantFactory' => \App\Image\SizeVariantDefaultFactory::class,
 	'App\Contracts\SizeVariantNamingStrategy' => \App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy::class,
@@ -417,8 +417,8 @@ override(\Illuminate\Container\Container::makeWith(0), map([
 ]));
 override(\Illuminate\Contracts\Container\Container::get(0), map([
 	'' => '@',
-	'App\Actions\Update\Apply' => \App\Actions\Update\Apply::class,
-	'App\Actions\Update\Check' => \App\Actions\Update\Check::class,
+	'App\Actions\Update\Apply' => \App\Actions\InstallUpdate\Apply::class,
+	'App\Actions\Update\Check' => \App\Actions\InstallUpdate\Check::class,
 	'App\Assets\Helpers' => \App\Assets\Helpers::class,
 	'App\Contracts\SizeVariantFactory' => \App\Image\SizeVariantDefaultFactory::class,
 	'App\Contracts\SizeVariantNamingStrategy' => \App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy::class,
@@ -619,8 +619,8 @@ override(\Illuminate\Contracts\Container\Container::get(0), map([
 ]));
 override(\Illuminate\Contracts\Container\Container::make(0), map([
 	'' => '@',
-	'App\Actions\Update\Apply' => \App\Actions\Update\Apply::class,
-	'App\Actions\Update\Check' => \App\Actions\Update\Check::class,
+	'App\Actions\Update\Apply' => \App\Actions\InstallUpdate\Apply::class,
+	'App\Actions\Update\Check' => \App\Actions\InstallUpdate\Check::class,
 	'App\Assets\Helpers' => \App\Assets\Helpers::class,
 	'App\Contracts\SizeVariantFactory' => \App\Image\SizeVariantDefaultFactory::class,
 	'App\Contracts\SizeVariantNamingStrategy' => \App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy::class,
@@ -821,8 +821,8 @@ override(\Illuminate\Contracts\Container\Container::make(0), map([
 ]));
 override(\Illuminate\Contracts\Container\Container::makeWith(0), map([
 	'' => '@',
-	'App\Actions\Update\Apply' => \App\Actions\Update\Apply::class,
-	'App\Actions\Update\Check' => \App\Actions\Update\Check::class,
+	'App\Actions\Update\Apply' => \App\Actions\InstallUpdate\Apply::class,
+	'App\Actions\Update\Check' => \App\Actions\InstallUpdate\Check::class,
 	'App\Assets\Helpers' => \App\Assets\Helpers::class,
 	'App\Contracts\SizeVariantFactory' => \App\Image\SizeVariantDefaultFactory::class,
 	'App\Contracts\SizeVariantNamingStrategy' => \App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy::class,
@@ -1023,8 +1023,8 @@ override(\Illuminate\Contracts\Container\Container::makeWith(0), map([
 ]));
 override(\App::get(0), map([
 	'' => '@',
-	'App\Actions\Update\Apply' => \App\Actions\Update\Apply::class,
-	'App\Actions\Update\Check' => \App\Actions\Update\Check::class,
+	'App\Actions\Update\Apply' => \App\Actions\InstallUpdate\Apply::class,
+	'App\Actions\Update\Check' => \App\Actions\InstallUpdate\Check::class,
 	'App\Assets\Helpers' => \App\Assets\Helpers::class,
 	'App\Contracts\SizeVariantFactory' => \App\Image\SizeVariantDefaultFactory::class,
 	'App\Contracts\SizeVariantNamingStrategy' => \App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy::class,
@@ -1225,8 +1225,8 @@ override(\App::get(0), map([
 ]));
 override(\App::make(0), map([
 	'' => '@',
-	'App\Actions\Update\Apply' => \App\Actions\Update\Apply::class,
-	'App\Actions\Update\Check' => \App\Actions\Update\Check::class,
+	'App\Actions\Update\Apply' => \App\Actions\InstallUpdate\Apply::class,
+	'App\Actions\Update\Check' => \App\Actions\InstallUpdate\Check::class,
 	'App\Assets\Helpers' => \App\Assets\Helpers::class,
 	'App\Contracts\SizeVariantFactory' => \App\Image\SizeVariantDefaultFactory::class,
 	'App\Contracts\SizeVariantNamingStrategy' => \App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy::class,
@@ -1427,8 +1427,8 @@ override(\App::make(0), map([
 ]));
 override(\App::makeWith(0), map([
 	'' => '@',
-	'App\Actions\Update\Apply' => \App\Actions\Update\Apply::class,
-	'App\Actions\Update\Check' => \App\Actions\Update\Check::class,
+	'App\Actions\Update\Apply' => \App\Actions\InstallUpdate\Apply::class,
+	'App\Actions\Update\Check' => \App\Actions\InstallUpdate\Check::class,
 	'App\Assets\Helpers' => \App\Assets\Helpers::class,
 	'App\Contracts\SizeVariantFactory' => \App\Image\SizeVariantDefaultFactory::class,
 	'App\Contracts\SizeVariantNamingStrategy' => \App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy::class,
@@ -1629,8 +1629,8 @@ override(\App::makeWith(0), map([
 ]));
 override(\app(0), map([
 	'' => '@',
-	'App\Actions\Update\Apply' => \App\Actions\Update\Apply::class,
-	'App\Actions\Update\Check' => \App\Actions\Update\Check::class,
+	'App\Actions\Update\Apply' => \App\Actions\InstallUpdate\Apply::class,
+	'App\Actions\Update\Check' => \App\Actions\InstallUpdate\Check::class,
 	'App\Assets\Helpers' => \App\Assets\Helpers::class,
 	'App\Contracts\SizeVariantFactory' => \App\Image\SizeVariantDefaultFactory::class,
 	'App\Contracts\SizeVariantNamingStrategy' => \App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy::class,
@@ -1831,8 +1831,8 @@ override(\app(0), map([
 ]));
 override(\resolve(0), map([
 	'' => '@',
-	'App\Actions\Update\Apply' => \App\Actions\Update\Apply::class,
-	'App\Actions\Update\Check' => \App\Actions\Update\Check::class,
+	'App\Actions\Update\Apply' => \App\Actions\InstallUpdate\Apply::class,
+	'App\Actions\Update\Check' => \App\Actions\InstallUpdate\Check::class,
 	'App\Assets\Helpers' => \App\Assets\Helpers::class,
 	'App\Contracts\SizeVariantFactory' => \App\Image\SizeVariantDefaultFactory::class,
 	'App\Contracts\SizeVariantNamingStrategy' => \App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy::class,
@@ -2033,8 +2033,8 @@ override(\resolve(0), map([
 ]));
 override(\Psr\Container\ContainerInterface::get(0), map([
 	'' => '@',
-	'App\Actions\Update\Apply' => \App\Actions\Update\Apply::class,
-	'App\Actions\Update\Check' => \App\Actions\Update\Check::class,
+	'App\Actions\Update\Apply' => \App\Actions\InstallUpdate\Apply::class,
+	'App\Actions\Update\Check' => \App\Actions\InstallUpdate\Check::class,
 	'App\Assets\Helpers' => \App\Assets\Helpers::class,
 	'App\Contracts\SizeVariantFactory' => \App\Image\SizeVariantDefaultFactory::class,
 	'App\Contracts\SizeVariantNamingStrategy' => \App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy::class,

@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Actions\Update;
+namespace App\Actions\InstallUpdate;
 
-use App\Actions\Update\Pipes\AllowMigrationCheck;
-use App\Actions\Update\Pipes\BranchCheck;
-use App\Actions\Update\Pipes\ComposerCall;
-use App\Actions\Update\Pipes\GitPull;
-use App\Actions\Update\Pipes\Migrate;
+use App\Actions\InstallUpdate\Pipes\AllowMigrationCheck;
+use App\Actions\InstallUpdate\Pipes\BranchCheck;
+use App\Actions\InstallUpdate\Pipes\ComposerCall;
+use App\Actions\InstallUpdate\Pipes\GitPull;
+use App\Actions\InstallUpdate\Pipes\Migrate;
 use Illuminate\Pipeline\Pipeline;
 use Safe\Exceptions\PcreException;
 use function Safe\preg_replace;
