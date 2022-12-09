@@ -81,12 +81,5 @@ class UpdatableCheck implements DiagnosticPipe
 			throw new InsufficientFilesystemPermissions(base_path('.git') . ' (and subdirectories) are not executable, check the permissions');
 			// @codeCoverageIgnoreEnd
 		}
-
-		// We skip this because it is executed on Master CI but not on Pull Requests
-		// @codeCoverageIgnoreEnd
-		if (!$gitHubFunctions->isMasterBranch()) {
-			throw new VersionControlException('branch is not master, unable to apply git update.');
-		}
-		// @codeCoverageIgnoreEnd
 	}
 }
