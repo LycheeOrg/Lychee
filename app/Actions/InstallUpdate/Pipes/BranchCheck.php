@@ -11,6 +11,11 @@ class BranchCheck extends AbstractUpdateInstallerPipe
 	 */
 	public function handle(array &$output, \Closure $next): array
 	{
+		$lycheeVersion = resolve(LycheeVersion::class);
+		if (!$lycheeVersion->isRelease()) {
+			return $next($output);
+		}
+
 		$githubFunctions = resolve(GitHubVersion::class);
 		$githubFunctions->hydrate(false);
 
