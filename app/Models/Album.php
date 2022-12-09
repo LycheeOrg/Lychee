@@ -173,10 +173,18 @@ class Album extends BaseAlbum implements Node
 		return $value;
 	}
 
+	/**
+	 * @return int
+	 */
+	public function numBranches()
+	{
+		return ($this->getRgt() - $this->getLft() - 1) / 2;
+	}
+
 	public function toArray(): array
 	{
 		$result = parent::toArray();
-		$result['has_albums'] = !$this->isLeaf();
+		$result['num_albums'] = $this->numBranches();
 
 		// The client expect the relation "children" to be named "albums".
 		// Rename it
