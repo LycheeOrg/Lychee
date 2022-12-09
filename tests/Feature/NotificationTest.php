@@ -76,6 +76,28 @@ class NotificationTest extends TestCase
 		}
 	}
 
+	public function testSubalbumCountSetting(): void
+	{
+		// save initial value
+		$init_config_value = Configs::getValue('show_num_albums');
+
+		try {
+			Auth::loginUsingId(0);
+
+			$response = $this->postJson('/api/Settings::setSubalbumCount', [
+				'show_num_albums' => '1',
+			]);
+			$this->assertNoContent($response);
+			static::assertEquals('1', Configs::getValue('show_num_albums'));
+		} finally {
+			// set to initial
+			Configs::set('show_num_albums', $init_config_value);
+
+			Auth::logout();
+			Session::flush();
+		}
+	}
+
 	public function testSetupUserEmail(): void
 	{
 		// add email to admin
