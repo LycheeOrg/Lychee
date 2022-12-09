@@ -3,6 +3,7 @@
 namespace App\Actions\InstallUpdate\Pipes;
 
 use App\Metadata\Versions\GitHubVersion;
+use App\Metadata\Versions\LycheeVersion;
 
 class BranchCheck extends AbstractUpdateInstallerPipe
 {
