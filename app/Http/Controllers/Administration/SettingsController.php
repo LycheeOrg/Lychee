@@ -372,25 +372,6 @@ class SettingsController extends Controller
 	}
 
 	/**
-	 * Enable display of number of subalbums on subalbum icon.
-	 *
-	 * @param Request $request
-	 *
-	 * @return void
-	 *
-	 * @throws InvalidConfigOption
-	 * @throws BadRequestException
-	 */
-	public function setSubalbumCount(Request $request): void
-	{
-		$request->validate(['show_num_albums' => 'required|boolean']);
-		Configs::set(
-			'show_num_albums',
-			(int) $request->boolean('show_num_albums')
-		);
-	}
-
-	/**
 	 * Takes the css input text and put it into `dist/user.css`.
 	 * This allows admins to actually personalize the look of their
 	 * installation.
