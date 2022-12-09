@@ -3,7 +3,7 @@
 namespace App\Http\Middleware\Checks;
 
 use App\Contracts\MiddlewareCheck;
-use App\Metadata\LycheeVersion;
+use App\Metadata\Versions\LycheeVersion;
 
 class IsMigrated implements MiddlewareCheck
 {

@@ -3,7 +3,7 @@
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
-use App\Metadata\LycheeVersion;
+use App\Metadata\Versions\LycheeVersion;
 
 class LycheeDBVersionCheck implements DiagnosticPipe
 {
@@ -34,7 +34,7 @@ class LycheeDBVersionCheck implements DiagnosticPipe
 	 */
 	public function handle(array &$data, \Closure $next): array
 	{
-		if ($this->lycheeVersion->isRelease) {
+		if ($this->lycheeVersion->isRelease()) {
 			// @codeCoverageIgnoreStart
 			$db_ver = $this->lycheeVersion->getDBVersion();
 			$file_ver = $this->lycheeVersion->getFileVersion();

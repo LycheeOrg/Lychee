@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Metadata;
+namespace App\Metadata\Versions;
 
-use App\Contracts\GitHubVersionControl;
+use App\Contracts\Versions\GitHubVersionControl;
 use App\Facades\Helpers;
+use App\Metadata\Json\UpdateRequest;
 use App\Models\Logs;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\File;
 
 class GitHubFunctions implements GitHubVersionControl
@@ -19,15 +19,17 @@ class GitHubFunctions implements GitHubVersionControl
 	/**
 	 * {@inheritDoc}
 	 */
-	public function hydrate(bool $useCache = true): void
+	public function hydrate(bool $withRemote = true, bool $useCache = true): void
 	{
 		$this->hydrateLocalBranch();
 
 		$this->hydrateLocalHead();
 
-		$commits = $this->hydrateRemoteHead($useCache);
+		if ($withRemote) {
+			$commits = $this->hydrateRemoteHead($useCache);
 
-		$this->countBehind($commits);
+			$this->countBehind($commits);
+		}
 	}
 
 	/**
@@ -43,7 +45,7 @@ class GitHubFunctions implements GitHubVersionControl
 	 */
 	public function isUpToDate(): bool
 	{
-		return $this->countBehind === 0;
+		return $this->countBehind === 0 || $this->countBehind === false;
 	}
 
 	/**
@@ -77,8 +79,6 @@ class GitHubFunctions implements GitHubVersionControl
 	 * - release.
 	 *
 	 * @return void
-	 *
-	 * @throws BindingResolutionException
 	 */
 	private function hydrateLocalBranch(): void
 	{
@@ -102,8 +102,6 @@ class GitHubFunctions implements GitHubVersionControl
 	 * - release.
 	 *
 	 * @return void
-	 *
-	 * @throws BindingResolutionException
 	 */
 	private function hydrateLocalHead(): void
 	{
@@ -129,8 +127,6 @@ class GitHubFunctions implements GitHubVersionControl
 	 * @param bool $useCache
 	 *
 	 * @return array
-	 *
-	 * @throws BindingResolutionException
 	 */
 	private function hydrateRemoteHead(bool $useCache): array
 	{
@@ -139,10 +135,10 @@ class GitHubFunctions implements GitHubVersionControl
 			return [];
 		}
 
-		$gitRequest = resolve(GitRequest::class);
+		$gitRequest = resolve(UpdateRequest::class);
 		// We fetch the commits
 		$commits = $gitRequest->get_json($useCache);
-		if ($commits === null || !is_array($commits) || count($commits) === 0) {
+		if (!is_array($commits) || count($commits) === 0) {
 			// if $gitData is null we already logged the problem
 			return [];
 		}

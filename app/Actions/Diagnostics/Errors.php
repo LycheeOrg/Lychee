@@ -12,6 +12,7 @@ use App\Actions\Diagnostics\Pipes\Checks\IniSettingsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\LycheeDBVersionCheck;
 use App\Actions\Diagnostics\Pipes\Checks\PHPVersionCheck;
 use App\Actions\Diagnostics\Pipes\Checks\TimezoneCheck;
+use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
 use Illuminate\Pipeline\Pipeline;
 
 class Errors
@@ -21,7 +22,7 @@ class Errors
 	 *
 	 * @var array<int,class-string>
 	 */
-	private $pipes = [
+	private array $pipes = [
 		AdminUserExistsCheck::class,
 		BasicPermissionCheck::class,
 		ConfigSanityCheck::class,
@@ -32,6 +33,7 @@ class Errors
 		LycheeDBVersionCheck::class,
 		PHPVersionCheck::class,
 		TimezoneCheck::class,
+		UpdatableCheck::class,
 	];
 
 	/**

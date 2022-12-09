@@ -7,16 +7,17 @@ use App\Actions\Update\Check as CheckUpdate;
 use App\Assets\Helpers;
 use App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy;
 use App\Contracts\AbstractSizeVariantNamingStrategy;
-use App\Contracts\GitHubVersionControl;
 use App\Contracts\SizeVariantFactory;
+use App\Contracts\Versions\GitHubVersionControl;
+use App\Contracts\Versions\LycheeVersionInterface;
 use App\Factories\AlbumFactory;
 use App\Factories\LangFactory;
 use App\Image\SizeVariantDefaultFactory;
 use App\Image\StreamStatFilter;
 use App\Locale\Lang;
-use App\Metadata\GitHubFunctions;
-use App\Metadata\GitRequest;
-use App\Metadata\LycheeVersion;
+use App\Metadata\Json\UpdateRequest;
+use App\Metadata\Versions\GitHubFunctions;
+use App\Metadata\Versions\LycheeVersion;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Policies\AlbumQueryPolicy;
@@ -38,13 +39,13 @@ class AppServiceProvider extends ServiceProvider
 		LangFactory::class => LangFactory::class,
 		Lang::class => Lang::class,
 		Helpers::class => Helpers::class,
-		GitRequest::class => GitRequest::class,
-		LycheeVersion::class => LycheeVersion::class,
+		UpdateRequest::class => UpdateRequest::class,
 		CheckUpdate::class => CheckUpdate::class,
 		ApplyUpdate::class => ApplyUpdate::class,
 		AlbumFactory::class => AlbumFactory::class,
 		AlbumQueryPolicy::class => AlbumQueryPolicy::class,
 		PhotoQueryPolicy::class => PhotoQueryPolicy::class,
+		LycheeVersionInterface::class => LycheeVersion::class,
 	];
 
 	/**

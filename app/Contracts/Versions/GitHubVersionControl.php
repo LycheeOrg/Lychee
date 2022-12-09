@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Contracts;
+namespace App\Contracts\Versions;
 
 /**
+ * Interface to pack all the required information with regard to the Git version of Lychee.
+ *
  * @property ?string   $localBranch
  * @property ?string   $localHead
  * @property ?string   $remoteHead
@@ -14,11 +16,12 @@ interface GitHubVersionControl
 	/**
 	 * Hydrate the GitData.
 	 *
+	 * @param bool $withRemote
 	 * @param bool $useCache
 	 *
 	 * @return void
 	 */
-	public function hydrate(bool $useCache = true): void;
+	public function hydrate(bool $withRemote = true, bool $useCache = true): void;
 
 	/**
 	 * are we on Master?

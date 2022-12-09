@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Administration;
 
+use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
 use App\Actions\Update\Apply as ApplyUpdate;
 use App\Actions\Update\Check as CheckUpdate;
 use App\Contracts\LycheeException;
 use App\Exceptions\VersionControlException;
 use App\Legacy\AdminAuthentication;
-use App\Legacy\Legacy;
 use App\Policies\UserPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -84,7 +84,7 @@ class UpdateController extends Controller
 	 */
 	public function apply(): array
 	{
-		$this->checkUpdate->assertUpdatability();
+		UpdatableCheck::assertUpdatability();
 
 		return ['updateMsgs' => $this->applyUpdate->run()];
 	}
@@ -102,7 +102,8 @@ class UpdateController extends Controller
 	 */
 	public function view(): View
 	{
-		$this->checkUpdate->assertUpdatability();
+		UpdatableCheck::assertUpdatability();
+
 		$output = $this->applyUpdate->run();
 
 		return view('update.results', ['code' => '200', 'message' => 'Upgrade results', 'output' => $output]);

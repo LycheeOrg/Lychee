@@ -5,7 +5,7 @@ namespace App\Actions\Diagnostics\Pipes\Infos;
 use App\Actions\Diagnostics\Diagnostics;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\LycheeChannelInfo;
-use App\Metadata\LycheeVersion;
+use App\Metadata\Versions\LycheeVersion;
 
 class VersionInfo implements DiagnosticPipe
 {

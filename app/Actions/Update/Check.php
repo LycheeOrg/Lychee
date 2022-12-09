@@ -2,13 +2,9 @@
 
 namespace App\Actions\Update;
 
-use App\Contracts\GitHubVersionControl;
-use App\Exceptions\ConfigurationException;
-use App\Exceptions\ExternalComponentMissingException;
-use App\Exceptions\InsufficientFilesystemPermissions;
-use App\Metadata\LycheeVersion;
-use App\Models\Configs;
-use function Safe\exec;
+use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
+use App\Contracts\Versions\GitHubVersionControl;
+use App\Metadata\Versions\LycheeVersion;
 
 class Check
 {
@@ -29,45 +25,11 @@ class Check
 	}
 
 	/**
-	 * Ensures that Lychee can be updated or throws an exception otherwise.
-	 *
-	 * @return void
-	 *
-	 * @throws ConfigurationException
-	 * @throws ExternalComponentMissingException
-	 * @throws InsufficientFilesystemPermissions
-	 */
-	public function assertUpdatability(): void
-	{
-		// we bypass this because we don't care about the other conditions as they don't apply to the release
-		if ($this->lycheeVersion->isRelease) {
-			// @codeCoverageIgnoreStart
-			return;
-			// @codeCoverageIgnoreEnd
-		}
-
-		if (!Configs::getValueAsBool('allow_online_git_pull')) {
-			throw new ConfigurationException('Online updates are disabled by configuration');
-		}
-
-		// When going with the CI, .git is always executable
-		// @codeCoverageIgnoreStart
-		if (exec('command -v git') === '') {
-			throw new ExternalComponentMissingException('git (software) is not available.');
-		}
-
-		if (!$this->gitHubFunctions->hasPermissions()) {
-			throw new InsufficientFilesystemPermissions(base_path('.git') . ' (and subdirectories) are not executable, check the permissions');
-		}
-		// @codeCoverageIgnoreEnd
-	}
-
-	/**
 	 * Check for updates, return text or an exception if not possible.
 	 */
 	public function getText(): string
 	{
-		$this->gitHubFunctions->hydrate(false);
+		$this->gitHubFunctions->hydrate(true, false);
 
 		return $this->gitHubFunctions->getBehindTest();
 	}
@@ -91,7 +53,7 @@ class Check
 	 */
 	public function getCode(): int
 	{
-		if ($this->lycheeVersion->isRelease) {
+		if ($this->lycheeVersion->isRelease()) {
 			// @codeCoverageIgnoreStart
 			$db_ver = $this->lycheeVersion->getDBVersion();
 			$file_ver = $this->lycheeVersion->getFileVersion();
@@ -101,7 +63,7 @@ class Check
 		}
 
 		try {
-			$this->assertUpdatability();
+			UpdatableCheck::assertUpdatability();
 			// @codeCoverageIgnoreStart
 			if (!$this->gitHubFunctions->isUpToDate()) {
 				return 2;

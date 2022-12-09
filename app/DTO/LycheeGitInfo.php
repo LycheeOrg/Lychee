@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-use App\Contracts\GitHubVersionControl;
+use App\Contracts\Versions\GitHubVersionControl;
 
 class LycheeGitInfo extends ArrayableDTO
 {

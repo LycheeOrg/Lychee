@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Contracts\GitHubVersionControl;
+use App\Contracts\Versions\GitHubVersionControl;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
 use App\Exceptions\ConfigurationKeyMissingException;
