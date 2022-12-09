@@ -15,15 +15,12 @@ class ToInstall implements Redirection
 	 * @throws RouteNotFoundException
 	 * @throws InstallationFailedException
 	 * @throws FrameworkException
+	 * @throws BindingResolutionException
 	 */
 	public static function go(): RedirectResponse
 	{
-		try {
-			return redirect(route('install-welcome'), Response::HTTP_TEMPORARY_REDIRECT, [
-				'Cache-Control' => 'no-cache, must-revalidate',
-			]);
-		} catch (BindingResolutionException $e) {
-			throw new FrameworkException('Laravel\'s container component', $e);
-		}
+		return redirect(route('install-welcome'), Response::HTTP_TEMPORARY_REDIRECT, [
+			'Cache-Control' => 'no-cache, must-revalidate',
+		]);
 	}
 }
