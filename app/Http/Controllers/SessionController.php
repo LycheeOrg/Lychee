@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Contracts\Versions\GitHubVersionControl;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
 use App\Exceptions\ConfigurationKeyMissingException;
@@ -16,6 +15,7 @@ use App\Facades\Lang;
 use App\Http\Requests\Session\LoginRequest;
 use App\Legacy\AdminAuthentication;
 use App\Metadata\Versions\FileVersion;
+use App\Metadata\Versions\GitHubVersion;
 use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -32,14 +32,14 @@ use Spatie\Feed\Helpers\FeedContentType;
 class SessionController extends Controller
 {
 	/**
-	 * @param ConfigFunctions      $configFunctions
-	 * @param GitHubVersionControl $gitHubVersion
-	 * @param FileVersion          $fileVersion,
-	 * @param Repository           $configRepository
+	 * @param ConfigFunctions $configFunctions
+	 * @param GitHubVersion   $gitHubVersion
+	 * @param FileVersion     $fileVersion,
+	 * @param Repository      $configRepository
 	 */
 	public function __construct(
 		private ConfigFunctions $configFunctions,
-		private GitHubVersionControl $gitHubVersion,
+		private GitHubVersion $gitHubVersion,
 		private FileVersion $fileVersion,
 		private Repository $configRepository,
 	) {

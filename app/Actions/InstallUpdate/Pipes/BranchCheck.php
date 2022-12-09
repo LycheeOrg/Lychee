@@ -2,7 +2,7 @@
 
 namespace App\Actions\InstallUpdate\Pipes;
 
-use App\Contracts\Versions\GitHubVersionControl;
+use App\Metadata\Versions\GitHubVersion;
 
 class BranchCheck extends AbstractUpdateInstallerPipe
 {
@@ -11,7 +11,7 @@ class BranchCheck extends AbstractUpdateInstallerPipe
 	 */
 	public function handle(array &$output, \Closure $next): array
 	{
-		$githubFunctions = resolve(GitHubVersionControl::class);
+		$githubFunctions = resolve(GitHubVersion::class);
 		$githubFunctions->hydrate(false);
 
 		if ($githubFunctions->isMasterBranch()) {

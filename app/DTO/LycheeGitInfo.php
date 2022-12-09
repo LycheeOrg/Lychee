@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-use App\Contracts\Versions\GitHubVersionControl;
+use App\Metadata\Versions\GitHubVersion;
 
 class LycheeGitInfo extends ArrayableDTO
 {
@@ -10,7 +10,7 @@ class LycheeGitInfo extends ArrayableDTO
 	public string $commit;
 	public string $additional;
 
-	public function __construct(GitHubVersionControl $gvc)
+	public function __construct(GitHubVersion $gvc)
 	{
 		$this->branch = $gvc->localBranch ?? '??';
 		$this->commit = $gvc->localHead ?? '??';

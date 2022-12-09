@@ -2,20 +2,13 @@
 
 namespace App\Metadata\Versions;
 
-use App\Contracts\Versions\GitHubVersionControl;
 use App\Contracts\Versions\HasVersion;
-use App\Contracts\Versions\LycheeVersionInterface;
-use App\DTO\LycheeChannelInfo;
-use App\DTO\LycheeGitInfo;
 use App\DTO\Version;
 use App\Exceptions\ConfigurationKeyMissingException;
-use App\Exceptions\Internal\LycheeInvalidArgumentException;
-use App\Exceptions\VersionControlException;
 use App\Models\Configs;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\File;
 
-class LycheeVersion implements LycheeVersionInterface, HasVersion
+class LycheeVersion implements HasVersion
 {
 	private bool $isRelease;
 
@@ -35,7 +28,7 @@ class LycheeVersion implements LycheeVersionInterface, HasVersion
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Return true if we are using a Release version of Lychee.
 	 */
 	public function isRelease(): bool
 	{
@@ -43,7 +36,7 @@ class LycheeVersion implements LycheeVersionInterface, HasVersion
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Return true of the dev dependencies are installed.
 	 */
 	public function isDev(): bool
 	{
@@ -58,38 +51,5 @@ class LycheeVersion implements LycheeVersionInterface, HasVersion
 	public function getVersion(): Version
 	{
 		return Version::createFromInt(Configs::getValueAsInt('version'));
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getLycheeChannelInfo(): LycheeChannelInfo
-	{
-		$fileVersion = resolve(FileVersion::class);
-		$fileVersion->hydrate(false, false);
-
-		if ($this->isRelease) {
-			try {
-				return LycheeChannelInfo::createReleaseInfo($fileVersion->getVersion());
-			} catch (FileNotFoundException|ConfigurationKeyMissingException|LycheeInvalidArgumentException $e) {
-				return LycheeChannelInfo::createReleaseInfo(null);
-			}
-		}
-
-		try {
-			$gitHubFunctions = resolve(GitHubVersionControl::class);
-			$gitHubFunctions->hydrate();
-
-			$branch = $gitHubFunctions->localBranch;
-			$commit = $gitHubFunctions->localHead;
-
-			if ($commit === null || $branch === null) {
-				return LycheeChannelInfo::createGitInfo(null);
-			}
-
-			return LycheeChannelInfo::createGitInfo(new LycheeGitInfo($gitHubFunctions));
-		} catch (VersionControlException) {
-			return LycheeChannelInfo::createGitInfo(null);
-		}
 	}
 }

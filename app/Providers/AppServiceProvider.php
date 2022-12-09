@@ -2,20 +2,19 @@
 
 namespace App\Providers;
 
-use App\Actions\InstallUpdate\ApplyUpdate;
 use App\Actions\InstallUpdate\CheckUpdate;
 use App\Assets\Helpers;
 use App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy;
 use App\Contracts\AbstractSizeVariantNamingStrategy;
 use App\Contracts\SizeVariantFactory;
-use App\Contracts\Versions\GitHubVersionControl;
-use App\Contracts\Versions\LycheeVersionInterface;
 use App\Factories\AlbumFactory;
 use App\Factories\LangFactory;
 use App\Image\SizeVariantDefaultFactory;
 use App\Image\StreamStatFilter;
 use App\Locale\Lang;
+use App\Metadata\Json\GitRequest;
 use App\Metadata\Json\UpdateRequest;
+use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\LycheeVersion;
 use App\ModelFunctions\ConfigFunctions;
@@ -34,18 +33,23 @@ class AppServiceProvider extends ServiceProvider
 	public array $singletons
 	= [
 		SymLinkFunctions::class => SymLinkFunctions::class,
-		GitHubVersionControl::class => GitHubVersion::class,
 		ConfigFunctions::class => ConfigFunctions::class,
 		LangFactory::class => LangFactory::class,
 		Lang::class => Lang::class,
 		Helpers::class => Helpers::class,
-		UpdateRequest::class => UpdateRequest::class,
 		CheckUpdate::class => CheckUpdate::class,
-		ApplyUpdate::class => ApplyUpdate::class,
 		AlbumFactory::class => AlbumFactory::class,
 		AlbumQueryPolicy::class => AlbumQueryPolicy::class,
 		PhotoQueryPolicy::class => PhotoQueryPolicy::class,
-		LycheeVersionInterface::class => LycheeVersion::class,
+
+		// Versionning
+		LycheeVersion::class => LycheeVersion::class,
+		GitHubVersion::class => GitHubVersion::class,
+		FileVersion::class => FileVersion::class,
+
+		// Json requests.
+		GitRequest::class => GitRequest::class,
+		UpdateRequest::class => UpdateRequest::class,
 	];
 
 	/**

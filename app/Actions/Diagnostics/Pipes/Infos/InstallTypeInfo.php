@@ -4,14 +4,14 @@ namespace App\Actions\Diagnostics\Pipes\Infos;
 
 use App\Actions\Diagnostics\Diagnostics;
 use App\Contracts\DiagnosticPipe;
-use App\Contracts\Versions\LycheeVersionInterface;
+use App\Metadata\Versions\LycheeVersion;
 use Illuminate\Support\Facades\Config;
 
 class InstallTypeInfo implements DiagnosticPipe
 {
-	private LycheeVersionInterface $lycheeVersion;
+	private LycheeVersion $lycheeVersion;
 
-	public function __construct(LycheeVersionInterface $lycheeVersion)
+	public function __construct(LycheeVersion $lycheeVersion)
 	{
 		$this->lycheeVersion = $lycheeVersion;
 	}

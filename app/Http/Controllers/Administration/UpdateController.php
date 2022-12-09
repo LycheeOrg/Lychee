@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Administration;
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
 use App\Actions\InstallUpdate\ApplyUpdate;
 use App\Contracts\LycheeException;
-use App\Contracts\Versions\GitHubVersionControl;
 use App\Exceptions\VersionControlException;
 use App\Legacy\AdminAuthentication;
+use App\Metadata\Versions\GitHubVersion;
 use App\Policies\UserPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -66,7 +66,7 @@ class UpdateController extends Controller
 	 */
 	public function check(): array
 	{
-		$gitHubFunctions = resolve(GitHubVersionControl::class);
+		$gitHubFunctions = resolve(GitHubVersion::class);
 		$gitHubFunctions->hydrate(true, false);
 
 		return ['updateStatus' => $gitHubFunctions->getBehindTest()];

@@ -3,13 +3,12 @@
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
-use App\Contracts\Versions\GitHubVersionControl;
-use App\Contracts\Versions\LycheeVersionInterface;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\VersionControlException;
 use App\Facades\Helpers;
+use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\LycheeVersion;
 use App\Models\Configs;
 use function Safe\exec;
@@ -54,7 +53,7 @@ class UpdatableCheck implements DiagnosticPipe
 	 */
 	public static function assertUpdatability(): void
 	{
-		$lycheeVersion = resolve(LycheeVersionInterface::class);
+		$lycheeVersion = resolve(LycheeVersion::class);
 
 		// we bypass this because we don't care about the other conditions as they don't apply to the release
 		if ($lycheeVersion->isRelease()) {
@@ -74,7 +73,7 @@ class UpdatableCheck implements DiagnosticPipe
 			// @codeCoverageIgnoreEnd
 		}
 
-		$gitHubFunctions = resolve(GitHubVersionControl::class);
+		$gitHubFunctions = resolve(GitHubVersion::class);
 		$gitHubFunctions->hydrate(false);
 
 		if (!$gitHubFunctions->hasPermissions()) {

@@ -4,19 +4,19 @@ namespace App\Actions\InstallUpdate;
 
 use App\Actions\Diagnostics\Pipes\Checks\MigrationCheck;
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
-use App\Contracts\Versions\GitHubVersionControl;
 use App\Metadata\Versions\FileVersion;
+use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\LycheeVersion;
 
 class CheckUpdate
 {
 	/**
-	 * @param GitHubVersionControl $gitHubFunctions
-	 * @param LycheeVersion        $lycheeVersion
-	 * @param FileVersion          $fileVersion
+	 * @param GitHubVersion $gitHubFunctions
+	 * @param LycheeVersion $lycheeVersion
+	 * @param FileVersion   $fileVersion
 	 */
 	public function __construct(
-		private GitHubVersionControl $gitHubFunctions,
+		private GitHubVersion $gitHubFunctions,
 		private LycheeVersion $lycheeVersion,
 		private FileVersion $fileVersion,
 	) {

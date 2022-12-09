@@ -2,13 +2,13 @@
 
 namespace App\Metadata\Versions;
 
-use App\Contracts\Versions\GitHubVersionControl;
+use App\Contracts\Versions\VersionControl;
 use App\Facades\Helpers;
 use App\Metadata\Json\GitRequest;
 use App\Models\Logs;
 use Illuminate\Support\Facades\File;
 
-class GitHubVersion implements GitHubVersionControl
+class GitHubVersion implements VersionControl
 {
 	public ?string $localBranch = null;
 	public ?string $localHead = null;
