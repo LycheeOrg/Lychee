@@ -16,12 +16,15 @@ class ArtisanKeyGenerate extends AbstractUpdateInstallerPipe
 
 		$this->strToArray(Artisan::output(), $output);
 
+		// Always false on CICD
 		if (
 			!str_contains(end($output), 'Application key set successfully') ||
 			config('app.key') === null
 		) {
+			// @codeCoverageIgnoreStart
 			$output[] = 'We could not generate the encryption key.';
 			throw new InstallationFailedException('Could not generate encryption key');
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $next($output);
