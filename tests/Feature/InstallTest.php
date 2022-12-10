@@ -15,6 +15,8 @@ namespace Tests\Feature;
 use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
@@ -161,6 +163,12 @@ class InstallTest extends TestCase
 			$admin->username = 'admin';
 			$admin->password = Hash::make('password');
 			$admin->save();
+			if (Schema::connection(null)->getConnection()->getDriverName() === 'pgsql' && DB::table('users')->count() > 0) {
+				// when using PostgreSQL, the next ID value is kept when inserting without incrementing
+				// which results in errors because trying to insert a user with ID = 1.
+				// Thus, we need to reset the index to the greatest ID + 1
+				DB::statement('ALTER SEQUENCE users_id_seq1 RESTART WITH ' . DB::table('users')->orderByDesc('id')->first()->id + 1);
+			}
 		} elseif (!$admin->may_administrate) {
 			$admin->may_administrate = true;
 			$admin->save();
