@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Last resort when nothing else matches.
  * Returns status code 500 (Internal Server Error) to an HTTP client.
  */
-class UnexpectedException extends LycheeBaseException
+class UnexpectedException extends BaseLycheeException
 {
 	public function __construct(\Throwable $previous = null)
 	{

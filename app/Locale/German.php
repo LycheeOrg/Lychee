@@ -138,6 +138,7 @@ final class German implements Language
 			'STARRED' => 'Favoriten',
 			'RECENT' => 'Zuletzt benutzt',
 			'PUBLIC' => 'Öffentlich',
+			'ON_THIS_DAY' => 'An diesem Tag',
 			'NUM_PHOTOS' => 'Fotos',
 
 			'CREATE_ALBUM' => 'Album erstellen',

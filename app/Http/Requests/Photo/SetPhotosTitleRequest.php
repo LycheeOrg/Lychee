@@ -5,6 +5,7 @@ namespace App\Http\Requests\Photo;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPhotos;
 use App\Http\Requests\Contracts\HasTitle;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotosTrait;
 use App\Http\Requests\Traits\HasPhotosTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
@@ -24,9 +25,9 @@ class SetPhotosTitleRequest extends BaseApiRequest implements HasPhotos, HasTitl
 	public function rules(): array
 	{
 		return [
-			HasPhotos::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
-			HasPhotos::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
-			HasTitle::TITLE_ATTRIBUTE => ['required', new TitleRule()],
+			RequestAttribute::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
+			RequestAttribute::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
+			RequestAttribute::TITLE_ATTRIBUTE => ['required', new TitleRule()],
 		];
 	}
 
@@ -35,7 +36,7 @@ class SetPhotosTitleRequest extends BaseApiRequest implements HasPhotos, HasTitl
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photos = Photo::query()->findOrFail($values[HasPhotos::PHOTO_IDS_ATTRIBUTE]);
-		$this->title = $values[HasTitle::TITLE_ATTRIBUTE];
+		$this->photos = Photo::query()->findOrFail($values[RequestAttribute::PHOTO_IDS_ATTRIBUTE]);
+		$this->title = $values[RequestAttribute::TITLE_ATTRIBUTE];
 	}
 }

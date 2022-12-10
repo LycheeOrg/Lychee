@@ -4,7 +4,7 @@ namespace App\Exceptions;
 
 use Symfony\Component\HttpFoundation\Response;
 
-class MigrationAlreadyCompletedException extends LycheeBaseException
+class MigrationAlreadyCompletedException extends BaseLycheeException
 {
 	public function __construct(\Throwable $previous = null)
 	{

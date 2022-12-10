@@ -2,7 +2,7 @@
 
 namespace App\Relations;
 
-use App\DTO\SortingCriterion;
+use App\DTO\BaseSortingCriterion;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\FixedQueryBuilder;
@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  * direct parent of the queried photos, but include the photo due to some
  * indirect condition.
  */
-abstract class HasManyPhotos extends Relation
+abstract class BaseHasManyPhotos extends Relation
 {
 	protected PhotoQueryPolicy $photoQueryPolicy;
 
@@ -125,7 +125,7 @@ abstract class HasManyPhotos extends Relation
 	{
 		/** @var BaseAlbum */
 		$parent = $this->parent;
-		/** @var SortingCriterion $sorting */
+		/** @var BaseSortingCriterion $sorting */
 		$sorting = $parent->getEffectiveSorting();
 
 		return (new SortingDecorator($this->getRelationQuery()))

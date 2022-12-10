@@ -28,6 +28,11 @@ class GDSupportCheck implements DiagnosticPipe
 				$data[] = 'Error: PHP gd extension without full gif support';
 				// @codeCoverageIgnoreEnd
 			}
+			if (!$gdVersion['WebP Support']) {
+				// @codeCoverageIgnoreStart
+				$data[] = 'Error: PHP gd extension without WebP support';
+				// @codeCoverageIgnoreEnd
+			}
 		}
 
 		return $next($data);

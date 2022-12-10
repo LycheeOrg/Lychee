@@ -22,7 +22,7 @@ use function Safe\stream_filter_append;
  * using streams.
  * This API is inspired by Flysystem.
  */
-abstract class BinaryBlob
+abstract class AbstractBinaryBlob
 {
 	/** @var ?resource */
 	protected $stream = null;

@@ -4,6 +4,7 @@ namespace App\Http\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPhoto;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasPhotoTrait;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
@@ -28,7 +29,7 @@ class GetPhotoRequest extends BaseApiRequest implements HasPhoto
 	public function rules(): array
 	{
 		return [
-			HasPhoto::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			RequestAttribute::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 		];
 	}
 
@@ -38,6 +39,6 @@ class GetPhotoRequest extends BaseApiRequest implements HasPhoto
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->photo = Photo::with(['size_variants', 'size_variants.sym_links'])
-			->findOrFail($values[HasPhoto::PHOTO_ID_ATTRIBUTE]);
+			->findOrFail($values[RequestAttribute::PHOTO_ID_ATTRIBUTE]);
 	}
 }

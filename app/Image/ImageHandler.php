@@ -48,7 +48,7 @@ class ImageHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function load(MediaFile $file): void
+	public function load(BaseMediaFile $file): void
 	{
 		$this->reset();
 		$lastException = null;
@@ -78,7 +78,7 @@ class ImageHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStat
+	public function save(BaseMediaFile $file, bool $collectStatistics = false): ?StreamStat
 	{
 		return $this->engine->save($file, $collectStatistics);
 	}

@@ -23,7 +23,7 @@ use function Safe\unlink;
  * This mostly applies to files which are uploaded to the server or
  * imported from the server and thus are located outside any Flysystem disk.
  */
-class NativeLocalFile extends MediaFile
+class NativeLocalFile extends BaseMediaFile
 {
 	protected string $path;
 	protected ?string $cachedMimeType;

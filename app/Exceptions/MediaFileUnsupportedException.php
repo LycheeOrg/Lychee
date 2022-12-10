@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Indicates that a type of format of a media file is unsupported.
  * Returns status code 422 (Unprocessable entity) to an HTTP client.
  */
-class MediaFileUnsupportedException extends LycheeBaseException
+class MediaFileUnsupportedException extends BaseLycheeException
 {
 	public const DEFAULT_MESSAGE = 'File format not supported';
 

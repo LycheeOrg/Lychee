@@ -2,13 +2,8 @@
 
 namespace App\Actions\Diagnostics;
 
-abstract class Diagnostics
+class Diagnostics
 {
-	/**
-	 * @return string[] array of messages
-	 */
-	abstract public function get(): array;
-
 	/**
 	 * Constructs a formatted message line.
 	 *

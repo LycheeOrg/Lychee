@@ -2,7 +2,7 @@
 
 namespace App\Rules;
 
-use App\DTO\SortingCriterion;
+use App\DTO\BaseSortingCriterion;
 use Illuminate\Contracts\Validation\Rule;
 
 class OrderRule implements Rule
@@ -26,8 +26,8 @@ class OrderRule implements Rule
 	{
 		return
 			($this->isNullable && $value === null) ||
-			$value === SortingCriterion::ASC ||
-			$value === SortingCriterion::DESC;
+			$value === BaseSortingCriterion::ASC ||
+			$value === BaseSortingCriterion::DESC;
 	}
 
 	/**
@@ -37,8 +37,8 @@ class OrderRule implements Rule
 	{
 		return ':attribute must be either ' .
 			($this->isNullable ? 'null, ' : '') .
-			SortingCriterion::ASC .
+			BaseSortingCriterion::ASC .
 			' or ' .
-			SortingCriterion::DESC;
+			BaseSortingCriterion::DESC;
 	}
 }

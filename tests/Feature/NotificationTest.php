@@ -65,7 +65,7 @@ class NotificationTest extends TestCase
 			$response = $this->postJson('/api/Settings::setNewPhotosNotification', [
 				'new_photos_notification' => '1',
 			]);
-			$response->assertNoContent();
+			$this->assertNoContent($response);
 			static::assertEquals('1', Configs::getValue('new_photos_notification'));
 		} finally {
 			// set to initial

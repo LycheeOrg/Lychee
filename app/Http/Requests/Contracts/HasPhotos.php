@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface HasPhotos
 {
-	public const PHOTO_IDS_ATTRIBUTE = 'photoIDs';
-
 	/**
 	 * @return Collection<Photo>
 	 */

@@ -138,6 +138,7 @@ final class Spanish implements Language
 			'STARRED' => 'Destacado',
 			'RECENT' => 'Reciente',
 			'PUBLIC' => 'Público',
+			'ON_THIS_DAY' => 'On This Day',
 			'NUM_PHOTOS' => 'Fotos',
 
 			'CREATE_ALBUM' => 'Crear Álbum',

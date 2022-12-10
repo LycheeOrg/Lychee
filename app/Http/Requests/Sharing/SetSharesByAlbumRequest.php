@@ -4,9 +4,9 @@ namespace App\Http\Requests\Sharing;
 
 use App\Contracts\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasBaseAlbum;
 use App\Http\Requests\Contracts\HasUserIDs;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasBaseAlbumTrait;
 use App\Http\Requests\Traits\HasUserIDsTrait;
 use App\Policies\AlbumPolicy;
@@ -38,9 +38,9 @@ class SetSharesByAlbumRequest extends BaseApiRequest implements HasBaseAlbum, Ha
 	public function rules(): array
 	{
 		return [
-			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
-			HasUserIDs::USER_IDS_ATTRIBUTE => 'present|array',
-			HasUserIDs::USER_IDS_ATTRIBUTE . '.*' => ['required', new IntegerIDRule(false)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			RequestAttribute::USER_IDS_ATTRIBUTE => 'present|array',
+			RequestAttribute::USER_IDS_ATTRIBUTE . '.*' => ['required', new IntegerIDRule(false)],
 		];
 	}
 
@@ -49,7 +49,7 @@ class SetSharesByAlbumRequest extends BaseApiRequest implements HasBaseAlbum, Ha
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = $this->albumFactory->findBaseAlbumOrFail($values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]);
-		$this->userIDs = $values[HasUserIDs::USER_IDS_ATTRIBUTE];
+		$this->album = $this->albumFactory->findBaseAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
+		$this->userIDs = $values[RequestAttribute::USER_IDS_ATTRIBUTE];
 	}
 }

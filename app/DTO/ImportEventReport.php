@@ -5,7 +5,7 @@ namespace App\DTO;
 use App\Exceptions\Handler as ExceptionHandler;
 use App\Models\Logs;
 
-class ImportEventReport extends ImportReport
+class ImportEventReport extends BaseImportReport
 {
 	public const REPORT_TYPE = 'event';
 

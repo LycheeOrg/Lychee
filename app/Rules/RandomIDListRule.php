@@ -2,7 +2,7 @@
 
 namespace App\Rules;
 
-use App\Contracts\HasRandomID;
+use App\Constants\RandomID;
 use Illuminate\Contracts\Validation\Rule;
 
 class RandomIDListRule implements Rule
@@ -30,6 +30,6 @@ class RandomIDListRule implements Rule
 	 */
 	public function message(): string
 	{
-		return ':attribute must be a comma-separated string of strings with ' . HasRandomID::ID_LENGTH . ' characters each.';
+		return ':attribute must be a comma-separated string of strings with ' . RandomID::ID_LENGTH . ' characters each.';
 	}
 }

@@ -4,9 +4,9 @@ namespace App\Http\Requests\Album;
 
 use App\DTO\AlbumProtectionPolicy;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasBaseAlbum;
 use App\Http\Requests\Contracts\HasPassword;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasBaseAlbumTrait;
 use App\Http\Requests\Traits\HasPasswordTrait;
@@ -34,8 +34,8 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 	public function rules(): array
 	{
 		return [
-			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
-			HasPassword::PASSWORD_ATTRIBUTE => ['sometimes', new PasswordRule(true)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			RequestAttribute::PASSWORD_ATTRIBUTE => ['sometimes', new PasswordRule(true)],
 			self::IS_PUBLIC_ATTRIBUTE => 'required|boolean',
 			self::IS_LINK_REQUIRED_ATTRIBUTE => 'required|boolean',
 			self::IS_NSFW_ATTRIBUTE => 'required|boolean',
@@ -50,7 +50,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->album = $this->albumFactory->findBaseAlbumOrFail(
-			$values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]
+			$values[RequestAttribute::ALBUM_ID_ATTRIBUTE]
 		);
 		$this->albumProtectionPolicy = new AlbumProtectionPolicy(
 			is_public: static::toBoolean($values[self::IS_PUBLIC_ATTRIBUTE]),
@@ -59,8 +59,8 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 			grants_full_photo_access: static::toBoolean($values[self::GRANTS_FULL_PHOTO_ACCESS_ATTRIBUTE]),
 			grants_download: static::toBoolean($values[self::GRANTS_DOWNLOAD_ATTRIBUTE]),
 		);
-		$this->isPasswordProvided = array_key_exists(HasPassword::PASSWORD_ATTRIBUTE, $values);
-		$this->password = $this->isPasswordProvided ? $values[HasPassword::PASSWORD_ATTRIBUTE] : null;
+		$this->isPasswordProvided = array_key_exists(RequestAttribute::PASSWORD_ATTRIBUTE, $values);
+		$this->password = $this->isPasswordProvided ? $values[RequestAttribute::PASSWORD_ATTRIBUTE] : null;
 	}
 
 	/**

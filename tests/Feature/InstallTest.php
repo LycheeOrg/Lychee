@@ -34,7 +34,7 @@ class InstallTest extends TestCase
 		$prevAppKey = config('app.key');
 		config(['app.key' => null]);
 		$response = $this->get('install/');
-		$response->assertOk();
+		$this->assertOk($response);
 		config(['app.key' => $prevAppKey]);
 
 		// TODO: Why does a `git pull` delete `installed.log`? This test needs to be discussed with @ildyria
@@ -45,7 +45,7 @@ class InstallTest extends TestCase
 		 * No installed.log: we should not be redirected to install (case where we have not done the last migration).
 		 */
 		$response = $this->get('/');
-		$response->assertOk();
+		$this->assertOk($response);
 
 		/*
 		 * Clearing things up. We could do an Artisan migrate but this is more efficient.
@@ -86,35 +86,35 @@ class InstallTest extends TestCase
 		 * No database: we should be redirected to install: default case.
 		 */
 		$response = $this->get('/');
-		$response->assertStatus(307);
+		$this->assertStatus($response, 307);
 		$response->assertRedirect('install/');
 
 		/**
 		 * Check the welcome page.
 		 */
 		$response = $this->get('install/');
-		$response->assertOk();
+		$this->assertOk($response);
 		$response->assertViewIs('install.welcome');
 
 		/**
 		 * Check the requirements page.
 		 */
 		$response = $this->get('install/req');
-		$response->assertOk();
+		$this->assertOk($response);
 		$response->assertViewIs('install.requirements');
 
 		/**
 		 * Check the permissions page.
 		 */
 		$response = $this->get('install/perm');
-		$response->assertOk();
+		$this->assertOk($response);
 		$response->assertViewIs('install.permissions');
 
 		/**
 		 * Check the env page.
 		 */
 		$response = $this->get('install/env');
-		$response->assertOk();
+		$this->assertOk($response);
 		$response->assertViewIs('install.env');
 
 		$env = file_get_contents(base_path('.env'));
@@ -123,28 +123,28 @@ class InstallTest extends TestCase
 		 * POST '.env' the env page.
 		 */
 		$response = $this->post('install/env', ['envConfig' => $env]);
-		$response->assertOk();
+		$this->assertOk($response);
 		$response->assertViewIs('install.env');
 
 		/**
 		 * apply migration.
 		 */
 		$response = $this->post('install/migrate', ['username' => 'admin', 'password' => 'password']);
-		$response->assertOk();
+		$this->assertOk($response);
 		$response->assertViewIs('install.migrate');
 
 		/**
 		 * Re-Installation should be forbidden now.
 		 */
 		$response = $this->get('install/');
-		$response->assertForbidden();
+		$this->assertForbidden($response);
 
 		/**
 		 * We now should NOT be redirected.
 		 */
 		Configs::invalidateCache();
 		$response = $this->get('/');
-		$response->assertOk();
+		$this->assertOk($response);
 
 		/*
 		 * make sure there's still an admin user with ID 1

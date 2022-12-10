@@ -6,6 +6,7 @@ use App\Contracts\AbstractAlbum;
 use App\Exceptions\PasswordRequiredException;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
@@ -45,7 +46,7 @@ class GetAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
 	public function rules(): array
 	{
 		return [
-			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
 		];
 	}
 
@@ -54,6 +55,6 @@ class GetAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = $this->albumFactory->findAbstractAlbumOrFail($values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]);
+		$this->album = $this->albumFactory->findAbstractAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
 	}
 }

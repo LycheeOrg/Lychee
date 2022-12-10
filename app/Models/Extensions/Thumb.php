@@ -2,9 +2,9 @@
 
 namespace App\Models\Extensions;
 
-use App\DTO\DTO;
+use App\DTO\AbstractDTO;
+use App\DTO\BaseSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
-use App\DTO\SortingCriterion;
 use App\Exceptions\InvalidPropertyException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
-class Thumb extends DTO
+class Thumb extends AbstractDTO
 {
 	protected string $id;
 	protected string $type;
@@ -46,21 +46,21 @@ class Thumb extends DTO
 	 * Note, this method assumes that the relation is already restricted
 	 * such that it only returns photos which the current user may see.
 	 *
-	 * @param Relation|Builder $photoQueryable the relation to or query for {@link Photo} which is used to pick a thumb
-	 * @param SortingCriterion $sorting        the sorting criterion
+	 * @param Relation|Builder     $photoQueryable the relation to or query for {@link Photo} which is used to pick a thumb
+	 * @param BaseSortingCriterion $sorting        the sorting criterion
 	 *
 	 * @return Thumb|null the created thumbnail; null if the relation is empty
 	 *
 	 * @throws InvalidPropertyException thrown, if $sortingOrder neither
 	 *                                  equals `desc` nor `asc`
 	 */
-	public static function createFromQueryable(Relation|Builder $photoQueryable, SortingCriterion $sorting): ?Thumb
+	public static function createFromQueryable(Relation|Builder $photoQueryable, BaseSortingCriterion $sorting): ?Thumb
 	{
 		try {
 			/** @var Photo|null $cover */
 			$cover = $photoQueryable
 				->withOnly(['size_variants' => (fn (HasMany $r) => self::sizeVariantsFilter($r))])
-				->orderBy('photos.' . PhotoSortingCriterion::COLUMN_IS_STARRED, SortingCriterion::DESC)
+				->orderBy('photos.' . PhotoSortingCriterion::COLUMN_IS_STARRED, BaseSortingCriterion::DESC)
 				->orderBy('photos.' . $sorting->column, $sorting->order)
 				->select(['photos.id', 'photos.type'])
 				->first();

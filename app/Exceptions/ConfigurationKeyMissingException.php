@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Returns status code 500 (Internal Server Error) to an HTTP client.
  */
-class ConfigurationKeyMissingException extends LycheeBaseException
+class ConfigurationKeyMissingException extends BaseLycheeException
 {
 	public function __construct(string $msg, \Throwable $previous = null)
 	{

@@ -2,6 +2,7 @@
 
 namespace App\Models\Extensions;
 
+use App\Constants\RandomID;
 use App\Contracts\AbstractAlbum;
 use App\Contracts\HasRandomID;
 use App\DTO\AlbumProtectionPolicy;
@@ -49,7 +50,7 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	/**
 	 * @var string The type of the primary key
 	 */
-	protected $keyType = HasRandomID::ID_TYPE;
+	protected $keyType = RandomID::ID_TYPE;
 
 	/**
 	 * Indicates if the model's primary key is auto-incrementing.

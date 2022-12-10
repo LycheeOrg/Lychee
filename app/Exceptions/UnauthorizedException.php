@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Returns status code 403 (Forbidden) to an HTTP client.
  */
-class UnauthorizedException extends LycheeBaseException
+class UnauthorizedException extends BaseLycheeException
 {
 	public const DEFAULT_MESSAGE = 'Insufficient privileges';
 

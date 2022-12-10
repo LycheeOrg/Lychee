@@ -4,7 +4,7 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 
-abstract class StringRule implements Rule
+class StringRule implements Rule
 {
 	protected bool $isNullable;
 	protected int $limit;

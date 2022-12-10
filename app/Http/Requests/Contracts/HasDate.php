@@ -6,8 +6,6 @@ use Illuminate\Support\Carbon;
 
 interface HasDate
 {
-	public const DATE_ATTRIBUTE = 'date';
-
 	/**
 	 * @return Carbon|null
 	 */

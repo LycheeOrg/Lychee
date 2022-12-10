@@ -3,8 +3,8 @@
 namespace App\Http\Requests\Import;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasAlbum;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Models\Album;
@@ -28,7 +28,7 @@ class ImportFromUrlRequest extends BaseApiRequest implements HasAlbum
 	public function rules(): array
 	{
 		return [
-			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			self::URLS_ATTRIBUTE => 'required|array|min:1',
 			self::URLS_ATTRIBUTE . '.*' => 'required|string',
 		];
@@ -39,7 +39,7 @@ class ImportFromUrlRequest extends BaseApiRequest implements HasAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$albumID = $values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE];
+		$albumID = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
 		$this->album = $albumID === null ?
 			null :
 			Album::query()->findOrFail($albumID);

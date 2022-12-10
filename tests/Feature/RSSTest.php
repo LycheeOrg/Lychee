@@ -54,7 +54,7 @@ class RSSTest extends TestCase
 
 			// check redirection
 			$response = $this->get('/feed');
-			$response->assertStatus(412);
+			$this->assertStatus($response, 412);
 		} finally {
 			Configs::set('rss_enable', $init_config_value);
 		}
@@ -74,7 +74,7 @@ class RSSTest extends TestCase
 
 			// check redirection
 			$response = $this->get('/feed');
-			$response->assertOk();
+			$this->assertOk($response);
 
 			// log as admin
 			Auth::loginUsingId(1);
@@ -92,7 +92,7 @@ class RSSTest extends TestCase
 
 			// try to get the RSS feed.
 			$response = $this->get('/feed');
-			$response->assertOk();
+			$this->assertOk($response);
 
 			// set picture to private
 			$this->photos_tests->set_public($photoID, false);
@@ -103,7 +103,7 @@ class RSSTest extends TestCase
 
 			// try to get the RSS feed.
 			$response = $this->get('/feed');
-			$response->assertOk();
+			$this->assertOk($response);
 
 			$this->albums_tests->delete([$albumID]);
 		} finally {

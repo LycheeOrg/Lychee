@@ -44,7 +44,7 @@ class WebAuthTest extends TestCase
 			],
 			'type' => 'public-key',
 		]);
-		$response->assertStatus(422);
+		$this->assertStatus($response, 422);
 
 		Auth::logout();
 		Session::flush();
@@ -63,7 +63,7 @@ class WebAuthTest extends TestCase
 			],
 			'type' => 'public-key',
 		]);
-		$response->assertStatus(422);
+		$this->assertStatus($response, 422);
 
 		$key = (new WebAuthnCredential())->forceFill([
 			'id' => 'hyxPTjCUCWYPcVTxFy7WjCXATwU7UDLI9nPGqifqs9ohskBuVih4Nzdp3UAl-wHTda4CUoAE_ylfQveayx07ug',

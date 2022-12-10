@@ -9,8 +9,6 @@ use Illuminate\Support\Collection;
  */
 interface HasAlbums
 {
-	public const ALBUM_IDS_ATTRIBUTE = 'albumIDs';
-
 	/**
 	 * @return Collection<T>
 	 */

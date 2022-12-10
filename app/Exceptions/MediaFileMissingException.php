@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Indicates that a type of format of a media file is unsupported.
  * Returns status code 404 (Not found) to an HTTP client.
  */
-class MediaFileMissingException extends LycheeBaseException
+class MediaFileMissingException extends BaseLycheeException
 {
 	public const DEFAULT_MESSAGE = 'The media file is missing';
 
