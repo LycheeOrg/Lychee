@@ -6,8 +6,7 @@ use App\Actions\Install\ApplyMigration;
 use App\Actions\User\Create;
 use App\Exceptions\InstallationFailedException;
 use App\Exceptions\Internal\FrameworkException;
-use App\Http\Requests\Contracts\HasPassword;
-use App\Http\Requests\Contracts\HasUsername;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Models\User;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
@@ -67,8 +66,8 @@ class MigrationController extends Controller
 	public function view(Request $request): View
 	{
 		$values = $request->validate([
-			HasUsername::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
-			HasPassword::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
+			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
+			RequestAttribute::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
 		]);
 
 		$output = [];
@@ -88,8 +87,8 @@ class MigrationController extends Controller
 			$user->may_upload = true;
 			$user->may_edit_own_settings = true;
 			$user->may_administrate = true;
-			$user->username = $values[HasUsername::USERNAME_ATTRIBUTE];
-			$user->password = Hash::make($values[HasPassword::PASSWORD_ATTRIBUTE]);
+			$user->username = $values[RequestAttribute::USERNAME_ATTRIBUTE];
+			$user->password = Hash::make($values[RequestAttribute::PASSWORD_ATTRIBUTE]);
 			$user->save();
 		}
 
