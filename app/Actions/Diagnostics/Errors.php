@@ -2,7 +2,6 @@
 
 namespace App\Actions\Diagnostics;
 
-use App\Actions\Diagnostics\Pipes\Checks\AdminUserExistsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ConfigSanityCheck;
 use App\Actions\Diagnostics\Pipes\Checks\DBSupportCheck;
@@ -22,7 +21,6 @@ class Errors
 	 * @var array<int,class-string>
 	 */
 	private $pipes = [
-		AdminUserExistsCheck::class,
 		BasicPermissionCheck::class,
 		ConfigSanityCheck::class,
 		DBSupportCheck::class,
