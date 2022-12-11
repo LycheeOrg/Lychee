@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class() extends Migration {
+class ConvertFileSizeToBigInt extends Migration
+{
 	/**
 	 * Converts the column `filesize` to a 64bit integer such that file sizes >= 4GB can be represented.
 	 */
@@ -19,4 +20,4 @@ return new class() extends Migration {
 	{
 		// no-op by intention
 	}
-};
+}

@@ -1,12 +1,13 @@
 <?php
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Kalnoy\Nestedset\NodeTrait;
 
-require_once 'TemporaryModels/NestedSetForAlbums_AlbumModel.php';
-
-return new class() extends Migration {
+class NestedSetForAlbums extends Migration
+{
 	private const ALBUMS = 'albums';
 	private const LEFT = '_lft';
 	private const RIGHT = '_rgt';
@@ -45,5 +46,25 @@ return new class() extends Migration {
 			$table->dropColumn(self::RIGHT);
 		});
 	}
-};
+}
 
+/**
+ * Model class specific for this migration.
+ *
+ * Migrations are required to be also runnable in the future after the code
+ * base will have evolved.
+ * To this end, migrations must not rely on a specific implementation of
+ * models, because these models may change in the future, but the migration
+ * must conduct its task with respect to a table layout which was valid at
+ * the time when the migration was written.
+ * In conclusion, this implies that migration should not use models but use
+ * low-level DB queries when necessary.
+ * Unfortunately, we need the `fixTree()` algorithm and there is no
+ * implementation which uses low-level DB queries.
+ */
+class NestedSetForAlbums_AlbumModel extends Model
+{
+	use NodeTrait;
+
+	protected $table = 'albums';
+}

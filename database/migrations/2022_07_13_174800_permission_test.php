@@ -3,7 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Artisan;
 
-return new class() extends Migration {
+class PermissionTest extends Migration
+{
 	/**
 	 * Run the migrations.
 	 *
@@ -22,4 +23,4 @@ return new class() extends Migration {
 	public function down(): void
 	{
 	}
-};
+}

@@ -3,7 +3,8 @@
 use App\Models\Photo;
 use Illuminate\Database\Migrations\Migration;
 
-return new class() extends Migration {
+class FixRotation extends Migration
+{
 	/**
 	 * Run the migrations.
 	 *
@@ -26,4 +27,4 @@ return new class() extends Migration {
 	{
 		// There is no undo
 	}
-};
+}

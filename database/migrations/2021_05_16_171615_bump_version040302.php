@@ -3,7 +3,8 @@
 use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 
-return new class() extends Migration {
+class BumpVersion040302 extends Migration
+{
 	/**
 	 * Run the migrations.
 	 *
@@ -23,4 +24,4 @@ return new class() extends Migration {
 	{
 		Configs::where('key', 'version')->update(['value' => '040301']);
 	}
-};
+}

@@ -8,7 +8,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class() extends Migration {
+class PhotosFix extends Migration
+{
 	private function fix_thumbs()
 	{
 		// from fix_thumb2x_default
@@ -53,4 +54,4 @@ return new class() extends Migration {
 	{
 		Logs::warning(__FUNCTION__, __LINE__, 'There is no going back! HUE HUE HUE');
 	}
-};
+}

@@ -7,7 +7,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class() extends Migration {
+class DropPageSupport extends Migration
+{
 	private const SQL_TIMEZONE_NAME = 'UTC';
 	private const SQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
 
@@ -74,4 +75,4 @@ return new class() extends Migration {
 			$table->dateTime('updated_at', 0)->nullable(false);
 		});
 	}
-};
+}

@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class() extends Migration {
+class RefactorTimestampsAnew extends Migration
+{
 	private const SQL_TIMEZONE_NAME = 'UTC';
 	private const SQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
 	private const ID_COL_NAME = 'id';
@@ -544,4 +545,4 @@ return new class() extends Migration {
 				throw new InvalidArgumentException('Unsupported DB system: ' . $dbConnType);
 		}
 	}
-};
+}

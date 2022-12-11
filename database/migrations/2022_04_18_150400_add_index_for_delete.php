@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Schema;
  * size variants which can be safely deleted without breaking shared use of
  * the media file by a duplicate.
  */
-return new class() extends Migration {
+class AddIndexForDelete extends Migration
+{
 	private AbstractSchemaManager $schemaManager;
 
 	/**
@@ -56,4 +57,4 @@ return new class() extends Migration {
 			$table->dropIndex($indexName);
 		}
 	}
-};
+}

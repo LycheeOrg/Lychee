@@ -5,7 +5,8 @@
 use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 
-return new class() extends Migration {
+class ConfigCheckUpdateEveryCatFix extends Migration
+{
 	/**
 	 * Run the migrations.
 	 *
@@ -25,4 +26,4 @@ return new class() extends Migration {
 	{
 		Configs::where('key', 'update_check_every_days')->update(['cat' => 'Config']);
 	}
-};
+}

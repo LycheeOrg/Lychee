@@ -7,7 +7,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class() extends Migration {
+class PostRevertFixes extends Migration
+{
 	private const SQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
 	private const ID_COL_NAME = 'id';
 	// The longest named timezones are "America/North_Dakota/New_Salem" and
@@ -252,4 +253,4 @@ return new class() extends Migration {
 		}
 		$this->setConfiguration($key, $value, $range);
 	}
-};
+}

@@ -4,7 +4,8 @@ use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Migrations\Migration;
 
-return new class() extends Migration {
+class UpdateLicences extends Migration
+{
 	/**
 	 * Update the fields.
 	 *
@@ -74,4 +75,4 @@ return new class() extends Migration {
 			$photo->save();
 		}
 	}
-};
+}

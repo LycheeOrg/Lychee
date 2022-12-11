@@ -3,7 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-return new class() extends Migration {
+class AddZipOptions extends Migration
+{
 	/**
 	 * Run the migrations.
 	 *
@@ -36,4 +37,4 @@ return new class() extends Migration {
 			->where('key', '=', 'zip_deflate_level')
 			->delete();
 	}
-};
+}

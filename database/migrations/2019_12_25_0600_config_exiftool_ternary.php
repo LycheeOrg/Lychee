@@ -6,7 +6,8 @@ use App\Facades\Helpers;
 use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 
-return new class() extends Migration {
+class ConfigExiftoolTernary extends Migration
+{
 	/**
 	 * Run the migrations.
 	 *
@@ -60,4 +61,4 @@ return new class() extends Migration {
 				]
 			);
 	}
-};
+}

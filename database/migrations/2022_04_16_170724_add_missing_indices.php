@@ -7,7 +7,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class() extends Migration {
+class AddMissingIndices extends Migration
+{
 	private AbstractSchemaManager $schemaManager;
 	private string $driverName;
 
@@ -68,4 +69,4 @@ return new class() extends Migration {
 			$table->dropIndex($indexName);
 		}
 	}
-};
+}

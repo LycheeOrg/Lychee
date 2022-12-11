@@ -3,7 +3,8 @@
 use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 
-return new class() extends Migration {
+class FixConfidentiality extends Migration
+{
 	/**
 	 * Run the migrations.
 	 *
@@ -27,4 +28,4 @@ return new class() extends Migration {
 		Configs::where('key', 'upload_processing_limit')->update(['confidentiality' => '2']);
 		Configs::where('key', 'public_photos_hidden')->update(['confidentiality' => '2']);
 	}
-};
+}

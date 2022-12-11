@@ -4,7 +4,8 @@ use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-return new class() extends Migration {
+class ConfigLocalTakestamp extends Migration
+{
 	/**
 	 * Run the migrations.
 	 *
@@ -34,4 +35,4 @@ return new class() extends Migration {
 	{
 		Configs::where('key', '=', 'local_takestamp_video_formats')->delete();
 	}
-};
+}

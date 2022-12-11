@@ -8,7 +8,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class() extends Migration {
+class ConfigFix extends Migration
+{
 	public const GALLERY = 'Gallery';
 	public const ADMIN = 'Admin';
 	public const IMAGE_PROCESSING = 'Image Processing';
@@ -576,4 +577,4 @@ return new class() extends Migration {
 	{
 		Logs::warning(__METHOD__, __LINE__, 'There is no going back for ' . __CLASS__ . '! HUE HUE HUE');
 	}
-};
+}

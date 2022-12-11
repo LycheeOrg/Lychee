@@ -15,7 +15,8 @@ MariaDB [lychee]> show columns from lychee_settings;
 +-------+--------------+------+-----+---------+-------+
 */
 
-return new class() extends Migration {
+class CreateConfigsTable extends Migration
+{
 	/**
 	 * Run the migrations.
 	 *
@@ -73,4 +74,4 @@ return new class() extends Migration {
 	{
 		Schema::dropIfExists('configs');
 	}
-};
+}

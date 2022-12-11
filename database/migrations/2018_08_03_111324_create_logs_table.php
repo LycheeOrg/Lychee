@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Schema;
 // | text     | text         | YES  |     | NULL    |                |
 // +----------+--------------+------+-----+---------+----------------+
 
-return new class() extends Migration {
+class CreateLogsTable extends Migration
+{
 	/**
 	 * Run the migrations.
 	 *
@@ -44,4 +45,4 @@ return new class() extends Migration {
 	{
 		Schema::dropIfExists('logs');
 	}
-};
+}

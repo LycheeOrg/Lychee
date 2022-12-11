@@ -5,7 +5,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class() extends Migration {
+class AddFileSizeRawCol extends Migration
+{
 	private const TABLE_NAME = 'photos';
 	private const ID_COL_NAME = 'id';
 	private const OLD_COL_NAME = 'size';
@@ -93,4 +94,4 @@ return new class() extends Migration {
 			$table->dropColumn(self::NEW_COL_NAME);
 		});
 	}
-};
+}

@@ -6,7 +6,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class() extends Migration {
+class AddNsfwAlbum extends Migration
+{
 	private const ALBUM = 'albums';
 	private const NSFW_COLUMN_NAME = 'nsfw';
 	private const VIEWABLE = 'viewable';
@@ -55,4 +56,4 @@ return new class() extends Migration {
 
 		Configs::where('cat', '=', 'Mod NSFW')->delete();
 	}
-};
+}

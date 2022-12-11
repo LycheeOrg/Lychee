@@ -6,7 +6,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class() extends Migration {
+class MoveSettings extends Migration
+{
 	/**
 	 * Run the migrations.
 	 *
@@ -77,4 +78,4 @@ return new class() extends Migration {
 	{
 		Logs::warning(__METHOD__, __LINE__, 'There is no going back for ' . __CLASS__ . '! HUE HUE HUE');
 	}
-};
+}
