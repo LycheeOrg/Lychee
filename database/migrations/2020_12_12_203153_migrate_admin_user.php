@@ -19,8 +19,10 @@ return new class() extends Migration {
 		$password = DB::table('configs')->select('value')->where('key', 'password')->first();
 
 		DB::table('users')->updateOrInsert(['id' => 0],
-			['username' => $username?->value ?? '',
-				'password' => $password?->value ?? '', ]);
+			[
+				'username' => $username?->value ?? '',
+				'password' => $password?->value ?? '',
+			]);
 	}
 
 	/**

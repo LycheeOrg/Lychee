@@ -21,7 +21,7 @@ return new class() extends Migration {
 	/**
 	 * Create the table if it did not exists yet.
 	 */
-	private function create()
+	private function create(): void
 	{
 		if (!Schema::hasTable('configs')) {
 			Schema::create('configs', function (Blueprint $table) {
@@ -35,7 +35,7 @@ return new class() extends Migration {
 	/**
 	 * Update names with Snake Case.
 	 */
-	private function update_names()
+	private function update_names(): void
 	{
 		DB::table('configs')->where('key', '=', 'justified_layout')->update(['key' => 'layout']);
 		DB::table('configs')->where('key', '=', 'checkForUpdates')->update(['key' => 'check_for_updates']);
@@ -53,14 +53,9 @@ return new class() extends Migration {
 	 *
 	 * @param array $values
 	 */
-	private function cleanup(array &$values)
+	private function cleanup(array &$values): void
 	{
-		function get_key($v)
-		{
-			return $v['key'];
-		}
-
-		$keys = array_map('get_key', $values);
+		$keys = array_map(fn ($v) => $v['key'], $values);
 
 		try {
 			DB::table('configs')->whereNotIn('key', $keys)->delete();
@@ -72,7 +67,7 @@ return new class() extends Migration {
 	/**
 	 * Add potentially missing columns.
 	 */
-	private function missing_columns()
+	private function missing_columns(): void
 	{
 		if (!Schema::hasColumn('configs', 'cat')) {
 			Schema::table('configs', function (Blueprint $table) {
@@ -97,7 +92,7 @@ return new class() extends Migration {
 	 *
 	 * @param array $default_values
 	 */
-	private function update_missing_fields(array &$default_values)
+	private function update_missing_fields(array &$default_values): void
 	{
 		foreach ($default_values as $value) {
 			$c = Configs::where('key', $value['key'])->count();
@@ -121,7 +116,7 @@ return new class() extends Migration {
 	 *
 	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		defined('INT') or define('INT', 'int');
 		defined('STRING') or define('STRING', 'string');
@@ -572,7 +567,7 @@ return new class() extends Migration {
 	 *
 	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		Logs::warning(__METHOD__, __LINE__, 'There is no going back for ' . __CLASS__ . '! HUE HUE HUE');
 	}

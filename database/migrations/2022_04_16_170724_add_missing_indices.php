@@ -21,7 +21,7 @@ return new class() extends Migration {
 		$this->driverName = $connection->getDriverName();
 	}
 
-	public function up()
+	public function up(): void
 	{
 		// MySQL cannot create indices over unlimited string values
 		// So we must explicitly define an upper bound on how many characters
@@ -40,7 +40,7 @@ return new class() extends Migration {
 		});
 	}
 
-	public function down()
+	public function down(): void
 	{
 		$descriptionSQL = match ($this->driverName) {
 			'mysql' => DB::raw('description(128)'),
@@ -61,9 +61,9 @@ return new class() extends Migration {
 	 *
 	 * @throws DBALException
 	 */
-	private function dropIndexIfExists(Blueprint $table, string $indexName)
+	private function dropIndexIfExists(Blueprint $table, string $indexName): void
 	{
-		$doctrineTable = $this->schemaManager->listTableDetails($table->getTable());
+		$doctrineTable = $this->schemaManager->introspectTable($table->getTable());
 		if ($doctrineTable->hasIndex($indexName)) {
 			$table->dropIndex($indexName);
 		}

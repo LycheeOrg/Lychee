@@ -8,7 +8,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class() extends Migration {
-	private function fix_thumbs()
+	private function fix_thumbs(): void
 	{
 		// from fix_thumb2x_default
 		DB::table('photos')->where('thumbUrl', '=', '')
@@ -21,7 +21,7 @@ return new class() extends Migration {
 		});
 	}
 
-	private function image_direction()
+	private function image_direction(): void
 	{
 		// migration from imageDirection
 		if (!Schema::hasColumn('photos', 'imgDirection')) {
@@ -37,7 +37,7 @@ return new class() extends Migration {
 	 *
 	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		$this->fix_thumbs();
 		$this->image_direction();
@@ -48,7 +48,7 @@ return new class() extends Migration {
 	 *
 	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		Logs::warning(__FUNCTION__, __LINE__, 'There is no going back! HUE HUE HUE');
 	}

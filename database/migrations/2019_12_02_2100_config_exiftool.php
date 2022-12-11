@@ -33,7 +33,7 @@ return new class() extends Migration {
 	 */
 	public function down()
 	{
-		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
+		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false) !== false) {
 			DB::table('configs')->where('key', '=', 'has_exiftool')->delete();
 		}
 	}

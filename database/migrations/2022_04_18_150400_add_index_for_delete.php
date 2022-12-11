@@ -25,7 +25,7 @@ return new class() extends Migration {
 		$this->schemaManager = $connection->getDoctrineSchemaManager();
 	}
 
-	public function up()
+	public function up(): void
 	{
 		Schema::table('size_variants', function (Blueprint $table) {
 			// This index is required by \App\Actions\SizeVariant\Delete::do()
@@ -34,7 +34,7 @@ return new class() extends Migration {
 		});
 	}
 
-	public function down()
+	public function down(): void
 	{
 		Schema::table('size_variants', function (Blueprint $table) {
 			$this->dropIndexIfExists($table, 'size_variants_short_path_index');
@@ -49,9 +49,9 @@ return new class() extends Migration {
 	 *
 	 * @throws DBALException
 	 */
-	private function dropIndexIfExists(Blueprint $table, string $indexName)
+	private function dropIndexIfExists(Blueprint $table, string $indexName): void
 	{
-		$doctrineTable = $this->schemaManager->listTableDetails($table->getTable());
+		$doctrineTable = $this->schemaManager->introspectTable($table->getTable());
 		if ($doctrineTable->hasIndex($indexName)) {
 			$table->dropIndex($indexName);
 		}

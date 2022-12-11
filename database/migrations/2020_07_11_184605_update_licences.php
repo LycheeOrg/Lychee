@@ -2,6 +2,7 @@
 
 use App\Models\Photo;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Collection;
 
 return new class() extends Migration {
 	/**
@@ -9,7 +10,7 @@ return new class() extends Migration {
 	 *
 	 * @param array $default_values
 	 */
-	private function update_fields(array &$default_values)
+	private function update_fields(array &$default_values): void
 	{
 		foreach ($default_values as $value) {
 			DB::table('configs')->updateOrInsert(
@@ -28,7 +29,7 @@ return new class() extends Migration {
 	 *
 	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		defined('LICENSE') or define('LICENSE', 'license');
 
@@ -45,9 +46,10 @@ return new class() extends Migration {
 		$this->update_fields($default_values);
 
 		// Get all CC licences
+		/** @var Collection<Photo> $photos */
 		$photos = Photo::where('license', 'like', 'CC-%')->get();
-		if (count($photos) === 0) {
-			return false;
+		if ($photos->isEmpty()) {
+			return;
 		}
 		foreach ($photos as $photo) {
 			$photo->license = $photo->license . '-4.0';
@@ -60,12 +62,13 @@ return new class() extends Migration {
 	 *
 	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		// Get all CC licences
+		/** @var Collection<Photo> $photos */
 		$photos = Photo::where('license', 'like', 'CC-%')->get();
-		if (count($photos) === 0) {
-			return false;
+		if ($photos->isEmpty()) {
+			return;
 		}
 		foreach ($photos as $photo) {
 			// Delete version

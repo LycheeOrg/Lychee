@@ -5,6 +5,7 @@
 use App\Facades\Helpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
+use function Safe\exec;
 
 return new class() extends Migration {
 	/**

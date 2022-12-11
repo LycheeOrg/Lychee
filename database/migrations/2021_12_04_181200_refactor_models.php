@@ -255,7 +255,7 @@ return new class() extends Migration {
 	 * @throws InvalidArgumentException
 	 * @throws RuntimeException
 	 */
-	public function up()
+	public function up(): void
 	{
 		$this->printInfo('Checking consistency of DB');
 		$this->ensureDBConsistency();
@@ -301,7 +301,7 @@ return new class() extends Migration {
 	/**
 	 * @throws InvalidArgumentException
 	 */
-	public function down()
+	public function down(): void
 	{
 		Schema::drop('sym_links');
 
@@ -1773,7 +1773,7 @@ return new class() extends Migration {
 	 */
 	private function dropIndexIfExists(Blueprint $table, string $indexName)
 	{
-		$doctrineTable = $this->schemaManager->listTableDetails($table->getTable());
+		$doctrineTable = $this->schemaManager->introspectTable($table->getTable());
 		if ($doctrineTable->hasIndex($indexName)) {
 			$table->dropIndex($indexName);
 		}
@@ -1789,7 +1789,7 @@ return new class() extends Migration {
 	 */
 	private function dropUniqueIfExists(Blueprint $table, string $indexName)
 	{
-		$doctrineTable = $this->schemaManager->listTableDetails($table->getTable());
+		$doctrineTable = $this->schemaManager->introspectTable($table->getTable());
 		if ($doctrineTable->hasIndex($indexName)) {
 			$table->dropUnique($indexName);
 		}
@@ -1808,7 +1808,7 @@ return new class() extends Migration {
 		if ($this->driverName === 'sqlite') {
 			return;
 		}
-		$doctrineTable = $this->schemaManager->listTableDetails($table->getTable());
+		$doctrineTable = $this->schemaManager->introspectTable($table->getTable());
 		if ($doctrineTable->hasForeignKey($indexName)) {
 			$table->dropForeign($indexName);
 		}

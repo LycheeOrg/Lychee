@@ -51,11 +51,11 @@ return new class() extends Migration {
 					| version             | update_030216                                                |
 					+---------------------+--------------------------------------------------------------+
 					*/
-					if (in_array($result->key, ['sortingAlbums', 'sortingPhotos'])) {
+					if (in_array($result->key, ['sortingAlbums', 'sortingPhotos'], true)) {
 						$order_by = explode(' ', $result->value);
 						DB::table('configs')->where('key', '=', $result->key . '_col')->update(['value' => $order_by[2] ?? 'id']);
 						DB::table('configs')->where('key', '=', $result->key . '_order')->update(['value' => $order_by[3] ?? 'DESC']);
-					} elseif (!in_array($result->key, ['checkForUpdates', 'hide_version_number', 'identifier', 'php_script_limit', 'plugins', 'public_search', 'useExiftool', 'version'])) {
+					} elseif (!in_array($result->key, ['checkForUpdates', 'hide_version_number', 'identifier', 'php_script_limit', 'plugins', 'public_search', 'useExiftool', 'version'], true)) {
 						DB::table('configs')->where('key', '=', $result->key)->update(['value' => $result->value ?? '']);
 					}
 				}

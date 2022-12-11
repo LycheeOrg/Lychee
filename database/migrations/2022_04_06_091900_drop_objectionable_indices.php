@@ -33,7 +33,7 @@ return new class() extends Migration {
 		$this->schemaManager = $connection->getDoctrineSchemaManager();
 	}
 
-	public function up()
+	public function up(): void
 	{
 		Schema::table('photos', function (Blueprint $table) {
 			$this->dropIndexIfExists($table, 'photos_created_at_index');
@@ -48,7 +48,7 @@ return new class() extends Migration {
 		});
 	}
 
-	public function down()
+	public function down(): void
 	{
 	}
 
@@ -60,9 +60,9 @@ return new class() extends Migration {
 	 *
 	 * @throws DBALException
 	 */
-	private function dropIndexIfExists(Blueprint $table, string $indexName)
+	private function dropIndexIfExists(Blueprint $table, string $indexName): void
 	{
-		$doctrineTable = $this->schemaManager->listTableDetails($table->getTable());
+		$doctrineTable = $this->schemaManager->introspectTable($table->getTable());
 		if ($doctrineTable->hasIndex($indexName)) {
 			$table->dropIndex($indexName);
 		}
