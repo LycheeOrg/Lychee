@@ -1,14 +1,14 @@
 <?php
 
 use App\Facades\Helpers;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
-class MovePhotos extends Migration
-{
+require_once 'TemporaryModels/MovePhotos_Photo.php';
+
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -96,9 +96,4 @@ class MovePhotos extends Migration
 			MovePhotos_Photo::query()->truncate();
 		}
 	}
-}
-
-class MovePhotos_Photo extends Model
-{
-	protected $table = 'photos';
-}
+};

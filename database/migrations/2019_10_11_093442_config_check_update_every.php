@@ -6,8 +6,7 @@ use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class ConfigCheckUpdateEvery extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -37,4 +36,4 @@ class ConfigCheckUpdateEvery extends Migration
 	{
 		Configs::where('key', '=', 'update_check_every_days')->delete();
 	}
-}
+};

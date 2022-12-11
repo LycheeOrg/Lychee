@@ -4,19 +4,17 @@ use Carbon\Carbon;
 use Carbon\Exceptions\InvalidFormatException;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
-use Kalnoy\Nestedset\Node;
-use Kalnoy\Nestedset\NodeTrait;
-use League\Flysystem\FileNotFoundException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
+
+require_once 'TemporaryModels/RefactorAlbumModel_AlbumModel.php';
 
 /**
  * Migration for new architecture of albums.
@@ -66,8 +64,7 @@ use Symfony\Component\Console\Output\ConsoleSectionOutput;
  * (At least, if we want to keep foreign constraints in SQLite.)
  * Yikes! :-(
  */
-class RefactorModels extends Migration
-{
+return new class() extends Migration {
 	private string $driverName;
 	private AbstractSchemaManager $schemaManager;
 	private ConsoleOutput $output;
@@ -1428,7 +1425,7 @@ class RefactorModels extends Migration
 				if ($sizeVariant->short_path !== $expectedShortPath) {
 					try {
 						Storage::move($sizeVariant->short_path, $expectedShortPath);
-					} catch (FileNotFoundException $e) {
+					} catch (\Throwable $e) {
 						// sic! just ignore
 						// This exception is thrown if there are duplicate
 						// photos which point to the same physical file.
@@ -2061,29 +2058,4 @@ class RefactorModels extends Migration
 			throw new \RuntimeException('Inconsistent DB');
 		}
 	}
-}
-
-/**
- * Model class specific for this migration.
- *
- * Migrations are required to be also runnable in the future after the code
- * base will have evolved.
- * To this end, migrations must not rely on a specific implementation of
- * models, because these models may change in the future, but the migration
- * must conduct its task with respect to a table layout which was valid at
- * the time when the migration was written.
- * In conclusion, this implies that migration should not use models but use
- * low-level DB queries when necessary.
- * Unfortunately, we need the `fixTree()` algorithm and there is no
- * implementation which uses low-level DB queries.
- */
-class RefactorAlbumModel_AlbumModel extends Model implements Node
-{
-	use NodeTrait;
-
-	protected $table = 'albums';
-
-	protected $keyType = 'string';
-
-	public $timestamps = false;
-}
+};

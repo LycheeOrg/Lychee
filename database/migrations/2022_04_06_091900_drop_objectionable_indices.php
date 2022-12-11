@@ -21,8 +21,7 @@ use Illuminate\Support\Facades\Schema;
  * for efficient queries, but the single-column indices only disorient the
  * query planner.
  */
-class DropObjectionableIndices extends Migration
-{
+return new class() extends Migration {
 	private AbstractSchemaManager $schemaManager;
 
 	/**
@@ -68,4 +67,4 @@ class DropObjectionableIndices extends Migration
 			$table->dropIndex($indexName);
 		}
 	}
-}
+};

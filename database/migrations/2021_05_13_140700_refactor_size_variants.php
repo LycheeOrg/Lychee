@@ -5,8 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class RefactorSizeVariants extends Migration
-{
+return new class() extends Migration {
 	private const PHOTOS_TABLE_NAME = 'photos';
 	private const ID_COL_NAME = 'id';
 	private const SMALL_COL_NAME = 'small';
@@ -147,4 +146,4 @@ class RefactorSizeVariants extends Migration
 	{
 		return ($width !== null) ? $width . 'x' . $height : '';
 	}
-}
+};

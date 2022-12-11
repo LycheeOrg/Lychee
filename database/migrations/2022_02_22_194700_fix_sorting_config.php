@@ -3,8 +3,7 @@
 use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 
-class FixSortingConfig extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -30,4 +29,4 @@ class FixSortingConfig extends Migration
 		Configs::where('key', 'sorting_photos_col')->update(['key' => 'sorting_Photos_col']);
 		Configs::where('key', 'sorting_photos_order')->update(['key' => 'sorting_Photos_order']);
 	}
-}
+};

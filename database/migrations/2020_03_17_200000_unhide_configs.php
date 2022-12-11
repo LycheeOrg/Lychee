@@ -5,8 +5,7 @@
 use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 
-class UnhideConfigs extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -28,4 +27,4 @@ class UnhideConfigs extends Migration
 		Configs::where('key', 'SL_enable')->update(['confidentiality' => '0']);
 		Configs::where('key', 'SL_for_admin')->update(['confidentiality' => '0']);
 	}
-}
+};

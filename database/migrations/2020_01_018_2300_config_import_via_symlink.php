@@ -6,8 +6,7 @@ use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class ConfigImportViaSymlink extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -37,4 +36,4 @@ class ConfigImportViaSymlink extends Migration
 	{
 		Configs::where('key', '=', 'import_via_symlink')->delete();
 	}
-}
+};

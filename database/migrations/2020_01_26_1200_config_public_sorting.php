@@ -5,8 +5,7 @@
 use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 
-class ConfigPublicSorting extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -28,4 +27,4 @@ class ConfigPublicSorting extends Migration
 		Configs::where('key', 'sorting_Albums_col')->update(['confidentiality' => '2']);
 		Configs::where('key', 'sorting_Albums_order')->update(['confidentiality' => '2']);
 	}
-}
+};

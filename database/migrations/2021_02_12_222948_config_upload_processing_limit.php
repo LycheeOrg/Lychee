@@ -4,8 +4,7 @@ use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class ConfigUploadProcessingLimit extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -35,4 +34,4 @@ class ConfigUploadProcessingLimit extends Migration
 	{
 		Configs::where('key', '=', 'upload_processing_limit')->delete();
 	}
-}
+};

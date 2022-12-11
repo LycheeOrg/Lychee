@@ -3,8 +3,7 @@
 use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 
-class ConfigMapMod extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -24,4 +23,4 @@ class ConfigMapMod extends Migration
 	{
 		Configs::where('key', '=', 'map_display')->update(['cat' => 'config']);
 	}
-}
+};

@@ -7,8 +7,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * @see \Laragear\WebAuthn\Models\WebAuthnCredential
  */
-class CreateWebauthnCredentials extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -108,4 +107,4 @@ class CreateWebauthnCredentials extends Migration
 			->references('id')->on('users')
 			->cascadeOnDelete();
 	}
-}
+};
