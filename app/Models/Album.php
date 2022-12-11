@@ -176,7 +176,20 @@ class Album extends BaseAlbum implements Node
 	public function toArray(): array
 	{
 		$result = parent::toArray();
-		$result['has_albums'] = !$this->isLeaf();
+		// 'num_albums' must reflect the number of albums a user can actually see.
+		// This necessitates a DB query.
+		if (Configs::getValueAsBool('show_num_albums')) {
+			$result['num_albums'] = count($this->children()->getResults()->all());
+		} else {
+			$result['num_albums'] = -1;
+		}
+		// Retireve the number of photos only if setting enabled.
+		if (Configs::getValueAsBool('show_num_photos')) {
+			$result['num_photos'] = count($this->photos()->getResults()->all());
+		} else {
+			$result['num_photos'] = -1;
+		}
+		// TODO: option to retireve photo count recursively with $this->all_photos()?
 
 		// The client expect the relation "children" to be named "albums".
 		// Rename it
