@@ -3,8 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class FrameRefreshInSec extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -42,4 +41,4 @@ class FrameRefreshInSec extends Migration
 				->update(['value' => strval(intval(floatval($value) * 1000.0))]);
 		}
 	}
-}
+};

@@ -5,8 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class IncreaseLengthPhotoType extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -28,4 +27,4 @@ class IncreaseLengthPhotoType extends Migration
 	{
 		Logs::warning(__FUNCTION__, __LINE__, 'There is no going back for ' . __CLASS__ . '!');
 	}
-}
+};

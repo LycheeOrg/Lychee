@@ -6,8 +6,7 @@ use App\Facades\Helpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class ConfigHasFFmpeg extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -56,4 +55,4 @@ class ConfigHasFFmpeg extends Migration
 	{
 		DB::table('configs')->where('key', '=', 'has_ffmpeg')->delete();
 	}
-}
+};

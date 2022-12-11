@@ -3,8 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class ConfigLosslessOptimization extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -33,4 +32,4 @@ class ConfigLosslessOptimization extends Migration
 	{
 		DB::table('configs')->where('key', '=', 'lossless_optimization')->delete();
 	}
-}
+};

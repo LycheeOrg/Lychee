@@ -3,8 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class DisplayTakedate extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -32,4 +31,4 @@ class DisplayTakedate extends Migration
 	{
 		DB::table('configs')->where('key', '=', 'album_subtitle_type')->delete();
 	}
-}
+};

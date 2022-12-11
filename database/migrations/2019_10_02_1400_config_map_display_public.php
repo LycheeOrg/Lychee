@@ -5,8 +5,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class ConfigMapDisplayPublic extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -36,4 +35,4 @@ class ConfigMapDisplayPublic extends Migration
 	{
 		DB::table('configs')->where('key', '=', 'map_display_public')->delete();
 	}
-}
+};

@@ -3,8 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class AddLogMaxNumLine extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -34,4 +33,4 @@ class AddLogMaxNumLine extends Migration
 	{
 		DB::table('configs')->where('key', '=', 'log_max_num_line')->delete();
 	}
-}
+};

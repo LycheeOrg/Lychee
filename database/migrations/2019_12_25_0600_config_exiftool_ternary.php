@@ -6,8 +6,7 @@ use App\Facades\Helpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class ConfigExiftoolTernary extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -61,4 +60,4 @@ class ConfigExiftoolTernary extends Migration
 				]
 			);
 	}
-}
+};

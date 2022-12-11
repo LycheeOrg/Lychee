@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateWebAuthnTables extends Migration
-{
+return new class() extends Migration {
 	public const DELETED_AT = 'disabled_at';
 
 	/**
@@ -59,4 +58,4 @@ class CreateWebAuthnTables extends Migration
 		}
 		Schema::dropIfExists('web_authn_credentials');
 	}
-}
+};

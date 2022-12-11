@@ -3,8 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class ConfigPasswordUrlParamForSmartAlbum extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -33,4 +32,4 @@ class ConfigPasswordUrlParamForSmartAlbum extends Migration
 	{
 		DB::table('configs')->where('key', '=', 'unlock_password_photos_with_url_param')->delete();
 	}
-}
+};

@@ -3,8 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class ConfigSwipeTolerance extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -41,4 +40,4 @@ class ConfigSwipeTolerance extends Migration
 		DB::table('configs')->where('key', '=', 'swipe_tolerance_x')->delete();
 		DB::table('configs')->where('key', '=', 'swipe_tolerance_y')->delete();
 	}
-}
+};

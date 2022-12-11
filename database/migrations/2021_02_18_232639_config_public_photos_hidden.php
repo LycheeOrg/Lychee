@@ -3,8 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class ConfigPublicPhotosHidden extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -34,4 +33,4 @@ class ConfigPublicPhotosHidden extends Migration
 	{
 		DB::table('configs')->where('key', '=', 'public_photos_hidden')->delete();
 	}
-}
+};

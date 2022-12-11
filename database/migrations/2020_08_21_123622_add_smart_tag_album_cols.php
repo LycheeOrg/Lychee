@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddSmartTagAlbumCols extends Migration
-{
+return new class() extends Migration {
 	private const ALBUM = 'albums';
 	private const SMART_COLUMN_NAME = 'smart';
 	private const SHOWTAGS_COLUMN_NAME = 'showtags';
@@ -39,4 +38,4 @@ class AddSmartTagAlbumCols extends Migration
 			$table->dropColumn(self::SHOWTAGS_COLUMN_NAME);
 		});
 	}
-}
+};

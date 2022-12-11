@@ -5,8 +5,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class ComposerUpdate extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -36,4 +35,4 @@ class ComposerUpdate extends Migration
 	{
 		DB::table('configs')->where('key', '=', 'apply_composer_update')->delete();
 	}
-}
+};
