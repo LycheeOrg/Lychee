@@ -22,6 +22,9 @@ class ComposerCall extends AbstractUpdateInstallerPipe
 			return $next($output);
 		}
 
+		// update with respect to installed version
+		$noDev = $lycheeVersion->isDev() ? '' : '--no-dev ';
+
 		if (Helpers::isExecAvailable()) {
 			if (Configs::getValueAsBool('apply_composer_update')) {
 				// @codeCoverageIgnoreStart
@@ -31,7 +34,7 @@ class ComposerCall extends AbstractUpdateInstallerPipe
 				// needs COMPOSER_HOME environment variable set
 				putenv('COMPOSER_HOME=' . base_path('/composer-cache'));
 				chdir(base_path());
-				exec('composer install --no-dev --no-progress 2>&1', $output);
+				exec(sprintf('composer install %s--no-progress 2>&1', $noDev), $output);
 				chdir(base_path('public'));
 			// @codeCoverageIgnoreEnd
 			} else {
