@@ -17,7 +17,7 @@ class MigrationCheck implements DiagnosticPipe
 	public function handle(array &$data, \Closure $next): array
 	{
 		if (!self::isUpToDate()) {
-			$data[] = 'Error: Database is behind file versions. Please apply the migration.';
+			$data[] = 'Error: Database is behind file versions. Please apply the migrations.';
 		}
 
 		return $next($data);

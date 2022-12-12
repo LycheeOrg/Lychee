@@ -22,7 +22,7 @@ class AllowMigrationCheck extends AbstractUpdateInstallerPipe
 		}
 
 		// @codeCoverageIgnoreStart
-		// we cannot code cov this part. APP_ENV is dev in testing mode.
+		// we cannot code cov this part. APP_ENV is `testing` in testing mode.
 		if (Configs::getValueAsBool('force_migration_in_production')) {
 			Logs::warning(__METHOD__, __LINE__, 'Force update is production.');
 

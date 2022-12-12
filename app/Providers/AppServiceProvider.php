@@ -42,7 +42,7 @@ class AppServiceProvider extends ServiceProvider
 		AlbumQueryPolicy::class => AlbumQueryPolicy::class,
 		PhotoQueryPolicy::class => PhotoQueryPolicy::class,
 
-		// Versionning
+		// Versioning
 		LycheeVersion::class => LycheeVersion::class,
 		GitHubVersion::class => GitHubVersion::class,
 		FileVersion::class => FileVersion::class,
