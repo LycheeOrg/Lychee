@@ -3,11 +3,11 @@
 /** @noinspection PhpUndefinedClassInspection */
 
 use App\Facades\Helpers;
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
+use function Safe\exec;
 
-class ConfigExiftoolTernary extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -35,7 +35,7 @@ class ConfigExiftoolTernary extends Migration
 			$has_exiftool = 0; // we cannot use it anyway.
 		}
 
-		Configs::where('key', '=', 'has_exiftool')
+		DB::table('configs')->where('key', '=', 'has_exiftool')
 			->update(
 				[
 					'value' => $has_exiftool,
@@ -53,7 +53,7 @@ class ConfigExiftoolTernary extends Migration
 	{
 		defined('BOOL') or define('BOOL', '0|1');
 
-		Configs::where('key', '=', 'has_exiftool')
+		DB::table('configs')->where('key', '=', 'has_exiftool')
 			->update(
 				[
 					'value' => null,
@@ -61,4 +61,4 @@ class ConfigExiftoolTernary extends Migration
 				]
 			);
 	}
-}
+};

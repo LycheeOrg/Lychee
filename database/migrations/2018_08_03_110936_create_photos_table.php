@@ -31,8 +31,7 @@ use Illuminate\Support\Facades\Schema;
 // | checksum    | char(40)            | YES  |     | NULL    |       |
 // | medium      | tinyint(1)          | NO   |     | 0       |       |
 
-class CreatePhotosTable extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -88,4 +87,4 @@ class CreatePhotosTable extends Migration
 	{
 		Schema::dropIfExists('photos');
 	}
-}
+};

@@ -2,11 +2,10 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
-class ConfigCheckUpdateEveryCatFix extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -14,7 +13,7 @@ class ConfigCheckUpdateEveryCatFix extends Migration
 	 */
 	public function up()
 	{
-		Configs::where('key', 'update_check_every_days')->update(['cat' => 'config']);
+		DB::table('configs')->where('key', 'update_check_every_days')->update(['cat' => 'config']);
 	}
 
 	/**
@@ -24,6 +23,6 @@ class ConfigCheckUpdateEveryCatFix extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', 'update_check_every_days')->update(['cat' => 'Config']);
+		DB::table('configs')->where('key', 'update_check_every_days')->update(['cat' => 'Config']);
 	}
-}
+};

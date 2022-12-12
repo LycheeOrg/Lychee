@@ -3,17 +3,15 @@
 /** @noinspection PhpUndefinedClassInspection */
 
 use App\Models\Logs;
-use App\Models\Photo;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class PhotosFix extends Migration
-{
-	private function fix_thumbs()
+return new class() extends Migration {
+	private function fix_thumbs(): void
 	{
 		// from fix_thumb2x_default
-		Photo::where('thumbUrl', '=', '')
+		DB::table('photos')->where('thumbUrl', '=', '')
 			->where('thumb2x', '=', '1')
 			->update([
 				'thumb2x' => '0',
@@ -23,7 +21,7 @@ class PhotosFix extends Migration
 		});
 	}
 
-	private function image_direction()
+	private function image_direction(): void
 	{
 		// migration from imageDirection
 		if (!Schema::hasColumn('photos', 'imgDirection')) {
@@ -39,7 +37,7 @@ class PhotosFix extends Migration
 	 *
 	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		$this->fix_thumbs();
 		$this->image_direction();
@@ -50,8 +48,8 @@ class PhotosFix extends Migration
 	 *
 	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		Logs::warning(__FUNCTION__, __LINE__, 'There is no going back! HUE HUE HUE');
 	}
-}
+};

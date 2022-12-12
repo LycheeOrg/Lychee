@@ -2,11 +2,10 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
-class UnhideConfigs extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -14,8 +13,8 @@ class UnhideConfigs extends Migration
 	 */
 	public function up()
 	{
-		Configs::where('key', 'SL_enable')->update(['confidentiality' => '2']);
-		Configs::where('key', 'SL_for_admin')->update(['confidentiality' => '2']);
+		DB::table('configs')->where('key', 'SL_enable')->update(['confidentiality' => '2']);
+		DB::table('configs')->where('key', 'SL_for_admin')->update(['confidentiality' => '2']);
 	}
 
 	/**
@@ -25,7 +24,7 @@ class UnhideConfigs extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', 'SL_enable')->update(['confidentiality' => '0']);
-		Configs::where('key', 'SL_for_admin')->update(['confidentiality' => '0']);
+		DB::table('configs')->where('key', 'SL_enable')->update(['confidentiality' => '0']);
+		DB::table('configs')->where('key', 'SL_for_admin')->update(['confidentiality' => '0']);
 	}
-}
+};

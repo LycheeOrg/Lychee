@@ -8,9 +8,12 @@ parameters:
 		- app
 		- scripts
 		- lang
+		- database
 	excludePaths:
 		- app/View/*
 		- app/Http/Livewire/*
+		- database/factories/*
+		- database/migrations/2021_12_04_181200_refactor_models.php
 	stubFiles:
 		# these can be removed after https://github.com/thecodingmachine/safe/issues/283 has been merged
 		- phpstan/stubs/image.stub
@@ -67,3 +70,17 @@ parameters:
 
 		# False positive from maennchen/ZipStream
 		- '#Call to an undefined static method ZipStream\\Option\\Method::(STORE|DEFLATE)\(\)#'
+
+		# Migrations
+		-
+			message: '#Function define is unsafe to use.#'
+			paths:
+				- database
+		-
+			message: '#Variable property access on (mixed|object).#'
+			paths:
+				- database
+		-
+			message: '#Access to an undefined property object::\$value.#'
+			paths:
+				- database
