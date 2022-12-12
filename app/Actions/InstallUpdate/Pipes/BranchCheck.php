@@ -26,7 +26,7 @@ class BranchCheck extends AbstractUpdateInstallerPipe
 			return $next($output);
 		}
 
-		$output[] = 'Branch is not Master';
+		$output[] = 'Branch is not ' . GitHubVersion::MASTER;
 
 		return $output;
 	}

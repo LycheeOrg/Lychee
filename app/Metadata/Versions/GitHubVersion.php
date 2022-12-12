@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\File;
 
 class GitHubVersion implements VersionControl
 {
+	public const MASTER = 'master';
+
 	public ?string $localBranch = null;
 	public ?string $localHead = null;
 	public ?string $remoteHead = null;
@@ -37,7 +39,7 @@ class GitHubVersion implements VersionControl
 	 */
 	public function isMasterBranch(): bool
 	{
-		return $this->localBranch === 'master';
+		return $this->localBranch === self::MASTER;
 	}
 
 	/**

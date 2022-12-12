@@ -17,7 +17,11 @@ class MigrationCheck implements DiagnosticPipe
 	public function handle(array &$data, \Closure $next): array
 	{
 		if (!self::isUpToDate()) {
-			$data[] = 'Error: Database is behind file versions. Please apply the migrations.';
+			$data[] = 'Error: Database is behind file version. Please apply the migrations.';
+		}
+
+		if ($this->isInFuture()) {
+			$data[] = 'Warning: Database is in advance of file version. Please check your installation.';
 		}
 
 		return $next($data);
@@ -32,5 +36,16 @@ class MigrationCheck implements DiagnosticPipe
 		$file_ver = $fileVersion->getVersion();
 
 		return $db_ver->toInteger() === $file_ver->toInteger();
+	}
+
+	private function isInFuture(): bool
+	{
+		$lycheeVersion = resolve(LycheeVersion::class);
+		$fileVersion = resolve(FileVersion::class);
+
+		$db_ver = $lycheeVersion->getVersion();
+		$file_ver = $fileVersion->getVersion();
+
+		return $db_ver->toInteger() > $file_ver->toInteger();
 	}
 }
