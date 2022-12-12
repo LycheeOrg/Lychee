@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
-use Safe\Exceptions\FilesystemException;
 use function Safe\file_get_contents;
 use function Safe\file_put_contents;
 
@@ -16,11 +15,8 @@ return new class() extends Migration {
 	{
 		defined('STRING') or define('STRING', 'string');
 
-		try {
-			$userCss = file_get_contents(public_path('dist/user.css'));
-		} catch (FilesystemException) {
-			$userCss = '';
-		}
+		$userCss = file_exists(public_path('dist/user.css')) ?
+			file_get_contents(public_path('dist/user.css')) : '';
 
 		DB::table('configs')->insert([
 			[
