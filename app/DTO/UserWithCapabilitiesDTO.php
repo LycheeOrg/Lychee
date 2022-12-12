@@ -35,9 +35,9 @@ class UserWithCapabilitiesDTO extends ArrayableDTO
 	 *
 	 * @return UserWithCapabilitiesDTO
 	 */
-	public static function ofUser(User $user): UserWithCapabilitiesDTO
+	public static function ofUser(User $user): self
 	{
-		return new UserWithCapabilitiesDTO(
+		return new self(
 			$user->id,
 			$user->username,
 			$user->may_administrate,
