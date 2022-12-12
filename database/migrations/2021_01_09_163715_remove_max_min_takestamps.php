@@ -5,8 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class RemoveMaxMinTakestamps extends Migration
-{
+return new class() extends Migration {
 	private const ALBUMS = 'albums';
 	private const MIN = 'min_takestamp';
 	private const MAX = 'max_takestamp';
@@ -70,4 +69,4 @@ class RemoveMaxMinTakestamps extends Migration
 				]);
 		}
 	}
-}
+};

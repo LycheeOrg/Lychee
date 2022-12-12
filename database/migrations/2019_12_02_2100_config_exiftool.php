@@ -2,12 +2,10 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class ConfigExiftool extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -35,8 +33,8 @@ class ConfigExiftool extends Migration
 	 */
 	public function down()
 	{
-		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-			Configs::where('key', '=', 'has_exiftool')->delete();
+		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false) !== false) {
+			DB::table('configs')->where('key', '=', 'has_exiftool')->delete();
 		}
 	}
-}
+};

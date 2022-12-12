@@ -8,8 +8,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class ConfigFix extends Migration
-{
+return new class() extends Migration {
 	public const GALLERY = 'Gallery';
 	public const ADMIN = 'Admin';
 	public const IMAGE_PROCESSING = 'Image Processing';
@@ -22,7 +21,7 @@ class ConfigFix extends Migration
 	/**
 	 * Create the table if it did not exists yet.
 	 */
-	private function create()
+	private function create(): void
 	{
 		if (!Schema::hasTable('configs')) {
 			Schema::create('configs', function (Blueprint $table) {
@@ -36,17 +35,17 @@ class ConfigFix extends Migration
 	/**
 	 * Update names with Snake Case.
 	 */
-	private function update_names()
+	private function update_names(): void
 	{
-		Configs::where('key', '=', 'justified_layout')->update(['key' => 'layout']);
-		Configs::where('key', '=', 'checkForUpdates')->update(['key' => 'check_for_updates']);
-		Configs::where('key', '=', 'sortingPhotos_col')->update(['key' => 'sorting_Photos_col']);
-		Configs::where('key', '=', 'sortingPhotos_order')->update(['key' => 'sorting_Photos_order']);
-		Configs::where('key', '=', 'sortingAlbums_col')->update(['key' => 'sorting_Albums_col']);
-		Configs::where('key', '=', 'sortingAlbums_order')->update(['key' => 'sorting_Albums_order']);
-		Configs::where('key', '=', 'skipDuplicates')->update(['key' => 'skip_duplicates']);
-		Configs::where('key', '=', 'deleteImported')->update(['key' => 'delete_imported']);
-		Configs::where('key', '=', 'dropboxKey')->update(['key' => 'dropbox_key']);
+		DB::table('configs')->where('key', '=', 'justified_layout')->update(['key' => 'layout']);
+		DB::table('configs')->where('key', '=', 'checkForUpdates')->update(['key' => 'check_for_updates']);
+		DB::table('configs')->where('key', '=', 'sortingPhotos_col')->update(['key' => 'sorting_Photos_col']);
+		DB::table('configs')->where('key', '=', 'sortingPhotos_order')->update(['key' => 'sorting_Photos_order']);
+		DB::table('configs')->where('key', '=', 'sortingAlbums_col')->update(['key' => 'sorting_Albums_col']);
+		DB::table('configs')->where('key', '=', 'sortingAlbums_order')->update(['key' => 'sorting_Albums_order']);
+		DB::table('configs')->where('key', '=', 'skipDuplicates')->update(['key' => 'skip_duplicates']);
+		DB::table('configs')->where('key', '=', 'deleteImported')->update(['key' => 'delete_imported']);
+		DB::table('configs')->where('key', '=', 'dropboxKey')->update(['key' => 'dropbox_key']);
 	}
 
 	/**
@@ -54,17 +53,12 @@ class ConfigFix extends Migration
 	 *
 	 * @param array $values
 	 */
-	private function cleanup(array &$values)
+	private function cleanup(array &$values): void
 	{
-		function get_key($v)
-		{
-			return $v['key'];
-		}
-
-		$keys = array_map('get_key', $values);
+		$keys = array_map(fn ($v) => $v['key'], $values);
 
 		try {
-			Configs::whereNotIn('key', $keys)->delete();
+			DB::table('configs')->whereNotIn('key', $keys)->delete();
 		} catch (Exception $e) {
 			Logs::warning(__FUNCTION__, __LINE__, 'Something weird happened.');
 		}
@@ -73,7 +67,7 @@ class ConfigFix extends Migration
 	/**
 	 * Add potentially missing columns.
 	 */
-	private function missing_columns()
+	private function missing_columns(): void
 	{
 		if (!Schema::hasColumn('configs', 'cat')) {
 			Schema::table('configs', function (Blueprint $table) {
@@ -98,7 +92,7 @@ class ConfigFix extends Migration
 	 *
 	 * @param array $default_values
 	 */
-	private function update_missing_fields(array &$default_values)
+	private function update_missing_fields(array &$default_values): void
 	{
 		foreach ($default_values as $value) {
 			$c = Configs::where('key', $value['key'])->count();
@@ -122,7 +116,7 @@ class ConfigFix extends Migration
 	 *
 	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		defined('INT') or define('INT', 'int');
 		defined('STRING') or define('STRING', 'string');
@@ -573,8 +567,8 @@ class ConfigFix extends Migration
 	 *
 	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		Logs::warning(__METHOD__, __LINE__, 'There is no going back for ' . __CLASS__ . '! HUE HUE HUE');
 	}
-}
+};

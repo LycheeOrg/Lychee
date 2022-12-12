@@ -1,11 +1,9 @@
 <?php
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class DisplayTakedate extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -31,6 +29,6 @@ class DisplayTakedate extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', '=', 'album_subtitle_type')->delete();
+		DB::table('configs')->where('key', '=', 'album_subtitle_type')->delete();
 	}
-}
+};

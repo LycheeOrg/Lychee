@@ -1,10 +1,9 @@
 <?php
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
-class FixSortingConfig extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -12,10 +11,10 @@ class FixSortingConfig extends Migration
 	 */
 	public function up()
 	{
-		Configs::where('key', 'sorting_Albums_col')->update(['key' => 'sorting_albums_col']);
-		Configs::where('key', 'sorting_Albums_order')->update(['key' => 'sorting_albums_order']);
-		Configs::where('key', 'sorting_Photos_col')->update(['key' => 'sorting_photos_col']);
-		Configs::where('key', 'sorting_Photos_order')->update(['key' => 'sorting_photos_order']);
+		DB::table('configs')->where('key', 'sorting_Albums_col')->update(['key' => 'sorting_albums_col']);
+		DB::table('configs')->where('key', 'sorting_Albums_order')->update(['key' => 'sorting_albums_order']);
+		DB::table('configs')->where('key', 'sorting_Photos_col')->update(['key' => 'sorting_photos_col']);
+		DB::table('configs')->where('key', 'sorting_Photos_order')->update(['key' => 'sorting_photos_order']);
 	}
 
 	/**
@@ -25,9 +24,9 @@ class FixSortingConfig extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', 'sorting_albums_col')->update(['key' => 'sorting_Albums_col']);
-		Configs::where('key', 'sorting_albums_order')->update(['key' => 'sorting_Albums_order']);
-		Configs::where('key', 'sorting_photos_col')->update(['key' => 'sorting_Photos_col']);
-		Configs::where('key', 'sorting_photos_order')->update(['key' => 'sorting_Photos_order']);
+		DB::table('configs')->where('key', 'sorting_albums_col')->update(['key' => 'sorting_Albums_col']);
+		DB::table('configs')->where('key', 'sorting_albums_order')->update(['key' => 'sorting_Albums_order']);
+		DB::table('configs')->where('key', 'sorting_photos_col')->update(['key' => 'sorting_Photos_col']);
+		DB::table('configs')->where('key', 'sorting_photos_order')->update(['key' => 'sorting_Photos_order']);
 	}
-}
+};

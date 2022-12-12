@@ -1,20 +1,19 @@
 <?php
 
-use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Collection;
 
-class UpdateLicences extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Update the fields.
 	 *
 	 * @param array $default_values
 	 */
-	private function update_fields(array &$default_values)
+	private function update_fields(array &$default_values): void
 	{
 		foreach ($default_values as $value) {
-			Configs::updateOrCreate(
+			DB::table('configs')->updateOrInsert(
 				['key' => $value['key']],
 				[
 					'cat' => $value['cat'],
@@ -30,7 +29,7 @@ class UpdateLicences extends Migration
 	 *
 	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		defined('LICENSE') or define('LICENSE', 'license');
 
@@ -47,9 +46,10 @@ class UpdateLicences extends Migration
 		$this->update_fields($default_values);
 
 		// Get all CC licences
+		/** @var Collection<Photo> $photos */
 		$photos = Photo::where('license', 'like', 'CC-%')->get();
-		if (count($photos) === 0) {
-			return false;
+		if ($photos->isEmpty()) {
+			return;
 		}
 		foreach ($photos as $photo) {
 			$photo->license = $photo->license . '-4.0';
@@ -62,12 +62,13 @@ class UpdateLicences extends Migration
 	 *
 	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		// Get all CC licences
+		/** @var Collection<Photo> $photos */
 		$photos = Photo::where('license', 'like', 'CC-%')->get();
-		if (count($photos) === 0) {
-			return false;
+		if ($photos->isEmpty()) {
+			return;
 		}
 		foreach ($photos as $photo) {
 			// Delete version
@@ -75,4 +76,4 @@ class UpdateLicences extends Migration
 			$photo->save();
 		}
 	}
-}
+};

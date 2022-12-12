@@ -1,20 +1,18 @@
 <?php
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class PostRevertFixes extends Migration
-{
+return new class() extends Migration {
 	private const SQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
 	private const ID_COL_NAME = 'id';
 	// The longest named timezones are "America/North_Dakota/New_Salem" and
 	// "America/Argentina/Buenos_Aires" (both have 30 letters)
-	private const TZ_NAME_MAX_LENGTH = 31;
-	private const DATETIME_PRECISION = 0;
+	// private const TZ_NAME_MAX_LENGTH = 31;
+	// private const DATETIME_PRECISION = 0;
 	// All constants related to the Photos relation
 	private const PHOTOS_TABLE_NAME = 'photos';
 	private const PHOTO_CREATED_AT_COL_NAME = 'created_at';
@@ -29,30 +27,25 @@ class PostRevertFixes extends Migration
 	private const CONFIG_RANGE_COL_NAME = 'type_range';
 	// All constants related to the configuration of Photo sorting (PS)
 	private const CONFIG_PS_KEY = 'sorting_Photos_col';
-	private const CONFIG_PS_VALUE_OLD2NEW = ['takestamp' => 'taken_at'];
+	// private const CONFIG_PS_VALUE_OLD2NEW = ['takestamp' => 'taken_at'];
 	private const CONFIG_PS_VALUE_NEW2OLD = ['taken_at' => 'takestamp'];
 	private const CONFIG_PS_RANGE_OLD = 'id|takestamp|title|description|public|star|type';
-	private const CONFIG_PS_RANGE_NEW = 'id|taken_at|title|description|public|star|type';
 	// All constants related to the configuration of Album sorting (AS)
 	private const CONFIG_AS_KEY = 'sorting_Albums_col';
-	private const CONFIG_AS_VALUE_OLD2NEW = [
-		'min_takestamp' => 'min_taken_at',
-		'max_takestamp' => 'max_taken_at',
-	];
 	private const CONFIG_AS_VALUE_NEW2OLD = [
 		'min_taken_at' => 'min_takestamp',
 		'max_taken_at' => 'max_takestamp',
 	];
 	private const CONFIG_AS_RANGE_OLD = 'id|title|description|public|max_takestamp|min_takestamp|created_at';
-	private const CONFIG_AS_RANGE_NEW = 'id|title|description|public|max_taken_at|min_taken_at|created_at';
 	private const DB_TIMEZONE_NAME = 'UTC';
 
 	/**
 	 * Run the migration.
 	 */
-	public function up()
+	public function up(): void
 	{
-		if (Configs::getValueAsString('version') !== '040303') {
+		$version = DB::table('configs')->select(['value'])->where('key', '=', 'version')->first()?->value;
+		if ($version !== '040303') {
 			return;
 		}
 
@@ -108,13 +101,13 @@ class PostRevertFixes extends Migration
 			]);
 		});
 
-		Configs::where('key', 'version')->update(['value' => '040302']);
+		DB::table('configs')->where('key', 'version')->update(['value' => '040302']);
 	}
 
 	/**
 	 * Reverse the migration.
 	 */
-	public function down()
+	public function down(): void
 	{
 	}
 
@@ -195,8 +188,10 @@ class PostRevertFixes extends Migration
 			$sqlDatetime,
 			$oldTz
 		);
+		/** @phpstan-ignore-next-line */ // Cannot call method setTimezone() on Carbon\Carbon|false.
 		$result->setTimezone($newTz);
 
+		/** @phpstan-ignore-next-line */ // Cannot call method format() on Carbon\Carbon|false.
 		return $result->format(self::SQL_DATETIME_FORMAT);
 	}
 
@@ -214,6 +209,7 @@ class PostRevertFixes extends Migration
 			->where(self::CONFIG_KEY_COL_NAME, '=', $key)
 			->first();
 
+		/** @phpstan-ignore-next-line */ // Access to an undefined property object::$value // Variable property access on object|null.
 		return $config->{self::CONFIG_VALUE_COL_NAME};
 	}
 
@@ -253,4 +249,4 @@ class PostRevertFixes extends Migration
 		}
 		$this->setConfiguration($key, $value, $range);
 	}
-}
+};

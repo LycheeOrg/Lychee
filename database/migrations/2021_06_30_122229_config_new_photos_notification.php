@@ -1,11 +1,9 @@
 <?php
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class ConfigNewPhotosNotification extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -33,6 +31,6 @@ class ConfigNewPhotosNotification extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', '=', 'new_photos_notification')->delete();
+		DB::table('configs')->where('key', '=', 'new_photos_notification')->delete();
 	}
-}
+};

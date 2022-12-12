@@ -1,13 +1,11 @@
 <?php
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class AddTokenToUserTable extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -17,7 +15,7 @@ class AddTokenToUserTable extends Migration
 	 */
 	public function up(): void
 	{
-		Configs::where('key', '=', 'api_key')->delete();
+		DB::table('configs')->where('key', '=', 'api_key')->delete();
 
 		if (!Schema::hasColumn('users', 'token')) {
 			Schema::table('users', function (Blueprint $table) {
@@ -42,4 +40,4 @@ class AddTokenToUserTable extends Migration
 			],
 		]);
 	}
-}
+};

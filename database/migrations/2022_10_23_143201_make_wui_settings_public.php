@@ -17,8 +17,7 @@ use Illuminate\Support\Facades\DB;
  *
  * On top, this migration also restructures the configuration settings.
  */
-class MakeWuiSettingsPublic extends Migration
-{
+return new class() extends Migration {
 	public const CONF_CATEGORY_SOCIAL_MEDIA = 'Social Media';
 	public const CONF_CATEGORY_FOOTER = 'Footer';
 	public const CONF_CATEGORY_CONF = 'config';
@@ -233,4 +232,4 @@ class MakeWuiSettingsPublic extends Migration
 			->where('key', '=', 'mod_frame_refresh')
 			->update(['key' => 'Mod_Frame_refresh']);
 	}
-}
+};
