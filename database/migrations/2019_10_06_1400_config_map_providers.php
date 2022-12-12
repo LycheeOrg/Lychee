@@ -2,12 +2,10 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class ConfigMapProviders extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -35,6 +33,6 @@ class ConfigMapProviders extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', '=', 'map_provider')->delete();
+		DB::table('configs')->where('key', '=', 'map_provider')->delete();
 	}
-}
+};

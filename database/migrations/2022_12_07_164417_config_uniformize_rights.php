@@ -9,7 +9,7 @@ return new class() extends Migration {
 	 *
 	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		DB::table('configs')->where('key', 'full_photo')->update(['key' => 'grants_full_photo_access']);
 		DB::table('configs')->where('key', 'downloadable')->update(['key' => 'grants_download']);
@@ -20,7 +20,7 @@ return new class() extends Migration {
 	 *
 	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		DB::table('configs')->where('key', 'grants_full_photo_access')->update(['key' => 'full_photo']);
 		DB::table('configs')->where('key', 'grants_download')->update(['key' => 'downloadable']);

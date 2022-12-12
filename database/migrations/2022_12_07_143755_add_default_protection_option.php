@@ -3,8 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class AddDefaultProtectionOption extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -37,4 +36,4 @@ class AddDefaultProtectionOption extends Migration
 			->where('key', '=', 'default_album_protection')
 			->delete();
 	}
-}
+};

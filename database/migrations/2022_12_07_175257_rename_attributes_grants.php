@@ -4,14 +4,13 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class RenameAttributesGrants extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
 	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		if (Schema::connection(null)->getConnection()->getDriverName() === 'sqlite') {
 			Schema::disableForeignKeyConstraints();
@@ -35,7 +34,7 @@ class RenameAttributesGrants extends Migration
 	 *
 	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		if (Schema::connection(null)->getConnection()->getDriverName() === 'sqlite') {
 			Schema::disableForeignKeyConstraints();
@@ -53,4 +52,4 @@ class RenameAttributesGrants extends Migration
 			Schema::enableForeignKeyConstraints();
 		}
 	}
-}
+};

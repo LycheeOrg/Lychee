@@ -2,12 +2,10 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class ComposerUpdate extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -35,6 +33,6 @@ class ComposerUpdate extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', '=', 'apply_composer_update')->delete();
+		DB::table('configs')->where('key', '=', 'apply_composer_update')->delete();
 	}
-}
+};

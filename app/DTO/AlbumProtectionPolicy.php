@@ -41,9 +41,9 @@ class AlbumProtectionPolicy extends ArrayableDTO
 	 *
 	 * @return AlbumProtectionPolicy
 	 */
-	public static function ofBaseAlbumImplementation(BaseAlbumImpl $baseAlbum): AlbumProtectionPolicy
+	public static function ofBaseAlbumImplementation(BaseAlbumImpl $baseAlbum): self
 	{
-		return new AlbumProtectionPolicy(
+		return new self(
 			is_public: $baseAlbum->is_public,
 			is_link_required: $baseAlbum->is_link_required,
 			is_nsfw: $baseAlbum->is_nsfw,
@@ -60,9 +60,9 @@ class AlbumProtectionPolicy extends ArrayableDTO
 	 *
 	 * @return AlbumProtectionPolicy
 	 */
-	public static function ofBaseAlbum(BaseAlbum $baseAlbum): AlbumProtectionPolicy
+	public static function ofBaseAlbum(BaseAlbum $baseAlbum): self
 	{
-		return new AlbumProtectionPolicy(
+		return new self(
 			is_public: $baseAlbum->is_public,
 			is_link_required: $baseAlbum->is_link_required,
 			is_nsfw: $baseAlbum->is_nsfw,
@@ -79,9 +79,9 @@ class AlbumProtectionPolicy extends ArrayableDTO
 	 *
 	 * @return AlbumProtectionPolicy
 	 */
-	public static function ofSmartAlbum(BaseSmartAlbum $baseSmartAlbum): AlbumProtectionPolicy
+	public static function ofSmartAlbum(BaseSmartAlbum $baseSmartAlbum): self
 	{
-		return new AlbumProtectionPolicy(
+		return new self(
 			is_public: $baseSmartAlbum->is_public,
 			is_link_required: false,
 			is_nsfw: false,
@@ -96,9 +96,9 @@ class AlbumProtectionPolicy extends ArrayableDTO
 	 *
 	 * @return AlbumProtectionPolicy
 	 */
-	public static function ofDefaultPrivate(): AlbumProtectionPolicy
+	public static function ofDefaultPrivate(): self
 	{
-		return new AlbumProtectionPolicy(
+		return new self(
 			is_public: false,
 			is_link_required: false,
 			is_nsfw: false,
@@ -113,9 +113,9 @@ class AlbumProtectionPolicy extends ArrayableDTO
 	 *
 	 * @return AlbumProtectionPolicy
 	 */
-	public static function ofDefaultPublic(): AlbumProtectionPolicy
+	public static function ofDefaultPublic(): self
 	{
-		return new AlbumProtectionPolicy(
+		return new self(
 			is_public: true,
 			is_link_required: false,
 			is_nsfw: false,

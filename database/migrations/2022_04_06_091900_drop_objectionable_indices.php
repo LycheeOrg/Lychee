@@ -21,8 +21,7 @@ use Illuminate\Support\Facades\Schema;
  * for efficient queries, but the single-column indices only disorient the
  * query planner.
  */
-class DropObjectionableIndices extends Migration
-{
+return new class() extends Migration {
 	private AbstractSchemaManager $schemaManager;
 
 	/**
@@ -34,7 +33,7 @@ class DropObjectionableIndices extends Migration
 		$this->schemaManager = $connection->getDoctrineSchemaManager();
 	}
 
-	public function up()
+	public function up(): void
 	{
 		Schema::table('photos', function (Blueprint $table) {
 			$this->dropIndexIfExists($table, 'photos_created_at_index');
@@ -49,7 +48,7 @@ class DropObjectionableIndices extends Migration
 		});
 	}
 
-	public function down()
+	public function down(): void
 	{
 	}
 
@@ -61,11 +60,11 @@ class DropObjectionableIndices extends Migration
 	 *
 	 * @throws DBALException
 	 */
-	private function dropIndexIfExists(Blueprint $table, string $indexName)
+	private function dropIndexIfExists(Blueprint $table, string $indexName): void
 	{
-		$doctrineTable = $this->schemaManager->listTableDetails($table->getTable());
+		$doctrineTable = $this->schemaManager->introspectTable($table->getTable());
 		if ($doctrineTable->hasIndex($indexName)) {
 			$table->dropIndex($indexName);
 		}
 	}
-}
+};

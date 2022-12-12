@@ -6,8 +6,7 @@ use Illuminate\Support\Facades\Schema;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
 
-class OptimizeTables extends Migration
-{
+return new class() extends Migration {
 	private ConsoleOutput $output;
 	private ConsoleSectionOutput $msgSection;
 
@@ -68,4 +67,4 @@ class OptimizeTables extends Migration
 	{
 		// Nothing do to here.
 	}
-}
+};
