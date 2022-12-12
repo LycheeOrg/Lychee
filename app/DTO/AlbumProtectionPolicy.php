@@ -96,7 +96,7 @@ class AlbumProtectionPolicy extends ArrayableDTO
 	 *
 	 * @return AlbumProtectionPolicy
 	 */
-	public static function ofDefaultPrivate(): AlbumProtectionPolicy
+	public static function ofDefaultPrivate(): self
 	{
 		return new self(
 			is_public: false,
