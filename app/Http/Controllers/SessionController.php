@@ -16,6 +16,7 @@ use App\Http\Requests\Session\LoginRequest;
 use App\Legacy\AdminAuthentication;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
+use App\Metadata\Versions\LycheeVersion;
 use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -41,6 +42,7 @@ class SessionController extends Controller
 		private ConfigFunctions $configFunctions,
 		private GitHubVersion $gitHubVersion,
 		private FileVersion $fileVersion,
+		private LycheeVersion $lycheeVersion,
 		private Repository $configRepository,
 	) {
 	}
@@ -96,9 +98,12 @@ class SessionController extends Controller
 			} else {
 				// Unauthenticated
 				$return['config'] = $this->configFunctions->public();
-				if (Configs::getValueAsBool('hide_version_number')) {
-					$return['config']['version'] = '';
-				}
+			}
+
+			if ($return['user'] !== null || !Configs::getValueAsBool('hide_version_number')) {
+				$return['config']['version'] = $this->lycheeVersion->getVersion();
+			} else {
+				$return['config']['version'] = null;
 			}
 
 			// Consolidate sorting attributes
