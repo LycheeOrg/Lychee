@@ -78,16 +78,6 @@ return [
 			'throw' => true,
 		],*/
 
-		// Lychee uses this disk to store the customized CSS file provided by the user
-		// ATTENTION: This disk MUST ALWAYS point to the local `./public/dist` directory.
-		// TODO: Maybe we should drop this Flysystem disk, because neither the driver nor the root must be changed and hence the whole point of using the Flysystem abstraction is gone.
-		'dist' => [
-			'driver' => 'local',
-			'root' => public_path('dist/'),
-			'url' => 'dist/',
-			'visibility' => 'public',
-		],
-
 		// Lychee uses this disk to create ephemeral, symbolic links to photos,
 		// if the feature is enabled.
 		// For this feature to work, the "images" disk must use the "local" driver.

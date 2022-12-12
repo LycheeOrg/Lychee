@@ -6,7 +6,6 @@ use App\Contracts\AbstractSizeVariantNamingStrategy;
 use App\Contracts\DiagnosticPipe;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\InvalidConfigOption;
-use App\Facades\Helpers;
 use App\Models\SymLink;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -49,7 +48,6 @@ class BasicPermissionCheck implements DiagnosticPipe
 	public function handle(array &$data, \Closure $next): array
 	{
 		$this->folders($data);
-		$this->userCSS($data);
 
 		return $next($data);
 	}
@@ -115,23 +113,6 @@ class BasicPermissionCheck implements DiagnosticPipe
 	}
 
 	/**
-	 * @param array<int,string> $data
-	 *
-	 * @return void
-	 */
-	public function userCSS(array &$data): void
-	{
-		$p = Storage::disk('dist')->path('user.css');
-		if (!Helpers::hasPermissions($p)) {
-			$data[] = "Warning: '" . $p . "' does not exist or has insufficient read/write privileges.";
-			$p = Storage::disk('dist')->path('');
-			if (!Helpers::hasPermissions($p)) {
-				$data[] = "Warning: '" . $p . "' has insufficient read/write privileges.";
-			}
-		}
-	}
-
-	/**
 	 * Check permissions of (local) image directories.
 	 *
 	 * For efficiency reasons only the directory permissions are checked,
@@ -139,8 +120,6 @@ class BasicPermissionCheck implements DiagnosticPipe
 	 *
 	 * @param string   $path the path of the directory or file to check
 	 * @param string[] $data the list of errors to append to
-	 *
-	 * @noinspection PhpComposerExtensionStubsInspection
 	 */
 	private function checkDirectoryPermissionsRecursively(string $path, array &$data): void
 	{

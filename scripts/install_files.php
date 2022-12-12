@@ -10,9 +10,6 @@ $GREEN = "\033[38;5;010m";
 $YELLOW = "\033[38;5;011m";
 $ORANGE = "\033[38;5;214m";
 
-echo "\n{$YELLOW}creating file for CSS personalization$NO_COLOR" . PHP_EOL;
-touch('public/dist/user.css');
-
 echo "\n{$YELLOW}creating default SQLite database$NO_COLOR" . PHP_EOL;
 touch('database/database.sqlite');
 

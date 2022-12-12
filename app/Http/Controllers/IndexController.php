@@ -190,4 +190,12 @@ class IndexController extends Controller
 			throw new FrameworkException('Laravel\'s container component', $e);
 		}
 	}
+
+	/**
+	 * Get the custom CSS the admin has set.
+	 */
+	public function getCSS(): string
+	{
+		return Configs::getValueAsString('user_css');
+	}
 }

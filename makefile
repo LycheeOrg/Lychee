@@ -43,7 +43,6 @@ dist-gen: clean composer
 	@cp -r simple_error_template.html       Lychee
 	@cp -r version.md                       Lychee
 	@touch Lychee/storage/logs/laravel.log
-	@touch Lychee/public/dist/user.css
 	@touch Lychee/public/uploads/import/index.html
 	@touch Lychee/public/sym/index.html
 

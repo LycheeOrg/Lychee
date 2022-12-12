@@ -20,7 +20,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
@@ -372,7 +371,7 @@ class SettingsController extends Controller
 	}
 
 	/**
-	 * Takes the css input text and put it into `dist/user.css`.
+	 * Takes the CSS input text and puts it into the database.
 	 * This allows admins to actually personalize the look of their
 	 * installation.
 	 *
@@ -387,9 +386,7 @@ class SettingsController extends Controller
 		$request->validate(['css' => 'present|nullable|string']);
 		$css = $request->get('css') ?? '';
 
-		if (Storage::disk('dist')->put('user.css', $css) === false) {
-			throw new InsufficientFilesystemPermissions('Could not save CSS');
-		}
+		Configs::set('user_css', $css);
 	}
 
 	/**

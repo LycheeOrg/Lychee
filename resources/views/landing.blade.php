@@ -4,7 +4,7 @@
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 		<title>{{ $title }}</title>
 		<link type="text/css" rel="stylesheet" href="{{ Helpers::cacheBusting('dist/landing.css') }}">
-		<link type="text/css" rel="stylesheet" href="{{ Helpers::cacheBusting('dist/user.css') }}">
+		<link type="text/css" rel="stylesheet" href="{{ route('user_css') }}">
 		<link rel="shortcut icon" href="favicon.ico">
 		<link rel="apple-touch-icon" href="img/apple-touch-icon-ipad.png" sizes="120x120">
 		<link rel="apple-touch-icon" href="img/apple-touch-icon-iphone.png" sizes="152x152">

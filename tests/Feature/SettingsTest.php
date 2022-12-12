@@ -91,4 +91,24 @@ class SettingsTest extends TestCase
 		Auth::logout();
 		Session::flush();
 	}
+
+	public function testSetAndGetCSS(): void
+	{
+		Auth::loginUsingId(0);
+
+		$response = $this->get('user.css');
+		$this->assertOk($response);
+
+		$this->assertEmpty($response->content());
+
+		$test_css = 'lychee {display: none;}' . PHP_EOL . '#lychee2 {color: blue;}';
+
+		$response = $this->postJson('/api/Settings::setSorting',
+			[
+				'css' => $test_css,
+			]);
+
+		$this->assertStatus($response, 204);
+		$this->assertEquals($test_css, $response->content());
+	}
 }

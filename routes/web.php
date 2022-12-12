@@ -30,6 +30,7 @@ Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->mi
 Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::class, 'migrate'])
 	->name('migrate')
 	->middleware(['migration:incomplete']);
+Route::get('/user.css', [IndexController::class, 'getCSS'])->name('user_css')->middleware(['migration:complete']);
 
 /*
  * TODO see to add better redirection functionality later.
