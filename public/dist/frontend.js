@@ -6184,7 +6184,7 @@ lychee.aboutDialog = function () {
   * @returns {void}
   */
 	var initAboutDialog = function initAboutDialog(formElements, dialog) {
-		dialog.querySelector("span.version-number").textContent = lychee.version.major + '.' + lychee.version.minor + '.' + lychee.version.patch;
+		dialog.querySelector("span.version-number").textContent = lychee.version.major + "." + lychee.version.minor + "." + lychee.version.patch;
 		// If Release is available : show release
 		// If Git is available : show git
 		if (lychee.update_available) {
@@ -6560,7 +6560,7 @@ lychee.loginDialog = function () {
 		if (!!lychee.version) {
 			dialog.querySelector("span.version-number").textContent = lychee.version.major + "." + lychee.version.minor + "." + lychee.version.patch;
 		} else {
-			dialog.querySelector("span.version-number").textContent = '';
+			dialog.querySelector("span.version-number").textContent = "";
 		}
 		// If Release is available : show release
 		// If Git is available : show git
@@ -7504,7 +7504,7 @@ lychee.locale = {
 	SIGN_OUT: "Sign Out",
 	UPDATE_AVAILABLE: "Update available!",
 	MIGRATION_AVAILABLE: "Migration available!",
-	CHECK_FOR_UPDATE: "CheckUpdate for updates",
+	CHECK_FOR_UPDATE: "Check for updates",
 	DEFAULT_LICENSE: "Default license for new uploads:",
 	SET_LICENSE: "Set License",
 	SET_OVERLAY_TYPE: "Set Overlay",
@@ -14245,7 +14245,7 @@ view.photo = {
 		if (nextPhotoInAlbum === null || lychee.viewMode === true) {
 			$nextArrow.hide();
 		} else {
-			// CheckUpdate if thumbUrl exists (for videos w/o ffmpeg, we add a play-icon)
+			// Check if thumbUrl exists (for videos w/o ffmpeg, we add a play-icon)
 			var thumbUrl = "img/placeholder.png";
 			if (nextPhotoInAlbum.size_variants.thumb !== null) {
 				thumbUrl = nextPhotoInAlbum.size_variants.thumb.url;
@@ -14258,7 +14258,7 @@ view.photo = {
 		if (prevPhotoInAlbum === null || lychee.viewMode === true) {
 			$previousArrow.hide();
 		} else {
-			// CheckUpdate if thumbUrl exists (for videos w/o ffmpeg, we add a play-icon)
+			// Check if thumbUrl exists (for videos w/o ffmpeg, we add a play-icon)
 			var _thumbUrl = "img/placeholder.png";
 			if (prevPhotoInAlbum.size_variants.thumb !== null) {
 				_thumbUrl = prevPhotoInAlbum.size_variants.thumb.url;
