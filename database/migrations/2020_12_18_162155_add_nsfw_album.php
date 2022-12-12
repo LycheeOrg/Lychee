@@ -1,13 +1,11 @@
 <?php
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class AddNsfwAlbum extends Migration
-{
+return new class() extends Migration {
 	private const ALBUM = 'albums';
 	private const NSFW_COLUMN_NAME = 'nsfw';
 	private const VIEWABLE = 'viewable';
@@ -54,6 +52,6 @@ class AddNsfwAlbum extends Migration
 			$table->renameColumn(self::VIEWABLE, self::VISIBLE_HIDDEN);
 		});
 
-		Configs::where('cat', '=', 'Mod NSFW')->delete();
+		DB::table('configs')->where('cat', '=', 'Mod NSFW')->delete();
 	}
-}
+};

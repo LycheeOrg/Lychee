@@ -7,8 +7,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class AddMissingIndices extends Migration
-{
+return new class() extends Migration {
 	private AbstractSchemaManager $schemaManager;
 	private string $driverName;
 
@@ -22,7 +21,7 @@ class AddMissingIndices extends Migration
 		$this->driverName = $connection->getDriverName();
 	}
 
-	public function up()
+	public function up(): void
 	{
 		// MySQL cannot create indices over unlimited string values
 		// So we must explicitly define an upper bound on how many characters
@@ -41,7 +40,7 @@ class AddMissingIndices extends Migration
 		});
 	}
 
-	public function down()
+	public function down(): void
 	{
 		$descriptionSQL = match ($this->driverName) {
 			'mysql' => DB::raw('description(128)'),
@@ -62,11 +61,11 @@ class AddMissingIndices extends Migration
 	 *
 	 * @throws DBALException
 	 */
-	private function dropIndexIfExists(Blueprint $table, string $indexName)
+	private function dropIndexIfExists(Blueprint $table, string $indexName): void
 	{
-		$doctrineTable = $this->schemaManager->listTableDetails($table->getTable());
+		$doctrineTable = $this->schemaManager->introspectTable($table->getTable());
 		if ($doctrineTable->hasIndex($indexName)) {
 			$table->dropIndex($indexName);
 		}
 	}
-}
+};

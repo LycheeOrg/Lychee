@@ -5,14 +5,13 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class RenameCapabilities extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
 	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		// flip the locked value
 		DB::table('users')->update(['is_locked' => DB::raw('NOT is_locked')]);
@@ -34,7 +33,7 @@ class RenameCapabilities extends Migration
 	 *
 	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		Schema::table('users', function (Blueprint $table) {
 			$table->dropColumn('may_administrate');
@@ -47,4 +46,4 @@ class RenameCapabilities extends Migration
 		// flip the locked value
 		DB::table('users')->update(['is_locked' => DB::raw('NOT is_locked')]);
 	}
-}
+};

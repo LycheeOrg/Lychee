@@ -143,14 +143,12 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		//     relation has been loaded.
 		//     This avoids unnecessary hydration of photos if the album is
 		//     only used within a listing of sub-albums.
-		$result = [
+		return [
 			'id' => $this->id,
 			'title' => $this->title,
 			'thumb' => $this->getThumbAttribute(),
 			'policy' => AlbumProtectionPolicy::ofSmartAlbum($this),
 			'photos' => $this->photos?->toArray(),
 		];
-
-		return $result;
 	}
 }

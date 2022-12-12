@@ -14,19 +14,19 @@ use function Safe\scandir;
  */
 $template = "<?php
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
-class BumpVersion%s extends Migration
-{
+return new class() extends Migration {
+
 	/**
 	 * Run the migrations.
 	 *
 	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
-		Configs::where('key', 'version')->update(['value' => '%s']);
+		DB::table('configs')->where('key', 'version')->update(['value' => '%s']);
 	}
 
 	/**
@@ -34,11 +34,11 @@ class BumpVersion%s extends Migration
 	 *
 	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
-		Configs::where('key', 'version')->update(['value' => '%s']);
+		DB::table('configs')->where('key', 'version')->update(['value' => '%s']);
 	}
-}
+};
 ";
 
 /**
@@ -131,7 +131,7 @@ try {
 	does_migration_exists($str_nv);
 
 	$fileName = sprintf('database/migrations/%s_bump_version%s.php', date('Y_m_d_His'), $str_nv);
-	$fileContent = sprintf($template, $str_nv, $str_nv, $str_cv);
+	$fileContent = sprintf($template, $str_nv, $str_cv);
 
 	file_put_contents($fileName, $fileContent);
 	echo "Migration generated!\n";

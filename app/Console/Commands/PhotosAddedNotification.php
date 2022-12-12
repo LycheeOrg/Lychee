@@ -9,7 +9,6 @@ use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\Mail;
-use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class PhotosAddedNotification extends Command
 {
@@ -26,16 +25,6 @@ class PhotosAddedNotification extends Command
 	 * @var string
 	 */
 	protected $description = 'Send email notifications for newly added photos';
-
-	/**
-	 * Create a new command instance.
-	 *
-	 * @throws SymfonyConsoleException
-	 */
-	public function __construct()
-	{
-		parent::__construct();
-	}
 
 	/**
 	 * Execute the console command.
