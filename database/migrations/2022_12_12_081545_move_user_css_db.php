@@ -29,8 +29,10 @@ return new class() extends Migration {
 			],
 		]);
 
-		// This is not a function of `Safe\` because if the dir is not writable we just ignore it.
-		unlink(public_path('dist/user.css'));
+		if (is_writable(public_path('dist/user.css'))) {
+			// This is not a function of `Safe\` because if the dir is not writable we just ignore it.
+			unlink(public_path('dist/user.css'));
+		}
 	}
 
 	/**
