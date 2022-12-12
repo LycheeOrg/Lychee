@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
-use function Safe\file_get_contents;
 use function Safe\file_put_contents;
 
 return new class() extends Migration {
@@ -15,7 +14,11 @@ return new class() extends Migration {
 	{
 		defined('STRING') or define('STRING', 'string');
 
+		// This is not a function of `Safe\` because if the file does not exist we just ignore it.
 		$userCss = file_get_contents(public_path('dist/user.css'));
+		if ($userCss === false) {
+			$userCss = '';
+		}
 
 		DB::table('configs')->insert([
 			[
