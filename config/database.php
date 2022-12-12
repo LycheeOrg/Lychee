@@ -170,6 +170,8 @@ return [
 		],
 
 		'default' => [
+			'scheme' => env('REDIS_SCHEME', 'tcp'),
+			'path' => env('REDIS_PATH', null),
 			'url' => env('REDIS_URL'),
 			'host' => env('REDIS_HOST', '127.0.0.1'),
 			'password' => env('REDIS_PASSWORD'),
@@ -178,6 +180,8 @@ return [
 		],
 
 		'cache' => [
+			'scheme' => env('REDIS_SCHEME', 'tcp'),
+			'path' => env('REDIS_PATH', null),
 			'url' => env('REDIS_URL'),
 			'host' => env('REDIS_HOST', '127.0.0.1'),
 			'password' => env('REDIS_PASSWORD', null),
