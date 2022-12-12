@@ -108,7 +108,7 @@ class SettingsTest extends TestCase
 				'css' => $test_css,
 			]);
 
-		$this->assertStatus($response, 204);
+		$this->assertStatus($response, 200);
 		$this->assertEquals($test_css, $response->content());
 	}
 }
