@@ -15,14 +15,15 @@ class IncrementUserIDs extends Migration
 	public function up(): void
 	{
 		Schema::disableForeignKeyConstraints();
-		/** @var App\Models\User $user */
-		$user = DB::table('users')->find(0);
-		if ($user !== null && ($user->username === '' || $user->password === '')) {
+		/** @var App\Models\User|null $admin */
+		$admin = DB::table('users')->find(0);
+		if ($admin !== null && ($admin->username === '' || $admin->password === '')) {
 			// The admin user (id 0) has never set a username and password, so we remove it.
 			// This should only happen on a completely new installation where the admin user is created by the
 			// MigrateAdminUser migration and the user has never logged in.
 			DB::table('users')->delete(0);
 		}
+		/** @var App\Models\User $user */
 		foreach (User::query()->orderByDesc('id')->get() as $user) {
 			$oldID = $user->id;
 			$newID = $oldID + 1;
@@ -39,7 +40,9 @@ class IncrementUserIDs extends Migration
 		if (Schema::connection(null)->getConnection()->getDriverName() === 'pgsql' && DB::table('users')->count() > 0) {
 			// when using PostgreSQL, the new IDs are not updated after incrementing. Thus, we need to reset the index to the greatest ID + 1
 			// the sequence is called `users_id_seq1`
-			DB::statement('ALTER SEQUENCE users_id_seq1 RESTART WITH ' . DB::table('users')->orderByDesc('id')->first()->id + 1);
+			/** @var App\Models\User $lastUser */
+			$lastUser = DB::table('users')->orderByDesc('id')->first();
+			DB::statement('ALTER SEQUENCE users_id_seq1 RESTART WITH ' . $lastUser->id + 1);
 		}
 		Schema::enableForeignKeyConstraints();
 	}
