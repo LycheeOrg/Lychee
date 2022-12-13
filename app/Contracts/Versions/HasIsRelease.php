@@ -5,7 +5,7 @@ namespace App\Contracts\Versions;
 /**
  * Must implement release getter.
  */
-interface HasRelease
+interface HasIsRelease
 {
 	/**
 	 * Return true if current instance is a release.

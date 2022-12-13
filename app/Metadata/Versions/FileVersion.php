@@ -11,6 +11,13 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\File;
 
+/**
+ * FileVersion provides information about the code version.
+ * It is the value contained in version.md.
+ *
+ * Up-to-date is checked against the release data in https://lycheeorg.github.io/update.json
+ * This part is done via the UpdateRequest class.
+ */
 class FileVersion implements VersionControl, HasVersion
 {
 	public Version $version;

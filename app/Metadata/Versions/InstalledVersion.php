@@ -2,14 +2,20 @@
 
 namespace App\Metadata\Versions;
 
-use App\Contracts\Versions\HasRelease;
+use App\Contracts\Versions\HasIsRelease;
 use App\Contracts\Versions\HasVersion;
 use App\DTO\Version;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Models\Configs;
 use Illuminate\Support\Facades\File;
 
-class InstalledVersion implements HasVersion, HasRelease
+/**
+ * InstalledVersion contains the following info:
+ * - which version is in the Database
+ * - are we downloaded from release page (.git is absent)
+ * - are we in dev mode (phpunit is present).
+ */
+class InstalledVersion implements HasVersion, HasIsRelease
 {
 	/**
 	 * True if we are using a release.

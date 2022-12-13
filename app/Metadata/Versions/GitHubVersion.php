@@ -2,7 +2,7 @@
 
 namespace App\Metadata\Versions;
 
-use App\Contracts\Versions\HasRelease;
+use App\Contracts\Versions\HasIsRelease;
 use App\Contracts\Versions\Remote\GitRemote;
 use App\Contracts\Versions\VersionControl;
 use App\Facades\Helpers;
@@ -12,7 +12,19 @@ use App\Models\Logs;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
-class GitHubVersion implements VersionControl, HasRelease
+/**
+ * GitHubVersion contains the following informations:
+ * - verfies that .git is present (and subsequent required rights)
+ * - the commit ID (7 hex format)
+ * - wether we are a release: pinned to a commit via tag or attached to a branch.
+ *
+ * If we are attached to a branch then we provide the branch name.
+ * If we are pinned to a a commit (detached head), we give the tag name (if available)
+ *
+ * Up-to-date is checked against the release data in https://api.github.com/repos/LycheeOrg/Lychee/[tags|commits]
+ * This part is done via the GitRemote interface.
+ */
+class GitHubVersion implements VersionControl, HasIsRelease
 {
 	use Trimable;
 
@@ -151,7 +163,7 @@ class GitHubVersion implements VersionControl, HasRelease
 		} else {
 			// This is tagged/CICD behaviour
 			// we leave localBranch as null so that we know that we are not on master
-			$this->localHead = self::trim($branchOrCommit);
+			$this->localHead = $this->trim($branchOrCommit);
 		}
 	}
 
@@ -183,7 +195,7 @@ class GitHubVersion implements VersionControl, HasRelease
 			return;
 		}
 		$commitID = File::get($commit_path);
-		$this->localHead = self::trim($commitID);
+		$this->localHead = $this->trim($commitID);
 	}
 
 	/**
