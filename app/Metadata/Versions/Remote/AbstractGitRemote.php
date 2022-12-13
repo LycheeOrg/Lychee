@@ -79,6 +79,8 @@ abstract class AbstractGitRemote implements GitRemote
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function getAgeText(): string
 	{
@@ -87,6 +89,8 @@ abstract class AbstractGitRemote implements GitRemote
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function getHead(): ?string
 	{
@@ -95,6 +99,8 @@ abstract class AbstractGitRemote implements GitRemote
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function getHeadSha(): ?string
 	{

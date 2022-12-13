@@ -43,7 +43,9 @@ class GitHubVersion implements VersionControl, HasIsRelease
 		// Firs we check if we are tag or commit mode.
 		// If we could not even access .git/HEAD. So we probably are in file release mode.
 		if (!$this->isGit()) {
+			// @codeCoverageIgnoreStart
 			return;
+			// @codeCoverageIgnoreEnd
 		}
 
 		// Let's fetch the HEAD & branch if available.
@@ -121,9 +123,11 @@ class GitHubVersion implements VersionControl, HasIsRelease
 		$branch_path = base_path('.git/HEAD');
 		if (!File::exists($branch_path) &&
 			!File::isReadable($branch_path)) {
+			// @codeCoverageIgnoreStart
 			Logs::warning(__METHOD__, __LINE__, 'could not read ' . $branch_path);
 
 			return false;
+			// @codeCoverageIgnoreEnd
 		}
 
 		$branch = File::get($branch_path);
@@ -149,7 +153,9 @@ class GitHubVersion implements VersionControl, HasIsRelease
 	{
 		// Remote is not set: exit early
 		if ($this->remote === null) {
+			// @codeCoverageIgnoreStart
 			return;
+			// @codeCoverageIgnoreEnd
 		}
 
 		// We get the branch name
@@ -183,16 +189,20 @@ class GitHubVersion implements VersionControl, HasIsRelease
 			|| $this->remote instanceof GitTags
 			|| $this->localBranch === null
 		) {
+			// @codeCoverageIgnoreStart
 			return;
+			// @codeCoverageIgnoreEnd
 		}
 
 		// We get the branch commit ID
 		$commit_path = base_path('.git/refs/heads/' . $this->localBranch);
 		if (!File::exists($commit_path) &&
 			!File::isReadable($commit_path)) {
+			// @codeCoverageIgnoreStart
 			Logs::warning(__METHOD__, __LINE__, 'could not read ' . $commit_path);
 
 			return;
+			// @codeCoverageIgnoreEnd
 		}
 		$commitID = File::get($commit_path);
 		$this->localHead = $this->trim($commitID);

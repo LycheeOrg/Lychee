@@ -27,6 +27,8 @@ class GitRemoteTest extends TestCase
 
 		$countBehind = $remote->countBehind([], 'fail');
 		$this->assertFalse($countBehind);
+
+		$this->assertEquals('commits', $remote->getType());
 	}
 
 	public function testTags(): void
@@ -42,5 +44,10 @@ class GitRemoteTest extends TestCase
 
 		$tagName = $remote->getTagName($data, '296db84');
 		$this->assertEquals('v4.6.2', $tagName);
+
+		$tagName = $remote->getTagName([], 'fail');
+		$this->assertEquals('', $tagName);
+
+		$this->assertEquals('tags', $remote->getType());
 	}
 }

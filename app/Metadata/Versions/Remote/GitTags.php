@@ -70,10 +70,6 @@ class GitTags extends AbstractGitRemote implements GitRemote
 	 */
 	public function getTagName(array $data, string $sha): string
 	{
-		if (count($data) === 0) {
-			return '';
-		}
-
 		foreach ($data as $d) {
 			if ($this->dataToSha($d) === $sha) {
 				return $this->dataToName($d);
