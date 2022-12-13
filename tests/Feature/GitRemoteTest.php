@@ -33,6 +33,10 @@ class GitRemoteTest extends TestCase
 		$countBehind = $remote->countBehind($data, 'fail');
 		$this->assertEquals(30, $countBehind);
 
+		// This test will fail in the future when v4.6.2 is further than 30 versions away.
+		$countBehind = $remote->countBehind($data, '296db84');
+		$this->assertNotEquals(30, $countBehind);
+
 		$tagName = $remote->getTagName($data, '296db84');
 		$this->assertEquals('v4.6.2', $tagName);
 	}
