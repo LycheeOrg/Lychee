@@ -17,6 +17,8 @@ use App\Metadata\Json\UpdateRequest;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
+use App\Metadata\Versions\Remote\GitCommits;
+use App\Metadata\Versions\Remote\GitTags;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Policies\AlbumQueryPolicy;
@@ -50,6 +52,10 @@ class AppServiceProvider extends ServiceProvider
 		// Json requests.
 		CommitsRequest::class => CommitsRequest::class,
 		UpdateRequest::class => UpdateRequest::class,
+
+		// JsonParsers
+		GitCommits::class => GitCommits::class,
+		GitTags::class => GitTags::class,
 	];
 
 	/**

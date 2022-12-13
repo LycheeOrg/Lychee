@@ -3,8 +3,8 @@
 namespace App\Metadata\Versions\Remote;
 
 use App\Contracts\Versions\Remote\GitRemote;
-use App\Metadata\Json\CommitsRequest;
 use App\Metadata\Json\JsonRequestFunctions;
+use App\Metadata\Json\TagsRequest;
 use App\Metadata\Versions\Trimable;
 
 /**
@@ -39,7 +39,7 @@ class GitTags extends AbstractGitRemote implements GitRemote
 	 */
 	protected function getRequest(): JsonRequestFunctions
 	{
-		return resolve(CommitsRequest::class);
+		return resolve(TagsRequest::class);
 	}
 
 	/**
