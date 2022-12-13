@@ -14,6 +14,7 @@ namespace Tests\Feature;
 
 use App\Metadata\Versions\Remote\GitCommits;
 use App\Metadata\Versions\Remote\GitTags;
+use Illuminate\Support\Facades\File;
 use Tests\TestCase;
 
 class GitRemoteTest extends TestCase
@@ -22,11 +23,18 @@ class GitRemoteTest extends TestCase
 	{
 		$remote = resolve(GitCommits::class);
 		$data = $remote->fetchRemote(true);
+
+		// due to api call limitations, $data can be empty...
+		$data = json_decode(File::get(base_path('tests/Samples/commits.json')));
+
 		$countBehind = $remote->countBehind($data, 'fail');
 		$this->assertEquals(30, $countBehind);
 
 		$countBehind = $remote->countBehind([], 'fail');
 		$this->assertFalse($countBehind);
+
+		$countBehind = $remote->countBehind($data, 'f3854cf');
+		$this->assertEquals(1, $countBehind);
 
 		$this->assertEquals('commits', $remote->getType());
 	}
@@ -35,8 +43,15 @@ class GitRemoteTest extends TestCase
 	{
 		$remote = resolve(GitTags::class);
 		$data = $remote->fetchRemote(false);
+
+		// due to api call limitations, $data can be empty...
+		$data = json_decode(File::get(base_path('tests/Samples/tags.json')));
+
 		$countBehind = $remote->countBehind($data, 'fail');
 		$this->assertEquals(30, $countBehind);
+
+		$countBehind = $remote->countBehind($data, '1144961');
+		$this->assertEquals(4, $countBehind);
 
 		// This test will fail in the future when v4.6.2 is further than 30 versions away.
 		$countBehind = $remote->countBehind($data, '296db84');
