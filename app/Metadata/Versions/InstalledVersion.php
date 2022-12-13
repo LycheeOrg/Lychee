@@ -8,8 +8,12 @@ use App\Exceptions\ConfigurationKeyMissingException;
 use App\Models\Configs;
 use Illuminate\Support\Facades\File;
 
-class LycheeVersion implements HasVersion
+class InstalledVersion implements HasVersion
 {
+	/**
+	 * True if we are using a release.
+	 * We check if the .git folder is present.
+	 */
 	private bool $isRelease;
 
 	/**

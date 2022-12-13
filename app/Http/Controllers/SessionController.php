@@ -16,7 +16,7 @@ use App\Http\Requests\Session\LoginRequest;
 use App\Legacy\AdminAuthentication;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
-use App\Metadata\Versions\LycheeVersion;
+use App\Metadata\Versions\InstalledVersion;
 use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -42,7 +42,7 @@ class SessionController extends Controller
 		private ConfigFunctions $configFunctions,
 		private GitHubVersion $gitHubVersion,
 		private FileVersion $fileVersion,
-		private LycheeVersion $lycheeVersion,
+		private InstalledVersion $lycheeVersion,
 		private Repository $configRepository,
 	) {
 	}

@@ -3,7 +3,7 @@
 namespace App\Actions\InstallUpdate\Pipes;
 
 use App\Facades\Helpers;
-use App\Metadata\Versions\LycheeVersion;
+use App\Metadata\Versions\InstalledVersion;
 use Illuminate\Support\Facades\Config;
 use function Safe\exec;
 
@@ -14,8 +14,8 @@ class GitPull extends AbstractUpdateInstallerPipe
 	 */
 	public function handle(array &$output, \Closure $next): array
 	{
-		$lycheeVersion = resolve(LycheeVersion::class);
-		if ($lycheeVersion->isRelease()) {
+		$installedVersion = resolve(InstalledVersion::class);
+		if ($installedVersion->isRelease()) {
 			return $next($output);
 		}
 

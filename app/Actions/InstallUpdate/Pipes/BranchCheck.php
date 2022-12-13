@@ -3,7 +3,7 @@
 namespace App\Actions\InstallUpdate\Pipes;
 
 use App\Metadata\Versions\GitHubVersion;
-use App\Metadata\Versions\LycheeVersion;
+use App\Metadata\Versions\InstalledVersion;
 
 class BranchCheck extends AbstractUpdateInstallerPipe
 {
@@ -12,8 +12,8 @@ class BranchCheck extends AbstractUpdateInstallerPipe
 	 */
 	public function handle(array &$output, \Closure $next): array
 	{
-		$lycheeVersion = resolve(LycheeVersion::class);
-		if ($lycheeVersion->isRelease()) {
+		$installedVersion = resolve(InstalledVersion::class);
+		if ($installedVersion->isRelease()) {
 			// @codeCoverageIgnoreStart
 			return $next($output);
 			// @codeCoverageIgnoreEnd

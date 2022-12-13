@@ -16,7 +16,7 @@ use App\Metadata\Json\GitRequest;
 use App\Metadata\Json\UpdateRequest;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
-use App\Metadata\Versions\LycheeVersion;
+use App\Metadata\Versions\InstalledVersion;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Policies\AlbumQueryPolicy;
@@ -43,7 +43,7 @@ class AppServiceProvider extends ServiceProvider
 		PhotoQueryPolicy::class => PhotoQueryPolicy::class,
 
 		// Versioning
-		LycheeVersion::class => LycheeVersion::class,
+		InstalledVersion::class => InstalledVersion::class,
 		GitHubVersion::class => GitHubVersion::class,
 		FileVersion::class => FileVersion::class,
 

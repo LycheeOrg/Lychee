@@ -6,18 +6,18 @@ use App\Actions\Diagnostics\Pipes\Checks\MigrationCheck;
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
-use App\Metadata\Versions\LycheeVersion;
+use App\Metadata\Versions\InstalledVersion;
 
 class CheckUpdate
 {
 	/**
-	 * @param GitHubVersion $gitHubFunctions
-	 * @param LycheeVersion $lycheeVersion
-	 * @param FileVersion   $fileVersion
+	 * @param GitHubVersion    $gitHubFunctions
+	 * @param InstalledVersion $installedVersion
+	 * @param FileVersion      $fileVersion
 	 */
 	public function __construct(
 		private GitHubVersion $gitHubFunctions,
-		private LycheeVersion $lycheeVersion,
+		private InstalledVersion $installedVersion,
 		private FileVersion $fileVersion,
 	) {
 		$this->gitHubFunctions->hydrate();
@@ -37,7 +37,7 @@ class CheckUpdate
 	 */
 	public function getCode(): int
 	{
-		if ($this->lycheeVersion->isRelease()) {
+		if ($this->installedVersion->isRelease()) {
 			// @codeCoverageIgnoreStart
 			return match (false) {
 				MigrationCheck::isUpToDate() => 3,

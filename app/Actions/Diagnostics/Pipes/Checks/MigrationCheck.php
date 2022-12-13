@@ -4,7 +4,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\Metadata\Versions\FileVersion;
-use App\Metadata\Versions\LycheeVersion;
+use App\Metadata\Versions\InstalledVersion;
 
 class MigrationCheck implements DiagnosticPipe
 {
@@ -29,10 +29,10 @@ class MigrationCheck implements DiagnosticPipe
 
 	public static function isUpToDate(): bool
 	{
-		$lycheeVersion = resolve(LycheeVersion::class);
+		$installedVersion = resolve(InstalledVersion::class);
 		$fileVersion = resolve(FileVersion::class);
 
-		$db_ver = $lycheeVersion->getVersion();
+		$db_ver = $installedVersion->getVersion();
 		$file_ver = $fileVersion->getVersion();
 
 		return $db_ver->toInteger() === $file_ver->toInteger();
@@ -40,10 +40,10 @@ class MigrationCheck implements DiagnosticPipe
 
 	private function isInFuture(): bool
 	{
-		$lycheeVersion = resolve(LycheeVersion::class);
+		$installedVersion = resolve(InstalledVersion::class);
 		$fileVersion = resolve(FileVersion::class);
 
-		$db_ver = $lycheeVersion->getVersion();
+		$db_ver = $installedVersion->getVersion();
 		$file_ver = $fileVersion->getVersion();
 
 		return $db_ver->toInteger() > $file_ver->toInteger();

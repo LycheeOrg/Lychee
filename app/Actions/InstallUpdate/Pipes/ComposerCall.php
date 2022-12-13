@@ -3,7 +3,7 @@
 namespace App\Actions\InstallUpdate\Pipes;
 
 use App\Facades\Helpers;
-use App\Metadata\Versions\LycheeVersion;
+use App\Metadata\Versions\InstalledVersion;
 use App\Models\Configs;
 use App\Models\Logs;
 use function Safe\chdir;
@@ -17,13 +17,13 @@ class ComposerCall extends AbstractUpdateInstallerPipe
 	 */
 	public function handle(array &$output, \Closure $next): array
 	{
-		$lycheeVersion = resolve(LycheeVersion::class);
-		if ($lycheeVersion->isRelease()) {
+		$installedVersion = resolve(InstalledVersion::class);
+		if ($installedVersion->isRelease()) {
 			return $next($output);
 		}
 
 		// update with respect to installed version
-		$noDev = $lycheeVersion->isDev() ? '' : '--no-dev ';
+		$noDev = $installedVersion->isDev() ? '' : '--no-dev ';
 
 		if (Helpers::isExecAvailable()) {
 			if (Configs::getValueAsBool('apply_composer_update')) {

@@ -9,21 +9,21 @@ use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\VersionControlException;
 use App\Facades\Helpers;
 use App\Metadata\Versions\GitHubVersion;
-use App\Metadata\Versions\LycheeVersion;
+use App\Metadata\Versions\InstalledVersion;
 use App\Models\Configs;
 use function Safe\exec;
 
 class UpdatableCheck implements DiagnosticPipe
 {
-	private LycheeVersion $lycheeVersion;
+	private InstalledVersion $InstalledVersion;
 
 	/**
-	 * @param LycheeVersion $lycheeVersion
+	 * @param InstalledVersion $InstalledVersion
 	 */
 	public function __construct(
-		LycheeVersion $lycheeVersion
+		InstalledVersion $InstalledVersion
 	) {
-		$this->lycheeVersion = $lycheeVersion;
+		$this->InstalledVersion = $InstalledVersion;
 	}
 
 	/**
@@ -31,7 +31,7 @@ class UpdatableCheck implements DiagnosticPipe
 	 */
 	public function handle(array &$data, \Closure $next): array
 	{
-		if (!$this->lycheeVersion->isRelease()) {
+		if (!$this->InstalledVersion->isRelease()) {
 			try {
 				self::assertUpdatability();
 				// @codeCoverageIgnoreStart
@@ -53,10 +53,10 @@ class UpdatableCheck implements DiagnosticPipe
 	 */
 	public static function assertUpdatability(): void
 	{
-		$lycheeVersion = resolve(LycheeVersion::class);
+		$InstalledVersion = resolve(InstalledVersion::class);
 
 		// we bypass this because we don't care about the other conditions as they don't apply to the release
-		if ($lycheeVersion->isRelease()) {
+		if ($InstalledVersion->isRelease()) {
 			// @codeCoverageIgnoreStart
 			return;
 			// @codeCoverageIgnoreEnd
