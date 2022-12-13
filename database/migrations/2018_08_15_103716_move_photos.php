@@ -1,14 +1,18 @@
 <?php
 
 use App\Facades\Helpers;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use function Safe\date;
+use Safe\Exceptions\DatetimeException;
+use Safe\Exceptions\ImageException;
+use function Safe\getimagesize;
 
-class MovePhotos extends Migration
-{
+require_once 'TemporaryModels/MovePhotos_Photo.php';
+
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -26,7 +30,7 @@ class MovePhotos extends Migration
 			$id = 0;
 			foreach ($results as $result) {
 				$photoAttributes = [];
-				$id = Helpers::trancateIf32($result->id, $id);
+				$id = Helpers::trancateIf32($result->id, (int) $id);
 				$photoAttributes['id'] = $id;
 				if ($result->album === 0) {
 					$photoAttributes['album_id'] = null;
@@ -49,13 +53,19 @@ class MovePhotos extends Migration
 				$photoAttributes['model'] = $result->model;
 				$photoAttributes['shutter'] = $result->shutter;
 				$photoAttributes['focal'] = $result->focal;
-				$photoAttributes['takestamp'] = ($result->takestamp === 0 || $result->takestamp === null) ? null : date('Y-m-d H:i:s', $result->takestamp);
+				try {
+					$date = date('Y-m-d H:i:s', $result->takestamp);
+				} catch (DatetimeException) {
+					$date = null;
+				}
+				$photoAttributes['takestamp'] = ($result->takestamp === 0 || $result->takestamp === null) ? null : $date;
 				$photoAttributes['star'] = $result->star;
 				$photoAttributes['thumbUrl'] = $result->thumbUrl;
 				$thumbUrl2x = explode('.', $result->thumbUrl);
 				if (count($thumbUrl2x) < 2) {
 					$photoAttributes['thumb2x'] = 0;
 				} else {
+					/** @var string $thumbUrl2x */
 					$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
 					if (!Storage::exists('thumb/' . $thumbUrl2x)) {
 						$photoAttributes['thumb2x'] = 0;
@@ -65,16 +75,24 @@ class MovePhotos extends Migration
 				}
 				$photoAttributes['checksum'] = $result->checksum;
 				if (Storage::exists('medium/' . $photoAttributes['url'])) {
-					list($width, $height) = getimagesize(Storage::path('medium/' . $photoAttributes['url']));
-					$photoAttributes['medium'] = $width . 'x' . $height;
+					try {
+						list($width, $height) = getimagesize(Storage::path('medium/' . $photoAttributes['url']));
+						$photoAttributes['medium'] = $width . 'x' . $height;
+					} catch (ImageException) {
+						$photoAttributes['medium'] = '';
+					}
 				} else {
 					$photoAttributes['medium'] = '';
 				}
 				if (Storage::exists('small/' . $photoAttributes['url'])) {
-					list($width, $height) = getimagesize(Storage::path('small/' . $photoAttributes['url']));
-					$result->small = $width . 'x' . $height;
+					try {
+						list($width, $height) = getimagesize(Storage::path('small/' . $photoAttributes['url']));
+						$photoAttributes['small'] = $width . 'x' . $height;
+					} catch (ImageException) {
+						$photoAttributes['small'] = '';
+					}
 				} else {
-					$result->small = '';
+					$photoAttributes['small'] = '';
 				}
 				$photoAttributes['license'] = $result->license ?? 'none';
 
@@ -96,9 +114,4 @@ class MovePhotos extends Migration
 			MovePhotos_Photo::query()->truncate();
 		}
 	}
-}
-
-class MovePhotos_Photo extends Model
-{
-	protected $table = 'photos';
-}
+};

@@ -7,8 +7,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class RefactorTimestampsAnew extends Migration
-{
+return new class() extends Migration {
 	private const SQL_TIMEZONE_NAME = 'UTC';
 	private const SQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
 	private const ID_COL_NAME = 'id';
@@ -58,7 +57,7 @@ class RefactorTimestampsAnew extends Migration
 	/**
 	 * Run the migration.
 	 */
-	public function up()
+	public function up(): void
 	{
 		try {
 			$this->fixPagesTable();
@@ -74,7 +73,7 @@ class RefactorTimestampsAnew extends Migration
 	/**
 	 * Reverse the migration.
 	 */
-	public function down()
+	public function down(): void
 	{
 		try {
 			$this->downgradeORMSystemTimes();
@@ -466,8 +465,10 @@ class RefactorTimestampsAnew extends Migration
 			$oldTz
 		);
 
+		/** @phpstan-ignore-next-line */ // Cannot call method setTimezone() on Carbon\Carbon|false.
 		$result->setTimezone($newTz);
 
+		/** @phpstan-ignore-next-line */ // Cannot call method format() on Carbon\Carbon|false.
 		return $result->format(self::SQL_DATETIME_FORMAT);
 	}
 
@@ -485,7 +486,7 @@ class RefactorTimestampsAnew extends Migration
 			->where(self::CONFIG_KEY_COL_NAME, '=', $key)
 			->first();
 
-		return $config->{self::CONFIG_VALUE_COL_NAME};
+		return $config?->{self::CONFIG_VALUE_COL_NAME} ?? '';
 	}
 
 	/**
@@ -545,4 +546,4 @@ class RefactorTimestampsAnew extends Migration
 				throw new InvalidArgumentException('Unsupported DB system: ' . $dbConnType);
 		}
 	}
-}
+};

@@ -5,8 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class FixLivePhotoShortPath extends Migration
-{
+return new class() extends Migration {
 	private string $driverName;
 
 	/**
@@ -65,4 +64,4 @@ class FixLivePhotoShortPath extends Migration
 			->where('live_photo_short_path', 'like', '%/%')
 			->update(['live_photo_short_path' => $sqlSubstringLivePhotoPath]);
 	}
-}
+};

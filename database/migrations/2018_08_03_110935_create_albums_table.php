@@ -18,8 +18,7 @@ use Illuminate\Support\Facades\Schema;
 // | password     | varchar(100)        | YES  |     | NULL    |       |
 // +--------------+---------------------+------+-----+---------+-------+
 
-class CreateAlbumsTable extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -56,4 +55,4 @@ class CreateAlbumsTable extends Migration
 	{
 		Schema::dropIfExists('albums');
 	}
-}
+};
