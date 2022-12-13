@@ -12,7 +12,7 @@ use App\Factories\LangFactory;
 use App\Image\SizeVariantDefaultFactory;
 use App\Image\StreamStatFilter;
 use App\Locale\Lang;
-use App\Metadata\Json\GitRequest;
+use App\Metadata\Json\CommitsRequest;
 use App\Metadata\Json\UpdateRequest;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
@@ -48,7 +48,7 @@ class AppServiceProvider extends ServiceProvider
 		FileVersion::class => FileVersion::class,
 
 		// Json requests.
-		GitRequest::class => GitRequest::class,
+		CommitsRequest::class => CommitsRequest::class,
 		UpdateRequest::class => UpdateRequest::class,
 	];
 

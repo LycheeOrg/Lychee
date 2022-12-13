@@ -2,13 +2,14 @@
 
 namespace App\Metadata\Versions;
 
+use App\Contracts\Versions\HasRelease;
 use App\Contracts\Versions\HasVersion;
 use App\DTO\Version;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Models\Configs;
 use Illuminate\Support\Facades\File;
 
-class InstalledVersion implements HasVersion
+class InstalledVersion implements HasVersion, HasRelease
 {
 	/**
 	 * True if we are using a release.

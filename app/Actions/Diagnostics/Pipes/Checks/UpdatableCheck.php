@@ -15,15 +15,15 @@ use function Safe\exec;
 
 class UpdatableCheck implements DiagnosticPipe
 {
-	private InstalledVersion $InstalledVersion;
+	private InstalledVersion $installedVersion;
 
 	/**
-	 * @param InstalledVersion $InstalledVersion
+	 * @param InstalledVersion $installedVersion
 	 */
 	public function __construct(
-		InstalledVersion $InstalledVersion
+		InstalledVersion $installedVersion,
 	) {
-		$this->InstalledVersion = $InstalledVersion;
+		$this->installedVersion = $installedVersion;
 	}
 
 	/**
@@ -31,7 +31,7 @@ class UpdatableCheck implements DiagnosticPipe
 	 */
 	public function handle(array &$data, \Closure $next): array
 	{
-		if (!$this->InstalledVersion->isRelease()) {
+		if (!$this->installedVersion->isRelease()) {
 			try {
 				self::assertUpdatability();
 				// @codeCoverageIgnoreStart
@@ -53,10 +53,10 @@ class UpdatableCheck implements DiagnosticPipe
 	 */
 	public static function assertUpdatability(): void
 	{
-		$InstalledVersion = resolve(InstalledVersion::class);
+		$installedVersion = resolve(InstalledVersion::class);
 
 		// we bypass this because we don't care about the other conditions as they don't apply to the release
-		if ($InstalledVersion->isRelease()) {
+		if ($installedVersion->isRelease()) {
 			// @codeCoverageIgnoreStart
 			return;
 			// @codeCoverageIgnoreEnd
