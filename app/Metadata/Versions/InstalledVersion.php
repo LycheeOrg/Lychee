@@ -18,10 +18,10 @@ use Illuminate\Support\Facades\File;
 class InstalledVersion implements HasVersion, HasIsRelease
 {
 	/**
-	 * True if we are using a release.
+	 * False if we are using a release.
 	 * We check if the .git folder is present.
 	 */
-	private bool $isRelease;
+	private bool $isGit;
 
 	/**
 	 * true if phpunit is present in vendor/bin/
@@ -34,7 +34,7 @@ class InstalledVersion implements HasVersion, HasIsRelease
 	 */
 	public function __construct()
 	{
-		$this->isRelease = !File::exists(base_path('.git'));
+		$this->isGit = !File::exists(base_path('.git'));
 		$this->phpUnit = File::exists(base_path('vendor/bin/phpunit'));
 	}
 
@@ -43,7 +43,7 @@ class InstalledVersion implements HasVersion, HasIsRelease
 	 */
 	public function isRelease(): bool
 	{
-		return $this->isRelease;
+		return !$this->isGit;
 	}
 
 	/**

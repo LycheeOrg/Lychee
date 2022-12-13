@@ -24,6 +24,9 @@ class GitRemoteTest extends TestCase
 		$data = $remote->fetchRemote(true);
 		$countBehind = $remote->countBehind($data, 'fail');
 		$this->assertEquals(30, $countBehind);
+
+		$countBehind = $remote->countBehind([], 'fail');
+		$this->assertFalse($countBehind);
 	}
 
 	public function testTags(): void

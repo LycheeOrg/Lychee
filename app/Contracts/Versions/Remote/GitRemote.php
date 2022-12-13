@@ -30,7 +30,7 @@ interface GitRemote
 	public function getHead(): ?string;
 
 	/**
-	 * Get the name of the remote Head.
+	 * Get the sha of the remote Head.
 	 */
 	public function getHeadSha(): ?string;
 
