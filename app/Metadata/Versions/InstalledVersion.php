@@ -34,7 +34,7 @@ class InstalledVersion implements HasVersion, HasIsRelease
 	 */
 	public function __construct()
 	{
-		$this->isGit = !File::exists(base_path('.git'));
+		$this->isGit = File::exists(base_path('.git'));
 		$this->phpUnit = File::exists(base_path('vendor/bin/phpunit'));
 	}
 
