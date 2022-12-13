@@ -23,11 +23,6 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 	use HasPasswordTrait;
 	use HasUserTrait;
 
-	public const ID_ATTRIBUTE = 'id';
-
-	public const MAY_UPLOAD_ATTRIBUTE = 'may_upload';
-	public const MAY_EDIT_OWN_SETTINGS_ATTRIBUTE = 'may_edit_own_settings';
-
 	protected bool $mayUpload = false;
 	protected bool $mayEditOwnSettings = false;
 
@@ -45,11 +40,11 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 	public function rules(): array
 	{
 		return [
-			self::ID_ATTRIBUTE => ['required', new IntegerIDRule(false)],
+			RequestAttribute::ID_ATTRIBUTE => ['required', new IntegerIDRule(false)],
 			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
 			RequestAttribute::PASSWORD_ATTRIBUTE => ['sometimes', new PasswordRule(false)],
-			self::MAY_UPLOAD_ATTRIBUTE => 'present|boolean',
-			self::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE => 'present|boolean',
+			RequestAttribute::MAY_UPLOAD_ATTRIBUTE => 'present|boolean',
+			RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE => 'present|boolean',
 		];
 	}
 
@@ -66,9 +61,9 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 		} else {
 			$this->password = null;
 		}
-		$this->mayUpload = static::toBoolean($values[self::MAY_UPLOAD_ATTRIBUTE]);
-		$this->mayEditOwnSettings = static::toBoolean($values[self::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE]);
-		$this->user2 = User::query()->findOrFail($values[self::ID_ATTRIBUTE]);
+		$this->mayUpload = static::toBoolean($values[RequestAttribute::MAY_UPLOAD_ATTRIBUTE]);
+		$this->mayEditOwnSettings = static::toBoolean($values[RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE]);
+		$this->user2 = User::query()->findOrFail($values[RequestAttribute::ID_ATTRIBUTE]);
 	}
 
 	public function mayUpload(): bool

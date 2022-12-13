@@ -4,6 +4,8 @@ namespace App\Http\Requests\Contracts;
 
 class RequestAttribute
 {
+	public const ID_ATTRIBUTE = 'id';
+
 	public const USER_ID_ATTRIBUTE = 'userID';
 	public const USER_IDS_ATTRIBUTE = 'userIDs';
 
@@ -23,6 +25,7 @@ class RequestAttribute
 	public const USERNAME_ATTRIBUTE = 'username';
 
 	public const PASSWORD_ATTRIBUTE = 'password';
+	public const OLD_PASSWORD_ATTRIBUTE = 'oldPassword';
 
 	public const SORTING_COLUMN_ATTRIBUTE = 'sorting_column';
 	public const SORTING_ORDER_ATTRIBUTE = 'sorting_order';
@@ -39,6 +42,8 @@ class RequestAttribute
 	 * TODO: Maybe rename the attribute in the back- and front-end to avoid overloading the same term.
 	 */
 	public const SIZE_VARIANT_ATTRIBUTE = 'kind';
-
 	public const TAGS_ATTRIBUTE = 'tags';
+
+	public const MAY_UPLOAD_ATTRIBUTE = 'may_upload';
+	public const MAY_EDIT_OWN_SETTINGS_ATTRIBUTE = 'may_edit_own_settings';
 }

@@ -4,6 +4,7 @@ namespace App\Http\Requests\Users;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasUser;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasUserTrait;
 use App\Models\User;
 use App\Policies\UserPolicy;
@@ -13,8 +14,6 @@ use Illuminate\Support\Facades\Gate;
 class DeleteUserRequest extends BaseApiRequest implements HasUser
 {
 	use HasUserTrait;
-
-	public const ID_ATTRIBUTE = 'id';
 
 	/**
 	 * {@inheritDoc}
@@ -30,7 +29,7 @@ class DeleteUserRequest extends BaseApiRequest implements HasUser
 	public function rules(): array
 	{
 		return [
-			self::ID_ATTRIBUTE => ['required', new IntegerIDRule(false)],
+			RequestAttribute::ID_ATTRIBUTE => ['required', new IntegerIDRule(false)],
 		];
 	}
 
@@ -39,6 +38,6 @@ class DeleteUserRequest extends BaseApiRequest implements HasUser
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->user2 = User::query()->findOrFail($values[self::ID_ATTRIBUTE]);
+		$this->user2 = User::query()->findOrFail($values[RequestAttribute::ID_ATTRIBUTE]);
 	}
 }
