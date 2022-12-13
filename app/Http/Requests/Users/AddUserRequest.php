@@ -19,9 +19,6 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword
 	use HasUsernameTrait;
 	use HasPasswordTrait;
 
-	public const MAY_UPLOAD_ATTRIBUTE = 'may_upload';
-	public const MAY_EDIT_OWN_SETTINGS_ATTRIBUTE = 'may_edit_own_settings';
-
 	protected bool $mayUpload = false;
 	protected bool $mayEditOwnSettings = false;
 
@@ -41,8 +38,8 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword
 		return [
 			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
 			RequestAttribute::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
-			self::MAY_UPLOAD_ATTRIBUTE => 'present|boolean',
-			self::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE => 'present|boolean',
+			RequestAttribute::MAY_UPLOAD_ATTRIBUTE => 'present|boolean',
+			RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE => 'present|boolean',
 		];
 	}
 
@@ -53,8 +50,8 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword
 	{
 		$this->username = $values[RequestAttribute::USERNAME_ATTRIBUTE];
 		$this->password = $values[RequestAttribute::PASSWORD_ATTRIBUTE];
-		$this->mayUpload = static::toBoolean($values[self::MAY_UPLOAD_ATTRIBUTE]);
-		$this->mayEditOwnSettings = static::toBoolean($values[self::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE]);
+		$this->mayUpload = static::toBoolean($values[RequestAttribute::MAY_UPLOAD_ATTRIBUTE]);
+		$this->mayEditOwnSettings = static::toBoolean($values[RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE]);
 	}
 
 	public function mayUpload(): bool

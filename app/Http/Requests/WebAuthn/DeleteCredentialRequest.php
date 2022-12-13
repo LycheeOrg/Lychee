@@ -3,6 +3,7 @@
 namespace App\Http\Requests\WebAuthn;
 
 use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\Contracts\RequestAttribute;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
@@ -21,12 +22,12 @@ class DeleteCredentialRequest extends BaseApiRequest
 
 	public function rules(): array
 	{
-		return ['id' => 'required|string'];
+		return [RequestAttribute::ID_ATTRIBUTE => 'required|string'];
 	}
 
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->id = $values['id'];
+		$this->id = $values[RequestAttribute::ID_ATTRIBUTE];
 	}
 
 	public function getId(): string
