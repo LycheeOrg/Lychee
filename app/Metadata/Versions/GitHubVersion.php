@@ -20,7 +20,7 @@ class GitHubVersion implements VersionControl, HasRelease
 
 	public ?string $localBranch = null;
 	public ?string $localHead = null;
-	public int|false $countBehind = false;
+	private int|false $countBehind = false;
 	private ?GitRemote $remote = null;
 
 	/**

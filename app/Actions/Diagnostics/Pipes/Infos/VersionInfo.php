@@ -36,7 +36,7 @@ class VersionInfo implements DiagnosticPipe
 
 			$lycheeChannelName = $gitHubFunctions->isRelease() ? 'tags' : 'git';
 
-			if ($gitHubFunctions->localHead !== null && $gitHubFunctions->localBranch !== null) {
+			if ($gitHubFunctions->localHead !== null) {
 				$gitInfo = new LycheeGitInfo($gitHubFunctions);
 				$lycheeInfoString = $gitInfo->toString();
 			} else {
