@@ -42,7 +42,7 @@ class IncrementUserIDs extends Migration
 			// the sequence is called `users_id_seq1`
 			/** @var App\Models\User $lastUser */
 			$lastUser = DB::table('users')->orderByDesc('id')->first();
-			DB::statement('ALTER SEQUENCE users_id_seq1 RESTART WITH ' . $lastUser->id + 1);
+			DB::statement('ALTER SEQUENCE users_id_seq1 RESTART WITH ' . strval($lastUser->id + 1));
 		}
 		Schema::enableForeignKeyConstraints();
 	}
