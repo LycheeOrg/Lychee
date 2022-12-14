@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Administration;
 
-use App\Actions\Update\Apply as ApplyUpdate;
-use App\Actions\Update\Check as CheckUpdate;
+use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
+use App\Actions\InstallUpdate\ApplyUpdate;
 use App\Contracts\LycheeException;
 use App\Exceptions\VersionControlException;
 use App\Legacy\AdminAuthentication;
-use App\Legacy\Legacy;
+use App\Metadata\Versions\GitHubVersion;
 use App\Policies\UserPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -49,12 +49,10 @@ use Illuminate\View\View;
  */
 class UpdateController extends Controller
 {
-	protected CheckUpdate $checkUpdate;
 	protected ApplyUpdate $applyUpdate;
 
-	public function __construct(CheckUpdate $checkUpdate, ApplyUpdate $applyUpdate)
+	public function __construct(ApplyUpdate $applyUpdate)
 	{
-		$this->checkUpdate = $checkUpdate;
 		$this->applyUpdate = $applyUpdate;
 	}
 
@@ -68,7 +66,10 @@ class UpdateController extends Controller
 	 */
 	public function check(): array
 	{
-		return ['updateStatus' => $this->checkUpdate->getText()];
+		$gitHubFunctions = resolve(GitHubVersion::class);
+		$gitHubFunctions->hydrate(true, false);
+
+		return ['updateStatus' => $gitHubFunctions->getBehindTest()];
 	}
 
 	/**
@@ -84,7 +85,7 @@ class UpdateController extends Controller
 	 */
 	public function apply(): array
 	{
-		$this->checkUpdate->assertUpdatability();
+		UpdatableCheck::assertUpdatability();
 
 		return ['updateMsgs' => $this->applyUpdate->run()];
 	}
@@ -102,7 +103,8 @@ class UpdateController extends Controller
 	 */
 	public function view(): View
 	{
-		$this->checkUpdate->assertUpdatability();
+		UpdatableCheck::assertUpdatability();
+
 		$output = $this->applyUpdate->run();
 
 		return view('update.results', ['code' => '200', 'message' => 'Upgrade results', 'output' => $output]);
@@ -118,7 +120,7 @@ class UpdateController extends Controller
 	 * trigger a migration, but also generates a new API key.
 	 * Also note, that this method internally uses
 	 * {@link ApplyUpdate::migrate()} while `MigrationController::view`
-	 * uses {@link \App\Actions\Install\ApplyMigration::migrate()}.
+	 * uses {@link \App\Actions\InstallUpdate\ApplyMigration::migrate()}.
 	 * However, both methods are very similar, too.
 	 * The whole code around installation/upgrade/migration should
 	 * thoroughly be revised an refactored.
@@ -140,9 +142,7 @@ class UpdateController extends Controller
 
 		// Check if logged in AND is admin
 		if (Gate::check(UserPolicy::IS_ADMIN)) {
-			$output = [];
-			$this->applyUpdate->migrate($output);
-			$this->applyUpdate->filter($output);
+			$output = $this->applyUpdate->run();
 
 			if (AdminAuthentication::isAdminNotRegistered()) {
 				Auth::logout();

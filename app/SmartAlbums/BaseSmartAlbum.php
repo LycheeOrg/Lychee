@@ -144,7 +144,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		//     This avoids unnecessary hydration of photos if the album is
 		//     only used within a listing of sub-albums.
 
-		$result = [
+		return [
 			'id' => $this->id,
 			'title' => $this->title,
 			'is_public' => $this->isPublic,
@@ -153,7 +153,5 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			'thumb' => $this->getThumbAttribute(),
 			'photos' => $this->photos?->toArray(),
 		];
-
-		return $result;
 	}
 }

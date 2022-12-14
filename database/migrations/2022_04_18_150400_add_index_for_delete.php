@@ -13,8 +13,7 @@ use Illuminate\Support\Facades\Schema;
  * size variants which can be safely deleted without breaking shared use of
  * the media file by a duplicate.
  */
-class AddIndexForDelete extends Migration
-{
+return new class() extends Migration {
 	private AbstractSchemaManager $schemaManager;
 
 	/**
@@ -26,7 +25,7 @@ class AddIndexForDelete extends Migration
 		$this->schemaManager = $connection->getDoctrineSchemaManager();
 	}
 
-	public function up()
+	public function up(): void
 	{
 		Schema::table('size_variants', function (Blueprint $table) {
 			// This index is required by \App\Actions\SizeVariant\Delete::do()
@@ -35,7 +34,7 @@ class AddIndexForDelete extends Migration
 		});
 	}
 
-	public function down()
+	public function down(): void
 	{
 		Schema::table('size_variants', function (Blueprint $table) {
 			$this->dropIndexIfExists($table, 'size_variants_short_path_index');
@@ -50,11 +49,11 @@ class AddIndexForDelete extends Migration
 	 *
 	 * @throws DBALException
 	 */
-	private function dropIndexIfExists(Blueprint $table, string $indexName)
+	private function dropIndexIfExists(Blueprint $table, string $indexName): void
 	{
-		$doctrineTable = $this->schemaManager->listTableDetails($table->getTable());
+		$doctrineTable = $this->schemaManager->introspectTable($table->getTable());
 		if ($doctrineTable->hasIndex($indexName)) {
 			$table->dropIndex($indexName);
 		}
 	}
-}
+};

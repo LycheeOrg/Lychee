@@ -1,11 +1,9 @@
 <?php
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class ConfigLocalTakestamp extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -33,6 +31,6 @@ class ConfigLocalTakestamp extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', '=', 'local_takestamp_video_formats')->delete();
+		DB::table('configs')->where('key', '=', 'local_takestamp_video_formats')->delete();
 	}
-}
+};

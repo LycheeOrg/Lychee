@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Install;
+namespace App\Actions\InstallUpdate;
 
 use App\Exceptions\Internal\FrameworkException;
 use Illuminate\Contracts\Container\BindingResolutionException;

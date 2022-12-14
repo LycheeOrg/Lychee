@@ -13,7 +13,6 @@ class ToHome implements Redirection
 	 */
 	public static function go(): RedirectResponse
 	{
-		// we directly redirect to gallery
 		return redirect(route('home'), Response::HTTP_TEMPORARY_REDIRECT, [
 			'Cache-Control' => 'no-cache, must-revalidate',
 		]);

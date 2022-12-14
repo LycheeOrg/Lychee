@@ -3,8 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class FixTakedate extends Migration
-{
+return new class() extends Migration {
 	private const TAKESTAMP = 'takestamp';
 	private const TAKEN_AT = 'taken_at';
 
@@ -29,4 +28,4 @@ class FixTakedate extends Migration
 		DB::table('configs')->where('value', '=', self::TAKEN_AT)->update(['value' => self::TAKESTAMP]);
 		DB::table('albums')->where('sorting_col', '=', self::TAKEN_AT)->update(['sorting_col' => self::TAKESTAMP]);
 	}
-}
+};
