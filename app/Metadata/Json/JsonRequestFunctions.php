@@ -1,25 +1,24 @@
 <?php
 
-namespace App\ModelFunctions;
+namespace App\Metadata\Json;
 
+use App\Contracts\JsonRequest;
 use App\Exceptions\Internal\JsonRequestFailedException;
+use App\Models\Logs;
 use Illuminate\Support\Facades\Cache;
 use function Safe\file_get_contents;
 use function Safe\ini_get;
 
-class JsonRequestFunctions
+class JsonRequestFunctions implements JsonRequest
 {
 	private string $url;
 	private mixed $decodedJson;
 	private int $ttl;
 
 	/**
-	 * JsonRequestFunctions constructor.
-	 *
-	 * @param string $url URL to request/cache
-	 * @param int    $ttl Time-to-live of the cache in DAYS
+	 * {@inheritDoc}
 	 */
-	public function __construct(string $url, int $ttl = 1)
+	public function init(string $url, int $ttl): void
 	{
 		$this->url = $url;
 		$this->decodedJson = null;
@@ -27,7 +26,7 @@ class JsonRequestFunctions
 	}
 
 	/**
-	 * Remove elements from the cache.
+	 * {@inheritDoc}
 	 */
 	public function clear_cache(): void
 	{
@@ -37,9 +36,7 @@ class JsonRequestFunctions
 	}
 
 	/**
-	 * Return the age of the last query in days/hours/minutes.
-	 *
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function get_age_text(): string
 	{
@@ -62,6 +59,34 @@ class JsonRequestFunctions
 		} catch (\Throwable) {
 			return 'unknown';
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function get_json(bool $useCache = false): mixed
+	{
+		try {
+			if ($this->decodedJson === null || !$useCache) {
+				$rawResponse = $useCache ? (string) Cache::get($this->url) : '';
+				if ($rawResponse === '') {
+					$rawResponse = $this->fetchFromServer();
+					Cache::put($this->url, $rawResponse, now()->addDays($this->ttl));
+					Cache::put($this->url . '_age', now(), now()->addDays($this->ttl));
+				}
+
+				$this->decodedJson = json_decode($rawResponse, false, 512, JSON_THROW_ON_ERROR);
+			}
+
+			return $this->decodedJson;
+		} catch (JsonRequestFailedException $e) {
+			Logs::error(__METHOD__, __LINE__, $e->getMessage());
+		} catch (\JsonException $e) {
+			Logs::error(__METHOD__, __LINE__, $e->getMessage());
+		}
+		$this->clear_cache();
+
+		return null;
 	}
 
 	/**
@@ -93,40 +118,6 @@ class JsonRequestFunctions
 			return $raw;
 		} catch (\Throwable $e) {
 			throw new JsonRequestFailedException('Could not fetch ' . $this->url, $e);
-		}
-	}
-
-	/**
-	 * Returns the decoded JSON response.
-	 *
-	 * @param bool $useCache if true, the JSON response is not fetched but
-	 *                       served from cache if available
-	 *
-	 * @return mixed the type of the response depends on the content of the
-	 *               HTTP response and may be anything: a primitive type,
-	 *               an array or an object
-	 *
-	 * @throws JsonRequestFailedException
-	 * @throws \JsonException
-	 */
-	public function get_json(bool $useCache = false): mixed
-	{
-		try {
-			if ($this->decodedJson === null || !$useCache) {
-				$rawResponse = $useCache ? (string) Cache::get($this->url) : '';
-				if ($rawResponse === '') {
-					$rawResponse = $this->fetchFromServer();
-					Cache::put($this->url, $rawResponse, now()->addDays($this->ttl));
-					Cache::put($this->url . '_age', now(), now()->addDays($this->ttl));
-				}
-
-				$this->decodedJson = json_decode($rawResponse, false, 512, JSON_THROW_ON_ERROR);
-			}
-
-			return $this->decodedJson;
-		} catch (\JsonException $e) {
-			$this->clear_cache();
-			throw $e;
 		}
 	}
 }

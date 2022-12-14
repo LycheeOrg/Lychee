@@ -12,8 +12,7 @@ active
 </code></pre>
 
 @if (empty($errors))
-    <strong>We did not detect any errors. However if the migration failed,
-    remove the installed.log file and reopen <a href="{{ route('install-welcome') }}">this page</a>.</strong>
+    <strong>We did not detect any errors. However if the migration failed, reopen <a href="{{ route('install-welcome') }}">this page</a>.</strong>
 @else
 <div class="buttons" >
     <a class="button" href="{{ route('install-migrate') }}">

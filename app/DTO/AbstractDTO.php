@@ -39,7 +39,9 @@ abstract class AbstractDTO implements DTO
 			// `JSON_THROW_ON_ERROR` and then mimic that behaviour.
 			$json = json_encode($this->jsonSerialize(), $options);
 			if (json_last_error() !== JSON_ERROR_NONE) {
+				// @codeCoverageIgnoreStart
 				throw new \JsonException(json_last_error_msg(), json_last_error());
+				// @codeCoverageIgnoreEnd
 			}
 
 			return $json;
@@ -62,7 +64,9 @@ abstract class AbstractDTO implements DTO
 		try {
 			return $this->toArray();
 		} catch (\Exception $e) {
+			// @codeCoverageIgnoreStart
 			throw new \JsonException(get_class($this) . '::toArray() failed', 0, $e);
+			// @codeCoverageIgnoreEnd
 		}
 	}
 

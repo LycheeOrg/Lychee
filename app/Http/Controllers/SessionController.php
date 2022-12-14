@@ -15,7 +15,9 @@ use App\Exceptions\VersionControlException;
 use App\Facades\Lang;
 use App\Http\Requests\Session\LoginRequest;
 use App\Legacy\AdminAuthentication;
-use App\Metadata\GitHubFunctions;
+use App\Metadata\Versions\FileVersion;
+use App\Metadata\Versions\GitHubVersion;
+use App\Metadata\Versions\InstalledVersion;
 use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -33,12 +35,15 @@ class SessionController extends Controller
 {
 	/**
 	 * @param ConfigFunctions $configFunctions
-	 * @param GitHubFunctions $gitHubFunctions
+	 * @param GitHubVersion   $gitHubVersion
+	 * @param FileVersion     $fileVersion,
 	 * @param Repository      $configRepository
 	 */
 	public function __construct(
 		private ConfigFunctions $configFunctions,
-		private GitHubFunctions $gitHubFunctions,
+		private GitHubVersion $gitHubVersion,
+		private FileVersion $fileVersion,
+		private InstalledVersion $lycheeVersion,
 		private Repository $configRepository,
 	) {
 	}
@@ -86,9 +91,12 @@ class SessionController extends Controller
 			} else {
 				// Unauthenticated
 				$return['config'] = $this->configFunctions->public();
-				if (Configs::getValueAsBool('hide_version_number')) {
-					$return['config']['version'] = '';
-				}
+			}
+
+			if ($return['user'] !== null || !Configs::getValueAsBool('hide_version_number')) {
+				$return['config']['version'] = $this->lycheeVersion->getVersion();
+			} else {
+				$return['config']['version'] = null;
 			}
 
 			// Consolidate sorting attributes
@@ -126,10 +134,14 @@ class SessionController extends Controller
 			// we also return the local
 			$return['locale'] = Lang::get_lang();
 
-			$return['update_json'] = 0;
-			$return['update_available'] = false;
+			if (Configs::getValueAsBool('check_for_updates')) {
+				$this->fileVersion->hydrate();
+				$this->gitHubVersion->hydrate();
+			}
+			$return['update_json'] = !$this->fileVersion->isUpToDate();
+			$return['update_available'] = !$this->gitHubVersion->isUpToDate();
 
-			return array_merge($return, $this->gitHubFunctions->checkUpdates());
+			return $return;
 		} catch (ModelDBException $e) {
 			$this->logout();
 			throw $e;

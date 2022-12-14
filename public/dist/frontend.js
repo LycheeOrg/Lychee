@@ -5900,17 +5900,12 @@ loadingBar.hide = function (force) {
 
 var lychee = {
 	/**
-  * The version of the backend in human-readable, printable form, e.g. `'4.6.3'`.
-  *
-  * TODO: Make format of this attribute and {@link lychee.update_json} consistent.
-  *
-  * TODO: Let the backend report the version as a proper object with properties for major, minor and patch level
-  *
-  * @type {string}
+  * The version of the backend in human-readable
+  * @type {Version}
   */
-	version: "",
+	version: null,
 
-	updatePath: "https://LycheeOrg.github.io/update.json",
+	updateGit: "https://github.com/LycheeOrg/Lychee",
 	updateURL: "https://github.com/LycheeOrg/Lychee/releases",
 	website: "https://LycheeOrg.github.io",
 
@@ -6133,16 +6128,7 @@ var lychee = {
 	hide_content_during_imgview: false,
 
 	checkForUpdates: true,
-	/**
-  * The most recent, available Lychee version encoded as an integer, e.g. 040506.
-  *
-  * TODO: Make format of this attribute and {@link lychee.version} consistent.
-  *
-  * TODO: Let the backend report the version as a proper object with properties for major, minor and patch level
-  *
-  * @type {number}
-  */
-	update_json: 0,
+	update_json: false,
 	update_available: false,
 	new_photos_notification: false,
 	/** @type {?SortingCriterion} */
@@ -6190,7 +6176,7 @@ lychee.logs = function () {
  * @returns {void}
  */
 lychee.aboutDialog = function () {
-	var aboutDialogBody = "\n\t\t<h1>Lychee <span class=\"version-number\"></span></h1>\n\t\t<p class=\"update-status up-to-date\"><a target='_blank' href='" + lychee.updateURL + "'></a></p>\n\t\t<h2></h2>\n\t\t<p class=\"about-desc\"></p>";
+	var aboutDialogBody = "\n\t\t<h1>Lychee <span class=\"version-number\"></span></h1>\n\t\t<p class=\"update-status up-to-date-release\"><a target='_blank' href='" + lychee.updateURL + "'></a></p>\n\t\t<p class=\"update-status up-to-date-git\"><a target='_blank' href='" + lychee.updateGit + "'></a></p>\n\t\t<h2></h2>\n\t\t<p class=\"about-desc\"></p>";
 
 	/**
   * @param {ModalDialogFormElements} formElements
@@ -6198,12 +6184,17 @@ lychee.aboutDialog = function () {
   * @returns {void}
   */
 	var initAboutDialog = function initAboutDialog(formElements, dialog) {
-		dialog.querySelector("span.version-number").textContent = lychee.version;
-		var updClassList = dialog.querySelector("p.update-status").classList;
+		dialog.querySelector("span.version-number").textContent = lychee.version.major + "." + lychee.version.minor + "." + lychee.version.patch;
+		// If Release is available : show release
+		// If Git is available : show git
 		if (lychee.update_available) {
-			updClassList.remove("up-to-date");
+			dialog.querySelector("p.up-to-date-release a").textContent = lychee.locale["UPDATE_AVAILABLE"];
+			dialog.querySelector("p.up-to-date-release").classList.remove("up-to-date-release");
+		} else if (lychee.update_json) {
+			dialog.querySelector("p.up-to-date-git a").textContent = lychee.locale["UPDATE_AVAILABLE"];
+			dialog.querySelector("p.up-to-date-git").classList.remove("up-to-date-git");
 		}
-		dialog.querySelector("p a").textContent = lychee.locale["UPDATE_AVAILABLE"];
+
 		dialog.querySelector("h2").textContent = lychee.locale["ABOUT_SUBTITLE"];
 		// We should not use `innerHTML`, but either hard-code HTML or build it
 		// programmatically.
@@ -6276,21 +6267,7 @@ lychee.parseInitializationData = function (data) {
 	lychee.rights = data.rights;
 	lychee.update_json = data.update_json;
 	lychee.update_available = data.update_available;
-
-	// Here we convert a version string with six digits but without dots
-	// as reported by the backend, e.g. `'040603'`, into a dot-separated,
-	// human-readable version string `'4.6.3'`.
-	// It is ridiculous how many variants we have to represent a version
-	// number.
-	// At least there are the following three:
-	//  - a string in human-readable format with dots: `'4.6.3'`
-	//  - a string with six digits, zero-padded, without dots: `'040603'`
-	//  - an integer: `40603`
-	// TODO: Let the backend report the version as a proper object with properties for major, minor and patch level
-	if (data.config.version !== "") {
-		var digits = data.config.version.match(/.{1,2}/g);
-		lychee.version = parseInt(digits[0]).toString() + "." + parseInt(digits[1]).toString() + "." + parseInt(digits[2]).toString();
-	}
+	lychee.version = data.config.version;
 
 	// we copy the locale that exists only.
 	// This ensures forward and backward compatibility.
@@ -6564,7 +6541,7 @@ lychee.login = function (data) {
  * @returns {void}
  */
 lychee.loginDialog = function () {
-	var loginDialogBody = "\n\t\t<a id='signInKeyLess' class=\"button\"><svg class='iconic'><use xlink:href='#key'/></svg></a>\n\t\t<form class=\"force-first-child\">\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input class='text' name='username' autocomplete='username' type='text' autocapitalize='off' data-tabindex='" + tabindex.get_next_tab_index() + "'>\n\t\t\t</div>\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input class='text' name='password' autocomplete='current-password' type='password' data-tabindex='" + tabindex.get_next_tab_index() + "'>\n\t\t\t</div>\n\t\t</form>\n\t\t<p class='version'>Lychee <span class='version-number'></span><span class=\"update-status up-to-date\"> &#8211; <a target='_blank' href='" + lychee.updateURL + "' data-tabindex='-1'></a></span></p>\n\t\t";
+	var loginDialogBody = "\n\t\t<a id='signInKeyLess' class=\"button\"><svg class='iconic'><use xlink:href='#key'/></svg></a>\n\t\t<form class=\"force-first-child\">\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input class='text' name='username' autocomplete='username' type='text' autocapitalize='off' data-tabindex='" + tabindex.get_next_tab_index() + "'>\n\t\t\t</div>\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input class='text' name='password' autocomplete='current-password' type='password' data-tabindex='" + tabindex.get_next_tab_index() + "'>\n\t\t\t</div>\n\t\t</form>\n\t\t<p class='version'>Lychee <span class='version-number'></span>\n\t\t\t<span class=\"update-status up-to-date-release\"> &#8211; <a target='_blank' href='" + lychee.updateURL + "' data-tabindex='-1'></a></span>\n\t\t\t<span class=\"update-status up-to-date-git\"> &#8211; <a target='_blank' href='" + lychee.updateGit + "' data-tabindex='-1'></a></span>\n\t\t</p>\n\t\t";
 
 	/**
   * @param {ModalDialogFormElements} formElements
@@ -6579,12 +6556,20 @@ lychee.loginDialog = function () {
 
 		formElements.username.placeholder = lychee.locale["USERNAME"];
 		formElements.password.placeholder = lychee.locale["PASSWORD"];
-		dialog.querySelector("span.version-number").textContent = lychee.version;
-		var updClassList = dialog.querySelector("span.update-status").classList;
-		if (lychee.update_available) {
-			updClassList.remove("up-to-date");
+		if (!!lychee.version) {
+			dialog.querySelector("span.version-number").textContent = lychee.version.major + "." + lychee.version.minor + "." + lychee.version.patch;
+		} else {
+			dialog.querySelector("span.version-number").textContent = "";
 		}
-		dialog.querySelector("span.update-status a").textContent = lychee.locale["UPDATE_AVAILABLE"];
+		// If Release is available : show release
+		// If Git is available : show git
+		if (lychee.update_available) {
+			dialog.querySelector("span.up-to-date-release a").textContent = lychee.locale["UPDATE_AVAILABLE"];
+			dialog.querySelector("span.up-to-date-release").classList.remove("up-to-date-release");
+		} else if (lychee.update_json) {
+			dialog.querySelector("span.up-to-date-git a").textContent = lychee.locale["UPDATE_AVAILABLE"];
+			dialog.querySelector("span.up-to-date-git").classList.remove("up-to-date-git");
+		}
 
 		// This feels awkward, because this hooks into the modal dialog in some
 		// unpredictable way.
@@ -15210,6 +15195,14 @@ visible.leftMenu = function () {
  */
 
 /**
+ * @typedef Version
+ *
+ * @property {int} major
+ * @property {int} minor
+ * @property {int} patch
+ */
+
+/**
  * @typedef Photo
  *
  * @property {string}       id
@@ -15475,7 +15468,7 @@ var SmartAlbumID = Object.freeze({
  *
  * @property {?User} user
  * @property {GlobalRightsDTO} rights
- * @property {number} update_json - version number of latest available update
+ * @property {boolean} update_json
  * @property {boolean} update_available
  * @property {Object.<string, string>} locale
  * @property {ConfigurationData} config
@@ -15531,7 +15524,7 @@ var SmartAlbumID = Object.freeze({
  * @property {string}   swipe_tolerance_x        - actually a number
  * @property {string}   swipe_tolerance_y        - actually a number
  * @property {string}   upload_processing_limit  - actually a number
- * @property {string}   version                  - a string of 6 digits without separating dots, i.e. version 4.6.3 is reported as `'040603'`
+ * @property {?Version} version                  - Version number
  */
 
 /**
