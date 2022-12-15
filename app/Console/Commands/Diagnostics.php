@@ -6,7 +6,7 @@ use App\Actions\Diagnostics\Configuration;
 use App\Actions\Diagnostics\Errors;
 use App\Actions\Diagnostics\Info;
 use App\Console\Commands\Utilities\Colorize;
-use App\Contracts\ExternalLycheeException;
+use App\Contracts\Exceptions\ExternalLycheeException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnexpectedException;
 use Illuminate\Console\Command;

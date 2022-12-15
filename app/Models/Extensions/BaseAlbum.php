@@ -3,8 +3,8 @@
 namespace App\Models\Extensions;
 
 use App\Constants\RandomID;
-use App\Contracts\AbstractAlbum;
 use App\Contracts\HasRandomID;
+use App\Contracts\Models\AbstractAlbum;
 use App\DTO\PhotoSortingCriterion;
 use App\Models\BaseAlbumImpl;
 use App\Models\User;

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Actions\SizeVariant\Delete;
 use App\Casts\MustNotSetCast;
-use App\Contracts\AbstractSizeVariantNamingStrategy;
+use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\MediaFileOperationException;

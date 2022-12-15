@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Photo;
 
+use App\Contracts\Http\Requests\HasPhotoIDs;
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasPhotoIDs;
-use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasPhotoIDsTrait;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;

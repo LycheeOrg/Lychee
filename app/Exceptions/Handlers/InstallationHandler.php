@@ -2,7 +2,7 @@
 
 namespace App\Exceptions\Handlers;
 
-use App\Contracts\HttpExceptionHandler;
+use App\Contracts\Exceptions\HttpExceptionHandler;
 use App\Exceptions\InstallationAlreadyCompletedException;
 use App\Exceptions\InstallationRequiredException;
 use App\Redirections\ToInstall;

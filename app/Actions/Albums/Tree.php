@@ -2,7 +2,7 @@
 
 namespace App\Actions\Albums;
 
-use App\Contracts\InternalLycheeException;
+use App\Contracts\Exceptions\InternalLycheeException;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\AlbumTree;
 use App\Exceptions\ConfigurationKeyMissingException;

@@ -43,7 +43,7 @@ parameters:
 		# Covariance - LSP princinple: https://en.wikipedia.org/wiki/Liskov_substitution_principle
 		- '#Return type \(Illuminate\\Support\\Carbon\|null\) of method App\\Models\\.*::asDateTime\(\) should be covariant with return type \(Illuminate\\Support\\Carbon\) of method Illuminate\\Database\\Eloquent\\Model::asDateTime\(\)#'
 		- '#Return type \(App\\Models\\Photo\) of method App\\Models\\Photo::replicate\(\) should be covariant with return type \(static\(.*\)\) of method Illuminate\\Database\\Eloquent\\Model::replicate\(\)#'
-		- '#Return type \(Illuminate\\Support\\Collection&iterable<App\\Contracts\\AbstractAlbum>\) of method App\\Http\\Requests\\Album\\.*::albums\(\) should be covariant with return type \(Illuminate\\Support\\Collection&iterable<App\\Models\\(Album|Extensions\\BaseAlbum)>\) of method App\\Http\\Requests\\Contracts\\HasAlbums<App\\Models\\(Album|Extensions\\BaseAlbum)>::albums\(\)#'
+		- '#Return type \(Illuminate\\Support\\Collection&iterable<App\\Contracts\\Models\\AbstractAlbum>\) of method App\\Http\\Requests\\Album\\.*::albums\(\) should be covariant with return type \(Illuminate\\Support\\Collection&iterable<App\\Models\\(Album|Extensions\\BaseAlbum)>\) of method App\\Contracts\\Http\\Requests\\HasAlbums<App\\Models\\(Album|Extensions\\BaseAlbum)>::albums\(\)#'
 		-
 			message: '#Parameter \#1 \$column \(array<string>\|Closure\|Illuminate\\Database\\Query\\Expression\|string\) of method .* should be contravariant with parameter \$column \(array<int\|string, mixed>\|\(Closure.*\)\|\(Closure.*\)\|Illuminate\\Database\\Query\\Expression\|string\) of method .*#'
 			paths:

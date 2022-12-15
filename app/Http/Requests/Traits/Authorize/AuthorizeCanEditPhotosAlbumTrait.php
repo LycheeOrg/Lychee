@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Traits\Authorize;
 
-use App\Contracts\AbstractAlbum;
+use App\Contracts\Models\AbstractAlbum;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;

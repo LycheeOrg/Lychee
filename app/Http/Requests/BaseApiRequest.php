@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Contracts\LycheeException;
+use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Exceptions\Internal\QueryBuilderException;

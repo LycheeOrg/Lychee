@@ -2,9 +2,9 @@
 
 namespace App\Image;
 
-use App\Contracts\AbstractSizeVariantNamingStrategy;
-use App\Contracts\LycheeException;
-use App\Contracts\SizeVariantFactory;
+use App\Contracts\Exceptions\LycheeException;
+use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
+use App\Contracts\Models\SizeVariantFactory;
 use App\DTO\ImageDimension;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ExternalComponentMissingException;

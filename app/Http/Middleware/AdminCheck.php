@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Contracts\InternalLycheeException;
+use App\Contracts\Exceptions\InternalLycheeException;
 use App\Exceptions\UnauthorizedException;
 use App\Http\Middleware\Checks\IsInstalled;
 use App\Policies\UserPolicy;

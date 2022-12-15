@@ -3,8 +3,8 @@
 namespace App\Actions\Photo;
 
 use App\Actions\Photo\Extensions\ArchiveFileInfo;
-use App\Contracts\AbstractSizeVariantNamingStrategy;
-use App\Contracts\LycheeException;
+use App\Contracts\Exceptions\LycheeException;
+use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSizeVariantException;

@@ -2,8 +2,8 @@
 
 namespace App\SmartAlbums;
 
-use App\Contracts\AbstractAlbum;
-use App\Contracts\InternalLycheeException;
+use App\Contracts\Exceptions\InternalLycheeException;
+use App\Contracts\Models\AbstractAlbum;
 use App\DTO\PhotoSortingCriterion;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;

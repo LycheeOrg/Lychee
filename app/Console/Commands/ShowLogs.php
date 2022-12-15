@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Console\Commands\Utilities\Colorize;
-use App\Contracts\ExternalLycheeException;
-use App\Contracts\InternalLycheeException;
+use App\Contracts\Exceptions\ExternalLycheeException;
+use App\Contracts\Exceptions\InternalLycheeException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnexpectedException;
 use App\Models\Logs;

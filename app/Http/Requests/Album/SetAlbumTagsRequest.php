@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests\Album;
 
+use App\Contracts\Http\Requests\HasTagAlbum;
+use App\Contracts\Http\Requests\HasTags;
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasTagAlbum;
-use App\Http\Requests\Contracts\HasTags;
-use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasTagAlbumTrait;
 use App\Http\Requests\Traits\HasTagsTrait;

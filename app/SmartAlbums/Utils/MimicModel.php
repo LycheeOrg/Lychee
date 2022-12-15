@@ -2,7 +2,7 @@
 
 namespace App\SmartAlbums\Utils;
 
-use App\Contracts\InternalLycheeException;
+use App\Contracts\Exceptions\InternalLycheeException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Support\Str;

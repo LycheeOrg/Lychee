@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Contracts\ExternalLycheeException;
+use App\Contracts\Exceptions\ExternalLycheeException;
 use App\Metadata\Geodecoder;
 use App\Models\Photo;
 use Illuminate\Console\Command;

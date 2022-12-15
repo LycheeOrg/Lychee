@@ -2,7 +2,7 @@
 
 namespace App\Exceptions\Handlers;
 
-use App\Contracts\HttpExceptionHandler;
+use App\Contracts\Exceptions\HttpExceptionHandler;
 use App\Redirections\ToInstall;
 use Illuminate\Database\QueryException;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;

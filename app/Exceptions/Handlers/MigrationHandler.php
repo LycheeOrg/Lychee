@@ -2,7 +2,7 @@
 
 namespace App\Exceptions\Handlers;
 
-use App\Contracts\HttpExceptionHandler;
+use App\Contracts\Exceptions\HttpExceptionHandler;
 use App\Exceptions\MigrationAlreadyCompletedException;
 use App\Exceptions\MigrationRequiredException;
 use App\Redirections\ToHome;
