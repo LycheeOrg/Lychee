@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Contracts\Exceptions;
+namespace App\Contracts\Exceptions\Handlers;
 
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface as HttpException;

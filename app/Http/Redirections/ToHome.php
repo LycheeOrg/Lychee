@@ -1,21 +1,20 @@
 <?php
 
-namespace App\Redirections;
+namespace App\Http\Redirections;
 
-use Illuminate\Contracts\Container\BindingResolutionException;
+use App\Contracts\Http\Redirection;
 use Illuminate\Http\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
-class ToMigration implements Redirection
+class ToHome implements Redirection
 {
 	/**
 	 * @throws RouteNotFoundException
-	 * @throws BindingResolutionException
 	 */
 	public static function go(): RedirectResponse
 	{
-		return redirect(route('migrate'), Response::HTTP_TEMPORARY_REDIRECT, [
+		return redirect(route('home'), Response::HTTP_TEMPORARY_REDIRECT, [
 			'Cache-Control' => 'no-cache, must-revalidate',
 		]);
 	}

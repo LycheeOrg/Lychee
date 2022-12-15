@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Redirections;
+namespace App\Http\Redirections;
 
+use App\Contracts\Http\Redirection;
 use App\Exceptions\InstallationFailedException;
 use App\Exceptions\Internal\FrameworkException;
 use Illuminate\Contracts\Container\BindingResolutionException;

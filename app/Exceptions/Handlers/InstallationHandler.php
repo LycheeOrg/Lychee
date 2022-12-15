@@ -2,10 +2,10 @@
 
 namespace App\Exceptions\Handlers;
 
-use App\Contracts\Exceptions\HttpExceptionHandler;
+use App\Contracts\Exceptions\Handlers\HttpExceptionHandler;
 use App\Exceptions\InstallationAlreadyCompletedException;
 use App\Exceptions\InstallationRequiredException;
-use App\Redirections\ToInstall;
+use App\Http\Redirections\ToInstall;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface as HttpException;
 

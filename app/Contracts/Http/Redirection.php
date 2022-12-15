@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Redirections;
+namespace App\Contracts\Http;
 
 use Illuminate\Http\RedirectResponse;
 
