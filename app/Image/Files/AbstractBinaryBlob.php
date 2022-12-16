@@ -7,7 +7,6 @@ use App\Contracts\Image\StreamStats;
 use App\Exceptions\MediaFileOperationException;
 use App\Image\StreamStat;
 use App\Image\StreamStatFilter;
-
 use function Safe\stream_filter_append;
 
 /**

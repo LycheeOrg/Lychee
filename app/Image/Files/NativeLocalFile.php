@@ -5,7 +5,6 @@ namespace App\Image\Files;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Image\StreamStat;
-
 use function Safe\filemtime;
 use function Safe\filesize;
 use function Safe\fopen;

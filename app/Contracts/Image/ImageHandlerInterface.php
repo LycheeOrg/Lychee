@@ -30,7 +30,7 @@ interface ImageHandlerInterface
 	 * Save the image into the provided file.
 	 *
 	 * @param MediaFile $file              the file to write into
-	 * @param bool          $collectStatistics if true, the method returns statistics about the stream
+	 * @param bool      $collectStatistics if true, the method returns statistics about the stream
 	 *
 	 * @return StreamStats|null optional statistics about the stream, if requested
 	 *
