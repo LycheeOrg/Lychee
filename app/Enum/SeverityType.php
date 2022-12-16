@@ -3,7 +3,11 @@
 namespace App\Enum;
 
 /**
- * Enum LogType.
+ * Enum SeverityType.
+ *
+ * The type of severity that are being issued.
+ * We do not use integers as the Enum id is taking care of that,
+ * the value makes sure that we stays consistent with the database.
  */
 enum SeverityType: string
 {

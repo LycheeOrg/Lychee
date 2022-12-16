@@ -3,7 +3,9 @@
 namespace App\Enum;
 
 /**
- * Enum AlbumColumnSortingType.
+ * Enum ColumnSortingAlbumType.
+ *
+ * All the allowed sorting possibilities on Album
  */
 enum ColumnSortingAlbumType: string
 {

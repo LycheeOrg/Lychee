@@ -3,7 +3,9 @@
 namespace App\Enum;
 
 /**
- * Enum PhotoColumnSortingType.
+ * Enum ColumnSortingPhotoType.
+ *
+ * All the allowed sorting possibilities on Photos.
  */
 enum ColumnSortingPhotoType: string
 {

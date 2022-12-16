@@ -3,7 +3,10 @@
 namespace App\Enum;
 
 /**
- * Enum SizeVariantType.
+ * Enum DonwloadVariantType.
+ *
+ * Because there are Live photos, it is not possible to merge those types with SizeVariantType
+ * This essencially accomplish the sames and provides a type mapping to ensure correct conversions.
  */
 enum DonwloadVariantType: string
 {

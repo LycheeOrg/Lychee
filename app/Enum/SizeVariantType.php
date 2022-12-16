@@ -4,6 +4,8 @@ namespace App\Enum;
 
 /**
  * Enum SizeVariantType.
+ *
+ * We use int because SizeVariants are stored as int in the database.
  */
 enum SizeVariantType: int
 {
