@@ -12,12 +12,13 @@
 
 namespace Tests\Feature;
 
+use Tests\Feature\Base\BasePhotosRotateTest;
 use Tests\Feature\Traits\RequiresImageHandler;
 
 /**
- * Runs the tests of {@link PhotosRotateTestAbstract} with Imagick as image handler.
+ * Runs the tests of {@link BasePhotosRotateTest} with Imagick as image handler.
  */
-class PhotosRotateImagickTest extends PhotosRotateTestAbstract
+class PhotosRotateImagickTest extends BasePhotosRotateTest
 {
 	use RequiresImageHandler;
 

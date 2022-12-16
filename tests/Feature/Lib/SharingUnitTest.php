@@ -13,16 +13,16 @@
 namespace Tests\Feature\Lib;
 
 use Illuminate\Testing\TestResponse;
+use Tests\AbstractTestCase;
 use Tests\Feature\Traits\CatchFailures;
-use Tests\TestCase;
 
 class SharingUnitTest
 {
 	use CatchFailures;
 
-	private TestCase $testCase;
+	private AbstractTestCase $testCase;
 
-	public function __construct(TestCase $testCase)
+	public function __construct(AbstractTestCase $testCase)
 	{
 		$this->testCase = $testCase;
 	}
@@ -41,7 +41,7 @@ class SharingUnitTest
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Sharing::list');
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 
@@ -70,7 +70,7 @@ class SharingUnitTest
 				'userIDs' => $userIDs,
 			]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 

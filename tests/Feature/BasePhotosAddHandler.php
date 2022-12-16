@@ -15,8 +15,8 @@ namespace Tests\Feature;
 use App\Models\Configs;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Tests\Feature\Base\PhotoTestBase;
-use Tests\TestCase;
+use Tests\AbstractTestCase;
+use Tests\Feature\Base\BasePhotoTest;
 
 /**
  * Contains all tests for adding photos to Lychee which involve the image
@@ -25,7 +25,7 @@ use Tests\TestCase;
  * The idea is to inherit this class by real test classes which enable
  * a particular image handler (i.e. Imagick, GD, etc.)
  */
-abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
+abstract class BasePhotosAddHandler extends BasePhotoTest
 {
 	/**
 	 * A simple upload of an ordinary photo to the root album.
@@ -35,11 +35,12 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 	public function testSimpleUploadToRoot(): void
 	{
 		$response = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		);
 		/*
 		 * Check some Exif data
 		 */
+		/** @var Carbon $taken_at */
 		$taken_at = Carbon::create(
 			2019, 6, 1, 1, 28, 25, '+02:00'
 		);
@@ -55,7 +56,7 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 			'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
 			'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
 			'title' => 'night',
-			'type' => TestCase::MIME_TYPE_IMG_JPEG,
+			'type' => AbstractTestCase::MIME_TYPE_IMG_JPEG,
 			'size_variants' => [
 				'thumb' => ['width' => 200, 'height' => 200],
 				'thumb2x' => ['width' => 400, 'height' => 400],
@@ -78,7 +79,7 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 		$this->assertHasExifToolOrSkip();
 
 		$response = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_ORIENTATION_90)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_ORIENTATION_90)
 		);
 
 		/*
@@ -103,7 +104,7 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 		$this->assertHasExifToolOrSkip();
 
 		$response = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_ORIENTATION_180)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_ORIENTATION_180)
 		);
 
 		/*
@@ -128,7 +129,7 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 		$this->assertHasExifToolOrSkip();
 
 		$response = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_ORIENTATION_270)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_ORIENTATION_270)
 		);
 
 		/*
@@ -153,7 +154,7 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 		$this->assertHasExifToolOrSkip();
 
 		$response = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_ORIENTATION_HFLIP)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_ORIENTATION_HFLIP)
 		);
 
 		/*
@@ -178,7 +179,7 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 		$this->assertHasExifToolOrSkip();
 
 		$response = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_ORIENTATION_VFLIP)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_ORIENTATION_VFLIP)
 		);
 
 		/*
@@ -195,26 +196,29 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 
 	public function testPNGUpload(): void
 	{
+		/** @var \App\Models\Photo $photo */
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_PNG)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_PNG)
 		));
-		static::assertStringEndsWith('.png', $photo->size_variants->original->url);
+		$this->assertStringEndsWith('.png', $photo->size_variants->original->url);
 	}
 
 	public function testGIFUpload(): void
 	{
+		/** @var \App\Models\Photo $photo */
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GIF)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_GIF)
 		));
-		static::assertStringEndsWith('.gif', $photo->size_variants->original->url);
+		$this->assertStringEndsWith('.gif', $photo->size_variants->original->url);
 	}
 
 	public function testWEBPUpload(): void
 	{
+		/** @var \App\Models\Photo $photo */
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_WEBP)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_WEBP)
 		));
-		static::assertStringEndsWith('.webp', $photo->size_variants->original->url);
+		$this->assertStringEndsWith('.webp', $photo->size_variants->original->url);
 	}
 
 	/**
@@ -226,19 +230,21 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 	{
 		$this->assertHasExifToolOrSkip();
 
+		/** @var \App\Models\Photo $photo */
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_TRAIN_IMAGE)
 		));
+		/** @var \App\Models\Photo $video */
 		$video = static::convertJsonToObject($this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_VIDEO),
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_TRAIN_VIDEO),
 			null,
 			200
 		));
-		static::assertEquals($photo->id, $video->id);
-		static::assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $video->live_photo_content_id);
-		static::assertStringEndsWith('.mov', $video->live_photo_url);
-		static::assertEquals(pathinfo($video->live_photo_url, PATHINFO_DIRNAME), pathinfo($video->size_variants->original->url, PATHINFO_DIRNAME));
-		static::assertEquals(pathinfo($video->live_photo_url, PATHINFO_FILENAME), pathinfo($video->size_variants->original->url, PATHINFO_FILENAME));
+		$this->assertEquals($photo->id, $video->id);
+		$this->assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $video->live_photo_content_id);
+		$this->assertStringEndsWith('.mov', $video->live_photo_url);
+		$this->assertEquals(pathinfo($video->live_photo_url, PATHINFO_DIRNAME), pathinfo($video->size_variants->original->url, PATHINFO_DIRNAME));
+		$this->assertEquals(pathinfo($video->live_photo_url, PATHINFO_FILENAME), pathinfo($video->size_variants->original->url, PATHINFO_FILENAME));
 	}
 
 	/**
@@ -250,19 +256,21 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 	{
 		$this->assertHasExifToolOrSkip();
 
+		/** @var \App\Models\Photo $video */
 		$video = static::convertJsonToObject($this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_VIDEO)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_TRAIN_VIDEO)
 		));
+		/** @var \App\Models\Photo $photo */
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_TRAIN_IMAGE)
 		));
-		static::assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
-		static::assertStringEndsWith('.mov', $photo->live_photo_url);
-		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
-		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
+		$this->assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
+		$this->assertStringEndsWith('.mov', $photo->live_photo_url);
+		$this->assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
+		$this->assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
 
 		// The initially uploaded video should have been deleted
-		static::assertEquals(0, DB::table('photos')->where('id', '=', $video->id)->count());
+		$this->assertEquals(0, DB::table('photos')->where('id', '=', $video->id)->count());
 	}
 
 	/**
@@ -275,13 +283,14 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 		$this->assertHasExifToolOrSkip();
 		$this->assertHasFFMpegOrSkip();
 
+		/** @var \App\Models\Photo $photo */
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_GMP_IMAGE)
 		));
 
-		static::assertStringEndsWith('.mov', $photo->live_photo_url);
-		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
-		static::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
+		$this->assertStringEndsWith('.mov', $photo->live_photo_url);
+		$this->assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
+		$this->assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
 	}
 
 	/**
@@ -307,14 +316,14 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 		DB::table('logs')->delete();
 
 		$response = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_BROKEN_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_GMP_BROKEN_IMAGE)
 		);
 		// Size variants are generated, because they are extracted from the
 		// still part of the GMP, not the video part.
 		$response->assertJson([
 			'album_id' => null,
 			'title' => 'google_motion_photo_broken',
-			'type' => TestCase::MIME_TYPE_IMG_JPEG,
+			'type' => AbstractTestCase::MIME_TYPE_IMG_JPEG,
 			'size_variants' => [
 				'original' => ['width' => 2016, 'height' => 1512],
 				'medium2x' => null,
@@ -344,12 +353,12 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 		$this->assertHasFFMpegOrSkip();
 
 		$response = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GAMING_VIDEO)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_GAMING_VIDEO)
 		);
 		$response->assertJson([
 			'album_id' => null,
 			'title' => 'gaming',
-			'type' => TestCase::MIME_TYPE_VID_MP4,
+			'type' => AbstractTestCase::MIME_TYPE_VID_MP4,
 			'size_variants' => [
 				'thumb' => [
 					'width' => 200,
@@ -386,18 +395,18 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 		$hasExifTool = Configs::getValueAsInt(self::CONFIG_HAS_EXIF_TOOL);
 		Configs::set(self::CONFIG_HAS_EXIF_TOOL, 0);
 
-		$hasFFMpeg = Configs::getValueAsInt(TestCase::CONFIG_HAS_FFMPEG);
-		Configs::set(TestCase::CONFIG_HAS_FFMPEG, 0);
+		$hasFFMpeg = Configs::getValueAsInt(AbstractTestCase::CONFIG_HAS_FFMPEG);
+		Configs::set(AbstractTestCase::CONFIG_HAS_FFMPEG, 0);
 
 		DB::table('logs')->delete();
 
 		$response = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GAMING_VIDEO)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_GAMING_VIDEO)
 		);
 		$response->assertJson([
 			'album_id' => null,
 			'title' => 'gaming',
-			'type' => TestCase::MIME_TYPE_VID_MP4,
+			'type' => AbstractTestCase::MIME_TYPE_VID_MP4,
 			'size_variants' => [
 				'original' => [
 					'width' => 0,
@@ -423,7 +432,7 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 		$logCount = DB::table('logs')
 			->where('text', 'like', '%FFmpeg%disabled%')
 			->count();
-		self::assertEquals(1, $logCount);
+		$this->assertEquals(1, $logCount);
 
 		Configs::set(self::CONFIG_HAS_FFMPEG, $hasFFMpeg);
 		Configs::set(self::CONFIG_HAS_EXIF_TOOL, $hasExifTool);
@@ -442,7 +451,7 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 		Configs::set(self::CONFIG_HAS_EXIF_TOOL, false);
 
 		$response = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_UNDEFINED_EXIF_TAG)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_UNDEFINED_EXIF_TAG)
 		);
 		$response->assertJson([
 			'album_id' => null,
@@ -453,7 +462,7 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 			'make' => 'Canon',
 			'model' => 'Canon EOS 100D',
 			'shutter' => '1/250 s',
-			'type' => TestCase::MIME_TYPE_IMG_JPEG,
+			'type' => AbstractTestCase::MIME_TYPE_IMG_JPEG,
 			'size_variants' => [
 				'thumb' => ['width' => 200, 'height' => 200],
 				'thumb2x' => ['width' => 400, 'height' => 400],
@@ -471,7 +480,7 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 	public function testUploadMultibyteTitle(): void
 	{
 		$id = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_SUNSET_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_SUNSET_IMAGE)
 		)->offsetGet('id');
 
 		$response = $this->photos_tests->get($id);
@@ -490,7 +499,7 @@ abstract class PhotosAddHandlerTestAbstract extends PhotoTestBase
 			'aperture' => 'f/8.0',
 			'shutter' => '1/320 s',
 			'focal' => '200 mm',
-			'type' => TestCase::MIME_TYPE_IMG_JPEG,
+			'type' => AbstractTestCase::MIME_TYPE_IMG_JPEG,
 			'size_variants' => [
 				'small' => [
 					'width' => 202,

@@ -13,9 +13,10 @@
 namespace Tests\Feature;
 
 use function Safe\chmod;
-use Tests\TestCase;
+use function Safe\fileperms;
+use Tests\AbstractTestCase;
 
-class CommandFixPermissionsTest extends Base\PhotoTestBase
+class CommandFixPermissionsTest extends Base\BasePhotoTest
 {
 	public const COMMAND = 'lychee:fix-permissions';
 
@@ -32,8 +33,9 @@ class CommandFixPermissionsTest extends Base\PhotoTestBase
 
 		clearstatcache(true);
 
+		/** @var \App\Models\Photo $photo */
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
-			static::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+			static::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
 		));
 
 		$filePath = public_path($photo->size_variants->original->url);
@@ -45,23 +47,23 @@ class CommandFixPermissionsTest extends Base\PhotoTestBase
 		chmod($filePath, 00400);
 		chmod($dirPath, 00500);
 
-		$this->artisan(self::COMMAND, [
-			'--dry-run' => 0,
-		])->assertSuccessful();
+		$cmd = $this->artisan(self::COMMAND, ['--dry-run' => 0]);
+		$this->assertIsNotInt($cmd);
+		$cmd->assertSuccessful();
 
 		clearstatcache(true);
-		static::assertEquals(00664, fileperms($filePath) & 07777);
-		static::assertEquals(02775, fileperms($dirPath) & 07777);
+		$this->assertEquals(00664, fileperms($filePath) & 07777);
+		$this->assertEquals(02775, fileperms($dirPath) & 07777);
 
 		chmod($filePath, 00777);
 		chmod($dirPath, 06777);
 
-		$this->artisan(self::COMMAND, [
-			'--dry-run' => 0,
-		])->assertSuccessful();
+		$cmd = $this->artisan(self::COMMAND, ['--dry-run' => 0]);
+		$this->assertIsNotInt($cmd);
+		$cmd->assertSuccessful();
 
 		clearstatcache(true);
-		static::assertEquals(00664, fileperms($filePath) & 07777);
-		static::assertEquals(02775, fileperms($dirPath) & 07777);
+		$this->assertEquals(00664, fileperms($filePath) & 07777);
+		$this->assertEquals(02775, fileperms($dirPath) & 07777);
 	}
 }

@@ -14,40 +14,44 @@ namespace Tests\Feature;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Tests\Feature\Base\PhotoTestBase;
-use Tests\TestCase;
+use Tests\AbstractTestCase;
+use Tests\Feature\Base\BasePhotoTest;
 
-class CommandTakeDateTest extends PhotoTestBase
+class CommandTakeDateTest extends BasePhotoTest
 {
 	public const COMMAND = 'lychee:takedate';
 
 	public function testNoUpdateRequired(): void
 	{
-		$this->artisan(self::COMMAND)
-			->expectsOutput('No pictures require takedate updates.')
+		$cmd = $this->artisan(self::COMMAND);
+		$this->assertIsNotInt($cmd);
+		$cmd->expectsOutput('No pictures require takedate updates.')
 			->assertExitCode(-1);
 	}
 
 	public function testSetUploadTimeFromFileTime(): void
 	{
 		$id = $this->photos_tests->upload(
-			static::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+			static::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
 		)->offsetGet('id');
 
 		DB::table('photos')
 			->where('id', '=', $id)
 			->update(['created_at' => Carbon::createFromDate(1970, 01, 01)->format('Y-m-d H:i:s.u')]);
 
-		$this->artisan(self::COMMAND, [
+		$cmd = $this->artisan(self::COMMAND, [
 			'--set-upload-time' => true,
 			'--force' => true,
-		])->assertSuccessful();
+		]);
+		$this->assertIsNotInt($cmd);
+		$cmd->assertSuccessful();
 
+		/** @var \App\Models\Photo */
 		$photo = static::convertJsonToObject($this->photos_tests->get($id));
 
 		$file_time = \Safe\filemtime(public_path($photo->size_variants->original->url));
 		$carbon = new Carbon($photo->created_at);
 
-		static::assertEquals($file_time, $carbon->getTimestamp());
+		$this->assertEquals($file_time, $carbon->getTimestamp());
 	}
 }

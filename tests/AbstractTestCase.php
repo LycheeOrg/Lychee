@@ -22,9 +22,10 @@ use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Testing\TestResponse;
 use function Safe\json_decode;
 use function Safe\tempnam;
+use function Safe\copy;
 use Tests\Feature\Traits\CatchFailures;
 
-abstract class TestCase extends BaseTestCase
+abstract class AbstractTestCase extends BaseTestCase
 {
 	use CreatesApplication;
 	use CatchFailures;
@@ -142,6 +143,7 @@ abstract class TestCase extends BaseTestCase
 	protected static function convertJsonToObject(TestResponse $response): object
 	{
 		$content = $response->getContent();
+		self::assertNotFalse($content);
 
 		return json_decode($content);
 	}

@@ -13,9 +13,9 @@
 namespace Tests\Feature;
 
 use App\Models\Configs;
-use Tests\TestCase;
+use Tests\AbstractTestCase;
 
-class DemoTest extends TestCase
+class DemoTest extends AbstractTestCase
 {
 	/**
 	 * Check that the demo page is not available
@@ -43,7 +43,7 @@ class DemoTest extends TestCase
 	 * Check that the demo page is available
 	 * if enabled in the advanced config.
 	 */
-	public function testDemo1()
+	public function testDemo1(): void
 	{
 		// save initial value
 		$init_config_value = Configs::getValue('gen_demo_js');

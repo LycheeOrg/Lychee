@@ -15,14 +15,14 @@ namespace Tests\Feature;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
-use Tests\Feature\Base\PhotoTestBase;
+use Tests\AbstractTestCase;
+use Tests\Feature\Base\BasePhotoTest;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
-use Tests\TestCase;
 
 /**
  * Contains tests which add photos to Lychee and directly set an album.
  */
-class PhotosAddSpecialAlbumTest extends PhotoTestBase
+class PhotosAddSpecialAlbumTest extends BasePhotoTest
 {
 	use InteractWithSmartAlbums;
 
@@ -39,12 +39,12 @@ class PhotosAddSpecialAlbumTest extends PhotoTestBase
 			$album_id = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 
 			$response = $this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
+				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE),
 				$album_id
 			);
 			$response->assertJson(['album_id' => $album_id]);
 		} finally {
-			if ($album_id) {
+			if ($album_id !== null) {
 				$this->albums_tests->delete([$album_id]);
 			}
 		}
@@ -58,7 +58,7 @@ class PhotosAddSpecialAlbumTest extends PhotoTestBase
 	public function testSimpleUploadToPublic(): void
 	{
 		$response = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE),
 			PublicAlbum::ID
 		);
 		$response->assertJson([
@@ -75,7 +75,7 @@ class PhotosAddSpecialAlbumTest extends PhotoTestBase
 	public function testSimpleUploadToIsStarred(): void
 	{
 		$response = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE),
 			StarredAlbum::ID
 		);
 		$response->assertJson([
@@ -89,15 +89,17 @@ class PhotosAddSpecialAlbumTest extends PhotoTestBase
 		$ids_before = static::getRecentPhotoIDs();
 
 		$this->clearCachedSmartAlbums();
+		/** @var \App\SmartAlbums\BaseSmartAlbum $recentAlbumBefore */
 		$recentAlbumBefore = static::convertJsonToObject($this->albums_tests->get(RecentAlbum::ID));
 		static::assertCount($ids_before->count(), $recentAlbumBefore->photos);
 
 		$photo_id = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 		$ids_after = static::getRecentPhotoIDs();
 
 		$this->clearCachedSmartAlbums();
+		/** @var \App\SmartAlbums\BaseSmartAlbum $recentAlbumAfter */
 		$recentAlbumAfter = static::convertJsonToObject($this->albums_tests->get(RecentAlbum::ID));
 		static::assertCount($ids_after->count(), $recentAlbumAfter->photos);
 
@@ -108,6 +110,7 @@ class PhotosAddSpecialAlbumTest extends PhotoTestBase
 		$this->photos_tests->delete([$photo_id]);
 
 		$this->clearCachedSmartAlbums();
+		/** @var \App\SmartAlbums\BaseSmartAlbum $recentAlbum */
 		$recentAlbum = static::convertJsonToObject($this->albums_tests->get(RecentAlbum::ID));
 		static::assertEquals($recentAlbumBefore->photos, $recentAlbum->photos);
 	}

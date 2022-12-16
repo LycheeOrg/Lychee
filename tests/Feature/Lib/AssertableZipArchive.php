@@ -28,13 +28,14 @@ class AssertableZipArchive extends \ZipArchive
 	 *
 	 * @param TestResponse $response
 	 *
-	 * @return static
+	 * @return self
 	 */
 	public static function createFromResponse(TestResponse $response): self
 	{
 		$memoryBlob = new InMemoryBuffer();
 		fwrite(
 			$memoryBlob->stream(),
+			// @phpstan-ignore-next-line
 			$response->baseResponse instanceof StreamedResponse ? $response->streamedContent() : $response->content()
 		);
 		$tmpZipFile = new TemporaryLocalFile('.zip', 'archive');

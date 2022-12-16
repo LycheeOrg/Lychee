@@ -19,10 +19,10 @@ use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Tests\Feature\Base\SharingTestBase;
-use Tests\TestCase;
+use Tests\AbstractTestCase;
+use Tests\Feature\Base\BaseSharingTest;
 
-class SharingSpecialTest extends SharingTestBase
+class SharingSpecialTest extends BaseSharingTest
 {
 	public const ALBUM_TITLE_4 = 'Test Album 4';
 	public const ALBUM_TITLE_5 = 'Test Album 5';
@@ -61,13 +61,13 @@ class SharingSpecialTest extends SharingTestBase
 		$this->photoID5 = null;
 		$this->photoID6 = null;
 
-		$this->arePublicPhotosHidden = Configs::getValueAsBool(TestCase::CONFIG_PUBLIC_HIDDEN);
-		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, false);
+		$this->arePublicPhotosHidden = Configs::getValueAsBool(AbstractTestCase::CONFIG_PUBLIC_HIDDEN);
+		Configs::set(AbstractTestCase::CONFIG_PUBLIC_HIDDEN, false);
 	}
 
 	public function tearDown(): void
 	{
-		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, $this->arePublicPhotosHidden);
+		Configs::set(AbstractTestCase::CONFIG_PUBLIC_HIDDEN, $this->arePublicPhotosHidden);
 		parent::tearDown();
 	}
 

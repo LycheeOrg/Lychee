@@ -14,14 +14,14 @@ namespace Tests\Feature\Base;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Tests\AbstractTestCase;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\Feature\Traits\RequiresExifTool;
 use Tests\Feature\Traits\RequiresFFMpeg;
-use Tests\TestCase;
 
-abstract class PhotoTestBase extends TestCase
+abstract class BasePhotoTest extends AbstractTestCase
 {
 	use RequiresEmptyPhotos;
 	use RequiresExifTool;

@@ -15,15 +15,14 @@
  * @noinspection @noinspection PhpUnused
  */
 
-namespace Tests\Feature;
+namespace Tests\Feature\Base;
 
 use App\Models\Configs;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Tests\Feature\Base\SharingTestBase;
-use Tests\TestCase;
+use Tests\AbstractTestCase;
 
 /**
  * Defines the "core" of common test cases which needs to be repeated
@@ -55,7 +54,7 @@ use Tests\TestCase;
  * Moreover, there are further potential dimensions, e.g. options like
  * whether albums are downloadable by default, etc. pp.
  */
-abstract class SharingTestScenariosAbstract extends SharingTestBase
+abstract class BaseSharingTestScenarios extends BaseSharingTest
 {
 	/** @var bool the previously configured visibility for public photos */
 	protected bool $arePublicPhotosHidden;
@@ -85,7 +84,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 	{
 		parent::setUp();
 
-		$this->arePublicPhotosHidden = Configs::getValueAsBool(TestCase::CONFIG_PUBLIC_HIDDEN);
+		$this->arePublicPhotosHidden = Configs::getValueAsBool(AbstractTestCase::CONFIG_PUBLIC_HIDDEN);
 
 		// Reset all variables to ensure that a test implementation of the
 		// child class does not accidentally use a value which it should not.
@@ -100,7 +99,7 @@ abstract class SharingTestScenariosAbstract extends SharingTestBase
 
 	public function tearDown(): void
 	{
-		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, $this->arePublicPhotosHidden);
+		Configs::set(AbstractTestCase::CONFIG_PUBLIC_HIDDEN, $this->arePublicPhotosHidden);
 		parent::tearDown();
 	}
 

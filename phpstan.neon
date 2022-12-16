@@ -9,6 +9,7 @@ parameters:
 		- scripts
 		- lang
 		- database
+		- tests
 	excludePaths:
 		- app/View/*
 		- app/Http/Livewire/*
@@ -84,3 +85,33 @@ parameters:
 			message: '#Access to an undefined property object::\$value.#'
 			paths:
 				- database
+
+		# TESTS
+		- # DISABLED FOR NOW, waiting for https://github.com/symplify/symplify/pull/4505
+			message: '#"\*Test.php" file cannot be located outside "Tests" namespace#'
+			paths:
+				- tests
+		-
+			message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assert(Is)?(Not)?(True|False|Equals|Int|Null|Empty)\(\)#'
+			paths:
+				- tests
+		-
+			message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assertFile(DoesNot)?Exists?\(\)#'
+			paths:
+				- tests
+		-
+			message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assertString(Not)?(Contains|Ends|Starts)(String|With)\(\)#'
+			paths:
+				- tests
+		-
+			message: '#Dynamic call to static method Symfony\\Component\\HttpFoundation\\Response::get(Content|StatusCode)\(\)#'
+			paths:
+				- tests
+		-
+			message: '#Function "dump\(\)" cannot be used/left in the code: seems you missed some dump debugging function#'
+			paths:
+				- tests
+		-
+			message: '#Access to private property App\\Models\\Extensions\\SizeVariants::\$(original|thumb|small|medium)(2x)?#'
+			paths:
+				- tests
