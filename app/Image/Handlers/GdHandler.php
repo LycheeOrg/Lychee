@@ -1,13 +1,17 @@
 <?php
 
-namespace App\Image;
+namespace App\Image\Handlers;
 
+use App\Contracts\Image\ImageHandlerInterface;
+use App\Contracts\Image\MediaFile;
+use App\Contracts\Image\StreamStats;
 use App\DTO\ImageDimension;
 use App\Exceptions\Handler;
 use App\Exceptions\ImageProcessingException;
 use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
+use App\Image\Files\InMemoryBuffer;
 use Safe\Exceptions\ImageException;
 use function Safe\imagecopyresampled;
 use function Safe\imagecopyresized;
@@ -129,7 +133,7 @@ class GdHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function load(BaseMediaFile $file): void
+	public function load(MediaFile $file): void
 	{
 		try {
 			$inMemoryBuffer = new InMemoryBuffer();
@@ -218,7 +222,7 @@ class GdHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function save(BaseMediaFile $file, bool $collectStatistics = false): ?StreamStat
+	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStats
 	{
 		if ($this->gdImage === null) {
 			throw new MediaFileOperationException('No image loaded');

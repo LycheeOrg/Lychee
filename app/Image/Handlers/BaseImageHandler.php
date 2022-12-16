@@ -1,9 +1,15 @@
 <?php
 
-namespace App\Image;
+namespace App\Image\Handlers;
 
+use App\Contracts\Image\ImageHandlerInterface;
+use App\Contracts\Image\MediaFile;
+use App\Contracts\Image\StreamStats;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\MediaFileOperationException;
+use App\Image\Files\FlysystemFile;
+use App\Image\Files\NativeLocalFile;
+use App\Image\StreamStat;
 use App\Models\Configs;
 use App\Models\Logs;
 use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
@@ -36,7 +42,7 @@ abstract class BaseImageHandler implements ImageHandlerInterface
 	 *
 	 * TODO: Do we really need it? It does neither seem lossless nor doing anything useful.
 	 *
-	 * @param BaseMediaFile $file
+	 * @param MediaFile $file
 	 * @param bool          $collectStatistics if true, the method returns statistics about the stream
 	 *
 	 * @return StreamStat|null optional statistics about the stream, if optimization took place and if requested
@@ -44,7 +50,7 @@ abstract class BaseImageHandler implements ImageHandlerInterface
 	 * @throws MediaFileOperationException
 	 * @throws ConfigurationKeyMissingException
 	 */
-	protected static function applyLosslessOptimizationConditionally(BaseMediaFile $file, bool $collectStatistics = false): ?StreamStat
+	protected static function applyLosslessOptimizationConditionally(MediaFile $file, bool $collectStatistics = false): ?StreamStats
 	{
 		if (Configs::getValueAsBool('lossless_optimization')) {
 			if ($file instanceof NativeLocalFile) {

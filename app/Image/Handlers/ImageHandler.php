@@ -1,14 +1,17 @@
 <?php
 
-namespace App\Image;
+namespace App\Image\Handlers;
 
+use App\Contracts\Image\ImageHandlerInterface;
+use App\Contracts\Image\MediaFile;
+use App\Contracts\Image\StreamStats;
 use App\DTO\ImageDimension;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
 use App\Models\Configs;
 
-class ImageHandler extends BaseImageHandler
+class ImageHandler extends BaseImageHandler implements ImageHandlerInterface
 {
 	public const NO_HANDLER_EXCEPTION_MSG = 'No suitable image handler found';
 
@@ -48,7 +51,7 @@ class ImageHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function load(BaseMediaFile $file): void
+	public function load(MediaFile $file): void
 	{
 		$this->reset();
 		$lastException = null;
@@ -78,7 +81,7 @@ class ImageHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function save(BaseMediaFile $file, bool $collectStatistics = false): ?StreamStat
+	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStats
 	{
 		return $this->engine->save($file, $collectStatistics);
 	}

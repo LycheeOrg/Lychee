@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Image;
+namespace App\Image\Files;
 
 use App\Exceptions\MediaFileOperationException;
 use Safe\Exceptions\PcreException;

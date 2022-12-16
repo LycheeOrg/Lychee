@@ -1,8 +1,13 @@
 <?php
 
-namespace App\Image;
+namespace App\Image\Files;
 
+use App\Contracts\Image\BinaryBlob;
+use App\Contracts\Image\StreamStats;
 use App\Exceptions\MediaFileOperationException;
+use App\Image\StreamStat;
+use App\Image\StreamStatFilter;
+
 use function Safe\stream_filter_append;
 
 /**
@@ -22,7 +27,7 @@ use function Safe\stream_filter_append;
  * using streams.
  * This API is inspired by Flysystem.
  */
-abstract class AbstractBinaryBlob
+abstract class AbstractBinaryBlob implements BinaryBlob
 {
 	/** @var ?resource */
 	protected $stream = null;
@@ -61,11 +66,11 @@ abstract class AbstractBinaryBlob
 	 * @param resource $stream            the input stream which provides the input to write
 	 * @param bool     $collectStatistics if true, the method returns statistics about the stream
 	 *
-	 * @return ?StreamStat optional statistics about the stream, if requested
+	 * @return ?StreamStats optional statistics about the stream, if requested
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	abstract public function write($stream, bool $collectStatistics = false): ?StreamStat;
+	abstract public function write($stream, bool $collectStatistics = false): ?StreamStats;
 
 	/**
 	 * Closes the internal stream/buffer.

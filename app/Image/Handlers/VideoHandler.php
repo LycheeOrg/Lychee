@@ -1,12 +1,15 @@
 <?php
 
-namespace App\Image;
+namespace App\Image\Handlers;
 
+use App\Contracts\Image\ImageHandlerInterface;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\ImageProcessingException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
+use App\Image\Files\NativeLocalFile;
+use App\Image\Files\TemporaryLocalFile;
 use App\Models\Configs;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\Exception\ExecutableNotFoundException;

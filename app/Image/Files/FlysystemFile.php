@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Image;
+namespace App\Image\Files;
 
 use App\Exceptions\FlySystemLycheeException;
 use App\Exceptions\MediaFileOperationException;
+use App\Image\StreamStat;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use League\Flysystem\FilesystemException;

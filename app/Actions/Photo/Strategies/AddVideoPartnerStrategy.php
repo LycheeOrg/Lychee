@@ -9,9 +9,9 @@ use App\Exceptions\Handler;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
-use App\Image\BaseMediaFile;
-use App\Image\FlysystemFile;
-use App\Image\NativeLocalFile;
+use App\Image\Files\BaseMediaFile;
+use App\Image\Files\FlysystemFile;
+use App\Image\Files\NativeLocalFile;
 use App\Image\StreamStat;
 use App\Models\Photo;
 

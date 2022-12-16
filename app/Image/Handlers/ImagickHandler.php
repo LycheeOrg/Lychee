@@ -2,11 +2,15 @@
 
 /** @noinspection PhpComposerExtensionStubsInspection */
 
-namespace App\Image;
+namespace App\Image\Handlers;
 
+use App\Contracts\Image\ImageHandlerInterface;
+use App\Contracts\Image\MediaFile;
+use App\Contracts\Image\StreamStats;
 use App\DTO\ImageDimension;
 use App\Exceptions\ImageProcessingException;
 use App\Exceptions\MediaFileOperationException;
+use App\Image\Files\InMemoryBuffer;
 use Imagick;
 
 class ImagickHandler extends BaseImageHandler
@@ -33,7 +37,7 @@ class ImagickHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function load(BaseMediaFile $file): void
+	public function load(MediaFile $file): void
 	{
 		try {
 			$inMemoryBuffer = null;
@@ -67,7 +71,7 @@ class ImagickHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function save(BaseMediaFile $file, bool $collectStatistics = false): ?StreamStat
+	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStats
 	{
 		if ($this->imImage === null) {
 			throw new MediaFileOperationException('No image loaded');

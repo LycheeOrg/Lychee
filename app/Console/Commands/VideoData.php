@@ -6,7 +6,7 @@ use App\Contracts\Exceptions\ExternalLycheeException;
 use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Models\SizeVariantFactory;
 use App\Exceptions\UnexpectedException;
-use App\Image\BaseMediaFile;
+use App\Image\Files\BaseMediaFile;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use App\Models\SizeVariant;

@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Image;
+namespace App\Contracts\Image;
 
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
-use App\Models\Configs;
 
 /**
  * Class `MediaFile` provides the common interface of all file-like classes.
@@ -25,58 +24,8 @@ use App\Models\Configs;
  * Copying via streams avoids issues like
  * [LycheeOrg/Lychee#1198](https://github.com/LycheeOrg/Lychee/issues/1198).
  */
-abstract class BaseMediaFile extends AbstractBinaryBlob
+interface MediaFile extends BinaryBlob
 {
-	public const SUPPORTED_PHP_EXIF_IMAGE_TYPES = [
-		IMAGETYPE_GIF,
-		IMAGETYPE_JPEG,
-		IMAGETYPE_PNG,
-		IMAGETYPE_WEBP,
-	];
-
-	public const SUPPORTED_IMAGE_FILE_EXTENSIONS = [
-		'.jpg',
-		'.jpeg',
-		'.png',
-		'.gif',
-		'.webp',
-	];
-
-	public const SUPPORTED_VIDEO_FILE_EXTENSIONS = [
-		'.avi',
-		'.m4v',
-		'.mov',
-		'.mp4',
-		'.mpg',
-		'.ogv',
-		'.webm',
-		'.wmv',
-	];
-
-	public const SUPPORTED_IMAGE_MIME_TYPES = [
-		'image/gif',
-		'image/jpeg',
-		'image/png',
-		'image/webp',
-	];
-
-	public const SUPPORTED_VIDEO_MIME_TYPES = [
-		'video/mp4',
-		'video/mpeg',
-		'image/x-tga', // mpg; will be corrected by the metadata extractor
-		'video/ogg',
-		'video/webm',
-		'video/quicktime',
-		'video/x-ms-asf', // wmv file
-		'video/x-ms-wmv', // wmv file
-		'video/x-msvideo', // Avi
-		'video/x-m4v', // Avi
-		'application/octet-stream', // Some mp4 files; will be corrected by the metadata extractor
-	];
-
-	/** @var string[] the accepted raw file extensions minus supported extensions */
-	private static array $cachedAcceptedRawFileExtensions = [];
-
 	/**
 	 * Writes the content of the provided stream into the file.
 	 *
@@ -91,11 +40,11 @@ abstract class BaseMediaFile extends AbstractBinaryBlob
 	 * @param resource $stream            the input stream which provides the input to write
 	 * @param bool     $collectStatistics if true, the method returns statistics about the stream
 	 *
-	 * @return ?StreamStat optional statistics about the stream, if requested
+	 * @return ?StreamStats optional statistics about the stream, if requested
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	abstract public function write($stream, bool $collectStatistics = false): ?StreamStat;
+	public function write($stream, bool $collectStatistics = false): ?StreamStats;
 
 	/**
 	 * Deletes the file.
@@ -106,7 +55,7 @@ abstract class BaseMediaFile extends AbstractBinaryBlob
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	abstract public function delete(): void;
+	public function delete(): void;
 
 	/**
 	 * Moves the file to the new location efficiently.
@@ -122,13 +71,13 @@ abstract class BaseMediaFile extends AbstractBinaryBlob
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	abstract public function move(string $newPath): void;
+	public function move(string $newPath): void;
 
 	/** Checks if the file exists.
 	 *
 	 * @return bool true, if the file exists
 	 */
-	abstract public function exists(): bool;
+	public function exists(): bool;
 
 	/**
 	 * Returns the time of last modification as UNIX timestamp.
@@ -137,7 +86,7 @@ abstract class BaseMediaFile extends AbstractBinaryBlob
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	abstract public function lastModified(): int;
+	public function lastModified(): int;
 
 	/**
 	 * Returns the size of the file in bytes.
@@ -146,14 +95,14 @@ abstract class BaseMediaFile extends AbstractBinaryBlob
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	abstract public function getFilesize(): int;
+	public function getFilesize(): int;
 
 	/**
 	 * Returns the extension of the file incl. a preceding dot.
 	 *
 	 * @return string
 	 */
-	abstract public function getExtension(): string;
+	public function getExtension(): string;
 
 	/**
 	 * Returns the original extension of the file incl. the preceding dot.
@@ -165,10 +114,7 @@ abstract class BaseMediaFile extends AbstractBinaryBlob
 	 *
 	 * @return string
 	 */
-	public function getOriginalExtension(): string
-	{
-		return $this->getExtension();
-	}
+	public function getOriginalExtension(): string;
 
 	/**
 	 * Returns the basename of the file.
@@ -182,7 +128,7 @@ abstract class BaseMediaFile extends AbstractBinaryBlob
 	 *
 	 * @return string
 	 */
-	abstract public function getBasename(): string;
+	public function getBasename(): string;
 
 	/**
 	 * Returns the original basename of the file.
@@ -194,10 +140,7 @@ abstract class BaseMediaFile extends AbstractBinaryBlob
 	 *
 	 * @return string
 	 */
-	public function getOriginalBasename(): string
-	{
-		return $this->getBasename();
-	}
+	public function getOriginalBasename(): string;
 
 	/**
 	 * Checks if the given MIME type designates a supported image type.
@@ -206,10 +149,7 @@ abstract class BaseMediaFile extends AbstractBinaryBlob
 	 *
 	 * @return bool
 	 */
-	public static function isSupportedImageMimeType(string $mimeType): bool
-	{
-		return in_array($mimeType, self::SUPPORTED_IMAGE_MIME_TYPES, true);
-	}
+	public static function isSupportedImageMimeType(string $mimeType): bool;
 
 	/**
 	 * Checks if the given MIME type designates a supported video type.
@@ -218,10 +158,7 @@ abstract class BaseMediaFile extends AbstractBinaryBlob
 	 *
 	 * @return bool
 	 */
-	public static function isSupportedVideoMimeType(string $mimeType): bool
-	{
-		return in_array($mimeType, self::SUPPORTED_VIDEO_MIME_TYPES, true);
-	}
+	public static function isSupportedVideoMimeType(string $mimeType): bool;
 
 	/**
 	 * Checks if the given file extension is a supported image extension.
@@ -230,10 +167,7 @@ abstract class BaseMediaFile extends AbstractBinaryBlob
 	 *
 	 * @return bool
 	 */
-	public static function isSupportedImageFileExtension(string $extension): bool
-	{
-		return in_array(strtolower($extension), self::SUPPORTED_IMAGE_FILE_EXTENSIONS, true);
-	}
+	public static function isSupportedImageFileExtension(string $extension): bool;
 
 	/**
 	 * Checks if the given file extension is a supported image extension.
@@ -242,10 +176,7 @@ abstract class BaseMediaFile extends AbstractBinaryBlob
 	 *
 	 * @return bool
 	 */
-	public static function isSupportedVideoFileExtension(string $extension): bool
-	{
-		return in_array(strtolower($extension), self::SUPPORTED_VIDEO_FILE_EXTENSIONS, true);
-	}
+	public static function isSupportedVideoFileExtension(string $extension): bool;
 
 	/**
 	 * Checks if the given file extension is supported.
@@ -254,30 +185,7 @@ abstract class BaseMediaFile extends AbstractBinaryBlob
 	 *
 	 * @return bool
 	 */
-	public static function isSupportedFileExtension(string $extension): bool
-	{
-		return
-			self::isSupportedImageFileExtension($extension) ||
-			self::isSupportedVideoFileExtension($extension);
-	}
-
-	/**
-	 * Returns {@link MediaFile::$cachedAcceptedRawFileExtensions} and creates it, if necessary.
-	 *
-	 * @return string[]
-	 */
-	protected static function getSanitizedAcceptedRawFileExtensions(): array
-	{
-		if (count(self::$cachedAcceptedRawFileExtensions) === 0) {
-			$tmp = explode('|', strtolower(Configs::getValueAsString('raw_formats')));
-			// Explode may return `false` on error
-			// Our supported file extensions always take precedence over any
-			// custom configured extension
-			self::$cachedAcceptedRawFileExtensions = array_diff($tmp, self::SUPPORTED_IMAGE_FILE_EXTENSIONS, self::SUPPORTED_VIDEO_FILE_EXTENSIONS);
-		}
-
-		return self::$cachedAcceptedRawFileExtensions;
-	}
+	public static function isSupportedFileExtension(string $extension): bool;
 
 	/**
 	 * Checks if the given extension is accepted as raw.
@@ -286,14 +194,7 @@ abstract class BaseMediaFile extends AbstractBinaryBlob
 	 *
 	 * @return bool
 	 */
-	public static function isAcceptedRawFileExtension(string $extension): bool
-	{
-		return in_array(
-			strtolower($extension),
-			self::getSanitizedAcceptedRawFileExtensions(),
-			true
-		);
-	}
+	public static function isAcceptedRawFileExtension(string $extension): bool;
 
 	/**
 	 * Check if the given extension is supported or accepted.
@@ -302,12 +203,7 @@ abstract class BaseMediaFile extends AbstractBinaryBlob
 	 *
 	 * @return bool
 	 */
-	public static function isSupportedOrAcceptedFileExtension(string $extension): bool
-	{
-		return
-			self::isSupportedFileExtension($extension) ||
-			self::isAcceptedRawFileExtension($extension);
-	}
+	public static function isSupportedOrAcceptedFileExtension(string $extension): bool;
 
 	/**
 	 * Asserts that the given extension is supported or accepted.
@@ -318,10 +214,5 @@ abstract class BaseMediaFile extends AbstractBinaryBlob
 	 *
 	 * @throws MediaFileUnsupportedException
 	 */
-	public static function assertIsSupportedOrAcceptedFileExtension(string $extension): void
-	{
-		if (!self::isSupportedOrAcceptedFileExtension($extension)) {
-			throw new MediaFileUnsupportedException(MediaFileUnsupportedException::DEFAULT_MESSAGE . ' (bad extension: ' . $extension . ')');
-		}
-	}
+	public static function assertIsSupportedOrAcceptedFileExtension(string $extension): void;
 }

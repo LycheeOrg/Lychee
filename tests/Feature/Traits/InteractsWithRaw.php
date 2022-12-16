@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Traits;
 
-use App\Image\BaseMediaFile;
+use App\Image\Files\BaseMediaFile;
 use App\Models\Configs;
 use Tests\TestCase;
 

@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Image;
+namespace App\Image\Handlers;
 
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\MediaFileOperationException;
+use App\Image\Files\NativeLocalFile;
+use App\Image\Files\TemporaryLocalFile;
 use App\ModelFunctions\MOVFormat;
 use App\Models\Configs;
 use FFMpeg\Exception\ExecutableNotFoundException;

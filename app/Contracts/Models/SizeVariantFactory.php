@@ -2,11 +2,11 @@
 
 namespace App\Contracts\Models;
 
-use App\Image\ImageHandlerInterface;
+use App\Contracts\Exceptions\LycheeException;
+use App\Contracts\Image\ImageHandlerInterface;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Support\Collection;
-use App\Contracts\Exceptions\LycheeException;
 
 interface SizeVariantFactory
 {

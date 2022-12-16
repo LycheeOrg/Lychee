@@ -2,12 +2,11 @@
 
 namespace App\Contracts\Models;
 
-use App\Image\FlysystemFile;
+use App\Contracts\Exceptions\LycheeException;
+use App\Image\Files\FlysystemFile;
 use App\Models\Photo;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
-use App\Contracts\Exceptions\LycheeException;
-
 
 /**
  * Interface SizeVariantNamingStrategy.

@@ -3,7 +3,7 @@
 namespace App\Actions\Photo\Strategies;
 
 use App\Contracts\Exceptions\LycheeException;
-use App\Image\NativeLocalFile;
+use App\Image\Files\NativeLocalFile;
 use App\Models\Photo;
 
 /**
