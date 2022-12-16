@@ -20,9 +20,9 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Testing\TestResponse;
+use function Safe\copy;
 use function Safe\json_decode;
 use function Safe\tempnam;
-use function Safe\copy;
 use Tests\Feature\Traits\CatchFailures;
 
 abstract class AbstractTestCase extends BaseTestCase

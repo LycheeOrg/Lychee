@@ -14,7 +14,6 @@ namespace Tests\Feature\Base;
 
 use App\Models\Configs;
 use Tests\AbstractTestCase;
-use Tests\Feature\Base\BasePhotoTest;
 
 abstract class BasePhotosRotateTest extends BasePhotoTest
 {
