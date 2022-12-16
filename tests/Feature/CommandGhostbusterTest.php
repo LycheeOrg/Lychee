@@ -56,11 +56,10 @@ class CommandGhostbusterTest extends Base\BasePhotoTest
 		}
 
 		// Ghostbuster, ...
-		$cmd = $this->artisan(self::COMMAND, [
+		$this->artisan(self::COMMAND, [
 			'--dryrun' => 0,
-		]);
-		$this->assertIsNotInt($cmd);
-		$cmd->assertSuccessful();
+		])
+			->assertSuccessful();
 
 		// Ensure that files are gone
 		foreach ($fileURLs as $fileURL) {
@@ -94,12 +93,11 @@ class CommandGhostbusterTest extends Base\BasePhotoTest
 		\Safe\unlink(public_path($originalFileURL));
 
 		// Ghostbuster, ...
-		$cmd = $this->artisan(self::COMMAND, [
+		$this->artisan(self::COMMAND, [
 			'--dryrun' => 0,
 			'--removeZombiePhotos' => 1,
-		]);
-		$this->assertIsNotInt($cmd);
-		$cmd->assertSuccessful();
+		])
+			->assertSuccessful();
 
 		// Ensure that photo, size variants and all other size variants are gone
 		$this->assertEquals(

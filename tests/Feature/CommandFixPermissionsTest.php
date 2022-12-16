@@ -47,9 +47,7 @@ class CommandFixPermissionsTest extends Base\BasePhotoTest
 		chmod($filePath, 00400);
 		chmod($dirPath, 00500);
 
-		$cmd = $this->artisan(self::COMMAND, ['--dry-run' => 0]);
-		$this->assertIsNotInt($cmd);
-		$cmd->assertSuccessful();
+		$this->artisan(self::COMMAND, ['--dry-run' => 0])->assertSuccessful();
 
 		clearstatcache(true);
 		$this->assertEquals(00664, fileperms($filePath) & 07777);
@@ -58,9 +56,7 @@ class CommandFixPermissionsTest extends Base\BasePhotoTest
 		chmod($filePath, 00777);
 		chmod($dirPath, 06777);
 
-		$cmd = $this->artisan(self::COMMAND, ['--dry-run' => 0]);
-		$this->assertIsNotInt($cmd);
-		$cmd->assertSuccessful();
+		$this->artisan(self::COMMAND, ['--dry-run' => 0])->assertSuccessful();
 
 		clearstatcache(true);
 		$this->assertEquals(00664, fileperms($filePath) & 07777);

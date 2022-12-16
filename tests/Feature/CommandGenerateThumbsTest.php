@@ -24,24 +24,21 @@ class CommandGenerateThumbsTest extends BasePhotoTest
 	public function testNoArguments(): void
 	{
 		$this->expectExceptionMessage('Not enough arguments (missing: "type").');
-		$cmd = $this->artisan(self::COMMAND);
-		$this->assertIsNotInt($cmd);
-		$cmd->run();
+		$this->artisan(self::COMMAND)
+			->run();
 	}
 
 	public function testInvalidSizeVariantArgument(): void
 	{
-		$cmd = $this->artisan(self::COMMAND, ['type' => 'smally']);
-		$this->assertIsNotInt($cmd);
-		$cmd->expectsOutput('Type smally is not one of thumb, thumb2x, small, small2x, medium, medium2x')
+		$this->artisan(self::COMMAND, ['type' => 'smally'])
+			->expectsOutput('Type smally is not one of thumb, thumb2x, small, small2x, medium, medium2x')
 			->assertExitCode(1);
 	}
 
 	public function testNoSizeVariantsMissing(): void
 	{
-		$cmd = $this->artisan(self::COMMAND, ['type' => 'small']);
-		$this->assertIsNotInt($cmd);
-		$cmd->expectsOutput('No picture requires small.')
+		$this->artisan(self::COMMAND, ['type' => 'small'])
+			->expectsOutput('No picture requires small.')
 			->assertExitCode(0);
 	}
 
@@ -60,9 +57,8 @@ class CommandGenerateThumbsTest extends BasePhotoTest
 			->delete();
 
 		// Re-create it
-		$cmd = $this->artisan(self::COMMAND, ['type' => 'small']);
-		$this->assertIsNotInt($cmd);
-		$cmd->assertExitCode(0);
+		$this->artisan(self::COMMAND, ['type' => 'small'])
+			->assertExitCode(0);
 
 		// Get updated photo and check if size variant has been re-created
 		/** @var \App\Models\Photo $photo2 */

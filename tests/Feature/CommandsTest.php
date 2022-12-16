@@ -19,32 +19,26 @@ class CommandsTest extends AbstractTestCase
 	 */
 	public function testCommands(): void
 	{
-		$cmd = $this->artisan('lychee:decode_GPS_locations');
-		$this->assertIsNotInt($cmd);
-		$cmd->expectsOutput('No photos or videos require processing.')
+		$this->artisan('lychee:decode_GPS_locations')
+			->expectsOutput('No photos or videos require processing.')
 			->assertExitCode(0);
 
-		$cmd = $this->artisan('lychee:diagnostics');
-		$this->assertIsNotInt($cmd);
-		$cmd->assertExitCode(0);
+		$this->artisan('lychee:diagnostics')
+			->assertExitCode(0);
 
-		$cmd = $this->artisan('lychee:exif_lens');
-		$this->assertIsNotInt($cmd);
-		$cmd->expectsOutput('No pictures requires EXIF updates.')
+		$this->artisan('lychee:exif_lens')
+			->expectsOutput('No pictures requires EXIF updates.')
 			->assertExitCode(-1);
 
-		$cmd = $this->artisan('lychee:reset_admin');
-		$this->assertIsNotInt($cmd);
-		$cmd->expectsOutput('Admin username and password reset.')
+		$this->artisan('lychee:reset_admin')
+			->expectsOutput('Admin username and password reset.')
 			->assertExitCode(0);
 
-		$cmd = $this->artisan('lychee:logs');
-		$this->assertIsNotInt($cmd);
-		$cmd->assertExitCode(0);
+		$this->artisan('lychee:logs')
+			->assertExitCode(0);
 
-		$cmd = $this->artisan('lychee:logs', ['action' => 'clean']);
-		$this->assertIsNotInt($cmd);
-		$cmd->expectsOutput('Log table has been emptied.')
+		$this->artisan('lychee:logs', ['action' => 'clean'])
+			->expectsOutput('Log table has been emptied.')
 			->assertExitCode(0);
 	}
 }

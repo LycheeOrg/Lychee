@@ -23,9 +23,8 @@ class CommandTakeDateTest extends BasePhotoTest
 
 	public function testNoUpdateRequired(): void
 	{
-		$cmd = $this->artisan(self::COMMAND);
-		$this->assertIsNotInt($cmd);
-		$cmd->expectsOutput('No pictures require takedate updates.')
+		$this->artisan(self::COMMAND)
+			->expectsOutput('No pictures require takedate updates.')
 			->assertExitCode(-1);
 	}
 
@@ -39,12 +38,11 @@ class CommandTakeDateTest extends BasePhotoTest
 			->where('id', '=', $id)
 			->update(['created_at' => Carbon::createFromDate(1970, 01, 01)->format('Y-m-d H:i:s.u')]);
 
-		$cmd = $this->artisan(self::COMMAND, [
+		$this->artisan(self::COMMAND, [
 			'--set-upload-time' => true,
 			'--force' => true,
-		]);
-		$this->assertIsNotInt($cmd);
-		$cmd->assertSuccessful();
+		])
+			->assertSuccessful();
 
 		/** @var \App\Models\Photo */
 		$photo = static::convertJsonToObject($this->photos_tests->get($id));

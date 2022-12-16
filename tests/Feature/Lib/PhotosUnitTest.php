@@ -506,7 +506,7 @@ class PhotosUnitTest
 	 * Rotate a picture.
 	 *
 	 * @param string      $id
-	 * @param string      $direction
+	 * @param int         $direction
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
