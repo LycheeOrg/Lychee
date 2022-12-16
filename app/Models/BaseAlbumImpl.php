@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Constants\RandomID;
-use App\Contracts\HasRandomID;
+use App\Contracts\Models\HasRandomID;
 use App\DTO\PhotoSortingCriterion;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
