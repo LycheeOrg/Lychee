@@ -41,7 +41,7 @@ abstract class BasePhotosRotateTest extends BasePhotoTest
 			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 
-		$this->photos_tests->rotate($id, '1', 412, 'support for rotation disabled by configuration');
+		$this->photos_tests->rotate($id, 1, 412, 'support for rotation disabled by configuration');
 	}
 
 	public function testInvalidValues(): void
@@ -50,9 +50,8 @@ abstract class BasePhotosRotateTest extends BasePhotoTest
 			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 
-		$this->photos_tests->rotate('-1', '1', 422);
-		$this->photos_tests->rotate($id, 'asdq', 422, 'The selected direction is invalid');
-		$this->photos_tests->rotate($id, '2', 422, 'The selected direction is invalid');
+		$this->photos_tests->rotate('-1', 1, 422);
+		$this->photos_tests->rotate($id, 2, 422, 'The selected direction is invalid');
 	}
 
 	/**
@@ -71,7 +70,7 @@ abstract class BasePhotosRotateTest extends BasePhotoTest
 			],
 		]);
 
-		$response = $this->photos_tests->rotate($response->offsetGet('id'), '1');
+		$response = $this->photos_tests->rotate($response->offsetGet('id'), 1);
 		$response->assertJson([
 			'size_variants' => [
 				'small' => ['width' => 240, 'height' => 360],
@@ -89,7 +88,7 @@ abstract class BasePhotosRotateTest extends BasePhotoTest
 			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_TRAIN_VIDEO)
 		)->offsetGet('id');
 
-		$this->photos_tests->rotate($id, '1', 422, 'MediaFileUnsupportedException');
+		$this->photos_tests->rotate($id, 1, 422, 'MediaFileUnsupportedException');
 	}
 
 	public function testGoogleMotionPhotoRotation(): void
@@ -101,7 +100,7 @@ abstract class BasePhotosRotateTest extends BasePhotoTest
 			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_GMP_IMAGE)
 		)->offsetGet('id');
 
-		$this->photos_tests->rotate($id, '1', 422, 'MediaFileUnsupportedException');
+		$this->photos_tests->rotate($id, 1, 422, 'MediaFileUnsupportedException');
 	}
 
 	public function testDuplicatePhotoRotation(): void
@@ -132,7 +131,7 @@ abstract class BasePhotosRotateTest extends BasePhotoTest
 			],
 		]);
 
-		$this->photos_tests->rotate($photoID1, 'ase');
+		$this->photos_tests->rotate($photoID1, 1);
 		$photoResponse2New = $this->photos_tests->get($photoID2);
 		$photoResponse2New->assertJson([
 			'size_variants' => [

@@ -514,7 +514,7 @@ class PhotosUnitTest
 	 */
 	public function rotate(
 		string $id,
-		string $direction,
+		int $direction,
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
