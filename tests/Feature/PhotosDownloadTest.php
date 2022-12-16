@@ -13,7 +13,7 @@
 namespace Tests\Feature;
 
 use App\Actions\Photo\Archive;
-use App\Enum\DonwloadVariantType;
+use App\Enum\DownloadVariantType;
 use App\Image\ImagickHandler;
 use App\Image\InMemoryBuffer;
 use App\Image\TemporaryLocalFile;
@@ -69,7 +69,7 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		);
 		$photoArchiveResponse = $this->photos_tests->download(
-			[$photoUploadResponse->offsetGet('id')], DonwloadVariantType::ORIGINAL->value);
+			[$photoUploadResponse->offsetGet('id')], DownloadVariantType::ORIGINAL->value);
 
 		// Stream the response in a temporary file
 		$memoryBlob = new InMemoryBuffer();
@@ -101,7 +101,7 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 		)->offsetGet('id');
 
 		$photoArchiveResponse = $this->photos_tests->download(
-			[$photoID1, $photoID2], DonwloadVariantType::ORIGINAL->value);
+			[$photoID1, $photoID2], DownloadVariantType::ORIGINAL->value);
 
 		$zipArchive = AssertableZipArchive::createFromResponse($photoArchiveResponse);
 		$zipArchive->assertContainsFilesExactly([
@@ -125,7 +125,7 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 		);
 		$photoArchiveResponse = $this->photos_tests->download(
 			[$photoUploadResponse->offsetGet('id')],
-			DonwloadVariantType::LIVEPHOTOVIDEO->value
+			DownloadVariantType::LIVEPHOTOVIDEO->value
 		);
 
 		// Stream the response in a temporary file
@@ -161,7 +161,7 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 		)->offsetGet('id');
 
 		$photoArchiveResponse = $this->photos_tests->download([$photoID1, $photoID2a, $photoID2b],
-			DonwloadVariantType::ORIGINAL->value);
+			DownloadVariantType::ORIGINAL->value);
 
 		$zipArchive = AssertableZipArchive::createFromResponse($photoArchiveResponse);
 		$zipArchive->assertContainsFilesExactly([
@@ -177,7 +177,7 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_SUNSET_IMAGE)
 		)->offsetGet('id');
 
-		$download = $this->photos_tests->download([$id], DonwloadVariantType::ORIGINAL->value);
+		$download = $this->photos_tests->download([$id], DownloadVariantType::ORIGINAL->value);
 		$download->assertHeader('Content-Type', TestCase::MIME_TYPE_IMG_JPEG);
 		$download->assertHeader('Content-Length', filesize(base_path(TestCase::SAMPLE_FILE_SUNSET_IMAGE)));
 		$download->assertHeader('Content-Disposition', HeaderUtils::makeDisposition(
@@ -204,7 +204,7 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
 		)->offsetGet('id');
 
-		$photoArchiveResponse = $this->photos_tests->download([$photoID1, $photoID2], DonwloadVariantType::ORIGINAL->value);
+		$photoArchiveResponse = $this->photos_tests->download([$photoID1, $photoID2], DownloadVariantType::ORIGINAL->value);
 
 		$zipArchive = AssertableZipArchive::createFromResponse($photoArchiveResponse);
 		$zipArchive->assertContainsFilesExactly([
@@ -254,7 +254,7 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 		Auth::logout();
 		Session::flush();
 		Auth::loginUsingId($userID2);
-		$this->photos_tests->download([$photoID], DonwloadVariantType::ORIGINAL->value, 403);
+		$this->photos_tests->download([$photoID], DownloadVariantType::ORIGINAL->value, 403);
 	}
 
 	public function testDownloadOfPhotoInSharedDownloadableAlbum(): void
@@ -277,7 +277,7 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 			Auth::logout();
 			Session::flush();
 			Auth::loginUsingId($userID2);
-			$this->photos_tests->download([$photoID], DonwloadVariantType::ORIGINAL->value);
+			$this->photos_tests->download([$photoID], DownloadVariantType::ORIGINAL->value);
 		} finally {
 			Configs::set(self::CONFIG_DOWNLOADABLE, $areAlbumsDownloadable);
 		}
@@ -303,7 +303,7 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 			Auth::logout();
 			Session::flush();
 			Auth::loginUsingId($userID2);
-			$this->photos_tests->download([$photoID], DonwloadVariantType::ORIGINAL->value, 403);
+			$this->photos_tests->download([$photoID], DownloadVariantType::ORIGINAL->value, 403);
 		} finally {
 			Configs::set(self::CONFIG_DOWNLOADABLE, $areAlbumsDownloadable);
 		}

@@ -5,7 +5,7 @@ namespace App\Actions\Photo;
 use App\Actions\Photo\Extensions\ArchiveFileInfo;
 use App\Contracts\AbstractSizeVariantNamingStrategy;
 use App\Contracts\LycheeException;
-use App\Enum\DonwloadVariantType;
+use App\Enum\DownloadVariantType;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
@@ -46,13 +46,13 @@ class Archive
 	 * more than one element).
 	 *
 	 * @param Collection<Photo>   $photos          the photos which shall be included in the response
-	 * @param DonwloadVariantType $downloadVariant the desired variant of the photo
+	 * @param DownloadVariantType $downloadVariant the desired variant of the photo
 	 *
 	 * @return StreamedResponse
 	 *
 	 * @throws LycheeException
 	 */
-	public function do(Collection $photos, DonwloadVariantType $downloadVariant): StreamedResponse
+	public function do(Collection $photos, DownloadVariantType $downloadVariant): StreamedResponse
 	{
 		if ($photos->count() === 1) {
 			$response = $this->file($photos->first(), $downloadVariant);
@@ -79,13 +79,13 @@ class Archive
 	 * random file name of the size variant.
 	 *
 	 * @param Photo               $photo           the photo
-	 * @param DonwloadVariantType $downloadVariant the requested size variant
+	 * @param DownloadVariantType $downloadVariant the requested size variant
 	 *
 	 * @return StreamedResponse
 	 *
 	 * @throws LycheeException
 	 */
-	protected function file(Photo $photo, DonwloadVariantType $downloadVariant): StreamedResponse
+	protected function file(Photo $photo, DownloadVariantType $downloadVariant): StreamedResponse
 	{
 		$archiveFileInfo = $this->extractFileInfo($photo, $downloadVariant);
 
@@ -130,14 +130,14 @@ class Archive
 
 	/**
 	 * @param Collection          $photos
-	 * @param DonwloadVariantType $downloadVariant
+	 * @param DownloadVariantType $downloadVariant
 	 *
 	 * @return StreamedResponse
 	 *
 	 * @throws FrameworkException
 	 * @throws ConfigurationKeyMissingException
 	 */
-	protected function zip(Collection $photos, DonwloadVariantType $downloadVariant): StreamedResponse
+	protected function zip(Collection $photos, DownloadVariantType $downloadVariant): StreamedResponse
 	{
 		$this->deflateLevel = Configs::getValueAsInt('zip_deflate_level');
 
@@ -277,18 +277,18 @@ class Archive
 	 * Creates a {@link ArchiveFileInfo} for the indicated photo and variant.
 	 *
 	 * @param Photo               $photo           the photo whose archive information shall be returned
-	 * @param DonwloadVariantType $downloadVariant the desired variant of the photo
+	 * @param DownloadVariantType $downloadVariant the desired variant of the photo
 	 *
 	 * @return ArchiveFileInfo the created archive info
 	 *
 	 * @throws InvalidSizeVariantException
 	 */
-	protected function extractFileInfo(Photo $photo, DonwloadVariantType $downloadVariant): ArchiveFileInfo
+	protected function extractFileInfo(Photo $photo, DownloadVariantType $downloadVariant): ArchiveFileInfo
 	{
 		$validFilename = str_replace(self::BAD_CHARS, '', $photo->title);
 		$baseFilename = $validFilename !== '' ? $validFilename : 'Untitled';
 
-		if ($downloadVariant === DonwloadVariantType::LIVEPHOTOVIDEO) {
+		if ($downloadVariant === DownloadVariantType::LIVEPHOTOVIDEO) {
 			$sourceFile = new FlysystemFile(AbstractSizeVariantNamingStrategy::getImageDisk(), $photo->live_photo_short_path);
 			$baseFilenameAddon = '';
 		} else {

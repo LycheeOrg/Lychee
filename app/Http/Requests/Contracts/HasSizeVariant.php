@@ -2,12 +2,12 @@
 
 namespace App\Http\Requests\Contracts;
 
-use App\Enum\DonwloadVariantType;
+use App\Enum\DownloadVariantType;
 
 interface HasSizeVariant
 {
 	/**
-	 * @return DonwloadVariantType
+	 * @return DownloadVariantType
 	 */
-	public function sizeVariant(): DonwloadVariantType;
+	public function sizeVariant(): DownloadVariantType;
 }

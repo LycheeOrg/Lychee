@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Photo;
 
-use App\Enum\DonwloadVariantType;
+use App\Enum\DownloadVariantType;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPhotos;
 use App\Http\Requests\Contracts\HasSizeVariant;
@@ -43,7 +43,7 @@ class ArchivePhotosRequest extends BaseApiRequest implements HasPhotos, HasSizeV
 	{
 		return [
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE => ['required', new RandomIDListRule()],
-			RequestAttribute::SIZE_VARIANT_ATTRIBUTE => ['required', new Enum(DonwloadVariantType::class)],
+			RequestAttribute::SIZE_VARIANT_ATTRIBUTE => ['required', new Enum(DownloadVariantType::class)],
 		];
 	}
 
@@ -52,7 +52,7 @@ class ArchivePhotosRequest extends BaseApiRequest implements HasPhotos, HasSizeV
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->sizeVariant = DonwloadVariantType::from($values[RequestAttribute::SIZE_VARIANT_ATTRIBUTE]);
+		$this->sizeVariant = DownloadVariantType::from($values[RequestAttribute::SIZE_VARIANT_ATTRIBUTE]);
 
 		$photoQuery = Photo::with(['album']);
 		// The condition is required, because Lychee also supports to archive

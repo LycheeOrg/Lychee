@@ -3,12 +3,12 @@
 namespace App\Enum;
 
 /**
- * Enum DonwloadVariantType.
+ * Enum DownloadVariantType.
  *
  * Because there are Live photos, it is not possible to merge those types with SizeVariantType
  * This essencially accomplish the sames and provides a type mapping to ensure correct conversions.
  */
-enum DonwloadVariantType: string
+enum DownloadVariantType: string
 {
 	case LIVEPHOTOVIDEO = 'LIVEPHOTOVIDEO';
 	case ORIGINAL = 'ORIGINAL';
