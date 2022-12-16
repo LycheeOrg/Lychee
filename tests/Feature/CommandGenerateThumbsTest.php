@@ -14,6 +14,7 @@ namespace Tests\Feature;
 
 use App\Models\SizeVariant;
 use Illuminate\Support\Facades\DB;
+use function Safe\unlink;
 use Tests\AbstractTestCase;
 use Tests\Feature\Base\BasePhotoTest;
 
@@ -50,7 +51,7 @@ class CommandGenerateThumbsTest extends BasePhotoTest
 		));
 
 		// Remove the size variant "small" from disk and from DB
-		\Safe\unlink(public_path($photo1->size_variants->small->url));
+		unlink(public_path($photo1->size_variants->small->url));
 		DB::table('size_variants')
 			->where('photo_id', '=', $photo1->id)
 			->where('type', '=', SizeVariant::SMALL)

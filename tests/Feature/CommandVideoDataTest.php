@@ -38,9 +38,8 @@ class CommandVideoDataTest extends BasePhotoTest
 			->delete();
 
 		// Re-create it
-		$cmd = $this->artisan(self::COMMAND);
-		$this->assertIsNotInt($cmd);
-		$cmd->assertExitCode(0);
+		$this->artisan(self::COMMAND)
+			->assertExitCode(0);
 
 		// Get updated video and check if thumb has been re-created
 		/** @var \App\Models\Photo $photo2 */
