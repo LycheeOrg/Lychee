@@ -75,7 +75,7 @@ class CreateUser extends Command
 		$user->may_administrate = $mayAdministrate;
 		$user->save();
 
-		$this->line('Successfully created user ' . $username);
+		$this->line(sprintf('Successfully created%s user %s ', $mayAdministrate ? ' admin' : '', $username));
 
 		return 0;
 	}
