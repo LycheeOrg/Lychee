@@ -34,4 +34,11 @@ class InstallMigrationRequest extends FormRequest implements HasUsername, HasPas
 	{
 		return true;
 	}
+
+	public function passedValidation()
+	{
+		$values = $this->validated();
+		$this->username = $values[RequestAttribute::USERNAME_ATTRIBUTE];
+		$this->password = $values[RequestAttribute::PASSWORD_ATTRIBUTE];
+	}
 }
