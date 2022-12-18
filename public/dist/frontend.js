@@ -3607,7 +3607,7 @@ build.tags = function (tags) {
  * @returns {string}
  */
 build.user = function (user) {
-	return lychee.html(_templateObject22, user.id, user.id, user.username, lychee.locale["USERNAME"], lychee.locale["NEW_PASSWORD"], lychee.locale["ALLOW_UPLOADS"], lychee.locale["ALLOW_USER_SELF_EDIT"], user.id, user.id !== lychee.user.id ? '' : 'basicModal__button_OK_no_DEL', lychee.locale["SAVE"], user.id !== lychee.user.id ? "<a id=\"UserDelete" + user.id + "\"  class=\"basicModal__button basicModal__button_DEL\">" + lychee.locale["DELETE"] + "</a>" : '');
+	return lychee.html(_templateObject22, user.id, user.id, user.username, lychee.locale["USERNAME"], lychee.locale["NEW_PASSWORD"], lychee.locale["ALLOW_UPLOADS"], lychee.locale["ALLOW_USER_SELF_EDIT"], user.id, user.id !== lychee.user.id ? "" : "basicModal__button_OK_no_DEL", lychee.locale["SAVE"], user.id !== lychee.user.id ? "<a id=\"UserDelete" + user.id + "\"  class=\"basicModal__button basicModal__button_DEL\">" + lychee.locale["DELETE"] + "</a>" : "");
 };
 
 /**
@@ -14635,7 +14635,7 @@ view.users = {
 				$(".users_view").append('<div class="users_view_line" style="margin-bottom: 50px;"><p style="text-align: center">User list is empty!</p></div>');
 			}
 
-			var html = "\n\t\t\t\t<div class=\"users_view_line\"><p>\n\t\t\t\t\t<span class=\"text\">username</span>\n\t\t\t\t\t<span class=\"text\">new password</span>\n\t\t\t\t\t<span class=\"text_icon\" title=\"" + lychee.locale["ALLOW_UPLOADS"] + "\">\n\t\t\t\t\t\t" + build.iconic("data-transfer-upload") + "\n\t\t\t\t\t</span>\n\t\t\t\t\t<span class=\"text_icon\" title=\"" + lychee.locale["ALLOW_USER_SELF_EDIT"] + "\">\n\t\t\t\t\t\t" + build.iconic("lock-unlocked") + "\n\t\t\t\t\t</span>\n\t\t\t\t</p></div>";
+			var html = "\n\t\t\t\t<div class=\"users_view_line\"><p>\n\t\t\t\t\t<span class=\"text\">" + lychee.locale["USERNAME"] + "</span>\n\t\t\t\t\t<span class=\"text\">" + lychee.locale["NEW_PASSWORD"] + "</span>\n\t\t\t\t\t<span class=\"text_icon\" title=\"" + lychee.locale["ALLOW_UPLOADS"] + "\">\n\t\t\t\t\t\t" + build.iconic("data-transfer-upload") + "\n\t\t\t\t\t</span>\n\t\t\t\t\t<span class=\"text_icon\" title=\"" + lychee.locale["ALLOW_USER_SELF_EDIT"] + "\">\n\t\t\t\t\t\t" + build.iconic("lock-unlocked") + "\n\t\t\t\t\t</span>\n\t\t\t\t</p></div>";
 
 			$(".users_view").append(html);
 
