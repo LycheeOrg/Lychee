@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Actions\User\Create;
-use App\Contracts\ExternalLycheeException;
+use App\Contracts\Exceptions\ExternalLycheeException;
 use App\Models\User;
 use Illuminate\Console\Command;
 

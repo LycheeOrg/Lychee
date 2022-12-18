@@ -15,7 +15,7 @@ class Boot implements BeforeFirstTestHook
 	public function executeBeforeFirstTest(): void
 	{
 		$this->createApplication();
-		/** @var User $admin */
+		/** @var User|null $admin */
 		$admin = User::find(1);
 		if ($admin === null) {
 			$admin = new User();
@@ -32,7 +32,9 @@ class Boot implements BeforeFirstTestHook
 				// when using PostgreSQL, the next ID value is kept when inserting without incrementing
 				// which results in errors because trying to insert a user with ID = 1.
 				// Thus, we need to reset the index to the greatest ID + 1
-				DB::statement('ALTER SEQUENCE users_id_seq1 RESTART WITH ' . DB::table('users')->orderByDesc('id')->first()->id + 1);
+				/** @var User $lastUser */
+				$lastUser = User::query()->orderByDesc('id')->first();
+				DB::statement('ALTER SEQUENCE users_id_seq1 RESTART WITH ' . $lastUser->id + 1);
 			}
 		} elseif (!$admin->may_administrate) {
 			$admin->may_administrate = true;

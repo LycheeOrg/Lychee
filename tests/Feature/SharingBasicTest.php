@@ -77,8 +77,8 @@ class SharingBasicTest extends Base\BaseSharingTest
 
 		/** @var array $users */
 		$users = $response->offsetGet('users');
-		$this->assertContains(['id' => $userID1, 'username' => self::USER_NAME_1], $users);
-		$this->assertContains(['id' => $userID2, 'username' => self::USER_NAME_2], $users);
-		$this->assertContains(['id' => 1, 'username' => 'admin'], $users);
+		self::assertContains(['id' => $userID1, 'username' => self::USER_NAME_1], $users);
+		self::assertContains(['id' => $userID2, 'username' => self::USER_NAME_2], $users);
+		self::assertContains(['id' => 1, 'username' => 'admin'], $users);
 	}
 }
