@@ -12,9 +12,10 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
+use function Safe\exec;
+use Tests\AbstractTestCase;
 
-class RootTest extends TestCase
+class RootTest extends AbstractTestCase
 {
 	/**
 	 * Test album functions.

@@ -12,12 +12,13 @@
 
 namespace Tests\Feature;
 
+use Tests\Feature\Base\BasePhotosRotateTest;
 use Tests\Feature\Traits\RequiresImageHandler;
 
 /**
  * Runs the tests of {@link PhotosRotateTestAbstract} with GD as image handler.
  */
-class PhotosRotateGDTest extends PhotosRotateTestAbstract
+class PhotosRotateGDTest extends BasePhotosRotateTest
 {
 	use RequiresImageHandler;
 

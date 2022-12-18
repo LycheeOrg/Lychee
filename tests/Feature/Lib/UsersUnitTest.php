@@ -13,16 +13,16 @@
 namespace Tests\Feature\Lib;
 
 use Illuminate\Testing\TestResponse;
+use Tests\AbstractTestCase;
 use Tests\Feature\Traits\CatchFailures;
-use Tests\TestCase;
 
 class UsersUnitTest
 {
 	use CatchFailures;
 
-	private TestCase $testCase;
+	private AbstractTestCase $testCase;
 
-	public function __construct(TestCase $testCase)
+	public function __construct(AbstractTestCase $testCase)
 	{
 		$this->testCase = $testCase;
 	}
@@ -41,7 +41,7 @@ class UsersUnitTest
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::list');
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 
@@ -60,7 +60,7 @@ class UsersUnitTest
 	): TestResponse {
 		$response = $this->testCase->postJson('/php/index.php');
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 
@@ -94,7 +94,7 @@ class UsersUnitTest
 			'is_locked' => $isLocked,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 
@@ -119,7 +119,7 @@ class UsersUnitTest
 			'id' => $id,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 
@@ -156,7 +156,7 @@ class UsersUnitTest
 			'is_locked' => $isLocked,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 
@@ -181,7 +181,7 @@ class UsersUnitTest
 			'email' => $email,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 
@@ -202,7 +202,7 @@ class UsersUnitTest
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::getEmail');
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 

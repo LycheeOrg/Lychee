@@ -14,10 +14,10 @@ namespace Tests\Feature;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Tests\Feature\Base\PhotoTestBase;
-use Tests\TestCase;
+use Tests\AbstractTestCase;
+use Tests\Feature\Base\BasePhotoTest;
 
-class CommandTakeDateTest extends PhotoTestBase
+class CommandTakeDateTest extends BasePhotoTest
 {
 	public const COMMAND = 'lychee:takedate';
 
@@ -31,7 +31,7 @@ class CommandTakeDateTest extends PhotoTestBase
 	public function testSetUploadTimeFromFileTime(): void
 	{
 		$id = $this->photos_tests->upload(
-			static::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+			static::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
 		)->offsetGet('id');
 
 		DB::table('photos')
@@ -41,13 +41,15 @@ class CommandTakeDateTest extends PhotoTestBase
 		$this->artisan(self::COMMAND, [
 			'--set-upload-time' => true,
 			'--force' => true,
-		])->assertSuccessful();
+		])
+			->assertSuccessful();
 
+		/** @var \App\Models\Photo */
 		$photo = static::convertJsonToObject($this->photos_tests->get($id));
 
 		$file_time = \Safe\filemtime(public_path($photo->size_variants->original->url));
 		$carbon = new Carbon($photo->created_at);
 
-		static::assertEquals($file_time, $carbon->getTimestamp());
+		$this->assertEquals($file_time, $carbon->getTimestamp());
 	}
 }

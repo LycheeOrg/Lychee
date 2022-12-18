@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
+use Tests\AbstractTestCase;
 
-class CommandsTest extends TestCase
+class CommandsTest extends AbstractTestCase
 {
 	/**
 	 * Tests some console commands on a basic level.

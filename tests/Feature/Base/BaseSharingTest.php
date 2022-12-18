@@ -13,15 +13,15 @@
 namespace Tests\Feature\Base;
 
 use App\Models\Configs;
+use Tests\AbstractTestCase;
 use Tests\Feature\Lib\RootAlbumUnitTest;
 use Tests\Feature\Lib\SharingUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyUsers;
-use Tests\TestCase;
 
-class SharingTestBase extends PhotoTestBase
+abstract class BaseSharingTest extends BasePhotoTest
 {
 	use RequiresEmptyAlbums;
 	use RequiresEmptyUsers;
@@ -50,7 +50,7 @@ class SharingTestBase extends PhotoTestBase
 
 	/** @var array[] EXPECTED_PHOTO_JSON defines the expected JSON result for each sample image such that we can avoid repeating this again and again during the tests */
 	public const EXPECTED_PHOTO_JSON = [
-		TestCase::SAMPLE_FILE_NIGHT_IMAGE => [
+		AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE => [
 			'id' => null,
 			'album_id' => null,
 			'title' => self::PHOTO_NIGHT_TITLE,
@@ -65,7 +65,7 @@ class SharingTestBase extends PhotoTestBase
 				'thumb' => ['type' => 6, 'width' => 200, 'height' => 200],
 			],
 		],
-		TestCase::SAMPLE_FILE_MONGOLIA_IMAGE => [
+		AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE => [
 			'id' => null,
 			'album_id' => null,
 			'title' => self::PHOTO_MONGOLIA_TITLE,
@@ -80,7 +80,7 @@ class SharingTestBase extends PhotoTestBase
 				'thumb' => ['type' => 6, 'width' => 200, 'height' => 200],
 			],
 		],
-		TestCase::SAMPLE_FILE_SUNSET_IMAGE => [
+		AbstractTestCase::SAMPLE_FILE_SUNSET_IMAGE => [
 			'id' => null,
 			'album_id' => null,
 			'title' => self::PHOTO_SUNSET_TITLE,
@@ -95,7 +95,7 @@ class SharingTestBase extends PhotoTestBase
 				'thumb' => ['type' => 6, 'width' => 200, 'height' => 200],
 			],
 		],
-		TestCase::SAMPLE_FILE_TRAIN_IMAGE => [
+		AbstractTestCase::SAMPLE_FILE_TRAIN_IMAGE => [
 			'id' => null,
 			'album_id' => null,
 			'title' => self::PHOTO_TRAIN_TITLE,
@@ -153,31 +153,31 @@ class SharingTestBase extends PhotoTestBase
 		// creation time is not reliable as models get identical timestamps.
 		// (This is not so much a problem for photos as photo processing
 		// takes some time, but it is a problem for albums.)
-		$this->albumsSortingCol = Configs::getValueAsString(TestCase::CONFIG_ALBUMS_SORTING_COL);
-		Configs::set(TestCase::CONFIG_ALBUMS_SORTING_COL, 'title');
-		$this->albumsSortingOrder = Configs::getValueAsString(TestCase::CONFIG_ALBUMS_SORTING_ORDER);
-		Configs::set(TestCase::CONFIG_ALBUMS_SORTING_ORDER, 'ASC');
-		$this->photosSortingCol = Configs::getValueAsString(TestCase::CONFIG_PHOTOS_SORTING_COL);
-		Configs::set(TestCase::CONFIG_PHOTOS_SORTING_COL, 'title');
-		$this->photosSortingOrder = Configs::getValueAsString(TestCase::CONFIG_PHOTOS_SORTING_ORDER);
-		Configs::set(TestCase::CONFIG_PHOTOS_SORTING_ORDER, 'ASC');
+		$this->albumsSortingCol = Configs::getValueAsString(AbstractTestCase::CONFIG_ALBUMS_SORTING_COL);
+		Configs::set(AbstractTestCase::CONFIG_ALBUMS_SORTING_COL, 'title');
+		$this->albumsSortingOrder = Configs::getValueAsString(AbstractTestCase::CONFIG_ALBUMS_SORTING_ORDER);
+		Configs::set(AbstractTestCase::CONFIG_ALBUMS_SORTING_ORDER, 'ASC');
+		$this->photosSortingCol = Configs::getValueAsString(AbstractTestCase::CONFIG_PHOTOS_SORTING_COL);
+		Configs::set(AbstractTestCase::CONFIG_PHOTOS_SORTING_COL, 'title');
+		$this->photosSortingOrder = Configs::getValueAsString(AbstractTestCase::CONFIG_PHOTOS_SORTING_ORDER);
+		Configs::set(AbstractTestCase::CONFIG_PHOTOS_SORTING_ORDER, 'ASC');
 
-		$this->isRecentAlbumPublic = Configs::getValueAsBool(TestCase::CONFIG_PUBLIC_RECENT);
-		Configs::set(TestCase::CONFIG_PUBLIC_RECENT, true);
-		$this->isStarredAlbumPublic = Configs::getValueAsBool(TestCase::CONFIG_PUBLIC_STARRED);
-		Configs::set(TestCase::CONFIG_PUBLIC_STARRED, true);
+		$this->isRecentAlbumPublic = Configs::getValueAsBool(AbstractTestCase::CONFIG_PUBLIC_RECENT);
+		Configs::set(AbstractTestCase::CONFIG_PUBLIC_RECENT, true);
+		$this->isStarredAlbumPublic = Configs::getValueAsBool(AbstractTestCase::CONFIG_PUBLIC_STARRED);
+		Configs::set(AbstractTestCase::CONFIG_PUBLIC_STARRED, true);
 		$this->clearCachedSmartAlbums();
 	}
 
 	public function tearDown(): void
 	{
-		Configs::set(TestCase::CONFIG_ALBUMS_SORTING_COL, $this->albumsSortingCol);
-		Configs::set(TestCase::CONFIG_ALBUMS_SORTING_ORDER, $this->albumsSortingOrder);
-		Configs::set(TestCase::CONFIG_PHOTOS_SORTING_COL, $this->photosSortingCol);
-		Configs::set(TestCase::CONFIG_PHOTOS_SORTING_ORDER, $this->photosSortingOrder);
+		Configs::set(AbstractTestCase::CONFIG_ALBUMS_SORTING_COL, $this->albumsSortingCol);
+		Configs::set(AbstractTestCase::CONFIG_ALBUMS_SORTING_ORDER, $this->albumsSortingOrder);
+		Configs::set(AbstractTestCase::CONFIG_PHOTOS_SORTING_COL, $this->photosSortingCol);
+		Configs::set(AbstractTestCase::CONFIG_PHOTOS_SORTING_ORDER, $this->photosSortingOrder);
 
-		Configs::set(TestCase::CONFIG_PUBLIC_RECENT, $this->isRecentAlbumPublic);
-		Configs::set(TestCase::CONFIG_PUBLIC_STARRED, $this->isStarredAlbumPublic);
+		Configs::set(AbstractTestCase::CONFIG_PUBLIC_RECENT, $this->isRecentAlbumPublic);
+		Configs::set(AbstractTestCase::CONFIG_PUBLIC_STARRED, $this->isStarredAlbumPublic);
 		$this->clearCachedSmartAlbums();
 
 		$this->tearDownRequiresEmptyPhotos();
@@ -193,9 +193,9 @@ class SharingTestBase extends PhotoTestBase
 	 * cumbersome, expected JSON description again and again.
 	 *
 	 * @param string      $samplePhotoID the identifier of the sample photo:
-	 *                                   {@link TestCase::SAMPLE_FILE_NIGHT_IMAGE},
-	 *                                   {@link TestCase::SAMPLE_FILE_MONGOLIA_IMAGE}, or
-	 *                                   {@link TestCase::SAMPLE_FILE_TRAIN_IMAGE}
+	 *                                   {@link AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE},
+	 *                                   {@link AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE}, or
+	 *                                   {@link AbstractTestCase::SAMPLE_FILE_TRAIN_IMAGE}
 	 * @param string      $photoID       the photo ID
 	 * @param string|null $albumID       the album ID
 	 * @param array       $attrToMerge   additional attributes which should be

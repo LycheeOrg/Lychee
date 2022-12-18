@@ -12,15 +12,18 @@
 
 namespace Tests\Feature;
 
-use Tests\Feature\Base\PhotoTestBase;
+use function Safe\chmod;
+use function Safe\copy;
+use function Safe\scandir;
+use Tests\AbstractTestCase;
+use Tests\Feature\Base\BasePhotoTest;
 use Tests\Feature\Traits\InteractsWithFilesystemPermissions;
 use Tests\Feature\Traits\InteractsWithRaw;
-use Tests\TestCase;
 
 /**
  * Contains all tests which add photos to Lychee and are expected to fail.
  */
-class PhotosAddNegativeTest extends PhotoTestBase
+class PhotosAddNegativeTest extends BasePhotoTest
 {
 	use InteractsWithRaw;
 	use InteractsWithFilesystemPermissions;
@@ -66,7 +69,7 @@ class PhotosAddNegativeTest extends PhotoTestBase
 		self::restrictDirectoryAccess(public_path('uploads/'));
 
 		$this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE),
 			null,
 			500,
 			'Unable to create a directory'
@@ -85,7 +88,7 @@ class PhotosAddNegativeTest extends PhotoTestBase
 			static::setAcceptedRawFormats('');
 
 			static::convertJsonToObject($this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TIFF),
+				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_TIFF),
 				null,
 				422,
 				'MediaFileUnsupportedException'
@@ -112,7 +115,7 @@ class PhotosAddNegativeTest extends PhotoTestBase
 			static::setAcceptedRawFormats('');
 
 			$this->photos_tests->importFromUrl(
-				[TestCase::SAMPLE_DOWNLOAD_TIFF],
+				[AbstractTestCase::SAMPLE_DOWNLOAD_TIFF],
 				null,
 				422,
 				'MediaFileUnsupportedException'
@@ -138,7 +141,7 @@ class PhotosAddNegativeTest extends PhotoTestBase
 
 		$dirEntries = scandir($dirPath);
 		foreach ($dirEntries as $dirEntry) {
-			if (in_array($dirEntry, ['.', '..'])) {
+			if (in_array($dirEntry, ['.', '..'], true)) {
 				continue;
 			}
 

@@ -15,9 +15,9 @@ namespace Tests\Feature;
 use App\Models\Logs;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Tests\TestCase;
+use Tests\AbstractTestCase;
 
-class LogsTest extends TestCase
+class LogsTest extends AbstractTestCase
 {
 	/**
 	 * Test log handling.

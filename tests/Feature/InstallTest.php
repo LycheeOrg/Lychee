@@ -16,9 +16,10 @@ use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Tests\TestCase;
+use function Safe\file_get_contents;
+use Tests\AbstractTestCase;
 
-class InstallTest extends TestCase
+class InstallTest extends AbstractTestCase
 {
 	/**
 	 * Testing the Login interface.

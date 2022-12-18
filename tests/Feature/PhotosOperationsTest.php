@@ -23,16 +23,16 @@ use App\SmartAlbums\UnsortedAlbum;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Tests\Feature\Base\PhotoTestBase;
+use Tests\AbstractTestCase;
+use Tests\Feature\Base\BasePhotoTest;
 use Tests\Feature\Lib\RootAlbumUnitTest;
 use Tests\Feature\Lib\SharingUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyUsers;
-use Tests\TestCase;
 
-class PhotosOperationsTest extends PhotoTestBase
+class PhotosOperationsTest extends BasePhotoTest
 {
 	use InteractWithSmartAlbums;
 	use RequiresEmptyAlbums;
@@ -71,7 +71,7 @@ class PhotosOperationsTest extends PhotoTestBase
 	public function testManyFunctionsAtOnce(): void
 	{
 		$id = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 
 		$this->photos_tests->get($id);
@@ -125,6 +125,7 @@ class PhotosOperationsTest extends PhotoTestBase
 		/*
 		 * Check some Exif data
 		 */
+		/** @var Carbon $taken_at */
 		$taken_at = Carbon::create(
 			2019,
 			6,
@@ -197,7 +198,7 @@ class PhotosOperationsTest extends PhotoTestBase
 			'taken_at' => '2019-06-01T01:28:25.000000+02:00',
 			'taken_at_orig_tz' => '+02:00',
 			'title' => "Night in Ploumanac'h",
-			'type' => TestCase::MIME_TYPE_IMG_JPEG,
+			'type' => AbstractTestCase::MIME_TYPE_IMG_JPEG,
 			'size_variants' => [
 				'small' => [
 					'width' => 540,
@@ -218,6 +219,7 @@ class PhotosOperationsTest extends PhotoTestBase
 		/**
 		 * Get album which should contain both photos.
 		 */
+		/** @var \App\Models\Album $album */
 		$album = static::convertJsonToObject($this->albums_tests->get($albumID));
 		static::assertCount(2, $album->photos);
 
@@ -242,6 +244,7 @@ class PhotosOperationsTest extends PhotoTestBase
 		// delete the picture after displaying it
 		$this->photos_tests->delete([$ids[1]]);
 		$this->photos_tests->get($ids[1], 404);
+		/** @var \App\Models\Album $album */
 		$album = static::convertJsonToObject($this->albums_tests->get($albumID));
 		static::assertCount(0, $album->photos);
 
@@ -358,16 +361,16 @@ class PhotosOperationsTest extends PhotoTestBase
 			$albumID11 = $this->albums_tests->add($albumID1, 'Test Album 1.1')->offsetGet('id');
 
 			$photoID11 = $this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE), $albumID11
+				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE), $albumID11
 			)->offsetGet('id');
 			$photoID13 = $this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID13
+				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID13
 			)->offsetGet('id');
 			$photoID12 = $this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE), $albumID12
+				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_TRAIN_IMAGE), $albumID12
 			)->offsetGet('id');
 			$photoID121 = $this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_SUNSET_IMAGE), $albumID121
+				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_SUNSET_IMAGE), $albumID121
 			)->offsetGet('id');
 
 			$this->albums_tests->set_protection_policy(id: $albumID1, full_photo: true, public: true, requiresLink: true);
@@ -517,7 +520,7 @@ class PhotosOperationsTest extends PhotoTestBase
 		$this->expectException(NotImplementedException::class);
 
 		$photo = new Photo();
-		$photo->legacy_id = 'SHOULD BREAK';
+		$photo->legacy_id = 1234;
 	}
 
 	/**
@@ -530,7 +533,7 @@ class PhotosOperationsTest extends PhotoTestBase
 		$this->expectException(NotImplementedException::class);
 
 		$photo = new Photo();
-		$photo->id = 0000;
+		$photo->id = '0000';
 	}
 
 	/**

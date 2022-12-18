@@ -10,13 +10,12 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature;
+namespace Tests\Feature\Base;
 
 use App\Models\Configs;
-use Tests\Feature\Base\PhotoTestBase;
-use Tests\TestCase;
+use Tests\AbstractTestCase;
 
-abstract class PhotosRotateTestAbstract extends PhotoTestBase
+abstract class BasePhotosRotateTest extends BasePhotoTest
 {
 	public const CONFIG_EDITOR_ENABLED = 'editor_enabled';
 
@@ -39,7 +38,7 @@ abstract class PhotosRotateTestAbstract extends PhotoTestBase
 	{
 		Configs::set(self::CONFIG_EDITOR_ENABLED, 0);
 		$id = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 
 		$this->photos_tests->rotate($id, 1, 412, 'support for rotation disabled by configuration');
@@ -48,12 +47,11 @@ abstract class PhotosRotateTestAbstract extends PhotoTestBase
 	public function testInvalidValues(): void
 	{
 		$id = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 
 		$this->photos_tests->rotate('-1', 1, 422);
-		$this->photos_tests->rotate($id, 'asdq', 422, 'The selected direction is invalid');
-		$this->photos_tests->rotate($id, '2', 422, 'The selected direction is invalid');
+		$this->photos_tests->rotate($id, 2, 422, 'The selected direction is invalid');
 	}
 
 	/**
@@ -62,7 +60,7 @@ abstract class PhotosRotateTestAbstract extends PhotoTestBase
 	public function testSimpleRotation(): void
 	{
 		$response = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		);
 		$response->assertJson([
 			'size_variants' => [
@@ -87,7 +85,7 @@ abstract class PhotosRotateTestAbstract extends PhotoTestBase
 		static::assertHasFFMpegOrSkip();
 
 		$id = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_VIDEO)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_TRAIN_VIDEO)
 		)->offsetGet('id');
 
 		$this->photos_tests->rotate($id, 1, 422, 'MediaFileUnsupportedException');
@@ -99,7 +97,7 @@ abstract class PhotosRotateTestAbstract extends PhotoTestBase
 		static::assertHasFFMpegOrSkip();
 
 		$id = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_GMP_IMAGE)
 		)->offsetGet('id');
 
 		$this->photos_tests->rotate($id, 1, 422, 'MediaFileUnsupportedException');
@@ -108,7 +106,7 @@ abstract class PhotosRotateTestAbstract extends PhotoTestBase
 	public function testDuplicatePhotoRotation(): void
 	{
 		$photoResponse1 = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		);
 		$photoID1 = $photoResponse1->offsetGet('id');
 		$photoResponse2 = $this->photos_tests->duplicate(

@@ -14,9 +14,9 @@ namespace Tests\Feature;
 
 use App\DTO\Version;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
-use Tests\TestCase;
+use Tests\AbstractTestCase;
 
-class VersionDTOUnitTest extends TestCase
+class VersionDTOUnitTest extends AbstractTestCase
 {
 	/**
 	 * Lychee version are constrained between 0 and 999999.

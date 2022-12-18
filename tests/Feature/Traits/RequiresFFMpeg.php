@@ -13,7 +13,7 @@
 namespace Tests\Feature\Traits;
 
 use App\Models\Configs;
-use Tests\TestCase;
+use Tests\AbstractTestCase;
 
 trait RequiresFFMpeg
 {
@@ -22,14 +22,14 @@ trait RequiresFFMpeg
 
 	protected function setUpRequiresFFMpeg(): void
 	{
-		$this->hasFFMpegInit = Configs::getValueAsInt(TestCase::CONFIG_HAS_FFMPEG);
-		Configs::set(TestCase::CONFIG_HAS_FFMPEG, 2);
+		$this->hasFFMpegInit = Configs::getValueAsInt(AbstractTestCase::CONFIG_HAS_FFMPEG);
+		Configs::set(AbstractTestCase::CONFIG_HAS_FFMPEG, 2);
 		$this->hasFFMpeg = Configs::hasFFmpeg();
 	}
 
 	protected function tearDownRequiresFFMpeg(): void
 	{
-		Configs::set(TestCase::CONFIG_HAS_FFMPEG, $this->hasFFMpegInit);
+		Configs::set(AbstractTestCase::CONFIG_HAS_FFMPEG, $this->hasFFMpegInit);
 	}
 
 	protected function assertHasFFMpegOrSkip(): void
