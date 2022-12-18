@@ -26,7 +26,7 @@ class SettingsTest extends AbstractTestCase
 		string $url,
 		array $params,
 		int $status = 204,
-		?string $assertSee = null)
+		?string $assertSee = null): void
 	{
 		Auth::loginUsingId(0);
 
@@ -43,9 +43,9 @@ class SettingsTest extends AbstractTestCase
 	private function sendKV(
 		string $url,
 		string $key,
-		string|bool $value,
+		string|bool|int $value,
 		int $status = 204,
-		?string $assertSee = null)
+		?string $assertSee = null): void
 	{
 		$oldVal = Configs::getValue($key);
 		Auth::loginUsingId(0);
