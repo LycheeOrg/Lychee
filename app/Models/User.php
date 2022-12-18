@@ -18,6 +18,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
+use Laragear\WebAuthn\Models\WebAuthnCredential;
 use Laragear\WebAuthn\WebAuthnAuthentication;
 
 /**
@@ -193,7 +194,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		}
 
 		$this->shared()->delete();
-		// TODO delete webauthn credentials
+		WebAuthnCredential::where('authenticatable_id', '=', $this->id)->delete();
 
 		return $this->parentDelete();
 	}
