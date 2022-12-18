@@ -3,10 +3,10 @@
 namespace App\Http\Requests\Import;
 
 use App\Actions\Photo\Strategies\ImportMode;
-use App\Contracts\AbstractAlbum;
+use App\Contracts\Http\Requests\HasAlbum;
+use App\Contracts\Http\Requests\RequestAttribute;
+use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAlbum;
-use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Models\Album;
 use App\Models\Configs;

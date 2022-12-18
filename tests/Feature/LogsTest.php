@@ -16,10 +16,10 @@ use App\Models\Logs;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Tests\AbstractTestCase;
 use Tests\Feature\Traits\CatchFailures;
-use Tests\TestCase;
 
-class LogsTest extends TestCase
+class LogsTest extends AbstractTestCase
 {
 	use CatchFailures;
 
@@ -91,8 +91,8 @@ class LogsTest extends TestCase
 	private function initAdmin(): void
 	{
 		$this->admin = User::find(1);
-		$this->name = $this->admin->username;
-		$this->pw = $this->admin->password;
+		$this->saveUsername = $this->admin->username;
+		$this->savedPassword = $this->admin->password;
 		$this->admin->username = 'temp';
 		$this->admin->password = 'temp';
 		$this->admin->save();
@@ -101,8 +101,8 @@ class LogsTest extends TestCase
 	private function revertAdmin(): void
 	{
 		$this->admin = User::find(1);
-		$this->admin->username = $this->name;
-		$this->admin->password = $this->pw;
+		$this->admin->username = $this->saveUsername;
+		$this->admin->password = $this->savedPassword;
 		$this->admin->save();
 	}
 }

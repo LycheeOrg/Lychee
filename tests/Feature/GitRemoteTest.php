@@ -15,9 +15,10 @@ namespace Tests\Feature;
 use App\Metadata\Versions\Remote\GitCommits;
 use App\Metadata\Versions\Remote\GitTags;
 use Illuminate\Support\Facades\File;
-use Tests\TestCase;
+use function Safe\json_decode;
+use Tests\AbstractTestCase;
 
-class GitRemoteTest extends TestCase
+class GitRemoteTest extends AbstractTestCase
 {
 	public function testCommits(): void
 	{

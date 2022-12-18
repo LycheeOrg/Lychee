@@ -2,7 +2,7 @@
 
 namespace App\DTO\Rights;
 
-use App\Contracts\AbstractAlbum;
+use App\Contracts\Models\AbstractAlbum;
 use App\DTO\ArrayableDTO;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;

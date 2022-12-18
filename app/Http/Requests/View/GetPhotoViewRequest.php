@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\View;
 
+use App\Contracts\Http\Requests\HasPhoto;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasPhoto;
 use App\Http\Requests\Traits\HasPhotoTrait;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;

@@ -18,9 +18,10 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
-use Tests\TestCase;
+use function Safe\file_get_contents;
+use Tests\AbstractTestCase;
 
-class InstallTest extends TestCase
+class InstallTest extends AbstractTestCase
 {
 	/**
 	 * Testing the Login interface.

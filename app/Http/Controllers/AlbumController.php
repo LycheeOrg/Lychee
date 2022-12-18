@@ -11,7 +11,7 @@ use App\Actions\Album\Move;
 use App\Actions\Album\PositionData;
 use App\Actions\Album\SetProtectionPolicy;
 use App\Actions\Album\Unlock;
-use App\Contracts\LycheeException;
+use App\Contracts\Exceptions\LycheeException;
 use App\DTO\AbstractAlbumDTO;
 use App\DTO\PositionData as PositionDataDTO;
 use App\Exceptions\MediaFileOperationException;

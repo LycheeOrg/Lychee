@@ -2,7 +2,7 @@
 
 namespace App\Exceptions\Internal;
 
-use App\Contracts\InternalLycheeException;
+use App\Contracts\Exceptions\InternalLycheeException;
 
 class LycheeAssertionError extends \AssertionError implements InternalLycheeException
 {

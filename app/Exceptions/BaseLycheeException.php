@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-use App\Contracts\ExternalLycheeException;
+use App\Contracts\Exceptions\ExternalLycheeException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**

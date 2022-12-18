@@ -3,7 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Actions\Albums\Top;
-use App\Contracts\InternalLycheeException;
+use App\Contracts\Exceptions\InternalLycheeException;
 use App\DTO\TopAlbums;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Livewire\Component;

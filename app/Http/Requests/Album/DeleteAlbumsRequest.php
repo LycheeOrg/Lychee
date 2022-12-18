@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Album;
 
+use App\Contracts\Http\Requests\HasAlbumIDs;
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAlbumIDs;
-use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasAlbumIDsTrait;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;

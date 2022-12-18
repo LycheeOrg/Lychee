@@ -14,11 +14,11 @@ namespace Tests\Feature;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Tests\AbstractTestCase;
 use Tests\Feature\Lib\UsersUnitTest;
 use Tests\Feature\Traits\RequiresEmptyUsers;
-use Tests\TestCase;
 
-class ApiTokenTest extends TestCase
+class ApiTokenTest extends AbstractTestCase
 {
 	use RequiresEmptyUsers;
 

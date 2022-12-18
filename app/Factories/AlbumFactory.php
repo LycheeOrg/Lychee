@@ -2,7 +2,7 @@
 
 namespace App\Factories;
 
-use App\Contracts\AbstractAlbum;
+use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Models\Album;

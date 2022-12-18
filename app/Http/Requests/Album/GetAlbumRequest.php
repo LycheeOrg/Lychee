@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests\Album;
 
-use App\Contracts\AbstractAlbum;
+use App\Contracts\Http\Requests\HasAbstractAlbum;
+use App\Contracts\Http\Requests\RequestAttribute;
+use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\PasswordRequiredException;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAbstractAlbum;
-use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;

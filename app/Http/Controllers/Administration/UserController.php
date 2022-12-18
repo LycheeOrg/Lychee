@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Administration;
 
 use App\Actions\Settings\UpdateLogin;
-use App\Contracts\InternalLycheeException;
+use App\Contracts\Exceptions\InternalLycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;

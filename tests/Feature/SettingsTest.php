@@ -16,9 +16,9 @@ use App\DTO\BaseSortingCriterion;
 use App\Http\Requests\Settings\SetSortingSettingsRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Tests\TestCase;
+use Tests\AbstractTestCase;
 
-class SettingsTest extends TestCase
+class SettingsTest extends AbstractTestCase
 {
 	public function testSetSorting(): void
 	{

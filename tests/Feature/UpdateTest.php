@@ -18,10 +18,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use PHPUnit\Framework\ExpectationFailedException;
+use Tests\AbstractTestCase;
 use Tests\Feature\Traits\CatchFailures;
-use Tests\TestCase;
 
-class UpdateTest extends TestCase
+class UpdateTest extends AbstractTestCase
 {
 	use CatchFailures;
 
@@ -39,7 +39,7 @@ class UpdateTest extends TestCase
 
 	public function testDoLogged(): void
 	{
-		$gitpull = Configs::getValue('allow_online_git_pull', '0');
+		$gitpull = Configs::getValue('allow_online_git_pull');
 
 		Auth::loginUsingId(1);
 
@@ -57,7 +57,7 @@ class UpdateTest extends TestCase
 		$this->assertOk($response);
 
 		$response = $this->postJson('/api/Update::check');
-		if ($response->status() === 500) {
+		if ($response->status() === 500) { // @phpstan-ignore-line
 			// We need an OR-condition here.
 			// If we are inside the Lychee repository but on a development
 			// branch which is not the master branch, then we get the first
@@ -85,7 +85,7 @@ class UpdateTest extends TestCase
 	 * This requires us to disable the {@link \App\Http\Middleware\MigrationStatus} middleware otherwise
 	 * we will be thrown out all the time.
 	 */
-	public function testApplyMigration()
+	public function testApplyMigration(): void
 	{
 		// Prepare for test: we need to make sure there is an admin user registered.
 		/** @var User $adminUser */

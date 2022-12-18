@@ -3,7 +3,7 @@
 namespace App\Http\Middleware\Checks;
 
 use App\Actions\Diagnostics\Pipes\Checks\MigrationCheck;
-use App\Contracts\MiddlewareCheck;
+use App\Contracts\Http\MiddlewareCheck;
 
 class IsMigrated implements MiddlewareCheck
 {

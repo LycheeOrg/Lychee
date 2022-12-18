@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Album\Unlock;
-use App\Contracts\LycheeException;
+use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Factories\AlbumFactory;
 use App\Legacy\Legacy;

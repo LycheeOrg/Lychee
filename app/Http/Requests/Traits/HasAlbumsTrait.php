@@ -5,7 +5,7 @@ namespace App\Http\Requests\Traits;
 use Illuminate\Support\Collection;
 
 /**
- * @template T of \App\Contracts\AbstractAlbum
+ * @template T of \App\Contracts\Models\AbstractAlbum
  */
 trait HasAlbumsTrait
 {

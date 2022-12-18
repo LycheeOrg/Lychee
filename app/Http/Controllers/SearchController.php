@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\Search\AlbumSearch;
 use App\Actions\Search\PhotoSearch;
-use App\Contracts\LycheeException;
+use App\Contracts\Exceptions\LycheeException;
 use App\Http\Requests\Search\SearchRequest;
 use Illuminate\Routing\Controller;
 use function Safe\json_encode;

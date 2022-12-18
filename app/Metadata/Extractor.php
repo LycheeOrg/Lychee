@@ -6,7 +6,7 @@ use App\Exceptions\ExternalComponentFailedException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\Handler;
 use App\Exceptions\MediaFileOperationException;
-use App\Image\NativeLocalFile;
+use App\Image\Files\NativeLocalFile;
 use App\Models\Configs;
 use App\Models\Logs;
 use Carbon\Exceptions\InvalidFormatException;

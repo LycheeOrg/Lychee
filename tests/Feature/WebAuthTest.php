@@ -16,10 +16,10 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
+use Tests\AbstractTestCase;
 use Tests\Feature\Traits\CatchFailures;
-use Tests\TestCase;
 
-class WebAuthTest extends TestCase
+class WebAuthTest extends AbstractTestCase
 {
 	use CatchFailures;
 
@@ -78,6 +78,7 @@ class WebAuthTest extends TestCase
 			'attestation_format' => 'none',
 			'public_key' => '',
 		]);
+		/** @var User $user */
 		$user = User::query()->find(1);
 		$user->webAuthnCredentials()->save($key);
 

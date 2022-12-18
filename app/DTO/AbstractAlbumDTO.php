@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-use App\Contracts\AbstractAlbum;
+use App\Contracts\Models\AbstractAlbum;
 use App\DTO\Rights\AlbumRightsDTO;
 use App\Models\Album;
 

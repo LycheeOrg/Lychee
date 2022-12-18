@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Import;
 
-use App\Contracts\AbstractAlbum;
+use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\AbstractEmptyRequest;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;

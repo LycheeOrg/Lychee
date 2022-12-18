@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests\Sharing;
 
-use App\Contracts\AbstractAlbum;
+use App\Contracts\Http\Requests\HasBaseAlbum;
+use App\Contracts\Http\Requests\RequestAttribute;
+use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasBaseAlbum;
-use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasBaseAlbumTrait;
 use App\Models\User;
 use App\Policies\AlbumPolicy;

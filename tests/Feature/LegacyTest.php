@@ -16,14 +16,14 @@ use App\Models\Album;
 use App\Models\Photo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Tests\AbstractTestCase;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\Feature\Traits\RequiresEmptyUsers;
-use Tests\TestCase;
 
-class LegacyTest extends TestCase
+class LegacyTest extends AbstractTestCase
 {
 	use RequiresEmptyAlbums;
 	use RequiresEmptyUsers;
@@ -60,13 +60,15 @@ class LegacyTest extends TestCase
 		Auth::loginUsingId(1);
 		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 		$photoID = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE),
 			$albumID
 		)->offsetGet('id');
 
+		/** @var \App\Models\Photo $photo */
 		$photo = Photo::find($photoID);
 		$legacyPhotoID = $photo->legacy_id;
 
+		/** @var \App\Models\Album $album */
 		$album = Album::find($albumID);
 		$legacyAlbumID = $album->legacy_id;
 
