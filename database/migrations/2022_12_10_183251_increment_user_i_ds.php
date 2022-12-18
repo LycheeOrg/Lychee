@@ -5,8 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class IncrementUserIDs extends Migration
-{
+return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -71,4 +70,4 @@ class IncrementUserIDs extends Migration
 		}
 		Schema::enableForeignKeyConstraints();
 	}
-}
+};
