@@ -91,4 +91,64 @@ class SettingsTest extends AbstractTestCase
 		Auth::logout();
 		Session::flush();
 	}
+
+	public function testSetMapProviderSetting(): void
+	{
+		$this->assertTrue(false);
+	}
+
+	public function testSetMapDisplayPublic(): void
+	{
+		$this->assertTrue(false);
+	}
+
+	public function testSetMapDisplaySetting(): void
+	{
+		$this->assertTrue(false);
+	}
+
+	public function testSetMapIncludeSubAlbums(): void
+	{
+		$this->assertTrue(false);
+	}
+
+	public function testSetLocationShowPublic(): void
+	{
+		$this->assertTrue(false);
+	}
+
+	public function testSetImageOverlay(): void
+	{
+		$this->assertTrue(false);
+	}
+
+	public function testSetDefaultLicense(): void
+	{
+		$this->assertTrue(false);
+	}
+
+	public function testgetAllSettings(): void
+	{
+		$this->assertTrue(false);
+	}
+
+	public function testsetAllSettings(): void
+	{
+		$this->assertTrue(false);
+	}
+
+	public function testsetLayout(): void
+	{
+		$this->assertTrue(false);
+	}
+
+	public function testsetDropBoxKey(): void
+	{
+		$this->assertTrue(false);
+	}
+
+	public function testsetLang(): void
+	{
+		$this->assertTrue(false);
+	}
 }
