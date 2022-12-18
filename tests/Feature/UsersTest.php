@@ -290,8 +290,7 @@ class UsersTest extends AbstractTestCase
 		$users_test->update_email(null);
 
 		// 38
-		$response = $users_test->delete(intval(Auth::id()));
-		$this->assertStatus($response, 403);
+		$response = $users_test->delete(intval(Auth::id()), 403);
 
 		// 39
 		$sessions_test->logout();
