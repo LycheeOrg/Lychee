@@ -2,8 +2,8 @@
 
 namespace App\Contracts\Models;
 
-use App\Enum\SizeVariantType;
 use App\Contracts\Exceptions\LycheeException;
+use App\Enum\SizeVariantType;
 use App\Image\Files\FlysystemFile;
 use App\Models\Photo;
 use Illuminate\Contracts\Filesystem\Filesystem;

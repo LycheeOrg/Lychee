@@ -2,9 +2,9 @@
 
 namespace App\Contracts\Models;
 
-use App\Enum\SizeVariantType;
 use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Image\ImageHandlerInterface;
+use App\Enum\SizeVariantType;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Support\Collection;
