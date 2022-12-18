@@ -9,6 +9,7 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
+use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\Users\AddUserRequest;
 use App\Http\Requests\Users\DeleteUserRequest;
 use App\Http\Requests\Users\ListUsersRequest;
@@ -17,6 +18,7 @@ use App\Models\User;
 use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller
 {
@@ -71,6 +73,9 @@ class UsersController extends Controller
 	 */
 	public function delete(DeleteUserRequest $request): void
 	{
+		if ($request->user2()->id === Auth::id()) {
+			throw new UnauthorizedException('You are not allowed to delete yourself');
+		}
 		$request->user2()->delete();
 	}
 

@@ -84,7 +84,8 @@ class UsersTest extends AbstractTestCase
 		 * 35. update email
 		 * 36. get email
 		 * 37. update email to blank
-		 * 38. log out
+		 * 38. try to delete yourself (not allowed)
+		 * 39. log out
 		 */
 
 		// 1
@@ -289,6 +290,10 @@ class UsersTest extends AbstractTestCase
 		$users_test->update_email(null);
 
 		// 38
+		$response = $users_test->delete(Auth::id());
+		$this->assertStatus($response, 403);
+
+		// 39
 		$sessions_test->logout();
 		Configs::set('new_photos_notification', $store_new_photos_notification);
 	}
