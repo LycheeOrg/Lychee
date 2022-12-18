@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware\Checks;
 
-use App\Contracts\InternalLycheeException;
-use App\Contracts\MiddlewareCheck;
+use App\Contracts\Exceptions\InternalLycheeException;
+use App\Contracts\Http\MiddlewareCheck;
 use App\Exceptions\Internal\FrameworkException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\QueryException;

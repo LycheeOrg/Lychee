@@ -2,9 +2,9 @@
 
 namespace App\Actions\Photo\Strategies;
 
-use App\Contracts\AbstractSizeVariantNamingStrategy;
-use App\Contracts\LycheeException;
-use App\Contracts\SizeVariantFactory;
+use App\Contracts\Exceptions\LycheeException;
+use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
+use App\Contracts\Models\SizeVariantFactory;
 use App\DTO\ImageDimension;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\FrameworkException;
@@ -13,8 +13,8 @@ use App\Exceptions\Internal\InvalidRotationDirectionException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\MediaFileUnsupportedException;
-use App\Image\FlysystemFile;
-use App\Image\ImageHandler;
+use App\Image\Files\FlysystemFile;
+use App\Image\Handlers\ImageHandler;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;

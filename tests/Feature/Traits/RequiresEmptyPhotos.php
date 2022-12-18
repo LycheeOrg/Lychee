@@ -14,6 +14,8 @@ namespace Tests\Feature\Traits;
 
 use Illuminate\Support\Facades\DB;
 use function Safe\fileowner;
+use function Safe\scandir;
+use function Safe\unlink;
 
 trait RequiresEmptyPhotos
 {
@@ -71,7 +73,7 @@ trait RequiresEmptyPhotos
 		}
 		$dirEntries = scandir($dirPath);
 		foreach ($dirEntries as $dirEntry) {
-			if (in_array($dirEntry, ['.', '..', 'index.html', '.gitignore'])) {
+			if (in_array($dirEntry, ['.', '..', 'index.html', '.gitignore'], true)) {
 				continue;
 			}
 

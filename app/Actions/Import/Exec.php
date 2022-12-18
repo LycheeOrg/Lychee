@@ -14,7 +14,7 @@ use App\Exceptions\ImportCancelledException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\InvalidDirectoryException;
 use App\Exceptions\ReservedDirectoryException;
-use App\Image\NativeLocalFile;
+use App\Image\Files\NativeLocalFile;
 use App\Models\Album;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\JsonEncodingException;

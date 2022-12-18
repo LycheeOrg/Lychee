@@ -13,16 +13,17 @@
 namespace Tests\Feature;
 
 use Illuminate\Support\Facades\DB;
-use Tests\TestCase;
+use Tests\AbstractTestCase;
 
-class CommandGhostbusterTest extends Base\PhotoTestBase
+class CommandGhostbusterTest extends Base\BasePhotoTest
 {
 	public const COMMAND = 'lychee:ghostbuster';
 
 	public function testRemoveOrphanedFiles(): void
 	{
+		/** @var \App\Models\Photo $photo */
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
-			static::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			static::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		));
 
 		// The question mark operator is deliberately omitted for original
@@ -37,7 +38,7 @@ class CommandGhostbusterTest extends Base\PhotoTestBase
 			$photo->size_variants->thumb2x?->url,
 			$photo->size_variants->thumb->url,
 		], [null]);
-		static::assertNotEmpty($fileURLs);
+		$this->assertNotEmpty($fileURLs);
 
 		// Remove photo and size variants from DB manually; note we must
 		// not use an API call as this would also remove the files, and we
@@ -51,24 +52,26 @@ class CommandGhostbusterTest extends Base\PhotoTestBase
 
 		// Ensure that files are still there
 		foreach ($fileURLs as $fileURL) {
-			static::assertFileExists(public_path($fileURL));
+			$this->assertFileExists(public_path($fileURL));
 		}
 
 		// Ghostbuster, ...
 		$this->artisan(self::COMMAND, [
 			'--dryrun' => 0,
-		])->assertSuccessful();
+		])
+			->assertSuccessful();
 
 		// Ensure that files are gone
 		foreach ($fileURLs as $fileURL) {
-			static::assertFileDoesNotExist(public_path($fileURL));
+			$this->assertFileDoesNotExist(public_path($fileURL));
 		}
 	}
 
 	public function testRemoveZombiePhotos(): void
 	{
+		/** @var \App\Models\Photo $photo */
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
-			static::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			static::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		));
 
 		// The question mark operator is deliberately omitted for original
@@ -84,7 +87,7 @@ class CommandGhostbusterTest extends Base\PhotoTestBase
 			$photo->size_variants->thumb2x?->url,
 			$photo->size_variants->thumb->url,
 		], [null]);
-		static::assertNotEmpty($fileURLs);
+		$this->assertNotEmpty($fileURLs);
 
 		// Remove original file
 		\Safe\unlink(public_path($originalFileURL));
@@ -93,23 +96,24 @@ class CommandGhostbusterTest extends Base\PhotoTestBase
 		$this->artisan(self::COMMAND, [
 			'--dryrun' => 0,
 			'--removeZombiePhotos' => 1,
-		])->assertSuccessful();
+		])
+			->assertSuccessful();
 
 		// Ensure that photo, size variants and all other size variants are gone
-		static::assertEquals(
+		$this->assertEquals(
 			0,
 			DB::table('photos')
 				->where('id', '=', $photo->id)
 				->count()
 		);
-		static::assertEquals(
+		$this->assertEquals(
 			0,
 			DB::table('size_variants')
 				->where('photo_id', '=', $photo->id)
 				->count()
 		);
 		foreach ($fileURLs as $fileURL) {
-			static::assertFileDoesNotExist(public_path($fileURL));
+			$this->assertFileDoesNotExist(public_path($fileURL));
 		}
 	}
 }

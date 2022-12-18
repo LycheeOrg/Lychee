@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Traits\Authorize;
 
-use App\Contracts\AbstractAlbum;
+use App\Contracts\Models\AbstractAlbum;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 

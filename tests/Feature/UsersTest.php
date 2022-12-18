@@ -22,14 +22,15 @@ use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use PHPUnit\Framework\ExpectationFailedException;
+use function Safe\json_decode;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
+use Tests\AbstractTestCase;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\SessionUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
-use Tests\TestCase;
 
-class UsersTest extends TestCase
+class UsersTest extends AbstractTestCase
 {
 	use InteractWithSmartAlbums;
 
@@ -127,7 +128,9 @@ class UsersTest extends TestCase
 		$response = $users_test->list();
 
 		// 4
-		$t = json_decode($response->getContent());
+		$content = $response->getContent();
+		$this->assertNotFalse($content);
+		$t = json_decode($content);
 		$id = end($t)->id;
 		$response->assertJsonFragment([
 			'id' => $id,
@@ -160,7 +163,9 @@ class UsersTest extends TestCase
 			mayUpload: true,
 			mayEditOwnSettings: false);
 		$response = $users_test->list();
-		$t = json_decode($response->getContent());
+		$content = $response->getContent();
+		$this->assertNotFalse($content);
+		$t = json_decode($content);
 		$id2 = end($t)->id;
 
 		// 8
@@ -279,10 +284,10 @@ class UsersTest extends TestCase
 		$users_test->delete($id2);
 
 		// those should fail because we do not touch user of ID 0
-		$users_test->delete('0', 422);
+		$users_test->delete(0, 422);
 		// those should fail because there are no user with id -1
-		$users_test->delete('-1', 422);
-		$users_test->save('-1', 'toto', 'test', false, true, 422);
+		$users_test->delete(-1, 422);
+		$users_test->save(-1, 'toto', 'test', false, true, 422);
 
 		// 32
 		$sessions_test->logout();
@@ -401,7 +406,7 @@ class UsersTest extends TestCase
 		$sessions_test->logout();
 	}
 
-	public function testGetAuthenticatedUser()
+	public function testGetAuthenticatedUser(): void
 	{
 		$users_test = new UsersUnitTest($this);
 

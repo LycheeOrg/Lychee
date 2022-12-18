@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Sharing;
 
-use App\Contracts\AbstractAlbum;
+use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Policies\AlbumPolicy;
 use App\Rules\IntegerIDRule;

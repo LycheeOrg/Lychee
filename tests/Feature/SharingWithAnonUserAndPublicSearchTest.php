@@ -15,14 +15,15 @@ namespace Tests\Feature;
 use App\Models\Configs;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
-use Tests\TestCase;
+use Tests\AbstractTestCase;
+use Tests\Feature\Base\BaseSharingWithAnonUser;
 
-class SharingWithAnonUserAndPublicSearchTest extends SharingWithAnonUserAbstract
+class SharingWithAnonUserAndPublicSearchTest extends BaseSharingWithAnonUser
 {
 	public function setUp(): void
 	{
 		parent::setUp();
-		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, false);
+		Configs::set(AbstractTestCase::CONFIG_PUBLIC_HIDDEN, false);
 	}
 
 	/**

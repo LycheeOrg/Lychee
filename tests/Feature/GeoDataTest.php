@@ -18,15 +18,15 @@ use App\SmartAlbums\UnsortedAlbum;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Tests\AbstractTestCase;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\Feature\Lib\RootAlbumUnitTest;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
-use Tests\TestCase;
 
-class GeoDataTest extends TestCase
+class GeoDataTest extends AbstractTestCase
 {
 	use RequiresEmptyPhotos;
 	use RequiresEmptyAlbums;
@@ -68,7 +68,7 @@ class GeoDataTest extends TestCase
 
 		try {
 			$photoResponse = $this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
 			);
 			$photoID = $photoResponse->offsetGet('id');
 
@@ -83,6 +83,7 @@ class GeoDataTest extends TestCase
 			 * if the tool is invoked from the command line, but the PHP wrapper
 			 * \PHPExif\Exif does not use it.
 			 */
+			/** @var Carbon $taken_at */
 			$taken_at = Carbon::create(
 				2011, 8, 17, 16, 39, 37
 			);
@@ -90,7 +91,7 @@ class GeoDataTest extends TestCase
 				[
 					'id' => $photoID,
 					'title' => 'mongolia',
-					'type' => TestCase::MIME_TYPE_IMG_JPEG,
+					'type' => AbstractTestCase::MIME_TYPE_IMG_JPEG,
 					'iso' => '200',
 					'aperture' => 'f/13.0',
 					'make' => 'NIKON CORPORATION',
@@ -130,6 +131,7 @@ class GeoDataTest extends TestCase
 			$this->clearCachedSmartAlbums();
 			$this->albums_tests->get(UnsortedAlbum::ID, 200, null, $photoID);
 			$albumResponse = $this->albums_tests->get($albumID);
+			/** @var \App\Models\Album $album */
 			$album = static::convertJsonToObject($albumResponse);
 			static::assertCount(1, $album->photos);
 			static::assertEquals($photoID, $album->photos[0]->id);
@@ -145,6 +147,7 @@ class GeoDataTest extends TestCase
 			Configs::set(self::CONFIG_MAP_DISPLAY, true);
 			static::assertEquals(true, Configs::getValueAsBool(self::CONFIG_MAP_DISPLAY));
 			$positionDataResponse = $this->root_album_tests->getPositionData();
+			/** @var \App\DTO\PositionData $positionData */
 			$positionData = static::convertJsonToObject($positionDataResponse);
 			static::assertObjectHasAttribute('photos', $positionData);
 			static::assertCount(1, $positionData->photos);
@@ -159,6 +162,7 @@ class GeoDataTest extends TestCase
 			Configs::set(self::CONFIG_MAP_DISPLAY, true);
 			static::assertEquals(true, Configs::getValueAsBool(self::CONFIG_MAP_DISPLAY));
 			$positionDataResponse = $this->albums_tests->getPositionData($albumID, false);
+			/** @var \App\DTO\PositionData $positionData */
 			$positionData = static::convertJsonToObject($positionDataResponse);
 			static::assertObjectHasAttribute('photos', $positionData);
 			static::assertCount(1, $positionData->photos);
@@ -206,19 +210,19 @@ class GeoDataTest extends TestCase
 			$albumID13 = $this->albums_tests->add($albumID1, 'Test Album 1.3')->offsetGet('id');
 
 			$photoID1 = $this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_AARHUS), $albumID1
+				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_AARHUS), $albumID1
 			)->offsetGet('id');
 			$photoID11 = $this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_ETTLINGEN), $albumID11
+				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_ETTLINGEN), $albumID11
 			)->offsetGet('id');
 			$photoID12 = $this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE), $albumID12
+				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_TRAIN_IMAGE), $albumID12
 			)->offsetGet('id');
 			$photoID121 = $this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_HOCHUFERWEG), $albumID121
+				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_HOCHUFERWEG), $albumID121
 			)->offsetGet('id');
 			$photoID13 = $this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID13
+				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID13
 			)->offsetGet('id');
 
 			$this->albums_tests->set_protection_policy(id: $albumID1, grants_full_photo_access: true, is_public: true, is_link_required: true);

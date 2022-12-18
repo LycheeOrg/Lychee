@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Contracts\AbstractSizeVariantNamingStrategy;
+use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Exceptions\RequestUnsupportedException;
 use Illuminate\Http\Request;
 use League\Flysystem\Local\LocalFilesystemAdapter;

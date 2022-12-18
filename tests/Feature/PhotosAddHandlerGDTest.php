@@ -12,14 +12,14 @@
 
 namespace Tests\Feature;
 
+use Tests\AbstractTestCase;
 use Tests\Feature\Traits\InteractsWithRaw;
 use Tests\Feature\Traits\RequiresImageHandler;
-use Tests\TestCase;
 
 /**
  * Runs the tests of {@link PhotosAddHandlerTestAbstract} with GD as image handler.
  */
-class PhotosAddHandlerGDTest extends PhotosAddHandlerTestAbstract
+class PhotosAddHandlerGDTest extends BasePhotosAddHandler
 {
 	use InteractsWithRaw;
 	use RequiresImageHandler;
@@ -50,8 +50,9 @@ class PhotosAddHandlerGDTest extends PhotosAddHandlerTestAbstract
 		try {
 			static::setAcceptedRawFormats('.tif');
 
+			/** @var \App\Models\Photo $photo */
 			$photo = static::convertJsonToObject($this->photos_tests->upload(
-				TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TIFF)
+				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_TIFF)
 			));
 
 			static::assertStringEndsWith('.tif', $photo->size_variants->original->url);

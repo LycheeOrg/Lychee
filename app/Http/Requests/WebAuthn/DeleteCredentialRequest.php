@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\WebAuthn;
 
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\RequestAttribute;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;

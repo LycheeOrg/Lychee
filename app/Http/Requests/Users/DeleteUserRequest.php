@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Users;
 
+use App\Contracts\Http\Requests\HasUser;
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasUser;
-use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasUserTrait;
 use App\Models\User;
 use App\Policies\UserPolicy;

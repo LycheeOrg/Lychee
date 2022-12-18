@@ -2,7 +2,7 @@
 
 namespace App\Image;
 
-use App\Contracts\AbstractSizeVariantNamingStrategy;
+use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Exceptions\MediaFileOperationException;
 use App\Models\SymLink;
 use Illuminate\Support\Collection;

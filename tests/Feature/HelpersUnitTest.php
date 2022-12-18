@@ -13,9 +13,9 @@
 namespace Tests\Feature;
 
 use App\Facades\Helpers;
-use Tests\TestCase;
+use Tests\AbstractTestCase;
 
-class HelpersUnitTest extends TestCase
+class HelpersUnitTest extends AbstractTestCase
 {
 	/**
 	 * Testing truncate.
