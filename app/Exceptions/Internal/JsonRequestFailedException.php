@@ -2,7 +2,7 @@
 
 namespace App\Exceptions\Internal;
 
-use App\Contracts\InternalLycheeException;
+use App\Contracts\Exceptions\InternalLycheeException;
 
 class JsonRequestFailedException extends \RuntimeException implements InternalLycheeException
 {

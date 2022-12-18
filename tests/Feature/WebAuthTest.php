@@ -16,9 +16,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
-use Tests\TestCase;
+use Tests\AbstractTestCase;
 
-class WebAuthTest extends TestCase
+class WebAuthTest extends AbstractTestCase
 {
 	/**
 	 * Testing the Login interface.
@@ -75,6 +75,7 @@ class WebAuthTest extends TestCase
 			'attestation_format' => 'none',
 			'public_key' => '',
 		]);
+		/** @var User $user */
 		$user = User::query()->find(0);
 		$user->webAuthnCredentials()->save($key);
 

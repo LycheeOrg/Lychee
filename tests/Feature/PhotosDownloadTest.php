@@ -14,24 +14,25 @@ namespace Tests\Feature;
 
 use App\Actions\Photo\Archive;
 use App\Enum\DownloadVariantType;
-use App\Image\ImagickHandler;
-use App\Image\InMemoryBuffer;
-use App\Image\TemporaryLocalFile;
-use App\Image\VideoHandler;
+use App\Image\Files\InMemoryBuffer;
+use App\Image\Files\TemporaryLocalFile;
+use App\Image\Handlers\ImagickHandler;
+use App\Image\Handlers\VideoHandler;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use function Safe\file_get_contents;
 use function Safe\filesize;
+use function Safe\fwrite;
 use Symfony\Component\HttpFoundation\HeaderUtils;
+use Tests\AbstractTestCase;
 use Tests\Feature\Lib\AssertableZipArchive;
 use Tests\Feature\Lib\SharingUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyUsers;
-use Tests\TestCase;
 
-class PhotosDownloadTest extends Base\PhotoTestBase
+class PhotosDownloadTest extends Base\BasePhotoTest
 {
 	use RequiresEmptyUsers;
 	use RequiresEmptyAlbums;
@@ -66,7 +67,7 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 	public function testSinglePhotoDownload(): void
 	{
 		$photoUploadResponse = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		);
 		$photoArchiveResponse = $this->photos_tests->download(
 			[$photoUploadResponse->offsetGet('id')], DownloadVariantType::ORIGINAL->value);
@@ -94,10 +95,10 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 	public function testMultiplePhotoDownload(): void
 	{
 		$photoID1 = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 		$photoID2 = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
 		)->offsetGet('id');
 
 		$photoArchiveResponse = $this->photos_tests->download(
@@ -121,7 +122,7 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 		static::assertHasFFMpegOrSkip();
 
 		$photoUploadResponse = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_GMP_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_GMP_IMAGE)
 		);
 		$photoArchiveResponse = $this->photos_tests->download(
 			[$photoUploadResponse->offsetGet('id')],
@@ -151,10 +152,10 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 	public function testAmbiguousPhotoDownload(): void
 	{
 		$photoID1 = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_TRAIN_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_TRAIN_IMAGE)
 		)->offsetGet('id');
 		$photoID2a = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
 		)->offsetGet('id');
 		$photoID2b = $this->photos_tests->duplicate(
 			[$photoID2a], null
@@ -174,19 +175,19 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 	public function testPhotoDownloadWithMultiByteFilename(): void
 	{
 		$id = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_SUNSET_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_SUNSET_IMAGE)
 		)->offsetGet('id');
 
 		$download = $this->photos_tests->download([$id], DownloadVariantType::ORIGINAL->value);
-		$download->assertHeader('Content-Type', TestCase::MIME_TYPE_IMG_JPEG);
-		$download->assertHeader('Content-Length', filesize(base_path(TestCase::SAMPLE_FILE_SUNSET_IMAGE)));
+		$download->assertHeader('Content-Type', AbstractTestCase::MIME_TYPE_IMG_JPEG);
+		$download->assertHeader('Content-Length', filesize(base_path(AbstractTestCase::SAMPLE_FILE_SUNSET_IMAGE)));
 		$download->assertHeader('Content-Disposition', HeaderUtils::makeDisposition(
 			HeaderUtils::DISPOSITION_ATTACHMENT,
 			'fin de journée.jpg',
 			'Photo.jpg'
 		));
 		$fileContent = $download->streamedContent();
-		self::assertEquals(file_get_contents(base_path(TestCase::SAMPLE_FILE_SUNSET_IMAGE)), $fileContent);
+		$this->assertEquals(file_get_contents(base_path(AbstractTestCase::SAMPLE_FILE_SUNSET_IMAGE)), $fileContent);
 	}
 
 	/**
@@ -198,18 +199,18 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 	public function testMultiplePhotoDownloadWithMultiByteFilename(): void
 	{
 		$photoID1 = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_SUNSET_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_SUNSET_IMAGE)
 		)->offsetGet('id');
 		$photoID2 = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
 		)->offsetGet('id');
 
 		$photoArchiveResponse = $this->photos_tests->download([$photoID1, $photoID2], DownloadVariantType::ORIGINAL->value);
 
 		$zipArchive = AssertableZipArchive::createFromResponse($photoArchiveResponse);
 		$zipArchive->assertContainsFilesExactly([
-			'fin de journée.jpg' => ['size' => filesize(base_path(TestCase::SAMPLE_FILE_SUNSET_IMAGE))],
-			'mongolia.jpeg' => ['size' => filesize(base_path(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE))],
+			'fin de journée.jpg' => ['size' => filesize(base_path(AbstractTestCase::SAMPLE_FILE_SUNSET_IMAGE))],
+			'mongolia.jpeg' => ['size' => filesize(base_path(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE))],
 		]);
 	}
 
@@ -217,10 +218,10 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 	{
 		$albumID = $this->albums_tests->add(null, self::MULTI_BYTE_ALBUM_TITLE)->offsetGet('id');
 		$this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_SUNSET_IMAGE), $albumID
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_SUNSET_IMAGE), $albumID
 		);
 		$this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID
 		);
 
 		$albumArchiveResponse = $this->albums_tests->download($albumID);
@@ -233,8 +234,8 @@ class PhotosDownloadTest extends Base\PhotoTestBase
 
 		$zipArchive = AssertableZipArchive::createFromResponse($albumArchiveResponse);
 		$zipArchive->assertContainsFilesExactly([
-			self::MULTI_BYTE_ALBUM_TITLE . '/fin de journée.jpg' => ['size' => filesize(base_path(TestCase::SAMPLE_FILE_SUNSET_IMAGE))],
-			self::MULTI_BYTE_ALBUM_TITLE . '/mongolia.jpeg' => ['size' => filesize(base_path(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE))],
+			self::MULTI_BYTE_ALBUM_TITLE . '/fin de journée.jpg' => ['size' => filesize(base_path(AbstractTestCase::SAMPLE_FILE_SUNSET_IMAGE))],
+			self::MULTI_BYTE_ALBUM_TITLE . '/mongolia.jpeg' => ['size' => filesize(base_path(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE))],
 		]);
 
 		$this->albums_tests->delete([$albumID]);

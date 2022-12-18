@@ -15,9 +15,9 @@ namespace Tests\Feature;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Tests\TestCase;
+use Tests\AbstractTestCase;
 
-class IndexTest extends TestCase
+class IndexTest extends AbstractTestCase
 {
 	/**
 	 * Testing the Login interface.
@@ -52,7 +52,7 @@ class IndexTest extends TestCase
 
 	public function testLandingPage(): void
 	{
-		$landing_on_off = Configs::getValue('landing_page_enable', '0');
+		$landing_on_off = Configs::getValue('landing_page_enable');
 		Configs::set('landing_page_enable', 1);
 
 		$response = $this->get('/');

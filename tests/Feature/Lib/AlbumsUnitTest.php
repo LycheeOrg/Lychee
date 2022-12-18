@@ -14,16 +14,16 @@ namespace Tests\Feature\Lib;
 
 use Illuminate\Testing\TestResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Tests\AbstractTestCase;
 use Tests\Feature\Traits\CatchFailures;
-use Tests\TestCase;
 
 class AlbumsUnitTest
 {
 	use CatchFailures;
 
-	private TestCase $testCase;
+	private AbstractTestCase $testCase;
 
-	public function __construct(TestCase $testCase)
+	public function __construct(AbstractTestCase $testCase)
 	{
 		$this->testCase = $testCase;
 	}
@@ -49,7 +49,7 @@ class AlbumsUnitTest
 			'parent_id' => $parent_id,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 
@@ -77,7 +77,7 @@ class AlbumsUnitTest
 			'tags' => $tags,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 
@@ -103,7 +103,7 @@ class AlbumsUnitTest
 			'albumIDs' => $ids,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 	}
@@ -127,7 +127,7 @@ class AlbumsUnitTest
 			'albumIDs' => $ids,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 	}
@@ -153,10 +153,10 @@ class AlbumsUnitTest
 			['albumID' => $id]
 		);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
-		if ($assertDontSee) {
+		if ($assertDontSee !== null) {
 			$response->assertDontSee($assertDontSee, false);
 		}
 
@@ -180,7 +180,7 @@ class AlbumsUnitTest
 			['albumID' => $id, 'password' => $password]
 		);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 	}
@@ -204,7 +204,7 @@ class AlbumsUnitTest
 			['albumIDs' => [$id], 'title' => $title]
 		);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 	}
@@ -228,7 +228,7 @@ class AlbumsUnitTest
 			['albumID' => $id, 'description' => $description]
 		);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 	}
@@ -252,7 +252,7 @@ class AlbumsUnitTest
 			['albumID' => $id, 'photoID' => $photoID]
 		);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 	}
@@ -276,7 +276,7 @@ class AlbumsUnitTest
 			'license' => $license,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 	}
@@ -303,7 +303,7 @@ class AlbumsUnitTest
 			'sorting_order' => $sortingOrder,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 	}
@@ -353,7 +353,7 @@ class AlbumsUnitTest
 
 		$response = $this->testCase->postJson('/api/Album::setProtectionPolicy', $params);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 	}
@@ -375,7 +375,7 @@ class AlbumsUnitTest
 			'show_tags' => $tags,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 	}
@@ -397,7 +397,7 @@ class AlbumsUnitTest
 			]
 		);
 		$this->assertOk($response);
-		if ($response->baseResponse instanceof StreamedResponse) {
+		if ($response->baseResponse instanceof StreamedResponse) { // @phpstan-ignore-line
 			// The content of a streamed response is not generated unless
 			// the content is fetched.
 			// This ensures that the generator of SUT is actually executed.
@@ -421,7 +421,7 @@ class AlbumsUnitTest
 	): void {
 		$response = $this->testCase->postJson('/api/Album::delete', ['albumIDs' => $ids]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 	}
@@ -447,7 +447,7 @@ class AlbumsUnitTest
 			'includeSubAlbums' => $includeSubAlbums,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 

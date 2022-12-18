@@ -2,9 +2,10 @@
 
 namespace App\Image;
 
-use App\Contracts\AbstractSizeVariantNamingStrategy;
-use App\Contracts\LycheeException;
-use App\Contracts\SizeVariantFactory;
+use App\Contracts\Exceptions\LycheeException;
+use App\Contracts\Image\ImageHandlerInterface;
+use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
+use App\Contracts\Models\SizeVariantFactory;
 use App\DTO\ImageDimension;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationException;
@@ -15,6 +16,9 @@ use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
+use App\Image\Files\TemporaryLocalFile;
+use App\Image\Handlers\ImageHandler;
+use App\Image\Handlers\VideoHandler;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;

@@ -3,23 +3,24 @@
 namespace App\Actions\Photo\Strategies;
 
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
-use App\Contracts\AbstractSizeVariantNamingStrategy;
-use App\Contracts\LycheeException;
-use App\Contracts\SizeVariantFactory;
+use App\Contracts\Exceptions\LycheeException;
+use App\Contracts\Image\ImageHandlerInterface;
+use App\Contracts\Image\StreamStats;
+use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
+use App\Contracts\Models\SizeVariantFactory;
 use App\DTO\ImageDimension;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\MediaFileOperationException;
-use App\Image\FlysystemFile;
-use App\Image\GoogleMotionPictureHandler;
-use App\Image\ImageHandler;
-use App\Image\ImageHandlerInterface;
-use App\Image\NativeLocalFile;
+use App\Image\Files\FlysystemFile;
+use App\Image\Files\NativeLocalFile;
+use App\Image\Files\TemporaryLocalFile;
+use App\Image\Handlers\GoogleMotionPictureHandler;
+use App\Image\Handlers\ImageHandler;
+use App\Image\Handlers\VideoHandler;
 use App\Image\StreamStat;
-use App\Image\TemporaryLocalFile;
-use App\Image\VideoHandler;
 use App\Models\Photo;
 use Illuminate\Contracts\Container\BindingResolutionException;
 
@@ -227,13 +228,13 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 	 *
 	 * @param FlysystemFile $targetFile the target file
 	 *
-	 * @returns StreamStat statistics about the final file, may differ from
+	 * @return StreamStats statistics about the final file, may differ from
 	 *                     the source file due to normalization of orientation
 	 *
 	 * @throws MediaFileOperationException
 	 * @throws ConfigurationException
 	 */
-	private function putSourceIntoFinalDestination(FlysystemFile $targetFile): StreamStat
+	private function putSourceIntoFinalDestination(FlysystemFile $targetFile): StreamStats
 	{
 		try {
 			if ($this->parameters->importMode->shallImportViaSymlink()) {

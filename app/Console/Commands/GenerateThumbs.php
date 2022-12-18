@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Contracts\ExternalLycheeException;
-use App\Contracts\LycheeException;
-use App\Contracts\SizeVariantFactory;
+use App\Contracts\Exceptions\ExternalLycheeException;
+use App\Contracts\Exceptions\LycheeException;
+use App\Contracts\Models\SizeVariantFactory;
 use App\Enum\SizeVariantType;
 use App\Exceptions\UnexpectedException;
 use App\Models\Photo;

@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests\Photo;
 
+use App\Contracts\Http\Requests\HasPhotos;
+use App\Contracts\Http\Requests\HasSizeVariant;
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Enum\DownloadVariantType;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasPhotos;
-use App\Http\Requests\Contracts\HasSizeVariant;
-use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasPhotosTrait;
 use App\Http\Requests\Traits\HasSizeVariantTrait;
 use App\Models\Photo;

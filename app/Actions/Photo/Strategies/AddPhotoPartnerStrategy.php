@@ -2,8 +2,8 @@
 
 namespace App\Actions\Photo\Strategies;
 
-use App\Contracts\LycheeException;
-use App\Image\NativeLocalFile;
+use App\Contracts\Exceptions\LycheeException;
+use App\Image\Files\NativeLocalFile;
 use App\Models\Photo;
 
 /**

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Albums\Top;
-use App\Contracts\LycheeException;
+use App\Contracts\Exceptions\LycheeException;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;

@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\Contracts\ExternalLycheeException;
+use App\Contracts\Exceptions\ExternalLycheeException;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnexpectedException;
-use App\Image\BaseMediaFile;
+use App\Image\Files\BaseMediaFile;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use Illuminate\Console\Command;

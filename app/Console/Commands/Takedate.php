@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Contracts\ExternalLycheeException;
-use App\Contracts\InternalLycheeException;
+use App\Contracts\Exceptions\ExternalLycheeException;
+use App\Contracts\Exceptions\InternalLycheeException;
 use App\Enum\SizeVariantType;
 use App\Exceptions\UnexpectedException;
 use App\Metadata\Extractor;

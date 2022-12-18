@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests\Sharing;
 
+use App\Contracts\Http\Requests\HasAlbumIDs;
+use App\Contracts\Http\Requests\HasUserIDs;
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAlbumIDs;
-use App\Http\Requests\Contracts\HasUserIDs;
-use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasAlbumIDsTrait;
 use App\Http\Requests\Traits\HasUserIDsTrait;
 use App\Models\User;

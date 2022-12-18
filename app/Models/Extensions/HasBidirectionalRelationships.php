@@ -2,7 +2,7 @@
 
 namespace App\Models\Extensions;
 
-use App\Contracts\BidirectionalRelation;
+use App\Contracts\Relations\BidirectionalRelation;
 use App\Relations\HasManyBidirectionally;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;

@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-use App\Contracts\HttpExceptionHandler;
+use App\Contracts\Exceptions\Handlers\HttpExceptionHandler;
 use App\DTO\BacktraceRecord;
 use App\Enum\SeverityType;
 use App\Exceptions\Handlers\AccessDBDenied;

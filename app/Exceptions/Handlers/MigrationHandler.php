@@ -2,11 +2,11 @@
 
 namespace App\Exceptions\Handlers;
 
-use App\Contracts\HttpExceptionHandler;
+use App\Contracts\Exceptions\Handlers\HttpExceptionHandler;
 use App\Exceptions\MigrationAlreadyCompletedException;
 use App\Exceptions\MigrationRequiredException;
-use App\Redirections\ToHome;
-use App\Redirections\ToMigration;
+use App\Http\Redirections\ToHome;
+use App\Http\Redirections\ToMigration;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface as HttpException;
 

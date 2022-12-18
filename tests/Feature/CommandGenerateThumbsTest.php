@@ -14,17 +14,19 @@ namespace Tests\Feature;
 
 use App\Enum\SizeVariantType;
 use Illuminate\Support\Facades\DB;
-use Tests\Feature\Base\PhotoTestBase;
-use Tests\TestCase;
+use function Safe\unlink;
+use Tests\AbstractTestCase;
+use Tests\Feature\Base\BasePhotoTest;
 
-class CommandGenerateThumbsTest extends PhotoTestBase
+class CommandGenerateThumbsTest extends BasePhotoTest
 {
 	public const COMMAND = 'lychee:generate_thumbs';
 
 	public function testNoArguments(): void
 	{
 		$this->expectExceptionMessage('Not enough arguments (missing: "type").');
-		$this->artisan(self::COMMAND)->run();
+		$this->artisan(self::COMMAND)
+			->run();
 	}
 
 	public function testInvalidSizeVariantArgument(): void
@@ -43,12 +45,13 @@ class CommandGenerateThumbsTest extends PhotoTestBase
 
 	public function testThumbRecreation(): void
 	{
+		/** @var \App\Models\Photo $photo1 */
 		$photo1 = static::convertJsonToObject($this->photos_tests->upload(
-			static::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			static::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		));
 
 		// Remove the size variant "small" from disk and from DB
-		\Safe\unlink(public_path($photo1->size_variants->small->url));
+		unlink(public_path($photo1->size_variants->small->url));
 		DB::table('size_variants')
 			->where('photo_id', '=', $photo1->id)
 			->where('type', '=', SizeVariantType::SMALL)
@@ -59,10 +62,11 @@ class CommandGenerateThumbsTest extends PhotoTestBase
 			->assertExitCode(0);
 
 		// Get updated photo and check if size variant has been re-created
+		/** @var \App\Models\Photo $photo2 */
 		$photo2 = static::convertJsonToObject($this->photos_tests->get($photo1->id));
-		static::assertNotNull($photo2->size_variants->small);
-		static::assertEquals($photo1->size_variants->small->width, $photo2->size_variants->small->width);
-		static::assertEquals($photo1->size_variants->small->height, $photo2->size_variants->small->height);
-		static::assertFileExists(public_path($photo2->size_variants->small->url));
+		$this->assertNotNull($photo2->size_variants->small);
+		$this->assertEquals($photo1->size_variants->small->width, $photo2->size_variants->small->width);
+		$this->assertEquals($photo1->size_variants->small->height, $photo2->size_variants->small->height);
+		$this->assertFileExists(public_path($photo2->size_variants->small->url));
 	}
 }

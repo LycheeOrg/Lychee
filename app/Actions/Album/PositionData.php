@@ -2,7 +2,7 @@
 
 namespace App\Actions\Album;
 
-use App\Contracts\AbstractAlbum;
+use App\Contracts\Models\AbstractAlbum;
 use App\DTO\PositionData as PositionDataDTO;
 use App\Enum\SizeVariantType;
 use App\Models\Album;
