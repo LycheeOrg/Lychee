@@ -34,7 +34,7 @@ class Boot implements BeforeFirstTestHook
 				// Thus, we need to reset the index to the greatest ID + 1
 				/** @var User $lastUser */
 				$lastUser = User::query()->orderByDesc('id')->first();
-				DB::statement('ALTER SEQUENCE users_id_seq1 RESTART WITH ' . $lastUser->id + 1);
+				DB::statement('ALTER SEQUENCE users_id_seq1 RESTART WITH ' . strval($lastUser->id + 1));
 			}
 		} elseif (!$admin->may_administrate) {
 			$admin->may_administrate = true;
