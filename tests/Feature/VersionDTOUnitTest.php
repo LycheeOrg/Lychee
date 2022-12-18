@@ -47,7 +47,7 @@ class VersionDTOUnitTest extends TestCase
 	 */
 	public function testValidVersionString(): void
 	{
-		$version = Version::createFromString('040306');
+		$version = Version::createFromString('40306');
 		$this->assertEquals(4, $version->major);
 		$this->assertEquals(3, $version->minor);
 		$this->assertEquals(6, $version->patch);

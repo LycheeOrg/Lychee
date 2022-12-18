@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Metadata;
+namespace App\Metadata\Json;
 
-use App\ModelFunctions\JsonRequestFunctions;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Config;
 
-class GitRequest extends JsonRequestFunctions
+class CommitsRequest extends JsonRequestFunctions
 {
 	/**
 	 * we just override the constructor,
@@ -14,8 +13,8 @@ class GitRequest extends JsonRequestFunctions
 	 */
 	public function __construct()
 	{
-		parent::__construct(
-			Config::get('urls.update.git'),
+		$this->init(
+			Config::get('urls.update.git.commits'),
 			Configs::getValueAsInt('update_check_every_days')
 		);
 	}

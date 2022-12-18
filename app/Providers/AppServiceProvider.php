@@ -2,8 +2,7 @@
 
 namespace App\Providers;
 
-use App\Actions\Update\Apply as ApplyUpdate;
-use App\Actions\Update\Check as CheckUpdate;
+use App\Actions\InstallUpdate\CheckUpdate;
 use App\Assets\Helpers;
 use App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy;
 use App\Contracts\AbstractSizeVariantNamingStrategy;
@@ -13,9 +12,13 @@ use App\Factories\LangFactory;
 use App\Image\SizeVariantDefaultFactory;
 use App\Image\StreamStatFilter;
 use App\Locale\Lang;
-use App\Metadata\GitHubFunctions;
-use App\Metadata\GitRequest;
-use App\Metadata\LycheeVersion;
+use App\Metadata\Json\CommitsRequest;
+use App\Metadata\Json\UpdateRequest;
+use App\Metadata\Versions\FileVersion;
+use App\Metadata\Versions\GitHubVersion;
+use App\Metadata\Versions\InstalledVersion;
+use App\Metadata\Versions\Remote\GitCommits;
+use App\Metadata\Versions\Remote\GitTags;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Policies\AlbumQueryPolicy;
@@ -36,14 +39,23 @@ class AppServiceProvider extends ServiceProvider
 		LangFactory::class => LangFactory::class,
 		Lang::class => Lang::class,
 		Helpers::class => Helpers::class,
-		GitRequest::class => GitRequest::class,
-		GitHubFunctions::class => GitHubFunctions::class,
-		LycheeVersion::class => LycheeVersion::class,
 		CheckUpdate::class => CheckUpdate::class,
-		ApplyUpdate::class => ApplyUpdate::class,
 		AlbumFactory::class => AlbumFactory::class,
 		AlbumQueryPolicy::class => AlbumQueryPolicy::class,
 		PhotoQueryPolicy::class => PhotoQueryPolicy::class,
+
+		// Versioning
+		InstalledVersion::class => InstalledVersion::class,
+		GitHubVersion::class => GitHubVersion::class,
+		FileVersion::class => FileVersion::class,
+
+		// Json requests.
+		CommitsRequest::class => CommitsRequest::class,
+		UpdateRequest::class => UpdateRequest::class,
+
+		// JsonParsers
+		GitCommits::class => GitCommits::class,
+		GitTags::class => GitTags::class,
 	];
 
 	/**
