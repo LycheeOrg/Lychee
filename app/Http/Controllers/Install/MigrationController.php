@@ -7,15 +7,12 @@ use App\Actions\InstallUpdate\Pipes\ArtisanMigrate;
 use App\Actions\InstallUpdate\Pipes\ArtisanViewClear;
 use App\Actions\InstallUpdate\Pipes\QueryExceptionChecker;
 use App\Actions\InstallUpdate\Pipes\Spacer;
-use App\Contracts\Http\Requests\RequestAttribute;
 use App\Exceptions\InstallationFailedException;
 use App\Exceptions\Internal\FrameworkException;
+use App\Http\Requests\Install\InstallMigrationRequest;
 use App\Models\User;
-use App\Rules\PasswordRule;
-use App\Rules\UsernameRule;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\Request;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -32,13 +29,8 @@ class MigrationController extends Controller
 	 *
 	 * @throws FrameworkException
 	 */
-	public function view(Request $request): View
+	public function view(InstallMigrationRequest $request): View
 	{
-		$values = $request->validate([
-			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
-			RequestAttribute::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
-		]);
-
 		$output = [];
 		$hasErrors = false;
 		try {
@@ -62,8 +54,8 @@ class MigrationController extends Controller
 			$user->may_upload = true;
 			$user->may_edit_own_settings = true;
 			$user->may_administrate = true;
-			$user->username = $values[RequestAttribute::USERNAME_ATTRIBUTE];
-			$user->password = Hash::make($values[RequestAttribute::PASSWORD_ATTRIBUTE]);
+			$user->username = $request->username();
+			$user->password = Hash::make($request->password());
 			$user->save();
 		}
 
