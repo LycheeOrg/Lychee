@@ -9,9 +9,9 @@ use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Requests\Traits\HasUsernameTrait;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
-use Illuminate\Http\Request;
+use Illuminate\Foundation\Http\FormRequest;
 
-class InstallMigrationRequest extends Request implements HasUsername, HasPassword
+class InstallMigrationRequest extends FormRequest implements HasUsername, HasPassword
 {
 	use HasUsernameTrait;
 	use HasPasswordTrait;
