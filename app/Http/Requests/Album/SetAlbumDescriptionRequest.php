@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests\Album;
 
+use App\Contracts\Http\Requests\HasBaseAlbum;
+use App\Contracts\Http\Requests\HasDescription;
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasBaseAlbum;
-use App\Http\Requests\Contracts\HasDescription;
-use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasBaseAlbumTrait;
 use App\Http\Requests\Traits\HasDescriptionTrait;

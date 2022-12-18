@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Contracts\ExternalLycheeException;
+use App\Contracts\Exceptions\ExternalLycheeException;
 use App\Exceptions\UnexpectedException;
 use Illuminate\Console\Command;
 use function Safe\exec;

@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests\Album;
 
-use App\Contracts\AbstractAlbum;
+use App\Contracts\Http\Requests\HasParentAlbum;
+use App\Contracts\Http\Requests\HasTitle;
+use App\Contracts\Http\Requests\RequestAttribute;
+use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasParentAlbum;
-use App\Http\Requests\Contracts\HasTitle;
-use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasParentAlbumTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
 use App\Models\Album;

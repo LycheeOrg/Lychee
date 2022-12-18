@@ -12,8 +12,8 @@
 
 namespace Tests\Feature\Lib;
 
-use App\Image\InMemoryBuffer;
-use App\Image\TemporaryLocalFile;
+use App\Image\Files\InMemoryBuffer;
+use App\Image\Files\TemporaryLocalFile;
 use Illuminate\Testing\Assert as PHPUnit;
 use Illuminate\Testing\TestResponse;
 use function Safe\fwrite;

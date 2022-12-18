@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Constants\RandomID;
-use App\Contracts\HasRandomID;
+use App\Contracts\Models\HasRandomID;
 use App\DTO\PhotoSortingCriterion;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
@@ -77,7 +77,7 @@ use Illuminate\Support\Facades\Auth;
  * implementation depends on the specific sub-type of album and thus must
  * be implemented by the child classes.
  * For example, every album contains photos and thus must provide
- * {@link \App\Contracts\AbstractAlbum::$photos}, but the way how an album
+ * {@link \App\Contracts\Models\AbstractAlbum::$photos}, but the way how an album
  * defines its collection of photos is specific for the album.
  * Normally, a proper parent class would use abstract methods for these cases,
  * but this class is not a proper parent class (it just provides an

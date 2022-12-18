@@ -5,7 +5,7 @@ namespace App\Assets;
 use App\Exceptions\InsufficientEntropyException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\Internal\LycheeAssertionError;
-use App\Image\FlysystemFile;
+use App\Image\Files\FlysystemFile;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Safe\Exceptions\PcreException;

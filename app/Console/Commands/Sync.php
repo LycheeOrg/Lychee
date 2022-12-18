@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Actions\Import\Exec;
 use App\Actions\Photo\Strategies\ImportMode;
-use App\Contracts\ExternalLycheeException;
+use App\Contracts\Exceptions\ExternalLycheeException;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\UnexpectedException;
 use App\Models\Album;

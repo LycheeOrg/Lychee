@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Legacy;
 
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\RequestAttribute;
 use App\Rules\IntegerIDRule;
 
 class TranslateIDRequest extends BaseApiRequest

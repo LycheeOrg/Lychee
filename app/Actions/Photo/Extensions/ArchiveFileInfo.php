@@ -2,7 +2,7 @@
 
 namespace App\Actions\Photo\Extensions;
 
-use App\Image\BaseMediaFile;
+use App\Image\Files\BaseMediaFile;
 
 /**
  * Class ArchiveFileInfo.

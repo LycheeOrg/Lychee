@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Console\Commands\Utilities\Colorize;
-use App\Contracts\AbstractSizeVariantNamingStrategy;
+use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Exceptions\UnexpectedException;
 use App\Models\Photo;
 use App\Models\SizeVariant;

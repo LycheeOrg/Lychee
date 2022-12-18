@@ -2,17 +2,17 @@
 
 namespace App\Http\Requests\Album;
 
-use App\Contracts\AbstractAlbum;
+use App\Contracts\Http\Requests\HasAlbums;
+use App\Contracts\Http\Requests\RequestAttribute;
+use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAlbums;
-use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasAlbumsTrait;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDListRule;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * @implements HasAlbums<\App\Contracts\AbstractAlbum>
+ * @implements HasAlbums<\App\Contracts\Models\AbstractAlbum>
  */
 class ArchiveAlbumsRequest extends BaseApiRequest implements HasAlbums
 {

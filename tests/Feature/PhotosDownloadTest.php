@@ -13,10 +13,10 @@
 namespace Tests\Feature;
 
 use App\Actions\Photo\Archive;
-use App\Image\ImagickHandler;
-use App\Image\InMemoryBuffer;
-use App\Image\TemporaryLocalFile;
-use App\Image\VideoHandler;
+use App\Image\Files\InMemoryBuffer;
+use App\Image\Files\TemporaryLocalFile;
+use App\Image\Handlers\ImagickHandler;
+use App\Image\Handlers\VideoHandler;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;

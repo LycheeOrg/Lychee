@@ -12,7 +12,7 @@
 
 namespace Tests\Feature;
 
-use App\Image\BaseMediaFile;
+use App\Image\Files\BaseMediaFile;
 use App\Models\Configs;
 use Illuminate\Support\Facades\DB;
 use function Safe\copy;

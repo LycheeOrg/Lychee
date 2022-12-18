@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\User;
 
-use App\Http\Requests\Contracts\RequestAttribute;
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Rules\PasswordRule;
 
 class AddUserRequest extends AbstractUserRequest

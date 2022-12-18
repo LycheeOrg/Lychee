@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\User;
 
+use App\Contracts\Http\Requests\HasUser;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasUser;
 use App\Http\Requests\Traits\HasUserTrait;
 use App\Models\User;
 use App\Policies\UserPolicy;

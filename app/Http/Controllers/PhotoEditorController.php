@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Photo\Strategies\RotateStrategy;
-use App\Contracts\LycheeException;
+use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\ConfigurationException;
 use App\Http\Requests\Photo\RotatePhotoRequest;
 use App\Models\Configs;

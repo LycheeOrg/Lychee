@@ -2,7 +2,7 @@
 
 namespace App\Relations;
 
-use App\Contracts\InternalLycheeException;
+use App\Contracts\Exceptions\InternalLycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Models\Extensions\SizeVariants;

@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests\Photo;
 
+use App\Contracts\Http\Requests\HasLicense;
+use App\Contracts\Http\Requests\HasPhoto;
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasLicense;
-use App\Http\Requests\Contracts\HasPhoto;
-use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotoTrait;
 use App\Http\Requests\Traits\HasLicenseTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;

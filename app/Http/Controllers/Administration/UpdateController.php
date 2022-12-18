@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Administration;
 
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
 use App\Actions\InstallUpdate\ApplyUpdate;
-use App\Contracts\LycheeException;
+use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\VersionControlException;
 use App\Legacy\AdminAuthentication;
 use App\Metadata\Versions\GitHubVersion;

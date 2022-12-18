@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Contracts\AbstractAlbum;
+use App\Contracts\Models\AbstractAlbum;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\BaseAlbum;

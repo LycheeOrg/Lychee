@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests\User;
 
+use App\Contracts\Http\Requests\HasPassword;
+use App\Contracts\Http\Requests\HasUsername;
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasPassword;
-use App\Http\Requests\Contracts\HasUsername;
-use App\Http\Requests\Contracts\RequestAttribute;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Requests\Traits\HasUsernameTrait;
 use App\Policies\UserPolicy;
