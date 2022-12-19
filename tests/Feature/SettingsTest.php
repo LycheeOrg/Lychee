@@ -175,6 +175,11 @@ class SettingsTest extends AbstractTestCase
 	}
 
 	// Route::post('/Settings::setPublicSearch', [Administration\SettingsController::class, 'setPublicSearch']);
+	public function testSetPublicSearch(): void
+	{
+		$this->sendKV('/Settings::setPublicSearch', 'public_search', 'wrong', 422);
+		$this->sendKV('/Settings::setPublicSearch', 'public_search', false);
+	}
 
 	// Route::post('/Settings::setCSS', [Administration\SettingsController::class, 'setCSS']);
 	public function testSetCSS(): void
