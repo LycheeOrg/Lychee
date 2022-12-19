@@ -15,6 +15,7 @@ namespace Tests\Feature;
 use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
@@ -128,6 +129,9 @@ class InstallTest extends AbstractTestCase
 		$response = $this->post('install/migrate', ['username' => 'admin', 'password' => 'password']);
 		$this->assertOk($response);
 		$response->assertViewIs('install.migrate');
+		// try to login with newly created admin
+		$this->assertTrue(Auth::attempt(['username' => 'admin', 'password' => 'password']));
+		Auth::logout();
 
 		/**
 		 * Re-Installation should be forbidden now.
