@@ -13,16 +13,16 @@
 namespace Tests\Feature\Lib;
 
 use Illuminate\Testing\TestResponse;
+use Tests\AbstractTestCase;
 use Tests\Feature\Traits\CatchFailures;
-use Tests\TestCase;
 
 class SessionUnitTest
 {
 	use CatchFailures;
 
-	private TestCase $testCase;
+	private AbstractTestCase $testCase;
 
-	public function __construct(TestCase $testCase)
+	public function __construct(AbstractTestCase $testCase)
 	{
 		$this->testCase = $testCase;
 	}
@@ -48,7 +48,7 @@ class SessionUnitTest
 			'password' => $password,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 
@@ -67,7 +67,7 @@ class SessionUnitTest
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Session::init');
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 
@@ -108,7 +108,7 @@ class SessionUnitTest
 			'password' => $password,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 
@@ -139,7 +139,7 @@ class SessionUnitTest
 			'oldPassword' => $oldPassword,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 

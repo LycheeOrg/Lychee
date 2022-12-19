@@ -2,8 +2,8 @@
 
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
-use App\Contracts\AbstractSizeVariantNamingStrategy;
 use App\Contracts\DiagnosticPipe;
+use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Facades\Helpers;

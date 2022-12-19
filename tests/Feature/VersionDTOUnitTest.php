@@ -14,9 +14,9 @@ namespace Tests\Feature;
 
 use App\DTO\Version;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
-use Tests\TestCase;
+use Tests\AbstractTestCase;
 
-class VersionDTOUnitTest extends TestCase
+class VersionDTOUnitTest extends AbstractTestCase
 {
 	/**
 	 * Lychee version are constrained between 0 and 999999.
@@ -47,7 +47,7 @@ class VersionDTOUnitTest extends TestCase
 	 */
 	public function testValidVersionString(): void
 	{
-		$version = Version::createFromString('040306');
+		$version = Version::createFromString('40306');
 		$this->assertEquals(4, $version->major);
 		$this->assertEquals(3, $version->minor);
 		$this->assertEquals(6, $version->patch);

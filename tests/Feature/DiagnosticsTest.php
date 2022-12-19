@@ -15,9 +15,9 @@ namespace Tests\Feature;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Tests\TestCase;
+use Tests\AbstractTestCase;
 
-class DiagnosticsTest extends TestCase
+class DiagnosticsTest extends AbstractTestCase
 {
 	/**
 	 * Test diagnostics.

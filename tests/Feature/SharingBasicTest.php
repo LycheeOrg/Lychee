@@ -12,7 +12,7 @@
 
 namespace Tests\Feature;
 
-class SharingBasicTest extends Base\SharingTestBase
+class SharingBasicTest extends Base\BaseSharingTest
 {
 	/**
 	 * @return void

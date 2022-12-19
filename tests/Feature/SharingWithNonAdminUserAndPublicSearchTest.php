@@ -16,14 +16,15 @@ use App\Models\Configs;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
-use Tests\TestCase;
+use Tests\AbstractTestCase;
+use Tests\Feature\Base\BaseSharingWithNonAdminUser;
 
-class SharingWithNonAdminUserAndPublicSearchTest extends SharingWithNonAdminUserAbstract
+class SharingWithNonAdminUserAndPublicSearchTest extends BaseSharingWithNonAdminUser
 {
 	public function setUp(): void
 	{
 		parent::setUp();
-		Configs::set(TestCase::CONFIG_PUBLIC_HIDDEN, false);
+		Configs::set(AbstractTestCase::CONFIG_PUBLIC_HIDDEN, false);
 	}
 
 	/**

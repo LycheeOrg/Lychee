@@ -16,9 +16,10 @@ use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Tests\TestCase;
+use function Safe\file_get_contents;
+use Tests\AbstractTestCase;
 
-class InstallTest extends TestCase
+class InstallTest extends AbstractTestCase
 {
 	/**
 	 * Testing the Login interface.
@@ -39,13 +40,6 @@ class InstallTest extends TestCase
 		$this->assertOk($response);
 		config(['app.key' => $prevAppKey]);
 
-		// TODO: Why does a `git pull` delete `installed.log`? This test needs to be discussed with @ildyria
-		if (file_exists(base_path('installed.log'))) {
-			unlink(base_path('installed.log'));
-		}
-		/**
-		 * No installed.log: we should not be redirected to install (case where we have not done the last migration).
-		 */
 		$response = $this->get('/');
 		$this->assertOk($response);
 

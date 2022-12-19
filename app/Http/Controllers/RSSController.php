@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\RSS\Generate;
-use App\Contracts\LycheeException;
+use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\ConfigurationException;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;

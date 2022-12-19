@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Contracts\LycheeException;
+use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\MigrationAlreadyCompletedException;
 use App\Exceptions\MigrationRequiredException;

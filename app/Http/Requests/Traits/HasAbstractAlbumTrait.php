@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Traits;
 
-use App\Contracts\AbstractAlbum;
+use App\Contracts\Models\AbstractAlbum;
 
 trait HasAbstractAlbumTrait
 {

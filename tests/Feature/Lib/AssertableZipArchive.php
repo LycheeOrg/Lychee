@@ -12,8 +12,8 @@
 
 namespace Tests\Feature\Lib;
 
-use App\Image\InMemoryBuffer;
-use App\Image\TemporaryLocalFile;
+use App\Image\Files\InMemoryBuffer;
+use App\Image\Files\TemporaryLocalFile;
 use Illuminate\Testing\Assert as PHPUnit;
 use Illuminate\Testing\TestResponse;
 use function Safe\fwrite;
@@ -28,13 +28,14 @@ class AssertableZipArchive extends \ZipArchive
 	 *
 	 * @param TestResponse $response
 	 *
-	 * @return static
+	 * @return self
 	 */
 	public static function createFromResponse(TestResponse $response): self
 	{
 		$memoryBlob = new InMemoryBuffer();
 		fwrite(
 			$memoryBlob->stream(),
+			// @phpstan-ignore-next-line
 			$response->baseResponse instanceof StreamedResponse ? $response->streamedContent() : $response->content()
 		);
 		$tmpZipFile = new TemporaryLocalFile('.zip', 'archive');

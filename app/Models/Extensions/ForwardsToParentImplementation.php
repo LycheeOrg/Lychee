@@ -4,7 +4,7 @@
 
 namespace App\Models\Extensions;
 
-use App\Contracts\InternalLycheeException;
+use App\Contracts\Exceptions\InternalLycheeException;
 use App\Exceptions\Internal\FailedModelAssumptionException;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Exceptions\ModelDBException;

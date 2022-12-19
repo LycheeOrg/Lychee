@@ -2,7 +2,7 @@
 
 namespace App\Actions\RSS;
 
-use App\Contracts\InternalLycheeException;
+use App\Contracts\Exceptions\InternalLycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Models\Configs;
 use App\Models\Photo;

@@ -2,7 +2,9 @@
 
 namespace App\Image;
 
+use App\Contracts\Image\StreamStats;
 use App\Exceptions\MediaFileOperationException;
+use App\Image\Files\NativeLocalFile;
 
 /**
  * Class `StreamStat` holds statistics about a read/written (image) stream.
@@ -14,7 +16,7 @@ use App\Exceptions\MediaFileOperationException;
  * This class provides these values which are collected while the stream
  * is "on the fly".
  */
-class StreamStat
+class StreamStat implements StreamStats
 {
 	public int $bytes;
 	public string $checksum;

@@ -16,16 +16,16 @@ use App\Actions\Photo\Archive;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Testing\TestResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Tests\AbstractTestCase;
 use Tests\Feature\Traits\CatchFailures;
-use Tests\TestCase;
 
 class PhotosUnitTest
 {
 	use CatchFailures;
 
-	private TestCase $testCase;
+	private AbstractTestCase $testCase;
 
-	public function __construct(TestCase $testCase)
+	public function __construct(AbstractTestCase $testCase)
 	{
 		$this->testCase = $testCase;
 	}
@@ -55,7 +55,7 @@ class PhotosUnitTest
 		);
 
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 
@@ -118,7 +118,7 @@ class PhotosUnitTest
 			'photoID' => $photo_id,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 
@@ -147,7 +147,7 @@ class PhotosUnitTest
 			'photoIDs' => [$id],
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 	}
@@ -173,7 +173,7 @@ class PhotosUnitTest
 			]
 		);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 	}
@@ -197,7 +197,7 @@ class PhotosUnitTest
 			'is_starred' => $isStarred,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 	}
@@ -224,7 +224,7 @@ class PhotosUnitTest
 			'shall_override' => $override,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 	}
@@ -250,7 +250,7 @@ class PhotosUnitTest
 			]
 		);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 	}
@@ -276,7 +276,7 @@ class PhotosUnitTest
 			]
 		);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 	}
@@ -302,7 +302,7 @@ class PhotosUnitTest
 			]
 		);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 	}
@@ -328,7 +328,7 @@ class PhotosUnitTest
 			]
 		);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 	}
@@ -354,7 +354,7 @@ class PhotosUnitTest
 			'albumID' => $targetAlbumID,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 
@@ -383,7 +383,7 @@ class PhotosUnitTest
 			]
 		);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($response->baseResponse instanceof StreamedResponse) {
+		if ($response->baseResponse instanceof StreamedResponse) { // @phpstan-ignore-line
 			// The content of a streamed response is not generated unless
 			// the content is fetched.
 			// This ensures that the generator of SUT is actually executed.
@@ -409,7 +409,7 @@ class PhotosUnitTest
 			'photoIDs' => $ids,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 	}
@@ -465,7 +465,7 @@ class PhotosUnitTest
 		);
 
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 
@@ -495,7 +495,7 @@ class PhotosUnitTest
 			]);
 
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 
@@ -506,7 +506,7 @@ class PhotosUnitTest
 	 * Rotate a picture.
 	 *
 	 * @param string      $id
-	 * @param string      $direction
+	 * @param int         $direction
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
@@ -514,7 +514,7 @@ class PhotosUnitTest
 	 */
 	public function rotate(
 		string $id,
-		string $direction,
+		int $direction,
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
@@ -523,7 +523,7 @@ class PhotosUnitTest
 			'direction' => $direction,
 		]);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 

@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Actions\User\ResetAdmin as UserResetAdmin;
 use App\Console\Commands\Utilities\Colorize;
-use App\Contracts\ExternalLycheeException;
+use App\Contracts\Exceptions\ExternalLycheeException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnexpectedException;
 use Illuminate\Console\Command;

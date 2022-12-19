@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire;
 
-use App\Contracts\AbstractAlbum;
+use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Factories\AlbumFactory;
 use App\Models\Album;

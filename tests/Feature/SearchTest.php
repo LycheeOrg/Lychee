@@ -16,14 +16,14 @@ use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Testing\TestResponse;
-use Tests\Feature\Base\PhotoTestBase;
+use Tests\AbstractTestCase;
+use Tests\Feature\Base\BasePhotoTest;
 use Tests\Feature\Lib\SharingUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyUsers;
-use Tests\TestCase;
 
-class SearchTest extends PhotoTestBase
+class SearchTest extends BasePhotoTest
 {
 	use RequiresEmptyAlbums;
 	use RequiresEmptyUsers;
@@ -51,10 +51,10 @@ class SearchTest extends PhotoTestBase
 	public function testSearchPhotoByTitle(): void
 	{
 		$photoId1 = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 		$photoId2 = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
 		)->offsetGet('id');
 		$this->photos_tests->set_title($photoId1, 'photo search');
 		$this->photos_tests->set_title($photoId2, 'do not find me');
@@ -106,10 +106,10 @@ class SearchTest extends PhotoTestBase
 	public function testSearchPhotoByTag(): void
 	{
 		$photoId1 = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 		$photoId2 = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
 		)->offsetGet('id');
 		$this->photos_tests->set_title($photoId1, 'photo search');
 		$this->photos_tests->set_title($photoId2, 'do not find me');
@@ -335,7 +335,7 @@ class SearchTest extends PhotoTestBase
 			['term' => $term]
 		);
 		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee) {
+		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
 

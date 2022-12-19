@@ -22,6 +22,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Tests\AbstractTestCase;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\Feature\Lib\RootAlbumUnitTest;
@@ -31,9 +32,8 @@ use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\Feature\Traits\RequiresEmptyUsers;
-use Tests\TestCase;
 
-class AlbumTest extends TestCase
+class AlbumTest extends AbstractTestCase
 {
 	use InteractWithSmartAlbums;
 	use RequiresEmptyAlbums;
@@ -728,7 +728,7 @@ class AlbumTest extends TestCase
 		$userID = $this->users_tests->add('Test user', 'Test password 1')->offsetGet('id');
 		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 		$photoID1 = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE),
 			$albumID
 		)->offsetGet('id');
 		Auth::logout();
@@ -752,11 +752,11 @@ class AlbumTest extends TestCase
 		Auth::loginUsingId(0);
 		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 		$photoID1 = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE),
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE),
 			$albumID
 		)->offsetGet('id');
 		$photoID2 = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_HOCHUFERWEG),
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_HOCHUFERWEG),
 			$albumID
 		)->offsetGet('id');
 		$initialCoverID = $this->albums_tests->get($albumID)->offsetGet('cover_id');
@@ -786,7 +786,7 @@ class AlbumTest extends TestCase
 	{
 		Auth::loginUsingId(0);
 		$id = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 
 		$this->photos_tests->get($id);
@@ -848,7 +848,7 @@ class AlbumTest extends TestCase
 		Auth::loginUsingId(0);
 		$today = CarbonImmutable::today();
 		$photoID = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 
 		DB::table('photos')
@@ -870,7 +870,7 @@ class AlbumTest extends TestCase
 		Auth::loginUsingId(0);
 		$today = CarbonImmutable::today();
 		$photoID = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 
 		DB::table('photos')
@@ -891,7 +891,7 @@ class AlbumTest extends TestCase
 		Auth::loginUsingId(0);
 		$today = CarbonImmutable::today();
 		$photoID = $this->photos_tests->upload(
-			TestCase::createUploadedFile(TestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 
 		DB::table('photos')

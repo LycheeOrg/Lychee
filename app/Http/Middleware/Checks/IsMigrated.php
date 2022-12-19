@@ -2,34 +2,18 @@
 
 namespace App\Http\Middleware\Checks;
 
-use App\Contracts\MiddlewareCheck;
-use App\Metadata\LycheeVersion;
+use App\Actions\Diagnostics\Pipes\Checks\MigrationCheck;
+use App\Contracts\Http\MiddlewareCheck;
 
 class IsMigrated implements MiddlewareCheck
 {
-	private LycheeVersion $lycheeVersion;
-
-	public function __construct(LycheeVersion $lycheeVersion)
-	{
-		$this->lycheeVersion = $lycheeVersion;
-	}
-
 	/**
-	 * TBD.
-	 *
-	 * The following line of codes are duplicated in
-	 *  - {@link \App\Actions\Diagnostics\Checks\LycheeDBVersionCheck::check()}
-	 *  - {@link \App\Actions\Update\Check::getCode()}.
-	 *
-	 * TODO: Probably, the whole logic around installation and updating should be re-factored. The whole code is wicked.
+	 * Returns true if the DB version is up to date.
 	 *
 	 * @return bool
 	 */
 	public function assert(): bool
 	{
-		$db_ver = $this->lycheeVersion->getDBVersion();
-		$file_ver = $this->lycheeVersion->getFileVersion();
-
-		return $db_ver->toInteger() === $file_ver->toInteger();
+		return MigrationCheck::isUpToDate();
 	}
 }

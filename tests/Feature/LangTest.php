@@ -17,9 +17,9 @@ use App\Factories\LangFactory;
 use App\Models\Configs;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Console\Output\ConsoleOutput;
-use Tests\TestCase;
+use Tests\AbstractTestCase;
 
-class LangTest extends TestCase
+class LangTest extends AbstractTestCase
 {
 	/**
 	 * Test Languages are complete.
@@ -58,7 +58,7 @@ class LangTest extends TestCase
 	{
 		Configs::where('key', '=', 'lang')->delete();
 		$lang = new \App\Locale\Lang(new LangFactory());
-		self::assertEquals('en', $lang->get_code());
+		$this->assertEquals('en', $lang->get_code());
 
 		DB::table('configs')->insert([
 			[

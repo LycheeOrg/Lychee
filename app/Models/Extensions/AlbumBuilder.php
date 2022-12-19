@@ -2,7 +2,7 @@
 
 namespace App\Models\Extensions;
 
-use App\Contracts\InternalLycheeException;
+use App\Contracts\Exceptions\InternalLycheeException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
 use Illuminate\Support\Facades\DB;

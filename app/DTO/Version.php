@@ -62,6 +62,9 @@ class Version extends ArrayableDTO
 		if (count($exploded) === 3) {
 			return new self(intval($exploded[0]), intval($exploded[1]), intval($exploded[2]));
 		}
+		if (strlen($version) === 5) {
+			$version = '0' . $version;
+		}
 		if (strlen($version) === 6) {
 			$exploded = str_split($version, 2);
 

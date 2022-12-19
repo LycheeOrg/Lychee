@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Administration;
 
 use App\Actions\Settings\SetLogin;
 use App\Actions\Settings\UpdateLogin;
-use App\Contracts\LycheeException;
+use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\QueryBuilderException;

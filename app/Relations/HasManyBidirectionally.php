@@ -2,7 +2,7 @@
 
 namespace App\Relations;
 
-use App\Contracts\BidirectionalRelation;
+use App\Contracts\Relations\BidirectionalRelation;
 use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;

@@ -9,6 +9,7 @@ parameters:
 		- scripts
 		- lang
 		- database
+		- tests
 	excludePaths:
 		- app/View/*
 		- app/Http/Livewire/*
@@ -43,7 +44,7 @@ parameters:
 		# Covariance - LSP princinple: https://en.wikipedia.org/wiki/Liskov_substitution_principle
 		- '#Return type \(Illuminate\\Support\\Carbon\|null\) of method App\\Models\\.*::asDateTime\(\) should be covariant with return type \(Illuminate\\Support\\Carbon\) of method Illuminate\\Database\\Eloquent\\Model::asDateTime\(\)#'
 		- '#Return type \(App\\Models\\Photo\) of method App\\Models\\Photo::replicate\(\) should be covariant with return type \(static\(.*\)\) of method Illuminate\\Database\\Eloquent\\Model::replicate\(\)#'
-		- '#Return type \(Illuminate\\Support\\Collection&iterable<App\\Contracts\\AbstractAlbum>\) of method App\\Http\\Requests\\Album\\.*::albums\(\) should be covariant with return type \(Illuminate\\Support\\Collection&iterable<App\\Models\\(Album|Extensions\\BaseAlbum)>\) of method App\\Http\\Requests\\Contracts\\HasAlbums<App\\Models\\(Album|Extensions\\BaseAlbum)>::albums\(\)#'
+		- '#Return type \(Illuminate\\Support\\Collection&iterable<App\\Contracts\\Models\\AbstractAlbum>\) of method App\\Http\\Requests\\Album\\.*::albums\(\) should be covariant with return type \(Illuminate\\Support\\Collection&iterable<App\\Models\\(Album|Extensions\\BaseAlbum)>\) of method App\\Contracts\\Http\\Requests\\HasAlbums<App\\Models\\(Album|Extensions\\BaseAlbum)>::albums\(\)#'
 		-
 			message: '#Parameter \#1 \$column \(array<string>\|Closure\|Illuminate\\Database\\Query\\Expression\|string\) of method .* should be contravariant with parameter \$column \(array<int\|string, mixed>\|\(Closure.*\)\|\(Closure.*\)\|Illuminate\\Database\\Query\\Expression\|string\) of method .*#'
 			paths:
@@ -84,3 +85,37 @@ parameters:
 			message: '#Access to an undefined property object::\$value.#'
 			paths:
 				- database
+
+		# TESTS
+		- # DISABLED FOR NOW, waiting for https://github.com/symplify/symplify/pull/4505
+			message: '#"\*Test.php" file cannot be located outside "Tests" namespace#'
+			paths:
+				- tests
+		-
+			message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assert(Is)?(Not)?(True|False|Equals|Int|Null|Empty)\(\)#'
+			paths:
+				- tests
+		-
+			message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assertFile(DoesNot)?Exists?\(\)#'
+			paths:
+				- tests
+		-
+			message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assertString(Not)?(Contains|Ends|Starts)(String|With)\(\)#'
+			paths:
+				- tests
+		-
+			message: '#Dynamic call to static method Symfony\\Component\\HttpFoundation\\Response::get(Content|StatusCode)\(\)#'
+			paths:
+				- tests
+		-
+			message: '#Function "dump\(\)" cannot be used/left in the code: seems you missed some dump debugging function#'
+			paths:
+				- tests
+		-
+			message: '#Access to private property App\\Models\\Extensions\\SizeVariants::\$(original|thumb|small|medium)(2x)?#'
+			paths:
+				- tests
+		-
+			message: '#Cannot call method .* on Illuminate\\Testing\\PendingCommand\|int.#'
+			paths:
+				- tests
