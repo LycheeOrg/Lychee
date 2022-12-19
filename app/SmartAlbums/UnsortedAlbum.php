@@ -4,13 +4,13 @@ namespace App\SmartAlbums;
 
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
+use App\Facades\Lang;
 use Illuminate\Database\Eloquent\Builder;
 
 class UnsortedAlbum extends BaseSmartAlbum
 {
 	private static ?self $instance = null;
 	public const ID = 'unsorted';
-	public const TITLE = 'Unsorted';
 
 	/**
 	 * @throws ConfigurationKeyMissingException
@@ -20,7 +20,7 @@ class UnsortedAlbum extends BaseSmartAlbum
 	{
 		parent::__construct(
 			self::ID,
-			self::TITLE,
+			Lang::get('UNSORTED'),
 			false,
 			fn (Builder $q) => $q->whereNull('photos.album_id')
 		);

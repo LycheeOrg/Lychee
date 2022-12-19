@@ -4,6 +4,7 @@ namespace App\SmartAlbums;
 
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
+use App\Facades\Lang;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Database\Eloquent\Builder;
@@ -13,7 +14,6 @@ class OnThisDayAlbum extends BaseSmartAlbum
 {
 	private static ?self $instance = null;
 	public const ID = 'on_this_day';
-	public const TITLE = 'On This Day';
 
 	/**
 	 * @throws InvalidFormatException
@@ -27,7 +27,7 @@ class OnThisDayAlbum extends BaseSmartAlbum
 
 		parent::__construct(
 			self::ID,
-			self::TITLE,
+			Lang::get('ON_THIS_DAY'),
 			false,
 			function (Builder $query) use ($today) {
 				$query->where(fn (Builder $q) => $q
