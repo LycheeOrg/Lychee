@@ -2977,8 +2977,7 @@ albums.parse = function (album) {
 	if (!album.thumb) {
 		album.thumb = {
 			id: "",
-			// TODO: FIX ME we need to expose that a password is required
-			thumb: album.has_password ? "img/password.svg" : "img/no_images.svg",
+			thumb: album.policy.is_password_required ? "img/password.svg" : "img/no_images.svg",
 			type: "image/svg+xml",
 			thumb2x: null
 		};
@@ -4428,7 +4427,7 @@ contextMenu.shareAlbum = function (albumID, e) {
 		title: build.iconic("link-intact") + lychee.locale["DIRECT_LINK"],
 		fn: function fn() {
 			var url = lychee.getBaseUrl() + "r/" + albumID;
-			if (album.json.has_password) {
+			if (album.json.policy.is_password_required) {
 				// Copy the url with prefilled password param
 				url += "?password=";
 			}
@@ -11495,7 +11494,7 @@ _sidebar.createStructure.album = function (data) {
 	var isPublic = !!data.policy && data.policy.is_public ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
 	var requiresLink = !!data.policy && data.policy.is_link_required ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
 	var isDownloadable = !!data.policy && data.policy.grant_download ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
-	var hasPassword = data.has_password ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
+	var hasPassword = !!data.policy && data.policy.is_password_required ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
 	var license = "";
 	var sorting = "";
 
@@ -15288,7 +15287,6 @@ visible.leftMenu = function () {
  * @property {AlbumRightsDTO} rights
  * @property {AlbumProtectionPolicy} policy
  * @property {boolean} has_albums
- * @property {boolean} has_password
  * @property {?string} min_taken_at
  * @property {?string} max_taken_at
  * @property {?SortingCriterion} sorting

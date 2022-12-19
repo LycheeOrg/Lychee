@@ -49,7 +49,7 @@ class AlbumProtectionPolicy extends ArrayableDTO
 			is_nsfw: $baseAlbum->is_nsfw,
 			grants_full_photo_access: $baseAlbum->grants_full_photo_access,
 			grants_download: $baseAlbum->grants_download,
-			is_password_required: $baseAlbum->password !== null && $baseAlbum->password !== '',
+			is_password_required: $baseAlbum->is_password_required,
 		);
 	}
 
@@ -68,7 +68,7 @@ class AlbumProtectionPolicy extends ArrayableDTO
 			is_nsfw: $baseAlbum->is_nsfw,
 			grants_full_photo_access: $baseAlbum->grants_full_photo_access,
 			grants_download: $baseAlbum->grants_download,
-			is_password_required: $baseAlbum->password !== null && $baseAlbum->password !== '',
+			is_password_required: $baseAlbum->is_password_required,
 		);
 	}
 

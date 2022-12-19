@@ -99,7 +99,7 @@ use Illuminate\Support\Facades\Auth;
  * @property bool                       $grants_download
  * @property Collection                 $shared_with
  * @property string|null                $password
- * @property bool                       $has_password
+ * @property bool                       $is_password_required
  * @property PhotoSortingCriterion|null $sorting
  * @property AlbumProtectionPolicy      $policy
  */
@@ -255,7 +255,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		}
 	}
 
-	protected function getHasPasswordAttribute(): bool
+	protected function getIsPasswordRequiredAttribute(): bool
 	{
 		return $this->password !== null && $this->password !== '';
 	}
