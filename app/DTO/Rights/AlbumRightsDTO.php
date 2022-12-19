@@ -22,10 +22,6 @@ class AlbumRightsDTO extends ArrayableDTO
 
 	/**
 	 * Given an album, returns the access rights associated to it.
-	 * TODO: Double check the different cases:
-	 * - Tag albums
-	 * - Smart albums
-	 * - Normal albums.
 	 *
 	 * @param AbstractAlbum $abstractAlbum
 	 *
