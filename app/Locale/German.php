@@ -475,6 +475,7 @@ final class German implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'In die Zwischenablage kopiert',
 			'URL_COPIED_TO_CLIPBOARD' => 'URL in die Zwischenablage kopiert!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Direkte Links zu den Bilddateien:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => 'Mittlere Größe',
 			'PHOTO_MEDIUM_HIDPI' => 'Mittlere Größe HiDPI',
 			'PHOTO_SMALL' => 'Miniaturansicht',

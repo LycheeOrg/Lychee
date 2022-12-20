@@ -475,6 +475,7 @@ final class Spanish implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Copiar al portapapeles',
 			'URL_COPIED_TO_CLIPBOARD' => '¡URL copiada al portapapeles!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Enlaces directos a archivos de imagen:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => 'Mediana',
 			'PHOTO_MEDIUM_HIDPI' => 'Mediana HiDPI',
 			'PHOTO_SMALL' => 'Miniatura',

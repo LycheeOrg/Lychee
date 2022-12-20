@@ -475,6 +475,7 @@ final class Slovak implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Skopírovať do schránky',
 			'URL_COPIED_TO_CLIPBOARD' => 'URL skopírované do schránky!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Priame linky k súborom obrázkov:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => 'Medium',
 			'PHOTO_MEDIUM_HIDPI' => 'Medium HiDPI',
 			'PHOTO_SMALL' => 'Náhľad',

@@ -475,6 +475,7 @@ final class Polish implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Kopiuj do schowka',
 			'URL_COPIED_TO_CLIPBOARD' => 'Skopiowano URL do schowka!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Direct links to image files:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => ' Średnie',
 			'PHOTO_MEDIUM_HIDPI' => 'Medium HiDPI',
 			'PHOTO_SMALL' => 'Miniaturka',

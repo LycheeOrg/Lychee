@@ -475,6 +475,7 @@ final class Vietnamese implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Sao chép vào bộ nhớ tạm thời',
 			'URL_COPIED_TO_CLIPBOARD' => 'Đã sao chép vào bộ nhớ tạm thời!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Đường link trực tiếp đến tập tin hình ảnh:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => 'Vừa',
 			'PHOTO_MEDIUM_HIDPI' => 'Độ phân giải cho hình vừa HiDPI',
 			'PHOTO_SMALL' => 'Nhỏ',

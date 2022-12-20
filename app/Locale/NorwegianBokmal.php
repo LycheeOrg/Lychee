@@ -475,6 +475,7 @@ final class NorwegianBokmal implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Kopier til utklippstavlen',
 			'URL_COPIED_TO_CLIPBOARD' => 'Kopierte lenke til utklippstavlen!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Direkte lenke til bildefiler:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => 'Medium',
 			'PHOTO_MEDIUM_HIDPI' => 'Medium HiDPI',
 			'PHOTO_SMALL' => 'Miniatyr',
