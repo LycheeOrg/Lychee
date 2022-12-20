@@ -2944,9 +2944,6 @@ albums.load = function () {
   * @param {Albums} data
   */
 	var successCallback = function successCallback(data) {
-		// Smart Albums
-		if (data.smart_albums) albums.localizeSmartAlbums(data.smart_albums);
-
 		albums.json = data;
 
 		// Skip delay when opening a blank Lychee
@@ -2981,37 +2978,6 @@ albums.parse = function (album) {
 			type: "image/svg+xml",
 			thumb2x: null
 		};
-	}
-};
-
-/**
- * Normalizes the built-in smart albums.
- *
- * @param {SmartAlbums} data
- * @returns {void}
- */
-albums.localizeSmartAlbums = function (data) {
-	if (data.unsorted) {
-		data.unsorted.title = lychee.locale["UNSORTED"];
-	}
-
-	if (data.starred) {
-		data.starred.title = lychee.locale["STARRED"];
-	}
-
-	if (data.public) {
-		data.public.title = lychee.locale["PUBLIC"];
-		// TODO: Why do we need to set these two attributes? What component relies upon them, what happens if we don't set them? Is it legacy?
-		// data.public.is_public = true;
-		// data.public.is_link_required = true;
-	}
-
-	if (data.recent) {
-		data.recent.title = lychee.locale["RECENT"];
-	}
-
-	if (data.on_this_day) {
-		data.on_this_day.title = lychee.locale["ON_THIS_DAY"];
 	}
 };
 

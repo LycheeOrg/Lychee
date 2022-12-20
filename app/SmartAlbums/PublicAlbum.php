@@ -4,6 +4,7 @@ namespace App\SmartAlbums;
 
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
+use App\Facades\Lang;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -27,7 +28,6 @@ class PublicAlbum extends BaseSmartAlbum
 {
 	private static ?self $instance = null;
 	public const ID = 'public';
-	public const TITLE = 'Public';
 
 	/**
 	 * Constructor.
@@ -46,7 +46,7 @@ class PublicAlbum extends BaseSmartAlbum
 	{
 		parent::__construct(
 			self::ID,
-			self::TITLE,
+			Lang::get('PUBLIC'),
 			false,
 			fn (Builder $q) => $q->where('photos.is_public', '=', true)
 		);
