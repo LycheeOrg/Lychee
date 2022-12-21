@@ -29,6 +29,7 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property Collection<Album> $children
  * @property int               $num_subalbums    The number of children.
  * @property Collection<Photo> $all_photos
+ * @property int               $num_photos       The number of photos in this album (excluding photos in subalbums).
  * @property string            $license
  * @property string|null       $cover_id
  * @property Photo|null        $cover
@@ -73,6 +74,7 @@ class Album extends BaseAlbum implements Node
 		'min_taken_at' => 'datetime',
 		'max_taken_at' => 'datetime',
 		'num_subalbums' => 'integer',
+		'num_photos' => 'integer',
 		'_lft' => 'integer',
 		'_rgt' => 'integer',
 	];

@@ -93,22 +93,30 @@ class AlbumBuilder extends NSQueryBuilder
 
 			$maxTsSelect = $minTsSelect->clone()->select(DB::raw('MAX(taken_at)'));
 
+			$selects = [
+				'min_taken_at' => $minTsSelect,
+				'max_taken_at' => $maxTsSelect,
+			];
+
 			if (Configs::getValueAsBool('show_num_albums')) {
 				$countChildren =
 					DB::table('albums', 'a')
 					->select(DB::raw('COUNT(*)'))
 					->whereColumn('a.parent_id', '=', 'albums.id');
-				$this->addSelect([
-					'min_taken_at' => $minTsSelect,
-					'max_taken_at' => $maxTsSelect,
-					'num_subalbums' => $this->applyVisibilityConditioOnNumChildren($countChildren),
-				]);
-			} else {
-				$this->addSelect([
-					'min_taken_at' => $minTsSelect,
-					'max_taken_at' => $maxTsSelect,
-				]);
+				$selects += [
+					'num_subalbums' => $this->applyVisibilityConditioOnCount($countChildren, 'a'),
+				];
 			}
+			if (Configs::getValueAsBool('show_num_photos')) {
+				$countPhotos =
+					DB::table('photos', 'p')
+					->select(DB::raw('COUNT(*)'))
+					->whereColumn('p.album_id', '=', 'albums.id');
+				$selects += [
+					'num_photos' => $this->applyVisibilityConditioOnCount($countPhotos, 'p'),
+				];
+			}
+			$this->addSelect($selects);
 		}
 
 		// The parent method returns a `Model[]`, but we must return
@@ -138,17 +146,18 @@ class AlbumBuilder extends NSQueryBuilder
 	 * Apply Visibiltiy conditions.
 	 * This a simplified version of AlbumQueryPolicy::applyVisibilityFilter().
 	 *
-	 * @param Builder $countChildren
+	 * @param Builder $count
+	 * @param Builder $table
 	 *
 	 * @return Builder Query with the visibility requirements applied
 	 */
-	private function applyVisibilityConditioOnNumChildren(Builder $countChildren): Builder
+	private function applyVisibilityConditioOnCount(Builder $count, string $table): Builder
 	{
 		if (Gate::check(UserPolicy::IS_ADMIN)) {
-			return $countChildren;
+			return $count;
 		}
 
-		$countChildren->join('base_albums', 'base_albums.id', '=', 'a.id');
+		$count->join('base_albums', 'base_albums.id', '=', $table . '.id');
 
 		$userID = Auth::id();
 		if ($userID !== null) {
@@ -160,8 +169,9 @@ class AlbumBuilder extends NSQueryBuilder
 			// because an album might be shared with more than one user.
 			// Hence, we must restrict the `LEFT JOIN` to the user ID which
 			// is also used in the outer `WHERE`-clause.
-			// See `applyVisibilityFilter` and `appendAccessibilityConditions`.
-			$countChildren->leftJoin(
+			// See `applyVisibilityFilter` and `appendAccessibilityConditions`
+			// in AlbumQueryPolicy.
+			$count->leftJoin(
 				'user_base_album',
 				function (JoinClause $join) use ($userID) {
 					$join
@@ -188,8 +198,8 @@ class AlbumBuilder extends NSQueryBuilder
 					->orWhere('user_base_album.user_id', '=', $userID);
 			}
 		};
-		$countChildren->where($visibilitySubQuery);
+		$count->where($visibilitySubQuery);
 
-		return $countChildren;
+		return $count;
 	}
 }
