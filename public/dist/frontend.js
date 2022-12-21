@@ -10486,7 +10486,7 @@ settings.createLogin = function () {
 			password: data.password
 		};
 
-		api.post("Settings::setLogin", params, successHandler, null, errorHandler);
+		api.post("User::updateLogin", params, successHandler, null, errorHandler);
 	};
 
 	var createLoginDialogBody = "\n\t\t<p></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input name='username' class='text' type='text' autocapitalize='off'>\n\t\t\t</div>\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input name='password' class='text' type='password'>\n\t\t\t</div>\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input name='confirm' class='text' type='password'>\n\t\t\t</div>\n\t\t</form>";
