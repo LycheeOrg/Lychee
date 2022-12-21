@@ -5,7 +5,13 @@ namespace App\Models\Extensions;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
+use App\Models\Configs;
+use App\Policies\UserPolicy;
+use Illuminate\Contracts\Database\Query\Builder;
+use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
 
 /**
@@ -87,10 +93,22 @@ class AlbumBuilder extends NSQueryBuilder
 
 			$maxTsSelect = $minTsSelect->clone()->select(DB::raw('MAX(taken_at)'));
 
-			$this->addSelect([
-				'min_taken_at' => $minTsSelect,
-				'max_taken_at' => $maxTsSelect,
-			]);
+			if (Configs::getValueAsBool('show_num_albums')) {
+				$countChildren =
+					DB::table('albums', 'a')
+					->select(DB::raw('COUNT(*)'))
+					->whereColumn('a.parent_id', '=', 'albums.id');
+				$this->addSelect([
+					'min_taken_at' => $minTsSelect,
+					'max_taken_at' => $maxTsSelect,
+					'num_subalbums' => $this->applyVisibilityConditioOnNumChildren($countChildren),
+				]);
+			} else {
+				$this->addSelect([
+					'min_taken_at' => $minTsSelect,
+					'max_taken_at' => $maxTsSelect,
+				]);
+			}
 		}
 
 		// The parent method returns a `Model[]`, but we must return
@@ -114,5 +132,64 @@ class AlbumBuilder extends NSQueryBuilder
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
+	}
+
+	/**
+	 * Apply Visibiltiy conditions.
+	 * This a simplified version of AlbumQueryPolicy::applyVisibilityFilter().
+	 *
+	 * @param Builder $countChildren
+	 *
+	 * @return Builder Query with the visibility requirements applied
+	 */
+	private function applyVisibilityConditioOnNumChildren(Builder $countChildren): Builder
+	{
+		if (Gate::check(UserPolicy::IS_ADMIN)) {
+			return $countChildren;
+		}
+
+		$countChildren->join('base_albums', 'base_albums.id', '=', 'a.id');
+
+		$userID = Auth::id();
+		if ($userID !== null) {
+			// We must left join with `user_base_album` if and only if we
+			// restrict the eventual query to the ID of the authenticated
+			// user by a `WHERE`-clause.
+			// If we were doing a left join unconditionally, then some
+			// albums might appear multiple times as part of the result
+			// because an album might be shared with more than one user.
+			// Hence, we must restrict the `LEFT JOIN` to the user ID which
+			// is also used in the outer `WHERE`-clause.
+			// See `applyVisibilityFilter` and `appendAccessibilityConditions`.
+			$countChildren->leftJoin(
+				'user_base_album',
+				function (JoinClause $join) use ($userID) {
+					$join
+						->on('user_base_album.base_album_id', '=', 'base_albums.id')
+						->where('user_base_album.user_id', '=', $userID);
+				}
+			);
+		}
+		// We must wrap everything into an outer query to avoid any undesired
+		// effects in case that the original query already contains an
+		// "OR"-clause.
+		// The sub-query only uses properties (i.e. columns) which are
+		// defined on the common base model for all albums.
+		$visibilitySubQuery = function ($query2) use ($userID) {
+			$query2
+				->where(
+					fn ($q) => $q
+						->where('base_albums.requires_link', '=', false)
+						->where('base_albums.is_public', '=', true)
+				);
+			if ($userID !== null) {
+				$query2
+					->orWhere('base_albums.owner_id', '=', $userID)
+					->orWhere('user_base_album.user_id', '=', $userID);
+			}
+		};
+		$countChildren->where($visibilitySubQuery);
+
+		return $countChildren;
 	}
 }

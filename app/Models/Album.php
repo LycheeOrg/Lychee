@@ -27,6 +27,7 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property string|null       $parent_id
  * @property Album|null        $parent
  * @property Collection<Album> $children
+ * @property int               $num_subalbums    The number of children.
  * @property Collection<Photo> $all_photos
  * @property string            $license
  * @property string|null       $cover_id
@@ -71,6 +72,7 @@ class Album extends BaseAlbum implements Node
 	protected $casts = [
 		'min_taken_at' => 'datetime',
 		'max_taken_at' => 'datetime',
+		'num_subalbums' => 'integer',
 		'_lft' => 'integer',
 		'_rgt' => 'integer',
 	];
@@ -176,20 +178,6 @@ class Album extends BaseAlbum implements Node
 	public function toArray(): array
 	{
 		$result = parent::toArray();
-		// 'num_albums' must reflect the number of albums a user can actually see.
-		// This necessitates a DB query.
-		if (Configs::getValueAsBool('show_num_albums')) {
-			$result['num_albums'] = count($this->children()->getResults()->all());
-		} else {
-			$result['num_albums'] = -1;
-		}
-		// Retireve the number of photos only if setting enabled.
-		if (Configs::getValueAsBool('show_num_photos')) {
-			$result['num_photos'] = count($this->photos()->getResults()->all());
-		} else {
-			$result['num_photos'] = -1;
-		}
-		// TODO: option to retireve photo count recursively with $this->all_photos()?
 
 		// The client expect the relation "children" to be named "albums".
 		// Rename it
