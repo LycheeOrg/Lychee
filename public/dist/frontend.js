@@ -8444,7 +8444,7 @@ mapview.close = function () {
 	// The map view can also be opened from a single photo and probably a
 	// users expect to go back to the photo if they close the photo.
 	// Currently, Lychee jumps back to the album of that photo.
-	header.setMode("album");
+	header.setMode(mapview.albumID ? "album" : "albums");
 
 	// Make album focusable
 	tabindex.makeFocusable(lychee.content);
