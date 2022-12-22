@@ -23,6 +23,16 @@ if (config('app.env') === 'dev') {
 	URL::forceScheme('https');
 }
 
+/**
+ * ALBUMS.
+ */
+Route::post('/Albums::get', [AlbumsController::class, 'get']);
+Route::post('/Albums::getPositionData', [AlbumsController::class, 'getPositionData']);
+Route::post('/Albums::tree', [AlbumsController::class, 'tree']);
+
+/**
+ * ALBUM.
+ */
 Route::post('/Album::get', [AlbumController::class, 'get']);
 Route::post('/Album::getPositionData', [AlbumController::class, 'getPositionData']);
 Route::post('/Album::unlock', [AlbumController::class, 'unlock']);
@@ -47,16 +57,21 @@ Route::post('/Album::setTrack', [AlbumController::class, 'setTrack'])
 	->middleware(['content_type:multipart']);
 Route::post('/Album::deleteTrack', [AlbumController::class, 'deleteTrack']);
 
-Route::post('/Albums::get', [AlbumsController::class, 'get']);
-Route::post('/Albums::getPositionData', [AlbumsController::class, 'getPositionData']);
-Route::post('/Albums::tree', [AlbumsController::class, 'tree']);
-
+/**
+ * IMPORT.
+ */
 Route::post('/Import::url', [ImportController::class, 'url']);
 Route::post('/Import::server', [ImportController::class, 'server']);
 Route::post('/Import::serverCancel', [ImportController::class, 'serverCancel']);
 
+/**
+ * LEGACY.
+ */
 Route::post('/Legacy::translateLegacyModelIDs', [LegacyController::class, 'translateLegacyModelIDs']);
 
+/**
+ * PHOTO.
+ */
 Route::post('/Photo::get', [PhotoController::class, 'get']);
 Route::post('/Photo::getRandom', [PhotoController::class, 'getRandom']);
 Route::post('/Photo::setTitle', [PhotoController::class, 'setTitle']);
@@ -65,34 +80,51 @@ Route::post('/Photo::setStar', [PhotoController::class, 'setStar']);
 Route::post('/Photo::setPublic', [PhotoController::class, 'setPublic']);
 Route::post('/Photo::setAlbum', [PhotoController::class, 'setAlbum']);
 Route::post('/Photo::setTags', [PhotoController::class, 'setTags']);
-Route::post('/Photo::add', [PhotoController::class, 'add'])
-	->withoutMiddleware(['content_type:json'])
-	->middleware(['content_type:multipart']);
 Route::post('/Photo::delete', [PhotoController::class, 'delete']);
 Route::post('/Photo::duplicate', [PhotoController::class, 'duplicate']);
 Route::post('/Photo::setLicense', [PhotoController::class, 'setLicense']);
 Route::post('/Photo::setUploadDate', [PhotoController::class, 'setUploadDate']);
+Route::post('/Photo::clearSymLink', [PhotoController::class, 'clearSymLink']);
+Route::post('/PhotoEditor::rotate', [PhotoEditorController::class, 'rotate']);
+Route::post('/Photo::add', [PhotoController::class, 'add'])
+	->withoutMiddleware(['content_type:json'])
+	->middleware(['content_type:multipart']);
 Route::get('/Photo::getArchive', [PhotoController::class, 'getArchive'])
 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
 	->middleware(['local_storage', 'accept_content_type:any']);
-Route::post('/Photo::clearSymLink', [PhotoController::class, 'clearSymLink']);
 
-Route::post('/PhotoEditor::rotate', [PhotoEditorController::class, 'rotate']);
-
+/**
+ * SEARCH.
+ */
 Route::post('/Search::run', [SearchController::class, 'run']);
 
+/**
+ * SESSION.
+ */
 Route::post('/Session::init', [SessionController::class, 'init']);
 Route::post('/Session::login', [SessionController::class, 'login']);
 Route::post('/Session::logout', [SessionController::class, 'logout']);
 
+/**
+ * USER.
+ */
 Route::post('/User::updateLogin', [Administration\UserController::class, 'updateLogin']);
+Route::post('/User::setEmail', [Administration\UserController::class, 'setEmail']);
+Route::post('/User::getAuthenticatedUser', [Administration\UserController::class, 'getAuthenticatedUser']);
+Route::post('/User::resetToken', [Administration\UserController::class, 'resetToken']);
+Route::post('/User::unsetToken', [Administration\UserController::class, 'unsetToken']);
 
-Route::post('/Sharing::list', [Administration\SharingController::class, 'list']);
-Route::post('/Sharing::add', [Administration\SharingController::class, 'add']);
-Route::post('/Sharing::setByAlbum', [Administration\SharingController::class, 'setByAlbum']);
-Route::post('/Sharing::delete', [Administration\SharingController::class, 'delete']);
+/**
+ * USERS.
+ */
+Route::post('/Users::list', [Administration\UsersController::class, 'list']);
+Route::post('/Users::save', [Administration\UsersController::class, 'save']);
+Route::post('/Users::delete', [Administration\UsersController::class, 'delete']);
+Route::post('/Users::create', [Administration\UsersController::class, 'create']);
 
-// WebAuthn Routes
+/**
+ * WEBAUTHN.
+ */
 Route::post('/WebAuthn::list', [WebAuthn\WebAuthnManageController::class, 'list']);
 Route::post('/WebAuthn::delete', [WebAuthn\WebAuthnManageController::class, 'delete']);
 Route::post('/WebAuthn::register/options', [WebAuthn\WebAuthnRegisterController::class, 'options'])
@@ -104,13 +136,31 @@ Route::post('/WebAuthn::login/options', [WebAuthn\WebAuthnLoginController::class
 Route::post('/WebAuthn::login', [WebAuthn\WebAuthnLoginController::class, 'login'])
 	->name('webauthn.login');
 
+/**
+ * SHARING.
+ */
+Route::post('/Sharing::list', [Administration\SharingController::class, 'list']);
+Route::post('/Sharing::add', [Administration\SharingController::class, 'add']);
+Route::post('/Sharing::setByAlbum', [Administration\SharingController::class, 'setByAlbum']);
+Route::post('/Sharing::delete', [Administration\SharingController::class, 'delete']);
+
+/**
+ * DIAGNOSTICS.
+ */
 Route::post('/Diagnostics::get', [Administration\DiagnosticsController::class, 'get']);
 Route::post('/Diagnostics::getSize', [Administration\DiagnosticsController::class, 'getSize']);
 
+/**
+ * LOGS.
+ */
 Route::post('/Logs::list', [Administration\LogController::class, 'list']);
 Route::post('/Logs::clear', [Administration\LogController::class, 'clear']);
 Route::post('/Logs::clearNoise', [Administration\LogController::class, 'clearNoise']);
 
+/**
+ * SETTINGS.
+ */
+Route::post('/Settings::setLogin', [Administration\SettingsController::class, 'setLogin']);
 Route::post('/Settings::setSorting', [Administration\SettingsController::class, 'setSorting']);
 Route::post('/Settings::setLang', [Administration\SettingsController::class, 'setLang']);
 Route::post('/Settings::setLayout', [Administration\SettingsController::class, 'setLayout']);
@@ -131,15 +181,9 @@ Route::post('/Settings::setNSFWVisible', [Administration\SettingsController::cla
 Route::post('/Settings::setDropboxKey', [Administration\SettingsController::class, 'setDropboxKey']);
 Route::post('/Settings::setNewPhotosNotification', [Administration\SettingsController::class, 'setNewPhotosNotification']);
 
+/**
+ * UPDATE.
+ */
 Route::post('/Update::apply', [Administration\UpdateController::class, 'apply']);
 Route::post('/Update::check', [Administration\UpdateController::class, 'check']);
 
-Route::post('/Users::list', [Administration\UsersController::class, 'list']);
-Route::post('/Users::save', [Administration\UsersController::class, 'save']);
-Route::post('/Users::delete', [Administration\UsersController::class, 'delete']);
-Route::post('/Users::create', [Administration\UsersController::class, 'create']);
-
-Route::post('/User::setEmail', [Administration\UserController::class, 'setEmail']);
-Route::post('/User::getAuthenticatedUser', [Administration\UserController::class, 'getAuthenticatedUser']);
-Route::post('/User::resetToken', [Administration\UserController::class, 'resetToken']);
-Route::post('/User::unsetToken', [Administration\UserController::class, 'unsetToken']);
