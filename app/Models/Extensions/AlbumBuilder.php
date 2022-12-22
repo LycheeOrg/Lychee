@@ -98,16 +98,43 @@ class AlbumBuilder extends NSQueryBuilder
 				'max_taken_at' => $maxTsSelect,
 			];
 
-			if (Configs::getValueAsBool('show_num_albums')) {
-				$countChildren =
+			$showSubalbum = true;
+			$showSubalbumCount = false;
+			$showPhotoCount = false;
+			switch (Configs::getValueAsString('album_decorations')) {
+				case 'none':
+					$showSubalbum = false;
+					break;
+				case 'album':
+					$showSubalbumCount = true;
+					break;
+				case 'photo':
+					$showPhotoCount = true;
+					break;
+				case 'all':
+					$showSubalbumCount = true;
+					$showPhotoCount = true;
+					break;
+				case 'original':
+				default:
+			}
+			if ($showSubalbum) {
+				if ($showSubalbumCount) {
+					$countChildren =
 					DB::table('albums', 'a')
 					->select(DB::raw('COUNT(*)'))
 					->whereColumn('a.parent_id', '=', 'albums.id');
+				} else {
+					$countChildren =
+					DB::table('albums', 'a')
+					->select(DB::raw('COUNT(*)>0'))
+					->whereColumn('a.parent_id', '=', 'albums.id');
+				}
 				$selects += [
 					'num_subalbums' => $this->applyVisibilityConditioOnCount($countChildren, 'a'),
 				];
 			}
-			if (Configs::getValueAsBool('show_num_photos')) {
+			if ($showPhotoCount) {
 				$countPhotos =
 					DB::table('photos', 'p')
 					->select(DB::raw('COUNT(*)'))

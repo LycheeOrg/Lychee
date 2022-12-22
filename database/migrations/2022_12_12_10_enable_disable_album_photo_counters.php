@@ -14,20 +14,20 @@ return new class() extends Migration {
 
 		DB::table('configs')->insert([
 			[
-				'key' => 'show_num_albums',
-				'value' => '0',
+				'key' => 'album_decorations',
+				'value' => 'original',
 				'confidentiality' => 0,
 				'cat' => 'Gallery',
-				'type_range' => BOOL,
-				'description' => 'Show subalbum count on album cover',
+				'type_range' => 'none|original|album|photo|all',
+				'description' => 'Show decorations on album cover (sub-album and/or photo count)',
 			],
 			[
-				'key' => 'show_num_photos',
-				'value' => '0',
+				'key' => 'album_decoration_orientation',
+				'value' => 'row',
 				'confidentiality' => 0,
 				'cat' => 'Gallery',
-				'type_range' => BOOL,
-				'description' => 'Show number of photos on album cover badge',
+				'type_range' => 'column|column-reverse|row|row-reverse',
+				'description' => 'Align album decorations horizontally or vertically',
 			],
 		]);
 	}
@@ -39,6 +39,6 @@ return new class() extends Migration {
 	 */
 	public function down()
 	{
-		DB::table('configs')->whereIn('key', ['show_num_albums', 'show_num_photos'])->delete();
+		DB::table('configs')->whereIn('key', ['album_decorations', 'album_decoration_orientation'])->delete();
 	}
 };
