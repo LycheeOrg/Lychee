@@ -66,7 +66,7 @@ class PhotosAddNegativeTest extends BasePhotoTest
 
 	public function testUploadWithReadOnlyStorage(): void
 	{
-		self::restrictDirectoryAccess(public_path('uploads/'));
+		self::restrictDirectoryAccess(storage_path('app/public/uploads/'));
 
 		$this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE),

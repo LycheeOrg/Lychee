@@ -3,6 +3,7 @@
 namespace App\Metadata;
 
 use App\Facades\Helpers;
+use Illuminate\Support\Facades\Storage;
 use function Safe\disk_free_space;
 use function Safe\disk_total_space;
 use function Safe\exec;
@@ -93,7 +94,7 @@ class DiskUsage
 	 */
 	public function get_total_space(): string
 	{
-		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
+		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in storage/app/public/uploads
 		$dts = disk_total_space(base_path(''));
 
 		return $this->getSymbolByQuantity($dts);
@@ -106,7 +107,7 @@ class DiskUsage
 	 */
 	public function get_free_space(): string
 	{
-		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
+		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in storage/app/public/uploads
 		$dfs = disk_free_space(base_path(''));
 
 		return $this->getSymbolByQuantity($dfs);
@@ -119,7 +120,7 @@ class DiskUsage
 	 */
 	public function get_free_percent(): string
 	{
-		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
+		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in storage/app/public/uploads
 		$dts = disk_total_space(base_path(''));
 		$dfs = disk_free_space(base_path(''));
 
@@ -145,8 +146,7 @@ class DiskUsage
 	 */
 	public function get_lychee_upload_space(): string
 	{
-		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
-		$ds = $this->getTotalSize(base_path('public/uploads/'));
+		$ds = $this->getTotalSize(Storage::disk('images')->path(''));
 
 		return $this->getSymbolByQuantity($ds);
 	}

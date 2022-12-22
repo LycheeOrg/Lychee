@@ -1,9 +1,5 @@
 /node_modules
 
-public/dist/user.css
-
-public/uploads/**
-
 /storage/*.key
 /storage/clockwork/
 /vendor

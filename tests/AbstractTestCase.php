@@ -30,7 +30,7 @@ abstract class AbstractTestCase extends BaseTestCase
 	use CreatesApplication;
 	use CatchFailures;
 
-	public const PATH_IMPORT_DIR = 'uploads/import/';
+	public const PATH_IMPORT_DIR = 'app/public/uploads/import/';
 
 	public const MIME_TYPE_APP_PDF = 'application/pdf';
 	public const MIME_TYPE_IMG_GIF = 'image/gif';
@@ -179,7 +179,7 @@ abstract class AbstractTestCase extends BaseTestCase
 
 	protected static function importPath(string $path = ''): string
 	{
-		return public_path(self::PATH_IMPORT_DIR . $path);
+		return storage_path(self::PATH_IMPORT_DIR . $path);
 	}
 
 	/**
