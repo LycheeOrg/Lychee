@@ -101,22 +101,34 @@ class AlbumBuilder extends NSQueryBuilder
 			$showSubalbum = true;
 			$showSubalbumCount = false;
 			$showPhotoCount = false;
+			$isAdmin = false;
+			$userID = null;
 			switch (Configs::getValueAsString('album_decorations')) {
 				case 'none':
 					$showSubalbum = false;
+					// whether admin and what user doesn't matter (no additional queries)
 					break;
 				case 'album':
 					$showSubalbumCount = true;
-					break;
-				case 'photo':
-					$showPhotoCount = true;
+					$isAdmin = Gate::check(UserPolicy::IS_ADMIN);
+					if (!$isAdmin) {
+						$userID = Auth::id();
+					}
 					break;
 				case 'all':
 					$showSubalbumCount = true;
+					// fall-through
+					// no break
+				case 'photo':
 					$showPhotoCount = true;
-					break;
+					// fall-through
+					// no break
 				case 'original':
 				default:
+					$isAdmin = Gate::check(UserPolicy::IS_ADMIN);
+					if (!$isAdmin) {
+						$userID = Auth::id();
+					}
 			}
 			if ($showSubalbum) {
 				if ($showSubalbumCount) {
@@ -131,7 +143,7 @@ class AlbumBuilder extends NSQueryBuilder
 					->whereColumn('a.parent_id', '=', 'albums.id');
 				}
 				$selects += [
-					'num_subalbums' => $this->applyVisibilityConditioOnCount($countChildren, 'a'),
+					'num_subalbums' => $this->applyVisibilityConditioOnSubalbums($countChildren, $isAdmin, $userID),
 				];
 			}
 			if ($showPhotoCount) {
@@ -140,7 +152,7 @@ class AlbumBuilder extends NSQueryBuilder
 					->select(DB::raw('COUNT(*)'))
 					->whereColumn('p.album_id', '=', 'albums.id');
 				$selects += [
-					'num_photos' => $this->applyVisibilityConditioOnCount($countPhotos, 'p'),
+					'num_photos' => $this->applyVisibilityConditioOnPhotos($countPhotos, $isAdmin, $userID),
 				];
 			}
 			$this->addSelect($selects);
@@ -173,20 +185,20 @@ class AlbumBuilder extends NSQueryBuilder
 	 * Apply Visibiltiy conditions.
 	 * This a simplified version of AlbumQueryPolicy::applyVisibilityFilter().
 	 *
-	 * @param Builder $count
-	 * @param Builder $table
+	 * @param Builder         $count
+	 * @param bool            $isAdmin
+	 * @param int|string|null $userID
 	 *
 	 * @return Builder Query with the visibility requirements applied
 	 */
-	private function applyVisibilityConditioOnCount(Builder $count, string $table): Builder
+	private function applyVisibilityConditioOnSubalbums(Builder $count, bool $isAdmin, int|string|null $userID): Builder
 	{
-		if (Gate::check(UserPolicy::IS_ADMIN)) {
+		if ($isAdmin) {
 			return $count;
 		}
 
-		$count->join('base_albums', 'base_albums.id', '=', $table . '.id');
+		$count->join('base_albums', 'base_albums.id', '=', 'a.id');
 
-		$userID = Auth::id();
 		if ($userID !== null) {
 			// We must left join with `user_base_album` if and only if we
 			// restrict the eventual query to the ID of the authenticated
@@ -228,5 +240,65 @@ class AlbumBuilder extends NSQueryBuilder
 		$count->where($visibilitySubQuery);
 
 		return $count;
+	}
+
+	/**
+	 * Apply Visibiltiy conditions.
+	 * This a simplified version of PhotoQueryPolicy::applyVisibilityFilter().
+	 *
+	 * @param Builder         $count
+	 * @param bool            $isAdmin
+	 * @param int|string|null $userID
+	 *
+	 * @return Builder Query with the visibility requirements applied
+	 */
+	private function applyVisibilityConditioOnPhotos(Builder $count, bool $isAdmin, int|string|null $userID): Builder
+	{
+		if ($isAdmin) {
+			return $count;
+		}
+
+		$count->join('base_albums', 'base_albums.id', '=', 'p.album_id');
+
+		if ($userID !== null) {
+			// We must left join with `user_base_album` if and only if we
+			// restrict the eventual query to the ID of the authenticated
+			// user by a `WHERE`-clause.
+			// If we were doing a left join unconditionally, then some
+			// albums might appear multiple times as part of the result
+			// because an album might be shared with more than one user.
+			// Hence, we must restrict the `LEFT JOIN` to the user ID which
+			// is also used in the outer `WHERE`-clause.
+			// See `applyVisibilityFilter` and `appendAccessibilityConditions`
+			// in AlbumQueryPolicy and PhotoQueryPolicy.
+			$count->leftJoin(
+				'user_base_album',
+				function (JoinClause $join) use ($userID) {
+					$join
+						->on('user_base_album.base_album_id', '=', 'base_albums.id')
+						->where('user_base_album.user_id', '=', $userID);
+				}
+			);
+		}
+
+		// We must wrap everything into an outer query to avoid any undesired
+		// effects in case that the original query already contains an
+		// "OR"-clause.
+		$visibilitySubQuery = function ($query2) use ($userID) {
+			$query2->where(
+				fn ($q) => $q
+					->where('base_albums.requires_link', '=', false)
+					->where('base_albums.is_public', '=', true)
+			);
+			if ($userID !== null) {
+				$query2
+					->orWhere('base_albums.owner_id', '=', $userID)
+					->orWhere('user_base_album.user_id', '=', $userID)
+					->orWhere('p.owner_id', '=', $userID);
+			}
+			$query2->orWhere('p.is_public', '=', true);
+		};
+
+		return $count->where($visibilitySubQuery);
 	}
 }
