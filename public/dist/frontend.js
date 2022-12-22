@@ -9617,7 +9617,7 @@ _photo3.setProtectionPolicy = function (photoID) {
 			formElements.grants_download.checked = album.json.policy.grants_download;
 			formElements.is_password_required.checked = album.json.policy.is_password_required;
 			basicModal.hideActionButton();
-		};
+		}
 	};
 
 	basicModal.show({
@@ -14139,7 +14139,7 @@ view.photo = {
 			$("#button_visibility").addClass("active--hidden");
 			if (_photo3.json.init) _sidebar.changeAttr("public", lychee.locale["PHOTO_SHR_YES"]);
 		} else if (_photo3.json.album_id !== null && album.json.policy.is_public === true) {
-			// album
+			// part of a visible album
 			$("#button_visibility").addClass("active--not-hidden");
 			if (_photo3.json.init) _sidebar.changeAttr("public", lychee.locale["PHOTO_SHR_YES"]);
 		} else {
@@ -15183,7 +15183,7 @@ visible.leftMenu = function () {
  * @property {string}       title
  * @property {?string}      description
  * @property {string[]}     tags
- * @property {number}       is_public
+ * @property {boolean}      is_public
  * @property {?string}      type
  * @property {?string}      iso
  * @property {?string}      aperture
