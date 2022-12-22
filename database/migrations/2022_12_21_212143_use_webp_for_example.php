@@ -11,7 +11,7 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-		DB::table('configs')->where('landing_background', 'version')->update(['value' => 'dist/cat.webp']);
+		DB::table('configs')->where('key', 'landing_background')->update(['value' => 'dist/cat.webp']);
 	}
 
 	/**
@@ -21,6 +21,6 @@ return new class() extends Migration {
 	 */
 	public function down(): void
 	{
-		DB::table('configs')->where('landing_background', 'version')->update(['value' => 'dist/cat.jpg']);
+		DB::table('configs')->where('key', 'landing_background')->update(['value' => 'dist/cat.jpg']);
 	}
 };
