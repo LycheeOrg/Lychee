@@ -9527,26 +9527,20 @@ _photo3.setProtectionPolicy = function (photoID) {
   * @param {{is_public: boolean}} data
   */
 	var action = function action(data) {
-		/**
-   * Note: `newIsPublic` must be `0` or `1` and no boolean, because
-   * `photo.is_public` is an integer between `0` and `2`.
-   */
-		var newIsPublic = data.is_public ? 1 : 0;
-
-		if (newIsPublic !== _photo3.json.is_public) {
+		if (data.is_public !== _photo3.json.is_public) {
 			if (visible.photo()) {
-				_photo3.json.is_public = newIsPublic;
+				_photo3.json.is_public = data.is_public;
 				view.photo.public();
 			}
 
-			album.getByID(photoID).is_public = newIsPublic;
+			album.getByID(photoID).is_public = data.is_public;
 			view.album.content.public(photoID);
 
 			albums.refresh();
 
 			api.post("Photo::setPublic", {
 				photoID: photoID,
-				is_public: newIsPublic !== 0
+				is_public: data.is_public
 			});
 		}
 
@@ -9581,38 +9575,49 @@ _photo3.setProtectionPolicy = function (photoID) {
 		formElements.is_password_required.previousElementSibling.textContent = lychee.locale["PHOTO_PASSWORD_PROT"];
 		formElements.is_password_required.nextElementSibling.textContent = lychee.locale["PHOTO_PASSWORD_PROT_EXPL"];
 
-		if (_photo3.json.is_public === 2) {
+		if (_photo3.json.album_id === null) {
+			// No album
+
+			dialog.querySelector("p#ppp_dialog_no_edit_expl").remove();
+			dialog.querySelector("p#ppp_dialog_global_expl").textContent = lychee.locale["PHOTO_EDIT_GLOBAL_SHARING_TEXT"];
+			// Initialize values of detailed settings according to global
+			// configuration.
+			formElements.is_public.checked = _photo3.json.is_public;
+			formElements.grants_full_photo_access.checked = lychee.grants_full_photo_access;
+			formElements.is_link_required.checked = lychee.public_photos_hidden;
+			formElements.grants_download.checked = lychee.grants_download;
+			formElements.is_password_required.checked = false;
+		} else if (album.json && album.json.policy.is_public === false) {
+			// Private album
+
+			dialog.querySelector("p#ppp_dialog_no_edit_expl").remove();
+			dialog.querySelector("p#ppp_dialog_global_expl").textContent = lychee.locale["PHOTO_EDIT_GLOBAL_SHARING_TEXT"];
+			// Initialize values of detailed settings according to global
+			// configuration.
+			formElements.is_public.checked = _photo3.json.is_public;
+			formElements.grants_full_photo_access.checked = lychee.grants_full_photo_access;
+			formElements.is_link_required.checked = lychee.public_photos_hidden;
+			formElements.grants_download.checked = lychee.grants_download;
+			formElements.is_password_required.checked = false;
+		} else {
 			// Public album.
 			dialog.querySelector("p#ppp_dialog_no_edit_expl").textContent = lychee.locale["PHOTO_NO_EDIT_SHARING_TEXT"];
 			dialog.querySelector("p#ppp_dialog_global_expl").remove();
 			// Initialize values of detailed settings according to album
 			// settings and hide action button as we can't actually change
 			// anything.
-			formElements.is_public.checked = true;
 			formElements.is_public.disabled = true;
+			formElements.is_public.checked = album.json.policy.is_public;
 			formElements.is_public.parentElement.classList.add("disabled");
-			if (album.json) {
-				formElements.grants_full_photo_access.checked = album.json.grants_full_photo_access;
-				// Photos in public albums are never hidden as such.  It's the
-				// album that's hidden.  Or is that distinction irrelevant to end
-				// users?
-				formElements.is_link_required.checked = false;
-				formElements.grants_download.checked = album.json.grants_download;
-				formElements.is_password_required.checked = album.json.is_password_required;
-			}
+			formElements.grants_full_photo_access.checked = album.json.policy.grants_full_photo_access;
+			// Photos in public albums are never hidden as such.  It's the
+			// album that's hidden.  Or is that distinction irrelevant to end
+			// users?
+			formElements.is_link_required.checked = album.json.policy.is_link_required;
+			formElements.grants_download.checked = album.json.policy.grants_download;
+			formElements.is_password_required.checked = album.json.policy.is_password_required;
 			basicModal.hideActionButton();
-		} else {
-			// Private album
-			dialog.querySelector("p#ppp_dialog_no_edit_expl").remove();
-			dialog.querySelector("p#ppp_dialog_global_expl").textContent = lychee.locale["PHOTO_EDIT_GLOBAL_SHARING_TEXT"];
-			// Initialize values of detailed settings according to global
-			// configuration.
-			formElements.is_public.checked = _photo3.json.is_public !== 0;
-			formElements.grants_full_photo_access.checked = lychee.grants_full_photo_access;
-			formElements.is_link_required.checked = lychee.public_photos_hidden;
-			formElements.grants_download.checked = lychee.grants_download;
-			formElements.is_password_required.checked = false;
-		}
+		};
 	};
 
 	basicModal.show({
@@ -10486,7 +10491,7 @@ settings.createLogin = function () {
 			password: data.password
 		};
 
-		api.post("User::updateLogin", params, successHandler, null, errorHandler);
+		api.post("Settings::setLogin", params, successHandler, null, errorHandler);
 	};
 
 	var createLoginDialogBody = "\n\t\t<p></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input name='username' class='text' type='text' autocapitalize='off'>\n\t\t\t</div>\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input name='password' class='text' type='password'>\n\t\t\t</div>\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input name='confirm' class='text' type='password'>\n\t\t\t</div>\n\t\t</form>";
@@ -10615,7 +10620,7 @@ settings.changeLogin = function (params) {
 		$("input[name=confirm]").removeClass("error");
 	}
 
-	api.post("Settings::updateLogin", params,
+	api.post("User::updateLogin", params,
 	/** @param {User} updatedUser */function (updatedUser) {
 		$("input[name]").removeClass("error");
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LOGIN"]);
@@ -14130,14 +14135,12 @@ view.photo = {
 	public: function _public() {
 		$("#button_visibility").removeClass("active--hidden active--not-hidden");
 
-		if (_photo3.json.is_public === 1 || _photo3.json.is_public === 2) {
-			// Photo public
-			if (_photo3.json.is_public === 1) {
-				$("#button_visibility").addClass("active--hidden");
-			} else {
-				$("#button_visibility").addClass("active--not-hidden");
-			}
-
+		if (_photo3.json.is_public === true) {
+			$("#button_visibility").addClass("active--hidden");
+			if (_photo3.json.init) _sidebar.changeAttr("public", lychee.locale["PHOTO_SHR_YES"]);
+		} else if (_photo3.json.album_id !== null && album.json.policy.is_public === true) {
+			// album
+			$("#button_visibility").addClass("active--not-hidden");
 			if (_photo3.json.init) _sidebar.changeAttr("public", lychee.locale["PHOTO_SHR_YES"]);
 		} else {
 			// Photo private
