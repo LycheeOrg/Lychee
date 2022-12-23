@@ -17,9 +17,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
 use Tests\AbstractTestCase;
+use Tests\Feature\Traits\CatchFailures;
 
 class WebAuthTest extends AbstractTestCase
 {
+	use CatchFailures;
+
 	/**
 	 * Testing the Login interface.
 	 *

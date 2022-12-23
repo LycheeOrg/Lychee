@@ -12,28 +12,29 @@
 
 namespace Tests\Feature;
 
-use App\Http\Middleware\MigrationStatus;
 use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
-use function PHPUnit\Framework\assertEquals;
 use PHPUnit\Framework\ExpectationFailedException;
 use Tests\AbstractTestCase;
+use Tests\Feature\Traits\CatchFailures;
 
 class UpdateTest extends AbstractTestCase
 {
+	use CatchFailures;
+
 	public function testDoNotLogged(): void
 	{
 		$response = $this->get('/Update', []);
-		$this->assertForbidden($response);
+		$this->assertUnauthorized($response);
 
 		$response = $this->postJson('/api/Update::apply');
-		$this->assertForbidden($response);
+		$this->assertUnauthorized($response);
 
 		$response = $this->postJson('/api/Update::check');
-		$this->assertForbidden($response);
+		$this->assertUnauthorized($response);
 	}
 
 	public function testDoLogged(): void
@@ -81,7 +82,7 @@ class UpdateTest extends AbstractTestCase
 
 	/**
 	 * We check that we can apply migration.
-	 * This requires us to disable the MigrationStatus middleware otherwise
+	 * This requires us to disable the {@link \App\Http\Middleware\MigrationStatus} middleware otherwise
 	 * we will be thrown out all the time.
 	 */
 	public function testApplyMigration(): void
@@ -109,7 +110,7 @@ class UpdateTest extends AbstractTestCase
 
 		// check that Legacy did change the username
 		$adminUser = User::findOrFail(0);
-		assertEquals('test_login', $adminUser->username);
+		$this->assertEquals('test_login', $adminUser->username);
 
 		// clean up
 		Auth::logout();

@@ -9,8 +9,10 @@ use App\Http\Requests\View\GetPhotoViewRequest;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
+use App\Policies\SettingsPolicy;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use function Safe\file_get_contents;
 use function Safe\phpinfo;
@@ -76,9 +78,10 @@ class IndexController extends Controller
 	// @codeCoverageIgnoreStart
 	public function phpinfo(): void
 	{
+		Gate::authorize(SettingsPolicy::CAN_SEE_DIAGNOSTICS, Configs::class);
+
 		phpinfo();
 	}
-
 	// @codeCoverageIgnoreEnd
 
 	/**
@@ -154,7 +157,7 @@ class IndexController extends Controller
 		return $this->frontend(
 			$photo->title,
 			$photo->description,
-			$photo->size_variants->getMedium()?->url ?? $photo->size_variants->getOriginal()->url
+			url()->to($photo->size_variants->getMedium()?->url ?? $photo->size_variants->getOriginal()->url)
 		);
 	}
 

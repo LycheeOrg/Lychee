@@ -3,25 +3,36 @@
 namespace App\Http\Controllers\Administration;
 
 use App\Actions\Settings\SetLogin;
-use App\Actions\Settings\UpdateLogin;
 use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Facades\Lang;
 use App\Http\Requests\Legacy\SetAdminLoginRequest;
-use App\Http\Requests\Settings\ChangeLoginRequest;
-use App\Http\Requests\Settings\SetSortingRequest;
+use App\Http\Requests\Settings\GetSetAllSettingsRequest;
+use App\Http\Requests\Settings\SetCSSSettingRequest;
+use App\Http\Requests\Settings\SetDefaultLicenseSettingRequest;
+use App\Http\Requests\Settings\SetDropboxKeySettingRequest;
+use App\Http\Requests\Settings\SetImageOverlaySettingRequest;
+use App\Http\Requests\Settings\SetLangSettingRequest;
+use App\Http\Requests\Settings\SetLayoutSettingRequest;
+use App\Http\Requests\Settings\SetLocationDecodingSettingRequest;
+use App\Http\Requests\Settings\SetLocationShowPublicSettingRequest;
+use App\Http\Requests\Settings\SetLocationShowSettingRequest;
+use App\Http\Requests\Settings\SetMapDisplayPublicSettingRequest;
+use App\Http\Requests\Settings\SetMapDisplaySettingRequest;
+use App\Http\Requests\Settings\SetMapIncludeSubAlbumsSettingRequest;
+use App\Http\Requests\Settings\SetMapProviderSettingRequest;
+use App\Http\Requests\Settings\SetNewPhotosNotificationSettingRequest;
+use App\Http\Requests\Settings\SetNSFWVisibilityRequest;
+use App\Http\Requests\Settings\SetPublicSearchSettingRequest;
+use App\Http\Requests\Settings\SetSortingSettingsRequest;
 use App\Models\Configs;
 use App\Models\User;
-use App\Rules\LicenseRule;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class SettingsController extends Controller
@@ -53,41 +64,15 @@ class SettingsController extends Controller
 	}
 
 	/**
-	 * Update the Login information of the current user.
-	 *
-	 * @param ChangeLoginRequest $request
-	 * @param UpdateLogin        $updateLogin
-	 *
-	 * @return User
-	 *
-	 * @throws LycheeException
-	 */
-	public function updateLogin(ChangeLoginRequest $request, UpdateLogin $updateLogin): User
-	{
-		$currentUser = $updateLogin->do(
-			$request->username(),
-			$request->password(),
-			$request->oldPassword(),
-			$request->ip()
-		);
-		// Update the session with the new credentials of the user.
-		// Otherwise, the session is out-of-sync and falsely assumes the user
-		// to be unauthenticated upon the next request.
-		Auth::login($currentUser);
-
-		return $currentUser;
-	}
-
-	/**
 	 * Define the default sorting type.
 	 *
-	 * @param SetSortingRequest $request
+	 * @param SetSortingSettingsRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 */
-	public function setSorting(SetSortingRequest $request): void
+	public function setSorting(SetSortingSettingsRequest $request): void
 	{
 		Configs::set('sorting_photos_col', $request->photoSortingColumn());
 		Configs::set('sorting_photos_order', $request->photoSortingOrder());
@@ -98,18 +83,15 @@ class SettingsController extends Controller
 	/**
 	 * Set the lang used by the Lychee installation.
 	 *
-	 * @param Request $request
+	 * @param SetLangSettingRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 */
-	public function setLang(Request $request): void
+	public function setLang(SetLangSettingRequest $request): void
 	{
-		$validated = $request->validate([
-			'lang' => ['required', 'string', Rule::in(Lang::get_lang_available())],
-		]);
-		Configs::set('lang', $validated['lang']);
+		Configs::set($request->getSettingName(), $request->getSettingValue());
 	}
 
 	/**
@@ -118,65 +100,59 @@ class SettingsController extends Controller
 	 * 1: flickr justified
 	 * 2: flickr unjustified.
 	 *
-	 * @param Request $request
+	 * @param SetLayoutSettingRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 */
-	public function setLayout(Request $request): void
+	public function setLayout(SetLayoutSettingRequest $request): void
 	{
-		$validated = $request->validate([
-			'layout' => ['required', Rule::in([0, 1, 2])],
-		]);
-		Configs::set('layout', $validated['layout']);
+		Configs::set($request->getSettingName(), $request->getSettingValue());
 	}
 
 	/**
 	 * Set the dropbox key for the API.
 	 *
-	 * @param Request $request
+	 * @param SetDropboxKeySettingRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 */
-	public function setDropboxKey(Request $request): void
+	public function setDropboxKey(SetDropboxKeySettingRequest $request): void
 	{
-		$validated = $request->validate(['key' => 'present|string|nullable']);
-		Configs::set('dropbox_key', $validated['key']);
+		Configs::set($request->getSettingName(), $request->getSettingValue());
 	}
 
 	/**
 	 * Allow public user to use the search function.
 	 *
-	 * @param Request $request
+	 * @param SetPublicSearchSettingRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 * @throws BadRequestException
 	 */
-	public function setPublicSearch(Request $request): void
+	public function setPublicSearch(SetPublicSearchSettingRequest $request): void
 	{
-		$request->validate(['public_search' => 'required|boolean']);
-		Configs::set('public_search', (int) $request->boolean('public_search'));
+		Configs::set($request->getSettingName(), $request->getSettingValue());
 	}
 
 	/**
 	 * Show NSFW albums by default or not.
 	 *
-	 * @param Request $request
+	 * @param SetNSFWVisibilityRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 * @throws BadRequestException
 	 */
-	public function setNSFWVisible(Request $request): void
+	public function setNSFWVisible(SetNSFWVisibilityRequest $request): void
 	{
-		$request->validate(['nsfw_visible' => 'required|boolean']);
-		Configs::set('nsfw_visible', (int) $request->boolean('nsfw_visible'));
+		Configs::set($request->getSettingName(), $request->getSettingValue());
 	}
 
 	/**
@@ -229,72 +205,59 @@ class SettingsController extends Controller
 	 * date: date of the photo
 	 * exif: exif information.
 	 *
-	 * @param Request $request
+	 * @param SetImageOverlaySettingRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 */
-	public function setImageOverlayType(Request $request): void
+	public function setImageOverlayType(SetImageOverlaySettingRequest $request): void
 	{
-		$validated = $request->validate([
-			'image_overlay_type' => [
-				'required',
-				'string',
-				Rule::in(['none', 'desc', 'date', 'exif']),
-			],
-		]);
-
-		Configs::set('image_overlay_type', $validated['image_overlay_type']);
+		Configs::set($request->getSettingName(), $request->getSettingValue());
 	}
 
 	/**
 	 * Define the default license of the pictures.
 	 *
-	 * @param Request $request
+	 * @param SetDefaultLicenseSettingRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 */
-	public function setDefaultLicense(Request $request): void
+	public function setDefaultLicense(SetDefaultLicenseSettingRequest $request): void
 	{
-		$validated = $request->validate([
-			'license' => ['required', new LicenseRule()],
-		]);
-		Configs::set('default_license', $validated['license']);
+		Configs::set($request->getSettingName(), $request->getSettingValue());
 	}
 
 	/**
 	 * Enable display of photo coordinates on map.
 	 *
-	 * @param Request $request
+	 * @param SetMapDisplaySettingRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 * @throws BadRequestException
 	 */
-	public function setMapDisplay(Request $request): void
+	public function setMapDisplay(SetMapDisplaySettingRequest $request): void
 	{
-		$request->validate(['map_display' => 'required|boolean']);
-		Configs::set('map_display', (int) $request->boolean('map_display'));
+		Configs::set($request->getSettingName(), $request->getSettingValue());
 	}
 
 	/**
 	 * Enable display of photos on map for public albums.
 	 *
-	 * @param Request $request
+	 * @param SetMapDisplayPublicSettingRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 * @throws BadRequestException
 	 */
-	public function setMapDisplayPublic(Request $request): void
+	public function setMapDisplayPublic(SetMapDisplayPublicSettingRequest $request): void
 	{
-		$request->validate(['map_display_public' => 'required|boolean']);
-		Configs::set('map_display_public', (int) $request->boolean('map_display_public'));
+		Configs::set($request->getSettingName(), $request->getSettingValue());
 	}
 
 	/**
@@ -307,111 +270,90 @@ class SettingsController extends Controller
 	 * (cp. {@link \App\Http\Controllers\SessionController::init()}) as the
 	 * confidentiality of this configuration option is `public`.
 	 *
-	 * @param Request $request
+	 * @param SetMapProviderSettingRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 */
-	public function setMapProvider(Request $request): void
+	public function setMapProvider(SetMapProviderSettingRequest $request): void
 	{
-		$request->validate([
-			'map_provider' => ['required', 'string', Rule::in([
-				'Wikimedia',
-				'OpenStreetMap.org',
-				'OpenStreetMap.de',
-				'OpenStreetMap.fr',
-				'RRZE',
-			])],
-		]);
-
-		Configs::set('map_provider', $request['map_provider']);
+		Configs::set($request->getSettingName(), $request->getSettingValue());
 	}
 
 	/**
 	 * Enable display of photos of sub-albums on map.
 	 *
-	 * @param Request $request
+	 * @param SetMapIncludeSubAlbumsSettingRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 * @throws BadRequestException
 	 */
-	public function setMapIncludeSubAlbums(Request $request): void
+	public function setMapIncludeSubAlbums(SetMapIncludeSubAlbumsSettingRequest $request): void
 	{
-		$request->validate(['map_include_subalbums' => 'required|boolean']);
-		Configs::set('map_include_subalbums', (int) $request->boolean('map_include_subalbums'));
+		Configs::set($request->getSettingName(), $request->getSettingValue());
 	}
 
 	/**
 	 * Enable decoding of GPS data into location names.
 	 *
-	 * @param Request $request
+	 * @param SetLocationDecodingSettingRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 * @throws BadRequestException
 	 */
-	public function setLocationDecoding(Request $request): void
+	public function setLocationDecoding(SetLocationDecodingSettingRequest $request): void
 	{
-		$request->validate(['location_decoding' => 'required|boolean']);
-		Configs::set('location_decoding', (int) $request->boolean('location_decoding'));
+		Configs::set($request->getSettingName(), $request->getSettingValue());
 	}
 
 	/**
 	 * Enable display of location name.
 	 *
-	 * @param Request $request
+	 * @param SetLocationShowSettingRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 * @throws BadRequestException
 	 */
-	public function setLocationShow(Request $request): void
+	public function setLocationShow(SetLocationShowSettingRequest $request): void
 	{
-		$request->validate(['location_show' => 'required|boolean']);
-		Configs::set('location_show', (int) $request->boolean('location_show'));
+		Configs::set($request->getSettingName(), $request->getSettingValue());
 	}
 
 	/**
 	 * Enable display of location name for public albums.
 	 *
-	 * @param Request $request
+	 * @param SetLocationShowPublicSettingRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 * @throws BadRequestException
 	 */
-	public function setLocationShowPublic(Request $request): void
+	public function setLocationShowPublic(SetLocationShowPublicSettingRequest $request): void
 	{
-		$request->validate(['location_show_public' => 'required|boolean']);
-		Configs::set(
-			'location_show_public',
-			(int) $request->boolean('location_show_public')
-		);
+		Configs::set($request->getSettingName(), $request->getSettingValue());
 	}
 
 	/**
 	 * Enable sending of new photos notification emails.
 	 *
-	 * @param Request $request
+	 * @param SetNewPhotosNotificationSettingRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 * @throws BadRequestException
 	 */
-	public function setNewPhotosNotification(Request $request): void
+	public function setNewPhotosNotification(SetNewPhotosNotificationSettingRequest $request): void
 	{
-		$request->validate(['new_photos_notification' => 'required|boolean']);
-		Configs::set(
-			'new_photos_notification',
-			(int) $request->boolean('new_photos_notification')
-		);
+		Configs::set($request->getSettingName(), $request->getSettingValue());
 	}
 
 	/**
@@ -419,17 +361,16 @@ class SettingsController extends Controller
 	 * This allows admins to actually personalize the look of their
 	 * installation.
 	 *
-	 * @param Request $request
+	 * @param SetCSSSettingRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws InsufficientFilesystemPermissions
 	 */
-	public function setCSS(Request $request): void
+	public function setCSS(SetCSSSettingRequest $request): void
 	{
-		$request->validate(['css' => 'present|nullable|string']);
-		$css = $request->get('css') ?? '';
-
+		/** @var string $css */
+		$css = $request->getSettingValue();
 		if (Storage::disk('dist')->put('user.css', $css) === false) {
 			throw new InsufficientFilesystemPermissions('Could not save CSS');
 		}
@@ -444,7 +385,7 @@ class SettingsController extends Controller
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function getAll(): Collection
+	public function getAll(GetSetAllSettingsRequest $request): Collection
 	{
 		return Configs::query()
 			->orderBy('cat')
@@ -456,13 +397,13 @@ class SettingsController extends Controller
 	 * Get a list of settings and save them in the database
 	 * if the associated key exists.
 	 *
-	 * @param Request $request
+	 * @param GetSetAllSettingsRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 */
-	public function saveAll(Request $request): void
+	public function saveAll(GetSetAllSettingsRequest $request): void
 	{
 		$lastException = null;
 		foreach ($request->except(['_token', 'function', '/api/Settings::saveAll']) as $key => $value) {

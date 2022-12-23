@@ -12,7 +12,8 @@ use App\DTO\DiagnosticInfo;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\ModelDBException;
 use App\Legacy\AdminAuthentication;
-use App\Policies\UserPolicy;
+use App\Models\Configs;
+use App\Policies\SettingsPolicy;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
@@ -28,7 +29,7 @@ class DiagnosticsController extends Controller
 	 */
 	private function isAuthorized(): bool
 	{
-		return Gate::check(UserPolicy::IS_ADMIN) || AdminAuthentication::isAdminNotRegistered();
+		return Gate::check(SettingsPolicy::CAN_SEE_DIAGNOSTICS, Configs::class) || AdminAuthentication::isAdminNotRegistered();
 	}
 
 	/**

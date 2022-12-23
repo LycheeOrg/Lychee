@@ -263,10 +263,6 @@ final class French implements Language
 			'PHOTO_FOCAL' => 'Distance focale',
 			'PHOTO_ISO' => 'ISO %s',
 			'PHOTO_SHARING' => 'Partager',
-			'PHOTO_SHR_PUBLIC' => 'Publique',
-			'PHOTO_SHR_ALB' => 'Oui (album)',
-			'PHOTO_SHR_PHT' => 'Oui (photo)',
-			'PHOTO_SHR_NO' => 'Non',
 			'PHOTO_DELETE' => 'Supprimer la photo',
 			'PHOTO_KEEP' => 'Garder la photo',
 			'PHOTO_DELETE_CONFIRMATION' => 'Voulez-vous vraiment supprimer la photo «%s» ? Cette action est irréversible !',
@@ -525,7 +521,7 @@ final class French implements Language
 			'CAMERA_DATE' => 'Camera date',
 			'NEW_PASSWORD' => 'Nouveau mot de passe',
 			'ALLOW_UPLOADS' => 'Authoriser les uploads',
-			'RESTRICTED_ACCOUNT' => 'Compte restraint',
+			'ALLOW_USER_SELF_EDIT' => 'Authoriser l’auto-gestion de compte utilisateur',
 			'OSM_CONTRIBUTORS' => 'Contributeur OpenStreetMap',
 		];
 	}

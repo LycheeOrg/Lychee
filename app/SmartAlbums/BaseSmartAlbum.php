@@ -4,6 +4,7 @@ namespace App\SmartAlbums;
 
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Contracts\Models\AbstractAlbum;
+use App\DTO\AlbumProtectionPolicy;
 use App\DTO\PhotoSortingCriterion;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
@@ -29,8 +30,6 @@ use Illuminate\Database\Eloquent\Collection;
  * Smart albums are never explicit "parent albums" of photos.
  * Photos belong to these albums due to certain properties like being
  * starred, being recently added, etc.
- *
- * @property string $id
  */
 abstract class BaseSmartAlbum implements AbstractAlbum
 {
@@ -40,9 +39,9 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	protected PhotoQueryPolicy $photoQueryPolicy;
 	protected string $id;
 	protected string $title;
-	protected bool $isPublic;
-	protected bool $isDownloadable;
-	protected bool $isShareButtonVisible;
+	protected bool $grants_download;
+	protected bool $grants_full_photo_access;
+	protected bool $is_public;
 	protected ?Thumb $thumb = null;
 	protected ?Collection $photos = null;
 	protected \Closure $smartPhotoCondition;
@@ -51,15 +50,15 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 * @throws ConfigurationKeyMissingException
 	 * @throws FrameworkException
 	 */
-	protected function __construct(string $id, string $title, bool $isPublic, \Closure $smartCondition)
+	protected function __construct(string $id, string $title, bool $is_public, \Closure $smartCondition)
 	{
 		try {
 			$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
 			$this->id = $id;
 			$this->title = $title;
-			$this->isPublic = $isPublic;
-			$this->isDownloadable = Configs::getValueAsBool('downloadable');
-			$this->isShareButtonVisible = Configs::getValueAsBool('share_button_visible');
+			$this->is_public = $is_public;
+			$this->grants_download = Configs::getValueAsBool('grants_download');
+			$this->grants_full_photo_access = Configs::getValueAsBool('grants_full_photo_access');
 			$this->smartPhotoCondition = $smartCondition;
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s service container', $e);
@@ -144,14 +143,11 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		//     relation has been loaded.
 		//     This avoids unnecessary hydration of photos if the album is
 		//     only used within a listing of sub-albums.
-
 		return [
 			'id' => $this->id,
 			'title' => $this->title,
-			'is_public' => $this->isPublic,
-			'is_downloadable' => $this->isDownloadable,
-			'is_share_button_visible' => $this->isShareButtonVisible,
 			'thumb' => $this->getThumbAttribute(),
+			'policy' => AlbumProtectionPolicy::ofSmartAlbum($this),
 			'photos' => $this->photos?->toArray(),
 		];
 	}
