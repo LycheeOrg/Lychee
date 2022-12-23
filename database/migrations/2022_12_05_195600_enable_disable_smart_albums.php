@@ -8,7 +8,7 @@ return new class() extends Migration {
 	 *
 	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		defined('BOOL') or define('BOOL', '0|1');
 
@@ -29,7 +29,7 @@ return new class() extends Migration {
 	 *
 	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		DB::table('configs')->where('key', '=', 'SA_enabled')->delete();
 	}

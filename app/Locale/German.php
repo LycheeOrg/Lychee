@@ -262,10 +262,6 @@ final class German implements Language
 			'PHOTO_FOCAL' => 'Brennweite',
 			'PHOTO_ISO' => 'ISO %s',
 			'PHOTO_SHARING' => 'Teilen',
-			'PHOTO_SHR_PUBLIC' => 'Öffentlich',
-			'PHOTO_SHR_ALB' => 'Ja (Album)',
-			'PHOTO_SHR_PHT' => 'Ja (Foto)',
-			'PHOTO_SHR_NO' => 'Nein',
 			'PHOTO_DELETE' => 'Foto löschen',
 			'PHOTO_KEEP' => 'Foto behalten',
 			'PHOTO_DELETE_CONFIRMATION' => 'Sind Sie sicher, dass Sie das Foto „%s“ löschen wollen? Diese Aktion kann nicht rückgängig gemacht werden!',
@@ -513,7 +509,7 @@ final class German implements Language
 			'CAMERA_DATE' => 'Kameradatum',
 			'NEW_PASSWORD' => 'Neues Password',
 			'ALLOW_UPLOADS' => 'Hochladen erlauben',
-			'RESTRICTED_ACCOUNT' => 'Eingeschränkter Account',
+			'ALLOW_USER_SELF_EDIT' => 'Erlaube Selbstverwaltung des Nutzerkontos',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap-Beitragende',
 		];
 	}

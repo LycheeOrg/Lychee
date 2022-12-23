@@ -262,10 +262,6 @@ final class English implements Language
 			'PHOTO_FOCAL' => 'Focal Length',
 			'PHOTO_ISO' => 'ISO %s',
 			'PHOTO_SHARING' => 'Sharing',
-			'PHOTO_SHR_PUBLIC' => 'Public',
-			'PHOTO_SHR_ALB' => 'Yes (Album)',
-			'PHOTO_SHR_PHT' => 'Yes (Photo)',
-			'PHOTO_SHR_NO' => 'No',
 			'PHOTO_DELETE' => 'Delete Photo',
 			'PHOTO_KEEP' => 'Keep Photo',
 			'PHOTO_DELETE_CONFIRMATION' => 'Are you sure you want to delete the photo “%s”? This action can’t be undone!',
@@ -513,7 +509,7 @@ final class English implements Language
 			'CAMERA_DATE' => 'Camera date',
 			'NEW_PASSWORD' => 'new password',
 			'ALLOW_UPLOADS' => 'Allow uploads',
-			'RESTRICTED_ACCOUNT' => 'Restricted account',
+			'ALLOW_USER_SELF_EDIT' => 'Allow self-management of user account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
 	}

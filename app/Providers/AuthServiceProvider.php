@@ -4,19 +4,19 @@ namespace App\Providers;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Models\Album;
-use App\Models\BaseAlbumImpl;
+use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
+use App\Policies\SettingsPolicy;
 use App\Policies\UserPolicy;
 use App\Services\Auth\SessionOrTokenGuard;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -33,9 +33,10 @@ class AuthServiceProvider extends ServiceProvider
 		// This ensures that all the kinds of albums are covered in the Gate mapping.
 		BaseSmartAlbum::class => AlbumPolicy::class,
 		BaseAlbum::class => AlbumPolicy::class,
-		BaseAlbumImpl::class => AlbumPolicy::class,
 		Album::class => AlbumPolicy::class,
 		AbstractAlbum::class => AlbumPolicy::class,
+
+		Configs::class => SettingsPolicy::class,
 	];
 
 	/**
@@ -50,6 +51,5 @@ class AuthServiceProvider extends ServiceProvider
 		Auth::extend('session-or-token', function (Application $app, string $name, array $config) {
 			return SessionOrTokenGuard::createGuard($app, $name, $config);
 		});
-		Gate::define(UserPolicy::IS_ADMIN, [UserPolicy::class, 'isAdmin']);
 	}
 }

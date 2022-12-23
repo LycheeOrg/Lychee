@@ -66,6 +66,7 @@ class LangTest extends AbstractTestCase
 				'value' => 'en',
 				'confidentiality' => 0,
 				'cat' => 'Gallery',
+				'type_range' => '',
 			],
 		]);
 	}

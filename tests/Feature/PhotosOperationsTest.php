@@ -373,7 +373,7 @@ class PhotosOperationsTest extends BasePhotoTest
 				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_SUNSET_IMAGE), $albumID121
 			)->offsetGet('id');
 
-			$this->albums_tests->set_protection_policy(id: $albumID1, full_photo: true, public: true, requiresLink: true);
+			$this->albums_tests->set_protection_policy(id: $albumID1, grants_full_photo_access: true, is_public: true, is_link_required: true);
 			$this->albums_tests->set_protection_policy($albumID11);
 			$this->albums_tests->set_protection_policy($albumID12);
 			$this->albums_tests->set_protection_policy($albumID121);
@@ -546,6 +546,6 @@ class PhotosOperationsTest extends BasePhotoTest
 		$this->expectException(IllegalOrderOfOperationException::class);
 
 		$photo = new Photo();
-		$photo->is_share_button_visible = true;
+		$photo->live_photo_full_path = 'Something';
 	}
 }

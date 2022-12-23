@@ -102,8 +102,9 @@ class GeoDataTest extends AbstractTestCase
 					'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
 					'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
 					'is_public' => 0,
-					'is_downloadable' => true,
-					'is_share_button_visible' => true,
+					'rights' => [
+						'can_download' => true,
+					],
 					'size_variants' => [
 						'thumb' => [
 							'width' => 200,
@@ -224,7 +225,7 @@ class GeoDataTest extends AbstractTestCase
 				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID13
 			)->offsetGet('id');
 
-			$this->albums_tests->set_protection_policy(id: $albumID1, full_photo: true, public: true, requiresLink: true);
+			$this->albums_tests->set_protection_policy(id: $albumID1, grants_full_photo_access: true, is_public: true, is_link_required: true);
 			// Sic! We do not make album 1.1 public to ensure that the
 			// search filter does not include too much
 			$this->albums_tests->set_protection_policy($albumID12);

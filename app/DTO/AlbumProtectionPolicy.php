@@ -2,50 +2,126 @@
 
 namespace App\DTO;
 
-class AlbumProtectionPolicy extends AbstractDTO
+use App\Models\Album;
+use App\Models\BaseAlbumImpl;
+use App\Models\Configs;
+use App\Models\Extensions\BaseAlbum;
+use App\SmartAlbums\BaseSmartAlbum;
+
+/**
+ * This represents the Album Protection Policy.
+ *
+ * In other words it provides information on the security attributes of an album.
+ * It MUST NOT be used in the front-end to determine whether an action is permitted or not (e.g. share link available).
+ *
+ * It is used in two places:
+ * 1. When sent to the front-end:
+ *   - provides the policy of the currently visited album
+ *   - allows modification of the policy on non-smart albums
+ * 2. When received from the front-end:
+ *   - allows for an easy interface between the validated request {@link \App\Http\Requests\Album\SetAlbumProtectionPolicyRequest}
+ *     and the applied action {@link \App\Actions\Album\SetProtectionPolicy}.
+ */
+class AlbumProtectionPolicy extends ArrayableDTO
 {
-	public const IS_PUBLIC_ATTRIBUTE = 'is_public';
-	public const REQUIRES_LINK_ATTRIBUTE = 'requires_link';
-	public const IS_NSFW_ATTRIBUTE = 'is_nsfw';
-	public const IS_DOWNLOADABLE_ATTRIBUTE = 'is_downloadable';
-	public const IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE = 'is_share_button_visible';
-	public const GRANTS_FULL_PHOTO_ATTRIBUTE = 'grants_full_photo';
-
-	public bool $isPublic;
-	public bool $requiresLink;
-	public bool $isNSFW;
-	public bool $isDownloadable;
-	public bool $isShareButtonVisible;
-	public bool $grantsFullPhoto;
-
 	public function __construct(
-		bool $isPublic,
-		bool $requiresLink,
-		bool $isNSFW,
-		bool $isDownloadable,
-		bool $isShareButtonVisible,
-		bool $grantsFullPhoto
+		public bool $is_public,
+		public bool $is_link_required,
+		public bool $is_nsfw,
+		public bool $grants_full_photo_access,
+		public bool $grants_download,
+		public bool $is_password_required = false, // Only used when sending info to the front-end
 	) {
-		$this->isPublic = $isPublic;
-		$this->requiresLink = $requiresLink;
-		$this->isNSFW = $isNSFW;
-		$this->isDownloadable = $isDownloadable;
-		$this->isShareButtonVisible = $isShareButtonVisible;
-		$this->grantsFullPhoto = $grantsFullPhoto;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Given a {@link BaseAlbumImpl}, returns the Protection Policy associated to it.
+	 *
+	 * @param BaseAlbumImpl $baseAlbum
+	 *
+	 * @return AlbumProtectionPolicy
 	 */
-	public function toArray(): array
+	public static function ofBaseAlbumImplementation(BaseAlbumImpl $baseAlbum): self
 	{
-		return [
-			self::IS_PUBLIC_ATTRIBUTE => $this->isPublic,
-			self::REQUIRES_LINK_ATTRIBUTE => $this->requiresLink,
-			self::IS_NSFW_ATTRIBUTE => $this->isNSFW,
-			self::IS_DOWNLOADABLE_ATTRIBUTE => $this->isDownloadable,
-			self::IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE => $this->isShareButtonVisible,
-			self::GRANTS_FULL_PHOTO_ATTRIBUTE => $this->grantsFullPhoto,
-		];
+		return new self(
+			is_public: $baseAlbum->is_public,
+			is_link_required: $baseAlbum->is_link_required,
+			is_nsfw: $baseAlbum->is_nsfw,
+			grants_full_photo_access: $baseAlbum->grants_full_photo_access,
+			grants_download: $baseAlbum->grants_download,
+			is_password_required: $baseAlbum->is_password_required,
+		);
+	}
+
+	/**
+	 * Given a {@link BaseAlbum}, returns the Protection Policy associated to it.
+	 *
+	 * @param Album $baseAlbum
+	 *
+	 * @return AlbumProtectionPolicy
+	 */
+	public static function ofBaseAlbum(BaseAlbum $baseAlbum): self
+	{
+		return new self(
+			is_public: $baseAlbum->is_public,
+			is_link_required: $baseAlbum->is_link_required,
+			is_nsfw: $baseAlbum->is_nsfw,
+			grants_full_photo_access: $baseAlbum->grants_full_photo_access,
+			grants_download: $baseAlbum->grants_download,
+			is_password_required: $baseAlbum->is_password_required,
+		);
+	}
+
+	/**
+	 * Given a smart album, returns the Protection Policy associated to it.
+	 *
+	 * @param BaseSmartAlbum $baseSmartAlbum
+	 *
+	 * @return AlbumProtectionPolicy
+	 */
+	public static function ofSmartAlbum(BaseSmartAlbum $baseSmartAlbum): self
+	{
+		return new self(
+			is_public: $baseSmartAlbum->is_public,
+			is_link_required: false,
+			is_nsfw: false,
+			grants_full_photo_access: $baseSmartAlbum->grants_full_photo_access,
+			grants_download: $baseSmartAlbum->grants_download,
+			is_password_required: false,
+		);
+	}
+
+	/**
+	 * Create an {@link AlbumProtectionPolicy} for private defaults.
+	 *
+	 * @return AlbumProtectionPolicy
+	 */
+	public static function ofDefaultPrivate(): self
+	{
+		return new self(
+			is_public: false,
+			is_link_required: false,
+			is_nsfw: false,
+			grants_full_photo_access: Configs::getValueAsBool('grants_full_photo_access'),
+			grants_download: Configs::getValueAsBool('grants_download'),
+			is_password_required: false,
+		);
+	}
+
+	/**
+	 * Create an {@link AlbumProtectionPolicy} for public defaults.
+	 *
+	 * @return AlbumProtectionPolicy
+	 */
+	public static function ofDefaultPublic(): self
+	{
+		return new self(
+			is_public: true,
+			is_link_required: false,
+			is_nsfw: false,
+			grants_full_photo_access: Configs::getValueAsBool('grants_full_photo_access'),
+			grants_download: Configs::getValueAsBool('grants_download'),
+			is_password_required: false,
+		);
 	}
 }

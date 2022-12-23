@@ -12,13 +12,11 @@ use App\Image\FileDeleter;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\TagAlbum;
-use App\Policies\UserPolicy;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use Safe\Exceptions\ArrayException;
 
 /**
@@ -74,7 +72,7 @@ class Delete extends Action
 			// because it provides deletion of photos
 			if (in_array(UnsortedAlbum::ID, $albumIDs, true)) {
 				$query = UnsortedAlbum::getInstance()->photos();
-				if (!Gate::check(UserPolicy::IS_ADMIN)) {
+				if (Auth::user()?->may_administrate !== true) {
 					$query->where('owner_id', '=', Auth::id() ?? throw new UnauthenticatedException());
 				}
 				$unsortedPhotoIDs = $query->pluck('id')->all();

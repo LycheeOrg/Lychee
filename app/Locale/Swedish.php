@@ -262,10 +262,6 @@ final class Swedish implements Language
 			'PHOTO_FOCAL' => 'Brännvidd',
 			'PHOTO_ISO' => 'ISO %s',
 			'PHOTO_SHARING' => 'Delning',
-			'PHOTO_SHR_PUBLIC' => 'Publik',
-			'PHOTO_SHR_ALB' => 'Ja (Album)',
-			'PHOTO_SHR_PHT' => 'Ja (Fotografi)',
-			'PHOTO_SHR_NO' => 'Nej',
 			'PHOTO_DELETE' => 'Radera fotografi',
 			'PHOTO_KEEP' => 'Spara fotografi',
 			'PHOTO_DELETE_CONFIRMATION' => 'Är du säker på att du vill radera det här fotografiet “%s”? Raderingen går inte att ångra!',
@@ -513,7 +509,7 @@ final class Swedish implements Language
 			'CAMERA_DATE' => 'Camera date',
 			'NEW_PASSWORD' => 'new password',
 			'ALLOW_UPLOADS' => 'Allow uploads',
-			'RESTRICTED_ACCOUNT' => 'Restricted account',
+			'ALLOW_USER_SELF_EDIT' => 'Allow self-management of user account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
 	}

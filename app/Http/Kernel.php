@@ -52,7 +52,6 @@ class Kernel extends HttpKernel
 			\Illuminate\View\Middleware\ShareErrorsFromSession::class,
 			\App\Http\Middleware\VerifyCsrfToken::class,
 			\Illuminate\Routing\Middleware\SubstituteBindings::class,
-			'admin',
 		],
 
 		'web-install' => [
@@ -72,20 +71,6 @@ class Kernel extends HttpKernel
 			\App\Http\Middleware\VerifyCsrfToken::class,
 			\Illuminate\Routing\Middleware\SubstituteBindings::class,
 		],
-
-		'api-admin' => [
-			'installation:complete',
-			'accept_content_type:json',
-			'content_type:json',
-			\Illuminate\Cookie\Middleware\EncryptCookies::class,
-			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-			\Illuminate\Session\Middleware\StartSession::class,
-			\Illuminate\Session\Middleware\AuthenticateSession::class,
-			\Illuminate\View\Middleware\ShareErrorsFromSession::class,
-			\App\Http\Middleware\VerifyCsrfToken::class,
-			\Illuminate\Routing\Middleware\SubstituteBindings::class,
-			'admin',
-		],
 	];
 
 	/**
@@ -96,7 +81,6 @@ class Kernel extends HttpKernel
 	 * @var array<string, string>
 	 */
 	protected $routeMiddleware = [
-		'admin' => \App\Http\Middleware\AdminCheck::class,
 		'installation' => \App\Http\Middleware\InstallationStatus::class,
 		'migration' => \App\Http\Middleware\MigrationStatus::class,
 		'local_storage' => \App\Http\Middleware\LocalStorageOnly::class,

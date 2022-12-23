@@ -1,39 +1,37 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\Users;
 
 use App\Contracts\Http\Requests\HasPassword;
+use App\Contracts\Http\Requests\HasUser;
 use App\Contracts\Http\Requests\HasUsername;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Requests\Traits\HasUsernameTrait;
+use App\Http\Requests\Traits\HasUserTrait;
+use App\Models\User;
 use App\Policies\UserPolicy;
+use App\Rules\IntegerIDRule;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
 use Illuminate\Support\Facades\Gate;
 
-abstract class AbstractUserRequest extends BaseApiRequest implements HasUsername, HasPassword
+class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasPassword, HasUser
 {
 	use HasUsernameTrait;
 	use HasPasswordTrait;
-
-	public const MAY_UPLOAD_ATTRIBUTE = 'may_upload';
-	public const IS_LOCKED_ATTRIBUTE = 'is_locked';
+	use HasUserTrait;
 
 	protected bool $mayUpload = false;
-	protected bool $isLocked = false;
+	protected bool $mayEditOwnSettings = false;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function authorize(): bool
 	{
-		// This should always return true, because we already check that the
-		// request is made by an admin during authentication (see
-		// `routes/web.php`).
-		// But better safe than sorry.
-		return Gate::check(UserPolicy::IS_ADMIN);
+		return Gate::check(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class]);
 	}
 
 	/**
@@ -42,10 +40,11 @@ abstract class AbstractUserRequest extends BaseApiRequest implements HasUsername
 	public function rules(): array
 	{
 		return [
+			RequestAttribute::ID_ATTRIBUTE => ['required', new IntegerIDRule(false)],
 			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
 			RequestAttribute::PASSWORD_ATTRIBUTE => ['sometimes', new PasswordRule(false)],
-			self::MAY_UPLOAD_ATTRIBUTE => 'present|boolean',
-			self::IS_LOCKED_ATTRIBUTE => 'present|boolean',
+			RequestAttribute::MAY_UPLOAD_ATTRIBUTE => 'present|boolean',
+			RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE => 'present|boolean',
 		];
 	}
 
@@ -62,8 +61,9 @@ abstract class AbstractUserRequest extends BaseApiRequest implements HasUsername
 		} else {
 			$this->password = null;
 		}
-		$this->mayUpload = static::toBoolean($values[self::MAY_UPLOAD_ATTRIBUTE]);
-		$this->isLocked = static::toBoolean($values[self::IS_LOCKED_ATTRIBUTE]);
+		$this->mayUpload = static::toBoolean($values[RequestAttribute::MAY_UPLOAD_ATTRIBUTE]);
+		$this->mayEditOwnSettings = static::toBoolean($values[RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE]);
+		$this->user2 = User::query()->findOrFail($values[RequestAttribute::ID_ATTRIBUTE]);
 	}
 
 	public function mayUpload(): bool
@@ -71,8 +71,8 @@ abstract class AbstractUserRequest extends BaseApiRequest implements HasUsername
 		return $this->mayUpload;
 	}
 
-	public function isLocked(): bool
+	public function mayEditOwnSettings(): bool
 	{
-		return $this->isLocked;
+		return $this->mayEditOwnSettings;
 	}
 }

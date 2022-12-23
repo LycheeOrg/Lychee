@@ -14,16 +14,16 @@ class Save
 	/**
 	 * @param User        $user
 	 * @param string      $username
-	 * @param string|null $password  see {@link HasPasswordTrait::password()} for the difference between the values `''` and `null`
+	 * @param string|null $password           see {@link HasPasswordTrait::password()} for the difference between the values `''` and `null`
 	 * @param bool        $mayUpload
-	 * @param bool        $isLocked
+	 * @param bool        $mayEditOwnSettings
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidPropertyException
 	 * @throws ModelDBException
 	 */
-	public function do(User $user, string $username, ?string $password, bool $mayUpload, bool $isLocked): void
+	public function do(User $user, string $username, ?string $password, bool $mayUpload, bool $mayEditOwnSettings): void
 	{
 		if (User::query()
 			->where('username', '=', $username)
@@ -35,7 +35,7 @@ class Save
 
 		$user->username = $username;
 		$user->may_upload = $mayUpload;
-		$user->is_locked = $isLocked;
+		$user->may_edit_own_settings = $mayEditOwnSettings;
 		if ($password !== null) {
 			try {
 				$user->password = Hash::make($password);

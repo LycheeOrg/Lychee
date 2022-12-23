@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\Users;
 
 use App\Contracts\Http\Requests\HasUser;
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasUserTrait;
 use App\Models\User;
@@ -14,18 +15,12 @@ class DeleteUserRequest extends BaseApiRequest implements HasUser
 {
 	use HasUserTrait;
 
-	public const ID_ATTRIBUTE = 'id';
-
 	/**
 	 * {@inheritDoc}
 	 */
 	public function authorize(): bool
 	{
-		// This should always return true, because we already check that the
-		// request is made by an admin during authentication (see
-		// `routes/web.php`).
-		// But better safe than sorry.
-		return Gate::check(UserPolicy::IS_ADMIN);
+		return Gate::check(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class]);
 	}
 
 	/**
@@ -34,7 +29,7 @@ class DeleteUserRequest extends BaseApiRequest implements HasUser
 	public function rules(): array
 	{
 		return [
-			self::ID_ATTRIBUTE => ['required', new IntegerIDRule(false)],
+			RequestAttribute::ID_ATTRIBUTE => ['required', new IntegerIDRule(false)],
 		];
 	}
 
@@ -43,6 +38,6 @@ class DeleteUserRequest extends BaseApiRequest implements HasUser
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->user2 = User::query()->findOrFail($values[self::ID_ATTRIBUTE]);
+		$this->user2 = User::query()->findOrFail($values[RequestAttribute::ID_ATTRIBUTE]);
 	}
 }

@@ -5,11 +5,11 @@ namespace App\Http\Requests\Sharing;
 use App\Contracts\Http\Requests\HasAlbumIDs;
 use App\Contracts\Http\Requests\HasUserIDs;
 use App\Contracts\Http\Requests\RequestAttribute;
+use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAlbumIDsTrait;
 use App\Http\Requests\Traits\HasUserIDsTrait;
-use App\Models\User;
-use App\Policies\UserPolicy;
+use App\Policies\AlbumPolicy;
 use App\Rules\IntegerIDRule;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
@@ -24,7 +24,7 @@ class AddSharesRequest extends BaseApiRequest implements HasAlbumIDs, HasUserIDs
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(UserPolicy::CAN_UPLOAD, User::class);
+		return Gate::check(AlbumPolicy::CAN_SHARE_ID, [AbstractAlbum::class, $this->albumIDs]);
 	}
 
 	/**

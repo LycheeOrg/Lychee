@@ -262,10 +262,6 @@ final class Polish implements Language
 			'PHOTO_FOCAL' => 'Ogniskowa',
 			'PHOTO_ISO' => 'ISO %s',
 			'PHOTO_SHARING' => 'Udostępnianie',
-			'PHOTO_SHR_PUBLIC' => 'Publiczne',
-			'PHOTO_SHR_ALB' => 'Tak (album)',
-			'PHOTO_SHR_PHT' => 'Tak (zdjęcie)',
-			'PHOTO_SHR_NO' => 'Nie',
 			'PHOTO_DELETE' => 'Usuń Zdjęcie',
 			'PHOTO_KEEP' => 'Anuluj',
 			'PHOTO_DELETE_CONFIRMATION' => 'Czy na pewno usunąć zdjęcie „%s”? Akcja jest nieodwracalna!',
@@ -513,7 +509,7 @@ final class Polish implements Language
 			'CAMERA_DATE' => 'Camera date',
 			'NEW_PASSWORD' => 'new password',
 			'ALLOW_UPLOADS' => 'Allow uploads',
-			'RESTRICTED_ACCOUNT' => 'Restricted account',
+			'ALLOW_USER_SELF_EDIT' => 'Allow self-management of user account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
 	}

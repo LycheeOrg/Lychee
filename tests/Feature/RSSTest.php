@@ -64,12 +64,12 @@ class RSSTest extends AbstractTestCase
 	{
 		// save initial value
 		$init_config_value = Configs::getValue('rss_enable');
-		$init_full_photo = Configs::getValue('full_photo');
+		$init_full_photo = Configs::getValue('grants_full_photo_access');
 
 		try {
 			// set to 0
 			Configs::set('rss_enable', '1');
-			Configs::set('full_photo', '0');
+			Configs::set('grants_full_photo_access', '0');
 			static::assertEquals('1', Configs::getValue('rss_enable'));
 
 			// check redirection
@@ -108,7 +108,7 @@ class RSSTest extends AbstractTestCase
 			$this->albums_tests->delete([$albumID]);
 		} finally {
 			Configs::set('rss_enable', $init_config_value);
-			Configs::set('full_photo', $init_full_photo);
+			Configs::set('grants_full_photo_access', $init_full_photo);
 
 			Auth::logout();
 			Session::flush();
