@@ -26,12 +26,11 @@ class CountForeignKeyInfo implements DiagnosticPipe
 		$data[] = Diagnostics::line('Number of foreign key:', sprintf('%d found.', count($fks)));
 	}
 
-	private function mysql(): void
+	private function mysql(array &$data): void
 	{
-		$fks = DB::select('select
-		*
- from information_schema.referential_constraints fks
- join information_schema.key_column_usage kcu on fks.constraint_schema = kcu.table_schema
+		$fks = DB::select('select *
+from information_schema.referential_constraints fks
+join information_schema.key_column_usage kcu on fks.constraint_schema = kcu.table_schema
  and fks.table_name = kcu.table_name
  and fks.constraint_name = kcu.constraint_name
  group by fks.constraint_schema, fks.table_name, fks.unique_constraint_schema, fks.referenced_table_name, fks.constraint_name
