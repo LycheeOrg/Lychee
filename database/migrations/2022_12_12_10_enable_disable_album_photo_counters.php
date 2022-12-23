@@ -14,7 +14,7 @@ return new class() extends Migration {
 
 		DB::table('configs')->insert([
 			[
-				'key' => 'album_decorations',
+				'key' => 'album_decoration',
 				'value' => 'original',
 				'confidentiality' => 0,
 				'cat' => 'Gallery',
@@ -39,6 +39,6 @@ return new class() extends Migration {
 	 */
 	public function down()
 	{
-		DB::table('configs')->whereIn('key', ['album_decorations', 'album_decoration_orientation'])->delete();
+		DB::table('configs')->whereIn('key', ['album_decoration', 'album_decoration_orientation'])->delete();
 	}
 };

@@ -103,25 +103,23 @@ class AlbumBuilder extends NSQueryBuilder
 			$showPhotoCount = false;
 			$isAdmin = false;
 			$userID = null;
-			switch (Configs::getValueAsString('album_decorations')) {
-				case 'none':
-					$showSubalbum = false;
-					// whether admin and what user doesn't matter (no additional queries)
-					break;
-				case 'album':
-					$showSubalbumCount = true;
+			switch (Configs::getValueAsString('album_decoration')) {
+				case 'photo':
+					$showPhotoCount = true;
 					$isAdmin = Gate::check(UserPolicy::IS_ADMIN);
 					if (!$isAdmin) {
 						$userID = Auth::id();
 					}
+					// no break
+				case 'none':
+					// whether admin and what user doesn't matter (no additional queries)
+					$showSubalbum = false;
 					break;
 				case 'all':
-					$showSubalbumCount = true;
-					// fall-through
-					// no break
-				case 'photo':
 					$showPhotoCount = true;
-					// fall-through
+					// no break
+				case 'album':
+					$showSubalbumCount = true;
 					// no break
 				case 'original':
 				default:
@@ -131,13 +129,13 @@ class AlbumBuilder extends NSQueryBuilder
 					}
 			}
 			if ($showSubalbum) {
-				$countChildren =
-					DB::table('albums', 'a')
-					->select(DB::raw('COUNT(*)'))
-					->whereColumn('a.parent_id', '=', 'albums.id');
-				if (!$showSubalbumCount) {
-					$countChildren->limit(1);
+				$countChildren = DB::table('albums', 'a');
+				if ($showSubalbumCount) {
+					$countChildren->select(DB::raw('COUNT(*)'));
+				} else {
+					$countChildren->select(DB::raw('COUNT(*)>0'));
 				}
+				$countChildren->whereColumn('a.parent_id', '=', 'albums.id');
 				$selects += [
 					'num_children' => $this->applyVisibilityConditioOnSubalbums($countChildren, $isAdmin, $userID),
 				];

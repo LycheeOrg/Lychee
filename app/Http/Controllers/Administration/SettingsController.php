@@ -180,6 +180,49 @@ class SettingsController extends Controller
 	}
 
 	/**
+	 * Select the decorations of albums.
+	 *
+	 * Sub-album and photo counts:
+	 * none: no decorations.
+	 * original: show folder icon on albums with sub-albums (if any).
+	 * album: like 'original' but with number of sub-albums (if any).
+	 * photo: show number of photos in album (if any).
+	 * all: show number of sub-albums as well as photos.
+	 *
+	 * Orientation of album decorations. This is only relevant if
+	 * both sub-album and photo decorations are shown. These are simply
+	 * the options for CSS 'flex-direction':
+	 * row: horizontal decorations (photos, albums).
+	 * row-reverse: horizontal decorations (albums, photos).
+	 * column: vertical decorations (top albums, bottom photos).
+	 * column-reverse: vertical decorations (top photos, bottom albums).
+	 *
+	 * @param Request $request
+	 *
+	 * @return void
+	 *
+	 * @throws InvalidConfigOption
+	 */
+	public function setAlbumDecoration(Request $request): void
+	{
+		$validated = $request->validate([
+			'album_decoration' => [
+				'required',
+				'string',
+				Rule::in(['none', 'original', 'album', 'photo', 'all']),
+			],
+			'album_decoration_orientation' => [
+				'required',
+				'string',
+				Rule::in(['row', 'row-reverse', 'column', 'column-reverse']),
+			],
+		]);
+
+		Configs::set('album_decoration', $validated['album_decoration']);
+		Configs::set('album_decoration_orientation', $validated['album_decoration_orientation']);
+	}
+
+	/**
 	 * Select the image overlay used:
 	 * none: no overlay
 	 * desc: description of the photo
