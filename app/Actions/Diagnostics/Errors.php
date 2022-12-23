@@ -6,6 +6,7 @@ use App\Actions\Diagnostics\Pipes\Checks\AdminUserExistsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ConfigSanityCheck;
 use App\Actions\Diagnostics\Pipes\Checks\DBSupportCheck;
+use App\Actions\Diagnostics\Pipes\Checks\ForeignKeyListInfo;
 use App\Actions\Diagnostics\Pipes\Checks\GDSupportCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ImageOptCheck;
 use App\Actions\Diagnostics\Pipes\Checks\IniSettingsCheck;
@@ -34,6 +35,7 @@ class Errors
 		PHPVersionCheck::class,
 		TimezoneCheck::class,
 		UpdatableCheck::class,
+		ForeignKeyListInfo::class,
 	];
 
 	/**
