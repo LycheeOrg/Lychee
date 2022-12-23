@@ -9,6 +9,7 @@ use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Http\Requests\Legacy\SetAdminLoginRequest;
 use App\Http\Requests\Settings\GetSetAllSettingsRequest;
+use App\Http\Requests\Settings\SetAlbumDecorationRequest;
 use App\Http\Requests\Settings\SetCSSSettingRequest;
 use App\Http\Requests\Settings\SetDefaultLicenseSettingRequest;
 use App\Http\Requests\Settings\SetDropboxKeySettingRequest;
@@ -173,29 +174,16 @@ class SettingsController extends Controller
 	 * column: vertical decorations (top albums, bottom photos).
 	 * column-reverse: vertical decorations (top photos, bottom albums).
 	 *
-	 * @param Request $request
+	 * @param SetAlbumDecorationRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 */
-	public function setAlbumDecoration(Request $request): void
+	public function setAlbumDecoration(SetAlbumDecorationRequest $request): void
 	{
-		$validated = $request->validate([
-			'album_decoration' => [
-				'required',
-				'string',
-				Rule::in(['none', 'original', 'album', 'photo', 'all']),
-			],
-			'album_decoration_orientation' => [
-				'required',
-				'string',
-				Rule::in(['row', 'row-reverse', 'column', 'column-reverse']),
-			],
-		]);
-
-		Configs::set('album_decoration', $validated['album_decoration']);
-		Configs::set('album_decoration_orientation', $validated['album_decoration_orientation']);
+		Configs::set('album_decoration', $request->albumDecoration());
+		Configs::set('album_decoration_orientation', $request->albumDecorationOrientation());
 	}
 
 	/**

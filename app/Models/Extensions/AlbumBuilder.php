@@ -6,12 +6,10 @@ use App\Contracts\Exceptions\InternalLycheeException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
 use App\Models\Configs;
-use App\Policies\UserPolicy;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
 
 /**
@@ -106,7 +104,7 @@ class AlbumBuilder extends NSQueryBuilder
 			switch (Configs::getValueAsString('album_decoration')) {
 				case 'photo':
 					$showPhotoCount = true;
-					$isAdmin = Gate::check(UserPolicy::IS_ADMIN);
+					$isAdmin = Auth::user()?->may_administrate;
 					if (!$isAdmin) {
 						$userID = Auth::id();
 					}
@@ -123,7 +121,7 @@ class AlbumBuilder extends NSQueryBuilder
 					// no break
 				case 'original':
 				default:
-					$isAdmin = Gate::check(UserPolicy::IS_ADMIN);
+					$isAdmin = Auth::user()?->may_administrate;
 					if (!$isAdmin) {
 						$userID = Auth::id();
 					}
