@@ -17,13 +17,13 @@ env:
 jobs:
   php-cs-fixer:
     if: github.event_name == 'pull_request' && ! startsWith(github.ref, 'refs/heads/auto-fixed/')
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     name: Run PHP CS Fixer
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.7.0
+        uses: shivammathur/setup-php@v2
         with:
           php-version: 8.0
           extensions: json, dom, curl, libxml, mbstring
