@@ -126,7 +126,7 @@ class InstallTest extends AbstractTestCase
 		/**
 		 * apply migration.
 		 */
-		$response = $this->post('install/migrate', ['username' => 'admin', 'password' => 'password']);
+		$response = $this->post('install/migrate', ['username' => 'admin', 'password' => 'password', 'password_confirmation' => 'password']);
 		$this->assertOk($response);
 		$response->assertViewIs('install.migrate');
 		// try to login with newly created admin

@@ -20,7 +20,7 @@ class InstallMigrationRequest extends FormRequest implements HasUsername, HasPas
 	{
 		return [
 			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
-			RequestAttribute::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
+			RequestAttribute::PASSWORD_ATTRIBUTE => ['required|confirm', new PasswordRule(false)],
 		];
 	}
 
