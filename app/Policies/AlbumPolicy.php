@@ -154,12 +154,15 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function canUpload(User $user, ?AbstractAlbum $abstractAlbum = null): bool
 	{
-		// The upload right on the root album is directly determined by the user's capabilities.
-		if ($abstractAlbum === null) {
-			return $user->may_upload;
+		if (!$user->may_upload) {
+			return false;
 		}
 
-		return $user->may_upload;
+		// The upload right on the root album is directly determined by the user's capabilities.
+		return
+			$abstractAlbum === null ||
+			$abstractAlbum instanceof BaseSmartAlbum ||
+			(($abstractAlbum instanceof BaseAlbum) && $this->isOwner($user, $abstractAlbum));
 	}
 
 	/**
