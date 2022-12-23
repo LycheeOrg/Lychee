@@ -20,7 +20,7 @@ return new class() extends Migration {
 			// The admin user (id 0) has never set a username and password, so we remove it.
 			// This should only happen on a completely new installation where the admin user is created by the
 			// MigrateAdminUser migration and the user has never logged in.
-			DB::table('users')->delete(0);
+			DB::table('users')->where('id', '=', 0)->delete();
 		}
 		/** @var App\Models\User $user */
 		foreach (DB::table('users')->orderByDesc('id')->get() as $user) {
