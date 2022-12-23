@@ -131,19 +131,15 @@ class AlbumBuilder extends NSQueryBuilder
 					}
 			}
 			if ($showSubalbum) {
-				if ($showSubalbumCount) {
-					$countChildren =
+				$countChildren =
 					DB::table('albums', 'a')
 					->select(DB::raw('COUNT(*)'))
 					->whereColumn('a.parent_id', '=', 'albums.id');
-				} else {
-					$countChildren =
-					DB::table('albums', 'a')
-					->select(DB::raw('COUNT(*)>0'))
-					->whereColumn('a.parent_id', '=', 'albums.id');
+				if (!$showSubalbumCount) {
+					$countChildren->limit(1);
 				}
 				$selects += [
-					'num_subalbums' => $this->applyVisibilityConditioOnSubalbums($countChildren, $isAdmin, $userID),
+					'num_children' => $this->applyVisibilityConditioOnSubalbums($countChildren, $isAdmin, $userID),
 				];
 			}
 			if ($showPhotoCount) {

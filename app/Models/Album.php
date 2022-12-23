@@ -27,7 +27,7 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property string|null       $parent_id
  * @property Album|null        $parent
  * @property Collection<Album> $children
- * @property int               $num_subalbums    The number of children (in original mode this is simply 0 or 1).
+ * @property int               $num_children     The number of children (in original mode this is simply 0 or 1).
  * @property Collection<Photo> $all_photos
  * @property int               $num_photos       The number of photos in this album (excluding photos in subalbums).
  * @property string            $license
@@ -73,7 +73,7 @@ class Album extends BaseAlbum implements Node
 	protected $casts = [
 		'min_taken_at' => 'datetime',
 		'max_taken_at' => 'datetime',
-		'num_subalbums' => 'integer',
+		'num_children' => 'integer',
 		'num_photos' => 'integer',
 		'_lft' => 'integer',
 		'_rgt' => 'integer',
@@ -186,6 +186,15 @@ class Album extends BaseAlbum implements Node
 		if (key_exists('children', $result)) {
 			$result['albums'] = $result['children'];
 			unset($result['children']);
+		}
+		if (key_exists('num_children', $result)) {
+			$result['num_subalbums'] = $result['num_children'];
+			unset($result['num_children']);
+		} else {
+			$result['num_subalbums'] = -1;
+		}
+		if (!key_exists('num_photos', $result)) {
+			$result['num_photos'] = -1;
 		}
 
 		return $result;
