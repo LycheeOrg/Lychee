@@ -1002,7 +1002,7 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject23 = _taggedTemplateLiteral(["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"string\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"string\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t<!--- <span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"is_locked\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>--->\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
     _templateObject24 = _taggedTemplateLiteral(["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "' alt=\"thumbnail\">\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "], ["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "' alt=\"thumbnail\">\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "]),
     _templateObject25 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
-    _templateObject26 = _taggedTemplateLiteral(["\n\t\t<a id=\"text_settings_close\" class=\"closetxt\" data-tabindex=\"-1\">", "</a>\n\t\t<a id=\"button_settings_close\" class=\"closebtn\" data-tabindex=\"20\">&times;</a>\n\t\t<a class=\"linkMenu\" id=\"button_settings_open\" data-tabindex=\"-1\"><svg class=\"iconic\"><use xlink:href=\"#cog\"></use></svg>", "</a>"], ["\n\t\t<a id=\"text_settings_close\" class=\"closetxt\" data-tabindex=\"-1\">", "</a>\n\t\t<a id=\"button_settings_close\" class=\"closebtn\" data-tabindex=\"20\">&times;</a>\n\t\t<a class=\"linkMenu\" id=\"button_settings_open\" data-tabindex=\"-1\"><svg class=\"iconic\"><use xlink:href=\"#cog\"></use></svg>", "</a>"]),
+    _templateObject26 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_settings_close\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_settings_open\" data-tabindex=\"-1\"><svg class=\"iconic\"><use xlink:href=\"#cog\"></use></svg>", "</a>"], ["\n\t\t<a class=\"linkMenu\" id=\"button_settings_close\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_settings_open\" data-tabindex=\"-1\"><svg class=\"iconic\"><use xlink:href=\"#cog\"></use></svg>", "</a>"]),
     _templateObject27 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_notifications\" data-tabindex=\"-1\">", "", " </a>\n\t\t"], ["\n\t\t<a class=\"linkMenu\" id=\"button_notifications\" data-tabindex=\"-1\">", "", " </a>\n\t\t"]),
     _templateObject28 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_users\" data-tabindex=\"-1\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_u2f\" data-tabindex=\"-1\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_sharing\" data-tabindex=\"-1\">", "", "</a>"], ["\n\t\t<a class=\"linkMenu\" id=\"button_users\" data-tabindex=\"-1\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_u2f\" data-tabindex=\"-1\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_sharing\" data-tabindex=\"-1\">", "", "</a>"]),
     _templateObject29 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_logs\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_diagnostics\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_about\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_signout\" data-tabindex=\"21\">", "", "</a>"], ["\n\t\t<a class=\"linkMenu\" id=\"button_logs\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_diagnostics\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_about\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_signout\" data-tabindex=\"21\">", "", "</a>"]),
@@ -4472,43 +4472,6 @@ contextMenu.close = function () {
 	}
 };
 
-/**
- * @param {jQuery.Event} e
- * @returns {void}
- */
-contextMenu.config = function (e) {
-	var items = [{ title: build.iconic("cog") + lychee.locale["SETTINGS"], fn: settings.open }];
-	if (lychee.new_photos_notification) {
-		items.push({ title: build.iconic("bell") + lychee.locale["NOTIFICATIONS"], fn: notifications.load });
-	}
-	if (lychee.rights.is_admin) {
-		items.push({ title: build.iconic("person") + lychee.locale["USERS"], fn: users.list });
-	}
-	items.push({ title: build.iconic("key") + lychee.locale["U2F"], fn: u2f.list });
-	items.push({ title: build.iconic("cloud") + lychee.locale["SHARING"], fn: sharing.list });
-	if (lychee.rights.is_admin) {
-		items.push({
-			title: build.iconic("align-left") + lychee.locale["LOGS"],
-			fn: function fn() {
-				view.logs.init();
-			}
-		});
-		items.push({
-			title: build.iconic("wrench") + lychee.locale["DIAGNOSTICS"],
-			fn: function fn() {
-				view.diagnostics.init();
-			}
-		});
-		if (lychee.update_available) {
-			items.push({ title: build.iconic("timer") + lychee.locale["UPDATE_AVAILABLE"], fn: view.update.init });
-		}
-	}
-	items.push({ title: build.iconic("info") + lychee.locale["ABOUT_LYCHEE"], fn: lychee.aboutDialog });
-	items.push({ title: build.iconic("account-logout") + lychee.locale["SIGN_OUT"], fn: lychee.logout });
-
-	basicContext.show(items, e.originalEvent);
-};
-
 var frame = {
 	/** @type {?Photo} */
 	photo: null,
@@ -4729,7 +4692,7 @@ header.dom = function (selector) {
  */
 header.bind = function () {
 	// Event Name
-	var eventName = "click touchend";
+	var eventName = "click";
 
 	header.dom(".header__title").on(eventName, function (e) {
 		if ($(this).hasClass("header__title--editable") === false) return false;
@@ -4760,16 +4723,7 @@ header.bind = function () {
 
 	header.dom("#button_signin").on(eventName, lychee.loginDialog);
 	header.dom("#button_settings").on(eventName, function (e) {
-		// Querying the CSS of an element is highly inefficient.
-		// Instead, we should use the same media query here as in the CSS.
-		// TODO: Fix this.
-		if ($("#lychee_left_menu_container").css("display") === "none") {
-			// left menu disabled on small screens
-			contextMenu.config(e);
-		} else {
-			// standard left menu
-			leftMenu.open();
-		}
+		leftMenu.open();
 	});
 	header.dom("#button_close_config").on(eventName, function () {
 		tabindex.makeFocusable(header.dom());
@@ -5656,13 +5610,11 @@ leftMenu.dom = function (selector) {
 };
 
 /**
- * Note: on mobile we use a context menu instead; please make sure that
- * contextMenu.config is kept in sync with any changes here!
- *
+ * Build left menu
  * @returns {void}
  */
 leftMenu.build = function () {
-	var html = lychee.html(_templateObject26, lychee.locale["CLOSE"], lychee.locale["SETTINGS"]);
+	var html = lychee.html(_templateObject26, build.iconic("chevron-left"), lychee.locale["CLOSE"], lychee.locale["SETTINGS"]);
 	if (lychee.new_photos_notification) {
 		html += lychee.html(_templateObject27, build.iconic("bell"), lychee.locale["NOTIFICATIONS"]);
 	}
@@ -5707,15 +5659,32 @@ leftMenu.close = function () {
 };
 
 /**
+ * Close the menu if it's in responsive mode.
+ *
+ * @returns {void}
+ */
+leftMenu.closeIfResponsive = function () {
+	if (window.matchMedia("only screen and (max-width: 567px), only screen and (max-width: 640px) and (orientation: portrait)").matches) {
+		leftMenu.dom().removeClass("visible");
+
+		tabindex.makeFocusable(header.dom());
+		tabindex.makeFocusable(lychee.content);
+		tabindex.makeUnfocusable(leftMenu.dom());
+	}
+};
+
+/**
  * @returns {void}
  */
 leftMenu.bind = function () {
 	// Event Name
-	var eventName = "click touchend";
+	var eventName = "click";
 
 	leftMenu.dom("#button_settings_close").on(eventName, leftMenu.close);
-	leftMenu.dom("#text_settings_close").on(eventName, leftMenu.close);
-	leftMenu.dom("#button_settings_open").on(eventName, settings.open);
+	leftMenu.dom("#button_settings_open").on(eventName, function () {
+		leftMenu.closeIfResponsive();
+		settings.open();
+	});
 	leftMenu.dom("#button_signout").on(eventName, lychee.logout);
 	leftMenu.dom("#button_logs").on(eventName, leftMenu.Logs);
 	leftMenu.dom("#button_diagnostics").on(eventName, leftMenu.Diagnostics);
@@ -5731,6 +5700,7 @@ leftMenu.bind = function () {
  * @returns {void}
  */
 leftMenu.Logs = function () {
+	leftMenu.closeIfResponsive();
 	view.logs.init();
 };
 
@@ -5738,6 +5708,7 @@ leftMenu.Logs = function () {
  * @returns {void}
  */
 leftMenu.Diagnostics = function () {
+	leftMenu.closeIfResponsive();
 	view.diagnostics.init();
 };
 
@@ -5745,6 +5716,7 @@ leftMenu.Diagnostics = function () {
  * @returns {void}
  */
 leftMenu.Update = function () {
+	leftMenu.closeIfResponsive();
 	view.update.init();
 };
 
@@ -5752,6 +5724,7 @@ leftMenu.Update = function () {
  * @returns {void}
  */
 leftMenu.Notifications = function () {
+	leftMenu.closeIfResponsive();
 	notifications.load();
 };
 
@@ -5759,6 +5732,7 @@ leftMenu.Notifications = function () {
  * @returns {void}
  */
 leftMenu.Users = function () {
+	leftMenu.closeIfResponsive();
 	users.list();
 };
 
@@ -5766,6 +5740,7 @@ leftMenu.Users = function () {
  * @returns {void}
  */
 leftMenu.u2f = function () {
+	leftMenu.closeIfResponsive();
 	u2f.list();
 };
 
@@ -5773,6 +5748,7 @@ leftMenu.u2f = function () {
  * @returns {void}
  */
 leftMenu.Sharing = function () {
+	leftMenu.closeIfResponsive();
 	sharing.list();
 };
 
@@ -8444,7 +8420,7 @@ mapview.close = function () {
 	// The map view can also be opened from a single photo and probably a
 	// users expect to go back to the photo if they close the photo.
 	// Currently, Lychee jumps back to the album of that photo.
-	header.setMode("album");
+	header.setMode(mapview.albumID ? "album" : "albums");
 
 	// Make album focusable
 	tabindex.makeFocusable(lychee.content);
@@ -11156,7 +11132,7 @@ _sidebar.dom = function (selector) {
  * @returns {void}
  */
 _sidebar.bind = function () {
-	var eventName = "click touchend";
+	var eventName = "click";
 
 	_sidebar.dom("#edit_title").off(eventName).on(eventName, function () {
 		if (visible.photo()) _photo3.setTitle([_photo3.getID()]);else if (visible.album()) album.setTitle([album.getID()]);
@@ -11474,8 +11450,11 @@ _sidebar.createStructure.photo = function (data) {
 	}
 
 	// Construct all parts of the structure
-	var structure_ret = [structure.basics, structure.image, structure.tags, structure.exif, structure.location, structure.license];
+	var structure_ret = [structure.basics, structure.image, structure.tags, structure.exif, structure.location];
 
+	if (license) {
+		structure_ret.push(structure.license);
+	}
 	if (!lychee.publicMode) {
 		structure_ret.push(structure.sharing);
 	}
@@ -11573,7 +11552,10 @@ _sidebar.createStructure.album = function (data) {
 	};
 
 	// Construct all parts of the structure
-	var structure_ret = [structure.basics, structure.album, structure.license];
+	var structure_ret = [structure.basics, structure.album];
+	if (license) {
+		structure_ret.push(structure.license);
+	}
 	if (!lychee.publicMode) {
 		structure_ret.push(structure.share);
 	}
@@ -11633,7 +11615,7 @@ _sidebar.render = function (structure) {
 			var rawValue = row.value;
 
 			// don't show rows which are empty and cannot be edited
-			if ((rawValue === "" || rawValue == null) && row.editable === false) {
+			if ((rawValue === "" || rawValue == null) && row.editable !== true) {
 				return;
 			}
 
@@ -14745,7 +14727,7 @@ view.users = {
 				$(".users_view").append('<div class="users_view_line" style="margin-bottom: 50px;"><p style="text-align: center">User list is empty!</p></div>');
 			}
 
-			var html = "\n\t\t\t\t<div class=\"users_view_line\"><p>\n\t\t\t\t\t<span class=\"text\">username</span>\n\t\t\t\t\t<span class=\"text\">new password</span>\n\t\t\t\t\t<span class=\"text_icon\" title=\"" + lychee.locale["ALLOW_UPLOADS"] + "\">\n\t\t\t\t\t\t" + build.iconic("data-transfer-upload") + "\n\t\t\t\t\t</span>\n\t\t\t\t\t<span class=\"text_icon\" title=\"" + lychee.locale["RESTRICTED_ACCOUNT"] + "\">\n\t\t\t\t\t\t" + build.iconic("lock-locked") + "\n\t\t\t\t\t</span>\n\t\t\t\t</p></div>";
+			var html = "\n\t\t\t\t<div class=\"users_view_line\"><p>\n\t\t\t\t\t<span class=\"text\">" + lychee.locale["USERNAME"] + "</span>\n\t\t\t\t\t<span class=\"text\">" + lychee.locale["NEW_PASSWORD"] + "</span>\n\t\t\t\t\t<span class=\"text_icon\" title=\"" + lychee.locale["ALLOW_UPLOADS"] + "\">\n\t\t\t\t\t\t" + build.iconic("data-transfer-upload") + "\n\t\t\t\t\t</span>\n\t\t\t\t\t<span class=\"text_icon\" title=\"" + lychee.locale["RESTRICTED_ACCOUNT"] + "\">\n\t\t\t\t\t\t" + build.iconic("lock-locked") + "\n\t\t\t\t\t</span>\n\t\t\t\t</p></div>";
 
 			$(".users_view").append(html);
 

@@ -11,6 +11,5 @@ Disallow: /docs/
 Disallow: /img/
 Disallow: /php/
 Disallow: /plugins/
-Disallow: /src/
 Disallow: /sym/
 Disallow: /uploads/

@@ -154,7 +154,7 @@ class IndexController extends Controller
 		return $this->frontend(
 			$photo->title,
 			$photo->description,
-			$photo->size_variants->getMedium()?->url ?? $photo->size_variants->getOriginal()->url
+			url()->to($photo->size_variants->getMedium()?->url ?? $photo->size_variants->getOriginal()->url)
 		);
 	}
 
