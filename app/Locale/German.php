@@ -200,7 +200,7 @@ final class German implements Language
 			'ALBUM_PASSWORD_PROT' => 'Kennwortgeschützt',
 			'ALBUM_PASSWORD_PROT_EXPL' => 'Anonyme Nutzer benötigen ein Passwort, um auf dieses Album zuzugreifen.',
 			'ALBUM_PASSWORD_REQUIRED' => 'Dieses Album ist mit einem Kennwort geschützt. Geben Sie unten das Kennwort ein, um das Album anzusehen:',
-			'ALBUM_MERGE' => 'Sind Sie sicher, dass Sie das Album „%1$s“ mit dem Album „%2%s“ zusammenführen wollen?',
+			'ALBUM_MERGE' => 'Sind Sie sicher, dass Sie das Album „%1$s“ mit dem Album „%2$s“ zusammenführen wollen?',
 			'ALBUMS_MERGE' => 'Sind Sie sicher, dass Sie alle ausgewählten Alben mit dem Album „%s“ zusammenführen möchten?',
 			'MERGE_ALBUM' => 'Alben zusammenführen',
 			'DONT_MERGE' => 'Nicht zusammenführen',
