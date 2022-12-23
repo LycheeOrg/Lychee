@@ -183,7 +183,7 @@ class SettingsController extends Controller
 	 * Select the decorations of albums.
 	 *
 	 * Sub-album and photo counts:
-	 * none: no decorations.
+	 * none: no badges.
 	 * original: show folder icon on albums with sub-albums (if any).
 	 * album: like 'original' but with number of sub-albums (if any).
 	 * photo: show number of photos in album (if any).
