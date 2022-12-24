@@ -10,11 +10,11 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface as HttpException;
 
 /**
- * Class InstallationHandler.
+ * Class AdminSetterHandler.
  *
- * If the exception {@link InstallationRequiredException} or
- * {@link InstallationAlreadyCompletedException} is thrown, this handler
- * redirects to the installation or to the home page.
+ * If the exception {@link AdminUserRequiredException} or
+ * {@link AdminUserAlreadySetException} is thrown, this handler
+ * redirects to the admin set up page or to the home page.
  *
  * Also see {@link MigrationHandler}.
  */
