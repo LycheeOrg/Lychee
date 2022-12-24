@@ -11883,7 +11883,7 @@ u2f.login = function () {
 		login: "/api/WebAuthn::login",
 		loginOptions: "/api/WebAuthn::login/options"
 	}, {}, false).login({
-		user_id: 0 // for now it is only available to Admin user via a secret key shortcut.
+		user_id: 1 // for now it is only available to Admin user via a secret key shortcut.
 	}).then(function () {
 		loadingBar.show("success", lychee.locale["U2F_AUTHENTIFICATION_SUCCESS"]);
 		window.location.reload();

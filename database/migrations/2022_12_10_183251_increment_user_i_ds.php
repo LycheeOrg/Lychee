@@ -26,7 +26,7 @@ return new class() extends Migration {
 		foreach (DB::table('users')->orderByDesc('id')->get() as $user) {
 			$oldID = $user->id;
 			$newID = $oldID + 1;
-			DB::table('users')->find($oldID)->update(['id' => $newID]);
+			DB::table('users')->where('id', '=', $oldID)->update(['id' => $newID]);
 			// update other columns referencing user ID
 			DB::table('base_albums')->where('owner_id', '=', $oldID)->update(['owner_id' => $newID]);
 			DB::table('photos')->where('owner_id', '=', $oldID)->update(['owner_id' => $newID]);
