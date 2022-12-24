@@ -126,9 +126,21 @@ class InstallTest extends AbstractTestCase
 		/**
 		 * apply migration.
 		 */
-		$response = $this->post('install/migrate', ['username' => 'admin', 'password' => 'password', 'password_confirmation' => 'password']);
+		$response = $this->get('install/migrate');
 		$this->assertOk($response);
 		$response->assertViewIs('install.migrate');
+
+		$response = $this->get('install/admin');
+		$this->assertOk($response);
+		$response->assertViewIs('install.setup-admin');
+
+		/**
+		 * set up admin user migration.
+		 */
+		$response = $this->post('install/admin', ['username' => 'admin', 'password' => 'password', 'password_confirmation' => 'password']);
+		$this->assertOk($response);
+		$response->assertViewIs('install.setup-admin');
+
 		// try to login with newly created admin
 		$this->assertTrue(Auth::attempt(['username' => 'admin', 'password' => 'password']));
 		Auth::logout();
@@ -137,6 +149,12 @@ class InstallTest extends AbstractTestCase
 		 * Re-Installation should be forbidden now.
 		 */
 		$response = $this->get('install/');
+		$this->assertForbidden($response);
+
+		/**
+		 * Setting admin should be forbidden now.
+		 */
+		$response = $this->get('install/admin');
 		$this->assertForbidden($response);
 
 		/**
