@@ -11,10 +11,15 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Hash;
 
 /**
- * Class MigrationController.
+ * Class SetUpAdminController.
  */
 class SetUpAdminController extends Controller
 {
+	/**
+	 * Called on GET request.
+	 *
+	 * @return View
+	 */
 	public function init(): View
 	{
 		return view('install.setup-admin',
@@ -26,7 +31,8 @@ class SetUpAdminController extends Controller
 	}
 
 	/**
-	 * Migrates the Lychee DB and generates a new API key.
+	 * Set up the admin user.
+	 * Called on POST request.
 	 *
 	 * @return View
 	 *
