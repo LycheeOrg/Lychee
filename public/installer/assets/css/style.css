@@ -7,8 +7,8 @@
  * -------------------------- */
 @font-face {
 	font-family: 'FontAwesome';
-	src: url("../fonts/fontawesome-webfont.eot?v=4.7.0");
-	src: url("../fonts/fontawesome-webfont.eot?#iefix&v=4.7.0") format("embedded-opentype"), url("../fonts/fontawesome-webfont.woff2?v=4.7.0") format("woff2"), url("../fonts/fontawesome-webfont.woff?v=4.7.0") format("woff"), url("../fonts/fontawesome-webfont.ttf?v=4.7.0") format("truetype"), url("../fonts/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular") format("svg");
+	src: url("../fonts/fontawesome-webfont.eot");
+	src: url("../fonts/fontawesome-webfont.eot") format("embedded-opentype"), url("../fonts/fontawesome-webfont.woff2") format("woff2"), url("../fonts/fontawesome-webfont.woff") format("woff"), url("../fonts/fontawesome-webfont.ttf") format("truetype"), url("../fonts/fontawesome-webfont.svg") format("svg");
 	font-weight: normal;
 	font-style: normal;
 }
@@ -3941,31 +3941,6 @@ input[type=text] {
 	align-items: center;
 	border-radius: 50%;
 	color: #fff;
-}
-
-.step__icon.welcome:before {
-	content: '\f144';
-	font-family: Ionicons;
-}
-
-.step__icon.requirements:before {
-	content: '\f127';
-	font-family: Ionicons;
-}
-
-.step__icon.permissions:before {
-	content: '\f296';
-	font-family: Ionicons;
-}
-
-.step__icon.database:before {
-	content: '\f454';
-	font-family: Ionicons;
-}
-
-.step__icon.update:before {
-	content: '\f2bf';
-	font-family: Ionicons;
 }
 
 .main {
