@@ -41,7 +41,7 @@ class SetAlbumDecorationRequest extends BaseApiRequest
 
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumDecoration = self::ALBUM_DECORATION_ATTRIBUTE;
+		$this->albumDecoration = $values[self::ALBUM_DECORATION_ATTRIBUTE];
 		$this->albumDecorationOrientation = $values[self::ALBUM_DECORATION_ORIENTATION_ATTRIBUTE];
 	}
 

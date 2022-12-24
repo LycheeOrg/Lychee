@@ -104,7 +104,7 @@ class AlbumBuilder extends NSQueryBuilder
 			switch (Configs::getValueAsString('album_decoration')) {
 				case 'photo':
 					$showPhotoCount = true;
-					$isAdmin = Auth::user()?->may_administrate;
+					$isAdmin = (Auth::user()?->may_administrate === true);
 					if (!$isAdmin) {
 						$userID = Auth::id();
 					}
@@ -121,7 +121,7 @@ class AlbumBuilder extends NSQueryBuilder
 					// no break
 				case 'original':
 				default:
-					$isAdmin = Auth::user()?->may_administrate;
+					$isAdmin = (Auth::user()?->may_administrate === true);
 					if (!$isAdmin) {
 						$userID = Auth::id();
 					}
@@ -220,7 +220,7 @@ class AlbumBuilder extends NSQueryBuilder
 			$query2
 				->where(
 					fn ($q) => $q
-						->where('base_albums.requires_link', '=', false)
+						->where('base_albums.is_link_required', '=', false)
 						->where('base_albums.is_public', '=', true)
 				);
 			if ($userID !== null) {
@@ -279,7 +279,7 @@ class AlbumBuilder extends NSQueryBuilder
 		$visibilitySubQuery = function ($query2) use ($userID) {
 			$query2->where(
 				fn ($q) => $q
-					->where('base_albums.requires_link', '=', false)
+					->where('base_albums.is_link_required', '=', false)
 					->where('base_albums.is_public', '=', true)
 			);
 			if ($userID !== null) {
