@@ -18,8 +18,8 @@ class CreateUser extends Command
 	 */
 	protected $signature =
 		'lychee:create_user' .
-		'{--username= : username of the new user} ' .
-		'{--password= : password of the new user} ' .
+		'{username : username of the new user} ' .
+		'{password : password of the new user} ' .
 		'{--may-edit-own-settings : user can edit own settings}  ' .
 		'{--may-upload : user may upload} ' .
 		'{--may-administrate : user is an admin} ';
@@ -49,21 +49,8 @@ class CreateUser extends Command
 	 */
 	public function handle(): int
 	{
-		/** @var string|null $username */
-		$username = $this->option('username');
-		/** @var string|null $password */
-		$password = $this->option('password');
-
-		if ($username === null || $username === '') {
-			$this->error('Username is missing.');
-
-			return 1;
-		}
-		if ($password === null || $password === '') {
-			$this->error('Password is missing.');
-
-			return 1;
-		}
+		$username = strval($this->argument('username'));
+		$password = strval($this->argument('password'));
 
 		$count = User::query()->count();
 

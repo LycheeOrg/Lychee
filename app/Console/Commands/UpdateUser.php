@@ -16,15 +16,15 @@ class UpdateUser extends Command
 	 */
 	protected $signature =
 		'lychee:update_user' .
-		'{--username= : username of the user} ' .
-		'{--password= : password of the user} ';
+		'{username : username of the user} ' .
+		'{password : password of the user} ';
 
 	/**
 	 * The console command description.
 	 *
 	 * @var string
 	 */
-	protected $description = 'Update the user with the given username. If an option is not set, it is not changed.';
+	protected $description = 'Update the user with the given username.';
 
 	/**
 	 * Execute the console command.
@@ -35,29 +35,30 @@ class UpdateUser extends Command
 	 */
 	public function handle(): int
 	{
-		/** @var string|null $username */
-		$username = $this->option('username');
+		$username = strval($this->argument('username'));
 
-		if ($username === null || $username === '') {
-			$this->error('Username is missing.');
+		/** @var User|null $user */
+		$user = User::query()->where('username', '=', $username)->first();
+
+		if ($user === null) {
+			$this->error('user not found');
 
 			return 1;
 		}
 
-		/** @var User $user */
-		$user = User::query()->where('username', '=', $username)->firstOrFail();
+		$password = strval($this->argument('password'));
 
-		/** @var string|null $password */
-		$password = $this->option('password');
-
-		if ($password !== null && $password !== '') {
+		if ($password !== '') {
 			$user->password = Hash::make($password);
+			$user->save();
+
+			$this->line('Successfully updated user ' . $username);
+
+			return 0;
 		}
 
-		$user->save();
+		$this->error('wrong password');
 
-		$this->line('Successfully updated user ' . $username);
-
-		return 0;
+		return 1;
 	}
 }

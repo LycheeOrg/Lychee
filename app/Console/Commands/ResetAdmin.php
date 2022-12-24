@@ -27,7 +27,7 @@ class ResetAdmin extends Command
 	 */
 	public function handle(): int
 	{
-		$this->line('Command deprecated. Instead, use php artisan lychee:update_user or lychee:create_user --may_administrate.');
+		$this->line('Command deprecated. Instead, use php artisan lychee:update_user or lychee:create_user {username} {password} --may_administrate.');
 
 		return 1;
 	}
