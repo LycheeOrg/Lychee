@@ -13,11 +13,10 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class SetUpAdminRequest extends FormRequest implements HasUsername, HasPassword
 {
-
-	protected $errorBag = 'errors';
-
 	use HasUsernameTrait;
 	use HasPasswordTrait;
+
+	protected $errorBag = 'errors';
 
 	public function rules(): array
 	{

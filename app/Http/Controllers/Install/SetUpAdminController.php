@@ -54,7 +54,7 @@ class SetUpAdminController extends Controller
 				'title' => 'Lychee-setup-admin',
 				'step' => 5,
 				'error' => $error,
-				'success' => !$error,
+				'success' => $error === null,
 			]);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s view component', $e);
