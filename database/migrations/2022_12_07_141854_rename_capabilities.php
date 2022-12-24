@@ -13,6 +13,9 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
+		if (DB::getDriverName() === 'sqlite') {
+			Schema::disableForeignKeyConstraints();
+		}
 		// flip the locked value
 		DB::table('users')->update(['is_locked' => DB::raw('NOT is_locked')]);
 
@@ -26,6 +29,9 @@ return new class() extends Migration {
 			$table->boolean('may_administrate')->after('email')->default(false);
 		});
 		DB::table('users')->where('id', '=', '0')->update(['may_administrate' => true]);
+		if (DB::getDriverName() === 'sqlite') {
+			Schema::enableForeignKeyConstraints();
+		}
 	}
 
 	/**
@@ -35,6 +41,9 @@ return new class() extends Migration {
 	 */
 	public function down(): void
 	{
+		if (DB::getDriverName() === 'sqlite') {
+			Schema::disableForeignKeyConstraints();
+		}
 		Schema::table('users', function (Blueprint $table) {
 			$table->dropColumn('may_administrate');
 		});
@@ -45,5 +54,8 @@ return new class() extends Migration {
 		});
 		// flip the locked value
 		DB::table('users')->update(['is_locked' => DB::raw('NOT is_locked')]);
+		if (DB::getDriverName() === 'sqlite') {
+			Schema::enableForeignKeyConstraints();
+		}
 	}
 };
