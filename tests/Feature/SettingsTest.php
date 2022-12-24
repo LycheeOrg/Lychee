@@ -28,7 +28,7 @@ class SettingsTest extends AbstractTestCase
 		int $status = 204,
 		?string $assertSee = null): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$response = $this->postJson('/api' . $url, $params);
 		$this->assertStatus($response, $status);
@@ -48,7 +48,7 @@ class SettingsTest extends AbstractTestCase
 		?string $assertSee = null): void
 	{
 		$oldVal = Configs::getValue($key);
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$response = $this->postJson('/api' . $url, [$key => $value]);
 		$this->assertStatus($response, $status);
@@ -194,7 +194,7 @@ class SettingsTest extends AbstractTestCase
 	// Route::post('/Settings::saveAll', [Administration\SettingsController::class, 'saveAll']);
 	public function testAllSettings(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$response = $this->postJson('/api/Settings::getAll', []);
 		$this->assertStatus($response, 200);
