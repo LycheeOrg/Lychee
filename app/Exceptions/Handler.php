@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use App\Contracts\Exceptions\Handlers\HttpExceptionHandler;
 use App\DTO\BacktraceRecord;
 use App\Exceptions\Handlers\AccessDBDenied;
+use App\Exceptions\Handlers\AdminSetterHandler;
 use App\Exceptions\Handlers\InstallationHandler;
 use App\Exceptions\Handlers\MigrationHandler;
 use App\Exceptions\Handlers\NoEncryptionKey;
@@ -284,6 +285,7 @@ class Handler extends ExceptionHandler
 			new NoEncryptionKey(),
 			new AccessDBDenied(),
 			new InstallationHandler(),
+			new AdminSetterHandler(),
 			new MigrationHandler(),
 		];
 

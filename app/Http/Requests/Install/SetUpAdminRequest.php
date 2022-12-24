@@ -11,8 +11,11 @@ use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class InstallMigrationRequest extends FormRequest implements HasUsername, HasPassword
+class SetUpAdminRequest extends FormRequest implements HasUsername, HasPassword
 {
+
+	protected $errorBag = 'errors';
+
 	use HasUsernameTrait;
 	use HasPasswordTrait;
 
