@@ -12,7 +12,7 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-		if (Schema::connection(null)->getConnection()->getDriverName() === 'sqlite') {
+		if (DB::getDriverName() === 'sqlite') {
 			Schema::disableForeignKeyConstraints();
 		}
 		Schema::table('base_albums', function (Blueprint $table) {
@@ -24,7 +24,7 @@ return new class() extends Migration {
 		Schema::table('base_albums', function (Blueprint $table) {
 			$table->renameColumn('grants_full_photo', 'grants_full_photo_access');
 		});
-		if (Schema::connection(null)->getConnection()->getDriverName() === 'sqlite') {
+		if (DB::getDriverName() === 'sqlite') {
 			Schema::enableForeignKeyConstraints();
 		}
 	}
@@ -36,7 +36,7 @@ return new class() extends Migration {
 	 */
 	public function down(): void
 	{
-		if (Schema::connection(null)->getConnection()->getDriverName() === 'sqlite') {
+		if (DB::getDriverName() === 'sqlite') {
 			Schema::disableForeignKeyConstraints();
 		}
 		Schema::table('base_albums', function (Blueprint $table) {
@@ -48,7 +48,7 @@ return new class() extends Migration {
 		Schema::table('base_albums', function (Blueprint $table) {
 			$table->renameColumn('grants_full_photo_access', 'grants_full_photo');
 		});
-		if (Schema::connection(null)->getConnection()->getDriverName() === 'sqlite') {
+		if (DB::getDriverName() === 'sqlite') {
 			Schema::enableForeignKeyConstraints();
 		}
 	}
