@@ -11,10 +11,12 @@ use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class InstallMigrationRequest extends FormRequest implements HasUsername, HasPassword
+class SetUpAdminRequest extends FormRequest implements HasUsername, HasPassword
 {
 	use HasUsernameTrait;
 	use HasPasswordTrait;
+
+	protected $errorBag = 'errors';
 
 	public function rules(): array
 	{
