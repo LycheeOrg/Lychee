@@ -26,7 +26,6 @@ class SetUpAdminController extends Controller
 			[
 				'title' => 'Lychee-installer',
 				'step' => 5,
-				'success' => false,
 			]);
 	}
 
@@ -38,10 +37,9 @@ class SetUpAdminController extends Controller
 	 *
 	 * @throws FrameworkException
 	 */
-	public function view(SetUpAdminRequest $request): View
+	public function create(SetUpAdminRequest $request): View
 	{
-		/** @var string|null $error */
-		$error = null;
+		$error = '';
 		try {
 			$user = new User();
 			$user->may_upload = true;
@@ -56,11 +54,17 @@ class SetUpAdminController extends Controller
 		}
 
 		try {
+			if ($error === '') {
+				return view('install.setup-success', [
+					'title' => 'Lychee-setup-admin',
+					'step' => 5,
+				]);
+			}
+
 			return view('install.setup-admin', [
 				'title' => 'Lychee-setup-admin',
 				'step' => 5,
 				'error' => $error,
-				'success' => $error === null,
 			]);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s view component', $e);

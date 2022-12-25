@@ -29,7 +29,7 @@ Route::get('install/perm', [PermissionsController::class, 'view'])->name('instal
 Route::match(['get', 'post'], 'install/env', [EnvController::class, 'view'])->name('install-env');
 Route::get('install/migrate', [MigrationController::class, 'view'])->name('install-migrate');
 
-Route::post('install/admin', [SetUpAdminController::class, 'view'])
+Route::post('install/admin', [SetUpAdminController::class, 'create'])
 	->withoutMiddleware(['installation:incomplete'])
 	->middleware(['admin_user:unset', 'installation:complete'])
 	->name('install-admin');

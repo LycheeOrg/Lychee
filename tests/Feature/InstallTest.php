@@ -139,7 +139,7 @@ class InstallTest extends AbstractTestCase
 		 */
 		$response = $this->post('install/admin', ['username' => 'admin', 'password' => 'password', 'password_confirmation' => 'password']);
 		$this->assertOk($response);
-		$response->assertViewIs('install.setup-admin');
+		$response->assertViewIs('install.setup-success');
 
 		// try to login with newly created admin
 		$this->assertTrue(Auth::attempt(['username' => 'admin', 'password' => 'password']));
