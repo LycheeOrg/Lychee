@@ -69,7 +69,6 @@ JOIN information_schema.constraint_column_usage AS ccu
 WHERE tc.constraint_type = \'FOREIGN KEY\';');
 
 		foreach ($fks as $fk) {
-			/** @phpstan-ignore-next-line */
 			$data[] = sprintf('Foreign key: %-30s → %-20s',
 				$fk->table_name . '.' . $fk->column_name,
 				$fk->foreign_table_name . '.' . $fk->foreign_column_name);

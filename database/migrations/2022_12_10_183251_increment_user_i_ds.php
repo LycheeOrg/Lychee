@@ -46,7 +46,7 @@ return new class() extends Migration {
 			DB::table('users')->delete($oldID);
 		}
 
-		if (Schema::getDriverName() === 'pgsql' && DB::table('users')->count() > 0) {
+		if (DB::getDriverName() === 'pgsql' && DB::table('users')->count() > 0) {
 			// when using PostgreSQL, the new IDs are not updated after incrementing. Thus, we need to reset the index to the greatest ID + 1
 			// the sequence is called `users_id_seq1`
 			/** @var App\Models\User $lastUser */
@@ -96,7 +96,7 @@ return new class() extends Migration {
 	/**
 	 * Defer a foreign key evalation to the end of a transaction in pgsql.
 	 */
-	private function defer(string $tableName, string $fkName)
+	private function defer(string $tableName, string $fkName): void
 	{
 		DB::select('ALTER TABLE ' . $tableName . ' ALTER CONSTRAINT ' . $fkName . ' DEFERRABLE INITIALLY DEFERRED;');
 	}
