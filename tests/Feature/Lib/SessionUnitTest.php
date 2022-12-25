@@ -133,7 +133,7 @@ class SessionUnitTest
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->postJson('/api/Settings::updateLogin', [
+		$response = $this->testCase->postJson('/api/User::updateLogin', [
 			'username' => $login,
 			'password' => $password,
 			'oldPassword' => $oldPassword,

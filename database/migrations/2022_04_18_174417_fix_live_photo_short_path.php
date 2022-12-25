@@ -24,7 +24,7 @@ return new class() extends Migration {
 	 *
 	 * @throws RuntimeException
 	 */
-	public function up()
+	public function up(): void
 	{
 		// MySQL misuses the ANSI SQL concatenation operator `||` for
 		// a logical OR and provides the proprietary `CONCAT` statement
@@ -48,7 +48,7 @@ return new class() extends Migration {
 	 *
 	 * @throws RuntimeException
 	 */
-	public function down()
+	public function down(): void
 	{
 		// In contrast to all other programming languages, the first character
 		// of a string has index 1 (not 0) in SQL.

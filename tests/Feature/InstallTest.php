@@ -15,6 +15,9 @@ namespace Tests\Feature;
 use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use function Safe\file_get_contents;
 use Tests\AbstractTestCase;
@@ -31,8 +34,6 @@ class InstallTest extends AbstractTestCase
 		/*
 		 * Get previous config
 		 */
-		/** @var User $admin */
-		$admin = User::query()->find(0);
 
 		$prevAppKey = config('app.key');
 		config(['app.key' => null]);
@@ -129,10 +130,31 @@ class InstallTest extends AbstractTestCase
 		$this->assertOk($response);
 		$response->assertViewIs('install.migrate');
 
+		$response = $this->get('install/admin');
+		$this->assertOk($response);
+		$response->assertViewIs('install.setup-admin');
+
+		/**
+		 * set up admin user migration.
+		 */
+		$response = $this->post('install/admin', ['username' => 'admin', 'password' => 'password', 'password_confirmation' => 'password']);
+		$this->assertOk($response);
+		$response->assertViewIs('install.setup-success');
+
+		// try to login with newly created admin
+		$this->assertTrue(Auth::attempt(['username' => 'admin', 'password' => 'password']));
+		Auth::logout();
+
 		/**
 		 * Re-Installation should be forbidden now.
 		 */
 		$response = $this->get('install/');
+		$this->assertForbidden($response);
+
+		/**
+		 * Setting admin should be forbidden now.
+		 */
+		$response = $this->get('install/admin');
 		$this->assertForbidden($response);
 
 		/**
@@ -142,8 +164,32 @@ class InstallTest extends AbstractTestCase
 		$response = $this->get('/');
 		$this->assertOk($response);
 
-		$admin->save();
-		$admin->id = 0;
-		$admin->save();
+		/*
+		 * make sure there's still an admin user with ID 1
+		 */
+		/** @var User|null $admin */
+		$admin = User::find(1);
+		if ($admin === null) {
+			$admin = new User();
+			$admin->incrementing = false;
+			$admin->id = 1;
+			$admin->may_upload = true;
+			$admin->may_edit_own_settings = true;
+			$admin->may_administrate = true;
+			$admin->username = 'admin';
+			$admin->password = Hash::make('password');
+			$admin->save();
+			if (Schema::connection(null)->getConnection()->getDriverName() === 'pgsql' && DB::table('users')->count() > 0) {
+				// when using PostgreSQL, the next ID value is kept when inserting without incrementing
+				// which results in errors because trying to insert a user with ID = 1.
+				// Thus, we need to reset the index to the greatest ID + 1
+				/** @var User $lastUser */
+				$lastUser = User::query()->orderByDesc('id')->first();
+				DB::statement('ALTER SEQUENCE users_id_seq1 RESTART WITH ' . strval($lastUser->id + 1));
+			}
+		} elseif (!$admin->may_administrate) {
+			$admin->may_administrate = true;
+			$admin->save();
+		}
 	}
 }

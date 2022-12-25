@@ -200,7 +200,7 @@ final class German implements Language
 			'ALBUM_PASSWORD_PROT' => 'Kennwortgeschützt',
 			'ALBUM_PASSWORD_PROT_EXPL' => 'Anonyme Nutzer benötigen ein Passwort, um auf dieses Album zuzugreifen.',
 			'ALBUM_PASSWORD_REQUIRED' => 'Dieses Album ist mit einem Kennwort geschützt. Geben Sie unten das Kennwort ein, um das Album anzusehen:',
-			'ALBUM_MERGE' => 'Sind Sie sicher, dass Sie das Album „%1$s“ mit dem Album „%2%s“ zusammenführen wollen?',
+			'ALBUM_MERGE' => 'Sind Sie sicher, dass Sie das Album „%1$s“ mit dem Album „%2$s“ zusammenführen wollen?',
 			'ALBUMS_MERGE' => 'Sind Sie sicher, dass Sie alle ausgewählten Alben mit dem Album „%s“ zusammenführen möchten?',
 			'MERGE_ALBUM' => 'Alben zusammenführen',
 			'DONT_MERGE' => 'Nicht zusammenführen',
@@ -262,10 +262,6 @@ final class German implements Language
 			'PHOTO_FOCAL' => 'Brennweite',
 			'PHOTO_ISO' => 'ISO %s',
 			'PHOTO_SHARING' => 'Teilen',
-			'PHOTO_SHR_PUBLIC' => 'Öffentlich',
-			'PHOTO_SHR_ALB' => 'Ja (Album)',
-			'PHOTO_SHR_PHT' => 'Ja (Foto)',
-			'PHOTO_SHR_NO' => 'Nein',
 			'PHOTO_DELETE' => 'Foto löschen',
 			'PHOTO_KEEP' => 'Foto behalten',
 			'PHOTO_DELETE_CONFIRMATION' => 'Sind Sie sicher, dass Sie das Foto „%s“ löschen wollen? Diese Aktion kann nicht rückgängig gemacht werden!',
@@ -514,7 +510,7 @@ final class German implements Language
 			'CAMERA_DATE' => 'Kameradatum',
 			'NEW_PASSWORD' => 'Neues Password',
 			'ALLOW_UPLOADS' => 'Hochladen erlauben',
-			'RESTRICTED_ACCOUNT' => 'Eingeschränkter Account',
+			'ALLOW_USER_SELF_EDIT' => 'Erlaube Selbstverwaltung des Nutzerkontos',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap-Beitragende',
 		];
 	}

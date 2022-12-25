@@ -9,7 +9,7 @@ return new class() extends Migration {
 	 *
 	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		DB::table('configs')->where('key', 'version')->update(['description' => 'Current version of Lychee']);
 		DB::table('configs')->where('key', 'check_for_updates')->update(['description' => 'Automatically check for new updates']);
@@ -109,7 +109,7 @@ return new class() extends Migration {
 	 *
 	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		DB::table('configs')->whereIn('key', ['version', 'check_for_updates', 'sorting_photos_col', 'sorting_photos_order', 'sorting_albums_col', 'sorting_albums_order', 'imagick', 'dropbox_key', 'skip_duplicates', 'lang', 'layout', 'default_license', 'small_max_width', 'small_max_height', 'medium_max_width', 'medium_max_height', 'full_photo', 'delete_imported', 'Mod_Frame', 'Mod_Frame_refresh', 'image_overlay_type', 'compression_quality', 'landing_page_enable', 'landing_owner', 'landing_title', 'landing_subtitle', 'landing_facebook', 'landing_flickr', 'landing_twitter', 'landing_instagram', 'landing_youtube', 'landing_background', 'thumb_2x', 'small_2x', 'medium_2x', 'site_title', 'site_copyright_enable', 'site_copyright_begin', 'site_copyright_end', 'api_key', 'allow_online_git_pull', 'force_migration_in_production', 'additional_footer_text', 'display_social_in_gallery', 'public_search', 'gen_demo_js', 'hide_version_number', 'public_recent', 'recent_age', 'public_starred', 'SL_enable', 'SL_for_admin', 'SL_life_time_days', 'photos_wraparound', 'raw_formats', 'map_display', 'zip64', 'force_32bit_ids', 'map_display_public', 'map_provider', 'map_include_subalbums', 'update_check_every_days', 'has_exiftool', 'share_button_visible', 'has_ffmpeg', 'import_via_symlink', 'apply_composer_update', 'location_decoding', 'location_decoding_timeout', 'location_show', 'location_show_public', 'rss_enable', 'rss_recent_days', 'rss_max_items', 'prefer_available_xmp_metadata', 'editor_enabled', 'lossless_optimization', 'swipe_tolerance_x', 'swipe_tolerance_y', 'log_max_num_line', 'unlock_password_photos_with_url_param', 'nsfw_visible', 'nsfw_blur', 'nsfw_warning', 'nsfw_warning_admin', 'nsfw_warning_text', 'map_display_direction', 'album_subtitle_type', 'upload_processing_limit', 'public_photos_hidden', 'new_photos_notification'])->update(['description' => '']);
 	}

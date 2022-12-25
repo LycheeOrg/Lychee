@@ -4,6 +4,7 @@ namespace App\SmartAlbums;
 
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
+use App\Facades\Lang;
 use App\Models\Configs;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -11,7 +12,6 @@ class StarredAlbum extends BaseSmartAlbum
 {
 	private static ?self $instance = null;
 	public const ID = 'starred';
-	public const TITLE = 'Starred';
 
 	/**
 	 * @throws ConfigurationKeyMissingException
@@ -21,7 +21,7 @@ class StarredAlbum extends BaseSmartAlbum
 	{
 		parent::__construct(
 			self::ID,
-			self::TITLE,
+			Lang::get('STARRED'),
 			Configs::getValueAsBool('public_starred'),
 			fn (Builder $q) => $q->where('photos.is_starred', '=', true)
 		);

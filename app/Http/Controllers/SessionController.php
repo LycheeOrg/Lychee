@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
+use App\DTO\Rights\GlobalRightsDTO;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\FrameworkException;
@@ -21,7 +22,7 @@ use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\User;
-use App\Policies\UserPolicy;
+use App\Policies\SettingsPolicy;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Routing\Controller;
@@ -64,29 +65,13 @@ class SessionController extends Controller
 			// Return settings
 			$return = [];
 
-			if (AdminAuthentication::loginAsAdminIfNotRegistered()) {
-				// TODO: Remove this legacy stuff after creating the admin user has become part of the installation routine.
-				// If the session is unauthenticated ('user' === null), but grants admin rights nonetheless,
-				// the front-end shows the dialog to create an admin account.
-				$return['user'] = null;
-				$return['rights'] = [
-					'is_admin' => true,
-					'is_locked' => false,
-					'may_upload' => true,
-				];
-			} else {
-				/** @var User|null $user */
-				$user = Auth::user();
-				$return['user'] = $user?->toArray();
-				$return['rights'] = [
-					'is_admin' => Gate::check(UserPolicy::IS_ADMIN, User::class),
-					'is_locked' => !Gate::check(UserPolicy::CAN_EDIT_SETTINGS, User::class), // the use of the negation should be removed later
-					'may_upload' => Gate::check(UserPolicy::CAN_UPLOAD, User::class),
-				];
-			}
+			/** @var User|null $user */
+			$user = Auth::user();
+			$return['user'] = $user?->toArray();
+			$return['rights'] = GlobalRightsDTO::ofCurrentUser();
 
 			// Load configuration settings acc. to authentication status
-			if ($return['rights']['is_admin'] === true) {
+			if (Gate::check(SettingsPolicy::CAN_EDIT, [Configs::class])) {
 				// Admin rights (either properly authenticated or not registered)
 				$return['config'] = $this->configFunctions->admin();
 				$return['config']['location'] = base_path('public/');

@@ -17,9 +17,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
 use Tests\AbstractTestCase;
+use Tests\Feature\Traits\CatchFailures;
 
 class WebAuthTest extends AbstractTestCase
 {
+	use CatchFailures;
+
 	/**
 	 * Testing the Login interface.
 	 *
@@ -27,7 +30,7 @@ class WebAuthTest extends AbstractTestCase
 	 */
 	public function testWebAuthTest(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$response = $this->postJson('/api/WebAuthn::register/options');
 		$this->assertOk($response);
@@ -76,10 +79,10 @@ class WebAuthTest extends AbstractTestCase
 			'public_key' => '',
 		]);
 		/** @var User $user */
-		$user = User::query()->find(0);
+		$user = User::query()->find(1);
 		$user->webAuthnCredentials()->save($key);
 
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$response = $this->postJson('/api/WebAuthn::list');
 		$this->assertOk($response); // code 200 something

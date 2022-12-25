@@ -2,6 +2,7 @@
 
 namespace App\Actions\Diagnostics;
 
+use App\Actions\Diagnostics\Pipes\Infos\CountForeignKeyInfo;
 use App\Actions\Diagnostics\Pipes\Infos\ExtensionsInfo;
 use App\Actions\Diagnostics\Pipes\Infos\InstallTypeInfo;
 use App\Actions\Diagnostics\Pipes\Infos\SystemInfo;
@@ -20,6 +21,7 @@ class Info
 		InstallTypeInfo::class,
 		SystemInfo::class,
 		ExtensionsInfo::class,
+		CountForeignKeyInfo::class,
 	];
 
 	/**

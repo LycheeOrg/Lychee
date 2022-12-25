@@ -9,7 +9,7 @@ return new class() extends Migration {
 	 *
 	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		DB::table('configs')
 			->whereIn('key', ['username', 'password'])
@@ -21,7 +21,7 @@ return new class() extends Migration {
 	 *
 	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		defined('STRING_REQ') or define('STRING_REQ', 'string_required');
 

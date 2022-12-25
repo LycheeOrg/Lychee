@@ -43,7 +43,7 @@ class GeoDataTest extends AbstractTestCase
 		$this->albums_tests = new AlbumsUnitTest($this);
 		$this->root_album_tests = new RootAlbumUnitTest($this);
 
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$this->setUpRequiresEmptyPhotos();
 		$this->setUpRequiresEmptyAlbums();
@@ -102,8 +102,9 @@ class GeoDataTest extends AbstractTestCase
 					'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
 					'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
 					'is_public' => 0,
-					'is_downloadable' => true,
-					'is_share_button_visible' => true,
+					'rights' => [
+						'can_download' => true,
+					],
 					'size_variants' => [
 						'thumb' => [
 							'width' => 200,
@@ -194,7 +195,7 @@ class GeoDataTest extends AbstractTestCase
 		$includeSubAlbums = Configs::getValueAsBool(self::CONFIG_MAP_INCLUDE_SUBALBUMS);
 
 		try {
-			Auth::loginUsingId(0);
+			Auth::loginUsingId(1);
 			Configs::set(self::CONFIG_PUBLIC_RECENT, true);
 			Configs::set(self::CONFIG_PUBLIC_HIDDEN, false);
 			Configs::set(self::CONFIG_PUBLIC_SEARCH, true);
@@ -224,7 +225,7 @@ class GeoDataTest extends AbstractTestCase
 				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID13
 			)->offsetGet('id');
 
-			$this->albums_tests->set_protection_policy(id: $albumID1, full_photo: true, public: true, requiresLink: true);
+			$this->albums_tests->set_protection_policy(id: $albumID1, grants_full_photo_access: true, is_public: true, is_link_required: true);
 			// Sic! We do not make album 1.1 public to ensure that the
 			// search filter does not include too much
 			$this->albums_tests->set_protection_policy($albumID12);

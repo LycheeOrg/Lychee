@@ -162,7 +162,7 @@ class SharingWithNonAdminUserAndNoPublicSearchTest extends BaseSharingWithNonAdm
 		$responseForAlbum->assertJson([
 			'id' => $this->albumID1,
 			'title' => self::ALBUM_TITLE_1,
-			'is_public' => false,
+			'policy' => ['is_public' => false],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID2),
 			'photos' => [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID2, $this->albumID1),

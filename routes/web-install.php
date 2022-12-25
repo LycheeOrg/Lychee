@@ -28,3 +28,12 @@ Route::get('install/req', [RequirementsController::class, 'view'])->name('instal
 Route::get('install/perm', [PermissionsController::class, 'view'])->name('install-perm');
 Route::match(['get', 'post'], 'install/env', [EnvController::class, 'view'])->name('install-env');
 Route::get('install/migrate', [MigrationController::class, 'view'])->name('install-migrate');
+
+Route::post('install/admin', [SetUpAdminController::class, 'create'])
+	->withoutMiddleware(['installation:incomplete'])
+	->middleware(['admin_user:unset', 'installation:complete'])
+	->name('install-admin');
+Route::get('install/admin', [SetUpAdminController::class, 'init'])
+	->withoutMiddleware(['installation:incomplete'])
+	->middleware(['admin_user:unset', 'installation:complete'])
+	->name('install-admin');
