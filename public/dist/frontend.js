@@ -998,7 +998,7 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject19 = _taggedTemplateLiteral(["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"], ["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"]),
     _templateObject20 = _taggedTemplateLiteral(["<a class='", "'>$", "</a>"], ["<a class='", "'>$", "</a>"]),
     _templateObject21 = _taggedTemplateLiteral(["<div class='empty'>", "</div>"], ["<div class='empty'>", "</div>"]),
-    _templateObject22 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_edit_own_settings\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_edit_own_settings\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
+    _templateObject22 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_edit_own_settings\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK ", "\">", "</a>\n\t\t\t", "\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"numeric\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"", "\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"", "\" />\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"", "\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"may_edit_own_settings\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK ", "\">", "</a>\n\t\t\t", "\n\t\t</div>\n\t\t"]),
     _templateObject23 = _taggedTemplateLiteral(["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"string\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"u2f_view_line\">\n\t\t\t<p id=\"CredentialData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" inputmode=\"string\" value=\"", "\" />\n\t\t\t<span class=\"text\">", "</span>\n\t\t\t</p>\n\t\t\t<a id=\"CredentialDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
     _templateObject24 = _taggedTemplateLiteral(["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "' alt=\"thumbnail\">\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "], ["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "' alt=\"thumbnail\">\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "]),
     _templateObject25 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
@@ -3572,7 +3572,7 @@ build.tags = function (tags) {
  * @returns {string}
  */
 build.user = function (user) {
-	return lychee.html(_templateObject22, user.id, user.id, user.username, lychee.locale["USERNAME"], lychee.locale["NEW_PASSWORD"], lychee.locale["ALLOW_UPLOADS"], lychee.locale["ALLOW_USER_SELF_EDIT"], user.id, user.id);
+	return lychee.html(_templateObject22, user.id, user.id, user.username, lychee.locale["USERNAME"], lychee.locale["NEW_PASSWORD"], lychee.locale["ALLOW_UPLOADS"], lychee.locale["ALLOW_USER_SELF_EDIT"], user.id, user.id !== lychee.user.id ? "" : "basicModal__button_OK_no_DEL", lychee.locale["SAVE"], user.id !== lychee.user.id ? "<a id=\"UserDelete" + user.id + "\"  class=\"basicModal__button basicModal__button_DEL\">" + lychee.locale["DELETE"] + "</a>" : "");
 };
 
 /**
@@ -6177,14 +6177,6 @@ lychee.init = function () {
 			leftMenu.build();
 			leftMenu.bind();
 			lychee.setMode("logged_in");
-
-			// Show dialog to create admin account, if no user is
-			// authenticated but admin rights are granted.
-			// TODO: Refactor the whole logic, i.e. the initial user should be created as part of the installation routine.
-			// In particular it is completely insane to build the UI as if the admin user was successfully authenticated.
-			// This might leak confidential photos to anybody if the DB is filled
-			// with photos and the admin password reset to `null`.
-			if (data.user === null && data.rights.user.can_edit) settings.createLogin();
 		} else {
 			lychee.setMode("public");
 		}
@@ -10404,98 +10396,6 @@ settings.open = function () {
 	view.settings.init();
 };
 
-settings.createLogin = function () {
-	/**
-  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
-  * @param {Object} params the original JSON parameters of the request
-  * @param {?LycheeException} lycheeException the Lychee exception
-  * @returns {boolean}
-  */
-	var errorHandler = function errorHandler(jqXHR, params, lycheeException) {
-		basicModal.show({
-			body: "<p></p><p></p>",
-			readyCB: function readyCB(formElement, dialog) {
-				/** @type {NodeList<HTMLParagraphElement>} */
-				var paragraphs = dialog.querySelectorAll("p");
-				paragraphs.item(0).textContent = lychee.locale["ERROR_LOGIN"];
-				paragraphs.item(1).textContent = lycheeException ? lycheeException.message : "";
-			},
-			buttons: {
-				action: {
-					title: lychee.locale["RETRY"],
-					fn: function fn() {
-						return settings.createLogin();
-					}
-				}
-			}
-		});
-		return true;
-	};
-
-	/**
-  * @param {User} updatedAdminUser
-  * @returns {void}
-  */
-	var successHandler = function successHandler(updatedAdminUser) {
-		lychee.user = updatedAdminUser;
-	};
-
-	/**
-  * @param {ModalDialogResult} data
-  * @returns {void}
-  */
-	var action = function action(data) {
-		if (!data.username.trim()) {
-			basicModal.focusError("username");
-			return;
-		}
-
-		if (!data.password.trim()) {
-			basicModal.focusError("password");
-			return;
-		}
-
-		if (data.password !== data.confirm) {
-			basicModal.focusError("confirm");
-			return;
-		}
-
-		basicModal.close();
-
-		var params = {
-			username: data.username,
-			password: data.password
-		};
-
-		api.post("Settings::setLogin", params, successHandler, null, errorHandler);
-	};
-
-	var createLoginDialogBody = "\n\t\t<p></p>\n\t\t<form>\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input name='username' class='text' type='text' autocapitalize='off'>\n\t\t\t</div>\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input name='password' class='text' type='password'>\n\t\t\t</div>\n\t\t\t<div class=\"input-group stacked\">\n\t\t\t\t<input name='confirm' class='text' type='password'>\n\t\t\t</div>\n\t\t</form>";
-
-	/**
-  * @param {ModalDialogFormElements} formElements
-  * @param {HTMLDivElement} dialog
-  * @returns {void}
-  */
-	var initDialog = function initDialog(formElements, dialog) {
-		dialog.querySelector("p").textContent = lychee.locale["LOGIN_TITLE"];
-		formElements.username.placeholder = lychee.locale["LOGIN_USERNAME"];
-		formElements.password.placeholder = lychee.locale["LOGIN_PASSWORD"];
-		formElements.confirm.placeholder = lychee.locale["LOGIN_PASSWORD_CONFIRM"];
-	};
-
-	basicModal.show({
-		body: createLoginDialogBody,
-		readyCB: initDialog,
-		buttons: {
-			action: {
-				title: lychee.locale["LOGIN_CREATE"],
-				fn: action
-			}
-		}
-	});
-};
-
 /**
  * A dictionary of (name,value)-pairs of the form.
  *
@@ -11983,7 +11883,7 @@ u2f.login = function () {
 		login: "/api/WebAuthn::login",
 		loginOptions: "/api/WebAuthn::login/options"
 	}, {}, false).login({
-		user_id: 0 // for now it is only available to Admin user via a secret key shortcut.
+		user_id: 1 // for now it is only available to Admin user via a secret key shortcut.
 	}).then(function () {
 		loadingBar.show("success", lychee.locale["U2F_AUTHENTIFICATION_SUCCESS"]);
 		window.location.reload();

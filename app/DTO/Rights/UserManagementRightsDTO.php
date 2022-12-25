@@ -34,12 +34,4 @@ class UserManagementRightsDTO extends ArrayableDTO
 			can_delete: Gate::check(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class])
 		);
 	}
-
-	/**
-	 * @return self
-	 */
-	public static function ofUnregisteredAdmin(): self
-	{
-		return new self(true, true, true, true);
-	}
 }

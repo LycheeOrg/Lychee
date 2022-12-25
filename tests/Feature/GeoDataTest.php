@@ -43,7 +43,7 @@ class GeoDataTest extends AbstractTestCase
 		$this->albums_tests = new AlbumsUnitTest($this);
 		$this->root_album_tests = new RootAlbumUnitTest($this);
 
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$this->setUpRequiresEmptyPhotos();
 		$this->setUpRequiresEmptyAlbums();
@@ -195,7 +195,7 @@ class GeoDataTest extends AbstractTestCase
 		$includeSubAlbums = Configs::getValueAsBool(self::CONFIG_MAP_INCLUDE_SUBALBUMS);
 
 		try {
-			Auth::loginUsingId(0);
+			Auth::loginUsingId(1);
 			Configs::set(self::CONFIG_PUBLIC_RECENT, true);
 			Configs::set(self::CONFIG_PUBLIC_HIDDEN, false);
 			Configs::set(self::CONFIG_PUBLIC_SEARCH, true);

@@ -37,10 +37,8 @@ class MigrateRequest extends BaseApiRequest implements HasUsername, HasPassword
 		// 3. Attempt to login as an admin user using the legacy method: hash(username) + hash(password).
 		// 4. Try to login the normal way.
 		//
-		// TODO: Step 2 will become unnecessary once admin registration has become part of the installation routine; after that the case that no admin is registered cannot occur anymore
-		// TODO: Step 3 will become unnecessary once the admin user of any existing installation has at least logged in once and the admin user has therewith migrated to use a non-hashed user name
+		// TODO: Step 2 will become unnecessary once the admin user of any existing installation has at least logged in once and the admin user has therewith migrated to use a non-hashed user name
 		$isLoggedIn = Auth::check();
-		$isLoggedIn = $isLoggedIn || AdminAuthentication::loginAsAdminIfNotRegistered();
 		$isLoggedIn = $isLoggedIn || AdminAuthentication::loginAsAdmin($this->username(), $this->password(), $this->ip());
 		$isLoggedIn = $isLoggedIn || Auth::attempt(['username' => $this->username(), 'password' => $this->password()]);
 

@@ -342,7 +342,7 @@ class PhotosOperationsTest extends BasePhotoTest
 		$photoSortingOrder = Configs::getValueAsString(self::CONFIG_PHOTOS_SORTING_ORDER);
 
 		try {
-			Auth::loginUsingId(0);
+			Auth::loginUsingId(1);
 			Configs::set(self::CONFIG_PUBLIC_RECENT, true);
 			Configs::set(self::CONFIG_PUBLIC_HIDDEN, false);
 			Configs::set(self::CONFIG_PUBLIC_SEARCH, true);
@@ -474,7 +474,7 @@ class PhotosOperationsTest extends BasePhotoTest
 
 	public function testDeleteMultiplePhotosByAnonUser(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 		$photoID1 = $this->photos_tests->upload(
 			self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID
@@ -490,7 +490,7 @@ class PhotosOperationsTest extends BasePhotoTest
 
 	public function testDeleteMultiplePhotosByNonOwner(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
 		$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
 		Auth::logout();

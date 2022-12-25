@@ -13,9 +13,9 @@ class WebAuthnRegisterController
 	/**
 	 * Returns a challenge to be verified by the user device.
 	 *
-	 * @param \Laragear\WebAuthn\Http\Requests\AttestationRequest $request
+	 * @param AttestationRequest $request
 	 *
-	 * @return \Illuminate\Contracts\Support\Responsable
+	 * @return Responsable
 	 */
 	public function options(AttestationRequest $request): Responsable
 	{
@@ -29,7 +29,7 @@ class WebAuthnRegisterController
 	/**
 	 * Registers a device for further WebAuthn authentication.
 	 *
-	 * @param \Laragear\WebAuthn\Http\Requests\AttestedRequest $request
+	 * @param AttestedRequest $request
 	 *
 	 * @return void
 	 */
