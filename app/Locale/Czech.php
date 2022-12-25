@@ -471,6 +471,7 @@ final class Czech implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Kopírovat do schránky',
 			'URL_COPIED_TO_CLIPBOARD' => 'URL zkopírována do schránky!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Přímý odkaz k souborům:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => 'Střední',
 			'PHOTO_MEDIUM_HIDPI' => 'Střední HiDPI',
 			'PHOTO_SMALL' => 'Náhled',

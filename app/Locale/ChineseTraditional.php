@@ -471,6 +471,7 @@ final class ChineseTraditional implements Language
 			'URL_COPY_TO_CLIPBOARD' => '複製到剪貼板',
 			'URL_COPIED_TO_CLIPBOARD' => '複製到剪貼板的URL！',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => '指向圖像文件的直接鏈接：',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => '中等',
 			'PHOTO_MEDIUM_HIDPI' => '中等解析度',
 			'PHOTO_SMALL' => '低',

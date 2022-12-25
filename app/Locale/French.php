@@ -471,6 +471,7 @@ final class French implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Copier dans le presse-papier',
 			'URL_COPIED_TO_CLIPBOARD' => 'l’URL a été copiée dans le presse-papier !',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Liens directs pour les fichier de l’image :',
+			'PHOTO_ORIGINAL' => 'Taille originale',
 			'PHOTO_MEDIUM' => 'Moyenne taille',
 			'PHOTO_MEDIUM_HIDPI' => 'Moyenne taille HiDPI',
 			'PHOTO_SMALL' => 'Petite taille',

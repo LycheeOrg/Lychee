@@ -471,6 +471,7 @@ final class Greek implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Αντιγραφή στο πρόχειρο',
 			'URL_COPIED_TO_CLIPBOARD' => 'Η διεύθυνση URL αντιγράφηκε στο πρόχειρο!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Απευθείας σύνδεσμοι στα αρχεία εικόνων:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => 'Μέτρια',
 			'PHOTO_MEDIUM_HIDPI' => 'Μέτρια HiDPI',
 			'PHOTO_SMALL' => 'Μικρογραφία',

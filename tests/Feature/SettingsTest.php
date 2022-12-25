@@ -12,7 +12,8 @@
 
 namespace Tests\Feature;
 
-use App\DTO\BaseSortingCriterion;
+use App\Enum\ColumnSortingType;
+use App\Enum\OrderSortingType;
 use App\Http\Requests\Settings\SetSortingSettingsRequest;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
@@ -65,42 +66,42 @@ class SettingsTest extends AbstractTestCase
 	public function testSetSorting(): void
 	{
 		$this->send('/Settings::setSorting', [
-			SetSortingSettingsRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => BaseSortingCriterion::COLUMN_CREATED_AT,
-			SetSortingSettingsRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => BaseSortingCriterion::COLUMN_CREATED_AT,
-			SetSortingSettingsRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => BaseSortingCriterion::ASC,
-			SetSortingSettingsRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => BaseSortingCriterion::ASC,
+			SetSortingSettingsRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => ColumnSortingType::CREATED_AT,
+			SetSortingSettingsRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => ColumnSortingType::CREATED_AT,
+			SetSortingSettingsRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => OrderSortingType::ASC,
+			SetSortingSettingsRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => OrderSortingType::ASC,
 		]);
 
 		$this->send('/Settings::setSorting', [
 			SetSortingSettingsRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => '123',
-			SetSortingSettingsRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => BaseSortingCriterion::COLUMN_CREATED_AT,
-			SetSortingSettingsRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => BaseSortingCriterion::ASC,
-			SetSortingSettingsRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => BaseSortingCriterion::ASC,
+			SetSortingSettingsRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => ColumnSortingType::CREATED_AT,
+			SetSortingSettingsRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => OrderSortingType::ASC,
+			SetSortingSettingsRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => OrderSortingType::ASC,
 		],
 			422,
-			'sorting albums column must be null or one out of'
+			'The selected sorting albums column is invalid'
 		);
 
 		$this->send('/Settings::setSorting', [
-			SetSortingSettingsRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => BaseSortingCriterion::COLUMN_CREATED_AT,
+			SetSortingSettingsRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => ColumnSortingType::CREATED_AT,
 			SetSortingSettingsRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => '123',
-			SetSortingSettingsRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => BaseSortingCriterion::ASC,
-			SetSortingSettingsRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => BaseSortingCriterion::ASC,
+			SetSortingSettingsRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => OrderSortingType::ASC,
+			SetSortingSettingsRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => OrderSortingType::ASC,
 		],
 			422,
-			'sorting photos column must be null or one out of'
+			'The selected sorting photos column is invalid'
 		);
 
 		$this->send(
 			'/Settings::setSorting',
 			[
-				SetSortingSettingsRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => BaseSortingCriterion::COLUMN_CREATED_AT,
-				SetSortingSettingsRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => BaseSortingCriterion::COLUMN_CREATED_AT,
+				SetSortingSettingsRequest::ALBUM_SORTING_COLUMN_ATTRIBUTE => ColumnSortingType::CREATED_AT,
+				SetSortingSettingsRequest::PHOTO_SORTING_COLUMN_ATTRIBUTE => ColumnSortingType::CREATED_AT,
 				SetSortingSettingsRequest::ALBUM_SORTING_ORDER_ATTRIBUTE => '123',
 				SetSortingSettingsRequest::PHOTO_SORTING_ORDER_ATTRIBUTE => '123',
 			],
 			422,
-			'order must be either'
+			'The selected sorting photos order is invalid'
 		);
 	}
 

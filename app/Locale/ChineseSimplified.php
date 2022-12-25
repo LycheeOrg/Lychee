@@ -471,6 +471,7 @@ final class ChineseSimplified implements Language
 			'URL_COPY_TO_CLIPBOARD' => '复制到剪贴板',
 			'URL_COPIED_TO_CLIPBOARD' => 'URL 已经复制到剪贴板！',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => '图像文件的直链：',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => '中等尺寸',
 			'PHOTO_MEDIUM_HIDPI' => '中等尺寸 HiDPI',
 			'PHOTO_SMALL' => '缩略图',

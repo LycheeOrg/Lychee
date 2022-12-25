@@ -26,14 +26,10 @@ class PHPVersionCheck implements DiagnosticPipe
 		// 26 Nov 2020	 => 8.0 = RELEASED   => 7.4 = WARNING
 		// 6 Dec 2020	 => 7.3 = DEPRECATED = ERROR
 		// 25 Nov 2021	 => 8.1 = Released   => 8.0 = WARNING & 7.4 = ERROR
-		$php_error = 7.4;
-		$php_warning = 8;
-		$php_latest = 8.1;
-
 		// ! 08 Dec 2022	 => 8.0 = DEPRECATED = ERROR
-		// $php_error = 8.1;
-		// $php_warning = 8.1;
-		// $php_latest = 8.2;
+		$php_error = 8.0;
+		$php_warning = 8.1;
+		$php_latest = 8.2;
 
 		if (floatval(phpversion()) <= $php_error) {
 			$data[] = 'Error: Upgrade to PHP ' . $php_warning . ' or higher';

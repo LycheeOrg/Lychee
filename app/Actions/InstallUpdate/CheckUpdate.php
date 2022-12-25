@@ -4,6 +4,7 @@ namespace App\Actions\InstallUpdate;
 
 use App\Actions\Diagnostics\Pipes\Checks\MigrationCheck;
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
+use App\Enum\UpdateStatus;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
@@ -33,16 +34,16 @@ class CheckUpdate
 	 *  - `2` - Not up-to-date.
 	 *  - `3` - Require migration.
 	 *
-	 * @return int the update state between 0..3
+	 * @return UpdateStatus the update state between 0..3
 	 */
-	public function getCode(): int
+	public function getCode(): UpdateStatus
 	{
 		if ($this->installedVersion->isRelease()) {
 			// @codeCoverageIgnoreStart
 			return match (false) {
-				MigrationCheck::isUpToDate() => 3,
-				$this->fileVersion->isUpToDate() => 2,
-				default => 1
+				MigrationCheck::isUpToDate() => UpdateStatus::REQUIRE_MIGRATION,
+				$this->fileVersion->isUpToDate() => UpdateStatus::NOT_UP_TO_DATE,
+				default => UpdateStatus::UP_TO_DATE
 			};
 			// @codeCoverageIgnoreEnd
 		}
@@ -51,13 +52,13 @@ class CheckUpdate
 			UpdatableCheck::assertUpdatability();
 			// @codeCoverageIgnoreStart
 			if (!$this->gitHubFunctions->isUpToDate()) {
-				return 2;
+				return UpdateStatus::NOT_UP_TO_DATE;
 			} else {
-				return 1;
+				return UpdateStatus::UP_TO_DATE;
 			}
 			// @codeCoverageIgnoreEnd
 		} catch (\Exception $e) {
-			return 0;
+			return UpdateStatus::NOT_MASTER;
 		}
 	}
 }
