@@ -239,7 +239,7 @@ class PhotosDownloadTest extends Base\BasePhotoTest
 
 	public function testDownloadOfInvisibleUnsortedPhotoByNonOwner(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
 		$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
 		Auth::logout();
@@ -259,7 +259,7 @@ class PhotosDownloadTest extends Base\BasePhotoTest
 		$areAlbumsDownloadable = Configs::getValueAsBool(self::CONFIG_DOWNLOADABLE);
 		try {
 			Configs::set(self::CONFIG_DOWNLOADABLE, true);
-			Auth::loginUsingId(0);
+			Auth::loginUsingId(1);
 			$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
 			$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
 			Auth::logout();
@@ -285,7 +285,7 @@ class PhotosDownloadTest extends Base\BasePhotoTest
 		$areAlbumsDownloadable = Configs::getValueAsBool(self::CONFIG_DOWNLOADABLE);
 		try {
 			Configs::set(self::CONFIG_DOWNLOADABLE, false);
-			Auth::loginUsingId(0);
+			Auth::loginUsingId(1);
 			$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
 			$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
 			Auth::logout();

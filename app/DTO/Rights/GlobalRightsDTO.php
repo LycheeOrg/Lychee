@@ -31,19 +31,4 @@ class GlobalRightsDTO extends ArrayableDTO
 			user: UserRightsDTO::ofCurrentUser(),
 		);
 	}
-
-	/**
-	 * Create from no admin registerd.
-	 *
-	 * @return self
-	 */
-	public static function ofUnregisteredAdmin(): self
-	{
-		return new self(
-			root_album: RootAlbumRightsDTO::ofUnregisteredAdmin(),
-			settings: SettingsRightsDTO::ofUnregisteredAdmin(),
-			user_management: UserManagementRightsDTO::ofUnregisteredAdmin(),
-			user: UserRightsDTO::ofUnregisteredAdmin(),
-		);
-	}
 }

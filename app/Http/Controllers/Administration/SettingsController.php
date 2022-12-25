@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers\Administration;
 
-use App\Actions\Settings\SetLogin;
-use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Http\Requests\Legacy\SetAdminLoginRequest;
 use App\Http\Requests\Settings\GetSetAllSettingsRequest;
 use App\Http\Requests\Settings\SetAlbumDecorationRequest;
 use App\Http\Requests\Settings\SetCSSSettingRequest;
@@ -30,40 +27,12 @@ use App\Http\Requests\Settings\SetSortingSettingsRequest;
 use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class SettingsController extends Controller
 {
-	/**
-	 * Set the Login information for the admin user (id = 0)
-	 * when the latter is not initialized.
-	 *
-	 * @param SetAdminLoginRequest $request
-	 * @param SetLogin             $setLogin
-	 *
-	 * @return User
-	 *
-	 * @throws LycheeException
-	 * @throws ModelNotFoundException
-	 */
-	public function setLogin(SetAdminLoginRequest $request, SetLogin $setLogin): User
-	{
-		$adminUser = $setLogin->do(
-			$request->username(),
-			$request->password()
-		);
-		// Update the session with the new credentials of the user.
-		// Otherwise, the session is out-of-sync and falsely assumes the user
-		// to be unauthenticated upon the next request.
-		Auth::login($adminUser);
-
-		return $adminUser;
-	}
-
 	/**
 	 * Define the default sorting type.
 	 *

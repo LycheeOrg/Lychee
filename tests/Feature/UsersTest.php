@@ -12,7 +12,6 @@
 
 namespace Tests\Feature;
 
-use App\Legacy\AdminAuthentication;
 use App\Models\Configs;
 use App\Models\User;
 use App\SmartAlbums\OnThisDayAlbum;
@@ -33,32 +32,6 @@ use Tests\Feature\Traits\InteractWithSmartAlbums;
 class UsersTest extends AbstractTestCase
 {
 	use InteractWithSmartAlbums;
-
-	public function testSetAdminLoginIfAdminUnconfigured(): void
-	{
-		/**
-		 * because there is no dependency injection in test cases.
-		 */
-		$sessions_test = new SessionUnitTest($this);
-
-		if (!AdminAuthentication::isAdminNotRegistered()) {
-			static::markTestSkipped('Admin user is registered; test skipped.');
-		}
-
-		static::assertTrue(AdminAuthentication::loginAsAdminIfNotRegistered());
-		$sessions_test->set_admin('lychee', 'password');
-		$sessions_test->logout();
-		static::assertFalse(AdminAuthentication::isAdminNotRegistered());
-
-		$sessions_test->set_admin('lychee', 'password', 403, 'Admin user is already registered');
-
-		$sessions_test->login('lychee', 'password');
-		$sessions_test->logout();
-
-		$sessions_test->login('foo', 'bar', 401);
-		$sessions_test->login('lychee', 'bar', 401);
-		$sessions_test->login('foo', 'password', 401);
-	}
 
 	public function testUsers(): void
 	{
@@ -111,11 +84,12 @@ class UsersTest extends AbstractTestCase
 		 * 35. update email
 		 * 36. get email
 		 * 37. update email to blank
-		 * 38. log out
+		 * 38. try to delete yourself (not allowed)
+		 * 39. log out
 		 */
 
 		// 1
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		// 2
 		$users_test->add(
@@ -207,7 +181,7 @@ class UsersTest extends AbstractTestCase
 		$sessions_test->logout();
 
 		// 15
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		// 16
 		$users_test->save(
@@ -277,7 +251,7 @@ class UsersTest extends AbstractTestCase
 		$sessions_test->logout();
 
 		// 30
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		// 31
 		$users_test->delete($id);
@@ -293,7 +267,7 @@ class UsersTest extends AbstractTestCase
 		$sessions_test->logout();
 
 		// 33
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$configs = Configs::get();
 		$store_new_photos_notification = $configs['new_photos_notification'];
@@ -316,6 +290,9 @@ class UsersTest extends AbstractTestCase
 		$users_test->update_email(null);
 
 		// 38
+		$response = $users_test->delete(intval(Auth::id()), 403);
+
+		// 39
 		$sessions_test->logout();
 		Configs::set('new_photos_notification', $store_new_photos_notification);
 	}
@@ -324,7 +301,7 @@ class UsersTest extends AbstractTestCase
 	{
 		$users_test = new UsersUnitTest($this);
 
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$oldToken = $users_test->reset_token()->offsetGet('token');
 		$newToken = $users_test->reset_token()->offsetGet('token');
@@ -337,7 +314,7 @@ class UsersTest extends AbstractTestCase
 	{
 		$users_test = new UsersUnitTest($this);
 
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$oldToken = $users_test->reset_token()->offsetGet('token');
 		self::assertNotNull($oldToken);
@@ -373,13 +350,13 @@ class UsersTest extends AbstractTestCase
 			], ]);
 
 		// update Admin user to non valid rights
-		$admin = User::findOrFail(0);
+		$admin = User::findOrFail(1);
 		$admin->may_upload = false;
 		$admin->may_edit_own_settings = true;
 		$admin->save();
 
 		// Log as admin and check the rights
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$response = $sessions_test->init();
 		$response->assertJsonFragment([
 			'rights' => [
@@ -395,7 +372,7 @@ class UsersTest extends AbstractTestCase
 		$admin->save();
 
 		// Log as admin and verify behaviour
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$response = $sessions_test->init();
 		$response->assertJsonFragment([
 			'rights' => [
@@ -415,10 +392,10 @@ class UsersTest extends AbstractTestCase
 
 		$users_test->get_user(204);
 
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$users_test->get_user(200, [
-			'id' => 0,
+			'id' => 1,
 		]);
 	}
 }

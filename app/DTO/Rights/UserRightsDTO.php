@@ -30,12 +30,4 @@ class UserRightsDTO extends ArrayableDTO
 			can_use_2fa: Gate::check(UserPolicy::CAN_USE_2FA, [User::class]),
 		);
 	}
-
-	/**
-	 * @return self
-	 */
-	public static function ofUnregisteredAdmin(): self
-	{
-		return new self(true, true);
-	}
 }

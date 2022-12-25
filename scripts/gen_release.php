@@ -110,6 +110,10 @@ function does_migration_exists(string $version): void
 	$name_candidate = 'bump_version' . $version;
 	$migrations = array_slice(scandir('database/migrations'), 2);
 	foreach ($migrations as $migration) {
+		if (is_dir('database/migrations/' . $migration)) {
+			continue;
+		}
+
 		// given 2020_04_22_155712_bump_version040002.php we retrieve bump_version040002
 		$name = explode('_', $migration, 5);
 		$name = substr($name[4], 0, -4);

@@ -38,7 +38,7 @@ abstract class BasePhotoTest extends AbstractTestCase
 		$this->setUpRequiresExifTool();
 		$this->setUpRequiresFFMpeg();
 		$this->setUpRequiresEmptyPhotos();
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 	}
 
 	public function tearDown(): void

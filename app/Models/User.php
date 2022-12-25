@@ -18,6 +18,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
+use Laragear\WebAuthn\Models\WebAuthnCredential;
 use Laragear\WebAuthn\WebAuthnAuthentication;
 
 /**
@@ -169,22 +170,31 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	public function delete(): bool
 	{
-		$now = Carbon::now();
-		$newOwnerID = Auth::id() ?? throw new UnauthenticatedException();
-
 		/** @var HasMany[] $ownershipRelations */
 		$ownershipRelations = [$this->photos(), $this->albums()];
+		$hasAny = false;
 
 		foreach ($ownershipRelations as $relation) {
-			// We must also update the `updated_at` column of the related
-			// models in case clients have cached these models.
-			$relation->update([
-				$relation->getForeignKeyName() => $newOwnerID,
-				$relation->getRelated()->getUpdatedAtColumn() => $relation->getRelated()->fromDateTime($now),
-			]);
+			$hasAny = $hasAny || $relation->count() > 0;
+		}
+
+		if ($hasAny) {
+			// only try update relations if there are any to allow deleting users from migrations (relations are moved before deleting)
+			$now = Carbon::now();
+			$newOwnerID = Auth::id() ?? throw new UnauthenticatedException();
+
+			foreach ($ownershipRelations as $relation) {
+				// We must also update the `updated_at` column of the related
+				// models in case clients have cached these models.
+				$relation->update([
+					$relation->getForeignKeyName() => $newOwnerID,
+					$relation->getRelated()->getUpdatedAtColumn() => $relation->getRelated()->fromDateTime($now),
+				]);
+			}
 		}
 
 		$this->shared()->delete();
+		WebAuthnCredential::where('authenticatable_id', '=', $this->id)->delete();
 
 		return $this->parentDelete();
 	}

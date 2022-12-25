@@ -90,7 +90,7 @@ class AlbumTest extends AbstractTestCase
 
 	public function testAddReadLogged(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$this->clearCachedSmartAlbums();
 
 		$this->albums_tests->get(RecentAlbum::ID);
@@ -165,7 +165,7 @@ class AlbumTest extends AbstractTestCase
 		$this->albums_tests->unlock($albumID1, 'wrong-password', 403);
 		$this->albums_tests->get($albumID1, 401);
 
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		/*
 		 * Let's try to delete this album.
@@ -229,7 +229,7 @@ class AlbumTest extends AbstractTestCase
 			// tests.
 			static::assertDatabaseCount('base_albums', 0);
 
-			Auth::loginUsingId(0);
+			Auth::loginUsingId(1);
 
 			// Create the test layout
 			$albumID1 = $this->albums_tests->add(null, 'Album 1')->offsetGet('id');
@@ -373,7 +373,7 @@ class AlbumTest extends AbstractTestCase
 			// tests.
 			static::assertDatabaseCount('base_albums', 0);
 
-			Auth::loginUsingId(0);
+			Auth::loginUsingId(1);
 
 			// Create the test layout
 			$albumID1 = $this->albums_tests->add(null, 'Album 1')->offsetGet('id');
@@ -490,7 +490,7 @@ class AlbumTest extends AbstractTestCase
 
 	public function testTrueNegative(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$this->albums_tests->set_description('-1', 'new description', 422);
 		$this->albums_tests->set_description('abcdefghijklmnopqrstuvwx', 'new description', 404);
@@ -507,7 +507,7 @@ class AlbumTest extends AbstractTestCase
 		$albumSortingOrder = Configs::getValueAsString(self::CONFIG_ALBUMS_SORTING_ORDER);
 
 		try {
-			Auth::loginUsingId(0);
+			Auth::loginUsingId(1);
 			Configs::set(self::CONFIG_ALBUMS_SORTING_COL, 'title');
 			Configs::set(self::CONFIG_ALBUMS_SORTING_ORDER, 'ASC');
 
@@ -560,7 +560,7 @@ class AlbumTest extends AbstractTestCase
 
 	public function testAddAlbumByNonAdminUserWithoutUploadPrivilege(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$userID = $this->users_tests->add('Test user', 'Test password', false)->offsetGet('id');
 		Auth::logout();
 		Session::flush();
@@ -570,7 +570,7 @@ class AlbumTest extends AbstractTestCase
 
 	public function testAddAlbumByNonAdminUserWithUploadPrivilege(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$userID = $this->users_tests->add('Test user', 'Test password')->offsetGet('id');
 		Auth::logout();
 		Session::flush();
@@ -580,7 +580,7 @@ class AlbumTest extends AbstractTestCase
 
 	public function testEditAlbumByNonOwner(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
 		$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
 		Auth::logout();
@@ -596,7 +596,7 @@ class AlbumTest extends AbstractTestCase
 
 	public function testEditAlbumByOwner(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$userID = $this->users_tests->add('Test user', 'Test password 1')->offsetGet('id');
 		Auth::logout();
 		Session::flush();
@@ -628,7 +628,7 @@ class AlbumTest extends AbstractTestCase
 
 	public function testDeleteMultipleAlbumsByAnonUser(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$albumID1 = $this->albums_tests->add(null, 'Test Album 1')->offsetGet('id');
 		$albumID2 = $this->albums_tests->add(null, 'Test Album 2')->offsetGet('id');
 		Auth::logout();
@@ -638,7 +638,7 @@ class AlbumTest extends AbstractTestCase
 
 	public function testDeleteMultipleAlbumsByNonAdminUserWithoutUploadPrivilege(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$albumID1 = $this->albums_tests->add(null, 'Test Album 1')->offsetGet('id');
 		$albumID2 = $this->albums_tests->add(null, 'Test Album 2')->offsetGet('id');
 		$userID = $this->users_tests->add('Test user', 'Test password', false)->offsetGet('id');
@@ -651,7 +651,7 @@ class AlbumTest extends AbstractTestCase
 
 	public function testDeleteMultipleAlbumsByNonOwner(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
 		$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
 		Auth::logout();
@@ -668,7 +668,7 @@ class AlbumTest extends AbstractTestCase
 
 	public function testDeleteMultipleAlbumsByOwner(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$userID = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
 		Auth::logout();
 		Session::flush();
@@ -696,7 +696,7 @@ class AlbumTest extends AbstractTestCase
 	 */
 	public function testDeleteNonEmptyTagAlbumWithPhotosFromRegularAlbum(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$regularAlbumID = $this->albums_tests->add(null, 'Regular Album for Delete Test')->offsetGet('id');
 		$photoID = $this->photos_tests->upload(
 			self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE), $regularAlbumID
@@ -724,7 +724,7 @@ class AlbumTest extends AbstractTestCase
 	 */
 	public function testSetCoverByNonOwner()
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$userID = $this->users_tests->add('Test user', 'Test password 1')->offsetGet('id');
 		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 		$photoID1 = $this->photos_tests->upload(
@@ -749,7 +749,7 @@ class AlbumTest extends AbstractTestCase
 	 */
 	public function testSetCoverByOwner()
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 		$photoID1 = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE),
@@ -784,7 +784,7 @@ class AlbumTest extends AbstractTestCase
 	 */
 	public function testDeleteUnsorted(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$id = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
@@ -804,7 +804,7 @@ class AlbumTest extends AbstractTestCase
 
 	public function testHiddenSmartAlbums(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$this->clearCachedSmartAlbums();
 		Configs::set('SA_enabled', true);
@@ -845,7 +845,7 @@ class AlbumTest extends AbstractTestCase
 
 	public function testOnThisDayAlbumWhenThereIsPhotoTakenAtCurrentMonthAndDay(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$today = CarbonImmutable::today();
 		$photoID = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
@@ -867,7 +867,7 @@ class AlbumTest extends AbstractTestCase
 
 	public function testOnThisDayAlbumWhenThereIsPhotoCreatedAtCurrentMonthAndDay(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$today = CarbonImmutable::today();
 		$photoID = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
@@ -888,7 +888,7 @@ class AlbumTest extends AbstractTestCase
 
 	public function testOnThisDayAlbumWhenIsEmpty(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$today = CarbonImmutable::today();
 		$photoID = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)

@@ -9,9 +9,9 @@ class AdminUserExistsCheck implements DiagnosticPipe
 {
 	public function handle(array &$data, \Closure $next): array
 	{
-		$admin = User::query()->find(0);
-		if ($admin === null) {
-			$data[] = 'Error: User Admin not found in database. Please run: "php artisan lychee:reset_admin"';
+		$numberOfAdmin = User::query()->where('may_administrate', '=', true)->count();
+		if ($numberOfAdmin === 0) {
+			$data[] = 'Error: User Admin not found in database. Please run: "php lychee:create_user {username} {password}"';
 		}
 
 		return $next($data);

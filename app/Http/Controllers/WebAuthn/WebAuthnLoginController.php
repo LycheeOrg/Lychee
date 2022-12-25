@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers\WebAuthn;
 
-use App\Exceptions\UnauthenticatedException;
-use App\Models\User;
-use App\Pipelines\AssertionValidator;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Support\Responsable;
-use Illuminate\Support\Facades\Auth;
-use Laragear\WebAuthn\Assertion\Validator\AssertionValidation;
 use Laragear\WebAuthn\Http\Requests\AssertedRequest;
 use Laragear\WebAuthn\Http\Requests\AssertionRequest;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class WebAuthnLoginController
 {
@@ -18,7 +16,9 @@ class WebAuthnLoginController
 	 *
 	 * @param AssertionRequest $request
 	 *
-	 * @return \Illuminate\Contracts\Support\Responsable
+	 * @return Responsable
+	 *
+	 * @throws BindingResolutionException
 	 */
 	public function options(AssertionRequest $request): Responsable
 	{
@@ -32,19 +32,11 @@ class WebAuthnLoginController
 	 *
 	 * @return void
 	 */
-	public function login(AssertedRequest $request, AssertionValidator $assertion): void
+	public function login(AssertedRequest $request): void
 	{
-		$credential = $assertion
-			->send(new AssertionValidation($request, User::findOrFail(0)))
-			->thenReturn()
-			->credential;
-
-		if ($credential === null) {
-			throw new UnauthenticatedException('Invalid credentials');
+		$user = $request->login();
+		if ($user === null) {
+			throw new HttpException(Response::HTTP_UNPROCESSABLE_ENTITY);
 		}
-
-		/** @var \Illuminate\Contracts\Auth\Authenticatable $authenticatable */
-		$authenticatable = $credential->authenticatable;
-		Auth::login($authenticatable);
 	}
 }

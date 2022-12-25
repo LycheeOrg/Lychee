@@ -29,7 +29,7 @@ class DiagnosticsTest extends AbstractTestCase
 		$response = $this->get('/Diagnostics');
 		$this->assertOk($response); // code 200 something
 
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		$response = $this->get('/Diagnostics');
 		$this->assertOk($response); // code 200 something

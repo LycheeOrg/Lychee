@@ -65,18 +65,10 @@ class SessionController extends Controller
 			// Return settings
 			$return = [];
 
-			if (AdminAuthentication::loginAsAdminIfNotRegistered()) {
-				// TODO: Remove this legacy stuff after creating the admin user has become part of the installation routine.
-				// If the session is unauthenticated ('user' === null), but grants admin rights nonetheless,
-				// the front-end shows the dialog to create an admin account.
-				$return['user'] = null;
-				$return['rights'] = GlobalRightsDTO::ofUnregisteredAdmin();
-			} else {
-				/** @var User|null $user */
-				$user = Auth::user();
-				$return['user'] = $user?->toArray();
-				$return['rights'] = GlobalRightsDTO::ofCurrentUser();
-			}
+			/** @var User|null $user */
+			$user = Auth::user();
+			$return['user'] = $user?->toArray();
+			$return['rights'] = GlobalRightsDTO::ofCurrentUser();
 
 			// Load configuration settings acc. to authentication status
 			if (Gate::check(SettingsPolicy::CAN_EDIT, [Configs::class])) {

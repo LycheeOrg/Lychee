@@ -77,7 +77,7 @@ class RSSTest extends AbstractTestCase
 			$this->assertOk($response);
 
 			// log as admin
-			Auth::loginUsingId(0);
+			Auth::loginUsingId(1);
 
 			// create an album
 			$albumID = $this->albums_tests->add(null, 'test_album')->offsetGet('id');

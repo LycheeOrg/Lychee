@@ -8,12 +8,9 @@ use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\VersionControlException;
 use App\Http\Requests\Settings\MigrateRequest;
 use App\Http\Requests\Settings\UpdateRequest;
-use App\Legacy\AdminAuthentication;
 use App\Metadata\Versions\GitHubVersion;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 /**
@@ -138,11 +135,6 @@ class UpdateController extends Controller
 	{
 		$output = [];
 		$output = $this->applyUpdate->run();
-
-		if (AdminAuthentication::isAdminNotRegistered()) {
-			Auth::logout();
-			Session::flush();
-		}
 
 		return view('update.results', ['code' => '200', 'message' => 'Migration results', 'output' => $output]);
 	}
