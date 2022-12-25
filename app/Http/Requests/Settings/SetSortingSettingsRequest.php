@@ -8,9 +8,6 @@ use App\Enum\OrderSortingType;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\Configs;
 use App\Policies\SettingsPolicy;
-use App\Rules\AlbumSortingRule;
-use App\Rules\OrderRule;
-use App\Rules\PhotoSortingRule;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 
