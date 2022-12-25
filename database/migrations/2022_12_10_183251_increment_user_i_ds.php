@@ -14,6 +14,7 @@ return new class() extends Migration {
 	public function up(): void
 	{
 		Schema::disableForeignKeyConstraints();
+		DB::beginTransaction();
 		/** @var App\Models\User|null $admin */
 		$admin = DB::table('users')->find(0);
 		if ($admin !== null && ($admin->username === '' || $admin->password === '')) {
@@ -41,6 +42,7 @@ return new class() extends Migration {
 			$lastUser = DB::table('users')->orderByDesc('id')->first();
 			DB::statement('ALTER SEQUENCE users_id_seq1 RESTART WITH ' . strval($lastUser->id + 1));
 		}
+		DB::commit();
 		Schema::enableForeignKeyConstraints();
 	}
 
@@ -52,6 +54,7 @@ return new class() extends Migration {
 	public function down(): void
 	{
 		Schema::disableForeignKeyConstraints();
+		DB::beginTransaction();
 		/** @var App\Models\User $user */
 		foreach (User::query()->orderBy('id')->get() as $user) {
 			$oldID = $user->id;
@@ -66,6 +69,7 @@ return new class() extends Migration {
 			DB::table('webauthn_credentials')->where('authenticatable_id', '=', $oldID)->update(['authenticatable_id' => $newID]);
 			DB::table('users')->delete($oldID);
 		}
+		DB::commit();
 		Schema::enableForeignKeyConstraints();
 	}
 };
