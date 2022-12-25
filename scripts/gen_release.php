@@ -110,7 +110,7 @@ function does_migration_exists(string $version): void
 	$name_candidate = 'bump_version' . $version;
 	$migrations = array_slice(scandir('database/migrations'), 2);
 	foreach ($migrations as $migration) {
-		if ($migration === 'TemporaryModels') {
+		if (is_dir('database/migrations/' . $migration)) {
 			continue;
 		}
 
