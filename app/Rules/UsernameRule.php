@@ -4,8 +4,8 @@ namespace App\Rules;
 
 class UsernameRule extends StringRule
 {
-	public function __construct()
+	public function __construct(bool $nullable = false)
 	{
-		parent::__construct(false, 100);
+		parent::__construct($nullable, 100);
 	}
 }
