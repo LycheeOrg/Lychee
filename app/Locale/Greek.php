@@ -291,7 +291,6 @@ final class Greek implements Language
 			'ERROR' => 'Σφάλμα',
 			'ERROR_TEXT' => 'Ουπς, φαίνεται πως κάτι πήγε στραβά. Παρακαλούμε κάντε ανανέωση της σελίδας και προσπαθήστε ξανά!',
 			'ERROR_UNKNOWN' => 'Κάτι απρόσμενο συνέβη. Παρακαλούμε προσπαθείστε ξανά και ελέγξτε την εγκατάστασή σας και τον εξυπηρετητή. Ρίξτε μια ματιά στο αρχείο readme για περισσότερες πληροφορίες.',
-			'ERROR_LOGIN' => 'Αδυναμία αποθήκευσης στοιχείων εισόδου. Παρακαλούμε δοκιμάστε ξανά με διαφορετικό όνομα χρήστη και κωδικό πρόσβασης!',
 			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
@@ -328,12 +327,9 @@ final class Greek implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
-			'LOGIN_TITLE' => 'Εισάγετε ένα όνομα χρήστη και κωδικό πρόσβασης για την εγκατάστασή σας:',
 			'LOGIN_USERNAME' => 'Νέο όνομα χρήστη',
 			'LOGIN_PASSWORD' => 'Νέος κωδικός πρόσβασης',
 			'LOGIN_PASSWORD_CONFIRM' => 'Επιβεβαίωση κωδικού πρόσβασης',
-			'LOGIN_CREATE' => 'Δημιουργία στοιχείων εισόδου',
-
 			'PASSWORD_TITLE' => 'Εισάγετε τον τρέχον κωδικό πρόσβασης:',
 			'PASSWORD_CURRENT' => 'Τρέχον κωδικός πρόσβασης',
 			'PASSWORD_TEXT' => 'Το όνομα χρήστη και ο κωδικός πρόσβασής σας θα αλλάξουν στα παρακάτω:',

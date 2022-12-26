@@ -291,7 +291,6 @@ final class English implements Language
 			'ERROR' => 'Error',
 			'ERROR_TEXT' => 'Whoops, it looks like something went wrong. Please reload the site and try again!',
 			'ERROR_UNKNOWN' => 'Something unexpected happened. Please try again and check your installation and server. Take a look at the readme for more information.',
-			'ERROR_LOGIN' => 'Unable to save login. Please try again with another username and password!',
 			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
@@ -328,15 +327,12 @@ final class English implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
-			'LOGIN_TITLE' => 'Enter a username and password for your installation:',
 			'LOGIN_USERNAME' => 'New Username',
 			'LOGIN_PASSWORD' => 'New Password',
 			'LOGIN_PASSWORD_CONFIRM' => 'Confirm Password',
-			'LOGIN_CREATE' => 'Create Login',
-
 			'PASSWORD_TITLE' => 'Enter your current password:',
 			'PASSWORD_CURRENT' => 'Current Password',
-			'PASSWORD_TEXT' => 'Your username and password will be changed to the following:',
+			'PASSWORD_TEXT' => 'Your credentials will be changed to the following:',
 			'PASSWORD_CHANGE' => 'Change Login',
 
 			'EDIT_SHARING_TITLE' => 'Edit Sharing',
