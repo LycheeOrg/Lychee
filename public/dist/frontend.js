@@ -10483,7 +10483,7 @@ settings.bind = function (inputSelector, formSelector, settingClickCB) {
  * @returns {void}
  */
 settings.changeLogin = function (params) {
-	if (params.username === '') {
+	if (params.username === "") {
 		params.username = null;
 	}
 
