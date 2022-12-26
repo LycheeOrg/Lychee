@@ -33,7 +33,6 @@ class PhotoRightsResource extends JsonResource
 		);
 	}
 
-
 	/**
 	 * Transform the resource into an array.
 	 *
@@ -49,5 +48,4 @@ class PhotoRightsResource extends JsonResource
 			'can_access_full_photo' => $this->can_access_full_photo,
 		];
 	}
-
 }
