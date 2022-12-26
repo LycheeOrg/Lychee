@@ -291,7 +291,6 @@ final class German implements Language
 			'ERROR' => 'Fehler',
 			'ERROR_TEXT' => 'Hoppla, da ist etwas schiefgegangen. Bitte laden Sie die Seite erneut und probieren Sie es noch einmal!',
 			'ERROR_UNKNOWN' => 'Etwas Unerwartetes ist passiert. Bitte probieren Sie es erneut und überprüfen Sie die Installation und Ihren Server. Lesen Sie die README-Datei für mehr Informationen.',
-			'ERROR_LOGIN' => 'Kann Login nicht speichern. Bitte versuchen Sie es erneut mit einem anderen Benutzernamen und Kennwort!',
 			'ERROR_MAP_DEACTIVATED' => 'Karten sind unter Einstellungen deaktiviert worden.',
 			'ERROR_SEARCH_DEACTIVATED' => 'Suchfunktion wurde unter Einstellungen deaktiviert.',
 			'SUCCESS' => 'OK',
@@ -328,12 +327,9 @@ final class German implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Geben Sie Ihre E-Mail-Adresse unten ein, um Benachrichtigungen zu aktivieren. Um Benachrichtigungen zu deaktivieren, entfernen Sie die E-Mail-Adresse unten einfach.',
 
-			'LOGIN_TITLE' => 'Geben Sie Benutzername und Kennwort für Ihre Installation an:',
 			'LOGIN_USERNAME' => 'Neuer Benutzername',
 			'LOGIN_PASSWORD' => 'Neues Kennwort',
 			'LOGIN_PASSWORD_CONFIRM' => 'Passwort bestätigen',
-			'LOGIN_CREATE' => 'Benutzer anlegen',
-
 			'PASSWORD_TITLE' => 'Geben Sie Ihr bestehendes Kennwort ein:',
 			'PASSWORD_CURRENT' => 'Bestehendes Kennwort',
 			'PASSWORD_TEXT' => 'Ihr Benutzername und Passwort werden wie folgt geändert:',

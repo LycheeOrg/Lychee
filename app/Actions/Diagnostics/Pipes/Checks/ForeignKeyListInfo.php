@@ -16,7 +16,7 @@ class ForeignKeyListInfo implements DiagnosticPipe
 		match (DB::getDriverName()) {
 			'sqlite' => $this->sqlite($data),
 			'mysql' => $this->mysql($data),
-			'pgsql' => '',
+			'pgsql' => $this->pgsql($data),
 			default => ''
 		};
 
@@ -35,8 +35,7 @@ class ForeignKeyListInfo implements DiagnosticPipe
 
 	private function mysql(array &$data): void
 	{
-		$fks = DB::select('select
-	   *
+		$fks = DB::select('select *
 from information_schema.referential_constraints fks
 join information_schema.key_column_usage kcu on fks.constraint_schema = kcu.table_schema
 and fks.table_name = kcu.table_name
@@ -50,6 +49,29 @@ order by fks.constraint_schema, fks.table_name;
 				$fk->TABLE_NAME . '.' . $fk->COLUMN_NAME,
 				$fk->REFERENCED_TABLE_NAME . '.' . $fk->REFERENCED_COLUMN_NAME,
 				$fk->UPDATE_RULE);
+		}
+	}
+
+	private function pgsql(array &$data): void
+	{
+		$fks = DB::select('SELECT tc.table_schema, tc.constraint_name, tc.table_name, kcu.column_name,
+ccu.table_schema AS foreign_table_schema,
+ccu.table_name AS foreign_table_name,
+ccu.column_name AS foreign_column_name
+FROM
+information_schema.table_constraints AS tc
+JOIN information_schema.key_column_usage AS kcu
+  ON tc.constraint_name = kcu.constraint_name
+  AND tc.table_schema = kcu.table_schema
+JOIN information_schema.constraint_column_usage AS ccu
+  ON ccu.constraint_name = tc.constraint_name
+  AND ccu.table_schema = tc.table_schema
+WHERE tc.constraint_type = \'FOREIGN KEY\';');
+
+		foreach ($fks as $fk) {
+			$data[] = sprintf('Foreign key: %-30s → %-20s',
+				$fk->table_name . '.' . $fk->column_name,
+				$fk->foreign_table_name . '.' . $fk->foreign_column_name);
 		}
 	}
 }

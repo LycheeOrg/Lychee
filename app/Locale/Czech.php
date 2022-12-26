@@ -291,7 +291,6 @@ final class Czech implements Language
 			'ERROR' => 'Chyba',
 			'ERROR_TEXT' => 'Něco není v pořádku. Obnovte stránku a postup zopakujte!',
 			'ERROR_UNKNOWN' => 'Neočekávaná chyba. Postup prosím opakujte a ujistěte se o správnosti instalace na serveru. Další informace jsou k dispozici v souboru README.',
-			'ERROR_LOGIN' => 'Nelze uložit přihlašovací informace. Opakujte prosím postup s jiným uřivatelským jménem a heslem!',
 			'ERROR_MAP_DEACTIVATED' => 'Funkce Mapy byla v nastavení deaktivována.',
 			'ERROR_SEARCH_DEACTIVATED' => 'Funkce hledání byla v nastavení deaktivována.',
 			'SUCCESS' => 'OK',
@@ -328,12 +327,9 @@ final class Czech implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
-			'LOGIN_TITLE' => 'Zadejte jméno uživatele a heslo pro svoji instalaci:',
 			'LOGIN_USERNAME' => 'Jméno uživatele',
 			'LOGIN_PASSWORD' => 'Heslo',
 			'LOGIN_PASSWORD_CONFIRM' => 'Zopakujte heslo',
-			'LOGIN_CREATE' => 'Vytvořit uživatele',
-
 			'PASSWORD_TITLE' => 'Zadejte aktuální heslo:',
 			'PASSWORD_CURRENT' => 'Aktuální heslo',
 			'PASSWORD_TEXT' => 'Vaše uživatelské jméno a heslo budou změněny následovně:',

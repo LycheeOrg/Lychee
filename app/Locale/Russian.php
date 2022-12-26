@@ -291,7 +291,6 @@ final class Russian implements Language
 			'ERROR' => 'Ошибка',
 			'ERROR_TEXT' => 'Ой, что-то пошло не так … Пожалуйста, обновите страницу и попробуйте повторить.',
 			'ERROR_UNKNOWN' => 'Произошло нечто неожиданное … Пожалуйста, повторите и проверьте папку установки и параметры сервера. За подробной информацией обратитесь к readme.',
-			'ERROR_LOGIN' => 'Не могу сохранить регистрационные данные. Попробуйте использовать другие логин и пароль.',
 			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'Ок',
@@ -328,12 +327,9 @@ final class Russian implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
-			'LOGIN_TITLE' => 'Введите логин и пароль для входа:',
 			'LOGIN_USERNAME' => 'Новый логин',
 			'LOGIN_PASSWORD' => 'Новый пароль',
 			'LOGIN_PASSWORD_CONFIRM' => 'Повторите пароль',
-			'LOGIN_CREATE' => 'Создать',
-
 			'PASSWORD_TITLE' => 'Введите текущий пароль:',
 			'PASSWORD_CURRENT' => 'Текущий пароль',
 			'PASSWORD_TEXT' => 'Ваши логин и пароль будут изменены на следующие:',

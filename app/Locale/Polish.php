@@ -291,7 +291,6 @@ final class Polish implements Language
 			'ERROR' => 'Błąd',
 			'ERROR_TEXT' => 'Ups, wygląda na to że coś poszło nie tak. Odśwież stronę i spróbuj ponownie!',
 			'ERROR_UNKNOWN' => 'Wystąpił nieoczekiwany błąd. Spróbuj ponownie i sprawdź swoją instalację oraz serwer. Przejrzyj plik README dla bardziej szczegółowych informacji.',
-			'ERROR_LOGIN' => 'Nie można zapisać loginu. Spróbuj ponownie przy użyciu innej nazwy użytkownika oraz hasła!',
 			'ERROR_MAP_DEACTIVATED' => 'Funkcja mapy została wyłączona w ustawieniach.',
 			'ERROR_SEARCH_DEACTIVATED' => 'Funkcja wyszkukiwania została wyłączona w ustawieniach.',
 			'SUCCESS' => 'OK',
@@ -328,12 +327,9 @@ final class Polish implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
-			'LOGIN_TITLE' => 'Wpisz nazwę użytkownika oraz hasło dla swojej instalacji:',
 			'LOGIN_USERNAME' => 'Nowa nazwa użytkownika',
 			'LOGIN_PASSWORD' => 'Nowe hasło',
 			'LOGIN_PASSWORD_CONFIRM' => 'Potwierdź nowe hasło',
-			'LOGIN_CREATE' => 'Utwórz login',
-
 			'PASSWORD_TITLE' => 'Wpisz aktualne dane dostępowe:',
 			'PASSWORD_CURRENT' => 'Aktualne hasło',
 			'PASSWORD_TEXT' => 'Twoja nazwa użytkownika oraz hasło zostaną zmienione na następujące:',

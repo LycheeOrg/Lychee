@@ -291,7 +291,6 @@ final class NorwegianBokmal implements Language
 			'ERROR' => 'Feil',
 			'ERROR_TEXT' => 'Oisann, her ser det ut som noe gikk galt. Vennligst last inn siden på nytt og prøv igjen!',
 			'ERROR_UNKNOWN' => 'Noe uventet skjedde. Prøv på nytt og kontroller installasjonen av Lychee og serveren. Se <b>readme</b> for mer informasjon',
-			'ERROR_LOGIN' => 'Kan ikke utføre innloggingen. Vennligst prøv med et annet brukernavn og passord!',
 			'ERROR_MAP_DEACTIVATED' => 'Kartfunksjoner har blitt deaktivert under innstillinger',
 			'ERROR_SEARCH_DEACTIVATED' => 'Søkefunksjoner har blitt deaktivert under innstillinger',
 			'SUCCESS' => 'OK',
@@ -328,12 +327,9 @@ final class NorwegianBokmal implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
-			'LOGIN_TITLE' => 'Fyll inn et brukernavn og passord for installasjonen:',
 			'LOGIN_USERNAME' => 'Nytt Brukernavn',
 			'LOGIN_PASSWORD' => 'Nytt Passord',
 			'LOGIN_PASSWORD_CONFIRM' => 'Bekreft Passord',
-			'LOGIN_CREATE' => 'Lag Innlogging',
-
 			'PASSWORD_TITLE' => 'Fyll inn ditt nåværende passord:',
 			'PASSWORD_CURRENT' => 'Nåværende Passord',
 			'PASSWORD_TEXT' => 'Brukernavnet og passordet ditt vil bli endret til det følgende:',
