@@ -96,7 +96,7 @@ class ShowLogs extends Command
 			foreach ($logs->reverse() as $log) {
 				$this->line($this->col->magenta($log->created_at)
 					. ' -- '
-					. $this->color_type(str_pad($log->type, 7))
+					. $this->color_type(str_pad($log->type->value, 7))
 					. ' -- '
 					. $this->col->blue($log->function)
 					. ' -- '

@@ -12,7 +12,6 @@
 
 namespace Tests\Feature\Lib;
 
-use App\Actions\Photo\Archive;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Testing\TestResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -371,7 +370,7 @@ class PhotosUnitTest
 	 */
 	public function download(
 		array $ids,
-		string $kind = Archive::FULL,
+		string $kind,
 		int $expectedStatusCode = 200
 	): TestResponse {
 		$response = $this->testCase->getWithParameters(

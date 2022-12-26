@@ -12,7 +12,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\SizeVariant;
+use App\Enum\SizeVariantType;
 use Illuminate\Support\Facades\DB;
 use Tests\AbstractTestCase;
 use Tests\Feature\Base\BasePhotoTest;
@@ -34,7 +34,7 @@ class CommandVideoDataTest extends BasePhotoTest
 		\Safe\unlink(public_path($photo1->size_variants->thumb->url));
 		DB::table('size_variants')
 			->where('photo_id', '=', $photo1->id)
-			->where('type', '=', SizeVariant::THUMB)
+			->where('type', '=', SizeVariantType::THUMB)
 			->delete();
 
 		// Re-create it

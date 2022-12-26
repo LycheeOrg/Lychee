@@ -4069,7 +4069,7 @@ contextMenu.photoMulti = function (photoIDs, e) {
 	}, { title: build.iconic("trash") + lychee.locale["DELETE_ALL"], fn: function fn() {
 			return _photo3.delete(photoIDs);
 		} }, { title: build.iconic("cloud-download") + lychee.locale["DOWNLOAD_ALL"], fn: function fn() {
-			return _photo3.getArchive(photoIDs, "FULL");
+			return _photo3.getArchive(photoIDs, "ORIGINAL");
 		} }];
 
 	basicContext.show(items, e.originalEvent, contextMenu.close);
@@ -7876,6 +7876,7 @@ lychee.locale = {
 	URL_COPY_TO_CLIPBOARD: "Copy to clipboard",
 	URL_COPIED_TO_CLIPBOARD: "Copied URL to clipboard!",
 	PHOTO_DIRECT_LINKS_TO_IMAGES: "Direct links to image files:",
+	PHOTO_ORIGINAL: "Original",
 	PHOTO_MEDIUM: "Medium",
 	PHOTO_MEDIUM_HIDPI: "Medium HiDPI",
 	PHOTO_SMALL: "Thumb",
@@ -9915,7 +9916,7 @@ _photo3.setLicense = function (photoID) {
 /**
  * @param {string[]} photoIDs
  * @param {?string} [kind=null] - the type of size variant; one out of
- *                                `"FULL"`, `"MEDIUM2X"`, `"MEDIUM"`,
+ *                                `"ORIGINAL"`, `"MEDIUM2X"`, `"MEDIUM"`,
  *                                `"SMALL2X"`, `"SMALL"`, `"THUMB2X"` or
  *                                `"THUMB"`,
  * @returns {void}
@@ -9934,7 +9935,7 @@ _photo3.getArchive = function (photoIDs) {
 	var myPhoto = _photo3.json && _photo3.json.id === photoIDs[0] ? _photo3.json : album.getByID(photoIDs[0]);
 
 	var kind2VariantAndLocalizedLabel = {
-		FULL: ["original", lychee.locale["PHOTO_FULL"]],
+		ORIGINAL: ["original", lychee.locale["PHOTO_ORIGINAL"]],
 		MEDIUM2X: ["medium2x", lychee.locale["PHOTO_MEDIUM_HIDPI"]],
 		MEDIUM: ["medium", lychee.locale["PHOTO_MEDIUM"]],
 		SMALL2X: ["small2x", lychee.locale["PHOTO_SMALL_HIDPI"]],

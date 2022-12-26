@@ -3,11 +3,10 @@
 namespace App\Relations;
 
 use App\Contracts\Exceptions\InternalLycheeException;
-use App\DTO\BaseSortingCriterion;
+use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
-use App\Models\Photo;
 use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
 use Illuminate\Database\Eloquent\Collection;
@@ -117,9 +116,9 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 		} else {
 			$sorting = $album->getEffectiveSorting();
 			$photos = $photos->sortBy(
-				$sorting->column,
+				$sorting->column->value,
 				in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
-				$sorting->order === BaseSortingCriterion::DESC
+				$sorting->order === OrderSortingType::DESC
 			)->values();
 			$album->setRelation($relation, $photos);
 		}

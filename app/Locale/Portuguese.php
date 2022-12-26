@@ -467,6 +467,7 @@ final class Portuguese implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Copiar para o clipboard',
 			'URL_COPIED_TO_CLIPBOARD' => 'URL copiado para o clipboard!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Links diretos para os ficheiros de imagem:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => 'Média',
 			'PHOTO_MEDIUM_HIDPI' => 'Média HiDPI',
 			'PHOTO_SMALL' => 'Pequena',

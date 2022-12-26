@@ -39,7 +39,7 @@ class ContentType
 				throw new UnexpectedContentType(self::JSON);
 			}
 		} elseif ($contentType === self::MULTIPART) {
-			if ($request->getContentType() !== 'form') {
+			if ($request->getContentTypeFormat() !== 'form') {
 				throw new UnexpectedContentType(self::MULTIPART);
 			}
 		} else {
