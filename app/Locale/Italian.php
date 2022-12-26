@@ -291,7 +291,6 @@ final class Italian implements Language
 			'ERROR' => 'Errore',
 			'ERROR_TEXT' => 'Oops, sembra che qualcosa sia andato storto. Per favore ricarica il sito e prova di nuovo!',
 			'ERROR_UNKNOWN' => 'È successo qualcosa di inaspettato. Per favore prova di nuovo e controlla la tua installazione e il tuo server. Controlla il readme per più informazioni.',
-			'ERROR_LOGIN' => 'Impossibile salvare il login. Per favore prova con altri nomi utenti e password!',
 			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
@@ -328,12 +327,9 @@ final class Italian implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
-			'LOGIN_TITLE' => 'Inserisci un nome utente e una password per la tua installazione:',
 			'LOGIN_USERNAME' => 'Nuovo Nome Utente',
 			'LOGIN_PASSWORD' => 'Nuova Password',
 			'LOGIN_PASSWORD_CONFIRM' => 'Conferma Password',
-			'LOGIN_CREATE' => 'Crea Login',
-
 			'PASSWORD_TITLE' => 'Inserisci la tua password attuale:',
 			'PASSWORD_CURRENT' => 'Password Attuale',
 			'PASSWORD_TEXT' => 'Il tuo nome utente e password verrano cambiati nei seguenti:',

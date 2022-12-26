@@ -33,7 +33,7 @@ class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::USERNAME_ATTRIBUTE => ['sometimes', new UsernameRule()],
+			RequestAttribute::USERNAME_ATTRIBUTE => ['sometimes', new UsernameRule(true)],
 			RequestAttribute::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
 			RequestAttribute::OLD_PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
 		];

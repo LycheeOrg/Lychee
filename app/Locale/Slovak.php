@@ -291,7 +291,6 @@ final class Slovak implements Language
 			'ERROR' => 'Chyba',
 			'ERROR_TEXT' => 'Asi sa niečo pokazilo. Obnovte stránku a skúste znova!',
 			'ERROR_UNKNOWN' => 'Vyskytla sa neočakávaná chyba. Skúste to znova a skontrolujte inštaláciu na vašom serveri. Ďalšie informácie nájdete v súbore README.',
-			'ERROR_LOGIN' => 'Nemožno uložiť Login. Skúste to s iným menom a heslom!',
 			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
@@ -328,12 +327,9 @@ final class Slovak implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
-			'LOGIN_TITLE' => 'Zadajte meno a heslo pre vašu inštaláciu:',
 			'LOGIN_USERNAME' => 'Nový užívateľ',
 			'LOGIN_PASSWORD' => 'Nové heslo',
 			'LOGIN_PASSWORD_CONFIRM' => 'Heslo potvrdiť',
-			'LOGIN_CREATE' => 'Založiť užívateľa',
-
 			'PASSWORD_TITLE' => 'Zadajte vaše heslo:',
 			'PASSWORD_CURRENT' => 'Vaše pôvodné heslo',
 			'PASSWORD_TEXT' => 'Vaše meno a heslo bolo zmenené nasledovne:',
