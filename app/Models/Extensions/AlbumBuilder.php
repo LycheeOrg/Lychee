@@ -5,7 +5,6 @@ namespace App\Models\Extensions;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
-use App\Models\Configs;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Auth;
@@ -91,63 +90,24 @@ class AlbumBuilder extends NSQueryBuilder
 
 			$maxTsSelect = $minTsSelect->clone()->select(DB::raw('MAX(taken_at)'));
 
-			$selects = [
+			$isAdmin = (Auth::user()?->may_administrate === true);
+			$userID = !$isAdmin ? Auth::id() : null;
+
+			$countChildren = DB::table('albums', 'a');
+			$countChildren->select(DB::raw('COUNT(*)'));
+			$countChildren->whereColumn('a.parent_id', '=', 'albums.id');
+
+			$countPhotos =
+				DB::table('photos', 'p')
+				->select(DB::raw('COUNT(*)'))
+				->whereColumn('p.album_id', '=', 'albums.id');
+
+			$this->addSelect([
 				'min_taken_at' => $minTsSelect,
 				'max_taken_at' => $maxTsSelect,
-			];
-
-			$showSubalbum = true;
-			$showSubalbumCount = false;
-			$showPhotoCount = false;
-			$isAdmin = false;
-			$userID = null;
-			switch (Configs::getValueAsString('album_decoration')) {
-				case 'photo':
-					$showPhotoCount = true;
-					$isAdmin = (Auth::user()?->may_administrate === true);
-					if (!$isAdmin) {
-						$userID = Auth::id();
-					}
-					// no break
-				case 'none':
-					// whether admin and what user doesn't matter (no additional queries)
-					$showSubalbum = false;
-					break;
-				case 'all':
-					$showPhotoCount = true;
-					// no break
-				case 'album':
-					$showSubalbumCount = true;
-					// no break
-				case 'original':
-				default:
-					$isAdmin = (Auth::user()?->may_administrate === true);
-					if (!$isAdmin) {
-						$userID = Auth::id();
-					}
-			}
-			if ($showSubalbum) {
-				$countChildren = DB::table('albums', 'a');
-				if ($showSubalbumCount) {
-					$countChildren->select(DB::raw('COUNT(*)'));
-				} else {
-					$countChildren->select(DB::raw('COUNT(*)>0'));
-				}
-				$countChildren->whereColumn('a.parent_id', '=', 'albums.id');
-				$selects += [
-					'num_children' => $this->applyVisibilityConditioOnSubalbums($countChildren, $isAdmin, $userID),
-				];
-			}
-			if ($showPhotoCount) {
-				$countPhotos =
-					DB::table('photos', 'p')
-					->select(DB::raw('COUNT(*)'))
-					->whereColumn('p.album_id', '=', 'albums.id');
-				$selects += [
-					'num_photos' => $this->applyVisibilityConditioOnPhotos($countPhotos, $isAdmin, $userID),
-				];
-			}
-			$this->addSelect($selects);
+				'num_children' => $this->applyVisibilityConditioOnSubalbums($countChildren, $isAdmin, $userID),
+				'num_photos' => $this->applyVisibilityConditioOnPhotos($countPhotos, $isAdmin, $userID),
+			]);
 		}
 
 		// The parent method returns a `Model[]`, but we must return

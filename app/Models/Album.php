@@ -187,15 +187,9 @@ class Album extends BaseAlbum implements Node
 			$result['albums'] = $result['children'];
 			unset($result['children']);
 		}
-		if (key_exists('num_children', $result)) {
-			$result['num_subalbums'] = $result['num_children'];
-			unset($result['num_children']);
-		} else {
-			$result['num_subalbums'] = -1;
-		}
-		if (!key_exists('num_photos', $result)) {
-			$result['num_photos'] = -1;
-		}
+
+		$result['num_subalbums'] = $result['num_children'];
+		unset($result['num_children']);
 
 		return $result;
 	}

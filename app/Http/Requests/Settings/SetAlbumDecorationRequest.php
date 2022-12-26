@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Settings;
 
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\Configs;
 use App\Policies\SettingsPolicy;
@@ -10,9 +11,6 @@ use Illuminate\Validation\Rule;
 
 class SetAlbumDecorationRequest extends BaseApiRequest
 {
-	public const ALBUM_DECORATION_ATTRIBUTE = 'album_decoration';
-	public const ALBUM_DECORATION_ORIENTATION_ATTRIBUTE = 'album_decoration_orientation';
-
 	protected string $albumDecoration;
 	protected string $albumDecorationOrientation;
 
@@ -26,12 +24,12 @@ class SetAlbumDecorationRequest extends BaseApiRequest
 
 	public function rules(): array
 	{
-		return [self::ALBUM_DECORATION_ATTRIBUTE => [
+		return [RequestAttribute::ALBUM_DECORATION_ATTRIBUTE => [
 			'required',
 			'string',
 			Rule::in(['none', 'original', 'album', 'photo', 'all']),
 		],
-			self::ALBUM_DECORATION_ORIENTATION_ATTRIBUTE => [
+			RequestAttribute::ALBUM_DECORATION_ORIENTATION_ATTRIBUTE => [
 				'required',
 				'string',
 				Rule::in(['row', 'row-reverse', 'column', 'column-reverse']),
@@ -41,8 +39,8 @@ class SetAlbumDecorationRequest extends BaseApiRequest
 
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumDecoration = $values[self::ALBUM_DECORATION_ATTRIBUTE];
-		$this->albumDecorationOrientation = $values[self::ALBUM_DECORATION_ORIENTATION_ATTRIBUTE];
+		$this->albumDecoration = $values[RequestAttribute::ALBUM_DECORATION_ATTRIBUTE];
+		$this->albumDecorationOrientation = $values[RequestAttribute::ALBUM_DECORATION_ORIENTATION_ATTRIBUTE];
 	}
 
 	/**
