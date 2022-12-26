@@ -1,16 +1,13 @@
 <?php
 
-namespace App\DTO\Rights;
+namespace App\Http\Resources\Rights;
 
 use App\Contracts\Models\AbstractAlbum;
-use App\DTO\ArrayableDTO;
+use App\Http\Resources\JsonResource;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
-/**
- * This DTO provides the information whether some actions are available to the user.
- */
-class AlbumRightsDTO extends ArrayableDTO
+class AlbumRightsResource extends JsonResource
 {
 	public function __construct(
 		public bool $can_edit,
@@ -18,6 +15,7 @@ class AlbumRightsDTO extends ArrayableDTO
 		public bool $can_download,
 		public bool $can_upload,
 	) {
+		parent::__construct();
 	}
 
 	/**
@@ -35,5 +33,22 @@ class AlbumRightsDTO extends ArrayableDTO
 			can_download: Gate::check(AlbumPolicy::CAN_DOWNLOAD, [AbstractAlbum::class, $abstractAlbum]),
 			can_upload: Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, $abstractAlbum]),
 		);
+	}
+
+	/**
+	 * Transform the resource into an array.
+	 *
+	 * @param \Illuminate\Http\Request $request
+	 *
+	 * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+	 */
+	public function toArray($request)
+	{
+		return [
+			'can_edit' => $this->can_edit,
+			'can_share_with_users' => $this->can_share_with_users,
+			'can_download' => $this->can_download,
+			'can_upload' => $this->can_upload,
+		];
 	}
 }

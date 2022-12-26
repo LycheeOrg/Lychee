@@ -1,22 +1,20 @@
 <?php
 
-namespace App\DTO\Rights;
+namespace App\Http\Resources\Rights;
 
-use App\DTO\ArrayableDTO;
+use App\Http\Resources\JsonResource;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
 use Illuminate\Support\Facades\Gate;
 
-/**
- * This DTO provides the information whether some actions are available to the user.
- */
-class PhotoRightsDTO extends ArrayableDTO
+class PhotoRightsResource extends JsonResource
 {
 	public function __construct(
 		public bool $can_edit,
 		public bool $can_download,
 		public bool $can_access_full_photo
 	) {
+		parent::__construct();
 	}
 
 	/**
@@ -34,4 +32,22 @@ class PhotoRightsDTO extends ArrayableDTO
 			can_access_full_photo: Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo]),
 		);
 	}
+
+
+	/**
+	 * Transform the resource into an array.
+	 *
+	 * @param \Illuminate\Http\Request $request
+	 *
+	 * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+	 */
+	public function toArray($request)
+	{
+		return [
+			'can_edit' => $this->can_edit,
+			'can_download' => $this->can_download,
+			'can_access_full_photo' => $this->can_access_full_photo,
+		];
+	}
+
 }

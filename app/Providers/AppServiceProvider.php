@@ -24,6 +24,7 @@ use App\ModelFunctions\SymLinkFunctions;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
@@ -65,6 +66,8 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
+		JsonResource::withoutWrapping();
+
 		if (config('app.db_log_sql', false) === true) {
 			DB::listen(function ($query) {
 				$msg = $query->sql . ' [' . implode(', ', $query->bindings) . ']';

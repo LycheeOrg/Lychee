@@ -7,13 +7,13 @@ use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Constants\RandomID;
-use App\DTO\Rights\PhotoRightsDTO;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\ZeroModuloException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Facades\Helpers;
+use App\Http\Resources\Rights\PhotoRightsResource;
 use App\Image\Files\BaseMediaFile;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
@@ -382,7 +382,7 @@ class Photo extends Model
 	{
 		$result = parent::toArray();
 
-		$result['rights'] = PhotoRightsDTO::ofPhoto($this);
+		$result['rights'] = PhotoRightsResource::ofPhoto($this);
 
 		// Downgrades the accessible resolution of a photo
 		if (
