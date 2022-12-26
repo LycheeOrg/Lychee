@@ -73,9 +73,9 @@ class UpdateLogin
 	/**
 	 * Update Username if it does not already exists.
 	 *
-	 * @param User        $user
-	 * @param string|null $username
-	 * @param string      $ip
+	 * @param User   $user
+	 * @param string $username
+	 * @param string $ip
 	 *
 	 * @return void
 	 *
