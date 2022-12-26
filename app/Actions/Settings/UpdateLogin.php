@@ -35,39 +35,22 @@ class UpdateLogin
 		/** @var User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();
 
-		$this->updatePassword($user, $password, $oldPassword, $ip);
-
-		if ($username !== null && Configs::getValueAsBool('allow_username_change')) {
-			$this->updateUsername($user, $username, $ip);
-		}
-
-		$user->save();
-
-		return $user;
-	}
-
-	/**
-	 * Update Password if old password is correct.
-	 *
-	 * @param User   $user
-	 * @param string $password
-	 * @param string $oldPassword
-	 * @param string $ip
-	 *
-	 * @return void
-	 *
-	 * @throws \InvalidArgumentException
-	 * @throws UnauthenticatedException
-	 */
-	private function updatePassword(User &$user, string $password, string $oldPassword, string $ip)
-	{
 		if (!Hash::check($oldPassword, $user->password)) {
-			Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change their identity from ' . $ip);
+			Logs::notice(__METHOD__, __LINE__, sprintf('User (%s) tried to change their identity from %s', $user->username, $ip));
 
 			throw new UnauthenticatedException('Previous password is invalid');
 		}
 
+		if ($username !== null
+			&& $username !== ''
+			&& Configs::getValueAsBool('allow_username_change')) {
+			$this->updateUsername($user, $username, $ip);
+		}
+
 		$user->password = Hash::make($password);
+		$user->save();
+
+		return $user;
 	}
 
 	/**
@@ -86,12 +69,12 @@ class UpdateLogin
 	private function updateUsername(User &$user, string $username, string $ip): void
 	{
 		if (User::query()->where('username', '=', $username)->where('id', '!=', $user->id)->count() !== 0) {
-			Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change their identity to ' . $username . ' from ' . $ip);
+			Logs::notice(__METHOD__, __LINE__, sprintf('User (%s) tried to change their identity to (%s) from %s', $user->username, $username, $ip));
 			throw new ConflictingPropertyException('Username already exists.');
 		}
 
 		if ($username !== $user->username) {
-			Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') changed their identity for (' . $username . ') from ' . $ip);
+			Logs::notice(__METHOD__, __LINE__, sprintf('User (%s) changed their identity for (%s) from %s', $user->username, $username, $ip));
 			$user->username = $username;
 		}
 	}

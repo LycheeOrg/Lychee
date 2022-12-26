@@ -14,7 +14,7 @@ return new class() extends Migration {
 			[
 				'key' => 'allow_username_change',
 				'value' => '1',
-				'confidentiality' => 2,
+				'confidentiality' => 0,
 				'cat' => 'config',
 				'type_range' => '0|1',
 				'description' => 'Allow users to change their username.',

@@ -6355,6 +6355,7 @@ lychee.localizeStaticGuiElements = function () {
  * @returns {void}
  */
 lychee.parsePublicInitializationData = function (data) {
+	lychee.allow_username_change = data.config.allow_username_change === "1";
 	lychee.sorting_photos = data.config.sorting_photos;
 	lychee.sorting_albums = data.config.sorting_albums;
 	lychee.album_subtitle_type = data.config.album_subtitle_type || "oldstyle";
@@ -6447,7 +6448,6 @@ lychee.parseProtectedInitializationData = function (data) {
 	lychee.skip_duplicates = data.config.skip_duplicates === "1";
 	lychee.editor_enabled = data.config.editor_enabled === "1";
 	lychee.new_photos_notification = data.config.new_photos_notification === "1";
-	lychee.allow_username_change = data.config.allow_username_change === "1";
 	lychee.upload_processing_limit = Number.parseInt(data.config.upload_processing_limit, 10) || 4;
 };
 
