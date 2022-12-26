@@ -3,7 +3,7 @@
 namespace App\DTO;
 
 use App\Contracts\Models\AbstractAlbum;
-use App\DTO\Rights\AlbumRightsDTO;
+use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Models\Album;
 
 /**
@@ -36,7 +36,7 @@ class AbstractAlbumDTO extends AbstractDTO
 		}
 
 		// add the rights
-		$albumDTO['rights'] = AlbumRightsDTO::ofAlbum($this->album);
+		$albumDTO['rights'] = AlbumRightsResource::ofAlbum($this->album);
 
 		return $albumDTO;
 	}
