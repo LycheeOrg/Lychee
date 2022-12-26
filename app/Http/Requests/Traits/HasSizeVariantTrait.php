@@ -2,14 +2,16 @@
 
 namespace App\Http\Requests\Traits;
 
+use App\Enum\DownloadVariantType;
+
 trait HasSizeVariantTrait
 {
-	protected string $sizeVariant;
+	protected DownloadVariantType $sizeVariant;
 
 	/**
-	 * @return string
+	 * @return DownloadVariantType
 	 */
-	public function sizeVariant(): string
+	public function sizeVariant(): DownloadVariantType
 	{
 		return $this->sizeVariant;
 	}

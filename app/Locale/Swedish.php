@@ -292,7 +292,6 @@ final class Swedish implements Language
 			'ERROR' => 'Fel',
 			'ERROR_TEXT' => 'Ojsan, något verkar ha gått lite fel. Prova att ladda om sidan och försök igen!',
 			'ERROR_UNKNOWN' => 'Något oväntat inträffade. Vänligen försök igen och kontrollera installationen av Lychee och din server. För mera information läs dokumentet <b>readme</b>.',
-			'ERROR_LOGIN' => 'Kunde inte spara inloggningsuppgifterna. Vänligen prova med ett annat användarnamn och lösenord!',
 			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
@@ -329,12 +328,9 @@ final class Swedish implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
-			'LOGIN_TITLE' => 'Ange ett användarnamn och lösenord för din installation:',
 			'LOGIN_USERNAME' => 'Nytt användarnamn',
 			'LOGIN_PASSWORD' => 'Nytt lösenord',
 			'LOGIN_PASSWORD_CONFIRM' => 'Confirm Password',
-			'LOGIN_CREATE' => 'Skapa inloggning',
-
 			'PASSWORD_TITLE' => 'Ange dina befintliga inloggningsuppgifter:',
 			'PASSWORD_CURRENT' => 'Befintligt lösenord',
 			'PASSWORD_TEXT' => 'Ditt inloggningsuppgifter kommer att ändras till:',
@@ -483,6 +479,7 @@ final class Swedish implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Copy to clipboard',
 			'URL_COPIED_TO_CLIPBOARD' => 'Copied URL to clipboard!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Direct links to image files:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => 'Medium',
 			'PHOTO_MEDIUM_HIDPI' => 'Medium HiDPI',
 			'PHOTO_SMALL' => 'Thumb',

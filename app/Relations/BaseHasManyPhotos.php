@@ -2,7 +2,7 @@
 
 namespace App\Relations;
 
-use App\DTO\BaseSortingCriterion;
+use App\DTO\SortingCriterion;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\FixedQueryBuilder;
@@ -125,11 +125,11 @@ abstract class BaseHasManyPhotos extends Relation
 	{
 		/** @var BaseAlbum */
 		$parent = $this->parent;
-		/** @var BaseSortingCriterion $sorting */
+		/** @var SortingCriterion $sorting */
 		$sorting = $parent->getEffectiveSorting();
 
 		return (new SortingDecorator($this->getRelationQuery()))
-			->orderBy('photos.' . $sorting->column, $sorting->order)
+			->orderPhotosBy($sorting->column, $sorting->order)
 			->get();
 	}
 }

@@ -292,7 +292,6 @@ final class Portuguese implements Language
 			'ERROR' => 'Erro',
 			'ERROR_TEXT' => 'Whoops, parece que algo de errado aconteceu. Por favor, atualize a página e tente de novo!',
 			'ERROR_UNKNOWN' => 'Algo de inesperado aconteceu. Por favor tente de novo e verifique a sua instalação e servidor. Dê uma vista de olhos ao readme para mais informação.',
-			'ERROR_LOGIN' => 'Incapaz de guardar o login. Por favor tente de novo com outro nome de utilizador e password!',
 			'ERROR_MAP_DEACTIVATED' => 'A funcionalidade do mapa foi desativada nas configurações.',
 			'ERROR_SEARCH_DEACTIVATED' => 'A funcionalidade de procura foi desativada nas configurações.',
 			'SUCCESS' => 'OK',
@@ -329,12 +328,9 @@ final class Portuguese implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
-			'LOGIN_TITLE' => 'Inserir um nome de utilizador e uma password para a sua instalação:',
 			'LOGIN_USERNAME' => 'Novo Nome de Utilizador',
 			'LOGIN_PASSWORD' => 'Nova Password',
 			'LOGIN_PASSWORD_CONFIRM' => 'Confirmar Password',
-			'LOGIN_CREATE' => 'Criar Login',
-
 			'PASSWORD_TITLE' => 'Inserir a sua password atual:',
 			'PASSWORD_CURRENT' => 'Password Atual',
 			'PASSWORD_TEXT' => 'O seu nome de utilizador e password vão ser alterados para o seguinte:',
@@ -483,6 +479,7 @@ final class Portuguese implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Copiar para o clipboard',
 			'URL_COPIED_TO_CLIPBOARD' => 'URL copiado para o clipboard!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Links diretos para os ficheiros de imagem:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => 'Média',
 			'PHOTO_MEDIUM_HIDPI' => 'Média HiDPI',
 			'PHOTO_SMALL' => 'Pequena',

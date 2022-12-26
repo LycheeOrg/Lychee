@@ -292,7 +292,6 @@ final class ChineseSimplified implements Language
 			'ERROR' => '错误',
 			'ERROR_TEXT' => '噢，似乎出了一些问题。请刷新页面后再试！',
 			'ERROR_UNKNOWN' => '发生未知问题。请再试一次，检查您的安装和服务器。请查看自述文件以获取更多信息。',
-			'ERROR_LOGIN' => '无法保存登录信息。请用另一个用户名和密码再试一次！',
 			'ERROR_MAP_DEACTIVATED' => '地图功能已在设置中停用。',
 			'ERROR_SEARCH_DEACTIVATED' => '搜索功能已在设置中停用。',
 			'SUCCESS' => 'OK',
@@ -329,12 +328,9 @@ final class ChineseSimplified implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
-			'LOGIN_TITLE' => '输入管理员用户名和密码：',
 			'LOGIN_USERNAME' => '新用户名',
 			'LOGIN_PASSWORD' => '新密码',
 			'LOGIN_PASSWORD_CONFIRM' => '确认密码',
-			'LOGIN_CREATE' => '创建',
-
 			'PASSWORD_TITLE' => '输入您当前的密码：',
 			'PASSWORD_CURRENT' => '当前密码',
 			'PASSWORD_TEXT' => '您的用户名和密码将被修改为：',
@@ -483,6 +479,7 @@ final class ChineseSimplified implements Language
 			'URL_COPY_TO_CLIPBOARD' => '复制到剪贴板',
 			'URL_COPIED_TO_CLIPBOARD' => 'URL 已经复制到剪贴板！',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => '图像文件的直链：',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => '中等尺寸',
 			'PHOTO_MEDIUM_HIDPI' => '中等尺寸 HiDPI',
 			'PHOTO_SMALL' => '缩略图',

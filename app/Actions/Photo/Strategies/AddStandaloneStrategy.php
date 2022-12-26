@@ -9,6 +9,7 @@ use App\Contracts\Image\StreamStats;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Contracts\Models\SizeVariantFactory;
 use App\DTO\ImageDimension;
+use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\FrameworkException;
@@ -21,7 +22,6 @@ use App\Image\Handlers\ImageHandler;
 use App\Image\Handlers\VideoHandler;
 use App\Image\StreamStat;
 use App\Models\Photo;
-use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
 
 class AddStandaloneStrategy extends AbstractAddStrategy
@@ -135,7 +135,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 			// If import strategy request to delete the source file.
 			// `$this->sourceFile` will be deleted after this step.
 			// But `$this->sourceImage` remains in memory.
-			$targetFile = $this->namingStrategy->createFile(SizeVariant::ORIGINAL);
+			$targetFile = $this->namingStrategy->createFile(SizeVariantType::ORIGINAL);
 			$streamStat = $this->putSourceIntoFinalDestination($targetFile);
 
 			// If we have a temporary video file from a Google Motion Picture,
@@ -169,7 +169,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 				$this->sourceImage->getDimensions() :
 				new ImageDimension($this->parameters->exifInfo->width, $this->parameters->exifInfo->height);
 			$this->photo->size_variants->create(
-				SizeVariant::ORIGINAL,
+				SizeVariantType::ORIGINAL,
 				$targetFile->getRelativePath(),
 				$imageDim,
 				$streamStat->bytes

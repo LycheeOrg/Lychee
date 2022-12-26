@@ -7,11 +7,13 @@ use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
+use App\Exceptions\UnexpectedException;
 use App\Facades\Helpers;
 use App\Models\Extensions\ConfigsHas;
 use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
+use BackedEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -210,6 +212,23 @@ class Configs extends Model
 	}
 
 	/**
+	 * @template T of BackedEnum
+	 *
+	 * @param string          $key
+	 * @param class-string<T> $type
+	 *
+	 * @return T|null
+	 */
+	public static function getValueAsEnum(string $key, string $type): \BackedEnum|null
+	{
+		if (!function_exists('enum_exists') || !enum_exists($type) || !method_exists($type, 'tryFrom')) {
+			throw new UnexpectedException();
+		}
+
+		return $type::tryFrom(self::getValue($key));
+	}
+
+	/**
 	 * Update Lychee configuration
 	 * Note that we must invalidate the cache now.
 	 *
@@ -221,13 +240,18 @@ class Configs extends Model
 	 * @throws InvalidConfigOption
 	 * @throws QueryBuilderException
 	 */
-	public static function set(string $key, string|int|bool $value): void
+	public static function set(string $key, string|int|bool|\BackedEnum $value): void
 	{
 		try {
 			/** @var Configs $config */
 			$config = Configs::query()
 				->where('key', '=', $key)
 				->firstOrFail();
+
+			// For BackEnm we take the value. In theory this is no longer necessary because we enforce at the column type.
+			if ($value instanceof \BackedEnum) {
+				$value = $value->value;
+			}
 
 			$strValue = match (gettype($value)) {
 				'boolean' => $value === true ? '1' : '0',

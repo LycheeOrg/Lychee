@@ -23,15 +23,17 @@ class ArrayableDTO extends AbstractDTO
 		$cls = new \ReflectionClass($this);
 		$props = $cls->getProperties(\ReflectionProperty::IS_PUBLIC);
 		foreach ($props as $prop) {
-			$value = $prop->getValue($this);
-			if (is_object($value)) {
-				if ($value instanceof Arrayable) {
-					$value = $value->toArray();
+			$propertyValue = $prop->getValue($this);
+			if (is_object($propertyValue)) {
+				if ($propertyValue instanceof Arrayable) {
+					$propertyValue = $propertyValue->toArray();
+				} elseif ($propertyValue instanceof \BackedEnum) {
+					$propertyValue = $propertyValue->value;
 				} else {
-					throw new LycheeLogicException(sprintf('Unable to convert %s into an array', get_class($value)));
+					throw new LycheeLogicException(sprintf('Unable to convert %s into an array', get_class($propertyValue)));
 				}
 			}
-			$result[$prop->getName()] = $value;
+			$result[$prop->getName()] = $propertyValue;
 		}
 
 		return $result;

@@ -35,5 +35,4 @@ Route::post('install/admin', [SetUpAdminController::class, 'create'])
 	->name('install-admin');
 Route::get('install/admin', [SetUpAdminController::class, 'init'])
 	->withoutMiddleware(['installation:incomplete'])
-	->middleware(['admin_user:unset', 'installation:complete'])
-	->name('install-admin');
+	->middleware(['admin_user:unset', 'installation:complete']);

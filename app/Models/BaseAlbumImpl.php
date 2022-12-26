@@ -6,6 +6,8 @@ use App\Constants\RandomID;
 use App\Contracts\Models\HasRandomID;
 use App\DTO\AlbumProtectionPolicy;
 use App\DTO\PhotoSortingCriterion;
+use App\Enum\ColumnSortingType;
+use App\Enum\OrderSortingType;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
@@ -267,13 +269,15 @@ class BaseAlbumImpl extends Model implements HasRandomID
 
 		return ($sortingColumn === null || $sortingOrder === null) ?
 			null :
-			new PhotoSortingCriterion($sortingColumn, $sortingOrder);
+			new PhotoSortingCriterion(
+				ColumnSortingType::from($sortingColumn),
+				OrderSortingType::from($sortingOrder));
 	}
 
 	protected function setSortingAttribute(?PhotoSortingCriterion $sorting): void
 	{
-		$this->attributes['sorting_col'] = $sorting?->column;
-		$this->attributes['sorting_order'] = $sorting?->order;
+		$this->attributes['sorting_col'] = $sorting?->column->value;
+		$this->attributes['sorting_order'] = $sorting?->order->value;
 	}
 
 	protected function setPolicyAttribute(AlbumProtectionPolicy $protectionPolicy): void

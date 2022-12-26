@@ -19,6 +19,7 @@ use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use PHPUnit\Framework\ExpectationFailedException;
 use function Safe\json_decode;
@@ -227,6 +228,7 @@ class UsersTest extends AbstractTestCase
 			expectedStatusCode: 401,
 			assertSee: 'Previous password is invalid');
 
+		$user = User::where('username', '=', 'test_abcde')->firstOrFail();
 		// 25
 		$sessions_test->update_login(
 			login: 'test_abcd2',
@@ -234,6 +236,9 @@ class UsersTest extends AbstractTestCase
 			oldPassword: 'password_testing',
 			expectedStatusCode: 409,
 			assertSee: 'Username already exists');
+
+		$this->assertEquals($user->password, Auth::user()->password);
+		$this->assertTrue(Hash::check('password_testing', Auth::user()->password));
 
 		// 26
 		$sessions_test->update_login(

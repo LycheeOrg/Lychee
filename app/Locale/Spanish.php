@@ -292,7 +292,6 @@ final class Spanish implements Language
 			'ERROR' => 'Error',
 			'ERROR_TEXT' => 'Vaya, parece que algo salió mal. ¡Vuelva a cargar el sitio e intente nuevamente!',
 			'ERROR_UNKNOWN' => 'Algo inesperado sucedió. Intente nuevamente y verifique su instalación y servidor. Eche un vistazo al archivo Léame para obtener más información.',
-			'ERROR_LOGIN' => 'No se puede guardar el inicio de sesión. ¡Inténtalo de nuevo con otro nombre de usuario y contraseña!',
 			'ERROR_MAP_DEACTIVATED' => 'La funcionalidad del mapa se ha desactivado en la configuración.',
 			'ERROR_SEARCH_DEACTIVATED' => 'La función de búsqueda se ha desactivado en la configuración.',
 			'SUCCESS' => 'Vale',
@@ -329,12 +328,9 @@ final class Spanish implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'Notificación de nuevas fotos actualizada',
 			'USER_EMAIL_INSTRUCTION' => 'Agregue su correo electrónico a continuación para habilitar la recepción de notificaciones. Para dejar de recibir correos electrónicos, simplemente elimine su correo electrónico a continuación.',
 
-			'LOGIN_TITLE' => 'Ingrese un nombre de usuario y contraseña para su instalación:',
 			'LOGIN_USERNAME' => 'Nuevo nombre de usuario',
 			'LOGIN_PASSWORD' => 'Nueva contraseña',
 			'LOGIN_PASSWORD_CONFIRM' => 'Confirmar contraseña',
-			'LOGIN_CREATE' => 'Crear inicio de sesión',
-
 			'PASSWORD_TITLE' => 'Introduce tu contraseña actual:',
 			'PASSWORD_CURRENT' => 'Contraseña actual',
 			'PASSWORD_TEXT' => 'Su nombre de usuario y contraseña se cambiarán a lo siguiente:',
@@ -483,6 +479,7 @@ final class Spanish implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Copiar al portapapeles',
 			'URL_COPIED_TO_CLIPBOARD' => '¡URL copiada al portapapeles!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Enlaces directos a archivos de imagen:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => 'Mediana',
 			'PHOTO_MEDIUM_HIDPI' => 'Mediana HiDPI',
 			'PHOTO_SMALL' => 'Miniatura',

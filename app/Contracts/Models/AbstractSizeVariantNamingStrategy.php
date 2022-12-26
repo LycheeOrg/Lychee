@@ -3,6 +3,7 @@
 namespace App\Contracts\Models;
 
 use App\Contracts\Exceptions\LycheeException;
+use App\Enum\SizeVariantType;
 use App\Image\Files\FlysystemFile;
 use App\Models\Photo;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -67,11 +68,11 @@ abstract class AbstractSizeVariantNamingStrategy
 	/**
 	 * Creates a file for the designated size variant.
 	 *
-	 * @param int $sizeVariant the size variant
+	 * @param SizeVariantType $sizeVariant the size variant
 	 *
 	 * @return FlysystemFile the file
 	 *
 	 * @throws LycheeException
 	 */
-	abstract public function createFile(int $sizeVariant): FlysystemFile;
+	abstract public function createFile(SizeVariantType $sizeVariant): FlysystemFile;
 }

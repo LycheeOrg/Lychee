@@ -292,7 +292,6 @@ final class Russian implements Language
 			'ERROR' => 'Ошибка',
 			'ERROR_TEXT' => 'Ой, что-то пошло не так … Пожалуйста, обновите страницу и попробуйте повторить.',
 			'ERROR_UNKNOWN' => 'Произошло нечто неожиданное … Пожалуйста, повторите и проверьте папку установки и параметры сервера. За подробной информацией обратитесь к readme.',
-			'ERROR_LOGIN' => 'Не могу сохранить регистрационные данные. Попробуйте использовать другие логин и пароль.',
 			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'Ок',
@@ -329,12 +328,9 @@ final class Russian implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
-			'LOGIN_TITLE' => 'Введите логин и пароль для входа:',
 			'LOGIN_USERNAME' => 'Новый логин',
 			'LOGIN_PASSWORD' => 'Новый пароль',
 			'LOGIN_PASSWORD_CONFIRM' => 'Повторите пароль',
-			'LOGIN_CREATE' => 'Создать',
-
 			'PASSWORD_TITLE' => 'Введите текущий пароль:',
 			'PASSWORD_CURRENT' => 'Текущий пароль',
 			'PASSWORD_TEXT' => 'Ваши логин и пароль будут изменены на следующие:',
@@ -483,6 +479,7 @@ final class Russian implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Copy to clipboard',
 			'URL_COPIED_TO_CLIPBOARD' => 'Copied URL to clipboard!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Direct links to image files:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => 'Medium',
 			'PHOTO_MEDIUM_HIDPI' => 'Medium HiDPI',
 			'PHOTO_SMALL' => 'Thumb',

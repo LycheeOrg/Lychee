@@ -292,7 +292,6 @@ final class Dutch implements Language
 			'ERROR' => 'Error',
 			'ERROR_TEXT' => 'Whoops, er is iets misgegaan. Herlaad de pagina en probeer het opnieuw!',
 			'ERROR_UNKNOWN' => 'Er is iets onverwachts gebeurd. Probeer het opnieuw of controleer je installatie en server. Kijk naar de readme voor meer informatie.',
-			'ERROR_LOGIN' => 'Kan login niet opslaan. Probeer het opnieuw met een andere gebruikersnaam en/of wachtwoord!',
 			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
@@ -329,12 +328,9 @@ final class Dutch implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
-			'LOGIN_TITLE' => 'Voer een gebruikersnaam en wachtwoord in voor je installatie:',
 			'LOGIN_USERNAME' => 'Nieuw Gebruikersnaam',
 			'LOGIN_PASSWORD' => 'Nieuw Wachtwoord',
 			'LOGIN_PASSWORD_CONFIRM' => 'Confirm Password',
-			'LOGIN_CREATE' => 'Maak Login',
-
 			'PASSWORD_TITLE' => 'Voer je huidige wachtwoord in:',
 			'PASSWORD_CURRENT' => 'Huidig Wachtwoord',
 			'PASSWORD_TEXT' => 'Je gebruikersnaam en wachtwoord worden verandert naar:',
@@ -483,6 +479,7 @@ final class Dutch implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Copy to clipboard',
 			'URL_COPIED_TO_CLIPBOARD' => 'Copied URL to clipboard!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Direct links to image files:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => 'Medium',
 			'PHOTO_MEDIUM_HIDPI' => 'Medium HiDPI',
 			'PHOTO_SMALL' => 'Thumb',

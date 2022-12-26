@@ -292,7 +292,6 @@ final class Vietnamese implements Language
 			'ERROR' => 'Bị lỗi',
 			'ERROR_TEXT' => 'Èo, hình như có trục trặc gì đó xảy ra. Xin hãy thử tải lại trang và thử lại nhé!',
 			'ERROR_UNKNOWN' => 'Có sự cố bất ngờ nào đó đã xảy ra. Xin hãy thử lại và kiểm tra phần cài đặt hệ thống và máy chủ của bạn. Hãy đọc phần readme để biết thêm thông tin chi tiết.',
-			'ERROR_LOGIN' => 'Không thể tạo tên đăng nhập. Xin hãy thử lại với một tên đăng nhập và mật khẩu khác!',
 			'ERROR_MAP_DEACTIVATED' => 'Tính năng hiển thị bản đồ đã tắt trong phần cài đặt.',
 			'ERROR_SEARCH_DEACTIVATED' => 'Tính năng tìm kiếm đã tắt trong phần cài đặt',
 			'SUCCESS' => 'OK',
@@ -329,12 +328,9 @@ final class Vietnamese implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'Thông báo đăng hình mới được cập nhật',
 			'USER_EMAIL_INSTRUCTION' => 'Thêm email của bạn vào bên dưới để nhận được thông báo qua email. Để ngưng nhận email, bạn chỉ cần xóa email của bạn ở bên dưới.',
 
-			'LOGIN_TITLE' => 'Nhập tên và mật khẩu đăng nhập cho phần cài đặt của bạn:',
 			'LOGIN_USERNAME' => 'Tên đăng nhập mới',
 			'LOGIN_PASSWORD' => 'Mật khẩu mới',
 			'LOGIN_PASSWORD_CONFIRM' => 'Xác nhận mật khẩu',
-			'LOGIN_CREATE' => 'Tạo thông tin đăng nhập',
-
 			'PASSWORD_TITLE' => 'Nhập mật khẩu cũ của bạn:',
 			'PASSWORD_CURRENT' => 'Mật khẩu cũ',
 			'PASSWORD_TEXT' => 'Tên đăng nhập và mật khẩu của bạn sẽ được thay đổi thành như sau:',
@@ -483,6 +479,7 @@ final class Vietnamese implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Sao chép vào bộ nhớ tạm thời',
 			'URL_COPIED_TO_CLIPBOARD' => 'Đã sao chép vào bộ nhớ tạm thời!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Đường link trực tiếp đến tập tin hình ảnh:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => 'Vừa',
 			'PHOTO_MEDIUM_HIDPI' => 'Độ phân giải cho hình vừa HiDPI',
 			'PHOTO_SMALL' => 'Nhỏ',
