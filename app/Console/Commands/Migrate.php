@@ -32,20 +32,20 @@ class Migrate extends MigrateCommand
 	/**
 	 * Execute the console command.
 	 *
-	 * @return void
+	 * @return int
 	 *
 	 * @throws ConsoleException
 	 * @throws BindingResolutionException
 	 * @throws NotFoundExceptionInterface
 	 * @throws ContainerExceptionInterface
 	 */
-	public function handle(): void
+	public function handle(): int
 	{
 		$current_php_version = floatval(phpversion());
 		if ($current_php_version <= PHPVersionCheck::PHP_ERROR) {
 			throw new RuntimeException(sprintf('PHP %01.1f is out of date, please update first to at least %01.1f.', $current_php_version, PHPVersionCheck::PHP_WARNING));
 		}
 
-		parent::handle();
+		return parent::handle();
 	}
 }
