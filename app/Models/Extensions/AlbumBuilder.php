@@ -91,7 +91,7 @@ class AlbumBuilder extends NSQueryBuilder
 			$maxTsSelect = $minTsSelect->clone()->select(DB::raw('MAX(taken_at)'));
 
 			$isAdmin = (Auth::user()?->may_administrate === true);
-			$userID = !$isAdmin ? Auth::id() : null;
+			$userID = Auth::id();
 
 			$countChildren = DB::table('albums', 'a');
 			$countChildren->select(DB::raw('COUNT(*)'));

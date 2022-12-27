@@ -3,11 +3,13 @@
 namespace App\Http\Requests\Settings;
 
 use App\Contracts\Http\Requests\RequestAttribute;
+use App\Enum\AlbumDecorationOrientation;
+use App\Enum\AlbumDecorationType;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\Configs;
 use App\Policies\SettingsPolicy;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 class SetAlbumDecorationRequest extends BaseApiRequest
 {
@@ -24,16 +26,9 @@ class SetAlbumDecorationRequest extends BaseApiRequest
 
 	public function rules(): array
 	{
-		return [RequestAttribute::ALBUM_DECORATION_ATTRIBUTE => [
-			'required',
-			'string',
-			Rule::in(['none', 'original', 'album', 'photo', 'all']),
-		],
-			RequestAttribute::ALBUM_DECORATION_ORIENTATION_ATTRIBUTE => [
-				'required',
-				'string',
-				Rule::in(['row', 'row-reverse', 'column', 'column-reverse']),
-			],
+		return [
+			RequestAttribute::ALBUM_DECORATION_ATTRIBUTE => ['required', new Enum(AlbumDecorationType::class)],
+			RequestAttribute::ALBUM_DECORATION_ORIENTATION_ATTRIBUTE => ['required', new Enum(AlbumDecorationOrientation::class)],
 		];
 	}
 
