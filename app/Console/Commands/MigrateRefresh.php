@@ -3,13 +3,13 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Database\Console\Migrations\FreshCommand;
+use Illuminate\Database\Console\Migrations\RefreshCommand;
 use Illuminate\Support\Facades\Config;
 
 /**
- * We disable migrate:fresh command on any environment which are not dev.
+ * We disable migrate:refresh command on any environment which are not dev.
  */
-class MigrateFreshCommand extends FreshCommand
+class MigrateRefresh extends RefreshCommand
 {
 	/**
 	 * The console command description.
@@ -26,7 +26,7 @@ class MigrateFreshCommand extends FreshCommand
 	public function handle()
 	{
 		if (Config::get('app.env') !== 'dev') {
-			$this->warn("It's inadvisable to run migrate:fresh on this project!");
+			$this->warn("It's inadvisable to run migrate:refresh on this project!");
 
 			return Command::FAILURE;
 		}

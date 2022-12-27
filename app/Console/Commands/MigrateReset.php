@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Config;
 /**
  * We disable migrate:reset command on any environment which are not dev.
  */
-class MigrateResetCommand extends ResetCommand
+class MigrateReset extends ResetCommand
 {
 	/**
 	 * Create a new migration command instance.
