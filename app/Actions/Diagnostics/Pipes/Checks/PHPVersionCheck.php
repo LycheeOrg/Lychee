@@ -6,6 +6,8 @@ use App\Contracts\DiagnosticPipe;
 
 class PHPVersionCheck implements DiagnosticPipe
 {
+	// We only support the actively supported version of php.
+	// See here: https://www.php.net/supported-versions.php
 	public const PHP_ERROR = 8.0;
 	public const PHP_WARNING = 8.1;
 	public const PHP_LATEST = 8.2;
