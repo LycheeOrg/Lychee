@@ -247,23 +247,6 @@ class PhotosOperationsTest extends BasePhotoTest
 		/** @var \App\Models\Album $album */
 		$album = static::convertJsonToObject($this->albums_tests->get($albumID));
 		static::assertCount(0, $album->photos);
-
-		// save initial value
-		$init_config_value = Configs::getValue('gen_demo_js');
-
-		// set to 0
-		Configs::set('gen_demo_js', '1');
-		static::assertEquals('1', Configs::getValue('gen_demo_js'));
-
-		// check redirection
-		$this->clearCachedSmartAlbums();
-		$response = $this->get('/demo');
-		$this->assertOk($response);
-		$response->assertViewIs('demo');
-
-		// set back to initial value
-		Configs::set('gen_demo_js', $init_config_value);
-
 		$this->albums_tests->delete([$albumID]);
 
 		$response = $this->postJson('/api/Photo::clearSymLink');
