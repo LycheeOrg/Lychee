@@ -44,8 +44,8 @@ return [
 		// Lychee uses the disk "images" to store the media files
 		'images' => [
 			'driver' => 'local',
-			'root' => env('LYCHEE_UPLOADS', storage_path('app/public/uploads/')),
-			'url' => env('LYCHEE_UPLOADS_URL', 'storage/uploads/'),
+			'root' => env('LYCHEE_UPLOADS', public_path('uploads/')),
+			'url' => env('LYCHEE_UPLOADS_URL', 'uploads/'),
 			'visibility' => env('LYCHEE_IMAGE_VISIBILITY', 'public'),
 			'directory_visibility' => env('LYCHEE_IMAGE_VISIBILITY', 'public'),
 			'permissions' => [
@@ -79,12 +79,12 @@ return [
 		],*/
 
 		// Lychee uses this disk to store the customized CSS file provided by the user
-		// ATTENTION: This disk MUST ALWAYS point to the local `./storage/app/public` directory.
+		// ATTENTION: This disk MUST ALWAYS point to the local `./public/dist` directory.
 		// TODO: Maybe we should drop this Flysystem disk, because neither the driver nor the root must be changed and hence the whole point of using the Flysystem abstraction is gone.
 		'dist' => [
 			'driver' => 'local',
-			'root' => storage_path('app/public/'),
-			'url' => 'storage/',
+			'root' => public_path('dist/'),
+			'url' => 'dist/',
 			'visibility' => 'public',
 		],
 
@@ -95,8 +95,8 @@ return [
 		// Flysystem does not support symbolic links.
 		'symbolic' => [
 			'driver' => 'local',
-			'root' => storage_path('app/public/sym'),
-			'url' => 'storage/sym',
+			'root' => public_path('sym'),
+			'url' => 'sym',
 			'visibility' => 'public',
 		],
 	],

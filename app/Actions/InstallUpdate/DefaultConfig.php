@@ -54,16 +54,17 @@ class DefaultConfig
 			*/
 		'permissions' => [
 			'.' => 'file_exists|is_readable|is_writable|is_executable',
-			'storage/app/' => 'file_exists|is_readable|is_writable|is_executable',
-			'storage/app/database.sqlite' => 'file_exists|is_readable|is_writable',
-			'storage/app/public/' => 'file_exists|is_readable|is_writable|is_executable',
-			'storage/app/public/uploads/' => 'file_exists|is_readable|is_writable|is_executable',
-			'storage/app/public/sym/' => 'file_exists|is_readable|is_writable|is_executable',
+			'database/' => 'file_exists|is_readable|is_writable|is_executable',
+			'database/database.sqlite' => 'file_exists|is_readable|is_writable',
+			'storage/framework/' => 'file_exists|is_readable|is_writable|is_executable',
 			'storage/framework/views/' => 'file_exists|is_readable|is_writable|is_executable',
 			'storage/framework/cache/' => 'file_exists|is_readable|is_writable|is_executable',
 			'storage/framework/sessions/' => 'file_exists|is_readable|is_writable|is_executable',
 			'storage/logs/' => 'file_exists|is_readable|is_writable|is_executable',
 			'bootstrap/cache/' => 'file_exists|is_readable|is_writable|is_executable',
+			'public/dist/' => 'file_exists|is_readable|is_writable|is_executable',
+			'public/sym/' => 'file_exists|is_readable|is_writable|is_executable',
+			'public/uploads/' => 'file_exists|is_readable|is_writable|is_executable',
 		],
 		// This is from https://github.com/rashidlaasri/LaravelInstaller
 		// We keep it so we can make the .env edition a bit more friendly (later).

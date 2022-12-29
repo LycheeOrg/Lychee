@@ -10,6 +10,9 @@ dist-gen: clean composer
 	@mkdir Lychee/public
 	@mkdir Lychee/public/dist
 	@mkdir Lychee/public/img
+	@mkdir Lychee/public/uploads
+	@mkdir Lychee/public/uploads/import
+	@mkdir Lychee/public/sym
 	@cp -r app                              Lychee
 	@cp -r bootstrap                        Lychee
 	@cp -r config                           Lychee
@@ -40,6 +43,9 @@ dist-gen: clean composer
 	@cp -r simple_error_template.html       Lychee
 	@cp -r version.md                       Lychee
 	@touch Lychee/storage/logs/laravel.log
+	@touch Lychee/public/dist/user.css
+	@touch Lychee/public/uploads/import/index.html
+	@touch Lychee/public/sym/index.html
 
 dist-clean: dist-gen
 	find Lychee -wholename '*/[Tt]ests/*' -delete

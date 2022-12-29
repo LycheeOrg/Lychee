@@ -94,7 +94,7 @@ class DiskUsage
 	 */
 	public function get_total_space(): string
 	{
-		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in storage/app/public/uploads
+		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
 		$dts = disk_total_space(base_path(''));
 
 		return $this->getSymbolByQuantity($dts);
@@ -107,7 +107,7 @@ class DiskUsage
 	 */
 	public function get_free_space(): string
 	{
-		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in storage/app/public/uploads
+		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
 		$dfs = disk_free_space(base_path(''));
 
 		return $this->getSymbolByQuantity($dfs);
@@ -120,7 +120,7 @@ class DiskUsage
 	 */
 	public function get_free_percent(): string
 	{
-		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in storage/app/public/uploads
+		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
 		$dts = disk_total_space(base_path(''));
 		$dfs = disk_free_space(base_path(''));
 
