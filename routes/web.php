@@ -42,5 +42,4 @@ Route::get('/r/{albumID}/{photoID}', [RedirectController::class, 'photo'])->midd
 Route::get('/r/{albumID}', [RedirectController::class, 'album'])->middleware(['migration:complete']);
 
 Route::get('/view', [IndexController::class, 'view'])->name('view')->middleware(['redirect-legacy-id']);
-Route::get('/demo', [DemoController::class, 'js']);
 Route::get('/frame', [IndexController::class, 'frame'])->name('frame')->middleware(['migration:complete']);

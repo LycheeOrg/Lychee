@@ -4,7 +4,9 @@ namespace App\Exceptions;
 
 use App\Contracts\Exceptions\Handlers\HttpExceptionHandler;
 use App\DTO\BacktraceRecord;
+use App\Enum\SeverityType;
 use App\Exceptions\Handlers\AccessDBDenied;
+use App\Exceptions\Handlers\AdminSetterHandler;
 use App\Exceptions\Handlers\InstallationHandler;
 use App\Exceptions\Handlers\MigrationHandler;
 use App\Exceptions\Handlers\NoEncryptionKey;
@@ -70,19 +72,17 @@ class Handler extends ExceptionHandler
 	 * Maps class names of exceptions to their severity.
 	 *
 	 * By default, exceptions are logged with severity
-	 * {@link Logs::SEVERITY_ERROR} by {@link Handler::report()}.
+	 * {@link SeverityType::ERROR} by {@link Handler::report()}.
 	 * This array overwrites the default severity per exception.
 	 *
-	 * @var array<class-string, int>
-	 *
-	 * @phpstan-var array<class-string, int<0,7>>
+	 * @var array<class-string,SeverityType>
 	 */
 	public const EXCEPTION2SEVERITY = [
-		PhotoResyncedException::class => Logs::SEVERITY_WARNING,
-		PhotoSkippedException::class => Logs::SEVERITY_WARNING,
-		ImportCancelledException::class => Logs::SEVERITY_NOTICE,
-		ConfigurationException::class => Logs::SEVERITY_NOTICE,
-		LocationDecodingFailed::class => Logs::SEVERITY_WARNING,
+		PhotoResyncedException::class => SeverityType::WARNING,
+		PhotoSkippedException::class => SeverityType::WARNING,
+		ImportCancelledException::class => SeverityType::NOTICE,
+		ConfigurationException::class => SeverityType::NOTICE,
+		LocationDecodingFailed::class => SeverityType::WARNING,
 	];
 
 	/**
@@ -284,6 +284,7 @@ class Handler extends ExceptionHandler
 			new NoEncryptionKey(),
 			new AccessDBDenied(),
 			new InstallationHandler(),
+			new AdminSetterHandler(),
 			new MigrationHandler(),
 		];
 
@@ -398,15 +399,13 @@ class Handler extends ExceptionHandler
 	/**
 	 * @param \Throwable $e
 	 *
-	 * @return int
-	 *
-	 * @phpstan-return int<0,7>
+	 * @return SeverityType
 	 */
-	public static function getLogSeverity(\Throwable $e): int
+	public static function getLogSeverity(\Throwable $e): SeverityType
 	{
 		return array_key_exists(get_class($e), self::EXCEPTION2SEVERITY) ?
 			self::EXCEPTION2SEVERITY[get_class($e)] :
-			Logs::SEVERITY_ERROR;
+			SeverityType::ERROR;
 	}
 
 	/**

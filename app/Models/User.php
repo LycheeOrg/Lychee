@@ -18,6 +18,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
+use Laragear\WebAuthn\Models\WebAuthnCredential;
 use Laragear\WebAuthn\WebAuthnAuthentication;
 
 /**
@@ -29,8 +30,9 @@ use Laragear\WebAuthn\WebAuthnAuthentication;
  * @property string                                                $username
  * @property string|null                                           $password
  * @property string|null                                           $email
+ * @property bool                                                  $may_administrate
  * @property bool                                                  $may_upload
- * @property bool                                                  $is_locked
+ * @property bool                                                  $may_edit_own_settings
  * @property string|null                                           $token
  * @property bool                                                  $has_token
  * @property string|null                                           $remember_token
@@ -68,6 +70,14 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'created_at',
 		'updated_at',
 		'token',
+
+		/**
+		 * We do not forward those to the front end: they are provided by {@link \App\DTO\UserWithCapabilitiesDTO}.
+		 * We do not need to inform every user on Lychee who can upload etc.
+		 */
+		'may_administrate',
+		'may_upload',
+		'may_edit_own_settings',
 	];
 
 	/**
@@ -77,8 +87,9 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'id' => 'integer',
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
+		'may_administrate' => 'boolean',
 		'may_upload' => 'boolean',
-		'is_locked' => 'boolean',
+		'may_edit_own_settings' => 'boolean',
 	];
 
 	/**
@@ -159,22 +170,31 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	public function delete(): bool
 	{
-		$now = Carbon::now();
-		$newOwnerID = Auth::id() ?? throw new UnauthenticatedException();
-
 		/** @var HasMany[] $ownershipRelations */
 		$ownershipRelations = [$this->photos(), $this->albums()];
+		$hasAny = false;
 
 		foreach ($ownershipRelations as $relation) {
-			// We must also update the `updated_at` column of the related
-			// models in case clients have cached these models.
-			$relation->update([
-				$relation->getForeignKeyName() => $newOwnerID,
-				$relation->getRelated()->getUpdatedAtColumn() => $relation->getRelated()->fromDateTime($now),
-			]);
+			$hasAny = $hasAny || $relation->count() > 0;
+		}
+
+		if ($hasAny) {
+			// only try update relations if there are any to allow deleting users from migrations (relations are moved before deleting)
+			$now = Carbon::now();
+			$newOwnerID = Auth::id() ?? throw new UnauthenticatedException();
+
+			foreach ($ownershipRelations as $relation) {
+				// We must also update the `updated_at` column of the related
+				// models in case clients have cached these models.
+				$relation->update([
+					$relation->getForeignKeyName() => $newOwnerID,
+					$relation->getRelated()->getUpdatedAtColumn() => $relation->getRelated()->fromDateTime($now),
+				]);
+			}
 		}
 
 		$this->shared()->delete();
+		WebAuthnCredential::where('authenticatable_id', '=', $this->id)->delete();
 
 		return $this->parentDelete();
 	}

@@ -30,10 +30,6 @@ class CommandsTest extends AbstractTestCase
 			->expectsOutput('No pictures requires EXIF updates.')
 			->assertExitCode(-1);
 
-		$this->artisan('lychee:reset_admin')
-			->expectsOutput('Admin username and password reset.')
-			->assertExitCode(0);
-
 		$this->artisan('lychee:logs')
 			->assertExitCode(0);
 

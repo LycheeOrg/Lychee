@@ -13,6 +13,7 @@
 namespace Tests\Feature\Traits;
 
 use App\Models\Configs;
+use Tests\AbstractTestCase;
 
 trait RequiresExifTool
 {
@@ -21,14 +22,14 @@ trait RequiresExifTool
 
 	protected function setUpRequiresExifTool(): void
 	{
-		$this->hasExifToolInit = Configs::getValueAsInt(self::CONFIG_HAS_EXIF_TOOL);
-		Configs::set(self::CONFIG_HAS_EXIF_TOOL, 2);
+		$this->hasExifToolInit = Configs::getValueAsInt(AbstractTestCase::CONFIG_HAS_EXIF_TOOL);
+		Configs::set(AbstractTestCase::CONFIG_HAS_EXIF_TOOL, 2);
 		$this->hasExifTools = Configs::hasExiftool();
 	}
 
 	protected function tearDownRequiresExifTool(): void
 	{
-		Configs::set(self::CONFIG_HAS_EXIF_TOOL, $this->hasExifToolInit);
+		Configs::set(AbstractTestCase::CONFIG_HAS_EXIF_TOOL, $this->hasExifToolInit);
 	}
 
 	protected function assertHasExifToolOrSkip(): void

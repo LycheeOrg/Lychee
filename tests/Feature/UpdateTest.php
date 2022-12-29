@@ -12,35 +12,36 @@
 
 namespace Tests\Feature;
 
-use App\Http\Middleware\MigrationStatus;
 use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
-use function PHPUnit\Framework\assertEquals;
 use PHPUnit\Framework\ExpectationFailedException;
 use Tests\AbstractTestCase;
+use Tests\Feature\Traits\CatchFailures;
 
 class UpdateTest extends AbstractTestCase
 {
+	use CatchFailures;
+
 	public function testDoNotLogged(): void
 	{
 		$response = $this->get('/Update', []);
-		$this->assertForbidden($response);
+		$this->assertUnauthorized($response);
 
 		$response = $this->postJson('/api/Update::apply');
-		$this->assertForbidden($response);
+		$this->assertUnauthorized($response);
 
 		$response = $this->postJson('/api/Update::check');
-		$this->assertForbidden($response);
+		$this->assertUnauthorized($response);
 	}
 
 	public function testDoLogged(): void
 	{
 		$gitpull = Configs::getValue('allow_online_git_pull');
 
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 
 		Configs::set('allow_online_git_pull', '0');
 		$response = $this->postJson('/api/Update::apply');
@@ -81,14 +82,14 @@ class UpdateTest extends AbstractTestCase
 
 	/**
 	 * We check that we can apply migration.
-	 * This requires us to disable the MigrationStatus middleware otherwise
+	 * This requires us to disable the {@link \App\Http\Middleware\MigrationStatus} middleware otherwise
 	 * we will be thrown out all the time.
 	 */
 	public function testApplyMigration(): void
 	{
 		// Prepare for test: we need to make sure there is an admin user registered.
 		/** @var User $adminUser */
-		$adminUser = User::findOrFail(0);
+		$adminUser = User::findOrFail(1);
 		$login = $adminUser->username;
 		$pw = $adminUser->password;
 		$adminUser->username = Hash::make('test_login');
@@ -108,8 +109,8 @@ class UpdateTest extends AbstractTestCase
 		$this->assertOk($response);
 
 		// check that Legacy did change the username
-		$adminUser = User::findOrFail(0);
-		assertEquals('test_login', $adminUser->username);
+		$adminUser = User::findOrFail(1);
+		$this->assertEquals('test_login', $adminUser->username);
 
 		// clean up
 		Auth::logout();

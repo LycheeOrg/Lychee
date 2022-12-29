@@ -262,10 +262,6 @@ final class Italian implements Language
 			'PHOTO_FOCAL' => 'Lunghezza Focale',
 			'PHOTO_ISO' => 'ISO %s',
 			'PHOTO_SHARING' => 'Condivisione',
-			'PHOTO_SHR_PUBLIC' => 'Pubblica',
-			'PHOTO_SHR_ALB' => 'Si (Album)',
-			'PHOTO_SHR_PHT' => 'Si (Foto)',
-			'PHOTO_SHR_NO' => 'No',
 			'PHOTO_DELETE' => 'Elimina Photo',
 			'PHOTO_KEEP' => 'Mantieni Photo',
 			'PHOTO_DELETE_CONFIRMATION' => 'Sei sicuro di voler eliminare la foto «%s»? Questa operazione non può essere annullata successivamente!',
@@ -295,7 +291,6 @@ final class Italian implements Language
 			'ERROR' => 'Errore',
 			'ERROR_TEXT' => 'Oops, sembra che qualcosa sia andato storto. Per favore ricarica il sito e prova di nuovo!',
 			'ERROR_UNKNOWN' => 'È successo qualcosa di inaspettato. Per favore prova di nuovo e controlla la tua installazione e il tuo server. Controlla il readme per più informazioni.',
-			'ERROR_LOGIN' => 'Impossibile salvare il login. Per favore prova con altri nomi utenti e password!',
 			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
@@ -332,12 +327,9 @@ final class Italian implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
-			'LOGIN_TITLE' => 'Inserisci un nome utente e una password per la tua installazione:',
 			'LOGIN_USERNAME' => 'Nuovo Nome Utente',
 			'LOGIN_PASSWORD' => 'Nuova Password',
 			'LOGIN_PASSWORD_CONFIRM' => 'Conferma Password',
-			'LOGIN_CREATE' => 'Crea Login',
-
 			'PASSWORD_TITLE' => 'Inserisci la tua password attuale:',
 			'PASSWORD_CURRENT' => 'Password Attuale',
 			'PASSWORD_TEXT' => 'Il tuo nome utente e password verrano cambiati nei seguenti:',
@@ -475,6 +467,7 @@ final class Italian implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Copy to clipboard',
 			'URL_COPIED_TO_CLIPBOARD' => 'Copied URL to clipboard!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Direct links to image files:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => 'Medium',
 			'PHOTO_MEDIUM_HIDPI' => 'Medium HiDPI',
 			'PHOTO_SMALL' => 'Thumb',
@@ -513,7 +506,7 @@ final class Italian implements Language
 			'CAMERA_DATE' => 'Camera date',
 			'NEW_PASSWORD' => 'new password',
 			'ALLOW_UPLOADS' => 'Allow uploads',
-			'RESTRICTED_ACCOUNT' => 'Restricted account',
+			'ALLOW_USER_SELF_EDIT' => 'Allow self-management of user account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
 	}

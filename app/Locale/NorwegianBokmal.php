@@ -262,10 +262,6 @@ final class NorwegianBokmal implements Language
 			'PHOTO_FOCAL' => 'Brennvidde',
 			'PHOTO_ISO' => 'ISO %s',
 			'PHOTO_SHARING' => 'Deling',
-			'PHOTO_SHR_PUBLIC' => 'Offentlig',
-			'PHOTO_SHR_ALB' => 'Ja (Album)',
-			'PHOTO_SHR_PHT' => 'Ja (Bilde)',
-			'PHOTO_SHR_NO' => 'Nei',
 			'PHOTO_DELETE' => 'Fjern Bilde',
 			'PHOTO_KEEP' => 'Behold Bilde',
 			'PHOTO_DELETE_CONFIRMATION' => 'Ønsker du virkelig å fjerne bilde «%s»? Denne handlingen kan ikke angres!',
@@ -295,7 +291,6 @@ final class NorwegianBokmal implements Language
 			'ERROR' => 'Feil',
 			'ERROR_TEXT' => 'Oisann, her ser det ut som noe gikk galt. Vennligst last inn siden på nytt og prøv igjen!',
 			'ERROR_UNKNOWN' => 'Noe uventet skjedde. Prøv på nytt og kontroller installasjonen av Lychee og serveren. Se <b>readme</b> for mer informasjon',
-			'ERROR_LOGIN' => 'Kan ikke utføre innloggingen. Vennligst prøv med et annet brukernavn og passord!',
 			'ERROR_MAP_DEACTIVATED' => 'Kartfunksjoner har blitt deaktivert under innstillinger',
 			'ERROR_SEARCH_DEACTIVATED' => 'Søkefunksjoner har blitt deaktivert under innstillinger',
 			'SUCCESS' => 'OK',
@@ -332,12 +327,9 @@ final class NorwegianBokmal implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
-			'LOGIN_TITLE' => 'Fyll inn et brukernavn og passord for installasjonen:',
 			'LOGIN_USERNAME' => 'Nytt Brukernavn',
 			'LOGIN_PASSWORD' => 'Nytt Passord',
 			'LOGIN_PASSWORD_CONFIRM' => 'Bekreft Passord',
-			'LOGIN_CREATE' => 'Lag Innlogging',
-
 			'PASSWORD_TITLE' => 'Fyll inn ditt nåværende passord:',
 			'PASSWORD_CURRENT' => 'Nåværende Passord',
 			'PASSWORD_TEXT' => 'Brukernavnet og passordet ditt vil bli endret til det følgende:',
@@ -475,6 +467,7 @@ final class NorwegianBokmal implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Kopier til utklippstavlen',
 			'URL_COPIED_TO_CLIPBOARD' => 'Kopierte lenke til utklippstavlen!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Direkte lenke til bildefiler:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => 'Medium',
 			'PHOTO_MEDIUM_HIDPI' => 'Medium HiDPI',
 			'PHOTO_SMALL' => 'Miniatyr',
@@ -513,7 +506,7 @@ final class NorwegianBokmal implements Language
 			'CAMERA_DATE' => 'Camera date',
 			'NEW_PASSWORD' => 'new password',
 			'ALLOW_UPLOADS' => 'Allow uploads',
-			'RESTRICTED_ACCOUNT' => 'Restricted account',
+			'ALLOW_USER_SELF_EDIT' => 'Allow self-management of user account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
 	}

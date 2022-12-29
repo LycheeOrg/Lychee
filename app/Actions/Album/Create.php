@@ -2,9 +2,11 @@
 
 namespace App\Actions\Album;
 
+use App\DTO\AlbumProtectionPolicy;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Models\Album;
+use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
 
 class Create extends Action
@@ -23,6 +25,15 @@ class Create extends Action
 		$album = new Album();
 		$album->title = $title;
 		$this->set_parent($album, $parentAlbum);
+
+		// We do not transfer the password
+		$album->policy = match (Configs::getValueAsInt('default_album_protection')) {
+			1 => AlbumProtectionPolicy::ofDefaultPrivate(),
+			2 => AlbumProtectionPolicy::ofDefaultPublic(),
+			3 => ($parentAlbum !== null ? AlbumProtectionPolicy::ofBaseAlbum($parentAlbum) : AlbumProtectionPolicy::ofDefaultPrivate()),
+			default => AlbumProtectionPolicy::ofDefaultPrivate() // just to be safe of stupid values
+		};
+
 		$album->save();
 
 		return $album;
@@ -46,7 +57,7 @@ class Create extends Action
 			// methods of the nested set `NodeTrait`.
 			$album->appendToNode($parentAlbum);
 		} else {
-			/** @var int */
+			/** @var int $userId */
 			$userId = Auth::id() ?? throw new UnauthenticatedException();
 			$album->owner_id = $userId;
 			$album->makeRoot();

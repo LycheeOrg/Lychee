@@ -262,10 +262,6 @@ final class ChineseTraditional implements Language
 			'PHOTO_FOCAL' => '焦距',
 			'PHOTO_ISO' => 'ISO感光度 %s',
 			'PHOTO_SHARING' => '共享',
-			'PHOTO_SHR_PUBLIC' => '公開',
-			'PHOTO_SHR_ALB' => '是 (相簿)',
-			'PHOTO_SHR_PHT' => '是 (照片)',
-			'PHOTO_SHR_NO' => '否',
 			'PHOTO_DELETE' => '刪除照片',
 			'PHOTO_KEEP' => '保留照片',
 			'PHOTO_DELETE_CONFIRMATION' => '是否要刪除照片《%s》？此動作無法還原！',
@@ -295,7 +291,6 @@ final class ChineseTraditional implements Language
 			'ERROR' => '錯誤',
 			'ERROR_TEXT' => '噢，似乎出了一些問題。請重整頁面後再試一次！',
 			'ERROR_UNKNOWN' => '發生未知問題！請再試一次，檢查您的安裝和伺服器。請查看自述文件以獲取更多信息。',
-			'ERROR_LOGIN' => '無法保存登錄信息。請用另一個用戶名和密碼再試一次！',
 			'ERROR_MAP_DEACTIVATED' => '地圖功能已被設為停用。',
 			'ERROR_SEARCH_DEACTIVATED' => '搜索功能已在設為停用。',
 			'SUCCESS' => '好',
@@ -332,12 +327,9 @@ final class ChineseTraditional implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
-			'LOGIN_TITLE' => '輸入管理員用戶名和密碼：',
 			'LOGIN_USERNAME' => '新用戶名',
 			'LOGIN_PASSWORD' => '新密碼',
 			'LOGIN_PASSWORD_CONFIRM' => '確認密碼',
-			'LOGIN_CREATE' => '創建',
-
 			'PASSWORD_TITLE' => '當前密碼',
 			'PASSWORD_CURRENT' => '當前密碼',
 			'PASSWORD_TEXT' => '用戶名和密碼將被修改為：',
@@ -475,6 +467,7 @@ final class ChineseTraditional implements Language
 			'URL_COPY_TO_CLIPBOARD' => '複製到剪貼板',
 			'URL_COPIED_TO_CLIPBOARD' => '複製到剪貼板的URL！',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => '指向圖像文件的直接鏈接：',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => '中等',
 			'PHOTO_MEDIUM_HIDPI' => '中等解析度',
 			'PHOTO_SMALL' => '低',
@@ -513,7 +506,7 @@ final class ChineseTraditional implements Language
 			'CAMERA_DATE' => 'Camera date',
 			'NEW_PASSWORD' => 'new password',
 			'ALLOW_UPLOADS' => 'Allow uploads',
-			'RESTRICTED_ACCOUNT' => 'Restricted account',
+			'ALLOW_USER_SELF_EDIT' => 'Allow self-management of user account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
 	}

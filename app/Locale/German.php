@@ -262,10 +262,6 @@ final class German implements Language
 			'PHOTO_FOCAL' => 'Brennweite',
 			'PHOTO_ISO' => 'ISO %s',
 			'PHOTO_SHARING' => 'Teilen',
-			'PHOTO_SHR_PUBLIC' => 'Öffentlich',
-			'PHOTO_SHR_ALB' => 'Ja (Album)',
-			'PHOTO_SHR_PHT' => 'Ja (Foto)',
-			'PHOTO_SHR_NO' => 'Nein',
 			'PHOTO_DELETE' => 'Foto löschen',
 			'PHOTO_KEEP' => 'Foto behalten',
 			'PHOTO_DELETE_CONFIRMATION' => 'Sind Sie sicher, dass Sie das Foto „%s“ löschen wollen? Diese Aktion kann nicht rückgängig gemacht werden!',
@@ -295,7 +291,6 @@ final class German implements Language
 			'ERROR' => 'Fehler',
 			'ERROR_TEXT' => 'Hoppla, da ist etwas schiefgegangen. Bitte laden Sie die Seite erneut und probieren Sie es noch einmal!',
 			'ERROR_UNKNOWN' => 'Etwas Unerwartetes ist passiert. Bitte probieren Sie es erneut und überprüfen Sie die Installation und Ihren Server. Lesen Sie die README-Datei für mehr Informationen.',
-			'ERROR_LOGIN' => 'Kann Login nicht speichern. Bitte versuchen Sie es erneut mit einem anderen Benutzernamen und Kennwort!',
 			'ERROR_MAP_DEACTIVATED' => 'Karten sind unter Einstellungen deaktiviert worden.',
 			'ERROR_SEARCH_DEACTIVATED' => 'Suchfunktion wurde unter Einstellungen deaktiviert.',
 			'SUCCESS' => 'OK',
@@ -332,12 +327,9 @@ final class German implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Geben Sie Ihre E-Mail-Adresse unten ein, um Benachrichtigungen zu aktivieren. Um Benachrichtigungen zu deaktivieren, entfernen Sie die E-Mail-Adresse unten einfach.',
 
-			'LOGIN_TITLE' => 'Geben Sie Benutzername und Kennwort für Ihre Installation an:',
 			'LOGIN_USERNAME' => 'Neuer Benutzername',
 			'LOGIN_PASSWORD' => 'Neues Kennwort',
 			'LOGIN_PASSWORD_CONFIRM' => 'Passwort bestätigen',
-			'LOGIN_CREATE' => 'Benutzer anlegen',
-
 			'PASSWORD_TITLE' => 'Geben Sie Ihr bestehendes Kennwort ein:',
 			'PASSWORD_CURRENT' => 'Bestehendes Kennwort',
 			'PASSWORD_TEXT' => 'Ihr Benutzername und Passwort werden wie folgt geändert:',
@@ -475,6 +467,7 @@ final class German implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'In die Zwischenablage kopiert',
 			'URL_COPIED_TO_CLIPBOARD' => 'URL in die Zwischenablage kopiert!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Direkte Links zu den Bilddateien:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => 'Mittlere Größe',
 			'PHOTO_MEDIUM_HIDPI' => 'Mittlere Größe HiDPI',
 			'PHOTO_SMALL' => 'Miniaturansicht',
@@ -513,7 +506,7 @@ final class German implements Language
 			'CAMERA_DATE' => 'Kameradatum',
 			'NEW_PASSWORD' => 'Neues Password',
 			'ALLOW_UPLOADS' => 'Hochladen erlauben',
-			'RESTRICTED_ACCOUNT' => 'Eingeschränkter Account',
+			'ALLOW_USER_SELF_EDIT' => 'Erlaube Selbstverwaltung des Nutzerkontos',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap-Beitragende',
 		];
 	}

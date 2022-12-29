@@ -26,7 +26,7 @@ class SetPhotoDescriptionRequest extends BaseApiRequest implements HasPhoto, Has
 	{
 		return [
 			RequestAttribute::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
-			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['required', new DescriptionRule()],
+			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['present', new DescriptionRule()],
 		];
 	}
 

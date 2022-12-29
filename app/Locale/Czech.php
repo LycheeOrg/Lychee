@@ -262,10 +262,6 @@ final class Czech implements Language
 			'PHOTO_FOCAL' => 'Fokus',
 			'PHOTO_ISO' => 'ISO %s',
 			'PHOTO_SHARING' => 'Sdílet',
-			'PHOTO_SHR_PUBLIC' => 'Veřejné',
-			'PHOTO_SHR_ALB' => 'Ano (Album)',
-			'PHOTO_SHR_PHT' => 'Ano (Foto)',
-			'PHOTO_SHR_NO' => 'Ne',
 			'PHOTO_DELETE' => 'Odstranit fotografii',
 			'PHOTO_KEEP' => 'Ponechat fotografii',
 			'PHOTO_DELETE_CONFIRMATION' => 'Opravdu odstranit fotografii „%s“? Tento krok je nevratný!',
@@ -295,7 +291,6 @@ final class Czech implements Language
 			'ERROR' => 'Chyba',
 			'ERROR_TEXT' => 'Něco není v pořádku. Obnovte stránku a postup zopakujte!',
 			'ERROR_UNKNOWN' => 'Neočekávaná chyba. Postup prosím opakujte a ujistěte se o správnosti instalace na serveru. Další informace jsou k dispozici v souboru README.',
-			'ERROR_LOGIN' => 'Nelze uložit přihlašovací informace. Opakujte prosím postup s jiným uřivatelským jménem a heslem!',
 			'ERROR_MAP_DEACTIVATED' => 'Funkce Mapy byla v nastavení deaktivována.',
 			'ERROR_SEARCH_DEACTIVATED' => 'Funkce hledání byla v nastavení deaktivována.',
 			'SUCCESS' => 'OK',
@@ -332,12 +327,9 @@ final class Czech implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
-			'LOGIN_TITLE' => 'Zadejte jméno uživatele a heslo pro svoji instalaci:',
 			'LOGIN_USERNAME' => 'Jméno uživatele',
 			'LOGIN_PASSWORD' => 'Heslo',
 			'LOGIN_PASSWORD_CONFIRM' => 'Zopakujte heslo',
-			'LOGIN_CREATE' => 'Vytvořit uživatele',
-
 			'PASSWORD_TITLE' => 'Zadejte aktuální heslo:',
 			'PASSWORD_CURRENT' => 'Aktuální heslo',
 			'PASSWORD_TEXT' => 'Vaše uživatelské jméno a heslo budou změněny následovně:',
@@ -475,6 +467,7 @@ final class Czech implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Kopírovat do schránky',
 			'URL_COPIED_TO_CLIPBOARD' => 'URL zkopírována do schránky!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Přímý odkaz k souborům:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => 'Střední',
 			'PHOTO_MEDIUM_HIDPI' => 'Střední HiDPI',
 			'PHOTO_SMALL' => 'Náhled',
@@ -513,7 +506,7 @@ final class Czech implements Language
 			'CAMERA_DATE' => 'Camera date',
 			'NEW_PASSWORD' => 'new password',
 			'ALLOW_UPLOADS' => 'Allow uploads',
-			'RESTRICTED_ACCOUNT' => 'Restricted account',
+			'ALLOW_USER_SELF_EDIT' => 'Allow self-management of user account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
 	}

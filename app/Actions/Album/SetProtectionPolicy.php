@@ -29,12 +29,7 @@ class SetProtectionPolicy extends Action
 	 */
 	public function do(BaseAlbum $album, AlbumProtectionPolicy $protectionPolicy, bool $shallSetPassword, ?string $password): void
 	{
-		$album->grants_full_photo = $protectionPolicy->grantsFullPhoto;
-		$album->is_public = $protectionPolicy->isPublic;
-		$album->requires_link = $protectionPolicy->requiresLink;
-		$album->is_nsfw = $protectionPolicy->isNSFW;
-		$album->is_downloadable = $protectionPolicy->isDownloadable;
-		$album->is_share_button_visible = $protectionPolicy->isShareButtonVisible;
+		$album->policy = $protectionPolicy;
 
 		// Set password if provided
 		if ($shallSetPassword) {

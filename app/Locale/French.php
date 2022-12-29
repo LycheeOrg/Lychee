@@ -262,10 +262,6 @@ final class French implements Language
 			'PHOTO_FOCAL' => 'Distance focale',
 			'PHOTO_ISO' => 'ISO %s',
 			'PHOTO_SHARING' => 'Partager',
-			'PHOTO_SHR_PUBLIC' => 'Publique',
-			'PHOTO_SHR_ALB' => 'Oui (album)',
-			'PHOTO_SHR_PHT' => 'Oui (photo)',
-			'PHOTO_SHR_NO' => 'Non',
 			'PHOTO_DELETE' => 'Supprimer la photo',
 			'PHOTO_KEEP' => 'Garder la photo',
 			'PHOTO_DELETE_CONFIRMATION' => 'Voulez-vous vraiment supprimer la photo «%s» ? Cette action est irréversible !',
@@ -295,7 +291,6 @@ final class French implements Language
 			'ERROR' => 'Erreur',
 			'ERROR_TEXT' => 'Il semble qu’une erreur soit survenue. Veuillez rafraichir la page et réessayer !',
 			'ERROR_UNKNOWN' => 'Une erreur inattendue est survenue. Veuillez réessayer et vérifier votre installation et votre serveur. Consultez le fichier Readme pour obtenir plus d’information.',
-			'ERROR_LOGIN' => 'Impossible d’enregistrer les informations de connexion. Veuillez réessayer avec un autre nom d’utilisateur et mot de passe.',
 			'ERROR_MAP_DEACTIVATED' => 'La carte a été désactivée dans les paramètres.',
 			'ERROR_SEARCH_DEACTIVATED' => 'La recherche a été désactivée dans les paramètres.',
 			'SUCCESS' => 'OK',
@@ -332,15 +327,12 @@ final class French implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'Notification de nouvelles photos mise à jour',
 			'USER_EMAIL_INSTRUCTION' => 'Ajouter votre email Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
-			'LOGIN_TITLE' => 'Entrez un nom d’utilisateur et un mot de passe pour votre installation :',
 			'LOGIN_USERNAME' => 'Nouvel utilisateur',
 			'LOGIN_PASSWORD' => 'Nouveau Mot de passe',
 			'LOGIN_PASSWORD_CONFIRM' => 'Confirmez le mot de passe',
-			'LOGIN_CREATE' => 'Créer les informations de connexion',
-
 			'PASSWORD_TITLE' => 'Entrez votre mot de passe existant :',
 			'PASSWORD_CURRENT' => 'Mot de passe existant :',
-			'PASSWORD_TEXT' => 'Votre nom d’utilisateur et votre mot de passe seront modifiés comme suit :',
+			'PASSWORD_TEXT' => 'Vos identifiants seront modifiés comme suit :',
 			'PASSWORD_CHANGE' => 'Modifier les informations de connexion',
 
 			'EDIT_SHARING_TITLE' => 'Modifier le partage',
@@ -475,6 +467,7 @@ final class French implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Copier dans le presse-papier',
 			'URL_COPIED_TO_CLIPBOARD' => 'l’URL a été copiée dans le presse-papier !',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Liens directs pour les fichier de l’image :',
+			'PHOTO_ORIGINAL' => 'Taille originale',
 			'PHOTO_MEDIUM' => 'Moyenne taille',
 			'PHOTO_MEDIUM_HIDPI' => 'Moyenne taille HiDPI',
 			'PHOTO_SMALL' => 'Petite taille',
@@ -513,7 +506,7 @@ final class French implements Language
 			'CAMERA_DATE' => 'Camera date',
 			'NEW_PASSWORD' => 'Nouveau mot de passe',
 			'ALLOW_UPLOADS' => 'Authoriser les uploads',
-			'RESTRICTED_ACCOUNT' => 'Compte restraint',
+			'ALLOW_USER_SELF_EDIT' => 'Authoriser l’auto-gestion de compte utilisateur',
 			'OSM_CONTRIBUTORS' => 'Contributeur OpenStreetMap',
 		];
 	}

@@ -262,10 +262,6 @@ final class Greek implements Language
 			'PHOTO_FOCAL' => 'Εστιακό μήκος',
 			'PHOTO_ISO' => 'ISO %s',
 			'PHOTO_SHARING' => 'Κοινή Χρήση',
-			'PHOTO_SHR_PUBLIC' => 'Δημόσια',
-			'PHOTO_SHR_ALB' => 'Ναι (Λεύκωμα)',
-			'PHOTO_SHR_PHT' => 'Ναι (Φωτογραφία)',
-			'PHOTO_SHR_NO' => 'Όχι',
 			'PHOTO_DELETE' => 'Διαγραφή Φωτογραφίας',
 			'PHOTO_KEEP' => 'Να μη γίνει διαγραφή',
 			'PHOTO_DELETE_CONFIRMATION' => 'Είστε σίγουρη/ος πως θέλετε να διαγράψετε αυτή τη φωτογραφία «%s»? Αυτή η ενέργεια δεν μπορεί να αναιρεθεί!',
@@ -295,7 +291,6 @@ final class Greek implements Language
 			'ERROR' => 'Σφάλμα',
 			'ERROR_TEXT' => 'Ουπς, φαίνεται πως κάτι πήγε στραβά. Παρακαλούμε κάντε ανανέωση της σελίδας και προσπαθήστε ξανά!',
 			'ERROR_UNKNOWN' => 'Κάτι απρόσμενο συνέβη. Παρακαλούμε προσπαθείστε ξανά και ελέγξτε την εγκατάστασή σας και τον εξυπηρετητή. Ρίξτε μια ματιά στο αρχείο readme για περισσότερες πληροφορίες.',
-			'ERROR_LOGIN' => 'Αδυναμία αποθήκευσης στοιχείων εισόδου. Παρακαλούμε δοκιμάστε ξανά με διαφορετικό όνομα χρήστη και κωδικό πρόσβασης!',
 			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
@@ -332,12 +327,9 @@ final class Greek implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
-			'LOGIN_TITLE' => 'Εισάγετε ένα όνομα χρήστη και κωδικό πρόσβασης για την εγκατάστασή σας:',
 			'LOGIN_USERNAME' => 'Νέο όνομα χρήστη',
 			'LOGIN_PASSWORD' => 'Νέος κωδικός πρόσβασης',
 			'LOGIN_PASSWORD_CONFIRM' => 'Επιβεβαίωση κωδικού πρόσβασης',
-			'LOGIN_CREATE' => 'Δημιουργία στοιχείων εισόδου',
-
 			'PASSWORD_TITLE' => 'Εισάγετε τον τρέχον κωδικό πρόσβασης:',
 			'PASSWORD_CURRENT' => 'Τρέχον κωδικός πρόσβασης',
 			'PASSWORD_TEXT' => 'Το όνομα χρήστη και ο κωδικός πρόσβασής σας θα αλλάξουν στα παρακάτω:',
@@ -475,6 +467,7 @@ final class Greek implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Αντιγραφή στο πρόχειρο',
 			'URL_COPIED_TO_CLIPBOARD' => 'Η διεύθυνση URL αντιγράφηκε στο πρόχειρο!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Απευθείας σύνδεσμοι στα αρχεία εικόνων:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => 'Μέτρια',
 			'PHOTO_MEDIUM_HIDPI' => 'Μέτρια HiDPI',
 			'PHOTO_SMALL' => 'Μικρογραφία',
@@ -513,7 +506,7 @@ final class Greek implements Language
 			'CAMERA_DATE' => 'Camera date',
 			'NEW_PASSWORD' => 'new password',
 			'ALLOW_UPLOADS' => 'Allow uploads',
-			'RESTRICTED_ACCOUNT' => 'Restricted account',
+			'ALLOW_USER_SELF_EDIT' => 'Allow self-management of user account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
 	}

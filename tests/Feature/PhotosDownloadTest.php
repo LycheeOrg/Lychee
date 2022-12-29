@@ -13,6 +13,7 @@
 namespace Tests\Feature;
 
 use App\Actions\Photo\Archive;
+use App\Enum\DownloadVariantType;
 use App\Image\Files\InMemoryBuffer;
 use App\Image\Files\TemporaryLocalFile;
 use App\Image\Handlers\ImagickHandler;
@@ -68,7 +69,8 @@ class PhotosDownloadTest extends Base\BasePhotoTest
 		$photoUploadResponse = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 		);
-		$photoArchiveResponse = $this->photos_tests->download([$photoUploadResponse->offsetGet('id')]);
+		$photoArchiveResponse = $this->photos_tests->download(
+			[$photoUploadResponse->offsetGet('id')], DownloadVariantType::ORIGINAL->value);
 
 		// Stream the response in a temporary file
 		$memoryBlob = new InMemoryBuffer();
@@ -99,7 +101,8 @@ class PhotosDownloadTest extends Base\BasePhotoTest
 			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
 		)->offsetGet('id');
 
-		$photoArchiveResponse = $this->photos_tests->download([$photoID1, $photoID2]);
+		$photoArchiveResponse = $this->photos_tests->download(
+			[$photoID1, $photoID2], DownloadVariantType::ORIGINAL->value);
 
 		$zipArchive = AssertableZipArchive::createFromResponse($photoArchiveResponse);
 		$zipArchive->assertContainsFilesExactly([
@@ -123,7 +126,7 @@ class PhotosDownloadTest extends Base\BasePhotoTest
 		);
 		$photoArchiveResponse = $this->photos_tests->download(
 			[$photoUploadResponse->offsetGet('id')],
-			Archive::LIVEPHOTOVIDEO
+			DownloadVariantType::LIVEPHOTOVIDEO->value
 		);
 
 		// Stream the response in a temporary file
@@ -158,7 +161,8 @@ class PhotosDownloadTest extends Base\BasePhotoTest
 			[$photoID2a], null
 		)->offsetGet('id');
 
-		$photoArchiveResponse = $this->photos_tests->download([$photoID1, $photoID2a, $photoID2b]);
+		$photoArchiveResponse = $this->photos_tests->download([$photoID1, $photoID2a, $photoID2b],
+			DownloadVariantType::ORIGINAL->value);
 
 		$zipArchive = AssertableZipArchive::createFromResponse($photoArchiveResponse);
 		$zipArchive->assertContainsFilesExactly([
@@ -174,7 +178,7 @@ class PhotosDownloadTest extends Base\BasePhotoTest
 			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_SUNSET_IMAGE)
 		)->offsetGet('id');
 
-		$download = $this->photos_tests->download([$id]);
+		$download = $this->photos_tests->download([$id], DownloadVariantType::ORIGINAL->value);
 		$download->assertHeader('Content-Type', AbstractTestCase::MIME_TYPE_IMG_JPEG);
 		$download->assertHeader('Content-Length', filesize(base_path(AbstractTestCase::SAMPLE_FILE_SUNSET_IMAGE)));
 		$download->assertHeader('Content-Disposition', HeaderUtils::makeDisposition(
@@ -201,7 +205,7 @@ class PhotosDownloadTest extends Base\BasePhotoTest
 			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
 		)->offsetGet('id');
 
-		$photoArchiveResponse = $this->photos_tests->download([$photoID1, $photoID2]);
+		$photoArchiveResponse = $this->photos_tests->download([$photoID1, $photoID2], DownloadVariantType::ORIGINAL->value);
 
 		$zipArchive = AssertableZipArchive::createFromResponse($photoArchiveResponse);
 		$zipArchive->assertContainsFilesExactly([
@@ -239,7 +243,7 @@ class PhotosDownloadTest extends Base\BasePhotoTest
 
 	public function testDownloadOfInvisibleUnsortedPhotoByNonOwner(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
 		$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
 		Auth::logout();
@@ -251,7 +255,7 @@ class PhotosDownloadTest extends Base\BasePhotoTest
 		Auth::logout();
 		Session::flush();
 		Auth::loginUsingId($userID2);
-		$this->photos_tests->download([$photoID], Archive::FULL, 403);
+		$this->photos_tests->download([$photoID], DownloadVariantType::ORIGINAL->value, 403);
 	}
 
 	public function testDownloadOfPhotoInSharedDownloadableAlbum(): void
@@ -259,7 +263,7 @@ class PhotosDownloadTest extends Base\BasePhotoTest
 		$areAlbumsDownloadable = Configs::getValueAsBool(self::CONFIG_DOWNLOADABLE);
 		try {
 			Configs::set(self::CONFIG_DOWNLOADABLE, true);
-			Auth::loginUsingId(0);
+			Auth::loginUsingId(1);
 			$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
 			$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
 			Auth::logout();
@@ -274,7 +278,7 @@ class PhotosDownloadTest extends Base\BasePhotoTest
 			Auth::logout();
 			Session::flush();
 			Auth::loginUsingId($userID2);
-			$this->photos_tests->download([$photoID]);
+			$this->photos_tests->download([$photoID], DownloadVariantType::ORIGINAL->value);
 		} finally {
 			Configs::set(self::CONFIG_DOWNLOADABLE, $areAlbumsDownloadable);
 		}
@@ -285,7 +289,7 @@ class PhotosDownloadTest extends Base\BasePhotoTest
 		$areAlbumsDownloadable = Configs::getValueAsBool(self::CONFIG_DOWNLOADABLE);
 		try {
 			Configs::set(self::CONFIG_DOWNLOADABLE, false);
-			Auth::loginUsingId(0);
+			Auth::loginUsingId(1);
 			$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
 			$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
 			Auth::logout();
@@ -300,7 +304,7 @@ class PhotosDownloadTest extends Base\BasePhotoTest
 			Auth::logout();
 			Session::flush();
 			Auth::loginUsingId($userID2);
-			$this->photos_tests->download([$photoID], Archive::FULL, 403);
+			$this->photos_tests->download([$photoID], DownloadVariantType::ORIGINAL->value, 403);
 		} finally {
 			Configs::set(self::CONFIG_DOWNLOADABLE, $areAlbumsDownloadable);
 		}

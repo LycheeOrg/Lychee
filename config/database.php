@@ -189,4 +189,6 @@ return [
 			'database' => env('REDIS_CACHE_DB', '1'),
 		],
 	],
+
+	'list_foreign_keys' => env('DB_LIST_FOREIGN_KEYS', false),
 ];

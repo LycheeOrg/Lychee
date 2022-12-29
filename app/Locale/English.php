@@ -262,10 +262,6 @@ final class English implements Language
 			'PHOTO_FOCAL' => 'Focal Length',
 			'PHOTO_ISO' => 'ISO %s',
 			'PHOTO_SHARING' => 'Sharing',
-			'PHOTO_SHR_PUBLIC' => 'Public',
-			'PHOTO_SHR_ALB' => 'Yes (Album)',
-			'PHOTO_SHR_PHT' => 'Yes (Photo)',
-			'PHOTO_SHR_NO' => 'No',
 			'PHOTO_DELETE' => 'Delete Photo',
 			'PHOTO_KEEP' => 'Keep Photo',
 			'PHOTO_DELETE_CONFIRMATION' => 'Are you sure you want to delete the photo “%s”? This action can’t be undone!',
@@ -295,7 +291,6 @@ final class English implements Language
 			'ERROR' => 'Error',
 			'ERROR_TEXT' => 'Whoops, it looks like something went wrong. Please reload the site and try again!',
 			'ERROR_UNKNOWN' => 'Something unexpected happened. Please try again and check your installation and server. Take a look at the readme for more information.',
-			'ERROR_LOGIN' => 'Unable to save login. Please try again with another username and password!',
 			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
@@ -332,15 +327,12 @@ final class English implements Language
 			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
 			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
 
-			'LOGIN_TITLE' => 'Enter a username and password for your installation:',
 			'LOGIN_USERNAME' => 'New Username',
 			'LOGIN_PASSWORD' => 'New Password',
 			'LOGIN_PASSWORD_CONFIRM' => 'Confirm Password',
-			'LOGIN_CREATE' => 'Create Login',
-
 			'PASSWORD_TITLE' => 'Enter your current password:',
 			'PASSWORD_CURRENT' => 'Current Password',
-			'PASSWORD_TEXT' => 'Your username and password will be changed to the following:',
+			'PASSWORD_TEXT' => 'Your credentials will be changed to the following:',
 			'PASSWORD_CHANGE' => 'Change Login',
 
 			'EDIT_SHARING_TITLE' => 'Edit Sharing',
@@ -475,6 +467,7 @@ final class English implements Language
 			'URL_COPY_TO_CLIPBOARD' => 'Copy to clipboard',
 			'URL_COPIED_TO_CLIPBOARD' => 'Copied URL to clipboard!',
 			'PHOTO_DIRECT_LINKS_TO_IMAGES' => 'Direct links to image files:',
+			'PHOTO_ORIGINAL' => 'Original',
 			'PHOTO_MEDIUM' => 'Medium',
 			'PHOTO_MEDIUM_HIDPI' => 'Medium HiDPI',
 			'PHOTO_SMALL' => 'Thumb',
@@ -513,7 +506,7 @@ final class English implements Language
 			'CAMERA_DATE' => 'Camera date',
 			'NEW_PASSWORD' => 'new password',
 			'ALLOW_UPLOADS' => 'Allow uploads',
-			'RESTRICTED_ACCOUNT' => 'Restricted account',
+			'ALLOW_USER_SELF_EDIT' => 'Allow self-management of user account',
 			'OSM_CONTRIBUTORS' => 'OpenStreetMap contributors',
 		];
 	}

@@ -133,12 +133,5 @@ class PanicAttack
 				$this->$fun();
 			}
 		}
-		// var_dump($error_message);
-		// if nothing has been caught so far
-		// $this->title = 'Error !';
-		// $this->code = 500;
-		// $this->message = 'Oups, something went wrong !';
-		// $this->message = $last_error['message'];
-		// $this->displaySimpleError();
 	}
 }

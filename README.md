@@ -1,7 +1,7 @@
 <p align="center"><a href="https://lycheeorg.github.io"><img src="https://raw.githubusercontent.com/LycheeOrg/Lychee/master/Banner.png" width="400px" alt="@LycheeOrg"></a></p>
 
 [![GitHub Release][release-shield]](https://github.com/LycheeOrg/Lychee/releases)
-[![PHP 8.0 & 8.1][php-shield]](https://lycheeorg.github.io/docs/#server-requirements)
+[![PHP 8.1 & 8.2][php-shield]](https://lycheeorg.github.io/docs/#server-requirements)
 [![MIT License][license-shield]](https://github.com/LycheeOrg/Lychee/blob/master/LICENSE)
 [![Downloads][download-shield]](https://github.com/LycheeOrg/Lychee/releases)
 <br>
@@ -32,7 +32,7 @@ Lychee is a free photo-management tool, which runs on your server or web-space. 
 
 ## Installation
 
-To run Lychee, everything you need is a web-server with PHP 8.0 or later and a MySQL-Database. Follow the instructions to install Lychee on your server. This version of Lychee is built on the Laravel framework. To install:
+To run Lychee, everything you need is a web-server with PHP 8.1 or later and a database (MySQL/MariaDB, PostgreSQL or SQLite). Follow the instructions to install Lychee on your server. This version of Lychee is built on the Laravel framework. To install:
 
 1. Clone this repo to your server and set the web root to `lychee/public`
 2. Run `composer install --no-dev` to install dependencies
@@ -84,7 +84,7 @@ In order to use the new photos email notification you will need to have configur
 
 ## Troubleshooting
 
-Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particularly the [FAQ](https://lycheeorg.github.io/docs/faq.html) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub! You can also contact us directly on [gitter (login with your github account). &#187;](https://gitter.im/LycheeOrg/Lobby)
+Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particularly the [FAQ](https://lycheeorg.github.io/docs/faq_troubleshooting.html) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub! You can also contact us directly on [gitter (login with your github account). &#187;](https://gitter.im/LycheeOrg/Lobby)
 
 ## Open Source Community Support
 
@@ -96,7 +96,7 @@ We would like to thank Jetbrains for supporting us with their [Open Source Devel
 [build-status-shield]: https://img.shields.io/github/actions/workflow/status/LycheeOrg/Lychee/CICD.yml?branch=master
 [codecov-shield]: https://codecov.io/gh/LycheeOrg/Lychee/branch/master/graph/badge.svg
 [release-shield]: https://img.shields.io/github/release/LycheeOrg/Lychee.svg
-[php-shield]: https://img.shields.io/badge/PHP-8.0%20|%208.1-blue
+[php-shield]: https://img.shields.io/badge/PHP-8.1%20|%208.2-blue
 [license-shield]: https://img.shields.io/github/license/LycheeOrg/Lychee.svg
 [cii-shield]: https://img.shields.io/cii/summary/2855.svg
 [sonar-shield]: https://sonarcloud.io/api/project_badges/measure?project=LycheeOrg_Lychee-Laravel&metric=alert_status

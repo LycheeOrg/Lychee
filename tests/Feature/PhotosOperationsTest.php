@@ -247,23 +247,6 @@ class PhotosOperationsTest extends BasePhotoTest
 		/** @var \App\Models\Album $album */
 		$album = static::convertJsonToObject($this->albums_tests->get($albumID));
 		static::assertCount(0, $album->photos);
-
-		// save initial value
-		$init_config_value = Configs::getValue('gen_demo_js');
-
-		// set to 0
-		Configs::set('gen_demo_js', '1');
-		static::assertEquals('1', Configs::getValue('gen_demo_js'));
-
-		// check redirection
-		$this->clearCachedSmartAlbums();
-		$response = $this->get('/demo');
-		$this->assertOk($response);
-		$response->assertViewIs('demo');
-
-		// set back to initial value
-		Configs::set('gen_demo_js', $init_config_value);
-
 		$this->albums_tests->delete([$albumID]);
 
 		$response = $this->postJson('/api/Photo::clearSymLink');
@@ -342,7 +325,7 @@ class PhotosOperationsTest extends BasePhotoTest
 		$photoSortingOrder = Configs::getValueAsString(self::CONFIG_PHOTOS_SORTING_ORDER);
 
 		try {
-			Auth::loginUsingId(0);
+			Auth::loginUsingId(1);
 			Configs::set(self::CONFIG_PUBLIC_RECENT, true);
 			Configs::set(self::CONFIG_PUBLIC_HIDDEN, false);
 			Configs::set(self::CONFIG_PUBLIC_SEARCH, true);
@@ -373,7 +356,7 @@ class PhotosOperationsTest extends BasePhotoTest
 				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_SUNSET_IMAGE), $albumID121
 			)->offsetGet('id');
 
-			$this->albums_tests->set_protection_policy(id: $albumID1, full_photo: true, public: true, requiresLink: true);
+			$this->albums_tests->set_protection_policy(id: $albumID1, grants_full_photo_access: true, is_public: true, is_link_required: true);
 			$this->albums_tests->set_protection_policy($albumID11);
 			$this->albums_tests->set_protection_policy($albumID12);
 			$this->albums_tests->set_protection_policy($albumID121);
@@ -474,7 +457,7 @@ class PhotosOperationsTest extends BasePhotoTest
 
 	public function testDeleteMultiplePhotosByAnonUser(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 		$photoID1 = $this->photos_tests->upload(
 			self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID
@@ -490,7 +473,7 @@ class PhotosOperationsTest extends BasePhotoTest
 
 	public function testDeleteMultiplePhotosByNonOwner(): void
 	{
-		Auth::loginUsingId(0);
+		Auth::loginUsingId(1);
 		$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
 		$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
 		Auth::logout();
@@ -546,6 +529,6 @@ class PhotosOperationsTest extends BasePhotoTest
 		$this->expectException(IllegalOrderOfOperationException::class);
 
 		$photo = new Photo();
-		$photo->is_share_button_visible = true;
+		$photo->live_photo_full_path = 'Something';
 	}
 }

@@ -5,9 +5,9 @@ namespace App\Console\Commands;
 use App\Contracts\Exceptions\ExternalLycheeException;
 use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Models\SizeVariantFactory;
+use App\Enum\SizeVariantType;
 use App\Exceptions\UnexpectedException;
 use App\Models\Photo;
-use App\Models\SizeVariant;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Safe\Exceptions\InfoException;
@@ -17,17 +17,15 @@ use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleExce
 class GenerateThumbs extends Command
 {
 	/**
-	 * @var array<string, int>
-	 *
-	 * @phpstan-var array<string, int<0,6>>
+	 * @var array<string,SizeVariantType>
 	 */
 	public const SIZE_VARIANTS = [
-		'thumb' => SizeVariant::THUMB,
-		'thumb2x' => SizeVariant::THUMB2X,
-		'small' => SizeVariant::SMALL,
-		'small2x' => SizeVariant::SMALL2X,
-		'medium' => SizeVariant::MEDIUM,
-		'medium2x' => SizeVariant::MEDIUM2X,
+		'thumb' => SizeVariantType::THUMB,
+		'thumb2x' => SizeVariantType::THUMB2X,
+		'small' => SizeVariantType::SMALL,
+		'small2x' => SizeVariantType::SMALL2X,
+		'medium' => SizeVariantType::MEDIUM,
+		'medium2x' => SizeVariantType::MEDIUM2X,
 	];
 
 	/**
@@ -56,7 +54,7 @@ class GenerateThumbs extends Command
 		try {
 			$sizeVariantName = strval($this->argument('type'));
 			if (!array_key_exists($sizeVariantName, self::SIZE_VARIANTS)) {
-				$this->error(sprintf('Type %s is not one of %s', $sizeVariantName, implode(', ', array_flip(self::SIZE_VARIANTS))));
+				$this->error(sprintf('Type %s is not one of %s', $sizeVariantName, implode(', ', array_keys(self::SIZE_VARIANTS))));
 
 				return 1;
 			}
