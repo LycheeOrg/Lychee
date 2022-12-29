@@ -6,6 +6,12 @@ use App\Contracts\DiagnosticPipe;
 
 class PHPVersionCheck implements DiagnosticPipe
 {
+	// We only support the actively supported version of php.
+	// See here: https://www.php.net/supported-versions.php
+	public const PHP_ERROR = 8.0;
+	public const PHP_WARNING = 8.1;
+	public const PHP_LATEST = 8.2;
+
 	public function handle(array &$data, \Closure $next): array
 	{
 		$this->checkPhpVersion($data);
@@ -17,26 +23,15 @@ class PHPVersionCheck implements DiagnosticPipe
 
 	private function checkPhpVersion(array &$data): void
 	{
-		// As we cannot test this as those are just raising warnings which we cannot check via Travis.
+		// As we cannot test this as those are just raising warnings which we cannot check via CICD.
 		// I hereby solemnly declare this code as covered !
 		// @codeCoverageIgnoreStart
-
-		// 30 Nov 2019	 => 7.2 = DEPRECATED = ERROR
-		// 28 Nov 2019	 => 7.4 = RELEASED   => 7.3 = WARNING
-		// 26 Nov 2020	 => 8.0 = RELEASED   => 7.4 = WARNING
-		// 6 Dec 2020	 => 7.3 = DEPRECATED = ERROR
-		// 25 Nov 2021	 => 8.1 = Released   => 8.0 = WARNING & 7.4 = ERROR
-		// ! 08 Dec 2022	 => 8.0 = DEPRECATED = ERROR
-		$php_error = 8.0;
-		$php_warning = 8.1;
-		$php_latest = 8.2;
-
-		if (floatval(phpversion()) <= $php_error) {
-			$data[] = 'Error: Upgrade to PHP ' . $php_warning . ' or higher';
-		} elseif (floatval(phpversion()) < $php_warning) {
-			$data[] = 'Warning: Upgrade to PHP ' . $php_latest . ' or higher';
-		} elseif (floatval(phpversion()) < $php_latest) {
-			$data[] = 'Info: Latest version of PHP is ' . $php_latest;
+		if (floatval(phpversion()) <= self::PHP_ERROR) {
+			$data[] = 'Error: Upgrade to PHP ' . self::PHP_WARNING . ' or higher';
+		} elseif (floatval(phpversion()) < self::PHP_WARNING) {
+			$data[] = 'Warning: Upgrade to PHP ' . self::PHP_LATEST . ' or higher';
+		} elseif (floatval(phpversion()) < self::PHP_LATEST) {
+			$data[] = 'Info: Latest version of PHP is ' . self::PHP_LATEST;
 		}
 	}
 
