@@ -11,10 +11,10 @@ $YELLOW = "\033[38;5;011m";
 $ORANGE = "\033[38;5;214m";
 
 echo "\n{$YELLOW}creating file for CSS personalization$NO_COLOR" . PHP_EOL;
-touch('storage/app/public/user.css');
+touch('public/dist/user.css');
 
 echo "\n{$YELLOW}creating default SQLite database$NO_COLOR" . PHP_EOL;
-touch('storage/app/database.sqlite');
+touch('database/database.sqlite');
 
 if (is_dir('.git')) {
 	echo "\n{$YELLOW}setting up hooks for git pull and git commits$NO_COLOR" . PHP_EOL;
