@@ -8,6 +8,7 @@ use App\Exceptions\Internal\FrameworkException;
 use App\Models\User;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Str;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
@@ -21,6 +22,10 @@ class HasAdminUser implements MiddlewareCheck
 		try {
 			return User::query()->where('may_administrate', '=', true)->count() > 0;
 		} catch (QueryException $e) {
+			if (Str::contains($e->getMessage(), 'column "may_administrate" does not exist')) {
+				// We are doing an upgrade, therefore we can assume there exists an admin.
+				return true;
+			}
 			throw $e;
 		} catch (BindingResolutionException|NotFoundExceptionInterface|ContainerExceptionInterface $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);
