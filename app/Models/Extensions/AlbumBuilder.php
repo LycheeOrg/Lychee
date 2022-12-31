@@ -14,10 +14,11 @@ use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
 /**
  * Specialized query builder for {@link \App\Models\Album}.
  *
- * This query builder adds the "virtual" columns `max_taken_at` and
- * `min_taken_at`, if actual models are hydrated from the DB.
- * Using a custom query builder rather than a global scope enables more
- * fine-grained control, when the columns are added.
+ * This query builder adds the "virtual" columns `max_taken_at`,
+ * `min_taken_at` as well as `num_children` and `num_photos`, if actual
+ * models are hydrated from the DB. Using a custom query builder rather
+ * than a global scope enables more fine-grained control, when the
+ * columns are added.
  * A global scope is always added to the query, even if the query is only
  * used as a sub-query which will not hydrate actual models.
  * Thus, a global scope unnecessarily complicates queries in many cases.
@@ -30,9 +31,9 @@ class AlbumBuilder extends NSQueryBuilder
 	/**
 	 * Get the hydrated models without eager loading.
 	 *
-	 * Adds the "virtual" columns min_taken_at and max_taken_at to the query,
-	 * if a "full" model is requested, i.e. if the selected columns are
-	 * `*` or not given at all.
+	 * Adds the "virtual" columns min_taken_at, max_taken_at as well as
+	 * num_children and num_photos to the query, if a "full" model is
+	 * requested, i.e. if the selected columns are `*` or not given at all.
 	 *
 	 * @param array|string $columns
 	 *
