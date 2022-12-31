@@ -13,6 +13,7 @@ use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Support\Carbon;
 use PHPExif\Adapter\NoAdapterException;
+use PHPExif\Enum\ReaderType;
 use PHPExif\Exif;
 use PHPExif\Reader\Reader;
 use Safe\Exceptions\StringsException;
@@ -77,10 +78,10 @@ class Extractor
 			//  3. Imagick (not for videos, i.e. for supported photos and accepted raw files only)
 			//  4. Native PHP exif reader (last resort)
 			$reader = match (true) {
-				(Configs::hasFFmpeg() && $isSupportedVideo) => Reader::factory(Reader::TYPE_FFPROBE),
-				Configs::hasExiftool() => Reader::factory(Reader::TYPE_EXIFTOOL),
-				(Configs::hasImagick() && !$isSupportedVideo) => Reader::factory(Reader::TYPE_IMAGICK),
-				default => Reader::factory(Reader::TYPE_NATIVE),
+				(Configs::hasFFmpeg() && $isSupportedVideo) => Reader::factory(ReaderType::FFPROBE),
+				Configs::hasExiftool() => Reader::factory(ReaderType::EXIFTOOL),
+				(Configs::hasImagick() && !$isSupportedVideo) => Reader::factory(ReaderType::IMAGICK),
+				default => Reader::factory(ReaderType::NATIVE),
 			};
 
 			// this can throw an exception in the case of Exiftool adapter!
@@ -108,7 +109,7 @@ class Extractor
 			try {
 				Logs::notice(__METHOD__, __LINE__, 'Falling back to native adapter.');
 				// Use Php native tools
-				$reader = Reader::factory(Reader::TYPE_NATIVE);
+				$reader = Reader::factory(ReaderType::NATIVE);
 				$exif = $reader->read($file->getRealPath());
 			} catch (\InvalidArgumentException|NoAdapterException $e) {
 				throw new ExternalComponentMissingException('The configured EXIF adapter is not available', $e);
@@ -132,7 +133,7 @@ class Extractor
 		if (Configs::hasExiftool() && $sidecarFile->exists()) {
 			try {
 				// Don't use the same reader as the file in case it's a video
-				$sidecarReader = Reader::factory(Reader::TYPE_EXIFTOOL);
+				$sidecarReader = Reader::factory(ReaderType::EXIFTOOL);
 				$sideCarExifData = $sidecarReader->read($sidecarFile->getRealPath());
 				if (!$sideCarExifData instanceof Exif) {
 					throw new MediaFileOperationException('Could not even extract EXIF data with the exiftool adapter');
