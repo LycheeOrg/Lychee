@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d2e44bde6559e481d7d4dcd90f7b7be9",
+    "content-hash": "4d8d838732655171326c4f561c3ba65c",
     "packages": [
         {
             "name": "bepsvpt/secure-headers",
@@ -2487,16 +2487,16 @@
         },
         {
             "name": "lychee-org/php-exif",
-            "version": "dev-readme",
+            "version": "v0.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/php-exif.git",
-                "reference": "49c4e13808d82cb95fee6e01cc661369c80be5db"
+                "reference": "ed40375c77fc29269f65b94daf2eada09aa191b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/49c4e13808d82cb95fee6e01cc661369c80be5db",
-                "reference": "49c4e13808d82cb95fee6e01cc661369c80be5db",
+                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/ed40375c77fc29269f65b94daf2eada09aa191b8",
+                "reference": "ed40375c77fc29269f65b94daf2eada09aa191b8",
                 "shasum": ""
             },
             "require": {
@@ -2570,10 +2570,10 @@
                 "tiff"
             ],
             "support": {
-                "source": "https://github.com/LycheeOrg/php-exif/tree/readme",
+                "source": "https://github.com/LycheeOrg/php-exif/tree/v0.8.0",
                 "issues": "https://github.com/LycheeOrg/php-exif/issues"
             },
-            "time": "2022-12-31T09:33:07+00:00"
+            "time": "2022-12-31T10:38:46+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
@@ -11493,7 +11493,6 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "laragear/webauthn": 20,
-        "lychee-org/php-exif": 20,
         "lychee-org/phpstan-lychee": 20
     },
     "prefer-stable": true,
