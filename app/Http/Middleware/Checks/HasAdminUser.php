@@ -22,7 +22,11 @@ class HasAdminUser implements MiddlewareCheck
 		try {
 			return User::query()->where('may_administrate', '=', true)->count() > 0;
 		} catch (QueryException $e) {
-			if (Str::contains($e->getMessage(), 'column "may_administrate" does not exist')) {
+			if (
+				Str::contains($e->getMessage(), 'column "may_administrate" does not exist') // PGSql
+				|| (Str::contains($e->getMessage(), 'SQLSTATE[42S22]') &&
+					Str::contains($e->getMessage(), "Unknown column 'may_administrate'")) // MySQL
+			) {
 				// We are doing an upgrade, therefore we can assume there exists an admin.
 				return true;
 			}
