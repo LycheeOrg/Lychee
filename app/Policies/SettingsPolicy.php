@@ -77,6 +77,6 @@ class SettingsPolicy extends BasePolicy
 	 */
 	public function canUpdate(User $user): bool
 	{
-		return false;
+		return $user->id === 0; // Edge case of migration not applied yet.
 	}
 }
