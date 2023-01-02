@@ -13,8 +13,8 @@ use Illuminate\Validation\Rules\Enum;
 
 class SetAlbumDecorationRequest extends BaseApiRequest
 {
-	protected string $albumDecoration;
-	protected string $albumDecorationOrientation;
+	protected AlbumDecorationType $albumDecoration;
+	protected AlbumDecorationOrientation $albumDecorationOrientation;
 
 	/**
 	 * {@inheritDoc}
@@ -24,6 +24,9 @@ class SetAlbumDecorationRequest extends BaseApiRequest
 		return Gate::check(SettingsPolicy::CAN_EDIT, Configs::class);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function rules(): array
 	{
 		return [
@@ -32,24 +35,27 @@ class SetAlbumDecorationRequest extends BaseApiRequest
 		];
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumDecoration = $values[RequestAttribute::ALBUM_DECORATION_ATTRIBUTE];
-		$this->albumDecorationOrientation = $values[RequestAttribute::ALBUM_DECORATION_ORIENTATION_ATTRIBUTE];
+		$this->albumDecoration = AlbumDecorationType::from($values[RequestAttribute::ALBUM_DECORATION_ATTRIBUTE]);
+		$this->albumDecorationOrientation = AlbumDecorationOrientation::from($values[RequestAttribute::ALBUM_DECORATION_ORIENTATION_ATTRIBUTE]);
 	}
 
 	/**
-	 * @return string
+	 * @return AlbumDecorationType
 	 */
-	public function albumDecoration(): string
+	public function albumDecoration(): AlbumDecorationType
 	{
 		return $this->albumDecoration;
 	}
 
 	/**
-	 * @return string
+	 * @return AlbumDecorationOrientation
 	 */
-	public function albumDecorationOrientation(): string
+	public function albumDecorationOrientation(): AlbumDecorationOrientation
 	{
 		return $this->albumDecorationOrientation;
 	}
