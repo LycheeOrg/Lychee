@@ -61,7 +61,7 @@ class IndexController extends Controller
 					'infos' => $infos,
 					'page_config' => $page_config,
 					'rss_enable' => $rss_enable,
-					'userCssUrl' => Storage::disk('dist')->url('user.css'),
+					'user_css_url' => Storage::disk('dist')->url('user.css'),
 				]);
 			}
 
@@ -188,7 +188,7 @@ class IndexController extends Controller
 				'siteOwner' => Configs::getValueAsString('site_owner'),
 				'imageUrl' => $imageUrl ?? '',
 				'pageUrl' => url()->current(),
-				'rss_enable' => Configs::getValueAsBool('rss_enable'),
+				'rssEnable' => Configs::getValueAsBool('rss_enable'),
 				'bodyHtml' => file_get_contents(public_path('dist/frontend.html')),
 				'userCssUrl' => Storage::disk('dist')->url('user.css'),
 			]);

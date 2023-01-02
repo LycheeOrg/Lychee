@@ -27,7 +27,7 @@
 		<meta property="og:image" content="{{ $imageUrl }}">
 		<meta property="og:url" content="{{ $pageUrl }}">
 		<!-- RSS feeds -->
-		@if($rss_enable)
+		@if($rssEnable)
 			@include('feed::links')
 		@endif
 	</head>
