@@ -130,7 +130,7 @@ class SettingsController extends Controller
 	 *
 	 * Sub-album and photo counts:
 	 * none: no badges.
-	 * original: show folder icon on albums with sub-albums (if any).
+	 * layers: show folder icon on albums with sub-albums (if any).
 	 * album: like 'original' but with number of sub-albums (if any).
 	 * photo: show number of photos in album (if any).
 	 * all: show number of sub-albums as well as photos.

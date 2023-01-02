@@ -10,7 +10,7 @@ namespace App\Enum;
 enum AlbumDecorationType: string
 {
 	case NONE = 'none';
-	case ORIGINAL = 'original';
+	case LAYERS = 'layers';
 	case ALBUM = 'album';
 	case PHOTO = 'photo';
 	case ALL = 'all';

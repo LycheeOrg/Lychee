@@ -10,15 +10,13 @@ return new class() extends Migration {
 	 */
 	public function up()
 	{
-		defined('BOOL') or define('BOOL', '0|1');
-
 		DB::table('configs')->insert([
 			[
 				'key' => 'album_decoration',
-				'value' => 'original',
+				'value' => 'layers',
 				'confidentiality' => 0,
 				'cat' => 'Gallery',
-				'type_range' => 'none|original|album|photo|all',
+				'type_range' => 'none|layers|album|photo|all',
 				'description' => 'Show decorations on album cover (sub-album and/or photo count)',
 			],
 			[
