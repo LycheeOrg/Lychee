@@ -27,7 +27,9 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property string|null       $parent_id
  * @property Album|null        $parent
  * @property Collection<Album> $children
+ * @property int               $num_children     The number of children.
  * @property Collection<Photo> $all_photos
+ * @property int               $num_photos       The number of photos in this album (excluding photos in subalbums).
  * @property string            $license
  * @property string|null       $cover_id
  * @property Photo|null        $cover
@@ -71,6 +73,8 @@ class Album extends BaseAlbum implements Node
 	protected $casts = [
 		'min_taken_at' => 'datetime',
 		'max_taken_at' => 'datetime',
+		'num_children' => 'integer',
+		'num_photos' => 'integer',
 		'_lft' => 'integer',
 		'_rgt' => 'integer',
 	];
@@ -176,13 +180,17 @@ class Album extends BaseAlbum implements Node
 	public function toArray(): array
 	{
 		$result = parent::toArray();
-		$result['has_albums'] = !$this->isLeaf();
 
 		// The client expect the relation "children" to be named "albums".
 		// Rename it
 		if (key_exists('children', $result)) {
 			$result['albums'] = $result['children'];
 			unset($result['children']);
+		}
+
+		if (key_exists('num_children', $result)) {
+			$result['num_subalbums'] = $result['num_children'];
+			unset($result['num_children']);
 		}
 
 		return $result;

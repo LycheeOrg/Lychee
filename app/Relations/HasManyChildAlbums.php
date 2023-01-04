@@ -72,7 +72,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	/**
 	 * @throws InvalidOrderDirectionException
 	 */
-	public function getResults()
+	public function getResults(): Collection
 	{
 		if (is_null($this->getParentKey())) {
 			return $this->related->newCollection();

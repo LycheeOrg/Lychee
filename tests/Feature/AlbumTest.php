@@ -131,6 +131,7 @@ class AlbumTest extends AbstractTestCase
 			'description' => null,
 			'title' => 'test_album',
 			'albums' => [['id' => $albumID2]],
+			'num_subalbums' => 1,
 		]);
 
 		$this->albums_tests->set_title($albumID1, 'NEW_TEST');
