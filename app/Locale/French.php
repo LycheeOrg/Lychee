@@ -462,7 +462,7 @@ final class French implements Language
 			'ABOUT_SUBTITLE' => 'Hebergement personalisé de photo à votre façon !',
 			'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> est une outil de gestion de gallerie gratuit qui fonctionne sur votre propre serveur. L’installation est rapide. Uploadez, gérez et partagez vos photos comme avec une application propre. Lychee vous fourni tout ce dont vous avez besoin et vos photos sont stockées en sécurité chez vous.',
 			'FOOTER_COPYRIGHT' => 'Toutes les images de ce site Web sont protégées par le droit d’auteur par %1$s © %2$s',
-			'HOSTED_WITH_LYCHEE' => 'Herbergé avec Lychee',
+			'HOSTED_WITH_LYCHEE' => 'Hébergé par Lychee',
 
 			'URL_COPY_TO_CLIPBOARD' => 'Copier dans le presse-papier',
 			'URL_COPIED_TO_CLIPBOARD' => 'l’URL a été copiée dans le presse-papier !',
