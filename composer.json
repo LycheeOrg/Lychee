@@ -53,7 +53,7 @@
         "laravel/framework": "^9.2",
         "livewire/livewire": "^2.7",
         "lychee-org/nestedset": "^6",
-        "lychee-org/php-exif": "^0.7.14",
+        "lychee-org/php-exif": "^0.8",
         "maennchen/zipstream-php": "^2.1",
         "php-ffmpeg/php-ffmpeg": "^1.0",
         "php-http/guzzle7-adapter": "^1.0",
