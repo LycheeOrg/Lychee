@@ -6115,6 +6115,7 @@ lychee.parsePublicInitializationData = function (data) {
   lychee.allow_username_change = data.config.allow_username_change === "1";
   lychee.sorting_photos = data.config.sorting_photos;
   lychee.sorting_albums = data.config.sorting_albums;
+  lychee.share_button_visible = data.config.share_button_visible === "1";
   lychee.album_subtitle_type = data.config.album_subtitle_type || "oldstyle";
   lychee.album_decoration = data.config.album_decoration || "layers";
   lychee.album_decoration_orientation = data.config.album_decoration_orientation || "row";
