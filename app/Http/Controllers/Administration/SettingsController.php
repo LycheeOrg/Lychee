@@ -6,6 +6,7 @@ use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Http\Requests\Settings\GetSetAllSettingsRequest;
+use App\Http\Requests\Settings\SetAlbumDecorationRequest;
 use App\Http\Requests\Settings\SetCSSSettingRequest;
 use App\Http\Requests\Settings\SetDefaultLicenseSettingRequest;
 use App\Http\Requests\Settings\SetDropboxKeySettingRequest;
@@ -122,6 +123,36 @@ class SettingsController extends Controller
 	public function setNSFWVisible(SetNSFWVisibilityRequest $request): void
 	{
 		Configs::set($request->getSettingName(), $request->getSettingValue());
+	}
+
+	/**
+	 * Select the decorations of albums.
+	 *
+	 * Sub-album and photo counts:
+	 * none: no badges.
+	 * layers: show folder icon on albums with sub-albums (if any).
+	 * album: like 'original' but with number of sub-albums (if any).
+	 * photo: show number of photos in album (if any).
+	 * all: show number of sub-albums as well as photos.
+	 *
+	 * Orientation of album decorations. This is only relevant if
+	 * both sub-album and photo decorations are shown. These are simply
+	 * the options for CSS 'flex-direction':
+	 * row: horizontal decorations (photos, albums).
+	 * row-reverse: horizontal decorations (albums, photos).
+	 * column: vertical decorations (top albums, bottom photos).
+	 * column-reverse: vertical decorations (top photos, bottom albums).
+	 *
+	 * @param SetAlbumDecorationRequest $request
+	 *
+	 * @return void
+	 *
+	 * @throws InvalidConfigOption
+	 */
+	public function setAlbumDecoration(SetAlbumDecorationRequest $request): void
+	{
+		Configs::set('album_decoration', $request->albumDecoration());
+		Configs::set('album_decoration_orientation', $request->albumDecorationOrientation());
 	}
 
 	/**

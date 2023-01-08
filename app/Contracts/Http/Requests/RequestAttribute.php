@@ -13,6 +13,8 @@ class RequestAttribute
 
 	public const ALBUM_ID_ATTRIBUTE = 'albumID';
 	public const ALBUM_IDS_ATTRIBUTE = 'albumIDs';
+	public const ALBUM_DECORATION_ATTRIBUTE = 'album_decoration';
+	public const ALBUM_DECORATION_ORIENTATION_ATTRIBUTE = 'album_decoration_orientation';
 
 	public const PHOTO_ID_ATTRIBUTE = 'photoID';
 	public const PHOTO_IDS_ATTRIBUTE = 'photoIDs';

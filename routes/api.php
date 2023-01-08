@@ -176,6 +176,7 @@ Route::post('/Settings::setLocationShowPublic', [Administration\SettingsControll
 Route::post('/Settings::setCSS', [Administration\SettingsController::class, 'setCSS']);
 Route::post('/Settings::getAll', [Administration\SettingsController::class, 'getAll']);
 Route::post('/Settings::saveAll', [Administration\SettingsController::class, 'saveAll']);
+Route::post('/Settings::setAlbumDecoration', [Administration\SettingsController::class, 'setAlbumDecoration']);
 Route::post('/Settings::setOverlayType', [Administration\SettingsController::class, 'setImageOverlayType']);
 Route::post('/Settings::setNSFWVisible', [Administration\SettingsController::class, 'setNSFWVisible']);
 Route::post('/Settings::setDropboxKey', [Administration\SettingsController::class, 'setDropboxKey']);

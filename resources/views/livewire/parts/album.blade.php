@@ -45,9 +45,15 @@
 </div>
 @endif
 
-@if ((isset($data['has_albums']) && $data['has_albums'] == '1') || (isset($data['albums']) && count($data['albums']) > 0))
-<div class='subalbum_badge'>
-	<x-icon class='badge--folder' icon='layers' />
+<div class='counters'>
+	@if (isset($data['show_num_photos']) && isset($data['num_photos'] && $data['num_photos'] > 0)
+		<div class='photos'><span>{{ $data['num_photos'] }}</span></div>;
+	@endif
+	@if ((isset($data['show_num_albums']) && isset($data['num_albums'] && $data['num_albums'] > 0))
+		<div class='albums'>
+		@if ($data['num_albums'] > 1)
+			<span>{{ $data['num_albums'] }}</span>
+		</div>;
+	@endif
 </div>
-@endif
 </div>
