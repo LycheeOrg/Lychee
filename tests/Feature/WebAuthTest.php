@@ -19,24 +19,79 @@ use Laragear\WebAuthn\ByteBuffer;
 use Laragear\WebAuthn\Challenge;
 use Tests\AbstractTestCase;
 use Tests\Feature\Traits\CatchFailures;
+use Tests\Feature\Traits\RequiresEmptyWebAuthnCredentials;
 
 class WebAuthTest extends AbstractTestCase
 {
 	use CatchFailures;
+	use RequiresEmptyWebAuthnCredentials;
+
+	public function setUp(): void
+	{
+		parent::setUp();
+		$this->setUpRequiresEmptyWebAuthnCredentials();
+	}
+
+	public function tearDown(): void
+	{
+		$this->tearDownRequiresEmptyWebAuthnCredentials();
+		parent::tearDown();
+	}
 
 	/**
 	 * Testing the Login interface.
 	 *
 	 * @return void
 	 */
-	public function testWebAuthnRegister(): void
+	public function testWebAuthnRegisterOptions(): void
 	{
 		Auth::loginUsingId(1);
+
 		$response = $this->postJson('/api/WebAuthn::register/options');
 		$this->assertOk($response);
 
+		// retrieve the challenge from the Session
+		$challengeRetrieved = Session::get(config('webauthn.challenge.key'));
+		$clg = $challengeRetrieved->data->toBase64Url();
+
+		$response->assertJson([
+			'rp' => ['name' => 'Lychee'],
+			'authenticatorSelection' => ['userVerification' => 'discouraged'],
+			'user' => ['name' => null, 'displayName' => 'admin'],
+			'pubKeyCredParams' => [['type' => 'public-key', 'alg' => -7], ['type' => 'public-key', 'alg' => -257]],
+			'attestation' => 'none',
+			'excludeCredentials' => [],
+			'timeout' => 60000,
+			'challenge' => $clg,
+		]);
+
+		Auth::logout();
+		Session::flush();
+	}
+
+	/**
+	 * Testing the Login interface.
+	 *
+	 * @return void
+	 */
+	public function testWebAuthnRegisterOptionsUnauthorized(): void
+	{
+		$response = $this->postJson('/api/WebAuthn::register/options');
+		$this->assertForbidden($response);
+	}
+
+	/**
+	 * Testing the Login interface.
+	 *
+	 * @return void
+	 */
+	public function testWebAuthnRegisterExecution(): void
+	{
+		Auth::loginUsingId(1);
+
+		// create challenge and flash it in the Session.
 		$challenge = new Challenge(
-			data: ByteBuffer::fromBase64('SRgqQgFXqbBblB85yXld9Q'),
+			data: ByteBuffer::fromBase64Url('Y7CVUuj2aBfZ3nKP_tS3YQ'),
 			timeout: 60,
 			verify: false,
 			properties: ['user_uuid' => 'dfe5446bfd664e599b6140fafd426489', 'user_handle' => null]
@@ -44,27 +99,25 @@ class WebAuthTest extends AbstractTestCase
 		Session::put(config('webauthn.challenge.key'), $challenge);
 
 		$response = $this->postJson('/api/WebAuthn::register', [
-			'id' => 'Pzcdil3rP3D-abaH84oyq9lsbZzbL9_e7HhS-Z-PvjprTCSuTlkhgIAYhjOUPQCQwn0o_QMBo-bPDT-SWU6rPg',
-			'rawId' => 'Pzcdil3rP3D+abaH84oyq9lsbZzbL9/e7HhS+Z+PvjprTCSuTlkhgIAYhjOUPQCQwn0o/QMBo+bPDT+SWU6rPg==',
+			'id' => 'kudbBp8jSUfho6ksyUPhPOMsC2ZLXmUJgkxvZd1zi8AXO6dnXfcRQg9xbTNA5PLcoIbn0ZQbsj4De6bvRy_Cgg',
+			'rawId' => 'kudbBp8jSUfho6ksyUPhPOMsC2ZLXmUJgkxvZd1zi8AXO6dnXfcRQg9xbTNA5PLcoIbn0ZQbsj4De6bvRy/Cgg==',
 			'response' => [
-				'attestationObject' => 'o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVjEc0C5YcCE9mphY/zz0IU/zq4zv5kiobJsNcgdhuZXNrJBAAAAAAAAAAAAAAAAAAAAAAAAAAAAQD83HYpd6z9w/mm2h/OKMqvZbG2c2y/f3ux4Uvmfj746a0wkrk5ZIYCAGIYzlD0AkMJ9KP0DAaPmzw0/kllOqz6lAQIDJiABIVggpdxXAuNaZVOlkPFshNfXW15VNIIQ2piLQbRhXZJlD8MiWCCRQN/b6NlruWWuPf5bHrXU0B5Y6sHMkpP/UBBdbsNOhg==',
-				'clientDataJSON' => 'eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiU1JncVFnRlhxYkJibEI4NXlYbGQ5USIsIm9yaWdpbiI6Imh0dHBzOi8vbHljaGVlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9',
+				'attestationObject' => 'o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVjESZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2NBAAAAAAAAAAAAAAAAAAAAAAAAAAAAQJLnWwafI0lH4aOpLMlD4TzjLAtmS15lCYJMb2Xdc4vAFzunZ133EUIPcW0zQOTy3KCG59GUG7I+A3um70cvwoKlAQIDJiABIVggG6db341aZsq7+N1jdp54dhYwnUu7yVwq11480ItZ9bUiWCB9Eo20Bxc5uzrA4l8Ch97AG0P2zpmUTzmGx9YaJ3z7gg==',
+				'clientDataJSON' => 'eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiWTdDVlV1ajJhQmZaM25LUF90UzNZUSIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0IiwiY3Jvc3NPcmlnaW4iOmZhbHNlfQ==',
 			],
 			'type' => 'public-key',
 		]);
 
 		$this->assertNoContent($response); // code 204
 
+		// Check that it is indeed in the list
 		$responseList = $this->postJson('/api/WebAuthn::list');
 		$this->assertOk($responseList); // code 200
 
 		// Check that the key is indeed in the list
 		$responseList->assertJson([
-			0 => ['id' => 'Pzcdil3rP3D-abaH84oyq9lsbZzbL9_e7HhS-Z-PvjprTCSuTlkhgIAYhjOUPQCQwn0o_QMBo-bPDT-SWU6rPg'],
+			0 => ['id' => 'kudbBp8jSUfho6ksyUPhPOMsC2ZLXmUJgkxvZd1zi8AXO6dnXfcRQg9xbTNA5PLcoIbn0ZQbsj4De6bvRy_Cgg'],
 		]);
-
-		$responseDelete = $this->postJson('/api/WebAuthn::delete', ['id' => 'Pzcdil3rP3D-abaH84oyq9lsbZzbL9_e7HhS-Z-PvjprTCSuTlkhgIAYhjOUPQCQwn0o_QMBo-bPDT-SWU6rPg']);
-		$this->assertNoContent($responseDelete);
 
 		Auth::logout();
 		Session::flush();
@@ -78,19 +131,17 @@ class WebAuthTest extends AbstractTestCase
 	public function testWebAuthnRegisterExpired(): void
 	{
 		Auth::loginUsingId(1);
-		$response = $this->postJson('/api/WebAuthn::register/options');
-		$this->assertOk($response);
 
 		// -100 ensures that we are expired.
-		$challenge = new Challenge(ByteBuffer::fromBase64('SRgqQgFXqbBblB85yXld9Q'), -100, false, []);
+		$challenge = new Challenge(ByteBuffer::fromBase64Url('Y7CVUuj2aBfZ3nKP_tS3YQ'), -100, false, []);
 		Session::put(config('webauthn.challenge.key'), $challenge);
 
 		$response = $this->postJson('/api/WebAuthn::register', [
-			'id' => 'Pzcdil3rP3D-abaH84oyq9lsbZzbL9_e7HhS-Z-PvjprTCSuTlkhgIAYhjOUPQCQwn0o_QMBo-bPDT-SWU6rPg',
-			'rawId' => 'Pzcdil3rP3D+abaH84oyq9lsbZzbL9/e7HhS+Z+PvjprTCSuTlkhgIAYhjOUPQCQwn0o/QMBo+bPDT+SWU6rPg==',
+			'id' => 'kudbBp8jSUfho6ksyUPhPOMsC2ZLXmUJgkxvZd1zi8AXO6dnXfcRQg9xbTNA5PLcoIbn0ZQbsj4De6bvRy_Cgg',
+			'rawId' => 'kudbBp8jSUfho6ksyUPhPOMsC2ZLXmUJgkxvZd1zi8AXO6dnXfcRQg9xbTNA5PLcoIbn0ZQbsj4De6bvRy/Cgg==',
 			'response' => [
-				'attestationObject' => 'o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVjEc0C5YcCE9mphY/zz0IU/zq4zv5kiobJsNcgdhuZXNrJBAAAAAAAAAAAAAAAAAAAAAAAAAAAAQD83HYpd6z9w/mm2h/OKMqvZbG2c2y/f3ux4Uvmfj746a0wkrk5ZIYCAGIYzlD0AkMJ9KP0DAaPmzw0/kllOqz6lAQIDJiABIVggpdxXAuNaZVOlkPFshNfXW15VNIIQ2piLQbRhXZJlD8MiWCCRQN/b6NlruWWuPf5bHrXU0B5Y6sHMkpP/UBBdbsNOhg==',
-				'clientDataJSON' => 'eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiU1JncVFnRlhxYkJibEI4NXlYbGQ5USIsIm9yaWdpbiI6Imh0dHBzOi8vbHljaGVlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9',
+				'attestationObject' => 'o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVjESZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2NBAAAAAAAAAAAAAAAAAAAAAAAAAAAAQJLnWwafI0lH4aOpLMlD4TzjLAtmS15lCYJMb2Xdc4vAFzunZ133EUIPcW0zQOTy3KCG59GUG7I+A3um70cvwoKlAQIDJiABIVggG6db341aZsq7+N1jdp54dhYwnUu7yVwq11480ItZ9bUiWCB9Eo20Bxc5uzrA4l8Ch97AG0P2zpmUTzmGx9YaJ3z7gg==',
+				'clientDataJSON' => 'eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiWTdDVlV1ajJhQmZaM25LUF90UzNZUSIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0IiwiY3Jvc3NPcmlnaW4iOmZhbHNlfQ==',
 			],
 			'type' => 'public-key',
 		]);
@@ -101,7 +152,7 @@ class WebAuthTest extends AbstractTestCase
 
 		// check that the key has not been added to the list
 		$responseList->assertJsonMissing([
-			0 => ['id' => 'Pzcdil3rP3D-abaH84oyq9lsbZzbL9_e7HhS-Z-PvjprTCSuTlkhgIAYhjOUPQCQwn0o_QMBo-bPDT-SWU6rPg'],
+			0 => ['id' => 'kudbBp8jSUfho6ksyUPhPOMsC2ZLXmUJgkxvZd1zi8AXO6dnXfcRQg9xbTNA5PLcoIbn0ZQbsj4De6bvRy_Cgg'],
 		]);
 
 		Auth::logout();
@@ -115,27 +166,7 @@ class WebAuthTest extends AbstractTestCase
 	 */
 	public function testWebAuthLogin(): void
 	{
-		$user = User::query()->find(1);
-
-		// The attribute for public key is encrypted (not that it really matters, but still).
-		// Therefore we cannot use a classic insert as this encryption relies on the secret app key.
-		// This key is different at each run of the tests, therefore we store a public key here unencrypted
-		$key = $user->makeWebAuthnCredential([
-			'id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA',
-
-			'user_id' => '27117450ff81461d80331fb79c655f39',
-			'alias' => null,
-
-			'counter' => 0,
-			'rp_id' => 'https://localhost',
-			'origin' => 'https://localhost',
-			'transports' => null,
-			'aaguid' => '00000000-0000-0000-0000-000000000000',
-
-			'public_key' => "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEF25MWDQwaeFqZJ2Gy/7HEdZkWaW+\nQCbWjLiplbklmqIq6MSSRhLqJLoegR5PqG2JOqhSLcQDAmf/tzdAvO5MmQ==\n-----END PUBLIC KEY-----\n",
-			'attestation_format' => 'none',
-		]);
-		$key->save();
+		$this->createCredentials();
 
 		// Generate a challenge for user_id = 1
 		$response = $this->postJson('/api/WebAuthn::login/options', ['user_id' => 1]);
@@ -174,10 +205,79 @@ class WebAuthTest extends AbstractTestCase
 
 		$this->assertAuthenticated();
 
-		$responseDelete = $this->postJson('/api/WebAuthn::delete', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA']);
-		$this->assertNoContent($responseDelete);
-
 		Auth::logout();
 		Session::flush();
+	}
+
+	/**
+	 * Testing the Listing of credentials.
+	 *
+	 * @return void
+	 */
+	public function testWebAuthListingUnautorized(): void
+	{
+		$this->createCredentials();
+
+		$responseList = $this->postJson('/api/WebAuthn::list');
+		$this->assertUnauthorized($responseList);
+	}
+
+	/**
+	 * Testing the Deletion of credentials.
+	 *
+	 * @return void
+	 */
+	public function testWebAuthDeleteUnautorized(): void
+	{
+		$this->createCredentials();
+
+		$responseDelete = $this->postJson('/api/WebAuthn::delete', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA']);
+		$this->assertUnauthorized($responseDelete);
+	}
+
+	/**
+	 * Testing the Deletion of credentials.
+	 *
+	 * @return void
+	 */
+	public function testWebAuthDeleteAutorized(): void
+	{
+		$this->createCredentials();
+
+		Auth::loginUsingId(1);
+		$responseDelete = $this->postJson('/api/WebAuthn::delete', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA']);
+		$this->assertNoContent($responseDelete);
+		Auth::logout();
+		Session::flush();
+	}
+
+	/**
+	 * Simple generation of credentials.
+	 *
+	 * @return void
+	 */
+	private function createCredentials(): void
+	{
+		$user = User::query()->find(1);
+
+		// The attribute for public key is encrypted (not that it really matters, but still).
+		// Therefore we cannot use a classic insert as this encryption relies on the secret app key.
+		// This key is different at each run of the tests, therefore we store a public key here unencrypted
+		$key = $user->makeWebAuthnCredential([
+			'id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA',
+
+			'user_id' => '27117450ff81461d80331fb79c655f39',
+			'alias' => null,
+
+			'counter' => 0,
+			'rp_id' => 'https://localhost',
+			'origin' => 'https://localhost',
+			'transports' => null,
+			'aaguid' => '00000000-0000-0000-0000-000000000000',
+
+			'public_key' => "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEF25MWDQwaeFqZJ2Gy/7HEdZkWaW+\nQCbWjLiplbklmqIq6MSSRhLqJLoegR5PqG2JOqhSLcQDAmf/tzdAvO5MmQ==\n-----END PUBLIC KEY-----\n",
+			'attestation_format' => 'none',
+		]);
+		$key->save();
 	}
 }
