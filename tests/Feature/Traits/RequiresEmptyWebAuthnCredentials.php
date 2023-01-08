@@ -20,11 +20,8 @@ trait RequiresEmptyWebAuthnCredentials
 
 	protected function setUpRequiresEmptyWebAuthnCredentials(): void
 	{
-		// Assert that user table only contains the admin user
-		static::assertEquals(
-			0,
-			DB::table('webauthn_credentials')->count()
-		);
+		// Assert that webauthn_credentials table is empty
+		$this->assertDatabaseCount('webauthn_credentials', 0);
 	}
 
 	protected function tearDownRequiresEmptyWebAuthnCredentials(): void
