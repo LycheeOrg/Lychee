@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<link type="text/css" rel="stylesheet" href="dist/frontend.css">
-		<link type="text/css" rel="stylesheet" href="dist/user.css">
+		<link type="text/css" rel="stylesheet" href="{{ $userCssUrl }}">
 		<link rel="shortcut icon" href="favicon.ico">
 		<link rel="apple-touch-icon" href="img/apple-touch-icon-ipad.png" sizes="120x120">
 		<link rel="apple-touch-icon" href="img/apple-touch-icon-iphone.png" sizes="152x152">
@@ -27,7 +27,7 @@
 		<meta property="og:image" content="{{ $imageUrl }}">
 		<meta property="og:url" content="{{ $pageUrl }}">
 		<!-- RSS feeds -->
-		@if($rss_enable)
+		@if($rssEnable)
 			@include('feed::links')
 		@endif
 	</head>

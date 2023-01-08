@@ -13,6 +13,7 @@ use App\Policies\SettingsPolicy;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use function Safe\file_get_contents;
 use function Safe\phpinfo;
@@ -60,6 +61,7 @@ class IndexController extends Controller
 					'infos' => $infos,
 					'page_config' => $page_config,
 					'rss_enable' => $rss_enable,
+					'user_css_url' => Storage::disk('dist')->url('user.css'),
 				]);
 			}
 
@@ -186,8 +188,9 @@ class IndexController extends Controller
 				'siteOwner' => Configs::getValueAsString('site_owner'),
 				'imageUrl' => $imageUrl ?? '',
 				'pageUrl' => url()->current(),
-				'rss_enable' => Configs::getValueAsBool('rss_enable'),
+				'rssEnable' => Configs::getValueAsBool('rss_enable'),
 				'bodyHtml' => file_get_contents(public_path('dist/frontend.html')),
+				'userCssUrl' => Storage::disk('dist')->url('user.css'),
 			]);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);

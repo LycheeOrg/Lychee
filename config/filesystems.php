@@ -83,8 +83,8 @@ return [
 		// TODO: Maybe we should drop this Flysystem disk, because neither the driver nor the root must be changed and hence the whole point of using the Flysystem abstraction is gone.
 		'dist' => [
 			'driver' => 'local',
-			'root' => public_path('dist/'),
-			'url' => 'dist/',
+			'root' => env('LYCHEE_DIST', public_path('dist/')),
+			'url' => env('LYCHEE_DIST_URL', 'dist/'),
 			'visibility' => 'public',
 		],
 
@@ -95,8 +95,8 @@ return [
 		// Flysystem does not support symbolic links.
 		'symbolic' => [
 			'driver' => 'local',
-			'root' => public_path('sym'),
-			'url' => 'sym',
+			'root' => env('LYCHEE_SYM', public_path('sym')),
+			'url' => env('LYCHEE_SYM_URL', 'sym'),
 			'visibility' => 'public',
 		],
 	],

@@ -22,7 +22,7 @@ class Npm extends Command
 	 *
 	 * @var string
 	 */
-	protected $description = 'Launch npm on the public/src folder';
+	protected $description = 'Launch npm on the public/Lychee-front folder';
 
 	/**
 	 * Create a new command instance.
@@ -46,7 +46,7 @@ class Npm extends Command
 		try {
 			$argument = $this->argument('cmd');
 			$ret = [];
-			if (!file_exists('public/Lychee-front/package-lock.json')) {
+			if (!is_dir('public/Lychee-front/node_modules')) {
 				$cmd = 'cd public/Lychee-front; npm install';
 				$this->info('execute: ' . $cmd);
 				exec($cmd, $ret);
