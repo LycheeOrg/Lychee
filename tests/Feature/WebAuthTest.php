@@ -258,6 +258,7 @@ class WebAuthTest extends AbstractTestCase
 	 */
 	private function createCredentials(): void
 	{
+		/** @var User $user */
 		$user = User::query()->find(1);
 
 		// The attribute for public key is encrypted (not that it really matters, but still).
