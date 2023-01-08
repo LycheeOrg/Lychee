@@ -6087,7 +6087,7 @@ lychee.localizeStaticGuiElements = function () {
   // Footer
   var footer = document.querySelector("#lychee_footer");
   footer.querySelector("p.home_copyright").textContent = lychee.footer_show_copyright ? sprintf(lychee.locale["FOOTER_COPYRIGHT"], lychee.site_owner, lychee.site_copyright_begin === lychee.site_copyright_end ? lychee.site_copyright_begin : lychee.site_copyright_begin + "–" + lychee.site_copyright_end) : "";
-  footer.querySelector("p.personal_text").textContent = lychee.footer_additional_text;
+  footer.querySelector("p.personal_text").innerHTML = lychee.footer_additional_text;
   footer.querySelector("p.hosted_by a").textContent = lychee.locale["HOSTED_WITH_LYCHEE"];
   /** @type {HTMLDivElement} */
   var footerSocialMedia = footer.querySelector("div#home_socials");
