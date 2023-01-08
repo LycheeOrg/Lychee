@@ -164,6 +164,29 @@ class WebAuthTest extends AbstractTestCase
 	 *
 	 * @return void
 	 */
+	public function testWebAuthnRegisterUnauthorized(): void
+	{
+		// -100 ensures that we are expired.
+		$challenge = new Challenge(ByteBuffer::fromBase64Url('Y7CVUuj2aBfZ3nKP_tS3YQ'), 60, false, []);
+		Session::put(config('webauthn.challenge.key'), $challenge);
+
+		$response = $this->postJson('/api/WebAuthn::register', [
+			'id' => 'kudbBp8jSUfho6ksyUPhPOMsC2ZLXmUJgkxvZd1zi8AXO6dnXfcRQg9xbTNA5PLcoIbn0ZQbsj4De6bvRy_Cgg',
+			'rawId' => 'kudbBp8jSUfho6ksyUPhPOMsC2ZLXmUJgkxvZd1zi8AXO6dnXfcRQg9xbTNA5PLcoIbn0ZQbsj4De6bvRy/Cgg==',
+			'response' => [
+				'attestationObject' => 'o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVjESZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2NBAAAAAAAAAAAAAAAAAAAAAAAAAAAAQJLnWwafI0lH4aOpLMlD4TzjLAtmS15lCYJMb2Xdc4vAFzunZ133EUIPcW0zQOTy3KCG59GUG7I+A3um70cvwoKlAQIDJiABIVggG6db341aZsq7+N1jdp54dhYwnUu7yVwq11480ItZ9bUiWCB9Eo20Bxc5uzrA4l8Ch97AG0P2zpmUTzmGx9YaJ3z7gg==',
+				'clientDataJSON' => 'eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiWTdDVlV1ajJhQmZaM25LUF90UzNZUSIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0IiwiY3Jvc3NPcmlnaW4iOmZhbHNlfQ==',
+			],
+			'type' => 'public-key',
+		]);
+		$this->assertForbidden($response); // Not logged in.
+	}
+
+	/**
+	 * Testing the Login interface.
+	 *
+	 * @return void
+	 */
 	public function testWebAuthLogin(): void
 	{
 		$this->createCredentials();
