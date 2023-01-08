@@ -183,19 +183,24 @@ class WebAuthTest extends AbstractTestCase
 	}
 
 	/**
-	 * Testing the Login interface.
+	 * Testing the Login options.
 	 *
 	 * @return void
 	 */
-	public function testWebAuthLogin(): void
+	public function testWebAuthLoginOptions(): void
 	{
 		$this->createCredentials();
 
 		// Generate a challenge for user_id = 1
 		$response = $this->postJson('/api/WebAuthn::login/options', ['user_id' => 1]);
 		$this->assertOk($response);
+
+		$challengeRetrieved = Session::get(config('webauthn.challenge.key'));
+		$clg = $challengeRetrieved->data->toBase64Url();
+
 		$response->assertJson([
 			'timeout' => 60000,
+			'challenge' => $clg,
 			'allowCredentials' => [
 				0 => [
 					'id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA',
@@ -203,6 +208,41 @@ class WebAuthTest extends AbstractTestCase
 				],
 			],
 		]);
+	}
+
+	/**
+	 * Testing the Login interface.
+	 *
+	 * @return void
+	 */
+	public function testWebAuthLoginOptionsAnonymous(): void
+	{
+		$this->createCredentials();
+
+		// Generate a challenge for user_id = 1
+		$response = $this->postJson('/api/WebAuthn::login/options', []);
+		$this->assertOk($response);
+
+		$challengeRetrieved = Session::get(config('webauthn.challenge.key'));
+		$clg = $challengeRetrieved->data->toBase64Url();
+
+		$response->assertJson([
+			'timeout' => 60000,
+			'challenge' => $clg,
+		]);
+		$response->assertJsonMissing(
+			['allowCredentials' => []]
+		);
+	}
+
+	/**
+	 * Testing the Login interface.
+	 *
+	 * @return void
+	 */
+	public function testWebAuthLogin(): void
+	{
+		$this->createCredentials();
 
 		// Override the challenge with precomputed data
 		$challenge = new Challenge(
@@ -230,6 +270,76 @@ class WebAuthTest extends AbstractTestCase
 
 		Auth::logout();
 		Session::flush();
+	}
+
+	/**
+	 * Testing the Login interface.
+	 *
+	 * @return void
+	 */
+	public function testWebAuthLoginWrongSignature(): void
+	{
+		$this->createCredentials();
+
+		// Override the challenge with precomputed data
+		$challenge = new Challenge(
+			data: ByteBuffer::fromBase64Url('Zn8U3jEDA4Io3huf-yhYGg'),
+			timeout: 60,
+			verify: false,
+			properties: ['credentials' => ['_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA']]
+		);
+		Session::put(config('webauthn.challenge.key'), $challenge);
+
+		$response = $this->postJson('/api/WebAuthn::login', [
+			'id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA',
+			'rawId' => '/Xlz+khgFhDdkvOWyy/YqC54ExkYyp1o6HAQiybqLST+9RGBndpgI06TQygIYI7ZL2dayCMYm6J1+bXyl72obA==',
+			'response' => [
+				'authenticatorData' => 'SZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2MBAAAAcw==',
+				'clientDataJSON' => 'eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiWm44VTNqRURBNElvM2h1Zi15aFlHZyIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0IiwiY3Jvc3NPcmlnaW4iOmZhbHNlLCJvdGhlcl9rZXlzX2Nhbl9iZV9hZGRlZF9oZXJlIjoiZG8gbm90IGNvbXBhcmUgY2xpZW50RGF0YUpTT04gYWdhaW5zdCBhIHRlbXBsYXRlLiBTZWUgaHR0cHM6Ly9nb28uZ2wveWFiUGV4In0=',
+				'signature' => 'NEQCIH2vd0cf9cNB4EL2OWZ7vs1diyC954ePQ0QIqP5rVyTwAiBCaicVZ2ex+Zb3keXl69oQSyu0w5r/EN2V5A8hsB1Jqw==',
+				'userHandle' => '',
+			],
+			'type' => 'public-key',
+		]);
+		$this->assertStatus($response, 422);
+		$response->assertSee('Assertion Error: Signature is invalid');
+
+		$this->assertGuest();
+	}
+
+	/**
+	 * Testing the Login interface.
+	 *
+	 * @return void
+	 */
+	public function testWebAuthLoginWrongChallenge(): void
+	{
+		$this->createCredentials();
+
+		// Override the challenge with precomputed data
+		$challenge = new Challenge(
+			data: ByteBuffer::fromBase64Url('Xn8U3jEDA4Io3huf-yhYGg'),
+			timeout: 60,
+			verify: false,
+			properties: ['credentials' => ['_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA']]
+		);
+		Session::put(config('webauthn.challenge.key'), $challenge);
+
+		$response = $this->postJson('/api/WebAuthn::login', [
+			'id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA',
+			'rawId' => '/Xlz+khgFhDdkvOWyy/YqC54ExkYyp1o6HAQiybqLST+9RGBndpgI06TQygIYI7ZL2dayCMYm6J1+bXyl72obA==',
+			'response' => [
+				'authenticatorData' => 'SZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2MBAAAAcw==',
+				'clientDataJSON' => 'eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiWm44VTNqRURBNElvM2h1Zi15aFlHZyIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0IiwiY3Jvc3NPcmlnaW4iOmZhbHNlLCJvdGhlcl9rZXlzX2Nhbl9iZV9hZGRlZF9oZXJlIjoiZG8gbm90IGNvbXBhcmUgY2xpZW50RGF0YUpTT04gYWdhaW5zdCBhIHRlbXBsYXRlLiBTZWUgaHR0cHM6Ly9nb28uZ2wveWFiUGV4In0=',
+				'signature' => 'NEQCIH2vd0cf9cNB4EL2OWZ7vs1diyC954ePQ0QIqP5rVyTwAiBCaicVZ2ex+Zb3keXl69oQSyu0w5r/EN2V5A8hsB1Jqw==',
+				'userHandle' => '',
+			],
+			'type' => 'public-key',
+		]);
+		$this->assertStatus($response, 422);
+		$response->assertSee('Assertion Error: Response challenge is not equal.');
+
+		$this->assertGuest();
 	}
 
 	/**
