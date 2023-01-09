@@ -36,7 +36,7 @@ return new class() extends Migration {
 					$photoAttributes['album_id'] = null;
 				} else {
 					$albumID = Helpers::trancateIf32($result->album, 0);
-					$exists = DB::table('albums')->select('*')->where('id', '=', $albumID)->count() !== 0;
+					$exists = DB::table('albums')->select('id')->where('id', '=', $albumID)->count() > 0;
 					$photoAttributes['album_id'] = $exists ? $albumID : null;
 				}
 				$photoAttributes['title'] = $result->title;
