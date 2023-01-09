@@ -329,7 +329,9 @@ class SettingsController extends Controller
 		/** @var string $css */
 		$css = $request->getSettingValue();
 		if (Storage::disk('dist')->put('user.css', $css) === false) {
-			throw new InsufficientFilesystemPermissions('Could not save CSS');
+			if (Storage::disk('dist')->get('user.css') !== $css) {
+				throw new InsufficientFilesystemPermissions('Could not save CSS');
+			}
 		}
 	}
 
