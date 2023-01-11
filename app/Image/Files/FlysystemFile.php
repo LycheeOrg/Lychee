@@ -6,7 +6,7 @@ use App\Exceptions\FlySystemLycheeException;
 use App\Exceptions\MediaFileOperationException;
 use App\Image\StreamStat;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Filesystem\FilesystemAdapter;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use function Safe\fclose;
@@ -16,10 +16,10 @@ use function Safe\fclose;
  */
 class FlysystemFile extends BaseMediaFile
 {
-	protected Filesystem $disk;
+	protected FilesystemAdapter $disk;
 	protected string $relativePath;
 
-	public function __construct(Filesystem $disk, string $relativePath)
+	public function __construct(FilesystemAdapter $disk, string $relativePath)
 	{
 		$this->disk = $disk;
 		$this->relativePath = $relativePath;
@@ -146,9 +146,9 @@ class FlysystemFile extends BaseMediaFile
 	}
 
 	/**
-	 * @return Filesystem the disk this file is stored on
+	 * @return FilesystemAdapter the disk this file is stored on
 	 */
-	public function getDisk(): Filesystem
+	public function getDisk(): FilesystemAdapter
 	{
 		return $this->disk;
 	}

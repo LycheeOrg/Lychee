@@ -535,15 +535,13 @@ return new class() extends Migration {
 	protected function needsConversion(): bool
 	{
 		$dbConnType = Config::get('database.default');
-		switch ($dbConnType) {
-			case 'mysql':
-				return false;
-			case 'sqlite':
-			case 'pgsql':
-				return true;
-			default:
-				// What is about sqlsrv? Is this actually used?
-				throw new InvalidArgumentException('Unsupported DB system: ' . $dbConnType);
-		}
+
+		return match ($dbConnType) {
+			'mysql' => false,
+			'sqlite',
+			'pgsql' => true,
+			// What is about sqlsrv? Is this actually used?
+			default => throw new InvalidArgumentException('Unsupported DB system: ' . $dbConnType),
+		};
 	}
 };
