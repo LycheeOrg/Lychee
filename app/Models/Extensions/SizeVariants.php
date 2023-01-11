@@ -69,31 +69,16 @@ class SizeVariants extends AbstractDTO
 			throw new LycheeInvalidArgumentException('ID of owning photo does not match');
 		}
 		$sizeVariant->setRelation('photo', $this->photo);
-		switch ($sizeVariant->type) {
-			case SizeVariantType::ORIGINAL:
-				$ref = &$this->original;
-				break;
-			case SizeVariantType::MEDIUM2X:
-				$ref = &$this->medium2x;
-				break;
-			case SizeVariantType::MEDIUM:
-				$ref = &$this->medium;
-				break;
-			case SizeVariantType::SMALL2X:
-				$ref = &$this->small2x;
-				break;
-			case SizeVariantType::SMALL:
-				$ref = &$this->small;
-				break;
-			case SizeVariantType::THUMB2X:
-				$ref = &$this->thumb2x;
-				break;
-			case SizeVariantType::THUMB:
-				$ref = &$this->thumb;
-				break;
-			default:
-				throw new LycheeInvalidArgumentException('size variant ' . $sizeVariant . 'invalid');
-		}
+		$ref = match ($sizeVariant->type) {
+			SizeVariantType::ORIGINAL => $this->original,
+			SizeVariantType::MEDIUM2X => $this->medium2x,
+			SizeVariantType::MEDIUM => $this->medium,
+			SizeVariantType::SMALL2X => $this->small2x,
+			SizeVariantType::SMALL => $this->small,
+			SizeVariantType::THUMB2X => $this->thumb2x,
+			SizeVariantType::THUMB => $this->thumb,
+			default => throw new LycheeInvalidArgumentException('size variant ' . $sizeVariant . 'invalid'),
+		};
 
 		if (isset($ref) && $ref->id !== $sizeVariant->id) {
 			throw new LycheeInvalidArgumentException('Another size variant of the same type has already been added');

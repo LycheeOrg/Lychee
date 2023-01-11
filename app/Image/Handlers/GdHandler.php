@@ -233,23 +233,14 @@ class GdHandler extends BaseImageHandler
 			// and if the file supports seekable streams
 			$inMemoryBuffer = new InMemoryBuffer();
 
-			switch ($this->gdImageType) {
-				case IMAGETYPE_JPEG:
-				case IMAGETYPE_JPEG2000:
-					imagejpeg($this->gdImage, $inMemoryBuffer->stream(), $this->compressionQuality);
-					break;
-				case IMAGETYPE_PNG:
-					imagepng($this->gdImage, $inMemoryBuffer->stream());
-					break;
-				case IMAGETYPE_GIF:
-					imagegif($this->gdImage, $inMemoryBuffer->stream());
-					break;
-				case IMAGETYPE_WEBP:
-					imagewebp($this->gdImage, $inMemoryBuffer->stream());
-					break;
-				default:
-					throw new \AssertionError('uncovered image type');
-			}
+			match ($this->gdImageType) {
+				IMAGETYPE_JPEG,
+				IMAGETYPE_JPEG2000 => imagejpeg($this->gdImage, $inMemoryBuffer->stream(), $this->compressionQuality),
+				IMAGETYPE_PNG => imagepng($this->gdImage, $inMemoryBuffer->stream()),
+				IMAGETYPE_GIF => imagegif($this->gdImage, $inMemoryBuffer->stream()),
+				IMAGETYPE_WEBP => imagewebp($this->gdImage, $inMemoryBuffer->stream()),
+				default => throw new \AssertionError('uncovered image type'),
+			};
 
 			$streamStat = $file->write($inMemoryBuffer->read(), $collectStatistics);
 			$file->close();

@@ -62,6 +62,10 @@ parameters:
 		- '#Call to an undefined method Geocoder\\Location::getDisplayName\(\)#'
 		- '#Call to an undefined method COM::getfolder\(\).#'
 		- '#Dynamic call to static method Laragear\\WebAuthn\\Http\\Requests\\AssertionRequest::validate\(\).#'
+		- '#Dynamic call to static method Illuminate\\Container\\Container::refresh\(\).#'
+		- '#Dynamic call to static method Illuminate\\Foundation\\Application::getCachedConfigPath\(\).#'
+		- '#Dynamic call to static method Illuminate\\Foundation\\Application::getCachedRoutesPath\(\).#'
+
 
 		- '#Property .* \(App\\Models\\.*(\|null)?\) does not accept (Illuminate\\Database\\Eloquent\\Collection<int, Illuminate\\Database\\Eloquent\\Model>\|)?Illuminate\\Database\\Eloquent\\Model(\|null)?.#'
 		- '#Property .* \(Illuminate\\Database\\Eloquent\\Collection&iterable<App\\Models\\.*>\) does not accept Illuminate\\Database\\Eloquent\\Collection<int, Illuminate\\Database\\Eloquent\\Model>(\|Illuminate\\Database\\Eloquent\\Model)?.#'
