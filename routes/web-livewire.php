@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Http\Livewire\Pages\Fullpage;
 use Illuminate\Support\Facades\Route;
 
 /*
