@@ -49,30 +49,23 @@ class FromServer
 	{
 		$value = 0;
 		$suffix = '';
-		if (sscanf(ini_get('memory_limit'), '%d%c', $value, $suffix) === 2) {
-			/** @var int $value */
-			/** @var string $suffix */
-			switch (strtolower($suffix)) {
-				// @codeCoverageIgnoreStart
-				case 'k':
-					$value *= 1024;
-					break;
-				case 'm':
-					$value *= 1024 * 1024;
-					break;
-				case 'g':
-					$value *= 1024 * 1024 * 1024;
-					break;
-				case 't':
-					$value *= 1024 * 1024 * 1024 * 1024;
-					break;
-				default:
-					break;
-					// @codeCoverageIgnoreEnd
-			}
-		} else {
-			$value = 0;
+
+		sscanf(ini_get('memory_limit'), '%d%c', $value, $suffix);
+		if (!is_int($value) && !is_string($suffix)) {
+			return 0;
 		}
+
+		/** @var int $value */
+		/** @var string $suffix */
+		$value *= match (strtolower($suffix)) {
+			// @codeCoverageIgnoreStart
+			'k' => 1024,
+			'm' => 1024 * 1024,
+			'g' => 1024 * 1024 * 1024,
+			't' => 1024 * 1024 * 1024 * 1024,
+			default => 1
+			// @codeCoverageIgnoreEnd
+		};
 
 		// We set the warning threshold at 90% of the limit.
 		return intval($value * 0.9);

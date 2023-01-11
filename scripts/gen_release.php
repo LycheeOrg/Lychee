@@ -72,21 +72,17 @@ function get_version(): array
 function new_version(array $curr_version, string $kind): array
 {
 	$new_version = $curr_version;
-	switch ($kind) {
-		case 'major':
-			if ($curr_version[1] === 99) {
-				throw new Exception('Maybe it is time for a big change?');
-			}
-			$new_version[1]++;
-			$new_version[2] = 0;
-			break;
-		case 'minor':
-		default:
-			if ($curr_version[2] === 99) {
-				throw new Exception('Maybe it is time for a major release?');
-			}
-			$new_version[2]++;
-			break;
+	if ($kind === 'major') {
+		$new_version[1] += 1;
+		$new_version[2] = 0;
+	}
+	else
+	{
+		$new_version[2] += 1;
+	}
+
+	if ($curr_version[1] === 100 || $curr_version[2] === 100) {
+		throw new Exception('Maybe it is time for a big change?');
 	}
 
 	return $new_version;

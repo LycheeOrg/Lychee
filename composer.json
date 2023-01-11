@@ -24,10 +24,6 @@
         {
             "type": "vcs",
             "url": "https://github.com/LycheeOrg/php-exif"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/Laragear/WebAuthn"
         }
     ],
     "license": "MIT",
@@ -73,7 +69,7 @@
         "filp/whoops": "^2.5",
         "friendsofphp/php-cs-fixer": "^3.3",
         "itsgoingd/clockwork": "^5.1",
-        "lychee-org/phpstan-lychee": "dev-master",
+        "lychee-org/phpstan-lychee": "^v1.0.0",
         "mockery/mockery": "^1.5",
         "phpunit/phpunit": "^9",
         "nunomaduro/larastan": "^2.0",
