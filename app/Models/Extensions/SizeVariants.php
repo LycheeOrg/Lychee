@@ -69,21 +69,21 @@ class SizeVariants extends AbstractDTO
 			throw new LycheeInvalidArgumentException('ID of owning photo does not match');
 		}
 		$sizeVariant->setRelation('photo', $this->photo);
-		$ref = match ($sizeVariant->type) {
-			SizeVariantType::ORIGINAL => $this->original,
-			SizeVariantType::MEDIUM2X => $this->medium2x,
-			SizeVariantType::MEDIUM => $this->medium,
-			SizeVariantType::SMALL2X => $this->small2x,
-			SizeVariantType::SMALL => $this->small,
-			SizeVariantType::THUMB2X => $this->thumb2x,
-			SizeVariantType::THUMB => $this->thumb,
-			default => throw new LycheeInvalidArgumentException('size variant ' . $sizeVariant . 'invalid'),
-		};
+		$candidate = $this->getSizeVariant($sizeVariant->type);
 
-		if (isset($ref) && $ref->id !== $sizeVariant->id) {
+		if ($candidate !== null && $candidate->id !== $sizeVariant->id) {
 			throw new LycheeInvalidArgumentException('Another size variant of the same type has already been added');
 		}
-		$ref = $sizeVariant;
+
+		match ($sizeVariant->type) {
+			SizeVariantType::ORIGINAL => $this->original = $sizeVariant,
+			SizeVariantType::MEDIUM2X => $this->medium2x = $sizeVariant,
+			SizeVariantType::MEDIUM => $this->medium = $sizeVariant,
+			SizeVariantType::SMALL2X => $this->small2x = $sizeVariant,
+			SizeVariantType::SMALL => $this->small = $sizeVariant,
+			SizeVariantType::THUMB2X => $this->thumb2x = $sizeVariant,
+			SizeVariantType::THUMB => $this->thumb = $sizeVariant,
+		};
 	}
 
 	/**
