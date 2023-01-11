@@ -38,6 +38,12 @@ class IsInstalled implements MiddlewareCheck
 			if (Str::contains($e->getMessage(), 'SQLSTATE[HY000] [1045]')) {
 				return false;
 			}
+			// Not coverable by tests unless we actually remove the php dependencies...
+			// @codeCoverageIgnoreStart
+			if (Str::contains($e->getMessage(), 'could not find driver')) {
+				return false;
+			}
+			// @codeCoverageIgnoreEnd
 			throw $e;
 		} catch (BindingResolutionException|NotFoundExceptionInterface|ContainerExceptionInterface $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);
