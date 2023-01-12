@@ -12,6 +12,7 @@
 
 namespace Tests\Feature\Base;
 
+use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
@@ -27,6 +28,8 @@ abstract class BaseSharingWithAnonUser extends BaseSharingTestScenarios
 	public function testPhotosInSharedAndPrivateAlbum(): void
 	{
 		$this->preparePhotosInSharedAndPrivateAndRequireLinkAlbum();
+
+		$this->ensurePhotosWereTakenOnThisDay($this->photoID1, $this->photoID2, $this->photoID3);
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson());
@@ -55,6 +58,12 @@ abstract class BaseSharingWithAnonUser extends BaseSharingTestScenarios
 		$responseForRecent->assertJsonMissing(['id' => $this->albumID3]);
 		$responseForRecent->assertJsonMissing(['id' => $this->photoID3]);
 
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(true));
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID1]);
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID2]);
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID3]);
+
 		$responseForTree = $this->root_album_tests->getTree();
 		$responseForTree->assertJson($this->generateExpectedTreeJson());
 		$responseForTree->assertJsonMissing(['id' => $this->albumID1]);
@@ -74,8 +83,11 @@ abstract class BaseSharingWithAnonUser extends BaseSharingTestScenarios
 	{
 		$this->preparePhotoInSharedPublicPasswordProtectedAlbum();
 
+		$this->ensurePhotosWereTakenOnThisDay($this->photoID1);
+
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
+			null,
 			null,
 			null,
 			null,
@@ -95,6 +107,10 @@ abstract class BaseSharingWithAnonUser extends BaseSharingTestScenarios
 		$responseForRecent->assertJsonMissing(['id' => $this->albumID1]);
 		$responseForRecent->assertJsonMissing(['id' => $this->photoID1]);
 
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(true));
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID1]);
+
 		$responseForTree = $this->root_album_tests->getTree();
 		$responseForTree->assertJson($this->generateExpectedTreeJson());
 		$responseForTree->assertJsonMissing(['id' => $this->albumID1]);
@@ -108,8 +124,11 @@ abstract class BaseSharingWithAnonUser extends BaseSharingTestScenarios
 	{
 		$this->prepareThreeAlbumsWithMixedSharingAndPasswordProtection();
 
+		$this->ensurePhotosWereTakenOnThisDay($this->photoID1, $this->photoID2, $this->photoID3);
+
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
+			null,
 			null,
 			null,
 			null,
@@ -141,6 +160,12 @@ abstract class BaseSharingWithAnonUser extends BaseSharingTestScenarios
 		$responseForRecent->assertJsonMissing(['id' => $this->albumID3]);
 		$responseForRecent->assertJsonMissing(['id' => $this->photoID3]);
 
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(true));
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID1]);
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID2]);
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID3]);
+
 		// TODO: Should public and password-protected albums appear in tree? Regression?
 		$responseForTree = $this->root_album_tests->getTree();
 		$responseForTree->assertJson($this->generateExpectedTreeJson());
@@ -164,15 +189,20 @@ abstract class BaseSharingWithAnonUser extends BaseSharingTestScenarios
 		$this->prepareThreeAlbumsWithMixedSharingAndPasswordProtection();
 		$this->albums_tests->unlock($this->albumID3, self::ALBUM_PWD_1);
 
+		$this->ensurePhotosWereTakenOnThisDay($this->photoID1, $this->photoID2);
+		$this->ensurePhotosWereNotTakenOnThisDay($this->photoID3);
+
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
 			null,
 			null,
 			null,
-			$this->photoID3, [ // photo 3 is alphabetically first
+			$this->photoID3,
+			$this->photoID2,
+			[ // photo 3 is alphabetically first
 				$this->generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
 				$this->generateExpectedAlbumJson($this->albumID3, self::ALBUM_TITLE_3, null, $this->photoID3),
-			]
+			],
 		));
 		$responseForRoot->assertJsonMissing(['id' => $this->albumID1]);
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID1]);
@@ -196,6 +226,16 @@ abstract class BaseSharingWithAnonUser extends BaseSharingTestScenarios
 		));
 		$responseForRecent->assertJsonMissing(['id' => $this->albumID1]);
 		$responseForRecent->assertJsonMissing(['id' => $this->photoID1]);
+
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID2, [ // photo 2 was taken on this day
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
+			]
+		));
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID1]);
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID3]);
 
 		$responseForTree = $this->root_album_tests->getTree();
 		$responseForTree->assertJson($this->generateExpectedTreeJson([
@@ -224,6 +264,7 @@ abstract class BaseSharingWithAnonUser extends BaseSharingTestScenarios
 		?string $starredAlbumThumbID = null,
 		?string $publicAlbumThumbID = null,
 		?string $recentAlbumThumbID = null,
+		?string $onThisDayAlbumThumbID = null,
 		array $expectedAlbumJson = []
 	): array {
 		if ($unsortedAlbumThumbID !== null) {
@@ -239,6 +280,7 @@ abstract class BaseSharingWithAnonUser extends BaseSharingTestScenarios
 				StarredAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($starredAlbumThumbID)],
 				PublicAlbum::ID => null,
 				RecentAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($recentAlbumThumbID)],
+				OnThisDayAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($onThisDayAlbumThumbID)],
 			],
 			'tag_albums' => [],
 			'albums' => $expectedAlbumJson,
