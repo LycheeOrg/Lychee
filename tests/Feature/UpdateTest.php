@@ -57,7 +57,7 @@ class UpdateTest extends AbstractTestCase
 			// We are most likely on a pull request let's just skip this test.
 			Configs::set('allow_online_git_pull', $gitpull);
 
-			$this->markTestSkipped("Pull Request from external repo will throw an error");
+			$this->markTestSkipped('Pull Request from external repo will throw an error');
 		}
 
 		$response = $this->postJson('/api/Update::apply');
