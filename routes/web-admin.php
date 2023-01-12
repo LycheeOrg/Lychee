@@ -17,10 +17,7 @@ use Illuminate\Support\Facades\URL;
 |
 */
 
-// We need that to force https everywhere
-// if (env('APP_ENV') === 'production') {
-
-if (env('APP_ENV') === 'dev') {
+if (config('app.force_https')) {
 	URL::forceScheme('https');
 }
 
