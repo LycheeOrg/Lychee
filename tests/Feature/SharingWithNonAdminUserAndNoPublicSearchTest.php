@@ -13,6 +13,7 @@
 namespace Tests\Feature;
 
 use App\Models\Configs;
+use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
@@ -29,7 +30,7 @@ class SharingWithNonAdminUserAndNoPublicSearchTest extends BaseSharingWithNonAdm
 
 	/**
 	 * Ensures that the user does not the unsorted public photos as covers nor
-	 * inside "Recent" and "Favorites" (as public search is disabled).
+	 * inside "Recent", "On This Day" and "Favorites" (as public search is disabled).
 	 * The user can access the public photo nonetheless, but gets
 	 * "403 - Forbidden" for the other.
 	 *
@@ -41,6 +42,8 @@ class SharingWithNonAdminUserAndNoPublicSearchTest extends BaseSharingWithNonAdm
 	public function testUnsortedPublicAndPrivatePhoto(): void
 	{
 		$this->prepareUnsortedPublicAndPrivatePhoto();
+
+		$this->ensurePhotosWereTakenOnThisDay($this->photoID1, $this->photoID2);
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson());
@@ -61,6 +64,11 @@ class SharingWithNonAdminUserAndNoPublicSearchTest extends BaseSharingWithNonAdm
 		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(true));
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
+
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(true));
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID1]);
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID2]);
 
 		// Even though the public photo is not searchable and hence does not
 		// show up in the smart albums, it can be fetched directly
@@ -82,6 +90,8 @@ class SharingWithNonAdminUserAndNoPublicSearchTest extends BaseSharingWithNonAdm
 	{
 		$this->preparePublicAndPrivatePhotoInPrivateAlbum();
 
+		$this->ensurePhotosWereTakenOnThisDay($this->photoID1, $this->photoID2);
+
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson());
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID1]);
@@ -102,6 +112,11 @@ class SharingWithNonAdminUserAndNoPublicSearchTest extends BaseSharingWithNonAdm
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
 
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(true));
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID1]);
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID2]);
+
 		$responseForTree = $this->root_album_tests->getTree();
 		$responseForTree->assertJson($this->generateExpectedTreeJson());
 		$responseForTree->assertJsonMissing(['id' => $this->albumID1]);
@@ -119,11 +134,14 @@ class SharingWithNonAdminUserAndNoPublicSearchTest extends BaseSharingWithNonAdm
 	{
 		$this->preparePublicUnsortedPhotoAndPhotoInSharedAlbum();
 
+		$this->ensurePhotosWereTakenOnThisDay($this->photoID1, $this->photoID2);
+
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
 			null,
 			$this->photoID2,
 			null,
+			$this->photoID2,
 			$this->photoID2, [
 				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID2),
 			]
@@ -142,7 +160,7 @@ class SharingWithNonAdminUserAndNoPublicSearchTest extends BaseSharingWithNonAdm
 				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID2, $this->albumID1),
 			]
 		));
-		$responseForUnsorted->assertJsonMissing(['id' => $this->photoID2]);
+		$responseForRecent->assertJsonMissing(['id' => $this->photoID1]);
 
 		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
 		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(
@@ -152,6 +170,14 @@ class SharingWithNonAdminUserAndNoPublicSearchTest extends BaseSharingWithNonAdm
 			]
 		));
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
+
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(true,
+			$this->photoID2, [
+				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID2, $this->albumID1),
+			]
+		));
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID1]);
 
 		$responseForTree = $this->root_album_tests->getTree();
 		$responseForTree->assertJson($this->generateExpectedTreeJson([

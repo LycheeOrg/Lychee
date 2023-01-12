@@ -18,6 +18,7 @@
 namespace Tests\Feature\Base;
 
 use App\Models\Configs;
+use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use Illuminate\Support\Facades\Auth;
@@ -108,6 +109,7 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 		?string $starredAlbumThumbID = null,
 		?string $publicAlbumThumbID = null,
 		?string $recentAlbumThumbID = null,
+		?string $onThisDayAlbumThumbID = null,
 		array $expectedAlbumJson = []
 	): array;
 
@@ -150,6 +152,10 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
 		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(true));
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
+
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(true));
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID1]);
 
 		$this->photos_tests->get($this->photoID1, $this->getExpectedInaccessibleHttpStatusCode());
 	}
@@ -235,16 +241,19 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 	{
 		$this->prepareTwoPhotosInPublicAlbum();
 
+		$this->ensurePhotosWereNotTakenOnThisDay($this->photoID1);
+		$this->ensurePhotosWereTakenOnThisDay($this->photoID2);
+
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
 			null,
 			$this->photoID1,
 			null,
-			$this->photoID1, [
+			$this->photoID1,
+			$this->photoID2, [
 				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1), // photo 1 is thumb, because starred photo are always picked first
 			])
 		);
-		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
@@ -263,6 +272,15 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 			]
 		));
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
+
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID2, [
+				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID2, $this->albumID1),
+			]
+		));
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID1]);
 
 		$responseForTree = $this->root_album_tests->getTree();
 		$responseForTree->assertJson($this->generateExpectedTreeJson([
@@ -333,11 +351,14 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 	{
 		$this->preparePublicAlbumAndPasswordProtectedAlbum();
 
+		$this->ensurePhotosWereTakenOnThisDay($this->photoID1, $this->photoID2);
+
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
 			null,
 			null,
 			null,
+			$this->photoID2,
 			$this->photoID2, [
 				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1), // album 1 is in password protected, still locked album
 				$this->generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
@@ -353,6 +374,15 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 			]
 		));
 		$responseForRecent->assertJsonMissing(['id' => $this->photoID1]);
+
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID2, [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
+			]
+		));
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID1]);
 
 		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
 		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(true));
@@ -385,6 +415,10 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 	public function testPublicAlbumAndPasswordProtectedUnlockedAlbum(): void
 	{
 		$this->preparePublicAlbumAndPasswordProtectedAlbum();
+
+		$this->ensurePhotosWereTakenOnThisDay($this->photoID2);
+		$this->ensurePhotosWereNotTakenOnThisDay($this->photoID1);
+
 		$this->albums_tests->unlock($this->albumID1, self::ALBUM_PWD_1);
 
 		$responseForRoot = $this->root_album_tests->get();
@@ -392,7 +426,8 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 			null,
 			null,
 			null,
-			$this->photoID1, [  // album 1 is unlocked, and photo 1 is alphabetically first
+			$this->photoID1,
+			$this->photoID2, [  // album 1 is unlocked, and photo 1 is alphabetically first
 				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
 				$this->generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
 			]
@@ -406,6 +441,15 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
 			]
 		));
+
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID2, [ // photo 2 was taken on this day
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
+			]
+		));
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID1]);
 
 		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
 		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(true));
@@ -468,11 +512,14 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 	{
 		$this->preparePublicAlbumAndPasswordProtectedAlbumWithStarredPhoto();
 
+		$this->ensurePhotosWereTakenOnThisDay($this->photoID1, $this->photoID2);
+
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
 			null,
 			null,
 			null,
+			$this->photoID2,
 			$this->photoID2, [  // album 1 is password protected, hence photo 2 is the thumb
 				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1), // album 1 is in password protected, still locked album
 				$this->generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
@@ -493,6 +540,15 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(true));
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
+
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID2, [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
+			]
+		));
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID1]);
 
 		$this->albums_tests->get($this->albumID1, $this->getExpectedInaccessibleHttpStatusCode(), self::EXPECTED_PASSWORD_REQUIRED_MSG, $this->getExpectedDefaultInaccessibleMessage());
 		$this->photos_tests->get($this->photoID1, $this->getExpectedInaccessibleHttpStatusCode());
@@ -522,12 +578,15 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 		$this->preparePublicAlbumAndPasswordProtectedAlbumWithStarredPhoto();
 		$this->albums_tests->unlock($this->albumID1, self::ALBUM_PWD_1);
 
+		$this->ensurePhotosWereNotTakenOnThisDay($this->photoID1, $this->photoID2);
+
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
 			null,
 			$this->photoID1,  // album 1 is unlocked, and photo 1 is alphabetically first
 			null,
-			$this->photoID1, [  // album 1 is unlocked, and photo 1 is alphabetically first
+			$this->photoID1,
+			null, [  // album 1 is unlocked, and photo 1 is alphabetically first
 				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
 				$this->generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
 			]
@@ -550,6 +609,11 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 			]
 		));
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
+
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(true));
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID1]);
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForAlbum1 = $this->albums_tests->get($this->albumID1);
 		$responseForAlbum1->assertJson([
@@ -608,11 +672,14 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 	{
 		$this->preparePublicAlbumAndHiddenAlbum();
 
+		$this->ensurePhotosWereTakenOnThisDay($this->photoID1, $this->photoID2);
+
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
 			null,
 			null,
 			null,
+			$this->photoID1,
 			$this->photoID1, [ // album 2 is hidden
 				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
 			]
@@ -633,6 +700,14 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(true));
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
+
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID1, [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
+			]));
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForAlbum1 = $this->albums_tests->get($this->albumID1);
 		$responseForAlbum1->assertJson([
@@ -690,11 +765,14 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 	{
 		$this->preparePublicAlbumAndHiddenPasswordProtectedAlbum();
 
+		$this->ensurePhotosWereTakenOnThisDay($this->photoID1, $this->photoID2);
+
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
 			null,
 			null,
 			null,
+			$this->photoID1,
 			$this->photoID1, [ // album 2 is hidden
 				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
 			]
@@ -715,6 +793,15 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(true));
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
+
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID1, [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
+			]
+		));
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForAlbum1 = $this->albums_tests->get($this->albumID1);
 		$responseForAlbum1->assertJson([
@@ -741,6 +828,9 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 	public function testPublicAlbumAndHiddenPasswordProtectedUnlockedAlbum(): void
 	{
 		$this->preparePublicAlbumAndHiddenPasswordProtectedAlbum();
+
+		$this->ensurePhotosWereTakenOnThisDay($this->photoID1, $this->photoID2);
+
 		$this->albums_tests->unlock($this->albumID2, self::ALBUM_PWD_2);
 
 		$responseForRoot = $this->root_album_tests->get();
@@ -748,6 +838,7 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 			null,
 			null,
 			null,
+			$this->photoID1,
 			$this->photoID1, [ // album 2 is hidden
 				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
 			]
@@ -768,6 +859,15 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(true));
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
+
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID1, [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
+			]
+		));
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForAlbum1 = $this->albums_tests->get($this->albumID1);
 		$responseForAlbum1->assertJson([
@@ -852,11 +952,14 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 		$this->preparePhotoInSharedPublicPasswordProtectedAlbum();
 		$this->albums_tests->unlock($this->albumID1, self::ALBUM_PWD_1);
 
+		$this->ensurePhotosWereTakenOnThisDay($this->photoID1);
+
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
 			null,
 			null,
 			null,
+			$this->photoID1,
 			$this->photoID1, [
 				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
 			]
@@ -869,6 +972,14 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID1, [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
+			]
+		));
+
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID1, [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
