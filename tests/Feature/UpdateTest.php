@@ -12,6 +12,7 @@
 
 namespace Tests\Feature;
 
+use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -49,9 +50,15 @@ class UpdateTest extends AbstractTestCase
 		$response->assertSee('Online updates are disabled by configuration');
 
 		Configs::set('allow_online_git_pull', '1');
+		try {
+			$response = $this->get('/Update', []);
+			$this->assertOk($response);
+		} catch (InsufficientFilesystemPermissions $e) {
+			// We are most likely on a pull request let's just skip this test.
+			Configs::set('allow_online_git_pull', $gitpull);
 
-		$response = $this->get('/Update', []);
-		$this->assertOk($response);
+			$this->markTestSkipped("Pull Request from external repo will throw an error");
+		}
 
 		$response = $this->postJson('/api/Update::apply');
 		$this->assertOk($response);
