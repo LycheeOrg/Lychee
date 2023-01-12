@@ -18,7 +18,7 @@ return new class() extends Migration {
 				'cat' => 'Smart Albums',
 				'type_range' => '0|1',
 				'confidentiality' => '0',
-				'description' => 'Make On This Day smart album accessible to anonymous users',
+				'description' => 'Make "On This Day" smart album accessible to anonymous users',
 			],
 		]);
 	}
