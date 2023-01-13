@@ -223,6 +223,28 @@ class Helpers
 	}
 
 	/**
+	 * From https://www.php.net/manual/en/function.disk-total-space.php.
+	 *
+	 * @param float $bytes
+	 *
+	 * @return string
+	 */
+	public function getSymbolByQuantity(float $bytes): string
+	{
+		$symbols = [
+			'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB',
+		];
+		$exp = intval(floor(log($bytes) / log(1024.0)));
+
+		if ($exp >= sizeof($symbols)) {
+			// if the number is too large, we fall back to the largest available symbol
+			$exp = sizeof($symbols) - 1;
+		}
+
+		return sprintf('%.2f %s', ($bytes / pow(1024, $exp)), $symbols[$exp]);
+	}
+
+	/**
 	 * Check if the `exec` function is available.
 	 *
 	 * @return bool

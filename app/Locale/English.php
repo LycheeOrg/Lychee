@@ -180,8 +180,9 @@ final class English implements Language
 			'ALBUM_IMAGES' => 'Images',
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Subalbums',
+			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Share',
-			'ALBUM_SHR_YES' => 'YES',
+			'ALBUM_SHR_YES' => 'Yes',
 			'ALBUM_SHR_NO' => 'No',
 			'ALBUM_PUBLIC' => 'Public',
 			'ALBUM_PUBLIC_EXPL' => 'Anonymous users can access this album, subject to the restrictions below.',
@@ -218,7 +219,6 @@ final class English implements Language
 			'ALBUM_RESERVED' => 'All Rights Reserved',
 			'ALBUM_SET_ORDER' => 'Set Order',
 			'ALBUM_ORDERING' => 'Order by',
-			'ALBUM_OWNER' => 'Owner',
 
 			'PHOTO_ABOUT' => 'About',
 			'PHOTO_BASICS' => 'Basics',
