@@ -77,22 +77,18 @@ class Fullpage extends Component
 		if ($this->photo !== null) {
 			$description = $this->photo->description;
 			$imageUrl = url()->to($this->photo->size_variants->getMedium()?->url ?? $this->photo->size_variants->getOriginal()->url);
-		}
-		else if ($album instanceof BaseAlbum) {
+		} elseif ($album instanceof BaseAlbum) {
 			$description = $album->description;
 			$imageUrl = url()->to($album->thumb->thumbUrl ?? '');
-		}
-		else if ($album instanceof BaseSmartAlbum) {
+		} elseif ($album instanceof BaseSmartAlbum) {
 			$description = '';
 			$imageUrl = url()->to($album->thumb->thumbUrl ?? '');
-		}
-		else
-		{
+		} else {
 			$description = '';
 			$imageUrl = '';
 		}
 
-		return view('livewire.pages.fullpage',)->layout('layouts.livewire',[
+		return view('livewire.pages.fullpage')->layout('layouts.livewire', [
 			'pageTitle' => $siteTitle . (!blank($siteTitle) && !blank($this->title) ? ' – ' : '') . $this->title,
 			'pageDescription' => !blank($description) ? $description . ' – via Lychee' : '',
 			'siteOwner' => Configs::getValueAsString('site_owner'),
@@ -101,7 +97,7 @@ class Fullpage extends Component
 			'rssEnable' => Configs::getValueAsBool('rss_enable'),
 			'bodyHtml' => file_get_contents(public_path('dist/frontend.html')),
 			'userCssUrl' => IndexController::getUserCss(),
-			'frame' => ''
+			'frame' => '',
 		])->slot('fullpage');
 	}
 
@@ -117,6 +113,7 @@ class Fullpage extends Component
 	{
 		$this->albumId = $albumId;
 		$this->emit('urlChange', route('livewire_index', ['albumId' => $this->albumId]));
+
 		return $this->render();
 	}
 
@@ -125,6 +122,7 @@ class Fullpage extends Component
 		$this->albumId = $this->getAlbumProperty()->id;
 		$this->photoId = $photoId;
 		$this->emit('urlChange', route('livewire_index', ['albumId' => $this->albumId, 'photoId' => $this->photoId]));
+
 		return $this->render();
 	}
 
@@ -135,21 +133,25 @@ class Fullpage extends Component
 			$this->albumId = $this->getAlbumProperty()?->id;
 			$this->photoId = '';
 			$this->emit('urlChange', route('livewire_index', ['albumId' => $this->albumId]));
+
 			return $this->render();
 		}
 		if ($this->baseAlbum !== null) {
 			if ($this->baseAlbum instanceof Album && $this->baseAlbum->parent_id !== null) {
 				$this->albumId = $this->baseAlbum->parent_id;
 				$this->emit('urlChange', route('livewire_index', ['albumId' => $this->albumId]));
+
 				return $this->render();
 			}
 
 			$this->albumId = '';
 			$this->emit('urlChange', route('livewire_index'));
+
 			return $this->render();
 		}
 		$this->albumId = '';
 		$this->emit('urlChange', route('livewire_index'));
+
 		return $this->render();
 	}
 
@@ -172,5 +174,4 @@ class Fullpage extends Component
 	{
 		$this->emitTo('components.sidebar', 'toggle');
 	}
-
 }
