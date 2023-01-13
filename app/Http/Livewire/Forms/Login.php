@@ -59,7 +59,7 @@ class Login extends BaseForm
 		parent::mount($params);
 
 		// ! TO BE LOCALIZED
-		$this->title = 'Please login';
+		$this->title = '';
 	}
 
 	/**

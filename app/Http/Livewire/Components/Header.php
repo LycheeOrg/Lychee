@@ -2,9 +2,13 @@
 
 namespace App\Http\Livewire\Components;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Enum\PageMode;
+use App\Http\Livewire\Traits\AlbumProperty;
 use App\Http\Livewire\Traits\InteractWithModal;
 use App\Models\Configs;
+use App\Models\Extensions\BaseAlbum;
+use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -24,16 +28,8 @@ class Header extends Component
 	 */
 	public string $title = '';
 
-	/**
-	 * @var PageMode
-	 */
 	public PageMode $mode;
-
-	public function mount(PageMode $mode, ?string $title = null): void
-	{
-		$this->title = $title ?? Configs::getValueAsString('site_title');
-		$this->mode = $mode;
-	}
+	public ?AbstractAlbum $album;
 
 	/**
 	 * Basic renderer.

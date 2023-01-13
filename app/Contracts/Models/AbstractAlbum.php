@@ -37,4 +37,5 @@ interface AbstractAlbum extends \JsonSerializable, Arrayable, Jsonable, Wireable
 	 * @return Relation|Builder
 	 */
 	public function photos(): Relation|Builder;
+
 }

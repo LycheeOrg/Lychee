@@ -1,3 +1,7 @@
+@props([
+	'mode' => '',
+	'title' => '',
+	'album' => null])
 <header id="lychee_toolbar_container" class="vflex-item-rigid">
 	@if ($mode === App\Enum\PageMode::ALBUMS ) <!-- ALBUMS -->
 		@if (Auth::user() === null) <!-- NOT LOGGED -->

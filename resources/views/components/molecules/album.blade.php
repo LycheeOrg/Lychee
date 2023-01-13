@@ -9,7 +9,7 @@
 
 <div class='overlay'>
 	<h1 title='{{ $title }}'>{{ $title }}</h1>
-	{{-- <a>{{ $data['date_stamp'] }}</a> --}}
+	<a>{{ $data['created_at'] ?? '' }}</a>
 </div>
 
 @if (Auth::check())
@@ -17,18 +17,24 @@
 	@if ($is_nsfw)
 		<x-icons.icon class='badge--nsfw icn-warning' icon='warning' />
 	@endif
-	@if ($id == App\SmartAlbums\StarredAlbum::ID)
+	@switch($id)
+		@case(App\SmartAlbums\StarredAlbum::ID)
 		<x-icons.icon class='badge--star icn-star' icon='star' />
-	@endif
-	@if ($id == App\SmartAlbums\PublicAlbum::ID)
-		<x-icons.icon class='badge--visible badge--hidden icn-share' icon='eye' />
-	@endif
-	@if ($id == App\SmartAlbums\UnsortedAlbum::ID)
+		@break
+		@case(App\SmartAlbums\PublicAlbum::ID)
+		<x-icons.icon class='badge--visible badge--not--hidden icn-share' icon='eye' />
+		@break
+		@case(App\SmartAlbums\UnsortedAlbum::ID)
 		<x-icons.icon class='badge--visible' icon='list' />
-	@endif
-	@if ($id == App\SmartAlbums\RecentAlbum::ID)
+		@break
+		@case(App\SmartAlbums\RecentAlbum::ID)
 		<x-icons.icon class='badge--visible badge--list' icon='clock' />
-	@endif
+		@break
+		@case(App\SmartAlbums\OnThisDayAlbum::ID)
+		<x-icons.icon class='badge--visible badge--tag badge--list' icon='calendar' />
+		@break
+		@default
+	@endswitch
 	@if ($is_public)
 		<x-icons.icon class='badge--visible {{ $is_link_required ? "badge--hidden" : "badge--not--hidden"}} icn-share' icon='eye' />
 	@endif

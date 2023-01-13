@@ -2,9 +2,7 @@
 @php
 $isVideo = Str::contains($type, 'video');
 @endphp
-<span class="thumbimg
-	{{-- {{ $isVideo ? "video" : ""}} --}}
-	">
+<span class="thumbimg {{-- {{ $isVideo ? "video" : ""}} --}} ">
 	<img
 	@if(!$isVideo) class='lazyload' @endif
 

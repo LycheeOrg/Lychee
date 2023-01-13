@@ -2,8 +2,6 @@
 <html lang="{{ str_replace('_', '-', Lang::get_code()) }}">
 	<head>
 		<meta charset="UTF-8">
-		<link type="text/css" rel="stylesheet" href="dist/frontend.css">
-		<link type="text/css" rel="stylesheet" href="dist/user.css">
 		<link rel="shortcut icon" href="favicon.ico">
 		<link rel="apple-touch-icon" href="img/apple-touch-icon-ipad.png" sizes="120x120">
 		<link rel="apple-touch-icon" href="img/apple-touch-icon-iphone.png" sizes="152x152">
@@ -33,11 +31,36 @@
 
 		<script async defer src="{{ URL::asset('js/app.js') }}"></script>
 		<script async defer src="{{ URL::asset('dist/WebAuthn.js') }}"></script>
+		<link type="text/css" rel="stylesheet" href="{{ URL::asset(Helpers::cacheBusting('dist/frontend.css')) }}">
+		<link type="text/css" rel="stylesheet" href="{{ URL::asset(Helpers::cacheBusting('dist/user.css')) }}">
+
 		@livewireStyles
 	</head>
-<body>
+<body class="mode-gallery vflex-container">
 	@include('includes.svg')
-	{{ $slot }}
+	<!-- Loading indicator -->
+	<div id="loading"></div>
+	<!--
+		The application container vertically shares space with the loading indicator.
+		If fills the remaining vertical space not taken by the loading indicator.
+		The application container contains the left menu and the workbench.
+		The application container is also that part which is shaded by the
+		background of the modal dialog while the loading indicator and (potential)
+		error message is not shaded.
+	-->
+	{{ $fullpage }}
+	<!--
+		The frame container vertically shares space with the loading indicator.
+		If fills the remaining vertical space not taken by the loading indicator.
+	-->
+	{{ $frame }}
 	@livewireScripts
+	<script type="text/javascript">
+		document.addEventListener('DOMContentLoaded', function () {
+			window.livewire.on('urlChange', (url) => {
+				history.pushState(null, null, url);
+			});
+		});
+	</script>
 </body>
 </html>

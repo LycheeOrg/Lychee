@@ -17,9 +17,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 if (config('app.livewire')) {
-	Route::group(['layout' => ''], function () {
-		Route::get('/livewire', Fullpage::class)->middleware(['installation:complete', 'migration:complete']);
-		Route::get('/livewire/{albumId}', Fullpage::class)->middleware(['installation:complete', 'migration:complete']);
-		Route::get('/livewire/{albumId}/{photoId}', Fullpage::class)->middleware(['installation:complete', 'migration:complete']);
-	});
+	Route::get('/livewire/{albumId?}/{photoId?}', Fullpage::class)->middleware(['installation:complete', 'migration:complete'])->name('livewire_index');
 }

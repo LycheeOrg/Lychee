@@ -30,7 +30,7 @@ class LeftMenu extends Openable
 		Auth::logout();
 		Session::flush();
 
-		return redirect('/livewire/');
+		return redirect(route('livewire_index'));
 	}
 
 	/**

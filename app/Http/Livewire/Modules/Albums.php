@@ -3,8 +3,6 @@
 namespace App\Http\Livewire\Modules;
 
 use App\Actions\Albums\Top;
-use App\Contracts\Exceptions\InternalLycheeException;
-use App\DTO\TopAlbums;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
@@ -17,9 +15,6 @@ use Livewire\Component;
  */
 class Albums extends Component
 {
-	/** @var TopAlbums This is just here for the computations before the rendering. */
-	private TopAlbums $topAlbums;
-
 	/** @var Collection<Album> Collection of the album owned by the user */
 	public Collection $albums;
 
@@ -30,18 +25,6 @@ class Albums extends Component
 	public Collection $shared_albums;
 
 	/**
-	 * Initialize component.
-	 *
-	 * @param Top $top this is injected by DDI
-	 *
-	 * @throws InternalLycheeException
-	 */
-	public function mount(Top $top): void
-	{
-		$this->topAlbums = $top->get();
-	}
-
-	/**
 	 * Render component.
 	 *
 	 * @return View
@@ -50,9 +33,10 @@ class Albums extends Component
 	 */
 	public function render(): View
 	{
-		$this->albums = $this->topAlbums->albums;
-		$this->smartalbums = $this->topAlbums->smart_albums->concat($this->topAlbums->tag_albums)->reject(fn ($album) => $album === null);
-		$this->shared_albums = $this->topAlbums->shared_albums;
+		$topAlbums = resolve(Top::class)->get();
+		$this->albums = $topAlbums->albums;
+		$this->smartalbums = $topAlbums->smart_albums->concat($topAlbums->tag_albums)->reject(fn ($album) => $album === null);
+		$this->shared_albums = $topAlbums->shared_albums;
 
 		return view('livewire.pages.modules.albums');
 	}

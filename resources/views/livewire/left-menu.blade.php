@@ -1,4 +1,4 @@
-<div>
+<div id="lychee_left_menu_container" class="hflex-item-rigid" style="display: none;">
 @if($isOpen)
 <!-- leftMenu -->
 <div class="leftMenu leftMenu__visible">

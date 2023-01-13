@@ -1,4 +1,4 @@
-<div class="content contentZoomIn">
+<div id="lychee_view_content" class="vflex-item-stretch contentZoomIn">
 	@php
 		Helpers::data_index_set(100);
 	@endphp

@@ -1,10 +1,11 @@
 @if (!$smartalbums && !$albums && !$shared_albums)
 <div class='no_content fadeIn'>
+	{{-- TODO : GIVE LOGIN PAGE INSTEAD --}}
 	<svg class='iconic'><use xlink:href='#eye' /></svg>
 	<p>{{ Lang::get('VIEW_NO_PUBLIC_ALBUMS') }}</p>
 </div>
 @else
-<div class="content contentZoomIn">
+<div id="lychee_view_content" class="vflex-item-stretch contentZoomIn">
 	<!-- test comment-->
 	@if($smartalbums->count() > 0)
 		<div class='divider'><h1>{{ Lang::get('SMART_ALBUMS') }}</h1></div>
