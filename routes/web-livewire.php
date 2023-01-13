@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Http\Livewire\Pages\Fullpage;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,6 +16,9 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+if (config('app.force_https')) {
+	URL::forceScheme('https');
+}
 
 if (config('app.livewire')) {
 	Route::get('/livewire/{albumId?}/{photoId?}', Fullpage::class)->middleware(['installation:complete', 'migration:complete'])->name('livewire_index');
