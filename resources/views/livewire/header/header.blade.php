@@ -1,6 +1,6 @@
 <header id="lychee_toolbar_container" class="vflex-item-rigid">
 	@if ($mode === App\Enum\PageMode::ALBUMS ) <!-- ALBUMS -->
-		@if (Auth::user() === null) <!-- NOT LOGGED -->
+		@if (!Auth::check()) <!-- NOT LOGGED -->
 		<div id="lychee_toolbar_public" class="toolbar visible">
 			<a class="button" wire:click="openLoginModal" id="button_settings"><svg class="iconic"><use xlink:href="#account-login" /></svg></a>
 			<a class="header__title">{{ $title }}</a>

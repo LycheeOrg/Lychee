@@ -12,10 +12,9 @@ use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\SmartAlbums\BaseSmartAlbum;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Livewire\Component;
-use Livewire\Redirector;
+use function Safe\file_get_contents;
 
 class Fullpage extends Component
 {
@@ -36,7 +35,9 @@ class Fullpage extends Component
 	public ?BaseAlbum $baseAlbum = null;
 	public ?BaseSmartAlbum $smartAlbum = null;
 
-
+	/**
+	 * Those two parameters are bound to the URL query.
+	 */
 	public string $albumId = '';
 	public string $photoId = '';
 
@@ -45,15 +46,7 @@ class Fullpage extends Component
 	public ?Photo $photo = null;
 
 	/**
-	 * Defines the query strings to be updated
-	 *
-	 * @var array<int,string>
-	 */
-	protected $queryString = ['albumId' => ['except'=>''], 'photoId' => ['except'=>'']];
-    // protected $updatesQueryString = ['albumId', 'photoId'];
-
-	/**
-	 * @var @array<int,string> listeners of click events
+	 * @var array<int,string> listeners of click events
 	 */
 	protected $listeners = ['openAlbum', 'openPhoto', 'back', 'reloadPage'];
 
@@ -103,7 +96,7 @@ class Fullpage extends Component
 			'pageTitle' => $siteTitle . (!blank($siteTitle) && !blank($this->title) ? ' – ' : '') . $this->title,
 			'pageDescription' => !blank($description) ? $description . ' – via Lychee' : '',
 			'siteOwner' => Configs::getValueAsString('site_owner'),
-			'imageUrl' => $imageUrl ?? '',
+			'imageUrl' => $imageUrl,
 			'pageUrl' => url()->current(),
 			'rssEnable' => Configs::getValueAsBool('rss_enable'),
 			'bodyHtml' => file_get_contents(public_path('dist/frontend.html')),
