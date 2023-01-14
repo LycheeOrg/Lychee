@@ -23,6 +23,21 @@ abstract class BaseForm extends Component
 	public array $params = [];
 
 	/**
+	 * @var array attributes
+	 */
+	public array $form = [];
+
+	/**
+	 * @var array mapped between attributes and their Lang info
+	 */
+	public array $formLocale = [];
+
+	/**
+	 * @var string bypass form rendering with specific ones
+	 */
+	public string $render = '';
+
+	/**
 	 * A form has a Submit method.
 	 *
 	 * @return void
@@ -48,7 +63,7 @@ abstract class BaseForm extends Component
 	 */
 	public function render(): View
 	{
-		return view('livewire.form.form');
+		return view('livewire.form.form' . $this->render);
 	}
 
 	/**

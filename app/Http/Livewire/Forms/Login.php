@@ -3,6 +3,10 @@
 namespace App\Http\Livewire\Forms;
 
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Facades\Lang;
+use App\Metadata\Versions\FileVersion;
+use App\Metadata\Versions\GitHubVersion;
+use App\Models\Configs;
 use App\Models\Logs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Auth;
@@ -13,25 +17,9 @@ use Illuminate\Validation\ValidationException;
  */
 class Login extends BaseForm
 {
-	/**
-	 * The form has 2 fields: username and password, containing empty values.
-	 *
-	 * @var array
-	 */
-	public array $form = [
-		'username' => '',
-		'password' => '',
-	];
-
-	/**
-	 * The form fields are mapped to their Lang info.
-	 *
-	 * @var array
-	 */
-	public array $formName = [
-		'form.username' => 'USERNAME',
-		'form.password' => 'PASSWORD',
-	];
+	public bool $is_new_release_available = false;
+	public bool $is_git_update_available = false;
+	public bool $show_version = false;
 
 	/**
 	 * This defines the set of validation rules to be applied on the input.
@@ -57,9 +45,21 @@ class Login extends BaseForm
 	public function mount(array $params = []): void
 	{
 		parent::mount($params);
+		$this->validate = Lang::get('SIGN_IN');
+		$this->cancel = Lang::get('CANCEL');
+		$this->render = '-login';
 
-		// ! TO BE LOCALIZED
-		$this->title = '';
+		$fileVersion = resolve(FileVersion::class);
+		$gitHubVersion = resolve(GitHubVersion::class);
+
+		$this->show_version = !Configs::getValueAsBool('hide_version_number');
+
+		if (Configs::getValueAsBool('check_for_updates')) {
+			$fileVersion->hydrate();
+			$gitHubVersion->hydrate();
+		}
+		$this->is_new_release_available = !$fileVersion->isUpToDate();
+		$this->is_git_update_available = !$gitHubVersion->isUpToDate();
 	}
 
 	/**

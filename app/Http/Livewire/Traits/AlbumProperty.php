@@ -49,4 +49,15 @@ trait AlbumProperty
 			throw new \Exception('unrecognized class for ' . get_class($album));
 		}
 	}
+
+	/**
+	 * Allows to reset smart and base album in one go.
+	 *
+	 * @return void
+	 */
+	protected function resetAlbums(): void
+	{
+		$this->baseAlbum = null; // ! safety
+		$this->smartAlbum = null; // ! safety
+	}
 }

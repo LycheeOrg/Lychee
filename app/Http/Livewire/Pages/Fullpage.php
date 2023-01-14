@@ -7,14 +7,12 @@ use App\Factories\AlbumFactory;
 use App\Http\Controllers\IndexController;
 use App\Http\Livewire\Traits\AlbumProperty;
 use App\Http\Livewire\Traits\InteractWithModal;
-use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\View\View;
 use Livewire\Component;
-use function Safe\file_get_contents;
 
 class Fullpage extends Component
 {
@@ -32,14 +30,13 @@ class Fullpage extends Component
 	 * Or to use a computed property on the model. We chose the later.
 	 */
 	use AlbumProperty;
-	public ?BaseAlbum $baseAlbum = null;
-	public ?BaseSmartAlbum $smartAlbum = null;
-
 	/**
 	 * Those two parameters are bound to the URL query.
 	 */
-	public string $albumId = '';
-	public string $photoId = '';
+	public string $albumId;
+	public string $photoId;
+	public ?BaseAlbum $baseAlbum = null;
+	public ?BaseSmartAlbum $smartAlbum = null;
 
 	public PageMode $mode;
 	public string $title;
@@ -50,27 +47,44 @@ class Fullpage extends Component
 	 */
 	protected $listeners = ['openAlbum', 'openPhoto', 'back', 'reloadPage'];
 
+	/**
+	 * While in most Laravel Controller calls we use the constructor,
+	 * in the case of Livewire this is not possible.
+	 * For this reason the method mount() is doing a similar job.
+	 *
+	 * @param string $albumId album parameter extracted from the route.
+	 *                        The value is defaulted to '' in the case where it is not provided, e.g. in albums view.
+	 * @param string $photoId photo parameter extracted from the route.
+	 *                        The value is defaulted to '' in the case where it is not provided, e.g. in an album view.
+	 *
+	 * @return void
+	 */
+	public function mount(string $albumId = '', string $photoId = '')
+	{
+		$this->albumId = $albumId;
+		$this->photoId = $photoId;
+	}
+
+	/**
+	 * Rendering of the front-end.
+	 *
+	 * @return View
+	 */
 	public function render(): View
 	{
-		$albumFactory = resolve(AlbumFactory::class);
-		if ($this->albumId === '') {
-			$this->mode = PageMode::ALBUMS;
-			$this->title = Configs::getValueAsString('site_title');
-		} else {
-			$this->mode = PageMode::ALBUM;
-			$album = $albumFactory->findAbstractAlbumOrFail($this->albumId);
-			$this->loadAlbum($album);
-			$this->title = $album->title;
+		// reload the necessary parts.
+		$this->load();
 
-			if ($this->photoId !== '') {
-				$this->mode = PageMode::PHOTO;
-				/** @var Photo $photoItem */
-				$photoItem = Photo::with('album')->findOrFail($this->photoId);
-				$this->photo = $photoItem;
-				$this->title = $this->photo->title;
-			}
-		}
+		return view('livewire.pages.fullpage')->layout('layouts.livewire', $this->getLayout())->slot('fullpage');
+	}
 
+	/**
+	 * Fetch layout data for the head, meta etc.
+	 *
+	 * @return array{pageTitle:string,pageDescrption:string,siteOwner:string,imageUrl:string,pageUrl:string,rssEnable:string,rssEnable:string,userCssUrl:string}
+	 */
+	private function getLayout(): array
+	{
 		$siteTitle = Configs::getValueAsString('site_title');
 		$album = $this->getAlbumProperty();
 
@@ -88,71 +102,115 @@ class Fullpage extends Component
 			$imageUrl = '';
 		}
 
-		return view('livewire.pages.fullpage')->layout('layouts.livewire', [
+		return [
 			'pageTitle' => $siteTitle . (!blank($siteTitle) && !blank($this->title) ? ' – ' : '') . $this->title,
 			'pageDescription' => !blank($description) ? $description . ' – via Lychee' : '',
 			'siteOwner' => Configs::getValueAsString('site_owner'),
 			'imageUrl' => $imageUrl,
 			'pageUrl' => url()->current(),
 			'rssEnable' => Configs::getValueAsBool('rss_enable'),
-			'bodyHtml' => file_get_contents(public_path('dist/frontend.html')),
 			'userCssUrl' => IndexController::getUserCss(),
 			'frame' => '',
-		])->slot('fullpage');
+		];
+	}
+
+	/**
+	 * Load data from albumId and photoId.
+	 *
+	 * @return void
+	 */
+	private function load(): void
+	{
+		$albumFactory = resolve(AlbumFactory::class);
+		if ($this->albumId === '') {
+			$this->mode = PageMode::ALBUMS;
+			$this->title = Configs::getValueAsString('site_title');
+			$this->resetAlbums();
+			$this->photo = null;
+
+			return;
+		}
+
+		// Reload if necessary
+		if ($this->getAlbumProperty()?->id !== $this->albumId) {
+			// this means that $this->albumId exists
+			$album = $albumFactory->findAbstractAlbumOrFail($this->albumId);
+			$this->loadAlbum($album);
+		}
+
+		// We are in album view.
+		if ($this->photoId === '') {
+			$this->mode = PageMode::ALBUM;
+			$this->title = $this->getAlbumProperty()->title;
+			$this->photo = null;
+
+			return;
+		}
+
+		// Set photo Mode
+		$this->mode = PageMode::PHOTO;
+		/** @var Photo $photoItem */
+		$photoItem = Photo::with('album')->findOrFail($this->photoId);
+		$this->photo = $photoItem;
+		$this->title = $this->photo->title;
 	}
 
 	/*
-	 *  Interactions
+	 ** This triggers a full reloading of the page
 	 */
 	public function reloadPage()
 	{
-		return $this->render();
+		return redirect(route('livewire_index', ['albumId' => $this->albumId, 'photoId' => $this->photoId]));
 	}
 
+	/**
+	 * Method call to open an album from either entry point or a sub album.
+	 * This will unfortunately trigger a significant rendering of the front-end because
+	 * of the html change.
+	 * In the case of album -> subalbum only the inner part will be re-rendered (in theory).
+	 *
+	 * @param string $albumId
+	 */
 	public function openAlbum(string $albumId)
 	{
 		$this->albumId = $albumId;
-		$this->emit('urlChange', route('livewire_index', ['albumId' => $this->albumId]));
-
-		return $this->render();
+		$this->load();
+		$this->emit('urlChange', route('livewire_index', ['albumId' => $this->albumId, 'photoId' => $this->photoId]));
 	}
 
+	/**
+	 * Method call to open a photo from an album.
+	 * This will unfortunately trigger a significant rendering of the front-end because
+	 * of the html change.
+	 *
+	 * @param string $photoId
+	 */
 	public function openPhoto(string $photoId)
 	{
-		$this->albumId = $this->getAlbumProperty()->id;
 		$this->photoId = $photoId;
-		$this->emit('urlChange', route('livewire_index', ['albumId' => $this->albumId, 'photoId' => $this->photoId]));
 
-		return $this->render();
+		// This ensures that the history has been updated
+		$this->emit('urlChange', route('livewire_index', ['albumId' => $this->albumId, 'photoId' => $this->photoId]));
 	}
 
-	// Ideal we would like to avoid the redirect as they are slow.
+	/**
+	 * Method call to go back one step.
+	 */
 	public function back()
 	{
-		if ($this->photo !== null) {
-			$this->albumId = $this->getAlbumProperty()?->id;
+		if ($this->photoId !== '') {
 			$this->photoId = '';
-			$this->emit('urlChange', route('livewire_index', ['albumId' => $this->albumId]));
 
-			return $this->render();
-		}
-		if ($this->baseAlbum !== null) {
-			if ($this->baseAlbum instanceof Album && $this->baseAlbum->parent_id !== null) {
-				$this->albumId = $this->baseAlbum->parent_id;
-				$this->emit('urlChange', route('livewire_index', ['albumId' => $this->albumId]));
-
-				return $this->render();
-			}
-
+		// Case of sub-albums
+		} elseif ($this->baseAlbum instanceof BaseAlbum
+			&& $this->baseAlbum->parent_id !== null) {
+			$this->albumId = $this->baseAlbum->parent_id;
+		} else {
 			$this->albumId = '';
-			$this->emit('urlChange', route('livewire_index'));
-
-			return $this->render();
 		}
-		$this->albumId = '';
-		$this->emit('urlChange', route('livewire_index'));
 
-		return $this->render();
+		// This ensures that the history has been updated
+		$this->emit('urlChange', route('livewire_index', ['albumId' => $this->albumId, 'photoId' => $this->photoId]));
 	}
 
 	/**
@@ -165,11 +223,21 @@ class Fullpage extends Component
 		$this->openModal('forms.login');
 	}
 
+	/**
+	 * Open the Left menu.
+	 *
+	 * @return void
+	 */
 	public function openLeftMenu(): void
 	{
 		$this->emitTo('components.left-menu', 'open');
 	}
 
+	/**
+	 * Toggle the side bar.
+	 *
+	 * @return void
+	 */
 	public function toggleSideBar(): void
 	{
 		$this->emitTo('components.sidebar', 'toggle');

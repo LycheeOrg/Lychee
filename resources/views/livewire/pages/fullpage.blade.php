@@ -24,11 +24,16 @@
 		@if($mode === App\Enum\PageMode::ALBUMS)
 			<livewire:modules.albums />
 		@elseif($mode === App\Enum\PageMode::ALBUM)
-			<livewire:modules.album :album="$this->album" />
-			<livewire:components.sidebar :album="$this->album"/>
+		<!--
+			The key="..." attribute ensure that we are triggering a refresh of the child component on reload.
+			Do not that those need to not colide with other components, as a result we use prefix-id-time
+			strings to avoid such problems.
+		-->
+			<livewire:modules.album key="view-{{$this->albumId}}-{{ now() }}" :album="$this->album" />
+			<livewire:components.sidebar key="sidebar-{{$this->albumId}}-{{ now() }}" :album="$this->album"/>
 		@elseif($mode === App\Enum\PageMode::PHOTO)
-			<livewire:modules.photo :album="$this->album" :photo="$this->photo" />
-			<livewire:components.sidebar :album="$this->album" :photo="$this->photo" />
+			<livewire:modules.photo key="sidebar-{{$this->photoId}}-{{ now() }}" :album="$this->album" :photo="$this->photo" />
+			<livewire:components.sidebar key="sidebar-{{$this->photoId}}-{{ now() }}" :album="$this->album" :photo="$this->photo" />
 		@elseif($mode === App\Enum\PageMode::MAP)
 			<livewire:modules.albums/>
 		@endif

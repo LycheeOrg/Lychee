@@ -21,5 +21,7 @@ if (config('app.force_https')) {
 }
 
 if (config('app.livewire')) {
-	Route::get('/livewire/{albumId?}/{photoId?}', Fullpage::class)->middleware(['installation:complete', 'migration:complete'])->name('livewire_index');
+	Route::get('/livewire/{albumId?}/{photoId?}', Fullpage::class)
+		->middleware(['installation:complete', 'migration:complete'])
+		->name('livewire_index');
 }
