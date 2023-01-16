@@ -28,10 +28,10 @@ use Tests\Feature\Base\BasePhotoTest;
 use Tests\Feature\Lib\RootAlbumUnitTest;
 use Tests\Feature\Lib\SharingUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
+use Tests\Feature\Traits\ExecuteAsAdmin;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyUsers;
-use Tests\Feature\Traits\ExecuteAsAdmin;
 
 class PhotosOperationsTest extends BasePhotoTest
 {

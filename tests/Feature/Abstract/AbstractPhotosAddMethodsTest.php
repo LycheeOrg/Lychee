@@ -19,7 +19,6 @@ use Illuminate\Support\Facades\DB;
 use function Safe\copy;
 use Tests\AbstractTestCase;
 use Tests\Feature\Base\BasePhotoTest;
-use Tests\Feature\Traits\RequiresAdmin;
 
 /**
  * Contains all tests for the various ways of adding images to Lychee
@@ -34,7 +33,6 @@ abstract class AbstractPhotosAddMethodsTest extends BasePhotoTest
 		// import the photo
 		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
 		$this->photos_tests->importFromServer(static::importPath(), null, true, false, false, null, $expectedStatusCode);
-
 
 		if ($expectedStatusCode !== 200) {
 			return;

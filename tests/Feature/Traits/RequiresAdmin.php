@@ -19,7 +19,7 @@ trait RequiresAdmin
 	protected function assertIsAdminOrSkip(): void
 	{
 		if (Auth::user()?->may_administrate !== true) {
-			static::markTestSkipped("Test only relevant if executed as admin user.");
+			static::markTestSkipped('Test only relevant if executed as admin user.');
 		}
 	}
 
