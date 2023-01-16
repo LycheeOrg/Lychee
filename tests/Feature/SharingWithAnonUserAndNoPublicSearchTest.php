@@ -18,7 +18,7 @@ use App\SmartAlbums\StarredAlbum;
 use Tests\AbstractTestCase;
 use Tests\Feature\Base\BaseSharingWithAnonUser;
 
-class AbstractSharingWithAnonUserAndNoPublicSearchTest extends BaseSharingWithAnonUser
+class SharingWithAnonUserAndNoPublicSearchTest extends BaseSharingWithAnonUser
 {
 	public function setUp(): void
 	{
@@ -33,7 +33,7 @@ class AbstractSharingWithAnonUserAndNoPublicSearchTest extends BaseSharingWithAn
 	 * "401 - Unauthenticated" for the other.
 	 *
 	 * See
-	 * {@link SharingTestScenariosAbstract::prepareUnsortedPublicAndPrivatePhoto()}
+	 * {@link AbstractSharingTestScenarios::prepareUnsortedPublicAndPrivatePhoto()}
 	 * for description of scenario.
 	 *
 	 * @return void

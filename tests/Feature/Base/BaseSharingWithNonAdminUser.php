@@ -19,7 +19,7 @@ use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * Implements the tests of {@link SharingTestScenariosAbstract} for a
+ * Implements the tests of {@link BaseSharingTestScenarios} for a
  * non-admin user whose results are independent of the setting for public
  * search.
  */
