@@ -45,10 +45,10 @@ abstract class BasePhotoTest extends AbstractTestCase
 	{
 		Auth::logout();
 		Session::flush();
-		$this->logoutAs();
 		$this->tearDownRequiresEmptyPhotos();
 		$this->tearDownRequiresFFMpeg();
 		$this->tearDownRequiresExifTool();
+		$this->logoutAs();
 		parent::tearDown();
 	}
 
