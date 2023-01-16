@@ -19,7 +19,7 @@ trait ExecuteAsMayUploadUser
 	 */
 	protected function executeAs(): int
 	{
-		/** @var User|null $admin */
+		/** @var User|null $user */
 		$user = User::find(2);
 		if ($user === null) {
 			$user = new User();
