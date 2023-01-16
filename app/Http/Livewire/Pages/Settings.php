@@ -25,5 +25,4 @@ class Settings extends Component
 	{
 		return view('livewire.pages.settings');
 	}
-
 }

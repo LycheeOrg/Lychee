@@ -18,12 +18,12 @@ use Livewire\Component;
 class SetLogin extends Component
 {
 	use InteractWithModal;
-    use AuthorizesRequests;
+	use AuthorizesRequests;
 
-	public string $oldPassword = ''; //! wired
-	public string $username = ''; //! wired
-	public string $password = ''; //! wired
-	public string $confirm = ''; //! wired
+	public string $oldPassword = ''; // ! wired
+	public string $username = ''; // ! wired
+	public string $password = ''; // ! wired
+	public string $confirm = ''; // ! wired
 
 	public function render()
 	{
@@ -31,18 +31,18 @@ class SetLogin extends Component
 	}
 
 	/**
-	 * Update Username & Password of current user
+	 * Update Username & Password of current user.
 	 */
-	public function submit(UpdateLogin $updateLogin) {
-
+	public function submit(UpdateLogin $updateLogin)
+	{
 		/**
 		 * For the validation to work it is important that the above wired property match
-		 * the keys in the rules applied
+		 * the keys in the rules applied.
 		 */
 		$this->validate(ChangeLoginRuleSet::rules());
 
 		/**
-		 * Authorize the request
+		 * Authorize the request.
 		 */
 		$this->authorize(UserPolicy::CAN_EDIT, [User::class]);
 
@@ -59,7 +59,6 @@ class SetLogin extends Component
 		Auth::login($currentUser);
 	}
 
-
 	/**
 	 * Open a login modal box.
 	 *
@@ -69,5 +68,4 @@ class SetLogin extends Component
 	{
 		$this->openModal('forms.settings.get-api-token');
 	}
-
 }

@@ -10,7 +10,7 @@ namespace App\Contracts\Http;
 interface RuleSet
 {
 	/**
-	 * Return an array containing the rules to be applied to the request attributes
+	 * Return an array containing the rules to be applied to the request attributes.
 	 *
 	 * @return array
 	 */

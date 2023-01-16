@@ -25,7 +25,8 @@ class GetApiToken extends Component
 	// token is hidden
 	public bool $isHidden;
 
-	public function mount() {
+	public function mount()
+	{
 		$user = Auth::user();
 
 		$this->isDisabled = !$user->has_token;
@@ -47,9 +48,10 @@ class GetApiToken extends Component
 		$this->closeModal();
 	}
 
-	public function resetToken(TokenReset $tokenReset) {
+	public function resetToken(TokenReset $tokenReset)
+	{
 		/**
-		 * Authorize the request
+		 * Authorize the request.
 		 */
 		$this->authorize(UserPolicy::CAN_EDIT, [User::class]);
 
@@ -58,9 +60,10 @@ class GetApiToken extends Component
 		$this->isHidden = false;
 	}
 
-	public function disableToken(TokenDisable $tokenDisable) {
+	public function disableToken(TokenDisable $tokenDisable)
+	{
 		/**
-		 * Authorize the request
+		 * Authorize the request.
 		 */
 		$this->authorize(UserPolicy::CAN_EDIT, [User::class]);
 

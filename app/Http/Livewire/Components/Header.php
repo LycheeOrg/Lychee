@@ -28,7 +28,6 @@ class Header extends Component
 	public ?BaseAlbum $baseAlbum = null;
 	public ?BaseSmartAlbum $smartAlbum = null;
 
-
 	/**
 	 * Render the header.
 	 *
@@ -38,7 +37,6 @@ class Header extends Component
 	{
 		return view('livewire.components.header');
 	}
-
 
 	/**
 	 * Open a login modal box.
@@ -51,7 +49,7 @@ class Header extends Component
 	}
 
 	/**
-	 * Go back one step
+	 * Go back one step.
 	 *
 	 * @return void
 	 */
@@ -79,6 +77,4 @@ class Header extends Component
 	{
 		$this->emitTo('components.sidebar', 'toggle');
 	}
-
-
 }

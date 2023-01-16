@@ -15,10 +15,11 @@ trait UrlChange
 	 * Send an event to trigger updating the URL in the browser.
 	 *
 	 * @param PageMode $page
-	 * @param string $albumId
-	 * @param string $photoId
+	 * @param string   $albumId
+	 * @param string   $photoId
 	 *
 	 * @return void
+	 *
 	 * @throws BindingResolutionException
 	 * @throws RouteNotFoundException
 	 */
@@ -27,5 +28,4 @@ trait UrlChange
 		// This ensures that the history has been updated
 		$this->emit('urlChange', route('livewire_index', ['page' => $page, 'albumId' => $albumId, 'photoId' => $photoId]));
 	}
-
 }
