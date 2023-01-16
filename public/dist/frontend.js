@@ -3392,6 +3392,10 @@ build.u2f = function (credential) {
 var contextMenu = {};
 
 /**
+ * Note, the 'Add' menu in the upper right corner is effectively
+ * a 'More...' menu (at least on small screens). More importantly,
+ * it is not a context menu (even though it uses the same code).
+ *
  * @param {jQuery.Event} e
  */
 contextMenu.add = function (e) {
@@ -3510,7 +3514,13 @@ contextMenu.add = function (e) {
       }
     }
   }
-  basicContext.show(items, e.originalEvent);
+  basicContext.show(items, e.originalEvent, null, function () {
+    // use callback of basicContext to add an id and use CSS
+    // formatting to override hardcoded positioning of the
+    // menu based on mouse/tap location and more.
+    var menu = document.querySelector(".basicContext");
+    menu.setAttribute("id", "addMenu");
+  });
   upload.notify();
 };
 
@@ -4749,11 +4759,7 @@ header.setMode = function (mode) {
         _e10.show();
         tabindex.makeFocusable(_e10);
       }
-      if (!lychee.is_share_button_visible && (
-      // The owner of an album (or the admin) shall always see
-      // the share button and be unaffected by the settings of
-      // the album
-      lychee.user === null || lychee.user.username !== album.json.owner_name) && !lychee.rights.is_admin) {
+      if (!lychee.share_button_visible) {
         var _e11 = $("#button_share_album");
         _e11.hide();
         tabindex.makeUnfocusable(_e11);
@@ -4828,7 +4834,7 @@ header.setMode = function (mode) {
         var _e15 = $("#button_visibility_album", "#button_sharing_album_users", "#lychee_toolbar_album");
         _e15.remove();
       }
-      if (!lychee.enable_button_share) {
+      if (!lychee.enable_button_share || !lychee.share_button_visible) {
         var _e16 = $("#button_share_album", "#lychee_toolbar_album");
         _e16.remove();
       }
