@@ -33,7 +33,7 @@ class SharingWithAnonUserAndNoPublicSearchTest extends BaseSharingWithAnonUser
 	 * "401 - Unauthenticated" for the other.
 	 *
 	 * See
-	 * {@link SharingTestScenariosAbstract::prepareUnsortedPublicAndPrivatePhoto()}
+	 * {@link AbstractSharingTestScenarios::prepareUnsortedPublicAndPrivatePhoto()}
 	 * for description of scenario.
 	 *
 	 * @return void

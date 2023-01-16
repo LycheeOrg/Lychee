@@ -10,7 +10,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature;
+namespace Tests\Feature\Abstract;
 
 use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +23,7 @@ use Tests\Feature\Lib\UsersUnitTest;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyUsers;
 
-class SearchTest extends BasePhotoTest
+abstract class AbstractSearchTest extends BasePhotoTest
 {
 	use RequiresEmptyAlbums;
 	use RequiresEmptyUsers;

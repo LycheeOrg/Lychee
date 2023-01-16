@@ -10,7 +10,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature;
+namespace Tests\Feature\Abstract;
 
 use function Safe\chmod;
 use function Safe\copy;
@@ -23,7 +23,7 @@ use Tests\Feature\Traits\InteractsWithRaw;
 /**
  * Contains all tests which add photos to Lychee and are expected to fail.
  */
-class PhotosAddNegativeTest extends BasePhotoTest
+abstract class AbstractPhotosAddNegativeTest extends BasePhotoTest
 {
 	use InteractsWithRaw;
 	use InteractsWithFilesystemPermissions;

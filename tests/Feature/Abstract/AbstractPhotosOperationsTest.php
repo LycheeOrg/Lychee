@@ -10,7 +10,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature;
+namespace Tests\Feature\Abstract;
 
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\NotImplementedException;
@@ -32,7 +32,7 @@ use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyUsers;
 
-class PhotosOperationsTest extends BasePhotoTest
+abstract class AbstractPhotosOperationsTest extends BasePhotoTest
 {
 	use InteractWithSmartAlbums;
 	use RequiresEmptyAlbums;

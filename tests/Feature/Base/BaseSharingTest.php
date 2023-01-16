@@ -17,6 +17,7 @@ use Tests\AbstractTestCase;
 use Tests\Feature\Lib\RootAlbumUnitTest;
 use Tests\Feature\Lib\SharingUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
+use Tests\Feature\Traits\ExecuteAsAdmin;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyUsers;
@@ -26,6 +27,7 @@ abstract class BaseSharingTest extends BasePhotoTest
 	use RequiresEmptyAlbums;
 	use RequiresEmptyUsers;
 	use InteractWithSmartAlbums;
+	use ExecuteAsAdmin;
 
 	public const PHOTO_NIGHT_TITLE = 'night';
 	public const PHOTO_MONGOLIA_TITLE = 'mongolia';

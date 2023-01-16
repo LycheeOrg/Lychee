@@ -10,9 +10,8 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature;
+namespace Tests\Feature\Abstract;
 
-use App\Actions\Photo\Archive;
 use App\Enum\DownloadVariantType;
 use App\Image\Files\InMemoryBuffer;
 use App\Image\Files\TemporaryLocalFile;
@@ -26,13 +25,14 @@ use function Safe\filesize;
 use function Safe\fwrite;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Tests\AbstractTestCase;
+use Tests\Feature\Base\BasePhotoTest;
 use Tests\Feature\Lib\AssertableZipArchive;
 use Tests\Feature\Lib\SharingUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyUsers;
 
-class PhotosDownloadTest extends Base\BasePhotoTest
+abstract class AbstractPhotosDownloadTest extends BasePhotoTest
 {
 	use RequiresEmptyUsers;
 	use RequiresEmptyAlbums;

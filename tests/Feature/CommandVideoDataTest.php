@@ -16,9 +16,12 @@ use App\Enum\SizeVariantType;
 use Illuminate\Support\Facades\DB;
 use Tests\AbstractTestCase;
 use Tests\Feature\Base\BasePhotoTest;
+use Tests\Feature\Traits\ExecuteAsAdmin;
 
 class CommandVideoDataTest extends BasePhotoTest
 {
+	use ExecuteAsAdmin;
+
 	public const COMMAND = 'lychee:video_data';
 
 	public function testThumbRecreation(): void

@@ -14,9 +14,12 @@ namespace Tests\Feature;
 
 use Illuminate\Support\Facades\DB;
 use Tests\AbstractTestCase;
+use Tests\Feature\Traits\ExecuteAsAdmin;
 
 class CommandGhostbusterTest extends Base\BasePhotoTest
 {
+	use ExecuteAsAdmin;
+
 	public const COMMAND = 'lychee:ghostbuster';
 
 	public function testRemoveOrphanedFiles(): void
