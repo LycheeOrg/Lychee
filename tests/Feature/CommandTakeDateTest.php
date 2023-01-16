@@ -16,9 +16,12 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Tests\AbstractTestCase;
 use Tests\Feature\Base\BasePhotoTest;
+use Tests\Feature\Traits\ExecuteAsAdmin;
 
 class CommandTakeDateTest extends BasePhotoTest
 {
+	use ExecuteAsAdmin;
+
 	public const COMMAND = 'lychee:takedate';
 
 	public function testNoUpdateRequired(): void

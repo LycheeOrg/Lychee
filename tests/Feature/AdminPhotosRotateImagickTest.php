@@ -13,14 +13,16 @@
 namespace Tests\Feature;
 
 use Tests\Feature\Base\BasePhotosRotateTest;
+use Tests\Feature\Traits\ExecuteAsAdmin;
 use Tests\Feature\Traits\RequiresImageHandler;
 
 /**
  * Runs the tests of {@link BasePhotosRotateTest} with Imagick as image handler.
  */
-class PhotosRotateImagickTest extends BasePhotosRotateTest
+class AdminPhotosRotateImagickTest extends BasePhotosRotateTest
 {
 	use RequiresImageHandler;
+	use ExecuteAsAdmin;
 
 	public function setUp(): void
 	{

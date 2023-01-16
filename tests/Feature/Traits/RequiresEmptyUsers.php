@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\DB;
 
 trait RequiresEmptyUsers
 {
+	abstract protected function executeAs(): int;
+
 	abstract protected function assertDatabaseCount($table, int $count, $connection = null);
 
 	protected function setUpRequiresEmptyUsers(): void
@@ -24,7 +26,7 @@ trait RequiresEmptyUsers
 		static::assertEquals(
 			0,
 			DB::table('users')
-				->where('may_administrate', '=', false)
+				->where('id', '>', $this->executeAs())
 				->count()
 		);
 	}
@@ -32,6 +34,8 @@ trait RequiresEmptyUsers
 	protected function tearDownRequiresEmptyUsers(): void
 	{
 		// Clean up remaining stuff from tests
-		DB::table('users')->where('may_administrate', '=', false)->delete();
+		DB::table('users')
+			->where('may_administrate','=', false)
+			->delete();
 	}
 }

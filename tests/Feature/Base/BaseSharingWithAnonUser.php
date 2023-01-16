@@ -18,7 +18,7 @@ use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 
 /**
- * Implements the tests of {@link SharingTestScenariosAbstract} for an
+ * Implements the tests of {@link BaseSharingTestScenarios} for an
  * anonymous user whose results are independent of the setting for public
  * search.
  */

@@ -17,9 +17,12 @@ use Illuminate\Support\Facades\DB;
 use function Safe\unlink;
 use Tests\AbstractTestCase;
 use Tests\Feature\Base\BasePhotoTest;
+use Tests\Feature\Traits\ExecuteAsAdmin;
 
 class CommandGenerateThumbsTest extends BasePhotoTest
 {
+	use ExecuteAsAdmin;
+
 	public const COMMAND = 'lychee:generate_thumbs';
 
 	public function testNoArguments(): void

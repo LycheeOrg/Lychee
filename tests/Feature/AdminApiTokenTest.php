@@ -16,11 +16,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Tests\AbstractTestCase;
 use Tests\Feature\Lib\UsersUnitTest;
+use Tests\Feature\Traits\ExecuteAsAdmin;
 use Tests\Feature\Traits\RequiresEmptyUsers;
 
-class ApiTokenTest extends AbstractTestCase
+class AdminApiTokenTest extends AbstractTestCase
 {
 	use RequiresEmptyUsers;
+	use ExecuteAsAdmin;
 
 	protected UsersUnitTest $users_tests;
 

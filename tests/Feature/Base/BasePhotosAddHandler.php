@@ -10,13 +10,12 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature;
+namespace Tests\Feature\Base;
 
 use App\Models\Configs;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Tests\AbstractTestCase;
-use Tests\Feature\Base\BasePhotoTest;
 
 /**
  * Contains all tests for adding photos to Lychee which involve the image
