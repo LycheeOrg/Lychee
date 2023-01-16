@@ -65,7 +65,7 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
-		if (config('app.db_log_sql', false) === true) {
+		if (config('database.db_log_sql', false) === true) {
 			DB::listen(function ($query) {
 				$msg = $query->sql . ' [' . implode(', ', $query->bindings) . ']';
 				Log::info($msg);
