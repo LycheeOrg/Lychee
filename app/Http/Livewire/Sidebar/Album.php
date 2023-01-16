@@ -81,7 +81,7 @@ class Album extends Component
 
 		if ($album instanceof ModelsAlbum) {
 			$this->description = $album->description ?? '';
-			$this->children_count = $album->children->count();
+			$this->children_count = $album->num_children;
 			$this->sorting_col = $album->sorting_col ?? '';
 			$this->sorting_order = $album->sorting_order ?? '';
 			$this->owner_name = $album->owner->name;

@@ -4,6 +4,7 @@
 	<svg class='iconic'><use xlink:href='#eye' /></svg>
 	<p>{{ Lang::get('VIEW_NO_PUBLIC_ALBUMS') }}</p>
 </div>
+<livewire:components.footer />
 @else
 <div id="lychee_view_content" class="vflex-item-stretch contentZoomIn">
 	<!-- test comment-->
@@ -29,5 +30,6 @@
 			<x-album :data="$album" />
 		@endforeach
 	@endif
+
 </div>
 @endif

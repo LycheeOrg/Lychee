@@ -40,6 +40,6 @@ class LeftMenu extends Openable
 	 */
 	public function render(): View
 	{
-		return view('livewire.left-menu');
+		return view('livewire.components.left-menu');
 	}
 }

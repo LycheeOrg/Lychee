@@ -1,4 +1,9 @@
-<div id="imageview" class="fadeIn full" style="display: block;">
+<div id="imageview" @class(
+	["overlay-container",
+	"fadeIn",
+	"active",
+	// "full" // Disabled for now
+	]) style="display: block;">
 @if ($photo->isVideo()) {{-- This is a video file: put html5 player --}}
 <video
 		width="auto"

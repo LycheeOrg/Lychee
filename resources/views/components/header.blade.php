@@ -1,7 +1,9 @@
 @props([
 	'mode' => '',
 	'title' => '',
-	'album' => null])
+	'album' => null,
+	// 'hidden' //
+	])
 <header id="lychee_toolbar_container" class="vflex-item-rigid">
 	@if ($mode === App\Enum\Livewire\GalleryMode::ALBUMS ) <!-- ALBUMS -->
 		@if (Auth::user() === null) <!-- NOT LOGGED -->
