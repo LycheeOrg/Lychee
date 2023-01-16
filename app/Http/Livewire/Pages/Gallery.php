@@ -45,7 +45,6 @@ class Gallery extends Component
 
 	public ?Photo $photo = null;
 
-
 	/**
 	 * @var array<int,string> listeners of click events
 	 */

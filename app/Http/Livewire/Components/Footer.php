@@ -14,7 +14,6 @@ use Livewire\Component;
  */
 class Footer extends Component
 {
-
 	public bool $show_socials;
 	public ?string $hosted_by = null;
 	public ?string $copyright = null;
@@ -25,8 +24,8 @@ class Footer extends Component
 	public string $youtube;
 	public string $additional_footer_text;
 
-
-	public function mount() {
+	public function mount()
+	{
 		$this->show_socials = Configs::getValueAsBool('footer_show_social_media');
 		$this->facebook = Configs::getValueAsString('sm_facebook_url');
 		$this->flickr = Configs::getValueAsString('sm_flickr_url');
@@ -55,7 +54,6 @@ class Footer extends Component
 	 */
 	public function render(): View
 	{
-
 		return view('livewire.components.footer');
 	}
 }
