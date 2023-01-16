@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Schema;
 trait ExecuteAsMayUploadUser
 {
 	/**
-	 * We create a new user with ID 2 and upload rights
+	 * We create a new user with ID 2 and upload rights.
 	 *
 	 * @return int
 	 */
@@ -49,13 +49,13 @@ trait ExecuteAsMayUploadUser
 	}
 
 	/**
-	 * Delete User created
+	 * Delete User created.
 	 *
 	 * @return void
 	 */
 	protected function logoutAs(): void
 	{
 		// RIP
-		User::where('id','=',2)->delete();
+		User::where('id', '=', 2)->delete();
 	}
 }
