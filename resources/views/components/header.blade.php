@@ -16,7 +16,7 @@
 		</div>
 		@else <!-- LOGGED -->
 		<div id="lychee_toolbar_albums" class="toolbar visible">
-			<a class="button" wire:click="openLeftMenu" id="button_settings"><svg class="iconic"><use xlink:href="#cog" /></svg></a>
+			<a class="button" wire:click="$emit('openLeftMenu')" id="button_settings"><svg class="iconic"><use xlink:href="#cog" /></svg></a>
 			<a class="header__title">{{ $title }}</a>
 			<div class="header__search__field">
 				<input class="header__search" type="text" name="search" placeholder="Search …">

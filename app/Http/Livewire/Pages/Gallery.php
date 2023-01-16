@@ -31,8 +31,11 @@ class Gallery extends Component
 	 * Or to use a computed property on the model. We chose the later.
 	 */
 	use AlbumProperty;
-	public ?string $albumId;
-	public ?string $photoId;
+	public ?string $albumId = null;
+	public ?string $photoId = null;
+
+	public GalleryMode $mode;
+	public string $title;
 
 	/**
 	 * Those two parameters are bound to the URL query.
@@ -40,14 +43,13 @@ class Gallery extends Component
 	public ?BaseAlbum $baseAlbum = null;
 	public ?BaseSmartAlbum $smartAlbum = null;
 
-	public GalleryMode $mode;
-	public string $title;
 	public ?Photo $photo = null;
+
 
 	/**
 	 * @var array<int,string> listeners of click events
 	 */
-	protected $listeners = ['openAlbum', 'openPhoto', 'back', 'reloadPage'];
+	protected $listeners = ['openAlbum', 'openPhoto', 'back', 'reloadPage' => '$refresh'];
 
 	/**
 	 * While in most Laravel Controller calls we use the constructor,
@@ -155,14 +157,6 @@ class Gallery extends Component
 		$photoItem = Photo::with('album')->findOrFail($this->photoId);
 		$this->photo = $photoItem;
 		$this->title = $this->photo->title;
-	}
-
-	/*
-	 ** This triggers a full reloading of the page
-	 */
-	public function reloadPage()
-	{
-		return redirect(route('livewire_index', ['page' => PageMode::GALLERY, 'albumId' => $this->albumId, 'photoId' => $this->photoId]));
 	}
 
 	/**

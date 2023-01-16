@@ -14,8 +14,14 @@ use Livewire\Component;
 class Index extends Component
 {
 	public PageMode $mode;
-	public ?string $albumId;
-	public ?string $photoId;
+	public ?string $albumId = null;
+	public ?string $photoId = null;
+
+	// listeners of click events
+	protected $listeners = [
+		'openLeftMenu',
+		'reloadPage'
+	];
 
 	public function mount(?string $page = 'gallery', ?string $albumId = null, ?string $photoId = null): void
 	{
@@ -80,4 +86,13 @@ class Index extends Component
 	{
 		$this->emitTo('components.left-menu', 'open');
 	}
+
+	/*
+	 ** This triggers a full reloading of the page
+	 */
+	public function reloadPage()
+	{
+		return redirect(route('livewire_index', ['page' => $this->mode->value, 'albumId' => $this->albumId, 'photoId' => $this->photoId]));
+	}
+
 }

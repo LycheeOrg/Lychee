@@ -88,7 +88,7 @@ class Login extends BaseForm
 		// apply login as admin and trigger a reload
 		if (Auth::attempt(['username' => $data['username'], 'password' => $data['password']])) {
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $data['username'] . ') has logged in from ' . request()->ip());
-			$this->emitTo('pages.fullpage', 'reloadPage');
+			$this->emitTo('index', 'reloadPage');
 
 			return;
 		}
