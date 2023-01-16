@@ -35,7 +35,7 @@ trait RequiresEmptyUsers
 	{
 		// Clean up remaining stuff from tests
 		DB::table('users')
-			->where('id', '>', $this->executeAs())
+			->where('may_administrate','=', false)
 			->delete();
 	}
 }
