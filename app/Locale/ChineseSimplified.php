@@ -180,6 +180,7 @@ final class ChineseSimplified implements Language
 			'ALBUM_IMAGES' => '图片数',
 			'ALBUM_VIDEOS' => '视频数',
 			'ALBUM_SUBALBUMS' => '子相册数',
+			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => '共享',
 			'ALBUM_SHR_YES' => '是',
 			'ALBUM_SHR_NO' => '否',
@@ -218,7 +219,6 @@ final class ChineseSimplified implements Language
 			'ALBUM_RESERVED' => '所有权利保留',
 			'ALBUM_SET_ORDER' => '设置排序',
 			'ALBUM_ORDERING' => '排序依据',
-			'ALBUM_OWNER' => 'Owner',
 
 			'PHOTO_ABOUT' => '关于',
 			'PHOTO_BASICS' => '基本信息',

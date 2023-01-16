@@ -32,7 +32,6 @@ class UserController extends Controller
 			$request->oldPassword(),
 			$request->ip()
 		);
-
 		// Update the session with the new credentials of the user.
 		// Otherwise, the session is out-of-sync and falsely assumes the user
 		// to be unauthenticated upon the next request.

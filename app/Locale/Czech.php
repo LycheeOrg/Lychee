@@ -180,6 +180,7 @@ final class Czech implements Language
 			'ALBUM_IMAGES' => 'Obrázky',
 			'ALBUM_VIDEOS' => 'Videa',
 			'ALBUM_SUBALBUMS' => 'Subalba',
+			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Sdílení',
 			'ALBUM_SHR_YES' => 'Ano',
 			'ALBUM_SHR_NO' => 'Ne',
@@ -218,7 +219,6 @@ final class Czech implements Language
 			'ALBUM_RESERVED' => 'Všechna práva vyhrazena',
 			'ALBUM_SET_ORDER' => 'Set Order',
 			'ALBUM_ORDERING' => 'Order by',
-			'ALBUM_OWNER' => 'Owner',
 
 			'PHOTO_ABOUT' => 'O fotografii',
 			'PHOTO_BASICS' => 'Základní informace',

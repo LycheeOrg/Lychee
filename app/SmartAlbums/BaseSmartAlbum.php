@@ -18,6 +18,7 @@ use App\Models\Extensions\UTCBasedTimes;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
 use App\SmartAlbums\Utils\MimicModel;
+use App\SmartAlbums\Utils\Wireable;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -33,6 +34,7 @@ use Illuminate\Database\Eloquent\Collection;
  */
 abstract class BaseSmartAlbum implements AbstractAlbum
 {
+	use Wireable;
 	use MimicModel;
 	use UTCBasedTimes;
 

@@ -1,23 +1,13 @@
-<!-- Sidebar -->
-<div class="sidebar active">
-	<div class="sidebar__header">
-		<h1>{{ Lang::get('ALBUM_ABOUT') }}</h1>
+<div>
+@if($isOpen)
+	@if($photo == null)
+	<div class="sidebar active">
+		<livewire:sidebar.album :album="$this->album" />
 	</div>
-	<div class="sidebar__wrapper">
-	@foreach ($data as $section)
-	<div class="sidebar__divider">
-		<h1>{{ $section->title }}</h1>
+	@else
+	<div class="sidebar active">
+		<livewire:sidebar.photo :album="$this->album" :photo="$this->photo" />
 	</div>
-	<table>
-		<tbody>
-		@foreach ($section->content as $line)
-		<tr>
-			<td>{{ $line['head'] }}</td>
-			<td><span>{{ $line['value'] }}</span></td>
-		</tr>
-		@endforeach
-	</tbody>
-	</table>
-	@endforeach
-	</div>
+	@endif
+@endif
 </div>

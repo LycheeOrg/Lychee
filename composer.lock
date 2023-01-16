@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6f86fb251cf5ffb86dccabe141160f8b",
+    "content-hash": "662da79b802a07e5bdbfd5e69c08165b",
     "packages": [
         {
             "name": "bepsvpt/secure-headers",
