@@ -29,17 +29,6 @@ return [
 
 	'env' => env('APP_ENV', 'production'),
 
-	/*
-	|--------------------------------------------------------------------------
-	| Application Environment
-	|--------------------------------------------------------------------------
-	|
-	| This value determines whether livewire front-end is enabled as it is
-	| currently under development.
-	|
-	*/
-
-	'livewire' => (bool) env('LIVEWIRE_ENABLED', false),
 
 	/*
 	|--------------------------------------------------------------------------
