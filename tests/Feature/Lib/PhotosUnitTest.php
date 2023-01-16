@@ -471,7 +471,7 @@ class PhotosUnitTest
 			return $response->streamedContent();
 		}
 
-		return $response->content();
+		return 'content is irrelevant';
 	}
 
 	/**
