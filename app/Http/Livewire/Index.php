@@ -20,7 +20,7 @@ class Index extends Component
 	// listeners of click events
 	protected $listeners = [
 		'openLeftMenu',
-		'reloadPage'
+		'reloadPage',
 	];
 
 	public function mount(?string $page = 'gallery', ?string $albumId = null, ?string $photoId = null): void
@@ -94,5 +94,4 @@ class Index extends Component
 	{
 		return redirect(route('livewire_index', ['page' => $this->mode->value, 'albumId' => $this->albumId, 'photoId' => $this->photoId]));
 	}
-
 }
