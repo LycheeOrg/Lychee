@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire\Components;
 
-use App\Enum\PhotoOverlayMode;
+use App\Enum\Livewire\PhotoOverlayMode;
 use App\Facades\Lang;
 use App\Models\Configs;
 use App\Models\Photo as PhotoModel;

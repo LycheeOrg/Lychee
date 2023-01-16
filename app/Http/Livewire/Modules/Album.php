@@ -3,7 +3,7 @@
 namespace App\Http\Livewire\Modules;
 
 use App\Contracts\Models\AbstractAlbum;
-use App\Enum\AlbumMode;
+use App\Enum\Livewire\AlbumMode;
 use App\Models\Configs;
 use Illuminate\View\View;
 use Livewire\Component;

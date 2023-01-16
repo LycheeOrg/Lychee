@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire;
 
-use App\Http\Livewire\Pages\Fullpage;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 
@@ -21,7 +20,7 @@ if (config('app.force_https')) {
 }
 
 if (config('app.livewire')) {
-	Route::get('/livewire/{albumId?}/{photoId?}', Fullpage::class)
+	Route::get('/livewire/{page?}/{albumId?}/{photoId?}', Index::class)
 		->middleware(['installation:complete', 'migration:complete'])
 		->name('livewire_index');
 }

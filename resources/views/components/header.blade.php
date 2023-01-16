@@ -3,7 +3,7 @@
 	'title' => '',
 	'album' => null])
 <header id="lychee_toolbar_container" class="vflex-item-rigid">
-	@if ($mode === App\Enum\PageMode::ALBUMS ) <!-- ALBUMS -->
+	@if ($mode === App\Enum\Livewire\GalleryMode::ALBUMS ) <!-- ALBUMS -->
 		@if (Auth::user() === null) <!-- NOT LOGGED -->
 		<div id="lychee_toolbar_public" class="toolbar visible">
 			<a class="button" wire:click="openLoginModal" id="button_settings"><svg class="iconic"><use xlink:href="#account-login" /></svg></a>
@@ -29,7 +29,7 @@
 			@endcan
 		</div>
 		@endif
-	@elseif ($mode === App\Enum\PageMode::ALBUM) <!-- ALBUM -->
+	@elseif ($mode === App\Enum\Livewire\GalleryMode::ALBUM) <!-- ALBUM -->
 	<div id="lychee_toolbar_album" class="toolbar visible">
 		<a class="button" id="button_back_home" title="Close Album" wire:click="back"><svg class="iconic"><use xlink:href="#chevron-left" /></svg></a>
 		<a class="header__title">{{ $title }}</a>
@@ -55,7 +55,7 @@
 		<a class="header__divider"></a>
 		<a class="button button_add"><svg class="iconic"><use xlink:href="#plus" /></svg></a>
 	</div>
-	@elseif ($mode === App\Enum\PageMode::PHOTO) <!-- PHOTO -->
+	@elseif ($mode === App\Enum\Livewire\GalleryMode::PHOTO) <!-- PHOTO -->
 	<div id="lychee_toolbar_photo" class="toolbar visible">
 		<a class="button" id="button_back" wire:click="$emit('back')"><svg class="iconic"><use xlink:href="#chevron-left" /></svg></a>
 		<a class="header__title"></a>
@@ -73,12 +73,12 @@
 		<a class="header__divider"></a>
 		<a class="button" id="button_more"><svg class="iconic"><use xlink:href="#ellipses" /></svg></a>
 	</div>
-	@elseif ($mode === App\Enum\PageMode::MAP) <!-- MAP -->
+	@elseif ($mode === App\Enum\Livewire\GalleryMode::MAP) <!-- MAP -->
 	<div id="lychee_toolbar_map" class="toolbar visible">
 		<a class="button" id="button_back_map"><svg class="iconic"><use xlink:href="#chevron-left" /></svg></a>
 		<a class="header__title"></a>
 	</div>
-	@elseif ($mode === App\Enum\PageMode::SETTINGS) <!-- SETTINGS -->
+	@elseif ($mode === App\Enum\Livewire\GalleryMode::SETTINGS) <!-- SETTINGS -->
 	<div id="lychee_toolbar_config" class="toolbar visible">
 		<a class="button" id="button_close_config"><svg class="iconic"><use xlink:href="#plus" /></svg></a>
 		<a class="header__title"></a>

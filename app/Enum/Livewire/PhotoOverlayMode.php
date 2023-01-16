@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enum;
+namespace App\Enum\Livewire;
 
 use App\Enum\Traits\WireableEnumTrait;
 use Livewire\Wireable;

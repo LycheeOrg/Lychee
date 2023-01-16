@@ -2,98 +2,82 @@
 
 namespace App\Http\Livewire;
 
-use App\Enum\PageMode;
+use App\Enum\Livewire\PageMode;
 use App\Factories\AlbumFactory;
-use App\Http\Livewire\Traits\AlbumProperty;
-use App\Models\Album;
+use App\Http\Controllers\IndexController;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
-use App\SmartAlbums\BaseSmartAlbum;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Livewire\Component;
-use Livewire\Redirector;
 
 class Index extends Component
 {
-	use AlbumProperty;
-
 	public PageMode $mode;
-	public string $title;
-	public ?Photo $photo = null;
-	public ?BaseAlbum $baseAlbum = null;
-	public ?BaseSmartAlbum $smartAlbum = null;
+	public ?string $albumId;
+	public ?string $photoId;
+
+	public function mount(?string $page = 'gallery', ?string $albumId = null, ?string $photoId = null): void
+	{
+		$this->mode = PageMode::from($page);
+		$this->albumId = $albumId;
+		$this->photoId = $photoId;
+	}
 
 	/**
-	 * @var string[] listeners of click events
+	 * Rendering of the front-end.
+	 *
+	 * @return View
 	 */
-	protected $listeners = ['openAlbum', 'openPhoto', 'back', 'reloadPage'];
-
-	public function mount(?string $albumId = null, ?string $photoId = null): void
-	{
-		$albumFactory = resolve(AlbumFactory::class);
-		if ($albumId === null) {
-			$this->mode = PageMode::ALBUMS;
-			$this->title = Configs::getValueAsString('site_title');
-		} else {
-			$this->mode = PageMode::ALBUM;
-			$album = $albumFactory->findAbstractAlbumOrFail($albumId);
-			$this->loadAlbum($album);
-			$this->title = $album->title;
-
-			if ($photoId !== null) {
-				$this->mode = PageMode::PHOTO;
-				/** @var Photo $photoItem */
-				$photoItem = Photo::with('album')->findOrFail($photoId);
-				$this->photo = $photoItem;
-				$this->title = $this->photo->title;
-			}
-		}
-	}
-
 	public function render(): View
 	{
-		return view('livewire.pages.fullpage');
+		return view('livewire.index')->layout('layouts.livewire', $this->getLayout())->slot('fullpage');
 	}
 
-	/*
-	 *          Interactions
+	/**
+	 * Fetch layout data for the head, meta etc.
+	 *
+	 * @return array{pageTitle:string,pageDescrption:string,siteOwner:string,imageUrl:string,pageUrl:string,rssEnable:string,rssEnable:string,userCssUrl:string}
 	 */
-	public function reloadPage(): Redirector|RedirectResponse
+	private function getLayout(): array
 	{
-		if ($this->photo !== null) {
-			return redirect('/livewire/' . $this->getAlbumProperty()->id . '/' . $this->photo->id);
+		$siteTitle = Configs::getValueAsString('site_title');
+		$title = '';
+		$description = '';
+		$imageUrl = '';
+
+		if ($this->photoId !== null) {
+			$photo = Photo::findOrFail($this->photoId);
+			$title = $photo->title;
+			$description = $photo->description;
+			$imageUrl = url()->to($photo->size_variants->getMedium()?->url ?? $photo->size_variants->getOriginal()->url);
+		} elseif ($this->albumId !== null) {
+			$albumFactory = resolve(AlbumFactory::class);
+			$album = $albumFactory->findAbstractAlbumOrFail($this->albumId, false);
+			$title = $album->title;
+			$description = $album instanceof BaseAlbum ? $album->description : '';
+			$imageUrl = url()->to($album->thumb->thumbUrl ?? '');
 		}
 
-		return redirect('/livewire/' . ($this->getAlbumProperty()?->id ?? ''));
+		return [
+			'pageTitle' => $siteTitle . (!blank($siteTitle) && !blank($title) ? ' – ' : '') . $title,
+			'pageDescription' => !blank($description) ? $description . ' – via Lychee' : '',
+			'siteOwner' => Configs::getValueAsString('site_owner'),
+			'imageUrl' => $imageUrl,
+			'pageUrl' => url()->current(),
+			'rssEnable' => Configs::getValueAsBool('rss_enable'),
+			'userCssUrl' => IndexController::getUserCss(),
+			'frame' => '',
+		];
 	}
 
-	public function openAlbum(string $albumId): Redirector|RedirectResponse
+	/**
+	 * Open the Left menu.
+	 *
+	 * @return void
+	 */
+	public function openLeftMenu(): void
 	{
-		return redirect('/livewire/' . $albumId);
-	}
-
-	public function openPhoto(string $photoId): Redirector|RedirectResponse
-	{
-		return redirect('/livewire/' . $this->getAlbumProperty()->id . '/' . $photoId);
-	}
-
-	// Ideal we would like to avoid the redirect as they are slow.
-	public function back(): Redirector|RedirectResponse
-	{
-		if ($this->photo !== null) {
-			// $this->photo = null;
-			return redirect('/livewire/' . ($this->getAlbumProperty()->id ?? ''));
-		}
-		if ($this->baseAlbum !== null) {
-			if ($this->baseAlbum instanceof Album && $this->baseAlbum->parent_id !== null) {
-				return redirect('/livewire/' . $this->baseAlbum->parent_id);
-			}
-
-			return redirect('/livewire/');
-		}
-
-		return redirect('/livewire/');
+		$this->emitTo('components.left-menu', 'open');
 	}
 }

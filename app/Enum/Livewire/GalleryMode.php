@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Enum;
+namespace App\Enum\Livewire;
 
 use App\Enum\Traits\WireableEnumTrait;
 use Livewire\Wireable;
 
-enum PageMode: string implements Wireable
+enum GalleryMode: string implements Wireable
 {
 	use WireableEnumTrait;
 
@@ -13,5 +13,4 @@ enum PageMode: string implements Wireable
 	case ALBUMS = 'albums';
 	case PHOTO = 'photo';
 	case MAP = 'map';
-	case SETTINGS = 'settings';
 }

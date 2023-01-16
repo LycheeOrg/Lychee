@@ -2,7 +2,8 @@
 
 namespace App\Http\Livewire\Pages;
 
-use App\Enum\PageMode;
+use App\Enum\Livewire\GalleryMode;
+use App\Enum\Livewire\PageMode;
 use App\Factories\AlbumFactory;
 use App\Http\Controllers\IndexController;
 use App\Http\Livewire\Traits\AlbumProperty;
@@ -14,7 +15,7 @@ use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\View\View;
 use Livewire\Component;
 
-class Fullpage extends Component
+class Gallery extends Component
 {
 	/*
 	* Add interaction with modal
@@ -30,15 +31,16 @@ class Fullpage extends Component
 	 * Or to use a computed property on the model. We chose the later.
 	 */
 	use AlbumProperty;
+	public ?string $albumId;
+	public ?string $photoId;
+
 	/**
 	 * Those two parameters are bound to the URL query.
 	 */
-	public string $albumId;
-	public string $photoId;
 	public ?BaseAlbum $baseAlbum = null;
 	public ?BaseSmartAlbum $smartAlbum = null;
 
-	public PageMode $mode;
+	public GalleryMode $mode;
 	public string $title;
 	public ?Photo $photo = null;
 
@@ -59,7 +61,7 @@ class Fullpage extends Component
 	 *
 	 * @return void
 	 */
-	public function mount(string $albumId = '', string $photoId = '')
+	public function mount(?string $albumId, ?string $photoId)
 	{
 		$this->albumId = $albumId;
 		$this->photoId = $photoId;
@@ -75,7 +77,7 @@ class Fullpage extends Component
 		// reload the necessary parts.
 		$this->load();
 
-		return view('livewire.pages.fullpage')->layout('layouts.livewire', $this->getLayout())->slot('fullpage');
+		return view('livewire.pages.gallery');
 	}
 
 	/**
@@ -122,8 +124,8 @@ class Fullpage extends Component
 	private function load(): void
 	{
 		$albumFactory = resolve(AlbumFactory::class);
-		if ($this->albumId === '') {
-			$this->mode = PageMode::ALBUMS;
+		if ($this->albumId === null || $this->albumId === '') {
+			$this->mode = GalleryMode::ALBUMS;
 			$this->title = Configs::getValueAsString('site_title');
 			$this->resetAlbums();
 			$this->photo = null;
@@ -139,8 +141,8 @@ class Fullpage extends Component
 		}
 
 		// We are in album view.
-		if ($this->photoId === '') {
-			$this->mode = PageMode::ALBUM;
+		if ($this->photoId === null || $this->photoId === '') {
+			$this->mode = GalleryMode::ALBUM;
 			$this->title = $this->getAlbumProperty()->title;
 			$this->photo = null;
 
@@ -148,7 +150,7 @@ class Fullpage extends Component
 		}
 
 		// Set photo Mode
-		$this->mode = PageMode::PHOTO;
+		$this->mode = GalleryMode::PHOTO;
 		/** @var Photo $photoItem */
 		$photoItem = Photo::with('album')->findOrFail($this->photoId);
 		$this->photo = $photoItem;
@@ -160,7 +162,7 @@ class Fullpage extends Component
 	 */
 	public function reloadPage()
 	{
-		return redirect(route('livewire_index', ['albumId' => $this->albumId, 'photoId' => $this->photoId]));
+		return redirect(route('livewire_index', ['page' => PageMode::GALLERY, 'albumId' => $this->albumId, 'photoId' => $this->photoId]));
 	}
 
 	/**
@@ -175,7 +177,7 @@ class Fullpage extends Component
 	{
 		$this->albumId = $albumId;
 		$this->load();
-		$this->emit('urlChange', route('livewire_index', ['albumId' => $this->albumId, 'photoId' => $this->photoId]));
+		$this->emit('urlChange', route('livewire_index', ['page' => PageMode::GALLERY, 'albumId' => $this->albumId, 'photoId' => $this->photoId]));
 	}
 
 	/**
@@ -190,7 +192,7 @@ class Fullpage extends Component
 		$this->photoId = $photoId;
 
 		// This ensures that the history has been updated
-		$this->emit('urlChange', route('livewire_index', ['albumId' => $this->albumId, 'photoId' => $this->photoId]));
+		$this->emit('urlChange', route('livewire_index', ['page' => PageMode::GALLERY, 'albumId' => $this->albumId, 'photoId' => $this->photoId]));
 	}
 
 	/**
@@ -198,19 +200,23 @@ class Fullpage extends Component
 	 */
 	public function back()
 	{
-		if ($this->photoId !== '') {
-			$this->photoId = '';
+		if ($this->photoId !== null && $this->photoId !== '') {
+			$this->photoId = null;
 
 		// Case of sub-albums
 		} elseif ($this->baseAlbum instanceof BaseAlbum
 			&& $this->baseAlbum->parent_id !== null) {
 			$this->albumId = $this->baseAlbum->parent_id;
 		} else {
-			$this->albumId = '';
+			$this->albumId = null;
 		}
 
 		// This ensures that the history has been updated
-		$this->emit('urlChange', route('livewire_index', ['albumId' => $this->albumId, 'photoId' => $this->photoId]));
+		$this->emit('urlChange', route('livewire_index', [
+			'page' => PageMode::GALLERY,
+			'albumId' => $this->albumId ?? '',
+			'photoId' => $this->photoId ?? '',
+		]));
 	}
 
 	/**
@@ -221,16 +227,6 @@ class Fullpage extends Component
 	public function openLoginModal(): void
 	{
 		$this->openModal('forms.login');
-	}
-
-	/**
-	 * Open the Left menu.
-	 *
-	 * @return void
-	 */
-	public function openLeftMenu(): void
-	{
-		$this->emitTo('components.left-menu', 'open');
 	}
 
 	/**
