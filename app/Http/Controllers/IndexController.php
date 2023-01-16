@@ -61,7 +61,7 @@ class IndexController extends Controller
 					'infos' => $infos,
 					'page_config' => $page_config,
 					'rss_enable' => $rss_enable,
-					'user_css_url' => $this->getUserCss(),
+					'user_css_url' => self::getUserCss(),
 				]);
 			}
 
@@ -190,7 +190,7 @@ class IndexController extends Controller
 				'pageUrl' => url()->current(),
 				'rssEnable' => Configs::getValueAsBool('rss_enable'),
 				'bodyHtml' => file_get_contents(public_path('dist/frontend.html')),
-				'userCssUrl' => $this->getUserCss(),
+				'userCssUrl' => self::getUserCss(),
 			]);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);
@@ -202,7 +202,7 @@ class IndexController extends Controller
 	 *
 	 * @return string
 	 */
-	private function getUserCss(): string
+	public static function getUserCss(): string
 	{
 		$cssCacheBusting = '';
 		if (Storage::disk('dist')->fileExists('user.css')) {

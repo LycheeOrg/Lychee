@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * These stubs for the Livewire interfaces which do not provide proper typing
+ */
+
+namespace Livewire;
+
+
+/**
+ * @template TWiredClass
+ */
+interface Wireable
+{
+    public function toLivewire() : string|int;
+
+
+	/**
+	 * @phpstan-return TWiredClass
+	 */
+    public static function fromLivewire(string|int $value);
+}
