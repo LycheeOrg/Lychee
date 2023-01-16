@@ -24,13 +24,13 @@ class SizeVariants extends AbstractDTO
 	/** @var Photo the parent object this object is tied to */
 	private Photo $photo;
 
-	private ?SizeVariant $original = null;
-	private ?SizeVariant $medium2x = null;
-	private ?SizeVariant $medium = null;
-	private ?SizeVariant $small2x = null;
-	private ?SizeVariant $small = null;
-	private ?SizeVariant $thumb2x = null;
-	private ?SizeVariant $thumb = null;
+	public ?SizeVariant $original = null;
+	public ?SizeVariant $medium2x = null;
+	public ?SizeVariant $medium = null;
+	public ?SizeVariant $small2x = null;
+	public ?SizeVariant $small = null;
+	public ?SizeVariant $thumb2x = null;
+	public ?SizeVariant $thumb = null;
 
 	/**
 	 * SizeVariants constructor.
