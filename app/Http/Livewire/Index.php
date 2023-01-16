@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Enum\Livewire\PageMode;
 use App\Factories\AlbumFactory;
 use App\Http\Controllers\IndexController;
+use App\Http\Livewire\Traits\UrlChange;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
@@ -13,6 +14,8 @@ use Livewire\Component;
 
 class Index extends Component
 {
+	use UrlChange;
+
 	public PageMode $mode;
 	public ?string $albumId = null;
 	public ?string $photoId = null;
@@ -20,6 +23,7 @@ class Index extends Component
 	// listeners of click events
 	protected $listeners = [
 		'openLeftMenu',
+		'openPage',
 		'reloadPage',
 	];
 
@@ -85,6 +89,22 @@ class Index extends Component
 	public function openLeftMenu(): void
 	{
 		$this->emitTo('components.left-menu', 'open');
+	}
+
+	/**
+	 * Open page.
+	 *
+	 * @return void
+	 */
+	public function openPage(string $page): void
+	{
+		$this->albumId = null;
+		$this->photoId = null;
+		$this->mode = PageMode::from($page);
+
+		// update URL
+		$this->emitUrlChange($this->mode, $this->albumId ?? '', $this->photoId ?? '');
+
 	}
 
 	/*

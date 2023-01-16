@@ -8,6 +8,7 @@ use App\Factories\AlbumFactory;
 use App\Http\Controllers\IndexController;
 use App\Http\Livewire\Traits\AlbumProperty;
 use App\Http\Livewire\Traits\InteractWithModal;
+use App\Http\Livewire\Traits\UrlChange;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
@@ -21,6 +22,7 @@ class Gallery extends Component
 	* Add interaction with modal
 	*/
 	use InteractWithModal;
+	use UrlChange;
 
 	/**
 	 * Because AbstractAlbum is an Interface, it is not possible to make it
@@ -48,7 +50,7 @@ class Gallery extends Component
 	/**
 	 * @var array<int,string> listeners of click events
 	 */
-	protected $listeners = ['openAlbum', 'openPhoto', 'back', 'reloadPage' => '$refresh'];
+	protected $listeners = ['openAlbum', 'openPhoto', 'back'];
 
 	/**
 	 * While in most Laravel Controller calls we use the constructor,
@@ -170,7 +172,7 @@ class Gallery extends Component
 	{
 		$this->albumId = $albumId;
 		$this->load();
-		$this->emit('urlChange', route('livewire_index', ['page' => PageMode::GALLERY, 'albumId' => $this->albumId, 'photoId' => $this->photoId]));
+		$this->emitUrlChange(PageMode::GALLERY, $this->albumId, $this->photoId);
 	}
 
 	/**
@@ -185,7 +187,7 @@ class Gallery extends Component
 		$this->photoId = $photoId;
 
 		// This ensures that the history has been updated
-		$this->emit('urlChange', route('livewire_index', ['page' => PageMode::GALLERY, 'albumId' => $this->albumId, 'photoId' => $this->photoId]));
+		$this->emitUrlChange(PageMode::GALLERY, $this->albumId, $this->photoId);
 	}
 
 	/**
@@ -205,21 +207,7 @@ class Gallery extends Component
 		}
 
 		// This ensures that the history has been updated
-		$this->emit('urlChange', route('livewire_index', [
-			'page' => PageMode::GALLERY,
-			'albumId' => $this->albumId ?? '',
-			'photoId' => $this->photoId ?? '',
-		]));
-	}
-
-	/**
-	 * Open a login modal box.
-	 *
-	 * @return void
-	 */
-	public function openLoginModal(): void
-	{
-		$this->openModal('forms.login');
+		$this->emitUrlChange(PageMode::GALLERY, $this->albumId ?? '', $this->photoId ?? '');
 	}
 
 	/**

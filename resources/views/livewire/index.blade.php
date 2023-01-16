@@ -5,6 +5,8 @@
 
 	@if($mode === App\Enum\Livewire\PageMode::GALLERY)
 	<livewire:pages.gallery albumId="{{$this->albumId}}" photoId="{{$this->photoId}}" />
+	@elseif($mode === App\Enum\Livewire\PageMode::SETTINGS)
+	<livewire:pages.settings />
 	@else
 		DO NOTHING FOR NOW;
 	@endif

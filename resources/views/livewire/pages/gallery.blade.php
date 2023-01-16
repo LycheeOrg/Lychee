@@ -1,6 +1,6 @@
 <div class="hflex-item-stretch vflex-container">
 	<!-- toolbar -->
-	<x-header :mode="$mode" :title="$this->title" :album="$this->album"  />
+	<livewire:components.header key="header-{{ now() }}" :gallery_mode="$mode" :title="$this->title" :album="$this->album" />
 	<!--
 		This container vertically shares space with the toolbar.
 		It fills the remaining vertical space not taken by the toolbar.
