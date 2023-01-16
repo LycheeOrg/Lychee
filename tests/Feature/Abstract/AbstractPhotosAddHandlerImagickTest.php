@@ -10,16 +10,17 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature;
+namespace Tests\Feature\Abstract;
 
 use Tests\AbstractTestCase;
+use Tests\Feature\Base\BasePhotosAddHandler;
 use Tests\Feature\Traits\InteractsWithRaw;
 use Tests\Feature\Traits\RequiresImageHandler;
 
 /**
- * Runs the tests of {@link PhotosAddHandlerTestAbstract} with Imagick as image handler.
+ * Runs the tests of {@link BasePhotosAddHandler} with Imagick as image handler.
  */
-class PhotosAddHandlerImagickTest extends BasePhotosAddHandler
+abstract class AbstractPhotosAddHandlerImagickTest extends BasePhotosAddHandler
 {
 	use InteractsWithRaw;
 	use RequiresImageHandler;

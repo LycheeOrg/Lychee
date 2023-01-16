@@ -18,7 +18,7 @@ use App\SmartAlbums\StarredAlbum;
 use Tests\AbstractTestCase;
 use Tests\Feature\Base\BaseSharingWithAnonUser;
 
-class SharingWithAnonUserAndNoPublicSearchTest extends BaseSharingWithAnonUser
+class AbstractSharingWithAnonUserAndNoPublicSearchTest extends BaseSharingWithAnonUser
 {
 	public function setUp(): void
 	{

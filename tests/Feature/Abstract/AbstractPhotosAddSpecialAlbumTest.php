@@ -10,7 +10,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature;
+namespace Tests\Feature\Abstract;
 
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
@@ -22,7 +22,7 @@ use Tests\Feature\Traits\InteractWithSmartAlbums;
 /**
  * Contains tests which add photos to Lychee and directly set an album.
  */
-class PhotosAddSpecialAlbumTest extends BasePhotoTest
+abstract class AbstractPhotosAddSpecialAlbumTest extends BasePhotoTest
 {
 	use InteractWithSmartAlbums;
 

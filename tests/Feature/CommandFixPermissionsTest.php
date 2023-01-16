@@ -15,9 +15,13 @@ namespace Tests\Feature;
 use function Safe\chmod;
 use function Safe\fileperms;
 use Tests\AbstractTestCase;
+use Tests\Feature\Base\BasePhotoTest;
+use Tests\Feature\Traits\ExecuteAsAdmin;
 
-class CommandFixPermissionsTest extends Base\BasePhotoTest
+class CommandFixPermissionsTest extends BasePhotoTest
 {
+	use ExecuteAsAdmin;
+
 	public const COMMAND = 'lychee:fix-permissions';
 
 	/**

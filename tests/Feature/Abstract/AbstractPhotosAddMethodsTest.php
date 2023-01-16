@@ -10,7 +10,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature;
+namespace Tests\Feature\Abstract;
 
 use App\Image\Files\BaseMediaFile;
 use App\Models\Configs;
@@ -23,7 +23,7 @@ use Tests\Feature\Base\BasePhotoTest;
  * Contains all tests for the various ways of adding images to Lychee
  * (upload, download, import) and their various options.
  */
-class PhotosAddMethodsTest extends BasePhotoTest
+abstract class AbstractPhotosAddMethodsTest extends BasePhotoTest
 {
 	public function testImportViaMove(): void
 	{
