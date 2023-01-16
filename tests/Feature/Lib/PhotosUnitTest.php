@@ -467,8 +467,11 @@ class PhotosUnitTest
 		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
+		if ($expectedStatusCode === 200) {
+			return $response->streamedContent();
+		}
 
-		return $response->streamedContent();
+		return $response->content();
 	}
 
 	/**
