@@ -49,4 +49,36 @@ class Header extends Component
 	{
 		$this->openModal('forms.login');
 	}
+
+	/**
+	 * Go back one step
+	 *
+	 * @return void
+	 */
+	public function back(): void
+	{
+		$this->emitTo('pages.gallery', 'back');
+	}
+
+	/**
+	 * Open the Left menu.
+	 *
+	 * @return void
+	 */
+	public function openLeftMenu(): void
+	{
+		$this->emitTo('components.left-menu', 'open');
+	}
+
+	/**
+	 * Toggle the side bar.
+	 *
+	 * @return void
+	 */
+	public function toggleSideBar(): void
+	{
+		$this->emitTo('components.sidebar', 'toggle');
+	}
+
+
 }

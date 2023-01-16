@@ -10,7 +10,7 @@
 				<div class="input-group stacked">
 				@if (is_string($f))
 					{{-- Work in Progess, will probably evolve --}}
-					<input class="text" name="{{ $f }}" autocomplete="on" type="text" placeholder="{{ Lang::get($formLocale['form.'.$f]) }}" autocapitalize="off" data-tabindex="{{ Helpers::data_index() }}" wire:model="form.{{ $f }}">
+					<input class="text" autocomplete="on" type="text" placeholder="{{ Lang::get($formLocale['form.'.$f]) }}" autocapitalize="off" data-tabindex="{{ Helpers::data_index() }}" wire:model="form.{{ $f }}">
 				@else
 					{{ $f }} not supported yet.
 				@endif

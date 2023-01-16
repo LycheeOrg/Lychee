@@ -22,7 +22,6 @@ class Index extends Component
 
 	// listeners of click events
 	protected $listeners = [
-		'openLeftMenu',
 		'openPage',
 		'reloadPage',
 	];
@@ -82,16 +81,6 @@ class Index extends Component
 	}
 
 	/**
-	 * Open the Left menu.
-	 *
-	 * @return void
-	 */
-	public function openLeftMenu(): void
-	{
-		$this->emitTo('components.left-menu', 'open');
-	}
-
-	/**
 	 * Open page.
 	 *
 	 * @return void
@@ -104,7 +93,7 @@ class Index extends Component
 
 		// update URL
 		$this->emitUrlChange($this->mode, $this->albumId ?? '', $this->photoId ?? '');
-
+		// $this->render();
 	}
 
 	/*

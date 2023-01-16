@@ -1,6 +1,6 @@
 <div class="hflex-item-stretch vflex-container">
 	<!-- toolbar -->
-	<livewire:components.header key="header-{{ now() }}" :gallery_mode="$mode" :title="$this->title" :album="$this->album" />
+	<livewire:components.header key="header-{{$this->albumId}}-{{$this->photoId ?? ''}}" :gallery_mode="$mode" :title="$this->title" :album="$this->album" />
 	<!--
 		This container vertically shares space with the toolbar.
 		It fills the remaining vertical space not taken by the toolbar.
@@ -28,7 +28,7 @@
 				Do not that those need to not colide with other components, as a result we use prefix-id-time
 				strings to avoid such problems.
 			-->
-			<livewire:modules.album key="view-{{$this->albumId}}-{{ now() }}" :album="$this->album" />
+			<livewire:modules.album key="view-album-{{$this->albumId}}" :album="$this->album" />
 			@elseif($mode === App\Enum\Livewire\GalleryMode::MAP)
 			<!--
 				For now
@@ -43,7 +43,7 @@
 			Do not that those need to not colide with other components, as a result we use prefix-id-time
 			strings to avoid such problems.
 		-->
-		<livewire:modules.photo key="view-{{$this->photoId}}-{{ now() }}" :album="$this->album" :photo="$this->photo" />
+		<livewire:modules.photo key="view-photo-{{$this->photoId}}" :album="$this->album" :photo="$this->photo" />
 		@endif
 	</div>
 	<!-- SIDE BARS --->
@@ -53,14 +53,14 @@
 		Do not that those need to not colide with other components, as a result we use prefix-id-time
 		strings to avoid such problems.
 	-->
-	<livewire:components.sidebar key="sidebar-{{$this->albumId}}-{{ now() }}" :album="$this->album"/>
+	<livewire:components.sidebar key="sidebar-album-{{$this->albumId}}" :album="$this->album"/>
 	@elseif($mode === App\Enum\Livewire\GalleryMode::PHOTO)
 		<!--
 			The key="..." attribute ensure that we are triggering a refresh of the child component on reload.
 			Do not that those need to not colide with other components, as a result we use prefix-id-time
 			strings to avoid such problems.
 		-->
-		<livewire:components.sidebar key="sidebar-{{$this->photoId}}-{{ now() }}" :album="$this->album" :photo="$this->photo" />
+		<livewire:components.sidebar key="sidebar-photo-{{$this->photoId}}" :album="$this->album" :photo="$this->photo" />
 	@endif
 	<livewire:components.base.modal />
 </div>

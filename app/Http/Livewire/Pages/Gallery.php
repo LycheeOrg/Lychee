@@ -172,7 +172,7 @@ class Gallery extends Component
 	{
 		$this->albumId = $albumId;
 		$this->load();
-		$this->emitUrlChange(PageMode::GALLERY, $this->albumId, $this->photoId);
+		$this->emitUrlChange(PageMode::GALLERY, $this->albumId, $this->photoId ?? '');
 	}
 
 	/**
@@ -208,15 +208,5 @@ class Gallery extends Component
 
 		// This ensures that the history has been updated
 		$this->emitUrlChange(PageMode::GALLERY, $this->albumId ?? '', $this->photoId ?? '');
-	}
-
-	/**
-	 * Toggle the side bar.
-	 *
-	 * @return void
-	 */
-	public function toggleSideBar(): void
-	{
-		$this->emitTo('components.sidebar', 'toggle');
 	}
 }

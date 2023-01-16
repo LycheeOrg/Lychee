@@ -27,25 +27,7 @@
 				-->
 				<div id="lychee_view_content" class="vflex-item-stretch contentZoomIn"><div class="settings_view">
 
-					<div class="setLogin">
-						<form>
-							<p>
-								Enter your current password:
-								<input name="oldPassword" class="text" type="password" placeholder="Current Password" value="">
-							</p>
-							<p>
-								Your credentials will be changed to the following:
-								<input name="username" class="text" type="text" placeholder="New Username" value="">
-								<input name="password" class="text" type="password" placeholder="New Password" value="">
-								<input name="confirm" class="text" type="password" placeholder="Confirm Password" value="">
-							</p>
-							<div class="basicModal__buttons">
-								<!--<a id="basicModal__cancel" class="basicModal__button ">Cancel</a>-->
-								<a id="basicModal__action_password_change" class="basicModal__button ">Change Login</a>
-								<a id="basicModal__action_token" class="basicModal__button ">API Token ...</a>
-							</div>
-						</form>
-					</div>
+					<livewire:forms.settings.set-login />
 
 					<div class="setSorting">
 						<p>
@@ -191,16 +173,7 @@
 							<a id="basicModal__action_set_layout" class="basicModal__button">Change layout</a>
 						</div>
 					</div>
-
-					<div class="setPublicSearch">
-						<p>
-							Public search allowed:
-							<label class="switch">
-								<input id="PublicSearch" type="checkbox" name="public_search">
-								<span class="slider round"></span>
-							</label>
-						</p>
-					</div>
+					<livewire:forms.settings.boolean-setting key="set-public_search" description="PUBLIC_SEARCH_TEXT" name="public_search" />
 
 					<div class="setAlbumDecoration">
 						<p>
@@ -248,25 +221,14 @@
 						</div>
 					</div>
 
-					<div class="setMapDisplay">
-						<p>
-							Enable maps (provided by OpenStreetMap):
-							<label class="switch">
-								<input id="MapDisplay" type="checkbox" name="map_display">
-								<span class="slider round"></span>
-							</label>
-						</p>
-					</div>
-
-					<div class="setMapDisplayPublic">
-						<p>
-							Enable maps for public albums (provided by OpenStreetMap):
-							<label class="switch">
-								<input id="MapDisplayPublic" type="checkbox" name="map_display_public">
-								<span class="slider round"></span>
-							</label>
-						</p>
-					</div>
+					<livewire:forms.settings.boolean-setting
+						key="set-map_display"
+						description="MAP_DISPLAY_TEXT"
+						name="map_display" />
+					<livewire:forms.settings.boolean-setting
+						key="set-map_display_public"
+						description="MAP_DISPLAY_PUBLIC_TEXT"
+						name="map_display_public" />
 
 					<div class="setMapProvider">
 						<p>
@@ -286,68 +248,35 @@
 						</div>
 					</div>
 
-					<div class="setMapIncludeSubAlbums">
-						<p>
-							Include photos of subalbums on map:
-							<label class="switch">
-								<input id="MapIncludeSubAlbums" type="checkbox" name="map_include_subalbums">
-								<span class="slider round"></span>
-							</label>
-						</p>
-					</div>
-
-					<div class="setLocationDecoding">
-						<p>
-							Decode GPS data into location name
-							<label class="switch">
-								<input id="LocationDecoding" type="checkbox" name="location_decoding">
-								<span class="slider round"></span>
-							</label>
-						</p>
-					</div>
-
-					<div class="setLocationShow">
-						<p>
-							Show location name
-							<label class="switch">
-								<input id="LocationShow" type="checkbox" name="location_show">
-								<span class="slider round"></span>
-							</label>
-						</p>
-					</div>
-
-					<div class="setLocationShowPublic">
-						<p>
-							Show location name for public mode
-							<label class="switch">
-								<input id="LocationShowPublic" type="checkbox" name="location_show_public">
-								<span class="slider round"></span>
-							</label>
-						</p>
-					</div>
-
-					<div class="setNSFWVisible">
-						<p>
-							Make Sensitive albums visible by default.
-							<label class="switch">
-								<input id="NSFWVisible" type="checkbox" name="nsfw_visible">
-								<span class="slider round"></span>
-							</label>
-						</p>
-						<p>
-							If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <kbd>H</kbd></b>.
-						</p>
-					</div>
-
-					<div class="setNewPhotosNotification">
-						<p>
-							Send new photos notification emails.
-							<label class="switch">
-								<input id="NewPhotosNotification" type="checkbox" name="new_photos_notification">
-								<span class="slider round"></span>
-							</label>
-						</p>
-					</div>
+					<livewire:forms.settings.boolean-setting
+						key="set-map_include_subalbums"
+						description="MAP_INCLUDE_SUBALBUMS_TEXT"
+						name="map_include_subalbums" />
+					<livewire:forms.settings.boolean-setting
+						key="set-location_decoding"
+						description="LOCATION_DECODING"
+						name="location_decoding" />
+					<livewire:forms.settings.boolean-setting
+						key="set-location_show"
+						description="LOCATION_SHOW"
+						name="location_show" />
+					<livewire:forms.settings.boolean-setting
+						key="set-location_show_public"
+						description="LOCATION_SHOW_PUBLIC"
+						name="location_show_public" />
+					<livewire:forms.settings.boolean-setting
+						key="set-location_show_public"
+						description="LOCATION_SHOW_PUBLIC"
+						name="location_show_public" />
+					<livewire:forms.settings.boolean-setting
+						key="set-nsfw_visible"
+						description="NSFW_VISIBLE_TEXT_1"
+						name="nsfw_visible"
+						footer="NSFW_VISIBLE_TEXT_2"/>
+					<livewire:forms.settings.boolean-setting
+						key="set-new_photos_notification"
+						description="NEW_PHOTOS_NOTIFICATION"
+						name="new_photos_notification" />
 
 					<div class="setCSS">
 						<p>
@@ -370,4 +299,5 @@
 
 		</div>
 	</div>
+	<livewire:components.base.modal />
 </div>
