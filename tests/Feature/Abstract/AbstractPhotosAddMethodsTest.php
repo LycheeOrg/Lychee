@@ -14,10 +14,12 @@ namespace Tests\Feature\Abstract;
 
 use App\Image\Files\BaseMediaFile;
 use App\Models\Configs;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use function Safe\copy;
 use Tests\AbstractTestCase;
 use Tests\Feature\Base\BasePhotoTest;
+use Tests\Feature\Traits\RequiresAdmin;
 
 /**
  * Contains all tests for the various ways of adding images to Lychee
@@ -27,9 +29,16 @@ abstract class AbstractPhotosAddMethodsTest extends BasePhotoTest
 {
 	public function testImportViaMove(): void
 	{
+		$expectedStatusCode = (Auth::user()?->may_administrate === true) ? 200 : 403;
+
 		// import the photo
 		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
-		$this->photos_tests->importFromServer(static::importPath(), null, true, false, false);
+		$this->photos_tests->importFromServer(static::importPath(), null, true, false, false, null, $expectedStatusCode);
+
+
+		if ($expectedStatusCode !== 200) {
+			return;
+		}
 
 		// check if the file has been moved
 		$this->assertEquals(false, file_exists(static::importPath('night.jpg')));
@@ -37,9 +46,11 @@ abstract class AbstractPhotosAddMethodsTest extends BasePhotoTest
 
 	public function testImportViaCopy(): void
 	{
+		$expectedStatusCode = (Auth::user()?->may_administrate === true) ? 200 : 403;
+
 		// import the photo
 		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
-		$this->photos_tests->importFromServer(static::importPath(), null, false, false, false);
+		$this->photos_tests->importFromServer(static::importPath(), null, false, false, false, null, $expectedStatusCode);
 
 		// check if the file is still there
 		$this->assertEquals(true, file_exists(static::importPath('night.jpg')));
@@ -47,6 +58,8 @@ abstract class AbstractPhotosAddMethodsTest extends BasePhotoTest
 
 	public function testImportViaSymlink(): void
 	{
+		$this->assertIsAdminOrSkip();
+
 		$ids_before = static::getRecentPhotoIDs();
 
 		// import the photo
@@ -67,6 +80,8 @@ abstract class AbstractPhotosAddMethodsTest extends BasePhotoTest
 
 	public function testImportSkipDuplicateWithResync(): void
 	{
+		$this->assertIsAdminOrSkip();
+
 		// Upload the photo the first time and remove some information
 		// such that there is really something to re-sync
 		$first_id = $this->photos_tests->upload(
@@ -100,6 +115,8 @@ abstract class AbstractPhotosAddMethodsTest extends BasePhotoTest
 
 	public function testImportSkipDuplicateWithoutResync(): void
 	{
+		$this->assertIsAdminOrSkip();
+
 		// Upload the photo the first time
 		$this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
@@ -114,6 +131,8 @@ abstract class AbstractPhotosAddMethodsTest extends BasePhotoTest
 
 	public function testImportDuplicateWithoutResync(): void
 	{
+		$this->assertIsAdminOrSkip();
+
 		// Upload the photo the first time and remove some information
 		// such that we can be sure that **no** re-sync happens later
 		$first_id = $this->photos_tests->upload(
@@ -160,6 +179,8 @@ abstract class AbstractPhotosAddMethodsTest extends BasePhotoTest
 	 */
 	public function testAppleLivePhotoImportViaSymlink(): void
 	{
+		$this->assertIsAdminOrSkip();
+
 		$this->assertHasExifToolOrSkip();
 
 		$ids_before = static::getRecentPhotoIDs();

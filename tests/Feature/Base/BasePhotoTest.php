@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Session;
 use Tests\AbstractTestCase;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
+use Tests\Feature\Traits\RequiresAdmin;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\Feature\Traits\RequiresExifTool;
 use Tests\Feature\Traits\RequiresFFMpeg;
@@ -26,6 +27,7 @@ abstract class BasePhotoTest extends AbstractTestCase
 	use RequiresEmptyPhotos;
 	use RequiresExifTool;
 	use RequiresFFMpeg;
+	use RequiresAdmin;
 
 	protected AlbumsUnitTest $albums_tests;
 	protected PhotosUnitTest $photos_tests;
