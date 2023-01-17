@@ -50,7 +50,7 @@ class Login extends BaseForm
 		$this->cancel = Lang::get('CANCEL');
 		$this->render = '-login';
 
-		if (!Configs::getValueAsBool('hide_version_number')){
+		if (!Configs::getValueAsBool('hide_version_number')) {
 			$this->version = resolve(InstalledVersion::class)->getVersion()->toString();
 		}
 

@@ -20,9 +20,9 @@ trait InteractWithModal
 	/**
 	 * Open Modal with form and paramters.
 	 *
-	 * @param string $form   Livewire component to include in the modal
+	 * @param string $form       Livewire component to include in the modal
 	 * @param string $close_text text to put if we use a close button
-	 * @param array  $params Parameters for said component
+	 * @param array  $params     Parameters for said component
 	 *
 	 * @return void
 	 */

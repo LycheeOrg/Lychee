@@ -22,9 +22,9 @@ class Modal extends Openable
 	/**
 	 * Defines if we include a close button.
 	 * if '' => no close button
-	 * any other string correspond to the LANG text
+	 * any other string correspond to the LANG text.
 	 *
-	 * @var string $close_text
+	 * @var string
 	 */
 	public string $close_text = '';
 
@@ -55,9 +55,9 @@ class Modal extends Openable
 	/**
 	 * Open a Modal.
 	 *
-	 * @param string $type   defines the Component loaded inside the modal
+	 * @param string $type       defines the Component loaded inside the modal
 	 * @param string $close_text text to put if we use a close button
-	 * @param array  $params Arguments to pass to the modal
+	 * @param array  $params     Arguments to pass to the modal
 	 *
 	 * @return void
 	 */

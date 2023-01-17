@@ -27,7 +27,7 @@ class About extends Component
 	 */
 	public function mount(): void
 	{
-		if (!Configs::getValueAsBool('hide_version_number')){
+		if (!Configs::getValueAsBool('hide_version_number')) {
 			$this->version = resolve(InstalledVersion::class)->getVersion()->toString();
 		}
 
