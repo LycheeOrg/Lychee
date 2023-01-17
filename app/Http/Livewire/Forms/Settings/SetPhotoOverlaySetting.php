@@ -11,10 +11,10 @@ class SetPhotoOverlaySetting extends BaseConfigDropDown
 	public function getOptionsProperty(): array
 	{
 		return [
-			"exif" => Lang::get('OVERLAY_EXIF'),
-			"desc" => Lang::get('OVERLAY_DESCRIPTION'),
-			"date" => Lang::get('OVERLAY_DATE'),
-			"none" => Lang::get('OVERLAY_NONE'),
+			'exif' => Lang::get('OVERLAY_EXIF'),
+			'desc' => Lang::get('OVERLAY_DESCRIPTION'),
+			'date' => Lang::get('OVERLAY_DATE'),
+			'none' => Lang::get('OVERLAY_NONE'),
 		];
 	}
 

@@ -62,22 +62,21 @@ class SetPhotoSortingSetting extends Component
 	public function getOptions1Property(): array
 	{
 		return [
-			'created_at' => Lang::get("SORT_PHOTO_SELECT_1"),
-			'taken_at' => Lang::get("SORT_PHOTO_SELECT_2"),
-			'title' => Lang::get("SORT_PHOTO_SELECT_3"),
-			'description' => Lang::get("SORT_PHOTO_SELECT_4"),
-			'is_public' => Lang::get("SORT_PHOTO_SELECT_5"),
-			'is_starred' => Lang::get("SORT_PHOTO_SELECT_6"),
-			'type' => Lang::get("SORT_PHOTO_SELECT_7"),
+			'created_at' => Lang::get('SORT_PHOTO_SELECT_1'),
+			'taken_at' => Lang::get('SORT_PHOTO_SELECT_2'),
+			'title' => Lang::get('SORT_PHOTO_SELECT_3'),
+			'description' => Lang::get('SORT_PHOTO_SELECT_4'),
+			'is_public' => Lang::get('SORT_PHOTO_SELECT_5'),
+			'is_starred' => Lang::get('SORT_PHOTO_SELECT_6'),
+			'type' => Lang::get('SORT_PHOTO_SELECT_7'),
 		];
 	}
 
 	public function getOptions2Property(): array
 	{
 		return [
-			'ASC' => Lang::get("SORT_ASCENDING"),
-			'DESC' => Lang::get("SORT_DESCENDING"),
+			'ASC' => Lang::get('SORT_ASCENDING'),
+			'DESC' => Lang::get('SORT_DESCENDING'),
 		];
 	}
-
 }

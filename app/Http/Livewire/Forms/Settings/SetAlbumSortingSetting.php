@@ -19,7 +19,6 @@ class SetAlbumSortingSetting extends Component
 
 	public function mount()
 	{
-
 		// We cannot abuse the sprintf in the case of blade templates compared to JS
 		// So we do a simple preg_match to retrieve the chunks.
 		// Note this assumes that %1$s is before %2$s !
@@ -63,21 +62,20 @@ class SetAlbumSortingSetting extends Component
 	public function getOptions1Property(): array
 	{
 		return [
-			'created_at' => Lang::get("SORT_ALBUM_SELECT_1"),
-			'title' => Lang::get("SORT_ALBUM_SELECT_2"),
-			'description' => Lang::get("SORT_ALBUM_SELECT_3"),
-			'is_public' => Lang::get("SORT_ALBUM_SELECT_4"),
-			'max_taken_at' => Lang::get("SORT_ALBUM_SELECT_5"),
-			'min_taken_at' => Lang::get("SORT_ALBUM_SELECT_6"),
+			'created_at' => Lang::get('SORT_ALBUM_SELECT_1'),
+			'title' => Lang::get('SORT_ALBUM_SELECT_2'),
+			'description' => Lang::get('SORT_ALBUM_SELECT_3'),
+			'is_public' => Lang::get('SORT_ALBUM_SELECT_4'),
+			'max_taken_at' => Lang::get('SORT_ALBUM_SELECT_5'),
+			'min_taken_at' => Lang::get('SORT_ALBUM_SELECT_6'),
 		];
 	}
 
 	public function getOptions2Property(): array
 	{
 		return [
-			'ASC' => Lang::get("SORT_ASCENDING"),
-			'DESC' => Lang::get("SORT_DESCENDING"),
+			'ASC' => Lang::get('SORT_ASCENDING'),
+			'DESC' => Lang::get('SORT_DESCENDING'),
 		];
 	}
-
 }
