@@ -180,7 +180,6 @@ final class Spanish implements Language
 			'ALBUM_IMAGES' => 'Imágenes',
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Subalbums',
-			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Compartir',
 			'ALBUM_SHR_YES' => 'SI',
 			'ALBUM_SHR_NO' => 'No',
@@ -219,6 +218,7 @@ final class Spanish implements Language
 			'ALBUM_RESERVED' => 'Todos los derechos reservados',
 			'ALBUM_SET_ORDER' => 'Establecer orden',
 			'ALBUM_ORDERING' => 'Ordenar por',
+			'ALBUM_OWNER' => 'Dueño',
 
 			'PHOTO_ABOUT' => 'Acerca de',
 			'PHOTO_BASICS' => 'Básico',

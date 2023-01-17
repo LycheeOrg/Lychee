@@ -180,7 +180,6 @@ final class Polish implements Language
 			'ALBUM_IMAGES' => 'Zdjęcia',
 			'ALBUM_VIDEOS' => 'Filmy',
 			'ALBUM_SUBALBUMS' => 'Albumy podrzędne',
-			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Udostępnianie',
 			'ALBUM_SHR_YES' => 'TAK',
 			'ALBUM_SHR_NO' => 'Nie',
@@ -219,6 +218,7 @@ final class Polish implements Language
 			'ALBUM_RESERVED' => 'Wszelkie prawa zastrzeżone',
 			'ALBUM_SET_ORDER' => 'Zapisz',
 			'ALBUM_ORDERING' => 'Sortowanie',
+			'ALBUM_OWNER' => 'Owner',
 
 			'PHOTO_ABOUT' => 'Informacje o zdjęciu',
 			'PHOTO_BASICS' => 'Informacje podstawowe',

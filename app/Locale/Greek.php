@@ -180,7 +180,6 @@ final class Greek implements Language
 			'ALBUM_IMAGES' => 'Εικόνες',
 			'ALBUM_VIDEOS' => 'Βίντεο',
 			'ALBUM_SUBALBUMS' => 'Υπο-λευκώματα',
-			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Κοινή Χρήση',
 			'ALBUM_SHR_YES' => 'ΝΑΙ',
 			'ALBUM_SHR_NO' => 'Όχι',
@@ -219,6 +218,7 @@ final class Greek implements Language
 			'ALBUM_RESERVED' => 'Με επιφύλαξη παντός δικαιώματος',
 			'ALBUM_SET_ORDER' => 'Set Order',
 			'ALBUM_ORDERING' => 'Order by',
+			'ALBUM_OWNER' => 'Owner',
 
 			'PHOTO_ABOUT' => 'Περί',
 			'PHOTO_BASICS' => 'Βασικές Πληροφορίες',

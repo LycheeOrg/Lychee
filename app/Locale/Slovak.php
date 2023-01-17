@@ -180,7 +180,6 @@ final class Slovak implements Language
 			'ALBUM_IMAGES' => 'Obrázky',
 			'ALBUM_VIDEOS' => 'Videá',
 			'ALBUM_SUBALBUMS' => 'Subalbumy',
-			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Zdieľanie',
 			'ALBUM_SHR_YES' => 'Áno',
 			'ALBUM_SHR_NO' => 'Nie',
@@ -219,6 +218,7 @@ final class Slovak implements Language
 			'ALBUM_RESERVED' => 'Všetky práva vyhradené',
 			'ALBUM_SET_ORDER' => 'Set Order',
 			'ALBUM_ORDERING' => 'Order by',
+			'ALBUM_OWNER' => 'Owner',
 
 			'PHOTO_ABOUT' => 'O obrázku',
 			'PHOTO_BASICS' => 'Základné informácie',

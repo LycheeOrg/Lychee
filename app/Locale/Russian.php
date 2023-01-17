@@ -180,7 +180,6 @@ final class Russian implements Language
 			'ALBUM_IMAGES' => 'Фотографий',
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Subalbums',
-			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Общее',
 			'ALBUM_SHR_YES' => 'Да',
 			'ALBUM_SHR_NO' => 'Нет',
@@ -219,6 +218,7 @@ final class Russian implements Language
 			'ALBUM_RESERVED' => 'Все права защищены',
 			'ALBUM_SET_ORDER' => 'Set Order',
 			'ALBUM_ORDERING' => 'Order by',
+			'ALBUM_OWNER' => 'Owner',
 
 			'PHOTO_ABOUT' => 'Описание',
 			'PHOTO_BASICS' => 'Основное',

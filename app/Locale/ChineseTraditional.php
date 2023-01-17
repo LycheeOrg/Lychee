@@ -180,7 +180,6 @@ final class ChineseTraditional implements Language
 			'ALBUM_IMAGES' => '圖片資訊',
 			'ALBUM_VIDEOS' => '影片',
 			'ALBUM_SUBALBUMS' => '子相簿',
-			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => '分享',
 			'ALBUM_SHR_YES' => '是',
 			'ALBUM_SHR_NO' => '否',
@@ -219,6 +218,7 @@ final class ChineseTraditional implements Language
 			'ALBUM_RESERVED' => '版權所有',
 			'ALBUM_SET_ORDER' => '設定排序方式',
 			'ALBUM_ORDERING' => '排序方式',
+			'ALBUM_OWNER' => 'Owner',
 
 			'PHOTO_ABOUT' => '關於',
 			'PHOTO_BASICS' => '基本資訊',
