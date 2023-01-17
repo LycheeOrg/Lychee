@@ -55,7 +55,11 @@ class Header extends Component
 	 */
 	public function back(): void
 	{
-		$this->emitTo('pages.gallery', 'back');
+		if ($this->page_mode === PageMode::GALLERY) {
+			$this->emitTo('pages.gallery', 'back');
+		} else {
+			$this->emitTo('index', 'back');
+		}
 	}
 
 	/**

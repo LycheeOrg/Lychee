@@ -1,11 +1,11 @@
 
-<div id="lychee_application_container" class="vflex-item-stretch hflex-container" style="padding-bottom: 62px;">
+<div id="lychee_application_container" class="vflex-item-stretch hflex-container">
 	<!-- leftMenu -->
 	<livewire:components.left-menu>
 
-	@if($mode === App\Enum\Livewire\PageMode::GALLERY)
+	@if($page_mode === App\Enum\Livewire\PageMode::GALLERY)
 	<livewire:pages.gallery albumId="{{$this->albumId}}" photoId="{{$this->photoId}}" key="gallery-{{ now() }}" />
-	@elseif($mode === App\Enum\Livewire\PageMode::SETTINGS)
+	@elseif($page_mode === App\Enum\Livewire\PageMode::SETTINGS)
 	<livewire:pages.settings />
 	@else
 		DO NOTHING FOR NOW;

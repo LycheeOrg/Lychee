@@ -8,7 +8,7 @@
 	</p>
 	@if($footer !== '')
 	<p>
-		{{ $footer }}
+		{!! $footer !!}
 	</p>
 	@endif
 </div>

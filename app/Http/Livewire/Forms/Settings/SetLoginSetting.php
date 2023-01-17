@@ -15,7 +15,7 @@ use Livewire\Component;
  * Because Livewire is sending the data to the client,
  * we do not provide the model as public property.
  */
-class SetLogin extends Component
+class SetLoginSetting extends Component
 {
 	use InteractWithModal;
 	use AuthorizesRequests;
@@ -27,7 +27,7 @@ class SetLogin extends Component
 
 	public function render()
 	{
-		return view('livewire.form.form-set-login');
+		return view('livewire.form.settings.form-set-login');
 	}
 
 	/**

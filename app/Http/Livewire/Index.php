@@ -16,19 +16,20 @@ class Index extends Component
 {
 	use UrlChange;
 
-	public PageMode $mode;
+	public PageMode $page_mode;
 	public ?string $albumId = null;
 	public ?string $photoId = null;
 
-	// listeners of click events
+	// listeners of events
 	protected $listeners = [
 		'openPage',
 		'reloadPage',
+		'back',
 	];
 
 	public function mount(?string $page = 'gallery', ?string $albumId = null, ?string $photoId = null): void
 	{
-		$this->mode = PageMode::from($page);
+		$this->page_mode = PageMode::from($page);
 		$this->albumId = $albumId;
 		$this->photoId = $photoId;
 	}
@@ -89,10 +90,10 @@ class Index extends Component
 	{
 		$this->albumId = null;
 		$this->photoId = null;
-		$this->mode = PageMode::from($page);
+		$this->page_mode = PageMode::from($page);
 
 		// update URL
-		$this->emitUrlChange($this->mode, $this->albumId ?? '', $this->photoId ?? '');
+		$this->emitUrlChange($this->page_mode, $this->albumId ?? '', $this->photoId ?? '');
 		// $this->render();
 	}
 
@@ -101,6 +102,19 @@ class Index extends Component
 	 */
 	public function reloadPage()
 	{
-		return redirect(route('livewire_index', ['page' => $this->mode->value, 'albumId' => $this->albumId, 'photoId' => $this->photoId]));
+		return redirect(route('livewire_index', ['page' => $this->page_mode, 'albumId' => $this->albumId, 'photoId' => $this->photoId]));
+	}
+
+	/**
+	 * Method call to go back one step.
+	 */
+	public function back()
+	{
+		$this->albumId = null;
+		$this->photoId = null;
+		$this->page_mode = PageMode::GALLERY;
+
+		// This ensures that the history has been updated
+		$this->emitUrlChange(PageMode::GALLERY, '', '');
 	}
 }
