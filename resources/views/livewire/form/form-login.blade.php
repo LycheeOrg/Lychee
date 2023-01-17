@@ -13,8 +13,8 @@
 		</form>
 		<p class="version">
 			Lychee
-			@if($show_version)
-			<span class="version-number">4.7.0</span>
+			@if($version !== null)
+			<span class="version-number">{{ $version }}</span>
 			@endif
 			@if($is_new_release_available)
 			<span class="update-status up-to-date-release">

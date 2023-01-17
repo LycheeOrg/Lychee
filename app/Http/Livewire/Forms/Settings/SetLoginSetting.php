@@ -66,6 +66,6 @@ class SetLoginSetting extends Component
 	 */
 	public function openApiTokenModal(): void
 	{
-		$this->openModal('forms.settings.get-api-token');
+		$this->openClosableModal('forms.settings.get-api-token', 'CANCEL');
 	}
 }

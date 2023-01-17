@@ -6,6 +6,7 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\Lang;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
+use App\Metadata\Versions\InstalledVersion;
 use App\Models\Configs;
 use App\Models\Logs;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -19,7 +20,7 @@ class Login extends BaseForm
 {
 	public bool $is_new_release_available = false;
 	public bool $is_git_update_available = false;
-	public bool $show_version = false;
+	public ?string $version = null;
 
 	/**
 	 * This defines the set of validation rules to be applied on the input.
@@ -49,11 +50,12 @@ class Login extends BaseForm
 		$this->cancel = Lang::get('CANCEL');
 		$this->render = '-login';
 
+		if (!Configs::getValueAsBool('hide_version_number')){
+			$this->version = resolve(InstalledVersion::class)->getVersion()->toString();
+		}
+
 		$fileVersion = resolve(FileVersion::class);
 		$gitHubVersion = resolve(GitHubVersion::class);
-
-		$this->show_version = !Configs::getValueAsBool('hide_version_number');
-
 		if (Configs::getValueAsBool('check_for_updates')) {
 			$fileVersion->hydrate();
 			$gitHubVersion->hydrate();

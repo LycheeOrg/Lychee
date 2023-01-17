@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Components;
 
 use App\Http\Livewire\Components\Base\Openable;
+use App\Http\Livewire\Traits\InteractWithModal;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
@@ -21,6 +22,8 @@ use Illuminate\View\View;
  */
 class LeftMenu extends Openable
 {
+	use InteractWithModal;
+
 	/**
 	 * Method called from user-land.
 	 * Log out the user.
@@ -41,5 +44,15 @@ class LeftMenu extends Openable
 	public function render(): View
 	{
 		return view('livewire.components.left-menu');
+	}
+
+	/**
+	 * Open a about modal box.
+	 *
+	 * @return void
+	 */
+	public function openAboutModal(): void
+	{
+		$this->openClosableModal('components.about', 'CLOSE');
 	}
 }

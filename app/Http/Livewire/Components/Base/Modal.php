@@ -13,21 +13,22 @@ use Illuminate\View\View;
  */
 class Modal extends Openable
 {
-	/** @var string defines the opacity status (unused for now) */
+	// ! defines the opacity status (unused for now)
 	public string $opacity = '0';
 
-	/**
-	 * ! defines the type of Modal. This correspond to the Livewire component loaded inside the Modal.
-	 *
-	 * @var string
-	 */
+	// ! defines the type of Modal. This correspond to the Livewire component loaded inside the Modal.
 	public string $type = '';
 
 	/**
-	 * ! defines the arguments to be passed to the Livewire component loaded inside the Modal.
+	 * Defines if we include a close button.
+	 * if '' => no close button
+	 * any other string correspond to the LANG text
 	 *
-	 * @var array
+	 * @var string $close_text
 	 */
+	public string $close_text = '';
+
+	// ! defines the arguments to be passed to the Livewire component loaded inside the Modal.
 	public array $params = [];
 
 	/**
@@ -55,14 +56,16 @@ class Modal extends Openable
 	 * Open a Modal.
 	 *
 	 * @param string $type   defines the Component loaded inside the modal
+	 * @param string $close_text text to put if we use a close button
 	 * @param array  $params Arguments to pass to the modal
 	 *
 	 * @return void
 	 */
-	public function openModal(string $type, array $params = []): void
+	public function openModal(string $type, string $close_text = '', array $params = []): void
 	{
 		$this->open();
 		$this->type = $type;
+		$this->close_text = $close_text;
 		$this->params = $params;
 		$this->opacity = '100';
 	}
