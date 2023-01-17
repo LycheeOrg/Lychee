@@ -10,16 +10,17 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature;
+namespace Tests\Feature\Abstract;
 
 use Tests\AbstractTestCase;
+use Tests\Feature\Base\BasePhotosAddHandler;
 use Tests\Feature\Traits\InteractsWithRaw;
 use Tests\Feature\Traits\RequiresImageHandler;
 
 /**
- * Runs the tests of {@link PhotosAddHandlerTestAbstract} with GD as image handler.
+ * Runs the tests of {@link BasePhotosAddHandler} with GD as image handler.
  */
-class PhotosAddHandlerGDTest extends BasePhotosAddHandler
+abstract class AbstractPhotosAddHandlerGDTest extends BasePhotosAddHandler
 {
 	use InteractsWithRaw;
 	use RequiresImageHandler;

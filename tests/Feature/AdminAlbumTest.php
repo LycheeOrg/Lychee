@@ -28,13 +28,15 @@ use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\Feature\Lib\RootAlbumUnitTest;
 use Tests\Feature\Lib\SharingUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
+use Tests\Feature\Traits\ExecuteAsAdmin;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\Feature\Traits\RequiresEmptyUsers;
 
-class AlbumTest extends AbstractTestCase
+class AdminAlbumTest extends AbstractTestCase
 {
+	use ExecuteAsAdmin;
 	use InteractWithSmartAlbums;
 	use RequiresEmptyAlbums;
 	use RequiresEmptyUsers;

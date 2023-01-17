@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Session;
 use Tests\AbstractTestCase;
 use Tests\Feature\Base\BaseSharingTest;
 
-class SharingSpecialTest extends BaseSharingTest
+class AbstractSharingSpecialTest extends BaseSharingTest
 {
 	public const ALBUM_TITLE_4 = 'Test Album 4';
 	public const ALBUM_TITLE_5 = 'Test Album 5';

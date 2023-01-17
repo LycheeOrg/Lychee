@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Session;
 use Tests\AbstractTestCase;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
+use Tests\Feature\Traits\RequiresAdmin;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\Feature\Traits\RequiresExifTool;
 use Tests\Feature\Traits\RequiresFFMpeg;
@@ -26,6 +27,7 @@ abstract class BasePhotoTest extends AbstractTestCase
 	use RequiresEmptyPhotos;
 	use RequiresExifTool;
 	use RequiresFFMpeg;
+	use RequiresAdmin;
 
 	protected AlbumsUnitTest $albums_tests;
 	protected PhotosUnitTest $photos_tests;
@@ -38,7 +40,7 @@ abstract class BasePhotoTest extends AbstractTestCase
 		$this->setUpRequiresExifTool();
 		$this->setUpRequiresFFMpeg();
 		$this->setUpRequiresEmptyPhotos();
-		Auth::loginUsingId(1);
+		Auth::loginUsingId($this->executeAs());
 	}
 
 	public function tearDown(): void
@@ -48,6 +50,22 @@ abstract class BasePhotoTest extends AbstractTestCase
 		$this->tearDownRequiresEmptyPhotos();
 		$this->tearDownRequiresFFMpeg();
 		$this->tearDownRequiresExifTool();
+		$this->logoutAs();
 		parent::tearDown();
 	}
+
+	/**
+	 * Allow selection of which user to log in with.
+	 *
+	 * @return int user ID
+	 */
+	abstract protected function executeAs(): int;
+
+	/**
+	 * Because we can use executeAs() to create an extra user.
+	 * It is also necessary to be able to remove it.
+	 *
+	 * @return void
+	 */
+	abstract protected function logoutAs(): void;
 }

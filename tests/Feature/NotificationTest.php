@@ -21,12 +21,14 @@ use Tests\AbstractTestCase;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
+use Tests\Feature\Traits\ExecuteAsAdmin;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\Feature\Traits\RequiresEmptyUsers;
 
 class NotificationTest extends AbstractTestCase
 {
+	use ExecuteAsAdmin;
 	use RequiresEmptyAlbums;
 	use RequiresEmptyUsers;
 	use RequiresEmptyPhotos;
