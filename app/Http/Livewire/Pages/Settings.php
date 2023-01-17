@@ -25,4 +25,14 @@ class Settings extends Component
 	{
 		return view('livewire.pages.settings');
 	}
+
+	/**
+	 * Open Settings page.
+	 *
+	 * @return void
+	 */
+	public function openAllSettings(): void
+	{
+		$this->emitTo('index', 'openPage', PageMode::ALL_SETTINGS->value);
+	}
 }

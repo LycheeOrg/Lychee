@@ -94,7 +94,6 @@ class Index extends Component
 
 		// update URL
 		$this->emitUrlChange($this->page_mode, $this->albumId ?? '', $this->photoId ?? '');
-		// $this->render();
 	}
 
 	/*

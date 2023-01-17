@@ -81,11 +81,6 @@
 							name="location_show_public"
 						/>
 						<livewire:forms.settings.boolean-setting
-							key="set-location_show_public"
-							description="LOCATION_SHOW_PUBLIC"
-							name="location_show_public"
-						/>
-						<livewire:forms.settings.boolean-setting
 							key="set-nsfw_visible"
 							description="NSFW_VISIBLE_TEXT_1"
 							name="nsfw_visible"
@@ -109,7 +104,7 @@
 						</div>
 
 						<div class="setCSS">
-							<a id="basicModal__action_more" class="basicModal__button basicModal__button_MORE">More</a>
+							<a class="basicModal__button basicModal__button_MORE" wire:click="openAllSettings">{{ Lang::get('MORE') }}</a>
 						</div>
 					</div>
 				</div>
@@ -120,3 +115,4 @@
 		</div>
 		<livewire:components.base.modal />
 	</div>
+</div>

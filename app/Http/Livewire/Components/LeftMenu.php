@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Components;
 
+use App\Enum\Livewire\PageMode;
 use App\Http\Livewire\Components\Base\Openable;
 use App\Http\Livewire\Traits\InteractWithModal;
 use Illuminate\Support\Facades\Auth;
@@ -54,5 +55,15 @@ class LeftMenu extends Openable
 	public function openAboutModal(): void
 	{
 		$this->openClosableModal('components.about', 'CLOSE');
+	}
+
+	/**
+	 * Open Settings page.
+	 *
+	 * @return void
+	 */
+	public function openSettings(): void
+	{
+		$this->emitTo('index', 'openPage', PageMode::SETTINGS->value);
 	}
 }
