@@ -16,7 +16,7 @@
 				type="text"
 				readonly="readonly"
 				placeholder="{{ Lang::get("TOKEN_WAIT") }}"
-					/>
+			/>
 
 			<div class="button-group">
 				<a id="button_reset_token"
