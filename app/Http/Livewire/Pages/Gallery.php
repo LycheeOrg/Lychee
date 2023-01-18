@@ -84,42 +84,6 @@ class Gallery extends Component
 	}
 
 	/**
-	 * Fetch layout data for the head, meta etc.
-	 *
-	 * @return array{pageTitle:string,pageDescrption:string,siteOwner:string,imageUrl:string,pageUrl:string,rssEnable:string,rssEnable:string,userCssUrl:string}
-	 */
-	private function getLayout(): array
-	{
-		$siteTitle = Configs::getValueAsString('site_title');
-		$album = $this->getAlbumProperty();
-
-		if ($this->photo !== null) {
-			$description = $this->photo->description;
-			$imageUrl = url()->to($this->photo->size_variants->getMedium()?->url ?? $this->photo->size_variants->getOriginal()->url);
-		} elseif ($album instanceof BaseAlbum) {
-			$description = $album->description;
-			$imageUrl = url()->to($album->thumb->thumbUrl ?? '');
-		} elseif ($album instanceof BaseSmartAlbum) {
-			$description = '';
-			$imageUrl = url()->to($album->thumb->thumbUrl ?? '');
-		} else {
-			$description = '';
-			$imageUrl = '';
-		}
-
-		return [
-			'pageTitle' => $siteTitle . (!blank($siteTitle) && !blank($this->title) ? ' – ' : '') . $this->title,
-			'pageDescription' => !blank($description) ? $description . ' – via Lychee' : '',
-			'siteOwner' => Configs::getValueAsString('site_owner'),
-			'imageUrl' => $imageUrl,
-			'pageUrl' => url()->current(),
-			'rssEnable' => Configs::getValueAsBool('rss_enable'),
-			'userCssUrl' => IndexController::getUserCss(),
-			'frame' => '',
-		];
-	}
-
-	/**
 	 * Load data from albumId and photoId.
 	 *
 	 * @return void
@@ -185,7 +149,6 @@ class Gallery extends Component
 	public function openPhoto(string $photoId)
 	{
 		$this->photoId = $photoId;
-
 		// This ensures that the history has been updated
 		$this->emitUrlChange(PageMode::GALLERY, $this->albumId, $this->photoId);
 	}
@@ -197,10 +160,8 @@ class Gallery extends Component
 	{
 		if ($this->photoId !== null && $this->photoId !== '') {
 			$this->photoId = null;
-
 		// Case of sub-albums
-		} elseif ($this->baseAlbum instanceof BaseAlbum
-			&& $this->baseAlbum->parent_id !== null) {
+		} elseif ($this->baseAlbum instanceof BaseAlbum && $this->baseAlbum->parent_id !== null) {
 			$this->albumId = $this->baseAlbum->parent_id;
 		} else {
 			$this->albumId = null;

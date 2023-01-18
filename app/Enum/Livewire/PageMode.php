@@ -11,6 +11,8 @@ enum PageMode: string implements Wireable
 
 	case GALLERY = 'gallery';
 	case MAP = 'map';
+	case PROFILE = 'profile';
+	case USERS = 'users';
 	case SETTINGS = 'settings';
 	case ALL_SETTINGS = 'all_settings';
 	case LOGS = 'logs';

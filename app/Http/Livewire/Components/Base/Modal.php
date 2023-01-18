@@ -88,6 +88,6 @@ class Modal extends Openable
 	 */
 	public function render(): View
 	{
-		return view('livewire.modal');
+		return view('livewire.components.modal');
 	}
 }

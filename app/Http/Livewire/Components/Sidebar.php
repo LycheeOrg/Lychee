@@ -48,6 +48,6 @@ class Sidebar extends Openable
 	 */
 	public function render(): View
 	{
-		return view('livewire.sidebar');
+		return view('livewire.sidebar.sidebar');
 	}
 }

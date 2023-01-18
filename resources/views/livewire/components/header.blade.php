@@ -1,6 +1,8 @@
-<header id="lychee_toolbar_container" @class([
-	"vflex-item-rigid",
-	"hidden" => $is_hidden
+<header
+	id="lychee_toolbar_container"
+	@class([
+		"vflex-item-rigid",
+		"hidden" => $is_hidden
 	])>
 	@if ($gallery_mode === App\Enum\Livewire\GalleryMode::ALBUMS) <!-- ALBUMS -->
 		@if (Auth::user() === null) <!-- NOT LOGGED -->
@@ -57,7 +59,7 @@
 	@elseif ($gallery_mode === App\Enum\Livewire\GalleryMode::PHOTO) <!-- PHOTO -->
 		<div id="lychee_toolbar_photo" class="toolbar visible">
 			<a class="button" id="button_back" wire:click="back"><x-icons.iconic icon="chevron-left" /></a>
-			<a class="header__title"></a>
+			<a class="header__title">{{ $title }}</a>
 			<a class="button button--star" id="button_star"><x-icons.iconic icon="star" /></a>
 			<a class="button button--eye" id="button_visibility"><x-icons.iconic icon="eye" /></a>
 			<a class="button button--rotate" id="button_rotate_ccwise"><x-icons.iconic icon="counterclockwise" /></a>

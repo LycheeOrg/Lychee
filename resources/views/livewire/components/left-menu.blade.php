@@ -4,7 +4,8 @@
 <div id="lychee_left_menu">
 	<a class="linkMenu" wire:click="close" id="button_settings_close" data-tabindex="-1"><x-icons.iconic icon="chevron-left" />{{ Lang::get("CLOSE") }}</a>
 	<a class="linkMenu" wire:click="openSettings" id="button_settings_open" data-tabindex="-1"><x-icons.iconic icon="cog" />{{ Lang::get("SETTINGS") }}</a>
-	<a class="linkMenu" id="button_users" data-tabindex="-1"><x-icons.iconic icon="person" />{{ Lang::get("USERS") }}</a>
+	<a class="linkMenu" id="button_users" data-tabindex="-1"><x-icons.iconic icon="person" />{{ Lang::get("USER", 'Profile') }}</a>
+	<a class="linkMenu" id="button_users" data-tabindex="-1"><x-icons.iconic icon="people" />{{ Lang::get("USERS") }}</a>
 	<a class="linkMenu" id="button_u2f" data-tabindex="-1"><x-icons.iconic icon="key" />{{ Lang::get("U2F") }}</a>
 	<a class="linkMenu" id="button_sharing" data-tabindex="-1"><x-icons.iconic icon="cloud" />{{ Lang::get("SHARING") }}</a>
 	<a class="linkMenu" wire:click="openLogs" id="button_logs" data-tabindex="-1"><x-icons.iconic icon="align-left" />{{ Lang::get("LOGS") }}</a>

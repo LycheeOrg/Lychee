@@ -120,7 +120,7 @@ class PhotoOverlay extends Component
 		$this->exif1 = trim($exif1);
 		$this->exif2 = trim($exif2);
 
-		return view('livewire.photo-overlay');
+		return view('livewire.components.photo-overlay');
 	}
 
 	/**

@@ -1,6 +1,6 @@
 <div class="hflex-item-stretch vflex-container">
 	<!-- toolbar -->
-	<livewire:components.header key="header-{{$this->albumId}}-{{$this->photoId ?? ''}}" :gallery_mode="$mode" :title="$this->title" :album="$this->album" />
+	<livewire:components.header key="header-{{$this->albumId}}-{{$this->photoId ?? ''}}" :page_mode="App\Enum\Livewire\PageMode::GALLERY" :gallery_mode="$mode" :title="$this->title" :album="$this->album" />
 	<!--
 		This container vertically shares space with the toolbar.
 		It fills the remaining vertical space not taken by the toolbar.

@@ -4,6 +4,7 @@ namespace App\Locale;
 
 use App\Contracts\Language;
 use App\Exceptions\ConfigurationKeyMissingException;
+use App\Exceptions\Internal\MissingTranslationException;
 use App\Factories\LangFactory;
 use App\Models\Configs;
 
@@ -33,9 +34,9 @@ class Lang
 	/**
 	 * Quickly translate a string (used with the Facade).
 	 */
-	public function get(string $string): string
+	public function get(string $string, ?string $default = null): string
 	{
-		return $this->language->get_locale()[$string];
+		return $this->language->get_locale()[$string] ?? $default ?? throw new MissingTranslationException($string);
 	}
 
 	/**
