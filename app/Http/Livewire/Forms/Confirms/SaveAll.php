@@ -19,7 +19,7 @@ class SaveAll extends Component
 	 */
 	public function render()
 	{
-		return view('livewire.form.confirms.save-all');
+		return view('livewire.forms.confirms.save-all');
 	}
 
 	/**

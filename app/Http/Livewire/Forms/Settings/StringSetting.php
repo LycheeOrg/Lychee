@@ -26,7 +26,7 @@ class StringSetting extends Component
 	{
 		$this->value = $this->config->value;
 
-		return view('livewire.form.form-input');
+		return view('livewire.forms.form-input');
 	}
 
 	public function save()

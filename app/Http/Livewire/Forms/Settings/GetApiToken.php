@@ -35,7 +35,7 @@ class GetApiToken extends Component
 
 	public function render()
 	{
-		return view('livewire.form.settings.form-get-api-token');
+		return view('livewire.forms.settings.form-get-api-token');
 	}
 
 	/**

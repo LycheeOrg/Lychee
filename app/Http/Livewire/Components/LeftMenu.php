@@ -66,4 +66,24 @@ class LeftMenu extends Openable
 	{
 		$this->emitTo('index', 'openPage', PageMode::SETTINGS->value);
 	}
+
+	/**
+	 * Open Log page.
+	 *
+	 * @return void
+	 */
+	public function openLogs(): void
+	{
+		$this->emitTo('index', 'openPage', PageMode::LOGS->value);
+	}
+
+	/**
+	 * Open Diagnostic page.
+	 *
+	 * @return void
+	 */
+	public function openDiagnostics(): void
+	{
+		$this->emitTo('index', 'openPage', PageMode::DIAGNOSTICS->value);
+	}
 }

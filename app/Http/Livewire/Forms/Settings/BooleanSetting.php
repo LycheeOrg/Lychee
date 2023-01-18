@@ -26,7 +26,7 @@ class BooleanSetting extends Component
 	{
 		$this->flag = $this->config->value === '1';
 
-		return view('livewire.form.form-toggle');
+		return view('livewire.forms.form-toggle');
 	}
 
 	/**

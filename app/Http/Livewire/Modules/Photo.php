@@ -27,6 +27,6 @@ class Photo extends Component
 	 */
 	public function render(): View
 	{
-		return view('livewire.pages.modules.photo');
+		return view('livewire.modules.gallery.photo');
 	}
 }

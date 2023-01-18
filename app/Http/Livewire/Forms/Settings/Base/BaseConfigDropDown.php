@@ -20,7 +20,7 @@ abstract class BaseConfigDropDown extends Component
 	{
 		$this->value = $this->config->value;
 
-		return view('livewire.form.form-drop-down');
+		return view('livewire.forms.form-drop-down');
 	}
 
 	/**

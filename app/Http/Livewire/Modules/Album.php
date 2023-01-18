@@ -28,6 +28,6 @@ class Album extends Component
 	{
 		$this->layout = Configs::getValueAsEnum('layout', AlbumMode::class);
 
-		return view('livewire.pages.modules.album');
+		return view('livewire.modules.gallery.album');
 	}
 }

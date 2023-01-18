@@ -12,6 +12,12 @@
 		@case(App\Enum\Livewire\PageMode::ALL_SETTINGS)
 		<livewire:pages.all-settings />
 		@break
+		@case(App\Enum\Livewire\PageMode::LOGS)
+		<livewire:pages.logs />
+		@break
+		@case(App\Enum\Livewire\PageMode::DIAGNOSTICS)
+		<livewire:pages.diagnostics />
+		@break
 		@default
 		DO NOTHING FOR NOW;
 	@endswitch

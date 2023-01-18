@@ -27,7 +27,7 @@ class SetLoginSetting extends Component
 
 	public function render()
 	{
-		return view('livewire.form.settings.form-set-login');
+		return view('livewire.forms.settings.form-set-login');
 	}
 
 	/**

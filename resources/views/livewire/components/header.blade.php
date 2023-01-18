@@ -79,7 +79,9 @@
 		</div>
 	@elseif (
 		$page_mode === App\Enum\Livewire\PageMode::SETTINGS
-		|| $page_mode === App\Enum\Livewire\PageMode::ALL_SETTINGS) <!-- SETTINGS -->
+		|| $page_mode === App\Enum\Livewire\PageMode::ALL_SETTINGS
+		|| $page_mode === App\Enum\Livewire\PageMode::LOGS
+		|| $page_mode === App\Enum\Livewire\PageMode::DIAGNOSTICS)
 		<div id="lychee_toolbar_config" class="toolbar visible">
 			<a class="button" id="button_close_config" wire:click="back"><x-icons.iconic icon="chevron-left" /></a>
 			<a class="header__title">{{ $title }}</a>

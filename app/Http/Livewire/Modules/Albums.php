@@ -38,6 +38,6 @@ class Albums extends Component
 		$this->smartalbums = $topAlbums->smart_albums->concat($topAlbums->tag_albums)->reject(fn ($album) => $album === null);
 		$this->shared_albums = $topAlbums->shared_albums;
 
-		return view('livewire.pages.modules.albums');
+		return view('livewire.modules.gallery.albums');
 	}
 }
