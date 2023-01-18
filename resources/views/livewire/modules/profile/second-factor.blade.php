@@ -7,8 +7,19 @@
 	'U2F_CREDENTIALS' => 'Credentials',
 	'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!', --}}
 	<div class="u2f_view_line">
-		<p class="single">Credentials list is empty!</p>
+		<p>
+			<span class="text">
+				{{ Lang::Get('U2F_CREDENTIALS') }}
+			</span>
+		</p>
 	</div>
+	@forelse ($credentials as $credential)
+		<livewire:forms.profile.manage-second-factor :credential="$credential" key="{{ $credential->id }}" />
+	@empty
+		<div class="u2f_view_line">
+			<p class="single">Credentials list is empty!</p>
+		</div>
+	@endforelse
 	<div class="u2f_view_line">
 		<a id="RegisterU2FButton" class="basicModal__button basicModal__button_CREATE">
 			Register new device.

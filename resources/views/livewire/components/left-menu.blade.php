@@ -6,7 +6,7 @@
 	<a class="linkMenu" wire:click="openSettings" data-tabindex="-1"><x-icons.iconic icon="cog" />{{ Lang::get("SETTINGS") }}</a>
 	<a class="linkMenu" wire:click="openProfile" data-tabindex="-1"><x-icons.iconic icon="person" />{{ Lang::get("USER", 'Profile') }}</a>
 	<a class="linkMenu" wire:click="openUsers" data-tabindex="-1"><x-icons.iconic icon="people" />{{ Lang::get("USERS") }}</a>
-	<a class="linkMenu" data-tabindex="-1"><x-icons.iconic icon="key" />{{ Lang::get("U2F") }}</a>
+	<a class="linkMenu" wire:click="openProfile" data-tabindex="-1"><x-icons.iconic icon="key" />{{ Lang::get("U2F") }}</a>
 	<a class="linkMenu" data-tabindex="-1"><x-icons.iconic icon="cloud" />{{ Lang::get("SHARING") }}</a>
 	<a class="linkMenu" wire:click="openLogs" data-tabindex="-1"><x-icons.iconic icon="align-left" />{{ Lang::get("LOGS") }}</a>
 	<a class="linkMenu" wire:click="openDiagnostics" data-tabindex="-1"><x-icons.iconic icon="wrench" />{{ Lang::get("DIAGNOSTICS") }}</a>

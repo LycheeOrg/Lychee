@@ -10,7 +10,7 @@
 			</div>
 			<livewire:forms.profile.set-email />
 			@endif
-			{{-- ADD U2F HERE, REMOVE FROM MENU --}}
+			<livewire:modules.profile.second-factor />
 		</div>
 	</div>
 </x-view-content>

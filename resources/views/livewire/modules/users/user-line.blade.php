@@ -1,6 +1,6 @@
 <div class="users_view_line">
 	<p>
-		<input class="text" wire:model="username" type="text" value="test" placeholder="{{ Lang::get('LOGIN_USERNAME') }}">
+		<input class="text" wire:model="username" type="text" placeholder="{{ Lang::get('LOGIN_USERNAME') }}">
 		<input class="text" wire:model="password" type="text" placeholder="{{ Lang::get('LOGIN_PASSWORD') }}">
 		<span class="choice" title="{{ Lang::get('ALLOW_UPLOADS') }}">
 			<label>
