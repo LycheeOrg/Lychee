@@ -18,6 +18,9 @@
 		@case(App\Enum\Livewire\PageMode::DIAGNOSTICS)
 		<livewire:pages.diagnostics />
 		@break
+		@case(App\Enum\Livewire\PageMode::USERS)
+		<livewire:pages.users />
+		@break
 		@default
 		DO NOTHING FOR NOW;
 	@endswitch
