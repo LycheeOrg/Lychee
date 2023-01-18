@@ -13,7 +13,8 @@ class Profile extends Component
 
 	public bool $are_notification_active = false;
 
-	public function mount() {
+	public function mount()
+	{
 		$this->are_notification_active = Configs::getValueAsBool('new_photos_notification');
 	}
 

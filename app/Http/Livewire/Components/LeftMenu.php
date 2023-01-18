@@ -112,5 +112,4 @@ class LeftMenu extends Openable
 	{
 		$this->emitTo('index', 'openPage', PageMode::PROFILE->value);
 	}
-
 }

@@ -14,7 +14,8 @@ class SetEmail extends Component
 	public ?string $value; // ! Wired
 	public string $action;
 
-	public function mount() {
+	public function mount()
+	{
 		$this->description = Lang::get('ENTER_EMAIL');
 		$this->action = Lang::get('SAVE');
 	}
@@ -23,6 +24,7 @@ class SetEmail extends Component
 	{
 		$user = Auth::user() ?? throw new UnauthenticatedException();
 		$this->value = $user->email;
+
 		return view('livewire.forms.form-input');
 	}
 
