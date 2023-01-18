@@ -1,8 +1,6 @@
 <x-view-content :mode="$mode" :title="Lang::get('SETTINGS')">
 	<div id="lychee_view_content" class="vflex-item-stretch contentZoomIn">
 		<div class="settings_view">
-
-			<livewire:forms.settings.set-login-setting />
 			<livewire:forms.settings.string-setting
 				key="set-dropbox-key"
 				description="DROPBOX_TEXT"

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Forms\Settings;
+namespace App\Http\Livewire\Forms\Profile;
 
 use App\Actions\Settings\UpdateLogin;
 use App\Http\Livewire\Traits\InteractWithModal;
@@ -15,7 +15,7 @@ use Livewire\Component;
  * Because Livewire is sending the data to the client,
  * we do not provide the model as public property.
  */
-class SetLoginSetting extends Component
+class SetLogin extends Component
 {
 	use InteractWithModal;
 	use AuthorizesRequests;
@@ -27,7 +27,7 @@ class SetLoginSetting extends Component
 
 	public function render()
 	{
-		return view('livewire.forms.settings.form-set-login');
+		return view('livewire.forms.profile.form-set-login');
 	}
 
 	/**

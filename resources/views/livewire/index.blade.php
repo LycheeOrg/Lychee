@@ -21,6 +21,9 @@
 		@case(App\Enum\Livewire\PageMode::USERS)
 		<livewire:pages.users />
 		@break
+		@case(App\Enum\Livewire\PageMode::PROFILE)
+		<livewire:pages.profile />
+		@break
 		@default
 		DO NOTHING FOR NOW;
 	@endswitch

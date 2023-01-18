@@ -101,4 +101,16 @@ class LeftMenu extends Openable
 	{
 		$this->emitTo('index', 'openPage', PageMode::USERS->value);
 	}
+
+	/**
+	 * Open Diagnostic page.
+	 * TODO Consider moving this directly to Blade.
+	 *
+	 * @return void
+	 */
+	public function openProfile(): void
+	{
+		$this->emitTo('index', 'openPage', PageMode::PROFILE->value);
+	}
+
 }

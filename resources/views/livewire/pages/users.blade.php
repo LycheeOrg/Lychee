@@ -3,12 +3,12 @@
 		<div class="users_view">
 			<div class="users_view_line">
 				<p>
-					<span class="text">Username</span>
-					<span class="text">new password</span>
-					<span class="text_icon" title="Allow uploads">
+					<span class="text">{{ Lang::get('USERNAME') }}</span>
+					<span class="text">{{ Lang::get('LOGIN_PASSWORD') }}</span>
+					<span class="text_icon" title="{{ Lang::get('ALLOW_UPLOADS') }}">
 						<x-icons.iconic icon="data-transfer-upload" />
 					</span>
-					<span class="text_icon" title="Allow self-management of user account">
+					<span class="text_icon" title="{{ Lang::get('ALLOW_USER_SELF_EDIT') }}">
 						<x-icons.iconic icon="lock-unlocked" />
 					</span>
 				</p>
@@ -19,9 +19,9 @@
 
 			<div class="users_view_line">
 				<p>
-					<input class="text" wire:model="username" type="text" placeholder="New Username">
-					<input class="text" wire:model="password" type="text" placeholder="New Password">
-					<span class="choice" title="Allow uploads">
+					<input class="text" wire:model="username" type="text" placeholder="{{ Lang::get('LOGIN_USERNAME') }}">
+					<input class="text" wire:model="password" type="text" placeholder="{{ Lang::get('LOGIN_PASSWORD') }}">
+					<span class="choice" title="{{ Lang::get('ALLOW_UPLOADS') }}">
 						<label>
 							<input type="checkbox" wire:model="may_upload">
 							<span class="checkbox"><svg class="iconic ">
@@ -29,7 +29,7 @@
 								</svg></span>
 						</label>
 					</span>
-					<span class="choice" title="Allow self-management of user account">
+					<span class="choice" title="{{ Lang::get('ALLOW_USER_SELF_EDIT') }}">
 						<label>
 							<input type="checkbox" wire:model="may_edit_own_settings">
 							<span class="checkbox"><svg class="iconic ">
@@ -38,7 +38,7 @@
 						</label>
 					</span>
 				</p>
-				<a wire:click="create" class="basicModal__button basicModal__button_CREATE">Create</a>
+				<a wire:click="create" class="basicModal__button basicModal__button_CREATE">{{ Lang::get('CREATE') }}</a>
 			</div>
 		</div>
 	</div>

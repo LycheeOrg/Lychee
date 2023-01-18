@@ -5,7 +5,6 @@ namespace App\Actions\User;
 use App\Exceptions\ConflictingPropertyException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
-use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
