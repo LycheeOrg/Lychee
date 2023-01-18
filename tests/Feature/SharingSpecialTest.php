@@ -13,6 +13,7 @@
 namespace Tests\Feature;
 
 use App\Models\Configs;
+use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
@@ -111,6 +112,9 @@ class SharingSpecialTest extends BaseSharingTest
 		$this->photos_tests->set_title($this->photoID5, 'Abenddämmerung'); // we rename the duplicated images, such that we can ensure
 		$this->photos_tests->set_title($this->photoID6, 'Zug'); // a deterministic, alphabetic order which makes testing easier
 
+		$this->ensurePhotosWereTakenOnThisDay($this->photoID1, $this->photoID5);
+		$this->ensurePhotosWereNotTakenOnThisDay($this->photoID2, $this->photoID3, $this->photoID4, $this->photoID6);
+
 		$this->albums_tests->set_protection_policy(id: $this->albumID1, password: self::ALBUM_PWD_1);
 		$this->albums_tests->set_protection_policy(id: $this->albumID2);
 		$this->albums_tests->set_protection_policy(id: $this->albumID3, password: self::ALBUM_PWD_1);
@@ -132,7 +136,7 @@ class SharingSpecialTest extends BaseSharingTest
 	 *
 	 *  - The root album shows album 1 but without a cover as album 1 is still
 	 *    locked.
-	 *  - The smart album Recent is empty
+	 *  - The smart albums "Recent" and "On This Day" are empty
 	 *  - The album tree does is empty
 	 *    (TODO: Check if we want it this way)
 	 *  - Album 2 and photo 2 are accessible; album 2 is public and behaves
@@ -150,7 +154,9 @@ class SharingSpecialTest extends BaseSharingTest
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
-			null, [
+			null,
+			null,
+			[
 				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1), // no thumb as album 1 is still locked
 			]
 		));
@@ -170,7 +176,7 @@ class SharingSpecialTest extends BaseSharingTest
 			$responseForRoot->assertJsonMissing(['id' => $id]);
 		}
 
-		// 2. Check Recent album
+		// 2. Check "Recent" and "On This Day" albums
 
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(true));
@@ -189,6 +195,19 @@ class SharingSpecialTest extends BaseSharingTest
 			$this->photoID6,
 		] as $id) {
 			$responseForRecent->assertJsonMissing(['id' => $id]);
+		}
+
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(true));
+		foreach ([
+			$this->photoID1,
+			$this->photoID2,
+			$this->photoID3,
+			$this->photoID4,
+			$this->photoID5,
+			$this->photoID6,
+		] as $id) {
+			$responseForOnThisDay->assertJsonMissing(['id' => $id]);
 		}
 
 		// 3. Check tree
@@ -255,6 +274,8 @@ class SharingSpecialTest extends BaseSharingTest
 	 *  - The smart album Recent shows photos 1-3; in particular photo 4
 	 *    is not shown although it has been unlocked, too, but it is part of a
 	 *    hidden album
+	 *  - The smart album "On This Day" shows photo 1, since only photo 1 is
+	 *    accessible and taken on this day
 	 *  - The album tree shows album 1-3; it does not show album 5 as it is
 	 *    password-protected and still locked
 	 *    (TODO: Check if we want it this way)
@@ -272,12 +293,12 @@ class SharingSpecialTest extends BaseSharingTest
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
-			$this->photoID3, [ // albums 1-3 are accessible, photo 3 is alphabetically first
+			$this->photoID3,
+			$this->photoID1, [ // albums 1-3 are accessible, photo 3 is alphabetically first
 				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID3), // thumb available as album 1 has been unlocked
 			]
 		));
 		foreach ([
-			$this->photoID1,
 			$this->albumID2,
 			$this->photoID2,
 			$this->albumID3,
@@ -291,7 +312,7 @@ class SharingSpecialTest extends BaseSharingTest
 			$responseForRoot->assertJsonMissing(['id' => $id]);
 		}
 
-		// 2. Check Recent album
+		// 2. Check "Recent" and "On This Day" albums
 
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
@@ -304,6 +325,17 @@ class SharingSpecialTest extends BaseSharingTest
 		));
 		foreach ([$this->albumID4, $this->photoID4, $this->albumID5, $this->photoID5, $this->albumID6, $this->photoID6] as $id) {
 			$responseForRecent->assertJsonMissing(['id' => $id]);
+		}
+
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID1, [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_NIGHT_IMAGE, $this->photoID1, $this->albumID1),
+			]
+		));
+		foreach ([$this->photoID2, $this->photoID3, $this->photoID4, $this->photoID5, $this->photoID6] as $id) {
+			$responseForOnThisDay->assertJsonMissing(['id' => $id]);
 		}
 
 		// 3. Check tree
@@ -374,6 +406,7 @@ class SharingSpecialTest extends BaseSharingTest
 	 *  - The smart album Recent shows photos 1-3+5; in particular photo 4+6
 	 *    are not shown, although they have been unlocked, too, but they are
 	 *    part of hidden albums
+	 *  - Smart album "On This Day" shows photos 1 and 5 that were taken on this day
 	 *  - The album tree shows album 1-3+5
 	 *  - Albums 1-6 and photos 1-6 are accessible
 	 *
@@ -389,6 +422,7 @@ class SharingSpecialTest extends BaseSharingTest
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
+			$this->photoID5,
 			$this->photoID5, [ // albums 1-6 are accessible, photo 5 is alphabetically first
 				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID5), // thumb available as album 1 has been unlocked
 			]
@@ -397,7 +431,7 @@ class SharingSpecialTest extends BaseSharingTest
 			$responseForRoot->assertJsonMissing(['id' => $id]);
 		}
 
-		// 2. Check Recent album
+		// 2. Check "Recent" and "On This Day" albums
 
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
@@ -411,6 +445,18 @@ class SharingSpecialTest extends BaseSharingTest
 		));
 		foreach ([$this->albumID4, $this->photoID4, $this->albumID6, $this->photoID6] as $id) {
 			$responseForRecent->assertJsonMissing(['id' => $id]);
+		}
+
+		$responseForOnThisDayAlbum = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDayAlbum->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID5, [ // photos 1 and 5 were taken on this day and accessible, photo 5 is alphabetically first
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_SUNSET_IMAGE, $this->photoID5, $this->albumID5, ['title' => 'Abenddämmerung']),
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_NIGHT_IMAGE, $this->photoID1, $this->albumID1),
+			]
+		));
+		foreach ([$this->photoID2, $this->photoID3, $this->photoID4, $this->photoID6] as $id) {
+			$responseForOnThisDayAlbum->assertJsonMissing(['id' => $id]);
 		}
 
 		// 3. Check tree
@@ -470,6 +516,7 @@ class SharingSpecialTest extends BaseSharingTest
 
 	protected function generateExpectedRootJson(
 		?string $recentAlbumThumbID = null,
+		?string $onThisDayAlbumThumbID = null,
 		array $expectedAlbumJson = []
 	): array {
 		return [
@@ -478,6 +525,7 @@ class SharingSpecialTest extends BaseSharingTest
 				StarredAlbum::ID => ['thumb' => null],
 				PublicAlbum::ID => null,
 				RecentAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($recentAlbumThumbID)],
+				OnThisDayAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($onThisDayAlbumThumbID)],
 			],
 			'tag_albums' => [],
 			'albums' => $expectedAlbumJson,

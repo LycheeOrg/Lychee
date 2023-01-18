@@ -12,6 +12,7 @@
 
 namespace Tests\Feature\Base;
 
+use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
@@ -54,12 +55,16 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 	{
 		$this->preparePhotosInSharedAndPrivateAndRequireLinkAlbum();
 
+		$this->ensurePhotosWereTakenOnThisDay($this->photoID1, $this->photoID2);
+		$this->ensurePhotosWereNotTakenOnThisDay($this->photoID3);
+
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
 			null,
 			null,
 			null,
-			$this->photoID3, [
+			$this->photoID3,
+			$this->photoID1, [
 				self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
 				self::generateExpectedAlbumJson($this->albumID3, self::ALBUM_TITLE_3, null, $this->photoID3),
 			]
@@ -84,6 +89,16 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 		));
 		$responseForRecent->assertJsonMissing(['id' => $this->albumID2]);
 		$responseForRecent->assertJsonMissing(['id' => $this->photoID2]);
+
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID1, [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
+			]
+		));
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID2]);
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID3]);
 
 		$responseForTree = $this->root_album_tests->getTree();
 		$responseForTree->assertJson($this->generateExpectedTreeJson([
@@ -113,11 +128,14 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 	{
 		$this->preparePhotoInSharedPublicPasswordProtectedAlbum();
 
+		$this->ensurePhotosWereTakenOnThisDay($this->photoID1);
+
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
 			null,
 			null,
 			null,
+			$this->photoID1,
 			$this->photoID1, [
 				self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
 			]
@@ -130,6 +148,14 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID1, [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
+			]
+		));
+
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID1, [
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
@@ -152,12 +178,16 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 	{
 		$this->prepareThreeAlbumsWithMixedSharingAndPasswordProtection();
 
+		$this->ensurePhotosWereTakenOnThisDay($this->photoID2, $this->photoID3);
+		$this->ensurePhotosWereNotTakenOnThisDay($this->photoID1);
+
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
 			null,
 			null,
 			null,
 			$this->photoID1,  // photo 1 is alphabetically first, as photo 3 is locked
+			$this->photoID2,  // photo 1 was not taken on this day and photo 3 is locked
 			[
 				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
 				$this->generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
@@ -185,6 +215,16 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 		));
 		$responseForRecent->assertJsonMissing(['id' => $this->albumID3]);
 		$responseForRecent->assertJsonMissing(['id' => $this->photoID3]);
+
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID2, [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
+			]
+		));
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID1]);
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID3]);
 
 		// TODO: Should public and password-protected albums appear in tree? Regression?
 		$responseForTree = $this->root_album_tests->getTree();
@@ -214,12 +254,17 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 		$this->prepareThreeAlbumsWithMixedSharingAndPasswordProtection();
 		$this->albums_tests->unlock($this->albumID3, self::ALBUM_PWD_1);
 
+		$this->ensurePhotosWereTakenOnThisDay($this->photoID2);
+		$this->ensurePhotosWereNotTakenOnThisDay($this->photoID1, $this->photoID3);
+
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
 			null,
 			null,
 			null,
-			$this->photoID3, [ // photo 3 is alphabetically first
+			$this->photoID3, // photo 3 is alphabetically first
+			$this->photoID2, // photo 2 was taken on this day
+			[
 				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
 				$this->generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
 				$this->generateExpectedAlbumJson($this->albumID3, self::ALBUM_TITLE_3, null, $this->photoID3),
@@ -244,6 +289,16 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
 			]
 		));
+
+		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
+		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
+			true,
+			$this->photoID2, [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
+			]
+		));
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID1]);
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID3]);
 
 		$responseForTree = $this->root_album_tests->getTree();
 		$responseForTree->assertJson($this->generateExpectedTreeJson([
@@ -274,6 +329,7 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 		?string $starredAlbumThumbID = null,
 		?string $publicAlbumThumbID = null,
 		?string $recentAlbumThumbID = null,
+		?string $onThisDayAlbumThumbID = null,
 		array $expectedAlbumJson = []
 	): array {
 		return [
@@ -282,6 +338,7 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 				StarredAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($starredAlbumThumbID)],
 				PublicAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($publicAlbumThumbID)],
 				RecentAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($recentAlbumThumbID)],
+				OnThisDayAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($onThisDayAlbumThumbID)],
 			],
 			'tag_albums' => [],
 			'albums' => [],
