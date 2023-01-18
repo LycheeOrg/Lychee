@@ -40,7 +40,8 @@ class Header extends Component
 
 	/**
 	 * Open a login modal box.
-	 * TODO Consider moving this directly to Blade
+	 * TODO Consider moving this directly to Blade.
+	 *
 	 * @return void
 	 */
 	public function openLoginModal(): void
@@ -50,7 +51,8 @@ class Header extends Component
 
 	/**
 	 * Go back one step.
-	 * TODO Consider moving this directly to Blade
+	 * TODO Consider moving this directly to Blade.
+	 *
 	 * @return void
 	 */
 	public function back(): void
@@ -64,7 +66,8 @@ class Header extends Component
 
 	/**
 	 * Open the Left menu.
-	 * TODO Consider moving this directly to Blade
+	 * TODO Consider moving this directly to Blade.
+	 *
 	 * @return void
 	 */
 	public function openLeftMenu(): void
@@ -74,7 +77,8 @@ class Header extends Component
 
 	/**
 	 * Toggle the side bar.
-	 * TODO Consider moving this directly to Blade
+	 * TODO Consider moving this directly to Blade.
+	 *
 	 * @return void
 	 */
 	public function toggleSideBar(): void

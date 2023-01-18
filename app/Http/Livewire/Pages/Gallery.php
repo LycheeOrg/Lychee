@@ -5,7 +5,6 @@ namespace App\Http\Livewire\Pages;
 use App\Enum\Livewire\GalleryMode;
 use App\Enum\Livewire\PageMode;
 use App\Factories\AlbumFactory;
-use App\Http\Controllers\IndexController;
 use App\Http\Livewire\Traits\AlbumProperty;
 use App\Http\Livewire\Traits\InteractWithModal;
 use App\Http\Livewire\Traits\UrlChange;

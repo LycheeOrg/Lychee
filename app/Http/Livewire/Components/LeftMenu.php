@@ -49,7 +49,8 @@ class LeftMenu extends Openable
 
 	/**
 	 * Open a about modal box.
-	 * TODO Consider moving this directly to Blade
+	 * TODO Consider moving this directly to Blade.
+	 *
 	 * @return void
 	 */
 	public function openAboutModal(): void
@@ -59,7 +60,8 @@ class LeftMenu extends Openable
 
 	/**
 	 * Open Settings page.
-	 * TODO Consider moving this directly to Blade
+	 * TODO Consider moving this directly to Blade.
+	 *
 	 * @return void
 	 */
 	public function openSettings(): void
@@ -69,7 +71,8 @@ class LeftMenu extends Openable
 
 	/**
 	 * Open Log page.
-	 * TODO Consider moving this directly to Blade
+	 * TODO Consider moving this directly to Blade.
+	 *
 	 * @return void
 	 */
 	public function openLogs(): void
@@ -79,7 +82,8 @@ class LeftMenu extends Openable
 
 	/**
 	 * Open Diagnostic page.
-	 * TODO Consider moving this directly to Blade
+	 * TODO Consider moving this directly to Blade.
+	 *
 	 * @return void
 	 */
 	public function openDiagnostics(): void
