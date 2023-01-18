@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Modules;
+namespace App\Http\Livewire\Modules\Gallery;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\AlbumMode;

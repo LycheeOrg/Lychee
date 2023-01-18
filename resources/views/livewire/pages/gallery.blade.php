@@ -21,19 +21,19 @@
 			at the bottom even if the content is smaller.
 			-->
 			@if($mode === App\Enum\Livewire\GalleryMode::ALBUMS)
-			<livewire:modules.albums />
+			<livewire:modules.gallery.albums />
 			@elseif($mode === App\Enum\Livewire\GalleryMode::ALBUM)
 			<!--
 				The key="..." attribute ensure that we are triggering a refresh of the child component on reload.
 				Do not that those need to not colide with other components, as a result we use prefix-id-time
 				strings to avoid such problems.
 			-->
-			<livewire:modules.album key="view-album-{{$this->albumId}}" :album="$this->album" />
+			<livewire:modules.gallery.album key="view-album-{{$this->albumId}}" :album="$this->album" />
 			@elseif($mode === App\Enum\Livewire\GalleryMode::MAP)
 			<!--
 				For now
 			-->
-			<livewire:modules.albums/>
+			<livewire:modules.gallery.albums/>
 			@endif
 			<livewire:components.footer />
 		</div>

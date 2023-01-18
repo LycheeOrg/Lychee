@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Modules;
+namespace App\Http\Livewire\Modules\Gallery;
 
 use App\Models\Photo as PhotoModel;
 use Illuminate\Contracts\Container\BindingResolutionException;
