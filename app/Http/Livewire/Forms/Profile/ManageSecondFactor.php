@@ -46,7 +46,6 @@ class ManageSecondFactor extends Component
 		$this->credential->save();
 	}
 
-
 	/**
 	 * Deletes a user.
 	 *
