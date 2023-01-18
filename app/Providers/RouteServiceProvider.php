@@ -52,9 +52,6 @@ class RouteServiceProvider extends ServiceProvider
 				->group(base_path('routes/web-admin.php'));
 
 			Route::middleware('web')
-				->group(base_path('routes/web-livewire.php'));
-
-			Route::middleware('web')
 				->group(base_path('routes/web.php'));
 		});
 	}

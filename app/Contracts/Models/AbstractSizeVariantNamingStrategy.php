@@ -6,7 +6,7 @@ use App\Contracts\Exceptions\LycheeException;
 use App\Enum\SizeVariantType;
 use App\Image\Files\FlysystemFile;
 use App\Models\Photo;
-use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -25,9 +25,9 @@ abstract class AbstractSizeVariantNamingStrategy
 	/**
 	 * Returns the disk on which the size variants are put.
 	 *
-	 * @return Filesystem
+	 * @return FilesystemAdapter
 	 */
-	public static function getImageDisk(): Filesystem
+	public static function getImageDisk(): FilesystemAdapter
 	{
 		return Storage::disk(self::IMAGE_DISK_NAME);
 	}

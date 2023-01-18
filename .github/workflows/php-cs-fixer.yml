@@ -25,12 +25,12 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.0
+          php-version: 8.1
           extensions: json, dom, curl, libxml, mbstring
           coverage: none
       - name: Install PHP-CS-Fixer
         run: |
-          curl -L https://github.com/FriendsOfPHP/PHP-CS-Fixer/releases/download/v3.13.0/php-cs-fixer.phar -o .github/build/php-cs-fixer
+          curl -L https://github.com/FriendsOfPHP/PHP-CS-Fixer/releases/download/v3.13.2/php-cs-fixer.phar -o .github/build/php-cs-fixer
           chmod a+x .github/build/php-cs-fixer
       - name: Prepare Git User
         run: |
