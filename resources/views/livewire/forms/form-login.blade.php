@@ -29,6 +29,6 @@
 	</div>
 	<div class="basicModal__buttons">
 		<a id="basicModal__cancel" class="basicModal__button" data-tabindex="{{ Helpers::data_index() }}" wire:click="close">{{ $cancel }}</a>
-		<a id="basicModal__action" class="basicModal__button" data-tabindex="{{ Helpers::data_index() }}" wire:click="submit">{{ $validate }}</a>
+		<a id="basicModal__action" class="basicModal__button" data-tabindex="{{ Helpers::data_index() }}" wire:click="submit" wire:loading.attr="disabled">{{ $validate }}</a>
 	</div>
 </div>

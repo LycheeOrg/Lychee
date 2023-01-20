@@ -11,7 +11,7 @@
 			<input wire:model="confirm" class="text" type="password" placeholder="{{ Lang::get('LOGIN_PASSWORD_CONFIRM') }}">
 		</p>
 		<div class="basicModal__buttons">
-			<a id="basicModal__action_password_change" class="basicModal__button " wire:click="submit">{{ Lang::get('PASSWORD_CHANGE') }}</a>
+			<a id="basicModal__action_password_change" class="basicModal__button " wire:click="submit" wire:loading.attr="disabled">{{ Lang::get('PASSWORD_CHANGE') }}</a>
 			<a id="basicModal__action_token" class="basicModal__button " wire:click="openApiTokenModal">{{ Lang::get('TOKEN_BUTTON') }}</a>
 		</div>
 	</form>

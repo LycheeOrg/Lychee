@@ -15,7 +15,7 @@ abstract class PreSection extends Component
 	 *
 	 * @return View
 	 */
-	public function render(): View
+	final public function render(): View
 	{
 		return view('livewire.modules.diagnostics.pre');
 	}
