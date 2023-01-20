@@ -28,7 +28,7 @@ class Sync extends Command
 	'lychee:sync ' .
 		'{dir* : directory to sync} ' . // string[]
 		'{--album_id= : Album ID to import to} ' . // string or null
-		'{--owner_id=0 : Owner ID of imported photos} ' . // string
+		'{--owner_id=1 : Owner ID of imported photos} ' . // string
 		'{--resync_metadata : Re-sync metadata of existing files}  ' . // bool
 		'{--delete_imported=%s : Delete the original files} ' . // string
 		'{--import_via_symlink=%s : Imports photos from via a symlink instead of copying the files} ' . // string
