@@ -31,7 +31,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Wireable;
-
 use function Safe\preg_match;
 
 /**
@@ -76,7 +75,7 @@ use function Safe\preg_match;
  * @property SizeVariants $size_variants
  */
 class Photo extends Model
-//  implements Wireable
+	//  implements Wireable
 {
 	use UTCBasedTimes;
 	use HasAttributesPatch;
@@ -453,5 +452,4 @@ class Photo extends Model
 	// {
 	// 	return self::findOrFail(strval($value));
 	// }
-
 }

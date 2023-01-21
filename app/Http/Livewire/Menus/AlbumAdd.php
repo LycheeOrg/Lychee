@@ -13,5 +13,4 @@ class AlbumAdd extends Component
 	{
 		return view('livewire.menus.album-add');
 	}
-
 }

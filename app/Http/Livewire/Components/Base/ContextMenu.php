@@ -33,8 +33,8 @@ class ContextMenu extends Openable
 	/**
 	 * Open the Context Menu.
 	 *
-	 * @param string $type       defines the Component loaded inside the modal
-	 * @param array  $params     Arguments to pass to the modal
+	 * @param string $type   defines the Component loaded inside the modal
+	 * @param array  $params Arguments to pass to the modal
 	 *
 	 * @return void
 	 */

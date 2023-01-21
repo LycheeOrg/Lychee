@@ -114,6 +114,7 @@ class Gallery extends Component
 			$this->mode = GalleryMode::ALBUM;
 			$this->title = $this->getAlbumProperty()->title;
 			$this->photo = null;
+
 			return;
 		}
 
@@ -170,9 +171,9 @@ class Gallery extends Component
 
 		if ($this->albumId === null) {
 			// In the case of smartAlbums or full gallery, we just close
-			$this->emitTo('components.sidebar','close');
+			$this->emitTo('components.sidebar', 'close');
 		}
-		$this->emitTo('components.sidebar','resetPhoto');
+		$this->emitTo('components.sidebar', 'resetPhoto');
 
 		// This ensures that the history has been updated
 		$this->emitUrlChange(PageMode::GALLERY, $this->albumId ?? '', $this->photoId ?? '');
@@ -188,5 +189,4 @@ class Gallery extends Component
 		Debugbar::info('toggle.');
 		$this->isSidebarOpen = !$this->isSidebarOpen;
 	}
-
 }
