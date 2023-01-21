@@ -39,7 +39,7 @@ return [
 
 	'guards' => [
 		'lychee' => [
-			'driver' => 'session-or-token',
+			'driver' => env('LYCHEE_AUTH_GUARD', 'session-or-token'),
 			'provider' => 'users',
 		],
 	],
