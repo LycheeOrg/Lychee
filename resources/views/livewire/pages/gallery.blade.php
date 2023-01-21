@@ -48,7 +48,7 @@
 			<livewire:modules.gallery.photo key="view-photo-{{$this->photoId}}" :album="$this->album" :photo="$this->photo" />
 			@endif
 			<!-- NSFW Warning -->
-			<div id="sensitive_warning" class="overlay-container"><h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p></div>
+			<livewire:modules.gallery.sensitive-warning :album="$this->album" />
 			<!-- Upload TODO: Figure out how this works -->
 			<div id="upload">
 				<input id="upload_files" type="file" name="fileElem[]" multiple="" accept="image/*,video/*,.mov">

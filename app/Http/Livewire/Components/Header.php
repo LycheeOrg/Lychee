@@ -2,11 +2,13 @@
 
 namespace App\Http\Livewire\Components;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\GalleryMode;
 use App\Enum\Livewire\PageMode;
 use App\Http\Livewire\Traits\AlbumProperty;
 use App\Http\Livewire\Traits\InteractWithModal;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\Photo;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\View\View;
 use Livewire\Component;
@@ -23,6 +25,15 @@ class Header extends Component
 
 	public ?BaseAlbum $baseAlbum = null;
 	public ?BaseSmartAlbum $smartAlbum = null;
+	// public ?Photo $photo = null;
+
+	public function mount(?AbstractAlbum $album = null, ?Photo $photoModel = null)
+	{
+		if ($album !== null) {
+			$this->loadAlbum($album);
+		}
+		// $this->photo = $photoModel;
+	}
 
 	/**
 	 * Render the header.
