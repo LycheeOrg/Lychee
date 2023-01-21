@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Livewire\Sidebar;
+namespace App\Http\Livewire\Modules\Sidebar;
 
-use App\Contracts\Models\AbstractAlbum;
 use App\DTO\AlbumProtectionPolicy;
 use App\Models\Album as ModelsAlbum;
+use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\Models\TagAlbum;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -38,14 +38,7 @@ class Album extends Component
 	public string $owner_name = '';
 	public string $license;
 
-	/**
-	 * Given an album we load the attributes.
-	 *
-	 * @param AbstractAlbum $album
-	 *
-	 * @return void
-	 */
-	public function mount(AbstractAlbum $album): void
+	public function mount(BaseAlbum $album): void
 	{
 		$this->load($album);
 	}
@@ -59,7 +52,7 @@ class Album extends Component
 	 */
 	public function render(): View
 	{
-		return view('livewire.sidebar.album');
+		return view('livewire.modules.sidebar.album');
 	}
 
 	/**
@@ -68,39 +61,37 @@ class Album extends Component
 	 * It is more interesting to extract this code because the code of mount() is executed only once.
 	 * On the other hand, the load() can be called from other components before triggering a rerendering upon updating properties.
 	 *
-	 * @param AbstractAlbum $album
+	 * @param BaseAlbum $album
 	 *
 	 * @return void
 	 *
 	 * @throws \Exception
 	 */
-	private function load(AbstractAlbum $album): void
+	private function load(BaseAlbum $baseAlbum): void
 	{
 		// $this->album = $album;
-		$this->title = $album->title;
+		$this->title = $baseAlbum->title;
 
-		if ($album instanceof ModelsAlbum) {
-			$this->description = $album->description ?? '';
-			$this->children_count = $album->num_children;
-			$this->sorting_col = $album->sorting_col ?? '';
-			$this->sorting_order = $album->sorting_order ?? '';
-			$this->owner_name = $album->owner->name;
-			$this->license = $album->license;
+		if ($baseAlbum instanceof ModelsAlbum) {
+			$this->description = $baseAlbum->description ?? '';
+			$this->children_count = $baseAlbum->num_children;
+			$this->sorting_col = $baseAlbum->sorting_col ?? '';
+			$this->sorting_order = $baseAlbum->sorting_order ?? '';
+			$this->owner_name = $baseAlbum->owner->name;
+			$this->license = $baseAlbum->license;
 		} else {
 			$this->description = '';
 		}
 
-		if ($album instanceof TagAlbum) {
+		if ($baseAlbum instanceof TagAlbum) {
 			$this->is_tag_album = true;
-			$this->showtags = $album->show_tags;
+			$this->showtags = $baseAlbum->show_tags;
 		}
 
-		if ($album instanceof ModelsAlbum || $album instanceof TagAlbum) {
-			$this->created_at = $album->created_at->format('F Y');
-			$this->policy = $album->policy;
-		}
+		$this->created_at = $baseAlbum->created_at->format('F Y');
+		$this->policy = $baseAlbum->policy;
 
-		$counted = $album->photos->countBy(function (Photo $photo) {
+		$counted = $baseAlbum->photos->countBy(function (Photo $photo) {
 			return $photo->isVideo() ? 'videos' : 'photos';
 		})->all();
 		$this->photo_count = isset($counted['photos']) ? $counted['photos'] : 0;

@@ -11,10 +11,6 @@ use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\View\View;
 use Livewire\Component;
 
-/**
- * This is the "start" page of the gallery
- * Integrate the list of all albums at top level.
- */
 class Header extends Component
 {
 	use InteractWithModal;
@@ -83,6 +79,11 @@ class Header extends Component
 	 */
 	public function toggleSideBar(): void
 	{
-		$this->emitTo('components.sidebar.sidebar', 'toggle');
+		$this->emitTo('pages.gallery', 'toggleSideBar');
+	}
+
+	public function openContextMenu()
+	{
+		$this->emitTo('components.base.context-menu', 'openContextMenu', 'album-add');
 	}
 }

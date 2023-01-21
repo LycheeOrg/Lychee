@@ -12,6 +12,7 @@ use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\SmartAlbums\BaseSmartAlbum;
+use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -36,6 +37,7 @@ class Gallery extends Component
 	public ?string $photoId = null;
 
 	public GalleryMode $mode;
+	public bool $isSidebarOpen = false;
 	public string $title;
 
 	/**
@@ -49,7 +51,7 @@ class Gallery extends Component
 	/**
 	 * @var array<int,string> listeners of click events
 	 */
-	protected $listeners = ['openAlbum', 'openPhoto', 'back'];
+	protected $listeners = ['openAlbum', 'openPhoto', 'back', 'toggleSideBar'];
 
 	/**
 	 * While in most Laravel Controller calls we use the constructor,
@@ -93,6 +95,7 @@ class Gallery extends Component
 		if ($this->albumId === null || $this->albumId === '') {
 			$this->mode = GalleryMode::ALBUMS;
 			$this->title = Configs::getValueAsString('site_title');
+
 			$this->resetAlbums();
 			$this->photo = null;
 
@@ -111,7 +114,6 @@ class Gallery extends Component
 			$this->mode = GalleryMode::ALBUM;
 			$this->title = $this->getAlbumProperty()->title;
 			$this->photo = null;
-
 			return;
 		}
 
@@ -159,14 +161,32 @@ class Gallery extends Component
 	{
 		if ($this->photoId !== null && $this->photoId !== '') {
 			$this->photoId = null;
-		// Case of sub-albums
 		} elseif ($this->baseAlbum instanceof BaseAlbum && $this->baseAlbum->parent_id !== null) {
+			// Case of sub-albums
 			$this->albumId = $this->baseAlbum->parent_id;
 		} else {
 			$this->albumId = null;
 		}
 
+		if ($this->albumId === null) {
+			// In the case of smartAlbums or full gallery, we just close
+			$this->emitTo('components.sidebar','close');
+		}
+		$this->emitTo('components.sidebar','resetPhoto');
+
 		// This ensures that the history has been updated
 		$this->emitUrlChange(PageMode::GALLERY, $this->albumId ?? '', $this->photoId ?? '');
 	}
+
+	/**
+	 * Toggle the component.
+	 *
+	 * @return void
+	 */
+	public function toggleSideBar(): void
+	{
+		Debugbar::info('toggle.');
+		$this->isSidebarOpen = !$this->isSidebarOpen;
+	}
+
 }

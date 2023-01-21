@@ -30,6 +30,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Wireable;
+
 use function Safe\preg_match;
 
 /**
@@ -74,6 +76,7 @@ use function Safe\preg_match;
  * @property SizeVariants $size_variants
  */
 class Photo extends Model
+//  implements Wireable
 {
 	use UTCBasedTimes;
 	use HasAttributesPatch;
@@ -434,4 +437,21 @@ class Photo extends Model
 		$this->exists = false;
 		$fileDeleter->do();
 	}
+
+	// /**
+	//  * {@inheritdoc}
+	//  */
+	// public function toLivewire(): string
+	// {
+	// 	return $this->id;
+	// }
+
+	// /**
+	//  * {@inheritdoc}
+	//  */
+	// public static function fromLivewire(mixed $value): self
+	// {
+	// 	return self::findOrFail(strval($value));
+	// }
+
 }

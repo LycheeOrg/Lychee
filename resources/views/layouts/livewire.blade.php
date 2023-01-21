@@ -54,6 +54,8 @@
 		If fills the remaining vertical space not taken by the loading indicator.
 	-->
 	{{ $frame }}
+	<livewire:components.base.modal />
+	<livewire:components.base.context-menu />
 	@livewireScripts
 	<script type="text/javascript">
 		document.addEventListener('DOMContentLoaded', function () {

@@ -23,7 +23,7 @@ trait AlbumProperty
 	 *
 	 * @return AbstractAlbum|null
 	 */
-	public function getAlbumProperty(): ?AbstractAlbum
+	final public function getAlbumProperty(): ?AbstractAlbum
 	{
 		return $this->baseAlbum ?? $this->smartAlbum;
 	}
@@ -37,14 +37,13 @@ trait AlbumProperty
 	 *
 	 * @throws \Exception album class is not recognized
 	 */
-	protected function loadAlbum(AbstractAlbum $album): void
+	final public function loadAlbum(AbstractAlbum $album): void
 	{
+		$this->resetAlbums();
 		if ($album instanceof BaseSmartAlbum) {
 			$this->smartAlbum = $album;
-			$this->baseAlbum = null; // ! safety
 		} elseif ($album instanceof BaseAlbum) {
 			$this->baseAlbum = $album;
-			$this->smartAlbum = null; // ! safety
 		} else {
 			throw new \Exception('unrecognized class for ' . get_class($album));
 		}
@@ -55,7 +54,7 @@ trait AlbumProperty
 	 *
 	 * @return void
 	 */
-	protected function resetAlbums(): void
+	final public function resetAlbums(): void
 	{
 		$this->baseAlbum = null; // ! safety
 		$this->smartAlbum = null; // ! safety

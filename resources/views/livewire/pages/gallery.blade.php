@@ -13,12 +13,15 @@
 			It fills the remaining horizontal space not taken be the
 			sidebar.
 		-->
-		<div id="lychee_view_container" class="vflex-container">
+		<div id="lychee_workbench_container" class="hflex-item-stretch">
 			<!--
-			Content
-			Vertically shares space with the footer.
-			The minimum height is set such the footer is positioned
-			at the bottom even if the content is smaller.
+				The view container covers the entire workbench and
+				contains the content and the footer.
+				It provides a vertical scroll bar if the content
+				grows too large.
+				Opposed to the map view and image view the view container
+				holds views which are scrollable (e.g. settings,
+				album listings, etc.)
 			-->
 			@if($mode === App\Enum\Livewire\GalleryMode::ALBUMS)
 			<livewire:modules.gallery.albums />
@@ -33,34 +36,37 @@
 			<!--
 				For now
 			-->
+			{{-- <div id="lychee_map_container" class="overlay-container"></div> --}}
 			<livewire:modules.gallery.albums/>
 			@endif
-			<livewire:components.footer />
+			@if($mode === App\Enum\Livewire\GalleryMode::PHOTO)
+			<!--
+				The key="..." attribute ensure that we are triggering a refresh of the child component on reload.
+				Do not that those need to not colide with other components, as a result we use prefix-id-time
+				strings to avoid such problems.
+			-->
+			<livewire:modules.gallery.photo key="view-photo-{{$this->photoId}}" :album="$this->album" :photo="$this->photo" />
+			@endif
+			<!-- NSFW Warning -->
+			<div id="sensitive_warning" class="overlay-container"><h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p></div>
+			<!-- Upload TODO: Figure out how this works -->
+			<div id="upload">
+				<input id="upload_files" type="file" name="fileElem[]" multiple="" accept="image/*,video/*,.mov">
+				<input id="upload_track_file" type="file" name="fileElem" accept="application/x-gpx+xml">
+			</div>
 		</div>
-		@if($mode === App\Enum\Livewire\GalleryMode::PHOTO)
+		<!-- SIDE BARS --->
 		<!--
 			The key="..." attribute ensure that we are triggering a refresh of the child component on reload.
 			Do not that those need to not colide with other components, as a result we use prefix-id-time
 			strings to avoid such problems.
 		-->
-		<livewire:modules.photo key="view-photo-{{$this->photoId}}" :album="$this->album" :photo="$this->photo" />
-		@endif
+		<div id="lychee_sidebar_container" @class(["hflex-item-rigid", "active" => $isSidebarOpen])>
+			@if($mode === App\Enum\Livewire\GalleryMode::ALBUM)
+			<livewire:modules.sidebar.album key="sidebar-album-{{$this->albumId}}" :album="$this->album" />
+			@elseif ($mode === App\Enum\Livewire\GalleryMode::PHOTO)
+			<livewire:modules.sidebar.photo key="sidebar-album-{{$this->photoId}}" :photo="$this->photo" />
+			@endif
+		</div>
 	</div>
-	<!-- SIDE BARS --->
-	@if($mode === App\Enum\Livewire\GalleryMode::ALBUM)
-	<!--
-		The key="..." attribute ensure that we are triggering a refresh of the child component on reload.
-		Do not that those need to not colide with other components, as a result we use prefix-id-time
-		strings to avoid such problems.
-	-->
-	<livewire:components.sidebar key="sidebar-album-{{$this->albumId}}" :album="$this->album"/>
-	@elseif($mode === App\Enum\Livewire\GalleryMode::PHOTO)
-		<!--
-			The key="..." attribute ensure that we are triggering a refresh of the child component on reload.
-			Do not that those need to not colide with other components, as a result we use prefix-id-time
-			strings to avoid such problems.
-		-->
-		<livewire:components.sidebar key="sidebar-photo-{{$this->photoId}}" :album="$this->album" :photo="$this->photo" />
-	@endif
-	<livewire:components.base.modal />
 </div>

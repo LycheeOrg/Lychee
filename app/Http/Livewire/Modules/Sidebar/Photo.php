@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Sidebar;
+namespace App\Http\Livewire\Modules\Sidebar;
 
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Facades\Helpers;
@@ -36,8 +36,8 @@ class Photo extends Component
 	public string $duration = 'xxx';
 	public string $fps = 'xxx';
 
-	public string $model;
-	public string $make;
+	public ?string $model;
+	public ?string $make;
 	public string $lens;
 
 	public bool $has_exif = false;
@@ -45,7 +45,7 @@ class Photo extends Component
 	public string $focal;
 	public string $aperture;
 	public string $shutter;
-	public string $taken_at;
+	public ?string $taken_at;
 
 	public bool $has_location = false;
 	public string $latitude;
@@ -79,7 +79,7 @@ class Photo extends Component
 		// $this->is_public = $photo->is_public;
 		$this->license = $photo->license;
 
-		$this->taken_at = $photo->taken_at->toString(); // for simplicity for now.
+		$this->taken_at = $photo->taken_at?->toString(); // for simplicity for now.
 		$this->make = $photo->make;
 		$this->model = $photo->model;
 
@@ -111,7 +111,7 @@ class Photo extends Component
 	 */
 	public function render(): View
 	{
-		return view('livewire.sidebar.photo');
+		return view('livewire.modules.sidebar.photo');
 	}
 
 	/**
