@@ -19,6 +19,7 @@ class Album extends Component
 	public ?Thumb $thumb;
 
 	public bool $is_nsfw;
+	public bool $is_nsfw_blurred;
 	public bool $is_public;
 	public bool $is_link_required;
 	public bool $is_password_required;
@@ -40,7 +41,8 @@ class Album extends Component
 			$policy = AlbumProtectionPolicy::ofBaseAlbum($data);
 		}
 
-		$this->is_nsfw = $policy->is_nsfw && Configs::getValueAsBool('nsfw_blur');
+		$this->is_nsfw = $policy->is_nsfw;
+		$this->is_nsfw_blurred = $this->is_nsfw && Configs::getValueAsBool('nsfw_blur');
 		$this->is_public = $policy->is_public;
 		$this->is_link_required = $policy->is_link_required;
 		$this->is_password_required = $policy->is_password_required;

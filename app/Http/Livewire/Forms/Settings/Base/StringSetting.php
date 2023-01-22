@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Forms\Settings;
+namespace App\Http\Livewire\Forms\Settings\Base;
 
 use App\Facades\Lang;
 use App\Models\Configs;

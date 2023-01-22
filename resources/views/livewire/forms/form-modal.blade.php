@@ -7,14 +7,17 @@
 			@endif --}}
 			<form class="force-first-child">
 			@foreach($form as $f => $v)
-				<div class="input-group stacked">
-				@if (is_string($f))
-					{{-- Work in Progess, will probably evolve --}}
-					<input class="text" autocomplete="on" type="text" placeholder="{{ Lang::get($formLocale['form.'.$f]) }}" autocapitalize="off" data-tabindex="{{ Helpers::data_index() }}" wire:model="form.{{ $f }}">
-				@else
-					{{ $f }} not supported yet.
+				{{-- Only display the allowed forms --}}
+				@if(!in_array($f, $formHidden, true))
+					<div class="input-group stacked">
+					@if (is_string($f))
+						{{-- Work in Progess, will probably evolve --}}
+						<input class="text" autocomplete="on" type="text" placeholder="{{ Lang::get($formLocale[$f]) }}" autocapitalize="off" data-tabindex="{{ Helpers::data_index() }}" wire:model="form.{{ $f }}">
+					@else
+						{{ $f }} not supported yet.
+					@endif
+					</div>
 				@endif
-				</div>
 			@endforeach
 			</form>
 		</div>

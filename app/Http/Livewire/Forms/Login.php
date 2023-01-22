@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Forms;
 
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\Lang;
+use App\Http\RuleSets\LoginRuleSet;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
@@ -28,12 +29,9 @@ class Login extends BaseForm
 	 *
 	 * @return array
 	 */
-	protected function rules(): array
+	protected function getRuleSet(): array
 	{
-		return [
-			'form.username' => 'required|string',
-			'form.password' => 'required|string',
-		];
+		return LoginRuleSet::rules();
 	}
 
 	/**
@@ -48,7 +46,7 @@ class Login extends BaseForm
 		parent::mount($params);
 		$this->validate = Lang::get('SIGN_IN');
 		$this->cancel = Lang::get('CANCEL');
-		$this->render = '-login';
+		$this->render = '-login'; // We use specialized blade because of the version
 
 		if (!Configs::getValueAsBool('hide_version_number')) {
 			$this->version = resolve(InstalledVersion::class)->getVersion()->toString();

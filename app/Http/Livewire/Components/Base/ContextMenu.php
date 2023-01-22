@@ -13,8 +13,17 @@ use Illuminate\View\View;
  */
 class ContextMenu extends Openable
 {
-	// ! defines the type of Modal. This correspond to the Livewire component loaded inside the Context Menu.
+	/**
+	 * @var string defines the type of menu loaded in the pop-up.
+	 *             It needs to be in App\Http\Livewire\ContextMenus.
+	 */
 	public string $type;
+
+	/**
+	 * @var array defines the arguments to be passed to the
+	 *            Livewire component loaded inside the ContextMenu
+	 */
+	public array $params = [];
 
 	/**
 	 * This defined the events that the Component will intercept.
@@ -40,6 +49,8 @@ class ContextMenu extends Openable
 	 */
 	public function openContextMenu(string $type, array $params = []): void
 	{
+		$this->type = $type;
+		$this->params = $params;
 		$this->open();
 	}
 

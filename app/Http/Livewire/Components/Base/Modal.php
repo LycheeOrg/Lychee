@@ -16,7 +16,10 @@ class Modal extends Openable
 	// ! defines the opacity status (unused for now)
 	public string $opacity = '0';
 
-	// ! defines the type of Modal. This correspond to the Livewire component loaded inside the Modal.
+	/**
+	 * @var string defines the type of Modal.
+	 *             This correspond to the Livewire component loaded inside the Modal.
+	 */
 	public string $type = '';
 
 	/**
@@ -28,7 +31,10 @@ class Modal extends Openable
 	 */
 	public string $close_text = '';
 
-	// ! defines the arguments to be passed to the Livewire component loaded inside the Modal.
+	/**
+	 * @var array defines the arguments to be passed to the
+	 *            Livewire component loaded inside the Modal
+	 */
 	public array $params = [];
 
 	/**

@@ -1,6 +1,7 @@
 <div class="basicContext" id="addMenu" style="left: 1173px; top: 28px; transform-origin: 154px 0px; opacity: 1;">
 	<table>
 		<tbody>
+
 			<tr class="basicContext__item ">
 				<td class="basicContext__data" data-num="0"><x-icons.iconic icon="image" />Upload Photo</td>
 			</tr>
@@ -17,7 +18,7 @@
 
 			<tr class="basicContext__item basicContext__item--separator"></tr>
 
-			<tr class="basicContext__item ">
+			<tr wire:click='openAlbumCreateModal' class="basicContext__item ">
 				<td class="basicContext__data" data-num="5"><x-icons.iconic icon="folder" />New Album</td>
 			</tr>
 

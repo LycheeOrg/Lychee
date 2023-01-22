@@ -1,4 +1,4 @@
-<div wire:click="$emit('openAlbum', '{{ $id }}')" class='album {{ $is_nsfw ? 'blurred' : '' }}'
+<div wire:click="$emit('openAlbum', '{{ $id }}')" class='album {{ $is_nsfw_blurred ? 'blurred' : '' }}'
 	{{-- {{ $disabled ? 'disabled' : '' }} --}}
 	data-id='{{ $id }}'
 	data-tabindex='{{ Helpers::data_index() }}'

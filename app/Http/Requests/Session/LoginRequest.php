@@ -8,8 +8,7 @@ use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Requests\Traits\HasUsernameTrait;
-use App\Rules\PasswordRule;
-use App\Rules\UsernameRule;
+use App\Http\RuleSets\LoginRuleSet;
 
 class LoginRequest extends BaseApiRequest implements HasUsername, HasPassword
 {
@@ -29,10 +28,7 @@ class LoginRequest extends BaseApiRequest implements HasUsername, HasPassword
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
-			RequestAttribute::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
-		];
+		return LoginRuleSet::rules();
 	}
 
 	/**

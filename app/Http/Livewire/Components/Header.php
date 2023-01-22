@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire\Components;
 
-use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\GalleryMode;
 use App\Enum\Livewire\PageMode;
 use App\Http\Livewire\Traits\AlbumProperty;
@@ -87,6 +86,6 @@ class Header extends Component
 
 	public function openContextMenu()
 	{
-		$this->emitTo('components.base.context-menu', 'openContextMenu', 'album-add');
+		$this->emitTo('components.base.context-menu', 'openContextMenu', 'album-add', ['parentId' => $this->baseAlbum?->id]);
 	}
 }

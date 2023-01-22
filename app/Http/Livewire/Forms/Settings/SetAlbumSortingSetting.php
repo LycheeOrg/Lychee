@@ -2,21 +2,14 @@
 
 namespace App\Http\Livewire\Forms\Settings;
 
+use App\Enum\ColumnSortingAlbumType;
+use App\Enum\OrderSortingType;
 use App\Facades\Lang;
+use App\Http\Livewire\Forms\Settings\Base\BaseConfigDoubleDropDown;
 use App\Models\Configs;
-use Livewire\Component;
 
-class SetAlbumSortingSetting extends Component
+class SetAlbumSortingSetting extends BaseConfigDoubleDropDown
 {
-	public string $begin;
-	public string $middle;
-	public string $end;
-
-	public Configs $config1;
-	public Configs $config2;
-	public string $value1; // ! Wired
-	public string $value2; // ! Wired
-
 	public function mount()
 	{
 		// We cannot abuse the sprintf in the case of blade templates compared to JS
@@ -31,51 +24,23 @@ class SetAlbumSortingSetting extends Component
 		$this->config2 = Configs::where('key', '=', 'sorting_albums_order')->firstOrFail();
 	}
 
-	public function render()
-	{
-		$this->value1 = $this->config1->value;
-		$this->value2 = $this->config2->value;
-
-		return view('livewire.forms.form-double-drop-down');
-	}
-
-	/**
-	 * This runs before a wired property is updated.
-	 *
-	 * @param mixed $field
-	 * @param mixed $value
-	 *
-	 * @return void
-	 *
-	 * @throws InvalidCastException
-	 * @throws JsonEncodingException
-	 * @throws \RuntimeException
-	 */
-	public function updated($field, $value)
-	{
-		$this->config1->value = $this->value1;
-		$this->config1->save();
-		$this->config2->value = $this->value2;
-		$this->config2->save();
-	}
-
 	public function getOptions1Property(): array
 	{
 		return [
-			'created_at' => Lang::get('SORT_ALBUM_SELECT_1'),
-			'title' => Lang::get('SORT_ALBUM_SELECT_2'),
-			'description' => Lang::get('SORT_ALBUM_SELECT_3'),
-			'is_public' => Lang::get('SORT_ALBUM_SELECT_4'),
-			'max_taken_at' => Lang::get('SORT_ALBUM_SELECT_5'),
-			'min_taken_at' => Lang::get('SORT_ALBUM_SELECT_6'),
+			ColumnSortingAlbumType::CREATED_AT->value => Lang::get('SORT_ALBUM_SELECT_1'),
+			ColumnSortingAlbumType::TITLE->value => Lang::get('SORT_ALBUM_SELECT_2'),
+			ColumnSortingAlbumType::DESCRIPTION->value => Lang::get('SORT_ALBUM_SELECT_3'),
+			ColumnSortingAlbumType::IS_PUBLIC->value => Lang::get('SORT_ALBUM_SELECT_4'),
+			ColumnSortingAlbumType::MAX_TAKEN_AT->value => Lang::get('SORT_ALBUM_SELECT_5'),
+			ColumnSortingAlbumType::MIN_TAKEN_AT->value => Lang::get('SORT_ALBUM_SELECT_6'),
 		];
 	}
 
 	public function getOptions2Property(): array
 	{
 		return [
-			'ASC' => Lang::get('SORT_ASCENDING'),
-			'DESC' => Lang::get('SORT_DESCENDING'),
+			OrderSortingType::ASC->value => Lang::get('SORT_ASCENDING'),
+			OrderSortingType::DESC->value => Lang::get('SORT_DESCENDING'),
 		];
 	}
 }

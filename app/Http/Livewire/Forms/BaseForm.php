@@ -23,9 +23,16 @@ abstract class BaseForm extends Component
 	public array $params = [];
 
 	/**
-	 * @var array attributes
+	 * @var array attributes, this implies that rules
 	 */
 	public array $form = [];
+
+	/**
+	 * List of attributes names which are hidden.
+	 *
+	 * @var array
+	 */
+	public array $formHidden = [];
 
 	/**
 	 * @var array mapped between attributes and their Lang info
@@ -35,7 +42,25 @@ abstract class BaseForm extends Component
 	/**
 	 * @var string bypass form rendering with specific ones
 	 */
-	public string $render = '';
+	public string $render = '-modal';
+
+	/**
+	 * This defines the set of validation rules to be applied on the input.
+	 * This makes sure that rules are prefixed with `form.`.
+	 *
+	 * @return array
+	 */
+	final protected function rules(): array
+	{
+		return collect($this->getRuleSet())->mapWithKeys(fn ($v, $k) => ['form.' . $k => $v])->all();
+	}
+
+	/**
+	 * Return the rules to be applied on the form.
+	 *
+	 * @return array
+	 */
+	abstract protected function getRuleSet(): array;
 
 	/**
 	 * A form has a Submit method.
