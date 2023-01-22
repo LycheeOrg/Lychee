@@ -1166,6 +1166,44 @@ api.getCSS = function (url, callback) {
     error: errorHandler
   });
 };
+
+/**
+ *
+ * @param {string} url
+ * @param {APISuccessCB} callback
+ * @returns {void}
+ */
+api.getJS = function (url, callback) {
+  loadingBar.show();
+
+  /**
+   * The success handler
+   * @param {Object} data the decoded JSON object of the response
+   */
+  var successHandler = function successHandler(data) {
+    setTimeout(loadingBar.hide, 100);
+    callback(data);
+  };
+
+  /**
+   * The error handler
+   * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+   */
+  var errorHandler = function errorHandler(jqXHR) {
+    api.onError(jqXHR, {}, null);
+  };
+  $.ajax({
+    type: "GET",
+    url: url,
+    data: {},
+    dataType: "text",
+    headers: {
+      "X-XSRF-TOKEN": csrf.getCSRFCookieValue()
+    },
+    success: successHandler,
+    error: errorHandler
+  });
+};
 var csrf = {};
 
 /**
@@ -6087,7 +6125,7 @@ lychee.localizeStaticGuiElements = function () {
   // Footer
   var footer = document.querySelector("#lychee_footer");
   footer.querySelector("p.home_copyright").textContent = lychee.footer_show_copyright ? sprintf(lychee.locale["FOOTER_COPYRIGHT"], lychee.site_owner, lychee.site_copyright_begin === lychee.site_copyright_end ? lychee.site_copyright_begin : lychee.site_copyright_begin + "–" + lychee.site_copyright_end) : "";
-  footer.querySelector("p.personal_text").innerHTML = lychee.footer_additional_text;
+  footer.querySelector("p.personal_text").textContent = lychee.footer_additional_text;
   footer.querySelector("p.hosted_by a").textContent = lychee.locale["HOSTED_WITH_LYCHEE"];
   /** @type {HTMLDivElement} */
   var footerSocialMedia = footer.querySelector("div#home_socials");
@@ -7421,6 +7459,7 @@ lychee.locale = {
   SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC: "Map display settings for public albums updated",
   SETTINGS_SUCCESS_MAP_PROVIDER: "Map provider settings updated",
   SETTINGS_SUCCESS_CSS: "CSS updated",
+  SETTINGS_SUCCESS_JS: "JS updated",
   SETTINGS_SUCCESS_UPDATE: "Settings updated successfully",
   SETTINGS_DROPBOX_KEY: "Dropbox API Key",
   SETTINGS_ADVANCED_WARNING_EXPL: "Changing these advanced settings can be harmful to the stability, security and performance of this application. You should only modify them if you are sure of what you are doing.",
@@ -7471,6 +7510,8 @@ lychee.locale = {
   LANG_TITLE: "Change Language",
   CSS_TEXT: "Personalize CSS:",
   CSS_TITLE: "Change CSS",
+  JS_TEXT: "Custom JS:",
+  JS_TITLE: "Change JS",
   PUBLIC_SEARCH_TEXT: "Public search allowed:",
   OVERLAY_TYPE: "Photo overlay:",
   OVERLAY_NONE: "None",
@@ -10274,6 +10315,19 @@ settings.changeCSS = function () {
   api.post("Settings::setCSS", params, function () {
     lychee.css = params.css;
     loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_CSS"]);
+  });
+};
+
+/**
+ * @returns {void}
+ */
+settings.changeJS = function () {
+  var params = {
+    js: $("#js").val()
+  };
+  api.post("Settings::setJS", params, function () {
+    lychee.js = params.js;
+    loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_JS"]);
   });
 };
 
@@ -13705,6 +13759,7 @@ view.settings = {
         view.settings.content.setNSFWVisible();
         view.settings.content.setNotification();
         view.settings.content.setCSS();
+        view.settings.content.setJS();
         view.settings.content.moreButton();
       }
     },
@@ -13884,8 +13939,19 @@ view.settings = {
     /**
      * @returns {void}
      */
+    setJS: function setJS() {
+      var msg = "\n\t\t\t<div class=\"setJS\">\n\t\t\t<p>".concat(lychee.locale["JS_TEXT"], "</p>\n\t\t\t<textarea id=\"js\"></textarea>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_js\" class=\"basicModal__button\">").concat(lychee.locale["JS_TITLE"], "</a>\n\t\t\t</div>\n\t\t\t</div>");
+      $(".settings_view").append(msg);
+      api.getJS("dist/custom.js", function (data) {
+        $("#js").html(data);
+      });
+      settings.bind("#basicModal__action_set_js", ".setJS", settings.changeJS);
+    },
+    /**
+     * @returns {void}
+     */
     moreButton: function moreButton() {
-      var msg = lychee.html(_templateObject61 || (_templateObject61 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"])), lychee.locale["MORE"]);
+      var msg = lychee.html(_templateObject61 || (_templateObject61 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setJS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"])), lychee.locale["MORE"]);
       $(".settings_view").append(msg);
       $("#basicModal__action_more").on("click", view.full_settings.init);
     }
