@@ -311,6 +311,7 @@ final class ChineseTraditional implements Language
 			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => '公開相簿的地圖顯示設置已更新',
 			'SETTINGS_SUCCESS_MAP_PROVIDER' => '地圖提供商設置已更新',
 			'SETTINGS_SUCCESS_CSS' => 'Stylesheets updated',
+			'SETTINGS_SUCCESS_JS' => 'JS updated',
 			'SETTINGS_SUCCESS_UPDATE' => 'Settings updated successfully',
 			'SETTINGS_DROPBOX_KEY' => 'Dropbox API Key',
 			'SETTINGS_ADVANCED_WARNING_EXPL' => 'Changing these advanced settings can be harmful to the stability, security and performance of this application. You should only modify them if you are sure of what you are doing.',
@@ -374,6 +375,8 @@ final class ChineseTraditional implements Language
 
 			'CSS_TEXT' => 'Personalize CSS:',
 			'CSS_TITLE' => 'Change CSS',
+			'JS_TEXT' => 'Custom JS:',
+			'JS_TITLE' => 'Change JS',
 			'PUBLIC_SEARCH_TEXT' => '允許公共搜索:',
 			'OVERLAY_TYPE' => '圖像疊加中要使用的數據:',
 			'OVERLAY_NONE' => 'None',

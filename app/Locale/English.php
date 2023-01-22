@@ -375,7 +375,7 @@ final class English implements Language
 
 			'CSS_TEXT' => 'Personalize CSS:',
 			'CSS_TITLE' => 'Change CSS',
-			'JS_TEXT' => 'Personalize JS:',
+			'JS_TEXT' => 'Custom JS:',
 			'JS_TITLE' => 'Change JS',
 			'PUBLIC_SEARCH_TEXT' => 'Public search allowed:',
 			'OVERLAY_TYPE' => 'Photo overlay:',
