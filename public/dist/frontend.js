@@ -13942,7 +13942,8 @@ view.settings = {
     setJS: function setJS() {
       var msg = "\n\t\t\t<div class=\"setJS\">\n\t\t\t<p>".concat(lychee.locale["JS_TEXT"], "</p>\n\t\t\t<textarea id=\"js\"></textarea>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_js\" class=\"basicModal__button\">").concat(lychee.locale["JS_TITLE"], "</a>\n\t\t\t</div>\n\t\t\t</div>");
       $(".settings_view").append(msg);
-      api.getJS("dist/custom.js", function (data) {
+      var js_addr = $($("script")[5]).attr("src");
+      api.getJS(js_addr, function (data) {
         $("#js").html(data);
       });
       settings.bind("#basicModal__action_set_js", ".setJS", settings.changeJS);

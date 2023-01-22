@@ -311,6 +311,7 @@ final class English implements Language
 			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
 			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
 			'SETTINGS_SUCCESS_CSS' => 'CSS updated',
+			'SETTINGS_SUCCESS_JS' => 'JS updated',
 			'SETTINGS_SUCCESS_UPDATE' => 'Settings updated successfully',
 			'SETTINGS_DROPBOX_KEY' => 'Dropbox API Key',
 			'SETTINGS_ADVANCED_WARNING_EXPL' => 'Changing these advanced settings can be harmful to the stability, security and performance of this application. You should only modify them if you are sure of what you are doing.',
@@ -374,6 +375,8 @@ final class English implements Language
 
 			'CSS_TEXT' => 'Personalize CSS:',
 			'CSS_TITLE' => 'Change CSS',
+			'JS_TEXT' => 'Personalize JS:',
+			'JS_TITLE' => 'Change JS',
 			'PUBLIC_SEARCH_TEXT' => 'Public search allowed:',
 			'OVERLAY_TYPE' => 'Photo overlay:',
 			'OVERLAY_NONE' => 'None',
