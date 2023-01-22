@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire\Components;
 
-use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\GalleryMode;
 use App\Enum\Livewire\PageMode;
 use App\Http\Livewire\Traits\AlbumProperty;
