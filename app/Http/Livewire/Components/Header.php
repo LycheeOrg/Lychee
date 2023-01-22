@@ -25,15 +25,7 @@ class Header extends Component
 
 	public ?BaseAlbum $baseAlbum = null;
 	public ?BaseSmartAlbum $smartAlbum = null;
-	// public ?Photo $photo = null;
-
-	public function mount(?AbstractAlbum $album = null, ?Photo $photoModel = null)
-	{
-		if ($album !== null) {
-			$this->loadAlbum($album);
-		}
-		// $this->photo = $photoModel;
-	}
+	public ?Photo $photo = null;
 
 	/**
 	 * Render the header.
