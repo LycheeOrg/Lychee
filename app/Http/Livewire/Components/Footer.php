@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Components;
 
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Facades\Lang;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -9,8 +10,8 @@ use Illuminate\View\View;
 use Livewire\Component;
 
 /**
- * This is the "start" page of the gallery
- * Integrate the list of all albums at top level.
+ * This is the bottom of the page.
+ * We provides socials etc...
  */
 class Footer extends Component
 {
@@ -24,7 +25,14 @@ class Footer extends Component
 	public string $youtube;
 	public string $additional_footer_text;
 
-	public function mount()
+	/**
+	 * Initialize the footer once for all.
+	 *
+	 * @return void
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	public function mount(): void
 	{
 		$this->show_socials = Configs::getValueAsBool('footer_show_social_media');
 		$this->facebook = Configs::getValueAsString('sm_facebook_url');

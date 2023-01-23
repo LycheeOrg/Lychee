@@ -3,12 +3,13 @@
 namespace App\Http\Livewire\Forms\Settings\Base;
 
 use App\Models\Configs;
-use Illuminate\Database\Eloquent\InvalidCastException;
-use Illuminate\Database\Eloquent\JsonEncodingException;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 /**
- * @property array $options
+ * Basic drop down menu.
+ * Do note that it will save and update the value immediately.
+ * No confirmation is requested.
  */
 abstract class BaseConfigDropDown extends Component
 {
@@ -16,7 +17,12 @@ abstract class BaseConfigDropDown extends Component
 	public string $description;
 	public string $value; // ! Wired
 
-	public function render()
+	/**
+	 * Renders the view of the dropdown menu.
+	 *
+	 * @return View
+	 */
+	public function render(): View
 	{
 		$this->value = $this->config->value;
 
@@ -30,16 +36,19 @@ abstract class BaseConfigDropDown extends Component
 	 * @param mixed $value
 	 *
 	 * @return void
-	 *
-	 * @throws InvalidCastException
-	 * @throws JsonEncodingException
-	 * @throws \RuntimeException
 	 */
-	public function updating($field, $value)
+	public function updating($field, $value): void
 	{
+		// TODO: VALIDATE & AUTHORIZE
+
 		$this->config->value = $value;
 		$this->config->save();
 	}
 
+	/**
+	 * Defines accessor for the drop down options1.
+	 *
+	 * @return array
+	 */
 	abstract public function getOptionsProperty(): array;
 }

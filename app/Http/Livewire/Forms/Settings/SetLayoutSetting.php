@@ -6,8 +6,16 @@ use App\Facades\Lang;
 use App\Http\Livewire\Forms\Settings\Base\BaseConfigDropDown;
 use App\Models\Configs;
 
+/**
+ * Defines the drop down menu for the layout used by the gallery.
+ */
 class SetLayoutSetting extends BaseConfigDropDown
 {
+	/**
+	 * Provides the different options.
+	 *
+	 * @return array
+	 */
 	public function getOptionsProperty(): array
 	{
 		return [
@@ -18,6 +26,11 @@ class SetLayoutSetting extends BaseConfigDropDown
 		];
 	}
 
+	/**
+	 * Mount the texts.
+	 *
+	 * @return void
+	 */
 	public function mount()
 	{
 		$this->description = Lang::get('LAYOUT_TYPE');

@@ -7,10 +7,19 @@ use App\Enum\OrderSortingType;
 use App\Facades\Lang;
 use App\Http\Livewire\Forms\Settings\Base\BaseConfigDoubleDropDown;
 use App\Models\Configs;
+use function Safe\preg_match;
 
+/**
+ * Set drop down for default ordering in albums.
+ */
 class SetPhotoSortingSetting extends BaseConfigDoubleDropDown
 {
-	public function mount()
+	/**
+	 * Set the strings for the menu.
+	 *
+	 * @return void
+	 */
+	public function mount(): void
 	{
 		// We cannot abuse the sprintf in the case of blade templates compared to JS
 		// So we do a simple preg_match to retrieve the chunks.
@@ -24,6 +33,11 @@ class SetPhotoSortingSetting extends BaseConfigDoubleDropDown
 		$this->config2 = Configs::where('key', '=', 'sorting_photos_order')->firstOrFail();
 	}
 
+	/**
+	 * Give the columns options.
+	 *
+	 * @return array
+	 */
 	public function getOptions1Property(): array
 	{
 		return [
@@ -37,6 +51,11 @@ class SetPhotoSortingSetting extends BaseConfigDoubleDropDown
 		];
 	}
 
+	/**
+	 * Ordering ascending or descending.
+	 *
+	 * @return array
+	 */
 	public function getOptions2Property(): array
 	{
 		return [

@@ -6,8 +6,16 @@ use App\Facades\Lang;
 use App\Http\Livewire\Forms\Settings\Base\BaseConfigDropDown;
 use App\Models\Configs;
 
+/**
+ * Defines the drop down menu for the decoration of albums.
+ */
 class SetAlbumDecorationSetting extends BaseConfigDropDown
 {
+	/**
+	 * Specify the options available.
+	 *
+	 * @return array
+	 */
 	public function getOptionsProperty(): array
 	{
 		return [
@@ -19,6 +27,11 @@ class SetAlbumDecorationSetting extends BaseConfigDropDown
 		];
 	}
 
+	/**
+	 * Set up the translations.
+	 *
+	 * @return void
+	 */
 	public function mount()
 	{
 		$this->description = Lang::get('ALBUM_DECORATION');

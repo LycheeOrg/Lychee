@@ -12,6 +12,15 @@ use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\View\View;
 use Livewire\Component;
 
+/**
+ * Header of the page.
+ * Provides a wide variety of actions:
+ * - login
+ * - open left menu
+ * - quick interaction with albums
+ * - quicj interaction with photos
+ * - context menu for add.
+ */
 class Header extends Component
 {
 	use InteractWithModal;
@@ -84,7 +93,12 @@ class Header extends Component
 		$this->emitTo('pages.gallery', 'toggleSideBar');
 	}
 
-	public function openContextMenu()
+	/**
+	 * Open the context menu in the top right corner.
+	 *
+	 * @return void
+	 */
+	public function openContextMenu(): void
 	{
 		$this->emitTo('components.base.context-menu', 'openContextMenu', 'album-add', ['parentId' => $this->baseAlbum?->id]);
 	}

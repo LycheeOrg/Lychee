@@ -6,8 +6,16 @@ use App\Facades\Lang;
 use App\Http\Livewire\Forms\Settings\Base\BaseConfigDropDown;
 use App\Models\Configs;
 
+/**
+ * Defines the default overlay when accessing a picture.
+ */
 class SetPhotoOverlaySetting extends BaseConfigDropDown
 {
+	/**
+	 * Default overlay options.
+	 *
+	 * @return array
+	 */
 	public function getOptionsProperty(): array
 	{
 		return [
@@ -18,7 +26,12 @@ class SetPhotoOverlaySetting extends BaseConfigDropDown
 		];
 	}
 
-	public function mount()
+	/**
+	 * Set up the drop down menu.
+	 *
+	 * @return void
+	 */
+	public function mount(): void
 	{
 		$this->description = Lang::get('OVERLAY_TYPE');
 		$this->config = Configs::where('key', '=', 'image_overlay_type')->firstOrFail();

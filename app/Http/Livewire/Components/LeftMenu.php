@@ -13,13 +13,14 @@ use Illuminate\View\View;
  * This is the Left menu component.
  * In here we will manage the different links:
  * - settings.
- * - logout
+ * - User profile (New!)
  * - users
- * - U2F
+ * - U2F (redirect to user profile)
  * - sharing
  * - Diagnostics
  * - Logs
- * - About.
+ * - About
+ * - logout.
  */
 class LeftMenu extends Openable
 {

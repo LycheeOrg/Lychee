@@ -4,10 +4,15 @@ namespace App\Http\Livewire\Forms\Settings\Base;
 
 use App\Facades\Lang;
 use App\Models\Configs;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\InvalidCastException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 use Livewire\Component;
 
+/**
+ * Basic boolean toggle.
+ * No confirmation is requested.
+ */
 class BooleanSetting extends Component
 {
 	public Configs $config;
@@ -15,14 +20,28 @@ class BooleanSetting extends Component
 	public string $footer;
 	public bool $flag; // ! Wired
 
-	public function mount(string $description, string $name, string $footer = '')
+	/**
+	 * Mount the toggle.
+	 *
+	 * @param string $description - LANG key
+	 * @param string $name        - Name of the config attribute
+	 * @param string $footer      - text under the toggle if necessary
+	 *
+	 * @return void
+	 */
+	public function mount(string $description, string $name, string $footer = ''): void
 	{
 		$this->description = Lang::get($description);
 		$this->footer = $footer !== '' ? Lang::get($footer) : '';
 		$this->config = Configs::where('key', '=', $name)->firstOrFail();
 	}
 
-	public function render()
+	/**
+	 * Render the toggle element.
+	 *
+	 * @return View
+	 */
+	public function render(): View
 	{
 		$this->flag = $this->config->value === '1';
 
@@ -43,6 +62,8 @@ class BooleanSetting extends Component
 	 */
 	public function updating($field, $value)
 	{
+		// TODO: VALIDATE & AUTHENTITCATE
+
 		$this->config->value = $value === true ? '1' : '0';
 		$this->config->save();
 	}

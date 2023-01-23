@@ -2,17 +2,31 @@
 
 namespace App\Http\Livewire\Forms\Profile;
 
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
 use Livewire\Component;
 
 class ManageSecondFactor extends Component
 {
+	/**
+	 * Credential used.
+	 *
+	 * @var WebAuthnCredential
+	 */
 	public WebAuthnCredential $credential;
 
+	/** @var string alias to rename the credentials. By default we provide the first parts of the ID */
 	public string $alias; // ! wired
 
-	public function mount(WebAuthnCredential $credential)
+	/**
+	 * Just mount the component with the required WebAuthn Credentials.
+	 *
+	 * @param WebAuthnCredential $credential
+	 *
+	 * @return void
+	 */
+	public function mount(WebAuthnCredential $credential): void
 	{
 		$this->credential = $credential;
 		$this->alias = $credential->alias ?? Str::substr($credential->id, 0, 30);
@@ -23,7 +37,7 @@ class ManageSecondFactor extends Component
 	 *
 	 * @return View
 	 */
-	public function render()
+	public function render(): View
 	{
 		return view('livewire.forms.profile.form-manage-second-factor');
 	}
@@ -35,13 +49,10 @@ class ManageSecondFactor extends Component
 	 * @param mixed $value
 	 *
 	 * @return void
-	 *
-	 * @throws InvalidCastException
-	 * @throws JsonEncodingException
-	 * @throws \RuntimeException
 	 */
-	public function updated($field, $value)
+	public function updated($field, $value): void
 	{
+		// TODO: ADD VALIDATION
 		$this->credential->alias = $this->alias;
 		$this->credential->save();
 	}
@@ -53,12 +64,8 @@ class ManageSecondFactor extends Component
 	 * admin user.
 	 *
 	 * @return void
-	 *
-	 * @throws ModelDBException
-	 * @throws UnauthenticatedException
-	 * @throws InvalidFormatException
 	 */
-	public function delete()
+	public function delete(): void
 	{
 		$this->credential->delete();
 		$this->emitTo('modules.profile.second-factor', 'loadCredentials');

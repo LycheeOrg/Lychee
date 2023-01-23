@@ -26,8 +26,6 @@ class Space extends Component
 	 * We now separate this from the initial get() call as this is quite time consuming.
 	 *
 	 * @return void
-	 *
-	 * @throws ModelDBException
 	 */
 	public function getSize(DiagnosticsSpace $space): void
 	{

@@ -97,9 +97,9 @@ class UserController extends Controller
 	 */
 	public function resetToken(ChangeTokenRequest $request, TokenReset $tokenReset): array
 	{
-		$user = $tokenReset->do();
+		$token = $tokenReset->do();
 
-		return ['token' => $user->token];
+		return ['token' => $token];
 	}
 
 	/**

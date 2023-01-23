@@ -7,10 +7,11 @@ use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
 use App\Models\Configs;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 /**
- * This defines the Login Form used in modals.
+ * This defines the about modal that can be found in the Left Menu.
  */
 class About extends Component
 {
@@ -21,7 +22,7 @@ class About extends Component
 	public ?string $version = null;
 
 	/**
-	 * Mount the component.
+	 * Mount the component. We set the attributes here.
 	 *
 	 * @return void
 	 */
@@ -41,7 +42,12 @@ class About extends Component
 		$this->is_git_update_available = !$gitHubVersion->isUpToDate();
 	}
 
-	public function render()
+	/**
+	 * Renders the About component.
+	 *
+	 * @return View
+	 */
+	public function render(): View
 	{
 		return view('livewire.components.about');
 	}

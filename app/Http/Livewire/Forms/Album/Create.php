@@ -8,8 +8,7 @@ use App\Http\Livewire\Traits\InteractWithModal;
 use App\Http\RuleSets\AddAlbumRuleSet;
 
 /**
- * Basic form component
- * Livewire forms need to extends from this.
+ * The Album Create MODAL extends directly from BaseForm.
  */
 class Create extends BaseForm
 {
@@ -70,6 +69,7 @@ class Create extends BaseForm
 		 * Call Livewire validation on the from
 		 */
 		$data = $this->validate()['form'];
-		dd('die');
+		/** @phpstan-ignore-next-line */
+		dd('die', $data);
 	}
 }

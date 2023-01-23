@@ -9,9 +9,13 @@ use App\Http\Livewire\Traits\UrlChange;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
-use Illuminate\View\View;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
+/**
+ * Defines the Index page.
+ * Here all starts.
+ */
 class Index extends Component
 {
 	use UrlChange;
@@ -20,13 +24,24 @@ class Index extends Component
 	public ?string $albumId = null;
 	public ?string $photoId = null;
 
-	// listeners of events
+	/**
+	 * @var string[] listeners of events
+	 */
 	protected $listeners = [
 		'openPage',
 		'reloadPage',
 		'back',
 	];
 
+	/**
+	 * Mounting point of the index.
+	 *
+	 * @param string|null $page
+	 * @param string|null $albumId
+	 * @param string|null $photoId
+	 *
+	 * @return void
+	 */
 	public function mount(?string $page = 'gallery', ?string $albumId = null, ?string $photoId = null): void
 	{
 		$this->page_mode = PageMode::from($page);
@@ -41,13 +56,14 @@ class Index extends Component
 	 */
 	public function render(): View
 	{
+		/** @phpstan-ignore-next-line */
 		return view('livewire.index')->layout('layouts.livewire', $this->getLayout())->slot('fullpage');
 	}
 
 	/**
 	 * Fetch layout data for the head, meta etc.
 	 *
-	 * @return array{pageTitle:string,pageDescrption:string,siteOwner:string,imageUrl:string,pageUrl:string,rssEnable:string,rssEnable:string,userCssUrl:string}
+	 * @return array
 	 */
 	private function getLayout(): array
 	{
@@ -99,7 +115,7 @@ class Index extends Component
 	/*
 	 ** This triggers a full reloading of the page
 	 */
-	public function reloadPage()
+	public function reloadPage(): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
 	{
 		return redirect(route('livewire_index', ['page' => $this->page_mode, 'albumId' => $this->albumId, 'photoId' => $this->photoId]));
 	}
@@ -107,7 +123,7 @@ class Index extends Component
 	/**
 	 * Method call to go back one step.
 	 */
-	public function back()
+	public function back(): void
 	{
 		$this->albumId = null;
 		$this->photoId = null;

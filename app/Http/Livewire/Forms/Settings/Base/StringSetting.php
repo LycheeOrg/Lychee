@@ -4,8 +4,13 @@ namespace App\Http\Livewire\Forms\Settings\Base;
 
 use App\Facades\Lang;
 use App\Models\Configs;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
+/**
+ * String setting input.
+ * To persist the data a call to save() is required.
+ */
 class StringSetting extends Component
 {
 	public Configs $config;
@@ -14,7 +19,15 @@ class StringSetting extends Component
 	public string $action;
 	public string $value; // ! Wired
 
-	public function mount(string $description, string $name, string $placeholder, string $action)
+	/**
+	 * @param string $description - LANG key
+	 * @param string $name        - name of the config attribute
+	 * @param string $placeholder - LANG key
+	 * @param string $action      - LANG key
+	 *
+	 * @return void
+	 */
+	public function mount(string $description, string $name, string $placeholder, string $action): void
 	{
 		$this->description = Lang::get($description);
 		$this->action = Lang::get($action);
@@ -22,14 +35,24 @@ class StringSetting extends Component
 		$this->config = Configs::where('key', '=', $name)->firstOrFail();
 	}
 
-	public function render()
+	/**
+	 * Renders the input form.
+	 *
+	 * @return View
+	 */
+	public function render(): View
 	{
 		$this->value = $this->config->value;
 
 		return view('livewire.forms.form-input');
 	}
 
-	public function save()
+	/**
+	 * Validation call to persist the data (as opposed to drop down menu and toggle which are instant).
+	 *
+	 * @return void
+	 */
+	public function save(): void
 	{
 		$this->config->value = $this->value;
 		$this->config->save();

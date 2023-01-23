@@ -6,8 +6,16 @@ use App\Facades\Lang;
 use App\Http\Livewire\Forms\Settings\Base\BaseConfigDropDown;
 use App\Models\Configs;
 
+/**
+ * Provides a drop down menu to chose the map provider.
+ */
 class SetMapProviderSetting extends BaseConfigDropDown
 {
+	/**
+	 * Options for the provider.
+	 *
+	 * @return array
+	 */
 	public function getOptionsProperty(): array
 	{
 		return [
@@ -19,6 +27,11 @@ class SetMapProviderSetting extends BaseConfigDropDown
 		];
 	}
 
+	/**
+	 * Mount the config.
+	 *
+	 * @return void
+	 */
 	public function mount()
 	{
 		$this->description = Lang::get('MAP_PROVIDER');

@@ -6,8 +6,16 @@ use App\Facades\Lang;
 use App\Http\Livewire\Forms\Settings\Base\BaseConfigDropDown;
 use App\Models\Configs;
 
+/**
+ * Drop Down menu for the default license.
+ */
 class SetLicenseDefaultSetting extends BaseConfigDropDown
 {
+	/**
+	 * We have to use this mapping to provide easilly readable license type.
+	 *
+	 * @return array
+	 */
 	public function getOptionsProperty(): array
 	{
 		return [
@@ -47,7 +55,12 @@ class SetLicenseDefaultSetting extends BaseConfigDropDown
 		];
 	}
 
-	public function mount()
+	/**
+	 * Set up the drop down menu.
+	 *
+	 * @return void
+	 */
+	public function mount(): void
 	{
 		$this->description = Lang::get('DEFAULT_LICENSE');
 		$this->config = Configs::where('key', '=', 'default_license')->firstOrFail();

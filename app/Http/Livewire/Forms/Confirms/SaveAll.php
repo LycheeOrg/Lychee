@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Forms\Confirms;
 
 use App\Http\Livewire\Traits\InteractWithModal;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 /**
@@ -17,7 +18,7 @@ class SaveAll extends Component
 	 *
 	 * @return View
 	 */
-	public function render()
+	public function render(): View
 	{
 		return view('livewire.forms.confirms.save-all');
 	}

@@ -13,7 +13,7 @@ class TokenReset
 	 * @throws InvalidPropertyException
 	 * @throws ModelDBException
 	 */
-	public function do(): User
+	public function do(): string
 	{
 		/** @var User $user */
 		$user = Auth::user();
@@ -21,6 +21,6 @@ class TokenReset
 		$user->token = hash('SHA512', $token);
 		$user->save();
 
-		return $user;
+		return $user->token;
 	}
 }

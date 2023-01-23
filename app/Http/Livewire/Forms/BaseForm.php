@@ -3,7 +3,7 @@
 namespace App\Http\Livewire\Forms;
 
 use App\Http\Livewire\Traits\InteractWithModal;
-use Illuminate\View\View;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 /**
@@ -88,7 +88,10 @@ abstract class BaseForm extends Component
 	 */
 	public function render(): View
 	{
-		return view('livewire.forms.form' . $this->render);
+		/** @var view-string $view */
+		$view = 'livewire.forms.form' . $this->render;
+
+		return view($view);
 	}
 
 	/**

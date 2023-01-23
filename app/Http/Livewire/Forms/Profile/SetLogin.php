@@ -7,6 +7,7 @@ use App\Http\Livewire\Traits\InteractWithModal;
 use App\Http\RuleSets\ChangeLoginRuleSet;
 use App\Models\User;
 use App\Policies\UserPolicy;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -25,7 +26,12 @@ class SetLogin extends Component
 	public string $password = ''; // ! wired
 	public string $confirm = ''; // ! wired
 
-	public function render()
+	/**
+	 * Simply render the form.
+	 *
+	 * @return View
+	 */
+	public function render(): View
 	{
 		return view('livewire.forms.profile.form-set-login');
 	}
@@ -33,7 +39,7 @@ class SetLogin extends Component
 	/**
 	 * Update Username & Password of current user.
 	 */
-	public function submit(UpdateLogin $updateLogin)
+	public function submit(UpdateLogin $updateLogin): void
 	{
 		/**
 		 * For the validation to work it is important that the above wired property match
@@ -66,6 +72,6 @@ class SetLogin extends Component
 	 */
 	public function openApiTokenModal(): void
 	{
-		$this->openClosableModal('forms.settings.get-api-token', 'CANCEL');
+		$this->openClosableModal('forms.profile.get-api-token', 'CANCEL');
 	}
 }
