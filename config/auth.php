@@ -39,7 +39,7 @@ return [
 
 	'guards' => [
 		'lychee' => [
-			'driver' => 'session-or-token',
+			'driver' => env('ENABLE_TOKEN_AUTH', true) ? 'session-or-token' : 'session',
 			'provider' => 'users',
 		],
 	],
