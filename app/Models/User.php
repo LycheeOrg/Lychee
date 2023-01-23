@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Models\Extensions\ThrowsConsistentExceptions;
+use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use Carbon\Exceptions\InvalidFormatException;
@@ -34,7 +35,6 @@ use Laragear\WebAuthn\WebAuthnAuthentication;
  * @property bool                                                  $may_upload
  * @property bool                                                  $may_edit_own_settings
  * @property string|null                                           $token
- * @property bool                                                  $has_token
  * @property string|null                                           $remember_token
  * @property Collection<BaseAlbumImpl>                             $albums
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
@@ -51,6 +51,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	}
 	/** @phpstan-use UseFixedQueryBuilder<User> */
 	use UseFixedQueryBuilder;
+	use ToArrayThrowsNotImplemented;
 
 	/**
 	 * @var string[] the attributes that are mass assignable
@@ -59,25 +60,6 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'username',
 		'password',
 		'email',
-	];
-
-	/**
-	 * @var array<int,string> the attributes that should be hidden for arrays
-	 */
-	protected $hidden = [
-		'password',
-		'remember_token',
-		'created_at',
-		'updated_at',
-		'token',
-
-		/**
-		 * We do not forward those to the front end: they are provided by {@link \App\DTO\UserWithCapabilitiesDTO}.
-		 * We do not need to inform every user on Lychee who can upload etc.
-		 */
-		'may_administrate',
-		'may_upload',
-		'may_edit_own_settings',
 	];
 
 	/**
@@ -90,13 +72,6 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'may_administrate' => 'boolean',
 		'may_upload' => 'boolean',
 		'may_edit_own_settings' => 'boolean',
-	];
-
-	/**
-	 * @var array
-	 */
-	protected $appends = [
-		'has_token',
 	];
 
 	/**
@@ -197,13 +172,5 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		WebAuthnCredential::where('authenticatable_id', '=', $this->id)->delete();
 
 		return $this->parentDelete();
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function getHasTokenAttribute(): bool
-	{
-		return $this->token !== null;
 	}
 }

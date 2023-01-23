@@ -13,6 +13,7 @@ use App\Image\Files\FlysystemFile;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\ThrowsConsistentExceptions;
+use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Relations\HasManyBidirectionally;
@@ -60,6 +61,7 @@ class SizeVariant extends Model
 	use ThrowsConsistentExceptions;
 	/** @phpstan-use UseFixedQueryBuilder<SizeVariant> */
 	use UseFixedQueryBuilder;
+	use ToArrayThrowsNotImplemented;
 
 	/**
 	 * This model has no own timestamps as it is inseparably bound to its
@@ -80,27 +82,6 @@ class SizeVariant extends Model
 		'width' => 'integer',
 		'height' => 'integer',
 		'filesize' => 'integer',
-	];
-
-	/**
-	 * @var array<int,string> The list of attributes which exist as columns of the DB
-	 *                        relation but shall not be serialized to JSON
-	 */
-	protected $hidden = [
-		'id', // irrelevant, because a size variant is always serialized as an embedded object of its photo
-		'photo', // see above and otherwise infinite loops will occur
-		'photo_id', // see above
-		'short_path',  // serialize url instead
-		'sym_links', // don't serialize relation of symlinks
-	];
-
-	/**
-	 * @var string[] The list of "virtual" attributes which do not exist as
-	 *               columns of the DB relation but which shall be appended to
-	 *               JSON from accessors
-	 */
-	protected $appends = [
-		'url',
 	];
 
 	/**

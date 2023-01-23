@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Administration;
 
 use App\Actions\Sharing\ListShare;
-use App\DTO\Shares;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Http\Requests\Sharing\AddSharesRequest;
 use App\Http\Requests\Sharing\DeleteSharingRequest;
 use App\Http\Requests\Sharing\ListSharingRequest;
 use App\Http\Requests\Sharing\SetSharesByAlbumRequest;
+use App\Http\Resources\Sharing\SharesResource;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
@@ -22,11 +22,11 @@ class SharingController extends Controller
 	 * @param ListSharingRequest $request
 	 * @param ListShare          $listShare
 	 *
-	 * @return Shares
+	 * @return SharesResource
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function list(ListSharingRequest $request, ListShare $listShare): Shares
+	public function list(ListSharingRequest $request, ListShare $listShare): SharesResource
 	{
 		return $listShare->do($request->participant(), $request->owner(), $request->album());
 	}

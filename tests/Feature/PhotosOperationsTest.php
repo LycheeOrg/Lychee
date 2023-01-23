@@ -148,9 +148,9 @@ class PhotosOperationsTest extends BasePhotoTest
 		$response->assertJson([
 			'album_id' => null,
 			'id' => $id,
-			'created_at' => $updated_taken_at->setTimezone('UTC')->format('Y-m-d\TH:i:s.uP'),
+			'created_at' => $updated_taken_at->setTimezone('UTC')->format('Y-m-d\TH:i:sP'),
 			'license' => 'reserved',
-			'is_public' => 1,
+			'is_public' => true,
 			'is_starred' => true,
 			'tags' => ['night', 'trees'],
 		]);
@@ -182,36 +182,38 @@ class PhotosOperationsTest extends BasePhotoTest
 		 */
 		$response = $this->photos_tests->duplicate([$id], $albumID);
 		$response->assertJson([
-			'album_id' => $albumID,
-			'aperture' => 'f/2.8',
-			'description' => 'A night photography',
-			'focal' => '16 mm',
-			'iso' => '1250',
-			'lens' => 'EF16-35mm f/2.8L USM',
-			'license' => 'reserved',
-			'make' => 'Canon',
-			'model' => 'Canon EOS R',
-			'is_public' => 1,
-			'shutter' => '30 s',
-			'is_starred' => true,
-			'tags' => [],
-			'taken_at' => '2019-06-01T01:28:25.000000+02:00',
-			'taken_at_orig_tz' => '+02:00',
-			'title' => "Night in Ploumanac'h",
-			'type' => AbstractTestCase::MIME_TYPE_IMG_JPEG,
-			'size_variants' => [
-				'small' => [
-					'width' => 540,
-					'height' => 360,
-				],
-				'medium' => [
-					'width' => 1620,
-					'height' => 1080,
-				],
-				'original' => [
-					'width' => 6720,
-					'height' => 4480,
-					'filesize' => 21106422,
+			0 => [
+				'album_id' => $albumID,
+				'aperture' => 'f/2.8',
+				'description' => 'A night photography',
+				'focal' => '16 mm',
+				'iso' => '1250',
+				'lens' => 'EF16-35mm f/2.8L USM',
+				'license' => 'reserved',
+				'make' => 'Canon',
+				'model' => 'Canon EOS R',
+				'is_public' => true,
+				'shutter' => '30 s',
+				'is_starred' => true,
+				'tags' => [],
+				'taken_at' => '2019-06-01T01:28:25+02:00',
+				'taken_at_orig_tz' => '+02:00',
+				'title' => "Night in Ploumanac'h",
+				'type' => AbstractTestCase::MIME_TYPE_IMG_JPEG,
+				'size_variants' => [
+					'small' => [
+						'width' => 540,
+						'height' => 360,
+					],
+					'medium' => [
+						'width' => 1620,
+						'height' => 1080,
+					],
+					'original' => [
+						'width' => 6720,
+						'height' => 4480,
+						'filesize' => 21106422,
+					],
 				],
 			],
 		]);
@@ -375,14 +377,16 @@ class PhotosOperationsTest extends BasePhotoTest
 			$responseForRoot = $this->root_album_tests->get();
 			$responseForRoot->assertJson([
 				'smart_albums' => [
-					'unsorted' => null,
-					'starred' => null,
-					'public' => null,
 					'recent' => ['thumb' => null],
 				],
 				'tag_albums' => [],
 				'albums' => [],
 				'shared_albums' => [],
+			]);
+			$responseForRoot->assertJsonMissing([
+				'unsorted' => null,
+				'starred' => null,
+				'public' => null,
 			]);
 			foreach ([$albumID1, $photoID11, $photoID12, $photoID121, $photoID13] as $id) {
 				$responseForRoot->assertJsonMissing(['id' => $id]);

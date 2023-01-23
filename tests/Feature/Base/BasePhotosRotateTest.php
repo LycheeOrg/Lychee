@@ -112,7 +112,7 @@ abstract class BasePhotosRotateTest extends BasePhotoTest
 		$photoResponse2 = $this->photos_tests->duplicate(
 			[$photoID1], null
 		);
-		$photoID2 = $photoResponse2->offsetGet('id');
+		$photoID2 = $photoResponse2->json()[0]['id'];
 
 		static::assertNotEquals($photoID1, $photoID2);
 
@@ -124,10 +124,12 @@ abstract class BasePhotosRotateTest extends BasePhotoTest
 			],
 		]);
 		$photoResponse2->assertJson([
-			'size_variants' => [
-				'small' => ['width' => 540, 'height' => 360],
-				'medium' => ['width' => 1620, 'height' => 1080],
-				'original' => ['width' => 6720, 'height' => 4480],
+			0 => [
+				'size_variants' => [
+					'small' => ['width' => 540, 'height' => 360],
+					'medium' => ['width' => 1620, 'height' => 1080],
+					'original' => ['width' => 6720, 'height' => 4480],
+				],
 			],
 		]);
 

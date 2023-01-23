@@ -6,7 +6,6 @@ use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\ModelDBException;
 use App\Http\Requests\View\GetPhotoViewRequest;
-use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Policies\SettingsPolicy;
@@ -20,16 +19,13 @@ use function Safe\phpinfo;
 
 class IndexController extends Controller
 {
-	private ConfigFunctions $configFunctions;
 	private SymLinkFunctions $symLinkFunctions;
 
 	/**
-	 * @param ConfigFunctions  $configFunctions
 	 * @param SymLinkFunctions $symLinkFunctions
 	 */
-	public function __construct(ConfigFunctions $configFunctions, SymLinkFunctions $symLinkFunctions)
+	public function __construct(SymLinkFunctions $symLinkFunctions)
 	{
-		$this->configFunctions = $configFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
 	}
 
@@ -47,7 +43,23 @@ class IndexController extends Controller
 	{
 		try {
 			if (Configs::getValueAsBool('landing_page_enable')) {
-				$infos = $this->configFunctions->get_pages_infos();
+				$infos = [
+					'owner' => Configs::getValueAsString('site_owner'),
+					'title' => Configs::getValueAsString('landing_title'),
+					'subtitle' => Configs::getValueAsString('landing_subtitle'),
+					'facebook' => Configs::getValueAsString('sm_facebook_url'),
+					'flickr' => Configs::getValueAsString('sm_flickr_url'),
+					'twitter' => Configs::getValueAsString('sm_twitter_url'),
+					'instagram' => Configs::getValueAsString('sm_instagram_url'),
+					'youtube' => Configs::getValueAsString('sm_youtube_url'),
+					'background' => Configs::getValueAsString('landing_background'),
+					'copyright_enable' => Configs::getValueAsString('footer_show_copyright'),
+					'copyright_year' => Configs::getValueAsString('site_copyright_begin'),
+					'additional_footer_text' => Configs::getValueAsString('footer_additional_text'),
+				];
+				if (Configs::getValueAsString('site_copyright_begin') !== Configs::getValueAsString('site_copyright_end')) {
+					$infos['copyright_year'] = Configs::getValueAsString('site_copyright_begin') . '-' . Configs::getValueAsString('site_copyright_end');
+				}
 
 				$title = Configs::getValueAsString('site_title');
 				$rss_enable = Configs::getValueAsBool('rss_enable');

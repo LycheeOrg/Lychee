@@ -3,23 +3,11 @@
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
-use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
 
 class ConfigSanityCheck implements DiagnosticPipe
 {
-	private ConfigFunctions $configFunctions;
-
 	private array $settings;
-
-	/**
-	 * @param ConfigFunctions $configFunctions
-	 */
-	public function __construct(
-		ConfigFunctions $configFunctions
-	) {
-		$this->configFunctions = $configFunctions;
-	}
 
 	public function handle(array &$data, \Closure $next): array
 	{
@@ -28,7 +16,7 @@ class ConfigSanityCheck implements DiagnosticPipe
 
 		$this->checkKeysExistsAndSet($data);
 
-		$this->configFunctions->sanity($data);
+		$this->sanity($data);
 
 		$this->checkDropBoxKeyWarning($data);
 
@@ -57,6 +45,23 @@ class ConfigSanityCheck implements DiagnosticPipe
 		} elseif ($this->settings['dropbox_key'] === '') {
 			$data[]
 				= 'Warning: Dropbox import not working. dropbox_key is empty.';
+		}
+	}
+
+	/**
+	 * Sanity check of the config.
+	 *
+	 * @param array $return
+	 */
+	private function sanity(array &$return): void
+	{
+		$configs = Configs::all(['key', 'value', 'type_range']);
+
+		foreach ($configs as $config) {
+			$message = $config->sanity($config->value);
+			if ($message !== '') {
+				$return[] = $message;
+			}
 		}
 	}
 }

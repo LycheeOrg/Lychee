@@ -46,7 +46,6 @@ trait CatchFailures
 		if (isset($exception['trace'])) {
 			$exception['trace'] = array_slice($exception['trace'], 0, 3);
 		}
-
 		if (isset($exception['previous_exception'])) {
 			$this->trimException($exception['previous_exception']);
 		}

@@ -249,4 +249,14 @@ class SizeVariants extends AbstractDTO
 			);
 		}
 	}
+
+	/**
+	 * Returns true if at least one version of medium is not null.
+	 *
+	 * @return bool
+	 */
+	public function hasMedium(): bool
+	{
+		return $this->medium2x !== null || $this->medium !== null;
+	}
 }

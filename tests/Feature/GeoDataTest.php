@@ -99,9 +99,9 @@ class GeoDataTest extends AbstractTestCase
 					'shutter' => '1/640 s',
 					'focal' => '44 mm',
 					'altitude' => 1633,
-					'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
+					'taken_at' => $taken_at->format('Y-m-d\TH:i:sP'),
 					'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
-					'is_public' => 0,
+					'is_public' => false,
 					'rights' => [
 						'can_download' => true,
 					],
@@ -147,11 +147,11 @@ class GeoDataTest extends AbstractTestCase
 			Configs::set(self::CONFIG_MAP_DISPLAY, true);
 			static::assertEquals(true, Configs::getValueAsBool(self::CONFIG_MAP_DISPLAY));
 			$positionDataResponse = $this->root_album_tests->getPositionData();
-			/** @var \App\DTO\PositionData $positionData */
+			/** @var \App\Http\Resources\Collections\PositionDataResource $positionData */
 			$positionData = static::convertJsonToObject($positionDataResponse);
 			static::assertObjectHasAttribute('photos', $positionData);
-			static::assertCount(1, $positionData->photos);
-			static::assertEquals($photoID, $positionData->photos[0]->id);
+			static::assertCount(1, $positionData->photos); // @phpstan-ignore-line
+			static::assertEquals($photoID, $positionData->photos[0]->id);  // @phpstan-ignore-line
 
 			// set to false
 			Configs::set(self::CONFIG_MAP_DISPLAY, false);
@@ -162,11 +162,11 @@ class GeoDataTest extends AbstractTestCase
 			Configs::set(self::CONFIG_MAP_DISPLAY, true);
 			static::assertEquals(true, Configs::getValueAsBool(self::CONFIG_MAP_DISPLAY));
 			$positionDataResponse = $this->albums_tests->getPositionData($albumID, false);
-			/** @var \App\DTO\PositionData $positionData */
+			/** @var \App\Http\Resources\Collections\PositionDataResource $positionData */
 			$positionData = static::convertJsonToObject($positionDataResponse);
 			static::assertObjectHasAttribute('photos', $positionData);
-			static::assertCount(1, $positionData->photos);
-			static::assertEquals($photoID, $positionData->photos[0]->id);
+			static::assertCount(1, $positionData->photos); // @phpstan-ignore-line
+			static::assertEquals($photoID, $positionData->photos[0]->id); // @phpstan-ignore-line
 		} finally {
 			Configs::set(self::CONFIG_MAP_DISPLAY, $map_display_value);
 		}
@@ -245,15 +245,17 @@ class GeoDataTest extends AbstractTestCase
 			$responseForRoot = $this->root_album_tests->get();
 			$responseForRoot->assertJson([
 				'smart_albums' => [
-					'unsorted' => null,
-					'starred' => null,
-					'public' => null,
-					'on_this_day' => null,
 					'recent' => ['thumb' => null],
 				],
 				'tag_albums' => [],
 				'albums' => [],
 				'shared_albums' => [],
+			]);
+			$responseForRoot->assertJsonMissing([
+				'unsorted' => null,
+				'starred' => null,
+				'public' => null,
+				'on_this_day' => null,
 			]);
 			foreach ([$albumID1, $photoID1, $photoID11, $photoID12, $photoID121, $photoID13] as $id) {
 				$responseForRoot->assertJsonMissing(['id' => $id]);

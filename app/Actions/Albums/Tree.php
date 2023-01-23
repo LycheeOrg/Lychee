@@ -4,11 +4,11 @@ namespace App\Actions\Albums;
 
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\DTO\AlbumSortingCriterion;
-use App\DTO\AlbumTree;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
+use App\Http\Resources\Collections\AlbumForestResource;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Policies\AlbumQueryPolicy;
@@ -31,11 +31,11 @@ class Tree
 	}
 
 	/**
-	 * @return AlbumTree
+	 * @return AlbumForestResource
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function get(): AlbumTree
+	public function get(): AlbumForestResource
 	{
 		/*
 		 * Note, strictly speaking
@@ -81,6 +81,6 @@ class Tree
 		// as there are several top-level albums below root.
 		// Otherwise, `toTree` uses the ID of the album with the lowest
 		// `_lft` value as the (wrong) root album.
-		return new AlbumTree($albums->toTree(null), $sharedAlbums?->toTree(null));
+		return new AlbumForestResource($albums->toTree(null), $sharedAlbums?->toTree(null));
 	}
 }

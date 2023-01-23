@@ -12,6 +12,7 @@ use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
 use App\Models\Extensions\ThrowsConsistentExceptions;
+use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use Carbon\Carbon;
@@ -19,7 +20,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * Class BaseAlbumImpl.
@@ -114,6 +114,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	use HasBidirectionalRelationships;
 	/** @phpstan-use UseFixedQueryBuilder<BaseAlbumImpl> */
 	use UseFixedQueryBuilder;
+	use ToArrayThrowsNotImplemented;
 
 	protected $table = 'base_albums';
 
@@ -172,40 +173,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'is_link_required' => 'boolean',
 		'is_nsfw' => 'boolean',
 		'owner_id' => 'integer',
-	];
-
-	/**
-	 * @var array<int,string> The list of attributes which exist as columns of the DB
-	 *                        relation but shall not be serialized to JSON
-	 */
-	protected $hidden = [
-		RandomID::LEGACY_ID_NAME,
-		'owner_id',
-		'owner',
-		'password',
-		'sorting_col',   // serialize DTO `order` instead
-		'sorting_order', // serialize DTO `order` instead
-
-		// Security attributes are hidden because provided by the DTO {@link \App\DTO\AlbumProtectionPolicy}
-		'is_public',
-		'is_nsfw',
-		'is_link_required',
-		'is_share_button_visible', // TODO: DELETE ME once we are able to remove columns
-
-		// Permissions are hidden because they will eventually be replaced by an external table
-		// and are provided by the DTO {@link \App\DTO\Rights\AlbumRightsDTO}
-		'grants_download',
-		'grants_full_photo_access',
-	];
-
-	/**
-	 * @var array<int,string> The list of "virtual" attributes which do not exist as
-	 *                        columns of the DB relation but which shall be appended to
-	 *                        JSON from accessors
-	 */
-	protected $appends = [
-		'sorting',
-		'policy',
 	];
 
 	/**
@@ -304,15 +271,5 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	protected function getPolicyAttribute(): AlbumProtectionPolicy
 	{
 		return AlbumProtectionPolicy::ofBaseAlbumImplementation($this);
-	}
-
-	public function toArray(): array
-	{
-		$result = parent::toArray();
-		if (Auth::check()) {
-			$result['owner_name'] = $this->owner->name;
-		}
-
-		return $result;
 	}
 }

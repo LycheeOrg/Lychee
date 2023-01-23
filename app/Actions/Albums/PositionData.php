@@ -3,8 +3,8 @@
 namespace App\Actions\Albums;
 
 use App\Contracts\Exceptions\InternalLycheeException;
-use App\DTO\PositionData as PositionDataDTO;
 use App\Enum\SizeVariantType;
+use App\Http\Resources\Collections\PositionDataResource;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
@@ -25,11 +25,11 @@ class PositionData
 	/**
 	 * Given a list of albums, generate an array to be returned.
 	 *
-	 * @return PositionDataDTO
+	 * @return PositionDataResource
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function do(): PositionDataDTO
+	public function do(): PositionDataResource
 	{
 		$photoQuery = $this->photoQueryPolicy->applySearchabilityFilter(
 			Photo::query()
@@ -56,6 +56,6 @@ class PositionData
 				->whereNotNull('longitude')
 		);
 
-		return new PositionDataDTO(null, null, $photoQuery->get(), null);
+		return new PositionDataResource(null, null, $photoQuery->get(), null);
 	}
 }

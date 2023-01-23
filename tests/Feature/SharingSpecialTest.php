@@ -14,10 +14,8 @@ namespace Tests\Feature;
 
 use App\Models\Configs;
 use App\SmartAlbums\OnThisDayAlbum;
-use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
-use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Tests\AbstractTestCase;
@@ -107,8 +105,8 @@ class SharingSpecialTest extends BaseSharingTest
 		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID2)->offsetGet('id');
 		$this->photoID3 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID3)->offsetGet('id');
 		$this->photoID4 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_SUNSET_IMAGE), $this->albumID4)->offsetGet('id');
-		$this->photoID5 = $this->photos_tests->duplicate([$this->photoID4], $this->albumID5)->offsetGet('id');
-		$this->photoID6 = $this->photos_tests->duplicate([$this->photoID2], $this->albumID6)->offsetGet('id');
+		$this->photoID5 = $this->photos_tests->duplicate([$this->photoID4], $this->albumID5)->json()[0]['id'];
+		$this->photoID6 = $this->photos_tests->duplicate([$this->photoID2], $this->albumID6)->json()[0]['id'];
 		$this->photos_tests->set_title($this->photoID5, 'Abenddämmerung'); // we rename the duplicated images, such that we can ensure
 		$this->photos_tests->set_title($this->photoID6, 'Zug'); // a deterministic, alphabetic order which makes testing easier
 
@@ -521,9 +519,7 @@ class SharingSpecialTest extends BaseSharingTest
 	): array {
 		return [
 			'smart_albums' => [
-				UnsortedAlbum::ID => null,
 				StarredAlbum::ID => ['thumb' => null],
-				PublicAlbum::ID => null,
 				RecentAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($recentAlbumThumbID)],
 				OnThisDayAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($onThisDayAlbumThumbID)],
 			],
