@@ -36,7 +36,6 @@ trait CatchFailures
 		$response->assertStatus($expectedStatusCode);
 	}
 
-
 	/**
 	 * An exception is an array of the shape:
 	 * array{message:string, exception:string, file:string, line:int, trace:array{}, previous_exception: obj }
