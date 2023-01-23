@@ -21,7 +21,7 @@ trait CatchFailures
 	{
 		if ($response->getStatusCode() === 500) {
 			$exception = $response->json();
-			if (in_array($exception->exception, $this->catchFailureSilence, true)) {
+			if (in_array($exception['exception'], $this->catchFailureSilence, true)) {
 				return;
 			}
 			$this->trimException($exception);
