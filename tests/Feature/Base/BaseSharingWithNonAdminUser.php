@@ -41,9 +41,9 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 	/**
 	 * {@inheritDoc}
 	 */
-	public function testTwoPhotosInPublicAlbum(): void
+	public function testThreePhotosInPublicAlbum(): void
 	{
-		parent::testTwoPhotosInPublicAlbum();
+		parent::testThreePhotosInPublicAlbum();
 
 		$responseForUnsorted = $this->albums_tests->get(UnsortedAlbum::ID);
 		$responseForUnsorted->assertJson($this->generateExpectedSmartAlbumJson(false));
