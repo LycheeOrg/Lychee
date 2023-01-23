@@ -73,12 +73,10 @@ function new_version(array $curr_version, string $kind): array
 {
 	$new_version = $curr_version;
 	if ($kind === 'major') {
-		$new_version[1] += 1;
+		$new_version[1]++;
 		$new_version[2] = 0;
-	}
-	else
-	{
-		$new_version[2] += 1;
+	} else {
+		$new_version[2]++;
 	}
 
 	if ($curr_version[1] === 100 || $curr_version[2] === 100) {

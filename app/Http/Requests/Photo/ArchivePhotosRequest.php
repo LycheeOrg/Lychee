@@ -9,12 +9,11 @@ use App\Enum\DownloadVariantType;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasPhotosTrait;
 use App\Http\Requests\Traits\HasSizeVariantTrait;
+use App\Http\RuleSets\Photo\ArchivePhotosRuleSet;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
-use App\Rules\RandomIDListRule;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Validation\Rules\Enum;
 
 class ArchivePhotosRequest extends BaseApiRequest implements HasPhotos, HasSizeVariant
 {
@@ -41,10 +40,7 @@ class ArchivePhotosRequest extends BaseApiRequest implements HasPhotos, HasSizeV
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::PHOTO_IDS_ATTRIBUTE => ['required', new RandomIDListRule()],
-			RequestAttribute::SIZE_VARIANT_ATTRIBUTE => ['required', new Enum(DownloadVariantType::class)],
-		];
+		return ArchivePhotosRuleSet::rules();
 	}
 
 	/**

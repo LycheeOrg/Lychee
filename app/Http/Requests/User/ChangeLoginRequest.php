@@ -6,7 +6,7 @@ use App\Contracts\Http\Requests\HasPassword;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasPasswordTrait;
-use App\Http\RuleSets\ChangeLoginRuleSet;
+use App\Http\RuleSets\User\ChangeLoginRuleSet;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;

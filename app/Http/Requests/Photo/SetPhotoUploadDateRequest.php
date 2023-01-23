@@ -9,11 +9,11 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotoTrait;
 use App\Http\Requests\Traits\HasDateTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
+use App\Http\RuleSets\Photo\SetPhotoUploadDateRuleSet;
 use App\Models\Photo;
-use App\Rules\RandomIDRule;
 use Illuminate\Support\Carbon;
 
-class SetPhotoUploadDate extends BaseApiRequest implements HasPhoto, HasDate
+class SetPhotoUploadDateRequest extends BaseApiRequest implements HasPhoto, HasDate
 {
 	use HasPhotoTrait;
 	use HasDateTrait;
@@ -24,10 +24,7 @@ class SetPhotoUploadDate extends BaseApiRequest implements HasPhoto, HasDate
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
-			RequestAttribute::DATE_ATTRIBUTE => 'required|date',
-		];
+		return SetPhotoUploadDateRuleSet::rules();
 	}
 
 	/**

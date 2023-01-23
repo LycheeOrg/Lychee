@@ -8,7 +8,7 @@ use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Requests\Traits\HasUsernameTrait;
-use App\Http\RuleSets\LoginRuleSet;
+use App\Http\RuleSets\Session\LoginRuleSet;
 
 class LoginRequest extends BaseApiRequest implements HasUsername, HasPassword
 {
