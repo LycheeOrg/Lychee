@@ -6,10 +6,9 @@ use App\Contracts\Http\Requests\HasPassword;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasPasswordTrait;
+use App\Http\RuleSets\User\ChangeLoginRuleSet;
 use App\Models\User;
 use App\Policies\UserPolicy;
-use App\Rules\PasswordRule;
-use App\Rules\UsernameRule;
 use Illuminate\Support\Facades\Gate;
 
 class ChangeLoginRequest extends BaseApiRequest implements HasPassword
@@ -32,11 +31,7 @@ class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::USERNAME_ATTRIBUTE => ['sometimes', new UsernameRule(true)],
-			RequestAttribute::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
-			RequestAttribute::OLD_PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
-		];
+		return ChangeLoginRuleSet::rules();
 	}
 
 	/**

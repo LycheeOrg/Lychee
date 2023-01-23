@@ -9,9 +9,9 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotosAlbumTrait;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Http\Requests\Traits\HasPhotosTrait;
+use App\Http\RuleSets\Photo\MovePhotosRuleSet;
 use App\Models\Album;
 use App\Models\Photo;
-use App\Rules\RandomIDRule;
 
 class MovePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum
 {
@@ -24,11 +24,7 @@ class MovePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
-			RequestAttribute::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
-		];
+		return MovePhotosRuleSet::rules();
 	}
 
 	/**

@@ -6,9 +6,9 @@ use App\Contracts\Http\Requests\HasPhotoIDs;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasPhotoIDsTrait;
+use App\Http\RuleSets\Photo\DeletePhotosRuleSet;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
-use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
 class DeletePhotosRequest extends BaseApiRequest implements HasPhotoIDs
@@ -28,10 +28,7 @@ class DeletePhotosRequest extends BaseApiRequest implements HasPhotoIDs
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
-			RequestAttribute::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
-		];
+		return DeletePhotosRuleSet::rules();
 	}
 
 	/**
