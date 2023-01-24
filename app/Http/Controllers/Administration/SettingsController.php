@@ -349,7 +349,11 @@ class SettingsController extends Controller
 	{
 		/** @var string $js */
 		$js = $request->getSettingValue();
-		if (Storage::disk('dist')->put('custom.js', $js) === false) {
+		if (Storage::disk('dist')->put('custom.js', $js) === true) {
+			if (Storage::disk('dist')->get('custom.js') !== $js) {
+				throw new InsufficientFilesystemPermissions('Could not save JS');
+			}
+		} else {
 			throw new InsufficientFilesystemPermissions('Could not save JS');
 		}
 	}
