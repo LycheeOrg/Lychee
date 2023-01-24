@@ -3,18 +3,15 @@
 namespace App\Http\Livewire\Modules\Gallery;
 
 use App\Contracts\Models\AbstractAlbum;
-use App\Exceptions\ConfigurationKeyMissingException;
 use App\Facades\Lang;
 use App\Http\Livewire\Components\Base\Openable;
 use App\Models\Album;
 use App\Models\Configs;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-use RuntimeException;
 
 /**
- * This is the overlay displaying the NSFW warning
+ * This is the overlay displaying the NSFW warning.
  */
 class SensitiveWarning extends Openable
 {
@@ -26,6 +23,7 @@ class SensitiveWarning extends Openable
 	 * - We also give the ability to override the text in LANG by the user.
 	 *
 	 * @param AbstractAlbum|null $album
+	 *
 	 * @return void
 	 */
 	public function mount(AbstractAlbum $album = null): void

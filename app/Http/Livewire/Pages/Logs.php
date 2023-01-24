@@ -7,10 +7,8 @@ use App\Enum\SeverityType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Configs;
-use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Logs as ModelsLogs;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Livewire\Component;
@@ -24,9 +22,10 @@ class Logs extends Component
 	 * in order to avoid poluting the data sent to the user.
 	 *
 	 * @return Collection
+	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	 public function getLogsProperty(): Collection
+	public function getLogsProperty(): Collection
 	{
 		return ModelsLogs::query()
 			->orderBy('id', 'desc')

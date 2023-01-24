@@ -25,7 +25,7 @@ class Users extends Component
 	public bool $may_edit_own_settings = false;
 
 	/**
-	 * @var string[] listeners to refresh the page when creating a new user or deleting one.
+	 * @var string[] listeners to refresh the page when creating a new user or deleting one
 	 */
 	protected $listeners = ['loadUsers'];
 
@@ -50,7 +50,7 @@ class Users extends Component
 	}
 
 	/**
-	 * Refresh the user List
+	 * Refresh the user List.
 	 *
 	 * @return void
 	 */

@@ -7,7 +7,6 @@ use App\Models\Album as ModelsAlbum;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\Models\TagAlbum;
-use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\View\View;
 use Livewire\Component;
@@ -43,8 +42,10 @@ class Album extends Component
 	 * Mount the album Side bar.
 	 *
 	 * @param BaseAlbum $album
+	 *
 	 * @return void
-	 * @throws Exception
+	 *
+	 * @throws \Exception
 	 */
 	public function mount(BaseAlbum $album): void
 	{

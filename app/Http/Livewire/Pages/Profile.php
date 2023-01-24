@@ -14,7 +14,7 @@ use Livewire\Component;
  * - Change their password,
  * - Set up their email for notifications
  * - Update their API Token
- * - Set up their U2F
+ * - Set up their U2F.
  */
 class Profile extends Component
 {
@@ -27,6 +27,7 @@ class Profile extends Component
 	 * Set up the profile page.
 	 *
 	 * @return void
+	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
 	public function mount(): void

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 /**
- * In the User management page, this represent a user (line)
+ * In the User management page, this represent a user (line).
  */
 class UserLine extends Component
 {
@@ -26,6 +26,7 @@ class UserLine extends Component
 	 * Note that password stays empty to ensure that we do not update it by mistake.
 	 *
 	 * @param User $user
+	 *
 	 * @return void
 	 */
 	public function mount(User $user): void

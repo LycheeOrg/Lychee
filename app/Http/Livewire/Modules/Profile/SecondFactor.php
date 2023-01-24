@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Livewire\Component;
-use RuntimeException;
 
 class SecondFactor extends Component
 {
@@ -46,7 +45,8 @@ class SecondFactor extends Component
 	 * Fetch the credentials of the current user.
 	 *
 	 * @return void
-	 * @throws RuntimeException
+	 *
+	 * @throws \RuntimeException
 	 * @throws UnauthenticatedException
 	 */
 	public function loadCredentials(): void
