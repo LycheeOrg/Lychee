@@ -20,13 +20,22 @@ class AllSettings extends Component
 
 	public PageMode $mode = PageMode::ALL_SETTINGS;
 
-	// This allows Livewire to know which values of the $configs we
-	// want to display in the wire:model. Sort of a white listing.
+	/**
+	 * This allows Livewire to know which values of the $configs we
+	 * want to display in the wire:model. Sort of a white listing.
+	 *
+	 * @var array<string,string>
+	 */
 	protected $rules = [
 		'configs.*.value' => 'required',
 	];
 
-	// listeners of events
+	/**
+	 * Listeners for saving all data. This is because we use a modal pop-up to confirm.
+	 * One way to avoid this listener would be to incorporate the modal into this component (but I don't feel like it).
+	 *
+	 * @var string[]
+	 */
 	protected $listeners = [
 		'saveAll',
 	];
@@ -51,7 +60,12 @@ class AllSettings extends Component
 		return view('livewire.pages.all-settings');
 	}
 
-	public function openConfirmSave()
+	/**
+	 * Open Saving confirmation modal.
+	 *
+	 * @return void
+	 */
+	public function openConfirmSave(): void
 	{
 		$this->openModal('forms.confirms.save-all');
 	}
@@ -61,7 +75,7 @@ class AllSettings extends Component
 	 *
 	 * @return void
 	 */
-	public function saveAll()
+	public function saveAll(): void
 	{
 		foreach ($this->configs as $config) {
 			$config->save();

@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\View\View;
 use Livewire\Component;
 
+/**
+ * User management page.
+ * Here we create, delete, modify users.
+ */
 class Users extends Component
 {
 	public PageMode $mode = PageMode::USERS;
@@ -20,6 +24,9 @@ class Users extends Component
 	public bool $may_upload = false;
 	public bool $may_edit_own_settings = false;
 
+	/**
+	 * @var string[] listeners to refresh the page when creating a new user or deleting one.
+	 */
 	protected $listeners = ['loadUsers'];
 
 	/**
@@ -27,7 +34,7 @@ class Users extends Component
 	 *
 	 * @return void
 	 */
-	public function mount()
+	public function mount(): void
 	{
 		$this->loadUsers();
 	}
@@ -42,7 +49,12 @@ class Users extends Component
 		return view('livewire.pages.users');
 	}
 
-	public function loadUsers()
+	/**
+	 * Refresh the user List
+	 *
+	 * @return void
+	 */
+	public function loadUsers(): void
 	{
 		$this->users = User::orderBy('id', 'asc')->get();
 	}
@@ -52,10 +64,9 @@ class Users extends Component
 	 *
 	 * @param Create $create
 	 *
-	 * @throws InvalidPropertyException
-	 * @throws ModelDBException
+	 * @return void
 	 */
-	public function create(Create $create)
+	public function create(Create $create): void
 	{
 		// Create user
 		$create->do(

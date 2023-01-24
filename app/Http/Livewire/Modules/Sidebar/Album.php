@@ -7,6 +7,7 @@ use App\Models\Album as ModelsAlbum;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\Models\TagAlbum;
+use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\View\View;
 use Livewire\Component;
@@ -38,6 +39,13 @@ class Album extends Component
 	public string $owner_name = '';
 	public string $license;
 
+	/**
+	 * Mount the album Side bar.
+	 *
+	 * @param BaseAlbum $album
+	 * @return void
+	 * @throws Exception
+	 */
 	public function mount(BaseAlbum $album): void
 	{
 		$this->load($album);
@@ -61,7 +69,7 @@ class Album extends Component
 	 * It is more interesting to extract this code because the code of mount() is executed only once.
 	 * On the other hand, the load() can be called from other components before triggering a rerendering upon updating properties.
 	 *
-	 * @param BaseAlbum $album
+	 * @param BaseAlbum $baseAlbum
 	 *
 	 * @return void
 	 *

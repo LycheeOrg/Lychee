@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Modules\Gallery;
 
 use App\Contracts\Models\AbstractAlbum;
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Facades\Lang;
 use App\Http\Livewire\Components\Base\Openable;
 use App\Models\Album;
@@ -10,12 +11,24 @@ use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use RuntimeException;
 
+/**
+ * This is the overlay displaying the NSFW warning
+ */
 class SensitiveWarning extends Openable
 {
+	// Text to be displayed. THIS IS HTML UNSANITIZED
 	public string $text;
 
-	public function mount(AbstractAlbum $album = null)
+	/**
+	 * Prepare the warning if required by the album.
+	 * - We also give the ability to override the text in LANG by the user.
+	 *
+	 * @param AbstractAlbum|null $album
+	 * @return void
+	 */
+	public function mount(AbstractAlbum $album = null): void
 	{
 		$override = Configs::getValueAsString('nsfw_banner_override');
 		$this->text = $override !== '' ? $override : Lang::get('NSFW_BANNER');
@@ -24,9 +37,9 @@ class SensitiveWarning extends Openable
 			$this->isOpen = $album->is_nsfw;
 
 			if (Auth::user()?->may_administrate === true) {
-				$this->isOpen &= Configs::getValueAsBool('nsfw_warning_admin');
+				$this->isOpen = $this->isOpen && Configs::getValueAsBool('nsfw_warning_admin');
 			} else {
-				$this->isOpen &= Configs::getValueAsBool('nsfw_warning');
+				$this->isOpen = $this->isOpen && Configs::getValueAsBool('nsfw_warning');
 			}
 		}
 	}
@@ -35,8 +48,6 @@ class SensitiveWarning extends Openable
 	 * Render the associated view.
 	 *
 	 * @return View
-	 *
-	 * @throws BindingResolutionException
 	 */
 	public function render(): View
 	{

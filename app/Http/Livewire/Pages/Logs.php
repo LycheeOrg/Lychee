@@ -23,12 +23,10 @@ class Logs extends Component
 	 * We use a computed property instead of attributes
 	 * in order to avoid poluting the data sent to the user.
 	 *
-	 * @return Collection<array-key, FixedQueryBuilder<Model>>
-	 *
-	 * @throws QueryBuilderException
+	 * @return Collection
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function getLogsProperty(): Collection
+	 public function getLogsProperty(): Collection
 	{
 		return ModelsLogs::query()
 			->orderBy('id', 'desc')

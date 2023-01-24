@@ -5,19 +5,30 @@ namespace App\Http\Livewire\Modules\Users;
 use App\Actions\User\Save;
 use App\Exceptions\UnauthorizedException;
 use App\Models\User;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
+/**
+ * In the User management page, this represent a user (line)
+ */
 class UserLine extends Component
 {
 	public User $user;
 	// We cannot model bind hidden attributes, as a result, it is better to add properties to the component
-	public string $username;
-	public string $password = '';
-	public bool $may_upload;
-	public bool $may_edit_own_settings;
+	public string $username; // ! Wired
+	public string $password = '';  // ! Wired
+	public bool $may_upload; // ! Wired
+	public bool $may_edit_own_settings; // ! Wired
 
-	public function mount(User $user)
+	/**
+	 * Given a user, load the properties.
+	 * Note that password stays empty to ensure that we do not update it by mistake.
+	 *
+	 * @param User $user
+	 * @return void
+	 */
+	public function mount(User $user): void
 	{
 		$this->user = $user;
 		$this->username = $user->username;
@@ -30,12 +41,18 @@ class UserLine extends Component
 	 *
 	 * @return View
 	 */
-	public function render()
+	public function render(): View
 	{
 		return view('livewire.modules.users.user-line');
 	}
 
-	public function getHasChangedProperty()
+	/**
+	 * computed property to check if the state is dirty.
+	 * TODO: See if the dirty state of Livewire is usable instead.
+	 *
+	 * @return bool
+	 */
+	public function getHasChangedProperty(): bool
 	{
 		return $this->user->username !== $this->username ||
 		$this->user->may_upload !== $this->may_upload ||
@@ -50,12 +67,8 @@ class UserLine extends Component
 	 * admin user.
 	 *
 	 * @return void
-	 *
-	 * @throws ModelDBException
-	 * @throws UnauthenticatedException
-	 * @throws InvalidFormatException
 	 */
-	public function delete()
+	public function delete(): void
 	{
 		if ($this->user->id === Auth::id()) {
 			throw new UnauthorizedException('You are not allowed to delete yourself');
@@ -71,9 +84,6 @@ class UserLine extends Component
 	 * @param Save $save
 	 *
 	 * @return void
-	 *
-	 * @throws InvalidPropertyException
-	 * @throws ModelDBException
 	 */
 	public function save(Save $save): void
 	{

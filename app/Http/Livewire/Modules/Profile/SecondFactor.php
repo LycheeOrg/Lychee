@@ -8,11 +8,18 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Livewire\Component;
+use RuntimeException;
 
 class SecondFactor extends Component
 {
 	public Collection $credentials;
 
+	/**
+	 * Listeners for reloading the list of credentials.
+	 * This allows to update the list after a new credential has been added or removed.
+	 *
+	 * @var string[]
+	 */
 	protected $listeners = ['loadCredentials'];
 
 	/**
@@ -20,7 +27,7 @@ class SecondFactor extends Component
 	 *
 	 * @return void
 	 */
-	public function mount()
+	public function mount(): void
 	{
 		$this->loadCredentials();
 	}
@@ -35,7 +42,14 @@ class SecondFactor extends Component
 		return view('livewire.modules.profile.second-factor');
 	}
 
-	public function loadCredentials()
+	/**
+	 * Fetch the credentials of the current user.
+	 *
+	 * @return void
+	 * @throws RuntimeException
+	 * @throws UnauthenticatedException
+	 */
+	public function loadCredentials(): void
 	{
 		/** @var \App\Models\User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();
@@ -44,16 +58,13 @@ class SecondFactor extends Component
 	}
 
 	/**
-	 * Create a new user.
+	 * Create a new U2F credential.
 	 *
-	 * @param Create $create
-	 *
-	 * @throws InvalidPropertyException
-	 * @throws ModelDBException
+	 * @return void
 	 */
-	public function create()
+	public function create(): void
 	{
-		dd('DIE FOR NOW');
+		dd('DIE FOR NOW: LATER HAVE U2F interaction');
 		// reset attributes and reload user list (triggers refresh)
 		$this->loadCredentials();
 	}

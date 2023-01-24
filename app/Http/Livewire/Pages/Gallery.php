@@ -8,6 +8,7 @@ use App\Factories\AlbumFactory;
 use App\Http\Livewire\Traits\AlbumProperty;
 use App\Http\Livewire\Traits\InteractWithModal;
 use App\Http\Livewire\Traits\UrlChange;
+use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
@@ -133,8 +134,10 @@ class Gallery extends Component
 	 * In the case of album -> subalbum only the inner part will be re-rendered (in theory).
 	 *
 	 * @param string $albumId
+	 *
+	 * @return void
 	 */
-	public function openAlbum(string $albumId)
+	public function openAlbum(string $albumId): void
 	{
 		$this->albumId = $albumId;
 		$this->load();
@@ -147,8 +150,10 @@ class Gallery extends Component
 	 * of the html change.
 	 *
 	 * @param string $photoId
+	 *
+	 * @return void
 	 */
-	public function openPhoto(string $photoId)
+	public function openPhoto(string $photoId): void
 	{
 		$this->photoId = $photoId;
 		// This ensures that the history has been updated
@@ -157,12 +162,14 @@ class Gallery extends Component
 
 	/**
 	 * Method call to go back one step.
+	 *
+	 * @return void
 	 */
-	public function back()
+	public function back(): void
 	{
 		if ($this->photoId !== null && $this->photoId !== '') {
 			$this->photoId = null;
-		} elseif ($this->baseAlbum instanceof BaseAlbum && $this->baseAlbum->parent_id !== null) {
+		} elseif ($this->baseAlbum instanceof Album && $this->baseAlbum->parent_id !== null) {
 			// Case of sub-albums
 			$this->albumId = $this->baseAlbum->parent_id;
 		} else {

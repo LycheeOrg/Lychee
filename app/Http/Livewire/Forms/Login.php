@@ -75,14 +75,10 @@ class Login extends BaseForm
 	 */
 	public function submit(): void
 	{
-		/*
-		 * Empty error bag
-		 */
+		// Empty error bag
 		$this->resetErrorBag();
 
-		/*
-		 * Call Livewire validation on the from
-		 */
+		// Call Livewire validation on the from
 		$data = $this->validate()['form'];
 
 		// apply login as admin and trigger a reload
