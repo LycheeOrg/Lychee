@@ -19,10 +19,10 @@ class SetAlbumDecorationOrientationSetting extends BaseConfigDropDown
 	public function getOptionsProperty(): array
 	{
 		return [
-			'row' => Lang::get('ALBUM_DECORATION_ORIENTATION_ROW'),
-			'row_reverse' => Lang::get('ALBUM_DECORATION_ORIENTATION_ROW_REVERSE'),
-			'column' => Lang::get('ALBUM_DECORATION_ORIENTATION_COLUMN'),
-			'column_reverse' => Lang::get('ALBUM_DECORATION_ORIENTATION_COLUMN_REVERSE'),
+			'row' => __('lychee.ALBUM_DECORATION_ORIENTATION_ROW'),
+			'row_reverse' => __('lychee.ALBUM_DECORATION_ORIENTATION_ROW_REVERSE'),
+			'column' => __('lychee.ALBUM_DECORATION_ORIENTATION_COLUMN'),
+			'column_reverse' => __('lychee.ALBUM_DECORATION_ORIENTATION_COLUMN_REVERSE'),
 		];
 	}
 
@@ -33,7 +33,7 @@ class SetAlbumDecorationOrientationSetting extends BaseConfigDropDown
 	 */
 	public function mount(): void
 	{
-		$this->description = Lang::get('ALBUM_DECORATION_ORIENTATION');
+		$this->description = __('lychee.ALBUM_DECORATION_ORIENTATION');
 		$this->config = Configs::where('key', '=', 'album_decoration_orientation')->firstOrFail();
 	}
 }

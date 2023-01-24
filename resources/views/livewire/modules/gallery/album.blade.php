@@ -3,25 +3,25 @@
 		@php
 			Helpers::data_index_set(100);
 		@endphp
-		@isset($album->children)
-			@if($album->children->count() > 0)
-				@if($album->photos?->count() > 0)
+		@isset($this->album->children)
+			@if($this->album->children->count() > 0)
+				@if($this->album->photos?->count() > 0)
 				<div class='divider'>
-					<h1>{{ Lang::get('ALBUMS') }}</h1>
+					<h1>{{ __('lychee.ALBUMS') }}</h1>
 				</div>
 				@endif
-				@foreach ($album->children as $data)
+				@foreach ($this->album->children as $data)
 					<x-album :data="$data" />
 				@endforeach
-				@if($album->photos->count() > 0)
+				@if($this->album->photos->count() > 0)
 					<div class='divider'>
-						<h1>{{ Lang::get('PHOTOS') }}</h1>
+						<h1>{{ __('lychee.PHOTOS') }}</h1>
 					</div>
 				@endif
 			@endif
 		@endisset
 		<div class="{{ $layout }}">
-			@foreach ($album->photos as $data)
+			@foreach ($this->album->photos as $data)
 				<x-photo :data="$data" />
 			@endforeach
 		</div>

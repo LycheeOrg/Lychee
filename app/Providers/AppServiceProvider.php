@@ -21,6 +21,7 @@ use App\Metadata\Versions\Remote\GitCommits;
 use App\Metadata\Versions\Remote\GitTags;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SymLinkFunctions;
+use App\Models\Configs;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use Illuminate\Database\Eloquent\Model;
@@ -70,6 +71,14 @@ class AppServiceProvider extends ServiceProvider
 				$msg = $query->sql . ' [' . implode(', ', $query->bindings) . ']';
 				Log::info($msg);
 			});
+		}
+
+		try {
+			$locale = Configs::getValueAsString('lang');
+			app()->setLocale($locale);
+		}catch (\Throwable) {
+			// Do nothing, continue as is.
+			// If this fails, it most likely means that the config table does not exists, so we don't care.
 		}
 
 		/**

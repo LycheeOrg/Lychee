@@ -39,7 +39,11 @@
 				Do not that those need to not colide with other components, as a result we use prefix-id-time
 				strings to avoid such problems.
 			-->
-			<livewire:modules.gallery.album key="view-album-{{$this->albumId}}" :album="$this->album" />
+			<livewire:modules.gallery.album
+				key="view-album-{{$this->albumId}}"
+				:smartAlbum="$smartAlbum"
+				:baseAlbum="$baseAlbum"
+			/>
 			@elseif($mode === App\Enum\Livewire\GalleryMode::MAP)
 			<!--
 				For now

@@ -19,11 +19,11 @@ class SetAlbumDecorationSetting extends BaseConfigDropDown
 	public function getOptionsProperty(): array
 	{
 		return [
-			'none' => Lang::get('ALBUM_DECORATION_NONE'),
-			'layers' => Lang::get('ALBUM_DECORATION_ORIGINAL'),
-			'album' => Lang::get('ALBUM_DECORATION_ALBUM'),
-			'photo' => Lang::get('ALBUM_DECORATION_PHOTO'),
-			'all' => Lang::get('ALBUM_DECORATION_ALL'),
+			'none' => __('lychee.ALBUM_DECORATION_NONE'),
+			'layers' => __('lychee.ALBUM_DECORATION_ORIGINAL'),
+			'album' => __('lychee.ALBUM_DECORATION_ALBUM'),
+			'photo' => __('lychee.ALBUM_DECORATION_PHOTO'),
+			'all' => __('lychee.ALBUM_DECORATION_ALL'),
 		];
 	}
 
@@ -34,7 +34,7 @@ class SetAlbumDecorationSetting extends BaseConfigDropDown
 	 */
 	public function mount()
 	{
-		$this->description = Lang::get('ALBUM_DECORATION');
+		$this->description = __('lychee.ALBUM_DECORATION');
 		$this->config = Configs::where('key', '=', 'album_decoration')->firstOrFail();
 	}
 }

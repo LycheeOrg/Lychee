@@ -29,7 +29,7 @@ class SensitiveWarning extends Openable
 	public function mount(AbstractAlbum $album = null): void
 	{
 		$override = Configs::getValueAsString('nsfw_banner_override');
-		$this->text = $override !== '' ? $override : Lang::get('NSFW_BANNER');
+		$this->text = $override !== '' ? $override : __('lychee.NSFW_BANNER');
 
 		if ($album instanceof Album) {
 			$this->isOpen = $album->is_nsfw;

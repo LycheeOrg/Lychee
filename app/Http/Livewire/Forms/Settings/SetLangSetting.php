@@ -28,7 +28,7 @@ class SetLangSetting extends BaseConfigDropDown
 	 */
 	public function mount()
 	{
-		$this->description = Lang::get('LANG_TEXT');
+		$this->description = __('lychee.LANG_TEXT');
 		// We do not use Lang::get_code() because we want to be able to modify it.
 		// We are interested in the setting itself.
 		$this->config = Configs::where('key', '=', 'lang')->firstOrFail();

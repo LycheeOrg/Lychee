@@ -62,7 +62,7 @@ class SetLicenseDefaultSetting extends BaseConfigDropDown
 	 */
 	public function mount(): void
 	{
-		$this->description = Lang::get('DEFAULT_LICENSE');
+		$this->description = __('lychee.DEFAULT_LICENSE');
 		$this->config = Configs::where('key', '=', 'default_license')->firstOrFail();
 	}
 }

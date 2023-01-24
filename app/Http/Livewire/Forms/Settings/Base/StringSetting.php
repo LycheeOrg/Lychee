@@ -29,9 +29,9 @@ class StringSetting extends Component
 	 */
 	public function mount(string $description, string $name, string $placeholder, string $action): void
 	{
-		$this->description = Lang::get($description);
-		$this->action = Lang::get($action);
-		$this->placeholder = Lang::get($placeholder);
+		$this->description = __('lychee.'.$description);
+		$this->action = __('lychee.'.$action);
+		$this->placeholder = __('lychee.'.$placeholder);
 		$this->config = Configs::where('key', '=', $name)->firstOrFail();
 	}
 

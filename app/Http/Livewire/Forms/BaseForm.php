@@ -56,6 +56,18 @@ abstract class BaseForm extends Component
 	}
 
 	/**
+	 * This defines the attributes names that we are validating.
+	 * They are displayed in the error messages.
+	 *
+	 * @return array
+	 */
+	final protected function getValidationAttributes(): array
+	{
+		return collect($this->getRuleSet())->mapWithKeys(fn ($v, $k) => ['form.' . $k => $k])->all();
+	}
+
+
+	/**
 	 * Return the rules to be applied on the form.
 	 *
 	 * @return array

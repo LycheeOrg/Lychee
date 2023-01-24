@@ -9,7 +9,7 @@
 	<div class="u2f_view_line">
 		<p>
 			<span class="text">
-				{{ Lang::Get('U2F_CREDENTIALS') }}
+				{{ __('lychee.U2F_CREDENTIALS') }}
 			</span>
 		</p>
 	</div>

@@ -2,9 +2,6 @@
 	<div class="basicModal basicModal--fadeIn " role="dialog">
 		<div class="basicModal__content">
 			{{ $title }}
-			{{-- @if($errors->has('wrongLogin'))
-				<span syle="color:red; font-weight:bold;">{{ $errors->first('wrongLogin') }}</span>
-			@endif --}}
 			<form class="force-first-child">
 			@foreach($form as $f => $v)
 				{{-- Only display the allowed forms --}}
@@ -12,7 +9,8 @@
 					<div class="input-group stacked">
 					@if (is_string($f))
 						{{-- Work in Progess, will probably evolve --}}
-						<input class="text" autocomplete="on" type="text" placeholder="{{ Lang::get($formLocale[$f]) }}" autocapitalize="off" data-tabindex="{{ Helpers::data_index() }}" wire:model="form.{{ $f }}">
+						<input class="text" autocomplete="on" type="text" placeholder="{{ $formLocale[$f] }}" autocapitalize="off" data-tabindex="{{ Helpers::data_index() }}" wire:model="form.{{ $f }}">
+						@error('form.' . $f)<span style="color:red; font-weight:bold;">{{ $message }}</span> @enderror
 					@else
 						{{ $f }} not supported yet.
 					@endif

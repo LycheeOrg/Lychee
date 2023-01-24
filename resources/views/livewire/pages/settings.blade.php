@@ -76,7 +76,7 @@
 			</div>
 
 			<div class="setCSS">
-				<a class="basicModal__button basicModal__button_MORE" wire:click="openAllSettings">{{ Lang::get('MORE') }}</a>
+				<a class="basicModal__button basicModal__button_MORE" wire:click="openAllSettings">{{ __('lychee.MORE') }}</a>
 			</div>
 		</div>
 	</div>

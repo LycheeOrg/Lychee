@@ -2,10 +2,17 @@
 
 namespace App\Http\Livewire\Forms\Album;
 
+use App\Actions\Album\Create as AlbumCreate;
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Facades\Lang;
 use App\Http\Livewire\Forms\BaseForm;
 use App\Http\Livewire\Traits\InteractWithModal;
+use App\Http\Requests\Album\AddAlbumRequest;
 use App\Http\RuleSets\AddAlbumRuleSet;
+use App\Models\Album;
+use App\Policies\AlbumPolicy;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * The Album Create MODAL extends directly from BaseForm.
@@ -16,6 +23,7 @@ class Create extends BaseForm
 	 * Allow modal integration
 	 */
 	use InteractWithModal;
+
 
 	/**
 	 * This defines the set of validation rules to be applied on the input.
@@ -38,19 +46,19 @@ class Create extends BaseForm
 	public function mount(array $params = []): void
 	{
 		parent::mount($params);
-		$this->title = Lang::get('ALBUM_NEW_TITLE');
-		$this->validate = Lang::get('CREATE_ALBUM');
-		$this->cancel = Lang::get('CANCEL');
+		$this->title = __('lychee.ALBUM_NEW_TITLE');
+		$this->validate = __('lychee.CREATE_ALBUM');
+		$this->cancel = __('lychee.CANCEL');
 		// Localization
 		$this->formLocale = [
-			'title' => 'UNTITLED',
+			RequestAttribute::TITLE_ATTRIBUTE => __('lychee.UNTITLED'),
 		];
 		// values
 		$this->form = [
-			'title' => '',
-			'parentId' => $params['parentId'],
+			RequestAttribute::TITLE_ATTRIBUTE => '',
+			RequestAttribute::PARENT_ID_ATTRIBUTE => $params['parentId'],
 		];
-		$this->formHidden = ['parentId'];
+		$this->formHidden = [RequestAttribute::PARENT_ID_ATTRIBUTE];
 	}
 
 	/**
@@ -60,16 +68,27 @@ class Create extends BaseForm
 	 */
 	public function submit(): void
 	{
-		/*
-		 * Empty error bag
-		 */
+		// Reset error bag
 		$this->resetErrorBag();
 
-		/*
-		 * Call Livewire validation on the from
-		 */
-		$data = $this->validate()['form'];
-		/** @phpstan-ignore-next-line */
-		dd('die', $data);
+		// Validate
+		$values = $this->validate()['form'];
+		$parentAlbumID = $values[RequestAttribute::PARENT_ID_ATTRIBUTE];
+		$title = $values[RequestAttribute::TITLE_ATTRIBUTE];
+
+		/** @var Album|null $parentAlbum */
+		$parentAlbum = $parentAlbumID === null ? null : Album::query()->firstOrFail($parentAlbumID);
+
+		// Authorize
+		Gate::validate(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $parentAlbum]);
+
+		// Create
+		resolve(AlbumCreate::class)->create($title, $parentAlbum);
+
+		// Do we want refresh or direcly open newly created Album ?
+		$this->emitTo('modules.gallery.albums', 'reload');
+		$this->emitTo('modules.gallery.album', 'reload');
+
+		$this->close();
 	}
 }

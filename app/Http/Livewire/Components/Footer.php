@@ -44,8 +44,10 @@ class Footer extends Component
 		$this->hosted_by = Lang::get('HOSTED_WITH_LYCHEE');
 
 		if (Configs::getValueAsBool('footer_show_copyright')) {
+			/** @var string $footer_text */
+			$footer_text = __('lychee.FOOTER_COPYRIGHT');
 			$this->copyright = sprintf(
-				Lang::get('FOOTER_COPYRIGHT'),
+				$footer_text,
 				Configs::getValueAsString('site_owner'),
 				Configs::getValueAsInt('site_copyright_end'));
 		}

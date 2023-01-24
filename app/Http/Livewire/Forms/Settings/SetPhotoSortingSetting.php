@@ -24,7 +24,9 @@ class SetPhotoSortingSetting extends BaseConfigDoubleDropDown
 		// We cannot abuse the sprintf in the case of blade templates compared to JS
 		// So we do a simple preg_match to retrieve the chunks.
 		// Note this assumes that %1$s is before %2$s !
-		preg_match('/^(.*)%1\$s(.*)%2\$s(.*)$/', Lang::get('SORT_PHOTO_BY'), $matches);
+		/** @var string $sort_photo_by */
+		$sort_photo_by = __('lychee.SORT_PHOTO_BY');
+		preg_match('/^(.*)%1\$s(.*)%2\$s(.*)$/', $sort_photo_by, $matches);
 		$this->begin = $matches[1];
 		$this->middle = $matches[2];
 		$this->end = $matches[3];
@@ -41,13 +43,13 @@ class SetPhotoSortingSetting extends BaseConfigDoubleDropDown
 	public function getOptions1Property(): array
 	{
 		return [
-			ColumnSortingPhotoType::CREATED_AT->value => Lang::get('SORT_PHOTO_SELECT_1'),
-			ColumnSortingPhotoType::TAKEN_AT->value => Lang::get('SORT_PHOTO_SELECT_2'),
-			ColumnSortingPhotoType::TITLE->value => Lang::get('SORT_PHOTO_SELECT_3'),
-			ColumnSortingPhotoType::DESCRIPTION->value => Lang::get('SORT_PHOTO_SELECT_4'),
-			ColumnSortingPhotoType::IS_PUBLIC->value => Lang::get('SORT_PHOTO_SELECT_5'),
-			ColumnSortingPhotoType::IS_STARRED->value => Lang::get('SORT_PHOTO_SELECT_6'),
-			ColumnSortingPhotoType::TYPE->value => Lang::get('SORT_PHOTO_SELECT_7'),
+			ColumnSortingPhotoType::CREATED_AT->value => __('lychee.SORT_PHOTO_SELECT_1'),
+			ColumnSortingPhotoType::TAKEN_AT->value => __('lychee.SORT_PHOTO_SELECT_2'),
+			ColumnSortingPhotoType::TITLE->value => __('lychee.SORT_PHOTO_SELECT_3'),
+			ColumnSortingPhotoType::DESCRIPTION->value => __('lychee.SORT_PHOTO_SELECT_4'),
+			ColumnSortingPhotoType::IS_PUBLIC->value => __('lychee.SORT_PHOTO_SELECT_5'),
+			ColumnSortingPhotoType::IS_STARRED->value => __('lychee.SORT_PHOTO_SELECT_6'),
+			ColumnSortingPhotoType::TYPE->value => __('lychee.SORT_PHOTO_SELECT_7'),
 		];
 	}
 
@@ -59,8 +61,8 @@ class SetPhotoSortingSetting extends BaseConfigDoubleDropDown
 	public function getOptions2Property(): array
 	{
 		return [
-			OrderSortingType::ASC->value => Lang::get('SORT_ASCENDING'),
-			OrderSortingType::DESC->value => Lang::get('SORT_DESCENDING'),
+			OrderSortingType::ASC->value => __('lychee.SORT_ASCENDING'),
+			OrderSortingType::DESC->value => __('lychee.SORT_DESCENDING'),
 		];
 	}
 }

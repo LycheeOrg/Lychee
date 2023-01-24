@@ -23,8 +23,8 @@ class SetEmail extends Component
 	 */
 	public function mount(): void
 	{
-		$this->description = Lang::get('ENTER_EMAIL');
-		$this->action = Lang::get('SAVE');
+		$this->description = __('lychee.ENTER_EMAIL');
+		$this->action = __('lychee.SAVE');
 	}
 
 	/**

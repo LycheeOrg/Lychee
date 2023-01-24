@@ -19,10 +19,10 @@ class SetPhotoOverlaySetting extends BaseConfigDropDown
 	public function getOptionsProperty(): array
 	{
 		return [
-			'exif' => Lang::get('OVERLAY_EXIF'),
-			'desc' => Lang::get('OVERLAY_DESCRIPTION'),
-			'date' => Lang::get('OVERLAY_DATE'),
-			'none' => Lang::get('OVERLAY_NONE'),
+			'exif' => __('lychee.OVERLAY_EXIF'),
+			'desc' => __('lychee.OVERLAY_DESCRIPTION'),
+			'date' => __('lychee.OVERLAY_DATE'),
+			'none' => __('lychee.OVERLAY_NONE'),
 		];
 	}
 
@@ -33,7 +33,7 @@ class SetPhotoOverlaySetting extends BaseConfigDropDown
 	 */
 	public function mount(): void
 	{
-		$this->description = Lang::get('OVERLAY_TYPE');
+		$this->description = __('lychee.OVERLAY_TYPE');
 		$this->config = Configs::where('key', '=', 'image_overlay_type')->firstOrFail();
 	}
 }

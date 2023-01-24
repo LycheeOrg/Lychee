@@ -19,11 +19,11 @@ class SetMapProviderSetting extends BaseConfigDropDown
 	public function getOptionsProperty(): array
 	{
 		return [
-			'Wikimedia' => Lang::get('MAP_PROVIDER_WIKIMEDIA'),
-			'OpenStreetMap.org' => Lang::get('MAP_PROVIDER_OSM_ORG'),
-			'OpenStreetMap.de' => Lang::get('MAP_PROVIDER_OSM_DE'),
-			'OpenStreetMap.fr' => Lang::get('MAP_PROVIDER_OSM_FR'),
-			'RRZE' => Lang::get('MAP_PROVIDER_RRZE'),
+			'Wikimedia' => __('lychee.MAP_PROVIDER_WIKIMEDIA'),
+			'OpenStreetMap.org' => __('lychee.MAP_PROVIDER_OSM_ORG'),
+			'OpenStreetMap.de' => __('lychee.MAP_PROVIDER_OSM_DE'),
+			'OpenStreetMap.fr' => __('lychee.MAP_PROVIDER_OSM_FR'),
+			'RRZE' => __('lychee.MAP_PROVIDER_RRZE'),
 		];
 	}
 
@@ -34,7 +34,7 @@ class SetMapProviderSetting extends BaseConfigDropDown
 	 */
 	public function mount()
 	{
-		$this->description = Lang::get('MAP_PROVIDER');
+		$this->description = __('lychee.MAP_PROVIDER');
 		$this->config = Configs::where('key', '=', 'map_provider')->firstOrFail();
 	}
 }

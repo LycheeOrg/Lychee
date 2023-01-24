@@ -1,10 +1,10 @@
-<x-view-content :mode="$mode" :title="Lang::get('SETTINGS')">
+<x-view-content :mode="$mode" :title="__('lychee.SETTINGS')">
 	<div id="lychee_view_content" class="vflex-item-stretch contentZoomIn">
 		<div class="settings_view">
 			<div id="fullSettings">
 				<div class="setting_line">
 					<p class="warning">
-						{{ Lang::get("SETTINGS_ADVANCED_WARNING_EXPL") }}
+						{{ __("lychee.SETTINGS_ADVANCED_WARNING_EXPL") }}
 					</p>
 				</div>
 				@php
@@ -29,7 +29,7 @@
 						</p>
 					</div>
 				@endforeach
-				<a class="basicModal__button basicModal__button_SAVE" wire:click="openConfirmSave">{{ Lang::get("SETTINGS_ADVANCED_SAVE") }}</a>
+				<a class="basicModal__button basicModal__button_SAVE" wire:click="openConfirmSave">{{ __("lychee.SETTINGS_ADVANCED_SAVE") }}</a>
 			</div>
 		</div>
 	</div>

@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Modules\Gallery;
 
 use App\Actions\Albums\Top;
+use App\Contracts\Exceptions\InternalLycheeException;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
@@ -24,6 +25,9 @@ class Albums extends Component
 	/** @var Collection<Album> Collection of the album shared to the user */
 	public Collection $shared_albums;
 
+	/** @var string[] allows to reload and refresh the page. */
+	protected $listeners = ['reload'];
+
 	/**
 	 * Render component.
 	 *
@@ -33,11 +37,20 @@ class Albums extends Component
 	 */
 	public function render(): View
 	{
+		$this->reload();
+
+		return view('livewire.modules.gallery.albums');
+	}
+
+	/**
+	 * Allows queries to reload the albums list.
+	 *
+	 * @return void
+	 */
+	public function reload() {
 		$topAlbums = resolve(Top::class)->get();
 		$this->albums = $topAlbums->albums;
 		$this->smartalbums = $topAlbums->smart_albums->concat($topAlbums->tag_albums)->reject(fn ($album) => $album === null);
 		$this->shared_albums = $topAlbums->shared_albums;
-
-		return view('livewire.modules.gallery.albums');
 	}
 }
