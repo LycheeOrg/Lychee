@@ -3,7 +3,6 @@
 namespace App\Http\Livewire\Forms\Profile;
 
 use App\Exceptions\UnauthenticatedException;
-use App\Facades\Lang;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;

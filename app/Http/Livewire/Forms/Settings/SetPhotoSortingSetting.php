@@ -4,7 +4,6 @@ namespace App\Http\Livewire\Forms\Settings;
 
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\OrderSortingType;
-use App\Facades\Lang;
 use App\Http\Livewire\Forms\Settings\Base\BaseConfigDoubleDropDown;
 use App\Models\Configs;
 use function Safe\preg_match;

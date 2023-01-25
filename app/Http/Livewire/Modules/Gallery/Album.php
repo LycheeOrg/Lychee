@@ -36,6 +36,7 @@ class Album extends Component
 
 	/**
 	 * Listeners for roloading the page.
+	 *
 	 * @var string[]
 	 */
 	protected $listeners = ['reload'];

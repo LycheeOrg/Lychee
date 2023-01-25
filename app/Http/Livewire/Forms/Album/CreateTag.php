@@ -7,13 +7,10 @@ use App\Contracts\Http\Requests\RequestAttribute;
 use App\Facades\Lang;
 use App\Http\Livewire\Forms\BaseForm;
 use App\Http\Livewire\Traits\InteractWithModal;
-use App\Http\Requests\Album\AddAlbumRequest;
-use App\Http\RuleSets\AddAlbumRuleSet;
 use App\Http\RuleSets\Album\AddTagAlbumRuleSet;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Validator;
 
 /**
  * The Tag Album Create MODAL extends directly from BaseForm.
@@ -24,7 +21,6 @@ class CreateTag extends BaseForm
 	 * Allow modal integration
 	 */
 	use InteractWithModal;
-
 
 	/**
 	 * This defines the set of validation rules to be applied on the input.

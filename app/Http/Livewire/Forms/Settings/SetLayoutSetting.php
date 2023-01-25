@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire\Forms\Settings;
 
-use App\Facades\Lang;
 use App\Http\Livewire\Forms\Settings\Base\BaseConfigDropDown;
 use App\Models\Configs;
 

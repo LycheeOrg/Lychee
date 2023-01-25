@@ -3,7 +3,6 @@
 namespace App\Http\Livewire\Forms;
 
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Facades\Lang;
 use App\Http\RuleSets\LoginRuleSet;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
