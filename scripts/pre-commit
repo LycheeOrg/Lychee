@@ -6,6 +6,7 @@ YELLOW="\033[38;5;011m"
 printf "\n${GREEN}pre commit hook start${NO_COLOR}\n"
 
 PHP_CS_FIXER="vendor/bin/php-cs-fixer"
+PHP_CS_FIXER_IGNORE_ENV=1
 
 if [ -x "$PHP_CS_FIXER" ]; then
     git status --porcelain | grep -e '^[AM]\(.*\).php$' | cut -c 3- | while read line; do

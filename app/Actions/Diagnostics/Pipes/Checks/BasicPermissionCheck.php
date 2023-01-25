@@ -9,7 +9,6 @@ use App\Exceptions\Internal\InvalidConfigOption;
 use App\Facades\Helpers;
 use App\Models\SymLink;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use Psr\Container\ContainerExceptionInterface;
@@ -91,7 +90,6 @@ class BasicPermissionCheck implements DiagnosticPipe
 			$this->groupIDs
 		));
 
-		/** @var Filesystem[] $disks */
 		$disks = [
 			AbstractSizeVariantNamingStrategy::getImageDisk(),
 			Storage::disk(SymLink::DISK_NAME),

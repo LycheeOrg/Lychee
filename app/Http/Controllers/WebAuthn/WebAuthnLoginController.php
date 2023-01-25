@@ -27,7 +27,7 @@ class WebAuthnLoginController
 	 */
 	public function options(AssertionRequest $request): Responsable
 	{
-		return $request->toVerify($request->validate(['user_id' => 'sometimes|int'])['user_id']);
+		return $request->toVerify($request->validate(['user_id' => 'sometimes|int'])['user_id'] ?? null);
 	}
 
 	/**

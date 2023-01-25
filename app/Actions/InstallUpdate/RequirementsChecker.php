@@ -24,36 +24,30 @@ class RequirementsChecker
 		$results = [];
 		$results['errors'] = false;
 		foreach ($requirements as $type => $requirement_) {
-			switch ($type) {
+			if ($type === 'php') {
 				// check php requirements
-				case 'php':
-					foreach ($requirement_ as $requirement) {
-						$hasExtension = extension_loaded($requirement);
-						$results['requirements'][$type][$requirement] = $hasExtension;
-						// Note: Don't use the short-cut assignment `|=`;
-						// it silently converts the type to integer, because
-						// `|` is not the logical OR, but the bitwise OR.
-						$results['errors'] = $results['errors'] || !$hasExtension;
-					}
+				foreach ($requirement_ as $requirement) {
+					$hasExtension = extension_loaded($requirement);
+					$results['requirements'][$type][$requirement] = $hasExtension;
+					// Note: Don't use the short-cut assignment `|=`;
+					// it silently converts the type to integer, because
+					// `|` is not the logical OR, but the bitwise OR.
+					$results['errors'] = $results['errors'] || !$hasExtension;
+				}
 
-					if (Helpers::isExecAvailable()) {
-						$results['requirements'][$type]['Php exec() available'] = true;
-					} else {
-						$results['requirements'][$type]['Php exec() not available (optional)'] = false;
-					}
-
-					break;
-					// check apache requirements
-				case 'apache':
-					foreach ($requirement_ as $requirement) {
-						// if function doesn't exist we can't check apache modules
-						$hasModule = !function_exists('apache_get_modules') || in_array($requirement, apache_get_modules(), true);
-						$results['requirements'][$type][$requirement] = $hasModule;
-						$results['errors'] = $results['errors'] || !$hasModule;
-					}
-					break;
-				default:
-					break;
+				if (Helpers::isExecAvailable()) {
+					$results['requirements'][$type]['Php exec() available'] = true;
+				} else {
+					$results['requirements'][$type]['Php exec() not available (optional)'] = false;
+				}
+			} elseif ($type === 'apache') {
+				// check apache requirements
+				foreach ($requirement_ as $requirement) {
+					// if function doesn't exist we can't check apache modules
+					$hasModule = !function_exists('apache_get_modules') || in_array($requirement, apache_get_modules(), true);
+					$results['requirements'][$type][$requirement] = $hasModule;
+					$results['errors'] = $results['errors'] || !$hasModule;
+				}
 			}
 		}
 

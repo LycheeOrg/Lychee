@@ -13,6 +13,8 @@
 namespace Tests\Feature\Base;
 
 use App\Models\Configs;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Tests\AbstractTestCase;
 use Tests\Feature\Lib\RootAlbumUnitTest;
 use Tests\Feature\Lib\SharingUnitTest;
@@ -138,6 +140,9 @@ abstract class BaseSharingTest extends BasePhotoTest
 	/** @var bool the previously configured public visibility for "Starred" */
 	private bool $isStarredAlbumPublic;
 
+	/** @var bool the previously configured public visibility for "On This Day" */
+	private bool $isOnThisDayAlbumPublic;
+
 	public function setUp(): void
 	{
 		parent::setUp();
@@ -166,6 +171,8 @@ abstract class BaseSharingTest extends BasePhotoTest
 		Configs::set(AbstractTestCase::CONFIG_PUBLIC_RECENT, true);
 		$this->isStarredAlbumPublic = Configs::getValueAsBool(AbstractTestCase::CONFIG_PUBLIC_STARRED);
 		Configs::set(AbstractTestCase::CONFIG_PUBLIC_STARRED, true);
+		$this->isOnThisDayAlbumPublic = Configs::getValueAsBool(AbstractTestCase::CONFIG_PUBLIC_ON_THIS_DAY);
+		Configs::set(AbstractTestCase::CONFIG_PUBLIC_ON_THIS_DAY, true);
 		$this->clearCachedSmartAlbums();
 	}
 
@@ -178,6 +185,7 @@ abstract class BaseSharingTest extends BasePhotoTest
 
 		Configs::set(AbstractTestCase::CONFIG_PUBLIC_RECENT, $this->isRecentAlbumPublic);
 		Configs::set(AbstractTestCase::CONFIG_PUBLIC_STARRED, $this->isStarredAlbumPublic);
+		Configs::set(AbstractTestCase::CONFIG_PUBLIC_ON_THIS_DAY, $this->isOnThisDayAlbumPublic);
 		$this->clearCachedSmartAlbums();
 
 		$this->tearDownRequiresEmptyPhotos();
@@ -237,5 +245,19 @@ abstract class BaseSharingTest extends BasePhotoTest
 			'photos' => $expectedPhotos,
 			'policy' => ['is_public' => $isPublic],
 		];
+	}
+
+	protected function ensurePhotosWereTakenOnThisDay(string ...$photoIds): void
+	{
+		DB::table('photos')
+			->whereIn('id', $photoIds)
+			->update(['taken_at' => (Carbon::today())->subYear()->format('Y-m-d H:i:s.u')]);
+	}
+
+	protected function ensurePhotosWereNotTakenOnThisDay(string ...$photoIds): void
+	{
+		DB::table('photos')
+			->whereIn('id', $photoIds)
+			->update(['taken_at' => (Carbon::today())->subMonth()->format('Y-m-d H:i:s.u')]);
 	}
 }

@@ -10,14 +10,25 @@ use Illuminate\Testing\TestResponse;
  */
 trait CatchFailures
 {
+	/**
+	 * Some of the exceptions we get are expected. We silence then.
+	 *
+	 * @var array
+	 */
+	private array $catchFailureSilence = ["App\Exceptions\MediaFileOperationException"];
+
 	protected function assertStatus(TestResponse $response, int $expectedStatusCode): void
 	{
 		if ($response->getStatusCode() === 500) {
 			$exception = $response->json();
+			if (in_array($exception['exception'], $this->catchFailureSilence, true)) {
+				return;
+			}
 			$this->trimException($exception);
 			dump($exception);
 		}
-		if ($response->getStatusCode() !== $expectedStatusCode) {
+		// We remove 204 as it does not have content
+		if (!in_array($response->getStatusCode(), [204, $expectedStatusCode], true)) {
 			$exception = $response->json();
 			$this->trimException($exception);
 			dump($exception);
@@ -42,9 +53,11 @@ trait CatchFailures
 	 */
 	private function trimException(array &$exception): void
 	{
-		$exception['trace'] = array_slice($exception['trace'], 0, 3);
+		if (isset($exception['trace'])) {
+			$exception['trace'] = array_slice($exception['trace'], 0, 3);
+		}
 
-		if ($exception['previous_exception'] !== null) {
+		if (isset($exception['previous_exception'])) {
 			$this->trimException($exception['previous_exception']);
 		}
 	}

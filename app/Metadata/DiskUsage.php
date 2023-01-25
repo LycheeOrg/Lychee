@@ -3,6 +3,7 @@
 namespace App\Metadata;
 
 use App\Facades\Helpers;
+use Illuminate\Support\Facades\Storage;
 use function Safe\disk_free_space;
 use function Safe\disk_total_space;
 use function Safe\exec;
@@ -145,8 +146,7 @@ class DiskUsage
 	 */
 	public function get_lychee_upload_space(): string
 	{
-		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
-		$ds = $this->getTotalSize(base_path('public/uploads/'));
+		$ds = $this->getTotalSize(Storage::disk('images')->path(''));
 
 		return $this->getSymbolByQuantity($ds);
 	}

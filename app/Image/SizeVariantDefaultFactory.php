@@ -206,34 +206,8 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 	 */
 	protected function getMaxDimensions(SizeVariantType $sizeVariant): ImageDimension
 	{
-		switch ($sizeVariant) {
-			case SizeVariantType::MEDIUM2X:
-				$maxWidth = 2 * Configs::getValueAsInt('medium_max_width');
-				$maxHeight = 2 * Configs::getValueAsInt('medium_max_height');
-				break;
-			case SizeVariantType::MEDIUM:
-				$maxWidth = Configs::getValueAsInt('medium_max_width');
-				$maxHeight = Configs::getValueAsInt('medium_max_height');
-				break;
-			case SizeVariantType::SMALL2X:
-				$maxWidth = 2 * Configs::getValueAsInt('small_max_width');
-				$maxHeight = 2 * Configs::getValueAsInt('small_max_height');
-				break;
-			case SizeVariantType::SMALL:
-				$maxWidth = Configs::getValueAsInt('small_max_width');
-				$maxHeight = Configs::getValueAsInt('small_max_height');
-				break;
-			case SizeVariantType::THUMB2X:
-				$maxWidth = self::THUMBNAIL2X_DIM;
-				$maxHeight = self::THUMBNAIL2X_DIM;
-				break;
-			case SizeVariantType::THUMB:
-				$maxWidth = self::THUMBNAIL_DIM;
-				$maxHeight = self::THUMBNAIL_DIM;
-				break;
-			default:
-				throw new InvalidSizeVariantException('unknown size variant: ' . $sizeVariant->value);
-		}
+		$maxWidth = $this->getMaxWidth($sizeVariant);
+		$maxHeight = $this->getMaxHeight($sizeVariant);
 
 		return new ImageDimension($maxWidth, $maxHeight);
 	}
@@ -273,6 +247,42 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 			SizeVariantType::SMALL2X => Configs::getValueAsBool('small_2x'),
 			SizeVariantType::THUMB2X => Configs::getValueAsBool('thumb_2x'),
 			SizeVariantType::SMALL, SizeVariantType::MEDIUM, SizeVariantType::THUMB => true,
+			default => throw new InvalidSizeVariantException('unknown size variant: ' . $sizeVariant->value),
+		};
+	}
+
+	/**
+	 * Return the max width for the SizeVariant.
+	 *
+	 * @return int
+	 */
+	protected function getMaxWidth(SizeVariantType $sizeVariant): int
+	{
+		return match ($sizeVariant) {
+			SizeVariantType::MEDIUM2X => 2 * Configs::getValueAsInt('medium_max_width'),
+			SizeVariantType::MEDIUM => Configs::getValueAsInt('medium_max_width'),
+			SizeVariantType::SMALL2X => 2 * Configs::getValueAsInt('small_max_width'),
+			SizeVariantType::SMALL => Configs::getValueAsInt('small_max_width'),
+			SizeVariantType::THUMB2X => self::THUMBNAIL2X_DIM,
+			SizeVariantType::THUMB => self::THUMBNAIL_DIM,
+			default => throw new InvalidSizeVariantException('No applicable for original'),
+		};
+	}
+
+	/**
+	 * Return the max height for the SizeVariant.
+	 *
+	 * @return int
+	 */
+	protected function getMaxHeight(SizeVariantType $sizeVariant): int
+	{
+		return match ($sizeVariant) {
+			SizeVariantType::MEDIUM2X => 2 * Configs::getValueAsInt('medium_max_height'),
+			SizeVariantType::MEDIUM => Configs::getValueAsInt('medium_max_height'),
+			SizeVariantType::SMALL2X => 2 * Configs::getValueAsInt('small_max_height'),
+			SizeVariantType::SMALL => Configs::getValueAsInt('small_max_height'),
+			SizeVariantType::THUMB2X => self::THUMBNAIL2X_DIM,
+			SizeVariantType::THUMB => self::THUMBNAIL_DIM,
 			default => throw new InvalidSizeVariantException('unknown size variant: ' . $sizeVariant->value),
 		};
 	}

@@ -29,17 +29,6 @@ return [
 
 	'env' => env('APP_ENV', 'production'),
 
-	/*
-	|--------------------------------------------------------------------------
-	| Application Environment
-	|--------------------------------------------------------------------------
-	|
-	| This value determines whether livewire front-end is enabled as it is
-	| currently under development.
-	|
-	*/
-
-	'livewire' => (bool) env('LIVEWIRE_ENABLED', false),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -68,6 +57,18 @@ return [
 	'url' => env('APP_URL', 'http://localhost'),
 
 	'asset_url' => null,
+
+	/*
+	|--------------------------------------------------------------------------
+	| Application URL
+	|--------------------------------------------------------------------------
+	|
+	| When running behind a proxy, it may be necessary for the urls to be
+	| set as https for the reverse translation. You should set this if you
+	| want to force the https scheme.
+	*/
+
+	'force_https' => (bool) env('APP_FORCE_HTTPS', false),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -120,20 +121,6 @@ return [
 	*/
 
 	'faker_locale' => 'en_US',
-
-	/*
-	|--------------------------------------------------------------------------
-	| Log DB SQL statements
-	|--------------------------------------------------------------------------
-	|
-	| If set to true, all SQL statements will be logged to a text file below
-	| storage.
-	| Only use it for debugging and development purposes as it slows down
-	| the performance of the application
-	|
-	*/
-
-	'db_log_sql' => (bool) env('DB_LOG_SQL', false),
 
 	/*
 	|--------------------------------------------------------------------------
