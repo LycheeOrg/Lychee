@@ -111,6 +111,16 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Application Avilable Locale
+	|--------------------------------------------------------------------------
+	|
+	| List of locale supported by Lychee.
+	*/
+
+	'supported_locale' => ['cz', 'de', 'el', 'en', 'es', 'fr', 'it', 'nl', 'no', 'pl', 'pt', 'ru', 'sk', 'sv', 'vi', 'zh_CN', 'zh_TW'],
+
+	/*
+	|--------------------------------------------------------------------------
 	| Faker Locale
 	|--------------------------------------------------------------------------
 	|
@@ -234,6 +244,5 @@ return [
 	'aliases' => Facade::defaultAliases()->merge([
 		'DebugBar' => Barryvdh\Debugbar\Facades\Debugbar::class,
 		'Helpers' => App\Facades\Helpers::class,
-		'Lang' => App\Facades\Lang::class,
 	])->toArray(),
 ];
