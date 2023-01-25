@@ -33,11 +33,11 @@ use Spatie\Feed\Helpers\FeedContentType;
 class SessionController extends Controller
 {
 	/**
-	 * @param ConfigFunctions $configFunctions
-	 * @param GitHubVersion $gitHubVersion
-	 * @param FileVersion $fileVersion,
+	 * @param ConfigFunctions  $configFunctions
+	 * @param GitHubVersion    $gitHubVersion
+	 * @param FileVersion      $fileVersion,
 	 * @param InstalledVersion $lycheeVersion
-	 * @param Repository  $configRepository
+	 * @param Repository       $configRepository
 	 */
 	public function __construct(
 		private ConfigFunctions $configFunctions,
