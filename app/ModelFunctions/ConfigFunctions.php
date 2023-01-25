@@ -3,7 +3,6 @@
 namespace App\ModelFunctions;
 
 use App\Exceptions\ConfigurationKeyMissingException;
-use App\Facades\Lang;
 use App\Models\Configs;
 
 class ConfigFunctions
@@ -56,7 +55,7 @@ class ConfigFunctions
 	public function admin(): array
 	{
 		$return = Configs::admin()->pluck('value', 'key')->all();
-		$return['lang_available'] = Lang::get_lang_available();
+		$return['lang_available'] = config('app.supported_locale');
 
 		return $return;
 	}
