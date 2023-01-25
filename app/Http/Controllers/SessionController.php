@@ -34,9 +34,9 @@ class SessionController extends Controller
 {
 	/**
 	 * @param ConfigFunctions $configFunctions
-	 * @param GitHubVersion
-	 *  $gitHubVersion
+	 * @param GitHubVersion $gitHubVersion
 	 * @param FileVersion $fileVersion,
+	 * @param InstalledVersion $lycheeVersion
 	 * @param Repository  $configRepository
 	 */
 	public function __construct(
