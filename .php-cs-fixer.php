@@ -4,6 +4,7 @@ $finder = array_reduce(
 	[
 		__DIR__ . '/app/',
 		__DIR__ . '/database/',
+		__DIR__ . '/lang/',
 		__DIR__ . '/resources/',
 		__DIR__ . '/routes/',
 		__DIR__ . '/tests/',
