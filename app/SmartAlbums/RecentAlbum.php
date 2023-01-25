@@ -4,7 +4,6 @@ namespace App\SmartAlbums;
 
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
-use App\Facades\Lang;
 use App\Models\Configs;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\InvalidTimeZoneException;
@@ -30,7 +29,7 @@ class RecentAlbum extends BaseSmartAlbum
 
 		parent::__construct(
 			self::ID,
-			Lang::get('RECENT'),
+			__('RECENT'),
 			Configs::getValueAsBool('public_recent'),
 			function (Builder $query) use ($strRecent) {
 				$query->where('photos.created_at', '>=', $strRecent);

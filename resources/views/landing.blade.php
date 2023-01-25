@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
-<html lang="{{ str_replace('_', '-', Lang::get_code()) }}">
-	<head>
+<html lang="{{ app()->currentLocale() }}">
+		<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 		<title>{{ $title }}</title>
 		<link type="text/css" rel="stylesheet" href="{{ Helpers::cacheBusting('dist/landing.css') }}">
@@ -26,7 +26,7 @@
 			<div id="menu">
 				<ul class="menu">
 					<li class="menu-item">
-						<a href="gallery">{{ Lang::get('GALLERY') }}</a>
+						<a href="gallery">{{ __('GALLERY') }}</a>
 					</li>
 				</ul>
 			</div><!-- menu -->

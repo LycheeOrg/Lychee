@@ -12,7 +12,6 @@ use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\VersionControlException;
-use App\Facades\Lang;
 use App\Http\Requests\Session\LoginRequest;
 use App\Legacy\AdminAuthentication;
 use App\Metadata\Versions\FileVersion;
@@ -35,9 +34,10 @@ class SessionController extends Controller
 {
 	/**
 	 * @param ConfigFunctions $configFunctions
-	 * @param GitHubVersion   $gitHubVersion
-	 * @param FileVersion     $fileVersion,
-	 * @param Repository      $configRepository
+	 * @param GitHubVersion $gitHubVersion
+	 * @param FileVersion $fileVersion,
+	 * @param InstalledVersion $lycheeVersion
+	 * @param Repository  $configRepository
 	 */
 	public function __construct(
 		private ConfigFunctions $configFunctions,
@@ -75,11 +75,11 @@ class SessionController extends Controller
 				// Admin rights (either properly authenticated or not registered)
 				$return['config'] = $this->configFunctions->admin();
 				$return['config']['location'] = base_path('public/');
-				$return['config']['lang_available'] = Lang::get_lang_available();
+				$return['config']['lang_available'] = config('app.supported_locale');
 			} elseif ($return['user'] !== null) {
 				// Authenticated as non-admin
 				$return['config'] = $this->configFunctions->public();
-				$return['config']['lang_available'] = Lang::get_lang_available();
+				$return['config']['lang_available'] = config('app.supported_locale');
 			} else {
 				// Unauthenticated
 				$return['config'] = $this->configFunctions->public();
@@ -124,7 +124,8 @@ class SessionController extends Controller
 			}
 
 			// we also return the local
-			$return['locale'] = Lang::get_lang();
+			$lang = Configs::getValueAsString('lang');
+			$return['locale'] = include base_path('lang/' . $lang . '.php');
 
 			if (Configs::getValueAsBool('check_for_updates')) {
 				$this->fileVersion->hydrate();

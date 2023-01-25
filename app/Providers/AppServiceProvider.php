@@ -8,10 +8,8 @@ use App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Contracts\Models\SizeVariantFactory;
 use App\Factories\AlbumFactory;
-use App\Factories\LangFactory;
 use App\Image\SizeVariantDefaultFactory;
 use App\Image\StreamStatFilter;
-use App\Locale\Lang;
 use App\Metadata\Json\CommitsRequest;
 use App\Metadata\Json\UpdateRequest;
 use App\Metadata\Versions\FileVersion;
@@ -21,6 +19,7 @@ use App\Metadata\Versions\Remote\GitCommits;
 use App\Metadata\Versions\Remote\GitTags;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SymLinkFunctions;
+use App\Models\Configs;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use Illuminate\Database\Eloquent\Model;
@@ -36,8 +35,6 @@ class AppServiceProvider extends ServiceProvider
 	= [
 		SymLinkFunctions::class => SymLinkFunctions::class,
 		ConfigFunctions::class => ConfigFunctions::class,
-		LangFactory::class => LangFactory::class,
-		Lang::class => Lang::class,
 		Helpers::class => Helpers::class,
 		CheckUpdate::class => CheckUpdate::class,
 		AlbumFactory::class => AlbumFactory::class,
@@ -72,6 +69,18 @@ class AppServiceProvider extends ServiceProvider
 			});
 		}
 
+		try {
+			$lang = Configs::getValueAsString('lang');
+			app()->setLocale($lang);
+		} catch (\Throwable $e) {
+			/** log and ignore.
+			 * This is necessary so that we can continue:
+			 * - if Configs table do not exists (no install),
+			 * - if the value does not exists in configs (no install),.
+			 */
+			logger($e);
+		}
+
 		/**
 		 * We enforce strict mode
 		 * this has the following effect:
@@ -100,10 +109,6 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function register()
 	{
-		$this->app->bind('lang', function () {
-			return resolve(Lang::class);
-		});
-
 		$this->app->bind('Helpers', function () {
 			return resolve(Helpers::class);
 		});
