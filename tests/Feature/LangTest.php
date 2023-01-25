@@ -34,7 +34,6 @@ class LangTest extends AbstractTestCase
 		$failed = false;
 
 		foreach ($availableDictionaries as $locale) {
-
 			$dictionary = include base_path('lang/' . $locale . '/lychee.php');
 			$missingKeys = array_diff_key($englishDictionary, $dictionary);
 			foreach ($missingKeys as $key => $value) {
