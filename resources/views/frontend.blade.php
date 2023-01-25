@@ -35,6 +35,6 @@
 		{!! $bodyHtml !!}
 		<script async defer type="text/javascript" src="dist/frontend.js"></script>
 		<script async defer type="text/javascript" src="dist/WebAuthn.js"></script>
-		<script defer type="text/javascript" src="dist/custom.js"></script>
+		<script defer type="text/javascript" src="{{ asset('dist/custom.js') }}"></script>
 	</body>
 </html>

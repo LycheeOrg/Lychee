@@ -33,5 +33,4 @@ installed.log
 .DS_Store
 .NO_SECURE_KEY
 .NO_AUTO_COMPOSER_MIGRATE
-storage/bootstrap/cache/packages.php
-storage/bootstrap/cache/services.php
+storage/bootstrap/cache/*
