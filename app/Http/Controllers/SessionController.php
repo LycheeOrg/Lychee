@@ -124,7 +124,8 @@ class SessionController extends Controller
 			}
 
 			// we also return the local
-			$return['locale'] = Lang::get_lang();
+			$return['locale'] = dd('RETURN ARRAY LOCALE HERE');
+			Lang::get_lang();
 
 			if (Configs::getValueAsBool('check_for_updates')) {
 				$this->fileVersion->hydrate();
