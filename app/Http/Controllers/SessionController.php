@@ -125,7 +125,7 @@ class SessionController extends Controller
 
 			// we also return the local
 			$lang = Configs::getValueAsString('lang');
-			$return['locale'] = include base_path('lang/' . $lang . '.php');
+			$return['locale'] = include base_path('lang/' . $lang . '/lychee.php');
 
 			if (Configs::getValueAsBool('check_for_updates')) {
 				$this->fileVersion->hydrate();

@@ -27,7 +27,7 @@ class OnThisDayAlbum extends BaseSmartAlbum
 
 		parent::__construct(
 			self::ID,
-			__('ON_THIS_DAY'),
+			__('lychee.ON_THIS_DAY'),
 			Configs::getValueAsBool('public_on_this_day'),
 			function (Builder $query) use ($today) {
 				$query->where(fn (Builder $q) => $q

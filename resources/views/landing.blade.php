@@ -26,7 +26,7 @@
 			<div id="menu">
 				<ul class="menu">
 					<li class="menu-item">
-						<a href="gallery">{{ __('GALLERY') }}</a>
+						<a href="gallery">{{ __('lychee.GALLERY') }}</a>
 					</li>
 				</ul>
 			</div><!-- menu -->

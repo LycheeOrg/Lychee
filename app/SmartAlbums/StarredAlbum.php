@@ -20,7 +20,7 @@ class StarredAlbum extends BaseSmartAlbum
 	{
 		parent::__construct(
 			self::ID,
-			__('STARRED'),
+			__('lychee.STARRED'),
 			Configs::getValueAsBool('public_starred'),
 			fn (Builder $q) => $q->where('photos.is_starred', '=', true)
 		);
