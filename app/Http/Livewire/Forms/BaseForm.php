@@ -66,7 +66,6 @@ abstract class BaseForm extends Component
 		return collect($this->getRuleSet())->mapWithKeys(fn ($v, $k) => ['form.' . $k => $k])->all();
 	}
 
-
 	/**
 	 * Return the rules to be applied on the form.
 	 *

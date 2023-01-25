@@ -3,7 +3,6 @@
 namespace App\Http\Livewire\Modules\Gallery;
 
 use App\Actions\Albums\Top;
-use App\Contracts\Exceptions\InternalLycheeException;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
@@ -47,7 +46,8 @@ class Albums extends Component
 	 *
 	 * @return void
 	 */
-	public function reload() {
+	public function reload()
+	{
 		$topAlbums = resolve(Top::class)->get();
 		$this->albums = $topAlbums->albums;
 		$this->smartalbums = $topAlbums->smart_albums->concat($topAlbums->tag_albums)->reject(fn ($album) => $album === null);

@@ -76,7 +76,7 @@ class AppServiceProvider extends ServiceProvider
 		try {
 			$locale = Configs::getValueAsString('lang');
 			app()->setLocale($locale);
-		}catch (\Throwable) {
+		} catch (\Throwable) {
 			// Do nothing, continue as is.
 			// If this fails, it most likely means that the config table does not exists, so we don't care.
 		}
