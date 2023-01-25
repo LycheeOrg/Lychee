@@ -7,16 +7,13 @@ use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotoTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
+use App\Http\RuleSets\Photo\RotatePhotoRuleSet;
 use App\Models\Photo;
-use App\Rules\RandomIDRule;
-use Illuminate\Validation\Rule;
 
 class RotatePhotoRequest extends BaseApiRequest implements HasPhoto
 {
 	use HasPhotoTrait;
 	use AuthorizeCanEditPhotoTrait;
-
-	public const DIRECTION_ATTRIBUTE = 'direction';
 
 	protected int $direction;
 
@@ -25,10 +22,7 @@ class RotatePhotoRequest extends BaseApiRequest implements HasPhoto
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
-			self::DIRECTION_ATTRIBUTE => ['required', Rule::in([-1, 1])],
-		];
+		return RotatePhotoRuleSet::rules();
 	}
 
 	/**
@@ -39,7 +33,7 @@ class RotatePhotoRequest extends BaseApiRequest implements HasPhoto
 		$this->photo = Photo::query()
 			->with(['size_variants'])
 			->findOrFail($values[RequestAttribute::PHOTO_ID_ATTRIBUTE]);
-		$this->direction = intval($values[self::DIRECTION_ATTRIBUTE]);
+		$this->direction = intval($values[RequestAttribute::DIRECTION_ATTRIBUTE]);
 	}
 
 	public function direction(): int

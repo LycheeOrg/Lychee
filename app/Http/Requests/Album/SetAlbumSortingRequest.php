@@ -12,8 +12,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasBaseAlbumTrait;
 use App\Http\Requests\Traits\HasSortingCriterionTrait;
-use App\Rules\RandomIDRule;
-use Illuminate\Validation\Rules\Enum;
+use App\Http\RuleSets\Album\SetAlbumSortingRuleSet;
 
 class SetAlbumSortingRequest extends BaseApiRequest implements HasBaseAlbum, HasSortingCriterion
 {
@@ -26,14 +25,7 @@ class SetAlbumSortingRequest extends BaseApiRequest implements HasBaseAlbum, Has
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
-			RequestAttribute::SORTING_COLUMN_ATTRIBUTE => ['present', 'nullable', new Enum(ColumnSortingPhotoType::class)],
-			RequestAttribute::SORTING_ORDER_ATTRIBUTE => [
-				'required_with:' . RequestAttribute::SORTING_COLUMN_ATTRIBUTE,
-				'nullable', new Enum(OrderSortingType::class),
-			],
-		];
+		return SetAlbumSortingRuleSet::rules();
 	}
 
 	/**

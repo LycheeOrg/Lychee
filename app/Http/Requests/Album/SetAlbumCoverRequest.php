@@ -9,11 +9,11 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
+use App\Http\RuleSets\Album\SetAlbumCoverRuleSet;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
-use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
 class SetAlbumCoverRequest extends BaseApiRequest implements HasAlbum, HasPhoto
@@ -35,10 +35,7 @@ class SetAlbumCoverRequest extends BaseApiRequest implements HasAlbum, HasPhoto
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
-			RequestAttribute::PHOTO_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
-		];
+		return SetAlbumCoverRuleSet::rules();
 	}
 
 	/**

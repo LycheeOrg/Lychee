@@ -8,10 +8,9 @@ use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Requests\Traits\HasUsernameTrait;
+use App\Http\RuleSets\Users\AddUserRuleSet;
 use App\Models\User;
 use App\Policies\UserPolicy;
-use App\Rules\PasswordRule;
-use App\Rules\UsernameRule;
 use Illuminate\Support\Facades\Gate;
 
 class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword
@@ -35,12 +34,7 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
-			RequestAttribute::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
-			RequestAttribute::MAY_UPLOAD_ATTRIBUTE => 'present|boolean',
-			RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE => 'present|boolean',
-		];
+		return AddUserRuleSet::rules();
 	}
 
 	/**

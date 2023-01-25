@@ -7,7 +7,7 @@ use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
-use App\Rules\AlbumIDRule;
+use App\Http\RuleSets\Photo\AddPhotoRuleSet;
 use Illuminate\Http\UploadedFile;
 
 class AddPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
@@ -15,7 +15,6 @@ class AddPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 	use HasAbstractAlbumTrait;
 	use AuthorizeCanEditAlbumTrait;
 
-	public const FILE_ATTRIBUTE = 'file';
 	protected UploadedFile $file;
 
 	/**
@@ -23,10 +22,7 @@ class AddPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['present', new AlbumIDRule(true)],
-			self::FILE_ATTRIBUTE => 'required|file',
-		];
+		return AddPhotoRuleSet::rules();
 	}
 
 	/**
@@ -38,7 +34,7 @@ class AddPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 		$this->album = $albumID === null ?
 			null :
 			$this->albumFactory->findAbstractAlbumOrFail($albumID);
-		$this->file = $files[self::FILE_ATTRIBUTE];
+		$this->file = $files[RequestAttribute::FILE_ATTRIBUTE];
 	}
 
 	public function uploadedFile(): UploadedFile
