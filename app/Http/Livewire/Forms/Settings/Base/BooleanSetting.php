@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire\Forms\Settings\Base;
 
-use App\Facades\Lang;
 use App\Models\Configs;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\InvalidCastException;
@@ -31,8 +30,8 @@ class BooleanSetting extends Component
 	 */
 	public function mount(string $description, string $name, string $footer = ''): void
 	{
-		$this->description = Lang::get($description);
-		$this->footer = $footer !== '' ? Lang::get($footer) : '';
+		$this->description = __('lychee.' . $description);
+		$this->footer = $footer !== '' ? __('lychee.' . $footer) : '';
 		$this->config = Configs::where('key', '=', $name)->firstOrFail();
 	}
 

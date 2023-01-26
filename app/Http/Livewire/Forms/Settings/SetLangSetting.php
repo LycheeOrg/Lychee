@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire\Forms\Settings;
 
-use App\Facades\Lang;
 use App\Http\Livewire\Forms\Settings\Base\BaseConfigDropDown;
 use App\Models\Configs;
 
@@ -18,7 +17,7 @@ class SetLangSetting extends BaseConfigDropDown
 	 */
 	public function getOptionsProperty(): array
 	{
-		return Lang::get_lang_available();
+		return config('app.supported_locale');
 	}
 
 	/**

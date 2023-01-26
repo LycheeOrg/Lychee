@@ -3,7 +3,6 @@
 namespace App\Http\Livewire\Components;
 
 use App\Exceptions\ConfigurationKeyMissingException;
-use App\Facades\Lang;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\View\View;
@@ -41,7 +40,7 @@ class Footer extends Component
 		$this->instagram = Configs::getValueAsString('sm_instagram_url');
 		$this->youtube = Configs::getValueAsString('sm_youtube_url');
 
-		$this->hosted_by = Lang::get('HOSTED_WITH_LYCHEE');
+		$this->hosted_by = __('lychee.HOSTED_WITH_LYCHEE');
 
 		if (Configs::getValueAsBool('footer_show_copyright')) {
 			/** @var string $footer_text */

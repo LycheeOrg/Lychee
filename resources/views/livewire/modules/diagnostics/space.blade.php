@@ -5,10 +5,10 @@
         {{ $spaceLine }}
 @endforeach
 </pre>
-@else<a wire:click="getSize" wire:loading.remove class="basicModal__button">{{ Lang::get('DIAGNOSTICS_GET_SIZE') }}</a><pre wire:loading>
+@else<a wire:click="getSize" wire:loading.remove class="basicModal__button">{{ __("lychee.DIAGNOSTICS_GET_SIZE') }}</a><pre wire:loading>
     {{ $title }}
     {{ str_repeat('-', Str::length($title)) }}
-        {{ Lang::get('LOADING') }} ...
+        {{ __("lychee.LOADING') }} ...
 
 </pre>
 @endif</div>

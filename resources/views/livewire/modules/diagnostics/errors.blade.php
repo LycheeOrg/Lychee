@@ -5,6 +5,6 @@
     {{ $line }}
     @empty{{ $error_msg }}@endforelse
     @else
-    {{ Lang::get('LOADING') }} ...
+    {{ __("lychee.LOADING') }} ...
     @endif
 </pre>

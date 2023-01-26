@@ -4,7 +4,6 @@ namespace App\Http\Livewire\Forms\Album;
 
 use App\Actions\Album\Create as AlbumCreate;
 use App\Contracts\Http\Requests\RequestAttribute;
-use App\Facades\Lang;
 use App\Http\Livewire\Forms\BaseForm;
 use App\Http\Livewire\Traits\InteractWithModal;
 use App\Http\RuleSets\Album\AddTagAlbumRuleSet;
@@ -44,8 +43,8 @@ class CreateTag extends BaseForm
 	{
 		parent::mount($params);
 		$this->title = __('lychee.ALBUM_NEW_TITLE');
-		$this->validate = Lang::get('CREATE_ALBUM');
-		$this->cancel = Lang::get('CANCEL');
+		$this->validate = __('lychee.CREATE_ALBUM');
+		$this->cancel = __('lychee.CANCEL');
 		// Localization
 		$this->formLocale = [
 			RequestAttribute::TITLE_ATTRIBUTE => 'UNTITLED',
