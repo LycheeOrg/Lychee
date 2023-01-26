@@ -257,5 +257,13 @@ return [
 	'aliases' => Facade::defaultAliases()->merge([
 		'DebugBar' => Barryvdh\Debugbar\Facades\Debugbar::class,
 		'Helpers' => App\Facades\Helpers::class,
+		// Aliases for easier access in the blade templates
+		'Configs' => App\Models\Configs::class,
+		'AlbumPolicy' => App\Policies\AlbumPolicy::class,
+		'PhotoPolicy' => App\Policies\PhotoPolicy::class,
+		'SettingsPolicy' => App\Policies\SettingsPolicy::class,
+		'UserPolicy' => App\Policies\UserPolicy::class,
+		'AbstractAlbum' => App\Contracts\Models\AbstractAlbum::class,
+		'User' => App\Models\User::class,
 	])->toArray(),
 ];

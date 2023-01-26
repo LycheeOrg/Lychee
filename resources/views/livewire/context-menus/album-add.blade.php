@@ -3,18 +3,24 @@
 		<tbody>
 
 			<tr class="basicContext__item ">
-				<td class="basicContext__data" data-num="0"><x-icons.iconic icon="image" />Upload Photo</td>
+				<td class="basicContext__data" data-num="0"><x-icons.iconic icon="image" />{{ __('lychee.UPLOAD_PHOTO') }}</td>
 			</tr>
 
 			<tr class="basicContext__item basicContext__item--separator"></tr>
 
 			<tr class="basicContext__item ">
-				<td class="basicContext__data" data-num="2"><x-icons.iconic icon="link-intact" />Import from Link</td>
+				<td class="basicContext__data" data-num="2"><x-icons.iconic icon="link-intact" />{{ __('lychee.IMPORT_LINK') }}</td>
 			</tr>
-
+			@can(AlbumPolicy::CAN_IMPORT_FROM_SERVER, [App\Contracts\Models\AbstractAlbum::class])
+			@if(Configs::getValueAsString('dropbox_key') !== '')
 			<tr class="basicContext__item ">
-				<td class="basicContext__data" data-num="3"><x-icons.iconic icon="terminal" />Import from Server</td>
+				<td class="basicContext__data" data-num="2"><x-icons.iconic icon="dropbox" class="ionicons" />{{ __('lychee.IMPORT_DROPBOX') }}</td>
 			</tr>
+			@endif
+			<tr class="basicContext__item ">
+				<td class="basicContext__data" data-num="3"><x-icons.iconic icon="terminal" />{{ __('lychee.IMPORT_SERVER') }}</td>
+			</tr>
+			@endcan
 
 			<tr class="basicContext__item basicContext__item--separator"></tr>
 
