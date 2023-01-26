@@ -47,7 +47,9 @@
 			@can(App\Policies\AlbumPolicy::CAN_DOWNLOAD, [App\Contracts\Models\AbstractAlbum::class, $this->album])
 			<a class="button" id="button_archive"><x-icons.iconic icon="cloud-download" /></a>
 			@endcan
+			@if($baseAlbum !== null)
 			<a wire:click='toggleSideBar' class="button button--info" id="button_info_album"><x-icons.iconic icon="info" /></a>
+			@endif
 			<a class="button button--map" id="button_map_album"><x-icons.iconic icon="map" /></a>
 			@can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class, $this->album])
 			<a class="button" id="button_move_album"><x-icons.iconic icon="folder" /></a>

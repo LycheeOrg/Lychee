@@ -74,8 +74,8 @@
 			strings to avoid such problems.
 		-->
 		<div id="lychee_sidebar_container" @class(["hflex-item-rigid", "active" => $isSidebarOpen])>
-			@if($mode === App\Enum\Livewire\GalleryMode::ALBUM)
-			<livewire:modules.sidebar.album key="sidebar-album-{{$this->albumId}}" :album="$this->album" />
+			@if($mode === App\Enum\Livewire\GalleryMode::ALBUM && $this->baseAlbum !== null)
+			<livewire:modules.sidebar.album key="sidebar-album-{{$this->albumId}}" :album="$this->baseAlbum" />
 			@elseif ($mode === App\Enum\Livewire\GalleryMode::PHOTO)
 			<livewire:modules.sidebar.photo key="sidebar-album-{{$this->photoId}}" :photo="$this->photo" />
 			@endif
