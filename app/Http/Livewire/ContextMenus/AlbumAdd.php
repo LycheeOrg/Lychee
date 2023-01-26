@@ -36,4 +36,15 @@ class AlbumAdd extends Component
 		$this->closeContextMenu();
 		$this->openModal('forms.album.create', $this->params);
 	}
+
+	/**
+	 * Open Create Tag Album modal.
+	 *
+	 * @return void
+	 */
+	public function openTagAlbumCreateModal(): void
+	{
+		$this->closeContextMenu();
+		$this->openModal('forms.album.create-tag', $this->params);
+	}
 }

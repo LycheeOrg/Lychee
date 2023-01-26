@@ -25,11 +25,11 @@
 			<tr class="basicContext__item basicContext__item--separator"></tr>
 
 			<tr wire:click='openAlbumCreateModal' class="basicContext__item ">
-				<td class="basicContext__data" data-num="5"><x-icons.iconic icon="folder" />New Album</td>
+				<td class="basicContext__data" data-num="5"><x-icons.iconic icon="folder" />{{ __('lychee.NEW_ALBUM') }}</td>
 			</tr>
 
-			<tr class="basicContext__item ">
-				<td class="basicContext__data" data-num="6"><x-icons.iconic icon="tags" />New Tag Album</td>
+			<tr wire:click='openTagAlbumCreateModal' class="basicContext__item ">
+				<td class="basicContext__data" data-num="6"><x-icons.iconic icon="tags" />{{ __('lychee.NEW_TAG_ALBUM') }}</td>
 			</tr>
 
 		</tbody>

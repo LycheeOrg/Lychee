@@ -43,16 +43,18 @@ class CreateTag extends BaseForm
 	{
 		parent::mount($params);
 		$this->title = __('lychee.ALBUM_NEW_TITLE');
-		$this->validate = __('lychee.CREATE_ALBUM');
+		$this->validate = __('lychee.CREATE_TAG_ALBUM');
 		$this->cancel = __('lychee.CANCEL');
 		// Localization
 		$this->formLocale = [
-			RequestAttribute::TITLE_ATTRIBUTE => 'UNTITLED',
+			RequestAttribute::TITLE_ATTRIBUTE => __('lychee.UNTITLED'),
+			RequestAttribute::TAGS_ATTRIBUTE => __('lychee.PHOTO_TAGS'),
 		];
+
 		// values
 		$this->form = [
 			RequestAttribute::TITLE_ATTRIBUTE => '',
-			RequestAttribute::PARENT_ID_ATTRIBUTE => $params['parentId'],
+			RequestAttribute::TAGS_ATTRIBUTE => '',
 		];
 		$this->formHidden = [RequestAttribute::PARENT_ID_ATTRIBUTE];
 	}
@@ -66,6 +68,9 @@ class CreateTag extends BaseForm
 	{
 		// Reset error bag
 		$this->resetErrorBag();
+
+		// prepare
+		$this->form[RequestAttribute::TAGS_ATTRIBUTE] = explode(',', $this->form[RequestAttribute::TAGS_ATTRIBUTE]);
 
 		// Validate
 		$values = $this->validate()['form'];
