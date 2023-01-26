@@ -4,9 +4,7 @@ namespace App\SmartAlbums;
 
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
-use App\Facades\Lang;
 use App\Models\Configs;
-use App\SmartAlbums\Utils\Wireable;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,8 +12,6 @@ use Illuminate\Support\Carbon;
 
 class RecentAlbum extends BaseSmartAlbum
 {
-	use Wireable;
-
 	private static ?self $instance = null;
 	public const ID = 'recent';
 
@@ -33,7 +29,7 @@ class RecentAlbum extends BaseSmartAlbum
 
 		parent::__construct(
 			self::ID,
-			Lang::get('RECENT'),
+			__('lychee.RECENT'),
 			Configs::getValueAsBool('public_recent'),
 			function (Builder $query) use ($strRecent) {
 				$query->where('photos.created_at', '>=', $strRecent);

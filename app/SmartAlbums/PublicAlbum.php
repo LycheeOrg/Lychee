@@ -4,8 +4,6 @@ namespace App\SmartAlbums;
 
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
-use App\Facades\Lang;
-use App\SmartAlbums\Utils\Wireable;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -27,8 +25,6 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class PublicAlbum extends BaseSmartAlbum
 {
-	use Wireable;
-
 	private static ?self $instance = null;
 	public const ID = 'public';
 
@@ -49,7 +45,7 @@ class PublicAlbum extends BaseSmartAlbum
 	{
 		parent::__construct(
 			self::ID,
-			Lang::get('PUBLIC'),
+			__('lychee.PUBLIC'),
 			false,
 			fn (Builder $q) => $q->where('photos.is_public', '=', true)
 		);
