@@ -14,7 +14,7 @@
 			</tbody>
 		</table>
 		<div class="sidebar__divider">
-			<h1>{{ __($lychee.is_video ? "PHOTO_VIDEO" : "PHOTO_IMAGE") }}</h1>
+			<h1>{{ $is_video ? __("lychee.PHOTO_VIDEO") : __("lychee.PHOTO_IMAGE") }}</h1>
 		</div>
 		<table>
 			<tbody>

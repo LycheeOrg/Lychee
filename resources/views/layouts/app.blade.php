@@ -1,6 +1,5 @@
 <!DOCTYPE HTML>
-<<<<<<< HEAD
-<html lang="{{ str_replace('_', '-', Lang::get_code()) }}">
+<html lang="{{ app()->currentLocale() }}">
 	<head>
 		<meta charset="UTF-8">
 		<link type="text/css" rel="stylesheet" href="dist/frontend.css">
@@ -31,12 +30,6 @@
 		{{-- @if($rss_enable)
 			@include('feed::links')
 		@endif --}}
-=======
-<html lang="{{ app()->currentLocale() }}">
-<head>
-	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-	<title>{{ App\Models\Configs::getValueAsString('site_title') }}</title>
->>>>>>> lang-support
 
 		<script async defer src="{{ URL::asset('js/app.js') }}"></script>
 		<script async defer src="{{ URL::asset('dist/WebAuthn.js') }}"></script>
