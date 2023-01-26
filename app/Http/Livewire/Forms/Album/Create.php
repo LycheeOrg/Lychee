@@ -4,11 +4,13 @@ namespace App\Http\Livewire\Forms\Album;
 
 use App\Actions\Album\Create as AlbumCreate;
 use App\Contracts\Http\Requests\RequestAttribute;
+use App\Contracts\Models\AbstractAlbum;
 use App\Http\Livewire\Forms\BaseForm;
 use App\Http\Livewire\Traits\InteractWithModal;
 use App\Http\RuleSets\AddAlbumRuleSet;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 /**
@@ -76,7 +78,7 @@ class Create extends BaseForm
 		$parentAlbum = $parentAlbumID === null ? null : Album::query()->firstOrFail($parentAlbumID);
 
 		// Authorize
-		Gate::validate(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $parentAlbum]);
+		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $parentAlbum]);
 
 		// Create
 		resolve(AlbumCreate::class)->create($title, $parentAlbum);

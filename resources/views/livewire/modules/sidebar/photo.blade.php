@@ -8,9 +8,15 @@
 		</div>
 		<table>
 			<tbody>
-				<x-atoms.line head='{{ __("lychee.PHOTO_TITLE") }}' :value='$title' />
-				<x-atoms.line head='{{ __("lychee.PHOTO_UPLOADED") }}' :value='$created_at' />
-				<x-atoms.line head='{{ __("lychee.PHOTO_DESCRIPTION") }}' :value='$description' />
+				<x-atoms.line head='{{ __("lychee.PHOTO_TITLE") }}'>
+					{{ $title }}
+				</x-atoms.line>
+				<x-atoms.line head='{{ __("lychee.PHOTO_UPLOADED") }}'>
+					{{ $created_at }}
+				</x-atoms.line>
+				<x-atoms.line head='{{ __("lychee.PHOTO_DESCRIPTION") }}'>
+					{{ $description }}
+				</x-atoms.line>
 			</tbody>
 		</table>
 		<div class="sidebar__divider">
@@ -18,8 +24,12 @@
 		</div>
 		<table>
 			<tbody>
-				<x-atoms.line head='{{ __("lychee.PHOTO_SIZE") }}' :value='$filesize' />
-				<x-atoms.line head='{{ __("lychee.PHOTO_FORMAT") }}' :value='$type' />
+				<x-atoms.line head='{{ __("lychee.PHOTO_SIZE") }}'>
+					{{ $filesize }}
+				</x-atoms.line>
+				<x-atoms.line head='{{ __("lychee.PHOTO_FORMAT") }}'>
+					{{ $type }}
+				</x-atoms.line>
 				<x-atoms.line-skip head='{{ __("lychee.PHOTO_RESOLUTION") }}' :value='$resolution' />
 				@if ($is_video)
 				<x-atoms.line-skip head='{{ __("lychee.PHOTO_DURATION") }}' :value='$duration' />
@@ -32,7 +42,9 @@
 		</div>
 		<table>
 			<tbody>
-				<x-atoms.line head='{{ __("lychee.PHOTO_TAGS") }}' :value='$tags' />
+				<x-atoms.line head='{{ __("lychee.PHOTO_TAGS") }}'>
+					{{ $tags }}
+				</x-atoms.line>
 			</tbody>
 		</table>
 		@if ($has_exif)
@@ -41,16 +53,32 @@
 		</div>
 		<table>
 			<tbody>
-				<x-atoms.line head='{{ __("lychee.PHOTO_CAPTURED") }}' :value='$taken_at' />
-				<x-atoms.line head='{{ __("lychee.PHOTO_MAKE") }}' :value='$make' />
-				<x-atoms.line head='{{ __("lychee.PHOTO_TYPE") }}' :value='$model' />
+				<x-atoms.line head='{{ __("lychee.PHOTO_CAPTURED") }}'>
+					{{ $taken_at }}
+				</x-atoms.line>
+				<x-atoms.line head='{{ __("lychee.PHOTO_MAKE") }}'>
+					{{ $make }}
+				</x-atoms.line>
+				<x-atoms.line head='{{ __("lychee.PHOTO_TYPE") }}'>
+					{{ $model }}
+				</x-atoms.line>
 				@if (!$is_video)
-				<x-atoms.line head='{{ __("lychee.PHOTO_LENS") }}' :value='$lens' />
-				<x-atoms.line head='{{ __("lychee.PHOTO_SHUTTER") }}' :value='$shutter' />
-				<x-atoms.line head='{{ __("lychee.PHOTO_APERTURE") }}' :value='"ƒ / ".$aperture' />
-				<x-atoms.line head='{{ __("lychee.PHOTO_FOCAL") }}' :value='$focal' />
+				<x-atoms.line head='{{ __("lychee.PHOTO_LENS") }}'>
+					{{ $lens }}
+				</x-atoms.line>
+				<x-atoms.line head='{{ __("lychee.PHOTO_SHUTTER") }}'>
+					{{ $shutter }}
+				</x-atoms.line>
+				<x-atoms.line head='{{ __("lychee.PHOTO_APERTURE") }}'>
+					{{ "ƒ / " . $aperture }}
+				</x-atoms.line>
+				<x-atoms.line head='{{ __("lychee.PHOTO_FOCAL") }}'>
+					{{ $focal }}
+				</x-atoms.line>
 				{{-- TODO remove sprintf after ISO doesn't use placeholder anymore --}}
-				<x-atoms.line head='{{ sprintf(__("lychee.PHOTO_ISO"), "") }}' :value='$iso' />
+				<x-atoms.line head='{{ sprintf(__("lychee.PHOTO_ISO"), "") }}'>
+					{{ $iso }}
+				</x-atoms.line>
 				@endif
 			</tbody>
 		</table>
@@ -61,14 +89,24 @@
 		</div>
 		<table>
 			<tbody>
-				<x-atoms.line head='{{ __("lychee.PHOTO_LATITUDE") }}' :value='$latitude' />
-				<x-atoms.line head='{{ __("lychee.PHOTO_LONGITUDE") }}' :value='$longitude' />
-				<x-atoms.line head='{{ __("lychee.PHOTO_ALTITUDE") }}' :value='$altitude' />
+				<x-atoms.line head='{{ __("lychee.PHOTO_LATITUDE") }}'>
+					{{ $latitude }}
+				</x-atoms.line>
+				<x-atoms.line head='{{ __("lychee.PHOTO_LONGITUDE") }}'>
+					{{ $longitude }}
+				</x-atoms.line>
+				<x-atoms.line head='{{ __("lychee.PHOTO_ALTITUDE") }}'>
+					{{ $altitude }}
+				</x-atoms.line>
 				@if ($location != null)
-				<x-atoms.line head='{{ __("lychee.PHOTO_LOCATION") }}' :value='$location' />
+				<x-atoms.line head='{{ __("lychee.PHOTO_LOCATION") }}'>
+					{{ $location }}
+				</x-atoms.line>
 				@endif
 				@if ($img_direction != null)
-				<x-atoms.line head='{{ __("lychee.PHOTO_IMGDIRECTION") }}' :value='$img_direction' />
+				<x-atoms.line head='{{ __("lychee.PHOTO_IMGDIRECTION") }}'>
+					{{ $img_direction }}
+				</x-atoms.line>
 				@endif
 			</tbody>
 		</table>

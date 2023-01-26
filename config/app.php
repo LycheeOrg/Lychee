@@ -263,7 +263,6 @@ return [
 		'PhotoPolicy' => App\Policies\PhotoPolicy::class,
 		'SettingsPolicy' => App\Policies\SettingsPolicy::class,
 		'UserPolicy' => App\Policies\UserPolicy::class,
-		'AbstractAlbum' => App\Contracts\Models\AbstractAlbum::class,
 		'User' => App\Models\User::class,
 	])->toArray(),
 ];

@@ -84,13 +84,13 @@ class Album extends Component
 		if ($baseAlbum instanceof ModelsAlbum) {
 			$this->description = $baseAlbum->description ?? '';
 			$this->children_count = $baseAlbum->num_children;
-			$this->sorting_col = $baseAlbum->sorting_col ?? '';
-			$this->sorting_order = $baseAlbum->sorting_order ?? '';
-			$this->owner_name = $baseAlbum->owner->name;
 			$this->license = $baseAlbum->license;
 		} else {
 			$this->description = '';
 		}
+		$this->owner_name = $baseAlbum->owner->name;
+		$this->sorting_col = $baseAlbum->sorting_col ?? '';
+		$this->sorting_order = $baseAlbum->sorting_order ?? '';
 
 		if ($baseAlbum instanceof TagAlbum) {
 			$this->is_tag_album = true;

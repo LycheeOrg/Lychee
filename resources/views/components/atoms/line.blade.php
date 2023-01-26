@@ -1,2 +1,2 @@
-@props(['head' => '','value'])
-<tr><td>{{ $head }}</td><td><span>{{ $value }}</span></td></tr>
+@props(['head' => ''])
+<tr><td>{{ $head }}</td><td><span>{{ $slot }}</span></td></tr>
