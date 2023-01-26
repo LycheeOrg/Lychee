@@ -10,7 +10,6 @@ use App\Http\Livewire\Traits\InteractWithModal;
 use App\Http\RuleSets\AddAlbumRuleSet;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 /**
