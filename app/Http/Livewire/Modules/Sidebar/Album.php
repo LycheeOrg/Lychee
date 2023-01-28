@@ -30,8 +30,8 @@ class Album extends Component
 	public int $photo_count;
 	public int $video_count;
 
-	public string $sorting_col;
-	public string $sorting_order;
+	public string $sorting_col = '';
+	public string $sorting_order = '';
 
 	protected ?AlbumProtectionPolicy $policy = null;
 
@@ -85,12 +85,12 @@ class Album extends Component
 			$this->description = $baseAlbum->description ?? '';
 			$this->children_count = $baseAlbum->num_children;
 			$this->license = $baseAlbum->license;
-		} else {
+			$this->sorting_col = $baseAlbum->sorting_col ?? '';
+			$this->sorting_order = $baseAlbum->sorting_order ?? '';
+			} else {
 			$this->description = '';
 		}
 		$this->owner_name = $baseAlbum->owner->name;
-		$this->sorting_col = $baseAlbum->sorting_col ?? '';
-		$this->sorting_order = $baseAlbum->sorting_order ?? '';
 
 		if ($baseAlbum instanceof TagAlbum) {
 			$this->is_tag_album = true;

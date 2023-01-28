@@ -70,6 +70,7 @@ class CreateTag extends BaseForm
 		$this->resetErrorBag();
 
 		// prepare
+		// TODO: Refactor tags rules.
 		$this->form[RequestAttribute::TAGS_ATTRIBUTE] = explode(',', $this->form[RequestAttribute::TAGS_ATTRIBUTE]);
 
 		// Validate
