@@ -58,10 +58,12 @@ class Albums extends Component
 	}
 
 	/**
-	 * When no albums are present we simply open the login modal
+	 * When no albums are present we simply open the login modal.
+	 *
 	 * @return void
 	 */
-	public function openLoginModal(): void {
+	public function openLoginModal(): void
+	{
 		$this->openModal('forms.login');
 	}
 }
