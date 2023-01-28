@@ -29,6 +29,17 @@ return [
 
 	'env' => env('APP_ENV', 'production'),
 
+	/*
+	|--------------------------------------------------------------------------
+	| Application Environment
+	|--------------------------------------------------------------------------
+	|
+	| This value determines whether livewire front-end is enabled as it is
+	| currently under development.
+	|
+	*/
+
+	'livewire' => (bool) env('LIVEWIRE_ENABLED', false),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -57,6 +68,8 @@ return [
 	'url' => env('APP_URL', 'http://localhost'),
 
 	'asset_url' => null,
+
+	'force_https' => (bool) env('APP_FORCE_HTTPS', false),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -108,6 +121,16 @@ return [
 	*/
 
 	'fallback_locale' => 'en',
+
+	/*
+	|--------------------------------------------------------------------------
+	| Application Avilable Locale
+	|--------------------------------------------------------------------------
+	|
+	| List of locale supported by Lychee.
+	*/
+
+	'supported_locale' => ['cz', 'de', 'el', 'en', 'es', 'fr', 'it', 'nl', 'no', 'pl', 'pt', 'ru', 'sk', 'sv', 'vi', 'zh_CN', 'zh_TW'],
 
 	/*
 	|--------------------------------------------------------------------------
@@ -234,6 +257,12 @@ return [
 	'aliases' => Facade::defaultAliases()->merge([
 		'DebugBar' => Barryvdh\Debugbar\Facades\Debugbar::class,
 		'Helpers' => App\Facades\Helpers::class,
-		'Lang' => App\Facades\Lang::class,
+		// Aliases for easier access in the blade templates
+		'Configs' => App\Models\Configs::class,
+		'AlbumPolicy' => App\Policies\AlbumPolicy::class,
+		'PhotoPolicy' => App\Policies\PhotoPolicy::class,
+		'SettingsPolicy' => App\Policies\SettingsPolicy::class,
+		'UserPolicy' => App\Policies\UserPolicy::class,
+		'User' => App\Models\User::class,
 	])->toArray(),
 ];

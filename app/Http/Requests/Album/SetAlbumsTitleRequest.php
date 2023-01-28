@@ -9,10 +9,9 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAlbumsTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
+use App\Http\RuleSets\Album\SetAlbumsTitleRuleSet;
 use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
-use App\Rules\RandomIDRule;
-use App\Rules\TitleRule;
 use Illuminate\Support\Facades\Gate;
 
 /**
@@ -43,11 +42,7 @@ class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, HasAlbum
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
-			RequestAttribute::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
-			RequestAttribute::TITLE_ATTRIBUTE => ['required', new TitleRule()],
-		];
+		return SetAlbumsTitleRuleSet::rules();
 	}
 
 	/**

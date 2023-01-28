@@ -9,9 +9,8 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Http\Requests\Traits\HasLicenseTrait;
+use App\Http\RuleSets\Album\SetAlbumLicenseRuleSet;
 use App\Models\Album;
-use App\Rules\LicenseRule;
-use App\Rules\RandomIDRule;
 
 class SetAlbumLicenseRequest extends BaseApiRequest implements HasAlbum, HasLicense
 {
@@ -24,10 +23,7 @@ class SetAlbumLicenseRequest extends BaseApiRequest implements HasAlbum, HasLice
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
-			RequestAttribute::LICENSE_ATTRIBUTE => ['required', new LicenseRule()],
-		];
+		return SetAlbumLicenseRuleSet::rules();
 	}
 
 	/**

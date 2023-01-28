@@ -107,7 +107,9 @@
 
 	// Badge -------------------------------------------------------------- //
 	.badges {
-		position: relative;
+		position: absolute;
+		left: 0px;
+		top: 0px;
 		margin: -1px 0 0 6px;
 	}
 	.badge {
@@ -181,256 +183,252 @@
 	@media (min-width: 768px) {
 		/* FLICKR like image display */
 		margin: 30px 0 0 30px;
-		
+
 		& > div,
 		&::after {
 			--ratio: calc(var(--w) / var(--h));
 			--row-height: 260px;
 			flex-basis: calc(var(--ratio) * var(--row-height));
 		}
-		
+
 		& > div {
 			margin: 0.25rem;
 			flex-grow: calc(var(--ratio) * 100);
 		}
-		
+
 		&::after {
 			--w: 2;
 			--h: 1;
 			content: "";
 			flex-grow: 1000000;
 		}
-		
+
 		& > div > span {
 			display: block;
 			height: 100%;
 			width: 100%;
 		}
-		
+
 		& > div > span > img {
 			width: 100%;
 		}
 	}
-	
 }
 
-.block{
-
+.block {
 	// responsive web design for smaller screens
 	@media only screen and (min-width: 320px) and (max-width: 567px) {
-	.content {
-		padding: 50px 0 33px 0;
-		width: 100%;
-		max-width: 100%;
+		.content {
+			padding: 50px 0 33px 0;
+			width: 100%;
+			max-width: 100%;
 
-		.photo {
-			// 3 thumbnails per row
-			--size: calc((100vw - 3px) / 3);
-			width: calc(var(--size) - 3px);
-			height: calc(var(--size) - 3px);
-			margin: 3px 0 0 3px;
-			.thumbimg {
-				width: calc(var(--size) - 5px);
-				height: calc(var(--size) - 5px);
-			}
-			.overlay {
-				width: calc(var(--size) - 5px);
-				h1 {
-					min-height: 14px;
-					width: calc(var(--size) - 19px);
-					margin: 8px 0 2px 6px;
-					font-size: 12px;
+			.photo {
+				// 3 thumbnails per row
+				--size: calc((100vw - 3px) / 3);
+				width: calc(var(--size) - 3px);
+				height: calc(var(--size) - 3px);
+				margin: 3px 0 0 3px;
+				.thumbimg {
+					width: calc(var(--size) - 5px);
+					height: calc(var(--size) - 5px);
 				}
-				a {
-					// suppress subtitles on small screens
-					display: none;
+				.overlay {
+					width: calc(var(--size) - 5px);
+					h1 {
+						min-height: 14px;
+						width: calc(var(--size) - 19px);
+						margin: 8px 0 2px 6px;
+						font-size: 12px;
+					}
+					a {
+						// suppress subtitles on small screens
+						display: none;
+					}
 				}
-			}
-			.badge {
-				padding: 4px 3px 3px;
-				width: 12px;
-				.iconic {
+				.badge {
+					padding: 4px 3px 3px;
 					width: 12px;
-					height: 12px;
-				}
-				&--folder {
 					.iconic {
-						width: 8px;
-						height: 8px;
+						width: 12px;
+						height: 12px;
+					}
+					&--folder {
+						.iconic {
+							width: 8px;
+							height: 8px;
+						}
 					}
 				}
 			}
-		}
-		.divider {
-			margin: 20px 0 0;
-			&:first-child {
-				margin-top: 0;
+			.divider {
+				margin: 20px 0 0;
+				&:first-child {
+					margin-top: 0;
+				}
+				h1 {
+					margin: 0 0 6px 8px;
+					font-size: 12px;
+				}
 			}
-			h1 {
-				margin: 0 0 6px 8px;
-				font-size: 12px;
-			}
 		}
-	}
 	}
 
 	@media only screen and (min-width: 568px) and (max-width: 639px) {
-	.content {
-		padding: 50px 0 33px 0;
-		width: 100%;
-		max-width: 100%;
+		.content {
+			padding: 50px 0 33px 0;
+			width: 100%;
+			max-width: 100%;
 
-		.photo {
-			// 4 thumbnails per row
-			--size: calc((100vw - 3px) / 4);
-			width: calc(var(--size) - 3px);
-			height: calc(var(--size) - 3px);
-			margin: 3px 0 0 3px;
-			.thumbimg {
-				width: calc(var(--size) - 5px);
-				height: calc(var(--size) - 5px);
-			}
-			.overlay {
-				width: calc(var(--size) - 5px);
-				h1 {
-					min-height: 14px;
-					width: calc(var(--size) - 19px);
-					margin: 8px 0 2px 6px;
-					font-size: 12px;
+			.photo {
+				// 4 thumbnails per row
+				--size: calc((100vw - 3px) / 4);
+				width: calc(var(--size) - 3px);
+				height: calc(var(--size) - 3px);
+				margin: 3px 0 0 3px;
+				.thumbimg {
+					width: calc(var(--size) - 5px);
+					height: calc(var(--size) - 5px);
 				}
-				a {
-					// suppress subtitles on small screens
-					display: none;
+				.overlay {
+					width: calc(var(--size) - 5px);
+					h1 {
+						min-height: 14px;
+						width: calc(var(--size) - 19px);
+						margin: 8px 0 2px 6px;
+						font-size: 12px;
+					}
+					a {
+						// suppress subtitles on small screens
+						display: none;
+					}
 				}
-			}
-			.badge {
-				padding: 4px 3px 3px;
-				width: 14px;
-				.iconic {
+				.badge {
+					padding: 4px 3px 3px;
 					width: 14px;
-					height: 14px;
-				}
-				&--folder {
 					.iconic {
-						width: 9px;
-						height: 9px;
+						width: 14px;
+						height: 14px;
+					}
+					&--folder {
+						.iconic {
+							width: 9px;
+							height: 9px;
+						}
 					}
 				}
 			}
-		}
-		.divider {
-			margin: 24px 0 0;
-			&:first-child {
-				margin-top: 0;
-			}
-			h1 {
-				margin: 0 0 6px 10px;
+			.divider {
+				margin: 24px 0 0;
+				&:first-child {
+					margin-top: 0;
+				}
+				h1 {
+					margin: 0 0 6px 10px;
+				}
 			}
 		}
 	}
-	}
-
 
 	@media only screen and (min-width: 640px) and (max-width: 768px) {
-	.content {
-		padding: 50px 0 33px 0;
-		width: 100%;
-		max-width: 100%;
+		.content {
+			padding: 50px 0 33px 0;
+			width: 100%;
+			max-width: 100%;
 
-		.photo {
-			// 5 thumbnails per row
-			--size: calc((100vw - 5px) / 5);
-			width: calc(var(--size) - 5px);
-			height: calc(var(--size) - 5px);
-			margin: 5px 0 0 5px;
-			.thumbimg {
-				width: calc(var(--size) - 7px);
-				height: calc(var(--size) - 7px);
-			}
-			.overlay {
-				width: calc(var(--size) - 7px);
-				h1 {
-					min-height: 14px;
-					width: calc(var(--size) - 21px);
-					margin: 10px 0 3px 8px;
-					font-size: 12px;
+			.photo {
+				// 5 thumbnails per row
+				--size: calc((100vw - 5px) / 5);
+				width: calc(var(--size) - 5px);
+				height: calc(var(--size) - 5px);
+				margin: 5px 0 0 5px;
+				.thumbimg {
+					width: calc(var(--size) - 7px);
+					height: calc(var(--size) - 7px);
 				}
-				a {
-					// suppress subtitles on small screens
-					display: none;
+				.overlay {
+					width: calc(var(--size) - 7px);
+					h1 {
+						min-height: 14px;
+						width: calc(var(--size) - 21px);
+						margin: 10px 0 3px 8px;
+						font-size: 12px;
+					}
+					a {
+						// suppress subtitles on small screens
+						display: none;
+					}
 				}
-			}
-			.badge {
-				padding: 6px 4px 4px;
-				width: 16px;
-				.iconic {
+				.badge {
+					padding: 6px 4px 4px;
 					width: 16px;
-					height: 16px;
-				}
-				&--folder {
 					.iconic {
-						width: 10px;
-						height: 10px;
+						width: 16px;
+						height: 16px;
+					}
+					&--folder {
+						.iconic {
+							width: 10px;
+							height: 10px;
+						}
 					}
 				}
 			}
-		}
-		.divider {
-			margin: 28px 0 0;
-			&:first-child {
-				margin-top: 0;
+			.divider {
+				margin: 28px 0 0;
+				&:first-child {
+					margin-top: 0;
+				}
+				h1 {
+					margin: 0 0 6px 10px;
+				}
 			}
-			h1 {
-				margin: 0 0 6px 10px;
-			}
 		}
-	}
 	}
 }
 
-
 .masonry {
 	column-gap: 16px;
-	@media (max-width: calc((240px + 16px)* 14) ) {
+	@media (max-width: calc((240px + 16px)* 14)) {
 		columns: 14;
 	}
-	@media (max-width: calc((240px + 16px)* 13) ) {
+	@media (max-width: calc((240px + 16px)* 13)) {
 		columns: 13;
 	}
-	@media (max-width: calc((240px + 16px)* 12) ) {
+	@media (max-width: calc((240px + 16px)* 12)) {
 		columns: 12;
 	}
-	@media (max-width: calc((240px + 16px)* 11) ) {
+	@media (max-width: calc((240px + 16px)* 11)) {
 		columns: 11;
 	}
-	@media (max-width: calc((240px + 16px)* 10) ) {
+	@media (max-width: calc((240px + 16px)* 10)) {
 		columns: 10;
 	}
-	@media (max-width: calc((240px + 16px)* 9))  {
+	@media (max-width: calc((240px + 16px)* 9)) {
 		columns: 9;
 	}
-	@media (max-width: calc((240px + 16px)* 8))  {
+	@media (max-width: calc((240px + 16px)* 8)) {
 		columns: 8;
 	}
-	@media (max-width: calc((240px + 16px)* 7))  {
+	@media (max-width: calc((240px + 16px)* 7)) {
 		columns: 7;
 	}
-	@media (max-width: calc((240px + 16px)* 6))  {
+	@media (max-width: calc((240px + 16px)* 6)) {
 		columns: 6;
 	}
-	@media (max-width: calc((240px + 16px)* 5))  {
+	@media (max-width: calc((240px + 16px)* 5)) {
 		columns: 5;
 	}
-	@media (max-width: calc((240px + 16px)* 4))  {
+	@media (max-width: calc((240px + 16px)* 4)) {
 		columns: 4;
 	}
-	@media (max-width: calc((240px + 16px)* 3))  {
+	@media (max-width: calc((240px + 16px)* 3)) {
 		columns: 3;
 	}
-	@media (max-width: calc((240px + 16px)* 2))  {
+	@media (max-width: calc((240px + 16px)* 2)) {
 		columns: 2;
 	}
-  
+
 	.photo {
 		display: inline-block;
 		margin-bottom: 16px;

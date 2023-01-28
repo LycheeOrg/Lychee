@@ -9,8 +9,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasBaseAlbumTrait;
 use App\Http\Requests\Traits\HasDescriptionTrait;
-use App\Rules\DescriptionRule;
-use App\Rules\RandomIDRule;
+use App\Http\RuleSets\Album\SetAlbumDescriptionRuleSet;
 
 class SetAlbumDescriptionRequest extends BaseApiRequest implements HasBaseAlbum, HasDescription
 {
@@ -23,10 +22,7 @@ class SetAlbumDescriptionRequest extends BaseApiRequest implements HasBaseAlbum,
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
-			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['present', new DescriptionRule()],
-		];
+		return SetAlbumDescriptionRuleSet::rules();
 	}
 
 	/**

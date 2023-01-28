@@ -10,11 +10,9 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Requests\Traits\HasUsernameTrait;
 use App\Http\Requests\Traits\HasUserTrait;
+use App\Http\RuleSets\Users\SetUserSettingsRuleSet;
 use App\Models\User;
 use App\Policies\UserPolicy;
-use App\Rules\IntegerIDRule;
-use App\Rules\PasswordRule;
-use App\Rules\UsernameRule;
 use Illuminate\Support\Facades\Gate;
 
 class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasPassword, HasUser
@@ -39,13 +37,7 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::ID_ATTRIBUTE => ['required', new IntegerIDRule(false)],
-			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
-			RequestAttribute::PASSWORD_ATTRIBUTE => ['sometimes', new PasswordRule(false)],
-			RequestAttribute::MAY_UPLOAD_ATTRIBUTE => 'present|boolean',
-			RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE => 'present|boolean',
-		];
+		return SetUserSettingsRuleSet::rules();
 	}
 
 	/**
