@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Modules\Gallery;
 
 use App\Actions\Albums\Top;
+use App\Http\Livewire\Traits\InteractWithModal;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
@@ -15,6 +16,8 @@ use Livewire\Component;
  */
 class Albums extends Component
 {
+	use InteractWithModal;
+
 	/** @var Collection<Album> Collection of the album owned by the user */
 	public Collection $albums;
 
@@ -52,5 +55,13 @@ class Albums extends Component
 		$this->albums = $topAlbums->albums;
 		$this->smartalbums = $topAlbums->smart_albums->concat($topAlbums->tag_albums)->reject(fn ($album) => $album === null);
 		$this->shared_albums = $topAlbums->shared_albums;
+	}
+
+	/**
+	 * When no albums are present we simply open the login modal
+	 * @return void
+	 */
+	public function openLoginModal(): void {
+		$this->openModal('forms.login');
 	}
 }
