@@ -24,6 +24,9 @@
 		@case(App\Enum\Livewire\PageMode::PROFILE)
 		<livewire:pages.profile />
 		@break
+		@case(App\Enum\Livewire\PageMode::LANDING)
+		<livewire:pages.landing />
+		@break
 		@default
 		DO NOTHING FOR NOW;
 	@endswitch
