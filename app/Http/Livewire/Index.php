@@ -42,8 +42,16 @@ class Index extends Component
 	 *
 	 * @return void
 	 */
-	public function mount(?string $page = 'gallery', ?string $albumId = null, ?string $photoId = null): void
+	public function mount(?string $page = null, ?string $albumId = null, ?string $photoId = null): void
 	{
+		if ($page === null) {
+			if (Configs::getValueAsBool('landing_page_enable')) {
+				$page = 'landing';
+			} else {
+				$page = 'gallery';
+			}
+		}
+
 		$this->page_mode = PageMode::from($page);
 		$this->albumId = $albumId;
 		$this->photoId = $photoId;

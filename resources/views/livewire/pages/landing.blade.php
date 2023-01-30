@@ -14,7 +14,7 @@
 		<div id="menu">
 			<ul class="menu">
 				<li class="menu-item">
-					<a href="gallery">GALLERY</a>
+					<a href="{{ route('livewire_index', ['page' => 'gallery']) }}">GALLERY</a>
 				</li>
 			</ul>
 		</div>
@@ -37,4 +37,6 @@
 			</ul>
 		</div>
 	</div>
+
+	<!-- TODO: footer -->
 </div>
