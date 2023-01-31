@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Facade;
+use function Safe\scandir;
 
 return [
 	/*
@@ -115,9 +116,10 @@ return [
 	|--------------------------------------------------------------------------
 	|
 	| List of locale supported by Lychee.
+	| ['cz', 'de', 'el', 'en', 'es', 'fr', 'it', 'nl', 'no', 'pl', 'pt', 'ru', 'sk', 'sv', 'vi', 'zh_CN', 'zh_TW']
 	*/
 
-	'supported_locale' => ['cz', 'de', 'el', 'en', 'es', 'fr', 'it', 'nl', 'no', 'pl', 'pt', 'ru', 'sk', 'sv', 'vi', 'zh_CN', 'zh_TW'],
+	'supported_locale' => array_diff(scandir(base_path('lang')), ['..', '.']),
 
 	/*
 	|--------------------------------------------------------------------------
