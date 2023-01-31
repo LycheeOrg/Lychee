@@ -11,6 +11,7 @@ use App\Http\Requests\Settings\SetCSSSettingRequest;
 use App\Http\Requests\Settings\SetDefaultLicenseSettingRequest;
 use App\Http\Requests\Settings\SetDropboxKeySettingRequest;
 use App\Http\Requests\Settings\SetImageOverlaySettingRequest;
+use App\Http\Requests\Settings\SetJSSettingRequest;
 use App\Http\Requests\Settings\SetLangSettingRequest;
 use App\Http\Requests\Settings\SetLayoutSettingRequest;
 use App\Http\Requests\Settings\SetLocationDecodingSettingRequest;
@@ -331,6 +332,28 @@ class SettingsController extends Controller
 		if (Storage::disk('dist')->put('user.css', $css) === false) {
 			if (Storage::disk('dist')->get('user.css') !== $css) {
 				throw new InsufficientFilesystemPermissions('Could not save CSS');
+			}
+		}
+	}
+
+	/**
+	 * Takes the js input text and put it into `dist/custom.js`.
+	 * This allows admins to actually execute custom js code on their
+	 * Lychee-Laravel installation.
+	 *
+	 * @param SetJSSettingRequest $request
+	 *
+	 * @return void
+	 *
+	 * @throws InsufficientFilesystemPermissions
+	 */
+	public function setJS(SetJSSettingRequest $request): void
+	{
+		/** @var string $js */
+		$js = $request->getSettingValue();
+		if (Storage::disk('dist')->put('custom.js', $js) === false) {
+			if (Storage::disk('dist')->get('custom.js') !== $js) {
+				throw new InsufficientFilesystemPermissions('Could not save JS');
 			}
 		}
 	}
