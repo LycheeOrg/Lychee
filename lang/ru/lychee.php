@@ -361,6 +361,8 @@ return [
 
 	'CSS_TEXT' => 'Personalize CSS:',
 	'CSS_TITLE' => 'Change CSS',
+	'JS_TEXT' => 'Custom JS:',
+	'JS_TITLE' => 'Change JS',
 	'PUBLIC_SEARCH_TEXT' => 'Разрешить публичный поиск:',
 	'OVERLAY_TYPE' => 'Данные для наложения:',
 	'OVERLAY_NONE' => 'None',

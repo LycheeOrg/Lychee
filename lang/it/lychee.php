@@ -361,6 +361,8 @@ return [
 
 	'CSS_TEXT' => 'Personalize CSS:',
 	'CSS_TITLE' => 'Change CSS',
+	'JS_TEXT' => 'Custom JS:',
+	'JS_TITLE' => 'Change JS',
 	'PUBLIC_SEARCH_TEXT' => 'Ricerca pubblica consentita:',
 	'OVERLAY_TYPE' => 'Contenuto da utilizzare nella filigrana:',
 	'OVERLAY_NONE' => 'None',

@@ -361,6 +361,8 @@ return [
 
 	'CSS_TEXT' => 'Vlastní CSS:',
 	'CSS_TITLE' => 'Změnit CSS',
+	'JS_TEXT' => 'Vlastní JS:',
+	'JS_TITLE' => 'Změnit JS',
 	'PUBLIC_SEARCH_TEXT' => 'Veřejné vyhledávání povoleno:',
 	'OVERLAY_TYPE' => 'Data, která budou použita na překryvu:',
 	'OVERLAY_NONE' => 'None',

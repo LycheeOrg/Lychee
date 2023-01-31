@@ -361,6 +361,8 @@ return [
 
 	'CSS_TEXT' => 'Vlastné CSS:',
 	'CSS_TITLE' => 'CSS zmeniť',
+	'JS_TEXT' => 'Vlastné JS:',
+	'JS_TITLE' => 'JS zmeniť',
 	'PUBLIC_SEARCH_TEXT' => 'Verejné vyhľadávanie povolené:',
 	'OVERLAY_TYPE' => 'Dáta použité pre overlay:',
 	'OVERLAY_NONE' => 'None',

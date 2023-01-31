@@ -361,6 +361,8 @@ return [
 
 	'CSS_TEXT' => 'Personalize CSS:',
 	'CSS_TITLE' => 'Change CSS',
+	'JS_TEXT' => 'Custom JS:',
+	'JS_TITLE' => 'Change JS',
 	'PUBLIC_SEARCH_TEXT' => 'Pesquisa pública permitida:',
 	'OVERLAY_TYPE' => 'Data a usar no overlay da imagem:',
 	'OVERLAY_NONE' => 'None',

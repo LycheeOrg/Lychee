@@ -361,6 +361,8 @@ return [
 
 	'CSS_TEXT' => 'Personalize CSS:',
 	'CSS_TITLE' => 'Change CSS',
+	'JS_TEXT' => 'Custom JS:',
+	'JS_TITLE' => 'Change JS',
 	'PUBLIC_SEARCH_TEXT' => '允許公共搜索:',
 	'OVERLAY_TYPE' => '圖像疊加中要使用的數據:',
 	'OVERLAY_NONE' => 'None',

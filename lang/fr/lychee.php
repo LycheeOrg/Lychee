@@ -359,8 +359,10 @@ return [
 	'LANG_TEXT' => 'Remplacer la langue de Lychee par :',
 	'LANG_TITLE' => 'Changer la langue',
 
-	'CSS_TEXT' => 'Personalize CSS :',
-	'CSS_TITLE' => 'Change CSS',
+	'CSS_TEXT' => 'Personaliser le CSS :',
+	'CSS_TITLE' => 'Changer le CSS',
+	'JS_TEXT' => 'Personaliser le JS:',
+	'JS_TITLE' => 'Changer le code JS',
 	'PUBLIC_SEARCH_TEXT' => 'Recherche publique autorisée :',
 	'OVERLAY_TYPE' => 'Informations à utiliser pour l’overlay :',
 	'OVERLAY_NONE' => 'Pas d’overlay',

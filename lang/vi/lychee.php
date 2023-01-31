@@ -361,6 +361,8 @@ return [
 
 	'CSS_TEXT' => 'Personalize CSS:',
 	'CSS_TITLE' => 'Change CSS',
+	'JS_TEXT' => 'Custom JS:',
+	'JS_TITLE' => 'Change JS',
 	'PUBLIC_SEARCH_TEXT' => 'Cho phép tìm kiếm công cộng:',
 	'OVERLAY_TYPE' => 'Thông tin hiển thị trên hình:',
 	'OVERLAY_NONE' => 'Không hiển thị gì cả',

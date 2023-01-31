@@ -361,6 +361,8 @@ return [
 
 	'CSS_TEXT' => 'CSS personalisieren:',
 	'CSS_TITLE' => 'CSS ändern',
+	'JS_TEXT' => 'JS personalisieren:',
+	'JS_TITLE' => 'JS ändern',
 	'PUBLIC_SEARCH_TEXT' => 'Öffentliche Suche erlauben',
 	'OVERLAY_TYPE' => 'Daten für Foto-Overlay:',
 	'OVERLAY_NONE' => 'Kein Overlay',
