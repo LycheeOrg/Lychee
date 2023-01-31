@@ -87,7 +87,7 @@ class Album extends Component
 			$this->license = $baseAlbum->license;
 			$this->sorting_col = $baseAlbum->sorting_col ?? '';
 			$this->sorting_order = $baseAlbum->sorting_order ?? '';
-			} else {
+		} else {
 			$this->description = '';
 		}
 		$this->owner_name = $baseAlbum->owner->name;
