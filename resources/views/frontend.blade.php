@@ -9,6 +9,7 @@
 		<link rel="apple-touch-icon" href="img/apple-touch-icon-iphone.png" sizes="152x152">
 		<link rel="apple-touch-icon" href="img/apple-touch-icon-iphone-plus.png" sizes="180x180">
 		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=4.0, user-scalable=yes">
+		<meta name="theme-color" content="#222">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="generator" content="Lychee v4">
