@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="{{ str_replace('_', '-', Lang::get_code()) }}">
+<html lang="{{ app()->currentLocale() }}">
 	<head>
 		<meta charset="UTF-8">
 		<link type="text/css" rel="stylesheet" href="dist/frontend.css">
