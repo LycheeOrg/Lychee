@@ -973,6 +973,943 @@ if (L.MarkerClusterGroup) {
 }
 
 !function(t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define([],t):("undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this).basicContext=t()}(function(){return function o(i,c,l){function r(n,t){if(!c[n]){if(!i[n]){var e="function"==typeof require&&require;if(!t&&e)return e(n,!0);if(a)return a(n,!0);throw(t=new Error("Cannot find module '"+n+"'")).code="MODULE_NOT_FOUND",t}e=c[n]={exports:{}},i[n][0].call(e.exports,function(t){return r(i[n][1][t]||t)},e,e.exports,o,i,c,l)}return c[n].exports}for(var a="function"==typeof require&&require,t=0;t<l.length;t++)r(l[t]);return r}({1:[function(t,n,e){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.visible=e.show=e.close=e.SEPARATOR=e.ITEM=void 0;function y(){var t=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{};return null!=t.fn&&(!1!==t.visible&&(!0!==t.disabled&&(b("td[data-num='".concat(t.num,"']")).onclick=t.fn,b("td[data-num='".concat(t.num,"']")).oncontextmenu=t.fn,!0)))}function o(){var t=b();return!(null==t||0===t.length)}var i="item",c=(e.ITEM=i,"separator"),b=(e.SEPARATOR=c,function(){return document.querySelector(".basicContext "+(0<arguments.length&&void 0!==arguments[0]?arguments[0]:""))}),x=function(t,n){var e="",o="";return!1===function(){var t=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{};return!0==(0===Object.keys(t).length)&&(t.type=c),null==t.type&&(t.type=i),null==t.class&&(t.class=""),!1!==t.visible&&(t.visible=!0),null==t.icon&&(t.icon=null),null==t.title&&(t.title="Undefined"),!0!==t.disabled&&(t.disabled=!1),!0===t.disabled&&(t.class+=" basicContext__item--disabled"),null!=t.fn||t.type===c||!1!==t.disabled||(console.warn("Missing fn for item '".concat(t.title,"'")),!1)}(t)||!1===t.visible?"":(t.num=n,null!==t.icon&&(o="<span class='basicContext__icon ".concat(t.icon,"'></span>")),t.type===i?e="\n\t\t\t\t <tr class='basicContext__item ".concat(t.class,"'>\n\t\t\t\t\t\t <td class='basicContext__data' data-num='").concat(t.num,"'>").concat(o).concat(t.title,"</td>\n\t\t\t\t </tr>\n\t\t\t\t "):t.type===c&&(e="\n\t\t\t\t <tr class='basicContext__item basicContext__item--separator'></tr>\n\t\t\t\t "),e)},v=function(){var t=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{},n={x:t.clientX,y:t.clientY};return"touchend"!==t.type||null!=n.x&&null!=n.y||null!=(t=t.changedTouches)&&0<t.length&&(n.x=t[0].clientX,n.y=t[0].clientY),(null==n.x||n.x<0)&&(n.x=0),(null==n.y||n.y<0)&&(n.y=0),n},m=(e.show=function(t,n,e,o){i="",i+="\n\t\t\t\t<div class='basicContextContainer'>\n\t\t\t\t\t\t<div class='basicContext'>\n\t\t\t\t\t\t\t\t<table>\n\t\t\t\t\t\t\t\t\t\t<tbody>\n\t\t\t\t",t.forEach(function(t,n){return i+=x(t,n)});var i,c,l,r,a,s,u,f,d=i+="\n\t\t\t\t\t\t\t\t\t\t</tbody>\n\t\t\t\t\t\t\t\t</table>\n\t\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t",d=(document.body.insertAdjacentHTML("beforeend",d),b()),p=(l=d,c=v(c=n),r=c.x,a=c.y,s=document.querySelector(".basicContextContainer"),p=s.offsetWidth,s=s.offsetHeight,u=l.offsetWidth,f=l.offsetHeight,p<r+u&&(r-=r+u-p),s<a+f&&(a-=a+f-s),s<f&&(a=0,l.classList.add("basicContext--scrollable")),u=c.x-r,{x:r,y:a,rx:u,ry:c.y-a});return d.style.left="".concat(p.x,"px"),d.style.top="".concat(p.y,"px"),d.style.transformOrigin="".concat(p.rx,"px ").concat(p.ry,"px"),d.style.opacity=1,d.parentElement.onclick=e=null==e?m:e,d.parentElement.oncontextmenu=e,t.forEach(y),"function"==typeof n.preventDefault&&n.preventDefault(),"function"==typeof n.stopPropagation&&n.stopPropagation(),"function"==typeof o&&o(),!0},e.visible=o,function(){var t;return!1!==o()&&((t=document.querySelector(".basicContextContainer")).parentElement.removeChild(t),!0)});e.close=m},{}]},{},[1])(1)});
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? define(factory) :
+    (global.ResizeObserver = factory());
+}(this, (function () { 'use strict';
+
+    /**
+     * A collection of shims that provide minimal functionality of the ES6 collections.
+     *
+     * These implementations are not meant to be used outside of the ResizeObserver
+     * modules as they cover only a limited range of use cases.
+     */
+    /* eslint-disable require-jsdoc, valid-jsdoc */
+    var MapShim = (function () {
+        if (typeof Map !== 'undefined') {
+            return Map;
+        }
+        /**
+         * Returns index in provided array that matches the specified key.
+         *
+         * @param {Array<Array>} arr
+         * @param {*} key
+         * @returns {number}
+         */
+        function getIndex(arr, key) {
+            var result = -1;
+            arr.some(function (entry, index) {
+                if (entry[0] === key) {
+                    result = index;
+                    return true;
+                }
+                return false;
+            });
+            return result;
+        }
+        return /** @class */ (function () {
+            function class_1() {
+                this.__entries__ = [];
+            }
+            Object.defineProperty(class_1.prototype, "size", {
+                /**
+                 * @returns {boolean}
+                 */
+                get: function () {
+                    return this.__entries__.length;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            /**
+             * @param {*} key
+             * @returns {*}
+             */
+            class_1.prototype.get = function (key) {
+                var index = getIndex(this.__entries__, key);
+                var entry = this.__entries__[index];
+                return entry && entry[1];
+            };
+            /**
+             * @param {*} key
+             * @param {*} value
+             * @returns {void}
+             */
+            class_1.prototype.set = function (key, value) {
+                var index = getIndex(this.__entries__, key);
+                if (~index) {
+                    this.__entries__[index][1] = value;
+                }
+                else {
+                    this.__entries__.push([key, value]);
+                }
+            };
+            /**
+             * @param {*} key
+             * @returns {void}
+             */
+            class_1.prototype.delete = function (key) {
+                var entries = this.__entries__;
+                var index = getIndex(entries, key);
+                if (~index) {
+                    entries.splice(index, 1);
+                }
+            };
+            /**
+             * @param {*} key
+             * @returns {void}
+             */
+            class_1.prototype.has = function (key) {
+                return !!~getIndex(this.__entries__, key);
+            };
+            /**
+             * @returns {void}
+             */
+            class_1.prototype.clear = function () {
+                this.__entries__.splice(0);
+            };
+            /**
+             * @param {Function} callback
+             * @param {*} [ctx=null]
+             * @returns {void}
+             */
+            class_1.prototype.forEach = function (callback, ctx) {
+                if (ctx === void 0) { ctx = null; }
+                for (var _i = 0, _a = this.__entries__; _i < _a.length; _i++) {
+                    var entry = _a[_i];
+                    callback.call(ctx, entry[1], entry[0]);
+                }
+            };
+            return class_1;
+        }());
+    })();
+
+    /**
+     * Detects whether window and document objects are available in current environment.
+     */
+    var isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined' && window.document === document;
+
+    // Returns global object of a current environment.
+    var global$1 = (function () {
+        if (typeof global !== 'undefined' && global.Math === Math) {
+            return global;
+        }
+        if (typeof self !== 'undefined' && self.Math === Math) {
+            return self;
+        }
+        if (typeof window !== 'undefined' && window.Math === Math) {
+            return window;
+        }
+        // eslint-disable-next-line no-new-func
+        return Function('return this')();
+    })();
+
+    /**
+     * A shim for the requestAnimationFrame which falls back to the setTimeout if
+     * first one is not supported.
+     *
+     * @returns {number} Requests' identifier.
+     */
+    var requestAnimationFrame$1 = (function () {
+        if (typeof requestAnimationFrame === 'function') {
+            // It's required to use a bounded function because IE sometimes throws
+            // an "Invalid calling object" error if rAF is invoked without the global
+            // object on the left hand side.
+            return requestAnimationFrame.bind(global$1);
+        }
+        return function (callback) { return setTimeout(function () { return callback(Date.now()); }, 1000 / 60); };
+    })();
+
+    // Defines minimum timeout before adding a trailing call.
+    var trailingTimeout = 2;
+    /**
+     * Creates a wrapper function which ensures that provided callback will be
+     * invoked only once during the specified delay period.
+     *
+     * @param {Function} callback - Function to be invoked after the delay period.
+     * @param {number} delay - Delay after which to invoke callback.
+     * @returns {Function}
+     */
+    function throttle (callback, delay) {
+        var leadingCall = false, trailingCall = false, lastCallTime = 0;
+        /**
+         * Invokes the original callback function and schedules new invocation if
+         * the "proxy" was called during current request.
+         *
+         * @returns {void}
+         */
+        function resolvePending() {
+            if (leadingCall) {
+                leadingCall = false;
+                callback();
+            }
+            if (trailingCall) {
+                proxy();
+            }
+        }
+        /**
+         * Callback invoked after the specified delay. It will further postpone
+         * invocation of the original function delegating it to the
+         * requestAnimationFrame.
+         *
+         * @returns {void}
+         */
+        function timeoutCallback() {
+            requestAnimationFrame$1(resolvePending);
+        }
+        /**
+         * Schedules invocation of the original function.
+         *
+         * @returns {void}
+         */
+        function proxy() {
+            var timeStamp = Date.now();
+            if (leadingCall) {
+                // Reject immediately following calls.
+                if (timeStamp - lastCallTime < trailingTimeout) {
+                    return;
+                }
+                // Schedule new call to be in invoked when the pending one is resolved.
+                // This is important for "transitions" which never actually start
+                // immediately so there is a chance that we might miss one if change
+                // happens amids the pending invocation.
+                trailingCall = true;
+            }
+            else {
+                leadingCall = true;
+                trailingCall = false;
+                setTimeout(timeoutCallback, delay);
+            }
+            lastCallTime = timeStamp;
+        }
+        return proxy;
+    }
+
+    // Minimum delay before invoking the update of observers.
+    var REFRESH_DELAY = 20;
+    // A list of substrings of CSS properties used to find transition events that
+    // might affect dimensions of observed elements.
+    var transitionKeys = ['top', 'right', 'bottom', 'left', 'width', 'height', 'size', 'weight'];
+    // Check if MutationObserver is available.
+    var mutationObserverSupported = typeof MutationObserver !== 'undefined';
+    /**
+     * Singleton controller class which handles updates of ResizeObserver instances.
+     */
+    var ResizeObserverController = /** @class */ (function () {
+        /**
+         * Creates a new instance of ResizeObserverController.
+         *
+         * @private
+         */
+        function ResizeObserverController() {
+            /**
+             * Indicates whether DOM listeners have been added.
+             *
+             * @private {boolean}
+             */
+            this.connected_ = false;
+            /**
+             * Tells that controller has subscribed for Mutation Events.
+             *
+             * @private {boolean}
+             */
+            this.mutationEventsAdded_ = false;
+            /**
+             * Keeps reference to the instance of MutationObserver.
+             *
+             * @private {MutationObserver}
+             */
+            this.mutationsObserver_ = null;
+            /**
+             * A list of connected observers.
+             *
+             * @private {Array<ResizeObserverSPI>}
+             */
+            this.observers_ = [];
+            this.onTransitionEnd_ = this.onTransitionEnd_.bind(this);
+            this.refresh = throttle(this.refresh.bind(this), REFRESH_DELAY);
+        }
+        /**
+         * Adds observer to observers list.
+         *
+         * @param {ResizeObserverSPI} observer - Observer to be added.
+         * @returns {void}
+         */
+        ResizeObserverController.prototype.addObserver = function (observer) {
+            if (!~this.observers_.indexOf(observer)) {
+                this.observers_.push(observer);
+            }
+            // Add listeners if they haven't been added yet.
+            if (!this.connected_) {
+                this.connect_();
+            }
+        };
+        /**
+         * Removes observer from observers list.
+         *
+         * @param {ResizeObserverSPI} observer - Observer to be removed.
+         * @returns {void}
+         */
+        ResizeObserverController.prototype.removeObserver = function (observer) {
+            var observers = this.observers_;
+            var index = observers.indexOf(observer);
+            // Remove observer if it's present in registry.
+            if (~index) {
+                observers.splice(index, 1);
+            }
+            // Remove listeners if controller has no connected observers.
+            if (!observers.length && this.connected_) {
+                this.disconnect_();
+            }
+        };
+        /**
+         * Invokes the update of observers. It will continue running updates insofar
+         * it detects changes.
+         *
+         * @returns {void}
+         */
+        ResizeObserverController.prototype.refresh = function () {
+            var changesDetected = this.updateObservers_();
+            // Continue running updates if changes have been detected as there might
+            // be future ones caused by CSS transitions.
+            if (changesDetected) {
+                this.refresh();
+            }
+        };
+        /**
+         * Updates every observer from observers list and notifies them of queued
+         * entries.
+         *
+         * @private
+         * @returns {boolean} Returns "true" if any observer has detected changes in
+         *      dimensions of it's elements.
+         */
+        ResizeObserverController.prototype.updateObservers_ = function () {
+            // Collect observers that have active observations.
+            var activeObservers = this.observers_.filter(function (observer) {
+                return observer.gatherActive(), observer.hasActive();
+            });
+            // Deliver notifications in a separate cycle in order to avoid any
+            // collisions between observers, e.g. when multiple instances of
+            // ResizeObserver are tracking the same element and the callback of one
+            // of them changes content dimensions of the observed target. Sometimes
+            // this may result in notifications being blocked for the rest of observers.
+            activeObservers.forEach(function (observer) { return observer.broadcastActive(); });
+            return activeObservers.length > 0;
+        };
+        /**
+         * Initializes DOM listeners.
+         *
+         * @private
+         * @returns {void}
+         */
+        ResizeObserverController.prototype.connect_ = function () {
+            // Do nothing if running in a non-browser environment or if listeners
+            // have been already added.
+            if (!isBrowser || this.connected_) {
+                return;
+            }
+            // Subscription to the "Transitionend" event is used as a workaround for
+            // delayed transitions. This way it's possible to capture at least the
+            // final state of an element.
+            document.addEventListener('transitionend', this.onTransitionEnd_);
+            window.addEventListener('resize', this.refresh);
+            if (mutationObserverSupported) {
+                this.mutationsObserver_ = new MutationObserver(this.refresh);
+                this.mutationsObserver_.observe(document, {
+                    attributes: true,
+                    childList: true,
+                    characterData: true,
+                    subtree: true
+                });
+            }
+            else {
+                document.addEventListener('DOMSubtreeModified', this.refresh);
+                this.mutationEventsAdded_ = true;
+            }
+            this.connected_ = true;
+        };
+        /**
+         * Removes DOM listeners.
+         *
+         * @private
+         * @returns {void}
+         */
+        ResizeObserverController.prototype.disconnect_ = function () {
+            // Do nothing if running in a non-browser environment or if listeners
+            // have been already removed.
+            if (!isBrowser || !this.connected_) {
+                return;
+            }
+            document.removeEventListener('transitionend', this.onTransitionEnd_);
+            window.removeEventListener('resize', this.refresh);
+            if (this.mutationsObserver_) {
+                this.mutationsObserver_.disconnect();
+            }
+            if (this.mutationEventsAdded_) {
+                document.removeEventListener('DOMSubtreeModified', this.refresh);
+            }
+            this.mutationsObserver_ = null;
+            this.mutationEventsAdded_ = false;
+            this.connected_ = false;
+        };
+        /**
+         * "Transitionend" event handler.
+         *
+         * @private
+         * @param {TransitionEvent} event
+         * @returns {void}
+         */
+        ResizeObserverController.prototype.onTransitionEnd_ = function (_a) {
+            var _b = _a.propertyName, propertyName = _b === void 0 ? '' : _b;
+            // Detect whether transition may affect dimensions of an element.
+            var isReflowProperty = transitionKeys.some(function (key) {
+                return !!~propertyName.indexOf(key);
+            });
+            if (isReflowProperty) {
+                this.refresh();
+            }
+        };
+        /**
+         * Returns instance of the ResizeObserverController.
+         *
+         * @returns {ResizeObserverController}
+         */
+        ResizeObserverController.getInstance = function () {
+            if (!this.instance_) {
+                this.instance_ = new ResizeObserverController();
+            }
+            return this.instance_;
+        };
+        /**
+         * Holds reference to the controller's instance.
+         *
+         * @private {ResizeObserverController}
+         */
+        ResizeObserverController.instance_ = null;
+        return ResizeObserverController;
+    }());
+
+    /**
+     * Defines non-writable/enumerable properties of the provided target object.
+     *
+     * @param {Object} target - Object for which to define properties.
+     * @param {Object} props - Properties to be defined.
+     * @returns {Object} Target object.
+     */
+    var defineConfigurable = (function (target, props) {
+        for (var _i = 0, _a = Object.keys(props); _i < _a.length; _i++) {
+            var key = _a[_i];
+            Object.defineProperty(target, key, {
+                value: props[key],
+                enumerable: false,
+                writable: false,
+                configurable: true
+            });
+        }
+        return target;
+    });
+
+    /**
+     * Returns the global object associated with provided element.
+     *
+     * @param {Object} target
+     * @returns {Object}
+     */
+    var getWindowOf = (function (target) {
+        // Assume that the element is an instance of Node, which means that it
+        // has the "ownerDocument" property from which we can retrieve a
+        // corresponding global object.
+        var ownerGlobal = target && target.ownerDocument && target.ownerDocument.defaultView;
+        // Return the local global object if it's not possible extract one from
+        // provided element.
+        return ownerGlobal || global$1;
+    });
+
+    // Placeholder of an empty content rectangle.
+    var emptyRect = createRectInit(0, 0, 0, 0);
+    /**
+     * Converts provided string to a number.
+     *
+     * @param {number|string} value
+     * @returns {number}
+     */
+    function toFloat(value) {
+        return parseFloat(value) || 0;
+    }
+    /**
+     * Extracts borders size from provided styles.
+     *
+     * @param {CSSStyleDeclaration} styles
+     * @param {...string} positions - Borders positions (top, right, ...)
+     * @returns {number}
+     */
+    function getBordersSize(styles) {
+        var positions = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            positions[_i - 1] = arguments[_i];
+        }
+        return positions.reduce(function (size, position) {
+            var value = styles['border-' + position + '-width'];
+            return size + toFloat(value);
+        }, 0);
+    }
+    /**
+     * Extracts paddings sizes from provided styles.
+     *
+     * @param {CSSStyleDeclaration} styles
+     * @returns {Object} Paddings box.
+     */
+    function getPaddings(styles) {
+        var positions = ['top', 'right', 'bottom', 'left'];
+        var paddings = {};
+        for (var _i = 0, positions_1 = positions; _i < positions_1.length; _i++) {
+            var position = positions_1[_i];
+            var value = styles['padding-' + position];
+            paddings[position] = toFloat(value);
+        }
+        return paddings;
+    }
+    /**
+     * Calculates content rectangle of provided SVG element.
+     *
+     * @param {SVGGraphicsElement} target - Element content rectangle of which needs
+     *      to be calculated.
+     * @returns {DOMRectInit}
+     */
+    function getSVGContentRect(target) {
+        var bbox = target.getBBox();
+        return createRectInit(0, 0, bbox.width, bbox.height);
+    }
+    /**
+     * Calculates content rectangle of provided HTMLElement.
+     *
+     * @param {HTMLElement} target - Element for which to calculate the content rectangle.
+     * @returns {DOMRectInit}
+     */
+    function getHTMLElementContentRect(target) {
+        // Client width & height properties can't be
+        // used exclusively as they provide rounded values.
+        var clientWidth = target.clientWidth, clientHeight = target.clientHeight;
+        // By this condition we can catch all non-replaced inline, hidden and
+        // detached elements. Though elements with width & height properties less
+        // than 0.5 will be discarded as well.
+        //
+        // Without it we would need to implement separate methods for each of
+        // those cases and it's not possible to perform a precise and performance
+        // effective test for hidden elements. E.g. even jQuery's ':visible' filter
+        // gives wrong results for elements with width & height less than 0.5.
+        if (!clientWidth && !clientHeight) {
+            return emptyRect;
+        }
+        var styles = getWindowOf(target).getComputedStyle(target);
+        var paddings = getPaddings(styles);
+        var horizPad = paddings.left + paddings.right;
+        var vertPad = paddings.top + paddings.bottom;
+        // Computed styles of width & height are being used because they are the
+        // only dimensions available to JS that contain non-rounded values. It could
+        // be possible to utilize the getBoundingClientRect if only it's data wasn't
+        // affected by CSS transformations let alone paddings, borders and scroll bars.
+        var width = toFloat(styles.width), height = toFloat(styles.height);
+        // Width & height include paddings and borders when the 'border-box' box
+        // model is applied (except for IE).
+        if (styles.boxSizing === 'border-box') {
+            // Following conditions are required to handle Internet Explorer which
+            // doesn't include paddings and borders to computed CSS dimensions.
+            //
+            // We can say that if CSS dimensions + paddings are equal to the "client"
+            // properties then it's either IE, and thus we don't need to subtract
+            // anything, or an element merely doesn't have paddings/borders styles.
+            if (Math.round(width + horizPad) !== clientWidth) {
+                width -= getBordersSize(styles, 'left', 'right') + horizPad;
+            }
+            if (Math.round(height + vertPad) !== clientHeight) {
+                height -= getBordersSize(styles, 'top', 'bottom') + vertPad;
+            }
+        }
+        // Following steps can't be applied to the document's root element as its
+        // client[Width/Height] properties represent viewport area of the window.
+        // Besides, it's as well not necessary as the <html> itself neither has
+        // rendered scroll bars nor it can be clipped.
+        if (!isDocumentElement(target)) {
+            // In some browsers (only in Firefox, actually) CSS width & height
+            // include scroll bars size which can be removed at this step as scroll
+            // bars are the only difference between rounded dimensions + paddings
+            // and "client" properties, though that is not always true in Chrome.
+            var vertScrollbar = Math.round(width + horizPad) - clientWidth;
+            var horizScrollbar = Math.round(height + vertPad) - clientHeight;
+            // Chrome has a rather weird rounding of "client" properties.
+            // E.g. for an element with content width of 314.2px it sometimes gives
+            // the client width of 315px and for the width of 314.7px it may give
+            // 314px. And it doesn't happen all the time. So just ignore this delta
+            // as a non-relevant.
+            if (Math.abs(vertScrollbar) !== 1) {
+                width -= vertScrollbar;
+            }
+            if (Math.abs(horizScrollbar) !== 1) {
+                height -= horizScrollbar;
+            }
+        }
+        return createRectInit(paddings.left, paddings.top, width, height);
+    }
+    /**
+     * Checks whether provided element is an instance of the SVGGraphicsElement.
+     *
+     * @param {Element} target - Element to be checked.
+     * @returns {boolean}
+     */
+    var isSVGGraphicsElement = (function () {
+        // Some browsers, namely IE and Edge, don't have the SVGGraphicsElement
+        // interface.
+        if (typeof SVGGraphicsElement !== 'undefined') {
+            return function (target) { return target instanceof getWindowOf(target).SVGGraphicsElement; };
+        }
+        // If it's so, then check that element is at least an instance of the
+        // SVGElement and that it has the "getBBox" method.
+        // eslint-disable-next-line no-extra-parens
+        return function (target) { return (target instanceof getWindowOf(target).SVGElement &&
+            typeof target.getBBox === 'function'); };
+    })();
+    /**
+     * Checks whether provided element is a document element (<html>).
+     *
+     * @param {Element} target - Element to be checked.
+     * @returns {boolean}
+     */
+    function isDocumentElement(target) {
+        return target === getWindowOf(target).document.documentElement;
+    }
+    /**
+     * Calculates an appropriate content rectangle for provided html or svg element.
+     *
+     * @param {Element} target - Element content rectangle of which needs to be calculated.
+     * @returns {DOMRectInit}
+     */
+    function getContentRect(target) {
+        if (!isBrowser) {
+            return emptyRect;
+        }
+        if (isSVGGraphicsElement(target)) {
+            return getSVGContentRect(target);
+        }
+        return getHTMLElementContentRect(target);
+    }
+    /**
+     * Creates rectangle with an interface of the DOMRectReadOnly.
+     * Spec: https://drafts.fxtf.org/geometry/#domrectreadonly
+     *
+     * @param {DOMRectInit} rectInit - Object with rectangle's x/y coordinates and dimensions.
+     * @returns {DOMRectReadOnly}
+     */
+    function createReadOnlyRect(_a) {
+        var x = _a.x, y = _a.y, width = _a.width, height = _a.height;
+        // If DOMRectReadOnly is available use it as a prototype for the rectangle.
+        var Constr = typeof DOMRectReadOnly !== 'undefined' ? DOMRectReadOnly : Object;
+        var rect = Object.create(Constr.prototype);
+        // Rectangle's properties are not writable and non-enumerable.
+        defineConfigurable(rect, {
+            x: x, y: y, width: width, height: height,
+            top: y,
+            right: x + width,
+            bottom: height + y,
+            left: x
+        });
+        return rect;
+    }
+    /**
+     * Creates DOMRectInit object based on the provided dimensions and the x/y coordinates.
+     * Spec: https://drafts.fxtf.org/geometry/#dictdef-domrectinit
+     *
+     * @param {number} x - X coordinate.
+     * @param {number} y - Y coordinate.
+     * @param {number} width - Rectangle's width.
+     * @param {number} height - Rectangle's height.
+     * @returns {DOMRectInit}
+     */
+    function createRectInit(x, y, width, height) {
+        return { x: x, y: y, width: width, height: height };
+    }
+
+    /**
+     * Class that is responsible for computations of the content rectangle of
+     * provided DOM element and for keeping track of it's changes.
+     */
+    var ResizeObservation = /** @class */ (function () {
+        /**
+         * Creates an instance of ResizeObservation.
+         *
+         * @param {Element} target - Element to be observed.
+         */
+        function ResizeObservation(target) {
+            /**
+             * Broadcasted width of content rectangle.
+             *
+             * @type {number}
+             */
+            this.broadcastWidth = 0;
+            /**
+             * Broadcasted height of content rectangle.
+             *
+             * @type {number}
+             */
+            this.broadcastHeight = 0;
+            /**
+             * Reference to the last observed content rectangle.
+             *
+             * @private {DOMRectInit}
+             */
+            this.contentRect_ = createRectInit(0, 0, 0, 0);
+            this.target = target;
+        }
+        /**
+         * Updates content rectangle and tells whether it's width or height properties
+         * have changed since the last broadcast.
+         *
+         * @returns {boolean}
+         */
+        ResizeObservation.prototype.isActive = function () {
+            var rect = getContentRect(this.target);
+            this.contentRect_ = rect;
+            return (rect.width !== this.broadcastWidth ||
+                rect.height !== this.broadcastHeight);
+        };
+        /**
+         * Updates 'broadcastWidth' and 'broadcastHeight' properties with a data
+         * from the corresponding properties of the last observed content rectangle.
+         *
+         * @returns {DOMRectInit} Last observed content rectangle.
+         */
+        ResizeObservation.prototype.broadcastRect = function () {
+            var rect = this.contentRect_;
+            this.broadcastWidth = rect.width;
+            this.broadcastHeight = rect.height;
+            return rect;
+        };
+        return ResizeObservation;
+    }());
+
+    var ResizeObserverEntry = /** @class */ (function () {
+        /**
+         * Creates an instance of ResizeObserverEntry.
+         *
+         * @param {Element} target - Element that is being observed.
+         * @param {DOMRectInit} rectInit - Data of the element's content rectangle.
+         */
+        function ResizeObserverEntry(target, rectInit) {
+            var contentRect = createReadOnlyRect(rectInit);
+            // According to the specification following properties are not writable
+            // and are also not enumerable in the native implementation.
+            //
+            // Property accessors are not being used as they'd require to define a
+            // private WeakMap storage which may cause memory leaks in browsers that
+            // don't support this type of collections.
+            defineConfigurable(this, { target: target, contentRect: contentRect });
+        }
+        return ResizeObserverEntry;
+    }());
+
+    var ResizeObserverSPI = /** @class */ (function () {
+        /**
+         * Creates a new instance of ResizeObserver.
+         *
+         * @param {ResizeObserverCallback} callback - Callback function that is invoked
+         *      when one of the observed elements changes it's content dimensions.
+         * @param {ResizeObserverController} controller - Controller instance which
+         *      is responsible for the updates of observer.
+         * @param {ResizeObserver} callbackCtx - Reference to the public
+         *      ResizeObserver instance which will be passed to callback function.
+         */
+        function ResizeObserverSPI(callback, controller, callbackCtx) {
+            /**
+             * Collection of resize observations that have detected changes in dimensions
+             * of elements.
+             *
+             * @private {Array<ResizeObservation>}
+             */
+            this.activeObservations_ = [];
+            /**
+             * Registry of the ResizeObservation instances.
+             *
+             * @private {Map<Element, ResizeObservation>}
+             */
+            this.observations_ = new MapShim();
+            if (typeof callback !== 'function') {
+                throw new TypeError('The callback provided as parameter 1 is not a function.');
+            }
+            this.callback_ = callback;
+            this.controller_ = controller;
+            this.callbackCtx_ = callbackCtx;
+        }
+        /**
+         * Starts observing provided element.
+         *
+         * @param {Element} target - Element to be observed.
+         * @returns {void}
+         */
+        ResizeObserverSPI.prototype.observe = function (target) {
+            if (!arguments.length) {
+                throw new TypeError('1 argument required, but only 0 present.');
+            }
+            // Do nothing if current environment doesn't have the Element interface.
+            if (typeof Element === 'undefined' || !(Element instanceof Object)) {
+                return;
+            }
+            if (!(target instanceof getWindowOf(target).Element)) {
+                throw new TypeError('parameter 1 is not of type "Element".');
+            }
+            var observations = this.observations_;
+            // Do nothing if element is already being observed.
+            if (observations.has(target)) {
+                return;
+            }
+            observations.set(target, new ResizeObservation(target));
+            this.controller_.addObserver(this);
+            // Force the update of observations.
+            this.controller_.refresh();
+        };
+        /**
+         * Stops observing provided element.
+         *
+         * @param {Element} target - Element to stop observing.
+         * @returns {void}
+         */
+        ResizeObserverSPI.prototype.unobserve = function (target) {
+            if (!arguments.length) {
+                throw new TypeError('1 argument required, but only 0 present.');
+            }
+            // Do nothing if current environment doesn't have the Element interface.
+            if (typeof Element === 'undefined' || !(Element instanceof Object)) {
+                return;
+            }
+            if (!(target instanceof getWindowOf(target).Element)) {
+                throw new TypeError('parameter 1 is not of type "Element".');
+            }
+            var observations = this.observations_;
+            // Do nothing if element is not being observed.
+            if (!observations.has(target)) {
+                return;
+            }
+            observations.delete(target);
+            if (!observations.size) {
+                this.controller_.removeObserver(this);
+            }
+        };
+        /**
+         * Stops observing all elements.
+         *
+         * @returns {void}
+         */
+        ResizeObserverSPI.prototype.disconnect = function () {
+            this.clearActive();
+            this.observations_.clear();
+            this.controller_.removeObserver(this);
+        };
+        /**
+         * Collects observation instances the associated element of which has changed
+         * it's content rectangle.
+         *
+         * @returns {void}
+         */
+        ResizeObserverSPI.prototype.gatherActive = function () {
+            var _this = this;
+            this.clearActive();
+            this.observations_.forEach(function (observation) {
+                if (observation.isActive()) {
+                    _this.activeObservations_.push(observation);
+                }
+            });
+        };
+        /**
+         * Invokes initial callback function with a list of ResizeObserverEntry
+         * instances collected from active resize observations.
+         *
+         * @returns {void}
+         */
+        ResizeObserverSPI.prototype.broadcastActive = function () {
+            // Do nothing if observer doesn't have active observations.
+            if (!this.hasActive()) {
+                return;
+            }
+            var ctx = this.callbackCtx_;
+            // Create ResizeObserverEntry instance for every active observation.
+            var entries = this.activeObservations_.map(function (observation) {
+                return new ResizeObserverEntry(observation.target, observation.broadcastRect());
+            });
+            this.callback_.call(ctx, entries, ctx);
+            this.clearActive();
+        };
+        /**
+         * Clears the collection of active observations.
+         *
+         * @returns {void}
+         */
+        ResizeObserverSPI.prototype.clearActive = function () {
+            this.activeObservations_.splice(0);
+        };
+        /**
+         * Tells whether observer has active observations.
+         *
+         * @returns {boolean}
+         */
+        ResizeObserverSPI.prototype.hasActive = function () {
+            return this.activeObservations_.length > 0;
+        };
+        return ResizeObserverSPI;
+    }());
+
+    // Registry of internal observers. If WeakMap is not available use current shim
+    // for the Map collection as it has all required methods and because WeakMap
+    // can't be fully polyfilled anyway.
+    var observers = typeof WeakMap !== 'undefined' ? new WeakMap() : new MapShim();
+    /**
+     * ResizeObserver API. Encapsulates the ResizeObserver SPI implementation
+     * exposing only those methods and properties that are defined in the spec.
+     */
+    var ResizeObserver = /** @class */ (function () {
+        /**
+         * Creates a new instance of ResizeObserver.
+         *
+         * @param {ResizeObserverCallback} callback - Callback that is invoked when
+         *      dimensions of the observed elements change.
+         */
+        function ResizeObserver(callback) {
+            if (!(this instanceof ResizeObserver)) {
+                throw new TypeError('Cannot call a class as a function.');
+            }
+            if (!arguments.length) {
+                throw new TypeError('1 argument required, but only 0 present.');
+            }
+            var controller = ResizeObserverController.getInstance();
+            var observer = new ResizeObserverSPI(callback, controller, this);
+            observers.set(this, observer);
+        }
+        return ResizeObserver;
+    }());
+    // Expose public methods of ResizeObserver.
+    [
+        'observe',
+        'unobserve',
+        'disconnect'
+    ].forEach(function (method) {
+        ResizeObserver.prototype[method] = function () {
+            var _a;
+            return (_a = observers.get(this))[method].apply(_a, arguments);
+        };
+    });
+
+    var index = (function () {
+        // Export existing implementation if available.
+        if (typeof global$1.ResizeObserver !== 'undefined') {
+            return global$1.ResizeObserver;
+        }
+        return ResizeObserver;
+    })();
+
+    return index;
+
+})));
+
 "use strict";
 
 var _templateObject, _templateObject2, _templateObject3, _templateObject4, _templateObject5, _templateObject6, _templateObject7, _templateObject8, _templateObject9, _templateObject10, _templateObject11, _templateObject12, _templateObject13, _templateObject14, _templateObject15, _templateObject16, _templateObject17, _templateObject18, _templateObject19, _templateObject20, _templateObject21, _templateObject22, _templateObject23, _templateObject24, _templateObject25, _templateObject26, _templateObject27, _templateObject28, _templateObject29, _templateObject30, _templateObject31, _templateObject32, _templateObject33, _templateObject34, _templateObject35, _templateObject36, _templateObject37, _templateObject38, _templateObject39, _templateObject40, _templateObject41, _templateObject42, _templateObject43, _templateObject44, _templateObject45, _templateObject46, _templateObject47, _templateObject48, _templateObject49, _templateObject50, _templateObject51, _templateObject52, _templateObject53, _templateObject54, _templateObject55, _templateObject56, _templateObject57, _templateObject58, _templateObject59, _templateObject60, _templateObject61, _templateObject62, _templateObject63, _templateObject64, _templateObject65, _templateObject66, _templateObject67, _templateObject68, _templateObject69, _templateObject70, _templateObject71;
@@ -1130,50 +2067,13 @@ api.post = function (fn, params) {
 };
 
 /**
+ * Given a URL return the text raw content of the file.
  *
  * @param {string} url
  * @param {APISuccessCB} callback
  * @returns {void}
  */
-api.getCSS = function (url, callback) {
-  loadingBar.show();
-
-  /**
-   * The success handler
-   * @param {Object} data the decoded JSON object of the response
-   */
-  var successHandler = function successHandler(data) {
-    setTimeout(loadingBar.hide, 100);
-    callback(data);
-  };
-
-  /**
-   * The error handler
-   * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
-   */
-  var errorHandler = function errorHandler(jqXHR) {
-    api.onError(jqXHR, {}, null);
-  };
-  $.ajax({
-    type: "GET",
-    url: url,
-    data: {},
-    dataType: "text",
-    headers: {
-      "X-XSRF-TOKEN": csrf.getCSRFCookieValue()
-    },
-    success: successHandler,
-    error: errorHandler
-  });
-};
-
-/**
- *
- * @param {string} url
- * @param {APISuccessCB} callback
- * @returns {void}
- */
-api.getJS = function (url, callback) {
+api.getRawContent = function (url, callback) {
   loadingBar.show();
 
   /**
@@ -3430,6 +4330,10 @@ build.u2f = function (credential) {
 var contextMenu = {};
 
 /**
+ * Note, the 'Add' menu in the upper right corner is effectively
+ * a 'More...' menu (at least on small screens). More importantly,
+ * it is not a context menu (even though it uses the same code).
+ *
  * @param {jQuery.Event} e
  */
 contextMenu.add = function (e) {
@@ -3548,7 +4452,13 @@ contextMenu.add = function (e) {
       }
     }
   }
-  basicContext.show(items, e.originalEvent);
+  basicContext.show(items, e.originalEvent, null, function () {
+    // use callback of basicContext to add an id and use CSS
+    // formatting to override hardcoded positioning of the
+    // menu based on mouse/tap location and more.
+    var menu = document.querySelector(".basicContext");
+    menu.setAttribute("id", "addMenu");
+  });
   upload.notify();
 };
 
@@ -4787,11 +5697,7 @@ header.setMode = function (mode) {
         _e10.show();
         tabindex.makeFocusable(_e10);
       }
-      if (!lychee.is_share_button_visible && (
-      // The owner of an album (or the admin) shall always see
-      // the share button and be unaffected by the settings of
-      // the album
-      lychee.user === null || lychee.user.username !== album.json.owner_name) && !lychee.rights.is_admin) {
+      if (!lychee.share_button_visible) {
         var _e11 = $("#button_share_album");
         _e11.hide();
         tabindex.makeUnfocusable(_e11);
@@ -4866,7 +5772,7 @@ header.setMode = function (mode) {
         var _e15 = $("#button_visibility_album", "#button_sharing_album_users", "#lychee_toolbar_album");
         _e15.remove();
       }
-      if (!lychee.enable_button_share) {
+      if (!lychee.enable_button_share || !lychee.share_button_visible) {
         var _e16 = $("#button_share_album", "#lychee_toolbar_album");
         _e16.remove();
       }
@@ -4947,7 +5853,7 @@ header.setMode = function (mode) {
       if (!lychee.enable_button_more || !(
       //
 
-      album.isUploadable() || _photo3.json && !_photo3.json.rights.can_download && !_photo3.json.rights.can_access_full_photo && !(_photo3.json.size_variants.original.url && _photo3.json.size_variants.original.url !== ""))) {
+      album.isUploadable() || _photo3.json && (_photo3.json.rights.can_download || _photo3.json.rights.can_access_full_photo || _photo3.json.size_variants.original.url))) {
         var _e32 = $("#button_more");
         _e32.hide();
         tabindex.makeUnfocusable(_e32);
@@ -6348,7 +7254,7 @@ lychee.logout = function () {
 lychee["goto"] = function () {
   var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
   var autoplay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-  url = "#" + (url !== null ? url : "");
+  url = "gallery#" + (url !== null ? url : "");
   history.pushState({
     autoplay: autoplay
   }, null, url);
@@ -6627,14 +7533,23 @@ lychee.load = function () {
       $("#sensitive_warning").removeClass("active");
       if (album.json && albumID === album.json.id) {
         if (album.isSearchID(albumID)) {
-          // We are probably coming back to the search results from
-          // viewing an image.  Because search results is not a
-          // regular album, it needs to be treated a little
-          // differently.
-          header.setMode("albums");
-          lychee.setMetaData(lychee.locale["SEARCH_RESULTS"]);
+          if ($(".settings_view, .users_view, .sharing_view, .logs_diagnostics_view, .u2f_view").length > 0) {
+            search.reset();
+            history.back();
+          } else {
+            // We are probably coming back to the search results from
+            // viewing an image.  Because search results is not a
+            // regular album, it needs to be treated a little
+            // differently.
+            header.setMode("albums");
+            lychee.setMetaData(lychee.locale["SEARCH_RESULTS"]);
+          }
         } else {
-          view.album.title();
+          if ($(".settings_view, .users_view, .sharing_view, .logs_diagnostics_view, .u2f_view").length > 0) {
+            album.load(albumID);
+          } else {
+            view.album.title();
+          }
         }
         lychee.content.show();
         tabindex.makeFocusable(lychee.content, true);
@@ -13931,7 +14846,7 @@ view.settings = {
       var msg = "\n\t\t\t<div class=\"setCSS\">\n\t\t\t<p>".concat(lychee.locale["CSS_TEXT"], "</p>\n\t\t\t<textarea id=\"css\"></textarea>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_css\" class=\"basicModal__button\">").concat(lychee.locale["CSS_TITLE"], "</a>\n\t\t\t</div>\n\t\t\t</div>");
       $(".settings_view").append(msg);
       var css_addr = $($("link")[1]).attr("href");
-      api.getCSS(css_addr, function (data) {
+      api.getRawContent(css_addr, function (data) {
         $("#css").html(data);
       });
       settings.bind("#basicModal__action_set_css", ".setCSS", settings.changeCSS);
@@ -13942,8 +14857,8 @@ view.settings = {
     setJS: function setJS() {
       var msg = "\n\t\t\t<div class=\"setJS\">\n\t\t\t<p>".concat(lychee.locale["JS_TEXT"], "</p>\n\t\t\t<textarea id=\"js\"></textarea>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_js\" class=\"basicModal__button\">").concat(lychee.locale["JS_TITLE"], "</a>\n\t\t\t</div>\n\t\t\t</div>");
       $(".settings_view").append(msg);
-      var js_addr = $($("script")[5]).attr("src");
-      api.getJS(js_addr, function (data) {
+      var js_addr = $("script[src]:last").attr("src");
+      api.getRawContent(js_addr, function (data) {
         $("#js").html(data);
       });
       settings.bind("#basicModal__action_set_js", ".setJS", settings.changeJS);
