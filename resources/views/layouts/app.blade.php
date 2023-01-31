@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="{{ str_replace('_', '-', Lang::get_code()) }}">
+<html lang="{{ app()->currentLocale() }}">
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 	<title>{{ App\Models\Configs::getValueAsString('site_title') }}</title>

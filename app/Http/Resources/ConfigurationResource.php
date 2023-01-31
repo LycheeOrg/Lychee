@@ -5,7 +5,6 @@ namespace App\Http\Resources;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
 use App\Exceptions\Handler;
-use App\Facades\Lang;
 use App\Metadata\Versions\InstalledVersion;
 use App\Models\Configs;
 use Illuminate\Contracts\Config\Repository;
@@ -56,7 +55,7 @@ class ConfigurationResource extends JsonResource
 
 		return [
 			// Computed
-			'lang_available' => $this->when(Auth::check(), Lang::get_lang_available()),
+			'lang_available' => $this->when(Auth::check(), config('app.supported_locale')),
 			'version' => $this->when(Auth::check() || !Configs::getValueAsBool('hide_version_number'), $lycheeVersion->getVersion()),
 			'rss_feeds' => $rss_feeds,
 			'allow_username_change' => $this->when(Auth::check(), Configs::getValueAsBool('allow_username_change')),

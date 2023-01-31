@@ -10,10 +10,20 @@ use Illuminate\Testing\TestResponse;
  */
 trait CatchFailures
 {
+	/**
+	 * Some of the exceptions we get are expected. We silence then.
+	 *
+	 * @var array
+	 */
+	private array $catchFailureSilence = ["App\Exceptions\MediaFileOperationException"];
+
 	protected function assertStatus(TestResponse $response, int $expectedStatusCode): void
 	{
 		if ($response->getStatusCode() === 500) {
 			$exception = $response->json();
+			if (in_array($exception['exception'], $this->catchFailureSilence, true)) {
+				return;
+			}
 			$this->trimException($exception);
 			dump($exception);
 		}

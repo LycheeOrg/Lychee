@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Settings;
 
-use App\Facades\Lang;
 use Illuminate\Validation\Rule;
 
 class SetLangSettingRequest extends AbstractSettingRequest
@@ -12,7 +11,7 @@ class SetLangSettingRequest extends AbstractSettingRequest
 	public function rules(): array
 	{
 		return [
-			'lang' => ['required', 'string', Rule::in(Lang::get_lang_available())],
+			'lang' => ['required', 'string', Rule::in(config('app.supported_locale'))],
 		];
 	}
 

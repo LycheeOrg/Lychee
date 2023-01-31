@@ -1,10 +1,10 @@
 <!DOCTYPE HTML>
-<html lang="{{ str_replace('_', '-', Lang::get_code()) }}">
-	<head>
+<html lang="{{ app()->currentLocale() }}">
+		<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 		<title>{{ $title }}</title>
 		<link type="text/css" rel="stylesheet" href="{{ Helpers::cacheBusting('dist/landing.css') }}">
-		<link type="text/css" rel="stylesheet" href="{{ Helpers::cacheBusting($user_css_url) }}">
+		<link type="text/css" rel="stylesheet" href="{{ $user_css_url }}">
 		<link rel="shortcut icon" href="favicon.ico">
 		<link rel="apple-touch-icon" href="img/apple-touch-icon-ipad.png" sizes="120x120">
 		<link rel="apple-touch-icon" href="img/apple-touch-icon-iphone.png" sizes="152x152">
@@ -26,7 +26,7 @@
 			<div id="menu">
 				<ul class="menu">
 					<li class="menu-item">
-						<a href="gallery">{{ Lang::get('GALLERY') }}</a>
+						<a href="gallery">{{ __('lychee.GALLERY') }}</a>
 					</li>
 				</ul>
 			</div><!-- menu -->
@@ -49,5 +49,6 @@
 		</div>
 		@include('includes.footer')
 		<script type="text/javascript" src="{{ Helpers::cacheBusting('dist/landing.js') }}"></script>
+		<script defer type="text/javascript" src="{{ $user_js_url }}"></script>
 	</body>
 </html>

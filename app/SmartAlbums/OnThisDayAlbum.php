@@ -4,7 +4,6 @@ namespace App\SmartAlbums;
 
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
-use App\Facades\Lang;
 use App\Models\Configs;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\InvalidTimeZoneException;
@@ -28,7 +27,7 @@ class OnThisDayAlbum extends BaseSmartAlbum
 
 		parent::__construct(
 			self::ID,
-			Lang::get('ON_THIS_DAY'),
+			__('lychee.ON_THIS_DAY'),
 			Configs::getValueAsBool('public_on_this_day'),
 			function (Builder $query) use ($today) {
 				$query->where(fn (Builder $q) => $q
