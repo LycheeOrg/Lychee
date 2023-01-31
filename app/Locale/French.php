@@ -311,6 +311,7 @@ final class French implements Language
 			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Paramètres de la carte pour les albums publics mis à jour.',
 			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Fournisseur de la Carte mis à jour.',
 			'SETTINGS_SUCCESS_CSS' => 'Stylesheets mise à jour ',
+			'SETTINGS_SUCCESS_JS' => 'JS updated',
 			'SETTINGS_SUCCESS_UPDATE' => 'Paramètres mis à jour avec succes',
 			'SETTINGS_DROPBOX_KEY' => 'Dropbox API Key',
 			'SETTINGS_ADVANCED_WARNING_EXPL' => 'Changer les paramètres avancés peut influencer la stabilité, la securité et les performances de Lychee. Modifiez à vos risques et périls.',
@@ -374,6 +375,8 @@ final class French implements Language
 
 			'CSS_TEXT' => 'Personalize CSS :',
 			'CSS_TITLE' => 'Change CSS',
+			'JS_TEXT' => 'Custom JS:',
+			'JS_TITLE' => 'Change JS',
 			'PUBLIC_SEARCH_TEXT' => 'Recherche publique autorisée :',
 			'OVERLAY_TYPE' => 'Informations à utiliser pour l’overlay :',
 			'OVERLAY_NONE' => 'Pas d’overlay',

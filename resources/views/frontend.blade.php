@@ -36,5 +36,6 @@
 		{!! $bodyHtml !!}
 		<script async defer type="text/javascript" src="dist/frontend.js"></script>
 		<script async defer type="text/javascript" src="dist/WebAuthn.js"></script>
+		<script defer type="text/javascript" src="{{ $userJsUrl }}"></script>
 	</body>
 </html>
