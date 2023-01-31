@@ -298,6 +298,7 @@ return [
 	'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
 	'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
 	'SETTINGS_SUCCESS_CSS' => 'CSS aktualizované',
+	'SETTINGS_SUCCESS_JS' => 'JS aktualizované',
 	'SETTINGS_SUCCESS_UPDATE' => 'Nastavenia úspešne aktualizované',
 	'SETTINGS_DROPBOX_KEY' => 'Dropbox API Key',
 	'SETTINGS_ADVANCED_WARNING_EXPL' => 'Zmena rozšírených nastavení môže mať negatívny vplyv na stabilitu, bezpečnosť a rýchlosť tejto aplikácie. Upravujte len to, o čom presne viete, čo robíte.',

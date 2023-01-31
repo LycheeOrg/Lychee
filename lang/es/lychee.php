@@ -298,6 +298,7 @@ return [
 	'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Configuración de visualización de mapa para álbumes públicos actualizada',
 	'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Configuración del proveedor de mapas actualizada',
 	'SETTINGS_SUCCESS_CSS' => 'Stylesheets updated',
+	'SETTINGS_SUCCESS_JS' => 'JS updated',
 	'SETTINGS_SUCCESS_UPDATE' => 'Settings updated successfully',
 	'SETTINGS_DROPBOX_KEY' => 'Clave API Dropbox',
 	'SETTINGS_ADVANCED_WARNING_EXPL' => 'Changing these advanced settings can be harmful to the stability, security and performance of this application. You should only modify them if you are sure of what you are doing.',

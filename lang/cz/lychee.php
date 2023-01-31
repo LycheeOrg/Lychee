@@ -298,6 +298,7 @@ return [
 	'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Nastavení zobrazeni Map pro veřejná alba bylo aktualizováno',
 	'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Poskytovatel Map byl aktualizován',
 	'SETTINGS_SUCCESS_CSS' => 'CSS aktualizováno',
+	'SETTINGS_SUCCESS_JS' => 'JS aktualizováno',
 	'SETTINGS_SUCCESS_UPDATE' => 'Nastavení úspešně aktualizováno',
 	'SETTINGS_DROPBOX_KEY' => 'Dropbox API Key',
 	'SETTINGS_ADVANCED_WARNING_EXPL' => 'Změna rozšířených nastavení může mít negativní vliv na stabilitu, bezpečnost a rychlost Lychee. Měňte pouze to, co opravdu dobře chápete.',
