@@ -1,9 +1,9 @@
-@once
-<link type="text/css" rel="stylesheet" href="{{ URL::asset(Helpers::cacheBusting('dist/landing.css')) }}">
-<script type="text/javascript" src="{{ URL::asset(Helpers::cacheBusting('dist/landing.js')) }}"></script>
-@endonce
-
 <div>
+	@once
+	<link type="text/css" rel="stylesheet" href="{{ URL::asset(Helpers::cacheBusting('dist/landing.css')) }}">
+	<script type="text/javascript" src="{{ URL::asset(Helpers::cacheBusting('dist/landing.js')) }}"></script>
+	@endonce
+
 	<div id="header" class="animate animate-down">
 		<div id="logo">
 			<a href="#"><h1>{{ $title }}<span>{{ $subtitle }}</span></h1></a>
@@ -38,5 +38,22 @@
 		</div>
 	</div>
 
+	{{-- <livewire:components.footer /> --}}
+	{{-- @class(['animate animate-up hide_footer toggled']) /> --}}
+	<div id="footer" class="animate_slower animate-up pop-in-last toggled">
+
+		<!-- socials -->
+			<div id="home_socials" class="animate animate-up toggled">
+						<a href="https://www.facebook.com/PhD-dance-366678150817732/" class="socialicons" id="facebook" target="_blank" rel="noopener"></a>
+												<a href="https://instagram.com/phd.dance" class="socialicons" id="instagram" target="_blank" rel="noopener"></a>
+							<div style="clear: both;"></div>
+		</div>
+
+				<p class="home_copyright">
+				All images on this website are subject to copyright by Benoît Viguier © 2018-2022</p>
+
+
+
+		</div>
 	<!-- TODO: footer -->
 </div>

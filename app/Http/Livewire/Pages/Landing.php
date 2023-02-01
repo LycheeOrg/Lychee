@@ -11,6 +11,10 @@ class Landing extends Component
 {
 	public PageMode $mode = PageMode::LANDING;
 
+	public string $title;
+	public string $subtitle;
+	public string $background;
+
 	/**
 	 * @return void
 	 */
