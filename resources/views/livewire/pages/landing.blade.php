@@ -14,6 +14,7 @@
 		<div id="menu">
 			<ul class="menu">
 				<li class="menu-item">
+					{{-- Here we can also use livewire to directly open the gallery without reloading the full page --}}
 					<a href="{{ route('livewire_index', ['page' => 'gallery']) }}">GALLERY</a>
 				</li>
 			</ul>
@@ -38,22 +39,5 @@
 		</div>
 	</div>
 
-	{{-- <livewire:components.footer /> --}}
-	{{-- @class(['animate animate-up hide_footer toggled']) /> --}}
-	<div id="footer" class="animate_slower animate-up pop-in-last toggled">
-
-		<!-- socials -->
-			<div id="home_socials" class="animate animate-up toggled">
-						<a href="https://www.facebook.com/PhD-dance-366678150817732/" class="socialicons" id="facebook" target="_blank" rel="noopener"></a>
-												<a href="https://instagram.com/phd.dance" class="socialicons" id="instagram" target="_blank" rel="noopener"></a>
-							<div style="clear: both;"></div>
-		</div>
-
-				<p class="home_copyright">
-				All images on this website are subject to copyright by Benoît Viguier © 2018-2022</p>
-
-
-
-		</div>
-	<!-- TODO: footer -->
+	<livewire:components.footer :class="'animate animate-up toggled'" :html_id="'footer'" />
 </div>
