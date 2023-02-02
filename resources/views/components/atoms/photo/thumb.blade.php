@@ -6,6 +6,7 @@
 	'is_lazyload' => false])
 <span class="thumbimg {{ $class }}">
 	<img
+		alt='Photo thumbnail'
 	@if ($is_lazyload)
 		class='lazyload'
 	@else
@@ -16,7 +17,6 @@
 	{!! $srcset !!}
 	{!! $srcset2x !!}
 
-	alt='Photo thumbnail'
 	data-overlay='false'
 	draggable='false'
 	/>

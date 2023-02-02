@@ -4,6 +4,7 @@ $isVideo = Str::contains($type, 'video');
 @endphp
 <span class="thumbimg {{-- {{ $isVideo ? "video" : ""}} --}} ">
 	<img
+		alt='Album thumbnail'
 	@if(!$isVideo) class='lazyload' @endif
 
 	@if ($thumb == 'uploads/thumb/')
@@ -25,12 +26,10 @@ $isVideo = Str::contains($type, 'video');
 		@endif
 	@endif
 
-
 	@if ($thumb2x != "")
 		data-srcset='{{ URL::asset($thumb2x) }} 2x'
 	@endif
 
-	alt='Photo thumbnail'
 	data-overlay='false'
-	draggable='false'>
+	draggable='false' />
 </span>

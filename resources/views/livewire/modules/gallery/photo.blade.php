@@ -18,16 +18,17 @@
 @elseif($photo->isRaw()) {{-- This is a raw file: put a place holder --}}
 	<img
 		id='image'
+		alt='big'
 		class='{{ $visibleControls === true ? "" : "full" }}'
 		src='{{ URL::asset('img/placeholder.png') }}'
 		draggable='false'
-		alt='big'
 		data-tabindex='{{ Helpers::data_index() }}'
 		/>
 @elseif ($photo->live_photo_short_path === null) {{-- This is a normal image: medium or original --}}
 	@if ($photo->size_variants->medium !== null)
 		<img
 			id='image'
+			alt='medium'
 			class='{{ $visibleControls === true ? "" : "full" }}'
 			src='{{ URL::asset($photo->size_variants->medium->url) }}'
 			@if ($photo->size_variants->medium2x !== null)
@@ -39,10 +40,10 @@
 	@else
 		<img
 			id='image'
+			alt='big'
 			class='{{ $visibleControls === true ? "" : "full" }}'
 			src='{{ URL::asset($photo->size_variants->original->url) }}'
 			draggable='false'
-			alt='big'
 			data-tabindex='{{ Helpers::data_index() }}'
 			/>
 	@endif
