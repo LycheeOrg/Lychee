@@ -64,7 +64,7 @@ class SecondFactor extends Component
 	 */
 	public function create(): void
 	{
-		dd('DIE FOR NOW: LATER HAVE U2F interaction');
+		// TODO: create token
 		// reset attributes and reload user list (triggers refresh)
 		$this->loadCredentials();
 	}
