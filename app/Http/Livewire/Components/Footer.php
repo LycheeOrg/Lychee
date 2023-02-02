@@ -23,6 +23,8 @@ class Footer extends Component
 	public string $instagram;
 	public string $youtube;
 	public string $additional_footer_text;
+	public string $class = 'vflex-item-rigid animate animate-up';
+	public string $html_id = 'lychee_footer';
 
 	/**
 	 * Initialize the footer once for all.

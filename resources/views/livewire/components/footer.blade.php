@@ -1,4 +1,4 @@
-<div id="lychee_footer" class="vflex-item-rigid animate animate-up">
+<div id="{{ $html_id }}" class="{{ $class }}">
 	<!--
 	Footer
 	Vertically shares space with the content.

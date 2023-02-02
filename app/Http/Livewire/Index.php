@@ -40,11 +40,17 @@ class Index extends Component
 	 * @param string|null $albumId
 	 * @param string|null $photoId
 	 *
-	 * @return void
+	 * @return void|\Illuminate\Http\RedirectResponse
 	 */
-	public function mount(?string $page = 'gallery', ?string $albumId = null, ?string $photoId = null): void
+	public function mount(?string $page = null, ?string $albumId = null, ?string $photoId = null)
 	{
-		$this->page_mode = PageMode::from($page);
+		$default_page = Configs::getValueAsBool('landing_page_enable') ? PageMode::LANDING : PageMode::GALLERY;
+
+		if ($page === 'landing' && !Configs::getValueAsBool('landing_page_enable')) {
+			return redirect()->route('livewire_index');
+		}
+
+		$this->page_mode = PageMode::tryFrom($page) ?? $default_page;
 		$this->albumId = $albumId;
 		$this->photoId = $photoId;
 	}

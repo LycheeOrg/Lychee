@@ -17,4 +17,5 @@ enum PageMode: string implements Wireable
 	case ALL_SETTINGS = 'all-settings';
 	case LOGS = 'logs';
 	case DIAGNOSTICS = 'diagnostics';
+	case LANDING = 'landing';
 }
