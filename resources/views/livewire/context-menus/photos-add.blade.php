@@ -1,5 +1,5 @@
 <div class="basicContext" style="left: 800px; top: 22px; transform-origin: 137px 0px; opacity: 1;">
-	<table>
+	<table aria-hidden="true"> {{-- Refactor me later to not use table --}}>
 			<tbody>
 
 <tr class="basicContext__item ">

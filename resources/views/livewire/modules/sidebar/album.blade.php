@@ -6,7 +6,7 @@
 		<div class="sidebar__divider">
 			<h1>{{ __("lychee.ALBUM_BASICS") }}</h1>
 		</div>
-		<table>
+		<table aria-hidden="true"> {{-- Refactor me later to not use table --}}
 			<tbody>
 				<x-atoms.line head='{{ __("lychee.ALBUM_TITLE") }}'>
 					{{ $title }}
@@ -32,7 +32,7 @@
 		<div class="sidebar__divider">
 			<h1>{{ __("lychee.ALBUM_ALBUM") }}</h1>
 		</div>
-		<table>
+		<table aria-hidden="true"> {{-- Refactor me later to not use table --}}
 			<tbody>
 				<x-atoms.line head='{{ __("lychee.ALBUM_CREATED") }}'>
 					{{ $created_at }}
@@ -61,7 +61,7 @@
 		<div class="sidebar__divider">
 			<h1>{{ __("lychee.ALBUM_ALBUM") }}</h1>
 		</div>
-		<table>
+		<table aria-hidden="true"> {{-- Refactor me later to not use table --}}
 			<tbody>
 				<x-atoms.line head='{{ __("lychee.ALBUM_LICENSE") }}' :value='$license' />
 			</tbody>
@@ -71,7 +71,7 @@
 		<div class="sidebar__divider">
 			<h1>{{ __("lychee.ALBUM_SHARING") }}</h1>
 		</div>
-		<table>
+		<table aria-hidden="true"> {{-- Refactor me later to not use table --}}
 			<tbody>
 				<x-atoms.line-bool valueFalse='{{ __("lychee.ALBUM_SHR_NO") }}' valueTrue='{{ __("lychee.ALBUM_SHR_YES") }}'
 				head='{{ __("lychee.ALBUM_PUBLIC") }}' :value='$this->policy->is_public' />

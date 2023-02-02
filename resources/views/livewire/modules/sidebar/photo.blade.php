@@ -6,7 +6,7 @@
 		<div class="sidebar__divider">
 			<h1>{{ __("lychee.PHOTO_BASICS") }}</h1>
 		</div>
-		<table>
+		<table aria-hidden="true"> {{-- Refactor me later to not use table --}}
 			<tbody>
 				<x-atoms.line head='{{ __("lychee.PHOTO_TITLE") }}'>
 					{{ $title }}
@@ -22,7 +22,7 @@
 		<div class="sidebar__divider">
 			<h1>{{ $is_video ? __("lychee.PHOTO_VIDEO") : __("lychee.PHOTO_IMAGE") }}</h1>
 		</div>
-		<table>
+		<table aria-hidden="true"> {{-- Refactor me later to not use table --}}
 			<tbody>
 				<x-atoms.line head='{{ __("lychee.PHOTO_SIZE") }}'>
 					{{ $filesize }}
@@ -40,7 +40,7 @@
 		<div class="sidebar__divider">
 			<h1>{{ __("lychee.PHOTO_TAGS") }}</h1>
 		</div>
-		<table>
+		<table aria-hidden="true"> {{-- Refactor me later to not use table --}}
 			<tbody>
 				<x-atoms.line head='{{ __("lychee.PHOTO_TAGS") }}'>
 					{{ $tags }}
@@ -51,7 +51,7 @@
 		<div class="sidebar__divider">
 			<h1>{{ __("lychee.PHOTO_CAMERA") }}</h1>
 		</div>
-		<table>
+		<table aria-hidden="true"> {{-- Refactor me later to not use table --}}
 			<tbody>
 				<x-atoms.line head='{{ __("lychee.PHOTO_CAPTURED") }}'>
 					{{ $taken_at }}
@@ -87,7 +87,7 @@
 		<div class="sidebar__divider">
 			<h1>{{ __("lychee.PHOTO_LOCATION") }}</h1>
 		</div>
-		<table>
+		<table aria-hidden="true"> {{-- Refactor me later to not use table --}}
 			<tbody>
 				<x-atoms.line head='{{ __("lychee.PHOTO_LATITUDE") }}'>
 					{{ $latitude }}

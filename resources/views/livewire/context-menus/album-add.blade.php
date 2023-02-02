@@ -1,5 +1,5 @@
 <div class="basicContext" id="addMenu" style="left: 1173px; top: 28px; transform-origin: 154px 0px; opacity: 1;">
-	<table>
+	<table aria-hidden="true"> {{-- Refactor me later to not use table --}}>
 		<tbody>
 
 			<tr class="basicContext__item ">
