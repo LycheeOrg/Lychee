@@ -15,7 +15,7 @@
 			<ul class="menu">
 				<li class="menu-item">
 					{{-- Here we can also use livewire to directly open the gallery without reloading the full page --}}
-					<a href="{{ route('livewire_index', ['page' => 'gallery']) }}">GALLERY</a>
+					<a href="{{ route('livewire_index', ['page' => 'gallery']) }}">{{ __('lychee.GALLERY') }}</a>
 				</li>
 			</ul>
 		</div>
