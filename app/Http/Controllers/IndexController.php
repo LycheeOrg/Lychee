@@ -61,7 +61,8 @@ class IndexController extends Controller
 					'infos' => $infos,
 					'page_config' => $page_config,
 					'rss_enable' => $rss_enable,
-					'user_css_url' => self::getUserCss(),
+					'user_css_url' => self::getUserCustomFiles('user.css'),
+					'user_js_url' => self::getUserCustomFiles('custom.js'),
 				]);
 			}
 
@@ -190,7 +191,8 @@ class IndexController extends Controller
 				'pageUrl' => url()->current(),
 				'rssEnable' => Configs::getValueAsBool('rss_enable'),
 				'bodyHtml' => file_get_contents(public_path('dist/frontend.html')),
-				'userCssUrl' => self::getUserCss(),
+				'userCssUrl' => self::getUserCustomFiles('user.css'),
+				'userJsUrl' => self::getUserCustomFiles('custom.js'),
 			]);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);
@@ -200,15 +202,17 @@ class IndexController extends Controller
 	/**
 	 * Returns user.css url with cache busting if file has been updated.
 	 *
+	 * @param string $fileName
+	 *
 	 * @return string
 	 */
-	public static function getUserCss(): string
+	public static function getUserCustomFiles(string $fileName): string
 	{
 		$cssCacheBusting = '';
-		if (Storage::disk('dist')->fileExists('user.css')) {
-			$cssCacheBusting = '?' . Storage::disk('dist')->lastModified('user.css');
+		if (Storage::disk('dist')->fileExists($fileName)) {
+			$cssCacheBusting = '?' . Storage::disk('dist')->lastModified($fileName);
 		}
 
-		return Storage::disk('dist')->url('user.css') . $cssCacheBusting;
+		return Storage::disk('dist')->url($fileName) . $cssCacheBusting;
 	}
 }

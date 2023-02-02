@@ -1,9 +1,10 @@
 <x-view-container>
-	@if (!$smartalbums && !$albums && !$shared_albums)
-	<div class='no_content fadeIn'>
-		{{-- TODO : GIVE LOGIN PAGE INSTEAD --}}
-		<x-icons.iconic icon="eye" />
-		<p>{{ __('lychee.VIEW_NO_PUBLIC_ALBUMS') }}</p>
+	@if ($smartalbums->isEmpty() && $albums->isEmpty() && $shared_albums->isEmpty())
+	<div id="lychee_view_content" class="vflex-item-stretch contentZoomIn">
+		<div class='no_content fadeIn' wire:init='openLoginModal'>
+			<x-icons.iconic icon="eye" />
+			<p>{{ __('lychee.VIEW_NO_PUBLIC_ALBUMS') }}</p>
+		</div>
 	</div>
 	@else
 	<div id="lychee_view_content" class="vflex-item-stretch contentZoomIn">

@@ -171,6 +171,7 @@ Route::post('/Settings::setLocationDecoding', [Administration\SettingsController
 Route::post('/Settings::setLocationShow', [Administration\SettingsController::class, 'setLocationShow']);
 Route::post('/Settings::setLocationShowPublic', [Administration\SettingsController::class, 'setLocationShowPublic']);
 Route::post('/Settings::setCSS', [Administration\SettingsController::class, 'setCSS']);
+Route::post('/Settings::setJS', [Administration\SettingsController::class, 'setJS']);
 Route::post('/Settings::getAll', [Administration\SettingsController::class, 'getAll']);
 Route::post('/Settings::saveAll', [Administration\SettingsController::class, 'saveAll']);
 Route::post('/Settings::setAlbumDecoration', [Administration\SettingsController::class, 'setAlbumDecoration']);

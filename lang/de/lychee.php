@@ -299,6 +299,7 @@ return [
 	'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Karteneinstellungen für öffentlichen Alben erfolgreich aktualisiert',
 	'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Provider für Karten erfolgreich aktualisiert',
 	'SETTINGS_SUCCESS_CSS' => 'CSS aktualisiert',
+	'SETTINGS_SUCCESS_JS' => 'JS aktualisiert',
 	'SETTINGS_SUCCESS_UPDATE' => 'Einstellungen erfolgreich aktualisiert',
 	'SETTINGS_DROPBOX_KEY' => 'Dropbox-API-Schlüssel',
 	'SETTINGS_ADVANCED_WARNING_EXPL' => 'Ändern dieser erweiterten Einstellungen kann sich negativ auf die Stabilität, Sicherheit und Geschwindigkeit dieser Anwendung auswirken. Sie sollten sie nur ändern, wenn Sie genau wissen, was Sie tun.',
@@ -362,6 +363,8 @@ return [
 
 	'CSS_TEXT' => 'CSS personalisieren:',
 	'CSS_TITLE' => 'CSS ändern',
+	'JS_TEXT' => 'JS personalisieren:',
+	'JS_TITLE' => 'JS ändern',
 	'PUBLIC_SEARCH_TEXT' => 'Öffentliche Suche erlauben',
 	'OVERLAY_TYPE' => 'Daten für Foto-Overlay:',
 	'OVERLAY_NONE' => 'Kein Overlay',

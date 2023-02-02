@@ -1,4 +1,4 @@
-<x-view-content :mode="$mode" :title="__("lychee.SETTINGS')">
+<x-view-content :mode="$mode" :title="__('lychee.SETTINGS')">
 	<div id="lychee_view_content" class="vflex-item-stretch contentZoomIn">
 		<div class="settings_view">
 			<livewire:forms.settings.base.string-setting

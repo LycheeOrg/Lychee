@@ -299,6 +299,7 @@ return [
 	'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Configuração da janela do mapa para álbums públicos atualizada',
 	'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Provider do mapa atualizado',
 	'SETTINGS_SUCCESS_CSS' => 'Stylesheets updated',
+	'SETTINGS_SUCCESS_JS' => 'JS updated',
 	'SETTINGS_SUCCESS_UPDATE' => 'Settings updated successfully',
 	'SETTINGS_DROPBOX_KEY' => 'Dropbox API Key',
 	'SETTINGS_ADVANCED_WARNING_EXPL' => 'Changing these advanced settings can be harmful to the stability, security and performance of this application. You should only modify them if you are sure of what you are doing.',
@@ -362,6 +363,8 @@ return [
 
 	'CSS_TEXT' => 'Personalize CSS:',
 	'CSS_TITLE' => 'Change CSS',
+	'JS_TEXT' => 'Custom JS:',
+	'JS_TITLE' => 'Change JS',
 	'PUBLIC_SEARCH_TEXT' => 'Pesquisa pública permitida:',
 	'OVERLAY_TYPE' => 'Data a usar no overlay da imagem:',
 	'OVERLAY_NONE' => 'None',

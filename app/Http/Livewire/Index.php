@@ -94,7 +94,8 @@ class Index extends Component
 			'imageUrl' => $imageUrl,
 			'pageUrl' => url()->current(),
 			'rssEnable' => Configs::getValueAsBool('rss_enable'),
-			'userCssUrl' => IndexController::getUserCss(),
+			'userCssUrl' => IndexController::getUserCustomFiles('user.css'),
+			'userJsUrl' => IndexController::getUserCustomFiles('custom.js'),
 			'frame' => '',
 		];
 	}
