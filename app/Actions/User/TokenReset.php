@@ -21,6 +21,6 @@ class TokenReset
 		$user->token = hash('SHA512', $token);
 		$user->save();
 
-		return $user->token;
+		return $token;
 	}
 }
