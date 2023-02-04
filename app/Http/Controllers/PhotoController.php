@@ -25,7 +25,7 @@ use App\Http\Requests\Photo\SetPhotoPublicRequest;
 use App\Http\Requests\Photo\SetPhotosStarredRequest;
 use App\Http\Requests\Photo\SetPhotosTagsRequest;
 use App\Http\Requests\Photo\SetPhotosTitleRequest;
-use App\Http\Requests\Photo\SetPhotoUploadDate;
+use App\Http\Requests\Photo\SetPhotoUploadDateRequest;
 use App\Image\Files\TemporaryLocalFile;
 use App\Image\Files\UploadedFile;
 use App\ModelFunctions\SymLinkFunctions;
@@ -276,13 +276,13 @@ class PhotoController extends Controller
 	/**
 	 * Sets the license of the photo.
 	 *
-	 * @param SetPhotoUploadDate $request
+	 * @param SetPhotoUploadDateRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
 	 */
-	public function setUploadDate(SetPhotoUploadDate $request): void
+	public function setUploadDate(SetPhotoUploadDateRequest $request): void
 	{
 		$request->photo()->created_at = $request->requestDate();
 		$request->photo()->save();

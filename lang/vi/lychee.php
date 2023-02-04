@@ -16,6 +16,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Người dùng',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Tạo',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',

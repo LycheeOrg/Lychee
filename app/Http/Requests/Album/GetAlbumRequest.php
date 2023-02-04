@@ -8,9 +8,9 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\PasswordRequiredException;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
+use App\Http\RuleSets\Album\BasicAlbumIdRuleSet;
 use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
-use App\Rules\AlbumIDRule;
 use Illuminate\Support\Facades\Gate;
 
 class GetAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
@@ -45,9 +45,7 @@ class GetAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
-		];
+		return BasicAlbumIdRuleSet::rules();
 	}
 
 	/**

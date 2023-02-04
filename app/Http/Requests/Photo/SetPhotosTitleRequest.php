@@ -9,9 +9,8 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotosTrait;
 use App\Http\Requests\Traits\HasPhotosTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
+use App\Http\RuleSets\Photo\SetPhotosTitleRuleSet;
 use App\Models\Photo;
-use App\Rules\RandomIDRule;
-use App\Rules\TitleRule;
 
 class SetPhotosTitleRequest extends BaseApiRequest implements HasPhotos, HasTitle
 {
@@ -24,11 +23,7 @@ class SetPhotosTitleRequest extends BaseApiRequest implements HasPhotos, HasTitl
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
-			RequestAttribute::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
-			RequestAttribute::TITLE_ATTRIBUTE => ['required', new TitleRule()],
-		];
+		return SetPhotosTitleRuleSet::rules();
 	}
 
 	/**
