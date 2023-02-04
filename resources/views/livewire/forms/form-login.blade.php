@@ -1,7 +1,7 @@
 <div>
 	<div class="basicModal__content">
 		@if($errors->has('wrongLogin'))
-			<span syle="color:red; font-weight:bold;">{{ $errors->first('wrongLogin') }}</span>
+			<span style="color:red; font-weight:bold;">{{ $errors->first('wrongLogin') }}</span>
 		@endif
 		<form class="force-first-child">
 			<div class="input-group stacked">
