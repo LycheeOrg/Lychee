@@ -7,6 +7,7 @@ use App\Http\Livewire\Traits\InteractWithModal;
 use App\Http\RuleSets\ChangeLoginRuleSet;
 use App\Models\User;
 use App\Policies\UserPolicy;
+use App\Rules\CurrentPasswordRule;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
@@ -46,6 +47,7 @@ class SetLogin extends Component
 		 * the keys in the rules applied.
 		 */
 		$this->validate(ChangeLoginRuleSet::rules());
+		$this->validate(['oldPassword' => new CurrentPasswordRule()]);
 
 		/**
 		 * Authorize the request.

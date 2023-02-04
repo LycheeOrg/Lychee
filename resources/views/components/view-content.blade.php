@@ -30,6 +30,5 @@
 				<livewire:components.footer />
 			</div>
 		</div>
-		<livewire:components.base.modal />
 	</div>
 </div>
