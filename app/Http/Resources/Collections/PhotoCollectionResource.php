@@ -4,7 +4,6 @@ namespace App\Http\Resources\Collections;
 
 use App\Http\Resources\Models\PhotoResource;
 use App\Models\Configs;
-use App\Models\Photo;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class PhotoCollectionResource extends ResourceCollection
@@ -32,9 +31,14 @@ class PhotoCollectionResource extends ResourceCollection
 		$photos = [];
 		$i = 0;
 
-		/** @var Photo $photo the photo */
+		/** @var PhotoResource $photoResource the photo */
 		foreach ($this->collection as $photoResource) {
-			$photos[] = $photoResource->toArray($request);
+			// We need to specify the return type to inform Phpstan that the appropriate property exists.
+			// Alternatively we could document properly the PhotoResource::toArray() but then the phpdoc
+			// of returns becomes a bit too messy.
+			/** @var array{id:string} $photoArray */
+			$photoArray = $photoResource->toArray($request);
+			$photos[] = $photoArray;
 			if ($i > 0) {
 				$photos[$i - 1]['next_photo_id'] = $photos[$i]['id'];
 				$photos[$i]['previous_photo_id'] = $photos[$i - 1]['id'];

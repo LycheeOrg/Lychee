@@ -23,7 +23,6 @@ use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Relations\HasManySizeVariants;
-use App\Relations\LinkedPhotoCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -110,24 +109,6 @@ class Photo extends Model
 		'altitude' => 'float',
 		'img_direction' => 'float',
 	];
-
-	/**
-	 * Creates a new instance of {@link LinkedPhotoCollection}.
-	 *
-	 * The only difference between an ordinary {@link Collection} and a
-	 * {@link LinkedPhotoCollection} is that the latter also adds links to
-	 * the previous and next photo if the collection is serialized to JSON.
-	 * This method is called by all relations which need to create a
-	 * collection of photos.
-	 *
-	 * @param array $models a list of {@link Photo} models
-	 *
-	 * @return LinkedPhotoCollection
-	 */
-	public function newCollection(array $models = []): LinkedPhotoCollection
-	{
-		return new LinkedPhotoCollection($models);
-	}
 
 	/**
 	 * Return the relationship between a Photo and its Album.

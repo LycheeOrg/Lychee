@@ -3,17 +3,23 @@
 namespace App\Http\Resources\Models;
 
 use App\Enum\SizeVariantType;
+use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Http\Resources\Rights\PhotoRightsResource;
 use App\Http\Resources\Traits\WithStatus;
 use App\Models\Extensions\SizeVariants;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\MissingValue;
 use Illuminate\Support\Facades\Gate;
+use JsonSerializable;
 
 /**
  * Photo resource returned when get() or adding a new photo.
+ * @property Photo $resource
  */
 class PhotoResource extends JsonResource
 {
@@ -29,7 +35,8 @@ class PhotoResource extends JsonResource
 	 *
 	 * @param \Illuminate\Http\Request $request
 	 *
-	 * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+	 * @param Request $request
+	 * @return array|Arrayable|JsonSerializable
 	 */
 	public function toArray($request)
 	{
@@ -91,6 +98,8 @@ class PhotoResource extends JsonResource
 			'type' => $this->resource->type,
 			'updated_at' => $this->resource->updated_at->toIso8601String(),
 			'rights' => PhotoRightsResource::make($this->resource)->toArray($request),
+			'next_photo_id' => null,
+			'previous_photo_id' => null
 		];
 	}
 }
