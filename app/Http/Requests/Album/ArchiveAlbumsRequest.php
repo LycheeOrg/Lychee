@@ -7,8 +7,8 @@ use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAlbumsTrait;
+use App\Http\RuleSets\Album\ArchiveAlbumRuleSet;
 use App\Policies\AlbumPolicy;
-use App\Rules\AlbumIDListRule;
 use Illuminate\Support\Facades\Gate;
 
 /**
@@ -38,9 +38,7 @@ class ArchiveAlbumsRequest extends BaseApiRequest implements HasAlbums
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::ALBUM_IDS_ATTRIBUTE => ['required', new AlbumIDListRule()],
-		];
+		return ArchiveAlbumRuleSet::rules();
 	}
 
 	/**

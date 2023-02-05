@@ -9,9 +9,8 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotoTrait;
 use App\Http\Requests\Traits\HasLicenseTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
+use App\Http\RuleSets\Photo\SetPhotoLicenseRuleSet;
 use App\Models\Photo;
-use App\Rules\LicenseRule;
-use App\Rules\RandomIDRule;
 
 class SetPhotoLicenseRequest extends BaseApiRequest implements HasPhoto, HasLicense
 {
@@ -24,10 +23,7 @@ class SetPhotoLicenseRequest extends BaseApiRequest implements HasPhoto, HasLice
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
-			RequestAttribute::LICENSE_ATTRIBUTE => ['required', new LicenseRule()],
-		];
+		return SetPhotoLicenseRuleSet::rules();
 	}
 
 	/**

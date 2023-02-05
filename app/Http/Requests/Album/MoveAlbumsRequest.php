@@ -9,8 +9,8 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumAlbumsTrait;
 use App\Http\Requests\Traits\HasAlbumsTrait;
 use App\Http\Requests\Traits\HasAlbumTrait;
+use App\Http\RuleSets\Album\MoveAlbumsRuleSet;
 use App\Models\Album;
-use App\Rules\RandomIDRule;
 
 /**
  * @implements HasAlbums<Album>
@@ -27,11 +27,7 @@ class MoveAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
-			RequestAttribute::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
-			RequestAttribute::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
-		];
+		return MoveAlbumsRuleSet::rules();
 	}
 
 	/**
