@@ -9,7 +9,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * Format a Tag album with all the required data
+ * Format a Tag album with all the required data.
  */
 class TagAlbumResource extends JsonResource
 {
