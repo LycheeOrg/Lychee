@@ -6,6 +6,11 @@ use App\Http\Resources\Models\PhotoResource;
 use App\Models\Configs;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
+/**
+ * While we could lever on the PhotoResource::collection(...)
+ * It does not provides with the next/previous photo connection.
+ * This aims to solve this problem.
+ */
 class PhotoCollectionResource extends ResourceCollection
 {
 	/**

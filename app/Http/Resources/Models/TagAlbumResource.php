@@ -8,6 +8,9 @@ use App\Models\TagAlbum;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Format a Tag album with all the required data
+ */
 class TagAlbumResource extends JsonResource
 {
 	use WithStatus;
