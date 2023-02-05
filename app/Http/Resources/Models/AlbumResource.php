@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Models;
 
+use App\Http\Resources\Collections\PhotoCollectionResource;
 use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Http\Resources\Traits\WithStatus;
 use App\Models\Album;
@@ -45,7 +46,7 @@ class AlbumResource extends JsonResource
 			'parent_id' => $this->resource->parent_id,
 			'has_albums' => !$this->resource->isLeaf(),
 			'albums' => AlbumResource::collection($this->whenLoaded('children')),
-			'photos' => PhotoResource::collection($this->whenLoaded('photos')),
+			'photos' => new PhotoCollectionResource($this->whenLoaded('photos')),
 			'num_subalbums' => $this->resource->num_children,
 			'num_photos' => $this->resource->num_photos,
 
