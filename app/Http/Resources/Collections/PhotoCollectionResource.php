@@ -8,22 +8,22 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class PhotoCollectionResource extends ResourceCollection
 {
+	/**
+	 * The resource that this resource collects.
+	 *
+	 * @var string
+	 */
+	public $collects = PhotoResource::class;
 
-    /**
-     * The resource that this resource collects.
-     *
-     * @var string
-     */
-    public $collects = PhotoResource::class;
-
-    /**
-     * Transform the resource collection into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
-     */
-    public function toArray($request)
-    {
+	/**
+	 * Transform the resource collection into an array.
+	 *
+	 * @param \Illuminate\Http\Request $request
+	 *
+	 * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+	 */
+	public function toArray($request)
+	{
 		if ($this->collection->count() === 0) {
 			return [];
 		}
@@ -57,5 +57,5 @@ class PhotoCollectionResource extends ResourceCollection
 		}
 
 		return $photos;
-    }
+	}
 }
