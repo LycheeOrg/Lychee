@@ -36,6 +36,7 @@ use Illuminate\Support\Carbon;
  * @property bool                       $is_password_required
  * @property Carbon|null                $min_taken_at
  * @property Carbon|null                $max_taken_at
+ * @property bool                       $is_shared_with_current_user
  * @property PhotoSortingCriterion|null $sorting
  * @property AlbumProtectionPolicy      $policy
  * @property BaseAlbumImpl              $base_class
@@ -89,11 +90,6 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	}
 
 	abstract public function photos(): Relation;
-
-	public function toArray(): array
-	{
-		return array_merge(parent::toArray(), $this->base_class->toArray());
-	}
 
 	/**
 	 * Returns the criterion acc. to which **photos** inside the album shall be sorted.

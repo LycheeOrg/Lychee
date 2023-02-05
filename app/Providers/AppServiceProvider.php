@@ -17,12 +17,12 @@ use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
 use App\Metadata\Versions\Remote\GitCommits;
 use App\Metadata\Versions\Remote\GitTags;
-use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
@@ -34,7 +34,6 @@ class AppServiceProvider extends ServiceProvider
 	public array $singletons
 	= [
 		SymLinkFunctions::class => SymLinkFunctions::class,
-		ConfigFunctions::class => ConfigFunctions::class,
 		Helpers::class => Helpers::class,
 		CheckUpdate::class => CheckUpdate::class,
 		AlbumFactory::class => AlbumFactory::class,
@@ -62,6 +61,12 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
+		/**
+		 * By default resources are wrapping results in a 'data' attribute.
+		 * We disable that.
+		 */
+		JsonResource::withoutWrapping();
+
 		if (config('database.db_log_sql', false) === true) {
 			DB::listen(function ($query) {
 				$msg = $query->sql . ' [' . implode(', ', $query->bindings) . ']';

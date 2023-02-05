@@ -8,7 +8,9 @@ use App\Exceptions\MassImportException;
 use App\Http\Requests\Import\CancelImportServerRequest;
 use App\Http\Requests\Import\ImportFromUrlRequest;
 use App\Http\Requests\Import\ImportServerRequest;
+use App\Http\Resources\Models\PhotoResource;
 use App\Models\Photo;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Session;
@@ -50,13 +52,15 @@ class ImportController extends Controller
 	 * @param ImportFromUrlRequest $request
 	 * @param FromUrl              $fromUrl
 	 *
-	 * @return Collection<Photo>
+	 * @return AnonymousResourceCollection
 	 *
 	 * @throws MassImportException
 	 */
-	public function url(ImportFromUrlRequest $request, FromUrl $fromUrl): Collection
+	public function url(ImportFromUrlRequest $request, FromUrl $fromUrl): AnonymousResourceCollection
 	{
-		return $fromUrl->do($request->urls(), $request->album());
+		$photos = $fromUrl->do($request->urls(), $request->album());
+
+		return PhotoResource::collection($photos);
 	}
 
 	/**

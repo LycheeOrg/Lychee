@@ -7,7 +7,6 @@ use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Constants\RandomID;
-use App\DTO\Rights\PhotoRightsDTO;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\ZeroModuloException;
@@ -20,15 +19,13 @@ use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
 use App\Models\Extensions\SizeVariants;
 use App\Models\Extensions\ThrowsConsistentExceptions;
+use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
-use App\Policies\PhotoPolicy;
 use App\Relations\HasManySizeVariants;
-use App\Relations\LinkedPhotoCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use function Safe\preg_match;
 
@@ -82,6 +79,7 @@ class Photo extends Model
 	use HasBidirectionalRelationships;
 	/** @phpstan-use UseFixedQueryBuilder<Photo> */
 	use UseFixedQueryBuilder;
+	use ToArrayThrowsNotImplemented;
 
 	/**
 	 * @var string The type of the primary key
@@ -111,45 +109,6 @@ class Photo extends Model
 		'altitude' => 'float',
 		'img_direction' => 'float',
 	];
-
-	/**
-	 * @var array<int,string> The list of attributes which exist as columns of the DB
-	 *                        relation but shall not be serialized to JSON
-	 */
-	protected $hidden = [
-		RandomID::LEGACY_ID_NAME,
-		'album',  // do not serialize relation in order to avoid infinite loops
-		'owner',  // do not serialize relation
-		'owner_id',
-		'live_photo_short_path', // serialize live_photo_url instead
-	];
-
-	/**
-	 * @var string[] The list of "virtual" attributes which do not exist as
-	 *               columns of the DB relation but which shall be appended to
-	 *               JSON from accessors
-	 */
-	protected $appends = [
-		'live_photo_url',
-	];
-
-	/**
-	 * Creates a new instance of {@link LinkedPhotoCollection}.
-	 *
-	 * The only difference between an ordinary {@link Collection} and a
-	 * {@link LinkedPhotoCollection} is that the latter also adds links to
-	 * the previous and next photo if the collection is serialized to JSON.
-	 * This method is called by all relations which need to create a
-	 * collection of photos.
-	 *
-	 * @param array $models a list of {@link Photo} models
-	 *
-	 * @return LinkedPhotoCollection
-	 */
-	public function newCollection(array $models = []): LinkedPhotoCollection
-	{
-		return new LinkedPhotoCollection($models);
-	}
 
 	/**
 	 * Return the relationship between a Photo and its Album.
@@ -238,13 +197,17 @@ class Photo extends Model
 	 * part of an album) or the default license of the application-wide
 	 * setting is returned.
 	 *
-	 * @param string $license the value from the database passed in by
-	 *                        the Eloquent framework
+	 * @param ?string $license the value from the database passed in by
+	 *                         the Eloquent framework
 	 *
 	 * @return string
 	 */
-	protected function getLicenseAttribute(string $license): string
+	protected function getLicenseAttribute(?string $license): string
 	{
+		if ($license === null) {
+			return Configs::getValueAsString('default_license');
+		}
+
 		if ($license !== 'none') {
 			return $license;
 		}
@@ -363,37 +326,6 @@ class Photo extends Model
 	public function isRaw(): bool
 	{
 		return !$this->isPhoto() && !$this->isVideo();
-	}
-
-	/**
-	 * Serializes the model into an array.
-	 *
-	 * This method is also invoked by Eloquent when someone invokes
-	 * {@link Model::toJson()} or {@link Model::jsonSerialize()}.
-	 *
-	 * This method removes the URL to the full resolution of a photo, if the
-	 * client is not allowed to see that.
-	 *
-	 * @return array
-	 *
-	 * @throws IllegalOrderOfOperationException
-	 */
-	public function toArray(): array
-	{
-		$result = parent::toArray();
-
-		$result['rights'] = PhotoRightsDTO::ofPhoto($this);
-
-		// Downgrades the accessible resolution of a photo
-		if (
-			!Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $this]) &&
-			!$this->isVideo() &&
-			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null)
-		) {
-			unset($result['size_variants']['original']['url']);
-		}
-
-		return $result;
 	}
 
 	/**

@@ -227,6 +227,6 @@ trait UTCBasedTimes
 	 */
 	protected function serializeDate(\DateTimeInterface $date): string
 	{
-		return $date->format('Y-m-d\TH:i:s.uP');
+		return $date->format('Y-m-d\TH:i:sP');
 	}
 }

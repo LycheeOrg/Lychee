@@ -4,7 +4,6 @@ namespace App\SmartAlbums;
 
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Contracts\Models\AbstractAlbum;
-use App\DTO\AlbumProtectionPolicy;
 use App\DTO\PhotoSortingCriterion;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
@@ -14,6 +13,7 @@ use App\Exceptions\InvalidPropertyException;
 use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Extensions\Thumb;
+use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
@@ -35,6 +35,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 {
 	use MimicModel;
 	use UTCBasedTimes;
+	use ToArrayThrowsNotImplemented;
 
 	protected PhotoQueryPolicy $photoQueryPolicy;
 	protected string $id;
@@ -97,6 +98,17 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	}
 
 	/**
+	 * Similar to the function above.
+	 * The big difference is that we do not check if it is null or not.
+	 *
+	 * @return Collection|null
+	 */
+	public function getPhotos(): ?Collection
+	{
+		return $this->photos;
+	}
+
+	/**
 	 * @throws InvalidPropertyException
 	 * @throws InvalidQueryModelException
 	 */
@@ -115,39 +127,5 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		}
 
 		return $this->thumb;
-	}
-
-	/**
-	 * @throws InvalidPropertyException
-	 * @throws InvalidQueryModelException
-	 */
-	public function toArray(): array
-	{
-		// The properties `thumb` and `photos` are intentionally treated
-		// differently.
-		//
-		//  1. The result always includes `thumb`, hence we call the
-		//     getter method to ensure that the property is initialized, if it
-		//     has not already been accessed before.
-		//  2. The result only includes the collection `photos`, if it has
-		//     already explicitly been accessed earlier and thus is initialized.
-		//
-		// Rationale:
-		//
-		//  1. This resembles the behaviour of a real Eloquent model, if the
-		//     attribute `thumb` was part of the `append`-property of model.
-		//  2. This resembles the behaviour of a real Eloquent model for
-		//     one-to-many relations.
-		//     A relation is only included in the array representation, if the
-		//     relation has been loaded.
-		//     This avoids unnecessary hydration of photos if the album is
-		//     only used within a listing of sub-albums.
-		return [
-			'id' => $this->id,
-			'title' => $this->title,
-			'thumb' => $this->getThumbAttribute(),
-			'policy' => AlbumProtectionPolicy::ofSmartAlbum($this),
-			'photos' => $this->photos?->toArray(),
-		];
 	}
 }

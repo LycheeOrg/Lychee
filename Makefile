@@ -59,6 +59,7 @@ dist: dist-clean
 	@zip -r Lychee.zip Lychee
 
 clean:
+	@rm build/* 2> /dev/null || true
 	@rm -r Lychee 2> /dev/null || true
 
 test:
@@ -102,3 +103,11 @@ gen_major:
 
 release_major: gen_major
 	git commit -m "bump to version $(shell cat version.md)"
+
+TESTS_PHP := $(shell find tests/Feature -name "*Test.php" -printf "%f\n")
+TEST_DONE := $(addprefix build/,$(TESTS_PHP:.php=.done))
+
+build/%.done: tests/Feature/%.php
+	vendor/bin/phpunit --filter $* && touch build/$*.done
+
+all_tests: $(TEST_DONE)

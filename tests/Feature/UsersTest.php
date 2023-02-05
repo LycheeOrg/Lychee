@@ -395,7 +395,7 @@ class UsersTest extends AbstractTestCase
 		Auth::logout();
 		Session::flush();
 
-		$users_test->get_user(204);
+		$users_test->get_user(401);
 
 		Auth::loginUsingId(1);
 

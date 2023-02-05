@@ -2,8 +2,8 @@
 
 namespace App\Actions\Sharing;
 
-use App\DTO\Shares;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Http\Resources\Sharing\SharesResource;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\User;
 use Illuminate\Support\Collection;
@@ -21,16 +21,16 @@ class ListShare
 	 *                                    which are shared
 	 * @param BaseAlbum|null $baseAlbum   the optional album which is shared
 	 *
-	 * @return Shares
+	 * @return SharesResource
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function do(?User $participant, ?User $owner, ?BaseAlbum $baseAlbum): Shares
+	public function do(?User $participant, ?User $owner, ?BaseAlbum $baseAlbum): SharesResource
 	{
 		try {
 			// Active shares, optionally filtered by album ID, participant ID
 			// and or owner ID
-			$shared_query = DB::table('user_base_album')
+			$shared = DB::table('user_base_album')
 				->select([
 					'user_base_album.id',
 					'user_id',
@@ -39,34 +39,23 @@ class ListShare
 					'title',
 				])
 				->join('users', 'user_id', '=', 'users.id')
-				->join('base_albums', 'base_album_id', '=', 'base_albums.id');
-			if ($participant !== null) {
-				$shared_query->where('user_base_album.user_id', '=', $participant->id);
-			}
-			if ($owner !== null) {
-				$shared_query->where('base_albums.owner_id', '=', $owner->id);
-			}
-			if ($baseAlbum !== null) {
-				$shared_query->where('base_albums.id', '=', $baseAlbum->id);
-			}
-			$shared = $shared_query
+				->join('base_albums', 'base_album_id', '=', 'base_albums.id')
+				->when($participant !== null, fn ($q) => $q->where('user_base_album.user_id', '=', $participant->id))
+				->when($owner !== null, fn ($q) => $q->where('base_albums.owner_id', '=', $owner->id))
+				->when($baseAlbum !== null, fn ($q) => $q->where('base_albums.id', '=', $baseAlbum->id))
 				->orderBy('title', 'ASC')
 				->orderBy('username', 'ASC')
 				->get();
 
 			// Existing albums which can be shared optionally filtered by
 			// album ID and/or owner ID
-			$albums_query = DB::table('base_albums')
+			$albums = DB::table('base_albums')
 				->leftJoin('albums', 'albums.id', '=', 'base_albums.id')
 				->select(['base_albums.id', 'title', 'parent_id'])
-				->orderBy('title', 'ASC');
-			if ($owner !== null) {
-				$albums_query->where('owner_id', '=', $owner->id);
-			}
-			if ($baseAlbum !== null) {
-				$albums_query->where('base_albums.id', '=', $baseAlbum->id);
-			}
-			$albums = $albums_query->get();
+				->when($owner !== null, fn ($q) => $q->where('owner_id', '=', $owner->id))
+				->when($baseAlbum !== null, fn ($q) => $q->where('base_albums.id', '=', $baseAlbum->id))
+				->orderBy('title', 'ASC')
+				->get();
 			$this->linkAlbums($albums);
 			$albums->each(function ($album) {
 				$album->title = $this->breadcrumbPath($album);
@@ -78,19 +67,16 @@ class ListShare
 
 			// Existing users with whom an album can be shared optionally
 			// filtered by participant ID
-			$users_query = DB::table('users')->select(['id', 'username']);
-			if ($participant !== null) {
-				$users_query->where('id', '=', $participant->id);
-			} else {
-				$users_query->where('id', '>', 0);
-			}
-			$users = $users_query->orderBy('username', 'ASC')
+			$users = DB::table('users')->select(['id', 'username'])
+				->when($participant !== null, fn ($q) => $q->where('id', '=', $participant->id))
+				->when($participant === null, fn ($q) => $q->where('may_administrate', '=', false))
+				->orderBy('username', 'ASC')
 				->get()
 				->each(function ($user) {
 					$user->id = intval($user->id);
 				});
 
-			return new Shares($shared, $albums, $users);
+			return new SharesResource($shared, $albums, $users);
 		} catch (\InvalidArgumentException $e) {
 			throw new QueryBuilderException($e);
 		}

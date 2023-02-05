@@ -3,15 +3,15 @@
 namespace App\Actions\Album;
 
 use App\Contracts\Models\AbstractAlbum;
-use App\DTO\PositionData as PositionDataDTO;
 use App\Enum\SizeVariantType;
+use App\Http\Resources\Collections\PositionDataResource;
 use App\Models\Album;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PositionData extends Action
 {
-	public function get(AbstractAlbum $album, bool $includeSubAlbums = false): PositionDataDTO
+	public function get(AbstractAlbum $album, bool $includeSubAlbums = false): PositionDataResource
 	{
 		$photoRelation = ($album instanceof Album && $includeSubAlbums) ?
 			$album->all_photos() :
@@ -40,6 +40,6 @@ class PositionData extends Action
 			->whereNotNull('latitude')
 			->whereNotNull('longitude');
 
-		return new PositionDataDTO($album->id, $album->title, $photoRelation->get(), $album instanceof Album ? $album->track_url : null);
+		return new PositionDataResource($album->id, $album->title, $photoRelation->get(), $album instanceof Album ? $album->track_url : null);
 	}
 }

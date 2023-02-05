@@ -63,7 +63,7 @@ class PhotosAddSpecialAlbumTest extends BasePhotoTest
 		);
 		$response->assertJson([
 			'album_id' => null,
-			'is_public' => 1,
+			'is_public' => true,
 		]);
 	}
 

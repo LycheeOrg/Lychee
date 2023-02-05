@@ -159,7 +159,7 @@ class PhotosDownloadTest extends Base\BasePhotoTest
 		)->offsetGet('id');
 		$photoID2b = $this->photos_tests->duplicate(
 			[$photoID2a], null
-		)->offsetGet('id');
+		)->json()[0]['id'];
 
 		$photoArchiveResponse = $this->photos_tests->download([$photoID1, $photoID2a, $photoID2b],
 			DownloadVariantType::ORIGINAL->value);

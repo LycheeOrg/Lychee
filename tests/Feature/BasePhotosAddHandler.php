@@ -53,7 +53,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 			'make' => 'Canon',
 			'model' => 'Canon EOS R',
 			'shutter' => '30 s',
-			'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
+			'taken_at' => $taken_at->format('Y-m-d\TH:i:sP'),
 			'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
 			'title' => 'night',
 			'type' => AbstractTestCase::MIME_TYPE_IMG_JPEG,
@@ -262,7 +262,9 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 		));
 		/** @var \App\Models\Photo $photo */
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_TRAIN_IMAGE)
+			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_TRAIN_IMAGE),
+			null,
+			200 // associated image to video.
 		));
 		$this->assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
 		$this->assertStringEndsWith('.mov', $photo->live_photo_url);
@@ -490,7 +492,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 			'description' => null,
 			'tags' => [],
 			'license' => 'none',
-			'is_public' => 0,
+			'is_public' => false,
 			'is_starred' => false,
 			'iso' => '400',
 			'make' => 'Canon',

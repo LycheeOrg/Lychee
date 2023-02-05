@@ -92,4 +92,16 @@ trait MimicModel
 	{
 		return $this->toJson();
 	}
+
+	/**
+	 * Determine if the given relation is loaded.
+	 *
+	 * @param string $key
+	 *
+	 * @return bool
+	 */
+	public function relationLoaded($key)
+	{
+		return $key === 'photos' && $this->photos !== null;
+	}
 }

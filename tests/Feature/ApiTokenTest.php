@@ -42,7 +42,7 @@ class ApiTokenTest extends AbstractTestCase
 		$token = $this->resetAdminToken();
 
 		$response = $this->postJson('/api/User::getAuthenticatedUser');
-		$this->assertStatus($response, 204);
+		$this->assertStatus($response, 401);
 
 		$response = $this->postJson('/api/User::getAuthenticatedUser', [], [
 			'Authorization' => $token,
@@ -196,7 +196,7 @@ class ApiTokenTest extends AbstractTestCase
 
 		// Ensure that we are logged out without the token
 		$response = $this->postJson('/api/User::getAuthenticatedUser');
-		$this->assertStatus($response, 204);
+		$this->assertStatus($response, 401);
 	}
 
 	/**

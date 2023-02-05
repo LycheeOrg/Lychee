@@ -10,6 +10,7 @@ use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\User\ChangeLoginRequest;
 use App\Http\Requests\User\ChangeTokenRequest;
 use App\Http\Requests\User\SetEmailRequest;
+use App\Http\Resources\Models\UserResource;
 use App\Models\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -22,9 +23,9 @@ class UserController extends Controller
 	 * @param ChangeLoginRequest $request
 	 * @param UpdateLogin        $updateLogin
 	 *
-	 * @return User
+	 * @return UserResource
 	 */
-	public function updateLogin(ChangeLoginRequest $request, UpdateLogin $updateLogin): User
+	public function updateLogin(ChangeLoginRequest $request, UpdateLogin $updateLogin): UserResource
 	{
 		$currentUser = $updateLogin->do(
 			$request->username(),
@@ -38,7 +39,7 @@ class UserController extends Controller
 		// to be unauthenticated upon the next request.
 		Auth::login($currentUser);
 
-		return $currentUser;
+		return UserResource::make($currentUser);
 	}
 
 	/**
@@ -77,12 +78,11 @@ class UserController extends Controller
 	 * Returns the currently authenticated user or `null` if no user
 	 * is authenticated.
 	 *
-	 * @return User|null
+	 * @return UserResource
 	 */
-	public function getAuthenticatedUser(): ?User
+	public function getAuthenticatedUser(): UserResource
 	{
-		/** @var User|null */
-		return Auth::user();
+		return UserResource::make(Auth::user() ?? throw new UnauthenticatedException());
 	}
 
 	/**
