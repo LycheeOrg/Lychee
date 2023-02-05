@@ -9,10 +9,9 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasParentAlbumTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
+use App\Http\RuleSets\Album\AddAlbumRuleSet;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;
-use App\Rules\RandomIDRule;
-use App\Rules\TitleRule;
 use Illuminate\Support\Facades\Gate;
 
 class AddAlbumRequest extends BaseApiRequest implements HasTitle, HasParentAlbum
@@ -33,10 +32,7 @@ class AddAlbumRequest extends BaseApiRequest implements HasTitle, HasParentAlbum
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::PARENT_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
-			RequestAttribute::TITLE_ATTRIBUTE => ['required', new TitleRule()],
-		];
+		return AddAlbumRuleSet::rules();
 	}
 
 	/**

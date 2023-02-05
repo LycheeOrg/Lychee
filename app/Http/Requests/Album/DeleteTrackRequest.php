@@ -7,8 +7,8 @@ use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasAlbumTrait;
+use App\Http\RuleSets\Album\BasicAlbumIdRuleSet;
 use App\Models\Album;
-use App\Rules\AlbumIDRule;
 
 class DeleteTrackRequest extends BaseApiRequest implements HasAlbum
 {
@@ -20,9 +20,7 @@ class DeleteTrackRequest extends BaseApiRequest implements HasAlbum
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
-		];
+		return BasicAlbumIdRuleSet::rules();
 	}
 
 	/**
