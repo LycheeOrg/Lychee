@@ -113,6 +113,13 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 		array $expectedAlbumJson = []
 	): array;
 
+	abstract protected function generateUnexpectedRootJson(
+		?string $unsortedAlbumThumbID = null,
+		?string $starredAlbumThumbID = null,
+		?string $publicAlbumThumbID = null,
+		?string $recentAlbumThumbID = null,
+	): ?array;
+
 	abstract protected function generateExpectedTreeJson(array $expectedAlbums = []): array;
 
 	/**
@@ -143,6 +150,10 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson());
+		$arrayUnexpected = $this->generateUnexpectedRootJson();
+		if ($arrayUnexpected !== null) {
+			$responseForRoot->assertJsonMissing($arrayUnexpected);
+		}
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID1]);
 
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
@@ -206,16 +217,17 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 	abstract public function testPublicAndPrivatePhotoInPrivateAlbum(): void;
 
 	/**
-	 * Creates an album with two photos, marks the album as public, stars
+	 * Creates an album with three photos, marks the album as public, stars
 	 * the alphabetically last photo and logs out.
 	 *
 	 * @return void
 	 */
-	protected function prepareTwoPhotosInPublicAlbum(): void
+	protected function prepareThreePhotosInPublicAlbum(): void
 	{
 		$this->albumID1 = $this->albums_tests->add(null, self::ALBUM_TITLE_1)->offsetGet('id');
 		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID1)->offsetGet('id');
 		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID1)->offsetGet('id');
+		$this->photoID3 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_SUNSET_IMAGE), $this->albumID1)->offsetGet('id');
 		$this->albums_tests->set_protection_policy($this->albumID1);
 		$this->photos_tests->set_star([$this->photoID1], true);
 		Auth::logout();
@@ -237,12 +249,13 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 	 * Note that the setting "public search" only affects photos which are
 	 * made public explicitly.
 	 */
-	public function testTwoPhotosInPublicAlbum(): void
+	public function testThreePhotosInPublicAlbum(): void
 	{
-		$this->prepareTwoPhotosInPublicAlbum();
+		$this->prepareThreePhotosInPublicAlbum();
 
 		$this->ensurePhotosWereNotTakenOnThisDay($this->photoID1);
 		$this->ensurePhotosWereTakenOnThisDay($this->photoID2);
+		$this->ensurePhotosWereNotTakenOnThisDay($this->photoID3);
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
@@ -251,15 +264,23 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 			null,
 			$this->photoID1,
 			$this->photoID2, [
-				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1), // photo 1 is thumb, because starred photo are always picked first
+				// photo 1 is thumb, because starred photo are always picked first
+				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
 			])
 		);
+		$arrayUnexpected = $this->generateUnexpectedRootJson(null, $this->photoID1, null, $this->photoID1);
+		if ($arrayUnexpected !== null) {
+			$responseForRoot->assertJsonMissing($arrayUnexpected);
+		}
+		$responseForRoot->assertJsonMissing(['id' => $this->photoID3]);
 
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
-			$this->photoID1, [ // photo 1 is the thumb, because starred photo are always picked first
-				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID2, $this->albumID1), // photo 2 is alphabetically first
+			$this->photoID1, [
+				// photo 1 is the thumb, because starred photo are always picked first
+				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_SUNSET_IMAGE, $this->photoID3, $this->albumID1), // photo 3 is alphabetically first
+				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID2, $this->albumID1), // photo 2 is next alphabetically
 				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, $this->albumID1), // despite that photo 1 is starred
 			]
 		));
@@ -272,6 +293,7 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 			]
 		));
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
+		$responseForStarred->assertJsonMissing(['id' => $this->photoID3]);
 
 		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
 		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
@@ -281,12 +303,13 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 			]
 		));
 		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID1]);
+		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID3]);
 
 		$responseForTree = $this->root_album_tests->getTree();
 		$responseForTree->assertJson($this->generateExpectedTreeJson([
 			$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1), // photo 1 is thumb, because starred photo are always picked first
 		]));
-		$responseForTree->assertJsonMissing(['id' => $this->photoID2]);
+		$responseForTree->assertJsonMissing(['id' => $this->photoID3]);
 
 		$responseForAlbum = $this->albums_tests->get($this->albumID1);
 		$responseForAlbum->assertJson([
@@ -295,12 +318,14 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 			'policy' => ['is_public' => true],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID1), // photo 1 is thumb, because starred photo are always picked first
 			'photos' => [
+				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_SUNSET_IMAGE, $this->photoID3, $this->albumID1), // photo 2 is alphabetically first
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID2, $this->albumID1), // photo 2 is alphabetically first
 				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, $this->albumID1), // despite that photo 1 is starred
 			],
 		]);
 		$this->photos_tests->get($this->photoID1);
 		$this->photos_tests->get($this->photoID2);
+		$this->photos_tests->get($this->photoID3);
 	}
 
 	/**
@@ -364,6 +389,10 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 				$this->generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
 			]
 		));
+		$arrayUnexpected = $this->generateUnexpectedRootJson(null, null, null, $this->photoID2);
+		if ($arrayUnexpected !== null) {
+			$responseForRoot->assertJsonMissing($arrayUnexpected);
+		}
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID1]); // photo 1 is in password protected, still locked album
 
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
@@ -432,6 +461,10 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 				$this->generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
 			]
 		));
+		$arrayUnexpected = $this->generateUnexpectedRootJson(null, null, null, $this->photoID1);
+		if ($arrayUnexpected !== null) {
+			$responseForRoot->assertJsonMissing($arrayUnexpected);
+		}
 
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
@@ -525,6 +558,10 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 				$this->generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
 			]
 		));
+		$arrayUnexpected = $this->generateUnexpectedRootJson(null, null, null, $this->photoID2);
+		if ($arrayUnexpected !== null) {
+			$responseForRoot->assertJsonMissing($arrayUnexpected);
+		}
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID1]); // photo 1 is in password protected, still locked album
 
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
@@ -591,6 +628,10 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 				$this->generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
 			]
 		));
+		$arrayUnexpected = $this->generateUnexpectedRootJson(null, $this->photoID1, null, $this->photoID1);
+		if ($arrayUnexpected !== null) {
+			$responseForRoot->assertJsonMissing($arrayUnexpected);
+		}
 
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
@@ -684,6 +725,10 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
 			]
 		));
+		$arrayUnexpected = $this->generateUnexpectedRootJson(null, null, null, $this->photoID1);
+		if ($arrayUnexpected !== null) {
+			$responseForRoot->assertJsonMissing($arrayUnexpected);
+		}
 		$responseForRoot->assertJsonMissing(['id' => $this->albumID2]); // album 2 is hidden
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]); // album 2 is hidden
 
@@ -777,6 +822,10 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
 			]
 		));
+		$arrayUnexpected = $this->generateUnexpectedRootJson(null, null, null, $this->photoID1);
+		if ($arrayUnexpected !== null) {
+			$responseForRoot->assertJsonMissing($arrayUnexpected);
+		}
 		$responseForRoot->assertJsonMissing(['id' => $this->albumID2]); // album 2 is hidden
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]); // album 2 is hidden
 
@@ -843,6 +892,10 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
 			]
 		));
+		$arrayUnexpected = $this->generateUnexpectedRootJson(null, null, null, $this->photoID1);
+		if ($arrayUnexpected !== null) {
+			$responseForRoot->assertJsonMissing($arrayUnexpected);
+		}
 		$responseForRoot->assertJsonMissing(['id' => $this->albumID2]); // album 2 is hidden
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]); // album 2 is hidden
 
@@ -964,6 +1017,10 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
 			]
 		));
+		$arrayUnexpected = $this->generateUnexpectedRootJson(null, null, null, $this->photoID1);
+		if ($arrayUnexpected !== null) {
+			$responseForRoot->assertJsonMissing($arrayUnexpected);
+		}
 
 		$responseForStarred = $this->albums_tests->get(StarredAlbum::ID);
 		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(true));

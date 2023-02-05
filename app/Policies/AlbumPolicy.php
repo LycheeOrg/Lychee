@@ -99,7 +99,7 @@ class AlbumPolicy extends BasePolicy
 					$this->isOwner($user, $album) ||
 					($album->is_public && $album->password === null) ||
 					($album->is_public && $this->isUnlocked($album)) ||
-					($album->shared_with()->where('user_id', '=', $user?->id)->count() > 0);
+					($album->is_shared_with_current_user);
 			} catch (\InvalidArgumentException $e) {
 				throw LycheeAssertionError::createFromUnexpectedException($e);
 			}

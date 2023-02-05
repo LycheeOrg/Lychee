@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Administration;
 
 use App\Actions\User\Create;
 use App\Actions\User\Save;
-use App\DTO\UserWithCapabilitiesDTO;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
@@ -14,24 +13,23 @@ use App\Http\Requests\Users\AddUserRequest;
 use App\Http\Requests\Users\DeleteUserRequest;
 use App\Http\Requests\Users\ListUsersRequest;
 use App\Http\Requests\Users\SetUserSettingsRequest;
+use App\Http\Resources\Models\UserManagementResource;
 use App\Models\User;
 use Carbon\Exceptions\InvalidFormatException;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller
 {
 	/**
-	 * @return Collection<UserWithCapabilitiesDTO>
+	 * @return ResourceCollection<UserManagementResource>
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function list(ListUsersRequest $request): Collection
+	public function list(ListUsersRequest $request): ResourceCollection
 	{
-		// PHPStan does not understand that `get` returns `Collection<User>`, but assumes that it returns `Collection<Model>`
-		// @phpstan-ignore-next-line
-		return User::query()->where('id', '>', 0)->get()->map(fn ($u) => UserWithCapabilitiesDTO::ofUser($u));
+		return UserManagementResource::collection(User::query()->whereNot('id', '=', Auth::id())->get());
 	}
 
 	/**
@@ -85,13 +83,15 @@ class UsersController extends Controller
 	 * @param AddUserRequest $request
 	 * @param Create         $create
 	 *
-	 * @return User
+	 * @return UserManagementResource
 	 *
 	 * @throws InvalidPropertyException
 	 * @throws ModelDBException
 	 */
-	public function create(AddUserRequest $request, Create $create): User
+	public function create(AddUserRequest $request, Create $create): UserManagementResource
 	{
-		return $create->do($request->username(), $request->password(), $request->mayUpload(), $request->mayEditOwnSettings());
+		$user = $create->do($request->username(), $request->password(), $request->mayUpload(), $request->mayEditOwnSettings());
+
+		return UserManagementResource::make($user)->setStatus(201);
 	}
 }

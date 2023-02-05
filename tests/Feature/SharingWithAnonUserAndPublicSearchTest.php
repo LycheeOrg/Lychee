@@ -49,6 +49,7 @@ class SharingWithAnonUserAndPublicSearchTest extends BaseSharingWithAnonUser
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
 			null, $this->photoID1, null, $this->photoID1, $this->photoID1
 		));
+		$responseForRoot->assertJsonMissing($this->generateUnexpectedRootJson(null, $this->photoID1, null, $this->photoID1));
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
@@ -101,6 +102,7 @@ class SharingWithAnonUserAndPublicSearchTest extends BaseSharingWithAnonUser
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
 			null, $this->photoID1, null, $this->photoID1, $this->photoID1
 		));
+		$responseForRoot->assertJsonMissing($this->generateUnexpectedRootJson(null, $this->photoID1, null, $this->photoID1));
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
@@ -151,6 +153,7 @@ class SharingWithAnonUserAndPublicSearchTest extends BaseSharingWithAnonUser
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
 			null, $this->photoID1, null, $this->photoID1, $this->photoID1
 		));
+		$responseForRoot->assertJsonMissing($this->generateUnexpectedRootJson(null, $this->photoID1, null, $this->photoID1));
 		$responseForRoot->assertJsonMissing(['id' => $this->albumID1]);
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]);
 

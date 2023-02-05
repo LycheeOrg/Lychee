@@ -12,8 +12,7 @@ use App\Actions\Album\PositionData;
 use App\Actions\Album\SetProtectionPolicy;
 use App\Actions\Album\Unlock;
 use App\Contracts\Exceptions\LycheeException;
-use App\DTO\AbstractAlbumDTO;
-use App\DTO\PositionData as PositionDataDTO;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Http\Requests\Album\AddAlbumRequest;
@@ -35,9 +34,14 @@ use App\Http\Requests\Album\SetAlbumsTitleRequest;
 use App\Http\Requests\Album\SetAlbumTagsRequest;
 use App\Http\Requests\Album\SetAlbumTrackRequest;
 use App\Http\Requests\Album\UnlockAlbumRequest;
+use App\Http\Resources\Collections\PositionDataResource;
+use App\Http\Resources\Models\AlbumResource;
+use App\Http\Resources\Models\SmartAlbumResource;
+use App\Http\Resources\Models\TagAlbumResource;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\TagAlbum;
+use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
@@ -51,13 +55,15 @@ class AlbumController extends Controller
 	 * @param AddAlbumRequest $request
 	 * @param Create          $create
 	 *
-	 * @return Album
+	 * @return AlbumResource
 	 *
 	 * @throws LycheeException
 	 */
-	public function add(AddAlbumRequest $request, Create $create): Album
+	public function add(AddAlbumRequest $request, Create $create): AlbumResource
 	{
-		return $create->create($request->title(), $request->parentAlbum());
+		$album = $create->create($request->title(), $request->parentAlbum());
+
+		return AlbumResource::make($album)->setStatus(201);
 	}
 
 	/**
@@ -66,13 +72,15 @@ class AlbumController extends Controller
 	 * @param AddTagAlbumRequest $request
 	 * @param CreateTagAlbum     $create
 	 *
-	 * @return TagAlbum
+	 * @return TagAlbumResource
 	 *
 	 * @throws LycheeException
 	 */
-	public function addTagAlbum(AddTagAlbumRequest $request, CreateTagAlbum $create): TagAlbum
+	public function addTagAlbum(AddTagAlbumRequest $request, CreateTagAlbum $create): TagAlbumResource
 	{
-		return $create->create($request->title(), $request->tags());
+		$tagAlbum = $create->create($request->title(), $request->tags());
+
+		return TagAlbumResource::make($tagAlbum)->setStatus(201);
 	}
 
 	/**
@@ -80,11 +88,16 @@ class AlbumController extends Controller
 	 *
 	 * @param GetAlbumRequest $request
 	 *
-	 * @return AbstractAlbumDTO
+	 * @return AlbumResource|TagAlbumResource|SmartAlbumResource
 	 */
-	public function get(GetAlbumRequest $request): AbstractAlbumDTO
+	public function get(GetAlbumRequest $request): AlbumResource|TagAlbumResource|SmartAlbumResource
 	{
-		return new AbstractAlbumDTO($request->album());
+		return match (true) {
+			$request->album() instanceof BaseSmartAlbum => SmartAlbumResource::make($request->album()),
+			$request->album() instanceof TagAlbum => TagAlbumResource::make($request->album()),
+			$request->album() instanceof Album => AlbumResource::make($request->album()),
+			default => throw new LycheeLogicException('This should not happen')
+		};
 	}
 
 	/**
@@ -93,9 +106,9 @@ class AlbumController extends Controller
 	 * @param GetAlbumPositionDataRequest $request
 	 * @param PositionData                $positionData
 	 *
-	 * @return PositionDataDTO
+	 * @return PositionDataResource
 	 */
-	public function getPositionData(GetAlbumPositionDataRequest $request, PositionData $positionData): PositionDataDTO
+	public function getPositionData(GetAlbumPositionDataRequest $request, PositionData $positionData): PositionDataResource
 	{
 		return $positionData->get($request->album(), $request->includeSubAlbums());
 	}

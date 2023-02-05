@@ -2,56 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\DTO\AlbumSortingCriterion;
-use App\DTO\PhotoSortingCriterion;
-use App\DTO\Rights\GlobalRightsDTO;
 use App\Exceptions\ConfigurationKeyMissingException;
-use App\Exceptions\Handler;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\VersionControlException;
 use App\Http\Requests\Session\LoginRequest;
+use App\Http\Resources\InitResource;
 use App\Legacy\AdminAuthentication;
-use App\Metadata\Versions\FileVersion;
-use App\Metadata\Versions\GitHubVersion;
-use App\Metadata\Versions\InstalledVersion;
-use App\ModelFunctions\ConfigFunctions;
-use App\Models\Configs;
 use App\Models\Logs;
-use App\Models\User;
-use App\Policies\SettingsPolicy;
-use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
-use Spatie\Feed\Helpers\FeedContentType;
 
 class SessionController extends Controller
 {
 	/**
-	 * @param ConfigFunctions  $configFunctions
-	 * @param GitHubVersion    $gitHubVersion
-	 * @param FileVersion      $fileVersion,
-	 * @param InstalledVersion $lycheeVersion
-	 * @param Repository       $configRepository
-	 */
-	public function __construct(
-		private ConfigFunctions $configFunctions,
-		private GitHubVersion $gitHubVersion,
-		private FileVersion $fileVersion,
-		private InstalledVersion $lycheeVersion,
-		private Repository $configRepository,
-	) {
-	}
-
-	/**
 	 * First function being called via AJAX.
 	 *
-	 * @return array
+	 * @return InitResource
 	 *
 	 * @throws VersionControlException
 	 * @throws ConfigurationKeyMissingException
@@ -59,82 +30,10 @@ class SessionController extends Controller
 	 * @throws ModelDBException
 	 * @throws InvalidOrderDirectionException
 	 */
-	public function init(): array
+	public function init(): InitResource
 	{
 		try {
-			// Return settings
-			$return = [];
-
-			/** @var User|null $user */
-			$user = Auth::user();
-			$return['user'] = $user?->toArray();
-			$return['rights'] = GlobalRightsDTO::ofCurrentUser();
-
-			// Load configuration settings acc. to authentication status
-			if (Gate::check(SettingsPolicy::CAN_EDIT, [Configs::class])) {
-				// Admin rights (either properly authenticated or not registered)
-				$return['config'] = $this->configFunctions->admin();
-				$return['config']['location'] = base_path('public/');
-				$return['config']['lang_available'] = config('app.supported_locale');
-			} elseif ($return['user'] !== null) {
-				// Authenticated as non-admin
-				$return['config'] = $this->configFunctions->public();
-				$return['config']['lang_available'] = config('app.supported_locale');
-			} else {
-				// Unauthenticated
-				$return['config'] = $this->configFunctions->public();
-			}
-
-			if ($return['user'] !== null || !Configs::getValueAsBool('hide_version_number')) {
-				$return['config']['version'] = $this->lycheeVersion->getVersion();
-			} else {
-				$return['config']['version'] = null;
-			}
-
-			// Consolidate sorting attributes
-			$return['config']['sorting_albums'] = AlbumSortingCriterion::createDefault()->toArray();
-			$return['config']['sorting_photos'] = PhotoSortingCriterion::createDefault()->toArray();
-			unset($return['config']['sorting_albums_col']);
-			unset($return['config']['sorting_albums_order']);
-			unset($return['config']['sorting_photos_col']);
-			unset($return['config']['sorting_photos_order']);
-
-			// Add each RSS feed to the configuration
-			// The code is taken from Spatie\Feed\resources\views\links.blade.php
-			$return['config']['feeds'] = [];
-			if (Configs::getValueAsBool('rss_enable')) {
-				try {
-					/** @var array<string, array{format: ?string, title: ?string}> $feeds */
-					$feeds = $this->configRepository->get('feed.feeds', []);
-					foreach ($feeds as $name => $feed) {
-						$return['config']['rss_feeds'][] = [
-							'url' => route("feeds.{$name}"),
-							'mimetype' => FeedContentType::forLink($feed['format'] ?? 'atom'),
-							'title' => $feed['title'] ?? '',
-						];
-					}
-				} catch (\Throwable $e) {
-					// do nothing, but report the exception, if the
-					// configuration for the RSS feed cannot be loaded or
-					// if the route to any RSS feed or the mime type of any
-					// feed cannot be resolved
-					Handler::reportSafely($e);
-					$return['config']['feeds'] = [];
-				}
-			}
-
-			// we also return the local
-			$lang = Configs::getValueAsString('lang');
-			$return['locale'] = include base_path('lang/' . $lang . '/lychee.php');
-
-			if (Configs::getValueAsBool('check_for_updates')) {
-				$this->fileVersion->hydrate();
-				$this->gitHubVersion->hydrate();
-			}
-			$return['update_json'] = !$this->fileVersion->isUpToDate();
-			$return['update_available'] = !$this->gitHubVersion->isUpToDate();
-
-			return $return;
+			return InitResource::make();
 		} catch (ModelDBException $e) {
 			$this->logout();
 			throw $e;

@@ -7,10 +7,11 @@ use App\Models\TagAlbum;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Specialized query builder for {@link \App\Models\Album}.
+ * Specialized query builder for {@link \App\Models\TagAlbum}.
  *
- * This query builder adds the "virtual" columns `max_taken_at` and
- * `min_taken_at`, if actual models are hydrated from the DB.
+ * This query builder adds the "virtual" columns `max_taken_at`,
+ * `min_taken_at`, and `is_shared_with_current_user`
+ * if actual models are hydrated from the DB.
  * Using a custom query builder rather than a global scope enables more
  * fine-grained control, when the columns are added.
  * A global scope is always added to the query, even if the query is only
@@ -21,6 +22,8 @@ use Illuminate\Support\Facades\DB;
  */
 class TagAlbumBuilder extends FixedQueryBuilder
 {
+	use SharedWithCurrentUserQuery;
+
 	/**
 	 * Get the hydrated models without eager loading.
 	 *
@@ -44,6 +47,7 @@ class TagAlbumBuilder extends FixedQueryBuilder
 			$this->addSelect([
 				DB::raw('null as max_taken_at'),
 				DB::raw('null as min_taken_at'),
+				'is_shared_with_current_user' => $this->sharedWithCurrentUser('tag_albums')->select(DB::raw('count(*)')),
 			]);
 		}
 

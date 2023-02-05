@@ -204,6 +204,7 @@ abstract class BaseSharingWithAnonUser extends BaseSharingTestScenarios
 				$this->generateExpectedAlbumJson($this->albumID3, self::ALBUM_TITLE_3, null, $this->photoID3),
 			],
 		));
+
 		$responseForRoot->assertJsonMissing(['id' => $this->albumID1]);
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID1]);
 
@@ -276,15 +277,43 @@ abstract class BaseSharingWithAnonUser extends BaseSharingTestScenarios
 
 		return [
 			'smart_albums' => [
-				UnsortedAlbum::ID => null,
 				StarredAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($starredAlbumThumbID)],
-				PublicAlbum::ID => null,
 				RecentAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($recentAlbumThumbID)],
 				OnThisDayAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($onThisDayAlbumThumbID)],
 			],
 			'tag_albums' => [],
 			'albums' => $expectedAlbumJson,
 			'shared_albums' => [],
+		];
+	}
+
+	protected function generateUnexpectedRootJson(
+		?string $unsortedAlbumThumbID = null,
+		?string $starredAlbumThumbID = null,
+		?string $publicAlbumThumbID = null,
+		?string $recentAlbumThumbID = null,
+		array $expectedAlbumJson = []
+	): array {
+		if ($unsortedAlbumThumbID !== null) {
+			throw new \InvalidArgumentException('$unsortedAlbumThumbID must be `null` for test with unauthenticated users');
+		}
+		if ($publicAlbumThumbID !== null) {
+			throw new \InvalidArgumentException('$publicAlbumThumbID must be `null` for test with unauthenticated users');
+		}
+
+		$smartAlbums = [
+			UnsortedAlbum::ID => null,
+			PublicAlbum::ID => null,
+		];
+		if ($starredAlbumThumbID === null) {
+			$smartAlbums[StarredAlbum::ID] = null;
+		}
+		if ($recentAlbumThumbID === null) {
+			$smartAlbums[RecentAlbum::ID] = null;
+		}
+
+		return [
+			'smart_albums' => $smartAlbums,
 		];
 	}
 

@@ -7,6 +7,7 @@ use App\Exceptions\InvalidPropertyException;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\TagAlbumBuilder;
 use App\Models\Extensions\Thumb;
+use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Relations\HasManyPhotosByTag;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 
@@ -20,6 +21,8 @@ use Illuminate\Database\Query\Builder as BaseBuilder;
  */
 class TagAlbum extends BaseAlbum
 {
+	use ToArrayThrowsNotImplemented;
+
 	/**
 	 * The model's attributes.
 	 *
@@ -43,14 +46,7 @@ class TagAlbum extends BaseAlbum
 		'min_taken_at' => 'datetime',
 		'max_taken_at' => 'datetime',
 		'show_tags' => ArrayCast::class,
-	];
-
-	/**
-	 * @var array<int,string> The list of attributes which exist as columns of the DB
-	 *                        relation but shall not be serialized to JSON
-	 */
-	protected $hidden = [
-		'base_class', // don't serialize base class as a relation, the attributes of the base class are flatly merged into the JSON result
+		'is_shared_with_current_user' => 'boolean',
 	];
 
 	/**
@@ -100,14 +96,6 @@ class TagAlbum extends BaseAlbum
 			$this->photos(),
 			$this->getEffectiveSorting()
 		);
-	}
-
-	public function toArray(): array
-	{
-		$result = parent::toArray();
-		$result['is_tag_album'] = true;
-
-		return $result;
 	}
 
 	/**

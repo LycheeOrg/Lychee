@@ -47,6 +47,10 @@ class SharingWithNonAdminUserAndNoPublicSearchTest extends BaseSharingWithNonAdm
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson());
+		$arrayUnexpected = $this->generateUnexpectedRootJson();
+		if ($arrayUnexpected !== null) {
+			$responseForRoot->assertJsonMissing($arrayUnexpected);
+		}
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]);
 
@@ -94,6 +98,10 @@ class SharingWithNonAdminUserAndNoPublicSearchTest extends BaseSharingWithNonAdm
 
 		$responseForRoot = $this->root_album_tests->get();
 		$responseForRoot->assertJson($this->generateExpectedRootJson());
+		$arrayUnexpected = $this->generateUnexpectedRootJson();
+		if ($arrayUnexpected !== null) {
+			$responseForRoot->assertJsonMissing($arrayUnexpected);
+		}
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]);
 
@@ -146,6 +154,12 @@ class SharingWithNonAdminUserAndNoPublicSearchTest extends BaseSharingWithNonAdm
 				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID2),
 			]
 		));
+		$arrayUnexpected = $this->generateUnexpectedRootJson(
+			null, $this->photoID1, null, $this->photoID2
+		);
+		if ($arrayUnexpected !== null) {
+			$responseForRoot->assertJsonMissing($arrayUnexpected);
+		}
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID1]);
 
 		$responseForUnsorted = $this->albums_tests->get(UnsortedAlbum::ID);
