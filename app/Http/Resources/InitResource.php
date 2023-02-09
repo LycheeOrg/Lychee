@@ -34,12 +34,16 @@ class InitResource extends JsonResource
 			$gitHubVersion->hydrate();
 		}
 
+		// we also return the locale
+		$locale = include base_path('lang/' . app()->getLocale() . '/lychee.php');
+
 		return [
 			'user' => $this->when(Auth::check(), UserResource::make(Auth::user()), null),
 			'rights' => GlobalRightsResource::make()->toArray($request),
 			'config' => ConfigurationResource::make()->toArray($request),
 			'update_json' => !$fileVersion->isUpToDate(),
 			'update_available' => !$gitHubVersion->isUpToDate(),
+			'locale' => $locale,
 		];
 	}
 }
