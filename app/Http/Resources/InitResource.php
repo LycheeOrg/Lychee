@@ -34,7 +34,7 @@ class InitResource extends JsonResource
 			$gitHubVersion->hydrate();
 		}
 
-		// we also return the local
+		// we also return the locale
 		$locale = include base_path('lang/' . app()->getLocale() . '/lychee.php');
 
 		return [
