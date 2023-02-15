@@ -3,7 +3,6 @@
 namespace App\Relations;
 
 use App\Contracts\Relations\BidirectionalRelation;
-use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -32,8 +31,6 @@ class HasManyBidirectionally extends HasMany implements BidirectionalRelation
 	 * @param string     $relation the name of the relation from the parent to the child models
 	 *
 	 * @return array
-	 *
-	 * @throws InvalidArgumentException
 	 */
 	public function match(array $models, Collection $results, $relation): array
 	{

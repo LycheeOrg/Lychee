@@ -26,8 +26,9 @@ return new class() extends Migration {
 		// MySQL cannot create indices over unlimited string values
 		// So we must explicitly define an upper bound on how many characters
 		// are analyzed for sorting
+		/** @var string $descriptionSQL */
 		$descriptionSQL = match ($this->driverName) {
-			'mysql' => DB::raw('description(128)'),
+			'mysql' => DB::raw('description(128)')->getValue(DB::connection()->getQueryGrammar()),
 			default => 'description',
 		};
 
@@ -42,8 +43,9 @@ return new class() extends Migration {
 
 	public function down(): void
 	{
+		/** @var string $descriptionSQL */
 		$descriptionSQL = match ($this->driverName) {
-			'mysql' => DB::raw('description(128)'),
+			'mysql' => DB::raw('description(128)')->getValue(DB::connection()->getQueryGrammar()),
 			default => 'description',
 		};
 

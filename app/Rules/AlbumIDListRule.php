@@ -4,14 +4,16 @@ namespace App\Rules;
 
 use App\Constants\RandomID;
 use App\Factories\AlbumFactory;
-use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Contracts\Validation\ValidationRule;
 
-class AlbumIDListRule implements Rule
+class AlbumIDListRule implements ValidationRule
 {
+	use ValidateTrait;
+
 	/**
 	 * {@inheritDoc}
 	 */
-	public function passes($attribute, $value): bool
+	public function passes(string $attribute, mixed $value): bool
 	{
 		if (!is_string($value)) {
 			return false;

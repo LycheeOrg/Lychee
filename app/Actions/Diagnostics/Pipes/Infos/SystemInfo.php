@@ -24,8 +24,14 @@ class SystemInfo implements DiagnosticPipe
 			};
 
 			$dbtype = $sql[0];
-			$results = DB::select(DB::raw($sql[1]));
-			$dbver = $results[0]->version;
+
+			$pdo = DB::connection()->getPdo();
+			$statement = $pdo->query($sql[1]);
+			if ($statement !== false) {
+				$dbver = $statement->fetchColumn();
+			} else {
+				$dbver = 'unknown';
+			}
 		} catch (QueryException $e) {
 			$dbtype = 'Unknown SQL';
 			$dbver = 'unknown';
