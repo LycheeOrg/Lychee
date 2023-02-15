@@ -9,10 +9,10 @@ use PHPUnit\TextUI\Configuration\Configuration;
 
 final class BootExtension implements PhpunitExtension
 {
-    public function bootstrap(Configuration $configuration, EventFacade $facade, ParameterCollection $parameters): void
-    {
-        $facade->registerSubscriber(
-            new LoadedSubscriber()
-        );
-    }
+	public function bootstrap(Configuration $configuration, EventFacade $facade, ParameterCollection $parameters): void
+	{
+		$facade->registerSubscriber(
+			new LoadedSubscriber()
+		);
+	}
 }

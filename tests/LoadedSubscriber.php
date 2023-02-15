@@ -2,8 +2,6 @@
 
 namespace Tests;
 
-use const PHP_EOL;
-
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -16,7 +14,7 @@ final class LoadedSubscriber implements LoadedSubscriberInterface
 	use CreatesApplication;
 
 	public function notify(Loaded $event): void
-    {
+	{
 		$this->createApplication();
 		/** @var User|null $admin */
 		$admin = User::find(1);
@@ -43,5 +41,5 @@ final class LoadedSubscriber implements LoadedSubscriberInterface
 			$admin->may_administrate = true;
 			$admin->save();
 		}
-    }
+	}
 }
