@@ -163,7 +163,7 @@ jobs:
           php artisan migrate
 
       - name: Apply tests
-        run: XDEBUG_MODE=coverage vendor/bin/phpunit --verbose
+        run: XDEBUG_MODE=coverage vendor/bin/phpunit
 
       - name: Codecov
         uses: codecov/codecov-action@v1
