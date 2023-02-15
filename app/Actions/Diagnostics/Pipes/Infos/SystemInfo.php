@@ -28,7 +28,7 @@ class SystemInfo implements DiagnosticPipe
 			$pdo = DB::connection()->getPdo();
 			$statement = $pdo->query($sql[1]);
 			if ($statement !== false) {
-				$dbver = $statement->fetchColumn();
+				$dbver = (string) $statement->fetchColumn();
 			} else {
 				$dbver = 'unknown';
 			}

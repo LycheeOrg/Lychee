@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          backupGlobals="false"
-          backupStaticAttributes="false"
           bootstrap="vendor/autoload.php"
           colors="true"
-          convertErrorsToExceptions="true"
-          convertNoticesToExceptions="true"
-          convertWarningsToExceptions="true"
           processIsolation="false"
           stopOnFailure="false"
-          verbose="true"
-          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+          xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd">
   <coverage>
     <include>
       <directory suffix=".php">./app</directory>
@@ -26,7 +20,7 @@
     </testsuite>
   </testsuites>
   <extensions>
-    <extension class="Tests\Boot"/>
+    <bootstrap class="Tests\BootExtension" />
   </extensions>
   <logging/>
   <php>
