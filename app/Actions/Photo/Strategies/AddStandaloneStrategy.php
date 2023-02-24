@@ -256,7 +256,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 				\Safe\symlink($sourcePath, $targetPath);
 				$streamStat = StreamStat::createFromLocalFile($this->sourceFile);
 			} else {
-				$shallNormalize = Configs::getValueAsBool('editor_enabled') &&
+				$shallNormalize = Configs::getValueAsBool('auto_fix_orientation') &&
 					$this->sourceImage !== null &&
 					$this->parameters->exifInfo->orientation !== 1;
 
