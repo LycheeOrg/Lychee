@@ -1,18 +1,15 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
-    {
+return new class() extends Migration {
+	/**
+	 * Run the migrations.
+	 *
+	 * @return void
+	 */
+	public function up()
+	{
 		defined('BOOL') or define('BOOL', '0|1');
 
 		DB::table('configs')->insert([
@@ -23,15 +20,15 @@ return new class extends Migration
 			'confidentiality' => '0',
 			'description' => 'Automatically rotate imported images',
 		]);
-    }
+	}
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
+	/**
+	 * Reverse the migrations.
+	 *
+	 * @return void
+	 */
+	public function down()
+	{
 		DB::table('configs')->where('key', '=', 'auto_fix_orientation')->delete();
-    }
+	}
 };
