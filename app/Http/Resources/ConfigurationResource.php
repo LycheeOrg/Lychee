@@ -78,6 +78,7 @@ class ConfigurationResource extends JsonResource
 				'delete_imported' => Configs::getValueAsBool('delete_imported'),
 				'dropbox_key' => Configs::getValueAsString('dropbox_key'),
 				'editor_enabled' => Configs::getValueAsBool('editor_enabled'),
+				'auto_fix_orientation' => Configs::getValueAsBool('auto_fix_orientation'),
 				'force_32bit_ids' => Configs::getValueAsBool('force_32bit_ids'),
 				'force_migration_in_production' => Configs::getValueAsBool('force_migration_in_production'),
 				'has_exiftool' => Configs::getValueAsBool('has_exiftool'),

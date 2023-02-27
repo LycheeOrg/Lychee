@@ -21,6 +21,7 @@ use App\Image\Handlers\GoogleMotionPictureHandler;
 use App\Image\Handlers\ImageHandler;
 use App\Image\Handlers\VideoHandler;
 use App\Image\StreamStat;
+use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Contracts\Container\BindingResolutionException;
 
@@ -255,7 +256,9 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 				\Safe\symlink($sourcePath, $targetPath);
 				$streamStat = StreamStat::createFromLocalFile($this->sourceFile);
 			} else {
-				$shallNormalize = $this->sourceImage !== null && $this->parameters->exifInfo->orientation !== 1;
+				$shallNormalize = Configs::getValueAsBool('auto_fix_orientation') &&
+					$this->sourceImage !== null &&
+					$this->parameters->exifInfo->orientation !== 1;
 
 				if ($shallNormalize) {
 					// Saving the loaded image to the final target normalizes
