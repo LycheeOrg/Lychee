@@ -7,7 +7,6 @@ use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
 use App\Models\Extensions\BaseAlbum;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Hash;
 
 /**
