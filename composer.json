@@ -19,10 +19,6 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/LycheeOrg/WebAuthn"
-        },
-        {
-            "type": "vcs",
             "url": "https://github.com/LycheeOrg/phpstan-lychee"
         },
         {
@@ -49,7 +45,7 @@
         "doctrine/dbal": "^3.1",
         "geocoder-php/cache-provider": "^4.3",
         "geocoder-php/nominatim-provider": "^5.5",
-        "laragear/webauthn": "laravel-10-dev",
+        "laragear/webauthn": "^1.2.0",
         "laravel/framework": "^10.0",
         "lychee-org/nestedset": "^8.0",
         "lychee-org/php-exif": "^0.8.1",
