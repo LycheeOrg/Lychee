@@ -37,11 +37,7 @@ class Save
 		$user->may_upload = $mayUpload;
 		$user->may_edit_own_settings = $mayEditOwnSettings;
 		if ($password !== null) {
-			try {
-				$user->password = Hash::make($password);
-			} catch (\InvalidArgumentException $e) {
-				throw new InvalidPropertyException('Could not hash password');
-			}
+			$user->password = Hash::make($password);
 		}
 		$user->save();
 	}
