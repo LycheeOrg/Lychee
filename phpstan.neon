@@ -91,10 +91,6 @@ parameters:
 				- database
 
 		# TESTS
-		- # DISABLED FOR NOW, waiting for https://github.com/symplify/symplify/pull/4505
-			message: '#"\*Test.php" file cannot be located outside "Tests" namespace#'
-			paths:
-				- tests
 		-
 			message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assert(Is)?(Not)?(True|False|Equals|Int|Null|Empty)\(\)#'
 			paths:

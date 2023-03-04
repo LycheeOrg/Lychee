@@ -149,9 +149,10 @@ class GeoDataTest extends AbstractTestCase
 			$positionDataResponse = $this->root_album_tests->getPositionData();
 			/** @var \App\Http\Resources\Collections\PositionDataResource $positionData */
 			$positionData = static::convertJsonToObject($positionDataResponse);
-			static::assertObjectHasAttribute('photos', $positionData);
-			static::assertCount(1, $positionData->photos); // @phpstan-ignore-line
-			static::assertEquals($photoID, $positionData->photos[0]->id);  // @phpstan-ignore-line
+			static::assertIsObject($positionData);
+			static::assertTrue(property_exists($positionData, 'photos'));
+			static::assertCount(1, $positionData->photos);
+			static::assertEquals($photoID, $positionData->photos[0]->id);
 
 			// set to false
 			Configs::set(self::CONFIG_MAP_DISPLAY, false);
@@ -164,9 +165,10 @@ class GeoDataTest extends AbstractTestCase
 			$positionDataResponse = $this->albums_tests->getPositionData($albumID, false);
 			/** @var \App\Http\Resources\Collections\PositionDataResource $positionData */
 			$positionData = static::convertJsonToObject($positionDataResponse);
-			static::assertObjectHasAttribute('photos', $positionData);
-			static::assertCount(1, $positionData->photos); // @phpstan-ignore-line
-			static::assertEquals($photoID, $positionData->photos[0]->id); // @phpstan-ignore-line
+			static::assertIsObject($positionData);
+			static::assertTrue(property_exists($positionData, 'photos'));
+			static::assertCount(1, $positionData->photos);
+			static::assertEquals($photoID, $positionData->photos[0]->id);
 		} finally {
 			Configs::set(self::CONFIG_MAP_DISPLAY, $map_display_value);
 		}

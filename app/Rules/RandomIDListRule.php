@@ -3,14 +3,16 @@
 namespace App\Rules;
 
 use App\Constants\RandomID;
-use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Contracts\Validation\ValidationRule;
 
-class RandomIDListRule implements Rule
+class RandomIDListRule implements ValidationRule
 {
+	use ValidateTrait;
+
 	/**
 	 * {@inheritDoc}
 	 */
-	public function passes($attribute, $value): bool
+	public function passes(string $attribute, mixed $value): bool
 	{
 		if (!is_string($value)) {
 			return false;

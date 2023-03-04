@@ -6,13 +6,14 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
-use PHPUnit\Runner\BeforeFirstTestHook;
+use PHPUnit\Event\TestSuite\Loaded;
+use PHPUnit\Event\TestSuite\LoadedSubscriber as LoadedSubscriberInterface;
 
-class Boot implements BeforeFirstTestHook
+final class LoadedSubscriber implements LoadedSubscriberInterface
 {
 	use CreatesApplication;
 
-	public function executeBeforeFirstTest(): void
+	public function notify(Loaded $event): void
 	{
 		$this->createApplication();
 		/** @var User|null $admin */

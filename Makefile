@@ -64,7 +64,7 @@ clean:
 
 test:
 	@if [ -x "vendor/bin/phpunit" ]; then \
-		./vendor/bin/phpunit --verbose --stop-on-failure; \
+		./vendor/bin/phpunit --stop-on-failure; \
 	else \
 		echo ""; \
 		echo "Please install phpunit:"; \

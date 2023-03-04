@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noindex">
 
         <title>Database Migration</title>
 
@@ -24,7 +25,7 @@
             .flex-center {
                 align-items: center;
                 display: flex;
-                flex-flow: row wrap;;
+                flex-flow: row wrap;
                 justify-content: center;
                 align-content: center;
             }
