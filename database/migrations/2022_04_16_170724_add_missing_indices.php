@@ -23,27 +23,30 @@ return new class() extends Migration {
 
 	public function up(): void
 	{
-		// MySQL cannot create indices over unlimited string values
-		// So we must explicitly define an upper bound on how many characters
-		// are analyzed for sorting
-		$descriptionSQL = match ($this->driverName) {
-			'mysql' => DB::raw('description(128)'),
-			default => 'description',
-		};
-
-		Schema::table('photos', function (Blueprint $table) use ($descriptionSQL) {
+		Schema::table('photos', function (Blueprint $table) {
 			// These indices are needed to efficiently retrieve the covers of
 			// albums acc. to different sorting criteria
 			// Note, that covers are always sorted acc. to `is_starred` first.
 			$table->index(['album_id', 'is_starred', 'title']);
-			$table->index(['album_id', 'is_starred', $descriptionSQL]);
+
+			// In the case of mysql we apply the RAW query below.
+			if ($this->driverName !== 'mysql') {
+				$table->index(['album_id', 'is_starred', 'description']);
+			}
 		});
+
+		// MySQL cannot create indices over unlimited string values
+		// So we must explicitly define an upper bound on how many characters
+		// are analyzed for sorting
+		if ($this->driverName === 'mysql') {
+			DB::statement('alter table `photos` add index `photos_album_id_is_starred_description(128)_index`(album_id, is_starred, description(128))');
+		}
 	}
 
 	public function down(): void
 	{
 		$descriptionSQL = match ($this->driverName) {
-			'mysql' => DB::raw('description(128)'),
+			'mysql' => 'description(128)',
 			default => 'description',
 		};
 

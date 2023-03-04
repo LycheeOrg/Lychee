@@ -188,7 +188,7 @@ class SessionOrTokenGuard extends SessionGuard
 			// In the other cases, `$this->user` has implicitly been set by
 			// `parent::setUser` or `$this->login`.
 			$this->authState = self::AUTH_STATE_UNAUTHENTICATED;
-			$this->user = null; /* @phpstan-ignore-line; in {@link \Illuminate\Auth\GuardHelpers} this property is erroneously annotated as non-nullable */
+			$this->user = null;
 		}
 
 		return $this->user;

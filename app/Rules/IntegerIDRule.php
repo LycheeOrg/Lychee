@@ -2,10 +2,12 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Contracts\Validation\ValidationRule;
 
-class IntegerIDRule implements Rule
+class IntegerIDRule implements ValidationRule
 {
+	use ValidateTrait;
+
 	protected bool $isNullable;
 	protected bool $isRelaxed;
 
@@ -18,7 +20,7 @@ class IntegerIDRule implements Rule
 	/**
 	 * {@inheritDoc}
 	 */
-	public function passes($attribute, $value): bool
+	public function passes(string $attribute, mixed $value): bool
 	{
 		return
 			(

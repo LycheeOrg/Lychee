@@ -54,17 +54,17 @@ class AlbumBuilder extends NSQueryBuilder
 			$userID = Auth::id();
 
 			$countChildren = DB::table('albums', 'a')
-				->select(DB::raw('COUNT(*)'))
+				->selectRaw('COUNT(*)')
 				->whereColumn('a.parent_id', '=', 'albums.id');
 
 			$countPhotos = DB::table('photos', 'p')
-				->select(DB::raw('COUNT(*)'))
+				->selectRaw('COUNT(*)')
 				->whereColumn('p.album_id', '=', 'albums.id');
 
 			$this->addSelect([
-				'min_taken_at' => $this->getTakenAtSQL()->select(DB::raw('MIN(taken_at)')),
-				'max_taken_at' => $this->getTakenAtSQL()->select(DB::raw('MAX(taken_at)')),
-				'is_shared_with_current_user' => $this->sharedWithCurrentUser('albums')->select(DB::raw('count(*)')),
+				'min_taken_at' => $this->getTakenAtSQL()->selectRaw('MIN(taken_at)'),
+				'max_taken_at' => $this->getTakenAtSQL()->selectRaw('MAX(taken_at)'),
+				'is_shared_with_current_user' => $this->sharedWithCurrentUser('albums')->selectRaw('count(*)'),
 				'num_children' => $this->applyVisibilityConditioOnSubalbums($countChildren, $isAdmin, $userID),
 				'num_photos' => $this->applyVisibilityConditioOnPhotos($countPhotos, $isAdmin, $userID),
 			]);

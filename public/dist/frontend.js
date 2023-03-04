@@ -5557,6 +5557,8 @@ header.bind_back = function () {
   header.dom(".header__title").on("click touchend", function () {
     if (lychee.landing_page_enable && visible.albums()) {
       window.location.href = ".";
+    } else if (visible.albums() && !!header.dom(".header__title").attr('href')) {
+      window.location.href = header.dom(".header__title").attr('href');
     } else {
       return false;
     }
@@ -6265,7 +6267,7 @@ $(document).ready(function () {
    */
   var rememberScrollPage = function rememberScrollPage() {
     if (visible.albums() && !visible.search() || visible.album()) {
-      var urls = JSON.parse(localStorage.getItem("scroll"));
+      var urls = JSON.parse(sessionStorage.getItem("scroll"));
       if (urls == null || urls.length < 1) {
         urls = {};
       }
@@ -6275,7 +6277,7 @@ $(document).ready(function () {
       if (urlScroll < 1) {
         delete urls[urlWindow];
       }
-      localStorage.setItem("scroll", JSON.stringify(urls));
+      sessionStorage.setItem("scroll", JSON.stringify(urls));
     }
   };
   $(window).on("resize", function () {
@@ -7059,7 +7061,7 @@ lychee.parsePublicInitializationData = function (data) {
   lychee.allow_username_change = data.config.allow_username_change === "1";
   lychee.sorting_photos = data.config.sorting_photos;
   lychee.sorting_albums = data.config.sorting_albums;
-  lychee.share_button_visible = data.config.share_button_visible === "1";
+  lychee.share_button_visible = data.config.share_button_visible;
   lychee.album_subtitle_type = data.config.album_subtitle_type || "oldstyle";
   lychee.album_decoration = data.config.album_decoration || "layers";
   lychee.album_decoration_orientation = data.config.album_decoration_orientation || "row";
@@ -13923,7 +13925,7 @@ view.album = {
     /** @returns {void} */
     restoreScroll: function restoreScroll() {
       // Restore scroll position
-      var urls = JSON.parse(localStorage.getItem("scroll"));
+      var urls = JSON.parse(sessionStorage.getItem("scroll"));
       var urlWindow = window.location.href;
       $("#lychee_view_container").scrollTop(urls != null && urls[urlWindow] ? urls[urlWindow] : 0);
     },

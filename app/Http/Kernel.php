@@ -13,7 +13,7 @@ class Kernel extends HttpKernel
 	 *
 	 * These middlewares are run during every request to your application.
 	 *
-	 * @var string[]
+	 * @var array<int,string>
 	 */
 	protected $middleware = [
 		\App\Http\Middleware\FixStatusCode::class,
@@ -28,7 +28,7 @@ class Kernel extends HttpKernel
 	/**
 	 * The application's route middleware groups.
 	 *
-	 * @var array<string[]>
+	 * @var array<string,array<int,string>>
 	 */
 	protected $middlewareGroups = [
 		'web' => [
@@ -82,7 +82,7 @@ class Kernel extends HttpKernel
 	 *
 	 * @var array<string, string>
 	 */
-	protected $routeMiddleware = [
+	protected $middlewareAliases = [
 		'installation' => \App\Http\Middleware\InstallationStatus::class,
 		'admin_user' => \App\Http\Middleware\AdminUserStatus::class,
 		'migration' => \App\Http\Middleware\MigrationStatus::class,

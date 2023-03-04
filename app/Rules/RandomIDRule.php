@@ -3,11 +3,13 @@
 namespace App\Rules;
 
 use App\Constants\RandomID;
-use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Contracts\Validation\ValidationRule;
 use function Safe\preg_match;
 
-class RandomIDRule implements Rule
+class RandomIDRule implements ValidationRule
 {
+	use ValidateTrait;
+
 	protected bool $isNullable;
 
 	public function __construct(bool $isNullable)
@@ -18,7 +20,7 @@ class RandomIDRule implements Rule
 	/**
 	 * {@inheritDoc}
 	 */
-	public function passes($attribute, $value): bool
+	public function passes(string $attribute, mixed $value): bool
 	{
 		return
 			(

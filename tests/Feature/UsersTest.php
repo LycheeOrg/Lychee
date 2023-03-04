@@ -23,7 +23,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use PHPUnit\Framework\ExpectationFailedException;
 use function Safe\json_decode;
-use SebastianBergmann\RecursionContext\InvalidArgumentException;
 use Tests\AbstractTestCase;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\SessionUnitTest;
@@ -338,7 +337,6 @@ class UsersTest extends AbstractTestCase
 	 *
 	 * @return void
 	 *
-	 * @throws InvalidArgumentException
 	 * @throws ExpectationFailedException
 	 * @throws \Throwable
 	 */

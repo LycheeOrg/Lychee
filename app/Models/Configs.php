@@ -221,6 +221,8 @@ class Configs extends Model
 	 */
 	public static function getValueAsEnum(string $key, string $type): \BackedEnum|null
 	{
+		// Due to typehinting on getValueAsEnum, it is assumed that $type will be a BackedEnum, this is not necessarily the case in practice.
+		// @phpstan-ignore-next-line
 		if (!function_exists('enum_exists') || !enum_exists($type) || !method_exists($type, 'tryFrom')) {
 			throw new UnexpectedException();
 		}

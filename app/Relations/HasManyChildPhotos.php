@@ -10,7 +10,6 @@ use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
-use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\InvalidCastException;
 use Illuminate\Database\Eloquent\Model;
@@ -109,7 +108,6 @@ class HasManyChildPhotos extends HasManyBidirectionally
 	 *
 	 * @return array
 	 *
-	 * @throws InvalidArgumentException
 	 * @throws \LogicException
 	 * @throws InvalidCastException
 	 */
