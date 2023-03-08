@@ -74,6 +74,8 @@ class Tree
 			// (sub)-tree and then `toTree` will return garbage as it does
 			// not find connected paths within `$albums` or `$sharedAlbums`,
 			// resp.
+			/** @var NsCollection<Album> $albums */
+			/** @var ?NsCollection<Album> $sharedAlbums */
 			list($albums, $sharedAlbums) = $albums->partition(fn (Album $album) => $album->owner_id === $userID);
 		}
 
