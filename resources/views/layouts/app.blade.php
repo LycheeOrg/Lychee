@@ -26,8 +26,6 @@
 	  @include('feed::links')
 	@endif --}}
 
-	<script src="{{ URL::asset('dist/WebAuthn.js') }}"></script>
-
 	@yield('head-meta')
 @livewireStyles
 </head>
