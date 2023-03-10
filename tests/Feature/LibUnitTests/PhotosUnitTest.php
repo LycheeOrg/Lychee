@@ -46,6 +46,7 @@ class PhotosUnitTest
 		$response = $this->testCase->post(
 			'/api/Photo::add', [
 				'albumID' => $albumID,
+				'fileLastModifiedTime' => 1678824303000,
 				'file' => $file,
 			], [
 				'CONTENT_TYPE' => 'multipart/form-data',
