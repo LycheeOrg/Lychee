@@ -12,7 +12,7 @@ return new class() extends Migration {
 
 		DB::table('configs')->insert([
 			'key' => 'use_job_queues',
-			'value' => '1',
+			'value' => '0',
 			'cat' => 'Image Processing',
 			'type_range' => BOOL,
 			'confidentiality' => '0',

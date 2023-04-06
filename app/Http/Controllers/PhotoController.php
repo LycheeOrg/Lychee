@@ -10,6 +10,7 @@ use App\Contracts\Exceptions\InternalLycheeException;
 use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
+use App\Factories\AlbumFactory;
 use App\Http\Requests\Photo\AddPhotoRequest;
 use App\Http\Requests\Photo\ArchivePhotosRequest;
 use App\Http\Requests\Photo\ClearSymLinkRequest;
@@ -40,15 +41,14 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class PhotoController extends Controller
 {
-	private SymLinkFunctions $symLinkFunctions;
-
 	/**
 	 * @param SymLinkFunctions $symLinkFunctions
+	 * @param AlbumFactory     $albumFactory
 	 */
 	public function __construct(
-		SymLinkFunctions $symLinkFunctions
+		private SymLinkFunctions $symLinkFunctions,
+		private AlbumFactory $albumFactory
 	) {
-		$this->symLinkFunctions = $symLinkFunctions;
 	}
 
 	/**
@@ -95,7 +95,7 @@ class PhotoController extends Controller
 	 * @throws LycheeException
 	 * @throws ModelNotFoundException
 	 */
-	public function add(AddPhotoRequest $request): mixed
+	public function add(AddPhotoRequest $request): PhotoResource|JsonResponse
 	{
 		// This code is a nasty work-around which should not exist.
 		// PHP stores a temporary copy of the uploaded file without a file
@@ -132,7 +132,8 @@ class PhotoController extends Controller
 			return new JsonResponse(null, 201);
 		}
 
-		$photo = ProcessImageJob::dispatchSync($processableFile, $request->album());
+		$job = new ProcessImageJob($processableFile, $request->album());
+		$photo = $job->handle($this->albumFactory);
 		$isNew = $photo->created_at->toIso8601String() === $photo->updated_at->toIso8601String();
 
 		return PhotoResource::make($photo)->setStatus($isNew ? 201 : 200);
