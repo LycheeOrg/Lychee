@@ -71,11 +71,14 @@ trait MimicModel
 		$studlyKey = lcfirst($studlyKey);
 
 		if (method_exists($this, $getter)) {
-			return $this->{$getter}(); // @phpstan-ignore-line, PhpStan does not like variadic calls
+			/** @phpstan-ignore-next-line PhpStan does not like variadic calls */
+			return $this->{$getter}();
 		} elseif (property_exists($this, $key)) {
-			return $this->{$key}; // @phpstan-ignore-line, PhpStan does not like variadic calls
+			/** @phpstan-ignore-next-line PhpStan does not like variadic calls */
+			return $this->{$key};
 		} elseif (property_exists($this, $studlyKey)) {
-			return $this->{$studlyKey}; // @phpstan-ignore-line, PhpStan does not like variadic calls
+			/** @phpstan-ignore-next-line PhpStan does not like variadic calls */
+			return $this->{$studlyKey};
 		} else {
 			throw new LycheeInvalidArgumentException('neither property nor getter method exist for [' . $getter . '/' . $key . '/' . $studlyKey . ']');
 		}

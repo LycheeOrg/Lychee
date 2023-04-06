@@ -65,27 +65,4 @@ class ProcessableJobFile extends NativeLocalFile
 	{
 		return $this->fakeBaseName;
 	}
-
-	/**
-	 * Converts an uploaded file into a processable & serializable one and delete it.
-	 *
-	 * @param UploadedFile $uploadedFile
-	 *
-	 * @return ProcessableJobFile
-	 *
-	 * @throws MediaFileOperationException
-	 */
-	public static function ofUploadedFile(UploadedFile $uploadedFile): self
-	{
-		$processableFile = new ProcessableJobFile(
-			$uploadedFile->getOriginalExtension(),
-			$uploadedFile->getOriginalBasename()
-		);
-		$processableFile->write($uploadedFile->read());
-
-		$uploadedFile->close();
-		$uploadedFile->delete();
-
-		return $processableFile;
-	}
 }

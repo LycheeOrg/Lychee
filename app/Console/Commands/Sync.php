@@ -11,7 +11,6 @@ use App\Models\Album;
 use App\Models\Configs;
 use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class Sync extends Command
@@ -105,11 +104,10 @@ class Sync extends Command
 					$importViaSymlink,
 					$resyncMetadata
 				),
+				$owner_id,
 				true,
 				0
 			);
-
-			Auth::loginUsingId($owner_id);
 
 			$this->info('Start syncing.');
 

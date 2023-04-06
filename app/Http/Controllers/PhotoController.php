@@ -3,15 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Photo\Archive;
-use App\Actions\Photo\Create;
 use App\Actions\Photo\Delete;
 use App\Actions\Photo\Duplicate;
-use App\Actions\Photo\Strategies\ImportMode;
 use App\Actions\User\Notify;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
+use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\Photo\AddPhotoRequest;
 use App\Http\Requests\Photo\ArchivePhotosRequest;
 use App\Http\Requests\Photo\ClearSymLinkRequest;
@@ -28,7 +27,6 @@ use App\Http\Requests\Photo\SetPhotosTitleRequest;
 use App\Http\Requests\Photo\SetPhotoUploadDateRequest;
 use App\Http\Resources\Models\PhotoResource;
 use App\Image\Files\ProcessableJobFile;
-use App\Image\Files\TemporaryLocalFile;
 use App\Image\Files\UploadedFile;
 use App\Jobs\ProcessImageJob;
 use App\ModelFunctions\SymLinkFunctions;
@@ -39,6 +37,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class PhotoController extends Controller
@@ -100,20 +99,9 @@ class PhotoController extends Controller
 	 */
 	public function add(AddPhotoRequest $request): mixed
 	{
-		if (Configs::getValueAsBool('use_job_queues')) {
-			$uploadedFile = new UploadedFile($request->uploadedFile());
-			$processableFile = ProcessableJobFile::ofUploadedFile($uploadedFile);
+		/** @var int $currentUserId */
+		$currentUserId = Auth::id() ?? throw new UnauthenticatedException();
 
-			ProcessImageJob::dispatch($processableFile, $request->album());
-
-			$processableFile->close();
-			// dd($processableFile);
-			// return $processableFile->read();
-
-			return new JsonResponse(null, 201);
-		}
-
-		ProcessImageJob::dispatchSync($processableFile, $request->album())
 		// This code is a nasty work-around which should not exist.
 		// PHP stores a temporary copy of the uploaded file without a file
 		// extension.
@@ -132,23 +120,24 @@ class PhotoController extends Controller
 		// Hence, we must make a deep copy.
 		// TODO: Remove this code again, if all other TODOs regarding MIME and file handling are properly refactored and we have stopped using absolute file paths as the least common denominator to pass around files.
 		$uploadedFile = new UploadedFile($request->uploadedFile());
-		$copiedFile = new TemporaryLocalFile(
+		$processableFile = new ProcessableJobFile(
 			$uploadedFile->getOriginalExtension(),
 			$uploadedFile->getOriginalBasename()
 		);
-		$copiedFile->write($uploadedFile->read());
+		$processableFile->write($uploadedFile->read());
+
 		$uploadedFile->close();
 		$uploadedFile->delete();
+		$processableFile->close();
 		// End of work-around
 
-		// As the file has been uploaded, the (temporary) source file shall be
-		// deleted
-		$create = new Create(new ImportMode(
-			true,
-			Configs::getValueAsBool('skip_duplicates')
-		));
+		if (Configs::getValueAsBool('use_job_queues')) {
+			ProcessImageJob::dispatch($processableFile, $request->album());
 
-		$photo = $create->add($copiedFile, $request->album());
+			return new JsonResponse(null, 201);
+		}
+
+		$photo = ProcessImageJob::dispatchSync($processableFile, $request->album());
 		$isNew = $photo->created_at->toIso8601String() === $photo->updated_at->toIso8601String();
 
 		return PhotoResource::make($photo)->setStatus($isNew ? 201 : 200);

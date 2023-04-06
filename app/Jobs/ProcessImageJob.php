@@ -48,29 +48,30 @@ class ProcessImageJob implements ShouldQueue
 	 */
 	public function handle(AlbumFactory $albumFactory): Photo
 	{
-		// Auth::loginUsingId($this->userId);
-
 		$copiedFile = new TemporaryJobFile($this->filePath, $this->originalBaseName);
 
 		// As the file has been uploaded, the (temporary) source file shall be
 		// deleted
-		$create = new Create(new ImportMode(
-			true,
-			Configs::getValueAsBool('skip_duplicates')
-		));
-		$album = null;
+		$create = new Create(
+			new ImportMode(deleteImported: true, skipDuplicates: Configs::getValueAsBool('skip_duplicates')),
+			$this->userId
+		);
 
+		$album = null;
 		if ($this->albumId !== null) {
 			$album = $albumFactory->findAbstractAlbumOrFail($this->albumId);
 		}
 
-		$photo = $create->add($copiedFile, $album);
-
-		// Auth::logout();
-
-		return $photo;
+		return $create->add($copiedFile, $album);
 	}
 
+	/**
+	 * Catch failures.
+	 *
+	 * @param \Throwable $th
+	 *
+	 * @return void
+	 */
 	public function failed(\Throwable $th): void
 	{
 		if ($th->getCode() === 999) {

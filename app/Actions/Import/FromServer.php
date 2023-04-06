@@ -10,15 +10,16 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class FromServer
 {
 	/**
-	 * @param string[]   $paths      the server path to import from
-	 * @param Album|null $album      the album to import into
-	 * @param ImportMode $importMode the import mode
+	 * @param string[]   $paths           the server path to import from
+	 * @param Album|null $album           the album to import into
+	 * @param ImportMode $importMode      the import mode
+	 * @param int        $intendedOwnerId the intended owner of those pictures
 	 *
 	 * @return StreamedResponse
 	 */
-	public function do(array $paths, ?Album $album, ImportMode $importMode): StreamedResponse
+	public function do(array $paths, ?Album $album, ImportMode $importMode, int $intendedOwnerId): StreamedResponse
 	{
-		$exec = new Exec($importMode, false, $this->determineMemLimit());
+		$exec = new Exec($importMode, $intendedOwnerId, false, $this->determineMemLimit());
 
 		$response = new StreamedResponse();
 		$response->headers->set('Content-Type', 'application/json');

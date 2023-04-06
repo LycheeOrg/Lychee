@@ -6,17 +6,13 @@ use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Models\Photo;
-use Illuminate\Support\Facades\Auth;
 
 abstract class AbstractAddStrategy
 {
-	protected AddStrategyParameters $parameters;
-	protected Photo $photo;
-
-	protected function __construct(AddStrategyParameters $parameters, Photo $photo)
-	{
-		$this->parameters = $parameters;
-		$this->photo = $photo;
+	protected function __construct(
+		protected AddStrategyParameters $parameters,
+		protected Photo $photo
+	) {
 	}
 
 	/**
@@ -116,9 +112,7 @@ abstract class AbstractAddStrategy
 			// Avoid unnecessary DB request, when we access the album of a
 			// photo later (e.g. when a notification is sent).
 			$this->photo->setRelation('album', null);
-			/** @var int */
-			$userId = Auth::id() ?? throw new UnauthenticatedException();
-			$this->photo->owner_id = $userId;
+			$this->photo->owner_id = $this->parameters->intendedOwnerId;
 		}
 	}
 }

@@ -12,9 +12,9 @@ use App\Models\Logs;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Support\Carbon;
-use PHPExif\Adapter\NoAdapterException;
 use PHPExif\Enum\ReaderType;
 use PHPExif\Exif;
+use PHPExif\Reader\PhpExifReaderException;
 use PHPExif\Reader\Reader;
 use Safe\Exceptions\StringsException;
 
@@ -64,7 +64,6 @@ class Extractor
 	 *
 	 * @throws ExternalComponentMissingException
 	 * @throws MediaFileOperationException
-	 * @throws ExternalComponentFailedException
 	 */
 	public static function createFromFile(NativeLocalFile $file): self
 	{
@@ -96,33 +95,20 @@ class Extractor
 			// as `application/octet-stream`, but this work-around only
 			// succeeds if the file has a recognized extension.
 			$exif = $reader->read($file->getRealPath());
-		} catch (\InvalidArgumentException|NoAdapterException $e) {
-			throw new ExternalComponentMissingException('The configured EXIF adapter is not available', $e);
-		} catch (\RuntimeException $e) {
+		} catch (PhpExifReaderException $e) {
 			// thrown by $reader->read if EXIF could not be extracted,
 			// don't give up yet, only log the event
 			Handler::reportSafely($e);
-			$exif = false;
-		}
-
-		if ($exif === false) {
 			try {
 				Logs::notice(__METHOD__, __LINE__, 'Falling back to native adapter.');
 				// Use Php native tools
 				$reader = Reader::factory(ReaderType::NATIVE);
 				$exif = $reader->read($file->getRealPath());
-			} catch (\InvalidArgumentException|NoAdapterException $e) {
-				throw new ExternalComponentMissingException('The configured EXIF adapter is not available', $e);
-			} catch (\RuntimeException $e) {
+			} catch (PhpExifReaderException $e) {
 				// thrown by $reader->read if EXIF could not be extracted,
 				// even with the native adapter, now we give up
 				throw new MediaFileOperationException('Could not even extract basic EXIF data with the native adapter', $e);
 			}
-		}
-
-		// TODO: By changing the logic of $reader to always return an Exif object or throw an exception, this would make this code safer.
-		if (!$exif instanceof Exif) {
-			throw new MediaFileOperationException('Could not even extract basic EXIF data with the native adapter');
 		}
 
 		// Attempt to get sidecar metadata if it exists, make sure to check 'real' path in case of symlinks
@@ -135,9 +121,6 @@ class Extractor
 				// Don't use the same reader as the file in case it's a video
 				$sidecarReader = Reader::factory(ReaderType::EXIFTOOL);
 				$sideCarExifData = $sidecarReader->read($sidecarFile->getRealPath());
-				if (!$sideCarExifData instanceof Exif) {
-					throw new MediaFileOperationException('Could not even extract EXIF data with the exiftool adapter');
-				}
 				$sidecarData = $sideCarExifData->getData();
 
 				// We don't want to overwrite the media's type with the mimetype of the sidecar file

@@ -9,6 +9,9 @@ class AddStrategyParameters
 {
 	public ImportMode $importMode;
 
+	/** @var int Indicates the intended owner of the image. */
+	public int $intendedOwnerId;
+
 	/** @var Album|null the intended parent album */
 	public ?Album $album = null;
 
@@ -21,8 +24,9 @@ class AddStrategyParameters
 	/** @var Extractor|null the extracted EXIF information */
 	public ?Extractor $exifInfo = null;
 
-	public function __construct(ImportMode $importMode)
+	public function __construct(ImportMode $importMode, int $intendedOwnerId)
 	{
 		$this->importMode = $importMode;
+		$this->intendedOwnerId = $intendedOwnerId;
 	}
 }

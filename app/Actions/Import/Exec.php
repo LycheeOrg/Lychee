@@ -49,11 +49,11 @@ class Exec
 	 * @param bool       $enableCLIFormatting determines whether the output shall be formatted for CLI or as JSON
 	 * @param int        $memLimit            the threshold when a memory warning shall be reported; `0` means unlimited
 	 */
-	public function __construct(ImportMode $importMode, bool $enableCLIFormatting, int $memLimit = 0)
+	public function __construct(ImportMode $importMode, int $intendedOwnerId, bool $enableCLIFormatting, int $memLimit = 0)
 	{
 		Session::forget('cancel');
 		$this->importMode = $importMode;
-		$this->photoCreate = new PhotoCreate($importMode);
+		$this->photoCreate = new PhotoCreate($importMode, $intendedOwnerId);
 		$this->albumCreate = new AlbumCreate();
 		$this->enableCLIFormatting = $enableCLIFormatting;
 		$this->memLimit = $memLimit;
