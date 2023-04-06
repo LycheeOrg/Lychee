@@ -113,6 +113,7 @@ class PhotoController extends Controller
 			return new JsonResponse(null, 201);
 		}
 
+		ProcessImageJob::dispatchSync($processableFile, $request->album())
 		// This code is a nasty work-around which should not exist.
 		// PHP stores a temporary copy of the uploaded file without a file
 		// extension.

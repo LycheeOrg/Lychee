@@ -10,6 +10,7 @@ use App\Image\Files\ProcessableJobFile;
 use App\Image\Files\TemporaryJobFile;
 use App\Models\Configs;
 use App\Models\Logs;
+use App\Models\Photo;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -45,9 +46,9 @@ class ProcessImageJob implements ShouldQueue
 	/**
 	 * Execute the job.
 	 */
-	public function handle(): void
+	public function handle(AlbumFactory $albumFactory): Photo
 	{
-		Auth::loginUsingId($this->userId);
+		// Auth::loginUsingId($this->userId);
 
 		$copiedFile = new TemporaryJobFile($this->filePath, $this->originalBaseName);
 
@@ -57,16 +58,17 @@ class ProcessImageJob implements ShouldQueue
 			true,
 			Configs::getValueAsBool('skip_duplicates')
 		));
-		$albumFactory = resolve(AlbumFactory::class);
 		$album = null;
 
 		if ($this->albumId !== null) {
 			$album = $albumFactory->findAbstractAlbumOrFail($this->albumId);
 		}
 
-		$create->add($copiedFile, $album);
+		$photo = $create->add($copiedFile, $album);
 
-		Auth::logout();
+		// Auth::logout();
+
+		return $photo;
 	}
 
 	public function failed(\Throwable $th): void
