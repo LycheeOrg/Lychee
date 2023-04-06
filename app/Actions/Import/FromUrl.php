@@ -26,19 +26,20 @@ class FromUrl
 	 *
 	 * @param string[]   $urls
 	 * @param Album|null $album
+	 * @param int        $intendedOwnerId
 	 *
 	 * @return Collection<Photo> the collection of imported photos
 	 *
 	 * @throws MassImportException
 	 */
-	public function do(array $urls, ?Album $album): Collection
+	public function do(array $urls, ?Album $album, int $intendedOwnerId): Collection
 	{
 		$result = new Collection();
 		$exceptions = [];
-		$create = new Create(new ImportMode(
-			true,
-			Configs::getValueAsBool('skip_duplicates')
-		));
+		$create = new Create(
+			new ImportMode(deleteImported: true, skipDuplicates: Configs::getValueAsBool('skip_duplicates')),
+			$intendedOwnerId
+		);
 
 		foreach ($urls as $url) {
 			try {

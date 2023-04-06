@@ -12,6 +12,7 @@ use App\Contracts\Exceptions\InternalLycheeException;
 use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
+use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\Photo\AddPhotoRequest;
 use App\Http\Requests\Photo\ArchivePhotosRequest;
 use App\Http\Requests\Photo\ClearSymLinkRequest;
@@ -37,6 +38,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class PhotoController extends Controller
@@ -98,6 +100,9 @@ class PhotoController extends Controller
 	 */
 	public function add(AddPhotoRequest $request): PhotoResource
 	{
+		/** @var int $currentUserId */
+		$currentUserId = Auth::id() ?? throw new UnauthenticatedException();
+
 		// This code is a nasty work-around which should not exist.
 		// PHP stores a temporary copy of the uploaded file without a file
 		// extension.
@@ -127,10 +132,10 @@ class PhotoController extends Controller
 
 		// As the file has been uploaded, the (temporary) source file shall be
 		// deleted
-		$create = new Create(new ImportMode(
-			true,
-			Configs::getValueAsBool('skip_duplicates')
-		));
+		$create = new Create(
+			new ImportMode(deleteImported: true, skipDuplicates: Configs::getValueAsBool('skip_duplicates')),
+			$currentUserId
+		);
 
 		$photo = $create->add($copiedFile, $request->album());
 		$isNew = $photo->created_at->toIso8601String() === $photo->updated_at->toIso8601String();

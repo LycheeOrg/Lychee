@@ -46,7 +46,10 @@ class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 		// "steals away" the stored video file from the existing video entity
 		// and moves it to the correct destination of a live partner for the
 		// photo.
-		$parameters = new AddStrategyParameters(new ImportMode(true));
+		$parameters = new AddStrategyParameters(
+			new ImportMode(deleteImported: true),
+			$this->parameters->intendedOwnerId
+		);
 		$videoStrategy = new AddVideoPartnerStrategy(
 			$parameters,
 			$this->existingVideo->size_variants->getOriginal()->getFile(),

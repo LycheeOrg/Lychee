@@ -34,9 +34,9 @@ class Create
 	/** @var AddStrategyParameters the strategy parameters prepared and compiled by this class */
 	protected AddStrategyParameters $strategyParameters;
 
-	public function __construct(?ImportMode $importMode)
+	public function __construct(?ImportMode $importMode, int $intendedOwnerId)
 	{
-		$this->strategyParameters = new AddStrategyParameters($importMode);
+		$this->strategyParameters = new AddStrategyParameters($importMode, $intendedOwnerId);
 	}
 
 	/**
