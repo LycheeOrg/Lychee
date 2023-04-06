@@ -18,6 +18,10 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * This allows to process images on serverside while making the responses faster.
+ * Note that the user will NOT see that the image is processed directly in upload when using queues.
+ */
 class ProcessImageJob implements ShouldQueue
 {
 	use Dispatchable;
@@ -45,6 +49,9 @@ class ProcessImageJob implements ShouldQueue
 
 	/**
 	 * Execute the job.
+	 *
+	 * Here we handle the execution of the image processing.
+	 * This will create the model, reformat the image etc.
 	 */
 	public function handle(AlbumFactory $albumFactory): Photo
 	{

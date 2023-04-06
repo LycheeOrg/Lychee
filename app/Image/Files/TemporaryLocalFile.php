@@ -3,7 +3,6 @@
 namespace App\Image\Files;
 
 use App\Exceptions\MediaFileOperationException;
-use function Safe\fopen;
 
 /**
  * Class TemporaryLocalFile.
@@ -13,6 +12,8 @@ use function Safe\fopen;
  */
 class TemporaryLocalFile extends NativeLocalFile
 {
+	use LoadTemporaryFileTrait;
+
 	protected string $fakeBaseName;
 
 	/**
@@ -34,31 +35,17 @@ class TemporaryLocalFile extends NativeLocalFile
 	 */
 	public function __construct(string $fileExtension, string $fakeBaseName = '')
 	{
-		// We must not use the usual PHP method `tempnam`, because that
-		// method does not handle file extensions well, but our temporary
-		// files need a proper (and correct) extension for the MIME extractor
-		// to work.
-		$lastException = null;
-		$retryCounter = 5;
-		do {
-			try {
-				$tempFilePath = sys_get_temp_dir() .
-					DIRECTORY_SEPARATOR .
-					'lychee-' .
-					strtr(base64_encode(random_bytes(12)), '+/', '-_') .
-					$fileExtension;
-				$retryCounter--;
-				$this->stream = fopen($tempFilePath, 'x+b');
-			} catch (\ErrorException|\Exception $e) {
-				$tempFilePath = null;
-				$lastException = $e;
-			}
-		} while ($tempFilePath === null && $retryCounter > 0);
-		if ($tempFilePath === null) {
-			throw new MediaFileOperationException('unable to create temporary file', $lastException);
-		}
+		$tempFilePath = $this->load($fileExtension);
 		parent::__construct($tempFilePath);
 		$this->fakeBaseName = $fakeBaseName;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function getFileBasePath(): string
+	{
+		return sys_get_temp_dir();
 	}
 
 	/**

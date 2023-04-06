@@ -16,6 +16,8 @@ class TemporaryJobFile extends NativeLocalFile
 	protected string $fakeBaseName;
 
 	/**
+	 * Once we are done with the process, we can delete the image.
+	 *
 	 * @throws MediaFileOperationException
 	 */
 	public function __destruct()
@@ -25,7 +27,7 @@ class TemporaryJobFile extends NativeLocalFile
 	}
 
 	/**
-	 * Creates a new temporary file with a random file name.
+	 * Load a temporary file with a previously generated file name.
 	 *
 	 * @param string $filePath     the path of a Processable Job file
 	 * @param string $fakeBaseName the fake base name of the file; e.g. the original name prior to up-/download
@@ -34,10 +36,6 @@ class TemporaryJobFile extends NativeLocalFile
 	 */
 	public function __construct(string $filePath, string $fakeBaseName = '')
 	{
-		// We must not use the usual PHP method `tempnam`, because that
-		// method does not handle file extensions well, but our temporary
-		// files need a proper (and correct) extension for the MIME extractor
-		// to work.
 		$lastException = null;
 		$retryCounter = 5;
 		do {
