@@ -48,7 +48,7 @@
         "laragear/webauthn": "^1.2.0",
         "laravel/framework": "^10.0",
         "lychee-org/nestedset": "^8.0",
-        "lychee-org/php-exif": "^0.8.1",
+        "lychee-org/php-exif": "^1.0.0",
         "maennchen/zipstream-php": "^2.1",
         "php-ffmpeg/php-ffmpeg": "^1.0",
         "php-http/guzzle7-adapter": "^1.0",
