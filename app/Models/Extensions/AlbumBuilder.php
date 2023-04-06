@@ -129,12 +129,12 @@ class AlbumBuilder extends NSQueryBuilder
 		//     MySQL's built-in heuristic chooses that index with high
 		//     priority and does not consider any alternatives.
 		//     In this specific case, this heuristic fails splendidly.
-			//
+		//
 		// Further note, that PostgreSQL's optimizer is not affected
 		// by any of these tricks.
 		// The optimized query plan for PostgreSQL is always the same.
 		// Good PosgreSQL :-)
-			//
+		//
 		// We must not use `Album::query->` to start the query, but
 		// use a non-Eloquent query here to avoid an infinite loop
 		// with this query builder.

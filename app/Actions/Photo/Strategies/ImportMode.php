@@ -4,32 +4,12 @@ namespace App\Actions\Photo\Strategies;
 
 class ImportMode
 {
-	protected bool $deleteImported = false;
-	protected bool $skipDuplicates = false;
-	protected bool $importViaSymlink = false;
-	protected bool $resyncMetadata = false;
-
 	public function __construct(
-		bool $deleteImported = false,
-		bool $skipDuplicates = false,
-		bool $importViaSymlink = false,
-		bool $resyncMetadata = false
+		protected readonly bool $deleteImported = false,
+		protected readonly bool $skipDuplicates = false,
+		protected bool $importViaSymlink = false,
+		protected bool $resyncMetadata = false
 	) {
-		$this->setMode(
-			$deleteImported, $skipDuplicates, $importViaSymlink, $resyncMetadata
-		);
-	}
-
-	public function setMode(
-		bool $deleteImported = false,
-		bool $skipDuplicates = false,
-		bool $importViaSymlink = false,
-		bool $resyncMetadata = false
-	): void {
-		$this->deleteImported = $deleteImported;
-		$this->skipDuplicates = $skipDuplicates;
-		$this->importViaSymlink = $importViaSymlink;
-		$this->resyncMetadata = $resyncMetadata;
 		// avoid incompatible settings (delete originals takes precedence over symbolic links)
 		if ($deleteImported) {
 			$this->importViaSymlink = false;
