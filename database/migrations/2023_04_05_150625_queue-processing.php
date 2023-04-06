@@ -16,7 +16,7 @@ return new class() extends Migration {
 			'cat' => 'Image Processing',
 			'type_range' => BOOL,
 			'confidentiality' => '0',
-			'description' => 'Use job queues instead of directly live.',
+			'description' => 'Use job queues instead of directly live connection.',
 		]);
 	}
 

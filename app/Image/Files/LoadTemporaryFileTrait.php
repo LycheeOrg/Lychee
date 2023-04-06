@@ -14,7 +14,17 @@ trait LoadTemporaryFileTrait
 	 */
 	abstract protected function getFileBasePath(): string;
 
-	protected function load(string $fileExtension)
+	/**
+	 * Prepare a temporary file to be loaded.
+	 * Name is randomly generated and will be placed in getFileBasePath() directory.
+	 *
+	 * @param string $fileExtension
+	 *
+	 * @return string
+	 *
+	 * @throws MediaFileOperationException
+	 */
+	protected function load(string $fileExtension): string
 	{
 		// We must not use the usual PHP method `tempnam`, because that
 		// method does not handle file extensions well, but our temporary
