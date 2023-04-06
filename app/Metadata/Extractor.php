@@ -345,7 +345,7 @@ class Extractor
 					// to original timezone of the location where the video
 					// has been recorded.
 					// So we don't need to do anything.
-						//
+					//
 					// The only known example are the mov files from Apple
 					// devices; the time zone will be formatted as "+01:00"
 					// so neither of the two conditions above should trigger.

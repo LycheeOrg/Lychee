@@ -27,8 +27,10 @@ use App\Http\Requests\Photo\SetPhotosTagsRequest;
 use App\Http\Requests\Photo\SetPhotosTitleRequest;
 use App\Http\Requests\Photo\SetPhotoUploadDateRequest;
 use App\Http\Resources\Models\PhotoResource;
+use App\Image\Files\ProcessableJobFile;
 use App\Image\Files\TemporaryLocalFile;
 use App\Image\Files\UploadedFile;
+use App\Jobs\ProcessImageJob;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -91,13 +93,26 @@ class PhotoController extends Controller
 	 *
 	 * @param AddPhotoRequest $request
 	 *
-	 * @return PhotoResource
+	 * @return PhotoResource|JsonResponse
 	 *
 	 * @throws LycheeException
 	 * @throws ModelNotFoundException
 	 */
-	public function add(AddPhotoRequest $request): PhotoResource
+	public function add(AddPhotoRequest $request): mixed
 	{
+		if (Configs::getValueAsBool('use_job_queues')) {
+			$uploadedFile = new UploadedFile($request->uploadedFile());
+			$processableFile = ProcessableJobFile::ofUploadedFile($uploadedFile);
+
+			ProcessImageJob::dispatch($processableFile, $request->album());
+
+			$processableFile->close();
+			// dd($processableFile);
+			// return $processableFile->read();
+
+			return new JsonResponse(null, 201);
+		}
+
 		// This code is a nasty work-around which should not exist.
 		// PHP stores a temporary copy of the uploaded file without a file
 		// extension.
