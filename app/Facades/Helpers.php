@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Facade;
  * Keep the list of documented method in sync with {@link \App\Assets\Helpers}.
  *
  * @method static string cacheBusting(string $filePath)
- * @method static string trancateIf32(string $id, int $prevShortId = 0, int $phpMax)
+ * @method static string trancateIf32(string $id, int $prevShortId = 0, int $phpMax = PHP_INT_MAX)
  * @method static string getExtension(string $filename, bool $isURI = false)
  * @method static bool   hasPermissions(string $path)
  * @method static bool   hasFullPermissions(string $path)
@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static int    data_index_r()
  * @method static void   data_index_set(int $idx = 0)
  * @method static array  get_all_licenses()
+ * @method static bool   isExecAvailable()
  */
 class Helpers extends Facade
 {
