@@ -13,8 +13,12 @@
 namespace Tests\Feature;
 
 use App\Image\Files\BaseMediaFile;
+use App\Jobs\ProcessImageJob;
 use App\Models\Configs;
+use App\Models\Photo;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Queue;
 use function Safe\copy;
 use Tests\AbstractTestCase;
 use Tests\Feature\Base\BasePhotoTest;
@@ -242,6 +246,44 @@ class PhotosAddMethodsTest extends BasePhotoTest
 			]]);
 		} finally {
 			Configs::set(self::CONFIG_RAW_FORMATS, $acceptedRawFormats);
+		}
+	}
+
+	public function testJobUploadWithFaking(): void
+	{
+		$useJobQueues = Configs::getValueAsString(self::CONFIG_USE_JOB_QUEUES);
+		try {
+			Configs::set(self::CONFIG_USE_JOB_QUEUES, '1');
+
+			Queue::fake();
+			Queue::assertNothingPushed();
+
+			$this->photos_tests->upload(
+				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			);
+
+			Queue::assertPushed(ProcessImageJob::class, 1);
+			self::assertEquals(1, Queue::size());
+		} finally {
+			Configs::set(self::CONFIG_USE_JOB_QUEUES, $useJobQueues);
+		}
+	}
+
+	public function testJobUploadWithoutFaking(): void
+	{
+		$useJobQueues = Configs::getValueAsString(self::CONFIG_USE_JOB_QUEUES);
+		$defaultQueue = Config::get('queue.default', 'sync');
+		try {
+			Configs::set(self::CONFIG_USE_JOB_QUEUES, '1');
+			Config::set('queue.default', 'sync');
+
+			$this->photos_tests->upload(
+				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			);
+			self::assertEquals(1, Photo::count());
+		} finally {
+			Configs::set(self::CONFIG_USE_JOB_QUEUES, $useJobQueues);
+			Config::set('queue.default', $defaultQueue);
 		}
 	}
 }
