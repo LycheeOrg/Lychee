@@ -112,6 +112,7 @@ abstract class AbstractTestCase extends BaseTestCase
 	public const CONFIG_PUBLIC_STARRED = 'public_starred';
 	public const CONFIG_PUBLIC_ON_THIS_DAY = 'public_on_this_day';
 	public const CONFIG_RAW_FORMATS = 'raw_formats';
+	public const CONFIG_USE_JOB_QUEUES = 'use_job_queues';
 
 	/**
 	 * Visit the given URI with a GET request.

@@ -3,30 +3,24 @@
 namespace App\Image\Files;
 
 use App\Exceptions\MediaFileOperationException;
+use function Safe\mkdir;
 
 /**
- * Class TemporaryLocalFile.
+ * Class TemporaryJobFile.
  *
  * Represents a local file with an automatically chosen, unique name intended
- * to be used temporarily.
+ * to be used temporarily before being processed in a Job.
  */
-class TemporaryLocalFile extends NativeLocalFile
+class ProcessableJobFile extends NativeLocalFile
 {
 	use LoadTemporaryFileTrait;
 
 	protected string $fakeBaseName;
 
 	/**
-	 * @throws MediaFileOperationException
-	 */
-	public function __destruct()
-	{
-		$this->delete();
-		parent::__destruct();
-	}
-
-	/**
 	 * Creates a new temporary file with a random file name.
+	 * Do note that we MUST use storage_path() instead of sys_get_temp_dir() as
+	 * tmp is not shared across processes, meaning that the queues will not be able to see the files.
 	 *
 	 * @param string $fileExtension the file extension of the new temporary file incl. a preceding dot
 	 * @param string $fakeBaseName  the fake base name of the file; e.g. the original name prior to up-/download
@@ -45,7 +39,13 @@ class TemporaryLocalFile extends NativeLocalFile
 	 */
 	protected function getFileBasePath(): string
 	{
-		return sys_get_temp_dir();
+		$tempDirPath = storage_path() . DIRECTORY_SEPARATOR . 'image-jobs';
+
+		if (!file_exists($tempDirPath)) {
+			mkdir($tempDirPath);
+		}
+
+		return $tempDirPath;
 	}
 
 	/**
