@@ -50,6 +50,7 @@ class InstallTest extends AbstractTestCase
 
 		// The order is important: referring tables must be deleted first, referred tables last
 		$tables = [
+			'jobs_history',
 			'failed_jobs',
 			'jobs',
 			'sym_links',
