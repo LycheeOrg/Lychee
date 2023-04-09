@@ -48,39 +48,41 @@ class InstallTest extends AbstractTestCase
 		 * Clearing things up. We could do an Artisan migrate but this is more efficient.
 		 */
 
-		// The order is important: referring tables must be deleted first, referred tables last
-		$tables = [
-			'jobs_history',
-			'failed_jobs',
-			'jobs',
-			'sym_links',
-			'size_variants',
-			'photos',
-			'configs',
-			'logs',
-			'migrations',
-			'notifications',
-			'page_contents',
-			'pages',
-			'user_base_album',
-			'tag_albums',
-			'albums',
-			'base_albums',
-			'webauthn_credentials',
-			'users',
-		];
+		// // The order is important: referring tables must be deleted first, referred tables last
+		// $tables = [
+		// 	'jobs_history',
+		// 	'failed_jobs',
+		// 	'jobs',
+		// 	'sym_links',
+		// 	'size_variants',
+		// 	'photos',
+		// 	'configs',
+		// 	'logs',
+		// 	'migrations',
+		// 	'notifications',
+		// 	'page_contents',
+		// 	'pages',
+		// 	'user_base_album',
+		// 	'tag_albums',
+		// 	'albums',
+		// 	'base_albums',
+		// 	'webauthn_credentials',
+		// 	'users',
+		// ];
 
-		if (Schema::connection(null)->getConnection()->getDriverName() !== 'sqlite') {
-			// We must remove the foreign constraint from `albums` to `photos` to
-			// break up circular dependencies.
-			Schema::table('albums', function (Blueprint $table) {
-				$table->dropForeign('albums_cover_id_foreign');
-			});
-		}
+		// if (Schema::connection(null)->getConnection()->getDriverName() !== 'sqlite') {
+		// 	// We must remove the foreign constraint from `albums` to `photos` to
+		// 	// break up circular dependencies.
+		// 	Schema::table('albums', function (Blueprint $table) {
+		// 		$table->dropForeign('albums_cover_id_foreign');
+		// 	});
+		// }
 
-		foreach ($tables as $table) {
-			Schema::dropIfExists($table);
-		}
+		// foreach ($tables as $table) {
+		// 	Schema::dropIfExists($table);
+		// }
+
+		Schema::dropAllTables();
 
 		/**
 		 * No database: we should be redirected to install: default case.
