@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Lychee Jogs</title>
+	<title>Lychee Jobs</title>
 	<meta charset="utf-8"/>
 </head>
 <body>
