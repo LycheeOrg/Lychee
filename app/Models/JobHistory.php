@@ -71,7 +71,7 @@ class JobHistory extends Model
 	public function scopeWithAlbumTitleOrNull(): Builder
 	{
 		$with = JobHistory::query()
-		->rightJoin('base_albums', 'jobs_history.parent_id', '=', 'base_albums.id')
+		->join('base_albums', 'jobs_history.parent_id', '=', 'base_albums.id')
 		->select(['jobs_history.*', 'base_albums.title']);
 
 		return JobHistory::query()
