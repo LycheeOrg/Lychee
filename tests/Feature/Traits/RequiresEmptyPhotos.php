@@ -28,6 +28,7 @@ trait RequiresEmptyPhotos
 		$this->assertDatabaseCount('sym_links', 0);
 		$this->assertDatabaseCount('size_variants', 0);
 		$this->assertDatabaseCount('photos', 0);
+		$this->assertDatabaseCount('jobs_history', 0);
 	}
 
 	protected function tearDownRequiresEmptyPhotos(): void
@@ -36,6 +37,7 @@ trait RequiresEmptyPhotos
 		DB::table('sym_links')->delete();
 		DB::table('size_variants')->delete();
 		DB::table('photos')->delete();
+		DB::table('jobs_history')->delete();
 		self::cleanPublicFolders();
 	}
 

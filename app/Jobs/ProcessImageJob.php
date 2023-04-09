@@ -9,6 +9,7 @@ use App\Factories\AlbumFactory;
 use App\Image\Files\ProcessableJobFile;
 use App\Image\Files\TemporaryJobFile;
 use App\Models\Configs;
+use App\Models\JobHistory;
 use App\Models\Logs;
 use App\Models\Photo;
 use Illuminate\Bus\Queueable;
@@ -17,6 +18,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 /**
  * This allows to process images on serverside while making the responses faster.
@@ -28,6 +30,8 @@ class ProcessImageJob implements ShouldQueue
 	use InteractsWithQueue;
 	use Queueable;
 	use SerializesModels;
+
+	protected JobHistory $history;
 
 	public string $filePath;
 	public string $originalBaseName;
@@ -45,6 +49,15 @@ class ProcessImageJob implements ShouldQueue
 		$this->originalBaseName = $file->getOriginalBasename();
 		$this->albumId = $albumId?->id;
 		$this->userId = Auth::user()->id;
+
+		// Set up our new history record.
+		$this->history = new JobHistory();
+		$this->history->owner_id = $this->userId;
+		$this->history->job = Str::limit('Process Image: ' . $this->originalBaseName, 200);
+		$this->history->parent_id = $this->albumId;
+		$this->history->status = 0;
+
+		$this->history->save();
 	}
 
 	/**
@@ -69,7 +82,13 @@ class ProcessImageJob implements ShouldQueue
 			$album = $albumFactory->findAbstractAlbumOrFail($this->albumId);
 		}
 
-		return $create->add($copiedFile, $album);
+		$photo = $create->add($copiedFile, $album);
+
+		// Once the job has finished, set history status to 1.
+		$this->history->status = 1;
+		$this->history->save();
+
+		return $photo;
 	}
 
 	/**
@@ -81,6 +100,9 @@ class ProcessImageJob implements ShouldQueue
 	 */
 	public function failed(\Throwable $th): void
 	{
+		$this->history->status = 2;
+		$this->history->save();
+
 		if ($th->getCode() === 999) {
 			$this->release();
 		} else {

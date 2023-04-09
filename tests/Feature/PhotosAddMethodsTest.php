@@ -15,6 +15,7 @@ namespace Tests\Feature;
 use App\Image\Files\BaseMediaFile;
 use App\Jobs\ProcessImageJob;
 use App\Models\Configs;
+use App\Models\JobHistory;
 use App\Models\Photo;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -263,6 +264,8 @@ class PhotosAddMethodsTest extends BasePhotoTest
 			);
 
 			Queue::assertPushed(ProcessImageJob::class, 1);
+
+			self::assertEquals(1, JobHistory::where('status', '=', '0')->count());
 			self::assertEquals(1, Queue::size());
 		} finally {
 			Configs::set(self::CONFIG_USE_JOB_QUEUES, $useJobQueues);
@@ -280,6 +283,11 @@ class PhotosAddMethodsTest extends BasePhotoTest
 			$this->photos_tests->upload(
 				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
 			);
+
+			self::assertEquals(1, JobHistory::where('status', '=', '1')->count());
+			$response = $this->get('Jobs');
+			$this->assertOk($response);
+
 			self::assertEquals(1, Photo::count());
 		} finally {
 			Configs::set(self::CONFIG_USE_JOB_QUEUES, $useJobQueues);

@@ -35,3 +35,4 @@ installed.log
 .NO_SECURE_KEY
 .NO_AUTO_COMPOSER_MIGRATE
 storage/bootstrap/cache/*
+storage/image-jobs/*
