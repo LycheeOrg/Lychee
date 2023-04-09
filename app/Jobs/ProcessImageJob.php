@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Actions\Photo\Create;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\Contracts\Models\AbstractAlbum;
+use App\Enum\JobStatus;
 use App\Factories\AlbumFactory;
 use App\Image\Files\ProcessableJobFile;
 use App\Image\Files\TemporaryJobFile;
@@ -55,7 +56,7 @@ class ProcessImageJob implements ShouldQueue
 		$this->history->owner_id = $this->userId;
 		$this->history->job = Str::limit('Process Image: ' . $this->originalBaseName, 200);
 		$this->history->parent_id = $this->albumId;
-		$this->history->status = 0;
+		$this->history->status = JobStatus::READY;
 
 		$this->history->save();
 	}
@@ -85,7 +86,7 @@ class ProcessImageJob implements ShouldQueue
 		$photo = $create->add($copiedFile, $album);
 
 		// Once the job has finished, set history status to 1.
-		$this->history->status = 1;
+		$this->history->status = JobStatus::SUCCESS;
 		$this->history->save();
 
 		return $photo;
@@ -100,7 +101,7 @@ class ProcessImageJob implements ShouldQueue
 	 */
 	public function failed(\Throwable $th): void
 	{
-		$this->history->status = 2;
+		$this->history->status = JobStatus::FAILURE;
 		$this->history->save();
 
 		if ($th->getCode() === 999) {

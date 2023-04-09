@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Administration;
 
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Http\Requests\Logs\ShowJobsRequest;
 use App\Models\Configs;
 use App\Models\JobHistory;
