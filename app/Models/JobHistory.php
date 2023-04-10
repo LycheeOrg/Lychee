@@ -77,12 +77,12 @@ class JobHistory extends Model
 	public function scopeWithAlbumTitleOrNull(): Builder
 	{
 		$with = JobHistory::query()
-		->join('base_albums', 'jobs_history.parent_id', '=', 'base_albums.id')
-		->select(['jobs_history.*', 'base_albums.title']);
+			->join('base_albums', 'jobs_history.parent_id', '=', 'base_albums.id')
+			->select(['jobs_history.*', 'base_albums.title']);
 
 		return JobHistory::query()
-		->doesntHave('parent')
-		->select(['jobs_history.*', DB::raw('NULL as title')])
-		->union($with);
+			->doesntHave('parent')
+			->select(['jobs_history.*', DB::raw('NULL as title')])
+			->union($with);
 	}
 }

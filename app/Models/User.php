@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Auth;
 use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
 use Laragear\WebAuthn\WebAuthnAuthentication;
+use function Safe\mb_convert_encoding;
 
 /**
  * App\Models\User.
@@ -123,6 +124,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	public function username(): string
 	{
+		// @phpstan-ignore-next-line This is temporary and should hopefully be fixed soon by Safe with proper type hinting.
 		return mb_convert_encoding($this->username, 'UTF-8');
 	}
 
