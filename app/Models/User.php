@@ -89,7 +89,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	public function albums(): HasMany
 	{
-		return $this->hasMany('App\Models\BaseAlbumImpl', 'owner_id', 'id');
+		return $this->hasMany(BaseAlbumImpl::class, 'owner_id', 'id');
 	}
 
 	/**
@@ -99,7 +99,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	public function photos(): HasMany
 	{
-		return $this->hasMany('App\Models\Photo', 'owner_id', 'id');
+		return $this->hasMany(Photo::class, 'owner_id', 'id');
 	}
 
 	/**
@@ -178,7 +178,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		}
 
 		$this->shared()->delete();
-		WebAuthnCredential::where('authenticatable_id', '=', $this->id)->delete();
+		WebAuthnCredential::query()->where('authenticatable_id', '=', $this->id)->delete();
 
 		return $this->parentDelete();
 	}

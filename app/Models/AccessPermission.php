@@ -9,6 +9,7 @@ use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\AccessPermission.
@@ -74,4 +75,34 @@ class AccessPermission extends Model
 		'grants_edit' => 'boolean',
 		'grants_delete' => 'boolean',
 	];
+
+	/**
+	 * Returns the relationship between an AccessPermission and its associated album.
+	 *
+	 * @return BelongsTo
+	 */
+	public function album(): BelongsTo
+	{
+		return $this->belongsTo(BaseAlbumImpl::class, 'base_album_id', 'id');
+	}
+
+	/**
+	 * Returns the relationship between an AccessPermission and its owner.
+	 *
+	 * @return BelongsTo
+	 */
+	public function owner(): BelongsTo
+	{
+		return $this->belongsTo(User::class, 'owner_id', 'id');
+	}
+
+	/**
+	 * Returns the relationship between an AccessPermission and its applied User.
+	 *
+	 * @return BelongsTo
+	 */
+	public function user(): BelongsTo
+	{
+		return $this->belongsTo(User::class, 'user_id', 'id');
+	}
 }

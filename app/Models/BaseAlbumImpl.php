@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class BaseAlbumImpl.
@@ -191,7 +192,17 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 */
 	public function owner(): BelongsTo
 	{
-		return $this->belongsTo('App\Models\User', 'owner_id', 'id');
+		return $this->belongsTo(User::class, 'owner_id', 'id');
+	}
+
+	/**
+	 * Returns the relationship between an album and its associated permissions.
+	 *
+	 * @return HasMany
+	 */
+	public function access_permissions(): HasMany
+	{
+		return $this->hasMany(AccessPermission::class, 'base_album_id', 'id');
 	}
 
 	/**
@@ -203,7 +214,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	public function shared_with(): BelongsToMany
 	{
 		return $this->belongsToMany(
-			'App\Models\User',
+			User::class,
 			'user_base_album',
 			'base_album_id',
 			'user_id'

@@ -117,7 +117,7 @@ class Photo extends Model
 	 */
 	public function album(): BelongsTo
 	{
-		return $this->belongsTo('App\Models\Album', 'album_id', 'id');
+		return $this->belongsTo(Album::class, 'album_id', 'id');
 	}
 
 	/**
@@ -127,7 +127,7 @@ class Photo extends Model
 	 */
 	public function owner(): BelongsTo
 	{
-		return $this->belongsTo('App\Models\User', 'owner_id', 'id');
+		return $this->belongsTo(User::class, 'owner_id', 'id');
 	}
 
 	public function size_variants(): HasManySizeVariants
