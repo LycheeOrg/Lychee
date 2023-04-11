@@ -18,6 +18,12 @@ use Illuminate\Database\Query\Builder as BaseBuilder;
  *
  * @method static TagAlbumBuilder query()                       Begin querying the model.
  * @method static TagAlbumBuilder with(array|string $relations) Begin querying the model with eager loading.
+ *
+ * @property string                                                          $id
+ * @property \App\Models\BaseAlbumImpl                                       $base_class
+ * @property \App\Models\User                                                $owner
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $shared_with
+ * @property int|null                                                        $shared_with_count
  */
 class TagAlbum extends BaseAlbum
 {

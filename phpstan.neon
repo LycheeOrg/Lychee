@@ -34,7 +34,6 @@ parameters:
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::without\(\)#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::count\(\).#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::update\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::join\(\).#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::union\(\).#'
 		- '#Dynamic call to static method App\\Models\\Extensions\\FixedQueryBuilder<.*>::orderByDesc\(\).#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::update\(\)#'
