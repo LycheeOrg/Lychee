@@ -29,8 +29,7 @@ class RecentAlbum extends BaseSmartAlbum
 
 		parent::__construct(
 			self::ID,
-			__('lychee.RECENT'),
-			Configs::getValueAsBool('public_recent'),
+			__('lychee.RECENT') ?? 'lychee.RECENT',
 			function (Builder $query) use ($strRecent) {
 				$query->where('photos.created_at', '>=', $strRecent);
 			}

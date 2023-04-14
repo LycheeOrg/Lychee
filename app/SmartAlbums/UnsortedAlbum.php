@@ -19,8 +19,7 @@ class UnsortedAlbum extends BaseSmartAlbum
 	{
 		parent::__construct(
 			self::ID,
-			__('lychee.UNSORTED'),
-			false,
+			__('lychee.UNSORTED') ?? 'lychee.UNSORTED',
 			fn (Builder $q) => $q->whereNull('photos.album_id')
 		);
 	}

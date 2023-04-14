@@ -56,7 +56,7 @@ class AlbumPolicy extends BasePolicy
 	public function canSee(?User $user, BaseSmartAlbum $smartAlbum): bool
 	{
 		return ($user?->may_upload === true) ||
-			$smartAlbum->is_public;
+			$smartAlbum->public_permissions !== null;
 	}
 
 	/**
@@ -103,8 +103,12 @@ class AlbumPolicy extends BasePolicy
 					return true;
 				}
 
-				if ($album->current_permissions !== null &&
-					($album->current_permissions->password === null ||
+				if ($album->current_user_permissions !== null) {
+					return true;
+				}
+
+				if ($album->public_permissions !== null &&
+					($album->public_permissions->password === null ||
 					$this->isUnlocked($album))) {
 					return true;
 				}
@@ -139,11 +143,13 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		if ($abstractAlbum instanceof BaseSmartAlbum) {
-			return $user !== null || $abstractAlbum->grants_download;
+			return $user !== null || $abstractAlbum->public_permissions?->grants_download === true;
 		}
 
 		if ($abstractAlbum instanceof BaseAlbum) {
-			return $this->isOwner($user, $abstractAlbum) || $abstractAlbum->current_permissions?->grants_download === true;
+			return $this->isOwner($user, $abstractAlbum)
+				|| $abstractAlbum->current_user_permissions?->grants_download === true
+				|| $abstractAlbum->public_permissions?->grants_download === true;
 		}
 
 		return false;
@@ -175,8 +181,12 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		if ($abstractAlbum instanceof BaseAlbum) {
-			return $this->isOwner($user, $abstractAlbum) || $abstractAlbum->current_permissions?->grants_upload === true;
+			return $this->isOwner($user, $abstractAlbum)
+				|| $abstractAlbum->current_user_permissions?->grants_upload === true
+				|| $abstractAlbum->public_permissions?->grants_upload === true;
 		}
+
+		return false;
 	}
 
 	/**
@@ -219,8 +229,12 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		if ($album instanceof BaseAlbum) {
-			return $this->isOwner($user, $album) || $album->current_permissions?->grants_edit === true;
+			return $this->isOwner($user, $album)
+			|| $album->current_user_permissions?->grants_edit === true
+			|| $album->public_permissions?->grants_edit === true;
 		}
+
+		return false;
 	}
 
 	/**

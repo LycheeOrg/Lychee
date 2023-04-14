@@ -6,6 +6,7 @@ class AccessPermissionConstants
 {
 	// computed table name
 	public const COMPUTED_ACCESS_PERMISSIONS = 'computed_access_permissions';
+	public const ACCESS_PERMISSIONS = 'access_permissions';
 
 	// Attributes name
 	public const IS_LINK_REQUIRED = 'is_link_required';

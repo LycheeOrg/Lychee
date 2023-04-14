@@ -176,7 +176,11 @@ class PhotoPolicy extends BasePolicy
 			return false;
 		}
 
-		return ($photo->album !== null && $photo->album->grants_full_photo_access) ||
-			($photo->album === null && Configs::getValueAsBool('grants_full_photo_access'));
+		if ($photo->album === null) {
+			return Configs::getValueAsBool('grants_full_photo_access');
+		}
+
+		return $photo->album->public_permissions?->grants_full_photo_access === true ||
+		$photo->album->current_user_permissions?->grants_full_photo_access === true;
 	}
 }

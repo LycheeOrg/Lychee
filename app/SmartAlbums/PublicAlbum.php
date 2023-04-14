@@ -45,8 +45,7 @@ class PublicAlbum extends BaseSmartAlbum
 	{
 		parent::__construct(
 			self::ID,
-			__('lychee.PUBLIC'),
-			false,
+			__('lychee.PUBLIC') ?? 'lychee.PUBLIC',
 			fn (Builder $q) => $q->where('photos.is_public', '=', true)
 		);
 	}

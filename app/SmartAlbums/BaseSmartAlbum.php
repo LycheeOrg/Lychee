@@ -10,7 +10,7 @@ use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\InvalidPropertyException;
-use App\Models\Configs;
+use App\Models\AccessPermission;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Extensions\Thumb;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
@@ -40,27 +40,23 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	protected PhotoQueryPolicy $photoQueryPolicy;
 	protected string $id;
 	protected string $title;
-	protected bool $grants_download;
-	protected bool $grants_full_photo_access;
-	protected bool $is_public;
 	protected ?Thumb $thumb = null;
 	protected ?Collection $photos = null;
 	protected \Closure $smartPhotoCondition;
+	protected AccessPermission|null $publicPermissions;
 
 	/**
 	 * @throws ConfigurationKeyMissingException
 	 * @throws FrameworkException
 	 */
-	protected function __construct(string $id, string $title, bool $is_public, \Closure $smartCondition)
+	protected function __construct(string $id, string $title, \Closure $smartCondition)
 	{
 		try {
 			$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
 			$this->id = $id;
 			$this->title = $title;
-			$this->is_public = $is_public;
-			$this->grants_download = Configs::getValueAsBool('grants_download');
-			$this->grants_full_photo_access = Configs::getValueAsBool('grants_full_photo_access');
 			$this->smartPhotoCondition = $smartCondition;
+			$this->publicPermissions = AccessPermission::find($id);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s service container', $e);
 		}

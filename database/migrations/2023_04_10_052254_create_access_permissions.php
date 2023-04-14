@@ -107,7 +107,7 @@ return new class() extends Migration {
 
 		// Loop over every base album
 		$currentShares = DB::table('user_base_album')
-			->join('base_albums', 'base_albums.base_album_id', '=', 'user_base_album.base_album_id')
+			->join('base_albums', 'base_albums.id', '=', 'user_base_album.base_album_id')
 			->select([
 				'base_album_id',
 				self::USER_ID,

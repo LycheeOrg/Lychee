@@ -9,6 +9,7 @@ use App\Http\Requests\Sharing\DeleteSharingRequest;
 use App\Http\Requests\Sharing\ListSharingRequest;
 use App\Http\Requests\Sharing\SetSharesByAlbumRequest;
 use App\Http\Resources\Sharing\SharesResource;
+use App\Models\AccessPermission;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
@@ -66,7 +67,12 @@ class SharingController extends Controller
 	 */
 	public function setByAlbum(SetSharesByAlbumRequest $request): void
 	{
-		$request->album()->shared_with()->sync($request->userIDs());
+		foreach ($request->userIDs() as $user_id) {
+			AccessPermission::firstOrCreate([
+				'user_id' => $user_id,
+				'base_album_id' => $request->album()->id,
+			])->save();
+		}
 	}
 
 	/**
