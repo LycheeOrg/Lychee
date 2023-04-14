@@ -192,8 +192,6 @@ class HasAlbumThumb extends Relation
 			});
 		}
 
-		$user = Auth::user();
-
 		$album2Cover = function (BaseBuilder $builder) use ($bestPhotoIDSelect, $albumKeys) {
 			$builder
 				->from('albums as covered_albums')

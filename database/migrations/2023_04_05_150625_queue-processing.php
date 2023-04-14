@@ -22,10 +22,8 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		DB::table('configs')->where('key', '=', 'use_job_queues')->delete();
 	}

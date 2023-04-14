@@ -412,7 +412,7 @@ class AlbumQueryPolicy
 	 */
 	public function getComputedAccessPermissionSubQuery(): BaseBuilder
 	{
-		return DB::table(DB::raw('access_permissions as ' . APC::COMPUTED_ACCESS_PERMISSIONS))->select([
+		return DB::table('access_permissions', APC::COMPUTED_ACCESS_PERMISSIONS)->select([
 			DB::raw('MIN(' . APC::IS_LINK_REQUIRED . ') as ' . APC::IS_LINK_REQUIRED),
 			DB::raw('MAX(' . APC::GRANTS_FULL_PHOTO_ACCESS . ') as ' . APC::GRANTS_FULL_PHOTO_ACCESS),
 			DB::raw('MAX(' . APC::GRANTS_DOWNLOAD . ') as ' . APC::GRANTS_DOWNLOAD),

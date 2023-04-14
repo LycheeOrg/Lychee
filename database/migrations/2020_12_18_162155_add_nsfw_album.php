@@ -13,10 +13,8 @@ return new class() extends Migration {
 
 	/**
 	 * Run the migrations.
-	 *
-	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		defined('STRING') or define('STRING', 'string');
 		defined('STRING_REQ') or define('STRING_REQ', 'string_required');
@@ -40,10 +38,8 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		Schema::table(self::ALBUM, function (Blueprint $table) {
 			$table->dropColumn(self::NSFW_COLUMN_NAME);

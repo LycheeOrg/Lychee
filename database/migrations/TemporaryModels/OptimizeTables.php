@@ -18,8 +18,6 @@ class OptimizeTables
 
 	/**
 	 * Run the optimization.
-	 *
-	 * @return void
 	 */
 	public function exec(): void
 	{

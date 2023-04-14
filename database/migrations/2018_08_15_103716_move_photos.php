@@ -15,10 +15,8 @@ require_once 'TemporaryModels/MovePhotos_Photo.php';
 return new class() extends Migration {
 	/**
 	 * Run the migrations.
-	 *
-	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		// only do if photos is empty and
 		// if there is a table to import from
@@ -107,10 +105,8 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		if (Schema::hasTable('lychee_photos')) {
 			MovePhotos_Photo::query()->truncate();

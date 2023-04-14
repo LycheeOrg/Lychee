@@ -6,10 +6,8 @@ use Illuminate\Support\Facades\DB;
 return new class() extends Migration {
 	/**
 	 * Run the migrations.
-	 *
-	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		DB::table('configs')->where('key', '=', 'image_overlay_type')->update(['type_range' => 'exif|desc|date|none']);
 		DB::table('configs')->where('key', '=', 'image_overlay')->delete();
@@ -17,10 +15,8 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		defined('BOOL') or define('BOOL', '0|1');
 

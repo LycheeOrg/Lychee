@@ -52,7 +52,7 @@ return new class() extends Migration {
 		});
 	}
 
-	private function createUserBaseAlbumTable()
+	private function createUserBaseAlbumTable(): void
 	{
 		Schema::create('user_base_album', function (Blueprint $table) {
 			// Column definitions

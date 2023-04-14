@@ -8,10 +8,8 @@ use Illuminate\Support\Facades\Schema;
 return new class() extends Migration {
 	/**
 	 * Run the migrations.
-	 *
-	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		// this test is to make sure this is not executed when we passed a certain migration point
 		if (Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_settings')) {
@@ -69,10 +67,8 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		Logs::warning(__METHOD__, __LINE__, 'There is no going back for ' . __CLASS__ . '! HUE HUE HUE');
 	}

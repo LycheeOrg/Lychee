@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -23,10 +24,8 @@ return new class() extends Migration {
 
 	/**
 	 * Run the migrations.
-	 *
-	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		Schema::table(self::PHOTOS_TABLE_NAME, function (Blueprint $table) {
 			$table->integer(self::SMALL_WIDTH_COL_NAME)->unsigned()->nullable()->default(null);
@@ -86,10 +85,8 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		Schema::table(self::PHOTOS_TABLE_NAME, function (Blueprint $table) {
 			$table->string(self::SMALL_COL_NAME)->default('');

@@ -7,10 +7,8 @@ require_once 'TemporaryModels/OptimizeTables.php';
 return new class() extends Migration {
 	/**
 	 * Run the migrations.
-	 *
-	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		$optimize = new OptimizeTables();
 		$optimize->exec();
@@ -18,10 +16,8 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		// Nothing do to here.
 	}

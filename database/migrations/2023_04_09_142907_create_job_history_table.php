@@ -12,10 +12,8 @@ return new class() extends Migration {
 
 	/**
 	 * Run the migrations.
-	 *
-	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		Schema::create('jobs_history', function (Blueprint $table) {
 			$table->bigIncrements('id');
@@ -39,10 +37,8 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		Schema::disableForeignKeyConstraints();
 		Schema::dropIfExists('jobs_history');

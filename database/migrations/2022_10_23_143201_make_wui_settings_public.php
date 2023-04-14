@@ -26,8 +26,6 @@ return new class() extends Migration {
 	/**
 	 * Run the migrations.
 	 *
-	 * @return void
-	 *
 	 * @throws InvalidArgumentException
 	 */
 	public function up(): void
@@ -144,8 +142,6 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 *
 	 * @throws InvalidArgumentException
 	 */
