@@ -22,8 +22,6 @@ use Illuminate\Support\Facades\DB;
  */
 class TagAlbumBuilder extends FixedQueryBuilder
 {
-	use SharedWithCurrentUserQuery;
-
 	/**
 	 * Get the hydrated models without eager loading.
 	 *
@@ -47,7 +45,6 @@ class TagAlbumBuilder extends FixedQueryBuilder
 			$this->addSelect([
 				DB::raw('null as max_taken_at'),
 				DB::raw('null as min_taken_at'),
-				'is_shared_with_current_user' => $this->sharedWithCurrentUser('tag_albums')->select(DB::raw('count(*)')),
 			]);
 		}
 

@@ -93,22 +93,30 @@ class AlbumPolicy extends BasePolicy
 			return true;
 		}
 
+		if ($album instanceof BaseSmartAlbum) {
+			return $this->canSee($user, $album);
+		}
+
 		if ($album instanceof BaseAlbum) {
 			try {
-				return
-					$this->isOwner($user, $album) ||
-					($album->is_public && $album->password === null) ||
-					($album->is_public && $this->isUnlocked($album)) ||
-					($album->is_shared_with_current_user);
+				if ($this->isOwner($user, $album)) {
+					return true;
+				}
+
+				if ($album->current_permissions !== null &&
+					($album->current_permissions->password === null ||
+					$this->isUnlocked($album))) {
+					return true;
+				}
+
+				return false;
 			} catch (\InvalidArgumentException $e) {
 				throw LycheeAssertionError::createFromUnexpectedException($e);
 			}
-		} elseif ($album instanceof BaseSmartAlbum) {
-			return $this->canSee($user, $album);
-		} else {
-			// Should never happen
-			return false;
 		}
+
+		// Should never happen
+		return false;
 	}
 
 	/**
@@ -124,6 +132,7 @@ class AlbumPolicy extends BasePolicy
 	public function canDownload(?User $user, ?AbstractAlbum $abstractAlbum): bool
 	{
 		$default = Configs::getValueAsBool('grants_download');
+
 		// The root album always uses the global setting
 		if ($abstractAlbum === null) {
 			return $default;
@@ -134,9 +143,7 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		if ($abstractAlbum instanceof BaseAlbum) {
-			return $this->isOwner($user, $abstractAlbum) ||
-				$abstractAlbum->grants_download ||
-				($abstractAlbum->shared_with()->where('user_id', '=', $user?->id)->count() > 0 && $default);
+			return $this->isOwner($user, $abstractAlbum) || $abstractAlbum->current_permissions?->grants_download === true;
 		}
 
 		return false;
@@ -159,10 +166,17 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		// The upload right on the root album is directly determined by the user's capabilities.
-		return
-			$abstractAlbum === null ||
-			$abstractAlbum instanceof BaseSmartAlbum ||
-			(($abstractAlbum instanceof BaseAlbum) && $this->isOwner($user, $abstractAlbum));
+		if ($abstractAlbum === null) {
+			return true;
+		}
+
+		if ($abstractAlbum instanceof BaseSmartAlbum) {
+			return true;
+		}
+
+		if ($abstractAlbum instanceof BaseAlbum) {
+			return $this->isOwner($user, $abstractAlbum) || $abstractAlbum->current_permissions?->grants_upload === true;
+		}
 	}
 
 	/**
@@ -196,10 +210,17 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		// The root album and smart albums get a pass
-		return
-			$album === null ||
-			$album instanceof BaseSmartAlbum ||
-			(($album instanceof BaseAlbum) && $this->isOwner($user, $album));
+		if ($album === null) {
+			return true;
+		}
+
+		if ($album instanceof BaseSmartAlbum) {
+			return true;
+		}
+
+		if ($album instanceof BaseAlbum) {
+			return $this->isOwner($user, $album) || $album->current_permissions?->grants_edit === true;
+		}
 	}
 
 	/**

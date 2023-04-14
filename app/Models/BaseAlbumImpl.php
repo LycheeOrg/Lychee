@@ -16,11 +16,14 @@ use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use Carbon\Carbon;
+use DB;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class BaseAlbumImpl.
@@ -174,8 +177,8 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		RandomID::LEGACY_ID_NAME => RandomID::LEGACY_ID_TYPE,
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
-		'is_public' => 'boolean',
-		'is_link_required' => 'boolean',
+		// 'is_public' => 'boolean',
+		// 'is_link_required' => 'boolean',
 		'is_nsfw' => 'boolean',
 		'owner_id' => 'integer',
 	];
@@ -183,7 +186,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	/**
 	 * The relationships that should always be eagerly loaded by default.
 	 */
-	protected $with = ['owner'];
+	protected $with = ['owner', 'access_permissions', 'current_permissions'];
 
 	/**
 	 * Returns the relationship between an album and its owner.
@@ -198,11 +201,24 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	/**
 	 * Returns the relationship between an album and its associated permissions.
 	 *
-	 * @return HasMany
+	 * @return hasMany
 	 */
-	public function access_permissions(): HasMany
+	public function access_permissions(): hasMany
 	{
 		return $this->hasMany(AccessPermission::class, 'base_album_id', 'id');
+	}
+
+	/**
+	 * Returns the relationship between an album and its associated permissions.
+	 *
+	 * @return HasOne
+	 */
+	public function current_permissions(): HasOne
+	{
+		return $this->access_permissions()->one()
+			->where('user_id', '=', Auth::id())
+			->orWhereNull('user_id')
+			->orderBy(\DB::raw('ISNULL(`user_id`)'), 'DESC')->limit(1);
 	}
 
 	/**
@@ -215,7 +231,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	{
 		return $this->belongsToMany(
 			User::class,
-			'user_base_album',
+			'access_permissions',
 			'base_album_id',
 			'user_id'
 		);

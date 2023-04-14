@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Carbon;
 
@@ -87,6 +89,26 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	public function shared_with(): BelongsToMany
 	{
 		return $this->base_class->shared_with();
+	}
+
+	/**
+	 * Returns the relationship between an album and its associated permissions.
+	 *
+	 * @return HasMany
+	 */
+	public function access_permissions(): HasMany
+	{
+		return $this->base_class->access_permissions();
+	}
+
+	/**
+	 * Returns the relationship between an album and its associated current user permissions.
+	 *
+	 * @return HasOne
+	 */
+	public function current_permissions(): HasOne
+	{
+		return $this->base_class->current_permissions();
 	}
 
 	abstract public function photos(): Relation;

@@ -27,7 +27,6 @@ class AlbumBuilder extends NSQueryBuilder
 {
 	/** @phpstan-use FixedQueryBuilderTrait<Album> */
 	use FixedQueryBuilderTrait;
-	use SharedWithCurrentUserQuery;
 
 	/**
 	 * Get the hydrated models without eager loading.
@@ -64,7 +63,6 @@ class AlbumBuilder extends NSQueryBuilder
 			$this->addSelect([
 				'min_taken_at' => $this->getTakenAtSQL()->selectRaw('MIN(taken_at)'),
 				'max_taken_at' => $this->getTakenAtSQL()->selectRaw('MAX(taken_at)'),
-				'is_shared_with_current_user' => $this->sharedWithCurrentUser('albums')->selectRaw('count(*)'),
 				'num_children' => $this->applyVisibilityConditioOnSubalbums($countChildren, $isAdmin, $userID),
 				'num_photos' => $this->applyVisibilityConditioOnPhotos($countPhotos, $isAdmin, $userID),
 			]);
@@ -164,7 +162,7 @@ class AlbumBuilder extends NSQueryBuilder
 		$countQuery->join('base_albums', 'base_albums.id', '=', 'a.id');
 
 		if ($userID !== null) {
-			// We must left join with `user_base_album` if and only if we
+			// We must left join with `access_permissions` if and only if we
 			// restrict the eventual query to the ID of the authenticated
 			// user by a `WHERE`-clause.
 			// If we were doing a left join unconditionally, then some
@@ -175,14 +173,15 @@ class AlbumBuilder extends NSQueryBuilder
 			// See `applyVisibilityFilter` and `appendAccessibilityConditions`
 			// in AlbumQueryPolicy.
 			$countQuery->leftJoin(
-				'user_base_album',
+				'access_permissions',
 				function (JoinClause $join) use ($userID) {
 					$join
-						->on('user_base_album.base_album_id', '=', 'base_albums.id')
-						->where('user_base_album.user_id', '=', $userID);
+						->on('access_permissions.base_album_id', '=', 'base_albums.id')
+						->where('access_permissions.user_id', '=', $userID);
 				}
 			);
 		}
+
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
 		// "OR"-clause.
@@ -198,7 +197,7 @@ class AlbumBuilder extends NSQueryBuilder
 			if ($userID !== null) {
 				$query2
 					->orWhere('base_albums.owner_id', '=', $userID)
-					->orWhere('user_base_album.user_id', '=', $userID);
+					->orWhere('access_permissions.user_id', '=', $userID);
 			}
 		};
 		$countQuery->where($visibilitySubQuery);

@@ -5,14 +5,18 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
+require_once 'TemporaryModels/OptimizeTables.php';
+
 return new class() extends Migration {
+	private const TABLE_NAME = 'access_permissions';
+
 	private const OWNER_ID = 'owner_id';
 	private const USER_ID = 'user_id';
 	private const BASE_ALBUM_ID = 'base_album_id';
 	private const IS_LINK_REQUIRED = 'is_link_required';
 	private const PASSWORD = 'password';
 	private const GRANTS_FULL_PHOTO_ACCESS = 'grants_full_photo_access';
-	private const GRANTS_DONWLOAD = 'grants_download';
+	private const GRANTS_DOWNLOAD = 'grants_download';
 	private const GRANTS_UPLOAD = 'grants_upload';
 	private const GRANTS_EDIT = 'grants_edit';
 	private const GRANTS_DELETE = 'grants_delete';
@@ -29,6 +33,9 @@ return new class() extends Migration {
 	{
 		$this->createAccesPersmissionTable();
 		DB::transaction(fn () => $this->populateAccessPermissionTable());
+
+		$optimize = new OptimizeTables();
+		$optimize->exec();
 	}
 
 	/**
@@ -36,7 +43,7 @@ return new class() extends Migration {
 	 */
 	public function down(): void
 	{
-		Schema::dropIfExists('access_permissions');
+		Schema::dropIfExists(self::TABLE_NAME);
 	}
 
 	/**
@@ -45,9 +52,9 @@ return new class() extends Migration {
 	private function createAccesPersmissionTable(): void
 	{
 		// Any old data is not relevant.
-		Schema::dropIfExists('access_permissions');
+		Schema::dropIfExists(self::TABLE_NAME);
 
-		Schema::create('access_permissions', function (Blueprint $table) {
+		Schema::create(self::TABLE_NAME, function (Blueprint $table) {
 			$table->bigIncrements('id');
 			// Owner of the access capabilities
 			// (technically we could infer that from the album)
@@ -66,7 +73,7 @@ return new class() extends Migration {
 
 			// Grants capabilities
 			$table->boolean(self::GRANTS_FULL_PHOTO_ACCESS)->nullable(false)->default(false);
-			$table->boolean(self::GRANTS_DONWLOAD)->nullable(false)->default(false);
+			$table->boolean(self::GRANTS_DOWNLOAD)->nullable(false)->default(false);
 			$table->boolean(self::GRANTS_UPLOAD)->nullable(false)->default(false);
 			$table->boolean(self::GRANTS_EDIT)->nullable(false)->default(false);
 			$table->boolean(self::GRANTS_DELETE)->nullable(false)->default(false);
@@ -81,37 +88,37 @@ return new class() extends Migration {
 
 	private function populateAccessPermissionTable(): void
 	{
-		$baseAlbums = DB::table('base_albums')->get();
+		$baseAlbums = DB::table('base_albums')->where('is_public', '=', true)->get();
 		foreach ($baseAlbums as $baseAlbum) {
-			if ($baseAlbum->is_public) {
-				DB::table('access_permissions')->
-				insert([
-					self::OWNER_ID => $baseAlbum->owner_id,
-					self::USER_ID => null,
-					self::BASE_ALBUM_ID => $baseAlbum->id,
-					self::IS_LINK_REQUIRED => $baseAlbum->is_link_required,
-					self::PASSWORD => $baseAlbum->password,
-					self::GRANTS_FULL_PHOTO_ACCESS => $baseAlbum->grants_full_photo_access,
-					self::GRANTS_DONWLOAD => $baseAlbum->grants_download,
-					self::GRANTS_UPLOAD => false,
-					self::GRANTS_EDIT => false,
-					self::GRANTS_DELETE => false,
-				]);
-			}
+			DB::table(self::TABLE_NAME)->
+			insert([
+				self::OWNER_ID => $baseAlbum->owner_id,
+				self::USER_ID => null,
+				self::BASE_ALBUM_ID => $baseAlbum->id,
+				self::IS_LINK_REQUIRED => $baseAlbum->is_link_required,
+				self::PASSWORD => $baseAlbum->password,
+				self::GRANTS_FULL_PHOTO_ACCESS => $baseAlbum->grants_full_photo_access,
+				self::GRANTS_DOWNLOAD => $baseAlbum->grants_download,
+				self::GRANTS_UPLOAD => false,
+				self::GRANTS_EDIT => false,
+				self::GRANTS_DELETE => false,
+			]);
 		}
 
 		// Loop over every base album
-		$currentShares = DB::table('user_base_album')->join('base_albums', 'base_album_id', '=', 'user_base_album.id')->select([
-			'base_album_id',
-			self::USER_ID,
-			self::OWNER_ID,
-			self::GRANTS_DONWLOAD,
-			self::GRANTS_FULL_PHOTO_ACCESS,
-		])
-		->get();
+		$currentShares = DB::table('user_base_album')
+			->join('base_albums', 'base_album_id', '=', 'user_base_album.id')
+			->select([
+				'base_album_id',
+				self::USER_ID,
+				self::OWNER_ID,
+				self::GRANTS_DOWNLOAD,
+				self::GRANTS_FULL_PHOTO_ACCESS,
+			])
+			->get();
 
 		foreach ($currentShares as $share) {
-			DB::table('access_permissions')->
+			DB::table(self::TABLE_NAME)->
 			insert([
 				self::OWNER_ID => $share->owner_id,
 				self::USER_ID => $share->user_id,
@@ -119,7 +126,7 @@ return new class() extends Migration {
 				self::IS_LINK_REQUIRED => false,
 				self::PASSWORD => null,
 				self::GRANTS_FULL_PHOTO_ACCESS => $share->grants_full_photo_access,
-				self::GRANTS_DONWLOAD => $share->grants_download,
+				self::GRANTS_DOWNLOAD => $share->grants_download,
 				self::GRANTS_UPLOAD => false,
 				self::GRANTS_EDIT => false,
 				self::GRANTS_DELETE => false,

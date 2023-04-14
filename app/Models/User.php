@@ -111,7 +111,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	{
 		return $this->belongsToMany(
 			BaseAlbumImpl::class,
-			'user_base_album',
+			'access_permissions',
 			'user_id',
 			'base_album_id'
 		);
