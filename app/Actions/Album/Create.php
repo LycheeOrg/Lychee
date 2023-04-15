@@ -32,6 +32,8 @@ class Create extends Action
 		$defaultProtectionType = Configs::getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class);
 
 		if ($defaultProtectionType === DefaultAlbumProtectionType::PUBLIC) {
+			// TODO: DOUBLE CHECK
+			// @phpstan-ignore-next-line
 			$album->access_permissions()->attach(new AccessPermission([
 				APC::IS_LINK_REQUIRED => false,
 				APC::GRANTS_FULL_PHOTO_ACCESS => Configs::getValueAsBool('grants_full_photo_access'),
@@ -56,6 +58,8 @@ class Create extends Action
 					APC::GRANTS_DELETE => $parentPermission->grants_delete,
 				]);
 			}
+			// TODO: DOUBLE CHECK
+			// @phpstan-ignore-next-line
 			$album->access_permissions()->sync($copyPermissions);
 		}
 

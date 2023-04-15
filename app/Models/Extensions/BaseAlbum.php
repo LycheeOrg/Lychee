@@ -13,6 +13,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -76,6 +77,17 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	public function owner(): BelongsTo
 	{
 		return $this->base_class->owner();
+	}
+
+	/**
+	 * Returns the relationship between an album and all users with whom
+	 * this album is shared.
+	 *
+	 * @return BelongsToMany
+	 */
+	public function shared_with(): BelongsToMany
+	{
+		return $this->base_class->shared_with();
 	}
 
 	/**

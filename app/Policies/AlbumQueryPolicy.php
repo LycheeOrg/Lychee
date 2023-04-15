@@ -177,7 +177,7 @@ class AlbumQueryPolicy
 						->whereIn(APC::COMPUTED_ACCESS_PERMISSIONS . '.base_album_id', $unlockedAlbumIDs)
 				)
 				->when($userID !== null,
-					fn (BaseBuilder $q) => $q
+					fn (Builder $q) => $q
 						->orWhere('base_albums.owner_id', '=', $userID)
 				);
 		};

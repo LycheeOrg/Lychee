@@ -20,6 +20,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
@@ -98,6 +99,8 @@ use Illuminate\Support\Facades\Auth;
  * @property int                              $owner_id
  * @property User                             $owner
  * @property bool                             $is_nsfw
+ * @property Collection                       $shared_with
+ * @property int|null                         $shared_with_count
  * @property PhotoSortingCriterion|null       $sorting
  * @property string|null                      $sorting_col
  * @property string|null                      $sorting_order
@@ -182,6 +185,22 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	public function owner(): BelongsTo
 	{
 		return $this->belongsTo(User::class, 'owner_id', 'id');
+	}
+
+	/**
+	 * Returns the relationship between an album and all users with whom
+	 * this album is shared.
+	 *
+	 * @return BelongsToMany
+	 */
+	public function shared_with(): BelongsToMany
+	{
+		return $this->belongsToMany(
+			User::class,
+			'access_permissions',
+			'base_album_id',
+			'user_id'
+		)->whereNotNull('user_id');
 	}
 
 	/**
