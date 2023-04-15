@@ -92,7 +92,7 @@ class AlbumQueryPolicy
 	 * The method silently assumes that the SELECT clause contains the tables
 	 *
 	 *  - **`base_albums`** and
-	 *  - **`user_base_album`**.
+	 *  - **`computed_access_permissions`**.
 	 *
 	 * Moreover, the raw OR-clauses are added.
 	 * They are not wrapped into a nesting braces `()`.

@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\QueryBuilderException;
@@ -11,7 +12,6 @@ use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
-use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Auth;
 
 class PhotoQueryPolicy
@@ -45,7 +45,7 @@ class PhotoQueryPolicy
 	 */
 	public function applyVisibilityFilter(FixedQueryBuilder $query): FixedQueryBuilder
 	{
-		$this->prepareModelQueryOrFail($query, false, true, true);
+		$this->prepareModelQueryOrFail($query, false, true);
 
 		if (Auth::user()?->may_administrate === true) {
 			return $query;
@@ -100,7 +100,7 @@ class PhotoQueryPolicy
 	 */
 	public function applySearchabilityFilter(FixedQueryBuilder $query, ?Album $origin = null): FixedQueryBuilder
 	{
-		$this->prepareModelQueryOrFail($query, true, false, false);
+		$this->prepareModelQueryOrFail($query, true, false);
 
 		// If origin is set, also restrict the search result for admin
 		// to photos which are in albums below origin.
@@ -113,15 +113,15 @@ class PhotoQueryPolicy
 
 		if (Auth::user()?->may_administrate === true) {
 			return $query;
-		} else {
-			return $query->where(function (Builder $query) use ($origin) {
-				$this->appendSearchabilityConditions(
-					$query->getQuery(),
-					$origin?->_lft,
-					$origin?->_rgt
-				);
-			});
 		}
+
+		return $query->where(function (Builder $query) use ($origin) {
+			$this->appendSearchabilityConditions(
+				$query->getQuery(),
+				$origin?->_lft,
+				$origin?->_rgt
+			);
+		});
 	}
 
 	/**
@@ -200,29 +200,16 @@ class PhotoQueryPolicy
 	 * @param FixedQueryBuilder $query         the query to prepare
 	 * @param bool              $addAlbums     if true, joins photo query with (parent) albums
 	 * @param bool              $addBaseAlbums if true, joins photos query with (parent) base albums
-	 * @param bool              $addShares     if true, joins photo query with user share table of (parent) album
 	 *
 	 * @throws InternalLycheeException
 	 */
-	private function prepareModelQueryOrFail(FixedQueryBuilder $query, bool $addAlbums, bool $addBaseAlbums, bool $addShares): void
+	private function prepareModelQueryOrFail(FixedQueryBuilder $query, bool $addAlbums, bool $addBaseAlbums): void
 	{
 		$model = $query->getModel();
 		$table = $query->getQuery()->from;
 		if (!($model instanceof Photo && $table === 'photos')) {
 			throw new InvalidQueryModelException('photo');
 		}
-
-		// We must only add the share, i.e. left join with `user_base_album`,
-		// if and only if we restrict the eventual query to the ID of the
-		// authenticated user by a `WHERE`-clause.
-		// If we were doing a left join unconditionally, then some
-		// photos might appear multiple times as part of the result
-		// because the parent album of a photo might be shared with more than
-		// one user.
-		// Hence, we must restrict the `LEFT JOIN` to the user ID which
-		// is also used in the outer `WHERE`-clause.
-		// See `applyVisibilityFilter`.
-		$addShares = $addShares && Auth::check();
 
 		// Ensure that only columns of the photos are selected,
 		// if no specific columns are yet set.
@@ -233,21 +220,27 @@ class PhotoQueryPolicy
 			$query->select(['photos.*']);
 		}
 		if ($addAlbums) {
-			$query->leftJoin('albums', 'albums.id', '=', 'photos.album_id');
+			$query->leftJoin(
+				table: 'albums',
+				first: 'albums.id',
+				operator: '=',
+				second: 'photos.album_id');
 		}
 		if ($addBaseAlbums) {
-			$query->leftJoin('base_albums', 'base_albums.id', '=', 'photos.album_id');
-		}
-		if ($addShares) {
-			$userId = Auth::id();
 			$query->leftJoin(
-				'user_base_album',
-				function (JoinClause $join) use ($userId) {
-					$join
-						->on('user_base_album.base_album_id', '=', 'base_albums.id')
-						->where('user_base_album.user_id', '=', $userId);
-				}
-			);
+				table: 'base_albums',
+				first: 'base_albums.id',
+				operator: '=',
+				second: 'photos.album_id');
 		}
+
+		// Necessary to apply the visibiliy/search conditions
+		$query->joinSub(
+			query: $this->albumQueryPolicy->getComputedAccessPermissionSubQuery(),
+			as: APC::COMPUTED_ACCESS_PERMISSIONS,
+			first: APC::COMPUTED_ACCESS_PERMISSIONS . '.base_album_id',
+			operator: '=',
+			second: 'photos.album_id',
+			type: 'left');
 	}
 }

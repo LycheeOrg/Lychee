@@ -10,8 +10,6 @@ require_once 'TemporaryModels/OptimizeTables.php';
 return new class() extends Migration {
 	private const TABLE_NAME = 'access_permissions';
 
-	private const USER_ID = 'user_id';
-	private const BASE_ALBUM_ID = 'base_album_id';
 	private const IS_LINK_REQUIRED = 'is_link_required';
 	private const PASSWORD = 'password';
 	private const GRANTS_FULL_PHOTO_ACCESS = 'grants_full_photo_access';
@@ -26,7 +24,6 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-		Schema::dropIfExists('user_base_album');
 		$this->dropColumnsBaseAlbumTable();
 	}
 
@@ -35,10 +32,7 @@ return new class() extends Migration {
 	 */
 	public function down(): void
 	{
-		$this->createUserBaseAlbumTable();
-		DB::transaction(fn () => $this->populateUserBaseAlbumTable());
-
-		$this->createBaseAlbumTable();
+		$this->fixBaseAlbumTable();
 		DB::transaction(fn () => $this->populateBaseAlbumTable());
 
 		$optimize = new OptimizeTables();
@@ -64,41 +58,13 @@ return new class() extends Migration {
 		});
 	}
 
-	private function createUserBaseAlbumTable(): void
-	{
-		Schema::create('user_base_album', function (Blueprint $table) {
-			// Column definitions
-			$table->bigIncrements('id')->nullable(false);
-			$table->unsignedInteger('user_id')->nullable(false);
-			$table->char('base_album_id', self::RANDOM_ID_LENGTH)->nullable(false);
-			// Indices and constraint definitions
-			$table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
-			$table->foreign('base_album_id')->references('id')->on('base_albums')->cascadeOnUpdate()->cascadeOnDelete();
-			// This index is required to efficiently filter those albums
-			// which are shared with a particular user
-			$table->unique(['base_album_id', 'user_id']);
-		});
-	}
-
-	private function populateUserBaseAlbumTable(): void
-	{
-		$shared = DB::table(self::TABLE_NAME)->whereNotNull('user_id')->get();
-		foreach ($shared as $share) {
-			DB::table('user_base_album')->
-				insert([
-					self::USER_ID => $share->user_id,
-					self::BASE_ALBUM_ID => $share->base_album_id,
-				]);
-		}
-	}
-
 	/**
 	 * Creates the table `base_albums`.
 	 *
 	 * The table `base_albums` contains all columns of the old table
 	 * `albums` which are common to normal albums and tag albums.
 	 */
-	private function createBaseAlbumTable(): void
+	private function fixBaseAlbumTable(): void
 	{
 		Schema::create('base_albums', function (Blueprint $table) {
 			// Column definitions
