@@ -25,7 +25,7 @@ class AlbumIDRule implements ValidationRule
 		return
 			($value === null && $this->isNullable) ||
 			strlen($value) === RandomID::ID_LENGTH ||
-			array_key_exists($value, SmartAlbumType::values());
+			SmartAlbumType::tryFrom($value) !== null;
 	}
 
 	/**

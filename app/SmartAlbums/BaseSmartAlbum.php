@@ -56,8 +56,8 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	{
 		try {
 			$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
-			$this->id = __('lychee.' . $id->name) ?? $id->name;
-			$this->title = $id->name;
+			$this->id = $id->value;
+			$this->title = __('lychee.' . $id->name) ?? $id->name;
 			$this->is_public = $is_public;
 			$this->grants_download = Configs::getValueAsBool('grants_download');
 			$this->grants_full_photo_access = Configs::getValueAsBool('grants_full_photo_access');
