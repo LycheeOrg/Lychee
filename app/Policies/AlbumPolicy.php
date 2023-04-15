@@ -138,10 +138,13 @@ class AlbumPolicy extends BasePolicy
 		$default = Configs::getValueAsBool('grants_download');
 
 		// The root album always uses the global setting
+		// TODO: Is this really required ??
 		if ($abstractAlbum === null) {
 			return $default;
 		}
 
+		// User is logged in
+		// Or User can download.
 		if ($abstractAlbum instanceof BaseSmartAlbum) {
 			return $user !== null || $abstractAlbum->public_permissions?->grants_download === true;
 		}
@@ -354,13 +357,13 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function isUnlocked(BaseAlbum|BaseAlbumImpl $album): bool
 	{
-		return in_array($album->id, $this->getUnlockedAlbumIDs(), true);
+		return in_array($album->id, self::getUnlockedAlbumIDs(), true);
 	}
 
 	/**
 	 * @return string[]
 	 */
-	public function getUnlockedAlbumIDs(): array
+	public static function getUnlockedAlbumIDs(): array
 	{
 		return Session::get(self::UNLOCKED_ALBUMS_SESSION_KEY, []);
 	}

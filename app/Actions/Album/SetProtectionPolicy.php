@@ -48,7 +48,7 @@ class SetProtectionPolicy extends Action
 		$active_permissions->owner_id = $album->owner_id;
 		$active_permissions->base_album_id = $album->id;
 
-		$album->public_permissions = $active_permissions;
+		// $album->public_permissions = $active_permissions;
 
 		// Set password if provided
 		if ($shallSetPassword) {
@@ -61,8 +61,9 @@ class SetProtectionPolicy extends Action
 				$active_permissions->password = null;
 			}
 		}
+		$album->public_permissions()->save($active_permissions);
 		$active_permissions->save();
-		$album->save();
+		// $album->save();
 
 		// Reset permissions for photos
 		$album->photos()->update(['photos.is_public' => false]);

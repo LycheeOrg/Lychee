@@ -7,7 +7,6 @@ use App\Contracts\Exceptions\InternalLycheeException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\AlbumBuilder;
@@ -24,15 +23,6 @@ use Illuminate\Support\Facades\DB;
  */
 class AlbumQueryPolicy
 {
-	protected AlbumFactory $albumFactory;
-	protected AlbumPolicy $albumPolicy;
-
-	public function __construct(AlbumFactory $albumFactory, AlbumPolicy $albumPolicy)
-	{
-		$this->albumFactory = $albumFactory;
-		$this->albumPolicy = $albumPolicy;
-	}
-
 	/**
 	 * Restricts an album query to _visible_ albums.
 	 *
@@ -45,6 +35,8 @@ class AlbumQueryPolicy
 	 *  - the user is the owner of the album
 	 *  - the album is shared with the user
 	 *  - the album is public and the album does not require a direct link
+	 *
+	 * Note this makes use of the fact that when an album is NOT shared nor public, the value of is_link_required is NULL.
 	 *
 	 * @param AlbumBuilder|TagAlbumBuilder $query
 	 *
@@ -69,14 +61,10 @@ class AlbumQueryPolicy
 		// defined on the common base model for all albums.
 		$visibilitySubQuery = function (AlbumBuilder|TagAlbumBuilder $query2) use ($userID) {
 			$query2
-				->where(
-					fn (AlbumBuilder|TagAlbumBuilder $q) => $q
-						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
-				);
-			if ($userID !== null) {
-				$query2
-					->orWhere('base_albums.owner_id', '=', $userID);
-			}
+				->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
+				->when($userID !== null,
+					fn ($q) => $q
+						->orWhere('base_albums.owner_id', '=', $userID));
 		};
 
 		return $query->where($visibilitySubQuery);
@@ -97,6 +85,8 @@ class AlbumQueryPolicy
 	 * Moreover, the raw OR-clauses are added.
 	 * They are not wrapped into a nesting braces `()`.
 	 *
+	 * Note this makes use of the fact that when an album is NOT shared nor public, the value of is_link_required is NULL.
+	 *
 	 * @param BaseBuilder $query
 	 *
 	 * @return BaseBuilder
@@ -105,24 +95,26 @@ class AlbumQueryPolicy
 	 */
 	public function appendAccessibilityConditions(BaseBuilder $query): BaseBuilder
 	{
-		$unlockedAlbumIDs = $this->albumPolicy->getUnlockedAlbumIDs();
+		$unlockedAlbumIDs = AlbumPolicy::getUnlockedAlbumIDs();
 		$userID = Auth::id();
 
 		try {
 			$query
 				->orWhere(
 					fn (BaseBuilder $q) => $q
-						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
+						->whereNotNull(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED)
+						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_PASSWORD_REQUIRED, '=', false)
 				)
 				->orWhere(
 					fn (BaseBuilder $q) => $q
-						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', true)
+						->whereNotNull(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED)
+						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_PASSWORD_REQUIRED, '=', true)
 						->whereIn(APC::COMPUTED_ACCESS_PERMISSIONS . '.base_album_id', $unlockedAlbumIDs)
+				)
+				->when($userID !== null,
+					fn (BaseBuilder $q) => $q
+						->orWhere('base_albums.owner_id', '=', $userID)
 				);
-			if ($userID !== null) {
-				$query
-					->orWhere('base_albums.owner_id', '=', $userID);
-			}
 
 			return $query;
 		} catch (\Throwable $e) {
@@ -133,8 +125,7 @@ class AlbumQueryPolicy
 	/**
 	 * Restricts an album query to _reachable_ albums.
 	 *
-	 * An album is called _reachable_, if it is _visible_ and _accessible_
-	 * simultaneously.
+	 * An album is called _reachable_, if it is _visible_ and _accessible_ simultaneously.
 	 * An album is reachable, if the user is able to see the album
 	 * within its parent album and has the privilege to enter it.
 	 *
@@ -164,24 +155,30 @@ class AlbumQueryPolicy
 			return $query;
 		}
 
-		$unlockedAlbumIDs = $this->albumPolicy->getUnlockedAlbumIDs();
+		$unlockedAlbumIDs = AlbumPolicy::getUnlockedAlbumIDs();
+		$userID = Auth::id();
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
 		// "OR"-clause.
 		// The sub-query only uses properties (i.e. columns) which are
 		// defined on the common base model for all albums.
-		$reachabilitySubQuery = function (Builder $query2) use ($unlockedAlbumIDs) {
+		$reachabilitySubQuery = function (Builder $query2) use ($unlockedAlbumIDs, $userID) {
 			$query2
 				->where(
 					fn (Builder $q) => $q
 						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
-						->whereNull(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_PASSWORD_REQUIRED)
+						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_PASSWORD_REQUIRED, '=', false)
 				)
 				->orWhere(
 					fn (Builder $q) => $q
 						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
+						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_PASSWORD_REQUIRED, '=', true)
 						->whereIn(APC::COMPUTED_ACCESS_PERMISSIONS . '.base_album_id', $unlockedAlbumIDs)
+				)
+				->when($userID !== null,
+					fn (BaseBuilder $q) => $q
+						->orWhere('base_albums.owner_id', '=', $userID)
 				);
 		};
 
@@ -254,6 +251,13 @@ class AlbumQueryPolicy
 	/**
 	 * Adds the conditions of an unreachable album to the query.
 	 *
+	 * An album is called _unreachable_, if it is
+	 *   - _invisible_
+	 *   - or not _accessible_
+	 *
+	 * It is the opposite of "reachable", if the user is not able to see the album
+	 * within its parent album or does not have the privilege to enter it.
+	 *
 	 * **Attention:** This method is only meant for internal use by
 	 * this class or {@link PhotoQueryPolicy}.
 	 * Use {@link AlbumQueryPolicy::applyBrowsabilityFilter()}
@@ -290,19 +294,17 @@ class AlbumQueryPolicy
 			throw new LycheeInvalidArgumentException('$originLeft and $originRight must simultaneously either be integers, strings or null');
 		}
 
-		$unlockedAlbumIDs = $this->albumPolicy->getUnlockedAlbumIDs();
+		$unlockedAlbumIDs = AlbumPolicy::getUnlockedAlbumIDs();
+		$userID = Auth::id();
 
 		try {
 			// There are inner albums ...
 			$builder
 				->from('albums', 'inner')
-				->join('base_albums as inner_base_albums', 'inner_base_albums.id', '=', 'inner.id')
-				->joinSub(
-					query: $this->getComputedAccessPermissionSubQuery(),
-					as: 'inner_' . APC::COMPUTED_ACCESS_PERMISSIONS,
-					first: 'inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.base_album_id',
-					operator: '=',
-					second: 'inner_base_albums.id');
+				->join('base_albums as inner_base_albums', 'inner_base_albums.id', '=', 'inner.id');
+
+			$this->joinSubComputedAccessPermissions($builder, 'inner_base_albums.id', 'left', 'inner_');
+
 			// ... on the path from the origin ...
 			if (is_int($originLeft)) {
 				// (We must exclude the origin as an inner node
@@ -324,27 +326,23 @@ class AlbumQueryPolicy
 				->whereColumn('inner._lft', '<=', 'albums._lft')
 				->whereColumn('inner._rgt', '>=', 'albums._rgt');
 			// ... which are unreachable.
+			// This is dubious.
+			// TODO: DOUBLE CHECK THE LOGIC
 			$builder
 				->where(
 					fn (BaseBuilder $q) => $q
-						->where('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', true)
-						->where('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_PASSWORD_REQUIRED, '=', true)
+						->where('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '<>', true)
+						->orWhere('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_PASSWORD_REQUIRED, '=', true)
 				)
 				->where(
 					fn (BaseBuilder $q) => $q
-						->where('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', true)
+						->where('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '<>', true)
 						->orWhereNotIn('inner_base_albums.id', $unlockedAlbumIDs)
+				)
+				->when($userID !== null,
+					fn (BaseBuilder $q) => $q
+						->where('base_albums.owner_id', '<>', $userID)
 				);
-			// if ($userID !== null) {
-			// 	$builder
-			// 		->where('inner_base_albums.owner_id', '<>', $userID)
-			// 		->whereNotExists(
-			// 			fn (BaseBuilder $q) => $q
-			// 				->from('user_base_album', 'user_inner_base_album')
-			// 				->whereColumn('user_inner_base_album.base_album_id', '=', 'inner_base_albums.id')
-			// 				->where('user_inner_base_album.user_id', '=', $userID)
-			// 		);
-			// }
 
 			return $builder;
 		} catch (\InvalidArgumentException $e) {
@@ -387,18 +385,14 @@ class AlbumQueryPolicy
 			$query->join('base_albums', 'base_albums.id', '=', $table . '.id');
 		}
 
-		$query->joinSub(
-			query: $this->getComputedAccessPermissionSubQuery(),
-			as: APC::COMPUTED_ACCESS_PERMISSIONS,
-			first: APC::COMPUTED_ACCESS_PERMISSIONS . '.base_album_id',
-			operator: '=',
-			second: 'base_albums.id', type: 'inner');
+		$this->joinSubComputedAccessPermissions($query, $table . '.id', 'left');
 	}
 
 	/**
 	 * Generate the computed property for the possibly logged-in user.
 	 *
 	 * This produces a sub table with base_album_id where we compute:
+	 * - base_album_id so that we can link those computed property to the base_album table.
 	 * - is_link_required => MIN as we want to ensure that a logged in user can see the shared album
 	 * - grants_full_photo_access => MAX as the public setting takes priority
 	 * - grants_download => MAX as the public setting takes priority
@@ -406,25 +400,71 @@ class AlbumQueryPolicy
 	 * - grants_edit => MAX as the shared setting takes priority
 	 * - grants_delete => MAX as the shared setting takes priority
 	 * - is_password_required => If password is null, ISNULL returns 1. We use MAX as the shared setting takes priority. We then want the negation on that.
-	 * - base_album_id so that we can link those computed property to the base_album table.
 	 *
 	 * @return BaseBuilder
 	 */
-	public function getComputedAccessPermissionSubQuery(): BaseBuilder
+	private function getComputedAccessPermissionSubQuery(): BaseBuilder
 	{
-		return DB::table('access_permissions', APC::COMPUTED_ACCESS_PERMISSIONS)->select([
+		$select = [
+			'base_album_id',
 			DB::raw('MIN(' . APC::IS_LINK_REQUIRED . ') as ' . APC::IS_LINK_REQUIRED),
 			DB::raw('MAX(' . APC::GRANTS_FULL_PHOTO_ACCESS . ') as ' . APC::GRANTS_FULL_PHOTO_ACCESS),
 			DB::raw('MAX(' . APC::GRANTS_DOWNLOAD . ') as ' . APC::GRANTS_DOWNLOAD),
 			DB::raw('MAX(' . APC::GRANTS_UPLOAD . ') as ' . APC::GRANTS_UPLOAD),
 			DB::raw('MAX(' . APC::GRANTS_EDIT . ') as ' . APC::GRANTS_EDIT),
 			DB::raw('MAX(' . APC::GRANTS_DELETE . ') as ' . APC::GRANTS_DELETE),
-			// If password is null, ISNULL returns 1. We want the negation on that.
-			DB::raw('1 - MAX(ISNULL(password)) as ' . APC::IS_PASSWORD_REQUIRED),
-			'base_album_id',
-		])
+		];
+
+		// If password is null, ISNULL returns 1. We want the negation on that.
+		if (DB::getDriverName() === 'sqlite') {
+			$passwordIsDefined = 'IFNULL(password,"")';
+			$passwordLength = 'LENGTH(' . $passwordIsDefined . ')';
+			$passwordLengthIsBetween0and1 = 'MIN(' . $passwordLength . ',1)';
+			$select[] = DB::raw($passwordLengthIsBetween0and1 . ' as ' . APC::IS_PASSWORD_REQUIRED);
+		} else {
+			$select[] = DB::raw('1 - MAX(ISNULL(password)) as ' . APC::IS_PASSWORD_REQUIRED);
+		}
+
+		return DB::table('access_permissions', APC::COMPUTED_ACCESS_PERMISSIONS)->select($select)
 			->when(Auth::check(), fn ($q) => $q->where('user_id', '=', Auth::id()))
 			->orWhereNull('user_id')
 			->groupBy('base_album_id');
+	}
+
+	/**
+	 * Helper to join the the computed property for the possibly logged-in user.
+	 *
+	 * This produces a sub table with base_album_id where we compute:
+	 * - base_album_id so that we can link those computed property to the album table.
+	 * - is_link_required => MIN as we want to ensure that a logged in user can see the shared album
+	 * - grants_full_photo_access => MAX as the public setting takes priority
+	 * - grants_download => MAX as the public setting takes priority
+	 * - grants_upload => MAX as the shared setting takes priority
+	 * - grants_edit => MAX as the shared setting takes priority
+	 * - grants_delete => MAX as the shared setting takes priority
+	 * - is_password_required => If password is null, ISNULL returns 1. We use MAX as the shared setting takes priority. We then want the negation on that.
+	 *
+	 * @param AlbumBuilder|FixedQueryBuilder|BaseBuilder $query
+	 * @param string                                     $second
+	 * @param string                                     $prefix
+	 * @param string                                     $type
+	 *
+	 * @return void
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function joinSubComputedAccessPermissions(
+		AlbumBuilder|FixedQueryBuilder|BaseBuilder $query,
+		string $second = 'base_albums.id',
+		string $type = 'left',
+		string $prefix = '',
+	): void {
+		$query->joinSub(
+			query: $this->getComputedAccessPermissionSubQuery(),
+			as: $prefix . APC::COMPUTED_ACCESS_PERMISSIONS,
+			first: $prefix . APC::COMPUTED_ACCESS_PERMISSIONS . '.base_album_id',
+			operator: '=',
+			second: $second,
+			type: $type);
 	}
 }

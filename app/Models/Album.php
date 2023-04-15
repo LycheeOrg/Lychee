@@ -25,24 +25,22 @@ use Kalnoy\Nestedset\NodeTrait;
 /**
  * Class Album.
  *
- * @property string                            $id
- * @property string|null                       $parent_id
- * @property Album|null                        $parent
- * @property Collection<Album>                 $children
- * @property int                               $num_children      The number of children.
- * @property Collection<Photo>                 $all_photos
- * @property int                               $num_photos        The number of photos in this album (excluding photos in subalbums).
- * @property string                            $license
- * @property string|null                       $cover_id
- * @property Photo|null                        $cover
- * @property string|null                       $track_short_path
- * @property string|null                       $track_url
- * @property int                               $_lft
- * @property int                               $_rgt
- * @property \App\Models\BaseAlbumImpl         $base_class
- * @property \App\Models\User|null             $owner
- * @property Collection<int, \App\Models\User> $shared_with
- * @property int|null                          $shared_with_count
+ * @property string                    $id
+ * @property string|null               $parent_id
+ * @property Album|null                $parent
+ * @property Collection<Album>         $children
+ * @property int                       $num_children     The number of children.
+ * @property Collection<Photo>         $all_photos
+ * @property int                       $num_photos       The number of photos in this album (excluding photos in subalbums).
+ * @property string                    $license
+ * @property string|null               $cover_id
+ * @property Photo|null                $cover
+ * @property string|null               $track_short_path
+ * @property string|null               $track_url
+ * @property int                       $_lft
+ * @property int                       $_rgt
+ * @property \App\Models\BaseAlbumImpl $base_class
+ * @property \App\Models\User|null     $owner
  *
  * @method static AlbumBuilder query()                       Begin querying the model.
  * @method static AlbumBuilder with(array|string $relations) Begin querying the model with eager loading.
@@ -84,7 +82,6 @@ class Album extends BaseAlbum implements Node
 		'num_photos' => 'integer',
 		'_lft' => 'integer',
 		'_rgt' => 'integer',
-		'is_shared_with_current_user' => 'boolean',
 	];
 
 	/**

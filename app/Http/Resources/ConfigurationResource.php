@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
+use App\Enum\DefaultAlbumProtectionType;
 use App\Exceptions\Handler;
 use App\Metadata\Versions\InstalledVersion;
 use App\Models\Configs;
@@ -108,7 +109,7 @@ class ConfigurationResource extends JsonResource
 
 			'album_subtitle_type' => Configs::getValueAsString('album_subtitle_type'),
 			'check_for_updates' => Configs::getValueAsBool('check_for_updates'),
-			'default_album_protection' => Configs::getValueAsString('default_album_protection'),
+			'default_album_protection' => Configs::getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class),
 			'feeds' => [],
 			'footer_additional_text' => Configs::getValueAsString('footer_additional_text'),
 			'footer_show_copyright' => Configs::getValueAsBool('footer_show_copyright'),

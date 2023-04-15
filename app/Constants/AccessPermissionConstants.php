@@ -16,4 +16,5 @@ class AccessPermissionConstants
 	public const GRANTS_EDIT = 'grants_edit';
 	public const GRANTS_DELETE = 'grants_delete';
 	public const IS_PASSWORD_REQUIRED = 'is_password_required';
+	public const PASSWORD = 'password';
 }

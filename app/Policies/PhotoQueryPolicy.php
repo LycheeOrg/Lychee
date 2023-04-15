@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\QueryBuilderException;
@@ -235,12 +234,9 @@ class PhotoQueryPolicy
 		}
 
 		// Necessary to apply the visibiliy/search conditions
-		$query->joinSub(
-			query: $this->albumQueryPolicy->getComputedAccessPermissionSubQuery(),
-			as: APC::COMPUTED_ACCESS_PERMISSIONS,
-			first: APC::COMPUTED_ACCESS_PERMISSIONS . '.base_album_id',
-			operator: '=',
-			second: 'photos.album_id',
-			type: 'left');
+		$this->albumQueryPolicy->joinSubComputedAccessPermissions(
+			query: $query,
+			second: 'photos.album_id'
+		);
 	}
 }

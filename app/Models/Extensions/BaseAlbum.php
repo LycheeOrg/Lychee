@@ -25,21 +25,21 @@ use Illuminate\Support\Carbon;
  * deleted by a user at runtime or more accurately which can be persisted
  * to the DB.
  *
- * @property int                          $legacy_id
- * @property Carbon                       $created_at
- * @property Carbon                       $updated_at
- * @property string|null                  $description
- * @property bool                         $is_nsfw
- * @property int                          $owner_id
- * @property User                         $owner
- * @property Collection<AccessPermission> $access_permissions
- * @property AccessPermission|null        $current_user_permissions
- * @property AccessPermission|null        $public_permissions
- * @property Carbon|null                  $min_taken_at
- * @property Carbon|null                  $max_taken_at
- * @property PhotoSortingCriterion|null   $sorting
- * @property AlbumProtectionPolicy        $policy
- * @property BaseAlbumImpl                $base_class
+ * @property int                              $legacy_id
+ * @property Carbon                           $created_at
+ * @property Carbon                           $updated_at
+ * @property string|null                      $description
+ * @property bool                             $is_nsfw
+ * @property int                              $owner_id
+ * @property User                             $owner
+ * @property Collection<int,AccessPermission> $access_permissions
+ * @property AccessPermission|null            $current_user_permissions
+ * @property AccessPermission|null            $public_permissions
+ * @property Carbon|null                      $min_taken_at
+ * @property Carbon|null                      $max_taken_at
+ * @property PhotoSortingCriterion|null       $sorting
+ * @property AlbumProtectionPolicy            $policy
+ * @property BaseAlbumImpl                    $base_class
  */
 abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 {

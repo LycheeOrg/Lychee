@@ -2,11 +2,12 @@
 
 namespace App\Models\Extensions;
 
+use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
+use App\Policies\AlbumQueryPolicy;
 use Illuminate\Database\Query\Builder;
-use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
@@ -161,26 +162,16 @@ class AlbumBuilder extends NSQueryBuilder
 
 		$countQuery->join('base_albums', 'base_albums.id', '=', 'a.id');
 
-		if ($userID !== null) {
-			// We must left join with `access_permissions` if and only if we
-			// restrict the eventual query to the ID of the authenticated
-			// user by a `WHERE`-clause.
-			// If we were doing a left join unconditionally, then some
-			// albums might appear multiple times as part of the result
-			// because an album might be shared with more than one user.
-			// Hence, we must restrict the `LEFT JOIN` to the user ID which
-			// is also used in the outer `WHERE`-clause.
-			// See `applyVisibilityFilter` and `appendAccessibilityConditions`
-			// in AlbumQueryPolicy.
-			$countQuery->leftJoin(
-				'access_permissions',
-				function (JoinClause $join) use ($userID) {
-					$join
-						->on('access_permissions.base_album_id', '=', 'base_albums.id')
-						->where('access_permissions.user_id', '=', $userID);
-				}
-			);
-		}
+		$albumQueryPolicy = resolve(AlbumQueryPolicy::class);
+		// We must left join with `conputed_access_permissions`.
+		// We must restrict the `LEFT JOIN` to the user ID which
+		// is also used in the outer `WHERE`-clause.
+		// See `applyVisibilityFilter` and `appendAccessibilityConditions`
+		// in AlbumQueryPolicy.
+		$albumQueryPolicy->joinSubComputedAccessPermissions(
+			query: $countQuery,
+			second: 'base_albums.id'
+		);
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
@@ -188,17 +179,8 @@ class AlbumBuilder extends NSQueryBuilder
 		// The sub-query only uses properties (i.e. columns) which are
 		// defined on the common base model for all albums.
 		$visibilitySubQuery = function ($query2) use ($userID) {
-			$query2
-				->where(
-					fn ($q) => $q
-						->where('base_albums.is_link_required', '=', false)
-						->where('base_albums.is_public', '=', true)
-				);
-			if ($userID !== null) {
-				$query2
-					->orWhere('base_albums.owner_id', '=', $userID)
-					->orWhere('access_permissions.user_id', '=', $userID);
-			}
+			$query2->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.is_link_required', '=', false)
+					->when($userID !== null, fn ($query) => $query->orWhere('base_albums.owner_id', '=', $userID));
 		};
 		$countQuery->where($visibilitySubQuery);
 
@@ -223,42 +205,22 @@ class AlbumBuilder extends NSQueryBuilder
 
 		$countQuery->join('base_albums', 'base_albums.id', '=', 'p.album_id');
 
-		if ($userID !== null) {
-			// We must left join with `user_base_album` if and only if we
-			// restrict the eventual query to the ID of the authenticated
-			// user by a `WHERE`-clause.
-			// If we were doing a left join unconditionally, then some
-			// albums might appear multiple times as part of the result
-			// because an album might be shared with more than one user.
-			// Hence, we must restrict the `LEFT JOIN` to the user ID which
-			// is also used in the outer `WHERE`-clause.
-			// See `applyVisibilityFilter` and `appendAccessibilityConditions`
-			// in AlbumQueryPolicy and PhotoQueryPolicy.
-			$countQuery->leftJoin(
-				'user_base_album',
-				function (JoinClause $join) use ($userID) {
-					$join
-						->on('user_base_album.base_album_id', '=', 'base_albums.id')
-						->where('user_base_album.user_id', '=', $userID);
-				}
-			);
-		}
+		$albumQueryPolicy = resolve(AlbumQueryPolicy::class);
+		$albumQueryPolicy->joinSubComputedAccessPermissions(
+			query: $countQuery,
+			second: 'base_albums.id'
+		);
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
 		// "OR"-clause.
 		$visibilitySubQuery = function ($query2) use ($userID) {
-			$query2->where(
-				fn ($q) => $q
-					->where('base_albums.is_link_required', '=', false)
-					->where('base_albums.is_public', '=', true)
-			);
-			if ($userID !== null) {
-				$query2
-					->orWhere('base_albums.owner_id', '=', $userID)
-					->orWhere('user_base_album.user_id', '=', $userID)
-					->orWhere('p.owner_id', '=', $userID);
-			}
+			$query2->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.is_link_required', '=', false)
+				->when($userID !== null,
+					fn ($query) => $query
+							->orWhere('base_albums.owner_id', '=', $userID)
+							->orWhere('p.owner_id', '=', $userID)
+				);
 			$query2->orWhere('p.is_public', '=', true);
 		};
 

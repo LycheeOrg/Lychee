@@ -2,7 +2,6 @@
 
 namespace App\Relations;
 
-use App\Constants\AccessPermissionConstants as APC;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\OrderSortingType;
@@ -182,6 +181,7 @@ class HasAlbumThumb extends Relation
 			->orderBy('photos.' . ColumnSortingPhotoType::IS_STARRED->value, OrderSortingType::DESC->value)
 			->orderBy('photos.' . $this->sorting->column->value, $this->sorting->order->value)
 			->limit(1);
+
 		if (Auth::user()?->may_administrate !== true) {
 			$bestPhotoIDSelect->where(function (Builder $query2) {
 				$this->photoQueryPolicy->appendSearchabilityConditions(
@@ -195,13 +195,12 @@ class HasAlbumThumb extends Relation
 		$album2Cover = function (BaseBuilder $builder) use ($bestPhotoIDSelect, $albumKeys) {
 			$builder
 				->from('albums as covered_albums')
-				->join('base_albums', 'base_albums.id', '=', 'covered_albums.id')
-				->joinSub(
-					query: $this->albumQueryPolicy->getComputedAccessPermissionSubQuery(),
-					as: APC::COMPUTED_ACCESS_PERMISSIONS,
-					first: APC::COMPUTED_ACCESS_PERMISSIONS . '.base_album_id',
-					operator: '=',
-					second: 'base_albums.id');
+				->join('base_albums', 'base_albums.id', '=', 'covered_albums.id');
+
+			$this->albumQueryPolicy->joinSubComputedAccessPermissions(
+				query: $builder,
+				second: 'base_albums.id'
+			);
 
 			$builder->select(['covered_albums.id AS album_id'])
 				->addSelect(['photo_id' => $bestPhotoIDSelect])

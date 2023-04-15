@@ -2,9 +2,11 @@
 
 namespace App\Actions\Album;
 
-use App\DTO\AlbumProtectionPolicy;
+use App\Constants\AccessPermissionConstants as APC;
+use App\Enum\DefaultAlbumProtectionType;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
+use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
@@ -25,16 +27,37 @@ class Create extends Action
 		$album = new Album();
 		$album->title = $title;
 		$this->set_parent($album, $parentAlbum);
-
-		// We do not transfer the password
-		$album->policy = match (Configs::getValueAsInt('default_album_protection')) {
-			1 => AlbumProtectionPolicy::ofDefaultPrivate(),
-			2 => AlbumProtectionPolicy::ofDefaultPublic(),
-			3 => ($parentAlbum !== null ? AlbumProtectionPolicy::ofBaseAlbum($parentAlbum) : AlbumProtectionPolicy::ofDefaultPrivate()),
-			default => AlbumProtectionPolicy::ofDefaultPrivate() // just to be safe of stupid values
-		};
-
 		$album->save();
+
+		$defaultProtectionType = Configs::getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class);
+
+		if ($defaultProtectionType === DefaultAlbumProtectionType::PUBLIC) {
+			$album->access_permissions()->attach(new AccessPermission([
+				APC::IS_LINK_REQUIRED => false,
+				APC::GRANTS_FULL_PHOTO_ACCESS => Configs::getValueAsBool('grants_full_photo_access'),
+				APC::GRANTS_DOWNLOAD => Configs::getValueAsBool('grants_download'),
+				APC::GRANTS_UPLOAD => false,
+				APC::GRANTS_EDIT => false,
+				APC::GRANTS_DELETE => false,
+				APC::PASSWORD => null,
+			]));
+		}
+
+		if ($defaultProtectionType === DefaultAlbumProtectionType::INHERIT && $parentAlbum !== null) {
+			$parentPermissions = $parentAlbum->access_permissions;
+			$copyPermissions = [];
+			foreach ($parentPermissions as $parentPermission) {
+				$copyPermissions[] = new AccessPermission([
+					APC::IS_LINK_REQUIRED => $parentPermission->is_link_required,
+					APC::GRANTS_FULL_PHOTO_ACCESS => $parentPermission->grants_full_photo_access,
+					APC::GRANTS_DOWNLOAD => $parentPermission->grants_download,
+					APC::GRANTS_UPLOAD => $parentPermission->grants_download,
+					APC::GRANTS_EDIT => $parentPermission->grants_edit,
+					APC::GRANTS_DELETE => $parentPermission->grants_delete,
+				]);
+			}
+			$album->access_permissions()->sync($copyPermissions);
+		}
 
 		return $album;
 	}
