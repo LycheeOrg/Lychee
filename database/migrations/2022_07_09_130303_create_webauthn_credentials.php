@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\Schema;
 return new class() extends Migration {
 	/**
 	 * Run the migrations.
-	 *
-	 * @return void
 	 */
 	public function up(): void
 	{
@@ -23,8 +21,6 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 */
 	public function down(): void
 	{
@@ -38,8 +34,6 @@ return new class() extends Migration {
 	 * Generate the default blueprint for the WebAuthn credentials table.
 	 *
 	 * @param \Illuminate\Database\Schema\Blueprint $table
-	 *
-	 * @return void
 	 */
 	protected static function defaultBlueprint(Blueprint $table): void
 	{
@@ -82,8 +76,6 @@ return new class() extends Migration {
 	 * Generate the default blueprint for the WebAuthn credentials table.
 	 *
 	 * @param \Illuminate\Database\Schema\Blueprint $table
-	 *
-	 * @return void
 	 */
 	protected static function oldTable(Blueprint $table): void
 	{

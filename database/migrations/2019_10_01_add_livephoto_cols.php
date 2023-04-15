@@ -7,10 +7,8 @@ use Illuminate\Support\Facades\Schema;
 return new class() extends Migration {
 	/**
 	 * Run the migrations.
-	 *
-	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		Schema::table('photos', function ($table) {
 			$table->string('livePhotoUrl')->default(null)->after('thumbURL')->nullable();
@@ -27,10 +25,8 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		Schema::table('photos', function (Blueprint $table) {
 			$table->dropColumn('livePhotoContentID');

@@ -6,10 +6,8 @@ use Illuminate\Support\Facades\DB;
 return new class() extends Migration {
 	/**
 	 * Run the migrations.
-	 *
-	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		DB::table('configs')->where('key', 'sorting_Albums_col')->update(['key' => 'sorting_albums_col']);
 		DB::table('configs')->where('key', 'sorting_Albums_order')->update(['key' => 'sorting_albums_order']);
@@ -19,10 +17,8 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		DB::table('configs')->where('key', 'sorting_albums_col')->update(['key' => 'sorting_Albums_col']);
 		DB::table('configs')->where('key', 'sorting_albums_order')->update(['key' => 'sorting_Albums_order']);
