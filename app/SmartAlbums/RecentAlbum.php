@@ -14,7 +14,9 @@ use Illuminate\Support\Carbon;
 class RecentAlbum extends BaseSmartAlbum
 {
 	private static ?self $instance = null;
-	public const ID = SmartAlbumType::RECENT->value;
+	// PHP 8.2
+	// public const ID = SmartAlbumType::RECENT->value;
+	public const ID = 'recent';
 
 	/**
 	 * @throws InvalidFormatException

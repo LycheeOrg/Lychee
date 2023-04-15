@@ -10,7 +10,9 @@ use Illuminate\Database\Eloquent\Builder;
 class UnsortedAlbum extends BaseSmartAlbum
 {
 	private static ?self $instance = null;
-	public const ID = SmartAlbumType::UNSORTED->value;
+	// PHP 8.2
+	// public const ID = SmartAlbumType::UNSORTED->value;
+	public const ID = 'unsorted';
 
 	/**
 	 * @throws ConfigurationKeyMissingException

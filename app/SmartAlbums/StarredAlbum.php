@@ -11,7 +11,9 @@ use Illuminate\Database\Eloquent\Builder;
 class StarredAlbum extends BaseSmartAlbum
 {
 	private static ?self $instance = null;
-	public const ID = SmartAlbumType::STARRED->value;
+	// PHP 8.2
+	// public const ID = SmartAlbumType::STARRED->value;
+	public const ID = 'starred';
 
 	/**
 	 * @throws ConfigurationKeyMissingException
