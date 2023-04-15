@@ -66,7 +66,7 @@ return new class() extends Migration {
 	 */
 	private function fixBaseAlbumTable(): void
 	{
-		Schema::create('base_albums', function (Blueprint $table) {
+		Schema::table('base_albums', function (Blueprint $table) {
 			// Column definitions
 			$table->boolean('is_public')->nullable(false)->default(false);
 			$table->boolean('grants_full_photo')->nullable(false)->default(true);
