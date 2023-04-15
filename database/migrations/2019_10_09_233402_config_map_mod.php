@@ -6,20 +6,16 @@ use Illuminate\Support\Facades\DB;
 return new class() extends Migration {
 	/**
 	 * Run the migrations.
-	 *
-	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		DB::table('configs')->where('key', '=', 'map_display')->update(['cat' => 'Mod Map']);
 	}
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		DB::table('configs')->where('key', '=', 'map_display')->update(['cat' => 'config']);
 	}

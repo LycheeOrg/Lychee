@@ -10,10 +10,8 @@ use function Safe\exec;
 return new class() extends Migration {
 	/**
 	 * Run the migrations.
-	 *
-	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		defined('BOOL') or define('BOOL', '0|1');
 		defined('TERNARY') or define('TERNARY', '0|1|2');
@@ -49,10 +47,8 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		DB::table('configs')->where('key', '=', 'has_ffmpeg')->delete();
 	}

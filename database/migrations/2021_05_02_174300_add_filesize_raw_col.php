@@ -13,10 +13,8 @@ return new class() extends Migration {
 
 	/**
 	 * Run the migrations.
-	 *
-	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		Schema::table(self::TABLE_NAME, function (Blueprint $table) {
 			$table->unsignedBigInteger(self::NEW_COL_NAME)->default(0)->after(self::OLD_COL_NAME);
@@ -59,10 +57,8 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		Schema::table(self::TABLE_NAME, function (Blueprint $table) {
 			$table->string(self::OLD_COL_NAME, 20)->default('')->after(self::NEW_COL_NAME);

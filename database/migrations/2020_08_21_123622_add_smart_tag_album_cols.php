@@ -11,10 +11,8 @@ return new class() extends Migration {
 
 	/**
 	 * Run the migrations.
-	 *
-	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		Schema::table(self::ALBUM, function ($table) {
 			$table->boolean(self::SMART_COLUMN_NAME)->default(false)->after('license');
@@ -26,10 +24,8 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		Schema::table(self::ALBUM, function (Blueprint $table) {
 			$table->dropColumn(self::SMART_COLUMN_NAME);

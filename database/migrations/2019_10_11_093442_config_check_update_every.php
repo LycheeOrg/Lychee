@@ -8,10 +8,8 @@ use Illuminate\Support\Facades\DB;
 return new class() extends Migration {
 	/**
 	 * Run the migrations.
-	 *
-	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		defined('INT') or define('INT', 'int');
 
@@ -28,10 +26,8 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		DB::table('configs')->where('key', '=', 'update_check_every_days')->delete();
 	}

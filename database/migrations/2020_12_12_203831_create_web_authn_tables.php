@@ -9,10 +9,8 @@ return new class() extends Migration {
 
 	/**
 	 * Run the migrations.
-	 *
-	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		defined('STRING') or define('STRING', 'string');
 
@@ -46,10 +44,8 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		defined('STRING_REQ') or define('STRING_REQ', 'string_required');
 

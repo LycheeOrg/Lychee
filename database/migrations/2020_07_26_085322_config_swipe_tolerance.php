@@ -6,10 +6,8 @@ use Illuminate\Support\Facades\DB;
 return new class() extends Migration {
 	/**
 	 * Run the migrations.
-	 *
-	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		defined('INT') or define('INT', 'int');
 		DB::table('configs')->insert([
@@ -32,10 +30,8 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		DB::table('configs')->where('key', '=', 'swipe_tolerance_x')->delete();
 		DB::table('configs')->where('key', '=', 'swipe_tolerance_y')->delete();

@@ -9,10 +9,8 @@ return new class() extends Migration {
 
 	/**
 	 * Run the migrations.
-	 *
-	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		DB::table('configs')->where('value', '=', self::TAKESTAMP)->update(['value' => self::TAKEN_AT]);
 		DB::table('albums')->where('sorting_col', '=', self::TAKESTAMP)->update(['sorting_col' => self::TAKEN_AT]);
@@ -20,10 +18,8 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		DB::table('configs')->where('value', '=', self::TAKEN_AT)->update(['value' => self::TAKESTAMP]);
 		DB::table('albums')->where('sorting_col', '=', self::TAKEN_AT)->update(['sorting_col' => self::TAKESTAMP]);

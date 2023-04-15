@@ -11,10 +11,8 @@ use Safe\Exceptions\DatetimeException;
 return new class() extends Migration {
 	/**
 	 * Run the migrations.
-	 *
-	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		if (DB::table('albums')->count('id') === 0) {
 			if (Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_albums')) {
@@ -49,10 +47,8 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
-	 *
-	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		if (Schema::hasTable('lychee_albums')) {
 			Schema::disableForeignKeyConstraints();

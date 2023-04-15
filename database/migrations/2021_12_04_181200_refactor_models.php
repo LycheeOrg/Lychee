@@ -193,8 +193,6 @@ return new class() extends Migration {
 	 * Outputs an error message.
 	 *
 	 * @param string $msg the message
-	 *
-	 * @return void
 	 */
 	private function printError(string $msg): void
 	{
@@ -205,8 +203,6 @@ return new class() extends Migration {
 	 * Outputs a warning.
 	 *
 	 * @param string $msg the message
-	 *
-	 * @return void
 	 */
 	private function printWarning(string $msg): void
 	{
@@ -217,8 +213,6 @@ return new class() extends Migration {
 	 * Outputs an informational message.
 	 *
 	 * @param string $msg the message
-	 *
-	 * @return void
 	 */
 	private function printInfo(string $msg): void
 	{
@@ -461,8 +455,6 @@ return new class() extends Migration {
 	 * Eventually, we would end up with re-creating the whole DB again. :-(
 	 * Hence, we bring forward this migration when we re-create the whole DB
 	 * anyway.
-	 *
-	 * @return void
 	 */
 	private function createUsersTableUp(): void
 	{
@@ -481,8 +473,6 @@ return new class() extends Migration {
 
 	/**
 	 * Creates the old table `users`.
-	 *
-	 * @return void
 	 */
 	private function createUsersTableDown(): void
 	{
@@ -959,8 +949,6 @@ return new class() extends Migration {
 	 * Essentially, the table schema becomes immutable.
 	 * The only possible action left which does not trigger an exception is to
 	 * drop the table.
-	 *
-	 * @return void
 	 */
 	private function renamePageContentTable(): void
 	{
@@ -1468,8 +1456,6 @@ return new class() extends Migration {
 	/**
 	 * Copies those table which have not changed structurally, but whose
 	 * date/time precision has changed.
-	 *
-	 * @return void
 	 */
 	private function copyStructurallyUnchangedTables(): void
 	{
@@ -1963,8 +1949,6 @@ return new class() extends Migration {
 	 *     problem needs manual attention.
 	 *
 	 * The method either returns or bails out with an exception.
-	 *
-	 * @return void
 	 *
 	 * @throws RuntimeException         thrown, if DB is inconsistent
 	 * @throws InvalidArgumentException
