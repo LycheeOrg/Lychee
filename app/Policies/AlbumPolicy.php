@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Contracts\Models\AbstractAlbum;
+use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Factories\AlbumFactory;
 use App\Models\BaseAlbumImpl;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
@@ -232,7 +232,7 @@ class AlbumPolicy extends BasePolicy
 		// Make IDs unique as otherwise count will fail.
 		$albumIDs = array_diff(
 			array_unique($albumIDs),
-			array_keys(AlbumFactory::BUILTIN_SMARTS),
+			array_keys(SmartAlbumType::values()),
 			[null]
 		);
 
@@ -264,7 +264,7 @@ class AlbumPolicy extends BasePolicy
 			return false;
 		}
 
-		if (in_array($abstractAlbum->id, AlbumFactory::BUILTIN_SMARTS, true)) {
+		if (SmartAlbumType::tryFrom($abstractAlbum->id) !== null) {
 			return false;
 		}
 

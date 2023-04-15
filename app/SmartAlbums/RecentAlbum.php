@@ -2,6 +2,7 @@
 
 namespace App\SmartAlbums;
 
+use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Models\Configs;
@@ -13,7 +14,7 @@ use Illuminate\Support\Carbon;
 class RecentAlbum extends BaseSmartAlbum
 {
 	private static ?self $instance = null;
-	public const ID = 'recent';
+	public const ID = SmartAlbumType::RECENT->value;
 
 	/**
 	 * @throws InvalidFormatException
@@ -28,8 +29,7 @@ class RecentAlbum extends BaseSmartAlbum
 		);
 
 		parent::__construct(
-			self::ID,
-			__('lychee.RECENT'),
+			SmartAlbumType::RECENT,
 			Configs::getValueAsBool('public_recent'),
 			function (Builder $query) use ($strRecent) {
 				$query->where('photos.created_at', '>=', $strRecent);

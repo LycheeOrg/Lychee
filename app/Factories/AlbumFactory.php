@@ -3,6 +3,7 @@
 namespace App\Factories;
 
 use App\Contracts\Models\AbstractAlbum;
+use App\Enum\SmartAlbumType;
 use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Models\Album;
@@ -20,12 +21,12 @@ use Illuminate\Support\Collection;
 
 class AlbumFactory
 {
-	public const BUILTIN_SMARTS = [
-		UnsortedAlbum::ID => UnsortedAlbum::class,
-		StarredAlbum::ID => StarredAlbum::class,
-		PublicAlbum::ID => PublicAlbum::class,
-		RecentAlbum::ID => RecentAlbum::class,
-		OnThisDayAlbum::ID => OnThisDayAlbum::class,
+	public const BUILTIN_SMARTS_CLASS = [
+		SmartAlbumType::UNSORTED->value => UnsortedAlbum::class,
+		SmartAlbumType::STARRED->value => StarredAlbum::class,
+		SmartAlbumType::PUBLIC->value => PublicAlbum::class,
+		SmartAlbumType::RECENT->value => RecentAlbum::class,
+		SmartAlbumType::ON_THIS_DAY->value => OnThisDayAlbum::class,
 	];
 
 	/**
@@ -45,8 +46,9 @@ class AlbumFactory
 	 */
 	public function findAbstractAlbumOrFail(string $albumId, bool $withRelations = true): AbstractAlbum
 	{
-		if ($this->isBuiltInSmartAlbum($albumId)) {
-			return $this->createSmartAlbum($albumId, $withRelations);
+		$smartAlbumType = SmartAlbumType::tryFrom($albumId);
+		if ($smartAlbumType !== null) {
+			return $this->createSmartAlbum($smartAlbumType, $withRelations);
 		}
 
 		return $this->findBaseAlbumOrFail($albumId, $withRelations);
@@ -108,16 +110,17 @@ class AlbumFactory
 	{
 		// Remove root (ID===`null`) and duplicates
 		$albumIDs = array_diff(array_unique($albumIDs), [null]);
-		$smartAlbumIDs = array_intersect($albumIDs, array_keys(self::BUILTIN_SMARTS));
-		$modelAlbumIDs = array_diff($albumIDs, array_keys(self::BUILTIN_SMARTS));
+		$smartAlbumIDs = array_intersect($albumIDs, SmartAlbumType::values());
+		$modelAlbumIDs = array_diff($albumIDs, SmartAlbumType::values());
 
 		$smartAlbums = [];
 		foreach ($smartAlbumIDs as $smartID) {
 			try {
-				$smartAlbums[] = $this->createSmartAlbum($smartID, $withRelations);
-			} catch (InvalidSmartIdException $e) {
-				// InvalidSmartIdException must not be thrown, as search has been limited to self::BUILTIN_SMARTS'
-				throw LycheeAssertionError::createFromUnexpectedException($e);
+				$smartAlbumType = SmartAlbumType::from($smartID);
+				$smartAlbums[] = $this->createSmartAlbum($smartAlbumType, $withRelations);
+			} catch (\ValueError $e) {
+				$e2 = new InvalidSmartIdException($smartID);
+				throw LycheeAssertionError::createFromUnexpectedException($e2);
 			}
 		}
 
@@ -183,7 +186,7 @@ class AlbumFactory
 	public function getAllBuiltInSmartAlbums(bool $withRelations = true): Collection
 	{
 		$smartAlbums = new Collection();
-		foreach (self::BUILTIN_SMARTS as $smartAlbumId => $smartAlbumClass) {
+		foreach (SmartAlbumType::cases() as $smartAlbumId) {
 			$smartAlbums->put($smartAlbumId, $this->createSmartAlbum($smartAlbumId, $withRelations));
 		}
 
@@ -191,37 +194,21 @@ class AlbumFactory
 	}
 
 	/**
-	 * Checks if the given album ID denotes one of the built-in smart albums.
-	 *
-	 * @param string $albumId
-	 *
-	 * @return bool true, if the album ID refers to a built-in smart album
-	 */
-	public function isBuiltInSmartAlbum(string $albumId): bool
-	{
-		return array_key_exists($albumId, self::BUILTIN_SMARTS);
-	}
-
-	/**
 	 * Returns the instance of the built-in smart album with the designated ID.
 	 *
-	 * @param string $smartAlbumId  the ID of the smart album
-	 * @param bool   $withRelations Eagerly loads the relation
-	 *                              {@link BaseSmartAlbum::photos()}
-	 *                              for the smart album
+	 * @param SmartAlbumType $smartAlbumId  the ID of the smart album
+	 * @param bool           $withRelations Eagerly loads the relation
+	 *                                      {@link BaseSmartAlbum::photos()}
+	 *                                      for the smart album
 	 *
 	 * @return BaseSmartAlbum
 	 *
 	 * @throws InvalidSmartIdException
 	 */
-	public function createSmartAlbum(string $smartAlbumId, bool $withRelations = true): BaseSmartAlbum
+	public function createSmartAlbum(SmartAlbumType $smartAlbumId, bool $withRelations = true): BaseSmartAlbum
 	{
-		if (!$this->isBuiltInSmartAlbum($smartAlbumId)) {
-			throw new InvalidSmartIdException($smartAlbumId);
-		}
-
 		/** @var BaseSmartAlbum $smartAlbum */
-		$smartAlbum = call_user_func(self::BUILTIN_SMARTS[$smartAlbumId] . '::getInstance');
+		$smartAlbum = call_user_func(self::BUILTIN_SMARTS_CLASS[$smartAlbumId->value] . '::getInstance');
 		if ($withRelations) {
 			// Just try to get the photos.
 			// This loads the relation from DB and caches it.
