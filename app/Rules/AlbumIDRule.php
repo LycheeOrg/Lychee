@@ -3,7 +3,7 @@
 namespace App\Rules;
 
 use App\Constants\RandomID;
-use App\Factories\AlbumFactory;
+use App\Enum\SmartAlbumType;
 use Illuminate\Contracts\Validation\ValidationRule;
 
 class AlbumIDRule implements ValidationRule
@@ -25,7 +25,7 @@ class AlbumIDRule implements ValidationRule
 		return
 			($value === null && $this->isNullable) ||
 			strlen($value) === RandomID::ID_LENGTH ||
-			array_key_exists($value, AlbumFactory::BUILTIN_SMARTS);
+			SmartAlbumType::tryFrom($value) !== null;
 	}
 
 	/**
@@ -35,6 +35,6 @@ class AlbumIDRule implements ValidationRule
 	{
 		return ':attribute ' .
 			' must either be null, a string with ' . RandomID::ID_LENGTH . ' characters or one of the built-in IDs ' .
-			implode(', ', array_keys(AlbumFactory::BUILTIN_SMARTS));
+			implode(', ', SmartAlbumType::values());
 	}
 }

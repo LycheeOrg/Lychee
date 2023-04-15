@@ -3,7 +3,7 @@
 namespace App\Rules;
 
 use App\Constants\RandomID;
-use App\Factories\AlbumFactory;
+use App\Enum\SmartAlbumType;
 use Illuminate\Contracts\Validation\ValidationRule;
 
 class AlbumIDListRule implements ValidationRule
@@ -35,6 +35,6 @@ class AlbumIDListRule implements ValidationRule
 	{
 		return ':attribute must be a comma-separated string of strings with either ' .
 			RandomID::ID_LENGTH . ' characters each or one of the built-in IDs ' .
-			implode(', ', array_keys(AlbumFactory::BUILTIN_SMARTS));
+			implode(', ', SmartAlbumType::values());
 	}
 }

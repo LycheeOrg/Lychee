@@ -2,6 +2,7 @@
 
 namespace App\SmartAlbums;
 
+use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Models\Configs;
@@ -13,6 +14,8 @@ use Illuminate\Support\Carbon;
 class RecentAlbum extends BaseSmartAlbum
 {
 	private static ?self $instance = null;
+	// PHP 8.2
+	// public const ID = SmartAlbumType::RECENT->value;
 	public const ID = 'recent';
 
 	/**
@@ -28,8 +31,7 @@ class RecentAlbum extends BaseSmartAlbum
 		);
 
 		parent::__construct(
-			self::ID,
-			__('lychee.RECENT') ?? 'lychee.RECENT',
+			SmartAlbumType::RECENT,
 			function (Builder $query) use ($strRecent) {
 				$query->where('photos.created_at', '>=', $strRecent);
 			}

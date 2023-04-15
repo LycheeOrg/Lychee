@@ -2,6 +2,7 @@
 
 namespace App\SmartAlbums;
 
+use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use Carbon\Exceptions\InvalidFormatException;
@@ -12,6 +13,8 @@ use Illuminate\Support\Carbon;
 class OnThisDayAlbum extends BaseSmartAlbum
 {
 	private static ?self $instance = null;
+	// PHP 8.2
+	// public const ID = SmartAlbumType::ON_THIS_DAY->value;
 	public const ID = 'on_this_day';
 
 	/**
@@ -25,8 +28,7 @@ class OnThisDayAlbum extends BaseSmartAlbum
 		$today = Carbon::today();
 
 		parent::__construct(
-			self::ID,
-			__('lychee.ON_THIS_DAY') ?? 'lychee.ON_THIS_DAY',
+			SmartAlbumType::ON_THIS_DAY,
 			function (Builder $query) use ($today) {
 				$query->where(fn (Builder $q) => $q
 					->whereMonth('photos.taken_at', '=', $today->month)

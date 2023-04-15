@@ -2,6 +2,7 @@
 
 namespace App\SmartAlbums;
 
+use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use Illuminate\Database\Eloquent\Builder;
@@ -9,6 +10,8 @@ use Illuminate\Database\Eloquent\Builder;
 class UnsortedAlbum extends BaseSmartAlbum
 {
 	private static ?self $instance = null;
+	// PHP 8.2
+	// public const ID = SmartAlbumType::UNSORTED->value;
 	public const ID = 'unsorted';
 
 	/**
@@ -18,8 +21,7 @@ class UnsortedAlbum extends BaseSmartAlbum
 	public function __construct()
 	{
 		parent::__construct(
-			self::ID,
-			__('lychee.UNSORTED') ?? 'lychee.UNSORTED',
+			SmartAlbumType::UNSORTED,
 			fn (Builder $q) => $q->whereNull('photos.album_id')
 		);
 	}
