@@ -2,6 +2,7 @@
 
 namespace App\SmartAlbums;
 
+use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use Illuminate\Database\Eloquent\Builder;
@@ -26,6 +27,8 @@ use Illuminate\Database\Eloquent\Builder;
 class PublicAlbum extends BaseSmartAlbum
 {
 	private static ?self $instance = null;
+	// PHP 8.2
+	// public const ID = SmartAlbumType::PUBLIC->value;
 	public const ID = 'public';
 
 	/**
@@ -44,8 +47,7 @@ class PublicAlbum extends BaseSmartAlbum
 	protected function __construct()
 	{
 		parent::__construct(
-			self::ID,
-			__('lychee.PUBLIC'),
+			SmartAlbumType::PUBLIC,
 			false,
 			fn (Builder $q) => $q->where('photos.is_public', '=', true)
 		);

@@ -2,6 +2,7 @@
 
 namespace App\SmartAlbums;
 
+use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Models\Configs;
@@ -10,6 +11,8 @@ use Illuminate\Database\Eloquent\Builder;
 class StarredAlbum extends BaseSmartAlbum
 {
 	private static ?self $instance = null;
+	// PHP 8.2
+	// public const ID = SmartAlbumType::STARRED->value;
 	public const ID = 'starred';
 
 	/**
@@ -19,8 +22,7 @@ class StarredAlbum extends BaseSmartAlbum
 	protected function __construct()
 	{
 		parent::__construct(
-			self::ID,
-			__('lychee.STARRED'),
+			SmartAlbumType::STARRED,
 			Configs::getValueAsBool('public_starred'),
 			fn (Builder $q) => $q->where('photos.is_starred', '=', true)
 		);

@@ -5,6 +5,7 @@ namespace App\SmartAlbums;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\PhotoSortingCriterion;
+use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
@@ -51,12 +52,12 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 * @throws ConfigurationKeyMissingException
 	 * @throws FrameworkException
 	 */
-	protected function __construct(string $id, string $title, bool $is_public, \Closure $smartCondition)
+	protected function __construct(SmartAlbumType $id, bool $is_public, \Closure $smartCondition)
 	{
 		try {
 			$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
-			$this->id = $id;
-			$this->title = $title;
+			$this->id = $id->value;
+			$this->title = __('lychee.' . $id->name) ?? $id->name;
 			$this->is_public = $is_public;
 			$this->grants_download = Configs::getValueAsBool('grants_download');
 			$this->grants_full_photo_access = Configs::getValueAsBool('grants_full_photo_access');
