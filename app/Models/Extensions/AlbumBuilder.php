@@ -174,7 +174,7 @@ class AlbumBuilder extends NSQueryBuilder
 		// "OR"-clause.
 		// The sub-query only uses properties (i.e. columns) which are
 		// defined on the common base model for all albums.
-		$visibilitySubQuery = function (AlbumBuilder|TagAlbumBuilder $query2) use ($userID) {
+		$visibilitySubQuery = function (Builder $query2) use ($userID) {
 			$query2
 				// We laverage that IS_LINK_REQUIRED is NULL if the album is NOT shared publically (left join).
 				->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
