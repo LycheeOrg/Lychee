@@ -7,10 +7,14 @@ use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Models\Album;
 use App\Models\Configs;
-use Illuminate\Support\Facades\Auth;
 
 class Create extends Action
 {
+	public function __construct(public readonly int $intendedOwnerId)
+	{
+		parent::__construct();
+	}
+
 	/**
 	 * @param string     $title
 	 * @param Album|null $parentAlbum
@@ -57,9 +61,7 @@ class Create extends Action
 			// methods of the nested set `NodeTrait`.
 			$album->appendToNode($parentAlbum);
 		} else {
-			/** @var int $userId */
-			$userId = Auth::id() ?? throw new UnauthenticatedException();
-			$album->owner_id = $userId;
+			$album->owner_id = $this->intendedOwnerId;
 			$album->makeRoot();
 		}
 	}

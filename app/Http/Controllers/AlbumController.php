@@ -15,6 +15,7 @@ use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
+use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\Album\AddAlbumRequest;
 use App\Http\Requests\Album\AddTagAlbumRequest;
 use App\Http\Requests\Album\ArchiveAlbumsRequest;
@@ -45,6 +46,7 @@ use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AlbumController extends Controller
@@ -53,14 +55,17 @@ class AlbumController extends Controller
 	 * Add a new Album.
 	 *
 	 * @param AddAlbumRequest $request
-	 * @param Create          $create
 	 *
 	 * @return AlbumResource
 	 *
 	 * @throws LycheeException
 	 */
-	public function add(AddAlbumRequest $request, Create $create): AlbumResource
+	public function add(AddAlbumRequest $request): AlbumResource
 	{
+		/** @var int $ownerId */
+		$ownerId = Auth::id() ?? throw new UnauthenticatedException();
+
+		$create = new Create($ownerId);
 		$album = $create->create($request->title(), $request->parentAlbum());
 
 		return AlbumResource::make($album)->setStatus(201);
