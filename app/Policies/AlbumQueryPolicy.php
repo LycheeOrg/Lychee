@@ -61,8 +61,10 @@ class AlbumQueryPolicy
 		// defined on the common base model for all albums.
 		$visibilitySubQuery = function (AlbumBuilder|TagAlbumBuilder $query2) use ($userID) {
 			$query2
+				// We laverage that IS_LINK_REQUIRED is NULL if the album is NOT shared publically (left join).
 				->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
 				->when($userID !== null,
+					// Current user is the owner of the album
 					fn ($q) => $q
 						->orWhere('base_albums.owner_id', '=', $userID));
 		};
@@ -101,17 +103,20 @@ class AlbumQueryPolicy
 		try {
 			$query
 				->orWhere(
+					// Album is public/shared (visible or not) and NOT protected by a password
 					fn (BaseBuilder $q) => $q
 						->whereNotNull(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED)
 						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_PASSWORD_REQUIRED, '=', false)
 				)
 				->orWhere(
+					// Album is public/shared (visible or not) and protected by a password and unlocked
 					fn (BaseBuilder $q) => $q
 						->whereNotNull(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED)
 						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_PASSWORD_REQUIRED, '=', true)
 						->whereIn(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID, $unlockedAlbumIDs)
 				)
 				->when($userID !== null,
+					// Current user is the owner of the album
 					fn (BaseBuilder $q) => $q
 						->orWhere('base_albums.owner_id', '=', $userID)
 				);
@@ -166,17 +171,20 @@ class AlbumQueryPolicy
 		$reachabilitySubQuery = function (Builder $query2) use ($unlockedAlbumIDs, $userID) {
 			$query2
 				->where(
+					// Album is visible and not password protected.
 					fn (Builder $q) => $q
 						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
 						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_PASSWORD_REQUIRED, '=', false)
 				)
 				->orWhere(
+					// Album is visible and password protected and unlocked
 					fn (Builder $q) => $q
 						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
 						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_PASSWORD_REQUIRED, '=', true)
 						->whereIn(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID, $unlockedAlbumIDs)
 				)
 				->when($userID !== null,
+					// User is owner of the album
 					fn (Builder $q) => $q
 						->orWhere('base_albums.owner_id', '=', $userID)
 				);
@@ -326,27 +334,28 @@ class AlbumQueryPolicy
 				->whereColumn('inner._lft', '<=', 'albums._lft')
 				->whereColumn('inner._rgt', '>=', 'albums._rgt');
 			// ... which are unreachable.
-			// This is dubious.
-			// TODO: DOUBLE CHECK THE LOGIC
+
+			/**
+			 *                       | Link required <> false | Password required = true
+			 * ----------------------+------------------------+--------------------------
+			 * Link required <> true | null = Not reachable ✓ | Not reachable ✓
+			 * Id not Unlocked       | Not reachable ✓        | Not reachable ✓.
+			 */
 			$builder
 				->where(
 					fn (BaseBuilder $q) => $q
-						->where('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '<>', true)
+						->where('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '<>', false)
 						->orWhere('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_PASSWORD_REQUIRED, '=', true)
 				)
 				->where(
 					fn (BaseBuilder $q) => $q
 						->where('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '<>', true)
-						->orWhereNotIn('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.inner_base_albums.id', $unlockedAlbumIDs)
+						->orWhereNotIn('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID, $unlockedAlbumIDs)
 				)
 				->when($userID !== null,
 					fn (BaseBuilder $q) => $q
-						->where('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::OWNER_ID, '<>', $userID)
+						->where('inner_base_albums.owner_id', '<>', $userID)
 				);
-			// ->when($userID !== null,
-			// 	fn (BaseBuilder $q) => $q
-			// 		->where('inner_base_albums.owner_id', '<>', $userID)
-			// );
 
 			return $builder;
 		} catch (\InvalidArgumentException $e) {
@@ -385,6 +394,7 @@ class AlbumQueryPolicy
 			$query->select([$table . '.*']);
 		}
 
+		// TODO: would joining just owner_id from base_album make more sense ?
 		if ($model instanceof Album || $model instanceof TagAlbum) {
 			$query->join('base_albums', 'base_albums.id', '=', $table . '.id');
 		}
