@@ -405,14 +405,22 @@ class AlbumQueryPolicy
 	 */
 	private function getComputedAccessPermissionSubQuery(): BaseBuilder
 	{
+		if (DB::getDriverName() === 'pgsql') {
+			$min = 'bool_and';
+			$max = 'bool_or';
+		} else {
+			$min = 'MIN';
+			$max = 'MAX';
+		}
+
 		$select = [
 			'base_album_id',
-			DB::raw('MIN(' . APC::IS_LINK_REQUIRED . ') as ' . APC::IS_LINK_REQUIRED),
-			DB::raw('MAX(' . APC::GRANTS_FULL_PHOTO_ACCESS . ') as ' . APC::GRANTS_FULL_PHOTO_ACCESS),
-			DB::raw('MAX(' . APC::GRANTS_DOWNLOAD . ') as ' . APC::GRANTS_DOWNLOAD),
-			DB::raw('MAX(' . APC::GRANTS_UPLOAD . ') as ' . APC::GRANTS_UPLOAD),
-			DB::raw('MAX(' . APC::GRANTS_EDIT . ') as ' . APC::GRANTS_EDIT),
-			DB::raw('MAX(' . APC::GRANTS_DELETE . ') as ' . APC::GRANTS_DELETE),
+			DB::raw($min . '(' . APC::IS_LINK_REQUIRED . ') as ' . APC::IS_LINK_REQUIRED),
+			DB::raw($max . '(' . APC::GRANTS_FULL_PHOTO_ACCESS . ') as ' . APC::GRANTS_FULL_PHOTO_ACCESS),
+			DB::raw($max . '(' . APC::GRANTS_DOWNLOAD . ') as ' . APC::GRANTS_DOWNLOAD),
+			DB::raw($max . '(' . APC::GRANTS_UPLOAD . ') as ' . APC::GRANTS_UPLOAD),
+			DB::raw($max . '(' . APC::GRANTS_EDIT . ') as ' . APC::GRANTS_EDIT),
+			DB::raw($max . '(' . APC::GRANTS_DELETE . ') as ' . APC::GRANTS_DELETE),
 		];
 
 		// If password is null, ISNULL returns 1. We want the negation on that.
