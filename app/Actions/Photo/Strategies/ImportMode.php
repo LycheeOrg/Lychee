@@ -8,7 +8,7 @@ class ImportMode
 		protected readonly bool $deleteImported = false,
 		protected readonly bool $skipDuplicates = false,
 		protected bool $importViaSymlink = false,
-		protected bool $resyncMetadata = false
+		protected bool $resyncMetadata = false,
 	) {
 		// avoid incompatible settings (delete originals takes precedence over symbolic links)
 		if ($deleteImported) {

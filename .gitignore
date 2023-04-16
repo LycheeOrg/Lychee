@@ -36,3 +36,5 @@ installed.log
 .NO_AUTO_COMPOSER_MIGRATE
 storage/bootstrap/cache/*
 storage/image-jobs/*
+
+sync/*
