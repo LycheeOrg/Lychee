@@ -424,17 +424,25 @@ class AlbumQueryPolicy
 			DB::raw($max . '(' . APC::GRANTS_DELETE . ') as ' . APC::GRANTS_DELETE),
 		];
 
-		// If password is null, ISNULL returns 1. We want the negation on that.
 		if ($driver === 'sqlite') {
+			// We convert password to empty string if it is null
 			$passwordIsDefined = 'IFNULL(password,"")';
+			// Take the lengh
 			$passwordLength = 'LENGTH(' . $passwordIsDefined . ')';
+			// First min with 1 to upper bound it
+			// then MIN aggregation
 			$passwordLengthIsBetween0and1 = 'MIN(MIN(' . $passwordLength . ',1))';
 			$select[] = DB::raw($passwordLengthIsBetween0and1 . ' as ' . APC::IS_PASSWORD_REQUIRED);
 		} elseif ($driver === 'pgsql') {
+			// If password is null, length returns null, we replace the value by 0 in such case
 			$passwordLength = 'COALESCE(LENGTH(password),0)';
+			// We take the minimum between length and 1 with LEAST
+			// and then agggregate on the column with MIN
+			// before casting it to bool
 			$passwordLengthIsBetween0and1 = 'MIN(LEAST(' . $passwordLength . ',1))::bool';
 			$select[] = DB::raw($passwordLengthIsBetween0and1 . ' as ' . APC::IS_PASSWORD_REQUIRED);
 		} else {
+			// If password is null, ISNULL returns 1. We want the negation on that.
 			$select[] = DB::raw('1 - MAX(ISNULL(password)) as ' . APC::IS_PASSWORD_REQUIRED);
 		}
 
