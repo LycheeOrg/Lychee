@@ -109,7 +109,7 @@ class AlbumQueryPolicy
 					fn (BaseBuilder $q) => $q
 						->whereNotNull(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED)
 						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_PASSWORD_REQUIRED, '=', true)
-						->whereIn(APC::COMPUTED_ACCESS_PERMISSIONS . '.base_album_id', $unlockedAlbumIDs)
+						->whereIn(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID, $unlockedAlbumIDs)
 				)
 				->when($userID !== null,
 					fn (BaseBuilder $q) => $q
@@ -174,7 +174,7 @@ class AlbumQueryPolicy
 					fn (Builder $q) => $q
 						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
 						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_PASSWORD_REQUIRED, '=', true)
-						->whereIn(APC::COMPUTED_ACCESS_PERMISSIONS . '.base_album_id', $unlockedAlbumIDs)
+						->whereIn(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID, $unlockedAlbumIDs)
 				)
 				->when($userID !== null,
 					fn (Builder $q) => $q
@@ -303,7 +303,7 @@ class AlbumQueryPolicy
 				->from('albums', 'inner')
 				->join('base_albums as inner_base_albums', 'inner_base_albums.id', '=', 'inner.id');
 
-			$this->joinSubComputedAccessPermissions($builder, 'inner_base_albums.id', 'left', 'inner_');
+			$this->joinSubComputedAccessPermissions($builder, 'inner.id', 'left', 'inner_');
 
 			// ... on the path from the origin ...
 			if (is_int($originLeft)) {
@@ -337,12 +337,16 @@ class AlbumQueryPolicy
 				->where(
 					fn (BaseBuilder $q) => $q
 						->where('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '<>', true)
-						->orWhereNotIn('inner_base_albums.id', $unlockedAlbumIDs)
+						->orWhereNotIn('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.inner_base_albums.id', $unlockedAlbumIDs)
 				)
 				->when($userID !== null,
 					fn (BaseBuilder $q) => $q
-						->where('base_albums.owner_id', '<>', $userID)
+						->where('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::OWNER_ID, '<>', $userID)
 				);
+			// ->when($userID !== null,
+			// 	fn (BaseBuilder $q) => $q
+			// 		->where('inner_base_albums.owner_id', '<>', $userID)
+			// );
 
 			return $builder;
 		} catch (\InvalidArgumentException $e) {
@@ -405,25 +409,27 @@ class AlbumQueryPolicy
 	 */
 	public function getComputedAccessPermissionSubQuery(): BaseBuilder
 	{
+		// MySQL defaults
+		$min = 'MIN';
+		$max = 'MAX';
+		$passwordLengthIsBetween0and1 = '1 - MAX(ISNULL(' . APC::PASSWORD . '))';
+
 		$driver = DB::getDriverName();
+
+		// pgsql has a proper boolean support and does not support ISNULL(x) -> bool
 		if ($driver === 'pgsql') {
 			$min = 'bool_and';
 			$max = 'bool_or';
-		} else {
-			$min = 'MIN';
-			$max = 'MAX';
+
+			// If password is null, length returns null, we replace the value by 0 in such case
+			$passwordLength = 'COALESCE(LENGTH(password),0)';
+			// We take the minimum between length and 1 with LEAST
+			// and then agggregate on the column with MIN
+			// before casting it to bool
+			$passwordLengthIsBetween0and1 = 'MIN(LEAST(' . $passwordLength . ',1))::bool';
 		}
 
-		$select = [
-			'base_album_id',
-			DB::raw($min . '(' . APC::IS_LINK_REQUIRED . ') as ' . APC::IS_LINK_REQUIRED),
-			DB::raw($max . '(' . APC::GRANTS_FULL_PHOTO_ACCESS . ') as ' . APC::GRANTS_FULL_PHOTO_ACCESS),
-			DB::raw($max . '(' . APC::GRANTS_DOWNLOAD . ') as ' . APC::GRANTS_DOWNLOAD),
-			DB::raw($max . '(' . APC::GRANTS_UPLOAD . ') as ' . APC::GRANTS_UPLOAD),
-			DB::raw($max . '(' . APC::GRANTS_EDIT . ') as ' . APC::GRANTS_EDIT),
-			DB::raw($max . '(' . APC::GRANTS_DELETE . ') as ' . APC::GRANTS_DELETE),
-		];
-
+		// sqlite does not support ISNULL(x) -> bool
 		if ($driver === 'sqlite') {
 			// We convert password to empty string if it is null
 			$passwordIsDefined = 'IFNULL(password,"")';
@@ -432,19 +438,18 @@ class AlbumQueryPolicy
 			// First min with 1 to upper bound it
 			// then MIN aggregation
 			$passwordLengthIsBetween0and1 = 'MIN(MIN(' . $passwordLength . ',1))';
-			$select[] = DB::raw($passwordLengthIsBetween0and1 . ' as ' . APC::IS_PASSWORD_REQUIRED);
-		} elseif ($driver === 'pgsql') {
-			// If password is null, length returns null, we replace the value by 0 in such case
-			$passwordLength = 'COALESCE(LENGTH(password),0)';
-			// We take the minimum between length and 1 with LEAST
-			// and then agggregate on the column with MIN
-			// before casting it to bool
-			$passwordLengthIsBetween0and1 = 'MIN(LEAST(' . $passwordLength . ',1))::bool';
-			$select[] = DB::raw($passwordLengthIsBetween0and1 . ' as ' . APC::IS_PASSWORD_REQUIRED);
-		} else {
-			// If password is null, ISNULL returns 1. We want the negation on that.
-			$select[] = DB::raw('1 - MAX(ISNULL(password)) as ' . APC::IS_PASSWORD_REQUIRED);
 		}
+
+		$select = [
+			APC::BASE_ALBUM_ID,
+			DB::raw($min . '(' . APC::IS_LINK_REQUIRED . ') as ' . APC::IS_LINK_REQUIRED),
+			DB::raw($max . '(' . APC::GRANTS_FULL_PHOTO_ACCESS . ') as ' . APC::GRANTS_FULL_PHOTO_ACCESS),
+			DB::raw($max . '(' . APC::GRANTS_DOWNLOAD . ') as ' . APC::GRANTS_DOWNLOAD),
+			DB::raw($max . '(' . APC::GRANTS_UPLOAD . ') as ' . APC::GRANTS_UPLOAD),
+			DB::raw($max . '(' . APC::GRANTS_EDIT . ') as ' . APC::GRANTS_EDIT),
+			DB::raw($max . '(' . APC::GRANTS_DELETE . ') as ' . APC::GRANTS_DELETE),
+			DB::raw($passwordLengthIsBetween0and1 . ' as ' . APC::IS_PASSWORD_REQUIRED),
+		];
 
 		return DB::table('access_permissions', APC::COMPUTED_ACCESS_PERMISSIONS)->select($select)
 			->when(Auth::check(), fn ($q) => $q->where('user_id', '=', Auth::id()))
@@ -483,7 +488,7 @@ class AlbumQueryPolicy
 		$query->joinSub(
 			query: $this->getComputedAccessPermissionSubQuery(),
 			as: $prefix . APC::COMPUTED_ACCESS_PERMISSIONS,
-			first: $prefix . APC::COMPUTED_ACCESS_PERMISSIONS . '.base_album_id',
+			first: $prefix . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID,
 			operator: '=',
 			second: $second,
 			type: $type);

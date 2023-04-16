@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\MustNotSetCast;
+use App\Constants\AccessPermissionConstants as APC;
 use App\Constants\RandomID;
 use App\Contracts\Models\HasRandomID;
 use App\DTO\AlbumProtectionPolicy;
@@ -197,8 +198,8 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	{
 		return $this->belongsToMany(
 			User::class,
-			'access_permissions',
-			'base_album_id',
+			APC::ACCESS_PERMISSIONS,
+			APC::BASE_ALBUM_ID,
 			'user_id'
 		)->whereNotNull('user_id');
 	}
@@ -210,7 +211,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 */
 	public function access_permissions(): hasMany
 	{
-		return $this->hasMany(AccessPermission::class, 'base_album_id', 'id');
+		return $this->hasMany(AccessPermission::class, APC::BASE_ALBUM_ID, 'id');
 	}
 
 	/**

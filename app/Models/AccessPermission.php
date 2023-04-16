@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Constants\AccessPermissionConstants as APC;
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\ThrowsConsistentExceptions;
@@ -79,5 +80,39 @@ class AccessPermission extends Model
 	public function user(): BelongsTo
 	{
 		return $this->belongsTo(User::class, 'user_id', 'id');
+	}
+
+	/**
+	 * Given an AccessPermission, duplicate its reccord.
+	 * - Password is NOT transfered
+	 * - base_album_id is NOT transfered.
+	 *
+	 * @param AccessPermission $accessPermission
+	 *
+	 * @return AccessPermission
+	 */
+	public static function ofAccessPermission(AccessPermission $accessPermission): self
+	{
+		return $accessPermission->replicate([APC::PASSWORD, APC::BASE_ALBUM_ID]);
+	}
+
+	/**
+	 * Return a new Public sharing permission with defaults.
+	 *
+	 * @return AccessPermission
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	public static function ofPublic(): self
+	{
+		return new AccessPermission([
+			APC::IS_LINK_REQUIRED => false,
+			APC::GRANTS_FULL_PHOTO_ACCESS => Configs::getValueAsBool('grants_full_photo_access'),
+			APC::GRANTS_DOWNLOAD => Configs::getValueAsBool('grants_download'),
+			APC::GRANTS_UPLOAD => false,
+			APC::GRANTS_EDIT => false,
+			APC::GRANTS_DELETE => false,
+			APC::PASSWORD => null,
+		]);
 	}
 }

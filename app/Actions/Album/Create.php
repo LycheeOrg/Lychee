@@ -2,7 +2,6 @@
 
 namespace App\Actions\Album;
 
-use App\Constants\AccessPermissionConstants as APC;
 use App\Enum\DefaultAlbumProtectionType;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
@@ -34,29 +33,14 @@ class Create extends Action
 		if ($defaultProtectionType === DefaultAlbumProtectionType::PUBLIC) {
 			// TODO: DOUBLE CHECK
 			// @phpstan-ignore-next-line
-			$album->access_permissions()->attach(new AccessPermission([
-				APC::IS_LINK_REQUIRED => false,
-				APC::GRANTS_FULL_PHOTO_ACCESS => Configs::getValueAsBool('grants_full_photo_access'),
-				APC::GRANTS_DOWNLOAD => Configs::getValueAsBool('grants_download'),
-				APC::GRANTS_UPLOAD => false,
-				APC::GRANTS_EDIT => false,
-				APC::GRANTS_DELETE => false,
-				APC::PASSWORD => null,
-			]));
+			$album->access_permissions()->attach(AccessPermission::ofPublic());
 		}
 
 		if ($defaultProtectionType === DefaultAlbumProtectionType::INHERIT && $parentAlbum !== null) {
 			$parentPermissions = $parentAlbum->access_permissions;
 			$copyPermissions = [];
 			foreach ($parentPermissions as $parentPermission) {
-				$copyPermissions[] = new AccessPermission([
-					APC::IS_LINK_REQUIRED => $parentPermission->is_link_required,
-					APC::GRANTS_FULL_PHOTO_ACCESS => $parentPermission->grants_full_photo_access,
-					APC::GRANTS_DOWNLOAD => $parentPermission->grants_download,
-					APC::GRANTS_UPLOAD => $parentPermission->grants_download,
-					APC::GRANTS_EDIT => $parentPermission->grants_edit,
-					APC::GRANTS_DELETE => $parentPermission->grants_delete,
-				]);
+				$copyPermissions[] = AccessPermission::ofAccessPermission($parentPermission);
 			}
 			// TODO: DOUBLE CHECK
 			// @phpstan-ignore-next-line

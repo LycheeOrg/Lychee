@@ -7,6 +7,7 @@ use App\Actions\Diagnostics\Errors;
 use App\Actions\Diagnostics\Info;
 use App\Actions\Diagnostics\Space;
 use App\Actions\InstallUpdate\CheckUpdate;
+use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Exceptions\LycheeException;
 use App\DTO\DiagnosticInfo;
 use App\Exceptions\Internal\FrameworkException;
@@ -20,6 +21,7 @@ use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use function Safe\json_encode;
 
@@ -91,17 +93,47 @@ class DiagnosticsController extends Controller
 		return $this->isAuthorized() ? $space->get() : [self::ERROR_MSG];
 	}
 
-	public function getFullAccessPermissions(): string
+	public function getFullAccessPermissions(): View
 	{
-		if (!$this->isAuthorized()) {
+		if (!$this->isAuthorized() && config('app.debug') !== true) {
 			throw new UnauthorizedException();
 		}
 
-		$return = '<pre>' . json_encode(AccessPermission::query()->whereNull('user_id')->get(), JSON_PRETTY_PRINT) . '</pre>';
-		$return .= '<pre>------------------------------------------------------------</pre>';
-		$aqp = resolve(AlbumQueryPolicy::class);
-		$return .= '<pre>' . json_encode($aqp->getComputedAccessPermissionSubQuery()->get(), JSON_PRETTY_PRINT) . '</pre>';
+		$select = [
+			APC::BASE_ALBUM_ID,
+			APC::IS_LINK_REQUIRED,
+			APC::GRANTS_FULL_PHOTO_ACCESS,
+			APC::GRANTS_DOWNLOAD,
+			APC::GRANTS_EDIT,
+			APC::GRANTS_UPLOAD,
+			APC::GRANTS_DELETE,
+			APC::PASSWORD,
+			'title',
+		];
 
-		return $return;
+		$data1 = AccessPermission::query()
+			->join('base_albums', 'base_albums.id', '=', APC::BASE_ALBUM_ID)
+			->select($select)
+			->whereNull('user_id')
+			->orderBy(APC::BASE_ALBUM_ID)
+			->get();
+
+		$aqp = resolve(AlbumQueryPolicy::class);
+
+		$data2 = $aqp->getComputedAccessPermissionSubQuery()
+			->joinSub(
+				DB::table('base_albums')
+					->select(['id', 'title']),
+				'base_albums',
+				'base_albums.id',
+				'=',
+				APC::BASE_ALBUM_ID
+			)
+			->addSelect('title')
+			->groupBy('title')
+			->orderBy(APC::BASE_ALBUM_ID)
+			->get();
+
+		return view('access-permissions', ['data1' => json_encode($data1, JSON_PRETTY_PRINT), 'data2' => json_encode($data2, JSON_PRETTY_PRINT)]);
 	}
 }

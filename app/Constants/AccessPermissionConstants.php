@@ -8,6 +8,10 @@ class AccessPermissionConstants
 	public const COMPUTED_ACCESS_PERMISSIONS = 'computed_access_permissions';
 	public const ACCESS_PERMISSIONS = 'access_permissions';
 
+	// Id names
+	public const BASE_ALBUM_ID = 'base_album_id';
+	public const OWNER_ID = 'owner_id';
+
 	// Attributes name
 	public const IS_LINK_REQUIRED = 'is_link_required';
 	public const GRANTS_FULL_PHOTO_ACCESS = 'grants_full_photo_access';
