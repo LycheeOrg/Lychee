@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Models;
 
+use App\DTO\AlbumProtectionPolicy;
 use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Http\Resources\Traits\WithStatus;
 use App\Models\TagAlbum;
@@ -53,7 +54,7 @@ class TagAlbumResource extends JsonResource
 			'min_taken_at' => $this->resource->max_taken_at?->toIso8601String(),
 
 			// security
-			'policy' => $this->resource->policy,
+			'policy' => AlbumProtectionPolicy::ofBaseAlbum($this->resource),
 			'rights' => AlbumRightsResource::make($this->resource)->toArray($request),
 		];
 	}

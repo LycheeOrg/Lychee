@@ -4,7 +4,6 @@ namespace App\DTO;
 
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
-use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 
@@ -86,41 +85,7 @@ class AlbumProtectionPolicy extends ArrayableDTO
 			is_link_required: false,
 			is_nsfw: false,
 			grants_full_photo_access: $baseSmartAlbum->public_permissions?->grants_full_photo_access === true,
-			grants_download: $baseSmartAlbum->public_permissions?->grants_download === null,
-			is_password_required: false,
-		);
-	}
-
-	/**
-	 * Create an {@link AlbumProtectionPolicy} for private defaults.
-	 *
-	 * @return AlbumProtectionPolicy
-	 */
-	public static function ofDefaultPrivate(): self
-	{
-		return new self(
-			is_public: false,
-			is_link_required: false,
-			is_nsfw: false,
-			grants_full_photo_access: Configs::getValueAsBool('grants_full_photo_access'),
-			grants_download: Configs::getValueAsBool('grants_download'),
-			is_password_required: false,
-		);
-	}
-
-	/**
-	 * Create an {@link AlbumProtectionPolicy} for public defaults.
-	 *
-	 * @return AlbumProtectionPolicy
-	 */
-	public static function ofDefaultPublic(): self
-	{
-		return new self(
-			is_public: true,
-			is_link_required: false,
-			is_nsfw: false,
-			grants_full_photo_access: Configs::getValueAsBool('grants_full_photo_access'),
-			grants_download: Configs::getValueAsBool('grants_download'),
+			grants_download: $baseSmartAlbum->public_permissions?->grants_download === true,
 			is_password_required: false,
 		);
 	}

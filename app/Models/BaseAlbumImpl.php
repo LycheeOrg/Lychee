@@ -2,11 +2,9 @@
 
 namespace App\Models;
 
-use App\Casts\MustNotSetCast;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Constants\RandomID;
 use App\Contracts\Models\HasRandomID;
-use App\DTO\AlbumProtectionPolicy;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
@@ -105,7 +103,6 @@ use Illuminate\Support\Facades\Auth;
  * @property PhotoSortingCriterion|null       $sorting
  * @property string|null                      $sorting_col
  * @property string|null                      $sorting_order
- * @property AlbumProtectionPolicy            $policy
  * @property Collection<int,AccessPermission> $access_permissions
  * @property AccessPermission|null            $current_permissions
  * @property AccessPermission|null            $public_permissions
@@ -170,7 +167,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'updated_at' => 'datetime',
 		'is_nsfw' => 'boolean',
 		'owner_id' => 'integer',
-		'policy' => MustNotSetCast::class,
 	];
 
 	/**
@@ -200,7 +196,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 			User::class,
 			APC::ACCESS_PERMISSIONS,
 			APC::BASE_ALBUM_ID,
-			'user_id'
+			APC::USER_ID
 		)->whereNotNull('user_id');
 	}
 
@@ -221,7 +217,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 */
 	public function current_user_permissions(): HasOne
 	{
-		return $this->access_permissions()->one()->where('user_id', '=', Auth::id());
+		return $this->access_permissions()->one()->where(APC::USER_ID, '=', Auth::id());
 	}
 
 	/**
@@ -231,7 +227,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 */
 	public function public_permissions(): HasOne
 	{
-		return $this->access_permissions()->one()->whereNull('user_id');
+		return $this->access_permissions()->one()->whereNull(APC::USER_ID);
 	}
 
 	protected function getSortingAttribute(): ?PhotoSortingCriterion
@@ -250,15 +246,5 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	{
 		$this->attributes['sorting_col'] = $sorting?->column->value;
 		$this->attributes['sorting_order'] = $sorting?->order->value;
-	}
-
-	/**
-	 * Provide the policy attributes for said album.
-	 *
-	 * @return AlbumProtectionPolicy
-	 */
-	protected function getPolicyAttribute(): AlbumProtectionPolicy
-	{
-		return AlbumProtectionPolicy::ofBaseAlbumImplementation($this);
 	}
 }

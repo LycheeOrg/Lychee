@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Constants\AccessPermissionConstants as APC;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Models\Extensions\ThrowsConsistentExceptions;
@@ -111,9 +112,9 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	{
 		return $this->belongsToMany(
 			BaseAlbumImpl::class,
-			'access_permissions',
-			'user_id',
-			'base_album_id'
+			APC::ACCESS_PERMISSIONS,
+			APC::USER_ID,
+			APC::BASE_ALBUM_ID
 		);
 	}
 

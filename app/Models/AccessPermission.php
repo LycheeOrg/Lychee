@@ -38,7 +38,7 @@ class AccessPermission extends Model
 	protected $casts = [
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
-		'user_id' => 'integer',
+		APC::USER_ID => 'integer',
 		APC::IS_LINK_REQUIRED => 'boolean',
 		APC::GRANTS_FULL_PHOTO_ACCESS => 'boolean',
 		APC::GRANTS_DOWNLOAD => 'boolean',

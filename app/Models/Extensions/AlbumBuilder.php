@@ -49,10 +49,6 @@ class AlbumBuilder extends NSQueryBuilder
 			($columns === ['*'] || $columns === ['albums.*']) &&
 			($baseQuery->columns === ['*'] || $baseQuery->columns === ['albums.*'] || $baseQuery->columns === null)
 		) {
-			$isAdmin = (Auth::user()?->may_administrate === true);
-			/** @var int|null $userID */
-			$userID = Auth::id();
-
 			$countChildren = DB::table('albums', 'a')
 				->selectRaw('COUNT(*)')
 				->whereColumn('a.parent_id', '=', 'albums.id');
@@ -64,8 +60,8 @@ class AlbumBuilder extends NSQueryBuilder
 			$this->addSelect([
 				'min_taken_at' => $this->getTakenAtSQL()->selectRaw('MIN(taken_at)'),
 				'max_taken_at' => $this->getTakenAtSQL()->selectRaw('MAX(taken_at)'),
-				'num_children' => $this->applyVisibilityConditioOnSubalbums($countChildren, $isAdmin, $userID),
-				'num_photos' => $this->applyVisibilityConditioOnPhotos($countPhotos, $isAdmin, $userID),
+				'num_children' => $this->applyVisibilityConditioOnSubalbums($countChildren),
+				'num_photos' => $this->applyVisibilityConditioOnPhotos($countPhotos),
 			]);
 		}
 
@@ -148,17 +144,17 @@ class AlbumBuilder extends NSQueryBuilder
 	 * Apply Visibiltiy conditions.
 	 * This a simplified version of AlbumQueryPolicy::applyVisibilityFilter().
 	 *
-	 * @param Builder  $countQuery
-	 * @param bool     $isAdmin
-	 * @param int|null $userID
+	 * @param Builder $countQuery
 	 *
 	 * @return Builder Query with the visibility requirements applied
 	 */
-	private function applyVisibilityConditioOnSubalbums(Builder $countQuery, bool $isAdmin, int|null $userID): Builder
+	private function applyVisibilityConditioOnSubalbums(Builder $countQuery): Builder
 	{
-		if ($isAdmin) {
+		if (Auth::user()?->may_administrate === true) {
 			return $countQuery;
 		}
+
+		$userID = Auth::id();
 
 		$countQuery->join('base_albums', 'base_albums.id', '=', 'a.id');
 
@@ -178,30 +174,34 @@ class AlbumBuilder extends NSQueryBuilder
 		// "OR"-clause.
 		// The sub-query only uses properties (i.e. columns) which are
 		// defined on the common base model for all albums.
-		$visibilitySubQuery = function ($query2) use ($userID) {
-			$query2->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.is_link_required', '=', false)
-					->when($userID !== null, fn ($query) => $query->orWhere('base_albums.owner_id', '=', $userID));
+		$visibilitySubQuery = function (AlbumBuilder|TagAlbumBuilder $query2) use ($userID) {
+			$query2
+				// We laverage that IS_LINK_REQUIRED is NULL if the album is NOT shared publically (left join).
+				->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
+				->when($userID !== null,
+					// Current user is the owner of the album
+					fn ($q) => $q
+						->orWhere('base_albums.owner_id', '=', $userID));
 		};
-		$countQuery->where($visibilitySubQuery);
 
-		return $countQuery;
+		return $countQuery->where($visibilitySubQuery);
 	}
 
 	/**
 	 * Apply Visibiltiy conditions.
 	 * This a simplified version of PhotoQueryPolicy::applyVisibilityFilter().
 	 *
-	 * @param Builder  $countQuery
-	 * @param bool     $isAdmin
-	 * @param int|null $userID
+	 * @param Builder $countQuery
 	 *
 	 * @return Builder Query with the visibility requirements applied
 	 */
-	private function applyVisibilityConditioOnPhotos(Builder $countQuery, bool $isAdmin, int|null $userID): Builder
+	private function applyVisibilityConditioOnPhotos(Builder $countQuery): Builder
 	{
-		if ($isAdmin) {
+		if (Auth::user()?->may_administrate === true) {
 			return $countQuery;
 		}
+
+		$userID = Auth::id();
 
 		$countQuery->join('base_albums', 'base_albums.id', '=', 'p.album_id');
 
@@ -215,11 +215,12 @@ class AlbumBuilder extends NSQueryBuilder
 		// effects in case that the original query already contains an
 		// "OR"-clause.
 		$visibilitySubQuery = function ($query2) use ($userID) {
-			$query2->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.is_link_required', '=', false)
+			$query2
+				->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
 				->when($userID !== null,
 					fn ($query) => $query
-							->orWhere('base_albums.owner_id', '=', $userID)
-							->orWhere('p.owner_id', '=', $userID)
+						->orWhere('base_albums.owner_id', '=', $userID)
+						->orWhere('p.owner_id', '=', $userID)
 				);
 			$query2->orWhere('p.is_public', '=', true);
 		};

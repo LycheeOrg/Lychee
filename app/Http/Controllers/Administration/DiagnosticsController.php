@@ -99,28 +99,24 @@ class DiagnosticsController extends Controller
 			throw new UnauthorizedException();
 		}
 
-		$select = [
-			APC::BASE_ALBUM_ID,
-			APC::IS_LINK_REQUIRED,
-			APC::GRANTS_FULL_PHOTO_ACCESS,
-			APC::GRANTS_DOWNLOAD,
-			APC::GRANTS_EDIT,
-			APC::GRANTS_UPLOAD,
-			APC::GRANTS_DELETE,
-			APC::PASSWORD,
-			'title',
-		];
-
 		$data1 = AccessPermission::query()
 			->join('base_albums', 'base_albums.id', '=', APC::BASE_ALBUM_ID)
-			->select($select)
+			->select([
+				APC::BASE_ALBUM_ID,
+				APC::IS_LINK_REQUIRED,
+				APC::GRANTS_FULL_PHOTO_ACCESS,
+				APC::GRANTS_DOWNLOAD,
+				APC::GRANTS_EDIT,
+				APC::GRANTS_UPLOAD,
+				APC::GRANTS_DELETE,
+				APC::PASSWORD,
+				'title',
+			])
 			->whereNull('user_id')
 			->orderBy(APC::BASE_ALBUM_ID)
 			->get();
 
-		$aqp = resolve(AlbumQueryPolicy::class);
-
-		$data2 = $aqp->getComputedAccessPermissionSubQuery()
+		$data2 = resolve(AlbumQueryPolicy::class)->getComputedAccessPermissionSubQuery()
 			->joinSub(
 				DB::table('base_albums')
 					->select(['id', 'title']),
