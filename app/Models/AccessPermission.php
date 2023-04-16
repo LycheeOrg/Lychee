@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Models\Extensions\HasAttributesPatch;
-use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
@@ -33,11 +32,8 @@ class AccessPermission extends Model
 	use UTCBasedTimes;
 	use HasAttributesPatch;
 	use ThrowsConsistentExceptions;
-	// use HasBidirectionalRelationships;
-	/** @phpstan-use UseFixedQueryBuilder<Photo> */
+	/** @phpstan-use UseFixedQueryBuilder<AccessPermission> */
 	use UseFixedQueryBuilder;
-
-	// protected string $table = 'access_permissions';
 
 	protected $casts = [
 		'created_at' => 'datetime',
