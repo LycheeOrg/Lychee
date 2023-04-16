@@ -405,7 +405,8 @@ class AlbumQueryPolicy
 	 */
 	private function getComputedAccessPermissionSubQuery(): BaseBuilder
 	{
-		if (DB::getDriverName() === 'pgsql') {
+		$driver = DB::getDriverName();
+		if ($driver === 'pgsql') {
 			$min = 'bool_and';
 			$max = 'bool_or';
 		} else {
@@ -424,10 +425,15 @@ class AlbumQueryPolicy
 		];
 
 		// If password is null, ISNULL returns 1. We want the negation on that.
-		if (DB::getDriverName() === 'sqlite') {
+		if ($driver === 'sqlite') {
 			$passwordIsDefined = 'IFNULL(password,"")';
 			$passwordLength = 'LENGTH(' . $passwordIsDefined . ')';
-			$passwordLengthIsBetween0and1 = 'MIN(' . $passwordLength . ',1)';
+			$passwordLengthIsBetween0and1 = 'MIN(MIN(' . $passwordLength . ',1))';
+			$select[] = DB::raw($passwordLengthIsBetween0and1 . ' as ' . APC::IS_PASSWORD_REQUIRED);
+		} elseif ($driver === 'pgsql') {
+			// $passwordIsDefined = 'COALESCE(password,"")';
+			$passwordLength = 'LENGTH(password)';
+			$passwordLengthIsBetween0and1 = 'MIN(LEAST(' . $passwordLength . ',1))';
 			$select[] = DB::raw($passwordLengthIsBetween0and1 . ' as ' . APC::IS_PASSWORD_REQUIRED);
 		} else {
 			$select[] = DB::raw('1 - MAX(ISNULL(password)) as ' . APC::IS_PASSWORD_REQUIRED);
