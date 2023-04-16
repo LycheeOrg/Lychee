@@ -336,10 +336,10 @@ class AlbumQueryPolicy
 			// ... which are unreachable.
 
 			/**
-			 *                       | Link required <> false | Password required = true
-			 * ----------------------+------------------------+--------------------------
-			 * Link required <> true | null = Not reachable ✓ | Not reachable ✓
-			 * Id not Unlocked       | Not reachable ✓        | Not reachable ✓.
+			 *                        | Link required <> false | Password required = true
+			 * -----------------------+------------------------+--------------------------
+			 * Link required <> false | Not reachable ✓        | Not reachable ✓
+			 * Id not Unlocked        | Not reachable ✓        | Not reachable ✓.
 			 */
 			$builder
 				->where(
@@ -349,7 +349,7 @@ class AlbumQueryPolicy
 				)
 				->where(
 					fn (BaseBuilder $q) => $q
-						->where('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '<>', true)
+						->where('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '<>', false)
 						->orWhereNotIn('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID, $unlockedAlbumIDs)
 				)
 				->when($userID !== null,
