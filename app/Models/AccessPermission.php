@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * App\Models\AccessPermission.
  *
  * @property int                             $id
- * @property int                             $owner_id
  * @property int|null                        $user_id
  * @property string|null                     $base_album_id
  * @property bool                            $is_link_required
@@ -43,13 +42,26 @@ class AccessPermission extends Model
 	protected $casts = [
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
-		'owner_id' => 'integer',
+		'user_id' => 'integer',
 		APC::IS_LINK_REQUIRED => 'boolean',
 		APC::GRANTS_FULL_PHOTO_ACCESS => 'boolean',
 		APC::GRANTS_DOWNLOAD => 'boolean',
 		APC::GRANTS_UPLOAD => 'boolean',
 		APC::GRANTS_EDIT => 'boolean',
 		APC::GRANTS_DELETE => 'boolean',
+	];
+
+	/**
+	 * allow these properties to be mass assigned.
+	 */
+	protected $fillable = [
+		APC::IS_LINK_REQUIRED,
+		APC::GRANTS_FULL_PHOTO_ACCESS,
+		APC::GRANTS_DOWNLOAD,
+		APC::GRANTS_UPLOAD,
+		APC::GRANTS_EDIT,
+		APC::GRANTS_DELETE,
+		APC::PASSWORD,
 	];
 
 	/**
@@ -60,16 +72,6 @@ class AccessPermission extends Model
 	public function album(): BelongsTo
 	{
 		return $this->belongsTo(BaseAlbumImpl::class, 'base_album_id', 'id');
-	}
-
-	/**
-	 * Returns the relationship between an AccessPermission and its owner.
-	 *
-	 * @return BelongsTo
-	 */
-	public function owner(): BelongsTo
-	{
-		return $this->belongsTo(User::class, 'owner_id', 'id');
 	}
 
 	/**

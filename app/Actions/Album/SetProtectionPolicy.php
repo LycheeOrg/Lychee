@@ -45,7 +45,6 @@ class SetProtectionPolicy extends Action
 		$active_permissions->is_link_required = $protectionPolicy->is_link_required;
 		$active_permissions->grants_full_photo_access = $protectionPolicy->grants_full_photo_access;
 		$active_permissions->grants_download = $protectionPolicy->grants_download;
-		$active_permissions->owner_id = $album->owner_id;
 		$active_permissions->base_album_id = $album->id;
 
 		// $album->public_permissions = $active_permissions;

@@ -189,7 +189,7 @@ class GeoDataTest extends AbstractTestCase
 	 */
 	public function testThumbnailsInsideHiddenAlbum(): void
 	{
-		$isRecentPublic = Configs::getValueAsBool(self::CONFIG_PUBLIC_RECENT);
+		$isRecentPublic = RecentAlbum::getInstance()->public_permissions !== null;
 		$arePublicPhotosHidden = Configs::getValueAsBool(self::CONFIG_PUBLIC_HIDDEN);
 		$isPublicSearchEnabled = Configs::getValueAsBool(self::CONFIG_PUBLIC_SEARCH);
 		$displayMap = Configs::getValueAsBool(self::CONFIG_MAP_DISPLAY);
@@ -198,7 +198,7 @@ class GeoDataTest extends AbstractTestCase
 
 		try {
 			Auth::loginUsingId(1);
-			Configs::set(self::CONFIG_PUBLIC_RECENT, true);
+			RecentAlbum::getInstance()->setPublic();
 			Configs::set(self::CONFIG_PUBLIC_HIDDEN, false);
 			Configs::set(self::CONFIG_PUBLIC_SEARCH, true);
 			Configs::set(self::CONFIG_MAP_DISPLAY, true);
@@ -315,7 +315,11 @@ class GeoDataTest extends AbstractTestCase
 		} finally {
 			Configs::set(self::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
 			Configs::set(self::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
-			Configs::set(self::CONFIG_PUBLIC_RECENT, $isRecentPublic);
+			if ($isRecentPublic) {
+				RecentAlbum::getInstance()->setPublic();
+			} else {
+				RecentAlbum::getInstance()->setPrivate();
+			}
 			Configs::set(self::CONFIG_MAP_DISPLAY, $displayMap);
 			Configs::set(self::CONFIG_MAP_DISPLAY_PUBLIC, $displayMapPublicly);
 			Configs::set(self::CONFIG_MAP_INCLUDE_SUBALBUMS, $includeSubAlbums);

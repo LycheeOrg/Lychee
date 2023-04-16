@@ -13,6 +13,9 @@
 namespace Tests\Feature\Base;
 
 use App\Models\Configs;
+use App\SmartAlbums\OnThisDayAlbum;
+use App\SmartAlbums\RecentAlbum;
+use App\SmartAlbums\StarredAlbum;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Tests\AbstractTestCase;
@@ -167,12 +170,12 @@ abstract class BaseSharingTest extends BasePhotoTest
 		$this->photosSortingOrder = Configs::getValueAsString(AbstractTestCase::CONFIG_PHOTOS_SORTING_ORDER);
 		Configs::set(AbstractTestCase::CONFIG_PHOTOS_SORTING_ORDER, 'ASC');
 
-		$this->isRecentAlbumPublic = Configs::getValueAsBool(AbstractTestCase::CONFIG_PUBLIC_RECENT);
-		Configs::set(AbstractTestCase::CONFIG_PUBLIC_RECENT, true);
-		$this->isStarredAlbumPublic = Configs::getValueAsBool(AbstractTestCase::CONFIG_PUBLIC_STARRED);
-		Configs::set(AbstractTestCase::CONFIG_PUBLIC_STARRED, true);
-		$this->isOnThisDayAlbumPublic = Configs::getValueAsBool(AbstractTestCase::CONFIG_PUBLIC_ON_THIS_DAY);
-		Configs::set(AbstractTestCase::CONFIG_PUBLIC_ON_THIS_DAY, true);
+		$this->isRecentAlbumPublic = RecentAlbum::getInstance()->public_permissions !== null;
+		RecentAlbum::getInstance()->setPublic();
+		$this->isStarredAlbumPublic = StarredAlbum::getInstance()->public_permissions !== null;
+		StarredAlbum::getInstance()->setPublic();
+		$this->isOnThisDayAlbumPublic = OnThisDayAlbum::getInstance()->public_permissions !== null;
+		OnThisDayAlbum::getInstance()->setPublic();
 		$this->clearCachedSmartAlbums();
 	}
 
@@ -183,9 +186,23 @@ abstract class BaseSharingTest extends BasePhotoTest
 		Configs::set(AbstractTestCase::CONFIG_PHOTOS_SORTING_COL, $this->photosSortingCol);
 		Configs::set(AbstractTestCase::CONFIG_PHOTOS_SORTING_ORDER, $this->photosSortingOrder);
 
-		Configs::set(AbstractTestCase::CONFIG_PUBLIC_RECENT, $this->isRecentAlbumPublic);
-		Configs::set(AbstractTestCase::CONFIG_PUBLIC_STARRED, $this->isStarredAlbumPublic);
-		Configs::set(AbstractTestCase::CONFIG_PUBLIC_ON_THIS_DAY, $this->isOnThisDayAlbumPublic);
+		if ($this->isRecentAlbumPublic) {
+			RecentAlbum::getInstance()->setPublic();
+		} else {
+			RecentAlbum::getInstance()->setPrivate();
+		}
+
+		if ($this->isStarredAlbumPublic) {
+			StarredAlbum::getInstance()->setPublic();
+		} else {
+			StarredAlbum::getInstance()->setPrivate();
+		}
+
+		if ($this->isOnThisDayAlbumPublic) {
+			OnThisDayAlbum::getInstance()->setPublic();
+		} else {
+			OnThisDayAlbum::getInstance()->setPrivate();
+		}
 		$this->clearCachedSmartAlbums();
 
 		$this->tearDownRequiresEmptyPhotos();

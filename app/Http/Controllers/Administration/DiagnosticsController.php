@@ -55,7 +55,7 @@ class DiagnosticsController extends Controller
 
 		$authorized = $this->isAuthorized();
 
-		$errors = $collectErrors->get(config('app.skip_diagnostics_checks'));
+		$errors = $collectErrors->get(config('app.skip_diagnostics_checks') ?? []);
 		$infos = $authorized ? $collectInfo->get() : [self::ERROR_MSG];
 		$configs = $authorized ? $collectConfig->get() : [self::ERROR_MSG];
 

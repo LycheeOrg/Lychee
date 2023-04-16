@@ -10,7 +10,6 @@ require_once 'TemporaryModels/OptimizeTables.php';
 return new class() extends Migration {
 	private const TABLE_NAME = 'access_permissions';
 
-	private const OWNER_ID = 'owner_id';
 	private const USER_ID = 'user_id';
 	private const BASE_ALBUM_ID = 'base_album_id';
 	private const IS_LINK_REQUIRED = 'is_link_required';
@@ -56,9 +55,6 @@ return new class() extends Migration {
 
 		Schema::create(self::TABLE_NAME, function (Blueprint $table) {
 			$table->bigIncrements('id');
-			// Owner of the access capabilities
-			// (technically we could infer that from the album)
-			$table->unsignedInteger(self::OWNER_ID)->nullable(false)->default(0);
 
 			// User associated with the access capabilities
 			// If null we consider the album public
@@ -81,7 +77,7 @@ return new class() extends Migration {
 			$table->dateTime(self::CREATED_AT_COL_NAME, self::DATETIME_PRECISION)->nullable();
 			$table->dateTime(self::UPDATED_AT_COL_NAME, self::DATETIME_PRECISION)->nullable();
 
-			$table->index([self::OWNER_ID]); // for albums which are own by the currently authenticated user
+			$table->index([self::USER_ID]); // for albums which are own by the currently authenticated user
 			$table->index([self::BASE_ALBUM_ID]); // for albums which are own by the currently authenticated user
 		});
 	}
@@ -92,7 +88,6 @@ return new class() extends Migration {
 		foreach ($baseAlbums as $baseAlbum) {
 			DB::table(self::TABLE_NAME)->insert([
 				[
-					self::OWNER_ID => $baseAlbum->owner_id,
 					self::USER_ID => null,
 					self::BASE_ALBUM_ID => $baseAlbum->id,
 					self::IS_LINK_REQUIRED => $baseAlbum->is_link_required,
@@ -112,7 +107,6 @@ return new class() extends Migration {
 			->select([
 				'base_album_id',
 				self::USER_ID,
-				self::OWNER_ID,
 				self::GRANTS_DOWNLOAD,
 				self::GRANTS_FULL_PHOTO_ACCESS,
 			])
@@ -122,7 +116,6 @@ return new class() extends Migration {
 			DB::table(self::TABLE_NAME)->
 			insert([
 				[
-					self::OWNER_ID => $share->owner_id,
 					self::USER_ID => $share->user_id,
 					self::BASE_ALBUM_ID => $share->base_album_id,
 					self::IS_LINK_REQUIRED => false,

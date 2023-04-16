@@ -318,7 +318,7 @@ class PhotosOperationsTest extends BasePhotoTest
 	 */
 	public function testThumbnailsInsideHiddenAlbum(): void
 	{
-		$isRecentPublic = Configs::getValueAsBool(self::CONFIG_PUBLIC_RECENT);
+		$isRecentPublic = RecentAlbum::getInstance()->public_permissions !== null;
 		$arePublicPhotosHidden = Configs::getValueAsBool(self::CONFIG_PUBLIC_HIDDEN);
 		$isPublicSearchEnabled = Configs::getValueAsBool(self::CONFIG_PUBLIC_SEARCH);
 		$albumSortingColumn = Configs::getValueAsString(self::CONFIG_ALBUMS_SORTING_COL);
@@ -328,7 +328,7 @@ class PhotosOperationsTest extends BasePhotoTest
 
 		try {
 			Auth::loginUsingId(1);
-			Configs::set(self::CONFIG_PUBLIC_RECENT, true);
+			RecentAlbum::getInstance()->setPublic();
 			Configs::set(self::CONFIG_PUBLIC_HIDDEN, false);
 			Configs::set(self::CONFIG_PUBLIC_SEARCH, true);
 			Configs::set(self::CONFIG_ALBUMS_SORTING_COL, 'title');
@@ -453,7 +453,11 @@ class PhotosOperationsTest extends BasePhotoTest
 			Configs::set(self::CONFIG_PHOTOS_SORTING_ORDER, $photoSortingOrder);
 			Configs::set(self::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
 			Configs::set(self::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
-			Configs::set(self::CONFIG_PUBLIC_RECENT, $isRecentPublic);
+			if ($isRecentPublic) {
+				RecentAlbum::getInstance()->setPublic();
+			} else {
+				RecentAlbum::getInstance()->setPrivate();
+			}
 			Auth::logout();
 			Session::flush();
 		}
