@@ -90,18 +90,19 @@ return new class() extends Migration {
 	{
 		$baseAlbums = DB::table('base_albums')->where('is_public', '=', true)->get();
 		foreach ($baseAlbums as $baseAlbum) {
-			DB::table(self::TABLE_NAME)->
-			insert([
-				self::OWNER_ID => $baseAlbum->owner_id,
-				self::USER_ID => null,
-				self::BASE_ALBUM_ID => $baseAlbum->id,
-				self::IS_LINK_REQUIRED => $baseAlbum->is_link_required,
-				self::PASSWORD => $baseAlbum->password,
-				self::GRANTS_FULL_PHOTO_ACCESS => $baseAlbum->grants_full_photo_access,
-				self::GRANTS_DOWNLOAD => $baseAlbum->grants_download,
-				self::GRANTS_UPLOAD => false,
-				self::GRANTS_EDIT => false,
-				self::GRANTS_DELETE => false,
+			DB::table(self::TABLE_NAME)->insert([
+				[
+					self::OWNER_ID => $baseAlbum->owner_id,
+					self::USER_ID => null,
+					self::BASE_ALBUM_ID => $baseAlbum->id,
+					self::IS_LINK_REQUIRED => $baseAlbum->is_link_required,
+					self::PASSWORD => $baseAlbum->password,
+					self::GRANTS_FULL_PHOTO_ACCESS => $baseAlbum->grants_full_photo_access,
+					self::GRANTS_DOWNLOAD => $baseAlbum->grants_download,
+					self::GRANTS_UPLOAD => false,
+					self::GRANTS_EDIT => false,
+					self::GRANTS_DELETE => false,
+				],
 			]);
 		}
 
@@ -120,16 +121,18 @@ return new class() extends Migration {
 		foreach ($currentShares as $share) {
 			DB::table(self::TABLE_NAME)->
 			insert([
-				self::OWNER_ID => $share->owner_id,
-				self::USER_ID => $share->user_id,
-				self::BASE_ALBUM_ID => $share->base_album_id,
-				self::IS_LINK_REQUIRED => false,
-				self::PASSWORD => null,
-				self::GRANTS_FULL_PHOTO_ACCESS => $share->grants_full_photo_access,
-				self::GRANTS_DOWNLOAD => $share->grants_download,
-				self::GRANTS_UPLOAD => false,
-				self::GRANTS_EDIT => false,
-				self::GRANTS_DELETE => false,
+				[
+					self::OWNER_ID => $share->owner_id,
+					self::USER_ID => $share->user_id,
+					self::BASE_ALBUM_ID => $share->base_album_id,
+					self::IS_LINK_REQUIRED => false,
+					self::PASSWORD => null,
+					self::GRANTS_FULL_PHOTO_ACCESS => $share->grants_full_photo_access,
+					self::GRANTS_DOWNLOAD => $share->grants_download,
+					self::GRANTS_UPLOAD => false,
+					self::GRANTS_EDIT => false,
+					self::GRANTS_DELETE => false,
+				],
 			]);
 		}
 	}

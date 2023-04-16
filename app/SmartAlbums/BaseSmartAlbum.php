@@ -57,7 +57,9 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			$this->id = $id->value;
 			$this->title = __('lychee.' . $id->name) ?? $id->name;
 			$this->smartPhotoCondition = $smartCondition;
-			$this->publicPermissions = AccessPermission::query()->where('base_album_id', '=', $id->value)->first();
+			/** @var AccessPermission|null $perm */
+			$perm = AccessPermission::query()->where('base_album_id', '=', $id->value)->first();
+			$this->publicPermissions = $perm;
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s service container', $e);
 		}

@@ -21,6 +21,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Gate;
+use function Safe\json_encode;
 
 class DiagnosticsController extends Controller
 {

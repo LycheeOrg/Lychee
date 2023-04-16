@@ -56,10 +56,10 @@ return new class() extends Migration {
 		$shared = DB::table(self::TABLE_NAME)->whereNotNull('user_id')->get();
 		foreach ($shared as $share) {
 			DB::table('user_base_album')->
-				insert([
+				insert([[
 					self::USER_ID => $share->user_id,
 					self::BASE_ALBUM_ID => $share->base_album_id,
-				]);
+				]]);
 		}
 	}
 };
