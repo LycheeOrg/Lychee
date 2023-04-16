@@ -217,7 +217,10 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 */
 	public function current_user_permissions(): HasOne
 	{
-		return $this->access_permissions()->one()->where(APC::USER_ID, '=', Auth::id());
+		return $this->access_permissions()
+			->one()
+			->whereNotNull(APC::USER_ID)
+			->where(APC::USER_ID, '=', Auth::id());
 	}
 
 	/**
@@ -227,7 +230,9 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 */
 	public function public_permissions(): HasOne
 	{
-		return $this->access_permissions()->one()->whereNull(APC::USER_ID);
+		return $this->access_permissions()
+			->one()
+			->whereNull(APC::USER_ID);
 	}
 
 	protected function getSortingAttribute(): ?PhotoSortingCriterion
