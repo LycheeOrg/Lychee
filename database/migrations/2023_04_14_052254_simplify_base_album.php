@@ -9,15 +9,14 @@ require_once 'TemporaryModels/OptimizeTables.php';
 
 return new class() extends Migration {
 	private const TABLE_NAME = 'access_permissions';
+	private const TABLE_BASE_ALBUMS = 'base_albums';
 
 	private const IS_LINK_REQUIRED = 'is_link_required';
 	private const PASSWORD = 'password';
 	private const GRANTS_FULL_PHOTO_ACCESS = 'grants_full_photo_access';
 	private const GRANTS_DOWNLOAD = 'grants_download';
-
+	private const IS_SHARE_BUTTON_VISIBLE = 'is_share_button_visible';
 	private const IS_PUBLIC = 'is_public';
-
-	public const RANDOM_ID_LENGTH = 24;
 
 	/**
 	 * Run the migrations.
@@ -41,20 +40,23 @@ return new class() extends Migration {
 
 	private function dropColumnsBaseAlbumTable(): void
 	{
-		Schema::table('base_albums', function ($table) {
+		Schema::table(self::TABLE_BASE_ALBUMS, function ($table) {
 			$table->dropColumn(self::IS_PUBLIC);
 		});
-		Schema::table('base_albums', function ($table) {
+		Schema::table(self::TABLE_BASE_ALBUMS, function ($table) {
 			$table->dropColumn(self::GRANTS_FULL_PHOTO_ACCESS);
 		});
-		Schema::table('base_albums', function ($table) {
+		Schema::table(self::TABLE_BASE_ALBUMS, function ($table) {
 			$table->dropColumn(self::GRANTS_DOWNLOAD);
 		});
-		Schema::table('base_albums', function ($table) {
+		Schema::table(self::TABLE_BASE_ALBUMS, function ($table) {
 			$table->dropColumn(self::IS_LINK_REQUIRED);
 		});
-		Schema::table('base_albums', function ($table) {
+		Schema::table(self::TABLE_BASE_ALBUMS, function ($table) {
 			$table->dropColumn(self::PASSWORD);
+		});
+		Schema::table(self::TABLE_BASE_ALBUMS, function ($table) {
+			$table->dropColumn(self::IS_SHARE_BUTTON_VISIBLE);
 		});
 	}
 
@@ -66,17 +68,17 @@ return new class() extends Migration {
 	 */
 	private function fixBaseAlbumTable(): void
 	{
-		Schema::table('base_albums', function (Blueprint $table) {
+		Schema::table(self::TABLE_BASE_ALBUMS, function (Blueprint $table) {
 			// Column definitions
-			$table->boolean('is_public')->nullable(false)->default(false);
-			$table->boolean('grants_full_photo')->nullable(false)->default(true);
-			$table->boolean('requires_link')->nullable(false)->default(false);
-			$table->boolean('is_downloadable')->nullable(false)->default(false);
-			$table->boolean('is_share_button_visible')->nullable(false)->default(false);
-			$table->string('password', 100)->nullable()->default(null);
+			$table->boolean(self::IS_PUBLIC)->nullable(false)->default(false);
+			$table->boolean(self::GRANTS_FULL_PHOTO_ACCESS)->nullable(false)->default(true);
+			$table->boolean(self::IS_LINK_REQUIRED)->nullable(false)->default(false);
+			$table->boolean(self::GRANTS_DOWNLOAD)->nullable(false)->default(false);
+			$table->boolean(self::IS_SHARE_BUTTON_VISIBLE)->nullable(false)->default(false);
+			$table->string(self::PASSWORD, 100)->nullable()->default(null);
 			// These indices are required for efficient filtering for accessible and/or visible albums
-			$table->index(['requires_link', 'is_public']); // for albums which don't require a direct link and are public
-			$table->index(['is_public', 'password']); // for albums which are public and how no password
+			$table->index([self::IS_LINK_REQUIRED, self::IS_PUBLIC]); // for albums which don't require a direct link and are public
+			$table->index([self::IS_PUBLIC, self::PASSWORD]); // for albums which are public and how no password
 		});
 	}
 
@@ -84,7 +86,7 @@ return new class() extends Migration {
 	{
 		$publics = DB::table(self::TABLE_NAME)->whereNull('user_id')->get();
 		foreach ($publics as $public) {
-			DB::table('base_albums')
+			DB::table(self::TABLE_BASE_ALBUMS)
 			->where('id', '=', $public->base_album_id)
 			->update([
 				self::IS_PUBLIC => true, // Duh !

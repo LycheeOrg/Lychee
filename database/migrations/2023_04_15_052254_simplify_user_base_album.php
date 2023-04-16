@@ -13,7 +13,7 @@ return new class() extends Migration {
 	private const USER_ID = 'user_id';
 	private const BASE_ALBUM_ID = 'base_album_id';
 
-	public const RANDOM_ID_LENGTH = 24;
+	private const RANDOM_ID_LENGTH = 24;
 
 	/**
 	 * Run the migrations.

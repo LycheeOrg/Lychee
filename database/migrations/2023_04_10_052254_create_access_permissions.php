@@ -24,7 +24,7 @@ return new class() extends Migration {
 	private const CREATED_AT_COL_NAME = 'created_at';
 	private const UPDATED_AT_COL_NAME = 'updated_at';
 	private const DATETIME_PRECISION = 0;
-	public const RANDOM_ID_LENGTH = 24;
+	private const RANDOM_ID_LENGTH = 24;
 
 	/**
 	 * Run the migrations.
