@@ -403,7 +403,7 @@ class AlbumQueryPolicy
 	 *
 	 * @return BaseBuilder
 	 */
-	private function getComputedAccessPermissionSubQuery(): BaseBuilder
+	public function getComputedAccessPermissionSubQuery(): BaseBuilder
 	{
 		$driver = DB::getDriverName();
 		if ($driver === 'pgsql') {
@@ -431,9 +431,8 @@ class AlbumQueryPolicy
 			$passwordLengthIsBetween0and1 = 'MIN(MIN(' . $passwordLength . ',1))';
 			$select[] = DB::raw($passwordLengthIsBetween0and1 . ' as ' . APC::IS_PASSWORD_REQUIRED);
 		} elseif ($driver === 'pgsql') {
-			// $passwordIsDefined = 'COALESCE(password,"")';
-			$passwordLength = 'LENGTH(password)';
-			$passwordLengthIsBetween0and1 = 'MIN(LEAST(' . $passwordLength . ',1))';
+			$passwordLength = 'COALESCE(LENGTH(password),0)';
+			$passwordLengthIsBetween0and1 = 'MIN(LEAST(' . $passwordLength . ',1))::bool';
 			$select[] = DB::raw($passwordLengthIsBetween0and1 . ' as ' . APC::IS_PASSWORD_REQUIRED);
 		} else {
 			$select[] = DB::raw('1 - MAX(ISNULL(password)) as ' . APC::IS_PASSWORD_REQUIRED);

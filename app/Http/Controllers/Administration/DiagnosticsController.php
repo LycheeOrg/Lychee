@@ -11,7 +11,10 @@ use App\Contracts\Exceptions\LycheeException;
 use App\DTO\DiagnosticInfo;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\ModelDBException;
+use App\Exceptions\UnauthorizedException;
+use App\Models\AccessPermission;
 use App\Models\Configs;
+use App\Policies\AlbumQueryPolicy;
 use App\Policies\SettingsPolicy;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -85,5 +88,19 @@ class DiagnosticsController extends Controller
 	public function getSize(Space $space): array
 	{
 		return $this->isAuthorized() ? $space->get() : [self::ERROR_MSG];
+	}
+
+	public function getFullAccessPermissions(): string
+	{
+		if (!$this->isAuthorized()) {
+			throw new UnauthorizedException();
+		}
+
+		$return = '<pre>' . json_encode(AccessPermission::query()->whereNull('user_id')->get(), JSON_PRETTY_PRINT) . '</pre>';
+		$return .= '<pre>------------------------------------------------------------</pre>';
+		$aqp = resolve(AlbumQueryPolicy::class);
+		$return .= '<pre>' . json_encode($aqp->getComputedAccessPermissionSubQuery()->get(), JSON_PRETTY_PRINT) . '</pre>';
+
+		return $return;
 	}
 }

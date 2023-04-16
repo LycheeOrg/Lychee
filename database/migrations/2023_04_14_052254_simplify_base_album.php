@@ -40,6 +40,7 @@ return new class() extends Migration {
 
 	private function dropColumnsBaseAlbumTable(): void
 	{
+		Schema::disableForeignKeyConstraints();
 		Schema::table(self::TABLE_BASE_ALBUMS, function ($table) {
 			$table->dropColumn(self::IS_PUBLIC);
 		});
@@ -58,6 +59,7 @@ return new class() extends Migration {
 		Schema::table(self::TABLE_BASE_ALBUMS, function ($table) {
 			$table->dropColumn(self::IS_SHARE_BUTTON_VISIBLE);
 		});
+		Schema::enableForeignKeyConstraints();
 	}
 
 	/**
