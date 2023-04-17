@@ -17,6 +17,7 @@ use function Safe\copy;
 use function Safe\scandir;
 use Tests\AbstractTestCase;
 use Tests\Feature\Base\BasePhotoTest;
+use Tests\Feature\Constants\TestConstants;
 use Tests\Feature\Traits\InteractsWithFilesystemPermissions;
 use Tests\Feature\Traits\InteractsWithRaw;
 
@@ -49,7 +50,7 @@ class PhotosAddNegativeTest extends BasePhotoTest
 		// of a file is based on the write-privilege of the containing directory,
 		// because all these operations require an update of a directory entry.
 		// Making the file read-only is not sufficient to prevent deletion.
-		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('read-only.jpg'));
+		copy(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('read-only.jpg'));
 		try {
 			chmod(static::importPath('read-only.jpg'), 0444);
 			chmod(static::importPath(), 0555);
@@ -69,7 +70,7 @@ class PhotosAddNegativeTest extends BasePhotoTest
 		self::restrictDirectoryAccess(public_path('uploads/'));
 
 		$this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE),
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE),
 			null,
 			500,
 			'Unable to create a directory'
@@ -88,7 +89,7 @@ class PhotosAddNegativeTest extends BasePhotoTest
 			static::setAcceptedRawFormats('');
 
 			static::convertJsonToObject($this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_TIFF),
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_TIFF),
 				null,
 				422,
 				'MediaFileUnsupportedException'
@@ -115,7 +116,7 @@ class PhotosAddNegativeTest extends BasePhotoTest
 			static::setAcceptedRawFormats('');
 
 			$this->photos_tests->importFromUrl(
-				[AbstractTestCase::SAMPLE_DOWNLOAD_TIFF],
+				[TestConstants::SAMPLE_DOWNLOAD_TIFF],
 				null,
 				422,
 				'MediaFileUnsupportedException'

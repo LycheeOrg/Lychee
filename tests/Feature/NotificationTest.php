@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Tests\AbstractTestCase;
+use Tests\Feature\Constants\TestConstants;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
@@ -123,7 +124,7 @@ class NotificationTest extends AbstractTestCase
 		Auth::loginUsingId(1);
 		$albumID = $this->albums_tests->add(null, 'Album 1')->offsetGet('id');
 		$photoID = $this->photos_tests->upload(
-			self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE))->offsetGet('id');
+			self::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE))->offsetGet('id');
 
 		$this->photos_tests->set_album($albumID, [$photoID]);
 

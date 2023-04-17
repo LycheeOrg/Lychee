@@ -13,7 +13,7 @@
 namespace Tests\Feature\Traits;
 
 use App\Models\Configs;
-use Tests\AbstractTestCase;
+use Tests\Feature\Constants\TestConstants;
 
 trait RequiresImageHandler
 {
@@ -21,8 +21,8 @@ trait RequiresImageHandler
 
 	protected function setUpRequiresImagick(): void
 	{
-		$this->hasImagickInit = Configs::getValueAsInt(AbstractTestCase::CONFIG_HAS_IMAGICK);
-		Configs::set(AbstractTestCase::CONFIG_HAS_IMAGICK, 1);
+		$this->hasImagickInit = Configs::getValueAsInt(TestConstants::CONFIG_HAS_IMAGICK);
+		Configs::set(TestConstants::CONFIG_HAS_IMAGICK, 1);
 
 		if (!Configs::hasImagick()) {
 			static::markTestSkipped('Imagick is not available. Test Skipped.');
@@ -31,8 +31,8 @@ trait RequiresImageHandler
 
 	protected function setUpRequiresGD(): void
 	{
-		$this->hasImagickInit = Configs::getValueAsInt(AbstractTestCase::CONFIG_HAS_IMAGICK);
-		Configs::set(AbstractTestCase::CONFIG_HAS_IMAGICK, 0);
+		$this->hasImagickInit = Configs::getValueAsInt(TestConstants::CONFIG_HAS_IMAGICK);
+		Configs::set(TestConstants::CONFIG_HAS_IMAGICK, 0);
 
 		if (Configs::hasImagick()) {
 			static::markTestSkipped('Imagick still enabled although it shouldn\'t. Test Skipped.');
@@ -41,7 +41,7 @@ trait RequiresImageHandler
 
 	protected function tearDownRequiresImageHandler(): void
 	{
-		Configs::set(AbstractTestCase::CONFIG_HAS_IMAGICK, $this->hasImagickInit);
+		Configs::set(TestConstants::CONFIG_HAS_IMAGICK, $this->hasImagickInit);
 	}
 
 	abstract public static function markTestSkipped(string $message = ''): void;

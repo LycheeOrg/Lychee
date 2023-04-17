@@ -17,15 +17,15 @@ use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
-use Tests\AbstractTestCase;
 use Tests\Feature\Base\BaseSharingWithNonAdminUser;
+use Tests\Feature\Constants\TestConstants;
 
 class SharingWithNonAdminUserAndNoPublicSearchTest extends BaseSharingWithNonAdminUser
 {
 	public function setUp(): void
 	{
 		parent::setUp();
-		Configs::set(AbstractTestCase::CONFIG_PUBLIC_HIDDEN, true);
+		Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, true);
 	}
 
 	/**
@@ -131,7 +131,7 @@ class SharingWithNonAdminUserAndNoPublicSearchTest extends BaseSharingWithNonAdm
 		$responseForTree->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForTree->assertJsonMissing(['id' => $this->photoID2]);
 
-		$this->albums_tests->get($this->albumID1, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), self::EXPECTED_PASSWORD_REQUIRED_MSG);
+		$this->albums_tests->get($this->albumID1, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), TestConstants::EXPECTED_PASSWORD_REQUIRED_MSG);
 		// Even though public search is disabled, the photo is accessible
 		// by its direct link, because it is public.
 		$this->photos_tests->get($this->photoID1);
@@ -151,7 +151,7 @@ class SharingWithNonAdminUserAndNoPublicSearchTest extends BaseSharingWithNonAdm
 			null,
 			$this->photoID2,
 			$this->photoID2, [
-				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID2),
+				$this->generateExpectedAlbumJson($this->albumID1, TestConstants::ALBUM_TITLE_1, null, $this->photoID2),
 			]
 		));
 		$arrayUnexpected = $this->generateUnexpectedRootJson(
@@ -171,7 +171,7 @@ class SharingWithNonAdminUserAndNoPublicSearchTest extends BaseSharingWithNonAdm
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID2, [
-				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID2, $this->albumID1),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID2, $this->albumID1),
 			]
 		));
 		$responseForRecent->assertJsonMissing(['id' => $this->photoID1]);
@@ -180,7 +180,7 @@ class SharingWithNonAdminUserAndNoPublicSearchTest extends BaseSharingWithNonAdm
 		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID2, [
-				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID2, $this->albumID1),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID2, $this->albumID1),
 			]
 		));
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID1]);
@@ -188,24 +188,24 @@ class SharingWithNonAdminUserAndNoPublicSearchTest extends BaseSharingWithNonAdm
 		$responseForOnThisDay = $this->albums_tests->get(OnThisDayAlbum::ID);
 		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(true,
 			$this->photoID2, [
-				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID2, $this->albumID1),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID2, $this->albumID1),
 			]
 		));
 		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID1]);
 
 		$responseForTree = $this->root_album_tests->getTree();
 		$responseForTree->assertJson($this->generateExpectedTreeJson([
-			$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID2),
+			$this->generateExpectedAlbumJson($this->albumID1, TestConstants::ALBUM_TITLE_1, null, $this->photoID2),
 		]));
 
 		$responseForAlbum = $this->albums_tests->get($this->albumID1);
 		$responseForAlbum->assertJson([
 			'id' => $this->albumID1,
-			'title' => self::ALBUM_TITLE_1,
+			'title' => TestConstants::ALBUM_TITLE_1,
 			'policy' => ['is_public' => false],
 			'thumb' => $this->generateExpectedThumbJson($this->photoID2),
 			'photos' => [
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID2, $this->albumID1),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID2, $this->albumID1),
 			],
 		]);
 

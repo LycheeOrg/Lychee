@@ -13,6 +13,7 @@
 namespace Tests\Feature;
 
 use Tests\AbstractTestCase;
+use Tests\Feature\Constants\TestConstants;
 use Tests\Feature\Traits\InteractsWithRaw;
 use Tests\Feature\Traits\RequiresImageHandler;
 
@@ -51,11 +52,11 @@ class PhotosAddHandlerImagickTest extends BasePhotosAddHandler
 
 			/** @var \App\Models\Photo $photo */
 			$photo = static::convertJsonToObject($this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_TIFF)
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_TIFF)
 			));
 
 			$this->assertStringEndsWith('.tif', $photo->size_variants->original->url);
-			$this->assertEquals(AbstractTestCase::MIME_TYPE_IMG_TIFF, $photo->type);
+			$this->assertEquals(TestConstants::MIME_TYPE_IMG_TIFF, $photo->type);
 			$this->assertNotNull($photo->size_variants->thumb);
 		} finally {
 			static::setAcceptedRawFormats($acceptedRawFormats);

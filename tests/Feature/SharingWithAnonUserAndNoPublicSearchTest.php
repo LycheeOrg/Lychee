@@ -16,15 +16,15 @@ use App\Models\Configs;
 use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
-use Tests\AbstractTestCase;
 use Tests\Feature\Base\BaseSharingWithAnonUser;
+use Tests\Feature\Constants\TestConstants;
 
 class SharingWithAnonUserAndNoPublicSearchTest extends BaseSharingWithAnonUser
 {
 	public function setUp(): void
 	{
 		parent::setUp();
-		Configs::set(AbstractTestCase::CONFIG_PUBLIC_HIDDEN, true);
+		Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, true);
 	}
 
 	/**
@@ -118,7 +118,7 @@ class SharingWithAnonUserAndNoPublicSearchTest extends BaseSharingWithAnonUser
 		// The album and photo 2 are not accessible, but photo 1 is
 		// because it is public even though it is contained in an inaccessible
 		// album
-		$this->albums_tests->get($this->albumID1, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), self::EXPECTED_PASSWORD_REQUIRED_MSG);
+		$this->albums_tests->get($this->albumID1, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), TestConstants::EXPECTED_PASSWORD_REQUIRED_MSG);
 		$this->photos_tests->get($this->photoID1);
 		$this->photos_tests->get($this->photoID2, $this->getExpectedInaccessibleHttpStatusCode());
 	}
@@ -155,7 +155,7 @@ class SharingWithAnonUserAndNoPublicSearchTest extends BaseSharingWithAnonUser
 		$responseForTree->assertJson($this->generateExpectedTreeJson());
 		$responseForTree->assertJsonMissing(['id' => $this->photoID2]);
 
-		$this->albums_tests->get($this->albumID1, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), self::EXPECTED_PASSWORD_REQUIRED_MSG);
+		$this->albums_tests->get($this->albumID1, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), TestConstants::EXPECTED_PASSWORD_REQUIRED_MSG);
 		$this->photos_tests->get($this->photoID1);
 		$this->photos_tests->get($this->photoID2, $this->getExpectedInaccessibleHttpStatusCode());
 	}

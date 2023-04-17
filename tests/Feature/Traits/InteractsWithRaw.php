@@ -4,18 +4,18 @@ namespace Tests\Feature\Traits;
 
 use App\Image\Files\BaseMediaFile;
 use App\Models\Configs;
-use Tests\AbstractTestCase;
+use Tests\Feature\Constants\TestConstants;
 
 trait InteractsWithRaw
 {
 	public static function getAcceptedRawFormats(): string
 	{
-		return Configs::getValueAsString(AbstractTestCase::CONFIG_RAW_FORMATS);
+		return Configs::getValueAsString(TestConstants::CONFIG_RAW_FORMATS);
 	}
 
 	public static function setAcceptedRawFormats(string $acceptedRawFormats): void
 	{
-		Configs::set(AbstractTestCase::CONFIG_RAW_FORMATS, $acceptedRawFormats);
+		Configs::set(TestConstants::CONFIG_RAW_FORMATS, $acceptedRawFormats);
 		$reflection = new \ReflectionClass(BaseMediaFile::class);
 		$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', []);
 	}

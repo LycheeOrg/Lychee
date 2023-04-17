@@ -16,6 +16,7 @@ use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Tests\AbstractTestCase;
+use Tests\Feature\Constants\TestConstants;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
@@ -84,7 +85,7 @@ class RSSTest extends AbstractTestCase
 
 			// upload a picture
 			$photoID = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 			)->offsetGet('id');
 
 			// set it to public
