@@ -92,6 +92,27 @@ trait FixedQueryBuilderTrait
 	}
 
 	/**
+	 * Add a "where not in" clause to the query.
+	 *
+	 * @param string $column
+	 * @param mixed  $values
+	 * @param string $boolean
+	 *
+	 * @return $this
+	 *
+	 * @throws QueryBuilderException
+	 */
+	public function whereNotIn($column, $values, $boolean = 'and'): static
+	{
+		try {
+			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method
+			return parent::whereNotIn($column, $values, $boolean);
+		} catch (\Throwable $e) {
+			throw new QueryBuilderException($e);
+		}
+	}
+
+	/**
 	 * Set the columns to be selected.
 	 *
 	 * @param array|mixed $columns

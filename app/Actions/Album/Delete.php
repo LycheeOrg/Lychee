@@ -3,12 +3,15 @@
 namespace App\Actions\Album;
 
 use App\Actions\Photo\Delete as PhotoDelete;
+use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Exceptions\InternalLycheeException;
+use App\Enum\SmartAlbumType;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Image\FileDeleter;
+use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\TagAlbum;
@@ -120,6 +123,18 @@ class Delete extends Action
 			})->whereNotExists(function (BaseBuilder $baseBuilder) {
 				$baseBuilder->from('tag_albums')->whereColumn('tag_albums.id', '=', 'base_albums.id');
 			})->delete();
+
+			// We also delete the permissions & sharing.
+			// Note that we explicitly avoid the smart albums.
+			AccessPermission::query()
+				->whereNotExists(function (BaseBuilder $baseBuilder) {
+					$baseBuilder->from('albums')->whereColumn('albums.id', '=', APC::ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID);
+				})
+				->whereNotExists(function (BaseBuilder $baseBuilder) {
+					$baseBuilder->from('tag_albums')->whereColumn('tag_albums.id', '=', APC::ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID);
+				})
+				->whereNotIn(APC::ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID, SmartAlbumType::values())
+				->delete();
 
 			return $fileDeleter;
 		} catch (QueryBuilderException|InternalLycheeException $e) {
