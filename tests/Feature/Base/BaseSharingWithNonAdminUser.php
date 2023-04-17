@@ -18,6 +18,7 @@ use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Support\Facades\Auth;
+use Tests\Feature\Constants\TestConstants;
 
 /**
  * Implements the tests of {@link SharingTestScenariosAbstract} for a
@@ -65,8 +66,8 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 			null,
 			$this->photoID3,
 			$this->photoID1, [
-				self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
-				self::generateExpectedAlbumJson($this->albumID3, self::ALBUM_TITLE_3, null, $this->photoID3),
+				self::generateExpectedAlbumJson($this->albumID1, TestConstants::ALBUM_TITLE_1, null, $this->photoID1),
+				self::generateExpectedAlbumJson($this->albumID3, TestConstants::ALBUM_TITLE_3, null, $this->photoID3),
 			]
 		));
 		$responseForRoot->assertJsonMissing(['id' => $this->albumID2]);
@@ -83,8 +84,8 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID3, [
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_SUNSET_IMAGE, $this->photoID3, $this->albumID3),
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_SUNSET_IMAGE, $this->photoID3, $this->albumID3),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
 			]
 		));
 		$responseForRecent->assertJsonMissing(['id' => $this->albumID2]);
@@ -94,7 +95,7 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID1, [
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
 			]
 		));
 		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID2]);
@@ -102,24 +103,24 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 
 		$responseForTree = $this->root_album_tests->getTree();
 		$responseForTree->assertJson($this->generateExpectedTreeJson([
-			self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
-			self::generateExpectedAlbumJson($this->albumID3, self::ALBUM_TITLE_3, null, $this->photoID3),
+			self::generateExpectedAlbumJson($this->albumID1, TestConstants::ALBUM_TITLE_1, null, $this->photoID1),
+			self::generateExpectedAlbumJson($this->albumID3, TestConstants::ALBUM_TITLE_3, null, $this->photoID3),
 		]));
 		$responseForTree->assertJsonMissing(['id' => $this->albumID2]);
 		$responseForTree->assertJsonMissing(['id' => $this->photoID2]);
 
 		$responseForAlbum1 = $this->albums_tests->get($this->albumID1);
 		$responseForAlbum1->assertJson(self::generateExpectedAlbumJson(
-			$this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1
+			$this->albumID1, TestConstants::ALBUM_TITLE_1, null, $this->photoID1
 		));
 		$this->photos_tests->get($this->photoID1);
 
-		$this->albums_tests->get($this->albumID2, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), self::EXPECTED_PASSWORD_REQUIRED_MSG);
+		$this->albums_tests->get($this->albumID2, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), TestConstants::EXPECTED_PASSWORD_REQUIRED_MSG);
 		$this->photos_tests->get($this->photoID2, $this->getExpectedInaccessibleHttpStatusCode());
 
 		$responseForAlbum3 = $this->albums_tests->get($this->albumID3);
 		$responseForAlbum3->assertJson(self::generateExpectedAlbumJson(
-			$this->albumID3, self::ALBUM_TITLE_3, null, $this->photoID3
+			$this->albumID3, TestConstants::ALBUM_TITLE_3, null, $this->photoID3
 		));
 		$this->photos_tests->get($this->photoID3);
 	}
@@ -137,7 +138,7 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 			null,
 			$this->photoID1,
 			$this->photoID1, [
-				self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
+				self::generateExpectedAlbumJson($this->albumID1, TestConstants::ALBUM_TITLE_1, null, $this->photoID1),
 			]
 		));
 
@@ -150,7 +151,7 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID1, [
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
 			]
 		));
 
@@ -158,18 +159,18 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID1, [
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID1, $this->albumID1),
 			]
 		));
 
 		$responseForTree = $this->root_album_tests->getTree();
 		$responseForTree->assertJson($this->generateExpectedTreeJson([
-			self::generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
+			self::generateExpectedAlbumJson($this->albumID1, TestConstants::ALBUM_TITLE_1, null, $this->photoID1),
 		]));
 
 		$responseForAlbum = $this->albums_tests->get($this->albumID1);
 		$responseForAlbum->assertJson($this->generateExpectedAlbumJson(
-			$this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1
+			$this->albumID1, TestConstants::ALBUM_TITLE_1, null, $this->photoID1
 		));
 		$this->photos_tests->get($this->photoID1);
 	}
@@ -189,9 +190,9 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 			$this->photoID1,  // photo 1 is alphabetically first, as photo 3 is locked
 			$this->photoID2,  // photo 1 was not taken on this day and photo 3 is locked
 			[
-				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
-				$this->generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
-				$this->generateExpectedAlbumJson($this->albumID3, self::ALBUM_TITLE_3), // album 3 is locked, hence no thumb
+				$this->generateExpectedAlbumJson($this->albumID1, TestConstants::ALBUM_TITLE_1, null, $this->photoID1),
+				$this->generateExpectedAlbumJson($this->albumID2, TestConstants::ALBUM_TITLE_2, null, $this->photoID2),
+				$this->generateExpectedAlbumJson($this->albumID3, TestConstants::ALBUM_TITLE_3), // album 3 is locked, hence no thumb
 			]
 		));
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID3]);
@@ -209,8 +210,8 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID1, [ // photo 1 is alphabetically first, as photo 3 is locked
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_NIGHT_IMAGE, $this->photoID1, $this->albumID1),
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_NIGHT_IMAGE, $this->photoID1, $this->albumID1),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
 			]
 		));
 		$responseForRecent->assertJsonMissing(['id' => $this->albumID3]);
@@ -220,7 +221,7 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID2, [
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
 			]
 		));
 		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID1]);
@@ -229,30 +230,30 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 		// TODO: Should public and password-protected albums appear in tree? Regression?
 		$responseForTree = $this->root_album_tests->getTree();
 		$responseForTree->assertJson($this->generateExpectedTreeJson([
-			$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
-			$this->generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
+			$this->generateExpectedAlbumJson($this->albumID1, TestConstants::ALBUM_TITLE_1, null, $this->photoID1),
+			$this->generateExpectedAlbumJson($this->albumID2, TestConstants::ALBUM_TITLE_2, null, $this->photoID2),
 		]));
 		$responseForTree->assertJsonMissing(['id' => $this->albumID3]);
 		$responseForTree->assertJsonMissing(['id' => $this->photoID3]);
 
 		$responseForAlbum1 = $this->albums_tests->get($this->albumID1);
 		$responseForAlbum1->assertJson($this->generateExpectedAlbumJson(
-			$this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1
+			$this->albumID1, TestConstants::ALBUM_TITLE_1, null, $this->photoID1
 		));
 		$this->photos_tests->get($this->photoID1);
 		$responseForAlbum2 = $this->albums_tests->get($this->albumID2);
 		$responseForAlbum2->assertJson($this->generateExpectedAlbumJson(
-			$this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2
+			$this->albumID2, TestConstants::ALBUM_TITLE_2, null, $this->photoID2
 		));
 		$this->photos_tests->get($this->photoID2);
-		$this->albums_tests->get($this->albumID3, $this->getExpectedInaccessibleHttpStatusCode(), self::EXPECTED_PASSWORD_REQUIRED_MSG, $this->getExpectedDefaultInaccessibleMessage());
+		$this->albums_tests->get($this->albumID3, $this->getExpectedInaccessibleHttpStatusCode(), TestConstants::EXPECTED_PASSWORD_REQUIRED_MSG, $this->getExpectedDefaultInaccessibleMessage());
 		$this->photos_tests->get($this->photoID3, $this->getExpectedInaccessibleHttpStatusCode());
 	}
 
 	public function testThreeUnlockedAlbumsWithMixedSharingAndPasswordProtection(): void
 	{
 		$this->prepareThreeAlbumsWithMixedSharingAndPasswordProtection();
-		$this->albums_tests->unlock($this->albumID3, self::ALBUM_PWD_1);
+		$this->albums_tests->unlock($this->albumID3, TestConstants::ALBUM_PWD_1);
 
 		$this->ensurePhotosWereTakenOnThisDay($this->photoID2);
 		$this->ensurePhotosWereNotTakenOnThisDay($this->photoID1, $this->photoID3);
@@ -265,9 +266,9 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 			$this->photoID3, // photo 3 is alphabetically first
 			$this->photoID2, // photo 2 was taken on this day
 			[
-				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
-				$this->generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
-				$this->generateExpectedAlbumJson($this->albumID3, self::ALBUM_TITLE_3, null, $this->photoID3),
+				$this->generateExpectedAlbumJson($this->albumID1, TestConstants::ALBUM_TITLE_1, null, $this->photoID1),
+				$this->generateExpectedAlbumJson($this->albumID2, TestConstants::ALBUM_TITLE_2, null, $this->photoID2),
+				$this->generateExpectedAlbumJson($this->albumID3, TestConstants::ALBUM_TITLE_3, null, $this->photoID3),
 			]
 		));
 
@@ -284,9 +285,9 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID3, [ // photo 1 is alphabetically first
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID3, $this->albumID3),
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_NIGHT_IMAGE, $this->photoID1, $this->albumID1),
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID3, $this->albumID3),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_NIGHT_IMAGE, $this->photoID1, $this->albumID1),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
 			]
 		));
 
@@ -294,7 +295,7 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID2, [
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
 			]
 		));
 		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID1]);
@@ -302,24 +303,24 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 
 		$responseForTree = $this->root_album_tests->getTree();
 		$responseForTree->assertJson($this->generateExpectedTreeJson([
-			$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1),
-			$this->generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2),
-			$this->generateExpectedAlbumJson($this->albumID3, self::ALBUM_TITLE_3, null, $this->photoID3),
+			$this->generateExpectedAlbumJson($this->albumID1, TestConstants::ALBUM_TITLE_1, null, $this->photoID1),
+			$this->generateExpectedAlbumJson($this->albumID2, TestConstants::ALBUM_TITLE_2, null, $this->photoID2),
+			$this->generateExpectedAlbumJson($this->albumID3, TestConstants::ALBUM_TITLE_3, null, $this->photoID3),
 		]));
 
 		$responseForAlbum1 = $this->albums_tests->get($this->albumID1);
 		$responseForAlbum1->assertJson($this->generateExpectedAlbumJson(
-			$this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID1
+			$this->albumID1, TestConstants::ALBUM_TITLE_1, null, $this->photoID1
 		));
 		$this->photos_tests->get($this->photoID1);
 		$responseForAlbum2 = $this->albums_tests->get($this->albumID2);
 		$responseForAlbum2->assertJson($this->generateExpectedAlbumJson(
-			$this->albumID2, self::ALBUM_TITLE_2, null, $this->photoID2
+			$this->albumID2, TestConstants::ALBUM_TITLE_2, null, $this->photoID2
 		));
 		$this->photos_tests->get($this->photoID2);
 		$responseForAlbum3 = $this->albums_tests->get($this->albumID3);
 		$responseForAlbum3->assertJson($this->generateExpectedAlbumJson(
-			$this->albumID3, self::ALBUM_TITLE_3, null, $this->photoID3
+			$this->albumID3, TestConstants::ALBUM_TITLE_3, null, $this->photoID3
 		));
 		$this->photos_tests->get($this->photoID3);
 	}
@@ -376,6 +377,6 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 
 	protected function getExpectedDefaultInaccessibleMessage(): string
 	{
-		return self::EXPECTED_FORBIDDEN_MSG;
+		return TestConstants::EXPECTED_FORBIDDEN_MSG;
 	}
 }

@@ -14,8 +14,8 @@ namespace Tests\Feature;
 
 use App\Enum\SizeVariantType;
 use Illuminate\Support\Facades\DB;
-use Tests\AbstractTestCase;
 use Tests\Feature\Base\BasePhotoTest;
+use Tests\Feature\Constants\TestConstants;
 
 class CommandVideoDataTest extends BasePhotoTest
 {
@@ -27,7 +27,7 @@ class CommandVideoDataTest extends BasePhotoTest
 
 		/** @var \App\Models\Photo $photo1 */
 		$photo1 = static::convertJsonToObject($this->photos_tests->upload(
-			static::createUploadedFile(AbstractTestCase::SAMPLE_FILE_TRAIN_VIDEO)
+			static::createUploadedFile(TestConstants::SAMPLE_FILE_TRAIN_VIDEO)
 		));
 
 		// Remove the size variant "thumb" from disk and from DB

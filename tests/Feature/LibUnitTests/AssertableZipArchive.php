@@ -10,7 +10,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature\Lib;
+namespace Tests\Feature\LibUnitTests;
 
 use App\Image\Files\InMemoryBuffer;
 use App\Image\Files\TemporaryLocalFile;

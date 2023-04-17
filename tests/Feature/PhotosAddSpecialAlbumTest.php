@@ -17,6 +17,7 @@ use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use Tests\AbstractTestCase;
 use Tests\Feature\Base\BasePhotoTest;
+use Tests\Feature\Constants\TestConstants;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
 
 /**
@@ -39,7 +40,7 @@ class PhotosAddSpecialAlbumTest extends BasePhotoTest
 			$album_id = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 
 			$response = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE),
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE),
 				$album_id
 			);
 			$response->assertJson(['album_id' => $album_id]);
@@ -58,7 +59,7 @@ class PhotosAddSpecialAlbumTest extends BasePhotoTest
 	public function testSimpleUploadToPublic(): void
 	{
 		$response = $this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE),
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE),
 			PublicAlbum::ID
 		);
 		$response->assertJson([
@@ -75,7 +76,7 @@ class PhotosAddSpecialAlbumTest extends BasePhotoTest
 	public function testSimpleUploadToIsStarred(): void
 	{
 		$response = $this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE),
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE),
 			StarredAlbum::ID
 		);
 		$response->assertJson([
@@ -94,7 +95,7 @@ class PhotosAddSpecialAlbumTest extends BasePhotoTest
 		static::assertCount($ids_before->count(), $recentAlbumBefore->photos);
 
 		$photo_id = $this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 		$ids_after = static::getRecentPhotoIDs();
 

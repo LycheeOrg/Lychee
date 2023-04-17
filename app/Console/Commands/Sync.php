@@ -31,7 +31,7 @@ class Sync extends Command
 		'{--resync_metadata : Re-sync metadata of existing files}  ' . // bool
 		'{--delete_imported=%s : Delete the original files} ' . // string
 		'{--import_via_symlink=%s : Imports photos from via a symlink instead of copying the files} ' . // string
-		'{--skip_duplicates=%s : Don\'t skip photos and albums if they already exist in the gallery}'; // string
+		'{--skip_duplicates=%s : Skip photos and albums if they already exist in the gallery}'; // string
 
 	/**
 	 * The console command description.

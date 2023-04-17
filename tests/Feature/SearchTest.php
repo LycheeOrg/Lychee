@@ -18,8 +18,9 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Testing\TestResponse;
 use Tests\AbstractTestCase;
 use Tests\Feature\Base\BasePhotoTest;
-use Tests\Feature\Lib\SharingUnitTest;
-use Tests\Feature\Lib\UsersUnitTest;
+use Tests\Feature\Constants\TestConstants;
+use Tests\Feature\LibUnitTests\SharingUnitTest;
+use Tests\Feature\LibUnitTests\UsersUnitTest;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyUsers;
 
@@ -51,10 +52,10 @@ class SearchTest extends BasePhotoTest
 	public function testSearchPhotoByTitle(): void
 	{
 		$photoId1 = $this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 		$photoId2 = $this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE)
 		)->offsetGet('id');
 		$this->photos_tests->set_title($photoId1, 'photo search');
 		$this->photos_tests->set_title($photoId2, 'do not find me');
@@ -106,10 +107,10 @@ class SearchTest extends BasePhotoTest
 	public function testSearchPhotoByTag(): void
 	{
 		$photoId1 = $this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 		$photoId2 = $this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE)
 		)->offsetGet('id');
 		$this->photos_tests->set_title($photoId1, 'photo search');
 		$this->photos_tests->set_title($photoId2, 'do not find me');
@@ -191,25 +192,25 @@ class SearchTest extends BasePhotoTest
 
 	public function testDisabledPublicSearchWithAnonUser(): void
 	{
-		$isPublicSearchEnabled = Configs::getValueAsBool(self::CONFIG_PUBLIC_SEARCH);
+		$isPublicSearchEnabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
 		try {
-			Configs::set(self::CONFIG_PUBLIC_SEARCH, false);
+			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, false);
 			$this->albums_tests->add(null, 'Matching private album')->offsetGet('id');
 			Auth::logout();
 			Session::flush();
 			$this->runSearch('Matching', 401);
 		} finally {
-			Configs::set(self::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
+			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
 		}
 	}
 
 	public function testSearchAlbumByTitleWithAnonUser(): void
 	{
-		$arePublicPhotosHidden = Configs::getValueAsBool(self::CONFIG_PUBLIC_HIDDEN);
-		$isPublicSearchEnabled = Configs::getValueAsBool(self::CONFIG_PUBLIC_SEARCH);
+		$arePublicPhotosHidden = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_HIDDEN);
+		$isPublicSearchEnabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
 		try {
-			Configs::set(self::CONFIG_PUBLIC_HIDDEN, false);
-			Configs::set(self::CONFIG_PUBLIC_SEARCH, true);
+			Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, false);
+			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, true);
 
 			$albumID1 = $this->albums_tests->add(null, 'Matching private album')->offsetGet('id');
 			$albumID2 = $this->albums_tests->add(null, 'Matching shared album')->offsetGet('id');
@@ -238,22 +239,22 @@ class SearchTest extends BasePhotoTest
 			$response->assertJsonMissing(['id' => $albumID2]);
 			$response->assertJsonMissing(['id' => $albumID4]);
 		} finally {
-			Configs::set(self::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
-			Configs::set(self::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
+			Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
+			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
 		}
 	}
 
 	public function testSearchAlbumByTitleWithNonAdminUser(): void
 	{
-		$arePublicPhotosHidden = Configs::getValueAsBool(self::CONFIG_PUBLIC_HIDDEN);
-		$isPublicSearchEnabled = Configs::getValueAsBool(self::CONFIG_PUBLIC_SEARCH);
-		$albumSortingColumn = Configs::getValueAsString(self::CONFIG_ALBUMS_SORTING_COL);
-		$albumSortingOrder = Configs::getValueAsString(self::CONFIG_ALBUMS_SORTING_ORDER);
+		$arePublicPhotosHidden = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_HIDDEN);
+		$isPublicSearchEnabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
+		$albumSortingColumn = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_COL);
+		$albumSortingOrder = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_ORDER);
 		try {
-			Configs::set(self::CONFIG_PUBLIC_HIDDEN, false);
-			Configs::set(self::CONFIG_PUBLIC_SEARCH, true);
-			Configs::set(self::CONFIG_ALBUMS_SORTING_COL, 'title');
-			Configs::set(self::CONFIG_ALBUMS_SORTING_ORDER, 'ASC');
+			Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, false);
+			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, true);
+			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_COL, 'title');
+			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_ORDER, 'ASC');
 
 			$albumID1 = $this->albums_tests->add(null, 'Matching private album')->offsetGet('id');
 			$albumID2 = $this->albums_tests->add(null, 'Matching shared album')->offsetGet('id');
@@ -284,10 +285,10 @@ class SearchTest extends BasePhotoTest
 			$response->assertJsonMissing(['id' => $albumID1]);
 			$response->assertJsonMissing(['id' => $albumID4]);
 		} finally {
-			Configs::set(self::CONFIG_ALBUMS_SORTING_COL, $albumSortingColumn);
-			Configs::set(self::CONFIG_ALBUMS_SORTING_ORDER, $albumSortingOrder);
-			Configs::set(self::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
-			Configs::set(self::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
+			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_COL, $albumSortingColumn);
+			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_ORDER, $albumSortingOrder);
+			Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
+			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
 		}
 	}
 

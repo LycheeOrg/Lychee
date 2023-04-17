@@ -23,11 +23,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Tests\AbstractTestCase;
-use Tests\Feature\Lib\AlbumsUnitTest;
-use Tests\Feature\Lib\PhotosUnitTest;
-use Tests\Feature\Lib\RootAlbumUnitTest;
-use Tests\Feature\Lib\SharingUnitTest;
-use Tests\Feature\Lib\UsersUnitTest;
+use Tests\Feature\Constants\TestConstants;
+use Tests\Feature\LibUnitTests\AlbumsUnitTest;
+use Tests\Feature\LibUnitTests\PhotosUnitTest;
+use Tests\Feature\LibUnitTests\RootAlbumUnitTest;
+use Tests\Feature\LibUnitTests\SharingUnitTest;
+use Tests\Feature\LibUnitTests\UsersUnitTest;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
@@ -503,13 +504,13 @@ class AlbumTest extends AbstractTestCase
 
 	public function testAlbumTree(): void
 	{
-		$albumSortingColumn = Configs::getValueAsString(self::CONFIG_ALBUMS_SORTING_COL);
-		$albumSortingOrder = Configs::getValueAsString(self::CONFIG_ALBUMS_SORTING_ORDER);
+		$albumSortingColumn = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_COL);
+		$albumSortingOrder = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_ORDER);
 
 		try {
 			Auth::loginUsingId(1);
-			Configs::set(self::CONFIG_ALBUMS_SORTING_COL, 'title');
-			Configs::set(self::CONFIG_ALBUMS_SORTING_ORDER, 'ASC');
+			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_COL, 'title');
+			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_ORDER, 'ASC');
 
 			// Sic! This out-of-order creation of albums is on purpose in order to
 			// catch errors where the album tree is accidentally ordered as
@@ -551,8 +552,8 @@ class AlbumTest extends AbstractTestCase
 				'shared_albums' => [],
 			]);
 		} finally {
-			Configs::set(self::CONFIG_ALBUMS_SORTING_COL, $albumSortingColumn);
-			Configs::set(self::CONFIG_ALBUMS_SORTING_ORDER, $albumSortingOrder);
+			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_COL, $albumSortingColumn);
+			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_ORDER, $albumSortingOrder);
 			Auth::logout();
 			Session::flush();
 		}
@@ -699,7 +700,7 @@ class AlbumTest extends AbstractTestCase
 		Auth::loginUsingId(1);
 		$regularAlbumID = $this->albums_tests->add(null, 'Regular Album for Delete Test')->offsetGet('id');
 		$photoID = $this->photos_tests->upload(
-			self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE), $regularAlbumID
+			self::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE), $regularAlbumID
 		)->offsetGet('id');
 		$this->photos_tests->set_tag([$photoID], ['tag-for-delete-test']);
 		$tagAlbumID = $this->albums_tests->addByTags('Tag Album for Delete Test', ['tag-for-delete-test'])->offsetGet('id');
@@ -728,7 +729,7 @@ class AlbumTest extends AbstractTestCase
 		$userID = $this->users_tests->add('Test user', 'Test password 1')->offsetGet('id');
 		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 		$photoID1 = $this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE),
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE),
 			$albumID
 		)->offsetGet('id');
 		Auth::logout();
@@ -752,11 +753,11 @@ class AlbumTest extends AbstractTestCase
 		Auth::loginUsingId(1);
 		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 		$photoID1 = $this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE),
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE),
 			$albumID
 		)->offsetGet('id');
 		$photoID2 = $this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_HOCHUFERWEG),
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_HOCHUFERWEG),
 			$albumID
 		)->offsetGet('id');
 		$initialCoverID = $this->albums_tests->get($albumID)->offsetGet('cover_id');
@@ -786,7 +787,7 @@ class AlbumTest extends AbstractTestCase
 	{
 		Auth::loginUsingId(1);
 		$id = $this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 
 		$this->photos_tests->get($id);
@@ -848,7 +849,7 @@ class AlbumTest extends AbstractTestCase
 		Auth::loginUsingId(1);
 		$today = CarbonImmutable::today();
 		$photoID = $this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 
 		DB::table('photos')
@@ -870,7 +871,7 @@ class AlbumTest extends AbstractTestCase
 		Auth::loginUsingId(1);
 		$today = CarbonImmutable::today();
 		$photoID = $this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 
 		DB::table('photos')
@@ -891,7 +892,7 @@ class AlbumTest extends AbstractTestCase
 		Auth::loginUsingId(1);
 		$today = CarbonImmutable::today();
 		$photoID = $this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 
 		DB::table('photos')

@@ -19,9 +19,10 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Tests\AbstractTestCase;
-use Tests\Feature\Lib\AlbumsUnitTest;
-use Tests\Feature\Lib\PhotosUnitTest;
-use Tests\Feature\Lib\RootAlbumUnitTest;
+use Tests\Feature\Constants\TestConstants;
+use Tests\Feature\LibUnitTests\AlbumsUnitTest;
+use Tests\Feature\LibUnitTests\PhotosUnitTest;
+use Tests\Feature\LibUnitTests\RootAlbumUnitTest;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
@@ -64,11 +65,11 @@ class GeoDataTest extends AbstractTestCase
 	public function testGeo(): void
 	{
 		// save initial value
-		$map_display_value = Configs::getValue(self::CONFIG_MAP_DISPLAY);
+		$map_display_value = Configs::getValue(TestConstants::CONFIG_MAP_DISPLAY);
 
 		try {
 			$photoResponse = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE)
 			);
 			$photoID = $photoResponse->offsetGet('id');
 
@@ -91,7 +92,7 @@ class GeoDataTest extends AbstractTestCase
 				[
 					'id' => $photoID,
 					'title' => 'mongolia',
-					'type' => AbstractTestCase::MIME_TYPE_IMG_JPEG,
+					'type' => TestConstants::MIME_TYPE_IMG_JPEG,
 					'iso' => '200',
 					'aperture' => 'f/13.0',
 					'make' => 'NIKON CORPORATION',
@@ -139,13 +140,13 @@ class GeoDataTest extends AbstractTestCase
 			// now we test position Data
 
 			// set to false
-			Configs::set(self::CONFIG_MAP_DISPLAY, false);
-			static::assertEquals(false, Configs::getValueAsBool(self::CONFIG_MAP_DISPLAY));
+			Configs::set(TestConstants::CONFIG_MAP_DISPLAY, false);
+			static::assertEquals(false, Configs::getValueAsBool(TestConstants::CONFIG_MAP_DISPLAY));
 			$this->root_album_tests->getPositionData();
 
 			// set to true
-			Configs::set(self::CONFIG_MAP_DISPLAY, true);
-			static::assertEquals(true, Configs::getValueAsBool(self::CONFIG_MAP_DISPLAY));
+			Configs::set(TestConstants::CONFIG_MAP_DISPLAY, true);
+			static::assertEquals(true, Configs::getValueAsBool(TestConstants::CONFIG_MAP_DISPLAY));
 			$positionDataResponse = $this->root_album_tests->getPositionData();
 			/** @var \App\Http\Resources\Collections\PositionDataResource $positionData */
 			$positionData = static::convertJsonToObject($positionDataResponse);
@@ -155,13 +156,13 @@ class GeoDataTest extends AbstractTestCase
 			static::assertEquals($photoID, $positionData->photos[0]->id);
 
 			// set to false
-			Configs::set(self::CONFIG_MAP_DISPLAY, false);
-			static::assertEquals(false, Configs::getValueAsBool(self::CONFIG_MAP_DISPLAY));
+			Configs::set(TestConstants::CONFIG_MAP_DISPLAY, false);
+			static::assertEquals(false, Configs::getValueAsBool(TestConstants::CONFIG_MAP_DISPLAY));
 			$this->albums_tests->getPositionData($albumID, false);
 
 			// set to true
-			Configs::set(self::CONFIG_MAP_DISPLAY, true);
-			static::assertEquals(true, Configs::getValueAsBool(self::CONFIG_MAP_DISPLAY));
+			Configs::set(TestConstants::CONFIG_MAP_DISPLAY, true);
+			static::assertEquals(true, Configs::getValueAsBool(TestConstants::CONFIG_MAP_DISPLAY));
 			$positionDataResponse = $this->albums_tests->getPositionData($albumID, false);
 			/** @var \App\Http\Resources\Collections\PositionDataResource $positionData */
 			$positionData = static::convertJsonToObject($positionDataResponse);
@@ -170,7 +171,7 @@ class GeoDataTest extends AbstractTestCase
 			static::assertCount(1, $positionData->photos);
 			static::assertEquals($photoID, $positionData->photos[0]->id);
 		} finally {
-			Configs::set(self::CONFIG_MAP_DISPLAY, $map_display_value);
+			Configs::set(TestConstants::CONFIG_MAP_DISPLAY, $map_display_value);
 		}
 	}
 
@@ -190,20 +191,20 @@ class GeoDataTest extends AbstractTestCase
 	public function testThumbnailsInsideHiddenAlbum(): void
 	{
 		$isRecentPublic = RecentAlbum::getInstance()->public_permissions !== null;
-		$arePublicPhotosHidden = Configs::getValueAsBool(self::CONFIG_PUBLIC_HIDDEN);
-		$isPublicSearchEnabled = Configs::getValueAsBool(self::CONFIG_PUBLIC_SEARCH);
-		$displayMap = Configs::getValueAsBool(self::CONFIG_MAP_DISPLAY);
-		$displayMapPublicly = Configs::getValueAsBool(self::CONFIG_MAP_DISPLAY_PUBLIC);
-		$includeSubAlbums = Configs::getValueAsBool(self::CONFIG_MAP_INCLUDE_SUBALBUMS);
+		$arePublicPhotosHidden = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_HIDDEN);
+		$isPublicSearchEnabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
+		$displayMap = Configs::getValueAsBool(TestConstants::CONFIG_MAP_DISPLAY);
+		$displayMapPublicly = Configs::getValueAsBool(TestConstants::CONFIG_MAP_DISPLAY_PUBLIC);
+		$includeSubAlbums = Configs::getValueAsBool(TestConstants::CONFIG_MAP_INCLUDE_SUBALBUMS);
 
 		try {
 			Auth::loginUsingId(1);
 			RecentAlbum::getInstance()->setPublic();
-			Configs::set(self::CONFIG_PUBLIC_HIDDEN, false);
-			Configs::set(self::CONFIG_PUBLIC_SEARCH, true);
-			Configs::set(self::CONFIG_MAP_DISPLAY, true);
-			Configs::set(self::CONFIG_MAP_DISPLAY_PUBLIC, true);
-			Configs::set(self::CONFIG_MAP_INCLUDE_SUBALBUMS, true);
+			Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, false);
+			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, true);
+			Configs::set(TestConstants::CONFIG_MAP_DISPLAY, true);
+			Configs::set(TestConstants::CONFIG_MAP_DISPLAY_PUBLIC, true);
+			Configs::set(TestConstants::CONFIG_MAP_INCLUDE_SUBALBUMS, true);
 
 			$albumID1 = $this->albums_tests->add(null, 'Test Album 1')->offsetGet('id');
 			$albumID11 = $this->albums_tests->add($albumID1, 'Test Album 1.1')->offsetGet('id');
@@ -212,19 +213,19 @@ class GeoDataTest extends AbstractTestCase
 			$albumID13 = $this->albums_tests->add($albumID1, 'Test Album 1.3')->offsetGet('id');
 
 			$photoID1 = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_AARHUS), $albumID1
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_AARHUS), $albumID1
 			)->offsetGet('id');
 			$photoID11 = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_ETTLINGEN), $albumID11
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_ETTLINGEN), $albumID11
 			)->offsetGet('id');
 			$photoID12 = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_TRAIN_IMAGE), $albumID12
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_TRAIN_IMAGE), $albumID12
 			)->offsetGet('id');
 			$photoID121 = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_HOCHUFERWEG), $albumID121
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_HOCHUFERWEG), $albumID121
 			)->offsetGet('id');
 			$photoID13 = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID13
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID13
 			)->offsetGet('id');
 
 			$this->albums_tests->set_protection_policy(id: $albumID1, grants_full_photo_access: true, is_public: true, is_link_required: true);
@@ -313,16 +314,16 @@ class GeoDataTest extends AbstractTestCase
 				$response->assertJsonMissing(['id' => $id]);
 			}
 		} finally {
-			Configs::set(self::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
-			Configs::set(self::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
+			Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
+			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
 			if ($isRecentPublic) {
 				RecentAlbum::getInstance()->setPublic();
 			} else {
 				RecentAlbum::getInstance()->setPrivate();
 			}
-			Configs::set(self::CONFIG_MAP_DISPLAY, $displayMap);
-			Configs::set(self::CONFIG_MAP_DISPLAY_PUBLIC, $displayMapPublicly);
-			Configs::set(self::CONFIG_MAP_INCLUDE_SUBALBUMS, $includeSubAlbums);
+			Configs::set(TestConstants::CONFIG_MAP_DISPLAY, $displayMap);
+			Configs::set(TestConstants::CONFIG_MAP_DISPLAY_PUBLIC, $displayMapPublicly);
+			Configs::set(TestConstants::CONFIG_MAP_INCLUDE_SUBALBUMS, $includeSubAlbums);
 			Auth::logout();
 			Session::flush();
 		}

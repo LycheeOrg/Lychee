@@ -16,15 +16,15 @@ use App\Models\Configs;
 use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
-use Tests\AbstractTestCase;
 use Tests\Feature\Base\BaseSharingWithAnonUser;
+use Tests\Feature\Constants\TestConstants;
 
 class SharingWithAnonUserAndPublicSearchTest extends BaseSharingWithAnonUser
 {
 	public function setUp(): void
 	{
 		parent::setUp();
-		Configs::set(AbstractTestCase::CONFIG_PUBLIC_HIDDEN, false);
+		Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, false);
 	}
 
 	/**
@@ -56,7 +56,7 @@ class SharingWithAnonUserAndPublicSearchTest extends BaseSharingWithAnonUser
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID1, [
-				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, null),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, null),
 			]
 		));
 		$responseForRecent->assertJsonMissing(['id' => $this->photoID2]);
@@ -65,7 +65,7 @@ class SharingWithAnonUserAndPublicSearchTest extends BaseSharingWithAnonUser
 		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID1, [
-				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, null),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, null),
 			]
 		));
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
@@ -74,7 +74,7 @@ class SharingWithAnonUserAndPublicSearchTest extends BaseSharingWithAnonUser
 		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID1, [
-				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, null),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, null),
 			]
 		));
 		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID2]);
@@ -109,7 +109,7 @@ class SharingWithAnonUserAndPublicSearchTest extends BaseSharingWithAnonUser
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID1, [
-				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, $this->albumID1),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, $this->albumID1),
 			]
 		));
 		$responseForRecent->assertJsonMissing(['id' => $this->photoID2]);
@@ -118,7 +118,7 @@ class SharingWithAnonUserAndPublicSearchTest extends BaseSharingWithAnonUser
 		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID1, [
-				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, $this->albumID1),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, $this->albumID1),
 			]
 		));
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
@@ -127,7 +127,7 @@ class SharingWithAnonUserAndPublicSearchTest extends BaseSharingWithAnonUser
 		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID1, [
-				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, $this->albumID1),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, $this->albumID1),
 			]
 		));
 		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID2]);
@@ -138,7 +138,7 @@ class SharingWithAnonUserAndPublicSearchTest extends BaseSharingWithAnonUser
 		$responseForTree->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForTree->assertJsonMissing(['id' => $this->photoID2]);
 
-		$this->albums_tests->get($this->albumID1, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), self::EXPECTED_PASSWORD_REQUIRED_MSG);
+		$this->albums_tests->get($this->albumID1, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), TestConstants::EXPECTED_PASSWORD_REQUIRED_MSG);
 		$this->photos_tests->get($this->photoID1);
 		$this->photos_tests->get($this->photoID2, $this->getExpectedInaccessibleHttpStatusCode());
 	}
@@ -161,7 +161,7 @@ class SharingWithAnonUserAndPublicSearchTest extends BaseSharingWithAnonUser
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID1, [
-				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, null),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, null),
 			],
 		));
 		$responseForRoot->assertJsonMissing(['id' => $this->photoID2]);
@@ -170,7 +170,7 @@ class SharingWithAnonUserAndPublicSearchTest extends BaseSharingWithAnonUser
 		$responseForStarred->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID1, [
-				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, null),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, null),
 			],
 		));
 		$responseForStarred->assertJsonMissing(['id' => $this->photoID2]);
@@ -179,7 +179,7 @@ class SharingWithAnonUserAndPublicSearchTest extends BaseSharingWithAnonUser
 		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID1, [
-				$this->generateExpectedPhotoJson(static::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, null),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID1, null),
 			],
 		));
 		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID2]);
@@ -188,7 +188,7 @@ class SharingWithAnonUserAndPublicSearchTest extends BaseSharingWithAnonUser
 		$responseForTree->assertJson($this->generateExpectedTreeJson());
 		$responseForTree->assertJsonMissing(['id' => $this->photoID2]);
 
-		$this->albums_tests->get($this->albumID1, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), self::EXPECTED_PASSWORD_REQUIRED_MSG);
+		$this->albums_tests->get($this->albumID1, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), TestConstants::EXPECTED_PASSWORD_REQUIRED_MSG);
 		$this->photos_tests->get($this->photoID1);
 		$this->photos_tests->get($this->photoID2, $this->getExpectedInaccessibleHttpStatusCode());
 	}

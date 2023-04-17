@@ -14,7 +14,7 @@ namespace Tests\Feature;
 
 use function Safe\chmod;
 use function Safe\fileperms;
-use Tests\AbstractTestCase;
+use Tests\Feature\Constants\TestConstants;
 
 class CommandFixPermissionsTest extends Base\BasePhotoTest
 {
@@ -35,7 +35,7 @@ class CommandFixPermissionsTest extends Base\BasePhotoTest
 
 		/** @var \App\Models\Photo $photo */
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
-			static::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+			static::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE)
 		));
 
 		$filePath = public_path($photo->size_variants->original->url);

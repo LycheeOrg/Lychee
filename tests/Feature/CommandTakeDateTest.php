@@ -14,8 +14,8 @@ namespace Tests\Feature;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Tests\AbstractTestCase;
 use Tests\Feature\Base\BasePhotoTest;
+use Tests\Feature\Constants\TestConstants;
 
 class CommandTakeDateTest extends BasePhotoTest
 {
@@ -31,7 +31,7 @@ class CommandTakeDateTest extends BasePhotoTest
 	public function testSetUploadTimeFromFileTime(): void
 	{
 		$id = $this->photos_tests->upload(
-			static::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE)
+			static::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE)
 		)->offsetGet('id');
 
 		DB::table('photos')
