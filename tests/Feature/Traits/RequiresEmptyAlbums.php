@@ -38,6 +38,7 @@ trait RequiresEmptyAlbums
 	{
 		// Assert that album tables are empty
 		$this->assertDatabaseCount('base_albums', 0);
+		$this->assertDatabaseCount('access_permissions', 0);
 		$this->assertDatabaseCount('albums', 0);
 		$this->assertDatabaseCount('tag_albums', 0);
 	}
@@ -51,5 +52,6 @@ trait RequiresEmptyAlbums
 		DB::table('tag_albums')->delete();
 		DB::table('albums')->orderBy('_lft', 'desc')->delete();
 		DB::table('base_albums')->delete();
+		DB::table('access_permissions')->delete();
 	}
 }
