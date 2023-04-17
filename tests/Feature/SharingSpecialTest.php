@@ -18,15 +18,11 @@ use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Tests\AbstractTestCase;
 use Tests\Feature\Base\BaseSharingTest;
+use Tests\Feature\Constants\TestConstants;
 
 class SharingSpecialTest extends BaseSharingTest
 {
-	public const ALBUM_TITLE_4 = 'Test Album 4';
-	public const ALBUM_TITLE_5 = 'Test Album 5';
-	public const ALBUM_TITLE_6 = 'Test Album 6';
-
 	protected ?string $albumID1 = null;
 	protected ?string $albumID2 = null;
 	protected ?string $albumID3 = null;
@@ -60,13 +56,13 @@ class SharingSpecialTest extends BaseSharingTest
 		$this->photoID5 = null;
 		$this->photoID6 = null;
 
-		$this->arePublicPhotosHidden = Configs::getValueAsBool(AbstractTestCase::CONFIG_PUBLIC_HIDDEN);
-		Configs::set(AbstractTestCase::CONFIG_PUBLIC_HIDDEN, false);
+		$this->arePublicPhotosHidden = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_HIDDEN);
+		Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, false);
 	}
 
 	public function tearDown(): void
 	{
-		Configs::set(AbstractTestCase::CONFIG_PUBLIC_HIDDEN, $this->arePublicPhotosHidden);
+		Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, $this->arePublicPhotosHidden);
 		parent::tearDown();
 	}
 
@@ -95,16 +91,16 @@ class SharingSpecialTest extends BaseSharingTest
 	 */
 	protected function prepareSixAlbumsWithDifferentProtectionSettings(): void
 	{
-		$this->albumID1 = $this->albums_tests->add(null, self::ALBUM_TITLE_1)->offsetGet('id');
-		$this->albumID2 = $this->albums_tests->add($this->albumID1, self::ALBUM_TITLE_2)->offsetGet('id');
-		$this->albumID3 = $this->albums_tests->add($this->albumID1, self::ALBUM_TITLE_3)->offsetGet('id');
-		$this->albumID4 = $this->albums_tests->add($this->albumID1, self::ALBUM_TITLE_4)->offsetGet('id');
-		$this->albumID5 = $this->albums_tests->add($this->albumID1, self::ALBUM_TITLE_5)->offsetGet('id');
-		$this->albumID6 = $this->albums_tests->add($this->albumID1, self::ALBUM_TITLE_6)->offsetGet('id');
-		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_NIGHT_IMAGE), $this->albumID1)->offsetGet('id');
-		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID2)->offsetGet('id');
-		$this->photoID3 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID3)->offsetGet('id');
-		$this->photoID4 = $this->photos_tests->upload(static::createUploadedFile(static::SAMPLE_FILE_SUNSET_IMAGE), $this->albumID4)->offsetGet('id');
+		$this->albumID1 = $this->albums_tests->add(null, TestConstants::ALBUM_TITLE_1)->offsetGet('id');
+		$this->albumID2 = $this->albums_tests->add($this->albumID1, TestConstants::ALBUM_TITLE_2)->offsetGet('id');
+		$this->albumID3 = $this->albums_tests->add($this->albumID1, TestConstants::ALBUM_TITLE_3)->offsetGet('id');
+		$this->albumID4 = $this->albums_tests->add($this->albumID1, TestConstants::ALBUM_TITLE_4)->offsetGet('id');
+		$this->albumID5 = $this->albums_tests->add($this->albumID1, TestConstants::ALBUM_TITLE_5)->offsetGet('id');
+		$this->albumID6 = $this->albums_tests->add($this->albumID1, TestConstants::ALBUM_TITLE_6)->offsetGet('id');
+		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE), $this->albumID1)->offsetGet('id');
+		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(TestConstants::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID2)->offsetGet('id');
+		$this->photoID3 = $this->photos_tests->upload(static::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID3)->offsetGet('id');
+		$this->photoID4 = $this->photos_tests->upload(static::createUploadedFile(TestConstants::SAMPLE_FILE_SUNSET_IMAGE), $this->albumID4)->offsetGet('id');
 		$this->photoID5 = $this->photos_tests->duplicate([$this->photoID4], $this->albumID5)->json()[0]['id'];
 		$this->photoID6 = $this->photos_tests->duplicate([$this->photoID2], $this->albumID6)->json()[0]['id'];
 		$this->photos_tests->set_title($this->photoID5, 'Abenddämmerung'); // we rename the duplicated images, such that we can ensure
@@ -113,12 +109,12 @@ class SharingSpecialTest extends BaseSharingTest
 		$this->ensurePhotosWereTakenOnThisDay($this->photoID1, $this->photoID5);
 		$this->ensurePhotosWereNotTakenOnThisDay($this->photoID2, $this->photoID3, $this->photoID4, $this->photoID6);
 
-		$this->albums_tests->set_protection_policy(id: $this->albumID1, password: self::ALBUM_PWD_1);
+		$this->albums_tests->set_protection_policy(id: $this->albumID1, password: TestConstants::ALBUM_PWD_1);
 		$this->albums_tests->set_protection_policy(id: $this->albumID2);
-		$this->albums_tests->set_protection_policy(id: $this->albumID3, password: self::ALBUM_PWD_1);
-		$this->albums_tests->set_protection_policy(id: $this->albumID4, is_link_required: true, password: self::ALBUM_PWD_1);
-		$this->albums_tests->set_protection_policy(id: $this->albumID5, password: self::ALBUM_PWD_2);
-		$this->albums_tests->set_protection_policy(id: $this->albumID6, is_link_required: true, password: self::ALBUM_PWD_2);
+		$this->albums_tests->set_protection_policy(id: $this->albumID3, password: TestConstants::ALBUM_PWD_1);
+		$this->albums_tests->set_protection_policy(id: $this->albumID4, is_link_required: true, password: TestConstants::ALBUM_PWD_1);
+		$this->albums_tests->set_protection_policy(id: $this->albumID5, password: TestConstants::ALBUM_PWD_2);
+		$this->albums_tests->set_protection_policy(id: $this->albumID6, is_link_required: true, password: TestConstants::ALBUM_PWD_2);
 
 		Auth::logout();
 		Session::flush();
@@ -155,7 +151,7 @@ class SharingSpecialTest extends BaseSharingTest
 			null,
 			null,
 			[
-				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1), // no thumb as album 1 is still locked
+				$this->generateExpectedAlbumJson($this->albumID1, TestConstants::ALBUM_TITLE_1), // no thumb as album 1 is still locked
 			]
 		));
 		foreach ([
@@ -213,7 +209,7 @@ class SharingSpecialTest extends BaseSharingTest
 		$responseForTree = $this->root_album_tests->getTree();
 		// TODO: Should public and password-protected albums appear in tree? Regression?
 		$responseForTree->assertJson($this->generateExpectedTreeJson([
-			// $this->generateExpectedAlbumJson($albumID1, self::ALBUM_TITLE_1), // no thumb as album 1 is still locked
+			// $this->generateExpectedAlbumJson($albumID1, TestConstants::ALBUM_TITLE_1), // no thumb as album 1 is still locked
 		]));
 		foreach ([
 			$this->albumID1,
@@ -241,7 +237,7 @@ class SharingSpecialTest extends BaseSharingTest
 			$this->albumID5,
 			$this->albumID6,
 		] as $id) {
-			$this->albums_tests->get($id, 401, self::EXPECTED_PASSWORD_REQUIRED_MSG, self::EXPECTED_UNAUTHENTICATED_MSG);
+			$this->albums_tests->get($id, 401, TestConstants::EXPECTED_PASSWORD_REQUIRED_MSG, TestConstants::EXPECTED_UNAUTHENTICATED_MSG);
 		}
 		foreach ([$this->photoID1, $this->photoID3, $this->photoID4, $this->photoID5, $this->photoID6] as $id) {
 			$this->photos_tests->get($id, 401);
@@ -254,7 +250,7 @@ class SharingSpecialTest extends BaseSharingTest
 		// TODO: Do we want this that way?
 		$responseForAlbum2 = $this->albums_tests->get($this->albumID2);
 		$responseForAlbum2->assertJson($this->generateExpectedAlbumJson(
-			$this->albumID2, self::ALBUM_TITLE_2, $this->albumID1, $this->photoID2
+			$this->albumID2, TestConstants::ALBUM_TITLE_2, $this->albumID1, $this->photoID2
 		));
 		$this->photos_tests->get($this->photoID2);
 	}
@@ -285,7 +281,7 @@ class SharingSpecialTest extends BaseSharingTest
 	public function testSixAlbumsWithDifferentProtectionSettingsAndSomeUnlocked(): void
 	{
 		$this->prepareSixAlbumsWithDifferentProtectionSettings();
-		$this->albums_tests->unlock($this->albumID1, self::ALBUM_PWD_1);
+		$this->albums_tests->unlock($this->albumID1, TestConstants::ALBUM_PWD_1);
 
 		// 1. Check root album
 
@@ -293,7 +289,7 @@ class SharingSpecialTest extends BaseSharingTest
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
 			$this->photoID3,
 			$this->photoID1, [ // albums 1-3 are accessible, photo 3 is alphabetically first
-				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID3), // thumb available as album 1 has been unlocked
+				$this->generateExpectedAlbumJson($this->albumID1, TestConstants::ALBUM_TITLE_1, null, $this->photoID3), // thumb available as album 1 has been unlocked
 			]
 		));
 		foreach ([
@@ -316,9 +312,9 @@ class SharingSpecialTest extends BaseSharingTest
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID3, [ // albums 1-3 are accessible, photo 3 is alphabetically first
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID3, $this->albumID3),
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_NIGHT_IMAGE, $this->photoID1, $this->albumID1),
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID3, $this->albumID3),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_NIGHT_IMAGE, $this->photoID1, $this->albumID1),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
 			]
 		));
 		foreach ([$this->albumID4, $this->photoID4, $this->albumID5, $this->photoID5, $this->albumID6, $this->photoID6] as $id) {
@@ -329,7 +325,7 @@ class SharingSpecialTest extends BaseSharingTest
 		$responseForOnThisDay->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID1, [
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_NIGHT_IMAGE, $this->photoID1, $this->albumID1),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_NIGHT_IMAGE, $this->photoID1, $this->albumID1),
 			]
 		));
 		foreach ([$this->photoID2, $this->photoID3, $this->photoID4, $this->photoID5, $this->photoID6] as $id) {
@@ -343,14 +339,14 @@ class SharingSpecialTest extends BaseSharingTest
 		$responseForTree->assertJson($this->generateExpectedTreeJson([
 			$this->generateExpectedAlbumJson(
 				$this->albumID1,
-				self::ALBUM_TITLE_1,
+				TestConstants::ALBUM_TITLE_1,
 				null,
 				$this->photoID3,
 				['albums' => [
-					$this->generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, $this->albumID1, $this->photoID2),
-					$this->generateExpectedAlbumJson($this->albumID3, self::ALBUM_TITLE_3, $this->albumID1, $this->photoID3),
+					$this->generateExpectedAlbumJson($this->albumID2, TestConstants::ALBUM_TITLE_2, $this->albumID1, $this->photoID2),
+					$this->generateExpectedAlbumJson($this->albumID3, TestConstants::ALBUM_TITLE_3, $this->albumID1, $this->photoID3),
 					// album 4 has been unlocked simultaneously with password 1, but is hidden and hence not part of the tree
-					// $this->generateExpectedAlbumJson($albumID5, self::ALBUM_TITLE_5, $albumID1), // shown without thumb, as album 5 is still locked
+					// $this->generateExpectedAlbumJson($albumID5, TestConstants::ALBUM_TITLE_5, $albumID1), // shown without thumb, as album 5 is still locked
 					// album 5 is not part of the tree, because it protected by a different password and still locked; regression?
 				]]
 			),
@@ -370,10 +366,10 @@ class SharingSpecialTest extends BaseSharingTest
 		// 4. Check album/photo access
 
 		foreach ([
-			[$this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID3], // photo 3 is alphabetically first of all child photos
-			[$this->albumID2, self::ALBUM_TITLE_2, $this->albumID1, $this->photoID2],
-			[$this->albumID3, self::ALBUM_TITLE_3, $this->albumID1, $this->photoID3],
-			[$this->albumID4, self::ALBUM_TITLE_4, $this->albumID1, $this->photoID4], // album 4 has been unlocked simultaneously with password 1 and hence is directly accessible, although it is hidden
+			[$this->albumID1, TestConstants::ALBUM_TITLE_1, null, $this->photoID3], // photo 3 is alphabetically first of all child photos
+			[$this->albumID2, TestConstants::ALBUM_TITLE_2, $this->albumID1, $this->photoID2],
+			[$this->albumID3, TestConstants::ALBUM_TITLE_3, $this->albumID1, $this->photoID3],
+			[$this->albumID4, TestConstants::ALBUM_TITLE_4, $this->albumID1, $this->photoID4], // album 4 has been unlocked simultaneously with password 1 and hence is directly accessible, although it is hidden
 		] as $albumInfo) {
 			$responseForAlbum = $this->albums_tests->get($albumInfo[0]);
 			$responseForAlbum->assertJson($this->generateExpectedAlbumJson(
@@ -381,7 +377,7 @@ class SharingSpecialTest extends BaseSharingTest
 			));
 		}
 		foreach ([$this->albumID5, $this->albumID6] as $id) {
-			$this->albums_tests->get($id, 401, self::EXPECTED_PASSWORD_REQUIRED_MSG, self::EXPECTED_UNAUTHENTICATED_MSG);
+			$this->albums_tests->get($id, 401, TestConstants::EXPECTED_PASSWORD_REQUIRED_MSG, TestConstants::EXPECTED_UNAUTHENTICATED_MSG);
 		}
 
 		foreach ([$this->photoID1, $this->photoID2, $this->photoID3, $this->photoID4] as $id) {
@@ -413,8 +409,8 @@ class SharingSpecialTest extends BaseSharingTest
 	public function testSixAlbumsWithDifferentProtectionSettingsAndAllUnlocked(): void
 	{
 		$this->prepareSixAlbumsWithDifferentProtectionSettings();
-		$this->albums_tests->unlock($this->albumID1, self::ALBUM_PWD_1);
-		$this->albums_tests->unlock($this->albumID5, self::ALBUM_PWD_2);
+		$this->albums_tests->unlock($this->albumID1, TestConstants::ALBUM_PWD_1);
+		$this->albums_tests->unlock($this->albumID5, TestConstants::ALBUM_PWD_2);
 
 		// 1. Check root album
 
@@ -422,7 +418,7 @@ class SharingSpecialTest extends BaseSharingTest
 		$responseForRoot->assertJson($this->generateExpectedRootJson(
 			$this->photoID5,
 			$this->photoID5, [ // albums 1-6 are accessible, photo 5 is alphabetically first
-				$this->generateExpectedAlbumJson($this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID5), // thumb available as album 1 has been unlocked
+				$this->generateExpectedAlbumJson($this->albumID1, TestConstants::ALBUM_TITLE_1, null, $this->photoID5), // thumb available as album 1 has been unlocked
 			]
 		));
 		foreach ([$this->photoID1, $this->albumID2, $this->photoID2, $this->albumID3, $this->photoID3, $this->albumID4, $this->photoID4, $this->albumID5, $this->albumID6, $this->photoID6] as $id) {
@@ -435,10 +431,10 @@ class SharingSpecialTest extends BaseSharingTest
 		$responseForRecent->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID5, [ // albums 1-3 and 5 are accessible, photo 5 is alphabetically first
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_SUNSET_IMAGE, $this->photoID5, $this->albumID5, ['title' => 'Abenddämmerung']),
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID3, $this->albumID3),
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_NIGHT_IMAGE, $this->photoID1, $this->albumID1),
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_SUNSET_IMAGE, $this->photoID5, $this->albumID5, ['title' => 'Abenddämmerung']),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE, $this->photoID3, $this->albumID3),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_NIGHT_IMAGE, $this->photoID1, $this->albumID1),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_TRAIN_IMAGE, $this->photoID2, $this->albumID2),
 			]
 		));
 		foreach ([$this->albumID4, $this->photoID4, $this->albumID6, $this->photoID6] as $id) {
@@ -449,8 +445,8 @@ class SharingSpecialTest extends BaseSharingTest
 		$responseForOnThisDayAlbum->assertJson($this->generateExpectedSmartAlbumJson(
 			true,
 			$this->photoID5, [ // photos 1 and 5 were taken on this day and accessible, photo 5 is alphabetically first
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_SUNSET_IMAGE, $this->photoID5, $this->albumID5, ['title' => 'Abenddämmerung']),
-				$this->generateExpectedPhotoJson(self::SAMPLE_FILE_NIGHT_IMAGE, $this->photoID1, $this->albumID1),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_SUNSET_IMAGE, $this->photoID5, $this->albumID5, ['title' => 'Abenddämmerung']),
+				$this->generateExpectedPhotoJson(TestConstants::SAMPLE_FILE_NIGHT_IMAGE, $this->photoID1, $this->albumID1),
 			]
 		));
 		foreach ([$this->photoID2, $this->photoID3, $this->photoID4, $this->photoID6] as $id) {
@@ -463,14 +459,14 @@ class SharingSpecialTest extends BaseSharingTest
 		$responseForTree->assertJson($this->generateExpectedTreeJson([
 			$this->generateExpectedAlbumJson(
 				$this->albumID1,
-				self::ALBUM_TITLE_1,
+				TestConstants::ALBUM_TITLE_1,
 				null,
 				$this->photoID5,
 				['albums' => [
-					$this->generateExpectedAlbumJson($this->albumID2, self::ALBUM_TITLE_2, $this->albumID1, $this->photoID2),
-					$this->generateExpectedAlbumJson($this->albumID3, self::ALBUM_TITLE_3, $this->albumID1, $this->photoID3),
+					$this->generateExpectedAlbumJson($this->albumID2, TestConstants::ALBUM_TITLE_2, $this->albumID1, $this->photoID2),
+					$this->generateExpectedAlbumJson($this->albumID3, TestConstants::ALBUM_TITLE_3, $this->albumID1, $this->photoID3),
 					// album 4 has been unlocked simultaneously with password 1, but is hidden and hence not part of the tree
-					$this->generateExpectedAlbumJson($this->albumID5, self::ALBUM_TITLE_5, $this->albumID1, $this->photoID5),
+					$this->generateExpectedAlbumJson($this->albumID5, TestConstants::ALBUM_TITLE_5, $this->albumID1, $this->photoID5),
 					// album 6 has been unlocked simultaneously with password 2, but is hidden and hence not part of the tree
 				]]
 			),
@@ -488,12 +484,12 @@ class SharingSpecialTest extends BaseSharingTest
 		// 4. Check album/photo access
 
 		foreach ([
-			[$this->albumID1, self::ALBUM_TITLE_1, null, $this->photoID5], // photo 5 is alphabetically first of all child photos
-			[$this->albumID2, self::ALBUM_TITLE_2, $this->albumID1, $this->photoID2],
-			[$this->albumID3, self::ALBUM_TITLE_3, $this->albumID1, $this->photoID3],
-			[$this->albumID4, self::ALBUM_TITLE_4, $this->albumID1, $this->photoID4], // album 4 has been unlocked simultaneously with password 1 and hence is directly accessible, although it is hidden
-			[$this->albumID5, self::ALBUM_TITLE_5, $this->albumID1, $this->photoID5],
-			[$this->albumID6, self::ALBUM_TITLE_6, $this->albumID1, $this->photoID6], // album 6 has been unlocked simultaneously with password 2 and hence is directly accessible, although it is hidden
+			[$this->albumID1, TestConstants::ALBUM_TITLE_1, null, $this->photoID5], // photo 5 is alphabetically first of all child photos
+			[$this->albumID2, TestConstants::ALBUM_TITLE_2, $this->albumID1, $this->photoID2],
+			[$this->albumID3, TestConstants::ALBUM_TITLE_3, $this->albumID1, $this->photoID3],
+			[$this->albumID4, TestConstants::ALBUM_TITLE_4, $this->albumID1, $this->photoID4], // album 4 has been unlocked simultaneously with password 1 and hence is directly accessible, although it is hidden
+			[$this->albumID5, TestConstants::ALBUM_TITLE_5, $this->albumID1, $this->photoID5],
+			[$this->albumID6, TestConstants::ALBUM_TITLE_6, $this->albumID1, $this->photoID6], // album 6 has been unlocked simultaneously with password 2 and hence is directly accessible, although it is hidden
 		] as $albumInfo) {
 			$responseForAlbum = $this->albums_tests->get($albumInfo[0]);
 			$responseForAlbum->assertJson($this->generateExpectedAlbumJson(

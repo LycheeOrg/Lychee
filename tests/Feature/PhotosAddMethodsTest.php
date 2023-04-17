@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Queue;
 use function Safe\copy;
 use Tests\AbstractTestCase;
 use Tests\Feature\Base\BasePhotoTest;
+use Tests\Feature\Constants\TestConstants;
 
 /**
  * Contains all tests for the various ways of adding images to Lychee
@@ -33,7 +34,7 @@ class PhotosAddMethodsTest extends BasePhotoTest
 	public function testImportViaMove(): void
 	{
 		// import the photo
-		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
+		copy(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
 		$this->photos_tests->importFromServer(static::importPath(), null, true, false, false);
 
 		// check if the file has been moved
@@ -43,7 +44,7 @@ class PhotosAddMethodsTest extends BasePhotoTest
 	public function testImportViaCopy(): void
 	{
 		// import the photo
-		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
+		copy(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
 		$this->photos_tests->importFromServer(static::importPath(), null, false, false, false);
 
 		// check if the file is still there
@@ -55,7 +56,7 @@ class PhotosAddMethodsTest extends BasePhotoTest
 		$ids_before = static::getRecentPhotoIDs();
 
 		// import the photo
-		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
+		copy(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
 		$this->photos_tests->importFromServer(static::importPath(), null, false, false, true);
 
 		// check if the file is still there
@@ -75,7 +76,7 @@ class PhotosAddMethodsTest extends BasePhotoTest
 		// Upload the photo the first time and remove some information
 		// such that there is really something to re-sync
 		$first_id = $this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 		DB::table('photos')
 			->where('id', '=', $first_id)
@@ -89,7 +90,7 @@ class PhotosAddMethodsTest extends BasePhotoTest
 		]);
 
 		// import the photo a second time and request re-sync
-		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
+		copy(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
 		$report = $this->photos_tests->importFromServer(static::importPath(), null, false, true, false, true);
 		$this->assertStringNotContainsString('PhotoSkippedException', $report);
 		$this->assertStringContainsString('PhotoResyncedException', $report);
@@ -107,11 +108,11 @@ class PhotosAddMethodsTest extends BasePhotoTest
 	{
 		// Upload the photo the first time
 		$this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 		);
 
 		// import the photo a second time and skip the duplicate
-		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
+		copy(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
 		$report = $this->photos_tests->importFromServer(static::importPath(), null, false, true, false, false);
 		$this->assertStringContainsString('PhotoSkippedException', $report);
 		$this->assertStringNotContainsString('PhotoResyncedException', $report);
@@ -122,7 +123,7 @@ class PhotosAddMethodsTest extends BasePhotoTest
 		// Upload the photo the first time and remove some information
 		// such that we can be sure that **no** re-sync happens later
 		$first_id = $this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 		$response = $this->photos_tests->get($first_id);
 		$response->assertJson([
@@ -142,7 +143,7 @@ class PhotosAddMethodsTest extends BasePhotoTest
 
 		// Import the photo a second time and do not skip the duplicate,
 		// but don't resync the metadata either.
-		copy(base_path(static::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
+		copy(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
 		$this->photos_tests->importFromServer(static::importPath(), null, false, false);
 		$report = $this->photos_tests->importFromServer(static::importPath(), null, false, false);
 		$this->assertStringNotContainsString('PhotoSkippedException', $report);
@@ -170,8 +171,8 @@ class PhotosAddMethodsTest extends BasePhotoTest
 		$ids_before = static::getRecentPhotoIDs();
 
 		// import the photo and video
-		copy(base_path(AbstractTestCase::SAMPLE_FILE_TRAIN_IMAGE), static::importPath('train.jpg'));
-		copy(base_path(AbstractTestCase::SAMPLE_FILE_TRAIN_VIDEO), static::importPath('train.mov'));
+		copy(base_path(TestConstants::SAMPLE_FILE_TRAIN_IMAGE), static::importPath('train.jpg'));
+		copy(base_path(TestConstants::SAMPLE_FILE_TRAIN_VIDEO), static::importPath('train.mov'));
 		$this->photos_tests->importFromServer(static::importPath(), null, false, false, true);
 
 		// check if the files are still there
@@ -197,12 +198,12 @@ class PhotosAddMethodsTest extends BasePhotoTest
 
 	public function testImportFromUrl(): void
 	{
-		$response = $this->photos_tests->importFromUrl([AbstractTestCase::SAMPLE_DOWNLOAD_JPG]);
+		$response = $this->photos_tests->importFromUrl([TestConstants::SAMPLE_DOWNLOAD_JPG]);
 
 		$response->assertJson([[
 			'album_id' => null,
 			'title' => 'mongolia',
-			'type' => AbstractTestCase::MIME_TYPE_IMG_JPEG,
+			'type' => TestConstants::MIME_TYPE_IMG_JPEG,
 			'size_variants' => [
 				'original' => [
 					'width' => 1280,
@@ -225,18 +226,18 @@ class PhotosAddMethodsTest extends BasePhotoTest
 	 */
 	public function testRawImportFromUrl(): void
 	{
-		$acceptedRawFormats = Configs::getValueAsString(self::CONFIG_RAW_FORMATS);
+		$acceptedRawFormats = Configs::getValueAsString(TestConstants::CONFIG_RAW_FORMATS);
 		try {
-			Configs::set(self::CONFIG_RAW_FORMATS, '.tif');
+			Configs::set(TestConstants::CONFIG_RAW_FORMATS, '.tif');
 			$reflection = new \ReflectionClass(BaseMediaFile::class);
 			$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', []);
 
-			$response = $this->photos_tests->importFromUrl([AbstractTestCase::SAMPLE_DOWNLOAD_TIFF]);
+			$response = $this->photos_tests->importFromUrl([TestConstants::SAMPLE_DOWNLOAD_TIFF]);
 
 			$response->assertJson([[
 				'album_id' => null,
 				'title' => 'tiff',
-				'type' => AbstractTestCase::MIME_TYPE_IMG_TIFF,
+				'type' => TestConstants::MIME_TYPE_IMG_TIFF,
 				'size_variants' => [
 					'original' => [
 						'width' => 400,
@@ -246,21 +247,21 @@ class PhotosAddMethodsTest extends BasePhotoTest
 				],
 			]]);
 		} finally {
-			Configs::set(self::CONFIG_RAW_FORMATS, $acceptedRawFormats);
+			Configs::set(TestConstants::CONFIG_RAW_FORMATS, $acceptedRawFormats);
 		}
 	}
 
 	public function testJobUploadWithFaking(): void
 	{
-		$useJobQueues = Configs::getValueAsString(self::CONFIG_USE_JOB_QUEUES);
+		$useJobQueues = Configs::getValueAsString(TestConstants::CONFIG_USE_JOB_QUEUES);
 		try {
-			Configs::set(self::CONFIG_USE_JOB_QUEUES, '1');
+			Configs::set(TestConstants::CONFIG_USE_JOB_QUEUES, '1');
 
 			Queue::fake();
 			Queue::assertNothingPushed();
 
 			$this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 			);
 
 			Queue::assertPushed(ProcessImageJob::class, 1);
@@ -268,20 +269,20 @@ class PhotosAddMethodsTest extends BasePhotoTest
 			self::assertEquals(1, JobHistory::where('status', '=', '0')->count());
 			self::assertEquals(1, Queue::size());
 		} finally {
-			Configs::set(self::CONFIG_USE_JOB_QUEUES, $useJobQueues);
+			Configs::set(TestConstants::CONFIG_USE_JOB_QUEUES, $useJobQueues);
 		}
 	}
 
 	public function testJobUploadWithoutFaking(): void
 	{
-		$useJobQueues = Configs::getValueAsString(self::CONFIG_USE_JOB_QUEUES);
+		$useJobQueues = Configs::getValueAsString(TestConstants::CONFIG_USE_JOB_QUEUES);
 		$defaultQueue = Config::get('queue.default', 'sync');
 		try {
-			Configs::set(self::CONFIG_USE_JOB_QUEUES, '1');
+			Configs::set(TestConstants::CONFIG_USE_JOB_QUEUES, '1');
 			Config::set('queue.default', 'sync');
 
 			$this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 			);
 
 			self::assertEquals(1, JobHistory::where('status', '=', '1')->count());
@@ -290,7 +291,7 @@ class PhotosAddMethodsTest extends BasePhotoTest
 
 			self::assertEquals(1, Photo::count());
 		} finally {
-			Configs::set(self::CONFIG_USE_JOB_QUEUES, $useJobQueues);
+			Configs::set(TestConstants::CONFIG_USE_JOB_QUEUES, $useJobQueues);
 			Config::set('queue.default', $defaultQueue);
 		}
 	}

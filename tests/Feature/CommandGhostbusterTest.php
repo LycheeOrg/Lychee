@@ -13,7 +13,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Support\Facades\DB;
-use Tests\AbstractTestCase;
+use Tests\Feature\Constants\TestConstants;
 
 class CommandGhostbusterTest extends Base\BasePhotoTest
 {
@@ -23,7 +23,7 @@ class CommandGhostbusterTest extends Base\BasePhotoTest
 	{
 		/** @var \App\Models\Photo $photo */
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
-			static::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			static::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 		));
 
 		// The question mark operator is deliberately omitted for original
@@ -71,7 +71,7 @@ class CommandGhostbusterTest extends Base\BasePhotoTest
 	{
 		/** @var \App\Models\Photo $photo */
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
-			static::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			static::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 		));
 
 		// The question mark operator is deliberately omitted for original

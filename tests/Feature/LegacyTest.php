@@ -17,6 +17,7 @@ use App\Models\Photo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Tests\AbstractTestCase;
+use Tests\Feature\Constants\TestConstants;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
@@ -60,7 +61,7 @@ class LegacyTest extends AbstractTestCase
 		Auth::loginUsingId(1);
 		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 		$photoID = $this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE),
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE),
 			$albumID
 		)->offsetGet('id');
 

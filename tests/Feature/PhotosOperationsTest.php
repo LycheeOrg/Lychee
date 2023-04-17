@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Tests\AbstractTestCase;
 use Tests\Feature\Base\BasePhotoTest;
+use Tests\Feature\Constants\TestConstants;
 use Tests\Feature\Lib\RootAlbumUnitTest;
 use Tests\Feature\Lib\SharingUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;
@@ -71,7 +72,7 @@ class PhotosOperationsTest extends BasePhotoTest
 	public function testManyFunctionsAtOnce(): void
 	{
 		$id = $this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
 
 		$this->photos_tests->get($id);
@@ -199,7 +200,7 @@ class PhotosOperationsTest extends BasePhotoTest
 				'taken_at' => '2019-06-01T01:28:25+02:00',
 				'taken_at_orig_tz' => '+02:00',
 				'title' => "Night in Ploumanac'h",
-				'type' => AbstractTestCase::MIME_TYPE_IMG_JPEG,
+				'type' => TestConstants::MIME_TYPE_IMG_JPEG,
 				'size_variants' => [
 					'small' => [
 						'width' => 540,
@@ -318,23 +319,23 @@ class PhotosOperationsTest extends BasePhotoTest
 	 */
 	public function testThumbnailsInsideHiddenAlbum(): void
 	{
-		$isRecentPublic = Configs::getValueAsBool(self::CONFIG_PUBLIC_RECENT);
-		$arePublicPhotosHidden = Configs::getValueAsBool(self::CONFIG_PUBLIC_HIDDEN);
-		$isPublicSearchEnabled = Configs::getValueAsBool(self::CONFIG_PUBLIC_SEARCH);
-		$albumSortingColumn = Configs::getValueAsString(self::CONFIG_ALBUMS_SORTING_COL);
-		$albumSortingOrder = Configs::getValueAsString(self::CONFIG_ALBUMS_SORTING_ORDER);
-		$photoSortingColumn = Configs::getValueAsString(self::CONFIG_PHOTOS_SORTING_COL);
-		$photoSortingOrder = Configs::getValueAsString(self::CONFIG_PHOTOS_SORTING_ORDER);
+		$isRecentPublic = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_RECENT);
+		$arePublicPhotosHidden = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_HIDDEN);
+		$isPublicSearchEnabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
+		$albumSortingColumn = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_COL);
+		$albumSortingOrder = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_ORDER);
+		$photoSortingColumn = Configs::getValueAsString(TestConstants::CONFIG_PHOTOS_SORTING_COL);
+		$photoSortingOrder = Configs::getValueAsString(TestConstants::CONFIG_PHOTOS_SORTING_ORDER);
 
 		try {
 			Auth::loginUsingId(1);
-			Configs::set(self::CONFIG_PUBLIC_RECENT, true);
-			Configs::set(self::CONFIG_PUBLIC_HIDDEN, false);
-			Configs::set(self::CONFIG_PUBLIC_SEARCH, true);
-			Configs::set(self::CONFIG_ALBUMS_SORTING_COL, 'title');
-			Configs::set(self::CONFIG_ALBUMS_SORTING_ORDER, 'ASC');
-			Configs::set(self::CONFIG_PHOTOS_SORTING_COL, 'title');
-			Configs::set(self::CONFIG_PHOTOS_SORTING_ORDER, 'ASC');
+			Configs::set(TestConstants::CONFIG_PUBLIC_RECENT, true);
+			Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, false);
+			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, true);
+			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_COL, 'title');
+			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_ORDER, 'ASC');
+			Configs::set(TestConstants::CONFIG_PHOTOS_SORTING_COL, 'title');
+			Configs::set(TestConstants::CONFIG_PHOTOS_SORTING_ORDER, 'ASC');
 
 			// Sic! This out-of-order creation of albums is on purpose in order to
 			// catch errors where the album tree is accidentally ordered as
@@ -346,16 +347,16 @@ class PhotosOperationsTest extends BasePhotoTest
 			$albumID11 = $this->albums_tests->add($albumID1, 'Test Album 1.1')->offsetGet('id');
 
 			$photoID11 = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE), $albumID11
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE), $albumID11
 			)->offsetGet('id');
 			$photoID13 = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID13
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID13
 			)->offsetGet('id');
 			$photoID12 = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_TRAIN_IMAGE), $albumID12
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_TRAIN_IMAGE), $albumID12
 			)->offsetGet('id');
 			$photoID121 = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(AbstractTestCase::SAMPLE_FILE_SUNSET_IMAGE), $albumID121
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_SUNSET_IMAGE), $albumID121
 			)->offsetGet('id');
 
 			$this->albums_tests->set_protection_policy(id: $albumID1, grants_full_photo_access: true, is_public: true, is_link_required: true);
@@ -447,13 +448,13 @@ class PhotosOperationsTest extends BasePhotoTest
 				]],
 			]);
 		} finally {
-			Configs::set(self::CONFIG_ALBUMS_SORTING_COL, $albumSortingColumn);
-			Configs::set(self::CONFIG_ALBUMS_SORTING_ORDER, $albumSortingOrder);
-			Configs::set(self::CONFIG_PHOTOS_SORTING_COL, $photoSortingColumn);
-			Configs::set(self::CONFIG_PHOTOS_SORTING_ORDER, $photoSortingOrder);
-			Configs::set(self::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
-			Configs::set(self::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
-			Configs::set(self::CONFIG_PUBLIC_RECENT, $isRecentPublic);
+			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_COL, $albumSortingColumn);
+			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_ORDER, $albumSortingOrder);
+			Configs::set(TestConstants::CONFIG_PHOTOS_SORTING_COL, $photoSortingColumn);
+			Configs::set(TestConstants::CONFIG_PHOTOS_SORTING_ORDER, $photoSortingOrder);
+			Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
+			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
+			Configs::set(TestConstants::CONFIG_PUBLIC_RECENT, $isRecentPublic);
 			Auth::logout();
 			Session::flush();
 		}
@@ -464,10 +465,10 @@ class PhotosOperationsTest extends BasePhotoTest
 		Auth::loginUsingId(1);
 		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 		$photoID1 = $this->photos_tests->upload(
-			self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID
+			self::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID
 		)->offsetGet('id');
 		$photoID2 = $this->photos_tests->upload(
-			self::createUploadedFile(self::SAMPLE_FILE_TRAIN_IMAGE), $albumID
+			self::createUploadedFile(TestConstants::SAMPLE_FILE_TRAIN_IMAGE), $albumID
 		)->offsetGet('id');
 		$this->albums_tests->set_protection_policy($albumID);
 		Auth::logout();
@@ -485,10 +486,10 @@ class PhotosOperationsTest extends BasePhotoTest
 		Auth::loginUsingId($userID1);
 		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 		$photoID1 = $this->photos_tests->upload(
-			self::createUploadedFile(self::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID
+			self::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID
 		)->offsetGet('id');
 		$photoID2 = $this->photos_tests->upload(
-			self::createUploadedFile(self::SAMPLE_FILE_TRAIN_IMAGE), $albumID
+			self::createUploadedFile(TestConstants::SAMPLE_FILE_TRAIN_IMAGE), $albumID
 		)->offsetGet('id');
 		$this->sharing_tests->add([$albumID], [$userID2]);
 		Auth::logout();

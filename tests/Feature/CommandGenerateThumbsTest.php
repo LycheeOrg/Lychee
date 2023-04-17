@@ -15,8 +15,8 @@ namespace Tests\Feature;
 use App\Enum\SizeVariantType;
 use Illuminate\Support\Facades\DB;
 use function Safe\unlink;
-use Tests\AbstractTestCase;
 use Tests\Feature\Base\BasePhotoTest;
+use Tests\Feature\Constants\TestConstants;
 
 class CommandGenerateThumbsTest extends BasePhotoTest
 {
@@ -47,7 +47,7 @@ class CommandGenerateThumbsTest extends BasePhotoTest
 	{
 		/** @var \App\Models\Photo $photo1 */
 		$photo1 = static::convertJsonToObject($this->photos_tests->upload(
-			static::createUploadedFile(AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE)
+			static::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 		));
 
 		// Remove the size variant "small" from disk and from DB
