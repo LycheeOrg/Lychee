@@ -10,7 +10,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature\Lib;
+namespace Tests\Feature\LibUnitTests;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Testing\TestResponse;

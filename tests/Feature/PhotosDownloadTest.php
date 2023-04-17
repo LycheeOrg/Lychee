@@ -27,9 +27,9 @@ use function Safe\fwrite;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Tests\AbstractTestCase;
 use Tests\Feature\Constants\TestConstants;
-use Tests\Feature\Lib\AssertableZipArchive;
-use Tests\Feature\Lib\SharingUnitTest;
-use Tests\Feature\Lib\UsersUnitTest;
+use Tests\Feature\LibUnitTests\AssertableZipArchive;
+use Tests\Feature\LibUnitTests\SharingUnitTest;
+use Tests\Feature\LibUnitTests\UsersUnitTest;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyUsers;
 

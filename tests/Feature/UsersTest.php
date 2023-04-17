@@ -24,9 +24,9 @@ use Illuminate\Support\Facades\Session;
 use PHPUnit\Framework\ExpectationFailedException;
 use function Safe\json_decode;
 use Tests\AbstractTestCase;
-use Tests\Feature\Lib\AlbumsUnitTest;
-use Tests\Feature\Lib\SessionUnitTest;
-use Tests\Feature\Lib\UsersUnitTest;
+use Tests\Feature\LibUnitTests\AlbumsUnitTest;
+use Tests\Feature\LibUnitTests\SessionUnitTest;
+use Tests\Feature\LibUnitTests\UsersUnitTest;
 use Tests\Feature\Traits\InteractWithSmartAlbums;
 
 class UsersTest extends AbstractTestCase
