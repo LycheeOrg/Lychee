@@ -17,8 +17,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Tests\AbstractTestCase;
 use Tests\Feature\Constants\TestConstants;
-use Tests\Feature\Lib\AlbumsUnitTest;
-use Tests\Feature\Lib\PhotosUnitTest;
+use Tests\Feature\LibUnitTests\AlbumsUnitTest;
+use Tests\Feature\LibUnitTests\PhotosUnitTest;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
 
 class RSSTest extends AbstractTestCase
