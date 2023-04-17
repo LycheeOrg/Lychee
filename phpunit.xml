@@ -18,12 +18,12 @@
         <exclude>./tests/Feature/Base/BasePhotoTest.php</exclude>
         <exclude>./tests/Feature/Base/BasePhotosRotateTest.php</exclude>
         <exclude>./tests/Feature/Base/BaseSharingTest.php</exclude>
-        <exclude>./tests/Feature/Lib/AlbumsUnitTest.php</exclude>
-        <exclude>./tests/Feature/Lib/PhotosUnitTest.php</exclude>
-        <exclude>./tests/Feature/Lib/RootAlbumUnitTest.php</exclude>
-        <exclude>./tests/Feature/Lib/SessionUnitTest.php</exclude>
-        <exclude>./tests/Feature/Lib/SharingUnitTest.php</exclude>
-        <exclude>./tests/Feature/Lib/UsersUnitTest.php</exclude>
+        <exclude>./tests/Feature/LibUnitTests/AlbumsUnitTest.php</exclude>
+        <exclude>./tests/Feature/LibUnitTests/PhotosUnitTest.php</exclude>
+        <exclude>./tests/Feature/LibUnitTests/RootAlbumUnitTest.php</exclude>
+        <exclude>./tests/Feature/LibUnitTests/SessionUnitTest.php</exclude>
+        <exclude>./tests/Feature/LibUnitTests/SharingUnitTest.php</exclude>
+        <exclude>./tests/Feature/LibUnitTests/UsersUnitTest.php</exclude>
     </testsuite>
   </testsuites>
   <extensions>
