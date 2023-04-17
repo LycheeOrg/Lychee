@@ -5585,8 +5585,6 @@ header.bind_back = function () {
   header.dom(".header__title").on("click touchend", function () {
     if (lychee.landing_page_enable && visible.albums()) {
       window.location.href = ".";
-    } else if (visible.albums() && !!header.dom(".header__title").attr('href')) {
-      window.location.href = header.dom(".header__title").attr('href');
     } else {
       return false;
     }
@@ -7086,7 +7084,6 @@ lychee.localizeStaticGuiElements = function () {
  * @returns {void}
  */
 lychee.parsePublicInitializationData = function (data) {
-  lychee.allow_username_change = data.config.allow_username_change === "1";
   lychee.sorting_photos = data.config.sorting_photos;
   lychee.sorting_albums = data.config.sorting_albums;
   lychee.share_button_visible = data.config.share_button_visible;
@@ -7096,39 +7093,39 @@ lychee.parsePublicInitializationData = function (data) {
   lychee.checkForUpdates = data.config.check_for_updates;
   lychee.layout = Number.parseInt(data.config.layout, 10);
   if (Number.isNaN(lychee.layout)) lychee.layout = 1;
-  lychee.landing_page_enable = data.config.landing_page_enable === "1";
-  lychee.public_search = data.config.public_search === "1";
+  lychee.landing_page_enable = data.config.landing_page_enable;
+  lychee.public_search = data.config.public_search;
   lychee.image_overlay_type = data.config.image_overlay_type || "exif";
   lychee.image_overlay_type_default = lychee.image_overlay_type;
-  lychee.map_display = data.config.map_display === "1";
-  lychee.map_display_public = data.config.map_display_public === "1";
+  lychee.map_display = data.config.map_display;
+  lychee.map_display_public = data.config.map_display_public;
   lychee.map_display_direction = data.config.map_display_direction === "1";
   lychee.map_provider = data.config.map_provider || "Wikimedia";
-  lychee.map_include_subalbums = data.config.map_include_subalbums === "1";
-  lychee.location_show = data.config.location_show === "1";
-  lychee.location_show_public = data.config.location_show_public === "1";
+  lychee.map_include_subalbums = data.config.map_include_subalbums;
+  lychee.location_show = data.config.location_show;
+  lychee.location_show_public = data.config.location_show_public;
   lychee.swipe_tolerance_x = Number.parseInt(data.config.swipe_tolerance_x, 10) || 150;
   lychee.swipe_tolerance_y = Number.parseInt(data.config.swipe_tolerance_y, 10) || 250;
-  lychee.nsfw_visible = data.config.nsfw_visible === "1";
+  lychee.nsfw_visible = data.config.nsfw_visible;
   lychee.nsfw_visible_saved = lychee.nsfw_visible;
-  lychee.nsfw_blur = data.config.nsfw_blur === "1";
-  lychee.nsfw_warning = data.config.nsfw_warning === "1";
+  lychee.nsfw_blur = data.config.nsfw_blur;
+  lychee.nsfw_warning = data.config.nsfw_warning;
   lychee.nsfw_banner_override = data.config.nsfw_banner_override || "";
   lychee.sm_facebook_url = data.config.sm_facebook_url;
   lychee.sm_flickr_url = data.config.sm_flickr_url;
   lychee.sm_instagram_url = data.config.sm_instagram_url;
   lychee.sm_twitter_url = data.config.sm_twitter_url;
   lychee.sm_youtube_url = data.config.sm_youtube_url;
-  lychee.rss_enable = data.config.rss_enable === "1";
+  lychee.rss_enable = data.config.rss_enable;
   lychee.rss_feeds = data.config.rss_feeds;
   lychee.site_title = data.config.site_title;
   lychee.site_owner = data.config.site_owner;
   lychee.site_copyright_begin = data.config.site_copyright_begin;
   lychee.site_copyright_end = data.config.site_copyright_end;
-  lychee.footer_show_social_media = data.config.footer_show_social_media === "1";
-  lychee.footer_show_copyright = data.config.footer_show_copyright === "1";
+  lychee.footer_show_social_media = data.config.footer_show_social_media;
+  lychee.footer_show_copyright = data.config.footer_show_copyright;
   lychee.footer_additional_text = data.config.footer_additional_text;
-  lychee.mod_frame_enabled = data.config.mod_frame_enabled === "1";
+  lychee.mod_frame_enabled = data.config.mod_frame_enabled;
   lychee.mod_frame_refresh = Number.parseInt(data.config.mod_frame_refresh, 10) || 30;
   var isTv = window.matchMedia("tv").matches;
   lychee.header_auto_hide = !isTv;
@@ -7158,22 +7155,23 @@ lychee.parsePublicInitializationData = function (data) {
  * @returns {void}
  */
 lychee.parseProtectedInitializationData = function (data) {
+  lychee.allow_username_change = data.config.allow_username_change;
   lychee.dropboxKey = data.config.dropbox_key || "";
   lychee.location = data.config.location || "";
-  lychee.checkForUpdates = data.config.check_for_updates === "1";
+  lychee.checkForUpdates = data.config.check_for_updates;
   lychee.lang = data.config.lang || "";
   lychee.lang_available = data.config.lang_available || [];
-  lychee.location_decoding = data.config.location_decoding === "1";
+  lychee.location_decoding = data.config.location_decoding;
   lychee.default_license = data.config.default_license || "none";
   lychee.css = data.config.css || "";
-  lychee.grants_full_photo_access = data.config.grants_full_photo_access === "1";
-  lychee.grants_download = data.config.grants_download === "1";
-  lychee.public_photos_hidden = data.config.public_photos_hidden === "1";
-  lychee.delete_imported = data.config.delete_imported === "1";
-  lychee.import_via_symlink = data.config.import_via_symlink === "1";
-  lychee.skip_duplicates = data.config.skip_duplicates === "1";
-  lychee.editor_enabled = data.config.editor_enabled === "1";
-  lychee.new_photos_notification = data.config.new_photos_notification === "1";
+  lychee.grants_full_photo_access = data.config.grants_full_photo_access;
+  lychee.grants_download = data.config.grants_download;
+  lychee.public_photos_hidden = data.config.public_photos_hidden;
+  lychee.delete_imported = data.config.delete_imported;
+  lychee.import_via_symlink = data.config.import_via_symlink;
+  lychee.skip_duplicates = data.config.skip_duplicates;
+  lychee.editor_enabled = data.config.editor_enabled;
+  lychee.new_photos_notification = data.config.new_photos_notification;
   lychee.upload_processing_limit = Number.parseInt(data.config.upload_processing_limit, 10) || 4;
 };
 
@@ -12963,6 +12961,7 @@ upload.start = {
       // string `""`. Form data falsely converts the value `null` to the
       // literal string `"null"`.
       formData.append("albumID", albumID ? albumID : "");
+      formData.append("fileLastModifiedTime", files[fileIdx].lastModified);
       formData.append("file", files[fileIdx]);
 
       // We must not use the `onload` event of the `XMLHttpRequestUpload`
