@@ -108,6 +108,6 @@ TESTS_PHP := $(shell find tests/Feature -name "*Test.php" -printf "%f\n")
 TEST_DONE := $(addprefix build/,$(TESTS_PHP:.php=.done))
 
 build/%.done: tests/Feature/%.php
-	vendor/bin/phpunit --filter $* && touch build/$*.done
+	XDEBUG_MODE=coverage vendor/bin/phpunit --filter $* && touch build/$*.done
 
 all_tests: $(TEST_DONE)
