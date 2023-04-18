@@ -9,6 +9,7 @@ use App\Enum\SmartAlbumType;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Http\Requests\Traits\HasIsPublicTrait;
+use App\Models\Configs;
 use App\Policies\SettingsPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\In;
