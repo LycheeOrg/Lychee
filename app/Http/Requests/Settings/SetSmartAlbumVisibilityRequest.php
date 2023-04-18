@@ -19,8 +19,6 @@ class SetSmartAlbumVisibilityRequest extends BaseApiRequest implements HasAbstra
 	use HasAbstractAlbumTrait;
 	use HasIsPublicTrait;
 
-	protected bool $is_public;
-
 	/**
 	 * {@inheritDoc}
 	 */
