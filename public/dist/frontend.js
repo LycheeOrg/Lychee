@@ -5378,6 +5378,7 @@ $(".u2f_view").append(build.u2f(credential));settings.bind("#CredentialDelete"+c
  * @property {string}   swipe_tolerance_y        - actually a number
  * @property {string}   upload_processing_limit  - actually a number
  * @property {?Version} version                  - Version number
+ * @property {SmartAlbumVisibility} smart_album_visibilty - visibility of smart albums
  */ /**
  * The JSON object for incremental reports sent by the
  * back-end within a streamed response.
@@ -5478,6 +5479,14 @@ $(".u2f_view").append(build.u2f(credential));settings.bind("#CredentialDelete"+c
  * @property {SettingsRightsDTO} settings
  * @property {UserManagementRightsDTO} user_management
  * @property {UserRightsDTO} user
+ */ /**
+ * The JSON object containing the visibility of smart albums
+ *
+ * @typedef SmartAlbumVisibility
+ *
+ * @property {boolean} recent
+ * @property {boolean} starred
+ * @property {boolean} on_this_day
  */ /**
  * MIT License
  *
