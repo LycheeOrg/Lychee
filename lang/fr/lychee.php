@@ -360,6 +360,10 @@ return [
 	'LANG_TEXT' => 'Remplacer la langue de Lychee par :',
 	'LANG_TITLE' => 'Changer la langue',
 
+	'SETTING_RECENT_PUBLIC_TEXT' => 'Rendre l’album "Recent" accessible à tous publics',
+	'SETTING_STARRED_PUBLIC_TEXT' => 'Rendre l’album "Favoris" accessible à tous publics',
+	'SETTING_ONTHISDAY_PUBLIC_TEXT' => 'Rendre l’album "Ce jour-là" accessible à tous publics',
+
 	'CSS_TEXT' => 'Personaliser le CSS :',
 	'CSS_TITLE' => 'Changer le CSS',
 	'JS_TEXT' => 'Personaliser le JS:',

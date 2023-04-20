@@ -360,6 +360,10 @@ return [
 	'LANG_TEXT' => '將Lychee語言更改為：',
 	'LANG_TITLE' => '改變語言',
 
+	'SETTING_RECENT_PUBLIC_TEXT' => 'Make "Recent" smart album accessible to anonymous users',
+	'SETTING_STARRED_PUBLIC_TEXT' => 'Make "Starred" smart album accessible to anonymous users',
+	'SETTING_ONTHISDAY_PUBLIC_TEXT' => 'Make "On This Day" smart album accessible to anonymous users',
+
 	'CSS_TEXT' => 'Personalize CSS:',
 	'CSS_TITLE' => 'Change CSS',
 	'JS_TEXT' => 'Custom JS:',

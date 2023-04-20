@@ -8,6 +8,9 @@ use App\Enum\DefaultAlbumProtectionType;
 use App\Exceptions\Handler;
 use App\Metadata\Versions\InstalledVersion;
 use App\Models\Configs;
+use App\SmartAlbums\OnThisDayAlbum;
+use App\SmartAlbums\RecentAlbum;
+use App\SmartAlbums\StarredAlbum;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
@@ -105,6 +108,11 @@ class ConfigurationResource extends JsonResource
 				'small_max_width' => Configs::getValueAsInt('small_max_width'),
 				'thumb_2x' => Configs::getValueAsBool('thumb_2x'),
 				'unlock_password_photos_with_url_param' => Configs::getValueAsBool('unlock_password_photos_with_url_param'),
+				'smart_album_visibilty' => [
+					'recent' => RecentAlbum::getInstance()->public_permissions !== null,
+					'starred' => StarredAlbum::getInstance()->public_permissions !== null,
+					'on_this_day' => OnThisDayAlbum::getInstance()->public_permissions !== null,
+				],
 			]),
 
 			'album_subtitle_type' => Configs::getValueAsString('album_subtitle_type'),
