@@ -30,7 +30,7 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-		$this->createAccesPersmissionTable();
+		$this->createAccessPermissionTable();
 		DB::transaction(fn () => $this->populateAccessPermissionTable());
 
 		$optimize = new OptimizeTables();
@@ -48,7 +48,7 @@ return new class() extends Migration {
 	/**
 	 * Generate the table for access_permissions.
 	 */
-	private function createAccesPersmissionTable(): void
+	private function createAccessPermissionTable(): void
 	{
 		// Any old data is not relevant.
 		Schema::dropIfExists(self::TABLE_NAME);

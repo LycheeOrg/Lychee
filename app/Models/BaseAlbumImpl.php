@@ -153,7 +153,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'owner_id' => 0,
 		'sorting_col' => null,
 		'sorting_order' => null,
-		// "Security" attributes
+		// Special visibility attributes
 		'is_nsfw' => false,
 	];
 
