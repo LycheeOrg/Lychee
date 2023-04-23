@@ -41,14 +41,9 @@ class Create extends Action
 		}
 
 		if ($defaultProtectionType === DefaultAlbumProtectionType::INHERIT && $parentAlbum !== null) {
-			$parentPermissions = $parentAlbum->access_permissions;
-			$copyPermissions = [];
-			foreach ($parentPermissions as $parentPermission) {
-				$copyPermissions[] = AccessPermission::ofAccessPermission($parentPermission);
-			}
 			// TODO: DOUBLE CHECK
 			// @phpstan-ignore-next-line
-			$album->access_permissions()->sync($copyPermissions);
+			$album->access_permissions()->sync($this->copyPermission($parentAlbum));
 		}
 
 		return $album;
@@ -75,5 +70,23 @@ class Create extends Action
 			$album->owner_id = $this->intendedOwnerId;
 			$album->makeRoot();
 		}
+	}
+
+	/**
+	 * Given a parent album, retrieve its access permission and return an array containing copies of them.
+	 *
+	 * @param Album|null $parentAlbum
+	 *
+	 * @return array<int,AccessPermission> array of access permissions
+	 */
+	private function copyPermission(?Album $parentAlbum): array
+	{
+		$parentPermissions = $parentAlbum->access_permissions;
+		$copyPermissions = [];
+		foreach ($parentPermissions as $parentPermission) {
+			$copyPermissions[] = AccessPermission::ofAccessPermission($parentPermission);
+		}
+
+		return $copyPermissions;
 	}
 }
