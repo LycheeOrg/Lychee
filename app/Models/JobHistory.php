@@ -4,16 +4,12 @@ namespace App\Models;
 
 use App\Enum\JobStatus;
 use App\Exceptions\ConfigurationKeyMissingException;
-use App\Models\Extensions\ThrowsConsistentExceptions;
-use App\Models\Extensions\UseFixedQueryBuilder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
 /**
- * App\Models\JobHistory.
- *
  * @property int         $id
  * @property int         $owner_id
  * @property User        $owner
@@ -26,10 +22,6 @@ use Illuminate\Support\Facades\DB;
  */
 class JobHistory extends Model
 {
-	use ThrowsConsistentExceptions;
-	/** @phpstan-use UseFixedQueryBuilder<JobHistory> */
-	use UseFixedQueryBuilder;
-
 	protected $table = 'jobs_history';
 
 	protected $hidden = [];
@@ -72,17 +64,19 @@ class JobHistory extends Model
 	/**
 	 * @return Builder
 	 *
+	 * @throws \RuntimeException
+	 * @throws \InvalidArgumentException
 	 * @throws ConfigurationKeyMissingException
 	 */
 	public function scopeWithAlbumTitleOrNull(): Builder
 	{
 		$with = JobHistory::query()
-			->join('base_albums', 'jobs_history.parent_id', '=', 'base_albums.id')
-			->select(['jobs_history.*', 'base_albums.title']);
+		->join('base_albums', 'jobs_history.parent_id', '=', 'base_albums.id')
+		->select(['jobs_history.*', 'base_albums.title']);
 
 		return JobHistory::query()
-			->doesntHave('parent')
-			->select(['jobs_history.*', DB::raw('NULL as title')])
-			->union($with);
+		->doesntHave('parent')
+		->select(['jobs_history.*', DB::raw('NULL as title')])
+		->union($with);
 	}
 }

@@ -76,4 +76,6 @@ class RequestAttribute
 	public const SKIP_DUPLICATES_ATTRIBUTE = 'skip_duplicates';
 	public const IMPORT_VIA_SYMLINK_ATTRIBUTE = 'import_via_symlink';
 	public const RESYNC_METADATA_ATTRIBUTE = 'resync_metadata';
+
+	public const URLS_ATTRIBUTE = 'urls';
 }

@@ -4,6 +4,7 @@ namespace App\SmartAlbums;
 
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Contracts\Models\AbstractAlbum;
+use App\DTO\AlbumProtectionPolicy;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
@@ -19,6 +20,7 @@ use App\Models\Extensions\UTCBasedTimes;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
 use App\SmartAlbums\Utils\MimicModel;
+use App\SmartAlbums\Utils\Wireable;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -34,6 +36,7 @@ use Illuminate\Database\Eloquent\Collection;
  */
 abstract class BaseSmartAlbum implements AbstractAlbum
 {
+	use Wireable;
 	use MimicModel;
 	use UTCBasedTimes;
 	use ToArrayThrowsNotImplemented;
@@ -63,6 +66,36 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s service container', $e);
 		}
+	}
+
+	protected function _toArray(): array
+	{
+		// The properties `thumb` and `photos` are intentionally treated
+		// differently.
+		//
+		//  1. The result always includes `thumb`, hence we call the
+		//     getter method to ensure that the property is initialized, if it
+		//     has not already been accessed before.
+		//  2. The result only includes the collection `photos`, if it has
+		//     already explicitly been accessed earlier and thus is initialized.
+		//
+		// Rationale:
+		//
+		//  1. This resembles the behaviour of a real Eloquent model, if the
+		//     attribute `thumb` was part of the `append`-property of model.
+		//  2. This resembles the behaviour of a real Eloquent model for
+		//     one-to-many relations.
+		//     A relation is only included in the array representation, if the
+		//     relation has been loaded.
+		//     This avoids unnecessary hydration of photos if the album is
+		//     only used within a listing of sub-albums.
+		return [
+			'id' => $this->id,
+			'title' => $this->title,
+			'thumb' => $this->getThumbAttribute(),
+			'policy' => AlbumProtectionPolicy::ofSmartAlbum($this),
+			'photos' => $this->photos?->toArray(),
+		];
 	}
 
 	/**

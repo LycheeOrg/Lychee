@@ -90,5 +90,6 @@ class Kernel extends HttpKernel
 		'content_type' => \App\Http\Middleware\ContentType::class,
 		'accept_content_type' => \App\Http\Middleware\AcceptContentType::class,
 		'redirect-legacy-id' => \App\Http\Middleware\RedirectLegacyPhotoID::class,
+		'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 	];
 }

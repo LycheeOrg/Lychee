@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Wireable;
 use function Safe\preg_match;
 
 /**
@@ -71,6 +72,7 @@ use function Safe\preg_match;
  * @property SizeVariants $size_variants
  */
 class Photo extends Model
+	//  implements Wireable
 {
 	use UTCBasedTimes;
 	use HasAttributesPatch;
@@ -109,6 +111,23 @@ class Photo extends Model
 		'altitude' => 'float',
 		'img_direction' => 'float',
 	];
+
+	/**
+	 * @var array<int,string> The list of attributes which exist as columns of the DB
+	 *                        relation but shall not be serialized to JSON
+	 */
+	protected $hidden = [
+		RandomID::LEGACY_ID_NAME,
+		'album',  // do not serialize relation in order to avoid infinite loops
+		'owner',  // do not serialize relation
+		'owner_id',
+		'live_photo_short_path', // serialize live_photo_url instead
+	];
+
+	protected function _toArray(): array
+	{
+		return parent::toArray();
+	}
 
 	/**
 	 * Return the relationship between a Photo and its Album.
@@ -366,4 +385,20 @@ class Photo extends Model
 		$this->exists = false;
 		$fileDeleter->do();
 	}
+
+	// /**
+	//  * {@inheritdoc}
+	//  */
+	// public function toLivewire(): string
+	// {
+	// 	return $this->id;
+	// }
+
+	// /**
+	//  * {@inheritdoc}
+	//  */
+	// public static function fromLivewire(mixed $value): self
+	// {
+	// 	return self::findOrFail(strval($value));
+	// }
 }

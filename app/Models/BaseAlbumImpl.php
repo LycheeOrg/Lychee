@@ -174,6 +174,11 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 */
 	protected $with = ['owner', 'access_permissions', 'current_user_permissions', 'public_permissions'];
 
+	protected function _toArray(): array
+	{
+		return parent::toArray();
+	}
+
 	/**
 	 * Returns the relationship between an album and its owner.
 	 *

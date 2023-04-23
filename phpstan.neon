@@ -8,15 +8,13 @@ parameters:
 		- app
 		- scripts
 		- lang
-		- database
+		- database/migrations
 		- tests
 	excludePaths:
-		- app/View/*
-		- app/Http/Livewire/*
-		- database/factories/*
 		- database/migrations/2021_12_04_181200_refactor_models.php
 	stubFiles:
 		# these can be removed after https://github.com/thecodingmachine/safe/issues/283 has been merged
+		- phpstan/stubs/Wireable.stub
 		- phpstan/stubs/image.stub
 		- phpstan/stubs/imageexception.stub
 	ignoreErrors:
@@ -34,6 +32,7 @@ parameters:
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::without\(\)#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::count\(\).#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::update\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::join\(\).#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Extensions\\FixedQueryBuilder)(<.*>)?::union\(\).#'
 		- '#Dynamic call to static method App\\Models\\Extensions\\FixedQueryBuilder<.*>::orderByDesc\(\).#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::update\(\)#'
@@ -81,15 +80,15 @@ parameters:
 		-
 			message: '#Function define is unsafe to use.#'
 			paths:
-				- database
+				- database/migrations
 		-
 			message: '#Variable property access on (mixed|object).#'
 			paths:
-				- database
+				- database/migrations
 		-
 			message: '#Access to an undefined property object::\$value.#'
 			paths:
-				- database
+				- database/migrations
 
 		# TESTS
 		-
@@ -110,10 +109,6 @@ parameters:
 				- tests
 		-
 			message: '#Function "dump\(\)" cannot be used/left in the code: seems you missed some dump debugging function#'
-			paths:
-				- tests
-		-
-			message: '#Access to private property App\\Models\\Extensions\\SizeVariants::\$(original|thumb|small|medium)(2x)?#'
 			paths:
 				- tests
 		-

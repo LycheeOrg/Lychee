@@ -30,6 +30,17 @@ return [
 
 	'env' => env('APP_ENV', 'production'),
 
+	/*
+	|--------------------------------------------------------------------------
+	| Application Environment
+	|--------------------------------------------------------------------------
+	|
+	| This value determines whether livewire front-end is enabled as it is
+	| currently under development.
+	|
+	*/
+
+	'livewire' => (bool) env('LIVEWIRE_ENABLED', false),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -58,6 +69,8 @@ return [
 	'url' => env('APP_URL', 'http://localhost'),
 
 	'asset_url' => null,
+
+	'force_https' => (bool) env('APP_FORCE_HTTPS', false),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -246,5 +259,13 @@ return [
 	'aliases' => Facade::defaultAliases()->merge([
 		'DebugBar' => Barryvdh\Debugbar\Facades\Debugbar::class,
 		'Helpers' => App\Facades\Helpers::class,
+		// Aliases for easier access in the blade templates
+		'Configs' => App\Models\Configs::class,
+		'AlbumPolicy' => App\Policies\AlbumPolicy::class,
+		'PhotoPolicy' => App\Policies\PhotoPolicy::class,
+		'SettingsPolicy' => App\Policies\SettingsPolicy::class,
+		'UserPolicy' => App\Policies\UserPolicy::class,
+		'User' => App\Models\User::class,
+		'SizeVariantType' => App\Enum\SizeVariantType::class,
 	])->toArray(),
 ];

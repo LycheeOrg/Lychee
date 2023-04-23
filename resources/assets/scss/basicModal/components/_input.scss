@@ -1,0 +1,29 @@
+.basicModal__text {
+
+	width: 100%;
+	margin: 0;
+	padding: 14px 10px;
+	background-color: rgba(0, 0, 0, 0);
+	color: #333;
+	border: none;
+	box-shadow: 0 1px 0 rgb(200, 200, 200);
+	border-radius: 0;
+	outline: none;
+	transition: background-color $basicModal__sDuration, box-shadow $basicModal__sDuration;
+
+	&:hover {
+		background-color: rgba(0, 0, 0, 0.02);
+		box-shadow: 0 1px 0 rgb(180, 180, 180);
+	}
+
+	&:focus {
+		background-color: rgba($basicModal__color, .05);
+		box-shadow: 0 1px 0 $basicModal__color;
+	}
+
+	&.error {
+		background-color: rgba(255, 36, 16, .05);
+		box-shadow: 0 1px 0 rgb(255, 36, 16);
+	}
+
+}

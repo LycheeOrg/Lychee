@@ -1,4 +1,8 @@
 {
     "/js/app.js": "/js/app.js",
-    "/css/app.css": "/css/app.css"
+    "/js/webauthn.js": "/js/webauthn.js",
+    "/css/filepond.css": "/css/filepond.css",
+    "/css/app.css": "/css/app.css",
+    "/js/alpine.min.js": "/js/alpine.min.js",
+    "/js/filepond.js": "/js/filepond.js"
 }
