@@ -160,7 +160,7 @@ class Extractor
 
 		if ($taken_at === false &&
 			Configs::getValueAsBool('use_last_modified_date_when_no_exif_date')) {
-			$taken_at = DateTime::createFromFormat('U', $fileLastModifiedTime);
+			$taken_at = DateTime::createFromFormat('U', "$fileLastModifiedTime");
 		}
 
 		if ($taken_at !== false) {

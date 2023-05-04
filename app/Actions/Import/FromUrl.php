@@ -13,6 +13,7 @@ use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Support\Collection;
 use Safe\Exceptions\InfoException;
+use function Safe\filemtime;
 use function Safe\ini_get;
 use function Safe\parse_url;
 use function Safe\set_time_limit;
