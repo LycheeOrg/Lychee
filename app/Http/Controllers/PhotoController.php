@@ -32,7 +32,7 @@ use App\Jobs\ProcessImageJob;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Models\Photo;
-use App\SmartAlbums\StarredAlbum;
+use App\Policies\PhotoQueryPolicy;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
@@ -64,8 +64,11 @@ class PhotoController extends Controller
 	}
 
 	/**
-	 * Returns a random public photo (starred)
+	 * Returns a random photo (from the configured album).
+	 * Only photos with enough access rights are included.
 	 * This is used in the Frame Controller.
+	 *
+	 * @param PhotoQueryPolicy $photoQueryPolicy
 	 *
 	 * @return PhotoResource
 	 *
@@ -75,13 +78,20 @@ class PhotoController extends Controller
 	 *
 	 * @noinspection PhpIncompatibleReturnTypeInspection
 	 */
-	public function getRandom(): PhotoResource
+	public function getRandom(PhotoQueryPolicy $photoQueryPolicy): PhotoResource
 	{
+		$randomAlbumId = Configs::getValueAsString('random_album_id');
+
+		if ($randomAlbumId === '') {
+			$query = $photoQueryPolicy->applySearchabilityFilter(Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links']));
+		} else {
+			$query = $this->albumFactory->findAbstractAlbumOrFail($randomAlbumId)
+									 ->photos()
+									 ->with(['album', 'size_variants', 'size_variants.sym_links']);
+		}
 		// PHPStan does not understand that `firstOrFail` returns `Photo`, but assumes that it returns `Model`
 		// @phpstan-ignore-next-line
-		return PhotoResource::make(StarredAlbum::getInstance()
-			->photos()
-			->inRandomOrder()
+		return PhotoResource::make($query->inRandomOrder()
 			->firstOrFail());
 	}
 
