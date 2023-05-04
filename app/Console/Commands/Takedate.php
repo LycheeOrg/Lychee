@@ -144,7 +144,7 @@ class Takedate extends Command
 				$this->progressBar->advance();
 				$localFile = $photo->size_variants->getOriginal()->getFile()->toLocalFile();
 
-				$info = Extractor::createFromFile($localFile);
+				$info = Extractor::createFromFile($localFile, filemtime($localFile->getRealPath()));
 				if ($info->taken_at !== null) {
 					// Note: `equalTo` only checks if two times indicate the same
 					// instant of time on the universe's timeline, i.e. equality

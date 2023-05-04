@@ -81,7 +81,7 @@ class VideoData extends Command
 				$originalSizeVariant = $photo->size_variants->getOriginal();
 				$file = $originalSizeVariant->getFile()->toLocalFile();
 
-				$info = Extractor::createFromFile($file);
+				$info = Extractor::createFromFile($file, filemtime($file->getRealPath()));
 
 				if ($originalSizeVariant->width === 0 && $info->width !== 0) {
 					$originalSizeVariant->width = $info->width;
