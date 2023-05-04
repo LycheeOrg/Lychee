@@ -38,6 +38,7 @@ class ProcessImageJob implements ShouldQueue
 	public string $originalBaseName;
 	public ?string $albumId;
 	public int $userId;
+	public int $fileLastModifiedTime;
 
 	/**
 	 * Create a new job instance.
@@ -45,11 +46,13 @@ class ProcessImageJob implements ShouldQueue
 	public function __construct(
 		ProcessableJobFile $file,
 		?AbstractAlbum $albumId,
+		int $fileLastModifiedTime,
 	) {
 		$this->filePath = $file->getPath();
 		$this->originalBaseName = $file->getOriginalBasename();
 		$this->albumId = $albumId?->id;
 		$this->userId = Auth::user()->id;
+		$this->fileLastModifiedTime = $fileLastModifiedTime;
 
 		// Set up our new history record.
 		$this->history = new JobHistory();
@@ -83,7 +86,7 @@ class ProcessImageJob implements ShouldQueue
 			$album = $albumFactory->findAbstractAlbumOrFail($this->albumId);
 		}
 
-		$photo = $create->add($copiedFile, $album);
+		$photo = $create->add($copiedFile, $this->fileLastModifiedTime, $album);
 
 		// Once the job has finished, set history status to 1.
 		$this->history->status = JobStatus::SUCCESS;

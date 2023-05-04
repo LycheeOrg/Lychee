@@ -63,8 +63,7 @@ class FromUrl
 				$downloadedFile = new DownloadedFile($url);
 
 				// Import photo/video/raw
-				// TODO Florin: figure out file's last modified time
-				$result->add($create->add($downloadedFile, $album));
+				$result->add($create->add($downloadedFile, filemtime($downloadedFile->getRealPath()), $album));
 			} catch (\Throwable $e) {
 				$exceptions[] = $e;
 				Handler::reportSafely($e);

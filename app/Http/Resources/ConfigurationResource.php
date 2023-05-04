@@ -104,6 +104,7 @@ class ConfigurationResource extends JsonResource
 				'small_max_width' => Configs::getValueAsInt('small_max_width'),
 				'thumb_2x' => Configs::getValueAsBool('thumb_2x'),
 				'unlock_password_photos_with_url_param' => Configs::getValueAsBool('unlock_password_photos_with_url_param'),
+				'use_last_modified_date_when_no_exif_date' => Configs::getValueAsBool('use_last_modified_date_when_no_exif_date'),
 			]),
 
 			'album_subtitle_type' => Configs::getValueAsString('album_subtitle_type'),

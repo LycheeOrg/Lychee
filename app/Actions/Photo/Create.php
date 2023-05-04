@@ -49,15 +49,15 @@ class Create
 	 * database entry.
 	 *
 	 * @param NativeLocalFile    $sourceFile           the source file
+	 * @param int                $fileLastModifiedTime the timestamp to use if there's no creation date in Exif
 	 * @param AbstractAlbum|null $album                the targeted parent album
-	 * @param int|null           $fileLastModifiedTime the timestamp to use if there's no creation date in Exif
 	 *
 	 * @return Photo the newly created or updated photo
 	 *
 	 * @throws ModelNotFoundException
 	 * @throws LycheeException
 	 */
-	public function add(NativeLocalFile $sourceFile, ?AbstractAlbum $album = null, ?int $fileLastModifiedTime = null): Photo
+	public function add(NativeLocalFile $sourceFile, int $fileLastModifiedTime, ?AbstractAlbum $album = null): Photo
 	{
 		$sourceFile->assertIsSupportedMediaOrAcceptedRaw();
 
@@ -117,7 +117,7 @@ class Create
 	 * {@link AddStrategyParameters::$exifInfo} of {@link Create::$strategyParameters}.
 	 *
 	 * @param NativeLocalFile $sourceFile           the source file
-	 * @param int|null        $fileLastModifiedTime the timestamp to use if there's no creation date in Exif
+	 * @param int             $fileLastModifiedTime the timestamp to use if there's no creation date in Exif
 	 *
 	 * @return void
 	 *
@@ -125,7 +125,7 @@ class Create
 	 * @throws MediaFileOperationException
 	 * @throws ExternalComponentFailedException
 	 */
-	protected function loadFileMetadata(NativeLocalFile $sourceFile, ?int $fileLastModifiedTime): void
+	protected function loadFileMetadata(NativeLocalFile $sourceFile, int $fileLastModifiedTime): void
 	{
 		$this->strategyParameters->exifInfo = Extractor::createFromFile($sourceFile, $fileLastModifiedTime);
 

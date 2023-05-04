@@ -320,8 +320,7 @@ class Exec
 				$filesCount++;
 
 				try {
-					// TODO Florin: figure out file's last modified time
-					$this->photoCreate->add(new NativeLocalFile($file), $parentAlbum, filemtime($file));
+					$this->photoCreate->add(new NativeLocalFile($file), filemtime($file), $parentAlbum);
 				} catch (\Throwable $e) {
 					$this->report(ImportEventReport::createFromException($e, $file));
 				}

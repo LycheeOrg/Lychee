@@ -2,7 +2,6 @@
 
 namespace App\Metadata;
 
-use App\Enum\TakenAtFallbackTimeType;
 use App\Exceptions\ExternalComponentFailedException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\Handler;
@@ -14,12 +13,10 @@ use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Support\Carbon;
 use PHPExif\Enum\ReaderType;
-use PHPExif\Exif;
 use PHPExif\Reader\PhpExifReaderException;
 use PHPExif\Reader\Reader;
 use Safe\DateTime;
 use Safe\Exceptions\StringsException;
-use function Safe\filemtime;
 
 /**
  * Collects normalized EXIF info about an image/video.
@@ -62,14 +59,14 @@ class Extractor
 	 * Extracts metadata from a file.
 	 *
 	 * @param NativeLocalFile $file                 the file
-	 * @param int|null        $fileLastModifiedTime the timestamp to use if there's no creation date in Exif
+	 * @param int             $fileLastModifiedTime the timestamp to use if there's no creation date in Exif
 	 *
 	 * @return Extractor
 	 *
 	 * @throws ExternalComponentMissingException
 	 * @throws MediaFileOperationException
 	 */
-	public static function createFromFile(NativeLocalFile $file, ?int $fileLastModifiedTime = null): self
+	public static function createFromFile(NativeLocalFile $file, int $fileLastModifiedTime): self
 	{
 		$metadata = new self();
 		$isSupportedVideo = $file->isSupportedVideo();
@@ -161,37 +158,9 @@ class Extractor
 
 		$taken_at = $exif->getCreationDate();
 
-		// TODO Florin: logica unde ne prindem daca am avut sau nu exif
-		// log data that is merged...
-		$myfile = fopen('newfile.txt', 'a+') or exit('Unable to open file!');
-
-		if ($taken_at !== false) {
-			$xxxI = $exif->getCreationDate()->getTimestamp();
-			fwrite($myfile, "\n\n\n Exif dump!!! getCreationDate(): $xxxI");
-		} else {
-			fwrite($myfile, "\n\n\n Exif dump!!! getCreationDate() is null!!!!");
-			$mt = \filemtime($file->getRealPath());
-			$ct = \Safe\filectime($file->getRealPath());
-			$rp = $file->getRealPath();
-			fwrite($myfile, "\n\n\n filemtime: $mt and filectime: $ct and realpath is $rp");
-		}
-
-		fwrite($myfile, "Keys of exif->rawData: \n");
-		foreach ($exif->getRawData() as $k1 => $v1) {
-			fwrite($myfile, "Key: $k1 with value: $v1 \n ");
-		}
-
-		fclose($myfile);
-
-		$fallbackMode = Configs::getValueAsEnum('taken_at_fallback', TakenAtFallbackTimeType::class);
-		if ($fallbackMode === TakenAtFallbackTimeType::CLIENT_LAST_MODIFIED_TIME) {
-			if ($fileLastModifiedTime !== null) {
-				$localFileLastModifiedTime = filemtime($file->getRealPath());
-				if ($taken_at !== false && $taken_at->getTimestamp() === $localFileLastModifiedTime) {
-					$taken_at = new DateTime();
-					$taken_at->setTimestamp($fileLastModifiedTime);
-				}
-			}
+		if ($taken_at === false &&
+			Configs::getValueAsBool('use_last_modified_date_when_no_exif_date')) {
+			$taken_at = DateTime::createFromFormat('U', $fileLastModifiedTime);
 		}
 
 		if ($taken_at !== false) {
