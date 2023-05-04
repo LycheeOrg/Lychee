@@ -93,6 +93,11 @@ class DiagnosticsController extends Controller
 		return $this->isAuthorized() ? $space->get() : [self::ERROR_MSG];
 	}
 
+	/**
+	 * Return the table of access permissions currently available on the server.
+	 *
+	 * @return View
+	 */
 	public function getFullAccessPermissions(): View
 	{
 		if (!$this->isAuthorized() && config('app.debug') !== true) {
