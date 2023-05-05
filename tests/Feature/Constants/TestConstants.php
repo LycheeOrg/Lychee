@@ -71,6 +71,7 @@ class TestConstants
 
 	public const CONFIG_ALBUMS_SORTING_COL = 'sorting_albums_col';
 	public const CONFIG_ALBUMS_SORTING_ORDER = 'sorting_albums_order';
+	public const CONFIG_DEFAULT_ALBUM_PROTECTION = 'default_album_protection';
 	public const CONFIG_DOWNLOADABLE = 'grants_download';
 	public const CONFIG_HAS_EXIF_TOOL = 'has_exiftool';
 	public const CONFIG_HAS_FFMPEG = 'has_ffmpeg';

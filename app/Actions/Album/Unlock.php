@@ -2,6 +2,7 @@
 
 namespace App\Actions\Album;
 
+use App\Constants\AccessPermissionConstants as APC;
 use App\Exceptions\UnauthorizedException;
 use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\BaseAlbum;
@@ -31,15 +32,16 @@ class Unlock extends Action
 	 */
 	public function do(BaseAlbum $album, string $password): void
 	{
-		if ($album->is_public) {
+		if ($album->public_permissions !== null) {
+			$album_password = $album->public_permissions->password;
 			if (
-				$album->password === null ||
-				$album->password === '' ||
+				$album_password === null ||
+				$album_password === '' ||
 				$this->albumPolicy->isUnlocked($album)
 			) {
 				return;
 			}
-			if (Hash::check($password, $album->password)) {
+			if (Hash::check($password, $album_password)) {
 				$this->propagate($password);
 
 				return;
@@ -61,8 +63,10 @@ class Unlock extends Action
 		// list of such albums is not exposed to the user and is
 		// considered as the last access check criteria.
 		$albums = BaseAlbumImpl::query()
-			->where('is_public', '=', true)
-			->whereNotNull('password')
+			->select(['base_albums.id', APC::PASSWORD])
+			->join(APC::ACCESS_PERMISSIONS, 'base_album_id', '=', 'base_albums.id', 'inner')
+			->whereNull(APC::ACCESS_PERMISSIONS . '.user_id')
+			->whereNotNull(APC::PASSWORD)
 			->get();
 		/** @var BaseAlbumImpl $album */
 		foreach ($albums as $album) {

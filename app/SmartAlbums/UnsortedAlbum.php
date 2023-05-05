@@ -22,7 +22,6 @@ class UnsortedAlbum extends BaseSmartAlbum
 	{
 		parent::__construct(
 			SmartAlbumType::UNSORTED,
-			false,
 			fn (Builder $q) => $q->whereNull('photos.album_id')
 		);
 	}

@@ -5,7 +5,6 @@ namespace App\SmartAlbums;
 use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
-use App\Models\Configs;
 use Illuminate\Database\Eloquent\Builder;
 
 class StarredAlbum extends BaseSmartAlbum
@@ -23,7 +22,6 @@ class StarredAlbum extends BaseSmartAlbum
 	{
 		parent::__construct(
 			SmartAlbumType::STARRED,
-			Configs::getValueAsBool('public_starred'),
 			fn (Builder $q) => $q->where('photos.is_starred', '=', true)
 		);
 	}

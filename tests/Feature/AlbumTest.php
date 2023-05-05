@@ -12,6 +12,7 @@
 
 namespace Tests\Feature;
 
+use App\Enum\DefaultAlbumProtectionType;
 use App\Models\Configs;
 use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\PublicAlbum;
@@ -907,5 +908,43 @@ class AlbumTest extends AbstractTestCase
 
 		$this->clearCachedSmartAlbums();
 		Auth::logout();
+	}
+
+	/**
+	 * 1. Set default album created as public
+	 * 2. Create album
+	 * 3. logout
+	 * 4. check visibility
+	 * 5. Set.
+	 *
+	 * @return void
+	 */
+	public function testAddPublicByDefault(): void
+	{
+		$defaultProtectionType = Configs::getValueAsEnum(TestConstants::CONFIG_DEFAULT_ALBUM_PROTECTION, DefaultAlbumProtectionType::class);
+
+		Configs::set(TestConstants::CONFIG_DEFAULT_ALBUM_PROTECTION, DefaultAlbumProtectionType::PUBLIC);
+		Auth::loginUsingId(1);
+		$albumID1 = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
+		Auth::logout();
+		$root = $this->root_album_tests->get();
+		$root->assertSee($albumID1);
+
+		Configs::set(TestConstants::CONFIG_DEFAULT_ALBUM_PROTECTION, DefaultAlbumProtectionType::INHERIT);
+		Auth::loginUsingId(1);
+		$albumID2 = $this->albums_tests->add($albumID1, 'Test Album 2')->offsetGet('id');
+		Auth::logout();
+		$album1 = $this->albums_tests->get($albumID1);
+		$album1->assertSee($albumID2);
+
+		Configs::set(TestConstants::CONFIG_DEFAULT_ALBUM_PROTECTION, DefaultAlbumProtectionType::PRIVATE);
+		Auth::loginUsingId(1);
+		$albumID3 = $this->albums_tests->add($albumID1, 'Test Album 3')->offsetGet('id');
+		Auth::logout();
+		$album1 = $this->albums_tests->get($albumID1);
+		$album1->assertSee($albumID2);
+		$album1->assertDontSee($albumID3);
+
+		Configs::set(TestConstants::CONFIG_DEFAULT_ALBUM_PROTECTION, $defaultProtectionType);
 	}
 }

@@ -2,11 +2,12 @@
 
 namespace App\Models\Extensions;
 
+use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
+use App\Policies\AlbumQueryPolicy;
 use Illuminate\Database\Query\Builder;
-use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
@@ -27,7 +28,6 @@ class AlbumBuilder extends NSQueryBuilder
 {
 	/** @phpstan-use FixedQueryBuilderTrait<Album> */
 	use FixedQueryBuilderTrait;
-	use SharedWithCurrentUserQuery;
 
 	/**
 	 * Get the hydrated models without eager loading.
@@ -49,10 +49,6 @@ class AlbumBuilder extends NSQueryBuilder
 			($columns === ['*'] || $columns === ['albums.*']) &&
 			($baseQuery->columns === ['*'] || $baseQuery->columns === ['albums.*'] || $baseQuery->columns === null)
 		) {
-			$isAdmin = (Auth::user()?->may_administrate === true);
-			/** @var int|null $userID */
-			$userID = Auth::id();
-
 			$countChildren = DB::table('albums', 'a')
 				->selectRaw('COUNT(*)')
 				->whereColumn('a.parent_id', '=', 'albums.id');
@@ -64,9 +60,8 @@ class AlbumBuilder extends NSQueryBuilder
 			$this->addSelect([
 				'min_taken_at' => $this->getTakenAtSQL()->selectRaw('MIN(taken_at)'),
 				'max_taken_at' => $this->getTakenAtSQL()->selectRaw('MAX(taken_at)'),
-				'is_shared_with_current_user' => $this->sharedWithCurrentUser('albums')->selectRaw('count(*)'),
-				'num_children' => $this->applyVisibilityConditioOnSubalbums($countChildren, $isAdmin, $userID),
-				'num_photos' => $this->applyVisibilityConditioOnPhotos($countPhotos, $isAdmin, $userID),
+				'num_children' => $this->applyVisibilityConditioOnSubalbums($countChildren),
+				'num_photos' => $this->applyVisibilityConditioOnPhotos($countPhotos),
 			]);
 		}
 
@@ -149,117 +144,84 @@ class AlbumBuilder extends NSQueryBuilder
 	 * Apply Visibiltiy conditions.
 	 * This a simplified version of AlbumQueryPolicy::applyVisibilityFilter().
 	 *
-	 * @param Builder  $countQuery
-	 * @param bool     $isAdmin
-	 * @param int|null $userID
+	 * @param Builder $countQuery
 	 *
 	 * @return Builder Query with the visibility requirements applied
 	 */
-	private function applyVisibilityConditioOnSubalbums(Builder $countQuery, bool $isAdmin, int|null $userID): Builder
+	private function applyVisibilityConditioOnSubalbums(Builder $countQuery): Builder
 	{
-		if ($isAdmin) {
+		if (Auth::user()?->may_administrate === true) {
 			return $countQuery;
 		}
 
+		$userID = Auth::id();
+
 		$countQuery->join('base_albums', 'base_albums.id', '=', 'a.id');
 
-		if ($userID !== null) {
-			// We must left join with `user_base_album` if and only if we
-			// restrict the eventual query to the ID of the authenticated
-			// user by a `WHERE`-clause.
-			// If we were doing a left join unconditionally, then some
-			// albums might appear multiple times as part of the result
-			// because an album might be shared with more than one user.
-			// Hence, we must restrict the `LEFT JOIN` to the user ID which
-			// is also used in the outer `WHERE`-clause.
-			// See `applyVisibilityFilter` and `appendAccessibilityConditions`
-			// in AlbumQueryPolicy.
-			$countQuery->leftJoin(
-				'user_base_album',
-				function (JoinClause $join) use ($userID) {
-					$join
-						->on('user_base_album.base_album_id', '=', 'base_albums.id')
-						->where('user_base_album.user_id', '=', $userID);
-				}
-			);
-		}
+		$albumQueryPolicy = resolve(AlbumQueryPolicy::class);
+		// We must left join with `conputed_access_permissions`.
+		// We must restrict the `LEFT JOIN` to the user ID which
+		// is also used in the outer `WHERE`-clause.
+		// See `applyVisibilityFilter` and `appendAccessibilityConditions`
+		// in AlbumQueryPolicy.
+		$albumQueryPolicy->joinSubComputedAccessPermissions(
+			query: $countQuery,
+			second: 'base_albums.id'
+		);
+
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
 		// "OR"-clause.
 		// The sub-query only uses properties (i.e. columns) which are
 		// defined on the common base model for all albums.
-		$visibilitySubQuery = function ($query2) use ($userID) {
+		$visibilitySubQuery = function (Builder $query2) use ($userID) {
 			$query2
-				->where(
+				// We laverage that IS_LINK_REQUIRED is NULL if the album is NOT shared publically (left join).
+				->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
+				->when($userID !== null,
+					// Current user is the owner of the album
 					fn ($q) => $q
-						->where('base_albums.is_link_required', '=', false)
-						->where('base_albums.is_public', '=', true)
-				);
-			if ($userID !== null) {
-				$query2
-					->orWhere('base_albums.owner_id', '=', $userID)
-					->orWhere('user_base_album.user_id', '=', $userID);
-			}
+						->orWhere('base_albums.owner_id', '=', $userID));
 		};
-		$countQuery->where($visibilitySubQuery);
 
-		return $countQuery;
+		return $countQuery->where($visibilitySubQuery);
 	}
 
 	/**
 	 * Apply Visibiltiy conditions.
 	 * This a simplified version of PhotoQueryPolicy::applyVisibilityFilter().
 	 *
-	 * @param Builder  $countQuery
-	 * @param bool     $isAdmin
-	 * @param int|null $userID
+	 * @param Builder $countQuery
 	 *
 	 * @return Builder Query with the visibility requirements applied
 	 */
-	private function applyVisibilityConditioOnPhotos(Builder $countQuery, bool $isAdmin, int|null $userID): Builder
+	private function applyVisibilityConditioOnPhotos(Builder $countQuery): Builder
 	{
-		if ($isAdmin) {
+		if (Auth::user()?->may_administrate === true) {
 			return $countQuery;
 		}
 
+		$userID = Auth::id();
+
 		$countQuery->join('base_albums', 'base_albums.id', '=', 'p.album_id');
 
-		if ($userID !== null) {
-			// We must left join with `user_base_album` if and only if we
-			// restrict the eventual query to the ID of the authenticated
-			// user by a `WHERE`-clause.
-			// If we were doing a left join unconditionally, then some
-			// albums might appear multiple times as part of the result
-			// because an album might be shared with more than one user.
-			// Hence, we must restrict the `LEFT JOIN` to the user ID which
-			// is also used in the outer `WHERE`-clause.
-			// See `applyVisibilityFilter` and `appendAccessibilityConditions`
-			// in AlbumQueryPolicy and PhotoQueryPolicy.
-			$countQuery->leftJoin(
-				'user_base_album',
-				function (JoinClause $join) use ($userID) {
-					$join
-						->on('user_base_album.base_album_id', '=', 'base_albums.id')
-						->where('user_base_album.user_id', '=', $userID);
-				}
-			);
-		}
+		$albumQueryPolicy = resolve(AlbumQueryPolicy::class);
+		$albumQueryPolicy->joinSubComputedAccessPermissions(
+			query: $countQuery,
+			second: 'base_albums.id'
+		);
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
 		// "OR"-clause.
 		$visibilitySubQuery = function ($query2) use ($userID) {
-			$query2->where(
-				fn ($q) => $q
-					->where('base_albums.is_link_required', '=', false)
-					->where('base_albums.is_public', '=', true)
-			);
-			if ($userID !== null) {
-				$query2
-					->orWhere('base_albums.owner_id', '=', $userID)
-					->orWhere('user_base_album.user_id', '=', $userID)
-					->orWhere('p.owner_id', '=', $userID);
-			}
+			$query2
+				->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
+				->when($userID !== null,
+					fn ($query) => $query
+						->orWhere('base_albums.owner_id', '=', $userID)
+						->orWhere('p.owner_id', '=', $userID)
+				);
 			$query2->orWhere('p.is_public', '=', true);
 		};
 

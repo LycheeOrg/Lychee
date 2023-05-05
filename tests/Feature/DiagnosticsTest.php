@@ -34,6 +34,9 @@ class DiagnosticsTest extends AbstractTestCase
 		$response = $this->get('/Diagnostics');
 		$this->assertOk($response); // code 200 something
 
+		$response = $this->get('/Permissions');
+		$this->assertOk($response); // code 200 something too
+
 		Configs::query()->where('key', '=', 'lossless_optimization')->update(['value' => null]);
 
 		$response = $this->postJson('/api/Diagnostics::get');

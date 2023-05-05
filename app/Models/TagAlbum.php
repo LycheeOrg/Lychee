@@ -52,7 +52,6 @@ class TagAlbum extends BaseAlbum
 		'min_taken_at' => 'datetime',
 		'max_taken_at' => 'datetime',
 		'show_tags' => ArrayCast::class,
-		'is_shared_with_current_user' => 'boolean',
 	];
 
 	/**

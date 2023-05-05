@@ -2,8 +2,10 @@
 
 namespace App\Actions\Sharing;
 
+use App\Constants\AccessPermissionConstants as APC;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Http\Resources\Sharing\SharesResource;
+use App\Models\AccessPermission;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\User;
 use Illuminate\Support\Collection;
@@ -30,15 +32,14 @@ class ListShare
 		try {
 			// Active shares, optionally filtered by album ID, participant ID
 			// and or owner ID
-			$shared = DB::table('user_base_album')
-				->select([
-					'user_base_album.id',
-					'user_id',
-					DB::raw('base_album_id as album_id'),
-					'username',
-					'title',
-				])
-				->join('users', 'user_id', '=', 'users.id')
+			$shared = AccessPermission::query()->select([
+				APC::ACCESS_PERMISSIONS . '.id',
+				APC::ACCESS_PERMISSIONS . '.user_id',
+				DB::raw('base_album_id as album_id'),
+				'username',
+				'title',
+			])
+				->join('users', 'user_id', '=', 'users.id', 'inner')
 				->join('base_albums', 'base_album_id', '=', 'base_albums.id')
 				->when($participant !== null, fn ($q) => $q->where('user_base_album.user_id', '=', $participant->id))
 				->when($owner !== null, fn ($q) => $q->where('base_albums.owner_id', '=', $owner->id))

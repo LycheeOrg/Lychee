@@ -56,7 +56,7 @@ class JobHistory extends Model
 	 */
 	public function owner(): BelongsTo
 	{
-		return $this->belongsTo('App\Models\User', 'owner_id', 'id');
+		return $this->belongsTo(User::class, 'owner_id', 'id');
 	}
 
 	/**
@@ -66,7 +66,7 @@ class JobHistory extends Model
 	 */
 	public function parent(): BelongsTo
 	{
-		return $this->belongsTo('App\Models\BaseAlbumImpl', 'parent_id', 'id');
+		return $this->belongsTo(BaseAlbumImpl::class, 'parent_id', 'id');
 	}
 
 	/**

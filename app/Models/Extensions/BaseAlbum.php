@@ -5,14 +5,16 @@ namespace App\Models\Extensions;
 use App\Constants\RandomID;
 use App\Contracts\Models\AbstractAlbum;
 use App\Contracts\Models\HasRandomID;
-use App\DTO\AlbumProtectionPolicy;
 use App\DTO\PhotoSortingCriterion;
+use App\Models\AccessPermission;
 use App\Models\BaseAlbumImpl;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Carbon;
 
@@ -23,23 +25,20 @@ use Illuminate\Support\Carbon;
  * deleted by a user at runtime or more accurately which can be persisted
  * to the DB.
  *
- * @property int                        $legacy_id
- * @property Carbon                     $created_at
- * @property Carbon                     $updated_at
- * @property string|null                $description
- * @property bool                       $is_nsfw
- * @property bool                       $is_link_required
- * @property int                        $owner_id
- * @property User                       $owner
- * @property Collection                 $shared_with
- * @property string|null                $password
- * @property bool                       $is_password_required
- * @property Carbon|null                $min_taken_at
- * @property Carbon|null                $max_taken_at
- * @property bool                       $is_shared_with_current_user
- * @property PhotoSortingCriterion|null $sorting
- * @property AlbumProtectionPolicy      $policy
- * @property BaseAlbumImpl              $base_class
+ * @property int                              $legacy_id
+ * @property Carbon                           $created_at
+ * @property Carbon                           $updated_at
+ * @property string|null                      $description
+ * @property bool                             $is_nsfw
+ * @property int                              $owner_id
+ * @property User                             $owner
+ * @property Collection<int,AccessPermission> $access_permissions
+ * @property AccessPermission|null            $current_user_permissions
+ * @property AccessPermission|null            $public_permissions
+ * @property Carbon|null                      $min_taken_at
+ * @property Carbon|null                      $max_taken_at
+ * @property PhotoSortingCriterion|null       $sorting
+ * @property BaseAlbumImpl                    $base_class
  */
 abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 {
@@ -87,6 +86,36 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	public function shared_with(): BelongsToMany
 	{
 		return $this->base_class->shared_with();
+	}
+
+	/**
+	 * Returns the relationship between an album and its associated permissions.
+	 *
+	 * @return HasMany
+	 */
+	public function access_permissions(): HasMany
+	{
+		return $this->base_class->access_permissions();
+	}
+
+	/**
+	 * Returns the relationship between an album and its associated current user permissions.
+	 *
+	 * @return HasOne
+	 */
+	public function current_user_permissions(): HasOne
+	{
+		return $this->base_class->current_user_permissions();
+	}
+
+	/**
+	 * Returns the relationship between an album and its associated public permissions.
+	 *
+	 * @return HasOne
+	 */
+	public function public_permissions(): HasOne
+	{
+		return $this->base_class->public_permissions();
 	}
 
 	abstract public function photos(): Relation;

@@ -56,7 +56,7 @@ class AlbumPolicy extends BasePolicy
 	public function canSee(?User $user, BaseSmartAlbum $smartAlbum): bool
 	{
 		return ($user?->may_upload === true) ||
-			$smartAlbum->is_public;
+			$smartAlbum->public_permissions !== null;
 	}
 
 	/**
@@ -93,22 +93,34 @@ class AlbumPolicy extends BasePolicy
 			return true;
 		}
 
+		if ($album instanceof BaseSmartAlbum) {
+			return $this->canSee($user, $album);
+		}
+
 		if ($album instanceof BaseAlbum) {
 			try {
-				return
-					$this->isOwner($user, $album) ||
-					($album->is_public && $album->password === null) ||
-					($album->is_public && $this->isUnlocked($album)) ||
-					($album->is_shared_with_current_user);
+				if ($this->isOwner($user, $album)) {
+					return true;
+				}
+
+				if ($album->current_user_permissions !== null) {
+					return true;
+				}
+
+				if ($album->public_permissions !== null &&
+					($album->public_permissions->password === null ||
+					$this->isUnlocked($album))) {
+					return true;
+				}
+
+				return false;
 			} catch (\InvalidArgumentException $e) {
 				throw LycheeAssertionError::createFromUnexpectedException($e);
 			}
-		} elseif ($album instanceof BaseSmartAlbum) {
-			return $this->canSee($user, $album);
-		} else {
-			// Should never happen
-			return false;
 		}
+
+		// Should never happen
+		return false;
 	}
 
 	/**
@@ -124,19 +136,23 @@ class AlbumPolicy extends BasePolicy
 	public function canDownload(?User $user, ?AbstractAlbum $abstractAlbum): bool
 	{
 		$default = Configs::getValueAsBool('grants_download');
+
 		// The root album always uses the global setting
+		// TODO: Is this really required ??
 		if ($abstractAlbum === null) {
 			return $default;
 		}
 
+		// User is logged in
+		// Or User can download.
 		if ($abstractAlbum instanceof BaseSmartAlbum) {
-			return $user !== null || $abstractAlbum->grants_download;
+			return $user !== null || $abstractAlbum->public_permissions?->grants_download === true;
 		}
 
 		if ($abstractAlbum instanceof BaseAlbum) {
-			return $this->isOwner($user, $abstractAlbum) ||
-				$abstractAlbum->grants_download ||
-				($abstractAlbum->shared_with()->where('user_id', '=', $user?->id)->count() > 0 && $default);
+			return $this->isOwner($user, $abstractAlbum)
+				|| $abstractAlbum->current_user_permissions?->grants_download === true
+				|| $abstractAlbum->public_permissions?->grants_download === true;
 		}
 
 		return false;
@@ -159,10 +175,21 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		// The upload right on the root album is directly determined by the user's capabilities.
-		return
-			$abstractAlbum === null ||
-			$abstractAlbum instanceof BaseSmartAlbum ||
-			(($abstractAlbum instanceof BaseAlbum) && $this->isOwner($user, $abstractAlbum));
+		if ($abstractAlbum === null) {
+			return true;
+		}
+
+		if ($abstractAlbum instanceof BaseSmartAlbum) {
+			return true;
+		}
+
+		if ($abstractAlbum instanceof BaseAlbum) {
+			return $this->isOwner($user, $abstractAlbum)
+				|| $abstractAlbum->current_user_permissions?->grants_upload === true
+				|| $abstractAlbum->public_permissions?->grants_upload === true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -196,10 +223,21 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		// The root album and smart albums get a pass
-		return
-			$album === null ||
-			$album instanceof BaseSmartAlbum ||
-			(($album instanceof BaseAlbum) && $this->isOwner($user, $album));
+		if ($album === null) {
+			return true;
+		}
+
+		if ($album instanceof BaseSmartAlbum) {
+			return true;
+		}
+
+		if ($album instanceof BaseAlbum) {
+			return $this->isOwner($user, $album)
+			|| $album->current_user_permissions?->grants_edit === true
+			|| $album->public_permissions?->grants_edit === true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -319,13 +357,13 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function isUnlocked(BaseAlbum|BaseAlbumImpl $album): bool
 	{
-		return in_array($album->id, $this->getUnlockedAlbumIDs(), true);
+		return in_array($album->id, self::getUnlockedAlbumIDs(), true);
 	}
 
 	/**
 	 * @return string[]
 	 */
-	public function getUnlockedAlbumIDs(): array
+	public static function getUnlockedAlbumIDs(): array
 	{
 		return Session::get(self::UNLOCKED_ALBUMS_SESSION_KEY, []);
 	}

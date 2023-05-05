@@ -4,9 +4,13 @@ namespace App\Http\Resources;
 
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
+use App\Enum\DefaultAlbumProtectionType;
 use App\Exceptions\Handler;
 use App\Metadata\Versions\InstalledVersion;
 use App\Models\Configs;
+use App\SmartAlbums\OnThisDayAlbum;
+use App\SmartAlbums\RecentAlbum;
+use App\SmartAlbums\StarredAlbum;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
@@ -104,11 +108,16 @@ class ConfigurationResource extends JsonResource
 				'small_max_width' => Configs::getValueAsInt('small_max_width'),
 				'thumb_2x' => Configs::getValueAsBool('thumb_2x'),
 				'unlock_password_photos_with_url_param' => Configs::getValueAsBool('unlock_password_photos_with_url_param'),
+				'smart_album_visibilty' => [
+					'recent' => RecentAlbum::getInstance()->public_permissions !== null,
+					'starred' => StarredAlbum::getInstance()->public_permissions !== null,
+					'on_this_day' => OnThisDayAlbum::getInstance()->public_permissions !== null,
+				],
 			]),
 
 			'album_subtitle_type' => Configs::getValueAsString('album_subtitle_type'),
 			'check_for_updates' => Configs::getValueAsBool('check_for_updates'),
-			'default_album_protection' => Configs::getValueAsString('default_album_protection'),
+			'default_album_protection' => Configs::getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class),
 			'feeds' => [],
 			'footer_additional_text' => Configs::getValueAsString('footer_additional_text'),
 			'footer_show_copyright' => Configs::getValueAsBool('footer_show_copyright'),
@@ -139,9 +148,7 @@ class ConfigurationResource extends JsonResource
 			'nsfw_warning_admin' => Configs::getValueAsBool('nsfw_warning_admin'),
 			'photos_wraparound' => Configs::getValueAsBool('photos_wraparound'),
 			'public_photos_hidden' => Configs::getValueAsBool('public_photos_hidden'),
-			'public_recent' => Configs::getValueAsBool('public_recent'),
 			'public_search' => Configs::getValueAsBool('public_search'),
-			'public_starred' => Configs::getValueAsBool('public_starred'),
 			'rss_enable' => Configs::getValueAsBool('rss_enable'),
 			'rss_max_items' => Configs::getValueAsInt('rss_max_items'),
 			'rss_recent_days' => Configs::getValueAsInt('rss_recent_days'),

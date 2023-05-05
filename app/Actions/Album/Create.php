@@ -2,9 +2,10 @@
 
 namespace App\Actions\Album;
 
-use App\DTO\AlbumProtectionPolicy;
+use App\Enum\DefaultAlbumProtectionType;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
+use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Configs;
 
@@ -29,16 +30,17 @@ class Create extends Action
 		$album = new Album();
 		$album->title = $title;
 		$this->set_parent($album, $parentAlbum);
-
-		// We do not transfer the password
-		$album->policy = match (Configs::getValueAsInt('default_album_protection')) {
-			1 => AlbumProtectionPolicy::ofDefaultPrivate(),
-			2 => AlbumProtectionPolicy::ofDefaultPublic(),
-			3 => ($parentAlbum !== null ? AlbumProtectionPolicy::ofBaseAlbum($parentAlbum) : AlbumProtectionPolicy::ofDefaultPrivate()),
-			default => AlbumProtectionPolicy::ofDefaultPrivate() // just to be safe of stupid values
-		};
-
 		$album->save();
+
+		$defaultProtectionType = Configs::getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class);
+
+		if ($defaultProtectionType === DefaultAlbumProtectionType::PUBLIC) {
+			$album->access_permissions()->saveMany([AccessPermission::ofPublic()]);
+		}
+
+		if ($defaultProtectionType === DefaultAlbumProtectionType::INHERIT && $parentAlbum !== null) {
+			$album->access_permissions()->saveMany($this->copyPermission($parentAlbum));
+		}
 
 		return $album;
 	}
@@ -64,5 +66,23 @@ class Create extends Action
 			$album->owner_id = $this->intendedOwnerId;
 			$album->makeRoot();
 		}
+	}
+
+	/**
+	 * Given a parent album, retrieve its access permission and return an array containing copies of them.
+	 *
+	 * @param Album|null $parentAlbum
+	 *
+	 * @return array<int,AccessPermission> array of access permissions
+	 */
+	private function copyPermission(?Album $parentAlbum): array
+	{
+		$parentPermissions = $parentAlbum->access_permissions;
+		$copyPermissions = [];
+		foreach ($parentPermissions as $parentPermission) {
+			$copyPermissions[] = AccessPermission::ofAccessPermission($parentPermission);
+		}
+
+		return $copyPermissions;
 	}
 }

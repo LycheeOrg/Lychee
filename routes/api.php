@@ -179,6 +179,7 @@ Route::post('/Settings::setOverlayType', [Administration\SettingsController::cla
 Route::post('/Settings::setNSFWVisible', [Administration\SettingsController::class, 'setNSFWVisible']);
 Route::post('/Settings::setDropboxKey', [Administration\SettingsController::class, 'setDropboxKey']);
 Route::post('/Settings::setNewPhotosNotification', [Administration\SettingsController::class, 'setNewPhotosNotification']);
+Route::post('/Settings::setSmartAlbumVisibility', [Administration\SettingsController::class, 'setSmartAlbumVisibility']);
 
 /**
  * UPDATE.

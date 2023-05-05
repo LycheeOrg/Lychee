@@ -32,7 +32,6 @@ class RecentAlbum extends BaseSmartAlbum
 
 		parent::__construct(
 			SmartAlbumType::RECENT,
-			Configs::getValueAsBool('public_recent'),
 			function (Builder $query) use ($strRecent) {
 				$query->where('photos.created_at', '>=', $strRecent);
 			}
