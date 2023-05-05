@@ -38,3 +38,5 @@ storage/bootstrap/cache/*
 storage/image-jobs/*
 
 sync/*
+backup.sql
+reset.sh
