@@ -58,7 +58,7 @@ return new class() extends Migration {
 
 			// User associated with the access capabilities
 			// If null we consider the album public
-			$table->unsignedInteger('user_id')->nullable()->default(null);
+			$table->unsignedInteger(self::USER_ID)->nullable()->default(null);
 
 			// parentId = album ID
 			$table->char(self::BASE_ALBUM_ID, self::RANDOM_ID_LENGTH)->nullable(true);
@@ -79,6 +79,11 @@ return new class() extends Migration {
 
 			$table->index([self::USER_ID]); // for albums which are own by the currently authenticated user
 			$table->index([self::BASE_ALBUM_ID]); // for albums which are own by the currently authenticated user
+
+			$table->foreign(self::BASE_ALBUM_ID)->references('id')->on('base_albums')->cascadeOnUpdate()->cascadeOnDelete();
+			// This index is required to efficiently filter those albums
+			// which are shared with a particular user
+			$table->unique([self::BASE_ALBUM_ID, self::USER_ID]);
 		});
 	}
 
@@ -105,7 +110,7 @@ return new class() extends Migration {
 		$currentShares = DB::table('user_base_album')
 			->join('base_albums', 'base_albums.id', '=', 'user_base_album.base_album_id')
 			->select([
-				'base_album_id',
+				self::BASE_ALBUM_ID,
 				self::USER_ID,
 				self::GRANTS_DOWNLOAD,
 				self::GRANTS_FULL_PHOTO_ACCESS,

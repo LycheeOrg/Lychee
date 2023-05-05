@@ -40,20 +40,20 @@ return new class() extends Migration {
 		Schema::create('user_base_album', function (Blueprint $table) {
 			// Column definitions
 			$table->bigIncrements('id')->nullable(false);
-			$table->unsignedInteger('user_id')->nullable(false);
-			$table->char('base_album_id', self::RANDOM_ID_LENGTH)->nullable(false);
+			$table->unsignedInteger(self::USER_ID)->nullable(false);
+			$table->char(self::BASE_ALBUM_ID, self::RANDOM_ID_LENGTH)->nullable(false);
 			// Indices and constraint definitions
-			$table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
-			$table->foreign('base_album_id')->references('id')->on('base_albums')->cascadeOnUpdate()->cascadeOnDelete();
+			$table->foreign(self::USER_ID)->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
+			$table->foreign(self::BASE_ALBUM_ID)->references('id')->on('base_albums')->cascadeOnUpdate()->cascadeOnDelete();
 			// This index is required to efficiently filter those albums
 			// which are shared with a particular user
-			$table->unique(['base_album_id', 'user_id']);
+			$table->unique([self::BASE_ALBUM_ID, self::USER_ID]);
 		});
 	}
 
 	private function populateUserBaseAlbumTable(): void
 	{
-		$shared = DB::table(self::TABLE_NAME)->whereNotNull('user_id')->get();
+		$shared = DB::table(self::TABLE_NAME)->whereNotNull(self::USER_ID)->get();
 		foreach ($shared as $share) {
 			DB::table('user_base_album')->
 				insert([[
