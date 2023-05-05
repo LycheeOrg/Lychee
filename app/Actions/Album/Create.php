@@ -35,12 +35,10 @@ class Create extends Action
 		$defaultProtectionType = Configs::getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class);
 
 		if ($defaultProtectionType === DefaultAlbumProtectionType::PUBLIC) {
-			// @phpstan-ignore-next-line
 			$album->access_permissions()->saveMany([AccessPermission::ofPublic()]);
 		}
 
 		if ($defaultProtectionType === DefaultAlbumProtectionType::INHERIT && $parentAlbum !== null) {
-			// @phpstan-ignore-next-line
 			$album->access_permissions()->saveMany($this->copyPermission($parentAlbum));
 		}
 
