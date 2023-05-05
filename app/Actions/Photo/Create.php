@@ -28,6 +28,7 @@ use App\SmartAlbums\BaseSmartAlbum;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\StarredAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use function Safe\filemtime;
 
 class Create
 {
@@ -49,7 +50,7 @@ class Create
 	 * database entry.
 	 *
 	 * @param NativeLocalFile    $sourceFile           the source file
-	 * @param int                $fileLastModifiedTime the timestamp to use if there's no creation date in Exif
+	 * @param int|null           $fileLastModifiedTime the timestamp to use if there's no creation date in Exif
 	 * @param AbstractAlbum|null $album                the targeted parent album
 	 *
 	 * @return Photo the newly created or updated photo
@@ -57,8 +58,12 @@ class Create
 	 * @throws ModelNotFoundException
 	 * @throws LycheeException
 	 */
-	public function add(NativeLocalFile $sourceFile, int $fileLastModifiedTime, ?AbstractAlbum $album = null): Photo
+	public function add(NativeLocalFile $sourceFile, ?AbstractAlbum $album = null, ?int $fileLastModifiedTime = null): Photo
 	{
+		if ($fileLastModifiedTime === null) {
+			$fileLastModifiedTime = filemtime($sourceFile->getRealPath());
+		}
+
 		$sourceFile->assertIsSupportedMediaOrAcceptedRaw();
 
 		// Fill in information about targeted parent album

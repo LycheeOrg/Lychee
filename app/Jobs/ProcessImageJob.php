@@ -86,7 +86,7 @@ class ProcessImageJob implements ShouldQueue
 			$album = $albumFactory->findAbstractAlbumOrFail($this->albumId);
 		}
 
-		$photo = $create->add($copiedFile, $this->fileLastModifiedTime, $album);
+		$photo = $create->add($copiedFile, $album, $this->fileLastModifiedTime);
 
 		// Once the job has finished, set history status to 1.
 		$this->history->status = JobStatus::SUCCESS;

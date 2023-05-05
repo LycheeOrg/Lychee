@@ -26,7 +26,6 @@ use Safe\Exceptions\FilesystemException;
 use Safe\Exceptions\InfoException;
 use Safe\Exceptions\StringsException;
 use function Safe\file;
-use function Safe\filemtime;
 use function Safe\glob;
 use function Safe\ini_get;
 use function Safe\ob_flush;
@@ -321,7 +320,7 @@ class Exec
 				$filesCount++;
 
 				try {
-					$this->photoCreate->add(new NativeLocalFile($file), filemtime($file), $parentAlbum);
+					$this->photoCreate->add(new NativeLocalFile($file), $parentAlbum);
 				} catch (\Throwable $e) {
 					$this->report(ImportEventReport::createFromException($e, $file));
 				}

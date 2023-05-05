@@ -13,7 +13,6 @@ use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Support\Collection;
 use Safe\Exceptions\InfoException;
-use function Safe\filemtime;
 use function Safe\ini_get;
 use function Safe\parse_url;
 use function Safe\set_time_limit;
@@ -64,7 +63,7 @@ class FromUrl
 				$downloadedFile = new DownloadedFile($url);
 
 				// Import photo/video/raw
-				$result->add($create->add($downloadedFile, filemtime($downloadedFile->getRealPath()), $album));
+				$result->add($create->add($downloadedFile, $album));
 			} catch (\Throwable $e) {
 				$exceptions[] = $e;
 				Handler::reportSafely($e);
