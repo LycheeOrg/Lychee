@@ -80,7 +80,9 @@ return new class() extends Migration {
 			$table->index([self::USER_ID]); // for albums which are own by the currently authenticated user
 			$table->index([self::BASE_ALBUM_ID]); // for albums which are own by the currently authenticated user
 
-			$table->foreign(self::BASE_ALBUM_ID)->references('id')->on('base_albums')->cascadeOnUpdate()->cascadeOnDelete();
+			// It is not possible to make a foreign key between base album and access permission.
+			// The reason being that `recent` `starred` `on_this_day` are 3 smart albums which do not have an associated album
+			// For this reason the only foreign key we consider is the one related to User.
 			$table->foreign(self::USER_ID)->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
 			// This index is required to efficiently filter those albums
 			// which are shared with a particular user
