@@ -12,6 +12,7 @@
 
 namespace Tests\Feature\Traits;
 
+use App\Enum\SmartAlbumType;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -40,6 +41,15 @@ trait RequiresEmptyAlbums
 		$this->assertDatabaseCount('base_albums', 0);
 		$this->assertDatabaseCount('albums', 0);
 		$this->assertDatabaseCount('tag_albums', 0);
+
+		// We do not use assertDatabaseCount('access_permissions', 0)
+		// Because we must not forget about the smart album properties too.
+		static::assertEquals(
+			0,
+			DB::table('access_permissions')
+				->whereNotIn('base_album_id', SmartAlbumType::values())
+				->count()
+		);
 	}
 
 	protected function tearDownRequiresEmptyAlbums(): void
@@ -51,5 +61,6 @@ trait RequiresEmptyAlbums
 		DB::table('tag_albums')->delete();
 		DB::table('albums')->orderBy('_lft', 'desc')->delete();
 		DB::table('base_albums')->delete();
+		DB::table('access_permissions')->whereNotIn('base_album_id', SmartAlbumType::values())->delete();
 	}
 }

@@ -31,8 +31,7 @@ class GetAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
 		if (
 			!$result &&
 			$this->album instanceof BaseAlbum &&
-			$this->album->is_public &&
-			$this->album->password !== null
+			$this->album->public_permissions?->password !== null
 		) {
 			throw new PasswordRequiredException();
 		}

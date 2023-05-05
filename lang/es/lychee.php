@@ -360,6 +360,10 @@ return [
 	'LANG_TEXT' => 'Cambiar el idioma Lychee para:',
 	'LANG_TITLE' => 'Cambiar idioma',
 
+	'SETTING_RECENT_PUBLIC_TEXT' => 'Rendre l\'album "Recent" accessible a tous publics',
+	'SETTING_STARRED_PUBLIC_TEXT' => 'Make "Starred" smart album accessible to anonymous users',
+	'SETTING_ONTHISDAY_PUBLIC_TEXT' => 'Make "On This Day" smart album accessible to anonymous users',
+
 	'CSS_TEXT' => 'Personalize CSS:',
 	'CSS_TITLE' => 'Change CSS',
 	'JS_TEXT' => 'Custom JS:',

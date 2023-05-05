@@ -92,6 +92,27 @@ trait FixedQueryBuilderTrait
 	}
 
 	/**
+	 * Add a "where not in" clause to the query.
+	 *
+	 * @param string $column
+	 * @param mixed  $values
+	 * @param string $boolean
+	 *
+	 * @return $this
+	 *
+	 * @throws QueryBuilderException
+	 */
+	public function whereNotIn($column, $values, $boolean = 'and'): static
+	{
+		try {
+			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method
+			return parent::whereNotIn($column, $values, $boolean);
+		} catch (\Throwable $e) {
+			throw new QueryBuilderException($e);
+		}
+	}
+
+	/**
 	 * Set the columns to be selected.
 	 *
 	 * @param array|mixed $columns
@@ -129,6 +150,31 @@ trait FixedQueryBuilderTrait
 		try {
 			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method
 			return parent::join($table, $first, $operator, $second, $type, $where);
+		} catch (\Throwable $e) {
+			throw new QueryBuilderException($e);
+		}
+	}
+
+	/**
+	 * Add a subquery join clause to the query.
+	 *
+	 * @param \Closure|\Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder|string $query
+	 * @param string                                                                                   $as
+	 * @param \Closure|string                                                                          $first
+	 * @param string|null                                                                              $operator
+	 * @param string|null                                                                              $second
+	 * @param string                                                                                   $type
+	 * @param bool                                                                                     $where
+	 *
+	 * @return $this
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function joinSub($query, $as, $first, $operator = null, $second = null, $type = 'inner', $where = false)
+	{
+		try {
+			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method
+			return parent::joinSub($query, $as, $first, $operator, $second, $type, $where);
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}

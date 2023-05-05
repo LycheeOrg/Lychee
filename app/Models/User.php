@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Constants\AccessPermissionConstants as APC;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Models\Extensions\ThrowsConsistentExceptions;
@@ -89,7 +90,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	public function albums(): HasMany
 	{
-		return $this->hasMany('App\Models\BaseAlbumImpl', 'owner_id', 'id');
+		return $this->hasMany(BaseAlbumImpl::class, 'owner_id', 'id');
 	}
 
 	/**
@@ -99,7 +100,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	public function photos(): HasMany
 	{
-		return $this->hasMany('App\Models\Photo', 'owner_id', 'id');
+		return $this->hasMany(Photo::class, 'owner_id', 'id');
 	}
 
 	/**
@@ -111,9 +112,9 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	{
 		return $this->belongsToMany(
 			BaseAlbumImpl::class,
-			'user_base_album',
-			'user_id',
-			'base_album_id'
+			APC::ACCESS_PERMISSIONS,
+			APC::USER_ID,
+			APC::BASE_ALBUM_ID
 		);
 	}
 
@@ -178,7 +179,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		}
 
 		$this->shared()->delete();
-		WebAuthnCredential::where('authenticatable_id', '=', $this->id)->delete();
+		WebAuthnCredential::query()->where('authenticatable_id', '=', $this->id)->delete();
 
 		return $this->parentDelete();
 	}

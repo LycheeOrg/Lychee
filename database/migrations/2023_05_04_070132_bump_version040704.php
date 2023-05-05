@@ -1,24 +1,26 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-
-require_once 'TemporaryModels/OptimizeTables.php';
+use Illuminate\Support\Facades\DB;
 
 return new class() extends Migration {
 	/**
 	 * Run the migrations.
+	 *
+	 * @return void
 	 */
 	public function up(): void
 	{
-		$optimize = new OptimizeTables();
-		$optimize->exec();
+		DB::table('configs')->where('key', 'version')->update(['value' => '040704']);
 	}
 
 	/**
 	 * Reverse the migrations.
+	 *
+	 * @return void
 	 */
 	public function down(): void
 	{
-		// Nothing do to here.
+		DB::table('configs')->where('key', 'version')->update(['value' => '040703']);
 	}
 };

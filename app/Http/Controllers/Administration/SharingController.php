@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Administration;
 
 use App\Actions\Sharing\ListShare;
+use App\Constants\AccessPermissionConstants as APC;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Http\Requests\Sharing\AddSharesRequest;
 use App\Http\Requests\Sharing\DeleteSharingRequest;
 use App\Http\Requests\Sharing\ListSharingRequest;
 use App\Http\Requests\Sharing\SetSharesByAlbumRequest;
 use App\Http\Resources\Sharing\SharesResource;
+use App\Models\AccessPermission;
+use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
@@ -49,7 +52,13 @@ class SharingController extends Controller
 
 		/** @var User $user */
 		foreach ($users as $user) {
-			$user->shared()->sync($request->albumIDs(), false);
+			$user->shared()->syncWithPivotValues(
+				$request->albumIDs(),
+				[
+					APC::GRANTS_DOWNLOAD => Configs::getValueAsBool('grants_download'),
+					APC::GRANTS_FULL_PHOTO_ACCESS => Configs::getValueAsBool('grants_full_photo_access'),
+				],
+				false);
 		}
 	}
 
@@ -66,7 +75,12 @@ class SharingController extends Controller
 	 */
 	public function setByAlbum(SetSharesByAlbumRequest $request): void
 	{
-		$request->album()->shared_with()->sync($request->userIDs());
+		foreach ($request->userIDs() as $user_id) {
+			AccessPermission::firstOrCreate([
+				'user_id' => $user_id,
+				'base_album_id' => $request->album()->id,
+			])->save();
+		}
 	}
 
 	/**

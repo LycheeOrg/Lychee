@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Administration;
 
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\ModelDBException;
 use App\Http\Requests\Settings\GetSetAllSettingsRequest;
 use App\Http\Requests\Settings\SetAlbumDecorationRequest;
 use App\Http\Requests\Settings\SetCSSSettingRequest;
@@ -24,9 +26,12 @@ use App\Http\Requests\Settings\SetMapProviderSettingRequest;
 use App\Http\Requests\Settings\SetNewPhotosNotificationSettingRequest;
 use App\Http\Requests\Settings\SetNSFWVisibilityRequest;
 use App\Http\Requests\Settings\SetPublicSearchSettingRequest;
+use App\Http\Requests\Settings\SetSmartAlbumVisibilityRequest;
 use App\Http\Requests\Settings\SetSortingSettingsRequest;
+use App\Models\AccessPermission;
 use App\Models\Configs;
 use App\Models\User;
+use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -109,6 +114,33 @@ class SettingsController extends Controller
 	public function setPublicSearch(SetPublicSearchSettingRequest $request): void
 	{
 		Configs::set($request->getSettingName(), $request->getSettingValue());
+	}
+
+	/**
+	 * Given a smart album we (un)set the public properties.
+	 * TODO: Give possibility to also change the grants_full_photo_access and grants_download.
+	 *
+	 * @param SetSmartAlbumVisibilityRequest $request
+	 *
+	 * @return void
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 * @throws ModelDBException
+	 */
+	public function setSmartAlbumVisibility(SetSmartAlbumVisibilityRequest $request): void
+	{
+		/** @var BaseSmartAlbum $album */
+		$album = $request->album();
+		if ($request->is_public() && $album->public_permissions === null) {
+			$access_permissions = AccessPermission::ofPublic();
+			$access_permissions->base_album_id = $album->id;
+			$access_permissions->save();
+		}
+
+		if (!$request->is_public() && $album->public_permissions !== null) {
+			$perm = $album->public_permissions;
+			$perm->delete();
+		}
 	}
 
 	/**

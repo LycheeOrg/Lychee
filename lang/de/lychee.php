@@ -360,6 +360,10 @@ return [
 	'LANG_TEXT' => 'Sprache für Lychee ändern:',
 	'LANG_TITLE' => 'Sprache festlegen',
 
+	'SETTING_RECENT_PUBLIC_TEXT' => 'Intelligentes Album „Zuletzt benutzt“ für anonyme Nutzer aktivieren',
+	'SETTING_STARRED_PUBLIC_TEXT' => 'Intelligentes Album „Favoriten“ für anonyme Nutzer aktivieren',
+	'SETTING_ONTHISDAY_PUBLIC_TEXT' => 'Intelligentes Album „An diesem Tag“ für anonyme Nutzer aktivieren',
+
 	'CSS_TEXT' => 'CSS personalisieren:',
 	'CSS_TITLE' => 'CSS ändern',
 	'JS_TEXT' => 'JS personalisieren:',

@@ -48,7 +48,6 @@ class PublicAlbum extends BaseSmartAlbum
 	{
 		parent::__construct(
 			SmartAlbumType::PUBLIC,
-			false,
 			fn (Builder $q) => $q->where('photos.is_public', '=', true)
 		);
 	}
