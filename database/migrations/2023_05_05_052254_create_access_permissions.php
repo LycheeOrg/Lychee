@@ -81,6 +81,7 @@ return new class() extends Migration {
 			$table->index([self::BASE_ALBUM_ID]); // for albums which are own by the currently authenticated user
 
 			$table->foreign(self::BASE_ALBUM_ID)->references('id')->on('base_albums')->cascadeOnUpdate()->cascadeOnDelete();
+			$table->foreign(self::USER_ID)->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
 			// This index is required to efficiently filter those albums
 			// which are shared with a particular user
 			$table->unique([self::BASE_ALBUM_ID, self::USER_ID]);
