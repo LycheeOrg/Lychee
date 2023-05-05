@@ -74,7 +74,7 @@ class Top
 		}
 
 		$tagAlbumQuery = $this->albumQueryPolicy
-			->applyVisibilityFilter(TagAlbum::query());
+			->applyVisibilityFilter(TagAlbum::query()->with(['owner']));
 		/** @var BaseCollection<TagAlbum> $tagAlbums */
 		$tagAlbums = (new SortingDecorator($tagAlbumQuery))
 			->orderBy($this->sorting->column, $this->sorting->order)
@@ -82,7 +82,7 @@ class Top
 
 		/** @var NsQueryBuilder $query */
 		$query = $this->albumQueryPolicy
-			->applyVisibilityFilter(Album::query()->whereIsRoot());
+			->applyVisibilityFilter(Album::query()->with(['owner'])->whereIsRoot());
 
 		$userID = Auth::id();
 		if ($userID !== null) {
