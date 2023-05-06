@@ -575,6 +575,23 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 	}
 
 	/**
+	 * Test the upload of a photo without Exif when the use of file last modified time is disabled.
+	 * Expected result is that import proceeds and taken at has no value.
+	 *
+	 * @return void
+	 */
+	public function testTakenAtForPhotoUploadWithoutExif3(): void
+	{
+		$response = $this->photos_tests->upload(
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_WITHOUT_EXIF)
+		);
+		$response->assertJson([
+			'taken_at' => null,
+			'taken_at_orig_tz' => null,
+		]);
+	}
+
+	/**
 	 * Test the upload of a photo with Exif when the use of file last modified time is enabled.
 	 * Expected result is that import succeeds and taken at is set to the value from Exif.
 	 *
