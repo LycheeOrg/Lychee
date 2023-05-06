@@ -47,6 +47,7 @@
         "geocoder-php/nominatim-provider": "^5.5",
         "laragear/webauthn": "^1.2.0",
         "laravel/framework": "^10.0",
+        "livewire/livewire": "^2.11",
         "lychee-org/nestedset": "^8.0",
         "lychee-org/php-exif": "^1.0.0",
         "maennchen/zipstream-php": "^2.1",

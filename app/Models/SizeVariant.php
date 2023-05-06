@@ -85,6 +85,32 @@ class SizeVariant extends Model
 	];
 
 	/**
+	 * @var array<int,string> The list of attributes which exist as columns of the DB
+	 *                        relation but shall not be serialized to JSON
+	 */
+	protected $hidden = [
+		'id', // irrelevant, because a size variant is always serialized as an embedded object of its photo
+		'photo', // see above and otherwise infinite loops will occur
+		'photo_id', // see above
+		'short_path',  // serialize url instead
+		'sym_links', // don't serialize relation of symlinks
+	];
+
+	/**
+	 * @var string[] The list of "virtual" attributes which do not exist as
+	 *               columns of the DB relation but which shall be appended to
+	 *               JSON from accessors
+	 */
+	protected $appends = [
+		'url',
+	];
+
+	protected function _toArray(): array
+	{
+		return parent::toArray();
+	}
+
+	/**
 	 * Returns the association to the photo which this size variant belongs
 	 * to.
 	 *

@@ -18,12 +18,6 @@ use Illuminate\Database\Query\Builder as BaseBuilder;
  *
  * @method static TagAlbumBuilder query()                       Begin querying the model.
  * @method static TagAlbumBuilder with(array|string $relations) Begin querying the model with eager loading.
- *
- * @property string                                                          $id
- * @property \App\Models\BaseAlbumImpl                                       $base_class
- * @property \App\Models\User                                                $owner
- * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $shared_with
- * @property int|null                                                        $shared_with_count
  */
 class TagAlbum extends BaseAlbum
 {
@@ -55,6 +49,14 @@ class TagAlbum extends BaseAlbum
 	];
 
 	/**
+	 * @var array<int,string> The list of attributes which exist as columns of the DB
+	 *                        relation but shall not be serialized to JSON
+	 */
+	protected $hidden = [
+		'base_class', // don't serialize base class as a relation, the attributes of the base class are flatly merged into the JSON result
+	];
+
+	/**
 	 * @var string[] The list of "virtual" attributes which do not exist as
 	 *               columns of the DB relation but which shall be appended to
 	 *               JSON from accessors
@@ -62,6 +64,14 @@ class TagAlbum extends BaseAlbum
 	protected $appends = [
 		'thumb',
 	];
+
+	protected function _toArray(): array
+	{
+		$result = parent::toArray();
+		$result['is_tag_album'] = true;
+
+		return $result;
+	}
 
 	public function photos(): HasManyPhotosByTag
 	{
