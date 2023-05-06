@@ -42,6 +42,7 @@ class TestConstants
 	public const SAMPLE_FILE_UNDEFINED_EXIF_TAG = 'tests/Samples/undefined-exif-tag.jpg';
 	public const SAMPLE_FILE_WEBP = 'tests/Samples/webp.webp';
 	public const SAMPLE_FILE_XCF = 'tests/Samples/xcf.xcf';
+	public const SAMPLE_FILE_WITHOUT_EXIF = 'tests/Samples/without_exif.jpg';
 
 	public const SAMPLE_FILES_2_MIME = [
 		self::SAMPLE_FILE_AARHUS => self::MIME_TYPE_IMG_JPEG,
@@ -67,6 +68,7 @@ class TestConstants
 		self::SAMPLE_FILE_UNDEFINED_EXIF_TAG => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_WEBP => self::MIME_TYPE_IMG_WEBP,
 		self::SAMPLE_FILE_XCF => self::MIME_TYPE_IMG_XCF,
+		self::SAMPLE_FILE_WITHOUT_EXIF => self::MIME_TYPE_IMG_JPEG,
 	];
 
 	public const CONFIG_ALBUMS_SORTING_COL = 'sorting_albums_col';
@@ -88,6 +90,7 @@ class TestConstants
 	public const CONFIG_PUBLIC_ON_THIS_DAY = 'public_on_this_day';
 	public const CONFIG_RAW_FORMATS = 'raw_formats';
 	public const CONFIG_USE_JOB_QUEUES = 'use_job_queues';
+	public const CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF = 'use_last_modified_date_when_no_exif_date';
 
 	public const PHOTO_NIGHT_TITLE = 'night';
 	public const PHOTO_MONGOLIA_TITLE = 'mongolia';

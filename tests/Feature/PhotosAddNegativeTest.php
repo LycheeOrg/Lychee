@@ -110,22 +110,22 @@ class PhotosAddNegativeTest extends BasePhotoTest
 	 *
 	 * @return void
 	 */
-//	public function testRefusedRawImportFormUrl(): void
-//	{
-//		$acceptedRawFormats = static::getAcceptedRawFormats();
-//		try {
-//			static::setAcceptedRawFormats('');
-//
-//			$this->photos_tests->importFromUrl(
-//				[TestConstants::SAMPLE_DOWNLOAD_TIFF],
-//				null,
-//				422,
-//				'MediaFileUnsupportedException'
-//			);
-//		} finally {
-//			static::setAcceptedRawFormats($acceptedRawFormats);
-//		}
-//	}
+	public function testRefusedRawImportFormUrl(): void
+	{
+		$acceptedRawFormats = static::getAcceptedRawFormats();
+		try {
+			static::setAcceptedRawFormats('');
+
+			$this->photos_tests->importFromUrl(
+				[TestConstants::SAMPLE_DOWNLOAD_TIFF],
+				null,
+				422,
+				'MediaFileUnsupportedException'
+			);
+		} finally {
+			static::setAcceptedRawFormats($acceptedRawFormats);
+		}
+	}
 
 	/**
 	 * Recursively restricts the access to the given directory.
