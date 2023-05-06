@@ -56,7 +56,7 @@ class Create
 	 * @throws ModelNotFoundException
 	 * @throws LycheeException
 	 */
-	public function add(NativeLocalFile $sourceFile, ?AbstractAlbum $album = null): Photo
+	public function add(NativeLocalFile $sourceFile, ?AbstractAlbum $album): Photo
 	{
 		$sourceFile->assertIsSupportedMediaOrAcceptedRaw();
 
