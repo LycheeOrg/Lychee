@@ -74,6 +74,7 @@ class AdminAuthentication
 		if (Hash::check($username, $username_hash) && Hash::check($password, $password_hash)) {
 			// Prior version 4.6.3 we are using ID 0 as admin
 			// We create admin at ID 0 because the 2022_12_10_183251_increment_user_i_ds will be taking care to push it to 1.
+			/** @var User $adminUser */
 			$adminUser = User::query()->findOrNew(0);
 			$adminUser->username = $username;
 			$adminUser->password = Hash::make($password);
