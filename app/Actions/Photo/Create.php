@@ -60,9 +60,7 @@ class Create
 	 */
 	public function add(NativeLocalFile $sourceFile, ?AbstractAlbum $album, ?int $fileLastModifiedTime = null): Photo
 	{
-		if ($fileLastModifiedTime === null) {
-			$fileLastModifiedTime = filemtime($sourceFile->getRealPath());
-		}
+		$fileLastModifiedTime ??= filemtime($sourceFile->getRealPath());
 
 		$sourceFile->assertIsSupportedMediaOrAcceptedRaw();
 
