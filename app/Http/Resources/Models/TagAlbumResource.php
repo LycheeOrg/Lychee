@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Models;
 
 use App\DTO\AlbumProtectionPolicy;
+use App\Http\Resources\Collections\PhotoCollectionResource;
 use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Http\Resources\Traits\WithStatus;
 use App\Models\TagAlbum;
@@ -42,7 +43,7 @@ class TagAlbumResource extends JsonResource
 			'show_tags' => $this->resource->show_tags,
 
 			// children
-			'photos' => PhotoResource::collection($this->whenLoaded('photos')),
+			'photos' => PhotoCollectionResource::make($this->whenLoaded('photos')),
 
 			// thumb
 			'thumb' => $this->resource->thumb,
