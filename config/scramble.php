@@ -1,7 +1,5 @@
 <?php
 
-use Dedoc\Scramble\Http\Middleware\RestrictedDocsAccess;
-
 return [
 	/*
 	 * Your API path. By default, all routes starting with this path will be added to the docs.
@@ -44,8 +42,8 @@ return [
 	'servers' => null,
 
 	'middleware' => [
-		'web',
-		// RestrictedDocsAccess::class,
+		// Only available for admin
+		'web-admin',
 	],
 
 	'extensions' => [],
