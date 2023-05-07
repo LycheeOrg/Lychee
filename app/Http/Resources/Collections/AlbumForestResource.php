@@ -15,7 +15,8 @@ class AlbumForestResource extends JsonResource
 		private Collection $albums,
 		private ?Collection $sharedAlbums = null
 	) {
-		parent::__construct(null);
+		// Laravel applies a shortcut when this value === null but not when it is something else.
+		parent::__construct('must_not_be_null');
 
 		$this->albums = $albums;
 		$this->sharedAlbums = $sharedAlbums ?? new Collection();
@@ -31,8 +32,8 @@ class AlbumForestResource extends JsonResource
 	public function toArray($request)
 	{
 		return [
-			'albums' => AlbumTreeResource::collection($this->albums)->toArray($request),
-			'shared_albums' => AlbumTreeResource::collection($this->sharedAlbums)->toArray($request),
+			'albums' => AlbumTreeResource::collection($this->albums),
+			'shared_albums' => AlbumTreeResource::collection($this->sharedAlbums),
 		];
 	}
 }

@@ -25,7 +25,8 @@ class PhotoRightsResource extends JsonResource
 	 */
 	public function __construct(Photo $photo)
 	{
-		parent::__construct(null);
+		// Laravel applies a shortcut when this value === null but not when it is something else.
+		parent::__construct('must_not_be_null');
 		$this->can_edit = Gate::check(PhotoPolicy::CAN_EDIT, [Photo::class, $photo]);
 		$this->can_download = Gate::check(PhotoPolicy::CAN_DOWNLOAD, [Photo::class, $photo]);
 		$this->can_access_full_photo = Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo]);

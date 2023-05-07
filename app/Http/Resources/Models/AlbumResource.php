@@ -47,7 +47,7 @@ class AlbumResource extends JsonResource
 			'parent_id' => $this->resource->parent_id,
 			'has_albums' => !$this->resource->isLeaf(),
 			'albums' => AlbumResource::collection($this->whenLoaded('children')),
-			'photos' => new PhotoCollectionResource($this->whenLoaded('photos')),
+			'photos' => PhotoCollectionResource::make($this->whenLoaded('photos')),
 			'num_subalbums' => $this->resource->num_children,
 			'num_photos' => $this->resource->num_photos,
 

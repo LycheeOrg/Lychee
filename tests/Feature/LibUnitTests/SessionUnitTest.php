@@ -92,34 +92,6 @@ class SessionUnitTest
 	 *
 	 * @param string      $login
 	 * @param string      $password
-	 * @param int         $expectedStatusCode
-	 * @param string|null $assertSee
-	 *
-	 * @return TestResponse
-	 */
-	public function set_admin(
-		string $login,
-		string $password,
-		int $expectedStatusCode = 200,
-		?string $assertSee = null
-	): TestResponse {
-		$response = $this->testCase->postJson('/api/Settings::setLogin', [
-			'username' => $login,
-			'password' => $password,
-		]);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
-		}
-
-		return $response;
-	}
-
-	/**
-	 * Set a new login and password.
-	 *
-	 * @param string      $login
-	 * @param string      $password
 	 * @param string      $oldPassword
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee

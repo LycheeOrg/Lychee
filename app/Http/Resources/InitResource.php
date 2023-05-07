@@ -14,7 +14,8 @@ class InitResource extends JsonResource
 {
 	public function __construct()
 	{
-		parent::__construct(null);
+		// Laravel applies a shortcut when this value === null but not when it is something else.
+		parent::__construct('must_not_be_null');
 	}
 
 	/**
@@ -39,8 +40,8 @@ class InitResource extends JsonResource
 
 		return [
 			'user' => $this->when(Auth::check(), UserResource::make(Auth::user()), null),
-			'rights' => GlobalRightsResource::make()->toArray($request),
-			'config' => ConfigurationResource::make()->toArray($request),
+			'rights' => GlobalRightsResource::make(),
+			'config' => ConfigurationResource::make(),
 			'update_json' => !$fileVersion->isUpToDate(),
 			'update_available' => !$gitHubVersion->isUpToDate(),
 			'locale' => $locale,

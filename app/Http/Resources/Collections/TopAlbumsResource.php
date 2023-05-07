@@ -26,7 +26,8 @@ class TopAlbumsResource extends JsonResource
 		public Collection $albums,
 		public ?Collection $shared_albums = null
 	) {
-		parent::__construct(null);
+		// Laravel applies a shortcut when this value === null but not when it is something else.
+		parent::__construct('must_not_be_null');
 
 		$this->shared_albums ??= new Collection();
 	}
