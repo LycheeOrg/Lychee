@@ -58,7 +58,7 @@ class Create
 	 * @throws ModelNotFoundException
 	 * @throws LycheeException
 	 */
-	public function add(NativeLocalFile $sourceFile, ?AbstractAlbum $album = null, ?int $fileLastModifiedTime = null): Photo
+	public function add(NativeLocalFile $sourceFile, ?AbstractAlbum $album, ?int $fileLastModifiedTime = null): Photo
 	{
 		if ($fileLastModifiedTime === null) {
 			$fileLastModifiedTime = filemtime($sourceFile->getRealPath());
