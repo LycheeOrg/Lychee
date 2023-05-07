@@ -15,7 +15,8 @@ class SharesResource extends JsonResource
 		public Collection $albums,
 		public Collection $users)
 	{
-		parent::__construct(null);
+		// Laravel applies a shortcut when this value === null but not when it is something else.
+		parent::__construct('must_not_be_null');
 	}
 
 	/**
@@ -28,9 +29,9 @@ class SharesResource extends JsonResource
 	public function toArray($request): array
 	{
 		return [
-			'shared' => SharedAlbumResource::collection($this->shared)->toArray($request),
-			'albums' => ListedAlbumsResource::collection($this->albums)->toArray($request),
-			'users' => UserSharedResource::collection($this->users)->toArray($request),
+			'shared' => SharedAlbumResource::collection($this->shared),
+			'albums' => ListedAlbumsResource::collection($this->albums),
+			'users' => UserSharedResource::collection($this->users),
 		];
 	}
 }

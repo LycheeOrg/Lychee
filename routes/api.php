@@ -157,7 +157,6 @@ Route::post('/Logs::clearNoise', [Administration\LogController::class, 'clearNoi
 /**
  * SETTINGS.
  */
-Route::post('/Settings::setLogin', [Administration\SettingsController::class, 'setLogin']);
 Route::post('/Settings::setSorting', [Administration\SettingsController::class, 'setSorting']);
 Route::post('/Settings::setLang', [Administration\SettingsController::class, 'setLang']);
 Route::post('/Settings::setLayout', [Administration\SettingsController::class, 'setLayout']);

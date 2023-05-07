@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7b6943a43e5f6a8cba8fedae66fa9a26",
+    "content-hash": "be90132645e61bffa40f4fb227aee7ae",
     "packages": [
         {
             "name": "bepsvpt/secure-headers",
@@ -8164,6 +8164,81 @@
                 }
             ],
             "time": "2022-02-25T21:32:43+00:00"
+        },
+        {
+            "name": "dedoc/scramble",
+            "version": "v0.7.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dedoc/scramble.git",
+                "reference": "dc1971fde68105697f872b2fb9aacebd3b91cca4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dedoc/scramble/zipball/dc1971fde68105697f872b2fb9aacebd3b91cca4",
+                "reference": "dc1971fde68105697f872b2fb9aacebd3b91cca4",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^8.0.0|^9.0.0|^10.0.0",
+                "nikic/php-parser": "^4.0",
+                "php": "^7.4|^8.0|^8.1",
+                "phpstan/phpdoc-parser": "^1.0",
+                "spatie/laravel-package-tools": "^1.9.2"
+            },
+            "require-dev": {
+                "doctrine/dbal": "^3.4",
+                "laravel/pint": "^v1.1.0",
+                "nunomaduro/collision": "^5.0|^v6.0",
+                "orchestra/testbench": "^6.0|^7.0|^8.0",
+                "pestphp/pest": "^1.21",
+                "pestphp/pest-plugin-laravel": "^1.2",
+                "phpunit/phpunit": "^9.5",
+                "spatie/pest-plugin-snapshots": "^1.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Dedoc\\Scramble\\ScrambleServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dedoc\\Scramble\\": "src",
+                    "Dedoc\\Scramble\\Database\\Factories\\": "database/factories"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Roman Lytvynenko",
+                    "email": "litvinenko95@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Automatic generation of API documentation for Laravel applications.",
+            "homepage": "https://github.com/dedoc/scramble",
+            "keywords": [
+                "documentation",
+                "laravel",
+                "openapi"
+            ],
+            "support": {
+                "issues": "https://github.com/dedoc/scramble/issues",
+                "source": "https://github.com/dedoc/scramble/tree/v0.7.2"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/romalytvynenko",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-02-20T08:34:36+00:00"
         },
         {
             "name": "doctrine/annotations",

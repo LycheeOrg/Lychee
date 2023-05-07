@@ -11,7 +11,8 @@ class GlobalRightsResource extends JsonResource
 {
 	public function __construct()
 	{
-		parent::__construct(null);
+		// Laravel applies a shortcut when this value === null but not when it is something else.
+		parent::__construct('must_not_be_null');
 	}
 
 	/**
@@ -24,10 +25,10 @@ class GlobalRightsResource extends JsonResource
 	public function toArray($request)
 	{
 		return [
-			'root_album' => RootAlbumRightsResource::make()->toArray($request),
-			'settings' => SettingsRightsResource::make()->toArray($request),
-			'user_management' => UserManagementRightsResource::make()->toArray($request),
-			'user' => UserRightsResource::make()->toArray($request),
+			'root_album' => RootAlbumRightsResource::make(),
+			'settings' => SettingsRightsResource::make(),
+			'user_management' => UserManagementRightsResource::make(),
+			'user' => UserRightsResource::make(),
 		];
 	}
 }

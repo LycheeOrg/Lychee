@@ -45,7 +45,7 @@ class PositionDataResource extends JsonResource
 		return [
 			'id' => $this->id,
 			'title' => $this->title,
-			'photos' => PhotoResource::collection($this->resource)->toArray($request),
+			'photos' => PhotoResource::collection($this->resource),
 			'track_url' => $this->track_url,
 		];
 	}
