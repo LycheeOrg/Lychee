@@ -41,8 +41,8 @@ class TestConstants
 	public const SAMPLE_FILE_TRAIN_VIDEO = 'tests/Samples/train.mov';
 	public const SAMPLE_FILE_UNDEFINED_EXIF_TAG = 'tests/Samples/undefined-exif-tag.jpg';
 	public const SAMPLE_FILE_WEBP = 'tests/Samples/webp.webp';
-	public const SAMPLE_FILE_XCF = 'tests/Samples/xcf.xcf';
 	public const SAMPLE_FILE_WITHOUT_EXIF = 'tests/Samples/without_exif.jpg';
+	public const SAMPLE_FILE_XCF = 'tests/Samples/xcf.xcf';
 
 	public const SAMPLE_FILES_2_MIME = [
 		self::SAMPLE_FILE_AARHUS => self::MIME_TYPE_IMG_JPEG,
@@ -67,8 +67,8 @@ class TestConstants
 		self::SAMPLE_FILE_TRAIN_VIDEO => self::MIME_TYPE_VID_QUICKTIME,
 		self::SAMPLE_FILE_UNDEFINED_EXIF_TAG => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_WEBP => self::MIME_TYPE_IMG_WEBP,
-		self::SAMPLE_FILE_XCF => self::MIME_TYPE_IMG_XCF,
 		self::SAMPLE_FILE_WITHOUT_EXIF => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_XCF => self::MIME_TYPE_IMG_XCF,
 	];
 
 	public const CONFIG_ALBUMS_SORTING_COL = 'sorting_albums_col';
