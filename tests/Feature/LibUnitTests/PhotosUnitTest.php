@@ -41,11 +41,13 @@ class PhotosUnitTest
 		UploadedFile $file,
 		?string $albumID = null,
 		int $expectedStatusCode = 201,
-		?string $assertSee = null
+		?string $assertSee = null,
+		?int $fileLastModifiedTime = 1678824303000
 	): TestResponse {
 		$response = $this->testCase->post(
 			'/api/Photo::add', [
 				'albumID' => $albumID,
+				'fileLastModifiedTime' => $fileLastModifiedTime,
 				'file' => $file,
 			], [
 				'CONTENT_TYPE' => 'multipart/form-data',
@@ -97,6 +99,26 @@ class PhotosUnitTest
 		);
 		$response->assertUnprocessable();
 		$response->assertSee('The file must be a file');
+	}
+
+	/**
+	 * Try uploading a picture without the file's last modified time.
+	 */
+	public function wrong_upload3(UploadedFile $file): void
+	{
+		$response = $this->testCase->post(
+			'/api/Photo::add',
+			[
+				'albumID' => null,
+				'file' => $file,
+			], [
+				'CONTENT_TYPE' => 'multipart/form-data',
+				'Accept' => 'application/json',
+			]
+		);
+
+		$response->assertUnprocessable();
+		$response->assertSee('The file last modified time field is required.');
 	}
 
 	/**

@@ -39,6 +39,7 @@ class PhotosAddNegativeTest extends BasePhotoTest
 	{
 		$this->photos_tests->wrong_upload();
 		$this->photos_tests->wrong_upload2();
+		$this->photos_tests->wrong_upload3(AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_SUNSET_IMAGE));
 	}
 
 	public function testImportViaDeniedMove(): void

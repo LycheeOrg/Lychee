@@ -137,12 +137,12 @@ class PhotoController extends Controller
 		// End of work-around
 
 		if (Configs::getValueAsBool('use_job_queues')) {
-			ProcessImageJob::dispatch($processableFile, $request->album());
+			ProcessImageJob::dispatch($processableFile, $request->album(), $request->fileLastModifiedTime());
 
 			return new JsonResponse(null, 201);
 		}
 
-		$job = new ProcessImageJob($processableFile, $request->album());
+		$job = new ProcessImageJob($processableFile, $request->album(), $request->fileLastModifiedTime());
 		$photo = $job->handle($this->albumFactory);
 		$isNew = $photo->created_at->toIso8601String() === $photo->updated_at->toIso8601String();
 

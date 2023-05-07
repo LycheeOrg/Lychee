@@ -28,6 +28,7 @@ use App\SmartAlbums\BaseSmartAlbum;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\StarredAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use function Safe\filemtime;
 
 class Create
 {
@@ -48,16 +49,19 @@ class Create
 	 * This method may create a new database entry or update an existing
 	 * database entry.
 	 *
-	 * @param NativeLocalFile    $sourceFile the source file
-	 * @param AbstractAlbum|null $album      the targeted parent album
+	 * @param NativeLocalFile    $sourceFile           the source file
+	 * @param int|null           $fileLastModifiedTime the timestamp to use if there's no creation date in Exif
+	 * @param AbstractAlbum|null $album                the targeted parent album
 	 *
 	 * @return Photo the newly created or updated photo
 	 *
 	 * @throws ModelNotFoundException
 	 * @throws LycheeException
 	 */
-	public function add(NativeLocalFile $sourceFile, ?AbstractAlbum $album): Photo
+	public function add(NativeLocalFile $sourceFile, ?AbstractAlbum $album, ?int $fileLastModifiedTime = null): Photo
 	{
+		$fileLastModifiedTime ??= filemtime($sourceFile->getRealPath());
+
 		$sourceFile->assertIsSupportedMediaOrAcceptedRaw();
 
 		// Fill in information about targeted parent album
@@ -65,7 +69,7 @@ class Create
 		$this->initParentAlbum($album);
 
 		// Fill in metadata extracted from source file
-		$this->loadFileMetadata($sourceFile);
+		$this->loadFileMetadata($sourceFile, $fileLastModifiedTime);
 
 		// Look up potential duplicates/partners in order to select the
 		// proper strategy
@@ -115,7 +119,8 @@ class Create
 	 * Extracts the meta-data of the source file and initializes
 	 * {@link AddStrategyParameters::$exifInfo} of {@link Create::$strategyParameters}.
 	 *
-	 * @param NativeLocalFile $sourceFile the source file
+	 * @param NativeLocalFile $sourceFile           the source file
+	 * @param int             $fileLastModifiedTime the timestamp to use if there's no creation date in Exif
 	 *
 	 * @return void
 	 *
@@ -123,9 +128,9 @@ class Create
 	 * @throws MediaFileOperationException
 	 * @throws ExternalComponentFailedException
 	 */
-	protected function loadFileMetadata(NativeLocalFile $sourceFile): void
+	protected function loadFileMetadata(NativeLocalFile $sourceFile, int $fileLastModifiedTime): void
 	{
-		$this->strategyParameters->exifInfo = Extractor::createFromFile($sourceFile);
+		$this->strategyParameters->exifInfo = Extractor::createFromFile($sourceFile, $fileLastModifiedTime);
 
 		// Use basename of file if IPTC title missing
 		if (

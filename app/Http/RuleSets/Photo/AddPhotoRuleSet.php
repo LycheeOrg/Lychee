@@ -18,6 +18,7 @@ class AddPhotoRuleSet implements RuleSet
 	{
 		return [
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['present', new AlbumIDRule(true)],
+			RequestAttribute::FILE_LAST_MODIFIED_TIME => 'required|numeric',
 			RequestAttribute::FILE_ATTRIBUTE => 'required|file',
 		];
 	}

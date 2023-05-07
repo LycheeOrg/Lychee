@@ -12,6 +12,7 @@ use App\Models\Photo;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Safe\Exceptions\InfoException;
+use function Safe\filemtime;
 use function Safe\set_time_limit;
 
 class ExifLens extends Command
@@ -70,7 +71,7 @@ class ExifLens extends Command
 			foreach ($photos as $photo) {
 				try {
 					$localFile = $photo->size_variants->getOriginal()->getFile()->toLocalFile();
-					$info = Extractor::createFromFile($localFile);
+					$info = Extractor::createFromFile($localFile, filemtime($localFile->getRealPath()));
 					$updated = false;
 					if ($photo->size_variants->getOriginal()->filesize === 0) {
 						$photo->size_variants->getOriginal()->filesize = $localFile->getFilesize();

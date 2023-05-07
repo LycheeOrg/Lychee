@@ -13,9 +13,9 @@ use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Support\Carbon;
 use PHPExif\Enum\ReaderType;
-use PHPExif\Exif;
 use PHPExif\Reader\PhpExifReaderException;
 use PHPExif\Reader\Reader;
+use Safe\DateTime;
 use Safe\Exceptions\StringsException;
 
 /**
@@ -58,14 +58,15 @@ class Extractor
 	/**
 	 * Extracts metadata from a file.
 	 *
-	 * @param NativeLocalFile $file the file
+	 * @param NativeLocalFile $file                 the file
+	 * @param int             $fileLastModifiedTime the timestamp to use if there's no creation date in Exif
 	 *
 	 * @return Extractor
 	 *
 	 * @throws ExternalComponentMissingException
 	 * @throws MediaFileOperationException
 	 */
-	public static function createFromFile(NativeLocalFile $file): self
+	public static function createFromFile(NativeLocalFile $file, int $fileLastModifiedTime): self
 	{
 		$metadata = new self();
 		$isSupportedVideo = $file->isSupportedVideo();
@@ -156,6 +157,12 @@ class Extractor
 		$metadata->microVideoOffset = ($exif->getMicroVideoOffset() !== false) ? (int) $exif->getMicroVideoOffset() : 0;
 
 		$taken_at = $exif->getCreationDate();
+
+		if ($taken_at === false &&
+			Configs::getValueAsBool('use_last_modified_date_when_no_exif_date')) {
+			$taken_at = DateTime::createFromFormat('U', "$fileLastModifiedTime");
+		}
+
 		if ($taken_at !== false) {
 			try {
 				$taken_at = Carbon::instance($taken_at);

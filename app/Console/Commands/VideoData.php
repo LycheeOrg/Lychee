@@ -13,6 +13,7 @@ use App\Models\Photo;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Safe\Exceptions\InfoException;
+use function Safe\filemtime;
 use function Safe\set_time_limit;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
@@ -81,7 +82,7 @@ class VideoData extends Command
 				$originalSizeVariant = $photo->size_variants->getOriginal();
 				$file = $originalSizeVariant->getFile()->toLocalFile();
 
-				$info = Extractor::createFromFile($file);
+				$info = Extractor::createFromFile($file, filemtime($file->getRealPath()));
 
 				if ($originalSizeVariant->width === 0 && $info->width !== 0) {
 					$originalSizeVariant->width = $info->width;

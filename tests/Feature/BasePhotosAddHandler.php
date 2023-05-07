@@ -528,4 +528,88 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 		$this->testUploadMultibyteTitle();
 		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, $hasExifTool);
 	}
+
+	/**
+	 * Test the upload of a photo without Exif when the use of file last modified time is enabled.
+	 * Expected result is that import succeeds and taken at property has the correct value.
+	 *
+	 * @return void
+	 */
+	public function testTakenAtForPhotoUploadWithoutExif(): void
+	{
+		$useLastModifiedDate = Configs::getValueAsBool(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF);
+		Configs::set(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF, true);
+
+		$response = $this->photos_tests->upload(
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_WITHOUT_EXIF)
+		);
+		$response->assertJson([
+			'taken_at' => '2023-03-14T20:05:03+00:00',
+			'taken_at_orig_tz' => '+00:00',
+		]);
+
+		Configs::set(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF, $useLastModifiedDate);
+	}
+
+	/**
+	 * Test the upload of a photo without Exif when the use of file last modified time is enabled and the value is set to 0.
+	 * Expected result is that import proceeds and taken at is set to 1st Jan 1970.
+	 *
+	 * @return void
+	 */
+	public function testTakenAtForPhotoUploadWithoutExif2(): void
+	{
+		$useLastModifiedDate = Configs::getValueAsBool(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF);
+		Configs::set(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF, true);
+
+		$response = $this->photos_tests->upload(
+			file: AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_WITHOUT_EXIF),
+			fileLastModifiedTime: 0
+		);
+		$response->assertJson([
+			'taken_at' => '1970-01-01T00:00:00+00:00',
+			'taken_at_orig_tz' => '+00:00',
+		]);
+
+		Configs::set(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF, $useLastModifiedDate);
+	}
+
+	/**
+	 * Test the upload of a photo without Exif when the use of file last modified time is disabled.
+	 * Expected result is that import proceeds and taken at has no value.
+	 *
+	 * @return void
+	 */
+	public function testTakenAtForPhotoUploadWithoutExif3(): void
+	{
+		$response = $this->photos_tests->upload(
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_WITHOUT_EXIF)
+		);
+		$response->assertJson([
+			'taken_at' => null,
+			'taken_at_orig_tz' => null,
+		]);
+	}
+
+	/**
+	 * Test the upload of a photo with Exif when the use of file last modified time is enabled.
+	 * Expected result is that import succeeds and taken at is set to the value from Exif.
+	 *
+	 * @return void
+	 */
+	public function testTakenAtForPhotoUploadWithExif(): void
+	{
+		$useLastModifiedDate = Configs::getValueAsBool(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF);
+		Configs::set(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF, true);
+
+		$response = $this->photos_tests->upload(
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
+		);
+		$response->assertJson([
+			'taken_at' => '2019-06-01T01:28:25+02:00',
+			'taken_at_orig_tz' => '+02:00',
+		]);
+
+		Configs::set(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF, $useLastModifiedDate);
+	}
 }
