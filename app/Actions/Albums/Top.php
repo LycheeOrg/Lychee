@@ -87,6 +87,7 @@ class Top
 		$userID = Auth::id();
 		if ($userID !== null) {
 			// For authenticated users we group albums by ownership.
+			/** @var BaseCollection<Album> $albums */
 			$albums = (new SortingDecorator($query))
 				->orderBy(ColumnSortingType::OWNER_ID, OrderSortingType::ASC)
 				->orderBy($this->sorting->column, $this->sorting->order)
