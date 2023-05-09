@@ -394,7 +394,7 @@ class AlbumsUnitTest
 			]
 		);
 		$this->assertOk($response);
-		if ($response->baseResponse instanceof StreamedResponse) { // @phpstan-ignore-line
+		if ($response->baseResponse instanceof StreamedResponse) {
 			// The content of a streamed response is not generated unless
 			// the content is fetched.
 			// This ensures that the generator of SUT is actually executed.

@@ -43,7 +43,7 @@ class ExtensionsInfo implements DiagnosticPipe
 		$data[] = Diagnostics::line('exec() Available:', Helpers::isExecAvailable() ? 'yes' : 'no');
 		$data[] = Diagnostics::line('Imagick Available:', (string) $imagick);
 		$data[] = Diagnostics::line('Imagick Enabled:', $settings['imagick'] ?? 'key not found in settings');
-		$data[] = Diagnostics::line('Imagick Version:', $imagickVersion);
+		$data[] = Diagnostics::line('Imagick Version:', (string) $imagickVersion);
 		$data[] = Diagnostics::line('GD Version:', $gdVersion['GD Version']);
 
 		return $next($data);

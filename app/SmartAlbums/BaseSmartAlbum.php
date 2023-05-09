@@ -42,6 +42,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	protected string $id;
 	protected string $title;
 	protected ?Thumb $thumb = null;
+	/** @var ?Collection<int,Photo> */
 	protected ?Collection $photos = null;
 	protected \Closure $smartPhotoCondition;
 	protected AccessPermission|null $publicPermissions;
@@ -88,9 +89,12 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		// (this mimics the behaviour of relations of true Eloquent models)
 		if ($this->photos === null) {
 			$sorting = PhotoSortingCriterion::createDefault();
-			$this->photos = (new SortingDecorator($this->photos()))
+
+			/** @var \Illuminate\Database\Eloquent\Collection&iterable<\App\Models\Photo> $photos */
+			$photos = (new SortingDecorator($this->photos()))
 				->orderPhotosBy($sorting->column, $sorting->order)
 				->get();
+			$this->photos = $photos;
 		}
 
 		return $this->photos;

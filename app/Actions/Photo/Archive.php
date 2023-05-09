@@ -45,8 +45,8 @@ class Archive
 	 * a single element) or a ZIP file (if the array of photo IDs contains
 	 * more than one element).
 	 *
-	 * @param Collection<Photo>   $photos          the photos which shall be included in the response
-	 * @param DownloadVariantType $downloadVariant the desired variant of the photo
+	 * @param Collection<int,Photo> $photos          the photos which shall be included in the response
+	 * @param DownloadVariantType   $downloadVariant the desired variant of the photo
 	 *
 	 * @return StreamedResponse
 	 *
@@ -55,7 +55,7 @@ class Archive
 	public function do(Collection $photos, DownloadVariantType $downloadVariant): StreamedResponse
 	{
 		if ($photos->count() === 1) {
-			$response = $this->file($photos->first(), $downloadVariant);
+			$response = $this->file($photos->firstOrFail(), $downloadVariant);
 		} else {
 			$response = $this->zip($photos, $downloadVariant);
 		}

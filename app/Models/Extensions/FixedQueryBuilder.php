@@ -13,10 +13,6 @@ use Illuminate\Database\Eloquent\Builder;
  * such that method used by Lychee throw proper exceptions.
  * See {@link FixedQueryBuilderTrait} for details.
  *
- * @template TModelClass of \Illuminate\Database\Eloquent\Model
- *
- * @extends Builder<TModelClass>
- *
  * Although this class extends `Builder<TModelClass>` and `Builder<TModelClass>`
  * has a `@mixin` for `Illuminate\Database\Query\Builder`, PhpStan does not
  * consider this mixin as part of this class, because this mixin is treated
@@ -45,6 +41,10 @@ use Illuminate\Database\Eloquent\Builder;
  * @method $this whereNotNull(string|array $columns, string $boolean = 'and')
  * @method $this whereNotIn(string $column, mixed $values, string $boolean = 'and')
  * @method $this whereNull(string|array $columns, string $boolean = 'and', bool $not = false)
+ *
+ * @template TModelClass of \Illuminate\Database\Eloquent\Model
+ *
+ * @extends Builder<TModelClass>
  */
 class FixedQueryBuilder extends Builder
 {

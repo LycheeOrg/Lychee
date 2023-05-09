@@ -28,9 +28,9 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property string                    $id
  * @property string|null               $parent_id
  * @property Album|null                $parent
- * @property Collection<Album>         $children
+ * @property Collection<int,Album>     $children
  * @property int                       $num_children     The number of children.
- * @property Collection<Photo>         $all_photos
+ * @property Collection<int,Photo>     $all_photos
  * @property int                       $num_photos       The number of photos in this album (excluding photos in subalbums).
  * @property string                    $license
  * @property string|null               $cover_id

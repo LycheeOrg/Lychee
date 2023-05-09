@@ -4,6 +4,7 @@ includes:
 
 parameters:
 	checkGenericClassInNonGenericObjectType: false
+	treatPhpDocTypesAsCertain: false
 	paths:
 		- app
 		- scripts

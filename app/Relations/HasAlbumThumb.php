@@ -254,7 +254,7 @@ class HasAlbumThumb extends Relation
 	public function match(array $models, Collection $results, $relation): array
 	{
 		$dictionary = $results->mapToDictionary(function ($result) {
-			return [$result->covered_album_id => $result];
+			return [$result->covered_album_id => $result]; // @phpstan-ignore-line
 		})->all();
 
 		// Once we have the dictionary we can simply spin through the parent models to
