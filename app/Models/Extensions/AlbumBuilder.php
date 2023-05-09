@@ -4,6 +4,7 @@ namespace App\Models\Extensions;
 
 use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Exceptions\InternalLycheeException;
+use App\Eloquent\FixedQueryBuilderTrait;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
 use App\Policies\AlbumQueryPolicy;

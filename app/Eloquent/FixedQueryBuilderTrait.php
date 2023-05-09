@@ -2,7 +2,7 @@
 
 /** @noinspection PhpMultipleClassDeclarationsInspection */
 
-namespace App\Models\Extensions;
+namespace App\Eloquent;
 
 use App\Exceptions\Internal\QueryBuilderException;
 use Illuminate\Database\Eloquent\Builder;

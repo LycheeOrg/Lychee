@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Extensions;
+namespace App\Eloquent;
 
 /**
  * Models which use this trait use {@link FixedQueryBuilder} instead of the standard {@link \Illuminate\Database\Eloquent\Builder}.

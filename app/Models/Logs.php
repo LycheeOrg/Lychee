@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Eloquent\UseFixedQueryBuilder;
 use App\Enum\SeverityType;
 use App\Models\Extensions\ThrowsConsistentExceptions;
-use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;

@@ -4,13 +4,13 @@ namespace App\Policies;
 
 use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Exceptions\InternalLycheeException;
+use App\Eloquent\FixedQueryBuilder;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\AlbumBuilder;
-use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\TagAlbumBuilder;
 use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;

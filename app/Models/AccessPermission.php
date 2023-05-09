@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use App\Constants\AccessPermissionConstants as APC;
+use App\Eloquent\UseFixedQueryBuilder;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\ThrowsConsistentExceptions;
-use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

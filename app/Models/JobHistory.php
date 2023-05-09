@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Eloquent\UseFixedQueryBuilder;
 use App\Enum\JobStatus;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Models\Extensions\ThrowsConsistentExceptions;
-use App\Models\Extensions\UseFixedQueryBuilder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

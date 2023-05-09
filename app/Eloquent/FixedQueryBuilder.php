@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Extensions;
+namespace App\Eloquent;
 
 use Closure;
 use Illuminate\Database\Eloquent\Builder;

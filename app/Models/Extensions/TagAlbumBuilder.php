@@ -2,6 +2,7 @@
 
 namespace App\Models\Extensions;
 
+use App\Eloquent\FixedQueryBuilder;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\TagAlbum;
 use Illuminate\Support\Facades\DB;

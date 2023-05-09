@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Eloquent\FixedQueryBuilder;
+use App\Eloquent\UseFixedQueryBuilder;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\LycheeAssertionError;
@@ -10,9 +12,7 @@ use App\Exceptions\ModelDBException;
 use App\Exceptions\UnexpectedException;
 use App\Facades\Helpers;
 use App\Models\Extensions\ConfigsHas;
-use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\ThrowsConsistentExceptions;
-use App\Models\Extensions\UseFixedQueryBuilder;
 use BackedEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
