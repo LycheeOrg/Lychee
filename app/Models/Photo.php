@@ -7,7 +7,6 @@ use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Constants\RandomID;
-use App\Eloquent\UseFixedQueryBuilder;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\ZeroModuloException;
@@ -15,6 +14,7 @@ use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Facades\Helpers;
 use App\Image\Files\BaseMediaFile;
+use App\Models\Builders\PhotoBuilder;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
@@ -69,6 +69,55 @@ use function Safe\preg_match;
  * @property Album|null   $album
  * @property User         $owner
  * @property SizeVariants $size_variants
+ * @property int          $filesize
+ *
+ * @method static PhotoBuilder|Photo addSelect($column)
+ * @method static PhotoBuilder|Photo join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
+ * @method static PhotoBuilder|Photo joinSub($query, $as, $first, $operator = null, $second = null, $type = 'inner', $where = false)
+ * @method static PhotoBuilder|Photo leftJoin(string $table, string $first, string $operator = null, string $second = null)
+ * @method static PhotoBuilder|Photo newModelQuery()
+ * @method static PhotoBuilder|Photo newQuery()
+ * @method static PhotoBuilder|Photo orderBy($column, $direction = 'asc')
+ * @method static PhotoBuilder|Photo query()
+ * @method static PhotoBuilder|Photo with(array|string $relations)
+ * @method static PhotoBuilder|Photo select($columns = [])
+ * @method static PhotoBuilder|Photo whereAlbumId($value)
+ * @method static PhotoBuilder|Photo whereAltitude($value)
+ * @method static PhotoBuilder|Photo whereAperture($value)
+ * @method static PhotoBuilder|Photo whereChecksum($value)
+ * @method static PhotoBuilder|Photo whereCreatedAt($value)
+ * @method static PhotoBuilder|Photo whereDescription($value)
+ * @method static PhotoBuilder|Photo whereFilesize($value)
+ * @method static PhotoBuilder|Photo whereFocal($value)
+ * @method static PhotoBuilder|Photo whereId($value)
+ * @method static PhotoBuilder|Photo whereImgDirection($value)
+ * @method static PhotoBuilder|Photo whereIn(string $column, string $values, string $boolean = 'and', string $not = false)
+ * @method static PhotoBuilder|Photo whereIsPublic($value)
+ * @method static PhotoBuilder|Photo whereIsStarred($value)
+ * @method static PhotoBuilder|Photo whereIso($value)
+ * @method static PhotoBuilder|Photo whereLatitude($value)
+ * @method static PhotoBuilder|Photo whereLegacyId($value)
+ * @method static PhotoBuilder|Photo whereLens($value)
+ * @method static PhotoBuilder|Photo whereLicense($value)
+ * @method static PhotoBuilder|Photo whereLivePhotoChecksum($value)
+ * @method static PhotoBuilder|Photo whereLivePhotoContentId($value)
+ * @method static PhotoBuilder|Photo whereLivePhotoShortPath($value)
+ * @method static PhotoBuilder|Photo whereLocation($value)
+ * @method static PhotoBuilder|Photo whereLongitude($value)
+ * @method static PhotoBuilder|Photo whereMake($value)
+ * @method static PhotoBuilder|Photo whereModel($value)
+ * @method static PhotoBuilder|Photo whereNotIn(string $column, string $values, string $boolean = 'and')
+ * @method static PhotoBuilder|Photo whereOriginalChecksum($value)
+ * @method static PhotoBuilder|Photo whereOwnerId($value)
+ * @method static PhotoBuilder|Photo whereShutter($value)
+ * @method static PhotoBuilder|Photo whereTags($value)
+ * @method static PhotoBuilder|Photo whereTakenAt($value)
+ * @method static PhotoBuilder|Photo whereTakenAtOrigTz($value)
+ * @method static PhotoBuilder|Photo whereTitle($value)
+ * @method static PhotoBuilder|Photo whereType($value)
+ * @method static PhotoBuilder|Photo whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
  */
 class Photo extends Model
 {
@@ -77,8 +126,6 @@ class Photo extends Model
 	use HasRandomIDAndLegacyTimeBasedID;
 	use ThrowsConsistentExceptions;
 	use HasBidirectionalRelationships;
-	/** @phpstan-use UseFixedQueryBuilder<Photo> */
-	use UseFixedQueryBuilder;
 	use ToArrayThrowsNotImplemented;
 
 	/**
@@ -109,6 +156,16 @@ class Photo extends Model
 		'altitude' => 'float',
 		'img_direction' => 'float',
 	];
+
+	/**
+	 * @param $query
+	 *
+	 * @return PhotoBuilder
+	 */
+	public function newEloquentBuilder($query): PhotoBuilder
+	{
+		return new PhotoBuilder($query);
+	}
 
 	/**
 	 * Return the relationship between a Photo and its Album.

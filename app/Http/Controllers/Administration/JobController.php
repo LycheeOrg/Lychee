@@ -23,7 +23,7 @@ class JobController extends Controller
 	{
 		// PHPStan does not understand that `get` returns `Collection<Logs>`, but assumes that it returns `Collection<Model>`
 		// @phpstan-ignore-next-line
-		return JobHistory::withAlbumTitleOrNull()
+		return JobHistory::query()
 		->orderBy('id', $order)
 		->limit(Configs::getValueAsInt('log_max_num_line'))
 		->get();

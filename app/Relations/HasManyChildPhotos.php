@@ -26,6 +26,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 		// attributes must be initialized by then
 		$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
 		parent::__construct(
+			/** @phpstan-ignore-next-line  */
 			Photo::query(),
 			$owningAlbum,
 			'album_id',

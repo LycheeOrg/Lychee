@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Extensions;
+namespace App\Models\Builders;
 
 use App\Eloquent\FixedQueryBuilder;
 use App\Exceptions\Internal\QueryBuilderException;

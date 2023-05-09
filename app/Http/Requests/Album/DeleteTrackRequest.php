@@ -28,6 +28,6 @@ class DeleteTrackRequest extends BaseApiRequest implements HasAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = Album::query()->findOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
+		$this->album = Album::query()->firstOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
 	}
 }

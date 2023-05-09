@@ -170,7 +170,7 @@ trait FixedQueryBuilderTrait
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function joinSub($query, $as, $first, $operator = null, $second = null, $type = 'inner', $where = false)
+	public function joinSub($query, $as, $first, $operator = null, $second = null, $type = 'inner', $where = false): static
 	{
 		try {
 			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method

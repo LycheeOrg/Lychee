@@ -10,12 +10,11 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAlbumsTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
 use App\Http\RuleSets\Album\SetAlbumsTitleRuleSet;
-use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * @implements HasAlbums<BaseAlbum>
+ * @implements HasAlbums<AbstractAlbum>
  */
 class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, HasAlbums
 {

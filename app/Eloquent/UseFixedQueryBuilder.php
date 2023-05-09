@@ -16,17 +16,4 @@ namespace App\Eloquent;
  */
 trait UseFixedQueryBuilder
 {
-	/**
-	 * @param $query
-	 *
-	 * @return FixedQueryBuilder<TModelClass>
-	 */
-	public function newEloquentBuilder($query): FixedQueryBuilder
-	{
-		// We must return `FixedQueryBuilder<TModelClass>` but the
-		// `new`-statement evaluates to `FixedQueryBuilder` (without a bound
-		// template parameter).
-		// @phpstan-ignore-next-line
-		return new FixedQueryBuilder($query);
-	}
 }

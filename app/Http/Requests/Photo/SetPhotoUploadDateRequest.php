@@ -32,7 +32,7 @@ class SetPhotoUploadDateRequest extends BaseApiRequest implements HasPhoto, HasD
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photo = Photo::query()->findOrFail($values[RequestAttribute::PHOTO_ID_ATTRIBUTE]);
+		$this->photo = Photo::query()->firstOrFail($values[RequestAttribute::PHOTO_ID_ATTRIBUTE]);
 		$this->date = Carbon::parse($values[RequestAttribute::DATE_ATTRIBUTE]);
 	}
 }

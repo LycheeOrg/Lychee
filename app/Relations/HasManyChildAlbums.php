@@ -7,7 +7,7 @@ use App\DTO\AlbumSortingCriterion;
 use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
-use App\Models\Extensions\AlbumBuilder;
+use App\Models\Builders\AlbumBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Policies\AlbumQueryPolicy;
 use Illuminate\Database\Eloquent\Collection;

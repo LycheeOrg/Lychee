@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Eloquent\UseFixedQueryBuilder;
 use App\Enum\SeverityType;
+use App\Models\Builders\LogsBuilder;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UTCBasedTimes;
 use Illuminate\Database\Eloquent\Model;
@@ -19,13 +19,32 @@ use Illuminate\Support\Carbon;
  * @property string       $text
  * @property Carbon|null  $created_at
  * @property Carbon|null  $updated_at
+ *
+ * @method static LogsBuilder|Logs addSelect($column)
+ * @method static LogsBuilder|Logs join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
+ * @method static LogsBuilder|Logs joinSub($query, $as, $first, $operator = null, $second = null, $type = 'inner', $where = false)
+ * @method static LogsBuilder|Logs leftJoin(string $table, string $first, string $operator = null, string $second = null)
+ * @method static LogsBuilder|Logs newModelQuery()
+ * @method static LogsBuilder|Logs newQuery()
+ * @method static LogsBuilder|Logs orderBy($column, $direction = 'asc')
+ * @method static LogsBuilder|Logs query()
+ * @method static LogsBuilder|Logs select($columns = [])
+ * @method static LogsBuilder|Logs whereCreatedAt($value)
+ * @method static LogsBuilder|Logs whereFunction($value)
+ * @method static LogsBuilder|Logs whereId($value)
+ * @method static LogsBuilder|Logs whereIn(string $column, string $values, string $boolean = 'and', string $not = false)
+ * @method static LogsBuilder|Logs whereLine($value)
+ * @method static LogsBuilder|Logs whereNotIn(string $column, string $values, string $boolean = 'and')
+ * @method static LogsBuilder|Logs whereText($value)
+ * @method static LogsBuilder|Logs whereType($value)
+ * @method static LogsBuilder|Logs whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
  */
 class Logs extends Model
 {
 	use UTCBasedTimes;
 	use ThrowsConsistentExceptions;
-	/** @phpstan-use UseFixedQueryBuilder<Logs> */
-	use UseFixedQueryBuilder;
 
 	public const MAX_METHOD_LENGTH = 100;
 
@@ -45,6 +64,16 @@ class Logs extends Model
 	protected $casts = [
 		'type' => SeverityType::class,
 	];
+
+	/**
+	 * @param $query
+	 *
+	 * @return LogsBuilder
+	 */
+	public function newEloquentBuilder($query): LogsBuilder
+	{
+		return new LogsBuilder($query);
+	}
 
 	/**
 	 * Logs a notification.

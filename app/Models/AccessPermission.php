@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Constants\AccessPermissionConstants as APC;
-use App\Eloquent\UseFixedQueryBuilder;
 use App\Exceptions\ConfigurationKeyMissingException;
+use App\Models\Builders\AccessPermissionBuilder;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UTCBasedTimes;
@@ -26,14 +26,40 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property bool                            $grants_delete
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \App\Models\BaseAlbumImpl|null  $album
+ * @property \App\Models\User|null           $user
+ *
+ * @method static AccessPermissionBuilder|AccessPermission addSelect($column)
+ * @method static AccessPermissionBuilder|AccessPermission join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
+ * @method static AccessPermissionBuilder|AccessPermission joinSub($query, $as, $first, $operator = null, $second = null, $type = 'inner', $where = false)
+ * @method static AccessPermissionBuilder|AccessPermission leftJoin(string $table, string $first, string $operator = null, string $second = null)
+ * @method static AccessPermissionBuilder|AccessPermission newModelQuery()
+ * @method static AccessPermissionBuilder|AccessPermission newQuery()
+ * @method static AccessPermissionBuilder|AccessPermission orderBy($column, $direction = 'asc')
+ * @method static AccessPermissionBuilder|AccessPermission query()
+ * @method static AccessPermissionBuilder|AccessPermission select($columns = [])
+ * @method static AccessPermissionBuilder|AccessPermission whereBaseAlbumId($value)
+ * @method static AccessPermissionBuilder|AccessPermission whereCreatedAt($value)
+ * @method static AccessPermissionBuilder|AccessPermission whereGrantsDelete($value)
+ * @method static AccessPermissionBuilder|AccessPermission whereGrantsDownload($value)
+ * @method static AccessPermissionBuilder|AccessPermission whereGrantsEdit($value)
+ * @method static AccessPermissionBuilder|AccessPermission whereGrantsFullPhotoAccess($value)
+ * @method static AccessPermissionBuilder|AccessPermission whereGrantsUpload($value)
+ * @method static AccessPermissionBuilder|AccessPermission whereId($value)
+ * @method static AccessPermissionBuilder|AccessPermission whereIn(string $column, string $values, string $boolean = 'and', string $not = false)
+ * @method static AccessPermissionBuilder|AccessPermission whereIsLinkRequired($value)
+ * @method static AccessPermissionBuilder|AccessPermission whereNotIn(string $column, string $values, string $boolean = 'and')
+ * @method static AccessPermissionBuilder|AccessPermission wherePassword($value)
+ * @method static AccessPermissionBuilder|AccessPermission whereUpdatedAt($value)
+ * @method static AccessPermissionBuilder|AccessPermission whereUserId($value)
+ *
+ * @mixin \Eloquent
  */
 class AccessPermission extends Model
 {
 	use UTCBasedTimes;
 	use HasAttributesPatch;
 	use ThrowsConsistentExceptions;
-	/** @phpstan-use UseFixedQueryBuilder<AccessPermission> */
-	use UseFixedQueryBuilder;
 
 	protected $casts = [
 		'created_at' => 'datetime',
@@ -59,6 +85,16 @@ class AccessPermission extends Model
 		APC::GRANTS_DELETE,
 		APC::PASSWORD,
 	];
+
+	/**
+	 * @param $query
+	 *
+	 * @return AccessPermissionBuilder
+	 */
+	public function newEloquentBuilder($query): AccessPermissionBuilder
+	{
+		return new AccessPermissionBuilder($query);
+	}
 
 	/**
 	 * Returns the relationship between an AccessPermission and its associated album.
