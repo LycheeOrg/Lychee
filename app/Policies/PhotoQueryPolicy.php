@@ -3,11 +3,11 @@
 namespace App\Policies;
 
 use App\Contracts\Exceptions\InternalLycheeException;
+use App\Eloquent\FixedQueryBuilder;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
 use App\Models\Configs;
-use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
@@ -88,12 +88,10 @@ class PhotoQueryPolicy
 	 * The method simply assumes that the user has already legitimately
 	 * accessed the origin album, if the caller provides an album model.
 	 *
-	 * @template TModelClass of \Illuminate\Database\Eloquent\Model
+	 * @param FixedQueryBuilder $query  the photo query which shall be restricted
+	 * @param Album|null        $origin the optional top album which is used as a search base
 	 *
-	 * @param FixedQueryBuilder<TModelClass> $query  the photo query which shall be restricted
-	 * @param Album|null                     $origin the optional top album which is used as a search base
-	 *
-	 * @return FixedQueryBuilder<TModelClass> the restricted photo query
+	 * @return FixedQueryBuilder the restricted photo query
 	 *
 	 * @throws InternalLycheeException
 	 */

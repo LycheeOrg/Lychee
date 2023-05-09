@@ -289,7 +289,7 @@ class PhotosAddMethodsTest extends BasePhotoTest
 			$response = $this->get('Jobs');
 			$this->assertOk($response);
 
-			self::assertEquals(1, Photo::count());
+			self::assertEquals(1, Photo::query()->count());
 		} finally {
 			Configs::set(TestConstants::CONFIG_USE_JOB_QUEUES, $useJobQueues);
 			Config::set('queue.default', $defaultQueue);

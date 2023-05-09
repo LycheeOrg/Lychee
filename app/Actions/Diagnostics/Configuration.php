@@ -18,7 +18,8 @@ class Configuration
 	public function get(): array
 	{
 		// Load settings
-		$settings = Configs::info()
+		$settings = Configs::query()
+			->where('confidentiality', '<=', 2)
 			->select(['key', 'value'])
 			->orderBy('id', 'ASC')
 			->get();

@@ -32,7 +32,7 @@ class RotatePhotoRequest extends BaseApiRequest implements HasPhoto
 	{
 		$this->photo = Photo::query()
 			->with(['size_variants'])
-			->findOrFail($values[RequestAttribute::PHOTO_ID_ATTRIBUTE]);
+			->firstOrFail($values[RequestAttribute::PHOTO_ID_ATTRIBUTE]);
 		$this->direction = intval($values[RequestAttribute::DIRECTION_ATTRIBUTE]);
 	}
 

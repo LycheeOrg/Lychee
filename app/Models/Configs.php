@@ -9,10 +9,9 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnexpectedException;
 use App\Facades\Helpers;
+use App\Models\Builders\ConfigsBuilder;
 use App\Models\Extensions\ConfigsHas;
-use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\ThrowsConsistentExceptions;
-use App\Models\Extensions\UseFixedQueryBuilder;
 use BackedEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -28,16 +27,31 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  * @property int         $confidentiality
  * @property string      $description
  *
- * @method static FixedQueryBuilder info()   Starts to query the model with results scoped to confidentiality level "info".
- * @method static FixedQueryBuilder public() Starts to query the model with results scoped to confidentiality level "public".
- * @method static FixedQueryBuilder admin()  Starts to query the model with results scoped to confidentiality level "admin".
+ * @method static ConfigsBuilder|Configs addSelect($column)
+ * @method static ConfigsBuilder|Configs join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
+ * @method static ConfigsBuilder|Configs joinSub($query, $as, $first, $operator = null, $second = null, $type = 'inner', $where = false)
+ * @method static ConfigsBuilder|Configs leftJoin(string $table, string $first, string $operator = null, string $second = null)
+ * @method static ConfigsBuilder|Configs newModelQuery()
+ * @method static ConfigsBuilder|Configs newQuery()
+ * @method static ConfigsBuilder|Configs orderBy($column, $direction = 'asc')
+ * @method static ConfigsBuilder|Configs query()
+ * @method static ConfigsBuilder|Configs select($columns = [])
+ * @method static ConfigsBuilder|Configs whereCat($value)
+ * @method static ConfigsBuilder|Configs whereConfidentiality($value)
+ * @method static ConfigsBuilder|Configs whereDescription($value)
+ * @method static ConfigsBuilder|Configs whereId($value)
+ * @method static ConfigsBuilder|Configs whereIn(string $column, string $values, string $boolean = 'and', string $not = false)
+ * @method static ConfigsBuilder|Configs whereKey($value)
+ * @method static ConfigsBuilder|Configs whereNotIn(string $column, string $values, string $boolean = 'and')
+ * @method static ConfigsBuilder|Configs whereTypeRange($value)
+ * @method static ConfigsBuilder|Configs whereValue($value)
+ *
+ * @mixin \Eloquent
  */
 class Configs extends Model
 {
 	use ConfigsHas;
 	use ThrowsConsistentExceptions;
-	/** @phpstan-use UseFixedQueryBuilder<Configs> */
-	use UseFixedQueryBuilder;
 
 	protected const INT = 'int';
 	protected const STRING = 'string';
@@ -65,6 +79,16 @@ class Configs extends Model
 	 * @var array<string, int|bool|string|null>
 	 */
 	private static array $cache = [];
+
+	/**
+	 * @param $query
+	 *
+	 * @return ConfigsBuilder
+	 */
+	public function newEloquentBuilder($query): ConfigsBuilder
+	{
+		return new ConfigsBuilder($query);
+	}
 
 	/**
 	 * Sanity check.
@@ -276,50 +300,6 @@ class Configs extends Model
 			// invalidate cache.
 			self::$cache = [];
 		}
-	}
-
-	/**
-	 * Define scopes.
-	 */
-
-	/**
-	 * @param FixedQueryBuilder $query
-	 *
-	 * @return FixedQueryBuilder
-	 *
-	 * @throws QueryBuilderException
-	 */
-	public function scopePublic(FixedQueryBuilder $query): FixedQueryBuilder
-	{
-		return $query->where('confidentiality', '=', 0);
-	}
-
-	/**
-	 * Logged user can see.
-	 *
-	 * @param FixedQueryBuilder $query
-	 *
-	 * @return FixedQueryBuilder
-	 *
-	 * @throws QueryBuilderException
-	 */
-	public function scopeInfo(FixedQueryBuilder $query): FixedQueryBuilder
-	{
-		return $query->where('confidentiality', '<=', 2);
-	}
-
-	/**
-	 * Only admin can see.
-	 *
-	 * @param FixedQueryBuilder $query
-	 *
-	 * @return FixedQueryBuilder
-	 *
-	 * @throws QueryBuilderException
-	 */
-	public function scopeAdmin(FixedQueryBuilder $query): FixedQueryBuilder
-	{
-		return $query->where('confidentiality', '<=', 3);
 	}
 
 	/**

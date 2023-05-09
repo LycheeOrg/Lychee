@@ -10,11 +10,11 @@ use App\Exceptions\ConfigurationException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Image\Files\FlysystemFile;
+use App\Models\Builders\SizeVariantBuilder;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
-use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Relations\HasManyBidirectionally;
 use Illuminate\Database\Eloquent\Collection;
@@ -52,6 +52,27 @@ use League\Flysystem\Local\LocalFilesystemAdapter;
  * @property int                 $height
  * @property int                 $filesize
  * @property Collection<SymLink> $sym_links
+ *
+ * @method static SizeVariantBuilder|SizeVariant addSelect($column)
+ * @method static SizeVariantBuilder|SizeVariant join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
+ * @method static SizeVariantBuilder|SizeVariant joinSub($query, $as, $first, $operator = null, $second = null, $type = 'inner', $where = false)
+ * @method static SizeVariantBuilder|SizeVariant leftJoin(string $table, string $first, string $operator = null, string $second = null)
+ * @method static SizeVariantBuilder|SizeVariant newModelQuery()
+ * @method static SizeVariantBuilder|SizeVariant newQuery()
+ * @method static SizeVariantBuilder|SizeVariant orderBy($column, $direction = 'asc')
+ * @method static SizeVariantBuilder|SizeVariant query()
+ * @method static SizeVariantBuilder|SizeVariant select($columns = [])
+ * @method static SizeVariantBuilder|SizeVariant whereFilesize($value)
+ * @method static SizeVariantBuilder|SizeVariant whereHeight($value)
+ * @method static SizeVariantBuilder|SizeVariant whereId($value)
+ * @method static SizeVariantBuilder|SizeVariant whereIn(string $column, string $values, string $boolean = 'and', string $not = false)
+ * @method static SizeVariantBuilder|SizeVariant whereNotIn(string $column, string $values, string $boolean = 'and')
+ * @method static SizeVariantBuilder|SizeVariant wherePhotoId($value)
+ * @method static SizeVariantBuilder|SizeVariant whereShortPath($value)
+ * @method static SizeVariantBuilder|SizeVariant whereType($value)
+ * @method static SizeVariantBuilder|SizeVariant whereWidth($value)
+ *
+ * @mixin \Eloquent
  */
 class SizeVariant extends Model
 {
@@ -59,8 +80,6 @@ class SizeVariant extends Model
 	use HasAttributesPatch;
 	use HasBidirectionalRelationships;
 	use ThrowsConsistentExceptions;
-	/** @phpstan-use UseFixedQueryBuilder<SizeVariant> */
-	use UseFixedQueryBuilder;
 	use ToArrayThrowsNotImplemented;
 
 	/**
@@ -83,6 +102,16 @@ class SizeVariant extends Model
 		'height' => 'integer',
 		'filesize' => 'integer',
 	];
+
+	/**
+	 * @param $query
+	 *
+	 * @return SizeVariantBuilder
+	 */
+	public function newEloquentBuilder($query): SizeVariantBuilder
+	{
+		return new SizeVariantBuilder($query);
+	}
 
 	/**
 	 * Returns the association to the photo which this size variant belongs

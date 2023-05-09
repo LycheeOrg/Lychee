@@ -1,13 +1,15 @@
 <?php
 
-namespace App\Models\Extensions;
+namespace App\Models\Builders;
 
 use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Exceptions\InternalLycheeException;
+use App\Eloquent\FixedQueryBuilderTrait;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
 use App\Policies\AlbumQueryPolicy;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder as EBuilder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
@@ -23,6 +25,31 @@ use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
  * A global scope is always added to the query, even if the query is only
  * used as a sub-query which will not hydrate actual models.
  * Thus, a global scope unnecessarily complicates queries in many cases.
+ *
+ *
+ * @method static AlbumBuilder|Album query()                       Begin querying the model.
+ * @method AlbumBuilder|Album with(array|string $relations) Begin querying the model with eager loading.
+ *
+ * @method $this addSelect(array|mixed $column)
+ * @method int   count(string $columns = '*')
+ * @method $this from(\Closure|\Illuminate\Database\Query\Builder|string $table, ?string $as = null)
+ * @method $this join(string $table, \Closure|string $first, ?string $operator = null, ?string $second = null, string $type = 'inner', bool $where = false)
+ * @method $this limit(int $value)
+ * @method $this offset(int $value)
+ * @method $this select(array|mixed $columns = ['*'])
+ * @method $this join(string $table, \Closure|string $first, ?string $operator = null, $second = null, $type = 'inner', $where = false)
+ * @method $this joinSub(\Closure|\Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder|string $query, string $as, \Closure|string $first, ?string $operator = null, $second = null, $type = 'inner', $where = false)
+ * @method $this leftJoin(string $table, \Closure|string $first, ?string $operator = null, $second = null, $type = 'inner', $where = false)
+ * @method $this take(int $value)
+ * @method void  truncate()
+ * @method $this whereColumn(string|array $first, ?string $operator = null, ?string $second = null, string $boolean = 'and')
+ * @method $this whereExists(\Closure $callback, string $boolean = 'and', bool $not = false)
+ * @method $this whereIn(string $column, mixed $values, string $boolean = 'and', bool $not = false)
+ * @method $this whereNotExists(\Closure $callback, string $boolean = 'and')
+ * @method $this whereNotNull(string|array $columns, string $boolean = 'and')
+ * @method $this whereNotIn(string $column, mixed $values, string $boolean = 'and')
+ * @method $this whereNull(string|array $columns, string $boolean = 'and', bool $not = false)
+ * @method $this orderByDesc($column)
  */
 class AlbumBuilder extends NSQueryBuilder
 {

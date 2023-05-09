@@ -65,7 +65,6 @@ class ArchivePhotosRequest extends BaseApiRequest implements HasPhotos, HasSizeV
 		// which is not assignable to `Collection<Photo>`; but as we query
 		// with an array of IDs we never get a single entity (even if the
 		// array only contains a single ID).
-		// @phpstan-ignore-next-line
 		$this->photos = $photoQuery->findOrFail(
 			explode(',', $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE])
 		);

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Extensions;
+namespace App\Eloquent;
 
 /**
  * Models which use this trait use {@link FixedQueryBuilder} instead of the standard {@link \Illuminate\Database\Eloquent\Builder}.
@@ -16,17 +16,4 @@ namespace App\Models\Extensions;
  */
 trait UseFixedQueryBuilder
 {
-	/**
-	 * @param $query
-	 *
-	 * @return FixedQueryBuilder<TModelClass>
-	 */
-	public function newEloquentBuilder($query): FixedQueryBuilder
-	{
-		// We must return `FixedQueryBuilder<TModelClass>` but the
-		// `new`-statement evaluates to `FixedQueryBuilder` (without a bound
-		// template parameter).
-		// @phpstan-ignore-next-line
-		return new FixedQueryBuilder($query);
-	}
 }

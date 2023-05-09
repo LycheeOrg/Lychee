@@ -85,10 +85,10 @@ class ListSharingRequest extends BaseApiRequest implements HasBaseAlbum
 			$this->albumFactory->findBaseAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]) :
 			null;
 		$this->owner = key_exists(self::OWNER_ID_ATTRIBUTE, $values) ?
-			User::query()->findOrFail($values[self::OWNER_ID_ATTRIBUTE]) :
+			User::query()->first($values[self::OWNER_ID_ATTRIBUTE]) :
 			null;
 		$this->participant = key_exists(self::PARTICIPANT_ID_ATTRIBUTE, $values) ?
-			User::query()->findOrFail($values[self::PARTICIPANT_ID_ATTRIBUTE]) :
+			User::query()->first($values[self::PARTICIPANT_ID_ATTRIBUTE]) :
 			null;
 	}
 

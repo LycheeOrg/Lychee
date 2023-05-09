@@ -20,6 +20,7 @@ class HasManySizeVariants extends HasMany
 	public function __construct(Photo $owningPhoto)
 	{
 		parent::__construct(
+			/** @phpstan-ignore-next-line  */
 			SizeVariant::query(),
 			$owningPhoto,
 			'photo_id',
