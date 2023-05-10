@@ -14,6 +14,11 @@ use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
 /**
+ * We cannot use <BaseAlbum>, even though it is indeed true.
+ * This violate LSP and contra variance.
+ *
+ * SetAlbumsTitleRuleSet ensure that we are actually dealing with BaseAlbum
+ *
  * @implements HasAlbums<AbstractAlbum>
  */
 class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, HasAlbums
