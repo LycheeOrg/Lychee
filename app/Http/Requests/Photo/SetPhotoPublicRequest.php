@@ -33,7 +33,9 @@ class SetPhotoPublicRequest extends BaseApiRequest implements HasPhoto
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photo = Photo::findOrFail($values[RequestAttribute::PHOTO_ID_ATTRIBUTE]);
+		/** @var ?string $photoID */
+		$photoID = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
+		$this->photo = Photo::findOrFail($photoID);
 		$this->isPublic = static::toBoolean($values[RequestAttribute::IS_PUBLIC_ATTRIBUTE]);
 	}
 
