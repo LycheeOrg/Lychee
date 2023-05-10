@@ -43,7 +43,7 @@ class AddAlbumRequest extends BaseApiRequest implements HasTitle, HasParentAlbum
 		$parentAlbumID = $values[RequestAttribute::PARENT_ID_ATTRIBUTE];
 		$this->parentAlbum = $parentAlbumID === null ?
 			null :
-			Album::query()->firstOrFail(
+			Album::query()->findOrFail(
 				$values[RequestAttribute::PARENT_ID_ATTRIBUTE]
 			);
 		$this->title = $values[RequestAttribute::TITLE_ATTRIBUTE];
