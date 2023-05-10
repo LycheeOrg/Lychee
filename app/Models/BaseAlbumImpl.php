@@ -8,12 +8,12 @@ use App\Contracts\Models\HasRandomID;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
+use App\Models\Builders\BaseAlbumImplBuilder;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
-use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -106,6 +106,32 @@ use Illuminate\Support\Facades\Auth;
  * @property hasMany<AccessPermission>  $access_permissions
  * @property AccessPermission|null      $current_permissions
  * @property AccessPermission|null      $public_permissions
+ * @property int|null                   $access_permissions_count
+ * @property AccessPermission|null      $current_user_permissions
+ *
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl addSelect($column)
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl joinSub($query, $as, $first, $operator = null, $second = null, $type = 'inner', $where = false)
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl leftJoin(string $table, string $first, string $operator = null, string $second = null)
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl newModelQuery()
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl newQuery()
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl orderBy($column, $direction = 'asc')
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl query()
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl select($columns = [])
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl whereCreatedAt($value)
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl whereDescription($value)
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl whereId($value)
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl whereIn(string $column, string $values, string $boolean = 'and', string $not = false)
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl whereIsNsfw($value)
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl whereLegacyId($value)
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl whereNotIn(string $column, string $values, string $boolean = 'and')
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl whereOwnerId($value)
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl whereSortingCol($value)
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl whereSortingOrder($value)
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl whereTitle($value)
+ * @method static BaseAlbumImplBuilder|BaseAlbumImpl whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
  */
 class BaseAlbumImpl extends Model implements HasRandomID
 {
@@ -114,8 +140,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	use ThrowsConsistentExceptions;
 	use UTCBasedTimes;
 	use HasBidirectionalRelationships;
-	/** @phpstan-use UseFixedQueryBuilder<BaseAlbumImpl> */
-	use UseFixedQueryBuilder;
 	use ToArrayThrowsNotImplemented;
 
 	protected $table = 'base_albums';
@@ -175,6 +199,16 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	protected $with = ['owner', 'access_permissions', 'current_user_permissions', 'public_permissions'];
 
 	/**
+	 * @param $query
+	 *
+	 * @return BaseAlbumImplBuilder
+	 */
+	public function newEloquentBuilder($query): BaseAlbumImplBuilder
+	{
+		return new BaseAlbumImplBuilder($query);
+	}
+
+	/**
 	 * Returns the relationship between an album and its owner.
 	 *
 	 * @return BelongsTo
@@ -197,7 +231,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 			APC::ACCESS_PERMISSIONS,
 			APC::BASE_ALBUM_ID,
 			APC::USER_ID
-		)->whereNotNull('user_id');
+		)->wherePivotNotNull('user_id');
 	}
 
 	/**

@@ -3,10 +3,10 @@
 namespace App\Relations;
 
 use App\DTO\PhotoSortingCriterion;
+use App\Eloquent\FixedQueryBuilder;
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\OrderSortingType;
 use App\Models\Album;
-use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\Thumb;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;

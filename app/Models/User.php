@@ -5,14 +5,15 @@ namespace App\Models;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
+use App\Models\Builders\UserBuilder;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
-use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
@@ -49,6 +50,32 @@ use function Safe\mb_convert_encoding;
  * @property int|null                                              $photos_count
  * @property Collection<int, WebAuthnCredential>                   $webAuthnCredentials
  * @property int|null                                              $web_authn_credentials_count
+ * @property Collection<int, WebAuthnCredential>                   $webAuthnCredentials
+ *
+ * @method static UserBuilder|User addSelect($column)
+ * @method static UserBuilder|User join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
+ * @method static UserBuilder|User joinSub($query, $as, $first, $operator = null, $second = null, $type = 'inner', $where = false)
+ * @method static UserBuilder|User leftJoin(string $table, string $first, string $operator = null, string $second = null)
+ * @method static UserBuilder|User newModelQuery()
+ * @method static UserBuilder|User newQuery()
+ * @method static UserBuilder|User orderBy($column, $direction = 'asc')
+ * @method static UserBuilder|User query()
+ * @method static UserBuilder|User select($columns = [])
+ * @method static UserBuilder|User whereCreatedAt($value)
+ * @method static UserBuilder|User whereEmail($value)
+ * @method static UserBuilder|User whereId($value)
+ * @method static UserBuilder|User whereIn(string $column, string $values, string $boolean = 'and', string $not = false)
+ * @method static UserBuilder|User whereMayAdministrate($value)
+ * @method static UserBuilder|User whereMayEditOwnSettings($value)
+ * @method static UserBuilder|User whereMayUpload($value)
+ * @method static UserBuilder|User whereNotIn(string $column, string $values, string $boolean = 'and')
+ * @method static UserBuilder|User wherePassword($value)
+ * @method static UserBuilder|User whereRememberToken($value)
+ * @method static UserBuilder|User whereToken($value)
+ * @method static UserBuilder|User whereUpdatedAt($value)
+ * @method static UserBuilder|User whereUsername($value)
+ *
+ * @mixin \Eloquent
  */
 class User extends Authenticatable implements WebAuthnAuthenticatable
 {
@@ -58,8 +85,6 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	use ThrowsConsistentExceptions {
 		delete as parentDelete;
 	}
-	/** @phpstan-use UseFixedQueryBuilder<User> */
-	use UseFixedQueryBuilder;
 	use ToArrayThrowsNotImplemented;
 
 	/**
@@ -82,6 +107,18 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'may_upload' => 'boolean',
 		'may_edit_own_settings' => 'boolean',
 	];
+
+	/**
+	 * Create a new Eloquent query builder for the model.
+	 *
+	 * @param BaseBuilder $query
+	 *
+	 * @return UserBuilder
+	 */
+	public function newEloquentBuilder($query): UserBuilder
+	{
+		return new UserBuilder($query);
+	}
 
 	/**
 	 * Return the albums owned by the user.

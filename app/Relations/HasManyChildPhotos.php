@@ -3,10 +3,10 @@
 namespace App\Relations;
 
 use App\Contracts\Exceptions\InternalLycheeException;
+use App\Eloquent\FixedQueryBuilder;
 use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
-use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
@@ -26,6 +26,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 		// attributes must be initialized by then
 		$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
 		parent::__construct(
+			/** @phpstan-ignore-next-line  */
 			Photo::query(),
 			$owningAlbum,
 			'album_id',

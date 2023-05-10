@@ -6,7 +6,7 @@ use App\Actions\Album\Delete;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
-use App\Models\Extensions\AlbumBuilder;
+use App\Models\Builders\AlbumBuilder;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Relations\HasAlbumThumb;
@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Kalnoy\Nestedset\Collection as NSCollection;
 use Kalnoy\Nestedset\DescendantsRelation;
 use Kalnoy\Nestedset\Node;
 use Kalnoy\Nestedset\NodeTrait;
@@ -25,27 +26,93 @@ use Kalnoy\Nestedset\NodeTrait;
 /**
  * Class Album.
  *
- * @property string                    $id
- * @property string|null               $parent_id
- * @property Album|null                $parent
- * @property Collection<int,Album>     $children
- * @property int                       $num_children     The number of children.
- * @property Collection<int,Photo>     $all_photos
- * @property int                       $num_photos       The number of photos in this album (excluding photos in subalbums).
- * @property string                    $license
- * @property string|null               $cover_id
- * @property Photo|null                $cover
- * @property string|null               $track_short_path
- * @property string|null               $track_url
- * @property int                       $_lft
- * @property int                       $_rgt
- * @property \App\Models\BaseAlbumImpl $base_class
- * @property \App\Models\User|null     $owner
+ * @property string                $id
+ * @property string|null           $parent_id
+ * @property Album|null            $parent
+ * @property Collection<int,Album> $children
+ * @property int                   $num_children     The number of children.
+ * @property Collection<int,Photo> $all_photos
+ * @property int                   $num_photos       The number of photos in this album (excluding photos in subalbums).
+ * @property string                $license
+ * @property string|null           $cover_id
+ * @property Photo|null            $cover
+ * @property string|null           $track_short_path
+ * @property string|null           $track_url
+ * @property int                   $_lft
+ * @property int                   $_rgt
+ * @property BaseAlbumImpl         $base_class
+ * @property User|null             $owner
  *
- * @method static AlbumBuilder query()                       Begin querying the model.
- * @method static AlbumBuilder with(array|string $relations) Begin querying the model with eager loading.
- * @method        AlbumBuilder newModelQuery()               Get a new, "pure" query builder for the model's table without any scopes, eager loading, etc.
- * @method        AlbumBuilder newQuery()                    Get a new query builder for the model's table.
+ * @method static AlbumBuilder|Album query()                       Begin querying the model.
+ * @method static AlbumBuilder|Album with(array|string $relations) Begin querying the model with eager loading.
+ * @method        AlbumBuilder|Album newModelQuery()               Get a new, "pure" query builder for the model's table without any scopes, eager loading, etc.
+ * @method        AlbumBuilder|Album newQuery()                    Get a new query builder for the model's table.
+ *
+ * @property Collection<int,AccessPermission> $access_permissions
+ * @property int|null                         $access_permissions_count
+ * @property AccessPermission|null            $current_user_permissions
+ * @property AccessPermission|null            $public_permissions
+ * @property Collection<int,User>             $shared_with
+ * @property int|null                         $shared_with_count
+ *
+ * @method static AlbumBuilder|Album addSelect($column)
+ * @method static NSCollection<int,  static> all($columns = ['*'])
+ * @method static AlbumBuilder|Album ancestorsAndSelf($id, array $columns = [])
+ * @method static AlbumBuilder|Album ancestorsOf($id, array $columns = [])
+ * @method static AlbumBuilder|Album applyNestedSetScope(?string $table = null)
+ * @method static AlbumBuilder|Album countErrors()
+ * @method static AlbumBuilder|Album d()
+ * @method static AlbumBuilder|Album defaultOrder(string $dir = 'asc')
+ * @method static AlbumBuilder|Album descendantsAndSelf($id, array $columns = [])
+ * @method static AlbumBuilder|Album descendantsOf($id, array $columns = [], $andSelf = false)
+ * @method static AlbumBuilder|Album fixSubtree($root)
+ * @method static AlbumBuilder|Album fixTree($root = null)
+ * @method static NSCollection<int,  static> get($columns = ['*'])
+ * @method static AlbumBuilder|Album getNodeData($id, $required = false)
+ * @method static AlbumBuilder|Album getPlainNodeData($id, $required = false)
+ * @method static AlbumBuilder|Album getTotalErrors()
+ * @method static AlbumBuilder|Album hasChildren()
+ * @method static AlbumBuilder|Album hasParent()
+ * @method static AlbumBuilder|Album isBroken()
+ * @method static AlbumBuilder|Album join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
+ * @method static AlbumBuilder|Album joinSub($query, $as, $first, $operator = null, $second = null, $type = 'inner', $where = false)
+ * @method static AlbumBuilder|Album leaves(array $columns = [])
+ * @method static AlbumBuilder|Album leftJoin(string $table, string $first, string $operator = null, string $second = null)
+ * @method static AlbumBuilder|Album makeGap(int $cut, int $height)
+ * @method static AlbumBuilder|Album moveNode($key, $position)
+ * @method static AlbumBuilder|Album orWhereAncestorOf(bool $id, bool $andSelf = false)
+ * @method static AlbumBuilder|Album orWhereDescendantOf($id)
+ * @method static AlbumBuilder|Album orWhereNodeBetween($values)
+ * @method static AlbumBuilder|Album orWhereNotDescendantOf($id)
+ * @method static AlbumBuilder|Album orderBy($column, $direction = 'asc')
+ * @method static AlbumBuilder|Album rebuildSubtree($root, array $data, $delete = false)
+ * @method static AlbumBuilder|Album rebuildTree(array $data, $delete = false, $root = null)
+ * @method static AlbumBuilder|Album reversed()
+ * @method static AlbumBuilder|Album root(array $columns = [])
+ * @method static AlbumBuilder|Album select($columns = [])
+ * @method static AlbumBuilder|Album whereAncestorOf($id, $andSelf = false, $boolean = 'and')
+ * @method static AlbumBuilder|Album whereAncestorOrSelf($id)
+ * @method static AlbumBuilder|Album whereCoverId($value)
+ * @method static AlbumBuilder|Album whereDescendantOf($id, $boolean = 'and', $not = false, $andSelf = false)
+ * @method static AlbumBuilder|Album whereDescendantOrSelf(string $id, string $boolean = 'and', string $not = false)
+ * @method static AlbumBuilder|Album whereId($value)
+ * @method static AlbumBuilder|Album whereIn(string $column, string $values, string $boolean = 'and', string $not = false)
+ * @method static AlbumBuilder|Album whereIsAfter($id, $boolean = 'and')
+ * @method static AlbumBuilder|Album whereIsBefore($id, $boolean = 'and')
+ * @method static AlbumBuilder|Album whereIsLeaf()
+ * @method static AlbumBuilder|Album whereIsRoot()
+ * @method static AlbumBuilder|Album whereLft($value)
+ * @method static AlbumBuilder|Album whereLicense($value)
+ * @method static AlbumBuilder|Album whereNodeBetween($values, $boolean = 'and', $not = false)
+ * @method static AlbumBuilder|Album whereNotDescendantOf($id)
+ * @method static AlbumBuilder|Album whereNotIn(string $column, string $values, string $boolean = 'and')
+ * @method static AlbumBuilder|Album whereParentId($value)
+ * @method static AlbumBuilder|Album whereRgt($value)
+ * @method static AlbumBuilder|Album whereTrackShortPath($value)
+ * @method static AlbumBuilder|Album withDepth(string $as = 'depth')
+ * @method static AlbumBuilder|Album withoutRoot()
+ *
+ * // * @mixin \Eloquent
  */
 class Album extends BaseAlbum implements Node
 {

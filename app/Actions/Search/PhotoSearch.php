@@ -4,7 +4,7 @@ namespace App\Actions\Search;
 
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\DTO\PhotoSortingCriterion;
-use App\Models\Extensions\FixedQueryBuilder;
+use App\Eloquent\FixedQueryBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
@@ -25,7 +25,7 @@ class PhotoSearch
 	public function query(array $terms): Collection
 	{
 		$query = $this->photoQueryPolicy->applySearchabilityFilter(
-			Photo::with(['album', 'size_variants', 'size_variants.sym_links'])
+			Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links'])
 		);
 
 		foreach ($terms as $term) {

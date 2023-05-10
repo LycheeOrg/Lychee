@@ -52,7 +52,7 @@ class ExifLens extends Command
 			}
 
 			// we use lens because this is the one which is most likely to be empty.
-			$photos = Photo::with(['size_variants' => function (HasMany $r) {
+			$photos = Photo::query()->with(['size_variants' => function (HasMany $r) {
 				$r->where('type', '=', SizeVariantType::ORIGINAL);
 			}])
 				->where('lens', '=', '')

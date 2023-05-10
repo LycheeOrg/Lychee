@@ -4,11 +4,12 @@ namespace App\Models;
 
 use App\Casts\ArrayCast;
 use App\Exceptions\InvalidPropertyException;
+use App\Models\Builders\TagAlbumBuilder;
 use App\Models\Extensions\BaseAlbum;
-use App\Models\Extensions\TagAlbumBuilder;
 use App\Models\Extensions\Thumb;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Relations\HasManyPhotosByTag;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 
 /**
@@ -16,14 +17,34 @@ use Illuminate\Database\Query\Builder as BaseBuilder;
  *
  * @property string[] $show_tags
  *
- * @method static TagAlbumBuilder query()                       Begin querying the model.
- * @method static TagAlbumBuilder with(array|string $relations) Begin querying the model with eager loading.
+ * @method static TagAlbumBuilder|TagAlbum query()                       Begin querying the model.
+ * @method static TagAlbumBuilder|TagAlbum with(array|string $relations) Begin querying the model with eager loading.
  *
- * @property string                                                          $id
- * @property \App\Models\BaseAlbumImpl                                       $base_class
- * @property \App\Models\User                                                $owner
- * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $shared_with
- * @property int|null                                                        $shared_with_count
+ * @property string                            $id
+ * @property BaseAlbumImpl                     $base_class
+ * @property User                              $owner
+ * @property Collection<int, User>             $shared_with
+ * @property int|null                          $shared_with_count
+ * @property Collection<int, AccessPermission> $access_permissions
+ * @property int|null                          $access_permissions_count
+ * @property AccessPermission|null             $current_user_permissions
+ * @property AccessPermission|null             $public_permissions
+ * @property Collection<int, User>             $shared_with
+ *
+ * @method static TagAlbumBuilder|TagAlbum addSelect($column)
+ * @method static TagAlbumBuilder|TagAlbum join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
+ * @method static TagAlbumBuilder|TagAlbum joinSub($query, $as, $first, $operator = null, $second = null, $type = 'inner', $where = false)
+ * @method static TagAlbumBuilder|TagAlbum leftJoin(string $table, string $first, string $operator = null, string $second = null)
+ * @method static TagAlbumBuilder|TagAlbum newModelQuery()
+ * @method static TagAlbumBuilder|TagAlbum newQuery()
+ * @method static TagAlbumBuilder|TagAlbum orderBy($column, $direction = 'asc')
+ * @method static TagAlbumBuilder|TagAlbum select($columns = [])
+ * @method static TagAlbumBuilder|TagAlbum whereId($value)
+ * @method static TagAlbumBuilder|TagAlbum whereIn(string $column, string $values, string $boolean = 'and', string $not = false)
+ * @method static TagAlbumBuilder|TagAlbum whereNotIn(string $column, string $values, string $boolean = 'and')
+ * @method static TagAlbumBuilder|TagAlbum whereShowTags($value)
+ *
+ * @mixin \Eloquent
  */
 class TagAlbum extends BaseAlbum
 {
