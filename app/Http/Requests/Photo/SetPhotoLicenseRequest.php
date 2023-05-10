@@ -33,7 +33,7 @@ class SetPhotoLicenseRequest extends BaseApiRequest implements HasPhoto, HasLice
 	{
 		/** @var ?string $photoID */
 		$photoID = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
-		$this->photo = Photo::findOrFail($photoID);
+		$this->photo = Photo::query()->findOrFail($photoID);
 		$this->license = $values[RequestAttribute::LICENSE_ATTRIBUTE];
 	}
 }

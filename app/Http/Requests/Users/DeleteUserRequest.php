@@ -40,6 +40,6 @@ class DeleteUserRequest extends BaseApiRequest implements HasUser
 	{
 		/** @var int $userID */
 		$userID = $values[RequestAttribute::ID_ATTRIBUTE];
-		$this->user2 = User::findOrFail($userID);
+		$this->user2 = User::query()->findOrFail($userID);
 	}
 }

@@ -106,7 +106,7 @@ class Takedate extends Command
 
 			// For faster iteration we eagerly load the original size variant,
 			// but only the original size variant
-			$photoQuery = Photo::with(['size_variants' => function (HasMany $r) {
+			$photoQuery = Photo::query()->with(['size_variants' => function (HasMany $r) {
 				$r->where('type', '=', SizeVariantType::ORIGINAL);
 			}]);
 

@@ -50,7 +50,7 @@ class ArchivePhotosRequest extends BaseApiRequest implements HasPhotos, HasSizeV
 	{
 		$this->sizeVariant = DownloadVariantType::from($values[RequestAttribute::SIZE_VARIANT_ATTRIBUTE]);
 
-		$photoQuery = Photo::with(['album']);
+		$photoQuery = Photo::query()->with(['album']);
 		// The condition is required, because Lychee also supports to archive
 		// the "live video" as a size variant which is not a proper size variant
 		$variant = $this->sizeVariant->getSizeVariantType();

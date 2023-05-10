@@ -43,9 +43,9 @@ class SetAlbumCoverRequest extends BaseApiRequest implements HasAlbum, HasPhoto
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = Album::findOrFail($values[RequestAttribute::PARENT_ID_ATTRIBUTE]);
+		$this->album = Album::query()->findOrFail($values[RequestAttribute::PARENT_ID_ATTRIBUTE]);
 		/** @var ?string $photoID */
 		$photoID = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
-		$this->photo = $photoID === null ? null : Photo::findOrFail($photoID);
+		$this->photo = $photoID === null ? null : Photo::query()->findOrFail($photoID);
 	}
 }

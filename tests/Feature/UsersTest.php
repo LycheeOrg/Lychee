@@ -353,7 +353,7 @@ class UsersTest extends AbstractTestCase
 			], ]);
 
 		// update Admin user to non valid rights
-		$admin = User::findOrFail(1);
+		$admin = User::query()->findOrFail(1);
 		$admin->may_upload = false;
 		$admin->may_edit_own_settings = true;
 		$admin->save();

@@ -33,7 +33,7 @@ class SetPhotoDescriptionRequest extends BaseApiRequest implements HasPhoto, Has
 	{
 		/** @var ?string $photoID */
 		$photoID = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
-		$this->photo = Photo::findOrFail($photoID);
+		$this->photo = Photo::query()->findOrFail($photoID);
 		$this->description = $values[RequestAttribute::DESCRIPTION_ATTRIBUTE];
 	}
 }

@@ -35,7 +35,7 @@ class SetPhotoPublicRequest extends BaseApiRequest implements HasPhoto
 	{
 		/** @var ?string $photoID */
 		$photoID = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
-		$this->photo = Photo::findOrFail($photoID);
+		$this->photo = Photo::query()->findOrFail($photoID);
 		$this->isPublic = static::toBoolean($values[RequestAttribute::IS_PUBLIC_ATTRIBUTE]);
 	}
 

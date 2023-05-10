@@ -34,7 +34,7 @@ class SetPhotoUploadDateRequest extends BaseApiRequest implements HasPhoto, HasD
 	{
 		/** @var ?string $photoID */
 		$photoID = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
-		$this->photo = Photo::findOrFail($photoID);
+		$this->photo = Photo::query()->findOrFail($photoID);
 		$this->date = Carbon::parse($values[RequestAttribute::DATE_ATTRIBUTE]);
 	}
 }
