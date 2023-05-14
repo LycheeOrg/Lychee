@@ -72,6 +72,7 @@
         "lychee-org/phpstan-lychee": "^v1.0.1",
         "mockery/mockery": "^1.5",
         "nunomaduro/larastan": "^2.0",
+        "opcodesio/log-viewer": "^2.4",
         "php-parallel-lint/php-parallel-lint": "^1.3",
         "phpunit/phpunit": "^10.0"
     },
