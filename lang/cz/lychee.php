@@ -336,7 +336,6 @@ return [
 	'SORT_ALBUM_SELECT_1' => 'Data vytvoření',
 	'SORT_ALBUM_SELECT_2' => 'Názvu',
 	'SORT_ALBUM_SELECT_3' => 'Popisu',
-	'SORT_ALBUM_SELECT_4' => 'Stavu zveřejnění',
 	'SORT_ALBUM_SELECT_5' => 'Nejmladšího data snímku',
 	'SORT_ALBUM_SELECT_6' => 'Nejstaršího data snímku',
 

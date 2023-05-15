@@ -336,7 +336,6 @@ return [
 	'SORT_ALBUM_SELECT_1' => 'Data di Creazione',
 	'SORT_ALBUM_SELECT_2' => 'Titolo',
 	'SORT_ALBUM_SELECT_3' => 'Descrizione',
-	'SORT_ALBUM_SELECT_4' => 'Pubblico',
 	'SORT_ALBUM_SELECT_5' => 'Ultima Aggiornamento',
 	'SORT_ALBUM_SELECT_6' => 'Aggiornamento più vecchio',
 
