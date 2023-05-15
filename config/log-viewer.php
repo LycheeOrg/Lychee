@@ -70,6 +70,8 @@ return [
 
 	'middleware' => [
 		'web-admin',
+		\App\Http\Middleware\FixStatusCode::class,
+		\Illuminate\Http\Middleware\TrustProxies::class,
 		\Opcodes\LogViewer\Http\Middleware\AuthorizeLogViewer::class,
 	],
 
@@ -83,6 +85,8 @@ return [
 	*/
 
 	'api_middleware' => [
+		\App\Http\Middleware\FixStatusCode::class,
+		\Illuminate\Http\Middleware\TrustProxies::class,
 		\Opcodes\LogViewer\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
 		\Illuminate\Cookie\Middleware\EncryptCookies::class,
 		\Illuminate\Session\Middleware\StartSession::class,

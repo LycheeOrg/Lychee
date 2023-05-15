@@ -114,8 +114,7 @@ class AppServiceProvider extends ServiceProvider
 		 */
 		LogViewer::auth(function ($request) {
 			// return true to allow viewing the Log Viewer.
-			// dd($request->user());
-			return Gate::check(SettingsPolicy::CAN_SEE_LOGS, Configs::class);
+			return \Auth::authenticate() && Gate::check(SettingsPolicy::CAN_SEE_LOGS, Configs::class);
 		});
 	}
 
