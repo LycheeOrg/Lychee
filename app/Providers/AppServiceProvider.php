@@ -24,6 +24,7 @@ use App\Policies\PhotoQueryPolicy;
 use App\Policies\SettingsPolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
@@ -114,7 +115,7 @@ class AppServiceProvider extends ServiceProvider
 		 */
 		LogViewer::auth(function ($request) {
 			// return true to allow viewing the Log Viewer.
-			return \Auth::authenticate() && Gate::check(SettingsPolicy::CAN_SEE_LOGS, Configs::class);
+			return Auth::authenticate() !== null && Gate::check(SettingsPolicy::CAN_SEE_LOGS, Configs::class);
 		});
 	}
 
