@@ -36,14 +36,14 @@ class LogsTest extends AbstractTestCase
 	{
 		$this->initAdmin();
 
-		$response = $this->get('/log-viewer');
+		$response = $this->get('/Logs');
 		$this->assertUnauthorized($response);
 
 		// set user as admin
 		Auth::loginUsingId(1);
 
 		Log::notice(__METHOD__ . ':' . __LINE__ . 'test');
-		$response = $this->get('/log-viewer');
+		$response = $this->get('/Logs');
 		$this->assertOk($response);
 
 		Auth::logout();
