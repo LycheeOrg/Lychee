@@ -341,7 +341,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 			'live_photo_url' => null,
 		]);
 
-		self::assertNotEmpty(file_get_contents(storage_path('logs/error.log')));
+		self::assertNotEmpty(file_get_contents(storage_path('logs/errors.log')));
 	}
 
 	/**
@@ -431,7 +431,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 		// that it isn't called accidentally.
 		// As a second-best approach, we check at least for the existence
 		// of an error message in the log.
-		self::assertNotEmpty(file_get_contents(storage_path('logs/error.log')));
+		self::assertNotEmpty(file_get_contents(storage_path('logs/errors.log')));
 
 		Configs::set(TestConstants::CONFIG_HAS_FFMPEG, $hasFFMpeg);
 		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, $hasExifTool);
