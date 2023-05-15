@@ -318,7 +318,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 		$this->assertHasExifToolOrSkip();
 		$this->assertHasFFMpegOrSkip();
 
-		file_put_contents(storage_path('logs/error.log'), '');
+		file_put_contents(storage_path('logs/errors.log'), '');
 
 		$response = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_GMP_BROKEN_IMAGE)
@@ -400,7 +400,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 		$hasFFMpeg = Configs::getValueAsInt(TestConstants::CONFIG_HAS_FFMPEG);
 		Configs::set(TestConstants::CONFIG_HAS_FFMPEG, 0);
 
-		file_put_contents(storage_path('logs/error.log'), '');
+		file_put_contents(storage_path('logs/errors.log'), '');
 
 		$response = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_GAMING_VIDEO)
