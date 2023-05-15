@@ -8,8 +8,8 @@ use App\Contracts\Versions\VersionControl;
 use App\Facades\Helpers;
 use App\Metadata\Versions\Remote\GitCommits;
 use App\Metadata\Versions\Remote\GitTags;
-use App\Models\Logs;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
@@ -124,7 +124,7 @@ class GitHubVersion implements VersionControl, HasIsRelease
 		if (!File::exists($branch_path) &&
 			!File::isReadable($branch_path)) {
 			// @codeCoverageIgnoreStart
-			Logs::warning(__METHOD__, __LINE__, 'could not read ' . $branch_path);
+			Log::warning(__METHOD__ . ':' . __LINE__ . ' Could not read ' . $branch_path);
 
 			return false;
 			// @codeCoverageIgnoreEnd
@@ -199,7 +199,7 @@ class GitHubVersion implements VersionControl, HasIsRelease
 		if (!File::exists($commit_path) &&
 			!File::isReadable($commit_path)) {
 			// @codeCoverageIgnoreStart
-			Logs::warning(__METHOD__, __LINE__, 'could not read ' . $commit_path);
+			Log::warning(__METHOD__ . ':' . __LINE__ . ' Could not read ' . $commit_path);
 
 			return;
 			// @codeCoverageIgnoreEnd

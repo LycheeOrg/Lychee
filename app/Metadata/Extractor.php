@@ -8,10 +8,10 @@ use App\Exceptions\Handler;
 use App\Exceptions\MediaFileOperationException;
 use App\Image\Files\NativeLocalFile;
 use App\Models\Configs;
-use App\Models\Logs;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use PHPExif\Enum\ReaderType;
 use PHPExif\Reader\PhpExifReaderException;
 use PHPExif\Reader\Reader;
@@ -101,7 +101,7 @@ class Extractor
 			// don't give up yet, only log the event
 			Handler::reportSafely($e);
 			try {
-				Logs::notice(__METHOD__, __LINE__, 'Falling back to native adapter.');
+				Log::notice(__METHOD__ . ':' . __LINE__ . ' Falling back to native adapter.');
 				// Use Php native tools
 				$reader = Reader::factory(ReaderType::NATIVE);
 				$exif = $reader->read($file->getRealPath());
@@ -369,7 +369,7 @@ class Extractor
 		// We set values to null in case we're out of bounds
 		if ($metadata->latitude !== null || $metadata->longitude !== null) {
 			if ($metadata->latitude < -90 || $metadata->latitude > 90 || $metadata->longitude < -180 || $metadata->longitude > 180) {
-				Logs::notice(__METHOD__, __LINE__, 'Latitude/Longitude (' . $metadata->latitude . '/' . $metadata->longitude . ') out of bounds (needs to be between -90/90 and -180/180)');
+				Log::notice(__METHOD__ . ':' . __LINE__ . 'Latitude/Longitude (' . $metadata->latitude . '/' . $metadata->longitude . ') out of bounds (needs to be between -90/90 and -180/180)');
 				$metadata->latitude = null;
 				$metadata->longitude = null;
 			}
@@ -379,7 +379,7 @@ class Extractor
 		// We set values to null in case we're out of bounds
 		if ($metadata->altitude !== null) {
 			if ($metadata->altitude < -self::ABSOLUTE_ALTITUDE_BOUNDS || $metadata->altitude > self::ABSOLUTE_ALTITUDE_BOUNDS) {
-				Logs::notice(__METHOD__, __LINE__, 'Altitude (' . $metadata->altitude . ') out of bounds for database (needs to be between -999999.9999 and 999999.9999)');
+				Log::notice(__METHOD__ . ':' . __LINE__ . 'Altitude (' . $metadata->altitude . ') out of bounds for database (needs to be between -999999.9999 and 999999.9999)');
 				$metadata->altitude = null;
 			}
 		}
@@ -388,7 +388,7 @@ class Extractor
 		// We set values to null in case we're out of bounds
 		if ($metadata->imgDirection !== null) {
 			if ($metadata->imgDirection < 0 || $metadata->imgDirection > 360) {
-				Logs::notice(__METHOD__, __LINE__, 'GPSImgDirection (' . $metadata->imgDirection . ') out of bounds (needs to be between 0 and 360)');
+				Log::notice(__METHOD__ . ':' . __LINE__ . 'GPSImgDirection (' . $metadata->imgDirection . ') out of bounds (needs to be between 0 and 360)');
 				$metadata->imgDirection = null;
 			}
 		}

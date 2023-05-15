@@ -1,6 +1,5 @@
 <?php
 
-use App\ModelFunctions\LogFunctions;
 use Spatie\ImageOptimizer\Optimizers\Cwebp;
 use Spatie\ImageOptimizer\Optimizers\Gifsicle;
 use Spatie\ImageOptimizer\Optimizers\Jpegoptim;
@@ -60,5 +59,5 @@ return [
 	 * If set to `true` all output of the optimizer binaries will be appended to the default log.
 	 * You can also set this to a class that implements `Psr\Log\LoggerInterface`.
 	 */
-	'log_optimizer_activity' => LogFunctions::class,
+	'log_optimizer_activity' => true,
 ];

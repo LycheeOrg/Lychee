@@ -4,8 +4,8 @@ namespace App\Metadata\Json;
 
 use App\Contracts\JsonRequest;
 use App\Exceptions\Internal\JsonRequestFailedException;
-use App\Models\Logs;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use function Safe\file_get_contents;
 use function Safe\ini_get;
 
@@ -80,9 +80,9 @@ class JsonRequestFunctions implements JsonRequest
 
 			return $this->decodedJson;
 		} catch (JsonRequestFailedException $e) {
-			Logs::error(__METHOD__, __LINE__, $e->getMessage());
+			Log::error(__METHOD__ . ':' . __LINE__ . ' ' . $e->getMessage());
 		} catch (\JsonException $e) {
-			Logs::error(__METHOD__, __LINE__, $e->getMessage());
+			Log::error(__METHOD__ . ':' . __LINE__ . ' ' . $e->getMessage());
 		}
 		$this->clear_cache();
 

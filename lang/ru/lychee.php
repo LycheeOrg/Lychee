@@ -29,8 +29,6 @@ return [
 	'DIAGNOSTICS' => 'Диагностика',
 	'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
 	'LOGS' => 'Логи',
-	'CLEAN_LOGS' => 'Clean Noise',
-	'CLEAR' => 'Clear',
 	'SIGN_OUT' => 'Выход',
 	'UPDATE_AVAILABLE' => 'Доступно обновление!',
 	'MIGRATION_AVAILABLE' => 'Migration available!',

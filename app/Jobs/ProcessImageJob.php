@@ -11,7 +11,6 @@ use App\Image\Files\ProcessableJobFile;
 use App\Image\Files\TemporaryJobFile;
 use App\Models\Configs;
 use App\Models\JobHistory;
-use App\Models\Logs;
 use App\Models\Photo;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -19,6 +18,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
@@ -110,8 +110,8 @@ class ProcessImageJob implements ShouldQueue
 		if ($th->getCode() === 999) {
 			$this->release();
 		} else {
-			logger($th->getMessage());
-			Logs::error($th, __LINE__, __FILE__);
+			logger($th);
+			Log::error(__LINE__ . ':' . __FILE__ . ' ' . $th->getMessage(), $th->getTrace());
 		}
 	}
 }

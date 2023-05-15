@@ -12,7 +12,7 @@ return [
 	|
 	*/
 
-	'default' => 'log',
+	'default' => 'stack',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -46,10 +46,27 @@ return [
 	*/
 
 	'channels' => [
-		'log' => [
-			'path' => storage_path('logs/laravel.log'),
+		'stack' => [
+			'driver' => 'stack',
+			'channels' => ['single', 'daily'],
+		],
+
+		'single' => [
+			'path' => storage_path('logs/errors.log'),
 			'driver' => 'single',
+			'level' => 'error',
+		],
+
+		'daily' => [
+			'path' => storage_path('logs/daily.log'),
+			'driver' => 'daily',
 			'level' => 'debug',
+		],
+
+		'login' => [
+			'path' => storage_path('logs/login.log'),
+			'driver' => 'single',
+			'level' => 'info',
 		],
 	],
 ];

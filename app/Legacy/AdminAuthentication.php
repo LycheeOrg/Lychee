@@ -4,10 +4,10 @@ namespace App\Legacy;
 
 use App\Metadata\Versions\InstalledVersion;
 use App\Models\Configs;
-use App\Models\Logs;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AdminAuthentication
 {
@@ -45,7 +45,7 @@ class AdminAuthentication
 		// Admin User exists, so we check against it.
 		if ($adminUser !== null && Hash::check($username, $adminUser->username) && Hash::check($password, $adminUser->password)) {
 			Auth::login($adminUser);
-			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
+			Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' User (' . $username . ') has logged in from ' . $ip);
 
 			// update the admin username so we do not need to go through here anymore.
 			$adminUser->username = $username;
@@ -81,7 +81,7 @@ class AdminAuthentication
 			$adminUser->save();
 
 			Auth::login($adminUser);
-			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip . ' (legacy)');
+			Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' User (' . $username . ') has logged in from ' . $ip . ' (legacy)');
 
 			return true;
 		}

@@ -148,13 +148,6 @@ Route::post('/Diagnostics::get', [Administration\DiagnosticsController::class, '
 Route::post('/Diagnostics::getSize', [Administration\DiagnosticsController::class, 'getSize']);
 
 /**
- * LOGS.
- */
-Route::post('/Logs::list', [Administration\LogController::class, 'list']);
-Route::post('/Logs::clear', [Administration\LogController::class, 'clear']);
-Route::post('/Logs::clearNoise', [Administration\LogController::class, 'clearNoise']);
-
-/**
  * SETTINGS.
  */
 Route::post('/Settings::setSorting', [Administration\SettingsController::class, 'setSorting']);

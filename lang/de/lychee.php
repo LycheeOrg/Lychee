@@ -29,8 +29,6 @@ return [
 	'DIAGNOSTICS' => 'Diagnose',
 	'DIAGNOSTICS_GET_SIZE' => 'Speicherplatz-Nutzung abrufen',
 	'LOGS' => 'Logs anzeigen',
-	'CLEAN_LOGS' => 'Unnötiges aufräumen',
-	'CLEAR' => 'Leeren',
 	'SIGN_OUT' => 'Abmelden',
 	'UPDATE_AVAILABLE' => 'Update verfügbar!',
 	'MIGRATION_AVAILABLE' => 'Migration verfügbar!',

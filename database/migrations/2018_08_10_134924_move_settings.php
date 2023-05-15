@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\Logs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 return new class() extends Migration {
@@ -58,10 +58,10 @@ return new class() extends Migration {
 					}
 				}
 			} else {
-				Logs::notice(__METHOD__, __LINE__, 'We are already passed migration point, ' . __CLASS__ . ' will not be applied.');
+				Log::notice(__METHOD__ . ':' . __LINE__ . ' We are already passed migration point, ' . __CLASS__ . ' will not be applied.');
 			}
 		} else {
-			Logs::notice(__FUNCTION__, __LINE__, env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_settings does not exist!');
+			Log::notice(__FUNCTION__ . ':' . __LINE__ . ' ' . env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_settings does not exist!');
 		}
 	}
 
@@ -70,6 +70,6 @@ return new class() extends Migration {
 	 */
 	public function down(): void
 	{
-		Logs::warning(__METHOD__, __LINE__, 'There is no going back for ' . __CLASS__ . '! HUE HUE HUE');
+		Log::warning(__METHOD__ . ':' . __LINE__ . ' There is no going back for ' . __CLASS__ . '! HUE HUE HUE');
 	}
 };

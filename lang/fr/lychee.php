@@ -29,8 +29,6 @@ return [
 	'DIAGNOSTICS' => 'Diagnostiques',
 	'DIAGNOSTICS_GET_SIZE' => 'Calculer l’espace utilisé',
 	'LOGS' => 'Afficher les logs',
-	'CLEAN_LOGS' => 'Nettoyer le bruit',
-	'CLEAR' => 'Vider',
 	'SIGN_OUT' => 'Déconnexion',
 	'UPDATE_AVAILABLE' => 'Une mise-à-jour est disponible !',
 	'MIGRATION_AVAILABLE' => 'Une migration est disponible !',

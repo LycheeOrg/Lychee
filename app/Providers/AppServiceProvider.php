@@ -21,11 +21,14 @@ use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
+use App\Policies\SettingsPolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
+use Opcodes\LogViewer\Facades\LogViewer;
 use Safe\Exceptions\StreamException;
 use function Safe\stream_filter_register;
 
@@ -105,6 +108,15 @@ class AppServiceProvider extends ServiceProvider
 			// method several times and any subsequent attempt to register a
 			// filter for the same name anew will fail.
 		}
+
+		/**
+		 * Set up the Authorization layer for accessing Logs in LogViewer.
+		 */
+		LogViewer::auth(function ($request) {
+			// return true to allow viewing the Log Viewer.
+			// dd($request->user());
+			return Gate::check(SettingsPolicy::CAN_SEE_LOGS, Configs::class);
+		});
 	}
 
 	/**

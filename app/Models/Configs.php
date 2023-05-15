@@ -15,6 +15,7 @@ use App\Models\Extensions\ThrowsConsistentExceptions;
 use BackedEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Log;
 
 /**
  * App\Configs.
@@ -185,7 +186,7 @@ class Configs extends Model
 			/*
 			 * For some reason the $default is not returned above...
 			 */
-			Logs::notice(__METHOD__, __LINE__, $key . ' does not exist in config (local) !');
+			Log::error(__METHOD__ . ':' . __LINE__ . ' ' . $key . ' does not exist in config (local) !');
 
 			throw new ConfigurationKeyMissingException($key . ' does not exist in config!');
 		}

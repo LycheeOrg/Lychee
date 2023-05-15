@@ -23,8 +23,6 @@ if (config('app.force_https')) {
 
 Route::get('/phpinfo', [IndexController::class, 'phpinfo']);
 
-Route::get('/Logs', [LogController::class, 'view']);
-
 Route::get('/Jobs', [JobController::class, 'view']);
 
 Route::get('/Permissions', [DiagnosticsController::class, 'getFullAccessPermissions']);

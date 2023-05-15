@@ -29,8 +29,6 @@ return [
 	'DIAGNOSTICS' => '诊断',
 	'DIAGNOSTICS_GET_SIZE' => '请求空间占用信息',
 	'LOGS' => '查看日志',
-	'CLEAN_LOGS' => 'Clean Noise',
-	'CLEAR' => 'Clear',
 	'SIGN_OUT' => '注销登录',
 	'UPDATE_AVAILABLE' => '可用更新！',
 	'MIGRATION_AVAILABLE' => '可用迁移！',
