@@ -64,9 +64,11 @@ trait FixedQueryBuilderTrait
 		try {
 			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method
 			return parent::where($column, $operator, $value, $boolean);
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -86,9 +88,11 @@ trait FixedQueryBuilderTrait
 		try {
 			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method
 			return parent::whereIn($column, $values, $boolean, $not);
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -107,9 +111,11 @@ trait FixedQueryBuilderTrait
 		try {
 			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method
 			return parent::whereNotIn($column, $values, $boolean);
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -126,9 +132,11 @@ trait FixedQueryBuilderTrait
 		try {
 			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method
 			return parent::select($columns);
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -150,9 +158,11 @@ trait FixedQueryBuilderTrait
 		try {
 			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method
 			return parent::join($table, $first, $operator, $second, $type, $where);
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -175,9 +185,11 @@ trait FixedQueryBuilderTrait
 		try {
 			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method
 			return parent::joinSub($query, $as, $first, $operator, $second, $type, $where);
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -197,9 +209,11 @@ trait FixedQueryBuilderTrait
 		try {
 			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method
 			return parent::leftJoin($table, $first, $operator, $second);
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -223,9 +237,11 @@ trait FixedQueryBuilderTrait
 			//
 			// @phpstan-ignore-next-line
 			return parent::orderBy($column, $direction);
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -242,9 +258,11 @@ trait FixedQueryBuilderTrait
 		try {
 			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method
 			return parent::addSelect($column);
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -263,8 +281,10 @@ trait FixedQueryBuilderTrait
 		try {
 			// @phpstan-ignore-next-line; due to the Larastan rules set PhpStan falsely assumes we are calling a static method
 			return parent::orWhere($column, $operator, $value);
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 }
