@@ -74,7 +74,7 @@ class AppServiceProvider extends ServiceProvider
 		if (config('database.db_log_sql', false) === true) {
 			DB::listen(function ($query) {
 				$msg = $query->sql . ' [' . implode(', ', $query->bindings) . ']';
-				Log::info($msg);
+				Log::debug($msg);
 			});
 		}
 

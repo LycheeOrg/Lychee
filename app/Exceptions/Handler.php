@@ -82,7 +82,7 @@ class Handler extends ExceptionHandler
 		PhotoSkippedException::class => SeverityType::WARNING,
 		ImportCancelledException::class => SeverityType::NOTICE,
 		ConfigurationException::class => SeverityType::NOTICE,
-		LocationDecodingFailed::class => SeverityType::WARNING,
+		LocationDecodingFailed::class => SeverityType::ERROR,
 	];
 
 	/**

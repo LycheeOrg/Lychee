@@ -48,21 +48,39 @@ return [
 	'channels' => [
 		'stack' => [
 			'driver' => 'stack',
-			'channels' => ['single', 'daily'],
+			'channels' => ['debug-daily', 'notice', 'warning', 'error', ],
 		],
 
-		'single' => [
+		// By the way...
+		'notice' => [
+			'path' => storage_path('logs/notice.log'),
+			'driver' => 'daily',
+			'level' => 'notice',
+		],
+
+		// Something may have gone wrong
+		'warning' => [
+			'path' => storage_path('logs/warning.log'),
+			'driver' => 'single',
+			'level' => 'warning',
+		],
+
+		// Something went wrong
+		'error' => [
 			'path' => storage_path('logs/errors.log'),
 			'driver' => 'single',
 			'level' => 'error',
 		],
 
-		'daily' => [
+		// Whatever debug log is needed
+		// Nostly SQL requests
+		'debug-daily' => [
 			'path' => storage_path('logs/daily.log'),
 			'driver' => 'daily',
 			'level' => 'debug',
 		],
 
+		// Specific channel to check who is accessing Lychee
 		'login' => [
 			'path' => storage_path('logs/login.log'),
 			'driver' => 'single',

@@ -186,7 +186,7 @@ class Configs extends Model
 			/*
 			 * For some reason the $default is not returned above...
 			 */
-			Log::error(__METHOD__ . ':' . __LINE__ . ' ' . $key . ' does not exist in config (local) !');
+			Log::critical(__METHOD__ . ':' . __LINE__ . ' ' . $key . ' does not exist in config (local) !');
 
 			throw new ConfigurationKeyMissingException($key . ' does not exist in config!');
 		}
