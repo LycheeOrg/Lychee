@@ -33,9 +33,7 @@ class SetProtectionPolicy extends Action
 		$active_permissions = $album->public_permissions;
 
 		if (!$protectionPolicy->is_public) {
-			$album->public_permissions = null;
 			$active_permissions?->delete();
-			$album->save();
 
 			return;
 		}
