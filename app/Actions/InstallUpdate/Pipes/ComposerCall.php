@@ -5,7 +5,7 @@ namespace App\Actions\InstallUpdate\Pipes;
 use App\Facades\Helpers;
 use App\Metadata\Versions\InstalledVersion;
 use App\Models\Configs;
-use App\Models\Logs;
+use Illuminate\Support\Facades\Log;
 use function Safe\chdir;
 use function Safe\exec;
 use function Safe\putenv;
@@ -28,7 +28,7 @@ class ComposerCall extends AbstractUpdateInstallerPipe
 		if (Helpers::isExecAvailable()) {
 			if (Configs::getValueAsBool('apply_composer_update')) {
 				// @codeCoverageIgnoreStart
-				Logs::warning(__METHOD__, __LINE__, 'Composer is called on update.');
+				Log::warning(__METHOD__ . ':' . __LINE__ . ' Composer is called on update.');
 
 				// Composer\Factory::getHomeDir() method
 				// needs COMPOSER_HOME environment variable set

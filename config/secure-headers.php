@@ -478,7 +478,6 @@ return [
 			],
 
 			/* followings are only work for `script` and `style` related directives */
-
 			'unsafe-inline' => false,
 
 			'unsafe-eval' => false,
@@ -513,6 +512,7 @@ return [
 					// upload.check()
 					'CL4mGy9ZhHM+PkLDZsWVuM25kEFBv3FXlmWe/O9Unmc=',
 
+					'UGZMnMEgbggabrnTmjaxzU2xHCzzqWszgOgN/xRyKn4=',
 					/*
 	document.addEventListener("DOMContentLoaded", function(event) {
 		document.querySelector("form").addEventListener("submit", function(e){

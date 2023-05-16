@@ -29,12 +29,5 @@ class CommandsTest extends AbstractTestCase
 		$this->artisan('lychee:exif_lens')
 			->expectsOutput('No pictures requires EXIF updates.')
 			->assertExitCode(-1);
-
-		$this->artisan('lychee:logs')
-			->assertExitCode(0);
-
-		$this->artisan('lychee:logs', ['action' => 'clean'])
-			->expectsOutput('Log table has been emptied.')
-			->assertExitCode(0);
 	}
 }

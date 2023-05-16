@@ -29,8 +29,6 @@ return [
 	'DIAGNOSTICS' => 'Diagnostika',
 	'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
 	'LOGS' => 'Protokoly',
-	'CLEAN_LOGS' => 'Clean Noise',
-	'CLEAR' => 'Clear',
 	'SIGN_OUT' => 'Odhlásit se',
 	'UPDATE_AVAILABLE' => 'Update je k dispozici!',
 	'MIGRATION_AVAILABLE' => 'Migration available!',

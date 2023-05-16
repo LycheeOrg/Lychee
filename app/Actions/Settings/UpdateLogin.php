@@ -8,10 +8,10 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Models\Configs;
-use App\Models\Logs;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class UpdateLogin
 {
@@ -36,7 +36,7 @@ class UpdateLogin
 		$user = Auth::user() ?? throw new UnauthenticatedException();
 
 		if (!Hash::check($oldPassword, $user->password)) {
-			Logs::notice(__METHOD__, __LINE__, sprintf('User (%s) tried to change their identity from %s', $user->username, $ip));
+			Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . sprintf('User (%s) tried to change their identity from %s', $user->username, $ip));
 
 			throw new UnauthenticatedException('Previous password is invalid');
 		}
@@ -69,12 +69,12 @@ class UpdateLogin
 	private function updateUsername(User &$user, string $username, string $ip): void
 	{
 		if (User::query()->where('username', '=', $username)->where('id', '!=', $user->id)->count() !== 0) {
-			Logs::notice(__METHOD__, __LINE__, sprintf('User (%s) tried to change their identity to (%s) from %s', $user->username, $username, $ip));
+			Log::channel('login')->warning(__METHOD__ . ':' . __LINE__ . sprintf('User (%s) tried to change their identity to (%s) from %s', $user->username, $username, $ip));
 			throw new ConflictingPropertyException('Username already exists.');
 		}
 
 		if ($username !== $user->username) {
-			Logs::notice(__METHOD__, __LINE__, sprintf('User (%s) changed their identity for (%s) from %s', $user->username, $username, $ip));
+			Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . sprintf('User (%s) changed their identity for (%s) from %s', $user->username, $username, $ip));
 			$user->username = $username;
 		}
 	}

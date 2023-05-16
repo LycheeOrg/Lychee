@@ -38,7 +38,7 @@ trait RequiresEmptyPhotos
 		DB::table('size_variants')->delete();
 		DB::table('photos')->delete();
 		DB::table('jobs_history')->delete();
-		self::cleanPublicFolders();
+		// self::cleanPublicFolders();
 	}
 
 	/**

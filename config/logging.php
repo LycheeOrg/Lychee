@@ -12,7 +12,7 @@ return [
 	|
 	*/
 
-	'default' => 'log',
+	'default' => 'stack',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -46,10 +46,45 @@ return [
 	*/
 
 	'channels' => [
-		'log' => [
-			'path' => storage_path('logs/laravel.log'),
+		'stack' => [
+			'driver' => 'stack',
+			'channels' => ['debug-daily', 'notice', 'warning', 'error', ],
+		],
+
+		// By the way...
+		'notice' => [
+			'path' => storage_path('logs/notice.log'),
+			'driver' => 'daily',
+			'level' => 'notice',
+		],
+
+		// Something may have gone wrong
+		'warning' => [
+			'path' => storage_path('logs/warning.log'),
 			'driver' => 'single',
+			'level' => 'warning',
+		],
+
+		// Something went wrong
+		'error' => [
+			'path' => storage_path('logs/errors.log'),
+			'driver' => 'single',
+			'level' => 'error',
+		],
+
+		// Whatever debug log is needed
+		// Nostly SQL requests
+		'debug-daily' => [
+			'path' => storage_path('logs/daily.log'),
+			'driver' => 'daily',
 			'level' => 'debug',
+		],
+
+		// Specific channel to check who is accessing Lychee
+		'login' => [
+			'path' => storage_path('logs/login.log'),
+			'driver' => 'single',
+			'level' => 'info',
 		],
 	],
 ];

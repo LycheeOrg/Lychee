@@ -11,10 +11,10 @@ use App\Exceptions\VersionControlException;
 use App\Http\Requests\Session\LoginRequest;
 use App\Http\Resources\InitResource;
 use App\Legacy\AdminAuthentication;
-use App\Models\Logs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
 class SessionController extends Controller
@@ -59,13 +59,13 @@ class SessionController extends Controller
 		}
 
 		if (Auth::attempt(['username' => $request->username(), 'password' => $request->password()])) {
-			Logs::notice(__METHOD__, __LINE__, 'User (' . $request->username() . ') has logged in from ' . $request->ip());
+			Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' -- User (' . $request->username() . ') has logged in from ' . $request->ip());
 
 			return;
 		}
 
 		// TODO: We could avoid this separate log entry and let the exception handler to all the logging, if we would add "context" (see Laravel docs) to those exceptions which need it.
-		Logs::error(__METHOD__, __LINE__, 'User (' . $request->username() . ') has tried to log in from ' . $request->ip());
+		Log::channel('login')->error(__METHOD__ . ':' . __LINE__ . ' -- User (' . $request->username() . ') has tried to log in from ' . $request->ip());
 
 		throw new UnauthenticatedException('Unknown user or invalid password');
 	}
@@ -77,6 +77,9 @@ class SessionController extends Controller
 	 */
 	public function logout(): void
 	{
+		/** @var \App\Models\User $user */
+		$user = Auth::user();
+		Log::channel('login')->info(__METHOD__ . ':' . __LINE__ . ' -- User (' . $user->username . ') has logged out.');
 		Auth::logout();
 		Session::flush();
 	}

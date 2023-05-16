@@ -29,8 +29,6 @@ return [
 	'DIAGNOSTICS' => 'Informacje techniczne',
 	'DIAGNOSTICS_GET_SIZE' => 'Analiza miejsca na dysku',
 	'LOGS' => 'Logi',
-	'CLEAN_LOGS' => 'Clean Noise',
-	'CLEAR' => 'Clear',
 	'SIGN_OUT' => 'Wyloguj',
 	'UPDATE_AVAILABLE' => 'Dostępna aktualizacja!',
 	'MIGRATION_AVAILABLE' => 'Dostępna migracja!',
