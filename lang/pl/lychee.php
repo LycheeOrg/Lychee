@@ -334,7 +334,6 @@ return [
 	'SORT_ALBUM_SELECT_1' => 'data utworzenia',
 	'SORT_ALBUM_SELECT_2' => 'tytuł',
 	'SORT_ALBUM_SELECT_3' => 'opis',
-	'SORT_ALBUM_SELECT_4' => 'publiczny',
 	'SORT_ALBUM_SELECT_5' => 'Latest Take Date',
 	'SORT_ALBUM_SELECT_6' => 'Oldest Take Date',
 

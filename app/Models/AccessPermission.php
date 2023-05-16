@@ -77,6 +77,8 @@ class AccessPermission extends Model
 	 * allow these properties to be mass assigned.
 	 */
 	protected $fillable = [
+		APC::USER_ID,
+		APC::BASE_ALBUM_ID,
 		APC::IS_LINK_REQUIRED,
 		APC::GRANTS_FULL_PHOTO_ACCESS,
 		APC::GRANTS_DOWNLOAD,

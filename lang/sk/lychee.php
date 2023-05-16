@@ -334,7 +334,6 @@ return [
 	'SORT_ALBUM_SELECT_1' => 'Čas vytvorenia',
 	'SORT_ALBUM_SELECT_2' => 'Titul',
 	'SORT_ALBUM_SELECT_3' => 'Popis',
-	'SORT_ALBUM_SELECT_4' => 'Verejný',
 	'SORT_ALBUM_SELECT_5' => 'Najnovšia zmena',
 	'SORT_ALBUM_SELECT_6' => 'Najstaršia zmena',
 

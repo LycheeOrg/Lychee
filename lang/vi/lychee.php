@@ -334,7 +334,6 @@ return [
 	'SORT_ALBUM_SELECT_1' => 'Lúc tạo album',
 	'SORT_ALBUM_SELECT_2' => 'Tên',
 	'SORT_ALBUM_SELECT_3' => 'Mô tả',
-	'SORT_ALBUM_SELECT_4' => 'Chia sẻ công cộng',
 	'SORT_ALBUM_SELECT_5' => 'Lần chụp gần nhất',
 	'SORT_ALBUM_SELECT_6' => 'Lần chụp lâu nhất',
 

@@ -334,7 +334,6 @@ return [
 	'SORT_ALBUM_SELECT_1' => '創建時間',
 	'SORT_ALBUM_SELECT_2' => '標題',
 	'SORT_ALBUM_SELECT_3' => '描述',
-	'SORT_ALBUM_SELECT_4' => '公開',
 	'SORT_ALBUM_SELECT_5' => '最新',
 	'SORT_ALBUM_SELECT_6' => '最老',
 

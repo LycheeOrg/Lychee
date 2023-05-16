@@ -334,7 +334,6 @@ return [
 	'SORT_ALBUM_SELECT_1' => 'skapelsetid',
 	'SORT_ALBUM_SELECT_2' => 'titel',
 	'SORT_ALBUM_SELECT_3' => 'beskrivning',
-	'SORT_ALBUM_SELECT_4' => 'publikt',
 	'SORT_ALBUM_SELECT_5' => 'senaste datum',
 	'SORT_ALBUM_SELECT_6' => 'äldsta datum',
 

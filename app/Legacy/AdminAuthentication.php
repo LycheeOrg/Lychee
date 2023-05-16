@@ -30,6 +30,7 @@ class AdminAuthentication
 		$db_version_number = $installed_version->getVersion();
 
 		// For version up to 4.0.8 the admin password is stored in the settings
+		/** @codeCoverageIgnore */
 		if ($db_version_number->toInteger() <= 40008) {
 			return self::logAsAdminFromConfig($username, $password, $ip);
 		}
@@ -65,6 +66,8 @@ class AdminAuthentication
 	 * @param string $ip
 	 *
 	 * @return bool
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public static function logAsAdminFromConfig(string $username, string $password, string $ip): bool
 	{

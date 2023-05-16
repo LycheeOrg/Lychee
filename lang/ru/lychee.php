@@ -334,7 +334,6 @@ return [
 	'SORT_ALBUM_SELECT_1' => 'даты создания',
 	'SORT_ALBUM_SELECT_2' => 'заголовка',
 	'SORT_ALBUM_SELECT_3' => 'описания',
-	'SORT_ALBUM_SELECT_4' => 'доступности',
 	'SORT_ALBUM_SELECT_5' => 'свежайшего фото',
 	'SORT_ALBUM_SELECT_6' => 'старейшего фото',
 
