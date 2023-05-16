@@ -336,7 +336,6 @@ return [
 	'SORT_ALBUM_SELECT_1' => 'Ημερομηνία Δημιουργίας',
 	'SORT_ALBUM_SELECT_2' => 'Τίτλος',
 	'SORT_ALBUM_SELECT_3' => 'Περιγραφή',
-	'SORT_ALBUM_SELECT_4' => 'Δημόσιο',
 	'SORT_ALBUM_SELECT_5' => 'Νεότερη Ημερομηνία Λήψης',
 	'SORT_ALBUM_SELECT_6' => 'Παλαιότερη Ημερομηνία Λήψης',
 
