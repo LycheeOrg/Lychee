@@ -114,7 +114,6 @@ class AppServiceProvider extends ServiceProvider
 		 * Set up the Authorization layer for accessing Logs in LogViewer.
 		 */
 		LogViewer::auth(function ($request) {
-
 			// We must disable unsafe-eval because vue3 used by log-viewer requires it.
 			// We only do that in that specific case. It is disabled by default otherwise.
 			config(['secure-headers.csp.script-src.unsafe-eval' => true]);
