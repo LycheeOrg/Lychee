@@ -118,6 +118,12 @@ class AppServiceProvider extends ServiceProvider
 			// We only do that in that specific case. It is disabled by default otherwise.
 			config(['secure-headers.csp.script-src.unsafe-eval' => true]);
 
+			// Allow to bypass when debug is ON and when env is dev
+			// At this point, it is no longer our fault if the Lychee admin have their logs publically accessible.
+			if (config('app.debug', false) === true && config('app.env', 'production') === 'dev') {
+				return true;
+			}
+
 			// return true to allow viewing the Log Viewer.
 			return Auth::authenticate() !== null && Gate::check(SettingsPolicy::CAN_SEE_LOGS, Configs::class);
 		});
