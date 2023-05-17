@@ -15,6 +15,7 @@ namespace Tests\Feature;
 use App\Models\Configs;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use function Safe\date;
 use function Safe\file_get_contents;
 use function Safe\file_put_contents;
 use Tests\AbstractTestCase;
