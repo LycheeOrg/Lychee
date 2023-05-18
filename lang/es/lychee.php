@@ -29,8 +29,6 @@ return [
 	'DIAGNOSTICS' => 'Diagnóstico',
 	'DIAGNOSTICS_GET_SIZE' => 'Pedir uso de espacio',
 	'LOGS' => 'Mostrar Registros',
-	'CLEAN_LOGS' => 'Limpiar Ruido',
-	'CLEAR' => 'Limpiar',
 	'SIGN_OUT' => 'Cerrar Sesión',
 	'UPDATE_AVAILABLE' => '¡Actualización disponible!',
 	'MIGRATION_AVAILABLE' => 'Migración disponible!',

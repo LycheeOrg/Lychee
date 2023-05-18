@@ -10,7 +10,6 @@ use App\Exceptions\Handlers\AdminSetterHandler;
 use App\Exceptions\Handlers\InstallationHandler;
 use App\Exceptions\Handlers\MigrationHandler;
 use App\Exceptions\Handlers\NoEncryptionKey;
-use App\Models\Logs;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Container\Container;
@@ -18,6 +17,7 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Request;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
@@ -82,7 +82,7 @@ class Handler extends ExceptionHandler
 		PhotoSkippedException::class => SeverityType::WARNING,
 		ImportCancelledException::class => SeverityType::NOTICE,
 		ConfigurationException::class => SeverityType::NOTICE,
-		LocationDecodingFailed::class => SeverityType::WARNING,
+		LocationDecodingFailed::class => SeverityType::ERROR,
 	];
 
 	/**
@@ -383,15 +383,14 @@ class Handler extends ExceptionHandler
 
 		do {
 			$cause = $this->findCause($e);
-
 			if (count($cause) === 2) {
-				Logs::log($severity, $cause[1]->getMethodBeautified(), $cause[1]->getLine(), $e->getMessage() . '; caused by');
+				Log::log($severity->value, $cause[1]->getMethodBeautified() . ':' . $cause[1]->getLine() . ' ' . $e->getMessage() . '; caused by');
 			}
 
 			if ($e->getPrevious() !== null) {
-				Logs::log($severity, $cause[0]->getMethodBeautified(), $cause[0]->getLine(), $e->getMessage() . '; caused by');
+				Log::log($severity->value, $cause[0]->getMethodBeautified() . ':' . $cause[0]->getLine() . ' ' . $e->getMessage() . '; caused by');
 			} else {
-				Logs::log($severity, $cause[0]->getMethodBeautified(), $cause[0]->getLine(), $e->getMessage());
+				Log::log($severity->value, $cause[0]->getMethodBeautified() . ':' . $cause[0]->getLine() . ' ' . $e->getMessage());
 			}
 		} while ($e = $e->getPrevious());
 	}

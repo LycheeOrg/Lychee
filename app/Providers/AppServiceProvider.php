@@ -21,11 +21,15 @@ use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
+use App\Policies\SettingsPolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
+use Opcodes\LogViewer\Facades\LogViewer;
 use Safe\Exceptions\StreamException;
 use function Safe\stream_filter_register;
 
@@ -70,7 +74,7 @@ class AppServiceProvider extends ServiceProvider
 		if (config('database.db_log_sql', false) === true) {
 			DB::listen(function ($query) {
 				$msg = $query->sql . ' [' . implode(', ', $query->bindings) . ']';
-				Log::info($msg);
+				Log::debug($msg);
 			});
 		}
 
@@ -105,6 +109,24 @@ class AppServiceProvider extends ServiceProvider
 			// method several times and any subsequent attempt to register a
 			// filter for the same name anew will fail.
 		}
+
+		/**
+		 * Set up the Authorization layer for accessing Logs in LogViewer.
+		 */
+		LogViewer::auth(function ($request) {
+			// We must disable unsafe-eval because vue3 used by log-viewer requires it.
+			// We only do that in that specific case. It is disabled by default otherwise.
+			config(['secure-headers.csp.script-src.unsafe-eval' => true]);
+
+			// Allow to bypass when debug is ON and when env is dev
+			// At this point, it is no longer our fault if the Lychee admin have their logs publically accessible.
+			if (config('app.debug', false) === true && config('app.env', 'production') === 'dev') {
+				return true;
+			}
+
+			// return true to allow viewing the Log Viewer.
+			return Auth::authenticate() !== null && Gate::check(SettingsPolicy::CAN_SEE_LOGS, Configs::class);
+		});
 	}
 
 	/**

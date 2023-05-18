@@ -29,8 +29,6 @@ return [
 	'DIAGNOSTICS' => 'Diagnostics',
 	'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
 	'LOGS' => 'Laat logs zien',
-	'CLEAN_LOGS' => 'Clean Noise',
-	'CLEAR' => 'Clear',
 	'SIGN_OUT' => 'Log uit',
 	'UPDATE_AVAILABLE' => 'Update beschikbaar!',
 	'MIGRATION_AVAILABLE' => 'Migration available!',

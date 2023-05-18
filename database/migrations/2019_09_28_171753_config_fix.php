@@ -3,9 +3,9 @@
 /** @noinspection PhpUndefinedClassInspection */
 
 use App\Models\Configs;
-use App\Models\Logs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 return new class() extends Migration {
@@ -60,7 +60,7 @@ return new class() extends Migration {
 		try {
 			DB::table('configs')->whereNotIn('key', $keys)->delete();
 		} catch (Exception $e) {
-			Logs::warning(__FUNCTION__, __LINE__, 'Something weird happened.');
+			Log::warning(__FUNCTION__ . ':' . __LINE__ . ' Something weird happened.');
 		}
 	}
 
@@ -565,6 +565,6 @@ return new class() extends Migration {
 	 */
 	public function down(): void
 	{
-		Logs::warning(__METHOD__, __LINE__, 'There is no going back for ' . __CLASS__ . '! HUE HUE HUE');
+		Log::warning(__METHOD__ . ':' . __LINE__ . 'There is no going back for ' . __CLASS__ . '! HUE HUE HUE');
 	}
 };

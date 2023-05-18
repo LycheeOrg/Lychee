@@ -29,8 +29,6 @@ return [
 	'DIAGNOSTICS' => 'Διαγνωστικά',
 	'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
 	'LOGS' => 'Εμφάνιση Καταγραφών',
-	'CLEAN_LOGS' => 'Clean Noise',
-	'CLEAR' => 'Clear',
 	'SIGN_OUT' => 'Αποσύνδεση',
 	'UPDATE_AVAILABLE' => 'Διαθέσιμη Ενημέρωση!',
 	'MIGRATION_AVAILABLE' => 'Migration available!',

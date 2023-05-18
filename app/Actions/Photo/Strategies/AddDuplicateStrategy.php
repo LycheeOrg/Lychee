@@ -5,9 +5,9 @@ namespace App\Actions\Photo\Strategies;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\PhotoResyncedException;
 use App\Exceptions\PhotoSkippedException;
-use App\Models\Logs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Log;
 
 class AddDuplicateStrategy extends AbstractAddStrategy
 {
@@ -30,7 +30,7 @@ class AddDuplicateStrategy extends AbstractAddStrategy
 		if ($this->parameters->importMode->shallResyncMetadata()) {
 			$this->hydrateMetadata();
 			if ($this->photo->isDirty()) {
-				Logs::notice(__METHOD__, __LINE__, 'Updating metadata of existing photo.');
+				Log::notice(__METHOD__ . ':' . __LINE__ . ' Updating metadata of existing photo.');
 				$this->photo->save();
 				$hasBeenReSynced = true;
 			}

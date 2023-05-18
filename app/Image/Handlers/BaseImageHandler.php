@@ -11,7 +11,7 @@ use App\Image\Files\FlysystemFile;
 use App\Image\Files\NativeLocalFile;
 use App\Image\StreamStat;
 use App\Models\Configs;
-use App\Models\Logs;
+use Illuminate\Support\Facades\Log;
 use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 abstract class BaseImageHandler implements ImageHandlerInterface
@@ -63,7 +63,7 @@ abstract class BaseImageHandler implements ImageHandlerInterface
 
 				return $collectStatistics ? StreamStat::createFromLocalFile($localFile) : null;
 			} else {
-				Logs::warning(__METHOD__, __LINE__, 'Skipping lossless optimization; optimization is requested by configuration but only supported for local files');
+				Log::warning(__METHOD__ . ':' . __LINE__ . ' Skipping lossless optimization; optimization is requested by configuration but only supported for local files');
 
 				return null;
 			}
