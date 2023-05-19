@@ -3,6 +3,7 @@
 composer:
 	rm -r vendor  2> /dev/null || true
 	composer install --prefer-dist --no-dev
+	php artisan vendor:publish --tag=log-viewer-asset
 
 dist-gen: clean composer
 	@echo "packaging..."
@@ -19,6 +20,7 @@ dist-gen: clean composer
 	@cp -r composer-cache                   Lychee
 	@cp -r database                         Lychee
 	@cp -r public/dist                      Lychee/public
+	@cp -r public/vendor                    Lychee/public
 	@cp -r public/installer                 Lychee/public
 	@cp -r public/img/*                     Lychee/public/img
 	@cp -r public/.htaccess                 Lychee/public
