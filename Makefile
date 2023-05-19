@@ -20,6 +20,7 @@ dist-gen: clean composer
 	@cp -r composer-cache                   Lychee
 	@cp -r database                         Lychee
 	@cp -r public/dist                      Lychee/public
+	@cp -r public/vendor                    Lychee/vendor
 	@cp -r public/installer                 Lychee/public
 	@cp -r public/img/*                     Lychee/public/img
 	@cp -r public/.htaccess                 Lychee/public
