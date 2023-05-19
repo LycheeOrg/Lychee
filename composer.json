@@ -104,7 +104,8 @@
     "scripts": {
         "post-install-cmd": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
-            "@php artisan key:generate --no-override"
+            "@php artisan key:generate --no-override",
+            "@php artisan vendor:publish --tag=log-viewer-assets"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
