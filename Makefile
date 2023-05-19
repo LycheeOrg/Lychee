@@ -3,6 +3,7 @@
 composer:
 	rm -r vendor  2> /dev/null || true
 	composer install --prefer-dist --no-dev
+	php artisan vendor:publish --tag=log-viewer-asset
 
 dist-gen: clean composer
 	@echo "packaging..."
