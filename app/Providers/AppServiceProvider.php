@@ -120,6 +120,8 @@ class AppServiceProvider extends ServiceProvider
 			// We only do that in that specific case. It is disabled by default otherwise.
 			config(['secure-headers.csp.script-src.unsafe-eval' => true]);
 			config(['secure-headers.csp.script-src.unsafe-inline' => true]);
+			config(['secure-headers.csp.script-src.unsafe-inline' => true]);
+			config(['secure-headers.csp.script-src.hashes.sha256' => []]);
 
 			// Allow to bypass when debug is ON and when env is dev
 			// At this point, it is no longer our fault if the Lychee admin have their logs publically accessible.
