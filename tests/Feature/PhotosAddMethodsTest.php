@@ -214,6 +214,24 @@ class PhotosAddMethodsTest extends BasePhotoTest
 		]]);
 	}
 
+	public function testImportFromUrlWithoutExtension(): void
+	{
+		$response = $this->photos_tests->importFromUrl([TestConstants::SAMPLE_DOWNLOAD_JPG_WITHOUT_EXTENSION]);
+
+		$response->assertJson([[
+			'album_id' => null,
+			'title' => 'mongolia',
+			'type' => TestConstants::MIME_TYPE_IMG_JPEG,
+			'size_variants' => [
+				'original' => [
+					'width' => 1280,
+					'height' => 850,
+					'filesize' => 201316,
+				],
+			],
+		]]);
+	}
+
 	/**
 	 * Test import from URL of a supported raw image.
 	 *

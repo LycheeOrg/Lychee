@@ -17,6 +17,7 @@ class TestConstants
 	public const MIME_TYPE_VID_QUICKTIME = 'video/quicktime';
 
 	public const SAMPLE_DOWNLOAD_JPG = 'https://github.com/LycheeOrg/Lychee/raw/master/tests/Samples/mongolia.jpeg';
+	public const SAMPLE_DOWNLOAD_JPG_WITHOUT_EXTENSION = 'https://github.com/LycheeOrg/Lychee/raw/master/tests/Samples/mongolia';
 	public const SAMPLE_DOWNLOAD_TIFF = 'https://github.com/LycheeOrg/Lychee/raw/master/tests/Samples/tiff.tif';
 
 	public const SAMPLE_FILE_AARHUS = 'tests/Samples/aarhus.jpg';
