@@ -27,12 +27,6 @@ class DownloadedFile extends TemporaryLocalFile
 	public function __construct(string $url)
 	{
 		try {
-			/** @var string $path because we provide directly PHP_URL_PATH */
-			$path = parse_url($url, PHP_URL_PATH);
-			$basename = pathinfo($path, PATHINFO_FILENAME);
-			$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
-			parent::__construct($extension, $basename);
-
 			$downloadStream = fopen($url, 'rb');
 			$downloadStreamData = stream_get_meta_data($downloadStream);
 			// Find the server-side MIME type; the HTTP headers are part of
@@ -46,10 +40,26 @@ class DownloadedFile extends TemporaryLocalFile
 					PREG_UNMATCHED_AS_NULL
 				);
 				if (count($matches) === 2 && $matches[1]) {
-					$this->originalMimeType = $matches[1];
+					$originalMimeType = $matches[1];
 					break;
 				}
 			}
+			/** @var string $path because we provide directly PHP_URL_PATH */
+			$path = parse_url($url, PHP_URL_PATH);
+			$basename = pathinfo($path, PATHINFO_FILENAME);
+			$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
+
+			// When there's no extension, use a default one based on Mime type
+			if ($extension === '.' && isset($originalMimeType)) {
+				$extension = '.' . self::getDefaultFileExtensionForMimeType($originalMimeType);
+			}
+
+			parent::__construct($extension, $basename);
+
+			if (isset($originalMimeType)) {
+				$this->originalMimeType = $originalMimeType;
+			}
+
 			$this->write($downloadStream);
 			fclose($downloadStream);
 		} catch (\ErrorException|PcreException $e) {

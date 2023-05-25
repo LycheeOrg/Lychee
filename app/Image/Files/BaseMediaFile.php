@@ -76,6 +76,24 @@ abstract class BaseMediaFile extends AbstractBinaryBlob implements MediaFile
 		'application/octet-stream', // Some mp4 files; will be corrected by the metadata extractor
 	];
 
+	public const MIME_TYPES_TO_FILE_EXTENSIONS = [
+		'image/gif' => '.gif',
+		'image/jpeg' => 'jpg',
+		'image/png' => '.png',
+		'image/webp' => '.webp',
+		'video/mp4' => '.mp4',
+		'video/mpeg' => '.mpg',
+		'image/x-tga' => '.mpg',
+		'video/ogg' => '.ogv',
+		'video/webm' => '.webm',
+		'video/quicktime' => '.mov',
+		'video/x-ms-asf' => '.wmv',
+		'video/x-ms-wmv' => '.wmv',
+		'video/x-msvideo' => '.avi',
+		'video/x-m4v' => '.avi',
+		'application/octet-stream' => '.mp4',
+	];
+
 	/** @var string[] the accepted raw file extensions minus supported extensions */
 	private static array $cachedAcceptedRawFileExtensions = [];
 
@@ -324,6 +342,22 @@ abstract class BaseMediaFile extends AbstractBinaryBlob implements MediaFile
 	{
 		if (!self::isSupportedOrAcceptedFileExtension($extension)) {
 			throw new MediaFileUnsupportedException(MediaFileUnsupportedException::DEFAULT_MESSAGE . ' (bad extension: ' . $extension . ')');
+		}
+	}
+
+	/**
+	 * Returns the default file extension for the given MIME type or an empty string if there is no default extension.
+	 *
+	 * @param string $mimeType a MIME type
+	 *
+	 * @return string the default file extension for the given MIME type
+	 */
+	public static function getDefaultFileExtensionForMimeType(string $mimeType): string
+	{
+		if (array_key_exists(strtolower($mimeType), self::MIME_TYPES_TO_FILE_EXTENSIONS)) {
+			return self::MIME_TYPES_TO_FILE_EXTENSIONS[strtolower($mimeType)];
+		} else {
+			return '';
 		}
 	}
 }
