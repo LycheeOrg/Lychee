@@ -6,6 +6,7 @@ use App\Actions\Photo\Create;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\Exceptions\Handler;
 use App\Exceptions\MassImportException;
+use App\Image\Files\BaseMediaFile;
 use App\Image\Files\DownloadedFile;
 use App\Models\Album;
 use App\Models\Configs;
@@ -13,6 +14,7 @@ use App\Models\Photo;
 use Illuminate\Support\Collection;
 use Safe\Exceptions\InfoException;
 use function Safe\ini_get;
+use function Safe\parse_url;
 use function Safe\set_time_limit;
 
 class FromUrl
@@ -46,6 +48,17 @@ class FromUrl
 					set_time_limit((int) ini_get('max_execution_time'));
 				} catch (InfoException) {
 					// Silently do nothing, if `set_time_limit` is denied.
+				}
+
+				// If the component parameter is specified, this function returns a string (or int in case of PHP_URL_PORT)
+				/** @var string $path */
+				$path = parse_url($url, PHP_URL_PATH);
+				$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
+
+				if ($extension != '.') {
+					// Validate photo extension even when `$create->add()` will do later.
+					// This prevents us from downloading unsupported files.
+					BaseMediaFile::assertIsSupportedOrAcceptedFileExtension($extension);
 				}
 
 				// Download file
