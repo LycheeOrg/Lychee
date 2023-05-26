@@ -6,8 +6,12 @@ use App\Exceptions\MediaFileOperationException;
 use Safe\Exceptions\PcreException;
 use function Safe\fclose;
 use function Safe\fopen;
+use function Safe\mime_content_type;
 use function Safe\parse_url;
 use function Safe\preg_match;
+use function Safe\rewind;
+use function Safe\stream_copy_to_stream;
+use function Safe\tmpfile;
 
 /**
  * Represents a temporary local file which has been downloaded.
@@ -27,6 +31,11 @@ class DownloadedFile extends TemporaryLocalFile
 	public function __construct(string $url)
 	{
 		try {
+			/** @var string $path because we provide directly PHP_URL_PATH */
+			$path = parse_url($url, PHP_URL_PATH);
+			$basename = pathinfo($path, PATHINFO_FILENAME);
+			$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
+
 			$downloadStream = fopen($url, 'rb');
 			$downloadStreamData = stream_get_meta_data($downloadStream);
 			// Find the server-side MIME type; the HTTP headers are part of
@@ -44,24 +53,43 @@ class DownloadedFile extends TemporaryLocalFile
 					break;
 				}
 			}
-			/** @var string $path because we provide directly PHP_URL_PATH */
-			$path = parse_url($url, PHP_URL_PATH);
-			$basename = pathinfo($path, PATHINFO_FILENAME);
-			$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
 
-			// When there's no extension, use a default one based on Mime type
-			if ($extension === '.' && isset($originalMimeType)) {
+			// When the URL doesn't contain the file's extension, the web server may or may have not set the
+			// Content-Type correctly. We'll consider a Content-Type that we can handle as correct for everything else
+			// will try to guess the file type.
+			// File extension > Content-Type > Inferred MIME type
+
+			if (self::isSupportedFileExtension($extension)) {
+				parent::__construct($extension, $basename);
+				if (isset($originalMimeType)) {
+					$this->originalMimeType = $originalMimeType;
+				}
+				$this->write($downloadStream);
+				fclose($downloadStream);
+			} elseif (isset($originalMimeType) && self::isSupportedMimeType($originalMimeType)) {
 				$extension = '.' . self::getDefaultFileExtensionForMimeType($originalMimeType);
-			}
-
-			parent::__construct($extension, $basename);
-
-			if (isset($originalMimeType)) {
+				parent::__construct($extension, $basename);
 				$this->originalMimeType = $originalMimeType;
-			}
+				$this->write($downloadStream);
+				fclose($downloadStream);
+			} else {
+				$temp = tmpfile();
+				stream_copy_to_stream($downloadStream, $temp);
+				fclose($downloadStream);
 
-			$this->write($downloadStream);
-			fclose($downloadStream);
+				rewind($temp);
+				$originalMimeType = mime_content_type($temp);
+
+				if (self::isSupportedMimeType($originalMimeType)) {
+					$extension = '.' . self::getDefaultFileExtensionForMimeType($originalMimeType);
+					parent::__construct($extension, $basename);
+					$this->originalMimeType = $originalMimeType;
+					rewind($temp);
+					$this->write($temp);
+				}
+
+				fclose($temp);
+			}
 		} catch (\ErrorException|PcreException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}

@@ -346,6 +346,18 @@ abstract class BaseMediaFile extends AbstractBinaryBlob implements MediaFile
 	}
 
 	/**
+	 * @param string $mimeType
+	 *
+	 * @return bool
+	 */
+	public static function isSupportedMimeType(string $mimeType): bool
+	{
+		return
+			self::isSupportedImageMimeType($mimeType) ||
+			self::isSupportedVideoMimeType($mimeType);
+	}
+
+	/**
 	 * Returns the default file extension for the given MIME type or an empty string if there is no default extension.
 	 *
 	 * @param string $mimeType a MIME type
