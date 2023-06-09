@@ -3,6 +3,7 @@
 namespace App\Image\Files;
 
 use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\MediaFileUnsupportedException;
 use Safe\Exceptions\PcreException;
 use function Safe\fclose;
 use function Safe\fopen;
@@ -86,9 +87,11 @@ class DownloadedFile extends TemporaryLocalFile
 					$this->originalMimeType = $originalMimeType;
 					rewind($temp);
 					$this->write($temp);
+					fclose($temp);
+				} else {
+					fclose($temp);
+					throw new MediaFileUnsupportedException(MediaFileUnsupportedException::DEFAULT_MESSAGE . ' (bad file type: ' . $originalMimeType . ')');
 				}
-
-				fclose($temp);
 			}
 		} catch (\ErrorException|PcreException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);

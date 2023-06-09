@@ -19,6 +19,7 @@ class TestConstants
 	public const SAMPLE_DOWNLOAD_JPG = 'https://github.com/LycheeOrg/Lychee/raw/master/tests/Samples/mongolia.jpeg';
 	public const SAMPLE_DOWNLOAD_JPG_WITHOUT_EXTENSION = 'https://github.com/LycheeOrg/Lychee/raw/master/tests/Samples/mongolia';
 	public const SAMPLE_DOWNLOAD_TIFF = 'https://github.com/LycheeOrg/Lychee/raw/master/tests/Samples/tiff.tif';
+	public const SAMPLE_DOWNLOAD_TIFF_WITHOUT_EXTENSION = 'https://github.com/wladif/Lychee/raw/master/tests/Samples/tiff';
 
 	public const SAMPLE_FILE_AARHUS = 'tests/Samples/aarhus.jpg';
 	public const SAMPLE_FILE_ETTLINGEN = 'tests/Samples/ettlinger-alb.jpg';
