@@ -55,8 +55,8 @@ class DownloadedFile extends TemporaryLocalFile
 			}
 
 			// When the URL doesn't contain the file's extension, the web server may or may have not set the
-			// Content-Type correctly. We'll consider a Content-Type that we can handle as correct for everything else
-			// will try to guess the file type.
+			// Content-Type correctly. If the Content-Type header has a value that we recognize, we consider it valid.
+			// In all other cases we try to guess the file type.
 			// File extension > Content-Type > Inferred MIME type
 
 			if (self::isSupportedOrAcceptedFileExtension($extension)) {
