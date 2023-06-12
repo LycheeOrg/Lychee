@@ -40,3 +40,6 @@ Route::get('/r/{albumID}', [RedirectController::class, 'album'])->middleware(['m
 
 Route::get('/view', [IndexController::class, 'view'])->name('view')->middleware(['redirect-legacy-id']);
 Route::get('/frame', [IndexController::class, 'frame'])->name('frame')->middleware(['migration:complete']);
+
+// This route must be defined last because it is a catch all.
+Route::match(['get', 'post'], '{path}', HoneyPotController::class)->where('path', '.*');
