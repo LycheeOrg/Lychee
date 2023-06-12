@@ -53,7 +53,7 @@ class HoneyPotController extends Controller
 	 * using abort(404) does not give the info which path was called.
 	 * This could be very useful when debugging.
 	 * By throwing a proper exception we preserve this info.
-	 * Not that this will generate a log line of type ERROR.
+	 * This will generate a log line of type ERROR.
 	 *
 	 * @param string $path called
 	 *
@@ -69,7 +69,7 @@ class HoneyPotController extends Controller
 	/**
 	 * Similar to abort(404), abort(418) does not give info.
 	 * It is more interesting to raise a proper exception.
-	 * By having a proper exception we are also able to decrease the severity.
+	 * By having a proper exception we are also able to decrease the severity to NOTICE.
 	 *
 	 * @param string $path called
 	 *
