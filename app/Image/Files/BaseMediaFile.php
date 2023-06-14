@@ -78,7 +78,7 @@ abstract class BaseMediaFile extends AbstractBinaryBlob implements MediaFile
 
 	public const MIME_TYPES_TO_FILE_EXTENSIONS = [
 		'image/gif' => '.gif',
-		'image/jpeg' => 'jpg',
+		'image/jpeg' => '.jpg',
 		'image/png' => '.png',
 		'image/webp' => '.webp',
 		'video/mp4' => '.mp4',
