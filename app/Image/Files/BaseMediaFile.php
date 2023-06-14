@@ -346,11 +346,13 @@ abstract class BaseMediaFile extends AbstractBinaryBlob implements MediaFile
 	}
 
 	/**
-	 * @param string $mimeType
+	 * Check if the given mimetype is supported or accepted.
+	 *
+	 * @param ?string $mimeType the file mimetype
 	 *
 	 * @return bool
 	 */
-	public static function isSupportedMimeType(string $mimeType): bool
+	public static function isSupportedMimeType(?string $mimeType): bool
 	{
 		return
 			self::isSupportedImageMimeType($mimeType) ||
@@ -366,10 +368,6 @@ abstract class BaseMediaFile extends AbstractBinaryBlob implements MediaFile
 	 */
 	public static function getDefaultFileExtensionForMimeType(string $mimeType): string
 	{
-		if (array_key_exists(strtolower($mimeType), self::MIME_TYPES_TO_FILE_EXTENSIONS)) {
-			return self::MIME_TYPES_TO_FILE_EXTENSIONS[strtolower($mimeType)];
-		} else {
-			return '';
-		}
+		return self::MIME_TYPES_TO_FILE_EXTENSIONS[strtolower($mimeType)] ?? '';
 	}
 }
