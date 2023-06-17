@@ -319,7 +319,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 		$this->assertHasExifToolOrSkip();
 		$this->assertHasFFMpegOrSkip();
 
-		file_put_contents(storage_path('logs/notice-' . date('Y-m-d') . '.log'), '');
+		file_put_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log'), '');
 
 		$response = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_GMP_BROKEN_IMAGE)
@@ -342,7 +342,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 			'live_photo_url' => null,
 		]);
 
-		self::assertNotEmpty(file_get_contents(storage_path('logs/notice-' . date('Y-m-d') . '.log')));
+		self::assertNotEmpty(file_get_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log')));
 	}
 
 	/**
@@ -401,7 +401,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 		$hasFFMpeg = Configs::getValueAsInt(TestConstants::CONFIG_HAS_FFMPEG);
 		Configs::set(TestConstants::CONFIG_HAS_FFMPEG, 0);
 
-		file_put_contents(storage_path('logs/notice-' . date('Y-m-d') . '.log'), '');
+		file_put_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log'), '');
 
 		$response = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_GAMING_VIDEO)
@@ -432,7 +432,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 		// that it isn't called accidentally.
 		// As a second-best approach, we check at least for the existence
 		// of an error message in the log.
-		self::assertNotEmpty(file_get_contents(storage_path('logs/notice-' . date('Y-m-d') . '.log')));
+		self::assertNotEmpty(file_get_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log')));
 
 		Configs::set(TestConstants::CONFIG_HAS_FFMPEG, $hasFFMpeg);
 		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, $hasExifTool);
