@@ -128,6 +128,31 @@ class PhotosAddNegativeTest extends BasePhotoTest
 	}
 
 	/**
+	 * Test import from URL of an unsupported raw image without file extension.
+	 *
+	 * We need this test because in case the file doesn't have an extension, we'll download the file
+	 * and try to guess the extension.
+	 *
+	 * @return void
+	 */
+	public function testRefusedRawImportFormUrlWithoutExtension(): void
+	{
+		$acceptedRawFormats = static::getAcceptedRawFormats();
+		try {
+			static::setAcceptedRawFormats('');
+
+			$this->photos_tests->importFromUrl(
+				[TestConstants::SAMPLE_DOWNLOAD_TIFF_WITHOUT_EXTENSION],
+				null,
+				422,
+				'MediaFileUnsupportedException'
+			);
+		} finally {
+			static::setAcceptedRawFormats($acceptedRawFormats);
+		}
+	}
+
+	/**
 	 * Recursively restricts the access to the given directory.
 	 *
 	 * @param string $dirPath the directory path
