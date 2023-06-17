@@ -8,7 +8,7 @@ use App\Rules\CopyrightRule;
 use App\Rules\RandomIDRule;
 
 /**
- * Rules applied when updating the titles of a group of album.
+ * Rules applied when updating the copyright of an album.
  */
 class SetAlbumCopyrightRuleSet implements RuleSet
 {

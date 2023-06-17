@@ -188,9 +188,9 @@ class AlbumController extends Controller
 	}
 
 	/**
-	 * Change the description of the album.
+	 * Change the copyright of the album.
 	 *
-	 * @param SetAlbumDescriptionRequest $request
+	 * @param SetAlbumCopyrightRequest $request
 	 *
 	 * @return void
 	 *
