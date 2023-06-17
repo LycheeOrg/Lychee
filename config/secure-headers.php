@@ -563,7 +563,6 @@ return [
 			'unsafe-inline' => true, // We need this one due to direct styles (not just style classes) applied by JavaScript
 			'allow' => [
 				'https://unpkg.com/@stoplight/elements/styles.min.css',
-				// 'url',
 			],
 		],
 
