@@ -36,6 +36,7 @@ class AlbumResource extends JsonResource
 			'id' => $this->resource->id,
 			'title' => $this->resource->title,
 			'owner_name' => $this->when(Auth::check(), $this->resource->owner->name),
+			'copyright' => $this->resource->copyright,
 
 			// attributes
 			'description' => $this->resource->description,

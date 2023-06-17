@@ -25,6 +25,7 @@ use App\Http\Requests\Album\GetAlbumPositionDataRequest;
 use App\Http\Requests\Album\GetAlbumRequest;
 use App\Http\Requests\Album\MergeAlbumsRequest;
 use App\Http\Requests\Album\MoveAlbumsRequest;
+use App\Http\Requests\Album\SetAlbumCopyrightRequest;
 use App\Http\Requests\Album\SetAlbumCoverRequest;
 use App\Http\Requests\Album\SetAlbumDescriptionRequest;
 use App\Http\Requests\Album\SetAlbumLicenseRequest;
@@ -183,6 +184,21 @@ class AlbumController extends Controller
 	public function setDescription(SetAlbumDescriptionRequest $request): void
 	{
 		$request->album()->description = $request->description();
+		$request->album()->save();
+	}
+
+	/**
+	 * Change the description of the album.
+	 *
+	 * @param SetAlbumDescriptionRequest $request
+	 *
+	 * @return void
+	 *
+	 * @throws ModelDBException
+	 */
+	public function setCopyright(SetAlbumCopyrightRequest $request): void
+	{
+		$request->album()->copyright = $request->copyright();
 		$request->album()->save();
 	}
 
