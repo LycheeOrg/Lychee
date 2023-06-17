@@ -469,7 +469,10 @@ return [
 			'report-sample' => true,
 
 			'allow' => array_merge(
-				['https://www.dropbox.com/static/api/1/dropins.js'],
+				[
+					'https://www.dropbox.com/static/api/1/dropins.js',
+					'https://unpkg.com/@stoplight/elements/web-components.min.js',
+				],
 				explode(",", env('SECURITY_HEADER_SCRIPT_SRC_ALLOW', ''))
 			),
 
@@ -558,6 +561,10 @@ return [
 		'style-src' => [
 			'self' => true,
 			'unsafe-inline' => true, // We need this one due to direct styles (not just style classes) applied by JavaScript
+			'allow' => [
+				'https://unpkg.com/@stoplight/elements/styles.min.css',
+				// 'url',
+			],
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src-attr
