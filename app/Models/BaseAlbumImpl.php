@@ -21,7 +21,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -196,7 +195,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	/**
 	 * The relationships that should always be eagerly loaded by default.
 	 */
-	protected $with = ['owner', 'access_permissions', 'current_user_permissions', 'public_permissions'];
+	protected $with = ['owner', 'access_permissions'];
 
 	/**
 	 * @param $query
@@ -247,26 +246,21 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	/**
 	 * Returns the relationship between an album and its associated current user permissions.
 	 *
-	 * @return HasOne
+	 * @return ?AccessPermission
 	 */
-	public function current_user_permissions(): HasOne
+	public function current_user_permissions(): AccessPermission|null
 	{
-		return $this->access_permissions()
-			->one()
-			->whereNotNull(APC::USER_ID)
-			->where(APC::USER_ID, '=', Auth::id());
+		return $this->access_permissions->first(fn (AccessPermission $p) => $p->user_id !== null && $p->user_id === Auth::id());
 	}
 
 	/**
 	 * Returns the relationship between an album and its associated public permissions.
 	 *
-	 * @return HasOne
+	 * @return ?AccessPermission
 	 */
-	public function public_permissions(): HasOne
+	public function public_permissions(): AccessPermission|null
 	{
-		return $this->access_permissions()
-			->one()
-			->whereNull(APC::USER_ID);
+		return $this->access_permissions->first(fn (AccessPermission $p) => $p->user_id === null);
 	}
 
 	protected function getSortingAttribute(): ?PhotoSortingCriterion

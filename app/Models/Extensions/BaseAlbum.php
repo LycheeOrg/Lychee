@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Carbon;
 
@@ -101,9 +100,9 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	/**
 	 * Returns the relationship between an album and its associated current user permissions.
 	 *
-	 * @return HasOne
+	 * @return AccessPermission|null
 	 */
-	public function current_user_permissions(): HasOne
+	public function current_user_permissions(): AccessPermission|null
 	{
 		return $this->base_class->current_user_permissions();
 	}
@@ -111,9 +110,9 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	/**
 	 * Returns the relationship between an album and its associated public permissions.
 	 *
-	 * @return HasOne
+	 * @return AccessPermission|null
 	 */
-	public function public_permissions(): HasOne
+	public function public_permissions(): AccessPermission|null
 	{
 		return $this->base_class->public_permissions();
 	}
