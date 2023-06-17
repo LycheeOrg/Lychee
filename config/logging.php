@@ -52,7 +52,7 @@ return [
 		],
 
 		// Whatever debug log is needed
-		// Nostly SQL requests
+		// Mostly SQL requests
 		'debug-daily' => [
 			'path' => storage_path('logs/daily.log'),
 			'driver' => 'daily',
