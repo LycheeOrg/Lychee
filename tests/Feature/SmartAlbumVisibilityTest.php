@@ -62,11 +62,11 @@ class SmartAlbumVisibilityTest extends AbstractTestCase
 		$this->sharing_tests = new SharingUnitTest($this);
 		$this->photos_tests = new PhotosUnitTest($this);
 
-		$this->isRecentAlbumPublic = RecentAlbum::getInstance()->public_permissions !== null;
+		$this->isRecentAlbumPublic = RecentAlbum::getInstance()->public_permissions() !== null;
 		RecentAlbum::getInstance()->setPrivate();
-		$this->isStarredAlbumPublic = StarredAlbum::getInstance()->public_permissions !== null;
+		$this->isStarredAlbumPublic = StarredAlbum::getInstance()->public_permissions() !== null;
 		StarredAlbum::getInstance()->setPrivate();
-		$this->isOnThisDayAlbumPublic = OnThisDayAlbum::getInstance()->public_permissions !== null;
+		$this->isOnThisDayAlbumPublic = OnThisDayAlbum::getInstance()->public_permissions() !== null;
 		OnThisDayAlbum::getInstance()->setPrivate();
 		$this->clearCachedSmartAlbums();
 	}

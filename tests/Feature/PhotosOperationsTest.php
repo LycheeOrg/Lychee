@@ -319,7 +319,7 @@ class PhotosOperationsTest extends BasePhotoTest
 	 */
 	public function testThumbnailsInsideHiddenAlbum(): void
 	{
-		$isRecentPublic = RecentAlbum::getInstance()->public_permissions !== null;
+		$isRecentPublic = RecentAlbum::getInstance()->public_permissions() !== null;
 		$arePublicPhotosHidden = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_HIDDEN);
 		$isPublicSearchEnabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
 		$albumSortingColumn = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_COL);

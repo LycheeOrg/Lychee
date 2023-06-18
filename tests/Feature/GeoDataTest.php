@@ -190,7 +190,7 @@ class GeoDataTest extends AbstractTestCase
 	 */
 	public function testThumbnailsInsideHiddenAlbum(): void
 	{
-		$isRecentPublic = RecentAlbum::getInstance()->public_permissions !== null;
+		$isRecentPublic = RecentAlbum::getInstance()->public_permissions() !== null;
 		$arePublicPhotosHidden = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_HIDDEN);
 		$isPublicSearchEnabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
 		$displayMap = Configs::getValueAsBool(TestConstants::CONFIG_MAP_DISPLAY);

@@ -45,12 +45,12 @@ class AlbumProtectionPolicy extends ArrayableDTO
 	public static function ofBaseAlbumImplementation(BaseAlbumImpl $baseAlbum): self
 	{
 		return new self(
-			is_public: $baseAlbum->public_permissions !== null,
-			is_link_required: $baseAlbum->public_permissions?->is_link_required === true,
+			is_public: $baseAlbum->public_permissions() !== null,
+			is_link_required: $baseAlbum->public_permissions()?->is_link_required === true,
 			is_nsfw: $baseAlbum->is_nsfw,
-			grants_full_photo_access: $baseAlbum->public_permissions?->grants_full_photo_access === true,
-			grants_download: $baseAlbum->public_permissions?->grants_download === true,
-			is_password_required: $baseAlbum->public_permissions?->password !== null,
+			grants_full_photo_access: $baseAlbum->public_permissions()?->grants_full_photo_access === true,
+			grants_download: $baseAlbum->public_permissions()?->grants_download === true,
+			is_password_required: $baseAlbum->public_permissions()?->password !== null,
 		);
 	}
 
@@ -87,11 +87,11 @@ class AlbumProtectionPolicy extends ArrayableDTO
 	public static function ofSmartAlbum(BaseSmartAlbum $baseSmartAlbum): self
 	{
 		return new self(
-			is_public: $baseSmartAlbum->public_permissions !== null,
+			is_public: $baseSmartAlbum->public_permissions() !== null,
 			is_link_required: false,
 			is_nsfw: false,
-			grants_full_photo_access: $baseSmartAlbum->public_permissions?->grants_full_photo_access === true,
-			grants_download: $baseSmartAlbum->public_permissions?->grants_download === true,
+			grants_full_photo_access: $baseSmartAlbum->public_permissions()?->grants_full_photo_access === true,
+			grants_download: $baseSmartAlbum->public_permissions()?->grants_download === true,
 			is_password_required: false,
 		);
 	}

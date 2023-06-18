@@ -131,14 +131,14 @@ class SettingsController extends Controller
 	{
 		/** @var BaseSmartAlbum $album */
 		$album = $request->album();
-		if ($request->is_public() && $album->public_permissions === null) {
+		if ($request->is_public() && $album->public_permissions() === null) {
 			$access_permissions = AccessPermission::ofPublic();
 			$access_permissions->base_album_id = $album->id;
 			$access_permissions->save();
 		}
 
-		if (!$request->is_public() && $album->public_permissions !== null) {
-			$perm = $album->public_permissions;
+		if (!$request->is_public() && $album->public_permissions() !== null) {
+			$perm = $album->public_permissions();
 			$perm->delete();
 		}
 	}
