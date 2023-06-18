@@ -103,12 +103,12 @@ class AlbumPolicy extends BasePolicy
 					return true;
 				}
 
-				if ($album->current_user_permissions !== null) {
+				if ($album->current_user_permissions() !== null) {
 					return true;
 				}
 
-				if ($album->public_permissions !== null &&
-					($album->public_permissions->password === null ||
+				if ($album->public_permissions() !== null &&
+					($album->public_permissions()->password === null ||
 					$this->isUnlocked($album))) {
 					return true;
 				}

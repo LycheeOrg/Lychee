@@ -32,8 +32,6 @@ use Illuminate\Support\Carbon;
  * @property int                              $owner_id
  * @property User                             $owner
  * @property Collection<int,AccessPermission> $access_permissions
- * @property AccessPermission|null            $current_user_permissions
- * @property AccessPermission|null            $public_permissions
  * @property Carbon|null                      $min_taken_at
  * @property Carbon|null                      $max_taken_at
  * @property PhotoSortingCriterion|null       $sorting
