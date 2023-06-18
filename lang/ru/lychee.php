@@ -151,6 +151,8 @@ return [
 	'ALBUM_ABOUT' => 'Об альбоме',
 	'ALBUM_BASICS' => 'Основное',
 	'ALBUM_TITLE' => 'Заголовок',
+	'ALBUM_COPYRIGHT' => '',
+	'ALBUM_SET_COPYRIGHT' => '',
 	'ALBUM_NEW_TITLE' => 'Новый заголовок альбома:',
 	'ALBUMS_NEW_TITLE' => 'Введите заголовок для всех %d выбранных альбомов:',
 	'ALBUM_SET_TITLE' => 'Сохранить заголовок',

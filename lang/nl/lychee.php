@@ -151,6 +151,8 @@ return [
 	'ALBUM_ABOUT' => 'Over',
 	'ALBUM_BASICS' => 'Basics',
 	'ALBUM_TITLE' => 'Titel',
+	'ALBUM_COPYRIGHT' => '',
+	'ALBUM_SET_COPYRIGHT' => '',
 	'ALBUM_NEW_TITLE' => 'Geef dit album een nieuwe titel:',
 	'ALBUMS_NEW_TITLE' => 'Geef alle geselecteerde %d albums een nieuwe titel:',
 	'ALBUM_SET_TITLE' => 'Sla Titel op',

@@ -30,6 +30,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon                           $updated_at
  * @property string|null                      $description
  * @property bool                             $is_nsfw
+ * @property string|null                      $copyright
  * @property int                              $owner_id
  * @property User                             $owner
  * @property Collection<int,AccessPermission> $access_permissions

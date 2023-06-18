@@ -151,6 +151,8 @@ return [
 	'ALBUM_ABOUT' => 'About',
 	'ALBUM_BASICS' => 'Basics',
 	'ALBUM_TITLE' => 'Title',
+	'ALBUM_COPYRIGHT' => 'Copyright',
+	'ALBUM_SET_COPYRIGHT' => 'Set copyright',
 	'ALBUM_NEW_TITLE' => 'Enter a new title for this album:',
 	'ALBUMS_NEW_TITLE' => 'Enter a title for all %d selected albums:',
 	'ALBUM_SET_TITLE' => 'Set Title',
