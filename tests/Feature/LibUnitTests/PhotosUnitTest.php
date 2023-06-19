@@ -44,12 +44,18 @@ class PhotosUnitTest
 		?string $assertSee = null,
 		?int $fileLastModifiedTime = 1678824303000
 	): TestResponse {
+		$params = [
+			'albumID' => $albumID,
+			'fileLastModifiedTime' => $fileLastModifiedTime,
+			'file' => $file,
+		];
+
+		if ($fileLastModifiedTime !== null) {
+			$params['fileLastModifiedTime'] = $fileLastModifiedTime;
+		}
+
 		$response = $this->testCase->post(
-			'/api/Photo::add', [
-				'albumID' => $albumID,
-				'fileLastModifiedTime' => $fileLastModifiedTime,
-				'file' => $file,
-			], [
+			'/api/Photo::add', $params, [
 				'CONTENT_TYPE' => 'multipart/form-data',
 				'Accept' => 'application/json',
 			]

@@ -540,4 +540,18 @@ class PhotosOperationsTest extends BasePhotoTest
 		$photo = new Photo();
 		$photo->live_photo_full_path = 'Something';
 	}
+
+	/**
+	 * Test uploading without timeData.
+	 */
+	public function testUploadTimeFromFileTimeNull(): void
+	{
+		Auth::loginUsingId(1);
+		$this->photos_tests->upload(
+			self::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE),
+			albumID: null,
+			expectedStatusCode: 201,
+			assertSee: null,
+			fileLastModifiedTime: null);
+	}
 }
