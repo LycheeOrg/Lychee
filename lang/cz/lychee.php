@@ -151,6 +151,8 @@ return [
 	'ALBUM_ABOUT' => 'O albu',
 	'ALBUM_BASICS' => 'Základní informace',
 	'ALBUM_TITLE' => 'Název',
+	'ALBUM_COPYRIGHT' => '',
+	'ALBUM_SET_COPYRIGHT' => '',
 	'ALBUM_NEW_TITLE' => 'Zadat nový název alba:',
 	'ALBUMS_NEW_TITLE' => 'Zadat nový název pro %d vybraná alba:',
 	'ALBUM_SET_TITLE' => 'Uložit název',

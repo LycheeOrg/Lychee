@@ -151,6 +151,8 @@ return [
 	'ALBUM_ABOUT' => 'Om',
 	'ALBUM_BASICS' => 'Grundläggande',
 	'ALBUM_TITLE' => 'Titel',
+	'ALBUM_COPYRIGHT' => '',
+	'ALBUM_SET_COPYRIGHT' => '',
 	'ALBUM_NEW_TITLE' => 'Skriv en ny titel för det här albumet:',
 	'ALBUMS_NEW_TITLE' => 'Skriv en ny titel för alla %d valda album:',
 	'ALBUM_SET_TITLE' => 'Spara titel',
