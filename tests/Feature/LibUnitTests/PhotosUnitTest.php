@@ -46,7 +46,6 @@ class PhotosUnitTest
 	): TestResponse {
 		$params = [
 			'albumID' => $albumID,
-			'fileLastModifiedTime' => $fileLastModifiedTime,
 			'file' => $file,
 		];
 
