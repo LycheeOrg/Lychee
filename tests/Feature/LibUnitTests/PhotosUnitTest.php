@@ -107,26 +107,6 @@ class PhotosUnitTest
 	}
 
 	/**
-	 * Try uploading a picture without the file's last modified time.
-	 */
-	public function wrong_upload3(UploadedFile $file): void
-	{
-		$response = $this->testCase->post(
-			'/api/Photo::add',
-			[
-				'albumID' => null,
-				'file' => $file,
-			], [
-				'CONTENT_TYPE' => 'multipart/form-data',
-				'Accept' => 'application/json',
-			]
-		);
-
-		$response->assertUnprocessable();
-		$response->assertSee('The file last modified time field is required.');
-	}
-
-	/**
 	 * Get a photo given a photo id.
 	 *
 	 * @param string      $photo_id
