@@ -152,7 +152,7 @@ return [
 	'ALBUM_BASICS' => 'Informations de base',
 	'ALBUM_TITLE' => 'Titre',
 	'ALBUM_COPYRIGHT' => 'Droits d’auteur',
-	'ALBUM_SET_COPYRIGHT' => '',
+	'ALBUM_SET_COPYRIGHT' => 'Définir les droits d’auteur',
 	'ALBUM_NEW_TITLE' => 'Entrez un nouveau titre pour cet album :',
 	'ALBUMS_NEW_TITLE' => 'Entrez un titre pour les %d albums sélectionnés :',
 	'ALBUM_SET_TITLE' => 'Enregistrer le titre',
