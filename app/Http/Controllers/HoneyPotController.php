@@ -16,6 +16,11 @@ class HoneyPotController extends Controller
 {
 	public function __invoke(string $path = ''): void
 	{
+		// Check if Honey is available
+		if (config('honeypot.enabled', true) !== true) {
+			$this->throwNotFound($path);
+		}
+
 		/** @var array<int,string> $honeypot_paths_array */
 		$honeypot_paths_array = config('honeypot.paths', []);
 
@@ -29,11 +34,6 @@ class HoneyPotController extends Controller
 			foreach ($honeypot_xpaths_array_suffix as $suffix) {
 				$honeypot_paths_array[] = $prefix . '.' . $suffix;
 			}
-		}
-
-		// Check if Honey is available
-		if (config('honeypot.enabled', true) !== true) {
-			$this->throwNotFound($path);
 		}
 
 		// Turn the path array into a regex pattern.
