@@ -110,6 +110,8 @@ class AppServiceProvider extends ServiceProvider
 			// filter for the same name anew will fail.
 		}
 
+		$this->disableCSP();
+
 		/**
 		 * Set up the Authorization layer for accessing Logs in LogViewer.
 		 */
@@ -153,5 +155,15 @@ class AppServiceProvider extends ServiceProvider
 			SizeVariantFactory::class,
 			SizeVariantDefaultFactory::class
 		);
+	}
+
+	/**
+	 * Consider making this a config parameter later.
+	 */
+	private function disableCSP()
+	{
+		if (request()->getRequestUri() === '/docs/api') {
+			config(['secure-headers.csp.enable' => false]);
+		}
 	}
 }
