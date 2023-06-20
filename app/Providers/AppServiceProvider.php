@@ -159,6 +159,7 @@ class AppServiceProvider extends ServiceProvider
 
 	/**
 	 * Consider making this a config parameter later.
+	 * Consider integrating this into a middleware.
 	 */
 	private function disableCSP()
 	{
