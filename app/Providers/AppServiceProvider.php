@@ -23,20 +23,22 @@ use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Policies\SettingsPolicy;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 use Opcodes\LogViewer\Facades\LogViewer;
 use Safe\Exceptions\StreamException;
 use function Safe\stream_filter_register;
 
 class AppServiceProvider extends ServiceProvider
 {
-	public array $singletons
-	= [
+	public array $singletons =
+	[
 		SymLinkFunctions::class => SymLinkFunctions::class,
 		Helpers::class => Helpers::class,
 		CheckUpdate::class => CheckUpdate::class,
@@ -72,9 +74,31 @@ class AppServiceProvider extends ServiceProvider
 		JsonResource::withoutWrapping();
 
 		if (config('database.db_log_sql', false) === true) {
-			DB::listen(function ($query) {
+			DB::listen(function (QueryExecuted $query) {
+				if (Str::contains(request()->getRequestUri(), 'logs', true) ||
+					Str::contains($query->sql, ['information_schema', 'EXPLAIN', 'configs'])) {
+					return;
+				}
+
 				$msg = $query->sql . ' [' . implode(', ', $query->bindings) . ']';
 				Log::debug($msg);
+
+				$bindings = collect($query->bindings)->map(function ($q) {
+					return match (gettype($q)) {
+						'NULL' => "''",
+						'string' => "'{$q}'",
+						'boolean' => $q ? '1' : '0',
+						default => $q
+					};
+				})->all();
+				$sql_with_bindings = Str::replaceArray('?', $bindings, $query->sql);
+				$explain = DB::select('EXPLAIN ' . $sql_with_bindings);
+				if (count($explain) === 1) {
+					Log::debug(var_export($explain[0], true));
+				} else {
+					Log::debug($explain);
+				}
+				// Log::debug(DB::select('EXPLAIN ' . $sql_with_bindings));
 			});
 		}
 
