@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Actions\InstallUpdate\CheckUpdate;
+use App\Assets\ArrayToTextTable;
 use App\Assets\Helpers;
 use App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
@@ -74,32 +75,7 @@ class AppServiceProvider extends ServiceProvider
 		JsonResource::withoutWrapping();
 
 		if (config('database.db_log_sql', false) === true) {
-			DB::listen(function (QueryExecuted $query) {
-				if (Str::contains(request()->getRequestUri(), 'logs', true) ||
-					Str::contains($query->sql, ['information_schema', 'EXPLAIN', 'configs'])) {
-					return;
-				}
-
-				$msg = $query->sql . ' [' . implode(', ', $query->bindings) . ']';
-				Log::debug($msg);
-
-				$bindings = collect($query->bindings)->map(function ($q) {
-					return match (gettype($q)) {
-						'NULL' => "''",
-						'string' => "'{$q}'",
-						'boolean' => $q ? '1' : '0',
-						default => $q
-					};
-				})->all();
-				$sql_with_bindings = Str::replaceArray('?', $bindings, $query->sql);
-				$explain = DB::select('EXPLAIN ' . $sql_with_bindings);
-				if (count($explain) === 1) {
-					Log::debug(var_export($explain[0], true));
-				} else {
-					Log::debug($explain);
-				}
-				// Log::debug(DB::select('EXPLAIN ' . $sql_with_bindings));
-			});
+			DB::listen(fn ($q) => $this->logSQL($q));
 		}
 
 		try {
@@ -177,5 +153,36 @@ class AppServiceProvider extends ServiceProvider
 			SizeVariantFactory::class,
 			SizeVariantDefaultFactory::class
 		);
+	}
+
+	private function logSQL(QueryExecuted $query): void
+	{
+		// Quick exit
+		if (
+			Str::contains(request()->getRequestUri(), 'logs', true) ||
+			Str::contains($query->sql, ['information_schema', 'EXPLAIN', 'configs'])
+		) {
+			return;
+		}
+
+		// Get message with binding outside.
+		$msg = $query->sql . ' [' . implode(', ', $query->bindings) . ']';
+		// Log::debug($msg);
+
+		$bindings = collect($query->bindings)->map(function ($q) {
+			return match (gettype($q)) {
+				'NULL' => "''",
+				'string' => "'{$q}'",
+				'boolean' => $q ? '1' : '0',
+				default => $q
+			};
+		})->all();
+
+		$sql_with_bindings = Str::replaceArray('?', $bindings, $query->sql);
+
+		$explain = DB::select('EXPLAIN ' . $sql_with_bindings);
+		$renderer = new ArrayToTextTable();
+		$renderer->setIgnoredKeys(['possible_keys','key_len','ref']);
+		Log::debug($msg . PHP_EOL . $renderer->getTable($explain));
 	}
 }
