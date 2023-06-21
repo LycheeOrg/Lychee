@@ -185,8 +185,13 @@ class AlbumPolicy extends BasePolicy
 
 		if ($abstractAlbum instanceof BaseAlbum) {
 			return $this->isOwner($user, $abstractAlbum) ||
+<<<<<<< HEAD
 				$abstractAlbum->current_user_permissions()?->grants_upload === true ||
 				$abstractAlbum->public_permissions()?->grants_upload === true;
+=======
+				$abstractAlbum->current_user_permissions?->grants_upload === true ||
+				$abstractAlbum->public_permissions?->grants_upload === true;
+>>>>>>> master
 		}
 
 		return false;
@@ -233,8 +238,13 @@ class AlbumPolicy extends BasePolicy
 
 		if ($album instanceof BaseAlbum) {
 			return $this->isOwner($user, $album) ||
+<<<<<<< HEAD
 			$album->current_user_permissions()?->grants_edit === true ||
 			$album->public_permissions()?->grants_edit === true;
+=======
+			$album->current_user_permissions?->grants_edit === true ||
+			$album->public_permissions?->grants_edit === true;
+>>>>>>> master
 		}
 
 		return false;
