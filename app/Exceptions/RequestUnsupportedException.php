@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class RequestUnsupportedException extends BaseLycheeException
 {
-	public function __construct(string $msg, \Throwable $previous = null)
+	public function __construct(string $msg, ?\Throwable $previous = null)
 	{
 		parent::__construct(Response::HTTP_NOT_IMPLEMENTED, $msg, $previous);
 	}

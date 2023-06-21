@@ -19,7 +19,7 @@ class PasswordRequiredException extends BaseLycheeException
 {
 	public const DEFAULT_MESSAGE = 'Password required';
 
-	public function __construct(string $msg = self::DEFAULT_MESSAGE, \Throwable $previous = null)
+	public function __construct(string $msg = self::DEFAULT_MESSAGE, ?\Throwable $previous = null)
 	{
 		parent::__construct(Auth::check() ? Response::HTTP_FORBIDDEN : Response::HTTP_UNAUTHORIZED, $msg, $previous);
 	}

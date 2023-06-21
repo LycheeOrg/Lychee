@@ -17,6 +17,7 @@ $finder = array_reduce(
 )->notName('*.blade.php');
 $rules = [
 	'@Symfony' => true,
+	'nullable_type_declaration_for_default_null_value' => true,
 	'align_multiline_comment' => true,
 	'array_indentation' => true,
 	'backtick_to_shell_exec' => true,
@@ -37,6 +38,10 @@ $rules = [
 	],
 	'no_unneeded_control_parentheses' => [
 		'statements' => ['break', 'clone', 'continue', 'echo_print', 'switch_case', 'yield'],
+	],
+	'operator_linebreak' => [
+		'only_booleans' => true,
+		'position' => 'end'
 	],
 ];
 $config = new PhpCsFixer\Config();

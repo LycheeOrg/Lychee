@@ -29,7 +29,7 @@ use function Safe\stream_filter_append;
 abstract class AbstractBinaryBlob implements BinaryBlob
 {
 	/** @var ?resource */
-	protected $stream = null;
+	protected $stream;
 
 	/**
 	 * @throws MediaFileOperationException
