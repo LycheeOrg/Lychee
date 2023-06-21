@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class InvalidPropertyException extends BaseLycheeException
 {
-	public function __construct(string $msg, \Throwable $previous = null, int $statusCode = Response::HTTP_UNPROCESSABLE_ENTITY)
+	public function __construct(string $msg, ?\Throwable $previous = null, int $statusCode = Response::HTTP_UNPROCESSABLE_ENTITY)
 	{
 		parent::__construct($statusCode, $msg, $previous);
 	}

@@ -30,7 +30,6 @@ use App\Http\Requests\Settings\SetSmartAlbumVisibilityRequest;
 use App\Http\Requests\Settings\SetSortingSettingsRequest;
 use App\Models\AccessPermission;
 use App\Models\Configs;
-use App\Models\User;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;

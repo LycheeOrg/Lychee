@@ -6,7 +6,7 @@ use App\Contracts\Exceptions\InternalLycheeException;
 
 class LycheeInvalidArgumentException extends \InvalidArgumentException implements InternalLycheeException
 {
-	public function __construct(string $msg, \Throwable $previous = null)
+	public function __construct(string $msg, ?\Throwable $previous = null)
 	{
 		parent::__construct($msg, 0, $previous);
 	}
