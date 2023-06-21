@@ -41,9 +41,9 @@ class UpdateLogin
 			throw new UnauthenticatedException('Previous password is invalid');
 		}
 
-		if ($username !== null
-			&& $username !== ''
-			&& Configs::getValueAsBool('allow_username_change')) {
+		if ($username !== null &&
+			$username !== '' &&
+			Configs::getValueAsBool('allow_username_change')) {
 			$this->updateUsername($user, $username, $ip);
 		}
 

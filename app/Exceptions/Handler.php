@@ -14,7 +14,9 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
@@ -214,14 +216,14 @@ class Handler extends ExceptionHandler
 	 * @param Request    $request
 	 * @param \Throwable $e
 	 *
-	 * @return SymfonyResponse
+	 * @return RedirectResponse|Response
 	 *
 	 * @throws BindingResolutionException
 	 * @throws \InvalidArgumentException
 	 * @throws ContainerExceptionInterface
 	 * @throws NotFoundExceptionInterface
 	 */
-	protected function prepareResponse($request, \Throwable $e): SymfonyResponse
+	protected function prepareResponse($request, \Throwable $e): RedirectResponse|Response
 	{
 		if (!$this->isHttpException($e) && config('app.debug') === true) {
 			return $this->toIlluminateResponse($this->convertExceptionToResponse($e), $e);

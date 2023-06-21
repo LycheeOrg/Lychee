@@ -9,7 +9,7 @@ class SessionExpiredException extends BaseLycheeException
 
 	public const DEFAULT_MESSAGE = 'Session expired';
 
-	public function __construct(string $msg = self::DEFAULT_MESSAGE, \Throwable $previous = null)
+	public function __construct(string $msg = self::DEFAULT_MESSAGE, ?\Throwable $previous = null)
 	{
 		parent::__construct(self::HTTP_PAGE_EXPIRED, $msg, $previous);
 	}

@@ -185,9 +185,9 @@ class GitHubVersion implements VersionControl, HasIsRelease
 	{
 		// Remote is not set: exit early
 		if (
-			$this->remote === null
-			|| $this->remote instanceof GitTags
-			|| $this->localBranch === null
+			$this->remote === null ||
+			$this->remote instanceof GitTags ||
+			$this->localBranch === null
 		) {
 			// @codeCoverageIgnoreStart
 			return;

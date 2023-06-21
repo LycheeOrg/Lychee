@@ -16,7 +16,7 @@ class InvalidDirectoryException extends InvalidPropertyException
 {
 	public const DEFAULT_MESSAGE = 'Given path is not a directory';
 
-	public function __construct(string $msg = self::DEFAULT_MESSAGE, \Throwable $previous = null)
+	public function __construct(string $msg = self::DEFAULT_MESSAGE, ?\Throwable $previous = null)
 	{
 		parent::__construct($msg, $previous);
 	}
