@@ -13,7 +13,7 @@ class PhotoSkippedException extends BaseLycheeException
 {
 	public const DEFAULT_MESSAGE = 'The photo has been skipped';
 
-	public function __construct(string $message = self::DEFAULT_MESSAGE, \Throwable $previous = null)
+	public function __construct(string $message = self::DEFAULT_MESSAGE, ?\Throwable $previous = null)
 	{
 		parent::__construct(Response::HTTP_CONFLICT, $message, $previous);
 	}

@@ -18,7 +18,7 @@ class HttpHoneyPotException extends HttpException
 	 *
 	 * @return void
 	 */
-	public function __construct(string $path, \Throwable $previous = null)
+	public function __construct(string $path, ?\Throwable $previous = null)
 	{
 		parent::__construct(Response::HTTP_I_AM_A_TEAPOT, sprintf('The route %s could not be found.', $path), $previous);
 	}

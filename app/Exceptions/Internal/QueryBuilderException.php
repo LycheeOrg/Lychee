@@ -14,7 +14,7 @@ namespace App\Exceptions\Internal;
  */
 class QueryBuilderException extends FrameworkException
 {
-	public function __construct(\Throwable $previous = null)
+	public function __construct(?\Throwable $previous = null)
 	{
 		parent::__construct('Laravel/Eloquent query builder', $previous);
 	}

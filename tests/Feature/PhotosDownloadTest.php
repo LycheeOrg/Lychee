@@ -12,7 +12,6 @@
 
 namespace Tests\Feature;
 
-use App\Actions\Photo\Archive;
 use App\Enum\DownloadVariantType;
 use App\Image\Files\InMemoryBuffer;
 use App\Image\Files\TemporaryLocalFile;

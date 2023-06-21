@@ -18,7 +18,7 @@ class UnauthenticatedException extends BaseLycheeException
 {
 	public const DEFAULT_MESSAGE = 'User is not authenticated';
 
-	public function __construct(string $msg = self::DEFAULT_MESSAGE, \Throwable $previous = null)
+	public function __construct(string $msg = self::DEFAULT_MESSAGE, ?\Throwable $previous = null)
 	{
 		parent::__construct(Response::HTTP_UNAUTHORIZED, $msg, $previous);
 	}

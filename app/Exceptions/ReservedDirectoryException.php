@@ -16,7 +16,7 @@ class ReservedDirectoryException extends ConflictingPropertyException
 {
 	public const DEFAULT_MESSAGE = 'The given path is a reserved path of Lychee';
 
-	public function __construct(string $msg = self::DEFAULT_MESSAGE, \Throwable $previous = null)
+	public function __construct(string $msg = self::DEFAULT_MESSAGE, ?\Throwable $previous = null)
 	{
 		parent::__construct($msg, $previous);
 	}

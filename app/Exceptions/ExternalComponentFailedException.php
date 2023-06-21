@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ExternalComponentFailedException extends BaseLycheeException
 {
-	public function __construct(string $msg, \Throwable $previous = null)
+	public function __construct(string $msg, ?\Throwable $previous = null)
 	{
 		parent::__construct(Response::HTTP_SERVICE_UNAVAILABLE, $msg, $previous);
 	}

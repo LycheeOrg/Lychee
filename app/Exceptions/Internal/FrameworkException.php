@@ -20,7 +20,7 @@ namespace App\Exceptions\Internal;
  */
 class FrameworkException extends LycheeLogicException
 {
-	public function __construct(string $what, \Throwable $previous = null)
+	public function __construct(string $what, ?\Throwable $previous = null)
 	{
 		parent::__construct($what . ' failed', $previous);
 	}

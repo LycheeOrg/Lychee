@@ -150,9 +150,9 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		if ($abstractAlbum instanceof BaseAlbum) {
-			return $this->isOwner($user, $abstractAlbum)
-				|| $abstractAlbum->current_user_permissions()?->grants_download === true
-				|| $abstractAlbum->public_permissions()?->grants_download === true;
+			return $this->isOwner($user, $abstractAlbum) ||
+				$abstractAlbum->current_user_permissions()?->grants_download === true ||
+				$abstractAlbum->public_permissions()?->grants_download === true;
 		}
 
 		return false;
@@ -184,9 +184,9 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		if ($abstractAlbum instanceof BaseAlbum) {
-			return $this->isOwner($user, $abstractAlbum)
-				|| $abstractAlbum->current_user_permissions()?->grants_upload === true
-				|| $abstractAlbum->public_permissions()?->grants_upload === true;
+			return $this->isOwner($user, $abstractAlbum) ||
+				$abstractAlbum->current_user_permissions()?->grants_upload === true ||
+				$abstractAlbum->public_permissions()?->grants_upload === true;
 		}
 
 		return false;
@@ -232,9 +232,9 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		if ($album instanceof BaseAlbum) {
-			return $this->isOwner($user, $album)
-			|| $album->current_user_permissions()?->grants_edit === true
-			|| $album->public_permissions()?->grants_edit === true;
+			return $this->isOwner($user, $album) ||
+			$album->current_user_permissions()?->grants_edit === true ||
+			$album->public_permissions()?->grants_edit === true;
 		}
 
 		return false;

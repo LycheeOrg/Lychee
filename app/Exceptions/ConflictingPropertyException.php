@@ -23,7 +23,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ConflictingPropertyException extends InvalidPropertyException
 {
-	public function __construct(string $msg, \Throwable $previous = null)
+	public function __construct(string $msg, ?\Throwable $previous = null)
 	{
 		parent::__construct($msg, $previous, Response::HTTP_CONFLICT);
 	}

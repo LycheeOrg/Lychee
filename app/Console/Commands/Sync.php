@@ -9,7 +9,6 @@ use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\UnexpectedException;
 use App\Models\Album;
 use App\Models\Configs;
-use Exception;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 

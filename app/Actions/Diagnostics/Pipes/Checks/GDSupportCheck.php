@@ -21,8 +21,8 @@ class GDSupportCheck implements DiagnosticPipe
 				// @codeCoverageIgnoreEnd
 			}
 			if (
-				!$gdVersion['GIF Read Support']
-				|| !$gdVersion['GIF Create Support']
+				!$gdVersion['GIF Read Support'] ||
+				!$gdVersion['GIF Create Support']
 			) {
 				// @codeCoverageIgnoreStart
 				$data[] = 'Error: PHP gd extension without full gif support';

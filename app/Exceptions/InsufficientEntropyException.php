@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class InsufficientEntropyException extends BaseLycheeException
 {
-	public function __construct(\Throwable $previous = null)
+	public function __construct(?\Throwable $previous = null)
 	{
 		parent::__construct(Response::HTTP_SERVICE_UNAVAILABLE, 'Insufficient entropy', $previous);
 	}
