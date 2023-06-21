@@ -10,7 +10,6 @@ use App\Http\Requests\Sharing\DeleteSharingRequest;
 use App\Http\Requests\Sharing\ListSharingRequest;
 use App\Http\Requests\Sharing\SetSharesByAlbumRequest;
 use App\Http\Resources\Sharing\SharesResource;
-use App\Models\AccessPermission;
 use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
@@ -45,21 +44,7 @@ class SharingController extends Controller
 	 */
 	public function add(AddSharesRequest $request): void
 	{
-		/** @var Collection<User> $users */
-		$users = User::query()
-			->whereIn('id', $request->userIDs())
-			->get();
-
-		/** @var User $user */
-		foreach ($users as $user) {
-			$user->shared()->syncWithPivotValues(
-				$request->albumIDs(),
-				[
-					APC::GRANTS_DOWNLOAD => Configs::getValueAsBool('grants_download'),
-					APC::GRANTS_FULL_PHOTO_ACCESS => Configs::getValueAsBool('grants_full_photo_access'),
-				],
-				false);
-		}
+		$this->updateLinks($request->userIDs(), $request->albumIDs());
 	}
 
 	/**
@@ -75,11 +60,42 @@ class SharingController extends Controller
 	 */
 	public function setByAlbum(SetSharesByAlbumRequest $request): void
 	{
-		foreach ($request->userIDs() as $user_id) {
-			AccessPermission::firstOrCreate([
-				'user_id' => $user_id,
-				'base_album_id' => $request->album()->id,
-			])->save();
+		// Clear previous (otherwise we can only add).
+		try {
+			DB::table(APC::ACCESS_PERMISSIONS)
+				->where(APC::BASE_ALBUM_ID, '=', $request->album()->id)
+				->delete();
+		} catch (\Throwable $e) {
+			throw new QueryBuilderException($e);
+		}
+
+		$this->updateLinks($request->userIDs(), [$request->album()->id]);
+	}
+
+	/**
+	 * Apply the modification.
+	 *
+	 * @param array<int,int>    $userIds
+	 * @param array<int,string> $albumIds
+	 *
+	 * @return void
+	 */
+	private function updateLinks(array $userIds, array $albumIds): void
+	{
+		/** @var Collection<User> $users */
+		$users = User::query()
+			->whereIn('id', $userIds)
+			->get();
+
+		/** @var User $user */
+		foreach ($users as $user) {
+			$user->shared()->syncWithPivotValues(
+				$albumIds,
+				[
+					APC::GRANTS_DOWNLOAD => Configs::getValueAsBool('grants_download'),
+					APC::GRANTS_FULL_PHOTO_ACCESS => Configs::getValueAsBool('grants_full_photo_access'),
+				],
+				false);
 		}
 	}
 
@@ -99,7 +115,7 @@ class SharingController extends Controller
 	public function delete(DeleteSharingRequest $request): void
 	{
 		try {
-			DB::table('user_base_album')
+			DB::table(APC::ACCESS_PERMISSIONS)
 				->whereIn('id', $request->shareIDs())
 				->delete();
 		} catch (\Throwable $e) {
