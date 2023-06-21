@@ -166,7 +166,7 @@ class AppServiceProvider extends ServiceProvider
 		}
 
 		// Get message with binding outside.
-		$msg = $query->sql . ' [' . implode(', ', $query->bindings) . ']';
+		$msg =  '(' . $query->time.'ms) ' . $query->sql . ' [' . implode(', ', $query->bindings) . ']';
 
 		// For pgsql and sqlite we log the query and exit early
 		if (config('database.default', 'mysql') !== 'mysql') {
