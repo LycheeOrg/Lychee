@@ -74,7 +74,8 @@ class AppServiceProvider extends ServiceProvider
 		 */
 		JsonResource::withoutWrapping();
 
-		if (config('database.db_log_sql', false) === true) {
+		if (config('database.db_log_sql', false) === true &&
+			config('database.default', 'mysql') === 'mysql') {
 			DB::listen(fn ($q) => $this->logSQL($q));
 		}
 
