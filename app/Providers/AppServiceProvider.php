@@ -74,8 +74,7 @@ class AppServiceProvider extends ServiceProvider
 		 */
 		JsonResource::withoutWrapping();
 
-		if (config('database.db_log_sql', false) === true &&
-			config('database.default', 'mysql') === 'mysql') {
+		if (config('database.db_log_sql', false) === true) {
 			DB::listen(fn ($q) => $this->logSQL($q));
 		}
 
@@ -168,8 +167,15 @@ class AppServiceProvider extends ServiceProvider
 
 		// Get message with binding outside.
 		$msg = $query->sql . ' [' . implode(', ', $query->bindings) . ']';
-		// Log::debug($msg);
 
+		// For pgsql and sqlite we log the query and exit early
+		if (config('database.default', 'mysql') !== 'mysql') {
+			Log::debug($msg);
+
+			return;
+		}
+
+		// For mysql we perform an explain as this is usually the one being slower...
 		$bindings = collect($query->bindings)->map(function ($q) {
 			return match (gettype($q)) {
 				'NULL' => "''",
