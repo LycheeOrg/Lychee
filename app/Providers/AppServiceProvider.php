@@ -182,7 +182,7 @@ class AppServiceProvider extends ServiceProvider
 
 		$explain = DB::select('EXPLAIN ' . $sql_with_bindings);
 		$renderer = new ArrayToTextTable();
-		$renderer->setIgnoredKeys(['possible_keys','key_len','ref']);
+		$renderer->setIgnoredKeys(['possible_keys', 'key_len', 'ref']);
 		Log::debug($msg . PHP_EOL . $renderer->getTable($explain));
 	}
 }

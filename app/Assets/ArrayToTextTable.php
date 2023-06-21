@@ -16,11 +16,10 @@ namespace App\Assets;
 
 use Laminas\Text\Table\Decorator\DecoratorInterface;
 use Laminas\Text\Table\Decorator\Unicode;
-use Safe\Exceptions\PcreException;
 use Safe\Exceptions\MbstringException;
-
-use function Safe\preg_match_all;
+use Safe\Exceptions\PcreException;
 use function Safe\mb_internal_encoding;
+use function Safe\preg_match_all;
 
 class ArrayToTextTable
 {
@@ -45,9 +44,10 @@ class ArrayToTextTable
 	protected ?\Closure $formatter;
 
 	/**
-	 * Create a table
+	 * Create a table.
 	 *
 	 * @param array<int,object|array> $rawData
+	 *
 	 * @return void
 	 */
 	public function __construct(array $rawData = [])
@@ -69,11 +69,12 @@ class ArrayToTextTable
 	}
 
 	/**
-	 * return the table
+	 * return the table.
 	 *
-	 * @param null|array<int,array|object> $rawData
+	 * @param array<int,array|object>|null $rawData
 	 *
 	 * @return string
+	 *
 	 * @throws PcreException
 	 * @throws MbstringException
 	 */
@@ -242,8 +243,8 @@ class ArrayToTextTable
 	}
 
 	/**
-	 *
 	 * @param array<int,string> $ignoredKeys
+	 *
 	 * @return ArrayToTextTable
 	 */
 	public function setIgnoredKeys(array $ignoredKeys): self
@@ -309,6 +310,7 @@ class ArrayToTextTable
 
 	/**
 	 * @return array<int,array>
+	 *
 	 * @throws PcreException
 	 */
 	protected function prepare(): array
