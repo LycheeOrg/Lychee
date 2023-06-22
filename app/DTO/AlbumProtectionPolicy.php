@@ -2,12 +2,10 @@
 
 namespace App\DTO;
 
-use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\BaseAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * This represents the Album Protection Policy.
