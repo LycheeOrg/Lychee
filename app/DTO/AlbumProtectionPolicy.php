@@ -63,17 +63,13 @@ class AlbumProtectionPolicy extends ArrayableDTO
 	 */
 	public static function ofBaseAlbum(BaseAlbum $baseAlbum): self
 	{
-		/** @var ?AccessPermission $perm */
-		$perm = $baseAlbum->access_permissions->first(fn (AccessPermission $p) => $p->user_id === Auth::id());
-		$perm ??= $baseAlbum->access_permissions->first(fn (AccessPermission $p) => $p->user_id === null);
-
 		return new self(
-			is_public: $perm !== null,
-			is_link_required: $perm?->is_link_required === true,
+			is_public: $baseAlbum->public_permissions() !== null,
+			is_link_required: $baseAlbum->public_permissions()?->is_link_required === true,
 			is_nsfw: $baseAlbum->is_nsfw,
-			grants_full_photo_access: $perm?->grants_full_photo_access === true,
-			grants_download: $perm?->grants_download === true,
-			is_password_required: $perm?->password !== null,
+			grants_full_photo_access: $baseAlbum->public_permissions()?->grants_full_photo_access === true,
+			grants_download: $baseAlbum->public_permissions()?->grants_download === true,
+			is_password_required: $baseAlbum->public_permissions()?->password !== null,
 		);
 	}
 
