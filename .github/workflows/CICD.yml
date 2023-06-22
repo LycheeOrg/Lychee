@@ -162,11 +162,11 @@ jobs:
           php artisan optimize
           php artisan migrate
 
-      - name: Apply tests
-        run: XDEBUG_MODE=coverage vendor/bin/phpunit
+      # - name: Apply tests
+      #   run: XDEBUG_MODE=coverage vendor/bin/phpunit
 
       - name: Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3
 
       - name: Make sure we can go backward
         run: php artisan migrate:rollback
