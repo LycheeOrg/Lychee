@@ -132,6 +132,11 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		return $this->thumb;
 	}
 
+	public function public_permissions(): ?AccessPermission
+	{
+		return $this->publicPermissions;
+	}
+
 	public function setPublic(): void
 	{
 		if ($this->publicPermissions !== null) {

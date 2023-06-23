@@ -63,10 +63,12 @@ class AlbumQueryPolicy
 			$query2
 				// We laverage that IS_LINK_REQUIRED is NULL if the album is NOT shared publically (left join).
 				->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
-				->when($userID !== null,
+				->when(
+					$userID !== null,
 					// Current user is the owner of the album
 					fn ($q) => $q
-						->orWhere('base_albums.owner_id', '=', $userID));
+						->orWhere('base_albums.owner_id', '=', $userID)
+				);
 		};
 
 		return $query->where($visibilitySubQuery);
@@ -115,7 +117,8 @@ class AlbumQueryPolicy
 						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_PASSWORD_REQUIRED, '=', true)
 						->whereIn(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID, $unlockedAlbumIDs)
 				)
-				->when($userID !== null,
+				->when(
+					$userID !== null,
 					// Current user is the owner of the album
 					fn (BaseBuilder $q) => $q
 						->orWhere('base_albums.owner_id', '=', $userID)
@@ -183,7 +186,8 @@ class AlbumQueryPolicy
 						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_PASSWORD_REQUIRED, '=', true)
 						->whereIn(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID, $unlockedAlbumIDs)
 				)
-				->when($userID !== null,
+				->when(
+					$userID !== null,
 					// User is owner of the album
 					fn (Builder $q) => $q
 						->orWhere('base_albums.owner_id', '=', $userID)
@@ -251,7 +255,9 @@ class AlbumQueryPolicy
 		// such that there are no blocked albums on the path to the album.
 		return $query->whereNotExists(function (BaseBuilder $q) {
 			$this->appendUnreachableAlbumsCondition(
-				$q, null, null,
+				$q,
+				null,
+				null,
 			);
 		});
 	}
@@ -354,7 +360,8 @@ class AlbumQueryPolicy
 						->orWhereNull('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED)
 						->orWhereNotIn('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID, $unlockedAlbumIDs)
 				)
-				->when($userID !== null,
+				->when(
+					$userID !== null,
 					fn (BaseBuilder $q) => $q
 						->where('inner_base_albums.owner_id', '<>', $userID)
 				);
@@ -421,36 +428,15 @@ class AlbumQueryPolicy
 	 */
 	public function getComputedAccessPermissionSubQuery(): BaseBuilder
 	{
-		// MySQL defaults
-		$min = 'MIN';
-		$max = 'MAX';
-		$passwordLengthIsBetween0and1 = '1 - MAX(ISNULL(' . APC::PASSWORD . '))';
-
 		$driver = DB::getDriverName();
+		$passwordLengthIsBetween0and1 = match ($driver) {
+			'pgsql' => $this->getPasswordIsRequiredPgSQL(),
+			'sqlite' => $this->getPasswordIsRequiredSqlite(),
+			default => $this->getPasswordIsRequiredMySQL()
+		};
 
-		// pgsql has a proper boolean support and does not support ISNULL(x) -> bool
-		if ($driver === 'pgsql') {
-			$min = 'bool_and';
-			$max = 'bool_or';
-
-			// If password is null, length returns null, we replace the value by 0 in such case
-			$passwordLength = 'COALESCE(LENGTH(password),0)';
-			// We take the minimum between length and 1 with LEAST
-			// and then agggregate on the column with MIN
-			// before casting it to bool
-			$passwordLengthIsBetween0and1 = 'MIN(LEAST(' . $passwordLength . ',1))::bool';
-		}
-
-		// sqlite does not support ISNULL(x) -> bool
-		if ($driver === 'sqlite') {
-			// We convert password to empty string if it is null
-			$passwordIsDefined = 'IFNULL(password,"")';
-			// Take the lengh
-			$passwordLength = 'LENGTH(' . $passwordIsDefined . ')';
-			// First min with 1 to upper bound it
-			// then MIN aggregation
-			$passwordLengthIsBetween0and1 = 'MIN(MIN(' . $passwordLength . ',1))';
-		}
+		$min = $driver === 'pgsql' ? 'bool_and' : 'MIN';
+		$max = $driver === 'pgsql' ? 'bool_or' : 'MAX';
 
 		$select = [
 			APC::BASE_ALBUM_ID,
@@ -467,6 +453,34 @@ class AlbumQueryPolicy
 			->when(Auth::check(), fn ($q) => $q->where('user_id', '=', Auth::id()))
 			->orWhereNull('user_id')
 			->groupBy('base_album_id');
+	}
+
+	private function getPasswordIsRequiredMySQL(): string
+	{
+		return '1 - MAX(ISNULL(' . APC::PASSWORD . '))';
+	}
+
+	private function getPasswordIsRequiredSqlite(): string
+	{
+		// sqlite does not support ISNULL(x) -> bool
+		// We convert password to empty string if it is null
+		$passwordIsDefined = 'IFNULL(' . APC::PASSWORD . ',"")';
+		// Take the lengh
+		$passwordLength = 'LENGTH(' . $passwordIsDefined . ')';
+		// First min with 1 to upper bound it
+		// then MIN aggregation
+		return 'MIN(MIN(' . $passwordLength . ',1))';
+	}
+
+	private function getPasswordIsRequiredPgSQL(): string
+	{
+		// pgsql has a proper boolean support and does not support ISNULL(x) -> bool
+		// If password is null, length returns null, we replace the value by 0 in such case
+		$passwordLength = 'COALESCE(LENGTH(' . APC::PASSWORD . '),0)';
+		// We take the minimum between length and 1 with LEAST
+		// and then agggregate on the column with MIN
+		// before casting it to bool
+		return 'MIN(LEAST(' . $passwordLength . ',1))::bool';
 	}
 
 	/**
@@ -503,6 +517,7 @@ class AlbumQueryPolicy
 			first: $prefix . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID,
 			operator: '=',
 			second: $second,
-			type: $type);
+			type: $type
+		);
 	}
 }

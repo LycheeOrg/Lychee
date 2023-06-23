@@ -82,11 +82,11 @@ abstract class BaseSharingTest extends BasePhotoTest
 		$this->photosSortingOrder = Configs::getValueAsString(TestConstants::CONFIG_PHOTOS_SORTING_ORDER);
 		Configs::set(TestConstants::CONFIG_PHOTOS_SORTING_ORDER, 'ASC');
 
-		$this->isRecentAlbumPublic = RecentAlbum::getInstance()->public_permissions !== null;
+		$this->isRecentAlbumPublic = RecentAlbum::getInstance()->public_permissions() !== null;
 		RecentAlbum::getInstance()->setPublic();
-		$this->isStarredAlbumPublic = StarredAlbum::getInstance()->public_permissions !== null;
+		$this->isStarredAlbumPublic = StarredAlbum::getInstance()->public_permissions() !== null;
 		StarredAlbum::getInstance()->setPublic();
-		$this->isOnThisDayAlbumPublic = OnThisDayAlbum::getInstance()->public_permissions !== null;
+		$this->isOnThisDayAlbumPublic = OnThisDayAlbum::getInstance()->public_permissions() !== null;
 		OnThisDayAlbum::getInstance()->setPublic();
 		$this->clearCachedSmartAlbums();
 	}

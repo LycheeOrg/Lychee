@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Carbon;
 
@@ -33,8 +32,6 @@ use Illuminate\Support\Carbon;
  * @property int                              $owner_id
  * @property User                             $owner
  * @property Collection<int,AccessPermission> $access_permissions
- * @property AccessPermission|null            $current_user_permissions
- * @property AccessPermission|null            $public_permissions
  * @property Carbon|null                      $min_taken_at
  * @property Carbon|null                      $max_taken_at
  * @property PhotoSortingCriterion|null       $sorting
@@ -101,9 +98,9 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	/**
 	 * Returns the relationship between an album and its associated current user permissions.
 	 *
-	 * @return HasOne
+	 * @return AccessPermission|null
 	 */
-	public function current_user_permissions(): HasOne
+	public function current_user_permissions(): AccessPermission|null
 	{
 		return $this->base_class->current_user_permissions();
 	}
@@ -111,9 +108,9 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	/**
 	 * Returns the relationship between an album and its associated public permissions.
 	 *
-	 * @return HasOne
+	 * @return AccessPermission|null
 	 */
-	public function public_permissions(): HasOne
+	public function public_permissions(): AccessPermission|null
 	{
 		return $this->base_class->public_permissions();
 	}

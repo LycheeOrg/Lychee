@@ -32,8 +32,8 @@ class Unlock extends Action
 	 */
 	public function do(BaseAlbum $album, string $password): void
 	{
-		if ($album->public_permissions !== null) {
-			$album_password = $album->public_permissions->password;
+		if ($album->public_permissions() !== null) {
+			$album_password = $album->public_permissions()->password;
 			if (
 				$album_password === null ||
 				$album_password === '' ||

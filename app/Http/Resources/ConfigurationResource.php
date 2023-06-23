@@ -111,9 +111,9 @@ class ConfigurationResource extends JsonResource
 				'unlock_password_photos_with_url_param' => Configs::getValueAsBool('unlock_password_photos_with_url_param'),
 				'use_last_modified_date_when_no_exif_date' => Configs::getValueAsBool('use_last_modified_date_when_no_exif_date'),
 				'smart_album_visibilty' => [
-					'recent' => RecentAlbum::getInstance()->public_permissions !== null,
-					'starred' => StarredAlbum::getInstance()->public_permissions !== null,
-					'on_this_day' => OnThisDayAlbum::getInstance()->public_permissions !== null,
+					'recent' => RecentAlbum::getInstance()->public_permissions() !== null,
+					'starred' => StarredAlbum::getInstance()->public_permissions() !== null,
+					'on_this_day' => OnThisDayAlbum::getInstance()->public_permissions() !== null,
 				],
 			]),
 
