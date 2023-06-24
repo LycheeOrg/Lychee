@@ -1776,7 +1776,7 @@ return new class() extends Migration {
 	private function dropUniqueIfExists(Blueprint $table, string $indexName)
 	{
 		$doctrineTable = $this->schemaManager->introspectTable($table->getTable());
-		if ($doctrineTable->hasUniqueConstraint($indexName)) {
+		if ($doctrineTable->hasIndex($indexName)) {
 			$table->dropUnique($indexName);
 		}
 	}
