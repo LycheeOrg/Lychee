@@ -438,7 +438,10 @@ class AlbumQueryPolicy
 			->when(Auth::check(),
 				fn ($q1) => $q1->where(APC::USER_ID, '=', Auth::id())
 						->orWhere(fn ($q2) => $q2->whereNull(APC::USER_ID)
-								->whereNotIn(DB::table('access_permissions')->select('id')->where(APC::USER_ID, '=', Auth::id()))
+							->whereNotIn(APC::COMPUTED_ACCESS_PERMISSIONS . '.id',
+								DB::table('access_permissions', 'access_perm_user')
+									->select('access_perm_user.id')
+									->where('access_perm_user.' . APC::USER_ID, '=', Auth::id()))
 						))
 			->when(!Auth::check(),
 				fn ($q1) => $q1->whereNull(APC::USER_ID));
