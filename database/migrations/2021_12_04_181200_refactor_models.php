@@ -1766,7 +1766,7 @@ return new class() extends Migration {
 	}
 
 	/**
-	 * A helper function that allows to drop an index if exists.
+	 * A helper function that allows to drop an unique constraint if exists.
 	 *
 	 * @param Blueprint $table
 	 * @param string    $indexName
@@ -1776,13 +1776,13 @@ return new class() extends Migration {
 	private function dropUniqueIfExists(Blueprint $table, string $indexName)
 	{
 		$doctrineTable = $this->schemaManager->introspectTable($table->getTable());
-		if ($doctrineTable->hasIndex($indexName)) {
+		if ($doctrineTable->hasUniqueConstraint($indexName)) {
 			$table->dropUnique($indexName);
 		}
 	}
 
 	/**
-	 * A helper function that allows to drop an index if exists.
+	 * A helper function that allows to drop an foreign key if exists.
 	 *
 	 * @param Blueprint $table
 	 * @param string    $indexName
