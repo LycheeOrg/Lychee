@@ -38,10 +38,10 @@ return new class() extends Migration {
 					]);
 				}
 			} else {
-				Log::notice(__FUNCTION__ . ':' . __LINE__ . ' ' . env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_albums does not exist!');
+				Log::notice(__METHOD__ . ':' . __LINE__ . ' ' . env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_albums does not exist!');
 			}
 		} else {
-			Log::notice(__FUNCTION__ . ':' . __LINE__ . ' albums is not empty.');
+			Log::notice(__METHOD__ . ':' . __LINE__ . ' albums is not empty.');
 		}
 	}
 
