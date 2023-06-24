@@ -183,7 +183,7 @@ class AlbumQueryPolicy
 					// Album is visible and password protected and unlocked
 					fn (Builder $q) => $q
 						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
-						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::PASSWORD)
+						->whereNotNull(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::PASSWORD)
 						->whereIn(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID, $unlockedAlbumIDs)
 				)
 				->when(
@@ -428,24 +428,10 @@ class AlbumQueryPolicy
 	 */
 	public function getComputedAccessPermissionSubQuery(): BaseBuilder
 	{
-		// $driver = DB::getDriverName();
-		// $passwordLengthIsBetween0and1 = match ($driver) {
-		// 	'pgsql' => $this->getPasswordIsRequiredPgSQL(),
-		// 	'sqlite' => $this->getPasswordIsRequiredSqlite(),
-		// 	default => $this->getPasswordIsRequiredMySQL()
-		// };
-
 		$select = [
 			APC::BASE_ALBUM_ID,
 			APC::IS_LINK_REQUIRED,
-			// APC::GRANTS_FULL_PHOTO_ACCESS,
-			// APC::GRANTS_DOWNLOAD,
-			// APC::GRANTS_UPLOAD,
-			// APC::GRANTS_EDIT,
-			// APC::GRANTS_DELETE,
 			APC::PASSWORD,
-			// APC::IS_PASSWORD_REQUIRED
-			// DB::raw($passwordLengthIsBetween0and1 . ' as ' . APC::IS_PASSWORD_REQUIRED),
 		];
 
 		return DB::table('access_permissions', APC::COMPUTED_ACCESS_PERMISSIONS)->select($select)
@@ -457,34 +443,6 @@ class AlbumQueryPolicy
 			->when(!Auth::check(),
 				fn ($q1) => $q1->whereNull(APC::USER_ID));
 	}
-
-	// private function getPasswordIsRequiredMySQL(): string
-	// {
-	// 	return '1 - ISNULL(' . APC::PASSWORD . ')';
-	// }
-
-	// private function getPasswordIsRequiredSqlite(): string
-	// {
-	// 	// sqlite does not support ISNULL(x) -> bool
-	// 	// We convert password to empty string if it is null
-	// 	$passwordIsDefined = 'IFNULL(' . APC::PASSWORD . ',"")';
-	// 	// Take the lengh
-	// 	$passwordLength = 'LENGTH(' . $passwordIsDefined . ')';
-	// 	// First min with 1 to upper bound it
-	// 	// then MIN aggregation
-	// 	return 'MIN(' . $passwordLength . ',1)';
-	// }
-
-	// private function getPasswordIsRequiredPgSQL(): string
-	// {
-	// 	// pgsql has a proper boolean support and does not support ISNULL(x) -> bool
-	// 	// If password is null, length returns null, we replace the value by 0 in such case
-	// 	$passwordLength = 'COALESCE(LENGTH(' . APC::PASSWORD . '),0)';
-	// 	// We take the minimum between length and 1 with LEAST
-	// 	// and then agggregate on the column with MIN
-	// 	// before casting it to bool
-	// 	return 'LEAST(' . $passwordLength . ',1)::bool';
-	// }
 
 	/**
 	 * Helper to join the the computed property for the possibly logged-in user.
