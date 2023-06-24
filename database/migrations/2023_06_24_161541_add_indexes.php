@@ -42,7 +42,6 @@ return new class() extends Migration {
 	{
 		Schema::table(self::ACCESS_PERMISSIONS, function (Blueprint $table) {
 			$table->index([self::IS_LINK_REQUIRED]); // for albums which don't require a direct link and are public
-			// $table->index([self::USER_ID]); // for albums which are own by the currently authenticated user
 			$table->index([self::IS_LINK_REQUIRED, self::PASSWORD]); // for albums which are public and how no password
 		});
 
