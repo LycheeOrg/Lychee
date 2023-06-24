@@ -30,7 +30,7 @@ class WebAuthTest extends AbstractTestCase
 	{
 		parent::setUp();
 		$this->setUpRequiresEmptyWebAuthnCredentials();
-		config(["app.url" => "https://localhost"]); 
+		config(['app.url' => 'https://localhost']);
 	}
 
 	public function tearDown(): void
