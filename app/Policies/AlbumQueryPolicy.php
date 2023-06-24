@@ -353,7 +353,7 @@ class AlbumQueryPolicy
 						->where('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', true)
 						->orWhereNull('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED)
 						->orWhereNotNull('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::PASSWORD)
-						// ->orWhere('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_PASSWORD_REQUIRED, '=', true)
+					// ->orWhere('inner_' . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_PASSWORD_REQUIRED, '=', true)
 				)
 				->where(
 					fn (BaseBuilder $q) => $q
@@ -443,17 +443,15 @@ class AlbumQueryPolicy
 			// APC::GRANTS_UPLOAD,
 			// APC::GRANTS_EDIT,
 			// APC::GRANTS_DELETE,
-			APC::PASSWORD
+			APC::PASSWORD,
 			// APC::IS_PASSWORD_REQUIRED
 			// DB::raw($passwordLengthIsBetween0and1 . ' as ' . APC::IS_PASSWORD_REQUIRED),
 		];
 
 		return DB::table('access_permissions', APC::COMPUTED_ACCESS_PERMISSIONS)->select($select)
 			->when(Auth::check(),
-				fn ($q1) => 
-					$q1->where(APC::USER_ID, '=', Auth::id())
-						->orWhere(fn($q2) => 
-							$q2->whereNull(APC::USER_ID)
+				fn ($q1) => $q1->where(APC::USER_ID, '=', Auth::id())
+						->orWhere(fn ($q2) => $q2->whereNull(APC::USER_ID)
 								->whereNotIn(DB::table('access_permissions')->select('id')->where(APC::USER_ID, '=', Auth::id()))
 						))
 			->when(!Auth::check(),
