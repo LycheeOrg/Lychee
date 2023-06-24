@@ -29,6 +29,7 @@ return [
 	*/
 
 	'db_log_sql' => (bool) env('DB_LOG_SQL', false),
+	'explain' => (bool) env('DB_LOG_SQL_EXPLAIN', false),
 
 	/*
 	|--------------------------------------------------------------------------
