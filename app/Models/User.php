@@ -50,7 +50,6 @@ use function Safe\mb_convert_encoding;
  * @property int|null                                              $photos_count
  * @property Collection<int, WebAuthnCredential>                   $webAuthnCredentials
  * @property int|null                                              $web_authn_credentials_count
- * @property Collection<int, WebAuthnCredential>                   $webAuthnCredentials
  *
  * @method static UserBuilder|User addSelect($column)
  * @method static UserBuilder|User join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
