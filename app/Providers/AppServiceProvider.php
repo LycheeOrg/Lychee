@@ -38,6 +38,22 @@ use function Safe\stream_filter_register;
 
 class AppServiceProvider extends ServiceProvider
 {
+	/**
+	 * Defines which queries to ignore when doing explain
+	 * 
+	 * @var array<int,string> 
+	 */
+	private array $ignore_log_SQL = 
+	[
+		'information_schema', // Not interesting
+
+		// We do not want infinite loops
+		'EXPLAIN',
+
+		// Way too noisy
+		'configs', 
+	];
+
 	public array $singletons =
 	[
 		SymLinkFunctions::class => SymLinkFunctions::class,
@@ -151,8 +167,7 @@ class AppServiceProvider extends ServiceProvider
 	{
 		// Quick exit
 		if (
-			Str::contains(request()->getRequestUri(), 'logs', true) ||
-			Str::contains($query->sql, ['information_schema', 'EXPLAIN', 'configs'])
+			Str::contains(request()->getRequestUri(), 'logs', true)
 		) {
 			return;
 		}
@@ -161,7 +176,11 @@ class AppServiceProvider extends ServiceProvider
 		$msg = '(' . $query->time . 'ms) ' . $query->sql . ' [' . implode(', ', $query->bindings) . ']';
 
 		// For pgsql and sqlite we log the query and exit early
-		if (config('database.default', 'mysql') !== 'mysql' || config('database.explain', false) === false) {
+		if (config('database.default', 'mysql') !== 'mysql' 
+			|| config('database.explain', false) === false
+			|| !Str::contains($query->sql, 'select')
+			|| Str::contains($query->sql, $this->ignore_log_SQL)
+		) {
 			Log::debug($msg);
 
 			return;

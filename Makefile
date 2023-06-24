@@ -109,7 +109,16 @@ release_major: gen_major
 TESTS_PHP := $(shell find tests/Feature -name "*Test.php" -printf "%f\n")
 TEST_DONE := $(addprefix build/,$(TESTS_PHP:.php=.done))
 
-build/%.done: tests/Feature/%.php
-	XDEBUG_MODE=coverage vendor/bin/phpunit --filter $* && touch build/$*.done
+build:
+	mkdir build
+
+build/Base%.done:
+	touch build/Base$*.done
+
+build/%UnitTest.done:
+	touch build/$*UnitTest.done
+
+build/%.done: tests/Feature/%.php build
+	vendor/bin/phpunit --no-coverage --filter $* && touch build/$*.done
 
 all_tests: $(TEST_DONE)
