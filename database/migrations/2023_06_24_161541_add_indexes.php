@@ -10,9 +10,6 @@ require_once 'TemporaryModels/OptimizeTables.php';
 
 return new class() extends Migration {
 	public const ACCESS_PERMISSIONS = 'access_permissions';
-	private const CREATED_AT_COL_NAME = 'created_at';
-	private const UPDATED_AT_COL_NAME = 'updated_at';
-	private const DATETIME_PRECISION = 0;
 
 	// Id names
 	public const BASE_ALBUM_ID = 'base_album_id';
