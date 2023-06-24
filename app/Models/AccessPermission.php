@@ -62,8 +62,6 @@ class AccessPermission extends Model
 	use ThrowsConsistentExceptions;
 
 	protected $casts = [
-		'created_at' => 'datetime',
-		'updated_at' => 'datetime',
 		APC::USER_ID => 'integer',
 		APC::IS_LINK_REQUIRED => 'boolean',
 		APC::GRANTS_FULL_PHOTO_ACCESS => 'boolean',

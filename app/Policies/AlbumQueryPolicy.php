@@ -61,6 +61,7 @@ class AlbumQueryPolicy
 			$query2
 				->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
 				// Current user is the owner of the album
+				// This is the case when is_link_required is NULL
 				->when(Auth::check(), fn ($q) => $q->orWhere('base_albums.owner_id', '=', Auth::id())
 				);
 		};
@@ -98,17 +99,16 @@ class AlbumQueryPolicy
 		try {
 			$query
 				->orWhere(
-					// Album is public/shared (visible or not) and NOT protected by a password
+					// Album is public/shared (visible or not => IS_LINK_REQUIRED NOT NULL)
+					// and NOT protected by a password
 					fn (BaseBuilder $q) => $q
 						->whereNull(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::PASSWORD)
-						->where(fn ($q) => $q
-								->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
-								->orWhere(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', true))
+						->whereNotNull(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED)
 				)
 				->orWhere(
 					// Album is public/shared (visible or not) and protected by a password and unlocked
 					fn (BaseBuilder $q) => $q
-						->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
+						->whereNotNull(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED)
 						->whereNotNull(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::PASSWORD)
 						->whereIn(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID, $unlockedAlbumIDs)
 				)
@@ -400,7 +400,8 @@ class AlbumQueryPolicy
 			$this->joinBaseAlbumOwnerId($query, $table . '.id', 'left');
 		}
 
-		$this->joinSubComputedAccessPermissions($query, $table . '.id', 'inner');
+		// We MUST use left here because otherwise we are preventing any non shared album to be visible
+		$this->joinSubComputedAccessPermissions($query, $table . '.id', 'left');
 	}
 
 	/**
