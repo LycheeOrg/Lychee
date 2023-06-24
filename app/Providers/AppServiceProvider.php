@@ -47,9 +47,6 @@ class AppServiceProvider extends ServiceProvider
 	[
 		'information_schema', // Not interesting
 
-		// We do not want infinite loops
-		'EXPLAIN',
-
 		// Way too noisy
 		'configs',
 	];
@@ -167,7 +164,8 @@ class AppServiceProvider extends ServiceProvider
 	{
 		// Quick exit
 		if (
-			Str::contains(request()->getRequestUri(), 'logs', true)
+			Str::contains(request()->getRequestUri(), 'logs', true) ||
+			Str::contains($query->sql, 'EXPLAIN') // We do not want infinite loops
 		) {
 			return;
 		}
