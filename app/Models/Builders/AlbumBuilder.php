@@ -68,7 +68,6 @@ class AlbumBuilder extends NSQueryBuilder
 	 */
 	public function getModels($columns = ['*']): array
 	{
-
 		$albumQueryPolicy = resolve(AlbumQueryPolicy::class);
 		$baseQuery = $this->getQuery();
 
@@ -185,7 +184,7 @@ class AlbumBuilder extends NSQueryBuilder
 
 		// Only join with base_album (used to get owner_id) when user is logged in
 		$countQuery->when(Auth::check(),
-			fn($q) => $albumQueryPolicy->joinBaseAlbumOwnerId(
+			fn ($q) => $albumQueryPolicy->joinBaseAlbumOwnerId(
 				query: $q,
 				second: 'a.id'
 			)
@@ -238,7 +237,7 @@ class AlbumBuilder extends NSQueryBuilder
 
 		// Only join with base_album (used to get owner_id) when user is logged in
 		$countQuery->when($userID !== null,
-			fn($q) => $albumQueryPolicy->joinBaseAlbumOwnerId(
+			fn ($q) => $albumQueryPolicy->joinBaseAlbumOwnerId(
 				query: $q,
 				second: 'p.album_id'
 			)
