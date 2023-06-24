@@ -47,6 +47,9 @@ class AppServiceProvider extends ServiceProvider
 	[
 		'information_schema', // Not interesting
 
+		// We do not want infinite loops
+		'EXPLAIN',
+
 		// Way too noisy
 		'configs',
 	];
@@ -165,7 +168,7 @@ class AppServiceProvider extends ServiceProvider
 		// Quick exit
 		if (
 			Str::contains(request()->getRequestUri(), 'logs', true) ||
-			Str::contains($query->sql, 'EXPLAIN') // We do not want infinite loops
+			Str::contains($query->sql, $this->ignore_log_SQL)
 		) {
 			return;
 		}
@@ -176,8 +179,7 @@ class AppServiceProvider extends ServiceProvider
 		// For pgsql and sqlite we log the query and exit early
 		if (config('database.default', 'mysql') !== 'mysql' ||
 			config('database.explain', false) === false ||
-			!Str::contains($query->sql, 'select') ||
-			Str::contains($query->sql, $this->ignore_log_SQL)
+			!Str::contains($query->sql, 'select')
 		) {
 			Log::debug($msg);
 
