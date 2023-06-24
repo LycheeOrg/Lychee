@@ -384,18 +384,22 @@ class Handler extends ExceptionHandler
 		// with a higher severity than the eventual exception
 		$severity = self::getLogSeverity($e);
 
+		$msg = '';
 		do {
 			$cause = $this->findCause($e);
 			if (count($cause) === 2) {
-				Log::log($severity->value, $cause[1]->getMethodBeautified() . ':' . $cause[1]->getLine() . ' ' . $e->getMessage() . '; caused by');
+				$msg_ = $cause[1]->getMethodBeautified() . ':' . $cause[1]->getLine() . ' ' . $e->getMessage() . '; caused by';
+				$msg = $msg_ . PHP_EOL . $msg;
 			}
 
 			if ($e->getPrevious() !== null) {
-				Log::log($severity->value, $cause[0]->getMethodBeautified() . ':' . $cause[0]->getLine() . ' ' . $e->getMessage() . '; caused by');
+				$msg_ = $cause[0]->getMethodBeautified() . ':' . $cause[0]->getLine() . ' ' . $e->getMessage() . '; caused by';
 			} else {
-				Log::log($severity->value, $cause[0]->getMethodBeautified() . ':' . $cause[0]->getLine() . ' ' . $e->getMessage());
+				$msg_ = $cause[0]->getMethodBeautified() . ':' . $cause[0]->getLine() . ' ' . $e->getMessage();
 			}
+			$msg = $msg_ . PHP_EOL . $msg;
 		} while ($e = $e->getPrevious());
+		Log::log($severity->value, $msg);
 	}
 
 	/**
