@@ -60,6 +60,7 @@ class SharingController extends Controller
 	 */
 	public function setByAlbum(SetSharesByAlbumRequest $request): void
 	{
+		// TODO: introduce logging on action
 		// Clear previous (otherwise we can only add).
 		try {
 			DB::table(APC::ACCESS_PERMISSIONS)
@@ -94,6 +95,8 @@ class SharingController extends Controller
 				[
 					APC::GRANTS_DOWNLOAD => Configs::getValueAsBool('grants_download'),
 					APC::GRANTS_FULL_PHOTO_ACCESS => Configs::getValueAsBool('grants_full_photo_access'),
+					'created_at' => now(),
+					'updated_at' => now(),
 				],
 				false);
 		}

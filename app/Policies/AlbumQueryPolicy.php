@@ -306,7 +306,7 @@ class AlbumQueryPolicy
 				->from('albums', 'inner')
 				->when(
 					Auth::check(),
-					fn ($q) => $this->joinBaseAlbumOwnerId($q, 'inner.id', 'left', 'inner_')
+					fn ($q) => $this->joinBaseAlbumOwnerId($q, 'inner.id', 'inner_')
 				);
 
 			// WE MUST JOIN LEFT HERE
@@ -397,7 +397,7 @@ class AlbumQueryPolicy
 		}
 
 		if (Auth::check() && ($model instanceof Album || $model instanceof TagAlbum)) {
-			$this->joinBaseAlbumOwnerId($query, $table . '.id', 'left');
+			$this->joinBaseAlbumOwnerId($query, $table . '.id');
 		}
 
 		// We MUST use left here because otherwise we are preventing any non shared album to be visible
