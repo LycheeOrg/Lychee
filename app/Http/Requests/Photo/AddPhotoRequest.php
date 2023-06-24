@@ -15,7 +15,7 @@ class AddPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 	use HasAbstractAlbumTrait;
 	use AuthorizeCanEditAlbumTrait;
 
-	protected int $fileLastModifiedTime;
+	protected ?int $fileLastModifiedTime;
 	protected UploadedFile $file;
 
 	/**
@@ -36,7 +36,7 @@ class AddPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 			null :
 			$this->albumFactory->findAbstractAlbumOrFail($albumID);
 		// Convert the File Last Modified to seconds instead of milliseconds
-		$this->fileLastModifiedTime = $values[RequestAttribute::FILE_LAST_MODIFIED_TIME] / 1000;
+		$this->fileLastModifiedTime = $values[RequestAttribute::FILE_LAST_MODIFIED_TIME] ?? null;
 		$this->file = $files[RequestAttribute::FILE_ATTRIBUTE];
 	}
 
@@ -45,8 +45,8 @@ class AddPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 		return $this->file;
 	}
 
-	public function fileLastModifiedTime(): int
+	public function fileLastModifiedTime(): ?int
 	{
-		return $this->fileLastModifiedTime;
+		return $this->fileLastModifiedTime !== null ? intval($this->fileLastModifiedTime / 1000) : null;
 	}
 }

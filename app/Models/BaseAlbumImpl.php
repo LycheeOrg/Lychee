@@ -21,7 +21,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -89,26 +88,23 @@ use Illuminate\Support\Facades\Auth;
  * but this class is not a proper parent class (it just provides an
  * implementation of it) and we need this class to be instantiable.
  *
- * @property string                     $id
- * @property int                        $legacy_id
- * @property Carbon                     $created_at
- * @property Carbon                     $updated_at
- * @property string                     $title
- * @property string|null                $description
- * @property int                        $owner_id
- * @property User                       $owner
- * @property bool                       $is_nsfw
- * @property Collection                 $shared_with
- * @property int|null                   $shared_with_count
- * @property PhotoSortingCriterion|null $sorting
- * @property string|null                $sorting_col
- * @property string|null                $sorting_order
- * @property hasMany<AccessPermission>  $access_permissions
- * @property AccessPermission|null      $current_permissions
- * @property AccessPermission|null      $public_permissions
- * @property int|null                   $access_permissions_count
- * @property AccessPermission|null      $current_user_permissions
- * @property string|null                $copyright
+ * @property string                           $id
+ * @property int                              $legacy_id
+ * @property Carbon                           $created_at
+ * @property Carbon                           $updated_at
+ * @property string                           $title
+ * @property string|null                      $description
+ * @property int                              $owner_id
+ * @property User                             $owner
+ * @property bool                             $is_nsfw
+ * @property Collection                       $shared_with
+ * @property int|null                         $shared_with_count
+ * @property PhotoSortingCriterion|null       $sorting
+ * @property string|null                      $sorting_col
+ * @property string|null                      $sorting_order
+ * @property Collection<int,AccessPermission> $access_permissions
+ * @property int|null                         $access_permissions_count
+ * @property string|null                      $copyright
  *
  * @method static BaseAlbumImplBuilder|BaseAlbumImpl addSelect($column)
  * @method static BaseAlbumImplBuilder|BaseAlbumImpl join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
@@ -198,7 +194,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	/**
 	 * The relationships that should always be eagerly loaded by default.
 	 */
-	protected $with = ['owner', 'access_permissions', 'current_user_permissions', 'public_permissions'];
+	protected $with = ['owner', 'access_permissions'];
 
 	/**
 	 * @param $query
@@ -249,26 +245,21 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	/**
 	 * Returns the relationship between an album and its associated current user permissions.
 	 *
-	 * @return HasOne
+	 * @return ?AccessPermission
 	 */
-	public function current_user_permissions(): HasOne
+	public function current_user_permissions(): AccessPermission|null
 	{
-		return $this->access_permissions()
-			->one()
-			->whereNotNull(APC::USER_ID)
-			->where(APC::USER_ID, '=', Auth::id());
+		return $this->access_permissions->first(fn (AccessPermission $p) => $p->user_id !== null && $p->user_id === Auth::id());
 	}
 
 	/**
 	 * Returns the relationship between an album and its associated public permissions.
 	 *
-	 * @return HasOne
+	 * @return ?AccessPermission
 	 */
-	public function public_permissions(): HasOne
+	public function public_permissions(): AccessPermission|null
 	{
-		return $this->access_permissions()
-			->one()
-			->whereNull(APC::USER_ID);
+		return $this->access_permissions->first(fn (AccessPermission $p) => $p->user_id === null);
 	}
 
 	protected function getSortingAttribute(): ?PhotoSortingCriterion

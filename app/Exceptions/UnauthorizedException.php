@@ -13,7 +13,7 @@ class UnauthorizedException extends BaseLycheeException
 {
 	public const DEFAULT_MESSAGE = 'Insufficient privileges';
 
-	public function __construct(string $msg = self::DEFAULT_MESSAGE, \Throwable $previous = null)
+	public function __construct(string $msg = self::DEFAULT_MESSAGE, ?\Throwable $previous = null)
 	{
 		parent::__construct(Response::HTTP_FORBIDDEN, $msg, $previous);
 	}

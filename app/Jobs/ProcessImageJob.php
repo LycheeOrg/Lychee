@@ -38,7 +38,7 @@ class ProcessImageJob implements ShouldQueue
 	public string $originalBaseName;
 	public ?string $albumId;
 	public int $userId;
-	public int $fileLastModifiedTime;
+	public ?int $fileLastModifiedTime;
 
 	/**
 	 * Create a new job instance.
@@ -46,7 +46,7 @@ class ProcessImageJob implements ShouldQueue
 	public function __construct(
 		ProcessableJobFile $file,
 		?AbstractAlbum $albumId,
-		int $fileLastModifiedTime,
+		?int $fileLastModifiedTime,
 	) {
 		$this->filePath = $file->getPath();
 		$this->originalBaseName = $file->getOriginalBasename();

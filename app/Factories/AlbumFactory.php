@@ -84,7 +84,7 @@ class AlbumFactory
 		$tagAlbumQuery = TagAlbum::query();
 
 		if ($withRelations) {
-			$albumQuery->with(['photos', 'children', 'photos.size_variants']);
+			$albumQuery->with(['access_permissions', 'photos', 'children', 'photos.size_variants']);
 			$tagAlbumQuery->with(['photos']);
 		}
 

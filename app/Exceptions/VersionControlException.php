@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class VersionControlException extends BaseLycheeException
 {
-	public function __construct(string $msg, \Throwable $previous = null)
+	public function __construct(string $msg, ?\Throwable $previous = null)
 	{
 		parent::__construct(Response::HTTP_INTERNAL_SERVER_ERROR, $msg, $previous);
 	}

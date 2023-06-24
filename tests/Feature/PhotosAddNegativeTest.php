@@ -39,7 +39,6 @@ class PhotosAddNegativeTest extends BasePhotoTest
 	{
 		$this->photos_tests->wrong_upload();
 		$this->photos_tests->wrong_upload2();
-		$this->photos_tests->wrong_upload3(AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_SUNSET_IMAGE));
 	}
 
 	public function testImportViaDeniedMove(): void
@@ -118,6 +117,31 @@ class PhotosAddNegativeTest extends BasePhotoTest
 
 			$this->photos_tests->importFromUrl(
 				[TestConstants::SAMPLE_DOWNLOAD_TIFF],
+				null,
+				422,
+				'MediaFileUnsupportedException'
+			);
+		} finally {
+			static::setAcceptedRawFormats($acceptedRawFormats);
+		}
+	}
+
+	/**
+	 * Test import from URL of an unsupported raw image without file extension.
+	 *
+	 * We need this test because in case the file doesn't have an extension, we'll download the file
+	 * and try to guess the extension.
+	 *
+	 * @return void
+	 */
+	public function testRefusedRawImportFormUrlWithoutExtension(): void
+	{
+		$acceptedRawFormats = static::getAcceptedRawFormats();
+		try {
+			static::setAcceptedRawFormats('');
+
+			$this->photos_tests->importFromUrl(
+				[TestConstants::SAMPLE_DOWNLOAD_TIFF_WITHOUT_EXTENSION],
 				null,
 				422,
 				'MediaFileUnsupportedException'

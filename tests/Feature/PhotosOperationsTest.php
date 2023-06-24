@@ -319,7 +319,7 @@ class PhotosOperationsTest extends BasePhotoTest
 	 */
 	public function testThumbnailsInsideHiddenAlbum(): void
 	{
-		$isRecentPublic = RecentAlbum::getInstance()->public_permissions !== null;
+		$isRecentPublic = RecentAlbum::getInstance()->public_permissions() !== null;
 		$arePublicPhotosHidden = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_HIDDEN);
 		$isPublicSearchEnabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
 		$albumSortingColumn = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_COL);
@@ -539,5 +539,19 @@ class PhotosOperationsTest extends BasePhotoTest
 
 		$photo = new Photo();
 		$photo->live_photo_full_path = 'Something';
+	}
+
+	/**
+	 * Test uploading without timeData.
+	 */
+	public function testUploadTimeFromFileTimeNull(): void
+	{
+		Auth::loginUsingId(1);
+		$this->photos_tests->upload(
+			self::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE),
+			albumID: null,
+			expectedStatusCode: 201,
+			assertSee: null,
+			fileLastModifiedTime: null);
 	}
 }

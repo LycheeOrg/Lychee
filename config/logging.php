@@ -48,21 +48,15 @@ return [
 	'channels' => [
 		'stack' => [
 			'driver' => 'stack',
-			'channels' => ['debug-daily', 'notice', 'warning', 'error', ],
+			'channels' => ['debug-daily', 'error', 'warning',  'notice'],
 		],
 
-		// By the way...
-		'notice' => [
-			'path' => storage_path('logs/notice.log'),
+		// Whatever debug log is needed
+		// Mostly SQL requests
+		'debug-daily' => [
+			'path' => storage_path('logs/daily.log'),
 			'driver' => 'daily',
-			'level' => 'notice',
-		],
-
-		// Something may have gone wrong
-		'warning' => [
-			'path' => storage_path('logs/warning.log'),
-			'driver' => 'single',
-			'level' => 'warning',
+			'level' => 'debug',
 		],
 
 		// Something went wrong
@@ -70,14 +64,22 @@ return [
 			'path' => storage_path('logs/errors.log'),
 			'driver' => 'single',
 			'level' => 'error',
+			'bubble' => false,
 		],
 
-		// Whatever debug log is needed
-		// Nostly SQL requests
-		'debug-daily' => [
-			'path' => storage_path('logs/daily.log'),
+		// Something may have gone wrong
+		'warning' => [
+			'path' => storage_path('logs/warning.log'),
+			'driver' => 'single',
+			'level' => 'warning',
+			'bubble' => false,
+		],
+
+		// By the way...
+		'notice' => [
+			'path' => storage_path('logs/notice.log'),
 			'driver' => 'daily',
-			'level' => 'debug',
+			'level' => 'notice',
 		],
 
 		// Specific channel to check who is accessing Lychee

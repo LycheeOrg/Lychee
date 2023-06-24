@@ -28,8 +28,6 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  * @property string                           $title
  * @property Collection<int,Photo>            $photos
  * @property Thumb|null                       $thumb
- * @property AccessPermission|null            $current_permissions
- * @property AccessPermission|null            $public_permissions
  * @property Collection<int,AccessPermission> $access_permissions
  */
 interface AbstractAlbum extends \JsonSerializable, Arrayable, Jsonable
@@ -38,4 +36,11 @@ interface AbstractAlbum extends \JsonSerializable, Arrayable, Jsonable
 	 * @return Relation|Builder
 	 */
 	public function photos(): Relation|Builder;
+
+	/**
+	 * Returns the permissions for the public user.
+	 *
+	 * @return ?AccessPermission
+	 */
+	public function public_permissions(): AccessPermission|null;
 }

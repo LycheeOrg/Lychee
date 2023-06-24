@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Actions\InstallUpdate\CheckUpdate;
+use App\Assets\ArrayToTextTable;
 use App\Assets\Helpers;
 use App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
@@ -23,20 +24,22 @@ use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Policies\SettingsPolicy;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 use Opcodes\LogViewer\Facades\LogViewer;
 use Safe\Exceptions\StreamException;
 use function Safe\stream_filter_register;
 
 class AppServiceProvider extends ServiceProvider
 {
-	public array $singletons
-	= [
+	public array $singletons =
+	[
 		SymLinkFunctions::class => SymLinkFunctions::class,
 		Helpers::class => Helpers::class,
 		CheckUpdate::class => CheckUpdate::class,
@@ -72,10 +75,7 @@ class AppServiceProvider extends ServiceProvider
 		JsonResource::withoutWrapping();
 
 		if (config('database.db_log_sql', false) === true) {
-			DB::listen(function ($query) {
-				$msg = $query->sql . ' [' . implode(', ', $query->bindings) . ']';
-				Log::debug($msg);
-			});
+			DB::listen(fn ($q) => $this->logSQL($q));
 		}
 
 		try {
@@ -114,14 +114,6 @@ class AppServiceProvider extends ServiceProvider
 		 * Set up the Authorization layer for accessing Logs in LogViewer.
 		 */
 		LogViewer::auth(function ($request) {
-			// We must disable unsafe-eval because vue3 used by log-viewer requires it.
-			// We must disable unsafe-inline (and hashes) because log-viewer uses inline script with parameter to boot.
-			// Those parameters are not know by Lychee if someone modifies the config.
-			// We only do that in that specific case. It is disabled by default otherwise.
-			config(['secure-headers.csp.script-src.unsafe-eval' => true]);
-			config(['secure-headers.csp.script-src.unsafe-inline' => true]);
-			config(['secure-headers.csp.script-src.hashes.sha256' => []]);
-
 			// Allow to bypass when debug is ON and when env is dev
 			// At this point, it is no longer our fault if the Lychee admin have their logs publically accessible.
 			if (config('app.debug', false) === true && config('app.env', 'production') === 'dev') {
@@ -153,5 +145,43 @@ class AppServiceProvider extends ServiceProvider
 			SizeVariantFactory::class,
 			SizeVariantDefaultFactory::class
 		);
+	}
+
+	private function logSQL(QueryExecuted $query): void
+	{
+		// Quick exit
+		if (
+			Str::contains(request()->getRequestUri(), 'logs', true) ||
+			Str::contains($query->sql, ['information_schema', 'EXPLAIN', 'configs'])
+		) {
+			return;
+		}
+
+		// Get message with binding outside.
+		$msg = '(' . $query->time . 'ms) ' . $query->sql . ' [' . implode(', ', $query->bindings) . ']';
+
+		// For pgsql and sqlite we log the query and exit early
+		if (config('database.default', 'mysql') !== 'mysql' || config('database.explain', false) === false) {
+			Log::debug($msg);
+
+			return;
+		}
+
+		// For mysql we perform an explain as this is usually the one being slower...
+		$bindings = collect($query->bindings)->map(function ($q) {
+			return match (gettype($q)) {
+				'NULL' => "''",
+				'string' => "'{$q}'",
+				'boolean' => $q ? '1' : '0',
+				default => $q
+			};
+		})->all();
+
+		$sql_with_bindings = Str::replaceArray('?', $bindings, $query->sql);
+
+		$explain = DB::select('EXPLAIN ' . $sql_with_bindings);
+		$renderer = new ArrayToTextTable();
+		$renderer->setIgnoredKeys(['possible_keys', 'key_len', 'ref']);
+		Log::debug($msg . PHP_EOL . $renderer->getTable($explain));
 	}
 }

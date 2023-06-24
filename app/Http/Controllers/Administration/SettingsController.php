@@ -30,7 +30,6 @@ use App\Http\Requests\Settings\SetSmartAlbumVisibilityRequest;
 use App\Http\Requests\Settings\SetSortingSettingsRequest;
 use App\Models\AccessPermission;
 use App\Models\Configs;
-use App\Models\User;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
@@ -131,14 +130,14 @@ class SettingsController extends Controller
 	{
 		/** @var BaseSmartAlbum $album */
 		$album = $request->album();
-		if ($request->is_public() && $album->public_permissions === null) {
+		if ($request->is_public() && $album->public_permissions() === null) {
 			$access_permissions = AccessPermission::ofPublic();
 			$access_permissions->base_album_id = $album->id;
 			$access_permissions->save();
 		}
 
-		if (!$request->is_public() && $album->public_permissions !== null) {
-			$perm = $album->public_permissions;
+		if (!$request->is_public() && $album->public_permissions() !== null) {
+			$perm = $album->public_permissions();
 			$perm->delete();
 		}
 	}

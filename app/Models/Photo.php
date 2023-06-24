@@ -389,7 +389,7 @@ class Photo extends Model
 	 * @throws ModelDBException
 	 * @throws IllegalOrderOfOperationException
 	 */
-	public function replicate(array $except = null): Photo
+	public function replicate(?array $except = null): Photo
 	{
 		$duplicate = parent::replicate($except);
 		// A photo has the following relations: (parent) album, owner and

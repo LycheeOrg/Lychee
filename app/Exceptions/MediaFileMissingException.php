@@ -14,7 +14,7 @@ class MediaFileMissingException extends BaseLycheeException
 {
 	public const DEFAULT_MESSAGE = 'The media file is missing';
 
-	public function __construct(string $msg = self::DEFAULT_MESSAGE, \Throwable $previous = null)
+	public function __construct(string $msg = self::DEFAULT_MESSAGE, ?\Throwable $previous = null)
 	{
 		parent::__construct(Response::HTTP_NOT_FOUND, $msg, $previous);
 	}
