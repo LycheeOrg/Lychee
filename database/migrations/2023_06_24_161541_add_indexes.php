@@ -1,13 +1,12 @@
 <?php
 
-use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Exception as DBALException;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class() extends Migration {
 	public const ACCESS_PERMISSIONS = 'access_permissions';
 
 	// Id names
@@ -34,30 +33,30 @@ return new class extends Migration
 		$this->schemaManager = $connection->getDoctrineSchemaManager();
 	}
 
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
+	/**
+	 * Run the migrations.
+	 */
+	public function up(): void
+	{
 		Schema::table(self::ACCESS_PERMISSIONS, function (Blueprint $table) {
-            $table->index([self::IS_LINK_REQUIRED]); // for albums which don't require a direct link and are public
-            // $table->index([self::USER_ID]); // for albums which are own by the currently authenticated user
-            $table->index([self::IS_LINK_REQUIRED, self::PASSWORD]); // for albums which are public and how no password
-        });
-    }
+			$table->index([self::IS_LINK_REQUIRED]); // for albums which don't require a direct link and are public
+			// $table->index([self::USER_ID]); // for albums which are own by the currently authenticated user
+			$table->index([self::IS_LINK_REQUIRED, self::PASSWORD]); // for albums which are public and how no password
+		});
+	}
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
+	/**
+	 * Reverse the migrations.
+	 */
+	public function down(): void
+	{
 		Schema::table(self::ACCESS_PERMISSIONS, function (Blueprint $table) {
 			$this->dropIndexIfExists($table, self::ACCESS_PERMISSIONS . '_' . self::IS_LINK_REQUIRED . '_index');
-			$this->dropIndexIfExists($table, self::ACCESS_PERMISSIONS . '_' . self::IS_LINK_REQUIRED . '_'. self::PASSWORD. '_index');
-        });
-    }
+			$this->dropIndexIfExists($table, self::ACCESS_PERMISSIONS . '_' . self::IS_LINK_REQUIRED . '_' . self::PASSWORD . '_index');
+		});
+	}
 
-    /**
+	/**
 	 * A helper function that allows to drop an index if exists.
 	 *
 	 * @param Blueprint $table
