@@ -114,14 +114,6 @@ class AppServiceProvider extends ServiceProvider
 		 * Set up the Authorization layer for accessing Logs in LogViewer.
 		 */
 		LogViewer::auth(function ($request) {
-			// We must disable unsafe-eval because vue3 used by log-viewer requires it.
-			// We must disable unsafe-inline (and hashes) because log-viewer uses inline script with parameter to boot.
-			// Those parameters are not know by Lychee if someone modifies the config.
-			// We only do that in that specific case. It is disabled by default otherwise.
-			config(['secure-headers.csp.script-src.unsafe-eval' => true]);
-			config(['secure-headers.csp.script-src.unsafe-inline' => true]);
-			config(['secure-headers.csp.script-src.hashes.sha256' => []]);
-
 			// Allow to bypass when debug is ON and when env is dev
 			// At this point, it is no longer our fault if the Lychee admin have their logs publically accessible.
 			if (config('app.debug', false) === true && config('app.env', 'production') === 'dev') {
