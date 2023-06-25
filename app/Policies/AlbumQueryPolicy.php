@@ -396,9 +396,7 @@ class AlbumQueryPolicy
 			$query->select([$table . '.*']);
 		}
 
-		if (Auth::check() && ($model instanceof Album || $model instanceof TagAlbum)) {
-			$this->joinBaseAlbumOwnerId($query, $table . '.id');
-		}
+		$this->joinBaseAlbumOwnerId($query, $table . '.id');
 
 		// We MUST use left here because otherwise we are preventing any non shared album to be visible
 		$this->joinSubComputedAccessPermissions($query, $table . '.id', 'left');
@@ -494,6 +492,9 @@ class AlbumQueryPolicy
 				->select([
 					$prefix . 'base_albums.id',
 					$prefix . 'base_albums.owner_id',
+					$prefix . 'base_albums.title',
+					$prefix . 'base_albums.created_at',
+					$prefix . 'base_albums.description',
 				]),
 			as: $prefix . 'base_albums',
 			first: $prefix . 'base_albums.id',
