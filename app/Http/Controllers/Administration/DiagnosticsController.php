@@ -144,6 +144,7 @@ class DiagnosticsController extends Controller
 				$e->grants_delete = $e->grants_delete === 1;
 				$e->grants_edit = $e->grants_edit === 1;
 				$e->grants_full_photo_access = $e->grants_full_photo_access === 1;
+
 				return $e;
 			});
 

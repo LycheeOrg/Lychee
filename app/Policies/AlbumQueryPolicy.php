@@ -17,7 +17,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
 
 /**
  * Class AlbumQueryPolicy.
@@ -465,11 +464,11 @@ class AlbumQueryPolicy
 	/**
 	 * Helper to join the the computed property for the possibly logged-in user.
 	 *
-	 * @param AlbumBuilder|FixedQueryBuilder|BaseBuilder $query query to join to
+	 * @param AlbumBuilder|FixedQueryBuilder|BaseBuilder $query  query to join to
 	 * @param string                                     $second id to link with
 	 * @param string                                     $prefix prefix in the future queries
-	 * @param string                                     $type left|inner
-	 * @param bool                                       $full Select most columns instead of just restricted
+	 * @param string                                     $type   left|inner
+	 * @param bool                                       $full   Select most columns instead of just restricted
 	 *
 	 * @return void
 	 *
@@ -495,13 +494,15 @@ class AlbumQueryPolicy
 	/**
 	 * Join BaseAlbum.
 	 * This aim to give lighter sub selection to make the queries run faster.
-	 * 
-	 * @param AlbumBuilder|FixedQueryBuilder|BaseBuilder $query 
-	 * @param string $second 
-	 * @param string $prefix 
-	 * @param bool $full 
-	 * @return void 
-	 * @throws InvalidArgumentException 
+	 *
+	 * @param AlbumBuilder|FixedQueryBuilder|BaseBuilder $query
+	 * @param string                                     $second
+	 * @param string                                     $prefix
+	 * @param bool                                       $full
+	 *
+	 * @return void
+	 *
+	 * @throws \InvalidArgumentException
 	 */
 	public function joinBaseAlbumOwnerId(
 		AlbumBuilder|FixedQueryBuilder|BaseBuilder $query,
