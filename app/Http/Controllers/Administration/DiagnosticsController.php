@@ -98,7 +98,7 @@ class DiagnosticsController extends Controller
 	 *
 	 * @return View
 	 */
-	public function getFullAccessPermissions(): View
+	public function getFullAccessPermissions(AlbumQueryPolicy $albumQueryPolicy): View
 	{
 		if (!$this->isAuthorized() && config('app.debug') !== true) {
 			throw new UnauthorizedException();
@@ -121,19 +121,31 @@ class DiagnosticsController extends Controller
 			->orderBy(APC::BASE_ALBUM_ID)
 			->get();
 
-		$data2 = resolve(AlbumQueryPolicy::class)->getComputedAccessPermissionSubQuery()
-			->joinSub(
-				DB::table('base_albums')
-					->select(['id', 'title']),
-				'base_albums',
-				'base_albums.id',
-				'=',
-				APC::BASE_ALBUM_ID
-			)
-			->addSelect('title')
-			->groupBy('title')
+		$query2 = DB::table('base_albums');
+		$albumQueryPolicy->joinSubComputedAccessPermissions($query2, 'base_albums.id', 'inner', '', true);
+		$data2 = $query2
+			->select([
+				APC::BASE_ALBUM_ID,
+				APC::IS_LINK_REQUIRED,
+				APC::GRANTS_FULL_PHOTO_ACCESS,
+				APC::GRANTS_DOWNLOAD,
+				APC::GRANTS_EDIT,
+				APC::GRANTS_UPLOAD,
+				APC::GRANTS_DELETE,
+				APC::PASSWORD,
+				'title',
+			])
 			->orderBy(APC::BASE_ALBUM_ID)
-			->get();
+			->get()
+			->map(function ($e) {
+				$e->is_link_required = $e->is_link_required === 1;
+				$e->grants_download = $e->grants_download === 1;
+				$e->grants_upload = $e->grants_upload === 1;
+				$e->grants_delete = $e->grants_delete === 1;
+				$e->grants_edit = $e->grants_edit === 1;
+				$e->grants_full_photo_access = $e->grants_full_photo_access === 1;
+				return $e;
+			});
 
 		return view('access-permissions', ['data1' => json_encode($data1, JSON_PRETTY_PRINT), 'data2' => json_encode($data2, JSON_PRETTY_PRINT)]);
 	}
