@@ -257,7 +257,6 @@ class AlbumBuilder extends NSQueryBuilder
 		$visibilitySubQuery = function ($query2) use ($userID) {
 			$query2
 				->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
-				// ->whereNotNull(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED)
 				->when($userID !== null,
 					fn ($query) => $query
 						->orWhere('base_albums.owner_id', '=', $userID)

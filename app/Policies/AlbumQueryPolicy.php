@@ -409,7 +409,9 @@ class AlbumQueryPolicy
 
 		// We MUST do a full join because we are also sorting on created_at, title and description.
 		// Those are stored in the base_albums.
-		$this->joinBaseAlbumOwnerId($query, $table . '.id');
+		if ($model instanceof Album || $model instanceof TagAlbum) {
+			$this->joinBaseAlbumOwnerId($query, $table . '.id');
+		}
 
 		// We MUST use left here because otherwise we are preventing any non shared album to be visible
 		$this->joinSubComputedAccessPermissions($query, $table . '.id', 'left');
