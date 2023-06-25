@@ -68,7 +68,9 @@ class AlbumBuilder extends NSQueryBuilder
 	 */
 	public function getModels($columns = ['*']): array
 	{
+		$albumQueryPolicy = resolve(AlbumQueryPolicy::class);
 		$baseQuery = $this->getQuery();
+
 		if (
 			($columns === ['*'] || $columns === ['albums.*']) &&
 			($baseQuery->columns === ['*'] || $baseQuery->columns === ['albums.*'] || $baseQuery->columns === null)
@@ -84,8 +86,8 @@ class AlbumBuilder extends NSQueryBuilder
 			$this->addSelect([
 				'min_taken_at' => $this->getTakenAtSQL()->selectRaw('MIN(taken_at)'),
 				'max_taken_at' => $this->getTakenAtSQL()->selectRaw('MAX(taken_at)'),
-				'num_children' => $this->applyVisibilityConditioOnSubalbums($countChildren),
-				'num_photos' => $this->applyVisibilityConditioOnPhotos($countPhotos),
+				'num_children' => $this->applyVisibilityConditioOnSubalbums($countChildren, $albumQueryPolicy),
+				'num_photos' => $this->applyVisibilityConditioOnPhotos($countPhotos, $albumQueryPolicy),
 			]);
 		}
 
@@ -172,7 +174,7 @@ class AlbumBuilder extends NSQueryBuilder
 	 *
 	 * @return Builder Query with the visibility requirements applied
 	 */
-	private function applyVisibilityConditioOnSubalbums(Builder $countQuery): Builder
+	private function applyVisibilityConditioOnSubalbums(Builder $countQuery, AlbumQueryPolicy $albumQueryPolicy): Builder
 	{
 		if (Auth::user()?->may_administrate === true) {
 			return $countQuery;
@@ -180,9 +182,15 @@ class AlbumBuilder extends NSQueryBuilder
 
 		$userID = Auth::id();
 
-		$countQuery->join('base_albums', 'base_albums.id', '=', 'a.id');
+		// Only join with base_album (used to get owner_id) when user is logged in
+		$countQuery->when(Auth::check(),
+			fn ($q) => $albumQueryPolicy->joinBaseAlbumOwnerId(
+				query: $q,
+				second: 'a.id',
+				full: false,
+			)
+		);
 
-		$albumQueryPolicy = resolve(AlbumQueryPolicy::class);
 		// We must left join with `conputed_access_permissions`.
 		// We must restrict the `LEFT JOIN` to the user ID which
 		// is also used in the outer `WHERE`-clause.
@@ -190,7 +198,8 @@ class AlbumBuilder extends NSQueryBuilder
 		// in AlbumQueryPolicy.
 		$albumQueryPolicy->joinSubComputedAccessPermissions(
 			query: $countQuery,
-			second: 'base_albums.id'
+			second: 'a.id',
+			type: 'left',
 		);
 
 		// We must wrap everything into an outer query to avoid any undesired
@@ -219,7 +228,7 @@ class AlbumBuilder extends NSQueryBuilder
 	 *
 	 * @return Builder Query with the visibility requirements applied
 	 */
-	private function applyVisibilityConditioOnPhotos(Builder $countQuery): Builder
+	private function applyVisibilityConditioOnPhotos(Builder $countQuery, AlbumQueryPolicy $albumQueryPolicy): Builder
 	{
 		if (Auth::user()?->may_administrate === true) {
 			return $countQuery;
@@ -227,12 +236,19 @@ class AlbumBuilder extends NSQueryBuilder
 
 		$userID = Auth::id();
 
-		$countQuery->join('base_albums', 'base_albums.id', '=', 'p.album_id');
+		// Only join with base_album (used to get owner_id) when user is logged in
+		$countQuery->when($userID !== null,
+			fn ($q) => $albumQueryPolicy->joinBaseAlbumOwnerId(
+				query: $q,
+				second: 'p.album_id',
+				full: false,
+			)
+		);
 
-		$albumQueryPolicy = resolve(AlbumQueryPolicy::class);
 		$albumQueryPolicy->joinSubComputedAccessPermissions(
 			query: $countQuery,
-			second: 'base_albums.id'
+			second: 'p.album_id',
+			type: 'left',
 		);
 
 		// We must wrap everything into an outer query to avoid any undesired
@@ -241,6 +257,7 @@ class AlbumBuilder extends NSQueryBuilder
 		$visibilitySubQuery = function ($query2) use ($userID) {
 			$query2
 				->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
+				// ->whereNotNull(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED)
 				->when($userID !== null,
 					fn ($query) => $query
 						->orWhere('base_albums.owner_id', '=', $userID)
