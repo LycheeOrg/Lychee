@@ -2908,7 +2908,7 @@ tabindex.makeUnfocusable(header.dom());tabindex.makeUnfocusable(lychee.content);
  */leftMenu.bind=function(){// Event Name
 var eventName="click";leftMenu.dom("#button_settings_close").on(eventName,leftMenu.close);leftMenu.dom("#button_settings_open").on(eventName,function(){leftMenu.closeIfResponsive();settings.open();});leftMenu.dom("#button_signout").on(eventName,lychee.logout);leftMenu.dom("#button_logs").on(eventName,leftMenu.Logs);leftMenu.dom("#button_diagnostics").on(eventName,leftMenu.Diagnostics);leftMenu.dom("#button_about").on(eventName,lychee.aboutDialog);leftMenu.dom("#button_notifications").on(eventName,leftMenu.Notifications);leftMenu.dom("#button_users").on(eventName,leftMenu.Users);leftMenu.dom("#button_u2f").on(eventName,leftMenu.u2f);leftMenu.dom("#button_sharing").on(eventName,leftMenu.Sharing);leftMenu.dom("#button_update").on(eventName,leftMenu.Update);};/**
  * @returns {void}
- */leftMenu.Logs=function(){leftMenu.closeIfResponsive();window.open("/Logs");};/**
+ */leftMenu.Logs=function(){leftMenu.closeIfResponsive();window.open("Logs");};/**
  * @returns {void}
  */leftMenu.Diagnostics=function(){leftMenu.closeIfResponsive();view.diagnostics.init();};/**
  * @returns {void}
