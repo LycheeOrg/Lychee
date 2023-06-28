@@ -92,6 +92,7 @@ class SharingController extends Controller
 			$user->shared()->syncWithPivotValues(
 				$albumIds,
 				[
+					APC::IS_LINK_REQUIRED => false, // In sharing no required link is needed
 					APC::GRANTS_DOWNLOAD => Configs::getValueAsBool('grants_download'),
 					APC::GRANTS_FULL_PHOTO_ACCESS => Configs::getValueAsBool('grants_full_photo_access'),
 				],
