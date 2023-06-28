@@ -166,7 +166,6 @@ b {
       user-select: none;
   -webkit-transition: color 0.3s, opacity 0.3s ease-out, -webkit-transform 0.3s ease-out, -webkit-box-shadow 0.3s;
   transition: color 0.3s, opacity 0.3s ease-out, -webkit-transform 0.3s ease-out, -webkit-box-shadow 0.3s;
-  -o-transition: color 0.3s, opacity 0.3s ease-out, transform 0.3s ease-out, box-shadow 0.3s;
   transition: color 0.3s, opacity 0.3s ease-out, transform 0.3s ease-out, box-shadow 0.3s;
   transition: color 0.3s, opacity 0.3s ease-out, transform 0.3s ease-out, box-shadow 0.3s, -webkit-transform 0.3s ease-out, -webkit-box-shadow 0.3s;
 }
@@ -3772,7 +3771,6 @@ a {
   padding: 5px 0 5px 0;
   -webkit-transition: color 0.3s, opacity 0.3s ease-out, margin-left 0.5s, -webkit-transform 0.3s ease-out, -webkit-box-shadow 0.3s;
   transition: color 0.3s, opacity 0.3s ease-out, margin-left 0.5s, -webkit-transform 0.3s ease-out, -webkit-box-shadow 0.3s;
-  -o-transition: color 0.3s, opacity 0.3s ease-out, transform 0.3s ease-out, box-shadow 0.3s, margin-left 0.5s;
   transition: color 0.3s, opacity 0.3s ease-out, transform 0.3s ease-out, box-shadow 0.3s, margin-left 0.5s;
   transition: color 0.3s, opacity 0.3s ease-out, transform 0.3s ease-out, box-shadow 0.3s, margin-left 0.5s, -webkit-transform 0.3s ease-out, -webkit-box-shadow 0.3s;
 }
