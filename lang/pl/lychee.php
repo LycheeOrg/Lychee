@@ -16,6 +16,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Użytkownicy',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +29,7 @@ return [
 	'ABOUT_LYCHEE' => 'O Lychee',
 	'DIAGNOSTICS' => 'Informacje techniczne',
 	'DIAGNOSTICS_GET_SIZE' => 'Analiza miejsca na dysku',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Logi',
 	'SIGN_OUT' => 'Wyloguj',
 	'UPDATE_AVAILABLE' => 'Dostępna aktualizacja!',

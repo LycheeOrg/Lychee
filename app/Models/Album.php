@@ -156,6 +156,11 @@ class Album extends BaseAlbum implements Node
 	 */
 	protected $with = ['cover', 'cover.size_variants', 'thumb'];
 
+	protected function _toArray(): array
+	{
+		return parent::toArray();
+	}
+
 	/**
 	 * Return the relationship between this album and photos which are
 	 * direct children of this album.

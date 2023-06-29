@@ -16,6 +16,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Người dùng',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Tạo',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +29,7 @@ return [
 	'ABOUT_LYCHEE' => 'Giới thiệu Lychee',
 	'DIAGNOSTICS' => 'Thông tin hệ thống',
 	'DIAGNOSTICS_GET_SIZE' => 'Xem dung lượng đã dùng',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Xem nhật ký thay đổi',
 	'SIGN_OUT' => 'Thoát',
 	'UPDATE_AVAILABLE' => 'Có phiên bản mới!',

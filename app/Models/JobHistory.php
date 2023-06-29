@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * App\Models\JobHistory.
- *
  * @property int         $id
  * @property int         $owner_id
  * @property User        $owner

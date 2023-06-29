@@ -45,12 +45,12 @@ class ProcessImageJob implements ShouldQueue
 	 */
 	public function __construct(
 		ProcessableJobFile $file,
-		?AbstractAlbum $albumId,
+		string|AbstractAlbum|null $albumId,
 		?int $fileLastModifiedTime,
 	) {
 		$this->filePath = $file->getPath();
 		$this->originalBaseName = $file->getOriginalBasename();
-		$this->albumId = $albumId?->id;
+		$this->albumId = is_string($albumId) ? $albumId : $albumId?->id;
 		$this->userId = Auth::user()->id;
 		$this->fileLastModifiedTime = $fileLastModifiedTime;
 
