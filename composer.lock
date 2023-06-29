@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "59942082cfd20b5aa671346f6d85f574",
+    "content-hash": "49478eff5ac9a2a5ea549b3645edfaa8",
     "packages": [
         {
             "name": "bepsvpt/secure-headers",
@@ -2692,6 +2692,79 @@
             "time": "2022-04-17T13:12:02+00:00"
         },
         {
+            "name": "livewire/livewire",
+            "version": "v2.12.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/livewire/livewire.git",
+                "reference": "019b1e69d8cd8c7e749eba7a38e4fa69ecbc8f74"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/livewire/livewire/zipball/019b1e69d8cd8c7e749eba7a38e4fa69ecbc8f74",
+                "reference": "019b1e69d8cd8c7e749eba7a38e4fa69ecbc8f74",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": "^7.0|^8.0|^9.0|^10.0",
+                "illuminate/support": "^7.0|^8.0|^9.0|^10.0",
+                "illuminate/validation": "^7.0|^8.0|^9.0|^10.0",
+                "league/mime-type-detection": "^1.9",
+                "php": "^7.2.5|^8.0",
+                "symfony/http-kernel": "^5.0|^6.0"
+            },
+            "require-dev": {
+                "calebporzio/sushi": "^2.1",
+                "laravel/framework": "^7.0|^8.0|^9.0|^10.0",
+                "mockery/mockery": "^1.3.1",
+                "orchestra/testbench": "^5.0|^6.0|^7.0|^8.0",
+                "orchestra/testbench-dusk": "^5.2|^6.0|^7.0|^8.0",
+                "phpunit/phpunit": "^8.4|^9.0",
+                "psy/psysh": "@stable"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Livewire\\LivewireServiceProvider"
+                    ],
+                    "aliases": {
+                        "Livewire": "Livewire\\Livewire"
+                    }
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Livewire\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Caleb Porzio",
+                    "email": "calebporzio@gmail.com"
+                }
+            ],
+            "description": "A front-end framework for Laravel.",
+            "support": {
+                "issues": "https://github.com/livewire/livewire/issues",
+                "source": "https://github.com/livewire/livewire/tree/v2.12.3"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/livewire",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-03-03T20:12:38+00:00"
+        },
+        {
             "name": "lychee-org/nestedset",
             "version": "v8.0.0",
             "source": {
@@ -2847,6 +2920,46 @@
                 "issues": "https://github.com/LycheeOrg/php-exif/issues"
             },
             "time": "2023-04-11T11:03:27+00:00"
+        },
+        {
+            "name": "lychee-org/php-flickr-justified-layout",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/LycheeOrg/php-flickr-justified-layout.git",
+                "reference": "aab36fcb3704e2f956fb232503a06223a85f76ae"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/LycheeOrg/php-flickr-justified-layout/zipball/aab36fcb3704e2f956fb232503a06223a85f76ae",
+                "reference": "aab36fcb3704e2f956fb232503a06223a85f76ae",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/collections": "^10.10"
+            },
+            "require-dev": {
+                "lychee-org/phpstan-lychee": "^v1.0.1",
+                "phpunit/phpunit": "^10.2@dev",
+                "symfony/var-dumper": "6.3.x-dev"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Tests\\": "tests/",
+                    "LycheeOrg\\PhpFlickrJustifiedLayout\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Port of the famous flikr justified layout JS gallery to php for serverside computation",
+            "support": {
+                "issues": "https://github.com/LycheeOrg/php-flickr-justified-layout/issues",
+                "source": "https://github.com/LycheeOrg/php-flickr-justified-layout/tree/v1.1.0"
+            },
+            "time": "2023-05-14T18:34:08+00:00"
         },
         {
             "name": "maennchen/zipstream-php",

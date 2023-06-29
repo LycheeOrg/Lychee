@@ -5,7 +5,6 @@ namespace App\Actions\User;
 use App\Exceptions\ConflictingPropertyException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
-use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -36,7 +35,7 @@ class Save
 		$user->username = $username;
 		$user->may_upload = $mayUpload;
 		$user->may_edit_own_settings = $mayEditOwnSettings;
-		if ($password !== null) {
+		if ($password !== null && $password !== '') {
 			$user->password = Hash::make($password);
 		}
 		$user->save();
