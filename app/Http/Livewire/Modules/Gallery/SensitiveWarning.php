@@ -25,7 +25,7 @@ class SensitiveWarning extends Openable
 	 *
 	 * @return void
 	 */
-	public function mount(AbstractAlbum $album = null): void
+	public function mount(?AbstractAlbum $album = null): void
 	{
 		$override = Configs::getValueAsString('nsfw_banner_override');
 		$this->text = $override !== '' ? $override : __('lychee.NSFW_BANNER');
