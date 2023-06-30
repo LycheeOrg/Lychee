@@ -1,7 +1,6 @@
 
-<div id="lychee_application_container" class="vflex-item-stretch hflex-container">
+<main @class(['sm:ml-64' => $isOpen ?? false])>
 	<!-- leftMenu -->
-	<livewire:components.left-menu>
 	@switch($page_mode)
 		@case(App\Enum\Livewire\PageMode::GALLERY)
 		<livewire:pages.gallery albumId="{{$this->albumId}}" photoId="{{$this->photoId}}" />
@@ -30,4 +29,4 @@
 		@default
 		DO NOTHING FOR NOW;
 	@endswitch
-</div>
+</main>

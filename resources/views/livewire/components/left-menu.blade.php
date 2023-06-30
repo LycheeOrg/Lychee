@@ -1,48 +1,60 @@
-<div id="lychee_left_menu_container" @class(['hflex-item-rigid', 'visible' => $isOpen])>
-@if($isOpen)
-<!-- lychee_left_menu -->
-<div id="lychee_left_menu">
-	<a class="linkMenu" wire:click="close" data-tabindex="-1"><x-icons.iconic icon="chevron-left" />{{ __("lychee.CLOSE") }}</a>
+<x-leftbar.leftbar open={{ $isOpen }}>
+	<x-leftbar.leftbar-item click="close">
+		<x-icons.iconic icon="chevron-left" class="w-6 h-6" />
+		<span class="text-lg">{{ __("lychee.CLOSE") }}</span>
+	</x-leftbar.leftbar-item>
 	@can(SettingsPolicy::CAN_EDIT, [App\Models\Configs::class])
-		<a class="linkMenu"
-		   wire:click="$emitTo('index', 'openPage', '{{ PageMode::SETTINGS->value }}')"
-		   data-tabindex="-1"><x-icons.iconic icon="cog" />{{ __("lychee.SETTINGS") }}</a>
+	<x-leftbar.leftbar-item action="{{ PageMode::SETTINGS->value }}">
+		<x-icons.iconic icon="cog" class="w-6 h-6" />
+		<span class="flex-1 ml-3 whitespace-nowrap">{{ __("lychee.SETTINGS") }}</span>
+	</x-leftbar.leftbar-item>
 	@endcan
 	@can(UserPolicy::CAN_EDIT, [App\Models\User::class])
-		<a class="linkMenu"
-		   wire:click="$emitTo('index', 'openPage', '{{ PageMode::PROFILE->value }}')"
-		   data-tabindex="-1"><x-icons.iconic icon="person" />{{ __("lychee.PROFILE") }}</a>
+	<x-leftbar.leftbar-item action="{{ PageMode::PROFILE->value }}">
+		<x-icons.iconic icon="person" class="w-6 h-6" />
+		<span class="flex-1 ml-3 whitespace-nowrap">{{ __("lychee.PROFILE") }}</span>
+	</x-leftbar.leftbar-item>
 	@endcan
 	@can(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [App\Models\User::class])
-		<a class="linkMenu"
-		   wire:click="emitTo('index', 'openPage', '{{ PageMode::USERS->value }}')"
-		   data-tabindex="-1"><x-icons.iconic icon="people" />{{ __("lychee.USERS") }}</a>
+	<x-leftbar.leftbar-item action="{{ PageMode::USERS->value }}">
+		<x-icons.iconic icon="people" class="w-6 h-6" />
+		<span class="flex-1 ml-3 whitespace-nowrap">{{ __("lychee.USERS") }}</span>
+	</x-leftbar.leftbar-item>
 	@endcan
 	@can(UserPolicy::CAN_USE_2FA, [App\Models\User::class])
-		<a class="linkMenu"
-		   wire:click="$emitTo('index', 'openPage', '{{ PageMode::PROFILE->value }}')"
-		   data-tabindex="-1"><x-icons.iconic icon="key" />{{ __("lychee.U2F") }}</a>
+	<x-leftbar.leftbar-item action="{{ PageMode::PROFILE->value }}">
+		<x-icons.iconic icon="key" class="w-6 h-6" />
+		<span class="flex-1 ml-3 whitespace-nowrap">{{ __("lychee.U2F") }}</span>
+	</x-leftbar.leftbar-item>
 	@endcan
 	@can(AlbumPolicy::CAN_SHARE_WITH_USERS, [App\Contracts\Models\AbstractAlbum::class, null])
-		<a class="linkMenu"
-		   data-tabindex="-1"><x-icons.iconic icon="cloud" />{{ __("lychee.SHARING") }}</a>
+	<x-leftbar.leftbar-item >
+		<x-icons.iconic icon="cloud" class="w-6 h-6" />
+		<span class="flex-1 ml-3 whitespace-nowrap">{{ __("lychee.SHARING") }}</span>
+	</x-leftbar.leftbar-item>
 	@endcan
 	@can(SettingsPolicy::CAN_SEE_LOGS, [App\Models\Configs::class])
-		<a class="linkMenu" href="{{ route('log-viewer.index') }}" data-tabindex="-1"><x-icons.iconic icon="align-left" />{{ __("lychee.LOGS") }}</a>
-		<a class="linkMenu"
-		   wire:click="$emitTo('index', 'openPage', '{{ PageMode::JOBS->value }}');"
-		   data-tabindex="-1"><x-icons.iconic icon="align-left" />{{ __("lychee.JOBS") }}</a>
+	<x-leftbar.leftbar-item href="{{ route('log-viewer.index') }}">
+		<x-icons.iconic icon="align-left" class="w-6 h-6" />
+		<span class="flex-1 ml-3 whitespace-nowrap">{{ __("lychee.LOGS") }}</span>
+	</x-leftbar.leftbar-item>
+	<x-leftbar.leftbar-item action="{{ PageMode::JOBS->value }}">
+		<x-icons.iconic icon="align-left" class="w-6 h-6" />
+		<span class="flex-1 ml-3 whitespace-nowrap">{{ __("lychee.JOBS") }}</span>
+	</x-leftbar.leftbar-item>
 	@endcan
 	@can(SettingsPolicy::CAN_SEE_DIAGNOSTICS, [App\Models\Configs::class])
-		<a class="linkMenu"
-		   wire:click="$this->emitTo('index', 'openPage', '{{ PageMode::DIAGNOSTICS->value }}')"
-		   data-tabindex="-1"><x-icons.iconic icon="wrench" />{{ __("lychee.DIAGNOSTICS") }}</a>
+	<x-leftbar.leftbar-item action="{{ PageMode::DIAGNOSTICS->value }}">
+		<x-icons.iconic icon="wrench" class="w-6 h-6" />
+		<span class="flex-1 ml-3 whitespace-nowrap">{{ __("lychee.DIAGNOSTICS") }}</span>
+	</x-leftbar.leftbar-item>
 	@endcan
-	<a class="linkMenu"
-	   wire:click="openAboutModal"
-	   data-tabindex="-1"><x-icons.iconic icon="info" />{{ __("lychee.ABOUT_LYCHEE") }}</a>
-	<a class="linkMenu"
-	   wire:click="logout"
-	   data-tabindex="21"><x-icons.iconic icon="account-logout" />{{ __("lychee.SIGN_OUT") }}</a></div>
-@endif
-</div>
+	<x-leftbar.leftbar-item click="openAboutModal">
+		<x-icons.iconic icon="info" class="w-6 h-6" />
+		<span class="flex-1 ml-3 whitespace-nowrap">{{ __("lychee.ABOUT_LYCHEE") }}</span>
+	</x-leftbar.leftbar-item>
+	<x-leftbar.leftbar-item click="logout">
+		<x-icons.iconic icon="account-logout" class="w-6 h-6" />
+		<span class="flex-1 ml-3 whitespace-nowrap">{{ __("lychee.SIGN_OUT") }}</span>
+	</x-leftbar.leftbar-item>
+</x-leftbar.leftbar>

@@ -12,37 +12,25 @@
 		@vite('resources/css/app.css')
 		@livewireStyles
 	</head>
-	<body class="mode-gallery vflex-container">
-	@include('includes.svg')
-	<!-- Loading indicator -->
-	<div id="loading"></div>
-	<!--
-		The application container vertically shares space with the loading indicator.
-		If fills the remaining vertical space not taken by the loading indicator.
-		The application container contains the left menu and the workbench.
-		The application container is also that part which is shaded by the
-		background of the modal dialog while the loading indicator and (potential)
-		error message is not shaded.
-	-->
-	{{ $fullpage }}
-	<!--
-		The frame container vertically shares space with the loading indicator.
-		If fills the remaining vertical space not taken by the loading indicator.
-	-->
-	{{ $frame }}
-	<livewire:components.base.modal />
-	<livewire:components.base.context-menu />
-	@livewireScripts
-	<script type="text/javascript">
-		document.addEventListener('DOMContentLoaded', function () {
-			window.livewire.on('urlChange', (url) => {
-				history.pushState(null, null, url);
+	<body class="antialiased bg-dark-700">
+		@include('includes.svg-livewire')
+		<livewire:components.left-menu>
+
+		{{ $fullpage }}
+
+		<livewire:components.base.modal />
+		<livewire:components.base.context-menu />
+		@livewireScripts
+		<script type="text/javascript">
+			document.addEventListener('DOMContentLoaded', function () {
+				window.livewire.on('urlChange', (url) => {
+					history.pushState(null, null, url);
+				});
 			});
-		});
-	</script>
-	{{-- <script src="//unpkg.com/alpinejs" defer></script> --}}
-	<script defer src="{{ URL::asset(Helpers::cacheBusting('js/alpine.min.js')) }}"></script>
-	<script defer src="{{ URL::asset(Helpers::cacheBusting('js/filepond.js')) }}"></script>
-	<script defer src="{{ URL::asset(Helpers::cacheBusting('js/justified-layout.min.js')) }}"></script>
+		</script>
+		{{-- <script src="//unpkg.com/alpinejs" defer></script> --}}
+		{{-- <script defer src="{{ URL::asset(Helpers::cacheBusting('js/alpine.min.js')) }}"></script> --}}
+		{{-- <script defer src="{{ URL::asset(Helpers::cacheBusting('js/filepond.js')) }}"></script> --}}
+		{{-- <script defer src="{{ URL::asset(Helpers::cacheBusting('js/justified-layout.min.js')) }}"></script> --}}
 </body>
 </html>

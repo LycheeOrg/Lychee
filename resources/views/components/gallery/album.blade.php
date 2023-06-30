@@ -1,9 +1,11 @@
 <div
 	wire:click="$emit('openAlbum', '{{ $id }}')"
-	 @class([
+	class="relative w-52 h-52"
+	 {{-- @class([
+		''
     'album',
     'blurred' => $is_nsfw_blurred
-     ])
+     ]) --}}
 	 {{-- {{ $disabled ? 'disabled' : '' }} --}}
 	data-id='{{ $id }}'
 	data-tabindex='{{ Helpers::data_index() }}'
@@ -12,9 +14,9 @@
 		<x-gallery.album-thumb type="{{ $thumb?->type ?? '' }}" thumb="{{ $thumb?->thumbUrl ?? '' }}" thumb2x="{{ $thumb?->thumb2xUrl ?? '' }}" />
 	@endfor
 
-<div class='overlay'>
-	<h1 title='{{ $title }}'>{{ $title }}</h1>
-	<a>{{ $data['created_at'] ?? '' }}</a>
+<div class='overlay absolute mb-[1px] mx-[1px] p-0 border-0 w-[206px] bottom-0 bg-gradient-to-t from-[#00000099]'>
+	<h1 class="w-48 pt-3 pb-1 pr-1 pl-4 text-sm text-white font-bold text-ellipsis whitespace-nowrap overflow-x-hidden" title='{{ $title }}'>{{ $title }}</h1>
+	<a class="block mt-0 mr-0 mb-3 ml-4 text-xs text-gray-400">{{ $data['created_at'] ?? '' }}</a>
 </div>
 
 @if (Auth::check())
@@ -55,8 +57,11 @@
 </div>
 @endif
 @if ($has_subalbum)
-<div class='subalbum_badge'>
-	<x-icons.badge class='badge--folder' icon='layers' />
+<div class='album_counters absolute right-2 top-2 flex flex-row gap-1 justify-end text-right font-bold font-sans drop-shadow-md'>
+	<a class="layers relative py-1 px-0">
+		<x-icons.iconic icon="layers" class=" fill-white w-3 h-3" />
+	{{-- <x-icons.badge class='badge--folder w-3 h-3' icon='layers' /> --}}
+	</a>
 </div>
 @endif
 </div>

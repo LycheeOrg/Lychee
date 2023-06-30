@@ -1,14 +1,15 @@
-<x-view.container>
+<div>
 	@if ($smartalbums->isEmpty() && $albums->isEmpty() && $shared_albums->isEmpty())
-	<div id="lychee_view_content" class="vflex-item-stretch contentZoomIn">
-		<div class='no_content fadeIn' wire:init='openLoginModal'>
+	<div>
+		<div wire:init='openLoginModal'>
 			<x-icons.iconic icon="eye" />
 			<p>{{ __('lychee.VIEW_NO_PUBLIC_ALBUMS') }}</p>
 		</div>
 	</div>
 	@else
-	<div id="lychee_view_content" class="vflex-item-stretch contentZoomIn">
-		<!-- test comment-->
+	<div class="flex flex-wrap flex-auto flex-shrink-0 w-full gap-8 gap justify-start p-7">
+		{{-- <div class=""> --}}
+			<!-- test comment-->
 		@if($smartalbums->count() > 0)
 			<div class='divider'>
 				<h1>{{ __('lychee.SMART_ALBUMS') }}</h1>
@@ -39,4 +40,5 @@
 		@endif
 	</div>
 	@endif
-</x-view.container>
+	<livewire:components.footer />
+</div>

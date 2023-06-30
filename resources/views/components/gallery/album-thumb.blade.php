@@ -1,12 +1,10 @@
 @props(['type' => '', 'thumb' => '', 'thumb2x' => ''])
 @php
-$isVideo = Str::contains($type, 'video');
+    $isVideo = Str::contains($type, 'video');
 @endphp
-<span class="thumbimg {{-- {{ $isVideo ? "video" : ""}} --}} ">
-	<img
-		alt='Album thumbnail'
-	@if(!$isVideo) class='lazyload' @endif
-
+<span
+    class="thumbimg absolute w-52 h-52 bg-gray-800 shadow-sm border-solid border border-gray-400 ease-out transition-transform {{-- {{ $isVideo ? "video" : ""}} --}} ">
+    <img alt='Album thumbnail' @class(['w-full h-full m-0 p-0 border-0', 'lazyload' => !$isVideo])
 	@if ($thumb == 'uploads/thumb/')
 		@if ($isVideo)
 			src='{{ URL::asset('img/play-icon.png') }}'
@@ -18,18 +16,17 @@ $isVideo = Str::contains($type, 'video');
 			@else
 			@endif
 		@endif
-
 	@else
 		src='{{ URL::asset('img/no_images.svg') }}'
-		@if ($thumb != "")
+		@if ($thumb != '')
 			data-src='{{ URL::asset($thumb) }}'
 		@endif
-	@endif
+    @endif
 
-	@if ($thumb2x != "")
-		data-srcset='{{ URL::asset($thumb2x) }} 2x'
-	@endif
+    @if ($thumb2x != '')
+        data-srcset='{{ URL::asset($thumb2x) }} 2x'
+    @endif
 
-	data-overlay='false'
-	draggable='false' />
+    data-overlay='false'
+    draggable='false' />
 </span>

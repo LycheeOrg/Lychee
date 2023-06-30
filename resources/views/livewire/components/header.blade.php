@@ -1,22 +1,24 @@
 <header
 	id="lychee_toolbar_container"
-	@class([
-		"vflex-item-rigid",
+	class=" h-14 w-full flex-none bg-gradient-to-b from-dark-700 to-dark-800 border-b border-b-solid border-b-neutral-900 "
+	{{-- @class([
+		"",
 		"hidden" => $is_hidden
-	])>
+	])> --}}
 	@if ($gallery_mode === App\Enum\Livewire\GalleryMode::ALBUMS) <!-- ALBUMS -->
 		@if (Auth::user() === null) <!-- NOT LOGGED -->
-		<div id="lychee_toolbar_public" class="toolbar visible">
-			<a class="button" wire:click="openLoginModal" id="button_settings"><x-icons.iconic icon="account-login" /></a>
-			<a class="header__title">{{ $title }}</a>
-			<div class="header__search__field">
-				<input class="header__search" type="text" name="search" placeholder="Search …">
-				<a class="header__clear">&times;</a>
-			</div>
-			<a class="button button--map-albums"><x-icons.iconic icon="map" /></a>
+		<div id="lychee_toolbar_public" class="flex w-full items-center box-border">
+			<a class="button flex-shrink-0 pt-4 pr-3 pb-4 pl-5 cursor-pointer" wire:click="openLoginModal" id="button_settings">
+				<x-icons.iconic class="inline w-4 h-4 mr-0 ml-0" icon="account-login" /></a>
+			<a class="header__title py-3 text-center overflow-hidden px-0 w-full text-white font-bold text-sm whitespace-nowrap text-ellipsis">{{ $title }}</a>
+			{{-- <div class="header__search__field"> --}}
+				{{-- <input class="header__search" type="text" name="search" placeholder="Search …"> --}}
+				{{-- <a class="header__clear">&times;</a> --}}
+			{{-- </div> --}}
+			{{-- <a class="button button--map-albums"><x-icons.iconic icon="map" /></a> --}}
 		</div>
 		@else <!-- LOGGED -->
-		<div id="lychee_toolbar_albums" class="toolbar visible">
+		<div id="lychee_toolbar_albums" class="flex">
 			<a class="button" wire:click="openLeftMenu" id="button_settings"><x-icons.iconic icon="cog" /></a>
 			<a class="header__title">{{ $title }}</a>
 			<div class="header__search__field">
@@ -31,7 +33,7 @@
 		</div>
 		@endif
 	@elseif ($gallery_mode === App\Enum\Livewire\GalleryMode::ALBUM) <!-- ALBUM -->
-		<div id="lychee_toolbar_album" class="toolbar visible">
+		<div id="lychee_toolbar_album" class="flex">
 			<a class="button" id="button_back_home" title="Close Album" wire:click="back"><x-icons.iconic icon="chevron-left" /></a>
 			<a class="header__title">{{ $title }}</a>
 			@can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class], $this->album)
@@ -61,7 +63,7 @@
 			<a class="button button_add" wire:click="openContextMenu"><x-icons.iconic icon="plus" /></a>
 		</div>
 	@elseif ($gallery_mode === App\Enum\Livewire\GalleryMode::PHOTO) <!-- PHOTO -->
-		<div id="lychee_toolbar_photo" class="toolbar visible">
+		<div id="lychee_toolbar_photo" class="flex">
 			<a class="button" id="button_back" wire:click="back"><x-icons.iconic icon="chevron-left" /></a>
 			<a class="header__title">{{ $title }}</a>
 			<a class="button button--star" id="button_star"><x-icons.iconic icon="star" /></a>
@@ -79,12 +81,12 @@
 			<a class="button" wire:click="openContextMenu" id="button_more"><x-icons.iconic icon="ellipses" /></a>
 		</div>
 	@elseif ($gallery_mode === App\Enum\Livewire\GalleryMode::MAP) <!-- MAP -->
-		<div id="lychee_toolbar_map" class="toolbar visible">
+		<div id="lychee_toolbar_map" class="flex">
 			<a class="button" id="button_back_map"><x-icons.iconic icon="chevron-left" /></a>
 			<a class="header__title"></a>
 		</div>
 	@else
-		<div id="lychee_toolbar_config" class="toolbar visible">
+		<div id="lychee_toolbar_config" class="flex">
 			<a class="button" id="button_close_config" wire:click="back"><x-icons.iconic icon="chevron-left" /></a>
 			<a class="header__title">{{ $title }}</a>
 		</div>
