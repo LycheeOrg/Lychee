@@ -1,0 +1,40 @@
+.basicModalContainer {
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	background-color: rgba(0, 0, 0, .4);
+	z-index: $basicModal__zIndex;
+
+	box-sizing: border-box;
+
+	*,
+	*:before,
+	*:after {
+		box-sizing: border-box;
+	}
+
+	// Overlay Animations --------------------------------------------------------- //
+	&--fadeIn {
+		animation: basicModal__fadeIn $basicModal__duration $basicModal__timing;
+	}
+
+	&--fadeOut {
+		animation: basicModal__fadeOut $basicModal__duration $basicModal__timing;
+	}
+
+	// Modal Animations ----------------------------------------------------------- //
+	&--fadeIn .basicModal--fadeIn {
+		animation: basicModal__moveUpFade $basicModal__duration $basicModal__timing;
+	}
+
+	&--fadeIn .basicModal--shake {
+		animation: basicModal__shake $basicModal__duration $basicModal__timing;
+	}
+
+}

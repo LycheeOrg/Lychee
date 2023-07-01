@@ -1,0 +1,32 @@
+@props(['type' => '', 'thumb' => '', 'thumb2x' => ''])
+@php
+    $isVideo = Str::contains($type, 'video');
+@endphp
+<span
+    class="thumbimg absolute w-52 h-52 bg-gray-800 shadow-sm border-solid border border-gray-400 ease-out transition-transform {{-- {{ $isVideo ? "video" : ""}} --}} ">
+    <img alt='Album thumbnail' @class(['w-full h-full m-0 p-0 border-0', 'lazyload' => !$isVideo])
+	@if ($thumb == 'uploads/thumb/')
+		@if ($isVideo)
+			src='{{ URL::asset('img/play-icon.png') }}'
+		@else
+			src='{{ URL::asset('img/placeholder.png') }}'
+
+			@if (Str::contains($this->type, 'raw'))
+				data-src='{{ URL::asset('img/no_images.svg') }}'
+			@else
+			@endif
+		@endif
+	@else
+		src='{{ URL::asset('img/no_images.svg') }}'
+		@if ($thumb != '')
+			data-src='{{ URL::asset($thumb) }}'
+		@endif
+    @endif
+
+    @if ($thumb2x != '')
+        data-srcset='{{ URL::asset($thumb2x) }} 2x'
+    @endif
+
+    data-overlay='false'
+    draggable='false' />
+</span>

@@ -1,0 +1,47 @@
+.basicModal__button {
+
+	display: inline-block;
+	width: 100%;
+	padding: 13px 0 14px 0;
+	background-color: rgba(0, 0, 0, .07);
+	color: #444;
+	font-weight: bold;
+	text-align: center;
+	cursor: pointer;
+	transition: background-color $basicModal__sDuration;
+
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+
+	&:hover { background-color: rgba(0, 0, 0, .02); }
+
+	&:active,
+	&--active {
+		transition: none;
+		background-color: rgba(0, 0, 0, .1);
+	}
+
+	// Cancel -------------------------------------------------------------- //
+	&#basicModal__cancel {
+		flex-shrink: 2;
+	}
+
+	// Action -------------------------------------------------------------- //
+	&#basicModal__action {
+		flex-shrink: 1;
+		color: $basicModal__color;
+		box-shadow: inset 1px 0 0 rgba(0, 0, 0, .1);
+	}
+
+	// Remove border when action button is the only button
+	&#basicModal__action:first-child {
+		box-shadow: none;
+	}
+
+	// Round edges --------------------------------------------------------- //
+	&:first-child { border-radius: 0 0 0 5px; }
+
+	&:last-child { border-radius: 0 0 5px; }
+
+}
