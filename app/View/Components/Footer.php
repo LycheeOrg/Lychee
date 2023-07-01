@@ -5,8 +5,8 @@ namespace App\View\Components;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\View\View;
 use Illuminate\View\Component;
+use Illuminate\View\View;
 
 /**
  * This is the bottom of the page.
