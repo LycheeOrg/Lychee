@@ -7,18 +7,18 @@
 		</div>
 	</div>
 	@else
-	<div class="flex flex-wrap flex-auto flex-shrink-0 w-full gap-8 gap justify-start p-7">
+	<div class="flex flex-wrap flex-auto flex-shrink-0 w-full justify-start">
 		{{-- <div class=""> --}}
 			<!-- test comment-->
 		@if($smartalbums->count() > 0)
-			<div class='divider'>
+			<div class='divider mt-2 pt-2 w-full border-t border-t-dark-800'>
 				<h1>{{ __('lychee.SMART_ALBUMS') }}</h1>
 			</div>
 			@foreach ($smartalbums as $album)
 				<x-album :data="$album" />
 			@endforeach
 			@if($albums->count() > 0)
-			<div class='divider'>
+			<div class='divider mt-12 pt-2 w-full border-t border-t-dark-800'>
 				<h1>{{ __('lychee.ALBUMS') }}</h1>
 			</div>
 			@endif
@@ -31,7 +31,7 @@
 		@endif
 
 		@if($shared_albums->count() > 0)
-		<div class='divider'>
+		<div class='divider mt-12 pt-2 w-full border-t border-t-dark-800'>
 			<h1>{{ __('lychee.SHARED_ALBUMS') }}</h1>
 		</div>
 			@foreach ($shared_albums as $album)
