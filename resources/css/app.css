@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+@layer base {
+    html {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+}

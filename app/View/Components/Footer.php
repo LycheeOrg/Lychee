@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Livewire\Components;
+namespace App\View\Components;
 
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\View\View;
-use Livewire\Component;
+use Illuminate\View\Component;
 
 /**
  * This is the bottom of the page.
@@ -23,17 +23,13 @@ class Footer extends Component
 	public string $instagram;
 	public string $youtube;
 	public string $additional_footer_text;
-	public string $class = 'vflex-item-rigid animate animate-up';
-	public string $html_id = 'lychee_footer';
 
 	/**
 	 * Initialize the footer once for all.
 	 *
-	 * @return void
-	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function mount(): void
+	public function __construct()
 	{
 		$this->show_socials = Configs::getValueAsBool('footer_show_social_media');
 		$this->facebook = Configs::getValueAsString('sm_facebook_url');
@@ -65,6 +61,6 @@ class Footer extends Component
 	 */
 	public function render(): View
 	{
-		return view('livewire.components.footer');
+		return view('components.footer');
 	}
 }
