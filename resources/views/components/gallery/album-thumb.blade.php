@@ -1,9 +1,11 @@
-@props(['type' => '', 'thumb' => '', 'thumb2x' => ''])
+@props(['type' => '', 'thumb' => '', 'thumb2x' => '', 'class' => ''])
 @php
     $isVideo = Str::contains($type, 'video');
 @endphp
 <span
-    class="thumbimg absolute w-52 h-52 bg-gray-800 shadow-sm border-solid border border-gray-400 ease-out transition-transform {{-- {{ $isVideo ? "video" : ""}} --}} ">
+    class="thumbimg absolute w-52 h-52 bg-gray-800 shadow-sm border-solid border border-gray-400 ease-out transition-transform
+	{{ $class }}
+	{{-- {{ $isVideo ? "video" : ""}} --}} ">
     <img alt='Album thumbnail' @class(['w-full h-full m-0 p-0 border-0', 'lazyload' => !$isVideo])
 	@if ($thumb == 'uploads/thumb/')
 		@if ($isVideo)

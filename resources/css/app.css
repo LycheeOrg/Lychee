@@ -1,4 +1,4 @@
-@tailwind base;
+@tailwind base; /* also contains normalize */
 @tailwind components;
 @tailwind utilities;
 
@@ -7,4 +7,16 @@
     html {
       font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     }
+}
+
+.album-thumb:hover .thumbimg:nth-child(1), .album__dragover .thumbimg:nth-child(1) {
+    -webkit-transform: rotate(-2deg) translateY(10px) translateX(-12px);
+    -ms-transform: rotate(-2deg) translateY(10px) translateX(-12px);
+    transform: rotate(-2deg) translateY(10px) translateX(-12px);
+}
+
+.album-thumb:hover .thumbimg:nth-child(2), .album__dragover .thumbimg:nth-child(2) {
+  -webkit-transform: rotate(5deg) translateY(-8px) translateX(12px);
+  -ms-transform: rotate(5deg) translateY(-8px) translateX(12px);
+  transform: rotate(5deg) translateY(-8px) translateX(12px);
 }
