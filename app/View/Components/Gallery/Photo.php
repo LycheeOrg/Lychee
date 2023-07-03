@@ -1,6 +1,6 @@
 <?php
 
-namespace App\View\Components;
+namespace App\View\Components\Gallery;
 
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationKeyMissingException;

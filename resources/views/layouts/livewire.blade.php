@@ -28,7 +28,7 @@
 				});
 			});
 		</script>
-		{{-- <script src="//unpkg.com/alpinejs" defer></script> --}}
+		<script src="//unpkg.com/alpinejs" defer></script>
 		{{-- <script defer src="{{ URL::asset(Helpers::cacheBusting('js/alpine.min.js')) }}"></script> --}}
 		{{-- <script defer src="{{ URL::asset(Helpers::cacheBusting('js/filepond.js')) }}"></script> --}}
 		{{-- <script defer src="{{ URL::asset(Helpers::cacheBusting('js/justified-layout.min.js')) }}"></script> --}}

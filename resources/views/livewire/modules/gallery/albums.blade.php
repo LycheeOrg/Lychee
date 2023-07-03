@@ -11,31 +11,31 @@
 		{{-- <div class=""> --}}
 			<!-- test comment-->
 		@if($smartalbums->count() > 0)
-			<div class='divider mt-2 pt-2 w-full border-t border-t-dark-800'>
-				<h1 class="ml-7 font-bold text-sm text-neutral-400">{{ __('lychee.SMART_ALBUMS') }}</h1>
-			</div>
+			<x-gallery.divider>
+				{{ __('lychee.SMART_ALBUMS') }}
+			</x-gallery.divider>
 			@foreach ($smartalbums as $album)
-				<x-album :data="$album" />
+				<x-gallery.album :data="$album" />
 			@endforeach
 			@if($albums->count() > 0)
-			<div class='divider mt-12 pt-2 w-full border-t border-t-dark-800'>
-				<h1 class="ml-7 font-bold text-sm text-neutral-400">{{ __('lychee.ALBUMS') }}</h1>
-			</div>
+			<x-gallery.divider>
+				{{ __('lychee.ALBUMS') }}
+			</x-gallery.divider>
 			@endif
 		@endif
 
 		@if($albums->count() > 0)
 			@foreach ($albums as $album)
-				<x-album :data="$album" />
+				<x-gallery.album :data="$album" />
 			@endforeach
 		@endif
 
 		@if($shared_albums->count() > 0)
-		<div class='divider mt-12 pt-2 w-full border-t border-t-dark-800'>
-			<h1 class="ml-7 font-bold text-sm text-neutral-400">{{ __('lychee.SHARED_ALBUMS') }}</h1>
-		</div>
+		<x-gallery.divider>
+			{{ __('lychee.SHARED_ALBUMS') }}
+		</x-gallery.divider>
 			@foreach ($shared_albums as $album)
-				<x-album :data="$album" />
+				<x-gallery.album :data="$album" />
 			@endforeach
 		@endif
 	</div>

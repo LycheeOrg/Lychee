@@ -1,4 +1,4 @@
-<div id="lychee_footer" class="flex-none w-full h-auto text-center py-5 px-0 relative overflow-clip">
+<div id="footer" class="flex-none w-full h-auto text-center py-5 px-0 relative overflow-clip">
 	<!--
 	Footer
 	Vertically shares space with the content.

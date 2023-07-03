@@ -1,6 +1,6 @@
 <?php
 
-namespace App\View\Components;
+namespace App\View\Components\Gallery;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\AlbumProtectionPolicy;

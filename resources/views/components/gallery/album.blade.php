@@ -24,47 +24,37 @@
 @if (Auth::check())
 <div class='badges absolute mt-[-1px] ml-1'>
 	@if ($is_nsfw)
-		<x-icons.badge class='badge--nsfw inline-block bg-[#ff82ee]
-		ml-1 px-2 pt-2 pb-1 border-solid border-white border border-t-0 rounded-md rounded-t-none text-white text-center' classIcon='inline w-4 h-4 fill-white text-sm' icon='warning' />
+		<x-icons.badge class='badge--nsfw bg-[#ff82ee]' icon='warning' />
 	@endif
 	@switch($id)
 		@case(App\SmartAlbums\StarredAlbum::ID)
-		<x-icons.badge class='badge--star inline-block bg-yellow-500
-		ml-1 px-2 pt-2 pb-1 border-solid border-white border border-t-0 rounded-md rounded-t-none text-white text-center' classIcon='inline w-4 h-4 fill-white  overflow-hidden overflow-y-hidden leading-4' icon='star' />
+		<x-icons.badge class='badge--star bg-yellow-500' icon='star' />
 		@break
 		@case(App\SmartAlbums\PublicAlbum::ID)
-		<x-icons.badge class='badge--public inline-block badge--not--hidden bg-green-600
-		ml-1 px-2 pt-2 pb-1 border-solid border-white border border-t-0 rounded-md rounded-t-none text-white text-center' classIcon='inline w-4 h-4 fill-white' icon='eye' />
+		<x-icons.badge class='badge--public bg-green-600' icon='eye' />
 		@break
 		@case(App\SmartAlbums\UnsortedAlbum::ID)
-		<x-icons.badge class='badge--unsorted inline-block bg-red-700
-		ml-1 px-2 pt-2 pb-1 border-solid border-white border border-t-0 rounded-md rounded-t-none text-white text-center' classIcon='inline w-4 h-4 fill-white' icon='list' />
+		<x-icons.badge class='badge--unsorted bg-red-700' icon='list' />
 		@break
 		@case(App\SmartAlbums\RecentAlbum::ID)
-		<x-icons.badge class='badge--recent inline-block badge--list bg-blue-700
-		ml-1 px-2 pt-2 pb-1 border-solid border-white border border-t-0 rounded-md rounded-t-none text-white text-center' classIcon='inline w-4 h-4 fill-white' icon='clock' />
+		<x-icons.badge class='badge--recent bg-blue-700' icon='clock' />
 		@break
 		@case(App\SmartAlbums\OnThisDayAlbum::ID)
-		<x-icons.badge class='badge--onthisday inline-block badge--tag badge--list bg-green-600
-		ml-1 px-2 pt-2 pb-1 border-solid border-white border border-t-0 rounded-md rounded-t-none text-white text-center' classIcon='inline w-4 h-4 fill-white' icon='calendar' />
+		<x-icons.badge class='badge--onthisday bg-green-600' icon='calendar' />
 		@break
 		@default
 	@endswitch
 	@if ($is_public)
-		<x-icons.badge class='badge--ispublic inline-block {{ $is_link_required ? "bg-orange-400" : "bg-green-600"}}
-		ml-1 px-2 pt-2 pb-1 border-solid border-white border border-t-0 rounded-md rounded-t-none text-white text-center' classIcon='inline w-4 h-4 fill-white' icon='eye' />
+		<x-icons.badge class='badge--ispublic {{ $is_link_required ? "bg-orange-400" : "bg-green-600"}}' icon='eye' />
 	@endif
 	@if ($is_password_required)
-		<x-icons.badge class='badge--locked inline-block bg-orange-400
-		ml-1 px-2 pt-2 pb-1 border-solid border-white border border-t-0 rounded-md rounded-t-none text-white text-center' classIcon='inline w-4 h-4 fill-white' icon='lock-locked' />
+		<x-icons.badge class='badge--locked bg-orange-400' icon='lock-locked' />
 	@endif
 	@if ($is_tag_album == "1")
-		<x-icons.badge class='badge--tag inline-block bg-green-600
-		ml-1 px-2 pt-2 pb-1 border-solid border-white border border-t-0 rounded-md rounded-t-none text-white text-center' classIcon='inline w-4 h-4 fill-white' icon='tag' />
+		<x-icons.badge class='badge--tag bg-green-600' icon='tag' />
 	@endif
 	@if ($has_cover_id)
-		<x-icons.badge class='badge--cover inline-block bg-yellow-500
-		ml-1 px-2 pt-2 pb-1 border-solid border-white border border-t-0 rounded-md rounded-t-none text-white text-center' classIcon='inline w-4 h-4 fill-white' icon='folder-cover' />
+		<x-icons.badge class='badge--cover bg-yellow-500' icon='folder-cover' />
 	@endif
 </div>
 @endif

@@ -38,6 +38,7 @@
 			</ul>
 		</div>
 	</div>
+	<x-footer />
 
-	<livewire:components.footer :class="'animate animate-up toggled'" :html_id="'footer'" />
+	{{-- <livewire:components.footer :class="'animate animate-up toggled'" :html_id="'footer'" /> --}}
 </div>

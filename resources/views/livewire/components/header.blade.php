@@ -8,7 +8,7 @@
 	@if ($gallery_mode === App\Enum\Livewire\GalleryMode::ALBUMS) <!-- ALBUMS -->
 		@if (Auth::user() === null) <!-- NOT LOGGED -->
 		<div id="lychee_toolbar_public" class="flex w-full items-center box-border">
-			<a class="button flex-shrink-0 pt-4 pr-3 pb-4 pl-5 cursor-pointer" wire:click="openLoginModal" id="button_settings">
+			<a class="button__login flex-shrink-0 pt-4 pr-3 pb-4 pl-5 cursor-pointer" wire:click="openLoginModal" id="button_settings">
 				<x-icons.iconic class="inline w-4 h-4 mr-0 ml-0" icon="account-login" />
 			</a>
 			<a class="header__title py-3 text-center overflow-hidden px-0 w-full text-white font-bold text-sm whitespace-nowrap text-ellipsis">
@@ -22,7 +22,7 @@
 		</div>
 		@else <!-- LOGGED -->
 		<div id="lychee_toolbar_albums" class="flex w-full items-center box-border">
-			<a class="button flex-shrink-0 pt-4 pr-3 pb-4 pl-5 cursor-pointer" wire:click="openLeftMenu" id="button_settings">
+			<a class="button__settings flex-shrink-0 pt-4 pr-3 pb-4 pl-5 cursor-pointer" wire:click="openLeftMenu" id="button_settings">
 				<x-icons.iconic class="inline w-4 h-4 mr-0 ml-0" icon="cog" />
 			</a>
 			<a class="header__title py-3 text-center overflow-hidden px-0 w-full text-white font-bold text-sm whitespace-nowrap text-ellipsis">
@@ -35,15 +35,17 @@
 			<a class="header__divider"></a>
 			{{-- <a class="button button--map-albums"><x-icons.iconic icon="map" /></a> --}}
 			@can(App\Policies\AlbumPolicy::CAN_UPLOAD, [App\Contracts\Models\AbstractAlbum::class, null])
-				<a class="button button_add" wire:click="openContextMenu"><x-icons.iconic class="inline w-4 h-4 mr-0 ml-0" icon="plus" /></a>
+				<a class="button__add" wire:click="openContextMenu"><x-icons.iconic class="inline w-4 h-4 mr-0 ml-0" icon="plus" /></a>
 			@endcan
 		</div>
 		@endif
 	@elseif ($gallery_mode === App\Enum\Livewire\GalleryMode::ALBUM) <!-- ALBUM -->
 		<div id="lychee_toolbar_album" class="flex w-full items-center box-border">
-			<a class="button" id="button_back_home" title="Close Album" wire:click="back"><x-icons.iconic icon="chevron-left" /></a>
-			<a class="header__title">{{ $title }}</a>
-			@can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class], $this->album)
+			<a class="buttonflex-shrink-0 pt-4 pr-3 pb-4 pl-5 cursor-pointer" id="button_back_home" title="Close Album" wire:click="back">
+				<x-icons.iconic class="inline w-4 h-4 mr-0 ml-0" icon="chevron-left" />
+			</a>
+			<a class="header__title py-3 text-center overflow-hidden px-0 w-full text-white font-bold text-sm whitespace-nowrap text-ellipsis">{{ $title }}</a>
+			{{-- @can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class], $this->album)
 			<a class="button button--eye" id="button_visibility_album"><x-icons.iconic class="iconic--eye" icon="eye" /></a>
 			@endcan
 			@can(App\Policies\AlbumPolicy::CAN_SHARE_WITH_USERS, [App\Contracts\Models\AbstractAlbum::class, $this->album])
@@ -63,16 +65,16 @@
 			@can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class, $this->album])
 			<a class="button" id="button_move_album"><x-icons.iconic icon="folder" /></a>
 			<a class="button" id="button_trash_album"><x-icons.iconic icon="trash" /></a>
-			@endcan
-			<a class="button" id="button_fs_album_enter"><x-icons.iconic icon="fullscreen-enter" /></a>
-			<a class="button" id="button_fs_album_exit"><x-icons.iconic icon="fullscreen-exit" /></a>
-			<a class="header__divider"></a>
-			<a class="button button_add" wire:click="openContextMenu"><x-icons.iconic icon="plus" /></a>
+			@endcan --}}
+			{{-- <a class="button" id="button_fs_album_enter"><x-icons.iconic icon="fullscreen-enter" /></a>
+			<a class="button" id="button_fs_album_exit"><x-icons.iconic icon="fullscreen-exit" /></a> --}}
+			{{-- <a class="header__divider"></a> --}}
+			<a class="button__add" wire:click="openContextMenu"><x-icons.iconic class="inline w-4 h-4 mr-0 ml-0" icon="plus" /></a>
 		</div>
 	@elseif ($gallery_mode === App\Enum\Livewire\GalleryMode::PHOTO) <!-- PHOTO -->
 		<div id="lychee_toolbar_photo" class="flex w-full items-center box-border">
 			<a class="button" id="button_back" wire:click="back"><x-icons.iconic icon="chevron-left" /></a>
-			<a class="header__title">{{ $title }}</a>
+			<a class="header__title py-3 text-center overflow-hidden px-0 w-full text-white font-bold text-sm whitespace-nowrap text-ellipsis">{{ $title }}</a>
 			<a class="button button--star" id="button_star"><x-icons.iconic icon="star" /></a>
 			<a class="button button--eye" id="button_visibility"><x-icons.iconic icon="eye" /></a>
 			<a class="button button--rotate" id="button_rotate_ccwise"><x-icons.iconic icon="counterclockwise" /></a>

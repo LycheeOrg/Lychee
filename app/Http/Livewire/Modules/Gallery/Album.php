@@ -34,6 +34,7 @@ class Album extends Component
 	 */
 	use AlbumProperty;
 	public bool $ready_to_load = false;
+	public int $width = 0;
 
 	public AlbumMode $layout;
 
@@ -66,9 +67,10 @@ class Album extends Component
 	 *
 	 * @return void
 	 */
-	public function loadAlbum(): void
+	public function loadAlbum(int $width): void
 	{
 		$this->ready_to_load = true;
+		$this->width = $width;
 	}
 
 	/**
@@ -96,7 +98,7 @@ class Album extends Component
 
 		$justify = new LayoutJustify();
 		$layoutConfig = new LayoutConfig(
-			containerWidth: 1800,
+			containerWidth: $this->width,
 			containerPadding: 0,
 		);
 
