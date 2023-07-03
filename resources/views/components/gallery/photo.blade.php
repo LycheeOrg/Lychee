@@ -39,7 +39,7 @@
 		</a>
 	</div>
 	@auth
-		<div class='badges absolute mt-[-1px] ml-1'>
+		<div class='badges absolute mt-[-1px] ml-1 top-0 left-0'>
 			@if($is_starred)
 				<x-gallery.badge class='badge--star bg-yellow-500' icon='star'/>
 			@endif
