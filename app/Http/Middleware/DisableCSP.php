@@ -6,7 +6,6 @@ use App\Contracts\Exceptions\LycheeException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Class DisableCSP.
@@ -51,17 +50,18 @@ class DisableCSP
 			$this->handleLivewire();
 		}
 
-
 		return $next($request);
 	}
 
 	/**
 	 * Disabling rules because of poor decision from the designer of Livewire.
-	 * 
-	 * @return void 
-	 * @throws BindingResolutionException 
+	 *
+	 * @return void
+	 *
+	 * @throws BindingResolutionException
 	 */
-	private function handleLivewire() {
+	private function handleLivewire()
+	{
 		// We have to disable unsafe-eval because Livewire requires it...
 		// So stupid....
 		config(['secure-headers.csp.script-src.unsafe-eval' => true]);
