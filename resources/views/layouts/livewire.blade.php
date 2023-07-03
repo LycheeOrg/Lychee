@@ -13,7 +13,7 @@
 		@vite('resources/js/app.js')
 		@livewireStyles(['nonce' => csp_nonce('script')])
 	</head>
-	<body class="antialiased bg-dark-700">
+	<body class="antialiased bg-dark-700 w-full flex flex-row gap-0 relative">
 		@include('includes.svg-livewire')
 		<livewire:components.left-menu>
 

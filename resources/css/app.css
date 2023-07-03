@@ -25,4 +25,12 @@
       font-size: 0.6rem;
       line-height: 0.8rem;
     }
+    .transition-width {
+      transition: width .5s;
+    }
+
+    .overflow-clip-auto {
+      overflow: clip auto;
+      height: calc(100vh - 56px);
+    }
 }

@@ -1,12 +1,12 @@
 @props(['action' => '', 'href' => '', 'click' => '', 'icon'])
-<li>
+<li class="px-4">
     <a
         @if ($action !== '') wire:click="$emitTo('index', 'openPage', '{{ $action }}')" @endif
         @if ($click !== '') wire:click="{{ $click }}" @endif
         @if ($href !== '') href="{{ $href }}" @endif
-        class="flex items-center p-2 light:text-gray-900 rounded-lg text-gray-400 light:bg-gray-100 hover:bg-gray-700">
-		<x-icons.iconic icon="{{ $icon }}" class="w-6 h-6" />
-        <span class="flex-1 ml-3 whitespace-nowrap">
+        class="p-2 py-1 rounded-lg text-neutral-400 hover:text-neutral-200 light:text-dark-850 light:bg-neutral-100 whitespace-nowrap ">
+		<x-icons.iconic icon="{{ $icon }}" class="w-3 h-3" />
+        <span class="ml-3 whitespace-nowrap text-base">
             {{ $slot }}
         </span>
     </a>

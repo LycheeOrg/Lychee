@@ -1,4 +1,4 @@
-<div>
+<div class="overflow-clip-auto">
 	@if ($smartalbums->isEmpty() && $albums->isEmpty() && $shared_albums->isEmpty())
 	<div>
 		<div wire:init='openLoginModal'>

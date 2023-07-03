@@ -1,4 +1,4 @@
-<div class="">
+<div class="w-full">
 	<!-- toolbar -->
 	<livewire:components.header
 		key="header-{{$this->albumId}}-{{$this->photoId ?? ''}}"

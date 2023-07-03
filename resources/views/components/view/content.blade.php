@@ -19,7 +19,7 @@
 			holds views which are scrollable (e.g. settings,
 			album listings, etc.)
 			-->
-			<div id="lychee_view_container" class="vflex-container">
+			<div id="lychee_view_container" class="overflow-clip-auto">
 				<!--
 				Content
 				Vertically shares space with the footer.
@@ -27,7 +27,7 @@
 				at the bottom even if the content is smaller.
 				-->
 				{{ $slot }}
-				<livewire:components.footer />
+				<x-footer />
 			</div>
 		</div>
 	</div>

@@ -5,7 +5,7 @@
     x-on:resize.window="width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
     $wire.loadAlbum(width - 2*28);"
     {{-- x-data="{ width:0 }" --}}
-    class="relative flex flex-wrap flex-auto flex-shrink-0 w-full justify-start"
+    class="relative flex flex-wrap flex-auto flex-shrink-0 w-full justify-start overflow-clip-auto"
     >
 @php
     Helpers::data_index_set(100);

@@ -71,8 +71,8 @@
 			<a class="button" id="button_trash"><x-icons.iconic icon="trash" /></a>
 			<a class="button" id="button_fs_enter"><x-icons.iconic icon="fullscreen-enter" /></a>
 			<a class="button" id="button_fs_exit"><x-icons.iconic icon="fullscreen-exit" /></a>
-			<a class="header__divider"></a>
-			<a class="button" wire:click="openContextMenu" id="button_more"><x-icons.iconic icon="ellipses" /></a> --}}
+			<a class="header__divider"></a> --}}
+			<a class="button" wire:click="openContextMenu" id="button_more"><x-icons.iconic icon="ellipses" /></a>
 		</x-header.bar>
 	@elseif ($gallery_mode === App\Enum\Livewire\GalleryMode::MAP) <!-- MAP -->
 		<x-header.bar>
