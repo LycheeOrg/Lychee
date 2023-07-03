@@ -11,7 +11,7 @@
 
 		@vite('resources/css/app.css')
 		@vite('resources/js/app.js')
-		@livewireStyles
+		@livewireStyles(['nonce' => csp_nonce('script')])
 	</head>
 	<body class="antialiased bg-dark-700">
 		@include('includes.svg-livewire')
@@ -21,15 +21,15 @@
 
 		<livewire:components.base.modal />
 		<livewire:components.base.context-menu />
-		@livewireScripts
-		<script type="text/javascript">
+		@livewireScripts(['nonce' => csp_nonce('script')])
+		<script type="text/javascript" nonce='{{ csp_nonce('script') }}'>
 			document.addEventListener('DOMContentLoaded', function () {
 				window.livewire.on('urlChange', (url) => {
 					history.pushState(null, null, url);
 				});
 			});
 		</script>
-		<script src="//unpkg.com/alpinejs" defer></script>
+		<script src="//unpkg.com/alpinejs" nonce='{{ csp_nonce('script') }}' defer></script>
 		{{-- <script defer src="{{ URL::asset(Helpers::cacheBusting('js/alpine.min.js')) }}"></script> --}}
 		{{-- <script defer src="{{ URL::asset(Helpers::cacheBusting('js/filepond.js')) }}"></script> --}}
 		{{-- <script defer src="{{ URL::asset(Helpers::cacheBusting('js/justified-layout.min.js')) }}"></script> --}}

@@ -44,6 +44,12 @@ class DisableCSP
 			config(['secure-headers.csp.script-src.hashes.sha256' => []]);
 		}
 
+		if (config('app.livewire',false) === true) {
+			// We have to disable unsafe-eval because Livewire requires it...
+			// So studpid.
+			config(['secure-headers.csp.script-src.unsafe-eval' => true]);
+		}
+
 		return $next($request);
 	}
 }

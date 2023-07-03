@@ -317,7 +317,7 @@ return [
 	 * There is no easy way to use CSP with debug bar at the moment, so we disable CSP if debug bar is enabled.
 	 */
 	'csp' => [
-		'enable' => false,
+		'enable' => true,
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy-Report-Only
 		'report-only' => false,
