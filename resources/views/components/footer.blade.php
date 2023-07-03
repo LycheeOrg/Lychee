@@ -1,4 +1,4 @@
-<div id="footer" class="flex-none w-full h-auto text-center py-5 px-0 relative overflow-clip">
+<div id="footer" class="flex-none w-full h-auto text-center py-5 px-0 relative overflow-clip text-3xs">
 	<!--
 	Footer
 	Vertically shares space with the content.
@@ -25,13 +25,13 @@
 	</div>
 	@endif
 	@isset($copyright)
-		<p class="home_copyright uppercase text-neutral-400 text-[.65rem] leading-6 font-normal">{{ $copyright }}</p>
+		<p class="home_copyright uppercase text-neutral-400 leading-6 font-normal">{{ $copyright }}</p>
 	@endisset
 	@isset($personal_text)
-		<p class="personal_text text-neutral-400 text-[.65rem] leading-6 font-normal">{{ $personal_text }}</p>
+		<p class="personal_text text-neutral-400 leading-6 font-normal">{{ $personal_text }}</p>
 	@endisset
 	@isset($hosted_by)
-	<p class="hosted_by uppercase text-neutral-400 text-[.65rem] leading-6 font-normal">
+	<p class="hosted_by uppercase text-neutral-400 leading-6 font-normal">
 		<a rel="noopener noreferrer" target="_blank" href="https://LycheeOrg.github.io" tabindex="-1"
 		class="underline">{{ $hosted_by }}</a>
 	</p>

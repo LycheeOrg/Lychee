@@ -48,4 +48,5 @@
     Loading...
     </span>
 @endif
+<x-footer />
 </div>

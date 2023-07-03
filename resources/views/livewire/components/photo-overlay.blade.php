@@ -1,4 +1,4 @@
-<div id="image_overlay" class="absolute bottom-7 left-7 text-white">
+<div id="image_overlay" class="absolute bottom-7 left-7 text-white text-shadow">
 	<h1 class=" text-3xl">{{ $title }}</h1>
 	<p class="mt-1 text-xl">
 	@switch($type)

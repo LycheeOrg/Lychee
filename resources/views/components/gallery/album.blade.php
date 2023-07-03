@@ -15,9 +15,9 @@
 	<x-gallery.album-thumb class="group-hover:border-blue-400"
 		type="{{ $thumb?->type ?? '' }}" thumb="{{ $thumb?->thumbUrl ?? '' }}" thumb2x="{{ $thumb?->thumb2xUrl ?? '' }}" />
 
-<div class='overlay absolute mb-[1px] mx-[1px] p-0 border-0 w-[206px] bottom-0 bg-gradient-to-t from-[#00000099]'>
+<div class='overlay absolute mb-[1px] mx-[1px] p-0 border-0 w-[206px] bottom-0 bg-gradient-to-t from-[#00000099] text-shadow-sm'>
 	<h1 class="w-48 pt-3 pb-1 pr-1 pl-4 text-sm text-white font-bold text-ellipsis whitespace-nowrap overflow-x-hidden" title='{{ $title }}'>{{ $title }}</h1>
-	<a class="block mt-0 mr-0 mb-3 ml-4 text-xs text-gray-400">{{ $data['created_at'] ?? '' }}</a>
+	<a class="block mt-0 mr-0 mb-3 ml-4 text-2xs text-gray-400">{{ $data['created_at'] ?? '' }}</a>
 </div>
 
 @auth
