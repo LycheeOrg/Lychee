@@ -1,6 +1,6 @@
 <meta charset="UTF-8">
 <link type="text/css" rel="stylesheet" href="dist/frontend.css">
-<link type="text/css" rel="stylesheet" href="dist/user.css">
+<link type="text/css" rel="stylesheet" href="{{ URL::asset('dist/user.css') }}">
 <link rel="shortcut icon" href="favicon.ico">
 <link rel="apple-touch-icon" href="img/apple-touch-icon-ipad.png" sizes="120x120">
 <link rel="apple-touch-icon" href="img/apple-touch-icon-iphone.png" sizes="152x152">

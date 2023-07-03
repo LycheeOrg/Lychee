@@ -1,21 +1,20 @@
-<div id="image_overlay">
-	<h1>{{ $title }}</h1>
-	<p>
+<div id="image_overlay" class="absolute bottom-7 left-7 text-white">
+	<h1 class=" text-3xl">{{ $title }}</h1>
+	<p class="mt-1 text-xl">
 	@switch($type)
-		@case('desc')
+		@case(App\Enum\Livewire\PhotoOverlayMode::DESC)
 			{{ $description }}
 		@break
-		@case('date')
+		@case(App\Enum\Livewire\PhotoOverlayMode::DATE)
 			@if($camera_date)
 			<a>
-				<span title='Camera Date'><a class='badge camera-slr'><svg class='iconic'><use xlink:href='#camera-slr' /></svg></a></span>
-				{{ $date }}
+				<span title='Camera Date'><a class='camera-slr'><svg class='iconic w-4 h-4 fill-white m-0 mr-1 -mt-1 inline-block'><use xlink:href='#camera-slr' /></svg></a></span>				{{ $date }}
 			</a>
 			@else
 			{{ $date }}
 			@endif
 		@break
-		@case('exif')
+		@case(App\Enum\Livewire\PhotoOverlayMode::EXIF)
 			{{ html_entity_decode($exif1) }}
 			<br>
 			{{ $exif2 }}

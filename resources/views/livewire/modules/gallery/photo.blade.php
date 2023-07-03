@@ -1,16 +1,21 @@
-<div id="imageview" @class(
+<div id="imageview" 
+	class="absolute top-0 left-0 w-full h-[calc(100%-3.5rem)] mt-14 bg-black"
+{{-- @class(
 	["overlay-container",
 	"fadeIn",
 	"active",
 	// "full" // Disabled for now
-	]) style="display: block;">
+	]) style="display: block;"> --}}
+>
 @if ($photo->isVideo()) {{-- This is a video file: put html5 player --}}
 <video
 		width="auto"
 		height="auto"
 		id='image'
 		controls
-		class='{{ $visibleControls === true ? "" : "full" }}'
+		class='
+		absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]
+		{{ $visibleControls === true ? "" : "full" }}'
 		autobuffer
 		{{ $autoplay ? "autoplay" : ""}}
 		data-tabindex='{{ Helpers::data_index() }}'
@@ -19,7 +24,9 @@
 	<img
 		id='image'
 		alt='big'
-		class='{{ $visibleControls === true ? "" : "full" }}'
+		class='
+		absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]
+		{{ $visibleControls === true ? "" : "full" }}'
 		src='{{ URL::asset('img/placeholder.png') }}'
 		draggable='false'
 		data-tabindex='{{ Helpers::data_index() }}'
@@ -29,7 +36,10 @@
 		<img
 			id='image'
 			alt='medium'
-			class='{{ $visibleControls === true ? "" : "full" }}'
+			class='
+			absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]
+			{{ $visibleControls === true ? "" : "full" }}
+			'
 			src='{{ URL::asset($photo->size_variants->medium->url) }}'
 			@if ($photo->size_variants->medium2x !== null)
 				srcset='{{ URL::asset($photo->size_variants->medium->url) }} {{ $photo->size_variants->medium->width }}w,
@@ -41,7 +51,10 @@
 		<img
 			id='image'
 			alt='big'
-			class='{{ $visibleControls === true ? "" : "full" }}'
+			class='
+			absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]
+			{{ $visibleControls === true ? "" : "full" }}
+			'
 			src='{{ URL::asset($photo->size_variants->original->url) }}'
 			draggable='false'
 			data-tabindex='{{ Helpers::data_index() }}'
@@ -54,6 +67,7 @@
 		data-proactively-loads-video='true'
 		data-photo-src='{{ URL::asset($photo->size_variants->medium->url) }}'
 		data-video-src='{{ URL::asset($photo->livePhotoUrl) }}'
+		class='absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'
 		style='width: {{ $photo->size_variants->medium->width }}px; height: {{ $photo->size_variants->medium->height }}px'
 		data-tabindex='{{ Helpers::data_index() }}'
 		>
@@ -65,6 +79,7 @@
 		data-proactively-loads-video='true'
 		data-photo-src='{{ URL::asset($photo->size_variants->original->url) }}'
 		data-video-src='{{ URL::asset($photo->livePhotoUrl) }}'
+		class='absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'
 		style='width: {{ $photo->size_variants->original->width }}px; height: {{ $photo->size_variants->original->height }}px'
 		data-tabindex='{{ Helpers::data_index() }}'
 		>

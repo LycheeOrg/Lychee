@@ -10,6 +10,7 @@
 		{{-- <link type="text/css" rel="stylesheet" href="{{ URL::asset(Helpers::cacheBusting('dist/user.css')) }}"> --}}
 
 		@vite('resources/css/app.css')
+		@vite('resources/js/app.js')
 		@livewireStyles
 	</head>
 	<body class="antialiased bg-dark-700">

@@ -110,7 +110,7 @@ class PhotoOverlay extends Component
 				$this->c($exif1, ' at ', str_replace('f/', '&fnof; / ', $this->photo_data->aperture));
 			}
 			if ($this->photo_data->iso !== '') {
-				$this->c($exif1, ', ', __('lychee.PHOTO_ISO') . ' ' . $this->photo_data->iso);
+				$this->c($exif1, ', ', sprintf(__('lychee.PHOTO_ISO'), $this->photo_data->iso));
 			}
 			if ($this->photo_data->focal !== '') {
 				$exif2 = $this->photo_data->focal . ($this->photo_data->lens !== '' ? ' (' . $this->photo_data->lens . ')' : '');

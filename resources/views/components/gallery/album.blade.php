@@ -1,6 +1,5 @@
 <div
 	wire:click="$emit('openAlbum', '{{ $id }}')"
-	{{-- class="album-thumb relative w-52 h-52 mt-7 ml-7 group" --}}
 	@class([
 		'album-thumb relative w-52 h-52 mt-7 ml-7 group',
 	    'blurred' => $is_nsfw_blurred
@@ -21,48 +20,47 @@
 	<a class="block mt-0 mr-0 mb-3 ml-4 text-xs text-gray-400">{{ $data['created_at'] ?? '' }}</a>
 </div>
 
-@if (Auth::check())
+@auth
 <div class='badges absolute mt-[-1px] ml-1'>
 	@if ($is_nsfw)
-		<x-icons.badge class='badge--nsfw bg-[#ff82ee]' icon='warning' />
+		<x-gallery.badge class='badge--nsfw bg-[#ff82ee]' icon='warning' />
 	@endif
 	@switch($id)
 		@case(App\SmartAlbums\StarredAlbum::ID)
-		<x-icons.badge class='badge--star bg-yellow-500' icon='star' />
+		<x-gallery.badge class='badge--star bg-yellow-500' icon='star' />
 		@break
 		@case(App\SmartAlbums\PublicAlbum::ID)
-		<x-icons.badge class='badge--public bg-green-600' icon='eye' />
+		<x-gallery.badge class='badge--public bg-green-600' icon='eye' />
 		@break
 		@case(App\SmartAlbums\UnsortedAlbum::ID)
-		<x-icons.badge class='badge--unsorted bg-red-700' icon='list' />
+		<x-gallery.badge class='badge--unsorted bg-red-700' icon='list' />
 		@break
 		@case(App\SmartAlbums\RecentAlbum::ID)
-		<x-icons.badge class='badge--recent bg-blue-700' icon='clock' />
+		<x-gallery.badge class='badge--recent bg-blue-700' icon='clock' />
 		@break
 		@case(App\SmartAlbums\OnThisDayAlbum::ID)
-		<x-icons.badge class='badge--onthisday bg-green-600' icon='calendar' />
+		<x-gallery.badge class='badge--onthisday bg-green-600' icon='calendar' />
 		@break
 		@default
 	@endswitch
 	@if ($is_public)
-		<x-icons.badge class='badge--ispublic {{ $is_link_required ? "bg-orange-400" : "bg-green-600"}}' icon='eye' />
+		<x-gallery.badge class='badge--ispublic {{ $is_link_required ? "bg-orange-400" : "bg-green-600"}}' icon='eye' />
 	@endif
 	@if ($is_password_required)
-		<x-icons.badge class='badge--locked bg-orange-400' icon='lock-locked' />
+		<x-gallery.badge class='badge--locked bg-orange-400' icon='lock-locked' />
 	@endif
 	@if ($is_tag_album == "1")
-		<x-icons.badge class='badge--tag bg-green-600' icon='tag' />
+		<x-gallery.badge class='badge--tag bg-green-600' icon='tag' />
 	@endif
 	@if ($has_cover_id)
-		<x-icons.badge class='badge--cover bg-yellow-500' icon='folder-cover' />
+		<x-gallery.badge class='badge--cover bg-yellow-500' icon='folder-cover' />
 	@endif
 </div>
-@endif
+@endauth
 @if ($has_subalbum)
 <div class='album_counters absolute right-2 top-2 flex flex-row gap-1 justify-end text-right font-bold font-sans drop-shadow-md'>
 	<a class="layers relative py-1 px-0">
 		<x-icons.iconic icon="layers" class=" fill-white w-3 h-3" />
-	{{-- <x-icons.badge class='badge--folder w-3 h-3' icon='layers' /> --}}
 	</a>
 </div>
 @endif

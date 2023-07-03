@@ -1,50 +1,35 @@
 <header
 	id="lychee_toolbar_container"
-	class=" h-14 w-full flex-none bg-gradient-to-b from-dark-700 to-dark-800 border-b border-b-solid border-b-neutral-900 "
+	class="h-14 w-full flex-none bg-gradient-to-b from-dark-700 to-dark-800 border-b border-b-solid border-b-neutral-900 "
 	{{-- @class([
 		"",
 		"hidden" => $is_hidden
 	])> --}}
 	@if ($gallery_mode === App\Enum\Livewire\GalleryMode::ALBUMS) <!-- ALBUMS -->
-		@if (Auth::user() === null) <!-- NOT LOGGED -->
-		<div id="lychee_toolbar_public" class="flex w-full items-center box-border">
-			<a class="button__login flex-shrink-0 pt-4 pr-3 pb-4 pl-5 cursor-pointer" wire:click="openLoginModal" id="button_settings">
-				<x-icons.iconic class="inline w-4 h-4 mr-0 ml-0" icon="account-login" />
-			</a>
-			<a class="header__title py-3 text-center overflow-hidden px-0 w-full text-white font-bold text-sm whitespace-nowrap text-ellipsis">
-				{{ $title }}
-			</a>
-			{{-- <div class="header__search__field"> --}}
-				{{-- <input class="header__search" type="text" name="search" placeholder="Search …"> --}}
-				{{-- <a class="header__clear">&times;</a> --}}
-			{{-- </div> --}}
+		@guest <!-- NOT LOGGED -->
+		<x-header.bar>
+			<x-header.button action="openLoginModal" icon="account-login" class="button__login" />
+			<x-header.title>{{ $title }}</x-header.title>
+			{{-- <x-header.search /> --}}
 			{{-- <a class="button button--map-albums"><x-icons.iconic icon="map" /></a> --}}
-		</div>
-		@else <!-- LOGGED -->
-		<div id="lychee_toolbar_albums" class="flex w-full items-center box-border">
-			<a class="button__settings flex-shrink-0 pt-4 pr-3 pb-4 pl-5 cursor-pointer" wire:click="openLeftMenu" id="button_settings">
-				<x-icons.iconic class="inline w-4 h-4 mr-0 ml-0" icon="cog" />
-			</a>
-			<a class="header__title py-3 text-center overflow-hidden px-0 w-full text-white font-bold text-sm whitespace-nowrap text-ellipsis">
-				{{ $title }}
-			</a>
-			{{-- <div class="header__search__field">
-				<input class="header__search" type="text" name="search" placeholder="Search …">
-				<a class="header__clear">&times;</a>
-			</div> --}}
-			<a class="header__divider"></a>
+		</x-header.bar>
+		@endguest
+		@auth
+		<x-header.bar>
+			<x-header.button action="openLeftMenu" icon="cog" class="button_settings" />
+			<x-header.title>{{ $title }}</x-header.title>
+			{{-- <x-header.search /> --}}
+			{{-- <a class="header__divider"></a> --}}
 			{{-- <a class="button button--map-albums"><x-icons.iconic icon="map" /></a> --}}
 			@can(App\Policies\AlbumPolicy::CAN_UPLOAD, [App\Contracts\Models\AbstractAlbum::class, null])
 				<a class="button__add" wire:click="openContextMenu"><x-icons.iconic class="inline w-4 h-4 mr-0 ml-0" icon="plus" /></a>
 			@endcan
-		</div>
-		@endif
+		</x-header.bar>
+		@endauth
 	@elseif ($gallery_mode === App\Enum\Livewire\GalleryMode::ALBUM) <!-- ALBUM -->
-		<div id="lychee_toolbar_album" class="flex w-full items-center box-border">
-			<a class="buttonflex-shrink-0 pt-4 pr-3 pb-4 pl-5 cursor-pointer" id="button_back_home" title="Close Album" wire:click="back">
-				<x-icons.iconic class="inline w-4 h-4 mr-0 ml-0" icon="chevron-left" />
-			</a>
-			<a class="header__title py-3 text-center overflow-hidden px-0 w-full text-white font-bold text-sm whitespace-nowrap text-ellipsis">{{ $title }}</a>
+		<x-header.bar>
+			<x-header.button action="back" icon="chevron-left" class="button__back" />
+			<x-header.title>{{ $title }}</x-header.title>
 			{{-- @can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class], $this->album)
 			<a class="button button--eye" id="button_visibility_album"><x-icons.iconic class="iconic--eye" icon="eye" /></a>
 			@endcan
@@ -70,12 +55,12 @@
 			<a class="button" id="button_fs_album_exit"><x-icons.iconic icon="fullscreen-exit" /></a> --}}
 			{{-- <a class="header__divider"></a> --}}
 			<a class="button__add" wire:click="openContextMenu"><x-icons.iconic class="inline w-4 h-4 mr-0 ml-0" icon="plus" /></a>
-		</div>
+		</x-header.bar>
 	@elseif ($gallery_mode === App\Enum\Livewire\GalleryMode::PHOTO) <!-- PHOTO -->
-		<div id="lychee_toolbar_photo" class="flex w-full items-center box-border">
-			<a class="button" id="button_back" wire:click="back"><x-icons.iconic icon="chevron-left" /></a>
-			<a class="header__title py-3 text-center overflow-hidden px-0 w-full text-white font-bold text-sm whitespace-nowrap text-ellipsis">{{ $title }}</a>
-			<a class="button button--star" id="button_star"><x-icons.iconic icon="star" /></a>
+		<x-header.bar>
+			<x-header.button action="back" icon="chevron-left" class="button__back" />
+			<x-header.title>{{ $title }}</x-header.title>
+			{{-- <a class="button button--star" id="button_star"><x-icons.iconic icon="star" /></a>
 			<a class="button button--eye" id="button_visibility"><x-icons.iconic icon="eye" /></a>
 			<a class="button button--rotate" id="button_rotate_ccwise"><x-icons.iconic icon="counterclockwise" /></a>
 			<a class="button button--rotate" id="button_rotate_cwise"><x-icons.iconic icon="clockwise" /></a>
@@ -87,17 +72,17 @@
 			<a class="button" id="button_fs_enter"><x-icons.iconic icon="fullscreen-enter" /></a>
 			<a class="button" id="button_fs_exit"><x-icons.iconic icon="fullscreen-exit" /></a>
 			<a class="header__divider"></a>
-			<a class="button" wire:click="openContextMenu" id="button_more"><x-icons.iconic icon="ellipses" /></a>
-		</div>
+			<a class="button" wire:click="openContextMenu" id="button_more"><x-icons.iconic icon="ellipses" /></a> --}}
+		</x-header.bar>
 	@elseif ($gallery_mode === App\Enum\Livewire\GalleryMode::MAP) <!-- MAP -->
-		<div id="lychee_toolbar_map" class="flex w-full items-center box-border">
-			<a class="button" id="button_back_map"><x-icons.iconic icon="chevron-left" /></a>
-			<a class="header__title"></a>
-		</div>
+		<x-header.bar>
+			<x-header.button action="back" icon="chevron-left" class="button__back" />
+			<x-header.title>{{ $title }}</x-header.title>
+		</x-header.bar>
 	@else
-		<div id="lychee_toolbar_config" class="flex w-full items-center box-border">
-			<a class="button" id="button_close_config" wire:click="back"><x-icons.iconic icon="chevron-left" /></a>
-			<a class="header__title">{{ $title }}</a>
-		</div>
+		<x-header.bar>
+			<x-header.button action="back" icon="chevron-left" class="button__back" />
+			<x-header.title>{{ $title }}</x-header.title>
+		</x-header.bar>
 	@endif
 </header>

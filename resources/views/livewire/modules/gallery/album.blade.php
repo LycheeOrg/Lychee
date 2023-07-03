@@ -21,17 +21,17 @@
             @foreach ($this->album->children as $data)
                 <x-gallery.album :data="$data" />
             @endforeach
-            @if ($this->album->photos->count() > 0)
+            @if ($this->album->photos?->count() > 0)
                 <x-gallery.divider>
                     {{ __('lychee.PHOTOS') }}
                 </x-gallery.divider>
             @endif
         @endif
-        @endisset
+    @endisset
         <div 
             @class([
                 'squares' => $layout === \App\Enum\Livewire\AlbumMode::SQUARE,
-                'm-7 relative w-full' => $layout === \App\Enum\Livewire\AlbumMode::JUSTIFIED,
+                'm-7 relative w-full' => $layout === \App\Enum\Livewire\AlbumMode::JUSTIFIED, // only one working for now
                 'masondry' => $layout === \App\Enum\Livewire\AlbumMode::MASONRY,
                 'grid' => $layout === \App\Enum\Livewire\AlbumMode::GRID,
             ])

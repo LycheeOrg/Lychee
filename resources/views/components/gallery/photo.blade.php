@@ -5,13 +5,13 @@
 	data-album-id='{{ $album_id }}'
 	data-id='{{ $photo_id }}'
 	data-tabindex='{{ Helpers::data_index() }}'
-{{--	x-on:click="$wire.emit('openPhoto', '{{ $photo_id }}', window.innerWidth)">--}}
 	>
-	<span class="thumbimg {{ $class }} w-full h-full border-none object-cover">
+	<span class="thumbimg w-full h-full border-none object-cover {{ $class }}">
 		<img
 			alt='Photo thumbnail'
-			class='w-full h-full border-none object-cover'
-			@class(['lazyload' => $is_lazyload])
+			@class([
+				'w-full h-full border-none object-cover',
+				'lazyload' => $is_lazyload])
 			@if (!$is_lazyload)
 				data-tabindex='{{ Helpers::data_index() }}'
 			@endif
@@ -34,14 +34,14 @@
 			<a class="block mt-0 mr-0 mb-3 ml-4 text-xs text-neutral-500">{{ $created_at }}</a>
 		@endif
 	</div>
-	@if (Auth::check())
-		<div class='badges'>
+	@auth
+		<div class='badges absolute mt-[-1px] ml-1'>
 			@if($is_starred)
-				<x-icons.badge class='badge--star icn-star' icon='star'/>
+				<x-gallery.badge class='badge--star bg-yellow-500' icon='star'/>
 			@endif
 			@if($is_public)
-				<x-icons.badge class='badge--visible badge--hidden icn-share' icon='eye'/>
+				<x-gallery.badge class='badge--public bg-orange-400' icon='eye'/>
 			@endif
 		</div>
-	@endif
+	@endauth
 </div>
