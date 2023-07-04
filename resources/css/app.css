@@ -25,7 +25,7 @@
       font-size: 0.6rem;
       line-height: 0.8rem;
     }
-    
+
     .transition-width {
       transition: width .5s;
     }
@@ -40,8 +40,8 @@
       background-color: #fff;
     }
 
-    input:checked + .slider {
-      background-color: #2293ec;
+    input:checked + .slider { 
+      background-color: rgb(14 165 233);
   }
 
   /* Remove all ugly outlines */

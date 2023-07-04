@@ -1,4 +1,4 @@
-<div class="u2f_view">
+<div class="u2f_view my-10">
 	{{-- 'U2F_NOT_SUPPORTED' => 'U2F not supported. Sorry.',
 	'U2F_NOT_SECURE' => 'Environment not secured. U2F not available.',
 	'U2F_REGISTER_KEY' => 'Register new device.',
@@ -8,7 +8,7 @@
 	'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!', --}}
 	<div class="u2f_view_line">
 		<p>
-			<span class="text">
+			<span class="text text-sm font-bold">
 				{{ __('lychee.U2F_CREDENTIALS') }}
 			</span>
 		</p>
@@ -21,7 +21,8 @@
 		</div>
 	@endforelse
 	<div class="u2f_view_line">
-		<a id="RegisterU2FButton" class="basicModal__button basicModal__button_CREATE">
+		<a id="RegisterU2FButton" class="basicModal__button cursor-pointer transition-colors ease-in-out w-full inline-block text-center pt-3 pb-4
+		font-bold text-green-600 rounded-md hover:text-white hover:bg-green-700">
 			Register new device.
 		</a>
 	</div>

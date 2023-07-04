@@ -3,7 +3,7 @@
     $isVideo = Str::contains($type, 'video');
 @endphp
 <span
-    class="thumbimg absolute w-52 h-52 bg-gray-800 shadow-md shadow-black/25 border-solid border border-gray-400 ease-out transition-transform
+    class="thumbimg absolute w-52 h-52 bg-neutral-800 shadow-md shadow-black/25 border-solid border border-neutral-400 ease-out transition-transform
 	{{ $class }}
 	{{-- {{ $isVideo ? "video" : ""}} --}} ">
     <img alt='Album thumbnail' @class(['w-full h-full m-0 p-0 border-0', 'lazyload' => !$isVideo])

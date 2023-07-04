@@ -4,7 +4,7 @@
 		:page_mode="App\Enum\Livewire\PageMode::SETTINGS"
 		:title="__('lychee.SETTINGS')" />
 	<div class="overflow-clip-auto">
-		<div class="settings_view w-10/12 max-w-2xl text-neutral-400 text-sm mx-auto">
+		<div class="settings_view w-10/12 max-w-xl text-neutral-400 text-sm mx-auto">
 			<livewire:forms.settings.base.string-setting key="set-dropbox-key" description="DROPBOX_TEXT"
 				placeholder="SETTINGS_DROPBOX_KEY" action="DROPBOX_TITLE" name="dropbox_key" />
 			<livewire:forms.settings.set-album-sorting-setting />
@@ -44,7 +44,7 @@
 					focus:border-sky-400 focus-visible:outline-none">
 				</textarea>
 				<div class="basicModal__buttons">
-					<a id="basicModal__action_set_css" class="basicModal__button cursor-pointer transition-colors ease-in-out w-full inline-block text-center pt-3 pb-4 font-bold text-sky-400 rounded-md hover:text-white hover:bg-sky-400">Change CSS</a>
+					<a id="basicModal__action_set_css" class="basicModal__button cursor-pointer transition-colors ease-in-out w-full inline-block text-center pt-3 pb-4 font-bold text-sky-400 rounded-md hover:text-white hover:bg-sky-500">Change CSS</a>
 				</div>
 			</div>
 

@@ -1,6 +1,10 @@
-<x-view.content :mode="$mode" :title="__('lychee.PROFILE')">
-	<div id="lychee_view_content" class="vflex-item-stretch contentZoomIn">
-		<div class="settings_view">
+<div class="w-full">
+	<!-- toolbar -->
+	<livewire:components.header
+		:page_mode="App\Enum\Livewire\PageMode::PROFILE"
+		:title="__('lychee.PROFILE')" />
+	<div class="overflow-clip-auto">
+		<div class="settings_view max-w-xl text-neutral-400 text-sm mx-auto">
 			<livewire:forms.profile.set-login />
 			@if($are_notification_active)
 			<div class="setting_line">
@@ -13,4 +17,4 @@
 			<livewire:modules.profile.second-factor />
 		</div>
 	</div>
-</x-view.content>
+</div>
