@@ -25,6 +25,7 @@
       font-size: 0.6rem;
       line-height: 0.8rem;
     }
+    
     .transition-width {
       transition: width .5s;
     }
@@ -41,5 +42,11 @@
 
     input:checked + .slider {
       background-color: #2293ec;
+  }
+
+  /* Remove all ugly outlines */
+  * {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
   }
 }

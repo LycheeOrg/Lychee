@@ -26,8 +26,8 @@
 					<p class="break-words w-full" wire:key="config-{{ $config->id }}">
 						<span class="inline-block text pt-2 pb-0 px-1 w-80 text-white">{{ $config->key }}</span>
 						<input class="inline-block text w-1/2 pt-2 pb-1 px-1 -mt-2 bg-transparent text-white border-b border-solid border-b-neutral-400
-						hover:border-b-teal-400
-						focus:border-b-teal-400 focus-visible:outline-none
+						hover:border-b-sky-400
+						focus:border-b-sky-400
 						" type="text" wire:model="configs.{{ $idx }}.value">
 						@if($config->description !== '')
 						<span class="text" class="w-full block -mt-1 text-neutral-500 pb-1 pt-0">{{ $config->description }}</span>

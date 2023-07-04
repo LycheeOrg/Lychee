@@ -8,11 +8,11 @@
 	data-id='{{ $id }}'
 	data-tabindex='{{ Helpers::data_index() }}'
 	data-nsfw='{{ $is_nsfw ? '1' : '0'}}'>
-	<x-gallery.album-thumb class="group-hover:border-blue-400 group-hover:-rotate-2 group-hover:-translate-x-3 group-hover:translate-y-2"
+	<x-gallery.album-thumb class="group-hover:border-sky-500 group-hover:-rotate-2 group-hover:-translate-x-3 group-hover:translate-y-2"
 		type="{{ $thumb?->type ?? '' }}" thumb="{{ $thumb?->thumbUrl ?? '' }}" thumb2x="{{ $thumb?->thumb2xUrl ?? '' }}" />
-	<x-gallery.album-thumb class="group-hover:border-blue-400 group-hover:rotate-6 group-hover:translate-x-3  group-hover:-translate-y-2"
+	<x-gallery.album-thumb class="group-hover:border-sky-500 group-hover:rotate-6 group-hover:translate-x-3  group-hover:-translate-y-2"
 		type="{{ $thumb?->type ?? '' }}" thumb="{{ $thumb?->thumbUrl ?? '' }}" thumb2x="{{ $thumb?->thumb2xUrl ?? '' }}" />
-	<x-gallery.album-thumb class="group-hover:border-blue-400"
+	<x-gallery.album-thumb class="group-hover:border-sky-500"
 		type="{{ $thumb?->type ?? '' }}" thumb="{{ $thumb?->thumbUrl ?? '' }}" thumb2x="{{ $thumb?->thumb2xUrl ?? '' }}" />
 
 <div class='overlay absolute mb-[1px] mx-[1px] p-0 border-0 w-[206px] bottom-0 bg-gradient-to-t from-[#00000099] text-shadow-sm'>

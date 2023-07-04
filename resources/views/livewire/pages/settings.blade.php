@@ -40,11 +40,11 @@
 					Personalize CSS:
 				</p>
 				<textarea id="css" class="p-2 h-28 bg-transparent text-white border border-solid border-neutral-400 resize-y w-full
-					hover:border-teal-400
-					focus:border-teal-400 focus-visible:outline-none">
+					hover:border-sky-400
+					focus:border-sky-400 focus-visible:outline-none">
 				</textarea>
 				<div class="basicModal__buttons">
-					<a id="basicModal__action_set_css" class="basicModal__button cursor-pointer transition-colors ease-in-out w-full inline-block text-center pt-3 pb-4 font-bold text-teal-400 rounded-md hover:text-white hover:bg-teal-400">Change CSS</a>
+					<a id="basicModal__action_set_css" class="basicModal__button cursor-pointer transition-colors ease-in-out w-full inline-block text-center pt-3 pb-4 font-bold text-sky-400 rounded-md hover:text-white hover:bg-sky-400">Change CSS</a>
 				</div>
 			</div>
 

@@ -3,7 +3,7 @@
         {{ $begin }}
         <span
             class="select relative my-[1px] mx-1 w-max text-white rounded overflow-hidden bg-black/30 inline-block text-2xs align-middle
-		after:content-['≡'] after:absolute after:text-teal-400 after:right-2 after:top-0 after:font-bold after:text-lg after:-mt-1
+		after:content-['≡'] after:absolute after:text-sky-400 after:right-2 after:top-0 after:font-bold after:text-lg after:-mt-1
 		after:pointer-events-none">
             <select class="m-0 py-1 px-2 w-[120%] text-white bg-transparent text-2xs" wire:model="value1">
                 @foreach ($this->options1 as $key => $option)
@@ -16,7 +16,7 @@
         {{ $middle }}
         <span
             class="select relative my-[1px] mx-1 w-max text-white rounded overflow-hidden bg-black/30 inline-block text-2xs align-middle
-		after:content-['≡'] after:absolute after:text-teal-400 after:right-2 after:top-0 after:font-bold after:text-lg after:-mt-1
+		after:content-['≡'] after:absolute after:text-sky-400 after:right-2 after:top-0 after:font-bold after:text-lg after:-mt-1
 		after:pointer-events-none">
             <select class="m-0 py-1 px-2 w-[120%] text-white bg-transparent text-2xs" wire:model="value2">
                 @foreach ($this->options2 as $key => $option)
