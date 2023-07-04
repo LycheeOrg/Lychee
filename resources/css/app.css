@@ -1,47 +1,55 @@
-@tailwind base; /* also contains normalize */
+@tailwind base;
+/* also contains normalize */
 @tailwind components;
 @tailwind utilities;
 
 
 @layer base {
-    html {
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    }
+  html {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
 
-    .text-shadow {
-      text-shadow: 1px 1px 2px #000;
-    }
+  .text-shadow {
+    text-shadow: 1px 1px 2px #000;
+  }
 
-    .text-shadow-sm {
-      text-shadow: 0 1px 3px #00000066;
-    }
+  .text-shadow-sm {
+    text-shadow: 0 1px 3px #00000066;
+  }
 
-    .text-2xs {
-      font-size: 0.65rem;
-      line-height: 0.8rem;
-    }
+  .text-2xs {
+    font-size: 0.65rem;
+    line-height: 0.8rem;
+  }
 
-    .text-3xs {
-      font-size: 0.6rem;
-      line-height: 0.8rem;
-    }
+  .text-3xs {
+    font-size: 0.6rem;
+    line-height: 0.8rem;
+  }
 
-    .transition-width {
-      transition: width .5s;
-    }
+  .transition-width {
+    transition: width .5s;
+  }
 
-    .overflow-clip-auto {
-      overflow: clip auto;
-      height: calc(100vh - 56px);
-    }
+  .overflow-clip-auto {
+    overflow: clip auto;
+    height: calc(100vh - 56px);
+  }
 
-    input:checked + .slider:before {
-      transform: translateX(20px);
-      background-color: #fff;
-    }
+  input:checked+.slider:before {
+    transform: translateX(20px);
+    background-color: #fff;
+  }
 
-    input:checked + .slider { 
-      background-color: rgb(14 165 233);
+  input:checked+.slider {
+    background-color: rgb(14 165 233);
+  }
+
+  input:checked~.checkbox svg {
+    opacity: 1;
+    -ms-transform: scale(1);
+    -webkit-transform: scale(1);
+    transform: scale(1);
   }
 
   /* Remove all ugly outlines */

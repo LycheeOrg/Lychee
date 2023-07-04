@@ -24,7 +24,7 @@
 					title='{{ __('lychee.RESET') }}'
 					wire:click='resetToken'
 					>
-					<x-icons.iconic class='ionicons' icon='reload' />
+					<x-icons.iconic class='my-0 ml-1 ionicons' icon='reload' />
 				</a>
 				<a id="button_copy_token"
 					class='button'
@@ -33,7 +33,7 @@
 					style='display:none;'
 					@endif
 					>
-					<x-icons.iconic class='ionicons' icon='copy' />
+					<x-icons.iconic class='my-0 ml-1 ionicons' icon='copy' />
 				</a>
 				<a id="button_disable_token"
 					class='button'
@@ -43,7 +43,7 @@
 					style='display:none;'
 					@endif
 					>
-					<x-icons.iconic class='ionicons' icon='ban' />
+					<x-icons.iconic class='my-0 ml-1 ionicons' icon='ban' />
 				</a>
 			</div>
 		</div>
