@@ -33,4 +33,13 @@
       overflow: clip auto;
       height: calc(100vh - 56px);
     }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+      background-color: #fff;
+    }
+
+    input:checked + .slider {
+      background-color: #2293ec;
+  }
 }

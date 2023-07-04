@@ -1,4 +1,3 @@
-
 <main class="w-full">
 	@switch($page_mode)
 		@case(App\Enum\Livewire\PageMode::GALLERY)

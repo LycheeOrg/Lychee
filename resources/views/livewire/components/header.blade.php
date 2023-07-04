@@ -1,16 +1,12 @@
 <header
 	id="lychee_toolbar_container"
-	class="h-14 w-full flex-none bg-gradient-to-b from-dark-700 to-dark-800 border-b border-b-solid border-b-neutral-900 "
-	{{-- @class([
-		"",
-		"hidden" => $is_hidden
-	])> --}}
+	class="h-14 w-full flex-none bg-gradient-to-b from-dark-700 to-dark-800 border-b border-b-solid border-b-neutral-900">
 	@if ($gallery_mode === App\Enum\Livewire\GalleryMode::ALBUMS) <!-- ALBUMS -->
 		@guest <!-- NOT LOGGED -->
 		<x-header.bar>
 			<x-header.button action="openLoginModal" icon="account-login" class="button__login" />
 			<x-header.title>{{ $title }}</x-header.title>
-			{{-- <x-header.search /> --}}
+			<x-header.search />
 			{{-- <a class="button button--map-albums"><x-icons.iconic icon="map" /></a> --}}
 		</x-header.bar>
 		@endguest
@@ -18,7 +14,7 @@
 		<x-header.bar>
 			<x-header.button action="openLeftMenu" icon="cog" class="button_settings" />
 			<x-header.title>{{ $title }}</x-header.title>
-			{{-- <x-header.search /> --}}
+			<x-header.search />
 			{{-- <a class="header__divider"></a> --}}
 			{{-- <a class="button button--map-albums"><x-icons.iconic icon="map" /></a> --}}
 			@can(App\Policies\AlbumPolicy::CAN_UPLOAD, [App\Contracts\Models\AbstractAlbum::class, null])
