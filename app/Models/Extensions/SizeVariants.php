@@ -131,9 +131,39 @@ class SizeVariants extends AbstractDTO
 		return $this->original;
 	}
 
+	/**
+	 * Get Medium2x or fallback to Medium
+	 * 
+	 * @return null|SizeVariant 
+	 */
+	public function getMedium2x(): ?SizeVariant
+	{
+		return $this->medium2x ?? $this->getMedium();
+	}
+
+	/**
+	 * get Medium or fallback to Original
+	 * 
+	 * @return null|SizeVariant 
+	 */
 	public function getMedium(): ?SizeVariant
 	{
-		return $this->medium;
+		return $this->medium ?? $this->original;
+	}
+
+	/**
+	 * Get Small2x or fallback to Small
+	 * 
+	 * @return null|SizeVariant 
+	 */
+	public function getSmall2x(): ?SizeVariant
+	{
+		return $this->small2x ?? $this->getSmall();
+	}
+
+	public function getSmall(): ?SizeVariant
+	{
+		return $this->small;
 	}
 
 	public function getThumb2x(): ?SizeVariant
