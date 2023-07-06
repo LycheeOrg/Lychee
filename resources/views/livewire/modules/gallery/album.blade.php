@@ -7,6 +7,22 @@
     {{-- x-data="{ width:0 }" --}}
     class="relative flex flex-wrap flex-auto flex-shrink-0 w-full justify-start overflow-clip-auto"
     >
+
+{{-- @if($isOpen) --}}
+<div class="w-full h-96 mb-4">
+    <img class="absolute block top-0 left-0 w-full h-96 object-cover z-0" src="{{ URL::asset($this->album->cover?->size_variants?->medium?->url) }}">
+    <div class="absolute top-0 left-0 w-full h-96 bg-white/30"></div>
+
+    <div class="ml-7 mt-7 relative text-shadow-sm">
+        <h1 class="font-bold text-4xl text-white">{{ $this->album->title }}</h1>
+        <span class="text-neutral-200 text-sm">{{ $this->album->min_taken_at->format("M Y") }}
+            @if($this->album->max_taken_at->format("M Y") !== $this->album->min_taken_at->format("M Y"))
+                 - {{ $this->album->max_taken_at->format("M Y") }}
+            @endif
+        </span>
+    </div>
+</div>
+{{-- @endif --}}
 @php
     Helpers::data_index_set(100);
 @endphp

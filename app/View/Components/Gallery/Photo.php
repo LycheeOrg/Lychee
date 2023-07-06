@@ -2,6 +2,7 @@
 
 namespace App\View\Components\Gallery;
 
+use App\Enum\Livewire\AlbumMode;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Models\Configs;
@@ -58,7 +59,7 @@ class Photo extends Component
 		$this->class .= $data->isVideo() ? ' video' : '';
 		$this->class .= $data->live_photo_url !== null ? ' livephoto' : '';
 
-		$this->is_square_layout = Configs::getValueAsInt('layout') === 0;
+		$this->is_square_layout = AlbumMode::SQUARE === Configs::getValueAsEnum('layout', AlbumMode::class);
 
 		$this->src = URL::asset('img/placeholder.png');
 
@@ -85,7 +86,7 @@ class Photo extends Component
 
 		// Probably this code needs some fix/refactoring, too. However, where is this method invoked and
 		// what is the structure of the passed `data` array? (Could find any invocation.)
-		if ($this->is_square_layout) {
+		if (AlbumMode::SQUARE === Configs::getValueAsEnum('layout', AlbumMode::class)) {
 			$thumbUrl = $thumb?->url;
 			$thumb2xUrl = $thumb2x?->url;
 		} elseif ($small !== null) {

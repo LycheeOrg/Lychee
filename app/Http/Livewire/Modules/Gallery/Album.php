@@ -2,8 +2,8 @@
 
 namespace App\Http\Livewire\Modules\Gallery;
 
-use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\AlbumMode;
+use App\Http\Livewire\Components\Base\Openable;
 use App\Http\Livewire\Traits\AlbumProperty;
 use App\Models\Album as ModelsAlbum;
 use App\Models\Configs;
@@ -11,7 +11,6 @@ use App\Models\Extensions\BaseAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
-use Livewire\Component;
 use LycheeOrg\PhpFlickrJustifiedLayout\DTO\Geometry;
 use LycheeOrg\PhpFlickrJustifiedLayout\LayoutConfig;
 use LycheeOrg\PhpFlickrJustifiedLayout\LayoutJustify;
@@ -22,7 +21,7 @@ use LycheeOrg\PhpFlickrJustifiedLayout\LayoutJustify;
  * We just load the layout from config and render.
  * The variable $album is automatically mounted from the Livewire call
  */
-class Album extends Component
+class Album extends Openable
 {
 	/**
 	 * Because AbstractAlbum is an Interface, it is not possible to make it
@@ -115,4 +114,6 @@ class Album extends Component
 	{
 		return $this->ready_to_load ? $this->getAlbumProperty()->photos : collect([]);
 	}
+
+
 }
