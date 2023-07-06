@@ -114,6 +114,4 @@ class Album extends Openable
 	{
 		return $this->ready_to_load ? $this->getAlbumProperty()->photos : collect([]);
 	}
-
-
 }
