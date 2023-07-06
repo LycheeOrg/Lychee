@@ -5,8 +5,12 @@ namespace App\View\Components\Gallery;
 use App\Enum\Livewire\AlbumMode;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationKeyMissingException;
+use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Models\Configs;
+use App\Models\Extensions\SizeVariants;
 use App\Models\Photo as ModelsPhoto;
+use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\URL;
 use Illuminate\View\Component;
@@ -47,88 +51,172 @@ class Photo extends Component
 	 */
 	public function __construct(ModelsPhoto $data, Item|null $geometry)
 	{
+		$this->is_square_layout = AlbumMode::SQUARE === Configs::getValueAsEnum('layout', AlbumMode::class);
+
 		$this->album_id = $data->album?->id ?? '';
 		$this->photo_id = $data->id;
 		$this->title = $data->title;
 		$this->taken_at = $data->taken_at ?? '';
 		$this->created_at = $data->created_at;
 		$this->is_starred = $data->is_starred;
-		// $this->is_public = $data->is_public;
+		$this->style = '';
 
-		$this->class = '';
-		$this->class .= $data->isVideo() ? ' video' : '';
-		$this->class .= $data->live_photo_url !== null ? ' livephoto' : '';
-
-		$this->is_square_layout = AlbumMode::SQUARE === Configs::getValueAsEnum('layout', AlbumMode::class);
-
-		$this->src = URL::asset('img/placeholder.png');
-
-		// TODO: Don't hardcode paths
-		if ($data->size_variants->getSizeVariant(SizeVariantType::THUMB) === null) {
-			$this->src = $data->isVideo() ? URL::asset('img/play-icon.png') : $this->src;
-			$this->src = $data->live_photo_url !== null ? URL::asset('img/live-photo-icon.png') : $this->src;
-
-			$this->is_lazyload = false;
+		if ($this->is_square_layout) {
+			return $this->setSquareLayout($data);
 		}
 
-		$dim = 0;
-		$dim2x = 0;
-		$thumb2x = '';
-		$thumb2xUrl = '';
+		// Not squared layout:
+		// - justified
+		// - Masondry
+		// - grid
+		$this->style = $geometry?->toCSS() ?? '';
+
+		$this->setOtherLayouts($data);
+	}
+
+	/**
+	 * Define src.
+	 *
+	 * this is what will be first deplayed before loading.
+	 *
+	 * @param SizeVariant|null $thumb
+	 * @param bool             $is_video
+	 * @param bool             $has_live_photo_url
+	 *
+	 * @return void
+	 */
+	private function set_src(?SizeVariant $thumb, bool $is_video, bool $has_live_photo_url): void
+	{
+		// default is place holder
+		$this->src = URL::asset('img/placeholder.png');
+
+		// if thumb is not null then directly return:
+		// it will be replaced later by src-set
+		if ($thumb !== null) {
+			$this->src = sprintf("src='%s'", $this->src);
+
+			return;
+		}
+
+		// TODO: Don't hardcode paths
+		// change the png in the other cases.
+		// no need to lazyload too.
+		$this->is_lazyload = false;
+		$this->src = $is_video ? URL::asset('img/play-icon.png') : $this->src;
+		$this->src = $has_live_photo_url ? URL::asset('img/live-photo-icon.png') : $this->src;
+		$this->src = sprintf("src='%s'", $this->src);
+	}
+
+	/**
+	 * Defines the thumbs if the layout is squared.
+	 *
+	 * @param ModelsPhoto $data
+	 *
+	 * @return void
+	 *
+	 * @throws IllegalOrderOfOperationException
+	 * @throws InvalidSizeVariantException
+	 */
+	private function setSquareLayout(ModelsPhoto $data): void
+	{
+		$is_video = $data->isVideo();
+		$has_live_photo_url = $data->live_photo_url !== null;
 
 		$thumb = $data->size_variants->getSizeVariant(SizeVariantType::THUMB);
 		$thumb2x = $data->size_variants->getSizeVariant(SizeVariantType::THUMB2X);
-		$small = $data->size_variants->getSizeVariant(SizeVariantType::SMALL);
-		$small2x = $data->size_variants->getSizeVariant(SizeVariantType::SMALL2X);
-		$medium = $data->size_variants->getSizeVariant(SizeVariantType::MEDIUM);
-		$medium2x = $data->size_variants->getSizeVariant(SizeVariantType::MEDIUM2X);
-		$original = $data->size_variants->getSizeVariant(SizeVariantType::ORIGINAL);
+
+		$this->class = '';
+		$this->class .= $is_video ? ' video' : '';
+		$this->class .= $has_live_photo_url ? ' livephoto' : '';
+
+		$thumbUrl = $thumb?->url;
+		$thumb2xUrl = $thumb2x?->url;
+		$this->set_src($thumb, $is_video, $has_live_photo_url);
+
+		$this->srcset = sprintf("data-src='%s'", URL::asset($thumbUrl));
+		$this->srcset2x = $thumb2xUrl !== null ? sprintf("data-srcset='%s 2x'", URL::asset($thumb2xUrl)) : '';
+	}
+
+	/**
+	 * Not squared layout:
+	 * - justified
+	 * - Masondry
+	 * - grid.
+	 *
+	 * @param ModelsPhoto $data
+	 *
+	 * @return void
+	 *
+	 * @throws IllegalOrderOfOperationException
+	 * @throws InvalidSizeVariantException
+	 */
+	private function setOtherLayouts(ModelsPhoto $data): void
+	{
+		$is_video = $data->isVideo();
+		$has_live_photo_url = $data->live_photo_url !== null;
+
+		$thumb = $data->size_variants->getSizeVariant(SizeVariantType::THUMB);
+		$thumb2x = $data->size_variants->getSizeVariant(SizeVariantType::THUMB2X);
+
+		$this->class = '';
+		$this->class .= $is_video ? ' video' : '';
+		$this->class .= $has_live_photo_url ? ' livephoto' : '';
+
+		$this->set_src($thumb, $is_video, $has_live_photo_url);
+
+		$dim = 200;
+		$dim2x = 400;
+		$thumbUrl = $thumb?->url;
+		$thumb2xUrl = $thumb2x?->url;
 
 		// Probably this code needs some fix/refactoring, too. However, where is this method invoked and
 		// what is the structure of the passed `data` array? (Could find any invocation.)
-		if (AlbumMode::SQUARE === Configs::getValueAsEnum('layout', AlbumMode::class)) {
-			$thumbUrl = $thumb?->url;
-			$thumb2xUrl = $thumb2x?->url;
-		} elseif ($small !== null) {
-			$this->_w = $small->width;
-			$this->_h = $small->height;
-			$thumbUrl = $small->url;
-			$thumb2xUrl = $small2x->url ?? '';
-			$dim = $small->width;
-			$dim2x = $small2x->width ?? 0;
-		} elseif ($medium !== null) {
-			$this->_w = $medium->width;
-			$this->_h = $medium->height;
-			$thumbUrl = $medium->url;
-			$thumb2xUrl = $medium2x->url ?? '';
-			$dim = $medium->width;
-			$dim2x = $medium2x->width ?? 0;
+
+		if ($data->size_variants->hasMediumOrSmall()) {
+			[$this->_w, $dim2x, $this->_h, $thumbUrl, $thumb2xUrl] = $this->setThumbUrls($data->size_variants);
+			$dim = $this->_w;
 		} elseif (!$data->isVideo()) {
-			$this->_w = $original->width;
-			$this->_h = $original->height;
+			$original = $data->size_variants->getSizeVariant(SizeVariantType::ORIGINAL);
+
+			$this->_w ??= $original->width;
+			$this->_h ??= $original->height;
 			// Fallback for images with no small or medium.
-			$thumbUrl = $original->url;
-		} else {
+			$thumbUrl ??= $original->url;
+		} elseif ($thumbUrl === null) {
 			// Fallback for videos with no small (the case of no thumb is handled else where).
 			$this->class = 'video';
-			$thumbUrl = $thumb?->url;
-			$thumb2xUrl = $thumb2x?->url;
 			$dim = 200;
 			$dim2x = 200;
 		}
 
-		$this->src = sprintf("src='%s'", $this->src);
 		$this->srcset = sprintf("data-src='%s'", URL::asset($thumbUrl));
+		$this->srcset2x = $thumb2xUrl !== null ? sprintf("data-srcset='%s %dw, %s %dw'", URL::asset($thumbUrl), $dim, URL::asset($thumb2xUrl), $dim2x) : '';
+	}
 
-		if ($this->is_square_layout) {
-			$thumb2x_src = sprintf("data-srcset='%s 2x'", URL::asset($thumb2xUrl));
-		} else {
-			$thumb2x_src = sprintf("data-srcset='%s %dw, %s %dw'", URL::asset($thumbUrl), $dim, URL::asset($thumb2xUrl), $dim2x);
-		}
+	/**
+	 * Fetch the thumbs data.
+	 *
+	 * @param SizeVariants $sizeVariants
+	 *
+	 * @return array
+	 *
+	 * @throws InvalidSizeVariantException
+	 */
+	private function setThumbUrls(SizeVariants $sizeVariants): array
+	{
+		$small = $sizeVariants->getSizeVariant(SizeVariantType::SMALL);
+		$small2x = $sizeVariants->getSizeVariant(SizeVariantType::SMALL2X);
+		$medium = $sizeVariants->getSizeVariant(SizeVariantType::MEDIUM);
+		$medium2x = $sizeVariants->getSizeVariant(SizeVariantType::MEDIUM2X);
 
-		$this->srcset2x = $thumb2xUrl !== '' ? $thumb2x_src : '';
+		$w = $small?->width ?? $medium?->width;
+		$w2x = $small2x?->width ?? $medium2x?->width;
+		$h = $small?->height ?? $medium?->height;
 
-		$this->style = $geometry?->toCSS() ?? '';
+		$thumbUrl = $small?->url ?? $medium?->url;
+		$thumb2xUrl = $small2x?->url ?? $medium2x?->url;
+
+		return [$w, $w2x, $h, $thumbUrl, $thumb2xUrl];
 	}
 
 	/**
