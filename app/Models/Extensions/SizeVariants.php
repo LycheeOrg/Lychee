@@ -132,9 +132,9 @@ class SizeVariants extends AbstractDTO
 	}
 
 	/**
-	 * Get Medium2x or fallback to Medium
-	 * 
-	 * @return null|SizeVariant 
+	 * Get Medium2x or fallback to Medium.
+	 *
+	 * @return SizeVariant|null
 	 */
 	public function getMedium2x(): ?SizeVariant
 	{
@@ -142,9 +142,9 @@ class SizeVariants extends AbstractDTO
 	}
 
 	/**
-	 * get Medium or fallback to Original
-	 * 
-	 * @return null|SizeVariant 
+	 * get Medium or fallback to Original.
+	 *
+	 * @return SizeVariant|null
 	 */
 	public function getMedium(): ?SizeVariant
 	{
@@ -152,9 +152,9 @@ class SizeVariants extends AbstractDTO
 	}
 
 	/**
-	 * Get Small2x or fallback to Small
-	 * 
-	 * @return null|SizeVariant 
+	 * Get Small2x or fallback to Small.
+	 *
+	 * @return SizeVariant|null
 	 */
 	public function getSmall2x(): ?SizeVariant
 	{
