@@ -40,10 +40,10 @@
 			absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]
 			{{ $visibleControls === true ? "" : "full" }}
 			'
-			src='{{ URL::asset($photo->size_variants->medium->url) }}'
+			src='{{ URL::asset($photo->size_variants->getMedium()->url) }}'
 			@if ($photo->size_variants->medium2x !== null)
-				srcset='{{ URL::asset($photo->size_variants->medium->url) }} {{ $photo->size_variants->medium->width }}w,
-				{{ URL::asset($photo->size_variants->medium2x->url) }} {{ $photo->size_variants->medium2x->width }}w'
+				srcset='{{ URL::asset($photo->size_variants->getMedium()->url) }} {{ $photo->size_variants->getMedium()->width }}w,
+				{{ URL::asset($photo->size_variants->getMedium2x()->url) }} {{ $photo->size_variants->getMedium2x()->width }}w'
 			@endif
 			data-tabindex='{{ Helpers::data_index() }}'
 			/>
@@ -55,7 +55,7 @@
 			absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]
 			{{ $visibleControls === true ? "" : "full" }}
 			'
-			src='{{ URL::asset($photo->size_variants->original->url) }}'
+			src='{{ URL::asset($photo->size_variants->getOriginal()->url) }}'
 			draggable='false'
 			data-tabindex='{{ Helpers::data_index() }}'
 			/>
@@ -65,10 +65,10 @@
 		id='livephoto'
 		data-live-photo
 		data-proactively-loads-video='true'
-		data-photo-src='{{ URL::asset($photo->size_variants->medium->url) }}'
+		data-photo-src='{{ URL::asset($photo->size_variants->getMedium()->url) }}'
 		data-video-src='{{ URL::asset($photo->livePhotoUrl) }}'
 		class='absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'
-		style='width: {{ $photo->size_variants->medium->width }}px; height: {{ $photo->size_variants->medium->height }}px'
+		style='width: {{ $photo->size_variants->getMedium()->width }}px; height: {{ $photo->size_variants->getMedium()->height }}px'
 		data-tabindex='{{ Helpers::data_index() }}'
 		>
 	</div>
@@ -77,10 +77,10 @@
 		id='livephoto'
 		data-live-photo
 		data-proactively-loads-video='true'
-		data-photo-src='{{ URL::asset($photo->size_variants->original->url) }}'
+		data-photo-src='{{ URL::asset($photo->size_variants->getOriginal()->url) }}'
 		data-video-src='{{ URL::asset($photo->livePhotoUrl) }}'
 		class='absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'
-		style='width: {{ $photo->size_variants->original->width }}px; height: {{ $photo->size_variants->original->height }}px'
+		style='width: {{ $photo->size_variants->getOriginal()->width }}px; height: {{ $photo->size_variants->getOriginal()->height }}px'
 		data-tabindex='{{ Helpers::data_index() }}'
 		>
 	</div>

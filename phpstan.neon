@@ -112,3 +112,8 @@ parameters:
 			message: '#Cannot call method .* on Illuminate\\Testing\\PendingCommand\|int.#'
 			paths:
 				- tests
+
+		-
+			message: '#Access to private property App\\Models\\Extensions\\SizeVariants::\$(original|small(2x)?|thumb(2x)?|medium(2x)?)#'
+			paths:
+				- tests
