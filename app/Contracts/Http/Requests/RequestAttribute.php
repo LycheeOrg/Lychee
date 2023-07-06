@@ -78,4 +78,5 @@ class RequestAttribute
 	public const RESYNC_METADATA_ATTRIBUTE = 'resync_metadata';
 
 	public const FILE_LAST_MODIFIED_TIME = 'fileLastModifiedTime';
+	public const URLS_ATTRIBUTE = 'urls';
 }

@@ -24,13 +24,13 @@ class SizeVariants extends AbstractDTO
 	/** @var Photo the parent object this object is tied to */
 	private Photo $photo;
 
-	private ?SizeVariant $original = null;
-	private ?SizeVariant $medium2x = null;
-	private ?SizeVariant $medium = null;
-	private ?SizeVariant $small2x = null;
-	private ?SizeVariant $small = null;
-	private ?SizeVariant $thumb2x = null;
-	private ?SizeVariant $thumb = null;
+	public ?SizeVariant $original = null;
+	public ?SizeVariant $medium2x = null;
+	public ?SizeVariant $medium = null;
+	public ?SizeVariant $small2x = null;
+	public ?SizeVariant $small = null;
+	public ?SizeVariant $thumb2x = null;
+	public ?SizeVariant $thumb = null;
 
 	/**
 	 * SizeVariants constructor.
@@ -131,9 +131,39 @@ class SizeVariants extends AbstractDTO
 		return $this->original;
 	}
 
+	/**
+	 * Get Medium2x or fallback to Medium
+	 * 
+	 * @return null|SizeVariant 
+	 */
+	public function getMedium2x(): ?SizeVariant
+	{
+		return $this->medium2x ?? $this->getMedium();
+	}
+
+	/**
+	 * get Medium or fallback to Original
+	 * 
+	 * @return null|SizeVariant 
+	 */
 	public function getMedium(): ?SizeVariant
 	{
-		return $this->medium;
+		return $this->medium ?? $this->original;
+	}
+
+	/**
+	 * Get Small2x or fallback to Small
+	 * 
+	 * @return null|SizeVariant 
+	 */
+	public function getSmall2x(): ?SizeVariant
+	{
+		return $this->small2x ?? $this->getSmall();
+	}
+
+	public function getSmall(): ?SizeVariant
+	{
+		return $this->small;
 	}
 
 	public function getThumb2x(): ?SizeVariant

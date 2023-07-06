@@ -16,6 +16,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Uživatelé',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +29,7 @@ return [
 	'ABOUT_LYCHEE' => 'O Lychee',
 	'DIAGNOSTICS' => 'Diagnostika',
 	'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Protokoly',
 	'SIGN_OUT' => 'Odhlásit se',
 	'UPDATE_AVAILABLE' => 'Update je k dispozici!',
