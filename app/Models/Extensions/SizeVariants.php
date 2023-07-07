@@ -174,7 +174,7 @@ class SizeVariants extends AbstractDTO
 			$result->width = $dim->width;
 			$result->height = $dim->height;
 			$result->filesize = $filesize;
-			$result->ratio = $dim->getRatio(); 
+			$result->ratio = $dim->getRatio();
 			$result->save();
 			$this->add($result);
 
