@@ -23,7 +23,6 @@ use Illuminate\Support\Facades\Auth;
 use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
 use Laragear\WebAuthn\WebAuthnAuthentication;
-use function Safe\mb_convert_encoding;
 
 /**
  * App\Models\User.
@@ -37,15 +36,11 @@ use function Safe\mb_convert_encoding;
  * @property bool                                                  $may_administrate
  * @property bool                                                  $may_upload
  * @property bool                                                  $may_edit_own_settings
- * @property string                                                $name
  * @property string|null                                           $token
  * @property string|null                                           $remember_token
  * @property Collection<BaseAlbumImpl>                             $albums
- * @property int|null                                              $albums_count
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
- * @property int|null                                              $notifications_count
  * @property Collection<BaseAlbumImpl>                             $shared
- * @property int|null                                              $shared_count
  * @property Collection<Photo>                                     $photos
  * @property int|null                                              $photos_count
  * @property Collection<int, WebAuthnCredential>                   $webAuthnCredentials
@@ -107,6 +102,11 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'may_edit_own_settings' => 'boolean',
 	];
 
+	protected function _toArray(): array
+	{
+		return parent::toArray();
+	}
+
 	/**
 	 * Create a new Eloquent query builder for the model.
 	 *
@@ -161,8 +161,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	public function username(): string
 	{
-		// @phpstan-ignore-next-line This is temporary and should hopefully be fixed soon by Safe with proper type hinting.
-		return mb_convert_encoding($this->username, 'UTF-8');
+		return utf8_encode($this->username);
 	}
 
 	/**

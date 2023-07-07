@@ -16,6 +16,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => '使用者',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +29,7 @@ return [
 	'ABOUT_LYCHEE' => '關於Lychee',
 	'DIAGNOSTICS' => '診斷',
 	'DIAGNOSTICS_GET_SIZE' => '請求空間使用',
+	'JOBS' => 'Show job history',
 	'LOGS' => '查看日誌',
 	'SIGN_OUT' => '登出',
 	'UPDATE_AVAILABLE' => '可用更新！',
