@@ -9,4 +9,13 @@ class ImageDimension extends ArrayableDTO
 		public int $height
 	) {
 	}
+
+	/**
+	 * Return the ratio given width and height
+	 * 
+	 * @return float 
+	 */
+	public function getRatio(): float {
+		return $this->height > 0 ? $this->width / $this->height : 0;
+	}
 }
