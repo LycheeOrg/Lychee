@@ -32,7 +32,7 @@
 		data-tabindex='{{ Helpers::data_index() }}'
 		/>
 @elseif ($photo->live_photo_short_path === null) {{-- This is a normal image: medium or original --}}
-	@if ($photo->size_variants->medium !== null)
+	@if ($photo->size_variants->getMedium() !== null)
 		<img
 			id='image'
 			alt='medium'
@@ -41,7 +41,7 @@
 			{{ $visibleControls === true ? "" : "full" }}
 			'
 			src='{{ URL::asset($photo->size_variants->getMedium()->url) }}'
-			@if ($photo->size_variants->medium2x !== null)
+			@if ($photo->size_variants->getMedium2x() !== null)
 				srcset='{{ URL::asset($photo->size_variants->getMedium()->url) }} {{ $photo->size_variants->getMedium()->width }}w,
 				{{ URL::asset($photo->size_variants->getMedium2x()->url) }} {{ $photo->size_variants->getMedium2x()->width }}w'
 			@endif
