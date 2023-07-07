@@ -21,9 +21,6 @@
 		</div>
 	@endforelse
 	<div class="u2f_view_line">
-		<a id="RegisterU2FButton" class="cursor-pointer transition-colors ease-in-out w-full inline-block text-center pt-3 pb-4
-		font-bold text-green-600 rounded-md hover:text-white hover:bg-green-700">
-			Register new device.
-		</a>
+		<x-forms.buttons.create class="rounded-md w-full" >Register new device.</x-forms.buttons.create>
 	</div>
 </div>

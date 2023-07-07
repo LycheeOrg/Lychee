@@ -24,31 +24,12 @@
 
 			<div class="users_view_line w-full flex my-5">
 				<p class="full w-full flex">
-					<input class="text w-full py-2 px-1 text-white border-b border-b-solid border-b-neutral-800 bg-transparent placeholder:text-neutral-500
-					hover:border-b-sky-400 focus:border-b-sky-400 shadow shadow-white/5" wire:model="username" type="text" placeholder="{{ __('lychee.LOGIN_USERNAME') }}">
-					<input class="text w-full py-2 px-1 text-white border-b border-b-solid border-b-neutral-800 bg-transparent placeholder:text-neutral-500
-					hover:border-b-red-700 focus:border-b-red-700 shadow shadow-white/5" wire:model="password" type="text" placeholder="{{ __('lychee.LOGIN_PASSWORD') }}">
-					<span class="choice inline-block w-12" title="{{ __('lychee.ALLOW_UPLOADS') }}">
-						<label>
-							<input type="checkbox" wire:model="may_upload" class="absolute m-0 opacity-0">
-							<span class="checkbox checkbox inline-block w-3.5 h-4 mt-2.5 mx-2 bg-black/50 rounded-sm">
-								<svg class="iconic fill-sky-500 opacity-0 p-0.5 w-full h-full">
-									<use xlink:href="#check"></use>
-								</svg></span>
-						</label>
-					</span>
-					<span class="choice inline-block w-12" title="{{ __('lychee.ALLOW_USER_SELF_EDIT') }}">
-						<label>
-							<input type="checkbox" wire:model="may_edit_own_settings" class="absolute m-0 opacity-0">
-							<span class="checkbox checkbox inline-block w-3.5 h-4 mt-2.5 mx-2 bg-black/50 rounded-sm">
-								<svg class="iconic fill-sky-500 opacity-0 p-0.5 w-full h-full">
-									<use xlink:href="#check"></use>
-								</svg></span>
-						</label>
-					</span>
+					<x-forms.inputs.text class="w-full mt-4" wire:model="username" type="text" placeholder="{{ __('lychee.LOGIN_USERNAME') }}" />
+					<x-forms.inputs.important class="w-full mt-4" wire:model="password" type="text" placeholder="{{ __('lychee.LOGIN_PASSWORD') }}" />
+					<x-forms.tickbox class="mt-1" title="{{ __('lychee.ALLOW_UPLOADS') }}" wire:model='may_upload' />
+					<x-forms.tickbox class="mt-1" title="{{ __('lychee.ALLOW_USER_SELF_EDIT') }}" wire:model='may_edit_own_settings' />
 				</p>
-				<a wire:click="create" class="inline-block w-1/6 cursor-pointer transition-colors ease-in-out text-center pt-3 pb-4
-				font-bold text-green-600 rounded-md hover:text-white hover:bg-green-700">{{ __('lychee.CREATE') }}</a>
+				<x-forms.buttons.create class="w-1/6 rounded-r-md" wire:click="create">{{ __('lychee.CREATE') }}</x-forms.buttons.create>
 			</div>
 		</div>
 	</div>

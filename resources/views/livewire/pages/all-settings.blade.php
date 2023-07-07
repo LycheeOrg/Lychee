@@ -25,17 +25,14 @@
 				<div class="setting_line my-0.5">
 					<p class="break-words w-full" wire:key="config-{{ $config->id }}">
 						<span class="inline-block text pt-2 pb-0 px-1 w-80 text-white">{{ $config->key }}</span>
-						<input class="inline-block text w-1/2 pt-2 pb-1 px-1 -mt-2 bg-transparent text-white border-b border-solid border-b-neutral-400
-						hover:border-b-sky-400
-						focus:border-b-sky-400
-						" type="text" wire:model="configs.{{ $idx }}.value">
+						<x-forms.inputs.text class="w-1/2" wire:model="configs.{{ $idx }}.value" />
 						@if($config->description !== '')
 						<span class="text" class="w-full block -mt-1 text-neutral-500 pb-1 pt-0">{{ $config->description }}</span>
 						@endif
 					</p>
 				</div>
 			@endforeach
-			<a class="basicModal__button basicModal__button_SAVE mt-7 mb-8 cursor-pointer transition-colors ease-in-out w-full inline-block text-center pt-3 pb-4 font-bold text-red-800 rounded-md hover:text-white hover:bg-red-800" wire:click="openConfirmSave">{{ __("lychee.SETTINGS_ADVANCED_SAVE") }}</a>
+			<x-forms.buttons.danger class="mt-7 mb-8 rounded-md" wire:click="openConfirmSave">{{ __("lychee.SETTINGS_ADVANCED_SAVE") }}</x-forms.buttons.danger>
 		</div>
 		<x-footer />
 	</div>
