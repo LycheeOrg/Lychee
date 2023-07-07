@@ -42,6 +42,8 @@ class Album extends Openable
 
 	public ?Collection $photos = null;
 
+	public string $header_url = '';
+
 	/**
 	 * Listeners for roloading the page.
 	 *
@@ -114,4 +116,9 @@ class Album extends Openable
 	{
 		return $this->ready_to_load ? $this->getAlbumProperty()->photos : collect([]);
 	}
+
+	// private function fetchHeaderUrl(): void
+	// {
+	// 	$this->getAlbumProperty()->photos()->where('size_variants.type','=','0')->get();
+	// }
 }

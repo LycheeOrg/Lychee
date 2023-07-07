@@ -62,7 +62,9 @@ class Photo extends Component
 		$this->style = '';
 
 		if ($this->is_square_layout) {
-			return $this->setSquareLayout($data);
+			$this->setSquareLayout($data);
+
+			return;
 		}
 
 		// Not squared layout:
@@ -173,7 +175,14 @@ class Photo extends Component
 		// what is the structure of the passed `data` array? (Could find any invocation.)
 
 		if ($data->size_variants->hasMediumOrSmall()) {
-			[$this->_w, $dim2x, $this->_h, $thumbUrl, $thumb2xUrl] = $this->setThumbUrls($data->size_variants);
+			$thumbsUrls = $this->setThumbUrls($data->size_variants);
+
+			$this->_w = $thumbsUrls['w'];
+			$this->_h = $thumbsUrls['h'];
+			$dim2x = $thumbsUrls['w2x'];
+			$thumbUrl = $thumbsUrls['thumbUrl'];
+			$thumb2xUrl = $thumbsUrls['thumb2xUrl'];
+
 			$dim = $this->_w;
 		} elseif (!$data->isVideo()) {
 			$original = $data->size_variants->getSizeVariant(SizeVariantType::ORIGINAL);
@@ -198,7 +207,7 @@ class Photo extends Component
 	 *
 	 * @param SizeVariants $sizeVariants
 	 *
-	 * @return array
+	 * @return array{w:int,w2x:int|null,h:int,thumbUrl:string,thumb2xUrl:string|null}
 	 *
 	 * @throws InvalidSizeVariantException
 	 */
@@ -209,14 +218,17 @@ class Photo extends Component
 		$medium = $sizeVariants->getSizeVariant(SizeVariantType::MEDIUM);
 		$medium2x = $sizeVariants->getSizeVariant(SizeVariantType::MEDIUM2X);
 
+		/** @var int $w */
 		$w = $small?->width ?? $medium?->width;
 		$w2x = $small2x?->width ?? $medium2x?->width;
+		/** @var int $h */
 		$h = $small?->height ?? $medium?->height;
 
+		/** @var string $thumbUrl */
 		$thumbUrl = $small?->url ?? $medium?->url;
 		$thumb2xUrl = $small2x?->url ?? $medium2x?->url;
 
-		return [$w, $w2x, $h, $thumbUrl, $thumb2xUrl];
+		return ['w' => $w, 'w2x' => $w2x, 'h' => $h, 'thumbUrl' => $thumbUrl, 'thumb2xUrl' => $thumb2xUrl];
 	}
 
 	/**
