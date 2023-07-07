@@ -44,13 +44,12 @@
 					focus:border-sky-400 focus-visible:outline-none">
 				</textarea>
 				<div class="basicModal__buttons">
-					<a id="basicModal__action_set_css" class="basicModal__button cursor-pointer transition-colors ease-in-out w-full inline-block text-center pt-3 pb-4 font-bold text-sky-400 rounded-md hover:text-white hover:bg-sky-500">Change CSS</a>
+					<x-forms.buttons.action class="rounded-md" >Change CSS</x-forms.buttons.action>
 				</div>
 			</div>
 
 			<div class="my-4">
-				<a class="basicModal__button basicModal__button_MORE cursor-pointer transition-colors ease-in-out w-full inline-block text-center pt-3 pb-4 font-bold text-red-800 rounded-md hover:text-white hover:bg-red-800" wire:click="openAllSettings">{{
-					__('lychee.MORE') }}</a>
+				<x-forms.buttons.danger class="rounded-md" wire:click="openAllSettings">{{ __('lychee.MORE') }}</x-forms.buttons.danger>
 			</div>
 		</div>
 		<x-footer />

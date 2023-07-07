@@ -4,29 +4,39 @@
     {{-- We remove 2x padding of 7rem + 20px for the scroll bar --}}
     x-on:resize.window="width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
     $wire.loadAlbum(width - 2*28);"
-    {{-- x-data="{ width:0 }" --}}
     class="relative flex flex-wrap flex-auto flex-shrink-0 w-full justify-start overflow-clip-auto"
     >
 
-{{-- @if($isOpen) --}}
-@if ($this->header_url !== null)
-<div class="w-full h-1/2 mb-4">
-    <img class="absolute block top-0 left-0 w-full h-1/2 object-cover object-center z-0" src="{{ URL::asset($this->header_url) }}">
-    <div class="h-full pl-7 pt-7 relative text-shadow-sm w-full bg-gradient-to-b from-black/20 via-80%">
-        <h1 class="font-bold text-4xl text-white">{{ $this->album->title }}</h1>
-        <span class="text-neutral-200 text-sm">{{ $this->album->min_taken_at->format("M Y") }}
-            @if($this->album->max_taken_at->format("M Y") !== $this->album->min_taken_at->format("M Y"))
-                 - {{ $this->album->max_taken_at->format("M Y") }}
-            @endif
-        </span>
-        <div class="absolute flex flex-col bottom-0 right-0 w-full pl-7 pb-7 bg-gradient-to-t from-black/60 via-80%">
-            <span class="block text-neutral-200 text-sm">{{ __('lychee.ALBUM_CREATED') }} {{ $this->album->created_at->format('M j, Y g:i:s A e') }}</span>
-            <span class="block text-neutral-200 text-sm">{{ $this->album->photos->count() }} {{ __('lychee.ALBUM_IMAGES') }}</span>
+@if(!$isOpen)
+    @if ($this->header_url !== null)
+        <div class="w-full h-1/2 mb-4">
+            <img class="absolute block top-0 left-0 w-full h-1/2 object-cover object-center z-0" src="{{ URL::asset($this->header_url) }}">
+            <div class="h-full pl-7 pt-7 relative text-shadow-sm w-full bg-gradient-to-b from-black/20 via-80%">
+                <h1 class="font-bold text-4xl text-white">{{ $this->album->title }}</h1>
+                <span class="text-neutral-200 text-sm">{{ $this->album->min_taken_at->format("M Y") }}
+                    @if($this->album->max_taken_at->format("M Y") !== $this->album->min_taken_at->format("M Y"))
+                        - {{ $this->album->max_taken_at->format("M Y") }}
+                    @endif
+                </span>
+                <div class="absolute flex flex-col bottom-0 right-0 w-full pl-7 pb-7 bg-gradient-to-t from-black/60 via-80%">
+                    <span class="block text-neutral-200 text-sm">{{ __('lychee.ALBUM_CREATED') }} {{ $this->album->created_at->format('M j, Y g:i:s A e') }}</span>
+                    <span class="block text-neutral-200 text-sm">{{ $this->album->photos->count() }} {{ __('lychee.ALBUM_IMAGES') }}</span>
+                </div>
+            </div>
         </div>
-    </div>
+        @if($this->album->description !== null)
+        <div>
+            {{ $this->album->description }}
+        </div>
+        @endif
+    @endif
+@else
+<div class="w-full h-1/2 mb-4">
+<input type="text" value="{{ $this->title }}">
+<textarea>{{ $this->description }}</textarea>
+<a class="">{{ __('lychee.SAVE') }}</a>
 </div>
 @endif
-{{-- @endif --}}
 @php
     Helpers::data_index_set(100);
 @endphp

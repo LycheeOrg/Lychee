@@ -7,7 +7,6 @@
 			text" wire:model="value" type="text" placeholder="{{ $placeholder }}">
 	</p>
 	<div class="basicModal__buttons w-full">
-		<a wire:click="save" class="basicModal__button
-		cursor-pointer transition-colors ease-in-out w-full inline-block text-center pt-3 pb-4 font-bold text-sky-400 rounded-md hover:text-white hover:bg-sky-500">{{ $action }}</a>
+		<x-forms.buttons.action class="rounded-md" wire:click="save">{{ $action }}</x-forms.buttons.action>
 	</div>
 </div>
