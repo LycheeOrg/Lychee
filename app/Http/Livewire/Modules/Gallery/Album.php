@@ -122,7 +122,7 @@ class Album extends Openable
 
 	private function fetchHeaderUrl(): SizeVariant|null
 	{
-		if($this->getAlbumProperty()->photos->isEmpty()) {
+		if ($this->getAlbumProperty()->photos->isEmpty()) {
 			return null;
 		}
 
