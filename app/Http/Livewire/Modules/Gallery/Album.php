@@ -3,13 +3,16 @@
 namespace App\Http\Livewire\Modules\Gallery;
 
 use App\Enum\Livewire\AlbumMode;
+use App\Enum\SizeVariantType;
 use App\Http\Livewire\Components\Base\Openable;
 use App\Http\Livewire\Traits\AlbumProperty;
 use App\Models\Album as ModelsAlbum;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\SizeVariant;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use LycheeOrg\PhpFlickrJustifiedLayout\DTO\Geometry;
 use LycheeOrg\PhpFlickrJustifiedLayout\LayoutConfig;
@@ -59,6 +62,7 @@ class Album extends Openable
 	public function render(): View
 	{
 		$this->layout = Configs::getValueAsEnum('layout', AlbumMode::class);
+		$this->fetchHeaderUrl();
 
 		return view('livewire.modules.gallery.album');
 	}
@@ -117,8 +121,24 @@ class Album extends Openable
 		return $this->ready_to_load ? $this->getAlbumProperty()->photos : collect([]);
 	}
 
-	// private function fetchHeaderUrl(): void
-	// {
-	// 	$this->getAlbumProperty()->photos()->where('size_variants.type','=','0')->get();
-	// }
+	private function fetchHeaderUrl(): SizeVariant
+	{
+		return SizeVariant::query()
+		->where('type', '=', SizeVariantType::MEDIUM)
+		->whereBelongsTo($this->getAlbumProperty()
+		->photos)
+		->whereColumn('width', '>', 'height')
+		->first();
+		// dd($res);
+		// $sizeVariants = SizeVariant::query()
+		// 	->select(['photo_id', 'short_path',DB::raw('width / height as ratio')])
+		// 	->where('type','=',SizeVariantType::MEDIUM);
+		// $this->getAlbumProperty()
+		// 		->photos()
+		// 		->joinSub($sizeVariants, 'medium', 'medium.photo_id','=','photos.id')
+		// 		->select(['short_path'])
+		// 		->where('ratio','>','1')
+		// 		->orderBy('ratio','DESC')
+		// 			->first();
+	}
 }
