@@ -1,1 +1,1 @@
-<div class="basicContext__item basicContext__item--separator"></div>
+<div class="h-0.5 my-1 border-b border-b-white/[.06] bg-black/20"></div>

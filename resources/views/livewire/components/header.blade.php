@@ -4,7 +4,7 @@
 	@if ($gallery_mode === App\Enum\Livewire\GalleryMode::ALBUMS) <!-- ALBUMS -->
 		@guest <!-- NOT LOGGED -->
 		<x-header.bar>
-			<x-header.button action="openLoginModal" icon="account-login" class="button__login" />
+			<x-header.button wire:click="openLoginModal" icon="account-login" />
 			<x-header.title>{{ $title }}</x-header.title>
 			<x-header.search />
 			{{-- <a class="button button--map-albums"><x-icons.iconic icon="map" /></a> --}}
@@ -12,19 +12,19 @@
 		@endguest
 		@auth
 		<x-header.bar>
-			<x-header.button action="openLeftMenu" icon="cog" class="button_settings" />
+			<x-header.button wire:click="openLeftMenu" icon="cog" />
 			<x-header.title>{{ $title }}</x-header.title>
 			<x-header.search />
 			{{-- <a class="header__divider"></a> --}}
 			{{-- <a class="button button--map-albums"><x-icons.iconic icon="map" /></a> --}}
 			@can(App\Policies\AlbumPolicy::CAN_UPLOAD, [App\Contracts\Models\AbstractAlbum::class, null])
-				<a class="button__add" wire:click="openContextMenu"><x-icons.iconic class="inline w-4 h-4 mr-0 ml-0" icon="plus" /></a>
+			<x-header.button wire:click="openContextMenu" icon="plus" />
 			@endcan
 		</x-header.bar>
 		@endauth
 	@elseif ($gallery_mode === App\Enum\Livewire\GalleryMode::ALBUM) <!-- ALBUM -->
 		<x-header.bar>
-			<x-header.button action="back" icon="chevron-left" class="button__back" />
+			<x-header.button wire:click="back" icon="chevron-left" />
 			<x-header.title>{{ $title }}</x-header.title>
 			{{-- @can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class], $this->album)
 			<a class="button button--eye" id="button_visibility_album"><x-icons.iconic class="iconic--eye" icon="eye" /></a>
@@ -50,11 +50,11 @@
 			{{-- <a class="button" id="button_fs_album_enter"><x-icons.iconic icon="fullscreen-enter" /></a>
 			<a class="button" id="button_fs_album_exit"><x-icons.iconic icon="fullscreen-exit" /></a> --}}
 			{{-- <a class="header__divider"></a> --}}
-			<a class="button__add" wire:click="openContextMenu"><x-icons.iconic class="inline w-4 h-4 mr-0 ml-0" icon="plus" /></a>
+			<x-header.button wire:click="openContextMenu" icon="plus" />
 		</x-header.bar>
 	@elseif ($gallery_mode === App\Enum\Livewire\GalleryMode::PHOTO) <!-- PHOTO -->
 		<x-header.bar>
-			<x-header.button action="back" icon="chevron-left" class="button__back" />
+			<x-header.button wire:click="back" icon="chevron-left" />
 			<x-header.title>{{ $title }}</x-header.title>
 			{{-- <a class="button button--star" id="button_star"><x-icons.iconic icon="star" /></a>
 			<a class="button button--eye" id="button_visibility"><x-icons.iconic icon="eye" /></a>
@@ -68,16 +68,16 @@
 			<a class="button" id="button_fs_enter"><x-icons.iconic icon="fullscreen-enter" /></a>
 			<a class="button" id="button_fs_exit"><x-icons.iconic icon="fullscreen-exit" /></a>
 			<a class="header__divider"></a> --}}
-			<a class="button" wire:click="openContextMenu" id="button_more"><x-icons.iconic icon="ellipses" /></a>
+			<x-header.button wire:click="openContextMenu" icon="ellipses" />
 		</x-header.bar>
 	@elseif ($gallery_mode === App\Enum\Livewire\GalleryMode::MAP) <!-- MAP -->
 		<x-header.bar>
-			<x-header.button action="back" icon="chevron-left" class="button__back" />
+			<x-header.button wire:click="back" icon="chevron-left" />
 			<x-header.title>{{ $title }}</x-header.title>
 		</x-header.bar>
 	@else
 		<x-header.bar>
-			<x-header.button action="back" icon="chevron-left" class="button__back" />
+			<x-header.button wire:click="back" icon="chevron-left" />
 			<x-header.title>{{ $title }}</x-header.title>
 		</x-header.bar>
 	@endif
