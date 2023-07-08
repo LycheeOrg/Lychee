@@ -70,8 +70,8 @@ class Album extends Openable
 		if ($this->baseAlbum !== null) {
 			$this->title = $this->baseAlbum->title;
 			$this->description = $this->baseAlbum->description ?? '';
-			$this->sort_by = $this->baseAlbum->sorting?->column ?? '';
-			$this->sort_by = $this->baseAlbum->sorting?->order ?? '';
+			$this->sort_by = $this->baseAlbum->sorting?->column->value ?? '';
+			$this->sort_by = $this->baseAlbum->sorting?->order->value ?? '';
 		}
 
 		$this->layout = Configs::getValueAsEnum('layout', AlbumMode::class);

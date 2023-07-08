@@ -2,8 +2,8 @@
 
 namespace App\Http\Livewire\Forms\Profile;
 
-use App\Models\User;
 use App\Exceptions\UnauthenticatedException;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;

@@ -36,18 +36,21 @@
         @endif
     @endif
 @else
-<div class="w-full h-1/2 m-7 mb-4 flex">
-    <div>
-    {{ __('lychee.ALBUM_TITLE') }}
-    <x-forms.inputs.text wire:model='title' />
-    {{ __('lychee.ALBUM_DESCRIPTION') }}
-    <textarea wire:model="description"></textarea>
-    {{ __('lychee.ALBUM_ORDERING' )}}
+<div class="w-full m-7 mb-4 flex flex-wrap md:flex-nowrap">
+    <div class="text-sm p-9 w-full min-w-fit text-neutral-200 ">
+        <div class="mb-4">
+        <p class="font-bold">{{ __('lychee.ALBUM_TITLE') }}:</p>
+        <x-forms.inputs.text wire:model='title' />
+        </div>
+        <div class="my-4">
+        <p class="font-bold">{{ __('lychee.ALBUM_DESCRIPTION') }}:</p>
+        <x-forms.textarea wire:model="description"></x-forms.textarea>
+        </div>
+        {{-- {{ __('lychee.ALBUM_ORDERING' )}} --}}
 
-    <x-forms.buttons.action wire:action='save'>{{ __('lychee.SAVE') }}</x-forms.buttons.action>
+        {{-- <x-forms.buttons.action wire:action='save'>{{ __('lychee.SAVE') }}</x-forms.buttons.action> --}}
     </div>
-    <div>
-    </div>
+    <livewire:forms.album.visibility />
 </div>
 @endif
 @php
