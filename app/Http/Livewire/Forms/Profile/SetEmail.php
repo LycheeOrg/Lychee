@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Forms\Profile;
 
+use App\Models\User;
 use App\Exceptions\UnauthenticatedException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -51,6 +52,7 @@ class SetEmail extends Component
 	public function save(): void
 	{
 		// TODO : VALIDATE
+		/** @var User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();
 		$user->email = $this->value;
 		$user->save();

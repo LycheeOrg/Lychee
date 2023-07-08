@@ -22,6 +22,9 @@
                 @endif
                 <div class="absolute flex flex-col bottom-0 right-0 w-full pl-7 pb-7 bg-gradient-to-t from-black/60 via-80%">
                     <span class="block text-neutral-200 text-sm">{{ __('lychee.ALBUM_CREATED') }} {{ $this->album->created_at->format('M j, Y g:i:s A e') }}</span>
+                    @if($this->album->children->count() > 0)
+                        <span class="block text-neutral-200 text-sm">{{ $this->album->children->count() }} {{ __('lychee.ALBUM_SUBALBUMS') }}</span>
+                    @endif
                     <span class="block text-neutral-200 text-sm">{{ $this->album->photos->count() }} {{ __('lychee.ALBUM_IMAGES') }}</span>
                 </div>
             </div>
@@ -33,10 +36,18 @@
         @endif
     @endif
 @else
-<div class="w-full h-1/2 mb-4">
-<input type="text" value="{{ $this->title }}">
-<textarea>{{ $this->description }}</textarea>
-<a class="">{{ __('lychee.SAVE') }}</a>
+<div class="w-full h-1/2 m-7 mb-4 flex">
+    <div>
+    {{ __('lychee.ALBUM_TITLE') }}
+    <x-forms.inputs.text wire:model='title' />
+    {{ __('lychee.ALBUM_DESCRIPTION') }}
+    <textarea wire:model="description"></textarea>
+    {{ __('lychee.ALBUM_ORDERING' )}}
+
+    <x-forms.buttons.action wire:action='save'>{{ __('lychee.SAVE') }}</x-forms.buttons.action>
+    </div>
+    <div>
+    </div>
 </div>
 @endif
 @php

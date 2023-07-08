@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Modules\Gallery;
 
 use App\Enum\Livewire\AlbumMode;
 use App\Enum\SizeVariantType;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Http\Livewire\Components\Base\Openable;
 use App\Http\Livewire\Traits\AlbumProperty;
 use App\Models\Album as ModelsAlbum;
@@ -11,6 +12,7 @@ use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\SizeVariant;
 use App\SmartAlbums\BaseSmartAlbum;
+use Illuminate\Database\Eloquent\RelationNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
 use LycheeOrg\PhpFlickrJustifiedLayout\DTO\Geometry;
@@ -46,12 +48,17 @@ class Album extends Openable
 
 	public ?string $header_url = null;
 
+	public string $title = '';
+	public string $description = '';
+	public string $sort_by = '';
+	public string $order_by = '';
+
 	/**
 	 * Listeners for roloading the page.
 	 *
 	 * @var string[]
 	 */
-	protected $listeners = ['reload'];
+	protected $listeners = ['reload', 'open', 'close', 'toggle'];
 
 	/**
 	 * Rendering of the blade template.
@@ -60,6 +67,13 @@ class Album extends Openable
 	 */
 	public function render(): View
 	{
+		if ($this->baseAlbum !== null) {
+			$this->title = $this->baseAlbum->title;
+			$this->description = $this->baseAlbum->description ?? '';
+			$this->sort_by = $this->baseAlbum->sorting?->column ?? '';
+			$this->sort_by = $this->baseAlbum->sorting?->order ?? '';
+		}
+
 		$this->layout = Configs::getValueAsEnum('layout', AlbumMode::class);
 		$this->header_url ??= $this->fetchHeaderUrl()?->url;
 
@@ -120,6 +134,15 @@ class Album extends Openable
 		return $this->ready_to_load ? $this->getAlbumProperty()->photos : collect([]);
 	}
 
+	/**
+	 * Fetch the header url
+	 * TODO: Later this can be also a field from the album and if null we apply the rdm query.
+	 *
+	 * @return SizeVariant|null
+	 *
+	 * @throws QueryBuilderException
+	 * @throws RelationNotFoundException
+	 */
 	private function fetchHeaderUrl(): SizeVariant|null
 	{
 		if ($this->getAlbumProperty()->photos->isEmpty()) {
@@ -127,10 +150,10 @@ class Album extends Openable
 		}
 
 		return SizeVariant::query()
-		->where('type', '=', SizeVariantType::MEDIUM)
-		->whereBelongsTo($this->getAlbumProperty()->photos)
-		->where('ratio', '>', 1)
-		->inRandomOrder()
-		->first();
+			->where('type', '=', SizeVariantType::MEDIUM)
+			->whereBelongsTo($this->getAlbumProperty()->photos)
+			->where('ratio', '>', 1)
+			->inRandomOrder()
+			->first();
 	}
 }

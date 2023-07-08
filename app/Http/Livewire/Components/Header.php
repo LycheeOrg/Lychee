@@ -35,6 +35,9 @@ class Header extends Component
 	public ?BaseSmartAlbum $smartAlbum = null;
 	public ?Photo $photo = null;
 
+	public bool $albumToggled = false;
+	public bool $leftBarToggled = false;
+
 	/**
 	 * Render the header.
 	 *
@@ -83,14 +86,24 @@ class Header extends Component
 	}
 
 	/**
-	 * Toggle the side bar.
-	 * TODO Consider moving this directly to Blade.
+	 * Toggle details of albums.
 	 *
 	 * @return void
 	 */
-	public function toggleSideBar(): void
+	public function toggleAlbumDetails(): void
 	{
-		$this->emitTo('pages.gallery', 'toggleSideBar');
+		$this->albumToggled = !$this->albumToggled;
+		$this->emitTo('modules.gallery.album', 'toggle');
+	}
+
+	/**
+	 * Toggle details of photos.
+	 *
+	 * @return void
+	 */
+	public function togglePhotoDetails(): void
+	{
+		$this->emitTo('modules.gallery.photo', 'toggle');
 	}
 
 	/**

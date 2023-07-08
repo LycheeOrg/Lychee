@@ -36,9 +36,7 @@
 				description="NEW_PHOTOS_NOTIFICATION" name="new_photos_notification" />
 
 			<div class="my-4">
-				<p>
-					Personalize CSS:
-				</p>
+				<p>{{ __('lychee.CSS_TEXT') }}</p>
 				<textarea id="css" class="p-2 h-28 bg-transparent text-white border border-solid border-neutral-400 resize-y w-full
 					hover:border-sky-400
 					focus:border-sky-400 focus-visible:outline-none">

@@ -32,7 +32,7 @@
 					</p>
 				</div>
 			@endforeach
-			<x-forms.buttons.danger class="mt-7 mb-8 rounded-md" wire:click="openConfirmSave">{{ __("lychee.SETTINGS_ADVANCED_SAVE") }}</x-forms.buttons.danger>
+			<x-forms.buttons.danger class="w-full mt-7 mb-8 rounded-md" wire:click="openConfirmSave">{{ __("lychee.SETTINGS_ADVANCED_SAVE") }}</x-forms.buttons.danger>
 		</div>
 		<x-footer />
 	</div>

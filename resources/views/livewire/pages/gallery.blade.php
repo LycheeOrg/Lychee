@@ -11,14 +11,14 @@
 		@if($mode === App\Enum\Livewire\GalleryMode::ALBUMS)
 		<livewire:modules.gallery.albums />
 		@elseif($mode === App\Enum\Livewire\GalleryMode::ALBUM)
-		<livewire:modules.gallery.album
+		<livewire:modules.gallery.album 
 			key="view-album-{{$this->albumId}}"
 			:smartAlbum="$smartAlbum"
 			:baseAlbum="$baseAlbum"
 		/>
 		@elseif($mode === App\Enum\Livewire\GalleryMode::MAP)
 		{{-- <div id="lychee_map_container" class="overlay-container"></div> --}}
-		<livewire:modules.gallery.albums/>
+		<livewire:modules.gallery.albums />
 		@endif
 		@if($mode === App\Enum\Livewire\GalleryMode::PHOTO)
 		<livewire:modules.gallery.photo key="view-photo-{{$this->photoId}}" :album="$this->album" :photo="$this->photo" />

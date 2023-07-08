@@ -50,6 +50,9 @@
 			{{-- <a class="button" id="button_fs_album_enter"><x-icons.iconic icon="fullscreen-enter" /></a>
 			<a class="button" id="button_fs_album_exit"><x-icons.iconic icon="fullscreen-exit" /></a> --}}
 			{{-- <a class="header__divider"></a> --}}
+			@if($baseAlbum !== null)
+			<x-header.button wire:click="toggleAlbumDetails" icon="{{ $albumToggled === true ? 'chevron-top' : 'chevron-bottom' }}" />
+			@endif
 			<x-header.button wire:click="openContextMenu" icon="plus" />
 		</x-header.bar>
 	@elseif ($gallery_mode === App\Enum\Livewire\GalleryMode::PHOTO) <!-- PHOTO -->

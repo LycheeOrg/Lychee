@@ -13,7 +13,6 @@ use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\SmartAlbums\BaseSmartAlbum;
-use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -38,7 +37,6 @@ class Gallery extends Component
 	public ?string $photoId = null;
 
 	public GalleryMode $mode;
-	public bool $isSidebarOpen = false;
 	public string $title;
 
 	/**
@@ -52,7 +50,7 @@ class Gallery extends Component
 	/**
 	 * @var array<int,string> listeners of click events
 	 */
-	protected $listeners = ['openAlbum', 'openPhoto', 'back', 'toggleSideBar'];
+	protected $listeners = ['openAlbum', 'openPhoto', 'back'];
 
 	/**
 	 * While in most Laravel Controller calls we use the constructor,
@@ -184,16 +182,5 @@ class Gallery extends Component
 
 		// This ensures that the history has been updated
 		$this->emitUrlChange(PageMode::GALLERY, $this->albumId ?? '', $this->photoId ?? '');
-	}
-
-	/**
-	 * Toggle the component.
-	 *
-	 * @return void
-	 */
-	public function toggleSideBar(): void
-	{
-		Debugbar::info('toggle.');
-		$this->isSidebarOpen = !$this->isSidebarOpen;
 	}
 }
