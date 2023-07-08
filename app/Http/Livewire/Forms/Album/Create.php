@@ -76,7 +76,7 @@ class Create extends BaseForm
 		$title = $values[RequestAttribute::TITLE_ATTRIBUTE];
 
 		/** @var Album|null $parentAlbum */
-		$parentAlbum = $parentAlbumID === null ? null : Album::query()->firstOrFail($parentAlbumID);
+		$parentAlbum = $parentAlbumID === null ? null : Album::query()->findOrFail($parentAlbumID);
 
 		// Authorize
 		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $parentAlbum]);
