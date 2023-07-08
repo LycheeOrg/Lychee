@@ -2,24 +2,18 @@
     <form>
         <p class="py-5">
             {{ __('lychee.PASSWORD_TITLE') }}
-            <x-forms.inputs.password class="w-full mt-2" wire:model="oldPassword" placeholder="{{ __('lychee.PASSWORD_CURRENT') }}" />
-            {{-- <input wire:model="oldPassword" @class([
-                'w-full py-2 px-1 border-b border-b-solid border-b-neutral-800text-red-400 placeholder:text-neutral-500
-                hover:border-b-red-700 focus:border-b-red-700 shadow shadow-white/5',
-                'text-white bg-transparent' => !$errors->has('oldPassword'),
-                'bg-red-700/10 text-red-400' => $errors->has('oldPassword'),
-            ]) type="password"
-                placeholder="{{ __('lychee.PASSWORD_CURRENT') }}" /> --}}
+            <x-forms.inputs.password class="w-full mt-2" wire:model="oldPassword" placeholder="{{ __('lychee.PASSWORD_CURRENT') }}"
+            :has_error="$errors->has('oldPassword')" />
             <x-forms.error-message field='oldPassword' />
         </p>
         <p>
             {{ __('lychee.PASSWORD_TEXT') }}
-            <x-forms.inputs.text class="w-full mt-2" wire:model="username" placeholder="{{ __('lychee.LOGIN_USERNAME') }}" />
+            <x-forms.inputs.text class="w-full mt-2" wire:model="username" placeholder="{{ __('lychee.LOGIN_USERNAME') }}" :has_error="$errors->has('username')" />
             <x-forms.error-message field='username' />
-            <x-forms.inputs.password class="mt-2" wire:model="password" placeholder="{{ __('lychee.LOGIN_PASSWORD') }}" />
+            <x-forms.inputs.password class="mt-2" wire:model="password" placeholder="{{ __('lychee.LOGIN_PASSWORD') }}" :has_error="$errors->has('password')" />
             <x-forms.error-message field='password' />
-            <x-forms.inputs.password class="mt-2" wire:model="confirm" placeholder="{{ __('lychee.LOGIN_PASSWORD_CONFIRM') }}" />
-            <x-forms.error-message field='confirm' />
+            <x-forms.inputs.password class="mt-2" wire:model="password_confirmation" placeholder="{{ __('lychee.LOGIN_PASSWORD_CONFIRM') }}" :has_error="$errors->has('confirm')" />
+            <x-forms.error-message field='password_confirmation' />
         </p>
         <div class="basicModal__buttons flex">
             <x-forms.buttons.action wire:click="submit" wire:loading.attr="disabled" class="rounded-md w-full">

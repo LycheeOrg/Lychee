@@ -1,5 +1,5 @@
 <div>
-	<div class="basicModal__content">
+	<div class="p-9">
 		{{ $title }}
 		<form class="force-first-child">
 		@foreach($form as $f => $v)
@@ -7,14 +7,13 @@
 			@if(!in_array($f, $formHidden, true))
 				@if (is_string($f))
 					<div class="input-group stacked">
-						<input
+						<x-forms.inputs.text
 						@class(['text', 'error' => $errors->has('form.' . $f)])
-						autocomplete="on"
-						type="text"
-						placeholder="{{ $formLocale[$f] }}"
+						autocomplete="on" placeholder="{{ $formLocale[$f] }}"
 						autocapitalize="off"
 						data-tabindex="{{ Helpers::data_index() }}"
-						wire:model="form.{{ $f }}">
+						wire:model="form.{{ $f }}"
+						/>
 						<x-forms.error-message :field="'form.' . $f" />
 					</div>
 				@else
@@ -24,8 +23,8 @@
 		@endforeach
 		</form>
 	</div>
-	<div class="basicModal__buttons">
-		<a id="basicModal__cancel" class="basicModal__button" data-tabindex="{{ Helpers::data_index() }}" wire:click="close">{{ $cancel }}</a>
-		<a id="basicModal__action" class="basicModal__button" data-tabindex="{{ Helpers::data_index() }}" wire:click="submit">{{ $validate }}</a>
+	<div class="flex w-full box-border">
+		<x-forms.buttons.cancel class="border-t border-t-dark-800 rounded-bl-md w-full" wire:click="close">{{ $cancel }}</x-forms.buttons.cancel>
+		<x-forms.buttons.action class="border-t border-t-dark-800 rounded-br-md w-full" wire:click="submit">{{ $validate }}</x-forms.buttons.action>
 	</div>
 </div>

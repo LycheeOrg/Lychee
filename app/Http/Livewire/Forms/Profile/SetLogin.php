@@ -25,7 +25,7 @@ class SetLogin extends Component
 	public string $oldPassword = ''; // ! wired
 	public string $username = ''; // ! wired
 	public string $password = ''; // ! wired
-	public string $confirm = ''; // ! wired
+	public string $password_confirmation = ''; // ! wired
 
 	/**
 	 * Simply render the form.

@@ -1,5 +1,5 @@
 <div>
-	<div class="basicModal__content p-9">
+	<div class="p-9">
 		<x-forms.error-message field='wrongLogin' />
 		<form class="">
 			<div class="mb-4 mx-0">
@@ -24,7 +24,7 @@
 			@endif
 		</p>
 	</div>
-	<div class="basicModal__buttons flex w-full box-border">
+	<div class="flex w-full box-border">
 		<x-forms.buttons.cancel class="border-t border-t-dark-800 rounded-bl-md w-full" wire:click="close">{{ __('lychee.CANCEL') }}</x-forms.buttons.cancel>
 		<x-forms.buttons.action class="border-t border-t-dark-800 rounded-br-md w-full" wire:click="submit">{{ __('lychee.SIGN_IN') }}</x-forms.buttons.action>
 	</div>
