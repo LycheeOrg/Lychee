@@ -5,7 +5,7 @@
 		@livewire($type, compact('params'))
 		@if($close_text !== '')
 		<div class="basicModal__buttons">
-			<a id="basicModal__cancel" class="basicModal__button"  wire:click="closeModal">{{ Lang::get($close_text) }}</a>
+			<x-forms.buttons.cancel wire:click="closeModal" class="border-t border-t-black/20 w-full hover:bg-white/[.02]">{{ Lang::get($close_text) }}</x-forms.buttons.cancel>
 		</div>
 		@endif
 	</div>
