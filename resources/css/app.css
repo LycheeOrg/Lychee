@@ -9,6 +9,11 @@
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   }
 
+  .box-shadow {
+    /* -webkit-box-shadow: 0 0 0 1px rgba(0,0,0,.7); */
+    box-shadow: 0 0 0 1px rgba(0,0,0,.7); 
+  }
+
   .text-shadow {
     text-shadow: 1px 1px 2px #000;
   }

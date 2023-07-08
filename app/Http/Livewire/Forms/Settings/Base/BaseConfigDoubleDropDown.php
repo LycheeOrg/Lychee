@@ -35,7 +35,7 @@ abstract class BaseConfigDoubleDropDown extends Component
 		$this->value1 = $this->config1->value;
 		$this->value2 = $this->config2->value;
 
-		return view('livewire.forms.form-double-drop-down');
+		return view('livewire.forms.settings.form-double-drop-down');
 	}
 
 	/**

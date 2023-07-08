@@ -51,7 +51,7 @@ class AlbumAdd extends Component
 	public function openImportFromServerModal(): void
 	{
 		$this->closeContextMenu();
-		$this->openModal('forms.import-from-server');
+		$this->openModal('forms.import.import-from-server', $this->params);
 	}
 
 	public function openImportFromUrlModal(): void

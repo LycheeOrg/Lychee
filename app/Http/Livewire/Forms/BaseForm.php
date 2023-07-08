@@ -100,7 +100,7 @@ abstract class BaseForm extends Component
 	public function render(): View
 	{
 		/** @var view-string $view */
-		$view = 'livewire.forms.form' . $this->render;
+		$view = 'livewire.forms.modals.form' . $this->render;
 
 		return view($view);
 	}

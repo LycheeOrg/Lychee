@@ -1,5 +1,5 @@
 <div>
-	<div>
+	<div class="p-9">
 	@foreach ($uploadedThumbs as $uploadedThumb)
 		<img alt="thumb" src="{{ URL::asset($uploadedThumb) }}" height="50px">
 	@endforeach
