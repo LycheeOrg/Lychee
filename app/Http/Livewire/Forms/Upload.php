@@ -105,7 +105,7 @@ class Upload extends BaseForm
 	public function mount(array $params = []): void
 	{
 		parent::mount($params);
-		$this->render = '-upload';
+		$this->render = 'upload';
 		$this->albumId = $params['parentId'] ?? null;
 	}
 

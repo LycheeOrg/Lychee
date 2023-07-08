@@ -43,7 +43,7 @@ class Login extends BaseForm
 	public function mount(array $params = []): void
 	{
 		parent::mount($params);
-		$this->render = '-login'; // We use specialized blade because of the version
+		$this->render = 'login'; // We use specialized blade because of the version
 
 		if (!Configs::getValueAsBool('hide_version_number')) {
 			$this->version = resolve(InstalledVersion::class)->getVersion()->toString();

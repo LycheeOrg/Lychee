@@ -37,7 +37,7 @@ class ImportFromServer extends BaseForm
 	public function mount(array $params = []): void
 	{
 		parent::mount($params);
-		$this->render = '-import-from-server';
+		$this->render = 'import-from-server';
 
 		// Initialize form elements (and dependent form elements) based on
 		// global configuration settings.

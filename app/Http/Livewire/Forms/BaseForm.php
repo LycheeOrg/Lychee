@@ -42,7 +42,7 @@ abstract class BaseForm extends Component
 	/**
 	 * @var string bypass form rendering with specific ones
 	 */
-	public string $render = '-modal';
+	public string $render = 'modal';
 
 	/**
 	 * This defines the set of validation rules to be applied on the input.
@@ -100,7 +100,7 @@ abstract class BaseForm extends Component
 	public function render(): View
 	{
 		/** @var view-string $view */
-		$view = 'livewire.forms.modals.form' . $this->render;
+		$view = 'livewire.forms.modals.' . $this->render;
 
 		return view($view);
 	}
