@@ -32,6 +32,5 @@
 		{{-- <script src="//unpkg.com/alpine.min.js" nonce='{{ csp_nonce('script') }}' defer></script> --}}
 		<script defer src="{{ URL::asset(Helpers::cacheBusting('js/alpine.min.js')) }}"></script>
 		{{-- <script defer src="{{ URL::asset(Helpers::cacheBusting('js/filepond.js')) }}"></script> --}}
-		{{-- <script defer src="{{ URL::asset(Helpers::cacheBusting('js/justified-layout.min.js')) }}"></script> --}}
 </body>
 </html>

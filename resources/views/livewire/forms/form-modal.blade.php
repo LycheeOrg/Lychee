@@ -1,14 +1,14 @@
 <div>
 	<div class="p-9">
-		{{ $title }}
-		<form class="force-first-child">
+		<p class="mb-5 text-neutral-200">{{ $title }}</p>
+		<form>
 		@foreach($form as $f => $v)
 			{{-- Only display the allowed forms --}}
 			@if(!in_array($f, $formHidden, true))
 				@if (is_string($f))
-					<div class="input-group stacked">
+					<div class="my-3 first:mt-0 last:mb-0">
 						<x-forms.inputs.text
-						@class(['text', 'error' => $errors->has('form.' . $f)])
+						:has_error="$errors->has('form.' . $f)"
 						autocomplete="on" placeholder="{{ $formLocale[$f] }}"
 						autocapitalize="off"
 						data-tabindex="{{ Helpers::data_index() }}"

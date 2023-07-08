@@ -5,11 +5,13 @@ namespace App\Http\Livewire\Forms\Album;
 use App\Actions\Album\Create as AlbumCreate;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
+use App\Exceptions\UnauthenticatedException;
 use App\Http\Livewire\Forms\BaseForm;
 use App\Http\Livewire\Traits\InteractWithModal;
 use App\Http\RuleSets\AddAlbumRuleSet;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 /**
@@ -43,7 +45,7 @@ class Create extends BaseForm
 	public function mount(array $params = []): void
 	{
 		parent::mount($params);
-		$this->title = __('lychee.ALBUM_NEW_TITLE');
+		$this->title = __('lychee.TITLE_NEW_ALBUM');
 		$this->validate = __('lychee.CREATE_ALBUM');
 		$this->cancel = __('lychee.CANCEL');
 		// Localization
@@ -79,8 +81,10 @@ class Create extends BaseForm
 		// Authorize
 		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $parentAlbum]);
 
-		// Create
-		resolve(AlbumCreate::class)->create($title, $parentAlbum);
+		/** @var int $ownerId */
+		$ownerId = Auth::id() ?? throw new UnauthenticatedException();
+		$create = new AlbumCreate($ownerId);
+		$create->create($title, $parentAlbum);
 
 		// Do we want refresh or direcly open newly created Album ?
 		$this->emitTo('modules.gallery.albums', 'reload');

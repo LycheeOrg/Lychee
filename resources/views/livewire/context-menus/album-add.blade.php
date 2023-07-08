@@ -8,7 +8,6 @@
 		@endif
 	<x-menu.item wire:click='openImportFromServerModal' icon='terminal'>{{ __('lychee.IMPORT_SERVER') }}</x-menu.item>
 	@endcan
-
 	<x-menu.separator />
 	<x-menu.item wire:click='openAlbumCreateModal' icon='folder'>{{ __('lychee.NEW_ALBUM') }}</x-menu.item>
 	@if($params['parentId'] === null)
