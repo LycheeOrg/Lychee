@@ -282,6 +282,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Funkcja mapy została wyłączona w ustawieniach.',
 	'ERROR_SEARCH_DEACTIVATED' => 'Funkcja wyszkukiwania została wyłączona w ustawieniach.',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Ponów',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',

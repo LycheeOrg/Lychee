@@ -282,6 +282,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Funkce Mapy byla v nastavení deaktivována.',
 	'ERROR_SEARCH_DEACTIVATED' => 'Funkce hledání byla v nastavení deaktivována.',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Opakovat',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',

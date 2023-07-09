@@ -7,6 +7,7 @@ use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\OrderSortingType;
 use App\Factories\AlbumFactory;
+use App\Http\Livewire\Traits\Notify;
 use App\Http\RuleSets\Album\SetAlbumDescriptionRuleSet;
 use App\Http\RuleSets\Album\SetAlbumSortingRuleSet;
 use App\Models\Extensions\BaseAlbum;
@@ -19,6 +20,7 @@ use Livewire\Component;
 class Properties extends Component
 {
 	use AuthorizesRequests;
+	use Notify;
 
 	public string $title; // ! wired
 	public string $description; // ! wired
@@ -83,6 +85,7 @@ class Properties extends Component
 		$sortingCriterion = $column === null ? null : new PhotoSortingCriterion($column->toColumnSortingType(), $order);
 
 		$baseAlbum->sorting = $sortingCriterion;
+        $this->notify(__('lychee.CHANGE_SUCCESS'));
 		$baseAlbum->save();
 	}
 }

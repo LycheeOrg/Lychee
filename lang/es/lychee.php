@@ -282,6 +282,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'La funcionalidad del mapa se ha desactivado en la configuración.',
 	'ERROR_SEARCH_DEACTIVATED' => 'La función de búsqueda se ha desactivado en la configuración.',
 	'SUCCESS' => 'Vale',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Procesar de nuevo',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',

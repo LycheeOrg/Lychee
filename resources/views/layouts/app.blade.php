@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="{{ app()->currentLocale() }}">
 	<head>
-		@include('components.meta.meta')
+		@include('components.meta.index')
 
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=4.0, user-scalable=yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">

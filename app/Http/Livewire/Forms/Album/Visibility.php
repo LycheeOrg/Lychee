@@ -93,8 +93,9 @@ class Visibility extends Component
 	 *
 	 * @return void
 	 */
-	public function updated(SetProtectionPolicy $setProtectionPolicy, AlbumFactory $albumFactory)
+	public function updated()
 	{
+		$albumFactory = resolve(AlbumFactory::class);
 		$baseAlbum = $albumFactory->findBaseAlbumOrFail($this->albumID, false);
 
 		$this->validate(SetAlbumProtectionPolicyRuleSet::rules());
@@ -127,6 +128,7 @@ class Visibility extends Component
 			$passwordUpdateRequested = true;
 		}
 
+		$setProtectionPolicy = resolve(SetProtectionPolicy::class);
 		$setProtectionPolicy->do(
 			$baseAlbum,
 			$albumProtectionPolicy,

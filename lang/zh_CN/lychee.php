@@ -282,6 +282,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => '地图功能已在设置中停用。',
 	'ERROR_SEARCH_DEACTIVATED' => '搜索功能已在设置中停用。',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => '重试',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',

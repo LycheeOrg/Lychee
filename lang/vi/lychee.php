@@ -282,6 +282,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Tính năng hiển thị bản đồ đã tắt trong phần cài đặt.',
 	'ERROR_SEARCH_DEACTIVATED' => 'Tính năng tìm kiếm đã tắt trong phần cài đặt',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Thử lại',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',

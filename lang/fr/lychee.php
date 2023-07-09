@@ -282,6 +282,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'La carte a été désactivée dans les paramètres.',
 	'ERROR_SEARCH_DEACTIVATED' => 'La recherche a été désactivée dans les paramètres.',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Changement réussi.',
 	'RETRY' => 'Réessayer',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',

@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="{{ app()->currentLocale() }}">
 	<head>
-		@include('components.meta.meta')
+		@include('components.meta.index')
 
 		{{-- <script async defer src="{{ URL::asset(Helpers::cacheBusting('js/app.js')) }}"></script> --}}
 		{{-- <script async defer src="{{ URL::asset(Helpers::cacheBusting('js/webauthn.js')) }}"></script> --}}
@@ -15,6 +15,7 @@
 	</head>
 	<body class="antialiased bg-dark-700 w-full flex flex-row gap-0 relative">
 		@include('includes.svg-livewire')
+		<x-notifications />
 		<livewire:components.left-menu>
 
 		{{ $fullpage }}

@@ -282,6 +282,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Kartfunksjoner har blitt deaktivert under innstillinger',
 	'ERROR_SEARCH_DEACTIVATED' => 'Søkefunksjoner har blitt deaktivert under innstillinger',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Prøv igjen',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
