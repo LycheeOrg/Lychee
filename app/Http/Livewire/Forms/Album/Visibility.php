@@ -3,21 +3,23 @@
 namespace App\Http\Livewire\Forms\Album;
 
 use App\Actions\Album\SetProtectionPolicy;
-use App\Actions\Settings\UpdateLogin;
 use App\DTO\AlbumProtectionPolicy;
+use App\Exceptions\InvalidPropertyException;
+use App\Exceptions\ModelDBException;
+use App\Exceptions\Internal\FrameworkException;
 use App\Factories\AlbumFactory;
 use App\Http\RuleSets\Album\SetAlbumProtectionPolicyRuleSet;
-use App\Http\RuleSets\ChangeLoginRuleSet;
 use App\Models\AccessPermission;
 use App\Models\Extensions\BaseAlbum;
-use App\Models\User;
 use App\Policies\AlbumPolicy;
-use App\Policies\UserPolicy;
-use App\Rules\CurrentPasswordRule;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
+use Throwable;
 
 class Visibility extends Component
 {
@@ -75,6 +77,11 @@ class Visibility extends Component
 		return view('livewire.forms.album.visibility');
 	}
 
+	/**
+	 * If any attributes are changed, we call this.
+	 * 
+	 * @return void 
+	 */
 	public function updated()
 	{
 		/** @var AlbumFactory $albumFactory */
@@ -82,7 +89,6 @@ class Visibility extends Component
 		$baseAlbum = $albumFactory->findBaseAlbumOrFail($this->albumID, false);
 
 		$this->authorize(AlbumPolicy::CAN_EDIT, $baseAlbum);
-
 		$this->validate(SetAlbumProtectionPolicyRuleSet::rules());
 
 		if (!$this->is_public) {
@@ -112,34 +118,4 @@ class Visibility extends Component
 			$this->password
 		);
 	}
-
-	// /**
-	//  * Update Username & Password of current user.
-	//  */
-	// public function submit(UpdateLogin $updateLogin): void
-	// {
-	// 	/**
-	// 	 * For the validation to work it is important that the above wired property match
-	// 	 * the keys in the rules applied.
-	// 	 */
-	// 	$this->validate(ChangeLoginRuleSet::rules());
-	// 	$this->validate(['oldPassword' => new CurrentPasswordRule()]);
-
-	// 	/**
-	// 	 * Authorize the request.
-	// 	 */
-	// 	$this->authorize(UserPolicy::CAN_EDIT, [User::class]);
-
-	// 	$currentUser = $updateLogin->do(
-	// 		$this->username,
-	// 		$this->password,
-	// 		$this->oldPassword,
-	// 		request()->ip()
-	// 	);
-
-	// 	// Update the session with the new credentials of the user.
-	// 	// Otherwise, the session is out-of-sync and falsely assumes the user
-	// 	// to be unauthenticated upon the next request.
-	// 	Auth::login($currentUser);
-	// }
 }

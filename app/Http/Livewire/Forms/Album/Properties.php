@@ -13,13 +13,13 @@ class Properties extends Component
 
 	public string $title; // ! wired
 	public string $description; // ! wired
-	public string $album_id;
+	public string $albumID;
 	public string $sort_by = ''; // ! wired
 	public string $order_by = ''; // ! wired
 
 	public function mount(BaseAlbum $album): void
 	{
-		$this->album_id = $album->id;
+		$this->albumID = $album->id;
 		$this->title = $album->title;
 		$this->description = $album->description ?? '';
 		$this->sort_by = $album->sorting?->column->value ?? '';
