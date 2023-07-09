@@ -31,7 +31,7 @@ class SetProtectionPolicy extends Action
 	{
 		$album->is_nsfw = $protectionPolicy->is_nsfw;
 		$album->save();
-		
+
 		$active_permissions = $album->public_permissions();
 
 		if (!$protectionPolicy->is_public) {
