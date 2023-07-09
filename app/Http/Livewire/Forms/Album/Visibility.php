@@ -27,10 +27,11 @@ class Visibility extends Component
 	public string $albumID;
 
 	/**
-	 * This is the equivalent of the constructor for Livewire Components
-	 * 
-	 * @param BaseAlbum $album to update the visibility of.
-	 * @return void 
+	 * This is the equivalent of the constructor for Livewire Components.
+	 *
+	 * @param BaseAlbum $album to update the visibility of
+	 *
+	 * @return void
 	 */
 	public function mount(BaseAlbum $album): void
 	{
@@ -47,10 +48,11 @@ class Visibility extends Component
 	}
 
 	/**
-	 * When we initialize, we also need to update the public attributes of the components
-	 * 
-	 * @param AccessPermission $perm 
-	 * @return void 
+	 * When we initialize, we also need to update the public attributes of the components.
+	 *
+	 * @param AccessPermission $perm
+	 *
+	 * @return void
 	 */
 	private function setPublic(AccessPermission $perm): void
 	{
@@ -64,8 +66,8 @@ class Visibility extends Component
 	/**
 	 * When we set to Private, we automatically reset the all the attributes to false.
 	 * The AccessPermission object associated will be destroyed later, as such it is better to reset the data.
-	 * 
-	 * @return void 
+	 *
+	 * @return void
 	 */
 	private function setPrivate(): void
 	{
@@ -89,8 +91,8 @@ class Visibility extends Component
 
 	/**
 	 * If any attributes are changed, we call this.
-	 * 
-	 * @return void 
+	 *
+	 * @return void
 	 */
 	public function updated()
 	{
