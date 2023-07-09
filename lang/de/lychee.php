@@ -16,6 +16,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Benutzer',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Erstellen',
 	'REMOVE' => 'Entfernen',
 	'SHARE' => 'Freigeben',
@@ -28,6 +29,7 @@ return [
 	'ABOUT_LYCHEE' => 'Über Lychee',
 	'DIAGNOSTICS' => 'Diagnose',
 	'DIAGNOSTICS_GET_SIZE' => 'Speicherplatz-Nutzung abrufen',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Logs anzeigen',
 	'SIGN_OUT' => 'Abmelden',
 	'UPDATE_AVAILABLE' => 'Update verfügbar!',
@@ -280,6 +282,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Karten sind unter Einstellungen deaktiviert worden.',
 	'ERROR_SEARCH_DEACTIVATED' => 'Suchfunktion wurde unter Einstellungen deaktiviert.',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Noch einmal versuchen',
 	'OVERRIDE' => 'Überschreiben',
 	'TAGS_OVERRIDE_INFO' => 'Wenn das nicht aktiviert ist, werden die Tags zu den vorhandenen Tags des Fotos hinzugefügt.',

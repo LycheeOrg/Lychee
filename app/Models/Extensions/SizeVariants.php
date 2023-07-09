@@ -131,14 +131,44 @@ class SizeVariants extends AbstractDTO
 		return $this->original;
 	}
 
+	/**
+	 * Get Medium2x or fallback to Medium.
+	 *
+	 * @return SizeVariant|null
+	 */
+	public function getMedium2x(): ?SizeVariant
+	{
+		return $this->medium2x ?? $this->getMedium();
+	}
+
+	/**
+	 * get Medium or fallback to Original.
+	 *
+	 * @return SizeVariant|null
+	 */
 	public function getMedium(): ?SizeVariant
 	{
-		return $this->medium;
+		return $this->medium ?? $this->original;
+	}
+
+	/**
+	 * Get Small2x or fallback to Small.
+	 *
+	 * @return SizeVariant|null
+	 */
+	public function getSmall2x(): ?SizeVariant
+	{
+		return $this->small2x ?? $this->getSmall();
+	}
+
+	public function getSmall(): ?SizeVariant
+	{
+		return $this->small;
 	}
 
 	public function getThumb2x(): ?SizeVariant
 	{
-		return $this->thumb2x;
+		return $this->thumb2x ?? $this->thumb2x;
 	}
 
 	public function getThumb(): ?SizeVariant
@@ -174,6 +204,7 @@ class SizeVariants extends AbstractDTO
 			$result->width = $dim->width;
 			$result->height = $dim->height;
 			$result->filesize = $filesize;
+			$result->ratio = $dim->getRatio();
 			$result->save();
 			$this->add($result);
 
@@ -257,6 +288,17 @@ class SizeVariants extends AbstractDTO
 	 */
 	public function hasMedium(): bool
 	{
-		return $this->medium2x !== null || $this->medium !== null;
+		return $this->medium !== null || $this->medium2x !== null;
+	}
+
+	/**
+	 * We don't need to check if small2x or medium2x exists.
+	 * small2x implies small, and same for medium2x, but the opposite is not true!
+	 *
+	 * @return bool
+	 */
+	public function hasMediumOrSmall(): bool
+	{
+		return $this->small !== null || $this->medium !== null;
 	}
 }

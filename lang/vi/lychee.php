@@ -16,6 +16,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Người dùng',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Tạo',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +29,7 @@ return [
 	'ABOUT_LYCHEE' => 'Giới thiệu Lychee',
 	'DIAGNOSTICS' => 'Thông tin hệ thống',
 	'DIAGNOSTICS_GET_SIZE' => 'Xem dung lượng đã dùng',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Xem nhật ký thay đổi',
 	'SIGN_OUT' => 'Thoát',
 	'UPDATE_AVAILABLE' => 'Có phiên bản mới!',
@@ -280,6 +282,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Tính năng hiển thị bản đồ đã tắt trong phần cài đặt.',
 	'ERROR_SEARCH_DEACTIVATED' => 'Tính năng tìm kiếm đã tắt trong phần cài đặt',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Thử lại',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',

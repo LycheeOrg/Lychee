@@ -16,6 +16,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Brukere',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +29,7 @@ return [
 	'ABOUT_LYCHEE' => 'Om Lychee',
 	'DIAGNOSTICS' => 'Diagnostikk',
 	'DIAGNOSTICS_GET_SIZE' => 'Hent diskbruk',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Vis Logg',
 	'SIGN_OUT' => 'Logg Ut',
 	'UPDATE_AVAILABLE' => 'Oppdatering er tilgjengelig!',
@@ -280,6 +282,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Kartfunksjoner har blitt deaktivert under innstillinger',
 	'ERROR_SEARCH_DEACTIVATED' => 'Søkefunksjoner har blitt deaktivert under innstillinger',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Prøv igjen',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',

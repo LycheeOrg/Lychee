@@ -16,6 +16,7 @@ return [
 	'GALLERY' => 'Galería',
 
 	'USERS' => 'Usuarios',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Crear',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +29,7 @@ return [
 	'ABOUT_LYCHEE' => 'Acerca de Lychee',
 	'DIAGNOSTICS' => 'Diagnóstico',
 	'DIAGNOSTICS_GET_SIZE' => 'Pedir uso de espacio',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Mostrar Registros',
 	'SIGN_OUT' => 'Cerrar Sesión',
 	'UPDATE_AVAILABLE' => '¡Actualización disponible!',
@@ -280,6 +282,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'La funcionalidad del mapa se ha desactivado en la configuración.',
 	'ERROR_SEARCH_DEACTIVATED' => 'La función de búsqueda se ha desactivado en la configuración.',
 	'SUCCESS' => 'Vale',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Procesar de nuevo',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',

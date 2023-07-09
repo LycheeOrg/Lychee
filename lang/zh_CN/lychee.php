@@ -16,6 +16,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => '用户',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +29,7 @@ return [
 	'ABOUT_LYCHEE' => '关于 Lychee',
 	'DIAGNOSTICS' => '诊断',
 	'DIAGNOSTICS_GET_SIZE' => '请求空间占用信息',
+	'JOBS' => 'Show job history',
 	'LOGS' => '查看日志',
 	'SIGN_OUT' => '注销登录',
 	'UPDATE_AVAILABLE' => '可用更新！',
@@ -280,6 +282,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => '地图功能已在设置中停用。',
 	'ERROR_SEARCH_DEACTIVATED' => '搜索功能已在设置中停用。',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => '重试',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
