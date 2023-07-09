@@ -964,13 +964,13 @@ class AlbumTest extends AbstractTestCase
 		Auth::loginUsingId(1);
 		$albumID1 = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
 		$res = $this->albums_tests->get($albumID1);
-		$res->assertJson(["policy" => ['is_nsfw' => false]]);
+		$res->assertJson(['policy' => ['is_nsfw' => false]]);
 		$this->albums_tests->set_protection_policy(id: $albumID1, is_nsfw: true);
 		$res = $this->albums_tests->get($albumID1);
-		$res->assertJson(["policy" => ['is_nsfw' => true]]);
+		$res->assertJson(['policy' => ['is_nsfw' => true]]);
 		$this->albums_tests->set_protection_policy(id: $albumID1, is_nsfw: false);
 		$res = $this->albums_tests->get($albumID1);
-		$res->assertJson(["policy" => ['is_nsfw' => false]]);
+		$res->assertJson(['policy' => ['is_nsfw' => false]]);
 		Auth::logout();
 	}
 }
