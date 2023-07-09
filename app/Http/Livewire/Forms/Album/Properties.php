@@ -85,7 +85,7 @@ class Properties extends Component
 		$sortingCriterion = $column === null ? null : new PhotoSortingCriterion($column->toColumnSortingType(), $order);
 
 		$baseAlbum->sorting = $sortingCriterion;
-        $this->notify(__('lychee.CHANGE_SUCCESS'));
+		$this->notify(__('lychee.CHANGE_SUCCESS'));
 		$baseAlbum->save();
 	}
 }
