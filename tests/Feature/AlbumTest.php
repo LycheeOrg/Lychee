@@ -23,6 +23,9 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use PHPUnit\Framework\ExpectationFailedException;
+use PHPUnit\Framework\AssertionFailedError;
+use Illuminate\Testing\Exceptions\InvalidArgumentException;
 use Tests\AbstractTestCase;
 use Tests\Feature\Constants\TestConstants;
 use Tests\Feature\LibUnitTests\AlbumsUnitTest;
@@ -34,6 +37,7 @@ use Tests\Feature\Traits\InteractWithSmartAlbums;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\Feature\Traits\RequiresEmptyUsers;
+use Throwable;
 
 class AlbumTest extends AbstractTestCase
 {
@@ -946,5 +950,32 @@ class AlbumTest extends AbstractTestCase
 		$album1->assertDontSee($albumID3);
 
 		Configs::set(TestConstants::CONFIG_DEFAULT_ALBUM_PROTECTION, $defaultProtectionType);
+	}
+
+	/**
+	 * Test that setting NSFW via the Protection Policy works.
+	 * 1. Create album
+	 * 2. check nsfw is false
+	 * 3. set nsfw to true
+	 * 4. check nsfw is true
+	 * 5. set nsfw to false
+	 * 6. check nsfw is false
+	 * 
+	 * 
+	 * @return void 
+	 */
+	public function testNSFWViaProtectionPolicy(): void
+	{
+		Auth::loginUsingId(1);
+		$albumID1 = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
+		$res = $this->albums_tests->get($albumID1);
+		$res->assertJson(['is_nsfw' => false]);
+		$this->albums_tests->set_protection_policy(id: $albumID1, is_nsfw:true);
+		$res = $this->albums_tests->get($albumID1);
+		$res->assertJson(['is_nsfw' => true]);
+		$this->albums_tests->set_protection_policy(id: $albumID1, is_nsfw:false);
+		$res = $this->albums_tests->get($albumID1);
+		$res->assertJson(['is_nsfw' => false]);
+		Auth::logout();
 	}
 }
