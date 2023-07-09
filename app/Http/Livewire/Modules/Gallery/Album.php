@@ -48,11 +48,6 @@ class Album extends Openable
 
 	public ?string $header_url = null;
 
-	public string $title = '';
-	public string $description = '';
-	public string $sort_by = '';
-	public string $order_by = '';
-
 	/**
 	 * Listeners for roloading the page.
 	 *
@@ -67,13 +62,6 @@ class Album extends Openable
 	 */
 	public function render(): View
 	{
-		if ($this->baseAlbum !== null) {
-			$this->title = $this->baseAlbum->title;
-			$this->description = $this->baseAlbum->description ?? '';
-			$this->sort_by = $this->baseAlbum->sorting?->column->value ?? '';
-			$this->sort_by = $this->baseAlbum->sorting?->order->value ?? '';
-		}
-
 		$this->layout = Configs::getValueAsEnum('layout', AlbumMode::class);
 		$this->header_url ??= $this->fetchHeaderUrl()?->url;
 
