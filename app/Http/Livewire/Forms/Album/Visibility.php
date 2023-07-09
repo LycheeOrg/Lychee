@@ -4,22 +4,14 @@ namespace App\Http\Livewire\Forms\Album;
 
 use App\Actions\Album\SetProtectionPolicy;
 use App\DTO\AlbumProtectionPolicy;
-use App\Exceptions\InvalidPropertyException;
-use App\Exceptions\ModelDBException;
-use App\Exceptions\Internal\FrameworkException;
 use App\Factories\AlbumFactory;
 use App\Http\RuleSets\Album\SetAlbumProtectionPolicyRuleSet;
 use App\Models\AccessPermission;
 use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
-use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Validation\ValidationException;
 use Livewire\Component;
-use Throwable;
 
 class Visibility extends Component
 {
@@ -34,6 +26,12 @@ class Visibility extends Component
 	public ?string $password = null; // ! wired
 	public string $albumID;
 
+	/**
+	 * This is the equivalent of the constructor for Livewire Components
+	 * 
+	 * @param BaseAlbum $album to update the visibility of.
+	 * @return void 
+	 */
 	public function mount(BaseAlbum $album): void
 	{
 		$this->albumID = $album->id;
@@ -48,6 +46,12 @@ class Visibility extends Component
 		}
 	}
 
+	/**
+	 * When we initialize, we also need to update the public attributes of the components
+	 * 
+	 * @param AccessPermission $perm 
+	 * @return void 
+	 */
 	private function setPublic(AccessPermission $perm): void
 	{
 		$this->grants_full_photo_access = $perm->grants_full_photo_access;
@@ -57,6 +61,12 @@ class Visibility extends Component
 		// ! We do NOT load the password as we do not want to expose it.
 	}
 
+	/**
+	 * When we set to Private, we automatically reset the all the attributes to false.
+	 * The AccessPermission object associated will be destroyed later, as such it is better to reset the data.
+	 * 
+	 * @return void 
+	 */
 	private function setPrivate(): void
 	{
 		$this->grants_full_photo_access = false;
