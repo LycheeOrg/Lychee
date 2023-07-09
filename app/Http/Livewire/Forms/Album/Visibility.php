@@ -6,9 +6,6 @@ use App\Actions\Album\SetProtectionPolicy;
 use App\Actions\Settings\UpdateLogin;
 use App\DTO\AlbumProtectionPolicy;
 use App\Factories\AlbumFactory;
-use App\Http\Requests\Album\SetAlbumNSFWRequest;
-use App\Http\Requests\Album\SetAlbumProtectionPolicyRequest;
-use App\Http\RuleSets\Album\SetAlbumNSFWRuleSet;
 use App\Http\RuleSets\Album\SetAlbumProtectionPolicyRuleSet;
 use App\Http\RuleSets\ChangeLoginRuleSet;
 use App\Models\AccessPermission;
@@ -78,7 +75,8 @@ class Visibility extends Component
 		return view('livewire.forms.album.visibility');
 	}
 
-	public function updated() {
+	public function updated()
+	{
 		/** @var AlbumFactory $albumFactory */
 		$albumFactory = resolve(AlbumFactory::class);
 		$baseAlbum = $albumFactory->findBaseAlbumOrFail($this->albumID, false);
@@ -98,7 +96,6 @@ class Visibility extends Component
 			grants_full_photo_access: $this->grants_full_photo_access,
 			grants_download: $this->grants_download,
 		);
-
 
 		if (!$this->is_password_required) {
 			$this->password = null;
