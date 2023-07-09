@@ -15,7 +15,6 @@
             {{-- <label for="sorting_dialog_order_select">{{ __('lychee.SORT_DIALOG_ORDER_LABEL') }}</label> --}}
             <x-forms.dropdown class="mx-2" :options="$sorting_orders" id="sorting_dialog_order_select" wire:model='sorting_order'/>
         </div>
-        @
         <x-forms.buttons.action wire:dirty class="rounded w-full" wire:click='submit' >{{ __('lychee.SAVE') }}</x-forms.buttons.action>
     </form>
 </div>
