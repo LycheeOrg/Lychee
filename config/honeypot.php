@@ -27,6 +27,7 @@ return [
 		'wp-login.php',
 		'Portal/Portal.mwsl',
 		'Portal0000.htm',
+		'wp-cron.php',
 
 		'aQQY',
 		'nmaplowercheck1686252089',
