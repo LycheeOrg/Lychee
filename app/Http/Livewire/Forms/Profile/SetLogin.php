@@ -42,16 +42,9 @@ class SetLogin extends Component
 	 */
 	public function submit(UpdateLogin $updateLogin): void
 	{
-		/**
-		 * For the validation to work it is important that the above wired property match
-		 * the keys in the rules applied.
-		 */
 		$this->validate(ChangeLoginRuleSet::rules());
 		$this->validate(['oldPassword' => new CurrentPasswordRule()]);
 
-		/**
-		 * Authorize the request.
-		 */
 		$this->authorize(UserPolicy::CAN_EDIT, [User::class]);
 
 		$currentUser = $updateLogin->do(

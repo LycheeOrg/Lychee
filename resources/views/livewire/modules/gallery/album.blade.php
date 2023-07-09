@@ -36,10 +36,10 @@
         @endif
     @endif
 @else
-<div class="w-full m-7 mb-4 flex justify-center flex-wrap">
-    <livewire:forms.album.properties :album="$this->album" />
-    <livewire:forms.album.visibility :album="$this->album" />
-</div>
+    <div class="w-full m-7 mb-4 flex justify-center flex-wrap">
+        <livewire:forms.album.properties :album="$this->album" />
+        <livewire:forms.album.visibility :album="$this->album" />
+    </div>
 @endif
 @php
     Helpers::data_index_set(100);
@@ -48,30 +48,26 @@
     @isset($this->album->children)
         @if ($this->album->children->count() > 0)
             @if ($this->album->photos?->count() > 0)
-                <x-gallery.divider>
-                    {{ __('lychee.ALBUMS') }}
-                </x-gallery.divider>
+                <x-gallery.divider>{{ __('lychee.ALBUMS') }}</x-gallery.divider>
             @endif
             @foreach ($this->album->children as $data)
                 <x-gallery.album :data="$data" />
             @endforeach
             @if ($this->album->photos?->count() > 0)
-                <x-gallery.divider>
-                    {{ __('lychee.PHOTOS') }}
-                </x-gallery.divider>
+                <x-gallery.divider>{{ __('lychee.PHOTOS') }}</x-gallery.divider>
             @endif
         @endif
     @endisset
-        <div 
-            @class([
-                'squares' => $layout === \App\Enum\Livewire\AlbumMode::SQUARE,
-                'm-7 relative w-full' => $layout === \App\Enum\Livewire\AlbumMode::JUSTIFIED, // only one working for now
-                'masondry' => $layout === \App\Enum\Livewire\AlbumMode::MASONRY,
-                'grid' => $layout === \App\Enum\Livewire\AlbumMode::GRID,
-            ])
-            @if ($layout === \App\Enum\Livewire\AlbumMode::JUSTIFIED)
-                style="height:{{ $this->geometry->containerHeight }}px;"
-            @endif
+    <div 
+        @class([
+            'squares' => $layout === \App\Enum\Livewire\AlbumMode::SQUARE,
+            'm-7 relative w-full' => $layout === \App\Enum\Livewire\AlbumMode::JUSTIFIED, // only one working for now
+            'masondry' => $layout === \App\Enum\Livewire\AlbumMode::MASONRY,
+            'grid' => $layout === \App\Enum\Livewire\AlbumMode::GRID,
+        ])
+        @if ($layout === \App\Enum\Livewire\AlbumMode::JUSTIFIED)
+            style="height:{{ $this->geometry->containerHeight }}px;"
+        @endif
         >
         @for ($i = 0; $i < $this->album->photos->count(); $i++)
             <x-gallery.photo :data="$this->album->photos[$i]" :geometry="$this->geometry->boxes->get($i)" />

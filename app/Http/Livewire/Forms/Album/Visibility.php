@@ -76,7 +76,6 @@ class Visibility extends Component
 		$this->is_password_required = false;
 		$this->grants_download = false;
 		$this->password = null;
-		$this->is_password_required = false;
 	}
 
 	/**
@@ -94,14 +93,13 @@ class Visibility extends Component
 	 *
 	 * @return void
 	 */
-	public function updated()
+	public function updated(SetProtectionPolicy $setProtectionPolicy, AlbumFactory $albumFactory)
 	{
-		/** @var AlbumFactory $albumFactory */
-		$albumFactory = resolve(AlbumFactory::class);
 		$baseAlbum = $albumFactory->findBaseAlbumOrFail($this->albumID, false);
 
-		$this->authorize(AlbumPolicy::CAN_EDIT, $baseAlbum);
 		$this->validate(SetAlbumProtectionPolicyRuleSet::rules());
+
+		$this->authorize(AlbumPolicy::CAN_EDIT, $baseAlbum);
 
 		if (!$this->is_public) {
 			$this->setPrivate();
@@ -115,18 +113,24 @@ class Visibility extends Component
 			grants_download: $this->grants_download,
 		);
 
-		if (!$this->is_password_required) {
-			$this->password = null;
-		}
-		if ($this->is_password_required && $this->password === '') {
+		// No empty string.
+		if ($this->password === '') {
 			$this->password = null;
 		}
 
-		$setProtectionPolicy = resolve(SetProtectionPolicy::class);
+		// If password is required but password is empty this means that we do not want to change current password.
+		$passwordUpdateRequested = $this->is_password_required && $this->password !== null;
+
+		// Override password if it is no longer required
+		if (!$this->is_password_required) {
+			$this->password = null;
+			$passwordUpdateRequested = true;
+		}
+
 		$setProtectionPolicy->do(
 			$baseAlbum,
 			$albumProtectionPolicy,
-			!$this->is_password_required || ($this->is_password_required && $this->password !== null),
+			$passwordUpdateRequested,
 			$this->password
 		);
 	}

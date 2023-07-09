@@ -2,7 +2,16 @@
 
 namespace App\Http\Livewire\Forms\Album;
 
+use App\Contracts\Http\Requests\RequestAttribute;
+use App\DTO\PhotoSortingCriterion;
+use App\Enum\ColumnSortingPhotoType;
+use App\Enum\OrderSortingType;
+use App\Factories\AlbumFactory;
+use App\Http\RuleSets\Album\SetAlbumDescriptionRuleSet;
+use App\Http\RuleSets\Album\SetAlbumSortingRuleSet;
 use App\Models\Extensions\BaseAlbum;
+use App\Policies\AlbumPolicy;
+use App\Rules\TitleRule;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;
@@ -14,16 +23,32 @@ class Properties extends Component
 	public string $title; // ! wired
 	public string $description; // ! wired
 	public string $albumID;
-	public string $sort_by = ''; // ! wired
-	public string $order_by = ''; // ! wired
+	public string $sorting_column = ''; // ! wired
+	public string $sorting_order = ''; // ! wired
 
+	public array $sorting_columns;
+	public array $sorting_orders;
+
+	/**
+	 * This is the equivalent of the constructor for Livewire Components.
+	 *
+	 * @param BaseAlbum $album to update the attributes of
+	 *
+	 * @return void
+	 */
 	public function mount(BaseAlbum $album): void
 	{
 		$this->albumID = $album->id;
 		$this->title = $album->title;
 		$this->description = $album->description ?? '';
-		$this->sort_by = $album->sorting?->column->value ?? '';
-		$this->sort_by = $album->sorting?->order->value ?? '';
+		$this->sorting_column = $album->sorting?->column->value ?? '';
+		$this->sorting_order = $album->sorting?->order->value ?? '';
+
+		// ? Dark magic: The ... will expand the array.
+		$this->sorting_columns = ['' => '-', ...ColumnSortingPhotoType::toTranslation()];
+		$this->sorting_orders = ['' => '-', ...OrderSortingType::toTranslation()];
+
+		// SetAlbumSortingRuleSet::rules();
 	}
 
 	/**
@@ -36,33 +61,28 @@ class Properties extends Component
 		return view('livewire.forms.album.properties');
 	}
 
-	// /**
-	//  * Update Username & Password of current user.
-	//  */
-	// public function submit(UpdateLogin $updateLogin): void
-	// {
-	// 	/**
-	// 	 * For the validation to work it is important that the above wired property match
-	// 	 * the keys in the rules applied.
-	// 	 */
-	// 	$this->validate(ChangeLoginRuleSet::rules());
-	// 	$this->validate(['oldPassword' => new CurrentPasswordRule()]);
+	/**
+	 * Update Username & Password of current user.
+	 */
+	public function submit(AlbumFactory $albumFactory): void
+	{
+		$baseAlbum = $albumFactory->findBaseAlbumOrFail($this->albumID, false);
 
-	// 	/**
-	// 	 * Authorize the request.
-	// 	 */
-	// 	$this->authorize(UserPolicy::CAN_EDIT, [User::class]);
+		$this->validate(SetAlbumSortingRuleSet::rules());
+		$this->validate(SetAlbumDescriptionRuleSet::rules());
+		$this->validate([RequestAttribute::TITLE_ATTRIBUTE => ['required', new TitleRule()]]);
 
-	// 	$currentUser = $updateLogin->do(
-	// 		$this->username,
-	// 		$this->password,
-	// 		$this->oldPassword,
-	// 		request()->ip()
-	// 	);
+		$this->authorize(AlbumPolicy::CAN_EDIT, $baseAlbum);
 
-	// 	// Update the session with the new credentials of the user.
-	// 	// Otherwise, the session is out-of-sync and falsely assumes the user
-	// 	// to be unauthenticated upon the next request.
-	// 	Auth::login($currentUser);
-	// }
+		$baseAlbum->title = $this->title;
+		$baseAlbum->description = $this->description;
+
+		// Not super pretty but whatever.
+		$column = ColumnSortingPhotoType::tryFrom($this->sorting_column);
+		$order = OrderSortingType::tryFrom($this->sorting_order);
+		$sortingCriterion = $column === null ? null : new PhotoSortingCriterion($column->toColumnSortingType(), $order);
+
+		$baseAlbum->sorting = $sortingCriterion;
+		$baseAlbum->save();
+	}
 }
