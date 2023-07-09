@@ -1,13 +1,22 @@
-/node_modules
+# We don't care about those
+node_modules
 build/*
 
+# Those are personal
 public/dist/user.css
+public/dist/custom.js
 
+# Pictures we do not commit
 public/uploads/**
 
+# Storage stuff: useless
 /storage/*.key
 /storage/clockwork/
+
+# Those are generated
 /vendor
+
+# IDE & Cache stuff
 /.idea
 /.vscode
 /.vagrant
@@ -15,18 +24,10 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
-.env
-.env.*
-
-aliases
-
-Lychee/*
 .phpunit*
 _ide*
-
 .php_cs.cache
 .php-cs-fixer.cache
-
 *.log
 clover.xml
 *.swp
@@ -37,6 +38,19 @@ installed.log
 storage/bootstrap/cache/*
 storage/image-jobs/*
 
+# used by Vite
+public/hot
+
 sync/*
+
+# Local DB for easy deployment
 backup.sql
-reset.sh
+
+# Make sure we don't commit secrets
+.env
+.env.*
+
+aliases
+
+# Building stuff for releaseses
+Lychee/*
