@@ -24,27 +24,6 @@ class DiskUsage
 	}
 
 	/**
-	 * From https://www.php.net/manual/en/function.disk-total-space.php.
-	 *
-	 * @param float $bytes
-	 *
-	 * @return string
-	 */
-	public function getSymbolByQuantity(float $bytes): string
-	{
-		$symbols = [
-			'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB',
-		];
-		$exp = intval(floor(log($bytes) / log(1024)));
-
-		return sprintf(
-			'%.2f %s',
-			($bytes / pow(1024, $exp)),
-			$symbols[$exp]
-		);
-	}
-
-	/**
 	 * from https://stackoverflow.com/questions/478121/how-to-get-directory-size-in-php.
 	 *
 	 * @param string $dir
@@ -97,7 +76,7 @@ class DiskUsage
 		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
 		$dts = disk_total_space(base_path(''));
 
-		return $this->getSymbolByQuantity($dts);
+		return Helpers::getSymbolByQuantity($dts);
 	}
 
 	/**
@@ -110,7 +89,7 @@ class DiskUsage
 		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
 		$dfs = disk_free_space(base_path(''));
 
-		return $this->getSymbolByQuantity($dfs);
+		return Helpers::getSymbolByQuantity($dfs);
 	}
 
 	/**
@@ -136,7 +115,7 @@ class DiskUsage
 	{
 		$ds = $this->getTotalSize(base_path(''));
 
-		return $this->getSymbolByQuantity($ds);
+		return Helpers::getSymbolByQuantity($ds);
 	}
 
 	/**
@@ -148,6 +127,6 @@ class DiskUsage
 	{
 		$ds = $this->getTotalSize(Storage::disk('images')->path(''));
 
-		return $this->getSymbolByQuantity($ds);
+		return Helpers::getSymbolByQuantity($ds);
 	}
 }
