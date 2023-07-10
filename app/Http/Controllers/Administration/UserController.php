@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Administration;
 
 use App\Actions\Settings\UpdateLogin;
+use App\Actions\User\TokenDisable;
+use App\Actions\User\TokenReset;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\ModelDBException;
@@ -94,13 +96,9 @@ class UserController extends Controller
 	 * @throws ModelDBException
 	 * @throws \Exception
 	 */
-	public function resetToken(ChangeTokenRequest $request): array
+	public function resetToken(ChangeTokenRequest $request, TokenReset $tokenReset): array
 	{
-		/** @var User $user */
-		$user = Auth::user();
-		$token = strtr(base64_encode(random_bytes(16)), '+/', '-_');
-		$user->token = hash('SHA512', $token);
-		$user->save();
+		$token = $tokenReset->do();
 
 		return ['token' => $token];
 	}
@@ -113,11 +111,8 @@ class UserController extends Controller
 	 * @throws UnauthenticatedException
 	 * @throws ModelDBException
 	 */
-	public function unsetToken(ChangeTokenRequest $request): void
+	public function unsetToken(ChangeTokenRequest $request, TokenDisable $tokenDisable): void
 	{
-		/** @var User $user */
-		$user = Auth::user();
-		$user->token = null;
-		$user->save();
+		$tokenDisable->do();
 	}
 }
