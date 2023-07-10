@@ -3505,7 +3505,7 @@ var format={month:"short",year:"numeric"};return new Date(jsonDateTime).toLocale
 	 * @type {MapProvider}
 	 */"OpenStreetMap.org":{layer:"https://{s}.tile.osm.org/{z}/{x}/{y}.png",attribution:"&copy; <a href=\"https://osm.org/copyright\">".concat(lychee.locale["OSM_CONTRIBUTORS"],"</a>")},/**
 	 * @type {MapProvider}
-	 */"OpenStreetMap.de":{layer:"https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png ",attribution:"&copy; <a href=\"https://osm.org/copyright\">".concat(lychee.locale["OSM_CONTRIBUTORS"],"</a>")},/**
+	 */"OpenStreetMap.de":{layer:"https://tile.openstreetmap.de/{z}/{x}/{y}.png ",attribution:"&copy; <a href=\"https://osm.org/copyright\">".concat(lychee.locale["OSM_CONTRIBUTORS"],"</a>")},/**
 	 * @type {MapProvider}
 	 */"OpenStreetMap.fr":{layer:"https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png ",attribution:"&copy; <a href=\"https://osm.org/copyright\">".concat(lychee.locale["OSM_CONTRIBUTORS"],"</a>")},/**
 	 * @type {MapProvider}
