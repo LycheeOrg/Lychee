@@ -271,7 +271,7 @@ return [
 	'PHOTO_NO_EDIT_SHARING_TEXT' => 'Dieses Foto ist in einem öffentlichen Album und erbt deshalb die Sichtbarkeitseinstellungen des Albums. Die aktuellen Sichtbarkeitseinstellungen werden unten nur zur Info dargestellt.',
 	'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'Die Sichtbarkeit dieses Fotos kann über die globalen Lychee Einstellungen modifiziert werden. Die aktuellen Sichtbarkeitseinstellungen werden unten nur zur Info dargestellt.',
 	'PHOTO_NEW_CREATED_AT' => 'Geben Sie das Upload-Datum für dieses Foto ein. MM/TT/JJJJ, hh:mm',
-	'PHOTO_SET_CREATED_AT' => 'Hochladedatum festlegen',
+	'PHOTO_SET_CREATED_AT' => 'Upload-Datum festlegen',
 
 	'LOADING' => 'Laden',
 	'ERROR' => 'Fehler',
