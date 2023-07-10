@@ -32,7 +32,7 @@ return [
 	'SIGN_OUT' => 'Abmelden',
 	'UPDATE_AVAILABLE' => 'Update verfügbar!',
 	'MIGRATION_AVAILABLE' => 'Migration verfügbar!',
-	'CHECK_FOR_UPDATE' => 'Check for updates',
+	'CHECK_FOR_UPDATE' => 'auf Updates prüfen',
 	'DEFAULT_LICENSE' => 'Standard-Lizenz für neue Uploads:',
 	'SET_LICENSE' => 'Lizenz anwenden',
 	'SET_OVERLAY_TYPE' => 'Setze Overlay',
@@ -270,8 +270,8 @@ return [
 	'PHOTO_EDIT_SHARING_TEXT' => 'Die Einstellungen zum Teilen des Foto werden wie folgt angepasst:',
 	'PHOTO_NO_EDIT_SHARING_TEXT' => 'Dieses Foto ist in einem öffentlichen Album und erbt deshalb die Sichtbarkeitseinstellungen des Albums. Die aktuellen Sichtbarkeitseinstellungen werden unten nur zur Info dargestellt.',
 	'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'Die Sichtbarkeit dieses Fotos kann über die globalen Lychee Einstellungen modifiziert werden. Die aktuellen Sichtbarkeitseinstellungen werden unten nur zur Info dargestellt.',
-	'PHOTO_NEW_CREATED_AT' => 'Enter the upload date for this photo. mm/dd/yyyy, hh:mm [am/pm]',
-	'PHOTO_SET_CREATED_AT' => 'Set upload date',
+	'PHOTO_NEW_CREATED_AT' => 'Geben Sie das Upload-Datum für dieses Foto ein. MM/TT/JJJJ, hh:mm',
+	'PHOTO_SET_CREATED_AT' => 'Upload-Datum festlegen',
 
 	'LOADING' => 'Laden',
 	'ERROR' => 'Fehler',
@@ -311,7 +311,7 @@ return [
 	'U2F_CREDENTIALS_DELETED' => 'Anmeldedaten gelöscht!',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'E-Mails für neue Fotos senden',
-	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
+	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'Benachrichtigung für neue Fotos aktualisiert',
 	'USER_EMAIL_INSTRUCTION' => 'Geben Sie Ihre E-Mail-Adresse unten ein, um Benachrichtigungen zu aktivieren. Um Benachrichtigungen zu deaktivieren, entfernen Sie die E-Mail-Adresse unten einfach.',
 
 	'LOGIN_USERNAME' => 'Neuer Benutzername',
