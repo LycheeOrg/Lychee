@@ -628,6 +628,18 @@ class AlbumTest extends AbstractTestCase
 		$this->albums_tests->get($albumID);
 	}
 
+	public function testEditAlbumCopyright(): void
+	{
+		Auth::loginUsingId(1);
+		$this->users_tests->add('Test user', 'Test password 1')->offsetGet('id');
+
+		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
+		$this->albums_tests->set_copyright($albumID, 'Test copyright value');
+
+		Auth::logout();
+		Session::flush();
+	}
+
 	public function testDeleteMultipleAlbumsByAnonUser(): void
 	{
 		Auth::loginUsingId(1);

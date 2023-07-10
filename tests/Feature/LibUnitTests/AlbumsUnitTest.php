@@ -210,6 +210,31 @@ class AlbumsUnitTest
 	}
 
 	/**
+	 * Change copyright.
+	 *
+	 * @param string      $id
+	 * @param string      $copyright
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 */
+	public function set_copyright(
+		string $id,
+		string $copyright,
+		int $expectedStatusCode = 204,
+		?string $assertSee = null
+	): void {
+		$response = $this->testCase->postJson(
+			'/api/Album::setCopyright',
+			['albumID' => $id, 'copyright' => $copyright]
+		);
+
+		$this->assertStatus($response, $expectedStatusCode);
+		if ($assertSee !== null) {
+			$response->assertSee($assertSee, false);
+		}
+	}
+
+	/**
 	 * Change description.
 	 *
 	 * @param string      $id

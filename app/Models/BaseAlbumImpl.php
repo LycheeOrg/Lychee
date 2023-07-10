@@ -104,6 +104,7 @@ use Illuminate\Support\Facades\Auth;
  * @property string|null                      $sorting_order
  * @property Collection<int,AccessPermission> $access_permissions
  * @property int|null                         $access_permissions_count
+ * @property string|null                      $copyright
  *
  * @method static BaseAlbumImplBuilder|BaseAlbumImpl addSelect($column)
  * @method static BaseAlbumImplBuilder|BaseAlbumImpl join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
@@ -173,6 +174,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'owner_id' => 0,
 		'sorting_col' => null,
 		'sorting_order' => null,
+		'copyright' => null,
 		// Special visibility attributes
 		'is_nsfw' => false,
 	];
