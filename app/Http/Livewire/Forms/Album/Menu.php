@@ -1,0 +1,51 @@
+<?php
+
+namespace App\Http\Livewire\Forms\Album;
+
+use App\Enum\Livewire\AlbumMenuMode;
+use App\Models\Extensions\BaseAlbum;
+use Illuminate\Contracts\View\View;
+use Livewire\Component;
+
+class Menu extends Component
+{
+	public BaseAlbum $album;
+
+	public string $mode = 'about';
+
+	/**
+	 * This is the equivalent of the constructor for Livewire Components.
+	 *
+	 * @param BaseAlbum $album to update the attributes of
+	 *
+	 * @return void
+	 */
+	public function mount(BaseAlbum $album): void
+	{
+		$this->album = $album;
+	}
+
+	/**
+	 * Simply render the form.
+	 *
+	 * @return View
+	 */
+	public function render(): View
+	{
+		return view('livewire.forms.album.menu');
+	}
+
+	/**
+	 * Set mode.
+	 *
+	 * @param string $mode
+	 *
+	 * @return void
+	 */
+	public function setMode(string $mode): void
+	{
+		$newMode = AlbumMenuMode::from($mode);
+
+		$this->mode = $newMode->value;
+	}
+}

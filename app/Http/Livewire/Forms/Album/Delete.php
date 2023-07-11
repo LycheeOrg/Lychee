@@ -1,0 +1,71 @@
+<?php
+
+namespace App\Http\Livewire\Forms\Album;
+
+use App\Actions\Album\Delete as DeleteAction;
+use App\Factories\AlbumFactory;
+use App\Http\Livewire\Traits\Notify;
+use App\Http\Livewire\Traits\UseValidator;
+use App\Models\Album;
+use App\Models\Extensions\BaseAlbum;
+use App\Policies\AlbumPolicy;
+use App\Rules\AlbumIDRule;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\App;
+use Livewire\Component;
+
+class Delete extends Component
+{
+	use AuthorizesRequests;
+	use UseValidator;
+	use Notify;
+
+	public string $albumID;
+	public string $title;
+
+	/**
+	 * This is the equivalent of the constructor for Livewire Components.
+	 *
+	 * @param BaseAlbum $album to update the attributes of
+	 *
+	 * @return void
+	 */
+	public function mount(BaseAlbum $album): void
+	{
+		$this->albumID = $album->id;
+		$this->title = $album->title;
+	}
+
+	/**
+	 * Simply render the form.
+	 *
+	 * @return View
+	 */
+	public function render(): View
+	{
+		return view('livewire.forms.album.delete');
+	}
+
+	/**
+	 * Execute deletion.
+	 *
+	 * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+	 */
+	public function delete(AlbumFactory $albumFactory): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+	{
+		$this->validate(['albumID' => ['required', new AlbumIDRule(false)]]);
+
+		$baseAlbum = $albumFactory->findBaseAlbumOrFail($this->albumID, false);
+
+		$this->authorize(AlbumPolicy::CAN_DELETE, $baseAlbum);
+
+		$parent_id = ($baseAlbum instanceof Album) ? $baseAlbum->parent_id : null;
+
+		$delete = resolve(DeleteAction::class);
+		$fileDeleter = $delete->do([$baseAlbum->id]);
+		App::terminating(fn () => $fileDeleter->do());
+
+		return redirect()->to(route('livewire_index', ['page' => 'gallery', 'albumId' => $parent_id]));
+	}
+}

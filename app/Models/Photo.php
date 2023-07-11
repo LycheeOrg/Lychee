@@ -27,6 +27,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Wireable;
+use LycheeOrg\PhpFlickrJustifiedLayout\Contracts\AspectRatio;
 use function Safe\preg_match;
 
 /**
@@ -119,7 +121,7 @@ use function Safe\preg_match;
  *
  * @mixin \Eloquent
  */
-class Photo extends Model
+class Photo extends Model implements Wireable, AspectRatio
 {
 	use UTCBasedTimes;
 	use HasAttributesPatch;
@@ -158,6 +160,18 @@ class Photo extends Model
 	];
 
 	/**
+	 * @var array<int,string> The list of attributes which exist as columns of the DB
+	 *                        relation but shall not be serialized to JSON
+	 */
+	protected $hidden = [
+		RandomID::LEGACY_ID_NAME,
+		'album',  // do not serialize relation in order to avoid infinite loops
+		'owner',  // do not serialize relation
+		'owner_id',
+		'live_photo_short_path', // serialize live_photo_url instead
+	];
+
+	/**
 	 * @param $query
 	 *
 	 * @return PhotoBuilder
@@ -165,6 +179,11 @@ class Photo extends Model
 	public function newEloquentBuilder($query): PhotoBuilder
 	{
 		return new PhotoBuilder($query);
+	}
+
+	protected function _toArray(): array
+	{
+		return parent::toArray();
 	}
 
 	/**
@@ -268,7 +287,8 @@ class Photo extends Model
 		if ($license !== 'none') {
 			return $license;
 		}
-		if ($this->album_id !== null) {
+
+		if ($this->album_id !== null && $this->relationLoaded('album')) {
 			return $this->album->license;
 		}
 
@@ -336,6 +356,33 @@ class Photo extends Model
 		$path = $this->live_photo_short_path;
 
 		return ($path === null || $path === '') ? null : Storage::url($path);
+	}
+
+	/**
+	 * Accessor for the virtual attribute $aspect_ratio.
+	 *
+	 * Returns the correct aspect ratio for
+	 * - photos
+	 * - and videos where small or medium exists
+	 * Otherwise returns 1 (square)
+	 *
+	 * @return float aspect ratio to use in display mode
+	 */
+	protected function getAspectRatioAttribute(): float
+	{
+		$ratio = 1;
+		$original = $this->size_variants->getOriginal();
+		if ($original !== null && $original->height > 0) {
+			$ratio = $original->width / $original->height;
+		}
+
+		if ($this->isVideo() &&
+			$this->size_variants->getSmall() === null &&
+			$this->size_variants->getMedium() === null) {
+			$ratio = 1;
+		}
+
+		return $ratio;
 	}
 
 	/**
@@ -422,5 +469,21 @@ class Photo extends Model
 		$fileDeleter = (new Delete())->do([$this->id]);
 		$this->exists = false;
 		$fileDeleter->do();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function toLivewire(): string
+	{
+		return $this->id;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public static function fromLivewire(mixed $value): self
+	{
+		return self::findOrFail(strval($value));
 	}
 }
