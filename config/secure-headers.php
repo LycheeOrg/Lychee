@@ -379,7 +379,7 @@ return [
 			// Allow image to be directly encoded at the img source parameter
 			'allow' => [
 				'https://maps.wikimedia.org/osm-intl/',
-				'https://tile.osm.org/',
+				'https://tile.openstreetmap.org/',
 				'https://tile.openstreetmap.de/',
 				'https://a.tile.openstreetmap.fr/osmfr/',
 				'https://b.tile.openstreetmap.fr/osmfr/',
