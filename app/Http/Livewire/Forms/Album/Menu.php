@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Forms\Album;
 
 use App\Enum\Livewire\AlbumMenuMode;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
@@ -12,6 +13,7 @@ class Menu extends Component
 	public BaseAlbum $album;
 
 	public string $mode = 'about';
+	public int $userCount;
 
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
@@ -23,6 +25,7 @@ class Menu extends Component
 	public function mount(BaseAlbum $album): void
 	{
 		$this->album = $album;
+		$this->userCount = User::count();
 	}
 
 	/**

@@ -2,11 +2,19 @@
 
 namespace App\Http\Livewire\Forms\Album;
 
+use App\Factories\AlbumFactory;
 use App\Http\Livewire\Traits\Notify;
 use App\Http\Livewire\Traits\UseValidator;
+use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\User;
+use App\Policies\AlbumPolicy;
+use App\Rules\AlbumIDRule;
+use App\Rules\UsernameRule;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Transfer extends Component
@@ -15,7 +23,10 @@ class Transfer extends Component
 	use UseValidator;
 	use Notify;
 
-	public BaseAlbum $album;
+	public string $albumID;
+	public string $title;
+	public int $current_owner;
+	public string $username; // ! wired
 
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
@@ -26,7 +37,10 @@ class Transfer extends Component
 	 */
 	public function mount(BaseAlbum $album): void
 	{
-		$this->album = $album;
+		$this->albumID = $album->id;
+		$this->title = $album->title;
+		$this->current_owner = $album->owner_id;
+		$this->username = $this->getUsersProperty()[0];
 	}
 
 	/**
@@ -37,5 +51,66 @@ class Transfer extends Component
 	public function render(): View
 	{
 		return view('livewire.forms.album.transfer');
+	}
+
+	/**
+	 * Return a table with the user_id and associated username.
+	 *
+	 * @return array list of usernames
+	 */
+	public function getUsersProperty(): array
+	{
+		return User::query()
+			->select('username')
+			->where('id', '<>', $this->current_owner)
+			->orderBy('id', 'ASC')
+			->pluck('username')
+			->all();
+	}
+
+	/**
+	 * Execute transfer of ownership.
+	 *
+	 * @param AlbumFactory $albumFactory
+	 *
+	 * @return RedirectResponse|View
+	 */
+	public function transfer(AlbumFactory $albumFactory)
+	{
+		$this->areValid([
+			'albumID' => ['required', new AlbumIDRule(false)],
+			'username' => ['required', new UsernameRule()],
+		]);
+
+		$baseAlbum = $albumFactory->findBaseAlbumOrFail($this->albumID, false);
+
+		// We use CAN DELETE because it is pretty much the same. Only the owner and admin can transfer ownership
+		$this->authorize(AlbumPolicy::CAN_DELETE, $baseAlbum);
+
+		$userId = User::query()
+			->select(['id'])
+			->where('username', '=', $this->username)
+			->firstOrFail(['id'])->id;
+
+		$baseAlbum->owner_id = $userId;
+		$baseAlbum->save();
+
+		// If this is an Album, we also need to fix the children and photos ownership
+		if ($baseAlbum instanceof Album) {
+			$baseAlbum->parent_id = null;
+			$baseAlbum->save();
+			$baseAlbum->fixOwnershipOfChildren();
+		}
+
+		// If we are not an administrator, this mean we no longer have access.
+		if (Auth::user()->may_administrate !== true) {
+			return redirect()->to(route('livewire_index', ['page' => 'gallery']));
+		}
+
+		// Remount the component and re-render.
+		$this->mount($baseAlbum);
+		$this->notify('Transfer successful!');
+
+		return $this->render();
 	}
 }
