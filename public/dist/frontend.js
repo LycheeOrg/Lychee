@@ -3503,13 +3503,13 @@ var format={month:"short",year:"numeric"};return new Date(jsonDateTime).toLocale
 	 * @type {MapProvider}
 	 */Wikimedia:{layer:"https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png",attribution:'<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>'},/**
 	 * @type {MapProvider}
-	 */"OpenStreetMap.org":{layer:"https://{s}.tile.osm.org/{z}/{x}/{y}.png",attribution:"&copy; <a href=\"https://osm.org/copyright\">".concat(lychee.locale["OSM_CONTRIBUTORS"],"</a>")},/**
+	 */"OpenStreetMap.org":{layer:"https://tile.openstreetmap.org/{z}/{x}/{y}.png",attribution:"&copy; <a href=\"https://openstreetmap.org/copyright\">".concat(lychee.locale["OSM_CONTRIBUTORS"],"</a>")},/**
 	 * @type {MapProvider}
-	 */"OpenStreetMap.de":{layer:"https://tile.openstreetmap.de/{z}/{x}/{y}.png ",attribution:"&copy; <a href=\"https://osm.org/copyright\">".concat(lychee.locale["OSM_CONTRIBUTORS"],"</a>")},/**
+	 */"OpenStreetMap.de":{layer:"https://tile.openstreetmap.de/{z}/{x}/{y}.png ",attribution:"&copy; <a href=\"https://openstreetmap.org/copyright\">".concat(lychee.locale["OSM_CONTRIBUTORS"],"</a>")},/**
 	 * @type {MapProvider}
-	 */"OpenStreetMap.fr":{layer:"https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png ",attribution:"&copy; <a href=\"https://osm.org/copyright\">".concat(lychee.locale["OSM_CONTRIBUTORS"],"</a>")},/**
+	 */"OpenStreetMap.fr":{layer:"https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png ",attribution:"&copy; <a href=\"https://openstreetmap.org/copyright\">".concat(lychee.locale["OSM_CONTRIBUTORS"],"</a>")},/**
 	 * @type {MapProvider}
-	 */RRZE:{layer:"https://{s}.osm.rrze.fau.de/osmhd/{z}/{x}/{y}.png",attribution:"&copy; <a href=\"https://osm.org/copyright\">".concat(lychee.locale["OSM_CONTRIBUTORS"],"</a>")}};var mapview={/** @type {?L.Map} */map:null,photoLayer:null,trackLayer:null,/** @type {(?LatLngBounds|?number[][])} */bounds:null,/** @type {?string} */albumID:null,/** @type {?string} */map_provider:null};/**
+	 */RRZE:{layer:"https://{s}.osm.rrze.fau.de/osmhd/{z}/{x}/{y}.png",attribution:"&copy; <a href=\"https://openstreetmap.org/copyright\">".concat(lychee.locale["OSM_CONTRIBUTORS"],"</a>")}};var mapview={/** @type {?L.Map} */map:null,photoLayer:null,trackLayer:null,/** @type {(?LatLngBounds|?number[][])} */bounds:null,/** @type {?string} */albumID:null,/** @type {?string} */map_provider:null};/**
  * @typedef MapPhotoEntry
  *
  * @property {number} [lat] - latitude
