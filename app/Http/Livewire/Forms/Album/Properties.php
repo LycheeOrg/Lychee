@@ -74,10 +74,6 @@ class Properties extends Component
 			return;
 		}
 
-		// 	$this->validate(SetAlbumSortingRuleSet::rules());
-		// $this->validate(SetAlbumDescriptionRuleSet::rules());
-		// $this->validate([RequestAttribute::TITLE_ATTRIBUTE => ['required', new TitleRule()]]);
-
 		$baseAlbum = $albumFactory->findBaseAlbumOrFail($this->albumID, false);
 		$this->authorize(AlbumPolicy::CAN_EDIT, $baseAlbum);
 
