@@ -6,17 +6,17 @@
         <x-gallery.album.menu.item mode='about' current="{{ $mode }}" >{{ __('lychee.ABOUT_ALBUM') }}</x-gallery.album.menu.item>
         <x-gallery.album.menu.item mode='share' current="{{ $mode }}" >{{ __('lychee.SHARE_ALBUM') }}</x-gallery.album.menu.item>
         <x-gallery.album.menu.item mode='move' current="{{ $mode }}" >{{ __('lychee.MOVE_ALBUM') }}</x-gallery.album.menu.item>
-        <x-gallery.album.menu.danger mode='transfer' current="{{ $mode }}" >Transfer Ownership</x-gallery.album.menu.danger>
-        <x-gallery.album.menu.danger mode='delete' current="{{ $mode }}" >{{ __('lychee.DELETE_ALBUM') }}</x-gallery.album.menu.danger>
+        <x-gallery.album.menu.danger mode='danger' current="{{ $mode }}" >{{ "DANGER ZONE" }}</x-gallery.album.menu.danger>
     </ul>
     <div class="w-full xl:w-5/6 flex justify-center flex-wrap">
         @if($mode === 'share')
             <livewire:forms.album.share-with :album="$this->album" />
         @elseif($mode === 'move')
             <livewire:forms.album.move :album="$this->album" />
-        @elseif($mode === 'transfer')
+        @elseif($mode === 'danger')
+            @if ($userCount > 1) {{-- We only display this menu if there are more than 1 user, it does not make sense otherwise --}}
             <livewire:forms.album.transfer :album="$this->album" />
-        @elseif($mode === 'delete')
+            @endif
             <livewire:forms.album.delete :album="$this->album" />
         @else
             <livewire:forms.album.properties :album="$this->album" />

@@ -1,10 +1,9 @@
-<div class="basicModal basicModal--fadeIn" role="dialog">
-	<div class="basicModal__content">
-		<p>Are you sure you want to delete the album “test” and all of the photos it contains? This action can’t be
-			undone!</p>
+<div class="text-neutral-200 text-sm p-9 text-center max-w-3xl">
+	<p class="mb-4 text-center">{{ sprintf("Are you sure you want to transfer the ownership of album “%s” and all the photos in contains?
+	You access to this album and will be lost.", $title) }}<br>{{ "This action can’t be undone!" }}</p>
+	<div class="mt-4 h-12">
+		<span class="font-bold">{{ "Transfer to" }}</span>
+		<x-forms.dropdown class="mx-2" :options="$this->users" wire:model='username'/>
 	</div>
-	<div class="basicModal__buttons">
-		<a id="basicModal__cancel" class="basicModal__button">Keep Album</a>
-		<a id="basicModal__action" class="basicModal__button red">Delete Album and Photos</a>
-	</div>
+	<x-forms.buttons.danger class="rounded-md w-full" wire:click='transfer'>{{ "Transfer ownership of album and photos" }}</x-forms.buttons.danger>
 </div>
