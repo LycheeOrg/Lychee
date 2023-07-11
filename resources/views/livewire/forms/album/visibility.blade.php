@@ -1,4 +1,4 @@
-<div class="text-neutral-200 text-sm p-4 xl:p-9 sm:min-w-[32rem]">
+<div class="text-neutral-200 text-sm p-4 xl:px-9 sm:min-w-[32rem]">
 	<form>
 		<div class="h-12 mb-4">
 			<label for="pp_dialog_public_check" class="font-bold">{{ __('lychee.ALBUM_PUBLIC') }}</label>

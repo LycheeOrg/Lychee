@@ -1,6 +1,6 @@
 <div class="w-full sm:m-7 mb-4 flex justify-center flex-wrap flex-row-reverse">
     <ul class="
-        text-neutral-200 text-sm w-full xl:w-1/6 xl:p-9
+        text-neutral-200 text-sm w-full xl:w-1/6 xl:px-9
         max-xl:w-full max-xl:flex max-xl:justify-center
         ">
         <x-gallery.album.menu.item mode='about' current="{{ $mode }}" >{{ __('lychee.ABOUT_ALBUM') }}</x-gallery.album.menu.item>
