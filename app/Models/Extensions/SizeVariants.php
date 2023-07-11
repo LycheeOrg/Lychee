@@ -138,7 +138,7 @@ class SizeVariants extends AbstractDTO
 	 */
 	public function getMedium2x(): ?SizeVariant
 	{
-		return $this->medium2x ?? $this->getMedium();
+		return $this->medium2x;
 	}
 
 	/**
@@ -148,7 +148,7 @@ class SizeVariants extends AbstractDTO
 	 */
 	public function getMedium(): ?SizeVariant
 	{
-		return $this->medium ?? $this->original;
+		return $this->medium;
 	}
 
 	/**
@@ -158,7 +158,7 @@ class SizeVariants extends AbstractDTO
 	 */
 	public function getSmall2x(): ?SizeVariant
 	{
-		return $this->small2x ?? $this->getSmall();
+		return $this->small2x;
 	}
 
 	public function getSmall(): ?SizeVariant
@@ -168,7 +168,7 @@ class SizeVariants extends AbstractDTO
 
 	public function getThumb2x(): ?SizeVariant
 	{
-		return $this->thumb2x ?? $this->thumb2x;
+		return $this->thumb2x;
 	}
 
 	public function getThumb(): ?SizeVariant

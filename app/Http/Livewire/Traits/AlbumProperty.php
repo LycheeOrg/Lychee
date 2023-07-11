@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Traits;
 
 use App\Contracts\Models\AbstractAlbum;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Models\Extensions\BaseAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 
@@ -35,7 +36,7 @@ trait AlbumProperty
 	 *
 	 * @return void
 	 *
-	 * @throws \Exception album class is not recognized
+	 * @throws LycheeLogicException album class is not recognized
 	 */
 	final public function loadAlbum(AbstractAlbum $album): void
 	{
@@ -45,7 +46,7 @@ trait AlbumProperty
 		} elseif ($album instanceof BaseAlbum) {
 			$this->baseAlbum = $album;
 		} else {
-			throw new \Exception('unrecognized class for ' . get_class($album));
+			throw new LycheeLogicException('unrecognized class for ' . get_class($album));
 		}
 	}
 
