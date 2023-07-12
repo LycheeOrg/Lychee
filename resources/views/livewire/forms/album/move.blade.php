@@ -7,14 +7,11 @@
 		after:content-['≡'] after:absolute after:text-sky-400 after:right-2 after:top-0 after:font-bold after:text-lg after:-mt-1
 		after:pointer-events-none mx-2">
 			<select class="m-0 py-1 w-[120%] text-white bg-transparent text-2xs px-2" wire:model='albumID'>
-			@foreach($this->albumList as $key => $option)
-				<option class="text-neutral-800" @if (is_string($key)) value="{{ $key }}" @endif>
-					{{ $option }}
-				</option>
+			@foreach($this->albumList as $option)
+				<x-gallery.album.move-option :album="$option" />
 			@endforeach
 			</select>
 		</span>
-		{{-- <x-forms.dropdown class="mx-2" :options="$this->albumList" wire:model='albumID'/> --}}
 	</div>
-	<x-forms.buttons.danger class="rounded-md w-full" wire:click='transfer'>{{ "Transfer ownership of album and photos" }}</x-forms.buttons.danger>
+	<x-forms.buttons.danger class="rounded-md w-full" wire:click='move'>{{ "Transfer ownership of album and photos" }}</x-forms.buttons.danger>
 </div>
