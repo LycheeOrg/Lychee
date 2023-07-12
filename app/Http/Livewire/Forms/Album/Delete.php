@@ -6,6 +6,7 @@ use App\Actions\Album\Delete as DeleteAction;
 use App\Factories\AlbumFactory;
 use App\Http\Livewire\Traits\Notify;
 use App\Http\Livewire\Traits\UseValidator;
+use App\Http\RuleSets\Album\DeleteAlbumsRuleSet;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
@@ -21,7 +22,9 @@ class Delete extends Component
 	use UseValidator;
 	use Notify;
 
-	public string $albumID;
+	// We need to use an array instead of directly said album id to reuse the rules (because I'm lazy).
+	/** @var array<int,string> */
+	public array $albumIDs;
 	public string $title;
 
 	/**
@@ -33,7 +36,7 @@ class Delete extends Component
 	 */
 	public function mount(BaseAlbum $album): void
 	{
-		$this->albumID = $album->id;
+		$this->albumIDs = [$album->id];
 		$this->title = $album->title;
 	}
 
@@ -54,7 +57,7 @@ class Delete extends Component
 	 */
 	public function delete(AlbumFactory $albumFactory): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
 	{
-		$this->validate(['albumID' => ['required', new AlbumIDRule(false)]]);
+		$this->validate(DeleteAlbumsRuleSet::rules());
 
 		$baseAlbum = $albumFactory->findBaseAlbumOrFail($this->albumID, false);
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Forms\Album;
 
+use App\Actions\Albums\Tree;
 use App\Http\Livewire\Traits\Notify;
 use App\Http\Livewire\Traits\UseValidator;
 use App\Models\Extensions\BaseAlbum;
@@ -15,7 +16,12 @@ class Move extends Component
 	use UseValidator;
 	use Notify;
 
-	public BaseAlbum $album;
+	// Destination
+	public string $albumID;
+	
+	// We need to use an array instead of directly said album id to reuse the rules.
+	/** @var array<int,string> */
+	public array $albumIDs;
 
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
@@ -26,9 +32,14 @@ class Move extends Component
 	 */
 	public function mount(BaseAlbum $album): void
 	{
-		$this->album = $album;
+		$this->albumID = '';
+		$this->albumIDs = [$album->id];
 	}
 
+	public function getAlbumListProperty() : array {
+		$tree = resolve(Tree::class);
+		return $tree->get()->toArray(null);
+	}
 	/**
 	 * Simply render the form.
 	 *
