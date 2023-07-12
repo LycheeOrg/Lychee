@@ -11,41 +11,7 @@
     @if ($this->header_url !== null)
         <x-gallery.album.hero :album="$this->album" url="{{ $this->header_url }}" />
     @endif
-    <div class="w-full px-7 my-4 flex flex-row-reverse">
-        <div class="order-1 flex flex-col w-full">
-            @if($this->header_url === null )
-                <h1 class="font-bold text-2xl text-white">{{ $this->album->title }}</h1>
-            @endif
-            <span class="block text-neutral-200 text-sm">
-                {{ __('lychee.ALBUM_CREATED') }} {{ $this->album->created_at->format('M j, Y g:i:s A e') }}
-            </span>
-            @if($this->album->children->count() > 0)
-                <span class="block text-neutral-200 text-sm">
-                    {{ $this->album->children->count() }} {{ __('lychee.ALBUM_SUBALBUMS') }}
-                </span>
-            @endif
-            @if($this->album->photos->count() > 0)
-                <span class="block text-neutral-200 text-sm">
-                    {{ $this->album->photos->count() }} {{ __('lychee.ALBUM_IMAGES') }}
-                </span>
-            @endif
-        </div>
-        @can(App\Policies\AlbumPolicy::CAN_DOWNLOAD, [App\Contracts\Models\AbstractAlbum::class, $this->album])
-        <a class="flex-shrink-0 px-3 cursor-pointer"
-            title="{{ __('lychee.DOWNLOAD_ALBUM') }}"
-            href="{{ route('download', ['albumIDs' => $this->album->id]) }}" >
-            <x-icons.iconic class="my-0 w-4 h-4 mr-0 ml-0" icon="cloud-download" />
-        </a>
-        @endcan
-        <a class="flex-shrink-0 px-3 cursor-pointer" title={{ __('lychee.SHARE_ALBUM') }} wire:click="openSharingModal">
-            <x-icons.iconic class="my-0 w-4 h-4 mr-0 ml-0" icon="share-ion" />
-        </a>
-    </div>
-    @if($this->album->description !== null)
-    <div class="w-full px-7 my-4 text-justify text-neutral-200 markdown">
-        @markdown{{ $this->album->description }}@endmarkdown
-    </div>
-    @endif
+    <x-gallery.album.details :album="$this->album" :url="$this->header_url" />
 @else
     <livewire:forms.album.menu :album="$this->album" />
 @endif
