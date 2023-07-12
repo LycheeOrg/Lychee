@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Forms\Album;
 
 use App\Actions\Album\Move as MoveAlbums;
 use App\Actions\Albums\Tree;
+use App\Contracts\Exceptions\InternalLycheeException;
 use App\Factories\AlbumFactory;
 use App\Http\Livewire\Traits\Notify;
 use App\Http\Livewire\Traits\UseValidator;
@@ -11,8 +12,10 @@ use App\Http\RuleSets\Album\MoveAlbumsRuleSet;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Collection;
 use Livewire\Component;
 
 class Move extends Component
@@ -41,7 +44,12 @@ class Move extends Component
 		$this->albumIDs = [$album->id];
 	}
 
-	public function getAlbumListProperty()
+	/**
+	 * Give the tree of albums owned by the user.
+	 * 
+	 * @return Collection<int,Album>
+	 */
+	public function getAlbumListProperty(): Collection
 	{
 		$tree = resolve(Tree::class);
 
@@ -61,23 +69,22 @@ class Move extends Component
 	/**
 	 * Execute transfer of ownership.
 	 *
-	 * @param AlbumFactory $albumFactory
-	 *
-	 * @return RedirectResponse|View
+	 * @param MoveAlbums $move
 	 */
-	public function move(MoveAlbums $move)
+	public function move(MoveAlbums $move): void
 	{
 		$this->areValid(MoveAlbumsRuleSet::rules());
 
 		// set default for root.
 		$this->albumID = $this->albumID === '' ? null : $this->albumID;
 
+		/** @var ?Album $album */
 		$album = $this->albumID === null ? null : Album::query()->findOrFail($this->albumID);
 		$this->authorize(AlbumPolicy::CAN_EDIT, $album);
 
 		// `findOrFail` returns a union type, but we know that it returns the
 		// correct collection in this case
-		// @phpstan-ignore-next-line
+		/** @var Collection<int,Album> $albums */
 		$albums = Album::query()->findOrFail($this->albumIDs);
 		foreach ($albums as $movedAlbum) {
 			$this->authorize(AlbumPolicy::CAN_EDIT, $movedAlbum);

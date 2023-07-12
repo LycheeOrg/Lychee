@@ -22,7 +22,7 @@ class Details extends Component
 
 	public function __construct(AbstractAlbum $album, ?string $url)
 	{
-		$this->can_download = Gate::check(AlbumPolicy::CAN_DOWNLOAD, [App\Contracts\Models\AbstractAlbum::class, $album]);
+		$this->can_download = Gate::check(AlbumPolicy::CAN_DOWNLOAD, [AbstractAlbum::class, $album]);
 		$this->url = $url;
 		$this->title = $album->title;
 		$this->album_id = $album->id;
