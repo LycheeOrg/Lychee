@@ -1,6 +1,8 @@
 <!DOCTYPE HTML>
 <html lang="{{ app()->currentLocale() }}">
 	<head>
+		<meta charset="UTF-8">
+		<link type="text/css" rel="stylesheet" href="dist/frontend.css">
 		@include('components.meta.index')
 
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=4.0, user-scalable=yes">
