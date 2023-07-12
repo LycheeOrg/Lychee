@@ -10,7 +10,6 @@ use App\Http\RuleSets\Album\DeleteAlbumsRuleSet;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
-use App\Rules\AlbumIDRule;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\App;

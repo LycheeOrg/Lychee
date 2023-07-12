@@ -2,8 +2,8 @@
 
 namespace App\Http\Livewire\Forms\Album;
 
-use App\Actions\Albums\Tree;
 use App\Actions\Album\Move as MoveAlbums;
+use App\Actions\Albums\Tree;
 use App\Factories\AlbumFactory;
 use App\Http\Livewire\Traits\Notify;
 use App\Http\Livewire\Traits\UseValidator;
@@ -23,7 +23,7 @@ class Move extends Component
 
 	// Destination
 	public ?string $albumID = null; // ! wired
-	
+
 	// We need to use an array instead of directly said album id to reuse the rules.
 	/** @var array<int,string> */
 	public array $albumIDs;
@@ -41,8 +41,10 @@ class Move extends Component
 		$this->albumIDs = [$album->id];
 	}
 
-	public function getAlbumListProperty() {
+	public function getAlbumListProperty()
+	{
 		$tree = resolve(Tree::class);
+
 		return $tree->get()->albums;
 	}
 
@@ -56,8 +58,7 @@ class Move extends Component
 		return view('livewire.forms.album.move');
 	}
 
-
-		/**
+	/**
 	 * Execute transfer of ownership.
 	 *
 	 * @param AlbumFactory $albumFactory

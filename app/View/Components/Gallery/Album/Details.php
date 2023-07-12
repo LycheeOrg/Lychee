@@ -18,11 +18,10 @@ class Details extends Component
 	public int $num_photos;
 	public bool $can_download;
 	public ?string $created_at = null;
-	public ?string $description = null; 
+	public ?string $description = null;
 
 	public function __construct(AbstractAlbum $album, ?string $url)
 	{
-
 		$this->can_download = Gate::check(AlbumPolicy::CAN_DOWNLOAD, [App\Contracts\Models\AbstractAlbum::class, $album]);
 		$this->url = $url;
 		$this->title = $album->title;
@@ -35,10 +34,10 @@ class Details extends Component
 			$this->created_at = $album->created_at->format('M j, Y g:i:s A e');
 			$this->description = $album->description;
 		}
+	}
 
-    }
-
-	public function render() {
-        return view('components.gallery.album.details');
-    }
+	public function render()
+	{
+		return view('components.gallery.album.details');
+	}
 }
