@@ -58,7 +58,7 @@ class Delete extends Component
 	{
 		$this->validate(DeleteAlbumsRuleSet::rules());
 
-		$baseAlbum = $albumFactory->findBaseAlbumOrFail($this->albumID, false);
+		$baseAlbum = $albumFactory->findBaseAlbumOrFail($this->albumIDs[0], false);
 
 		$this->authorize(AlbumPolicy::CAN_DELETE, $baseAlbum);
 
