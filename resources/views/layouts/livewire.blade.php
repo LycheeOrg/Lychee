@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="{{ app()->currentLocale() }}">
 	<head>
+		<meta charset="UTF-8">
 		@include('components.meta.index')
 
 		{{-- <script async defer src="{{ URL::asset(Helpers::cacheBusting('js/app.js')) }}"></script> --}}
