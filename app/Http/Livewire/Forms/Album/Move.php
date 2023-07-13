@@ -4,9 +4,6 @@ namespace App\Http\Livewire\Forms\Album;
 
 use App\Actions\Album\Move as MoveAlbums;
 use App\DTO\AlbumSortingCriterion;
-use App\Enum\ColumnSortingAlbumType;
-use App\Enum\ColumnSortingType;
-use App\Enum\OrderSortingType;
 use App\Http\Livewire\Traits\Notify;
 use App\Http\Livewire\Traits\UseValidator;
 use App\Http\RuleSets\Album\MoveAlbumsRuleSet;
@@ -18,10 +15,8 @@ use App\Policies\AlbumQueryPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Livewire\Component;
 use Illuminate\Support\Str;
+use Livewire\Component;
 
 class Move extends Component
 {
@@ -109,9 +104,9 @@ class Move extends Component
 
 		$this->notify(__('lychee.CHANGE_SUCCESS'));
 	}
-	
-	private function getAlbumsListWithPath(): array {
 
+	private function getAlbumsListWithPath(): array
+	{
 		$albumQueryPolicy = resolve(AlbumQueryPolicy::class);
 		$unfiltered = $albumQueryPolicy->applyReachabilityFilter(Album::query());
 		$sorting = AlbumSortingCriterion::createDefault();
@@ -128,8 +123,8 @@ class Move extends Component
 		return $this->flatten($tree);
 	}
 
-	private function breadCrumbPath(ALbum $album, string $prefix = '') {
-
+	private function breadCrumbPath(ALbum $album, string $prefix = '')
+	{
 		$album->title = $prefix . ($prefix !== '' ? '/' : '') . $album->title;
 		if ($album->num_children === 0) {
 			return;
@@ -140,7 +135,8 @@ class Move extends Component
 		}
 	}
 
-	private function flatten($collection): array {
+	private function flatten($collection): array
+	{
 		$flatArray = [];
 		foreach ($collection as $key => $node) {
 			$flatArray[] = ['id' => $node->id, 'title' => $node->title];
