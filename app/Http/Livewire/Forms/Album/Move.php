@@ -3,17 +3,25 @@
 namespace App\Http\Livewire\Forms\Album;
 
 use App\Actions\Album\Move as MoveAlbums;
-use App\Actions\Albums\Tree;
+use App\DTO\AlbumSortingCriterion;
+use App\Enum\ColumnSortingAlbumType;
+use App\Enum\ColumnSortingType;
+use App\Enum\OrderSortingType;
 use App\Http\Livewire\Traits\Notify;
 use App\Http\Livewire\Traits\UseValidator;
 use App\Http\RuleSets\Album\MoveAlbumsRuleSet;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\Extensions\SortingDecorator;
 use App\Policies\AlbumPolicy;
+use App\Policies\AlbumQueryPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use Illuminate\Support\Str;
 
 class Move extends Component
 {
@@ -28,6 +36,10 @@ class Move extends Component
 	/** @var array<int,string> */
 	public array $albumIDs;
 
+	public ?string $search = null; // ! wired
+
+	public array $albumListSaved;
+
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
@@ -39,6 +51,7 @@ class Move extends Component
 	{
 		$this->albumID = '';
 		$this->albumIDs = [$album->id];
+		$this->albumListSaved = $this->getAlbumsListWithPath();
 	}
 
 	/**
@@ -48,9 +61,14 @@ class Move extends Component
 	 */
 	public function getAlbumListProperty(): Collection
 	{
-		$tree = resolve(Tree::class);
+		$filtered = collect($this->albumListSaved);
+		if ($this->search !== null) {
+			return $filtered->filter(function (array $album) {
+				return Str::contains($album['title'], $this->search);
+			});
+		}
 
-		return $tree->get()->albums;
+		return $filtered;
 	}
 
 	/**
@@ -91,4 +109,68 @@ class Move extends Component
 
 		$this->notify(__('lychee.CHANGE_SUCCESS'));
 	}
+	
+	private function getAlbumsListWithPath(): array {
+
+		$albumQueryPolicy = resolve(AlbumQueryPolicy::class);
+		$unfiltered = $albumQueryPolicy->applyReachabilityFilter(Album::query());
+		$sorting = AlbumSortingCriterion::createDefault();
+		$query = (new SortingDecorator($unfiltered))
+			->orderBy($sorting->column, $sorting->order);
+
+		/** @var NsCollection<Album> $albums */
+		$albums = $query->get();
+		$tree = $albums->toTree(null);
+		foreach ($tree as $branches) {
+			$this->breadCrumbPath($branches);
+		}
+
+		return $this->flatten($tree);
+	}
+
+	private function breadCrumbPath(ALbum $album, string $prefix = '') {
+
+		$album->title = $prefix . ($prefix !== '' ? '/' : '') . $album->title;
+		if ($album->num_children === 0) {
+			return;
+		}
+
+		foreach ($album->children as $child) {
+			$this->breadCrumbPath($child, $album->title);
+		}
+	}
+
+	private function flatten($collection): array {
+		$flatArray = [];
+		foreach ($collection as $key => $node) {
+			$flatArray[] = ['id' => $node->id, 'title' => $node->title];
+			if ($node->children !== null) {
+				$flatArray = array_merge($flatArray, $this->flatten($node->children));
+				unset($node->children);
+			}
+		}
+
+		return $flatArray;
+	}
+	// /**
+	//  * Creates the breadcrumb path of an album.
+	//  *
+	//  * @param \App\Models\Album $album this is not really an album but a very
+	//  *                                 stripped down version of an album with
+	//  *                                 only the following properties:
+	//  *                                 `title`, `parent` and `parent_id` (unused here)
+	//  *
+	//  * @return string the breadcrumb path
+	//  */
+	// private function breadcrumbPath(object $album): string
+	// {
+	// 	$title = [$album->title];
+	// 	$parent = $album->parent;
+	// 	while ($parent !== null) {
+	// 		array_unshift($title, $parent->title);
+	// 		$parent = $parent->parent;
+	// 	}
+
+	// 	return implode('/', $title);
+	// }
 }
