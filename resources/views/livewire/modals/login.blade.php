@@ -14,7 +14,9 @@
 				<x-forms.inputs.password class="w-full" autocomplete="current-password"
 					data-tabindex="{{ Helpers::data_index() }}"
 					placeholder="{{ __('lychee.PASSWORD') }}"
-					wire:model="password" />
+					wire:model="password"
+					@keydown.enter="$wire.submit()"
+					 />
 			</div>
 		</form>
 		<p class="version text-xs text-right text-neutral-200">

@@ -10,8 +10,7 @@
 		{{-- <link type="text/css" rel="stylesheet" href="{{ URL::asset(Helpers::cacheBusting('dist/frontend.css')) }}"> --}}
 		{{-- <link type="text/css" rel="stylesheet" href="{{ URL::asset(Helpers::cacheBusting('dist/user.css')) }}"> --}}
 
-		@vite('resources/css/app.css')
-		@vite('resources/js/app.js')
+		@vite(['resources/css/app.css','resources/js/app.js'])
 		@livewireStyles(['nonce' => csp_nonce('script')])
 	</head>
 	<body class="antialiased bg-dark-700 w-full flex flex-row gap-0 relative">

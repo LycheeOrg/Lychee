@@ -1,4 +1,4 @@
-<div>
+<div @keydown.enter.window="$wire.confirm()">
 	<div class="p-9">
 		<p class="text-red-700 text-xl font-bold capitalize text-center">
 			{{ __('lychee.SETTINGS_ADVANCED_SAVE') }}
