@@ -15,7 +15,7 @@ class Details extends Component
 	public ?string $url;
 	public string $title;
 	public int $num_children = 0;
-	public int $num_photos;
+	public int $num_photos = 0;
 	public bool $can_download;
 	public ?string $created_at = null;
 	public ?string $description = null;
@@ -27,9 +27,10 @@ class Details extends Component
 		$this->title = $album->title;
 		$this->album_id = $album->id;
 		if ($album instanceof Album) {
-			$this->num_children = $album->children()->count();
+			$this->num_children = $album->num_children;
+			// TODO fix me later
+			$this->num_photos = $album->num_photos;
 		}
-		$this->num_photos = $album->photos()->count();
 		if ($album instanceof BaseAlbum) {
 			$this->created_at = $album->created_at->format('M j, Y g:i:s A e');
 			$this->description = $album->description;

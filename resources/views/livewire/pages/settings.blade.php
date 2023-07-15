@@ -3,7 +3,7 @@
 	<livewire:components.header
 		:page_mode="App\Enum\Livewire\PageMode::SETTINGS"
 		:title="__('lychee.SETTINGS')" />
-	<div class="overflow-clip-auto">
+	<div class="overflow-x-clip overflow-y-auto h-[calc(100vh-56px)]">
 		<div class="settings_view w-10/12 max-w-xl text-neutral-400 text-sm mx-auto">
 			<livewire:forms.settings.base.string-setting key="set-dropbox-key" description="DROPBOX_TEXT"
 				placeholder="SETTINGS_DROPBOX_KEY" action="DROPBOX_TITLE" name="dropbox_key" />

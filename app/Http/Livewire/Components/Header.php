@@ -38,6 +38,9 @@ class Header extends Component
 	public bool $albumToggled = false;
 	public bool $leftBarToggled = false;
 
+	/** @var array<int,string> */
+	protected $listeners = ['toggleAlbumDetails'];
+
 	/**
 	 * Render the header.
 	 *

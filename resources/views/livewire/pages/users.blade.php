@@ -3,7 +3,7 @@
 	<livewire:components.header
 		:page_mode="App\Enum\Livewire\PageMode::USERS"
 		:title="__('lychee.USERS')" />
-	<div class="overflow-clip-auto">
+	<div class="overflow-x-clip overflow-y-auto h-[calc(100vh-56px)]">
 		<div class="settings_view max-w-3xl text-neutral-400 text-sm mx-auto">
 			<div class="users_view_line w-full flex mt-5">
 				<p class="full w-full flex">
