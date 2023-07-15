@@ -16,8 +16,8 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Livewire\Component;
 use Kalnoy\Nestedset\Collection as NsCollection;
+use Livewire\Component;
 
 class Move extends Component
 {
@@ -168,7 +168,7 @@ class Move extends Component
 	/**
 	 * Flatten the tree and create bread crumb paths.
 	 *
-	 * @param mixed $collection
+	 * @param mixed  $collection
 	 * @param string $prefix
 	 *
 	 * @return array
