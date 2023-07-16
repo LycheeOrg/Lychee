@@ -5,7 +5,9 @@ namespace App\Http\Livewire\Pages;
 use App\Enum\Livewire\PageMode;
 use App\Http\Livewire\Traits\InteractWithModal;
 use App\Models\Configs;
+use App\Policies\SettingsPolicy;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -47,6 +49,8 @@ class AllSettings extends Component
 	 */
 	public function mount(): void
 	{
+		Gate::authorize(SettingsPolicy::CAN_EDIT, [Configs::class]);
+
 		$this->configs = Configs::orderBy('cat', 'asc')->get();
 	}
 
@@ -77,6 +81,8 @@ class AllSettings extends Component
 	 */
 	public function saveAll(): void
 	{
+		Gate::authorize(SettingsPolicy::CAN_EDIT, [Configs::class]);
+
 		foreach ($this->configs as $config) {
 			$config->save();
 		}

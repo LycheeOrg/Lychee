@@ -5,7 +5,9 @@ namespace App\Http\Livewire\Pages;
 use App\Actions\User\Create;
 use App\Enum\Livewire\PageMode;
 use App\Models\User;
+use App\Policies\UserPolicy;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -36,6 +38,8 @@ class Users extends Component
 	 */
 	public function mount(): void
 	{
+		Gate::authorize(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, User::class);
+
 		$this->loadUsers();
 	}
 

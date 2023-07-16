@@ -4,6 +4,9 @@ namespace App\Http\Livewire\Pages;
 
 use App\Enum\Livewire\PageMode;
 use App\Http\Livewire\Traits\InteractWithModal;
+use App\Models\Configs;
+use App\Policies\SettingsPolicy;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -15,6 +18,16 @@ class Settings extends Component
 	use InteractWithModal;
 
 	public PageMode $mode = PageMode::SETTINGS;
+
+	/**
+	 * Mount the component of the front-end.
+	 *
+	 * @return void
+	 */
+	public function mount(): void
+	{
+		Gate::authorize(SettingsPolicy::CAN_EDIT, [Configs::class]);
+	}
 
 	/**
 	 * Rendering of the front-end.

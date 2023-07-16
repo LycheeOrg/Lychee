@@ -5,6 +5,9 @@ namespace App\Http\Livewire\Pages;
 use App\Enum\Livewire\PageMode;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Models\Configs;
+use App\Models\User;
+use App\Policies\UserPolicy;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -32,6 +35,8 @@ class Profile extends Component
 	 */
 	public function mount(): void
 	{
+		Gate::authorize(UserPolicy::CAN_EDIT, User::class);
+
 		$this->are_notification_active = Configs::getValueAsBool('new_photos_notification');
 		$this->is_token_auh_active = config('auth.guards.lychee.driver', 'session-or-token') === 'session-or-token';
 	}
