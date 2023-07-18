@@ -388,6 +388,7 @@ return [
 				'https://b.osm.rrze.fau.de/osmhd/',
 				'https://c.osm.rrze.fau.de/osmhd/',
 				'data:', // required by openstreetmap
+				'blob:', // required for "live" photos
 			],
 		],
 
@@ -398,6 +399,9 @@ return [
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/media-src
 		'media-src' => [
 			'self' => true,
+			'allow' => [
+				'blob:', // required for "live" photos
+			],
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/navigate-to
