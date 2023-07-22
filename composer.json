@@ -53,7 +53,7 @@
         "laminas/laminas-text": "^2.9",
         "laragear/webauthn": "^1.2.0",
         "laravel/framework": "^10.0",
-        "livewire/livewire": "^2.11",
+        "livewire/livewire": "^3.0",
         "lychee-org/nestedset": "^8.0",
         "lychee-org/php-exif": "^1.0.0",
         "lychee-org/php-flickr-justified-layout": "^1.1",
