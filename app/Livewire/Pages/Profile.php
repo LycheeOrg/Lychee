@@ -21,7 +21,7 @@ use Livewire\Component;
  */
 class Profile extends Component
 {
-	public PageMode $mode = PageMode::PROFILE;
+	// public PageMode $mode = PageMode::PROFILE;
 
 	public bool $are_notification_active = false;
 	public bool $is_token_auh_active = true;

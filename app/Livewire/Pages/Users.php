@@ -17,7 +17,7 @@ use Livewire\Component;
  */
 class Users extends Component
 {
-	public PageMode $mode = PageMode::USERS;
+	// public PageMode $mode = PageMode::USERS;
 
 	public Collection $users;
 

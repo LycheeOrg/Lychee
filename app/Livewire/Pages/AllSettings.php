@@ -20,7 +20,7 @@ class AllSettings extends Component
 
 	public Collection $configs;
 
-	public PageMode $mode = PageMode::ALL_SETTINGS;
+	// public PageMode $mode = PageMode::ALL_SETTINGS;
 
 	/**
 	 * This allows Livewire to know which values of the $configs we
