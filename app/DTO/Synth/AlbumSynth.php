@@ -8,9 +8,9 @@ use Livewire\Mechanisms\HandleComponents\Synthesizers\Synth;
 
 class AlbumSynth extends Synth
 {
-	public static $key = 'a';
+	public static string $key = 'a';
 
-	public static function match($target)
+	public static function match(mixed $target): bool
 	{
 		return $target instanceof AbstractAlbum;
 	}
@@ -18,9 +18,9 @@ class AlbumSynth extends Synth
 	/**
 	 * @param AbstractAlbum $target
 	 *
-	 * @return string
+	 * @return array<int,array<string,string>>
 	 */
-	public function dehydrate($target)
+	public function dehydrate($target): array
 	{
 		return [[
 			'id' => $target->id,

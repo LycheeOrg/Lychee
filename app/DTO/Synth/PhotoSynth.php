@@ -7,9 +7,9 @@ use Livewire\Mechanisms\HandleComponents\Synthesizers\Synth;
 
 class PhotoSynth extends Synth
 {
-	public static $key = 'p';
+	public static string $key = 'p';
 
-	public static function match($target)
+	public static function match(mixed $target): bool
 	{
 		return $target instanceof Photo;
 	}
@@ -17,9 +17,9 @@ class PhotoSynth extends Synth
 	/**
 	 * @param Photo $target
 	 *
-	 * @return string
+	 * @return array<int,array<string,string>>
 	 */
-	public function dehydrate($target)
+	public function dehydrate($target): array
 	{
 		return [[
 			'id' => $target->id,

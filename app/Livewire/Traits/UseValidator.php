@@ -27,7 +27,7 @@ trait UseValidator
 			foreach ($validator->getMessageBag()->messages() as $value) {
 				$msg .= ($msg !== '' ? '<br>' : '') . implode('<br>', $value);
 			}
-			$this->dispatchBrowserEvent('notify', ['msg' => $msg, 'type' => 'error']);
+			$this->dispatch('notify', ['msg' => $msg, 'type' => 'error']);
 
 			return false;
 		}

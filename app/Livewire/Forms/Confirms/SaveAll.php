@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Forms\Confirms;
 
+use App\Livewire\Pages\AllSettings;
 use App\Livewire\Traits\InteractWithModal;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
@@ -31,7 +32,7 @@ class SaveAll extends Component
 	public function confirm(): void
 	{
 		$this->closeModal();
-		$this->emitTo('pages.all-settings', 'saveAll');
+		$this->dispatch('saveAll')->to(AllSettings::class);
 	}
 
 	public function close(): void

@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Traits;
 
+use App\Livewire\Components\Base\Modal;
+
 trait InteractWithModal
 {
 	/**
@@ -14,7 +16,7 @@ trait InteractWithModal
 	 */
 	protected function openModal(string $form, array $params = []): void
 	{
-		$this->emitTo('components.base.modal', 'openModal', $form, '', $params);
+		$this->dispatch('openModal', $form, '', $params)->to(Modal::class);
 	}
 
 	/**
@@ -28,7 +30,7 @@ trait InteractWithModal
 	 */
 	protected function openClosableModal(string $form, string $close_text, array $params = []): void
 	{
-		$this->emitTo('components.base.modal', 'openModal', $form, $close_text, $params);
+		$this->dispatch('openModal', $form, $close_text, $params)->to(Modal::class);
 	}
 
 	/**
@@ -38,6 +40,6 @@ trait InteractWithModal
 	 */
 	protected function closeModal(): void
 	{
-		$this->emitTo('components.base.modal', 'closeModal');
+		$this->dispatch('closeModal')->to(Modal::class);
 	}
 }

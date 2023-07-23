@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Forms\Profile;
 
+use App\Livewire\Modules\Profile\SecondFactor;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
@@ -68,6 +69,6 @@ class ManageSecondFactor extends Component
 	public function delete(): void
 	{
 		$this->credential->delete();
-		$this->emitTo('modules.profile.second-factor', 'loadCredentials');
+		$this->dispatch('loadCredentials')->to(SecondFactor::class);
 	}
 }

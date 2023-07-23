@@ -4,6 +4,7 @@ namespace App\Livewire\Modules\Users;
 
 use App\Actions\User\Save;
 use App\Exceptions\UnauthorizedException;
+use App\Livewire\Pages\Users;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -75,7 +76,7 @@ class UserLine extends Component
 			throw new UnauthorizedException('You are not allowed to delete yourself');
 		}
 		$this->user->delete();
-		$this->emitTo('pages.users', 'loadUsers');
+		$this->dispatch('loadUsers')->to(Users::class);
 	}
 
 	/**

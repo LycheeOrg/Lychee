@@ -4,6 +4,7 @@ namespace App\Livewire\Modals;
 
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Http\RuleSets\LoginRuleSet;
+use App\Livewire\Pages\Gallery;
 use App\Livewire\Traits\InteractWithModal;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
@@ -85,7 +86,7 @@ class Login extends Component
 		// apply login as admin and trigger a reload
 		if (Auth::attempt(['username' => $data['username'], 'password' => $data['password']])) {
 			Log::notice(__METHOD__ . ':' . __LINE__ . ' User (' . $data['username'] . ') has logged in from ' . request()->ip());
-			$this->emitTo('index', 'reloadPage');
+			$this->dispatch('reloadPage')->to(Gallery::class);
 
 			return;
 		}
