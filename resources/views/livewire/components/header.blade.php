@@ -51,7 +51,7 @@
 			<a class="button" id="button_fs_album_exit"><x-icons.iconic icon="fullscreen-exit" /></a> --}}
 			{{-- <a class="header__divider"></a> --}}
 			@can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class, $this->album])
-			@if($baseAlbum !== null)
+			@if($album instanceof BaseAlbum)
 			<x-header.button wire:click="toggleAlbumDetails" icon="{{ $albumToggled === true ? 'chevron-top' : 'chevron-bottom' }}" />
 			@endif
 			@endcan
