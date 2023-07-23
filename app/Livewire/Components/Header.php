@@ -4,11 +4,8 @@ namespace App\Livewire\Components;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\GalleryMode;
-use App\Livewire\Traits\AlbumProperty;
 use App\Livewire\Traits\InteractWithModal;
-use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
-use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\View\View;
 use Livewire\Component;
 
