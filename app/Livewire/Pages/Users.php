@@ -3,7 +3,6 @@
 namespace App\Livewire\Pages;
 
 use App\Actions\User\Create;
-use App\Enum\Livewire\PageMode;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Database\Eloquent\Collection;
@@ -89,5 +88,4 @@ class Users extends Component
 	{
 		return $this->redirect(route('livewire-gallery'));
 	}
-
 }

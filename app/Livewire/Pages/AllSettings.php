@@ -92,5 +92,4 @@ class AllSettings extends Component
 	{
 		return $this->redirect(route('settings'));
 	}
-
 }

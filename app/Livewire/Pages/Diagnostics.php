@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Pages;
 
-use App\Enum\Livewire\PageMode;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -22,5 +21,4 @@ class Diagnostics extends Component
 	{
 		return $this->redirect(route('livewire-gallery'));
 	}
-
 }

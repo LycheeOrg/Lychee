@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Pages;
 
-use App\Enum\Livewire\PageMode;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Configs;
 use App\Policies\SettingsPolicy;
@@ -41,5 +40,4 @@ class Settings extends Component
 	{
 		return $this->redirect(route('livewire-gallery'));
 	}
-
 }
