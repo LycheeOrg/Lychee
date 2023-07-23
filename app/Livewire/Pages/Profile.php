@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Pages;
 
-use App\Enum\Livewire\PageMode;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Models\Configs;
 use App\Models\User;
@@ -53,5 +52,4 @@ class Profile extends Component
 	{
 		return $this->redirect(route('livewire-gallery'));
 	}
-
 }
