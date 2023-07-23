@@ -1,7 +1,7 @@
 <div>
 	<div class="p-9">
 		<x-forms.error-message field='wrongLogin' />
-		<form class="">
+		<form class="" wire:submit="submit">
 			<div class="mb-4 mx-0">
 				<x-forms.inputs.text class="w-full" autocomplete="on"
 					autofocus
@@ -15,7 +15,7 @@
 					data-tabindex="{{ Helpers::data_index() }}"
 					placeholder="{{ __('lychee.PASSWORD') }}"
 					wire:model="password"
-					@keydown.enter="$wire.submit()"
+					wire:keydown.enter="submit"
 					 />
 			</div>
 		</form>

@@ -4,7 +4,6 @@ namespace App\Livewire\Pages;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\GalleryMode;
-use App\Enum\Livewire\PageMode;
 use App\Factories\AlbumFactory;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Album;
@@ -39,11 +38,6 @@ class Gallery extends Component
 	public ?AbstractAlbum $album = null;
 	#[Locked]
 	public ?Photo $photo = null;
-
-	/**
-	 * @var array<int,string> listeners of click events
-	 */
-	protected $listeners = ['openAlbum', 'openPhoto', 'back'];
 
 	/**
 	 * While in most Laravel Controller calls we use the constructor,
@@ -119,39 +113,6 @@ class Gallery extends Component
 		$photoItem = Photo::with('album')->findOrFail($this->photoId);
 		$this->photo = $photoItem;
 		$this->title = $this->photo->title;
-	}
-
-	/**
-	 * Method call to open an album from either entry point or a sub album.
-	 * This will unfortunately trigger a significant rendering of the front-end because
-	 * of the html change.
-	 * In the case of album -> subalbum only the inner part will be re-rendered (in theory).
-	 *
-	 * @param string $albumId
-	 *
-	 * @return void
-	 */
-	// public function openAlbum(string $albumId): void
-	// {
-	// 	$this->albumId = $albumId;
-	// 	$this->load();
-	// 	// $this->emitUrlChange(PageMode::GALLERY, $this->albumId, $this->photoId ?? '');
-	// }
-
-	/**
-	 * Method call to open a photo from an album.
-	 * This will unfortunately trigger a significant rendering of the front-end because
-	 * of the html change.
-	 *
-	 * @param string $photoId
-	 *
-	 * @return void
-	 */
-	public function openPhoto(string $photoId): void
-	{
-		$this->photoId = $photoId;
-		// This ensures that the history has been updated
-		// $this->emitUrlChange(PageMode::GALLERY, $this->albumId, $this->photoId);
 	}
 
 	/**

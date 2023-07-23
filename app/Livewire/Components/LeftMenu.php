@@ -34,7 +34,9 @@ class LeftMenu extends Openable
 		Auth::logout();
 		Session::flush();
 
-		return redirect(route('livewire_index'));
+		$this->close();
+
+		return redirect(route('livewire-gallery'));
 	}
 
 	/**

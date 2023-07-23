@@ -1,7 +1,6 @@
 <div class="w-full">
 	<!-- toolbar -->
 	<livewire:components.header
-		:page_mode="App\Enum\Livewire\PageMode::PROFILE"
 		:title="__('lychee.PROFILE')" />
 	<div class="overflow-x-clip overflow-y-auto h-[calc(100vh-56px)]">
 		<div class="settings_view max-w-xl text-neutral-400 text-sm mx-auto">
