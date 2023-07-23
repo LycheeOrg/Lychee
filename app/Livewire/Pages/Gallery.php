@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Pages;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\GalleryMode;
 use App\Enum\Livewire\PageMode;
 use App\Factories\AlbumFactory;
@@ -23,16 +24,6 @@ class Gallery extends Component
 	*/
 	use InteractWithModal;
 
-	/**
-	 * Because AbstractAlbum is an Interface, it is not possible to make it
-	 * and attribute of a Livewire Component as on the "way back" we do not know
-	 * in what kind of AbstractAlbum we need to cast it back.
-	 *
-	 * One way to solve this would actually be to create either an WireableAlbum container
-	 * Or to use a computed property on the model. We chose the later.
-	 */
-	use AlbumProperty;
-
 	private AlbumFactory $albumFactory;
 
 	#[Locked]
@@ -48,9 +39,7 @@ class Gallery extends Component
 	 * Those two parameters are bound to the URL query.
 	 */
 	#[Locked]
-	public ?BaseAlbum $baseAlbum = null;
-	#[Locked]
-	public ?BaseSmartAlbum $smartAlbum = null;
+	public ?AbstractAlbum $album = null;
 	#[Locked]
 	public ?Photo $photo = null;
 
@@ -106,23 +95,22 @@ class Gallery extends Component
 			$this->mode = GalleryMode::ALBUMS;
 			$this->title = Configs::getValueAsString('site_title');
 
-			$this->resetAlbums();
+			$this->album = null;
 			$this->photo = null;
 
 			return;
 		}
 
 		// Reload if necessary
-		if ($this->getAlbumProperty()?->id !== $this->albumId) {
+		if ($this->album?->id !== $this->albumId) {
 			// this means that $this->albumId exists
-			$album = $this->albumFactory->findAbstractAlbumOrFail($this->albumId, false);
-			$this->loadAlbum($album);
+			$this->album = $this->albumFactory->findAbstractAlbumOrFail($this->albumId, false);
 		}
 
 		// We are in album view.
 		if ($this->photoId === null || $this->photoId === '') {
 			$this->mode = GalleryMode::ALBUM;
-			$this->title = $this->getAlbumProperty()->title;
+			$this->title = $this->album->title;
 			$this->photo = null;
 
 			return;
@@ -177,8 +165,8 @@ class Gallery extends Component
 		if ($this->photoId !== null && $this->photoId !== '') {
 			return $this->redirect(route('livewire-gallery', ['albumId' => $this->albumId]));
 		}
-		if ($this->baseAlbum instanceof Album && $this->baseAlbum->parent_id !== null) {
-			return $this->redirect(route('livewire-gallery', ['albumId' => $this->baseAlbum->parent_id]));
+		if ($this->album instanceof Album && $this->album->parent_id !== null) {
+			return $this->redirect(route('livewire-gallery', ['albumId' => $this->album->parent_id]));
 		}
 
 		return $this->redirect(route('livewire-gallery'));

@@ -8,7 +8,7 @@ use Livewire\Component;
 
 class Diagnostics extends Component
 {
-	public PageMode $mode = PageMode::DIAGNOSTICS;
+	// public PageMode $mode = PageMode::DIAGNOSTICS;
 
 	/**
 	 * Rendering of the front-end.

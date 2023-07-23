@@ -4,16 +4,14 @@
 		key="header-{{$this->albumId}}-{{$this->photoId ?? ''}}"
 		:gallery_mode="$this->mode"
 		:$title
-		:$smartAlbum
-		:$baseAlbum
+		:$album
 		 />
 		@if($mode === App\Enum\Livewire\GalleryMode::ALBUMS)
 		<livewire:modules.gallery.albums />
 		@elseif($mode === App\Enum\Livewire\GalleryMode::ALBUM)
 		<livewire:modules.gallery.album 
 			key="view-album-{{$this->albumId}}"
-			:$smartAlbum
-			:$baseAlbum
+			:$album
 		/>
 		{{-- @elseif($mode === App\Enum\Livewire\GalleryMode::MAP)
 		<livewire:modules.gallery.albums /> --}}

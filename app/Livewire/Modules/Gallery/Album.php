@@ -41,15 +41,13 @@ class Album extends Openable
 	 * One way to solve this would actually be to create either an WireableAlbum container
 	 * Or to use a computed property on the model. We chose the later.
 	 */
-	use AlbumProperty;
 	public bool $locked = false;
 	public bool $ready_to_load = false;
 	public int $width = 0;
 
 	public AlbumMode $layout;
 
-	public ?BaseAlbum $baseAlbum = null;
-	public ?BaseSmartAlbum $smartAlbum = null;
+	public ?AbstractAlbum $album = null;
 
 	public ?string $header_url = null;
 
@@ -62,7 +60,7 @@ class Album extends Openable
 
 	public function mount()
 	{
-		$this->locked = Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->getAlbumProperty()]);
+		$this->locked = Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
 	}
 
 	/**
@@ -96,8 +94,8 @@ class Album extends Openable
 	 */
 	public function reload(): void
 	{
-		if ($this->baseAlbum instanceof ModelsAlbum) {
-			$this->baseAlbum = ModelsAlbum::findOrFail($this->baseAlbum->id);
+		if ($this->album instanceof ModelsAlbum) {
+			$this->album = ModelsAlbum::findOrFail($this->album->id);
 		}
 	}
 
@@ -143,13 +141,13 @@ class Album extends Openable
 	 */
 	private function fetchHeaderUrl(): SizeVariant|null
 	{
-		if ($this->getAlbumProperty()->photos->isEmpty()) {
+		if ($this->album->photos->isEmpty()) {
 			return null;
 		}
 
 		return SizeVariant::query()
 			->where('type', '=', SizeVariantType::MEDIUM)
-			->whereBelongsTo($this->getAlbumProperty()->photos)
+			->whereBelongsTo($this->album->photos)
 			->where('ratio', '>', 1)
 			->inRandomOrder()
 			->first();

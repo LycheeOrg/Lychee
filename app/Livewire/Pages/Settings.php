@@ -17,7 +17,7 @@ class Settings extends Component
 	*/
 	use InteractWithModal;
 
-	public PageMode $mode = PageMode::SETTINGS;
+	// public PageMode $mode = PageMode::SETTINGS;
 
 	/**
 	 * Mount the component of the front-end.
@@ -37,15 +37,5 @@ class Settings extends Component
 	public function render(): View
 	{
 		return view('livewire.pages.settings');
-	}
-
-	/**
-	 * Open Settings page.
-	 *
-	 * @return void
-	 */
-	public function openAllSettings(): void
-	{
-		$this->emitTo('index', 'openPage', PageMode::ALL_SETTINGS->value);
 	}
 }

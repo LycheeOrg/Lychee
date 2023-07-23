@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\GalleryMode;
 use App\Livewire\Traits\AlbumProperty;
 use App\Livewire\Traits\InteractWithModal;
@@ -23,15 +24,13 @@ use Livewire\Component;
 class Header extends Component
 {
 	use InteractWithModal;
-	use AlbumProperty;
 
 	public ?GalleryMode $gallery_mode = null;
 	public string $title = '';
 	public bool $is_hidden = false;
 
 	// Used to determine whether some actions are possible or not.
-	public ?BaseAlbum $baseAlbum = null;
-	public ?BaseSmartAlbum $smartAlbum = null;
+	public ?AbstractAlbum $album = null;
 	public ?Photo $photo = null;
 
 	public bool $albumToggled = false;
@@ -100,6 +99,6 @@ class Header extends Component
 	 */
 	public function openContextMenu(): void
 	{
-		$this->dispatchTo('components.base.context-menu', 'openContextMenu', 'album-add', ['parentId' => $this->baseAlbum?->id]);
+		$this->dispatchTo('components.base.context-menu', 'openContextMenu', 'album-add', ['parentId' => $this->album?->id]);
 	}
 }

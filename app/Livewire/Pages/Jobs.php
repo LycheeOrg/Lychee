@@ -12,7 +12,7 @@ use Livewire\Component;
 
 class Jobs extends Component
 {
-	public PageMode $mode = PageMode::JOBS;
+	// public PageMode $mode = PageMode::JOBS;
 
 	/**
 	 * We use a computed property instead of attributes
