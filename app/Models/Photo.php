@@ -27,7 +27,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
-use Livewire\Wireable;
 use LycheeOrg\PhpFlickrJustifiedLayout\Contracts\AspectRatio;
 use function Safe\preg_match;
 
@@ -121,7 +120,7 @@ use function Safe\preg_match;
  *
  * @mixin \Eloquent
  */
-class Photo extends Model implements Wireable, AspectRatio
+class Photo extends Model implements AspectRatio
 {
 	use UTCBasedTimes;
 	use HasAttributesPatch;
@@ -469,21 +468,5 @@ class Photo extends Model implements Wireable, AspectRatio
 		$fileDeleter = (new Delete())->do([$this->id]);
 		$this->exists = false;
 		$fileDeleter->do();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function toLivewire(): string
-	{
-		return $this->id;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public static function fromLivewire(mixed $value): self
-	{
-		return self::findOrFail(strval($value));
 	}
 }

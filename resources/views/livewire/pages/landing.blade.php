@@ -1,4 +1,4 @@
-<div>
+<main class="w-full">
 	@once
 	<link type="text/css" rel="stylesheet" href="{{ URL::asset(Helpers::cacheBusting('dist/landing.css')) }}">
 	<script type="text/javascript" src="{{ URL::asset(Helpers::cacheBusting('dist/landing.js')) }}"></script>
@@ -15,7 +15,7 @@
 			<ul class="menu">
 				<li class="menu-item">
 					{{-- Here we can also use livewire to directly open the gallery without reloading the full page --}}
-					<a href="{{ route('livewire_index', ['page' => 'gallery']) }}">{{ __('lychee.GALLERY') }}</a>
+					<a href="{{ route('livewire-gallery') }}" wire:navigate>{{ __('lychee.GALLERY') }}</a>
 				</li>
 			</ul>
 		</div>

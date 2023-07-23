@@ -6,7 +6,6 @@ use App\Constants\RandomID;
 use App\Contracts\Models\AbstractAlbum;
 use App\Contracts\Models\HasRandomID;
 use App\DTO\PhotoSortingCriterion;
-use App\Factories\AlbumFactory;
 use App\Models\AccessPermission;
 use App\Models\BaseAlbumImpl;
 use App\Models\User;
@@ -17,7 +16,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Carbon;
-use Livewire\Wireable;
 
 /**
  * Interface BaseAlbum.
@@ -39,7 +37,7 @@ use Livewire\Wireable;
  * @property PhotoSortingCriterion|null       $sorting
  * @property BaseAlbumImpl                    $base_class
  */
-abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID, Wireable
+abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 {
 	use HasBidirectionalRelationships;
 	use ForwardsToParentImplementation, ThrowsConsistentExceptions {
@@ -127,23 +125,5 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID, Wi
 	public function getEffectiveSorting(): PhotoSortingCriterion
 	{
 		return $this->sorting ?? PhotoSortingCriterion::createDefault();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function toLivewire(): string
-	{
-		return $this->id;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public static function fromLivewire(mixed $value): AbstractAlbum
-	{
-		$factory = resolve(AlbumFactory::class);
-
-		return $factory->findAbstractAlbumOrFail(strval($value));
 	}
 }

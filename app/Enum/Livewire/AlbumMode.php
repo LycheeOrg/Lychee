@@ -2,14 +2,10 @@
 
 namespace App\Enum\Livewire;
 
-use App\Enum\Traits\WireableEnumTrait;
 use Illuminate\Support\Str;
-use Livewire\Wireable;
 
-enum AlbumMode: int implements Wireable
+enum AlbumMode: int
 {
-	use WireableEnumTrait;
-
 	case SQUARE = 0;
 	case JUSTIFIED = 1;
 	case MASONRY = 2;

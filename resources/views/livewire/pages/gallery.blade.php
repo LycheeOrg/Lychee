@@ -2,24 +2,21 @@
 	<!-- toolbar -->
 	<livewire:components.header
 		key="header-{{$this->albumId}}-{{$this->photoId ?? ''}}"
-		:page_mode="App\Enum\Livewire\PageMode::GALLERY"
-		:gallery_mode="$mode"
-		:title="$this->title"
-		:smartAlbum="$smartAlbum"
-		:baseAlbum="$baseAlbum"
+		:gallery_mode="$this->mode"
+		:$title
+		:$smartAlbum
+		:$baseAlbum
 		 />
 		@if($mode === App\Enum\Livewire\GalleryMode::ALBUMS)
 		<livewire:modules.gallery.albums />
 		@elseif($mode === App\Enum\Livewire\GalleryMode::ALBUM)
 		<livewire:modules.gallery.album 
 			key="view-album-{{$this->albumId}}"
-			:smartAlbum="$smartAlbum"
-			:baseAlbum="$baseAlbum"
+			:$smartAlbum
+			:$baseAlbum
 		/>
-		{{-- <x-footer /> --}}
-		@elseif($mode === App\Enum\Livewire\GalleryMode::MAP)
-		{{-- <div id="lychee_map_container" class="overlay-container"></div> --}}
-		<livewire:modules.gallery.albums />
+		{{-- @elseif($mode === App\Enum\Livewire\GalleryMode::MAP)
+		<livewire:modules.gallery.albums /> --}}
 		@endif
 		@if($mode === App\Enum\Livewire\GalleryMode::PHOTO)
 		<livewire:modules.gallery.photo key="view-photo-{{$this->photoId}}" :album="$this->album" :photo="$this->photo" />

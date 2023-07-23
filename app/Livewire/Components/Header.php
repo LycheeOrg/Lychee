@@ -3,7 +3,6 @@
 namespace App\Livewire\Components;
 
 use App\Enum\Livewire\GalleryMode;
-use App\Enum\Livewire\PageMode;
 use App\Livewire\Traits\AlbumProperty;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Extensions\BaseAlbum;
@@ -26,11 +25,11 @@ class Header extends Component
 	use InteractWithModal;
 	use AlbumProperty;
 
-	public ?PageMode $page_mode = null;
 	public ?GalleryMode $gallery_mode = null;
 	public string $title = '';
 	public bool $is_hidden = false;
 
+	// Used to determine whether some actions are possible or not.
 	public ?BaseAlbum $baseAlbum = null;
 	public ?BaseSmartAlbum $smartAlbum = null;
 	public ?Photo $photo = null;
@@ -63,21 +62,6 @@ class Header extends Component
 	}
 
 	/**
-	 * Go back one step.
-	 * TODO Consider moving this directly to Blade.
-	 *
-	 * @return void
-	 */
-	public function back(): void
-	{
-		if ($this->page_mode === PageMode::GALLERY) {
-			$this->emitTo('pages.gallery', 'back');
-		} else {
-			$this->emitTo('index', 'back');
-		}
-	}
-
-	/**
 	 * Open the Left menu.
 	 * TODO Consider moving this directly to Blade.
 	 *
@@ -85,7 +69,7 @@ class Header extends Component
 	 */
 	public function openLeftMenu(): void
 	{
-		$this->emitTo('components.left-menu', 'open');
+		$this->dispatchTo('components.left-menu', 'open');
 	}
 
 	/**
@@ -96,7 +80,7 @@ class Header extends Component
 	public function toggleAlbumDetails(): void
 	{
 		$this->albumToggled = !$this->albumToggled;
-		$this->emitTo('modules.gallery.album', 'toggle');
+		$this->dispatchTo('modules.gallery.album', 'toggle');
 	}
 
 	/**
@@ -106,7 +90,7 @@ class Header extends Component
 	 */
 	public function togglePhotoDetails(): void
 	{
-		$this->emitTo('modules.gallery.photo', 'toggle');
+		$this->dispatchTo('modules.gallery.photo', 'toggle');
 	}
 
 	/**
@@ -116,6 +100,6 @@ class Header extends Component
 	 */
 	public function openContextMenu(): void
 	{
-		$this->emitTo('components.base.context-menu', 'openContextMenu', 'album-add', ['parentId' => $this->baseAlbum?->id]);
+		$this->dispatchTo('components.base.context-menu', 'openContextMenu', 'album-add', ['parentId' => $this->baseAlbum?->id]);
 	}
 }

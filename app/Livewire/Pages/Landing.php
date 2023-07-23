@@ -3,6 +3,8 @@
 namespace App\Livewire\Pages;
 
 use App\Models\Configs;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -19,7 +21,11 @@ class Landing extends Component
 	{
 		$this->title = Configs::getValueAsString('landing_title');
 		$this->subtitle = Configs::getValueAsString('landing_subtitle');
-		$this->background = Configs::getValueAsString('landing_background');
+		$background = Configs::getValueAsString('landing_background');
+		if (!Str::startsWith($background, 'http')) {
+			$background = URL::asset($background);
+		}
+		$this->background = $background;
 	}
 
 	/**

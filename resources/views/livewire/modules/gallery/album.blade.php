@@ -1,9 +1,9 @@
 <div id="lychee_view_content" 
-    x-init="width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-    $wire.loadAlbum(width - 2*28 -20);"
+    {{-- x-init="width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+    $wire.loadAlbum(width - 2*28 -20);" --}}
     {{-- We remove 2x padding of 7rem + 20px for the scroll bar --}}
-    x-on:resize.window="width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-    $wire.loadAlbum(width - 2*28);"
+    {{-- x-on:resize.window="width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+    $wire.loadAlbum(width - 2*28);" --}}
     class="relative flex flex-wrap content-start w-full justify-start h-[calc(100vh-56px)] overflow-x-clip overflow-y-auto"
     >
 
@@ -15,9 +15,6 @@
 @else
     <livewire:forms.album.menu :album="$this->album" />
 @endif
-@php
-    Helpers::data_index_set(100);
-@endphp
 @if ($ready_to_load)
     @isset($this->album->children)
         @if ($this->album->children->count() > 0)
@@ -54,5 +51,5 @@
     Loading...
     </span>
 @endif
-<x-footer />
+{{-- <x-footer /> --}}
 </div>
