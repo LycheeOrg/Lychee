@@ -4,6 +4,9 @@ namespace App\Livewire\Components;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\GalleryMode;
+use App\Livewire\Components\Base\ContextMenu;
+use App\Livewire\Modules\Gallery\Album as ModuleGalleryAlbum;
+use App\Livewire\Modules\Gallery\Photo as ModuleGalleryPhoto;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Photo;
 use Illuminate\View\View;
@@ -65,7 +68,7 @@ class Header extends Component
 	 */
 	public function openLeftMenu(): void
 	{
-		$this->dispatchTo('components.left-menu', 'open');
+		$this->dispatch('open')->to(LeftMenu::class);
 	}
 
 	/**
@@ -76,7 +79,7 @@ class Header extends Component
 	public function toggleAlbumDetails(): void
 	{
 		$this->albumToggled = !$this->albumToggled;
-		$this->dispatchTo('modules.gallery.album', 'toggle');
+		$this->dispatch('toggle')->to(ModuleGalleryAlbum::class);
 	}
 
 	/**
@@ -86,7 +89,7 @@ class Header extends Component
 	 */
 	public function togglePhotoDetails(): void
 	{
-		$this->dispatchTo('modules.gallery.photo', 'toggle');
+		$this->dispatch('toggle')->to(ModuleGalleryPhoto::class);
 	}
 
 	/**
@@ -96,6 +99,6 @@ class Header extends Component
 	 */
 	public function openContextMenu(): void
 	{
-		$this->dispatchTo('components.base.context-menu', 'openContextMenu', 'album-add', ['parentId' => $this->album?->id]);
+		$this->dispatch('openContextMenu', 'album-add', ['parentId' => $this->album?->id])->to(ContextMenu::class);
 	}
 }

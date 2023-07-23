@@ -19,6 +19,6 @@ trait Notify
 	 */
 	public function notify(string $message, NotificationType $type = NotificationType::SUCCESS): void
 	{
-		$this->dispatchBrowserEvent('notify', ['msg' => $message, 'type' => $type->value]);
+		$this->dispatch('notify', ['msg' => $message, 'type' => $type->value]);
 	}
 }

@@ -46,7 +46,7 @@ class Albums extends Component
 		return view('livewire.modules.gallery.albums');
 	}
 
-	public function boot()
+	public function boot(): void
 	{
 		$this->top = resolve(Top::class);
 	}

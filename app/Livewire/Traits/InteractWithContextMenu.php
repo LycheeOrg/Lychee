@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Traits;
 
+use App\Livewire\Components\Base\ContextMenu;
+
 trait InteractWithContextMenu
 {
 	/**
@@ -14,7 +16,7 @@ trait InteractWithContextMenu
 	 */
 	protected function openContextMenu(string $form, $params = []): void
 	{
-		$this->emitTo('components.base.context-menu', 'openContextMenu', $form, $params);
+		$this->dispatch('openContextMenu', $form, $params)->to(ContextMenu::class);
 	}
 
 	/**
@@ -24,6 +26,6 @@ trait InteractWithContextMenu
 	 */
 	protected function closeContextMenu(): void
 	{
-		$this->emitTo('components.base.context-menu', 'closeContextMenu');
+		$this->dispatch('closeContextMenu')->to(ContextMenu::class);
 	}
 }

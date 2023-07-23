@@ -6,6 +6,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\AlbumMode;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Factories\AlbumFactory;
 use App\Livewire\Components\Base\Openable;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Album as ModelsAlbum;
@@ -55,7 +56,7 @@ class Album extends Openable
 	 */
 	protected $listeners = ['reload', 'open', 'close', 'toggle'];
 
-	public function mount()
+	public function mount(): void
 	{
 		$this->locked = Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
 	}
@@ -92,7 +93,8 @@ class Album extends Openable
 	public function reload(): void
 	{
 		if ($this->album instanceof ModelsAlbum) {
-			$this->album = ModelsAlbum::findOrFail($this->album->id);
+			$albumFactory = resolve(AlbumFactory::class);
+			$this->album = $albumFactory->findBaseAlbumOrFail($this->album->id);
 		}
 	}
 
@@ -124,7 +126,7 @@ class Album extends Openable
 	 */
 	public function getPhotosProperty(): Collection
 	{
-		return $this->ready_to_load ? $this->getAlbumProperty()->photos() : collect([]);
+		return $this->ready_to_load ? $this->album->photos : collect([]);
 	}
 
 	/**

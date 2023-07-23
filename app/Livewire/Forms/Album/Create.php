@@ -8,6 +8,8 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\RuleSets\AddAlbumRuleSet;
 use App\Livewire\Forms\BaseForm;
+use App\Livewire\Modules\Gallery\Album as ModuleGalleryAlbum;
+use App\Livewire\Modules\Gallery\Albums as ModuleGalleryAlbums;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;
@@ -87,8 +89,8 @@ class Create extends BaseForm
 		$create->create($title, $parentAlbum);
 
 		// Do we want refresh or direcly open newly created Album ?
-		$this->emitTo('modules.gallery.albums', 'reload');
-		$this->emitTo('modules.gallery.album', 'reload');
+		$this->dispatch('reload')->to(ModuleGalleryAlbums::class);
+		$this->dispatch('reload')->to(ModuleGalleryAlbum::class);
 
 		$this->close();
 	}

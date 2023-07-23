@@ -6,6 +6,7 @@ use App\Actions\Album\Move as MoveAlbums;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\AlbumSortingCriterion;
 use App\Http\RuleSets\Album\MoveAlbumsRuleSet;
+use App\Livewire\Components\Header;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
 use App\Models\Album;
@@ -159,7 +160,7 @@ class Move extends Component
 
 		$move->do($album, $albums);
 
-		$this->emitTo('components.header', 'toggleAlbumDetails');
+		$this->dispatch('toggleAlbumDetails')->to(Header::class);
 		$this->notify(__('lychee.CHANGE_SUCCESS'));
 	}
 

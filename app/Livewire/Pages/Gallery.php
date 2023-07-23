@@ -57,13 +57,13 @@ class Gallery extends Component
 	 *
 	 * @return void
 	 */
-	public function mount(?string $albumId = null, ?string $photoId = null)
+	public function mount(?string $albumId = null, ?string $photoId = null): void
 	{
 		$this->albumId = $albumId;
 		$this->photoId = $photoId;
 	}
 
-	public function boot()
+	public function boot(): void
 	{
 		$this->albumFactory = resolve(AlbumFactory::class);
 	}
@@ -157,7 +157,7 @@ class Gallery extends Component
 	/**
 	 * Method call to go back one step.
 	 */
-	public function back()
+	public function back(): mixed
 	{
 		if ($this->photoId !== null && $this->photoId !== '') {
 			return $this->redirect(route('livewire-gallery', ['albumId' => $this->albumId]));

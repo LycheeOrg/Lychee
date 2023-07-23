@@ -5,7 +5,6 @@ namespace App\View\Components;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Http\Controllers\IndexController;
 use App\Models\Configs;
-use App\Models\Extensions\BaseAlbum;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\View\Component;
 use Illuminate\View\View;
@@ -21,7 +20,7 @@ class Meta extends Component
 	public string $siteOwner;
 	public string $imageUrl;
 	public string $pageUrl;
-	public string $rssEnable;
+	public bool $rssEnable;
 	public string $userCssUrl;
 	public string $userJsUrl;
 	public string $frame;
