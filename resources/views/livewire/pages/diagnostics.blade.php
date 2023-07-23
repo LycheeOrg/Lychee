@@ -1,7 +1,6 @@
 <div class="w-full">
 	<!-- toolbar -->
 	<livewire:components.header
-		:page_mode="App\Enum\Livewire\PageMode::DIAGNOSTICS"
 		:title="__('lychee.DIAGNOSTICS')" />
 	<div class="overflow-x-clip overflow-y-auto h-[calc(100vh-56px)]">
 		<pre class="logs_diagnostics_view text-neutral-400 text-xs mx-8">

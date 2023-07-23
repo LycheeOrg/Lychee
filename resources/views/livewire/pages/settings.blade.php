@@ -1,7 +1,6 @@
 <div class="w-full">
 	<!-- toolbar -->
 	<livewire:components.header
-		:page_mode="App\Enum\Livewire\PageMode::SETTINGS"
 		:title="__('lychee.SETTINGS')" />
 	<div class="overflow-x-clip overflow-y-auto h-[calc(100vh-56px)]">
 		<div class="settings_view w-10/12 max-w-xl text-neutral-400 text-sm mx-auto">
@@ -47,7 +46,7 @@
 			</div>
 
 			<div class="my-4">
-				<x-forms.buttons.danger class="rounded-md w-full" wire:click="openAllSettings">{{ __('lychee.MORE') }}</x-forms.buttons.danger>
+				<x-forms.buttons.danger class="rounded-md w-full" wire:navigate href="{{ route('all-settings') }}">{{ __('lychee.MORE') }}</x-forms.buttons.danger>
 			</div>
 		</div>
 		<x-footer />

@@ -8,8 +8,6 @@ use Livewire\Component;
 
 class Diagnostics extends Component
 {
-	// public PageMode $mode = PageMode::DIAGNOSTICS;
-
 	/**
 	 * Rendering of the front-end.
 	 *
@@ -19,4 +17,10 @@ class Diagnostics extends Component
 	{
 		return view('livewire.pages.diagnostics');
 	}
+
+	public function back(): mixed
+	{
+		return $this->redirect(route('livewire-gallery'));
+	}
+
 }

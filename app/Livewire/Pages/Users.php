@@ -17,8 +17,6 @@ use Livewire\Component;
  */
 class Users extends Component
 {
-	// public PageMode $mode = PageMode::USERS;
-
 	public Collection $users;
 
 	public string $username = '';
@@ -86,4 +84,10 @@ class Users extends Component
 		$this->may_edit_own_settings = false;
 		$this->loadUsers();
 	}
+
+	public function back(): mixed
+	{
+		return $this->redirect(route('livewire-gallery'));
+	}
+
 }

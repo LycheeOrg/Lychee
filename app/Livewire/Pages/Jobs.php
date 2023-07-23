@@ -12,8 +12,6 @@ use Livewire\Component;
 
 class Jobs extends Component
 {
-	// public PageMode $mode = PageMode::JOBS;
-
 	/**
 	 * We use a computed property instead of attributes
 	 * in order to avoid poluting the data sent to the user.
@@ -39,4 +37,10 @@ class Jobs extends Component
 	{
 		return view('livewire.pages.jobs');
 	}
+
+	public function back(): mixed
+	{
+		return $this->redirect(route('livewire-gallery'));
+	}
+
 }

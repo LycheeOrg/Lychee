@@ -87,4 +87,10 @@ class AllSettings extends Component
 			$config->save();
 		}
 	}
+
+	public function back(): mixed
+	{
+		return $this->redirect(route('settings'));
+	}
+
 }

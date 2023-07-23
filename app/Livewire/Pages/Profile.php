@@ -21,8 +21,6 @@ use Livewire\Component;
  */
 class Profile extends Component
 {
-	// public PageMode $mode = PageMode::PROFILE;
-
 	public bool $are_notification_active = false;
 	public bool $is_token_auh_active = true;
 
@@ -50,4 +48,10 @@ class Profile extends Component
 	{
 		return view('livewire.pages.profile');
 	}
+
+	public function back(): mixed
+	{
+		return $this->redirect(route('livewire-gallery'));
+	}
+
 }
