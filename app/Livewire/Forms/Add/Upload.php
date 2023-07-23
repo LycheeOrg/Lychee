@@ -3,10 +3,10 @@
 namespace App\Livewire\Forms\Add;
 
 use App\Exceptions\PhotoSkippedException;
-use App\Livewire\Forms\BaseForm;
 use App\Image\Files\ProcessableJobFile;
 use App\Image\Files\UploadedFile;
 use App\Jobs\ProcessImageJob;
+use App\Livewire\Forms\BaseForm;
 use App\Models\Configs;
 use Livewire\WithFileUploads;
 

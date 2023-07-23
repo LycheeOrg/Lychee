@@ -24,7 +24,7 @@
 		@endauth
 	@elseif ($gallery_mode === App\Enum\Livewire\GalleryMode::ALBUM) <!-- ALBUM -->
 		<x-header.bar>
-			<x-header.button wire:click="back" icon="chevron-left" />
+			<x-header.button wire:click="$parent.back()" icon="chevron-left" />
 			<x-header.title>{{ $title }}</x-header.title>
 			{{-- @can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class], $this->album)
 			<a class="button button--eye" id="button_visibility_album"><x-icons.iconic class="iconic--eye" icon="eye" /></a>
@@ -61,7 +61,7 @@
 		</x-header.bar>
 	@elseif ($gallery_mode === App\Enum\Livewire\GalleryMode::PHOTO) <!-- PHOTO -->
 		<x-header.bar>
-			<x-header.button wire:click="back" icon="chevron-left" />
+			<x-header.button wire:click="$parent.back()" icon="chevron-left" />
 			<x-header.title>{{ $title }}</x-header.title>
 			{{-- <a class="button button--star" id="button_star"><x-icons.iconic icon="star" /></a>
 			<a class="button button--eye" id="button_visibility"><x-icons.iconic icon="eye" /></a>
@@ -79,12 +79,12 @@
 		</x-header.bar>
 	@elseif ($gallery_mode === App\Enum\Livewire\GalleryMode::MAP) <!-- MAP -->
 		<x-header.bar>
-			<x-header.button wire:click="back" icon="chevron-left" />
+			<x-header.button wire:click="$parent.back()" icon="chevron-left" />
 			<x-header.title>{{ $title }}</x-header.title>
 		</x-header.bar>
 	@else
 		<x-header.bar>
-			<x-header.button wire:click="back" icon="chevron-left" />
+			<x-header.button wire:click="$parent.back()" icon="chevron-left" />
 			<x-header.title>{{ $title }}</x-header.title>
 		</x-header.bar>
 	@endif

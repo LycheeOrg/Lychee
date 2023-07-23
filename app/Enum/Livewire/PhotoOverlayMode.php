@@ -2,13 +2,8 @@
 
 namespace App\Enum\Livewire;
 
-use App\Enum\Traits\WireableEnumTrait;
-use Livewire\Wireable;
-
-enum PhotoOverlayMode: string implements Wireable
+enum PhotoOverlayMode: string
 {
-	use WireableEnumTrait;
-
 	case NONE = 'none';
 	case DESC = 'desc';
 	case EXIF = 'exif';

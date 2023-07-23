@@ -3,8 +3,8 @@
 namespace App\Livewire\Modals;
 
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Livewire\Traits\InteractWithModal;
 use App\Http\RuleSets\LoginRuleSet;
+use App\Livewire\Traits\InteractWithModal;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;

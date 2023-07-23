@@ -7,13 +7,13 @@ use App\Enum\Livewire\PageMode;
 use App\Factories\AlbumFactory;
 use App\Livewire\Traits\AlbumProperty;
 use App\Livewire\Traits\InteractWithModal;
-use App\Livewire\Traits\UrlChange;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\View\View;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class Gallery extends Component
@@ -22,7 +22,6 @@ class Gallery extends Component
 	* Add interaction with modal
 	*/
 	use InteractWithModal;
-	use UrlChange;
 
 	/**
 	 * Because AbstractAlbum is an Interface, it is not possible to make it
@@ -33,18 +32,26 @@ class Gallery extends Component
 	 * Or to use a computed property on the model. We chose the later.
 	 */
 	use AlbumProperty;
-	public ?string $albumId = null;
-	public ?string $photoId = null;
 
+	private AlbumFactory $albumFactory;
+
+	#[Locked]
+	public ?string $albumId = null;
+	#[Locked]
+	public ?string $photoId = null;
+	#[Locked]
 	public GalleryMode $mode;
+	#[Locked]
 	public string $title;
 
 	/**
 	 * Those two parameters are bound to the URL query.
 	 */
+	#[Locked]
 	public ?BaseAlbum $baseAlbum = null;
+	#[Locked]
 	public ?BaseSmartAlbum $smartAlbum = null;
-
+	#[Locked]
 	public ?Photo $photo = null;
 
 	/**
@@ -64,10 +71,15 @@ class Gallery extends Component
 	 *
 	 * @return void
 	 */
-	public function mount(?string $albumId, ?string $photoId)
+	public function mount(?string $albumId = null, ?string $photoId = null)
 	{
 		$this->albumId = $albumId;
 		$this->photoId = $photoId;
+	}
+
+	public function boot()
+	{
+		$this->albumFactory = resolve(AlbumFactory::class);
 	}
 
 	/**
@@ -90,7 +102,6 @@ class Gallery extends Component
 	 */
 	private function load(): void
 	{
-		$albumFactory = resolve(AlbumFactory::class);
 		if ($this->albumId === null || $this->albumId === '') {
 			$this->mode = GalleryMode::ALBUMS;
 			$this->title = Configs::getValueAsString('site_title');
@@ -104,7 +115,7 @@ class Gallery extends Component
 		// Reload if necessary
 		if ($this->getAlbumProperty()?->id !== $this->albumId) {
 			// this means that $this->albumId exists
-			$album = $albumFactory->findAbstractAlbumOrFail($this->albumId, false);
+			$album = $this->albumFactory->findAbstractAlbumOrFail($this->albumId, false);
 			$this->loadAlbum($album);
 		}
 
@@ -135,12 +146,12 @@ class Gallery extends Component
 	 *
 	 * @return void
 	 */
-	public function openAlbum(string $albumId): void
-	{
-		$this->albumId = $albumId;
-		$this->load();
-		$this->emitUrlChange(PageMode::GALLERY, $this->albumId, $this->photoId ?? '');
-	}
+	// public function openAlbum(string $albumId): void
+	// {
+	// 	$this->albumId = $albumId;
+	// 	$this->load();
+	// 	// $this->emitUrlChange(PageMode::GALLERY, $this->albumId, $this->photoId ?? '');
+	// }
 
 	/**
 	 * Method call to open a photo from an album.
@@ -155,32 +166,21 @@ class Gallery extends Component
 	{
 		$this->photoId = $photoId;
 		// This ensures that the history has been updated
-		$this->emitUrlChange(PageMode::GALLERY, $this->albumId, $this->photoId);
+		// $this->emitUrlChange(PageMode::GALLERY, $this->albumId, $this->photoId);
 	}
 
 	/**
 	 * Method call to go back one step.
-	 *
-	 * @return void
 	 */
-	public function back(): void
+	public function back()
 	{
 		if ($this->photoId !== null && $this->photoId !== '') {
-			$this->photoId = null;
-		} elseif ($this->baseAlbum instanceof Album && $this->baseAlbum->parent_id !== null) {
-			// Case of sub-albums
-			$this->albumId = $this->baseAlbum->parent_id;
-		} else {
-			$this->albumId = null;
+			return $this->redirect(route('livewire-gallery', ['albumId' => $this->albumId]));
+		}
+		if ($this->baseAlbum instanceof Album && $this->baseAlbum->parent_id !== null) {
+			return $this->redirect(route('livewire-gallery', ['albumId' => $this->baseAlbum->parent_id]));
 		}
 
-		if ($this->albumId === null) {
-			// In the case of smartAlbums or full gallery, we just close
-			$this->emitTo('components.sidebar', 'close');
-		}
-		$this->emitTo('components.sidebar', 'resetPhoto');
-
-		// This ensures that the history has been updated
-		$this->emitUrlChange(PageMode::GALLERY, $this->albumId ?? '', $this->photoId ?? '');
+		return $this->redirect(route('livewire-gallery'));
 	}
 }

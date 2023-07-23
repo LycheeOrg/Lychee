@@ -2,13 +2,8 @@
 
 namespace App\Enum\Livewire;
 
-use App\Enum\Traits\WireableEnumTrait;
-use Livewire\Wireable;
-
-enum GalleryMode: string implements Wireable
+enum GalleryMode: string
 {
-	use WireableEnumTrait;
-
 	case ALBUM = 'album';
 	case ALBUMS = 'albums';
 	case PHOTO = 'photo';

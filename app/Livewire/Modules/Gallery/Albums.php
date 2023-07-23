@@ -18,6 +18,8 @@ class Albums extends Component
 {
 	use InteractWithModal;
 
+	private Top $top;
+
 	/** @var Collection<Album> Collection of the album owned by the user */
 	public Collection $albums;
 
@@ -44,6 +46,11 @@ class Albums extends Component
 		return view('livewire.modules.gallery.albums');
 	}
 
+	public function boot()
+	{
+		$this->top = resolve(Top::class);
+	}
+
 	/**
 	 * Allows queries to reload the albums list.
 	 *
@@ -51,7 +58,7 @@ class Albums extends Component
 	 */
 	public function reload()
 	{
-		$topAlbums = resolve(Top::class)->get();
+		$topAlbums = $this->top->get();
 		$this->albums = $topAlbums->albums;
 		$this->smartalbums = $topAlbums->smart_albums->concat($topAlbums->tag_albums)->reject(fn ($album) => $album === null);
 		$this->shared_albums = $topAlbums->shared_albums;

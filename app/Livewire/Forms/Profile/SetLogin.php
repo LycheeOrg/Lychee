@@ -3,8 +3,8 @@
 namespace App\Livewire\Forms\Profile;
 
 use App\Actions\Settings\UpdateLogin;
-use App\Livewire\Traits\InteractWithModal;
 use App\Http\RuleSets\ChangeLoginRuleSet;
+use App\Livewire\Traits\InteractWithModal;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use App\Rules\CurrentPasswordRule;

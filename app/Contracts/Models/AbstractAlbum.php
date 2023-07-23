@@ -10,7 +10,6 @@ use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Livewire\Wireable;
 
 /**
  * Interface AbsractAlbum.
@@ -31,7 +30,7 @@ use Livewire\Wireable;
  * @property Thumb|null                       $thumb
  * @property Collection<int,AccessPermission> $access_permissions
  */
-interface AbstractAlbum extends \JsonSerializable, Arrayable, Jsonable, Wireable
+interface AbstractAlbum extends \JsonSerializable, Arrayable, Jsonable
 {
 	/**
 	 * @return Relation|Builder

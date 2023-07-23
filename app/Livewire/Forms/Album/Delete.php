@@ -4,9 +4,9 @@ namespace App\Livewire\Forms\Album;
 
 use App\Actions\Album\Delete as DeleteAction;
 use App\Factories\AlbumFactory;
+use App\Http\RuleSets\Album\DeleteAlbumsRuleSet;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
-use App\Http\RuleSets\Album\DeleteAlbumsRuleSet;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;

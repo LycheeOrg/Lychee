@@ -5,9 +5,9 @@ namespace App\Livewire\Forms\Album;
 use App\Actions\Album\CreateTagAlbum;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
+use App\Http\RuleSets\Album\AddTagAlbumRuleSet;
 use App\Livewire\Forms\BaseForm;
 use App\Livewire\Traits\InteractWithModal;
-use App\Http\RuleSets\Album\AddTagAlbumRuleSet;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 

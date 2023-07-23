@@ -51,8 +51,6 @@ class Album extends Openable
 	public ?BaseAlbum $baseAlbum = null;
 	public ?BaseSmartAlbum $smartAlbum = null;
 
-	public ?Collection $photos = null;
-
 	public ?string $header_url = null;
 
 	/**
@@ -62,8 +60,9 @@ class Album extends Openable
 	 */
 	protected $listeners = ['reload', 'open', 'close', 'toggle'];
 
-	public function mount() {
-		$this->locked = Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->getAlbumProperty()])
+	public function mount()
+	{
+		$this->locked = Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->getAlbumProperty()]);
 	}
 
 	/**
@@ -130,7 +129,7 @@ class Album extends Openable
 	 */
 	public function getPhotosProperty(): Collection
 	{
-		return $this->ready_to_load ? $this->getAlbumProperty()->photos : collect([]);
+		return $this->ready_to_load ? $this->getAlbumProperty()->photos() : collect([]);
 	}
 
 	/**
