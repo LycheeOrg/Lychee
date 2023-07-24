@@ -1,5 +1,4 @@
 <link type="text/css" rel="stylesheet" href="{{ URL::asset('dist/user.css') }}">
-<link rel="shortcut icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=4.0, user-scalable=yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-capable" content="yes">

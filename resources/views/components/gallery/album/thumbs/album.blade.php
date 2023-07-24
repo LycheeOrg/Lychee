@@ -1,6 +1,5 @@
-<a href="{{ route('livewire-gallery', ['albumId' => $id])}}"
+<a href="{{ route('livewire-gallery-album', ['albumId' => $id])}}"
 	wire:navigate
-	{{-- wire:click="$emit('openAlbum', '{{ $id }}')" --}}
 	@class([
 	"album-thumb block relative aspect-square
 	w-[calc(33vw-9px-4px)] ml-1 mt-1

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Modules\Gallery;
+namespace App\Livewire\Pages\Gallery;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Livewire\Components\Base\Openable;

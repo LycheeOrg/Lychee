@@ -1,10 +1,11 @@
-<div
-	wire:click="$emit('openPhoto', '{{ $photo_id }}')"
+<a
+	href="{{ route('livewire-gallery-photo',['albumId'=>$album_id, 'photoId' => $photo_id]) }}"
 	style="{{ $style }}"
 	class='photo group absolute  shadow-md shadow-black/25' {{-- ${disabled ? `disabled` : ``}'--}}
 	data-album-id='{{ $album_id }}'
 	data-id='{{ $photo_id }}'
 	data-tabindex='{{ Helpers::data_index() }}'
+	wire:navigate
 	>
 	<span class="thumbimg w-full h-full border-none object-cover {{ $class }}">
 		<img
@@ -29,14 +30,15 @@
 		<h1 class=" min-h-[19px] mt-3 mb-1 ml-3 text-white text-base font-bold overflow-hidden whitespace-nowrap text-ellipsis"
 			title='{{ $title }}'>{{ $title }}
 		</h1>
-		<a class="block mt-0 mr-0 mb-2 ml-3 text-2xs text-neutral-300">
+		<span class="block mt-0 mr-0 mb-2 ml-3 text-2xs text-neutral-300">
 			@if($taken_at !== "")
 			<span title='Camera Date'>
-			<x-icons.iconic icon='camera-slr' class="w-2 h-2 m-0 mr-1 fill-neutral-300" /></span>{{ $taken_at }}
+				<x-icons.iconic icon='camera-slr' class="w-2 h-2 m-0 mr-1 fill-neutral-300" />
+			</span>{{ $taken_at }}
 			@else
 				{{ $created_at }}
 			@endif
-		</a>
+		</span>
 	</div>
 	@auth
 		<div class='badges absolute mt-[-1px] ml-1 top-0 left-0'>
@@ -48,4 +50,4 @@
 			@endif
 		</div>
 	@endauth
-</div>
+</a>

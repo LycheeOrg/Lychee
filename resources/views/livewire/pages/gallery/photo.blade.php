@@ -1,3 +1,22 @@
+<div class="w-full">
+	<!-- toolbar -->
+    <x-header.bar>
+        <x-header.button wire:click="back" icon="chevron-left" />
+        <x-header.title>{{ $photo->title }}</x-header.title>
+        {{-- <a class="button button--star" id="button_star"><x-icons.iconic icon="star" /></a>
+        <a class="button button--eye" id="button_visibility"><x-icons.iconic icon="eye" /></a>
+        <a class="button button--rotate" id="button_rotate_ccwise"><x-icons.iconic icon="counterclockwise" /></a>
+        <a class="button button--rotate" id="button_rotate_cwise"><x-icons.iconic icon="clockwise" /></a>
+        <a class="button button--share" id="button_share"><x-icons.iconic class='ionicons' icon="share-ion" /></a>
+        <a wire:click='toggleSideBar' class="button button--info" id="button_info"><x-icons.iconic icon="info" /></a>
+        <a class="button button--map" id="button_map"><x-icons.iconic icon="map" /></a>
+        <a class="button" id="button_move"><x-icons.iconic icon="folder" /></a>
+        <a class="button" id="button_trash"><x-icons.iconic icon="trash" /></a>
+        <a class="button" id="button_fs_enter"><x-icons.iconic icon="fullscreen-enter" /></a>
+        <a class="button" id="button_fs_exit"><x-icons.iconic icon="fullscreen-exit" /></a>
+        <a class="header__divider"></a> --}}
+        <x-header.button wire:click="openContextMenu" icon="ellipses" />
+    </x-header.bar>
 <div id="imageview" 
 	class="absolute top-0 left-0 w-full h-[calc(100%-3.5rem)] mt-14 bg-black"
 {{-- @class(
@@ -88,4 +107,5 @@
 <livewire:components.photo-overlay :photo="$photo" />
 {{-- <div class='arrow_wrapper arrow_wrapper--previous'><a id='previous'>${build.iconic("caret-left")}</a></div> --}}
 {{-- <div class='arrow_wrapper arrow_wrapper--next'><a id='next'>${build.iconic("caret-right")}</a></div> --}}
+</div>
 </div>
