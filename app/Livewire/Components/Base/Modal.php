@@ -3,6 +3,7 @@
 namespace App\Livewire\Components\Base;
 
 use Illuminate\View\View;
+use Livewire\Attributes\On;
 
 /**
  * Modal component, extends Openable.
@@ -53,8 +54,6 @@ class Modal extends Openable
 	 * @var string[] listeners for modal events
 	 * */
 	protected $listeners = [
-		'openModal',
-		'closeModal',
 		'deleteModal',
 	];
 
@@ -67,6 +66,7 @@ class Modal extends Openable
 	 *
 	 * @return void
 	 */
+	#[On('openModal')]
 	public function openModal(string $type, string $close_text = '', array $params = []): void
 	{
 		$this->open();
@@ -81,6 +81,7 @@ class Modal extends Openable
 	 *
 	 * @return void
 	 */
+	#[On('closeModal')]
 	public function closeModal(): void
 	{
 		$this->close();

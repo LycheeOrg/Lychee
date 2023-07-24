@@ -86,7 +86,7 @@ class Login extends Component
 		// apply login as admin and trigger a reload
 		if (Auth::attempt(['username' => $data['username'], 'password' => $data['password']])) {
 			Log::notice(__METHOD__ . ':' . __LINE__ . ' User (' . $data['username'] . ') has logged in from ' . request()->ip());
-			$this->dispatch('reloadPage')->to(Gallery::class);
+			$this->dispatch('reloadPage');
 
 			return;
 		}

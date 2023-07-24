@@ -4,10 +4,12 @@ namespace App\Livewire\Pages\Gallery;
 
 use App\Actions\Albums\Top;
 use App\Http\Resources\Collections\TopAlbumsResource;
+use App\Livewire\Components\LeftMenu;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\View\View;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 /**
@@ -32,6 +34,12 @@ class Albums extends Component
 	public function render(): View
 	{
 		return view('livewire.pages.gallery.albums');
+	}
+
+	#[On('reloadPage')]
+	public function reloadPage() {
+		$top = resolve(Top::class);
+		$this->topAlbums = $top->get();
 	}
 
 	public function boot(): void
@@ -62,6 +70,12 @@ class Albums extends Component
 	 */
 	public function openLoginModal(): void
 	{
-		$this->openModal('forms.login');
+		$this->openModal('modals.login');
 	}
+
+	public function openLeftMenu(): void
+	{
+		$this->dispatch('open')->to(LeftMenu::class);
+	}
+
 }
