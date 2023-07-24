@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Modules\Gallery;
+namespace App\Livewire\Pages\Gallery;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\AlbumMode;
@@ -11,12 +11,12 @@ use App\Livewire\Components\Base\Openable;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Album as ModelsAlbum;
 use App\Models\Configs;
+use App\Models\Extensions\BaseAlbum;
 use App\Models\SizeVariant;
-use App\Policies\AlbumPolicy;
 use Illuminate\Database\Eloquent\RelationNotFoundException;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
+use Livewire\Attributes\Locked;
 use LycheeOrg\PhpFlickrJustifiedLayout\DTO\Geometry;
 use LycheeOrg\PhpFlickrJustifiedLayout\LayoutConfig;
 use LycheeOrg\PhpFlickrJustifiedLayout\LayoutJustify;
@@ -31,6 +31,11 @@ class Album extends Openable
 {
 	use InteractWithModal;
 
+	private AlbumFactory $albumFactory;
+
+	#[Locked]
+	public string $albumId;
+
 	/**
 	 * Because AbstractAlbum is an Interface, it is not possible to make it
 	 * and attribute of a Livewire Component as on the "way back" we do not know
@@ -39,8 +44,14 @@ class Album extends Openable
 	 * One way to solve this would actually be to create either an WireableAlbum container
 	 * Or to use a computed property on the model. We chose the later.
 	 */
+	#[Locked]
 	public bool $locked = false;
+
+	#[Locked]
 	public bool $ready_to_load = false;
+
+	public bool $is_base_album = false;
+
 	public int $width = 0;
 
 	public AlbumMode $layout;
@@ -49,16 +60,17 @@ class Album extends Openable
 
 	public ?string $header_url = null;
 
-	/**
-	 * Listeners for roloading the page.
-	 *
-	 * @var string[]
-	 */
-	protected $listeners = ['reload', 'open', 'close', 'toggle'];
-
-	public function mount(): void
+	public function boot(): void
 	{
-		$this->locked = Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
+		$this->albumFactory = resolve(AlbumFactory::class);
+	}
+
+	public function mount(string $albumId): void
+	{
+		$this->albumId = $albumId;
+		$this->album = $this->albumFactory->findAbstractAlbumOrFail($this->albumId);
+		$this->is_base_album = $this->album instanceof BaseAlbum;
+		// $this->locked = Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
 	}
 
 	/**
@@ -71,7 +83,7 @@ class Album extends Openable
 		$this->layout = Configs::getValueAsEnum('layout', AlbumMode::class);
 		$this->header_url ??= $this->fetchHeaderUrl()?->url;
 
-		return view('livewire.modules.gallery.album');
+		return view('livewire.pages.gallery.album');
 	}
 
 	/**
@@ -93,8 +105,7 @@ class Album extends Openable
 	public function reload(): void
 	{
 		if ($this->album instanceof ModelsAlbum) {
-			$albumFactory = resolve(AlbumFactory::class);
-			$this->album = $albumFactory->findBaseAlbumOrFail($this->album->id);
+			$this->album = $this->albumFactory->findBaseAlbumOrFail($this->album->id);
 		}
 	}
 
@@ -155,5 +166,13 @@ class Album extends Openable
 	public function openSharingModal(): void
 	{
 		$this->openClosableModal('forms.album.share', __('lychee.CLOSE'));
+	}
+
+	public function back() {
+		if ($this->album instanceof ModelsAlbum && $this->album->parent_id !== null) {
+			return $this->redirect(route('livewire-gallery-album', ['albumId' => $this->album->parent_id]));
+		}
+
+		return $this->redirect(route('livewire-gallery'));
 	}
 }

@@ -2,9 +2,11 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Pages\Gallery\Album;
+use App\Livewire\Pages\Gallery\Albums;
+use App\Livewire\Pages\Gallery\Photo;
 use App\Livewire\Pages\AllSettings;
 use App\Livewire\Pages\Diagnostics;
-use App\Livewire\Pages\Gallery;
 use App\Livewire\Pages\Jobs;
 use App\Livewire\Pages\Landing;
 use App\Livewire\Pages\Profile;
@@ -38,7 +40,9 @@ if (config('app.livewire') === true) {
 		Route::get('/livewire/users', Users::class)->name('users');
 		Route::get('/livewire/jobs', Jobs::class)->name('jobs');
 		Route::get('/livewire/diagnostics', Diagnostics::class)->name('diagnostics');
-		Route::get('/livewire/gallery/{albumId?}/{photoId?}', Gallery::class)->name('livewire-gallery');
+		Route::get('/livewire/gallery/', Albums::class)->name('livewire-gallery');
+		Route::get('/livewire/gallery/{albumId}/', Album::class)->name('livewire-gallery-album');
+		Route::get('/livewire/gallery/{albumId}/{photoId}', Photo::class)->name('livewire-gallery-photo');
 		// Route::get('/livewire/{page?}/{albumId?}/{photoId?}', Index::class)
 
 		Route::get('/livewire', function () {
