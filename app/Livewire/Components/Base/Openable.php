@@ -3,6 +3,7 @@
 namespace App\Livewire\Components\Base;
 
 use Barryvdh\Debugbar\Facades\Debugbar;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 /**
@@ -17,18 +18,12 @@ class Openable extends Component
 	/** @var bool status flag which defines whether the component is open or not. */
 	public bool $isOpen = false;
 
-	/** @var string[] Associative array. Those defines the events for which Openable is listening to. */
-	protected $listeners = [
-		'open',
-		'close',
-		'toggle',
-	];
-
 	/**
 	 * Open the Component.
 	 *
 	 * @return void
 	 */
+	#[On('open')]
 	public function open(): void
 	{
 		Debugbar::info('request to open.');
@@ -40,6 +35,7 @@ class Openable extends Component
 	 *
 	 * @return void
 	 */
+	#[On('close')]
 	public function close(): void
 	{
 		Debugbar::info('request to close.');
@@ -51,6 +47,7 @@ class Openable extends Component
 	 *
 	 * @return void
 	 */
+	#[On('toggle')]
 	public function toggle(): void
 	{
 		Debugbar::info('toggle.');
