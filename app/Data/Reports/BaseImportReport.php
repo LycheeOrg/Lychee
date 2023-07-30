@@ -24,9 +24,10 @@ abstract class BaseImportReport extends Data
 	 * Indicates the type (i.e. the subclass) of this class.
 	 * This information is required by the front-end to correctly cast
 	 * the response into the correct type.
-	 * 
-	 * @param string $type 
-	 * @return void 
+	 *
+	 * @param string $type
+	 *
+	 * @return void
 	 */
 	protected function __construct(
 		public string $type)
