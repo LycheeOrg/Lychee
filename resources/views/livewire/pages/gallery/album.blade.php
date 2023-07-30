@@ -8,9 +8,9 @@
         {{-- <a class="button" id="button_fs_album_exit"><x-icons.iconic icon="fullscreen-exit" /></a> --}}
         {{-- <a class="header__divider"></a> --}}
         @can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class, $this->album])
-            @if ($is_base_album)
+            @if ($flags->is_base_album)
                 <x-header.button wire:click="toggleAlbumDetails"
-                    icon="{{ $albumToggled === true ? 'chevron-top' : 'chevron-bottom' }}" />
+                    icon="{{ $flags->is_toggled === true ? 'chevron-top' : 'chevron-bottom' }}" />
             @endif
         @endcan
         @can(App\Policies\AlbumPolicy::CAN_UPLOAD, [App\Contracts\Models\AbstractAlbum::class, $this->album])
@@ -23,7 +23,7 @@
         x-on:resize.window="width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
                 $wire.loadAlbum(width - 2*28);"
         class="relative flex flex-wrap content-start w-full justify-start h-[calc(100vh-56px)] overflow-x-clip overflow-y-auto">
-        @if (!$isOpen)
+        @if (!$flags->is_toggled)
             @if ($this->header_url !== null)
                 <x-gallery.album.hero :album="$this->album" url="{{ $this->header_url }}" />
             @endif
@@ -31,7 +31,7 @@
         @else
             <livewire:forms.album.menu :album="$this->album" />
         @endif
-        @if ($ready_to_load)
+        @if ($flags->is_ready_to_load)
             @isset($this->album->children)
                 @if ($this->album->children->count() > 0)
                     @if ($this->album->photos?->count() > 0)

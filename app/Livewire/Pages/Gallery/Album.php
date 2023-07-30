@@ -5,6 +5,7 @@ namespace App\Livewire\Pages\Gallery;
 use App\Contracts\Livewire\Openable;
 use App\Contracts\Livewire\Reloadable;
 use App\Contracts\Models\AbstractAlbum;
+use App\DTO\Livewire\AlbumFlags;
 use App\Enum\Livewire\AlbumMode;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\QueryBuilderException;
@@ -34,28 +35,13 @@ use LycheeOrg\PhpFlickrJustifiedLayout\LayoutJustify;
 class Album extends Component implements Openable, Reloadable
 {
 	use InteractWithModal;
-	use UseOpenable;
 
 	private AlbumFactory $albumFactory;
 
+	public AlbumFlags $flags;
+
 	#[Locked]
 	public string $albumId;
-
-	/**
-	 * Because AbstractAlbum is an Interface, it is not possible to make it
-	 * and attribute of a Livewire Component as on the "way back" we do not know
-	 * in what kind of AbstractAlbum we need to cast it back.
-	 *
-	 * One way to solve this would actually be to create either an WireableAlbum container
-	 * Or to use a computed property on the model. We chose the later.
-	 */
-	#[Locked]
-	public bool $locked = false;
-
-	#[Locked]
-	public bool $ready_to_load = false;
-
-	public bool $is_base_album = false;
 
 	public int $width = 0;
 
@@ -72,10 +58,10 @@ class Album extends Component implements Openable, Reloadable
 
 	public function mount(string $albumId): void
 	{
+		$this->flags = new AlbumFlags();
 		$this->albumId = $albumId;
 		$this->album = $this->albumFactory->findAbstractAlbumOrFail($this->albumId);
-		$this->is_base_album = $this->album instanceof BaseAlbum;
-		// $this->locked = Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
+		$this->flags->is_base_album = $this->album instanceof BaseAlbum;
 	}
 
 	/**
@@ -98,7 +84,7 @@ class Album extends Component implements Openable, Reloadable
 	 */
 	public function loadAlbum(int $width): void
 	{
-		$this->ready_to_load = true;
+		$this->flags->is_ready_to_load = true;
 		$this->width = $width;
 	}
 
@@ -182,4 +168,12 @@ class Album extends Component implements Openable, Reloadable
 
 		return $this->redirect(route('livewire-gallery'));
 	}
+
+	public function open(): void { }
+
+	public function close(): void { }
+
+	public function toggle(): void { }
+
+
 }
