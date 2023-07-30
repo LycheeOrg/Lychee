@@ -4,7 +4,7 @@ namespace App\Metadata\Versions;
 
 use App\Contracts\Versions\HasVersion;
 use App\Contracts\Versions\VersionControl;
-use App\DTO\Version;
+use App\Data\Version;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Metadata\Json\UpdateRequest;
 use Illuminate\Contracts\Container\BindingResolutionException;

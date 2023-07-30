@@ -12,7 +12,7 @@
 
 namespace Tests\Feature;
 
-use App\DTO\Version;
+use App\Data\Version;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use Tests\AbstractTestCase;
 

@@ -2,7 +2,7 @@
 
 namespace App\Contracts\Http\Requests;
 
-use App\DTO\PhotoSortingCriterion;
+use App\Data\PhotoSortingCriterion;
 
 interface HasSortingCriterion
 {

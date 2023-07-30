@@ -1,10 +1,11 @@
 <?php
 
-namespace App\DTO;
+namespace App\Data;
 
 use App\Metadata\Versions\GitHubVersion;
+use Spatie\LaravelData\Data;
 
-class LycheeGitInfo extends ArrayableDTO
+class LycheeGitInfo extends Data
 {
 	public string $branch;
 	public string $commit;

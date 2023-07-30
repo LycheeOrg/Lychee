@@ -5,7 +5,7 @@ namespace App\Image\Handlers;
 use App\Contracts\Image\ImageHandlerInterface;
 use App\Contracts\Image\MediaFile;
 use App\Contracts\Image\StreamStats;
-use App\DTO\ImageDimension;
+use App\Data\ImageDimension;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;

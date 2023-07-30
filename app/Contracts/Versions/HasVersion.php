@@ -2,7 +2,7 @@
 
 namespace App\Contracts\Versions;
 
-use App\DTO\Version;
+use App\Data\Version;
 
 /**
  * Must implement version getter.

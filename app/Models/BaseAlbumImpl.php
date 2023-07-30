@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Constants\RandomID;
 use App\Contracts\Models\HasRandomID;
-use App\DTO\PhotoSortingCriterion;
+use App\Data\PhotoSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Models\Builders\BaseAlbumImplBuilder;

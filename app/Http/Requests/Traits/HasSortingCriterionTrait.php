@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Traits;
 
-use App\DTO\PhotoSortingCriterion;
+use App\Data\PhotoSortingCriterion;
 
 trait HasSortingCriterionTrait
 {

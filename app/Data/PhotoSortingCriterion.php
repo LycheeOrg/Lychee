@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DTO;
+namespace App\Data;
 
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\ColumnSortingType;

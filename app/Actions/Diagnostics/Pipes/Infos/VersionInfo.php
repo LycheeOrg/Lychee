@@ -4,7 +4,7 @@ namespace App\Actions\Diagnostics\Pipes\Infos;
 
 use App\Actions\Diagnostics\Diagnostics;
 use App\Contracts\DiagnosticPipe;
-use App\DTO\LycheeGitInfo;
+use App\Data\LycheeGitInfo;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;

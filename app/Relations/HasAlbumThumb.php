@@ -2,7 +2,7 @@
 
 namespace App\Relations;
 
-use App\DTO\PhotoSortingCriterion;
+use App\Data\PhotoSortingCriterion;
 use App\Eloquent\FixedQueryBuilder;
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\OrderSortingType;

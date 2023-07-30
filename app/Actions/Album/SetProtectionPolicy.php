@@ -2,7 +2,7 @@
 
 namespace App\Actions\Album;
 
-use App\DTO\AlbumProtectionPolicy;
+use App\Data\AlbumProtectionPolicy;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;

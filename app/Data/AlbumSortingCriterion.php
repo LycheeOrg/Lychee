@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DTO;
+namespace App\Data;
 
 use App\Enum\ColumnSortingAlbumType;
 use App\Enum\ColumnSortingType;

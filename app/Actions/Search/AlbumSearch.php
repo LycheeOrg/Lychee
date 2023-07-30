@@ -3,7 +3,7 @@
 namespace App\Actions\Search;
 
 use App\Contracts\Exceptions\InternalLycheeException;
-use App\DTO\AlbumSortingCriterion;
+use App\Data\AlbumSortingCriterion;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
 use App\Models\Builders\AlbumBuilder;

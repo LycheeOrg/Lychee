@@ -3,7 +3,7 @@
 namespace App\Relations;
 
 use App\Contracts\Exceptions\InternalLycheeException;
-use App\DTO\AlbumSortingCriterion;
+use App\Data\AlbumSortingCriterion;
 use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;

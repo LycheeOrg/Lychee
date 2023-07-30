@@ -3,7 +3,7 @@
 namespace App\Actions\Albums;
 
 use App\Contracts\Exceptions\InternalLycheeException;
-use App\DTO\AlbumSortingCriterion;
+use App\Data\AlbumSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Exceptions\ConfigurationKeyMissingException;

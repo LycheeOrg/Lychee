@@ -3,7 +3,7 @@
 namespace App\Actions\Search;
 
 use App\Contracts\Exceptions\InternalLycheeException;
-use App\DTO\PhotoSortingCriterion;
+use App\Data\PhotoSortingCriterion;
 use App\Eloquent\FixedQueryBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;

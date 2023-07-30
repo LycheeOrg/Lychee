@@ -1,11 +1,12 @@
 <?php
 
-namespace App\DTO;
+namespace App\Data;
 
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
+use Spatie\LaravelData\Data;
 
-class SortingCriterion extends ArrayableDTO
+class SortingCriterion extends Data
 {
 	/**
 	 * Sorting criterion.

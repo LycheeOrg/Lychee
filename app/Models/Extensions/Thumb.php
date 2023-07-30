@@ -2,8 +2,8 @@
 
 namespace App\Models\Extensions;
 
+use App\Data\SortingCriterion;
 use App\DTO\AbstractDTO;
-use App\DTO\SortingCriterion;
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\OrderSortingType;
 use App\Enum\SizeVariantType;
