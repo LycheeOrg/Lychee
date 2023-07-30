@@ -9,7 +9,7 @@ use App\Metadata\Versions\InstalledVersion;
 class MigrationCheck implements DiagnosticPipe
 {
 	/**
-	 * @param array<int,string>                                    $data list of error messages
+	 * @param array<int,string> $data list of error messages
 	 * @param \Closure(array<int,string> $data): array<int,string> $next
 	 *
 	 * @return array<int,string>
