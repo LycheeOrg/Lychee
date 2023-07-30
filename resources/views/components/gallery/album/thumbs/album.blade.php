@@ -27,7 +27,7 @@
 	</div>
 
 	@auth
-	<div class='badges absolute mt-[-1px] ml-1'>
+	<div class='badges absolute mt-[-1px] ml-1 top-0 left-0'>
 		@if ($is_nsfw)
 			<x-gallery.badge class='badge--nsfw bg-[#ff82ee]' icon='warning' />
 		@endif
@@ -65,9 +65,9 @@
 	@endauth
 	@if ($has_subalbum)
 	<div class='album_counters absolute right-2 top-1.5 flex flex-row gap-1 justify-end text-right font-bold font-sans drop-shadow-md'>
-		<a class="layers relative py-1 px-1">
+		<div class="layers relative py-1 px-1">
 			<x-icons.iconic icon="layers" class=" fill-white w-3 h-3" />
-		</a>
+		</div>
 	</div>
 	@endif
 </a>

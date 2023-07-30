@@ -2,8 +2,11 @@
 
 namespace App\Livewire\Components\Base;
 
+use App\Contracts\Livewire\Openable;
+use App\Livewire\Traits\UseOpenable;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
+use Livewire\Component;
 
 /**
  * Modal component, extends Openable.
@@ -12,10 +15,9 @@ use Livewire\Attributes\On;
  * - login
  * - privacy properties...
  */
-class Modal extends Openable
+class Modal extends Component implements Openable
 {
-	// ! defines the opacity status (unused for now)
-	public string $opacity = '0';
+	use UseOpenable;
 
 	/**
 	 * @var string defines the type of Modal.
@@ -46,18 +48,6 @@ class Modal extends Openable
 	public string $modalSize = 'md:max-w-xl';
 
 	/**
-	 * This defined the events that the Component will intercept.
-	 * In order to facilitate the use of those events, the trait
-	 * app/Livewire/Traits/InteractWithModal.php can be used to
-	 * add access to the modal.
-	 *
-	 * @var string[] listeners for modal events
-	 * */
-	protected $listeners = [
-		'deleteModal',
-	];
-
-	/**
 	 * Open a Modal.
 	 *
 	 * @param string $type       defines the Component loaded inside the modal
@@ -73,7 +63,6 @@ class Modal extends Openable
 		$this->type = $type;
 		$this->close_text = $close_text;
 		$this->params = $params;
-		$this->opacity = '100';
 	}
 
 	/**
@@ -85,7 +74,6 @@ class Modal extends Openable
 	public function closeModal(): void
 	{
 		$this->close();
-		$this->opacity = '0';
 	}
 
 	/**

@@ -3,6 +3,7 @@
 namespace App\Livewire\Pages;
 
 use Illuminate\View\View;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Diagnostics extends Component
@@ -20,5 +21,11 @@ class Diagnostics extends Component
 	public function back(): mixed
 	{
 		return $this->redirect(route('livewire-gallery'));
+	}
+
+	#[On('reloadPage')]
+	public function reloadPage(): void
+	{
+		$this->render();
 	}
 }

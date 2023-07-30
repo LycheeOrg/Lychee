@@ -3,6 +3,7 @@
 namespace App\Livewire\Pages\Gallery;
 
 use App\Actions\Albums\Top;
+use App\Contracts\Livewire\Reloadable;
 use App\Http\Resources\Collections\TopAlbumsResource;
 use App\Livewire\Components\LeftMenu;
 use App\Livewire\Traits\InteractWithModal;
@@ -16,7 +17,7 @@ use Livewire\Component;
  * This is the "start" page of the gallery
  * Integrate the list of all albums at top level.
  */
-class Albums extends Component
+class Albums extends Component implements Reloadable
 {
 	use InteractWithModal;
 
@@ -37,7 +38,8 @@ class Albums extends Component
 	}
 
 	#[On('reloadPage')]
-	public function reloadPage() {
+	public function reloadPage(): void
+	{
 		$top = resolve(Top::class);
 		$this->topAlbums = $top->get();
 	}
@@ -49,17 +51,20 @@ class Albums extends Component
 		$this->title = Configs::getValueAsString('site_title');
 	}
 
-	public function getAlbumsProperty() {
+	public function getAlbumsProperty()
+	{
 		return $this->topAlbums->albums;
 	}
 
-	public function getSmartAlbumsProperty() {
+	public function getSmartAlbumsProperty()
+	{
 		return $this->topAlbums->smart_albums
 			->concat($this->topAlbums->tag_albums)
 			->reject(fn ($album) => $album === null);
 	}
 
-	public function getSharedAlbumsProperty() {
+	public function getSharedAlbumsProperty()
+	{
 		return $this->topAlbums->shared_albums;
 	}
 
@@ -77,5 +82,4 @@ class Albums extends Component
 	{
 		$this->dispatch('open')->to(LeftMenu::class);
 	}
-
 }

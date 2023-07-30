@@ -2,11 +2,11 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Pages\AllSettings;
+use App\Livewire\Pages\Diagnostics;
 use App\Livewire\Pages\Gallery\Album;
 use App\Livewire\Pages\Gallery\Albums;
 use App\Livewire\Pages\Gallery\Photo;
-use App\Livewire\Pages\AllSettings;
-use App\Livewire\Pages\Diagnostics;
 use App\Livewire\Pages\Jobs;
 use App\Livewire\Pages\Landing;
 use App\Livewire\Pages\Profile;
