@@ -1,10 +1,11 @@
 <?php
 
-namespace App\DTO;
+namespace App\Data;
 
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
+use Spatie\LaravelData\Data;
 
-class Version extends ArrayableDTO
+class Version extends Data
 {
 	public function __construct(
 		public int $major,

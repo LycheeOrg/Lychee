@@ -1,10 +1,14 @@
 <?php
 
-namespace App\DTO;
+namespace App\Data;
 
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Contracts\Support\Jsonable;
+use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Support\Str;
+use function Safe\json_encode;
 
-class BacktraceRecord extends AbstractDTO
+class BacktraceRecord implements Arrayable, Jsonable, \JsonSerializable
 {
 	public const UNKNOWN_PLACEHOLDER = '<unknown>';
 	public const NAMESPACE_SEPARATOR = '::';
@@ -154,5 +158,59 @@ class BacktraceRecord extends AbstractDTO
 			'line' => $this->line,
 			'method' => $this->getMethodBeautified(),
 		];
+	}
+
+	/**
+	 * Convert the instance into a JSON string.
+	 *
+	 * The error message is inspired by {@link JsonEncodingException::forModel()}.
+	 *
+	 * @param int $options
+	 *
+	 * @return string
+	 *
+	 * @throws JsonEncodingException
+	 */
+	public function toJson($options = 0): string
+	{
+		try {
+			// Note, we must not use the option `JSON_THROW_ON_ERROR` here,
+			// because this does not clear `json_last_error()` from any
+			// previous, stalled error message.
+			// But `\Illuminate\Http\JsonResponse::setData()` falsy assumes
+			// that this method does so.
+			// Hence, we call `json_encode` _without_ specifying
+			// `JSON_THROW_ON_ERROR` and then mimic that behaviour.
+			$json = json_encode($this->jsonSerialize(), $options);
+			if (json_last_error() !== JSON_ERROR_NONE) {
+				// @codeCoverageIgnoreStart
+				throw new \JsonException(json_last_error_msg(), json_last_error());
+				// @codeCoverageIgnoreEnd
+			}
+
+			return $json;
+		} catch (\JsonException $e) {
+			throw new JsonEncodingException('Error encoding DTO [' . get_class($this) . ']', 0, $e);
+		}
+	}
+
+	/**
+	 * Serializes this object into an array.
+	 *
+	 * @see Arrayable::toArray()
+	 *
+	 * @return array The serialized properties of this object
+	 *
+	 * @throws \JsonException
+	 */
+	public function jsonSerialize(): array
+	{
+		try {
+			return $this->toArray();
+		} catch (\Exception $e) {
+			// @codeCoverageIgnoreStart
+			throw new \JsonException(get_class($this) . '::toArray() failed', 0, $e);
+			// @codeCoverageIgnoreEnd
+		}
 	}
 }

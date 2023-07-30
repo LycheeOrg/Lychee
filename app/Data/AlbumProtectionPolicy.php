@@ -1,10 +1,11 @@
 <?php
 
-namespace App\DTO;
+namespace App\Data;
 
 use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\BaseAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
+use Spatie\LaravelData\Data;
 
 /**
  * This represents the Album Protection Policy.
@@ -20,7 +21,7 @@ use App\SmartAlbums\BaseSmartAlbum;
  *   - allows for an easy interface between the validated request {@link \App\Http\Requests\Album\SetAlbumProtectionPolicyRequest}
  *     and the applied action {@link \App\Actions\Album\SetProtectionPolicy}.
  */
-class AlbumProtectionPolicy extends ArrayableDTO
+class AlbumProtectionPolicy extends Data
 {
 	public function __construct(
 		public bool $is_public,

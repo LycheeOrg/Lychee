@@ -1,8 +1,10 @@
 <?php
 
-namespace App\DTO;
+namespace App\Data;
 
-class ImageDimension extends ArrayableDTO
+use Spatie\LaravelData\Data;
+
+class ImageDimension extends Data
 {
 	public function __construct(
 		public int $width,

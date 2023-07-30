@@ -8,7 +8,7 @@ use App\Contracts\Image\ImageHandlerInterface;
 use App\Contracts\Image\StreamStats;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Contracts\Models\SizeVariantFactory;
-use App\DTO\ImageDimension;
+use App\Data\ImageDimension;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Handler;

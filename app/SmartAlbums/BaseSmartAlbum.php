@@ -4,7 +4,7 @@ namespace App\SmartAlbums;
 
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Contracts\Models\AbstractAlbum;
-use App\DTO\PhotoSortingCriterion;
+use App\Data\PhotoSortingCriterion;
 use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;

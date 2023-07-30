@@ -2,7 +2,7 @@
 
 namespace App\Relations;
 
-use App\DTO\SortingCriterion;
+use App\Data\SortingCriterion;
 use App\Eloquent\FixedQueryBuilder;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Extensions\BaseAlbum;

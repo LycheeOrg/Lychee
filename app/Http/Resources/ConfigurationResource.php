@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources;
 
-use App\DTO\AlbumSortingCriterion;
-use App\DTO\PhotoSortingCriterion;
+use App\Data\AlbumSortingCriterion;
+use App\Data\PhotoSortingCriterion;
 use App\Enum\DefaultAlbumProtectionType;
 use App\Exceptions\Handler;
 use App\Metadata\Versions\InstalledVersion;

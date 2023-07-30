@@ -4,7 +4,7 @@ namespace App\Metadata\Versions;
 
 use App\Contracts\Versions\HasIsRelease;
 use App\Contracts\Versions\HasVersion;
-use App\DTO\Version;
+use App\Data\Version;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Models\Configs;
 use Illuminate\Support\Facades\File;

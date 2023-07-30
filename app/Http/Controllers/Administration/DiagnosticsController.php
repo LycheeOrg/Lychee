@@ -9,7 +9,7 @@ use App\Actions\Diagnostics\Space;
 use App\Actions\InstallUpdate\CheckUpdate;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Exceptions\LycheeException;
-use App\DTO\DiagnosticInfo;
+use App\Data\DiagnosticInfo;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthorizedException;

@@ -2,7 +2,7 @@
 
 namespace App\Contracts\Image;
 
-use App\DTO\ImageDimension;
+use App\Data\ImageDimension;
 use App\Exceptions\ImageProcessingException;
 use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\MediaFileOperationException;

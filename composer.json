@@ -60,6 +60,7 @@
         "php-http/guzzle7-adapter": "^1.0",
         "php-http/message": "^1.12",
         "spatie/guzzle-rate-limiter-middleware": "^2.0",
+        "spatie/laravel-data": "^3.7",
         "spatie/laravel-feed": "^4.0",
         "spatie/laravel-image-optimizer": "^1.6.2",
         "symfony/cache": "^v6.0.0",

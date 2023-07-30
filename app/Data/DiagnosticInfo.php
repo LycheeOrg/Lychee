@@ -1,10 +1,11 @@
 <?php
 
-namespace App\DTO;
+namespace App\Data;
 
 use App\Enum\UpdateStatus;
+use Spatie\LaravelData\Data;
 
-class DiagnosticInfo extends ArrayableDTO
+class DiagnosticInfo extends Data
 {
 	/**
 	 * @param string[]     $errors  list of error messages
