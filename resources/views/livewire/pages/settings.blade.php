@@ -1,7 +1,8 @@
 <div class="w-full">
-	<!-- toolbar -->
-	<livewire:components.header
-		:title="__('lychee.SETTINGS')" />
+    <x-header.bar>
+        <x-header.button wire:click="back" icon="chevron-left" />
+        <x-header.title>{{ __('lychee.SETTINGS') }}</x-header.title>
+    </x-header.bar>
 	<div class="overflow-x-clip overflow-y-auto h-[calc(100vh-56px)]">
 		<div class="settings_view w-10/12 max-w-xl text-neutral-400 text-sm mx-auto">
 			<livewire:forms.settings.base.string-setting key="set-dropbox-key" description="DROPBOX_TEXT"

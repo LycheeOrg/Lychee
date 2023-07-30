@@ -2,11 +2,13 @@
 
 namespace App\Livewire\Components;
 
-use App\Livewire\Components\Base\Openable;
+use App\Contracts\Livewire\Openable;
 use App\Livewire\Traits\InteractWithModal;
+use App\Livewire\Traits\UseOpenable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
+use Livewire\Component;
 
 /**
  * This is the Left menu component.
@@ -21,22 +23,23 @@ use Illuminate\View\View;
  * - About
  * - logout.
  */
-class LeftMenu extends Openable
+class LeftMenu extends Component implements Openable
 {
 	use InteractWithModal;
+	use UseOpenable;
 
 	/**
 	 * Method called from user-land.
 	 * Log out the user.
 	 */
-	public function logout(): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+	public function logout()
 	{
 		Auth::logout();
 		Session::flush();
 
 		$this->close();
-
-		return redirect(route('livewire-gallery'));
+		$this->redirect(route('livewire-gallery'), navigate: false);
+		// $this->dispatch('reloadPage');
 	}
 
 	/**

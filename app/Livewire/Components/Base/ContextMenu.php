@@ -2,17 +2,23 @@
 
 namespace App\Livewire\Components\Base;
 
+use App\Contracts\Livewire\Openable;
+use App\Livewire\Traits\UseOpenable;
 use Illuminate\View\View;
+use Livewire\Attributes\On;
+use Livewire\Component;
 
 /**
- * Modal component, extends Openable.
+ * Modal component, extends Component.
  *
  * This aims to encapsulate any floating box that appears in Lychee Interface:
  * - login
  * - privacy properties...
  */
-class ContextMenu extends Openable
+class ContextMenu extends Component implements Openable
 {
+	use UseOpenable;
+
 	/**
 	 * @var string defines the type of menu loaded in the pop-up.
 	 *             It needs to be in App\Http\Livewire\ContextMenus.
@@ -26,20 +32,6 @@ class ContextMenu extends Openable
 	public array $params = [];
 
 	/**
-	 * This defined the events that the Component will intercept.
-	 * In order to facilitate the use of those events, the trait
-	 * app/Livewire/Traits/InteractWithModal.php can be used to
-	 * add access to the modal.
-	 *
-	 * @var string[] listeners for modal events
-	 * */
-	protected $listeners = [
-		'openContextMenu',
-		'closeContextMenu',
-		'deleteContextMenu',
-	];
-
-	/**
 	 * Open the Context Menu.
 	 *
 	 * @param string $type   defines the Component loaded inside the modal
@@ -47,6 +39,7 @@ class ContextMenu extends Openable
 	 *
 	 * @return void
 	 */
+	#[On('openContextMenu')]
 	public function openContextMenu(string $type, array $params = []): void
 	{
 		$this->type = $type;
@@ -59,6 +52,7 @@ class ContextMenu extends Openable
 	 *
 	 * @return void
 	 */
+	#[On('closeContextMenu')]
 	public function closeContextMenu(): void
 	{
 		$this->close();

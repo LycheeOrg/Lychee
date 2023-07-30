@@ -9,6 +9,7 @@ use App\Models\Photo as PhotoModel;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 /**
@@ -36,7 +37,7 @@ class Photo extends Component
 	{
 		$this->albumFactory = resolve(AlbumFactory::class);
 	}
-	
+
 	public function mount(string $albumId, string $photoId): void
 	{
 		$this->albumId = $albumId;
@@ -62,10 +63,13 @@ class Photo extends Component
 		return view('livewire.pages.gallery.photo');
 	}
 
-
 	public function back(): mixed
 	{
 		return $this->redirect(route('livewire-gallery-album', ['albumId' => $this->albumId]));
 	}
 
+	#[On('reloadPage')]
+	public function reloadPage()
+	{
+	}
 }

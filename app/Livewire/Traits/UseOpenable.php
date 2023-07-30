@@ -1,19 +1,14 @@
 <?php
 
-namespace App\Livewire\Components\Base;
+namespace App\Livewire\Traits;
 
 use Barryvdh\Debugbar\Facades\Debugbar;
 use Livewire\Attributes\On;
-use Livewire\Component;
 
 /**
- * We define here Openable components.
- * This is a super class for:
- * - left menu
- * - the side menu
- * - the modals.
+ * Implementation of the Openable contract.
  */
-class Openable extends Component
+trait UseOpenable
 {
 	/** @var bool status flag which defines whether the component is open or not. */
 	public bool $isOpen = false;

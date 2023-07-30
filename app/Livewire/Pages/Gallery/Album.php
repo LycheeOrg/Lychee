@@ -2,13 +2,15 @@
 
 namespace App\Livewire\Pages\Gallery;
 
+use App\Contracts\Livewire\Openable;
+use App\Contracts\Livewire\Reloadable;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\AlbumMode;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Factories\AlbumFactory;
-use App\Livewire\Components\Base\Openable;
 use App\Livewire\Traits\InteractWithModal;
+use App\Livewire\Traits\UseOpenable;
 use App\Models\Album as ModelsAlbum;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
@@ -17,6 +19,8 @@ use Illuminate\Database\Eloquent\RelationNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\On;
+use Livewire\Component;
 use LycheeOrg\PhpFlickrJustifiedLayout\DTO\Geometry;
 use LycheeOrg\PhpFlickrJustifiedLayout\LayoutConfig;
 use LycheeOrg\PhpFlickrJustifiedLayout\LayoutJustify;
@@ -27,9 +31,10 @@ use LycheeOrg\PhpFlickrJustifiedLayout\LayoutJustify;
  * We just load the layout from config and render.
  * The variable $album is automatically mounted from the Livewire call
  */
-class Album extends Openable
+class Album extends Component implements Openable, Reloadable
 {
 	use InteractWithModal;
+	use UseOpenable;
 
 	private AlbumFactory $albumFactory;
 
@@ -102,7 +107,8 @@ class Album extends Openable
 	 *
 	 * @return void
 	 */
-	public function reload(): void
+	#[On('reloadPage')]
+	public function reloadPage(): void
 	{
 		if ($this->album instanceof ModelsAlbum) {
 			$this->album = $this->albumFactory->findBaseAlbumOrFail($this->album->id);
@@ -168,7 +174,8 @@ class Album extends Openable
 		$this->openClosableModal('forms.album.share', __('lychee.CLOSE'));
 	}
 
-	public function back() {
+	public function back()
+	{
 		if ($this->album instanceof ModelsAlbum && $this->album->parent_id !== null) {
 			return $this->redirect(route('livewire-gallery-album', ['albumId' => $this->album->parent_id]));
 		}

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Pages;
 
+use App\Contracts\Livewire\Reloadable;
 use App\Enum\Livewire\PageMode;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Configs;
@@ -9,9 +10,10 @@ use App\Policies\SettingsPolicy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
-class AllSettings extends Component
+class AllSettings extends Component implements Reloadable
 {
 	/*
 	* Add interaction with modal
@@ -91,5 +93,11 @@ class AllSettings extends Component
 	public function back(): mixed
 	{
 		return $this->redirect(route('settings'));
+	}
+
+	#[On('reloadPage')]
+	public function reloadPage(): void
+	{
+		$this->back();
 	}
 }

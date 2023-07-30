@@ -1,7 +1,8 @@
 <div class="w-full">
-	<!-- toolbar -->
-	<livewire:components.header
-		:title="__('lychee.SETTINGS')" />
+    <x-header.bar>
+        <x-header.button wire:click="back" icon="chevron-left" />
+        <x-header.title>{{ __('lychee.SETTINGS') }}</x-header.title>
+    </x-header.bar>
 	<div class="overflow-x-clip overflow-y-auto h-[calc(100vh-56px)]">
 		<div class="settings_view w-10/12 max-w-2xl text-neutral-400 text-sm mx-auto">
 			<div class="pt-12">
