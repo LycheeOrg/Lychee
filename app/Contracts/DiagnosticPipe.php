@@ -11,7 +11,7 @@ namespace App\Contracts;
 interface DiagnosticPipe
 {
 	/**
-	 * @param array<int,string> &$data
+	 * @param array<int,string>                                    &$data
 	 * @param \Closure(array<int,string> $data): array<int,string> $next
 	 *
 	 * @return array<int,string>

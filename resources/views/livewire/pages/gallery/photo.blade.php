@@ -1,0 +1,111 @@
+<div class="w-full">
+	<!-- toolbar -->
+    <x-header.bar>
+        <x-header.button wire:click="back" icon="chevron-left" />
+        <x-header.title>{{ $photo->title }}</x-header.title>
+        {{-- <a class="button button--star" id="button_star"><x-icons.iconic icon="star" /></a>
+        <a class="button button--eye" id="button_visibility"><x-icons.iconic icon="eye" /></a>
+        <a class="button button--rotate" id="button_rotate_ccwise"><x-icons.iconic icon="counterclockwise" /></a>
+        <a class="button button--rotate" id="button_rotate_cwise"><x-icons.iconic icon="clockwise" /></a>
+        <a class="button button--share" id="button_share"><x-icons.iconic class='ionicons' icon="share-ion" /></a>
+        <a wire:click='toggleSideBar' class="button button--info" id="button_info"><x-icons.iconic icon="info" /></a>
+        <a class="button button--map" id="button_map"><x-icons.iconic icon="map" /></a>
+        <a class="button" id="button_move"><x-icons.iconic icon="folder" /></a>
+        <a class="button" id="button_trash"><x-icons.iconic icon="trash" /></a>
+        <a class="button" id="button_fs_enter"><x-icons.iconic icon="fullscreen-enter" /></a>
+        <a class="button" id="button_fs_exit"><x-icons.iconic icon="fullscreen-exit" /></a>
+        <a class="header__divider"></a> --}}
+        <x-header.button wire:click="openContextMenu" icon="ellipses" />
+    </x-header.bar>
+<div id="imageview" 
+	class="absolute top-0 left-0 w-full h-[calc(100%-3.5rem)] mt-14 bg-black"
+{{-- @class(
+	["overlay-container",
+	"fadeIn",
+	"active",
+	// "full" // Disabled for now
+	]) style="display: block;"> --}}
+>
+@if ($photo->isVideo()) {{-- This is a video file: put html5 player --}}
+<video
+		width="auto"
+		height="auto"
+		id='image'
+		controls
+		class='
+		absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]
+		{{ $visibleControls === true ? "" : "full" }}'
+		autobuffer
+		{{ $autoplay ? "autoplay" : ""}}
+		data-tabindex='{{ Helpers::data_index() }}'
+		><source src='{{ URL::asset($data->original->url) }}'>Your browser does not support the video tag.</video>
+@elseif($photo->isRaw()) {{-- This is a raw file: put a place holder --}}
+	<img
+		id='image'
+		alt='big'
+		class='
+		absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]
+		{{ $visibleControls === true ? "" : "full" }}'
+		src='{{ URL::asset('img/placeholder.png') }}'
+		draggable='false'
+		data-tabindex='{{ Helpers::data_index() }}'
+		/>
+@elseif ($photo->live_photo_short_path === null) {{-- This is a normal image: medium or original --}}
+	@if ($photo->size_variants->getMedium() !== null)
+		<img
+			id='image'
+			alt='medium'
+			class='
+			absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]
+			{{ $visibleControls === true ? "" : "full" }}
+			'
+			src='{{ URL::asset($photo->size_variants->getMedium()->url) }}'
+			@if ($photo->size_variants->getMedium2x() !== null)
+				srcset='{{ URL::asset($photo->size_variants->getMedium()->url) }} {{ $photo->size_variants->getMedium()->width }}w,
+				{{ URL::asset($photo->size_variants->getMedium2x()->url) }} {{ $photo->size_variants->getMedium2x()->width }}w'
+			@endif
+			data-tabindex='{{ Helpers::data_index() }}'
+			/>
+	@else
+		<img
+			id='image'
+			alt='big'
+			class='
+			absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]
+			{{ $visibleControls === true ? "" : "full" }}
+			'
+			src='{{ URL::asset($photo->size_variants->getOriginal()->url) }}'
+			draggable='false'
+			data-tabindex='{{ Helpers::data_index() }}'
+			/>
+	@endif
+@elseif ($photo->size_variants->medium !== null) {{-- This is a livephoto : medium --}}
+	<div
+		id='livephoto'
+		data-live-photo
+		data-proactively-loads-video='true'
+		data-photo-src='{{ URL::asset($photo->size_variants->getMedium()->url) }}'
+		data-video-src='{{ URL::asset($photo->livePhotoUrl) }}'
+		class='absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'
+		style='width: {{ $photo->size_variants->getMedium()->width }}px; height: {{ $photo->size_variants->getMedium()->height }}px'
+		data-tabindex='{{ Helpers::data_index() }}'
+		>
+	</div>
+@else  {{-- This is a livephoto : full --}}
+	<div
+		id='livephoto'
+		data-live-photo
+		data-proactively-loads-video='true'
+		data-photo-src='{{ URL::asset($photo->size_variants->getOriginal()->url) }}'
+		data-video-src='{{ URL::asset($photo->livePhotoUrl) }}'
+		class='absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'
+		style='width: {{ $photo->size_variants->getOriginal()->width }}px; height: {{ $photo->size_variants->getOriginal()->height }}px'
+		data-tabindex='{{ Helpers::data_index() }}'
+		>
+	</div>
+@endif
+<livewire:components.photo-overlay :photo="$photo" />
+{{-- <div class='arrow_wrapper arrow_wrapper--previous'><a id='previous'>${build.iconic("caret-left")}</a></div> --}}
+{{-- <div class='arrow_wrapper arrow_wrapper--next'><a id='next'>${build.iconic("caret-right")}</a></div> --}}
+</div>
+</div>
