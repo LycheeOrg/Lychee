@@ -4,7 +4,7 @@ namespace App\Models\Extensions;
 
 use App\Actions\SizeVariant\Delete;
 use App\Data\ImageDimension;
-use App\DTO\AbstractDTO;
+// use App\DTO\AbstractDTO;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
@@ -15,11 +15,12 @@ use App\Exceptions\ModelDBException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Database\Eloquent\Collection;
+use Spatie\LaravelData\Data;
 
 /**
  * Class SizeVariants.
  */
-class SizeVariants extends AbstractDTO
+class SizeVariants extends Data
 {
 	/** @var Photo the parent object this object is tied to */
 	private Photo $photo;

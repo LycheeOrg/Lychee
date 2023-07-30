@@ -1,6 +1,8 @@
 <?php
 
-namespace App\DTO;
+namespace App\Data\Reports;
+
+use Spatie\LaravelData\Data;
 
 /**
  * Class ImportReport.
@@ -16,7 +18,7 @@ namespace App\DTO;
  * mechanism, but must be reported "inline" within the streamed response
  * as an event report.
  */
-abstract class BaseImportReport extends AbstractDTO
+abstract class BaseImportReport extends Data
 {
 	/**
 	 * Indicates the type (i.e. the subclass) of this class.
@@ -25,21 +27,9 @@ abstract class BaseImportReport extends AbstractDTO
 	 *
 	 * @var string
 	 */
-	protected string $type;
-
-	protected function __construct(string $type)
+	protected function __construct(
+		public string $type)
 	{
-		$this->type = $type;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function toArray(): array
-	{
-		return [
-			'type' => $this->type,
-		];
 	}
 
 	abstract public function toCLIString(): string;

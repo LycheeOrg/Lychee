@@ -3,7 +3,7 @@
 namespace App\Models\Extensions;
 
 use App\Data\SortingCriterion;
-use App\DTO\AbstractDTO;
+// use App\DTO\AbstractDTO;
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\OrderSortingType;
 use App\Enum\SizeVariantType;
@@ -12,8 +12,9 @@ use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Spatie\LaravelData\Data;
 
-class Thumb extends AbstractDTO
+class Thumb extends Data
 {
 	protected string $id;
 	protected string $type;
