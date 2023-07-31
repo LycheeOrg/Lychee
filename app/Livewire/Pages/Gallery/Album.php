@@ -11,7 +11,6 @@ use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Factories\AlbumFactory;
 use App\Livewire\Traits\InteractWithModal;
-use App\Livewire\Traits\UseOpenable;
 use App\Models\Album as ModelsAlbum;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
@@ -169,11 +168,15 @@ class Album extends Component implements Openable, Reloadable
 		return $this->redirect(route('livewire-gallery'));
 	}
 
-	public function open(): void { }
+	public function open(): void
+	{
+	}
 
-	public function close(): void { }
+	public function close(): void
+	{
+	}
 
-	public function toggle(): void { }
-
-
+	public function toggle(): void
+	{
+	}
 }
