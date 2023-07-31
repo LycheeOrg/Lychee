@@ -4,7 +4,6 @@ namespace App\Models\Extensions;
 
 use App\Actions\SizeVariant\Delete;
 use App\Data\ImageDimension;
-// use App\DTO\AbstractDTO;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
@@ -16,6 +15,7 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Database\Eloquent\Collection;
 use Spatie\LaravelData\Data;
+use Spatie\LaravelData\Support\Wrapping\WrapExecutionType;
 
 /**
  * Class SizeVariants.
@@ -92,7 +92,7 @@ class SizeVariants extends Data
 	 *
 	 * @return array<string, array|null> The serialized properties of this object
 	 */
-	public function toArray(): array
+	public function transform(bool $transformValues = true, WrapExecutionType $wrapExecutionType = WrapExecutionType::Disabled, bool $mapPropertyNames = true): array
 	{
 		return [
 			SizeVariantType::ORIGINAL->name() => $this->original?->toArray(),
@@ -175,7 +175,7 @@ class SizeVariants extends Data
 			$result->width = $dim->width;
 			$result->height = $dim->height;
 			$result->filesize = $filesize;
-			$result->ratio = $dim->getRatio();
+			$result->ratio = $dim->ratio;
 			$result->save();
 			$this->add($result);
 

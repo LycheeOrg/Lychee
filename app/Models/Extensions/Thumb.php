@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Spatie\LaravelData\Data;
+use Spatie\LaravelData\Support\Wrapping\WrapExecutionType;
 
 class Thumb extends Data
 {
@@ -101,7 +102,7 @@ class Thumb extends Data
 	 *
 	 * @return array<string, string|null> The serialized properties of this object
 	 */
-	public function toArray(): array
+	public function transform(bool $transformValues = true, WrapExecutionType $wrapExecutionType = WrapExecutionType::Disabled, bool $mapPropertyNames = true): array
 	{
 		return [
 			'id' => $this->id,
