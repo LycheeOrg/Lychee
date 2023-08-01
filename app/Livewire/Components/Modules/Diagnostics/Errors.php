@@ -9,7 +9,7 @@ class Errors extends AbstractPreSection
 	public string $title = 'Diagnostics';
 	public string $error_msg = 'No critical problems found. Lychee should work without problems!';
 
-	public function placeholder()
+	public function placeholder(): string
 	{
 		return '<p class="font-mono">
 	Diagnostics

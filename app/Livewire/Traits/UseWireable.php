@@ -3,6 +3,7 @@
 namespace App\Livewire\Traits;
 
 use App\Exceptions\Internal\LycheeLogicException;
+use ReflectionException;
 
 /**
  * Quick helpers for the serialization and deserialization of livewire components.
@@ -26,8 +27,20 @@ trait UseWireable
 		return $result;
 	}
 
-	public static function fromLivewire($data)
+	/**
+	 * 
+	 * @param mixed $data 
+	 * @return self
+	 * @throws LycheeLogicException 
+	 * @throws ReflectionException 
+	 */
+	public static function fromLivewire(mixed $data)
 	{
+		if (!is_array($data))
+		{
+			throw new LycheeLogicException("data is not an array");
+		}
+
 		$cls = new \ReflectionClass(self::class);
 
 		return $cls->newInstanceArgs($data);

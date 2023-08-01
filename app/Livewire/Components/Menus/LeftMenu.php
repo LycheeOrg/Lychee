@@ -32,14 +32,13 @@ class LeftMenu extends Component implements Openable
 	 * Method called from user-land.
 	 * Log out the user.
 	 */
-	public function logout()
+	public function logout(): void
 	{
 		Auth::logout();
 		Session::flush();
 
 		$this->close();
 		$this->redirect(route('livewire-gallery'), navigate: false);
-		// $this->dispatch('reloadPage');
 	}
 
 	/**

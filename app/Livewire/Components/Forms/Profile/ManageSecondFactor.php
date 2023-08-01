@@ -3,6 +3,7 @@
 namespace App\Livewire\Components\Forms\Profile;
 
 use App\Livewire\Components\Modules\Profile\SecondFactor;
+use App\Livewire\Traits\Notify;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
@@ -10,6 +11,9 @@ use Livewire\Component;
 
 class ManageSecondFactor extends Component
 {
+
+	use Notify;
+	
 	/**
 	 * Credential used.
 	 *

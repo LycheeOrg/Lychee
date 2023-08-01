@@ -69,7 +69,7 @@ class Photo extends Component
 	}
 
 	#[On('reloadPage')]
-	public function reloadPage()
+	public function reloadPage(): void
 	{
 	}
 }

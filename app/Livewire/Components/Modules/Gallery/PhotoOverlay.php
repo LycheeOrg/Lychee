@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Components;
+namespace App\Livewire\Components\Modules\Gallery;
 
 use App\Enum\Livewire\PhotoOverlayMode;
 use App\Models\Configs;

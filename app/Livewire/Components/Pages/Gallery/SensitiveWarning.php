@@ -2,8 +2,9 @@
 
 namespace App\Livewire\Components\Pages\Gallery;
 
+use App\Contracts\Livewire\Openable;
 use App\Contracts\Models\AbstractAlbum;
-use App\Livewire\Components\Base\Openable;
+use App\Livewire\Traits\UseOpenable;
 use App\Models\Album;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
@@ -12,8 +13,10 @@ use Illuminate\View\View;
 /**
  * This is the overlay displaying the NSFW warning.
  */
-class SensitiveWarning extends Openable
+class SensitiveWarning implements Openable
 {
+	use UseOpenable;
+	
 	// Text to be displayed. THIS IS HTML UNSANITIZED
 	public string $text;
 

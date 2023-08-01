@@ -5,10 +5,11 @@ namespace App\Livewire\Components\Pages\Gallery;
 use App\Actions\Albums\Top;
 use App\Contracts\Livewire\Reloadable;
 use App\Http\Resources\Collections\TopAlbumsResource;
-use App\Livewire\Components\LeftMenu;
+use App\Livewire\Components\Menus\LeftMenu;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -51,19 +52,19 @@ class Albums extends Component implements Reloadable
 		$this->title = Configs::getValueAsString('site_title');
 	}
 
-	public function getAlbumsProperty()
+	public function getAlbumsProperty(): Collection
 	{
 		return $this->topAlbums->albums;
 	}
 
-	public function getSmartAlbumsProperty()
+	public function getSmartAlbumsProperty(): Collection
 	{
 		return $this->topAlbums->smart_albums
 			->concat($this->topAlbums->tag_albums)
 			->reject(fn ($album) => $album === null);
 	}
 
-	public function getSharedAlbumsProperty()
+	public function getSharedAlbumsProperty(): Collection
 	{
 		return $this->topAlbums->shared_albums;
 	}

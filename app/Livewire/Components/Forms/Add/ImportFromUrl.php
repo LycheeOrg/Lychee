@@ -8,7 +8,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\RuleSets\Import\ImportFromUrlRuleSet;
 use App\Livewire\Components\Forms\BaseForm;
-use App\Livewire\Components\Modules\Gallery\Album as ModuleGalleryAlbum;
+use App\Livewire\Components\Pages\Gallery\Album as PageGalleryAlbum;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;
@@ -104,8 +104,8 @@ class ImportFromUrl extends BaseForm
 		$fromUrl->do($urls, $parentAlbum, $currentUserId);
 
 		// Do we want refresh or direcly open newly created Album ?
-		$this->dispatch('reload')->to(ModuleGalleryAlbum::class);
-		$this->dispatch('reload')->to(ModuleGalleryAlbum::class);
+		$this->dispatch('reload')->to(PageGalleryAlbum::class);
+		// $this->dispatch('reload')->to(PageGalleryAlbum::class);
 
 		$this->close();
 	}
