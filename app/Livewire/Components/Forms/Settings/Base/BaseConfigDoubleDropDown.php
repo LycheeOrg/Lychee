@@ -17,7 +17,7 @@ use Livewire\Component;
 abstract class BaseConfigDoubleDropDown extends Component
 {
 	use Notify;
-	
+
 	public string $begin;
 	public string $middle;
 	public string $end;

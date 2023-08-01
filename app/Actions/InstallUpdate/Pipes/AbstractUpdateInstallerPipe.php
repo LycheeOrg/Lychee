@@ -5,7 +5,7 @@ namespace App\Actions\InstallUpdate\Pipes;
 abstract class AbstractUpdateInstallerPipe
 {
 	/**
-	 * @param array<int,string>                                      &$output
+	 * @param array<int,string> &$output
 	 * @param \Closure(array<int,string> $output): array<int,string> $next
 	 *
 	 * @return array<int,string>

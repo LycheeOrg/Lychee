@@ -9,24 +9,27 @@ use App\Exceptions\Internal\LycheeLogicException;
  */
 trait UseWireable
 {
-    public function toLivewire(): array {
+	public function toLivewire(): array
+	{
 		$result = [];
 		$cls = new \ReflectionClass($this);
 		$props = $cls->getProperties(\ReflectionProperty::IS_PUBLIC);
 
-        foreach ($props as $prop) {
+		foreach ($props as $prop) {
 			$propertyValue = $prop->getValue($this);
 			if (is_object($propertyValue)) {
-                throw new LycheeLogicException(sprintf('Convertion of %s is not supported', get_class($propertyValue)));
+				throw new LycheeLogicException(sprintf('Convertion of %s is not supported', get_class($propertyValue)));
 			}
 			$result[$prop->getName()] = $propertyValue;
 		}
 
-        return $result;
-    }
+		return $result;
+	}
 
-	public static function fromLivewire($data) {
+	public static function fromLivewire($data)
+	{
 		$cls = new \ReflectionClass(self::class);
+
 		return $cls->newInstanceArgs($data);
 	}
 }
