@@ -9,8 +9,14 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use function Safe\ini_get;
 
+/**
+ * What system are we running on?
+ */
 class SystemInfo implements DiagnosticPipe
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function handle(array &$data, \Closure $next): array
 	{
 		// About SQL version

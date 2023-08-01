@@ -9,6 +9,9 @@ use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
 
+/**
+ * Which version of Lychee are we using?
+ */
 class VersionInfo implements DiagnosticPipe
 {
 	private InstalledVersion $installedVersion;
@@ -19,6 +22,9 @@ class VersionInfo implements DiagnosticPipe
 		$this->installedVersion = $installedVersion;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function handle(array &$data, \Closure $next): array
 	{
 		if ($this->installedVersion->isRelease()) {

@@ -6,8 +6,14 @@ use App\Contracts\DiagnosticPipe;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\InstalledVersion;
 
+/**
+ * Just checking that the Database or the files are in the correct version.
+ */
 class MigrationCheck implements DiagnosticPipe
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function handle(array &$data, \Closure $next): array
 	{
 		if (!self::isUpToDate()) {

@@ -5,8 +5,15 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Contracts\DiagnosticPipe;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * We list the foreign keys.
+ * This is useful to debug when Lychee is getting pretty slow.
+ */
 class ForeignKeyListInfo implements DiagnosticPipe
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function handle(array &$data, \Closure $next): array
 	{
 		if (config('database.list_foreign_keys') === false) {
