@@ -8,6 +8,8 @@ use App\Assets\Helpers;
 use App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Contracts\Models\SizeVariantFactory;
+use App\Livewire\Synth\AlbumSynth;
+use App\Livewire\Synth\PhotoSynth;
 use App\Factories\AlbumFactory;
 use App\Image\SizeVariantDefaultFactory;
 use App\Image\StreamStatFilter;
@@ -32,6 +34,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Livewire\Livewire;
 use Opcodes\LogViewer\Facades\LogViewer;
 use Safe\Exceptions\StreamException;
 use function Safe\stream_filter_register;
@@ -76,6 +79,12 @@ class AppServiceProvider extends ServiceProvider
 		// JsonParsers
 		GitCommits::class => GitCommits::class,
 		GitTags::class => GitTags::class,
+	];
+
+	private array $livewireSynth =
+	[
+		AlbumSynth::class,
+		PhotoSynth::class,
 	];
 
 	/**
@@ -140,6 +149,10 @@ class AppServiceProvider extends ServiceProvider
 			// return true to allow viewing the Log Viewer.
 			return Auth::authenticate() !== null && Gate::check(SettingsPolicy::CAN_SEE_LOGS, Configs::class);
 		});
+
+		foreach ($this->livewireSynth as $synth) {
+			Livewire::propertySynthesizer($synth);
+		}
 	}
 
 	/**
