@@ -4,6 +4,9 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 
+/**
+ * We want to make sure that our users are using the correct version of PHP.
+ */
 class PHPVersionCheck implements DiagnosticPipe
 {
 	// We only support the actively supported version of php.
@@ -12,6 +15,9 @@ class PHPVersionCheck implements DiagnosticPipe
 	public const PHP_WARNING = 8.1;
 	public const PHP_LATEST = 8.2;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function handle(array &$data, \Closure $next): array
 	{
 		$this->checkPhpVersion($data);

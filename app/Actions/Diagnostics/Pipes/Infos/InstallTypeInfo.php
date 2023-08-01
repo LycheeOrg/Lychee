@@ -7,6 +7,10 @@ use App\Contracts\DiagnosticPipe;
 use App\Metadata\Versions\InstalledVersion;
 use Illuminate\Support\Facades\Config;
 
+/**
+ * What kind of Lychee install we are looking at?
+ * Composer? Dev? Release?
+ */
 class InstallTypeInfo implements DiagnosticPipe
 {
 	private InstalledVersion $installedVersion;
@@ -16,6 +20,9 @@ class InstallTypeInfo implements DiagnosticPipe
 		$this->installedVersion = $installedVersion;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function handle(array &$data, \Closure $next): array
 	{
 		$data[] = Diagnostics::line('composer install:', $this->installedVersion->isDev() ? 'dev' : '--no-dev');

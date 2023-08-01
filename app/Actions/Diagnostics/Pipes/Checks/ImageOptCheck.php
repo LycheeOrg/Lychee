@@ -13,8 +13,14 @@ use Spatie\ImageOptimizer\Optimizers\Optipng;
 use Spatie\ImageOptimizer\Optimizers\Pngquant;
 use Spatie\ImageOptimizer\Optimizers\Svgo;
 
+/**
+ * Verify that we have some image optimization available if enabled.
+ */
 class ImageOptCheck implements DiagnosticPipe
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function handle(array &$data, \Closure $next): array
 	{
 		$tools = [];

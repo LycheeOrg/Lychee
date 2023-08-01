@@ -8,8 +8,15 @@ use App\Models\Configs;
 use function Safe\ini_get;
 use function Safe\preg_match;
 
+/**
+ * Double check that the init settings are not too low.
+ * This informs us if something may not be uploaded because too big.
+ */
 class IniSettingsCheck implements DiagnosticPipe
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function handle(array &$data, \Closure $next): array
 	{
 		// Check php.ini Settings

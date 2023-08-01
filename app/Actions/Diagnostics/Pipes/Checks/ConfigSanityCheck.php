@@ -5,10 +5,17 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Contracts\DiagnosticPipe;
 use App\Models\Configs;
 
+/**
+ * Small checks on the content of the config database.
+ * Mostly verifying that some keys exists.
+ */
 class ConfigSanityCheck implements DiagnosticPipe
 {
 	private array $settings;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function handle(array &$data, \Closure $next): array
 	{
 		// Load settings
@@ -23,6 +30,13 @@ class ConfigSanityCheck implements DiagnosticPipe
 		return $next($data);
 	}
 
+	/**
+	 * Check that a certain set of configuration exists in the database.
+	 *
+	 * @param array $data
+	 *
+	 * @return void
+	 */
 	private function checkKeysExistsAndSet(array &$data): void
 	{
 		$keys_checked = [
@@ -37,6 +51,13 @@ class ConfigSanityCheck implements DiagnosticPipe
 		}
 	}
 
+	/**
+	 * Warning if the Dropbox key does not exists.
+	 *
+	 * @param array $data
+	 *
+	 * @return void
+	 */
 	private function checkDropBoxKeyWarning(array &$data): void
 	{
 		if (!isset($this->settings['dropbox_key'])) {
