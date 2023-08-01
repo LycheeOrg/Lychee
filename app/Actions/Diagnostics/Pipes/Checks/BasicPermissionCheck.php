@@ -39,12 +39,6 @@ class BasicPermissionCheck implements DiagnosticPipe
 
 	protected int $numAccessIssues;
 
-	/**
-	 * @param array<int,string> $data
-	 * @param \Closure(array<int,string> $data): array<int,string> $next
-	 *
-	 * @return array<int,string>
-	 */
 	public function handle(array &$data, \Closure $next): array
 	{
 		$this->folders($data);
