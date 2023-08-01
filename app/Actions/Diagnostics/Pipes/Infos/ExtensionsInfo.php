@@ -7,8 +7,14 @@ use App\Contracts\DiagnosticPipe;
 use App\Facades\Helpers;
 use App\Models\Configs;
 
+/**
+ * Info on what image processing we have available.
+ */
 class ExtensionsInfo implements DiagnosticPipe
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function handle(array &$data, \Closure $next): array
 	{
 		// Load settings

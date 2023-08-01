@@ -5,8 +5,14 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Contracts\DiagnosticPipe;
 use Carbon\CarbonTimeZone;
 
+/**
+ * quick check that the Timezone has been set.
+ */
 class TimezoneCheck implements DiagnosticPipe
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function handle(array &$data, \Closure $next): array
 	{
 		$timezone = CarbonTimeZone::create();

@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\DB;
  */
 class DBIntegrityCheck implements DiagnosticPipe
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function handle(array &$data, \Closure $next): array
 	{
 		$subJoin = DB::table('size_variants')->where('size_variants.type', '=', 0);

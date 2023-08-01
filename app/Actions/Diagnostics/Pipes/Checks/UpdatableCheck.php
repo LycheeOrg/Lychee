@@ -13,6 +13,9 @@ use App\Metadata\Versions\InstalledVersion;
 use App\Models\Configs;
 use function Safe\exec;
 
+/**
+ * Check whether or not it is possible to update this installation.
+ */
 class UpdatableCheck implements DiagnosticPipe
 {
 	private InstalledVersion $installedVersion;

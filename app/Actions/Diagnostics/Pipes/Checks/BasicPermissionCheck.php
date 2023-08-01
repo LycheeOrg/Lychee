@@ -19,6 +19,10 @@ use function Safe\fileperms;
 use function Safe\posix_getgrgid;
 use function Safe\posix_getgroups;
 
+/**
+ * We check that the folders are with the correct permissions.
+ * Mostly read write.
+ */
 class BasicPermissionCheck implements DiagnosticPipe
 {
 	public const MAX_ISSUE_REPORTS_PER_TYPE = 5;
@@ -40,10 +44,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 	protected int $numAccessIssues;
 
 	/**
-	 * @param array<int,string> $data
-	 * @param \Closure(array<int,string> $data): array<int,string> $next
-	 *
-	 * @return array<int,string>
+	 * {@inheritDoc}
 	 */
 	public function handle(array &$data, \Closure $next): array
 	{
@@ -54,6 +55,8 @@ class BasicPermissionCheck implements DiagnosticPipe
 	}
 
 	/**
+	 * Check all the folders with the correct permissions.
+	 * 
 	 * @param array<int,string> $data
 	 *
 	 * @return void
@@ -113,6 +116,8 @@ class BasicPermissionCheck implements DiagnosticPipe
 	}
 
 	/**
+	 * Check if user.css has the correct permissions
+	 * 
 	 * @param array<int,string> $data
 	 *
 	 * @return void

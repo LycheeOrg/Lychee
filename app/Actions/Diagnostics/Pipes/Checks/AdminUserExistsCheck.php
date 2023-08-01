@@ -7,6 +7,9 @@ use App\Models\User;
 
 class AdminUserExistsCheck implements DiagnosticPipe
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function handle(array &$data, \Closure $next): array
 	{
 		$numberOfAdmin = User::query()->where('may_administrate', '=', true)->count();

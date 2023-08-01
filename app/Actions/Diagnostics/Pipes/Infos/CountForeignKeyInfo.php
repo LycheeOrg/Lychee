@@ -6,8 +6,14 @@ use App\Actions\Diagnostics\Diagnostics;
 use App\Contracts\DiagnosticPipe;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Instead of listing all Foreign key as in the Errors, we just check their number.
+ */
 class CountForeignKeyInfo implements DiagnosticPipe
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function handle(array &$data, \Closure $next): array
 	{
 		match (DB::getDriverName()) {

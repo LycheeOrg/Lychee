@@ -4,8 +4,15 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 
+/**
+ * Check that the database is supported.
+ * In theory this should be the case by default.
+ */
 class DBSupportCheck implements DiagnosticPipe
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function handle(array &$data, \Closure $next): array
 	{
 		$db_possibilities = [
