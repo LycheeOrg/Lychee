@@ -56,7 +56,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 
 	/**
 	 * Check all the folders with the correct permissions.
-	 * 
+	 *
 	 * @param array<int,string> $data
 	 *
 	 * @return void
@@ -116,8 +116,8 @@ class BasicPermissionCheck implements DiagnosticPipe
 	}
 
 	/**
-	 * Check if user.css has the correct permissions
-	 * 
+	 * Check if user.css has the correct permissions.
+	 *
 	 * @param array<int,string> $data
 	 *
 	 * @return void
