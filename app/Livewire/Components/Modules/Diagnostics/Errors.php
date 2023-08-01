@@ -3,23 +3,21 @@
 namespace App\Livewire\Components\Modules\Diagnostics;
 
 use App\Actions\Diagnostics\Errors as DiagnosticsErrors;
-use Illuminate\Contracts\View\View;
-use Livewire\Component;
 
 class Errors extends AbstractPreSection
 {
 	public string $title = 'Diagnostics';
 	public string $error_msg = 'No critical problems found. Lychee should work without problems!';
 
-    public function placeholder()
-    {
-        return '<p class="font-mono">
+	public function placeholder()
+	{
+		return '<p class="font-mono">
 	Diagnostics
 	-----------
 	<span class="text-sky-500 font-bold">    ' . __('lychee.LOADING') . ' ...</span>
 </p>
 ';
-    }
+	}
 
 	/**
 	 * Computable property to access the errors.
