@@ -32,9 +32,10 @@ class ConfigSanityCheck implements DiagnosticPipe
 
 	/**
 	 * Check that a certain set of configuration exists in the database.
-	 * 
-	 * @param array $data 
-	 * @return void 
+	 *
+	 * @param array $data
+	 *
+	 * @return void
 	 */
 	private function checkKeysExistsAndSet(array &$data): void
 	{
@@ -51,10 +52,11 @@ class ConfigSanityCheck implements DiagnosticPipe
 	}
 
 	/**
-	 * Warning if the Dropbox key does not exists
-	 * 
-	 * @param array $data 
-	 * @return void 
+	 * Warning if the Dropbox key does not exists.
+	 *
+	 * @param array $data
+	 *
+	 * @return void
 	 */
 	private function checkDropBoxKeyWarning(array &$data): void
 	{
