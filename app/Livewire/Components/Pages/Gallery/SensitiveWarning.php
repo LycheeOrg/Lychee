@@ -16,7 +16,7 @@ use Illuminate\View\View;
 class SensitiveWarning implements Openable
 {
 	use UseOpenable;
-	
+
 	// Text to be displayed. THIS IS HTML UNSANITIZED
 	public string $text;
 

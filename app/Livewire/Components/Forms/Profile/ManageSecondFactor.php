@@ -11,9 +11,8 @@ use Livewire\Component;
 
 class ManageSecondFactor extends Component
 {
-
 	use Notify;
-	
+
 	/**
 	 * Credential used.
 	 *

@@ -15,7 +15,6 @@ use App\Models\Album as ModelsAlbum;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\SizeVariant;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\RelationNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
@@ -25,7 +24,6 @@ use Livewire\Component;
 use LycheeOrg\PhpFlickrJustifiedLayout\DTO\Geometry;
 use LycheeOrg\PhpFlickrJustifiedLayout\LayoutConfig;
 use LycheeOrg\PhpFlickrJustifiedLayout\LayoutJustify;
-use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 /**
  * Album sub module.
@@ -169,6 +167,7 @@ class Album extends Component implements Openable, Reloadable
 	{
 		if ($this->album instanceof ModelsAlbum && $this->album->parent_id !== null) {
 			$this->redirect(route('livewire-gallery-album', ['albumId' => $this->album->parent_id]));
+
 			return;
 		}
 
