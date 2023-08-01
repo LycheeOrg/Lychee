@@ -2,16 +2,16 @@
 
 namespace App\Livewire;
 
-use App\Livewire\Pages\AllSettings;
-use App\Livewire\Pages\Diagnostics;
-use App\Livewire\Pages\Gallery\Album;
-use App\Livewire\Pages\Gallery\Albums;
-use App\Livewire\Pages\Gallery\Photo;
-use App\Livewire\Pages\Jobs;
-use App\Livewire\Pages\Landing;
-use App\Livewire\Pages\Profile;
-use App\Livewire\Pages\Settings;
-use App\Livewire\Pages\Users;
+use App\Livewire\Components\Pages\AllSettings;
+use App\Livewire\Components\Pages\Diagnostics;
+use App\Livewire\Components\Pages\Gallery\Album;
+use App\Livewire\Components\Pages\Gallery\Albums;
+use App\Livewire\Components\Pages\Gallery\Photo;
+use App\Livewire\Components\Pages\Jobs;
+use App\Livewire\Components\Pages\Landing;
+use App\Livewire\Components\Pages\Profile;
+use App\Livewire\Components\Pages\Settings;
+use App\Livewire\Components\Pages\Users;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;

@@ -5,15 +5,16 @@ namespace App\View\Components\Gallery\Album;
 use App\Contracts\Models\AbstractAlbum;
 use App\Models\Extensions\BaseAlbum;
 use Illuminate\View\Component;
+use Illuminate\View\View;
 
 class Hero extends Component
 {
-	public string $url;
+	public ?string $url;
 	public string $title;
 	public ?string $min_taken_at = null;
 	public ?string $max_taken_at = null;
 
-	public function __construct(AbstractAlbum $album, string $url)
+	public function __construct(AbstractAlbum $album, ?string $url)
 	{
 		$this->url = $url;
 		$this->title = $album->title;
@@ -24,7 +25,7 @@ class Hero extends Component
 		}
 	}
 
-	public function render()
+	public function render(): View
 	{
 		return view('components.gallery.album.hero');
 	}

@@ -10,7 +10,13 @@
             }
         },
     }"
-    @notify.window="let m = $event.detail; let mid = Date.now(); messages.push({id: mid, msg: m.msg, type: m.type}); setTimeout(() => { remove(mid) }, 2500)"
+    @notify.window="
+        let m = $event.detail;
+        m.forEach(me => {
+        let mid = Date.now();
+        messages.push({id: mid, msg: me.msg, type: me.type});
+        setTimeout(() => { remove(mid) }, 2500);
+        });"
     class="z-50 fixed inset-0 flex flex-col items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:justify-start space-y-4"
 >
     <template x-for="(message, messageIndex) in messages" :key="messageIndex" hidden>

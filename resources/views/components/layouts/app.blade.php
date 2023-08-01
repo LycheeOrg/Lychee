@@ -17,10 +17,10 @@
 		@include('includes.svg-livewire')
 		<x-notifications />
         @persist('left-menu')
-		<livewire:components.left-menu>
+		<livewire:menus.left-menu>
         @endpersist('left-menu')
         {{ $slot }}
-		<livewire:components.base.modal />
-		<livewire:components.base.context-menu />
+		<livewire:base.modal />
+		<livewire:base.context-menu />
     </body>
 </html>
