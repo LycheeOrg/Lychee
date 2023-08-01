@@ -40,7 +40,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 	protected int $numAccessIssues;
 
 	/**
-	 * @param array<int,string>                                    $data
+	 * @param array<int,string> $data
 	 * @param \Closure(array<int,string> $data): array<int,string> $next
 	 *
 	 * @return array<int,string>
