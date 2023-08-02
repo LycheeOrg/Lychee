@@ -2,9 +2,7 @@
 
 namespace App\Livewire\Components\Menus;
 
-use App\Contracts\Livewire\Openable;
 use App\Livewire\Traits\InteractWithModal;
-use App\Livewire\Traits\UseOpenable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
