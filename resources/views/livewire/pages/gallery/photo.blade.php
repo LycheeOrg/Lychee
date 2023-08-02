@@ -1,7 +1,7 @@
 <div class="w-full">
 	<!-- toolbar -->
     <x-header.bar>
-        <x-header.button wire:click="back" icon="chevron-left" />
+        <x-header.button @keydown.escape.window="$wire.back()" wire:click="back" icon="chevron-left" />
         <x-header.title>{{ $photo->title }}</x-header.title>
         {{-- <a class="button button--star" id="button_star"><x-icons.iconic icon="star" /></a>
         <a class="button button--eye" id="button_visibility"><x-icons.iconic icon="eye" /></a>
@@ -38,14 +38,14 @@
 		autobuffer
 		{{ $autoplay ? "autoplay" : ""}}
 		data-tabindex='{{ Helpers::data_index() }}'
-		><source src='{{ URL::asset($data->original->url) }}'>Your browser does not support the video tag.</video>
+		><source src='{{ URL::asset($photo->size_variants->getOriginal()->url) }}'>Your browser does not support the video tag.</video>
 @elseif($photo->isRaw()) {{-- This is a raw file: put a place holder --}}
 	<img
 		id='image'
 		alt='big'
 		class='
 		absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]
-		{{ $visibleControls === true ? "" : "full" }}'
+ 		{{ $visibleControls === true ? "" : "full" }}'
 		src='{{ URL::asset('img/placeholder.png') }}'
 		draggable='false'
 		data-tabindex='{{ Helpers::data_index() }}'
@@ -72,14 +72,16 @@
 			alt='big'
 			class='
 			absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]
+			bg-contain bg-center bg-no-repeat
 			{{ $visibleControls === true ? "" : "full" }}
 			'
+			style='background-image: url({{ URL::asset($photo->size_variants->getSmall()?->url) }})'
 			src='{{ URL::asset($photo->size_variants->getOriginal()->url) }}'
 			draggable='false'
 			data-tabindex='{{ Helpers::data_index() }}'
 			/>
 	@endif
-@elseif ($photo->size_variants->medium !== null) {{-- This is a livephoto : medium --}}
+@elseif ($photo->size_variants->getMedium() !== null) {{-- This is a livephoto : medium --}}
 	<div
 		id='livephoto'
 		data-live-photo
@@ -104,7 +106,7 @@
 		>
 	</div>
 @endif
-<livewire:components.photo-overlay :photo="$photo" />
+<livewire:modules.gallery.photo-overlay :photo="$photo" />
 {{-- <div class='arrow_wrapper arrow_wrapper--previous'><a id='previous'>${build.iconic("caret-left")}</a></div> --}}
 {{-- <div class='arrow_wrapper arrow_wrapper--next'><a id='next'>${build.iconic("caret-right")}</a></div> --}}
 </div>

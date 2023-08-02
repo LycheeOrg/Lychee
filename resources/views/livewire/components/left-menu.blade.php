@@ -1,13 +1,10 @@
 <aside id="default-sidebar"
-	@class([
-		'z-40 w-0 h-screen transition-width',
-		'w-full' => $isOpen,
-		'sm:w-[250px]' => $isOpen,
-	])
+    x-bind:class="! leftMenuOpen ? '' : 'w-full sm:w-[250px]'"
+	class="z-40 w-0 h-screen transition-width"
     aria-label="Sidebar">
     <div class="h-full py-4 overflow-y-auto bg-dark-850 light:bg-neutral-50">
         <ul class="space-y-0.5">
-            <x-leftbar.leftbar-item wire:click="close" icon="chevron-left">
+            <x-leftbar.leftbar-item x-on:click="leftMenuOpen = ! leftMenuOpen"  icon="chevron-left">
                 {{ __('lychee.CLOSE') }}
             </x-leftbar.leftbar-item>
             @can(SettingsPolicy::CAN_EDIT, [App\Models\Configs::class])

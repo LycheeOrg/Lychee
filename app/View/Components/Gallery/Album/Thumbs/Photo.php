@@ -49,11 +49,11 @@ class Photo extends Component
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function __construct(ModelsPhoto $data, Item|null $geometry)
+	public function __construct(ModelsPhoto $data, string $albumId, Item|null $geometry)
 	{
 		$this->is_square_layout = AlbumMode::SQUARE === Configs::getValueAsEnum('layout', AlbumMode::class);
 
-		$this->album_id = $data->album?->id ?? '';
+		$this->album_id = $albumId;
 		$this->photo_id = $data->id;
 		$this->title = $data->title;
 		$this->taken_at = $data->taken_at ?? '';

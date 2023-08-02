@@ -6,7 +6,7 @@
             <x-header.button wire:click="openLoginModal" icon="account-login" />
         @endguest
         @auth
-            <x-header.button wire:click="openLeftMenu" icon="cog" />
+            <x-header.button x-on:click="leftMenuOpen = ! leftMenuOpen" icon="cog" />
         @endauth
         <x-header.title>{{ $title }}</x-header.title>
         <x-header.search />

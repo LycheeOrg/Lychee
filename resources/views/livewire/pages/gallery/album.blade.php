@@ -1,7 +1,7 @@
 <div class="w-full">
     <!-- toolbar -->
     <x-header.bar>
-        <x-header.button wire:click="back" icon="chevron-left" />
+        <x-header.button @keydown.escape.window="$wire.back()" wire:click="back"  icon="chevron-left" />
         <x-header.title>{{ $album->title }}</x-header.title>
         {{-- <a class="button button--map" id="button_map_album"><x-icons.iconic icon="map" /></a> --}}
         {{-- <a class="button" id="button_fs_album_enter"><x-icons.iconic icon="fullscreen-enter" /></a> --}}
@@ -49,7 +49,7 @@
                 @endif
             >
             @for ($i = 0; $i < $num_photos; $i++)
-                <x-gallery.album.thumbs.photo :data="$this->album->photos[$i]" :geometry="$this->geometry->boxes->get($i)" />
+                <x-gallery.album.thumbs.photo :data="$this->album->photos[$i]" albumId="{{ $albumId }}" :geometry="$this->geometry->boxes->get($i)" />
             @endfor
             </div>
             @endif

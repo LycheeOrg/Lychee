@@ -23,10 +23,9 @@ use Livewire\Component;
  * - About
  * - logout.
  */
-class LeftMenu extends Component implements Openable
+class LeftMenu extends Component
 {
 	use InteractWithModal;
-	use UseOpenable;
 
 	/**
 	 * Method called from user-land.
@@ -37,7 +36,6 @@ class LeftMenu extends Component implements Openable
 		Auth::logout();
 		Session::flush();
 
-		$this->close();
 		$this->redirect(route('livewire-gallery'), navigate: false);
 	}
 

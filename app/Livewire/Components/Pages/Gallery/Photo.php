@@ -25,6 +25,8 @@ class Photo extends Component
 	#[Locked]
 	public string $photoId;
 
+	public bool $autoplay = true;
+
 	/** @var PhotoModel Said photo to be displayed */
 	public PhotoModel $photo;
 	public ?AbstractAlbum $album = null;
