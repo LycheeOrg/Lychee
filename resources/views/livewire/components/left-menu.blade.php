@@ -41,8 +41,8 @@
             @endcan
             @can(SettingsPolicy::CAN_SEE_DIAGNOSTICS, [App\Models\Configs::class])
                 <x-leftbar.leftbar-item href="{{ route('diagnostics') }}" wire:navigate icon="wrench">
-
-                    {{ __('lychee.DIAGNOSTICS') }}</x-leftbar.leftbar-item>
+                    {{ __('lychee.DIAGNOSTICS') }}
+                </x-leftbar.leftbar-item>
             @endcan
             <x-leftbar.leftbar-item wire:click="openAboutModal" icon="info">
                 {{ __('lychee.ABOUT_LYCHEE') }}

@@ -1,4 +1,4 @@
-<div class="w-full">
+<div class="w-full" x-data="{ detailsOpen: false }">
     <!-- toolbar -->
     <x-header.bar>
         <x-header.button @keydown.escape.window="$wire.back()" wire:click="back"  icon="chevron-left" />
@@ -9,8 +9,8 @@
         {{-- <a class="header__divider"></a> --}}
         @can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class, $this->album])
             @if ($flags->is_base_album)
-                <x-header.button wire:click="toggle"
-                    icon="{{ $flags->is_detail_open === true ? 'chevron-top' : 'chevron-bottom' }}" />
+                <x-header.button x-on:click="detailsOpen = ! detailsOpen" icon="chevron-top" x-cloak x-show="detailsOpen" />
+                <x-header.button x-on:click="detailsOpen = ! detailsOpen" icon="chevron-bottom" x-cloak x-show="!detailsOpen" />
             @endif
         @endcan
         @can(App\Policies\AlbumPolicy::CAN_UPLOAD, [App\Contracts\Models\AbstractAlbum::class, $this->album])
@@ -23,14 +23,11 @@
         x-on:resize.window="width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
                 $wire.loadAlbum(width - 2*28);"
         class="relative flex flex-wrap content-start w-full justify-start h-[calc(100vh-56px)] overflow-x-clip overflow-y-auto">
-        @if (!$flags->is_detail_open)
-            <x-gallery.album.hero :if="!$flags->is_detail_open" 
-                :album="$this->album" :url="$this->header_url" />
-            <x-gallery.album.details :if="!$flags->is_detail_open"
-             :album="$this->album" :url="$this->header_url" />
-        @else
-            <livewire:forms.album.menu :album="$this->album" />
-        @endif
+
+        <x-gallery.album.hero    :album="$this->album" :url="$this->header_url" x-show="! detailsOpen" />
+        <x-gallery.album.details :album="$this->album" :url="$this->header_url" x-show="! detailsOpen" />
+        <livewire:forms.album.menu :album="$this->album" />
+
         @if ($flags->is_ready_to_load)
             @if($num_children > 0 && $num_photos > 0)<x-gallery.divider title="{{ __('lychee.ALBUMS') }}" />@endif
             @if($num_children > 0)

@@ -1,4 +1,4 @@
-<div class="w-full sm:m-7 mb-4 flex justify-center flex-wrap flex-row-reverse">
+<div class="w-full sm:m-7 mb-4 flex justify-center flex-wrap flex-row-reverse" x-show="detailsOpen">
     <ul class="
         text-neutral-200 text-sm w-full xl:w-1/6 xl:px-9
         max-xl:w-full max-xl:flex max-xl:justify-center
