@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Components\Pages\Gallery;
 
-use App\Contracts\Livewire\Openable;
 use App\Contracts\Livewire\Reloadable;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\AlbumMode;
@@ -31,7 +30,7 @@ use LycheeOrg\PhpFlickrJustifiedLayout\LayoutJustify;
  * We just load the layout from config and render.
  * The variable $album is automatically mounted from the Livewire call
  */
-class Album extends Component implements Openable, Reloadable
+class Album extends Component implements Reloadable
 {
 	use InteractWithModal;
 
@@ -172,20 +171,5 @@ class Album extends Component implements Openable, Reloadable
 		}
 
 		$this->redirect(route('livewire-gallery'));
-	}
-
-	public function open(): void
-	{
-		$this->flags->is_detail_open = true;
-	}
-
-	public function close(): void
-	{
-		$this->flags->is_detail_open = false;
-	}
-
-	public function toggle(): void
-	{
-		$this->flags->is_detail_open = !$this->flags->is_detail_open;
 	}
 }
