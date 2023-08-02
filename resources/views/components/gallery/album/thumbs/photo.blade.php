@@ -1,7 +1,7 @@
 <a
 	href="{{ route('livewire-gallery-photo',['albumId'=>$album_id, 'photoId' => $photo_id]) }}"
 	style="{{ $style }}"
-	class='photo group absolute  shadow-md shadow-black/25' {{-- ${disabled ? `disabled` : ``}'--}}
+	class='photo group absolute  shadow-md shadow-black/25 animate-zoomIn' {{-- ${disabled ? `disabled` : ``}'--}}
 	data-album-id='{{ $album_id }}'
 	data-id='{{ $photo_id }}'
 	data-tabindex='{{ Helpers::data_index() }}'

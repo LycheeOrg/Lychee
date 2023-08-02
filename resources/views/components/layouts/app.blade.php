@@ -20,7 +20,7 @@
 		<livewire:menus.left-menu>
         @endpersist('left-menu')
         {{ $slot }}
-		<livewire:base.modal />
 		<livewire:base.context-menu />
+		<livewire:base.modal />
     </body>
 </html>

@@ -8,6 +8,7 @@
 	lg:w-[calc(16vw-9px-15px)] lg:ml-5 lg:mt-5
 	xl:w-[calc(14vw-9px-22px)] xl:ml-6 xl:mt-6
 	2xl:w-52 2xl:ml-7 2xl:mt-7
+	animate-zoomIn
 	group",
 	    'blurred' => $is_nsfw_blurred
 	])

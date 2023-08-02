@@ -40,6 +40,51 @@ module.exports = {
       },
       flexShrink: {
         2: '2'
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { 'opacity': '0' },
+          '100%': { 'opacity': '1' }
+        },
+        fadeOut: {
+          '0%': { 'opacity': '1' },
+          '100%': { 'opacity': '0' }
+        },
+        moveBackground: {
+          '0%': { 'background-position-x': '0px' },
+          '100%': { 'background-position-x': '-100px' }
+        },
+        moveUp: {
+          '0%': {'transform': 'translateY(80px)'},
+          '100%': {'transform': 'translateY(0)'}
+        },
+        zoomIn: {
+          '0%': {
+            'opacity': '0',
+            'transform': 'scale(0.8)'
+          },
+          '100%': {
+            'opacity': '1',
+            'transform': 'scale(1)'
+          }
+        },
+        zoomOut: {
+          '0%': {
+            'opacity': '1',
+            'transform': 'scale(1)'
+          },
+          '100%': {
+            'opacity': '0',
+            'transform': 'scale(0.8)'
+          }
+        }
+      },
+      animation: {
+        'fadeIn': 'fadeIn 0.3s forwards cubic-bezier(0.51, 0.92, 0.24, 1)',
+        'fadeOut': 'fadeOut 0.3s forwards cubic-bezier(0.51, 0.92, 0.24, 1)',
+        'zoomIn': 'zoomIn 0.2s forwards cubic-bezier(0.51, 0.92, 0.24, 1)',
+        'zoomOut': 'zoomOut 0.2s forwards cubic-bezier(0.51, 0.92, 0.24, 1)',
+        'moveUp': 'moveUp 0.3s forwards cubic-bezier(0.51, 0.92, 0.24, 1)'
       }
     },
   },
