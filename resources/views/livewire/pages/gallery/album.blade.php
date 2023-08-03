@@ -26,7 +26,7 @@
 
         <x-gallery.album.hero    :album="$this->album" :url="$this->header_url" x-show="! detailsOpen" />
         <x-gallery.album.details :album="$this->album" :url="$this->header_url" x-show="! detailsOpen" />
-        <livewire:forms.album.menu :album="$this->album" />
+        <x-gallery.album.menu.menu :album="$this->album" :userCount="User::count()" />
 
         @if ($flags->is_ready_to_load)
             @if($num_children > 0 && $num_photos > 0)<x-gallery.divider title="{{ __('lychee.ALBUMS') }}" />@endif

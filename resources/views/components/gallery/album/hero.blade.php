@@ -1,5 +1,5 @@
 @if ($url !== null)
-<div class="w-full h-1/2 text-neutral-200" {{ $attributes }}>
+<div class="w-full h-1/2 text-neutral-200" {{ $attributes }} x-transition >
     <img class="absolute block top-0 left-0 w-full h-1/2 object-cover object-center z-0" src="{{ URL::asset($url) }}">
     <div class="h-full pl-7 pt-7 relative text-shadow-sm w-full bg-gradient-to-b from-black/20 via-80%">
         <h1 class="font-bold text-4xl text-white">{{ $title }}</h1>
