@@ -18,7 +18,28 @@
         <x-header.button wire:click="openContextMenu" icon="ellipses" />
     </x-header.bar>
 <div id="imageview" 
-	class="absolute top-0 left-0 w-full h-[calc(100%-3.5rem)] mt-14 bg-black"
+	class="absolute top-0 left-0 w-full h-[calc(100%-3.5rem)] mt-14 bg-black animate-fadeIn"
+	x-data="{
+				has_description: {{ $photo->description !== null ? 'true' : 'false' }},
+				overlayType: '{{ $overlayType }}',
+				rotate() {
+					switch (this.overlayType) {
+						case 'exif':
+							this.overlayType = 'date';
+							break;
+						case 'date':
+							if (this.has_description) { this.overlayType = 'description'; }
+							else { this.overlayType = 'none'; }
+							break;
+						case 'description':
+							this.overlayType = 'none';
+							break;
+						default:
+							this.overlayType = 'exif';
+					}
+				}
+			}"
+	x-on:click="rotate()"
 {{-- @class(
 	["overlay-container",
 	"fadeIn",
@@ -106,7 +127,8 @@
 		>
 	</div>
 @endif
-<livewire:modules.gallery.photo-overlay :photo="$photo" />
+<x-gallery.photo.overlay :photo="$photo" />
+{{-- <livewire:modules.gallery.photo-overlay :photo="$photo" /> --}}
 {{-- <div class='arrow_wrapper arrow_wrapper--previous'><a id='previous'>${build.iconic("caret-left")}</a></div> --}}
 {{-- <div class='arrow_wrapper arrow_wrapper--next'><a id='next'>${build.iconic("caret-right")}</a></div> --}}
 </div>

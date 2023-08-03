@@ -3,7 +3,9 @@
 namespace App\Livewire\Components\Pages\Gallery;
 
 use App\Contracts\Models\AbstractAlbum;
+use App\Enum\Livewire\PhotoOverlayMode;
 use App\Factories\AlbumFactory;
+use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo as PhotoModel;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -24,6 +26,8 @@ class Photo extends Component
 
 	#[Locked]
 	public string $photoId;
+
+	public string $overlayType;
 
 	public bool $autoplay = true;
 
@@ -49,6 +53,8 @@ class Photo extends Component
 		/** @var PhotoModel $photoItem */
 		$photoItem = PhotoModel::with('album')->findOrFail($this->photoId);
 		$this->photo = $photoItem;
+		$this->overlayType = Configs::getValueAsEnum('image_overlay_type', PhotoOverlayMode::class)->value;
+
 
 		// $this->locked = Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
 	}

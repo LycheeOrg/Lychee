@@ -24,7 +24,9 @@
                 $wire.loadAlbum(width - 2*28);"
         class="relative flex flex-wrap content-start w-full justify-start h-[calc(100vh-56px)] overflow-x-clip overflow-y-auto">
 
+        @can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class, $this->album])
         <x-gallery.album.menu.menu :album="$this->album" :userCount="User::count()" />
+        @endcan
         <x-gallery.album.hero    :album="$this->album" :url="$this->header_url" x-show="! detailsOpen" />
         <x-gallery.album.details :album="$this->album" :url="$this->header_url" x-show="! detailsOpen" />
 
