@@ -24,9 +24,9 @@
                 $wire.loadAlbum(width - 2*28);"
         class="relative flex flex-wrap content-start w-full justify-start h-[calc(100vh-56px)] overflow-x-clip overflow-y-auto">
 
+        <x-gallery.album.menu.menu :album="$this->album" :userCount="User::count()" />
         <x-gallery.album.hero    :album="$this->album" :url="$this->header_url" x-show="! detailsOpen" />
         <x-gallery.album.details :album="$this->album" :url="$this->header_url" x-show="! detailsOpen" />
-        <x-gallery.album.menu.menu :album="$this->album" :userCount="User::count()" />
 
         @if ($flags->is_ready_to_load)
             @if($num_children > 0 && $num_photos > 0)<x-gallery.divider title="{{ __('lychee.ALBUMS') }}" />@endif

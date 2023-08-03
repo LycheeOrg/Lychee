@@ -12,7 +12,10 @@ Mousetrap.addKeycodes({
 	228: "forward",
 });
 
-
+// document.addEventListener('alpine:init', () => {
+// 	Alpine.data('leftMenuOpen', (initialOpenState = false) => ({ leftMenuOpen: initialOpenState}));
+// 	Alpine.bind('openLeftMenu', () => ({ '@click'() { leftMenuOpen = ! leftMenuOpen }}))
+// })
 // Mousetrap
 // .bind(["l"], function () {
 // 	lychee.loginDialog();
@@ -178,26 +181,26 @@ Mousetrap.addKeycodes({
 
 // Prevent 'esc keyup' event to trigger 'go back in history'
 // and 'alt keyup' to show a webapp context menu for Fire TV
-Mousetrap.bindGlobal(
-	["esc", "ContextMenu"],
-	function () {
-		return false;
-	},
-	"keyup"
-);
+// Mousetrap.bindGlobal(
+// 	["esc", "ContextMenu"],
+// 	function () {
+// 		return false;
+// 	},
+// 	"keyup"
+// );
 
-Mousetrap.bindGlobal(["esc", "command+up"], function () {
-	Livewire.emit('back');
-	// if (basicModal.visible() === true) basicModal.cancel();
-	// else if (visible.config() || visible.leftMenu()) leftMenu.close();
-	// else if (visible.contextMenu()) contextMenu.close();
-	// else if (visible.photo()) lychee.goto(album.getID());
-	// else if (visible.album() && !album.json.parent_id) lychee.goto();
-	// else if (visible.album()) lychee.goto(album.getParent());
-	// else if (visible.albums() && search.hash !== null) search.reset();
-	// else if (visible.mapview()) mapview.close();
-	// else if (visible.albums() && lychee.enable_close_tab_on_esc) {
-	// 	window.open("", "_self").close();
-	// }
-	return false;
-});
+// Mousetrap.bindGlobal(["esc", "command+up"], function () {
+// 	Livewire.emit('back');
+// 	// if (basicModal.visible() === true) basicModal.cancel();
+// 	// else if (visible.config() || visible.leftMenu()) leftMenu.close();
+// 	// else if (visible.contextMenu()) contextMenu.close();
+// 	// else if (visible.photo()) lychee.goto(album.getID());
+// 	// else if (visible.album() && !album.json.parent_id) lychee.goto();
+// 	// else if (visible.album()) lychee.goto(album.getParent());
+// 	// else if (visible.albums() && search.hash !== null) search.reset();
+// 	// else if (visible.mapview()) mapview.close();
+// 	// else if (visible.albums() && lychee.enable_close_tab_on_esc) {
+// 	// 	window.open("", "_self").close();
+// 	// }
+// 	return false;
+// });

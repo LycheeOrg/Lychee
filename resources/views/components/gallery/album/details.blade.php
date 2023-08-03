@@ -1,4 +1,4 @@
-<div class="w-full px-7 my-4 flex flex-row-reverse" {{ $attributes }} x-transition >
+<div class="w-full px-7 my-4 flex flex-row-reverse" {{ $attributes }} x-transition.opacity >
     <div class="order-1 flex flex-col w-full">
         @if($url === null )
             <h1 class="font-bold text-2xl text-white">{{ $title }}</h1>
