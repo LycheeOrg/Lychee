@@ -5,7 +5,9 @@
         max-xl:w-full max-xl:flex max-xl:justify-center
         ">
         <x-gallery.album.menu.item tab='0' >{{ __('lychee.ABOUT_ALBUM') }}</x-gallery.album.menu.item>
+        @if ($userCount > 1)
         <x-gallery.album.menu.item tab='1' >{{ __('lychee.SHARE_ALBUM') }}</x-gallery.album.menu.item>
+        @endif
         <x-gallery.album.menu.item tab='2' >{{ __('lychee.MOVE_ALBUM') }}</x-gallery.album.menu.item>
         <x-gallery.album.menu.danger tab='3' >{{ "DANGER ZONE" }}</x-gallery.album.menu.danger>
     </ul>
@@ -13,9 +15,11 @@
         <livewire:forms.album.properties :album="$album" />
         <livewire:forms.album.visibility :album="$album" />
     </div>
+    @if ($userCount > 1)
     <div class="w-full xl:w-5/6 flex justify-center flex-wrap" x-cloak x-show="activeTab === 1">
         <livewire:forms.album.share-with :album="$album" />
     </div>
+    @endif
     <div class="w-full xl:w-5/6 flex justify-center flex-wrap" x-cloak x-show="activeTab === 2">
         <livewire:forms.album.move :album="$album" />
     </div>
