@@ -9,7 +9,7 @@
 		</div>
 		<div class="relative mt-3 w-full" >
 			<input
-				wire:model.debounce.500ms="search"
+				wire:model.live.debounce.500ms="search"
 				type="text"
 				class="bg-neutral-800 text-sm rounded-full w-full px-4 pl-8 py-1 focus:outline-none focus:shadow-outline
 					placeholder:text-neutral-400"

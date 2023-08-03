@@ -31,7 +31,7 @@
     </a>
 </div>
 @if($description !== null)
-<div class="w-full px-7 my-4 text-justify text-neutral-200 markdown">
+<div class="w-full px-7 my-4 text-justify text-neutral-200 markdown" {{ $attributes }} >
     @markdown{{ $description }}@endmarkdown
 </div>
 @endif

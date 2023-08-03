@@ -25,7 +25,8 @@
 				<div class="setting_line my-0.5">
 					<p class="break-words w-full" wire:key="config-{{ $config->id }}">
 						<span class="inline-block text pt-2 pb-0 px-1 w-80 text-white">{{ $config->key }}</span>
-						<x-forms.inputs.text class="w-1/2" wire:model="configs.{{ $idx }}.value" />
+						{{-- TODO: FIX ME --}}
+						<x-forms.inputs.text class="w-1/2" wire:model.live="configs.{{ $idx }}.value" />
 						@if($config->description !== '')
 						<span class="text" class="w-full block -mt-1 text-neutral-500 pb-1 pt-0">{{ $config->description }}</span>
 						@endif

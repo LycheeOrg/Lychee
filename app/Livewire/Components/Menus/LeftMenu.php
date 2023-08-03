@@ -6,6 +6,7 @@ use App\Livewire\Traits\InteractWithModal;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 /**
@@ -42,6 +43,7 @@ class LeftMenu extends Component
 	 *
 	 * @return View
 	 */
+	#[On('reloadPage')]
 	public function render(): View
 	{
 		return view('livewire.components.left-menu');

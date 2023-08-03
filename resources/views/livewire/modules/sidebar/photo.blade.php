@@ -1,115 +1,66 @@
-<div id="lychee_sidebar" class="vflex-container">
-	<div id="lychee_sidebar_header" class="vflex-item-rigid">
-		<h1>{{ __("lychee.ALBUM_ABOUT") }}</h1>
-	</div>
-	<div id="lychee_sidebar_content" class="vflex-item-stretch">
-		<div class="sidebar__divider">
-			<h1>{{ __("lychee.PHOTO_BASICS") }}</h1>
-		</div>
-		<table aria-hidden="true"> {{-- Refactor me later to not use table --}}
-			<tbody>
-				<x-sidebar.line head='{{ __("lychee.PHOTO_TITLE") }}'>
-					{{ $title }}
-				</x-sidebar.line>
-				<x-sidebar.line head='{{ __("lychee.PHOTO_UPLOADED") }}'>
-					{{ $created_at }}
-				</x-sidebar.line>
-				<x-sidebar.line head='{{ __("lychee.PHOTO_DESCRIPTION") }}'>
-					{{ $description }}
-				</x-sidebar.line>
-			</tbody>
-		</table>
-		<div class="sidebar__divider">
-			<h1>{{ $is_video ? __("lychee.PHOTO_VIDEO") : __("lychee.PHOTO_IMAGE") }}</h1>
-		</div>
-		<table aria-hidden="true"> {{-- Refactor me later to not use table --}}
-			<tbody>
-				<x-sidebar.line head='{{ __("lychee.PHOTO_SIZE") }}'>
-					{{ $filesize }}
-				</x-sidebar.line>
-				<x-sidebar.line head='{{ __("lychee.PHOTO_FORMAT") }}'>
-					{{ $type }}
-				</x-sidebar.line>
-				<x-sidebar.line-skip head='{{ __("lychee.PHOTO_RESOLUTION") }}' :value='$resolution' />
-				@if ($is_video)
-				<x-sidebar.line-skip head='{{ __("lychee.PHOTO_DURATION") }}' :value='$duration' />
-				<x-sidebar.line-skip head='{{ __("lychee.PHOTO_FPS") }}' :value='$fps' />
-				@endif
-			</tbody>
-		</table>
-		<div class="sidebar__divider">
-			<h1>{{ __("lychee.PHOTO_TAGS") }}</h1>
-		</div>
-		<table aria-hidden="true"> {{-- Refactor me later to not use table --}}
-			<tbody>
-				<x-sidebar.line head='{{ __("lychee.PHOTO_TAGS") }}'>
-					{{ $tags }}
-				</x-sidebar.line>
-			</tbody>
-		</table>
+<div id="lychee_sidebar" class="border-t border-solid border-sky-500 text-white w-[360px]">
+	<div class="grid grid-cols-[auto minmax(0, 1fr)]">
+		<h1 class="col-span-2 text-center text-lg font-bold my-4">{{ __("lychee.ALBUM_ABOUT") }}</h1>
+		<h2 class="col-span-2 text-neutral-400 font-bold px-3 pt-4 pb-3">{{ __("lychee.PHOTO_BASICS") }}</h2>
+		<span class="py-0.5 pl-3 text-sm">{{ __("lychee.PHOTO_TITLE") }}</span>
+		<span class="py-0.5 pl-0 text-sm">{{ $title }}</span>
+		<span class="py-0.5 pl-3 text-sm">{{ __("lychee.PHOTO_UPLOADED") }}</span>
+		<span class="py-0.5 pl-0 text-sm">{{ $created_at }}</span>
+		<span class="py-0.5 pl-3 text-sm">{{ __("lychee.PHOTO_DESCRIPTION") }}</span>
+		<span class="py-0.5 pl-0 text-sm">{{ $description }}</span>
+
+		<h2 class="col-span-2 text-neutral-400 font-bold px-3 pt-4 pb-3">{{ $is_video ? __("lychee.PHOTO_VIDEO") : __("lychee.PHOTO_IMAGE") }}</h1>
+		<span class="py-0.5 pl-3 text-sm">{{ __("lychee.PHOTO_SIZE") }}</span>
+		<span class="py-0.5 pl-0 text-sm">{{ $filesize }}</span>
+		<span class="py-0.5 pl-3 text-sm">{{ __("lychee.PHOTO_FORMAT") }}</span>
+		<span class="py-0.5 pl-0 text-sm">{{ $type }}</span>
+		<span class="py-0.5 pl-3 text-sm">{{ __("lychee.PHOTO_RESOLUTION") }}</span>
+		<span class="py-0.5 pl-0 text-sm">{{ $resolution }}</span>
+		@if($is_video)
+		<span class="py-0.5 pl-3 text-sm">{{ __("lychee.PHOTO_DURATION") }}</span>
+		<span class="py-0.5 pl-0 text-sm">{{ $duration }}</span>
+		<span class="py-0.5 pl-3 text-sm">{{ __("lychee.PHOTO_FPS") }}</span>
+		<span class="py-0.5 pl-0 text-sm">{{ $fps }}</span>
+		@endif
+		<h2 class="col-span-2 text-neutral-400 font-bold px-3 pt-4 pb-3">{{ __("lychee.PHOTO_TAGS") }}</h1>
+		<span class="py-0.5 pl-3 col-span-2 text-sm">tags, tags, tags</span>
 		@if ($has_exif)
-		<div class="sidebar__divider">
-			<h1>{{ __("lychee.PHOTO_CAMERA") }}</h1>
-		</div>
-		<table aria-hidden="true"> {{-- Refactor me later to not use table --}}
-			<tbody>
-				<x-sidebar.line head='{{ __("lychee.PHOTO_CAPTURED") }}'>
-					{{ $taken_at }}
-				</x-sidebar.line>
-				<x-sidebar.line head='{{ __("lychee.PHOTO_MAKE") }}'>
-					{{ $make }}
-				</x-sidebar.line>
-				<x-sidebar.line head='{{ __("lychee.PHOTO_TYPE") }}'>
-					{{ $model }}
-				</x-sidebar.line>
-				@if (!$is_video)
-				<x-sidebar.line head='{{ __("lychee.PHOTO_LENS") }}'>
-					{{ $lens }}
-				</x-sidebar.line>
-				<x-sidebar.line head='{{ __("lychee.PHOTO_SHUTTER") }}'>
-					{{ $shutter }}
-				</x-sidebar.line>
-				<x-sidebar.line head='{{ __("lychee.PHOTO_APERTURE") }}'>
-					{{ "ƒ / " . $aperture }}
-				</x-sidebar.line>
-				<x-sidebar.line head='{{ __("lychee.PHOTO_FOCAL") }}'>
-					{{ $focal }}
-				</x-sidebar.line>
-				{{-- TODO remove sprintf after ISO doesn't use placeholder anymore --}}
-				<x-sidebar.line head='{{ sprintf(__("lychee.PHOTO_ISO"), "") }}'>
-					{{ $iso }}
-				</x-sidebar.line>
-				@endif
-			</tbody>
-		</table>
+		<h2 class="col-span-2 text-neutral-400 font-bold px-3 pt-4 pb-3">{{ __("lychee.PHOTO_CAMERA") }}</h1>
+		<span class="py-0.5 pl-3 text-sm">{{ __("lychee.PHOTO_CAPTURED") }}</span>
+		<span class="py-0.5 pl-0 text-sm">{{ $taken_at }}</span>
+		<span class="py-0.5 pl-3 text-sm">{{ __("lychee.PHOTO_MAKE") }}</span>
+		<span class="py-0.5 pl-0 text-sm">{{ $make }}</span>
+		<span class="py-0.5 pl-3 text-sm">{{ __("lychee.PHOTO_TYPE") }}</span>
+		<span class="py-0.5 pl-0 text-sm">{{ $model }}</span>
+		@if (!$is_video)
+		<span class="py-0.5 pl-3 text-sm">{{ __("lychee.PHOTO_LENS") }}</span>
+		<span class="py-0.5 pl-0 text-sm">{{ $lens }}</span>
+		<span class="py-0.5 pl-3 text-sm">{{ __("lychee.PHOTO_SHUTTER") }}</span>
+		<span class="py-0.5 pl-0 text-sm">{{ $shutter }}</span>
+		<span class="py-0.5 pl-3 text-sm">{{ __("lychee.PHOTO_APERTURE") }}</span>
+		<span class="py-0.5 pl-0 text-sm">ƒ / {{ $aperture }}</span>
+		<span class="py-0.5 pl-3 text-sm">{{ __("lychee.PHOTO_FOCAL") }}</span>
+		<span class="py-0.5 pl-0 text-sm">{{ $focal }}</span>
+		<span class="py-0.5 pl-3 text-sm">{{ sprintf(__("lychee.PHOTO_ISO"), "") }}</span>
+		<span class="py-0.5 pl-0 text-sm">{{ $iso }}</span>
+		@endif
 		@endif
 		@if ($has_location)
-		<div class="sidebar__divider">
-			<h1>{{ __("lychee.PHOTO_LOCATION") }}</h1>
-		</div>
-		<table aria-hidden="true"> {{-- Refactor me later to not use table --}}
-			<tbody>
-				<x-sidebar.line head='{{ __("lychee.PHOTO_LATITUDE") }}'>
-					{{ $latitude }}
-				</x-sidebar.line>
-				<x-sidebar.line head='{{ __("lychee.PHOTO_LONGITUDE") }}'>
-					{{ $longitude }}
-				</x-sidebar.line>
-				<x-sidebar.line head='{{ __("lychee.PHOTO_ALTITUDE") }}'>
-					{{ $altitude }}
-				</x-sidebar.line>
-				@if ($location != null)
-				<x-sidebar.line head='{{ __("lychee.PHOTO_LOCATION") }}'>
-					{{ $location }}
-				</x-sidebar.line>
-				@endif
-				@if ($img_direction != null)
-				<x-sidebar.line head='{{ __("lychee.PHOTO_IMGDIRECTION") }}'>
-					{{ $img_direction }}
-				</x-sidebar.line>
-				@endif
-			</tbody>
-		</table>
+		<h2 class="col-span-2 text-neutral-400 font-bold px-3 pt-4 pb-3">{{ __("lychee.PHOTO_LOCATION") }}</h1>
+		<span class="py-0.5 pl-3 text-sm">{{ __("lychee.PHOTO_LATITUDE") }}</span>
+		<span class="py-0.5 pl-0 text-sm">{{ $latitude }}</span>
+		<span class="py-0.5 pl-3 text-sm">{{ __("lychee.PHOTO_LONGITUDE") }}</span>
+		<span class="py-0.5 pl-0 text-sm">{{ $longitude }}</span>
+		<span class="py-0.5 pl-3 text-sm">{{ __("lychee.PHOTO_ALTITUDE") }}</span>
+		<span class="py-0.5 pl-0 text-sm">{{ $altitude }}</span>
+		@if ($location != null)
+		<span class="py-0.5 pl-3 text-sm">{{ __("lychee.PHOTO_LOCATION") }}</span>
+		<span class="py-0.5 pl-0 text-sm">{{ $location }}</span>
+		@endif
+		@if ($img_direction != null)
+		<span class="py-0.5 pl-3 text-sm">{{ __("lychee.PHOTO_IMGDIRECTION") }}</span>
+		<span class="py-0.5 pl-0 text-sm">{{ $img_direction }}</span>
+		@endif
 		@endif
 	{{--
 	structure.license = {
@@ -120,13 +71,13 @@
 	--}}
 
 
-	@if(Auth::check())
+	{{-- @if(Auth::check()) --}}
 	{{-- structure.sharing = {
 		title: lychee.locale["PHOTO_SHARING"],
 		type: sidebar.types.DEFAULT,
 		rows: [{ title: lychee.locale["PHOTO_SHR_PLUBLIC"], kind: "public", value: isPublic }],
 	};
 	--}}
-	@endif
+	{{-- @endif --}}
 	</div>
 </div>

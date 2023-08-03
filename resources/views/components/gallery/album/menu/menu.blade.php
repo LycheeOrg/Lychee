@@ -1,5 +1,6 @@
 @props(['album', 'userCount' => 0])
-<div class="w-full sm:m-7 mb-4 flex justify-center flex-wrap flex-row-reverse" x-show="detailsOpen" x-data="{ activeTab:  0 }" x-collapse.duration.300ms>
+<div class="w-full sm:m-7 mb-4 flex justify-center flex-wrap flex-row-reverse
+    " x-show="detailsOpen" x-data="{ activeTab:  0 }" x-collapse.duration.300ms>
     <ul class="
         text-neutral-200 text-sm w-full xl:w-1/6 xl:px-9
         max-xl:w-full max-xl:flex max-xl:justify-center
