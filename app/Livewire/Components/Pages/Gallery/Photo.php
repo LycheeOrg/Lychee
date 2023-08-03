@@ -55,7 +55,6 @@ class Photo extends Component
 		$this->photo = $photoItem;
 		$this->overlayType = Configs::getValueAsEnum('image_overlay_type', PhotoOverlayMode::class)->value;
 
-
 		// $this->locked = Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
 	}
 
