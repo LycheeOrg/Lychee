@@ -30,7 +30,7 @@
         @endif
         @if ($fps !== '')
             <span class="py-0.5 pl-3 text-sm">{{ __('lychee.PHOTO_FPS') }}</span>
-            <span class="py-0.5 pl-0 text-sm">{{ $fps }}</span>
+            <span class="py-0.5 pl-0 text-sm">{{ $fps }} fps</span>
         @endif
         @if (count($tags) > 0)
             <h2 class="col-span-2 text-neutral-400 font-bold px-3 pt-4 pb-3">{{ __('lychee.PHOTO_TAGS') }}</h2>
@@ -64,18 +64,18 @@
                 <span class="py-0.5 pl-3 text-sm">{{ __('lychee.PHOTO_SHUTTER') }}</span>
                 <span class="py-0.5 pl-0 text-sm">{{ $shutter }}</span>
             @endif
-            @if ($aperture !== '')
-                <span class="py-0.5 pl-3 text-sm">{{ __('lychee.PHOTO_APERTURE') }}</span>
-                <span class="py-0.5 pl-0 text-sm">ƒ / {{ $aperture }}</span>
-            @endif
-            @if ($focal !== '')
-                <span class="py-0.5 pl-3 text-sm">{{ __('lychee.PHOTO_FOCAL') }}</span>
-                <span class="py-0.5 pl-0 text-sm">{{ $focal }}</span>
-            @endif
-            @if ($iso !== '')
-                <span class="py-0.5 pl-3 text-sm">{{ sprintf(__('lychee.PHOTO_ISO'), '') }}</span>
-                <span class="py-0.5 pl-0 text-sm">{{ $iso }}</span>
-            @endif
+			@if ($aperture !== '')
+				<span class="py-0.5 pl-3 text-sm">{{ __('lychee.PHOTO_APERTURE') }}</span>
+				<span class="py-0.5 pl-0 text-sm">ƒ / {{ $aperture }}</span>
+			@endif
+			@if ($focal !== '')
+				<span class="py-0.5 pl-3 text-sm">{{ __('lychee.PHOTO_FOCAL') }}</span>
+				<span class="py-0.5 pl-0 text-sm">{{ $focal }}</span>
+			@endif
+			@if ($iso !== '')
+				<span class="py-0.5 pl-3 text-sm">{{ sprintf(__('lychee.PHOTO_ISO'), '') }}</span>
+				<span class="py-0.5 pl-0 text-sm">{{ $iso }}</span>
+			@endif
         @endif
         @if ($has_location)
             <h2 class="col-span-2 text-neutral-400 font-bold px-3 pt-4 pb-3">{{ __('lychee.PHOTO_LOCATION') }}

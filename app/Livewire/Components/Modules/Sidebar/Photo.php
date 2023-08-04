@@ -88,10 +88,15 @@ class Photo extends Component
 		$this->has_exif = $this->genExifHash($photo) !== '';
 		if ($this->has_exif) {
 			$this->lens = $photo->lens ?? '';
-			$this->shutter = $photo->shutter;
+			$this->shutter = $photo->shutter ?? '';
 			$this->aperture = str_replace('f/', '', $photo->aperture);
-			$this->focal = $photo->focal;
-			$this->iso = $photo->iso;
+			$this->focal = $photo->focal ?? '';
+			$this->iso = $photo->iso ?? '';
+		}
+
+		if ($this->is_video) {
+			$this->duration = Helpers::secondsToHMS($photo->aperture ?? 0);
+			$this->fps = $photo->focal ?? '';
 		}
 
 		$this->has_location = $this->has_location($photo);
@@ -167,7 +172,7 @@ class Photo extends Component
 		$exifHash = $photo->make;
 		$exifHash .= $photo->model;
 		$exifHash .= $photo->shutter;
-		if ($photo->isVideo()) {
+		if (!$photo->isVideo()) {
 			$exifHash .= $photo->aperture;
 			$exifHash .= $photo->focal;
 		}

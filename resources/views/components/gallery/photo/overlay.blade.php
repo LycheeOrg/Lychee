@@ -16,7 +16,7 @@
         <br>
         {{ $focal }} {{ $lens === '' ? '' : sprintf('(%s)', $lens) }}
         @else
-        {{ $duration }} at {{ $fps }}fps
+        {{ $duration }} at {{ $fps }} fps
         @endif
     </p>
 </div>

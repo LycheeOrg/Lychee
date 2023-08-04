@@ -54,7 +54,7 @@ class Overlay extends Component
 
 		if ($this->is_video) {
 			$this->duration = Helpers::secondsToHMS($photo->aperture ?? 0);
-			$this->fps = $photo->focal;
+			$this->fps = $photo->focal ?? '';
 		}
 	}
 
