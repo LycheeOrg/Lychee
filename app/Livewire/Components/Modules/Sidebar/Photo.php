@@ -24,7 +24,8 @@ class Photo extends Component
 	public string $filesize;
 	public string $type;
 	public string $resolution;
-	public string $tags;
+	/** @var array<int,string> */
+	public array $tags;
 
 	public bool $is_public;
 	public bool $is_video;
@@ -82,6 +83,7 @@ class Photo extends Component
 		$this->taken_at = $photo->taken_at?->toString(); // for simplicity for now.
 		$this->make = $photo->make;
 		$this->model = $photo->model;
+		$this->tags = $photo->tags;
 
 		$this->has_exif = $this->genExifHash($photo) !== '';
 		if ($this->has_exif) {

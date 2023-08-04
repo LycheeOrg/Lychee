@@ -1,4 +1,4 @@
-<div id="image_overlay" class="absolute bottom-7 left-7 text-white text-shadow" x-show="overlayType !== 'none'"  x-cloak>
+<div id="image_overlay" class="absolute bottom-7 left-7 text-white text-shadow" x-show="overlayType !== 'none'" x-cloak>
 	<h1 class=" text-3xl">{{ $title }}</h1>
     <p class="mt-1 text-xl" x-show="overlayType === 'description'">
         {{ $description }}
