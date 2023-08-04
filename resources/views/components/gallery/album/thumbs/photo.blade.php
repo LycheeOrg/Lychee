@@ -40,6 +40,12 @@
 			@endif
 		</span>
 	</div>
+	@if($is_video)
+	<div class="w-full top-0 h-full absolute hover:opacity-70 transition-opacity duration-300">
+		<img class="absolute top-1/2 -translate-y-1/2 aspect-square w-fit h-fit" alt="play"  src="{{ URL::asset("img/play-icon.png") }}" />
+	</div>
+	@endif
+
 	@auth
 		<div class='badges absolute mt-[-1px] ml-1 top-0 left-0'>
 			@if($is_starred)

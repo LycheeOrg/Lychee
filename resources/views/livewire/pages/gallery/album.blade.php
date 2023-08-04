@@ -24,11 +24,15 @@
                 $wire.loadAlbum(width - 2*28);"
         class="relative flex flex-wrap content-start w-full justify-start h-[calc(100vh-56px)] overflow-x-clip overflow-y-auto">
 
+        @if ($flags->is_base_album)
         @can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class, $this->album])
         <x-gallery.album.menu.menu :album="$this->album" :userCount="User::count()" />
         @endcan
+        @endif
+        @if($num_children > 0 || $num_photos > 0)
         <x-gallery.album.hero    :album="$this->album" :url="$this->header_url" x-show="! detailsOpen" />
         <x-gallery.album.details :album="$this->album" :url="$this->header_url" x-show="! detailsOpen" />
+        @endif
 
         @if ($flags->is_ready_to_load)
             @if($num_children > 0 && $num_photos > 0)<x-gallery.divider title="{{ __('lychee.ALBUMS') }}" />@endif
@@ -51,6 +55,11 @@
                 <x-gallery.album.thumbs.photo :data="$this->album->photos[$i]" albumId="{{ $albumId }}" :geometry="$this->geometry->boxes->get($i)" />
             @endfor
             </div>
+            @endif
+            @if($num_children === 0 && $num_photos === 0)
+            <span class="mt-[33%] w-full text-center text-xl text-neutral-400 align-middle">
+                Loading...
+            </span>
             @endif
         @else
         <span class="mt-[33%] w-full text-center text-xl text-neutral-400 align-middle">

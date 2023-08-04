@@ -24,6 +24,7 @@ class Photo extends Component
 	public string $photo_id = '';
 
 	public bool $is_lazyload = true;
+	public bool $is_video = false;
 
 	public string $title;
 	public ?string $taken_at;
@@ -60,6 +61,7 @@ class Photo extends Component
 		$this->created_at = $data->created_at;
 		$this->is_starred = $data->is_starred;
 		$this->style = '';
+		$this->is_video = $data->isVideo();
 
 		if ($this->is_square_layout) {
 			$this->setSquareLayout($data);
@@ -121,19 +123,18 @@ class Photo extends Component
 	 */
 	private function setSquareLayout(ModelsPhoto $data): void
 	{
-		$is_video = $data->isVideo();
 		$has_live_photo_url = $data->live_photo_url !== null;
 
 		$thumb = $data->size_variants->getSizeVariant(SizeVariantType::THUMB);
 		$thumb2x = $data->size_variants->getSizeVariant(SizeVariantType::THUMB2X);
 
 		$this->class = '';
-		$this->class .= $is_video ? ' video' : '';
+		$this->class .= $this->is_video ? ' video' : '';
 		$this->class .= $has_live_photo_url ? ' livephoto' : '';
 
 		$thumbUrl = $thumb?->url;
 		$thumb2xUrl = $thumb2x?->url;
-		$this->set_src($thumb, $is_video, $has_live_photo_url);
+		$this->set_src($thumb, $this->is_video, $has_live_photo_url);
 
 		$this->srcset = sprintf("data-src='%s'", URL::asset($thumbUrl));
 		$this->srcset2x = $thumb2xUrl !== null ? sprintf("data-srcset='%s 2x'", URL::asset($thumb2xUrl)) : '';

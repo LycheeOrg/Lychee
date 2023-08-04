@@ -26,7 +26,11 @@
 		<h1 class="w-full pt-3 pb-1 pr-1 pl-4 text-sm text-white font-bold text-ellipsis whitespace-nowrap overflow-x-hidden" title='{{ $title }}'>{{ $title }}</h1>
 		<span class="block mt-0 mr-0 mb-3 ml-4 text-2xs text-neutral-400">{{ $data['created_at'] ?? '' }}</span>
 	</div>
-
+	@if(Str::contains($thumb?->type, 'video'))
+	<span class="w-full h-full absolute hover:opacity-70 transition-opacity duration-300">
+		<img class="h-full w-full" alt="play"  src="{{ URL::asset("img/play-icon.png") }}" />
+	</span>
+	@endif
 	@auth
 	<div class='badges absolute mt-[-1px] ml-1 top-0 left-0'>
 		@if ($is_nsfw)

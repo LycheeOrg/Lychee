@@ -8,8 +8,6 @@ use Illuminate\View\Component;
 
 class AlbumThumb extends Component
 {
-	public bool $isVideo;
-	public string $class;
 	public string $src = '';
 	public string $dataSrc = '';
 	public string $dataSrcSet = '';
@@ -18,14 +16,9 @@ class AlbumThumb extends Component
 		string $type = '',
 		string $thumb = '',
 		string $thumb2x = '',
-		string $class = ''
 	) {
-		$this->isVideo = Str::contains($type, 'video');
-
-		$this->class = $class . ($this->isVideo ? ' video' : '');
-
 		if ($thumb === 'uploads/thumb/') {
-			$this->src = $this->isVideo ? URL::asset('img/play-icon.png') : URL::asset('img/placeholder.png');
+			$this->src = Str::contains($type, 'video') ? URL::asset('img/play-icon.png') : URL::asset('img/placeholder.png');
 			$this->dataSrc = Str::contains($type, 'raw') ? URL::asset('img/no_images.svg') : '';
 		} else {
 			$this->src = URL::asset('img/no_images.svg');
