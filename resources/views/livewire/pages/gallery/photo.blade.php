@@ -17,8 +17,7 @@
         <a class="header__divider"></a> --}}
         {{-- <x-header.button wire:click="openContextMenu" icon="ellipses" /> --}}
 
-		<x-header.button x-on:click="detailsOpen = ! detailsOpen" icon="chevron-left" x-cloak x-show="!detailsOpen" />
-		<x-header.button x-on:click="detailsOpen = ! detailsOpen" icon="chevron-right" x-cloak x-show="detailsOpen" />
+		<x-header.button x-on:click="detailsOpen = ! detailsOpen" icon="info" x-bind:class="detailsOpen ? 'fill-sky-500' : ''" />
 
 	</x-header.bar>
 	<div class="w-full flex h-[calc(100%-3.5rem)] overflow-hidden">

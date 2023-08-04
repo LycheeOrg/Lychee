@@ -33,8 +33,8 @@ class Photo extends Component
 	public string $owner_name = '';
 	public string $license;
 
-	public string $duration = 'xxx';
-	public string $fps = 'xxx';
+	public string $duration = '';
+	public string $fps = '';
 
 	public ?string $model;
 	public ?string $make;
@@ -85,7 +85,7 @@ class Photo extends Component
 
 		$this->has_exif = $this->genExifHash($photo) !== '';
 		if ($this->has_exif) {
-			$this->lens = $photo->lens;
+			$this->lens = $photo->lens ?? '';
 			$this->shutter = $photo->shutter;
 			$this->aperture = str_replace('f/', '', $photo->aperture);
 			$this->focal = $photo->focal;
