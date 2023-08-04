@@ -1,4 +1,5 @@
-<div class="w-full" x-data="{ detailsOpen: false }">
+<div class="w-full" x-data="{ detailsOpen: false }" 
+    @keydown.window="if (event.keyCode === 73) { event.preventDefault(); detailsOpen = ! detailsOpen }">
     <!-- toolbar -->
     <x-header.bar>
         <x-header.button @keydown.escape.window="$wire.back()" wire:click="back"  icon="chevron-left" />
@@ -58,7 +59,7 @@
             @endif
             @if($num_children === 0 && $num_photos === 0)
             <span class="mt-[33%] w-full text-center text-xl text-neutral-400 align-middle">
-                Loading...
+                Nothing to see here
             </span>
             @endif
         @else
