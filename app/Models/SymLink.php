@@ -79,6 +79,11 @@ class SymLink extends Model
 		'size_variant_id', // see above
 	];
 
+	final protected function _toArray(): array
+	{
+		return parent::toArray();
+	}
+
 	/**
 	 * @param $query
 	 *

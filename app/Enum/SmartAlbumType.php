@@ -10,8 +10,8 @@ enum SmartAlbumType: string
 	use DecorateBackedEnum;
 
 	case UNSORTED = 'unsorted';
+	case PUBLIC = 'public';
 	case STARRED = 'starred';
 	case RECENT = 'recent';
-	case PUBLIC = 'public';
 	case ON_THIS_DAY = 'on_this_day';
 }
