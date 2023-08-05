@@ -1,0 +1,1 @@
+<x-header.button @keydown.escape.window="$wire.back()" wire:click="back" icon="chevron-left" />

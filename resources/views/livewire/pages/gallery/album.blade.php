@@ -2,7 +2,7 @@
     @keydown.window="if (event.keyCode === 73) { event.preventDefault(); detailsOpen = ! detailsOpen }">
     <!-- toolbar -->
     <x-header.bar>
-        <x-header.button @keydown.escape.window="$wire.back()" wire:click="back"  icon="chevron-left" />
+        <x-header.back />
         <x-header.title>{{ $album->title }}</x-header.title>
         {{-- <a class="button button--map" id="button_map_album"><x-icons.iconic icon="map" /></a> --}}
         {{-- <a class="button" id="button_fs_album_enter"><x-icons.iconic icon="fullscreen-enter" /></a> --}}

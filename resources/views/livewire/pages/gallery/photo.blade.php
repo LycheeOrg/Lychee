@@ -1,7 +1,7 @@
 <div class="w-full" x-data="{ detailsOpen: false }">
     <!-- toolbar -->
     <x-header.bar>
-        <x-header.button @keydown.escape.window="$wire.back()" wire:click="back" icon="chevron-left" />
+        <x-header.back />
         <x-header.title>{{ $photo->title }}</x-header.title>
         {{-- <a class="button button--star" id="button_star"><x-icons.iconic icon="star" /></a>
         <a class="button button--eye" id="button_visibility"><x-icons.iconic icon="eye" /></a>

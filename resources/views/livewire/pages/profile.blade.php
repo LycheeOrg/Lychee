@@ -1,6 +1,6 @@
 <div class="w-full">
     <x-header.bar>
-        <x-header.button wire:click="back" icon="chevron-left" />
+        <x-header.back />
         <x-header.title>{{ __('lychee.PROFILE') }}</x-header.title>
     </x-header.bar>
 	<div class="overflow-x-clip overflow-y-auto h-[calc(100vh-56px)]">
