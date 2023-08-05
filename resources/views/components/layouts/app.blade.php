@@ -22,5 +22,6 @@
         {{ $slot }}
 		<livewire:base.context-menu />
 		<livewire:base.modal />
+		<x-shortcuts />
     </body>
 </html>

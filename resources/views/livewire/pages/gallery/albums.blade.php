@@ -3,7 +3,11 @@
     <x-header.bar>
         @guest
             <!-- NOT LOGGED -->
-            <x-header.button wire:click="openLoginModal" icon="account-login" />
+            <x-header.button 
+                @keydown.window="if (event.keyCode === 76) { $wire.openLoginModal() }"
+                wire:click="openLoginModal" icon="account-login"
+                {{--  76 = l --}}
+                />
         @endguest
         @auth
             <x-header.button x-bind="leftMenuOpen" x-on:click="leftMenuOpen = ! leftMenuOpen" icon="cog" />
