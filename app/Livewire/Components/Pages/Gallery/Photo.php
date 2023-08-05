@@ -2,13 +2,19 @@
 
 namespace App\Livewire\Components\Pages\Gallery;
 
+use App\Actions\Photo\Delete;
+use App\Actions\Photo\Strategies\RotateStrategy;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\PhotoOverlayMode;
 use App\Factories\AlbumFactory;
+use App\Livewire\DTO\PhotoFlags;
+use App\Livewire\Traits\InteractWithModal;
 use App\Models\Configs;
-use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo as PhotoModel;
+use App\Policies\PhotoPolicy;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -19,6 +25,7 @@ use Livewire\Component;
  */
 class Photo extends Component
 {
+	use InteractWithModal;
 	private AlbumFactory $albumFactory;
 
 	#[Locked]
@@ -27,17 +34,14 @@ class Photo extends Component
 	#[Locked]
 	public string $photoId;
 
-	public string $overlayType;
+	#[Locked]
+	public PhotoFlags $flags;
 
-	public bool $autoplay = true;
+	public string $overlayType;
 
 	/** @var PhotoModel Said photo to be displayed */
 	public PhotoModel $photo;
 	public ?AbstractAlbum $album = null;
-	public bool $is_base_album = false;
-
-	// ! Will be used later
-	public bool $visibleControls = false;
 
 	public function boot(): void
 	{
@@ -49,11 +53,16 @@ class Photo extends Component
 		$this->albumId = $albumId;
 		$this->photoId = $photoId;
 		$this->album = $this->albumFactory->findAbstractAlbumOrFail($this->albumId);
-		$this->is_base_album = $this->album instanceof BaseAlbum;
+
 		/** @var PhotoModel $photoItem */
 		$photoItem = PhotoModel::with('album')->findOrFail($this->photoId);
 		$this->photo = $photoItem;
 		$this->overlayType = Configs::getValueAsEnum('image_overlay_type', PhotoOverlayMode::class)->value;
+
+		$this->flags = new PhotoFlags(
+			can_autoplay: true,
+			can_rotate: Configs::getValueAsBool('editor_enabled'),
+		);
 
 		// $this->locked = Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
 	}
@@ -78,5 +87,38 @@ class Photo extends Component
 	#[On('reloadPage')]
 	public function reloadPage(): void
 	{
+	}
+
+	public function set_star(): void
+	{
+		Gate::check(PhotoPolicy::CAN_EDIT, $this->photo);
+		$this->photo->is_starred = !$this->photo->is_starred;
+		$this->photo->save();
+	}
+
+	public function rotate_ccw(): void
+	{
+		Gate::check(PhotoPolicy::CAN_EDIT, $this->photo);
+		$rotateStrategy = new RotateStrategy($this->photo, -1);
+		$this->photo = $rotateStrategy->do();
+		$this->render();
+	}
+
+	public function rotate_cw(): void
+	{
+		Gate::check(PhotoPolicy::CAN_EDIT, $this->photo);
+		$rotateStrategy = new RotateStrategy($this->photo, 1);
+		$this->photo = $rotateStrategy->do();
+		$this->render();
+	}
+
+	public function delete(): void
+	{
+		$this->openModal('forms.photo.delete', ['photoId' => $this->photo->id, 'albumId' => $this->albumId]);
+
+		// Gate::check(PhotoPolicy::CAN_EDIT, $this->photo);
+		// $fileDeleter = $delete->do([$this->photo->id]);
+		// App::terminating(fn () => $fileDeleter->do());
+		// $this->back();
 	}
 }

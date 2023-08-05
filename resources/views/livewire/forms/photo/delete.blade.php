@@ -1,9 +1,9 @@
-<div class="basicModal basicModal--fadeIn" role="dialog">
-	<div class="basicModal__content">
-		<p>Are you sure you want to delete the photo “drino”? This action can’t be undone!</p>
+<div>
+	<div class="p-9">
+		<p>{{ sprintf(__('lychee.PHOTO_DELETE_CONFIRMATION'), $title) }}</p>
 	</div>
-	<div class="basicModal__buttons">
-		<a id="basicModal__cancel" class="basicModal__button">Keep Photo</a>
-		<a id="basicModal__action" class="basicModal__button red">Delete Photo</a>
+	<div class="flex w-full box-border">
+		<x-forms.buttons.cancel class="border-t border-t-dark-800 rounded-bl-md w-full" wire:click="close">{{ __('lychee.PHOTO_KEEP' ) }}</x-forms.buttons.cancel>
+		<x-forms.buttons.danger class="border-t border-t-dark-800 rounded-br-md w-full" wire:click="submit">{{ __('lychee.PHOTO_DELETE') }}</x-forms.buttons.action>
 	</div>
 </div>
