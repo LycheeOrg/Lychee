@@ -7,7 +7,6 @@ use App\Models\Configs;
 use App\Models\JobHistory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\View\View;
-use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Jobs extends Component
@@ -41,11 +40,5 @@ class Jobs extends Component
 	public function back(): mixed
 	{
 		return $this->redirect(route('livewire-gallery'));
-	}
-
-	#[On('reloadPage')]
-	public function reloadPage(): void
-	{
-		$this->back();
 	}
 }

@@ -95,10 +95,11 @@ class Configs extends Model
 	 * Sanity check.
 	 *
 	 * @param string|null $candidateValue
+	 * @param string|null $message_template
 	 *
 	 * @return string
 	 */
-	public function sanity(?string $candidateValue): string
+	public function sanity(?string $candidateValue, ?string $message_template = null): string
 	{
 		$message = '';
 		$val_range = [
@@ -106,7 +107,7 @@ class Configs extends Model
 			self::TERNARY => explode('|', self::TERNARY),
 		];
 
-		$message_template_got = 'Error: Wrong property for ' . $this->key . ', expected %s, got ' . ($candidateValue ?? 'NULL') . '.';
+		$message_template ??= 'Error: Wrong property for ' . $this->key . ', expected %s, got ' . ($candidateValue ?? 'NULL') . '.';
 		switch ($this->type_range) {
 			case self::STRING:
 			case self::DISABLED:
@@ -119,24 +120,24 @@ class Configs extends Model
 			case self::INT:
 				// we make sure that we only have digits in the chosen value.
 				if (!ctype_digit(strval($candidateValue))) {
-					$message = sprintf($message_template_got, 'positive integer');
+					$message = sprintf($message_template, 'positive integer');
 				}
 				break;
 			case self::BOOL:
 			case self::TERNARY:
 				if (!in_array($candidateValue, $val_range[$this->type_range], true)) { // BOOL or TERNARY
-					$message = sprintf($message_template_got, implode(' or ', $val_range[$this->type_range]));
+					$message = sprintf($message_template, implode(' or ', $val_range[$this->type_range]));
 				}
 				break;
 			case self::LICENSE:
 				if (!in_array($candidateValue, Helpers::get_all_licenses(), true)) {
-					$message = sprintf($message_template_got, 'a valid license');
+					$message = sprintf($message_template, 'a valid license');
 				}
 				break;
 			default:
 				$values = explode('|', $this->type_range);
 				if (!in_array($candidateValue, $values, true)) {
-					$message = sprintf($message_template_got, implode(' or ', $values));
+					$message = sprintf($message_template, implode(' or ', $values));
 				}
 				break;
 		}

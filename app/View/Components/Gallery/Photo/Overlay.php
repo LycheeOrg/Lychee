@@ -42,7 +42,7 @@ class Overlay extends Component
 		$this->description = $photo->description ?? '';
 		$this->is_video = $photo->isVideo();
 		$this->is_camera_date = $photo->taken_at !== null;
-		$this->date = ($photo->taken_at ?? $photo->created_at)?->format('M j, Y, g:i:s A T') ?? '';
+		$this->date = ($photo->taken_at ?? $photo->created_at)->format('M j, Y, g:i:s A T') ?? '';
 
 		$this->make = $photo->make ?? '';
 		$this->model = $photo->model ?? '';
@@ -53,7 +53,7 @@ class Overlay extends Component
 		$this->lens = $photo->lens ?? '';
 
 		if ($this->is_video) {
-			$this->duration = Helpers::secondsToHMS($photo->aperture ?? 0);
+			$this->duration = Helpers::secondsToHMS(intval($photo->aperture));
 			$this->fps = $photo->focal ?? '';
 		}
 	}

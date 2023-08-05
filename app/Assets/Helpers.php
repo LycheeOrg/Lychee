@@ -266,10 +266,12 @@ class Helpers
 	 */
 	public function secondsToHMS(int|float $d): string
 	{
-		$h = floor($d / 3600);
-		$m = floor(($d % 3600) / 60);
-		$s = floor($d % 60);
+		$h = (int) floor($d / 3600);
+		$m = (int) floor(($d % 3600) / 60);
+		$s = (int) floor($d % 60);
 
-		return ($h > 0 ? $h . 'h' : '') . ($m > 0 ? $m . 'm' : '') . ($s > 0 || ($h === 0 && $m === 0) ? $s . 's' : '');
+		return ($h > 0 ? $h . 'h' : '')
+			. ($m > 0 ? $m . 'm' : '')
+			. ($s > 0 || ($h === 0 && $m === 0) ? $s . 's' : '');
 	}
 }

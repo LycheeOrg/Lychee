@@ -95,7 +95,7 @@ class Photo extends Component
 		}
 
 		if ($this->is_video) {
-			$this->duration = Helpers::secondsToHMS($photo->aperture ?? 0);
+			$this->duration = Helpers::secondsToHMS(intval($photo->aperture));
 			$this->fps = $photo->focal ?? '';
 		}
 

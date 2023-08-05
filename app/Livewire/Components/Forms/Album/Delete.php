@@ -68,6 +68,10 @@ class Delete extends Component
 		$fileDeleter = $delete->do([$baseAlbum->id]);
 		App::terminating(fn () => $fileDeleter->do());
 
-		return redirect()->to(route('livewire_index', ['page' => 'gallery', 'albumId' => $parent_id]));
+		if ($parent_id !== null) {
+			return redirect()->to(route('livewire-gallery-album', ['albumId' => $parent_id]));
+		}
+
+		return redirect()->to(route('livewire-gallery'));
 	}
 }
