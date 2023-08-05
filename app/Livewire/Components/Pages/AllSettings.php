@@ -13,9 +13,9 @@ use Livewire\Component;
 
 class AllSettings extends Component
 {
-	/*
-	* Add interaction with modal
-	*/
+	/**
+	 * Add interaction with modal
+	 */
 	use InteractWithModal;
 
 	public AllConfigsForms $form;
