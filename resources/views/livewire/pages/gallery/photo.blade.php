@@ -100,6 +100,7 @@
                 {{-- <div class='arrow_wrapper arrow_wrapper--previous'><a id='previous'>${build.iconic("caret-left")}</a></div> --}}
                 {{-- <div class='arrow_wrapper arrow_wrapper--next'><a id='next'>${build.iconic("caret-right")}</a></div> --}}
             </div>
+            @can(App\Policies\PhotoPolicy::CAN_EDIT, [App\Models\Photo::class, $photo])
             <div class="absolute top-0 w-full bg-red-500">
                 <span class="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-b from-black rounded-b-xl p-1">
                 <x-header.button x-on:click="$wire.set_star()" class="hover:fill-yellow-500 {{ $photo->is_starred ? 'fill-yellow-500' : 'fill-white'}}" icon="star"
@@ -118,6 +119,7 @@
                 {{-- 46 = dell, 8 = backspace --}} />
                 </span>
             </div>
+            @endcan
         </div>
         <aside id="lychee_sidebar_container" class="h-full relative overflow-clip w-0 bg-dark-800 transition-all"
             :class=" detailsOpen ? 'w-[360px]' : 'w-0 translate-x-full'">
