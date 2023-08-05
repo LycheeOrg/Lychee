@@ -2,8 +2,9 @@
 
 namespace App\Livewire\Components\Forms\Photo;
 
-use App\Http\RuleSets\Photo\DeletePhotosRuleSet;
 use App\Actions\Photo\Delete as DeleteAction;
+use App\Http\RuleSets\Photo\DeletePhotosRuleSet;
+use App\Livewire\Traits\InteractWithModal;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
 use App\Models\Photo;
@@ -17,6 +18,7 @@ use Livewire\Component;
 
 class Delete extends Component
 {
+	use InteractWithModal;
 	use AuthorizesRequests;
 	use UseValidator;
 	use Notify;
@@ -40,8 +42,10 @@ class Delete extends Component
 	 */
 	public function mount(array $params = []): void
 	{
-		$this->photoIDs = [$params['photoId']];
-		$this->title = Photo::query()->findOrFail($params['photoId'])->title;
+		/** @var string $id */
+		$id = $params['photoId'];
+		$this->photoIDs = [$id];
+		$this->title = Photo::query()->findOrFail($id)->title;
 		$this->albumId = $params['albumId'];
 	}
 
@@ -80,5 +84,4 @@ class Delete extends Component
 	{
 		$this->closeModal();
 	}
-
 }

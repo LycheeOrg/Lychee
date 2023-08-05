@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Components\Pages\Gallery;
 
-use App\Actions\Photo\Delete;
 use App\Actions\Photo\Strategies\RotateStrategy;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\PhotoOverlayMode;
