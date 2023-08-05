@@ -46,12 +46,10 @@
                 <x-help.cell class="text-right"><x-help.kbd>n</x-help.kbd></x-help.cell>
                 <x-help.cell>Upload photos</x-help.cell>
                 <x-help.cell class="text-right"><x-help.kbd>u</x-help.kbd></x-help.cell>
-                {{-- <!-- Still unsure about those -->
                 <x-help.cell>Rename album</x-help.cell>
                 <x-help.cell class="text-right"><x-help.kbd>r</x-help.kbd></x-help.cell>
                 <x-help.cell>Set description</x-help.cell>
                 <x-help.cell class="text-right"><x-help.kbd>d</x-help.kbd></x-help.cell>
-                --}}
                 <x-help.cell>Toggle panel</x-help.cell>
                 <x-help.cell class="text-right"><x-help.kbd>i</x-help.kbd></x-help.cell>
                 <x-help.cell>Search</x-help.cell>

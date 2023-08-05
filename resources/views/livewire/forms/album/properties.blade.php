@@ -2,12 +2,12 @@
 	<form>
         <div class="mb-4 h-12">
             <p class="font-bold">{{ __('lychee.ALBUM_TITLE') }}:</p>
-            <x-forms.inputs.text wire:model='title' />
+            <x-forms.inputs.text wire:model='title' id="albumTitle" />
             <x-forms.error-message field='title' />
         </div>
         <div class="my-4 h-56">
             <p class="font-bold">{{ __('lychee.ALBUM_DESCRIPTION') }}:</p>
-            <x-forms.textarea class="w-full h-48" wire:model="description"></x-forms.textarea>
+            <x-forms.textarea class="w-full h-48" wire:model="description"  id="albumDescription"></x-forms.textarea>
             <x-forms.error-message field='description' />
         </div>
         <div class="mt-4 h-12">

@@ -1,6 +1,15 @@
 @props(['album', 'userCount' => 0])
 <div class="w-full sm:m-7 mb-4 flex justify-center flex-wrap flex-row-reverse
-    " x-show="detailsOpen" x-data="{ activeTab:  0 }" x-collapse.duration.300ms>
+    " x-show="detailsOpen" x-data="{ activeTab:  0 }" x-collapse.duration.300ms
+    @keydown.window="
+        if (event.keyCode === 82 && !detailsOpen) { event.preventDefault(); detailsOpen = true; activeTab = 0; }
+        if (event.keyCode === 68 && !detailsOpen) { event.preventDefault(); detailsOpen = true; activeTab = 0; }
+        if (event.keyCode === 77 && !detailsOpen) { event.preventDefault(); detailsOpen = true; activeTab = 2; }
+    "
+    {{-- 82 = r --}}
+    {{-- 68 = d --}}
+    {{-- 68 = m --}}
+    >
     <ul class="
         text-neutral-200 text-sm w-full xl:w-1/6 xl:px-9
         max-xl:w-full max-xl:flex max-xl:justify-center
