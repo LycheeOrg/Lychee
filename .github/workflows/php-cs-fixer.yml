@@ -3,6 +3,7 @@ on:
   push:
     branches-ignore:
       - master
+      - livewire/**
   pull_request:
     paths-ignore:
       - '**.md'
