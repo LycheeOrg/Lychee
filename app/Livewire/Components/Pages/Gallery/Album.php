@@ -8,6 +8,7 @@ use App\Enum\Livewire\AlbumMode;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Factories\AlbumFactory;
+use App\Livewire\Components\Base\ContextMenu;
 use App\Livewire\DTO\AlbumFlags;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Album as ModelsAlbum;
@@ -19,6 +20,7 @@ use Illuminate\Support\Collection;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Renderless;
 use Livewire\Component;
 use LycheeOrg\PhpFlickrJustifiedLayout\DTO\Geometry;
 use LycheeOrg\PhpFlickrJustifiedLayout\LayoutConfig;
@@ -157,6 +159,7 @@ class Album extends Component implements Reloadable
 			->first();
 	}
 
+    #[Renderless]
 	public function openSharingModal(): void
 	{
 		$this->openClosableModal('forms.album.share', __('lychee.CLOSE'));
@@ -171,5 +174,11 @@ class Album extends Component implements Reloadable
 		}
 
 		$this->redirect(route('livewire-gallery'));
+	}
+
+    #[Renderless] 
+	public function openContextMenu(): void
+	{
+		$this->dispatch('openContextMenu', 'menus.AlbumAdd', ['parentId' => $this->albumId])->to(ContextMenu::class);
 	}
 }

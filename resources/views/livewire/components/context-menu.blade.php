@@ -5,7 +5,7 @@
 		role="dialog"
 		x-on:click.away="$wire.closeContextMenu()"
 		style="right: 30px; top: 30px; transform-origin: 154px 0px;">
-		@livewire('context-menus.'. $type, ['params' => $params])
+		@livewire($type, ['params' => $params])
 	</div>
 </div>
 @endif
