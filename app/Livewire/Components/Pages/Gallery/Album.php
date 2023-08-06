@@ -159,7 +159,7 @@ class Album extends Component implements Reloadable
 			->first();
 	}
 
-    #[Renderless]
+	#[Renderless]
 	public function openSharingModal(): void
 	{
 		$this->openClosableModal('forms.album.share', __('lychee.CLOSE'));
@@ -176,7 +176,7 @@ class Album extends Component implements Reloadable
 		$this->redirect(route('livewire-gallery'));
 	}
 
-    #[Renderless] 
+	#[Renderless]
 	public function openContextMenu(): void
 	{
 		$this->dispatch('openContextMenu', 'menus.AlbumAdd', ['parentId' => $this->albumId])->to(ContextMenu::class);

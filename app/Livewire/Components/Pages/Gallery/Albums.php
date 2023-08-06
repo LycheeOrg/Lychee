@@ -6,7 +6,6 @@ use App\Actions\Albums\Top;
 use App\Contracts\Livewire\Reloadable;
 use App\Http\Resources\Collections\TopAlbumsResource;
 use App\Livewire\Components\Base\ContextMenu;
-use App\Livewire\Components\Menus\LeftMenu;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -77,7 +76,7 @@ class Albums extends Component implements Reloadable
 	 *
 	 * @return void
 	 */
-    #[Renderless]
+	#[Renderless]
 	public function openLoginModal(): void
 	{
 		$this->openModal('modals.login');
@@ -86,13 +85,12 @@ class Albums extends Component implements Reloadable
 	/**
 	 * Open the context menu.
 	 * [Renderless] indicates that we do not need to call render() on this component.
-	 * 
-	 * @return void 
+	 *
+	 * @return void
 	 */
-    #[Renderless] 
+	#[Renderless]
 	public function openContextMenu(): void
 	{
 		$this->dispatch('openContextMenu', 'menus.AlbumAdd', ['parentId' => null])->to(ContextMenu::class);
 	}
-
 }
