@@ -14,7 +14,7 @@ return [
 	'SEARCH' => 'Suchen …',
 	'MORE' => 'Mehr',
 	'DEFAULT' => 'Standard',
-	'GALLERY' => 'Gallery',
+	'GALLERY' => 'Gallerie',
 
 	'USERS' => 'Benutzer',
 	'PROFILE' => 'Profile',
@@ -406,7 +406,7 @@ return [
 	'SET_LAYOUT' => 'Ausgerichtetes Layout benutzen:',
 
 	'NSFW_VISIBLE_TEXT_1' => 'Sensible Alben sind standardmäßig auf sichtbar',
-	'NSFW_VISIBLE_TEXT_2' => 'Wenn das Album öffentlich ist, kann weiterhin zugegriffen werden. Es wird nur ausgeblendet und kann <b>durch Pressen der Taste <kbd>H</kbd> sichtbar gemacht werden.</b>.',
+	'NSFW_VISIBLE_TEXT_2' => 'Wenn das Album öffentlich ist, kann weiterhin zugegriffen werden. Es wird nur ausgeblendet und kann <b>durch Drücken der Taste <kbd>H</kbd> sichtbar gemacht werden.</b>.',
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Standardmäßige Sichtbarkeit wurde erfolgreich geändert.',
 
 	'NSFW_BANNER' => '<h1>Krititscher Inhalt</h1><p>Diese Album enthält krititsche Inhalte, die manche Personen anstößig oder verstörend finden könnten.</p><p>Zur Einwilligung klicken.</p>',
