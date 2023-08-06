@@ -12,8 +12,8 @@ use Illuminate\Support\Collection;
 class AlbumForestResource extends JsonResource
 {
 	public function __construct(
-		private Collection $albums,
-		private ?Collection $sharedAlbums = null
+		public Collection $albums,
+		public ?Collection $sharedAlbums = null
 	) {
 		// Laravel applies a shortcut when this value === null but not when it is something else.
 		parent::__construct('must_not_be_null');

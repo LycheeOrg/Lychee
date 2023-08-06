@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\DefaultAlbumProtectionType;
+use App\Enum\ThumbAlbumSubtitleType;
 use App\Exceptions\Handler;
 use App\Metadata\Versions\InstalledVersion;
 use App\Models\Configs;
@@ -117,7 +118,7 @@ class ConfigurationResource extends JsonResource
 				],
 			]),
 
-			'album_subtitle_type' => Configs::getValueAsString('album_subtitle_type'),
+			'album_subtitle_type' => Configs::getValueAsEnum('album_subtitle_type', ThumbAlbumSubtitleType::class),
 			'check_for_updates' => Configs::getValueAsBool('check_for_updates'),
 			'default_album_protection' => Configs::getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class),
 			'feeds' => [],
