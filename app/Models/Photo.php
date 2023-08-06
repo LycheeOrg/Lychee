@@ -369,19 +369,15 @@ class Photo extends Model implements AspectRatio
 	 */
 	protected function getAspectRatioAttribute(): float
 	{
-		$ratio = 1;
-		$original = $this->size_variants->getOriginal();
-		if ($original !== null && $original->height > 0) {
-			$ratio = $original->width / $original->height;
-		}
-
 		if ($this->isVideo() &&
 			$this->size_variants->getSmall() === null &&
 			$this->size_variants->getMedium() === null) {
-			$ratio = 1;
+			return 1;
 		}
 
-		return $ratio;
+		return $this->size_variants->getOriginal()?->ratio ??
+			$this->size_variants->getMedium()?->ratio ??
+			$this->size_variants->getSmall()?->ratio ?? 1;
 	}
 
 	/**

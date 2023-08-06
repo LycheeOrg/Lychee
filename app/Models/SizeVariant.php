@@ -50,6 +50,7 @@ use League\Flysystem\Local\LocalFilesystemAdapter;
  * @property string              $full_path
  * @property int                 $width
  * @property int                 $height
+ * @property float               $ratio
  * @property int                 $filesize
  * @property Collection<SymLink> $sym_links
  *
@@ -101,6 +102,7 @@ class SizeVariant extends Model
 		'width' => 'integer',
 		'height' => 'integer',
 		'filesize' => 'integer',
+		'ratio' => 'float',
 	];
 
 	/**
