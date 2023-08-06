@@ -30,6 +30,8 @@ class Album extends Component
 
 	public function __construct(AbstractAlbum $data)
 	{
+		// $date_format = Configs::getValueAsString('date_format_album_thumb');
+
 		$this->id = $data->id;
 		$this->thumb = $data->thumb;
 		$this->title = $data->title;

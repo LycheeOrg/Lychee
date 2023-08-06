@@ -54,11 +54,13 @@ class Photo extends Component
 	{
 		$this->is_square_layout = AlbumMode::SQUARE === Configs::getValueAsEnum('layout', AlbumMode::class);
 
+		$date_format = Configs::getValueAsString('date_format_photo_thumb');
+
 		$this->album_id = $albumId;
 		$this->photo_id = $data->id;
 		$this->title = $data->title;
-		$this->taken_at = $data->taken_at ?? '';
-		$this->created_at = $data->created_at;
+		$this->taken_at = $data->taken_at?->format($date_format) ?? '';
+		$this->created_at = $data->created_at->format($date_format);
 		$this->is_starred = $data->is_starred;
 		$this->style = '';
 		$this->is_video = $data->isVideo();

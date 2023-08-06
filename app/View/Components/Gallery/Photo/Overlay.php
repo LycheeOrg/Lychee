@@ -3,6 +3,7 @@
 namespace App\View\Components\Gallery\Photo;
 
 use App\Facades\Helpers;
+use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\View\Component;
 use Illuminate\View\View;
@@ -38,11 +39,13 @@ class Overlay extends Component
 	 */
 	public function __construct(Photo $photo)
 	{
+		$date_format = Configs::getValueAsString('date_format_photo_overlay');
+
 		$this->title = $photo->title ?? '';
 		$this->description = $photo->description ?? '';
 		$this->is_video = $photo->isVideo();
 		$this->is_camera_date = $photo->taken_at !== null;
-		$this->date = ($photo->taken_at ?? $photo->created_at)->format('M j, Y, g:i:s A T') ?? '';
+		$this->date = ($photo->taken_at ?? $photo->created_at)->format($date_format) ?? '';
 
 		$this->make = $photo->make ?? '';
 		$this->model = $photo->model ?? '';

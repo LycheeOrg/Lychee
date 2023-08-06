@@ -4,6 +4,7 @@ namespace App\Livewire\Components\Modules\Sidebar;
 
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Facades\Helpers;
+use App\Models\Configs;
 use App\Models\Photo as PhotoModel;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\View\View;
@@ -67,8 +68,11 @@ class Photo extends Component
 	 */
 	public function mount(PhotoModel $photo): void
 	{
+		$date_format_uploaded = Configs::getValueAsString('date_format_sidebar_uploaded');
+		$date_format_taken_at = Configs::getValueAsString('date_format_sidebar_taken_at');
+
 		$this->title = $photo->title;
-		$this->created_at = $photo->created_at->format('F Y');
+		$this->created_at = $photo->created_at->format($date_format_uploaded);
 		$this->description = $photo->description ?? '';
 
 		$this->type = $photo->type;
@@ -80,7 +84,7 @@ class Photo extends Component
 		// $this->is_public = $photo->is_public;
 		$this->license = $photo->license;
 
-		$this->taken_at = $photo->taken_at?->toString(); // for simplicity for now.
+		$this->taken_at = $photo->taken_at?->format($date_format_taken_at);
 		$this->make = $photo->make;
 		$this->model = $photo->model;
 		$this->tags = $photo->tags;

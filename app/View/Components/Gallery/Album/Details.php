@@ -4,6 +4,7 @@ namespace App\View\Components\Gallery\Album;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Models\Album;
+use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
@@ -22,6 +23,7 @@ class Details extends Component
 
 	public function __construct(AbstractAlbum $album, ?string $url)
 	{
+		$date_format = Configs::getValueAsString('date_format_hero_created_at');
 		$this->can_download = Gate::check(AlbumPolicy::CAN_DOWNLOAD, [AbstractAlbum::class, $album]);
 		$this->url = $url;
 		$this->title = $album->title;
@@ -32,7 +34,7 @@ class Details extends Component
 			$this->num_photos = $album->num_photos;
 		}
 		if ($album instanceof BaseAlbum) {
-			$this->created_at = $album->created_at->format('M j, Y g:i:s A e');
+			$this->created_at = $album->created_at->format($date_format);
 			$this->description = $album->description;
 		}
 	}
