@@ -54,8 +54,6 @@ class Album extends Component
 			$policy = AlbumProtectionPolicy::ofBaseAlbum($data);
 		}
 
-
-
 		$this->is_nsfw = $policy->is_nsfw;
 		$this->is_nsfw_blurred = $this->is_nsfw && Configs::getValueAsBool('nsfw_blur');
 		$this->is_public = $policy->is_public;
