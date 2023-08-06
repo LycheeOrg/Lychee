@@ -1,13 +1,9 @@
 <!DOCTYPE HTML>
 <html lang="{{ app()->currentLocale() }}">
-<head>
-	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-	<title>{{ App\Models\Configs::getValueAsString('site_title') }}</title>
-
-	<link rel="shortcut icon" href="{{ URL::asset('favicon.ico') }}">
-	<link rel="apple-touch-icon" href="img/apple-touch-icon-ipad.png" sizes="120x120">
-	<link rel="apple-touch-icon" href="img/apple-touch-icon-iphone.png" sizes="152x152">
-	<link rel="apple-touch-icon" href="img/apple-touch-icon-iphone-plus.png" sizes="180x180">
+	<head>
+		<meta charset="UTF-8">
+		<link type="text/css" rel="stylesheet" href="dist/frontend.css">
+		@include('components.meta.index')
 
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=4.0, user-scalable=yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -27,11 +23,9 @@
 	@endif --}}
 
 	@yield('head-meta')
-@livewireStyles
 </head>
 <body>
-	{{ $slot }}
 	@include('includes.svg')
-	@livewireScripts
+	{{ $slot }}
 </body>
 </html>
