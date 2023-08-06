@@ -1,9 +1,9 @@
 <div class="users_view_line w-full flex my-1">
 	<p class="w-full flex">
-		<x-forms.inputs.text class="w-full mt-4" wire:model="username" type="text" placeholder="{{ __('lychee.LOGIN_USERNAME') }}" />
-		<x-forms.inputs.important class="w-full mt-4" wire:model="password" type="text" placeholder="{{ __('lychee.LOGIN_PASSWORD') }}" />
-		<x-forms.tickbox class="mt-1" title="{{ __('lychee.ALLOW_UPLOADS') }}" wire:model='may_upload' />
-		<x-forms.tickbox class="mt-1" title="{{ __('lychee.ALLOW_USER_SELF_EDIT') }}" wire:model='may_edit_own_settings' />
+		<x-forms.inputs.text class="w-full mt-4" wire:model.live="username" type="text" placeholder="{{ __('lychee.LOGIN_USERNAME') }}" />
+		<x-forms.inputs.important class="w-full mt-4" wire:model.live="password" type="text" placeholder="{{ __('lychee.LOGIN_PASSWORD') }}" />
+		<x-forms.tickbox class="mt-1" title="{{ __('lychee.ALLOW_UPLOADS') }}" wire:model.live='may_upload' />
+		<x-forms.tickbox class="mt-1" title="{{ __('lychee.ALLOW_USER_SELF_EDIT') }}" wire:model.live='may_edit_own_settings' />
 	</p>
 	@if($this->hasChanged)
 	<x-forms.buttons.action wire:click='save' class="w-1/6 rounded-r-md h-11" >{{ __('lychee.SAVE') }}</x-forms.buttons.action>
