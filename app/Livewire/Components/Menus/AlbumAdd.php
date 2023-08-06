@@ -63,6 +63,6 @@ class AlbumAdd extends Component
 	public function openUploadModal(): void
 	{
 		$this->closeContextMenu();
-		$this->openModal('forms.upload', $this->params);
+		$this->openModal('forms.add.MultipleFileUploader', $this->params);
 	}
 }
