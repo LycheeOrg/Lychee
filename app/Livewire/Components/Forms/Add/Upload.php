@@ -7,7 +7,9 @@ use App\Image\Files\ProcessableJobFile;
 use App\Image\Files\UploadedFile;
 use App\Jobs\ProcessImageJob;
 use App\Models\Configs;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 
 /**
@@ -17,6 +19,7 @@ class Upload extends Component
 {
 	use WithFileUploads;
 
+	/** @var array<int,TemporaryUploadedFile> */
 	public $files = [];
 
 	/**
@@ -94,9 +97,8 @@ class Upload extends Component
 		}
 	}
 
-	public function render()
+	public function render(): View
 	{
 		return view('livewire.forms.add.upload');
 	}
-
 }

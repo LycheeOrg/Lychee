@@ -7,6 +7,7 @@ use App\Image\Files\ProcessableJobFile;
 use App\Image\Files\UploadedFile;
 use App\Jobs\ProcessImageJob;
 use App\Models\Configs;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -14,53 +15,50 @@ use Livewire\WithFileUploads;
 
 class MultipleFileUploader extends Component
 {
-    // use WithFileUploads;
-    // public $uploads   = [];
-    // public $chunkSize = 5_000_000; // 5MB
+	// use WithFileUploads;
+	// public $uploads   = [];
+	// public $chunkSize = 5_000_000; // 5MB
 
-    // public function updatedUploads( $value, $key )
-    // {
-    //     list($index, $attribute) = explode('.',$key);
-    //     if( $attribute == 'fileChunk' ){
-    //         $fileDetails = $this->uploads[intval($index)];
-            
-    //         // Final File
-    //         $fileName  = $fileDetails['fileName'];
-    //         $finalPath = Storage::path('/livewire-tmp/'.$fileName);  
-            
-    //         // Chunk File
-    //         $chunkName = $fileDetails['fileChunk']->getFileName();
-    //         $chunkPath = Storage::path('/livewire-tmp/'.$chunkName);
-    //         $chunk      = fopen($chunkPath, 'rb');
-    //         $buff       = fread($chunk, $this->chunkSize);
-    //         fclose($chunk);
+	// public function updatedUploads( $value, $key )
+	// {
+	//     list($index, $attribute) = explode('.',$key);
+	//     if( $attribute == 'fileChunk' ){
+	//         $fileDetails = $this->uploads[intval($index)];
 
-    //         // Merge Together
-    //         $final = fopen($finalPath, 'ab');
-    //         fwrite($final, $buff);
-    //         fclose($final);
-    //         unlink($chunkPath);
+	//         // Final File
+	//         $fileName  = $fileDetails['fileName'];
+	//         $finalPath = Storage::path('/livewire-tmp/'.$fileName);
 
-            
-    //         // Progress
-    //         $curSize = Storage::size('/livewire-tmp/'.$fileName);
-    //         $this->uploads[$index]['progress'] = 
-    //         $curSize/$fileDetails['fileSize']*100;
-    //         if( $this->uploads[$index]['progress'] == 100 ){
-    //             $this->uploads[$index]['fileRef'] = 
-    //             TemporaryUploadedFile::createFromLivewire(
-    //               '/'.$fileDetails['fileName']
-    //             );
-    //         }
-    //     }
-    // }
+	//         // Chunk File
+	//         $chunkName = $fileDetails['fileChunk']->getFileName();
+	//         $chunkPath = Storage::path('/livewire-tmp/'.$chunkName);
+	//         $chunk      = fopen($chunkPath, 'rb');
+	//         $buff       = fread($chunk, $this->chunkSize);
+	//         fclose($chunk);
 
-    // public function render()
-    // {
-	// 	return view('livewire.forms.add.multiple-file-uploader-chunk');
+	//         // Merge Together
+	//         $final = fopen($finalPath, 'ab');
+	//         fwrite($final, $buff);
+	//         fclose($final);
+	//         unlink($chunkPath);
+
+	//         // Progress
+	//         $curSize = Storage::size('/livewire-tmp/'.$fileName);
+	//         $this->uploads[$index]['progress'] =
+	//         $curSize/$fileDetails['fileSize']*100;
+	//         if( $this->uploads[$index]['progress'] == 100 ){
+	//             $this->uploads[$index]['fileRef'] =
+	//             TemporaryUploadedFile::createFromLivewire(
+	//               '/'.$fileDetails['fileName']
+	//             );
+	//         }
+	//     }
 	// }
 
-
+	// public function render()
+	// {
+	// 	return view('livewire.forms.add.multiple-file-uploader-chunk');
+	// }
 
 	use WithFileUploads;
 
@@ -142,9 +140,6 @@ class MultipleFileUploader extends Component
 		}
 	}
 
-
-
-
 	// public function finishUpload($name, $tmpPath, $isMultiple)
 	// {
 	// 	$this->cleanupOldUploads();
@@ -158,12 +153,11 @@ class MultipleFileUploader extends Component
 	// 	$this->syncInput($name, $files);
 	// }
 
-	public function render()
+	/**
+	 * @return View
+	 */
+	public function render(): View
 	{
 		return view('livewire.forms.add.multiple-file-uploader');
 	}
-
-
-
-
 }
