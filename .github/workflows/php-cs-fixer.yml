@@ -3,7 +3,10 @@ on:
   push:
     branches-ignore:
       - master
+      - livewire/**
   pull_request:
+    branches-ignore:
+      - livewire/**
     paths-ignore:
       - '**.md'
       - '**.js'
