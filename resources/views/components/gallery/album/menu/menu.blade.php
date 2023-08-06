@@ -1,6 +1,7 @@
 @props(['album', 'userCount' => 0])
 <div class="w-full sm:m-7 mb-4 flex justify-center flex-wrap flex-row-reverse
-    " x-show="detailsOpen" x-data="{ activeTab:  0 }" x-collapse.duration.300ms
+    "
+    x-cloak x-show="detailsOpen" x-data="{ activeTab:  0 }" x-collapse.duration.300ms
     @keydown.window="
         if (event.keyCode === 82 && !detailsOpen) { event.preventDefault(); detailsOpen = true; activeTab = 0; }
         if (event.keyCode === 68 && !detailsOpen) { event.preventDefault(); detailsOpen = true; activeTab = 0; }

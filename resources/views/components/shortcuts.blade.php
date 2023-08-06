@@ -4,6 +4,7 @@
     x-data="{ shortCutsOpen: false }"
     @keydown.window="if (event.keyCode === 191 && event.shiftKey) { shortCutsOpen = true }"
     @keydown.escape.window="shortCutsOpen = false"
+    x-cloak
     x-show="shortCutsOpen">
     <div class="basicModal transition-opacity ease-in duration-1000
         opacity-100 bg-gradient-to-b from-dark-300 to-dark-400

@@ -7,16 +7,64 @@ use App\Image\Files\ProcessableJobFile;
 use App\Image\Files\UploadedFile;
 use App\Jobs\ProcessImageJob;
 use App\Models\Configs;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 
-/**
- * This defines the Login Form used in modals.
- */
-class Upload extends Component
+class MultipleFileUploader extends Component
 {
+    // use WithFileUploads;
+    // public $uploads   = [];
+    // public $chunkSize = 5_000_000; // 5MB
+
+    // public function updatedUploads( $value, $key )
+    // {
+    //     list($index, $attribute) = explode('.',$key);
+    //     if( $attribute == 'fileChunk' ){
+    //         $fileDetails = $this->uploads[intval($index)];
+            
+    //         // Final File
+    //         $fileName  = $fileDetails['fileName'];
+    //         $finalPath = Storage::path('/livewire-tmp/'.$fileName);  
+            
+    //         // Chunk File
+    //         $chunkName = $fileDetails['fileChunk']->getFileName();
+    //         $chunkPath = Storage::path('/livewire-tmp/'.$chunkName);
+    //         $chunk      = fopen($chunkPath, 'rb');
+    //         $buff       = fread($chunk, $this->chunkSize);
+    //         fclose($chunk);
+
+    //         // Merge Together
+    //         $final = fopen($finalPath, 'ab');
+    //         fwrite($final, $buff);
+    //         fclose($final);
+    //         unlink($chunkPath);
+
+            
+    //         // Progress
+    //         $curSize = Storage::size('/livewire-tmp/'.$fileName);
+    //         $this->uploads[$index]['progress'] = 
+    //         $curSize/$fileDetails['fileSize']*100;
+    //         if( $this->uploads[$index]['progress'] == 100 ){
+    //             $this->uploads[$index]['fileRef'] = 
+    //             TemporaryUploadedFile::createFromLivewire(
+    //               '/'.$fileDetails['fileName']
+    //             );
+    //         }
+    //     }
+    // }
+
+    // public function render()
+    // {
+	// 	return view('livewire.forms.add.multiple-file-uploader-chunk');
+	// }
+
+
+
 	use WithFileUploads;
 
+	/** @var array<int,TemporaryUploadedFile> */
 	public $files = [];
 
 	/**
@@ -46,7 +94,7 @@ class Upload extends Component
 		$this->albumId = $params['parentId'] ?? null;
 	}
 
-	protected function updatedFiles(): void
+	public function updatedFiles(): void
 	{
 		foreach ($this->files as $idx => $file) {
 			if (!array_key_exists($idx, $this->uploadedThumbs) && !array_key_exists($idx, $this->skipped)) {
@@ -94,9 +142,28 @@ class Upload extends Component
 		}
 	}
 
+
+
+
+	// public function finishUpload($name, $tmpPath, $isMultiple)
+	// {
+	// 	$this->cleanupOldUploads();
+
+	// 	$files = collect($tmpPath)->map(function ($i) {
+	// 		return TemporaryUploadedFile::createFromLivewire($i);
+	// 	})->toArray();
+	// 	$this->dispatch('upload:finished', $name, collect($files)->map->getFilename()->toArray())->self();
+
+	// 	$files = array_merge($this->getPropertyValue($name), $files);
+	// 	$this->syncInput($name, $files);
+	// }
+
 	public function render()
 	{
-		return view('livewire.forms.add.upload');
+		return view('livewire.forms.add.multiple-file-uploader');
 	}
+
+
+
 
 }

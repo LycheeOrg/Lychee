@@ -10,12 +10,14 @@ export default defineConfig({
     ],
     server: {
       watch: {
-        ignored: ["**/vendor/**",
+        ignored: [
+          "**/.*/**",
+          "**/database/**",
+          "**/node_modules/**",
           "**/public/**",
           "**/storage/**",
           "**/tests/**",
-          "**/database/**",
-          "**/.git/**"
+          "**/vendor/**",
         ],
       },
     }
