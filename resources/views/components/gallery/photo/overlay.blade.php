@@ -11,12 +11,13 @@
         @endif
     </p>
     <p class="mt-1 text-xl" x-show="overlayType === 'exif'">
-        @if (!$is_video)
+        @if ($is_video)
+        {{ $duration }} at {{ $fps }} fps
+        @endif
+        @if (!$is_video && $shutter !== '')
         {{ $shutter }} at &fnof; / {{ $aperture }}, {{ sprintf(__('lychee.PHOTO_ISO'), $iso) }}
         <br>
         {{ $focal }} {{ $lens === '' ? '' : sprintf('(%s)', $lens) }}
-        @else
-        {{ $duration }} at {{ $fps }} fps
         @endif
     </p>
 </div>
