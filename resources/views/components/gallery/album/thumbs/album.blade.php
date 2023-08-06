@@ -24,7 +24,23 @@
 		type="{{ $thumb?->type ?? '' }}" thumb="{{ $thumb?->thumbUrl ?? '' }}" thumb2x="{{ $thumb?->thumb2xUrl ?? '' }}" />
 	<div class='overlay absolute mb-[1px] mx-[1px] p-0 border-0 w-[calc(100%-2px)] bottom-0 bg-gradient-to-t from-[#00000099] text-shadow-sm'>
 		<h1 class="w-full pt-3 pb-1 pr-1 pl-4 text-sm text-white font-bold text-ellipsis whitespace-nowrap overflow-x-hidden" title='{{ $title }}'>{{ $title }}</h1>
-		<span class="block mt-0 mr-0 mb-3 ml-4 text-2xs text-neutral-400">{{ $data['created_at'] ?? '' }}</span>
+		<span class="block mt-0 mr-0 mb-3 ml-4 text-2xs text-neutral-300">
+			@switch($subType)
+				@case('description')
+					{{ Str::limit($description, 100) }}
+					@break
+				@case('takedate')
+					@isset($max_taken_at)
+					<x-icons.iconic icon="camera" class=" fill-neutral-200 w-3 h-3" /> {{ $max_taken_at === $min_taken_at ? $min_taken_at : $max_taken_at . ' - ' . $min_taken_at }}
+					@break
+					@endisset
+				@case('creation')
+					{{ $created_at }}
+					@break
+				@default
+					{{ $max_taken_at === $min_taken_at ? $min_taken_at : $max_taken_at . ' - ' . $min_taken_at }}					
+			@endswitch
+		</span>
 	</div>
 	@if(Str::contains($thumb?->type, 'video'))
 	<span class="w-full h-full absolute hover:opacity-70 transition-opacity duration-300">
