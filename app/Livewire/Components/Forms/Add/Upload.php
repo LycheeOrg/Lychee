@@ -98,5 +98,4 @@ class Upload extends Component
 	{
 		return view('livewire.forms.add.upload');
 	}
-
 }
