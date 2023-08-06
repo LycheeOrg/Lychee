@@ -5,6 +5,8 @@ on:
       - master
       - livewire/**
   pull_request:
+    branches-ignore:
+      - livewire/**
     paths-ignore:
       - '**.md'
       - '**.js'
