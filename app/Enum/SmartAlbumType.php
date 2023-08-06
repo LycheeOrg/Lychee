@@ -2,6 +2,8 @@
 
 namespace App\Enum;
 
+use App\Enum\Traits\DecorateBackedEnum;
+
 /**
  * Enum SmartAlbumType.
  */

@@ -8,7 +8,7 @@
  * https://github.com/laracraft-tech/laravel-useful-additions#usefulenums3
  */
 
-namespace App\Enum;
+namespace App\Enum\Traits;
 
 /**
  * add a 3 utility functions to enum.
