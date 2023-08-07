@@ -77,7 +77,7 @@ class GoogleMotionPictureHandler extends VideoHandler
 			$file->close();
 
 			$ffmpeg = FFMpeg::create([
-				'ffmpeg.binaries'  => '/usr/bin/ffmpeg',
+				'ffmpeg.binaries' => '/usr/bin/ffmpeg',
 				'ffprobe.binaries' => '/usr/bin/ffprobe',
 			]);
 			$audioOrVideo = $ffmpeg->open($this->workingCopy->getRealPath());

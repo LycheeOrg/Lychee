@@ -44,7 +44,7 @@ class VideoHandler
 		}
 		try {
 			$ffmpeg = FFMpeg::create([
-				'ffmpeg.binaries'  => '/usr/bin/ffmpeg',
+				'ffmpeg.binaries' => '/usr/bin/ffmpeg',
 				'ffprobe.binaries' => '/usr/bin/ffprobe',
 			]);
 			$audioOrVideo = $ffmpeg->open($file->getRealPath());
