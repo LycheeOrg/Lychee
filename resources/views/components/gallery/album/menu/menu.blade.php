@@ -28,16 +28,16 @@
     </div>
     @if ($userCount > 1)
     <div class="w-full xl:w-5/6 flex justify-center flex-wrap" x-cloak x-show="activeTab === 1">
-        <livewire:forms.album.share-with :album="$album" />
+        <livewire:forms.album.share-with :album="$album"  lazy />
     </div>
     @endif
     <div class="w-full xl:w-5/6 flex justify-center flex-wrap" x-cloak x-show="activeTab === 2">
-        <livewire:forms.album.move :album="$album" />
+        <livewire:forms.album.move :album="$album"  lazy />
     </div>
     <div class="w-full xl:w-5/6 flex justify-center flex-wrap" x-cloak x-show="activeTab === 3">
             {{-- We only display this menu if there are more than 1 user, it does not make sense otherwise --}}
             @if ($userCount > 1)
-            <livewire:forms.album.transfer :album="$album" />
+            <livewire:forms.album.transfer :album="$album"  lazy />
             @endif
             <livewire:forms.album.delete :album="$album" />
     </div>

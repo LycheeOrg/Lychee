@@ -15,6 +15,7 @@ use App\Models\Album as ModelsAlbum;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\SizeVariant;
+use App\Models\User;
 use Illuminate\Database\Eloquent\RelationNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
@@ -51,6 +52,7 @@ class Album extends Component implements Reloadable
 	public ?string $header_url = null;
 	public int $num_children = 0;
 	public int $num_photos = 0;
+	public int $num_users = 0;
 
 	public function boot(): void
 	{
@@ -63,6 +65,7 @@ class Album extends Component implements Reloadable
 		$this->albumId = $albumId;
 		$this->album = $this->albumFactory->findAbstractAlbumOrFail($this->albumId);
 		$this->flags->is_base_album = $this->album instanceof BaseAlbum;
+		$this->num_users = User::count();
 	}
 
 	/**
