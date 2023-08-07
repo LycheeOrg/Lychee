@@ -27,7 +27,7 @@
 
         @if ($flags->is_base_album)
         @can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class, $this->album])
-        <x-gallery.album.menu.menu :album="$this->album" :userCount="User::count()" />
+        <x-gallery.album.menu.menu :album="$this->album" :userCount="$num_users" />
         @endcan
         @endif
         @if($num_children > 0 || $num_photos > 0)
