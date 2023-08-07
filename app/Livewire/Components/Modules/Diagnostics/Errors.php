@@ -3,8 +3,8 @@
 namespace App\Livewire\Components\Modules\Diagnostics;
 
 use App\Actions\Diagnostics\Errors as DiagnosticsErrors;
-use Illuminate\View\View;
 use Illuminate\Support\Str;
+use Illuminate\View\View;
 use Livewire\Component;
 
 class Errors extends Component
@@ -36,14 +36,15 @@ class Errors extends Component
 			if (Str::startsWith($line, 'Warning: ')) {
 				$arr['color'] = 'text-yellow-500';
 				$arr['type'] = 'Warning:';
-				$arr['line'] = Str::substr($line,9);
+				$arr['line'] = Str::substr($line, 9);
 			}
 
 			if (Str::startsWith($line, 'Error: ')) {
 				$arr['color'] = 'text-red-500';
 				$arr['type'] = 'Error:';
-				$arr['line'] = Str::substr($line,7);
+				$arr['line'] = Str::substr($line, 7);
 			}
+
 			return $arr;
 		})->all();
 	}
@@ -57,5 +58,4 @@ class Errors extends Component
 	{
 		return view('livewire.modules.diagnostics.pre-colored');
 	}
-
 }
