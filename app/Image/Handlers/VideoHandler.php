@@ -43,7 +43,10 @@ class VideoHandler
 			throw new ConfigurationException('FFmpeg is disabled by configuration');
 		}
 		try {
-			$ffmpeg = FFMpeg::create();
+			$ffmpeg = FFMpeg::create(array(
+				'ffmpeg.binaries'  => '/usr/bin/ffmpeg',
+				'ffprobe.binaries' => '/usr/bin/ffprobe',
+			));
 			$audioOrVideo = $ffmpeg->open($file->getRealPath());
 			if ($audioOrVideo instanceof Video) {
 				$this->video = $audioOrVideo;
