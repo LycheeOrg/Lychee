@@ -21,7 +21,7 @@ use Kalnoy\Nestedset\Collection as NsCollection;
 use Livewire\Component;
 
 /**
- * TODO: improve speed. 800ms component
+ * TODO: improve speed. 800ms component.
  */
 class Move extends Component
 {
