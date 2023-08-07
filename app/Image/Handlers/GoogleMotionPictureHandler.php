@@ -76,10 +76,10 @@ class GoogleMotionPictureHandler extends VideoHandler
 			$this->workingCopy->write($readStream);
 			$file->close();
 
-			$ffmpeg = FFMpeg::create(array(
+			$ffmpeg = FFMpeg::create([
 				'ffmpeg.binaries'  => '/usr/bin/ffmpeg',
 				'ffprobe.binaries' => '/usr/bin/ffprobe',
-			));
+			]);
 			$audioOrVideo = $ffmpeg->open($this->workingCopy->getRealPath());
 			if ($audioOrVideo instanceof Video) {
 				$this->video = $audioOrVideo;
