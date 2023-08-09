@@ -2,9 +2,12 @@
 
 namespace App\Livewire\Components\Forms\Settings\Base;
 
+use App\Enum\Livewire\NotificationType;
 use App\Livewire\Traits\Notify;
 use App\Models\Configs;
+use App\Policies\SettingsPolicy;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 
 /**
@@ -56,6 +59,13 @@ class StringSetting extends Component
 	 */
 	public function save(): void
 	{
+		Gate::check(SettingsPolicy::CAN_EDIT, [Configs::class]);
+		$error_msg = $this->config->sanity($this->value);
+		if ($error_msg === '') {
+			$this->notify($error_msg, NotificationType::ERROR);
+			return;
+		}
+
 		$this->config->value = $this->value;
 		$this->config->save();
 		$this->notify(__('lychee.CHANGE_SUCCESS'));

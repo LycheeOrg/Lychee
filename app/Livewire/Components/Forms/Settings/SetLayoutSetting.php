@@ -17,11 +17,12 @@ class SetLayoutSetting extends BaseConfigDropDown
 	 */
 	public function getOptionsProperty(): array
 	{
+		// ! Here we MUST do 1 0 2 3 order otherwise php makes a stupid conversion to int.
 		return [
-			'0' => __('lychee.LAYOUT_SQUARES'), // \App\Enum\Livewire\AlbumMode::FLKR
 			'1' => __('lychee.LAYOUT_JUSTIFIED'), // \App\Enum\Livewire\AlbumMode::SQUARE
-			// ! FIX ME
-			'2' => __('lychee.LAYOUT_UNJUSTIFIED'), // \App\Enum\Livewire\AlbumMode::MASONRY
+			'0' => __('lychee.LAYOUT_SQUARES'), // \App\Enum\Livewire\AlbumMode::FLKR
+			'2' => __('lychee.LAYOUT_MASONRY'), // \App\Enum\Livewire\AlbumMode::MASONRY
+			'3' => __('lychee.LAYOUT_GRID'), // \App\Enum\Livewire\AlbumMode::GRID
 		];
 	}
 

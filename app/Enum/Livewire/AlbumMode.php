@@ -4,6 +4,10 @@ namespace App\Enum\Livewire;
 
 use Illuminate\Support\Str;
 
+/**
+ * Enum to select all the possible modes.
+ * Do note that we use strings to avoid int/string type
+ */
 enum AlbumMode: int
 {
 	case SQUARE = 0;

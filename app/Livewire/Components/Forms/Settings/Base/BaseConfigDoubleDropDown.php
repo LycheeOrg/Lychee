@@ -2,11 +2,14 @@
 
 namespace App\Livewire\Components\Forms\Settings\Base;
 
+use App\Enum\Livewire\NotificationType;
 use App\Livewire\Traits\Notify;
 use App\Models\Configs;
+use App\Policies\SettingsPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\InvalidCastException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 
 /**
@@ -55,6 +58,18 @@ abstract class BaseConfigDoubleDropDown extends Component
 	 */
 	public function updated($field, $value)
 	{
+		Gate::check(SettingsPolicy::CAN_EDIT, [Configs::class]);
+		$error_msg = $this->config1->sanity($this->value1);
+		if ($error_msg === '') {
+			$this->notify($error_msg, NotificationType::ERROR);
+			return;
+		}
+		$error_msg = $this->config2->sanity($this->value2);
+		if ($error_msg === '') {
+			$this->notify($error_msg, NotificationType::ERROR);
+			return;
+		}
+
 		$this->config1->value = $this->value1;
 		$this->config1->save();
 		$this->config2->value = $this->value2;
