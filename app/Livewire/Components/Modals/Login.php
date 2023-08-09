@@ -4,7 +4,6 @@ namespace App\Livewire\Components\Modals;
 
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Http\RuleSets\LoginRuleSet;
-use App\Livewire\Traits\InteractWithModal;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
@@ -21,11 +20,6 @@ use Livewire\Component;
  */
 class Login extends Component
 {
-	/*
-	 * Allow modal integration
-	 */
-	use InteractWithModal;
-
 	public bool $is_new_release_available = false;
 	public bool $is_git_update_available = false;
 	public ?string $version = null;
@@ -85,7 +79,7 @@ class Login extends Component
 		// apply login as admin and trigger a reload
 		if (Auth::attempt(['username' => $data['username'], 'password' => $data['password']])) {
 			Log::notice(__METHOD__ . ':' . __LINE__ . ' User (' . $data['username'] . ') has logged in from ' . request()->ip());
-			$this->closeModal();
+			$this->dispatch('login-close');
 			$this->dispatch('reloadPage');
 
 			return;
@@ -94,15 +88,5 @@ class Login extends Component
 		// Wrong login: stay on the modal and update the rendering.
 		$this->addError('wrongLogin', 'Wrong login or password.');
 		Log::error(__METHOD__ . ':' . __LINE__ . ' User (' . $data['username'] . ') has tried to log in from ' . request()->ip());
-	}
-
-	/**
-	 * Add an handle to close the modal form from a user-land call.
-	 *
-	 * @return void
-	 */
-	public function close(): void
-	{
-		$this->closeModal();
 	}
 }
