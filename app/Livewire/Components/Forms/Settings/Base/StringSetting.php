@@ -64,6 +64,7 @@ class StringSetting extends Component
 		if ($error_msg !== '') {
 			$this->notify($error_msg, NotificationType::ERROR);
 			$this->value = $this->config->value;
+
 			return;
 		}
 
