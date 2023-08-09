@@ -31,6 +31,7 @@ abstract class BaseConfigDropDown extends Component
 	public function render(): View
 	{
 		$this->value = $this->config->value;
+
 		return view('livewire.forms.settings.drop-down');
 	}
 
@@ -48,6 +49,7 @@ abstract class BaseConfigDropDown extends Component
 		$error_msg = $this->config->sanity($this->value);
 		if ($error_msg === '') {
 			$this->notify($error_msg, NotificationType::ERROR);
+
 			return;
 		}
 
