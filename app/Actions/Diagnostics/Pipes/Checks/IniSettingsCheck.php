@@ -66,6 +66,15 @@ class IniSettingsCheck implements DiagnosticPipe
 			// @codeCoverageIgnoreEnd
 		}
 
+		if (extension_loaded('xdebug')) {
+			// @codeCoverageIgnoreStart
+			$msg = config('app.debug') !== true
+			? 'Errror: xdebug is enabled although Lychee is not in debug mode. Outside of debugging, xdebug may generate significant slowdown on your application.'
+			: 'Warning: xdebug is enabled. This may generate significant slowdown on your application.';
+			$data[] = $msg;
+			// @codeCoverageIgnoreEnd
+		}
+
 		if (ini_get('assert.exception') !== '1') {
 			// @codeCoverageIgnoreStart
 			$data[] = 'Warning: assert.exception is set to false. Lychee assumes that failing assertions throw proper exceptions.';
