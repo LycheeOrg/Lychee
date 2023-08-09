@@ -60,12 +60,12 @@ abstract class BaseConfigDoubleDropDown extends Component
 	{
 		Gate::check(SettingsPolicy::CAN_EDIT, [Configs::class]);
 		$error_msg = $this->config1->sanity($this->value1);
-		if ($error_msg === '') {
+		if ($error_msg !== '') {
 			$this->notify($error_msg, NotificationType::ERROR);
 			return;
 		}
 		$error_msg = $this->config2->sanity($this->value2);
-		if ($error_msg === '') {
+		if ($error_msg !== '') {
 			$this->notify($error_msg, NotificationType::ERROR);
 			return;
 		}
