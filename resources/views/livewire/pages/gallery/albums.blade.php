@@ -1,13 +1,10 @@
-<div class="w-full">
+<div class="w-full" x-data={loginModalOpen:false} x-on:login-close="loginModalOpen = false">
     <!-- toolbar -->
     <x-header.bar>
         @guest
             <!-- NOT LOGGED -->
-            <x-header.button 
-                @keydown.window="if (event.keyCode === 76) { $wire.openLoginModal() }"
-                wire:click="openLoginModal" icon="account-login"
-                {{--  76 = l --}}
-                />
+            <x-header.button @keydown.window="if (event.keyCode === 76) { loginModalOpen = true }"
+                x-on:click="loginModalOpen = true" icon="account-login" {{--  76 = l --}} />
         @endguest
         @auth
             <x-header.button x-bind="leftMenuOpen" x-on:click="leftMenuOpen = ! leftMenuOpen" icon="cog" />
@@ -23,7 +20,7 @@
     <div class="overflow-x-clip overflow-y-auto h-[calc(100vh-56px)]">
         @if ($this->smartAlbums->isEmpty() && $this->albums->isEmpty() && $this->sharedAlbums->isEmpty())
             <div>
-                <div wire:init='openLoginModal'>
+                <div x-on:init='loginModalOpen = true'>
                     <x-icons.iconic icon="eye" />
                     <p>{{ __('lychee.VIEW_NO_PUBLIC_ALBUMS') }}</p>
                 </div>
@@ -56,4 +53,17 @@
         @endif
         <x-footer />
     </div>
+    @guest
+        <div class="basicModalContainer transition-opacity duration-1000 ease-in animate-fadeIn
+	bg-black/80 z-50 fixed flex items-center justify-center w-full h-full top-0 left-0 box-border opacity-100"
+            data-closable="true" x-cloak x-show="loginModalOpen">
+            <div class="basicModal transition-opacity ease-in duration-1000
+                opacity-100 bg-gradient-to-b from-dark-300 to-dark-400
+                relative w-[500px] text-sm rounded-md text-neutral-400 animate-moveUp
+                "
+                role="dialog" x-on:click.away="loginModalOpen = false">
+                <livewire:modals.login />
+            </div>
+        </div>
+    @endguest
 </div>
