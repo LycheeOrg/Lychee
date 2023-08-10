@@ -49,7 +49,6 @@ class SetLayoutSetting extends BaseConfigDropDown
 		return view('livewire.forms.settings.drop-down');
 	}
 
-
 	public function updating($field, $value): void
 	{
 		Gate::check(SettingsPolicy::CAN_EDIT, [Configs::class]);
@@ -69,6 +68,4 @@ class SetLayoutSetting extends BaseConfigDropDown
 		$this->config->save();
 		$this->notify(__('lychee.CHANGE_SUCCESS'));
 	}
-
-
 }
