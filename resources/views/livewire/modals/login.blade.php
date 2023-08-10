@@ -5,14 +5,12 @@
 			<div class="mb-4 mx-0">
 				<x-forms.inputs.text class="w-full" autocomplete="on"
 					autofocus
-					data-tabindex="{{ Helpers::data_index() }}"
 					placeholder="{{ __('lychee.USERNAME') }}"
 					autocapitalize="off"
 					wire:model="username" />
 			</div>
 			<div class="my-4 mx-0">
 				<x-forms.inputs.password class="w-full" autocomplete="current-password"
-					data-tabindex="{{ Helpers::data_index() }}"
 					placeholder="{{ __('lychee.PASSWORD') }}"
 					wire:model="password"
 					wire:keydown.enter="submit"

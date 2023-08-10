@@ -69,7 +69,7 @@ class BooleanSetting extends Component
 	{
 		Gate::check(SettingsPolicy::CAN_EDIT, [Configs::class]);
 
-		$error_msg = $this->config->sanity($value);
+		$error_msg = $this->config->sanity($value === true ? '1' : '0');
 		if ($error_msg !== '') {
 			$this->notify($error_msg, NotificationType::ERROR);
 
