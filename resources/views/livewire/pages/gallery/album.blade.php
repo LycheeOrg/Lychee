@@ -35,15 +35,15 @@
         <x-gallery.album.details :album="$this->album" :url="$this->header_url" x-show="! detailsOpen" />
         @endif
 
+        @if($num_children > 0 && $num_photos > 0)<x-gallery.divider title="{{ __('lychee.ALBUMS') }}" />@endif
+        @if($num_children > 0)
+            @foreach ($this->album->children as $data)<x-gallery.album.thumbs.album :data="$data" />@endforeach
+        @endif
+        @if($num_children > 0 && $num_photos > 0)<x-gallery.divider title="{{ __('lychee.PHOTOS') }}" />@endif
         @if ($flags->is_ready_to_load)
-            @if($num_children > 0 && $num_photos > 0)<x-gallery.divider title="{{ __('lychee.ALBUMS') }}" />@endif
-            @if($num_children > 0)
-                @foreach ($this->album->children as $data)<x-gallery.album.thumbs.album :data="$data" />@endforeach
-            @endif
-            @if($num_children > 0 && $num_photos > 0)<x-gallery.divider title="{{ __('lychee.PHOTOS') }}" />@endif
             @if($num_photos > 0)
             <div @class([
-                    'squares' => $layout === \App\Enum\Livewire\AlbumMode::SQUARE,
+                    'm-4 relative w-full squares flex flex-wrap' => $layout === \App\Enum\Livewire\AlbumMode::SQUARE,
                     'm-7 relative w-full' => $layout === \App\Enum\Livewire\AlbumMode::JUSTIFIED, // only one working for now
                     'masondry' => $layout === \App\Enum\Livewire\AlbumMode::MASONRY,
                     'grid' => $layout === \App\Enum\Livewire\AlbumMode::GRID,
@@ -53,7 +53,7 @@
                 @endif
             >
             @for ($i = 0; $i < $num_photos; $i++)
-                <x-gallery.album.thumbs.photo :data="$this->album->photos[$i]" albumId="{{ $albumId }}" :geometry="$this->geometry->boxes->get($i)" />
+                <x-gallery.album.thumbs.photo :data="$this->album->photos[$i]" albumId="{{ $albumId }}" :geometry="$this->geometry?->boxes->get($i)" :layout="$layout" />
             @endfor
             </div>
             @endif

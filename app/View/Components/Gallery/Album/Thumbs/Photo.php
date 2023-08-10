@@ -18,7 +18,8 @@ use LycheeOrg\PhpFlickrJustifiedLayout\DTO\Item;
 
 class Photo extends Component
 {
-	public string $class = '';
+	public string $class_thumbs = '';
+	public AlbumMode $layout;
 
 	public string $album_id = '';
 	public string $photo_id = '';
@@ -36,7 +37,6 @@ class Photo extends Component
 	public string $srcset = '';
 	public string $srcset2x = '';
 
-	public bool $is_square_layout = false;
 	public int $_w = 200;
 	public int $_h = 200;
 
@@ -50,10 +50,9 @@ class Photo extends Component
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function __construct(ModelsPhoto $data, string $albumId, Item|null $geometry)
+	public function __construct(ModelsPhoto $data, string $albumId, Item|null $geometry, AlbumMode $layout)
 	{
-		$this->is_square_layout = AlbumMode::SQUARE === Configs::getValueAsEnum('layout', AlbumMode::class);
-
+		$this->layout = $layout;
 		$date_format = Configs::getValueAsString('date_format_photo_thumb');
 
 		$this->album_id = $albumId;
@@ -65,7 +64,7 @@ class Photo extends Component
 		$this->style = '';
 		$this->is_video = $data->isVideo();
 
-		if ($this->is_square_layout) {
+		if ($this->layout === AlbumMode::SQUARE) {
 			$this->setSquareLayout($data);
 
 			return;
@@ -130,9 +129,9 @@ class Photo extends Component
 		$thumb = $data->size_variants->getSizeVariant(SizeVariantType::THUMB);
 		$thumb2x = $data->size_variants->getSizeVariant(SizeVariantType::THUMB2X);
 
-		$this->class = '';
-		$this->class .= $this->is_video ? ' video' : '';
-		$this->class .= $has_live_photo_url ? ' livephoto' : '';
+		$this->class_thumbs = '';
+		$this->class_thumbs .= $this->is_video ? ' video' : '';
+		$this->class_thumbs .= $has_live_photo_url ? ' livephoto' : '';
 
 		$thumbUrl = $thumb?->url;
 		$thumb2xUrl = $thumb2x?->url;
@@ -163,9 +162,9 @@ class Photo extends Component
 		$thumb = $data->size_variants->getSizeVariant(SizeVariantType::THUMB);
 		$thumb2x = $data->size_variants->getSizeVariant(SizeVariantType::THUMB2X);
 
-		$this->class = '';
-		$this->class .= $is_video ? ' video' : '';
-		$this->class .= $has_live_photo_url ? ' livephoto' : '';
+		$this->class_thumbs = '';
+		$this->class_thumbs .= $is_video ? ' video' : '';
+		$this->class_thumbs .= $has_live_photo_url ? ' livephoto' : '';
 
 		$this->set_src($thumb, $is_video, $has_live_photo_url);
 
@@ -196,7 +195,7 @@ class Photo extends Component
 			$thumbUrl ??= $original->url;
 		} elseif ($thumbUrl === null) {
 			// Fallback for videos with no small (the case of no thumb is handled else where).
-			$this->class = 'video';
+			$this->class_thumbs = 'video';
 			$dim = 200;
 			$dim2x = 200;
 		}
