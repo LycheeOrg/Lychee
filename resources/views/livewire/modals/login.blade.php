@@ -1,5 +1,5 @@
 <div>
-	<div class="p-9">
+	<div class="p-9" x-trap="loginModalOpen">
 		<x-forms.error-message field='wrongLogin' />
 		<form class="" wire:submit="submit">
 			<div class="mb-4 mx-0">
