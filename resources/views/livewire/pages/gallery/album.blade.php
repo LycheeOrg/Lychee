@@ -47,9 +47,9 @@
         @if($num_children > 0 && $num_photos > 0)<x-gallery.divider title="{{ __('lychee.PHOTOS') }}" />@endif
         @if ($flags->is_ready_to_load || $layout !== \App\Enum\Livewire\AlbumMode::JUSTIFIED)
             <div
-                @class([
-                    'm-4 relative w-full squares flex flex-wrap' => $layout === \App\Enum\Livewire\AlbumMode::SQUARE,
-                    'm-7 relative w-full' => $layout === \App\Enum\Livewire\AlbumMode::JUSTIFIED,
+                @class(['relative w-full',
+                    'm-4 flex flex-wrap' => $layout === \App\Enum\Livewire\AlbumMode::SQUARE,
+                    'm-7' => $layout === \App\Enum\Livewire\AlbumMode::JUSTIFIED,
                     'masondry' => $layout === \App\Enum\Livewire\AlbumMode::MASONRY,
                     'grid' => $layout === \App\Enum\Livewire\AlbumMode::GRID,
                 ])

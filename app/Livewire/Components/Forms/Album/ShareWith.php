@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Forms\Album;
 
+use App\Livewire\Forms\SharingAlbumForms;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
 use App\Models\Extensions\BaseAlbum;
@@ -16,6 +17,11 @@ class ShareWith extends Component
 	use Notify;
 
 	public BaseAlbum $album;
+	public SharingAlbumForms $form;
+
+	public ?string $search = null; // ! wired
+
+	public array $albumListSaved;
 
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
@@ -27,6 +33,8 @@ class ShareWith extends Component
 	public function mount(BaseAlbum $album): void
 	{
 		$this->album = $album;
+		$this->form->setAlbum($album);
+		$this->form->setSharing($album->access_permissions()->whereNotNull('user_id')->get());
 	}
 
 	/**
