@@ -61,7 +61,7 @@ class Photo extends Component
 		$this->taken_at = $data->taken_at?->format($date_format) ?? '';
 		$this->created_at = $data->created_at->format($date_format);
 		$this->is_starred = $data->is_starred;
-		$this->style = '';
+		$this->style = $geometry?->toCSS() ?? '';
 		$this->is_video = $data->isVideo();
 
 		if ($this->layout === AlbumMode::SQUARE) {
@@ -74,7 +74,6 @@ class Photo extends Component
 		// - justified
 		// - Masondry
 		// - grid
-		$this->style = $geometry?->toCSS() ?? '';
 
 		$this->setOtherLayouts($data);
 	}
