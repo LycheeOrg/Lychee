@@ -51,8 +51,8 @@ trait RequiresEmptyPhotos
 	 */
 	protected static function cleanPublicFolders(): void
 	{
-		self::cleanupHelper(base_path('public/uploads/'));
-		self::cleanupHelper(base_path('public/sym/'));
+		// self::cleanupHelper(base_path('public/uploads/'));
+		// self::cleanupHelper(base_path('public/sym/'));
 	}
 
 	/**
