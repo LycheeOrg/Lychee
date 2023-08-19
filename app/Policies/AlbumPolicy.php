@@ -7,6 +7,7 @@ use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Models\AccessPermission;
 use App\Models\BaseAlbumImpl;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
@@ -21,6 +22,7 @@ class AlbumPolicy extends BasePolicy
 	public const CAN_SEE = 'canSee';
 	public const CAN_ACCESS = 'canAccess';
 	public const CAN_DOWNLOAD = 'canDownload';
+	public const CAN_DELETE = 'canDelete';
 	public const CAN_UPLOAD = 'canUpload';
 	public const CAN_EDIT = 'canEdit';
 	public const CAN_EDIT_ID = 'canEditById';
@@ -107,9 +109,11 @@ class AlbumPolicy extends BasePolicy
 					return true;
 				}
 
-				if ($album->public_permissions() !== null &&
+				if (
+					$album->public_permissions() !== null &&
 					($album->public_permissions()->password === null ||
-					$this->isUnlocked($album))) {
+						$this->isUnlocked($album))
+				) {
 					return true;
 				}
 
@@ -233,11 +237,34 @@ class AlbumPolicy extends BasePolicy
 
 		if ($album instanceof BaseAlbum) {
 			return $this->isOwner($user, $album) ||
-			$album->current_user_permissions()?->grants_edit === true ||
-			$album->public_permissions()?->grants_edit === true;
+				$album->current_user_permissions()?->grants_edit === true ||
+				$album->public_permissions()?->grants_edit === true;
 		}
 
 		return false;
+	}
+
+	/**
+	 * Check if user is allowed to delete in current albumn.
+	 *
+	 * @param User               $user
+	 * @param AbstractAlbum|null $abstractAlbum
+	 *
+	 * @return bool
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	public function canDelete(User $user, ?AbstractAlbum $abstractAlbum = null): bool
+	{
+		if (!$user->may_upload) {
+			return false;
+		}
+
+		if (!$abstractAlbum instanceof BaseAlbum) {
+			return false;
+		}
+
+		return $this->isOwner($user, $abstractAlbum);
 	}
 
 	/**
@@ -274,12 +301,29 @@ class AlbumPolicy extends BasePolicy
 			[null]
 		);
 
-		return
-			count($albumIDs) === 0 ||
-			BaseAlbumImpl::query()
+		$num_albums = count($albumIDs);
+
+		if ($num_albums === 0) {
+			return true;
+		}
+
+		if (BaseAlbumImpl::query()
 			->whereIn('id', $albumIDs)
 			->where('owner_id', $user->id)
-			->count() === count($albumIDs);
+			->count() === $num_albums
+		) {
+			return true;
+		}
+
+		if (AccessPermission::query()
+			->whereIn('base_album_id', $albumIDs)
+			->where('user_id', $user->id)
+			->count() === $num_albums
+		) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
