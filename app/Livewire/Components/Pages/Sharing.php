@@ -8,7 +8,6 @@ use App\Models\AccessPermission;
 use App\Models\BaseAlbumImpl;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
-use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
@@ -31,7 +30,7 @@ class Sharing extends Component
 		// This could be optimized, but whatever.
 		return
 			AccessPermission::with(['album', 'user'])
-			->when(!Auth::user()->may_administrate, fn($q) => $q->whereIn('base_album_id', BaseAlbumImpl::select('id')->where('owner_id', '=', Auth::id())))
+			->when(!Auth::user()->may_administrate, fn ($q) => $q->whereIn('base_album_id', BaseAlbumImpl::select('id')->where('owner_id', '=', Auth::id())))
 			->whereNotNull('user_id')
 			->orderBy('base_album_id', 'asc')
 			->get()->all();
