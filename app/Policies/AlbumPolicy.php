@@ -309,7 +309,7 @@ class AlbumPolicy extends BasePolicy
 
 		if (BaseAlbumImpl::query()
 			->whereIn('id', $albumIDs)
-			->where('owner_id', $user->id)
+			->where('owner_id', '=', $user->id)
 			->count() === $num_albums
 		) {
 			return true;
@@ -317,7 +317,8 @@ class AlbumPolicy extends BasePolicy
 
 		if (AccessPermission::query()
 			->whereIn('base_album_id', $albumIDs)
-			->where('user_id', $user->id)
+			->where('user_id', '=', $user->id)
+			->where('grants_edit', '=', true)
 			->count() === $num_albums
 		) {
 			return true;
@@ -386,7 +387,7 @@ class AlbumPolicy extends BasePolicy
 
 		if (BaseAlbumImpl::query()
 			->whereIn('id', $albumIDs)
-			->where('owner_id', $user->id)
+			->where('owner_id', '=', $user->id)
 			->count() === $num_albums
 		) {
 			return true;
