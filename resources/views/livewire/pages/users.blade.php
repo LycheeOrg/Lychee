@@ -17,12 +17,12 @@
                 </p>
 
             </div>
-            <div class="users_view_line w-full flex mt-5">
+            <div class="users_view_line w-full flex mt-5 border-b border-solid border-neutral-600 pb-3">
                 <p class="full w-full flex">
                     <span
-                        class="inline-block text font-bold w-full py-2 px-1 mr-2 mt-2.5 text-white">{{ __('lychee.USERNAME') }}</span>
+                        class="inline-block text font-bold w-full pt-2 px-1 mr-2 mt-2.5 text-white">{{ __('lychee.USERNAME') }}</span>
                     <span
-                        class="inline-block text font-bold w-full py-2 px-1 mr-2 mt-2.5 text-white">{{ __('lychee.LOGIN_PASSWORD') }}</span>
+                        class="inline-block text font-bold w-full pt-2 px-1 mr-2 mt-2.5 text-white">{{ __('lychee.LOGIN_PASSWORD') }}</span>
                     <span class="inline-block text_icon mt-2.5 w-12 mx-2" title="{{ __('lychee.ALLOW_UPLOADS') }}">
                         <x-icons.iconic class="fill-white w-4 h-4" icon="data-transfer-upload" />
                     </span>
@@ -39,9 +39,9 @@
 
             <div class="users_view_line w-full flex my-5">
                 <p class="full w-full flex">
-                    <x-forms.inputs.text class="w-full mt-4" wire:model="username" type="text"
+                    <x-forms.inputs.text class="w-full mt-2" wire:model="username" type="text"
                         placeholder="{{ __('lychee.LOGIN_USERNAME') }}" />
-                    <x-forms.inputs.important class="w-full mt-4" wire:model="password" type="text"
+                    <x-forms.inputs.important class="w-full mt-2" wire:model="password" type="text"
                         placeholder="{{ __('lychee.LOGIN_PASSWORD') }}" />
                     <x-forms.tickbox class="mt-1" title="{{ __('lychee.ALLOW_UPLOADS') }}" wire:model='may_upload' />
                     <x-forms.tickbox class="mt-1" title="{{ __('lychee.ALLOW_USER_SELF_EDIT') }}"

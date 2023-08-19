@@ -1,7 +1,7 @@
 <div class="text-neutral-200 text-sm p-9 sm:p-4 xl:px-9 max-sm:w-full sm:min-w-[40rem] flex-shrink-0">
     <div class="flex flex-col">
 		@if(count($perms) > 0)
-        <div class="w-full flex my-1">
+        <div class="w-full flex my-1 border-b border-solid border-neutral-600 pb-3">
             <p class="w-full flex align-middle">
                 <span class="h-4 w-56 inline-block mt-2.5">{{ __('lychee.USERNAME') }}</span>
                 <span class="h-4 w-56 inline-block text-center">
@@ -15,13 +15,13 @@
         </div>
 		@endif
         @foreach ($perms as $perm)
-            <livewire:forms.album.share-with-line :$perm :key="$perm->id"  />
+            <livewire:forms.album.share-with-line :$perm :key="$perm->id" />
         @endforeach
     </div>
     <div class="mt-4" x-data="{ isSearchUserOpen: false }" x-on:click.away="isSearchUserOpen = false">
         <form>
 			@if($username !== null)
-			<p class="my-3 w-full">Select the rights granted: full photo access, download, upload, edit, and delete. </p>
+			<p class="my-3 w-full">Select the rights granted: full photo access, download, upload, edit, and delete.</p>
 			<div class="w-full flex my-1">
 				<p class="w-full flex align-middle">
 					<span class="h-4 w-56 inline-block mt-2.5"></span>

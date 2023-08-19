@@ -17,9 +17,9 @@
         <a class="header__divider"></a> --}}
         {{-- <x-header.button wire:click="openContextMenu" icon="ellipses" /> --}}
 
-        <x-header.button x-on:click="detailsOpen = ! detailsOpen" icon="info"
+        <x-header.button x-on:click="detailsOpen = ! detailsOpen" icon="info" fill=""
             @keydown.window="if (event.keyCode === 73) { event.preventDefault(); detailsOpen = ! detailsOpen }"
-            {{-- 73 = i --}} x-bind:class="detailsOpen ? 'fill-sky-500' : ''" />
+            {{-- 73 = i --}} x-bind:class="detailsOpen ? 'fill-sky-500' : 'fill-neutral-400'"  />
 
     </x-header.bar>
     <div class="w-full flex h-[calc(100%-3.5rem)] overflow-hidden">
@@ -103,18 +103,18 @@
             @can(App\Policies\PhotoPolicy::CAN_EDIT, [App\Models\Photo::class, $photo])
             <div class="absolute top-0 w-full bg-red-500">
                 <span class="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-b from-black rounded-b-xl p-1">
-                <x-header.button x-on:click="$wire.set_star()" class="hover:fill-yellow-500 {{ $photo->is_starred ? 'fill-yellow-500' : 'fill-white'}}" icon="star"
+                <x-header.button x-on:click="$wire.set_star()" fill="" class="hover:fill-yellow-500 {{ $photo->is_starred ? 'fill-yellow-500' : 'fill-white'}}" icon="star"
                 @keydown.window="if (event.keyCode === 70) { $wire.set_star(); }"
                 {{-- 70 = f --}} />
                 @if($flags->can_rotate)
-                <x-header.button x-on:click="$wire.rotate_ccw()" class="fill-white hover:fill-sky-500" icon="counterclockwise"
+                <x-header.button x-on:click="$wire.rotate_ccw()" fill="" class="fill-white hover:fill-sky-500" icon="counterclockwise"
                 @keydown.window="if (event.keyCode === 37 && event.ctrlKey) { $wire.rotate_ccw(); }"
                 {{-- 37 = left arrow --}}  />
-                <x-header.button x-on:click="$wire.rotate_cw()" class="fill-white hover:fill-sky-500" icon="clockwise"
+                <x-header.button x-on:click="$wire.rotate_cw()" fill="" class="fill-white hover:fill-sky-500" icon="clockwise"
                 @keydown.window="if (event.keyCode === 39 && event.ctrlKey) { $wire.rotate_cw(); }"
                 {{-- 39 = right arrow --}}  />
                 @endif
-                <x-header.button x-on:click="$wire.delete()" class="fill-red-800 hover:fill-red-600" icon="trash"
+                <x-header.button x-on:click="$wire.delete()" fill="" class="fill-red-800 hover:fill-red-600" icon="trash"
                 @keydown.window="if (event.keyCode === 46 || event.keyCode === 8) { $wire.delete(); }"
                 {{-- 46 = dell, 8 = backspace --}} />
                 </span>

@@ -18,7 +18,7 @@
         {{-- <a class="header__divider"></a> --}}
         @can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class, $this->album])
             @if ($flags->is_base_album)
-                <x-header.button x-on:click="detailsOpen = false" icon="chevron-top" class="fill-sky-500" x-cloak x-show="detailsOpen" />
+                <x-header.button x-on:click="detailsOpen = false" icon="chevron-top" fill="fill-sky-500" x-cloak x-show="detailsOpen" />
                 <x-header.button x-on:click="detailsOpen = true" icon="chevron-bottom" x-cloak x-show="!detailsOpen" />
             @endif
         @endcan

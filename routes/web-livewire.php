@@ -11,6 +11,7 @@ use App\Livewire\Components\Pages\Jobs;
 use App\Livewire\Components\Pages\Landing;
 use App\Livewire\Components\Pages\Profile;
 use App\Livewire\Components\Pages\Settings;
+use App\Livewire\Components\Pages\Sharing;
 use App\Livewire\Components\Pages\Users;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Route;
@@ -38,6 +39,7 @@ if (config('app.livewire') === true) {
 		Route::get('/livewire/settings', Settings::class)->name('settings');
 		Route::get('/livewire/profile', Profile::class)->name('profile');
 		Route::get('/livewire/users', Users::class)->name('users');
+		Route::get('/livewire/sharing', Sharing::class)->name('sharing');
 		Route::get('/livewire/jobs', Jobs::class)->name('jobs');
 		Route::get('/livewire/diagnostics', Diagnostics::class)->name('diagnostics');
 		Route::get('/livewire/gallery/', Albums::class)->name('livewire-gallery');

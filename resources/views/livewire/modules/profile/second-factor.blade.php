@@ -6,7 +6,7 @@
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication successful!',
 	'U2F_CREDENTIALS' => 'Credentials',
 	'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!', --}}
-	<div class="u2f_view_line">
+	<div class="u2f_view_line border-b border-solid border-neutral-600 pb-3 mb-2">
 		<p>
 			<span class="text text-sm font-bold">
 				{{ __('lychee.U2F_CREDENTIALS') }}

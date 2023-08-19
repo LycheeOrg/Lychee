@@ -20,6 +20,7 @@ class ShareWithLine extends Component
 
 	public AccessPermission $perm;
 
+	public string $album_title;
 	public string $username;
 	public bool $grants_full_photo_access;
 	public bool $grants_download;
@@ -34,8 +35,9 @@ class ShareWithLine extends Component
 	 *
 	 * @return void
 	 */
-	public function mount(AccessPermission $perm): void
+	public function mount(AccessPermission $perm, string $album_title = ''): void
 	{
+		$this->album_title = $album_title;
 		$this->perm = $perm;
 		$this->username = $perm->user->username;
 		$this->grants_full_photo_access = $perm->grants_full_photo_access;

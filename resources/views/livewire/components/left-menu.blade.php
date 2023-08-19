@@ -27,7 +27,7 @@
                 </x-leftbar.leftbar-item>
             @endcan
             @can(AlbumPolicy::CAN_SHARE_WITH_USERS, [App\Contracts\Models\AbstractAlbum::class, null])
-                <x-leftbar.leftbar-item icon="cloud">
+                <x-leftbar.leftbar-item href="{{ route('sharing') }}" wire:navigate icon="cloud">
                     {{ __('lychee.SHARING') }}</x-leftbar.leftbar-item>
             @endcan
             @can(SettingsPolicy::CAN_SEE_LOGS, [App\Models\Configs::class])
