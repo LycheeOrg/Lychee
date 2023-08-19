@@ -50,8 +50,8 @@ class ListSharingRequest extends BaseApiRequest implements HasBaseAlbum
 	 */
 	public function authorize(): bool
 	{
-		if (Gate::check(AlbumPolicy::CAN_SHARE_WITH_USERS, [AbstractAlbum::class, $this->album])) {
-			return true;
+		if (!Gate::check(AlbumPolicy::CAN_SHARE_WITH_USERS, [AbstractAlbum::class, $this->album])) {
+			return false;
 		}
 
 		if (

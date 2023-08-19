@@ -294,12 +294,13 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function canShareWithUsers(?User $user, ?AbstractAlbum $abstractAlbum): bool
 	{
-		if ($abstractAlbum === null) {
+		if ($user?->may_upload !== true) {
 			return false;
 		}
 
-		if ($user?->may_upload !== true) {
-			return false;
+		// If this is null, this means that we are looking at the list.
+		if ($abstractAlbum === null) {
+			return true;
 		}
 
 		if (SmartAlbumType::tryFrom($abstractAlbum->id) !== null) {
