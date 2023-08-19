@@ -7,6 +7,7 @@
         if (event.keyCode === 68 && !detailsOpen) { event.preventDefault(); detailsOpen = true; activeTab = 0; }
         if (event.keyCode === 77 && !detailsOpen) { event.preventDefault(); detailsOpen = true; activeTab = 2; }
     "
+    {{-- 73 = i --}}
     {{-- 82 = r --}}
     {{-- 68 = d --}}
     {{-- 68 = m --}}

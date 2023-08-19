@@ -10,7 +10,7 @@
 	2xl:w-52 2xl:ml-7 2xl:mt-7
 	animate-zoomIn
 	group",
-	    'blurred' => $is_nsfw_blurred
+	"blurred" => $is_nsfw_blurred
 	])
 	{{-- if it is NOT nsfw => display Otherwise check nsfwAlbumsVisible alpine value --}}
 	{{-- This would be better if livewire did not add comments around @if --}}

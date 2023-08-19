@@ -2,9 +2,11 @@
         detailsOpen: false,
         nsfwAlbumsVisible: {{ $nsfwAlbumsVisible ? 'true' : 'false' }}
     }" 
-    @keydown.window.prevent="
+    @keydown.window="
         if (event.keyCode === 72 && !detailsOpen) { event.preventDefault(); nsfwAlbumsVisible = !nsfwAlbumsVisible; }
+        if (event.keyCode === 73 && $focus.focused() === undefined) { event.preventDefault(); detailsOpen = !detailsOpen; }
     {{-- 72 = h --}}
+    {{-- 73 = i --}}
     ">
     <!-- toolbar -->
     <x-header.bar>
