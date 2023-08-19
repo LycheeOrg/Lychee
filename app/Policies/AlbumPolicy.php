@@ -18,11 +18,13 @@ class AlbumPolicy extends BasePolicy
 {
 	public const UNLOCKED_ALBUMS_SESSION_KEY = 'unlocked_albums';
 
+	public const IS_OWNER = 'isOwner';
 	public const CAN_SEE = 'canSee';
 	public const CAN_ACCESS = 'canAccess';
 	public const CAN_DOWNLOAD = 'canDownload';
 	public const CAN_UPLOAD = 'canUpload';
 	public const CAN_EDIT = 'canEdit';
+	public const CAN_DELETE = 'canDelete';
 	public const CAN_EDIT_ID = 'canEditById';
 	public const CAN_SHARE_WITH_USERS = 'canShareWithUsers';
 	public const CAN_IMPORT_FROM_SERVER = 'canImportFromServer';
@@ -36,7 +38,7 @@ class AlbumPolicy extends BasePolicy
 	 *
 	 * @return bool
 	 */
-	private function isOwner(?User $user, BaseAlbum $album): bool
+	public function isOwner(?User $user, BaseAlbum $album): bool
 	{
 		return $user !== null && $album->owner_id === $user->id;
 	}
@@ -238,6 +240,29 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		return false;
+	}
+
+	/**
+	 * Check if user is allowed to delete in current albumn.
+	 *
+	 * @param User               $user
+	 * @param AbstractAlbum|null $abstractAlbum
+	 *
+	 * @return bool
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	public function canDelete(User $user, ?AbstractAlbum $abstractAlbum = null): bool
+	{
+		if (!$user->may_upload) {
+			return false;
+		}
+
+		if (!$abstractAlbum instanceof BaseAlbum) {
+			return false;
+		}
+
+		return $this->isOwner($user, $abstractAlbum);
 	}
 
 	/**

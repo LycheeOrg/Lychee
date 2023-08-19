@@ -131,9 +131,39 @@ class SizeVariants extends AbstractDTO
 		return $this->original;
 	}
 
+	/**
+	 * Get Medium2x or fallback to Medium.
+	 *
+	 * @return SizeVariant|null
+	 */
+	public function getMedium2x(): ?SizeVariant
+	{
+		return $this->medium2x;
+	}
+
+	/**
+	 * get Medium or fallback to Original.
+	 *
+	 * @return SizeVariant|null
+	 */
 	public function getMedium(): ?SizeVariant
 	{
 		return $this->medium;
+	}
+
+	/**
+	 * Get Small2x or fallback to Small.
+	 *
+	 * @return SizeVariant|null
+	 */
+	public function getSmall2x(): ?SizeVariant
+	{
+		return $this->small2x;
+	}
+
+	public function getSmall(): ?SizeVariant
+	{
+		return $this->small;
 	}
 
 	public function getThumb2x(): ?SizeVariant
@@ -258,6 +288,17 @@ class SizeVariants extends AbstractDTO
 	 */
 	public function hasMedium(): bool
 	{
-		return $this->medium2x !== null || $this->medium !== null;
+		return $this->medium !== null || $this->medium2x !== null;
+	}
+
+	/**
+	 * We don't need to check if small2x or medium2x exists.
+	 * small2x implies small, and same for medium2x, but the opposite is not true!
+	 *
+	 * @return bool
+	 */
+	public function hasMediumOrSmall(): bool
+	{
+		return $this->small !== null || $this->medium !== null;
 	}
 }

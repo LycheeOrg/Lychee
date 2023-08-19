@@ -9,7 +9,6 @@
   <testsuites>
     <testsuite name="Feature">
       <directory suffix="Test.php">./tests/Feature</directory>
-      <directory suffix="Test.php">./tests/Feature</directory>
       <exclude>./tests/Feature/Base/BasePhotoTest.php</exclude>
       <exclude>./tests/Feature/Base/BasePhotosRotateTest.php</exclude>
       <exclude>./tests/Feature/Base/BaseSharingTest.php</exclude>
