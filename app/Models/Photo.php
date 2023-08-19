@@ -317,6 +317,7 @@ class Photo extends Model implements AspectRatio
 		if ($focal === null || $focal === '') {
 			return null;
 		}
+
 		// We need to format the framerate (stored as focal) -> max 2 decimal digits
 		return $this->isVideo() ? (string) round(floatval($focal), 2) : $focal;
 	}

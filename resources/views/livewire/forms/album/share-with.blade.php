@@ -15,7 +15,7 @@
         </div>
 		@endif
         @foreach ($perms as $perm)
-            <livewire:forms.album.share-with-line :$perm />
+            <livewire:forms.album.share-with-line :$perm :key="$perm->id"  />
         @endforeach
     </div>
     <div class="mt-4" x-data="{ isSearchUserOpen: false }" x-on:click.away="isSearchUserOpen = false">

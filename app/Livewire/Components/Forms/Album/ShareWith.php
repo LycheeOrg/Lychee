@@ -127,7 +127,7 @@ class ShareWith extends Component
 
 	private function resetData(): void
 	{
-		$this->perms = $this->album->access_permissions()->whereNotNull('user_id')->get()->all();
+		$this->perms = $this->album->access_permissions()->with(['user'])->whereNotNull('user_id')->get()->all();
 		$this->grants_download = Configs::getValueAsBool('grants_download');
 		$this->grants_full_photo_access = Configs::getValueAsBool('grants_full_photo_access');
 		$this->grants_upload = false;
@@ -136,5 +136,11 @@ class ShareWith extends Component
 		$this->search = null;
 		$this->userID = null;
 		$this->username = null;
+	}
+
+	public function delete(int $id): void
+	{
+		AccessPermission::query()->where('id', '=', $id)->delete();
+		$this->resetData();
 	}
 }

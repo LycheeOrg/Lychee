@@ -200,7 +200,7 @@ trait UTCBasedTimes
 			}
 
 			return $result;
-		} catch (InvalidArgumentException) {
+		} catch (\InvalidArgumentException) {
 			// If the specified format did not mach, don't throw an exception,
 			// but try to parse the value using a best-effort approach, see below
 		}

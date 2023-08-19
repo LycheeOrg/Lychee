@@ -7,7 +7,6 @@ use App\Http\Redirections\ToInstall;
 use Illuminate\Encryption\MissingAppKeyException;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface as HttpException;
-use Throwable;
 
 /**
  * Class NoEncryptionKey.
@@ -45,7 +44,7 @@ class NoEncryptionKey implements HttpExceptionHandler
 			}
 
 			return $redirectResponse;
-		} catch (Throwable) {
+		} catch (\Throwable) {
 			return $defaultResponse;
 		}
 	}

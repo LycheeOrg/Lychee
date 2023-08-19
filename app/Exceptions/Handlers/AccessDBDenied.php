@@ -7,7 +7,6 @@ use App\Http\Redirections\ToInstall;
 use Illuminate\Database\QueryException;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface as HttpException;
-use Throwable;
 
 /**
  * Class AccessDBDenied.
@@ -45,7 +44,7 @@ class AccessDBDenied implements HttpExceptionHandler
 			}
 
 			return $redirectResponse;
-		} catch (Throwable) {
+		} catch (\Throwable) {
 			return $defaultResponse;
 		}
 	}

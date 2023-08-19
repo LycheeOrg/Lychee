@@ -1,4 +1,4 @@
-<div class="w-full flex my-1">
+<div class="w-full flex my-1" >
 	<p class="w-full flex align-middle">
 		<span class="h-4 w-56 inline-block mt-2.5">{{ $username }}</span>
 		<span class="w-56 inline-block text-center">
@@ -10,6 +10,6 @@
 		</span>
 		<a class="basicModal__button pt-1 pb-2 w-20 rounded flex-shrink
 			cursor-pointer inline-block font-bold text-center transition-colors ease-in-out select-none
-			text-red-800 hover:text-white hover:bg-red-800"  wire:click='delete'>{{ __('lychee.DELETE') }}</a>
+			text-red-800 hover:text-white hover:bg-red-800"  wire:click="$parent.delete('{{ $perm->id }}')">{{ __('lychee.DELETE') }}</a>
 	</p>
 </div>
