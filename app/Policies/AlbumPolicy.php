@@ -366,7 +366,33 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function canShareById(User $user, array $albumIDs): bool
 	{
-		return $this->canEditById($user, $albumIDs);
+		if (!$user->may_upload) {
+			return false;
+		}
+
+		// Remove root and smart albums, as they get a pass.
+		// Make IDs unique as otherwise count will fail.
+		$albumIDs = array_diff(
+			array_unique($albumIDs),
+			array_keys(SmartAlbumType::values()),
+			[null]
+		);
+
+		$num_albums = count($albumIDs);
+
+		if ($num_albums === 0) {
+			return true;
+		}
+
+		if (BaseAlbumImpl::query()
+			->whereIn('id', $albumIDs)
+			->where('owner_id', $user->id)
+			->count() === $num_albums
+		) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
