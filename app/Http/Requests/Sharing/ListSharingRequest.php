@@ -51,15 +51,20 @@ class ListSharingRequest extends BaseApiRequest implements HasBaseAlbum
 	 */
 	public function authorize(): bool
 	{
-		$id = Auth::id() ?? throw new UnauthenticatedException();
+		/** @var User $user */
+		$user = Auth::user() ?? throw new UnauthenticatedException();
 
 		if (!Gate::check(AlbumPolicy::CAN_SHARE_WITH_USERS, [AbstractAlbum::class, $this->album])) {
 			return false;
 		}
 
+		if ($user->may_administrate === true) {
+			return true;
+		}
+
 		if (
-			($this->owner?->id === $id) ||
-			($this->participant?->id === $id)
+			($this->owner?->id === $user->id) ||
+			($this->participant?->id === $user->id)
 		) {
 			return true;
 		}
