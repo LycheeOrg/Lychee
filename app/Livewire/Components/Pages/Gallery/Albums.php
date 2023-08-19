@@ -27,6 +27,8 @@ class Albums extends Component implements Reloadable
 
 	public string $title;
 
+	public bool $nsfwAlbumsVisible;
+
 	/**
 	 * Render component.
 	 *
@@ -42,15 +44,14 @@ class Albums extends Component implements Reloadable
 	#[On('reloadPage')]
 	public function reloadPage(): void
 	{
-		$top = resolve(Top::class);
-		$this->topAlbums = $top->get();
+		$this->topAlbums = resolve(Top::class)->get();
 	}
 
 	public function boot(): void
 	{
-		$top = resolve(Top::class);
-		$this->topAlbums = $top->get();
+		$this->topAlbums = resolve(Top::class)->get();
 		$this->title = Configs::getValueAsString('site_title');
+		$this->nsfwAlbumsVisible = Configs::getValueAsBool('nsfw_visible');
 	}
 
 	public function getAlbumsProperty(): Collection

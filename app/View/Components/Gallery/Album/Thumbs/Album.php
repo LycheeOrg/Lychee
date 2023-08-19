@@ -61,6 +61,8 @@ class Album extends Component
 		$this->is_password_required = $policy->is_password_required;
 
 		$this->is_tag_album = $data instanceof TagAlbum;
+		// TODO : FIX ME This is incorrect. We should compare with the parent and not the current album.
+		// This aims to indicate whether the current thumb is used to determine the parent.
 		$this->has_cover_id = $data instanceof AlbumModel && $data->cover_id !== null && $data->cover_id === $data->thumb->id;
 		$this->has_subalbum = $data instanceof AlbumModel && !$data->isLeaf();
 	}

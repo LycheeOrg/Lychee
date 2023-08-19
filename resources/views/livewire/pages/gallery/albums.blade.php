@@ -1,10 +1,17 @@
-<div class="w-full" x-data={loginModalOpen:false} x-on:login-close="loginModalOpen = false">
+<div class="w-full"
+    x-data="{
+        loginModalOpen:false,
+        nsfwAlbumsVisible:{{ $nsfwAlbumsVisible ? 'true' : 'false' }}
+    }"
+    @keydown.window="if (event.keyCode === 72) { event.preventDefault(); nsfwAlbumsVisible = ! nsfwAlbumsVisible }"
+    {{-- 72 = h --}}
+    x-on:login-close="loginModalOpen = false">
+    
     <!-- toolbar -->
     <x-header.bar>
         @guest
             <!-- NOT LOGGED -->
-            <x-header.button @keydown.window="if (event.keyCode === 76) { loginModalOpen = true }"
-                x-on:click="loginModalOpen = true" icon="account-login" {{--  76 = l --}} />
+            <x-header.button @keydown.window="if (event.keyCode === 76) { loginModalOpen = true }" x-on:click="loginModalOpen = true" icon="account-login" {{--  76 = l --}} />
         @endguest
         @auth
             <x-header.button x-bind="leftMenuOpen" x-on:click="leftMenuOpen = ! leftMenuOpen" icon="cog" />

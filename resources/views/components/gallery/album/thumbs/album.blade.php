@@ -12,7 +12,10 @@
 	group",
 	    'blurred' => $is_nsfw_blurred
 	])
-	 {{-- {{ $disabled ? 'disabled' : '' }} --}}
+	{{-- if it is NOT nsfw => display Otherwise check nsfwAlbumsVisible alpine value --}}
+	{{-- This would be better if livewire did not add comments around @if --}}
+	x-show="{{ !$is_nsfw ? 'true' : 'false' }} || nsfwAlbumsVisible"
+	{{-- {{ $disabled ? 'disabled' : '' }} --}}
 	data-id='{{ $id }}'
 	data-tabindex='{{ Helpers::data_index() }}'
 	data-nsfw='{{ $is_nsfw ? '1' : '0'}}'>
