@@ -25,7 +25,8 @@ class ManageSecondFactor extends Component
 	public string $alias; // ! wired
 	public bool $has_error = false;
 
-	public function rules() {
+	public function rules()
+	{
 		return ['alias' => 'required|string|min:5|max:255'];
 	}
 
@@ -64,6 +65,7 @@ class ManageSecondFactor extends Component
 	{
 		if (!$this->areValid($this->rules())) {
 			$this->has_error = true;
+
 			return;
 		}
 
