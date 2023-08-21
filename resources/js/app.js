@@ -13,24 +13,54 @@ Mousetrap.addKeycodes({
 
 document.addEventListener('alpine:init', () => {
 	Alpine.data('loginWebAuthn',
-		(success_msg_val, error_msg_val) => ({
+		(success_msg_val = "U2F_AUTHENTIFICATION_SUCCESS", error_msg_val = "ERROR_TEXT", not_supported_val = "U2F_NOT_SUPPORTED") => ({
 			webAuthnOpen: false,
 			success_msg: success_msg_val,
 			error_msg: error_msg_val,
+			not_supported: not_supported_val,
 
 			isWebAuthnUnavailable() {
 				return !window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
 			},
 
 			login() {
-				console.log('hello There');
+				// work around because this does not refer to alpine anymore when inside WebAuthn then context.
+				let alpine = this
 				new WebAuthn({ login: "/api/WebAuthn::login", loginOptions: "/api/WebAuthn::login/options" }, {}, false)
 					.login({ user_id: 1 })
 					.then(function () {
-						this.$dispatch("notify", [{ type: "success", msg: this.success_msg }]);
+						alpine.$dispatch("notify", [{ type: "success", msg: alpine.success_msg }]);
 						window.location.reload();
 					})
 					.catch(() => this.$dispatch("notify", [{ type: "error", msg: this.error_msg }]));
+			}
+		})
+	)
+
+	Alpine.data('registerWebAuthn',
+		(success_msg_val = "U2F_REGISTRATION_SUCCESS", error_msg_val = "ERROR_TEXT", not_supported_val = "U2F_NOT_SUPPORTED") => ({
+			success_msg: success_msg_val,
+			error_msg: error_msg_val,
+			not_supported: not_supported_val,
+
+			isWebAuthnUnavailable() {
+				return !window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+			},
+
+			register() {
+				// work around because this does not refer to alpine anymore when inside WebAuthn then context.
+				let alpine = this
+				new WebAuthn({ register: "/api/WebAuthn::register", registerOptions: "/api/WebAuthn::register/options" }, {}, false)
+					.register()
+					.then(function () {
+						// First reload then display
+						alpine.$dispatch("reload-component");
+						alpine.$dispatch("notify", [{ type: "success", msg: alpine.success_msg }]);
+					})
+					.catch((error) => {
+						console.log(error);
+						this.$dispatch("notify", [{ type: "error", msg: this.error_msg }]);
+					});
 			}
 		})
 	)
@@ -38,7 +68,7 @@ document.addEventListener('alpine:init', () => {
 
 
 
-	// Alpine.bind('openLeftMenu', () => ({ '@click'() { leftMenuOpen = ! leftMenuOpen }}))
+// Alpine.bind('openLeftMenu', () => ({ '@click'() { leftMenuOpen = ! leftMenuOpen }}))
 // })
 // Mousetrap
 // .bind(["l"], function () {

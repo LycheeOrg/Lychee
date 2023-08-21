@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Components\Forms\Profile;
 
-use App\Livewire\Components\Modules\Profile\SecondFactor;
 use App\Livewire\Traits\Notify;
+use App\Livewire\Traits\UseValidator;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
@@ -12,6 +12,7 @@ use Livewire\Component;
 class ManageSecondFactor extends Component
 {
 	use Notify;
+	use UseValidator;
 
 	/**
 	 * Credential used.
@@ -22,6 +23,11 @@ class ManageSecondFactor extends Component
 
 	/** @var string alias to rename the credentials. By default we provide the first parts of the ID */
 	public string $alias; // ! wired
+	public bool $has_error = false;
+
+	public function rules() {
+		return ['alias' => 'required|string|min:5|max:255'];
+	}
 
 	/**
 	 * Just mount the component with the required WebAuthn Credentials.
@@ -56,23 +62,14 @@ class ManageSecondFactor extends Component
 	 */
 	public function updated($field, $value): void
 	{
-		// TODO: ADD VALIDATION
+		if (!$this->areValid($this->rules())) {
+			$this->has_error = true;
+			return;
+		}
+
+		$this->has_error = false;
 		$this->credential->alias = $this->alias;
 		$this->credential->save();
 		$this->notify(__('lychee.CHANGE_SUCCESS'));
-	}
-
-	/**
-	 * Deletes a user.
-	 *
-	 * The albums and photos owned by the user are re-assigned to the
-	 * admin user.
-	 *
-	 * @return void
-	 */
-	public function delete(): void
-	{
-		$this->credential->delete();
-		$this->dispatch('loadCredentials')->to(SecondFactor::class);
 	}
 }

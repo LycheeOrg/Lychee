@@ -1,7 +1,7 @@
 <div class="basicModalContainer transition-opacity duration-1000 ease-in animate-fadeIn
     bg-black/80 z-5 fixed flex items-center justify-center w-full h-full top-0 left-0 box-border opacity-100"
     data-closable="true"
-    x-data="loginWebAuthn('{{ __("lychee.U2F_AUTHENTIFICATION_SUCCESS") }}', '{{ __("lychee.ERROR_TEXT") }}')"
+    x-data="loginWebAuthn('{{ __("lychee.U2F_AUTHENTIFICATION_SUCCESS") }}', '{{ __("lychee.ERROR_TEXT") }}', '{{ __("lychee.U2F_NOT_SUPPORTED") }}')"
     @keydown.window="if (event.keyCode === 75) { webAuthnOpen = true }"
     @keydown.escape.window="webAuthnOpen = false"
     x-cloak
