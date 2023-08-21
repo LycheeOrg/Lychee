@@ -38,6 +38,6 @@ class JobController extends Controller
 	 */
 	public function view(ShowJobsRequest $request): View
 	{
-		return view('jobs.list', ['jobs' => $this->list($request)]);
+		return view('jobs', ['jobs' => $this->list($request)]);
 	}
 }

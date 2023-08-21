@@ -1,0 +1,67 @@
+@tailwind base;
+/* also contains normalize */
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+  html {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  [x-cloak] { display: none !important; }
+
+  .box-shadow {
+    /* -webkit-box-shadow: 0 0 0 1px rgba(0,0,0,.7); */
+    box-shadow: 0 0 0 1px rgba(0,0,0,.7); 
+  }
+
+  .text-shadow {
+    text-shadow: 1px 1px 2px #000;
+  }
+
+  .text-shadow-sm {
+    text-shadow: 0 1px 3px #00000066;
+  }
+
+  .text-2xs {
+    font-size: 0.65rem;
+    line-height: 0.8rem;
+  }
+
+  .text-3xs {
+    font-size: 0.6rem;
+    line-height: 0.8rem;
+  }
+
+  .transition-width {
+    transition: width .5s;
+  }
+
+  input:checked+.slider:before {
+    transform: translateX(20px);
+    background-color: #fff;
+  }
+
+  input:checked+.slider {
+    background-color: rgb(14 165 233);
+  }
+
+  input:checked~.checkbox svg {
+    opacity: 1;
+    -ms-transform: scale(1);
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+
+  /* Remove all ugly outlines */
+  * {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+
+  .markdown a {
+    text-underline-offset: 0.2rem;
+    text-decoration: underline dashed;
+  }
+}

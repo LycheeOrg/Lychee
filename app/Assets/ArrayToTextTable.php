@@ -121,54 +121,6 @@ class ArrayToTextTable
 	}
 
 	/**
-	 * @return array<int,array|object>
-	 */
-	public function getData(): array
-	{
-		return $this->data;
-	}
-
-	public function getDecorator(): DecoratorInterface
-	{
-		return $this->decorator;
-	}
-
-	public function getIndentation(): string
-	{
-		return $this->indentation;
-	}
-
-	public function getDisplayKeys(): bool|string
-	{
-		return $this->displayKeys;
-	}
-
-	public function getUpperKeys(): bool
-	{
-		return $this->upperKeys;
-	}
-
-	public function getKeysAlignment(): int
-	{
-		return $this->keysAlignment;
-	}
-
-	public function getValuesAlignment(): int
-	{
-		return $this->valuesAlignment;
-	}
-
-	public function getFormatter(): ?\Closure
-	{
-		return $this->formatter;
-	}
-
-	public function getIgnoredKeys(): array
-	{
-		return $this->ignoredKeys;
-	}
-
-	/**
 	 * @param array<int,array|object>|null $data
 	 *
 	 * @return self
