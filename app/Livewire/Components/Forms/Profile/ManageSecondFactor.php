@@ -25,7 +25,7 @@ class ManageSecondFactor extends Component
 	public string $alias; // ! wired
 	public bool $has_error = false;
 
-	public function rules()
+	public function rules(): array
 	{
 		return ['alias' => 'required|string|min:5|max:255'];
 	}
