@@ -12,9 +12,10 @@
 
 namespace Tests\Feature;
 
+use Tests\Feature\Base\BaseSharingTest;
 use Tests\Feature\Constants\TestConstants;
 
-class SharingBasicTest extends Base\BaseSharingTest
+class SharingBasicTest extends BaseSharingTest
 {
 	/**
 	 * @return void

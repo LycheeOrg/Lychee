@@ -5,6 +5,7 @@ namespace App\Http\Requests\Sharing;
 use App\Contracts\Http\Requests\HasBaseAlbum;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
+use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasBaseAlbumTrait;
 use App\Models\User;
@@ -50,13 +51,20 @@ class ListSharingRequest extends BaseApiRequest implements HasBaseAlbum
 	 */
 	public function authorize(): bool
 	{
-		if (Gate::check(AlbumPolicy::CAN_SHARE_WITH_USERS, [AbstractAlbum::class, $this->album])) {
+		/** @var User $user */
+		$user = Auth::user() ?? throw new UnauthenticatedException();
+
+		if (!Gate::check(AlbumPolicy::CAN_SHARE_WITH_USERS, [AbstractAlbum::class, $this->album])) {
+			return false;
+		}
+
+		if ($user->may_administrate === true) {
 			return true;
 		}
 
 		if (
-			($this->owner !== null && $this->owner->id === Auth::id()) ||
-			($this->participant !== null && $this->participant->id === Auth::id())
+			($this->owner?->id === $user->id) ||
+			($this->participant?->id === $user->id)
 		) {
 			return true;
 		}
