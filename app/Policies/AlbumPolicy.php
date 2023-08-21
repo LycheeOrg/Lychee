@@ -26,7 +26,6 @@ class AlbumPolicy extends BasePolicy
 	public const CAN_DELETE = 'canDelete';
 	public const CAN_UPLOAD = 'canUpload';
 	public const CAN_EDIT = 'canEdit';
-	public const CAN_DELETE = 'canDelete';
 	public const CAN_EDIT_ID = 'canEditById';
 	public const CAN_SHARE_WITH_USERS = 'canShareWithUsers';
 	public const CAN_IMPORT_FROM_SERVER = 'canImportFromServer';
