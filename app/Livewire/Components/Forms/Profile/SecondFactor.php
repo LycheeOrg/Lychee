@@ -7,7 +7,6 @@ use App\Livewire\Traits\Notify;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-use InvalidArgumentException;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -29,10 +28,10 @@ class SecondFactor extends Component
 
 	/**
 	 * Return the list of credentials associated to the current logged in user.
-	 * 
+	 *
 	 * @return Collection<int,WebAuthnCredential>
-	 * 
-	 * @throws UnauthenticatedException 
+	 *
+	 * @throws UnauthenticatedException
 	 */
 	public function getCredentialsProperty(): Collection
 	{
@@ -43,11 +42,13 @@ class SecondFactor extends Component
 	}
 
 	/**
-	 * Delete an existing credential
-	 * 
-	 * @param string $id 
-	 * @return void 
-	 * @throws InvalidArgumentException 
+	 * Delete an existing credential.
+	 *
+	 * @param string $id
+	 *
+	 * @return void
+	 *
+	 * @throws \InvalidArgumentException
 	 */
 	public function delete(string $id): void
 	{
