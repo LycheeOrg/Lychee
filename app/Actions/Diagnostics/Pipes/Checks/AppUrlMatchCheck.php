@@ -12,7 +12,7 @@ class AppUrlMatchCheck implements DiagnosticPipe
 	public function handle(array &$data, \Closure $next): array
 	{
 		$config_url = config('app.url');
-		// http:// is 7 characters.
+		// https:// is 8 characters.
 		if (strpos($config_url, '/', 8) !== false) {
 			$data[] = 'Warning: APP_URL contains a sub-path. This may impact your WebAuthn authentication.';
 		} elseif ($config_url !== request()->httpHost() && $config_url !== request()->schemeAndHttpHost()) {
