@@ -96,9 +96,15 @@ class AppServiceProvider extends ServiceProvider
 			DB::listen(fn ($q) => $this->logSQL($q));
 		}
 
-		if (Schema::hasTable('configs')) {
+		try {
 			$lang = Configs::getValueAsString('lang');
 			app()->setLocale($lang);
+		} catch (\Throwable $e) {
+			/** Ignore.
+			 * This is necessary so that we can continue:
+			 * - if Configs table do not exists (no install),
+			 * - if the value does not exists in configs (no install),.
+			 */
 		}
 
 		/**
