@@ -4,6 +4,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\Models\Configs;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Small checks on the content of the config database.
@@ -18,6 +19,10 @@ class ConfigSanityCheck implements DiagnosticPipe
 	 */
 	public function handle(array &$data, \Closure $next): array
 	{
+		if (!Schema::hasTable('configs')) {
+			return $next($data);
+		}
+
 		// Load settings
 		$this->settings = Configs::get();
 

@@ -4,6 +4,7 @@ namespace App\Actions\Diagnostics;
 
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Configs;
+use Illuminate\Support\Facades\Schema;
 
 class Configuration
 {
@@ -17,6 +18,10 @@ class Configuration
 	 */
 	public function get(): array
 	{
+		if (!Schema::hasTable('configs')) {
+			return ['Error: migration has not been run yet.'];
+		}
+
 		// Load settings
 		$settings = Configs::query()
 			->where('confidentiality', '<=', 2)

@@ -99,12 +99,11 @@ class AppServiceProvider extends ServiceProvider
 			$lang = Configs::getValueAsString('lang');
 			app()->setLocale($lang);
 		} catch (\Throwable $e) {
-			/** log and ignore.
+			/** Ignore.
 			 * This is necessary so that we can continue:
 			 * - if Configs table do not exists (no install),
 			 * - if the value does not exists in configs (no install),.
 			 */
-			logger($e);
 		}
 
 		/**
