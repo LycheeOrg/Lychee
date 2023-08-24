@@ -8,6 +8,7 @@ use App\DTO\Version;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Models\Configs;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * InstalledVersion contains the following info:
@@ -61,6 +62,10 @@ class InstalledVersion implements HasVersion, HasIsRelease
 	 */
 	public function getVersion(): Version
 	{
+		if (!Schema::hasTable('configs')) {
+			return Version::createFromInt(10000);
+		}
+
 		return Version::createFromInt(Configs::getValueAsInt('version'));
 	}
 }

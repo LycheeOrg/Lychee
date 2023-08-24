@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Opcodes\LogViewer\Facades\LogViewer;
@@ -95,16 +96,9 @@ class AppServiceProvider extends ServiceProvider
 			DB::listen(fn ($q) => $this->logSQL($q));
 		}
 
-		try {
+		if (Schema::hasTable('configs')) {
 			$lang = Configs::getValueAsString('lang');
 			app()->setLocale($lang);
-		} catch (\Throwable $e) {
-			/** log and ignore.
-			 * This is necessary so that we can continue:
-			 * - if Configs table do not exists (no install),
-			 * - if the value does not exists in configs (no install),.
-			 */
-			logger($e);
 		}
 
 		/**

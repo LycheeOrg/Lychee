@@ -11,6 +11,7 @@ use App\Facades\Helpers;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
 use App\Models\Configs;
+use Illuminate\Support\Facades\Schema;
 use function Safe\exec;
 
 /**
@@ -63,6 +64,9 @@ class UpdatableCheck implements DiagnosticPipe
 			// @codeCoverageIgnoreStart
 			return;
 			// @codeCoverageIgnoreEnd
+		}
+		if (!Schema::hasTable('configs')) {
+			throw new ConfigurationException('Migration is not run');
 		}
 
 		if (!Configs::getValueAsBool('allow_online_git_pull')) {

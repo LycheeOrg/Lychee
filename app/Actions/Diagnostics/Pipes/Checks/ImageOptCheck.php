@@ -5,6 +5,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Contracts\DiagnosticPipe;
 use App\Facades\Helpers;
 use App\Models\Configs;
+use Illuminate\Support\Facades\Schema;
 use function Safe\exec;
 use Spatie\ImageOptimizer\Optimizers\Cwebp;
 use Spatie\ImageOptimizer\Optimizers\Gifsicle;
@@ -23,6 +24,10 @@ class ImageOptCheck implements DiagnosticPipe
 	 */
 	public function handle(array &$data, \Closure $next): array
 	{
+		if (!Schema::hasTable('configs')) {
+			return $next($data);
+		}
+
 		$tools = [];
 		$tools[] = new Cwebp();
 		$tools[] = new Gifsicle();

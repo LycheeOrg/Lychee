@@ -5,6 +5,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Contracts\DiagnosticPipe;
 use App\Models\Photo;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * This checks the Database integrity.
@@ -19,6 +20,10 @@ class DBIntegrityCheck implements DiagnosticPipe
 	 */
 	public function handle(array &$data, \Closure $next): array
 	{
+		if (!Schema::hasTable('size_variants') || !Schema::hasTable('photos')) {
+			return $next($data);
+		}
+
 		$subJoin = DB::table('size_variants')->where('size_variants.type', '=', 0);
 		$photos = Photo::query()
 			->with(['album'])
