@@ -3,7 +3,10 @@ on:
   push:
     branches-ignore:
       - master
+      - livewire/**
   pull_request:
+    branches-ignore:
+      - livewire/**
     paths-ignore:
       - '**.md'
       - '**.js'
@@ -30,7 +33,7 @@ jobs:
           coverage: none
       - name: Install PHP-CS-Fixer
         run: |
-          curl -L https://github.com/FriendsOfPHP/PHP-CS-Fixer/releases/download/v3.22.0/php-cs-fixer.phar -o .github/build/php-cs-fixer
+          curl -L https://github.com/FriendsOfPHP/PHP-CS-Fixer/releases/download/v3.23.0/php-cs-fixer.phar -o .github/build/php-cs-fixer
           chmod a+x .github/build/php-cs-fixer
       - name: Prepare Git User
         run: |

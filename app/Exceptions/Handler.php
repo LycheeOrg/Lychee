@@ -19,12 +19,14 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use UnexpectedValueException;
 
 /**
  * Lychee's custom exception handler.
@@ -94,6 +96,7 @@ class Handler extends ExceptionHandler
 	protected $dontReport = [
 		TokenMismatchException::class,
 		SessionExpiredException::class,
+
 	];
 
 	/**
@@ -229,6 +232,9 @@ class Handler extends ExceptionHandler
 			return $this->toIlluminateResponse($this->convertExceptionToResponse($e), $e);
 		}
 
+		if (Str::contains($e->getMessage(), 'could not be opened in append mode')){
+			dd($e);
+		}
 		if (!$this->isHttpException($e)) {
 			$e = new HttpException(500, $e->getMessage(), $e);
 		}
@@ -399,7 +405,13 @@ class Handler extends ExceptionHandler
 			}
 			$msg = $msg_ . PHP_EOL . $msg;
 		} while ($e = $e->getPrevious());
-		Log::log($severity->value, $msg);
+		try {
+			Log::log($severity->value, $msg);
+		}
+		catch (UnexpectedValueException $e) {
+			// This is thrown when we don't have write access to the logs.
+			abort(507, "Could not write in the logs. Check that storage/logs/ and containing files have proper permissions.");
+		}
 	}
 
 	/**
