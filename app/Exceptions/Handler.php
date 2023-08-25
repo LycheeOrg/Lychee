@@ -94,6 +94,7 @@ class Handler extends ExceptionHandler
 	protected $dontReport = [
 		TokenMismatchException::class,
 		SessionExpiredException::class,
+		NoWriteAccessOnLogsExceptions::class,
 	];
 
 	/**
@@ -399,7 +400,13 @@ class Handler extends ExceptionHandler
 			}
 			$msg = $msg_ . PHP_EOL . $msg;
 		} while ($e = $e->getPrevious());
-		Log::log($severity->value, $msg);
+		try {
+			Log::log($severity->value, $msg);
+			/** @phpstan-ignore-next-line // Yes it is thrown, trust me.... */
+		} catch (\UnexpectedValueException $e2) {
+			throw new NoWriteAccessOnLogsExceptions($e2);
+			// abort(507, 'Could not write in the logs. Check that storage/logs/ and containing files have proper permissions.');
+		}
 	}
 
 	/**
