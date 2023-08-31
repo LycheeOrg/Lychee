@@ -14,9 +14,7 @@
 			</div>
 			<livewire:forms.profile.set-email />
 			@endif
-			@can(App\Policies\UserPolicy::CAN_USE_2FA, [App\Models\User::class, null])
 			<livewire:forms.profile.second-factor />
-			@endcan
 		</div>
 	</div>
 </div>
