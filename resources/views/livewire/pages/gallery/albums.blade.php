@@ -73,5 +73,7 @@
             </div>
         </div>
     @endguest
+    @if($can_use_2fa)
     <x-webauthn.login />
+    @endif
 </div>

@@ -12,12 +12,14 @@ Mousetrap.addKeycodes({
 });
 
 document.addEventListener('alpine:init', () => {
+
 	Alpine.data('loginWebAuthn',
-		(success_msg_val = "U2F_AUTHENTIFICATION_SUCCESS", error_msg_val = "ERROR_TEXT", not_supported_val = "U2F_NOT_SUPPORTED") => ({
+		(success_msg_val = "U2F_AUTHENTIFICATION_SUCCESS", error_msg_val = "ERROR_TEXT") => ({
 			webAuthnOpen: false,
 			success_msg: success_msg_val,
 			error_msg: error_msg_val,
-			not_supported: not_supported_val,
+			username: null,
+			userId: 1,
 
 			isWebAuthnUnavailable() {
 				return !window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
@@ -25,9 +27,17 @@ document.addEventListener('alpine:init', () => {
 
 			login() {
 				// work around because this does not refer to alpine anymore when inside WebAuthn then context.
-				let alpine = this
+				let alpine = this;
+				let params = {};
+				if (this.username !== '' && this.username !== null) {
+					params.username = this.username;
+				}
+				else if (this.userId !== null) {
+					params.user_id = this.userId;
+				}
 				new WebAuthn({ login: "/api/WebAuthn::login", loginOptions: "/api/WebAuthn::login/options" }, {}, false)
-					.login({ user_id: 1 })
+					// .login({ user_id: 1 })
+					.login(params)
 					.then(function () {
 						alpine.$dispatch("notify", [{ type: "success", msg: alpine.success_msg }]);
 						window.location.reload();
@@ -38,10 +48,10 @@ document.addEventListener('alpine:init', () => {
 	)
 
 	Alpine.data('registerWebAuthn',
-		(success_msg_val = "U2F_REGISTRATION_SUCCESS", error_msg_val = "ERROR_TEXT", not_supported_val = "U2F_NOT_SUPPORTED") => ({
+		(success_msg_val = "U2F_REGISTRATION_SUCCESS", error_msg_val = "ERROR_TEXT") => ({
 			success_msg: success_msg_val,
 			error_msg: error_msg_val,
-			not_supported: not_supported_val,
+			
 
 			isWebAuthnUnavailable() {
 				return !window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';

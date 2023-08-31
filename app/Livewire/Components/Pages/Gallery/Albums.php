@@ -10,7 +10,10 @@ use App\Livewire\Traits\InteractWithModal;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Laragear\WebAuthn\Models\WebAuthnCredential;
+use Laragear\WebAuthn\WebAuthn;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Renderless;
 use Livewire\Component;
@@ -28,6 +31,7 @@ class Albums extends Component implements Reloadable
 	public string $title;
 
 	public bool $nsfwAlbumsVisible;
+	public bool $can_use_2fa;
 
 	/**
 	 * Render component.
@@ -39,6 +43,10 @@ class Albums extends Component implements Reloadable
 	public function render(): View
 	{
 		return view('livewire.pages.gallery.albums');
+	}
+
+	public function mount() {
+		$this->can_use_2fa = !Auth::check() && (WebAuthnCredential::query()->whereNull('disabled_at')->count() > 0);
 	}
 
 	#[On('reloadPage')]

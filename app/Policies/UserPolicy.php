@@ -41,7 +41,7 @@ class UserPolicy extends BasePolicy
 	 */
 	public function canUse2FA(User $user): bool
 	{
-		return false;
+		return true;
 	}
 
 	/**

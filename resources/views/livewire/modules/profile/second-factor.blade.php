@@ -1,5 +1,5 @@
 <div class="u2f_view my-10" 
-	x-data="registerWebAuthn('{{ __("lychee.U2F_REGISTRATION_SUCCESS") }}', '{{ __("lychee.ERROR_TEXT") }}', '{{ __("U2F_NOT_SUPPORTED") }}')"
+	x-data="registerWebAuthn('{{ __("lychee.U2F_REGISTRATION_SUCCESS") }}', '{{ __("lychee.ERROR_TEXT") }}')"
 	>
 	{{-- 
 	'U2F_NOT_SUPPORTED' => 'U2F not supported. Sorry.',
