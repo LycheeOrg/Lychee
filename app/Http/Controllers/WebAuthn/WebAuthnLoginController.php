@@ -29,7 +29,7 @@ class WebAuthnLoginController
 	{
 		$fields = $request->validate([
 			'user_id' => 'sometimes|int',
-			'username' => 'sometimes|string'
+			'username' => 'sometimes|string',
 		]);
 
 		$username = $fields['username'] ?? null;
