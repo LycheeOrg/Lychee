@@ -44,7 +44,7 @@ class Albums extends Component implements Reloadable
 		return view('livewire.pages.gallery.albums');
 	}
 
-	public function mount()
+	public function mount(): void
 	{
 		$this->can_use_2fa = !Auth::check() && (WebAuthnCredential::query()->whereNull('disabled_at')->count() > 0);
 	}
