@@ -27,7 +27,15 @@ class WebAuthnLoginController
 	 */
 	public function options(AssertionRequest $request): Responsable
 	{
-		return $request->toVerify($request->validate(['user_id' => 'sometimes|int'])['user_id'] ?? null);
+		$fields = $request->validate([
+			'user_id' => 'sometimes|int',
+			'username' => 'sometimes|string'
+		]);
+
+		$username = $fields['username'] ?? null;
+		$authenticatable = $fields['user_id'] ?? ($username !== null ? ['username' => $username] : null);
+
+		return $request->toVerify($authenticatable);
 	}
 
 	/**

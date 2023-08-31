@@ -22,18 +22,18 @@
  * SOFTWARE.
  */
 
-class WebAuthn {
+export default class WebAuthn {
     /**
      * Routes for WebAuthn assertion (login) and attestation (register).
      *
      * @type {{registerOptions: string, register: string, loginOptions: string, login: string, }}
      */
     #routes = {
-        registerOptions: "webauthn::register/options",
-        register: "webauthn::register",
-        loginOptions: "webauthn::login/options",
-        login: "webauthn::login",
-    }
+        registerOptions: "webauthn/register/options",
+        register: "webauthn/register",
+        loginOptions: "webauthn/login/options",
+        login: "webauthn/login",
+    };
 
     /**
      * Headers to use in ALL requests done.
@@ -41,9 +41,9 @@ class WebAuthn {
      * @type {{Accept: string, "Content-Type": string, "X-Requested-With": string}}
      */
     #headers = {
-        "Accept": "application/json",
+        Accept: "application/json",
         "Content-Type": "application/json",
-        "X-Requested-With": "XMLHttpRequest"
+        "X-Requested-With": "XMLHttpRequest",
     };
 
     /**
@@ -53,7 +53,7 @@ class WebAuthn {
      *
      * @type {boolean}
      */
-    #includeCredentials = false
+    #includeCredentials = false;
 
     /**
      * Create a new WebAuthn instance.
@@ -76,14 +76,14 @@ class WebAuthn {
             // If the developer didn't issue an XSRF token, we will find it ourselves.
             xsrfToken = WebAuthn.#XsrfToken;
             csrfToken = WebAuthn.#firstInputWithCsrfToken;
-        } else{
+        } else {
             // Check if it is a CSRF or XSRF token
             if (xcsrfToken.length === 40) {
                 csrfToken = xcsrfToken;
             } else if (xcsrfToken.length === 224) {
                 xsrfToken = xcsrfToken;
             } else {
-                throw new TypeError('CSRF token or XSRF token provided does not match requirements. Must be 40 or 224 characters.');
+                throw new TypeError("CSRF token or XSRF token provided does not match requirements. Must be 40 or 224 characters.");
             }
         }
 
@@ -93,7 +93,9 @@ class WebAuthn {
             this.#headers["X-CSRF-TOKEN"] ??= csrfToken;
         } else {
             // We didn't find it, and since is required, we will bail out.
-            throw new TypeError('Ensure a CSRF/XSRF token is manually set, or provided in a cookie "XSRF-TOKEN" or or there is meta tag named "csrf-token".');
+            throw new TypeError(
+                'Ensure a CSRF/XSRF token is manually set, or provided in a cookie "XSRF-TOKEN" or or there is meta tag named "csrf-token".'
+            );
         }
     }
 
@@ -105,16 +107,14 @@ class WebAuthn {
      */
     static get #firstInputWithCsrfToken() {
         // First, try finding an CSRF Token in the head.
-        let token = Array.from(document.head.getElementsByTagName("meta"))
-            .find(element => element.name === "csrf-token");
+        let token = Array.from(document.head.getElementsByTagName("meta")).find((element) => element.name === "csrf-token");
 
         if (token) {
             return token.content;
         }
 
         // Then, try to find a hidden input containing the CSRF token.
-        token = Array.from(document.getElementsByTagName('input'))
-            .find(input => input.name === "_token" && input.type === "hidden")
+        token = Array.from(document.getElementsByTagName("input")).find((input) => input.name === "_token" && input.type === "hidden");
 
         if (token) {
             return token.value;
@@ -130,7 +130,7 @@ class WebAuthn {
      *
      * @returns {?string}
      */
-     static get #XsrfToken() {
+    static get #XsrfToken() {
         const cookie = document.cookie.split(";").find((row) => /^\s*(X-)?[XC]SRF-TOKEN\s*=/.test(row));
         // We must remove all '%3D' from the end of the string.
         // Background:
@@ -145,7 +145,7 @@ class WebAuthn {
         // Laravel expects an unpadded value.
         // Hence, we must remove the `%3D`.
         return cookie ? cookie.split("=")[1].trim().replaceAll("%3D", "") : null;
-    };
+    }
 
     /**
      * Returns a fetch promise to resolve later.
@@ -156,12 +156,14 @@ class WebAuthn {
      * @returns {Promise<Response>}
      */
     #fetch(data, route, headers = {}) {
-        return fetch(route, {
+        const url = new URL(route, window.location.origin).href;
+
+        return fetch(url, {
             method: "POST",
             credentials: this.#includeCredentials ? "include" : "same-origin",
             redirect: "error",
-            headers: {...this.#headers, ...headers},
-            body: JSON.stringify(data)
+            headers: { ...this.#headers, ...headers },
+            body: JSON.stringify(data),
         });
     }
 
@@ -195,9 +197,7 @@ class WebAuthn {
      * @returns {Uint8Array}
      */
     static #uint8Array(input, useAtob = false) {
-        return Uint8Array.from(
-            useAtob ? atob(input) : WebAuthn.#base64UrlDecode(input), c => c.charCodeAt(0)
-        );
+        return Uint8Array.from(useAtob ? atob(input) : WebAuthn.#base64UrlDecode(input), (c) => c.charCodeAt(0));
     }
 
     /**
@@ -221,23 +221,22 @@ class WebAuthn {
 
         publicKey.challenge = WebAuthn.#uint8Array(publicKey.challenge);
 
-        if ('user' in publicKey) {
+        if ("user" in publicKey) {
             publicKey.user = {
                 ...publicKey.user,
-                id: WebAuthn.#uint8Array(publicKey.user.id)
+                id: WebAuthn.#uint8Array(publicKey.user.id),
             };
         }
 
-        [
-            "excludeCredentials",
-            "allowCredentials"
-        ]
-            .filter(key => key in publicKey)
-            .forEach(key => {
-                publicKey[key] = publicKey[key].map(data => {
-                    return {...data, id: WebAuthn.#uint8Array(data.id)};
+        ["excludeCredentials", "allowCredentials"]
+            .filter((key) => key in publicKey)
+            .forEach((key) => {
+                publicKey[key] = publicKey[key].map((data) => {
+                    return { ...data, id: WebAuthn.#uint8Array(data.id) };
                 });
             });
+
+        console.log(publicKey);
 
         return publicKey;
     }
@@ -253,18 +252,12 @@ class WebAuthn {
             id: credentials.id,
             type: credentials.type,
             rawId: WebAuthn.#arrayToBase64String(credentials.rawId),
-            response: {}
+            response: {},
         };
 
-        [
-            "clientDataJSON",
-            "attestationObject",
-            "authenticatorData",
-            "signature",
-            "userHandle"
-        ]
-            .filter(key => key in credentials.response)
-            .forEach(key => parseCredentials.response[key] = WebAuthn.#arrayToBase64String(credentials.response[key]));
+        ["clientDataJSON", "attestationObject", "authenticatorData", "signature", "userHandle"]
+            .filter((key) => key in credentials.response)
+            .forEach((key) => (parseCredentials.response[key] = WebAuthn.#arrayToBase64String(credentials.response[key])));
 
         return parseCredentials;
     }
@@ -307,10 +300,11 @@ class WebAuthn {
         const optionsResponse = await this.#fetch(request, this.#routes.registerOptions);
         const json = await optionsResponse.json();
         const publicKey = this.#parseIncomingServerOptions(json);
-        const credentials = await navigator.credentials.create({publicKey});
+        const credentials = await navigator.credentials.create({ publicKey });
         const publicKeyCredential = this.#parseOutgoingCredentials(credentials);
 
         Object.assign(publicKeyCredential, response);
+        Object.assign(publicKeyCredential, request);
 
         return await this.#fetch(publicKeyCredential, this.#routes.register).then(WebAuthn.#handleResponse);
     }
@@ -328,10 +322,12 @@ class WebAuthn {
         const optionsResponse = await this.#fetch(request, this.#routes.loginOptions);
         const json = await optionsResponse.json();
         const publicKey = this.#parseIncomingServerOptions(json);
-        const credentials = await navigator.credentials.get({publicKey});
+        const credentials = await navigator.credentials.get({ publicKey });
         const publicKeyCredential = this.#parseOutgoingCredentials(credentials);
 
         Object.assign(publicKeyCredential, response);
+
+        console.log(publicKeyCredential);
 
         return await this.#fetch(publicKeyCredential, this.#routes.login, response).then(WebAuthn.#handleResponse);
     }

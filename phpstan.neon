@@ -9,15 +9,13 @@ parameters:
 		- app
 		- scripts
 		- lang
-		- database
+		- database/migrations
 		- tests
 	excludePaths:
-		- app/View/*
-		- app/Http/Livewire/*
-		- database/factories/*
 		- database/migrations/2021_12_04_181200_refactor_models.php
 	stubFiles:
 		# these can be removed after https://github.com/thecodingmachine/safe/issues/283 has been merged
+		- phpstan/stubs/Wireable.stub
 		- phpstan/stubs/image.stub
 		- phpstan/stubs/imageexception.stub
 	ignoreErrors:
@@ -33,8 +31,10 @@ parameters:
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::where(Not)?(Null|In|Between|Exists|Column|Year|Month|Day)?\(\).#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::delete\(\)#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::without\(\)#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::with\(\)#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::count\(\).#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::update\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::inRandomOrder\(\).#'
 		- '#Dynamic call to static method App\\Models\\Builders\\.*::orderByDesc\(\).#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::update\(\)#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::with(Only)?\(\)#'
@@ -79,15 +79,15 @@ parameters:
 		-
 			message: '#Function define is unsafe to use.#'
 			paths:
-				- database
+				- database/migrations
 		-
 			message: '#Variable property access on (mixed|object).#'
 			paths:
-				- database
+				- database/migrations
 		-
 			message: '#Access to an undefined property object::\$value.#'
 			paths:
-				- database
+				- database/migrations
 
 		# TESTS
 		-
@@ -111,10 +111,11 @@ parameters:
 			paths:
 				- tests
 		-
-			message: '#Access to private property App\\Models\\Extensions\\SizeVariants::\$(original|thumb|small|medium)(2x)?#'
+			message: '#Cannot call method .* on Illuminate\\Testing\\PendingCommand\|int.#'
 			paths:
 				- tests
+
 		-
-			message: '#Cannot call method .* on Illuminate\\Testing\\PendingCommand\|int.#'
+			message: '#Access to private property App\\Models\\Extensions\\SizeVariants::\$(original|small(2x)?|thumb(2x)?|medium(2x)?)#'
 			paths:
 				- tests

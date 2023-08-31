@@ -19,6 +19,7 @@ class AlbumPolicy extends BasePolicy
 {
 	public const UNLOCKED_ALBUMS_SESSION_KEY = 'unlocked_albums';
 
+	public const IS_OWNER = 'isOwner';
 	public const CAN_SEE = 'canSee';
 	public const CAN_ACCESS = 'canAccess';
 	public const CAN_DOWNLOAD = 'canDownload';
@@ -38,7 +39,7 @@ class AlbumPolicy extends BasePolicy
 	 *
 	 * @return bool
 	 */
-	private function isOwner(?User $user, BaseAlbum $album): bool
+	public function isOwner(?User $user, BaseAlbum $album): bool
 	{
 		return $user !== null && $album->owner_id === $user->id;
 	}
