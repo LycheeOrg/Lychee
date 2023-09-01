@@ -8,7 +8,7 @@
         <span class="py-0.5 pl-0 text-sm">{{ $created_at }}</span>
         @if ($description !== '')
             <span class="col-span-2 py-0.5 pl-3 text-sm">{{ __('lychee.PHOTO_DESCRIPTION') }}</span>
-            <div class="py-0.5 pl-8 col-span-2 text-sm">
+            <div class="pb-0.5 pt-4 pl-8 col-span-2 text-sm" id="photoDescription">
                 @markdown{{ $description }}@endmarkdown
             </div>
         @endif

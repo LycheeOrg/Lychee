@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Components\Modules\Sidebar;
+namespace App\Livewire\Components\Modules\Photo;
 
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Facades\Helpers;
@@ -16,7 +16,7 @@ use Livewire\Component;
  * Contrary to the JS implementation, the attributes are directly embeded in the bar.
  * This will (hopefully) simplify the update when editing properties.
  */
-class Photo extends Component
+class Sidebar extends Component
 {
 	public string $title;
 	public string $description;
@@ -122,7 +122,7 @@ class Photo extends Component
 	 */
 	public function render(): View
 	{
-		return view('livewire.modules.sidebar.photo');
+		return view('livewire.modules.photo.sidebar');
 	}
 
 	/**

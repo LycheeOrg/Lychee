@@ -1,4 +1,4 @@
-<div class="w-full" x-data="{ detailsOpen: false }">
+<div class="w-full" x-data="{ detailsOpen: false, editOpen: false }">
     <!-- toolbar -->
     <x-header.bar>
         <x-header.back />
@@ -16,10 +16,14 @@
         <a class="button" id="button_fs_exit"><x-icons.iconic icon="fullscreen-exit" /></a>
         <a class="header__divider"></a> --}}
         {{-- <x-header.button wire:click="openContextMenu" icon="ellipses" /> --}}
-
+        @can(App\Policies\PhotoPolicy::CAN_EDIT, [App\Models\Photo::class, $photo])
+        <x-header.button x-on:click="editOpen = ! editOpen" icon="pencil" fill=""
+            @keydown.window="if (event.keyCode === 69 && $focus.focused() === undefined) { event.preventDefault(); editOpen = ! editOpen }"
+            {{-- 69 = e --}} x-bind:class="editOpen ? 'fill-sky-500' : 'fill-neutral-400'" />
+        @endcan
         <x-header.button x-on:click="detailsOpen = ! detailsOpen" icon="info" fill=""
-            @keydown.window="if (event.keyCode === 73) { event.preventDefault(); detailsOpen = ! detailsOpen }"
-            {{-- 73 = i --}} x-bind:class="detailsOpen ? 'fill-sky-500' : 'fill-neutral-400'"  />
+            @keydown.window="if (event.keyCode === 73 && $focus.focused() === undefined) { event.preventDefault(); detailsOpen = ! detailsOpen }"
+            {{-- 73 = i --}} x-bind:class="detailsOpen ? 'fill-sky-500' : 'fill-neutral-400'" />
 
     </x-header.bar>
     <div class="w-full flex h-[calc(100%-3.5rem)] overflow-hidden">
@@ -43,7 +47,7 @@
                     }
                 }
             }"
-                x-on:click="rotateOverlay()" >
+                x-on:click="rotateOverlay()">
                 @if ($photo->isVideo())
                     {{-- This is a video file: put html5 player --}}
                     <video width="auto" height="auto" id='image' controls
@@ -51,7 +55,7 @@
                         autobuffer {{ $flags->can_autoplay ? 'autoplay' : '' }}
                         data-tabindex='{{ Helpers::data_index() }}'>
                         <source src='{{ URL::asset($photo->size_variants->getOriginal()->url) }}' />
-                            Your browser does not support the video tag.
+                        Your browser does not support the video tag.
                     </video>
                 @elseif($photo->isRaw())
                     {{-- This is a raw file: put a place holder --}}
@@ -101,29 +105,39 @@
                 {{-- <div class='arrow_wrapper arrow_wrapper--next'><a id='next'>${build.iconic("caret-right")}</a></div> --}}
             </div>
             @can(App\Policies\PhotoPolicy::CAN_EDIT, [App\Models\Photo::class, $photo])
-            <div class="absolute top-0 w-full bg-red-500">
-                <span class="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-b from-black rounded-b-xl p-1">
-                <x-header.button x-on:click="$wire.set_star()" fill="" class="hover:fill-yellow-500 {{ $photo->is_starred ? 'fill-yellow-500' : 'fill-white'}}" icon="star"
-                @keydown.window="if (event.keyCode === 70) { $wire.set_star(); }"
-                {{-- 70 = f --}} />
-                @if($flags->can_rotate)
-                <x-header.button x-on:click="$wire.rotate_ccw()" fill="" class="fill-white hover:fill-sky-500" icon="counterclockwise"
-                @keydown.window="if (event.keyCode === 37 && event.ctrlKey) { $wire.rotate_ccw(); }"
-                {{-- 37 = left arrow --}}  />
-                <x-header.button x-on:click="$wire.rotate_cw()" fill="" class="fill-white hover:fill-sky-500" icon="clockwise"
-                @keydown.window="if (event.keyCode === 39 && event.ctrlKey) { $wire.rotate_cw(); }"
-                {{-- 39 = right arrow --}}  />
-                @endif
-                <x-header.button x-on:click="$wire.delete()" fill="" class="fill-red-800 hover:fill-red-600" icon="trash"
-                @keydown.window="if (event.keyCode === 46 || event.keyCode === 8) { $wire.delete(); }"
-                {{-- 46 = dell, 8 = backspace --}} />
-                </span>
-            </div>
+                <div class="absolute top-0 w-full bg-red-500">
+                    <span class="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-b from-black rounded-b-xl p-1">
+                        <x-header.button x-on:click="$wire.set_star()" fill=""
+                            class="hover:fill-yellow-500 {{ $photo->is_starred ? 'fill-yellow-500' : 'fill-white' }}"
+                            icon="star" @keydown.window="if (event.keyCode === 70) { $wire.set_star(); }"
+                            {{-- 70 = f --}} />
+                        @if ($flags->can_rotate)
+                            <x-header.button x-on:click="$wire.rotate_ccw()" fill=""
+                                class="fill-white hover:fill-sky-500" icon="counterclockwise"
+                                @keydown.window="if (event.keyCode === 37 && event.ctrlKey) { $wire.rotate_ccw(); }"
+                                {{-- 37 = left arrow --}} />
+                            <x-header.button x-on:click="$wire.rotate_cw()" fill=""
+                                class="fill-white hover:fill-sky-500" icon="clockwise"
+                                @keydown.window="if (event.keyCode === 39 && event.ctrlKey) { $wire.rotate_cw(); }"
+                                {{-- 39 = right arrow --}} />
+                        @endif
+                        <x-header.button x-on:click="$wire.delete()" fill="" class="fill-red-800 hover:fill-red-600"
+                            icon="trash"
+                            @keydown.window="if (event.ctrlKey && (event.keyCode === 46 || event.keyCode === 8)) { $wire.delete(); }"
+                            {{-- 46 = dell, 8 = backspace --}} />
+                    </span>
+                </div>
             @endcan
         </div>
+        @can(App\Policies\PhotoPolicy::CAN_EDIT, [App\Models\Photo::class, $photo])
+        <div class="h-full relative overflow-clip w-0 bg-dark-800 transition-all"
+            :class=" editOpen ? 'w-full' : 'w-0 translate-x-full'">
+            <livewire:modules.photo.properties :photo="$this->photo" />
+        </div>
+        @endcan
         <aside id="lychee_sidebar_container" class="h-full relative overflow-clip w-0 bg-dark-800 transition-all"
             :class=" detailsOpen ? 'w-[360px]' : 'w-0 translate-x-full'">
-            <livewire:modules.sidebar.photo :photo="$this->photo" />
+            <livewire:modules.photo.sidebar :photo="$this->photo" />
         </aside>
     </div>
 </div>
