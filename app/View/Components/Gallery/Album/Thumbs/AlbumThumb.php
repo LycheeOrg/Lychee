@@ -11,12 +11,15 @@ class AlbumThumb extends Component
 	public string $src = '';
 	public string $dataSrc = '';
 	public string $dataSrcSet = '';
+	public string $class = '';
 
 	public function __construct(
 		string $type = '',
 		string $thumb = '',
 		string $thumb2x = '',
+		string $class = '',
 	) {
+		$this->class = $class;
 		if ($thumb === 'uploads/thumb/') {
 			$this->src = Str::contains($type, 'video') ? URL::asset('img/play-icon.png') : URL::asset('img/placeholder.png');
 			$this->dataSrc = Str::contains($type, 'raw') ? URL::asset('img/no_images.svg') : '';
