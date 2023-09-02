@@ -76,15 +76,13 @@ class Photo extends Component
 		$wrapOver = Configs::getValueAsBool('photos_wraparound') && $max > 1;
 
 		$idx_next = ($idx + 1) % $max;
-		$idx_previous = ($idx - 1) % $max;
-		if ($idx < $idx_next && $idx_previous < $idx) {
-			$this->previousPhoto = $this->album->photos->get($idx_previous);
-			$this->nextPhoto = $this->album->photos->get($idx_next);
-		} else {
-			// Possible wrap around
-			$this->previousPhoto = ($wrapOver && $idx_previous > $idx) ? $this->album->photos->get($idx_previous) : null;
-			$this->nextPhoto = ($wrapOver && $idx_next < $idx) ? $this->album->photos->get($idx_next) : null;
-		}
+		// No, we cannot use ($idx - 1) % $max.
+		// -1 % $max returns the reminder of the division, which will be... -1.
+		// % is not a true modulo operator for php.
+		$idx_previous = $idx === 0 ? $max - 1 : $idx - 1;
+
+		$this->previousPhoto = ($wrapOver && $idx_previous > $idx) || $idx_previous < $idx ? $this->album->photos->get($idx_previous) : null;
+		$this->nextPhoto = ($wrapOver && $idx_next < $idx) || $idx < $idx_next ? $this->album->photos->get($idx_next) : null;
 
 		// $this->locked = Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
 	}
