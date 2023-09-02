@@ -26,18 +26,18 @@
                 <li class="menu-item relative block float-right pt-6 pb-5 px-3">
                     {{-- Here we can also use livewire to directly open the gallery without reloading the full page --}}
                     <a href="{{ route('livewire-gallery') }}" class="block text-xs uppercase font-normal text-white hover:text-neutral-400 "
-                        wire:navigate>{{ __('lychee.GALLERY') }}</a>
+                        wire:navigate.hover >{{ __('lychee.GALLERY') }}</a>
                 </li>
             </ul>
         </div>
     </div>
 
-    {{-- <div id="intro">
+    <div id="intro">
 		<div id="intro_content">
 			<h1 class="animate_slower pop-in">{{ $title }}</h1>
 			<h2><span class="animate_slower pop-in">{{ $subtitle }}</span></h2>
 		</div>
-	</div> --}}
+	</div>
 
     <div id="slides" class="absolute left-0 top-0 w-screen h-[98vh] opacity-100 scale-100 transition-all ease-in-out duration-[2s]
 	animate_slower pop-in-last">

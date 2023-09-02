@@ -100,9 +100,6 @@
                     </div>
                 @endif
                 <x-gallery.photo.overlay :photo="$photo" />
-                {{-- <livewire:modules.gallery.photo-overlay :photo="$photo" /> --}}
-                {{-- <div class='arrow_wrapper arrow_wrapper--previous'><a id='previous'>${build.iconic("caret-left")}</a></div> --}}
-                {{-- <div class='arrow_wrapper arrow_wrapper--next'><a id='next'>${build.iconic("caret-right")}</a></div> --}}
             </div>
             @if ($this->previousPhoto !== null)
                 <x-gallery.photo.next-previous :photo="$this->previousPhoto" :albumId="$albumId" :is_next="false" @keyup.left.window="Alpine.navigate($el.getAttribute('href'));" wire:navigate.hover />
