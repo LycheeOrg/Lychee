@@ -47,6 +47,8 @@
                     }
                 }
             }"
+            @keydown.window="if (event.keyCode === 79 && $focus.focused() === undefined) { rotateOverlay() }"
+                {{-- 79 - o --}}
                 x-on:click="rotateOverlay()">
                 @if ($photo->isVideo())
                     {{-- This is a video file: put html5 player --}}
