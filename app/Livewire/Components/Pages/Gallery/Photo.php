@@ -70,8 +70,9 @@ class Photo extends Component
 			can_rotate: Configs::getValueAsBool('editor_enabled'),
 		);
 
-		$idx = $this->album->photos->search(fn(PhotoModel $photo) => $photo->id === $this->photoId);
-		$max = $this->album->num_photos;
+		/** @var int $idx */
+		$idx = $this->album->photos->search(fn (PhotoModel $photo) => $photo->id === $this->photoId);
+		$max = $this->album->photos->count();
 		$wrapOver = Configs::getValueAsBool('photos_wraparound') && $max > 1;
 
 		$idx_next = ($idx + 1) % $max;
@@ -84,7 +85,7 @@ class Photo extends Component
 			$this->previousPhoto = ($wrapOver && $idx_previous > $idx) ? $this->album->photos->get($idx_previous) : null;
 			$this->nextPhoto = ($wrapOver && $idx_next < $idx) ? $this->album->photos->get($idx_next) : null;
 		}
-		
+
 		// $this->locked = Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
 	}
 
