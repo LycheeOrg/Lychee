@@ -13,6 +13,7 @@ use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use App\SmartAlbums\BaseSmartAlbum;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 use Safe\Exceptions\InfoException;
@@ -49,6 +50,9 @@ class Archive extends Action
 	 */
 	public function do(Collection $albums): StreamedResponse
 	{
+		// For this specific case we must allow lazy loading.
+		Model::shouldBeStrict(false);
+
 		$this->deflateLevel = Configs::getValueAsInt('zip_deflate_level');
 
 		$responseGenerator = function () use ($albums) {
