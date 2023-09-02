@@ -10,9 +10,9 @@ use App\Livewire\DTO\PhotoFlags;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Configs;
 use App\Models\Photo as PhotoModel;
+use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
@@ -42,6 +42,9 @@ class Photo extends Component
 	public PhotoModel $photo;
 	public ?AbstractAlbum $album = null;
 
+	public ?PhotoModel $nextPhoto = null;
+	public ?PhotoModel $previousPhoto = null;
+
 	public function boot(): void
 	{
 		$this->albumFactory = resolve(AlbumFactory::class);
@@ -51,7 +54,11 @@ class Photo extends Component
 	{
 		$this->albumId = $albumId;
 		$this->photoId = $photoId;
+
 		$this->album = $this->albumFactory->findAbstractAlbumOrFail($this->albumId);
+
+		// TODO: support password
+		Gate::authorize(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
 
 		/** @var PhotoModel $photoItem */
 		$photoItem = PhotoModel::with('album')->findOrFail($this->photoId);
@@ -63,6 +70,21 @@ class Photo extends Component
 			can_rotate: Configs::getValueAsBool('editor_enabled'),
 		);
 
+		$idx = $this->album->photos->search(fn(PhotoModel $photo) => $photo->id === $this->photoId);
+		$max = $this->album->num_photos;
+		$wrapOver = Configs::getValueAsBool('photos_wraparound') && $max > 1;
+
+		$idx_next = ($idx + 1) % $max;
+		$idx_previous = ($idx - 1) % $max;
+		if ($idx < $idx_next && $idx_previous < $idx) {
+			$this->previousPhoto = $this->album->photos->get($idx_previous);
+			$this->nextPhoto = $this->album->photos->get($idx_next);
+		} else {
+			// Possible wrap around
+			$this->previousPhoto = ($wrapOver && $idx_previous > $idx) ? $this->album->photos->get($idx_previous) : null;
+			$this->nextPhoto = ($wrapOver && $idx_next < $idx) ? $this->album->photos->get($idx_next) : null;
+		}
+		
 		// $this->locked = Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
 	}
 
@@ -90,14 +112,14 @@ class Photo extends Component
 
 	public function set_star(): void
 	{
-		Gate::check(PhotoPolicy::CAN_EDIT, $this->photo);
+		Gate::authorize(PhotoPolicy::CAN_EDIT, $this->photo);
 		$this->photo->is_starred = !$this->photo->is_starred;
 		$this->photo->save();
 	}
 
 	public function rotate_ccw(): void
 	{
-		Gate::check(PhotoPolicy::CAN_EDIT, $this->photo);
+		Gate::authorize(PhotoPolicy::CAN_EDIT, $this->photo);
 		$rotateStrategy = new RotateStrategy($this->photo, -1);
 		$this->photo = $rotateStrategy->do();
 		$this->render();
@@ -105,7 +127,7 @@ class Photo extends Component
 
 	public function rotate_cw(): void
 	{
-		Gate::check(PhotoPolicy::CAN_EDIT, $this->photo);
+		Gate::authorize(PhotoPolicy::CAN_EDIT, $this->photo);
 		$rotateStrategy = new RotateStrategy($this->photo, 1);
 		$this->photo = $rotateStrategy->do();
 		$this->render();
