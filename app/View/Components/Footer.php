@@ -24,13 +24,16 @@ class Footer extends Component
 	public string $youtube;
 	public string $additional_footer_text;
 
+	private string $layout;
+
 	/**
 	 * Initialize the footer once for all.
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function __construct()
+	public function __construct(string $layout = 'footer')
 	{
+		$this->layout = $layout;
 		$this->show_socials = Configs::getValueAsBool('footer_show_social_media');
 		$this->facebook = Configs::getValueAsString('sm_facebook_url');
 		$this->flickr = Configs::getValueAsString('sm_flickr_url');
@@ -41,12 +44,17 @@ class Footer extends Component
 		$this->hosted_by = __('lychee.HOSTED_WITH_LYCHEE');
 
 		if (Configs::getValueAsBool('footer_show_copyright')) {
-			/** @var string $footer_text */
-			$footer_text = __('lychee.FOOTER_COPYRIGHT');
+			$copyright_year = Configs::getValueAsString('site_copyright_begin');
+			$copyright_year_end = Configs::getValueAsString('site_copyright_end');
+			if ($copyright_year !== $copyright_year_end) {
+				$copyright_year = $copyright_year . '-' . $copyright_year_end;
+			}
+
 			$this->copyright = sprintf(
-				$footer_text,
+				__('lychee.FOOTER_COPYRIGHT'),
 				Configs::getValueAsString('site_owner'),
-				Configs::getValueAsInt('site_copyright_end'));
+				$copyright_year
+			);
 		}
 
 		$this->additional_footer_text = Configs::getValueAsString('footer_additional_text');
@@ -61,6 +69,6 @@ class Footer extends Component
 	 */
 	public function render(): View
 	{
-		return view('components.footer');
+		return view('components.' . $this->layout);
 	}
 }

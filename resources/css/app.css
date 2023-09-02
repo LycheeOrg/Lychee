@@ -1,16 +1,77 @@
+/* @import 'fonts.css'; */
 @tailwind base;
 /* also contains normalize */
 @tailwind components;
 @tailwind utilities;
 
-
 @layer base {
+  
+  @font-face {
+    font-family: "Roboto";
+    font-style: normal;
+    font-weight: 300;
+    src: local(""), url("../fonts/roboto-v29-300.woff2") format("woff2");
+  }
+  
+  /* roboto-regular - vietnamese_latin-ext_latin_greek-ext_greek_cyrillic-ext_cyrillic */
+  @font-face {
+    font-family: "Roboto";
+    font-style: normal;
+    font-weight: 400;
+    src: local(""), url("../fonts/roboto-v29-400.woff2") format("woff2");
+  }
+  
+  /* roboto-700 - vietnamese_latin-ext_latin_greek-ext_greek_cyrillic-ext_cyrillic */
+  @font-face {
+    font-family: "Roboto";
+    font-style: normal;
+    font-weight: 700;
+    src: local(""), url("../fonts/roboto-v29-700.woff2") format("woff2");
+  }
+  
+  @font-face {
+    font-family: "socials";
+    src: url("../fonts/socials.eot?egvu10");
+    src: url("../fonts/socials.eot?egvu10#iefix") format("embedded-opentype"), url("../fonts/socials.ttf?egvu10") format("truetype"),
+      url("../fonts/socials.woff?egvu10") format("woff"), url("../fonts/socials.svg?egvu10#socials") format("svg");
+    font-weight: normal;
+    font-style: normal;
+  }
+  
   html {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   }
 
   [x-cloak] { display: none !important; }
 
+  .roboto {
+    font-family: "Roboto", sans-serif;
+  }
+
+  .socials {
+    font-family: "socials" !important;
+  }
+  
+  #twitter:before {
+    content: "\ea96";
+  }
+  
+  #instagram:before {
+    content: "\ea92";
+  }
+  
+  #youtube:before {
+    content: "\ea9d";
+  }
+  
+  #flickr:before {
+    content: "\eaa4";
+  }
+  
+  #facebook:before {
+    content: "\ea91";
+  }
+  
   .box-shadow {
     /* -webkit-box-shadow: 0 0 0 1px rgba(0,0,0,.7); */
     box-shadow: 0 0 0 1px rgba(0,0,0,.7); 
@@ -30,8 +91,8 @@
   }
 
   .text-3xs {
-    font-size: 0.6rem;
-    line-height: 0.8rem;
+    font-size: 0.55rem;
+    line-height: 0.7rem;
   }
 
   .transition-width {
