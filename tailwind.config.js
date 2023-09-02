@@ -77,14 +77,61 @@ module.exports = {
             'opacity': '0',
             'transform': 'scale(0.8)'
           }
+        },
+        popIn: {
+          '0%': {
+            'opacity': '0',
+            'transform': 'scale(1.1)'
+          },
+          '100%': {
+            'opacity': '1',
+            'transform': 'scale(1)'
+          }
+        },
+        animateDown: {
+          '0%': {
+            'opacity': '0',
+            'transform': 'translateY(-300px)'
+          },
+          '100%': {
+            'opacity': '1',
+            'transform': 'translateY(0px)'
+          }
+        },
+        animateUp: {
+          '0%': {
+            'opacity': '0',
+            'transform': 'translateY(300px)'
+          },
+          '100%': {
+            'opacity': '1',
+            'transform': 'translateY(0px)'
+          }
         }
+
+
       },
       animation: {
         'fadeIn': 'fadeIn 0.3s forwards cubic-bezier(0.51, 0.92, 0.24, 1)',
         'fadeOut': 'fadeOut 0.3s forwards cubic-bezier(0.51, 0.92, 0.24, 1)',
         'zoomIn': 'zoomIn 0.2s forwards cubic-bezier(0.51, 0.92, 0.24, 1)',
         'zoomOut': 'zoomOut 0.2s forwards cubic-bezier(0.51, 0.92, 0.24, 1)',
-        'moveUp': 'moveUp 0.3s forwards cubic-bezier(0.51, 0.92, 0.24, 1)'
+        'moveUp': 'moveUp 0.3s forwards cubic-bezier(0.51, 0.92, 0.24, 1)',
+
+        'slowFadeIn': 'fadeIn 2s forwards cubic-bezier(0.51, 0.92, 0.24, 1)',
+        'slowFadeOut': 'fadeOut 2s forwards cubic-bezier(0.51, 0.92, 0.24, 1)',
+        'slowZoomIn': 'zoomIn 2s forwards cubic-bezier(0.51, 0.92, 0.24, 1)',
+        'slowZoomOut': 'zoomOut 2s forwards cubic-bezier(0.51, 0.92, 0.24, 1)',
+
+        'slowMoveUp': 'moveUp 2s forwards cubic-bezier(0.51, 0.92, 0.24, 1)',
+        'slowPopIn': 'popIn 2s forwards cubic-bezier(0.51, 0.92, 0.24, 1)',
+
+        'landingIntroPopIn': 'popIn 2s forwards ease-in-out',
+        'landingIntroFadeOut': 'fadeOut 2s 2s forwards ease-in-out', // delayed by 2s
+        'landingSlidesPopIn': 'popIn 2s 3s forwards ease-in-out', // delayed by 2s
+        'ladningAnimateDown': 'animateDown 1s 3.1s forwards ease-in-out', 
+        'ladningAnimateUp': 'animateUp 1s 3.1s forwards ease-in-out',
+        'delayedFadeOut': 'fadeOut 2s 2s forwards ease-in-out'
       }
     },
   },
