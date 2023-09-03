@@ -3,7 +3,10 @@
 namespace App\Http\Middleware;
 
 use App\Contracts\Exceptions\LycheeException;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 /**
  * Class DisableCSP.
@@ -44,6 +47,31 @@ class DisableCSP
 			config(['secure-headers.csp.script-src.hashes.sha256' => []]);
 		}
 
+		// disable unsafe-eval if we are on a Livewire page 
+		if (config('app.livewire', false) === true || Str::startsWith($request->getRequestUri(), '/livewire/')) {
+			$this->handleLivewire();
+		}
+
 		return $next($request);
+	}
+
+	/**
+	 * Disabling rules because of poor decision from the designer of Livewire.
+	 *
+	 * @return void
+	 *
+	 * @throws BindingResolutionException
+	 */
+	private function handleLivewire()
+	{
+		// We have to disable unsafe-eval because Livewire requires it...
+		// So stupid....
+		config(['secure-headers.csp.script-src.unsafe-eval' => true]);
+
+		// if the public/hot file exists, it means that we need to disable CSP completely
+		// As we will be reloading on the fly the page and Vite has poor CSP support.
+		if (File::exists(public_path('hot'))) {
+			config(['secure-headers.csp.enable' => false]);
+		}
 	}
 }

@@ -18,7 +18,7 @@ class DeleteCredentialRequest extends BaseApiRequest
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(UserPolicy::CAN_USE_2FA, [User::class]);
+		return Gate::check(UserPolicy::CAN_EDIT, [User::class]);
 	}
 
 	public function rules(): array

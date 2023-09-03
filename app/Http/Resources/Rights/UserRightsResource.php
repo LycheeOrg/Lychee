@@ -29,7 +29,6 @@ class UserRightsResource extends JsonResource
 	{
 		return [
 			'can_edit' => Gate::check(UserPolicy::CAN_EDIT, [User::class]),
-			'can_use_2fa' => Gate::check(UserPolicy::CAN_USE_2FA, [User::class]),
 		];
 	}
 }

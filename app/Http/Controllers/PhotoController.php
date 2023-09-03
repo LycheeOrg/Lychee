@@ -89,6 +89,7 @@ class PhotoController extends Controller
 									 ->photos()
 									 ->with(['album', 'size_variants', 'size_variants.sym_links']);
 		}
+
 		// PHPStan does not understand that `firstOrFail` returns `Photo`, but assumes that it returns `Model`
 		// @phpstan-ignore-next-line
 		return PhotoResource::make($query->inRandomOrder()
