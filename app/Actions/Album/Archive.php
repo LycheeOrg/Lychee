@@ -13,6 +13,7 @@ use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use App\SmartAlbums\BaseSmartAlbum;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 use Safe\Exceptions\InfoException;
@@ -49,6 +50,15 @@ class Archive extends Action
 	 */
 	public function do(Collection $albums): StreamedResponse
 	{
+		// Issue #1950: Setting Model::shouldBeStrict(); in /app/Providers/AppServiceProvider.php breaks recursive album download.
+		//
+		// From my understanding it is because when we query an album with it's relations (photos & children),
+		// the relations of the children are not populated.
+		// As a result, when we try to query the picture list of those, it breaks.
+		// In that specific case, it is better to simply disable Model::shouldBeStrict() and eat the recursive SQL queries:
+		// for this specific case we must allow lazy loading.
+		Model::shouldBeStrict(false);
+
 		$this->deflateLevel = Configs::getValueAsInt('zip_deflate_level');
 
 		$responseGenerator = function () use ($albums) {
