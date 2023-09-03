@@ -23,7 +23,7 @@ if (config('app.force_https')) {
 Route::feeds();
 
 // If we are using Livewire by default, we no longer need those routes.
-if (!config('app.livewire') !== true) {
+if (config('app.livewire') !== true) {
 	Route::get('/', [IndexController::class, 'show'])->name('home')->middleware(['migration:complete']);
 	Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware(['migration:complete']);
 	Route::get('/view', [IndexController::class, 'view'])->name('view')->middleware(['redirect-legacy-id']);

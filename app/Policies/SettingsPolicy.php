@@ -15,6 +15,7 @@ class SettingsPolicy extends BasePolicy
 	public const CAN_CLEAR_LOGS = 'canClearLogs';
 	public const CAN_SEE_DIAGNOSTICS = 'canSeeDiagnostics';
 	public const CAN_UPDATE = 'canUpdate';
+	public const CAN_ACCESS_DEV_TOOLS = 'canAccessDevTools';
 
 	/**
 	 * This function returns false as it is bypassed by the before()
@@ -78,5 +79,18 @@ class SettingsPolicy extends BasePolicy
 	public function canUpdate(User $user): bool
 	{
 		return $user->id === 0; // Edge case of migration not applied yet.
+	}
+
+	/**
+	 * This function returns false as it is bypassed by the before()
+	 * which directly checks for admin rights.
+	 *
+	 * @param User $user
+	 *
+	 * @return bool
+	 */
+	public function canAccessDevTools(User $user): bool
+	{
+		return false;
 	}
 }

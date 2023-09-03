@@ -47,6 +47,21 @@
             <x-leftbar.leftbar-item wire:click="logout" icon="account-logout">
                 {{ __('lychee.SIGN_OUT') }}
             </x-leftbar.leftbar-item>
+            @if($has_dev_tools)
+            {{-- <li class="pt-12 border-b border-b-neutral-400/20 border-solid">
+            </li> --}}
+            <li class="px-4 pt-14 pb-1">
+            <span class="p-2 rounded-lg text-neutral-400 light:text-dark-850 light:bg-neutral-100 whitespace-nowrap text-base">
+                Dev Tools
+            </span>
+            </li>
+            @if($clockwork_url !== null)
+                <x-leftbar.leftbar-item href="{{ $clockwork_url }}" icon="telescope">Clockwork App</x-leftbar.leftbar-item>
+            @endif
+            @if($doc_api_url !== null)
+            <x-leftbar.leftbar-item href="{{ $doc_api_url }}" icon="document">Api Documentation</x-leftbar.leftbar-item>
+            @endif
+            @endif
         </ul>
     </div>
 </aside>
