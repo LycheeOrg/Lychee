@@ -32,23 +32,24 @@ if (config('app.force_https')) {
 	URL::forceScheme('https');
 }
 
-if (config('app.livewire') === true) {
-	Route::middleware(['installation:complete', 'migration:complete'])->group(function () {
-		Route::get('/livewire/landing', Landing::class)->name('landing');
-		Route::get('/livewire/all-settings', AllSettings::class)->name('all-settings');
-		Route::get('/livewire/settings', Settings::class)->name('settings');
-		Route::get('/livewire/profile', Profile::class)->name('profile');
-		Route::get('/livewire/users', Users::class)->name('users');
-		Route::get('/livewire/sharing', Sharing::class)->name('sharing');
-		Route::get('/livewire/jobs', Jobs::class)->name('jobs');
-		Route::get('/livewire/diagnostics', Diagnostics::class)->name('diagnostics');
-		Route::get('/livewire/gallery/', Albums::class)->name('livewire-gallery');
-		Route::get('/livewire/gallery/{albumId}/', Album::class)->name('livewire-gallery-album');
-		Route::get('/livewire/gallery/{albumId}/{photoId}', Photo::class)->name('livewire-gallery-photo');
-		// Route::get('/livewire/{page?}/{albumId?}/{photoId?}', Index::class)
-
-		Route::get('/livewire', function () {
-			return redirect(Configs::getValueAsBool('landing_page_enable') ? route('landing') : route('livewire-gallery'));
+Route::middleware(['installation:complete', 'migration:complete'])
+	->group(function () {
+		Route::prefix(config('app.livewire') === true ? '' : 'livewire')
+		->group(function () {
+			Route::get('/landing', Landing::class)->name('landing');
+			Route::get('/all-settings', AllSettings::class)->name('all-settings');
+			Route::get('/settings', Settings::class)->name('settings');
+			Route::get('/profile', Profile::class)->name('profile');
+			Route::get('/users', Users::class)->name('users');
+			Route::get('/sharing', Sharing::class)->name('sharing');
+			Route::get('/jobs', Jobs::class)->name('jobs');
+			Route::get('/diagnostics', Diagnostics::class)->name('diagnostics');
+			Route::get('/gallery/', Albums::class)->name('livewire-gallery');
+			Route::get('/gallery/{albumId}/', Album::class)->name('livewire-gallery-album');
+			Route::get('/gallery/{albumId}/{photoId}', Photo::class)->name('livewire-gallery-photo');
+			Route::get('/', function () {
+				return redirect(Configs::getValueAsBool('landing_page_enable') ? route('landing') : route('livewire-gallery'));
+			});
 		});
 	});
-}
+
