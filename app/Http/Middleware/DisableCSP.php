@@ -6,6 +6,7 @@ use App\Contracts\Exceptions\LycheeException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 /**
  * Class DisableCSP.
@@ -46,7 +47,8 @@ class DisableCSP
 			config(['secure-headers.csp.script-src.hashes.sha256' => []]);
 		}
 
-		if (config('app.livewire', false) === true) {
+		// disable unsafe-eval if we are on a Livewire page 
+		if (config('app.livewire', false) === true || Str::startsWith($request->getRequestUri(), '/livewire/')) {
 			$this->handleLivewire();
 		}
 
