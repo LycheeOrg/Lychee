@@ -5,11 +5,13 @@ namespace App\Livewire\Components\Forms\Add;
 use App\Actions\Import\FromUrl;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
+use App\Exceptions\MassImportException;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\RuleSets\Import\ImportFromUrlRuleSet;
 use App\Livewire\Components\Forms\BaseForm;
 use App\Livewire\Components\Pages\Gallery\Album as PageGalleryAlbum;
 use App\Livewire\Traits\InteractWithModal;
+use App\Livewire\Traits\Notify;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Auth;
@@ -24,6 +26,7 @@ class ImportFromUrl extends BaseForm
 	 * Allow modal integration
 	 */
 	use InteractWithModal;
+	use Notify;
 
 	/**
 	 * This defines the set of validation rules to be applied on the input.
@@ -101,11 +104,15 @@ class ImportFromUrl extends BaseForm
 
 		// Create
 		$fromUrl = resolve(FromUrl::class);
-		$fromUrl->do($urls, $parentAlbum, $currentUserId);
+		try {
+			$fromUrl->do($urls, $parentAlbum, $currentUserId);
+			$this->notify(__('lychee.UPLOAD_IMPORT_COMPLETE'));
+		} catch (MassImportException $e) {
+			$this->notify($e->getMessage());
+		}
 
 		// Do we want refresh or direcly open newly created Album ?
-		$this->dispatch('reload')->to(PageGalleryAlbum::class);
-		// $this->dispatch('reload')->to(PageGalleryAlbum::class);
+		$this->dispatch('reloadPage')->to(PageGalleryAlbum::class);
 
 		$this->close();
 	}
