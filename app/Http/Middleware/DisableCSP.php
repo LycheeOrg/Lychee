@@ -47,7 +47,7 @@ class DisableCSP
 			config(['secure-headers.csp.script-src.hashes.sha256' => []]);
 		}
 
-		// disable unsafe-eval if we are on a Livewire page 
+		// disable unsafe-eval if we are on a Livewire page
 		if (config('app.livewire', false) === true || Str::startsWith($request->getRequestUri(), '/livewire/')) {
 			$this->handleLivewire();
 		}

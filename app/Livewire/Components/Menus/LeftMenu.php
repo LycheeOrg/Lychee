@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\URL;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -89,7 +90,7 @@ class LeftMenu extends Component
 		$clockWorkEnabled = config('clockwork.enable') === true || (config('app.debug') === true && config('clockwork.enable') === null);
 		$clockWorkWeb = config('clockwork.web');
 		if ($clockWorkEnabled && $clockWorkWeb === true || is_string($clockWorkWeb)) {
-			$this->clockwork_url = $clockWorkWeb === true ? 'clockwork/app' : $clockWorkWeb . '/app';
+			$this->clockwork_url = $clockWorkWeb === true ? URL::asset('clockwork/app') : $clockWorkWeb . '/app';
 		}
 
 		// API documentation
