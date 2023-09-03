@@ -1,4 +1,4 @@
-<div class="w-full" x-data="{ detailsOpen: false, editOpen: false }">
+<div class="w-full" x-data="{ detailsOpen: false, editOpen: false, donwloadOpen: false }">
     <!-- toolbar -->
     <x-header.bar>
         <x-header.back />
@@ -16,6 +16,9 @@
         <a class="button" id="button_fs_exit"><x-icons.iconic icon="fullscreen-exit" /></a>
         <a class="header__divider"></a> --}}
         {{-- <x-header.button wire:click="openContextMenu" icon="ellipses" /> --}}
+        @can(App\Policies\PhotoPolicy::CAN_DOWNLOAD, [App\Models\Photo::class, $photo])
+            <x-header.button x-on:click="donwloadOpen = ! donwloadOpen" icon="cloud-download" fill="" x-bind:class="donwloadOpen ? 'fill-sky-500' : 'fill-neutral-400'" />
+        @endcan
         @can(App\Policies\PhotoPolicy::CAN_EDIT, [App\Models\Photo::class, $photo])
             <x-header.button x-on:click="editOpen = ! editOpen" icon="pencil" fill=""
                 @keydown.window="if (event.keyCode === 69 && $focus.focused() === undefined) { event.preventDefault(); editOpen = ! editOpen }"
@@ -145,4 +148,7 @@
             <livewire:modules.photo.sidebar :photo="$this->photo" />
         </aside>
     </div>
+    @can(App\Policies\PhotoPolicy::CAN_DOWNLOAD, [App\Models\Photo::class, $photo])
+    <x-gallery.photo.download :photo="$this->photo" />
+    @endcan
 </div>

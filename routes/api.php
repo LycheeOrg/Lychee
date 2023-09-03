@@ -88,6 +88,7 @@ Route::post('/Photo::add', [PhotoController::class, 'add'])
 	->withoutMiddleware(['content_type:json'])
 	->middleware(['content_type:multipart']);
 Route::get('/Photo::getArchive', [PhotoController::class, 'getArchive'])
+	->name('photo_download')
 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
 	->middleware(['local_storage', 'accept_content_type:any']);
 
