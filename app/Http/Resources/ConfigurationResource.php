@@ -4,6 +4,8 @@ namespace App\Http\Resources;
 
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
+use App\Enum\AlbumDecorationOrientation;
+use App\Enum\AlbumDecorationType;
 use App\Enum\DefaultAlbumProtectionType;
 use App\Enum\ThumbAlbumSubtitleType;
 use App\Exceptions\Handler;
@@ -118,6 +120,8 @@ class ConfigurationResource extends JsonResource
 				],
 			]),
 
+			'album_decoration' => Configs::getValueAsEnum('album_decoration', AlbumDecorationType::class),
+			'album_decoration_orientation' => Configs::getValueAsEnum('album_decoration_orientation', AlbumDecorationOrientation::class),
 			'album_subtitle_type' => Configs::getValueAsEnum('album_subtitle_type', ThumbAlbumSubtitleType::class),
 			'check_for_updates' => Configs::getValueAsBool('check_for_updates'),
 			'default_album_protection' => Configs::getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class),

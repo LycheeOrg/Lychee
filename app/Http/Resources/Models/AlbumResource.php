@@ -58,8 +58,8 @@ class AlbumResource extends JsonResource
 			// timestamps
 			'created_at' => $this->resource->created_at->toIso8601String(),
 			'updated_at' => $this->resource->updated_at->toIso8601String(),
-			'max_taken_at' => $this->resource->min_taken_at?->toIso8601String(),
-			'min_taken_at' => $this->resource->max_taken_at?->toIso8601String(),
+			'max_taken_at' => $this->resource->max_taken_at?->toIso8601String(),
+			'min_taken_at' => $this->resource->min_taken_at?->toIso8601String(),
 
 			// security
 			'policy' => AlbumProtectionPolicy::ofBaseAlbum($this->resource),
