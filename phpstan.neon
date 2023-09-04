@@ -75,6 +75,18 @@ parameters:
 		# False positive from maennchen/ZipStream
 		- '#Call to an undefined static method ZipStream\\Option\\Method::(STORE|DEFLATE)\(\)#'
 
+
+		# Synth
+		-
+			message: '#Variable property access on .*#'
+			paths:
+				- app/Livewire/Synth 
+
+		-
+			message: '#Parameter .* of method App\\Livewire\\Synth\\.* should be contravariant with parameter .* of method Livewire\\Mechanisms\\HandleComponents\\Synthesizers\\Synth::.*#'
+			paths:
+				- app/Livewire/Synth 
+
 		# Migrations
 		-
 			message: '#Function define is unsafe to use.#'

@@ -17,7 +17,7 @@ class SessionFlagsSynth extends Synth
 	/**
 	 * @param SessionFlags $target
 	 *
-	 * @return array<int,array<string,string>>
+	 * @return array<int,array<string,bool>>
 	 */
 	public function dehydrate($target): array
 	{
@@ -29,7 +29,7 @@ class SessionFlagsSynth extends Synth
 	}
 
 	/**
-	 * @param array<string,string> $value
+	 * @param array<string,bool> $value
 	 *
 	 * @return SessionFlags
 	 */
@@ -42,28 +42,27 @@ class SessionFlagsSynth extends Synth
 		);
 	}
 
+	/**
+	 * @param SessionFlags $target
+	 * @param string       $key
+	 *
+	 * @return string
+	 */
+	public function get(&$target, $key)
+	{
+		return $target->{$key};
+	}
 
 	/**
-	 * 
-	 * @param SessionFlags $target 
-	 * @param string $key 
-	 * @return string 
+	 * @param SessionFlags $target
+	 * @param string       $key
+	 * @param bool  $value
+	 *
+	 * @return void
 	 */
-    public function get(&$target, $key)
-    { 
-        return $target->{$key};
-    }
- 
-	/**
-	 * 
-	 * @param SessionFlags $target 
-	 * @param string $key 
-	 * @param string|bool $value
-	 * @return void 
-	 */
-    public function set(&$target, $key, $value)
-    {
-        $target->{$key} = $value;
+	public function set(&$target, $key, $value)
+	{
+		$target->{$key} = $value;
 		$target->save();
-    }
+	}
 }

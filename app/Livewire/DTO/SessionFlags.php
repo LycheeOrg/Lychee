@@ -18,7 +18,8 @@ class SessionFlags extends ArrayableDTO implements Wireable
 	) {
 	}
 
-	public static function get(): SessionFlags {
+	public static function get(): SessionFlags
+	{
 		$default = new SessionFlags(
 			can_fullscreen: true,
 			is_fullscreen: false,
@@ -28,8 +29,8 @@ class SessionFlags extends ArrayableDTO implements Wireable
 		return Session::get('session-flags', $default);
 	}
 
-	public function save(): void {
+	public function save(): void
+	{
 		Session::put('session-flags', $this);
 	}
-
 }
