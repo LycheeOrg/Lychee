@@ -4,8 +4,8 @@ namespace App\Http\Resources;
 
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
-use App\Enum\AlbumDecorationType;
 use App\Enum\AlbumDecorationOrientation;
+use App\Enum\AlbumDecorationType;
 use App\Enum\DefaultAlbumProtectionType;
 use App\Enum\ThumbAlbumSubtitleType;
 use App\Exceptions\Handler;
