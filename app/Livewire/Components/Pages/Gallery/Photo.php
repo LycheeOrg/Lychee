@@ -7,6 +7,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\PhotoOverlayMode;
 use App\Factories\AlbumFactory;
 use App\Livewire\DTO\PhotoFlags;
+use App\Livewire\DTO\SessionFlags;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Configs;
 use App\Models\Photo as PhotoModel;
@@ -35,6 +36,8 @@ class Photo extends Component
 
 	#[Locked]
 	public PhotoFlags $flags;
+
+	public SessionFlags $sessionFlags;
 
 	public string $overlayType;
 
@@ -96,11 +99,15 @@ class Photo extends Component
 	 */
 	public function render(): View
 	{
+		$this->sessionFlags = SessionFlags::get();
+
 		return view('livewire.pages.gallery.photo');
 	}
 
 	public function back(): mixed
 	{
+		$this->sessionFlags->save();
+
 		return $this->redirect(route('livewire-gallery-album', ['albumId' => $this->albumId]));
 	}
 

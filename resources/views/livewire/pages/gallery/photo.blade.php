@@ -1,4 +1,8 @@
-<div class="w-full" x-data="{ detailsOpen: false, editOpen: false, donwloadOpen: false }">
+<div class="w-full" x-data="{
+    detailsOpen: $wire.entangle('sessionFlags.are_photo_details_open'),
+    editOpen: false,
+    donwloadOpen: false
+}">
     <!-- toolbar -->
     <x-header.bar>
         <x-header.back />
@@ -17,7 +21,9 @@
         <a class="header__divider"></a> --}}
         {{-- <x-header.button wire:click="openContextMenu" icon="ellipses" /> --}}
         @can(App\Policies\PhotoPolicy::CAN_DOWNLOAD, [App\Models\Photo::class, $photo])
-            <x-header.button x-on:click="donwloadOpen = ! donwloadOpen" icon="cloud-download" fill="" x-bind:class="donwloadOpen ? 'fill-sky-500' : 'fill-neutral-400'" />
+            <x-header.button x-on:click="donwloadOpen = ! donwloadOpen" icon="cloud-download" fill=""
+                class="fill-neutral-400"
+                x-bind:class="donwloadOpen ? 'fill-sky-500' : 'fill-neutral-400'" />
         @endcan
         @can(App\Policies\PhotoPolicy::CAN_EDIT, [App\Models\Photo::class, $photo])
             <x-header.button x-on:click="editOpen = ! editOpen" icon="pencil" fill=""
@@ -25,11 +31,14 @@
                 {{-- 69 = e --}} x-bind:class="editOpen ? 'fill-sky-500' : 'fill-neutral-400'" />
         @endcan
         <x-header.button x-on:click="detailsOpen = ! detailsOpen" icon="info" fill=""
+            @class([
+                'fill-sky-500' => $sessionFlags->are_photo_details_open,
+                'fill-neutral-400' => !$sessionFlags->are_photo_details_open])
             @keydown.window="if (event.keyCode === 73 && $focus.focused() === undefined) { event.preventDefault(); detailsOpen = ! detailsOpen }"
             {{-- 73 = i --}} x-bind:class="detailsOpen ? 'fill-sky-500' : 'fill-neutral-400'" />
 
     </x-header.bar>
-    <div class="w-full flex h-[calc(100%-3.5rem)] overflow-hidden">
+    <div class="w-full flex h-[calc(100%-3.5rem)] overflow-hidden bg-black">
         <div class="w-0 flex-auto relative">
             <div id="imageview" class="absolute top-0 left-0 w-full h-full bg-black " x-data="{
                 has_description: {{ $photo->description !== null ? 'true' : 'false' }},
@@ -50,9 +59,8 @@
                     }
                 }
             }"
-            @keydown.window="if (event.keyCode === 79 && $focus.focused() === undefined) { rotateOverlay() }"
-                {{-- 79 - o --}}
-                x-on:click="rotateOverlay()">
+                @keydown.window="if (event.keyCode === 79 && $focus.focused() === undefined) { rotateOverlay() }"
+                {{-- 79 - o --}} x-on:click="rotateOverlay()">
                 @if ($photo->isVideo())
                     {{-- This is a video file: put html5 player --}}
                     <video width="auto" height="auto" id='image' controls
@@ -107,10 +115,12 @@
                 <x-gallery.photo.overlay :photo="$photo" />
             </div>
             @if ($this->previousPhoto !== null)
-                <x-gallery.photo.next-previous :photo="$this->previousPhoto" :albumId="$albumId" :is_next="false" @keyup.left.window="Alpine.navigate($el.getAttribute('href'));" wire:navigate.hover />
+                <x-gallery.photo.next-previous :photo="$this->previousPhoto" :albumId="$albumId" :is_next="false"
+                    @keyup.left.window="Alpine.navigate($el.getAttribute('href'));" wire:navigate.hover />
             @endif
             @if ($this->nextPhoto !== null)
-                <x-gallery.photo.next-previous :photo="$this->nextPhoto" :albumId="$albumId" :is_next="true" @keyup.right.window="Alpine.navigate($el.getAttribute('href'));" wire:navigate.hover />
+                <x-gallery.photo.next-previous :photo="$this->nextPhoto" :albumId="$albumId" :is_next="true"
+                    @keyup.right.window="Alpine.navigate($el.getAttribute('href'));" wire:navigate.hover />
             @endif
             @can(App\Policies\PhotoPolicy::CAN_EDIT, [App\Models\Photo::class, $photo])
                 <div class="absolute top-0 w-full bg-red-500">
@@ -138,17 +148,22 @@
             @endcan
         </div>
         @can(App\Policies\PhotoPolicy::CAN_EDIT, [App\Models\Photo::class, $photo])
-            <div class="h-full relative overflow-clip w-0 bg-dark-800 transition-all"
-                :class=" editOpen ? 'w-full' : 'w-0 translate-x-full'">
-                <livewire:modules.photo.properties :photo="$this->photo" />
-            </div>
+        <div class="h-full relative overflow-clip w-0 bg-dark-800 transition-all"
+            :class=" editOpen ? 'w-full' : 'w-0 translate-x-full'">
+            <livewire:modules.photo.properties :photo="$this->photo" />
+        </div>
         @endcan
-        <aside id="lychee_sidebar_container" class="h-full relative overflow-clip w-0 bg-dark-800 transition-all"
-            :class=" detailsOpen ? 'w-[360px]' : 'w-0 translate-x-full'">
+        <aside id="lychee_sidebar_container" @class([
+            'h-full relative overflow-clip transition-all',
+            'w-[360px]' => $sessionFlags->are_photo_details_open,
+            'w-0 translate-x-full' => !$sessionFlags->are_photo_details_open,
+        ])
+            :class=" detailsOpen ? 'w-[360px]' : 'w-0 translate-x-full'"
+            >
             <livewire:modules.photo.sidebar :photo="$this->photo" />
         </aside>
     </div>
     @can(App\Policies\PhotoPolicy::CAN_DOWNLOAD, [App\Models\Photo::class, $photo])
-    <x-gallery.photo.download :photo="$this->photo" />
+        <x-gallery.photo.download :photo="$this->photo" />
     @endcan
 </div>

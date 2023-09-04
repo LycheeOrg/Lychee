@@ -13,6 +13,7 @@ use App\Image\SizeVariantDefaultFactory;
 use App\Image\StreamStatFilter;
 use App\Livewire\Synth\AlbumSynth;
 use App\Livewire\Synth\PhotoSynth;
+use App\Livewire\Synth\SessionFlagsSynth;
 use App\Metadata\Json\CommitsRequest;
 use App\Metadata\Json\UpdateRequest;
 use App\Metadata\Versions\FileVersion;
@@ -85,6 +86,7 @@ class AppServiceProvider extends ServiceProvider
 	[
 		AlbumSynth::class,
 		PhotoSynth::class,
+		SessionFlagsSynth::class,
 	];
 
 	/**

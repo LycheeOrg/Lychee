@@ -1,4 +1,4 @@
-<div id="lychee_sidebar" class="border-t border-solid border-sky-500 text-white w-[360px]">
+<div id="lychee_sidebar" class="border-t border-solid border-sky-500 text-white w-[360px] h-full bg-dark-800">
     <div class="grid grid-cols-[auto minmax(0, 1fr)]">
         <h1 class="col-span-2 text-center text-lg font-bold my-4">{{ __('lychee.ALBUM_ABOUT') }}</h1>
         <h2 class="col-span-2 text-neutral-400 font-bold px-3 pt-4 pb-3">{{ __('lychee.PHOTO_BASICS') }}</h2>
