@@ -56,7 +56,7 @@ class SessionFlagsSynth extends Synth
 	/**
 	 * @param SessionFlags $target
 	 * @param string       $key
-	 * @param bool  $value
+	 * @param bool         $value
 	 *
 	 * @return void
 	 */
