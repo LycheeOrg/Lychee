@@ -106,8 +106,6 @@ class Photo extends Component
 
 	public function back(): mixed
 	{
-		$this->sessionFlags->save();
-
 		return $this->redirect(route('livewire-gallery-album', ['albumId' => $this->albumId]));
 	}
 

@@ -1,10 +1,13 @@
-<div class="w-full" x-data="{
+<div class="w-full flex flex-col" x-data="{
     detailsOpen: $wire.entangle('sessionFlags.are_photo_details_open'),
+    isFullscreen: $wire.entangle('sessionFlags.is_fullscreen'),
     editOpen: false,
     donwloadOpen: false
-}">
+}"
+    @keydown.window="if (event.keyCode === 70 && $focus.focused() === undefined) { event.preventDefault(); isFullscreen = ! isFullscreen }"
+    {{-- 70 = f --}}>
     <!-- toolbar -->
-    <x-header.bar>
+    <x-header.bar class="opacity-0" x-bind:class="isFullscreen ? 'opacity-0 h-0' : 'opacity-100 h-14'">
         <x-header.back />
         <x-header.title>{{ $photo->title }}</x-header.title>
         {{-- <a class="button button--star" id="button_star"><x-icons.iconic icon="star" /></a>
@@ -22,8 +25,7 @@
         {{-- <x-header.button wire:click="openContextMenu" icon="ellipses" /> --}}
         @can(App\Policies\PhotoPolicy::CAN_DOWNLOAD, [App\Models\Photo::class, $photo])
             <x-header.button x-on:click="donwloadOpen = ! donwloadOpen" icon="cloud-download" fill=""
-                class="fill-neutral-400"
-                x-bind:class="donwloadOpen ? 'fill-sky-500' : 'fill-neutral-400'" />
+                class="fill-neutral-400" x-bind:class="donwloadOpen ? 'fill-sky-500' : 'fill-neutral-400'" />
         @endcan
         @can(App\Policies\PhotoPolicy::CAN_EDIT, [App\Models\Photo::class, $photo])
             <x-header.button x-on:click="editOpen = ! editOpen" icon="pencil" fill=""
@@ -33,12 +35,13 @@
         <x-header.button x-on:click="detailsOpen = ! detailsOpen" icon="info" fill=""
             @class([
                 'fill-sky-500' => $sessionFlags->are_photo_details_open,
-                'fill-neutral-400' => !$sessionFlags->are_photo_details_open])
+                'fill-neutral-400' => !$sessionFlags->are_photo_details_open,
+            ])
             @keydown.window="if (event.keyCode === 73 && $focus.focused() === undefined) { event.preventDefault(); detailsOpen = ! detailsOpen }"
             {{-- 73 = i --}} x-bind:class="detailsOpen ? 'fill-sky-500' : 'fill-neutral-400'" />
 
     </x-header.bar>
-    <div class="w-full flex h-[calc(100%-3.5rem)] overflow-hidden bg-black">
+    <div class="w-full flex h-full overflow-hidden bg-black">
         <div class="w-0 flex-auto relative">
             <div id="imageview" class="absolute top-0 left-0 w-full h-full bg-black " x-data="{
                 has_description: {{ $photo->description !== null ? 'true' : 'false' }},
@@ -63,35 +66,31 @@
                 {{-- 79 - o --}} x-on:click="rotateOverlay()">
                 @if ($photo->isVideo())
                     {{-- This is a video file: put html5 player --}}
-                    <video width="auto" height="auto" id='image' controls
-                        class='absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'
-                        autobuffer {{ $flags->can_autoplay ? 'autoplay' : '' }}
-                        data-tabindex='{{ Helpers::data_index() }}'>
-                        <source src='{{ URL::asset($photo->size_variants->getOriginal()->url) }}' />
-                        Your browser does not support the video tag.
-                    </video>
+                    <x-gallery.photo.video-panel :flags="$flags"
+                        src="{{ URL::asset($photo->size_variants->getOriginal()->url) }}" />
                 @elseif($photo->isRaw())
                     {{-- This is a raw file: put a place holder --}}
-                    <img id='image' alt='big'
-                        class='absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'
-                        src='{{ URL::asset('img/placeholder.png') }}' draggable='false'
-                        data-tabindex='{{ Helpers::data_index() }}' />
+                    <x-gallery.photo.photo-panel alt='placeholder' src='{{ URL::asset('img/placeholder.png') }}' />
                 @elseif ($photo->live_photo_short_path === null)
                     {{-- This is a normal image: medium or original --}}
                     @if ($photo->size_variants->getMedium() !== null)
-                        <img id='image' alt='medium'
-                            class='absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)] animate-zoomIn'
+                        <x-gallery.photo.photo-panel alt='medium'
                             src='{{ URL::asset($photo->size_variants->getMedium()->url) }}'
-                            @if ($photo->size_variants->getMedium2x() !== null) srcset='{{ URL::asset($photo->size_variants->getMedium()->url) }} {{ $photo->size_variants->getMedium()->width }}w,
-							{{ URL::asset($photo->size_variants->getMedium2x()->url) }} {{ $photo->size_variants->getMedium2x()->width }}w' @endif
-                            data-tabindex='{{ Helpers::data_index() }}' />
+                            class='top-7 bottom-7 left-7 right-7' :srcset="$photo->size_variants->getMedium2x() === null
+                                ? ''
+                                : URL::asset($photo->size_variants->getMedium()->url) .
+                                    ' ' .
+                                    $photo->size_variants->getMedium()->width .
+                                    'w, ' .
+                                    URL::asset($photo->size_variants->getMedium2x()->url) .
+                                    ' ' .
+                                    $photo->size_variants->getMedium2x()->width .
+                                    'w'" />
                     @else
-                        <img id='image' alt='big'
-                            class='absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]
-						    bg-contain bg-center bg-no-repeat animate-zoomIn'
+                        <x-gallery.photo.photo-panel alt='big'
+                            class='top-7 bottom-7 left-7 right-7 bg-contain bg-center bg-no-repeat'
                             style='background-image: url({{ URL::asset($photo->size_variants->getSmall()?->url) }})'
-                            src='{{ URL::asset($photo->size_variants->getOriginal()->url) }}' draggable='false'
-                            data-tabindex='{{ Helpers::data_index() }}' />
+                            src='{{ URL::asset($photo->size_variants->getOriginal()->url) }}' />
                     @endif
                 @elseif ($photo->size_variants->getMedium() !== null)
                     {{-- This is a livephoto : medium --}}
@@ -123,43 +122,52 @@
                     @keyup.right.window="Alpine.navigate($el.getAttribute('href'));" wire:navigate.hover />
             @endif
             @can(App\Policies\PhotoPolicy::CAN_EDIT, [App\Models\Photo::class, $photo])
-                <div class="absolute top-0 w-full bg-red-500">
-                    <span class="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-b from-black rounded-b-xl p-1">
-                        <x-header.button x-on:click="$wire.set_star()" fill=""
-                            class="hover:fill-yellow-500 {{ $photo->is_starred ? 'fill-yellow-500' : 'fill-white' }}"
-                            icon="star" @keydown.window="if (event.keyCode === 70) { $wire.set_star(); }"
-                            {{-- 70 = f --}} />
+                <div x-cloak
+                    class="absolute top-0 h-1/4 w-1/2 left-1/2 opacity-0 -translate-x-1/2 group hover:opacity-100 transition-opacity duration-500 ease-in-out">
+                    <span class="absolute top-7 left-1/2 -translate-x-1/2 p-1 bg-gradient-radial from-black/20 via-black/10 via-35% to-black/0 to-70% min-w-[25%] text-center">
+                        <a class="inline-block px-3 py-4 cursor-pointer
+                            hover:fill-yellow-500 {{ $photo->is_starred ? 'fill-yellow-500' : 'fill-white' }}
+                            transition-all duration-300 ease-in h-full"
+                            x-on:click="$wire.set_star()" @keydown.window="if (event.keyCode === 83) { $wire.set_star(); }"
+                            {{-- 83 = s --}}>
+                            <x-icons.iconic icon="star" fill='' class="my-0 w-20 h-20 mr-0 ml-0" />
+                        </a>
                         @if ($flags->can_rotate)
                             <x-header.button x-on:click="$wire.rotate_ccw()" fill=""
-                                class="fill-white hover:fill-sky-500" icon="counterclockwise"
+                                class="fill-white hover:fill-sky-500 transition-all duration-300 ease-in"
+                                icon="counterclockwise"
                                 @keydown.window="if (event.keyCode === 37 && event.ctrlKey) { $wire.rotate_ccw(); }"
                                 {{-- 37 = left arrow --}} />
                             <x-header.button x-on:click="$wire.rotate_cw()" fill=""
-                                class="fill-white hover:fill-sky-500" icon="clockwise"
+                                class="fill-white hover:fill-sky-500 transition-all duration-300 ease-in"
+                                icon="clockwise"
                                 @keydown.window="if (event.keyCode === 39 && event.ctrlKey) { $wire.rotate_cw(); }"
                                 {{-- 39 = right arrow --}} />
                         @endif
-                        <x-header.button x-on:click="$wire.delete()" fill="" class="fill-red-800 hover:fill-red-600"
-                            icon="trash"
+                        <a class="px-3 py-4 cursor-pointer
+                        fill-red-800 hover:fill-red-600
+                        opacity-50 hover:opacity-100 transition-all duration-300 ease-in"
+                            x-on:click="$wire.delete()"
                             @keydown.window="if (event.ctrlKey && (event.keyCode === 46 || event.keyCode === 8)) { $wire.delete(); }"
                             {{-- 46 = dell, 8 = backspace --}} />
+                        <x-icons.iconic icon="trash" fill='' class="my-0 w-20 h-20 mr-0 ml-0" />
+                        </a>
                     </span>
                 </div>
             @endcan
         </div>
         @can(App\Policies\PhotoPolicy::CAN_EDIT, [App\Models\Photo::class, $photo])
-        <div class="h-full relative overflow-clip w-0 bg-dark-800 transition-all"
-            :class=" editOpen ? 'w-full' : 'w-0 translate-x-full'">
-            <livewire:modules.photo.properties :photo="$this->photo" />
-        </div>
+            <div class="h-full relative overflow-clip w-0 bg-dark-800 transition-all"
+                :class=" editOpen ? 'w-full' : 'w-0 translate-x-full'">
+                <livewire:modules.photo.properties :photo="$this->photo" />
+            </div>
         @endcan
         <aside id="lychee_sidebar_container" @class([
             'h-full relative overflow-clip transition-all',
             'w-[360px]' => $sessionFlags->are_photo_details_open,
             'w-0 translate-x-full' => !$sessionFlags->are_photo_details_open,
         ])
-            :class=" detailsOpen ? 'w-[360px]' : 'w-0 translate-x-full'"
-            >
+            :class=" detailsOpen ? 'w-[360px]' : 'w-0 translate-x-full'">
             <livewire:modules.photo.sidebar :photo="$this->photo" />
         </aside>
     </div>

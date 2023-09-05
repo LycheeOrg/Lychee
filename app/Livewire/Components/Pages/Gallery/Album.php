@@ -10,6 +10,7 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Factories\AlbumFactory;
 use App\Livewire\Components\Base\ContextMenu;
 use App\Livewire\DTO\AlbumFlags;
+use App\Livewire\DTO\SessionFlags;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Album as ModelsAlbum;
 use App\Models\Configs;
@@ -40,6 +41,8 @@ class Album extends Component implements Reloadable
 	private AlbumFactory $albumFactory;
 
 	public AlbumFlags $flags;
+
+	public SessionFlags $sessionFlags;
 
 	public bool $nsfwAlbumsVisible;
 
@@ -78,6 +81,8 @@ class Album extends Component implements Reloadable
 	 */
 	public function render(): View
 	{
+		$this->sessionFlags = SessionFlags::get();
+
 		$this->layout = Configs::getValueAsEnum('layout', AlbumMode::class);
 		$this->header_url ??= $this->fetchHeaderUrl()?->url;
 

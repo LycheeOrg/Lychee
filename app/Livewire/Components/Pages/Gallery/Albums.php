@@ -74,7 +74,6 @@ class Albums extends Component implements Reloadable
 		return $this->topAlbums->smart_albums
 			// We filter out the public one (we don't remove it completely to not break the other front-end).
 			->filter(fn (AbstractAlbum $e, $k) => $e->id !== SmartAlbumType::PUBLIC->value)
-
 			->concat($this->topAlbums->tag_albums)
 			->reject(fn ($album) => $album === null);
 	}

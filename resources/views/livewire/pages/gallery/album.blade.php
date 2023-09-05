@@ -1,16 +1,19 @@
 <div class="w-full" x-data="{
         detailsOpen: false,
         sharingLinksOpen: false,
-        nsfwAlbumsVisible: {{ $nsfwAlbumsVisible ? 'true' : 'false' }}
+        nsfwAlbumsVisible: {{ $nsfwAlbumsVisible ? 'true' : 'false' }},
+        isFullscreen: $wire.entangle('sessionFlags.is_fullscreen'),
     }" 
     @keydown.window="
         if (event.keyCode === 72 && !detailsOpen) { event.preventDefault(); nsfwAlbumsVisible = !nsfwAlbumsVisible; }
         if (event.keyCode === 73 && $focus.focused() === undefined) { event.preventDefault(); detailsOpen = !detailsOpen; }
+        if (event.keyCode === 70 && $focus.focused() === undefined) { event.preventDefault(); isFullscreen = ! isFullscreen }
     {{-- 72 = h --}}
     {{-- 73 = i --}}
+    {{-- 70 = f --}}
     ">
     <!-- toolbar -->
-    <x-header.bar>
+    <x-header.bar class="opacity-0" x-bind:class="isFullscreen ? 'opacity-0 h-0' : 'opacity-100 h-14'">
         <x-header.back back="if (detailsOpen) { detailsOpen = false; } else { $wire.back(); }" />
         <x-header.title>{{ $album->title }}</x-header.title>
         {{-- <a class="button button--map" id="button_map_album"><x-icons.iconic icon="map" /></a> --}}
@@ -34,7 +37,8 @@
         x-on:resize.window="width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
                 $wire.loadAlbum(width - 2*28);"
         @endif
-        class="relative flex flex-wrap content-start w-full justify-start h-[calc(100vh-56px)] overflow-x-clip overflow-y-auto">
+        class="relative flex flex-wrap content-start w-full justify-start overflow-x-clip overflow-y-auto"
+        x-bind:class="isFullscreen ? 'h-[calc(100vh-3px)]' : 'h-[calc(100vh-56px)]'">
         @if ($flags->is_base_album)
         @can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class, $this->album])
         <x-gallery.album.menu.menu :album="$this->album" :userCount="$num_users" />

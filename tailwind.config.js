@@ -18,6 +18,12 @@ module.exports = {
   ],
   theme: {
     extend: {
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+      },
+      dropShadow: {
+        '3xl': '0 20px 20px rgba(0, 0, 0, 1)',
+      },
       colors: {
         dark: {
           // 50: '#fdf8f6',
