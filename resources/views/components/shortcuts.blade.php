@@ -23,8 +23,8 @@
                 <x-help.cell class="text-right"><x-help.kbd>Shift</x-help.kbd> <x-help.kbd>?</x-help.kbd></x-help.cell>
                 <x-help.cell>Login</x-help.cell>
                 <x-help.cell class="text-right"><x-help.kbd>l</x-help.kbd></x-help.cell>
-                <x-help.cell>Logout</x-help.cell>
-                <x-help.cell class="text-right"><x-help.kbd>l</x-help.kbd></x-help.cell>
+                <x-help.cell>Login with U2F</x-help.cell>
+                <x-help.cell class="text-right"><x-help.kbd>k</x-help.kbd></x-help.cell>
             </x-help.table>
 
             <x-help.table>
