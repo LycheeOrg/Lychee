@@ -8,11 +8,10 @@
     x-show="shortCutsOpen">
     <div class="basicModal transition-opacity ease-in duration-1000
         opacity-100 bg-gradient-to-b from-dark-300 to-dark-400
-        relative w-[500px] text-sm rounded-md text-neutral-400 animate-moveUp"
+        relative w-[500px] text-sm rounded-md text-neutral-400 animate-moveUp overflow-hidden"
         role="dialog" x-on:click.away="shortCutsOpen = !shortCutsOpen">
-        <div class="flex flex-wrap gap-0.5 justify-center align-top text-white/80">
-            <h1 class="text-center text-white text-xl font-bold w-full border-b border-b-black/20 p-3">Keyboard shortcuts</h1>
-
+        <h1 class="text-center text-white text-xl font-bold w-full border-b border-b-black/20 p-3">Keyboard shortcuts</h1>
+        <div class="flex flex-wrap gap-0.5 justify-center align-top text-white/80 max-h-[80vh] overflow-y-auto">
             <x-help.table>
                 <x-help.head>Site-wide Shortcuts</x-help.head>
                 <x-help.cell>Back/Cancel</x-help.cell>
@@ -51,6 +50,8 @@
                 <x-help.cell class="text-right"><x-help.kbd>r</x-help.kbd></x-help.cell>
                 <x-help.cell>Set description</x-help.cell>
                 <x-help.cell class="text-right"><x-help.kbd>d</x-help.kbd></x-help.cell>
+                <x-help.cell>Toggle full screen</x-help.cell>
+                <x-help.cell class="text-right"><x-help.kbd>f</x-help.kbd></x-help.cell>
                 <x-help.cell>Toggle panel</x-help.cell>
                 <x-help.cell class="text-right"><x-help.kbd>i</x-help.kbd></x-help.cell>
                 <x-help.cell>Search</x-help.cell>
