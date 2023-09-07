@@ -10,6 +10,7 @@ use App\Http\Resources\Collections\TopAlbumsResource;
 use App\Livewire\Components\Base\ContextMenu;
 use App\Livewire\DTO\SessionFlags;
 use App\Livewire\Traits\InteractWithModal;
+use App\Livewire\Traits\SilentUpdate;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
@@ -27,6 +28,7 @@ use Livewire\Component;
 class Albums extends Component implements Reloadable
 {
 	use InteractWithModal;
+	use SilentUpdate;
 
 	private TopAlbumsResource $topAlbums;
 
@@ -107,10 +109,5 @@ class Albums extends Component implements Reloadable
 	public function openContextMenu(): void
 	{
 		$this->dispatch('openContextMenu', 'menus.AlbumAdd', ['parentId' => null])->to(ContextMenu::class);
-	}
-
-	#[Renderless]
-	public function emptyRequest(): void
-	{
 	}
 }

@@ -12,6 +12,7 @@ use App\Livewire\Components\Base\ContextMenu;
 use App\Livewire\DTO\AlbumFlags;
 use App\Livewire\DTO\SessionFlags;
 use App\Livewire\Traits\InteractWithModal;
+use App\Livewire\Traits\SilentUpdate;
 use App\Models\Album as ModelsAlbum;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
@@ -37,6 +38,7 @@ use LycheeOrg\PhpFlickrJustifiedLayout\LayoutJustify;
 class Album extends Component implements Reloadable
 {
 	use InteractWithModal;
+	use SilentUpdate;
 
 	private AlbumFactory $albumFactory;
 
@@ -188,10 +190,5 @@ class Album extends Component implements Reloadable
 	public function openContextMenu(): void
 	{
 		$this->dispatch('openContextMenu', 'menus.AlbumAdd', ['parentId' => $this->albumId])->to(ContextMenu::class);
-	}
-
-	#[Renderless]
-	public function emptyRequest(): void
-	{
 	}
 }

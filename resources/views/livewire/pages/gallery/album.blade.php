@@ -3,15 +3,15 @@
         sharingLinksOpen: false,
         nsfwAlbumsVisible: @entangle('sessionFlags.nsfwAlbumsVisible'),
         isFullscreen: @entangle('sessionFlags.is_fullscreen'),
-        toggleNSFW() {
-            this.nsfwAlbumsVisible = ! this.nsfwAlbumsVisible;
-            $wire.emptyRequest();
+        silentToggle(elem) {
+            this[elem] = ! this[elem];
+            $wire.silentUpdate();
         }
     }" 
     @keydown.window="
-        if (event.keyCode === 72 && !detailsOpen) { event.preventDefault(); toggleNSFW(); }
+        if (event.keyCode === 72 && !detailsOpen) { event.preventDefault(); silentToggle('nsfwAlbumsVisible'); }
         if (event.keyCode === 73 && $focus.focused() === undefined) { event.preventDefault(); detailsOpen = !detailsOpen; }
-        if (event.keyCode === 70 && $focus.focused() === undefined) { event.preventDefault(); isFullscreen = ! isFullscreen }
+        if (event.keyCode === 70 && $focus.focused() === undefined) { event.preventDefault(); silentToggle('isFullscreen') }
     {{-- 72 = h --}}
     {{-- 73 = i --}}
     {{-- 70 = f --}}

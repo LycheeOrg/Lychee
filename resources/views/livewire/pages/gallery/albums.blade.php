@@ -2,12 +2,12 @@
     x-data="{
         loginModalOpen:false,
         nsfwAlbumsVisible: @entangle('sessionFlags.nsfwAlbumsVisible'),
-        toggleNSFW() {
-            this.nsfwAlbumsVisible = ! this.nsfwAlbumsVisible;
-            $wire.emptyRequest();
+        silentToggle(elem) {
+            this[elem] = ! this[elem];
+            $wire.silentUpdate();
         }
     }"
-    @keydown.window="if (event.keyCode === 72) { event.preventDefault(); toggleNSFW() }"
+    @keydown.window="if (event.keyCode === 72) { event.preventDefault(); silentToggle('nsfwAlbumsVisible') }"
     {{-- 72 = h --}}
     x-on:login-close="loginModalOpen = false">
     
