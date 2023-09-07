@@ -44,8 +44,6 @@ class Album extends Component implements Reloadable
 
 	public SessionFlags $sessionFlags;
 
-	public bool $nsfwAlbumsVisible;
-
 	#[Locked]
 	public string $albumId;
 
@@ -62,7 +60,6 @@ class Album extends Component implements Reloadable
 	public function boot(): void
 	{
 		$this->albumFactory = resolve(AlbumFactory::class);
-		$this->nsfwAlbumsVisible = Configs::getValueAsBool('nsfw_visible');
 	}
 
 	public function mount(string $albumId): void

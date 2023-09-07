@@ -1,7 +1,7 @@
 <div class="w-full"
     x-data="{
         loginModalOpen:false,
-        nsfwAlbumsVisible:{{ $nsfwAlbumsVisible ? 'true' : 'false' }}
+        nsfwAlbumsVisible: $wire.entangle('sessionFlags.nsfwAlbumsVisible')
     }"
     @keydown.window="if (event.keyCode === 72) { event.preventDefault(); nsfwAlbumsVisible = ! nsfwAlbumsVisible }"
     {{-- 72 = h --}}

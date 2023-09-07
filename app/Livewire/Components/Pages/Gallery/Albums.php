@@ -8,6 +8,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SmartAlbumType;
 use App\Http\Resources\Collections\TopAlbumsResource;
 use App\Livewire\Components\Base\ContextMenu;
+use App\Livewire\DTO\SessionFlags;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -29,9 +30,10 @@ class Albums extends Component implements Reloadable
 
 	private TopAlbumsResource $topAlbums;
 
+	public SessionFlags $sessionFlags;
+
 	public string $title;
 
-	public bool $nsfwAlbumsVisible;
 	public bool $can_use_2fa;
 
 	/**
@@ -48,6 +50,7 @@ class Albums extends Component implements Reloadable
 
 	public function mount(): void
 	{
+		$this->sessionFlags = SessionFlags::get();
 		$this->can_use_2fa = !Auth::check() && (WebAuthnCredential::query()->whereNull('disabled_at')->count() > 0);
 	}
 
@@ -61,7 +64,6 @@ class Albums extends Component implements Reloadable
 	{
 		$this->topAlbums = resolve(Top::class)->get();
 		$this->title = Configs::getValueAsString('site_title');
-		$this->nsfwAlbumsVisible = Configs::getValueAsBool('nsfw_visible');
 	}
 
 	public function getAlbumsProperty(): Collection

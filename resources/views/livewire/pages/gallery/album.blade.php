@@ -1,7 +1,7 @@
 <div class="w-full" x-data="{
         detailsOpen: false,
         sharingLinksOpen: false,
-        nsfwAlbumsVisible: {{ $nsfwAlbumsVisible ? 'true' : 'false' }},
+        nsfwAlbumsVisible: $wire.entangle('sessionFlags.nsfwAlbumsVisible'),
         isFullscreen: $wire.entangle('sessionFlags.is_fullscreen'),
     }" 
     @keydown.window="

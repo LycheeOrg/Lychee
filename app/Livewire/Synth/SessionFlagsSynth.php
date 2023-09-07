@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Synth;
 
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Livewire\DTO\SessionFlags;
 use Livewire\Mechanisms\HandleComponents\Synthesizers\Synth;
 
@@ -21,11 +22,26 @@ class SessionFlagsSynth extends Synth
 	 */
 	public function dehydrate($target): array
 	{
-		return [[
-			'can_fullscreen' => $target->can_fullscreen,
-			'is_fullscreen' => $target->is_fullscreen,
-			'are_photo_details_open' => $target->are_photo_details_open,
-		], []];
+		$result = [];
+		$cls = new \ReflectionClass(SessionFlags::class);
+		$props = $cls->getProperties(\ReflectionProperty::IS_PUBLIC);
+		foreach ($props as $prop) {
+			$propertyValue = $prop->getValue($target);
+			if (is_object($propertyValue)) {
+				throw new LycheeLogicException(sprintf('wrong value type for %s', get_class($propertyValue)));
+			}
+			$result[$prop->getName()] = $propertyValue;
+		}
+
+		return [$result, []];
+		// return [
+		// 	[
+		// 	'can_fullscreen' => $target->can_fullscreen,
+		// 	'is_fullscreen' => $target->is_fullscreen,
+		// 	'are_photo_details_open' => $target->are_photo_details_open,
+		// 	'nsfwAlbumsVisible' => $target->nsfwAlbumsVisible
+		// ]
+		// , []];
 	}
 
 	/**
@@ -35,11 +51,22 @@ class SessionFlagsSynth extends Synth
 	 */
 	public function hydrate($value): SessionFlags
 	{
-		return new SessionFlags(
-			can_fullscreen: $value['can_fullscreen'],
-			is_fullscreen: $value['is_fullscreen'],
-			are_photo_details_open: $value['are_photo_details_open'],
-		);
+		$cls = new \ReflectionClass(SessionFlags::class);
+
+		/** @var SessionFlags $flags */
+		$flags = $cls->newInstanceWithoutConstructor();
+		$props = $cls->getProperties(\ReflectionProperty::IS_PUBLIC);
+		foreach ($props as $prop) {
+			$flags->{$prop->getName()} = $value[$prop->getName()];
+		}
+
+		return $flags;
+		// return new SessionFlags(
+		// 	can_fullscreen: $value['can_fullscreen'],
+		// 	is_fullscreen: $value['is_fullscreen'],
+		// 	are_photo_details_open: $value['are_photo_details_open'],
+		// 	nsfwAlbumsVisible: $value['nsfwAlbumsVisible']
+		// );
 	}
 
 	/**
