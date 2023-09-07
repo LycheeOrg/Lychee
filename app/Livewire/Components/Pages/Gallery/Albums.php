@@ -91,11 +91,11 @@ class Albums extends Component implements Reloadable
 	 *
 	 * @return void
 	 */
-	#[Renderless]
-	public function openLoginModal(): void
-	{
-		$this->openModal('modals.login');
-	}
+	// #[Renderless]
+	// public function openLoginModal(): void
+	// {
+	// 	$this->openModal('modals.login');
+	// }
 
 	/**
 	 * Open the context menu.
@@ -107,5 +107,10 @@ class Albums extends Component implements Reloadable
 	public function openContextMenu(): void
 	{
 		$this->dispatch('openContextMenu', 'menus.AlbumAdd', ['parentId' => null])->to(ContextMenu::class);
+	}
+
+	#[Renderless]
+	public function emptyRequest(): void
+	{
 	}
 }

@@ -1,9 +1,13 @@
 <div class="w-full"
     x-data="{
         loginModalOpen:false,
-        nsfwAlbumsVisible: $wire.entangle('sessionFlags.nsfwAlbumsVisible')
+        nsfwAlbumsVisible: @entangle('sessionFlags.nsfwAlbumsVisible'),
+        toggleNSFW() {
+            this.nsfwAlbumsVisible = ! this.nsfwAlbumsVisible;
+            $wire.emptyRequest();
+        }
     }"
-    @keydown.window="if (event.keyCode === 72) { event.preventDefault(); nsfwAlbumsVisible = ! nsfwAlbumsVisible }"
+    @keydown.window="if (event.keyCode === 72) { event.preventDefault(); toggleNSFW() }"
     {{-- 72 = h --}}
     x-on:login-close="loginModalOpen = false">
     

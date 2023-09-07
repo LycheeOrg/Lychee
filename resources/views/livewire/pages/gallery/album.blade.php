@@ -1,11 +1,15 @@
 <div class="w-full" x-data="{
         detailsOpen: false,
         sharingLinksOpen: false,
-        nsfwAlbumsVisible: $wire.entangle('sessionFlags.nsfwAlbumsVisible'),
-        isFullscreen: $wire.entangle('sessionFlags.is_fullscreen'),
+        nsfwAlbumsVisible: @entangle('sessionFlags.nsfwAlbumsVisible'),
+        isFullscreen: @entangle('sessionFlags.is_fullscreen'),
+        toggleNSFW() {
+            this.nsfwAlbumsVisible = ! this.nsfwAlbumsVisible;
+            $wire.emptyRequest();
+        }
     }" 
     @keydown.window="
-        if (event.keyCode === 72 && !detailsOpen) { event.preventDefault(); nsfwAlbumsVisible = !nsfwAlbumsVisible; }
+        if (event.keyCode === 72 && !detailsOpen) { event.preventDefault(); toggleNSFW(); }
         if (event.keyCode === 73 && $focus.focused() === undefined) { event.preventDefault(); detailsOpen = !detailsOpen; }
         if (event.keyCode === 70 && $focus.focused() === undefined) { event.preventDefault(); isFullscreen = ! isFullscreen }
     {{-- 72 = h --}}

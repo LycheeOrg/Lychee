@@ -189,4 +189,9 @@ class Album extends Component implements Reloadable
 	{
 		$this->dispatch('openContextMenu', 'menus.AlbumAdd', ['parentId' => $this->albumId])->to(ContextMenu::class);
 	}
+
+	#[Renderless]
+	public function emptyRequest(): void
+	{
+	}
 }
