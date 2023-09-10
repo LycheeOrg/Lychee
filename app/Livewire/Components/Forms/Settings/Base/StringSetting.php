@@ -8,6 +8,7 @@ use App\Models\Configs;
 use App\Policies\SettingsPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
@@ -19,9 +20,9 @@ class StringSetting extends Component
 	use Notify;
 
 	public Configs $config;
-	public string $description;
-	public string $placeholder;
-	public string $action;
+	#[Locked] public string $description;
+	#[Locked] public string $placeholder;
+	#[Locked] public string $action;
 	public string $value; // ! Wired
 
 	/**

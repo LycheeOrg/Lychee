@@ -24,15 +24,9 @@ class Delete extends Component
 	use Notify;
 
 	/** @var array<int,string> */
-	#[Locked]
-	public array $photoIDs;
-
-	#[Locked]
-	public string $albumId;
-
-	#[Locked]
-	public string $title;
-
+	#[Locked] public array $photoIDs;
+	#[Locked] public string $albumId;
+	#[Locked] public string $title;
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *

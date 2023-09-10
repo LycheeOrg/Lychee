@@ -10,6 +10,7 @@ use App\Policies\AlbumPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Gate;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class ShareWithLine extends Component
@@ -20,8 +21,8 @@ class ShareWithLine extends Component
 
 	public AccessPermission $perm;
 
-	public string $album_title;
-	public string $username;
+	#[Locked] public string $album_title;
+	#[Locked] public string $username;
 	public bool $grants_full_photo_access;
 	public bool $grants_download;
 	public bool $grants_upload;

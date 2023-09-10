@@ -5,6 +5,7 @@ namespace App\Livewire\Components\Menus;
 use App\Livewire\Traits\InteractWithContextMenu;
 use App\Livewire\Traits\InteractWithModal;
 use Illuminate\Contracts\View\View;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
@@ -14,8 +15,8 @@ class AlbumAdd extends Component
 {
 	use InteractWithModal;
 	use InteractWithContextMenu;
-	public array $params;
 
+	#[Locked] public array $params;
 	/**
 	 * Renders the Add menu in the top right.
 	 *

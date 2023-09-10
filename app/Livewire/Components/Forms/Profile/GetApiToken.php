@@ -10,6 +10,7 @@ use App\Policies\UserPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
@@ -22,11 +23,9 @@ class GetApiToken extends Component
 	use AuthorizesRequests;
 
 	// String of the token or message
-	public string $token = '';
-
+	#[Locked] public string $token = '';
 	// token is disabled
-	public bool $isDisabled;
-
+	#[Locked] public bool $isDisabled;
 	/**
 	 * Mount the current data of the user.
 	 * $token is kept empty in order to avoid revealing the data.

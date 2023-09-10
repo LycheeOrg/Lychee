@@ -4,13 +4,13 @@ namespace App\Livewire\Components\Modules\Diagnostics;
 
 use App\Actions\Diagnostics\Space as DiagnosticsSpace;
 use Illuminate\View\View;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class Space extends Component
 {
-	public string $title = 'Space Usage';
-	public array $space = [];
-
+	#[Locked] public string $title = 'Space Usage';
+	#[Locked] public array $space = [];
 	/**
 	 * Rendering of the front-end.
 	 *

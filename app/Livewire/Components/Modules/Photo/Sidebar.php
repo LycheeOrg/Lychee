@@ -8,6 +8,7 @@ use App\Models\Configs;
 use App\Models\Photo as PhotoModel;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\View\View;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
@@ -18,44 +19,36 @@ use Livewire\Component;
  */
 class Sidebar extends Component
 {
-	public string $title;
-	public string $description;
-	public string $created_at;
-
-	public string $filesize;
-	public string $type;
-	public string $resolution;
+	#[Locked] public string $title;
+	#[Locked] public string $description;
+	#[Locked] public string $created_at;
+	#[Locked] public string $filesize;
+	#[Locked] public string $type;
+	#[Locked] public string $resolution;
 	/** @var array<int,string> */
-	public array $tags;
-
-	public bool $is_public;
-	public bool $is_video;
-	public bool $has_password;
-
-	public string $owner_name = '';
-	public string $license;
-
-	public string $duration = '';
-	public string $fps = '';
-
-	public ?string $model;
-	public ?string $make;
-	public string $lens;
-
-	public bool $has_exif = false;
-	public string $iso;
-	public string $focal;
-	public string $aperture;
-	public string $shutter;
-	public ?string $taken_at;
-
-	public bool $has_location = false;
-	public string $latitude;
-	public string $longitude;
-	public string $altitude;
-	public ?string $location;
-	public ?float $img_direction;
-
+	#[Locked] public array $tags;
+	#[Locked] public bool $is_public;
+	#[Locked] public bool $is_video;
+	#[Locked] public bool $has_password;
+	#[Locked] public string $owner_name = '';
+	#[Locked] public string $license;
+	#[Locked] public string $duration = '';
+	#[Locked] public string $fps = '';
+	#[Locked] public ?string $model;
+	#[Locked] public ?string $make;
+	#[Locked] public string $lens;
+	#[Locked] public bool $has_exif = false;
+	#[Locked] public string $iso;
+	#[Locked] public string $focal;
+	#[Locked] public string $aperture;
+	#[Locked] public string $shutter;
+	#[Locked] public ?string $taken_at;
+	#[Locked] public bool $has_location = false;
+	#[Locked] public string $latitude;
+	#[Locked] public string $longitude;
+	#[Locked] public string $altitude;
+	#[Locked] public ?string $location;
+	#[Locked] public ?float $img_direction;
 	/**
 	 * Given a photo model extract all the information.
 	 * ! It is possible that we may need to extract those in a similar fashion as with Album.

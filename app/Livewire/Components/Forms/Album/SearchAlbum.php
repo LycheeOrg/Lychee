@@ -10,6 +10,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Kalnoy\Nestedset\Collection as NsCollection;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
@@ -17,12 +18,11 @@ use Livewire\Component;
  */
 class SearchAlbum extends Component
 {
-	private int $shorten_by = 80;
+	private const SHORTEN_BY = 80;
 
 	public ?string $search = null; // ! wired
 
-	public array $albumListSaved;
-
+	#[Locked] public array $albumListSaved;
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
@@ -140,7 +140,7 @@ class SearchAlbum extends Component
 	{
 		$len = strlen($title);
 
-		if ($len < $this->shorten_by) {
+		if ($len < self::SHORTEN_BY) {
 			return $title;
 		}
 		/** @var Collection<int,string> $title_split */
@@ -156,7 +156,7 @@ class SearchAlbum extends Component
 
 		// find best target length.
 
-		$len_to_reduce = $this->shorten_by - $len_last_elem - 2 * $num_chunks;
+		$len_to_reduce = self::SHORTEN_BY - $len_last_elem - 2 * $num_chunks;
 		$unit_target_len = (int) ceil($len_to_reduce / $num_chunks);
 
 		do {
@@ -170,7 +170,8 @@ class SearchAlbum extends Component
 		return implode('/', $title_split->all()) . '/' . $last_elem;
 	}
 
-	public function placeholder() : string {
+	public function placeholder(): string
+	{
 		return "<div class='w-full p-4 text-center'>Loading album list...</div>";
 	}
 }

@@ -13,6 +13,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
@@ -20,11 +21,11 @@ use Livewire\Component;
  */
 class Login extends Component
 {
-	public bool $is_new_release_available = false;
-	public bool $is_git_update_available = false;
-	public ?string $version = null;
-	public ?string $username;
-	public ?string $password;
+	#[Locked] public bool $is_new_release_available = false;
+	#[Locked] public bool $is_git_update_available = false;
+	#[Locked] public ?string $version = null;
+	public ?string $username; // ! wired
+	public ?string $password; // ! wired
 
 	/**
 	 * Call the parametrized rendering.

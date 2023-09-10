@@ -4,6 +4,7 @@ namespace App\Livewire\Components\Forms;
 
 use App\Livewire\Traits\InteractWithModal;
 use Illuminate\Contracts\View\View;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
@@ -17,9 +18,9 @@ abstract class BaseForm extends Component
 	 */
 	use InteractWithModal;
 
-	public string $title = '';
-	public string $validate = '';
-	public string $cancel = '';
+	#[Locked] public string $title = '';
+	#[Locked] public string $validate = '';
+	#[Locked] public string $cancel = '';
 	public array $params = [];
 
 	/**

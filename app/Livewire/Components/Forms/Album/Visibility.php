@@ -12,6 +12,7 @@ use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class Visibility extends Component
@@ -26,8 +27,8 @@ class Visibility extends Component
 	public bool $is_password_required = false; // ! wired
 	public bool $is_nsfw = false; // ! wired
 	public ?string $password = null; // ! wired
-	public string $albumID;
 
+	#[Locked] public string $albumID;
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *

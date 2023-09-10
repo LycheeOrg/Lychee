@@ -16,6 +16,7 @@ use App\Policies\AlbumPolicy;
 use App\Rules\TitleRule;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class Properties extends Component
@@ -24,9 +25,9 @@ class Properties extends Component
 	use UseValidator;
 	use Notify;
 
+	#[Locked] public string $albumID;
 	public string $title; // ! wired
 	public string $description; // ! wired
-	public string $albumID;
 	public string $sorting_column = ''; // ! wired
 	public string $sorting_order = ''; // ! wired
 

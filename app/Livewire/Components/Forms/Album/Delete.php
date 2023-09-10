@@ -13,6 +13,7 @@ use App\Policies\AlbumPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\App;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class Delete extends Component
@@ -23,9 +24,8 @@ class Delete extends Component
 
 	// We need to use an array instead of directly said album id to reuse the rules (because I'm lazy).
 	/** @var array<int,string> */
-	public array $albumIDs;
-	public string $title;
-
+	#[Locked] public array $albumIDs;
+	#[Locked] public string $title;
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *

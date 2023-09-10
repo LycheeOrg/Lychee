@@ -2,18 +2,12 @@
 
 namespace App\Livewire\Components\Forms\Photo;
 
-use App\Actions\Photo\Delete as DeleteAction;
-use App\Http\RuleSets\Photo\DeletePhotosRuleSet;
-use App\Http\RuleSets\Photo\MovePhotosRuleSet;
 use App\Livewire\Traits\InteractWithModal;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
 use App\Models\Photo;
-use App\Policies\PhotoPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -25,23 +19,15 @@ class Delete extends Component
 	use Notify;
 
 	/** @var array<int,string> */
-	#[Locked]
-	public array $photoIDs;
-
-	#[Locked]
-	public string $albumId;
-
-	#[Locked]
-	public string $title;
-
+	#[Locked] public array $photoIDs;
+	#[Locked] public string $albumId;
+	#[Locked] public string $title;
 	// Destination
-	public ?string $albumID = null;
-	public ?string $albumTitle = null;
-
-	public ?string $search = null; // ! wired
-
-	public array $albumListSaved;
-	
+	#[Locked] public ?string $albumID = null;
+	#[Locked] public ?string $albumTitle = null;
+	#[Locked] public ?string $parent_id;
+	#[Locked] public ?int $lft;
+	#[Locked] public ?int $rgt;
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
@@ -54,8 +40,26 @@ class Delete extends Component
 		/** @var string $id */
 		$id = $params['photoId'];
 		$this->photoIDs = [$id];
-		$this->title = Photo::query()->findOrFail($id)->title;
-		$this->albumId = $params['albumId'];
+		$photo = Photo::query()->findOrFail($id);
+		$this->title = $photo->title;
+		$this->lft = $photo?->album?->lft;
+		$this->rgt = $photo?->album?->rgt;
+		$this->parent_id = $photo?->album?->parent_id;
+	}
+
+	/**
+	 * Prepare confirmation step.
+	 *
+	 * @param string $id
+	 * @param string $title
+	 *
+	 * @return void
+	 */
+	public function setAlbum(string $id, string $title)
+	{
+		$this->albumID = $id;
+
+		$this->title = $title;
 	}
 
 	/**
@@ -66,22 +70,6 @@ class Delete extends Component
 	public function render(): View
 	{
 		return view('livewire.forms.photo.move');
-	}
-
-	/**
-	 * Execute deletion.
-	 *
-	 * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
-	 */
-	public function submit(DeleteAction $delete): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
-	{
-		$this->validate(MovePhotosRuleSet::rules());
-		Gate::check(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->photoIDs]);
-
-		$fileDeleter = $delete->do($this->photoIDs);
-		App::terminating(fn () => $fileDeleter->do());
-
-		return redirect()->to(route('livewire-gallery-album', ['albumId' => $this->albumId]));
 	}
 
 	/**

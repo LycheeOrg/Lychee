@@ -15,6 +15,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class Transfer extends Component
@@ -23,9 +24,9 @@ class Transfer extends Component
 	use UseValidator;
 	use Notify;
 
-	public string $albumID;
-	public string $title;
-	public int $current_owner;
+	#[Locked] public string $albumID;
+	#[Locked] public string $title;
+	#[Locked] public int $current_owner;
 	public string $username; // ! wired
 
 	/**

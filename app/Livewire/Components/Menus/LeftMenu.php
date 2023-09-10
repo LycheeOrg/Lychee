@@ -32,12 +32,9 @@ class LeftMenu extends Component
 {
 	use InteractWithModal;
 
-	#[Locked]
-	public bool $has_dev_tools = false;
-
-	public ?string $clockwork_url = null;
-	public ?string $doc_api_url = null;
-
+	#[Locked] public bool $has_dev_tools = false;
+	#[Locked] public ?string $clockwork_url = null;
+	#[Locked] public ?string $doc_api_url = null;
 	/**
 	 * Method called from user-land.
 	 * Log out the user.

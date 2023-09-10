@@ -27,18 +27,14 @@ class Properties extends Component
 	use Notify;
 	use UseValidator;
 
-	#[Locked]
-	public string $photoID;
-
+	#[Locked] public string $photoID;
 	public string $title;
 	public string $created_at;
 	public string $description;
 	public string $tags_with_comma;
 
-	#[Locked]
 	/** @var array<int,string> */
-	public array $tags;
-
+	#[Locked] public array $tags;
 	/**
 	 * Given a photo model extract all the information.
 	 *

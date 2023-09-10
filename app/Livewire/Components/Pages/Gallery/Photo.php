@@ -137,6 +137,11 @@ class Photo extends Component
 		$this->render();
 	}
 
+	public function move(): void
+	{
+		$this->openModal('forms.photo.move', ['photoId' => $this->photo->id]);
+	}
+
 	public function delete(): void
 	{
 		$this->openModal('forms.photo.delete', ['photoId' => $this->photo->id, 'albumId' => $this->albumId]);

@@ -5,13 +5,13 @@ namespace App\Livewire\Components\Modules\Diagnostics;
 use App\Actions\Diagnostics\Errors as DiagnosticsErrors;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class Errors extends Component
 {
-	public string $title = 'Diagnostics';
-	public string $error_msg = 'No critical problems found. Lychee should work without problems!';
-
+	#[Locked] public string $title = 'Diagnostics';
+	#[Locked] public string $error_msg = 'No critical problems found. Lychee should work without problems!';
 	public function placeholder(): string
 	{
 		return '<p class="font-mono">

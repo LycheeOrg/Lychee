@@ -13,6 +13,7 @@ use App\Policies\AlbumPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Collection;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class Move extends Component
@@ -23,17 +24,14 @@ class Move extends Component
 
 	// We need to use an array instead of directly said album id to reuse the rules.
 	/** @var array<int,string> */
-	public array $albumIDs;
-	public ?string $titleMoved;
-
+	#[Locked] public array $albumIDs;
+	#[Locked] public ?string $titleMoved;
 	// Destination
-	public ?string $albumID = null;
-	public ?string $title = null;
-
-	public ?string $parent_id;
-	public int $lft;
-	public int $rgt;
-
+	#[Locked] public ?string $albumID = null;
+	#[Locked] public ?string $title = null;
+	#[Locked] public ?string $parent_id;
+	#[Locked] public int $lft;
+	#[Locked] public int $rgt;
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *

@@ -8,6 +8,7 @@ use App\Models\Configs;
 use App\Policies\SettingsPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
@@ -20,7 +21,8 @@ abstract class BaseConfigDropDown extends Component
 	use Notify;
 
 	public Configs $config;
-	public string $description;
+
+	#[Locked] public string $description;
 	public string $value; // ! Wired
 
 	/**

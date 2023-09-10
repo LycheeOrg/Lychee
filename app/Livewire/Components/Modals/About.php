@@ -8,6 +8,7 @@ use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
 use App\Models\Configs;
 use Illuminate\Contracts\View\View;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
@@ -17,10 +18,9 @@ class About extends Component
 {
 	use InteractWithModal;
 
-	public bool $is_new_release_available = false;
-	public bool $is_git_update_available = false;
-	public ?string $version = null;
-
+	#[Locked] public bool $is_new_release_available = false;
+	#[Locked] public bool $is_git_update_available = false;
+	#[Locked] public ?string $version = null;
 	/**
 	 * Mount the component. We set the attributes here.
 	 *

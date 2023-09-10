@@ -3,6 +3,7 @@
 namespace App\Livewire\Components\Modules\Diagnostics;
 
 use Illuminate\View\View;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
@@ -10,9 +11,8 @@ use Livewire\Component;
  */
 abstract class AbstractPreSection extends Component
 {
-	public string $title;
-	public string $error_msg = 'You must have administrator rights to see this.';
-
+	#[Locked] public string $title;
+	#[Locked] public string $error_msg = 'You must have administrator rights to see this.';
 	/**
 	 * Rendering of the front-end.
 	 *

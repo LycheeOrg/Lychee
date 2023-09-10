@@ -10,6 +10,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\InvalidCastException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Support\Facades\Gate;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
@@ -21,10 +22,9 @@ abstract class BaseConfigDoubleDropDown extends Component
 {
 	use Notify;
 
-	public string $begin;
-	public string $middle;
-	public string $end;
-
+	#[Locked] public string $begin;
+	#[Locked] public string $middle;
+	#[Locked] public string $end;
 	public Configs $config1;
 	public Configs $config2;
 	public string $value1; // ! Wired

@@ -10,6 +10,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\InvalidCastException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Support\Facades\Gate;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
@@ -21,8 +22,9 @@ class BooleanSetting extends Component
 	use Notify;
 
 	public Configs $config;
-	public string $description;
-	public string $footer;
+
+	#[Locked] public string $description;
+	#[Locked] public string $footer;
 	public bool $flag; // ! Wired
 
 	/**
