@@ -36,7 +36,7 @@ class SmartAlbumResource extends JsonResource
 			// Some of the tests do check what is the value of the thumb id as a result,
 			// if the id is not in thumb (intended behaviour we want to check)
 			// but still in the photos (supposed to be null), this fail the test.
-			'photos' => $this->whenLoaded('photos', PhotoCollectionResource::collection($this->resource->getPhotos() ?? []), null),
+			'photos' => $this->whenLoaded('photos', PhotoCollectionResource::make($this->resource->getPhotos() ?? []), null),
 
 			// thumb
 			'thumb' => $this->resource->thumb,
