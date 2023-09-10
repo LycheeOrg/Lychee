@@ -139,7 +139,7 @@ class Photo extends Component
 
 	public function move(): void
 	{
-		$this->openModal('forms.photo.move', ['photoId' => $this->photo->id]);
+		$this->openModal('forms.photo.move', ['photoId' => $this->photo->id, 'albumId' => $this->albumId]);
 	}
 
 	public function delete(): void

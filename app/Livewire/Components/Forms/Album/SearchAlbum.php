@@ -21,16 +21,17 @@ class SearchAlbum extends Component
 	private const SHORTEN_BY = 80;
 
 	public ?string $search = null; // ! wired
-
 	#[Locked] public array $albumListSaved;
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
-	 * @param Album $album to update the attributes of
+	 * @param int|null    $lft       constraint on serach - left
+	 * @param int|null    $rgt       constraint on serach - right
+	 * @param string|null $parent_id contraint on search remove sub-tree
 	 *
 	 * @return void
 	 */
-	public function mount(int $lft, int $rgt, ?string $parent_id): void
+	public function mount(?string $parent_id, ?int $lft = null, ?int $rgt = null): void
 	{
 		$this->albumListSaved = $this->getAlbumsListWithPath($lft, $rgt, $parent_id);
 	}
@@ -62,15 +63,15 @@ class SearchAlbum extends Component
 		return view('livewire.forms.album.search-album');
 	}
 
-	private function getAlbumsListWithPath(int $lft, int $rgt, ?string $parent_id): array
+	private function getAlbumsListWithPath(?int $lft, ?int $rgt, ?string $parent_id): array
 	{
 		$albumQueryPolicy = resolve(AlbumQueryPolicy::class);
 		$unfiltered = $albumQueryPolicy->applyReachabilityFilter(
 			// We remove all sub albums
 			// Otherwise it would create cyclic dependency
 			Album::query()
-				->where('_lft', '<', $lft)
-				->orWhere('_rgt', '>', $rgt)
+				->when($lft !== null,
+					fn ($q) => $q->where('_lft', '<', $lft)->orWhere('_rgt', '>', $rgt))
 		);
 		$sorting = AlbumSortingCriterion::createDefault();
 		$query = (new SortingDecorator($unfiltered))

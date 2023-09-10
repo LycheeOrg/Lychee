@@ -51,12 +51,12 @@ class Move extends Component
 	/**
 	 * Prepare confirmation step.
 	 *
-	 * @param string $id
-	 * @param string $title
+	 * @param string|null $id
+	 * @param string      $title
 	 *
 	 * @return void
 	 */
-	public function setAlbum(string $id, string $title)
+	public function setAlbum(?string $id, string $title)
 	{
 		$this->albumID = $id;
 		$this->title = $title;
