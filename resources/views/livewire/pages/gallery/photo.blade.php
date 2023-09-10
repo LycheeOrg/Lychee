@@ -123,35 +123,35 @@
             @endif
             @can(App\Policies\PhotoPolicy::CAN_EDIT, [App\Models\Photo::class, $photo])
                 <div x-cloak
-                    class="absolute top-0 h-1/4 w-1/2 left-1/2 opacity-0 -translate-x-1/2 group hover:opacity-100 transition-opacity duration-500 ease-in-out">
-                    <span class="absolute top-7 left-1/2 -translate-x-1/2 p-1 bg-gradient-radial from-black/20 via-black/10 via-35% to-black/0 to-70% min-w-[25%] text-center">
-                        <a class="inline-block px-3 py-4 cursor-pointer
-                            hover:fill-yellow-500 {{ $photo->is_starred ? 'fill-yellow-500' : 'fill-white' }}
-                            transition-all duration-300 ease-in h-full"
+                    class="absolute top-0 h-1/4 w-full left-0 opacity-0 group hover:opacity-100 transition-opacity duration-500 ease-in-out 
+                     bg-gradient-to-b from-black/30">
+                    <span class="absolute top-7 left-1/2 -translate-x-1/2 p-1 min-w-[25%] text-center">
+                        <x-gallery.photo.button
+                            icon="star"
+                            class="{{ $photo->is_starred ? 'fill-yellow-500 hover:fill-yellow-100' : 'fill-white hover:fill-yellow-500' }}" 
                             x-on:click="$wire.set_star()" @keydown.window="if (event.keyCode === 83) { $wire.set_star(); }"
-                            {{-- 83 = s --}}>
-                            <x-icons.iconic icon="star" fill='' class="my-0 w-20 h-20 mr-0 ml-0" />
-                        </a>
+                            {{-- 83 = s --}}
+                            />
                         @if ($flags->can_rotate)
-                            <x-header.button x-on:click="$wire.rotate_ccw()" fill=""
-                                class="fill-white hover:fill-sky-500 transition-all duration-300 ease-in"
+                            <x-gallery.photo.button
                                 icon="counterclockwise"
+                                class="fill-white hover:fill-sky-500" 
                                 @keydown.window="if (event.keyCode === 37 && event.ctrlKey) { $wire.rotate_ccw(); }"
-                                {{-- 37 = left arrow --}} />
-                            <x-header.button x-on:click="$wire.rotate_cw()" fill=""
-                                class="fill-white hover:fill-sky-500 transition-all duration-300 ease-in"
+                                {{-- 37 = left arrow --}}
+                                />
+                            <x-gallery.photo.button
                                 icon="clockwise"
+                                class="fill-white hover:fill-sky-500" 
                                 @keydown.window="if (event.keyCode === 39 && event.ctrlKey) { $wire.rotate_cw(); }"
-                                {{-- 39 = right arrow --}} />
+                                {{-- 39 = right arrow --}}
+                                />
                         @endif
-                        <a class="px-3 py-4 cursor-pointer
-                        fill-red-800 hover:fill-red-600
-                        opacity-50 hover:opacity-100 transition-all duration-300 ease-in"
-                            x-on:click="$wire.delete()"
-                            @keydown.window="if (event.ctrlKey && (event.keyCode === 46 || event.keyCode === 8)) { $wire.delete(); }"
-                            {{-- 46 = dell, 8 = backspace --}} />
-                        <x-icons.iconic icon="trash" fill='' class="my-0 w-20 h-20 mr-0 ml-0" />
-                        </a>
+                        <x-gallery.photo.button
+                            icon="trash"
+                            class="fill-white hover:fill-red-600" 
+                            x-on:click="$wire.delete()" @keydown.window="if (event.ctrlKey && (event.keyCode === 46 || event.keyCode === 8)) { $wire.delete(); }"
+                            {{-- 46 = dell, 8 = backspace --}}
+                        />
                     </span>
                 </div>
             @endcan
