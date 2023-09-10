@@ -55,8 +55,8 @@ class Move extends Component
 	/**
 	 * Prepare confirmation step.
 	 *
-	 * @param string|null $id
-	 * @param string      $title
+	 * @param string $id
+	 * @param string $title
 	 *
 	 * @return RedirectResponse|Redirector
 	 */
