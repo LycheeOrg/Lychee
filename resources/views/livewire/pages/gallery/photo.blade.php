@@ -9,7 +9,12 @@
     <!-- toolbar -->
     <x-header.bar class="opacity-0" x-bind:class="isFullscreen ? 'opacity-0 h-0' : 'opacity-100 h-14'">
         <x-header.back />
-        <x-header.title>{{ $photo->title }}</x-header.title>
+        <x-header.title>
+            @if ($photo->is_starred)
+            <x-icons.iconic icon="star" fill='fill-yellow-400' class="my-0 w-3 h-3 mb-1 mr-0 ml-0" />
+            @endif
+            {{ $photo->title }}
+        </x-header.title>
         {{-- <a class="button button--star" id="button_star"><x-icons.iconic icon="star" /></a>
         <a class="button button--eye" id="button_visibility"><x-icons.iconic icon="eye" /></a>
         <a class="button button--rotate" id="button_rotate_ccwise"><x-icons.iconic icon="counterclockwise" /></a>
