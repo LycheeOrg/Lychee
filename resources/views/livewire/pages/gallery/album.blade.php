@@ -34,8 +34,9 @@
             <x-header.button wire:click="openContextMenu" icon="plus" />
         @endcan
     </x-header.bar>
+    @if(!$flags->is_locked)
     <div id="lychee_view_content"
-        @if ($layout === \App\Enum\Livewire\AlbumMode::JUSTIFIED)
+        @if ($flags->layout === \App\Enum\Livewire\AlbumMode::JUSTIFIED)
         x-init="width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
                 $wire.loadAlbum(width - 2 * 28 - 20);" {{-- We remove 2x padding of 7rem + 20px for the scroll bar --}}
         x-on:resize.window="width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
@@ -62,20 +63,20 @@
             @foreach ($this->album->children as $data)<x-gallery.album.thumbs.album :data="$data" />@endforeach
         @endif
         @if($num_children > 0 && $num_photos > 0)<x-gallery.divider title="{{ __('lychee.PHOTOS') }}" />@endif
-        @if ($flags->is_ready_to_load || $layout !== \App\Enum\Livewire\AlbumMode::JUSTIFIED)
+        @if ($flags->is_ready_to_load || $flags->layout !== \App\Enum\Livewire\AlbumMode::JUSTIFIED->value)
             <div
                 @class(['relative w-full',
-                    'm-4 flex flex-wrap' => $layout === \App\Enum\Livewire\AlbumMode::SQUARE,
-                    'm-7' => $layout === \App\Enum\Livewire\AlbumMode::JUSTIFIED,
-                    'masondry' => $layout === \App\Enum\Livewire\AlbumMode::MASONRY,
-                    'grid' => $layout === \App\Enum\Livewire\AlbumMode::GRID,
+                    'm-4 flex flex-wrap' => $flags->layout === \App\Enum\Livewire\AlbumMode::SQUARE->value,
+                    'm-7' => $flags->layout === \App\Enum\Livewire\AlbumMode::JUSTIFIED->value,
+                    'masondry' => $flags->layout === \App\Enum\Livewire\AlbumMode::MASONRY->value,
+                    'grid' => $flags->layout === \App\Enum\Livewire\AlbumMode::GRID->value,
                 ])
-                @if ($layout === \App\Enum\Livewire\AlbumMode::JUSTIFIED)
+                @if ($flags->layout === \App\Enum\Livewire\AlbumMode::JUSTIFIED->value)
                     style="height:{{ $this->geometry->containerHeight }}px;"
                 @endif
             >
             @for ($i = 0; $i < $num_photos; $i++)
-                <x-gallery.album.thumbs.photo :data="$this->album->photos[$i]" albumId="{{ $albumId }}" :geometry="$this->geometry?->boxes->get($i)" :layout="$layout" />
+                <x-gallery.album.thumbs.photo :data="$this->album->photos[$i]" albumId="{{ $albumId }}" :geometry="$this->geometry?->boxes->get($i)" :layout="\App\Enum\Livewire\AlbumMode::from($flags->layout)" />
             @endfor
             </div>
         @else
@@ -90,4 +91,7 @@
         @endif
     </div>
     <x-gallery.album.sharing-links :album="$this->album" x-show="sharingLinksOpen" />
+    @else
+    <x-gallery.album.unlock />
+    @endif
 </div>

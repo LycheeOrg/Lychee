@@ -2,11 +2,13 @@
 
 namespace App\Livewire\Components\Pages\Gallery;
 
+use App\Actions\Album\Unlock;
 use App\Contracts\Livewire\Reloadable;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\AlbumMode;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\UnauthorizedException;
 use App\Factories\AlbumFactory;
 use App\Livewire\Components\Base\ContextMenu;
 use App\Livewire\DTO\AlbumFlags;
@@ -14,12 +16,13 @@ use App\Livewire\DTO\SessionFlags;
 use App\Livewire\Traits\InteractWithModal;
 use App\Livewire\Traits\SilentUpdate;
 use App\Models\Album as ModelsAlbum;
-use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\SizeVariant;
 use App\Models\User;
+use App\Policies\AlbumPolicy;
 use Illuminate\Database\Eloquent\RelationNotFoundException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -46,19 +49,20 @@ class Album extends Component implements Reloadable
 
 	public SessionFlags $sessionFlags;
 
-	#[Locked]
-	public string $albumId;
-
-	public int $width = 0;
-
-	public AlbumMode $layout;
-
+	#[Locked] public string $albumId;
+	#[Locked] public int $width = 0;
 	public ?AbstractAlbum $album = null;
-	public ?string $header_url = null;
-	public int $num_children = 0;
-	public int $num_photos = 0;
-	public int $num_users = 0;
+	#[Locked] public ?string $header_url = null;
+	#[Locked] public int $num_children = 0;
+	#[Locked] public int $num_photos = 0;
+	#[Locked] public int $num_users = 0;
+	public string $password = ''; // ! wired
 
+	/**
+	 * Boot method, called before any interaction with the component.
+	 *
+	 * @return void
+	 */
 	public function boot(): void
 	{
 		$this->albumFactory = resolve(AlbumFactory::class);
@@ -66,11 +70,22 @@ class Album extends Component implements Reloadable
 
 	public function mount(string $albumId): void
 	{
-		$this->flags = new AlbumFlags();
 		$this->albumId = $albumId;
+		$this->flags = new AlbumFlags();
 		$this->album = $this->albumFactory->findAbstractAlbumOrFail($this->albumId);
 		$this->flags->is_base_album = $this->album instanceof BaseAlbum;
-		$this->num_users = User::count();
+
+		$checked = Gate::check(AlbumPolicy::CAN_ACCESS, [ModelsAlbum::class, $this->album]);
+
+		if (!$checked) {
+			$this->flags->is_locked =
+				$this->album->public_permissions() !== null &&
+				$this->album->public_permissions()->password !== null;
+		}
+
+		if (!$checked && !$this->flags->is_locked) {
+			throw new UnauthorizedException();
+		}
 	}
 
 	/**
@@ -81,12 +96,12 @@ class Album extends Component implements Reloadable
 	public function render(): View
 	{
 		$this->sessionFlags = SessionFlags::get();
-
-		$this->layout = Configs::getValueAsEnum('layout', AlbumMode::class);
-		$this->header_url ??= $this->fetchHeaderUrl()?->url;
-
-		$this->num_children = $this->album instanceof ModelsAlbum ? $this->album->children->count() : 0;
-		$this->num_photos = $this->album->photos->count();
+		if (!$this->flags->is_locked) {
+			$this->num_users = User::count();
+			$this->header_url ??= $this->fetchHeaderUrl()?->url;
+			$this->num_children = $this->album instanceof ModelsAlbum ? $this->album->children->count() : 0;
+			$this->num_photos = $this->album->photos->count();
+		}
 
 		return view('livewire.pages.gallery.album');
 	}
@@ -122,7 +137,7 @@ class Album extends Component implements Reloadable
 	 */
 	final public function getGeometryProperty(): ?Geometry
 	{
-		if ($this->layout !== AlbumMode::JUSTIFIED) {
+		if ($this->flags->layout !== AlbumMode::JUSTIFIED->value) {
 			return null;
 		}
 
@@ -190,5 +205,13 @@ class Album extends Component implements Reloadable
 	public function openContextMenu(): void
 	{
 		$this->dispatch('openContextMenu', 'menus.AlbumAdd', ['parentId' => $this->albumId])->to(ContextMenu::class);
+	}
+
+	public function unlock()
+	{
+		$unlock = resolve(Unlock::class);
+		$unlock->do($this->album, $this->password);
+
+		$this->redirect(route('livewire-gallery-album', ['albumId' => $this->albumId]));
 	}
 }
