@@ -24,6 +24,7 @@ trait ThrowsConsistentExceptions
 	protected function friendlyModelName(): string
 	{
 		$name = Str::snake(class_basename($this), ' ');
+
 		// Remove some typical, implementation-specific pre- and suffixes from the name
 		return str_replace('/(^abstract )|( impl$)|( interface$)/', '', $name);
 	}
