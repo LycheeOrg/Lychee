@@ -147,6 +147,12 @@
                                 />
                         @endif
                         <x-gallery.photo.button
+                            icon="transfer"
+                            class="fill-white hover:fill-sky-500"
+                            x-on:click="$wire.move()" @keydown.window="if (event.ctrlKey && (event.keyCode === 77)) { $wire.move(); }"
+                            {{-- 77 = m --}}
+                        />
+                        <x-gallery.photo.button
                             icon="trash"
                             class="fill-white hover:fill-red-600" 
                             x-on:click="$wire.delete()" @keydown.window="if (event.ctrlKey && (event.keyCode === 46 || event.keyCode === 8)) { $wire.delete(); }"
