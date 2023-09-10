@@ -14,11 +14,9 @@ use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
-use Livewire\Features\SupportRedirects\Redirector;
 
 class Move extends Component
 {
@@ -58,9 +56,9 @@ class Move extends Component
 	 * @param string $id
 	 * @param string $title
 	 *
-	 * @return RedirectResponse|Redirector
+	 * @return void
 	 */
-	public function setAlbum(string $id, string $title): RedirectResponse|Redirector
+	public function setAlbum(string $id, string $title): void
 	{
 		$this->albumID = $id;
 		$this->title = $title;
@@ -91,7 +89,7 @@ class Move extends Component
 			$notify->do($photo);
 		}
 
-		return redirect()->to(route('livewire-gallery-album', ['albumId' => $this->albumID ?? SmartAlbumType::UNSORTED->value]));
+		$this->redirect(route('livewire-gallery-album', ['albumId' => $this->albumID ?? SmartAlbumType::UNSORTED->value]));
 	}
 
 	/**

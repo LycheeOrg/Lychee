@@ -7,6 +7,7 @@ use App\Contracts\Livewire\Reloadable;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\AlbumMode;
 use App\Enum\SizeVariantType;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnauthorizedException;
 use App\Factories\AlbumFactory;
@@ -207,11 +208,20 @@ class Album extends Component implements Reloadable
 		$this->dispatch('openContextMenu', 'menus.AlbumAdd', ['parentId' => $this->albumId])->to(ContextMenu::class);
 	}
 
-	public function unlock()
+	/**
+	 * Method called from the front-end to unlock the album when given a password.
+	 * This will throw an exception on failure!
+	 *
+	 * @return void
+	 */
+	public function unlock(): void
 	{
 		$unlock = resolve(Unlock::class);
-		$unlock->do($this->album, $this->password);
+		if ($this->album instanceof BaseAlbum) {
+			$unlock->do($this->album, $this->password);
+			$this->redirect(route('livewire-gallery-album', ['albumId' => $this->albumId]));
+		}
 
-		$this->redirect(route('livewire-gallery-album', ['albumId' => $this->albumId]));
+		throw new LycheeLogicException('Should not happen!');
 	}
 }
