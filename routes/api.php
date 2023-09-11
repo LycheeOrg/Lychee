@@ -47,6 +47,7 @@ Route::post('/Album::move', [AlbumController::class, 'move']);
 Route::post('/Album::setLicense', [AlbumController::class, 'setLicense']);
 Route::post('/Album::setSorting', [AlbumController::class, 'setSorting']);
 Route::get('/Album::getArchive', [AlbumController::class, 'getArchive'])
+	->name('download')
 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
 	->middleware(['local_storage', 'accept_content_type:any']);
 Route::post('/Album::setTrack', [AlbumController::class, 'setTrack'])
@@ -87,6 +88,7 @@ Route::post('/Photo::add', [PhotoController::class, 'add'])
 	->withoutMiddleware(['content_type:json'])
 	->middleware(['content_type:multipart']);
 Route::get('/Photo::getArchive', [PhotoController::class, 'getArchive'])
+	->name('photo_download')
 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
 	->middleware(['local_storage', 'accept_content_type:any']);
 
