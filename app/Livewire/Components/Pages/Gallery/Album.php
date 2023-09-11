@@ -2,14 +2,11 @@
 
 namespace App\Livewire\Components\Pages\Gallery;
 
-use App\Actions\Album\Unlock;
 use App\Contracts\Livewire\Reloadable;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\AlbumMode;
 use App\Enum\SizeVariantType;
-use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Exceptions\UnauthorizedException;
 use App\Factories\AlbumFactory;
 use App\Livewire\Components\Base\ContextMenu;
 use App\Livewire\DTO\AlbumFlags;
@@ -57,7 +54,6 @@ class Album extends Component implements Reloadable
 	#[Locked] public int $num_children = 0;
 	#[Locked] public int $num_photos = 0;
 	#[Locked] public int $num_users = 0;
-	public string $password = ''; // ! wired
 
 	/**
 	 * Boot method, called before any interaction with the component.
@@ -73,20 +69,7 @@ class Album extends Component implements Reloadable
 	{
 		$this->albumId = $albumId;
 		$this->flags = new AlbumFlags();
-		$this->album = $this->albumFactory->findAbstractAlbumOrFail($this->albumId);
-		$this->flags->is_base_album = $this->album instanceof BaseAlbum;
-
-		$checked = Gate::check(AlbumPolicy::CAN_ACCESS, [ModelsAlbum::class, $this->album]);
-
-		if (!$checked) {
-			$this->flags->is_locked =
-				$this->album->public_permissions() !== null &&
-				$this->album->public_permissions()->password !== null;
-		}
-
-		if (!$checked && !$this->flags->is_locked) {
-			throw new UnauthorizedException();
-		}
+		$this->reloadPage();
 	}
 
 	/**
@@ -97,7 +80,8 @@ class Album extends Component implements Reloadable
 	public function render(): View
 	{
 		$this->sessionFlags = SessionFlags::get();
-		if (!$this->flags->is_locked) {
+
+		if ($this->flags->is_accessible) {
 			$this->num_users = User::count();
 			$this->header_url ??= $this->fetchHeaderUrl()?->url;
 			$this->num_children = $this->album instanceof ModelsAlbum ? $this->album->children->count() : 0;
@@ -126,10 +110,18 @@ class Album extends Component implements Reloadable
 	#[On('reloadPage')]
 	public function reloadPage(): void
 	{
-		if ($this->album instanceof ModelsAlbum) {
-			$this->album = $this->albumFactory->findBaseAlbumOrFail($this->album->id);
+		$this->album = $this->albumFactory->findAbstractAlbumOrFail($this->albumId);
+		$this->flags->is_base_album = $this->album instanceof BaseAlbum;
+		$this->flags->is_accessible = Gate::check(AlbumPolicy::CAN_ACCESS, [ModelsAlbum::class, $this->album]);
+
+		if (!$this->flags->is_accessible) {
+			$this->flags->is_password_protected =
+				$this->album->public_permissions() !== null &&
+				$this->album->public_permissions()->password !== null;
 		}
 	}
+
+
 
 	/**
 	 * Album property to support the multiple type.
@@ -185,12 +177,6 @@ class Album extends Component implements Reloadable
 			->first();
 	}
 
-	#[Renderless]
-	public function openSharingModal(): void
-	{
-		$this->openClosableModal('forms.album.share', __('lychee.CLOSE'));
-	}
-
 	public function back(): void
 	{
 		if ($this->album instanceof ModelsAlbum && $this->album->parent_id !== null) {
@@ -206,22 +192,5 @@ class Album extends Component implements Reloadable
 	public function openContextMenu(): void
 	{
 		$this->dispatch('openContextMenu', 'menus.AlbumAdd', ['parentId' => $this->albumId])->to(ContextMenu::class);
-	}
-
-	/**
-	 * Method called from the front-end to unlock the album when given a password.
-	 * This will throw an exception on failure!
-	 *
-	 * @return void
-	 */
-	public function unlock(): void
-	{
-		$unlock = resolve(Unlock::class);
-		if ($this->album instanceof BaseAlbum) {
-			$unlock->do($this->album, $this->password);
-			$this->redirect(route('livewire-gallery-album', ['albumId' => $this->albumId]));
-		}
-
-		throw new LycheeLogicException('Should not happen!');
 	}
 }

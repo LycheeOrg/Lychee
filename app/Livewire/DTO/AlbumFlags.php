@@ -13,11 +13,16 @@ class AlbumFlags extends ArrayableDTO implements Wireable
 	use UseWireable;
 
 	public function __construct(
-		public bool $is_locked = false,
+		public bool $is_accessible = false,
+		public bool $is_password_protected = false,
 		public bool $is_ready_to_load = false,
 		public bool $is_base_album = false,
-		public int $layout = 0,
+		public ?int $layout = null,
 	) {
-		$this->layout = Configs::getValueAsEnum('layout', AlbumMode::class)->value;
+		$this->layout ??= Configs::getValueAsEnum('layout', AlbumMode::class)->value;
+	}
+
+	public function layout(): AlbumMode {
+		return AlbumMode::from($this->layout);
 	}
 }

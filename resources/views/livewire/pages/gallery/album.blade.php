@@ -34,9 +34,25 @@
             <x-header.button wire:click="openContextMenu" icon="plus" />
         @endcan
     </x-header.bar>
-    @if(!$flags->is_locked)
+    @if($flags->is_password_protected)
+        <livewire:gallery.album.unlock albumID="$albumId" />
+    @elseif(!$flags->is_accessible)
+        <div class="basicModalContainer transition-opacity duration-1000 ease-in animate-fadeIn
+	bg-black/80 z-50 fixed flex items-center justify-center w-full h-full top-0 left-0 box-border opacity-100"
+            data-closable="true"
+            x-data="{loginModalOpen:true}"
+            >
+            <div class="basicModal transition-opacity ease-in duration-1000
+                opacity-100 bg-gradient-to-b from-dark-300 to-dark-400
+                relative w-[500px] text-sm rounded-md text-neutral-400 animate-moveUp
+                "
+                role="dialog">
+                <livewire:modals.login />
+            </div>
+        </div>
+    @else
     <div id="lychee_view_content"
-        @if ($flags->layout === \App\Enum\Livewire\AlbumMode::JUSTIFIED)
+        @if ($flags->layout() === \App\Enum\Livewire\AlbumMode::JUSTIFIED)
         x-init="width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
                 $wire.loadAlbum(width - 2 * 28 - 20);" {{-- We remove 2x padding of 7rem + 20px for the scroll bar --}}
         x-on:resize.window="width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
@@ -63,20 +79,20 @@
             @foreach ($this->album->children as $data)<x-gallery.album.thumbs.album :data="$data" />@endforeach
         @endif
         @if($num_children > 0 && $num_photos > 0)<x-gallery.divider title="{{ __('lychee.PHOTOS') }}" />@endif
-        @if ($flags->is_ready_to_load || $flags->layout !== \App\Enum\Livewire\AlbumMode::JUSTIFIED->value)
+        @if ($flags->is_ready_to_load || $flags->layout() !== \App\Enum\Livewire\AlbumMode::JUSTIFIED)
             <div
                 @class(['relative w-full',
-                    'm-4 flex flex-wrap' => $flags->layout === \App\Enum\Livewire\AlbumMode::SQUARE->value,
-                    'm-7' => $flags->layout === \App\Enum\Livewire\AlbumMode::JUSTIFIED->value,
-                    'masondry' => $flags->layout === \App\Enum\Livewire\AlbumMode::MASONRY->value,
-                    'grid' => $flags->layout === \App\Enum\Livewire\AlbumMode::GRID->value,
+                    'm-4 flex flex-wrap' => $flags->layout() === \App\Enum\Livewire\AlbumMode::SQUARE,
+                    'm-7' => $flags->layout() === \App\Enum\Livewire\AlbumMode::JUSTIFIED,
+                    'masondry' => $flags->layout() === \App\Enum\Livewire\AlbumMode::MASONRY,
+                    'grid' => $flags->layout() === \App\Enum\Livewire\AlbumMode::GRID,
                 ])
-                @if ($flags->layout === \App\Enum\Livewire\AlbumMode::JUSTIFIED->value)
+                @if ($flags->layout() === \App\Enum\Livewire\AlbumMode::JUSTIFIED)
                     style="height:{{ $this->geometry->containerHeight }}px;"
                 @endif
             >
             @for ($i = 0; $i < $num_photos; $i++)
-                <x-gallery.album.thumbs.photo :data="$this->album->photos[$i]" albumId="{{ $albumId }}" :geometry="$this->geometry?->boxes->get($i)" :layout="\App\Enum\Livewire\AlbumMode::from($flags->layout)" />
+                <x-gallery.album.thumbs.photo :data="$this->album->photos[$i]" albumId="{{ $albumId }}" :geometry="$this->geometry?->boxes->get($i)" :layout="$flags->layout()" />
             @endfor
             </div>
         @else
@@ -91,7 +107,5 @@
         @endif
     </div>
     <x-gallery.album.sharing-links :album="$this->album" x-show="sharingLinksOpen" />
-    @else
-    <x-gallery.album.unlock />
     @endif
 </div>
