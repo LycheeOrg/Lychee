@@ -7,7 +7,6 @@ use App\Factories\AlbumFactory;
 use App\Http\RuleSets\Album\UnlockAlbumRuleSet;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
-use App\Models\Extensions\BaseAlbum;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Locked;
@@ -26,11 +25,12 @@ class UnlockAlbum extends Component
 	private AlbumFactory $albumFactory;
 
 	/**
-	 * Initialize private attributes
-	 * 
-	 * @return void 
+	 * Initialize private attributes.
+	 *
+	 * @return void
 	 */
-	public function boot(): void {
+	public function boot(): void
+	{
 		$this->unlock = resolve(Unlock::class);
 		$this->albumFactory = resolve(AlbumFactory::class);
 	}
@@ -65,7 +65,7 @@ class UnlockAlbum extends Component
 	 */
 	public function submit(): void
 	{
-		if (!$this->areValid(UnlockAlbumRuleSet::rules())){
+		if (!$this->areValid(UnlockAlbumRuleSet::rules())) {
 			return;
 		}
 

@@ -20,6 +20,7 @@ use App\Models\User;
 use App\Policies\AlbumPolicy;
 use Illuminate\Database\Eloquent\RelationNotFoundException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
@@ -54,7 +55,6 @@ class Album extends Component implements Reloadable
 	#[Locked] public int $num_children = 0;
 	#[Locked] public int $num_photos = 0;
 	#[Locked] public int $num_users = 0;
-
 	/**
 	 * Boot method, called before any interaction with the component.
 	 *
@@ -119,9 +119,11 @@ class Album extends Component implements Reloadable
 				$this->album->public_permissions() !== null &&
 				$this->album->public_permissions()->password !== null;
 		}
+
+		if (Auth::check() && !$this->flags->is_accessible && !$this->flags->is_password_protected) {
+			$this->redirect(route('livewire-gallery'));
+		}
 	}
-
-
 
 	/**
 	 * Album property to support the multiple type.

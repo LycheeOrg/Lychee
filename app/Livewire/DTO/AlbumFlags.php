@@ -22,7 +22,8 @@ class AlbumFlags extends ArrayableDTO implements Wireable
 		$this->layout ??= Configs::getValueAsEnum('layout', AlbumMode::class)->value;
 	}
 
-	public function layout(): AlbumMode {
+	public function layout(): AlbumMode
+	{
 		return AlbumMode::from($this->layout);
 	}
 }
