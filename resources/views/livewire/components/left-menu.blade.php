@@ -1,5 +1,5 @@
 <aside id="default-sidebar" x-bind:class="! leftMenuOpen ? '' : 'w-full sm:w-[250px]'"
-	class="z-40 w-0 h-screen transition-width"
+	class="z-40 w-0 h-screen transition-width duration-500"
     aria-label="Sidebar">
     <div class="h-full py-4 overflow-y-auto bg-dark-850 light:bg-neutral-50">
         <ul class="space-y-0.5">

@@ -15,15 +15,9 @@
             @endif
             {{ $photo->title }}
         </x-header.title>
-        {{-- <a class="button button--star" id="button_star"><x-icons.iconic icon="star" /></a>
-        <a class="button button--eye" id="button_visibility"><x-icons.iconic icon="eye" /></a>
-        <a class="button button--rotate" id="button_rotate_ccwise"><x-icons.iconic icon="counterclockwise" /></a>
-        <a class="button button--rotate" id="button_rotate_cwise"><x-icons.iconic icon="clockwise" /></a>
+        {{-- 
         <a class="button button--share" id="button_share"><x-icons.iconic class='ionicons' icon="share-ion" /></a>
-        <a wire:click='toggleSideBar' class="button button--info" id="button_info"><x-icons.iconic icon="info" /></a>
         <a class="button button--map" id="button_map"><x-icons.iconic icon="map" /></a>
-        <a class="button" id="button_move"><x-icons.iconic icon="folder" /></a>
-        <a class="button" id="button_trash"><x-icons.iconic icon="trash" /></a>
         <a class="button" id="button_fs_enter"><x-icons.iconic icon="fullscreen-enter" /></a>
         <a class="button" id="button_fs_exit"><x-icons.iconic icon="fullscreen-exit" /></a>
         <a class="header__divider"></a> --}}
@@ -48,7 +42,7 @@
     </x-header.bar>
     <div class="w-full flex h-full overflow-hidden bg-black">
         <div class="w-0 flex-auto relative">
-            <div id="imageview" class="absolute top-0 left-0 w-full h-full bg-black " x-data="{
+            <div id="imageview" class="absolute top-0 left-0 w-full h-full bg-black flex items-center justify-center" x-data="{
                 has_description: {{ $photo->description !== null ? 'true' : 'false' }},
                 overlayType: '{{ $overlayType }}',
                 rotateOverlay() {
@@ -72,16 +66,18 @@
                 @if ($photo->isVideo())
                     {{-- This is a video file: put html5 player --}}
                     <x-gallery.photo.video-panel :flags="$flags"
+                        x-bind:class="isFullscreen ? 'max-w-full max-h-full' : 'max-wh-full-56'"
                         src="{{ URL::asset($photo->size_variants->getOriginal()->url) }}" />
                 @elseif($photo->isRaw())
                     {{-- This is a raw file: put a place holder --}}
-                    <x-gallery.photo.photo-panel alt='placeholder' src='{{ URL::asset('img/placeholder.png') }}' />
+                    <x-gallery.photo.photo-panel alt='placeholder' src='{{ URL::asset('img/placeholder.png') }}' x-bind:class=""/>
                 @elseif ($photo->live_photo_short_path === null)
                     {{-- This is a normal image: medium or original --}}
                     @if ($photo->size_variants->getMedium() !== null)
                         <x-gallery.photo.photo-panel alt='medium'
                             src='{{ URL::asset($photo->size_variants->getMedium()->url) }}'
-                            class='top-7 bottom-7 left-7 right-7' :srcset="$photo->size_variants->getMedium2x() === null
+                            x-bind:class="isFullscreen ? 'max-w-full max-h-full' : 'max-wh-full-56'"
+                            :srcset="$photo->size_variants->getMedium2x() === null
                                 ? ''
                                 : URL::asset($photo->size_variants->getMedium()->url) .
                                     ' ' .
@@ -93,7 +89,7 @@
                                     'w'" />
                     @else
                         <x-gallery.photo.photo-panel alt='big'
-                            class='top-7 bottom-7 left-7 right-7 bg-contain bg-center bg-no-repeat'
+                            x-bind:class="isFullscreen ? 'max-w-full max-h-full' : 'max-wh-full-56' "
                             style='background-image: url({{ URL::asset($photo->size_variants->getSmall()?->url) }})'
                             src='{{ URL::asset($photo->size_variants->getOriginal()->url) }}' />
                     @endif
@@ -102,7 +98,8 @@
                     <div id='livephoto' data-live-photo data-proactively-loads-video='true'
                         data-photo-src='{{ URL::asset($photo->size_variants->getMedium()->url) }}'
                         data-video-src='{{ URL::asset($photo->livePhotoUrl) }}'
-                        class='absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'
+                        class='absolute m-auto w-auto h-auto'
+                        x-bind:class="isFullscreen ? 'max-w-full max-h-full' : 'max-wh-full-56' "
                         style='width: {{ $photo->size_variants->getMedium()->width }}px; height: {{ $photo->size_variants->getMedium()->height }}px'
                         data-tabindex='{{ Helpers::data_index() }}'>
                     </div>
@@ -111,7 +108,8 @@
                     <div id='livephoto' data-live-photo data-proactively-loads-video='true'
                         data-photo-src='{{ URL::asset($photo->size_variants->getOriginal()->url) }}'
                         data-video-src='{{ URL::asset($photo->livePhotoUrl) }}'
-                        class='absolute top-7 bottom-7 left-7 right-7 m-auto w-auto h-auto max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'
+                        class='absolute m-auto w-auto h-auto'
+                        x-bind:class="isFullscreen ? 'max-w-full max-h-full' : 'max-wh-full-56' "
                         style='width: {{ $photo->size_variants->getOriginal()->width }}px; height: {{ $photo->size_variants->getOriginal()->height }}px'
                         data-tabindex='{{ Helpers::data_index() }}'>
                     </div>

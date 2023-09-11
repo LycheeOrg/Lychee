@@ -73,7 +73,6 @@
   }
   
   .box-shadow {
-    /* -webkit-box-shadow: 0 0 0 1px rgba(0,0,0,.7); */
     box-shadow: 0 0 0 1px rgba(0,0,0,.7); 
   }
 
@@ -85,18 +84,9 @@
     text-shadow: 0 1px 3px #00000066;
   }
 
-  .text-2xs {
-    font-size: 0.65rem;
-    line-height: 0.8rem;
-  }
-
-  .text-3xs {
-    font-size: 0.55rem;
-    line-height: 0.7rem;
-  }
-
-  .transition-width {
-    transition: width .5s;
+  .max-wh-full-56 {
+    max-width: calc(100% - 56px);
+    max-height: calc(100% - 56px);
   }
 
   input:checked+.slider:before {

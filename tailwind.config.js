@@ -24,6 +24,10 @@ module.exports = {
       dropShadow: {
         '3xl': '0 20px 20px rgba(0, 0, 0, 1)',
       },
+      fontSize: {
+        '3xs': ['0.55rem', '0.7rem'],
+        '2xs' : ['0.65rem', '0.8rem'],
+      },
       colors: {
         dark: {
           // 50: '#fdf8f6',
@@ -46,6 +50,9 @@ module.exports = {
       },
       flexShrink: {
         2: '2'
+      },
+      transitionProperty: {
+        width: ['width'],
       },
       keyframes: {
         fadeIn: {

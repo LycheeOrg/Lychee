@@ -1,8 +1,5 @@
-@props(['alt', 'src', 'srcset' => '', 'class' => 'top-7 bottom-7 left-7 right-7'])
+@props(['alt', 'src', 'srcset' => ''])
 <img id='image' alt='{{ $alt }}'
-    class='absolute m-auto w-auto h-auto
-max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]
-animate-zoomIn
-{{ $class }}'
+    class='absolute m-auto w-auto h-auto animate-zoomIn bg-contain bg-center bg-no-repeat'
 	{{ $attributes }}
 	src='{{ $src }}' srcset='{{ $srcset }}' />
