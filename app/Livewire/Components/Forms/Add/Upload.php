@@ -131,14 +131,15 @@ class Upload extends Component
 	{
 		$size = Configs::getValueAsInt('upload_chunk_size');
 		if ($size === 0) {
-			$size = min(
+			$size = (int) min(
 				Helpers::convertSize(ini_get('upload_max_filesize')),
 				Helpers::convertSize(ini_get('post_max_size')),
 				Helpers::convertSize(ini_get('memory_limit')) / 10
 			);
 		}
-
-		$sizeRule = collect(FileUploadConfiguration::rules())->first(fn ($rule) => Str::startsWith($rule, 'max:'), 'max:12288');
+		/** @var array<int,string> $rules */
+		$rules = FileUploadConfiguration::rules();
+		$sizeRule = collect($rules)->first(fn ($rule) => Str::startsWith($rule, 'max:'), 'max:12288');
 		$LivewireSizeLimit = intval(Str::substr($sizeRule, 4)) * 1024;
 
 		return min($size, $LivewireSizeLimit);
