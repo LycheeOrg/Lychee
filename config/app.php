@@ -263,6 +263,6 @@ return [
 		'UserPolicy' => App\Policies\UserPolicy::class,
 		'User' => App\Models\User::class,
 		'SizeVariantType' => App\Enum\SizeVariantType::class,
-		'PageMode' => App\Enum\Livewire\PageMode::class,
+		'FileStatus' => App\Enum\Livewire\FileStatus::class,
 	])->toArray(),
 ];
