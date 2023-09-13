@@ -71,7 +71,6 @@
                                 @break
 
                                 @default
-                                    @dd($upl['stage'])
                                     <div class="float-right">{{ $upl['stage'] }}</div>
                             @endswitch
                         </label>
