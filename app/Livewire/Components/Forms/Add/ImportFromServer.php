@@ -2,88 +2,90 @@
 
 namespace App\Livewire\Components\Forms\Add;
 
-use App\Contracts\Http\Requests\RequestAttribute;
-use App\Exceptions\Internal\QueryBuilderException;
-use App\Http\RuleSets\Import\ImportServerRuleSet;
-use App\Livewire\Components\Forms\BaseForm;
-use App\Models\Configs;
-use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Validation\ValidationException;
-use function Safe\preg_match;
+use App\Actions\Import\FromServer;
+use App\Contracts\Models\AbstractAlbum;
+use App\Livewire\Forms\ImportForm;
+use App\Livewire\Traits\InteractWithModal;
+use App\Policies\AlbumPolicy;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\View\View;
+use Livewire\Component;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * This defines the Login Form used in modals.
  */
-class ImportFromServer extends BaseForm
+class ImportFromServer extends Component
 {
-	/**
-	 * This defines the set of validation rules to be applied on the input.
-	 * It would be a good idea to unify (namely reuse) the rules from the JSON api.
-	 *
-	 * @return array
+	/*
+	 * Allow modal integration
 	 */
-	protected function getRuleSet(): array
+	use InteractWithModal;
+
+	public ImportForm $form;
+
+	private FromServer $fromServer;
+
+	public function boot(): void
 	{
-		return ImportServerRuleSet::rules();
+		$this->fromServer = resolve(FromServer::class);
 	}
 
 	/**
-	 * Mount the component.
+	 * We load the parameters.
 	 *
-	 * @param array $params
+	 * @param array $params set of parameters of the form
 	 *
 	 * @return void
 	 */
 	public function mount(array $params = []): void
 	{
-		parent::mount($params);
-		$this->render = 'add.import-from-server';
+		Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, AbstractAlbum::class);
 
-		// Initialize form elements (and dependent form elements) based on
-		// global configuration settings.
-		$this->form = [
-			RequestAttribute::PATH_ATTRIBUTE => public_path('uploads/import/'),
-			RequestAttribute::DELETE_IMPORTED_ATTRIBUTE => Configs::getValueAsBool('delete_imported'),
-			RequestAttribute::IMPORT_VIA_SYMLINK_ATTRIBUTE => !Configs::getValueAsBool('delete_imported') && Configs::getValueAsBool('import_via_symlink'),
-			RequestAttribute::SKIP_DUPLICATES_ATTRIBUTE => Configs::getValueAsBool('skip_duplicates'),
-			RequestAttribute::RESYNC_METADATA_ATTRIBUTE => false,
-		];
+		$this->form->init($params['parentId'] ?? null);
+	}
+
+	/**
+	 * Call the parametrized rendering.
+	 *
+	 * @return View
+	 */
+	public function render(): View
+	{
+		return view('livewire.forms.add.import-from-server');
+	}
+
+	/**
+	 * Add an handle to close the modal form from a user-land call.
+	 *
+	 * @return void
+	 */
+	public function close(): void
+	{
+		$this->closeModal();
 	}
 
 	/**
 	 * Hook the submit button.
 	 *
-	 * @return void
-	 *
-	 * @throws \Throwable
-	 * @throws ValidationException
-	 * @throws BindingResolutionException
-	 * @throws \InvalidArgumentException
-	 * @throws QueryBuilderException
+	 * @return StreamedResponse
 	 */
-	public function submit(): void
+	public function submit(): StreamedResponse
 	{
+		Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, AbstractAlbum::class);
+
 		// Empty error bag
 		$this->resetErrorBag();
 
-		// prepare
-		$subject = $this->form[RequestAttribute::PATH_ATTRIBUTE];
+		$this->form->prepare();
+		$this->form->validate();
+		$this->form->processValidatedValues();
 
-		// We split the given path string at unescaped spaces into an
-		// array or more precisely we create an array whose entries
-		// match strings with non-space characters or escaped spaces.
-		// After splitting, the escaped spaces must be replaced by
-		// proper spaces as escaping of spaces is a GUI-only thing to
-		// allow input of several paths into a single input field.
-		$pattern = '/(?:\\ |\S)+/';
-		preg_match($pattern, $subject, $matches);
-
-		// drop first element: matched elements start at index 1
-		array_shift($matches);
-		$this->form[RequestAttribute::PATH_ATTRIBUTE] = array_map(fn ($v) => str_replace('\\ ', ' ', $v), $matches);
+		/** @var int $userId */
+		$userId = Auth::id();
 
 		// Validate
-		// $values = $this->validate()['form'];
-		// TODO: Return streamed response ?
+		return $this->fromServer->do($this->form->paths, $this->form->album, $this->form->importMode, $userId);
 	}
 }
