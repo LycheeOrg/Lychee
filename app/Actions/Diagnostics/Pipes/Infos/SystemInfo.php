@@ -5,7 +5,7 @@ namespace App\Actions\Diagnostics\Pipes\Infos;
 use App\Actions\Diagnostics\Diagnostics;
 use App\Contracts\DiagnosticPipe;
 use App\Facades\Helpers;
-use App\Models\Configs;
+use App\Livewire\Components\Forms\Add\Upload;
 use Carbon\CarbonTimeZone;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -65,15 +65,8 @@ class SystemInfo implements DiagnosticPipe
 
 	private function getUploadLimit(array &$data): void
 	{
-		$size = Configs::getValueAsInt('upload_chunk_size');
-		if ($size === 0) {
-			$size = min(
-				Helpers::convertSize(ini_get('upload_max_filesize')),
-				Helpers::convertSize(ini_get('post_max_size')),
-				Helpers::convertSize(ini_get('memory_limit')) / 10
-			);
-		}
+		$size = Upload::getUploadLimit();
 
-		$data[] = Diagnostics::line('Upload chunk size:', Helpers::getSymbolByQuantity($size));
+		$data[] = Diagnostics::line('Livewire chunk size:', Helpers::getSymbolByQuantity($size));
 	}
 }

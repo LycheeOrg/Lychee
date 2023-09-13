@@ -1,42 +1,22 @@
 <div>
     <div class="p-9"
-    x-init="const filesSelector = document.querySelector('#myFiles');
-    let chnkStarts = [];
-    
-    filesSelector.addEventListener('change', () => {
-        const fileList = [...filesSelector.files];
-    
-        fileList.forEach((file, index) => {
-            @this.set('uploads.' + index + '.fileName', file.name);
-            @this.set('uploads.' + index + '.fileSize', file.size);
-            @this.set('uploads.' + index + '.lastModified', file.lastModified);
-            @this.set('uploads.' + index + '.stage', 'uploading');
-            @this.set('uploads.' + index + '.progress', 0);
-            chnkStarts[index] = 0;
-            livewireUploadChunk(index, file);
-        });
-    });
-    
-    function livewireUploadChunk(index, file) {
-        // End of chunk is start + chunkSize OR file size, whichever is greater
-        const chunkEnd = Math.min(chnkStarts[index] + @js($chunkSize), file.size);
-        const chunk = file.slice(chnkStarts[index], chunkEnd);
-    
-        @this.upload('uploads.' + index + '.fileChunk', chunk, (n) => {}, () => {}, (e) => {
-            if (e.detail.progress == 100) {
-                chnkStarts[index] =
-                    Math.min(chnkStarts[index] + @js($chunkSize), file.size);
-    
-                if (chnkStarts[index] < file.size) {
-                    let _time = Math.floor((Math.random() * 2000) + 1);
-                    console.log('sleeping ', _time, 'before next chunk upload');
-                    setTimeout(livewireUploadChunk, _time, index, file);
-                }
-            }
-        });
-    }">
+    x-data="upload({{$chunkSize}}, {{ $parallelism }})"
+    >
         @if (count($uploads) === 0)
-            <input type="file" id="myFiles" multiple>
+            {{ $chunkSize }}
+            <input type="file" id="myFiles" multiple x-on:change="
+                fileList = [...$el.files];
+                fileList.forEach((file, index) => {
+                    @this.set('uploads.' + index + '.fileName', file.name);
+                    @this.set('uploads.' + index + '.fileSize', file.size);
+                    @this.set('uploads.' + index + '.lastModified', file.lastModified);
+                    @this.set('uploads.' + index + '.stage', 'uploading');
+                    @this.set('uploads.' + index + '.progress', 0);
+                    chnkStarts[index] = 0;
+                });
+
+                {{-- livewireUploadChunk(index, file, @this); --}}
+            ">
         @else
             <h1 class="text-center text-white text-lg font-bold">{{ __('lychee.UPLOAD_UPLOADING') }}</h1>
             <div class="overflow-y-auto rounded max-h-[20rem]">

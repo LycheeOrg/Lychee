@@ -11,7 +11,9 @@ use App\Jobs\ProcessImageJob;
 use App\Models\Configs;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\FileUploadConfiguration;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 use function Safe\ini_get;
@@ -32,6 +34,7 @@ class Upload extends Component
 	public array $uploads = [];
 
 	public int $chunkSize;
+	public int $parallelism;
 
 	/**
 	 * Mount the component.
@@ -43,13 +46,8 @@ class Upload extends Component
 	public function mount(array $params = []): void
 	{
 		$this->albumId = $params['parentId'] ?? null;
-		$size = Configs::getValueAsInt('upload_chunk_size');
-
-		$this->chunkSize = $size !== 0 ? $size : (int) min(
-			Helpers::convertSize(ini_get('upload_max_filesize')),
-			Helpers::convertSize(ini_get('post_max_size')),
-			Helpers::convertSize(ini_get('memory_limit')) / 10
-		);
+		$this->chunkSize = self::getUploadLimit();
+		$this->parallelism = Configs::getValueAsInt('upload_processing_limit');
 	}
 
 	public function render(): View
@@ -127,5 +125,22 @@ class Upload extends Component
 				}
 			}
 		}
+	}
+
+	public static function getUploadLimit(): int
+	{
+		$size = Configs::getValueAsInt('upload_chunk_size');
+		if ($size === 0) {
+			$size = min(
+				Helpers::convertSize(ini_get('upload_max_filesize')),
+				Helpers::convertSize(ini_get('post_max_size')),
+				Helpers::convertSize(ini_get('memory_limit')) / 10
+			);
+		}
+
+		$sizeRule = collect(FileUploadConfiguration::rules())->first(fn ($rule) => Str::startsWith($rule, 'max:'), 'max:12288');
+		$LivewireSizeLimit = intval(Str::substr($sizeRule, 4)) * 1024;
+
+		return min($size, $LivewireSizeLimit);
 	}
 }

@@ -51,7 +51,7 @@ document.addEventListener('alpine:init', () => {
 		(success_msg_val = "U2F_REGISTRATION_SUCCESS", error_msg_val = "ERROR_TEXT") => ({
 			success_msg: success_msg_val,
 			error_msg: error_msg_val,
-			
+
 
 			isWebAuthnUnavailable() {
 				return !window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
@@ -74,7 +74,45 @@ document.addEventListener('alpine:init', () => {
 			}
 		})
 	)
-})
+
+	Alpine.data('upload',
+		(chunkSize_val, parallelism_val = 3) => ({
+			chunkSize: chunkSize_val,
+			hasErrorOccurred: false,
+			hasWarningOccurred: false,
+			parallelism: parallelism_val,
+			chnkStarts: [],
+			fileList: [],
+
+			livewireUploadChunk(index, file, wire, ths = this) {
+				// End of chunk is start + chunkSize OR file size, whichever is greater
+				const chunkEnd = Math.min(ths.chnkStarts[index] + e.chunkSize, file.size);
+				const chunk = file.slice(ths.chnkStarts[index], chunkEnd);
+
+				wire.upload('uploads.' + index + '.fileChunk', chunk,
+					(success) => { },
+					(error) => { console.log(error) },
+					(event) => {
+						if (event.detail.progress == 100) {
+							ths.chnkStarts[index] =
+								Math.min(ths.chnkStarts[index] + ths.chunkSize, file.size);
+
+							if (ths.chnkStarts[index] < file.size) {
+								let _time = Math.floor((Math.random() * 2000) + 1);
+								console.log('sleeping ', _time, 'before next chunk upload');
+								setTimeout(ths.livewireUploadChunk, _time, index, file, wire, ths);
+							}
+						}
+					}
+				);
+			},
+
+			start(ths = this) {
+
+			}
+		})
+	)
+});
 
 
 
