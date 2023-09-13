@@ -97,6 +97,42 @@ class NativeLocalFile extends BaseMediaFile
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * If new content is written to the file, the internally cached mime
+	 * type is cleared.
+	 * The mime type will be re-determined again upon the next invocation of
+	 * {@link NativeLocalFile::getMimeType()}.
+	 * This can be avoided by passing the MIME type of the stream.
+	 *
+	 * @param string|null $mimeType the mime type of `$stream`
+	 *
+	 * @returns void
+	 */
+	public function append($stream, bool $collectStatistics = false, ?string $mimeType = null): ?StreamStat
+	{
+		try {
+			$streamStat = $collectStatistics ? static::appendStatFilter($stream) : null;
+
+			if (!is_resource($this->stream)) {
+				$this->stream = fopen($this->getPath(), 'a+b');
+			}
+			$this->cachedMimeType = null;
+			stream_copy_to_stream($stream, $this->stream);
+			$this->cachedMimeType = $mimeType;
+			// File statistics info (filesize, access mode, etc.) are cached
+			// by PHP to avoid costly I/O calls.
+			// If cache is not cleared, an old size may be reported after
+			// write.
+			clearstatcache(true, $this->getPath());
+
+			return $streamStat;
+		} catch (\ErrorException $e) {
+			throw new MediaFileOperationException($e->getMessage(), $e);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
 	 */
 	public function delete(): void
 	{

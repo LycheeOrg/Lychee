@@ -274,4 +274,31 @@ class Helpers
 			. ($m > 0 ? $m . 'm' : '')
 			. ($s > 0 || ($h === 0 && $m === 0) ? $s . 's' : '');
 	}
+
+	/**
+	 * Convert a stringifyed size into its value in bytes.
+	 *
+	 * @param string $size size in 10gmk
+	 *
+	 * @return int byte equivalent
+	 */
+	public function convertSize(string $size): int
+	{
+		$size = trim($size);
+		$last = strtolower($size[strlen($size) - 1]);
+		$size = intval($size);
+
+		switch ($last) {
+			case 'g':
+				$size *= 1024;
+				// no break
+			case 'm':
+				$size *= 1024;
+				// no break
+			case 'k':
+				$size *= 1024;
+		}
+
+		return $size;
+	}
 }

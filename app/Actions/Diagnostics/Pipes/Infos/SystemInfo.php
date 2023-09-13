@@ -4,6 +4,8 @@ namespace App\Actions\Diagnostics\Pipes\Infos;
 
 use App\Actions\Diagnostics\Diagnostics;
 use App\Contracts\DiagnosticPipe;
+use App\Facades\Helpers;
+use App\Models\Configs;
 use Carbon\CarbonTimeZone;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -53,10 +55,25 @@ class SystemInfo implements DiagnosticPipe
 		$data[] = Diagnostics::line('Timezone:', ($timeZone !== false ? $timeZone : null)?->getName());
 		$data[] = Diagnostics::line('Max uploaded file size:', ini_get('upload_max_filesize'));
 		$data[] = Diagnostics::line('Max post size:', ini_get('post_max_size'));
+		$this->getUploadLimit($data);
 		$data[] = Diagnostics::line('Max execution time: ', ini_get('max_execution_time'));
 		$data[] = Diagnostics::line($dbtype . ' Version:', $dbver);
 		$data[] = '';
 
 		return $next($data);
+	}
+
+	private function getUploadLimit(array &$data): void
+	{
+		$size = Configs::getValueAsInt('upload_chunk_size');
+		if ($size === 0) {
+			$size = min(
+				Helpers::convertSize(ini_get('upload_max_filesize')),
+				Helpers::convertSize(ini_get('post_max_size')),
+				Helpers::convertSize(ini_get('memory_limit')) / 10
+			);
+		}
+
+		$data[] = Diagnostics::line('Upload chunk size:', Helpers::getSymbolByQuantity($size));
 	}
 }
