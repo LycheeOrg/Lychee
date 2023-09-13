@@ -1,5 +1,6 @@
 <div>
-	<div class="p-9">
+	<div class="p-9"
+		x-data=>
 		<p class="mb-5 text-neutral-200 text-sm/4">{{ __('lychee.UPLOAD_IMPORT_SERVER_INSTR') }}</p>
 		<form>
 			<div class="my-3 first:mt-0 last:mb-0">
@@ -13,26 +14,26 @@
 				'disabled'=> $form['import_via_symlink'] === true,
 				'text-neutral-200' => $form['import_via_symlink'] === false ])>
 				<label class="font-bold block " for="server_import_dialog_delete_imported_check">{{ __('lychee.UPLOAD_IMPORT_DELETE_ORIGINALS') }}</label>
-				<x-forms.defaulttickbox id="server_import_dialog_delete_imported_check" wire:model='form.delete_imported' :disabled="$form['import_via_symlink'] === true" />
+				<x-forms.defaulttickbox id="server_import_dialog_delete_imported_check" wire:model.live='form.delete_imported' :disabled="$form['import_via_symlink'] === true" />
 				<p>{{ __('lychee.UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL') }}</p>
 			</div>
 			<div @class(['relative my-3 pl-9 transition-color duration-300', 
-				'disabled'=> $form['delete_imported'] == true,
+				'disabled'=> $form['delete_imported'] === true,
 				'text-neutral-200' => $form['delete_imported'] === false ])>
 				<label class="font-bold block " for="server_import_dialog_symlink_check">{{ __('lychee.UPLOAD_IMPORT_VIA_SYMLINK') }}</label>
-				<x-forms.defaulttickbox id="server_import_dialog_symlink_check" wire:model='form.import_via_symlink' :disabled="$form['delete_imported'] === true" />
+				<x-forms.defaulttickbox id="server_import_dialog_symlink_check" wire:model.live='form.import_via_symlink' :disabled="$form['delete_imported'] === true" />
 				<p>{{ __('lychee.UPLOAD_IMPORT_VIA_SYMLINK_EXPL') }}</p>
 			</div>
 			<div class='relative my-3 pl-9 transition-color duration-300 text-neutral-200'>
 				<label class="font-bold block " for="server_import_dialog_skip_check">{{ __('lychee.UPLOAD_IMPORT_SKIP_DUPLICATES') }}</label>
-				<x-forms.defaulttickbox id="server_import_dialog_skip_check" wire:model='form.skip_duplicates' />
+				<x-forms.defaulttickbox id="server_import_dialog_skip_check" wire:model.live='form.skip_duplicates' />
 				<p>{{ __('lychee.UPLOAD_IMPORT_SKIP_DUPLICATES_EXPL') }}</p>
 			</div>
 			<div @class(['relative my-3 pl-9 transition-color duration-300',
 				'disabled'=> $form['skip_duplicates'] == false,
 				'text-neutral-200' => $form['skip_duplicates'] === true ])>
 				<label class="font-bold block " for="server_import_dialog_resync_check">{{ __('lychee.UPLOAD_IMPORT_RESYNC_METADATA') }}</label>
-				<x-forms.defaulttickbox id="server_import_dialog_resync_check" wire:model='form.resync_metadata' :disabled="$form['skip_duplicates'] === false" />
+				<x-forms.defaulttickbox id="server_import_dialog_resync_check" wire:model.live='form.resync_metadata' :disabled="$form['skip_duplicates'] === false" />
 				<p>{{ __('lychee.UPLOAD_IMPORT_RESYNC_METADATA_EXPL') }}</p>
 			</div>
 		</form>
