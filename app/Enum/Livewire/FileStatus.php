@@ -9,4 +9,5 @@ enum FileStatus: string
 	case READY = 'ready';
 	case SKIPPED = 'skipped';
 	case DONE = 'done';
+	case ERROR = 'error';
 }

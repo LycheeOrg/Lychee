@@ -8,6 +8,7 @@ use App\Facades\Helpers;
 use App\Image\Files\NativeLocalFile;
 use App\Image\Files\ProcessableJobFile;
 use App\Jobs\ProcessImageJob;
+use App\Livewire\Traits\InteractWithModal;
 use App\Models\Configs;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Storage;
@@ -24,13 +25,14 @@ use function Safe\ini_get;
 class Upload extends Component
 {
 	use WithFileUploads;
+	use InteractWithModal;
 
 	/**
 	 * @var string|null albumId of where to upload the picture
 	 */
 	public ?string $albumId = null;
 
-	/** @var array<int,array{fileName:string,fileChunk:mixed,lastModified:int,progress:int,uuidName:string,extension:string,fileSize:int,stage:FileStatus}> */
+	/** @var array<int,array{fileName:string,fileChunk:mixed,lastModified:int,progress:int,uuidName:string,extension:string,fileSize:int,stage:string}> */
 	public array $uploads = [];
 
 	public int $chunkSize;
@@ -72,7 +74,7 @@ class Upload extends Component
 			// Initialize data if not existing.
 			$fileDetails['extension'] ??= '.' . pathinfo($fileDetails['fileName'], PATHINFO_EXTENSION);
 			$fileDetails['uuidName'] ??= strtr(base64_encode(random_bytes(12)), '+/', '-_') . $fileDetails['extension'];
-			$fileDetails['stage'] ??= FileStatus::UPLOADING;
+			$fileDetails['stage'] ??= FileStatus::UPLOADING->value;
 
 			// Refresh uploads
 			$this->uploads[$index]['extension'] = $fileDetails['extension'];
@@ -89,7 +91,7 @@ class Upload extends Component
 
 			$this->uploads[$index]['progress'] = intval($curSize / $fileDetails['fileSize'] * 100);
 			if ($this->uploads[$index]['progress'] === 100) {
-				$this->uploads[$index]['stage'] = FileStatus::READY;
+				$this->uploads[$index]['stage'] = FileStatus::READY->value;
 			}
 		}
 
@@ -99,7 +101,7 @@ class Upload extends Component
 	public function triggerProcessing(): void
 	{
 		foreach ($this->uploads as $idx => $fileData) {
-			if ($fileData['stage'] === FileStatus::READY) {
+			if ($fileData['stage'] === FileStatus::READY->value) {
 				$uploadedFile = new NativeLocalFile(Storage::path('/livewire-tmp/' . $fileData['uuidName']));
 				$processableFile = new ProcessableJobFile(
 					$fileData['extension'],
@@ -112,16 +114,16 @@ class Upload extends Component
 				// End of work-around
 
 				try {
-					$this->uploads[$idx]['stage'] = FileStatus::PROCESSING;
+					$this->uploads[$idx]['stage'] = FileStatus::PROCESSING->value;
 
 					if (Configs::getValueAsBool('use_job_queues')) {
 						ProcessImageJob::dispatch($processableFile, $this->albumId, $fileData['lastModified']);
 					} else {
 						ProcessImageJob::dispatchSync($processableFile, $this->albumId, $fileData['lastModified']);
 					}
-					$this->uploads[$idx]['stage'] = FileStatus::DONE;
+					$this->uploads[$idx]['stage'] = FileStatus::DONE->value;
 				} catch (PhotoSkippedException $e) {
-					$this->uploads[$idx]['stage'] = FileStatus::SKIPPED;
+					$this->uploads[$idx]['stage'] = FileStatus::SKIPPED->value;
 				}
 			}
 		}
@@ -137,11 +139,22 @@ class Upload extends Component
 				Helpers::convertSize(ini_get('memory_limit')) / 10
 			);
 		}
+
 		/** @var array<int,string> $rules */
 		$rules = FileUploadConfiguration::rules();
 		$sizeRule = collect($rules)->first(fn ($rule) => Str::startsWith($rule, 'max:'), 'max:12288');
 		$LivewireSizeLimit = intval(Str::substr($sizeRule, 4)) * 1024;
 
 		return min($size, $LivewireSizeLimit);
+	}
+
+	/**
+	 * Close the modal containing the Upload panel.
+	 *
+	 * @return void
+	 */
+	public function close(): void
+	{
+		$this->closeModal();
 	}
 }
