@@ -91,9 +91,6 @@ class Upload extends Component
 
 			$this->uploads[$index]['progress'] = intval($curSize / $fileDetails['fileSize'] * 100);
 			if ($this->uploads[$index]['progress'] === 100) {
-				$this->uploads[$index]['fileRef'] =
-					TemporaryUploadedFile::createFromLivewire(
-						'/' . $fileDetails['fileName']);
 				$this->uploads[$index]['stage'] = FileStatus::READY;
 			}
 		}

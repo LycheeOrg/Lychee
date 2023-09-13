@@ -96,14 +96,13 @@ class NativeLocalFile extends BaseMediaFile
 	}
 
 	/**
-	 * {@inheritDoc}
-	 *
 	 * If new content is written to the file, the internally cached mime
 	 * type is cleared.
 	 * The mime type will be re-determined again upon the next invocation of
 	 * {@link NativeLocalFile::getMimeType()}.
 	 * This can be avoided by passing the MIME type of the stream.
 	 *
+	 * @param resource    $stream   the input stream which provides the input to write
 	 * @param string|null $mimeType the mime type of `$stream`
 	 *
 	 * @returns void
