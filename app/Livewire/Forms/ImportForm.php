@@ -112,6 +112,7 @@ class ImportForm extends Form
 	{
 		/** @var Album $album */
 		$album = $this->albumID === null ? null : Album::query()->findOrFail($this->albumID);
+
 		return $album;
 	}
 
