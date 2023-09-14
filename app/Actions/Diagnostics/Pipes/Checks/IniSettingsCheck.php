@@ -23,10 +23,10 @@ class IniSettingsCheck implements DiagnosticPipe
 		// Load settings
 		$settings = Configs::get();
 
-		if ($this->convert_size(ini_get('upload_max_filesize')) < $this->convert_size('30M')) {
+		if (Helpers::convertSize(ini_get('upload_max_filesize')) < Helpers::convertSize(('30M'))) {
 			$data[] = 'Warning: You may experience problems when uploading a photo of large size. Take a look in the FAQ for details.';
 		}
-		if ($this->convert_size(ini_get('post_max_size')) < $this->convert_size('100M')) {
+		if (Helpers::convertSize(ini_get('post_max_size')) < Helpers::convertSize(('100M'))) {
 			$data[] = 'Warning: You may experience problems when uploading a photo of large size. Take a look in the FAQ for details.';
 		}
 		$max_execution_time = intval(ini_get('max_execution_time'));
@@ -66,6 +66,15 @@ class IniSettingsCheck implements DiagnosticPipe
 			// @codeCoverageIgnoreEnd
 		}
 
+		if (extension_loaded('xdebug')) {
+			// @codeCoverageIgnoreStart
+			$msg = config('app.debug') !== true
+			? 'Errror: xdebug is enabled although Lychee is not in debug mode. Outside of debugging, xdebug may generate significant slowdown on your application.'
+			: 'Warning: xdebug is enabled. This may generate significant slowdown on your application.';
+			$data[] = $msg;
+			// @codeCoverageIgnoreEnd
+		}
+
 		if (ini_get('assert.exception') !== '1') {
 			// @codeCoverageIgnoreStart
 			$data[] = 'Warning: assert.exception is set to false. Lychee assumes that failing assertions throw proper exceptions.';
@@ -83,28 +92,5 @@ class IniSettingsCheck implements DiagnosticPipe
 		}
 
 		return $next($data);
-	}
-
-	/**
-	 * Return true if the upload_max_filesize is bellow what we want.
-	 */
-	private function convert_size(string $size): int
-	{
-		$size = trim($size);
-		$last = strtolower($size[strlen($size) - 1]);
-		$size = intval($size);
-
-		switch ($last) {
-			case 'g':
-				$size *= 1024;
-				// no break
-			case 'm':
-				$size *= 1024;
-				// no break
-			case 'k':
-				$size *= 1024;
-		}
-
-		return $size;
 	}
 }

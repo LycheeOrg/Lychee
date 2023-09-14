@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Facade;
  * @method static void   data_index_set(int $idx = 0)
  * @method static array  get_all_licenses()
  * @method static bool   isExecAvailable()
+ * @method static string secondsToHMS(int|float $d)
+ * @method static int    convertSize(string $size)
  */
 class Helpers extends Facade
 {

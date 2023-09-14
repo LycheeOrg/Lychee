@@ -37,15 +37,11 @@ use function Safe\mb_convert_encoding;
  * @property bool                                                  $may_administrate
  * @property bool                                                  $may_upload
  * @property bool                                                  $may_edit_own_settings
- * @property string                                                $name
  * @property string|null                                           $token
  * @property string|null                                           $remember_token
  * @property Collection<BaseAlbumImpl>                             $albums
- * @property int|null                                              $albums_count
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
- * @property int|null                                              $notifications_count
  * @property Collection<BaseAlbumImpl>                             $shared
- * @property int|null                                              $shared_count
  * @property Collection<Photo>                                     $photos
  * @property int|null                                              $photos_count
  * @property Collection<int, WebAuthnCredential>                   $webAuthnCredentials
@@ -106,6 +102,11 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'may_upload' => 'boolean',
 		'may_edit_own_settings' => 'boolean',
 	];
+
+	protected function _toArray(): array
+	{
+		return parent::toArray();
+	}
 
 	/**
 	 * Create a new Eloquent query builder for the model.

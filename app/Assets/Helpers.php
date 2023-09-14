@@ -256,4 +256,49 @@ class Helpers
 
 		return function_exists('exec') && !in_array('exec', $disabledFunctions, true);
 	}
+
+	/**
+	 * Given a duration convert it into hms.
+	 *
+	 * @param int|float $d length in seconds
+	 *
+	 * @return string equivalent time string formatted
+	 */
+	public function secondsToHMS(int|float $d): string
+	{
+		$h = (int) floor($d / 3600);
+		$m = (int) floor(($d % 3600) / 60);
+		$s = (int) floor($d % 60);
+
+		return ($h > 0 ? $h . 'h' : '')
+			. ($m > 0 ? $m . 'm' : '')
+			. ($s > 0 || ($h === 0 && $m === 0) ? $s . 's' : '');
+	}
+
+	/**
+	 * Convert a stringifyed size into its value in bytes.
+	 *
+	 * @param string $size size in 10gmk
+	 *
+	 * @return int byte equivalent
+	 */
+	public function convertSize(string $size): int
+	{
+		$size = trim($size);
+		$last = strtolower($size[strlen($size) - 1]);
+		$size = intval($size);
+
+		switch ($last) {
+			case 'g':
+				$size *= 1024;
+				// no break
+			case 'm':
+				$size *= 1024;
+				// no break
+			case 'k':
+				$size *= 1024;
+		}
+
+		return $size;
+	}
 }
