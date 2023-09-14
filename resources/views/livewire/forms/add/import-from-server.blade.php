@@ -7,6 +7,11 @@
 			resync_metadata: @entangle('form.resync_metadata')
 		}">
 		<p class="mb-5 text-neutral-200 text-sm/4">{{ __('lychee.UPLOAD_IMPORT_SERVER_INSTR') }}</p>
+		<div class="text-red-500 font-bold">@error('form.paths') {{ $message }} @enderror</div>
+		<div class="text-red-500 font-bold">@error('form.import_via_symlink') {{ $message }} @enderror</div>
+		<div class="text-red-500 font-bold">@error('form.delete_imported') {{ $message }} @enderror</div>
+		<div class="text-red-500 font-bold">@error('form.skip_duplicates') {{ $message }} @enderror</div>
+		<div class="text-red-500 font-bold">@error('form.resync_metadata') {{ $message }} @enderror</div>
 		<form>
 			<div class="my-3 first:mt-0 last:mb-0">
 				<x-forms.inputs.text class="w-full" autocapitalize="off" wire:model="form.path" />

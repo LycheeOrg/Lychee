@@ -80,12 +80,11 @@ class ImportFromServer extends Component
 
 		$this->form->prepare();
 		$this->form->validate();
-		$this->form->processValidatedValues();
 
 		/** @var int $userId */
 		$userId = Auth::id();
 
 		// Validate
-		return $this->fromServer->do($this->form->paths, $this->form->album, $this->form->importMode, $userId);
+		return $this->fromServer->do($this->form->paths, $this->form->getAlbum(), $this->form->getImportMode(), $userId);
 	}
 }

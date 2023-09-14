@@ -8,17 +8,15 @@ use App\Models\Album;
 use App\Models\Configs;
 use App\Rules\RandomIDRule;
 use Livewire\Form;
-use function Safe\preg_match;
+use function Safe\preg_replace;
+use function Safe\preg_split;
 
 class ImportForm extends Form
 {
-	public ?Album $album;
-	public ImportMode $importMode;
-
 	public ?string $albumID;
 	public string $path;
 	/** @var array<int,string> */
-	public array $paths;
+	public array $paths = [];
 	public bool $delete_imported;
 	public bool $skip_duplicates;
 	public bool $import_via_symlink;
@@ -58,12 +56,39 @@ class ImportForm extends Form
 		// After splitting, the escaped spaces must be replaced by
 		// proper spaces as escaping of spaces is a GUI-only thing to
 		// allow input of several paths into a single input field.
-		$pattern = '/(?:\\ |\S)+/';
-		preg_match($pattern, $subject, $matches);
+		$matches = $this->split_escaped(' ', '\\', $subject);
 
 		// drop first element: matched elements start at index 1
-		array_shift($matches);
+		// array_shift($matches);
 		$this->paths = array_map(fn ($v) => str_replace('\\ ', ' ', $v), $matches);
+	}
+
+	/**
+	 * Dark magic code from Stack Overflow
+	 * https://stackoverflow.com/a/27135602.
+	 *
+	 * @param string $delimiter
+	 * @param string $escaper
+	 * @param string $text
+	 *
+	 * @return string[]
+	 */
+	private function split_escaped(string $delimiter, string $escaper, string $text): array
+	{
+		$d = preg_quote($delimiter, '~');
+		$e = preg_quote($escaper, '~');
+		$tokens = preg_split(
+			'~' . $e . '(' . $e . '|' . $d . ')(*SKIP)(*FAIL)|' . $d . '~',
+			$text
+		);
+		$escaperReplacement = str_replace(['\\', '$'], ['\\\\', '\\$'], $escaper);
+		$delimiterReplacement = str_replace(['\\', '$'], ['\\\\', '\\$'], $delimiter);
+
+		return preg_replace(
+			['~' . $e . $e . '~', '~' . $e . $d . '~'],
+			[$escaperReplacement, $delimiterReplacement],
+			$tokens
+		);
 	}
 
 	/**
@@ -83,14 +108,15 @@ class ImportForm extends Form
 		$this->resync_metadata = false;
 	}
 
-	/**
-	 * After validation we can parse the values.
-	 *
-	 * @return void
-	 */
-	public function processValidatedValues(): void
+	public function getAlbum(): null|Album
 	{
-		$this->album = $this->albumID === null ? null : Album::query()->findOrFail($this->albumID);
-		$this->importMode = new ImportMode($this->delete_imported, $this->skip_duplicates, $this->import_via_symlink, $this->resync_metadata);
+		/** @var Album $album */
+		$album = $this->albumID === null ? null : Album::query()->findOrFail($this->albumID);
+		return $album;
+	}
+
+	public function getImportMode(): ImportMode
+	{
+		return new ImportMode($this->delete_imported, $this->skip_duplicates, $this->import_via_symlink, $this->resync_metadata);
 	}
 }
