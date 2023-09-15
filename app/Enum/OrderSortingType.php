@@ -16,7 +16,7 @@ enum OrderSortingType: string
 	 *
 	 * @return array<string,string>
 	 */
-	public static function toTranslation(): array
+	public static function localized(): array
 	{
 		return [
 			self::ASC->value => __('lychee.SORT_ASCENDING'),

@@ -39,7 +39,7 @@ enum ColumnSortingPhotoType: string
 	 *
 	 * @return array<string,string>
 	 */
-	public static function toTranslation(): array
+	public static function localized(): array
 	{
 		return [
 			self::CREATED_AT->value => __('lychee.SORT_PHOTO_SELECT_1'),

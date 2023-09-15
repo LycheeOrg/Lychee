@@ -33,7 +33,7 @@ enum ColumnSortingAlbumType: string
 	 *
 	 * @return array<string,string>
 	 */
-	public static function toTranslation(): array
+	public static function localized(): array
 	{
 		return [
 			self::CREATED_AT->value => __('lychee.SORT_ALBUM_SELECT_1'),
