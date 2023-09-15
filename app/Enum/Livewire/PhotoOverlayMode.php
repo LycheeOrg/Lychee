@@ -18,10 +18,10 @@ enum PhotoOverlayMode: string
 	public static function localized(): array
 	{
 		return [
-			self::EXIF => __('lychee.OVERLAY_EXIF'),
-			self::DESC => __('lychee.OVERLAY_DESCRIPTION'),
-			self::DATE => __('lychee.OVERLAY_DATE'),
-			self::NONE => __('lychee.OVERLAY_NONE'),
+			self::EXIF->value => __('lychee.OVERLAY_EXIF'),
+			self::DESC->value => __('lychee.OVERLAY_DESCRIPTION'),
+			self::DATE->value => __('lychee.OVERLAY_DATE'),
+			self::NONE->value => __('lychee.OVERLAY_NONE'),
 		];
 	}
 }
