@@ -41,13 +41,7 @@ class SetAlbumSortingSetting extends BaseConfigDoubleDropDown
 	 */
 	public function getOptions1Property(): array
 	{
-		return [
-			ColumnSortingAlbumType::CREATED_AT->value => __('lychee.SORT_ALBUM_SELECT_1'),
-			ColumnSortingAlbumType::TITLE->value => __('lychee.SORT_ALBUM_SELECT_2'),
-			ColumnSortingAlbumType::DESCRIPTION->value => __('lychee.SORT_ALBUM_SELECT_3'),
-			ColumnSortingAlbumType::MAX_TAKEN_AT->value => __('lychee.SORT_ALBUM_SELECT_5'),
-			ColumnSortingAlbumType::MIN_TAKEN_AT->value => __('lychee.SORT_ALBUM_SELECT_6'),
-		];
+		return ColumnSortingAlbumType::localized();
 	}
 
 	/**
@@ -57,9 +51,6 @@ class SetAlbumSortingSetting extends BaseConfigDoubleDropDown
 	 */
 	public function getOptions2Property(): array
 	{
-		return [
-			OrderSortingType::ASC->value => __('lychee.SORT_ASCENDING'),
-			OrderSortingType::DESC->value => __('lychee.SORT_DESCENDING'),
-		];
+		return OrderSortingType::localized();
 	}
 }

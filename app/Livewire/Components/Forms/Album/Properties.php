@@ -99,7 +99,7 @@ class Properties extends Component
 	final public function getPhotoSortingColumnsProperty(): array
 	{
 		// ? Dark magic: The ... will expand the array.
-		return ['' => '-', ...ColumnSortingPhotoType::toTranslation()];
+		return ['' => '-', ...ColumnSortingPhotoType::localized()];
 	}
 
 	/**
@@ -110,6 +110,6 @@ class Properties extends Component
 	final public function getSortingOrdersProperty(): array
 	{
 		// ? Dark magic: The ... will expand the array.
-		return ['' => '-', ...OrderSortingType::toTranslation()];
+		return ['' => '-', ...OrderSortingType::localized()];
 	}
 }

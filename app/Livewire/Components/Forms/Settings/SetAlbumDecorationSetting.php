@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Forms\Settings;
 
+use App\Enum\AlbumDecorationType;
 use App\Livewire\Components\Forms\Settings\Base\BaseConfigDropDown;
 use App\Models\Configs;
 
@@ -17,13 +18,7 @@ class SetAlbumDecorationSetting extends BaseConfigDropDown
 	 */
 	public function getOptionsProperty(): array
 	{
-		return [
-			'none' => __('lychee.ALBUM_DECORATION_NONE'),
-			'layers' => __('lychee.ALBUM_DECORATION_ORIGINAL'),
-			'album' => __('lychee.ALBUM_DECORATION_ALBUM'),
-			'photo' => __('lychee.ALBUM_DECORATION_PHOTO'),
-			'all' => __('lychee.ALBUM_DECORATION_ALL'),
-		];
+		return AlbumDecorationType::localized();
 	}
 
 	/**

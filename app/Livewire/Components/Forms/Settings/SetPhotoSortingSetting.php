@@ -41,15 +41,7 @@ class SetPhotoSortingSetting extends BaseConfigDoubleDropDown
 	 */
 	public function getOptions1Property(): array
 	{
-		return [
-			ColumnSortingPhotoType::CREATED_AT->value => __('lychee.SORT_PHOTO_SELECT_1'),
-			ColumnSortingPhotoType::TAKEN_AT->value => __('lychee.SORT_PHOTO_SELECT_2'),
-			ColumnSortingPhotoType::TITLE->value => __('lychee.SORT_PHOTO_SELECT_3'),
-			ColumnSortingPhotoType::DESCRIPTION->value => __('lychee.SORT_PHOTO_SELECT_4'),
-			ColumnSortingPhotoType::IS_PUBLIC->value => __('lychee.SORT_PHOTO_SELECT_5'),
-			ColumnSortingPhotoType::IS_STARRED->value => __('lychee.SORT_PHOTO_SELECT_6'),
-			ColumnSortingPhotoType::TYPE->value => __('lychee.SORT_PHOTO_SELECT_7'),
-		];
+		return ColumnSortingPhotoType::localized();
 	}
 
 	/**
@@ -59,9 +51,6 @@ class SetPhotoSortingSetting extends BaseConfigDoubleDropDown
 	 */
 	public function getOptions2Property(): array
 	{
-		return [
-			OrderSortingType::ASC->value => __('lychee.SORT_ASCENDING'),
-			OrderSortingType::DESC->value => __('lychee.SORT_DESCENDING'),
-		];
+		return OrderSortingType::localized();
 	}
 }

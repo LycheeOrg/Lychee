@@ -274,4 +274,27 @@ class Helpers
 			. ($m > 0 ? $m . 'm' : '')
 			. ($s > 0 || ($h === 0 && $m === 0) ? $s . 's' : '');
 	}
+
+	/**
+	 * Return true if the upload_max_filesize is bellow what we want.
+	 */
+	public function convertSize(string $size): int
+	{
+		$size = trim($size);
+		$last = strtolower($size[strlen($size) - 1]);
+		$size = intval($size);
+
+		switch ($last) {
+			case 'g':
+				$size *= 1024;
+				// no break
+			case 'm':
+				$size *= 1024;
+				// no break
+			case 'k':
+				$size *= 1024;
+		}
+
+		return $size;
+	}
 }

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Forms\Settings;
 
+use App\Enum\AlbumDecorationOrientation;
 use App\Livewire\Components\Forms\Settings\Base\BaseConfigDropDown;
 use App\Models\Configs;
 
@@ -17,12 +18,7 @@ class SetAlbumDecorationOrientationSetting extends BaseConfigDropDown
 	 */
 	public function getOptionsProperty(): array
 	{
-		return [
-			'row' => __('lychee.ALBUM_DECORATION_ORIENTATION_ROW'),
-			'row_reverse' => __('lychee.ALBUM_DECORATION_ORIENTATION_ROW_REVERSE'),
-			'column' => __('lychee.ALBUM_DECORATION_ORIENTATION_COLUMN'),
-			'column_reverse' => __('lychee.ALBUM_DECORATION_ORIENTATION_COLUMN_REVERSE'),
-		];
+		return AlbumDecorationOrientation::localized();
 	}
 
 	/**
