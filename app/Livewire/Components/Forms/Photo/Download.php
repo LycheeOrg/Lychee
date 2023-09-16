@@ -2,21 +2,18 @@
 
 namespace App\Livewire\Components\Forms\Photo;
 
-use App\Actions\Photo\Delete as DeleteAction;
-use App\Http\RuleSets\Photo\DeletePhotosRuleSet;
+use App\Contracts\Livewire\Params;
+use App\Enum\DownloadVariantType;
 use App\Livewire\Traits\InteractWithModal;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
 use App\Models\Photo;
-use App\Policies\PhotoPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
-class Delete extends Component
+class Download extends Component
 {
 	use InteractWithModal;
 	use AuthorizesRequests;
@@ -30,16 +27,22 @@ class Delete extends Component
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
-	 * @param array $params to delete
+	 * @param array{albumID:?string,photoID?:string,photoIDs?:array<int,string>} $params to download
 	 *
 	 * @return void
 	 */
-	public function mount(array $params = []): void
+	public function mount(array $params = ['albumID' => null]): void
 	{
-		/** @var string $id */
-		$id = $params['photoId'];
-		$this->photoIDs = [$id];
-		$this->photo = Photo::query()->findOrFail($id)->title;
+		$id = $params[Params::PHOTO_ID] ?? null;
+		if ($id !== null) {
+			$this->photoIDs = [$id];
+			$this->photo = Photo::query()->findOrFail($id);
+		} else {
+			$this->photoIDs = $params[Params::PHOTO_IDS] ?? null;
+			$this->redirect(route('photo_download',
+				['photoIDs' => $this->photoIDs,
+					'kind' => DownloadVariantType::ORIGINAL->value]));
+		}
 	}
 
 	/**
@@ -50,22 +53,6 @@ class Delete extends Component
 	public function render(): View
 	{
 		return view('livewire.forms.photo.download');
-	}
-
-	/**
-	 * Execute deletion.
-	 *
-	 * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
-	 */
-	public function submit(DeleteAction $delete): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
-	{
-		$this->validate(DeletePhotosRuleSet::rules());
-		Gate::check(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->photoIDs]);
-
-		$fileDeleter = $delete->do($this->photoIDs);
-		App::terminating(fn () => $fileDeleter->do());
-
-		return redirect()->to(route('livewire-gallery-album', ['albumId' => $this->albumId]));
 	}
 
 	/**

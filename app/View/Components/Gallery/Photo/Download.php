@@ -28,37 +28,25 @@ class Download extends Component
 	{
 		$this->photoId = $photo->id;
 
-		$medium = $photo->size_variants->getSizeVariant(SizeVariantType::MEDIUM);
-		$medium2x = $photo->size_variants->getSizeVariant(SizeVariantType::MEDIUM2X);
-		$original = $photo->size_variants->getSizeVariant(SizeVariantType::ORIGINAL);
-		$small = $photo->size_variants->getSizeVariant(SizeVariantType::SMALL);
-		$small2x = $photo->size_variants->getSizeVariant(SizeVariantType::SMALL2X);
-		$thumb = $photo->size_variants->getSizeVariant(SizeVariantType::THUMB);
-		$thumb2x = $photo->size_variants->getSizeVariant(SizeVariantType::THUMB2X);
-
 		$downgrade = !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo]) &&
 		!$photo->isVideo() &&
 		$photo->size_variants->hasMedium() === true;
 
 		$rq = request();
 
-		$this->size_variants = collect([
-			'original' => $original === null ? null : SizeVariantResource::make($original)->noUrl($downgrade)->toArray($rq),
-			'medium2x' => $medium2x === null ? null : SizeVariantResource::make($medium2x)->toArray($rq),
-			'medium' => $medium === null ? null : SizeVariantResource::make($medium)->toArray($rq),
-			'small2x' => $small2x === null ? null : SizeVariantResource::make($small2x)->toArray($rq),
-			'small' => $small === null ? null : SizeVariantResource::make($small)->toArray($rq),
-			'thumb2x' => $thumb2x === null ? null : SizeVariantResource::make($thumb2x)->toArray($rq),
-			'thumb' => $thumb === null ? null : SizeVariantResource::make($thumb)->toArray($rq),
-		])
-		->filter(fn ($e) => $e !== null)
-		->map(function ($v, $k) {
-			/** @var array{filesize:int} $v */
-			$v['filesize'] = Helpers::getSymbolByQuantity(intval($v['filesize']));
+		// TODO: Add Live photo
+		$this->size_variants = collect(SizeVariantType::cases())
+			->map(fn ($v, $k) => $photo->size_variants->getSizeVariant($v))
+			->filter(fn ($e) => $e !== null)
+			->map(fn ($v, $k) => SizeVariantResource::make($v))
+			->map(fn ($v, $k) => $k === 0 ? $v->noUrl($downgrade) : $v) // 0 = original
+			->map(fn ($v, $k) => $v->toArray($rq))
+			->map(function ($v, $k) {
+				/** @var array{filesize:int} $v */
+				$v['filesize'] = Helpers::getSymbolByQuantity(intval($v['filesize']));
 
-			return $v;
-		})
-		->all();
+				return $v;
+			})->all();
 	}
 
 	/**

@@ -44,7 +44,7 @@ class ImportFromUrl extends Component
 	 *
 	 * @return void
 	 */
-	public function mount(array $params = []): void
+	public function mount(array $params = ['parentID' => null]): void
 	{
 		$albumId = $params[Params::PARENT_ID] ?? null;
 
@@ -95,7 +95,7 @@ class ImportFromUrl extends Component
 		$userId = Auth::id();
 
 		try {
-			$this->fromUrl->do($this->from->urls, $this->form->getAlbum(), $userId);
+			$this->fromUrl->do($this->form->urls, $this->form->getAlbum(), $userId);
 			$this->notify(__('lychee.UPLOAD_IMPORT_COMPLETE'));
 		} catch (MassImportException $e) {
 			$this->notify($e->getMessage());

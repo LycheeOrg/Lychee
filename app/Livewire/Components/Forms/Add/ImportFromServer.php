@@ -39,7 +39,7 @@ class ImportFromServer extends Component
 	 *
 	 * @return void
 	 */
-	public function mount(array $params = []): void
+	public function mount(array $params = ['parentID' => null]): void
 	{
 		Gate::authorize(AlbumPolicy::CAN_IMPORT_FROM_SERVER, AbstractAlbum::class);
 

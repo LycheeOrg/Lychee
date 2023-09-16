@@ -1,13 +1,16 @@
 <div>
-	<div class="p-9">
-		@if(count($photoIDs) === 1)
-		<p>{{ sprintf("Move %s to:", $title) }}</p>
-		@else
-		<p>{{ sprintf("Move %d photos to:", count($photoIDs)) }}</p>
-		@endif
-		<livewire:forms.album.search-album lazy :parent_id="$parent_id" />
-	</div>
-	<div class="flex w-full box-border">
-		<x-forms.buttons.cancel class="border-t border-t-dark-800 rounded-bl-md w-full" wire:click="close">{{ __('lychee.CANCEL' ) }}</x-forms.buttons.cancel>
-	</div>
+    <div class="p-9">
+        <p>
+            @if (count($photoIDs) === 1)
+                {{ sprintf('Move %s to:', $title) }}
+            @else
+                {{ sprintf('Move %d photos to:', count($photoIDs)) }}
+            @endif
+        </p>
+        <livewire:forms.album.search-album lazy :parent_id="$parent_id" />
+    </div>
+    <div class="flex w-full box-border">
+        <x-forms.buttons.cancel class="border-t border-t-dark-800 rounded-bl-md w-full"
+            wire:click="close">{{ __('lychee.CANCEL') }}</x-forms.buttons.cancel>
+    </div>
 </div>

@@ -3,6 +3,8 @@
 namespace App\Livewire\Components\Forms\Photo;
 
 use App\Actions\Photo\Delete as DeleteAction;
+use App\Contracts\Livewire\Params;
+use App\Enum\SmartAlbumType;
 use App\Http\RuleSets\Photo\DeletePhotosRuleSet;
 use App\Livewire\Traits\InteractWithModal;
 use App\Livewire\Traits\Notify;
@@ -26,21 +28,25 @@ class Delete extends Component
 	/** @var array<int,string> */
 	#[Locked] public array $photoIDs;
 	#[Locked] public string $albumId;
-	#[Locked] public string $title;
+	#[Locked] public string $title = '';
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
-	 * @param array $params to delete
+	 * @param array{albumID:?string,photoID?:string,photoIDs?:array<int,string>} $params to delete
 	 *
 	 * @return void
 	 */
-	public function mount(array $params = []): void
+	public function mount(array $params = ['albumID' => null]): void
 	{
-		/** @var string $id */
-		$id = $params['photoId'];
-		$this->photoIDs = [$id];
-		$this->title = Photo::query()->findOrFail($id)->title;
-		$this->albumId = $params['albumId'] ?? null;
+		$id = $params[Params::PHOTO_ID] ?? null;
+		if ($id !== null) {
+			$this->photoIDs = [$id];
+			$this->title = Photo::query()->findOrFail($id)->title;
+		} else {
+			$this->photoIDs = $params[Params::PHOTO_IDS] ?? [];
+		}
+
+		$this->albumId = $params[Params::ALBUM_ID] ?? null;
 	}
 
 	/**
@@ -61,12 +67,13 @@ class Delete extends Component
 	public function submit(DeleteAction $delete): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
 	{
 		$this->validate(DeletePhotosRuleSet::rules());
-		Gate::check(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->photoIDs]);
+
+		Gate::check(PhotoPolicy::CAN_DELETE_BY_ID, [Photo::class, $this->photoIDs]);
 
 		$fileDeleter = $delete->do($this->photoIDs);
 		App::terminating(fn () => $fileDeleter->do());
 
-		return redirect()->to(route('livewire-gallery-album', ['albumId' => $this->albumId]));
+		return redirect()->to(route('livewire-gallery-album', ['albumId' => $this->albumId ?? SmartAlbumType::UNSORTED->value]));
 	}
 
 	/**

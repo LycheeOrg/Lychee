@@ -3,6 +3,7 @@
 namespace App\Livewire\Components\Forms\Photo;
 
 use App\Actions\User\Notify as UserNotify;
+use App\Contracts\Livewire\Params;
 use App\Enum\SmartAlbumType;
 use App\Http\RuleSets\Photo\MovePhotosRuleSet;
 use App\Livewire\Traits\InteractWithModal;
@@ -25,35 +26,33 @@ class Move extends Component
 	use UseValidator;
 	use Notify;
 
+	#[Locked] public string $parent_id;
 	/** @var array<int,string> */
 	#[Locked] public array $photoIDs;
-	#[Locked] public ?string $albumId;
-	#[Locked] public string $title;
+	#[Locked] public string $title = '';
 	// Destination
 	#[Locked] public ?string $albumID = null;
 	#[Locked] public ?string $albumTitle = null;
-	#[Locked] public string $parent_id;
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
-	 * @param array{photoId?:string,photoIds?:array<int,string>,albumId?:string} $params to move
+	 * @param array{photoID?:string,photoIDs?:array<int,string>,albumID:?string} $params to move
 	 *
 	 * @return void
 	 */
-	public function mount(array $params = []): void
+	public function mount(array $params = ['albumID' => null]): void
 	{
-		/** @var string $id */
-		$id = $params['photoId'] ?? null;
-		$ids = $params['photoIds'] ?? null;
+		$id = $params[Params::PHOTO_ID] ?? null;
 		if ($id !== null) {
 			$this->photoIDs = [$id];
+			/** @var Photo $photo */
 			$photo = Photo::query()->findOrFail($id);
 			$this->title = $photo->title;
 		} else {
-			$this->photoIDs = $ids;
-			$this->title = '';
+			$this->photoIDs = $params[Params::PHOTO_IDS] ?? [];
 		}
-		$this->parent_id = $params['albumId'] ?? SmartAlbumType::UNSORTED->value;
+
+		$this->parent_id = $params[Params::ALBUM_ID] ?? SmartAlbumType::UNSORTED->value;
 	}
 
 	/**

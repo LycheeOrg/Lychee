@@ -13,7 +13,7 @@
             this.selectedAlbums = [];
             const photoId = event.currentTarget.dataset.id;
             const index = this.selectedPhotos.indexOf(photoId);
-            if (index > -1) { // found
+            if (index > -1 && this.selectedPhotos.length > 1) { // found and more than one element
                 $wire.openPhotosDropdown(event.clientX, event.clientY, this.selectedPhotos);
             } else {
                 $wire.openPhotoDropdown(event.clientX, event.clientY, event.currentTarget.dataset.id);
@@ -36,7 +36,7 @@
             this.selectedPhotos = [];
             const albumId = event.currentTarget.dataset.id;
             const index = this.selectedAlbums.indexOf(albumId);
-            if (index > -1) { // found
+            if (index > -1 && this.selectedAlbums.length > 1) { // found and more than one element
                 $wire.openAlbumsDropdown(event.clientX, event.clientY, this.selectedAlbums);
             } else {
                 $wire.openAlbumDropdown(event.clientX, event.clientY, event.currentTarget.dataset.id);

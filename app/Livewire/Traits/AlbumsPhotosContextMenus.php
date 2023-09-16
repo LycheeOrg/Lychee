@@ -68,7 +68,7 @@ trait AlbumsPhotosContextMenus
 		)->to(ContextMenu::class);
 	}
 
-	private function getCss($x, $y): string
+	private function getCss(int $x, int $y): string
 	{
 		return sprintf('transform-origin: top left; left: %dpx; top: %dpx;', $x, $y);
 	}

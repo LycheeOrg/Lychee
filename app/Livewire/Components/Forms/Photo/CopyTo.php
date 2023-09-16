@@ -2,9 +2,11 @@
 
 namespace App\Livewire\Components\Forms\Photo;
 
+use App\Actions\Photo\Duplicate;
 use App\Actions\User\Notify as UserNotify;
+use App\Contracts\Livewire\Params;
 use App\Enum\SmartAlbumType;
-use App\Http\RuleSets\Photo\MovePhotosRuleSet;
+use App\Http\RuleSets\Photo\DuplicatePhotosRuleSet;
 use App\Livewire\Traits\InteractWithModal;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
@@ -25,35 +27,43 @@ class CopyTo extends Component
 	use UseValidator;
 	use Notify;
 
+	private Duplicate $duplicate;
+
+	#[Locked] public string $parent_id;
 	/** @var array<int,string> */
 	#[Locked] public array $photoIDs;
-	#[Locked] public ?string $albumId;
-	#[Locked] public string $title;
+	#[Locked] public string $title = '';
 	// Destination
 	#[Locked] public ?string $albumID = null;
 	#[Locked] public ?string $albumTitle = null;
-	#[Locked] public string $parent_id;
+	/**
+	 * Boot method.
+	 */
+	public function boot(): void
+	{
+		$this->duplicate = resolve(Duplicate::class);
+	}
+
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
-	 * @param array{photoId?:string,photoIds?:array<int,string>,albumId?:string} $params to move
+	 * @param array{photoID?:string,photoIDs?:array<int,string>,albumID:?string} $params to move
 	 *
 	 * @return void
 	 */
-	public function mount(array $params = []): void
+	public function mount(array $params = ['albumID' => null]): void
 	{
-		/** @var string $id */
-		$id = $params['photoId'] ?? null;
-		$ids = $params['photoIds'] ?? null;
+		$id = $params[Params::PHOTO_ID] ?? null;
 		if ($id !== null) {
 			$this->photoIDs = [$id];
+			/** @var Photo $photo */
 			$photo = Photo::query()->findOrFail($id);
 			$this->title = $photo->title;
 		} else {
-			$this->photoIDs = $ids;
-			$this->title = '';
+			$this->photoIDs = $params[Params::PHOTO_IDS] ?? [];
 		}
-		$this->parent_id = $params['albumId'] ?? SmartAlbumType::UNSORTED->value;
+
+		$this->parent_id = $params[Params::ALBUM_ID] ?? SmartAlbumType::UNSORTED->value;
 	}
 
 	/**
@@ -69,7 +79,7 @@ class CopyTo extends Component
 		$this->albumID = $id;
 		$this->title = $title;
 
-		$this->validate(MovePhotosRuleSet::rules());
+		$this->validate(DuplicatePhotosRuleSet::rules());
 		Gate::check(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->photoIDs]);
 
 		$this->albumID = $this->albumID === '' ? null : $this->albumID;
@@ -80,20 +90,11 @@ class CopyTo extends Component
 
 		$photos = Photo::query()->findOrFail($this->photoIDs);
 
+		$copiedPhotos = $this->duplicate->do($photos, $album);
+
 		$notify = new UserNotify();
 
-		/** @var Photo $photo */
-		foreach ($photos as $photo) {
-			$photo->album_id = $album?->id;
-			// Avoid unnecessary DB request, when we access the album of a
-			// photo later (e.g. when a notification is sent).
-			$photo->setRelation('album', $album);
-			if ($album !== null) {
-				$photo->owner_id = $album->owner_id;
-			}
-			$photo->save();
-			$notify->do($photo);
-		}
+		$copiedPhotos->each(fn ($photo, $k) => $notify->do($photo));
 
 		// We stay in current album.
 		$this->redirect(route('livewire-gallery-album', ['albumId' => $this->parent_id]), true);

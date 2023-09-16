@@ -46,7 +46,7 @@ class Upload extends Component
 	 *
 	 * @return void
 	 */
-	public function mount(array $params = []): void
+	public function mount(array $params = ['parentID' => null]): void
 	{
 		$this->albumId = $params[Params::PARENT_ID] ?? null;
 		$this->chunkSize = self::getUploadLimit();

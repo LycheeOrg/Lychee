@@ -4,12 +4,10 @@ namespace App\Livewire\Components\Forms\Album;
 
 use App\Actions\Album\CreateTagAlbum;
 use App\Contracts\Models\AbstractAlbum;
-use App\Exceptions\UnauthenticatedException;
 use App\Http\RuleSets\Album\AddTagAlbumRuleSet;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
@@ -30,7 +28,7 @@ class CreateTag extends Component
 	public string $title = '';
 	public string $tag = '';
 	#[Locked] public array $tags = [];
-	public function boot()
+	public function boot(): void
 	{
 		$this->create = resolve(CreateTagAlbum::class);
 	}
@@ -84,9 +82,6 @@ class CreateTag extends Component
 
 		// Authorize
 		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, null]);
-
-		/** @var int $ownerId */
-		$ownerId = Auth::id() ?? throw new UnauthenticatedException();
 
 		// Create
 		$new_album = $this->create->create($this->title, $this->tags);

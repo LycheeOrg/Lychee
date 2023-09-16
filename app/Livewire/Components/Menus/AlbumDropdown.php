@@ -16,7 +16,7 @@ class AlbumDropdown extends Component
 	use InteractWithModal;
 	use InteractWithContextMenu;
 
-	/** @var array{parentID:?string} */
+	/** @var array{parentID:?string,albumID:string} */
 	#[Locked] public array $params;
 	/**
 	 * Renders the Add menu in the top right.
@@ -52,7 +52,7 @@ class AlbumDropdown extends Component
 		// $this->openModal('forms.add.upload', $this->params);
 	}
 
-	public function donwload(): void
+	public function download(): void
 	{
 		$this->closeContextMenu();
 		// $this->openModal('forms.add.upload', $this->params);
