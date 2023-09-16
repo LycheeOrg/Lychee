@@ -52,7 +52,7 @@
         </div>
     @else
     <div id="lychee_view_content"
-        @if ($flags->layout() === \App\Enum\Livewire\AlbumMode::JUSTIFIED)
+        @if ($flags->layout() === \App\Enum\AlbumLayoutType::JUSTIFIED)
         x-init="width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
                 $wire.loadAlbum(width - 2 * 28 - 20);" {{-- We remove 2x padding of 7rem + 20px for the scroll bar --}}
         x-on:resize.window="width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
@@ -79,15 +79,15 @@
             @foreach ($this->album->children as $data)<x-gallery.album.thumbs.album :data="$data" />@endforeach
         @endif
         @if($num_children > 0 && $num_photos > 0)<x-gallery.divider title="{{ __('lychee.PHOTOS') }}" />@endif
-        @if ($flags->is_ready_to_load || $flags->layout() !== \App\Enum\Livewire\AlbumMode::JUSTIFIED)
+        @if ($flags->is_ready_to_load || $flags->layout() !== \App\Enum\AlbumLayoutType::JUSTIFIED)
             <div
                 @class(['relative w-full',
-                    'm-4 flex flex-wrap' => $flags->layout() === \App\Enum\Livewire\AlbumMode::SQUARE,
-                    'm-7' => $flags->layout() === \App\Enum\Livewire\AlbumMode::JUSTIFIED,
-                    'masondry' => $flags->layout() === \App\Enum\Livewire\AlbumMode::MASONRY,
-                    'grid' => $flags->layout() === \App\Enum\Livewire\AlbumMode::GRID,
+                    'm-4 flex flex-wrap' => $flags->layout() === \App\Enum\AlbumLayoutType::SQUARE,
+                    'm-7' => $flags->layout() === \App\Enum\AlbumLayoutType::JUSTIFIED,
+                    'masondry' => $flags->layout() === \App\Enum\AlbumLayoutType::MASONRY,
+                    'grid' => $flags->layout() === \App\Enum\AlbumLayoutType::GRID,
                 ])
-                @if ($flags->layout() === \App\Enum\Livewire\AlbumMode::JUSTIFIED)
+                @if ($flags->layout() === \App\Enum\AlbumLayoutType::JUSTIFIED)
                     style="height:{{ $this->geometry->containerHeight }}px;"
                 @endif
             >

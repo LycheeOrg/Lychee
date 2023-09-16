@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Forms\Settings;
 
+use App\Enum\AlbumLayoutType;
 use App\Enum\Livewire\NotificationType;
 use App\Livewire\Components\Forms\Settings\Base\BaseConfigDropDown;
 use App\Models\Configs;
@@ -21,13 +22,7 @@ class SetLayoutSetting extends BaseConfigDropDown
 	 */
 	public function getOptionsProperty(): array
 	{
-		// TODO: refactor enum from int to string to avoid this mess /!\ impact on JS front-end.
-		return [
-			'squares' => __('lychee.LAYOUT_SQUARES'), // 0 - \App\Enum\Livewire\AlbumMode::FLKR
-			'justified' => __('lychee.LAYOUT_JUSTIFIED'), // 1 - \App\Enum\Livewire\AlbumMode::SQUARE
-			'masonry' => __('lychee.LAYOUT_MASONRY'), // 2 - \App\Enum\Livewire\AlbumMode::MASONRY
-			'grid' => __('lychee.LAYOUT_GRID'), // 3 - \App\Enum\Livewire\AlbumMode::GRID
-		];
+		return AlbumLayoutType::localized();
 	}
 
 	/**
