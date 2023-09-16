@@ -6,7 +6,9 @@ use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\AlbumDecorationOrientation;
 use App\Enum\AlbumDecorationType;
+use App\Enum\AlbumLayoutType;
 use App\Enum\DefaultAlbumProtectionType;
+use App\Enum\ImageOverlayType;
 use App\Enum\ThumbAlbumSubtitleType;
 use App\Exceptions\Handler;
 use App\Metadata\Versions\InstalledVersion;
@@ -131,10 +133,10 @@ class ConfigurationResource extends JsonResource
 			'footer_show_social_media' => Configs::getValueAsBool('footer_show_social_media'),
 			'grants_download' => Configs::getValueAsBool('grants_download'),
 			'grants_full_photo_access' => Configs::getValueAsBool('grants_full_photo_access'),
-			'image_overlay_type' => Configs::getValueAsString('image_overlay_type'),
+			'image_overlay_type' => Configs::getValueAsEnum('image_overlay_type', ImageOverlayType::class),
 			'landing_page_enable' => Configs::getValueAsBool('landing_page_enable'),
 			'lang' => Configs::getValueAsString('lang'),
-			'layout' => Configs::getValueAsString('layout'),
+			'layout' => Configs::getValueAsEnum('layout', AlbumLayoutType::class),
 			'legacy_id_redirection' => Configs::getValueAsBool('legacy_id_redirection'),
 			'location_decoding' => Configs::getValueAsBool('location_decoding'),
 			'location_decoding_timeout' => Configs::getValueAsInt('location_decoding_timeout'),
