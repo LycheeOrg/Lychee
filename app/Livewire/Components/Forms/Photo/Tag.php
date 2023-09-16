@@ -8,7 +8,6 @@ use App\Livewire\Traits\InteractWithModal;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
@@ -21,9 +20,10 @@ class Tag extends Component
 
 	/** @var array<int,string> */
 	#[Locked] public array $photoIDs;
+	#[Locked] public array $tags = [];
 	public bool $shall_override = false;
 	public ?string $tag = '';
-	#[Locked] public array $tags = [];
+
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
