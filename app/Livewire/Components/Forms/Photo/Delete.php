@@ -68,7 +68,7 @@ class Delete extends Component
 	{
 		$this->validate(DeletePhotosRuleSet::rules());
 
-		Gate::check(PhotoPolicy::CAN_DELETE_BY_ID, [Photo::class, $this->photoIDs]);
+		Gate::authorize(PhotoPolicy::CAN_DELETE_BY_ID, [Photo::class, $this->photoIDs]);
 
 		$fileDeleter = $delete->do($this->photoIDs);
 		App::terminating(fn () => $fileDeleter->do());

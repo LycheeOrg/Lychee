@@ -6,7 +6,6 @@ use App\Actions\Album\CreateTagAlbum;
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\RuleSets\Album\AddTagAlbumRuleSet;
 use App\Livewire\Traits\InteractWithModal;
-use App\Models\Album;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;

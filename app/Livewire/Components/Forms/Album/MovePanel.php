@@ -13,6 +13,7 @@ use App\Policies\AlbumPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -86,14 +87,14 @@ class MovePanel extends Component
 
 		/** @var ?Album $album */
 		$album = $this->albumID === null ? null : Album::query()->findOrFail($this->albumID);
-		$this->authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $album]);
+		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $album]);
 
 		// `findOrFail` returns a union type, but we know that it returns the
 		// correct collection in this case
 		/** @var Collection<int,Album> $albums */
 		$albums = Album::query()->findOrFail($this->albumIDs);
 		foreach ($albums as $movedAlbum) {
-			$this->authorize(AlbumPolicy::CAN_EDIT, $movedAlbum);
+			Gate::authorize(AlbumPolicy::CAN_EDIT, $movedAlbum);
 		}
 
 		$move->do($album, $albums);

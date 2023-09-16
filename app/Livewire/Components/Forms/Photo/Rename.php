@@ -41,6 +41,8 @@ class Rename extends Component
 		} else {
 			$this->photoIDs = $params[Params::PHOTO_IDS] ?? [];
 		}
+
+		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->photoIDs]);
 	}
 
 	/**
@@ -51,7 +53,7 @@ class Rename extends Component
 	public function submit(): void
 	{
 		$this->validate(SetPhotosTitleRuleSet::rules());
-		Gate::check(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->photoIDs]);
+		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->photoIDs]);
 		Photo::query()->whereIn('id', $this->photoIDs)->update(['title' => $this->title]);
 
 		$this->close();

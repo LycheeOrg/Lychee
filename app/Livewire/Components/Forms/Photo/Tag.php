@@ -53,7 +53,7 @@ class Tag extends Component
 	{
 		$this->tags = collect(explode(',', $this->tag))->map(fn ($v, $k) => trim($v))->filter(fn ($v) => $v !== '')->all();
 
-		Gate::check(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->photoIDs]);
+		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->photoIDs]);
 
 		$photos = Photo::query()->whereIn('id', $this->photoIDs)->get();
 		foreach ($photos as $photo) {

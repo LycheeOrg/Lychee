@@ -87,8 +87,6 @@ class Photo extends Component
 
 		$this->previousPhoto = ($wrapOver && $idx_previous > $idx) || $idx_previous < $idx ? $this->album->photos->get($idx_previous) : null;
 		$this->nextPhoto = ($wrapOver && $idx_next < $idx) || $idx < $idx_next ? $this->album->photos->get($idx_next) : null;
-
-		// $this->locked = Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
 	}
 
 	/**

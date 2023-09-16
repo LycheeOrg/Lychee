@@ -3,6 +3,7 @@
 namespace App\Livewire\Components\Forms\Album;
 
 use App\Actions\Album\SetProtectionPolicy;
+use App\Contracts\Models\AbstractAlbum;
 use App\DTO\AlbumProtectionPolicy;
 use App\Factories\AlbumFactory;
 use App\Http\RuleSets\Album\SetAlbumProtectionPolicyRuleSet;
@@ -12,6 +13,7 @@ use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -38,6 +40,8 @@ class Visibility extends Component
 	 */
 	public function mount(BaseAlbum $album): void
 	{
+		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $album]);
+
 		$this->albumID = $album->id;
 		$this->is_nsfw = $album->is_nsfw;
 
@@ -103,7 +107,7 @@ class Visibility extends Component
 
 		$this->validate(SetAlbumProtectionPolicyRuleSet::rules());
 
-		$this->authorize(AlbumPolicy::CAN_EDIT, $baseAlbum);
+		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $baseAlbum]);
 
 		if (!$this->is_public) {
 			$this->setPrivate();

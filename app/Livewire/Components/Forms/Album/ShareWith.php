@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Forms\Album;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnauthorizedException;
 use App\Livewire\Traits\Notify;
@@ -10,9 +11,11 @@ use App\Models\AccessPermission;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\User;
+use App\Policies\AlbumPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Livewire\Component;
 
@@ -47,6 +50,7 @@ class ShareWith extends Component
 	public function mount(BaseAlbum $album): void
 	{
 		$this->album = $album;
+		Gate::authorize(AlbumPolicy::CAN_SHARE_WITH_USERS, [AbstractAlbum::class, $this->album]);
 		$this->resetData();
 	}
 
@@ -100,6 +104,8 @@ class ShareWith extends Component
 
 	public function add(): void
 	{
+		Gate::authorize(AlbumPolicy::CAN_SHARE_WITH_USERS, [AbstractAlbum::class, $this->album]);
+
 		$perm = new AccessPermission();
 		$perm->user_id = $this->userID;
 		$perm->base_album_id = $this->album->id;

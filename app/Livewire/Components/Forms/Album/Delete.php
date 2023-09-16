@@ -13,6 +13,7 @@ use App\Policies\AlbumPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -60,7 +61,7 @@ class Delete extends Component
 
 		$baseAlbum = $albumFactory->findBaseAlbumOrFail($this->albumIDs[0], false);
 
-		$this->authorize(AlbumPolicy::CAN_DELETE, $baseAlbum);
+		Gate::authorize(AlbumPolicy::CAN_DELETE, $baseAlbum);
 
 		$parent_id = ($baseAlbum instanceof Album) ? $baseAlbum->parent_id : null;
 

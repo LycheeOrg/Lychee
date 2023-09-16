@@ -47,7 +47,7 @@ abstract class BaseConfigDropDown extends Component
 	 */
 	public function updating($field, $value): void
 	{
-		Gate::check(SettingsPolicy::CAN_EDIT, [Configs::class]);
+		Gate::authorize(SettingsPolicy::CAN_EDIT, [Configs::class]);
 		$error_msg = $this->config->sanity($value);
 		if ($error_msg !== '') {
 			$this->notify($error_msg, NotificationType::ERROR);

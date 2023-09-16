@@ -16,6 +16,7 @@ use App\Policies\AlbumPolicy;
 use App\Rules\TitleRule;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -76,7 +77,7 @@ class Properties extends Component
 		}
 
 		$baseAlbum = $albumFactory->findBaseAlbumOrFail($this->albumID, false);
-		$this->authorize(AlbumPolicy::CAN_EDIT, $baseAlbum);
+		Gate::authorize(AlbumPolicy::CAN_EDIT, $baseAlbum);
 
 		$baseAlbum->title = $this->title;
 		$baseAlbum->description = $this->description;

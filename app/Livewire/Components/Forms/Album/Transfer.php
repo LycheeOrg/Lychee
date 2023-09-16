@@ -15,6 +15,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -86,7 +87,7 @@ class Transfer extends Component
 		$baseAlbum = $albumFactory->findBaseAlbumOrFail($this->albumID, false);
 
 		// We use CAN DELETE because it is pretty much the same. Only the owner and admin can transfer ownership
-		$this->authorize(AlbumPolicy::CAN_DELETE, $baseAlbum);
+		Gate::authorize(AlbumPolicy::CAN_DELETE, $baseAlbum);
 
 		$userId = User::query()
 			->select(['id'])

@@ -69,7 +69,7 @@ class BooleanSetting extends Component
 	 */
 	public function updating($field, $value)
 	{
-		Gate::check(SettingsPolicy::CAN_EDIT, [Configs::class]);
+		Gate::authorize(SettingsPolicy::CAN_EDIT, [Configs::class]);
 
 		$error_msg = $this->config->sanity($value === true ? '1' : '0');
 		if ($error_msg !== '') {

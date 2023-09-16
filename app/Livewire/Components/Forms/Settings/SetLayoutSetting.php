@@ -46,7 +46,7 @@ class SetLayoutSetting extends BaseConfigDropDown
 
 	public function updating($field, $value): void
 	{
-		Gate::check(SettingsPolicy::CAN_EDIT, [Configs::class]);
+		Gate::authorize(SettingsPolicy::CAN_EDIT, [Configs::class]);
 
 		// Fetch the keys and reverse index.
 		$reverse = array_flip(array_keys($this->getOptionsProperty()));

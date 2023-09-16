@@ -4,7 +4,10 @@ namespace App\Livewire\Components\Forms\Confirms;
 
 use App\Livewire\Components\Pages\AllSettings;
 use App\Livewire\Traits\InteractWithModal;
+use App\Models\Configs;
+use App\Policies\SettingsPolicy;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 
 /**
@@ -21,6 +24,8 @@ class SaveAll extends Component
 	 */
 	public function render(): View
 	{
+		Gate::authorize(SettingsPolicy::CAN_EDIT, [Configs::class]);
+
 		return view('livewire.forms.confirms.save-all');
 	}
 

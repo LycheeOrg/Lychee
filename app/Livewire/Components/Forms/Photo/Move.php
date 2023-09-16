@@ -48,6 +48,7 @@ class Move extends Component
 			$this->photoIDs = $params[Params::PHOTO_IDS] ?? [];
 		}
 
+		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->photoIDs]);
 		$this->parent_id = $params[Params::ALBUM_ID] ?? SmartAlbumType::UNSORTED->value;
 	}
 
@@ -65,13 +66,13 @@ class Move extends Component
 		$this->title = $title;
 
 		$this->validate(MovePhotosRuleSet::rules());
-		Gate::check(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->photoIDs]);
+		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->photoIDs]);
 
 		$this->albumID = $this->albumID === '' ? null : $this->albumID;
 
 		/** @var ?Album $album */
 		$album = $this->albumID === null ? null : Album::query()->findOrFail($this->albumID);
-		Gate::check(AlbumPolicy::CAN_EDIT, [Album::class, $album]);
+		Gate::authorize(AlbumPolicy::CAN_EDIT, [Album::class, $album]);
 
 		$photos = Photo::query()->findOrFail($this->photoIDs);
 

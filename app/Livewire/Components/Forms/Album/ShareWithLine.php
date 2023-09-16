@@ -68,7 +68,7 @@ class ShareWithLine extends Component
 	 */
 	public function updated($field, $value): void
 	{
-		Gate::authorize(AlbumPolicy::IS_OWNER, [AbstractAlbum::class, $this->perm->album]);
+		Gate::authorize(AlbumPolicy::CAN_SHARE_WITH_USERS, [AbstractAlbum::class, $this->perm->album]);
 
 		$this->perm->grants_full_photo_access = $this->grants_full_photo_access;
 		$this->perm->grants_download = $this->grants_download;
