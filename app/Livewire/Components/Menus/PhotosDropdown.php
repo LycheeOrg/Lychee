@@ -12,7 +12,7 @@ use Livewire\Component;
 /**
  * This defines the context menu when right clicking on multiple photo.
  */
-class PhotosDropDown extends Component
+class PhotosDropdown extends Component
 {
 	use InteractWithModal;
 	use InteractWithContextMenu;
