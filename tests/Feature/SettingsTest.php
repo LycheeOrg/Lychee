@@ -116,7 +116,8 @@ class SettingsTest extends AbstractTestCase
 	public function testSetLayout(): void
 	{
 		$this->sendKV('/Settings::setLayout', 'layout', 3, 422);
-		$this->sendKV('/Settings::setLayout', 'layout', 1);
+		$this->sendKV('/Settings::setLayout', 'layout', 'something', 422);
+		$this->sendKV('/Settings::setLayout', 'layout', 'justified');
 	}
 
 	// Route::post('/Settings::setDefaultLicense', [Administration\SettingsController::class, 'setDefaultLicense']);
