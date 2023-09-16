@@ -11,7 +11,7 @@ enum AlbumLayoutType: string
 {
 	case SQUARE = 'square';
 	case JUSTIFIED = 'justified';
-	case UNJUSTIFIED = 'unjustified';
+	case UNJUSTIFIED = 'unjustified'; // ! Legcay
 	case MASONRY = 'masonry';
 	case GRID = 'grid';
 
