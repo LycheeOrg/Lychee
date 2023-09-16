@@ -24,6 +24,7 @@ class Space extends Component
 		if (!Gate::check(SettingsPolicy::CAN_SEE_DIAGNOSTICS, Configs::class)) {
 			$this->space[] = 'Error: You must have administrator rights to see this.';
 		}
+
 		return view('livewire.modules.diagnostics.space');
 	}
 
