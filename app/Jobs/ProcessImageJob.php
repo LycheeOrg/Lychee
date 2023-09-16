@@ -36,7 +36,7 @@ class ProcessImageJob implements ShouldQueue
 
 	public string $filePath;
 	public string $originalBaseName;
-	public ?string $albumId;
+	public ?string $albumID;
 	public int $userId;
 	public ?int $fileLastModifiedTime;
 
@@ -45,12 +45,12 @@ class ProcessImageJob implements ShouldQueue
 	 */
 	public function __construct(
 		ProcessableJobFile $file,
-		string|AbstractAlbum|null $albumId,
+		string|AbstractAlbum|null $albumID,
 		?int $fileLastModifiedTime,
 	) {
 		$this->filePath = $file->getPath();
 		$this->originalBaseName = $file->getOriginalBasename();
-		$this->albumId = is_string($albumId) ? $albumId : $albumId?->id;
+		$this->albumID = is_string($albumID) ? $albumID : $albumID?->id;
 		$this->userId = Auth::user()->id;
 		$this->fileLastModifiedTime = $fileLastModifiedTime;
 
@@ -58,7 +58,7 @@ class ProcessImageJob implements ShouldQueue
 		$this->history = new JobHistory();
 		$this->history->owner_id = $this->userId;
 		$this->history->job = Str::limit('Process Image: ' . $this->originalBaseName, 200);
-		$this->history->parent_id = $this->albumId;
+		$this->history->parent_id = $this->albumID;
 		$this->history->status = JobStatus::READY;
 
 		$this->history->save();
@@ -82,8 +82,8 @@ class ProcessImageJob implements ShouldQueue
 		);
 
 		$album = null;
-		if ($this->albumId !== null) {
-			$album = $albumFactory->findAbstractAlbumOrFail($this->albumId);
+		if ($this->albumID !== null) {
+			$album = $albumFactory->findAbstractAlbumOrFail($this->albumID);
 		}
 
 		$photo = $create->add($copiedFile, $album, $this->fileLastModifiedTime);
