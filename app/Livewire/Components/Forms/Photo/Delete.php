@@ -29,6 +29,7 @@ class Delete extends Component
 	#[Locked] public array $photoIDs;
 	#[Locked] public string $albumId;
 	#[Locked] public string $title = '';
+	#[Locked] public int $num;
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
@@ -47,6 +48,7 @@ class Delete extends Component
 		}
 
 		$this->albumId = $params[Params::ALBUM_ID] ?? null;
+		$this->num = count($this->photoIDs);
 	}
 
 	/**

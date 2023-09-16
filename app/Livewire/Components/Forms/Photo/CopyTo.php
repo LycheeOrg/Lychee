@@ -36,6 +36,7 @@ class CopyTo extends Component
 	// Destination
 	#[Locked] public ?string $albumID = null;
 	#[Locked] public ?string $albumTitle = null;
+	#[Locked] public int $num;
 	/**
 	 * Boot method.
 	 */
@@ -63,7 +64,10 @@ class CopyTo extends Component
 			$this->photoIDs = $params[Params::PHOTO_IDS] ?? [];
 		}
 
+		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->photoIDs]);
+
 		$this->parent_id = $params[Params::ALBUM_ID] ?? SmartAlbumType::UNSORTED->value;
+		$this->num = count($this->photoIDs);
 	}
 
 	/**

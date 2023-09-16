@@ -21,6 +21,7 @@ class Rename extends Component
 
 	/** @var array<int,string> */
 	#[Locked] public array $photoIDs;
+	#[Locked] public int $num;
 	public string $title = '';
 
 	/**
@@ -43,6 +44,8 @@ class Rename extends Component
 		}
 
 		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->photoIDs]);
+
+		$this->num = count($this->photoIDs);
 	}
 
 	/**

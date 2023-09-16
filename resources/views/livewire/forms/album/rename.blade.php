@@ -1,7 +1,7 @@
 <div>
     <div class="p-9">
         <p class="mb-5 text-neutral-200 text-sm/4">
-            {{ $num === 1 ? __('lychee.PHOTO_NEW_TITLE') : sprintf(__('lychee.PHOTOS_NEW_TITLE'), $num) }}
+            {{ $num === 1 ? __('lychee.ALBUM_NEW_TITLE') : sprintf(__('lychee.ALBUMS_NEW_TITLE'), $num) }}
         </p>
         <form>
             <div class="my-3 first:mt-0 last:mb-0">
@@ -15,6 +15,6 @@
             wire:click="close">{{ __('lychee.CANCEL') }}</x-forms.buttons.cancel>
         <x-forms.buttons.action class="border-t border-t-dark-800 rounded-br-md w-full"
             @keydown.enter.window="$wire.submit()"
-            wire:click="submit">{{ $num === 1 ? __('lychee.RENAME') : __('lychee.RENAME_ALL') }}</x-forms.buttons.action>
+            wire:click="submit">{{ __('lychee.ALBUM_SET_TITLE') }}</x-forms.buttons.action>
     </div>
 </div>

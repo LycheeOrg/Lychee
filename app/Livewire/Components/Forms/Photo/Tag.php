@@ -21,6 +21,7 @@ class Tag extends Component
 	/** @var array<int,string> */
 	#[Locked] public array $photoIDs;
 	#[Locked] public array $tags = [];
+	#[Locked] public int $num;
 	public bool $shall_override = false;
 	public ?string $tag = '';
 
@@ -42,6 +43,9 @@ class Tag extends Component
 		} else {
 			$this->photoIDs = $params[Params::PHOTO_IDS] ?? [];
 		}
+
+		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->photoIDs]);
+		$this->num = count($this->photoIDs);
 	}
 
 	/**

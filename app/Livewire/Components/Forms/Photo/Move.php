@@ -26,6 +26,7 @@ class Move extends Component
 	/** @var array<int,string> */
 	#[Locked] public array $photoIDs;
 	#[Locked] public string $title = '';
+	#[Locked] public int $num;
 	// Destination
 	#[Locked] public ?string $albumID = null;
 	#[Locked] public ?string $albumTitle = null;
@@ -50,6 +51,7 @@ class Move extends Component
 
 		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->photoIDs]);
 		$this->parent_id = $params[Params::ALBUM_ID] ?? SmartAlbumType::UNSORTED->value;
+		$this->num = count($this->photoIDs);
 	}
 
 	/**

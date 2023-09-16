@@ -1,10 +1,10 @@
 <div>
     <div class="p-9">
         <p>
-            @if (count($photoIDs) === 1)
+            @if ($num === 1)
                 {{ sprintf(__('lychee.PHOTO_DELETE_CONFIRMATION'), $title) }}
             @else
-                {{ sprintf(__('lychee.PHOTO_DELETE_ALL'), count($photoIDs)) }}
+                {{ sprintf(__('lychee.PHOTO_DELETE_ALL'), $num) }}
             @endif
         </p>
     </div>
@@ -13,6 +13,6 @@
             wire:click="close">{{ __('lychee.PHOTO_KEEP') }}</x-forms.buttons.cancel>
         <x-forms.buttons.danger class="border-t border-t-dark-800 rounded-br-md w-full"
             @keydown.enter.window="$wire.submit()"
-            wire:click="submit">{{ count($photoIDs) === 1 ? __('lychee.PHOTO_DELETE') : __('lychee.DELETE_ALL') }}</x-forms.buttons.action>
+            wire:click="submit">{{ $num === 1 ? __('lychee.PHOTO_DELETE') : __('lychee.DELETE_ALL') }}</x-forms.buttons.action>
     </div>
 </div>

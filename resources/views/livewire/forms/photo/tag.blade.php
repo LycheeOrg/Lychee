@@ -1,7 +1,7 @@
 <div>
     <div class="p-9">
         <p class="mb-5 text-neutral-200 text-sm/4">
-            {{ count($photoIDs) === 1 ? __('lychee.PHOTO_NEW_TAGS') : sprintf(__('lychee.PHOTOS_NEW_TAGS'), count($photoIDs)) }}
+            {{ $num === 1 ? __('lychee.PHOTO_NEW_TAGS') : sprintf(__('lychee.PHOTOS_NEW_TAGS'), $num) }}
         </p>
         <form>
             <div class="my-3 first:mt-0 last:mb-0">

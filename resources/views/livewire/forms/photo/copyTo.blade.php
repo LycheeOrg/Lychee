@@ -1,10 +1,10 @@
 <div>
     <div class="p-9">
         <p>
-            @if (count($photoIDs) === 1)
+            @if ($num === 1)
                 {{ sprintf('Copy %s to:', $title) }}
             @else
-                {{ sprintf('Copy %d photos to:', count($photoIDs)) }}
+                {{ sprintf('Copy %d photos to:', $num) }}
             @endif
         </p>
         <livewire:forms.album.search-album lazy :parent_id="$parent_id" />

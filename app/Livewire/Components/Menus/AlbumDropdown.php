@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Menus;
 
+use App\Contracts\Livewire\Params;
 use App\Livewire\Traits\InteractWithContextMenu;
 use App\Livewire\Traits\InteractWithModal;
 use Illuminate\Contracts\View\View;
@@ -31,30 +32,30 @@ class AlbumDropdown extends Component
 	public function rename(): void
 	{
 		$this->closeContextMenu();
-		// $this->openModal('forms.add.upload', $this->params);
+		$this->openModal('forms.album.rename', [Params::ALBUM_ID => $this->params[Params::ALBUM_ID], Params::PARENT_ID => $this->params[Params::PARENT_ID]]);
 	}
 
 	public function merge(): void
 	{
 		$this->closeContextMenu();
-		// $this->openModal('forms.add.upload', $this->params);
+		$this->openModal('forms.album.merge', [Params::ALBUM_ID => $this->params[Params::ALBUM_ID], Params::PARENT_ID => $this->params[Params::PARENT_ID]]);
 	}
 
 	public function move(): void
 	{
 		$this->closeContextMenu();
-		// $this->openModal('forms.add.upload', $this->params);
+		$this->openModal('forms.album.move', [Params::ALBUM_ID => $this->params[Params::ALBUM_ID], Params::PARENT_ID => $this->params[Params::PARENT_ID]]);
 	}
 
 	public function delete(): void
 	{
 		$this->closeContextMenu();
-		// $this->openModal('forms.add.upload', $this->params);
+		$this->openModal('forms.album.delete', [Params::ALBUM_ID => $this->params[Params::ALBUM_ID], Params::PARENT_ID => $this->params[Params::PARENT_ID]]);
 	}
 
 	public function download(): void
 	{
 		$this->closeContextMenu();
-		// $this->openModal('forms.add.upload', $this->params);
+		$this->redirect(route('download', ['albumIDs' => $this->params[Params::ALBUM_ID]]));
 	}
 }

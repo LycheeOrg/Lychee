@@ -40,6 +40,6 @@
             @if ($userCount > 1)
             <livewire:forms.album.transfer :album="$album"  lazy />
             @endif
-            <livewire:forms.album.delete :album="$album" />
+            <livewire:forms.album.delete-panel :album="$album" />
     </div>
 </div>

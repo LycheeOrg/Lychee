@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Components\Forms\Album;
 
-use App\Actions\Album\Move as MoveAlbums;
+use App\Actions\Album\Move as AlbumMove;
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\RuleSets\Album\MoveAlbumsRuleSet;
 use App\Livewire\Components\Pages\Gallery\Album as GalleryAlbum;
@@ -33,6 +33,13 @@ class MovePanel extends Component
 	#[Locked] public ?string $parent_id;
 	#[Locked] public int $lft;
 	#[Locked] public int $rgt;
+	private AlbumMove $moveAlbums;
+
+	public function boot(): void
+	{
+		$this->moveAlbums = resolve(AlbumMove::class);
+	}
+
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
@@ -75,15 +82,14 @@ class MovePanel extends Component
 
 	/**
 	 * Execute transfer of ownership.
-	 *
-	 * @param MoveAlbums $move
 	 */
-	public function move(MoveAlbums $move): void
+	public function move(): void
 	{
 		$this->areValid(MoveAlbumsRuleSet::rules());
 
 		// set default for root.
 		$this->albumID = $this->albumID === '' ? null : $this->albumID;
+		Gate::authorize(AlbumPolicy::CAN_EDIT_ID, [AbstractAlbum::class, $this->albumIDs]);
 
 		/** @var ?Album $album */
 		$album = $this->albumID === null ? null : Album::query()->findOrFail($this->albumID);
@@ -93,11 +99,7 @@ class MovePanel extends Component
 		// correct collection in this case
 		/** @var Collection<int,Album> $albums */
 		$albums = Album::query()->findOrFail($this->albumIDs);
-		foreach ($albums as $movedAlbum) {
-			Gate::authorize(AlbumPolicy::CAN_EDIT, $movedAlbum);
-		}
-
-		$move->do($album, $albums);
+		$this->moveAlbums->do($album, $albums);
 
 		$this->dispatch('toggleAlbumDetails')->to(GalleryAlbum::class);
 		$this->notify(__('lychee.CHANGE_SUCCESS'));

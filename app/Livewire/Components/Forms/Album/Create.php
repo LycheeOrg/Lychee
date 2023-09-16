@@ -26,7 +26,7 @@ class Create extends Component
 	 */
 	use InteractWithModal;
 
-	#[Locked] public ?string $parentId;
+	#[Locked] public ?string $parent_id;
 	public string $title = '';
 
 	/**
@@ -49,7 +49,7 @@ class Create extends Component
 	 */
 	public function mount(array $params = []): void
 	{
-		$this->parentId = $params[Params::PARENT_ID];
+		$this->parent_id = $params[Params::PARENT_ID];
 	}
 
 	/**
@@ -76,7 +76,7 @@ class Create extends Component
 		$this->validate();
 
 		/** @var Album|null $parentAlbum */
-		$parentAlbum = $this->parentId === null ? null : Album::query()->findOrFail($this->parentId);
+		$parentAlbum = $this->parent_id === null ? null : Album::query()->findOrFail($this->parent_id);
 
 		// Authorize
 		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $parentAlbum]);

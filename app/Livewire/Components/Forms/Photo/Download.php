@@ -39,9 +39,7 @@ class Download extends Component
 			$this->photo = Photo::query()->findOrFail($id);
 		} else {
 			$this->photoIDs = $params[Params::PHOTO_IDS] ?? null;
-			$this->redirect(route('photo_download',
-				['photoIDs' => $this->photoIDs,
-					'kind' => DownloadVariantType::ORIGINAL->value]));
+			$this->redirect(route('photo_download', ['kind' => DownloadVariantType::ORIGINAL->value]) . '&photoIDs=' . implode(',', $this->photoIDs));
 		}
 	}
 

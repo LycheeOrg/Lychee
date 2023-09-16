@@ -2,45 +2,43 @@
 
 namespace App\Livewire\Components\Forms\Album;
 
-use App\Actions\Album\Delete as DeleteAction;
 use App\Contracts\Livewire\Params;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SmartAlbumType;
 use App\Factories\AlbumFactory;
-use App\Http\RuleSets\Album\DeleteAlbumsRuleSet;
+use App\Http\RuleSets\Album\SetAlbumsTitleRuleSet;
+use App\Livewire\Components\Pages\Gallery\Album as GalleryAlbum;
 use App\Livewire\Traits\InteractWithModal;
+use App\Models\BaseAlbumImpl;
 use App\Policies\AlbumPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
-class Delete extends Component
+class Rename extends Component
 {
-	use AuthorizesRequests;
 	use InteractWithModal;
+	use AuthorizesRequests;
 
-	// We need to use an array instead of directly said album id to reuse the rules (because I'm lazy).
+	#[Locked] public ?string $parent_id;
 	/** @var array<int,string> */
 	#[Locked] public array $albumIDs;
-	#[Locked] public string $parent_id;
-	#[Locked] public string $title = '';
 	#[Locked] public int $num;
+	public string $title = '';
+
 	private AlbumFactory $albumFactory;
-	private DeleteAction $deleteAction;
 
 	public function boot(): void
 	{
 		$this->albumFactory = resolve(AlbumFactory::class);
-		$this->deleteAction = resolve(DeleteAction::class);
 	}
 
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
-	 * @param array{albumID?:string,albumIDs?:array<int,string>,parentID:?string} $params to delete
+	 * @param array{albumID?:string,albumIDs?:array<int,string>,parentID:?string} $params to move
 	 *
 	 * @return void
 	 */
@@ -49,15 +47,29 @@ class Delete extends Component
 		$id = $params[Params::ALBUM_ID] ?? null;
 		if ($id !== null) {
 			$this->albumIDs = [$id];
-			$this->title = $this->albumFactory->findBaseAlbumOrFail($id)->title;
+			$this->title = $this->albumFactory->findBaseAlbumOrFail($id, false)->title;
 		} else {
 			$this->albumIDs = $params[Params::ALBUM_IDS] ?? [];
 		}
 
-		Gate::authorize(AlbumPolicy::CAN_DELETE_ID, [AbstractAlbum::class, $this->albumIDs]);
+		Gate::authorize(AlbumPolicy::CAN_EDIT_ID, [AbstractAlbum::class, $this->albumIDs]);
 		$this->parent_id = $params[Params::PARENT_ID] ?? SmartAlbumType::UNSORTED->value;
-
 		$this->num = count($this->albumIDs);
+	}
+
+	/**
+	 * Rename.
+	 *
+	 * @return void
+	 */
+	public function submit(): void
+	{
+		$this->validate(SetAlbumsTitleRuleSet::rules());
+		Gate::authorize(AlbumPolicy::CAN_EDIT_ID, [AbstractAlbum::class, $this->albumIDs]);
+		BaseAlbumImpl::query()->whereIn('id', $this->albumIDs)->update(['title' => $this->title]);
+
+		$this->close();
+		$this->dispatch('reloadPage')->to(GalleryAlbum::class);
 	}
 
 	/**
@@ -67,23 +79,16 @@ class Delete extends Component
 	 */
 	public function render(): View
 	{
-		return view('livewire.forms.album.delete');
+		return view('livewire.forms.album.rename');
 	}
 
 	/**
-	 * Execute deletion.
+	 * Add an handle to close the modal form from a user-land call.
 	 *
 	 * @return void
 	 */
-	public function delete(): void
+	public function close(): void
 	{
-		$this->validate(DeleteAlbumsRuleSet::rules());
-
-		Gate::authorize(AlbumPolicy::CAN_DELETE_ID, [AbstractAlbum::class, $this->albumIDs]);
-
-		$fileDeleter = $this->deleteAction->do($this->albumIDs);
-		App::terminating(fn () => $fileDeleter->do());
-
-		$this->redirect(route('livewire-gallery-album', ['albumId' => $this->parent_id]), true);
+		$this->closeModal();
 	}
 }
