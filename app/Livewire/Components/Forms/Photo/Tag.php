@@ -8,6 +8,7 @@ use App\Livewire\Traits\InteractWithModal;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
@@ -54,7 +55,6 @@ class Tag extends Component
 
 		Gate::check(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->photoIDs]);
 
-		/** @var Photo $photo */
 		$photos = Photo::query()->whereIn('id', $this->photoIDs)->get();
 		foreach ($photos as $photo) {
 			if ($this->shall_override) {
