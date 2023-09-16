@@ -5,6 +5,7 @@ namespace App\Livewire\Components\Base;
 use App\Contracts\Livewire\Openable;
 use App\Livewire\Traits\UseOpenable;
 use Illuminate\View\View;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -26,9 +27,23 @@ class ContextMenu extends Component implements Openable
 	public string $type;
 
 	/**
+	 * @var int defines the x position of the menu
+	 */
+	public int $x;
+
+	/**
+	 * @var int defines the y position of the menu
+	 */
+	public int $y;
+
+	public int $transformXorigin;
+	public int $transformYorigin;
+
+	/**
 	 * @var array defines the arguments to be passed to the
 	 *            Livewire component loaded inside the ContextMenu
 	 */
+	#[Locked]
 	public array $params = [];
 
 	/**
@@ -40,10 +55,14 @@ class ContextMenu extends Component implements Openable
 	 * @return void
 	 */
 	#[On('openContextMenu')]
-	public function openContextMenu(string $type, array $params = []): void
+	public function openContextMenu(string $type, int $x = 30, int $y = 30, array $params = [], $transformXorigin = 0, $transformYorigin = 0): void
 	{
 		$this->type = $type;
 		$this->params = $params;
+		$this->x = $x;
+		$this->y = $y;
+		$this->transformXorigin = $transformXorigin;
+		$this->transformYorigin = $transformYorigin;
 		$this->open();
 	}
 

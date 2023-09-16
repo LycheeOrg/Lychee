@@ -40,7 +40,7 @@ class Delete extends Component
 		$id = $params['photoId'];
 		$this->photoIDs = [$id];
 		$this->title = Photo::query()->findOrFail($id)->title;
-		$this->albumId = $params['albumId'];
+		$this->albumId = $params['albumId'] ?? null;
 	}
 
 	/**

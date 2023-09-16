@@ -145,10 +145,5 @@ class Photo extends Component
 	public function delete(): void
 	{
 		$this->openModal('forms.photo.delete', ['photoId' => $this->photo->id, 'albumId' => $this->albumId]);
-
-		// Gate::check(PhotoPolicy::CAN_EDIT, $this->photo);
-		// $fileDeleter = $delete->do([$this->photo->id]);
-		// App::terminating(fn () => $fileDeleter->do());
-		// $this->back();
 	}
 }

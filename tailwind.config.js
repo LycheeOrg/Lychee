@@ -101,6 +101,22 @@ module.exports = {
             'transform': 'scale(1)'
           }
         },
+        scaleIn: {
+          '0%': {
+            'transform': 'scale(0)'
+          },
+          '100%': {
+            'transform': 'scale(1)'
+          }
+        },
+        scaleOut: {
+          '0%': {
+            'transform': 'scale(1)'
+          },
+          '100%': {
+            'transform': 'scale(0)'
+          }
+        },
         animateDown: {
           '0%': {
             'opacity': '0',
@@ -130,6 +146,8 @@ module.exports = {
         'zoomIn': 'zoomIn 0.2s forwards cubic-bezier(0.51, 0.92, 0.24, 1)',
         'zoomOut': 'zoomOut 0.2s forwards cubic-bezier(0.51, 0.92, 0.24, 1)',
         'moveUp': 'moveUp 0.3s forwards cubic-bezier(0.51, 0.92, 0.24, 1)',
+        'scaleIn': 'scaleIn 0.3s forwards cubic-bezier(0.51,0.92,0.24,1.2)',
+        'scaleOut': 'scaleOut 0.3s forwards cubic-bezier(0.51,0.92,0.24,1.2)',
 
         'slowFadeIn': 'fadeIn 2s forwards cubic-bezier(0.51, 0.92, 0.24, 1)',
         'slowFadeOut': 'fadeOut 2s forwards cubic-bezier(0.51, 0.92, 0.24, 1)',

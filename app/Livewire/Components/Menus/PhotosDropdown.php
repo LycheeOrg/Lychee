@@ -9,9 +9,9 @@ use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
- * This defines the context menu when right clicking on a single photo.
+ * This defines the context menu when right clicking on multiple photo.
  */
-class PhotoDropDown extends Component
+class PhotosDropDown extends Component
 {
 	use InteractWithModal;
 	use InteractWithContextMenu;
@@ -24,57 +24,48 @@ class PhotoDropDown extends Component
 	 */
 	public function render(): View
 	{
-		return view('livewire.context-menus.photo-dropdown');
+		return view('livewire.context-menus.photos-dropdown');
 	}
 
-	public function star(): void
+	public function starAll(): void
 	{
 		$this->closeContextMenu();
 		// $this->openModal('forms.add.upload', $this->params);
 	}
 
-	public function tag(): void
+	public function tagAll(): void
 	{
 		$this->closeContextMenu();
 		// $this->openModal('forms.add.upload', $this->params);
 	}
 
-	public function setAsCover(): void
+	public function renameAll(): void
 	{
 		$this->closeContextMenu();
 		// $this->openModal('forms.add.upload', $this->params);
 	}
 
-	public function rename(): void
+	public function copyAllTo(): void
 	{
 		$this->closeContextMenu();
 		// $this->openModal('forms.add.upload', $this->params);
 	}
 
-	public function copyTo(): void
+	public function moveAll(): void
 	{
 		$this->closeContextMenu();
 		// $this->openModal('forms.add.upload', $this->params);
 	}
 
-	public function move(): void
+	public function deleteAll(): void
 	{
 		$this->closeContextMenu();
 		// $this->openModal('forms.add.upload', $this->params);
 	}
 
-	public function delete(): void
+	public function donwloadAll(): void
 	{
 		$this->closeContextMenu();
-		$this->openModal('forms.photo.delete', ['photoId' => $this->params['photoId'], 'albumId' => $this->params['albumId']]);
-		// $this->openModal('forms.add.upload', $this->params);
-	}
-
-	public function donwload(): void
-	{
-		$this->closeContextMenu();
-		dd($this->params);
-		$this->openModal('forms.photo.download', ['photoId' => $this->params['photoId'], 'albumId' => $this->params['albumId']]);
 		// $this->openModal('forms.add.upload', $this->params);
 	}
 }

@@ -1,5 +1,4 @@
-<a href="{{ route('livewire-gallery-album', ['albumId' => $id])}}"
-	wire:navigate
+<a wire:navigate href="{{ route('livewire-gallery-album', ['albumId' => $id])}}"
 	@class([
 	"album-thumb block relative aspect-square
 	w-[calc(33vw-9px-4px)] ml-1 mt-1
@@ -15,9 +14,12 @@
 	{{-- if it is NOT nsfw => display Otherwise check nsfwAlbumsVisible alpine value --}}
 	{{-- This would be better if livewire did not add comments around @if --}}
 	x-show="{{ !$is_nsfw ? 'true' : 'false' }} || nsfwAlbumsVisible"
-	{{-- {{ $disabled ? 'disabled' : '' }} --}}
 	data-id='{{ $id }}'
-	data-nsfw='{{ $is_nsfw ? '1' : '0'}}'>
+	x-on:contextmenu.prevent="(event) => {
+		console.log(event.clientX, event.clientY);
+	}"
+	{{-- data-nsfw='{{ $is_nsfw ? '1' : '0'}}' --}}
+	>
 	<x-gallery.album.thumbs.album-thumb class="group-hover:border-sky-500 group-hover:-rotate-2 group-hover:-translate-x-3 group-hover:translate-y-2"
 		type="{{ $thumb?->type ?? '' }}" thumb="{{ $thumb?->thumbUrl ?? '' }}" thumb2x="{{ $thumb?->thumb2xUrl ?? '' }}" />
 	<x-gallery.album.thumbs.album-thumb class="group-hover:border-sky-500 group-hover:rotate-6 group-hover:translate-x-3  group-hover:-translate-y-2"

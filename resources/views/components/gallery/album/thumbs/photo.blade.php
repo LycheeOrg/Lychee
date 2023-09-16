@@ -1,5 +1,4 @@
-<a
-	href="{{ route('livewire-gallery-photo',['albumId'=>$album_id, 'photoId' => $photo_id]) }}"
+<a wire:navigate href="{{ route('livewire-gallery-photo',['albumId'=>$album_id, 'photoId' => $photo_id]) }}"
 	style="{{ $style }}"
 	@class([
 		'photo group shadow-md shadow-black/25 animate-zoomIn',
@@ -14,7 +13,10 @@
 		])
 	data-album-id='{{ $album_id }}'
 	data-id='{{ $photo_id }}'
-	wire:navigate
+	x-on:contextmenu.prevent="(event) => {
+		console.log(event.clientX, event.clientY);
+	}"
+	
 	>
 	<span class="thumbimg w-full h-full border-none {{ $class_thumbs }}">
 		<img

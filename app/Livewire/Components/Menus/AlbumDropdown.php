@@ -9,9 +9,9 @@ use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
- * This defines the context menu when right clicking on a single photo.
+ * This defines the context menu when right clicking on a single albums.
  */
-class PhotoDropDown extends Component
+class AlbumDropdown extends Component
 {
 	use InteractWithModal;
 	use InteractWithContextMenu;
@@ -24,25 +24,7 @@ class PhotoDropDown extends Component
 	 */
 	public function render(): View
 	{
-		return view('livewire.context-menus.photo-dropdown');
-	}
-
-	public function star(): void
-	{
-		$this->closeContextMenu();
-		// $this->openModal('forms.add.upload', $this->params);
-	}
-
-	public function tag(): void
-	{
-		$this->closeContextMenu();
-		// $this->openModal('forms.add.upload', $this->params);
-	}
-
-	public function setAsCover(): void
-	{
-		$this->closeContextMenu();
-		// $this->openModal('forms.add.upload', $this->params);
+		return view('livewire.context-menus.album-dropdown');
 	}
 
 	public function rename(): void
@@ -51,7 +33,7 @@ class PhotoDropDown extends Component
 		// $this->openModal('forms.add.upload', $this->params);
 	}
 
-	public function copyTo(): void
+	public function merge(): void
 	{
 		$this->closeContextMenu();
 		// $this->openModal('forms.add.upload', $this->params);
@@ -66,15 +48,12 @@ class PhotoDropDown extends Component
 	public function delete(): void
 	{
 		$this->closeContextMenu();
-		$this->openModal('forms.photo.delete', ['photoId' => $this->params['photoId'], 'albumId' => $this->params['albumId']]);
 		// $this->openModal('forms.add.upload', $this->params);
 	}
 
 	public function donwload(): void
 	{
 		$this->closeContextMenu();
-		dd($this->params);
-		$this->openModal('forms.photo.download', ['photoId' => $this->params['photoId'], 'albumId' => $this->params['albumId']]);
 		// $this->openModal('forms.add.upload', $this->params);
 	}
 }
