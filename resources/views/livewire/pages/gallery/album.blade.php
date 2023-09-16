@@ -1,4 +1,6 @@
 <div class="w-full" x-data="{
+        selectedPhotos: [],
+        selectedAlbums: [],
         detailsOpen: false,
         sharingLinksOpen: false,
         nsfwAlbumsVisible: @entangle('sessionFlags.nsfwAlbumsVisible'),
@@ -6,24 +8,69 @@
         silentToggle(elem) {
             this[elem] = ! this[elem];
             $wire.silentUpdate();
-        }
-    }" 
-    @keydown.window="
-        if (event.keyCode === 72 && !detailsOpen) { event.preventDefault(); silentToggle('nsfwAlbumsVisible'); }
-        if (event.keyCode === 73 && $focus.focused() === undefined) { event.preventDefault(); detailsOpen = !detailsOpen; }
-        if (event.keyCode === 70 && $focus.focused() === undefined) { event.preventDefault(); silentToggle('isFullscreen') }
+        },
+        handleContextPhoto(event) {
+            this.selectedAlbums = [];
+            const photoId = event.currentTarget.dataset.id;
+            const index = this.selectedPhotos.indexOf(photoId);
+            if (index > -1) { // found
+                $wire.openPhotosDropdown(event.clientX, event.clientY, this.selectedPhotos);
+            } else {
+                $wire.openPhotoDropdown(event.clientX, event.clientY, event.currentTarget.dataset.id);
+            }
+        },
+        handleClickPhoto(event) {
+            if (event.ctrlKey) {
+                event.preventDefault();
+                this.selectedAlbums = [];
+                const photoId = event.currentTarget.dataset.id;
+                const index = this.selectedPhotos.indexOf(photoId);
+                if (index > -1) { // found
+                    this.selectedPhotos = this.selectedPhotos.filter((e) => e !== photoId);
+                } else { // not found
+                    this.selectedPhotos.push(photoId);
+                }
+            }
+        },
+        handleContextAlbum(event) {
+            this.selectedPhotos = [];
+            const albumId = event.currentTarget.dataset.id;
+            const index = this.selectedAlbums.indexOf(albumId);
+            if (index > -1) { // found
+                $wire.openAlbumsDropdown(event.clientX, event.clientY, this.selectedAlbums);
+            } else {
+                $wire.openAlbumDropdown(event.clientX, event.clientY, event.currentTarget.dataset.id);
+            }
+        },
+        handleClickAlbum(event) {
+            if (event.ctrlKey) {
+                event.preventDefault();
+                this.selectedPhotos = [];
+                const albumId = event.currentTarget.dataset.id;
+                const index = this.selectedAlbums.indexOf(albumId);
+                if (index > -1) { // found
+                    this.selectedAlbums = this.selectedAlbums.filter((e) => e !== albumId);
+                } else { // not found
+                    this.selectedAlbums.push(albumId);
+                }
+            }
+        },
+        handleKeydown(event) {
+            if (event.keyCode === 72 && !this.detailsOpen) { event.preventDefault(); console.log('toggle hidden albums:', this.nsfwAlbumsVisible); this.silentToggle('nsfwAlbumsVisible'); }
+            if (event.keyCode === 73 && $focus.focused() === undefined) { event.preventDefault(); this.detailsOpen = !this.detailsOpen; }
+            if (event.keyCode === 70 && $focus.focused() === undefined) { event.preventDefault(); this.silentToggle('isFullscreen') }
+            }
+    }"
     {{-- 72 = h --}}
     {{-- 73 = i --}}
     {{-- 70 = f --}}
-    ">
+    @keydown.window="handleKeydown(event)"
+    >
     <!-- toolbar -->
     <x-header.bar class="opacity-0" x-bind:class="isFullscreen ? 'opacity-0 h-0' : 'opacity-100 h-14'">
         <x-header.back back="if (detailsOpen) { detailsOpen = false; } else { $wire.back(); }" />
         <x-header.title>{{ $album->title }}</x-header.title>
         {{-- <a class="button button--map" id="button_map_album"><x-icons.iconic icon="map" /></a> --}}
-        {{-- <a class="button" id="button_fs_album_enter"><x-icons.iconic icon="fullscreen-enter" /></a> --}}
-        {{-- <a class="button" id="button_fs_album_exit"><x-icons.iconic icon="fullscreen-exit" /></a> --}}
-        {{-- <a class="header__divider"></a> --}}
         @can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class, $this->album])
             @if ($flags->is_base_album)
                 <x-header.button x-on:click="detailsOpen = false" icon="chevron-top" fill="fill-sky-500" x-cloak x-show="detailsOpen" />

@@ -193,30 +193,30 @@ class Album extends Component implements Reloadable
 	#[Renderless]
 	public function openContextMenu(): void
 	{
-		$this->dispatch('openContextMenu', 'menus.AlbumAdd', 30, 30, ['parentId' => $this->albumId], 156)->to(ContextMenu::class);
+		$this->dispatch('openContextMenu', 'menus.AlbumAdd', ['parentId' => $this->albumId], 'right: 30px; top: 30px; transform-origin: top right;')->to(ContextMenu::class);
 	}
 
 	#[Renderless]
 	public function openPhotoDropdown(int $x, int $y, string $photoId): void
 	{
-		$this->dispatch('openContextMenu', 'menus.PhotoDropdown', $x, $y, ['albumId' => $this->albumId, 'photoId' => $photoId])->to(ContextMenu::class);
+		$this->dispatch('openContextMenu', 'menus.PhotoDropdown', ['albumId' => $this->albumId, 'photoId' => $photoId], sprintf('transform-origin: top left; left: %dpx; top: %dpx;', $x, $y))->to(ContextMenu::class);
 	}
 
 	#[Renderless]
 	public function openPhotosDropdown(int $x, int $y, array $photoIds): void
 	{
-		$this->dispatch('openContextMenu', 'menus.PhotosDropdown', $x, $y, ['albumId' => $this->albumId, 'photoIds' => $photoIds])->to(ContextMenu::class);
+		$this->dispatch('openContextMenu', 'menus.PhotosDropdown', ['albumId' => $this->albumId, 'photoIds' => $photoIds], sprintf('transform-origin: top left; left: %dpx; top: %dpx;', $x, $y))->to(ContextMenu::class);
 	}
 
 	#[Renderless]
 	public function openAlbumDropdown(int $x, int $y, string $albumID): void
 	{
-		$this->dispatch('openContextMenu', 'menus.AlbumDropdown', $x, $y, ['parentId' => $this->albumId, 'albumId' => $albumID])->to(ContextMenu::class);
+		$this->dispatch('openContextMenu', 'menus.AlbumDropdown', ['parentId' => $this->albumId, 'albumId' => $albumID], sprintf('transform-origin: top left; left: %dpx; top: %dpx;', $x, $y))->to(ContextMenu::class);
 	}
 
 	#[Renderless]
 	public function openAlbumsDropdown(int $x, int $y, array $albumIds): void
 	{
-		$this->dispatch('openContextMenu', 'menus.AlbumsDropdown', $x, $y, ['parentId' => $this->albumId, 'albumIds' => $albumIds])->to(ContextMenu::class);
+		$this->dispatch('openContextMenu', 'menus.AlbumsDropdown', ['parentId' => $this->albumId, 'albumIds' => $albumIds], sprintf('transform-origin: top left; left: %dpx; top: %dpx;', $x, $y))->to(ContextMenu::class);
 	}
 }

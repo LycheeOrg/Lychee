@@ -13,10 +13,9 @@
 		])
 	data-album-id='{{ $album_id }}'
 	data-id='{{ $photo_id }}'
-	x-on:contextmenu.prevent="(event) => {
-		console.log(event.clientX, event.clientY);
-	}"
-	
+	x-on:contextmenu.prevent='handleContextPhoto($event)'
+	x-on:click='handleClickPhoto($event)'
+	x-bind:class="selectedPhotos.includes('{{ $photo_id }}') ? 'outline outline-1 outline-sky-500' : ''"
 	>
 	<span class="thumbimg w-full h-full border-none {{ $class_thumbs }}">
 		<img

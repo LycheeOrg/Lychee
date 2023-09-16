@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
-class Move extends Component
+class CopyTo extends Component
 {
 	use InteractWithModal;
 	use AuthorizesRequests;
@@ -106,7 +106,7 @@ class Move extends Component
 	 */
 	public function render(): View
 	{
-		return view('livewire.forms.photo.move');
+		return view('livewire.forms.photo.copyTo');
 	}
 
 	/**

@@ -8,7 +8,7 @@
 		animate-scaleIn"
 		role="dialog"
 		x-on:click.away="$wire.closeContextMenu()"
-		style="right: {{ $x}}px; top: {{ $y }}px; transform-origin: {{ $transformXorigin }}px {{ $transformYorigin }}px;">
+		style="{{ $style }}">
 		@livewire($type, ['params' => $params])
 	</div>
 </div>

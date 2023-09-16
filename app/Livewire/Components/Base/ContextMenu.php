@@ -27,17 +27,9 @@ class ContextMenu extends Component implements Openable
 	public string $type;
 
 	/**
-	 * @var int defines the x position of the menu
+	 * @var string defines the x y transformX transformY position of the menu
 	 */
-	public int $x;
-
-	/**
-	 * @var int defines the y position of the menu
-	 */
-	public int $y;
-
-	public int $transformXorigin;
-	public int $transformYorigin;
+	public string $style;
 
 	/**
 	 * @var array defines the arguments to be passed to the
@@ -55,14 +47,11 @@ class ContextMenu extends Component implements Openable
 	 * @return void
 	 */
 	#[On('openContextMenu')]
-	public function openContextMenu(string $type, int $x = 30, int $y = 30, array $params = [], $transformXorigin = 0, $transformYorigin = 0): void
+	public function openContextMenu(string $type, array $params = [], string $style = 'left: 30px; top: 30px;'): void
 	{
 		$this->type = $type;
 		$this->params = $params;
-		$this->x = $x;
-		$this->y = $y;
-		$this->transformXorigin = $transformXorigin;
-		$this->transformYorigin = $transformYorigin;
+		$this->style = $style;
 		$this->open();
 	}
 

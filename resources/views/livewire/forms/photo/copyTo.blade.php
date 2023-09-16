@@ -1,9 +1,9 @@
 <div>
 	<div class="p-9">
 		@if(count($photoIDs) === 1)
-		<p>{{ sprintf("Move %s to:", $title) }}</p>
+		<p>{{ sprintf("Copy %s to:", $title) }}</p>
 		@else
-		<p>{{ sprintf("Move %d photos to:", count($photoIDs)) }}</p>
+		<p>{{ sprintf("Copy %d photos to:", count($photoIDs)) }}</p>
 		@endif
 		<livewire:forms.album.search-album lazy :parent_id="$parent_id" />
 	</div>

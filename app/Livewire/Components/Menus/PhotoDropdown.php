@@ -60,14 +60,13 @@ class PhotoDropDown extends Component
 	public function move(): void
 	{
 		$this->closeContextMenu();
-		// $this->openModal('forms.add.upload', $this->params);
+		$this->openModal('forms.photo.move', ['photoId' => $this->params['photoId'], 'albumId' => $this->params['albumId']]);
 	}
 
 	public function delete(): void
 	{
 		$this->closeContextMenu();
 		$this->openModal('forms.photo.delete', ['photoId' => $this->params['photoId'], 'albumId' => $this->params['albumId']]);
-		// $this->openModal('forms.add.upload', $this->params);
 	}
 
 	public function donwload(): void

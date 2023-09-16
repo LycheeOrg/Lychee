@@ -15,9 +15,9 @@
 	{{-- This would be better if livewire did not add comments around @if --}}
 	x-show="{{ !$is_nsfw ? 'true' : 'false' }} || nsfwAlbumsVisible"
 	data-id='{{ $id }}'
-	x-on:contextmenu.prevent="(event) => {
-		console.log(event.clientX, event.clientY);
-	}"
+	x-on:contextmenu.prevent="handleContextAlbum($event)"
+	x-on:click='handleClickAlbum($event)'
+	x-bind:class="selectedAlbums.includes('{{ $id }}') ? 'outline outline-1 outline-sky-500' : ''"
 	{{-- data-nsfw='{{ $is_nsfw ? '1' : '0'}}' --}}
 	>
 	<x-gallery.album.thumbs.album-thumb class="group-hover:border-sky-500 group-hover:-rotate-2 group-hover:-translate-x-3 group-hover:translate-y-2"
