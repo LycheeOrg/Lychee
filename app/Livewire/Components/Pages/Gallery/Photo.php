@@ -4,7 +4,7 @@ namespace App\Livewire\Components\Pages\Gallery;
 
 use App\Actions\Photo\Strategies\RotateStrategy;
 use App\Contracts\Models\AbstractAlbum;
-use App\Enum\Livewire\PhotoOverlayMode;
+use App\Enum\ImageOverlayType;
 use App\Factories\AlbumFactory;
 use App\Livewire\DTO\PhotoFlags;
 use App\Livewire\DTO\SessionFlags;
@@ -66,7 +66,7 @@ class Photo extends Component
 		/** @var PhotoModel $photoItem */
 		$photoItem = PhotoModel::with('album')->findOrFail($this->photoId);
 		$this->photo = $photoItem;
-		$this->overlayType = Configs::getValueAsEnum('image_overlay_type', PhotoOverlayMode::class)->value;
+		$this->overlayType = Configs::getValueAsEnum('image_overlay_type', ImageOverlayType::class)->value;
 
 		$this->flags = new PhotoFlags(
 			can_autoplay: true,

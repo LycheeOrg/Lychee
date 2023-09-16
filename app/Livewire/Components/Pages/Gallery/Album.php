@@ -4,7 +4,7 @@ namespace App\Livewire\Components\Pages\Gallery;
 
 use App\Contracts\Livewire\Reloadable;
 use App\Contracts\Models\AbstractAlbum;
-use App\Enum\Livewire\AlbumMode;
+use App\Enum\AlbumLayoutType;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Factories\AlbumFactory;
@@ -132,7 +132,7 @@ class Album extends Component implements Reloadable
 	 */
 	final public function getGeometryProperty(): ?Geometry
 	{
-		if ($this->flags->layout !== AlbumMode::JUSTIFIED->value) {
+		if ($this->flags->layout !== AlbumLayoutType::JUSTIFIED->value) {
 			return null;
 		}
 

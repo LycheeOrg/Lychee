@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Forms\Settings;
 
+use App\Enum\ImageOverlayType;
 use App\Livewire\Components\Forms\Settings\Base\BaseConfigDropDown;
 use App\Models\Configs;
 
@@ -17,12 +18,7 @@ class SetPhotoOverlaySetting extends BaseConfigDropDown
 	 */
 	public function getOptionsProperty(): array
 	{
-		return [
-			'exif' => __('lychee.OVERLAY_EXIF'),
-			'desc' => __('lychee.OVERLAY_DESCRIPTION'),
-			'date' => __('lychee.OVERLAY_DATE'),
-			'none' => __('lychee.OVERLAY_NONE'),
-		];
+		return ImageOverlayType::localized();
 	}
 
 	/**

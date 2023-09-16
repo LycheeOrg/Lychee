@@ -2,7 +2,7 @@
 
 namespace App\View\Components\Gallery\Album\Thumbs;
 
-use App\Enum\Livewire\AlbumMode;
+use App\Enum\AlbumLayoutType;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
@@ -19,7 +19,7 @@ use LycheeOrg\PhpFlickrJustifiedLayout\DTO\Item;
 class Photo extends Component
 {
 	public string $class_thumbs = '';
-	public AlbumMode $layout;
+	public AlbumLayoutType $layout;
 
 	public string $album_id = '';
 	public string $photo_id = '';
@@ -50,7 +50,7 @@ class Photo extends Component
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function __construct(ModelsPhoto $data, string $albumId, Item|null $geometry, AlbumMode $layout)
+	public function __construct(ModelsPhoto $data, string $albumId, Item|null $geometry, AlbumLayoutType $layout)
 	{
 		$this->layout = $layout;
 		$date_format = Configs::getValueAsString('date_format_photo_thumb');
@@ -64,7 +64,7 @@ class Photo extends Component
 		$this->style = $geometry?->toCSS() ?? '';
 		$this->is_video = $data->isVideo();
 
-		if ($this->layout === AlbumMode::SQUARE) {
+		if ($this->layout === AlbumLayoutType::SQUARE) {
 			$this->setSquareLayout($data);
 
 			return;
