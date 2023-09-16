@@ -3,6 +3,9 @@
 namespace App\Livewire\Components\Modules\Diagnostics;
 
 use App\Actions\Diagnostics\Space as DiagnosticsSpace;
+use App\Models\Configs;
+use App\Policies\SettingsPolicy;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -18,6 +21,9 @@ class Space extends Component
 	 */
 	public function render(): View
 	{
+		if (!Gate::check(SettingsPolicy::CAN_SEE_DIAGNOSTICS, Configs::class)) {
+			$this->space[] = 'Error: You must have administrator rights to see this.';
+		}
 		return view('livewire.modules.diagnostics.space');
 	}
 
@@ -29,6 +35,7 @@ class Space extends Component
 	 */
 	public function getSize(DiagnosticsSpace $space): void
 	{
+		Gate::authorize(SettingsPolicy::CAN_SEE_DIAGNOSTICS, Configs::class);
 		$this->space = $space->get();
 	}
 }
