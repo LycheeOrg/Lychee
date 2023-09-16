@@ -17,7 +17,6 @@
 	x-show="{{ !$is_nsfw ? 'true' : 'false' }} || nsfwAlbumsVisible"
 	{{-- {{ $disabled ? 'disabled' : '' }} --}}
 	data-id='{{ $id }}'
-	data-tabindex='{{ Helpers::data_index() }}'
 	data-nsfw='{{ $is_nsfw ? '1' : '0'}}'>
 	<x-gallery.album.thumbs.album-thumb class="group-hover:border-sky-500 group-hover:-rotate-2 group-hover:-translate-x-3 group-hover:translate-y-2"
 		type="{{ $thumb?->type ?? '' }}" thumb="{{ $thumb?->thumbUrl ?? '' }}" thumb2x="{{ $thumb?->thumb2xUrl ?? '' }}" />

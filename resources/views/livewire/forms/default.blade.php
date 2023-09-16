@@ -11,7 +11,6 @@
 						:has_error="$errors->has('form.' . $f)"
 						autocomplete="on" placeholder="{{ $formLocale[$f] }}"
 						autocapitalize="off"
-						data-tabindex="{{ Helpers::data_index() }}"
 						wire:model="form.{{ $f }}"
 						/>
 						<x-forms.error-message :field="'form.' . $f" />

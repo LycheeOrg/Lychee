@@ -12,11 +12,8 @@
 		xl:ml-6 xl:mt-6
 		w-52 2xl:ml-7 2xl:mt-7' => $layout === \App\Enum\AlbumLayoutType::SQUARE,
 		])
-	 
-	{{-- ${disabled ? `disabled` : ``}'--}}
 	data-album-id='{{ $album_id }}'
 	data-id='{{ $photo_id }}'
-	data-tabindex='{{ Helpers::data_index() }}'
 	wire:navigate
 	>
 	<span class="thumbimg w-full h-full border-none {{ $class_thumbs }}">

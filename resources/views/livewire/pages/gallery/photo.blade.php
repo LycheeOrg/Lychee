@@ -101,7 +101,7 @@
                         class='absolute m-auto w-auto h-auto'
                         x-bind:class="isFullscreen ? 'max-w-full max-h-full' : 'max-wh-full-56' "
                         style='width: {{ $photo->size_variants->getMedium()->width }}px; height: {{ $photo->size_variants->getMedium()->height }}px'
-                        data-tabindex='{{ Helpers::data_index() }}'>
+                        >
                     </div>
                 @else
                     {{-- This is a livephoto : full --}}
@@ -111,7 +111,7 @@
                         class='absolute m-auto w-auto h-auto'
                         x-bind:class="isFullscreen ? 'max-w-full max-h-full' : 'max-wh-full-56' "
                         style='width: {{ $photo->size_variants->getOriginal()->width }}px; height: {{ $photo->size_variants->getOriginal()->height }}px'
-                        data-tabindex='{{ Helpers::data_index() }}'>
+                        >
                     </div>
                 @endif
                 <x-gallery.photo.overlay :photo="$photo" />

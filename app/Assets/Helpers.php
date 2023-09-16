@@ -9,16 +9,6 @@ use function Safe\parse_url;
 
 class Helpers
 {
-	private int $numTab = 0;
-
-	/**
-	 * Initialize the Facade.
-	 */
-	public function __construct()
-	{
-		$this->numTab = 0;
-	}
-
 	/**
 	 * Add UnixTimeStamp to file path suffix.
 	 *
@@ -193,34 +183,6 @@ class Helpers
 			'CC-BY-SA-3.0',
 			'CC-BY-SA-4.0',
 		];
-	}
-
-	/**
-	 * Return incrementing numbers.
-	 */
-	public function data_index(): int
-	{
-		$this->numTab++;
-
-		return $this->numTab;
-	}
-
-	/**
-	 * Reset and return incrementing numbers.
-	 */
-	public function data_index_r(): int
-	{
-		$this->numTab = 1;
-
-		return $this->numTab;
-	}
-
-	/**
-	 * Reset the incrementing number.
-	 */
-	public function data_index_set(int $idx = 0): void
-	{
-		$this->numTab = $idx;
 	}
 
 	/**
