@@ -31,7 +31,7 @@ class SearchResource extends JsonResource
 	 */
 	public function toArray($request)
 	{
-		$albumIds = $this->albums->reduce(fn (string $carry, Album $item) => $carry . $item->id, '');
+		$albumIDs = $this->albums->reduce(fn (string $carry, Album $item) => $carry . $item->id, '');
 		$tagAlbumsIds = $this->tag_albums->reduce(fn (string $carry, TagAlbum $item) => $carry . $item->id, '');
 		$photosIds = $this->photos->reduce(fn (string $carry, Photo $item) => $carry . $item->id, '');
 		// The checksum is used by the web front-end as an efficient way to
@@ -43,7 +43,7 @@ class SearchResource extends JsonResource
 		// next character of a search term although the search result might
 		// stay the same, the GUI would flicker.
 		// The checksum is just over the id, we do not need a full conversion of the data.
-		$checksum = md5($albumIds . $tagAlbumsIds . $photosIds);
+		$checksum = md5($albumIDs . $tagAlbumsIds . $photosIds);
 
 		return [
 			'albums' => AlbumResource::collection($this->albums)->toArray($request),
