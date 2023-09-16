@@ -42,7 +42,7 @@ class AlbumFactory
 	 * Returns an existing instance of an album with the given ID or fails
 	 * with an exception.
 	 *
-	 * @param string $albumId       the ID of the requested album
+	 * @param string $albumID       the ID of the requested album
 	 * @param bool   $withRelations indicates if the relations of an
 	 *                              album (i.e. photos and sub-albums,
 	 *                              if applicable) shall be loaded, too.
@@ -53,21 +53,21 @@ class AlbumFactory
 	 * @throws InvalidSmartIdException should not be thrown; otherwise this
 	 *                                 indicates an internal bug
 	 */
-	public function findAbstractAlbumOrFail(string $albumId, bool $withRelations = true): AbstractAlbum
+	public function findAbstractAlbumOrFail(string $albumID, bool $withRelations = true): AbstractAlbum
 	{
-		$smartAlbumType = SmartAlbumType::tryFrom($albumId);
+		$smartAlbumType = SmartAlbumType::tryFrom($albumID);
 		if ($smartAlbumType !== null) {
 			return $this->createSmartAlbum($smartAlbumType, $withRelations);
 		}
 
-		return $this->findBaseAlbumOrFail($albumId, $withRelations);
+		return $this->findBaseAlbumOrFail($albumID, $withRelations);
 	}
 
 	/**
 	 * Returns an existing model instance of an album with the given ID or
 	 * fails with an exception.
 	 *
-	 * @param string $albumId       the ID of the requested album
+	 * @param string $albumID       the ID of the requested album
 	 * @param bool   $withRelations indicates if the relations of an
 	 *                              album (i.e. photos and sub-albums,
 	 *                              if applicable) shall be loaded, too.
@@ -78,7 +78,7 @@ class AlbumFactory
 	 *
 	 * @noinspection PhpIncompatibleReturnTypeInspection
 	 */
-	public function findBaseAlbumOrFail(string $albumId, bool $withRelations = true): BaseAlbum
+	public function findBaseAlbumOrFail(string $albumID, bool $withRelations = true): BaseAlbum
 	{
 		$albumQuery = Album::query();
 		$tagAlbumQuery = TagAlbum::query();
@@ -91,12 +91,12 @@ class AlbumFactory
 		try {
 			// PHPStan does not understand that `findOrFail` returns `BaseAlbum`, but assumes that it returns `Model`
 			// @phpstan-ignore-next-line
-			return $albumQuery->findOrFail($albumId);
+			return $albumQuery->findOrFail($albumID);
 		} catch (ModelNotFoundException) {
 			try {
-				return $tagAlbumQuery->findOrFail($albumId);
+				return $tagAlbumQuery->findOrFail($albumID);
 			} catch (ModelNotFoundException) {
-				throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, [$albumId]);
+				throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, [$albumID]);
 			}
 		}
 	}
