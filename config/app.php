@@ -264,5 +264,6 @@ return [
 		'User' => App\Models\User::class,
 		'SizeVariantType' => App\Enum\SizeVariantType::class,
 		'FileStatus' => App\Enum\Livewire\FileStatus::class,
+		'Params' => App\Contracts\Livewire\Params::class,
 	])->toArray(),
 ];

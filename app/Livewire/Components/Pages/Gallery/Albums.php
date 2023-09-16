@@ -7,9 +7,8 @@ use App\Contracts\Livewire\Reloadable;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SmartAlbumType;
 use App\Http\Resources\Collections\TopAlbumsResource;
-use App\Livewire\Components\Base\ContextMenu;
 use App\Livewire\DTO\SessionFlags;
-use App\Livewire\Traits\InteractWithModal;
+use App\Livewire\Traits\AlbumsPhotosContextMenus;
 use App\Livewire\Traits\SilentUpdate;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -17,8 +16,8 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Renderless;
 use Livewire\Component;
 
 /**
@@ -27,7 +26,7 @@ use Livewire\Component;
  */
 class Albums extends Component implements Reloadable
 {
-	use InteractWithModal;
+	use AlbumsPhotosContextMenus;
 	use SilentUpdate;
 
 	private TopAlbumsResource $topAlbums;
@@ -37,6 +36,9 @@ class Albums extends Component implements Reloadable
 	public string $title;
 
 	public bool $can_use_2fa;
+
+	#[Locked]
+	public ?string $albumId = null;
 
 	/**
 	 * Render component.
@@ -85,29 +87,5 @@ class Albums extends Component implements Reloadable
 	public function getSharedAlbumsProperty(): Collection
 	{
 		return $this->topAlbums->shared_albums;
-	}
-
-	/**
-	 * When no albums are present we simply open the login modal.
-	 * [Renderless] indicates that we do not need to call render() on this component.
-	 *
-	 * @return void
-	 */
-	// #[Renderless]
-	// public function openLoginModal(): void
-	// {
-	// 	$this->openModal('modals.login');
-	// }
-
-	/**
-	 * Open the context menu.
-	 * [Renderless] indicates that we do not need to call render() on this component.
-	 *
-	 * @return void
-	 */
-	#[Renderless]
-	public function openContextMenu(): void
-	{
-		$this->dispatch('openContextMenu', 'menus.AlbumAdd', 30, 30, ['parentId' => null])->to(ContextMenu::class);
 	}
 }

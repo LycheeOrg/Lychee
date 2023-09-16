@@ -3,6 +3,7 @@
 namespace App\Livewire\Components\Pages\Gallery;
 
 use App\Actions\Photo\Strategies\RotateStrategy;
+use App\Contracts\Livewire\Params;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\ImageOverlayType;
 use App\Factories\AlbumFactory;
@@ -139,11 +140,11 @@ class Photo extends Component
 
 	public function move(): void
 	{
-		$this->openModal('forms.photo.move', ['photoIds' => $this->photo->id, 'albumId' => $this->albumId]);
+		$this->openModal('forms.photo.move', [Params::PHOTO_IDS => [$this->photo->id], Params::ALBUM_ID => $this->albumId]);
 	}
 
 	public function delete(): void
 	{
-		$this->openModal('forms.photo.delete', ['photoId' => $this->photo->id, 'albumId' => $this->albumId]);
+		$this->openModal('forms.photo.delete', [Params::PHOTO_IDS => [$this->photo->id], Params::ALBUM_ID => $this->albumId]);
 	}
 }

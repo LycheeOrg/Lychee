@@ -3,8 +3,9 @@
 namespace App\Livewire\Components\Forms\Add;
 
 use App\Actions\Import\FromServer;
+use App\Contracts\Livewire\Params;
 use App\Contracts\Models\AbstractAlbum;
-use App\Livewire\Forms\ImportForm;
+use App\Livewire\Forms\ImportFromServerForm;
 use App\Livewire\Traits\InteractWithModal;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Auth;
@@ -14,17 +15,16 @@ use Livewire\Component;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
- * This defines the Login Form used in modals.
+ * This defines the Import From Server modals.
  */
 class ImportFromServer extends Component
 {
-	/*
-	 * Allow modal integration
+	/**
+	 * Allow modal integration.
 	 */
 	use InteractWithModal;
 
-	public ImportForm $form;
-
+	public ImportFromServerForm $form;
 	private FromServer $fromServer;
 
 	public function boot(): void
@@ -35,15 +35,15 @@ class ImportFromServer extends Component
 	/**
 	 * We load the parameters.
 	 *
-	 * @param array $params set of parameters of the form
+	 * @param array{parentID:?string} $params set of parameters of the form
 	 *
 	 * @return void
 	 */
 	public function mount(array $params = []): void
 	{
-		Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, AbstractAlbum::class);
+		Gate::authorize(AlbumPolicy::CAN_IMPORT_FROM_SERVER, AbstractAlbum::class);
 
-		$this->form->init($params['parentId'] ?? null);
+		$this->form->init($params[Params::PARENT_ID] ?? null);
 	}
 
 	/**
@@ -73,7 +73,7 @@ class ImportFromServer extends Component
 	 */
 	public function submit(): StreamedResponse
 	{
-		Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, AbstractAlbum::class);
+		Gate::authorize(AlbumPolicy::CAN_IMPORT_FROM_SERVER, AbstractAlbum::class);
 
 		// Empty error bag
 		$this->resetErrorBag();

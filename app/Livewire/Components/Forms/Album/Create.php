@@ -3,28 +3,31 @@
 namespace App\Livewire\Components\Forms\Album;
 
 use App\Actions\Album\Create as AlbumCreate;
-use App\Contracts\Http\Requests\RequestAttribute;
+use App\Contracts\Livewire\Params;
 use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\RuleSets\AddAlbumRuleSet;
-use App\Livewire\Components\Forms\BaseForm;
-use App\Livewire\Components\Pages\Gallery\Album as PagesGalleryAlbum;
-use App\Livewire\Components\Pages\Gallery\Albums as PagesGalleryAlbums;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\View\View;
+use Livewire\Attributes\Locked;
+use Livewire\Component;
 
 /**
- * The Album Create MODAL extends directly from BaseForm.
+ * The Create Album Modal.
  */
-class Create extends BaseForm
+class Create extends Component
 {
-	/*
-	 * Allow modal integration
+	/**
+	 * Allow modal integration.
 	 */
 	use InteractWithModal;
+
+	#[Locked] public ?string $parentId;
+	public string $title = '';
 
 	/**
 	 * This defines the set of validation rules to be applied on the input.
@@ -32,7 +35,7 @@ class Create extends BaseForm
 	 *
 	 * @return array
 	 */
-	protected function getRuleSet(): array
+	protected function rules(): array
 	{
 		return AddAlbumRuleSet::rules();
 	}
@@ -46,20 +49,17 @@ class Create extends BaseForm
 	 */
 	public function mount(array $params = []): void
 	{
-		parent::mount($params);
-		$this->title = __('lychee.TITLE_NEW_ALBUM');
-		$this->validate = __('lychee.CREATE_ALBUM');
-		$this->cancel = __('lychee.CANCEL');
-		// Localization
-		$this->formLocale = [
-			RequestAttribute::TITLE_ATTRIBUTE => __('lychee.UNTITLED'),
-		];
-		// values
-		$this->form = [
-			RequestAttribute::TITLE_ATTRIBUTE => '',
-			RequestAttribute::PARENT_ID_ATTRIBUTE => $params['parentId'],
-		];
-		$this->formHidden = [RequestAttribute::PARENT_ID_ATTRIBUTE];
+		$this->parentId = $params[Params::PARENT_ID];
+	}
+
+	/**
+	 * Call the parametrized rendering.
+	 *
+	 * @return View
+	 */
+	public function render(): View
+	{
+		return view('livewire.forms.add.create');
 	}
 
 	/**
@@ -73,12 +73,10 @@ class Create extends BaseForm
 		$this->resetErrorBag();
 
 		// Validate
-		$values = $this->validate()['form'];
-		$parentAlbumID = $values[RequestAttribute::PARENT_ID_ATTRIBUTE];
-		$title = $values[RequestAttribute::TITLE_ATTRIBUTE];
+		$this->validate();
 
 		/** @var Album|null $parentAlbum */
-		$parentAlbum = $parentAlbumID === null ? null : Album::query()->findOrFail($parentAlbumID);
+		$parentAlbum = $this->parentId === null ? null : Album::query()->findOrFail($this->parentId);
 
 		// Authorize
 		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $parentAlbum]);
@@ -86,12 +84,20 @@ class Create extends BaseForm
 		/** @var int $ownerId */
 		$ownerId = Auth::id() ?? throw new UnauthenticatedException();
 		$create = new AlbumCreate($ownerId);
-		$create->create($title, $parentAlbum);
+		$new_album = $create->create($this->title, $parentAlbum);
 
 		// Do we want refresh or direcly open newly created Album ?
-		$this->dispatch('reload')->to(PagesGalleryAlbums::class);
-		$this->dispatch('reload')->to(PagesGalleryAlbum::class);
-
 		$this->close();
+		$this->redirect(route('livewire-gallery-album', ['albumId' => $new_album->id]), true);
+	}
+
+	/**
+	 * Add an handle to close the modal form from a user-land call.
+	 *
+	 * @return void
+	 */
+	public function close(): void
+	{
+		$this->closeModal();
 	}
 }

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Forms\Add;
 
+use App\Contracts\Livewire\Params;
 use App\Enum\Livewire\FileStatus;
 use App\Exceptions\PhotoSkippedException;
 use App\Facades\Helpers;
@@ -41,13 +42,13 @@ class Upload extends Component
 	/**
 	 * Mount the component.
 	 *
-	 * @param array $params
+	 * @param array{parentID:?string} $params
 	 *
 	 * @return void
 	 */
 	public function mount(array $params = []): void
 	{
-		$this->albumId = $params['parentId'] ?? null;
+		$this->albumId = $params[Params::PARENT_ID] ?? null;
 		$this->chunkSize = self::getUploadLimit();
 		$this->parallelism = Configs::getValueAsInt('upload_processing_limit');
 	}

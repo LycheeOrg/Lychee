@@ -11,7 +11,7 @@ use Livewire\Form;
 use function Safe\preg_replace;
 use function Safe\preg_split;
 
-class ImportForm extends Form
+class ImportFromServerForm extends Form
 {
 	public ?string $albumID;
 	public string $path;

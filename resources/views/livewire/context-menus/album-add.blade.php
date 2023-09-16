@@ -10,7 +10,7 @@
 	@endcan
 	<x-context-menu.separator />
 	<x-context-menu.item wire:click='openAlbumCreateModal' icon='folder'>{{ __('lychee.NEW_ALBUM') }}</x-context-menu.item>
-	@if($params['parentId'] === null)
+	@if($params[Params::PARENT_ID] === null)
 	<x-context-menu.item wire:click='openTagAlbumCreateModal' icon='tags'>{{ __('lychee.NEW_TAG_ALBUM') }}</x-context-menu.item>
 	@endif
 </div>

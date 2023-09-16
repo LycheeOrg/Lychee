@@ -2,16 +2,11 @@
 
 namespace App\Livewire\DTO;
 
-use App\DTO\ArrayableDTO;
-use App\Livewire\Traits\UseWireable;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Session;
-use Livewire\Wireable;
 
-class SessionFlags extends ArrayableDTO implements Wireable
+class SessionFlags
 {
-	use UseWireable;
-
 	public function __construct(
 		public bool $can_fullscreen,
 		public bool $is_fullscreen,

@@ -2,13 +2,12 @@
 
 namespace App\Livewire\DTO;
 
-use App\DTO\ArrayableDTO;
 use App\Enum\AlbumLayoutType;
 use App\Livewire\Traits\UseWireable;
 use App\Models\Configs;
 use Livewire\Wireable;
 
-class AlbumFlags extends ArrayableDTO implements Wireable
+class AlbumFlags implements Wireable
 {
 	use UseWireable;
 

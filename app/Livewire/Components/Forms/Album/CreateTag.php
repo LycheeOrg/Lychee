@@ -3,25 +3,37 @@
 namespace App\Livewire\Components\Forms\Album;
 
 use App\Actions\Album\CreateTagAlbum;
-use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
+use App\Exceptions\UnauthenticatedException;
 use App\Http\RuleSets\Album\AddTagAlbumRuleSet;
-use App\Livewire\Components\Forms\BaseForm;
-use App\Livewire\Components\Pages\Gallery\Album as PagesGalleryAlbum;
-use App\Livewire\Components\Pages\Gallery\Albums as PagesGalleryAlbums;
 use App\Livewire\Traits\InteractWithModal;
+use App\Models\Album;
 use App\Policies\AlbumPolicy;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\View\View;
+use Livewire\Attributes\Locked;
+use Livewire\Component;
 
 /**
- * The Tag Album Create MODAL extends directly from BaseForm.
+ * The CreateTag Album Modal.
  */
-class CreateTag extends BaseForm
+class CreateTag extends Component
 {
-	/*
-	 * Allow modal integration
+	/**
+	 * Allow modal integration.
 	 */
 	use InteractWithModal;
+
+	private CreateTagAlbum $create;
+
+	public string $title = '';
+	public string $tag = '';
+	#[Locked] public array $tags = [];
+	public function boot()
+	{
+		$this->create = resolve(CreateTagAlbum::class);
+	}
 
 	/**
 	 * This defines the set of validation rules to be applied on the input.
@@ -29,7 +41,7 @@ class CreateTag extends BaseForm
 	 *
 	 * @return array
 	 */
-	protected function getRuleSet(): array
+	protected function rules(): array
 	{
 		return AddTagAlbumRuleSet::rules();
 	}
@@ -43,22 +55,16 @@ class CreateTag extends BaseForm
 	 */
 	public function mount(array $params = []): void
 	{
-		parent::mount($params);
-		$this->title = __('lychee.ALBUM_NEW_TITLE');
-		$this->validate = __('lychee.CREATE_TAG_ALBUM');
-		$this->cancel = __('lychee.CANCEL');
-		// Localization
-		$this->formLocale = [
-			RequestAttribute::TITLE_ATTRIBUTE => __('lychee.UNTITLED'),
-			RequestAttribute::TAGS_ATTRIBUTE => __('lychee.PHOTO_TAGS'),
-		];
+	}
 
-		// values
-		$this->form = [
-			RequestAttribute::TITLE_ATTRIBUTE => '',
-			RequestAttribute::TAGS_ATTRIBUTE => '',
-		];
-		$this->formHidden = [RequestAttribute::PARENT_ID_ATTRIBUTE];
+	/**
+	 * Call the parametrized rendering.
+	 *
+	 * @return View
+	 */
+	public function render(): View
+	{
+		return view('livewire.forms.add.create-tag');
 	}
 
 	/**
@@ -71,25 +77,32 @@ class CreateTag extends BaseForm
 		// Reset error bag
 		$this->resetErrorBag();
 
-		// prepare
-		// TODO: Refactor tags rules.
-		$this->form[RequestAttribute::TAGS_ATTRIBUTE] = explode(',', $this->form[RequestAttribute::TAGS_ATTRIBUTE]);
+		$this->tags = explode(',', $this->tag);
 
 		// Validate
-		$values = $this->validate()['form'];
-		$tags = $values[RequestAttribute::TAGS_ATTRIBUTE];
-		$title = $values[RequestAttribute::TITLE_ATTRIBUTE];
+		$this->validate();
 
 		// Authorize
 		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, null]);
 
+		/** @var int $ownerId */
+		$ownerId = Auth::id() ?? throw new UnauthenticatedException();
+
 		// Create
-		resolve(CreateTagAlbum::class)->create($title, $tags);
+		$new_album = $this->create->create($this->title, $this->tags);
 
 		// Do we want refresh or direcly open newly created Album ?
-		$this->dispatch('reload')->to(PagesGalleryAlbums::class);
-		$this->dispatch('reload')->to(PagesGalleryAlbum::class);
-
 		$this->close();
+		$this->redirect(route('livewire-gallery-album', ['albumId' => $new_album->id]), true);
+	}
+
+	/**
+	 * Add an handle to close the modal form from a user-land call.
+	 *
+	 * @return void
+	 */
+	public function close(): void
+	{
+		$this->closeModal();
 	}
 }

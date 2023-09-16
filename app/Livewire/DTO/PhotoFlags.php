@@ -2,11 +2,10 @@
 
 namespace App\Livewire\DTO;
 
-use App\DTO\ArrayableDTO;
 use App\Livewire\Traits\UseWireable;
 use Livewire\Wireable;
 
-class PhotoFlags extends ArrayableDTO implements Wireable
+class PhotoFlags implements Wireable
 {
 	use UseWireable;
 
