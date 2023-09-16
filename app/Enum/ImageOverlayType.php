@@ -29,5 +29,4 @@ enum ImageOverlayType: string
 			self::NONE->value => __('lychee.OVERLAY_NONE'),
 		];
 	}
-
 }

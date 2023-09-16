@@ -31,5 +31,4 @@ enum AlbumLayoutType: string
 			self::GRID->value => __('lychee.LAYOUT_GRID'),
 		];
 	}
-
 }
