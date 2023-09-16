@@ -54,7 +54,7 @@ return new class() extends Migration {
 			0 => self::SQUARE,
 			1 => self::JUSTIFIED,
 			2 => self::UNJUSTIFIED,
-            default => self::JUSTIFIED,
+			default => self::JUSTIFIED,
 		};
 	}
 
@@ -64,7 +64,7 @@ return new class() extends Migration {
 			self::SQUARE => 0,
 			self::JUSTIFIED => 1,
 			self::UNJUSTIFIED => 2,
-            default => 1,
+			default => 1,
 		};
 	}
 };
