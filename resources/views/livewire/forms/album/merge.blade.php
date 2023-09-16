@@ -18,7 +18,7 @@
             </x-forms.buttons.action>
         </div>
     @else
-        <div class="w-full">
+        <div class="p-9">
             <div class="w-full">
                 <span class="font-bold">
                     {{ __('lychee.MERGE_ALBUM') }} into

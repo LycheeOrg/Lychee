@@ -18,7 +18,7 @@
             </x-forms.buttons.action>
         </div>
     @else
-        <div class="w-full">
+        <div class="p-9">
             <div class="w-full">
                 <span class="font-bold">
                     {{ $num === 1 ? __('lychee.MOVE_ALBUM') : __('lychee.MOVE_ALBUMS') }} to
