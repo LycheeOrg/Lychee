@@ -7,8 +7,6 @@ use App\Contracts\Livewire\Params;
 use App\Enum\SmartAlbumType;
 use App\Http\RuleSets\Photo\MovePhotosRuleSet;
 use App\Livewire\Traits\InteractWithModal;
-use App\Livewire\Traits\Notify;
-use App\Livewire\Traits\UseValidator;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
@@ -23,8 +21,6 @@ class Move extends Component
 {
 	use InteractWithModal;
 	use AuthorizesRequests;
-	use UseValidator;
-	use Notify;
 
 	#[Locked] public string $parent_id;
 	/** @var array<int,string> */

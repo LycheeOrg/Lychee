@@ -1,14 +1,12 @@
 <div>
     <div class="p-9">
-        <p class="mb-5 text-neutral-200 text-sm/4">{{ __('lychee.NEW_TAG_ALBUM') }}</p>
+        <p class="mb-5 text-neutral-200 text-sm/4">
+            {{ count($photoIDs) === 1 ? __('lychee.PHOTO_NEW_TITLE') : sprintf(__('lychee.PHOTOS_NEW_TITLE'), count($photoIDs)) }}
+        </p>
         <form>
             <div class="my-3 first:mt-0 last:mb-0">
                 <x-forms.inputs.text class="w-full" autocapitalize="off" wire:model="title"
                     placeholder="{{ __('lychee.UNTITLED') }}" :has_error="$errors->has('title')" />
-            </div>
-            <div class="my-3 first:mt-0 last:mb-0">
-                <x-forms.inputs.text class="w-full" autocapitalize="off" wire:model="tag"
-                    placeholder="{{ __('lychee.PHOTO_TAGS') }}" :has_error="$errors->has('tags')" />
             </div>
         </form>
     </div>
@@ -17,6 +15,6 @@
             wire:click="close">{{ __('lychee.CANCEL') }}</x-forms.buttons.cancel>
         <x-forms.buttons.action class="border-t border-t-dark-800 rounded-br-md w-full"
             @keydown.enter.window="$wire.submit()"
-            wire:click="submit">{{ __('lychee.CREATE_TAG_ALBUM') }}</x-forms.buttons.action>
+            wire:click="submit">{{ count($photoIDs) === 1 ? __('lychee.RENAME') : __('lychee.RENAME_ALL') }}</x-forms.buttons.action>
     </div>
 </div>

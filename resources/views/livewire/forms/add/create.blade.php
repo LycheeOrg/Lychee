@@ -12,6 +12,7 @@
         <x-forms.buttons.cancel class="border-t border-t-dark-800 rounded-bl-md w-full"
             wire:click="close">{{ __('lychee.CANCEL') }}</x-forms.buttons.cancel>
         <x-forms.buttons.action class="border-t border-t-dark-800 rounded-br-md w-full"
+            @keydown.enter.window="$wire.submit()"
             wire:click="submit">{{ __('lychee.CREATE_ALBUM') }}</x-forms.buttons.action>
     </div>
 </div>

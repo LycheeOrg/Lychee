@@ -3,9 +3,13 @@
 namespace App\Livewire\Components\Menus;
 
 use App\Contracts\Livewire\Params;
+use App\Livewire\Components\Pages\Gallery\Album as GalleryAlbum;
 use App\Livewire\Traits\InteractWithContextMenu;
 use App\Livewire\Traits\InteractWithModal;
+use App\Models\Photo;
+use App\Policies\PhotoPolicy;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -32,25 +36,35 @@ class PhotosDropdown extends Component
 	public function starAll(): void
 	{
 		$this->closeContextMenu();
-		// $this->openModal('forms.add.upload', $this->params);
+		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->params[Params::PHOTO_IDS]]);
+		Photo::whereIn('id', $this->params[Params::PHOTO_IDS])->update(['is_starred' => true]);
+		$this->dispatch('reloadPage')->to(GalleryAlbum::class);
+	}
+
+	public function unstarAll(): void
+	{
+		$this->closeContextMenu();
+		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->params[Params::PHOTO_IDS]]);
+		Photo::whereIn('id', $this->params[Params::PHOTO_IDS])->update(['is_starred' => false]);
+		$this->dispatch('reloadPage')->to(GalleryAlbum::class);
 	}
 
 	public function tagAll(): void
 	{
 		$this->closeContextMenu();
-		// $this->openModal('forms.add.upload', $this->params);
+		$this->openModal('forms.photo.tag', [Params::PHOTO_IDS => $this->params[Params::PHOTO_IDS], Params::ALBUM_ID => $this->params[Params::ALBUM_ID]]);
 	}
 
 	public function renameAll(): void
 	{
 		$this->closeContextMenu();
-		// $this->openModal('forms.add.upload', $this->params);
+		$this->openModal('forms.photo.rename', [Params::PHOTO_IDS => $this->params[Params::PHOTO_IDS], Params::ALBUM_ID => $this->params[Params::ALBUM_ID]]);
 	}
 
 	public function copyAllTo(): void
 	{
 		$this->closeContextMenu();
-		// $this->openModal('forms.add.upload', $this->params);
+		$this->openModal('forms.photo.copy-to', [Params::PHOTO_IDS => $this->params[Params::PHOTO_IDS], Params::ALBUM_ID => $this->params[Params::ALBUM_ID]]);
 	}
 
 	public function moveAll(): void

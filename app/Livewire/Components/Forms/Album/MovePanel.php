@@ -16,7 +16,7 @@ use Illuminate\Support\Collection;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
-class Move extends Component
+class MovePanel extends Component
 {
 	use AuthorizesRequests;
 	use UseValidator;
@@ -69,7 +69,7 @@ class Move extends Component
 	 */
 	public function render(): View
 	{
-		return view('livewire.forms.album.move');
+		return view('livewire.forms.album.move-panel');
 	}
 
 	/**

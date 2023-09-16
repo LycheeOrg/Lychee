@@ -13,6 +13,6 @@
             wire:click="close">{{ __('lychee.PHOTO_KEEP') }}</x-forms.buttons.cancel>
         <x-forms.buttons.danger class="border-t border-t-dark-800 rounded-br-md w-full"
             @keydown.enter.window="$wire.submit()"
-            wire:click="submit">{{ __('lychee.PHOTO_DELETE') }}</x-forms.buttons.action>
+            wire:click="submit">{{ count($photoIDs) === 1 ? __('lychee.PHOTO_DELETE') : __('lychee.DELETE_ALL') }}</x-forms.buttons.action>
     </div>
 </div>
