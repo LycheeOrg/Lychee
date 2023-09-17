@@ -10,6 +10,7 @@ use App\Factories\AlbumFactory;
 use App\Livewire\DTO\PhotoFlags;
 use App\Livewire\DTO\SessionFlags;
 use App\Livewire\Traits\InteractWithModal;
+use App\Livewire\Traits\SilentUpdate;
 use App\Models\Configs;
 use App\Models\Photo as PhotoModel;
 use App\Policies\AlbumPolicy;
@@ -27,6 +28,8 @@ use Livewire\Component;
 class Photo extends Component
 {
 	use InteractWithModal;
+	use SilentUpdate;
+
 	private AlbumFactory $albumFactory;
 
 	#[Locked]

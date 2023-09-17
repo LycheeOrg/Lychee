@@ -5,6 +5,7 @@ import "mousetrap-global-bind";
 import { loginWebAuthn, registerWebAuthn } from "./lycheeOrg/webauthn.js";
 import { upload } from "./lycheeOrg/upload.js";
 import { albumView } from "./lycheeOrg/albumView.js";
+import { photoView } from "./lycheeOrg/photoView.js";
 
 // Keyboard
 Mousetrap.addKeycodes({
@@ -19,6 +20,7 @@ document.addEventListener("alpine:init", () => {
 	Alpine.data("registerWebAuthn", registerWebAuthn);
 	Alpine.data("upload", upload);
 	Alpine.data("albumView", albumView);
+	Alpine.data("photoView", photoView);
 });
 
 // Alpine.bind('openLeftMenu', () => ({ '@click'() { leftMenuOpen = ! leftMenuOpen }}))

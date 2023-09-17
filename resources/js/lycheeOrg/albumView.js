@@ -4,7 +4,7 @@ export default { albumView };
 
 export function albumView(nsfwAlbumsVisible_val, isFullscreen_val) {
 	return {
-		loginModalOpen:false,
+		loginModalOpen: false,
 		selectedPhotos: [],
 		selectedAlbums: [],
 		detailsOpen: false,
@@ -104,9 +104,9 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val) {
 			}
 
 			// l
-			if (event.keyCode === 76) { this.loginModalOpen = true }
-
-
+			if (event.keyCode === 76) {
+				this.loginModalOpen = true;
+			}
 		},
 	};
 }

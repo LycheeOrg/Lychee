@@ -1,13 +1,9 @@
-<div class="w-full flex flex-col" x-data="{
-    detailsOpen: $wire.entangle('sessionFlags.are_photo_details_open'),
-    isFullscreen: $wire.entangle('sessionFlags.is_fullscreen'),
-    editOpen: false,
-    donwloadOpen: false
-}"
-    @keydown.window="
-        if (event.keyCode === 70 && $focus.focused() === undefined) { event.preventDefault(); isFullscreen = ! isFullscreen }
-    "
-    {{-- 70 = f --}}>
+<div class="w-full flex flex-col" x-data="photoView(
+    $wire.entangle('sessionFlags.are_photo_details_open'),
+    @entangle('sessionFlags.is_fullscreen'),
+    {{ $photo->description !== null ? 'true' : 'false' }},
+    '{{ $overlayType }}')"
+    @keydown.window="handleKeydown(event, $wire, $focus)">
     <!-- toolbar -->
     <x-header.bar class="opacity-0" x-bind:class="isFullscreen ? 'opacity-0 h-0' : 'opacity-100 h-14'">
         <x-header.back />
@@ -27,42 +23,19 @@
         @endcan
         @can(App\Policies\PhotoPolicy::CAN_EDIT, [App\Models\Photo::class, $photo])
             <x-header.button x-on:click="editOpen = ! editOpen" icon="pencil" fill=""
-                @keydown.window="if (event.keyCode === 69 && $focus.focused() === undefined) { event.preventDefault(); editOpen = ! editOpen }"
-                {{-- 69 = e --}} x-bind:class="editOpen ? 'fill-sky-500' : 'fill-neutral-400'" />
+                x-bind:class="editOpen ? 'fill-sky-500' : 'fill-neutral-400'" />
         @endcan
         <x-header.button x-on:click="detailsOpen = ! detailsOpen" icon="info" fill=""
             @class([
                 'fill-sky-500' => $sessionFlags->are_photo_details_open,
                 'fill-neutral-400' => !$sessionFlags->are_photo_details_open,
-            ])
-            @keydown.window="if (event.keyCode === 73 && $focus.focused() === undefined) { event.preventDefault(); detailsOpen = ! detailsOpen }"
-            {{-- 73 = i --}} x-bind:class="detailsOpen ? 'fill-sky-500' : 'fill-neutral-400'" />
+            ]) x-bind:class="detailsOpen ? 'fill-sky-500' : 'fill-neutral-400'" />
 
     </x-header.bar>
     <div class="w-full flex h-full overflow-hidden bg-black">
         <div class="w-0 flex-auto relative">
             <div id="imageview" class="absolute top-0 left-0 w-full h-full bg-black flex items-center justify-center"
-                x-data="{
-                    has_description: {{ $photo->description !== null ? 'true' : 'false' }},
-                    overlayType: '{{ $overlayType }}',
-                    rotateOverlay() {
-                        switch (this.overlayType) {
-                            case 'exif':
-                                this.overlayType = 'date';
-                                break;
-                            case 'date':
-                                if (this.has_description) { this.overlayType = 'description'; } else { this.overlayType = 'none'; }
-                                break;
-                            case 'description':
-                                this.overlayType = 'none';
-                                break;
-                            default:
-                                this.overlayType = 'exif';
-                        }
-                    }
-                }"
-                @keydown.window="if (event.keyCode === 79 && $focus.focused() === undefined) { rotateOverlay() }"
-                {{-- 79 - o --}} x-on:click="rotateOverlay()">
+                x-on:click="rotateOverlay()">
                 @if ($photo->isVideo())
                     {{-- This is a video file: put html5 player --}}
                     <x-gallery.photo.video-panel :flags="$flags"
@@ -128,24 +101,17 @@
                     <span class="absolute top-7 left-1/2 -translate-x-1/2 p-1 min-w-[25%] text-center">
                         <x-gallery.photo.button icon="star"
                             class="{{ $photo->is_starred ? 'fill-yellow-500 hover:fill-yellow-100' : 'fill-white hover:fill-yellow-500' }}"
-                            x-on:click="$wire.set_star()" @keydown.window="if (event.keyCode === 83) { $wire.set_star(); }"
-                            {{-- 83 = s --}} />
+                            x-on:click="$wire.set_star()" />
                         @if ($flags->can_rotate)
                             <x-gallery.photo.button icon="counterclockwise" class="fill-white hover:fill-sky-500"
-                                @keydown.window="if (event.keyCode === 37 && event.ctrlKey) { $wire.rotate_ccw(); }"
-                                {{-- 37 = left arrow --}} />
+                                x-on:click="$wire.ccw()" />
                             <x-gallery.photo.button icon="clockwise" class="fill-white hover:fill-sky-500"
-                                @keydown.window="if (event.keyCode === 39 && event.ctrlKey) { $wire.rotate_cw(); }"
-                                {{-- 39 = right arrow --}} />
+                                x-on:click="$wire.cw()" />
                         @endif
                         <x-gallery.photo.button icon="transfer" class="fill-white hover:fill-sky-500"
-                            x-on:click="$wire.move()"
-                            @keydown.window="if (event.ctrlKey && (event.keyCode === 77)) { $wire.move(); }"
-                            {{-- 77 = m --}} />
+                            x-on:click="$wire.move()" />
                         <x-gallery.photo.button icon="trash" class="fill-white hover:fill-red-600"
-                            x-on:click="$wire.delete()"
-                            @keydown.window="if (event.ctrlKey && (event.keyCode === 46 || event.keyCode === 8)) { $wire.delete(); }"
-                            {{-- 46 = dell, 8 = backspace --}} />
+                            x-on:click="$wire.delete()" />
                     </span>
                 </div>
             @endcan
