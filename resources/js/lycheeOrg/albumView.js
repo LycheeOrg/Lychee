@@ -9,7 +9,7 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 		loginModalOpen: false,
 		selectedPhotos: [],
 		selectedAlbums: [],
-		parent_id:  parent_id_val,
+		parent_id: parent_id_val,
 		canEdit: canEdit_val,
 		detailsOpen: false,
 		detailsActiveTab: 0,
@@ -126,7 +126,7 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 				if (this.detailsOpen) {
 					event.preventDefault();
 					this.detailsOpen = false;
-				} else if(this.parent_id !== null) {
+				} else if (this.parent_id !== null) {
 					event.preventDefault();
 					wire.back();
 				}
@@ -144,28 +144,23 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 					console.log("select all albums (flip)");
 					this.selectedAlbums = [];
 					this.selectedPhotos = this.photoIDs;
-				}
-				else if (this.selectedPhotos.length === this.photoIDs.length && this.photoIDs.length > 1) {
+				} else if (this.selectedPhotos.length === this.photoIDs.length && this.photoIDs.length > 1) {
 					console.log("select all photos (flip)");
 					this.selectedPhotos = [];
 					this.selectedAlbums = this.albumIDs;
-				}
-				else if (this.selectedAlbums.length > 1) {
+				} else if (this.selectedAlbums.length > 1) {
 					console.log("select all albums");
 					this.selectedAlbums = this.albumIDs;
 					this.selectedPhotos = [];
-				}
-				else if(this.selectedPhotos.length > 1) {
+				} else if (this.selectedPhotos.length > 1) {
 					console.log("select all photos");
 					this.selectedPhotos = this.photoIDs;
 					this.selectedAlbums = [];
-				}
-				else if(this.albumIDs.length > 1) {
+				} else if (this.albumIDs.length > 1) {
 					console.log("select all albums");
 					this.selectedAlbums = this.albumIDs;
 					this.selectedPhotos = [];
-				}
-				else {
+				} else {
 					console.log("select all photos");
 					this.selectedPhotos = this.photoIDs;
 					this.selectedAlbums = [];
@@ -175,20 +170,20 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 			// n
 			if (event.keyCode === 78 && !this.detailsOpen) {
 				event.preventDefault();
-				const params = ["forms.album.create", "", {"parentID": this.parent_id}];
-				wire.$dispatch('openModal', params);
+				const params = ["forms.album.create", "", { parentID: this.parent_id }];
+				wire.$dispatch("openModal", params);
 			}
-			
+
 			// u
 			if (event.keyCode === 85 && !this.detailsOpen) {
 				event.preventDefault();
-				const params = ["forms.add.upload", "", {"parentID": this.parent_id}];
-				wire.$dispatch('openModal', params);
+				const params = ["forms.add.upload", "", { parentID: this.parent_id }];
+				wire.$dispatch("openModal", params);
 			}
 
 			// Following this point only if we are not in root.
 			if (this.parent_id === null) {
-				console.log("root")
+				console.log("root");
 				return;
 			}
 
