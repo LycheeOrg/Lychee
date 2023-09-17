@@ -22,8 +22,7 @@ use function Safe\set_time_limit;
 use function Safe\stream_copy_to_stream;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use ZipStream\Option\File as ZipFileOption;
-use ZipStream\Option\Method as ZipMethod;
+use ZipStream\CompressionMethod as ZipMethod;
 use ZipStream\ZipStream;
 
 class Archive
@@ -142,10 +141,7 @@ class Archive
 		$this->deflateLevel = Configs::getValueAsInt('zip_deflate_level');
 
 		$responseGenerator = function () use ($downloadVariant, $photos) {
-			$options = new \ZipStream\Option\Archive();
-			$options->setEnableZip64(Configs::getValueAsBool('zip64'));
-			$options->setZeroHeader(true);
-			$zip = new ZipStream(null, $options);
+			$zip = new ZipStream(enableZip64: true, defaultEnableZeroHeader: true);
 
 			// We first need to scan the whole array of files to avoid
 			// problems with duplicate file names.
@@ -236,10 +232,9 @@ class Archive
 						);
 					} while (array_key_exists($filename, $uniqueFilenames));
 				}
-				$zipFileOption = new ZipFileOption();
-				$zipFileOption->setMethod($this->deflateLevel === -1 ? ZipMethod::STORE() : ZipMethod::DEFLATE());
-				$zipFileOption->setDeflateLevel($this->deflateLevel);
-				$zip->addFileFromStream($filename, $archiveFileInfo->getFile()->read(), $zipFileOption);
+				$zip->addFileFromStream(fileName: $filename, stream: $archiveFileInfo->getFile()->read(),
+					compressionMethod: $this->deflateLevel === -1 ? ZipMethod::STORE : ZipMethod::DEFLATE,
+					deflateLevel: $this->deflateLevel);
 				$archiveFileInfo->getFile()->close();
 				// Reset the execution timeout for every iteration.
 				try {
