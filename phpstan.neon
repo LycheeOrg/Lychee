@@ -73,9 +73,6 @@ parameters:
 		# False positive as stub code for PHP has not yet been updated to 2nd parameter, see https://github.com/php/doc-en/issues/1529 and https://www.php.net/imagick.writeimagefile
 		- '#Method Imagick::writeImageFile\(\) invoked with 2 parameters, 1 required#'
 
-		# False positive from maennchen/ZipStream
-		- '#Call to an undefined static method ZipStream\\Option\\Method::(STORE|DEFLATE)\(\)#'
-
 		# Migrations
 		-
 			message: '#Function define is unsafe to use.#'
