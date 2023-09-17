@@ -11,6 +11,7 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\Thumb;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
+use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\View\Component;
 
 class Album extends Component
@@ -27,7 +28,7 @@ class Album extends Component
 	public string $subType;
 
 	public bool $is_tag_album;
-	public bool $has_cover_id;
+	public bool $is_cover_id;
 	public bool $has_subalbum;
 
 	public string $created_at = '';
@@ -61,9 +62,8 @@ class Album extends Component
 		$this->is_password_required = $policy->is_password_required;
 
 		$this->is_tag_album = $data instanceof TagAlbum;
-		// TODO : FIX ME This is incorrect. We should compare with the parent and not the current album.
 		// This aims to indicate whether the current thumb is used to determine the parent.
-		$this->has_cover_id = $data instanceof AlbumModel && $data->cover_id !== null && $data->cover_id === $data->thumb->id;
+		$this->is_cover_id = $data instanceof AlbumModel && $data->parent?->cover_id === $data->thumb->id;
 		$this->has_subalbum = $data instanceof AlbumModel && !$data->isLeaf();
 	}
 

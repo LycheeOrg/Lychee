@@ -32,6 +32,7 @@ class Photo extends Component
 	public string $created_at;
 	public bool $is_starred = false;
 	public bool $is_public = false;
+	public bool $is_cover_id = false;
 
 	public string $src = '';
 	public string $srcset = '';
@@ -63,6 +64,8 @@ class Photo extends Component
 		$this->is_starred = $data->is_starred;
 		$this->style = $geometry?->toCSS() ?? '';
 		$this->is_video = $data->isVideo();
+
+		$this->is_cover_id = $data->album?->cover_id === $data->id;
 
 		if ($this->layout === AlbumLayoutType::SQUARE) {
 			$this->setSquareLayout($data);

@@ -83,7 +83,7 @@
 		@if ($is_tag_album == "1")
 			<x-gallery.badge class='badge--tag bg-green-600' icon='tag' />
 		@endif
-		@if ($has_cover_id)
+		@if ($is_cover_id)
 			<x-gallery.badge class='badge--cover bg-yellow-500' icon='folder-cover' />
 		@endif
 	</div>

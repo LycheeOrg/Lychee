@@ -54,6 +54,9 @@
 			@if($is_public)
 				<x-gallery.badge class='badge--public bg-orange-400' icon='eye'/>
 			@endif
+			@if ($is_cover_id)
+				<x-gallery.badge class='badge--cover bg-yellow-500' icon='folder-cover' />
+			@endif
 		</div>
 	@endauth
 </a>
