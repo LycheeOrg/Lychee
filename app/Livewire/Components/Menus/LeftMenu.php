@@ -2,7 +2,9 @@
 
 namespace App\Livewire\Components\Menus;
 
+use App\Contracts\Livewire\Openable;
 use App\Livewire\Traits\InteractWithModal;
+use App\Livewire\Traits\UseOpenable;
 use App\Models\Configs;
 use App\Policies\SettingsPolicy;
 use Illuminate\Support\Facades\Auth;
@@ -28,9 +30,10 @@ use Livewire\Component;
  * - About
  * - logout.
  */
-class LeftMenu extends Component
+class LeftMenu extends Component implements Openable
 {
 	use InteractWithModal;
+	use UseOpenable;
 
 	#[Locked] public bool $has_dev_tools = false;
 	#[Locked] public ?string $clockwork_url = null;
@@ -44,7 +47,9 @@ class LeftMenu extends Component
 		Auth::logout();
 		Session::flush();
 
-		$this->redirect(route('livewire-gallery'), navigate: false);
+		// Hard redirect & refresh instead of using Livewire.
+		// Enures the full reloading of the page.
+		redirect(route('livewire-gallery'));
 	}
 
 	/**
@@ -60,6 +65,41 @@ class LeftMenu extends Component
 		return view('livewire.components.left-menu');
 	}
 
+
+	/**
+	 * Open the Context Menu.
+	 *
+	 * @return void
+	 */
+	#[On('openLeftMenu')]
+	public function openLeftMenu(): void
+	{
+		$this->open();
+	}
+
+	/**
+	 * Close the LeftMenu component.
+	 *
+	 * @return void
+	 */
+	#[On('closeLeftMenu')]
+	public function closeLeftMenu(): void
+	{
+		$this->close();
+	}
+
+	/**
+	 * Toggle the LeftMenu component.
+	 *
+	 * @return void
+	 */
+	#[On('toggleLeftMenu')]
+	public function toggleLeftMenu(): void
+	{
+		$this->toggle();
+	}
+
+	
 	/**
 	 * Open a about modal box.
 	 * TODO Consider moving this directly to Blade.

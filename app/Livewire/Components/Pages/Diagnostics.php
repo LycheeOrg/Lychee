@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Pages;
 
+use App\Livewire\Components\Menus\LeftMenu;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -20,7 +21,8 @@ class Diagnostics extends Component
 
 	public function back(): mixed
 	{
-		return $this->redirect(route('livewire-gallery'));
+		$this->dispatch('closeLeftMenu')->to(LeftMenu::class);
+		return $this->redirect(route('livewire-gallery'), true);
 	}
 
 	#[On('reloadPage')]

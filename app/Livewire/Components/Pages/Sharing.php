@@ -4,6 +4,7 @@ namespace App\Livewire\Components\Pages;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\ConfigurationKeyMissingException;
+use App\Livewire\Components\Menus\LeftMenu;
 use App\Models\AccessPermission;
 use App\Models\BaseAlbumImpl;
 use App\Models\User;
@@ -60,7 +61,8 @@ class Sharing extends Component
 
 	public function back(): mixed
 	{
-		return $this->redirect(route('livewire-gallery'));
+		$this->dispatch('closeLeftMenu')->to(LeftMenu::class);
+		return $this->redirect(route('livewire-gallery'), true);
 	}
 
 	public function delete(int $id): void

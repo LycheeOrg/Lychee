@@ -3,6 +3,7 @@
 namespace App\Livewire\Components\Pages;
 
 use App\Actions\User\Create;
+use App\Livewire\Components\Menus\LeftMenu;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Database\Eloquent\Collection;
@@ -86,6 +87,7 @@ class Users extends Component
 
 	public function back(): mixed
 	{
-		return $this->redirect(route('livewire-gallery'));
+		$this->dispatch('closeLeftMenu')->to(LeftMenu::class);
+		return $this->redirect(route('livewire-gallery'), true);
 	}
 }

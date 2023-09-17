@@ -3,6 +3,7 @@
 namespace App\Livewire\Components\Pages;
 
 use App\Exceptions\ConfigurationKeyMissingException;
+use App\Livewire\Components\Menus\LeftMenu;
 use App\Models\Configs;
 use App\Models\JobHistory;
 use Illuminate\Database\Eloquent\Collection;
@@ -39,6 +40,7 @@ class Jobs extends Component
 
 	public function back(): mixed
 	{
-		return $this->redirect(route('livewire-gallery'));
+		$this->dispatch('closeLeftMenu')->to(LeftMenu::class);
+		return $this->redirect(route('livewire-gallery'), true);
 	}
 }

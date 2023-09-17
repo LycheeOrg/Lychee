@@ -15,7 +15,7 @@
 		{{-- @livewireScripts(['nonce' => csp_nonce('script')]) --}}
 		@vite(['resources/css/app.css','resources/js/app.js'])
     </head>
-	<body class="antialiased bg-dark-700 w-full flex flex-row gap-0 relative" x-data="{ leftMenuOpen: false }">
+	<body class="antialiased bg-dark-700 w-full flex flex-row gap-0 relative">
 		@include('includes.svg')
 		<x-notifications />
         @persist('left-menu')

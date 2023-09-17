@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Pages;
 
+use App\Livewire\Components\Menus\LeftMenu;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Configs;
 use App\Policies\SettingsPolicy;
@@ -38,6 +39,7 @@ class Settings extends Component
 
 	public function back(): mixed
 	{
-		return $this->redirect(route('livewire-gallery'));
+		$this->dispatch('closeLeftMenu')->to(LeftMenu::class);
+		return $this->redirect(route('livewire-gallery'), true);
 	}
 }

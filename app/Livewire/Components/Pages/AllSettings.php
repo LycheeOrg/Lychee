@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Pages;
 
+use App\Livewire\Components\Menus\LeftMenu;
 use App\Livewire\Forms\AllConfigsForms;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Configs;
@@ -67,6 +68,7 @@ class AllSettings extends Component
 
 	public function back(): mixed
 	{
-		return $this->redirect(route('settings'));
+		$this->dispatch('closeLeftMenu')->to(LeftMenu::class);
+		return $this->redirect(route('settings'), true);
 	}
 }

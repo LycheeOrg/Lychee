@@ -1,5 +1,8 @@
 <div class="w-full"
-    x-data="albumView(@entangle('sessionFlags.nsfwAlbumsVisible'), @entangle('sessionFlags.is_fullscreen'))"
+    x-data="albumView(
+        @entangle('sessionFlags.nsfwAlbumsVisible'),
+        @entangle('sessionFlags.is_fullscreen')
+        )"
     @keydown.window="handleKeydown(event, $wire, $focus)"
     x-on:login-close="loginModalOpen = false">
     <!-- toolbar -->
@@ -9,7 +12,7 @@
             <x-header.button x-on:click="loginModalOpen = true" icon="account-login" />
         @endguest
         @auth
-            <x-header.button x-bind="leftMenuOpen" x-on:click="leftMenuOpen = ! leftMenuOpen" icon="cog" />
+            <x-header.button x-on:click="$dispatch('toggleLeftMenu')" icon="cog" />
         @endauth
         <x-header.title>{{ $title }}</x-header.title>
         <x-header.search />
