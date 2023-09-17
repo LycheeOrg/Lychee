@@ -11,7 +11,6 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\Thumb;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
-use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\View\Component;
 
 class Album extends Component
