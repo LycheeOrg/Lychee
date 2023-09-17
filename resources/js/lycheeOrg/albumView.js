@@ -76,15 +76,14 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, hasDetails_va
 			}
 		},
 
-		handleKeydown(event, wire, focus) {
+		handleKeydown(event, wire) {
 			const skipped = ["TEXTAREA", "INPUT", "SELECT"];
 
-			if (focus.focused() !== undefined && skipped.includes(focus.focused().nodeName)) {
-				console.log("skipped: " + focus.focused().nodeName);
+			if (skipped.includes(document.activeElement.nodeName)) {
+				console.log("skipped: " + document.activeElement.nodeName);
 				return;
-			} else if (focus.focused() !== undefined) {
-				console.log(focus.focused().nodeName);
 			}
+			console.log(document.activeElement.nodeName);
 
 			// h
 			if (event.keyCode === 72 && !this.detailsOpen) {

@@ -3,7 +3,7 @@
         @entangle('sessionFlags.nsfwAlbumsVisible'),
         @entangle('sessionFlags.is_fullscreen')
         )"
-    @keydown.window="handleKeydown(event, $wire, $focus)"
+    @keydown.window="handleKeydown(event, $wire)"
     x-on:login-close="loginModalOpen = false">
     <!-- toolbar -->
     <x-header.bar>

@@ -1,6 +1,6 @@
 <div class="w-full"
     x-data="albumView(@entangle('sessionFlags.nsfwAlbumsVisible'), @entangle('sessionFlags.is_fullscreen'), true)"
-    @keydown.window="handleKeydown(event, $wire, $focus)"
+    @keydown.window="handleKeydown(event, $wire)"
     >
     <!-- toolbar -->
     <x-header.bar class="opacity-0" x-bind:class="isFullscreen ? 'opacity-0 h-0' : 'opacity-100 h-14'">
