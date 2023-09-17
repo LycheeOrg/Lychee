@@ -141,7 +141,7 @@ class Archive
 		$this->deflateLevel = Configs::getValueAsInt('zip_deflate_level');
 
 		$responseGenerator = function () use ($downloadVariant, $photos) {
-			$zip = new ZipStream(enableZip64: true, defaultEnableZeroHeader: true);
+			$zip = new ZipStream(enableZip64: Configs::getValueAsBool('zip64'), defaultEnableZeroHeader: true, sendHttpHeaders: false);
 
 			// We first need to scan the whole array of files to avoid
 			// problems with duplicate file names.

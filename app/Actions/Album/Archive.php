@@ -62,7 +62,8 @@ class Archive extends Action
 		$responseGenerator = function () use ($albums) {
 			$zip = new ZipStream(defaultCompressionMethod: $this->deflateLevel === -1 ? ZipMethod::STORE : ZipMethod::DEFLATE,
 				defaultDeflateLevel: $this->deflateLevel,
-				enableZip64: true, defaultEnableZeroHeader: true);
+				enableZip64: Configs::getValueAsBool('zip64'),
+				defaultEnableZeroHeader: true, sendHttpHeaders: false);
 
 			$usedDirNames = [];
 			foreach ($albums as $album) {
