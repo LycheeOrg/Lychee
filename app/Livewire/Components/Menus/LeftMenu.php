@@ -65,7 +65,6 @@ class LeftMenu extends Component implements Openable
 		return view('livewire.components.left-menu');
 	}
 
-
 	/**
 	 * Open the Context Menu.
 	 *
@@ -99,7 +98,6 @@ class LeftMenu extends Component implements Openable
 		$this->toggle();
 	}
 
-	
 	/**
 	 * Open a about modal box.
 	 * TODO Consider moving this directly to Blade.

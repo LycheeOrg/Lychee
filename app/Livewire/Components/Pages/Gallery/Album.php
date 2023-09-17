@@ -156,6 +156,26 @@ class Album extends Component implements Reloadable
 	}
 
 	/**
+	 * Return the photoIDs (no need to wait to compute the geometry).
+	 *
+	 * @return array
+	 */
+	public function getPhotoIDsProperty(): array
+	{
+		return $this->album->photos->map(fn ($v, $k) => $v->id)->all();
+	}
+
+	/**
+	 * Used in the JS front-end to manage the selected albums.
+	 *
+	 * @return array
+	 */
+	public function getAlbumIDsProperty(): array
+	{
+		return $this->album instanceof ModelsAlbum ? $this->album->children->map(fn ($v, $k) => $v->id)->all() : [];
+	}
+
+	/**
 	 * Fetch the header url
 	 * TODO: Later this can be also a field from the album and if null we apply the rdm query.
 	 *

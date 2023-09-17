@@ -2,8 +2,10 @@
 
 export default { albumView };
 
-export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, parent_id_val = null) {
+export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, parent_id_val = null, albumIDs_val = [], photoIDs_val = []) {
 	return {
+		albumIDs: albumIDs_val,
+		photoIDs: photoIDs_val,
 		loginModalOpen: false,
 		selectedPhotos: [],
 		selectedAlbums: [],
@@ -133,7 +135,42 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 			console.log(this.canEdit);
 			if (!this.canEdit) {
 				return;
-			}			
+			}
+
+			// ctrl + a
+			if (event.keyCode === 65 && event.ctrlKey) {
+				event.preventDefault();
+				if (this.selectedAlbums.length === this.albumIDs.length && this.albumIDs.length > 1) {
+					console.log("select all albums (flip)");
+					this.selectedAlbums = [];
+					this.selectedPhotos = this.photoIDs;
+				}
+				else if (this.selectedPhotos.length === this.photoIDs.length && this.photoIDs.length > 1) {
+					console.log("select all photos (flip)");
+					this.selectedPhotos = [];
+					this.selectedAlbums = this.albumIDs;
+				}
+				else if (this.selectedAlbums.length > 1) {
+					console.log("select all albums");
+					this.selectedAlbums = this.albumIDs;
+					this.selectedPhotos = [];
+				}
+				else if(this.selectedPhotos.length > 1) {
+					console.log("select all photos");
+					this.selectedPhotos = this.photoIDs;
+					this.selectedAlbums = [];
+				}
+				else if(this.albumIDs.length > 1) {
+					console.log("select all albums");
+					this.selectedAlbums = this.albumIDs;
+					this.selectedPhotos = [];
+				}
+				else {
+					console.log("select all photos");
+					this.selectedPhotos = this.photoIDs;
+					this.selectedAlbums = [];
+				}
+			}
 
 			// n
 			if (event.keyCode === 78 && !this.detailsOpen) {
@@ -142,6 +179,14 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 				wire.$dispatch('openModal', params);
 			}
 			
+			// u
+			if (event.keyCode === 85 && !this.detailsOpen) {
+				event.preventDefault();
+				const params = ["forms.add.upload", "", {"parentID": this.parent_id}];
+				wire.$dispatch('openModal', params);
+			}
+
+			// Following this point only if we are not in root.
 			if (this.parent_id === null) {
 				console.log("root")
 				return;

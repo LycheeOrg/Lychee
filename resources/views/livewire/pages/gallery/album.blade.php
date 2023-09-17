@@ -3,7 +3,10 @@
         @entangle('sessionFlags.nsfwAlbumsVisible'),
         @entangle('sessionFlags.is_fullscreen'),
         @js($flags->can_edit),
-        @js($album->id))"
+        @js($album->id),
+        @js($this->albumIDs),
+        @js($this->photoIDs)
+        )"
     @keydown.window="handleKeydown(event, $wire)"
     >
     <!-- toolbar -->

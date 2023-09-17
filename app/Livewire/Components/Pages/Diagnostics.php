@@ -22,6 +22,7 @@ class Diagnostics extends Component
 	public function back(): mixed
 	{
 		$this->dispatch('closeLeftMenu')->to(LeftMenu::class);
+
 		return $this->redirect(route('livewire-gallery'), true);
 	}
 
