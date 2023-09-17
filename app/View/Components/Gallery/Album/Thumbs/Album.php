@@ -62,7 +62,7 @@ class Album extends Component
 
 		$this->is_tag_album = $data instanceof TagAlbum;
 		// This aims to indicate whether the current thumb is used to determine the parent.
-		$this->is_cover_id = $data instanceof AlbumModel && $data->parent?->cover_id === $data->thumb->id;
+		$this->is_cover_id = $data instanceof AlbumModel && $data->thumb !== null && $data->parent?->cover_id === $data->thumb->id;
 		$this->has_subalbum = $data instanceof AlbumModel && !$data->isLeaf();
 	}
 
