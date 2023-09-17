@@ -7,15 +7,14 @@ use App\Contracts\Livewire\Reloadable;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SmartAlbumType;
 use App\Http\Resources\Collections\TopAlbumsResource;
+use App\Livewire\DTO\AlbumsFlags;
 use App\Livewire\DTO\SessionFlags;
 use App\Livewire\Traits\AlbumsPhotosContextMenus;
 use App\Livewire\Traits\SilentUpdate;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-use Laragear\WebAuthn\Models\WebAuthnCredential;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -31,14 +30,13 @@ class Albums extends Component implements Reloadable
 
 	private TopAlbumsResource $topAlbums;
 
+	public AlbumsFlags $flags;
+
 	public SessionFlags $sessionFlags;
 
 	public string $title;
 
-	public bool $can_use_2fa;
-
-	#[Locked]
-	public ?string $albumId = null;
+	#[Locked] public ?string $albumId = null;
 
 	/**
 	 * Render component.
@@ -49,13 +47,14 @@ class Albums extends Component implements Reloadable
 	 */
 	public function render(): View
 	{
+		$this->flags = new AlbumsFlags();
+
 		return view('livewire.pages.gallery.albums');
 	}
 
 	public function mount(): void
 	{
 		$this->sessionFlags = SessionFlags::get();
-		$this->can_use_2fa = !Auth::check() && (WebAuthnCredential::query()->whereNull('disabled_at')->count() > 0);
 	}
 
 	#[On('reloadPage')]

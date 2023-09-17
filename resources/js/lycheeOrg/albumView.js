@@ -2,12 +2,13 @@
 
 export default { albumView };
 
-export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, hasDetails_val = false) {
+export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, parent_id_val = null) {
 	return {
 		loginModalOpen: false,
 		selectedPhotos: [],
 		selectedAlbums: [],
-		hasDetails:  hasDetails_val,
+		parent_id:  parent_id_val,
+		canEdit: canEdit_val,
 		detailsOpen: false,
 		detailsActiveTab: 0,
 		sharingLinksOpen: false,
@@ -21,6 +22,9 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, hasDetails_va
 		},
 
 		handleContextPhoto(event, wire) {
+			if (!this.canEdit) {
+				return;
+			}
 			this.selectedAlbums = [];
 			const photoId = event.currentTarget.dataset.id;
 			const index = this.selectedPhotos.indexOf(photoId);
@@ -33,6 +37,10 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, hasDetails_va
 		},
 
 		handleClickPhoto(event, wire) {
+			if (!this.canEdit) {
+				return;
+			}
+
 			if (event.ctrlKey) {
 				event.preventDefault();
 				this.selectedAlbums = [];
@@ -49,6 +57,10 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, hasDetails_va
 		},
 
 		handleContextAlbum(event, wire) {
+			if (!this.canEdit) {
+				return;
+			}
+
 			this.selectedPhotos = [];
 			const albumId = event.currentTarget.dataset.id;
 			const index = this.selectedAlbums.indexOf(albumId);
@@ -61,6 +73,10 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, hasDetails_va
 		},
 
 		handleClickAlbum(event, wire) {
+			if (!this.canEdit) {
+				return;
+			}
+
 			if (event.ctrlKey) {
 				event.preventDefault();
 				this.selectedPhotos = [];
@@ -103,20 +119,32 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, hasDetails_va
 				this.loginModalOpen = true;
 			}
 
-			// No details. we end there (most likely gallery page)
-			if (!this.hasDetails) {
-				return;
-			}
-
 			// escape
 			if (event.keyCode === 27) {
 				if (this.detailsOpen) {
 					event.preventDefault();
 					this.detailsOpen = false;
-				} else {
+				} else if(this.parent_id !== null) {
 					event.preventDefault();
 					wire.back();
 				}
+			}
+
+			console.log(this.canEdit);
+			if (!this.canEdit) {
+				return;
+			}			
+
+			// n
+			if (event.keyCode === 78 && !this.detailsOpen) {
+				event.preventDefault();
+				const params = ["forms.album.create", "", {"parentID": this.parent_id}];
+				wire.$dispatch('openModal', params);
+			}
+			
+			if (this.parent_id === null) {
+				console.log("root")
+				return;
 			}
 
 			// d

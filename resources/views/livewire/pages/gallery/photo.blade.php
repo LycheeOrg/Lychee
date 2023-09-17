@@ -1,8 +1,8 @@
 <div class="w-full flex flex-col" x-data="photoView(
-    $wire.entangle('sessionFlags.are_photo_details_open'),
-    @entangle('sessionFlags.is_fullscreen'),
-    {{ $photo->description !== null ? 'true' : 'false' }},
-    '{{ $overlayType }}')"
+        $wire.entangle('sessionFlags.are_photo_details_open'),
+        @entangle('sessionFlags.is_fullscreen'),
+        @js($photo->description !== null),
+        @js($overlayType))"
     @keydown.window="handleKeydown(event, $wire)">
     <!-- toolbar -->
     <x-header.bar class="opacity-0" x-bind:class="isFullscreen ? 'opacity-0 h-0' : 'opacity-100 h-14'">

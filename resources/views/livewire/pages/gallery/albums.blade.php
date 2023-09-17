@@ -1,7 +1,8 @@
 <div class="w-full"
     x-data="albumView(
         @entangle('sessionFlags.nsfwAlbumsVisible'),
-        @entangle('sessionFlags.is_fullscreen')
+        @entangle('sessionFlags.is_fullscreen'),
+        @js($flags->can_edit)
         )"
     @keydown.window="handleKeydown(event, $wire)"
     x-on:login-close="loginModalOpen = false">
@@ -71,7 +72,7 @@
             </div>
         </div>
     @endguest
-    @if($can_use_2fa)
+    @if($flags->can_use_2fa)
     <x-webauthn.login />
     @endif
 </div>

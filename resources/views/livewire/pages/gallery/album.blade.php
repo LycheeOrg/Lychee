@@ -1,5 +1,9 @@
 <div class="w-full"
-    x-data="albumView(@entangle('sessionFlags.nsfwAlbumsVisible'), @entangle('sessionFlags.is_fullscreen'), true)"
+    x-data="albumView(
+        @entangle('sessionFlags.nsfwAlbumsVisible'),
+        @entangle('sessionFlags.is_fullscreen'),
+        @js($flags->can_edit),
+        @js($album->id))"
     @keydown.window="handleKeydown(event, $wire)"
     >
     <!-- toolbar -->

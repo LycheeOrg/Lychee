@@ -16,6 +16,7 @@ class AlbumFlags implements Wireable
 		public bool $is_password_protected = false,
 		public bool $is_ready_to_load = false,
 		public bool $is_base_album = false,
+		public bool $can_edit = false,
 		public ?string $layout = null,
 	) {
 		$this->layout ??= Configs::getValueAsEnum('layout', AlbumLayoutType::class)->value;

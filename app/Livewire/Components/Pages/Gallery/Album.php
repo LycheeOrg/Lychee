@@ -78,6 +78,7 @@ class Album extends Component implements Reloadable
 	public function render(): View
 	{
 		$this->sessionFlags = SessionFlags::get();
+		$this->flags->can_edit = Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->album]);
 
 		if ($this->flags->is_accessible) {
 			$this->num_users = User::count();
