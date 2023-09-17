@@ -15,8 +15,8 @@
 	{{-- This would be better if livewire did not add comments around @if --}}
 	x-show="{{ !$is_nsfw ? 'true' : 'false' }} || nsfwAlbumsVisible"
 	data-id='{{ $id }}'
-	x-on:contextmenu.prevent="handleContextAlbum($event)"
-	x-on:click='handleClickAlbum($event)'
+	x-on:contextmenu.prevent="handleContextAlbum($event, $wire)"
+	x-on:click='handleClickAlbum($event, $wire)'
 	x-bind:class="selectedAlbums.includes('{{ $id }}') ? 'outline outline-1 outline-sky-500' : ''"
 	{{-- data-nsfw='{{ $is_nsfw ? '1' : '0'}}' --}}
 	>

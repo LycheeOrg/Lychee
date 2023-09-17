@@ -4,7 +4,9 @@
     editOpen: false,
     donwloadOpen: false
 }"
-    @keydown.window="if (event.keyCode === 70 && $focus.focused() === undefined) { event.preventDefault(); isFullscreen = ! isFullscreen }"
+    @keydown.window="
+        if (event.keyCode === 70 && $focus.focused() === undefined) { event.preventDefault(); isFullscreen = ! isFullscreen }
+    "
     {{-- 70 = f --}}>
     <!-- toolbar -->
     <x-header.bar class="opacity-0" x-bind:class="isFullscreen ? 'opacity-0 h-0' : 'opacity-100 h-14'">
