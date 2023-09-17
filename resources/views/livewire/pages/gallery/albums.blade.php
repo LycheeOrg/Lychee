@@ -1,77 +1,12 @@
 <div class="w-full"
-    x-data="{
-        loginModalOpen:false,
-        selectedPhotos: [],
-        selectedAlbums: [],
-        detailsOpen: false,
-        sharingLinksOpen: false,
-        nsfwAlbumsVisible: @entangle('sessionFlags.nsfwAlbumsVisible'),
-        isFullscreen: @entangle('sessionFlags.is_fullscreen'),
-        silentToggle(elem) {
-            this[elem] = ! this[elem];
-            $wire.silentUpdate();
-        },
-        handleContextPhoto(event) {
-            this.selectedAlbums = [];
-            const photoId = event.currentTarget.dataset.id;
-            const index = this.selectedPhotos.indexOf(photoId);
-            if (index > -1 && this.selectedPhotos.length > 1) { // found and more than one element
-                $wire.openPhotosDropdown(event.clientX, event.clientY, this.selectedPhotos);
-            } else {
-                $wire.openPhotoDropdown(event.clientX, event.clientY, event.currentTarget.dataset.id);
-            }
-        },
-        handleClickPhoto(event) {
-            if (event.ctrlKey) {
-                event.preventDefault();
-                this.selectedAlbums = [];
-                const photoId = event.currentTarget.dataset.id;
-                const index = this.selectedPhotos.indexOf(photoId);
-                if (index > -1) { // found
-                    this.selectedPhotos = this.selectedPhotos.filter((e) => e !== photoId);
-                } else { // not found
-                    this.selectedPhotos.push(photoId);
-                }
-            }
-        },
-        handleContextAlbum(event) {
-            this.selectedPhotos = [];
-            const albumId = event.currentTarget.dataset.id;
-            const index = this.selectedAlbums.indexOf(albumId);
-            if (index > -1 && this.selectedAlbums.length > 1) { // found and more than one element
-                $wire.openAlbumsDropdown(event.clientX, event.clientY, this.selectedAlbums);
-            } else {
-                $wire.openAlbumDropdown(event.clientX, event.clientY, event.currentTarget.dataset.id);
-            }
-        },
-        handleClickAlbum(event) {
-            if (event.ctrlKey) {
-                event.preventDefault();
-                this.selectedPhotos = [];
-                const albumId = event.currentTarget.dataset.id;
-                const index = this.selectedAlbums.indexOf(albumId);
-                if (index > -1) { // found
-                    this.selectedAlbums = this.selectedAlbums.filter((e) => e !== albumId);
-                } else { // not found
-                    this.selectedAlbums.push(albumId);
-                }
-            }
-        },
-        handleKeydown(event) {
-            if (event.keyCode === 72) { event.preventDefault(); console.log('toggle hidden albums:', this.nsfwAlbumsVisible); this.silentToggle('nsfwAlbumsVisible'); }
-            if (event.keyCode === 70 && $focus.focused() === undefined) { event.preventDefault(); this.silentToggle('isFullscreen') }
-        }
-    }"
-    {{-- 72 = h --}}
-    {{-- 73 = i --}}
-    {{-- 70 = f --}}
-    @keydown.window="handleKeydown(event)"
+    x-data="albumView(@entangle('sessionFlags.nsfwAlbumsVisible'), @entangle('sessionFlags.is_fullscreen'))"
+    @keydown.window="handleKeydown(event, $wire, $focus)"
     x-on:login-close="loginModalOpen = false">
     <!-- toolbar -->
     <x-header.bar>
         @guest
             <!-- NOT LOGGED -->
-            <x-header.button @keydown.window="if (event.keyCode === 76) { loginModalOpen = true }" x-on:click="loginModalOpen = true" icon="account-login" {{--  76 = l --}} />
+            <x-header.button x-on:click="loginModalOpen = true" icon="account-login" />
         @endguest
         @auth
             <x-header.button x-bind="leftMenuOpen" x-on:click="leftMenuOpen = ! leftMenuOpen" icon="cog" />
