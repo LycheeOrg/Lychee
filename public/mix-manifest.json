@@ -1,9 +1,0 @@
-{
-    "/js/app.js": "/js/app.js",
-    "/js/webauthn.js": "/js/webauthn.js",
-    "/css/filepond.css": "/css/filepond.css",
-    "/css/app.css": "/css/app.css",
-    "/js/alpine.min.js": "/js/alpine.min.js",
-    "/js/filepond.js": "/js/filepond.js",
-    "/js/justified-layout.min.js": "/js/justified-layout.min.js"
-}
