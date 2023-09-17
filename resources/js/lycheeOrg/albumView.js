@@ -2,12 +2,14 @@
 
 export default { albumView };
 
-export function albumView(nsfwAlbumsVisible_val, isFullscreen_val) {
+export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, hasDetails_val = false) {
 	return {
 		loginModalOpen: false,
 		selectedPhotos: [],
 		selectedAlbums: [],
+		hasDetails:  hasDetails_val,
 		detailsOpen: false,
+		detailsActiveTab: 0,
 		sharingLinksOpen: false,
 		nsfwAlbumsVisible: nsfwAlbumsVisible_val,
 		isFullscreen: isFullscreen_val,
@@ -91,12 +93,6 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val) {
 				this.silentToggle("nsfwAlbumsVisible", wire);
 			}
 
-			// i
-			if (event.keyCode === 73) {
-				event.preventDefault();
-				this.detailsOpen = !this.detailsOpen;
-			}
-
 			// f
 			if (event.keyCode === 70 && !this.detailsOpen) {
 				event.preventDefault();
@@ -106,6 +102,49 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val) {
 			// l
 			if (event.keyCode === 76) {
 				this.loginModalOpen = true;
+			}
+
+			// No details. we end there (most likely gallery page)
+			if (!this.hasDetails) {
+				return;
+			}
+
+			// escape
+			if (event.keyCode === 27) {
+				if (this.detailsOpen) {
+					event.preventDefault();
+					this.detailsOpen = false;
+				} else {
+					event.preventDefault();
+					wire.back();
+				}
+			}
+
+			// d
+			if (event.keyCode === 68 && !this.detailsOpen) {
+				event.preventDefault();
+				this.detailsOpen = true;
+				this.activeTab = 0;
+			}
+
+			// i
+			if (event.keyCode === 73) {
+				event.preventDefault();
+				this.detailsOpen = !this.detailsOpen;
+			}
+
+			// m
+			if (event.keyCode === 77 && !this.detailsOpen) {
+				event.preventDefault();
+				this.detailsOpen = true;
+				this.detailsActiveTab = 2;
+			}
+
+			// r
+			if (event.keyCode === 82 && !this.detailsOpen) {
+				event.preventDefault();
+				this.detailsOpen = true;
+				this.detailsActiveTab = 0;
 			}
 		},
 	};

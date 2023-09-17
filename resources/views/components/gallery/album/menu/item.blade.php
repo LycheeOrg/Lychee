@@ -4,7 +4,7 @@
     border-sky-500 text-sky-500 
     hover:border-sky-200 hover:text-sky-200
     {{ $class }}"
-    x-bind:class="! activeTab === {{ $tab }} ? 'bg-sky-200/10' : ''"
-    {{ $attributes }} x-on:click="activeTab = {{ $tab }}">
+    x-bind:class="! detailsActiveTab === {{ $tab }} ? 'bg-sky-200/10' : ''"
+    {{ $attributes }} x-on:click="detailsActiveTab = {{ $tab }}">
     {{ $slot }}
 </li>

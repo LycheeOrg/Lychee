@@ -1,10 +1,10 @@
 <div class="w-full"
-    x-data="albumView(@entangle('sessionFlags.nsfwAlbumsVisible'), @entangle('sessionFlags.is_fullscreen'))"
+    x-data="albumView(@entangle('sessionFlags.nsfwAlbumsVisible'), @entangle('sessionFlags.is_fullscreen'), true)"
     @keydown.window="handleKeydown(event, $wire, $focus)"
     >
     <!-- toolbar -->
     <x-header.bar class="opacity-0" x-bind:class="isFullscreen ? 'opacity-0 h-0' : 'opacity-100 h-14'">
-        <x-header.back back="if (detailsOpen) { detailsOpen = false; } else { $wire.back(); }" />
+        <x-header.back />
         <x-header.title>{{ $album->title }}</x-header.title>
         {{-- <a class="button button--map" id="button_map_album"><x-icons.iconic icon="map" /></a> --}}
         @can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class, $this->album])
