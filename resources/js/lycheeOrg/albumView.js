@@ -56,6 +56,17 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 					this.selectedPhotos.push(photoId);
 				}
 			}
+
+			if (event.shiftKey) {
+				event.preventDefault();
+				this.selectedAlbums = [];
+				const photoId = event.currentTarget.dataset.id;
+				const lastInsertedAlbumId = this.selectedPhotos[this.selectedPhotos.length - 1];
+				this.__addPhotoRange(lastInsertedAlbumId, photoId);
+			}
+
+			console.log("result:");
+			console.log(this.selectedPhotos);
 		},
 
 		handleContextAlbum(event, wire) {
@@ -92,6 +103,17 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 					this.selectedAlbums.push(albumId);
 				}
 			}
+
+			if (event.shiftKey) {
+				event.preventDefault();
+				this.selectedPhotos = [];
+				const albumId = event.currentTarget.dataset.id;
+				const lastInsertedAlbumId = this.selectedAlbums[this.selectedAlbums.length - 1];
+				this.__addAlbumRange(lastInsertedAlbumId, albumId);
+			}
+
+			console.log("result:");
+			console.log(this.selectedAlbums);
 		},
 
 		handleKeydown(event, wire) {
@@ -132,8 +154,8 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 				}
 			}
 
-			console.log(this.canEdit);
 			if (!this.canEdit) {
+				console.log(this.canEdit);
 				return;
 			}
 
@@ -143,26 +165,26 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 				if (this.selectedAlbums.length === this.albumIDs.length && this.albumIDs.length > 1) {
 					console.log("select all albums (flip)");
 					this.selectedAlbums = [];
-					this.selectedPhotos = this.photoIDs;
+					this.selectedPhotos = [...this.photoIDs];
 				} else if (this.selectedPhotos.length === this.photoIDs.length && this.photoIDs.length > 1) {
 					console.log("select all photos (flip)");
 					this.selectedPhotos = [];
-					this.selectedAlbums = this.albumIDs;
+					this.selectedAlbums = [...this.albumIDs];
 				} else if (this.selectedAlbums.length > 1) {
 					console.log("select all albums");
-					this.selectedAlbums = this.albumIDs;
+					this.selectedAlbums = [...this.albumIDs];
 					this.selectedPhotos = [];
 				} else if (this.selectedPhotos.length > 1) {
 					console.log("select all photos");
-					this.selectedPhotos = this.photoIDs;
+					this.selectedPhotos = [...this.photoIDs];
 					this.selectedAlbums = [];
 				} else if (this.albumIDs.length > 1) {
 					console.log("select all albums");
-					this.selectedAlbums = this.albumIDs;
+					this.selectedAlbums = [...this.albumIDs];
 					this.selectedPhotos = [];
 				} else {
 					console.log("select all photos");
-					this.selectedPhotos = this.photoIDs;
+					this.selectedPhotos = [...this.photoIDs];
 					this.selectedAlbums = [];
 				}
 			}
@@ -213,6 +235,68 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 				this.detailsOpen = true;
 				this.detailsActiveTab = 0;
 			}
+		},
+
+		__addAlbumRange(lastInsertedAlbumId, albumId) {
+			if (lastInsertedAlbumId === undefined) {
+				console.log("previous not found");
+				return;
+			}
+			if (lastInsertedAlbumId === albumId) {
+				console.log("same elem");
+				return;
+			}
+
+			let toAppend;
+			const index = this.albumIDs.indexOf(albumId);
+			console.log(index);
+			const indexLastInserted = this.albumIDs.indexOf(lastInsertedAlbumId);
+			console.log(indexLastInserted);
+			if (index < indexLastInserted) {
+				toAppend = this.albumIDs.slice(index + 1, indexLastInserted);
+			} else {
+				toAppend = this.albumIDs.slice(indexLastInserted + 1, index);
+			}
+			// Push albumId at the end.
+			toAppend.push(albumId);
+			console.log("to append:");
+			console.log(toAppend);
+
+			this.selectedAlbums = this.selectedAlbums.reduce((acc, elem) => (toAppend.includes(elem) ? acc : [...acc, elem]), []);
+			console.log("before:");
+			console.log(this.selectedAlbums);
+			this.selectedAlbums.push(...toAppend);
+		},
+
+		__addPhotoRange(lastInsertedPhotoId, photoId) {
+			if (lastInsertedPhotoId === undefined) {
+				console.log("previous not found");
+				return;
+			}
+			if (lastInsertedPhotoId === photoId) {
+				console.log("same elem");
+				return;
+			}
+
+			let toAppend;
+			const index = this.photoIDs.indexOf(photoId);
+			console.log(index);
+			const indexLastInserted = this.photoIDs.indexOf(lastInsertedPhotoId);
+			console.log(indexLastInserted);
+			if (index < indexLastInserted) {
+				toAppend = this.photoIDs.slice(index + 1, indexLastInserted);
+			} else {
+				toAppend = this.photoIDs.slice(indexLastInserted + 1, index);
+			}
+			// Push albumId at the end.
+			toAppend.push(albumId);
+			console.log("to append:");
+			console.log(toAppend);
+
+			this.selectedPhotos = this.selectedPhotos.reduce((acc, elem) => (toAppend.includes(elem) ? acc : [...acc, elem]), []);
+			console.log("before:");
+			console.log(this.selectedPhotos);
+			this.selectedPhotos.push(...toAppend);
 		},
 	};
 }
