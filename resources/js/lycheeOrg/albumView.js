@@ -340,6 +340,6 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 
 		donwloadPhotos() {
 			window.open("api/Photo::getArchive?kind=ORIGINAL&photoIDs=" + this.selectedPhotos.join(","));
-		}
+		},
 	};
 }

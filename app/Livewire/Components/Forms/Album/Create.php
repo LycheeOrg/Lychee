@@ -26,7 +26,7 @@ class Create extends Component
 	 */
 	use InteractWithModal;
 
-	#[Locked] public ?string $parent_id;
+	#[Locked] public ?string $parent_id = null;
 	public string $title = '';
 
 	/**
