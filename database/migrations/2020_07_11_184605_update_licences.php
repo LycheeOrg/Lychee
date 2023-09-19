@@ -50,7 +50,7 @@ return new class() extends Migration {
 			return;
 		}
 		foreach ($photos as $photo) {
-			$photo->license = $photo->license . '-4.0';
+			$photo->license .= '-4.0';
 			$photo->save();
 		}
 	}

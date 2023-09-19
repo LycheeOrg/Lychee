@@ -47,17 +47,15 @@ class Delete extends Component
 	public function mount(array $params = ['parentID' => null]): void
 	{
 		$id = $params[Params::ALBUM_ID] ?? null;
-		if ($id !== null) {
-			$this->albumIDs = [$id];
-			$this->title = $this->albumFactory->findBaseAlbumOrFail($id)->title;
-		} else {
-			$this->albumIDs = $params[Params::ALBUM_IDS] ?? [];
+		$this->albumIDs = $id !== null ? [$id] : $params[Params::ALBUM_IDS] ?? [];
+		$this->num = count($this->albumIDs);
+
+		if ($this->num === 1) {
+			$this->title = $this->albumFactory->findBaseAlbumOrFail($this->albumIDs[0])->title;
 		}
 
 		Gate::authorize(AlbumPolicy::CAN_DELETE_ID, [AbstractAlbum::class, $this->albumIDs]);
 		$this->parent_id = $params[Params::PARENT_ID] ?? SmartAlbumType::UNSORTED->value;
-
-		$this->num = count($this->albumIDs);
 	}
 
 	/**
@@ -85,5 +83,15 @@ class Delete extends Component
 		App::terminating(fn () => $fileDeleter->do());
 
 		$this->redirect(route('livewire-gallery-album', ['albumId' => $this->parent_id]), true);
+	}
+
+	/**
+	 * Add an handle to close the modal form from a user-land call.
+	 *
+	 * @return void
+	 */
+	public function close(): void
+	{
+		$this->closeModal();
 	}
 }

@@ -7,21 +7,21 @@
         @js($this->albumIDs),
         @js($this->photoIDs)
         )"
-    @keydown.window="handleKeydown(event, $wire)"
+    @keydown.window="handleKeydown(event)"
     >
     <!-- toolbar -->
     <x-header.bar class="opacity-0" x-bind:class="isFullscreen ? 'opacity-0 h-0' : 'opacity-100 h-14'">
         <x-header.back />
         <x-header.title>{{ $album->title }}</x-header.title>
         {{-- <a class="button button--map" id="button_map_album"><x-icons.iconic icon="map" /></a> --}}
+        <x-header.actions-menus />
+            {{-- <x-header.button wire:click="openContextMenu" icon="plus" /> --}}
+        {{-- @endcan --}}
         @can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class, $this->album])
             @if ($flags->is_base_album)
                 <x-header.button x-on:click="detailsOpen = false" icon="chevron-top" fill="fill-sky-500" x-cloak x-show="detailsOpen" />
                 <x-header.button x-on:click="detailsOpen = true" icon="chevron-bottom" x-cloak x-show="!detailsOpen" />
             @endif
-        @endcan
-        @can(App\Policies\AlbumPolicy::CAN_UPLOAD, [App\Contracts\Models\AbstractAlbum::class, $this->album])
-            <x-header.button wire:click="openContextMenu" icon="plus" />
         @endcan
     </x-header.bar>
     @if($flags->is_password_protected)

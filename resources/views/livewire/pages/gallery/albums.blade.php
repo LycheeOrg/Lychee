@@ -6,7 +6,7 @@
         @js(null),
         @js($this->albumIDs)
         )"
-    @keydown.window="handleKeydown(event, $wire)"
+    @keydown.window="handleKeydown(event)"
     x-on:login-close="loginModalOpen = false">
     <!-- toolbar -->
     <x-header.bar>
@@ -19,10 +19,7 @@
         @endauth
         <x-header.title>{{ $title }}</x-header.title>
         <x-header.search />
-        {{-- <a class="button button--map-albums"><x-icons.iconic icon="map" /></a> --}}
-        @can(App\Policies\AlbumPolicy::CAN_UPLOAD, [App\Contracts\Models\AbstractAlbum::class, null])
-            <x-header.button wire:click="openContextMenu" icon="plus" />
-        @endcan
+        <x-header.actions-menus />
     </x-header.bar>
     <!-- albums -->
     <div class="overflow-x-clip overflow-y-auto h-[calc(100vh-56px)]">

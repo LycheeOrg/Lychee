@@ -52,27 +52,25 @@ class Merge extends Component
 	public function mount(array $params = ['parentID' => null]): void
 	{
 		$id = $params[Params::ALBUM_ID] ?? null;
-		if ($id !== null) {
-			$this->albumIDs = [$id];
+		$this->albumIDs = $id !== null ? [$id] : $params[Params::ALBUM_IDS] ?? [];
+		$this->num = count($this->albumIDs);
+
+		if ($this->num === 1) {
 			/** @var Album $album */
-			$album = $this->albumFactory->findBaseAlbumOrFail($id, false);
+			$album = $this->albumFactory->findBaseAlbumOrFail($this->albumIDs[0], false);
 			$this->lft = $album->_lft;
 			$this->rgt = $album->_rgt;
-		} else {
-			$this->albumIDs = $params[Params::ALBUM_IDS] ?? [];
-		}
-
-		if ($id === null && count($this->albumIDs) > 1) {
+		} elseif ($this->num > 1) {
 			$this->albumID = array_shift($this->albumIDs);
 			$this->title = $this->albumFactory->findBaseAlbumOrFail($this->albumID, false)->title;
 		}
-		if ($id === null && count($this->albumIDs) === 1) {
+
+		if (count($this->albumIDs) === 1) {
 			$this->titleMoved = $this->albumFactory->findBaseAlbumOrFail($this->albumIDs[0], false)->title;
 		}
 
 		Gate::authorize(AlbumPolicy::CAN_EDIT_ID, [AbstractAlbum::class, $this->albumIDs]);
 		$this->parent_id = $params[Params::PARENT_ID] ?? SmartAlbumType::UNSORTED->value;
-		$this->num = count($this->albumIDs);
 	}
 
 	/**

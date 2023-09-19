@@ -17,13 +17,13 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 		nsfwAlbumsVisible: nsfwAlbumsVisible_val,
 		isFullscreen: isFullscreen_val,
 
-		silentToggle(elem, wire) {
+		silentToggle(elem) {
 			this[elem] = !this[elem];
 
-			wire.silentUpdate();
+			this.$wire.silentUpdate();
 		},
 
-		handleContextPhoto(event, wire) {
+		handleContextPhoto(event) {
 			if (!this.canEdit) {
 				return;
 			}
@@ -32,13 +32,13 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 			const index = this.selectedPhotos.indexOf(photoId);
 			if (index > -1 && this.selectedPhotos.length > 1) {
 				// found and more than one element
-				wire.openPhotosDropdown(event.clientX, event.clientY, this.selectedPhotos);
+				this.$wire.openPhotosDropdown(event.clientX, event.clientY, this.selectedPhotos);
 			} else {
-				wire.openPhotoDropdown(event.clientX, event.clientY, event.currentTarget.dataset.id);
+				this.$wire.openPhotoDropdown(event.clientX, event.clientY, event.currentTarget.dataset.id);
 			}
 		},
 
-		handleClickPhoto(event, wire) {
+		handleClickPhoto(event) {
 			if (!this.canEdit) {
 				return;
 			}
@@ -69,7 +69,7 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 			console.log(this.selectedPhotos);
 		},
 
-		handleContextAlbum(event, wire) {
+		handleContextAlbum(event) {
 			if (!this.canEdit) {
 				return;
 			}
@@ -79,13 +79,13 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 			const index = this.selectedAlbums.indexOf(albumId);
 			if (index > -1 && this.selectedAlbums.length > 1) {
 				// found and more than one element
-				wire.openAlbumsDropdown(event.clientX, event.clientY, this.selectedAlbums);
+				this.$wire.openAlbumsDropdown(event.clientX, event.clientY, this.selectedAlbums);
 			} else {
-				wire.openAlbumDropdown(event.clientX, event.clientY, event.currentTarget.dataset.id);
+				this.$wire.openAlbumDropdown(event.clientX, event.clientY, event.currentTarget.dataset.id);
 			}
 		},
 
-		handleClickAlbum(event, wire) {
+		handleClickAlbum(event) {
 			if (!this.canEdit) {
 				return;
 			}
@@ -116,7 +116,7 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 			console.log(this.selectedAlbums);
 		},
 
-		handleKeydown(event, wire) {
+		handleKeydown(event) {
 			const skipped = ["TEXTAREA", "INPUT", "SELECT"];
 
 			if (skipped.includes(document.activeElement.nodeName)) {
@@ -129,13 +129,13 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 			if (event.keyCode === 72 && !this.detailsOpen) {
 				event.preventDefault();
 				console.log("toggle hidden albums:", this.nsfwAlbumsVisible);
-				this.silentToggle("nsfwAlbumsVisible", wire);
+				this.silentToggle("nsfwAlbumsVisible");
 			}
 
 			// f
 			if (event.keyCode === 70 && !this.detailsOpen) {
 				event.preventDefault();
-				this.silentToggle("isFullscreen", wire);
+				this.silentToggle("isFullscreen");
 			}
 
 			// l
@@ -150,7 +150,7 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 					this.detailsOpen = false;
 				} else if (this.parent_id !== null) {
 					event.preventDefault();
-					wire.back();
+					this.$wire.back();
 				}
 			}
 
@@ -193,14 +193,14 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 			if (event.keyCode === 78 && !this.detailsOpen) {
 				event.preventDefault();
 				const params = ["forms.album.create", "", { parentID: this.parent_id }];
-				wire.$dispatch("openModal", params);
+				this.$wire.$dispatch("openModal", params);
 			}
 
 			// u
 			if (event.keyCode === 85 && !this.detailsOpen) {
 				event.preventDefault();
 				const params = ["forms.add.upload", "", { parentID: this.parent_id }];
-				wire.$dispatch("openModal", params);
+				this.$wire.$dispatch("openModal", params);
 			}
 
 			// Following this point only if we are not in root.
@@ -288,8 +288,8 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 			} else {
 				toAppend = this.photoIDs.slice(indexLastInserted + 1, index);
 			}
-			// Push albumId at the end.
-			toAppend.push(albumId);
+			// Push photoId at the end.
+			toAppend.push(photoId);
 			console.log("to append:");
 			console.log(toAppend);
 
@@ -298,5 +298,29 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 			console.log(this.selectedPhotos);
 			this.selectedPhotos.push(...toAppend);
 		},
+
+		moveAlbums() {
+			const params = ["forms.album.move", "", { parentID: this.parent_id, albumIDs: this.selectedAlbums }];
+			this.$wire.$dispatch("openModal", params);
+		},
+
+		mergeAlbums() {
+			const params = ["forms.album.merge", "", { parentID: this.parent_id, albumIDs: this.selectedAlbums }];
+			this.$wire.$dispatch("openModal", params);
+		},
+
+		renameAlbums() {
+			const params = ["forms.album.rename", "", { parentID: this.parent_id, albumIDs: this.selectedAlbums }];
+			this.$wire.$dispatch("openModal", params);
+		},
+
+		deleteAlbums() {
+			const params = ["forms.album.delete", "", { parentID: this.parent_id, albumIDs: this.selectedAlbums }];
+			this.$wire.$dispatch("openModal", params);
+		},
+
+		donwloadAlbums() {
+			window.open("api/Album::getArchive?albumIDs=" + this.selectedAlbums.join(","));
+		}
 	};
 }

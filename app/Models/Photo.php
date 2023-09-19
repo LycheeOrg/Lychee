@@ -242,8 +242,8 @@ class Photo extends Model implements AspectRatio
 					$b = intval($matches[2]);
 					if ($b !== 0) {
 						$gcd = Helpers::gcd($a, $b);
-						$a = $a / $gcd;
-						$b = $b / $gcd;
+						$a /= $gcd;
+						$b /= $gcd;
 						if ($a === 1) {
 							$shutter = '1/' . $b . ' s';
 						} else {

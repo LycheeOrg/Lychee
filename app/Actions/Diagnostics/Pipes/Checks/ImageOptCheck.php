@@ -45,7 +45,7 @@ class ImageOptCheck implements DiagnosticPipe
 		$binaryPath = config('image-optimizer.binary_path');
 
 		if ($binaryPath !== '' && substr($binaryPath, -1) !== DIRECTORY_SEPARATOR) {
-			$binaryPath = $binaryPath . DIRECTORY_SEPARATOR;
+			$binaryPath .= DIRECTORY_SEPARATOR;
 		}
 
 		if (Helpers::isExecAvailable()) {

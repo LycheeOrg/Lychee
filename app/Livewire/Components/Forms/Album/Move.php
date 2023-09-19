@@ -22,7 +22,7 @@ class Move extends Component
 	use InteractWithModal;
 	use AuthorizesRequests;
 
-	#[Locked] public string $parent_id;
+	#[Locked] public ?string $parent_id;
 	/** @var array<int,string> */
 	#[Locked] public array $albumIDs;
 	#[Locked] public string $titleMoved = '';
@@ -51,29 +51,19 @@ class Move extends Component
 	public function mount(array $params = ['parentID' => null]): void
 	{
 		$id = $params[Params::ALBUM_ID] ?? null;
-		if ($id !== null) {
-			$this->albumIDs = [$id];
+		$this->albumIDs = $id !== null ? [$id] : $params[Params::ALBUM_IDS] ?? [];
+		$this->num = count($this->albumIDs);
+
+		if ($this->num === 1) {
 			/** @var Album $album */
-			$album = $this->albumFactory->findBaseAlbumOrFail($id, false);
+			$album = $this->albumFactory->findBaseAlbumOrFail($this->albumIDs[0], false);
 			$this->titleMoved = $album->title;
 			$this->lft = $album->_lft;
 			$this->rgt = $album->_rgt;
-		} else {
-			$this->albumIDs = $params[Params::ALBUM_IDS] ?? [];
 		}
 
 		Gate::authorize(AlbumPolicy::CAN_EDIT_ID, [AbstractAlbum::class, $this->albumIDs]);
 		$this->parent_id = $params[Params::PARENT_ID] ?? null;
-
-		// TODO : This could be dangerous: it is possible to put an album within itself!
-		// Some safety, but not perfect.
-		if ($this->parent_id !== null && $id !== null) {
-			/** @var Album $album */
-			$album = $this->albumFactory->findBaseAlbumOrFail($id, false);
-			$this->lft = $album->_lft;
-			$this->rgt = $album->_rgt;
-		}
-		$this->num = count($this->albumIDs);
 	}
 
 	/**
@@ -107,7 +97,11 @@ class Move extends Component
 		$albums = Album::query()->findOrFail($this->albumIDs);
 		$this->moveAlbums->do($album, $albums);
 
-		$this->redirect(route('livewire-gallery-album', ['albumId' => $this->parent_id]), true);
+		if ($this->parent_id !== null) {
+			$this->redirect(route('livewire-gallery-album', ['albumId' => $this->parent_id]), true);
+		} else {
+			$this->redirect(route('livewire-gallery'), true);
+		}
 		$this->close();
 	}
 
