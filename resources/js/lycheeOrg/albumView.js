@@ -321,6 +321,25 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 
 		donwloadAlbums() {
 			window.open("api/Album::getArchive?albumIDs=" + this.selectedAlbums.join(","));
+		},
+
+		movePhotos() {
+			const params = ["forms.album.move", "", { albumID: this.parent_id, photoIDs: this.selectedPhotos }];
+			this.$wire.$dispatch("openModal", params);
+		},
+
+		renamePhotos() {
+			const params = ["forms.photo.rename", "", { albumID: this.parent_id, photoIDs: this.selectedPhotos }];
+			this.$wire.$dispatch("openModal", params);
+		},
+
+		deletePhotos() {
+			const params = ["forms.album.delete", "", { albumID: this.parent_id, photoIDs: this.selectedPhotos }];
+			this.$wire.$dispatch("openModal", params);
+		},
+
+		donwloadPhotos() {
+			window.open("api/Photo::getArchive?kind=ORIGINAL&photoIDs=" + this.selectedPhotos.join(","));
 		}
 	};
 }
