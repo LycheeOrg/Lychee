@@ -5,5 +5,7 @@
 		<span class="font-bold">{{ "Transfer to" }}</span>
 		<x-forms.dropdown class="mx-2" :options="$this->users" wire:model='username'/>
 	</div>
-	<x-forms.buttons.danger class="rounded-md w-full" wire:click='transfer'>{{ "Transfer ownership of album and photos" }}</x-forms.buttons.danger>
+	<x-forms.buttons.danger class="rounded-md w-full" wire:click='transfer'>
+		{{ "Transfer ownership of album and photos" }}
+	</x-forms.buttons.danger>
 </div>

@@ -10,10 +10,12 @@
             </p>
         </div>
         <div class="flex w-full box-border">
-            <x-forms.buttons.cancel class="border-t border-t-dark-800 rounded-bl-md w-full" wire:click="close">
+            <x-forms.buttons.cancel class="border-t border-t-dark-800 rounded-bl-md w-full"
+                @keydown.escape.window="$wire.close()" wire:click="close">
                 {{ __('lychee.NOT_MOVE_ALBUMS') }}
             </x-forms.buttons.cancel>
-            <x-forms.buttons.action class="rounded-md w-full" @keydown.enter.window="$wire.submit()" wire:click='submit'>
+            <x-forms.buttons.action class="rounded-md w-full"
+                @keydown.enter.window="$wire.submit()" wire:click='submit'>
                 {{ $num === 1 ? __('lychee.MOVE_ALBUM') : __('lychee.MOVE_ALBUMS') }}
             </x-forms.buttons.action>
         </div>

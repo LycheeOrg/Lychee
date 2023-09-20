@@ -15,6 +15,8 @@
             <x-forms.dropdown class="mx-2" :options="$this->photoSortingColumns" id="sorting_dialog_column_select" wire:model='sorting_column'/>
             <x-forms.dropdown class="mx-2" :options="$this->sortingOrders" id="sorting_dialog_order_select" wire:model='sorting_order'/>
         </div>
-        <x-forms.buttons.action class="rounded w-full" wire:click='submit' >{{ __('lychee.SAVE') }}</x-forms.buttons.action>
+        <x-forms.buttons.action class="rounded w-full" wire:click='submit' >
+            {{ __('lychee.SAVE') }}
+        </x-forms.buttons.action>
     </form>
 </div>
