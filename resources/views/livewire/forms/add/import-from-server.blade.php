@@ -14,7 +14,7 @@
 		<div class="text-red-500 font-bold">@error('form.resync_metadata') {{ $message }} @enderror</div> --}}
 		<form>
 			<div class="my-3 first:mt-0 last:mb-0">
-				<x-forms.inputs.text class="w-full" autocapitalize="off" wire:model="form.path" :has_error="$errors->has('form.paths.*')" />
+				<x-forms.inputs.text class="w-full" autocapitalize="off" wire:model="form.path" :has_error="$errors->has('form.paths.*')" x-intersect="$el.focus()" />
 			</div>
 			<div class='relative my-3 pl-9 transition-color duration-300' x-bind:class="import_via_symlink ? 'disabled' : 'text-neutral-200'">
 				<label class="font-bold block " for="server_import_dialog_delete_imported_check">{{ __('lychee.UPLOAD_IMPORT_DELETE_ORIGINALS') }}</label>

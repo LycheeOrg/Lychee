@@ -27,6 +27,7 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 			if (!this.canEdit) {
 				return;
 			}
+
 			this.selectedAlbums = [];
 			const photoId = event.currentTarget.dataset.id;
 			const index = this.selectedPhotos.indexOf(photoId);
@@ -123,24 +124,26 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 				console.log("skipped: " + document.activeElement.nodeName);
 				return;
 			}
-			console.log(document.activeElement.nodeName);
 
 			// h
 			if (event.keyCode === 72 && !this.detailsOpen) {
 				event.preventDefault();
 				console.log("toggle hidden albums:", this.nsfwAlbumsVisible);
 				this.silentToggle("nsfwAlbumsVisible");
+				return;
 			}
 
 			// f
 			if (event.keyCode === 70 && !this.detailsOpen) {
 				event.preventDefault();
 				this.silentToggle("isFullscreen");
+				return;
 			}
 
 			// l
 			if (event.keyCode === 76) {
 				this.loginModalOpen = true;
+				return;
 			}
 
 			// escape
@@ -152,10 +155,11 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 					event.preventDefault();
 					this.$wire.back();
 				}
+				return;
 			}
 
 			if (!this.canEdit) {
-				console.log(this.canEdit);
+				console.log("can't edit.");
 				return;
 			}
 
@@ -187,6 +191,7 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 					this.selectedPhotos = [...this.photoIDs];
 					this.selectedAlbums = [];
 				}
+				return;
 			}
 
 			// n
@@ -194,6 +199,7 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 				event.preventDefault();
 				const params = ["forms.album.create", "", { parentID: this.parent_id }];
 				this.$wire.$dispatch("openModal", params);
+				return;
 			}
 
 			// u
@@ -201,6 +207,31 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 				event.preventDefault();
 				const params = ["forms.add.upload", "", { parentID: this.parent_id }];
 				this.$wire.$dispatch("openModal", params);
+				return;
+			}
+
+			// m on selected albums/photos
+			if (event.keyCode === 77 && this.selectedAlbums.length > 0) {
+				event.preventDefault();
+				this.moveAlbums();
+				return;
+			}
+			if (event.keyCode === 77 && this.selectedPhotos.length > 0) {
+				event.preventDefault();
+				this.movePhotos();
+				return;
+			}
+
+			// r on selected albums
+			if (event.keyCode === 82 && this.selectedAlbums.length > 0) {
+				event.preventDefault();
+				this.renameAlbums();
+				return;
+			}
+			if (event.keyCode === 82 && this.selectedPhotos.length > 0) {
+				event.preventDefault();
+				this.renamePhotos();
+				return;
 			}
 
 			// Following this point only if we are not in root.
@@ -214,12 +245,14 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 				event.preventDefault();
 				this.detailsOpen = true;
 				this.activeTab = 0;
+				return;
 			}
 
 			// i
 			if (event.keyCode === 73) {
 				event.preventDefault();
 				this.detailsOpen = !this.detailsOpen;
+				return;
 			}
 
 			// m
@@ -227,6 +260,7 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 				event.preventDefault();
 				this.detailsOpen = true;
 				this.detailsActiveTab = 2;
+				return;
 			}
 
 			// r
@@ -234,6 +268,7 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 				event.preventDefault();
 				this.detailsOpen = true;
 				this.detailsActiveTab = 0;
+				return;
 			}
 		},
 
@@ -323,8 +358,13 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 			window.open("api/Album::getArchive?albumIDs=" + this.selectedAlbums.join(","));
 		},
 
+		copyPhotosTo() {
+			const params = ["forms.photo.copy-to", "", { albumID: this.parent_id, photoIDs: this.selectedPhotos }];
+			this.$wire.$dispatch("openModal", params);
+		},
+
 		movePhotos() {
-			const params = ["forms.album.move", "", { albumID: this.parent_id, photoIDs: this.selectedPhotos }];
+			const params = ["forms.photo.move", "", { albumID: this.parent_id, photoIDs: this.selectedPhotos }];
 			this.$wire.$dispatch("openModal", params);
 		},
 
@@ -334,7 +374,12 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 		},
 
 		deletePhotos() {
-			const params = ["forms.album.delete", "", { albumID: this.parent_id, photoIDs: this.selectedPhotos }];
+			const params = ["forms.photo.delete", "", { albumID: this.parent_id, photoIDs: this.selectedPhotos }];
+			this.$wire.$dispatch("openModal", params);
+		},
+
+		tagPhotos() {
+			const params = ["forms.photo.tag", "", { photoIDs: this.selectedPhotos }];
 			this.$wire.$dispatch("openModal", params);
 		},
 

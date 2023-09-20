@@ -30,13 +30,13 @@ class Albums extends Component implements Reloadable
 
 	private TopAlbumsResource $topAlbums;
 
+	#[Locked] public string $title;
+	/** @var array<int,string> */
+	#[Locked] public array $albumIDs;
+	#[Locked] public ?string $albumId = null;
 	public AlbumsFlags $flags;
-
 	public SessionFlags $sessionFlags;
 
-	public string $title;
-
-	#[Locked] public ?string $albumId = null;
 	/**
 	 * Render component.
 	 *
@@ -47,6 +47,7 @@ class Albums extends Component implements Reloadable
 	public function render(): View
 	{
 		$this->flags = new AlbumsFlags();
+		$this->albumIDs = $this->topAlbums->albums->map(fn ($v, $k) => $v->id)->all();
 
 		return view('livewire.pages.gallery.albums');
 	}
@@ -66,16 +67,6 @@ class Albums extends Component implements Reloadable
 	{
 		$this->topAlbums = resolve(Top::class)->get();
 		$this->title = Configs::getValueAsString('site_title');
-	}
-
-	/**
-	 * Used in the JS front-end to manage the selected albums.
-	 *
-	 * @return array
-	 */
-	public function getAlbumIDsProperty(): array
-	{
-		return $this->topAlbums->albums->map(fn ($v, $k) => $v->id)->all();
 	}
 
 	public function getAlbumsProperty(): Collection

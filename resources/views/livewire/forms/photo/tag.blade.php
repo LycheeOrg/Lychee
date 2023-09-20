@@ -5,7 +5,7 @@
         </p>
         <form>
             <div class="my-3 first:mt-0 last:mb-0">
-                <x-forms.inputs.text class="w-full" autocapitalize="off" wire:model="tag"
+                <x-forms.inputs.text class="w-full" autocapitalize="off" wire:model="tag" x-intersect="$el.focus()" 
                     placeholder="{{ __('lychee.NO_TAGS') }}" :has_error="$errors->has('tags')" />
             </div>
             <div class='relative h-12 my-4 pl-9 transition-color duration-300'>

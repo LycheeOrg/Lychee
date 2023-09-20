@@ -4,6 +4,7 @@
         <form>
             <div class="my-3 first:mt-0 last:mb-0">
                 <x-forms.inputs.text class="w-full" autocapitalize="off" wire:model="title"
+                    x-intersect="$el.focus()"
                     placeholder="{{ __('lychee.UNTITLED') }}" :has_error="$errors->has('title')" />
             </div>
             <div class="my-3 first:mt-0 last:mb-0">

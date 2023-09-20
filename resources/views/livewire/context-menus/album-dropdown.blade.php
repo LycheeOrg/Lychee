@@ -1,5 +1,7 @@
 <div class="w-full relative">
+	@if ($params['parentID'] !== null)
 	<x-context-menu.item wire:click='setAsCover' icon='folder-cover'>{{ __('lychee.SET_COVER') }}</x-context-menu.item>
+	@endif
 	<x-context-menu.item wire:click='rename' icon='pencil'>{{ __('lychee.RENAME') }}</x-context-menu.item>
 	<x-context-menu.item wire:click='merge' icon='collapse-left'>{{ __('lychee.MERGE') }}</x-context-menu.item>
 	<x-context-menu.item wire:click='move' icon='transfer'>{{ __('lychee.MOVE') }}</x-context-menu.item>

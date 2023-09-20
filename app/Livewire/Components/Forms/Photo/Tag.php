@@ -35,17 +35,16 @@ class Tag extends Component
 	public function mount(array $params = ['albumID' => null]): void
 	{
 		$id = $params[Params::PHOTO_ID] ?? null;
-		if ($id !== null) {
-			$this->photoIDs = [$id];
+		$this->photoIDs = $id !== null ? [$id] : $params[Params::PHOTO_IDS] ?? [];
+		$this->num = count($this->photoIDs);
+
+		if ($this->num === 1) {
 			/** @var Photo $photo */
-			$photo = Photo::query()->findOrFail($id);
+			$photo = Photo::query()->findOrFail($this->photoIDs[0]);
 			$this->tag = implode(', ', $photo->tags);
-		} else {
-			$this->photoIDs = $params[Params::PHOTO_IDS] ?? [];
 		}
 
 		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->photoIDs]);
-		$this->num = count($this->photoIDs);
 	}
 
 	/**

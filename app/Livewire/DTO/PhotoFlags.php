@@ -12,6 +12,7 @@ class PhotoFlags implements Wireable
 	public function __construct(
 		public bool $can_autoplay,
 		public bool $can_rotate,
+		public bool $can_edit,
 	) {
 	}
 }

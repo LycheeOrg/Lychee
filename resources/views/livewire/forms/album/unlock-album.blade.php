@@ -14,6 +14,7 @@
                         {{ __('lychee.ALBUM_PASSWORD_REQUIRED') }}
                     </p>
                     <x-forms.inputs.password class="w-full" autocomplete="album-password"
+                        x-intersect="$el.focus()" 
                         placeholder="{{ __('lychee.PASSWORD') }}"
                         wire:model="password"
                         wire:keydown.enter="submit"

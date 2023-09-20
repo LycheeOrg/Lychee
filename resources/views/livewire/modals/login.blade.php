@@ -5,7 +5,7 @@
 			<div class="mb-4 mx-0">
 				<x-forms.inputs.text class="w-full" autocomplete="on"
 					autofocus
-					x-ref="username"
+					x-intersect="$el.focus()"
 					placeholder="{{ __('lychee.USERNAME') }}"
 					autocapitalize="off"
 					wire:model="username" />

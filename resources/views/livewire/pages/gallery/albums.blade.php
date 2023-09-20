@@ -2,9 +2,9 @@
     x-data="albumView(
         @entangle('sessionFlags.nsfwAlbumsVisible'),
         @entangle('sessionFlags.is_fullscreen'),
-        @js($flags->can_edit),
+        @entangle('flags.can_edit'),
         @js(null),
-        @js($this->albumIDs)
+        @entangle('albumIDs')
         )"
     @keydown.window="handleKeydown(event)"
     x-on:login-close="loginModalOpen = false">

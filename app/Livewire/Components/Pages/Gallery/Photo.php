@@ -75,6 +75,7 @@ class Photo extends Component
 		$this->flags = new PhotoFlags(
 			can_autoplay: true,
 			can_rotate: Configs::getValueAsBool('editor_enabled'),
+			can_edit: Gate::check(PhotoPolicy::CAN_EDIT, [PhotoModel::class, $this->photo]),
 		);
 
 		/** @var int $idx */
