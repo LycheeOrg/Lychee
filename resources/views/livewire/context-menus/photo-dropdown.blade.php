@@ -1,5 +1,9 @@
 <div class="w-full relative">
-	<x-context-menu.item wire:click='star' icon='star'>{{ __('lychee.STAR') }}</x-context-menu.item>
+	@if (!$is_starred)
+	<x-context-menu.item wire:click='star' icon_class='hover:fill-yello-400' icon='star'>{{ __('lychee.STAR') }}</x-context-menu.item>
+	@else
+	<x-context-menu.item wire:click='unstar' icon='star'>{{ __('lychee.UNSTAR') }}</x-context-menu.item>
+	@endif
 	<x-context-menu.item wire:click='tag' icon='tag'>{{ __('lychee.TAG') }}</x-context-menu.item>
 	<x-context-menu.item wire:click='setAsCover' icon='folder-cover'>{{ __('lychee.SET_COVER') }}</x-context-menu.item>
 	<x-context-menu.separator />

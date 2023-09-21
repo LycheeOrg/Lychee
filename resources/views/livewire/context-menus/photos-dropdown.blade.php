@@ -1,5 +1,9 @@
 <div class="w-full relative">
+	@if(!$are_starred)
 	<x-context-menu.item wire:click='starAll' icon='star'>{{ __('lychee.STAR_ALL') }}</x-context-menu.item>
+	@else
+	<x-context-menu.item wire:click='unstarAll' icon='star'>{{ __('lychee.UNSTAR_ALL') }}</x-context-menu.item>
+	@endif
 	<x-context-menu.item wire:click='tagAll' icon='tag'>{{ __('lychee.TAG_ALL') }}</x-context-menu.item>
 	<x-context-menu.separator />
 	<x-context-menu.item wire:click='renameAll' icon='pencil'>{{ __('lychee.RENAME_ALL') }}</x-context-menu.item>

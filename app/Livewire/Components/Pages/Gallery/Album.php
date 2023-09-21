@@ -241,12 +241,7 @@ class Album extends Component implements Reloadable
 	public function setStar(array $photoIDs): void
 	{
 		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $photoIDs]);
-		/** @var Collection<Photo> $photos */
-		$photos = Photo::query()->findOrFail($photoIDs);
-		foreach ($photos as $photo) {
-			$photo->is_starred = true;
-			$photo->save();
-		}
+		Photo::whereIn('id', $photoIDs)->update(['is_starred' => true]);
 	}
 
 	/**
@@ -259,11 +254,6 @@ class Album extends Component implements Reloadable
 	public function unsetStar(array $photoIDs): void
 	{
 		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $photoIDs]);
-		/** @var Collection<Photo> $photos */
-		$photos = Photo::query()->findOrFail($photoIDs);
-		foreach ($photos as $photo) {
-			$photo->is_starred = false;
-			$photo->save();
-		}
+		Photo::whereIn('id', $photoIDs)->update(['is_starred' => false]);
 	}
 }

@@ -28,6 +28,20 @@ class PhotoDropdown extends Component
 
 	/** @var array{albumID:?string,photoID:string} */
 	#[Locked] public array $params;
+	#[Locked] public bool $is_starred;
+	/**
+	 * mount info and load star condition.
+	 *
+	 * @param array{albumID:?string,photoID:string} $params
+	 *
+	 * @return void
+	 */
+	public function mount(array $params): void
+	{
+		$this->params = $params;
+		$this->is_starred = Photo::query()->findOrFail($params[Params::PHOTO_ID])->is_starred;
+	}
+
 	/**
 	 * Renders the Add menu in the top right.
 	 *
