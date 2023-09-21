@@ -14,9 +14,11 @@ use App\Livewire\Traits\AlbumsPhotosContextMenus;
 use App\Livewire\Traits\SilentUpdate;
 use App\Models\Album as ModelsAlbum;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
+use App\Policies\PhotoPolicy;
 use Illuminate\Database\Eloquent\RelationNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -207,5 +209,22 @@ class Album extends Component implements Reloadable
 		}
 
 		$this->redirect(route('livewire-gallery'));
+	}
+
+	public function setCover(?string $photoID): void
+	{
+		if (!$this->album instanceof ModelsAlbum) {
+			return;
+		}
+
+		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->album]);
+
+		$photo = $photoID === null ? null : Photo::query()->findOrFail($photoID);
+		if ($photo !== null) {
+			Gate::authorize(PhotoPolicy::CAN_SEE, [Photo::class, $photo]);
+		}
+
+		$this->album->cover_id = $photo?->id;
+		$this->album->save();
 	}
 }

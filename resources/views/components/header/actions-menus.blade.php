@@ -14,7 +14,7 @@
 <x-header.button x-cloak x-show='selectedPhotos.length > 0' x-on:click='' icon='star'/>{{-- star --}}
 <x-header.button x-cloak x-show='selectedPhotos.length > 0' x-on:click='tagPhotos' icon='tag'/>{{-- tag --}}
 @if($this->albumId !== null)
-<x-header.button x-cloak x-show='selectedPhotos.length === 1' x-on:click='' icon='folder-cover'/>{{-- setAsCover --}}
+<x-header.button x-cloak x-show='selectedPhotos.length === 1' x-on:click='setCover' icon='folder-cover'/>{{-- setAsCover --}}
 @endif
 <x-header.button x-cloak x-show='selectedPhotos.length > 0' x-on:click='renamePhotos' icon='pencil'/>{{-- rename --}}
 <x-header.button x-cloak x-show='selectedPhotos.length > 0' x-on:click='copyPhotosTo' icon='layers'/>{{-- copyTo --}}

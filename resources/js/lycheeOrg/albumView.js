@@ -383,6 +383,10 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 			this.$wire.$dispatch("openModal", params);
 		},
 
+		setCover() {
+			this.$wire.setCover(this.selectedPhotos[0]);
+		},
+
 		donwloadPhotos() {
 			window.open("api/Photo::getArchive?kind=ORIGINAL&photoIDs=" + this.selectedPhotos.join(","));
 		},
