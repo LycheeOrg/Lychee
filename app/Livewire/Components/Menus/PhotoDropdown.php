@@ -82,7 +82,8 @@ class PhotoDropdown extends Component
 		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $album]);
 		$album->cover_id = $album->cover_id === $this->params[Params::PHOTO_ID] ? null : $this->params[Params::PHOTO_ID];
 		$album->save();
-		$this->notify(__('lychee.CHANGE_SUCCESS'));
+		// $this->notify(__('lychee.CHANGE_SUCCESS'));
+		$this->dispatch('reloadPage')->to(GalleryAlbum::class);
 		$this->closeContextMenu();
 	}
 
