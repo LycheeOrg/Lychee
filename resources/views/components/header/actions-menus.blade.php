@@ -11,7 +11,10 @@
 <x-header.button x-cloak x-show='selectedAlbums.length > 0' x-on:click='deleteAlbums' icon='trash' />
 <x-header.button x-cloak x-show='selectedAlbums.length > 0' x-on:click='downloadAlbums' icon='cloud-download' />
 {{-- Photo selection --}}
-<x-header.button x-cloak x-show='selectedPhotos.length > 0' x-on:click='' icon='star'/>{{-- star --}}
+<x-header.button x-cloak x-show='selectedPhotos.length > 0 && areSelectedPhotosAllStarred()'
+	x-on:click='unstarPhotos' icon='star' fill="fill-yellow-400 hover:fill-white"/>{{-- star --}}
+<x-header.button x-cloak x-show='selectedPhotos.length > 0 && !areSelectedPhotosAllStarred()'
+	x-on:click='starPhotos' icon='star' fill='fill-neutral-400 hover:fill-yellow-400'/>{{-- star --}}
 <x-header.button x-cloak x-show='selectedPhotos.length > 0' x-on:click='tagPhotos' icon='tag'/>{{-- tag --}}
 @if($this->albumId !== null)
 <x-header.button x-cloak x-show='selectedPhotos.length === 1' x-on:click='setCover' icon='folder-cover'/>{{-- setAsCover --}}

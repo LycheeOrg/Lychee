@@ -13,6 +13,7 @@
 		])
 	data-album-id='{{ $album_id }}'
 	data-id='{{ $photo_id }}'
+	data-starred='{{ $is_starred ? '1' : '0' }}'
 	x-on:contextmenu.prevent='handleContextPhoto($event, $wire)'
 	x-on:click='handleClickPhoto($event, $wire)'
 	x-bind:class="selectedPhotos.includes('{{ $photo_id }}') ? 'outline outline-1 outline-sky-500' : ''"

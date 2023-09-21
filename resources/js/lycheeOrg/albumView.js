@@ -334,6 +334,22 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 			this.selectedPhotos.push(...toAppend);
 		},
 
+		areSelectedPhotosAllStarred() {
+			let allStarred = true;
+			this.selectedPhotos.forEach((v) => {
+				let photo = document.querySelector("[data-id='" + v + "']");
+				if (photo === undefined) {
+					console.log(v + " not found!");
+				} else {
+					console.log(photo.dataset.starred);
+					console.log(photo.dataset.starred === "1");
+					allStarred = allStarred && photo.dataset.starred === "1";
+				}
+			});
+
+			return allStarred;
+		},
+
 		moveAlbums() {
 			const params = ["forms.album.move", "", { parentID: this.parent_id, albumIDs: this.selectedAlbums }];
 			this.$wire.$dispatch("openModal", params);
@@ -381,6 +397,14 @@ export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, 
 		tagPhotos() {
 			const params = ["forms.photo.tag", "", { photoIDs: this.selectedPhotos }];
 			this.$wire.$dispatch("openModal", params);
+		},
+
+		starPhotos() {
+			this.$wire.setStar(this.selectedPhotos);
+		},
+
+		unstarPhotos() {
+			this.$wire.unsetStar(this.selectedPhotos);
 		},
 
 		setCover() {

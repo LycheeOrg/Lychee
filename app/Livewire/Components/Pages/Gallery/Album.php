@@ -11,6 +11,7 @@ use App\Factories\AlbumFactory;
 use App\Livewire\DTO\AlbumFlags;
 use App\Livewire\DTO\SessionFlags;
 use App\Livewire\Traits\AlbumsPhotosContextMenus;
+use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\SilentUpdate;
 use App\Models\Album as ModelsAlbum;
 use App\Models\Extensions\BaseAlbum;
@@ -41,6 +42,7 @@ class Album extends Component implements Reloadable
 {
 	use AlbumsPhotosContextMenus;
 	use SilentUpdate;
+	use Notify;
 
 	private AlbumFactory $albumFactory;
 
@@ -224,7 +226,44 @@ class Album extends Component implements Reloadable
 			Gate::authorize(PhotoPolicy::CAN_SEE, [Photo::class, $photo]);
 		}
 
-		$this->album->cover_id = $photo?->id;
+		$this->album->cover_id = ($this->album->cover_id === $photo->id) ? null : $photo->id;
 		$this->album->save();
+		$this->notify(__('lychee.CHANGE_SUCCESS'));
+	}
+
+	/**
+	 * Set all photos for given id as starred.
+	 *
+	 * @param array<int,string> $photoIDs
+	 *
+	 * @return void
+	 */
+	public function setStar(array $photoIDs): void
+	{
+		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $photoIDs]);
+		/** @var Collection<Photo> $photos */
+		$photos = Photo::query()->findOrFail($photoIDs);
+		foreach ($photos as $photo) {
+			$photo->is_starred = true;
+			$photo->save();
+		}
+	}
+
+	/**
+	 * Set all photos for given id as NOT starred.
+	 *
+	 * @param array $photoIDs
+	 *
+	 * @return void
+	 */
+	public function unsetStar(array $photoIDs): void
+	{
+		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $photoIDs]);
+		/** @var Collection<Photo> $photos */
+		$photos = Photo::query()->findOrFail($photoIDs);
+		foreach ($photos as $photo) {
+			$photo->is_starred = false;
+			$photo->save();
+		}
 	}
 }
