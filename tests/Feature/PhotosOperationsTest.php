@@ -150,7 +150,7 @@ class PhotosOperationsTest extends BasePhotoTest
 			'album_id' => null,
 			'id' => $id,
 			'created_at' => $updated_taken_at->setTimezone('UTC')->format('Y-m-d\TH:i:sP'),
-			'license' => 'reserved',
+			'license' => 'All Rights Reserved',
 			'is_public' => true,
 			'is_starred' => true,
 			'tags' => ['night', 'trees'],
