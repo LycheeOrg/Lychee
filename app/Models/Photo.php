@@ -272,19 +272,19 @@ class Photo extends Model
 	 * part of an album) or the default license of the application-wide
 	 * setting is returned.
 	 *
-	 * @param ?LicenseType $license the value from the database passed in by
-	 *                              the Eloquent framework
+	 * @param ?string $license the value from the database passed in by
+	 *                         the Eloquent framework
 	 *
 	 * @return LicenseType
 	 */
-	protected function getLicenseAttribute(?LicenseType $license): LicenseType
+	protected function getLicenseAttribute(?string $license): LicenseType
 	{
 		if ($license === null) {
 			return Configs::getValueAsEnum('default_license', LicenseType::class);
 		}
 
-		if ($license !== LicenseType::NONE) {
-			return $license;
+		if (LicenseType::tryFrom($license) !== null && LicenseType::tryFrom($license) !== LicenseType::NONE) {
+			return LicenseType::from($license);
 		}
 
 		if ($this->album_id !== null && $this->relationLoaded('album')) {
