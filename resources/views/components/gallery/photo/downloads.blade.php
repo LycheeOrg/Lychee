@@ -13,7 +13,7 @@
             href="{{ route('photo_download',['photoIDs' => $photoId, 'kind' => $size_variant['type']->name]) }}"
             >
             <x-icons.iconic icon="cloud-download" fill='' class="my-0 w-3 h-3 mr-1" />
-            {{ $size_variant['type']->localized() }} ({{ $size_variant['width'] }}x{{ $size_variant['height'] }},
+            {{ $size_variant['type']->localization() }} ({{ $size_variant['width'] }}x{{ $size_variant['height'] }},
             {{ $size_variant['filesize'] }})
         </a>
     @endforeach

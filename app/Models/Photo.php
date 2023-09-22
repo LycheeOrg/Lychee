@@ -7,6 +7,7 @@ use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Constants\RandomID;
+use App\Enum\LicenseType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\ZeroModuloException;
@@ -62,7 +63,7 @@ use function Safe\preg_match;
  * @property string|null  $album_id
  * @property string       $checksum
  * @property string       $original_checksum
- * @property string       $license
+ * @property LicenseType  $license
  * @property Carbon       $created_at
  * @property Carbon       $updated_at
  * @property string|null  $live_photo_content_id
@@ -272,18 +273,18 @@ class Photo extends Model implements AspectRatio
 	 * part of an album) or the default license of the application-wide
 	 * setting is returned.
 	 *
-	 * @param ?string $license the value from the database passed in by
+	 * @param ?LicenseType $license the value from the database passed in by
 	 *                         the Eloquent framework
 	 *
-	 * @return string
+	 * @return LicenseType
 	 */
-	protected function getLicenseAttribute(?string $license): string
+	protected function getLicenseAttribute(?LicenseType $license): LicenseType
 	{
 		if ($license === null) {
-			return Configs::getValueAsString('default_license');
+			return Configs::getValueAsEnum('default_license', LicenseType::class);
 		}
 
-		if ($license !== 'none') {
+		if ($license !== LicenseType::NONE) {
 			return $license;
 		}
 
@@ -291,7 +292,7 @@ class Photo extends Model implements AspectRatio
 			return $this->album->license;
 		}
 
-		return Configs::getValueAsString('default_license');
+		return Configs::getValueAsEnum('default_license', LicenseType::class);
 	}
 
 	/**

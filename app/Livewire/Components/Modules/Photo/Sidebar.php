@@ -74,8 +74,7 @@ class Sidebar extends Component
 		$this->resolution = $original->width . ' x ' . $original->height;
 
 		$this->is_video = $photo->isVideo();
-		// $this->is_public = $photo->is_public;
-		$this->license = $photo->license;
+		$this->license = $photo->license->localization();
 
 		$this->taken_at = $photo->taken_at?->format($date_format_taken_at);
 		$this->make = $photo->make;

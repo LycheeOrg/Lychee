@@ -3,6 +3,7 @@
 namespace App\View\Components\Gallery\Album;
 
 use App\Contracts\Models\AbstractAlbum;
+use App\Enum\LicenseType;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
@@ -15,6 +16,7 @@ class Details extends Component
 	public string $album_id;
 	public ?string $url;
 	public string $title;
+	public string $license = '';
 	public int $num_children = 0;
 	public int $num_photos = 0;
 	public bool $can_download;
@@ -30,8 +32,8 @@ class Details extends Component
 		$this->album_id = $album->id;
 		if ($album instanceof Album) {
 			$this->num_children = $album->num_children;
-			// TODO fix me later
 			$this->num_photos = $album->num_photos;
+			$this->license = $album->license === LicenseType::NONE ? '' : $album->license->localization();
 		}
 		if ($album instanceof BaseAlbum) {
 			$this->created_at = $album->created_at->format($date_format);

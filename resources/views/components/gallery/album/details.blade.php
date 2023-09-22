@@ -18,6 +18,11 @@
                 {{ $num_photos }} {{ __('lychee.ALBUM_IMAGES') }}
             </span>
         @endif
+        @if($num_photos > 0 && $license !== '')
+        <span class="block text-neutral-400 text-sm">
+            {{ $license }}
+        </span>
+        @endif
     </div>
     @if($can_download)
     <a class="flex-shrink-0 px-3 cursor-pointer"

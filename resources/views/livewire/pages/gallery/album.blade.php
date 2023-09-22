@@ -27,19 +27,7 @@
     @if($flags->is_password_protected)
         <livewire:gallery.album.unlock albumID="$albumId" />
     @elseif(!$flags->is_accessible)
-        <div class="basicModalContainer transition-opacity duration-1000 ease-in animate-fadeIn
-	bg-black/80 z-50 fixed flex items-center justify-center w-full h-full top-0 left-0 box-border opacity-100"
-            data-closable="true"
-            x-data="{loginModalOpen:true}"
-            >
-            <div class="basicModal transition-opacity ease-in duration-1000
-                opacity-100 bg-gradient-to-b from-dark-300 to-dark-400
-                relative w-[500px] text-sm rounded-md text-neutral-400 animate-moveUp
-                "
-                role="dialog">
-                <livewire:modals.login />
-            </div>
-        </div>
+        <x-gallery.album.login-dialog />
     @else
     <div id="lychee_view_content"
         @if ($flags->layout() === \App\Enum\AlbumLayoutType::JUSTIFIED)
@@ -51,9 +39,9 @@
         class="relative flex flex-wrap content-start w-full justify-start overflow-x-clip overflow-y-auto"
         x-bind:class="isFullscreen ? 'h-[calc(100vh-3px)]' : 'h-[calc(100vh-56px)]'">
         @if ($flags->is_base_album)
-        @can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class, $this->album])
-        <x-gallery.album.menu.menu :album="$this->album" :userCount="$num_users" />
-        @endcan
+            @can(App\Policies\AlbumPolicy::CAN_EDIT, [App\Contracts\Models\AbstractAlbum::class, $this->album])
+            <x-gallery.album.menu.menu :album="$this->album" :userCount="$num_users" />
+            @endcan
         @endif
         @if($num_children > 0 || $num_photos > 0)
         <x-gallery.album.hero    :album="$this->album" :url="$this->header_url" x-show="! detailsOpen" />
