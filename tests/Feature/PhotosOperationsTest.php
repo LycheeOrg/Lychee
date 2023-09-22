@@ -89,7 +89,7 @@ class PhotosOperationsTest extends BasePhotoTest
 		$this->photos_tests->set_tag([$id], ['night']);
 		$this->photos_tests->set_tag([$id], ['trees'], false);
 		$this->photos_tests->set_public($id, true);
-		$this->photos_tests->set_license($id, 'WTFPL', 422, 'license must be one out of');
+		$this->photos_tests->set_license($id, 'WTFPL', 422, 'The selected license is invalid.');
 		$this->photos_tests->set_license($id, 'CC0');
 		$this->photos_tests->set_license($id, 'CC-BY-1.0');
 		$this->photos_tests->set_license($id, 'CC-BY-2.0');
