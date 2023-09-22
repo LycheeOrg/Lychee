@@ -28,7 +28,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
-use LycheeOrg\PhpFlickrJustifiedLayout\Contracts\AspectRatio;
 use function Safe\preg_match;
 
 /**
@@ -121,7 +120,7 @@ use function Safe\preg_match;
  *
  * @mixin \Eloquent
  */
-class Photo extends Model implements AspectRatio
+class Photo extends Model
 {
 	use UTCBasedTimes;
 	use HasAttributesPatch;
