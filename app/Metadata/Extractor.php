@@ -432,7 +432,7 @@ class Extractor
 		if ($metadata->shutter !== null && $metadata->shutter !== '') {
 			// TODO: If we add the suffix " s" here, we should also normalize the fraction here.
 			// It does not make any sense to strip-off the suffix again in Photo and re-add it again.
-			$metadata->shutter = $metadata->shutter . self::SUFFIX_SEC_UNIT;
+			$metadata->shutter .= self::SUFFIX_SEC_UNIT;
 		}
 
 		// Decode location data, it can be longer than is acceptable for DB that's the reason for substr

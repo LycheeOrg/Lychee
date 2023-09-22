@@ -1857,7 +1857,7 @@ return new class() extends Migration {
 
 		// This is Oct 21st, 1976, so it is also smaller than `self::BIRTH_OF_LYCHEE`
 		if ($id < self::MAX_SIGNED_32BIT_INT / 10 - 1) {
-			$id = $id * 10;
+			$id *= 10;
 		}
 
 		// This will never be true for 32bit platforms, but might be true
@@ -1865,7 +1865,7 @@ return new class() extends Migration {
 		if ($id > self::MAX_SIGNED_32BIT_INT) {
 			$id = (float) $id;
 			while ($id >= self::MAX_SIGNED_32BIT_INT) {
-				$id = $id / 10.0;
+				$id /= 10.0;
 			}
 		}
 

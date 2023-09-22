@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
+use App\Enum\LicenseType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnexpectedException;
-use App\Facades\Helpers;
 use App\Models\Builders\ConfigsBuilder;
 use App\Models\Extensions\ConfigsHas;
 use App\Models\Extensions\ThrowsConsistentExceptions;
@@ -130,7 +130,7 @@ class Configs extends Model
 				}
 				break;
 			case self::LICENSE:
-				if (!in_array($candidateValue, Helpers::get_all_licenses(), true)) {
+				if (LicenseType::tryFrom($candidateValue) === null) {
 					$message = sprintf($message_template, 'a valid license');
 				}
 				break;

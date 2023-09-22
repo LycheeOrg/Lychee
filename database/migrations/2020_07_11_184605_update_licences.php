@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\Photo;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 return new class() extends Migration {
 	/**
@@ -44,14 +44,13 @@ return new class() extends Migration {
 		$this->update_fields($default_values);
 
 		// Get all CC licences
-		/** @var Collection<Photo> $photos */
-		$photos = Photo::where('license', 'like', 'CC-%')->get();
+		/** @var Collection $photos */
+		$photos = DB::table('photos')->where('license', 'like', 'CC-%')->get();
 		if ($photos->isEmpty()) {
 			return;
 		}
 		foreach ($photos as $photo) {
-			$photo->license = $photo->license . '-4.0';
-			$photo->save();
+			DB::table('photos')->where('id', '=', $photo->id)->update(['license' => $photo->license . '-4.0']);
 		}
 	}
 
@@ -61,15 +60,14 @@ return new class() extends Migration {
 	public function down(): void
 	{
 		// Get all CC licences
-		/** @var Collection<Photo> $photos */
-		$photos = Photo::where('license', 'like', 'CC-%')->get();
+		/** @var Collection $photos */
+		$photos = DB::table('photos')->where('license', 'like', 'CC-%')->get();
 		if ($photos->isEmpty()) {
 			return;
 		}
 		foreach ($photos as $photo) {
 			// Delete version
-			$photo->license = substr($photo->license, 0, -4);
-			$photo->save();
+			DB::table('photos')->where('id', '=', $photo->id)->update(['license' => substr($photo->license, 0, -4)]);
 		}
 	}
 };
