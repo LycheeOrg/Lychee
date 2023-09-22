@@ -9,6 +9,7 @@ use App\Enum\AlbumDecorationType;
 use App\Enum\AlbumLayoutType;
 use App\Enum\DefaultAlbumProtectionType;
 use App\Enum\ImageOverlayType;
+use App\Enum\LicenseType;
 use App\Enum\ThumbAlbumSubtitleType;
 use App\Exceptions\Handler;
 use App\Metadata\Versions\InstalledVersion;
@@ -84,7 +85,7 @@ class ConfigurationResource extends JsonResource
 				'allow_online_git_pull' => Configs::getValueAsBool('allow_online_git_pull'),
 				'apply_composer_update' => Configs::getValueAsBool('apply_composer_update'),
 				'compression_quality' => Configs::getValueAsInt('compression_quality'),
-				'default_license' => Configs::getValueAsString('default_license'),
+				'default_license' => Configs::getValueAsEnum('default_license', LicenseType::class),
 				'delete_imported' => Configs::getValueAsBool('delete_imported'),
 				'dropbox_key' => Configs::getValueAsString('dropbox_key'),
 				'editor_enabled' => Configs::getValueAsBool('editor_enabled'),
