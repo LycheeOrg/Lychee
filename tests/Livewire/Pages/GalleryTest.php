@@ -25,6 +25,8 @@ class GalleryTest extends BaseLivewireTest
 
 		Livewire::test(Albums::class)
 			->assertViewIs('livewire.pages.gallery.albums')
-			->assertSee($title);
+			->assertSee($title)
+			->dispatch('reloadPage')
+			->assertStatus(200);
 	}
 }
