@@ -22,8 +22,8 @@ class LandingTest extends BaseLivewireTest
 	private $landing_on_off;
 
 	protected function setUp(): void
-    {
-        parent::setUp();
+	{
+		parent::setUp();
 		$this->landing_on_off = Configs::getValue('landing_page_enable');
 		Configs::set('landing_page_enable', 1);
 	}
@@ -45,5 +45,4 @@ class LandingTest extends BaseLivewireTest
 			->assertSee($subtitle)
 			->assertSee($background);
 	}
-
 }

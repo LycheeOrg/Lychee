@@ -12,19 +12,16 @@
 
 namespace Tests\Livewire;
 
-use App\Livewire\Components\Pages\Gallery\Albums;
-use App\Models\Configs;
+use App\Livewire\Components\Pages\Users;
 use Livewire\Livewire;
 use Tests\Livewire\Base\BaseLivewireTest;
 
-class GalleryTest extends BaseLivewireTest
+class UsersTest extends BaseLivewireTest
 {
-	public function testGallery(): void
+	public function testSharingLoggedOut(): void
 	{
-		$title = Configs::getValueAsString('site_title');
-
-		Livewire::test(Albums::class)
-			->assertViewIs('livewire.pages.gallery.albums')
-			->assertSee($title);
+		Livewire::test(Users::class)
+			->assertForbidden();
+			// ->assertViewIs('livewire.pages.users');
 	}
 }

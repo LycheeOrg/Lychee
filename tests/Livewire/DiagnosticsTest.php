@@ -12,19 +12,15 @@
 
 namespace Tests\Livewire;
 
-use App\Livewire\Components\Pages\Gallery\Albums;
-use App\Models\Configs;
+use App\Livewire\Components\Pages\Diagnostics;
 use Livewire\Livewire;
 use Tests\Livewire\Base\BaseLivewireTest;
 
-class GalleryTest extends BaseLivewireTest
+class DiagnosticsTest extends BaseLivewireTest
 {
-	public function testGallery(): void
+	public function testDiagnosticsLoggedOut(): void
 	{
-		$title = Configs::getValueAsString('site_title');
-
-		Livewire::test(Albums::class)
-			->assertViewIs('livewire.pages.gallery.albums')
-			->assertSee($title);
+		Livewire::test(Diagnostics::class)
+			->assertViewIs('livewire.pages.diagnostics');
 	}
 }

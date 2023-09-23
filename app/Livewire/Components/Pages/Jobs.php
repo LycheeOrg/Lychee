@@ -6,12 +6,25 @@ use App\Exceptions\ConfigurationKeyMissingException;
 use App\Livewire\Components\Menus\LeftMenu;
 use App\Models\Configs;
 use App\Models\JobHistory;
+use App\Policies\SettingsPolicy;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Livewire\Component;
 
 class Jobs extends Component
 {
+	/**
+	 * Mount the component of the front-end.
+	 *
+	 * @return void
+	 */
+	public function mount(): void
+	{
+		Gate::authorize(SettingsPolicy::CAN_SEE_LOGS, [Configs::class]);
+	}
+
+
 	/**
 	 * We use a computed property instead of attributes
 	 * in order to avoid poluting the data sent to the user.

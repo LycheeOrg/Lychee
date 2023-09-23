@@ -16,11 +16,10 @@ use Tests\AbstractTestCase;
 
 abstract class BaseLivewireTest extends AbstractTestCase
 {
+	protected function setUp(): void
+	{
+		parent::setUp();
 
-protected function setUp(): void
-    {
-        parent::setUp();
- 
-        $this->withoutVite();
-    }
+		$this->withoutVite();
+	}
 }
