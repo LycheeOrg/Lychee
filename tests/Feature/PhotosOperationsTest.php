@@ -190,7 +190,7 @@ class PhotosOperationsTest extends BasePhotoTest
 				'focal' => '16 mm',
 				'iso' => '1250',
 				'lens' => 'EF16-35mm f/2.8L USM',
-				'license' => 'reserved',
+				'license' => 'All Rights Reserved',
 				'make' => 'Canon',
 				'model' => 'Canon EOS R',
 				'is_public' => true,
