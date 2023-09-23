@@ -4,6 +4,6 @@
     @forelse($this->data as $line)
     {{ $line }}
     @empty
-    {{ $error_msg }}
+    {{ $this->errorMessage }}
     @endforelse
 </p>

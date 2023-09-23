@@ -12,7 +12,6 @@ use Livewire\Component;
 abstract class AbstractPreSection extends Component
 {
 	#[Locked] public string $title;
-	#[Locked] public string $error_msg = 'Error: You must have administrator rights to see this.';
 	/**
 	 * Rendering of the front-end.
 	 *
@@ -29,4 +28,13 @@ abstract class AbstractPreSection extends Component
 	 * @return array
 	 */
 	abstract public function getDataProperty(): array;
+
+	/**
+	 * Return error message because we don't want this serialized
+	 * 
+	 * @return string 
+	 */
+	public function getErrorMessageProperty(): string {
+		return 'Error: You must have administrator rights to see this.';
+	}
 }
