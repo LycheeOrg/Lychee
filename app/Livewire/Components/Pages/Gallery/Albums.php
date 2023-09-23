@@ -34,6 +34,7 @@ class Albums extends Component implements Reloadable
 	/** @var array<int,string> */
 	#[Locked] public array $albumIDs;
 	#[Locked] public ?string $albumId = null;
+	#[Locked] public bool $is_empty;
 	public AlbumsFlags $flags;
 	public SessionFlags $sessionFlags;
 
@@ -48,6 +49,7 @@ class Albums extends Component implements Reloadable
 	{
 		$this->flags = new AlbumsFlags();
 		$this->albumIDs = $this->topAlbums->albums->map(fn ($v, $k) => $v->id)->all();
+		$this->is_empty = $this->smartAlbums->isEmpty() && $this->albums->isEmpty() && $this->sharedAlbums->isEmpty();
 
 		return view('livewire.pages.gallery.albums');
 	}

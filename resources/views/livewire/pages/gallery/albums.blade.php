@@ -22,16 +22,14 @@
         <x-header.actions-menus />
     </x-header.bar>
     <!-- albums -->
-    <div class="overflow-x-clip overflow-y-auto h-[calc(100vh-56px)]">
+    <div class="overflow-x-clip overflow-y-auto h-[calc(100vh-56px)] flex flex-col">
         @if ($this->smartAlbums->isEmpty() && $this->albums->isEmpty() && $this->sharedAlbums->isEmpty())
-            <div>
-                <div x-on:init='loginModalOpen = true'>
-                    <x-icons.iconic icon="eye" />
-                    <p>{{ __('lychee.VIEW_NO_PUBLIC_ALBUMS') }}</p>
-                </div>
+            <div class="h-full flex flex-col justify-center"  x-init='loginModalOpen = true'>
+                <div class="w-full text-center"><x-icons.iconic icon="eye" /></div>
+                <p class="w-full text-center text-neutral-400">{{ __('lychee.VIEW_NO_PUBLIC_ALBUMS') }}</p>
             </div>
         @else
-            <div class="flex flex-wrap flex-auto flex-shrink-0 w-full justify-start">
+            <div class="flex flex-wrap flex-row flex-shrink w-full justify-start align-top">
                 @if ($this->smartAlbums->count() > 0)
                     <x-gallery.divider title="{{ __('lychee.SMART_ALBUMS') }}" />
                     @foreach ($this->smartAlbums as $album)

@@ -45,6 +45,7 @@ sync/*
 
 # Local DB for easy deployment
 backup.sql
+*-bck
 
 # Make sure we don't commit secrets
 .env

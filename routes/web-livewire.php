@@ -49,7 +49,7 @@ Route::middleware(['installation:complete', 'migration:complete'])
 			Route::get('/gallery/{albumId}/{photoId}', Photo::class)->name('livewire-gallery-photo');
 			Route::get('/', function () {
 				return redirect(Configs::getValueAsBool('landing_page_enable') ? route('landing') : route('livewire-gallery'));
-			});
+			})->name('livewire-index');
 		});
 	});
 
