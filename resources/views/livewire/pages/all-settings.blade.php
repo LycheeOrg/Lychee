@@ -31,10 +31,10 @@
 							wire:dirty.class="text-yellow-500"
 							/>
 						@foreach ($errors->get('form.values.' . $idx) as $err)
-						<span class="w-full block -mt-1 text-red-600 pb-1 pt-0">{{ $err }}</span>
+						<span class="w-full block -mt-1 text-red-600 pl-1 pb-1 pt-0">{{ $err }}</span>
 						@endforeach
 						@if($config->description !== '')
-						<span class="w-full block -mt-1 text-neutral-500 pb-1 pt-0">{{ $config->description }}</span>
+						<span class="w-full block -mt-1 text-neutral-500 pl-1 pb-1 pt-0">{{ $config->description }}</span>
 						@endif
 					</p>
 				</div>
@@ -44,6 +44,5 @@
 				class="w-full mt-7 mb-8 rounded-md"
 				wire:click="openConfirmSave">{{ __("lychee.SETTINGS_ADVANCED_SAVE") }}</x-forms.buttons.danger>
 		</div>
-		<x-footer />
 	</div>
 </div>

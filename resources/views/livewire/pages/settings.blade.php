@@ -53,6 +53,5 @@
 				<x-forms.buttons.danger class="rounded-md w-full" wire:navigate href="{{ route('all-settings') }}">{{ __('lychee.MORE') }}</x-forms.buttons.danger>
 			</div>
 		</div>
-		<x-footer />
 	</div>
 </div>
