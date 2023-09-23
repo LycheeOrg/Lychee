@@ -10,15 +10,15 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Livewire;
+namespace Tests\Livewire\Pages;
 
-use App\Livewire\Components\Pages\Profile;
+use App\Livewire\Components\Pages\AllSettings;
 use Livewire\Livewire;
 use Tests\Livewire\Base\BaseLivewireTest;
 
-class ProfileTest extends BaseLivewireTest
+class AllSettingsTest extends BaseLivewireTest
 {
-	private string $component = Profile::class;
+	private string $component = AllSettings::class;
 
 	public function testLoggedOut(): void
 	{
@@ -29,11 +29,11 @@ class ProfileTest extends BaseLivewireTest
 	public function testLoggedIn(): void
 	{
 		Livewire::actingAs($this->admin)->test($this->component)
-			->assertViewIs('livewire.pages.profile');
+			->assertViewIs('livewire.pages.all-settings');
 
 		Livewire::actingAs($this->admin)->test($this->component)
 			->call('back')
 			->assertDispatched('closeLeftMenu')
-			->assertRedirect(route('livewire-gallery'));
+			->assertRedirect(route('settings'));
 	}
 }

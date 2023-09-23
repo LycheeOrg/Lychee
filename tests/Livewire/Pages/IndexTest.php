@@ -10,7 +10,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Livewire;
+namespace Tests\Livewire\Pages;
 
 use App\Models\Configs;
 use Tests\Livewire\Base\BaseLivewireTest;

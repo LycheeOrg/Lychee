@@ -8,8 +8,8 @@
 	@if($this->hasChanged)
 	<x-forms.buttons.action wire:click='save' class="w-1/6 rounded-r-md h-11" >{{ __('lychee.SAVE') }}</x-forms.buttons.action>
 	@elseif($user->may_administrate !== true)
-	<x-forms.buttons.danger wire:click='delete' class="w-1/6 rounded-r-md h-11" >{{ __('lychee.DELETE') }}</x-forms.buttons.action>
+	<x-forms.buttons.danger wire:click='$parent.delete({{ $id }})' class="w-1/6 rounded-r-md h-11" >{{ __('lychee.DELETE') }}</x-forms.buttons.action>
 	@else 
-	<a class="inline-block h-10 invisible w-1/6 pt-2 pb-4 border-t border-t-dark-800">Save</a>
+	<a class="inline-block h-10 invisible w-1/6 pt-2 pb-4 border-t border-t-dark-800">{{ __('lychee.SAVE') }}</a>
 	@endif
 </div>

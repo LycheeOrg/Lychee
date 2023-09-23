@@ -82,7 +82,8 @@
         "mockery/mockery": "^1.5",
         "nunomaduro/larastan": "^2.0",
         "php-parallel-lint/php-parallel-lint": "^1.3",
-        "phpunit/phpunit": "^10.0"
+        "phpunit/phpunit": "^10.0",
+        "fakerphp/faker": "^1.23.0"
     },
     "autoload": {
         "classmap": [

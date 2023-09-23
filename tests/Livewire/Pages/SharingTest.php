@@ -10,15 +10,15 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Livewire;
+namespace Tests\Livewire\Pages;
 
-use App\Livewire\Components\Pages\Settings;
+use App\Livewire\Components\Pages\Sharing;
 use Livewire\Livewire;
 use Tests\Livewire\Base\BaseLivewireTest;
 
-class SettingsTest extends BaseLivewireTest
+class SharingTest extends BaseLivewireTest
 {
-	private string $component = Settings::class;
+	private string $component = Sharing::class;
 
 	public function testLoggedOut(): void
 	{
@@ -29,7 +29,7 @@ class SettingsTest extends BaseLivewireTest
 	public function testLoggedIn(): void
 	{
 		Livewire::actingAs($this->admin)->test($this->component)
-			->assertViewIs('livewire.pages.settings');
+			->assertViewIs('livewire.pages.sharing');
 
 		Livewire::actingAs($this->admin)->test($this->component)
 			->call('back')

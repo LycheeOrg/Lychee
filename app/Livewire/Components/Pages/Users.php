@@ -3,11 +3,12 @@
 namespace App\Livewire\Components\Pages;
 
 use App\Actions\User\Create;
+use App\Exceptions\UnauthorizedException;
 use App\Livewire\Components\Menus\LeftMenu;
 use App\Models\User;
 use App\Policies\UserPolicy;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Livewire\Component;
@@ -27,17 +28,12 @@ class Users extends Component
 	public bool $may_edit_own_settings = false;
 
 	/**
-	 * @var string[] listeners to refresh the page when creating a new user or deleting one
+	 * Init the private properties.
+	 *
+	 * @return void
 	 */
-	protected $listeners = ['loadUsers'];
-
-
-	/**
-	 * Init the private properties
-	 * 
-	 * @return void 
-	 */
-	public function boot(): void {
+	public function boot(): void
+	{
 		$this->create = resolve(Create::class);
 	}
 
@@ -102,5 +98,24 @@ class Users extends Component
 		$this->dispatch('closeLeftMenu')->to(LeftMenu::class);
 
 		return $this->redirect(route('livewire-gallery'), true);
+	}
+
+	/**
+	 * Delete an existing credential.
+	 *
+	 * @param int $id
+	 *
+	 * @return void
+	 */
+	public function delete(int $id): void
+	{
+		if ($id === Auth::id()) {
+			throw new UnauthorizedException('You are not allowed to delete yourself');
+		}
+
+		Gate::authorize(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class]);
+
+		User::where('id', '=', $id)->delete();
+		$this->loadUsers();
 	}
 }

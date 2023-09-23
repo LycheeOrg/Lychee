@@ -3,11 +3,13 @@
 namespace App\Livewire\Components\Modules\Users;
 
 use App\Actions\User\Save;
-use App\Exceptions\UnauthorizedException;
-use App\Livewire\Components\Pages\Users;
+use App\Http\RuleSets\Users\SetUserSettingsRuleSet;
+use App\Livewire\Traits\UseValidator;
 use App\Models\User;
+use App\Policies\UserPolicy;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
@@ -15,12 +17,26 @@ use Livewire\Component;
  */
 class UserLine extends Component
 {
+	use UseValidator;
+
+	private Save $save;
 	public User $user;
 	// We cannot model bind hidden attributes, as a result, it is better to add properties to the component
+	#[Locked] public int $id;
 	public string $username; // ! Wired
 	public string $password = '';  // ! Wired
 	public bool $may_upload; // ! Wired
 	public bool $may_edit_own_settings; // ! Wired
+
+	/**
+	 * Initialization of private properties.
+	 *
+	 * @return void
+	 */
+	public function boot()
+	{
+		$this->save = resolve(Save::class);
+	}
 
 	/**
 	 * Given a user, load the properties.
@@ -32,7 +48,10 @@ class UserLine extends Component
 	 */
 	public function mount(User $user): void
 	{
+		Gate::authorize(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class]);
+
 		$this->user = $user;
+		$this->id = $user->id;
 		$this->username = $user->username;
 		$this->may_edit_own_settings = $user->may_edit_own_settings;
 		$this->may_upload = $user->may_upload;
@@ -63,33 +82,20 @@ class UserLine extends Component
 	}
 
 	/**
-	 * Deletes a user.
-	 *
-	 * The albums and photos owned by the user are re-assigned to the
-	 * admin user.
-	 *
-	 * @return void
-	 */
-	public function delete(): void
-	{
-		if ($this->user->id === Auth::id()) {
-			throw new UnauthorizedException('You are not allowed to delete yourself');
-		}
-		$this->user->delete();
-		$this->dispatch('loadUsers')->to(Users::class);
-	}
-
-	/**
 	 * Save modification done to a user.
 	 * Note that an admin can change the password of a user at will.
 	 *
-	 * @param Save $save
-	 *
 	 * @return void
 	 */
-	public function save(Save $save): void
+	public function save(): void
 	{
-		$save->do(
+		if (!$this->areValid(SetUserSettingsRuleSet::rules())) {
+			return;
+		}
+
+		Gate::authorize(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class]);
+
+		$this->save->do(
 			$this->user,
 			$this->username,
 			$this->password,

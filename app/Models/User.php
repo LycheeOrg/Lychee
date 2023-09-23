@@ -11,6 +11,7 @@ use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UTCBasedTimes;
 use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Query\Builder as BaseBuilder;
@@ -74,6 +75,7 @@ use function Safe\mb_convert_encoding;
  */
 class User extends Authenticatable implements WebAuthnAuthenticatable
 {
+	use HasFactory;
 	use Notifiable;
 	use WebAuthnAuthentication;
 	use UTCBasedTimes;

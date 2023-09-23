@@ -10,16 +10,15 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Livewire;
+namespace Tests\Livewire\Pages;
 
-use App\Livewire\Components\Pages\Users;
-use Illuminate\Support\Facades\Auth;
+use App\Livewire\Components\Pages\Settings;
 use Livewire\Livewire;
 use Tests\Livewire\Base\BaseLivewireTest;
 
-class UsersTest extends BaseLivewireTest
+class SettingsTest extends BaseLivewireTest
 {
-	private string $component = Users::class;
+	private string $component = Settings::class;
 
 	public function testLoggedOut(): void
 	{
@@ -30,25 +29,11 @@ class UsersTest extends BaseLivewireTest
 	public function testLoggedIn(): void
 	{
 		Livewire::actingAs($this->admin)->test($this->component)
-			->assertViewIs('livewire.pages.users');
+			->assertViewIs('livewire.pages.settings');
 
 		Livewire::actingAs($this->admin)->test($this->component)
 			->call('back')
 			->assertDispatched('closeLeftMenu')
 			->assertRedirect(route('livewire-gallery'));
-	}
-
-	public function testCreate(): void
-	{
-		Auth::loginUsingId(1);
-
-		Livewire::test(Users::class)
-			->set('username', 'user1')
-			->set('password', 'password')
-			->call('create')
-			->assertStatus(200);
-
-		Auth::logout();
-			// ->assertSee('user1');
 	}
 }
