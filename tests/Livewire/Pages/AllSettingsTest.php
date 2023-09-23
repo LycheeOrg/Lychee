@@ -29,7 +29,13 @@ class AllSettingsTest extends BaseLivewireTest
 	public function testLoggedIn(): void
 	{
 		Livewire::actingAs($this->admin)->test($this->component)
-			->assertViewIs('livewire.pages.all-settings');
+			->assertViewIs('livewire.pages.all-settings')
+			->call('openConfirmSave')
+			->assertDispatched('openModal');
+
+		Livewire::actingAs($this->admin)->test($this->component)
+			->dispatch('saveAll')
+			->assertStatus(200);
 
 		Livewire::actingAs($this->admin)->test($this->component)
 			->call('back')

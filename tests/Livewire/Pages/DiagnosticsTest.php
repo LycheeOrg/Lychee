@@ -36,11 +36,20 @@ class DiagnosticsTest extends BaseLivewireTest
 
 	public function testDiagnosticsLogged(): void
 	{
-		Livewire::actingAs($this->admin)->test(Diagnostics::class)
+		$diagnostics = Livewire::actingAs($this->admin)->test(Diagnostics::class)
 			->assertViewIs('livewire.pages.diagnostics')
 			->assertSeeLivewire(Configurations::class)
 			->assertSeeLivewire(Space::class)
 			->assertSeeLivewire(Infos::class)
 			->assertDontSee('Error: You must have administrator rights to see this.');
+
+		$diagnostics->dispatch('reloadPage')
+			->assertStatus(200);
+
+		Livewire::actingAs($this->admin)->test(Diagnostics::class)
+			->call('back')
+			->assertDispatched('closeLeftMenu')
+			->assertRedirect(route('livewire-gallery'));
+
 	}
 }
