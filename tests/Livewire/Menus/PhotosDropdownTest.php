@@ -130,6 +130,15 @@ class PhotosDropdownTest extends BaseLivewireTest
 			->assertDispatched('openModal', 'forms.photo.move');
 	}
 
+	public function testCopyTo(): void
+	{
+		Livewire::test(PhotosDropdown::class,
+			['params' => ['albumID' => $this->album->id, 'photoIDs' => [$this->photo1->id, $this->photo2->id]]])
+			->call('copyAllTo')
+			->assertDispatched('closeContextMenu')
+			->assertDispatched('openModal', 'forms.photo.copy-to');
+	}
+
 	public function testDownload(): void
 	{
 		Livewire::test(PhotosDropdown::class,
