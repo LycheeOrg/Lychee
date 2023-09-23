@@ -2,11 +2,15 @@
 
 namespace App\Enum;
 
+use App\Enum\Traits\DecorateBackedEnum;
+
 /**
  * Defines the possible licenses available by Lychee.
  */
 enum LicenseType: string
 {
+	use DecorateBackedEnum;
+
 	case NONE = 'none';
 	case RESERVED = 'reserved';
 	case CC0 = 'CC0';

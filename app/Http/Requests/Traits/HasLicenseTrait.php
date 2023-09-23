@@ -2,14 +2,16 @@
 
 namespace App\Http\Requests\Traits;
 
+use App\Enum\LicenseType;
+
 trait HasLicenseTrait
 {
-	protected string $license = 'none';
+	protected LicenseType $license = LicenseType::NONE;
 
 	/**
-	 * @return string
+	 * @return LicenseType
 	 */
-	public function license(): string
+	public function license(): LicenseType
 	{
 		return $this->license;
 	}

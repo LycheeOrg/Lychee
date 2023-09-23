@@ -89,7 +89,7 @@ class PhotosOperationsTest extends BasePhotoTest
 		$this->photos_tests->set_tag([$id], ['night']);
 		$this->photos_tests->set_tag([$id], ['trees'], false);
 		$this->photos_tests->set_public($id, true);
-		$this->photos_tests->set_license($id, 'WTFPL', 422, 'license must be one out of');
+		$this->photos_tests->set_license($id, 'WTFPL', 422, 'The selected license is invalid.');
 		$this->photos_tests->set_license($id, 'CC0');
 		$this->photos_tests->set_license($id, 'CC-BY-1.0');
 		$this->photos_tests->set_license($id, 'CC-BY-2.0');
@@ -150,7 +150,7 @@ class PhotosOperationsTest extends BasePhotoTest
 			'album_id' => null,
 			'id' => $id,
 			'created_at' => $updated_taken_at->setTimezone('UTC')->format('Y-m-d\TH:i:sP'),
-			'license' => 'reserved',
+			'license' => 'All Rights Reserved',
 			'is_public' => true,
 			'is_starred' => true,
 			'tags' => ['night', 'trees'],
@@ -190,7 +190,7 @@ class PhotosOperationsTest extends BasePhotoTest
 				'focal' => '16 mm',
 				'iso' => '1250',
 				'lens' => 'EF16-35mm f/2.8L USM',
-				'license' => 'reserved',
+				'license' => 'All Rights Reserved',
 				'make' => 'Canon',
 				'model' => 'Canon EOS R',
 				'is_public' => true,

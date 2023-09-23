@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Photo;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;

@@ -2,10 +2,12 @@
 
 namespace App\Contracts\Http\Requests;
 
+use App\Enum\LicenseType;
+
 interface HasLicense
 {
 	/**
-	 * @return string|null
+	 * @return LicenseType|null
 	 */
-	public function license(): ?string;
+	public function license(): ?LicenseType;
 }
