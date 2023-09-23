@@ -50,6 +50,5 @@ class DiagnosticsTest extends BaseLivewireTest
 			->call('back')
 			->assertDispatched('closeLeftMenu')
 			->assertRedirect(route('livewire-gallery'));
-
 	}
 }
