@@ -10,10 +10,14 @@
             <x-forms.textarea class="w-full h-48" wire:model="description"  id="albumDescription"></x-forms.textarea>
             <x-forms.error-message field='description' />
         </div>
-        <div class="mt-4 h-12">
+        <div class="mt-4 h-10">
             <span class="font-bold">{{ __('lychee.ALBUM_ORDERING') }}</span>
             <x-forms.dropdown class="mx-2" :options="$this->photoSortingColumns" id="sorting_dialog_column_select" wire:model='sorting_column'/>
             <x-forms.dropdown class="mx-2" :options="$this->sortingOrders" id="sorting_dialog_order_select" wire:model='sorting_order'/>
+        </div>
+        <div class="h-10">
+            <span class="font-bold">{{ __('lychee.ALBUM_SET_LICENSE') }}</span>
+            <x-forms.dropdown class="mx-2" :options="$this->licenses" id="license_dialog_select" wire:model='license'/>
         </div>
         <x-forms.buttons.action class="rounded w-full" wire:click='submit' >
             {{ __('lychee.SAVE') }}

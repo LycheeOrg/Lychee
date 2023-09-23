@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Modules\Photo;
 
+use App\Enum\LicenseType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Facades\Helpers;
 use App\Models\Configs;
@@ -74,7 +75,7 @@ class Sidebar extends Component
 		$this->resolution = $original->width . ' x ' . $original->height;
 
 		$this->is_video = $photo->isVideo();
-		$this->license = $photo->license->localization();
+		$this->license = $photo->license !== LicenseType::NONE ? $photo->license->localization() : '';
 
 		$this->taken_at = $photo->taken_at?->format($date_format_taken_at);
 		$this->make = $photo->make;

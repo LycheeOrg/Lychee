@@ -16,12 +16,12 @@
         @if($num_photos > 0)
             <span class="block text-neutral-200 text-sm">
                 {{ $num_photos }} {{ __('lychee.ALBUM_IMAGES') }}
+                @if($license !== '')
+                <span class="text-neutral-400 text-sm">
+                    &mdash; {{ $license }}
+                </span>
             </span>
         @endif
-        @if($num_photos > 0 && $license !== '')
-        <span class="block text-neutral-400 text-sm">
-            {{ $license }}
-        </span>
         @endif
     </div>
     @if($can_download)

@@ -1,5 +1,5 @@
 <div class="my-8">
-	<p class="m-0 w-full text-neutral-200">
+	<p class="m-0 w-full text-neutral-400">
 		{!! $description !!}
 		<x-forms.inputs.text class="mt-2 w-full" placeholder="{{ $placeholder }}" wire:model="value" />
 	</p>

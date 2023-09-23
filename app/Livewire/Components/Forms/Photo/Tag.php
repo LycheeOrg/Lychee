@@ -54,7 +54,7 @@ class Tag extends Component
 	 */
 	public function submit(): void
 	{
-		$this->tags = collect(explode(',', $this->tag))->map(fn ($v, $k) => trim($v))->filter(fn ($v) => $v !== '')->all();
+		$this->tags = collect(explode(',', $this->tag))->map(fn ($v) => trim($v))->filter(fn ($v) => $v !== '')->all();
 
 		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->photoIDs]);
 

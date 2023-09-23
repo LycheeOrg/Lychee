@@ -5,18 +5,21 @@ namespace App\Livewire\Components\Forms\Album;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingPhotoType;
+use App\Enum\LicenseType;
 use App\Enum\OrderSortingType;
 use App\Factories\AlbumFactory;
 use App\Http\RuleSets\Album\SetAlbumDescriptionRuleSet;
 use App\Http\RuleSets\Album\SetAlbumSortingRuleSet;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
+use App\Models\Album as ModelsAlbum;
 use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
 use App\Rules\TitleRule;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rules\Enum;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -31,6 +34,7 @@ class Properties extends Component
 	public string $description; // ! wired
 	public string $sorting_column = ''; // ! wired
 	public string $sorting_order = ''; // ! wired
+	public string $license = 'none';
 
 	public array $sorting_columns;
 	public array $sorting_orders;
@@ -49,6 +53,9 @@ class Properties extends Component
 		$this->description = $album->description ?? '';
 		$this->sorting_column = $album->sorting?->column->value ?? '';
 		$this->sorting_order = $album->sorting?->order->value ?? '';
+		if ($album instanceof ModelsAlbum) {
+			$this->license = $album->license->value;
+		}
 	}
 
 	/**
@@ -68,6 +75,7 @@ class Properties extends Component
 	{
 		$rules = [
 			RequestAttribute::TITLE_ATTRIBUTE => ['required', new TitleRule()],
+			RequestAttribute::LICENSE_ATTRIBUTE => ['required', new Enum(LicenseType::class)],
 			...SetAlbumDescriptionRuleSet::rules(),
 			...SetAlbumSortingRuleSet::rules(),
 		];
@@ -88,6 +96,11 @@ class Properties extends Component
 		$sortingCriterion = $column === null ? null : new PhotoSortingCriterion($column->toColumnSortingType(), $order);
 
 		$baseAlbum->sorting = $sortingCriterion;
+
+		if ($baseAlbum instanceof ModelsAlbum) {
+			$baseAlbum->license = LicenseType::from($this->license);
+		}
+
 		$this->notify(__('lychee.CHANGE_SUCCESS'));
 		$baseAlbum->save();
 	}
@@ -112,5 +125,10 @@ class Properties extends Component
 	{
 		// ? Dark magic: The ... will expand the array.
 		return ['' => '-', ...OrderSortingType::localized()];
+	}
+
+	final public function getLicensesProperty(): array
+	{
+		return LicenseType::localized();
 	}
 }

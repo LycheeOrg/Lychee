@@ -3,6 +3,7 @@
 namespace App\Livewire\Components\Modules\Photo;
 
 use App\Contracts\Http\Requests\RequestAttribute;
+use App\Enum\LicenseType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Http\RuleSets\Photo\SetPhotoDescriptionRuleSet;
 use App\Livewire\Traits\Notify;
@@ -12,6 +13,7 @@ use App\Models\Photo as PhotoModel;
 use App\Policies\PhotoPolicy;
 use App\Rules\TitleRule;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Validation\Rules\Enum;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -28,10 +30,11 @@ class Properties extends Component
 	use UseValidator;
 
 	#[Locked] public string $photoID;
-	public string $title;
-	public string $created_at;
-	public string $description;
-	public string $tags_with_comma;
+	public string $title; // ! wired
+	public string $created_at; // ! wired
+	public string $description; // ! wired
+	public string $tags_with_comma; // ! wired
+	public string $license; // ! wired
 
 	/** @var array<int,string> */
 	#[Locked] public array $tags;
@@ -53,6 +56,7 @@ class Properties extends Component
 		$this->created_at = $photo->created_at->format($date_format_uploaded);
 		$this->description = $photo->description ?? '';
 		$this->tags = $photo->tags;
+		$this->license = $photo->attributes['license'] ?? 'none';
 		$this->tags_with_comma = join(', ', $photo->tags);
 	}
 
@@ -73,13 +77,14 @@ class Properties extends Component
 	 */
 	public function submit(): void
 	{
-		$this->tags = collect(explode(',', $this->tags_with_comma))->map(fn (string $v) => trim($v))->all();
+		$this->tags = collect(explode(',', $this->tags_with_comma))->map(fn ($v) => trim($v))->filter(fn ($v) => $v !== '')->all();
 
 		$rules = [
 			RequestAttribute::TITLE_ATTRIBUTE => ['required', new TitleRule()],
 			...SetPhotoDescriptionRuleSet::rules(),
 			RequestAttribute::TAGS_ATTRIBUTE => 'present|array',
 			RequestAttribute::TAGS_ATTRIBUTE . '.*' => 'required|string|min:1',
+			RequestAttribute::LICENSE_ATTRIBUTE => ['required', new Enum(LicenseType::class)],
 		];
 
 		if (!$this->areValid($rules)) {
@@ -93,8 +98,14 @@ class Properties extends Component
 		$photo->description = $this->description;
 		$photo->created_at = $this->created_at;
 		$photo->tags = $this->tags;
+		$photo->license = LicenseType::from($this->license);
 		$photo->save();
 
 		$this->notify(__('lychee.CHANGE_SUCCESS'));
+	}
+
+	final public function getLicensesProperty(): array
+	{
+		return LicenseType::localized();
 	}
 }

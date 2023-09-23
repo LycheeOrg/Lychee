@@ -17,11 +17,11 @@
                 <x-forms.inputs.text wire:model='tags_with_comma' />
                 <x-forms.error-message field='tags' />
             </div>
-            {{-- <div class="mt-4 h-12 w-full"> --}}
-                {{-- <span class="font-bold">{{ __('lychee.ALBUM_ORDERING') }}</span>
-                <x-forms.dropdown class="mx-2" :options="$this->photoSortingColumns" id="sorting_dialog_column_select" wire:model='sorting_column'/>
-                <x-forms.dropdown class="mx-2" :options="$this->sortingOrders" id="sorting_dialog_order_select" wire:model='sorting_order'/> --}}
-            {{-- </div> --}}
+            <div class="my-4 h-12 w-full">
+                <p><span class="font-bold">{{ __('lychee.SET_LICENSE') }}</span>
+                <x-forms.dropdown class="mx-2" :options="$this->licenses" id="licenses_dialog_select" wire:model='license'/>
+                </p>
+            </div>
             <x-forms.buttons.action class="rounded w-full"
                 wire:click='submit'>{{ __('lychee.SAVE') }}</x-forms.buttons.action>
         </div>
