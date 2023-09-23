@@ -296,6 +296,16 @@ class Photo extends Model implements AspectRatio
 	}
 
 	/**
+	 * This is to avoid loading the license from configs & albums.
+	 *
+	 * @return ?string
+	 */
+	public function getOriginalLicense(): ?string
+	{
+		return $this->attributes['license'];
+	}
+
+	/**
 	 * Accessor for attribute `focal`.
 	 *
 	 * In case the photo is a video (why it is called a photo then, btw?), the
