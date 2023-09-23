@@ -104,7 +104,7 @@ parameters:
 			paths:
 				- tests
 		- 
-			message: '#Call to an undefined method Illuminate\\Testing\\TestResponse::(assertSeeLivewire|dispatch)#'
+			message: '#Call to an undefined method Illuminate\\Testing\\TestResponse::(assert)?(SeeLivewire|dispatch|call|Set)#'
 			paths:
 				- tests
 		- 
