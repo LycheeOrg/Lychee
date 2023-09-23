@@ -9,16 +9,6 @@ use function Safe\parse_url;
 
 class Helpers
 {
-	private int $numTab = 0;
-
-	/**
-	 * Initialize the Facade.
-	 */
-	public function __construct()
-	{
-		$this->numTab = 0;
-	}
-
 	/**
 	 * Add UnixTimeStamp to file path suffix.
 	 *
@@ -154,34 +144,6 @@ class Helpers
 	}
 
 	/**
-	 * Return incrementing numbers.
-	 */
-	public function data_index(): int
-	{
-		$this->numTab++;
-
-		return $this->numTab;
-	}
-
-	/**
-	 * Reset and return incrementing numbers.
-	 */
-	public function data_index_r(): int
-	{
-		$this->numTab = 1;
-
-		return $this->numTab;
-	}
-
-	/**
-	 * Reset the incrementing number.
-	 */
-	public function data_index_set(int $idx = 0): void
-	{
-		$this->numTab = $idx;
-	}
-
-	/**
 	 * From https://www.php.net/manual/en/function.disk-total-space.php.
 	 *
 	 * @param float $bytes
@@ -231,5 +193,28 @@ class Helpers
 		return ($h > 0 ? $h . 'h' : '')
 			. ($m > 0 ? $m . 'm' : '')
 			. ($s > 0 || ($h === 0 && $m === 0) ? $s . 's' : '');
+	}
+
+	/**
+	 * Return true if the upload_max_filesize is bellow what we want.
+	 */
+	public function convertSize(string $size): int
+	{
+		$size = trim($size);
+		$last = strtolower($size[strlen($size) - 1]);
+		$size = intval($size);
+
+		switch ($last) {
+			case 'g':
+				$size *= 1024;
+				// no break
+			case 'm':
+				$size *= 1024;
+				// no break
+			case 'k':
+				$size *= 1024;
+		}
+
+		return $size;
 	}
 }

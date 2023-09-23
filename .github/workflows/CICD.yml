@@ -30,7 +30,7 @@ jobs:
           access_token: ${{ github.token }}
 
   php_syntax_errors:
-    name: 1️⃣ PHP - Syntax errors
+    name: 1️⃣ PHP 8.1 - Syntax errors
     runs-on: ubuntu-latest
     needs:
       - kill_previous
@@ -50,7 +50,7 @@ jobs:
         run: vendor/bin/parallel-lint --exclude .git --exclude vendor .
 
   code_style_errors:
-    name: 2️⃣ PHP - Code Style errors
+    name: 2️⃣ PHP 8.1 - Code Style errors
     runs-on: ubuntu-latest
     needs:
       - php_syntax_errors
@@ -58,7 +58,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: latest
+          php-version: 8.1
 
       - name: Checkout code
         uses: actions/checkout@v3
@@ -91,7 +91,7 @@ jobs:
         run: vendor/bin/phpstan analyze
 
   tests:
-    name: 2️⃣ PHP ${{ matrix.php-version }} - ${{ matrix.sql-versions }}
+    name: 2️⃣ PHP ${{ matrix.php-version }} - ${{ matrix.sql-versions }} -- ${{ matrix.test-suite }}
     needs:
       - php_syntax_errors
     runs-on: ubuntu-latest
@@ -104,6 +104,8 @@ jobs:
           - mariadb
           - postgresql
           - sqlite
+        test-suite:
+          - Feature
     # Service containers to run with `container-job`
     services:
       # Label used to access the service container
@@ -162,11 +164,11 @@ jobs:
           php artisan optimize
           php artisan migrate
 
-      - name: Apply tests
-        run: XDEBUG_MODE=coverage vendor/bin/phpunit
+      - name: Apply tests ${{ matrix.test-suite }}
+        run: XDEBUG_MODE=coverage vendor/bin/phpunit --testsuite ${{ matrix.test-suite }}
 
       - name: Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3
 
       - name: Make sure we can go backward
         run: php artisan migrate:rollback
@@ -180,7 +182,6 @@ jobs:
       matrix:
         php-version:
           - 8.1
-          - 8.2
         sql-versions:
           - mariadb
           - postgresql

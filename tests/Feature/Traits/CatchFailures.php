@@ -28,7 +28,7 @@ trait CatchFailures
 			dump($exception);
 		}
 		// We remove 204 as it does not have content
-		if (!in_array($response->getStatusCode(), [204, $expectedStatusCode], true)) {
+		if (!in_array($response->getStatusCode(), [204, 302, $expectedStatusCode], true)) {
 			$exception = $response->json();
 			$this->trimException($exception);
 			dump($exception);
