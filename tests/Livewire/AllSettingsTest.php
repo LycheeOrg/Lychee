@@ -18,15 +18,22 @@ use Tests\Livewire\Base\BaseLivewireTest;
 
 class AllSettingsTest extends BaseLivewireTest
 {
-	public function testAllSettingsLoggedOut(): void
+	private string $component = AllSettings::class;
+
+	public function testLoggedOut(): void
 	{
-		Livewire::test(AllSettings::class)
+		Livewire::test($this->component)
 			->assertForbidden();
 	}
 
-	public function testAllSettingsLoggedIn(): void
+	public function testLoggedIn(): void
 	{
-		Livewire::actingAs($this->admin)->test(AllSettings::class)
+		Livewire::actingAs($this->admin)->test($this->component)
 			->assertViewIs('livewire.pages.all-settings');
+
+		Livewire::actingAs($this->admin)->test($this->component)
+			->call('back')
+			->assertDispatched('closeLeftMenu')
+			->assertRedirect(route('settings'));
 	}
 }

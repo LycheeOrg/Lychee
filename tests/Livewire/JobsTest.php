@@ -18,15 +18,22 @@ use Tests\Livewire\Base\BaseLivewireTest;
 
 class JobsTest extends BaseLivewireTest
 {
-	public function testJobsLoggedOut(): void
+	private string $component = Jobs::class;
+
+	public function testLoggedOut(): void
 	{
-		Livewire::test(Jobs::class)
+		Livewire::test($this->component)
 			->assertForbidden();
 	}
 
-	public function testJobsLoggedIn(): void
+	public function testLoggedIn(): void
 	{
-		Livewire::actingAs($this->admin)->test(Jobs::class)
+		Livewire::actingAs($this->admin)->test($this->component)
 			->assertViewIs('livewire.pages.jobs');
+
+		Livewire::actingAs($this->admin)->test($this->component)
+			->call('back')
+			->assertDispatched('closeLeftMenu')
+			->assertRedirect(route('livewire-gallery'));
 	}
 }

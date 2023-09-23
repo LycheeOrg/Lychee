@@ -18,15 +18,22 @@ use Tests\Livewire\Base\BaseLivewireTest;
 
 class ProfileTest extends BaseLivewireTest
 {
-	public function testProfileLoggedOut(): void
+	private string $component = Profile::class;
+
+	public function testLoggedOut(): void
 	{
-		Livewire::test(Profile::class)
+		Livewire::test($this->component)
 			->assertForbidden();
 	}
 
-	public function testProfileLoggedIn(): void
+	public function testLoggedIn(): void
 	{
-		Livewire::actingAs($this->admin)->test(Profile::class)
+		Livewire::actingAs($this->admin)->test($this->component)
 			->assertViewIs('livewire.pages.profile');
+
+		Livewire::actingAs($this->admin)->test($this->component)
+			->call('back')
+			->assertDispatched('closeLeftMenu')
+			->assertRedirect(route('livewire-gallery'));
 	}
 }

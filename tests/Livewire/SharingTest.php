@@ -18,15 +18,22 @@ use Tests\Livewire\Base\BaseLivewireTest;
 
 class SharingTest extends BaseLivewireTest
 {
-	public function testSharingLoggedOut(): void
+	private string $component = Sharing::class;
+
+	public function testLoggedOut(): void
 	{
-		Livewire::test(Sharing::class)
+		Livewire::test($this->component)
 			->assertForbidden();
 	}
 
-	public function testSharingLoggedIn(): void
+	public function testLoggedIn(): void
 	{
-		Livewire::actingAs($this->admin)->test(Sharing::class)
+		Livewire::actingAs($this->admin)->test($this->component)
 			->assertViewIs('livewire.pages.sharing');
+
+		Livewire::actingAs($this->admin)->test($this->component)
+			->call('back')
+			->assertDispatched('closeLeftMenu')
+			->assertRedirect(route('livewire-gallery'));
 	}
 }
