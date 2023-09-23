@@ -13,6 +13,7 @@
 namespace Tests\Livewire\Pages;
 
 use App\Livewire\Components\Modules\Diagnostics\Configurations;
+use App\Livewire\Components\Modules\Diagnostics\Errors;
 use App\Livewire\Components\Modules\Diagnostics\Infos;
 use App\Livewire\Components\Modules\Diagnostics\Space;
 use App\Livewire\Components\Pages\Diagnostics;
@@ -36,9 +37,10 @@ class DiagnosticsTest extends BaseLivewireTest
 
 	public function testDiagnosticsLogged(): void
 	{
-		$diagnostics = Livewire::actingAs($this->admin)->test(Diagnostics::class)
+		$diagnostics = Livewire::actingAs($this->admin)->test(Diagnostics::class, ['lazy' => false])
 			->assertViewIs('livewire.pages.diagnostics')
 			->assertSeeLivewire(Configurations::class)
+			->assertSeeLivewire(Errors::class)
 			->assertSeeLivewire(Space::class)
 			->assertSeeLivewire(Infos::class)
 			->assertDontSee('Error: You must have administrator rights to see this.');
