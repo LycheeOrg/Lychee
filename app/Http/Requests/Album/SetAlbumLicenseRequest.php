@@ -5,6 +5,7 @@ namespace App\Http\Requests\Album;
 use App\Contracts\Http\Requests\HasAlbum;
 use App\Contracts\Http\Requests\HasLicense;
 use App\Contracts\Http\Requests\RequestAttribute;
+use App\Enum\LicenseType;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasAlbumTrait;
@@ -32,6 +33,6 @@ class SetAlbumLicenseRequest extends BaseApiRequest implements HasAlbum, HasLice
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->album = Album::query()->findOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
-		$this->license = $values[RequestAttribute::LICENSE_ATTRIBUTE];
+		$this->license = LicenseType::tryFrom($values[RequestAttribute::LICENSE_ATTRIBUTE]);
 	}
 }

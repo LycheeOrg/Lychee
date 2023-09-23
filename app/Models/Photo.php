@@ -7,6 +7,7 @@ use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Constants\RandomID;
+use App\Enum\LicenseType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\ZeroModuloException;
@@ -61,7 +62,7 @@ use function Safe\preg_match;
  * @property string|null  $album_id
  * @property string       $checksum
  * @property string       $original_checksum
- * @property string       $license
+ * @property LicenseType  $license
  * @property Carbon       $created_at
  * @property Carbon       $updated_at
  * @property string|null  $live_photo_content_id
@@ -158,6 +159,18 @@ class Photo extends Model
 	];
 
 	/**
+	 * @var array<int,string> The list of attributes which exist as columns of the DB
+	 *                        relation but shall not be serialized to JSON
+	 */
+	protected $hidden = [
+		RandomID::LEGACY_ID_NAME,
+		'album',  // do not serialize relation in order to avoid infinite loops
+		'owner',  // do not serialize relation
+		'owner_id',
+		'live_photo_short_path', // serialize live_photo_url instead
+	];
+
+	/**
 	 * @param $query
 	 *
 	 * @return PhotoBuilder
@@ -165,6 +178,11 @@ class Photo extends Model
 	public function newEloquentBuilder($query): PhotoBuilder
 	{
 		return new PhotoBuilder($query);
+	}
+
+	protected function _toArray(): array
+	{
+		return parent::toArray();
 	}
 
 	/**
@@ -224,8 +242,8 @@ class Photo extends Model
 					$b = intval($matches[2]);
 					if ($b !== 0) {
 						$gcd = Helpers::gcd($a, $b);
-						$a = $a / $gcd;
-						$b = $b / $gcd;
+						$a /= $gcd;
+						$b /= $gcd;
 						if ($a === 1) {
 							$shutter = '1/' . $b . ' s';
 						} else {
@@ -257,22 +275,23 @@ class Photo extends Model
 	 * @param ?string $license the value from the database passed in by
 	 *                         the Eloquent framework
 	 *
-	 * @return string
+	 * @return LicenseType
 	 */
-	protected function getLicenseAttribute(?string $license): string
+	protected function getLicenseAttribute(?string $license): LicenseType
 	{
 		if ($license === null) {
-			return Configs::getValueAsString('default_license');
+			return Configs::getValueAsEnum('default_license', LicenseType::class);
 		}
 
-		if ($license !== 'none') {
-			return $license;
+		if (LicenseType::tryFrom($license) !== null && LicenseType::tryFrom($license) !== LicenseType::NONE) {
+			return LicenseType::from($license);
 		}
-		if ($this->album_id !== null) {
+
+		if ($this->album_id !== null && $this->relationLoaded('album')) {
 			return $this->album->license;
 		}
 
-		return Configs::getValueAsString('default_license');
+		return Configs::getValueAsEnum('default_license', LicenseType::class);
 	}
 
 	/**
@@ -337,6 +356,29 @@ class Photo extends Model
 		$path = $this->live_photo_short_path;
 
 		return ($path === null || $path === '') ? null : Storage::url($path);
+	}
+
+	/**
+	 * Accessor for the virtual attribute $aspect_ratio.
+	 *
+	 * Returns the correct aspect ratio for
+	 * - photos
+	 * - and videos where small or medium exists
+	 * Otherwise returns 1 (square)
+	 *
+	 * @return float aspect ratio to use in display mode
+	 */
+	protected function getAspectRatioAttribute(): float
+	{
+		if ($this->isVideo() &&
+			$this->size_variants->getSmall() === null &&
+			$this->size_variants->getMedium() === null) {
+			return 1;
+		}
+
+		return $this->size_variants->getOriginal()?->ratio ??
+			$this->size_variants->getMedium()?->ratio ??
+			$this->size_variants->getSmall()?->ratio ?? 1;
 	}
 
 	/**

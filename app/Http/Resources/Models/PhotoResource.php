@@ -70,7 +70,7 @@ class PhotoResource extends JsonResource
 			'iso' => $this->resource->iso,
 			'latitude' => $this->resource->latitude,
 			'lens' => $this->resource->lens,
-			'license' => $this->resource->license,
+			'license' => $this->resource->license->localization(),
 			'live_photo_checksum' => $this->resource->live_photo_checksum,
 			'live_photo_content_id' => $this->resource->live_photo_content_id,
 			'live_photo_url' => $this->resource->live_photo_url,

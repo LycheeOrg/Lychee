@@ -40,7 +40,7 @@ enum SizeVariantType: int
 	 *
 	 * @return string
 	 */
-	public function localized(): string
+	public function localization(): string
 	{
 		return match ($this) {
 			self::THUMB => __('lychee.PHOTO_THUMB'),

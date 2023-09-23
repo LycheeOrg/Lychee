@@ -40,7 +40,7 @@ class AlbumResource extends JsonResource
 			// attributes
 			'description' => $this->resource->description,
 			'track_url' => $this->resource->track_url,
-			'license' => $this->resource->license,
+			'license' => $this->resource->license->localization(),
 			'sorting' => $this->resource->sorting,
 
 			// children

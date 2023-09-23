@@ -20,7 +20,6 @@ use Illuminate\Support\Facades\Facade;
  * @method static int    data_index()
  * @method static int    data_index_r()
  * @method static void   data_index_set(int $idx = 0)
- * @method static array  get_all_licenses()
  * @method static bool   isExecAvailable()
  * @method static string secondsToHMS(int|float $d)
  */

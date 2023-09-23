@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Actions\Album\Delete;
+use App\Enum\LicenseType;
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
@@ -33,7 +35,7 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property int                   $num_children     The number of children.
  * @property Collection<int,Photo> $all_photos
  * @property int                   $num_photos       The number of photos in this album (excluding photos in subalbums).
- * @property string                $license
+ * @property LicenseType           $license
  * @property string|null           $cover_id
  * @property Photo|null            $cover
  * @property string|null           $track_short_path
@@ -156,6 +158,11 @@ class Album extends BaseAlbum implements Node
 	 */
 	protected $with = ['cover', 'cover.size_variants', 'thumb'];
 
+	protected function _toArray(): array
+	{
+		return parent::toArray();
+	}
+
 	/**
 	 * Return the relationship between this album and photos which are
 	 * direct children of this album.
@@ -219,13 +226,22 @@ class Album extends BaseAlbum implements Node
 		return $this->hasOne(Photo::class, 'id', 'cover_id');
 	}
 
-	protected function getLicenseAttribute(string $value): string
+	/**
+	 * Return the License used by the album.
+	 *
+	 * @param string $value
+	 *
+	 * @return LicenseType
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	protected function getLicenseAttribute(string $value): LicenseType
 	{
 		if ($value === 'none') {
-			return Configs::getValueAsString('default_license');
+			return Configs::getValueAsEnum('default_license', LicenseType::class);
 		}
 
-		return $value;
+		return LicenseType::from($value);
 	}
 
 	/**
