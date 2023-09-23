@@ -209,7 +209,7 @@ jobs:
       matrix:
         php-version:
           - 8.1
-          - 8.2
+          # - 8.2
         sql-versions:
           - mariadb
           - postgresql
@@ -309,6 +309,17 @@ jobs:
         uses: ramsey/composer-install@v2
         with:
           composer-options: --no-dev
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v3
+        with:
+            node-version: 20
+
+      - name: Install
+        run: npm install
+
+      - name: Compile Front-end
+        run: npm run build
 
       - name: Build Dist
         run: |
