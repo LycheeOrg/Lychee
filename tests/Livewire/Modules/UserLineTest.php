@@ -45,7 +45,7 @@ class UserLineTest extends BaseLivewireTest
 
 	public function testLoggedIn(): void
 	{
-		/** @var User $user  */
+		/** @var User $user */
 		$user = User::factory()->create();
 
 		Livewire::actingAs($this->admin)->test($this->component, ['user' => $user])
