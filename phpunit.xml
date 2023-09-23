@@ -19,6 +19,9 @@
       <exclude>./tests/Feature/LibUnitTests/SharingUnitTest.php</exclude>
       <exclude>./tests/Feature/LibUnitTests/UsersUnitTest.php</exclude>
     </testsuite>
+    <testsuite name="Livwire">
+      <directory suffix="Test.php">./tests/Livewire</directory>
+    </testsuite>
   </testsuites>
   <extensions>
     <bootstrap class="Tests\BootExtension"/>

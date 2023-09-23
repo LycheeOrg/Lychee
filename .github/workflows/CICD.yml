@@ -70,51 +70,14 @@ jobs:
         run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
 
   check_js:
-    name: 2️⃣ JS - Code Style errors & Compilation errors on Node ${{ matrix.node-version }}
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/sub/js.yml
     needs:
       - php_syntax_errors
-    strategy:
-        matrix:
-            node-version: [16, 18, 20]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-            node-version: ${{ matrix.node-version }}
-
-      - name: Install
-        run: npm install
-
-      - name: Check Style
-        run: npm run check-formatting
-
-      - name: Compile Front-end
-        run: npm run build
 
   phpstan:
-    name: 2️⃣ PHP 8.1 - PHPStan
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/sub/phpstan.yml
     needs:
       - php_syntax_errors
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.1
-          coverage: none
-
-      - name: Install Composer dependencies
-        uses: ramsey/composer-install@v2
-
-      - name: Run PHPStan
-        run: vendor/bin/phpstan analyze
 
   tests:
     name: 2️⃣ PHP ${{ matrix.php-version }} - ${{ matrix.sql-versions }}
@@ -198,87 +161,9 @@ jobs:
         run: php artisan migrate:rollback
 
   dist:
-    name: 3️⃣ PHP ${{ matrix.php-version }} - ${{ matrix.sql-versions }} - Dist
+    uses: ./.github/workflows/sub/js.yml
     needs:
       - code_style_errors
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php-version:
-          - 8.1
-          - 8.2
-        sql-versions:
-          - mariadb
-          - postgresql
-          - sqlite
-    # Service containers to run with `container-job`
-    services:
-      # Label used to access the service container
-      postgres:
-        # Docker Hub image
-        image: postgres
-        # Provide the password for postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          # Maps tcp port 5432 on service container to the host
-          - 5432:5432
-    env:
-      extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set Up Imagick, FFmpeg & Exiftools
-        run: |
-          sudo apt-get update
-          sudo apt-get --fix-broken install
-          sudo apt-get -y install ffmpeg libimage-exiftool-perl
-
-      - name: setup Databases
-        run: |
-          sudo service mysql start
-          touch database/database.sqlite
-          mysql -uroot -proot -e 'create database homestead_test;'
-
-      - name: Setup PHP Action
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-version }}
-          extensions: ${{ env.extensions }}
-          tools: pecl, composer
-
-      - name: Install Composer dependencies
-        uses: ramsey/composer-install@v2
-        with:
-          composer-options: --no-dev
-
-      - name: Build Dist
-        run: |
-          make dist-clean
-
-      - name: copy Env
-        run: |
-          cp .github/workflows/.env.${{ matrix.sql-versions }} Lychee/.env
-
-      - name: setup MySQL Database with v3
-        run: |
-          mysql -uroot -proot homestead_test < .github/workflows/v3.sql
-
-      - name: Generate secure key & Migrate & go backward
-        run: |
-          cd Lychee
-          pwd
-          php artisan key:generate
-          php artisan migrate
-          php artisan migrate:rollback
 
   createArtifact:
     name: 4️⃣ Build Artifact

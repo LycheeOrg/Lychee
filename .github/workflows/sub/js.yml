@@ -1,0 +1,29 @@
+name: "Check JS formatting & compilation"
+
+on:
+  workflow_call:
+
+jobs:
+  check_js:
+    name: 2️⃣ JS - Code Style errors & Compilation errors on Node ${{ matrix.node-version }}
+    runs-on: ubuntu-latest
+    strategy:
+        matrix:
+            node-version: [16, 18, 20]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+            node-version: ${{ matrix.node-version }}
+
+      - name: Install
+        run: npm install
+
+      - name: Check Style
+        run: npm run check-formatting
+
+      - name: Compile Front-end
+        run: npm run build

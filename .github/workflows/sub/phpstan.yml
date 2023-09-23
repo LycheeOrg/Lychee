@@ -1,0 +1,26 @@
+name: "Check PHPStan"
+
+on:
+  workflow_call:
+
+jobs:
+  phpstan:
+    name: 2️⃣ PHP 8.1 - PHPStan
+    runs-on: ubuntu-latest
+    needs:
+      - php_syntax_errors
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          coverage: none
+
+      - name: Install Composer dependencies
+        uses: ramsey/composer-install@v2
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyze
