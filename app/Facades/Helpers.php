@@ -17,11 +17,9 @@ use Illuminate\Support\Facades\Facade;
  * @method static bool   hasPermissions(string $path)
  * @method static bool   hasFullPermissions(string $path)
  * @method static int    gcd(int $a, int $b)
- * @method static int    data_index()
- * @method static int    data_index_r()
- * @method static void   data_index_set(int $idx = 0)
  * @method static bool   isExecAvailable()
  * @method static string secondsToHMS(int|float $d)
+ * @method static int    convertSize(string $size)
  */
 class Helpers extends Facade
 {

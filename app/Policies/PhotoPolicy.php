@@ -20,6 +20,7 @@ class PhotoPolicy extends BasePolicy
 	public const CAN_EDIT = 'canEdit';
 	public const CAN_EDIT_ID = 'canEditById';
 	public const CAN_ACCESS_FULL_PHOTO = 'canAccessFullPhoto';
+	public const CAN_DELETE_BY_ID = 'canDeleteById';
 
 	/**
 	 * @throws FrameworkException
