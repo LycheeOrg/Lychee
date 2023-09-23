@@ -13,9 +13,9 @@
 namespace Tests\Livewire;
 
 use App\Models\Configs;
-use Tests\AbstractTestCase;
+use Tests\Livewire\Base\BaseLivewireTest;
 
-class IndexTest extends AbstractTestCase
+class IndexTest extends BaseLivewireTest
 {
 	/**
 	 * Testing the Login interface.
