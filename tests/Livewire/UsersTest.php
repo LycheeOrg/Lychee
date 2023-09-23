@@ -13,6 +13,7 @@
 namespace Tests\Livewire;
 
 use App\Livewire\Components\Pages\Users;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Livewire;
 use Tests\Livewire\Base\BaseLivewireTest;
 
@@ -35,5 +36,19 @@ class UsersTest extends BaseLivewireTest
 			->call('back')
 			->assertDispatched('closeLeftMenu')
 			->assertRedirect(route('livewire-gallery'));
+	}
+
+	public function testCreate(): void
+	{
+		Auth::loginUsingId(1);
+
+		Livewire::test(Users::class)
+			->set('username', 'user1')
+			->set('password', 'password')
+			->call('create')
+			->assertStatus(200);
+
+		Auth::logout();
+			// ->assertSee('user1');
 	}
 }

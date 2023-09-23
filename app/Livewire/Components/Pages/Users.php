@@ -6,6 +6,7 @@ use App\Actions\User\Create;
 use App\Livewire\Components\Menus\LeftMenu;
 use App\Models\User;
 use App\Policies\UserPolicy;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
@@ -18,6 +19,7 @@ use Livewire\Component;
 class Users extends Component
 {
 	public Collection $users;
+	private Create $create;
 
 	public string $username = '';
 	public string $password = '';
@@ -28,6 +30,16 @@ class Users extends Component
 	 * @var string[] listeners to refresh the page when creating a new user or deleting one
 	 */
 	protected $listeners = ['loadUsers'];
+
+
+	/**
+	 * Init the private properties
+	 * 
+	 * @return void 
+	 */
+	public function boot(): void {
+		$this->create = resolve(Create::class);
+	}
 
 	/**
 	 * Load users.
@@ -64,14 +76,14 @@ class Users extends Component
 	/**
 	 * Create a new user.
 	 *
-	 * @param Create $create
-	 *
 	 * @return void
 	 */
-	public function create(Create $create): void
+	public function create(): void
 	{
+		Gate::authorize(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, User::class);
+
 		// Create user
-		$create->do(
+		$this->create->do(
 			$this->username,
 			$this->password,
 			$this->may_upload,
