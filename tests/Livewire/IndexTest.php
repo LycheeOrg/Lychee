@@ -66,5 +66,4 @@ class IndexTest extends AbstractTestCase
 
 		Configs::set('landing_page_enable', $landing_on_off);
 	}
-
 }

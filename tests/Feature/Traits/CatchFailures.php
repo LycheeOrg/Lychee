@@ -85,5 +85,4 @@ trait CatchFailures
 	{
 		$this->assertStatus($response, 302);
 	}
-
 }
