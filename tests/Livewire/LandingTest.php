@@ -19,12 +19,12 @@ use Tests\Livewire\Base\BaseLivewireTest;
 
 class LandingTest extends BaseLivewireTest
 {
-	private $landing_on_off;
+	private bool $landing_on_off;
 
 	protected function setUp(): void
 	{
 		parent::setUp();
-		$this->landing_on_off = Configs::getValue('landing_page_enable');
+		$this->landing_on_off = Configs::getValueAsBool('landing_page_enable');
 		Configs::set('landing_page_enable', 1);
 	}
 

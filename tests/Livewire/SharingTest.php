@@ -22,6 +22,11 @@ class SharingTest extends BaseLivewireTest
 	{
 		Livewire::test(Sharing::class)
 			->assertForbidden();
-			// ->assertViewIs('livewire.pages.sharing');
+	}
+
+	public function testSharingLoggedIn(): void
+	{
+		Livewire::actingAs($this->admin)->test(Sharing::class)
+			->assertViewIs('livewire.pages.sharing');
 	}
 }

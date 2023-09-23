@@ -22,6 +22,11 @@ class JobsTest extends BaseLivewireTest
 	{
 		Livewire::test(Jobs::class)
 			->assertForbidden();
-			// ->assertViewIs('livewire.pages.jobs');
+	}
+
+	public function testJobsLoggedIn(): void
+	{
+		Livewire::actingAs($this->admin)->test(Jobs::class)
+			->assertViewIs('livewire.pages.jobs');
 	}
 }

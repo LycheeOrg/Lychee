@@ -22,6 +22,11 @@ class AllSettingsTest extends BaseLivewireTest
 	{
 		Livewire::test(AllSettings::class)
 			->assertForbidden();
-			// ->assertViewIs('livewire.pages.settings');
+	}
+
+	public function testAllSettingsLoggedIn(): void
+	{
+		Livewire::actingAs($this->admin)->test(AllSettings::class)
+			->assertViewIs('livewire.pages.all-settings');
 	}
 }

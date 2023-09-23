@@ -30,11 +30,12 @@ abstract class AbstractPreSection extends Component
 	abstract public function getDataProperty(): array;
 
 	/**
-	 * Return error message because we don't want this serialized
-	 * 
-	 * @return string 
+	 * Return error message because we don't want this serialized.
+	 *
+	 * @return string
 	 */
-	public function getErrorMessageProperty(): string {
+	public function getErrorMessageProperty(): string
+	{
 		return 'Error: You must have administrator rights to see this.';
 	}
 }

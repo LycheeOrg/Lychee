@@ -24,7 +24,6 @@ class Jobs extends Component
 		Gate::authorize(SettingsPolicy::CAN_SEE_LOGS, [Configs::class]);
 	}
 
-
 	/**
 	 * We use a computed property instead of attributes
 	 * in order to avoid poluting the data sent to the user.

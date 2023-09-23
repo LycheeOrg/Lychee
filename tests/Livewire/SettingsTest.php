@@ -18,10 +18,15 @@ use Tests\Livewire\Base\BaseLivewireTest;
 
 class SettingsTest extends BaseLivewireTest
 {
-	public function testSharingLoggedOut(): void
+	public function testSettingsLoggedOut(): void
 	{
 		Livewire::test(Settings::class)
 			->assertForbidden();
-			// ->assertViewIs('livewire.pages.settings');
+	}
+
+	public function testSettingsLoggedIn(): void
+	{
+		Livewire::actingAs($this->admin)->test(Settings::class)
+			->assertViewIs('livewire.pages.settings');
 	}
 }

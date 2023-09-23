@@ -12,14 +12,18 @@
 
 namespace Tests\Livewire\Base;
 
+use App\Models\User;
 use Tests\AbstractTestCase;
 
 abstract class BaseLivewireTest extends AbstractTestCase
 {
+	protected User $admin;
+
 	protected function setUp(): void
 	{
 		parent::setUp();
 
+		$this->admin = User::findOrFail(1);
 		$this->withoutVite();
 	}
 }

@@ -16,7 +16,6 @@ use App\Livewire\Components\Modules\Diagnostics\Configurations;
 use App\Livewire\Components\Modules\Diagnostics\Infos;
 use App\Livewire\Components\Modules\Diagnostics\Space;
 use App\Livewire\Components\Pages\Diagnostics;
-use App\Models\User;
 use Livewire\Livewire;
 use Tests\Livewire\Base\BaseLivewireTest;
 
@@ -37,9 +36,7 @@ class DiagnosticsTest extends BaseLivewireTest
 
 	public function testDiagnosticsLogged(): void
 	{
-		$admin = User::findOrFail(1);
-
-		Livewire::actingAs($admin)->test(Diagnostics::class)
+		Livewire::actingAs($this->admin)->test(Diagnostics::class)
 			->assertViewIs('livewire.pages.diagnostics')
 			->assertSeeLivewire(Configurations::class)
 			->assertSeeLivewire(Space::class)

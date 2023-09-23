@@ -22,6 +22,11 @@ class UsersTest extends BaseLivewireTest
 	{
 		Livewire::test(Users::class)
 			->assertForbidden();
-			// ->assertViewIs('livewire.pages.users');
+	}
+
+	public function testUsersLoggedIn(): void
+	{
+		Livewire::actingAs($this->admin)->test(Users::class)
+			->assertViewIs('livewire.pages.users');
 	}
 }

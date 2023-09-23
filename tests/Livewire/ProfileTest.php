@@ -22,6 +22,11 @@ class ProfileTest extends BaseLivewireTest
 	{
 		Livewire::test(Profile::class)
 			->assertForbidden();
-			// ->assertViewIs('livewire.pages.profile');
+	}
+
+	public function testProfileLoggedIn(): void
+	{
+		Livewire::actingAs($this->admin)->test(Profile::class)
+			->assertViewIs('livewire.pages.profile');
 	}
 }
