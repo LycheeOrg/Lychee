@@ -25,12 +25,20 @@ class AlbumAddTest extends BaseLivewireTest
 			->assertStatus(200);
 	}
 
+	public function testOpenAlbumCreateModalModal(): void
+	{
+		Livewire::test(AlbumAdd::class, ['params' => ['parentID' => null]])
+		->call('openAlbumCreateModal')
+		->assertDispatched('closeContextMenu')
+		->assertDispatched('openModal', 'forms.album.create');
+	}
+
 	public function testOpenTagAlbumCreateModal(): void
 	{
 		Livewire::test(AlbumAdd::class, ['params' => ['parentID' => null]])
 		->call('openTagAlbumCreateModal')
 		->assertDispatched('closeContextMenu')
-		->assertDispatched('openModal');
+		->assertDispatched('openModal', 'forms.album.create-tag');
 	}
 
 	public function testOpenImportFromServerModal(): void
@@ -38,7 +46,7 @@ class AlbumAddTest extends BaseLivewireTest
 		Livewire::test(AlbumAdd::class, ['params' => ['parentID' => null]])
 		->call('openImportFromServerModal')
 		->assertDispatched('closeContextMenu')
-		->assertDispatched('openModal');
+		->assertDispatched('openModal', 'forms.add.import-from-server');
 	}
 
 	public function testOpenImportFromUrlModal(): void
@@ -46,7 +54,7 @@ class AlbumAddTest extends BaseLivewireTest
 		Livewire::test(AlbumAdd::class, ['params' => ['parentID' => null]])
 		->call('openImportFromUrlModal')
 		->assertDispatched('closeContextMenu')
-		->assertDispatched('openModal');
+		->assertDispatched('openModal', 'forms.add.import-from-url');
 	}
 
 	public function testOpenUploadModal(): void
@@ -54,6 +62,6 @@ class AlbumAddTest extends BaseLivewireTest
 		Livewire::test(AlbumAdd::class, ['params' => ['parentID' => null]])
 		->call('openUploadModal')
 		->assertDispatched('closeContextMenu')
-		->assertDispatched('openModal');
+		->assertDispatched('openModal', 'forms.add.upload');
 	}
 }
