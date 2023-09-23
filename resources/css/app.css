@@ -157,4 +157,9 @@
 	#photoDescription li {
 		margin-left: 1.5rem;
 	}
+
+	/* Trick to change the calendar picker color in chrome */
+	::-webkit-calendar-picker-indicator {
+		filter: invert(54%) sepia(85%) saturate(2054%) hue-rotate(166deg) brightness(93%) contrast(97%);
+	}
 }

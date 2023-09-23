@@ -29,15 +29,17 @@ class Properties extends Component
 	use Notify;
 	use UseValidator;
 
+	/** @var array<int,string> */
 	#[Locked] public string $photoID;
+	#[Locked] public array $tags;
+	#[Locked] public string $sec_tz;
+	#[Locked] public string $date;
 	public string $title; // ! wired
 	public string $created_at; // ! wired
 	public string $description; // ! wired
 	public string $tags_with_comma; // ! wired
 	public string $license; // ! wired
 
-	/** @var array<int,string> */
-	#[Locked] public array $tags;
 	/**
 	 * Given a photo model extract all the information.
 	 *
@@ -49,15 +51,15 @@ class Properties extends Component
 	 */
 	public function mount(PhotoModel $photo): void
 	{
-		$date_format_uploaded = Configs::getValueAsString('date_format_sidebar_uploaded');
-
+		$this->date = $photo->created_at->toIso8601String();
 		$this->photoID = $photo->id;
 		$this->title = $photo->title;
-		$this->created_at = $photo->created_at->format($date_format_uploaded);
 		$this->description = $photo->description ?? '';
 		$this->tags = $photo->tags;
 		$this->license = $photo->attributes['license'] ?? 'none';
 		$this->tags_with_comma = join(', ', $photo->tags);
+		$this->created_at = substr($this->date,0,16);
+		$this->sec_tz = substr($this->date, 16);
 	}
 
 	/**
@@ -78,13 +80,15 @@ class Properties extends Component
 	public function submit(): void
 	{
 		$this->tags = collect(explode(',', $this->tags_with_comma))->map(fn ($v) => trim($v))->filter(fn ($v) => $v !== '')->all();
-
+		$this->date = $this->created_at . $this->sec_tz;
+		
 		$rules = [
 			RequestAttribute::TITLE_ATTRIBUTE => ['required', new TitleRule()],
 			...SetPhotoDescriptionRuleSet::rules(),
 			RequestAttribute::TAGS_ATTRIBUTE => 'present|array',
 			RequestAttribute::TAGS_ATTRIBUTE . '.*' => 'required|string|min:1',
 			RequestAttribute::LICENSE_ATTRIBUTE => ['required', new Enum(LicenseType::class)],
+			RequestAttribute::DATE_ATTRIBUTE => 'required|date'
 		];
 
 		if (!$this->areValid($rules)) {
