@@ -28,7 +28,7 @@ class IndexTest extends AbstractTestCase
 		 * check if we can actually get a nice answer.
 		 */
 		$response = $this->get(route('livewire-index'));
-		$this->assertOk($response);
+		$this->assertRedirect($response);
 	}
 
 	public function testLandingPage(): void
@@ -36,13 +36,35 @@ class IndexTest extends AbstractTestCase
 		$landing_on_off = Configs::getValue('landing_page_enable');
 		Configs::set('landing_page_enable', 1);
 
-		$response = $this->get('/');
-		$this->assertOk($response);
-		$response->assertViewIs('landing');
+		$response = $this->get(route('livewire-index'));
+		$this->assertRedirect($response);
+		$response->assertRedirect(route('landing'));
 
-		$response = $this->get('/gallery');
+		$response = $this->get(route('landing'));
+		$this->assertOk($response);
+
+		$response = $this->get(route('livewire-gallery'));
 		$this->assertOk($response);
 
 		Configs::set('landing_page_enable', $landing_on_off);
 	}
+
+	public function testGalleryPage(): void
+	{
+		$landing_on_off = Configs::getValue('landing_page_enable');
+		Configs::set('landing_page_enable', 0);
+
+		$response = $this->get(route('livewire-index'));
+		$this->assertRedirect($response);
+		$response->assertRedirect(route('livewire-gallery'));
+
+		$response = $this->get(route('livewire-gallery'));
+		$this->assertOk($response);
+
+		$response = $this->get(route('landing'));
+		$this->assertRedirect($response);
+
+		Configs::set('landing_page_enable', $landing_on_off);
+	}
+
 }

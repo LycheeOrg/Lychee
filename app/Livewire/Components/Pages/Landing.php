@@ -19,6 +19,9 @@ class Landing extends Component
 	 */
 	public function mount(): void
 	{
+		if (!Configs::getValueAsBool('landing_page_enable')) {
+			redirect(route('livewire-gallery'));
+		}
 		$this->title = Configs::getValueAsString('landing_title');
 		$this->subtitle = Configs::getValueAsString('landing_subtitle');
 		$background = Configs::getValueAsString('landing_background');
