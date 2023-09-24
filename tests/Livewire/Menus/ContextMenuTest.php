@@ -29,4 +29,15 @@ class ContextMenuTest extends BaseLivewireTest
 			->dispatch('closeContextMenu')
 			->assertSet('isOpen', false);
 	}
+
+	public function testMenu2(): void
+	{
+		Livewire::test(ContextMenu::class)
+			->assertSet('isOpen', false)
+			->call('openContextMenu', 'menus.AlbumAdd', [Params::PARENT_ID => null], 'right: 30px; top: 30px; transform-origin: top right;')
+			->assertSet('isOpen', true)
+			->assertSet('type', 'menus.AlbumAdd')
+			->dispatch('closeContextMenu')
+			->assertSet('isOpen', false);
+	}
 }

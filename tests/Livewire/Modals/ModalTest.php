@@ -30,4 +30,17 @@ class ModalTest extends BaseLivewireTest
 			->dispatch('closeModal')
 			->assertSet('isOpen', false);
 	}
+
+	public function testOpenClose2(): void
+	{
+		Livewire::test(Modal::class)
+			->assertSet('isOpen', false)
+			->call('openModal', 'modals.about', __('lychee.CLOSE'))
+			->assertSet('isOpen', true)
+			->assertSet('type', 'modals.about')
+			->assertSet('close_text', __('lychee.CLOSE'))
+			->assertViewIs('livewire.components.modal')
+			->dispatch('closeModal')
+			->assertSet('isOpen', false);
+	}
 }
