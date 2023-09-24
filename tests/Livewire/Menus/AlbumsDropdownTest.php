@@ -17,10 +17,12 @@ use App\Models\Album;
 use Livewire\Livewire;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Livewire\Base\BaseLivewireTest;
+use Tests\Livewire\Traits\CreateAlbum;
 
 class AlbumsDropdownTest extends BaseLivewireTest
 {
 	use RequiresEmptyAlbums;
+	use CreateAlbum;
 
 	private Album $album1;
 	private Album $album2;
@@ -30,17 +32,8 @@ class AlbumsDropdownTest extends BaseLivewireTest
 		parent::setUp();
 		$this->setUpRequiresEmptyAlbums();
 
-		$this->album1 = new Album();
-		$this->album1->title = fake()->title;
-		$this->album1->owner_id = $this->admin->id;
-		$this->album1->makeRoot();
-		$this->album1->save();
-
-		$this->album2 = new Album();
-		$this->album2->title = fake()->title;
-		$this->album2->owner_id = $this->admin->id;
-		$this->album2->makeRoot();
-		$this->album2->save();
+		$this->album1 = $this->createAlbum();
+		$this->album2 = $this->createAlbum();
 	}
 
 	public function tearDown(): void

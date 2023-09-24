@@ -87,4 +87,9 @@ trait CatchFailures
 	{
 		$this->assertStatus($response, 302);
 	}
+
+	protected function assertNotFound(TestResponse $response): void
+	{
+		$this->assertStatus($response, 404);
+	}
 }

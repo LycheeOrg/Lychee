@@ -19,11 +19,13 @@ use Livewire\Livewire;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\Livewire\Base\BaseLivewireTest;
+use Tests\Livewire\Traits\CreateAlbum;
 
 class PhotosDropdownTest extends BaseLivewireTest
 {
 	use RequiresEmptyAlbums;
 	use RequiresEmptyPhotos;
+	use CreateAlbum;
 
 	private Album $album;
 	private Photo $photo1;
@@ -38,11 +40,7 @@ class PhotosDropdownTest extends BaseLivewireTest
 		$this->photo1 = Photo::factory()->create();
 		$this->photo2 = Photo::factory()->create();
 
-		$this->album = new Album();
-		$this->album->title = fake()->title;
-		$this->album->owner_id = $this->admin->id;
-		$this->album->makeRoot();
-		$this->album->save();
+		$this->album = $this->createAlbum();
 	}
 
 	public function tearDown(): void
