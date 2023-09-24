@@ -14,6 +14,13 @@ class Space extends Component
 {
 	#[Locked] public string $title = 'Space Usage';
 	#[Locked] public array $space = [];
+	private DiagnosticsSpace $diagnostics;
+
+	public function boot(): void
+	{
+		$this->diagnostics = resolve(DiagnosticsSpace::class);
+	}
+
 	/**
 	 * Rendering of the front-end.
 	 *
@@ -34,9 +41,9 @@ class Space extends Component
 	 *
 	 * @return void
 	 */
-	public function getSize(DiagnosticsSpace $space): void
+	public function getSize(): void
 	{
 		Gate::authorize(SettingsPolicy::CAN_SEE_DIAGNOSTICS, Configs::class);
-		$this->space = $space->get();
+		$this->space = $this->diagnostics->get();
 	}
 }

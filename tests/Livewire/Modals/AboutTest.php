@@ -19,7 +19,7 @@ use Tests\Livewire\Base\BaseLivewireTest;
 
 class AboutTest extends BaseLivewireTest
 {
-	public function testGallery(): void
+	public function testAbout(): void
 	{
 		Livewire::test(About::class)
 			->assertViewIs('livewire.modals.about')
