@@ -69,6 +69,7 @@ parameters:
 
 
 		- '#Property .* \(App\\Models\\.*(\|null)?\) does not accept (Illuminate\\Database\\Eloquent\\Collection<int, Illuminate\\Database\\Eloquent\\Model>\|)?Illuminate\\Database\\Eloquent\\Model(\|null)?.#'
+		- '#Access to an undefined property Laragear\\WebAuthn\\Models\\WebAuthnCredential::\$authenticatable_id#'
 
 		# False positive as stub code for PHP has not yet been updated to 2nd parameter, see https://github.com/php/doc-en/issues/1529 and https://www.php.net/imagick.writeimagefile
 		- '#Method Imagick::writeImageFile\(\) invoked with 2 parameters, 1 required#'
@@ -100,7 +101,7 @@ parameters:
 
 		# TESTS
 		- 
-			message: '#Dynamic call to static method Illuminate\\Testing\\TestResponse::assert(Forbidden|ViewIs)#'
+			message: '#Dynamic call to static method Illuminate\\Testing\\TestResponse::assert(Forbidden|ViewIs|Unauthorized)#'
 			paths:
 				- tests
 		- 

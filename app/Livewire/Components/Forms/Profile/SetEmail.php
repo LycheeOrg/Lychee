@@ -4,16 +4,18 @@ namespace App\Livewire\Components\Forms\Profile;
 
 use App\Exceptions\UnauthenticatedException;
 use App\Models\User;
+use App\Policies\UserPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class SetEmail extends Component
 {
-	public string $description;
-	public string $placeholder = 'email@example.com';
+	#[Locked] public string $description;
+	#[Locked] public string $placeholder = 'email@example.com';
+	#[Locked] public string $action;
 	public ?string $value; // ! Wired
-	public string $action;
 
 	/**
 	 * Mount the description and action localization.
@@ -23,6 +25,11 @@ class SetEmail extends Component
 	 */
 	public function mount(): void
 	{
+		$this->authorize(UserPolicy::CAN_EDIT, [User::class]);
+
+		/** @var User $user */
+		$user = Auth::user();
+		$this->value = $user->email;
 		$this->description = __('lychee.ENTER_EMAIL');
 		$this->action = __('lychee.SAVE');
 	}
@@ -36,9 +43,6 @@ class SetEmail extends Component
 	 */
 	public function render(): View
 	{
-		$user = Auth::user() ?? throw new UnauthenticatedException();
-		$this->value = $user->email;
-
 		return view('livewire.forms.settings.input');
 	}
 
@@ -51,7 +55,10 @@ class SetEmail extends Component
 	 */
 	public function save(): void
 	{
-		// TODO : VALIDATE
+		$this->validate(['value' => 'required|email']);
+
+		$this->authorize(UserPolicy::CAN_EDIT, [User::class]);
+
 		/** @var User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();
 		$user->email = $this->value;

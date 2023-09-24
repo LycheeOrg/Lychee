@@ -4,6 +4,7 @@ namespace App\Livewire\Components\Forms\Profile;
 
 use App\Actions\User\TokenDisable;
 use App\Actions\User\TokenReset;
+use App\Exceptions\UnauthenticatedException;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\User;
 use App\Policies\UserPolicy;
@@ -26,6 +27,15 @@ class GetApiToken extends Component
 	#[Locked] public string $token = '';
 	// token is disabled
 	#[Locked] public bool $isDisabled;
+	private TokenReset $tokenReset;
+	private TokenDisable $tokenDisable;
+
+	public function boot(): void
+	{
+		$this->tokenReset = resolve(TokenReset::class);
+		$this->tokenDisable = resolve(TokenDisable::class);
+	}
+
 	/**
 	 * Mount the current data of the user.
 	 * $token is kept empty in order to avoid revealing the data.
@@ -34,7 +44,7 @@ class GetApiToken extends Component
 	 */
 	public function mount(): void
 	{
-		$user = Auth::user();
+		$user = Auth::user() ?? throw new UnauthenticatedException();
 
 		$this->token = __('lychee.TOKEN_NOT_AVAILABLE');
 		$this->isDisabled = true;
@@ -68,18 +78,16 @@ class GetApiToken extends Component
 	 * Method call from front-end to reset the Token.
 	 * We generate a new one on the fly and display it.
 	 *
-	 * @param TokenReset $tokenReset
-	 *
 	 * @return void
 	 */
-	public function resetToken(TokenReset $tokenReset): void
+	public function resetToken(): void
 	{
 		/**
 		 * Authorize the request.
 		 */
 		$this->authorize(UserPolicy::CAN_EDIT, [User::class]);
 
-		$this->token = $tokenReset->do();
+		$this->token = $this->tokenReset->do();
 		$this->isDisabled = false;
 	}
 
@@ -87,18 +95,16 @@ class GetApiToken extends Component
 	 * Method call from front-end to disable the token.
 	 * We simply erase the current one.
 	 *
-	 * @param TokenDisable $tokenDisable
-	 *
 	 * @return void
 	 */
-	public function disableToken(TokenDisable $tokenDisable): void
+	public function disableToken(): void
 	{
 		/**
 		 * Authorize the request.
 		 */
 		$this->authorize(UserPolicy::CAN_EDIT, [User::class]);
 
-		$tokenDisable->do();
+		$this->tokenDisable->do();
 		$this->token = __('lychee.DISABLED_TOKEN_STATUS_MSG');
 		$this->isDisabled = true;
 	}

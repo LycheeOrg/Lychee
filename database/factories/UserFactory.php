@@ -26,6 +26,8 @@ class UserFactory extends Factory
 			'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
 			'may_administrate' => false,
 			'may_upload' => false,
+			'email' => fake()->email(),
+			'token' => null,
 			'may_edit_own_settings' => true,
 		];
 	}

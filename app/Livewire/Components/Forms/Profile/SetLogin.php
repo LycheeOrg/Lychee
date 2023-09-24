@@ -27,6 +27,18 @@ class SetLogin extends Component
 	public string $password = ''; // ! wired
 	public string $password_confirmation = ''; // ! wired
 
+	private UpdateLogin $updateLogin;
+
+	public function boot(): void
+	{
+		$this->updateLogin = resolve(UpdateLogin::class);
+	}
+
+	public function mount(): void
+	{
+		$this->authorize(UserPolicy::CAN_EDIT, [User::class]);
+	}
+
 	/**
 	 * Simply render the form.
 	 *
@@ -40,14 +52,14 @@ class SetLogin extends Component
 	/**
 	 * Update Username & Password of current user.
 	 */
-	public function submit(UpdateLogin $updateLogin): void
+	public function submit(): void
 	{
 		$this->validate(ChangeLoginRuleSet::rules());
 		$this->validate(['oldPassword' => new CurrentPasswordRule()]);
 
 		$this->authorize(UserPolicy::CAN_EDIT, [User::class]);
 
-		$currentUser = $updateLogin->do(
+		$currentUser = $this->updateLogin->do(
 			$this->username,
 			$this->password,
 			$this->oldPassword,

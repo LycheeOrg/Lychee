@@ -4,6 +4,8 @@ namespace App\Livewire\Components\Forms\Profile;
 
 use App\Exceptions\UnauthenticatedException;
 use App\Livewire\Traits\Notify;
+use App\Models\User;
+use App\Policies\UserPolicy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -23,6 +25,8 @@ class SecondFactor extends Component
 	#[On('reload-component')]
 	public function render(): View
 	{
+		$this->authorize(UserPolicy::CAN_EDIT, [User::class]);
+
 		return view('livewire.modules.profile.second-factor');
 	}
 
@@ -52,7 +56,10 @@ class SecondFactor extends Component
 	 */
 	public function delete(string $id): void
 	{
-		WebAuthnCredential::query()->where('id', '=', $id)->delete();
+		/** @var User $user */
+		$user = Auth::user() ?? throw new UnauthenticatedException();
+
+		$user->webAuthnCredentials()->where('id', '=', $id)->delete();
 		$this->notify(__('lychee.U2F_CREDENTIALS_DELETED'));
 	}
 }

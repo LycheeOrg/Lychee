@@ -2,11 +2,17 @@
 
 namespace App\Livewire\Components\Forms\Profile;
 
+use App\Exceptions\UnauthenticatedException;
+use App\Exceptions\UnauthorizedException;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
+use App\Models\User;
+use App\Policies\UserPolicy;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class ManageSecondFactor extends Component
@@ -21,9 +27,9 @@ class ManageSecondFactor extends Component
 	 */
 	public WebAuthnCredential $credential;
 
+	#[Locked] public bool $has_error = false;
 	/** @var string alias to rename the credentials. By default we provide the first parts of the ID */
 	public string $alias; // ! wired
-	public bool $has_error = false;
 
 	public function rules(): array
 	{
@@ -39,6 +45,12 @@ class ManageSecondFactor extends Component
 	 */
 	public function mount(WebAuthnCredential $credential): void
 	{
+		$this->authorize(UserPolicy::CAN_EDIT, [User::class]);
+
+		if ($credential->authenticatable_id !== (Auth::id() ?? throw new UnauthenticatedException())) {
+			throw new UnauthorizedException();
+		}
+
 		$this->credential = $credential;
 		$this->alias = $credential->alias ?? Str::substr($credential->id, 0, 30);
 	}

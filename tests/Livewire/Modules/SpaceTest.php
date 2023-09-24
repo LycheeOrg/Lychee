@@ -44,6 +44,8 @@ class SpaceTest extends BaseLivewireTest
 			->assertViewIs('livewire.modules.diagnostics.space')
 			->assertDontSee('Error: You must have administrator rights to see this.')
 			->assertOk()
-			->call('getSize');
+			->call('getSize')
+			->assertOk()
+			->assertDontSee('Error: You must have administrator rights to see this.');
 	}
 }
