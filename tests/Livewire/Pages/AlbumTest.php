@@ -14,9 +14,12 @@ namespace Tests\Livewire\Pages;
 
 use App\Livewire\Components\Pages\Gallery\Album;
 use App\Models\Album as ModelsAlbum;
+use App\Models\Photo;
+use App\Models\SizeVariant;
 use App\Models\User;
 use Livewire\Livewire;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
+use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\Feature\Traits\RequiresEmptyUsers;
 use Tests\Livewire\Base\BaseLivewireTest;
 use Tests\Livewire\Traits\CreateAlbum;
@@ -25,22 +28,37 @@ class AlbumTest extends BaseLivewireTest
 {
 	use RequiresEmptyAlbums;
 	use RequiresEmptyUsers;
+	use RequiresEmptyPhotos;
 	use CreateAlbum;
 
 	private ModelsAlbum $album;
+	private ModelsAlbum $subAlbum;
+	private Photo $photo;
+	private Photo $subPhoto;
 	private User $user;
 
 	public function setUp(): void
 	{
 		parent::setUp();
 		$this->setUpRequiresEmptyAlbums();
+		$this->setUpRequiresEmptyPhotos();
 
 		$this->album = $this->createAlbum();
+		$this->subAlbum = $this->createAlbum();
 		$this->user = User::factory()->create();
+
+		$this->photo = Photo::factory()->create(['latitude' => '51.81738000', 'longitude' => '5.86694306', 'altitude' => '83.1000']);
+		SizeVariant::factory()->count(7)->allSizeVariants()->create(['photo_id' => $this->photo->id]);
+		$this->photo->fresh();
+
+		$this->subPhoto = Photo::factory()->create(['latitude' => '51.81738000', 'longitude' => '5.86694306', 'altitude' => '83.1000']);
+		SizeVariant::factory()->count(7)->allSizeVariants()->create(['photo_id' => $this->subPhoto->id]);
+		$this->subPhoto->fresh();
 	}
 
 	public function tearDown(): void
 	{
+		$this->tearDownRequiresEmptyPhotos();
 		$this->tearDownRequiresEmptyAlbums();
 		parent::tearDown();
 	}
@@ -60,7 +78,7 @@ class AlbumTest extends BaseLivewireTest
 		Livewire::test(Album::class, ['albumId' => $this->album->id])
 			->assertViewIs('livewire.pages.gallery.album')
 			->assertSee($this->album->id)
-			->assertStatus(200)
+			->assertOk()
 			->assertSet('flags.is_accessible', false)
 			->dispatch('reloadPage');
 	}
@@ -76,9 +94,46 @@ class AlbumTest extends BaseLivewireTest
 		Livewire::actingAs($this->admin)->test(Album::class, ['albumId' => $this->album->id])
 			->assertViewIs('livewire.pages.gallery.album')
 			->assertSee($this->album->id)
-			->assertStatus(200)
+			->assertOk()
 			->assertSet('flags.is_accessible', true)
 			->call('silentUpdate')
-			->assertStatus(200);
+			->assertOk();
+	}
+
+	public function testMenus(): void
+	{
+		$this->photo->album_id = $this->album->id;
+		$this->photo->save();
+		$this->photo = $this->photo->fresh();
+
+		$this->subPhoto->album_id = $this->subAlbum->id;
+		$this->subPhoto->save();
+		$this->subPhoto = $this->subPhoto->fresh();
+
+		$this->album->appendNode($this->subAlbum);
+		$this->album->save();
+		$this->album->fixOwnershipOfChildren();
+		$this->album = $this->album->fresh();
+		$this->album->load('children', 'photos');
+
+		$this->subAlbum->load('children', 'photos');
+
+		Livewire::actingAs($this->admin)->test(Album::class, ['albumId' => $this->album->id])
+			->assertViewIs('livewire.pages.gallery.album')
+			->assertSee($this->album->id)
+			->assertSee($this->subAlbum->id)
+			->assertSee($this->photo->id)
+			->assertSee($this->subPhoto->size_variants->getThumb()->url)
+			->assertOk()
+			->call('openContextMenu')
+			->assertOk()
+			->call('openAlbumDropdown', 0, 0, $this->subAlbum->id)
+			->assertOk()
+			->call('openAlbumsDropdown', 0, 0, [$this->subAlbum->id])
+			->assertOk()
+			->call('openPhotoDropdown', 0, 0, $this->photo->id)
+			->assertOk()
+			->call('openPhotosDropdown', 0, 0, [$this->photo->id])
+			->assertOk();
 	}
 }

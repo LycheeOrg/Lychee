@@ -23,7 +23,7 @@ trait CreateAlbum
 	protected function createAlbum(?int $ower_id = null): Album
 	{
 		$album = new Album();
-		$album->title = fake()->title();
+		$album->title = fake()->country() . ' ' . fake()->year();
 		$album->owner_id = $ower_id ?? $this->admin->id;
 		$album->makeRoot();
 		$album->save();

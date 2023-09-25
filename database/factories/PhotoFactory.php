@@ -25,7 +25,7 @@ class PhotoFactory extends Factory
 	public function definition(): array
 	{
 		return [
-			'title' => fake()->title(),
+			'title' => 'CR_' . fake()->numerify('####'),
 			'description' => null,
 			'tags' => '',
 			'is_public' => false,
