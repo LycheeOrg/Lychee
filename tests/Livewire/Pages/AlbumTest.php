@@ -13,6 +13,7 @@
 namespace Tests\Livewire\Pages;
 
 use App\Livewire\Components\Pages\Gallery\Album;
+use App\Livewire\Components\Pages\Gallery\Albums;
 use App\Models\Album as ModelsAlbum;
 use App\Models\Photo;
 use App\Models\SizeVariant;
@@ -97,7 +98,9 @@ class AlbumTest extends BaseLivewireTest
 			->assertOk()
 			->assertSet('flags.is_accessible', true)
 			->call('silentUpdate')
-			->assertOk();
+			->assertOk()
+			->call('back')
+			->assertRedirect(Albums::class);
 	}
 
 	public function testMenus(): void
@@ -115,7 +118,6 @@ class AlbumTest extends BaseLivewireTest
 		$this->album->fixOwnershipOfChildren();
 		$this->album = $this->album->fresh();
 		$this->album->load('children', 'photos');
-
 		$this->subAlbum->load('children', 'photos');
 
 		Livewire::actingAs($this->admin)->test(Album::class, ['albumId' => $this->album->id])
@@ -124,6 +126,8 @@ class AlbumTest extends BaseLivewireTest
 			->assertSee($this->subAlbum->id)
 			->assertSee($this->photo->id)
 			->assertSee($this->subPhoto->size_variants->getThumb()->url)
+			->assertOk()
+			->call('loadAlbum', 1900)
 			->assertOk()
 			->call('openContextMenu')
 			->assertOk()
@@ -134,6 +138,13 @@ class AlbumTest extends BaseLivewireTest
 			->call('openPhotoDropdown', 0, 0, $this->photo->id)
 			->assertOk()
 			->call('openPhotosDropdown', 0, 0, [$this->photo->id])
+			->assertOk()
+			->call('setStar', [$this->photo->id])
+			->assertOk()
+			->call('unsetStar', [$this->photo->id])
+			->assertOk()
+			->call('setCover', $this->photo->id)
+			->assertDispatched('notify')
 			->assertOk();
 	}
 }
