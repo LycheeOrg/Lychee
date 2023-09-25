@@ -25,7 +25,7 @@ class PhotoFactory extends Factory
 	public function definition(): array
 	{
 		return [
-			'title' => fake()->title,
+			'title' => fake()->title(),
 			'description' => null,
 			'tags' => '',
 			'is_public' => false,
@@ -36,7 +36,7 @@ class PhotoFactory extends Factory
 			'make' => 'Canon',
 			'model' => 'Canon EOS R',
 			'lens' => 'EF200mm f/2L IS',
-			'shutter' => '1/200 s',
+			'shutter' => '1/320 s',
 			'focal' => '200mm',
 			'taken_at' => now(),
 			'taken_at_orig_tz' => null,

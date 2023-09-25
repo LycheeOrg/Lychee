@@ -12,9 +12,11 @@
 
 namespace Tests\Livewire\Pages;
 
-use App\Livewire\Components\Pages\Gallery\Album;
+use App\Enum\SmartAlbumType;
+use App\Livewire\Components\Pages\Gallery\Photo;
 use App\Models\Album as ModelsAlbum;
-use App\Models\Photo;
+use App\Models\Photo as ModelsPhoto;
+use App\Models\SizeVariant;
 use App\Models\User;
 use Livewire\Livewire;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
@@ -30,9 +32,9 @@ class PhotoTest extends BaseLivewireTest
 	use RequiresEmptyUsers;
 	use CreateAlbum;
 
-	// private ModelsAlbum $album;
-	// private Photo $photo;
-	// private User $user;
+	private ModelsAlbum $album;
+	private ModelsPhoto $photo;
+	private User $user;
 
 	public function setUp(): void
 	{
@@ -40,9 +42,11 @@ class PhotoTest extends BaseLivewireTest
 		$this->setUpRequiresEmptyAlbums();
 		$this->setUpRequiresEmptyPhotos();
 
-		// $this->album = $this->createAlbum();
-		// $this->photo = Photo::factory()->create();
-		// $this->user = User::factory()->create();
+		$this->album = $this->createAlbum();
+		$this->photo = ModelsPhoto::factory()->create();
+		$this->user = User::factory()->create();
+		SizeVariant::factory()->count(7)->allSizeVariants()->create(['photo_id' => $this->photo->id]);
+		$this->photo->fresh();
 	}
 
 	public function tearDown(): void
@@ -51,38 +55,33 @@ class PhotoTest extends BaseLivewireTest
 		parent::tearDown();
 	}
 
-	// public function testUrlPageLogout(): void
-	// {
-	// 	// In this specific case we allow to find the album but we do not display it (tested later)
-	// 	$response = $this->get(route('livewire-gallery-album', ['albumId' => $this->album->id]));
-	// 	$this->assertOk($response);
+	public function testUrlPageLogout(): void
+	{
+		// In this specific case we allow to find the album but we do not display it (tested later)
+		$response = $this->get(route('livewire-gallery-photo', ['albumId' => $this->album->id, 'photoId' => $this->photo->id]));
+		$this->assertForbidden($response);
 
-	// 	$response = $this->get(route('livewire-gallery-album', ['albumId' => '1234567890']));
-	// 	$this->assertNotFound($response);
-	// }
+		$response = $this->get(route('livewire-gallery-photo', ['albumId' => '1234567890', 'photoId' => '123456']));
+		$this->assertNotFound($response);
+	}
 
-	// public function testPageLogout(): void
-	// {
-	// 	Livewire::test(Album::class, ['albumId' => $this->album->id])
-	// 		->assertViewIs('livewire.pages.gallery.album')
-	// 		->assertSee($this->album->id)
-	// 		->assertStatus(200)
-	// 		->assertSet('flags.is_accessible', false)
-	// 		->dispatch('reloadPage');
-	// }
+	public function testPageLogout(): void
+	{
+		Livewire::test(Photo::class, ['albumId' => $this->album->id, 'photoId' => $this->photo->id])
+			->assertForbidden();
+	}
 
-	// public function testPageUserNoAccess(): void
-	// {
-	// 	Livewire::actingAs($this->user)->test(Album::class, ['albumId' => $this->album->id])
-	// 		->assertRedirect(route('livewire-gallery'));
-	// }
+	public function testPageUserNoAccess(): void
+	{
+		Livewire::actingAs($this->user)->test(Photo::class, ['albumId' => $this->album->id, 'photoId' => $this->photo->id])
+			->assertForbidden();
+	}
 
-	// public function testPageLogin(): void
-	// {
-	// 	Livewire::actingAs($this->admin)->test(Album::class, ['albumId' => $this->album->id])
-	// 		->assertViewIs('livewire.pages.gallery.album')
-	// 		->assertSee($this->album->id)
-	// 		->assertStatus(200)
-	// 		->assertSet('flags.is_accessible', true);
-	// }
+	public function testPageLogin(): void
+	{
+		Livewire::actingAs($this->admin)->test(Photo::class, ['albumId' => SmartAlbumType::UNSORTED->value, 'photoId' => $this->photo->id])
+			->assertViewIs('livewire.pages.gallery.photo')
+			->assertSee($this->photo->id)
+			->assertStatus(200);
+	}
 }

@@ -80,7 +80,7 @@ class Photo extends Component
 
 		/** @var int $idx */
 		$idx = $this->album->photos->search(fn (PhotoModel $photo) => $photo->id === $this->photoId);
-		$max = $this->album->photos->count();
+		$max = max(1, $this->album->photos->count());
 		$wrapOver = Configs::getValueAsBool('photos_wraparound') && $max > 1;
 
 		$idx_next = ($idx + 1) % $max;

@@ -18,6 +18,7 @@ use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Relations\HasManyBidirectionally;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
@@ -83,6 +84,7 @@ class SizeVariant extends Model
 	use HasBidirectionalRelationships;
 	use ThrowsConsistentExceptions;
 	use ToArrayThrowsNotImplemented;
+	use HasFactory;
 
 	/**
 	 * This model has no own timestamps as it is inseparably bound to its
