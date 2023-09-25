@@ -43,7 +43,7 @@ class PhotoTest extends BaseLivewireTest
 		$this->setUpRequiresEmptyPhotos();
 
 		$this->album = $this->createAlbum();
-		$this->photo = ModelsPhoto::factory()->create();
+		$this->photo = ModelsPhoto::factory()->create(['latitude' => '51.81738000', 'longitude' => '5.86694306', 'altitude' => '83.1000']);
 		$this->user = User::factory()->create();
 		SizeVariant::factory()->count(7)->allSizeVariants()->create(['photo_id' => $this->photo->id]);
 		$this->photo->fresh();
