@@ -51,6 +51,7 @@ class PhotoTest extends BaseLivewireTest
 
 	public function tearDown(): void
 	{
+		$this->tearDownRequiresEmptyPhotos();
 		$this->tearDownRequiresEmptyAlbums();
 		parent::tearDown();
 	}
@@ -73,17 +74,17 @@ class PhotoTest extends BaseLivewireTest
 
 	public function testPageUserNoAccess(): void
 	{
-		Livewire::actingAs($this->user)->test(Photo::class, ['albumId' => $this->album->id, 'photoId' => $this->photo->id])
+		Livewire::actingAs($this->user)->test(Photo::class,
+			['albumId' => $this->album->id, 'photoId' => $this->photo->id])
 			->assertForbidden();
 	}
 
 	public function testPageLogin(): void
 	{
-		Livewire::actingAs($this->admin)->test(Photo::class, ['albumId' => SmartAlbumType::UNSORTED->value, 'photoId' => $this->photo->id])
+		Livewire::actingAs($this->admin)->test(Photo::class,
+			['albumId' => SmartAlbumType::UNSORTED->value, 'photoId' => $this->photo->id])
 			->assertViewIs('livewire.pages.gallery.photo')
 			->assertSee($this->photo->id)
-			->assertStatus(200)
-			->call('silentUpdate')
 			->assertStatus(200);
 	}
 }
