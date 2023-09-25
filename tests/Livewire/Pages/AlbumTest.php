@@ -12,9 +12,12 @@
 
 namespace Tests\Livewire\Pages;
 
+use App\Enum\AlbumLayoutType;
+use App\Enum\SmartAlbumType;
 use App\Livewire\Components\Pages\Gallery\Album;
 use App\Livewire\Components\Pages\Gallery\Albums;
 use App\Models\Album as ModelsAlbum;
+use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\User;
@@ -57,6 +60,24 @@ class AlbumTest extends BaseLivewireTest
 		$this->subPhoto->fresh();
 	}
 
+	private function buildTree(): void
+	{
+		$this->photo->album_id = $this->album->id;
+		$this->photo->save();
+		$this->photo = $this->photo->fresh();
+
+		$this->subPhoto->album_id = $this->subAlbum->id;
+		$this->subPhoto->save();
+		$this->subPhoto = $this->subPhoto->fresh();
+
+		$this->album->appendNode($this->subAlbum);
+		$this->album->save();
+		$this->album->fixOwnershipOfChildren();
+		$this->album = $this->album->fresh();
+		$this->album->load('children', 'photos');
+		$this->subAlbum->load('children', 'photos');
+	}
+
 	public function tearDown(): void
 	{
 		$this->tearDownRequiresEmptyPhotos();
@@ -90,7 +111,7 @@ class AlbumTest extends BaseLivewireTest
 			->assertRedirect(route('livewire-gallery'));
 	}
 
-	public function testPageLogin(): void
+	public function testPageLoginAndBack(): void
 	{
 		Livewire::actingAs($this->admin)->test(Album::class, ['albumId' => $this->album->id])
 			->assertViewIs('livewire.pages.gallery.album')
@@ -103,22 +124,24 @@ class AlbumTest extends BaseLivewireTest
 			->assertRedirect(Albums::class);
 	}
 
+	public function testPageLoginAndBackFromSubAlbum(): void
+	{
+		$this->buildTree();
+
+		Livewire::actingAs($this->admin)->test(Album::class, ['albumId' => $this->subAlbum->id])
+			->assertViewIs('livewire.pages.gallery.album')
+			->assertSee($this->subAlbum->id)
+			->assertOk()
+			->assertSet('flags.is_accessible', true)
+			->call('silentUpdate')
+			->assertOk()
+			->call('back')
+			->assertRedirect(Album::class, ['albumId' => $this->album->id]);
+	}
+
 	public function testMenus(): void
 	{
-		$this->photo->album_id = $this->album->id;
-		$this->photo->save();
-		$this->photo = $this->photo->fresh();
-
-		$this->subPhoto->album_id = $this->subAlbum->id;
-		$this->subPhoto->save();
-		$this->subPhoto = $this->subPhoto->fresh();
-
-		$this->album->appendNode($this->subAlbum);
-		$this->album->save();
-		$this->album->fixOwnershipOfChildren();
-		$this->album = $this->album->fresh();
-		$this->album->load('children', 'photos');
-		$this->subAlbum->load('children', 'photos');
+		$this->buildTree();
 
 		Livewire::actingAs($this->admin)->test(Album::class, ['albumId' => $this->album->id])
 			->assertViewIs('livewire.pages.gallery.album')
@@ -146,5 +169,48 @@ class AlbumTest extends BaseLivewireTest
 			->call('setCover', $this->photo->id)
 			->assertDispatched('notify')
 			->assertOk();
+	}
+
+	public function testActions(): void
+	{
+		$this->buildTree();
+
+		Livewire::actingAs($this->admin)->test(Album::class, ['albumId' => $this->album->id])
+			->assertViewIs('livewire.pages.gallery.album')
+			->assertSee($this->album->id)
+			->assertSee($this->subAlbum->id)
+			->assertSee($this->photo->id)
+			->assertSee($this->subPhoto->size_variants->getThumb()->url)
+			->assertOk()
+			->call('loadAlbum', 1900)
+			->assertOk()
+			->call('setStar', [$this->photo->id])
+			->assertOk()
+			->call('unsetStar', [$this->photo->id])
+			->assertOk()
+			->call('setCover', $this->photo->id)
+			->assertDispatched('notify')
+			->assertOk();
+	}
+
+	public function testActionsUnsorted(): void
+	{
+		Configs::set('layout', AlbumLayoutType::SQUARE);
+
+		Livewire::actingAs($this->admin)->test(Album::class, ['albumId' => SmartAlbumType::UNSORTED->value])
+			->assertViewIs('livewire.pages.gallery.album')
+			->assertSee($this->photo->id)
+			->assertOk()
+			->call('loadAlbum', 1900)
+			->assertOk()
+			->call('setStar', [$this->photo->id])
+			->assertOk()
+			->call('unsetStar', [$this->photo->id])
+			->assertOk()
+			->call('setCover', $this->photo->id)
+			->assertDispatched('notify')
+			->assertOk();
+
+		Configs::set('layout', AlbumLayoutType::JUSTIFIED);
 	}
 }
