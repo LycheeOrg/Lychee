@@ -30,6 +30,12 @@ class SettingsTest extends BaseLivewireTest
 			->assertViewIs('livewire.forms.settings.drop-down')
 			->set('value', 'column')
 			->assertDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value]);
+
+		Livewire::actingAs($this->admin)->test(SetAlbumDecorationOrientationSetting::class)
+		->assertOk()
+		->assertViewIs('livewire.forms.settings.drop-down')
+		->set('value', 'something')
+		->assertNotDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value]);
 	}
 
 	public function testDoubleDropdown(): void
@@ -40,8 +46,16 @@ class SettingsTest extends BaseLivewireTest
 			->set('value1', 'title')
 			->assertDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value])
 			->set('value2', 'DESC')
-			->assertDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value])
-		;
+			->assertDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value]);
+
+		Livewire::actingAs($this->admin)->test(SetAlbumSortingSetting::class)
+			->assertOk()
+			->assertViewIs('livewire.forms.settings.double-drop-down')
+			->set('value1', 'something')
+			->assertNotDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value])
+			->set('value1', 'title')
+			->set('value2', 'OTHER')
+			->assertNotDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value]);
 	}
 
 	public function testBoolean(): void
