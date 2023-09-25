@@ -19,6 +19,5 @@ trait SilentUpdate
 	public function silentUpdate(): void
 	{
 		// DO NOTHING!
-		return;
 	}
 }

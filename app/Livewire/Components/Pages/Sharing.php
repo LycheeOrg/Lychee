@@ -68,9 +68,7 @@ class Sharing extends Component
 
 	public function delete(int $id): void
 	{
+		// TODO: check that $id is owned by user.
 		AccessPermission::query()->where('id', '=', $id)->delete();
-
-		// $this->perms = AccessPermission::with(['album','user'])
-		// 	->whereNotNull('user_id')->get()->all();
 	}
 }

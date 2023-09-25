@@ -34,14 +34,6 @@ class SessionFlagsSynth extends Synth
 		}
 
 		return [$result, []];
-		// return [
-		// 	[
-		// 	'can_fullscreen' => $target->can_fullscreen,
-		// 	'is_fullscreen' => $target->is_fullscreen,
-		// 	'are_photo_details_open' => $target->are_photo_details_open,
-		// 	'nsfwAlbumsVisible' => $target->nsfwAlbumsVisible
-		// ]
-		// , []];
 	}
 
 	/**
@@ -61,12 +53,6 @@ class SessionFlagsSynth extends Synth
 		}
 
 		return $flags;
-		// return new SessionFlags(
-		// 	can_fullscreen: $value['can_fullscreen'],
-		// 	is_fullscreen: $value['is_fullscreen'],
-		// 	are_photo_details_open: $value['are_photo_details_open'],
-		// 	nsfwAlbumsVisible: $value['nsfwAlbumsVisible']
-		// );
 	}
 
 	/**
