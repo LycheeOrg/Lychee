@@ -3,9 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-return new class extends Migration
-{
-    public const MOD_NSFW = 'Mod NSFW';
+return new class() extends Migration {
+	public const MOD_NSFW = 'Mod NSFW';
 	public const BOOL = '0|1';
 
 	public const CONFIGS = [
@@ -19,22 +18,22 @@ return new class extends Migration
 		],
 	];
 
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
+	/**
+	 * Run the migrations.
+	 */
+	public function up(): void
+	{
 		DB::table('configs')->insert(self::CONFIGS);
-        DB::table('configs')->where('key', '=', 'nsfw_banner_override')->update(['description' => 'override description with personalized html']);
-    }
-    
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        $keys = collect(self::CONFIGS)->map(fn ($v) => $v['key'])->all();
+		DB::table('configs')->where('key', '=', 'nsfw_banner_override')->update(['description' => 'override description with personalized html']);
+	}
+
+	/**
+	 * Reverse the migrations.
+	 */
+	public function down(): void
+	{
+		$keys = collect(self::CONFIGS)->map(fn ($v) => $v['key'])->all();
 
 		DB::table('configs')->whereIn('key', $keys)->delete();
-    }
+	}
 };
