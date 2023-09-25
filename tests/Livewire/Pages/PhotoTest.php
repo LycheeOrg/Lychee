@@ -30,9 +30,9 @@ class PhotoTest extends BaseLivewireTest
 	use RequiresEmptyUsers;
 	use CreateAlbum;
 
-	private ModelsAlbum $album;
-	private Photo $photo;
-	private User $user;
+	// private ModelsAlbum $album;
+	// private Photo $photo;
+	// private User $user;
 
 	public function setUp(): void
 	{
@@ -40,9 +40,9 @@ class PhotoTest extends BaseLivewireTest
 		$this->setUpRequiresEmptyAlbums();
 		$this->setUpRequiresEmptyPhotos();
 
-		$this->album = $this->createAlbum();
-		$this->photo = Photo::factory()->create();
-		$this->user = User::factory()->create();
+		// $this->album = $this->createAlbum();
+		// $this->photo = Photo::factory()->create();
+		// $this->user = User::factory()->create();
 	}
 
 	public function tearDown(): void
