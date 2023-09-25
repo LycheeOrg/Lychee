@@ -36,12 +36,12 @@ class AlbumPolicy extends BasePolicy
 	/**
 	 * This ensures that current album is owned by current user.
 	 *
-	 * @param User|null $user
-	 * @param BaseAlbum $album
+	 * @param User|null               $user
+	 * @param BaseAlbum|BaseAlbumImpl $album
 	 *
 	 * @return bool
 	 */
-	public function isOwner(?User $user, BaseAlbum $album): bool
+	public function isOwner(?User $user, BaseAlbum|BaseAlbumImpl $album): bool
 	{
 		return $user !== null && $album->owner_id === $user->id;
 	}
@@ -353,16 +353,14 @@ class AlbumPolicy extends BasePolicy
 	/**
 	 * Check if user can share selected album with another user.
 	 *
-	 * @param User|null     $user
+	 * @param User          $user
 	 * @param AbstractAlbum $abstractAlbum
 	 *
 	 * @return bool
-	 *
-	 * @throws ConfigurationKeyMissingException
 	 */
-	public function canShareWithUsers(?User $user, ?AbstractAlbum $abstractAlbum): bool
+	public function canShareWithUsers(User $user, AbstractAlbum|BaseAlbumImpl|null $abstractAlbum): bool
 	{
-		if ($user?->may_upload !== true) {
+		if ($user->may_upload !== true) {
 			return false;
 		}
 
@@ -371,7 +369,7 @@ class AlbumPolicy extends BasePolicy
 			return true;
 		}
 
-		if (!$abstractAlbum instanceof BaseAlbum) {
+		if (!$abstractAlbum instanceof BaseAlbum && !$abstractAlbum instanceof BaseAlbumImpl) {
 			return false;
 		}
 

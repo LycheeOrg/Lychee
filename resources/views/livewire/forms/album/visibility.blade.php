@@ -33,7 +33,7 @@
 			<x-forms.defaulttickbox id="pp_dialog_password_check" wire:model.live='is_password_required' :disabled="!$is_public" />
 			<p class="my-1.5">{{ __('lychee.ALBUM_PASSWORD_PROT_EXPL') }}</p>
 			<div @class(["hidden" => !$is_password_required])>
-				<x-forms.inputs.text wire:model.live='password' placeholder="{{ __('lychee.ALBUM_PASSWORD') }}" />
+				<x-forms.inputs.text wire:model.live.debounce.500ms='password' placeholder="{{ __('lychee.ALBUM_PASSWORD') }}" />
 			</div>
 		</div>
 	</form>

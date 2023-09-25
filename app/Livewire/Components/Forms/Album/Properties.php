@@ -3,6 +3,7 @@
 namespace App\Livewire\Components\Forms\Album;
 
 use App\Contracts\Http\Requests\RequestAttribute;
+use App\Contracts\Models\AbstractAlbum;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\LicenseType;
@@ -48,6 +49,8 @@ class Properties extends Component
 	 */
 	public function mount(BaseAlbum $album): void
 	{
+		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $album]);
+
 		$this->albumID = $album->id;
 		$this->title = $album->title;
 		$this->description = $album->description ?? '';

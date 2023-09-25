@@ -38,6 +38,8 @@ class ShareWithLine extends Component
 	 */
 	public function mount(AccessPermission $perm, string $album_title = ''): void
 	{
+		Gate::authorize(AlbumPolicy::CAN_SHARE_WITH_USERS, [AbstractAlbum::class, $perm->album]);
+
 		$this->album_title = $album_title;
 		$this->perm = $perm;
 		$this->username = $perm->user->username;

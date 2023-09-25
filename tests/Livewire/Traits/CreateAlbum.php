@@ -20,7 +20,7 @@ use App\Models\User;
  */
 trait CreateAlbum
 {
-	protected function createAlbum(?int $ower_id = null): Album
+	final protected function createAlbum(?int $ower_id = null): Album
 	{
 		$album = new Album();
 		$album->title = fake()->country() . ' ' . fake()->year();

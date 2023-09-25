@@ -27,6 +27,7 @@ use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\Feature\Traits\RequiresEmptyUsers;
 use Tests\Livewire\Base\BaseLivewireTest;
 use Tests\Livewire\Traits\CreateAlbum;
+use Tests\Livewire\Traits\CreateTree;
 
 class AlbumTest extends BaseLivewireTest
 {
@@ -34,6 +35,7 @@ class AlbumTest extends BaseLivewireTest
 	use RequiresEmptyUsers;
 	use RequiresEmptyPhotos;
 	use CreateAlbum;
+	use CreateTree;
 
 	private ModelsAlbum $album;
 	private ModelsAlbum $subAlbum;
@@ -58,24 +60,6 @@ class AlbumTest extends BaseLivewireTest
 		$this->subPhoto = Photo::factory()->create(['latitude' => '51.81738000', 'longitude' => '5.86694306', 'altitude' => '83.1000']);
 		SizeVariant::factory()->count(7)->allSizeVariants()->create(['photo_id' => $this->subPhoto->id]);
 		$this->subPhoto->fresh();
-	}
-
-	private function buildTree(): void
-	{
-		$this->photo->album_id = $this->album->id;
-		$this->photo->save();
-		$this->photo = $this->photo->fresh();
-
-		$this->subPhoto->album_id = $this->subAlbum->id;
-		$this->subPhoto->save();
-		$this->subPhoto = $this->subPhoto->fresh();
-
-		$this->album->appendNode($this->subAlbum);
-		$this->album->save();
-		$this->album->fixOwnershipOfChildren();
-		$this->album = $this->album->fresh();
-		$this->album->load('children', 'photos');
-		$this->subAlbum->load('children', 'photos');
 	}
 
 	public function tearDown(): void
@@ -126,7 +110,7 @@ class AlbumTest extends BaseLivewireTest
 
 	public function testPageLoginAndBackFromSubAlbum(): void
 	{
-		$this->buildTree();
+		$this->createTree();
 
 		Livewire::actingAs($this->admin)->test(Album::class, ['albumId' => $this->subAlbum->id])
 			->assertViewIs('livewire.pages.gallery.album')
@@ -141,7 +125,7 @@ class AlbumTest extends BaseLivewireTest
 
 	public function testMenus(): void
 	{
-		$this->buildTree();
+		$this->createTree();
 
 		Livewire::actingAs($this->admin)->test(Album::class, ['albumId' => $this->album->id])
 			->assertViewIs('livewire.pages.gallery.album')
@@ -173,7 +157,7 @@ class AlbumTest extends BaseLivewireTest
 
 	public function testActions(): void
 	{
-		$this->buildTree();
+		$this->createTree();
 
 		Livewire::actingAs($this->admin)->test(Album::class, ['albumId' => $this->album->id])
 			->assertViewIs('livewire.pages.gallery.album')
