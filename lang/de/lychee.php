@@ -410,6 +410,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Standardmäßige Sichtbarkeit wurde erfolgreich geändert.',
 
 	'NSFW_BANNER' => '<h1>Krititscher Inhalt</h1><p>Diese Album enthält krititsche Inhalte, die manche Personen anstößig oder verstörend finden könnten.</p><p>Zur Einwilligung klicken.</p>',
+	'NSFW_HEADER' => 'Krititscher Inhalt',
+	'NSFW_EXPLANATION' => 'Diese Album enthält krititsche Inhalte, die manche Personen anstößig oder verstörend finden könnten.',
+	'TAP_CONSENT' => 'Zur Einwilligung klicken.',
 
 	'VIEW_NO_RESULT' => 'Keine Ergebnisse',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Keine öffentlichen Alben',

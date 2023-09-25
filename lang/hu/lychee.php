@@ -408,6 +408,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Az alapértelmezett érzékeny album láthatósága sikeresen frissítve.',
 
 	'NSFW_BANNER' => '<h1>Érzékeny tartalom</h1><p>Ez az album érzékeny tartalmat tartalmaz, amit néhány ember zavaró vagy zavarba ejtő lehet. Tapintson az engedélyezéshez.</p>',
+	'NSFW_HEADER' => 'Érzékeny tartalom',
+	'NSFW_EXPLANATION' => 'Ez az album érzékeny tartalmat tartalmaz, amit néhány ember zavaró vagy zavarba ejtő lehet.',
+	'TAP_CONSENT' => 'Tapintson az engedélyezéshez.',
 
 	'VIEW_NO_RESULT' => 'Nincs találat',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Nincsenek nyilvános albumok',

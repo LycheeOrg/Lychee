@@ -410,6 +410,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Domyślne ustawienie dotyczące widoczności albumów poufnych ostało zaktualizowane.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => 'Brak wyników',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Brak albumów publicznych',

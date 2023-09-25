@@ -9,16 +9,18 @@ use App\Models\Album;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Livewire\Component;
 
 /**
  * This is the overlay displaying the NSFW warning.
  */
-class SensitiveWarning implements Openable
+class SensitiveWarning extends Component implements Openable
 {
 	use UseOpenable;
 
 	// Text to be displayed. THIS IS HTML UNSANITIZED
 	public string $text;
+	public bool $isBlurred;
 
 	/**
 	 * Prepare the warning if required by the album.
@@ -30,8 +32,10 @@ class SensitiveWarning implements Openable
 	 */
 	public function mount(?AbstractAlbum $album = null): void
 	{
-		$override = Configs::getValueAsString('nsfw_banner_override');
-		$this->text = $override !== '' ? $override : __('lychee.NSFW_BANNER');
+		$this->text = Configs::getValueAsString('nsfw_banner_override');
+		$this->isBlurred = Configs::getValueAsBool('nsfw_banner_blur_backdrop');
+
+		// TODO: remember if was open or not.
 
 		if ($album instanceof Album) {
 			$this->isOpen = $album->is_nsfw;

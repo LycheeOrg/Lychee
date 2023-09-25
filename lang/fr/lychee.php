@@ -410,6 +410,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Visibilé par default des albums sensible mis à jour.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Contenu Sensible',
+	'NSFW_EXPLANATION' => 'Cet album contient des contenus sensible que certaine personnes peuvent trouver chocant ou troublant.',
+	'TAP_CONSENT' => 'Tap pour consentir.',
 
 	'VIEW_NO_RESULT' => 'Aucun résultat',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Aucun album public',
