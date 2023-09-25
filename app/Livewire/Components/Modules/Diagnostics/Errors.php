@@ -40,9 +40,11 @@ class Errors extends Component
 			}
 
 			if (Str::startsWith($line, 'Error: ')) {
+				// @codeCoverageIgnoreStart
 				$arr['color'] = 'text-red-500';
 				$arr['type'] = 'Error:';
 				$arr['line'] = Str::substr($line, 7);
+				// @codeCoverageIgnoreEnd
 			}
 
 			return $arr;

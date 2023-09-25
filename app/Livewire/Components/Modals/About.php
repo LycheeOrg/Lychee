@@ -35,8 +35,10 @@ class About extends Component
 		$fileVersion = resolve(FileVersion::class);
 		$gitHubVersion = resolve(GitHubVersion::class);
 		if (Configs::getValueAsBool('check_for_updates')) {
+			// @codeCoverageIgnoreStart
 			$fileVersion->hydrate();
 			$gitHubVersion->hydrate();
+			// @codeCoverageIgnoreEnd
 		}
 		$this->is_new_release_available = !$fileVersion->isUpToDate();
 		$this->is_git_update_available = !$gitHubVersion->isUpToDate();
