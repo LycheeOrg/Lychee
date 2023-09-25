@@ -83,6 +83,7 @@
             Loading...
         </span>
         @endif
+        <livewire:modules.gallery.sensitive-warning :album="$this->album" />
     </div>
     <x-gallery.album.sharing-links :album="$this->album" x-show="sharingLinksOpen" />
     @endif
