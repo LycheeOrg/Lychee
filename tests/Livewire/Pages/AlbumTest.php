@@ -208,7 +208,7 @@ class AlbumTest extends BaseLivewireTest
 			->call('unsetStar', [$this->photo->id])
 			->assertOk()
 			->call('setCover', $this->photo->id)
-			->assertDispatched('notify')
+			->assertNotDispatched('notify')
 			->assertOk();
 
 		Configs::set('layout', AlbumLayoutType::JUSTIFIED);
