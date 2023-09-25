@@ -136,7 +136,7 @@ class AlbumTest extends BaseLivewireTest
 			->call('silentUpdate')
 			->assertOk()
 			->call('back')
-			->assertRedirect(Album::class, ['albumId' => $this->album->id]);
+			->assertRedirect(route('livewire-gallery-album', ['albumId' => $this->album->id]));
 	}
 
 	public function testMenus(): void
