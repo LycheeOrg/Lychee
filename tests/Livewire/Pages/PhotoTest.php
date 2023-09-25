@@ -82,6 +82,8 @@ class PhotoTest extends BaseLivewireTest
 		Livewire::actingAs($this->admin)->test(Photo::class, ['albumId' => SmartAlbumType::UNSORTED->value, 'photoId' => $this->photo->id])
 			->assertViewIs('livewire.pages.gallery.photo')
 			->assertSee($this->photo->id)
+			->assertStatus(200)
+			->call('silentUpdate')
 			->assertStatus(200);
 	}
 }

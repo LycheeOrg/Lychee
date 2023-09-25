@@ -77,6 +77,8 @@ class AlbumTest extends BaseLivewireTest
 			->assertViewIs('livewire.pages.gallery.album')
 			->assertSee($this->album->id)
 			->assertStatus(200)
-			->assertSet('flags.is_accessible', true);
+			->assertSet('flags.is_accessible', true)
+			->call('silentUpdate')
+			->assertStatus(200);
 	}
 }
