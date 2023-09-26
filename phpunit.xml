@@ -7,6 +7,9 @@
     </report>
   </coverage>
   <testsuites>
+    <testsuite name="Install">
+      <directory suffix="Test.php">./tests/Install</directory>
+    </testsuite>
     <testsuite name="Feature">
       <directory suffix="Test.php">./tests/Feature</directory>
       <exclude>./tests/Feature/Base/BasePhotoTest.php</exclude>

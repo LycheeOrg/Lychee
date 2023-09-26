@@ -105,6 +105,7 @@ jobs:
           - postgresql
           - sqlite
         test-suite:
+          - Install
           - Feature
     # Service containers to run with `container-job`
     services:
