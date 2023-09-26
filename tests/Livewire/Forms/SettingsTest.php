@@ -12,7 +12,6 @@
 
 namespace Tests\Livewire\Forms;
 
-use App\Enum\Livewire\NotificationType;
 use App\Livewire\Components\Forms\Settings\Base\BooleanSetting;
 use App\Livewire\Components\Forms\Settings\Base\StringSetting;
 use App\Livewire\Components\Forms\Settings\SetAlbumDecorationOrientationSetting;
@@ -29,13 +28,13 @@ class SettingsTest extends BaseLivewireTest
 			->assertOk()
 			->assertViewIs('livewire.forms.settings.drop-down')
 			->set('value', 'column')
-			->assertDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value]);
+			->assertDispatched('notify', self::notifySuccess());
 
 		Livewire::actingAs($this->admin)->test(SetAlbumDecorationOrientationSetting::class)
 		->assertOk()
 		->assertViewIs('livewire.forms.settings.drop-down')
 		->set('value', 'something')
-		->assertNotDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value]);
+		->assertNotDispatched('notify', self::notifySuccess());
 	}
 
 	public function testDoubleDropdown(): void
@@ -44,18 +43,18 @@ class SettingsTest extends BaseLivewireTest
 			->assertOk()
 			->assertViewIs('livewire.forms.settings.double-drop-down')
 			->set('value1', 'title')
-			->assertDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value])
+			->assertDispatched('notify', self::notifySuccess())
 			->set('value2', 'DESC')
-			->assertDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value]);
+			->assertDispatched('notify', self::notifySuccess());
 
 		Livewire::actingAs($this->admin)->test(SetAlbumSortingSetting::class)
 			->assertOk()
 			->assertViewIs('livewire.forms.settings.double-drop-down')
 			->set('value1', 'something')
-			->assertNotDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value])
+			->assertNotDispatched('notify', self::notifySuccess())
 			->set('value1', 'title')
 			->set('value2', 'OTHER')
-			->assertNotDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value]);
+			->assertNotDispatched('notify', self::notifySuccess());
 	}
 
 	public function testBoolean(): void
@@ -68,7 +67,7 @@ class SettingsTest extends BaseLivewireTest
 			->assertViewIs('livewire.forms.settings.toggle')
 			->assertSet('flag', false)
 			->set('flag', true)
-			->assertDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value]);
+			->assertDispatched('notify', self::notifySuccess());
 	}
 
 	public function testString(): void
@@ -84,6 +83,6 @@ class SettingsTest extends BaseLivewireTest
 			->assertSet('value', '')
 			->set('value', 'api')
 			->call('save')
-			->assertDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value]);
+			->assertDispatched('notify', self::notifySuccess());
 	}
 }

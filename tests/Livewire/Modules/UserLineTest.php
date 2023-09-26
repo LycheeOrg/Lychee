@@ -15,26 +15,11 @@ namespace Tests\Livewire\Modules;
 use App\Livewire\Components\Modules\Users\UserLine;
 use App\Models\User;
 use Livewire\Livewire;
-use Tests\Feature\Traits\RequiresEmptyUsers;
 use Tests\Livewire\Base\BaseLivewireTest;
 
 class UserLineTest extends BaseLivewireTest
 {
-	use RequiresEmptyUsers;
-
 	private string $component = UserLine::class;
-
-	public function setUp(): void
-	{
-		parent::setUp();
-		$this->setUpRequiresEmptyUsers();
-	}
-
-	public function tearDown(): void
-	{
-		$this->tearDownRequiresEmptyUsers();
-		parent::tearDown();
-	}
 
 	public function testLoggedOut(): void
 	{

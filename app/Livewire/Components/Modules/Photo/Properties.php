@@ -50,6 +50,8 @@ class Properties extends Component
 	 */
 	public function mount(PhotoModel $photo): void
 	{
+		$this->authorize(PhotoPolicy::CAN_EDIT, $photo);
+
 		$this->date = $photo->created_at->toIso8601String();
 		$this->photoID = $photo->id;
 		$this->title = $photo->title;

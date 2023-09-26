@@ -13,38 +13,16 @@
 namespace Tests\Livewire\Menus;
 
 use App\Livewire\Components\Menus\AlbumDropdown;
-use App\Models\Album;
 use Livewire\Livewire;
-use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Livewire\Base\BaseLivewireTest;
-use Tests\Livewire\Traits\CreateAlbum;
 
 class AlbumDropdownTest extends BaseLivewireTest
 {
-	use RequiresEmptyAlbums;
-	use CreateAlbum;
-
-	private Album $album;
-
-	public function setUp(): void
-	{
-		parent::setUp();
-		$this->setUpRequiresEmptyAlbums();
-
-		$this->album = $this->createAlbum();
-	}
-
-	public function tearDown(): void
-	{
-		$this->tearDownRequiresEmptyAlbums();
-		parent::tearDown();
-	}
-
 	public function testMenu(): void
 	{
 		Livewire::test(
 			AlbumDropdown::class,
-			['params' => ['parentID' => null, 'albumID' => $this->album->id]]
+			['params' => ['parentID' => null, 'albumID' => $this->album1->id]]
 		)
 			->assertViewIs('livewire.context-menus.album-dropdown')
 			->assertStatus(200);
@@ -54,7 +32,7 @@ class AlbumDropdownTest extends BaseLivewireTest
 	{
 		Livewire::test(
 			AlbumDropdown::class,
-			['params' => ['parentID' => null, 'albumID' => $this->album->id]]
+			['params' => ['parentID' => null, 'albumID' => $this->album1->id]]
 		)
 			->call('rename')
 			->assertDispatched('closeContextMenu')
@@ -65,7 +43,7 @@ class AlbumDropdownTest extends BaseLivewireTest
 	{
 		Livewire::test(
 			AlbumDropdown::class,
-			['params' => ['parentID' => null, 'albumID' => $this->album->id]]
+			['params' => ['parentID' => null, 'albumID' => $this->album1->id]]
 		)
 			->call('merge')
 			->assertDispatched('closeContextMenu')
@@ -76,7 +54,7 @@ class AlbumDropdownTest extends BaseLivewireTest
 	{
 		Livewire::test(
 			AlbumDropdown::class,
-			['params' => ['parentID' => null, 'albumID' => $this->album->id]]
+			['params' => ['parentID' => null, 'albumID' => $this->album1->id]]
 		)
 			->call('delete')
 			->assertDispatched('closeContextMenu')
@@ -87,7 +65,7 @@ class AlbumDropdownTest extends BaseLivewireTest
 	{
 		Livewire::test(
 			AlbumDropdown::class,
-			['params' => ['parentID' => null, 'albumID' => $this->album->id]]
+			['params' => ['parentID' => null, 'albumID' => $this->album1->id]]
 		)
 			->call('move')
 			->assertDispatched('closeContextMenu')
@@ -98,10 +76,10 @@ class AlbumDropdownTest extends BaseLivewireTest
 	{
 		Livewire::test(
 			AlbumDropdown::class,
-			['params' => ['parentID' => null, 'albumID' => $this->album->id]]
+			['params' => ['parentID' => null, 'albumID' => $this->album1->id]]
 		)
 			->call('download')
 			->assertDispatched('closeContextMenu')
-			->assertRedirect(route('download', ['albumIDs' => $this->album->id]));
+			->assertRedirect(route('download', ['albumIDs' => $this->album1->id]));
 	}
 }

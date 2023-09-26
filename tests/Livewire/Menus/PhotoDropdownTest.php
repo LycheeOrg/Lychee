@@ -12,46 +12,18 @@
 
 namespace Tests\Livewire\Menus;
 
+use App\Contracts\Livewire\Params;
 use App\Livewire\Components\Menus\PhotoDropdown;
-use App\Models\Album;
 use App\Models\Photo;
 use Livewire\Livewire;
-use Tests\Feature\Traits\RequiresEmptyAlbums;
-use Tests\Feature\Traits\RequiresEmptyPhotos;
 use Tests\Livewire\Base\BaseLivewireTest;
-use Tests\Livewire\Traits\CreateAlbum;
 
 class PhotoDropdownTest extends BaseLivewireTest
 {
-	use RequiresEmptyAlbums;
-	use RequiresEmptyPhotos;
-	use CreateAlbum;
-
-	private Album $album;
-	private Photo $photo;
-
-	public function setUp(): void
-	{
-		parent::setUp();
-		$this->setUpRequiresEmptyPhotos();
-		$this->setUpRequiresEmptyAlbums();
-
-		$this->photo = Photo::factory()->create();
-
-		$this->album = $this->createAlbum();
-	}
-
-	public function tearDown(): void
-	{
-		$this->tearDownRequiresEmptyPhotos();
-		$this->tearDownRequiresEmptyAlbums();
-		parent::tearDown();
-	}
-
 	public function testMenu(): void
 	{
 		Livewire::test(PhotoDropdown::class,
-			['params' => ['albumID' => $this->album->id, 'photoID' => $this->photo->id]])
+			['params' => [Params::ALBUM_ID => $this->album1->id, Params::PHOTO_ID => $this->photo1->id]])
 			->assertViewIs('livewire.context-menus.photo-dropdown')
 			->assertStatus(200);
 	}
@@ -59,7 +31,7 @@ class PhotoDropdownTest extends BaseLivewireTest
 	public function testRename(): void
 	{
 		Livewire::test(PhotoDropdown::class,
-			['params' => ['albumID' => $this->album->id, 'photoID' => $this->photo->id]])
+			['params' => [Params::ALBUM_ID => $this->album1->id, Params::PHOTO_ID => $this->photo1->id]])
 			->call('rename')
 			->assertDispatched('closeContextMenu')
 			->assertDispatched('openModal', 'forms.photo.rename');
@@ -68,7 +40,7 @@ class PhotoDropdownTest extends BaseLivewireTest
 	public function testStarGuest(): void
 	{
 		Livewire::test(PhotoDropdown::class,
-			['params' => ['albumID' => $this->album->id, 'photoID' => $this->photo->id]])
+			['params' => [Params::ALBUM_ID => $this->album1->id, Params::PHOTO_ID => $this->photo1->id]])
 			->call('star')
 			->assertStatus(403);
 	}
@@ -76,7 +48,7 @@ class PhotoDropdownTest extends BaseLivewireTest
 	public function testStar(): void
 	{
 		Livewire::actingAs($this->admin)->test(PhotoDropdown::class,
-			['params' => ['albumID' => $this->album->id, 'photoID' => $this->photo->id]])
+			['params' => [Params::ALBUM_ID => $this->album1->id, Params::PHOTO_ID => $this->photo1->id]])
 			->call('star')
 			->assertDispatched('closeContextMenu')
 			->assertDispatched('reloadPage');
@@ -85,7 +57,7 @@ class PhotoDropdownTest extends BaseLivewireTest
 	public function testUnstarGuest(): void
 	{
 		Livewire::test(PhotoDropdown::class,
-			['params' => ['albumID' => $this->album->id, 'photoID' => $this->photo->id]])
+			['params' => [Params::ALBUM_ID => $this->album1->id, Params::PHOTO_ID => $this->photo1->id]])
 			->call('unstar')
 			->assertStatus(403);
 	}
@@ -93,7 +65,7 @@ class PhotoDropdownTest extends BaseLivewireTest
 	public function testUnstar(): void
 	{
 		Livewire::actingAs($this->admin)->test(PhotoDropdown::class,
-			['params' => ['albumID' => $this->album->id, 'photoID' => $this->photo->id]])
+			['params' => [Params::ALBUM_ID => $this->album1->id, Params::PHOTO_ID => $this->photo1->id]])
 			->call('unstar')
 			->assertDispatched('closeContextMenu')
 			->assertDispatched('reloadPage');
@@ -102,7 +74,7 @@ class PhotoDropdownTest extends BaseLivewireTest
 	public function testSetAsCoverGuest(): void
 	{
 		Livewire::test(PhotoDropdown::class,
-			['params' => ['albumID' => $this->album->id, 'photoID' => $this->photo->id]])
+			['params' => [Params::ALBUM_ID => $this->album1->id, Params::PHOTO_ID => $this->photo1->id]])
 			->call('setAsCover')
 			->assertStatus(403);
 	}
@@ -110,7 +82,7 @@ class PhotoDropdownTest extends BaseLivewireTest
 	public function testSetAsCover(): void
 	{
 		Livewire::actingAs($this->admin)->test(PhotoDropdown::class,
-			['params' => ['albumID' => $this->album->id, 'photoID' => $this->photo->id]])
+			['params' => [Params::ALBUM_ID => $this->album1->id, Params::PHOTO_ID => $this->photo1->id]])
 			->call('setAsCover')
 			->assertDispatched('closeContextMenu')
 			->assertDispatched('reloadPage');
@@ -119,7 +91,7 @@ class PhotoDropdownTest extends BaseLivewireTest
 	public function testTag(): void
 	{
 		Livewire::test(PhotoDropdown::class,
-			['params' => ['albumID' => $this->album->id, 'photoID' => $this->photo->id]])
+			['params' => [Params::ALBUM_ID => $this->album1->id, Params::PHOTO_ID => $this->photo1->id]])
 			->call('tag')
 			->assertDispatched('closeContextMenu')
 			->assertDispatched('openModal', 'forms.photo.tag');
@@ -128,7 +100,7 @@ class PhotoDropdownTest extends BaseLivewireTest
 	public function testDelete(): void
 	{
 		Livewire::test(PhotoDropdown::class,
-			['params' => ['albumID' => $this->album->id, 'photoID' => $this->photo->id]])
+			['params' => [Params::ALBUM_ID => $this->album1->id, Params::PHOTO_ID => $this->photo1->id]])
 			->call('delete')
 			->assertDispatched('closeContextMenu')
 			->assertDispatched('openModal', 'forms.photo.delete');
@@ -137,7 +109,7 @@ class PhotoDropdownTest extends BaseLivewireTest
 	public function testMove(): void
 	{
 		Livewire::test(PhotoDropdown::class,
-			['params' => ['albumID' => $this->album->id, 'photoID' => $this->photo->id]])
+			['params' => [Params::ALBUM_ID => $this->album1->id, Params::PHOTO_ID => $this->photo1->id]])
 			->call('move')
 			->assertDispatched('closeContextMenu')
 			->assertDispatched('openModal', 'forms.photo.move');
@@ -146,7 +118,7 @@ class PhotoDropdownTest extends BaseLivewireTest
 	public function testCopyTo(): void
 	{
 		Livewire::test(PhotoDropdown::class,
-			['params' => ['albumID' => $this->album->id, 'photoID' => $this->photo->id]])
+			['params' => [Params::ALBUM_ID => $this->album1->id, Params::PHOTO_ID => $this->photo1->id]])
 			->call('copyTo')
 			->assertDispatched('closeContextMenu')
 			->assertDispatched('openModal', 'forms.photo.copy-to');
@@ -155,7 +127,7 @@ class PhotoDropdownTest extends BaseLivewireTest
 	public function testDownload(): void
 	{
 		Livewire::test(PhotoDropdown::class,
-			['params' => ['albumID' => $this->album->id, 'photoID' => $this->photo->id]])
+			['params' => [Params::ALBUM_ID => $this->album1->id, Params::PHOTO_ID => $this->photo1->id]])
 			->call('download')
 			->assertDispatched('closeContextMenu')
 			->assertDispatched('openModal', 'forms.photo.download');

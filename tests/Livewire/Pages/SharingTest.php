@@ -26,7 +26,24 @@ class SharingTest extends BaseLivewireTest
 			->assertForbidden();
 	}
 
-	public function testLoggedIn(): void
+	public function testLoggedInUserNoRights(): void
+	{
+		Livewire::actingAs($this->userNoUpload)->test($this->component)
+			->assertForbidden();
+	}
+
+	public function testLoggedInUser(): void
+	{
+		Livewire::actingAs($this->userMayUpload1)->test($this->component)
+			->assertViewIs('livewire.pages.sharing');
+
+		Livewire::actingAs($this->userMayUpload1)->test($this->component)
+			->call('back')
+			->assertDispatched('closeLeftMenu')
+			->assertRedirect(route('livewire-gallery'));
+	}
+
+	public function testLoggedInAdmin(): void
 	{
 		Livewire::actingAs($this->admin)->test($this->component)
 			->assertViewIs('livewire.pages.sharing');

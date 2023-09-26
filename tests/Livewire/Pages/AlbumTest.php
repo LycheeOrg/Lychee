@@ -16,63 +16,16 @@ use App\Enum\AlbumLayoutType;
 use App\Enum\SmartAlbumType;
 use App\Livewire\Components\Pages\Gallery\Album;
 use App\Livewire\Components\Pages\Gallery\Albums;
-use App\Models\Album as ModelsAlbum;
 use App\Models\Configs;
-use App\Models\Photo;
-use App\Models\SizeVariant;
-use App\Models\User;
 use Livewire\Livewire;
-use Tests\Feature\Traits\RequiresEmptyAlbums;
-use Tests\Feature\Traits\RequiresEmptyPhotos;
-use Tests\Feature\Traits\RequiresEmptyUsers;
 use Tests\Livewire\Base\BaseLivewireTest;
-use Tests\Livewire\Traits\CreateAlbum;
-use Tests\Livewire\Traits\CreateTree;
 
 class AlbumTest extends BaseLivewireTest
 {
-	use RequiresEmptyAlbums;
-	use RequiresEmptyUsers;
-	use RequiresEmptyPhotos;
-	use CreateAlbum;
-	use CreateTree;
-
-	private ModelsAlbum $album;
-	private ModelsAlbum $subAlbum;
-	private Photo $photo;
-	private Photo $subPhoto;
-	private User $user;
-
-	public function setUp(): void
-	{
-		parent::setUp();
-		$this->setUpRequiresEmptyAlbums();
-		$this->setUpRequiresEmptyPhotos();
-
-		$this->album = $this->createAlbum();
-		$this->subAlbum = $this->createAlbum();
-		$this->user = User::factory()->create();
-
-		$this->photo = Photo::factory()->create(['latitude' => '51.81738000', 'longitude' => '5.86694306', 'altitude' => '83.1000']);
-		SizeVariant::factory()->count(7)->allSizeVariants()->create(['photo_id' => $this->photo->id]);
-		$this->photo->fresh();
-
-		$this->subPhoto = Photo::factory()->create(['latitude' => '51.81738000', 'longitude' => '5.86694306', 'altitude' => '83.1000']);
-		SizeVariant::factory()->count(7)->allSizeVariants()->create(['photo_id' => $this->subPhoto->id]);
-		$this->subPhoto->fresh();
-	}
-
-	public function tearDown(): void
-	{
-		$this->tearDownRequiresEmptyPhotos();
-		$this->tearDownRequiresEmptyAlbums();
-		parent::tearDown();
-	}
-
 	public function testUrlPageLogout(): void
 	{
 		// In this specific case we allow to find the album but we do not display it (tested later)
-		$response = $this->get(route('livewire-gallery-album', ['albumId' => $this->album->id]));
+		$response = $this->get(route('livewire-gallery-album', ['albumId' => $this->album1->id]));
 		$this->assertOk($response);
 
 		$response = $this->get(route('livewire-gallery-album', ['albumId' => '1234567890']));
@@ -81,9 +34,9 @@ class AlbumTest extends BaseLivewireTest
 
 	public function testPageLogout(): void
 	{
-		Livewire::test(Album::class, ['albumId' => $this->album->id])
+		Livewire::test(Album::class, ['albumId' => $this->album1->id])
 			->assertViewIs('livewire.pages.gallery.album')
-			->assertSee($this->album->id)
+			->assertSee($this->album1->id)
 			->assertOk()
 			->assertSet('flags.is_accessible', false)
 			->dispatch('reloadPage');
@@ -91,15 +44,18 @@ class AlbumTest extends BaseLivewireTest
 
 	public function testPageUserNoAccess(): void
 	{
-		Livewire::actingAs($this->user)->test(Album::class, ['albumId' => $this->album->id])
+		Livewire::actingAs($this->userMayUpload2)->test(Album::class, ['albumId' => $this->album1->id])
+			->assertRedirect(route('livewire-gallery'));
+
+		Livewire::actingAs($this->userNoUpload)->test(Album::class, ['albumId' => $this->album1->id])
 			->assertRedirect(route('livewire-gallery'));
 	}
 
 	public function testPageLoginAndBack(): void
 	{
-		Livewire::actingAs($this->admin)->test(Album::class, ['albumId' => $this->album->id])
+		Livewire::actingAs($this->userMayUpload1)->test(Album::class, ['albumId' => $this->album1->id])
 			->assertViewIs('livewire.pages.gallery.album')
-			->assertSee($this->album->id)
+			->assertSee($this->album1->id)
 			->assertOk()
 			->assertSet('flags.is_accessible', true)
 			->call('silentUpdate')
@@ -110,70 +66,57 @@ class AlbumTest extends BaseLivewireTest
 
 	public function testPageLoginAndBackFromSubAlbum(): void
 	{
-		$this->createTree();
-
-		Livewire::actingAs($this->admin)->test(Album::class, ['albumId' => $this->subAlbum->id])
+		Livewire::actingAs($this->userMayUpload1)->test(Album::class, ['albumId' => $this->subAlbum1->id])
 			->assertViewIs('livewire.pages.gallery.album')
-			->assertSee($this->subAlbum->id)
+			->assertSee($this->subAlbum1->id)
 			->assertOk()
 			->assertSet('flags.is_accessible', true)
 			->call('silentUpdate')
 			->assertOk()
 			->call('back')
-			->assertRedirect(route('livewire-gallery-album', ['albumId' => $this->album->id]));
+			->assertRedirect(route('livewire-gallery-album', ['albumId' => $this->album1->id]));
 	}
 
 	public function testMenus(): void
 	{
-		$this->createTree();
-
-		Livewire::actingAs($this->admin)->test(Album::class, ['albumId' => $this->album->id])
+		Livewire::actingAs($this->userMayUpload1)->test(Album::class, ['albumId' => $this->album1->id])
 			->assertViewIs('livewire.pages.gallery.album')
-			->assertSee($this->album->id)
-			->assertSee($this->subAlbum->id)
-			->assertSee($this->photo->id)
-			->assertSee($this->subPhoto->size_variants->getThumb()->url)
+			->assertSee($this->album1->id)
+			->assertSee($this->subAlbum1->id)
+			->assertSee($this->photo1->id)
+			->assertSee($this->subPhoto1->size_variants->getThumb()->url)
 			->assertOk()
 			->call('loadAlbum', 1900)
 			->assertOk()
 			->call('openContextMenu')
 			->assertOk()
-			->call('openAlbumDropdown', 0, 0, $this->subAlbum->id)
+			->call('openAlbumDropdown', 0, 0, $this->subAlbum1->id)
 			->assertOk()
-			->call('openAlbumsDropdown', 0, 0, [$this->subAlbum->id])
+			->call('openAlbumsDropdown', 0, 0, [$this->subAlbum1->id])
 			->assertOk()
-			->call('openPhotoDropdown', 0, 0, $this->photo->id)
+			->call('openPhotoDropdown', 0, 0, $this->photo1->id)
 			->assertOk()
-			->call('openPhotosDropdown', 0, 0, [$this->photo->id])
-			->assertOk()
-			->call('setStar', [$this->photo->id])
-			->assertOk()
-			->call('unsetStar', [$this->photo->id])
-			->assertOk()
-			->call('setCover', $this->photo->id)
-			->assertDispatched('notify')
+			->call('openPhotosDropdown', 0, 0, [$this->photo1->id])
 			->assertOk();
 	}
 
 	public function testActions(): void
 	{
-		$this->createTree();
-
-		Livewire::actingAs($this->admin)->test(Album::class, ['albumId' => $this->album->id])
+		Livewire::actingAs($this->userMayUpload1)->test(Album::class, ['albumId' => $this->album1->id])
 			->assertViewIs('livewire.pages.gallery.album')
-			->assertSee($this->album->id)
-			->assertSee($this->subAlbum->id)
-			->assertSee($this->photo->id)
-			->assertSee($this->subPhoto->size_variants->getThumb()->url)
+			->assertSee($this->album1->id)
+			->assertSee($this->subAlbum1->id)
+			->assertSee($this->photo1->id)
+			->assertSee($this->subPhoto1->size_variants->getThumb()->url)
 			->assertOk()
 			->call('loadAlbum', 1900)
 			->assertOk()
-			->call('setStar', [$this->photo->id])
+			->call('setStar', [$this->photo1->id])
 			->assertOk()
-			->call('unsetStar', [$this->photo->id])
+			->call('unsetStar', [$this->photo1->id])
 			->assertOk()
-			->call('setCover', $this->photo->id)
-			->assertDispatched('notify')
+			->call('setCover', $this->photo1->id)
+			->assertDispatched('notify', self::notifySuccess())
 			->assertOk();
 	}
 
@@ -181,17 +124,17 @@ class AlbumTest extends BaseLivewireTest
 	{
 		Configs::set('layout', AlbumLayoutType::SQUARE);
 
-		Livewire::actingAs($this->admin)->test(Album::class, ['albumId' => SmartAlbumType::UNSORTED->value])
+		Livewire::actingAs($this->userMayUpload1)->test(Album::class, ['albumId' => SmartAlbumType::UNSORTED->value])
 			->assertViewIs('livewire.pages.gallery.album')
-			->assertSee($this->photo->id)
+			->assertSee($this->photoUnsorted->id)
 			->assertOk()
 			->call('loadAlbum', 1900)
 			->assertOk()
-			->call('setStar', [$this->photo->id])
+			->call('setStar', [$this->photoUnsorted->id])
 			->assertOk()
-			->call('unsetStar', [$this->photo->id])
+			->call('unsetStar', [$this->photoUnsorted->id])
 			->assertOk()
-			->call('setCover', $this->photo->id)
+			->call('setCover', $this->photoUnsorted->id)
 			->assertNotDispatched('notify')
 			->assertOk();
 

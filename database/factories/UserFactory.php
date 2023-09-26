@@ -5,6 +5,9 @@ namespace Database\Factories;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ */
 class UserFactory extends Factory
 {
 	/**
@@ -17,9 +20,9 @@ class UserFactory extends Factory
 	/**
 	 * Define the model's default state.
 	 *
-	 * @return array
+	 * @return array<string,mixed>
 	 */
-	public function definition()
+	public function definition(): array
 	{
 		return [
 			'username' => fake()->name(),
@@ -28,7 +31,48 @@ class UserFactory extends Factory
 			'may_upload' => false,
 			'email' => fake()->email(),
 			'token' => null,
+			'remember_token' => null,
 			'may_edit_own_settings' => true,
 		];
+	}
+
+	/**
+	 * Indicate that user is Admin.
+	 *
+	 * @return Factory
+	 */
+	public function may_administrate(): Factory
+	{
+		return $this->state(function (array $attributes) {
+			return [
+				'may_administrate' => true,
+			];
+		});
+	}
+
+	/**
+	 * Indicate that the user has upload rights.
+	 *
+	 * @return Factory
+	 */
+	public function may_upload(): Factory
+	{
+		return $this->state(function (array $attributes) {
+			return [
+				'may_upload' => true,
+			];
+		});
+	}
+
+	/**
+	 * Indicates the user is locked.
+	 *
+	 * @return Factory
+	 */
+	public function locked(): Factory
+	{
+		return $this->state(function (array $attributes) {
+			return ['may_edit_own_settings' => false];
+		});
 	}
 }

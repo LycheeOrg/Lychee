@@ -17,35 +17,23 @@ use App\Livewire\Components\Forms\Profile\ManageSecondFactor;
 use App\Livewire\Components\Forms\Profile\SecondFactor;
 use App\Livewire\Components\Forms\Profile\SetEmail;
 use App\Livewire\Components\Forms\Profile\SetLogin;
-use App\Models\User;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
 use Livewire\Livewire;
-use Tests\Feature\Traits\RequiresEmptyUsers;
 use Tests\Feature\Traits\RequiresEmptyWebAuthnCredentials;
 use Tests\Livewire\Base\BaseLivewireTest;
 
 class FormsProfileTest extends BaseLivewireTest
 {
-	use RequiresEmptyUsers;
 	use RequiresEmptyWebAuthnCredentials;
 
-	private User $user;
-	private User $user2;
 	private WebAuthnCredential $credential;
 
 	public function setUp(): void
 	{
 		parent::setUp();
-		$this->setUpRequiresEmptyUsers();
 		$this->setUpRequiresEmptyWebAuthnCredentials();
-		/** @var User $user */
-		$user = User::factory()->create();
-		$this->user = $user;
-		/** @var User $user */
-		$user = User::factory()->create();
-		$this->user2 = $user;
 
-		$this->credential = $this->user->makeWebAuthnCredential([
+		$this->credential = $this->userMayUpload1->makeWebAuthnCredential([
 			'id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA',
 
 			'user_id' => '27117450ff81461d80331fb79c655f39',
@@ -66,7 +54,6 @@ class FormsProfileTest extends BaseLivewireTest
 	public function tearDown(): void
 	{
 		$this->tearDownRequiresEmptyWebAuthnCredentials();
-		$this->tearDownRequiresEmptyUsers();
 		parent::tearDown();
 	}
 
@@ -77,29 +64,29 @@ class FormsProfileTest extends BaseLivewireTest
 
 	public function testSecondFactorLoggedIn(): void
 	{
-		$this->assertEquals(1, $this->user->webAuthnCredentials()->count());
-		Livewire::actingAs($this->user)->test(SecondFactor::class)
+		$this->assertEquals(1, $this->userMayUpload1->webAuthnCredentials()->count());
+		Livewire::actingAs($this->userMayUpload1)->test(SecondFactor::class)
 			->assertViewIs('livewire.modules.profile.second-factor')
 			->assertSeeLivewire(ManageSecondFactor::class)
 			->dispatch('reload-component') // called when a WebAuthn is create
 			->call('delete', '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA')
 			->assertDontSeeLivewire(ManageSecondFactor::class);
 
-		$this->assertEquals(0, $this->user->webAuthnCredentials()->count());
+		$this->assertEquals(0, $this->userMayUpload1->webAuthnCredentials()->count());
 	}
 
 	public function testSecondFactorLoggedInCrossInteraction(): void
 	{
-		$this->assertEquals(1, $this->user->webAuthnCredentials()->count());
-		$this->assertEquals(0, $this->user2->webAuthnCredentials()->count());
-		Livewire::actingAs($this->user2)->test(SecondFactor::class)
+		$this->assertEquals(1, $this->userMayUpload1->webAuthnCredentials()->count());
+		$this->assertEquals(0, $this->userNoUpload->webAuthnCredentials()->count());
+		Livewire::actingAs($this->userNoUpload)->test(SecondFactor::class)
 			->assertViewIs('livewire.modules.profile.second-factor')
 			->assertDontSeeLivewire(ManageSecondFactor::class)
 			->dispatch('reload-component') // called when a WebAuthn is create
 			->call('delete', '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA')
 			->assertDontSeeLivewire(ManageSecondFactor::class);
 
-		$this->assertEquals(1, $this->user->webAuthnCredentials()->count());
+		$this->assertEquals(1, $this->userMayUpload1->webAuthnCredentials()->count());
 	}
 
 	public function testManageSecondFactorLogout(): void
@@ -109,13 +96,13 @@ class FormsProfileTest extends BaseLivewireTest
 
 	public function testManageSecondFactorLoginCrossInteraction(): void
 	{
-		Livewire::actingAs($this->user2)->test(ManageSecondFactor::class, ['credential' => $this->credential])
+		Livewire::actingAs($this->userNoUpload)->test(ManageSecondFactor::class, ['credential' => $this->credential])
 			->assertForbidden();
 	}
 
 	public function testManageSecondFactorLogin(): void
 	{
-		Livewire::actingAs($this->user)->test(ManageSecondFactor::class, ['credential' => $this->credential])
+		Livewire::actingAs($this->userMayUpload1)->test(ManageSecondFactor::class, ['credential' => $this->credential])
 			->assertViewIs('livewire.forms.profile.manage-second-factor')
 			->assertSet('alias', '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp')
 			->set('alias', '123')
@@ -125,7 +112,7 @@ class FormsProfileTest extends BaseLivewireTest
 		// reload model
 		$this->credential->fresh();
 
-		Livewire::actingAs($this->user)->test(ManageSecondFactor::class, ['credential' => $this->credential])
+		Livewire::actingAs($this->userMayUpload1)->test(ManageSecondFactor::class, ['credential' => $this->credential])
 			->assertViewIs('livewire.forms.profile.manage-second-factor')
 			->assertSet('alias', '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp')
 			->set('alias', '12345')
@@ -155,7 +142,7 @@ class FormsProfileTest extends BaseLivewireTest
 
 	public function testGetApiTokenLogin(): void
 	{
-		Livewire::actingAs($this->user)->test(GetApiToken::class)
+		Livewire::actingAs($this->userMayUpload1)->test(GetApiToken::class)
 			->assertViewIs('livewire.forms.profile.get-api-token')
 			->assertSet('token', __('lychee.DISABLED_TOKEN_STATUS_MSG'))
 			->call('resetToken')
@@ -163,29 +150,29 @@ class FormsProfileTest extends BaseLivewireTest
 			->call('close')
 			->assertDispatched('closeModal');
 
-		Livewire::actingAs($this->user)->test(GetApiToken::class)
+		Livewire::actingAs($this->userMayUpload1)->test(GetApiToken::class)
 			->assertViewIs('livewire.forms.profile.get-api-token')
 			->assertSet('token', __('lychee.TOKEN_NOT_AVAILABLE'))
 			->call('disableToken')
 			->assertSet('token', __('lychee.DISABLED_TOKEN_STATUS_MSG'));
 
-		$this->assertNull($this->user->fresh()->token);
+		$this->assertNull($this->userMayUpload1->fresh()->token);
 	}
 
 	public function testSetEmailLogin(): void
 	{
-		Livewire::actingAs($this->user)->test(SetEmail::class)
+		Livewire::actingAs($this->userMayUpload1)->test(SetEmail::class)
 			->assertViewIs('livewire.forms.settings.input')
 			->set('value', 'user@lychee.org')
 			->call('save')
 			->assertOk();
 
-		$this->assertEquals('user@lychee.org', $this->user->fresh()->email);
+		$this->assertEquals('user@lychee.org', $this->userMayUpload1->fresh()->email);
 	}
 
 	public function testSetLoginLogin(): void
 	{
-		Livewire::actingAs($this->user)->test(SetLogin::class)
+		Livewire::actingAs($this->userMayUpload1)->test(SetLogin::class)
 			->assertViewIs('livewire.forms.profile.set-login')
 			->call('openApiTokenModal')
 			->assertDispatched('openModal', 'forms.profile.get-api-token')
@@ -198,7 +185,7 @@ class FormsProfileTest extends BaseLivewireTest
 			->set('oldPassword', 'password')
 			->call('submit')
 			->assertHasErrors('password')
-			->set('username', 'user2')
+			->set('username', 'userNoUpload')
 			->set('password', 'password')
 			->call('submit')
 			->assertHasErrors('password')
@@ -206,6 +193,6 @@ class FormsProfileTest extends BaseLivewireTest
 			->call('submit')
 			->assertHasNoErrors('password');
 
-		$this->assertEquals('user2', $this->user->fresh()->username());
+		$this->assertEquals('userNoUpload', $this->userMayUpload1->fresh()->username());
 	}
 }

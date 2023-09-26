@@ -15,9 +15,9 @@ namespace Tests\Livewire\Pages;
 use App\Livewire\Components\Pages\Landing;
 use App\Models\Configs;
 use Livewire\Livewire;
-use Tests\Livewire\Base\BaseLivewireTest;
+use Tests\AbstractTestCase;
 
-class LandingTest extends BaseLivewireTest
+class LandingTest extends AbstractTestCase
 {
 	private bool $landing_on_off;
 

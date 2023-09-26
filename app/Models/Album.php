@@ -16,6 +16,7 @@ use App\Relations\HasManyChildAlbums;
 use App\Relations\HasManyChildPhotos;
 use App\Relations\HasManyPhotosRecursively;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Http\UploadedFile;
@@ -120,6 +121,7 @@ class Album extends BaseAlbum implements Node
 {
 	use NodeTrait;
 	use ToArrayThrowsNotImplemented;
+	use HasFactory;
 
 	/**
 	 * The model's attributes.

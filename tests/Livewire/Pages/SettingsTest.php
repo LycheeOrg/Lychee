@@ -14,10 +14,13 @@ namespace Tests\Livewire\Pages;
 
 use App\Livewire\Components\Pages\Settings;
 use Livewire\Livewire;
+use Tests\Feature\Traits\RequiresEmptyUsers;
 use Tests\Livewire\Base\BaseLivewireTest;
 
 class SettingsTest extends BaseLivewireTest
 {
+	use RequiresEmptyUsers;
+
 	private string $component = Settings::class;
 
 	public function testLoggedOut(): void
@@ -27,6 +30,12 @@ class SettingsTest extends BaseLivewireTest
 	}
 
 	public function testLoggedIn(): void
+	{
+		Livewire::actingAs($this->userMayUpload1)->test($this->component)
+			->assertForbidden();
+	}
+
+	public function testLoggedInAdmin(): void
 	{
 		Livewire::actingAs($this->admin)->test($this->component)
 			->assertViewIs('livewire.pages.settings');

@@ -2,7 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Models\Album;
 use App\Models\Photo;
+use App\Models\SizeVariant;
+use Database\Factories\Traits\OwnedBy;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -10,6 +13,10 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class PhotoFactory extends Factory
 {
+	use OwnedBy;
+
+	private bool $with_size_variants = true;
+
 	/**
 	 * The name of the factory's corresponding model.
 	 *
@@ -20,7 +27,7 @@ class PhotoFactory extends Factory
 	/**
 	 * Define the model's default state.
 	 *
-	 * @return array<string, mixed>
+	 * @return array<string,mixed>
 	 */
 	public function definition(): array
 	{
@@ -48,5 +55,66 @@ class PhotoFactory extends Factory
 			'created_at' => now(),
 			'updated_at' => now(),
 		];
+	}
+
+	/**
+	 * Indicate that the user is suspended.
+	 */
+	public function without_size_variants(): Factory
+	{
+		$this->with_size_variants = false;
+
+		return $this;
+	}
+
+	/**
+	 * Set a bunch of GPS coordinates (in Netherlands).
+	 *
+	 * @return array<string,mixed>
+	 */
+	public function with_GPS_coordinates(): self
+	{
+		return $this->state(function (array $attributes) {
+			return [
+				'latitude' => '51.81738000',
+				'longitude' => '5.86694306',
+				'altitude' => '83.1000',
+			];
+		});
+	}
+
+	/**
+	 * Set a bunch of GPS coordinates (in Netherlands).
+	 *
+	 * @return self
+	 */
+	public function in(Album $album): self
+	{
+		return $this->state(function (array $attributes) use ($album) {
+			return [
+				'album_id' => $album->id,
+			];
+		})->afterCreating(function (Photo $photo) {
+			$photo->load('album', 'owner');
+		});
+	}
+
+	/**
+	 * Configure the model factory.
+	 * We create 7 random Size Variants.
+	 */
+	public function configure(): static
+	{
+		return $this->afterCreating(function (Photo $photo) {
+			// Creates the size variants
+			if ($this->with_size_variants) {
+				SizeVariant::factory()->count(7)->allSizeVariants()->create(['photo_id' => $photo->id]);
+				$photo->fresh();
+				$photo->load('size_variants');
+			}
+
+			// Reset the value if it was disabled.
+			$this->with_size_variants = true;
+		});
 	}
 }

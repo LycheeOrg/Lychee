@@ -12,71 +12,49 @@
 
 namespace Tests\Livewire\Forms\Album;
 
-use App\Enum\Livewire\NotificationType;
 use App\Livewire\Components\Forms\Album\Visibility;
-use App\Models\Album;
 use Livewire\Livewire;
-use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Livewire\Base\BaseLivewireTest;
-use Tests\Livewire\Traits\CreateAlbum;
 
 class VisibilityTest extends BaseLivewireTest
 {
-	use RequiresEmptyAlbums;
-	use CreateAlbum;
-
-	private Album $album;
-
-	public function setUp(): void
-	{
-		parent::setUp();
-		$this->setUpRequiresEmptyAlbums();
-		$this->album = $this->createAlbum();
-	}
-
-	public function tearDown(): void
-	{
-		$this->tearDownRequiresEmptyAlbums();
-		parent::tearDown();
-	}
-
 	public function testVisibilityLoggedOut(): void
 	{
-		Livewire::test(Visibility::class, ['album' => $this->album])->assertForbidden();
+		Livewire::test(Visibility::class, ['album' => $this->album1])->assertForbidden();
 	}
 
 	public function testVisibilityLoggedIn(): void
 	{
-		Livewire::actingAs($this->admin)->test(Visibility::class, ['album' => $this->album])
+		Livewire::actingAs($this->admin)->test(Visibility::class, ['album' => $this->album1])
 			->assertOk()
 			->assertViewIs('livewire.forms.album.visibility')
 			->toggle('is_public')
-			->assertDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value]);
+			->assertDispatched('notify', self::notifySuccess());
 
-		$this->album->fresh();
-		$this->album->base_class->load('access_permissions');
-		$this->assertNotNull($this->album->public_permissions());
+		$this->album1->fresh();
+		$this->album1->base_class->load('access_permissions');
+		$this->assertNotNull($this->album1->public_permissions());
 
-		Livewire::actingAs($this->admin)->test(Visibility::class, ['album' => $this->album])
+		Livewire::actingAs($this->admin)->test(Visibility::class, ['album' => $this->album1])
 			->assertOk()
 			->assertViewIs('livewire.forms.album.visibility')
 			->set('grants_full_photo_access', true)
-			->assertDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value])
+			->assertDispatched('notify', self::notifySuccess())
 			->set('is_link_required', true)
-			->assertDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value])
+			->assertDispatched('notify', self::notifySuccess())
 			->set('grants_download', true)
-			->assertDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value])
+			->assertDispatched('notify', self::notifySuccess())
 			->set('is_nsfw', true)
-			->assertDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value])
+			->assertDispatched('notify', self::notifySuccess())
 			->set('is_password_required', true)
-			->assertDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value])
+			->assertDispatched('notify', self::notifySuccess())
 			->set('password', 'password')
-			->assertDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value]);
+			->assertDispatched('notify', self::notifySuccess());
 
-		$this->album = $this->album->fresh();
-		$this->album->base_class->load('access_permissions');
+		$this->album1 = $this->album1->fresh();
+		$this->album1->base_class->load('access_permissions');
 
-		Livewire::actingAs($this->admin)->test(Visibility::class, ['album' => $this->album])
+		Livewire::actingAs($this->admin)->test(Visibility::class, ['album' => $this->album1])
 			->assertOk()
 			->assertSet('is_public', true)
 			->assertSet('grants_full_photo_access', true)
@@ -85,7 +63,7 @@ class VisibilityTest extends BaseLivewireTest
 			->assertSet('is_nsfw', true)
 			->assertSet('is_password_required', true)
 			->toggle('is_public')
-			->assertDispatched('notify', ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value])
+			->assertDispatched('notify', self::notifySuccess())
 			->assertSet('grants_full_photo_access', false)
 			->assertSet('is_link_required', false)
 			->assertSet('grants_download', false)

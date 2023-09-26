@@ -14,21 +14,26 @@ namespace Tests\Livewire\Pages;
 
 use App\Livewire\Components\Pages\Users;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Livewire;
+use Tests\AbstractTestCase;
 use Tests\Feature\Traits\RequiresEmptyUsers;
 use Tests\Livewire\Base\BaseLivewireTest;
 
-class UsersTest extends BaseLivewireTest
+class UsersTest extends AbstractTestCase
 {
 	use RequiresEmptyUsers;
 
 	private string $component = Users::class;
 
+	private User $admin;
+
 	public function setUp(): void
 	{
 		parent::setUp();
+		$this->admin = User::findOrFail(1);
+		
 		$this->setUpRequiresEmptyUsers();
+		$this->withoutVite();
 	}
 
 	public function tearDown(): void
@@ -83,8 +88,7 @@ class UsersTest extends BaseLivewireTest
 
 	public function testForbiddenDelete(): void
 	{
-		Auth::login($this->admin);
-		Livewire::test(Users::class)
+		Livewire::actingAs($this->admin)->test(Users::class)
 			->call('delete', $this->admin->id)
 			->assertStatus(403);
 	}
