@@ -16,7 +16,6 @@ use App\Models\Configs;
 use App\Models\Photo;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection as BaseCollection;
@@ -31,7 +30,6 @@ abstract class AbstractTestCase extends BaseTestCase
 {
 	use CreatesApplication;
 	use CatchFailures;
-	use DatabaseTransactions;
 
 	/**
 	 * Visit the given URI with a GET request.
