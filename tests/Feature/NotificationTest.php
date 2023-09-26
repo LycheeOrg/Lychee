@@ -14,6 +14,7 @@ namespace Tests\Feature;
 
 use App\Mail\PhotosAdded;
 use App\Models\Configs;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
@@ -31,6 +32,7 @@ class NotificationTest extends AbstractTestCase
 	use RequiresEmptyAlbums;
 	use RequiresEmptyUsers;
 	use RequiresEmptyPhotos;
+	use DatabaseTransactions;
 
 	protected AlbumsUnitTest $albums_tests;
 	protected UsersUnitTest $users_tests;

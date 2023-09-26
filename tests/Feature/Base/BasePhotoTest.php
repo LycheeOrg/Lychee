@@ -12,6 +12,7 @@
 
 namespace Tests\Feature\Base;
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Tests\AbstractTestCase;
@@ -26,6 +27,7 @@ abstract class BasePhotoTest extends AbstractTestCase
 	use RequiresEmptyPhotos;
 	use RequiresExifTool;
 	use RequiresFFMpeg;
+	use DatabaseTransactions;
 
 	protected AlbumsUnitTest $albums_tests;
 	protected PhotosUnitTest $photos_tests;

@@ -14,12 +14,15 @@ namespace Tests\Feature;
 
 use App\Metadata\Versions\Remote\GitCommits;
 use App\Metadata\Versions\Remote\GitTags;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\File;
 use function Safe\json_decode;
 use Tests\AbstractTestCase;
 
 class GitRemoteTest extends AbstractTestCase
 {
+	use DatabaseTransactions;
+
 	public function testCommits(): void
 	{
 		$remote = resolve(GitCommits::class);

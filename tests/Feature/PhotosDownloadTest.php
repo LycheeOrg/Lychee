@@ -25,6 +25,7 @@ use function Safe\filesize;
 use function Safe\fwrite;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Tests\AbstractTestCase;
+use Tests\Feature\Base\BasePhotoTest;
 use Tests\Feature\Constants\TestConstants;
 use Tests\Feature\LibUnitTests\AssertableZipArchive;
 use Tests\Feature\LibUnitTests\SharingUnitTest;
@@ -32,7 +33,7 @@ use Tests\Feature\LibUnitTests\UsersUnitTest;
 use Tests\Feature\Traits\RequiresEmptyAlbums;
 use Tests\Feature\Traits\RequiresEmptyUsers;
 
-class PhotosDownloadTest extends Base\BasePhotoTest
+class PhotosDownloadTest extends BasePhotoTest
 {
 	use RequiresEmptyUsers;
 	use RequiresEmptyAlbums;

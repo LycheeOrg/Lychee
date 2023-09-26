@@ -13,6 +13,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Laragear\WebAuthn\ByteBuffer;
@@ -25,6 +26,7 @@ class WebAuthTest extends AbstractTestCase
 {
 	use CatchFailures;
 	use RequiresEmptyWebAuthnCredentials;
+	use DatabaseTransactions;
 
 	public function setUp(): void
 	{

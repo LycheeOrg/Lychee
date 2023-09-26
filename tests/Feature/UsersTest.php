@@ -18,6 +18,7 @@ use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
@@ -32,6 +33,7 @@ use Tests\Feature\Traits\InteractWithSmartAlbums;
 class UsersTest extends AbstractTestCase
 {
 	use InteractWithSmartAlbums;
+	use DatabaseTransactions;
 
 	public function testUsers(): void
 	{

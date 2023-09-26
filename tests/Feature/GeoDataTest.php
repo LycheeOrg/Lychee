@@ -16,6 +16,7 @@ use App\Models\Configs;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Carbon\Carbon;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Tests\AbstractTestCase;
@@ -29,6 +30,7 @@ use Tests\Feature\Traits\RequiresEmptyPhotos;
 
 class GeoDataTest extends AbstractTestCase
 {
+	use DatabaseTransactions;
 	use RequiresEmptyPhotos;
 	use RequiresEmptyAlbums;
 	use InteractWithSmartAlbums;

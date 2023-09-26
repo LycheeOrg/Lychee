@@ -13,9 +13,10 @@
 namespace Tests\Feature;
 
 use Illuminate\Support\Facades\DB;
+use Tests\Feature\Base\BasePhotoTest;
 use Tests\Feature\Constants\TestConstants;
 
-class CommandGhostbusterTest extends Base\BasePhotoTest
+class CommandGhostbusterTest extends BasePhotoTest
 {
 	public const COMMAND = 'lychee:ghostbuster';
 

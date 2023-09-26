@@ -13,6 +13,7 @@
 namespace Tests\Feature;
 
 use App\Models\Configs;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Testing\TestResponse;
@@ -28,6 +29,7 @@ class SearchTest extends BasePhotoTest
 {
 	use RequiresEmptyAlbums;
 	use RequiresEmptyUsers;
+	use DatabaseTransactions;
 
 	protected UsersUnitTest $users_tests;
 	protected SharingUnitTest $sharing_test;

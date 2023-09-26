@@ -13,12 +13,15 @@
 namespace Tests\Feature;
 
 use App\Models\Configs;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Tests\AbstractTestCase;
 
 class IndexTest extends AbstractTestCase
 {
+	use DatabaseTransactions;
+
 	/**
 	 * Testing the Login interface.
 	 *

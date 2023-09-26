@@ -14,6 +14,7 @@ namespace Tests\Feature;
 
 use App\Models\Configs;
 use Carbon\Carbon;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 use function Safe\date;
 use function Safe\file_get_contents;
@@ -31,6 +32,8 @@ use Tests\Feature\Constants\TestConstants;
  */
 abstract class BasePhotosAddHandler extends BasePhotoTest
 {
+	use DatabaseTransactions;
+
 	/**
 	 * A simple upload of an ordinary photo to the root album.
 	 *

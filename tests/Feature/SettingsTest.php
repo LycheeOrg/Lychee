@@ -16,6 +16,7 @@ use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Http\Requests\Settings\SetSortingSettingsRequest;
 use App\Models\Configs;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Session;
@@ -23,6 +24,8 @@ use Tests\AbstractTestCase;
 
 class SettingsTest extends AbstractTestCase
 {
+	use DatabaseTransactions;
+
 	private function send(
 		string $url,
 		array $params,

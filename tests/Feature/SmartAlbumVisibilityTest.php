@@ -15,6 +15,7 @@ namespace Tests\Feature;
 use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Tests\AbstractTestCase;
@@ -34,6 +35,7 @@ class SmartAlbumVisibilityTest extends AbstractTestCase
 	use RequiresEmptyAlbums;
 	use RequiresEmptyUsers;
 	use RequiresEmptyPhotos;
+	use DatabaseTransactions;
 
 	protected AlbumsUnitTest $albums_tests;
 	protected RootAlbumUnitTest $root_album_tests;

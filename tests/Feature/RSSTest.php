@@ -13,6 +13,7 @@
 namespace Tests\Feature;
 
 use App\Models\Configs;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Tests\AbstractTestCase;
@@ -24,6 +25,7 @@ use Tests\Feature\Traits\RequiresEmptyPhotos;
 class RSSTest extends AbstractTestCase
 {
 	use RequiresEmptyPhotos;
+	use DatabaseTransactions;
 
 	protected PhotosUnitTest $photos_tests;
 	protected AlbumsUnitTest $albums_tests;
