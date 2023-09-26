@@ -17,7 +17,6 @@ use App\Models\User;
 use Livewire\Livewire;
 use Tests\AbstractTestCase;
 use Tests\Feature\Traits\RequiresEmptyUsers;
-use Tests\Livewire\Base\BaseLivewireTest;
 
 class UsersTest extends AbstractTestCase
 {
@@ -31,7 +30,7 @@ class UsersTest extends AbstractTestCase
 	{
 		parent::setUp();
 		$this->admin = User::findOrFail(1);
-		
+
 		$this->setUpRequiresEmptyUsers();
 		$this->withoutVite();
 	}

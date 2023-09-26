@@ -27,7 +27,7 @@ abstract class BaseLivewireTest extends AbstractTestCase
 	use RequiresEmptyUsers;
 	use RequiresEmptyAlbums;
 	use RequiresEmptyPhotos;
-    use DatabaseTransactions;
+	use DatabaseTransactions;
 
 	protected User $admin;
 
