@@ -10,9 +10,8 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature;
+namespace Tests\Install;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Tests\AbstractTestCase;
@@ -22,7 +21,6 @@ use Tests\Feature\Traits\RequiresEmptyUsers;
 class ApiTokenTest extends AbstractTestCase
 {
 	use RequiresEmptyUsers;
-	use DatabaseTransactions;
 
 	protected UsersUnitTest $users_tests;
 
