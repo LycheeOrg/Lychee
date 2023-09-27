@@ -113,7 +113,7 @@ parameters:
 			paths:
 				- tests
 		-
-			message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assert(Is)?(Not)?(True|False|Equals|Int|Null|Empty)\(\)#'
+			message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assert(Is)?(Not)?(True|False|Equals|Int|Null|Empty|Count)\(\)#'
 			paths:
 				- tests
 		-
