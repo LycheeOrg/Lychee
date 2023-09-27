@@ -8,8 +8,10 @@ use App\Livewire\Traits\InteractWithModal;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
 use App\Models\Photo;
+use App\Policies\PhotoPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -34,11 +36,13 @@ class Download extends Component
 	public function mount(array $params = ['albumID' => null]): void
 	{
 		$id = $params[Params::PHOTO_ID] ?? null;
-		if ($id !== null) {
-			$this->photoIDs = [$id];
-			$this->photo = Photo::query()->findOrFail($id);
+		$this->photoIDs = $id !== null ? [$id] : $params[Params::PHOTO_IDS] ?? [];
+		$num = count($this->photoIDs);
+
+		if ($num === 1) {
+			$this->photo = Photo::query()->findOrFail($this->photoIDs[0]);
+			Gate::authorize(PhotoPolicy::CAN_DOWNLOAD, [Photo::class, $this->photo]);
 		} else {
-			$this->photoIDs = $params[Params::PHOTO_IDS] ?? null;
 			$this->redirect(route('photo_download', ['kind' => DownloadVariantType::ORIGINAL->value]) . '&photoIDs=' . implode(',', $this->photoIDs));
 		}
 	}
