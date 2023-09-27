@@ -12,6 +12,7 @@
 
 namespace Tests\Livewire\Pages;
 
+use App\Contracts\Livewire\Params;
 use App\Livewire\Components\Modules\Photo\Properties;
 use App\Livewire\Components\Pages\Gallery\Photo;
 use Livewire\Livewire;
@@ -48,7 +49,19 @@ class PhotoTest extends BaseLivewireTest
 			['albumId' => $this->album1->id, 'photoId' => $this->photo1->id])
 			->assertViewIs('livewire.pages.gallery.photo')
 			->assertSee($this->photo1->id)
-			->assertStatus(200);
+			->assertOk()
+			->dispatch('reloadPage')
+			->assertOk()
+			->call('set_star')
+			->assertSet('photo.is_starred', true)
+			->call('set_star')
+			->assertSet('photo.is_starred', false)
+			->call('move')
+			->assertDispatched('openModal', 'forms.photo.move', '', [Params::PHOTO_IDS => [$this->photo1->id], Params::ALBUM_ID => $this->album1->id])
+			->call('delete')
+			->assertDispatched('openModal', 'forms.photo.delete', '', [Params::PHOTO_IDS => [$this->photo1->id], Params::ALBUM_ID => $this->album1->id])
+			->call('back')
+			->assertRedirect(route('livewire-gallery-album', ['albumId' => $this->album1->id]));
 	}
 
 	public function testPropertiesLogout(): void
