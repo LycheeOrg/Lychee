@@ -52,6 +52,7 @@ class CreateTag extends Component
 	 */
 	public function mount(array $params = []): void
 	{
+		Gate::authorize(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, null]);
 	}
 
 	/**

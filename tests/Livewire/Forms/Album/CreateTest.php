@@ -46,7 +46,8 @@ class CreateTest extends BaseLivewireTest
 		Livewire::actingAs($this->userMayUpload1)->test(Create::class, ['params' => [Params::PARENT_ID => $this->album1->id]])
 			->assertOk()
 			->assertViewIs('livewire.forms.add.create')
-			->call('close');
+			->call('close')
+			->assertDispatched('closeModal');
 
 		Livewire::actingAs($this->userMayUpload1)->test(Create::class, ['params' => [Params::PARENT_ID => $this->album1->id]])
 			->assertOk()
