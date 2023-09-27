@@ -5,7 +5,6 @@ namespace App\Livewire\Components\Forms\Album;
 use App\Actions\Album\Move as AlbumMove;
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\RuleSets\Album\MoveAlbumsRuleSet;
-use App\Livewire\Components\Pages\Gallery\Album as GalleryAlbum;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
 use App\Models\Album;
@@ -30,7 +29,7 @@ class MovePanel extends Component
 	// Destination
 	#[Locked] public ?string $albumID = null;
 	#[Locked] public ?string $title = null;
-	#[Locked] public ?string $parent_id;
+	#[Locked] public ?string $parent_id = null;
 	#[Locked] public int $lft;
 	#[Locked] public int $rgt;
 	private AlbumMove $moveAlbums;
@@ -49,6 +48,8 @@ class MovePanel extends Component
 	 */
 	public function mount(Album $album): void
 	{
+		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $album]);
+
 		$this->albumIDs = [$album->id];
 		$this->titleMoved = $album->title;
 		$this->lft = $album->_lft;
@@ -101,7 +102,10 @@ class MovePanel extends Component
 		$albums = Album::query()->findOrFail($this->albumIDs);
 		$this->moveAlbums->do($album, $albums);
 
-		$this->dispatch('toggleAlbumDetails')->to(GalleryAlbum::class);
-		$this->notify(__('lychee.CHANGE_SUCCESS'));
+		if ($this->parent_id !== null) {
+			$this->redirect(route('livewire-gallery-album', ['albumId' => $this->parent_id]), true);
+		} else {
+			$this->redirect(route('livewire-gallery'), true);
+		}
 	}
 }

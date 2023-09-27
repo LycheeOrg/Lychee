@@ -12,6 +12,7 @@
 
 namespace Tests\Livewire\Forms\Album;
 
+use App\Livewire\Components\Forms\Album\UnlockAlbum;
 use App\Livewire\Components\Forms\Album\Visibility;
 use Livewire\Livewire;
 use Tests\Livewire\Base\BaseLivewireTest;
@@ -25,7 +26,7 @@ class VisibilityTest extends BaseLivewireTest
 
 	public function testVisibilityLoggedIn(): void
 	{
-		Livewire::actingAs($this->admin)->test(Visibility::class, ['album' => $this->album1])
+		Livewire::actingAs($this->userMayUpload1)->test(Visibility::class, ['album' => $this->album1])
 			->assertOk()
 			->assertViewIs('livewire.forms.album.visibility')
 			->toggle('is_public')
@@ -35,7 +36,7 @@ class VisibilityTest extends BaseLivewireTest
 		$this->album1->base_class->load('access_permissions');
 		$this->assertNotNull($this->album1->public_permissions());
 
-		Livewire::actingAs($this->admin)->test(Visibility::class, ['album' => $this->album1])
+		Livewire::actingAs($this->userMayUpload1)->test(Visibility::class, ['album' => $this->album1])
 			->assertOk()
 			->assertViewIs('livewire.forms.album.visibility')
 			->set('grants_full_photo_access', true)
@@ -54,7 +55,7 @@ class VisibilityTest extends BaseLivewireTest
 		$this->album1 = $this->album1->fresh();
 		$this->album1->base_class->load('access_permissions');
 
-		Livewire::actingAs($this->admin)->test(Visibility::class, ['album' => $this->album1])
+		Livewire::actingAs($this->userMayUpload1)->test(Visibility::class, ['album' => $this->album1])
 			->assertOk()
 			->assertSet('is_public', true)
 			->assertSet('grants_full_photo_access', true)
@@ -69,5 +70,49 @@ class VisibilityTest extends BaseLivewireTest
 			->assertSet('grants_download', false)
 			->assertSet('is_nsfw', true)
 			->assertSet('is_password_required', false);
+	}
+
+	public function testUnlocking(): void
+	{
+		Livewire::actingAs($this->userMayUpload1)->test(Visibility::class, ['album' => $this->album1])
+			->assertOk()
+			->assertViewIs('livewire.forms.album.visibility')
+			->toggle('is_public')
+			->assertDispatched('notify', self::notifySuccess())
+			->assertSet('is_public', true)
+			->set('grants_full_photo_access', true)
+			->assertDispatched('notify', self::notifySuccess())
+			->set('is_link_required', true)
+			->assertDispatched('notify', self::notifySuccess())
+			->set('grants_download', true)
+			->assertDispatched('notify', self::notifySuccess())
+			->set('is_nsfw', true)
+			->assertDispatched('notify', self::notifySuccess())
+			->set('is_password_required', true)
+			->assertDispatched('notify', self::notifySuccess())
+			->set('password', 'password')
+			->assertDispatched('notify', self::notifySuccess());
+
+		$this->album1 = $this->album1->fresh();
+		$this->album1->base_class->load('access_permissions');
+
+		Livewire::actingAs($this->userMayUpload2)->test(UnlockAlbum::class, ['albumID' => $this->album1->id])
+			->set('password', 'wrongPassword')
+			->call('submit')
+			->assertForbidden();
+
+		Livewire::actingAs($this->userMayUpload2)->test(UnlockAlbum::class, ['albumID' => $this->album1->id])
+			->set('password', 'password')
+			->call('submit')
+			->assertOk()
+			->assertRedirect(route('livewire-gallery-album', ['albumId' => $this->album1->id]));
+	}
+
+	public function testUnlockingUnlockedAlbum(): void
+	{
+		Livewire::actingAs($this->userMayUpload2)->test(UnlockAlbum::class, ['albumID' => $this->album1->id])
+			->set('password', 'password')
+			->call('submit')
+			->assertForbidden();
 	}
 }

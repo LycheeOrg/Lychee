@@ -13,7 +13,7 @@ use function Safe\preg_split;
 
 class ImportFromServerForm extends Form
 {
-	public ?string $albumID;
+	public ?string $albumID = null;
 	public string $path;
 	/** @var array<int,string> */
 	public array $paths = [];

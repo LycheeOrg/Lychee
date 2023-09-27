@@ -22,7 +22,7 @@ class Rename extends Component
 	use InteractWithModal;
 	use AuthorizesRequests;
 
-	#[Locked] public ?string $parent_id;
+	#[Locked] public ?string $parent_id = null;
 	/** @var array<int,string> */
 	#[Locked] public array $albumIDs;
 	#[Locked] public int $num;

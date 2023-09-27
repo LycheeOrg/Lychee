@@ -10,7 +10,7 @@ use Livewire\Form;
 
 class ImportFromUrlForm extends Form
 {
-	#[Locked] public ?string $albumID;
+	#[Locked] public ?string $albumID = null;
 	/** @var array<int,string> */
 	#[Locked] public array $urls = [];
 	public string $url = '';
@@ -61,13 +61,13 @@ class ImportFromUrlForm extends Form
 	 */
 	public function init(?string $albumID): void
 	{
-		$this->albumID = $albumID ?? '';
+		$this->albumID = $albumID;
 	}
 
 	public function getAlbum(): null|Album
 	{
 		/** @var Album $album */
-		$album = $this->albumID === '' ? null : Album::query()->findOrFail($this->albumID);
+		$album = $this->albumID === null ? null : Album::query()->findOrFail($this->albumID);
 
 		return $album;
 	}

@@ -101,11 +101,11 @@ parameters:
 
 		# TESTS
 		- 
-			message: '#Dynamic call to static method Illuminate\\Testing\\TestResponse::assert(Forbidden|ViewIs|Unauthorized)#'
+			message: '#Dynamic call to static method Illuminate\\Testing\\TestResponse::assert(Forbidden|ViewIs|Unauthorized|Ok)#'
 			paths:
 				- tests
 		- 
-			message: '#Call to an undefined method Illuminate\\Testing\\TestResponse::(assert)?(SeeLivewire|dispatch|call|Set)#'
+			message: '#Call to an undefined method Illuminate\\Testing\\TestResponse::(assert)?(SeeLivewire|dispatch|call|Set|Count)#'
 			paths:
 				- tests
 		- 

@@ -3,6 +3,7 @@
 namespace App\Livewire\Components\Forms\Album;
 
 use App\Actions\Album\Delete as DeleteAction;
+use App\Contracts\Models\AbstractAlbum;
 use App\Factories\AlbumFactory;
 use App\Http\RuleSets\Album\DeleteAlbumsRuleSet;
 use App\Livewire\Traits\Notify;
@@ -45,6 +46,8 @@ class DeletePanel extends Component
 	 */
 	public function mount(BaseAlbum $album): void
 	{
+		Gate::authorize(AlbumPolicy::CAN_DELETE, [AbstractAlbum::class, $album]);
+
 		$this->albumIDs = [$album->id];
 		$this->title = $album->title;
 	}
