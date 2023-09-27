@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Forms\Album;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Factories\AlbumFactory;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
@@ -39,6 +40,8 @@ class Transfer extends Component
 	 */
 	public function mount(BaseAlbum $album): void
 	{
+		Gate::authorize(AlbumPolicy::IS_OWNER, [AbstractAlbum::class, $album]);
+
 		$this->albumID = $album->id;
 		$this->title = $album->title;
 		$this->current_owner = $album->owner_id;
@@ -99,14 +102,14 @@ class Transfer extends Component
 
 		// If this is an Album, we also need to fix the children and photos ownership
 		if ($baseAlbum instanceof Album) {
-			$baseAlbum->parent_id = null;
+			$baseAlbum->makeRoot();
 			$baseAlbum->save();
 			$baseAlbum->fixOwnershipOfChildren();
 		}
 
 		// If we are not an administrator, this mean we no longer have access.
 		if (Auth::user()->may_administrate !== true) {
-			return redirect()->to(route('livewire_index', ['page' => 'gallery']));
+			return redirect()->to(route('livewire-gallery'));
 		}
 
 		// Remount the component and re-render.

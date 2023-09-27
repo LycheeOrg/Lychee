@@ -15,7 +15,6 @@ namespace Tests\Livewire\Forms\Album;
 use App\Contracts\Livewire\Params;
 use App\Livewire\Components\Forms\Album\Create;
 use Livewire\Livewire;
-use function PHPUnit\Framework\assertCount;
 use Tests\Livewire\Base\BaseLivewireTest;
 
 class CreateTest extends BaseLivewireTest
@@ -56,6 +55,6 @@ class CreateTest extends BaseLivewireTest
 			->call('submit')
 			->assertRedirect();
 
-		assertCount(2, $this->album1->fresh()->load('children')->children);
+		$this->assertCount(2, $this->album1->fresh()->load('children')->children);
 	}
 }

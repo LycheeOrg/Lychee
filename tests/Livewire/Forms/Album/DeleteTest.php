@@ -15,7 +15,6 @@ namespace Tests\Livewire\Forms\Album;
 use App\Contracts\Livewire\Params;
 use App\Livewire\Components\Forms\Album\Delete;
 use Livewire\Livewire;
-use function PHPUnit\Framework\assertCount;
 use Tests\Livewire\Base\BaseLivewireTest;
 
 class DeleteTest extends BaseLivewireTest
@@ -54,6 +53,6 @@ class DeleteTest extends BaseLivewireTest
 			->call('delete')
 			->assertRedirect(route('livewire-gallery-album', ['albumId' => $this->album1->id]));
 
-		assertCount(0, $this->album1->fresh()->load('children')->children);
+		$this->assertCount(0, $this->album1->fresh()->load('children')->children);
 	}
 }
