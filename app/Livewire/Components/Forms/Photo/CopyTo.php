@@ -90,7 +90,7 @@ class CopyTo extends Component
 		$album = $this->albumID === null ? null : Album::query()->findOrFail($this->albumID);
 		Gate::authorize(AlbumPolicy::CAN_EDIT, [Album::class, $album]);
 
-		$photos = Photo::query()->findOrFail($this->photoIDs);
+		$photos = Photo::query()->with(['size_variants'])->findOrFail($this->photoIDs);
 
 		$copiedPhotos = $this->duplicate->do($photos, $album);
 

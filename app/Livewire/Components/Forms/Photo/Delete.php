@@ -27,7 +27,7 @@ class Delete extends Component
 
 	/** @var array<int,string> */
 	#[Locked] public array $photoIDs;
-	#[Locked] public string $albumId;
+	#[Locked] public ?string $albumId = null;
 	#[Locked] public string $title = '';
 	#[Locked] public int $num;
 	/**
@@ -41,6 +41,9 @@ class Delete extends Component
 	{
 		$id = $params[Params::PHOTO_ID] ?? null;
 		$this->photoIDs = $id !== null ? [$id] : $params[Params::PHOTO_IDS] ?? [];
+
+		Gate::authorize(PhotoPolicy::CAN_DELETE_BY_ID, [Photo::class, $this->photoIDs]);
+
 		$this->num = count($this->photoIDs);
 
 		if ($this->num === 1) {
