@@ -5,14 +5,15 @@ namespace App\Livewire\Forms;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Models\Album;
 use App\Rules\RandomIDRule;
+use Livewire\Attributes\Locked;
 use Livewire\Form;
 
 class ImportFromUrlForm extends Form
 {
-	public ?string $albumID;
-	public string $url = '';
+	#[Locked] public ?string $albumID;
 	/** @var array<int,string> */
-	public array $urls = [];
+	#[Locked] public array $urls = [];
+	public string $url = '';
 
 	/**
 	 * This allows Livewire to know which values of the $configs we
@@ -60,13 +61,13 @@ class ImportFromUrlForm extends Form
 	 */
 	public function init(?string $albumID): void
 	{
-		$this->albumID = $albumID;
+		$this->albumID = $albumID ?? '';
 	}
 
 	public function getAlbum(): null|Album
 	{
 		/** @var Album $album */
-		$album = $this->albumID === null ? null : Album::query()->findOrFail($this->albumID);
+		$album = $this->albumID === '' ? null : Album::query()->findOrFail($this->albumID);
 
 		return $album;
 	}
