@@ -13,12 +13,15 @@
 namespace Tests\Livewire\Forms;
 
 use App\Livewire\Components\Forms\Add\ImportFromUrl;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Livewire\Livewire;
 use Tests\Feature\Constants\TestConstants;
 use Tests\Livewire\Base\BaseLivewireTest;
 
 class ImportFromUrlTest extends BaseLivewireTest
 {
+	use DatabaseTransactions;
+
 	public function testLoggedOut(): void
 	{
 		Livewire::test(ImportFromUrl::class)
@@ -38,7 +41,9 @@ class ImportFromUrlTest extends BaseLivewireTest
 			->assertOk()
 			->set('form.url', TestConstants::SAMPLE_DOWNLOAD_JPG)
 			->call('submit')
-			->assertOk();
+			->assertOk()
+			->assertDispatched('reloadPage')
+			->assertDispatched('closeModal');
 	}
 
 	public function testLoggedInClose(): void
