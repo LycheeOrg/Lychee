@@ -50,6 +50,7 @@ class Create extends Component
 	public function mount(array $params = []): void
 	{
 		$this->parent_id = $params[Params::PARENT_ID];
+		Gate::authorize(AlbumPolicy::CAN_EDIT_ID, [AbstractAlbum::class, [$this->parent_id]]);
 	}
 
 	/**
