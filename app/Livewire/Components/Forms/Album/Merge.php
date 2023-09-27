@@ -5,7 +5,6 @@ namespace App\Livewire\Components\Forms\Album;
 use App\Actions\Album\Merge as AlbumMerge;
 use App\Contracts\Livewire\Params;
 use App\Contracts\Models\AbstractAlbum;
-use App\Enum\SmartAlbumType;
 use App\Factories\AlbumFactory;
 use App\Http\RuleSets\Album\MergeAlbumsRuleSet;
 use App\Livewire\Traits\InteractWithModal;
@@ -23,7 +22,7 @@ class Merge extends Component
 	use InteractWithModal;
 	use AuthorizesRequests;
 
-	#[Locked] public string $parent_id;
+	#[Locked] public ?string $parent_id = null;
 	/** @var array<int,string> */
 	#[Locked] public array $albumIDs;
 	#[Locked] public string $titleMoved = '';
@@ -70,7 +69,7 @@ class Merge extends Component
 		}
 
 		Gate::authorize(AlbumPolicy::CAN_EDIT_ID, [AbstractAlbum::class, $this->albumIDs]);
-		$this->parent_id = $params[Params::PARENT_ID] ?? SmartAlbumType::UNSORTED->value;
+		$this->parent_id = $params[Params::PARENT_ID] ?? null;
 	}
 
 	/**
@@ -105,7 +104,11 @@ class Merge extends Component
 
 		$this->mergeAlbums->do($album, $albums);
 
-		$this->redirect(route('livewire-gallery-album', ['albumId' => $this->parent_id]), true);
+		if ($this->parent_id !== null) {
+			$this->redirect(route('livewire-gallery-album', ['albumId' => $this->parent_id]), true);
+		} else {
+			$this->redirect(route('livewire-gallery'), true);
+		}
 		$this->close();
 	}
 

@@ -27,6 +27,9 @@ class MergeMoveTest extends BaseLivewireTest
 
 		Livewire::test(Merge::class, ['params' => [Params::PARENT_ID => $this->album1->id, Params::ALBUM_ID => $this->subAlbum1->id]])
 			->assertForbidden();
+
+		Livewire::test(Merge::class, ['params' => [Params::PARENT_ID => null, Params::ALBUM_IDS => [$this->album1->id, $this->subAlbum1->id]]])
+			->assertForbidden();
 	}
 
 	public function testMoveLoggedOut(): void
@@ -80,6 +83,18 @@ class MergeMoveTest extends BaseLivewireTest
 			->assertRedirect(route('livewire-gallery-album', ['albumId' => $this->album1->id]));
 
 		$this->assertCount(0, $this->album1->fresh()->load('children')->children);
+
+		Livewire::actingAs($this->userMayUpload1)->test(Merge::class, ['params' => [Params::PARENT_ID => null, Params::ALBUM_ID => $this->album1->id]])
+			->assertOk()
+			->assertViewIs('livewire.forms.album.merge')
+			->call('setAlbum', $this->album2->id, $this->album2->title)
+			->assertSet('albumID', $this->album2->id)
+			->assertSet('title', $this->album2->title)
+			->assertOk()
+			->call('submit')
+			->assertRedirect(route('livewire-gallery'));
+
+		$this->assertCount(1, $this->album2->fresh()->load('children')->children);
 	}
 
 	public function testMoveLoggedIn(): void
@@ -101,5 +116,17 @@ class MergeMoveTest extends BaseLivewireTest
 
 		$this->assertCount(0, $this->album1->fresh()->load('children')->children);
 		$this->assertCount(2, $this->album2->fresh()->load('children')->children);
+
+		Livewire::actingAs($this->userMayUpload1)->test(Move::class, ['params' => [Params::PARENT_ID => null, Params::ALBUM_ID => $this->album1->id]])
+			->assertOk()
+			->assertViewIs('livewire.forms.album.move')
+			->call('setAlbum', $this->album2->id, $this->album2->title)
+			->assertSet('albumID', $this->album2->id)
+			->assertSet('title', $this->album2->title)
+			->assertOk()
+			->call('submit')
+			->assertRedirect(route('livewire-gallery'));
+
+		$this->assertCount(3, $this->album2->fresh()->load('children')->children);
 	}
 }
