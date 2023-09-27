@@ -86,6 +86,22 @@ class PhotoFactory extends Factory
 	/**
 	 * Set a bunch of GPS coordinates (in Netherlands).
 	 *
+	 * @return array<string,mixed>
+	 */
+	public function with_subGPS_coordinates(): self
+	{
+		return $this->state(function (array $attributes) {
+			return [
+				'latitude' => '-51.81738000',
+				'longitude' => '-5.86694306',
+				'altitude' => '83.1000',
+			];
+		});
+	}
+
+	/**
+	 * Set a bunch of GPS coordinates (in Netherlands).
+	 *
 	 * @return self
 	 */
 	public function in(Album $album): self

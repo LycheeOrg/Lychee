@@ -62,7 +62,7 @@ abstract class BaseLivewireTest extends AbstractTestCase
 
 		$this->album1 = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
 		$this->photo1 = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->in($this->album1)->create();
-		$this->photo1b = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->in($this->album1)->create();
+		$this->photo1b = Photo::factory()->owned_by($this->userMayUpload1)->with_subGPS_coordinates()->in($this->album1)->create();
 
 		$this->subAlbum1 = Album::factory()->children_of($this->album1)->owned_by($this->userMayUpload1)->create();
 		$this->subPhoto1 = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->in($this->subAlbum1)->create();
