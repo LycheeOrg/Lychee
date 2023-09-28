@@ -1,5 +1,3 @@
-// import Livewire from
-
 export default { albumView };
 
 export function albumView(nsfwAlbumsVisible_val, isFullscreen_val, canEdit_val, parent_id_val = null, albumIDs_val = [], photoIDs_val = []) {

@@ -51,7 +51,7 @@ class Photo extends Component
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function __construct(ModelsPhoto $data, string $albumId, Item|null $geometry, AlbumLayoutType $layout)
+	public function __construct(ModelsPhoto $data, string $albumId, Item|null $geometry = null, AlbumLayoutType $layout)
 	{
 		$this->layout = $layout;
 		$date_format = Configs::getValueAsString('date_format_photo_thumb');

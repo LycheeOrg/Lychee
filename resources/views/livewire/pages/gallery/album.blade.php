@@ -30,12 +30,13 @@
         <x-gallery.album.login-dialog />
     @else
     <div id="lychee_view_content"
-        @if ($flags->layout() === \App\Enum\AlbumLayoutType::JUSTIFIED)
-        x-init="width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-                $wire.loadAlbum(width - 2 * 28 - 20);" {{-- We remove 2x padding of 7rem + 20px for the scroll bar --}}
+        {{-- We remove 2x padding of 7rem + 20px for the scroll bar --}}
+        {{-- @if ($flags->layout() === \App\Enum\AlbumLayoutType::JUSTIFIED) --}}
+        {{-- x-init="width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+                $wire.loadAlbum(width - 2 * 28 - 20);"
         x-on:resize.window="width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-                $wire.loadAlbum(width - 2*28);"
-        @endif
+                $wire.loadAlbum(width - 2*28);" --}}
+        {{-- @endif --}}
         class="relative flex flex-wrap content-start w-full justify-start overflow-x-clip overflow-y-auto"
         x-bind:class="isFullscreen ? 'h-[calc(100vh-3px)]' : 'h-[calc(100vh-56px)]'">
         @if ($flags->is_base_album)
@@ -57,7 +58,7 @@
             @foreach ($this->album->children as $data)<x-gallery.album.thumbs.album :data="$data" />@endforeach
         @endif
         @if($num_children > 0 && $num_photos > 0)<x-gallery.divider title="{{ __('lychee.PHOTOS') }}" />@endif
-        @if ($flags->is_ready_to_load || $flags->layout() !== \App\Enum\AlbumLayoutType::JUSTIFIED)
+        {{-- @if ($flags->is_ready_to_load || $flags->layout() !== \App\Enum\AlbumLayoutType::JUSTIFIED) --}}
             <div
                 @class(['relative w-full',
                     'm-4 flex flex-wrap' => $flags->layout() === \App\Enum\AlbumLayoutType::SQUARE,
@@ -66,23 +67,28 @@
                     'grid' => $flags->layout() === \App\Enum\AlbumLayoutType::GRID,
                 ])
                 @if ($flags->layout() === \App\Enum\AlbumLayoutType::JUSTIFIED)
-                    style="height:{{ $this->geometry->containerHeight }}px;"
+                    x-justify-layout
+                    {{-- style="height:{{ $this->geometry->containerHeight }}px;" --}}
                 @endif
             >
             @for ($i = 0; $i < $num_photos; $i++)
-                <x-gallery.album.thumbs.photo :data="$this->album->photos[$i]" albumId="{{ $albumId }}" :geometry="$this->geometry?->boxes->get($i)" :layout="$flags->layout()" />
+                <x-gallery.album.thumbs.photo :data="$this->album->photos[$i]" albumId="{{ $albumId }}" 
+                    :geometry="null"
+                    {{-- :geometry="$this->geometry?->boxes->get($i)" --}}
+                    :layout="$flags->layout()" />
             @endfor
             </div>
-        @else
-        <span
+        {{-- @else --}}
+                    {{-- We remove 2x padding of 7rem + 20px for the scroll bar --}}
+        {{-- <span
             x-init="width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-                    $wire.loadAlbum(width - 2 * 28 - 20);" {{-- We remove 2x padding of 7rem + 20px for the scroll bar --}}
+                    $wire.loadAlbum(width - 2 * 28 - 20);" 
             x-on:resize.window="width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
                                 $wire.loadAlbum(width - 2*28);"
             class="mt-[33%] w-full text-center text-xl text-neutral-400 align-middle">
             Loading...
         </span>
-        @endif
+        @endif --}}
         <livewire:pages.gallery.sensitive-warning :album="$this->album" />
     </div>
     <x-gallery.album.sharing-links :album="$this->album" x-show="sharingLinksOpen" />

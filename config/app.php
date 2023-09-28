@@ -265,5 +265,6 @@ return [
 		'SizeVariantType' => App\Enum\SizeVariantType::class,
 		'FileStatus' => App\Enum\Livewire\FileStatus::class,
 		'Params' => App\Contracts\Livewire\Params::class,
+		'AlbumLayoutType' => \App\Enum\AlbumLayoutType::class,
 	])->toArray(),
 ];

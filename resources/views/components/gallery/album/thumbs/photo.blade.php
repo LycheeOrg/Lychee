@@ -12,6 +12,8 @@
 		w-52 2xl:ml-7 2xl:mt-7' => $layout === \App\Enum\AlbumLayoutType::SQUARE,
 		])
 	data-album-id='{{ $album_id }}'
+	data-width='{{ $_w }}'
+	data-height='{{ $_h }}'
 	data-id='{{ $photo_id }}'
 	data-starred='{{ $is_starred ? '1' : '0' }}'
 	x-on:contextmenu.prevent='handleContextPhoto($event, $wire)'
