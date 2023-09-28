@@ -14,29 +14,32 @@ namespace Tests\Livewire;
 
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Livewire\Traits\UseWireable;
+use Livewire\Wireable;
 use Tests\AbstractTestCase;
 
 class WireableTest extends AbstractTestCase
 {
-	public function testWirableDehydrate() : void {
-		$trait = new class {
-            use UseWireable;
-			public $num;
+	public function testWirableDehydrate(): void
+	{
+		$trait = new class() implements Wireable {
+			use UseWireable;
+			public object $num;
 
 			public function __construct()
 			{
-				$this->num = new class {};
+				$this->num = new class() {};
 			}
 		};
 
 		$this->assertThrows(fn () => $trait->toLivewire(), LycheeLogicException::class);
 	}
 
-	public function testWirableHydrate() : void {
-		$trait = new class {
-            use UseWireable;
+	public function testWirableHydrate(): void
+	{
+		$trait = new class() implements Wireable {
+			use UseWireable;
 		};
 
-		$this->assertThrows(fn () => $trait->fromLivewire(""), LycheeLogicException::class);
+		$this->assertThrows(fn () => $trait::fromLivewire(''), LycheeLogicException::class);
 	}
 }
