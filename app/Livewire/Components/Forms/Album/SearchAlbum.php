@@ -151,6 +151,10 @@ class SearchAlbum extends Component
 
 		$num_chunks = $title_split->count() - 1;
 
+		if ($num_chunks === 0) {
+			return Str::limit($last_elem, self::SHORTEN_BY, '…');
+		}
+
 		$title_split = $title_split->take($num_chunks);
 		/** @var Collection<int,int> $title_lengths */
 		$title_lengths = $title_split->map(fn ($v) => strlen($v));

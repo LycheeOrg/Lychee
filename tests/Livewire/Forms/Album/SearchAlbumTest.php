@@ -18,6 +18,13 @@ use Tests\Livewire\Base\BaseLivewireTest;
 
 class SearchAlbumTest extends BaseLivewireTest
 {
+	public function setUp(): void
+	{
+		parent::setUp();
+		$this->album2->title = 'vzreckosowoigygagvarcknkxubsbmrczvkmwqayhsemhpwidplztkifahdywtuaghlyighdcrzxjlzzdcuj';
+		$this->album2->save();
+	}
+
 	public function testSearchAlbumLoggedOut(): void
 	{
 		Livewire::test(SearchAlbum::class, ['parent_id' => null, 'lft' => null, 'rgt' => null])

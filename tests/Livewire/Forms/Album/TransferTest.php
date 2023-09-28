@@ -12,6 +12,7 @@
 
 namespace Tests\Livewire\Forms\Album;
 
+use App\Enum\Livewire\NotificationType;
 use App\Livewire\Components\Forms\Album\Transfer;
 use App\Livewire\Components\Pages\Gallery\Album;
 use Livewire\Livewire;
@@ -54,5 +55,16 @@ class TransferTest extends BaseLivewireTest
 		// User 1 no longer have access.
 		Livewire::actingAs($this->userMayUpload1)->test(Album::class, ['albumId' => $this->album1->id])
 			->assertRedirect(route('livewire-gallery'));
+	}
+
+	public function testTransferAsAdmin(): void
+	{
+		Livewire::actingAs($this->admin)->test(Transfer::class, ['album' => $this->album1])
+			->assertOk()
+			->assertViewIs('livewire.forms.album.transfer')
+			->set('username', $this->userMayUpload2->username)
+			->assertOk()
+			->call('transfer')
+			->assertDispatched('notify', ['msg' => 'Transfer successful!', 'type' => NotificationType::SUCCESS->value]);
 	}
 }

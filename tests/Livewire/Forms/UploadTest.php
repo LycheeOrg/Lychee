@@ -15,13 +15,11 @@ namespace Tests\Livewire\Forms;
 use App\Livewire\Components\Forms\Add\Upload;
 use App\Models\Configs;
 use Illuminate\Http\UploadedFile;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\Livewire;
-
 use function Safe\copy;
+use function Safe\file_get_contents;
 use function Safe\filesize;
 use function Safe\tempnam;
-
 use Tests\Feature\Constants\TestConstants;
 use Tests\Livewire\Base\BaseLivewireTest;
 

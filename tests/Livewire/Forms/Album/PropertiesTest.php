@@ -31,5 +31,13 @@ class PropertiesTest extends BaseLivewireTest
 			->call('submit')
 			->assertOk()
 			->assertDispatched('notify', self::notifySuccess());
+
+		Livewire::actingAs($this->admin)->test(Properties::class, ['album' => $this->album1])
+			->assertOk()
+			->assertViewIs('livewire.forms.album.properties')
+			->set('license', 'WTFPL')
+			->call('submit')
+			->assertOk()
+			->assertNotDispatched('notify', self::notifySuccess());
 	}
 }

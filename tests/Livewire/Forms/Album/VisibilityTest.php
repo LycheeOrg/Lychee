@@ -102,6 +102,11 @@ class VisibilityTest extends BaseLivewireTest
 			->assertForbidden();
 
 		Livewire::actingAs($this->userMayUpload2)->test(UnlockAlbum::class, ['albumID' => $this->album1->id])
+			->set('password', '')
+			->call('submit')
+			->assertDispatched('notify');
+
+		Livewire::actingAs($this->userMayUpload2)->test(UnlockAlbum::class, ['albumID' => $this->album1->id])
 			->set('password', 'password')
 			->call('submit')
 			->assertOk()
