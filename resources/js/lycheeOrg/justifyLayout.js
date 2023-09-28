@@ -1,5 +1,3 @@
-
-
 export default { useJustifyLayout };
 
 export function useJustifyLayout(el) {
@@ -7,12 +5,10 @@ export function useJustifyLayout(el) {
 	const multiplier = view.scrollHeight > view.clientHeight ? 0 : 1;
 	const containerWidth = parseFloat(getComputedStyle(el).width) - 20 * multiplier;
 	const photoDefaultHeight = 320; // make this a parameter later
-	const justifiedItems = [...el.childNodes].filter(
-		(gridItem) => gridItem.nodeType === 1
-	)
+	const justifiedItems = [...el.childNodes].filter((gridItem) => gridItem.nodeType === 1);
 	justifiedItems.forEach((e) => {
-		e.dataset.width
-		e.dataset.height
+		e.dataset.width;
+		e.dataset.height;
 	});
 
 	/** @type {number[]} */
@@ -21,7 +17,7 @@ export function useJustifyLayout(el) {
 		const width = _photo.dataset.width;
 		return height > 0 ? width / height : 1;
 	});
-	const layoutGeometry = require("justified-layout") (ratio, {
+	const layoutGeometry = require("justified-layout")(ratio, {
 		containerWidth: containerWidth,
 		containerPadding: 0,
 		targetRowHeight: photoDefaultHeight,
@@ -34,11 +30,11 @@ export function useJustifyLayout(el) {
 			// query is being modified.
 			return false;
 		}
-		e.style.top = layoutGeometry.boxes[i].top + "px"
-		e.style.width = layoutGeometry.boxes[i].width + "px"
-		e.style.height = layoutGeometry.boxes[i].height + "px"
-		e.style.left = layoutGeometry.boxes[i].left + "px"
-	})
+		e.style.top = layoutGeometry.boxes[i].top + "px";
+		e.style.width = layoutGeometry.boxes[i].width + "px";
+		e.style.height = layoutGeometry.boxes[i].height + "px";
+		e.style.left = layoutGeometry.boxes[i].left + "px";
+	});
 
 	// 	const imgs = $(this)
 	// 		.css({
