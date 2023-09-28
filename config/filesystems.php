@@ -99,5 +99,11 @@ return [
 			'url' => env('LYCHEE_SYM_URL', 'sym'),
 			'visibility' => 'public',
 		],
+
+		'tmp-for-tests' => [
+			'driver' => 'local',
+			'root' => storage_path('image-tmp/'),
+			'visibility' => 'private'
+		]
 	],
 ];

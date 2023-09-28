@@ -76,7 +76,6 @@ class Upload extends Component
 		$keys = explode('.', $key);
 		$index = intval($keys[0]);
 		$attribute = $keys[1] ?? null;
-
 		if ($attribute === 'fileName') {
 			$fileDetails = $this->uploads[$index];
 			// Initialize data if not existing.
@@ -86,14 +85,12 @@ class Upload extends Component
 			// Ensure data are set
 			$this->uploads[$index]['extension'] = $fileDetails['extension'];
 			$this->uploads[$index]['uuidName'] = $fileDetails['uuidName'];
-			$this->uploads[$index]['stage'] = $fileData['stage'] ??= FileStatus::UPLOADING->value;
-			$this->uploads[$index]['progress'] = $fileData['progress'] ??= 0;
+			$this->uploads[$index]['stage'] = $fileDetails['stage'] ?? FileStatus::UPLOADING->value;
+			$this->uploads[$index]['progress'] = $fileDetails['progress'] ?? 0;
 		}
 
 		if ($attribute === 'fileChunk') {
 			$fileDetails = $this->uploads[$index];
-
-			dump($this->uploads);
 			/** @var TemporaryUploadedFile $chunkFile */
 			$chunkFile = $fileDetails['fileChunk'];
 			$final = new NativeLocalFile(Storage::path('/livewire-tmp/' . $fileDetails['uuidName']));
@@ -108,12 +105,11 @@ class Upload extends Component
 			}
 		}
 
-		// $this->triggerProcessing();
+		$this->triggerProcessing();
 	}
 
 	public function triggerProcessing(): void
 	{
-		dump($this->uploads);
 		foreach ($this->uploads as $idx => $fileData) {
 			if ($fileData['stage'] === FileStatus::READY->value) {
 				$uploadedFile = new NativeLocalFile(Storage::path('/livewire-tmp/' . $fileData['uuidName']));

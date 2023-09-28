@@ -59,7 +59,7 @@ class ImportFromServerTest extends BaseLivewireTest
 	// 		->call('submit')
 	// 		->assertOk()
 	// 		->assertHasNoErrors('form.paths.0');
-	
+
 	// 	$this->assertEquals(true, file_exists(static::importPath('night.jpg')));
 	// }
 
@@ -75,7 +75,7 @@ class ImportFromServerTest extends BaseLivewireTest
 	// 		->call('submit')
 	// 		->assertOk()
 	// 		->assertHasNoErrors('form.paths.0');
-	
+
 	// 	$this->assertEquals(false, file_exists(static::importPath('night.jpg')));
 	// }
 

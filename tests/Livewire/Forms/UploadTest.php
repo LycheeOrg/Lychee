@@ -14,13 +14,16 @@ namespace Tests\Livewire\Forms;
 
 use App\Livewire\Components\Forms\Add\Upload;
 use App\Models\Configs;
+use Illuminate\Http\UploadedFile;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\Livewire;
-use Tests\AbstractTestCase;
+
+use function Safe\copy;
+use function Safe\filesize;
+use function Safe\tempnam;
+
 use Tests\Feature\Constants\TestConstants;
 use Tests\Livewire\Base\BaseLivewireTest;
-
-use function Safe\filesize;
 
 class UploadTest extends BaseLivewireTest
 {
@@ -67,10 +70,11 @@ class UploadTest extends BaseLivewireTest
 		// Reset
 		Configs::set('upload_chunk_size', 0);
 
-		$uploadedFile = $this->createTemporaryUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE);
-		$name = $uploadedFile->getClientOriginalName();
-		$size = filesize($uploadedFile->getPathname());
-		// $uploadedFile = TemporaryUploadedFile::createFromLivewire()
+		$tmpFilename = tempnam(sys_get_temp_dir(), 'lychee');
+		copy(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE), $tmpFilename);
+		$uploadedFile = UploadedFile::fake()->createWithContent('night.jpg', file_get_contents($tmpFilename));
+		$name = TestConstants::SAMPLE_FILE_NIGHT_IMAGE;
+		$size = filesize($tmpFilename);
 
 		Livewire::actingAs($this->userMayUpload1)->test(Upload::class)
 			->assertOk()
@@ -83,13 +87,5 @@ class UploadTest extends BaseLivewireTest
 				'uploads.0.progress' => 0])
 			->set('uploads.0.fileChunk', $uploadedFile)
 			->assertOk();
-	}
-
-	protected function createTemporaryUploadedFile(string $sampleFilePath): TemporaryUploadedFile
-	{
-		$tmpFilename = tempnam(sys_get_temp_dir(), 'lychee');
-		copy(base_path($sampleFilePath), $tmpFilename);
-
-		return TemporaryUploadedFile::createFromLivewire($tmpFilename);
 	}
 }
