@@ -8,7 +8,6 @@
         "format": "prettier --write resources/js/ resources/css/"
     },
     "devDependencies": {
-        "alpinejs-masonry": "^1.0.12",
         "autoprefixer": "^10.4.14",
         "axios": "^1.1.2",
         "laravel-vite-plugin": "^0.7.5",
