@@ -14,7 +14,6 @@ class AlbumFlags implements Wireable
 	public function __construct(
 		public bool $is_accessible = false,
 		public bool $is_password_protected = false,
-		public bool $is_ready_to_load = false,
 		public bool $is_base_album = false,
 		public bool $can_edit = false,
 		public ?string $layout = null,

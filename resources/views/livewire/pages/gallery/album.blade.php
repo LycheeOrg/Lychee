@@ -67,9 +67,9 @@
                     x-justify-layout
                 @endif
                 >
-                @for ($i = 0; $i < $num_photos; $i++)
-                    <x-gallery.album.thumbs.photo :data="$this->album->photos[$i]" albumId="{{ $albumId }}" :layout="$flags->layout()" />
-                @endfor
+                @foreach ($this->album->photos as $photo)
+                    <x-gallery.album.thumbs.photo :data="$photo" albumId="{{ $albumId }}" :layout="$flags->layout()" />
+                @endforeach
             </div>
             <livewire:pages.gallery.sensitive-warning :album="$this->album" />
         </div>

@@ -92,17 +92,6 @@ class Album extends Component implements Reloadable
 	}
 
 	/**
-	 * Method call from the front-end to inform it is time to load the pictures given the width.
-	 *
-	 * @return void
-	 */
-	public function loadAlbum(int $width): void
-	{
-		$this->flags->is_ready_to_load = true;
-		$this->width = $width;
-	}
-
-	/**
 	 * Reload the data.
 	 *
 	 * @return void
@@ -123,17 +112,6 @@ class Album extends Component implements Reloadable
 		if (Auth::check() && !$this->flags->is_accessible && !$this->flags->is_password_protected) {
 			$this->redirect(route('livewire-gallery'));
 		}
-	}
-
-	/**
-	 * Computable property to access the photos.
-	 * If we are not ready to load, we return an empty array.
-	 *
-	 * @return Collection
-	 */
-	public function getPhotosProperty(): Collection
-	{
-		return $this->flags->is_ready_to_load ? $this->album->photos : collect([]);
 	}
 
 	/**
