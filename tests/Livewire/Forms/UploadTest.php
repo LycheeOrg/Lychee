@@ -82,7 +82,8 @@ class UploadTest extends BaseLivewireTest
 				'uploads.0.fileSize' => $size,
 				'uploads.0.lastModified' => 0,
 				'uploads.0.stage' => 'uploading',
-				'uploads.0.progress' => 0])
+				'uploads.0.progress' => 0
+			])
 			->set('uploads.0.fileChunk', $uploadedFile)
 			->assertOk();
 	}
