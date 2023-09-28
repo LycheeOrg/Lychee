@@ -2,6 +2,7 @@
 	@class([
 		'photo group shadow-md shadow-black/25 animate-zoomIn',
 		'absolute' => $layout === \App\Enum\AlbumLayoutType::JUSTIFIED,
+		'absolute' => $layout === \App\Enum\AlbumLayoutType::MASONRY,
 		'relative aspect-square
 		ml-1 mt-1
 		sm:ml-2 sm:mt-2

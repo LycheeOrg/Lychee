@@ -60,11 +60,13 @@
                     'm-4 flex flex-wrap' =>
                         $flags->layout() === \App\Enum\AlbumLayoutType::SQUARE,
                     'm-7' => $flags->layout() === \App\Enum\AlbumLayoutType::JUSTIFIED,
-                    'masondry' => $flags->layout() === \App\Enum\AlbumLayoutType::MASONRY,
+                    'm-7 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4' => $flags->layout() === \App\Enum\AlbumLayoutType::MASONRY,
                     'grid' => $flags->layout() === \App\Enum\AlbumLayoutType::GRID,
                 ])
                 @if ($flags->layout() === \App\Enum\AlbumLayoutType::JUSTIFIED)
-                    x-justify-layout
+                    x-justify
+                @elseif ($flags->layout() === \App\Enum\AlbumLayoutType::MASONRY)
+                    x-masonry
                 @endif
                 >
                 @foreach ($this->album->photos as $photo)

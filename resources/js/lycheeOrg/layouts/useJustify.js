@@ -1,6 +1,8 @@
-export default { useJustifyLayout };
+import "justified-layout";
 
-export function useJustifyLayout(el) {
+export default { useJustify };
+
+export function useJustify(el) {
 	const view = document.getElementById("lychee_view_content");
 	const multiplier = view.scrollHeight > view.clientHeight ? 0 : 1;
 	const containerWidth = parseFloat(getComputedStyle(el).width) - 20 * multiplier;

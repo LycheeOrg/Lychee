@@ -1,14 +1,13 @@
 import "lazysizes";
 import Mousetrap from "mousetrap";
 import "mousetrap-global-bind";
-// import masonry from 'alpinejs-masonry';
-import "justified-layout";
 
 import { loginWebAuthn, registerWebAuthn } from "./lycheeOrg/webauthn.js";
 import { upload } from "./lycheeOrg/upload.js";
 import { albumView } from "./lycheeOrg/albumView.js";
 import { photoView } from "./lycheeOrg/photoView.js";
-import { useJustifyLayout } from "./lycheeOrg/justifyLayout.js";
+import { justify } from "./lycheeOrg/layouts/justifyLayout.js";
+import { masonry } from "./lycheeOrg/layouts/masonryLayout.js";
 
 // Keyboard
 Mousetrap.addKeycodes({
@@ -24,24 +23,8 @@ document.addEventListener("alpine:init", () => {
 	Alpine.data("upload", upload);
 	Alpine.data("albumView", albumView);
 	Alpine.data("photoView", photoView);
-	// Alpine.plugin(masonry);
-
-	Alpine.directive("justify-layout", (el, { modifiers }, { cleanup }) => {
-		const waitPollModifier = modifiers[0];
-		const waitPollDuration = modifiers[1] || 2500;
-
-		waitPollModifier === "wait" ? setTimeout(() => useJustifyLayout(el), waitPollDuration) : useJustifyLayout(el);
-
-		waitPollModifier === "poll" && setInterval(() => useJustifyLayout(el), waitPollDuration);
-
-		window.addEventListener("resize", () => useJustifyLayout(el));
-		window.addEventListener("reload:justify", () => useJustifyLayout(el));
-
-		cleanup(() => {
-			window.removeEventListener("resize", useJustifyLayout);
-			window.addEventListener("reload:justify", useJustifyLayout);
-		});
-	});
+	Alpine.directive("masonry", masonry);
+	Alpine.directive("justify", justify);
 });
 
 // Mousetrap
