@@ -84,5 +84,11 @@ class PhotoTest extends BaseLivewireTest
 			->assertOk()
 			->call('submit')
 			->assertDispatched('notify', self::notifySuccess());
+
+		Livewire::actingAs($this->userMayUpload1)->test(Properties::class, ['photo' => $this->photo1])
+			->assertOk()
+			->set('license', 'WTFPL')
+			->call('submit')
+			->assertNotDispatched('notify', self::notifySuccess());
 	}
 }
